@@ -110,18 +110,31 @@ Kreuzberg is designed as a high-level async abstraction over established open-so
 
 ## Usage
 
-Kreuzberg provides a simple, async-first API for text extraction. The library exports two main functions:
+Kreuzberg provides both async and sync APIs for text extraction. The library exports four main functions:
 
-- `extract_file()`: Extract text from a file (accepts string path or `pathlib.Path`)
-- `extract_bytes()`: Extract text from bytes (accepts a byte string)
+- `extract_file()`: Async function to extract text from a file (accepts string path or `pathlib.Path`)
+- `extract_bytes()`: Async function to extract text from bytes (accepts a byte string)
+- `extract_file_sync()`: Synchronous version of `extract_file()`
+- `extract_bytes_sync()`: Synchronous version of `extract_bytes()`
+
+### Why Async?
+
+Kreuzberg is designed with an async-first approach for several reasons:
+
+1. **I/O Operations**: Text extraction often involves heavy I/O operations (reading files, OCR processing, etc.). Async allows other tasks to run while waiting for these operations.
+2. **Scalability**: In web applications or batch processing scenarios, async enables handling multiple extractions concurrently without blocking.
+3. **Resource Efficiency**: Async operations make better use of system resources by avoiding thread blocking during I/O-bound operations.
+
+However, we also provide sync methods for simpler use cases or when working in synchronous contexts.
 
 ### Quick Start
 
 ```python
 from pathlib import Path
-from kreuzberg import extract_file, extract_bytes
+from kreuzberg import extract_file, extract_bytes, extract_file_sync, extract_bytes_sync
 
 # Basic file extraction
+# Async usage
 async def extract_document():
     # Extract from a PDF file
     pdf_result = await extract_file("document.pdf")
@@ -133,6 +146,20 @@ async def extract_document():
 
     # Extract from Word document
     docx_result = await extract_file(Path("document.docx"))
+    print(f"Word text: {docx_result.content}")
+
+# Sync usage
+def extract_document_sync():
+    # Extract from a PDF file
+    pdf_result = extract_file_sync("document.pdf")
+    print(f"PDF text: {pdf_result.content}")
+
+    # Extract from an image
+    img_result = extract_file_sync("scan.png")
+    print(f"Image text: {img_result.content}")
+
+    # Extract from Word document
+    docx_result = extract_file_sync(Path("document.docx"))
     print(f"Word text: {docx_result.content}")
 ```
 

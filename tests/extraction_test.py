@@ -12,7 +12,7 @@ from kreuzberg._mime_types import (
     POWER_POINT_MIME_TYPE,
 )
 from kreuzberg.exceptions import ValidationError
-from kreuzberg.extraction import extract_bytes, extract_file
+from kreuzberg.extraction import extract_bytes, extract_bytes_sync, extract_file, extract_file_sync
 
 
 @pytest.mark.timeout(timeout=60)
@@ -191,3 +191,35 @@ async def test_extract_file_excel(excel_document: Path) -> None:
 async def test_extract_file_excel_invalid() -> None:
     with pytest.raises(ValidationError, match="The file does not exist"):
         await extract_file("/invalid/path.xlsx", EXCEL_MIME_TYPE)
+
+
+def test_extract_bytes_sync_plain_text() -> None:
+    content = b"This is a plain text file."
+    result = extract_bytes_sync(content, PLAIN_TEXT_MIME_TYPE)
+    assert result.mime_type == PLAIN_TEXT_MIME_TYPE
+    assert isinstance(result.content, str)
+    assert result.content.strip() == "This is a plain text file."
+
+
+def test_extract_file_sync_plain_text(tmp_path: Path) -> None:
+    text_file = tmp_path / "sample.txt"
+    text_file.write_text("This is a plain text file.")
+    result = extract_file_sync(text_file, PLAIN_TEXT_MIME_TYPE)
+    assert result.mime_type == PLAIN_TEXT_MIME_TYPE
+    assert isinstance(result.content, str)
+    assert result.content.strip() == "This is a plain text file."
+
+
+def test_extract_bytes_sync_invalid_mime() -> None:
+    with pytest.raises(ValidationError, match="Unsupported mime type"):
+        extract_bytes_sync(b"some content", "application/unknown")
+
+
+def test_extract_file_sync_invalid_mime() -> None:
+    with pytest.raises(ValidationError, match="Unsupported mime type"):
+        extract_file_sync("/invalid/path.txt", "application/unknown")
+
+
+def test_extract_file_sync_not_exists() -> None:
+    with pytest.raises(ValidationError, match="The file does not exist"):
+        extract_file_sync("/invalid/path.txt", PLAIN_TEXT_MIME_TYPE)
