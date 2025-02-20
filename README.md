@@ -54,7 +54,6 @@ Notes:
 
 - in most distributions the tesseract-ocr package is split into multiple packages, you may need to install any language models you need aside from English separately.
 - please consult the official documentation for these libraries for the most up-to-date installation instructions for your platform.
-- th
 
 ## Architecture
 
@@ -157,11 +156,7 @@ Consult the [Tesseract documentation](https://tesseract-ocr.github.io/tessdoc/) 
 
 #### Processing Configuration
 
-- `max_processes` (default: CPU count / 2): Maximum number of concurrent processes for Tesseract and Pandoc.
-
-  Notes:
-
-  - Higher values can lead to performance improvements when batch processing especially with OCR, but may cause resource exhaustion and deadlocks (especially for tesseract).
+- `max_processes` (default: CPU count): Maximum number of concurrent processes for Tesseract.
 
 ### Quick Start
 
