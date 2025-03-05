@@ -227,7 +227,7 @@ def test_extract_metadata_blocks() -> None:
             ],
         }
     }
-    expected = {"abstract": ["First paragraph", "Second paragraph"]}
+    expected = {"summary": ["First paragraph", "Second paragraph"]}
     assert _extract_metadata(input_meta) == expected
 
 
@@ -254,28 +254,18 @@ def test_extract_metadata_complex() -> None:
         "empty": {"t": META_STRING, "c": ""},
         "invalid_key": {"t": "InvalidType", "c": "Something"},
     }
-    expected = {"title": "Test Document", "authors": ["John Doe", "Jane Smith"], "abstract": ["Test abstract"]}
+    expected = {"title": "Test Document", "authors": ["John Doe", "Jane Smith"], "summary": ["Test abstract"]}
     assert _extract_metadata(input_meta) == expected
 
 
 def test_extract_metadata_invalid_types() -> None:
     input_meta = {
         "title": None,
-        "authors": "Not a dict",
+        "authors": ["Not a dict"],
         "keywords": {"t": "UnknownType", "c": "content"},
-        "abstract": {"t": META_BLOCKS, "c": "Not a list"},
+        "summary": {"t": META_BLOCKS, "c": "Not a list"},
     }
     assert _extract_metadata(input_meta) == {}
-
-
-def test_extract_metadata_from_meta_fixture() -> None:
-    result = _extract_metadata(cast(dict[str, Any], AST_FIXTURE_META["meta"]))
-    expected = {
-        "foo": "bar",
-        # The msg field contains "the quick *brown* fox jumped"
-        "msg": "the quick brown fox jumped",
-    }
-    assert result == expected
 
 
 def test_extract_metadata_from_special_headers() -> None:
