@@ -24,7 +24,7 @@ def backend() -> TesseractBackend:
 
 @pytest.fixture
 def mock_run_process(mocker: MockerFixture) -> Mock:
-    def run_sync(command: list[str], **kwargs: Any) -> Mock:
+    async def async_run_sync(command: list[str], **kwargs: Any) -> Mock:
         result = Mock()
         result.stdout = b"tesseract 5.0.0"
         result.returncode = 0
@@ -32,14 +32,6 @@ def mock_run_process(mocker: MockerFixture) -> Mock:
 
         if "--version" in command and command[0].endswith("tesseract"):
             return result
-
-        if "test_process_file_error" in str(kwargs.get("cwd")):
-            result.returncode = 1
-            result.stderr = b"Error processing file"
-            raise OCRError("Error processing file")
-
-        if "test_process_file_runtime_error" in str(kwargs.get("cwd")):
-            raise RuntimeError("Command failed")
 
         if len(command) >= 3 and command[0].endswith("tesseract"):
             output_file = command[2]
@@ -59,27 +51,40 @@ def mock_run_process(mocker: MockerFixture) -> Mock:
 
         return result
 
-    return mocker.patch("kreuzberg._ocr._tesseract.run_process", side_effect=run_sync)
+    mock = mocker.patch("kreuzberg._ocr._tesseract.run_process")
+    mock.return_value = Mock()
+    mock.return_value.stdout = b"tesseract 5.0.0"
+    mock.return_value.returncode = 0
+    mock.return_value.stderr = b""
+    mock.side_effect = async_run_sync
+    return mock
 
 
 @pytest.fixture
 def mock_run_process_invalid(mocker: MockerFixture) -> Mock:
-    def run_sync(command: list[str], **kwargs: Any) -> Mock:
+    async def run_sync(command: list[str], **kwargs: Any) -> Mock:
         result = Mock()
         result.stdout = b"tesseract 4.0.0"
         result.returncode = 0
         result.stderr = b""
         return result
 
-    return mocker.patch("kreuzberg._ocr._tesseract.run_process", side_effect=run_sync)
+    mock = mocker.patch("kreuzberg._ocr._tesseract.run_process")
+    mock.return_value = Mock()
+    mock.return_value.stdout = b"tesseract 4.0.0"
+    mock.return_value.returncode = 0
+    mock.side_effect = run_sync
+    return mock
 
 
 @pytest.fixture
 def mock_run_process_error(mocker: MockerFixture) -> Mock:
-    def run_sync(command: list[str], **kwargs: Any) -> Mock:
+    async def run_sync(command: list[str], **kwargs: Any) -> Mock:
         raise FileNotFoundError
 
-    return mocker.patch("kreuzberg._ocr._tesseract.run_process", side_effect=run_sync)
+    mock = mocker.patch("kreuzberg._ocr._tesseract.run_process")
+    mock.side_effect = run_sync
+    return mock
 
 
 @pytest.mark.anyio
@@ -90,7 +95,7 @@ async def test_validate_tesseract_version(backend: TesseractBackend, mock_run_pr
 
 @pytest.fixture(autouse=True)
 def reset_version_ref(mocker: MockerFixture) -> None:
-    mocker.patch("kreuzberg._ocr._tesseract.version_ref", {"checked": False})
+    mocker.patch("kreuzberg._ocr._tesseract.TesseractBackend._version_checked", False)
 
 
 @pytest.mark.anyio
@@ -125,16 +130,52 @@ async def test_process_file_with_options(backend: TesseractBackend, mock_run_pro
 
 @pytest.mark.anyio
 async def test_process_file_error(backend: TesseractBackend, mock_run_process: Mock, ocr_image: Path) -> None:
-    mock_run_process.return_value.returncode = 1
-    mock_run_process.return_value.stderr = b"Error processing file"
-    mock_run_process.side_effect = None
+    async def error_side_effect(*args: Any, **kwargs: Any) -> Mock:
+        if args and isinstance(args[0], list) and "--version" in args[0]:
+            result = Mock()
+            result.returncode = 0
+
+            stdout_mock = Mock()
+            stdout_mock.decode = Mock(return_value="tesseract 5.0.0")
+            result.stdout = stdout_mock
+            result.stderr = b""
+            return result
+
+        result = Mock()
+        result.returncode = 1
+        result.stderr = b"Error processing file"
+        return result
+
+    TesseractBackend._version_checked = False
+    mock_run_process.side_effect = error_side_effect
+
     with pytest.raises(OCRError, match="OCR failed with a non-0 return code"):
         await backend.process_file(ocr_image, language="eng", psm=PSMMode.AUTO)
 
 
 @pytest.mark.anyio
 async def test_process_file_runtime_error(backend: TesseractBackend, mock_run_process: Mock, ocr_image: Path) -> None:
-    mock_run_process.side_effect = RuntimeError()
+    call_count = 0
+
+    async def runtime_error_side_effect(*args: Any, **kwargs: Any) -> Mock:
+        nonlocal call_count
+        call_count += 1
+
+        if call_count == 1:
+            result = Mock()
+            result.returncode = 0
+
+            stdout_mock = Mock()
+            stdout_mock.decode = Mock(return_value="tesseract 5.0.0")
+            result.stdout = stdout_mock
+            result.stderr = b""
+            return result
+
+        raise RuntimeError("Command failed")
+
+    TesseractBackend._version_checked = False
+    mock_run_process.side_effect = runtime_error_side_effect
+
     with pytest.raises(OCRError, match="Failed to OCR using tesseract"):
         await backend.process_file(ocr_image, language="eng", psm=PSMMode.AUTO)
 
@@ -175,11 +216,16 @@ async def test_integration_process_image(backend: TesseractBackend, ocr_image: P
 async def test_process_file_linux(backend: TesseractBackend, mocker: MockerFixture) -> None:
     mocker.patch("sys.platform", "linux")
 
-    mock_run = mocker.patch("kreuzberg._ocr._tesseract.run_process")
-    mock_run.return_value.returncode = 0
-    mock_run.return_value.stdout = b"test output"
+    async def linux_mock_run(*args: Any, **kwargs: Any) -> Mock:
+        result = Mock()
+        result.returncode = 0
+        result.stdout = b"tesseract 5.0.0" if "--version" in args[0] else b"test output"
+        result.stderr = b""
+        return result
 
+    mock_run = mocker.patch("kreuzberg._ocr._tesseract.run_process", side_effect=linux_mock_run)
+
+    TesseractBackend._version_checked = False
     await backend.process_file(Path("test.png"), language="eng", psm=PSMMode.AUTO)
 
-    mock_run.assert_called_once()
-    assert mock_run.call_args[1]["env"] == {"OMP_THREAD_LIMIT": "1"}
+    assert any(call[1].get("env") == {"OMP_THREAD_LIMIT": "1"} for call in mock_run.call_args_list)
