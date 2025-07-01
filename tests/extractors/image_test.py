@@ -68,11 +68,11 @@ def test_extract_path_sync(mock_ocr_backend: MagicMock, tmp_path: Path) -> None:
     expected_result = ExtractionResult(content="extracted text", chunks=[], mime_type="text/plain", metadata={})
     mock_ocr_backend.process_file.return_value = expected_result
 
-    with patch("kreuzberg._extractors._image.anyio.run") as mock_run:
-        mock_run.return_value = expected_result
+    with patch("kreuzberg._multiprocessing.sync_tesseract.process_batch_images_sync_pure") as mock_process:
+        mock_process.return_value = [expected_result]
         result = extractor.extract_path_sync(image_path)
 
-        mock_run.assert_called_once()
+        mock_process.assert_called_once()
         assert result == expected_result
 
 
@@ -82,11 +82,11 @@ def test_extract_bytes_sync(mock_ocr_backend: MagicMock) -> None:
 
     expected_result = ExtractionResult(content="extracted text", chunks=[], mime_type="text/plain", metadata={})
 
-    with patch("kreuzberg._extractors._image.anyio.run") as mock_run:
-        mock_run.return_value = expected_result
+    with patch.object(extractor, "extract_path_sync") as mock_extract_path:
+        mock_extract_path.return_value = expected_result
         result = extractor.extract_bytes_sync(b"dummy image content")
 
-        mock_run.assert_called_once()
+        mock_extract_path.assert_called_once()
         assert result == expected_result
 
 
