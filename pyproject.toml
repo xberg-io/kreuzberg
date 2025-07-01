@@ -189,12 +189,20 @@ exclude_lines = [ 'if TYPE_CHECKING:', "except ImportError:" ]
 fail_under = 95
 
 [tool.mypy]
-packages = [ "kreuzberg", "tests" ]
+packages = [ "kreuzberg", "tests", "benchmarks.src.kreuzberg_benchmarks" ]
 python_version = "3.9"
 disable_error_code = 'import-untyped'
 implicit_reexport = false
 show_error_codes = true
 strict = true
+
+[[tool.mypy.overrides]]
+module = [ "rich.*", "typer.*", "matplotlib.*", "memory_profiler.*", "py_spy.*" ]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "benchmarks.src.kreuzberg_benchmarks.cli"
+disable_error_code = [ "misc" ]
 
 [tool.uv.sources]
 uv-bump = { git = "https://github.com/Goldziher/uv-bump" }
