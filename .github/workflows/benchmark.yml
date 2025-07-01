@@ -48,10 +48,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          # Sync all workspace packages including benchmarks
-          uv sync --all-packages --all-extras
-          # Install benchmarks package to make CLI available
-          uv pip install -e ./benchmarks --no-deps
+          # Sync all workspace packages including benchmarks and install in dev mode
+          uv sync --all-packages --all-extras --dev
 
       - name: Create test files
         run: |
@@ -80,7 +78,7 @@ jobs:
       - name: Run benchmarks
         run: |
           # Run comparison benchmarks (sync vs async)
-          uv run kreuzberg-bench run \
+          uv run python -m kreuzberg_benchmarks.cli run \
             --comparison-only \
             --test-files-dir test_files \
             --output-dir benchmark_results \
@@ -90,7 +88,7 @@ jobs:
       - name: Run stress tests (if requested)
         if: github.event.inputs.include_stress_tests == 'true' || github.event_name == 'schedule'
         run: |
-          uv run kreuzberg-bench run \
+          uv run python -m kreuzberg_benchmarks.cli run \
             --stress \
             --test-files-dir test_files \
             --output-dir benchmark_results \
