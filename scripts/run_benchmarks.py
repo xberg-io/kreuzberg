@@ -29,6 +29,7 @@ def collect_system_info() -> dict[str, Any]:
         "memory_total_gb": memory_info.total / (1024**3),
         "architecture": platform.architecture()[0],
         "machine": platform.machine(),
+        "processor": platform.processor(),
     }
 
 
@@ -163,7 +164,9 @@ def print_summary(results: list[dict[str, Any]], system_info: dict[str, Any]) ->
         result.get("memory_mb", 0)
 
 
-def save_results(results: list[dict[str, Any]], system_info: dict[str, Any], output_file: str) -> None:
+def save_results(
+    results: list[dict[str, Any]], system_info: dict[str, Any], output_file: str = "benchmark_results.json"
+) -> None:
     """Save results to JSON file."""
     output_data = {
         "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
@@ -191,7 +194,7 @@ async def main() -> None:
 
     if results:
         print_summary(results, system_info)
-        save_results(results, system_info, "benchmark_results.json")
+        save_results(results, system_info)
     else:
         pass
 

@@ -202,5 +202,6 @@ kreuzberg-benchmarks = { workspace = true }
 
 [tool.uv.workspace]
 members = [
+  ".",
   "benchmarks",
 ]

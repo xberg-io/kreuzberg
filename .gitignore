@@ -22,6 +22,7 @@
 .windsurfrules
 .cursorrules
 CLAUDE.md
+GEMINI.md
 __pycache__/
 coverage.xml
 prompt_template.egg-info/

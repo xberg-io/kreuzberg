@@ -7,7 +7,7 @@ on:
     branches: [main]
     types: [opened, synchronize, reopened]
   schedule:
-    # Run benchmarks weekly on Sundays at 2 AM UTC
+
     - cron: '0 2 * * 0'
   workflow_dispatch:
     inputs:
@@ -53,37 +53,18 @@ jobs:
           # Verify benchmarks CLI is available
           uv run kreuzberg-bench --help
 
-      - name: Create test files
+      - name: Verify test files exist
         run: |
-          mkdir -p test_files
-          echo "Sample text content for benchmarking" > test_files/sample.txt
-          # Create a simple PDF for testing
-          echo '%PDF-1.4
-          1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj
-          2 0 obj << /Type /Pages /Kids [3 0 R] /Count 1 >> endobj
-          3 0 obj << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R >> endobj
-          4 0 obj << /Length 44 >> stream
-          BT /F1 12 Tf 100 700 Td (Benchmark Test) Tj ET
-          endstream endobj
-          xref
-          0 5
-          0000000000 65535 f
-          0000000009 00000 n
-          0000000074 00000 n
-          0000000131 00000 n
-          0000000252 00000 n
-          trailer << /Size 5 /Root 1 0 R >>
-          startxref
-          296
-          %%EOF' > test_files/benchmark.pdf
+          ls -la tests/test_source_files/
+          echo "Using existing test files from tests/test_source_files/"
 
       - name: Run benchmarks
         run: |
           # Run comparison benchmarks (sync vs async)
           uv run kreuzberg-bench run \
             --comparison-only \
-            --test-files-dir test_files \
-            --output-dir benchmark_results \
+            --test-files-dir tests/test_source_files \
+            --output-dir benchmarks/results \
             --suite-name "ci_sync_vs_async" \
             ${{ github.event.inputs.flame_graphs == 'true' && '--flame' || '' }}
 
@@ -92,15 +73,15 @@ jobs:
         run: |
           uv run kreuzberg-bench run \
             --stress \
-            --test-files-dir test_files \
-            --output-dir benchmark_results \
+            --test-files-dir tests/test_source_files \
+            --output-dir benchmarks/results \
             --suite-name "ci_stress_tests"
 
       - name: Archive benchmark results
         uses: actions/upload-artifact@v4
         with:
           name: benchmark-results-${{ github.sha }}
-          path: benchmark_results/
+          path: benchmarks/results/
           retention-days: 30
 
       - name: Comment benchmark results on PR
@@ -112,7 +93,7 @@ jobs:
             const path = require('path');
 
             // Read the latest benchmark results
-            const resultsPath = 'benchmark_results/latest.json';
+            const resultsPath = 'benchmarks/results/latest.json';
             if (!fs.existsSync(resultsPath)) {
               console.log('No benchmark results found');
               return;
@@ -166,9 +147,8 @@ jobs:
       - name: Check performance regression
         if: github.event_name == 'pull_request'
         run: |
-          # This could be enhanced to compare against baseline performance
-          # For now, just ensure benchmarks completed successfully
-          if [ ! -f "benchmark_results/latest.json" ]; then
+          # Check if benchmark results exist
+          if [ ! -f "benchmarks/results/latest.json" ]; then
             echo "❌ Benchmark results not found"
             exit 1
           fi
@@ -176,7 +156,7 @@ jobs:
           # Check if any benchmarks failed
           FAILED_COUNT=$(uv run python -c "
           import json
-          with open('benchmark_results/latest.json') as f:
+          with open('benchmarks/results/latest.json') as f:
               data = json.load(f)
           failed = sum(1 for b in data['benchmarks'] if not b['success'])
           print(failed)
@@ -187,9 +167,20 @@ jobs:
             exit 1
           fi
 
+          # Download baseline for comparison if it exists
+          echo "Checking for performance regression against baseline..."
+          if [ -f ".github/benchmarks/baseline.json" ]; then
+            uv run python scripts/compare_benchmarks.py \
+              --baseline .github/benchmarks/baseline.json \
+              --current benchmarks/results/latest.json \
+              --threshold 0.2
+          else
+            echo "⚠️ No baseline found, skipping regression check"
+          fi
+
           echo "✅ All benchmarks passed successfully"
 
-  # Store baseline benchmarks for main branch
+
   store-baseline:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
@@ -203,12 +194,12 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: benchmark-results-${{ github.sha }}
-          path: benchmark_results/
+          path: benchmarks/results/
 
       - name: Store baseline in repository
         run: |
           mkdir -p .github/benchmarks
-          cp benchmark_results/latest.json .github/benchmarks/baseline.json
+          cp benchmarks/results/latest.json .github/benchmarks/baseline.json
 
       - name: Commit baseline
         run: |
