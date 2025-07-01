@@ -5,7 +5,7 @@
     "success": true
   },
   "single_file_cached": {
-    "duration": 4.00543212890625e-05,
+    "duration": 4.00543212890625e-5,
     "speedup": 884310.2023809524,
     "cache_hit": true
   },

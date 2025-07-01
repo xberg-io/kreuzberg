@@ -1,6 +1,6 @@
 {
   "cold_ocr_duration": 9.110050201416016,
-  "cached_ocr_duration": 3.409385681152344e-05,
+  "cached_ocr_duration": 3.409385681152344e-5,
   "ocr_speedup": 267205.034965035,
   "content_matches": true,
   "batch_duration": 0.0003261566162109375,
