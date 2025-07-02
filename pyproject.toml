@@ -137,12 +137,19 @@ lint.ignore = [
   "FIX",     # We allow todo and fixme comments
   "ISC001",  # Conflicts with formatter
   "PLC0415", # Import should be at top-level (we use conditional imports)
+  "PLW0603", # Using global statement is discouraged
+  "S110",    # try-except-pass detected
   "TD",      # We allow todo and fixme comments
   "TRY",     # Try except block, rules are too strict
 ]
 lint.per-file-ignores."tests/**/*.*" = [
+  "A005",    # Module shadows standard library
+  "ANN",     # Disable all annotation rules for tests
   "ARG001",
+  "ARG002",  # Unused method argument
+  "BLE001",  # Disable blind exception catching for tests
   "D",
+  "N806",    # Variable naming in tests
   "N815",
   "PD",
   "PGH003",
@@ -152,8 +159,11 @@ lint.per-file-ignores."tests/**/*.*" = [
   "PT006",
   "PT007",
   "PT013",
+  "PT017",   # Assertion on exception in except block
+  "PT031",   # pytest.warns block should contain single statement
   "RUF012",
   "S",
+  "SIM117",  # Combine with statements
   "SLF001",
 ]
 lint.isort.known-first-party = [ "kreuzberg", "tests" ]
@@ -211,3 +221,6 @@ members = [
   ".",
   "benchmarks",
 ]
+
+[tool.codespell]
+ignore-words-list = "inh,te,tha,vie"

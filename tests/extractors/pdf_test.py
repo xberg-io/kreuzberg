@@ -286,7 +286,7 @@ async def test_extract_pdf_no_ocr_backend_fallback(non_searchable_pdf: Path) -> 
 
     result = await extractor.extract_path_async(non_searchable_pdf)
 
-    # Should fallback to empty result since no OCR backend and PDF isn't searchable
+    # Should fallback to empty result since no OCR backend and PDF isn't searchable  # ~keep
     assert result.content == ""
     assert result.mime_type == "text/plain"
 
@@ -335,7 +335,7 @@ def test_validate_text_mixed_corruption(extractor: PDFExtractor) -> None:
     mixed_corruption = "\x00\x01\x02\ufffd\ufffd" * 15  # 75 corrupted chars
     text = base_text + mixed_corruption
 
-    # Should fail due to high corruption ratio (75/1075 = ~7%)
+    # Should fail due to high corruption ratio (75/1075 = ~7%)  # ~keep
     assert not extractor._validate_extracted_text(text)
 
     # With higher threshold should pass
@@ -350,7 +350,7 @@ async def test_extract_pdf_force_ocr_when_valid_text_exists(searchable_pdf: Path
 
     result = await extractor.extract_path_async(searchable_pdf)
 
-    # Should still get valid content via OCR
+    # Should still get valid content via OCR  # ~keep
     assert result.content.strip()
     assert result.mime_type == "text/plain"
 

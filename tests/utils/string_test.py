@@ -42,10 +42,10 @@ def test_safe_decode_fallback_to_latin1() -> None:
     with patch("kreuzberg._utils._string.detect") as mock_detect:
         mock_detect.return_value = {"encoding": None}
 
-        # This should trigger the latin-1 fallback on line 27
+        # This should trigger the latin-1 fallback on line 27  # ~keep
         result = safe_decode(problematic_bytes)
 
-        # Latin-1 can decode any byte sequence, so we should get a result
+        # Latin-1 can decode any byte sequence, so we should get a result  # ~keep
         assert isinstance(result, str)
         assert len(result) == len(problematic_bytes)
 

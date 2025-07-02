@@ -90,7 +90,7 @@ def test_pypdfium_lock_context_manager() -> None:
     def thread_func(thread_id: int) -> None:
         with pypdfium_lock():
             execution_order.append(f"start_{thread_id}")
-            time.sleep(0.01)  # Small delay to ensure sequential execution
+            time.sleep(0.01)  # Small delay to ensure sequential execution  # ~keep
             execution_order.append(f"end_{thread_id}")
 
     # Start multiple threads
@@ -104,8 +104,8 @@ def test_pypdfium_lock_context_manager() -> None:
     for thread in threads:
         thread.join()
 
-    # Due to the lock, execution should be sequential
-    # Each thread should complete before the next starts
+    # Due to the lock, execution should be sequential  # ~keep
+    # Each thread should complete before the next starts  # ~keep
     assert len(execution_order) == 6
 
     # Find pairs and verify they're sequential
@@ -141,7 +141,7 @@ def test_pypdfium_file_lock_context_manager(tmp_path) -> None:
     for thread in threads:
         thread.join()
 
-    # Should be sequential due to file lock
+    # Should be sequential due to file lock  # ~keep
     assert len(execution_order) == 4
 
 

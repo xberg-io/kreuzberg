@@ -81,7 +81,7 @@ def test_easyocr_resolve_device_config_validation_error_no_fallback(mock_validat
 
 @patch("kreuzberg._ocr._paddleocr.validate_device_request")
 def test_paddleocr_resolve_device_config_mps_warning(mock_validate: Mock) -> None:
-    # PaddlePaddle doesn't support MPS, should warn and fallback to CPU
+    # PaddlePaddle doesn't support MPS, should warn and fallback to CPU  # ~keep
     mock_validate.return_value = DeviceInfo(device_type="cpu", name="CPU")
 
     config = PaddleOCRConfig(device="mps")
@@ -89,7 +89,7 @@ def test_paddleocr_resolve_device_config_mps_warning(mock_validate: Mock) -> Non
     with pytest.warns(UserWarning, match="PaddlePaddle does not support MPS"):
         PaddleBackend._resolve_device_config(**config.__dict__)
 
-    # Should call validate with "cpu" instead of "mps"
+    # Should call validate with "cpu" instead of "mps"  # ~keep
     mock_validate.assert_called_once_with("cpu", "PaddleOCR", memory_limit=None, fallback_to_cpu=True)
 
 

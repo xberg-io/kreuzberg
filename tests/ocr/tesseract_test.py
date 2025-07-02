@@ -370,7 +370,7 @@ async def test_process_file_cache_processing_coordination(
     # Get the cache and set up processing coordination
     cache = get_ocr_cache()
 
-    # Generate cache key based on file - must match the format in process_file
+    # Generate cache key based on file - must match the format in process_file  # ~keep
     file_stat = test_file.stat()
     file_info = {
         "path": str(test_file.resolve()),
@@ -401,10 +401,10 @@ async def test_process_file_cache_processing_coordination(
     thread = threading.Thread(target=complete_processing)
     thread.start()
 
-    # This should trigger cache coordination
+    # This should trigger cache coordination  # ~keep
     result = await backend.process_file(test_file, language="eng")
 
-    # Should get cached result
+    # Should get cached result  # ~keep
     assert result.content == "cached file text"
 
     thread.join()

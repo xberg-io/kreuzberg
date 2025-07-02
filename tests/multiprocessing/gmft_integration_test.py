@@ -45,16 +45,16 @@ def test_gmft_isolated_enabled_by_default(sample_pdf: Path, monkeypatch) -> None
     # Remove any existing env var
     monkeypatch.delenv("KREUZBERG_GMFT_ISOLATED", raising=False)
 
-    # This should use isolated process by default
+    # This should use isolated process by default  # ~keep
     try:
         result = extract_tables_sync(sample_pdf, GMFTConfig())
         # If GMFT is installed, we get results
         assert isinstance(result, list)
     except ParsingError as e:
-        # If GMFT isn't installed, we should get a controlled error
+        # If GMFT isn't installed, we should get a controlled error  # ~keep
         assert "GMFT" in str(e)
     except Exception as e:
-        # Should not get random segfaults or other errors
+        # Should not get random segfaults or other errors  # ~keep
         pytest.fail(f"Unexpected error type: {type(e).__name__}: {e}")
 
 
@@ -63,7 +63,7 @@ def test_gmft_isolated_can_be_disabled(sample_pdf: Path, monkeypatch) -> None:
     """Test that GMFT isolation can be disabled via env var."""
     monkeypatch.setenv("KREUZBERG_GMFT_ISOLATED", "false")
 
-    # This should NOT use isolated process
+    # This should NOT use isolated process  # ~keep
     try:
         result = extract_tables_sync(sample_pdf, GMFTConfig())
         assert isinstance(result, list)

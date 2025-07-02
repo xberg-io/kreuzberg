@@ -63,13 +63,13 @@ def test_get_cache_key(cache: KreuzbergCache[ExtractionResult]) -> None:
     key2 = cache._get_cache_key(config="default", file_path="/test/file.pdf")
     key3 = cache._get_cache_key(file_path="/test/other.pdf", config="default")
 
-    # Same params in different order should produce same key
+    # Same params in different order should produce same key  # ~keep
     assert key1 == key2
 
-    # Different params should produce different key
+    # Different params should produce different key  # ~keep
     assert key1 != key3
 
-    # Keys should be 16 characters (truncated sha256)
+    # Keys should be 16 characters (truncated sha256)  # ~keep
     assert len(key1) == 16
 
 

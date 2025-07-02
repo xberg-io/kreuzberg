@@ -168,7 +168,7 @@ sys.path.insert(0, '{Path.cwd()}')
     def _generate_function_call_code(self, func: Callable[[], T]) -> str:
         """Generate Python code to call the function."""
         # This is a simplified approach - in practice, you'd need more
-        # sophisticated serialization for complex functions
+        # sophisticated serialization for complex functions  # ~keep
         return f"""
 # Placeholder for function execution
 # In a real implementation, this would serialize and execute the benchmark
