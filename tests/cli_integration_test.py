@@ -337,7 +337,7 @@ max_chars = 1500
 
         assert result.returncode == 0
         assert "kreuzberg, version" in result.stdout
-        # Version should contain a number pattern like "3.x.x"
+
         import re
 
         assert re.search(r"\d+\.\d+\.\d+", result.stdout), f"No version pattern found in: {result.stdout}"

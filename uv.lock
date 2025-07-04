@@ -1085,7 +1085,7 @@ wheels = [
 
 [[package]]
 name = "kreuzberg"
-version = "3.4.2"
+version = "3.5.0"
 source = { editable = "." }
 dependencies = [
     { name = "anyio" },
@@ -1127,7 +1127,7 @@ easyocr = [
 gmft = [
     { name = "gmft" },
 ]
-language-detection = [
+langdetect = [
     { name = "fast-langdetect" },
 ]
 paddleocr = [
@@ -1164,7 +1164,7 @@ requires-dist = [
     { name = "click", marker = "extra == 'cli'", specifier = ">=8.2.1" },
     { name = "easyocr", marker = "extra == 'easyocr'", specifier = ">=1.7.2" },
     { name = "exceptiongroup", marker = "python_full_version < '3.11'", specifier = ">=1.2.2" },
-    { name = "fast-langdetect", marker = "extra == 'language-detection'", specifier = ">=0.2.0" },
+    { name = "fast-langdetect", marker = "extra == 'langdetect'", specifier = ">=0.2.0" },
     { name = "gmft", marker = "extra == 'gmft'", specifier = ">=0.4.2" },
     { name = "html-to-markdown", specifier = ">=1.4.0" },
     { name = "kreuzberg", extras = ["api", "chunking", "cli", "easyocr", "gmft", "paddleocr"], marker = "extra == 'all'" },
@@ -1183,7 +1183,7 @@ requires-dist = [
     { name = "tomli", marker = "python_full_version < '3.11' and extra == 'cli'", specifier = ">=2.0.0" },
     { name = "typing-extensions", marker = "python_full_version < '3.12'", specifier = ">=4.14.0" },
 ]
-provides-extras = ["all", "api", "chunking", "cli", "easyocr", "gmft", "language-detection", "paddleocr"]
+provides-extras = ["all", "api", "chunking", "cli", "easyocr", "gmft", "langdetect", "paddleocr"]
 
 [package.metadata.requires-dev]
 dev = [
