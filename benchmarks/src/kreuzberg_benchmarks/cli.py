@@ -145,7 +145,7 @@ def _generate_quality_report(data: dict[str, Any], console: Console) -> None:
         console.print(f"  {field}: {', '.join(sorted(backends))}")
 
 
-@app.command()  
+@app.command()
 def run(
     output_dir: Path = typer.Option(
         Path("results"),
@@ -272,7 +272,7 @@ def run(
         raise typer.Exit(1)
 
 
-@app.command() 
+@app.command()
 def compare(
     result1: Path = typer.Argument(..., help="First benchmark result file"),
     result2: Path = typer.Argument(..., help="Second benchmark result file"),
@@ -324,7 +324,7 @@ def compare(
         console.print(f"\nComparison saved to: {output}")
 
 
-@app.command()  
+@app.command()
 def analyze(
     result_file: Path = typer.Argument(..., help="Benchmark result file to analyze"),
     quality_report: bool = typer.Option(
