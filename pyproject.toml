@@ -255,7 +255,7 @@ module = "kreuzberg.docker.main"
 disable_error_code = [ "misc" ]
 
 [[tool.mypy.overrides]]
-module = [ "kreuzberg._gmft", "kreuzberg._multiprocessing.gmft_isolated" ]
+module = [ "kreuzberg._gmft" ]
 disable_error_code = [ "unused-ignore" ]
 
 [[tool.mypy.overrides]]

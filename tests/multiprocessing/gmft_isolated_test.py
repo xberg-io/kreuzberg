@@ -13,13 +13,15 @@ from unittest.mock import MagicMock, patch
 import pytest
 from PIL import Image
 
-from kreuzberg._gmft import GMFTConfig
-from kreuzberg._multiprocessing import (
-    extract_tables_isolated,
-    extract_tables_isolated_async,
-)
-from kreuzberg._multiprocessing.gmft_isolated import (
+from kreuzberg._gmft import (
+    GMFTConfig,
     _extract_tables_in_process,
+)
+from kreuzberg._gmft import (
+    _extract_tables_isolated as extract_tables_isolated,
+)
+from kreuzberg._gmft import (
+    _extract_tables_isolated_async as extract_tables_isolated_async,
 )
 from kreuzberg.exceptions import ParsingError
 
