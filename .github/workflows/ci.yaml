@@ -120,5 +120,40 @@ jobs:
           tesseract --version
           pandoc --version
 
-      - name: Run Tests
-        run: uv run pytest -s -vvv
+      - name: Run Tests with Coverage
+        run: |
+          uv run pytest -s -vvv --cov=kreuzberg --cov-report=lcov:coverage.lcov --cov-report=term
+
+      - name: Upload Coverage Artifacts
+        if: matrix.os == 'ubuntu-latest' && matrix.python == '3.13'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.lcov
+          retention-days: 1
+
+  upload-coverage:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Download Coverage Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-report
+          path: .
+
+      - name: Install DeepSource CLI
+        run: |
+          curl https://deepsource.io/cli | sh
+
+      - name: Upload Coverage to DeepSource
+        env:
+          DEEPSOURCE_DSN: ${{ secrets.DEEPSOURCE_DSN }}
+        run: |
+          ./bin/deepsource report --analyzer test-coverage --key python --value-file ./coverage.lcov

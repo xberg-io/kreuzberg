@@ -80,7 +80,7 @@ optional-dependencies.all = [
 optional-dependencies.api = [
   "litestar[standard,structlog,opentelemetry]>=2.16.0",
 ]
-optional-dependencies.auto-classify-document-type = [ "deep-translator>=1.11.4", "pandas>=2.2.0" ]
+optional-dependencies.auto-classify-document-type = [ "deep-translator>=1.11.4", "pandas>=2.3.1" ]
 optional-dependencies.chunking = [ "semantic-text-splitter>=0.27.0" ]
 optional-dependencies.cli = [
   "click>=8.2.1",

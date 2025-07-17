@@ -10,6 +10,8 @@
 *temp/
 .coverage
 .coverage*
+coverage.lcov
+htmlcov/
 .cursorrules
 .dist/
 .DS_store
