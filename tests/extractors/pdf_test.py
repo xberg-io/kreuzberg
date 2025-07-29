@@ -388,3 +388,51 @@ async def test_extract_pdf_searchable_text_page_errors(
         return MockDocument()
 
     monkeypatch.setattr(pypdfium2, "PdfDocument", mock_pdf_document)
+
+
+def test_pdf_password_configuration() -> None:
+    """Test PDF password configuration variations."""
+    # Test single password string
+    config = ExtractionConfig(pdf_password="test")
+    extractor = PDFExtractor(mime_type="application/pdf", config=config)
+    passwords = extractor._get_passwords_to_try()
+    assert passwords == ["test"]
+
+    # Test multiple passwords list
+    config = ExtractionConfig(pdf_password=["pass1", "pass2", "pass3"])
+    extractor = PDFExtractor(mime_type="application/pdf", config=config)
+    passwords = extractor._get_passwords_to_try()
+    assert passwords == ["pass1", "pass2", "pass3"]
+
+    # Test empty password string
+    config = ExtractionConfig(pdf_password="")
+    extractor = PDFExtractor(mime_type="application/pdf", config=config)
+    passwords = extractor._get_passwords_to_try()
+    assert passwords == [""]
+
+    # Test empty password list
+    config = ExtractionConfig(pdf_password=[])
+    extractor = PDFExtractor(mime_type="application/pdf", config=config)
+    passwords = extractor._get_passwords_to_try()
+    assert passwords == [""]
+
+
+def test_pdf_password_attempts_with_parse_with_password_attempts(test_article: Path) -> None:
+    """Test the _parse_with_password_attempts method with different password configurations."""
+    # Test with no password (should work with regular PDF)
+    config = ExtractionConfig(pdf_password="")
+    extractor = PDFExtractor(mime_type="application/pdf", config=config)
+
+    content = test_article.read_bytes()
+    document = extractor._parse_with_password_attempts(content)
+
+    assert document is not None
+    assert len(document.pages) > 0
+
+    # Test with wrong password but fallback should work
+    config = ExtractionConfig(pdf_password="wrongpassword")
+    extractor = PDFExtractor(mime_type="application/pdf", config=config)
+
+    document = extractor._parse_with_password_attempts(content)
+    assert document is not None
+    assert len(document.pages) > 0

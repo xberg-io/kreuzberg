@@ -193,16 +193,18 @@ rules:
       api = ["litestar[standard,structlog,opentelemetry]>=2.1.6"]
       cli = ["click>=8.2.1", "rich>=14.0.0", "tomli>=2.0.0; python_version<'3.11'"]
       chunking = ["semantic-text-splitter>=0.27.0"]
+      crypto = ["playa-pdf[crypto]>=0.6.4"]
       easyocr = ["easyocr>=1.7.2"]
       gmft = ["gmft>=0.4.2"]
       langdetect = ["fast-langdetect>=0.2.0"]
       paddleocr = ["paddleocr>=3.1.0", "paddlepaddle>=3.1.0", "setuptools>=80.9.0"]
-      all = ["kreuzberg[api,chunking,cli,easyocr,gmft,langdetect,paddleocr]"]
+      all = ["kreuzberg[api,chunking,cli,crypto,easyocr,gmft,langdetect,paddleocr]"]
       ```
 
       ### Installation Patterns
       - Basic: `pip install kreuzberg`
       - With features: `pip install "kreuzberg[api,cli]"`
+      - With crypto support: `pip install "kreuzberg[crypto]"`
       - All features: `pip install "kreuzberg[all]"`
       - Development: `uv sync --all-extras`
 
@@ -210,6 +212,14 @@ rules:
       - **Core**: pypdfium2, playa-pdf, python-pptx, etc.
       - **System**: tesseract-ocr, pandoc (via package manager)
       - **Development**: Uses dependency groups in pyproject.toml
+
+      ### Crypto Support
+      The `crypto` extra adds cryptographic support for PDF processing:
+      - **Purpose**: Enables AES encryption/decryption for password-protected PDFs
+      - **Dependencies**: Adds cryptography (~22MB), cffi, and pycparser
+      - **Usage**: Required for PDFs with AES encryption (RC4 is supported in base installation)
+      - **Password Support**: Supports single password or list of passwords to try in sequence
+      - **Size Impact**: Increases installation size by ~24MB due to cryptography package
 
 sections:
   - title: "Language Detection"
