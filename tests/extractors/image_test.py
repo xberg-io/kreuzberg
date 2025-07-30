@@ -167,6 +167,50 @@ async def test_extract_bytes_async(mock_ocr_backend: MagicMock) -> None:
             assert result == expected_result
 
 
+def test_ocr_backend_none_validation_error() -> None:
+    """Test validation error when OCR backend is None."""
+    config = ExtractionConfig(ocr_backend=None)
+    extractor = ImageExtractor(mime_type="image/png", config=config)
+
+    with pytest.raises(ValidationError, match="ocr_backend is None"):
+        extractor.extract_path_sync(Path("dummy.png"))
+
+
+@pytest.mark.anyio
+async def test_ocr_backend_none_validation_error_async() -> None:
+    """Test validation error when OCR backend is None in async mode."""
+    config = ExtractionConfig(ocr_backend=None)
+    extractor = ImageExtractor(mime_type="image/png", config=config)
+
+    with pytest.raises(ValidationError, match="ocr_backend is None"):
+        await extractor.extract_path_async(Path("dummy.png"))
+
+
+def test_extract_bytes_temp_file_cleanup_on_error() -> None:
+    """Test that temp files are cleaned up even when processing fails."""
+    config = ExtractionConfig(ocr_backend="tesseract")
+    extractor = ImageExtractor(mime_type="image/png", config=config)
+
+    with patch("tempfile.mkstemp") as mock_mkstemp:
+        mock_fd = 42
+        mock_temp_path = "/tmp/test_image.png"
+        mock_mkstemp.return_value = (mock_fd, mock_temp_path)
+
+        with patch("os.fdopen") as mock_fdopen:
+            mock_file = MagicMock()
+            mock_fdopen.return_value.__enter__.return_value = mock_file
+
+            with patch.object(extractor, "extract_path_sync") as mock_extract:
+                mock_extract.side_effect = Exception("Processing failed")
+
+                with patch("pathlib.Path.unlink") as mock_unlink:
+                    with pytest.raises(Exception, match="Processing failed"):
+                        extractor.extract_bytes_sync(b"image data")
+
+                    # Verify temp file was still cleaned up
+                    mock_unlink.assert_called_once()
+
+
 def test_extract_path_sync_no_ocr_backend() -> None:
     """Test sync path extraction when ocr_backend is None."""
     config = ExtractionConfig(ocr_backend=None)
