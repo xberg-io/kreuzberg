@@ -1,13 +1,6 @@
 name: Docker E2E Tests
 
 on:
-  pull_request:
-    paths:
-      - '.docker/**'
-      - 'kreuzberg/**'
-      - 'pyproject.toml'
-      - 'tests/e2e/**'
-      - '.github/workflows/docker-e2e-tests.yml'
   workflow_dispatch:
   workflow_call:
 
