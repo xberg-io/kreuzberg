@@ -37,15 +37,31 @@ jobs:
 
       - name: Free up disk space
         run: |
+          # Show initial disk usage
+          echo "Initial disk usage:"
+          df -h
+
           # Remove unnecessary packages to free up space for Docker builds
           sudo rm -rf /usr/share/dotnet
           sudo rm -rf /usr/local/lib/android
           sudo rm -rf /opt/ghc
           sudo rm -rf /opt/hostedtoolcache/CodeQL
-          sudo docker system prune -af
+          sudo rm -rf /usr/local/share/boost
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
 
-          # Show available space
-          echo "Available disk space:"
+          # Clean apt cache
+          sudo apt-get clean
+          sudo apt-get autoremove -y
+
+          # Clean Docker
+          docker system prune -af --volumes
+
+          # Remove swap
+          sudo swapoff -a
+          sudo rm -f /swapfile
+
+          # Show available space after cleanup
+          echo "Available disk space after cleanup:"
           df -h
 
       - name: Set up Docker Buildx
