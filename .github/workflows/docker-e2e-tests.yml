@@ -93,9 +93,7 @@ jobs:
           docker build -f .docker/Dockerfile \
             --build-arg EXTRAS="${{ matrix.image.extras }}" \
             -t kreuzberg:${{ matrix.image.name }} \
-            --cache-from type=gha \
-            --cache-to type=gha,mode=max \
-            --load \
+            --no-cache \
             .
 
           echo "Built image:"

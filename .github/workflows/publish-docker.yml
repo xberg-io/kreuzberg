@@ -44,7 +44,10 @@ jobs:
     steps:
       - name: Free up disk space
         run: |
-          # Remove unnecessary system packages to free ~14GB
+          echo "Initial disk space:"
+          df -h /
+
+          # Remove unnecessary large directories (saves ~30GB)
           sudo rm -rf /usr/share/dotnet
           sudo rm -rf /usr/local/lib/android
           sudo rm -rf /opt/ghc
@@ -52,15 +55,23 @@ jobs:
           sudo rm -rf /usr/local/share/boost
           sudo rm -rf /usr/local/lib/node_modules
           sudo rm -rf /opt/microsoft
-          # Clean Docker completely
-          sudo docker system prune -af --volumes
-          sudo docker builder prune -af
-          # Clear package caches
+          sudo rm -rf /usr/local/.ghcup
+          sudo rm -rf /opt/hostedtoolcache
+
+          # Clean apt
           sudo apt-get clean
           sudo rm -rf /var/lib/apt/lists/*
-          # Show available space
-          echo "Available disk space:"
-          df -h / | tail -1
+
+          # Remove swap to free up space
+          sudo swapoff -a
+          sudo rm -f /swapfile
+
+          # Clean Docker completely
+          docker system prune -af --volumes || true
+          docker builder prune -af || true
+
+          echo "Available disk space after cleanup:"
+          df -h /
 
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -111,17 +122,25 @@ jobs:
             EXTRAS=${{ matrix.extras }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha,scope=${{ matrix.name }}
-          cache-to: type=gha,mode=max,scope=${{ matrix.name }}
+          no-cache: true
 
       - name: Clean up after build
         if: always()
         run: |
-          # Clean up Docker images and build cache after each build
-          sudo docker system prune -af --volumes
-          sudo docker builder prune -af
-          echo "Available disk space after cleanup:"
-          df -h / | tail -1
+          # Remove all Docker images and containers
+          docker stop $(docker ps -aq) || true
+          docker rm $(docker ps -aq) || true
+          docker rmi $(docker images -q) || true
+
+          # Clean all Docker data
+          docker system prune -af --volumes || true
+          docker builder prune -af || true
+
+          # Clear buildkit cache
+          docker buildx prune -af || true
+
+          echo "Disk space after cleanup:"
+          df -h /
 
       - name: Update Docker Hub README
         uses: peter-evans/dockerhub-description@v4
