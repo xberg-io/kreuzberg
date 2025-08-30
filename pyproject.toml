@@ -68,7 +68,7 @@ dependencies = [
   "pypdfium2==4.30.0",                                # pinned due to bug in 4.30.1, until v5 is stable
   "python-calamine>=0.3.2",
   "python-pptx>=1.0.2",
-  "typing-extensions>=4.14.0; python_version<'3.12'",
+  "typing-extensions>=4.15.0; python_version<'3.12'",
 ]
 
 optional-dependencies.additional-extensions = [
@@ -115,9 +115,9 @@ dev = [
   "pytest>=8.4.1",
   "pytest-cov>=6.2.1",
   "pytest-mock>=3.14.0",
-  "pytest-rerunfailures>=15.1",
+  "pytest-rerunfailures>=16.0",
   "pytest-timeout>=2.4.0",
-  "ruff>=0.12.9",
+  "ruff>=0.12.11",
   "trio>=0.30.0",
   "uv-bump",
 ]

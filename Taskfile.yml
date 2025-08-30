@@ -87,15 +87,18 @@ tasks:
       - for container in $(docker ps -a --filter "name=kreuzberg-test" --format "{{.Names}}"); do echo "=== $container ==="; docker logs --tail 50 "$container" 2>&1 || true; done
 
   # Development tasks
-  install:
+  setup:
     desc: "Install dependencies with uv"
     cmds:
-      - uv sync
+      - uv sync --all-extras --all-packages
 
-  install:all:
-    desc: "Install all optional dependencies with uv"
+  update:
+    desc: "Update the dependencies"
     cmds:
-      - uv sync --all-extras
+      - uv run uv-bump
+      - cd benchmarks && uv run uv-bump && cd -
+      - uv sync --all-extras --all-packages --upgrade
+      - pre-commit autoupdate
 
   test:
     desc: "Run tests with pytest"
