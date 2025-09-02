@@ -109,9 +109,7 @@ from kreuzberg import extract_file, ExtractionConfig, EasyOCRConfig  # EasyOCRCo
 
 result = await extract_file(
     "document.jpg",
-    config=ExtractionConfig(
-        ocr_backend="easyocr", ocr_config=EasyOCRConfig(language_list=["en"])  # EasyOCR uses different language codes
-    ),
+    config=ExtractionConfig(ocr_backend="easyocr", ocr_config=EasyOCRConfig(language_list=["en"])),
 )
 ```
 

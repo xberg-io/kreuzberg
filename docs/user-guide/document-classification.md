@@ -38,7 +38,7 @@ Here's how to use the vision-based classifier:
 config = ExtractionConfig(
     auto_detect_document_type=True,
     document_classification_mode="vision",
-    force_ocr=True,  # Recommended for vision-based classification
+    force_ocr=True,
 )
 ```
 

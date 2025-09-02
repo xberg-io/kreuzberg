@@ -74,12 +74,51 @@ choco install -y tesseract
 
     For more details on language installation and configuration, refer to the [Tesseract documentation](https://tesseract-ocr.github.io/tessdoc/Installation.html).
 
+#### EasyOCR
+
+EasyOCR is a Python-based OCR backend with wide language support and strong performance.
+
+```shell
+pip install "kreuzberg[easyocr]"
+```
+
+#### PaddleOCR
+
+PaddleOCR is particularly strong for Chinese and other Asian languages. It requires additional system dependencies for OpenCV support:
+
+##### System Dependencies
+
+```shell
+# Ubuntu/Debian
+sudo apt-get install libgl1 libglib2.0-0
+
+# macOS
+# OpenGL is typically included; if needed:
+brew install glfw
+```
+
+OpenGL libraries are typically included with graphics drivers on Windows.
+
+##### Python Package
+
+```shell
+pip install "kreuzberg[paddleocr]"
+```
+
 ### Chunking
 
 Chunking is an optional feature - useful for RAG applications among others. Kreuzberg uses the excellent `semantic-text-splitter` package for chunking. To install Kreuzberg with chunking support, you can use:
 
 ```shell
 pip install "kreuzberg[chunking]"
+```
+
+### Table Extraction
+
+Table extraction is an optional feature that allows Kreuzberg to extract tables from PDFs. It uses the [GMFT](https://github.com/conjuncts/gmft) package. To install Kreuzberg with table extraction support, you can use:
+
+```shell
+pip install "kreuzberg[gmft]"
 ```
 
 ### Language Detection
@@ -111,5 +150,5 @@ pip install "kreuzberg[all]"
 This is equivalent to:
 
 ```shell
-pip install "kreuzberg[chunking,document-classification,langdetect,crypto,additional-extensions,cli,api]"
+pip install "kreuzberg[api,chunking,cli,crypto,document-classification,easyocr,entity-extraction,gmft,langdetect,paddleocr,additional-extensions]"
 ```

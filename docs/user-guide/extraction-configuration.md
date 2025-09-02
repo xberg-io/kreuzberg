@@ -138,7 +138,7 @@ When configuration files are present, you can still override specific settings p
 from kreuzberg import extract_file, ExtractionConfig
 
 # Override just the OCR setting while keeping other file-based config
-result = await extract_file("document.pdf", config=ExtractionConfig(force_ocr=True))  # Overrides file config
+result = await extract_file("document.pdf", config=ExtractionConfig(force_ocr=True))
 ```
 
 The priority order is:
@@ -228,9 +228,9 @@ result = await extract_file("document_with_tables.pdf", config=ExtractionConfig(
 config = ExtractionConfig(
     extract_tables=True,
     gmft_config=GMFTConfig(
-        detector_base_threshold=0.85,  # Minimum confidence score required for a table
-        remove_null_rows=True,  # Remove rows with no text
-        enable_multi_header=True,  # Enable multi-indices in the dataframe
+        detector_base_threshold=0.85,
+        remove_null_rows=True,
+        enable_multi_header=True,
     ),
 )
 result = await extract_file("document_with_tables.pdf", config=config)
@@ -238,8 +238,7 @@ result = await extract_file("document_with_tables.pdf", config=config)
 # Access extracted tables
 for i, table in enumerate(result.tables):
     print(f"Table {i+1} on page {table['page_number']}:")
-    print(table["text"])  # Markdown formatted table text
-    # You can also access the pandas DataFrame directly
+    print(table["text"])
     df = table["df"]
     print(df.shape)  # (rows, columns)
 ```
@@ -263,14 +262,13 @@ result = await extract_file("multilingual_document.pdf", config=ExtractionConfig
 # Access detected languages (lowercase ISO 639-1 codes)
 if result.detected_languages:
     print(f"Detected languages: {', '.join(result.detected_languages)}")
-    # Example output: "Detected languages: en, de, fr"
 
 # Advanced configuration with multilingual detection
 lang_config = LanguageDetectionConfig(
-    multilingual=True,  # Enable mixed-language detection
-    top_k=5,  # Return top 5 languages
-    low_memory=False,  # Use high accuracy mode
-    cache_dir="/tmp/lang_models",  # Custom model cache directory
+    multilingual=True,
+    top_k=5,
+    low_memory=False,
+    cache_dir="/tmp/lang_models",
 )
 
 result = await extract_file(
@@ -279,7 +277,6 @@ result = await extract_file(
 
 # Use detected languages for OCR
 if result.detected_languages:
-    # Re-extract with OCR using the primary detected language
     from kreuzberg import TesseractConfig
 
     result_with_ocr = await extract_file(
@@ -315,7 +312,7 @@ result = await extract_file(
     config=ExtractionConfig(
         extract_entities=True,
         extract_keywords=True,
-        keyword_count=10,  # Number of keywords to extract (default: 10)
+        keyword_count=10,
     ),
 )
 
@@ -323,12 +320,10 @@ result = await extract_file(
 if result.entities:
     for entity in result.entities:
         print(f"{entity.type}: {entity.text} (position {entity.start}-{entity.end})")
-        # Example: "PERSON: John Doe (position 0-8)"
 
 if result.keywords:
     for keyword, score in result.keywords:
         print(f"{keyword}: {score:.3f}")
-        # Example: "artificial intelligence: 0.845"
 ```
 
 #### Entity Extraction with Language Support
@@ -341,26 +336,25 @@ from kreuzberg import extract_file, ExtractionConfig, SpacyEntityExtractionConfi
 # Configure spaCy for specific languages
 spacy_config = SpacyEntityExtractionConfig(
     language_models={
-        "en": "en_core_web_sm",  # English
-        "de": "de_core_news_sm",  # German
-        "fr": "fr_core_news_sm",  # French
-        "es": "es_core_news_sm",  # Spanish
+        "en": "en_core_web_sm",
+        "de": "de_core_news_sm",
+        "fr": "fr_core_news_sm",
+        "es": "es_core_news_sm",
     },
-    model_cache_dir="/tmp/spacy_models",  # Custom model cache directory
-    fallback_to_multilingual=True,  # Use multilingual model if language-specific model fails
+    model_cache_dir="/tmp/spacy_models",
+    fallback_to_multilingual=True,
 )
 
 # Extract with language detection to automatically choose the right model
 result = await extract_file(
     "multilingual_document.pdf",
     config=ExtractionConfig(
-        auto_detect_language=True,  # Enable language detection
+        auto_detect_language=True,
         extract_entities=True,
         spacy_entity_extraction_config=spacy_config,
     ),
 )
 
-# The system will automatically use the appropriate spaCy model based on detected languages
 if result.detected_languages and result.entities:
     print(f"Detected languages: {result.detected_languages}")
     print(f"Extracted {len(result.entities)} entities")
@@ -376,14 +370,13 @@ result = await extract_file(
     config=ExtractionConfig(
         extract_entities=True,
         custom_entity_patterns={
-            "INVOICE_ID": r"INV-\d{4,}",  # Invoice numbers
-            "PHONE": r"\+?\d{1,3}[-.\s]?\d{3,4}[-.\s]?\d{3,4}[-.\s]?\d{3,4}",  # Phone numbers
-            "EMAIL": r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+",  # Email addresses
+            "INVOICE_ID": r"INV-\d{4,}",
+            "PHONE": r"\+?\d{1,3}[-.\s]?\d{3,4}[-.\s]?\d{3,4}[-.\s]?\d{3,4}",
+            "EMAIL": r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+",
         },
     ),
 )
 
-# Custom patterns are combined with spaCy's standard entity types
 for entity in result.entities:
     if entity.type in ["INVOICE_ID", "PHONE", "EMAIL"]:
         print(f"Custom entity - {entity.type}: {entity.text}")
