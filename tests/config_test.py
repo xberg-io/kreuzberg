@@ -31,7 +31,7 @@ from kreuzberg._gmft import GMFTConfig
 from kreuzberg._ocr._easyocr import EasyOCRConfig
 from kreuzberg._ocr._paddleocr import PaddleOCRConfig
 from kreuzberg._ocr._tesseract import PSMMode, TesseractConfig
-from kreuzberg._types import ExtractionConfig
+from kreuzberg._types import ExtractionConfig, HTMLToMarkdownConfig
 from kreuzberg.exceptions import ValidationError
 
 
@@ -220,8 +220,9 @@ force_ocr = false
         config_file = tmp_path / "pyproject.toml"
         config_file.write_text("invalid [ toml")
 
-        result = find_config_file(tmp_path)
-        assert result is None
+        with pytest.raises(ValidationError) as exc_info:
+            find_config_file(tmp_path)
+        assert "Invalid TOML in pyproject.toml" in str(exc_info.value)
 
 
 class TestConfigParsing:
@@ -335,8 +336,11 @@ class TestConfigParsing:
         """Test parsing when OCR backend config is not a dict."""
         config_dict = {"tesseract": "invalid"}
 
-        result = parse_ocr_backend_config(config_dict, "tesseract")
-        assert result is None
+        with pytest.raises(ValidationError) as exc_info:
+            parse_ocr_backend_config(config_dict, "tesseract")
+
+        assert "expected dict, got str" in str(exc_info.value)
+        assert exc_info.value.context["backend"] == "tesseract"
 
     def test_parse_ocr_config_invalid_backend(self) -> None:
         """Test parsing with invalid backend name."""
@@ -547,7 +551,6 @@ def test_build_from_dict_with_gmft_config() -> None:
 
 def test_build_from_dict_with_html_to_markdown_config() -> None:
     """Test building ExtractionConfig with HTML-to-Markdown configuration."""
-    from kreuzberg._config import HTMLToMarkdownConfig
 
     config_dict = {
         "force_ocr": False,
@@ -670,12 +673,13 @@ requires = ["hatchling"]
         assert result is None
 
     def test_try_discover_config_invalid(self, tmp_path: Path) -> None:
-        """Test try_discover_config with invalid config."""
+        """Test try_discover_config with invalid config raises ValidationError."""
         config_file = tmp_path / "kreuzberg.toml"
         config_file.write_text("invalid [ toml")
 
-        result = try_discover_config(tmp_path)
-        assert result is None
+        with pytest.raises(ValidationError) as exc_info:
+            try_discover_config(tmp_path)
+        assert "Invalid TOML" in str(exc_info.value)
 
     def test_load_default_config(self, tmp_path: Path) -> None:
         """Test deprecated load_default_config function."""
@@ -1056,7 +1060,7 @@ class TestConfigDiscoveryComprehensive:
     """Comprehensive tests for configuration discovery."""
 
     def test_find_config_handles_permission_error(self, tmp_path: Path) -> None:
-        """Test that permission errors in pyproject.toml are silently handled."""
+        """Test that permission errors in pyproject.toml raise ValidationError."""
         pyproject_file = tmp_path / "pyproject.toml"
         pyproject_file.write_text("""
 [tool.kreuzberg]
@@ -1064,20 +1068,23 @@ force_ocr = true
 """)
 
         with patch("pathlib.Path.open", side_effect=PermissionError("No access")):
-            result = find_config_file(tmp_path)
-            assert result is None
+            with pytest.raises(ValidationError) as exc_info:
+                find_config_file(tmp_path)
+            assert "Failed to read pyproject.toml" in str(exc_info.value)
+            assert "No access" in str(exc_info.value.context["error"])
 
     def test_find_config_handles_generic_exception(self, tmp_path: Path) -> None:
-        """Test that generic exceptions in pyproject.toml are handled."""
+        """Test that generic exceptions in pyproject.toml bubble up."""
         pyproject_file = tmp_path / "pyproject.toml"
         pyproject_file.write_text("""
 [tool.kreuzberg]
 force_ocr = true
 """)
 
-        with patch("kreuzberg._config.tomllib.load", side_effect=Exception("Unexpected error")):
-            result = find_config_file(tmp_path)
-            assert result is None
+        # Generic exceptions should bubble up, not be caught
+        with patch("kreuzberg._config.tomllib.load", side_effect=RuntimeError("Unexpected error")):
+            with pytest.raises(RuntimeError, match="Unexpected error"):
+                find_config_file(tmp_path)
 
     def test_find_config_at_root_directory(self) -> None:
         """Test config discovery when reaching root directory."""
@@ -1363,13 +1370,14 @@ class TestHighLevelAPIComprehensive:
             assert result is None
 
     def test_load_default_config_with_error(self, tmp_path: Path) -> None:
-        """Test load_default_config silently handles errors."""
+        """Test load_default_config raises ValidationError for invalid configs."""
         config_file = tmp_path / "kreuzberg.toml"
         config_file.write_text("invalid [ toml")
 
         with patch("kreuzberg._config.find_config_file", return_value=config_file):
-            result = load_default_config()
-            assert result is None
+            with pytest.raises(ValidationError) as exc_info:
+                load_default_config()
+            assert "Invalid TOML" in str(exc_info.value)
 
     def test_load_default_config_empty_dict(self, tmp_path: Path) -> None:
         """Test load_default_config with empty config dict."""
@@ -1552,7 +1560,7 @@ class TestEdgeCasesAndErrorHandling:
 
     def test_html_to_markdown_config_with_all_parameters(self) -> None:
         """Test HTML-to-Markdown config with various parameters."""
-        from kreuzberg._config import HTMLToMarkdownConfig
+        from kreuzberg._types import HTMLToMarkdownConfig
 
         config_dict = {
             "html_to_markdown": {

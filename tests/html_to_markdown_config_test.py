@@ -7,7 +7,8 @@ from typing import Any
 import pytest
 
 from kreuzberg import ExtractionConfig, extract_bytes_sync
-from kreuzberg._config import HTMLToMarkdownConfig, build_extraction_config_from_dict, load_config_from_file
+from kreuzberg._config import build_extraction_config_from_dict, load_config_from_file
+from kreuzberg._types import HTMLToMarkdownConfig
 
 
 def test_html_to_markdown_config_defaults() -> None:
