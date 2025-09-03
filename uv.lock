@@ -957,7 +957,7 @@ name = "exceptiongroup"
 version = "1.3.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "typing-extensions", marker = "python_full_version < '3.13'" },
+    { name = "typing-extensions", marker = "python_full_version < '3.11'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/0b/9f/a65090624ecf468cdca03533906e7c69ed7588582240cfe7cc9e770b50eb/exceptiongroup-1.3.0.tar.gz", hash = "sha256:b241f5885f560bc56a59ee63ca4c6a8bfa46ae4ad651af316d4e81817bb9fd88", size = 29749, upload-time = "2025-05-10T17:42:51.123Z" }
 wheels = [
@@ -1642,8 +1642,8 @@ dependencies = [
     { name = "html-to-markdown", extra = ["lxml"] },
     { name = "mcp" },
     { name = "msgspec" },
-    { name = "pandas" },
     { name = "playa-pdf" },
+    { name = "polars" },
     { name = "psutil" },
     { name = "pypdfium2" },
     { name = "python-calamine" },
@@ -1753,9 +1753,9 @@ requires-dist = [
     { name = "msgspec", specifier = ">=0.18.0" },
     { name = "paddleocr", marker = "extra == 'paddleocr'", specifier = ">=3.2.0" },
     { name = "paddlepaddle", marker = "extra == 'paddleocr'", specifier = ">=3.1.1" },
-    { name = "pandas", specifier = ">=2.0.0" },
     { name = "playa-pdf", specifier = ">=0.7.0" },
     { name = "playa-pdf", extras = ["crypto"], marker = "extra == 'crypto'", specifier = ">=0.7.0" },
+    { name = "polars", specifier = ">=1.33.0" },
     { name = "psutil", specifier = ">=7.0.0" },
     { name = "pypdfium2", specifier = "==4.30.0" },
     { name = "python-calamine", specifier = ">=0.3.2" },
@@ -3465,6 +3465,20 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/f9/e2/3e91f31a7d2b083fe6ef3fa267035b518369d9511ffab804f839851d2779/pluggy-1.6.0.tar.gz", hash = "sha256:7dcc130b76258d33b90f61b658791dede3486c3e6bfb003ee5c9bfb396dd22f3", size = 69412, upload-time = "2025-05-15T12:30:07.975Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/54/20/4d324d65cc6d9205fabedc306948156824eb9f0ee1633355a8f7ec5c66bf/pluggy-1.6.0-py3-none-any.whl", hash = "sha256:e920276dd6813095e9377c0bc5566d94c932c33b27a3e3945d8389c374dd4746", size = 20538, upload-time = "2025-05-15T12:30:06.134Z" },
+]
+
+[[package]]
+name = "polars"
+version = "1.33.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/b6/3f/d8bc150b548a486f2559586ec6455c2566b9d2fb7ee1acae90ddca14eec1/polars-1.33.0.tar.gz", hash = "sha256:50ad2ab96c701be2c6ac9b584d9aa6a385f228f6c06de15b88c5d10df7990d56", size = 4811393, upload-time = "2025-09-01T16:32:46.106Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/23/8c/0c4ac34030348ed547b27db0ae7d77ccd12dc4008e91c4f8e896c3161ed8/polars-1.33.0-cp39-abi3-macosx_10_12_x86_64.whl", hash = "sha256:664ef1c0988e4098518c6acfdd5477f2e11611f4ac8a269db55b94ea4978d0e5", size = 38793275, upload-time = "2025-09-01T16:31:51.038Z" },
+    { url = "https://files.pythonhosted.org/packages/95/2a/87e27ef3cb76e54f92dd177b9f4c80329d66e78f51ed968e9bdf452ccfb1/polars-1.33.0-cp39-abi3-macosx_11_0_arm64.whl", hash = "sha256:2477b720c466914549f0f2cfc69f617a602d91e9d90205b64d795ed1ecf99b3c", size = 35238137, upload-time = "2025-09-01T16:31:55.179Z" },
+    { url = "https://files.pythonhosted.org/packages/f2/e2/485c87047e8aaae8dae4e9881517697616b7f79b14132961fbccfc386b29/polars-1.33.0-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:bd9b76abc22fdb20a005c629ee8c056b0545433f18854b929fb54e351d1b98ee", size = 39341268, upload-time = "2025-09-01T16:31:58.269Z" },
+    { url = "https://files.pythonhosted.org/packages/b9/3a/39d784ed547832eb6cbe86cc7f3a6353fa977803e0cec743dd5932ecf50b/polars-1.33.0-cp39-abi3-manylinux_2_24_aarch64.whl", hash = "sha256:6e78026c2ece38c45c6ee0416e2594980652d89deee13a15bd9f83743ec8fa8d", size = 36262606, upload-time = "2025-09-01T16:32:01.981Z" },
+    { url = "https://files.pythonhosted.org/packages/94/1b/4aea12acf2301f4d7fe78b9f4b54611ec2187439fa299e986974cfd956f2/polars-1.33.0-cp39-abi3-win_amd64.whl", hash = "sha256:7973568178117667871455d7969c1929abb890597964ca89290bfd89e4366980", size = 38919180, upload-time = "2025-09-01T16:32:05.087Z" },
+    { url = "https://files.pythonhosted.org/packages/58/13/824a81b43199202fc859c24515cd5b227930d6dce0dea488e4b415edbaba/polars-1.33.0-cp39-abi3-win_arm64.whl", hash = "sha256:c7d614644eda028907965f8203ac54b9a4f5b90303de2723bf1c1087433a0914", size = 35033820, upload-time = "2025-09-01T16:32:08.116Z" },
 ]
 
 [[package]]
