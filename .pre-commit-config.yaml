@@ -6,7 +6,7 @@ repos:
         stages: [commit-msg]
         additional_dependencies: ["@commitlint/config-conventional"]
   - repo: https://github.com/Goldziher/ai-rulez
-    rev: v1.6.1
+    rev: v2.0.1
     hooks:
       - id: ai-rulez-validate
       - id: ai-rulez-generate
@@ -37,7 +37,7 @@ repos:
     hooks:
       - id: markdownlint-fix
   - repo: https://github.com/adamchainz/blacken-docs
-    rev: 1.19.1
+    rev: 1.20.0
     hooks:
       - id: blacken-docs
         args: ["--pyi", "--line-length", "130"]
@@ -53,7 +53,7 @@ repos:
     hooks:
       - id: pyproject-fmt
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.12.11
+    rev: v0.12.12
     hooks:
       - id: ruff
         args: ["--fix", "--unsafe-fixes"]
