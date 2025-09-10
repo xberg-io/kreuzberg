@@ -7,7 +7,6 @@ on:
   push:
     branches:
       - main
-      - feat/smart-multiprocessing
 
 jobs:
   validate:
@@ -38,7 +37,7 @@ jobs:
               echo "Removing existing .venv directory on Windows"
               rm -rf .venv
             fi
-            uv sync --all-packages --all-extras --dev
+            uv sync --all-extras --dev
           shell: bash
 
       - name: Load Cached Pre-Commit Dependencies
@@ -53,6 +52,7 @@ jobs:
 
   coverage:
     needs: validate
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 120
     steps:
@@ -88,7 +88,7 @@ jobs:
           max_attempts: 3
           retry_wait_seconds: 30
           command: |
-            uv sync --all-packages --all-extras --dev
+            uv sync --all-extras --dev
           shell: bash
 
       - name: Install System Dependencies
@@ -115,7 +115,7 @@ jobs:
           shell: bash
 
       - name: Upload Coverage to DeepSource
-        if: always() && github.event_name == 'push'
+        if: always()
         env:
           DEEPSOURCE_DSN: ${{ secrets.DEEPSOURCE_DSN }}
         run: |
@@ -135,7 +135,8 @@ jobs:
           retention-days: 7
 
   test:
-    needs: coverage
+    needs: validate
+    if: always() && (needs.validate.result == 'success')
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -180,7 +181,7 @@ jobs:
               echo "Removing existing .venv directory on Windows"
               rm -rf .venv
             fi
-            uv sync --all-packages --all-extras --dev
+            uv sync --all-extras --dev
           shell: bash
 
       - name: Cache Test Artifacts
