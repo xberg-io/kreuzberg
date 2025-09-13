@@ -35,6 +35,14 @@ auto_detect_document_type = true
 document_classification_mode = "text"  # or "vision"
 type_confidence_threshold = 0.5
 
+# Image extraction configuration
+extract_images = true              # Extract embedded images from documents
+ocr_extracted_images = true        # Run OCR on extracted images
+image_ocr_backend = "tesseract"     # OCR engine for images
+deduplicate_images = true          # Remove duplicate images
+image_ocr_min_dimensions = [100, 100]  # Minimum image dimensions for OCR
+image_ocr_max_dimensions = [5000, 5000] # Maximum image dimensions for OCR
+
 # Tesseract OCR configuration
 [tesseract]
 language = "eng+deu"  # English and German
@@ -97,6 +105,14 @@ auto_detect_language = true
 auto_detect_document_type = true
 document_classification_mode = "text"
 type_confidence_threshold = 0.5
+
+# Image extraction configuration
+extract_images = true              # Extract embedded images from documents
+ocr_extracted_images = true        # Run OCR on extracted images
+image_ocr_backend = "tesseract"     # OCR engine for images
+deduplicate_images = true          # Remove duplicate images
+image_ocr_min_dimensions = [100, 100]  # Minimum image dimensions for OCR
+image_ocr_max_dimensions = [5000, 5000] # Maximum image dimensions for OCR
 
 # DPI and Image Processing
 target_dpi = 150
@@ -430,6 +446,161 @@ The feature requires the `langdetect` dependency:
 ```shell
 pip install "kreuzberg[langdetect]"
 ```
+
+### Image Extraction
+
+Kreuzberg can extract embedded images from various document formats including PDF, PowerPoint presentations (PPTX), HTML, and Office documents. It also supports running OCR on extracted images to get text content from them.
+
+```python
+from kreuzberg import extract_file, ExtractionConfig
+
+# Basic image extraction
+result = await extract_file("document.pdf", config=ExtractionConfig(extract_images=True))
+
+# Access extracted images
+for i, image in enumerate(result.images):
+    print(f"Image {i+1}: {image.format} ({image.dimensions})")
+    if image.filename:
+        print(f"  Filename: {image.filename}")
+    if image.page_number:
+        print(f"  Page: {image.page_number}")
+
+    # Save image data to file
+    with open(f"extracted_image_{i+1}.{image.format.lower()}", "wb") as f:
+        f.write(image.data)
+```
+
+#### Image OCR Processing
+
+You can automatically run OCR on extracted images to extract text content:
+
+```python
+from kreuzberg import extract_file, ExtractionConfig
+
+# Extract images and run OCR on them
+config = ExtractionConfig(
+    extract_images=True,
+    ocr_extracted_images=True,
+    image_ocr_backend="tesseract",  # or "easyocr", "paddleocr"
+    image_ocr_min_dimensions=(100, 100),  # Skip small images
+    image_ocr_max_dimensions=(5000, 5000),  # Skip very large images
+)
+
+result = await extract_file("presentation.pptx", config=config)
+
+# Access OCR results from images
+for ocr_result in result.image_ocr_results:
+    image = ocr_result.image
+    text_content = ocr_result.ocr_result.content
+    confidence = ocr_result.confidence_score
+
+    print(f"Image: {image.filename or 'unnamed'}")
+    print(f"OCR Text: {text_content[:100]}...")
+    if confidence:
+        print(f"Confidence: {confidence:.2f}")
+    if ocr_result.skipped_reason:
+        print(f"Skipped: {ocr_result.skipped_reason}")
+```
+
+#### Image Filtering and Deduplication
+
+Control which images are processed with dimension filtering and deduplication:
+
+```python
+from kreuzberg import extract_file, ExtractionConfig
+
+# Extract only medium-sized images and remove duplicates
+config = ExtractionConfig(
+    extract_images=True,
+    deduplicate_images=True,  # Remove duplicate images by content hash
+    ocr_extracted_images=True,
+    image_ocr_min_dimensions=(200, 200),  # At least 200x200 pixels
+    image_ocr_max_dimensions=(3000, 3000),  # At most 3000x3000 pixels
+)
+
+result = await extract_file("document.pdf", config=config)
+
+print(f"Extracted {len(result.images)} unique images")
+print(f"OCR processed {len(result.image_ocr_results)} images")
+```
+
+#### Advanced Image OCR Configuration
+
+You can use different OCR backends with specific configurations for image processing:
+
+```python
+from kreuzberg import extract_file, ExtractionConfig, TesseractConfig, EasyOCRConfig
+
+# Use Tesseract with specific configuration for image OCR
+tesseract_config = TesseractConfig(
+    language="eng+deu",
+    psm=6,  # Uniform block of text
+    output_format="text",
+)
+
+config = ExtractionConfig(
+    extract_images=True,
+    ocr_extracted_images=True,
+    image_ocr_backend="tesseract",
+    image_ocr_config=tesseract_config,
+    deduplicate_images=True,
+)
+
+result = await extract_file("multilingual_presentation.pptx", config=config)
+
+# Use EasyOCR for better handling of scene text
+easyocr_config = EasyOCRConfig(
+    language_list=["en", "de"],
+    gpu=False,
+    confidence_threshold=0.5,
+)
+
+config = ExtractionConfig(
+    extract_images=True,
+    ocr_extracted_images=True,
+    image_ocr_backend="easyocr",
+    image_ocr_config=easyocr_config,
+)
+
+result = await extract_file("document_with_photos.pdf", config=config)
+```
+
+#### Supported Image Sources
+
+Image extraction works with these document types:
+
+- **PDF documents**: Extract embedded images and graphics
+- **PowerPoint presentations (PPTX)**: Extract slide images, charts, and graphics
+- **HTML documents**: Extract inline images and base64-encoded images
+- **Microsoft Word documents (DOCX)**: Extract embedded images and charts
+- **Email files**: Extract image attachments and inline images
+
+#### Image Extraction Configuration Options
+
+- **`extract_images`** (default: False): Enable image extraction from documents
+- **`ocr_extracted_images`** (default: False): Run OCR on extracted images to get text content
+- **`image_ocr_backend`**: OCR engine for images ("tesseract", "easyocr", "paddleocr")
+- **`image_ocr_config`**: Backend-specific OCR configuration for images
+- **`deduplicate_images`** (default: True): Remove duplicate images based on content hash
+- **`image_ocr_min_dimensions`**: Minimum (width, height) for OCR eligibility
+- **`image_ocr_max_dimensions`**: Maximum (width, height) for OCR processing
+
+#### Performance Considerations
+
+Image extraction and OCR can be resource-intensive:
+
+- **Memory usage**: Large images consume significant memory during processing
+- **Processing time**: OCR on images takes longer than text extraction
+- **Storage**: Extracted image data is included in results, increasing memory usage
+- **Filtering**: Use dimension filters to skip very small or very large images
+- **Deduplication**: Enable to avoid processing identical images multiple times
+
+For better performance in production:
+
+- Set appropriate dimension limits based on your use case
+- Consider using faster OCR backends like Tesseract for batch processing
+- Enable deduplication to avoid redundant processing
+- Use selective extraction based on document types
 
 ### Entity and Keyword Extraction
 

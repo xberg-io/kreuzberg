@@ -260,6 +260,258 @@ async def process_invoice():
             print(table["text"])
 ```
 
+## Image Extraction
+
+Kreuzberg can extract embedded images from various document formats and optionally run OCR on them to extract text content.
+
+### Basic Image Extraction
+
+```python
+from kreuzberg import extract_file, ExtractionConfig
+import base64
+from pathlib import Path
+
+async def extract_images_from_pdf():
+    # Extract embedded images from a PDF document
+    result = await extract_file("document_with_images.pdf", config=ExtractionConfig(extract_images=True))
+
+    print(f"Document content: {result.content[:100]}...")
+    print(f"Found {len(result.images)} images")
+
+    # Save extracted images to files
+    for i, image in enumerate(result.images):
+        filename = image.filename or f"image_{i+1}.{image.format.lower()}"
+        filepath = Path("extracted_images") / filename
+        filepath.parent.mkdir(exist_ok=True)
+
+        # Write image data to file
+        filepath.write_bytes(image.data)
+
+        print(f"Saved image: {filename}")
+        print(f"  Format: {image.format}")
+        print(f"  Dimensions: {image.dimensions}")
+        if image.page_number:
+            print(f"  Page: {image.page_number}")
+        if image.description:
+            print(f"  Description: {image.description}")
+```
+
+### Image OCR Processing
+
+Extract text content from images using OCR:
+
+```python
+from kreuzberg import extract_file, ExtractionConfig
+
+async def extract_and_ocr_images():
+    # Extract images and run OCR on them
+    config = ExtractionConfig(
+        extract_images=True,
+        ocr_extracted_images=True,
+        image_ocr_backend="tesseract",
+        # Only process reasonably sized images
+        image_ocr_min_dimensions=(100, 100),
+        image_ocr_max_dimensions=(3000, 3000),
+        deduplicate_images=True,  # Remove duplicate images
+    )
+
+    result = await extract_file("presentation.pptx", config=config)
+
+    print(f"Main content: {len(result.content)} characters")
+    print(f"Extracted {len(result.images)} unique images")
+    print(f"OCR processed {len(result.image_ocr_results)} images")
+
+    # Process OCR results
+    for i, ocr_result in enumerate(result.image_ocr_results):
+        image = ocr_result.image
+        text = ocr_result.ocr_result.content
+        confidence = ocr_result.confidence_score
+
+        print(f"\nImage {i+1}: {image.filename or 'unnamed'}")
+        print(f"  Dimensions: {image.dimensions}")
+        print(f"  OCR Confidence: {confidence:.2f}" if confidence else "  No confidence score")
+
+        if ocr_result.skipped_reason:
+            print(f"  Skipped: {ocr_result.skipped_reason}")
+        else:
+            print(f"  Extracted text: {text[:100]}...")
+```
+
+### Advanced Image OCR Configuration
+
+Use different OCR backends and configurations for optimal results:
+
+```python
+from kreuzberg import extract_file, ExtractionConfig, TesseractConfig, EasyOCRConfig, PSMMode
+
+async def advanced_image_ocr():
+    # Tesseract with multilingual support for technical documents
+    tesseract_config = TesseractConfig(
+        language="eng+deu",  # English and German
+        psm=PSMMode.SINGLE_BLOCK,  # Treat each image as single text block
+        output_format="text",
+        tessedit_char_whitelist="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz .-,",
+    )
+
+    config = ExtractionConfig(
+        extract_images=True,
+        ocr_extracted_images=True,
+        image_ocr_backend="tesseract",
+        image_ocr_config=tesseract_config,
+        image_ocr_min_dimensions=(150, 50),  # Allow narrow images like table headers
+        image_ocr_max_dimensions=(4000, 4000),
+    )
+
+    result = await extract_file("technical_manual.pdf", config=config)
+
+    # EasyOCR for natural scene text and photos
+    easyocr_config = EasyOCRConfig(
+        language_list=["en"],
+        gpu=False,  # Use CPU processing
+        confidence_threshold=0.4,  # Lower threshold for challenging images
+    )
+
+    config = ExtractionConfig(
+        extract_images=True,
+        ocr_extracted_images=True,
+        image_ocr_backend="easyocr",
+        image_ocr_config=easyocr_config,
+    )
+
+    result = await extract_file("document_with_photos.pdf", config=config)
+
+    # Filter OCR results by confidence
+    high_confidence_results = [
+        ocr_result for ocr_result in result.image_ocr_results if ocr_result.confidence_score and ocr_result.confidence_score > 0.7
+    ]
+
+    print(f"High-confidence OCR results: {len(high_confidence_results)}")
+```
+
+### Processing Different Document Types
+
+Image extraction works with various document formats:
+
+```python
+from kreuzberg import extract_file, ExtractionConfig
+
+async def extract_from_various_formats():
+    config = ExtractionConfig(
+        extract_images=True,
+        ocr_extracted_images=True,
+        image_ocr_backend="tesseract",
+    )
+
+    # PDF documents - embedded images and graphics
+    pdf_result = await extract_file("report.pdf", config=config)
+    print(f"PDF: {len(pdf_result.images)} images extracted")
+
+    # PowerPoint presentations - slide images and shapes
+    pptx_result = await extract_file("presentation.pptx", config=config)
+    print(f"PPTX: {len(pptx_result.images)} images extracted")
+
+    # HTML documents - inline and base64 images
+    html_result = await extract_file("webpage.html", config=config)
+    print(f"HTML: {len(html_result.images)} images extracted")
+
+    # Email messages - attachments and inline images
+    email_result = await extract_file("message.eml", config=config)
+    print(f"Email: {len(email_result.images)} images extracted")
+
+    # Word documents - embedded images and charts
+    docx_result = await extract_file("document.docx", config=config)
+    print(f"DOCX: {len(docx_result.images)} images extracted")
+```
+
+### Image Processing Performance Optimization
+
+Control performance and resource usage:
+
+```python
+from kreuzberg import extract_file, ExtractionConfig
+
+async def optimized_image_processing():
+    # Fast processing for large batches
+    fast_config = ExtractionConfig(
+        extract_images=True,
+        ocr_extracted_images=False,  # Skip OCR for speed
+        deduplicate_images=True,  # Remove duplicates
+        image_ocr_min_dimensions=(200, 200),  # Skip small images
+        image_ocr_max_dimensions=(2000, 2000),  # Limit large images
+    )
+
+    # Quality processing for important documents
+    quality_config = ExtractionConfig(
+        extract_images=True,
+        ocr_extracted_images=True,
+        image_ocr_backend="tesseract",
+        deduplicate_images=True,
+        image_ocr_min_dimensions=(50, 50),  # Process smaller images
+        image_ocr_max_dimensions=(5000, 5000),  # Allow larger images
+    )
+
+    # Selective processing based on image size
+    selective_config = ExtractionConfig(
+        extract_images=True,
+        ocr_extracted_images=True,
+        image_ocr_min_dimensions=(300, 100),  # Good for charts and tables
+        image_ocr_max_dimensions=(3000, 3000),
+        deduplicate_images=True,
+    )
+
+    # Process with different configs
+    for config_name, config in [("fast", fast_config), ("quality", quality_config), ("selective", selective_config)]:
+        result = await extract_file("large_document.pdf", config=config)
+        print(f"{config_name.title()} mode: {len(result.images)} images, " f"{len(result.image_ocr_results)} OCR results")
+```
+
+### Combining Image Extraction with Other Features
+
+Use image extraction alongside other Kreuzberg features:
+
+```python
+from kreuzberg import extract_file, ExtractionConfig, TesseractConfig
+
+async def comprehensive_extraction():
+    config = ExtractionConfig(
+        # Text extraction
+        chunk_content=True,
+        max_chars=1000,
+        # Image extraction
+        extract_images=True,
+        ocr_extracted_images=True,
+        image_ocr_backend="tesseract",
+        # Table extraction
+        extract_tables=True,
+        # Entity and keyword extraction
+        extract_entities=True,
+        extract_keywords=True,
+        keyword_count=10,
+        # Language detection
+        auto_detect_language=True,
+    )
+
+    result = await extract_file("comprehensive_document.pdf", config=config)
+
+    print("=== Comprehensive Extraction Results ===")
+    print(f"Main content: {len(result.content)} characters")
+    print(f"Content chunks: {len(result.chunks)}")
+    print(f"Extracted images: {len(result.images)}")
+    print(f"Image OCR results: {len(result.image_ocr_results)}")
+    print(f"Tables: {len(result.tables)}")
+    print(f"Detected languages: {result.detected_languages}")
+    print(f"Keywords: {len(result.keywords) if result.keywords else 0}")
+    print(f"Entities: {len(result.entities) if result.entities else 0}")
+
+    # Combine text from main content and image OCR
+    all_text = result.content
+    for ocr_result in result.image_ocr_results:
+        if ocr_result.ocr_result.content.strip():
+            all_text += "\n\nFrom image OCR:\n" + ocr_result.ocr_result.content
+
+    print(f"Total text (including OCR): {len(all_text)} characters")
+```
+
 ## Batch Processing
 
 ```python

@@ -131,10 +131,12 @@ curl -X POST "http://localhost:8000/extract?force_ocr=true&ocr_backend=tesseract
   -F "data=@image.jpg"
 ```
 
-Enable image extraction and optional OCR over images:
+### Image Extraction and OCR
+
+Kreuzberg can extract embedded images from various document formats and optionally run OCR on them to extract text content:
 
 ```bash
-# Extract embedded images from documents
+# Basic image extraction from PDF documents
 curl -X POST "http://localhost:8000/extract?extract_images=true" \
   -F "data=@document.pdf"
 
@@ -142,10 +144,114 @@ curl -X POST "http://localhost:8000/extract?extract_images=true" \
 curl -X POST "http://localhost:8000/extract?extract_images=true&ocr_extracted_images=true&image_ocr_backend=tesseract" \
   -F "data=@scanned_document.pdf"
 
-# Control OCR filtering for images by size and formats
-curl -X POST "http://localhost:8000/extract?extract_images=true&ocr_extracted_images=true&image_ocr_min_width=50&image_ocr_min_height=50&image_ocr_max_width=5000&image_ocr_max_height=5000" \
-  -F "data=@slides.pptx"
+# Extract images from PowerPoint presentations with dimension filtering
+curl -X POST "http://localhost:8000/extract?extract_images=true&ocr_extracted_images=true&image_ocr_min_width=100&image_ocr_min_height=100&image_ocr_max_width=3000&image_ocr_max_height=3000" \
+  -F "data=@presentation.pptx"
+
+# Use EasyOCR for better scene text recognition
+curl -X POST "http://localhost:8000/extract?extract_images=true&ocr_extracted_images=true&image_ocr_backend=easyocr" \
+  -F "data=@document_with_photos.pdf"
+
+# Extract images from HTML with inline base64 images
+curl -X POST "http://localhost:8000/extract?extract_images=true" \
+  -F "data=@webpage.html"
+
+# Process multiple documents with different image extraction settings
+curl -X POST "http://localhost:8000/extract?extract_images=true&ocr_extracted_images=true&image_ocr_backend=tesseract" \
+  -F "data=@document1.pdf" \
+  -F "data=@presentation.pptx" \
+  -F "data=@email.eml"
 ```
+
+**Image Extraction Response Format:**
+
+When image extraction is enabled, the response includes additional fields:
+
+```json
+[
+  {
+    "content": "Main document text content...",
+    "mime_type": "text/plain",
+    "metadata": { ... },
+    "images": [
+      {
+        "data": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAB...",
+        "format": "png",
+        "filename": "chart_1.png",
+        "page_number": 2,
+        "dimensions": [640, 480],
+        "colorspace": "RGB",
+        "bits_per_component": 8,
+        "is_mask": false,
+        "description": "Chart showing quarterly results"
+      }
+    ],
+    "image_ocr_results": [
+      {
+        "image": {
+          "data": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD...",
+          "format": "jpeg",
+          "filename": "screenshot.jpg",
+          "dimensions": [1024, 768]
+        },
+        "ocr_result": {
+          "content": "Text extracted from image using OCR...",
+          "mime_type": "text/plain",
+          "metadata": { "quality_score": 0.95 }
+        },
+        "confidence_score": 0.87,
+        "processing_time": 1.23,
+        "skipped_reason": null
+      }
+    ]
+  }
+]
+```
+
+**Advanced Image OCR Configuration:**
+
+For complex image OCR scenarios, use header-based configuration:
+
+```bash
+# Tesseract with multilingual support and custom PSM
+curl -X POST http://localhost:8000/extract \
+  -H "X-Extraction-Config: {
+    \"extract_images\": true,
+    \"ocr_extracted_images\": true,
+    \"image_ocr_backend\": \"tesseract\",
+    \"image_ocr_config\": {
+      \"language\": \"eng+deu+fra\",
+      \"psm\": 6,
+      \"output_format\": \"text\"
+    },
+    \"deduplicate_images\": true,
+    \"image_ocr_min_dimensions\": [200, 200],
+    \"image_ocr_max_dimensions\": [4000, 4000]
+  }" \
+  -F "data=@multilingual_presentation.pptx"
+
+# EasyOCR with confidence threshold and GPU acceleration
+curl -X POST http://localhost:8000/extract \
+  -H "X-Extraction-Config: {
+    \"extract_images\": true,
+    \"ocr_extracted_images\": true,
+    \"image_ocr_backend\": \"easyocr\",
+    \"image_ocr_config\": {
+      \"language_list\": [\"en\", \"de\"],
+      \"gpu\": false,
+      \"confidence_threshold\": 0.6
+    }
+  }" \
+  -F "data=@document_with_scene_text.pdf"
+```
+
+**Supported Document Types for Image Extraction:**
+
+- **PDF documents**: Embedded images, graphics, and charts
+- **PowerPoint presentations (PPTX)**: Slide images, shapes, and media
+- **HTML documents**: Inline images and base64-encoded images
+- **Microsoft Word documents (DOCX)**: Embedded images and charts
+- **Email files (EML, MSG)**: Image attachments and inline images
 
 Enable language detection:
 
@@ -167,11 +273,12 @@ curl -X POST "http://localhost:8000/extract?auto_detect_language=true" \
 - `ocr_backend` (string): OCR engine (`tesseract`, `easyocr`, `paddleocr`)
 - `auto_detect_language` (boolean): Enable automatic language detection
 - `pdf_password` (string): Password for encrypted PDFs
-- `extract_images` (boolean): Extract embedded images from supported formats
-- `ocr_extracted_images` (boolean): Run OCR on extracted images
-- `image_ocr_backend` (string): OCR engine to use for images
-- `image_ocr_min_width` / `image_ocr_min_height` (integer): Minimum dimensions to OCR
-- `image_ocr_max_width` / `image_ocr_max_height` (integer): Maximum dimensions to OCR
+- `extract_images` (boolean): Extract embedded images from supported formats (PDF, PPTX, HTML, Office, Email)
+- `ocr_extracted_images` (boolean): Run OCR on extracted images to get text content
+- `image_ocr_backend` (string): OCR engine to use for images (`tesseract`, `easyocr`, `paddleocr`)
+- `image_ocr_min_width` / `image_ocr_min_height` (integer): Minimum image dimensions for OCR eligibility
+- `image_ocr_max_width` / `image_ocr_max_height` (integer): Maximum image dimensions for OCR processing
+- `deduplicate_images` (boolean): Remove duplicate images by content hash (enabled by default)
 
 **Boolean Parameter Formats:**
 

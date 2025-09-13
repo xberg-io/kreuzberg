@@ -47,7 +47,8 @@ Kreuzberg addresses the complete document intelligence pipeline through a modula
 
 - **Format Support**: 18 document types including PDF, DOCX, PPTX, images, HTML, and structured data formats
 - **OCR Engines**: Tesseract (default), EasyOCR, PaddleOCR with automatic fallback strategies
-- **Data Extraction**: Text content, document metadata, table structures, and embedded resources
+- **Data Extraction**: Text content, document metadata, table structures, embedded images, and media resources
+- **Image Processing**: Extract embedded images from documents with optional OCR text recognition
 - **Processing Capabilities**: Content chunking for RAG pipelines, language detection, format preservation
 - **Document Classification**: Automatic document type detection (contracts, forms, invoices, receipts, reports)
 - **Extensibility**: Plugin architecture for custom extractors and hooks

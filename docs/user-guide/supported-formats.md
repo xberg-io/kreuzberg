@@ -46,3 +46,13 @@ Kreuzberg handles a wide range of document, image, and text formats.
 - JPEG 2000 family (`.jp2`, `.jpm`, `.jpx`, `.mj2`)
 - WebP (`.webp`)
 - Portable anymap formats (`.pbm`, `.pgm`, `.ppm`, `.pnm`)
+
+**Image Extraction Support**: Kreuzberg can extract embedded images from the following document types:
+
+- PDF documents (embedded images and graphics)
+- PowerPoint presentations (PPTX - slide images, charts, shapes)
+- HTML documents (inline images and base64-encoded images)
+- Microsoft Word documents (DOCX - embedded images and charts)
+- Email messages (EML, MSG - image attachments and inline images)
+
+See the [Image Extraction guide](extraction-configuration.md#image-extraction) for configuration options.
