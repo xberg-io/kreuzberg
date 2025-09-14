@@ -301,18 +301,20 @@ async def extract_images_from_pdf():
 Extract text content from images using OCR:
 
 ```python
-from kreuzberg import extract_file, ExtractionConfig
+from kreuzberg import extract_file, ExtractionConfig, ImageOCRConfig
 
 async def extract_and_ocr_images():
     # Extract images and run OCR on them
     config = ExtractionConfig(
         extract_images=True,
-        ocr_extracted_images=True,
-        image_ocr_backend="tesseract",
-        # Only process reasonably sized images
-        image_ocr_min_dimensions=(100, 100),
-        image_ocr_max_dimensions=(3000, 3000),
         deduplicate_images=True,  # Remove duplicate images
+        image_ocr_config=ImageOCRConfig(
+            enabled=True,
+            backend="tesseract",
+            # Only process reasonably sized images
+            min_dimensions=(100, 100),
+            max_dimensions=(3000, 3000),
+        ),
     )
 
     result = await extract_file("presentation.pptx", config=config)
@@ -355,11 +357,13 @@ async def advanced_image_ocr():
 
     config = ExtractionConfig(
         extract_images=True,
-        ocr_extracted_images=True,
-        image_ocr_backend="tesseract",
-        image_ocr_config=tesseract_config,
-        image_ocr_min_dimensions=(150, 50),  # Allow narrow images like table headers
-        image_ocr_max_dimensions=(4000, 4000),
+        image_ocr_config=ImageOCRConfig(
+            enabled=True,
+            backend="tesseract",
+            backend_config=tesseract_config,
+            min_dimensions=(150, 50),  # Allow narrow images like table headers
+            max_dimensions=(4000, 4000),
+        ),
     )
 
     result = await extract_file("technical_manual.pdf", config=config)
@@ -373,9 +377,11 @@ async def advanced_image_ocr():
 
     config = ExtractionConfig(
         extract_images=True,
-        ocr_extracted_images=True,
-        image_ocr_backend="easyocr",
-        image_ocr_config=easyocr_config,
+        image_ocr_config=ImageOCRConfig(
+            enabled=True,
+            backend="easyocr",
+            backend_config=easyocr_config,
+        ),
     )
 
     result = await extract_file("document_with_photos.pdf", config=config)
@@ -393,13 +399,15 @@ async def advanced_image_ocr():
 Image extraction works with various document formats:
 
 ```python
-from kreuzberg import extract_file, ExtractionConfig
+from kreuzberg import extract_file, ExtractionConfig, ImageOCRConfig
 
 async def extract_from_various_formats():
     config = ExtractionConfig(
         extract_images=True,
-        ocr_extracted_images=True,
-        image_ocr_backend="tesseract",
+        image_ocr_config=ImageOCRConfig(
+            enabled=True,
+            backend="tesseract",
+        ),
     )
 
     # PDF documents - embedded images and graphics
@@ -428,35 +436,38 @@ async def extract_from_various_formats():
 Control performance and resource usage:
 
 ```python
-from kreuzberg import extract_file, ExtractionConfig
+from kreuzberg import extract_file, ExtractionConfig, ImageOCRConfig
 
 async def optimized_image_processing():
     # Fast processing for large batches
     fast_config = ExtractionConfig(
         extract_images=True,
-        ocr_extracted_images=False,  # Skip OCR for speed
         deduplicate_images=True,  # Remove duplicates
-        image_ocr_min_dimensions=(200, 200),  # Skip small images
-        image_ocr_max_dimensions=(2000, 2000),  # Limit large images
+        # image_ocr_config not set, so OCR is disabled
     )
 
     # Quality processing for important documents
     quality_config = ExtractionConfig(
         extract_images=True,
-        ocr_extracted_images=True,
-        image_ocr_backend="tesseract",
         deduplicate_images=True,
-        image_ocr_min_dimensions=(50, 50),  # Process smaller images
-        image_ocr_max_dimensions=(5000, 5000),  # Allow larger images
+        image_ocr_config=ImageOCRConfig(
+            enabled=True,
+            backend="tesseract",
+            min_dimensions=(50, 50),  # Process smaller images
+            max_dimensions=(5000, 5000),  # Allow larger images
+        ),
     )
 
     # Selective processing based on image size
     selective_config = ExtractionConfig(
         extract_images=True,
-        ocr_extracted_images=True,
-        image_ocr_min_dimensions=(300, 100),  # Good for charts and tables
-        image_ocr_max_dimensions=(3000, 3000),
         deduplicate_images=True,
+        image_ocr_config=ImageOCRConfig(
+            enabled=True,
+            backend="tesseract",
+            min_dimensions=(300, 100),  # Good for charts and tables
+            max_dimensions=(3000, 3000),
+        ),
     )
 
     # Process with different configs
@@ -470,7 +481,7 @@ async def optimized_image_processing():
 Use image extraction alongside other Kreuzberg features:
 
 ```python
-from kreuzberg import extract_file, ExtractionConfig, TesseractConfig
+from kreuzberg import extract_file, ExtractionConfig, ImageOCRConfig
 
 async def comprehensive_extraction():
     config = ExtractionConfig(
@@ -479,8 +490,10 @@ async def comprehensive_extraction():
         max_chars=1000,
         # Image extraction
         extract_images=True,
-        ocr_extracted_images=True,
-        image_ocr_backend="tesseract",
+        image_ocr_config=ImageOCRConfig(
+            enabled=True,
+            backend="tesseract",
+        ),
         # Table extraction
         extract_tables=True,
         # Entity and keyword extraction

@@ -34,6 +34,12 @@ Contains the result of running OCR on an extracted image:
 
 ::: kreuzberg.ImageOCRResult
 
+### ImageOCRConfig
+
+Configuration for OCR processing of extracted images:
+
+::: kreuzberg.ImageOCRConfig
+
 ## OCR Configuration
 
 ### TesseractConfig

@@ -37,11 +37,15 @@ type_confidence_threshold = 0.5
 
 # Image extraction configuration
 extract_images = true              # Extract embedded images from documents
-ocr_extracted_images = true        # Run OCR on extracted images
-image_ocr_backend = "tesseract"     # OCR engine for images
 deduplicate_images = true          # Remove duplicate images
-image_ocr_min_dimensions = [100, 100]  # Minimum image dimensions for OCR
-image_ocr_max_dimensions = [5000, 5000] # Maximum image dimensions for OCR
+
+# Image OCR configuration
+[image_ocr_config]
+enabled = true                     # Run OCR on extracted images
+backend = "tesseract"              # OCR engine for images
+min_dimensions = [100, 100]        # Minimum image dimensions for OCR
+max_dimensions = [5000, 5000]      # Maximum image dimensions for OCR
+batch_size = 10                    # Number of images to process in parallel
 
 # Tesseract OCR configuration
 [tesseract]
@@ -108,11 +112,15 @@ type_confidence_threshold = 0.5
 
 # Image extraction configuration
 extract_images = true              # Extract embedded images from documents
-ocr_extracted_images = true        # Run OCR on extracted images
-image_ocr_backend = "tesseract"     # OCR engine for images
 deduplicate_images = true          # Remove duplicate images
-image_ocr_min_dimensions = [100, 100]  # Minimum image dimensions for OCR
-image_ocr_max_dimensions = [5000, 5000] # Maximum image dimensions for OCR
+
+# Image OCR configuration
+[image_ocr_config]
+enabled = true                     # Run OCR on extracted images
+backend = "tesseract"              # OCR engine for images
+min_dimensions = [100, 100]        # Minimum image dimensions for OCR
+max_dimensions = [5000, 5000]      # Maximum image dimensions for OCR
+batch_size = 10                    # Number of images to process in parallel
 
 # DPI and Image Processing
 target_dpi = 150
@@ -120,6 +128,13 @@ max_image_dimension = 25000
 auto_adjust_dpi = true
 min_dpi = 72
 max_dpi = 600
+
+[tool.kreuzberg.image_ocr_config]
+enabled = true                     # Run OCR on extracted images
+backend = "tesseract"              # OCR engine for images
+min_dimensions = [100, 100]        # Minimum image dimensions for OCR
+max_dimensions = [5000, 5000]      # Maximum image dimensions for OCR
+batch_size = 10                    # Number of images to process in parallel
 
 [tool.kreuzberg.tesseract]
 language = "eng"
@@ -228,10 +243,9 @@ curl -X POST "http://localhost:8000/extract?force_ocr=true&ocr_backend=tesseract
 - `auto_detect_language` (boolean): Enable automatic language detection
 - `pdf_password` (string): Password for encrypted PDFs
 - `extract_images` (boolean): Extract embedded images from supported formats (PDF, PPTX, HTML, Office)
-- `ocr_extracted_images` (boolean): Run OCR on extracted images
-- `image_ocr_backend` (string): OCR engine for images (`tesseract`, `easyocr`, `paddleocr`)
-- `image_ocr_min_width` / `image_ocr_min_height` (integer): Minimum dimensions to OCR
-- `image_ocr_max_width` / `image_ocr_max_height` (integer): Maximum dimensions to OCR
+- `extract_images` (boolean): Extract embedded images from documents
+- `deduplicate_images` (boolean): Remove duplicate images by content hash
+- Note: For image OCR configuration via API, use the `ImageOCRConfig` in request body instead of query parameters
 
 ### Header Configuration
 
@@ -475,15 +489,18 @@ for i, image in enumerate(result.images):
 You can automatically run OCR on extracted images to extract text content:
 
 ```python
-from kreuzberg import extract_file, ExtractionConfig
+from kreuzberg import extract_file, ExtractionConfig, ImageOCRConfig
 
 # Extract images and run OCR on them
 config = ExtractionConfig(
     extract_images=True,
-    ocr_extracted_images=True,
-    image_ocr_backend="tesseract",  # or "easyocr", "paddleocr"
-    image_ocr_min_dimensions=(100, 100),  # Skip small images
-    image_ocr_max_dimensions=(5000, 5000),  # Skip very large images
+    image_ocr_config=ImageOCRConfig(
+        enabled=True,
+        backend="tesseract",  # or "easyocr", "paddleocr"
+        min_dimensions=(100, 100),  # Skip small images
+        max_dimensions=(5000, 5000),  # Skip very large images
+        batch_size=10,  # Process images in parallel
+    ),
 )
 
 result = await extract_file("presentation.pptx", config=config)
@@ -507,15 +524,17 @@ for ocr_result in result.image_ocr_results:
 Control which images are processed with dimension filtering and deduplication:
 
 ```python
-from kreuzberg import extract_file, ExtractionConfig
+from kreuzberg import extract_file, ExtractionConfig, ImageOCRConfig
 
 # Extract only medium-sized images and remove duplicates
 config = ExtractionConfig(
     extract_images=True,
     deduplicate_images=True,  # Remove duplicate images by content hash
-    ocr_extracted_images=True,
-    image_ocr_min_dimensions=(200, 200),  # At least 200x200 pixels
-    image_ocr_max_dimensions=(3000, 3000),  # At most 3000x3000 pixels
+    image_ocr_config=ImageOCRConfig(
+        enabled=True,
+        min_dimensions=(200, 200),  # At least 200x200 pixels
+        max_dimensions=(3000, 3000),  # At most 3000x3000 pixels
+    ),
 )
 
 result = await extract_file("document.pdf", config=config)
@@ -578,12 +597,14 @@ Image extraction works with these document types:
 #### Image Extraction Configuration Options
 
 - **`extract_images`** (default: False): Enable image extraction from documents
-- **`ocr_extracted_images`** (default: False): Run OCR on extracted images to get text content
-- **`image_ocr_backend`**: OCR engine for images ("tesseract", "easyocr", "paddleocr")
-- **`image_ocr_config`**: Backend-specific OCR configuration for images
 - **`deduplicate_images`** (default: True): Remove duplicate images based on content hash
-- **`image_ocr_min_dimensions`**: Minimum (width, height) for OCR eligibility
-- **`image_ocr_max_dimensions`**: Maximum (width, height) for OCR processing
+- **`image_ocr_config`** (ImageOCRConfig): Configuration for OCR processing of extracted images
+    - **`enabled`** (default: False): Run OCR on extracted images
+    - **`backend`** (default: None): OCR engine for images ("tesseract", "easyocr", "paddleocr")
+    - **`min_dimensions`** (default: (50, 50)): Minimum (width, height) for OCR eligibility
+    - **`max_dimensions`** (default: (10000, 10000)): Maximum (width, height) for OCR processing
+    - **`batch_size`** (default: 10): Number of images to process in parallel
+    - **`allowed_formats`**: Set of image formats to process (jpg, png, gif, etc.)
 
 #### Performance Considerations
 
