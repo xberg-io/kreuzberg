@@ -105,16 +105,16 @@ wheels = [
 
 [[package]]
 name = "bce-python-sdk"
-version = "0.9.45"
+version = "0.9.46"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "future" },
     { name = "pycryptodome" },
     { name = "six" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/53/19/0f23aedecb980288e663ba9ce81fa1545d6331d62bd75262fca49678052d/bce_python_sdk-0.9.45.tar.gz", hash = "sha256:ba60d66e80fcd012a6362bf011fee18bca616b0005814d261aba3aa202f7025f", size = 252769, upload-time = "2025-08-28T10:24:54.303Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/53/57/f98bc15c12cc022ef195f689ee57ed61d8a8677bda3089c4d58fb1872d45/bce_python_sdk-0.9.46.tar.gz", hash = "sha256:4bf01b22e6d172ccd94aa201f8bc6f2a98d0da4784160e77cfacfcc71c2686be", size = 253806, upload-time = "2025-09-15T06:51:52.753Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/cf/1f/d3fd91808a1f4881b4072424390d38e85707edd75ed5d9cea2a0299a7a7a/bce_python_sdk-0.9.45-py3-none-any.whl", hash = "sha256:cce3ca7ad4de8be2cc0722c1d6a7db7be6f2833f8d9ca7f892c572e6ff78a959", size = 352012, upload-time = "2025-08-28T10:24:52.387Z" },
+    { url = "https://files.pythonhosted.org/packages/c0/f5/20e9ab324b22a77970c57bc8267e586e85e2aa1277d80f2c58ca8a39a13e/bce_python_sdk-0.9.46-py3-none-any.whl", hash = "sha256:655074da6592ce8b036f605d9a272bfdcd1f515eb2f8e3f0333bb7cc62f700cb", size = 352622, upload-time = "2025-09-15T06:51:50.811Z" },
 ]
 
 [[package]]
@@ -987,7 +987,7 @@ name = "exceptiongroup"
 version = "1.3.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "typing-extensions", marker = "python_full_version < '3.11'" },
+    { name = "typing-extensions", marker = "python_full_version < '3.13'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/0b/9f/a65090624ecf468cdca03533906e7c69ed7588582240cfe7cc9e770b50eb/exceptiongroup-1.3.0.tar.gz", hash = "sha256:b241f5885f560bc56a59ee63ca4c6a8bfa46ae4ad651af316d4e81817bb9fd88", size = 29749, upload-time = "2025-05-10T17:42:51.123Z" }
 wheels = [
@@ -1663,7 +1663,7 @@ wheels = [
 
 [[package]]
 name = "kreuzberg"
-version = "3.15.0"
+version = "3.16.0"
 source = { editable = "." }
 dependencies = [
     { name = "anyio" },
