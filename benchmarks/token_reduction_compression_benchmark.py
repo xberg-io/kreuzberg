@@ -1,14 +1,3 @@
-"""
-Token Reduction Compression Effectiveness Benchmark
-
-Tests compression effectiveness of token reduction feature across different:
-- Text types (formal, casual, technical, news, literature, etc.)
-- Reduction modes (light, moderate)
-- Text lengths (short, medium, long)
-
-Provides clear metrics on compression ratios and effectiveness.
-"""
-
 from __future__ import annotations
 
 import json
@@ -123,7 +112,6 @@ class TokenReductionCompressionBenchmark:
         self.modes: list[Literal["light", "moderate"]] = ["light", "moderate"]
 
     def _create_test_texts(self) -> dict[str, str]:
-        """Create diverse text samples for testing compression effectiveness."""
         return {
             "formal_document": """
                 The quarterly financial report demonstrates significant improvements in operational efficiency and market positioning.
@@ -195,7 +183,6 @@ class TokenReductionCompressionBenchmark:
     def test_compression_effectiveness(
         self, text: str, text_type: str, mode: Literal["light", "moderate"]
     ) -> CompressionResult:
-        """Test compression effectiveness for a specific text and mode."""
         config = TokenReductionConfig(mode=mode, preserve_markdown=False)
 
         start_time = time.perf_counter()
@@ -217,7 +204,6 @@ class TokenReductionCompressionBenchmark:
         )
 
     def run_comprehensive_benchmark(self) -> CompressionBenchmarkSuite:
-        """Run comprehensive compression benchmark across all text types and modes."""
         suite = CompressionBenchmarkSuite()
 
         for text_type, text in self.test_texts.items():
@@ -228,8 +214,6 @@ class TokenReductionCompressionBenchmark:
         return suite
 
     def run_pipeline_integration_test(self) -> dict[str, Any]:
-        """Test compression with full extraction pipeline."""
-
         pipeline_results: dict[str, Any] = {}
 
         for mode in self.modes:
@@ -255,7 +239,6 @@ class TokenReductionCompressionBenchmark:
 
 
 def main() -> None:
-    """Run the token reduction compression benchmark."""
     benchmark = TokenReductionCompressionBenchmark()
 
     suite = benchmark.run_comprehensive_benchmark()

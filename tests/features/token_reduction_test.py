@@ -307,12 +307,9 @@ def test_get_reduction_stats_validation_raises_error_on_invalid_reduced_type() -
 
 
 def test_reduce_tokens_handles_large_text_with_streaming() -> None:
-    """Test that large texts are processed successfully using streaming."""
     config = TokenReductionConfig(mode="light")
-    # Create text larger than streaming threshold (1MB)
-    large_text = "Hello world. " * 100_000  # ~1.3MB
+    large_text = "Hello world. " * 100_000
 
-    # Should not raise an error, should process successfully
     result = reduce_tokens(large_text, config=config)
     assert isinstance(result, str)
     assert len(result) > 0
@@ -478,7 +475,6 @@ def test_get_reduction_stats_edge_case_expansion() -> None:
 
 
 def test_stopwords_manager_concurrent_access() -> None:
-    """Test that StopwordsManager handles concurrent access correctly via LRU cache."""
     import concurrent.futures
 
     manager = StopwordsManager()
@@ -488,41 +484,33 @@ def test_stopwords_manager_concurrent_access() -> None:
         stopwords = manager.get_stopwords(lang)
         return len(stopwords)
 
-    # Test concurrent loading of different languages
     with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
         futures = [executor.submit(load_language, lang) for lang in languages * 3]
         results = [f.result() for f in concurrent.futures.as_completed(futures)]
 
-    # All results should be successful (non-zero lengths)
     assert all(r > 0 for r in results)
-    assert len(results) == 15  # 5 languages * 3 repetitions
+    assert len(results) == 15
 
 
 def test_stopwords_manager_handles_corrupted_file(tmp_path: Path) -> None:
-    """Test that StopwordsManager handles corrupted JSON files gracefully."""
     from unittest.mock import patch
 
-    # Create a corrupted stopwords file
     corrupted_dir = tmp_path / "stopwords"
     corrupted_dir.mkdir()
     corrupted_file = corrupted_dir / "xx_stopwords.json"
     corrupted_file.write_text("not valid json {[}")
 
-    # Patch the stopwords directory to use our test directory
     with patch("kreuzberg._token_reduction._stopwords._STOPWORDS_DIR", corrupted_dir):
         manager = StopwordsManager()
 
-        # Should return empty set for corrupted file (consistent with missing files)
         stopwords = manager.get_stopwords("xx")
         assert isinstance(stopwords, set)
         assert len(stopwords) == 0
 
 
 def test_stopwords_manager_handles_missing_file() -> None:
-    """Test that StopwordsManager returns empty set for missing language files."""
     manager = StopwordsManager()
 
-    # Non-existent language should return empty set
     stopwords = manager.get_stopwords("zz_nonexistent")
 
     assert isinstance(stopwords, set)
@@ -530,7 +518,6 @@ def test_stopwords_manager_handles_missing_file() -> None:
 
 
 def test_reduce_tokens_thread_safety() -> None:
-    """Test that reduce_tokens is thread-safe."""
     import concurrent.futures
 
     config = TokenReductionConfig(mode="moderate")
@@ -545,22 +532,18 @@ def test_reduce_tokens_thread_safety() -> None:
     def process_text(text: str) -> str:
         return reduce_tokens(text, config=config, language="en")
 
-    # Process texts concurrently
     with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
         futures = [executor.submit(process_text, text) for text in test_texts * 3]
         results = [f.result() for f in concurrent.futures.as_completed(futures)]
 
-    # All results should be processed successfully
-    assert len(results) == 15  # 5 texts * 3 repetitions
+    assert len(results) == 15
     assert all(isinstance(r, str) for r in results)
     assert all(len(r) > 0 for r in results)
 
 
 def test_stopwords_manager_lru_cache_size() -> None:
-    """Test that LRU cache maintains reasonable memory usage."""
     manager = StopwordsManager()
 
-    # Load more than the cache size (16) to test eviction
     languages = [
         "en",
         "es",
@@ -580,22 +563,19 @@ def test_stopwords_manager_lru_cache_size() -> None:
         "ro",
         "bg",
         "hr",
-        "sr",  # 19 languages total
+        "sr",
     ]
 
     for lang in languages:
         if manager.has_language(lang):
             manager.get_stopwords(lang)
 
-    # Cache should still work correctly after evictions
-    # Re-load first language (should have been evicted)
     stopwords = manager.get_stopwords("en")
     assert "the" in stopwords
     assert len(stopwords) > 0
 
 
 def test_reduce_tokens_with_custom_stopwords_thread_safety() -> None:
-    """Test thread safety with custom stopwords."""
     import concurrent.futures
 
     config = TokenReductionConfig(
@@ -614,23 +594,19 @@ def test_reduce_tokens_with_custom_stopwords_thread_safety() -> None:
     def process_with_custom(text: str, lang: str) -> str:
         return reduce_tokens(text, config=config, language=lang)
 
-    # Process with custom stopwords concurrently
     with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
         futures = [executor.submit(process_with_custom, text, lang) for text, lang in test_cases * 5]
         results = [f.result() for f in concurrent.futures.as_completed(futures)]
 
-    # Verify results are consistent and correct
-    assert len(results) == 10  # 2 test cases * 5 repetitions
+    assert len(results) == 10
 
     for result in results:
         result_lower = result.lower()
-        # Custom stopwords should be removed
         assert "customword" not in result_lower
         assert "special" not in result_lower
         assert "personalizado" not in result_lower
         assert "especial" not in result_lower
 
-        # Content words like "Python" and "programming" should remain
         assert "python" in result_lower
         assert (
             "programming" in result_lower
@@ -641,74 +617,58 @@ def test_reduce_tokens_with_custom_stopwords_thread_safety() -> None:
 
 
 def test_short_stopwords_are_removed() -> None:
-    """Test that common 2-letter stopwords are actually removed."""
     config = TokenReductionConfig(mode="moderate")
-    # Common 2-letter stopwords that should be removed
     text = "It is an excellent document of the organization"
 
     result = reduce_tokens(text, config=config, language="en")
 
-    # These 2-letter stopwords should be removed
     assert " is " not in f" {result} "
     assert " it " not in f" {result.lower()} "
     assert " an " not in f" {result.lower()} "
     assert " of " not in f" {result.lower()} "
 
-    # Content words should remain (using words not in stopword list)
     assert "excellent" in result
     assert "document" in result
     assert "organization" in result
 
 
 def test_single_letter_words_preserved() -> None:
-    """Test that single letters like 'I' and 'a' are preserved."""
     config = TokenReductionConfig(mode="moderate")
     text = "I need a solution"
 
     result = reduce_tokens(text, config=config, language="en")
 
-    # Single letters should be preserved
     assert "I" in result or "i" in result.lower()
     assert " a " in f" {result.lower()} " or result.lower().startswith("a ")
 
-    # Other words preserved/removed appropriately
     assert "solution" in result
 
 
 def test_markdown_table_detection_improved() -> None:
-    """Test improved markdown table detection."""
     config = TokenReductionConfig(mode="moderate", preserve_markdown=True)
 
-    # Real table - should be preserved
     table_text = """
 | Column 1 | Column 2 |
 |----------|----------|
 | Value 1  | Value 2  |
 """
 
-    # Not a table - just text with pipes
     not_table = "This text has a pipe | but it's not a table"
 
     table_result = reduce_tokens(table_text, config=config, language="en")
     not_table_result = reduce_tokens(not_table, config=config, language="en")
 
-    # Real table structure preserved
     assert "| Column 1 | Column 2 |" in table_result
     assert "|----------|----------|" in table_result
 
-    # Pipe in regular text gets stopwords removed
     assert "pipe" in not_table_result
     assert "table" in not_table_result
-    # "but" and "it's" should be removed as stopwords
     assert "but" not in not_table_result
 
 
 def test_path_traversal_protection() -> None:
-    """Test that path traversal attempts are blocked."""
-
     manager = StopwordsManager()
 
-    # Try various path traversal patterns
     dangerous_codes = [
         "../../../etc/passwd",
         "..\\..\\windows\\system32",
@@ -717,24 +677,20 @@ def test_path_traversal_protection() -> None:
     ]
 
     for dangerous_code in dangerous_codes:
-        # Should safely return empty set
         stopwords = manager.get_stopwords(dangerous_code)
         assert stopwords == set()
 
 
 def test_empty_result_handling() -> None:
-    """Test that completely filtered text returns empty string."""
     config = TokenReductionConfig(mode="moderate", custom_stopwords={"en": ["everything", "removed"]})
     text = "everything is removed"
 
     result = reduce_tokens(text, config=config, language="en")
 
-    # Should return empty string, not crash
     assert result == ""
 
 
 def test_thread_safe_ref_initialization() -> None:
-    """Test that Ref class is thread-safe during initialization."""
     import concurrent.futures
     import time
 
@@ -745,32 +701,26 @@ def test_thread_safe_ref_initialization() -> None:
     def slow_factory() -> str:
         nonlocal call_count
         call_count += 1
-        time.sleep(0.01)  # Simulate slow initialization
+        time.sleep(0.01)
         return f"initialized_{call_count}"
 
     ref = Ref("test_ref", slow_factory)
 
-    # Clear to ensure fresh test
     ref.clear()
 
-    # Multiple threads try to initialize simultaneously
     with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
         futures = [executor.submit(ref.get) for _ in range(10)]
         results = [f.result() for f in concurrent.futures.as_completed(futures)]
 
-    # Should only initialize once despite concurrent access
     assert call_count == 1
     assert all(r == "initialized_1" for r in results)
 
-    # Cleanup
     ref.clear()
 
 
 def test_language_normalization_in_config() -> None:
-    """Test that language hints are normalized in TokenReductionConfig."""
     from kreuzberg._types import TokenReductionConfig
 
-    # Test ISO 639-2/3 to ISO 639-1 conversion
     config = TokenReductionConfig(language_hint="eng")
     assert config.language_hint == "en"
 
@@ -780,7 +730,6 @@ def test_language_normalization_in_config() -> None:
     config = TokenReductionConfig(language_hint="deu")
     assert config.language_hint == "de"
 
-    # Test BCP 47 normalization
     config = TokenReductionConfig(language_hint="en-US")
     assert config.language_hint == "en"
 
@@ -790,14 +739,12 @@ def test_language_normalization_in_config() -> None:
     config = TokenReductionConfig(language_hint="zh-Hans-CN")
     assert config.language_hint == "zh"
 
-    # Test case insensitive
     config = TokenReductionConfig(language_hint="EN")
     assert config.language_hint == "en"
 
     config = TokenReductionConfig(language_hint="ENG")
     assert config.language_hint == "en"
 
-    # Test that already normalized codes stay the same
     config = TokenReductionConfig(language_hint="en")
     assert config.language_hint == "en"
 
@@ -806,13 +753,9 @@ def test_language_normalization_in_config() -> None:
 
 
 def test_unicode_normalization() -> None:
-    """Test that Unicode text is normalized correctly."""
     from kreuzberg._types import TokenReductionConfig
 
-    # Test with combining characters
-    # café written with combining acute accent
-    text_combining = "cafe\u0301"  # e + combining acute accent
-    # café written with precomposed character
+    text_combining = "cafe\u0301"
     text_precomposed = "café"
 
     config = TokenReductionConfig(mode="light")
@@ -820,35 +763,29 @@ def test_unicode_normalization() -> None:
     result1 = reduce_tokens(text_combining, config=config)
     result2 = reduce_tokens(text_precomposed, config=config)
 
-    # Should normalize to the same result
     assert result1 == result2
 
 
 def test_punctuation_preservation_with_stopwords() -> None:
-    """Test that punctuation is correctly preserved when removing stopwords."""
     from kreuzberg._types import TokenReductionConfig
 
     config = TokenReductionConfig(mode="moderate")
 
-    # Test sentence-ending punctuation preservation
     text = "The cat is on the mat."
     result = reduce_tokens(text, config=config, language="en")
     assert result.endswith(".")
     assert "cat" in result
     assert "mat" in result
-    assert "the" not in result.lower()  # stopword removed
+    assert "the" not in result.lower()
 
-    # Test with question mark
     text = "Is the cat on the mat?"
     result = reduce_tokens(text, config=config, language="en")
     assert result.endswith("?")
 
-    # Test with exclamation
     text = "The cat is amazing!"
     result = reduce_tokens(text, config=config, language="en")
     assert result.endswith("!")
 
-    # Test comma preservation (when meaningful)
     text = "The cat, the dog, and the bird."
     result = reduce_tokens(text, config=config, language="en")
     assert "cat" in result
@@ -857,22 +794,18 @@ def test_punctuation_preservation_with_stopwords() -> None:
 
 
 def test_performance_pre_lowercase_stopwords() -> None:
-    """Test that stopwords are pre-lowercased for performance."""
     import time
 
     from kreuzberg._types import TokenReductionConfig
 
     config = TokenReductionConfig(mode="moderate")
 
-    # Generate a large text with many repeated stopwords
     text = " ".join(["The quick brown fox jumps over the lazy dog"] * 1000)
 
-    # Time the operation
     start = time.perf_counter()
     result = reduce_tokens(text, config=config, language="en")
     elapsed = time.perf_counter() - start
 
-    # Should be fast (under 1 second for 9000 words)
     assert elapsed < 1.0
     assert "quick" in result
     assert "brown" in result
