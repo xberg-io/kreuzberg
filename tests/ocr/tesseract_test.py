@@ -50,7 +50,8 @@ def mock_run_process(mocker: MockerFixture) -> Mock:
 5\t1\t1\t1\t1\t2\t160\t50\t60\t30\t94.0\tOCR
 5\t1\t1\t1\t1\t3\t230\t50\t60\t30\t96.0\ttext"""
                 Path(f"{output_file}.tsv").write_text(tsv_content)
-            elif "hocr" in command:
+            # Check for HOCR format (either old configfile or new config option approach)
+            elif "hocr" in command or "tessedit_create_hocr=1" in " ".join(command):
                 hocr_content = """<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -313,7 +314,8 @@ async def test_process_file_linux(
             result.stdout = b"tesseract 5.0.0"
         elif len(command) >= 3 and command[0].endswith("tesseract"):
             output_base = command[2]
-            if "hocr" in command:
+            # Check for HOCR format (either old configfile or new config option approach)
+            if "hocr" in command or "tessedit_create_hocr=1" in " ".join(command):
                 hocr_content = """<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -899,7 +901,8 @@ async def test_tesseract_environment_variables_linux_omp_thread_limit(
             result.stdout = b"tesseract 5.0.0"
         elif len(command) >= 3 and command[0].endswith("tesseract"):
             output_base = command[2]
-            if "hocr" in command:
+            # Check for HOCR format (either old configfile or new config option approach)
+            if "hocr" in command or "tessedit_create_hocr=1" in " ".join(command):
                 hocr_content = """<?xml version="1.0" encoding="UTF-8"?>
 <html>
  <body>
