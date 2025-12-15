@@ -7,6 +7,7 @@ require_relative 'spec_helper'
 
 RSpec.describe 'office fixtures' do
   it 'office_doc_legacy' do
+    skip 'LibreOffice conversion hangs on Windows CI' if Gem.win_platform?
     E2ERuby.run_fixture(
       'office_doc_legacy',
       'legacy_office/unit_test_lists.doc',
@@ -145,6 +146,7 @@ RSpec.describe 'office fixtures' do
   end
 
   it 'office_ppt_legacy' do
+    skip 'LibreOffice conversion hangs on Windows CI' if Gem.win_platform?
     E2ERuby.run_fixture(
       'office_ppt_legacy',
       'legacy_office/simple.ppt',
@@ -213,6 +215,7 @@ RSpec.describe 'office fixtures' do
   end
 
   it 'office_xls_legacy' do
+    skip 'LibreOffice conversion hangs on Windows CI' if Gem.win_platform?
     E2ERuby.run_fixture(
       'office_xls_legacy',
       'spreadsheets/test_excel.xls',

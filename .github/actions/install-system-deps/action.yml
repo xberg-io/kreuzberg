@@ -74,14 +74,6 @@ runs:
           tesseract-linux-${{ runner.arch }}-v5-
           tesseract-linux-${{ runner.arch }}-
 
-    - name: Cache fonts (Linux)
-      if: runner.os == 'Linux'
-      id: cache-fonts-linux
-      uses: actions/cache@v5
-      with:
-        path: /usr/share/fonts/
-        key: fonts-linux-${{ runner.arch }}-v2
-
     - name: Install dependencies (Linux)
       if: runner.os == 'Linux'
       shell: bash

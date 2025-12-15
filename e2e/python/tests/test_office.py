@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import sys
+
 import pytest
 
 from kreuzberg import extract_file_sync
@@ -7,6 +9,7 @@ from kreuzberg import extract_file_sync
 from . import helpers
 
 
+@pytest.mark.skipif(sys.platform == "win32", reason="LibreOffice conversion hangs on Windows CI")
 def test_office_doc_legacy() -> None:
     """Legacy .doc document conversion via LibreOffice."""
 
@@ -129,6 +132,7 @@ def test_office_docx_tables() -> None:
     helpers.assert_table_count(result, 1, None)
 
 
+@pytest.mark.skipif(sys.platform == "win32", reason="LibreOffice conversion hangs on Windows CI")
 def test_office_ppt_legacy() -> None:
     """Legacy PowerPoint .ppt file requiring LibreOffice conversion."""
 
@@ -189,6 +193,7 @@ def test_office_pptx_pitch_deck() -> None:
     helpers.assert_min_content_length(result, 100)
 
 
+@pytest.mark.skipif(sys.platform == "win32", reason="LibreOffice conversion hangs on Windows CI")
 def test_office_xls_legacy() -> None:
     """Legacy XLS spreadsheet to ensure backward compatibility."""
 

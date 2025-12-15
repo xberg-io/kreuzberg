@@ -11,7 +11,7 @@ sudo rm -rf /usr/local/share/boost /usr/local/lib/node_modules /opt/microsoft /u
 
 echo "=== Removing large apt packages ==="
 sudo apt-get remove --yes -o APT::AutoRemove::SuggestsImportant=false \
-	'^ghc-' 'php.*' 'powershell' 'azure-cli' 'google-cloud-sdk' 'amazon-efs-utils' 'hhvm' || true
+	'^ghc-' 'php.*' 'powershell' 'azure-cli' 'google-cloud-sdk' 2>/dev/null || true
 
 echo "=== Cleaning apt cache ==="
 sudo apt-get autoremove --yes || true

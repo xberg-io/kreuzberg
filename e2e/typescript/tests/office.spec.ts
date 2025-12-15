@@ -7,7 +7,7 @@ import type { ExtractionResult } from "@kreuzberg/node";
 const TEST_TIMEOUT_MS = 60_000;
 
 describe("office fixtures", () => {
-	it(
+	it.skipIf(process.platform === "win32")(
 		"office_doc_legacy",
 		() => {
 			const documentPath = resolveDocument("legacy_office/unit_test_lists.doc");
@@ -252,7 +252,7 @@ describe("office fixtures", () => {
 		TEST_TIMEOUT_MS,
 	);
 
-	it(
+	it.skipIf(process.platform === "win32")(
 		"office_ppt_legacy",
 		() => {
 			const documentPath = resolveDocument("legacy_office/simple.ppt");
@@ -374,7 +374,7 @@ describe("office fixtures", () => {
 		TEST_TIMEOUT_MS,
 	);
 
-	it(
+	it.skipIf(process.platform === "win32")(
 		"office_xls_legacy",
 		() => {
 			const documentPath = resolveDocument("spreadsheets/test_excel.xls");

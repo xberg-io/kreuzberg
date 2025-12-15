@@ -3,6 +3,8 @@ package com.kreuzberg.e2e;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -14,6 +16,7 @@ public class OfficeTest {
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     @Test
+    @DisabledOnOs(OS.WINDOWS)
     public void officeDocLegacy() throws Exception {
         JsonNode config = null;
         E2EHelpers.runFixture(
@@ -152,6 +155,7 @@ public class OfficeTest {
     }
 
     @Test
+    @DisabledOnOs(OS.WINDOWS)
     public void officePptLegacy() throws Exception {
         JsonNode config = null;
         E2EHelpers.runFixture(
@@ -220,6 +224,7 @@ public class OfficeTest {
     }
 
     @Test
+    @DisabledOnOs(OS.WINDOWS)
     public void officeXlsLegacy() throws Exception {
         JsonNode config = null;
         E2EHelpers.runFixture(
