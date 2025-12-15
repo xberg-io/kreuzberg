@@ -37,6 +37,17 @@ runs:
       shell: bash
       run: scripts/ci/actions/setup-tesseract-cache/setup-dirs.sh "${{ inputs.label }}"
 
+    - name: Cache tesseract-rs build cache
+      if: inputs.enable-cache == 'true'
+      uses: actions/cache@v5
+      with:
+        path: |
+          .tesseract-cache/${{ inputs.label }}
+          .xdg-cache/${{ inputs.label }}
+        key: tesseract-rs-cache-v1-${{ runner.os }}-${{ inputs.label }}-${{ hashFiles('crates/kreuzberg-tesseract/Cargo.toml', 'crates/kreuzberg-tesseract/build.rs') }}
+        restore-keys: |
+          tesseract-rs-cache-v1-${{ runner.os }}-${{ inputs.label }}-
+
     - name: Clean per-target Tesseract cache
       if: inputs.rust-target != ''
       shell: bash

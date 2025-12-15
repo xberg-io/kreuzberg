@@ -18,14 +18,14 @@ mod build_tesseract {
 
     fn leptonica_url() -> String {
         format!(
-            "https://github.com/DanBloomberg/leptonica/archive/refs/tags/{}.zip",
+            "https://codeload.github.com/DanBloomberg/leptonica/zip/refs/tags/{}",
             LEPTONICA_VERSION
         )
     }
 
     fn tesseract_url() -> String {
         format!(
-            "https://github.com/tesseract-ocr/tesseract/archive/refs/tags/{}.zip",
+            "https://codeload.github.com/tesseract-ocr/tesseract/zip/refs/tags/{}",
             TESSERACT_VERSION
         )
     }

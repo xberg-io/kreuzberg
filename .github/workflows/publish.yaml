@@ -1088,6 +1088,13 @@ jobs:
       - name: Setup OpenSSL
         uses: ./.github/actions/setup-openssl
 
+      - name: Setup Tesseract cache
+        id: tesseract-cache
+        uses: ./.github/actions/setup-tesseract-cache
+        with:
+          label: ${{ matrix.settings.label }}
+          enable-cache: "true"
+
       - name: Setup Rust
         uses: ./.github/actions/setup-rust
         with:
