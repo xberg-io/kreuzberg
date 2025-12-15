@@ -5,11 +5,15 @@ on:
     branches: [main]
     paths:
       - '.github/actions/**'
+      - 'scripts/**'
       - 'crates/kreuzberg/**'
       - 'crates/kreuzberg-ffi/**'
       - 'crates/kreuzberg-tesseract/**'
       - 'packages/java/**'
       - 'e2e/java/**'
+      - 'test_documents/**'
+      - 'fixtures/**'
+      - 'tools/e2e-generator/**'
       - 'Cargo.toml'
       - 'Cargo.lock'
       - 'packages/java/pom.xml'
@@ -19,11 +23,15 @@ on:
     branches: [main]
     paths:
       - '.github/actions/**'
+      - 'scripts/**'
       - 'crates/kreuzberg/**'
       - 'crates/kreuzberg-ffi/**'
       - 'crates/kreuzberg-tesseract/**'
       - 'packages/java/**'
       - 'e2e/java/**'
+      - 'test_documents/**'
+      - 'fixtures/**'
+      - 'tools/e2e-generator/**'
       - 'Cargo.toml'
       - 'Cargo.lock'
       - 'packages/java/pom.xml'

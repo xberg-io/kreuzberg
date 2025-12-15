@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
     paths:
+      - '.github/actions/**'
       - 'crates/kreuzberg/**'
       - 'crates/kreuzberg-wasm/**'
       - 'crates/kreuzberg-core-types/**'
@@ -18,14 +19,12 @@ on:
       - 'Cargo.lock'
       - 'pnpm-lock.yaml'
       - 'package.json'
-      - '.github/actions/install-system-deps/**'
-      - '.github/actions/setup-rust/**'
-      - '.github/actions/setup-node-workspace/**'
-      - '.github/actions/cleanup-rust-cache/**'
+      - 'scripts/**'
       - '.github/workflows/ci-wasm.yaml'
   pull_request:
     branches: [main]
     paths:
+      - '.github/actions/**'
       - 'crates/kreuzberg/**'
       - 'crates/kreuzberg-wasm/**'
       - 'crates/kreuzberg-core-types/**'
@@ -40,10 +39,7 @@ on:
       - 'Cargo.lock'
       - 'pnpm-lock.yaml'
       - 'package.json'
-      - '.github/actions/install-system-deps/**'
-      - '.github/actions/setup-rust/**'
-      - '.github/actions/setup-node-workspace/**'
-      - '.github/actions/cleanup-rust-cache/**'
+      - 'scripts/**'
       - '.github/workflows/ci-wasm.yaml'
   workflow_dispatch:
 

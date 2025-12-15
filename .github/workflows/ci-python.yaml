@@ -5,11 +5,15 @@ on:
     branches: [main]
     paths:
       - '.github/actions/**'
+      - 'scripts/**'
       - 'crates/kreuzberg/**'
       - 'crates/kreuzberg-py/**'
       - 'crates/kreuzberg-tesseract/**'
       - 'packages/python/**'
       - 'e2e/python/**'
+      - 'test_documents/**'
+      - 'fixtures/**'
+      - 'tools/e2e-generator/**'
       - 'Cargo.toml'
       - 'Cargo.lock'
       - 'uv.lock'
@@ -20,11 +24,15 @@ on:
     branches: [main]
     paths:
       - '.github/actions/**'
+      - 'scripts/**'
       - 'crates/kreuzberg/**'
       - 'crates/kreuzberg-py/**'
       - 'crates/kreuzberg-tesseract/**'
       - 'packages/python/**'
       - 'e2e/python/**'
+      - 'test_documents/**'
+      - 'fixtures/**'
+      - 'tools/e2e-generator/**'
       - 'Cargo.toml'
       - 'Cargo.lock'
       - 'uv.lock'

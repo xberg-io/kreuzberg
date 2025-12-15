@@ -5,11 +5,15 @@ on:
     branches: [main]
     paths:
       - '.github/actions/**'
+      - 'scripts/**'
       - 'crates/kreuzberg/**'
       - 'crates/kreuzberg-ffi/**'
       - 'crates/kreuzberg-tesseract/**'
       - 'packages/csharp/**'
       - 'e2e/csharp/**'
+      - 'test_documents/**'
+      - 'fixtures/**'
+      - 'tools/e2e-generator/**'
       - 'Cargo.toml'
       - 'Cargo.lock'
       - 'packages/csharp/**/*.csproj'
@@ -20,11 +24,15 @@ on:
     branches: [main]
     paths:
       - '.github/actions/**'
+      - 'scripts/**'
       - 'crates/kreuzberg/**'
       - 'crates/kreuzberg-ffi/**'
       - 'crates/kreuzberg-tesseract/**'
       - 'packages/csharp/**'
       - 'e2e/csharp/**'
+      - 'test_documents/**'
+      - 'fixtures/**'
+      - 'tools/e2e-generator/**'
       - 'Cargo.toml'
       - 'Cargo.lock'
       - 'packages/csharp/**/*.csproj'
