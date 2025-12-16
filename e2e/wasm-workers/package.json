@@ -11,7 +11,10 @@
 		"@cloudflare/vitest-pool-workers": "^0.10.15",
 		"@cloudflare/workers-types": "^4.20251216.0",
 		"@kreuzberg/wasm": "workspace:*",
-		"vitest": "^3.2.0"
+		"@vitest/runner": "~4.0.15",
+		"@vitest/snapshot": "~4.0.15",
+		"@vitest/ui": "~4.0.15",
+		"vitest": "~4.0.15"
 	},
 	"version": "4.0.0-rc.9"
 }
