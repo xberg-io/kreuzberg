@@ -8,8 +8,8 @@ $ErrorActionPreference = 'Stop'
 
 $IsWindowsOS = $PSVersionTable.Platform -eq 'Win32NT' -or $PSVersionTable.PSVersion.Major -lt 6
 
-cd packages/go
-$workspace = Resolve-Path "$PWD/../.."
+cd packages/go/v4
+$workspace = Resolve-Path "$PWD/../../.."
 
 if ($IsWindowsOS) {
     Write-Host "=== Setting up Windows MinGW-w64 CGO environment ==="
