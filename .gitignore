@@ -131,3 +131,6 @@ libpdfium.a
 
 # Generated pkg-config files
 *.pc
+
+# Rust coverage profiling artifacts
+*.profraw

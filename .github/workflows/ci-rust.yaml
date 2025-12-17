@@ -78,6 +78,13 @@ jobs:
       - name: Install system dependencies
         uses: ./.github/actions/install-system-deps
 
+      - name: Free disk space before setup
+        if: matrix.os == 'ubuntu-latest'
+        uses: ./.github/actions/free-disk-space-linux
+        with:
+          show-initial: "true"
+          show-final: "true"
+
       - name: Setup OpenSSL
         uses: ./.github/actions/setup-openssl
 
@@ -148,6 +155,12 @@ jobs:
       - name: Install system dependencies
         uses: ./.github/actions/install-system-deps
 
+      - name: Free disk space before setup
+        uses: ./.github/actions/free-disk-space-linux
+        with:
+          show-initial: "true"
+          show-final: "true"
+
       - name: Setup OpenSSL
         uses: ./.github/actions/setup-openssl
 
@@ -214,6 +227,13 @@ jobs:
 
       - name: Install system dependencies
         uses: ./.github/actions/install-system-deps
+
+      - name: Free disk space before setup
+        if: matrix.os == 'ubuntu-latest'
+        uses: ./.github/actions/free-disk-space-linux
+        with:
+          show-initial: "true"
+          show-final: "true"
 
       - name: Install system PDFium (Linux)
         if: matrix.os == 'ubuntu-latest'
@@ -287,6 +307,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Free disk space before setup
+        if: matrix.os == 'ubuntu-latest'
+        uses: ./.github/actions/free-disk-space-linux
+        with:
+          show-initial: "true"
+          show-final: "true"
 
       - name: Setup Rust
         uses: ./.github/actions/setup-rust
