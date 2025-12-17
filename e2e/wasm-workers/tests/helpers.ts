@@ -1,6 +1,4 @@
-import { describe, it, expect } from "vitest";
-import { readFileSync } from "fs";
-import path from "path";
+import { expect } from "vitest";
 import type {
 	ChunkingConfig,
 	ExtractionConfig,
@@ -14,32 +12,12 @@ import type {
 	TokenReductionConfig,
 } from "@kreuzberg/wasm";
 
-// Fixture loading from disk instead of embedded base64 data
-// This eliminates repository bloat
-
-function getRootDir(): string {
-	const __filename = new URL(import.meta.url).pathname;
-	const __dirname = path.dirname(__filename);
-	return path.resolve(__dirname, "../../../");
-}
-
-const fixtureCache = new Map<string, Uint8Array>();
-
+// CRITICAL: Cloudflare Workers cannot access the filesystem
+// All fixture-based tests are skipped in this environment
 export function getFixture(fixturePath: string): Uint8Array {
-	if (fixtureCache.has(fixturePath)) {
-		return fixtureCache.get(fixturePath)!;
-	}
-
-	const rootDir = getRootDir();
-	const fullPath = path.join(rootDir, "test_documents", fixturePath);
-
-	try {
-		const data = readFileSync(fullPath);
-		fixtureCache.set(fixturePath, data);
-		return data;
-	} catch (error) {
-		throw new Error(`Fixture not found: ${fixturePath} (looked in: ${fullPath})`);
-	}
+	throw new Error(
+		`Cloudflare Workers cannot load fixtures from disk. Fixture: ${fixturePath}. These tests require filesystem access which is not available in the Workers sandbox.`,
+	);
 }
 
 type PlainRecord = Record<string, unknown>;
@@ -231,6 +209,12 @@ export function shouldSkipFixture(
 	const requirementHit = requirements.some((req) => lower.includes(req.toLowerCase()));
 	const missingDependency = lower.includes("missingdependencyerror") || lower.includes("missing dependency");
 	const unsupportedFormat = lower.includes("unsupported mime type") || lower.includes("unsupported format");
+	const workersFileSystem = lower.includes("cloudflare workers cannot load fixtures");
+
+	if (workersFileSystem) {
+		console.warn(`Skipping ${fixtureId}: Cloudflare Workers filesystem limitation`);
+		return true;
+	}
 
 	if (missingDependency || unsupportedFormat || requirementHit) {
 		const reason = missingDependency

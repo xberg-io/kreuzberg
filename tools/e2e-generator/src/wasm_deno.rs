@@ -8,21 +8,43 @@ use std::fs;
 
 use crate::fixtures::{Assertions, Fixture, WasmTarget};
 
-const DENO_HELPERS_TEMPLATE: &str = r#"import { assertEquals, assertExists } from "https://deno.land/std@0.224.0/assert/mod.ts";
+const DENO_HELPERS_TEMPLATE: &str = r#"import { assertEquals, assertExists } from "@std/assert";
+// @deno-types="../../crates/kreuzberg-wasm/dist/index.d.mts"
+import { extractBytes, initWasm } from "npm:@kreuzberg/wasm@^4.0.0";
+// @deno-types="../../crates/kreuzberg-wasm/dist/index.d.mts"
 import type {
     ChunkingConfig,
     ExtractionConfig,
     ExtractionResult,
     ImageExtractionConfig,
     LanguageDetectionConfig,
+    Metadata,
     OcrConfig,
     PdfConfig,
     PostProcessorConfig,
+    Table,
     TesseractConfig,
     TokenReductionConfig,
 } from "npm:@kreuzberg/wasm@^4.0.0";
 
-const WORKSPACE_ROOT = new URL("../../../../..", import.meta.url).pathname;
+export type {
+    ChunkingConfig,
+    ExtractionConfig,
+    ExtractionResult,
+    ImageExtractionConfig,
+    LanguageDetectionConfig,
+    Metadata,
+    OcrConfig,
+    PdfConfig,
+    PostProcessorConfig,
+    Table,
+    TesseractConfig,
+    TokenReductionConfig,
+};
+
+export { extractBytes, initWasm };
+
+const WORKSPACE_ROOT = new URL("../..", import.meta.url).pathname;
 const TEST_DOCUMENTS = `${WORKSPACE_ROOT}/test_documents`;
 
 type PlainRecord = Record<string, unknown>;
@@ -442,16 +464,13 @@ fn render_category(category: &str, fixtures: &[&Fixture]) -> Result<String> {
     writeln!(buffer, "// Auto-generated tests for {category} fixtures.")?;
     writeln!(buffer, "// Run with: deno test --allow-read")?;
     writeln!(buffer)?;
-    writeln!(buffer, "import {{ extractBytes }} from \"npm:@kreuzberg/wasm@^4.0.0\";")?;
     writeln!(
         buffer,
-        "import {{ assertions, buildConfig, resolveDocument, shouldSkipFixture }} from \"./helpers.ts\";"
+        "import {{ assertions, buildConfig, extractBytes, initWasm, resolveDocument, shouldSkipFixture }} from \"./helpers.ts\";"
     )?;
-    writeln!(
-        buffer,
-        "import type {{ ExtractionResult }} from \"npm:@kreuzberg/wasm@^4.0.0\";\n"
-    )?;
-    writeln!(buffer, "const TEST_TIMEOUT_MS = 60_000;\n")?;
+    writeln!(buffer, "import type {{ ExtractionResult }} from \"./helpers.ts\";\n")?;
+    writeln!(buffer, "// Initialize WASM module once at module load time")?;
+    writeln!(buffer, "await initWasm();\n")?;
 
     for fixture in fixtures {
         buffer.write_str(&render_test(fixture)?)?;
@@ -466,7 +485,7 @@ fn render_test(fixture: &Fixture) -> Result<String> {
     let test_name = &fixture.id;
     writeln!(
         body,
-        "Deno.test(\"{test_name}\", {{ permissions: {{ read: true }}, timeout: TEST_TIMEOUT_MS }}, async () => {{"
+        "Deno.test(\"{test_name}\", {{ permissions: {{ read: true }} }}, async () => {{"
     )?;
 
     writeln!(
@@ -481,11 +500,17 @@ fn render_test(fixture: &Fixture) -> Result<String> {
     }
 
     let requirements = collect_requirements(fixture);
+    let mime_type = fixture
+        .document()
+        .media_type
+        .as_deref()
+        .unwrap_or("application/octet-stream");
     writeln!(body, "    let result: ExtractionResult | null = null;")?;
     writeln!(body, "    try {{")?;
     writeln!(
         body,
-        "      result = await extractBytes(documentBytes, \"application/pdf\", config);"
+        "      result = await extractBytes(documentBytes, \"{}\", config);",
+        escape_ts_string(mime_type)
     )?;
     writeln!(body, "    }} catch (error) {{")?;
     if !requirements.is_empty()
@@ -585,7 +610,7 @@ fn render_assertions(assertions: &Assertions) -> String {
             buffer.push_str(&format!(
                 "    assertions.assertMetadataExpectation(result, \"{}\", {});\n",
                 escape_ts_string(path),
-                render_json_literal(expectation)
+                normalize_metadata_expectation(expectation)
             ));
         }
     }
@@ -648,6 +673,17 @@ fn escape_ts_string(input: &str) -> String {
 
 fn render_json_literal(value: &Value) -> String {
     serde_json::to_string(value).unwrap_or_else(|_| "null".into())
+}
+
+fn normalize_metadata_expectation(value: &Value) -> String {
+    // If the value is a plain string, number, or boolean, wrap it in { eq: value }
+    match value {
+        Value::String(_) | Value::Number(_) | Value::Bool(_) => {
+            format!("{{ eq: {} }}", render_json_literal(value))
+        }
+        // If it's already an object or array, use it as-is
+        _ => render_json_literal(value),
+    }
 }
 
 fn generate_plugin_api_tests(fixtures: &[&Fixture], output_dir: &Utf8Path) -> Result<()> {

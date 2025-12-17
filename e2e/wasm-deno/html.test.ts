@@ -1,18 +1,18 @@
 // Auto-generated tests for html fixtures.
 // Run with: deno test --allow-read
 
-// @deno-types="../../crates/kreuzberg-wasm/dist/index.d.mts"
-import { extractBytes } from "npm:@kreuzberg/wasm@^4.0.0";
-import { assertions, buildConfig, resolveDocument, shouldSkipFixture } from "./helpers.ts";
-// @deno-types="../../crates/kreuzberg-wasm/dist/index.d.mts"
-import type { ExtractionResult } from "npm:@kreuzberg/wasm@^4.0.0";
+import { assertions, buildConfig, extractBytes, initWasm, resolveDocument, shouldSkipFixture } from "./helpers.ts";
+import type { ExtractionResult } from "./helpers.ts";
+
+// Initialize WASM module once at module load time
+await initWasm();
 
 Deno.test("html_complex_layout", { permissions: { read: true } }, async () => {
 	const documentBytes = await resolveDocument("web/taylor_swift.html");
 	const config = buildConfig(undefined);
 	let result: ExtractionResult | null = null;
 	try {
-		result = await extractBytes(documentBytes, "application/pdf", config);
+		result = await extractBytes(documentBytes, "text/html", config);
 	} catch (error) {
 		if (shouldSkipFixture(error, "html_complex_layout", [], undefined)) {
 			return;
@@ -31,7 +31,7 @@ Deno.test("html_simple_table", { permissions: { read: true } }, async () => {
 	const config = buildConfig(undefined);
 	let result: ExtractionResult | null = null;
 	try {
-		result = await extractBytes(documentBytes, "application/pdf", config);
+		result = await extractBytes(documentBytes, "text/html", config);
 	} catch (error) {
 		if (shouldSkipFixture(error, "html_simple_table", [], undefined)) {
 			return;

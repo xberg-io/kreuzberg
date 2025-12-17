@@ -1,18 +1,18 @@
 // Auto-generated tests for structured fixtures.
 // Run with: deno test --allow-read
 
-// @deno-types="../../crates/kreuzberg-wasm/dist/index.d.mts"
-import { extractBytes } from "npm:@kreuzberg/wasm@^4.0.0";
-import { assertions, buildConfig, resolveDocument, shouldSkipFixture } from "./helpers.ts";
-// @deno-types="../../crates/kreuzberg-wasm/dist/index.d.mts"
-import type { ExtractionResult } from "npm:@kreuzberg/wasm@^4.0.0";
+import { assertions, buildConfig, extractBytes, initWasm, resolveDocument, shouldSkipFixture } from "./helpers.ts";
+import type { ExtractionResult } from "./helpers.ts";
+
+// Initialize WASM module once at module load time
+await initWasm();
 
 Deno.test("structured_json_basic", { permissions: { read: true } }, async () => {
 	const documentBytes = await resolveDocument("json/sample_document.json");
 	const config = buildConfig(undefined);
 	let result: ExtractionResult | null = null;
 	try {
-		result = await extractBytes(documentBytes, "application/pdf", config);
+		result = await extractBytes(documentBytes, "application/json", config);
 	} catch (error) {
 		if (shouldSkipFixture(error, "structured_json_basic", [], undefined)) {
 			return;
@@ -32,7 +32,7 @@ Deno.test("structured_json_simple", { permissions: { read: true } }, async () =>
 	const config = buildConfig(undefined);
 	let result: ExtractionResult | null = null;
 	try {
-		result = await extractBytes(documentBytes, "application/pdf", config);
+		result = await extractBytes(documentBytes, "application/json", config);
 	} catch (error) {
 		if (shouldSkipFixture(error, "structured_json_simple", [], undefined)) {
 			return;
@@ -52,7 +52,7 @@ Deno.test("structured_yaml_simple", { permissions: { read: true } }, async () =>
 	const config = buildConfig(undefined);
 	let result: ExtractionResult | null = null;
 	try {
-		result = await extractBytes(documentBytes, "application/pdf", config);
+		result = await extractBytes(documentBytes, "application/x-yaml", config);
 	} catch (error) {
 		if (shouldSkipFixture(error, "structured_yaml_simple", [], undefined)) {
 			return;

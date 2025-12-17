@@ -8,10 +8,11 @@ import type { ExtractionResult } from "@kreuzberg/wasm";
 
 describe("ocr", () => {
 	it("ocr_image_hello_world", async () => {
-		const documentBytes = getFixture("images/test_hello_world.png");
-		const config = buildConfig({ force_ocr: true, ocr: { backend: "tesseract", language: "eng" } });
+		let documentBytes: Uint8Array;
 		let result: ExtractionResult | null = null;
 		try {
+			documentBytes = getFixture("images/test_hello_world.png");
+			const config = buildConfig({ force_ocr: true, ocr: { backend: "tesseract", language: "eng" } });
 			result = await extractBytes(documentBytes, "application/pdf", config);
 		} catch (error) {
 			if (
@@ -35,10 +36,11 @@ describe("ocr", () => {
 	});
 
 	it("ocr_image_no_text", async () => {
-		const documentBytes = getFixture("images/flower_no_text.jpg");
-		const config = buildConfig({ force_ocr: true, ocr: { backend: "tesseract", language: "eng" } });
+		let documentBytes: Uint8Array;
 		let result: ExtractionResult | null = null;
 		try {
+			documentBytes = getFixture("images/flower_no_text.jpg");
+			const config = buildConfig({ force_ocr: true, ocr: { backend: "tesseract", language: "eng" } });
 			result = await extractBytes(documentBytes, "application/pdf", config);
 		} catch (error) {
 			if (shouldSkipFixture(error, "ocr_image_no_text", ["tesseract"], "Skip when Tesseract is unavailable.")) {
@@ -54,10 +56,11 @@ describe("ocr", () => {
 	});
 
 	it("ocr_pdf_image_only_german", async () => {
-		const documentBytes = getFixture("pdfs/image_only_german_pdf.pdf");
-		const config = buildConfig({ force_ocr: true, ocr: { backend: "tesseract", language: "eng" } });
+		let documentBytes: Uint8Array;
 		let result: ExtractionResult | null = null;
 		try {
+			documentBytes = getFixture("pdfs/image_only_german_pdf.pdf");
+			const config = buildConfig({ force_ocr: true, ocr: { backend: "tesseract", language: "eng" } });
 			result = await extractBytes(documentBytes, "application/pdf", config);
 		} catch (error) {
 			if (shouldSkipFixture(error, "ocr_pdf_image_only_german", ["tesseract"], "Skip if OCR backend unavailable.")) {
@@ -74,10 +77,11 @@ describe("ocr", () => {
 	});
 
 	it("ocr_pdf_rotated_90", async () => {
-		const documentBytes = getFixture("pdfs/ocr_test_rotated_90.pdf");
-		const config = buildConfig({ force_ocr: true, ocr: { backend: "tesseract", language: "eng" } });
+		let documentBytes: Uint8Array;
 		let result: ExtractionResult | null = null;
 		try {
+			documentBytes = getFixture("pdfs/ocr_test_rotated_90.pdf");
+			const config = buildConfig({ force_ocr: true, ocr: { backend: "tesseract", language: "eng" } });
 			result = await extractBytes(documentBytes, "application/pdf", config);
 		} catch (error) {
 			if (
@@ -95,10 +99,11 @@ describe("ocr", () => {
 	});
 
 	it("ocr_pdf_tesseract", async () => {
-		const documentBytes = getFixture("pdfs/ocr_test.pdf");
-		const config = buildConfig({ force_ocr: true, ocr: { backend: "tesseract", language: "eng" } });
+		let documentBytes: Uint8Array;
 		let result: ExtractionResult | null = null;
 		try {
+			documentBytes = getFixture("pdfs/ocr_test.pdf");
+			const config = buildConfig({ force_ocr: true, ocr: { backend: "tesseract", language: "eng" } });
 			result = await extractBytes(documentBytes, "application/pdf", config);
 		} catch (error) {
 			if (

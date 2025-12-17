@@ -1,11 +1,11 @@
 // Auto-generated tests for pdf fixtures.
 // Run with: deno test --allow-read
 
-// @deno-types="../../crates/kreuzberg-wasm/dist/index.d.mts"
-import { extractBytes } from "npm:@kreuzberg/wasm@^4.0.0";
-import { assertions, buildConfig, resolveDocument, shouldSkipFixture } from "./helpers.ts";
-// @deno-types="../../crates/kreuzberg-wasm/dist/index.d.mts"
-import type { ExtractionResult } from "npm:@kreuzberg/wasm@^4.0.0";
+import { assertions, buildConfig, extractBytes, initWasm, resolveDocument, shouldSkipFixture } from "./helpers.ts";
+import type { ExtractionResult } from "./helpers.ts";
+
+// Initialize WASM module once at module load time
+await initWasm();
 
 Deno.test("pdf_assembly_technical", { permissions: { read: true } }, async () => {
 	const documentBytes = await resolveDocument("pdfs/assembly_language_for_beginners_al4_b_en.pdf");

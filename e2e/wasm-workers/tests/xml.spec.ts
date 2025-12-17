@@ -8,10 +8,11 @@ import type { ExtractionResult } from "@kreuzberg/wasm";
 
 describe("xml", () => {
 	it("xml_plant_catalog", async () => {
-		const documentBytes = getFixture("xml/plant_catalog.xml");
-		const config = buildConfig(undefined);
+		let documentBytes: Uint8Array;
 		let result: ExtractionResult | null = null;
 		try {
+			documentBytes = getFixture("xml/plant_catalog.xml");
+			const config = buildConfig(undefined);
 			result = await extractBytes(documentBytes, "application/pdf", config);
 		} catch (error) {
 			if (shouldSkipFixture(error, "xml_plant_catalog", [], undefined)) {

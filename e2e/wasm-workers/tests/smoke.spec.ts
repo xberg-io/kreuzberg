@@ -8,10 +8,11 @@ import type { ExtractionResult } from "@kreuzberg/wasm";
 
 describe("smoke", () => {
 	it("smoke_docx_basic", async () => {
-		const documentBytes = getFixture("documents/fake.docx");
-		const config = buildConfig(undefined);
+		let documentBytes: Uint8Array;
 		let result: ExtractionResult | null = null;
 		try {
+			documentBytes = getFixture("documents/fake.docx");
+			const config = buildConfig(undefined);
 			result = await extractBytes(documentBytes, "application/pdf", config);
 		} catch (error) {
 			if (shouldSkipFixture(error, "smoke_docx_basic", [], undefined)) {
@@ -28,10 +29,11 @@ describe("smoke", () => {
 	});
 
 	it("smoke_html_basic", async () => {
-		const documentBytes = getFixture("web/simple_table.html");
-		const config = buildConfig(undefined);
+		let documentBytes: Uint8Array;
 		let result: ExtractionResult | null = null;
 		try {
+			documentBytes = getFixture("web/simple_table.html");
+			const config = buildConfig(undefined);
 			result = await extractBytes(documentBytes, "application/pdf", config);
 		} catch (error) {
 			if (shouldSkipFixture(error, "smoke_html_basic", [], undefined)) {
@@ -48,10 +50,11 @@ describe("smoke", () => {
 	});
 
 	it("smoke_image_png", async () => {
-		const documentBytes = getFixture("images/sample.png");
-		const config = buildConfig(undefined);
+		let documentBytes: Uint8Array;
 		let result: ExtractionResult | null = null;
 		try {
+			documentBytes = getFixture("images/sample.png");
+			const config = buildConfig(undefined);
 			result = await extractBytes(documentBytes, "application/pdf", config);
 		} catch (error) {
 			if (shouldSkipFixture(error, "smoke_image_png", [], "Image extraction requires image processing dependencies")) {
@@ -67,10 +70,11 @@ describe("smoke", () => {
 	});
 
 	it("smoke_json_basic", async () => {
-		const documentBytes = getFixture("data_formats/simple.json");
-		const config = buildConfig(undefined);
+		let documentBytes: Uint8Array;
 		let result: ExtractionResult | null = null;
 		try {
+			documentBytes = getFixture("data_formats/simple.json");
+			const config = buildConfig(undefined);
 			result = await extractBytes(documentBytes, "application/pdf", config);
 		} catch (error) {
 			if (shouldSkipFixture(error, "smoke_json_basic", [], undefined)) {
@@ -86,10 +90,11 @@ describe("smoke", () => {
 	});
 
 	it("smoke_pdf_basic", async () => {
-		const documentBytes = getFixture("pdfs/fake_memo.pdf");
-		const config = buildConfig(undefined);
+		let documentBytes: Uint8Array;
 		let result: ExtractionResult | null = null;
 		try {
+			documentBytes = getFixture("pdfs/fake_memo.pdf");
+			const config = buildConfig(undefined);
 			result = await extractBytes(documentBytes, "application/pdf", config);
 		} catch (error) {
 			if (shouldSkipFixture(error, "smoke_pdf_basic", [], undefined)) {
@@ -106,10 +111,11 @@ describe("smoke", () => {
 	});
 
 	it("smoke_txt_basic", async () => {
-		const documentBytes = getFixture("text/report.txt");
-		const config = buildConfig(undefined);
+		let documentBytes: Uint8Array;
 		let result: ExtractionResult | null = null;
 		try {
+			documentBytes = getFixture("text/report.txt");
+			const config = buildConfig(undefined);
 			result = await extractBytes(documentBytes, "application/pdf", config);
 		} catch (error) {
 			if (shouldSkipFixture(error, "smoke_txt_basic", [], undefined)) {
@@ -125,10 +131,11 @@ describe("smoke", () => {
 	});
 
 	it("smoke_xlsx_basic", async () => {
-		const documentBytes = getFixture("spreadsheets/stanley_cups.xlsx");
-		const config = buildConfig(undefined);
+		let documentBytes: Uint8Array;
 		let result: ExtractionResult | null = null;
 		try {
+			documentBytes = getFixture("spreadsheets/stanley_cups.xlsx");
+			const config = buildConfig(undefined);
 			result = await extractBytes(documentBytes, "application/pdf", config);
 		} catch (error) {
 			if (shouldSkipFixture(error, "smoke_xlsx_basic", [], undefined)) {

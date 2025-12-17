@@ -1,18 +1,18 @@
 // Auto-generated tests for office fixtures.
 // Run with: deno test --allow-read
 
-// @deno-types="../../crates/kreuzberg-wasm/dist/index.d.mts"
-import { extractBytes } from "npm:@kreuzberg/wasm@^4.0.0";
-import { assertions, buildConfig, resolveDocument, shouldSkipFixture } from "./helpers.ts";
-// @deno-types="../../crates/kreuzberg-wasm/dist/index.d.mts"
-import type { ExtractionResult } from "npm:@kreuzberg/wasm@^4.0.0";
+import { assertions, buildConfig, extractBytes, initWasm, resolveDocument, shouldSkipFixture } from "./helpers.ts";
+import type { ExtractionResult } from "./helpers.ts";
+
+// Initialize WASM module once at module load time
+await initWasm();
 
 Deno.test("office_doc_legacy", { permissions: { read: true } }, async () => {
 	const documentBytes = await resolveDocument("legacy_office/unit_test_lists.doc");
 	const config = buildConfig(undefined);
 	let result: ExtractionResult | null = null;
 	try {
-		result = await extractBytes(documentBytes, "application/pdf", config);
+		result = await extractBytes(documentBytes, "application/msword", config);
 	} catch (error) {
 		if (
 			shouldSkipFixture(error, "office_doc_legacy", ["libreoffice"], "LibreOffice must be installed for conversion.")
@@ -33,7 +33,11 @@ Deno.test("office_docx_basic", { permissions: { read: true } }, async () => {
 	const config = buildConfig(undefined);
 	let result: ExtractionResult | null = null;
 	try {
-		result = await extractBytes(documentBytes, "application/pdf", config);
+		result = await extractBytes(
+			documentBytes,
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+			config,
+		);
 	} catch (error) {
 		if (shouldSkipFixture(error, "office_docx_basic", [], undefined)) {
 			return;
@@ -52,7 +56,11 @@ Deno.test("office_docx_equations", { permissions: { read: true } }, async () => 
 	const config = buildConfig(undefined);
 	let result: ExtractionResult | null = null;
 	try {
-		result = await extractBytes(documentBytes, "application/pdf", config);
+		result = await extractBytes(
+			documentBytes,
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+			config,
+		);
 	} catch (error) {
 		if (shouldSkipFixture(error, "office_docx_equations", [], undefined)) {
 			return;
@@ -71,7 +79,11 @@ Deno.test("office_docx_fake", { permissions: { read: true } }, async () => {
 	const config = buildConfig(undefined);
 	let result: ExtractionResult | null = null;
 	try {
-		result = await extractBytes(documentBytes, "application/pdf", config);
+		result = await extractBytes(
+			documentBytes,
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+			config,
+		);
 	} catch (error) {
 		if (shouldSkipFixture(error, "office_docx_fake", [], undefined)) {
 			return;
@@ -90,7 +102,11 @@ Deno.test("office_docx_formatting", { permissions: { read: true } }, async () =>
 	const config = buildConfig(undefined);
 	let result: ExtractionResult | null = null;
 	try {
-		result = await extractBytes(documentBytes, "application/pdf", config);
+		result = await extractBytes(
+			documentBytes,
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+			config,
+		);
 	} catch (error) {
 		if (shouldSkipFixture(error, "office_docx_formatting", [], undefined)) {
 			return;
@@ -109,7 +125,11 @@ Deno.test("office_docx_headers", { permissions: { read: true } }, async () => {
 	const config = buildConfig(undefined);
 	let result: ExtractionResult | null = null;
 	try {
-		result = await extractBytes(documentBytes, "application/pdf", config);
+		result = await extractBytes(
+			documentBytes,
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+			config,
+		);
 	} catch (error) {
 		if (shouldSkipFixture(error, "office_docx_headers", [], undefined)) {
 			return;
@@ -128,7 +148,11 @@ Deno.test("office_docx_lists", { permissions: { read: true } }, async () => {
 	const config = buildConfig(undefined);
 	let result: ExtractionResult | null = null;
 	try {
-		result = await extractBytes(documentBytes, "application/pdf", config);
+		result = await extractBytes(
+			documentBytes,
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+			config,
+		);
 	} catch (error) {
 		if (shouldSkipFixture(error, "office_docx_lists", [], undefined)) {
 			return;
@@ -147,7 +171,11 @@ Deno.test("office_docx_tables", { permissions: { read: true } }, async () => {
 	const config = buildConfig(undefined);
 	let result: ExtractionResult | null = null;
 	try {
-		result = await extractBytes(documentBytes, "application/pdf", config);
+		result = await extractBytes(
+			documentBytes,
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+			config,
+		);
 	} catch (error) {
 		if (shouldSkipFixture(error, "office_docx_tables", [], undefined)) {
 			return;
@@ -168,7 +196,7 @@ Deno.test("office_ppt_legacy", { permissions: { read: true } }, async () => {
 	const config = buildConfig(undefined);
 	let result: ExtractionResult | null = null;
 	try {
-		result = await extractBytes(documentBytes, "application/pdf", config);
+		result = await extractBytes(documentBytes, "application/vnd.ms-powerpoint", config);
 	} catch (error) {
 		if (
 			shouldSkipFixture(error, "office_ppt_legacy", ["libreoffice"], "Skip if LibreOffice conversion is unavailable.")
@@ -189,7 +217,11 @@ Deno.test("office_pptx_basic", { permissions: { read: true } }, async () => {
 	const config = buildConfig(undefined);
 	let result: ExtractionResult | null = null;
 	try {
-		result = await extractBytes(documentBytes, "application/pdf", config);
+		result = await extractBytes(
+			documentBytes,
+			"application/vnd.openxmlformats-officedocument.presentationml.presentation",
+			config,
+		);
 	} catch (error) {
 		if (shouldSkipFixture(error, "office_pptx_basic", [], undefined)) {
 			return;
@@ -208,7 +240,11 @@ Deno.test("office_pptx_images", { permissions: { read: true } }, async () => {
 	const config = buildConfig(undefined);
 	let result: ExtractionResult | null = null;
 	try {
-		result = await extractBytes(documentBytes, "application/pdf", config);
+		result = await extractBytes(
+			documentBytes,
+			"application/vnd.openxmlformats-officedocument.presentationml.presentation",
+			config,
+		);
 	} catch (error) {
 		if (shouldSkipFixture(error, "office_pptx_images", [], undefined)) {
 			return;
@@ -227,7 +263,11 @@ Deno.test("office_pptx_pitch_deck", { permissions: { read: true } }, async () =>
 	const config = buildConfig(undefined);
 	let result: ExtractionResult | null = null;
 	try {
-		result = await extractBytes(documentBytes, "application/pdf", config);
+		result = await extractBytes(
+			documentBytes,
+			"application/vnd.openxmlformats-officedocument.presentationml.presentation",
+			config,
+		);
 	} catch (error) {
 		if (shouldSkipFixture(error, "office_pptx_pitch_deck", [], undefined)) {
 			return;
@@ -246,7 +286,7 @@ Deno.test("office_xls_legacy", { permissions: { read: true } }, async () => {
 	const config = buildConfig(undefined);
 	let result: ExtractionResult | null = null;
 	try {
-		result = await extractBytes(documentBytes, "application/pdf", config);
+		result = await extractBytes(documentBytes, "application/vnd.ms-excel", config);
 	} catch (error) {
 		if (shouldSkipFixture(error, "office_xls_legacy", [], undefined)) {
 			return;
@@ -265,7 +305,11 @@ Deno.test("office_xlsx_basic", { permissions: { read: true } }, async () => {
 	const config = buildConfig(undefined);
 	let result: ExtractionResult | null = null;
 	try {
-		result = await extractBytes(documentBytes, "application/pdf", config);
+		result = await extractBytes(
+			documentBytes,
+			"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+			config,
+		);
 	} catch (error) {
 		if (shouldSkipFixture(error, "office_xlsx_basic", [], undefined)) {
 			return;
@@ -288,7 +332,11 @@ Deno.test("office_xlsx_multi_sheet", { permissions: { read: true } }, async () =
 	const config = buildConfig(undefined);
 	let result: ExtractionResult | null = null;
 	try {
-		result = await extractBytes(documentBytes, "application/pdf", config);
+		result = await extractBytes(
+			documentBytes,
+			"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+			config,
+		);
 	} catch (error) {
 		if (shouldSkipFixture(error, "office_xlsx_multi_sheet", [], undefined)) {
 			return;
@@ -308,7 +356,11 @@ Deno.test("office_xlsx_office_example", { permissions: { read: true } }, async (
 	const config = buildConfig(undefined);
 	let result: ExtractionResult | null = null;
 	try {
-		result = await extractBytes(documentBytes, "application/pdf", config);
+		result = await extractBytes(
+			documentBytes,
+			"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+			config,
+		);
 	} catch (error) {
 		if (shouldSkipFixture(error, "office_xlsx_office_example", [], undefined)) {
 			return;

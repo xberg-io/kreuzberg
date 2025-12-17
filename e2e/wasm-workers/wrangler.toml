@@ -1,5 +1,5 @@
 name = "kreuzberg-wasm-e2e"
-main = "tests/worker.ts"
+main = "tests/index.ts"
 compatibility_date = "2024-11-01"
 compatibility_flags = ["nodejs_compat"]
 

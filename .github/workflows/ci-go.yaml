@@ -135,13 +135,25 @@ jobs:
         shell: pwsh
         run: scripts/ci/go/setup-msys2-windows.ps1
 
-      - name: Build FFI library
+      - name: Build FFI library (Windows)
+        if: matrix.os == 'windows-latest'
         run: scripts/ci/go/build-ffi.ps1
         shell: pwsh
 
-      - name: Build Go bindings
+      - name: Build FFI library (Unix)
+        if: matrix.os != 'windows-latest'
+        run: scripts/ci/go/build-ffi.sh
+        shell: bash
+
+      - name: Build Go bindings (Windows)
+        if: matrix.os == 'windows-latest'
         run: scripts/ci/go/build-bindings.ps1
         shell: pwsh
+
+      - name: Build Go bindings (Unix)
+        if: matrix.os != 'windows-latest'
+        run: scripts/ci/go/build-bindings.sh
+        shell: bash
 
       - name: Upload FFI library
         uses: actions/upload-artifact@v6

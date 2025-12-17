@@ -8,10 +8,11 @@ import type { ExtractionResult } from "@kreuzberg/wasm";
 
 describe("email", () => {
 	it("email_sample_eml", async () => {
-		const documentBytes = getFixture("email/sample_email.eml");
-		const config = buildConfig(undefined);
+		let documentBytes: Uint8Array;
 		let result: ExtractionResult | null = null;
 		try {
+			documentBytes = getFixture("email/sample_email.eml");
+			const config = buildConfig(undefined);
 			result = await extractBytes(documentBytes, "application/pdf", config);
 		} catch (error) {
 			if (shouldSkipFixture(error, "email_sample_eml", [], undefined)) {

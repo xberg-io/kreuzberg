@@ -1,6 +1,6 @@
-import { assertEquals, assertExists } from "https://deno.land/std@0.224.0/assert/mod.ts";
+import { assertEquals, assertExists } from "@std/assert";
 // @deno-types="../../crates/kreuzberg-wasm/dist/index.d.mts"
-import { extractBytes } from "npm:@kreuzberg/wasm@^4.0.0";
+import { extractBytes, initWasm } from "npm:@kreuzberg/wasm@^4.0.0";
 // @deno-types="../../crates/kreuzberg-wasm/dist/index.d.mts"
 import type {
 	ChunkingConfig,
@@ -32,7 +32,9 @@ export type {
 	TokenReductionConfig,
 };
 
-const WORKSPACE_ROOT = new URL("../../../../..", import.meta.url).pathname;
+export { extractBytes, initWasm };
+
+const WORKSPACE_ROOT = new URL("../..", import.meta.url).pathname;
 const TEST_DOCUMENTS = `${WORKSPACE_ROOT}/test_documents`;
 
 type PlainRecord = Record<string, unknown>;

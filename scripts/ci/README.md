@@ -4,7 +4,7 @@ This directory contains extracted scripts from GitHub Actions CI workflows, orga
 
 ## Overview
 
-- **Total Scripts**: 39 (25 Bash + 14 PowerShell)
+- **Total Scripts**: 41 (27 Bash + 14 PowerShell)
 - **Documentation**: See `SCRIPT_MAPPING.md` for detailed workflow-to-script mapping
 - **All Scripts**: Production-ready with proper error handling and documentation
 
@@ -62,8 +62,10 @@ setup_all_library_paths
 - `summary.sh` - Print test summary
 
 ### Go (`go/`)
-- `build-ffi.ps1` - Build FFI library (Windows/Unix)
-- `build-bindings.ps1` - Build Go bindings with CGO
+- `build-ffi.sh` - Build FFI library (Unix)
+- `build-ffi.ps1` - Build FFI library (Windows)
+- `build-bindings.sh` - Build Go bindings with CGO (Unix)
+- `build-bindings.ps1` - Build Go bindings with CGO (Windows)
 - `reorganize-libraries.ps1` - Reorganize FFI libraries for Windows
 - `run-tests.sh` - Run Go tests with library paths
 

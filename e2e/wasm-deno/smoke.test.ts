@@ -1,17 +1,22 @@
 // Auto-generated tests for smoke fixtures.
 // Run with: deno test --allow-read
 
-// @deno-types="../../crates/kreuzberg-wasm/dist/index.d.mts"
-import { extractBytes } from "npm:@kreuzberg/wasm@^4.0.0";
-import { assertions, buildConfig, resolveDocument, shouldSkipFixture } from "./helpers.ts";
+import { assertions, buildConfig, extractBytes, initWasm, resolveDocument, shouldSkipFixture } from "./helpers.ts";
 import type { ExtractionResult } from "./helpers.ts";
+
+// Initialize WASM module once at module load time
+await initWasm();
 
 Deno.test("smoke_docx_basic", { permissions: { read: true } }, async () => {
 	const documentBytes = await resolveDocument("documents/fake.docx");
 	const config = buildConfig(undefined);
 	let result: ExtractionResult | null = null;
 	try {
-		result = await extractBytes(documentBytes, "application/pdf", config);
+		result = await extractBytes(
+			documentBytes,
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+			config,
+		);
 	} catch (error) {
 		if (shouldSkipFixture(error, "smoke_docx_basic", [], undefined)) {
 			return;
@@ -31,7 +36,7 @@ Deno.test("smoke_html_basic", { permissions: { read: true } }, async () => {
 	const config = buildConfig(undefined);
 	let result: ExtractionResult | null = null;
 	try {
-		result = await extractBytes(documentBytes, "application/pdf", config);
+		result = await extractBytes(documentBytes, "text/html", config);
 	} catch (error) {
 		if (shouldSkipFixture(error, "smoke_html_basic", [], undefined)) {
 			return;
@@ -51,7 +56,7 @@ Deno.test("smoke_image_png", { permissions: { read: true } }, async () => {
 	const config = buildConfig(undefined);
 	let result: ExtractionResult | null = null;
 	try {
-		result = await extractBytes(documentBytes, "application/pdf", config);
+		result = await extractBytes(documentBytes, "image/png", config);
 	} catch (error) {
 		if (shouldSkipFixture(error, "smoke_image_png", [], "Image extraction requires image processing dependencies")) {
 			return;
@@ -70,7 +75,7 @@ Deno.test("smoke_json_basic", { permissions: { read: true } }, async () => {
 	const config = buildConfig(undefined);
 	let result: ExtractionResult | null = null;
 	try {
-		result = await extractBytes(documentBytes, "application/pdf", config);
+		result = await extractBytes(documentBytes, "application/json", config);
 	} catch (error) {
 		if (shouldSkipFixture(error, "smoke_json_basic", [], undefined)) {
 			return;
@@ -109,7 +114,7 @@ Deno.test("smoke_txt_basic", { permissions: { read: true } }, async () => {
 	const config = buildConfig(undefined);
 	let result: ExtractionResult | null = null;
 	try {
-		result = await extractBytes(documentBytes, "application/pdf", config);
+		result = await extractBytes(documentBytes, "text/plain", config);
 	} catch (error) {
 		if (shouldSkipFixture(error, "smoke_txt_basic", [], undefined)) {
 			return;
@@ -128,7 +133,11 @@ Deno.test("smoke_xlsx_basic", { permissions: { read: true } }, async () => {
 	const config = buildConfig(undefined);
 	let result: ExtractionResult | null = null;
 	try {
-		result = await extractBytes(documentBytes, "application/pdf", config);
+		result = await extractBytes(
+			documentBytes,
+			"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+			config,
+		);
 	} catch (error) {
 		if (shouldSkipFixture(error, "smoke_xlsx_basic", [], undefined)) {
 			return;

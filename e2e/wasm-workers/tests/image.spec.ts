@@ -8,10 +8,11 @@ import type { ExtractionResult } from "@kreuzberg/wasm";
 
 describe("image", () => {
 	it("image_metadata_only", async () => {
-		const documentBytes = getFixture("images/example.jpg");
-		const config = buildConfig({ ocr: null });
+		let documentBytes: Uint8Array;
 		let result: ExtractionResult | null = null;
 		try {
+			documentBytes = getFixture("images/example.jpg");
+			const config = buildConfig({ ocr: null });
 			result = await extractBytes(documentBytes, "application/pdf", config);
 		} catch (error) {
 			if (shouldSkipFixture(error, "image_metadata_only", [], undefined)) {
