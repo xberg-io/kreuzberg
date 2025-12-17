@@ -24,22 +24,19 @@ cd "$REPO_ROOT/packages/go"
 echo "Working directory: $(pwd)"
 echo
 
-# Build list of Go packages that actually contain source files (skip empty module root)
-echo "Discovering Go packages (excluding empty roots)..."
-packages=()
-while IFS= read -r dir; do
-	# Skip the module root if it contains no Go sources
-	if [[ "$dir" != "." ]]; then
-		packages+=("./$dir")
-	fi
-done < <(find . -name '*.go' -not -path './vendor/*' -exec dirname {} \; | sort -u)
+# Find all Go modules (directories with go.mod)
+echo "Discovering Go modules..."
+modules=()
+while IFS= read -r module_dir; do
+	modules+=("$module_dir")
+done < <(find . -maxdepth 2 -name 'go.mod' -exec dirname {} \; | sort -u)
 
-echo "Found packages: $(printf '%s ' "${packages[@]}")"
+echo "Found modules: $(printf '%s ' "${modules[@]}")"
 echo
 
-if [[ ${#packages[@]} -eq 0 ]]; then
-	echo "Error: No Go packages found in $(pwd)"
-	find . -name '*.go' -not -path './vendor/*' | head -20
+if [[ ${#modules[@]} -eq 0 ]]; then
+	echo "Error: No Go modules found in $(pwd)"
+	find . -maxdepth 2 -name 'go.mod'
 	exit 1
 fi
 
@@ -61,7 +58,13 @@ if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || "$OSTYPE" == "win32" ]]; t
 		read -r -a extra_flags <<<"$GO_TEST_FLAGS"
 	fi
 
-	go test -v -x "${extra_flags[@]}" "${packages[@]}"
+	# Run tests in each module
+	for module in "${modules[@]}"; do
+		echo "Running tests in $module..."
+		cd "$module"
+		go test -v -x "${extra_flags[@]:-}" ./...
+		cd "$REPO_ROOT/packages/go"
+	done
 else
 	# Unix (Linux/macOS) setup
 	setup_go_paths "$REPO_ROOT"
@@ -69,7 +72,7 @@ else
 	echo "=========================================="
 	echo "Unix Test Configuration"
 	echo "=========================================="
-	echo "LD_LIBRARY_PATH: $LD_LIBRARY_PATH"
+	echo "LD_LIBRARY_PATH: ${LD_LIBRARY_PATH:-<not set>}"
 	echo "DYLD_FALLBACK_LIBRARY_PATH: ${DYLD_FALLBACK_LIBRARY_PATH:-<not set>}"
 	echo "CGO_LDFLAGS: ${CGO_LDFLAGS:-<not set>}"
 	echo "CGO_ENABLED: ${CGO_ENABLED:-<not set>}"
@@ -81,5 +84,11 @@ else
 		read -r -a extra_flags <<<"$GO_TEST_FLAGS"
 	fi
 
-	go test -v -race -x "${extra_flags[@]}" "${packages[@]}"
+	# Run tests in each module
+	for module in "${modules[@]}"; do
+		echo "Running tests in $module..."
+		cd "$module"
+		go test -v -race -x "${extra_flags[@]:-}" ./...
+		cd "$REPO_ROOT/packages/go"
+	done
 fi
