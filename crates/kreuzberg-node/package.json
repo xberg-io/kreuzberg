@@ -58,6 +58,9 @@
 		"*.cjs",
 		"*.d.ts",
 		"*.node",
+		"*.dylib",
+		"*.so",
+		"*.dll",
 		"README.md"
 	],
 	"napi": {
