@@ -313,6 +313,30 @@ jobs:
         id: check
         run: scripts/publish/check_cratesio.sh "${{ needs.prepare.outputs.version }}" >> "$GITHUB_OUTPUT"
 
+  check-homebrew:
+    name: Check if Homebrew formula already published
+    needs: prepare
+    if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.release_homebrew == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      exists: ${{ steps.check.outputs.exists }}
+    steps:
+      - name: Check Homebrew tap for formula
+        id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ needs.prepare.outputs.version }}
+        run: |
+          # Check if Formula/kreuzberg.rb exists and contains the current version
+          if gh api repos/kreuzberg-dev/homebrew-tap/contents/Formula/kreuzberg.rb --jq '.content' 2>/dev/null | base64 -d | grep -q "version \"${VERSION}\""; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "Homebrew formula already contains version ${VERSION}" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
   python-wheels:
     name: Build Python wheels (${{ matrix.label }})
     needs: [prepare, check-pypi]
@@ -2320,12 +2344,13 @@ jobs:
 
   publish-homebrew:
     name: Update Homebrew formula
-    needs: [prepare, validate-versions, upload-cli-release]
+    needs: [prepare, validate-versions, check-homebrew, upload-cli-release]
     if: |
       always() &&
       needs.prepare.outputs.dry_run != 'true' &&
       needs.prepare.outputs.is_tag == 'true' &&
       needs.prepare.outputs.release_homebrew == 'true' &&
+      needs.check-homebrew.outputs.exists != 'true' &&
       needs.upload-cli-release.result == 'success'
     runs-on: ubuntu-latest
     permissions:
@@ -2368,6 +2393,7 @@ jobs:
       - check-maven
       - check-nuget
       - check-cratesio
+      - check-homebrew
       - publish-pypi
       - publish-node
       - publish-wasm
