@@ -1,21 +1,21 @@
 {
-	"name": "kreuzberg-root",
-	"private": true,
-	"packageManager": "pnpm@10.26.1+sha512.664074abc367d2c9324fdc18037097ce0a8f126034160f709928e9e9f95d98714347044e5c3164d65bd5da6c59c6be362b107546292a8eecb7999196e5ce58fa",
-	"scripts": {
-		"typecheck": "pnpm -r --if-present run typecheck"
-	},
-	"devDependencies": {
-		"@biomejs/biome": "^2.3.9",
-		"@vitest/coverage-v8": "^4.0.15",
-		"tsx": "^4.21.0",
-		"typescript": "^5.9.3",
-		"vitest": "^4.0.15"
-	},
-	"pnpm": {
-		"overrides": {
-			"glob": "10.5.0"
-		}
-	},
-	"version": "4.0.0-rc.11"
+  "name": "kreuzberg-root",
+  "private": true,
+  "packageManager": "pnpm@10.26.1+sha512.664074abc367d2c9324fdc18037097ce0a8f126034160f709928e9e9f95d98714347044e5c3164d65bd5da6c59c6be362b107546292a8eecb7999196e5ce58fa",
+  "scripts": {
+    "typecheck": "pnpm -r --if-present run typecheck"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.3.9",
+    "@vitest/coverage-v8": "^4.0.15",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.15"
+  },
+  "pnpm": {
+    "overrides": {
+      "glob": "10.5.0"
+    }
+  },
+  "version": "4.0.0-rc.12"
 }

@@ -22,7 +22,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Ruby bindings**: Complete YARD documentation for all API methods
 - **C# bindings**: Complete XML documentation for all public methods
 
-## [4.0.0-rc.11] - Unreleased
+## [4.0.0-rc.12] - 2025-12-19
+
+### Fixed
+
+- **Python bindings**: Fixed PDFium bundling in wheels by correcting feature flag in conditional compilation
+  - Root cause: Code was checking for legacy `pdf-bundled` feature in `#[cfg()]` but feature was renamed to `bundled-pdfium`
+  - Feature aliases don't apply to Rust conditional compilation - only to dependency resolution
+  - Result: Bundled PDFium module was never compiled when `bundled-pdfium` was enabled
+  - Fixed all `#[cfg(feature = "pdf-bundled")]` to `#[cfg(feature = "bundled-pdfium")]` in pdf module
+  - Verified: Python wheels now successfully extract and initialize PDFium at runtime
+- **C# bindings**: Fixed MSBuild target to prevent overwriting CI-downloaded native assets
+  - Added conditional logic to detect if runtimes directory already populated with cross-platform files
+  - Prevents build step from creating empty platform directories that overwrite CI artifacts
+  - Supports all platforms: Windows (x64/arm64), macOS (arm64/x64), Linux (x64/arm64)
+- **Rust 2024 compliance**: Added `unsafe` keyword to extern blocks in Ruby bindings
+  - Required by Rust 2024 edition for `extern "C"` declarations
+  - Fixes compilation error in packages/ruby/ext/kreuzberg_rb/native/src/lib.rs
+- **WASM**: Fixed unused import warning in pdf extractor
+  - Added `#[cfg(feature = "tokio-runtime")]` to conditional import of `std::path::Path`
+  - Path is only used in tokio-runtime enabled code paths
+- **Docker**: Fixed ONNX Runtime package installation
+  - Corrected Debian Trixie package name from `libonnxruntime` to `libonnxruntime1.21`
+  - Applied to both Dockerfile.core and Dockerfile.full
+  - Verified: Both Docker images build successfully and PDF extraction works with bundled PDFium
+- **Homebrew CLI**: Added bundled-pdfium feature to kreuzberg-cli dependency
+  - Ensures CLI binary includes embedded PDFium without requiring system installation
+  - User can run `kreuzberg extract file.pdf` without extra setup
+- **Python CI**: Fixed path traversal calculation in test script
+  - Script in scripts/ci/python/ needed proper directory levels to reach repo root
+  - Changed from 2 levels (`/../..`) to 3 levels (`/../../..`)
+- **LibreOffice tests**: Disabled on Windows CI to prevent hanging
+  - soffice binary lookup hangs on Windows runners during CI
+  - Added `#[cfg(not(target_os = "windows"))]` to 12 LibreOffice test cases in Rust core
+  - Tests continue running on macOS and Linux CI
+
+## [4.0.0-rc.11] - 2025-12-18
 
 ### Fixed
 

@@ -1979,4 +1979,4 @@ export function getLastPanicContext(): PanicContext | null {
 	return result as unknown as PanicContext | null;
 }
 
-export const __version__ = "4.0.0-rc.11";
+export const __version__ = "4.0.0-rc.12";

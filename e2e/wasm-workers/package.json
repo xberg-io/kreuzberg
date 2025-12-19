@@ -1,20 +1,20 @@
 {
-	"name": "@kreuzberg/wasm-workers-e2e",
-	"private": true,
-	"type": "module",
-	"scripts": {
-		"test": "vitest run",
-		"test:watch": "vitest",
-		"test:ui": "vitest --ui"
-	},
-	"devDependencies": {
-		"@cloudflare/vitest-pool-workers": "^0.10.15",
-		"@cloudflare/workers-types": "^4.20251216.0",
-		"@kreuzberg/wasm": "workspace:*",
-		"@vitest/runner": "~3.2.0",
-		"@vitest/snapshot": "~3.2.0",
-		"@vitest/ui": "~3.2.0",
-		"vitest": "~3.2.0"
-	},
-	"version": "4.0.0-rc.11"
+  "name": "@kreuzberg/wasm-workers-e2e",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.10.15",
+    "@cloudflare/workers-types": "^4.20251216.0",
+    "@kreuzberg/wasm": "workspace:*",
+    "@vitest/runner": "~3.2.0",
+    "@vitest/snapshot": "~3.2.0",
+    "@vitest/ui": "~3.2.0",
+    "vitest": "~3.2.0"
+  },
+  "version": "4.0.0-rc.12"
 }

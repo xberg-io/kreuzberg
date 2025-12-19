@@ -7,7 +7,7 @@ rb-sys = { path = "../../../vendor/rb-sys" }
 
 [package]
 name = "kreuzberg-rb"
-version = "4.0.0-rc.11"
+version = "4.0.0-rc.12"
 edition = "2024"
 rust-version = "1.91"
 authors = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
