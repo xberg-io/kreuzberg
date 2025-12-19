@@ -28,6 +28,6 @@ cd "$REPO_ROOT"
 # without pdf-static, pdf-bundled, or pdf-system
 cargo build --workspace --release \
 	--features full,profiling,api,mcp,otel
-cargo build --manifest-path tools/benchmark-harness/Cargo.toml --release
+cargo build --manifest-path tools/benchmark-harness/Cargo.toml --release --features profiling
 
 echo "Native libraries build complete"

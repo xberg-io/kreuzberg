@@ -87,6 +87,7 @@ jobs:
           name: profiling-target
           path: |
             target/release
+            target/**/*.a
           retention-days: 7
 
       - name: Log disk space after artifact upload
