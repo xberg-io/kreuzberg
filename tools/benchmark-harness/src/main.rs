@@ -57,6 +57,17 @@ enum Commands {
         fixtures: PathBuf,
     },
 
+    /// Generate an HTML index gallery for flamegraphs
+    GenerateFlamegraphIndex {
+        /// Directory containing flamegraph SVG files
+        #[arg(long)]
+        flamegraphs: PathBuf,
+
+        /// Output path for the HTML gallery file
+        #[arg(long)]
+        output: PathBuf,
+    },
+
     /// Run benchmarks
     Run {
         /// Directory or file pattern to search for fixtures
@@ -147,6 +158,13 @@ async fn main() -> Result<()> {
             }
 
             println!("✓ All {} fixture(s) are valid", manager.len());
+            Ok(())
+        }
+
+        Commands::GenerateFlamegraphIndex { flamegraphs, output } => {
+            use benchmark_harness::generate_flamegraph_index;
+            generate_flamegraph_index(&flamegraphs, &output)?;
+            println!("✓ Flamegraph index generated: {}", output.display());
             Ok(())
         }
 

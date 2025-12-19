@@ -13,6 +13,9 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::time::Duration;
 
+#[cfg(feature = "profiling")]
+use crate::profiling::ProfileGuard;
+
 /// Calculate percentile from duration values
 ///
 /// # Arguments
@@ -84,6 +87,15 @@ fn calculate_statistics(iterations: &[IterationResult]) -> DurationStatistics {
         p99,
         sample_count: iterations.len(),
     }
+}
+
+/// Check if profiling is enabled via environment variable
+///
+/// # Returns
+/// `true` if `ENABLE_PROFILING=true` is set, `false` otherwise
+#[cfg(feature = "profiling")]
+fn should_profile() -> bool {
+    std::env::var("ENABLE_PROFILING").unwrap_or_default() == "true"
 }
 
 /// Aggregate performance metrics from iterations (average)
@@ -184,11 +196,51 @@ impl BenchmarkRunner {
         let total_iterations = config.warmup_iterations + config.benchmark_iterations;
         let mut all_results = Vec::new();
 
+        // Initialize profiler if profiling is enabled
+        #[cfg(feature = "profiling")]
+        let profiler = if should_profile() {
+            match ProfileGuard::new(1000) {
+                Ok(g) => Some(g),
+                Err(e) => {
+                    eprintln!("Warning: Failed to start profiler: {}", e);
+                    None
+                }
+            }
+        } else {
+            None
+        };
+
         for iteration in 0..total_iterations {
             let result = adapter.extract(file_path, config.timeout).await?;
 
             if iteration >= config.warmup_iterations {
                 all_results.push(result);
+            }
+        }
+
+        // Finish profiling if enabled
+        #[cfg(feature = "profiling")]
+        if let Some(profiler) = profiler {
+            let framework_name = adapter.name();
+            let mode_name = match config.benchmark_mode {
+                BenchmarkMode::SingleFile => "single-file",
+                BenchmarkMode::Batch => "batch",
+            };
+            let fixture_stem = file_path
+                .file_stem()
+                .and_then(|s| s.to_str())
+                .unwrap_or("unknown");
+
+            let flamegraph_path = format!("flamegraphs/{}/{}/{}.svg", framework_name, mode_name, fixture_stem);
+
+            match profiler.finish() {
+                Ok(result) => {
+                    let path = Path::new(&flamegraph_path);
+                    if let Err(e) = result.generate_flamegraph(path) {
+                        eprintln!("Warning: Failed to generate flamegraph: {}", e);
+                    }
+                }
+                Err(e) => eprintln!("Warning: Profiling error: {}", e),
             }
         }
 

@@ -39,9 +39,14 @@ num_cpus = { workspace = true }
 which = "8"
 chrono = "0.4"
 minijinja = { version = "2.14", features = ["json"] }
+pathdiff = "0.2"
+
+# Profiling
+pprof = { version = "0.13", features = ["flamegraph", "criterion"], optional = true }
 
 [dev-dependencies]
 tempfile = { workspace = true }
 
 [features]
 default = []
+profiling = ["pprof"]
