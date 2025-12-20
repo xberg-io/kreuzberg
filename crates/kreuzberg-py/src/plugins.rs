@@ -752,28 +752,33 @@ fn extract_tables(obj: &Bound<'_, PyAny>) -> Result<Vec<Table>> {
                 source: None,
             })?;
 
-        let mut cells: Vec<Vec<String>> = Vec::new();
-        for (row_idx, row_obj) in cells_list.iter().enumerate() {
-            let row_list = row_obj
-                .cast::<pyo3::types::PyList>()
-                .map_err(|_| KreuzbergError::Validation {
-                    message: format!("Table {} row {} must be a list", index, row_idx),
-                    source: None,
-                })?;
+        // Use iterator chains to eliminate intermediate Vec allocations
+        let cells: Vec<Vec<String>> = cells_list
+            .iter()
+            .enumerate()
+            .map(|(row_idx, row_obj)| {
+                let row_list = row_obj
+                    .cast::<pyo3::types::PyList>()
+                    .map_err(|_| KreuzbergError::Validation {
+                        message: format!("Table {} row {} must be a list", index, row_idx),
+                        source: None,
+                    })?;
 
-            let mut row: Vec<String> = Vec::new();
-            for (col_idx, cell_obj) in row_list.iter().enumerate() {
-                let cell_str: String = cell_obj.extract().map_err(|e| KreuzbergError::Validation {
-                    message: format!(
-                        "Table {} cell [{}, {}] must be a string: {}",
-                        index, row_idx, col_idx, e
-                    ),
-                    source: None,
-                })?;
-                row.push(cell_str);
-            }
-            cells.push(row);
-        }
+                row_list
+                    .iter()
+                    .enumerate()
+                    .map(|(col_idx, cell_obj)| {
+                        cell_obj.extract::<String>().map_err(|e| KreuzbergError::Validation {
+                            message: format!(
+                                "Table {} cell [{}, {}] must be a string: {}",
+                                index, row_idx, col_idx, e
+                            ),
+                            source: None,
+                        })
+                    })
+                    .collect::<Result<Vec<String>>>()
+            })
+            .collect::<Result<Vec<Vec<String>>>>()?;
 
         let markdown_val = table_dict
             .get_item("markdown")
