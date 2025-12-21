@@ -14,6 +14,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - This caused `_internal_bindings.pyi` and `py.typed` to be missing from installed packages
   - Solution: Updated `pyproject.toml` to include stub files in both sdist and wheel formats
   - Impact: IDEs can now properly inspect types from the binary `_internal_bindings` module
+- **Java CI Maven version mismatch**: Fixed CI workflow failing with Maven 3.9.11 when project requires Maven 4.0.0-rc-4+
+  - Root cause: `actions/setup-java@v4` automatically bundles Maven 3.9.x with Java 25
+  - Solution: Added `stCarolas/setup-maven@v5` action to explicitly install Maven 4.0.0-rc-4
+  - Impact: Java CI builds now pass Maven version enforcement checks
+- **Go Windows CI linking failure**: Fixed duplicate CGO_LDFLAGS causing linker errors on Windows
+  - Root cause: Three separate scripts (build-bindings.ps1, setup-go-cgo-env/windows.ps1, library-paths.sh) each set CGO_LDFLAGS, causing flags to accumulate via GitHub Actions environment file appending
+  - Solution: Removed CGO variable setup from build-bindings.ps1, hardened setup-go-cgo-env/windows.ps1 to replace (not append), added conditional logic to library-paths.sh to skip if already set in GitHub Actions
+  - Impact: Go tests on Windows now link correctly without duplicate library flags
+- **Ruby gem Linux/Windows build linking failure**: Fixed missing link search path in Magnus FFI bindings build.rs
+  - Root cause: Linux and Windows build.rs were missing cargo:rustc-link-search directive to locate libkreuzberg_ffi
+  - Error: `rust-lld: error: unable to find library -lkreuzberg_ffi` during native extension compilation
+  - Solution: Added link search path logic to Linux and Windows build.rs matching the macOS implementation
+  - Impact: Ruby gem now builds successfully on all platforms
 
 ## [4.0.0-rc.15] - 2025-12-20
 
