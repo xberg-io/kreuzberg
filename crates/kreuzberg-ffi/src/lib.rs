@@ -6,6 +6,7 @@
 mod config;
 mod error;
 mod panic_shield;
+mod validation;
 
 pub use error::ErrorCode as KreuzbergErrorCode;
 pub use error::{

@@ -1409,4 +1409,319 @@ const char *kreuzberg_error_code_name(uint32_t code);
  */
 const char *kreuzberg_error_code_description(uint32_t code);
 
+/**
+ * Validates a binarization method string.
+ *
+ * # Arguments
+ *
+ * * `method` - C string containing the binarization method (e.g., "otsu", "adaptive", "sauvola")
+ *
+ * # Returns
+ *
+ * - `1` if valid
+ * - `0` if invalid (error message available via `kreuzberg_get_last_error_message()`)
+ *
+ * # Safety
+ *
+ * * `method` must be a valid pointer to a null-terminated UTF-8 string
+ * * `method` cannot be NULL
+ * * The string must be valid for the duration of the call
+ *
+ * # C Signature
+ *
+ * ```c
+ * int32_t kreuzberg_validate_binarization_method(const char* method);
+ * ```
+ */
+int32_t kreuzberg_validate_binarization_method(const char *method);
+
+/**
+ * Validates an OCR backend string.
+ *
+ * # Arguments
+ *
+ * * `backend` - C string containing the OCR backend (e.g., "tesseract", "easyocr", "paddleocr")
+ *
+ * # Returns
+ *
+ * - `1` if valid
+ * - `0` if invalid (error message available via `kreuzberg_get_last_error_message()`)
+ *
+ * # Safety
+ *
+ * * `backend` must be a valid pointer to a null-terminated UTF-8 string
+ * * `backend` cannot be NULL
+ * * The string must be valid for the duration of the call
+ *
+ * # C Signature
+ *
+ * ```c
+ * int32_t kreuzberg_validate_ocr_backend(const char* backend);
+ * ```
+ */
+int32_t kreuzberg_validate_ocr_backend(const char *backend);
+
+/**
+ * Validates a language code (ISO 639-1 or 639-3 format).
+ *
+ * Accepts both 2-letter codes (e.g., "en", "de") and 3-letter codes (e.g., "eng", "deu").
+ *
+ * # Arguments
+ *
+ * * `code` - C string containing the language code
+ *
+ * # Returns
+ *
+ * - `1` if valid
+ * - `0` if invalid (error message available via `kreuzberg_get_last_error_message()`)
+ *
+ * # Safety
+ *
+ * * `code` must be a valid pointer to a null-terminated UTF-8 string
+ * * `code` cannot be NULL
+ * * The string must be valid for the duration of the call
+ *
+ * # C Signature
+ *
+ * ```c
+ * int32_t kreuzberg_validate_language_code(const char* code);
+ * ```
+ */
+int32_t kreuzberg_validate_language_code(const char *code);
+
+/**
+ * Validates a token reduction level string.
+ *
+ * # Arguments
+ *
+ * * `level` - C string containing the token reduction level (e.g., "off", "light", "moderate")
+ *
+ * # Returns
+ *
+ * - `1` if valid
+ * - `0` if invalid (error message available via `kreuzberg_get_last_error_message()`)
+ *
+ * # Safety
+ *
+ * * `level` must be a valid pointer to a null-terminated UTF-8 string
+ * * `level` cannot be NULL
+ * * The string must be valid for the duration of the call
+ *
+ * # C Signature
+ *
+ * ```c
+ * int32_t kreuzberg_validate_token_reduction_level(const char* level);
+ * ```
+ */
+int32_t kreuzberg_validate_token_reduction_level(const char *level);
+
+/**
+ * Validates a tesseract Page Segmentation Mode (PSM) value.
+ *
+ * # Arguments
+ *
+ * * `psm` - PSM value (valid range: 0-13)
+ *
+ * # Returns
+ *
+ * - `1` if valid
+ * - `0` if invalid (error message available via `kreuzberg_get_last_error_message()`)
+ *
+ * # C Signature
+ *
+ * ```c
+ * int32_t kreuzberg_validate_tesseract_psm(int32_t psm);
+ * ```
+ */
+int32_t kreuzberg_validate_tesseract_psm(int32_t psm);
+
+/**
+ * Validates a tesseract OCR Engine Mode (OEM) value.
+ *
+ * # Arguments
+ *
+ * * `oem` - OEM value (valid range: 0-3)
+ *
+ * # Returns
+ *
+ * - `1` if valid
+ * - `0` if invalid (error message available via `kreuzberg_get_last_error_message()`)
+ *
+ * # C Signature
+ *
+ * ```c
+ * int32_t kreuzberg_validate_tesseract_oem(int32_t oem);
+ * ```
+ */
+int32_t kreuzberg_validate_tesseract_oem(int32_t oem);
+
+/**
+ * Validates a tesseract output format string.
+ *
+ * # Arguments
+ *
+ * * `format` - C string containing the output format (e.g., "text", "markdown")
+ *
+ * # Returns
+ *
+ * - `1` if valid
+ * - `0` if invalid (error message available via `kreuzberg_get_last_error_message()`)
+ *
+ * # Safety
+ *
+ * * `format` must be a valid pointer to a null-terminated UTF-8 string
+ * * `format` cannot be NULL
+ * * The string must be valid for the duration of the call
+ *
+ * # C Signature
+ *
+ * ```c
+ * int32_t kreuzberg_validate_output_format(const char* format);
+ * ```
+ */
+int32_t kreuzberg_validate_output_format(const char *format);
+
+/**
+ * Validates a confidence threshold value.
+ *
+ * Confidence thresholds must be between 0.0 and 1.0 inclusive.
+ *
+ * # Arguments
+ *
+ * * `confidence` - Confidence threshold value
+ *
+ * # Returns
+ *
+ * - `1` if valid
+ * - `0` if invalid (error message available via `kreuzberg_get_last_error_message()`)
+ *
+ * # C Signature
+ *
+ * ```c
+ * int32_t kreuzberg_validate_confidence(double confidence);
+ * ```
+ */
+int32_t kreuzberg_validate_confidence(double confidence);
+
+/**
+ * Validates a DPI (dots per inch) value.
+ *
+ * DPI must be a positive integer, typically 72-600.
+ *
+ * # Arguments
+ *
+ * * `dpi` - DPI value
+ *
+ * # Returns
+ *
+ * - `1` if valid
+ * - `0` if invalid (error message available via `kreuzberg_get_last_error_message()`)
+ *
+ * # C Signature
+ *
+ * ```c
+ * int32_t kreuzberg_validate_dpi(int32_t dpi);
+ * ```
+ */
+int32_t kreuzberg_validate_dpi(int32_t dpi);
+
+/**
+ * Validates chunking parameters.
+ *
+ * Checks that `max_chars > 0` and `max_overlap < max_chars`.
+ *
+ * # Arguments
+ *
+ * * `max_chars` - Maximum characters per chunk
+ * * `max_overlap` - Maximum overlap between chunks
+ *
+ * # Returns
+ *
+ * - `1` if valid
+ * - `0` if invalid (error message available via `kreuzberg_get_last_error_message()`)
+ *
+ * # C Signature
+ *
+ * ```c
+ * int32_t kreuzberg_validate_chunking_params(size_t max_chars, size_t max_overlap);
+ * ```
+ */
+int32_t kreuzberg_validate_chunking_params(uintptr_t max_chars, uintptr_t max_overlap);
+
+/**
+ * Returns valid binarization methods as a JSON array string.
+ *
+ * The returned string MUST be freed by the caller using `kreuzberg_free_string()`.
+ *
+ * # Returns
+ *
+ * A pointer to a dynamically allocated C string containing a JSON array of valid methods.
+ * Returns NULL if memory allocation fails (error message set via `set_last_error()`).
+ *
+ * # Example
+ *
+ * The returned JSON string looks like: `["otsu","adaptive","sauvola"]`
+ *
+ * # C Signature
+ *
+ * ```c
+ * char* kreuzberg_get_valid_binarization_methods(void);
+ * ```
+ */
+char *kreuzberg_get_valid_binarization_methods(void);
+
+/**
+ * Returns valid language codes as a JSON array string.
+ *
+ * The returned string MUST be freed by the caller using `kreuzberg_free_string()`.
+ *
+ * # Returns
+ *
+ * A pointer to a dynamically allocated C string containing a JSON array of valid codes.
+ * Returns NULL if memory allocation fails (error message set via `set_last_error()`).
+ *
+ * # C Signature
+ *
+ * ```c
+ * char* kreuzberg_get_valid_language_codes(void);
+ * ```
+ */
+char *kreuzberg_get_valid_language_codes(void);
+
+/**
+ * Returns valid OCR backends as a JSON array string.
+ *
+ * The returned string MUST be freed by the caller using `kreuzberg_free_string()`.
+ *
+ * # Returns
+ *
+ * A pointer to a dynamically allocated C string containing a JSON array of valid backends.
+ * Returns NULL if memory allocation fails (error message set via `set_last_error()`).
+ *
+ * # C Signature
+ *
+ * ```c
+ * char* kreuzberg_get_valid_ocr_backends(void);
+ * ```
+ */
+char *kreuzberg_get_valid_ocr_backends(void);
+
+/**
+ * Returns valid token reduction levels as a JSON array string.
+ *
+ * The returned string MUST be freed by the caller using `kreuzberg_free_string()`.
+ *
+ * # Returns
+ *
+ * A pointer to a dynamically allocated C string containing a JSON array of valid levels.
+ * Returns NULL if memory allocation fails (error message set via `set_last_error()`).
+ *
+ * # C Signature
+ *
+ * ```c
+ * char* kreuzberg_get_valid_token_reduction_levels(void);
+ * ```
+ */
+char *kreuzberg_get_valid_token_reduction_levels(void);
+
 #endif  /* KREUZBERG_FFI_H */
