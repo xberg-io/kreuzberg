@@ -21,6 +21,11 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class BatchOperationsTest {
 
+    private static ExtractionConfig batchConfig() {
+        return ExtractionConfig.builder()
+                .maxConcurrentExtractions(1)
+                .build();
+    }
 
     @Test
     void testBatchExtractMultipleFiles(@TempDir Path tempDir) throws IOException, KreuzbergException {
@@ -36,7 +41,7 @@ class BatchOperationsTest {
             paths.add(file.toString());
         }
 
-        List<ExtractionResult> results = Kreuzberg.batchExtractFiles(paths, null);
+        List<ExtractionResult> results = Kreuzberg.batchExtractFiles(paths, batchConfig());
 
         assertNotNull(results, "Results should not be null");
         assertEquals(5, results.size(), "Should have 5 results");
@@ -62,7 +67,7 @@ class BatchOperationsTest {
         Files.writeString(jsonFile, "{\"key\": \"value\"}");
         paths.add(jsonFile.toString());
 
-        List<ExtractionResult> results = Kreuzberg.batchExtractFiles(paths, null);
+        List<ExtractionResult> results = Kreuzberg.batchExtractFiles(paths, batchConfig());
 
         assertEquals(3, results.size(), "Should extract all file types");
         for (ExtractionResult result : results) {
@@ -81,7 +86,7 @@ class BatchOperationsTest {
             paths.add(file.toString());
         }
 
-        List<ExtractionResult> results = Kreuzberg.batchExtractFiles(paths, null);
+        List<ExtractionResult> results = Kreuzberg.batchExtractFiles(paths, batchConfig());
 
         assertEquals(20, results.size(), "Should extract all 20 files");
         int successCount = 0;
@@ -102,7 +107,7 @@ class BatchOperationsTest {
         items.add(new BytesWithMime("Second content".getBytes(), "text/plain"));
         items.add(new BytesWithMime("{\"test\": true}".getBytes(), "application/json"));
 
-        List<ExtractionResult> results = Kreuzberg.batchExtractBytes(items, null);
+        List<ExtractionResult> results = Kreuzberg.batchExtractBytes(items, batchConfig());
 
         assertNotNull(results, "Results should not be null");
         assertEquals(3, results.size(), "Should have 3 results");
@@ -116,6 +121,7 @@ class BatchOperationsTest {
 
         ExtractionConfig config = ExtractionConfig.builder()
                 .useCache(false)
+                .maxConcurrentExtractions(1)
                 .build();
 
         List<ExtractionResult> results = Kreuzberg.batchExtractBytes(items, config);
@@ -127,7 +133,7 @@ class BatchOperationsTest {
     void testBatchExtractBytesEmptyList() throws KreuzbergException {
         List<BytesWithMime> items = new ArrayList<>();
 
-        List<ExtractionResult> results = Kreuzberg.batchExtractBytes(items, null);
+        List<ExtractionResult> results = Kreuzberg.batchExtractBytes(items, batchConfig());
 
         assertNotNull(results, "Results should not be null for empty list");
         assertTrue(results.isEmpty(), "Should return empty list for empty input");
@@ -137,7 +143,7 @@ class BatchOperationsTest {
     void testBatchExtractFilesEmptyList() throws KreuzbergException {
         List<String> paths = new ArrayList<>();
 
-        List<ExtractionResult> results = Kreuzberg.batchExtractFiles(paths, null);
+        List<ExtractionResult> results = Kreuzberg.batchExtractFiles(paths, batchConfig());
 
         assertNotNull(results, "Results should not be null for empty list");
         assertTrue(results.isEmpty(), "Should return empty list for empty input");
@@ -157,7 +163,7 @@ class BatchOperationsTest {
         paths.add("/nonexistent/file1.txt");
         paths.add("/nonexistent/file2.txt");
 
-        List<ExtractionResult> results = Kreuzberg.batchExtractFiles(paths, null);
+        List<ExtractionResult> results = Kreuzberg.batchExtractFiles(paths, batchConfig());
 
         assertNotNull(results, "Results should be returned");
         assertEquals(4, results.size(), "Should have results for all paths");
@@ -175,7 +181,7 @@ class BatchOperationsTest {
             paths.add(file.toString());
         }
 
-        List<ExtractionResult> results = Kreuzberg.batchExtractFiles(paths, null);
+        List<ExtractionResult> results = Kreuzberg.batchExtractFiles(paths, batchConfig());
 
         assertNotEquals(results.get(0).getContent(), results.get(1).getContent(),
                 "Different files should have different content");
@@ -193,7 +199,7 @@ class BatchOperationsTest {
             paths.add(file.toString());
         }
 
-        List<ExtractionResult> results = Kreuzberg.batchExtractFiles(paths, null);
+        List<ExtractionResult> results = Kreuzberg.batchExtractFiles(paths, batchConfig());
 
         int processedCount = 0;
         for (ExtractionResult result : results) {
@@ -236,6 +242,7 @@ class BatchOperationsTest {
         ExtractionConfig config = ExtractionConfig.builder()
                 .useCache(false)
                 .enableQualityProcessing(true)
+                .maxConcurrentExtractions(1)
                 .build();
 
         List<ExtractionResult> results = Kreuzberg.batchExtractFiles(paths, config);
@@ -266,6 +273,7 @@ class BatchOperationsTest {
                         .maxOverlap(64)
                         .enabled(true)
                         .build())
+                .maxConcurrentExtractions(1)
                 .build();
 
         List<ExtractionResult> results = Kreuzberg.batchExtractFiles(paths, config);
@@ -284,6 +292,7 @@ class BatchOperationsTest {
 
         ExtractionConfig config = ExtractionConfig.builder()
                 .forceOcr(false)
+                .maxConcurrentExtractions(1)
                 .build();
 
         List<ExtractionResult> results = Kreuzberg.batchExtractFiles(paths, config);
@@ -301,8 +310,8 @@ class BatchOperationsTest {
             paths.add(file.toString());
         }
 
-        List<ExtractionResult> results1 = Kreuzberg.batchExtractFiles(paths, null);
-        List<ExtractionResult> results2 = Kreuzberg.batchExtractFiles(paths, null);
+        List<ExtractionResult> results1 = Kreuzberg.batchExtractFiles(paths, batchConfig());
+        List<ExtractionResult> results2 = Kreuzberg.batchExtractFiles(paths, batchConfig());
 
         assertEquals(results1.size(), results2.size(), "Batch size should be consistent");
         for (int i = 0; i < results1.size(); i++) {
@@ -326,7 +335,7 @@ class BatchOperationsTest {
         assertNotNull(single.getContent(), "Single extraction should work");
 
         List<ExtractionResult> batch = Kreuzberg.batchExtractFiles(
-                List.of(file2.toString(), file3.toString()), null);
+                List.of(file2.toString(), file3.toString()), batchConfig());
         assertEquals(2, batch.size(), "Batch should have 2 results");
 
         ExtractionResult single2 = Kreuzberg.extractFile(file1);
@@ -339,7 +348,7 @@ class BatchOperationsTest {
         Files.writeString(file1, "Before async");
 
         List<ExtractionResult> batch = Kreuzberg.batchExtractFiles(
-                List.of(file1.toString()), null);
+                List.of(file1.toString()), batchConfig());
         assertEquals(1, batch.size(), "Batch should succeed");
 
         var asyncFuture = Kreuzberg.extractFileAsync(file1, null);
@@ -366,7 +375,7 @@ class BatchOperationsTest {
             paths.add(file.toString());
         }
 
-        List<ExtractionResult> results = Kreuzberg.batchExtractFiles(paths, null);
+        List<ExtractionResult> results = Kreuzberg.batchExtractFiles(paths, batchConfig());
 
         assertNotNull(results, "Should handle large file batch");
         assertTrue(results.size() > 0, "Should return results for large files");
@@ -382,7 +391,7 @@ class BatchOperationsTest {
             paths.add(file.toString());
         }
 
-        List<ExtractionResult> results = Kreuzberg.batchExtractFiles(paths, null);
+        List<ExtractionResult> results = Kreuzberg.batchExtractFiles(paths, batchConfig());
 
         assertEquals(2, results.size(), "Should extract files with special character names");
     }
@@ -396,7 +405,7 @@ class BatchOperationsTest {
             paths.add(file.toString());
         }
 
-        List<ExtractionResult> results = Kreuzberg.batchExtractFiles(paths, null);
+        List<ExtractionResult> results = Kreuzberg.batchExtractFiles(paths, batchConfig());
 
         if (results.size() > 0) {
             var firstContent = results.get(0).getContent();
@@ -463,7 +472,7 @@ class BatchOperationsTest {
             paths.add(file.toString());
         }
 
-        var future = Kreuzberg.batchExtractFilesAsync(paths, null);
+        var future = Kreuzberg.batchExtractFilesAsync(paths, batchConfig());
 
         try {
             List<ExtractionResult> results = future.get();
@@ -479,7 +488,7 @@ class BatchOperationsTest {
         items.add(new BytesWithMime("Async content 1".getBytes(), "text/plain"));
         items.add(new BytesWithMime("Async content 2".getBytes(), "text/plain"));
 
-        var future = Kreuzberg.batchExtractBytesAsync(items, null);
+        var future = Kreuzberg.batchExtractBytesAsync(items, batchConfig());
 
         try {
             List<ExtractionResult> results = future.get();
@@ -499,7 +508,7 @@ class BatchOperationsTest {
             paths.add(file.toString());
         }
 
-        List<ExtractionResult> results = Kreuzberg.batchExtractFiles(paths, null);
+        List<ExtractionResult> results = Kreuzberg.batchExtractFiles(paths, batchConfig());
 
         long totalSize = 0;
         int successCount = 0;
