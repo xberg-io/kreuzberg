@@ -754,6 +754,11 @@ pub struct ExcelSheet {
     pub col_count: usize,
     /// Total number of non-empty cells
     pub cell_count: usize,
+    /// Pre-extracted table cells (2D vector of cell values)
+    /// Populated during markdown generation to avoid re-parsing markdown.
+    /// None for empty sheets.
+    #[serde(skip)]
+    pub table_cells: Option<Vec<Vec<String>>>,
 }
 
 /// XML extraction result.

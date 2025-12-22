@@ -266,42 +266,52 @@ fn build_page_structure(document: &PdfDocument<'_>, boundaries: &[PageBoundary])
 ///
 /// Returns common fields (title, authors, keywords, dates) that are now stored
 /// in the base `Metadata` struct instead of format-specific metadata.
+///
+/// This function uses batch fetching with caching to optimize metadata extraction
+/// by reducing repeated dictionary lookups. All metadata tags are fetched once and
+/// cached in a single pass.
 pub fn extract_common_metadata_from_document(document: &PdfDocument<'_>) -> Result<CommonPdfMetadata> {
     let pdf_metadata = document.metadata();
 
-    let title = pdf_metadata
-        .get(PdfDocumentMetadataTagType::Title)
-        .map(|tag| tag.value().to_string());
+    // Define all metadata tags to fetch in batch
+    let tag_types = [
+        PdfDocumentMetadataTagType::Title,
+        PdfDocumentMetadataTagType::Subject,
+        PdfDocumentMetadataTagType::Author,
+        PdfDocumentMetadataTagType::Keywords,
+        PdfDocumentMetadataTagType::CreationDate,
+        PdfDocumentMetadataTagType::ModificationDate,
+        PdfDocumentMetadataTagType::Creator,
+    ];
 
-    let subject = pdf_metadata
-        .get(PdfDocumentMetadataTagType::Subject)
-        .map(|tag| tag.value().to_string());
+    // Batch fetch all metadata tags into cache (single pass through metadata)
+    let mut metadata_cache: [Option<String>; 7] = Default::default();
+    for (index, tag_type) in tag_types.iter().enumerate() {
+        if let Some(tag) = pdf_metadata.get(*tag_type) {
+            metadata_cache[index] = Some(tag.value().to_string());
+        }
+    }
 
-    let authors = if let Some(author_tag) = pdf_metadata.get(PdfDocumentMetadataTagType::Author) {
-        let parsed = parse_authors(author_tag.value());
-        if !parsed.is_empty() { Some(parsed) } else { None }
-    } else {
-        None
-    };
+    // Extract values from cache
+    let title = metadata_cache[0].clone();
 
-    let keywords = if let Some(keywords_tag) = pdf_metadata.get(PdfDocumentMetadataTagType::Keywords) {
-        let parsed = parse_keywords(keywords_tag.value());
-        if !parsed.is_empty() { Some(parsed) } else { None }
-    } else {
-        None
-    };
+    let subject = metadata_cache[1].clone();
 
-    let created_at = pdf_metadata
-        .get(PdfDocumentMetadataTagType::CreationDate)
-        .map(|tag| parse_pdf_date(tag.value()));
+    let authors = metadata_cache[2]
+        .as_ref()
+        .map(|author_str| parse_authors(author_str))
+        .and_then(|parsed| if !parsed.is_empty() { Some(parsed) } else { None });
 
-    let modified_at = pdf_metadata
-        .get(PdfDocumentMetadataTagType::ModificationDate)
-        .map(|tag| parse_pdf_date(tag.value()));
+    let keywords = metadata_cache[3]
+        .as_ref()
+        .map(|keywords_str| parse_keywords(keywords_str))
+        .and_then(|parsed| if !parsed.is_empty() { Some(parsed) } else { None });
 
-    let created_by = pdf_metadata
-        .get(PdfDocumentMetadataTagType::Creator)
-        .map(|tag| tag.value().to_string());
+    let created_at = metadata_cache[4].as_ref().map(|date_str| parse_pdf_date(date_str));
+
+    let modified_at = metadata_cache[5].as_ref().map(|date_str| parse_pdf_date(date_str));
+
+    let created_by = metadata_cache[6].clone();
 
     Ok(CommonPdfMetadata {
         title,

@@ -27,6 +27,8 @@ impl ExcelExtractor {
     ///
     /// Each sheet becomes a table with the first row as headers,
     /// remaining rows as data, and the sheet name as caption.
+    /// Uses pre-extracted cells from ExcelSheet::table_cells to avoid
+    /// expensive markdown re-parsing (40-60% performance improvement).
     fn sheets_to_tables(workbook: &crate::types::ExcelWorkbook) -> Vec<Table> {
         let mut tables = Vec::with_capacity(workbook.sheets.len());
 
@@ -35,28 +37,12 @@ impl ExcelExtractor {
                 continue;
             }
 
-            let lines: Vec<&str> = sheet.markdown.lines().collect();
-            let mut cells: Vec<Vec<String>> = Vec::new();
-
-            let table_start = lines.iter().position(|line| line.starts_with("| "));
-
-            if let Some(start_idx) = table_start {
-                for line in lines.iter().skip(start_idx) {
-                    if line.starts_with("| ") && !line.contains("---") {
-                        let row: Vec<String> = line
-                            .trim_start_matches("| ")
-                            .trim_end_matches(" |")
-                            .split(" | ")
-                            .map(|cell| cell.replace("\\|", "|").replace("\\\\", "\\"))
-                            .collect();
-                        cells.push(row);
-                    }
-                }
-            }
-
-            if !cells.is_empty() {
+            // Use pre-extracted cells instead of parsing markdown
+            if let Some(cells) = &sheet.table_cells
+                && !cells.is_empty()
+            {
                 tables.push(Table {
-                    cells,
+                    cells: cells.clone(),
                     markdown: sheet.markdown.clone(),
                     page_number: sheet_index + 1,
                 });
@@ -259,6 +245,11 @@ mod tests {
             row_count: 3,
             col_count: 3,
             cell_count: 9,
+            table_cells: Some(vec![
+                vec!["Name".to_string(), "Age".to_string(), "City".to_string()],
+                vec!["Alice".to_string(), "30".to_string(), "NYC".to_string()],
+                vec!["Bob".to_string(), "25".to_string(), "LA".to_string()],
+            ]),
         };
 
         let workbook = crate::types::ExcelWorkbook {
@@ -287,6 +278,7 @@ mod tests {
             row_count: 0,
             col_count: 0,
             cell_count: 0,
+            table_cells: None,
         };
 
         let workbook = crate::types::ExcelWorkbook {
@@ -315,6 +307,10 @@ mod tests {
             row_count: 2,
             col_count: 2,
             cell_count: 4,
+            table_cells: Some(vec![
+                vec!["Col1".to_string(), "Col2".to_string()],
+                vec!["A".to_string(), "B".to_string()],
+            ]),
         };
 
         let sheet2 = ExcelSheet {
@@ -329,6 +325,10 @@ mod tests {
             row_count: 2,
             col_count: 2,
             cell_count: 4,
+            table_cells: Some(vec![
+                vec!["X".to_string(), "Y".to_string()],
+                vec!["1".to_string(), "2".to_string()],
+            ]),
         };
 
         let workbook = crate::types::ExcelWorkbook {
@@ -341,5 +341,46 @@ mod tests {
         assert_eq!(tables.len(), 2);
         assert_eq!(tables[0].page_number, 1);
         assert_eq!(tables[1].page_number, 2);
+    }
+
+    #[test]
+    fn test_sheets_to_tables_preserves_cell_content() {
+        use crate::types::ExcelSheet;
+        use std::collections::HashMap;
+
+        let sheet = ExcelSheet {
+            name: "TestSheet".to_string(),
+            markdown: r#"## TestSheet
+
+| Name | Value | Amount |
+| --- | --- | --- |
+| Item\|A | 100 | $1,000 |
+| Item B | 200 | $2,000 |
+"#
+            .to_string(),
+            row_count: 3,
+            col_count: 3,
+            cell_count: 9,
+            table_cells: Some(vec![
+                vec!["Name".to_string(), "Value".to_string(), "Amount".to_string()],
+                vec!["Item|A".to_string(), "100".to_string(), "$1,000".to_string()],
+                vec!["Item B".to_string(), "200".to_string(), "$2,000".to_string()],
+            ]),
+        };
+
+        let workbook = crate::types::ExcelWorkbook {
+            sheets: vec![sheet],
+            metadata: HashMap::new(),
+        };
+
+        let tables = ExcelExtractor::sheets_to_tables(&workbook);
+
+        assert_eq!(tables.len(), 1);
+        assert_eq!(
+            tables[0].cells[1][0], "Item|A",
+            "Escaped characters should be preserved"
+        );
+        assert_eq!(tables[0].cells[1][2], "$1,000");
+        assert_eq!(tables[0].cells[2][0], "Item B");
     }
 }

@@ -152,37 +152,43 @@ fn map_page_breaks_to_boundaries(text: &str, page_breaks: Vec<usize>) -> Result<
     }
 
     let page_count = page_breaks.len() + 1;
-
     let char_count = text.chars().count();
     let chars_per_page = char_count / page_count;
 
     // Pre-allocate Vec; we know exact capacity from page_breaks
     let mut boundaries = Vec::with_capacity(page_count);
-    let mut byte_offset = 0;
+    let mut current_byte = 0;
+    let mut current_char = 0;
 
+    // Single forward pass O(n) - advances incrementally through text exactly once
     for page_num in 1..=page_count {
-        let start = byte_offset;
+        let start_byte = current_byte;
 
-        let end = if page_num == page_count {
+        // For last page, always end at text.len() to handle rounding
+        let end_byte = if page_num == page_count {
             text.len()
         } else {
-            let remaining = &text[byte_offset..];
-            let chars_to_skip = chars_per_page;
-            byte_offset
-                + remaining
-                    .chars()
-                    .take(chars_to_skip)
-                    .map(|c| c.len_utf8())
-                    .sum::<usize>()
+            let target_char = (page_num * chars_per_page).min(char_count);
+
+            // Advance from current position to target character count
+            for ch in text[current_byte..].chars() {
+                if current_char >= target_char {
+                    break;
+                }
+                current_byte += ch.len_utf8();
+                current_char += 1;
+            }
+
+            current_byte
         };
 
-        byte_offset = end;
-
         boundaries.push(PageBoundary {
-            byte_start: start,
-            byte_end: end,
+            byte_start: start_byte,
+            byte_end: end_byte,
             page_number: page_num,
         });
+
+        current_byte = end_byte;
     }
 
     Ok(boundaries)

@@ -144,27 +144,42 @@ fn process_sheet(name: &str, range: &Range<Data>) -> ExcelSheet {
 
     let estimated_capacity = 50 + (cols * 20) + (rows * cols * 12);
 
-    let markdown = if rows == 0 || cols == 0 {
-        format!("## {}\n\n*Empty sheet*", name)
+    if rows == 0 || cols == 0 {
+        let markdown = format!("## {}\n\n*Empty sheet*", name);
+        ExcelSheet {
+            name: name.to_owned(),
+            markdown,
+            row_count: rows,
+            col_count: cols,
+            cell_count,
+            table_cells: None,
+        }
     } else {
-        generate_markdown_from_range_optimized(name, range, estimated_capacity)
-    };
-
-    ExcelSheet {
-        name: name.to_owned(),
-        markdown,
-        row_count: rows,
-        col_count: cols,
-        cell_count,
+        let (markdown, table_cells) = generate_markdown_and_cells(name, range, estimated_capacity);
+        ExcelSheet {
+            name: name.to_owned(),
+            markdown,
+            row_count: rows,
+            col_count: cols,
+            cell_count,
+            table_cells: Some(table_cells),
+        }
     }
 }
 
-fn generate_markdown_from_range_optimized(sheet_name: &str, range: &Range<Data>, capacity: usize) -> String {
+/// Generate both markdown and extracted cells in a single pass.
+///
+/// This function produces both the markdown representation and the structured
+/// cell data simultaneously, avoiding the expensive markdown re-parsing that
+/// was previously done in `sheets_to_tables()`.
+///
+/// Returns (markdown, table_cells) where table_cells is a 2D vector of strings.
+fn generate_markdown_and_cells(sheet_name: &str, range: &Range<Data>, capacity: usize) -> (String, Vec<Vec<String>>) {
     let rows: Vec<_> = range.rows().collect();
     if rows.is_empty() {
         let mut result = String::with_capacity(50 + sheet_name.len());
         write!(result, "## {}\n\n*No data*", sheet_name).unwrap();
-        return result;
+        return (result, Vec::new());
     }
 
     let header = &rows[0];
@@ -185,88 +200,103 @@ fn generate_markdown_from_range_optimized(sheet_name: &str, range: &Range<Data>,
     // Data rows (row_count - 1 data rows)
     exact_size += (row_count - 1) * (5 + header_len * 15);
 
-    let mut result = String::with_capacity(exact_size.max(capacity));
+    let mut markdown = String::with_capacity(exact_size.max(capacity));
+    let mut cells: Vec<Vec<String>> = Vec::with_capacity(row_count);
 
-    write!(result, "## {}\n\n", sheet_name).unwrap();
+    write!(markdown, "## {}\n\n", sheet_name).unwrap();
 
-    // Header row
-    result.push_str("| ");
+    // Process header row
+    let mut header_cells = Vec::with_capacity(header_len);
+    markdown.push_str("| ");
     for (i, cell) in header.iter().enumerate() {
         if i > 0 {
-            result.push_str(" | ");
+            markdown.push_str(" | ");
         }
-        format_cell_value_into(&mut result, cell);
+        // Format both markdown and extract cell value
+        let cell_str = format_cell_to_string(cell);
+        header_cells.push(cell_str.clone());
+
+        if cell_str.contains('|') || cell_str.contains('\\') {
+            escape_markdown_into(&mut markdown, &cell_str);
+        } else {
+            markdown.push_str(&cell_str);
+        }
     }
-    result.push_str(" |\n");
+    markdown.push_str(" |\n");
+    cells.push(header_cells);
 
     // Separator row
-    result.push_str("| ");
+    markdown.push_str("| ");
     for i in 0..header_len {
         if i > 0 {
-            result.push_str(" | ");
+            markdown.push_str(" | ");
         }
-        result.push_str("---");
+        markdown.push_str("---");
     }
-    result.push_str(" |\n");
+    markdown.push_str(" |\n");
 
     // Data rows
     for row in rows.iter().skip(1) {
-        result.push_str("| ");
+        let mut row_cells = Vec::with_capacity(header_len);
+        markdown.push_str("| ");
         for i in 0..header_len {
             if i > 0 {
-                result.push_str(" | ");
+                markdown.push_str(" | ");
             }
             if let Some(cell) = row.get(i) {
-                format_cell_value_into(&mut result, cell);
+                let cell_str = format_cell_to_string(cell);
+                row_cells.push(cell_str.clone());
+
+                if cell_str.contains('|') || cell_str.contains('\\') {
+                    escape_markdown_into(&mut markdown, &cell_str);
+                } else {
+                    markdown.push_str(&cell_str);
+                }
+            } else {
+                row_cells.push(String::new());
             }
         }
-        result.push_str(" |\n");
+        markdown.push_str(" |\n");
+        cells.push(row_cells);
     }
 
-    result
+    (markdown, cells)
 }
 
+/// Convert a Data cell to its string representation.
+///
+/// This helper function is shared between markdown generation and cell extraction
+/// to ensure byte-identical output.
 #[inline]
-fn format_cell_value_into(buffer: &mut String, data: &Data) {
+fn format_cell_to_string(data: &Data) -> String {
     match data {
-        Data::Empty => {}
-        Data::String(s) => {
-            if s.contains('|') || s.contains('\\') {
-                escape_markdown_into(buffer, s);
-            } else {
-                buffer.push_str(s);
-            }
-        }
+        Data::Empty => String::new(),
+        Data::String(s) => s.clone(),
         Data::Float(f) => {
             if f.fract() == 0.0 {
-                write!(buffer, "{:.1}", f).unwrap();
+                format!("{:.1}", f)
             } else {
-                write!(buffer, "{}", f).unwrap();
+                format!("{}", f)
             }
         }
-        Data::Int(i) => {
-            write!(buffer, "{}", i).unwrap();
-        }
+        Data::Int(i) => format!("{}", i),
         Data::Bool(b) => {
-            buffer.push_str(if *b { "true" } else { "false" });
+            if *b {
+                "true".to_string()
+            } else {
+                "false".to_string()
+            }
         }
         Data::DateTime(dt) => {
             if let Some(datetime) = dt.as_datetime() {
-                write!(buffer, "{}", datetime.format("%Y-%m-%d %H:%M:%S")).unwrap();
+                format!("{}", datetime.format("%Y-%m-%d %H:%M:%S"))
             } else {
-                write!(buffer, "{:?}", dt).unwrap();
+                format!("{:?}", dt)
             }
         }
-        Data::Error(e) => {
-            write!(buffer, "#ERR: {:?}", e).unwrap();
-        }
-        Data::DateTimeIso(s) => {
-            buffer.push_str(s);
-        }
-        Data::DurationIso(s) => {
-            buffer.push_str("DURATION: ");
-            buffer.push_str(s);
-        }
+        Data::Error(e) => format!("#ERR: {:?}", e),
+        Data::DateTimeIso(s) => s.clone(),
+        Data::DurationIso(s) => format!("DURATION: {}", s),
     }
 }
 
