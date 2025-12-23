@@ -49,6 +49,16 @@ $env:PATH = "${ffiPath};$($env:PATH)"
 $msys2FfiPath = ConvertTo-Msys2Path $ffiPath
 $msys2IncludePath = "$msys2RepoRoot/crates/kreuzberg-ffi/include"
 
+$mingwBin = "C:\msys64\mingw64\bin"
+if (Test-Path (Join-Path $mingwBin "x86_64-w64-mingw32-gcc.exe")) {
+  $env:PATH = "${mingwBin};$($env:PATH)"
+  $env:CC = "x86_64-w64-mingw32-gcc"
+  $env:CXX = "x86_64-w64-mingw32-g++"
+  $env:AR = "x86_64-w64-mingw32-ar"
+  $env:RANLIB = "x86_64-w64-mingw32-ranlib"
+  Write-Host "Using MinGW64 toolchain for Go cgo: $mingwBin"
+}
+
 $cgoEnabled = "1"
 $cgoCflags = "-I$msys2IncludePath"
 $importLibName = "libkreuzberg_ffi.dll.a"
@@ -68,6 +78,10 @@ Add-Content -Path $env:GITHUB_ENV -Value "PATH=$env:PATH"
 Add-Content -Path $env:GITHUB_ENV -Value "PKG_CONFIG_PATH=$pkgConfigPath"
 Add-Content -Path $env:GITHUB_ENV -Value "CGO_ENABLED=$cgoEnabled"
 Add-Content -Path $env:GITHUB_ENV -Value "CGO_CFLAGS=$cgoCflags"
+if ($env:CC) { Add-Content -Path $env:GITHUB_ENV -Value "CC=$env:CC" }
+if ($env:CXX) { Add-Content -Path $env:GITHUB_ENV -Value "CXX=$env:CXX" }
+if ($env:AR) { Add-Content -Path $env:GITHUB_ENV -Value "AR=$env:AR" }
+if ($env:RANLIB) { Add-Content -Path $env:GITHUB_ENV -Value "RANLIB=$env:RANLIB" }
 
 # CRITICAL: Replace CGO_LDFLAGS entirely, never append
 # This prevents duplication if the script is called multiple times
