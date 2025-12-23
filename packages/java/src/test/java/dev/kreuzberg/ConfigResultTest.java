@@ -134,7 +134,7 @@ final class ConfigResultTest {
 
             assertThat(field)
                 .isPresent()
-                .contains("tesseract");
+                .contains("\"tesseract\"");
         }
 
         @Test

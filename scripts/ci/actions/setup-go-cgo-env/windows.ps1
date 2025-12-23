@@ -53,7 +53,10 @@ $cgoEnabled = "1"
 $cgoCflags = "-I$msys2IncludePath"
 $importLibName = "libkreuzberg_ffi.dll.a"
 $importLibPath = Join-Path $ffiPath $importLibName
-$linkerVerboseFlags = "-Wl,-v -Wl,--verbose -Wl,--trace -Wl,--print-map"
+$linkerVerboseFlags = ""
+if ($env:KREUZBERG_GO_LINKER_VERBOSE -eq "1") {
+  $linkerVerboseFlags = "-Wl,-v -Wl,--verbose"
+}
 if (Test-Path $importLibPath) {
   $cgoLdflags = "-L$msys2FfiPath -l:$importLibName -static-libgcc -static-libstdc++ -lws2_32 -luserenv -lbcrypt $linkerVerboseFlags"
 } else {
