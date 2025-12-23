@@ -332,6 +332,7 @@ impl PostProcessor for JsPostProcessorWrapper {
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 impl PostProcessor for JsPostProcessorWrapper {
     async fn process(&self, _result: &mut ExtractionResult, _config: &ExtractionConfig) -> kreuzberg::Result<()> {
+        let _ = &self.js_obj.0;
         Ok(())
     }
 
