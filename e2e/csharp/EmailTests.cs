@@ -11,6 +11,7 @@ namespace Kreuzberg.E2E.Email {
         [Fact]
         public void EmailSampleEml()
         {
+            TestHelpers.SkipIfLegacyOfficeDisabled("email/sample_email.eml");
             var result = TestHelpers.RunExtraction("email/sample_email.eml", null);
             TestHelpers.AssertExpectedMime(result, new[] { "message/rfc822" });
             TestHelpers.AssertMinContentLength(result, 20);

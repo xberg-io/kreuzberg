@@ -28,6 +28,9 @@ public final class ExtractionConfig {
   private final boolean useCache;
   private final boolean enableQualityProcessing;
   private final boolean forceOcr;
+  private final boolean useCacheSet;
+  private final boolean enableQualityProcessingSet;
+  private final boolean forceOcrSet;
   private final OcrConfig ocr;
   private final ChunkingConfig chunking;
   private final LanguageDetectionConfig languageDetection;
@@ -46,6 +49,9 @@ public final class ExtractionConfig {
     this.useCache = builder.useCache;
     this.enableQualityProcessing = builder.enableQualityProcessing;
     this.forceOcr = builder.forceOcr;
+    this.useCacheSet = builder.useCacheSet;
+    this.enableQualityProcessingSet = builder.enableQualityProcessingSet;
+    this.forceOcrSet = builder.forceOcrSet;
     this.ocr = builder.ocr;
     this.chunking = builder.chunking;
     this.languageDetection = builder.languageDetection;
@@ -282,8 +288,8 @@ public final class ExtractionConfig {
     }
 
     try (var arena = Arena.ofConfined()) {
-      String thisJson = CONFIG_MAPPER.writeValueAsString(toMap());
-      String otherJson = CONFIG_MAPPER.writeValueAsString(other.toMap());
+      String thisJson = CONFIG_MAPPER.writeValueAsString(toMap(true));
+      String otherJson = CONFIG_MAPPER.writeValueAsString(other.toMap(false));
 
       MemorySegment thisJsonSeg = KreuzbergFFI.allocateCString(arena, thisJson);
       MemorySegment otherJsonSeg = KreuzbergFFI.allocateCString(arena, otherJson);
@@ -331,13 +337,23 @@ public final class ExtractionConfig {
   }
 
   public Map<String, Object> toMap() {
+    return toMap(true);
+  }
+
+  private Map<String, Object> toMap(boolean includeDefaults) {
     if (rawConfigOverride != null) {
       return rawConfigOverride;
     }
     Map<String, Object> map = new HashMap<>();
-    map.put("use_cache", useCache);
-    map.put("enable_quality_processing", enableQualityProcessing);
-    map.put("force_ocr", forceOcr);
+    if (includeDefaults || useCacheSet) {
+      map.put("use_cache", useCache);
+    }
+    if (includeDefaults || enableQualityProcessingSet) {
+      map.put("enable_quality_processing", enableQualityProcessing);
+    }
+    if (includeDefaults || forceOcrSet) {
+      map.put("force_ocr", forceOcr);
+    }
     if (ocr != null) {
       map.put("ocr", ocr.toMap());
     }
@@ -480,6 +496,9 @@ public final class ExtractionConfig {
     private boolean useCache = true;
     private boolean enableQualityProcessing = false;
     private boolean forceOcr = false;
+    private boolean useCacheSet = false;
+    private boolean enableQualityProcessingSet = false;
+    private boolean forceOcrSet = false;
     private OcrConfig ocr;
     private ChunkingConfig chunking;
     private LanguageDetectionConfig languageDetection;
@@ -499,16 +518,19 @@ public final class ExtractionConfig {
 
     public Builder useCache(boolean useCache) {
       this.useCache = useCache;
+      this.useCacheSet = true;
       return this;
     }
 
     public Builder enableQualityProcessing(boolean enableQualityProcessing) {
       this.enableQualityProcessing = enableQualityProcessing;
+      this.enableQualityProcessingSet = true;
       return this;
     }
 
     public Builder forceOcr(boolean forceOcr) {
       this.forceOcr = forceOcr;
+      this.forceOcrSet = true;
       return this;
     }
 

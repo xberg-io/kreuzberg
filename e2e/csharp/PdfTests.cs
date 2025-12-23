@@ -11,6 +11,7 @@ namespace Kreuzberg.E2E.Pdf {
         [Fact]
         public void PdfAssemblyTechnical()
         {
+            TestHelpers.SkipIfLegacyOfficeDisabled("pdfs/assembly_language_for_beginners_al4_b_en.pdf");
             var result = TestHelpers.RunExtraction("pdfs/assembly_language_for_beginners_al4_b_en.pdf", null);
             TestHelpers.AssertExpectedMime(result, new[] { "application/pdf" });
             TestHelpers.AssertMinContentLength(result, 5000);
@@ -22,6 +23,7 @@ namespace Kreuzberg.E2E.Pdf {
         [Fact]
         public void PdfBayesianDataAnalysis()
         {
+            TestHelpers.SkipIfLegacyOfficeDisabled("pdfs/bayesian_data_analysis_third_edition_13th_feb_2020.pdf");
             var result = TestHelpers.RunExtraction("pdfs/bayesian_data_analysis_third_edition_13th_feb_2020.pdf", null);
             TestHelpers.AssertExpectedMime(result, new[] { "application/pdf" });
             TestHelpers.AssertMinContentLength(result, 10000);
@@ -33,6 +35,7 @@ namespace Kreuzberg.E2E.Pdf {
         [Fact]
         public void PdfCodeAndFormula()
         {
+            TestHelpers.SkipIfLegacyOfficeDisabled("pdfs/code_and_formula.pdf");
             var result = TestHelpers.RunExtraction("pdfs/code_and_formula.pdf", null);
             TestHelpers.AssertExpectedMime(result, new[] { "application/pdf" });
             TestHelpers.AssertMinContentLength(result, 100);
@@ -41,6 +44,7 @@ namespace Kreuzberg.E2E.Pdf {
         [Fact]
         public void PdfDeepLearning()
         {
+            TestHelpers.SkipIfLegacyOfficeDisabled("pdfs/fundamentals_of_deep_learning_2014.pdf");
             var result = TestHelpers.RunExtraction("pdfs/fundamentals_of_deep_learning_2014.pdf", null);
             TestHelpers.AssertExpectedMime(result, new[] { "application/pdf" });
             TestHelpers.AssertMinContentLength(result, 1000);
@@ -52,6 +56,7 @@ namespace Kreuzberg.E2E.Pdf {
         [Fact]
         public void PdfEmbeddedImages()
         {
+            TestHelpers.SkipIfLegacyOfficeDisabled("pdfs/embedded_images_tables.pdf");
             var result = TestHelpers.RunExtraction("pdfs/embedded_images_tables.pdf", null);
             TestHelpers.AssertExpectedMime(result, new[] { "application/pdf" });
             TestHelpers.AssertMinContentLength(result, 50);
@@ -61,6 +66,7 @@ namespace Kreuzberg.E2E.Pdf {
         [Fact]
         public void PdfGoogleDoc()
         {
+            TestHelpers.SkipIfLegacyOfficeDisabled("pdfs/google_doc_document.pdf");
             var result = TestHelpers.RunExtraction("pdfs/google_doc_document.pdf", null);
             TestHelpers.AssertExpectedMime(result, new[] { "application/pdf" });
             TestHelpers.AssertMinContentLength(result, 50);
@@ -71,6 +77,7 @@ namespace Kreuzberg.E2E.Pdf {
         [Fact]
         public void PdfLargeCiml()
         {
+            TestHelpers.SkipIfLegacyOfficeDisabled("pdfs/a_course_in_machine_learning_ciml_v0_9_all.pdf");
             var result = TestHelpers.RunExtraction("pdfs/a_course_in_machine_learning_ciml_v0_9_all.pdf", null);
             TestHelpers.AssertExpectedMime(result, new[] { "application/pdf" });
             TestHelpers.AssertMinContentLength(result, 10000);
@@ -82,6 +89,7 @@ namespace Kreuzberg.E2E.Pdf {
         [Fact]
         public void PdfNonEnglishGerman()
         {
+            TestHelpers.SkipIfLegacyOfficeDisabled("pdfs/5_level_paging_and_5_level_ept_intel_revision_1_1_may_2017.pdf");
             var result = TestHelpers.RunExtraction("pdfs/5_level_paging_and_5_level_ept_intel_revision_1_1_may_2017.pdf", null);
             TestHelpers.AssertExpectedMime(result, new[] { "application/pdf" });
             TestHelpers.AssertMinContentLength(result, 100);
@@ -93,6 +101,7 @@ namespace Kreuzberg.E2E.Pdf {
         [Fact]
         public void PdfRightToLeft()
         {
+            TestHelpers.SkipIfLegacyOfficeDisabled("pdfs/right_to_left_01.pdf");
             var result = TestHelpers.RunExtraction("pdfs/right_to_left_01.pdf", null);
             TestHelpers.AssertExpectedMime(result, new[] { "application/pdf" });
             TestHelpers.AssertMinContentLength(result, 50);
@@ -103,6 +112,7 @@ namespace Kreuzberg.E2E.Pdf {
         [Fact]
         public void PdfSimpleText()
         {
+            TestHelpers.SkipIfLegacyOfficeDisabled("pdfs/fake_memo.pdf");
             var result = TestHelpers.RunExtraction("pdfs/fake_memo.pdf", null);
             TestHelpers.AssertExpectedMime(result, new[] { "application/pdf" });
             TestHelpers.AssertMinContentLength(result, 50);
@@ -112,6 +122,7 @@ namespace Kreuzberg.E2E.Pdf {
         [Fact]
         public void PdfTablesLarge()
         {
+            TestHelpers.SkipIfLegacyOfficeDisabled("pdfs_with_tables/large.pdf");
             var result = TestHelpers.RunExtraction("pdfs_with_tables/large.pdf", null);
             TestHelpers.AssertExpectedMime(result, new[] { "application/pdf" });
             TestHelpers.AssertMinContentLength(result, 500);
@@ -121,6 +132,7 @@ namespace Kreuzberg.E2E.Pdf {
         [Fact]
         public void PdfTablesMedium()
         {
+            TestHelpers.SkipIfLegacyOfficeDisabled("pdfs_with_tables/medium.pdf");
             var result = TestHelpers.RunExtraction("pdfs_with_tables/medium.pdf", null);
             TestHelpers.AssertExpectedMime(result, new[] { "application/pdf" });
             TestHelpers.AssertMinContentLength(result, 100);
@@ -130,6 +142,7 @@ namespace Kreuzberg.E2E.Pdf {
         [Fact]
         public void PdfTablesSmall()
         {
+            TestHelpers.SkipIfLegacyOfficeDisabled("pdfs_with_tables/tiny.pdf");
             var result = TestHelpers.RunExtraction("pdfs_with_tables/tiny.pdf", null);
             TestHelpers.AssertExpectedMime(result, new[] { "application/pdf" });
             TestHelpers.AssertMinContentLength(result, 50);
@@ -140,6 +153,7 @@ namespace Kreuzberg.E2E.Pdf {
         [Fact]
         public void PdfTechnicalStatLearning()
         {
+            TestHelpers.SkipIfLegacyOfficeDisabled("pdfs/an_introduction_to_statistical_learning_with_applications_in_r_islr_sixth_printing.pdf");
             var result = TestHelpers.RunExtraction("pdfs/an_introduction_to_statistical_learning_with_applications_in_r_islr_sixth_printing.pdf", null);
             TestHelpers.AssertExpectedMime(result, new[] { "application/pdf" });
             TestHelpers.AssertMinContentLength(result, 10000);

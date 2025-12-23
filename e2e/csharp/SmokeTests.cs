@@ -11,6 +11,7 @@ namespace Kreuzberg.E2E.Smoke {
         [Fact]
         public void SmokeDocxBasic()
         {
+            TestHelpers.SkipIfLegacyOfficeDisabled("documents/fake.docx");
             var result = TestHelpers.RunExtraction("documents/fake.docx", null);
             TestHelpers.AssertExpectedMime(result, new[] { "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
             TestHelpers.AssertMinContentLength(result, 20);
@@ -20,6 +21,7 @@ namespace Kreuzberg.E2E.Smoke {
         [Fact]
         public void SmokeHtmlBasic()
         {
+            TestHelpers.SkipIfLegacyOfficeDisabled("web/simple_table.html");
             var result = TestHelpers.RunExtraction("web/simple_table.html", null);
             TestHelpers.AssertExpectedMime(result, new[] { "text/html" });
             TestHelpers.AssertMinContentLength(result, 10);
@@ -29,6 +31,7 @@ namespace Kreuzberg.E2E.Smoke {
         [Fact]
         public void SmokeImagePng()
         {
+            TestHelpers.SkipIfLegacyOfficeDisabled("images/sample.png");
             var result = TestHelpers.RunExtraction("images/sample.png", null);
             TestHelpers.AssertExpectedMime(result, new[] { "image/png" });
             var metadataNode = TestHelpers.MetadataToJson(result.Metadata);
@@ -38,6 +41,7 @@ namespace Kreuzberg.E2E.Smoke {
         [Fact]
         public void SmokeJsonBasic()
         {
+            TestHelpers.SkipIfLegacyOfficeDisabled("data_formats/simple.json");
             var result = TestHelpers.RunExtraction("data_formats/simple.json", null);
             TestHelpers.AssertExpectedMime(result, new[] { "application/json" });
             TestHelpers.AssertMinContentLength(result, 5);
@@ -46,6 +50,7 @@ namespace Kreuzberg.E2E.Smoke {
         [Fact]
         public void SmokePdfBasic()
         {
+            TestHelpers.SkipIfLegacyOfficeDisabled("pdfs/fake_memo.pdf");
             var result = TestHelpers.RunExtraction("pdfs/fake_memo.pdf", null);
             TestHelpers.AssertExpectedMime(result, new[] { "application/pdf" });
             TestHelpers.AssertMinContentLength(result, 50);
@@ -55,6 +60,7 @@ namespace Kreuzberg.E2E.Smoke {
         [Fact]
         public void SmokeTxtBasic()
         {
+            TestHelpers.SkipIfLegacyOfficeDisabled("text/report.txt");
             var result = TestHelpers.RunExtraction("text/report.txt", null);
             TestHelpers.AssertExpectedMime(result, new[] { "text/plain" });
             TestHelpers.AssertMinContentLength(result, 5);
@@ -63,6 +69,7 @@ namespace Kreuzberg.E2E.Smoke {
         [Fact]
         public void SmokeXlsxBasic()
         {
+            TestHelpers.SkipIfLegacyOfficeDisabled("spreadsheets/stanley_cups.xlsx");
             var result = TestHelpers.RunExtraction("spreadsheets/stanley_cups.xlsx", null);
             TestHelpers.AssertExpectedMime(result, new[] { "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
             TestHelpers.AssertMinContentLength(result, 100);

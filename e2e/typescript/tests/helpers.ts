@@ -284,7 +284,11 @@ export const assertions = {
 		}
 	},
 
-	assertMetadataExpectation(result: ExtractionResult, path: string, expectation: PlainRecord): void {
+	assertMetadataExpectation(
+		result: ExtractionResult,
+		path: string,
+		expectation: PlainRecord | string | number | boolean,
+	): void {
 		if (!isPlainRecord(result.metadata)) {
 			throw new Error(`Metadata is not a record for path ${path}`);
 		}
@@ -292,6 +296,11 @@ export const assertions = {
 		const value = getMetadataPath(result.metadata as PlainRecord, path);
 		if (value === undefined || value === null) {
 			throw new Error(`Metadata path '${path}' missing in ${JSON.stringify(result.metadata)}`);
+		}
+
+		if (!isPlainRecord(expectation)) {
+			expect(valuesEqual(value, expectation)).toBe(true);
+			return;
 		}
 
 		if ("eq" in expectation) {

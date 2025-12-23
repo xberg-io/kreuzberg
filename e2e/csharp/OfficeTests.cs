@@ -11,6 +11,7 @@ namespace Kreuzberg.E2E.Office {
         [Fact]
         public void OfficeDocLegacy()
         {
+            TestHelpers.SkipIfLegacyOfficeDisabled("legacy_office/unit_test_lists.doc");
             var result = TestHelpers.RunExtraction("legacy_office/unit_test_lists.doc", null);
             TestHelpers.AssertExpectedMime(result, new[] { "application/msword" });
             TestHelpers.AssertMinContentLength(result, 20);
@@ -19,6 +20,7 @@ namespace Kreuzberg.E2E.Office {
         [Fact]
         public void OfficeDocxBasic()
         {
+            TestHelpers.SkipIfLegacyOfficeDisabled("office/document.docx");
             var result = TestHelpers.RunExtraction("office/document.docx", null);
             TestHelpers.AssertExpectedMime(result, new[] { "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
             TestHelpers.AssertMinContentLength(result, 10);
@@ -27,6 +29,7 @@ namespace Kreuzberg.E2E.Office {
         [Fact]
         public void OfficeDocxEquations()
         {
+            TestHelpers.SkipIfLegacyOfficeDisabled("documents/equations.docx");
             var result = TestHelpers.RunExtraction("documents/equations.docx", null);
             TestHelpers.AssertExpectedMime(result, new[] { "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
             TestHelpers.AssertMinContentLength(result, 20);
@@ -35,6 +38,7 @@ namespace Kreuzberg.E2E.Office {
         [Fact]
         public void OfficeDocxFake()
         {
+            TestHelpers.SkipIfLegacyOfficeDisabled("documents/fake.docx");
             var result = TestHelpers.RunExtraction("documents/fake.docx", null);
             TestHelpers.AssertExpectedMime(result, new[] { "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
             TestHelpers.AssertMinContentLength(result, 20);
@@ -43,6 +47,7 @@ namespace Kreuzberg.E2E.Office {
         [Fact]
         public void OfficeDocxFormatting()
         {
+            TestHelpers.SkipIfLegacyOfficeDisabled("documents/unit_test_formatting.docx");
             var result = TestHelpers.RunExtraction("documents/unit_test_formatting.docx", null);
             TestHelpers.AssertExpectedMime(result, new[] { "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
             TestHelpers.AssertMinContentLength(result, 20);
@@ -51,6 +56,7 @@ namespace Kreuzberg.E2E.Office {
         [Fact]
         public void OfficeDocxHeaders()
         {
+            TestHelpers.SkipIfLegacyOfficeDisabled("documents/unit_test_headers.docx");
             var result = TestHelpers.RunExtraction("documents/unit_test_headers.docx", null);
             TestHelpers.AssertExpectedMime(result, new[] { "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
             TestHelpers.AssertMinContentLength(result, 20);
@@ -59,6 +65,7 @@ namespace Kreuzberg.E2E.Office {
         [Fact]
         public void OfficeDocxLists()
         {
+            TestHelpers.SkipIfLegacyOfficeDisabled("documents/unit_test_lists.docx");
             var result = TestHelpers.RunExtraction("documents/unit_test_lists.docx", null);
             TestHelpers.AssertExpectedMime(result, new[] { "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
             TestHelpers.AssertMinContentLength(result, 20);
@@ -67,6 +74,7 @@ namespace Kreuzberg.E2E.Office {
         [Fact]
         public void OfficeDocxTables()
         {
+            TestHelpers.SkipIfLegacyOfficeDisabled("documents/docx_tables.docx");
             var result = TestHelpers.RunExtraction("documents/docx_tables.docx", null);
             TestHelpers.AssertExpectedMime(result, new[] { "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
             TestHelpers.AssertMinContentLength(result, 50);
@@ -77,6 +85,7 @@ namespace Kreuzberg.E2E.Office {
         [Fact]
         public void OfficePptLegacy()
         {
+            TestHelpers.SkipIfLegacyOfficeDisabled("legacy_office/simple.ppt");
             var result = TestHelpers.RunExtraction("legacy_office/simple.ppt", null);
             TestHelpers.AssertExpectedMime(result, new[] { "application/vnd.ms-powerpoint" });
             TestHelpers.AssertMinContentLength(result, 10);
@@ -85,6 +94,7 @@ namespace Kreuzberg.E2E.Office {
         [Fact]
         public void OfficePptxBasic()
         {
+            TestHelpers.SkipIfLegacyOfficeDisabled("presentations/simple.pptx");
             var result = TestHelpers.RunExtraction("presentations/simple.pptx", null);
             TestHelpers.AssertExpectedMime(result, new[] { "application/vnd.openxmlformats-officedocument.presentationml.presentation" });
             TestHelpers.AssertMinContentLength(result, 50);
@@ -93,6 +103,7 @@ namespace Kreuzberg.E2E.Office {
         [Fact]
         public void OfficePptxImages()
         {
+            TestHelpers.SkipIfLegacyOfficeDisabled("presentations/powerpoint_with_image.pptx");
             var result = TestHelpers.RunExtraction("presentations/powerpoint_with_image.pptx", null);
             TestHelpers.AssertExpectedMime(result, new[] { "application/vnd.openxmlformats-officedocument.presentationml.presentation" });
             TestHelpers.AssertMinContentLength(result, 20);
@@ -101,6 +112,7 @@ namespace Kreuzberg.E2E.Office {
         [Fact]
         public void OfficePptxPitchDeck()
         {
+            TestHelpers.SkipIfLegacyOfficeDisabled("presentations/pitch_deck_presentation.pptx");
             var result = TestHelpers.RunExtraction("presentations/pitch_deck_presentation.pptx", null);
             TestHelpers.AssertExpectedMime(result, new[] { "application/vnd.openxmlformats-officedocument.presentationml.presentation" });
             TestHelpers.AssertMinContentLength(result, 100);
@@ -109,6 +121,7 @@ namespace Kreuzberg.E2E.Office {
         [Fact]
         public void OfficeXlsLegacy()
         {
+            TestHelpers.SkipIfLegacyOfficeDisabled("spreadsheets/test_excel.xls");
             var result = TestHelpers.RunExtraction("spreadsheets/test_excel.xls", null);
             TestHelpers.AssertExpectedMime(result, new[] { "application/vnd.ms-excel" });
             TestHelpers.AssertMinContentLength(result, 10);
@@ -117,6 +130,7 @@ namespace Kreuzberg.E2E.Office {
         [Fact]
         public void OfficeXlsxBasic()
         {
+            TestHelpers.SkipIfLegacyOfficeDisabled("spreadsheets/stanley_cups.xlsx");
             var result = TestHelpers.RunExtraction("spreadsheets/stanley_cups.xlsx", null);
             TestHelpers.AssertExpectedMime(result, new[] { "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
             TestHelpers.AssertMinContentLength(result, 100);
@@ -130,6 +144,7 @@ namespace Kreuzberg.E2E.Office {
         [Fact]
         public void OfficeXlsxMultiSheet()
         {
+            TestHelpers.SkipIfLegacyOfficeDisabled("spreadsheets/excel_multi_sheet.xlsx");
             var result = TestHelpers.RunExtraction("spreadsheets/excel_multi_sheet.xlsx", null);
             TestHelpers.AssertExpectedMime(result, new[] { "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
             TestHelpers.AssertMinContentLength(result, 20);
@@ -140,6 +155,7 @@ namespace Kreuzberg.E2E.Office {
         [Fact]
         public void OfficeXlsxOfficeExample()
         {
+            TestHelpers.SkipIfLegacyOfficeDisabled("office/excel.xlsx");
             var result = TestHelpers.RunExtraction("office/excel.xlsx", null);
             TestHelpers.AssertExpectedMime(result, new[] { "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
             TestHelpers.AssertMinContentLength(result, 10);

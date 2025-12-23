@@ -11,6 +11,7 @@ namespace Kreuzberg.E2E.Structured {
         [Fact]
         public void StructuredJsonBasic()
         {
+            TestHelpers.SkipIfLegacyOfficeDisabled("json/sample_document.json");
             var result = TestHelpers.RunExtraction("json/sample_document.json", null);
             TestHelpers.AssertExpectedMime(result, new[] { "application/json" });
             TestHelpers.AssertMinContentLength(result, 20);
@@ -20,6 +21,7 @@ namespace Kreuzberg.E2E.Structured {
         [Fact]
         public void StructuredJsonSimple()
         {
+            TestHelpers.SkipIfLegacyOfficeDisabled("data_formats/simple.json");
             var result = TestHelpers.RunExtraction("data_formats/simple.json", null);
             TestHelpers.AssertExpectedMime(result, new[] { "application/json" });
             TestHelpers.AssertMinContentLength(result, 10);
@@ -29,6 +31,7 @@ namespace Kreuzberg.E2E.Structured {
         [Fact]
         public void StructuredYamlSimple()
         {
+            TestHelpers.SkipIfLegacyOfficeDisabled("data_formats/simple.yaml");
             var result = TestHelpers.RunExtraction("data_formats/simple.yaml", null);
             TestHelpers.AssertExpectedMime(result, new[] { "application/x-yaml" });
             TestHelpers.AssertMinContentLength(result, 10);

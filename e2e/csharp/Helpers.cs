@@ -88,6 +88,20 @@ public static class TestHelpers
         return path;
     }
 
+    public static void SkipIfLegacyOfficeDisabled(string relativePath)
+    {
+        var flag = Environment.GetEnvironmentVariable("KREUZBERG_SKIP_LEGACY_OFFICE");
+        if (string.IsNullOrWhiteSpace(flag) || !OperatingSystem.IsWindows())
+        {
+            return;
+        }
+        var ext = Path.GetExtension(relativePath).ToLowerInvariant();
+        if (ext == ".ppt" || ext == ".doc" || ext == ".xls")
+        {
+            throw new SkipException("Legacy Office conversion skipped on Windows CI");
+        }
+    }
+
     public static ExtractionConfig? BuildConfig(string? configJson)
     {
         if (string.IsNullOrWhiteSpace(configJson))

@@ -247,6 +247,7 @@ jobs:
           KREUZBERG_FFI_DIR: ${{ github.workspace }}/target/release
           LD_LIBRARY_PATH: ${{ github.workspace }}/target/release:${{ env.LD_LIBRARY_PATH }}
           DYLD_LIBRARY_PATH: ${{ github.workspace }}/target/release:${{ env.DYLD_LIBRARY_PATH }}
+          KREUZBERG_SKIP_LEGACY_OFFICE: ${{ runner.os == 'Windows' && '1' || '' }}
         run: scripts/ci/csharp/run-e2e.sh
 
       - name: Upload C# crash dumps

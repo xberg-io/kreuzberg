@@ -96,6 +96,20 @@ public static class TestHelpers
         return path;
     }
 
+    public static void SkipIfLegacyOfficeDisabled(string relativePath)
+    {
+        var flag = Environment.GetEnvironmentVariable("KREUZBERG_SKIP_LEGACY_OFFICE");
+        if (string.IsNullOrWhiteSpace(flag) || !OperatingSystem.IsWindows())
+        {
+            return;
+        }
+        var ext = Path.GetExtension(relativePath).ToLowerInvariant();
+        if (ext == ".ppt" || ext == ".doc" || ext == ".xls")
+        {
+            throw new SkipException("Legacy Office conversion skipped on Windows CI");
+        }
+    }
+
     public static ExtractionConfig? BuildConfig(string? configJson)
     {
         if (string.IsNullOrWhiteSpace(configJson))
@@ -515,6 +529,11 @@ fn render_test(buffer: &mut String, fixture: &Fixture) -> Result<()> {
 
     let doc = fixture.document();
     let config_json = render_config_expression(&fixture.extraction().config)?;
+    writeln!(
+        buffer,
+        "            TestHelpers.SkipIfLegacyOfficeDisabled(\"{}\");",
+        escape_csharp_string(&doc.path)
+    )?;
     writeln!(
         buffer,
         "            var result = TestHelpers.RunExtraction(\"{}\", {});",

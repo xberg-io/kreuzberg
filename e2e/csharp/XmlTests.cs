@@ -11,6 +11,7 @@ namespace Kreuzberg.E2E.Xml {
         [Fact]
         public void XmlPlantCatalog()
         {
+            TestHelpers.SkipIfLegacyOfficeDisabled("xml/plant_catalog.xml");
             var result = TestHelpers.RunExtraction("xml/plant_catalog.xml", null);
             TestHelpers.AssertExpectedMime(result, new[] { "application/xml" });
             TestHelpers.AssertMinContentLength(result, 100);
