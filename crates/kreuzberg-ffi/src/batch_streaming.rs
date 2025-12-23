@@ -42,7 +42,6 @@ use kreuzberg::types::ExtractionResult;
 use std::ffi::{CStr, CString};
 use std::os::raw::{c_char, c_int, c_void};
 use std::path::Path;
-use std::ptr;
 #[cfg(feature = "rayon")]
 use std::sync::Arc;
 #[cfg(feature = "rayon")]
@@ -450,6 +449,7 @@ fn extract_file_internal(
 mod tests {
     use super::*;
     use std::ffi::CString;
+    use std::ptr;
     use std::sync::Mutex;
 
     struct TestContext {
