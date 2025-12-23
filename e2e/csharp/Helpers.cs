@@ -36,7 +36,7 @@ public static class TestHelpers
             dir = Directory.GetParent(candidate)?.FullName;
         }
 
-        // Fallback to two-levels-up from current directory to preserve previous behaviour
+        // Fallback to legacy two-levels-up resolution
         var cwd = Directory.GetCurrentDirectory();
         return Path.GetFullPath(Path.Combine(cwd, "..", ".."));
     }
@@ -220,6 +220,20 @@ public static class TestHelpers
 
     public static JsonNode? LookupMetadata(JsonNode node, string path)
     {
+        var direct = LookupMetadataPath(node, path);
+        if (direct is not null)
+        {
+            return direct;
+        }
+        if (node is JsonObject obj && obj.TryGetPropertyValue("format", out var format) && format is not null)
+        {
+            return LookupMetadataPath(format, path);
+        }
+        return null;
+    }
+
+    private static JsonNode? LookupMetadataPath(JsonNode node, string path)
+    {
         var current = node;
         foreach (var segment in path.Split('.', StringSplitOptions.RemoveEmptyEntries))
         {
@@ -246,47 +260,42 @@ public static class TestHelpers
             throw new XunitException($"Invalid expectation for {path}: {expectationJson}");
         }
 
-	        if (spec.TryGetPropertyValue("eq", out var eq))
-	        {
-	            if (!JsonEquals(value, eq))
-	            {
-	                throw new XunitException($"Expected metadata {path} == {eq}, got {value}");
-	            }
-	        }
-	        if (spec.TryGetPropertyValue("gte", out var gte))
-	        {
-	            if (!CompareFloat(value, gte, true))
-	            {
-	                throw new XunitException($"Expected metadata {path} >= {gte}, got {value}");
-	            }
-	        }
-	        if (spec.TryGetPropertyValue("lte", out var lte))
-	        {
-	            if (!CompareFloat(value, lte, false))
-	            {
-	                throw new XunitException($"Expected metadata {path} <= {lte}, got {value}");
-	            }
-	        }
-	        if (spec.TryGetPropertyValue("contains", out var contains))
-	        {
-	            if (!ValueContains(value, contains))
-	            {
-	                throw new XunitException($"Expected metadata {path} to contain {contains}, got {value}");
-	            }
-	        }
-	    }
+        if (spec.TryGetPropertyValue("eq", out var eq))
+        {
+            if (!JsonEquals(value, eq))
+            {
+                throw new XunitException($"Expected metadata {path} == {eq}, got {value}");
+            }
+        }
+        if (spec.TryGetPropertyValue("gte", out var gte))
+        {
+            if (!CompareFloat(value, gte, true))
+            {
+                throw new XunitException($"Expected metadata {path} >= {gte}, got {value}");
+            }
+        }
+        if (spec.TryGetPropertyValue("lte", out var lte))
+        {
+            if (!CompareFloat(value, lte, false))
+            {
+                throw new XunitException($"Expected metadata {path} <= {lte}, got {value}");
+            }
+        }
+        if (spec.TryGetPropertyValue("contains", out var contains))
+        {
+            if (!ValueContains(value, contains))
+            {
+                throw new XunitException($"Expected metadata {path} to contain {contains}, got {value}");
+            }
+        }
+    }
 
-	    private static bool JsonEquals(JsonNode a, JsonNode? b)
-	    {
-	        if (b is null)
-	        {
-	            return false;
-	        }
-
-	        if (a is JsonValue av && b is JsonValue bv)
-	        {
-	            if (av.TryGetValue<string>(out var aStr) && bv.TryGetValue<string>(out var bStr))
-	            {
+    private static bool JsonEquals(JsonNode a, JsonNode b)
+    {
+        if (a is JsonValue av && b is JsonValue bv)
+        {
+            if (av.TryGetValue<string>(out var aStr) && bv.TryGetValue<string>(out var bStr))
+            {
                 return aStr == bStr;
             }
             if (av.TryGetValue<double>(out var aNum) && bv.TryGetValue<double>(out var bNum))
@@ -299,11 +308,11 @@ public static class TestHelpers
             }
         }
 
-	        if (a is JsonArray aa && b is JsonArray ba && aa.Count == ba.Count)
-	        {
-	            for (var i = 0; i < aa.Count; i++)
-	            {
-	                if (!JsonEquals(aa[i]!, ba[i]!))
+        if (a is JsonArray aa && b is JsonArray ba && aa.Count == ba.Count)
+        {
+            for (var i = 0; i < aa.Count; i++)
+            {
+                if (!JsonEquals(aa[i]!, ba[i]!))
                 {
                     return false;
                 }
@@ -311,20 +320,15 @@ public static class TestHelpers
             return true;
         }
 
-	        return a.ToJsonString() == b.ToJsonString();
-	    }
+        return a.ToJsonString() == b.ToJsonString();
+    }
 
-	    private static bool CompareFloat(JsonNode actual, JsonNode? expected, bool gte)
-	    {
-	        if (expected is null)
-	        {
-	            return false;
-	        }
-
-	        try
-	        {
-	            double? actualVal = null;
-	            double? expectedVal = null;
+    private static bool CompareFloat(JsonNode actual, JsonNode expected, bool gte)
+    {
+        try
+        {
+            double? actualVal = null;
+            double? expectedVal = null;
 
             if (actual is JsonValue av)
             {
@@ -350,30 +354,25 @@ public static class TestHelpers
         catch
         {
             return false;
-	        }
-	    }
+        }
+    }
 
-	    private static bool ValueContains(JsonNode value, JsonNode? contains)
-	    {
-	        if (contains is null)
-	        {
-	            return false;
-	        }
-
-	        if (value is JsonValue valueAsJsonValue && contains is JsonValue containsAsJsonValue)
-	        {
-	            if (valueAsJsonValue.TryGetValue<string>(out var valueStr) && containsAsJsonValue.TryGetValue<string>(out var containsStr))
-	            {
-                return valueStr.Contains(containsStr, StringComparison.OrdinalIgnoreCase);
+    private static bool ValueContains(JsonNode value, JsonNode contains)
+    {
+        if (value is JsonValue vv && contains is JsonValue cv)
+        {
+            if (vv.TryGetValue<string>(out var vStr) && cv.TryGetValue<string>(out var cStr))
+            {
+                return vStr.Contains(cStr, StringComparison.OrdinalIgnoreCase);
             }
         }
 
-        if (value is JsonArray valueArrayWithString && contains is JsonValue containsAsValueString && containsAsValueString.TryGetValue<string>(out var needle))
+        if (value is JsonArray va && contains is JsonValue cs && cs.TryGetValue<string>(out var needle))
         {
-            foreach (var arrayItem in valueArrayWithString)
+            foreach (var vItem in va)
             {
-                if (arrayItem is JsonValue arrayItemAsValue && arrayItemAsValue.TryGetValue<string>(out var arrayItemStr) &&
-                    arrayItemStr.Contains(needle, StringComparison.OrdinalIgnoreCase))
+                if (vItem is JsonValue vv && vv.TryGetValue<string>(out var vStr) &&
+                    vStr.Contains(needle, StringComparison.OrdinalIgnoreCase))
                 {
                     return true;
                 }
@@ -381,14 +380,14 @@ public static class TestHelpers
             return false;
         }
 
-        if (value is JsonArray valueArrayWithArray && contains is JsonArray containsArray)
+        if (value is JsonArray va && contains is JsonArray ca)
         {
-            foreach (var containsItem in containsArray)
+            foreach (var item in ca)
             {
                 bool found = false;
-                foreach (var valueItem in valueArrayWithArray)
+                foreach (var vItem in va)
                 {
-                    if (JsonEquals(valueItem!, containsItem!))
+                    if (JsonEquals(vItem!, item!))
                     {
                         found = true;
                         break;
@@ -400,19 +399,6 @@ public static class TestHelpers
             return true;
         }
 
-        // Handle case where value is an array and contains is a single value
-        if (value is JsonArray valueArraySingleItem)
-        {
-            foreach (var arrayItem in valueArraySingleItem)
-            {
-                if (JsonEquals(arrayItem!, contains))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-	        return false;
-	    }
+        return false;
+    }
 }

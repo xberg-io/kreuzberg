@@ -185,6 +185,16 @@ module E2ERuby
       private
 
       def fetch_metadata_value(metadata, path)
+        value = lookup_metadata_path(metadata, path)
+        return value unless value.nil?
+
+        format = metadata['format'] || metadata[:format]
+        return nil unless format.is_a?(Hash)
+
+        lookup_metadata_path(format, path)
+      end
+
+      def lookup_metadata_path(metadata, path)
         current = metadata
         path.split('.').each do |segment|
           return nil unless current.is_a?(Hash)

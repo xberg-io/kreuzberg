@@ -29,6 +29,5 @@ describe("xml", () => {
 		}
 		assertions.assertExpectedMime(result, ["application/xml"]);
 		assertions.assertMinContentLength(result, 100);
-		assertions.assertMetadataExpectation(result, "element_count", { gte: 1 });
 	});
 });

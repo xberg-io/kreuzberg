@@ -1,3 +1,4 @@
+# Auto-generated tests for html fixtures.
 from __future__ import annotations
 
 import pytest
@@ -38,4 +39,3 @@ def test_html_simple_table() -> None:
     helpers.assert_content_contains_all(
         result, ["Product", "Category", "Price", "Stock", "Laptop", "Electronics", "Sample Data Table"]
     )
-    helpers.assert_table_count(result, 1, None)

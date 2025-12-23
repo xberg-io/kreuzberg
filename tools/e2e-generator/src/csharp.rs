@@ -228,6 +228,20 @@ public static class TestHelpers
 
     public static JsonNode? LookupMetadata(JsonNode node, string path)
     {
+        var direct = LookupMetadataPath(node, path);
+        if (direct is not null)
+        {
+            return direct;
+        }
+        if (node is JsonObject obj && obj.TryGetPropertyValue("format", out var format) && format is not null)
+        {
+            return LookupMetadataPath(format, path);
+        }
+        return null;
+    }
+
+    private static JsonNode? LookupMetadataPath(JsonNode node, string path)
+    {
         var current = node;
         foreach (var segment in path.Split('.', StringSplitOptions.RemoveEmptyEntries))
         {

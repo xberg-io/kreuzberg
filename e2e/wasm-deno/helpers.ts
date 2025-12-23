@@ -364,7 +364,7 @@ export const assertions = {
 	},
 };
 
-function getMetadataPath(metadata: PlainRecord, path: string): unknown {
+function lookupMetadataPath(metadata: PlainRecord, path: string): unknown {
 	const segments = path.split(".");
 	let current: unknown = metadata;
 	for (const segment of segments) {
@@ -374,6 +374,18 @@ function getMetadataPath(metadata: PlainRecord, path: string): unknown {
 		current = (current as PlainRecord)[segment];
 	}
 	return current;
+}
+
+function getMetadataPath(metadata: PlainRecord, path: string): unknown {
+	const direct = lookupMetadataPath(metadata, path);
+	if (direct !== undefined) {
+		return direct;
+	}
+	const format = metadata.format;
+	if (isPlainRecord(format)) {
+		return lookupMetadataPath(format as PlainRecord, path);
+	}
+	return undefined;
 }
 
 function valuesEqual(lhs: unknown, rhs: unknown): boolean {

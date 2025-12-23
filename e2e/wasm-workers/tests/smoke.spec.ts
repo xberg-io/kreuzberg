@@ -82,7 +82,7 @@ describe("smoke", () => {
 			return;
 		}
 		assertions.assertExpectedMime(result, ["image/png"]);
-		assertions.assertMetadataExpectation(result, "format", { eq: "PNG" });
+		assertions.assertMetadataExpectation(result, "format", "PNG");
 	});
 
 	it("smoke_json_basic", async () => {

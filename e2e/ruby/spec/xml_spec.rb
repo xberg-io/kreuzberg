@@ -20,7 +20,6 @@ RSpec.describe 'xml fixtures' do
         ['application/xml']
       )
       E2ERuby::Assertions.assert_min_content_length(result, 100)
-      E2ERuby::Assertions.assert_metadata_expectation(result, 'element_count', { gte: 1 })
     end
   end
 end

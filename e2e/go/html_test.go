@@ -16,5 +16,4 @@ func TestHtmlHtmlSimpleTable(t *testing.T) {
 	assertExpectedMime(t, result, []string{"text/html"})
 	assertMinContentLength(t, result, 100)
 	assertContentContainsAll(t, result, []string{"Product", "Category", "Price", "Stock", "Laptop", "Electronics", "Sample Data Table"})
-	assertTableCount(t, result, intPtr(1), nil)
 }

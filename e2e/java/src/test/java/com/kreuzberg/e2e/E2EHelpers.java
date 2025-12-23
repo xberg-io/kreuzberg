@@ -67,6 +67,7 @@ public final class E2EHelpers {
         String reason;
         if (missingDependency) {
             if (error instanceof MissingDependencyException) {
+                // Extract dependency from exception message if available
                 String msg = error.getMessage();
                 reason = msg != null && !msg.isEmpty()
                         ? "missing dependency: " + msg
@@ -270,6 +271,7 @@ public final class E2EHelpers {
                     assertTrue(((String) value).contains((String) contains),
                             String.format("Expected '%s' to contain '%s'", value, contains));
                 } else if (value instanceof List && contains instanceof String) {
+                    // List contains a string
                     @SuppressWarnings("unchecked")
                     List<Object> valueList = (List<Object>) value;
                     boolean found = valueList.stream()
@@ -295,6 +297,20 @@ public final class E2EHelpers {
             if (metadata == null) {
                 return null;
             }
+            Object direct = lookupMetadataPath(metadata, path);
+            if (direct != null) {
+                return direct;
+            }
+            Object formatObj = metadata.get("format");
+            if (formatObj instanceof Map<?, ?>) {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> format = (Map<String, Object>) formatObj;
+                return lookupMetadataPath(format, path);
+            }
+            return null;
+        }
+
+        private static Object lookupMetadataPath(Map<String, Object> metadata, String path) {
             Object current = metadata;
             for (String segment : path.split("\\.")) {
                 if (!(current instanceof Map)) {

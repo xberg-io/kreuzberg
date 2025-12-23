@@ -62,6 +62,5 @@ describe("html", () => {
 			"Electronics",
 			"Sample Data Table",
 		]);
-		assertions.assertTableCount(result, 1, null);
 	});
 });

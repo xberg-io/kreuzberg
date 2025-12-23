@@ -226,6 +226,18 @@ pub mod assertions {
     }
 
     fn lookup_path<'a>(value: &'a Value, path: &str) -> Option<&'a Value> {
+        if let Some(found) = lookup_path_inner(value, path) {
+            return Some(found);
+        }
+        if let Value::Object(map) = value {
+            if let Some(format) = map.get("format") {
+                return lookup_path_inner(format, path);
+            }
+        }
+        None
+    }
+
+    fn lookup_path_inner<'a>(value: &'a Value, path: &str) -> Option<&'a Value> {
         let mut current = value;
         for segment in path.split('.') {
             current = match current {

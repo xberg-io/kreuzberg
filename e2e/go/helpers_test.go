@@ -245,6 +245,16 @@ func metadataAsMap(t *testing.T, metadata kreuzberg.Metadata) map[string]any {
 }
 
 func lookupMetadataValue(metadata map[string]any, path string) any {
+	if value := lookupMetadataPath(metadata, path); value != nil {
+		return value
+	}
+	if format, ok := metadata["format"].(map[string]any); ok {
+		return lookupMetadataPath(format, path)
+	}
+	return nil
+}
+
+func lookupMetadataPath(metadata map[string]any, path string) any {
 	current := any(metadata)
 	for _, segment := range strings.Split(path, ".") {
 		asMap, ok := current.(map[string]any)

@@ -160,13 +160,26 @@ def assert_metadata_expectation(result: Any, path: str, expectation: dict[str, A
         pytest.fail("exists=False not supported for metadata expectations")
 
 
-def _lookup_path(metadata: Mapping[str, Any], path: str) -> Any:
-    current: Any = metadata
-    for segment in path.split("."):
-        if not isinstance(current, Mapping) or segment not in current:
-            return None
-        current = current[segment]
-    return current
+def _lookup_path(metadata: Mapping[str, Any] | None, path: str) -> Any:
+    if not isinstance(metadata, Mapping):
+        return None
+
+    def _lookup(source: Mapping[str, Any]) -> Any:
+        current: Any = source
+        for segment in path.split("."):
+            if not isinstance(current, Mapping) or segment not in current:
+                return None
+            current = current[segment]
+        return current
+
+    direct = _lookup(metadata)
+    if direct is not None:
+        return direct
+
+    format_metadata = metadata.get("format")
+    if isinstance(format_metadata, Mapping):
+        return _lookup(format_metadata)
+    return None
 
 
 def _values_equal(lhs: Any, rhs: Any) -> bool:

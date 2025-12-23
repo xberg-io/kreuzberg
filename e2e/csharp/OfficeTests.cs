@@ -8,7 +8,7 @@ using Kreuzberg.E2E;
 namespace Kreuzberg.E2E.Office {
     public class OfficeTests
     {
-        [Fact(Skip = "LibreOffice conversion hangs on Windows CI")]
+        [Fact]
         public void OfficeDocLegacy()
         {
             var result = TestHelpers.RunExtraction("legacy_office/unit_test_lists.doc", null);
@@ -74,7 +74,7 @@ namespace Kreuzberg.E2E.Office {
             TestHelpers.AssertTableCount(result, 1, null);
         }
 
-        [Fact(Skip = "LibreOffice conversion hangs on Windows CI")]
+        [Fact]
         public void OfficePptLegacy()
         {
             var result = TestHelpers.RunExtraction("legacy_office/simple.ppt", null);
@@ -106,7 +106,7 @@ namespace Kreuzberg.E2E.Office {
             TestHelpers.AssertMinContentLength(result, 100);
         }
 
-        [Fact(Skip = "LibreOffice conversion hangs on Windows CI")]
+        [Fact]
         public void OfficeXlsLegacy()
         {
             var result = TestHelpers.RunExtraction("spreadsheets/test_excel.xls", null);
@@ -124,7 +124,7 @@ namespace Kreuzberg.E2E.Office {
             TestHelpers.AssertTableCount(result, 1, null);
             var metadataNode = TestHelpers.MetadataToJson(result.Metadata);
             TestHelpers.AssertMetadata(metadataNode, "sheet_count", @"{""gte"": 2}");
-            TestHelpers.AssertMetadata(metadataNode, "sheet_names", @"{""contains"": ""Stanley Cups""}");
+            TestHelpers.AssertMetadata(metadataNode, "sheet_names", @"{""contains"": [""Stanley Cups""]}");
         }
 
         [Fact]

@@ -306,6 +306,20 @@ public final class E2EHelpers {
             if (metadata == null) {
                 return null;
             }
+            Object direct = lookupMetadataPath(metadata, path);
+            if (direct != null) {
+                return direct;
+            }
+            Object formatObj = metadata.get("format");
+            if (formatObj instanceof Map<?, ?>) {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> format = (Map<String, Object>) formatObj;
+                return lookupMetadataPath(format, path);
+            }
+            return null;
+        }
+
+        private static Object lookupMetadataPath(Map<String, Object> metadata, String path) {
             Object current = metadata;
             for (String segment : path.split("\\.")) {
                 if (!(current instanceof Map)) {
@@ -411,6 +425,10 @@ const JAVA_POM_TEMPLATE: &str = r#"<?xml version="1.0" encoding="UTF-8"?>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.5.4</version>
+                <configuration>
+                    <argLine>--enable-native-access=ALL-UNNAMED -Djava.library.path=${project.basedir}/../../target/release</argLine>
+                    <forkedProcessTimeoutInSeconds>300</forkedProcessTimeoutInSeconds>
+                </configuration>
             </plugin>
         </plugins>
     </build>

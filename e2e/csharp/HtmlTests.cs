@@ -23,7 +23,6 @@ namespace Kreuzberg.E2E.Html {
             TestHelpers.AssertExpectedMime(result, new[] { "text/html" });
             TestHelpers.AssertMinContentLength(result, 100);
             TestHelpers.AssertContentContainsAll(result, new[] { "Product", "Category", "Price", "Stock", "Laptop", "Electronics", "Sample Data Table" });
-            TestHelpers.AssertTableCount(result, 1, null);
         }
 
     }

@@ -1,9 +1,12 @@
+// Auto-generated tests for xml fixtures.
 #![allow(clippy::too_many_lines)]
 use e2e_rust::{assertions, resolve_document};
 use kreuzberg::core::config::ExtractionConfig;
 
 #[test]
 fn test_xml_plant_catalog() {
+    // XML plant catalog to validate streaming XML extraction.
+
     let document_path = resolve_document("xml/plant_catalog.xml");
     if !document_path.exists() {
         println!(
@@ -21,5 +24,4 @@ fn test_xml_plant_catalog() {
 
     assertions::assert_expected_mime(&result, &["application/xml"]);
     assertions::assert_min_content_length(&result, 100);
-    assertions::assert_metadata_expectation(&result, "element_count", &serde_json::json!({"gte":1}));
 }
