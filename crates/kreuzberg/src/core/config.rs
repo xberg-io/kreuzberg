@@ -6,6 +6,7 @@
 use crate::{KreuzbergError, Result};
 use dashmap::DashMap;
 use serde::{Deserialize, Serialize};
+use std::collections::HashSet;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, LazyLock};
 use std::time::SystemTime;
@@ -144,6 +145,29 @@ pub struct PostProcessorConfig {
     /// Blacklist of processor names to skip (None = none disabled)
     #[serde(default)]
     pub disabled_processors: Option<Vec<String>>,
+
+    /// Pre-computed HashSet for O(1) enabled processor lookup
+    #[serde(skip)]
+    pub enabled_set: Option<HashSet<String>>,
+
+    /// Pre-computed HashSet for O(1) disabled processor lookup
+    #[serde(skip)]
+    pub disabled_set: Option<HashSet<String>>,
+}
+
+impl PostProcessorConfig {
+    /// Pre-compute HashSets for O(1) processor name lookups.
+    ///
+    /// This method converts the enabled/disabled processor Vec to HashSet
+    /// for constant-time lookups in the pipeline.
+    pub fn build_lookup_sets(&mut self) {
+        if let Some(ref enabled) = self.enabled_processors {
+            self.enabled_set = Some(enabled.iter().cloned().collect());
+        }
+        if let Some(ref disabled) = self.disabled_processors {
+            self.disabled_set = Some(disabled.iter().cloned().collect());
+        }
+    }
 }
 
 /// OCR configuration.
@@ -386,6 +410,8 @@ impl Default for PostProcessorConfig {
             enabled: true,
             enabled_processors: None,
             disabled_processors: None,
+            enabled_set: None,
+            disabled_set: None,
         }
     }
 }

@@ -153,9 +153,16 @@ pub async fn run_pipeline(mut result: ExtractionResult, config: &ExtractionConfi
                 let processor_name = processor.name();
 
                 let should_run = if let Some(config) = pp_config {
-                    if let Some(ref enabled) = config.enabled_processors {
+                    // Use O(1) HashSet lookups if available
+                    if let Some(ref enabled_set) = config.enabled_set {
+                        enabled_set.contains(processor_name)
+                    } else if let Some(ref disabled_set) = config.disabled_set {
+                        !disabled_set.contains(processor_name)
+                    } else if let Some(ref enabled) = config.enabled_processors {
+                        // Fallback to O(n) Vec search if HashSet not built yet
                         enabled.iter().any(|name| name == processor_name)
                     } else if let Some(ref disabled) = config.disabled_processors {
+                        // Fallback to O(n) Vec search if HashSet not built yet
                         !disabled.iter().any(|name| name == processor_name)
                     } else {
                         true
