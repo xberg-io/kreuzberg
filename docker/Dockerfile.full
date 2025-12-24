@@ -44,6 +44,19 @@ RUN mkdir -p /build/pdfium && \
 # Set environment variable to use prebuilt pdfium
 ENV KREUZBERG_PDFIUM_PREBUILT=/build/pdfium
 
+# Download and extract ONNX Runtime
+ARG ONNXRUNTIME_VERSION=1.23.2
+RUN mkdir -p /build/onnxruntime && \
+    if [ "$TARGETARCH" = "arm64" ]; then \
+        ONNX_ARCH="aarch64"; \
+    else \
+        ONNX_ARCH="x64"; \
+    fi && \
+    curl -fL "https://github.com/microsoft/onnxruntime/releases/download/v${ONNXRUNTIME_VERSION}/onnxruntime-linux-${ONNX_ARCH}-${ONNXRUNTIME_VERSION}.tgz" \
+        -o /build/onnxruntime.tgz && \
+    tar -xzf /build/onnxruntime.tgz -C /build/onnxruntime --strip-components=1 && \
+    rm /build/onnxruntime.tgz
+
 # Copy workspace manifests and crates
 COPY Cargo.toml Cargo.lock ./
 COPY crates/kreuzberg/ crates/kreuzberg/
@@ -91,8 +104,6 @@ RUN apt-get update && \
         tesseract-ocr-ara \
         tesseract-ocr-rus \
         tesseract-ocr-hin \
-        libonnxruntime1.23 \
-        libonnxruntime-dev \
         fontconfig \
         libxinerama1 \
         libgl1 \
@@ -119,6 +130,10 @@ RUN apt-get update && \
 
 # Copy pdfium library from builder
 COPY --from=builder /build/pdfium/lib/libpdfium.so /usr/local/lib/
+
+# Copy ONNX Runtime from builder
+COPY --from=builder /build/onnxruntime/lib/* /usr/local/lib/
+COPY --from=builder /build/onnxruntime/include/* /usr/local/include/
 RUN ldconfig
 
 # Copy binary from builder
