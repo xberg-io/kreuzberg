@@ -17,10 +17,13 @@ crate-type = ["cdylib"]
 test = false
 
 [dependencies]
+async-trait = { workspace = true }
 ext-php-rs = "0.13"
 kreuzberg = { path = "../kreuzberg", features = ["full", "bundled-pdfium"] }
+once_cell = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
+tokio = { workspace = true, features = ["rt", "sync"] }
 
 [features]
 default = []

@@ -3181,10 +3181,13 @@ dependencies = [
 name = "kreuzberg-php"
 version = "4.0.0-rc.20"
 dependencies = [
+ "async-trait",
  "ext-php-rs",
  "kreuzberg",
+ "once_cell",
  "serde",
  "serde_json",
+ "tokio",
 ]
 
 [[package]]

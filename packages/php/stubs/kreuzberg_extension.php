@@ -84,3 +84,160 @@ function kreuzberg_detect_mime_type(string $data): string
 function kreuzberg_detect_mime_type_from_path(string $path): string
 {
 }
+
+/**
+ * Register a custom document extractor (native extension function).
+ *
+ * @param string $mimeType MIME type to handle
+ * @param callable $extractor Extractor callback
+ * @return void
+ */
+function kreuzberg_register_extractor(string $mimeType, callable $extractor): void
+{
+}
+
+/**
+ * Unregister a custom document extractor (native extension function).
+ *
+ * @param string $mimeType MIME type to unregister
+ * @return void
+ */
+function kreuzberg_unregister_extractor(string $mimeType): void
+{
+}
+
+/**
+ * List all registered extractors (native extension function).
+ *
+ * @return array<string> List of registered MIME types
+ */
+function kreuzberg_list_extractors(): array
+{
+}
+
+/**
+ * Clear all registered extractors (native extension function).
+ *
+ * @return void
+ */
+function kreuzberg_clear_extractors(): void
+{
+}
+
+/**
+ * Test a plugin for compatibility (native extension function).
+ *
+ * @param string $pluginPath Path to the plugin
+ * @return bool Whether the plugin is compatible
+ */
+function kreuzberg_test_plugin(string $pluginPath): bool
+{
+}
+
+/**
+ * Register a custom OCR backend (native extension function).
+ *
+ * @param string $name Backend name
+ * @param callable $backend Backend callback
+ * @return void
+ */
+function kreuzberg_register_ocr_backend(string $name, callable $backend): void
+{
+}
+
+/**
+ * Unregister a custom OCR backend (native extension function).
+ *
+ * @param string $name Backend name
+ * @return void
+ */
+function kreuzberg_unregister_ocr_backend(string $name): void
+{
+}
+
+/**
+ * List all registered OCR backends (native extension function).
+ *
+ * @return array<string> List of registered backend names
+ */
+function kreuzberg_list_ocr_backends(): array
+{
+}
+
+/**
+ * Register a custom post-processor (native extension function).
+ *
+ * @param string $name Processor name
+ * @param callable $processor Processor callback
+ * @return void
+ */
+function kreuzberg_register_post_processor(string $name, callable $processor): void
+{
+}
+
+/**
+ * Unregister a custom post-processor (native extension function).
+ *
+ * @param string $name Processor name
+ * @return void
+ */
+function kreuzberg_unregister_post_processor(string $name): void
+{
+}
+
+/**
+ * List all registered post-processors (native extension function).
+ *
+ * @return array<string> List of registered processor names
+ */
+function kreuzberg_list_post_processors(): array
+{
+}
+
+/**
+ * Clear all registered post-processors (native extension function).
+ *
+ * @return void
+ */
+function kreuzberg_clear_post_processors(): void
+{
+}
+
+/**
+ * Register a custom validator (native extension function).
+ *
+ * @param string $name Validator name
+ * @param callable $validator Validator callback
+ * @return void
+ */
+function kreuzberg_register_validator(string $name, callable $validator): void
+{
+}
+
+/**
+ * Unregister a custom validator (native extension function).
+ *
+ * @param string $name Validator name
+ * @return void
+ */
+function kreuzberg_unregister_validator(string $name): void
+{
+}
+
+/**
+ * List all registered validators (native extension function).
+ *
+ * @return array<string> List of registered validator names
+ */
+function kreuzberg_list_validators(): array
+{
+}
+
+/**
+ * Clear all registered validators (native extension function).
+ *
+ * @return void
+ */
+function kreuzberg_clear_validators(): void
+{
+}
