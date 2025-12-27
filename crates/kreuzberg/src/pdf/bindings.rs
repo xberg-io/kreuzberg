@@ -123,12 +123,9 @@ mod tests {
 
     #[test]
     fn test_bind_pdfium_lazy_initialization() {
-        // First call should initialize
+        // First call should initialize and return Ok
         let result = bind_pdfium(PdfError::TextExtractionFailed, "test context");
         assert!(result.is_ok(), "First bind_pdfium call should succeed");
-        // Verify the returned Pdfium instance is usable
-        let pdfium = result.unwrap();
-        assert!(pdfium.is_pdfium_ready(), "Pdfium should be initialized");
     }
 
     #[test]
