@@ -100,6 +100,12 @@ Or with pnpm:
 pnpm add @kreuzberg/node
 ```
 
+> **Note for pnpm workspaces**: If you're using pnpm in a monorepo/workspace setup, you may need to add `auto-install-peers=true` to your `.npmrc` file to ensure the platform-specific optional dependencies are installed correctly:
+>
+> ```bash
+> echo "auto-install-peers=true" >> .npmrc
+> ```
+
 Or with yarn:
 
 ```bash

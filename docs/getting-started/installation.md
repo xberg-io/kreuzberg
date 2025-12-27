@@ -78,6 +78,14 @@ yarn add @kreuzberg/node
 
 The package ships with prebuilt N-API binaries for Linux, macOS (Intel/Apple Silicon), and Windows. If you need to build from source, ensure Rust is available on your PATH and rerun the install command.
 
+**Note for pnpm workspaces**: If you're using pnpm in a monorepo/workspace setup, you may need to configure automatic peer dependency installation. Add the following to your `.npmrc` file in the workspace root:
+
+```ini title=".npmrc"
+auto-install-peers=true
+```
+
+This ensures the platform-specific optional dependencies are installed correctly.
+
 **Performance**: Native bindings provide ~100% performance through NAPI-RS compiled bindings.
 
 Next steps: [TypeScript Quick Start](../guides/extraction.md#typescript-nodejs) • [TypeScript API Reference](../reference/api-typescript.md)
