@@ -1446,13 +1446,22 @@ jobs:
           cache-key-prefix: publish-java
 
       - name: Setup Java
-        uses: actions/setup-java@v4
+        uses: sdkman/sdkman-action@v1
+        id: sdkman
         with:
-          distribution: 'temurin'
-          java-version: '25'
+          candidate: java
+          version: 25.0.1-tem
+
+      - name: Setup Java with jdkfile
+        uses: actions/setup-java@v3
+        id: setup-java
+        with:
+          distribution: 'jdkfile'
+          java-version: 25.0.1
+          jdkFile: ${{ steps.sdkman.outputs.file }}
           cache: 'maven'
 
-      - name: Setup Maven 3.9.12
+      - name: Setup Maven 3.9.11
         uses: ./.github/actions/setup-maven-4
 
       - name: Cache PDFium
@@ -2334,14 +2343,24 @@ jobs:
 
       - name: Setup Java
         if: ${{ needs.prepare.outputs.dry_run != 'true' && steps.maven_check.outputs.exists != 'true' }}
+        uses: sdkman/sdkman-action@v1
+        id: sdkman
+        with:
+          candidate: java
+          version: 25.0.1-tem
+
+      - name: Setup Java with jdkfile
+        if: ${{ needs.prepare.outputs.dry_run != 'true' && steps.maven_check.outputs.exists != 'true' }}
+        id: setup-java
         env:
           MAVEN_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPP_PASSPHRASE }}
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v3
         with:
-          distribution: temurin
-          java-version: "25"
+          distribution: jdkfile
+          java-version: 25.0.1
+          jdkFile: ${{ steps.sdkman.outputs.file }}
           cache: maven
           server-id: ossrh
           server-username: MAVEN_USERNAME
@@ -2349,7 +2368,7 @@ jobs:
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
 
-      - name: Setup Maven 3.9.12
+      - name: Setup Maven 3.9.11
         if: ${{ needs.prepare.outputs.dry_run != 'true' && steps.maven_check.outputs.exists != 'true' }}
         uses: ./.github/actions/setup-maven-4
 

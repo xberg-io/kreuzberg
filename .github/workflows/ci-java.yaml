@@ -151,12 +151,20 @@ jobs:
         with:
           cache-key-prefix: java-${{ matrix.os }}
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
+      - name: Setup Java with SDKMAN
+        uses: sdkman/sdkman-action@v1
+        id: sdkman
         with:
-          distribution: 'temurin'
-          java-version: '25'
-          cache: 'maven'
+          candidate: java
+          version: 25.0.1-tem
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        id: setup-java
+        with:
+          distribution: 'jdkfile'
+          java-version: 25.0.1
+          jdkFile: ${{ steps.sdkman.outputs.file }}
 
       - name: Setup Maven 3.9.11
         uses: ./.github/actions/setup-maven-4
@@ -302,12 +310,20 @@ jobs:
           ort-version: ${{ env.ORT_VERSION }}
           dest-dir: target/release
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
+      - name: Setup Java with SDKMAN
+        uses: sdkman/sdkman-action@v1
+        id: sdkman
         with:
-          distribution: 'temurin'
-          java-version: '25'
-          cache: 'maven'
+          candidate: java
+          version: 25.0.1-tem
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        id: setup-java
+        with:
+          distribution: 'jdkfile'
+          java-version: 25.0.1
+          jdkFile: ${{ steps.sdkman.outputs.file }}
 
       - name: Setup Maven 3.9.11
         uses: ./.github/actions/setup-maven-4

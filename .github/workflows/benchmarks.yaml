@@ -1059,11 +1059,20 @@ jobs:
         with:
           cache-key-prefix: benchmarks-java-sync
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
+      - name: Setup Java with SDKMAN
+        uses: sdkman/sdkman-action@v1
+        id: sdkman
         with:
-          distribution: temurin
-          java-version: "25"
+          candidate: java
+          version: 25.0.1-tem
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        id: setup-java
+        with:
+          distribution: 'jdkfile'
+          java-version: 25.0.1
+          jdkFile: ${{ steps.sdkman.outputs.file }}
 
       - name: Setup ONNX Runtime
         uses: ./.github/actions/setup-onnx-runtime
@@ -1510,11 +1519,20 @@ jobs:
         with:
           cache-key-prefix: benchmarks-tika-sync
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
+      - name: Setup Java with SDKMAN
+        uses: sdkman/sdkman-action@v1
+        id: sdkman
         with:
-          distribution: temurin
-          java-version: "25"
+          candidate: java
+          version: 25.0.1-tem
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        id: setup-java
+        with:
+          distribution: 'jdkfile'
+          java-version: 25.0.1
+          jdkFile: ${{ steps.sdkman.outputs.file }}
 
       - name: Setup ONNX Runtime
         uses: ./.github/actions/setup-onnx-runtime
@@ -1576,11 +1594,20 @@ jobs:
         with:
           cache-key-prefix: benchmarks-tika-batch
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
+      - name: Setup Java with SDKMAN
+        uses: sdkman/sdkman-action@v1
+        id: sdkman
         with:
-          distribution: temurin
-          java-version: "25"
+          candidate: java
+          version: 25.0.1-tem
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        id: setup-java
+        with:
+          distribution: 'jdkfile'
+          java-version: 25.0.1
+          jdkFile: ${{ steps.sdkman.outputs.file }}
 
       - name: Setup ONNX Runtime
         uses: ./.github/actions/setup-onnx-runtime

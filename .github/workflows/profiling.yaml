@@ -1112,13 +1112,22 @@ jobs:
           cache-key-prefix: profiling
           use-sccache: true
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
+      - name: Setup Java with SDKMAN
+        uses: sdkman/sdkman-action@v1
+        id: sdkman
         with:
-          distribution: temurin
-          java-version: "25"
+          candidate: java
+          version: 25.0.1-tem
 
-      - name: Setup Maven 3.9.12
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        id: setup-java
+        with:
+          distribution: 'jdkfile'
+          java-version: 25.0.1
+          jdkFile: ${{ steps.sdkman.outputs.file }}
+
+      - name: Setup Maven 3.9.11
         uses: ./.github/actions/setup-maven-4
 
       - name: Setup ONNX Runtime

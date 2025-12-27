@@ -24,140 +24,176 @@ repos:
         args: ["--allow-multiple-documents"]
       - id: check-toml
       - id: check-case-conflict
-  - repo: https://github.com/abravalheri/validate-pyproject
-    rev: v0.24.1
-    hooks:
-      - id: validate-pyproject
-  - repo: https://github.com/tox-dev/pyproject-fmt
-    rev: v2.11.1
-    hooks:
-      - id: pyproject-fmt
-  - repo: https://github.com/biomejs/pre-commit
-    rev: v2.3.10
-    hooks:
-      - id: biome-format
-      - id: biome-lint
-  - repo: https://github.com/oxc-project/mirrors-oxlint
-    rev: v1.35.0
-    hooks:
-      - id: oxlint
-        args: ["--fix"]
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.14.10
-    hooks:
-      - id: ruff-format
-      - id: ruff
-        args: ["--fix", "--unsafe-fixes"]
-  - repo: https://github.com/koalaman/shellcheck-precommit
-    rev: v0.11.0
-    hooks:
-      - id: shellcheck
-  - repo: https://github.com/scop/pre-commit-shfmt
-    rev: v3.12.0-2
-    hooks:
-      - id: shfmt
-  - repo: https://github.com/doublify/pre-commit-rust
-    rev: v1.0
-    hooks:
-      - id: fmt
-      - id: clippy
-  - repo: https://github.com/rhysd/actionlint
-    rev: v1.7.9
-    hooks:
-      - id: actionlint
-  - repo: https://github.com/gherynos/pre-commit-java
-    rev: v0.6.31
-    hooks:
-      - id: cpd
-        exclude: ^tests/test_apps/
-      - id: checkstyle
-        args: ["-c", "packages/java/checkstyle.xml"]
-        files: ^(packages/java|e2e/java)/src/.*\.java$
   - repo: local
     hooks:
-      - id: taplo-format
-        name: taplo format
-        entry: bash -c 'scripts/toml_format.sh'
+      # TOML Formatting - using task command
+      - id: toml-format
+        name: Format TOML files
+        entry: task toml:format
         language: system
         files: \.toml$
         pass_filenames: false
         require_serial: true
-      - id: taplo-format-check
-        name: taplo format check
-        entry: bash -c 'scripts/toml_format.sh --check'
+      # Python Linting and Formatting - using task commands
+      - id: python-lint-check
+        name: Check Python linting (ruff + mypy)
+        entry: task python:lint:check
         language: system
-        files: \.toml$
+        types: [python]
         pass_filenames: false
         require_serial: true
-      - id: cargo-deny-licenses
-        name: cargo deny licenses
-        entry: cargo deny check licenses
+        stages: [commit]
+      - id: python-format
+        name: Format Python code
+        entry: task python:format
+        language: system
+        types: [python]
+        pass_filenames: false
+        require_serial: true
+        stages: [commit]
+      # Rust Linting and Formatting - using task commands
+      - id: rust-format-check
+        name: Check Rust formatting
+        entry: task rust:format:check
+        language: system
+        files: ^(crates|tools|e2e/rust)/.*\.rs$|^(Cargo\.toml|Cargo\.lock|crates/.*/Cargo\.toml|tools/.*/Cargo\.toml|e2e/rust/Cargo\.toml|packages/ruby/ext/kreuzberg_rb/native/Cargo\.toml)$
+        pass_filenames: false
+        require_serial: true
+        stages: [commit]
+      - id: rust-lint-check
+        name: Check Rust linting (clippy)
+        entry: task rust:lint:check
+        language: system
+        files: ^(crates|tools|e2e/rust)/.*\.rs$|^(Cargo\.toml|Cargo\.lock|crates/.*/Cargo\.toml|tools/.*/Cargo\.toml|e2e/rust/Cargo\.toml|packages/ruby/ext/kreuzberg_rb/native/Cargo\.toml)$
+        pass_filenames: false
+        require_serial: true
+        stages: [commit]
+      # Rust dependency licenses - using task command
+      - id: rust-licenses
+        name: Check Rust dependency licenses
+        entry: task rust:licenses
         language: system
         files: ^(Cargo\.toml|Cargo\.lock|crates/.*/Cargo\.toml|tools/.*/Cargo\.toml|e2e/rust/Cargo\.toml|packages/ruby/ext/kreuzberg_rb/native/Cargo\.toml|deny\.toml)$
         pass_filenames: false
         require_serial: true
-      - id: go-fmt
-        name: go fmt (packages/go/v4)
-        entry: bash -c 'cd packages/go/v4 && go fmt ./...'
-        language: system
-        files: ^packages/go/v4/.*\.go$
-        pass_filenames: false
-      - id: golangci-lint
-        name: golangci-lint (packages/go/v4)
-        entry: bash -c 'export PKG_CONFIG_PATH="$(cd . && pwd -P)/crates/kreuzberg-ffi:${PKG_CONFIG_PATH}" && cd packages/go/v4 && golangci-lint run --config ../../../.golangci.yml --fix ./...'
-        language: system
-        files: ^packages/go/v4/
-        pass_filenames: false
-      - id: rubocop
-        name: rubocop
-        entry: bash -c 'cd packages/ruby && bundle exec rubocop --autocorrect --config .rubocop.yml'
-        require_serial: true
-        language: system
-        files: ^packages/ruby/.*\.rb$
-        pass_filenames: false
-      - id: steep
-        name: steep
-        entry: bash -c 'cd packages/ruby && bundle exec steep check'
-        require_serial: true
-        language: system
-        files: ^packages/ruby/(lib|sig)/.*\.(rb|rbs)$
-        pass_filenames: false
-      - id: java-pmd
-        name: pmd (packages/java)
-        entry: bash -c 'cd packages/java && mvn pmd:check'
-        require_serial: true
-        language: system
-        files: ^packages/java/src/.*\.java$
-        pass_filenames: false
-      - id: mypy
-        name: mypy
-        entry: uv run python -m mypy
-        require_serial: true
-        language: system
-        types: [python]
-        pass_filenames: false
-      - id: typescript-typecheck
-        name: typescript typecheck (crates/kreuzberg-node)
-        entry: bash -c 'cd crates/kreuzberg-node && pnpm typecheck'
-        require_serial: true
+        stages: [commit]
+      # Node/TypeScript Linting and Formatting - using task commands
+      - id: node-format-check
+        name: Check TypeScript formatting (biome)
+        entry: task node:format:check
         language: system
         files: ^crates/kreuzberg-node/
         pass_filenames: false
-      - id: dotnet-format
-        name: dotnet format (packages/csharp)
-        entry: bash -c 'cd packages/csharp && dotnet format Kreuzberg/Kreuzberg.csproj --verify-no-changes && dotnet format Kreuzberg.Tests/Kreuzberg.Tests.csproj --verify-no-changes && dotnet format Benchmark/Benchmark.csproj --verify-no-changes'
+        require_serial: true
+        stages: [commit]
+      - id: node-lint-check
+        name: Check Node/TypeScript linting
+        entry: task node:lint:check
+        language: system
+        files: ^crates/kreuzberg-node/
+        pass_filenames: false
+        require_serial: true
+        stages: [commit]
+      # Ruby Linting and Formatting - using task commands
+      - id: ruby-format-check
+        name: Check Ruby formatting (rubocop)
+        entry: task ruby:format:check
+        language: system
+        files: ^packages/ruby/.*\.rb$
+        pass_filenames: false
+        require_serial: true
+        stages: [commit]
+      - id: ruby-lint-check
+        name: Check Ruby linting (rubocop + steep)
+        entry: task ruby:lint:check
+        language: system
+        files: ^packages/ruby/(lib|sig)/.*\.(rb|rbs)$
+        pass_filenames: false
+        require_serial: true
+        stages: [commit]
+      # Go Linting and Formatting - using task commands
+      - id: go-format-check
+        name: Check Go formatting
+        entry: task go:format:check
+        language: system
+        files: ^packages/go/v4/.*\.go$
+        pass_filenames: false
+        require_serial: true
+        stages: [commit]
+      - id: go-lint-check
+        name: Check Go linting (golangci-lint)
+        entry: task go:lint:check
+        language: system
+        files: ^packages/go/v4/
+        pass_filenames: false
+        require_serial: true
+        stages: [commit]
+      # Java Linting and Formatting - using task commands
+      - id: java-format-check
+        name: Check Java formatting (spotless)
+        entry: task java:format:check
+        language: system
+        files: ^packages/java/src/.*\.java$
+        pass_filenames: false
+        require_serial: true
+        stages: [commit]
+      - id: java-lint-check
+        name: Check Java linting (checkstyle + pmd)
+        entry: task java:lint:check
+        language: system
+        files: ^packages/java/src/.*\.java$
+        pass_filenames: false
+        require_serial: true
+        stages: [commit]
+      # C# Linting and Formatting - using task commands
+      - id: csharp-format-check
+        name: Check C# formatting (dotnet format)
+        entry: task csharp:format:check
         language: system
         files: ^packages/csharp/
         pass_filenames: false
-      - id: phpstan
-        name: phpstan (packages/php)
-        entry: bash -c 'cd packages/php && composer exec -- phpstan analyse'
+        require_serial: true
+        stages: [commit]
+      - id: csharp-lint-check
+        name: Check C# linting (dotnet format verify)
+        entry: task csharp:lint:check
+        language: system
+        files: ^packages/csharp/
+        pass_filenames: false
+        require_serial: true
+        stages: [commit]
+      # PHP Linting and Formatting - using task commands
+      - id: php-format-check
+        name: Check PHP formatting (php-cs-fixer)
+        entry: task php:format:check
         language: system
         files: ^packages/php/.*\.php$
         pass_filenames: false
-      - id: php-cs-fixer
-        name: php-cs-fixer (packages/php)
-        entry: bash -c 'cd packages/php && composer exec -- php-cs-fixer fix'
+        require_serial: true
+        stages: [commit]
+      - id: php-lint-check
+        name: Check PHP linting (phpstan + php-cs-fixer)
+        entry: task php:lint:check
         language: system
         files: ^packages/php/.*\.php$
         pass_filenames: false
+        require_serial: true
+        stages: [commit]
+      # Shell scripts linting - using task command
+      - id: shell-lint-check
+        name: Check shell scripts (shfmt + shellcheck)
+        entry: task shell:lint:check
+        language: system
+        files: \.sh$
+        pass_filenames: false
+        require_serial: true
+        stages: [commit]
+      # GitHub Actions linting - using task command
+      - id: github-actions-lint
+        name: Lint GitHub Actions workflows (actionlint)
+        entry: task github:lint
+        language: system
+        files: ^\.github/workflows/.*\.ya?ml$
+        pass_filenames: false
+        require_serial: true
+        stages: [commit]
