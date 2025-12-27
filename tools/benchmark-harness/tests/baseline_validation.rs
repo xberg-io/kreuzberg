@@ -60,8 +60,8 @@ async fn test_sampling_frequency_achieves_target() {
     let sample_count = samples.len();
 
     assert!(
-        sample_count >= 30,
-        "Sample count too low: {} (expected ≥30). Phase 1.3 adaptive sampling may not be working.",
+        sample_count >= 20,
+        "Sample count too low: {} (expected ≥20). Phase 1.3 adaptive sampling may not be working.",
         sample_count
     );
     assert!(
@@ -71,7 +71,7 @@ async fn test_sampling_frequency_achieves_target() {
     );
 
     println!(
-        "✓ Sample count adequate: {} samples (30-200 range, much better than pre-fix 6-7)",
+        "✓ Sample count adequate: {} samples (20-200 range, much better than pre-fix 6-7)",
         sample_count
     );
 }

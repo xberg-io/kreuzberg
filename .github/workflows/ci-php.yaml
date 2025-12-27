@@ -200,6 +200,9 @@ jobs:
             echo "RUSTFLAGS=${EXTRA_FLAGS}" >> "$GITHUB_ENV"
           fi
 
+      - name: Install Task
+        uses: ./.github/actions/install-task
+
       - name: Build or restore FFI from cache
         id: ffi
         uses: ./.github/actions/build-and-cache-ffi
@@ -209,9 +212,6 @@ jobs:
           cache-version: v1
           pdfium-version: ${{ env.PDFIUM_VERSION }}
           ort-version: ${{ env.ORT_VERSION }}
-
-      - name: Install Task
-        uses: ./.github/actions/install-task
 
       - name: Build PHP extension
         shell: bash
@@ -270,6 +270,9 @@ jobs:
         with:
           ort-version: ${{ env.ORT_VERSION }}
 
+      - name: Install Task
+        uses: ./.github/actions/install-task
+
       - name: Build or restore FFI from cache
         id: ffi
         uses: ./.github/actions/build-and-cache-ffi
@@ -279,9 +282,6 @@ jobs:
           cache-version: v1
           pdfium-version: ${{ env.PDFIUM_VERSION }}
           ort-version: ${{ env.ORT_VERSION }}
-
-      - name: Install Task
-        uses: ./.github/actions/install-task
 
       - name: Build PHP extension
         shell: bash
