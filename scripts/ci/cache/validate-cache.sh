@@ -44,6 +44,45 @@ INVALID_COUNT=0
 MISSING_COUNT=0
 
 for path in "$@"; do
+	# Check if path is a directory
+	if [[ -d "$path" ]]; then
+		# For WASM artifacts, look for .wasm files recursively in the directory
+		if [[ "$ARTIFACT_TYPE" == "wasm" ]]; then
+			wasm_files=$(find "$path" -type f -name "*.wasm" 2>/dev/null || true)
+			if [[ -z "$wasm_files" ]]; then
+				warn "No WASM files found in directory: $path"
+				((MISSING_COUNT++))
+			else
+				while IFS= read -r artifact; do
+					# File exists, check size
+					SIZE=$(du -sh "$artifact" 2>/dev/null | cut -f1 || echo "unknown")
+					FILE_SIZE=$(stat -f%z "$artifact" 2>/dev/null || stat -c%s "$artifact" 2>/dev/null || echo "0")
+
+					if [[ "$FILE_SIZE" -eq 0 ]]; then
+						warn "Empty file: $artifact"
+						((INVALID_COUNT++))
+						continue
+					fi
+
+					# Check for WASM magic bytes (\0asm)
+					if xxd -l 4 -p "$artifact" 2>/dev/null | grep -q "0061736d" ||
+						file "$artifact" | grep -q "WebAssembly"; then
+						info "✓ Valid WASM module: $artifact ($SIZE)"
+						((VALID_COUNT++))
+					else
+						warn "Invalid WASM format: $artifact"
+						((INVALID_COUNT++))
+					fi
+				done <<<"$wasm_files"
+			fi
+		else
+			# For non-WASM, just check that the directory exists
+			info "✓ Directory exists: $path"
+			((VALID_COUNT++))
+		fi
+		continue
+	fi
+
 	# Expand glob patterns
 	for artifact in $path; do
 		if [[ ! -e "$artifact" ]]; then
