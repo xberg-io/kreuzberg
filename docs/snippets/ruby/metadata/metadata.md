@@ -41,7 +41,7 @@ if html_result.metadata['html']
 
   # Access headers
   if html_meta['headers']
-    puts "Headers: #{html_meta['headers'].join(', ')}"
+    puts "Headers: #{html_meta['headers'].map { |h| h['text'] }.join(', ')}"
   end
 
   # Access links

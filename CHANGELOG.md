@@ -23,7 +23,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Smoke tests (7 formats)
   - Structured data tests (JSON/YAML)
   - XML extraction tests
-- **Root composer.json** - Added composer.json at repository root for Packagist publishing
+- **Root composer.json** - Added composer.json at repository root for
+  Packagist publishing
+- **HTML metadata extraction** - Rich structured metadata from HTML
+  documents
+  - Headers extraction with hierarchy (level, text, id, depth,
+    html_offset)
+  - Links extraction with type classification (anchor, internal,
+    external, email, phone)
+  - Images extraction with dimensions and type detection (data-uri,
+    inline-svg, external, relative)
+  - Structured data extraction (JSON-LD, Microdata, RDFa)
+  - New fields: `language`, `text_direction`, `meta_tags`
 
 ### Fixed
 
@@ -34,15 +45,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Job timeout: 5 minutes
   - Step timeout: 3 minutes
   - Command timeout: 120 seconds
-- **Documentation** - Standardized all README badges and removed AI-generated content
+- **Documentation** - Standardized all README badges and removed
+  AI-generated content
   - Consistent blue badge colors across all language bindings
   - Added Packagist badge to PHP README
   - Removed emojis and marketing language
   - Converted all relative links to absolute GitHub URLs
+- **Ruby vendor script** - Added missing workspace dependency inlining
+  for `lzma-rust2` and `parking_lot`
 
 ### Changed
 
-- **Version sync** - Updated scripts/sync_versions.py to include root composer.json
+- **Version sync** - Updated scripts/sync_versions.py to include root
+  composer.json
+- **BREAKING: HTML metadata structure** - Replaced YAML frontmatter
+  parsing with single-pass metadata extraction
+  - **keywords**: Changed from `Option<String>` (comma-separated) to
+    `Vec<String>` (array)
+  - **canonical**: Renamed to `canonical_url` for clarity
+  - **Open Graph fields**: Consolidated `og_*` fields into
+    `open_graph: BTreeMap<String, String>`
+  - **Twitter Card fields**: Consolidated `twitter_*` fields into
+    `twitter_card: BTreeMap<String, String>`
+  - **New structured types**: `headers: Vec<HeaderMetadata>`,
+    `links: Vec<LinkMetadata>`, `images: Vec<ImageMetadataType>`,
+    `structured_data: Vec<StructuredData>`
+  - **Migration guide**: See `docs/migration/v4.0-html-metadata.md`
+    for upgrade instructions
 
 ## [4.0.0-rc.21] - 2025-12-26
 

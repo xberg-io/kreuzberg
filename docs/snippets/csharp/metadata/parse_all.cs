@@ -28,5 +28,6 @@ if (htmlResult.Metadata?.Format.Html != null)
     var htmlMeta = htmlResult.Metadata.Format.Html;
     Console.WriteLine($"Title: {htmlMeta.Title}");
     Console.WriteLine($"Description: {htmlMeta.Description}");
-    Console.WriteLine($"Open Graph Image: {htmlMeta.OgImage}");
+    if (htmlMeta.OpenGraph != null && htmlMeta.OpenGraph.ContainsKey("image"))
+        Console.WriteLine($"Open Graph Image: {htmlMeta.OpenGraph["image"]}");
 }

@@ -71,25 +71,28 @@ public class Main {
 
                 // Access headers
                 @SuppressWarnings("unchecked")
-                List<String> headers = (List<String>) htmlMeta.get("headers");
+                List<Map<String, Object>> headers = (List<Map<String, Object>>) htmlMeta.get("headers");
                 if (headers != null) {
-                    System.out.println("Headers: " + headers);
+                    headers.stream()
+                        .map(h -> h.get("text"))
+                        .forEach(text -> System.out.print(text + ", "));
+                    System.out.println();
                 }
 
                 // Access links
                 @SuppressWarnings("unchecked")
-                List<Map<String, String>> links = (List<Map<String, String>>) htmlMeta.get("links");
+                List<Map<String, Object>> links = (List<Map<String, Object>>) htmlMeta.get("links");
                 if (links != null) {
-                    for (Map<String, String> link : links) {
+                    for (Map<String, Object> link : links) {
                         System.out.println("Link: " + link.get("href") + " (" + link.get("text") + ")");
                     }
                 }
 
                 // Access images
                 @SuppressWarnings("unchecked")
-                List<Map<String, String>> images = (List<Map<String, String>>) htmlMeta.get("images");
+                List<Map<String, Object>> images = (List<Map<String, Object>>) htmlMeta.get("images");
                 if (images != null) {
-                    for (Map<String, String> image : images) {
+                    for (Map<String, Object> image : images) {
                         System.out.println("Image: " + image.get("src"));
                     }
                 }

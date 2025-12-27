@@ -85,7 +85,11 @@ func main() {
 
 		// Access headers
 		if len(html.Headers) > 0 {
-			fmt.Printf("Headers: %s\n", strings.Join(html.Headers, ", "))
+			headers := make([]string, len(html.Headers))
+			for i, h := range html.Headers {
+				headers[i] = h.Text
+			}
+			fmt.Printf("Headers: %s\n", strings.Join(headers, ", "))
 		}
 
 		// Access links

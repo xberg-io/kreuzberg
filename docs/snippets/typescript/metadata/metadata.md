@@ -59,7 +59,7 @@ if (htmlMeta.textDirection) {
 
 // Access headers
 if (htmlMeta.headers && htmlMeta.headers.length > 0) {
-	console.log(`Headers: ${htmlMeta.headers.join(', ')}`);
+	console.log(`Headers: ${htmlMeta.headers.map(h => h.text).join(', ')}`);
 }
 
 // Access links

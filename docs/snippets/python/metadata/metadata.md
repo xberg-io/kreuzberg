@@ -53,9 +53,9 @@ if html_meta:
         print(f"Text Direction: {text_direction}")
 
     # Access headers
-    headers = html_meta.get('headers')
+    headers = html_meta.get('headers', [])
     if headers:
-        print(f"Headers: {', '.join(headers)}")
+        print(f"Headers: {', '.join([h['text'] for h in headers])}")
 
     # Access links
     links = html_meta.get('links', [])
