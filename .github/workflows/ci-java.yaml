@@ -312,6 +312,9 @@ jobs:
       - name: Setup Maven 3.9.11
         uses: ./.github/actions/setup-maven-4
 
+      - name: Install Task
+        uses: ./.github/actions/install-task
+
       - name: Download JAR
         uses: actions/download-artifact@v7
         with:
@@ -415,9 +418,6 @@ jobs:
           export DYLD_PRINT_SEGMENTS=1
           export DYLD_PRINT_LIBRARIES=1
           echo "DYLD settings enabled for next test run"
-
-      - name: Install Task
-        uses: ./.github/actions/install-task
 
       - name: Run E2E tests (Unix)
         if: runner.os != 'Windows'
