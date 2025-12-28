@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **PDF hierarchy detection** - Semantic document structure extraction from PDFs
+  - K-means clustering for automatic heading hierarchy (H1-H6) based on font sizes
+  - Distance-weighted text merging with configurable horizontal/vertical priorities
+  - Smart OCR triggering based on text coverage threshold (default 50%)
+  - Real font size extraction from PDFium character data
+  - Configurable via `HierarchyConfig` (enabled by default, opt-out available)
+  - New `PageHierarchy` type with hierarchical text blocks
+  - Comprehensive test suite with 32 tests including ground truth validation
+
 ## [4.0.0-rc.22] - 2025-12-27
 
 ### Added
