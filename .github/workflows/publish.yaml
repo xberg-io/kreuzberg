@@ -357,7 +357,7 @@ jobs:
             extra_args: ""
           # TODO: Re-enable linux-aarch64 once build issues are resolved
           - label: macos-arm64
-            os: macos-14
+            os: macos-latest
             artifact: python-wheels-macos
             needs_qemu: false
             python: "3.10"
@@ -583,7 +583,7 @@ jobs:
       fail-fast: false
       matrix:
         settings:
-          - os: macos-14
+          - os: macos-latest
             target: aarch64-apple-darwin
             rust_target: ""
             use_cross: false
@@ -737,7 +737,7 @@ jobs:
             use_cross: false
           # TODO: Re-enable x86_64-unknown-linux-musl once build issues are resolved
           # TODO: Add aarch64-unknown-linux-gnu once test-build parity is restored
-          - os: macos-14
+          - os: macos-latest
             target: aarch64-apple-darwin
             use_cross: false
           - os: windows-latest
@@ -827,7 +827,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - runner: macos-14
+          - runner: macos-latest
             bottle_tag: arm64_sequoia
     steps:
       - name: Checkout
@@ -947,7 +947,7 @@ jobs:
         include:
           - os: ubuntu-latest
             label: linux
-          - os: macos-14
+          - os: macos-latest
             label: macos-arm64
           - os: windows-latest
             label: windows-x64
@@ -1164,7 +1164,7 @@ jobs:
             label: linux-x86_64
             target: x86_64-unknown-linux-gnu
             build_features: default
-          - os: macos-14
+          - os: macos-latest
             label: macos-arm64
             target: aarch64-apple-darwin
             build_features: default
@@ -1504,7 +1504,7 @@ jobs:
           - os: ubuntu-latest
             label: linux-x86_64
             platform: linux-x86_64
-          - os: macos-14
+          - os: macos-latest
             label: macos-arm64
             platform: macos-arm64
           - os: windows-latest
