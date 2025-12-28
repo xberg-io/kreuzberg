@@ -47,7 +47,7 @@
 
 <div align="center" style="margin-top: 20px;">
   <a href="https://discord.gg/pXxagNK2zN">
-      <img height="30" src="https://img.shields.io/badge/Discord-Join%20our%20community-7289da" alt="Discord">
+      <img height="25" src="https://img.shields.io/badge/Discord-Join%20our%20community-7289da?logo=discord&logoColor=white" alt="Discord">
   </a>
 </div>
 
