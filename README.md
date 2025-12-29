@@ -43,7 +43,8 @@
   </a>
 </div>
 
-<img width="1128" height="191" alt="Banner2" src="https://github.com/user-attachments/assets/419fc06c-8313-4324-b159-4b4d3cfce5c0" />
+<img width="3384" height="573" alt="Linkedin- Banner" src="https://github.com/user-attachments/assets/272fd0a4-cfce-41bd-b25c-7d5934d90717" />
+
 
 <div align="center" style="margin-top: 20px;">
   <a href="https://discord.gg/pXxagNK2zN">
