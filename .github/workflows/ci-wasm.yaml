@@ -170,6 +170,17 @@ jobs:
         env:
           RUSTFLAGS: ${{ env.WASM_RUSTFLAGS }}
 
+      - name: Upload WASM artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: wasm-${{ matrix.target }}
+          path: |
+            crates/kreuzberg-wasm/pkg/*.wasm
+            crates/kreuzberg-wasm/pkg/*.js
+            crates/kreuzberg-wasm/pkg/*.ts
+            crates/kreuzberg-wasm/pkg/package.json
+          retention-days: 7
+
       - name: Cleanup Rust cache
         if: always()
         uses: ./.github/actions/cleanup-rust-cache
