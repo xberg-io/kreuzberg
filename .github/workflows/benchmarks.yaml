@@ -118,7 +118,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -178,7 +178,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -250,7 +250,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -322,7 +322,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -394,7 +394,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -468,7 +468,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -542,7 +542,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -606,7 +606,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -670,7 +670,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -762,7 +762,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -854,7 +854,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -947,7 +947,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -1040,7 +1040,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -1129,7 +1129,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -1216,7 +1216,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -1288,7 +1288,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -1360,7 +1360,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -1448,7 +1448,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -1536,7 +1536,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -1605,7 +1605,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -1674,7 +1674,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -1743,7 +1743,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -1812,7 +1812,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -1879,7 +1879,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -1946,7 +1946,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -2015,7 +2015,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -2084,7 +2084,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -2153,7 +2153,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -2222,7 +2222,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -2284,7 +2284,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Download all benchmark results
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           pattern: "benchmarks-*"
           path: benchmark-results/

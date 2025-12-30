@@ -276,7 +276,7 @@ jobs:
           key: huggingface-${{ runner.os }}-py-3.13-${{ hashFiles('packages/python/pyproject.toml') || 'fallback' }}
 
       - name: Download wheels
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: ${{ matrix.os == 'ubuntu-latest' && 'wheels-linux-x86_64' || matrix.os == 'ubuntu-24.04-arm' && 'wheels-linux-arm64' || matrix.os == 'macos-latest' && 'wheels-macos-arm64' || 'wheels-windows-x86_64' }}
           path: dist/

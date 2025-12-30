@@ -245,7 +245,7 @@ jobs:
         run: scripts/ci/csharp/setup-tessdata-env.sh
 
       - name: Download FFI library
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: csharp-ffi-lib-${{ matrix.os }}
           path: target/release/
