@@ -1469,6 +1469,35 @@ pub fn discover_extraction_config() -> Result<Option<JsExtractionConfig>> {
 
 #[napi(object)]
 #[derive(serde::Serialize, serde::Deserialize)]
+pub struct JsHierarchicalBlock {
+    pub text: String,
+    pub font_size: f64,
+    pub level: String,
+    #[napi(ts_type = "[number, number, number, number] | undefined")]
+    pub bbox: Option<Vec<f64>>,
+}
+
+#[napi(object)]
+#[derive(serde::Serialize, serde::Deserialize)]
+pub struct JsPageHierarchy {
+    pub block_count: u32,
+    pub blocks: Vec<JsHierarchicalBlock>,
+}
+
+#[napi(object)]
+#[derive(serde::Serialize, serde::Deserialize)]
+pub struct JsPageContent {
+    pub page_number: u32,
+    pub content: String,
+    #[serde(skip)]
+    pub tables: Vec<JsTable>,
+    #[serde(skip)]
+    pub images: Vec<JsExtractedImage>,
+    pub hierarchy: Option<JsPageHierarchy>,
+}
+
+#[napi(object)]
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct JsTable {
     pub cells: Vec<Vec<String>>,
     pub markdown: String,
@@ -1540,6 +1569,8 @@ pub struct JsExtractionResult {
     pub chunks: Option<Vec<JsChunk>>,
     #[serde(skip)]
     pub images: Option<Vec<JsExtractedImage>>,
+    #[serde(skip)]
+    pub pages: Option<Vec<JsPageContent>>,
 }
 
 impl TryFrom<RustExtractionResult> for JsExtractionResult {
@@ -1580,6 +1611,87 @@ impl TryFrom<RustExtractionResult> for JsExtractionResult {
                 });
             }
             Some(js_images)
+        } else {
+            None
+        };
+
+        let pages = if let Some(pages_vec) = val.pages {
+            let mut js_pages = Vec::with_capacity(pages_vec.len());
+            for page in pages_vec {
+                let page_tables: Vec<JsTable> = page
+                    .tables
+                    .iter()
+                    .map(|t| JsTable {
+                        cells: t.cells.clone(),
+                        markdown: t.markdown.clone(),
+                        page_number: t.page_number as u32,
+                    })
+                    .collect();
+
+                let page_images: Vec<JsExtractedImage> = page
+                    .images
+                    .iter()
+                    .map(|img| {
+                        let ocr_result = if let Some(ocr) = &img.ocr_result {
+                            JsExtractionResult::try_from((**ocr).clone())
+                                .and_then(|js_res| {
+                                    serde_json::to_value(js_res).map_err(|e| {
+                                        Error::new(
+                                            Status::GenericFailure,
+                                            format!("Failed to serialize OCR result in page image: {}", e),
+                                        )
+                                    })
+                                })
+                                .ok()
+                        } else {
+                            None
+                        };
+
+                        JsExtractedImage {
+                            data: img.data.clone().into(),
+                            format: img.format.clone(),
+                            image_index: img.image_index as u32,
+                            page_number: img.page_number.map(|p| p as u32),
+                            width: img.width,
+                            height: img.height,
+                            colorspace: img.colorspace.clone(),
+                            bits_per_component: img.bits_per_component,
+                            is_mask: img.is_mask,
+                            description: img.description.clone(),
+                            ocr_result,
+                        }
+                    })
+                    .collect();
+
+                let hierarchy = page.hierarchy.map(|h| {
+                    let blocks: Vec<JsHierarchicalBlock> = h
+                        .blocks
+                        .into_iter()
+                        .map(|block| JsHierarchicalBlock {
+                            text: block.text,
+                            font_size: block.font_size as f64,
+                            level: block.level,
+                            bbox: block
+                                .bbox
+                                .map(|(l, t, r, b)| vec![l as f64, t as f64, r as f64, b as f64]),
+                        })
+                        .collect();
+
+                    JsPageHierarchy {
+                        block_count: h.block_count as u32,
+                        blocks,
+                    }
+                });
+
+                js_pages.push(JsPageContent {
+                    page_number: page.page_number as u32,
+                    content: page.content,
+                    tables: page_tables,
+                    images: page_images,
+                    hierarchy,
+                });
+            }
+            Some(js_pages)
         } else {
             None
         };
@@ -1629,6 +1741,7 @@ impl TryFrom<RustExtractionResult> for JsExtractionResult {
                 None
             },
             images,
+            pages,
         })
     }
 }
