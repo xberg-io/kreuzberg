@@ -438,10 +438,10 @@ func TestErrorPathCleanup(t *testing.T) {
 			t.Error("expected error for empty bytes")
 		}
 
-		// Invalid batch should trigger error path
-		_, err3 := kreuzberg.BatchExtractFilesSync([]string{}, nil)
+		// Batch with empty path should trigger error path
+		_, err3 := kreuzberg.BatchExtractFilesSync([]string{""}, nil)
 		if err3 == nil {
-			t.Error("expected error for empty batch")
+			t.Error("expected error for batch with empty path")
 		}
 	}
 
