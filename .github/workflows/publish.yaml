@@ -2170,13 +2170,10 @@ jobs:
         shell: bash
         run: scripts/ci/ruby/vendor-kreuzberg-core.sh
 
-      - name: Install Task
-        uses: ./.github/actions/install-task
-
       - name: Rebuild gems from source
         shell: bash
         working-directory: packages/ruby
-        run: task ruby:build:release
+        run: bundle exec rake build
 
       - name: Copy rebuilt gems to dist directory
         shell: bash
