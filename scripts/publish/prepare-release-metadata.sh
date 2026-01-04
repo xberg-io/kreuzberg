@@ -11,6 +11,7 @@ echo "$metadata" >release-metadata.json
   echo "npm_tag=$(echo "$metadata" | jq -r '.npm_tag')"
   echo "ref=$(echo "$metadata" | jq -r '.ref')"
   echo "dry_run=$(echo "$metadata" | jq -r '.dry_run')"
+  echo "force_republish=$(echo "$metadata" | jq -r '.force_republish')"
   echo "checkout_ref=$(echo "$metadata" | jq -r '.checkout_ref')"
   echo "target_sha=$(echo "$metadata" | jq -r '.target_sha')"
   echo "matrix_ref=$(echo "$metadata" | jq -r '.matrix_ref')"

@@ -5,27 +5,32 @@ set -euo pipefail
 event="${GITHUB_EVENT_NAME:-${1:-}}"
 tag=""
 dry_run_input="false"
+force_republish_input="false"
 ref_input=""
 targets_input=""
 
 if [[ "$event" == "workflow_dispatch" ]]; then
   tag="${INPUT_TAG:-}"
   dry_run_input="${INPUT_DRY_RUN:-false}"
+  force_republish_input="${INPUT_FORCE_REPUBLISH:-false}"
   ref_input="${INPUT_REF:-}"
   targets_input="${INPUT_TARGETS:-}"
 elif [[ "$event" == "release" ]]; then
   tag="${EVENT_RELEASE_TAG:-}"
   dry_run_input="false"
+  force_republish_input="false"
   ref_input="refs/tags/${tag}"
   targets_input=""
 elif [[ "$event" == "repository_dispatch" ]]; then
   tag="${EVENT_DISPATCH_TAG:-}"
   dry_run_input="${EVENT_DISPATCH_DRY_RUN:-false}"
+  force_republish_input="${EVENT_DISPATCH_FORCE_REPUBLISH:-false}"
   ref_input="${EVENT_DISPATCH_REF:-}"
   targets_input="${EVENT_DISPATCH_TARGETS:-}"
 else
   tag="${GITHUB_REF_NAME:-}"
   dry_run_input="false"
+  force_republish_input="false"
   ref_input=""
   targets_input=""
   if [[ "$tag" == *-pre* || "$tag" == *-rc* ]]; then
@@ -261,6 +266,7 @@ cat <<JSON
   "target_sha": "$target_sha",
   "matrix_ref": "$matrix_ref",
   "dry_run": ${dry_run_input:-false},
+  "force_republish": ${force_republish_input:-false},
   "is_tag": $is_tag,
   "release_targets": "$release_targets_summary",
   "release_any": $release_any,
