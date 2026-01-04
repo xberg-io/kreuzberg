@@ -39,7 +39,6 @@ office = [
     "dep:docx-lite",
     "dep:quick-xml",
     "dep:pulldown-cmark",
-    "dep:jotdown",
     "dep:biblatex",
     "dep:org",
     "dep:rtf-parser",
@@ -49,6 +48,7 @@ office = [
     "html",
     "tokio-runtime",
 ]
+djot = ["dep:jotdown", "tokio-runtime"]
 email = ["dep:mail-parser", "dep:msg_parser"]
 html = ["dep:html-to-markdown-rs"]
 xml = ["dep:quick-xml", "dep:roxmltree"]
@@ -86,6 +86,7 @@ full = [
     "pdf",
     "excel",
     "office",
+    "djot",
     "email",
     "html",
     "xml",

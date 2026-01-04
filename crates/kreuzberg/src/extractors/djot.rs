@@ -10,21 +10,21 @@
 //! Djot is a modern markup language with simpler parsing rules than CommonMark.
 //! See https://djot.net for the specification.
 //!
-//! Requires the `office` feature.
+//! Requires the `djot` feature.
 
-#[cfg(feature = "office")]
+#[cfg(feature = "djot")]
 use crate::Result;
-#[cfg(feature = "office")]
+#[cfg(feature = "djot")]
 use crate::core::config::ExtractionConfig;
-#[cfg(feature = "office")]
+#[cfg(feature = "djot")]
 use crate::plugins::{DocumentExtractor, Plugin};
-#[cfg(feature = "office")]
+#[cfg(feature = "djot")]
 use crate::types::{ExtractionResult, Metadata, Table};
-#[cfg(feature = "office")]
+#[cfg(feature = "djot")]
 use async_trait::async_trait;
-#[cfg(feature = "office")]
+#[cfg(feature = "djot")]
 use jotdown::{Container, Event, Parser};
-#[cfg(feature = "office")]
+#[cfg(feature = "djot")]
 use serde_yaml_ng::Value as YamlValue;
 
 /// Djot markup extractor with metadata and table support.
@@ -34,10 +34,10 @@ use serde_yaml_ng::Value as YamlValue;
 /// - Plain text content
 /// - Tables as structured data
 /// - Document structure (headings, links, code blocks)
-#[cfg(feature = "office")]
+#[cfg(feature = "djot")]
 pub struct DjotExtractor;
 
-#[cfg(feature = "office")]
+#[cfg(feature = "djot")]
 impl DjotExtractor {
     /// Create a new Djot extractor.
     pub fn new() -> Self {
@@ -291,14 +291,14 @@ impl DjotExtractor {
     }
 }
 
-#[cfg(feature = "office")]
+#[cfg(feature = "djot")]
 impl Default for DjotExtractor {
     fn default() -> Self {
         Self::new()
     }
 }
 
-#[cfg(feature = "office")]
+#[cfg(feature = "djot")]
 impl Plugin for DjotExtractor {
     fn name(&self) -> &str {
         "djot-extractor"
@@ -325,7 +325,7 @@ impl Plugin for DjotExtractor {
     }
 }
 
-#[cfg(feature = "office")]
+#[cfg(feature = "djot")]
 #[async_trait]
 impl DocumentExtractor for DjotExtractor {
     #[cfg_attr(feature = "otel", tracing::instrument(
@@ -388,7 +388,7 @@ impl DocumentExtractor for DjotExtractor {
     }
 }
 
-#[cfg(all(test, feature = "office"))]
+#[cfg(all(test, feature = "djot"))]
 mod tests {
     use super::*;
 
