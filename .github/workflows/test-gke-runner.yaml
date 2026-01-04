@@ -1,0 +1,13 @@
+name: Test GKE Runner
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: [self-hosted, benchmark]
+    steps:
+      - run: echo "Running on GKE self-hosted runner!"
+      - run: kubectl version || echo "kubectl not available"
+      - run: df -h
+      - run: free -h
