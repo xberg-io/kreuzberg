@@ -95,6 +95,9 @@ pub mod epub;
 pub mod fictionbook;
 
 #[cfg(feature = "office")]
+pub mod djot;
+
+#[cfg(feature = "office")]
 pub mod markdown;
 
 #[cfg(feature = "office")]
@@ -165,6 +168,9 @@ pub use epub::EpubExtractor;
 
 #[cfg(feature = "office")]
 pub use fictionbook::FictionBookExtractor;
+
+#[cfg(feature = "office")]
+pub use djot::DjotExtractor;
 
 #[cfg(feature = "office")]
 pub use markdown::MarkdownExtractor as EnhancedMarkdownExtractor;
@@ -283,6 +289,7 @@ pub fn register_default_extractors() -> Result<()> {
 
     #[cfg(feature = "office")]
     {
+        registry.register(Arc::new(DjotExtractor::new()))?;
         registry.register(Arc::new(EnhancedMarkdownExtractor::new()))?;
         registry.register(Arc::new(BibtexExtractor::new()))?;
         registry.register(Arc::new(EpubExtractor::new()))?;
@@ -372,7 +379,8 @@ mod tests {
 
         #[cfg(feature = "office")]
         {
-            expected_count += 10;
+            expected_count += 11;
+            assert!(extractor_names.contains(&"djot-extractor".to_string()));
             assert!(extractor_names.contains(&"markdown-extractor".to_string()));
             assert!(extractor_names.contains(&"bibtex-extractor".to_string()));
             assert!(extractor_names.contains(&"epub-extractor".to_string()));

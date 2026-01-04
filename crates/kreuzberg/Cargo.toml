@@ -39,6 +39,7 @@ office = [
     "dep:docx-lite",
     "dep:quick-xml",
     "dep:pulldown-cmark",
+    "dep:jotdown",
     "dep:biblatex",
     "dep:org",
     "dep:rtf-parser",
@@ -171,6 +172,7 @@ lzma-rust2 = { workspace = true, optional = true }
 docx-lite = { version = "0.2.0", optional = true }
 
 pulldown-cmark = { version = "0.13", optional = true }
+jotdown = { version = "0.9", optional = true }
 biblatex = { version = "0.11", optional = true }
 org = { version = "0.3", optional = true }
 rtf-parser = { version = "0.4", optional = true }
