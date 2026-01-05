@@ -88,9 +88,20 @@ jobs:
         uses: ./.github/actions/setup-openssl
 
       - name: Setup Rust
+        id: rust
         uses: ./.github/actions/setup-rust
         with:
           cache-key-prefix: php-${{ matrix.os }}
+
+      - name: Detect partial cache hit and clean stale fingerprints
+        shell: bash
+        run: |
+          # Check if cache was a partial hit (restored from fallback key)
+          # For now, we'll do a more conservative check: always clean before build
+          # since the current Cargo.lock changes frequently
+          echo "Preparing clean Rust build environment..."
+          cargo clean --release -p kreuzberg-php 2>/dev/null || true
+          cargo clean --release -p kreuzberg 2>/dev/null || true
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -170,12 +181,6 @@ jobs:
           echo "Building kreuzberg-php from source (no caching)"
           cargo build --release --package kreuzberg-php
 
-      - name: Clean cargo cache to avoid fingerprint conflicts
-        shell: bash
-        run: |
-          cargo clean --release -p kreuzberg-php 2>/dev/null || true
-          cargo clean --release -p kreuzberg 2>/dev/null || true
-
       - name: Build PHP extension
         shell: bash
         run: |
@@ -207,9 +212,20 @@ jobs:
         uses: ./.github/actions/install-system-deps
 
       - name: Setup Rust
+        id: rust
         uses: ./.github/actions/setup-rust
         with:
           cache-key-prefix: php-test-${{ matrix.os }}
+
+      - name: Detect partial cache hit and clean stale fingerprints
+        shell: bash
+        run: |
+          # Check if cache was a partial hit (restored from fallback key)
+          # For now, we'll do a more conservative check: always clean before build
+          # since the current Cargo.lock changes frequently
+          echo "Preparing clean Rust build environment..."
+          cargo clean --release -p kreuzberg-php 2>/dev/null || true
+          cargo clean --release -p kreuzberg 2>/dev/null || true
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -259,12 +275,6 @@ jobs:
           echo "=== Building FFI Library ==="
           echo "Building kreuzberg-php from source (no caching)"
           cargo build --release --package kreuzberg-php
-
-      - name: Clean cargo cache to avoid fingerprint conflicts
-        shell: bash
-        run: |
-          cargo clean --release -p kreuzberg-php 2>/dev/null || true
-          cargo clean --release -p kreuzberg 2>/dev/null || true
 
       - name: Build PHP extension
         shell: bash
