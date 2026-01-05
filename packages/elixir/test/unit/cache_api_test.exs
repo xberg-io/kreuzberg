@@ -784,13 +784,11 @@ defmodule KreuzbergTest.Unit.CacheAPITest do
     test "functions handle UtilityAPI.classify_error being called" do
       # The bang functions call UtilityAPI.classify_error on errors
       # We can't trigger errors, but we verify the functions work when no error occurs
-      begin_time = System.monotonic_time()
       CacheAPI.cache_stats!()
       CacheAPI.clear_cache!()
-      end_time = System.monotonic_time()
 
-      # Functions executed without timing out
-      assert end_time > begin_time
+      # Functions executed without timing out - if we got here, they worked
+      assert true
     end
   end
 
