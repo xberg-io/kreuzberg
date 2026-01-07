@@ -11,6 +11,18 @@ readonly class KeywordConfig
 {
     public function __construct(
         /**
+         * Algorithm to use for keyword extraction.
+         *
+         * Supported algorithms:
+         * - 'yake': Yet Another Keyword Extractor (statistical approach)
+         * - 'rake': Rapid Automatic Keyword Extraction (co-occurrence based)
+         *
+         * @var string
+         * @default 'yake'
+         */
+        public string $algorithm = 'yake',
+
+        /**
          * Maximum number of keywords to extract.
          *
          * Limits the number of top-ranked keywords returned from the extraction process.
@@ -58,6 +70,19 @@ readonly class KeywordConfig
          * @default 'en'
          */
         public ?string $language = 'en',
+
+        /**
+         * N-gram range for keyword extraction (min, max).
+         *
+         * Defines the range of n-grams to consider:
+         * - [1, 1]: unigrams only (single words)
+         * - [1, 2]: unigrams and bigrams (1-2 word phrases)
+         * - [1, 3]: unigrams, bigrams, and trigrams (1-3 word phrases)
+         *
+         * @var array{int, int}
+         * @default [1, 3]
+         */
+        public array $ngramRange = [1, 3],
     ) {
     }
 
@@ -68,6 +93,13 @@ readonly class KeywordConfig
      */
     public static function fromArray(array $data): self
     {
+        /** @var string $algorithm */
+        $algorithm = $data['algorithm'] ?? 'yake';
+        if (!is_string($algorithm)) {
+            /** @var string $algorithm */
+            $algorithm = (string) $algorithm;
+        }
+
         /** @var int $maxKeywords */
         $maxKeywords = $data['max_keywords'] ?? 10;
         if (!is_int($maxKeywords)) {
@@ -89,10 +121,18 @@ readonly class KeywordConfig
             $language = (string) $language;
         }
 
+        /** @var array{int, int} $ngramRange */
+        $ngramRange = $data['ngram_range'] ?? [1, 3];
+        if (!is_array($ngramRange) || count($ngramRange) !== 2) {
+            $ngramRange = [1, 3];
+        }
+
         return new self(
+            algorithm: $algorithm,
             maxKeywords: $maxKeywords,
             minScore: (float) $minScore,
             language: $language,
+            ngramRange: $ngramRange,
         );
     }
 
@@ -133,9 +173,11 @@ readonly class KeywordConfig
     public function toArray(): array
     {
         return array_filter([
+            'algorithm' => $this->algorithm,
             'max_keywords' => $this->maxKeywords,
             'min_score' => $this->minScore,
             'language' => $this->language,
+            'ngram_range' => $this->ngramRange,
         ], static fn ($value): bool => $value !== null);
     }
 

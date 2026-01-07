@@ -69,6 +69,17 @@ readonly class ChunkingConfig
          * @default true
          */
         public bool $respectParagraphs = true,
+
+        /**
+         * Embedding configuration for chunks.
+         *
+         * When provided, embeddings will be generated for each chunk using the
+         * specified embedding model. This allows for semantic search over chunks.
+         *
+         * @var EmbeddingConfig|null
+         * @default null
+         */
+        public ?EmbeddingConfig $embedding = null,
     ) {
     }
 
@@ -107,11 +118,19 @@ readonly class ChunkingConfig
             $respectParagraphs = (bool) $respectParagraphs;
         }
 
+        $embedding = null;
+        if (isset($data['embedding']) && is_array($data['embedding'])) {
+            /** @var array<string, mixed> $embeddingData */
+            $embeddingData = $data['embedding'];
+            $embedding = EmbeddingConfig::fromArray($embeddingData);
+        }
+
         return new self(
             maxChars: $maxChars,
             maxOverlap: $maxOverlap,
             respectSentences: $respectSentences,
             respectParagraphs: $respectParagraphs,
+            embedding: $embedding,
         );
     }
 
@@ -151,12 +170,16 @@ readonly class ChunkingConfig
      */
     public function toArray(): array
     {
-        return [
+        // Use toRustArray() for embedding to get Rust-compatible format
+        $embedding = $this->embedding !== null ? $this->embedding->toRustArray() : null;
+
+        return array_filter([
             'max_chars' => $this->maxChars,
             'max_overlap' => $this->maxOverlap,
             'respect_sentences' => $this->respectSentences,
             'respect_paragraphs' => $this->respectParagraphs,
-        ];
+            'embedding' => $embedding,
+        ], static fn ($value): bool => $value !== null);
     }
 
     /**

@@ -66,7 +66,7 @@ final class PagesExtractionTest extends TestCase
         }
 
         $config = new ExtractionConfig(
-            pages: new PageConfig(extractPages: true),
+            page: new PageConfig(extractPages: true),
         );
 
         $kreuzberg = new Kreuzberg($config);
@@ -89,7 +89,7 @@ final class PagesExtractionTest extends TestCase
         }
 
         $config = new ExtractionConfig(
-            pages: new PageConfig(extractPages: true),
+            page: new PageConfig(extractPages: true),
         );
 
         $kreuzberg = new Kreuzberg($config);
@@ -125,7 +125,7 @@ final class PagesExtractionTest extends TestCase
         }
 
         $config = new ExtractionConfig(
-            pages: new PageConfig(
+            page: new PageConfig(
                 extractPages: true,
                 insertPageMarkers: true,
             ),
@@ -153,7 +153,7 @@ final class PagesExtractionTest extends TestCase
         }
 
         $config = new ExtractionConfig(
-            pages: new PageConfig(
+            page: new PageConfig(
                 extractPages: true,
                 insertPageMarkers: true,
                 markerFormat: '--- PAGE {page_number} ---',
@@ -300,7 +300,7 @@ final class PagesExtractionTest extends TestCase
         }
 
         $config = new ExtractionConfig(
-            pages: new PageConfig(extractPages: true),
+            page: new PageConfig(extractPages: true),
         );
 
         $kreuzberg = new Kreuzberg($config);
@@ -328,7 +328,7 @@ final class PagesExtractionTest extends TestCase
         }
 
         $config = new ExtractionConfig(
-            pages: new PageConfig(extractPages: true),
+            page: new PageConfig(extractPages: true),
         );
 
         $kreuzberg = new Kreuzberg();
@@ -357,7 +357,7 @@ final class PagesExtractionTest extends TestCase
         }
 
         $config = new ExtractionConfig(
-            pages: new PageConfig(
+            page: new PageConfig(
                 extractPages: true,
                 insertPageMarkers: false,
             ),

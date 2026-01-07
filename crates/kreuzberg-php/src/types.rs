@@ -96,6 +96,9 @@ pub struct ExtractionResult {
 
     /// Per-page results
     pub pages: Option<Vec<PageResult>>,
+
+    /// Extracted keywords
+    pub keywords: Option<Vec<Keyword>>,
 }
 
 #[php_impl]
@@ -107,14 +110,67 @@ impl ExtractionResult {
         Metadata::from_json(&self.metadata_json)
     }
 
-    /// Magic getter for accessing metadata as a property.
+    /// Magic getter for accessing properties that are not directly exposed.
     ///
-    /// Allows access like $result->metadata instead of $result->getMetadata().
-    pub fn __get(&self, name: &str) -> PhpResult<Option<Metadata>> {
-        if name == "metadata" {
-            Ok(Some(self.get_metadata()?))
-        } else {
-            Ok(None)
+    /// Allows access like $result->metadata, $result->chunks, $result->images, $result->pages, $result->tables.
+    pub fn __get(&self, name: &str) -> PhpResult<Option<Zval>> {
+        match name {
+            "metadata" => {
+                let metadata = self.get_metadata()?;
+                Ok(Some(metadata.into_zval(false)?))
+            }
+            "chunks" => {
+                if let Some(chunks) = &self.chunks {
+                    Ok(Some(chunks.clone().into_zval(false)?))
+                } else {
+                    Ok(None)
+                }
+            }
+            "embeddings" => {
+                // Extract embeddings from chunks if available
+                if let Some(chunks) = &self.chunks {
+                    let embeddings: Vec<Vec<f32>> = chunks.iter().filter_map(|chunk| chunk.embedding.clone()).collect();
+
+                    if !embeddings.is_empty() {
+                        Ok(Some(embeddings.into_zval(false)?))
+                    } else {
+                        Ok(None)
+                    }
+                } else {
+                    Ok(None)
+                }
+            }
+            "images" => {
+                if let Some(images) = &self.images {
+                    Ok(Some(images.clone().into_zval(false)?))
+                } else {
+                    Ok(None)
+                }
+            }
+            "pages" => {
+                if let Some(pages) = &self.pages {
+                    Ok(Some(pages.clone().into_zval(false)?))
+                } else {
+                    Ok(None)
+                }
+            }
+            "keywords" => {
+                if let Some(keywords) = &self.keywords {
+                    // Convert keywords to PHP array of associative arrays
+                    let mut php_keywords = Vec::new();
+                    for kw in keywords {
+                        let mut kw_map = HashMap::new();
+                        kw_map.insert("text", kw.text.as_str().into_zval(false)?);
+                        kw_map.insert("score", kw.score.into_zval(false)?);
+                        php_keywords.push(kw_map.into_zval(false)?);
+                    }
+                    Ok(Some(php_keywords.into_zval(false)?))
+                } else {
+                    Ok(None)
+                }
+            }
+            "tables" => Ok(Some(self.tables.clone().into_zval(false)?)),
+            _ => Ok(None),
         }
     }
 
@@ -157,6 +213,22 @@ impl ExtractionResult {
         self.detected_languages
             .as_ref()
             .and_then(|langs| langs.first().cloned())
+    }
+
+    /// Get all extracted keywords.
+    #[php(name = "getKeywords")]
+    pub fn get_keywords(&self) -> Option<Vec<Keyword>> {
+        self.keywords.clone()
+    }
+
+    /// Get all embeddings extracted from chunks.
+    ///
+    /// Extracts embeddings from chunks if available.
+    #[php(name = "getEmbeddings")]
+    pub fn get_embeddings(&self) -> Option<Vec<Vec<f32>>> {
+        self.chunks
+            .as_ref()
+            .map(|chunks| chunks.iter().filter_map(|chunk| chunk.embedding.clone()).collect())
     }
 }
 
@@ -231,6 +303,30 @@ impl ExtractionResult {
             metadata_obj.insert("format".to_string(), format_json);
         }
 
+        // Extract keywords from additional metadata before adding all additional fields
+        let keywords = if let Some(keywords_value) = result.metadata.additional.get("keywords") {
+            if let Some(arr) = keywords_value.as_array() {
+                let mut keywords_vec = Vec::new();
+                for keyword_value in arr {
+                    match Keyword::from_json(keyword_value) {
+                        Ok(kw) => keywords_vec.push(kw),
+                        Err(_e) => {
+                            continue;
+                        }
+                    }
+                }
+                if !keywords_vec.is_empty() {
+                    Some(keywords_vec)
+                } else {
+                    None
+                }
+            } else {
+                None
+            }
+        } else {
+            None
+        };
+
         // Add additional metadata fields (from postprocessors)
         for (key, value) in &result.metadata.additional {
             metadata_obj.insert(key.clone(), value.clone());
@@ -283,6 +379,7 @@ impl ExtractionResult {
             images,
             chunks,
             pages,
+            keywords,
         })
     }
 }
@@ -647,5 +744,66 @@ impl Metadata {
         } else {
             Ok(HashMap::new())
         }
+    }
+
+    /// Check if a custom metadata field exists.
+    pub fn has_custom(&self, key: String) -> PhpResult<bool> {
+        let additional = self.get_additional()?;
+        Ok(additional.contains_key(&key))
+    }
+
+    /// Get a custom metadata field value.
+    pub fn get_custom(&self, key: String) -> PhpResult<Zval> {
+        let additional = self.get_additional()?;
+        Ok(additional
+            .get(&key)
+            .map(|v| v.shallow_clone())
+            .unwrap_or_else(Zval::new))
+    }
+}
+
+/// Extracted keyword with score and metadata.
+///
+/// # Properties
+///
+/// - `text` (string): The keyword text
+/// - `score` (float): Keyword relevance score (0-1 range typically)
+/// - `algorithm` (string|null): The algorithm used to extract this keyword
+#[php_class]
+#[php(name = "Kreuzberg\\Types\\Keyword")]
+#[derive(Clone, Debug)]
+pub struct Keyword {
+    /// Keyword text
+    #[php(prop)]
+    pub text: String,
+
+    /// Keyword score
+    #[php(prop)]
+    pub score: f32,
+
+    /// Algorithm used
+    #[php(prop)]
+    pub algorithm: Option<String>,
+}
+
+impl Keyword {
+    /// Convert from JSON value to Keyword.
+    pub fn from_json(value: &serde_json::Value) -> PhpResult<Self> {
+        let obj = value.as_object().ok_or("Keyword must be a JSON object")?;
+
+        let text = obj
+            .get("text")
+            .and_then(|v| v.as_str())
+            .ok_or("Keyword must have a 'text' field")?
+            .to_string();
+
+        let score = obj
+            .get("score")
+            .and_then(|v| v.as_f64())
+            .ok_or("Keyword must have a 'score' field")? as f32;
+
+        let algorithm = obj.get("algorithm").and_then(|v| v.as_str()).map(|s| s.to_string());
+
+        Ok(Self { text, score, algorithm })
     }
 }

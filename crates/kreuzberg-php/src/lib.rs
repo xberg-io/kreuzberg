@@ -72,6 +72,7 @@ pub fn get_module(module: ModuleBuilder) -> ModuleBuilder {
     // Register all PHP classes (order matters for dependencies)
     // Types module - base result types
     module = module
+        .class::<types::Metadata>()
         .class::<types::ExtractedImage>()
         .class::<types::ExtractedTable>()
         .class::<types::TextChunk>()

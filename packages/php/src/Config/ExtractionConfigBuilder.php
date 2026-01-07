@@ -198,7 +198,7 @@ class ExtractionConfigBuilder
             imageExtraction: $this->imageExtraction,
             page: $this->page,
             languageDetection: $this->languageDetection,
-            keyword: $this->keyword,
+            keywords: $this->keyword,
             extractImages: $this->extractImages,
             extractTables: $this->extractTables,
             preserveFormatting: $this->preserveFormatting,

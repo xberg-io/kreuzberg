@@ -418,20 +418,29 @@ readonly class ExtractionConfig
      */
     public function toArray(): array
     {
-        // Build chunking config with embedded embedding config if present
-        $chunking = null;
-        if ($this->chunking !== null) {
-            $chunking = $this->chunking->toArray();
-            // Nest embedding config inside chunking config if present
-            if ($this->embedding !== null) {
-                $chunking['embedding'] = $this->embedding->toArray();
+        // If embedding config is provided but chunking is not, auto-enable chunking
+        // so embeddings can be generated for chunks. The Rust pipeline generates
+        // embeddings for chunks, not at the document level.
+        $chunking = $this->chunking;
+        if ($this->embedding !== null) {
+            if ($chunking === null) {
+                $chunking = new ChunkingConfig(embedding: $this->embedding);
+            } elseif ($chunking->embedding === null) {
+                // If chunking exists but has no embedding, use the top-level embedding
+                $chunking = new ChunkingConfig(
+                    maxChars: $chunking->maxChars,
+                    maxOverlap: $chunking->maxOverlap,
+                    respectSentences: $chunking->respectSentences,
+                    respectParagraphs: $chunking->respectParagraphs,
+                    embedding: $this->embedding,
+                );
             }
         }
 
         return array_filter([
             'ocr' => $this->ocr?->toArray(),
             'pdf' => $this->pdf?->toArray(),
-            'chunking' => $chunking,
+            'chunking' => $chunking?->toArray(),
             'image_extraction' => $this->imageExtraction?->toArray(),
             'page' => $this->page?->toArray(),
             'language_detection' => $this->languageDetection?->toArray(),

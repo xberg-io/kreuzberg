@@ -50,7 +50,7 @@ final class ConfigTest extends TestCase
         $this->assertNull($config->imageExtraction);
         $this->assertNull($config->page);
         $this->assertNull($config->languageDetection);
-        $this->assertNull($config->keyword);
+        $this->assertNull($config->keywords);
         $this->assertFalse($config->extractImages);
         $this->assertTrue($config->extractTables);
         $this->assertFalse($config->preserveFormatting);

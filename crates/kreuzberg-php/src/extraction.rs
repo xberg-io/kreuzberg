@@ -2,6 +2,7 @@
 //!
 //! Provides extraction functions for PHP.
 
+use ext_php_rs::binary_slice::BinarySlice;
 use ext_php_rs::prelude::*;
 
 use crate::config::parse_config_from_json;
@@ -89,7 +90,7 @@ pub fn kreuzberg_extract_file(
 /// ```
 #[php_function]
 pub fn kreuzberg_extract_bytes(
-    data: Vec<u8>,
+    data: BinarySlice<u8>,
     mime_type: String,
     config_json: Option<String>,
 ) -> PhpResult<ExtractionResult> {
@@ -99,7 +100,7 @@ pub fn kreuzberg_extract_bytes(
     };
 
     if crate::plugins::has_custom_extractor(&mime_type) {
-        match crate::plugins::call_custom_extractor(&mime_type, &data) {
+        match crate::plugins::call_custom_extractor(&mime_type, data.as_ref()) {
             Ok(result_zval) => {
                 if let Some(result_array) = result_zval.array() {
                     let content = result_array
@@ -142,7 +143,7 @@ pub fn kreuzberg_extract_bytes(
         }
     }
 
-    let result = kreuzberg::extract_bytes_sync(&data, &mime_type, &rust_config).map_err(to_php_exception)?;
+    let result = kreuzberg::extract_bytes_sync(data.as_ref(), &mime_type, &rust_config).map_err(to_php_exception)?;
 
     ExtractionResult::from_rust(result)
 }
@@ -230,7 +231,7 @@ pub fn kreuzberg_batch_extract_files(
 /// ```
 #[php_function]
 pub fn kreuzberg_batch_extract_bytes(
-    data_list: Vec<Vec<u8>>,
+    data_list: Vec<BinarySlice<u8>>,
     mime_types: Vec<String>,
     config_json: Option<String>,
 ) -> PhpResult<Vec<ExtractionResult>> {
@@ -248,15 +249,15 @@ pub fn kreuzberg_batch_extract_bytes(
         None => Default::default(),
     };
 
-    let contents: Vec<(&[u8], &str)> = data_list
-        .iter()
-        .zip(mime_types.iter())
-        .map(|(data, mime)| (data.as_slice(), mime.as_str()))
-        .collect();
-
-    let owned_contents: Vec<(Vec<u8>, String)> = contents
+    // Convert Vec<BinarySlice<u8>> to Vec<(Vec<u8>, String)> for the core function
+    // BinarySlice provides a reference to the binary data from PHP
+    let owned_contents: Vec<(Vec<u8>, String)> = data_list
         .into_iter()
-        .map(|(bytes, mime)| (bytes.to_vec(), mime.to_string()))
+        .zip(mime_types)
+        .map(|(binary_slice, mime)| {
+            let bytes: &[u8] = binary_slice.as_ref();
+            (bytes.to_vec(), mime)
+        })
         .collect();
 
     let results = kreuzberg::batch_extract_bytes_sync(owned_contents, &rust_config).map_err(to_php_exception)?;
@@ -282,8 +283,9 @@ pub fn kreuzberg_batch_extract_bytes(
 /// echo "Detected type: $mime_type\n";
 /// ```
 #[php_function]
-pub fn kreuzberg_detect_mime_type_from_bytes(data: Vec<u8>) -> PhpResult<String> {
-    kreuzberg::detect_mime_type_from_bytes(&data).map_err(|e| format!("Failed to detect MIME type: {}", e).into())
+pub fn kreuzberg_detect_mime_type_from_bytes(data: BinarySlice<u8>) -> PhpResult<String> {
+    kreuzberg::detect_mime_type_from_bytes(data.as_ref())
+        .map_err(|e| format!("Failed to detect MIME type: {}", e).into())
 }
 
 /// Detect MIME type from file bytes (alias for kreuzberg_detect_mime_type_from_bytes).
@@ -304,8 +306,9 @@ pub fn kreuzberg_detect_mime_type_from_bytes(data: Vec<u8>) -> PhpResult<String>
 /// echo "Detected type: $mime_type\n";
 /// ```
 #[php_function]
-pub fn kreuzberg_detect_mime_type(data: Vec<u8>) -> PhpResult<String> {
-    kreuzberg::detect_mime_type_from_bytes(&data).map_err(|e| format!("Failed to detect MIME type: {}", e).into())
+pub fn kreuzberg_detect_mime_type(data: BinarySlice<u8>) -> PhpResult<String> {
+    kreuzberg::detect_mime_type_from_bytes(data.as_ref())
+        .map_err(|e| format!("Failed to detect MIME type: {}", e).into())
 }
 
 /// Detect MIME type from file path.

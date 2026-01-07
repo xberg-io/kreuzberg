@@ -66,7 +66,7 @@ final class EmbeddingGenerationTest extends TestCase
         }
 
         $config = new ExtractionConfig(
-            embeddings: new EmbeddingConfig(),
+            embedding: new EmbeddingConfig(),
         );
 
         $kreuzberg = new Kreuzberg($config);
@@ -89,7 +89,7 @@ final class EmbeddingGenerationTest extends TestCase
         }
 
         $config = new ExtractionConfig(
-            embeddings: new EmbeddingConfig(),
+            embedding: new EmbeddingConfig(),
         );
 
         $kreuzberg = new Kreuzberg($config);
@@ -280,7 +280,7 @@ final class EmbeddingGenerationTest extends TestCase
         }
 
         $config = new ExtractionConfig(
-            embeddings: new EmbeddingConfig(normalize: true),
+            embedding: new EmbeddingConfig(normalize: true),
         );
 
         $kreuzberg = new Kreuzberg();

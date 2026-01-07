@@ -105,7 +105,7 @@ final class OcrExtractionTest extends TestCase
             ocr: new OcrConfig(
                 backend: 'tesseract',
                 language: 'eng',
-                tesseract: $tesseractConfig,
+                tesseractConfig: $tesseractConfig,
             ),
         );
 
@@ -135,7 +135,7 @@ final class OcrExtractionTest extends TestCase
             ocr: new OcrConfig(
                 backend: 'tesseract',
                 language: 'eng',
-                tesseract: $tesseractConfig,
+                tesseractConfig: $tesseractConfig,
             ),
             extractTables: true,
         );

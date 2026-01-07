@@ -9,6 +9,45 @@ use Kreuzberg\Exceptions\KreuzbergException;
 use Kreuzberg\Types\ExtractionResult;
 
 /**
+ * Convert generic exceptions from FFI layer to KreuzbergException.
+ *
+ * @internal
+ */
+function convertToKreuzbergException(\Exception $e): KreuzbergException
+{
+    $message = $e->getMessage();
+
+    // Check for validation errors
+    if (str_contains($message, '[Validation]') ||
+        str_contains($message, 'File does not exist') ||
+        str_contains($message, 'Invalid value given for argument')) {
+        return KreuzbergException::validation($message);
+    }
+
+    // Check for parsing errors
+    if (str_contains($message, 'Failed to parse') ||
+        str_contains($message, 'parsing error') ||
+        str_contains($message, 'Could not determine MIME type')) {
+        return KreuzbergException::parsing($message);
+    }
+
+    // Check for OCR errors
+    if (str_contains($message, 'OCR') || str_contains($message, 'ocr')) {
+        return KreuzbergException::ocr($message);
+    }
+
+    // Check for I/O errors
+    if (str_contains($message, 'I/O') ||
+        str_contains($message, 'permission') ||
+        str_contains($message, 'Permission denied')) {
+        return KreuzbergException::io($message);
+    }
+
+    // Generic error
+    return new KreuzbergException($message, 0, $e);
+}
+
+/**
  * Extract content from a file (procedural API).
  *
  * @param string $filePath Path to the file to extract
@@ -38,7 +77,14 @@ function extract_file(
     ?string $mimeType = null,
     ?ExtractionConfig $config = null,
 ): ExtractionResult {
-    return \kreuzberg_extract_file($filePath, $mimeType, $config);
+    try {
+        return \kreuzberg_extract_file($filePath, $mimeType, $config?->toJson());
+    } catch (\Exception $e) {
+        if ($e instanceof KreuzbergException) {
+            throw $e;
+        }
+        throw convertToKreuzbergException($e);
+    }
 }
 
 /**
@@ -64,7 +110,14 @@ function extract_bytes(
     string $mimeType,
     ?ExtractionConfig $config = null,
 ): ExtractionResult {
-    return \kreuzberg_extract_bytes($data, $mimeType, $config);
+    try {
+        return \kreuzberg_extract_bytes($data, $mimeType, $config?->toJson());
+    } catch (\Exception $e) {
+        if ($e instanceof KreuzbergException) {
+            throw $e;
+        }
+        throw convertToKreuzbergException($e);
+    }
 }
 
 /**
@@ -91,7 +144,14 @@ function batch_extract_files(
     array $paths,
     ?ExtractionConfig $config = null,
 ): array {
-    return \kreuzberg_batch_extract_files($paths, $config);
+    try {
+        return \kreuzberg_batch_extract_files($paths, $config?->toJson());
+    } catch (\Exception $e) {
+        if ($e instanceof KreuzbergException) {
+            throw $e;
+        }
+        throw convertToKreuzbergException($e);
+    }
 }
 
 /**
@@ -121,7 +181,14 @@ function batch_extract_bytes(
     array $mimeTypes,
     ?ExtractionConfig $config = null,
 ): array {
-    return \kreuzberg_batch_extract_bytes($dataList, $mimeTypes, $config);
+    try {
+        return \kreuzberg_batch_extract_bytes($dataList, $mimeTypes, $config?->toJson());
+    } catch (\Exception $e) {
+        if ($e instanceof KreuzbergException) {
+            throw $e;
+        }
+        throw convertToKreuzbergException($e);
+    }
 }
 
 /**
@@ -141,10 +208,17 @@ function batch_extract_bytes(
  */
 function detect_mime_type(string $data): string
 {
-    /** @var string $result */
-    $result = \kreuzberg_detect_mime_type($data);
+    try {
+        /** @var string $result */
+        $result = \kreuzberg_detect_mime_type($data);
 
-    return $result;
+        return $result;
+    } catch (\Exception $e) {
+        if ($e instanceof KreuzbergException) {
+            throw $e;
+        }
+        throw convertToKreuzbergException($e);
+    }
 }
 
 /**
@@ -163,8 +237,15 @@ function detect_mime_type(string $data): string
  */
 function detect_mime_type_from_path(string $path): string
 {
-    /** @var string $result */
-    $result = \kreuzberg_detect_mime_type_from_path($path);
+    try {
+        /** @var string $result */
+        $result = \kreuzberg_detect_mime_type_from_path($path);
 
-    return $result;
+        return $result;
+    } catch (\Exception $e) {
+        if ($e instanceof KreuzbergException) {
+            throw $e;
+        }
+        throw convertToKreuzbergException($e);
+    }
 }

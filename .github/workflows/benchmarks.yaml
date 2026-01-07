@@ -44,7 +44,7 @@ jobs:
   setup:
     name: Build harness + native libs
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 360
     permissions:
       contents: read
     outputs:
@@ -125,7 +125,7 @@ jobs:
     name: kreuzberg-native (${{ matrix.mode }})
     needs: setup
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 360
     permissions:
       contents: read
     strategy:
@@ -185,7 +185,7 @@ jobs:
     name: kreuzberg-python-sync (${{ matrix.mode }})
     needs: setup
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 360
     permissions:
       contents: read
     strategy:
@@ -257,7 +257,7 @@ jobs:
     name: kreuzberg-python-async (${{ matrix.mode }})
     needs: setup
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 360
     permissions:
       contents: read
     strategy:
@@ -329,7 +329,7 @@ jobs:
     name: kreuzberg-python-batch (${{ matrix.mode }})
     needs: setup
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 360
     permissions:
       contents: read
     strategy:
@@ -401,7 +401,7 @@ jobs:
     name: kreuzberg-node-async (${{ matrix.mode }})
     needs: setup
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 360
     permissions:
       contents: read
     strategy:
@@ -476,7 +476,7 @@ jobs:
     name: kreuzberg-node-batch (${{ matrix.mode }})
     needs: setup
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 360
     permissions:
       contents: read
     strategy:
@@ -551,7 +551,7 @@ jobs:
     name: kreuzberg-wasm-async (${{ matrix.mode }})
     needs: setup
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 360
     permissions:
       contents: read
     strategy:
@@ -615,7 +615,7 @@ jobs:
     name: kreuzberg-wasm-batch (${{ matrix.mode }})
     needs: setup
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 360
     permissions:
       contents: read
     strategy:
@@ -679,7 +679,7 @@ jobs:
     name: kreuzberg-ruby-sync (${{ matrix.mode }})
     needs: setup
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 360
     permissions:
       contents: read
     strategy:
@@ -784,7 +784,7 @@ jobs:
     name: kreuzberg-ruby-batch (${{ matrix.mode }})
     needs: setup
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 360
     permissions:
       contents: read
     strategy:
@@ -889,7 +889,7 @@ jobs:
     name: kreuzberg-go-sync (${{ matrix.mode }})
     needs: setup
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 360
     permissions:
       contents: read
     strategy:
@@ -999,7 +999,7 @@ jobs:
     name: kreuzberg-go-batch (${{ matrix.mode }})
     needs: setup
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 360
     permissions:
       contents: read
     strategy:
@@ -1109,7 +1109,7 @@ jobs:
     name: kreuzberg-java-sync (${{ matrix.mode }})
     needs: setup
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 360
     permissions:
       contents: read
     strategy:
@@ -1211,7 +1211,7 @@ jobs:
     name: kreuzberg-csharp-sync (${{ matrix.mode }})
     needs: setup
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 360
     permissions:
       contents: read
     strategy:
@@ -1311,7 +1311,7 @@ jobs:
     name: kreuzberg-elixir-sync (${{ matrix.mode }})
     needs: setup
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 360
     permissions:
       contents: read
     strategy:
@@ -1385,7 +1385,7 @@ jobs:
     name: kreuzberg-elixir-batch (${{ matrix.mode }})
     needs: setup
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 360
     permissions:
       contents: read
     strategy:
@@ -1459,7 +1459,7 @@ jobs:
     name: kreuzberg-php-sync (${{ matrix.mode }})
     needs: setup
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 360
     permissions:
       contents: read
     strategy:
@@ -1560,7 +1560,7 @@ jobs:
     name: kreuzberg-php-batch (${{ matrix.mode }})
     needs: setup
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 360
     permissions:
       contents: read
     strategy:
@@ -1662,7 +1662,7 @@ jobs:
     name: docling (${{ matrix.mode }})
     needs: setup
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 360
     permissions:
       contents: read
     strategy:
@@ -1715,7 +1715,7 @@ jobs:
     name: docling-batch (${{ matrix.mode }})
     needs: setup
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 360
     permissions:
       contents: read
     strategy:
@@ -1768,7 +1768,7 @@ jobs:
     name: markitdown (${{ matrix.mode }})
     needs: setup
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 360
     permissions:
       contents: read
     strategy:
@@ -1821,7 +1821,7 @@ jobs:
     name: pandoc (${{ matrix.mode }})
     needs: setup
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 360
     permissions:
       contents: read
     strategy:
@@ -1880,7 +1880,7 @@ jobs:
     name: unstructured (${{ matrix.mode }})
     needs: setup
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 360
     permissions:
       contents: read
     strategy:
@@ -1933,7 +1933,7 @@ jobs:
     name: tika-sync (${{ matrix.mode }})
     needs: setup
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 360
     permissions:
       contents: read
     strategy:
@@ -1984,7 +1984,7 @@ jobs:
     name: tika-batch (${{ matrix.mode }})
     needs: setup
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 360
     permissions:
       contents: read
     strategy:
@@ -2035,7 +2035,7 @@ jobs:
     name: pymupdf4llm (${{ matrix.mode }})
     needs: setup
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 360
     permissions:
       contents: read
     strategy:
@@ -2088,7 +2088,7 @@ jobs:
     name: pdfplumber (${{ matrix.mode }})
     needs: setup
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 360
     permissions:
       contents: read
     strategy:
@@ -2141,7 +2141,7 @@ jobs:
     name: pdfplumber-batch (${{ matrix.mode }})
     needs: setup
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 360
     permissions:
       contents: read
     strategy:
@@ -2194,7 +2194,7 @@ jobs:
     name: mineru (${{ matrix.mode }})
     needs: setup
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 360
     permissions:
       contents: read
     strategy:
@@ -2247,7 +2247,7 @@ jobs:
     name: mineru-batch (${{ matrix.mode }})
     needs: setup
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 360
     permissions:
       contents: read
     strategy:

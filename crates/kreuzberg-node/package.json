@@ -86,6 +86,7 @@
     "build": "napi build --platform --release && tsup",
     "build:debug": "napi build --platform",
     "build:ts": "tsup",
+    "prepare": "tsup",
     "test": "pnpm test:smoke && pnpm test:binding",
     "test:smoke": "vitest run tests/smoke/",
     "test:binding": "vitest run tests/binding/",

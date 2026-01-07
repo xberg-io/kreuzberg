@@ -55,7 +55,7 @@ final class ExtractionConfigTest extends TestCase
         $this->assertNull($config->imageExtraction);
         $this->assertNull($config->page);
         $this->assertNull($config->languageDetection);
-        $this->assertNull($config->keyword);
+        $this->assertNull($config->keywords);
         $this->assertFalse($config->extractImages);
         $this->assertTrue($config->extractTables);
         $this->assertFalse($config->preserveFormatting);
@@ -148,7 +148,7 @@ final class ExtractionConfigTest extends TestCase
             'image_extraction' => ['extract_images' => true],
             'page' => ['extract_pages' => true],
             'language_detection' => ['enabled' => true],
-            'keyword' => ['max_keywords' => 10],
+            'keywords' => ['max_keywords' => 10],
             'extract_images' => true,
             'extract_tables' => false,
             'preserve_formatting' => true,
@@ -163,7 +163,7 @@ final class ExtractionConfigTest extends TestCase
         $this->assertNotNull($config->imageExtraction);
         $this->assertNotNull($config->page);
         $this->assertNotNull($config->languageDetection);
-        $this->assertNotNull($config->keyword);
+        $this->assertNotNull($config->keywords);
         $this->assertTrue($config->extractImages);
         $this->assertFalse($config->extractTables);
         $this->assertTrue($config->preserveFormatting);
@@ -337,7 +337,7 @@ final class ExtractionConfigTest extends TestCase
             imageExtraction: new ImageExtractionConfig(),
             page: new PageConfig(),
             languageDetection: new LanguageDetectionConfig(),
-            keyword: new KeywordConfig(),
+            keywords: new KeywordConfig(),
         );
 
         $array = $config->toArray();
@@ -349,7 +349,7 @@ final class ExtractionConfigTest extends TestCase
         $this->assertArrayHasKey('image_extraction', $array);
         $this->assertArrayHasKey('page', $array);
         $this->assertArrayHasKey('language_detection', $array);
-        $this->assertArrayHasKey('keyword', $array);
+        $this->assertArrayHasKey('keywords', $array);
     }
 
     #[Test]

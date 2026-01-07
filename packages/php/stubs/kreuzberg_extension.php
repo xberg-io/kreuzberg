@@ -19,11 +19,11 @@ declare(strict_types=1);
  *
  * @param string $filePath Path to the file
  * @param string|null $mimeType Optional MIME type hint
- * @param \Kreuzberg\Config\ExtractionConfig|null $config Extraction configuration
+ * @param string|null $config JSON-encoded extraction configuration
  * @return \Kreuzberg\Types\ExtractionResult Extraction result
  * @throws \Exception If extraction fails
  */
-function kreuzberg_extract_file(string $filePath, ?string $mimeType, ?\Kreuzberg\Config\ExtractionConfig $config): \Kreuzberg\Types\ExtractionResult
+function kreuzberg_extract_file(string $filePath, ?string $mimeType, ?string $config): \Kreuzberg\Types\ExtractionResult
 {
 }
 
@@ -32,11 +32,11 @@ function kreuzberg_extract_file(string $filePath, ?string $mimeType, ?\Kreuzberg
  *
  * @param string $data File content as bytes
  * @param string $mimeType MIME type of the data
- * @param \Kreuzberg\Config\ExtractionConfig|null $config Extraction configuration
+ * @param string|null $config JSON-encoded extraction configuration
  * @return \Kreuzberg\Types\ExtractionResult Extraction result
  * @throws \Exception If extraction fails
  */
-function kreuzberg_extract_bytes(string $data, string $mimeType, ?\Kreuzberg\Config\ExtractionConfig $config): \Kreuzberg\Types\ExtractionResult
+function kreuzberg_extract_bytes(string $data, string $mimeType, ?string $config): \Kreuzberg\Types\ExtractionResult
 {
 }
 
@@ -44,11 +44,11 @@ function kreuzberg_extract_bytes(string $data, string $mimeType, ?\Kreuzberg\Con
  * Extract content from multiple files in parallel (native extension function).
  *
  * @param array<string> $paths List of file paths
- * @param \Kreuzberg\Config\ExtractionConfig|null $config Extraction configuration
+ * @param string|null $config JSON-encoded extraction configuration
  * @return array<\Kreuzberg\Types\ExtractionResult> List of extraction results
  * @throws \Exception If extraction fails
  */
-function kreuzberg_batch_extract_files(array $paths, ?\Kreuzberg\Config\ExtractionConfig $config): array
+function kreuzberg_batch_extract_files(array $paths, ?string $config): array
 {
 }
 
@@ -57,11 +57,11 @@ function kreuzberg_batch_extract_files(array $paths, ?\Kreuzberg\Config\Extracti
  *
  * @param array<string> $dataList List of file contents as bytes
  * @param array<string> $mimeTypes List of MIME types
- * @param \Kreuzberg\Config\ExtractionConfig|null $config Extraction configuration
+ * @param string|null $config JSON-encoded extraction configuration
  * @return array<\Kreuzberg\Types\ExtractionResult> List of extraction results
  * @throws \Exception If extraction fails
  */
-function kreuzberg_batch_extract_bytes(array $dataList, array $mimeTypes, ?\Kreuzberg\Config\ExtractionConfig $config): array
+function kreuzberg_batch_extract_bytes(array $dataList, array $mimeTypes, ?string $config): array
 {
 }
 

@@ -30,6 +30,10 @@ pub struct PdfMetadata {
     /// First page height in points (1/72 inch)
     #[serde(skip_serializing_if = "Option::is_none")]
     pub height: Option<i64>,
+
+    /// Total number of pages in the PDF document
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub page_count: Option<usize>,
 }
 
 /// Complete PDF extraction metadata including common and PDF-specific fields.
@@ -199,6 +203,9 @@ fn extract_pdf_specific_metadata(document: &PdfDocument<'_>) -> Result<PdfMetada
         metadata.width = Some(page_rect.width().value.round() as i64);
         metadata.height = Some(page_rect.height().value.round() as i64);
     }
+
+    // Always capture page count
+    metadata.page_count = Some(document.pages().len() as usize);
 
     Ok(metadata)
 }

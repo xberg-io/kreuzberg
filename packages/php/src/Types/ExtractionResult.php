@@ -15,8 +15,8 @@ namespace Kreuzberg\Types;
  * @property-read array<Chunk>|null $chunks Text chunks with embeddings and metadata
  * @property-read array<ExtractedImage>|null $images Extracted images (with nested OCR results)
  * @property-read array<PageContent>|null $pages Per-page content when page extraction is enabled
+ * @property-read array<mixed>|null $keywords Extracted keywords with scores if KeywordConfig provided
  * @property-read array<mixed, mixed>|null $embeddings Generated embeddings if enabled
- * @property-read array<mixed, mixed>|null $keywords Extracted keywords if enabled
  * @property-read array<mixed, mixed>|null $tesseract Tesseract OCR configuration results if enabled
  */
 readonly class ExtractionResult
@@ -101,9 +101,23 @@ readonly class ExtractionResult
             );
         }
 
+        // If embeddings field exists in data, use it
         $embeddings = $data['embeddings'] ?? null;
         if (!is_array($embeddings)) {
             $embeddings = null;
+        }
+
+        // If no embeddings field but chunks have embeddings, extract them
+        if ($embeddings === null && $chunks !== null) {
+            $chunkEmbeddings = [];
+            foreach ($chunks as $chunk) {
+                if ($chunk instanceof Chunk && $chunk->embedding !== null) {
+                    $chunkEmbeddings[] = (object) ['vector' => $chunk->embedding];
+                }
+            }
+            if (!empty($chunkEmbeddings)) {
+                $embeddings = $chunkEmbeddings;
+            }
         }
 
         $keywords = $data['keywords'] ?? null;
