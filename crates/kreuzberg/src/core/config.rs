@@ -539,8 +539,7 @@ impl ExtractionConfig {
     /// - A boolean is not "true" or "false"
     pub fn apply_env_overrides(&mut self) -> Result<()> {
         use crate::core::config_validation::{
-            validate_language_code, validate_ocr_backend, validate_token_reduction_level,
-            validate_chunking_params,
+            validate_chunking_params, validate_language_code, validate_ocr_backend, validate_token_reduction_level,
         };
 
         // KREUZBERG_OCR_LANGUAGE override
@@ -567,14 +566,12 @@ impl ExtractionConfig {
 
         // KREUZBERG_CHUNKING_MAX_CHARS override
         if let Ok(max_chars_str) = std::env::var("KREUZBERG_CHUNKING_MAX_CHARS") {
-            let max_chars: usize = max_chars_str.parse().map_err(|_| {
-                KreuzbergError::Validation {
-                    message: format!(
-                        "Invalid value for KREUZBERG_CHUNKING_MAX_CHARS: '{}'. Must be a positive integer.",
-                        max_chars_str
-                    ),
-                    source: None,
-                }
+            let max_chars: usize = max_chars_str.parse().map_err(|_| KreuzbergError::Validation {
+                message: format!(
+                    "Invalid value for KREUZBERG_CHUNKING_MAX_CHARS: '{}'. Must be a positive integer.",
+                    max_chars_str
+                ),
+                source: None,
             })?;
 
             if max_chars == 0 {
@@ -602,14 +599,12 @@ impl ExtractionConfig {
 
         // KREUZBERG_CHUNKING_MAX_OVERLAP override
         if let Ok(max_overlap_str) = std::env::var("KREUZBERG_CHUNKING_MAX_OVERLAP") {
-            let max_overlap: usize = max_overlap_str.parse().map_err(|_| {
-                KreuzbergError::Validation {
-                    message: format!(
-                        "Invalid value for KREUZBERG_CHUNKING_MAX_OVERLAP: '{}'. Must be a non-negative integer.",
-                        max_overlap_str
-                    ),
-                    source: None,
-                }
+            let max_overlap: usize = max_overlap_str.parse().map_err(|_| KreuzbergError::Validation {
+                message: format!(
+                    "Invalid value for KREUZBERG_CHUNKING_MAX_OVERLAP: '{}'. Must be a non-negative integer.",
+                    max_overlap_str
+                ),
+                source: None,
             })?;
 
             if self.chunking.is_none() {

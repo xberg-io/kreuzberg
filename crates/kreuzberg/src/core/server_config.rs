@@ -203,7 +203,7 @@ impl ServerConfig {
     /// assert_eq!(config.max_request_body_mb(), 100);
     /// ```
     pub fn max_request_body_mb(&self) -> usize {
-        (self.max_request_body_bytes + 1_048_575) / 1_048_576 // Ceiling division
+        self.max_request_body_bytes.div_ceil(1_048_576)
     }
 
     /// Get maximum multipart field size in megabytes (rounded up).
@@ -217,7 +217,7 @@ impl ServerConfig {
     /// assert_eq!(config.max_multipart_field_mb(), 100);
     /// ```
     pub fn max_multipart_field_mb(&self) -> usize {
-        (self.max_multipart_field_bytes + 1_048_575) / 1_048_576 // Ceiling division
+        self.max_multipart_field_bytes.div_ceil(1_048_576)
     }
 
     /// Normalize legacy field values for backward compatibility.
@@ -696,11 +696,7 @@ port: 3000
         let dir = tempdir().unwrap();
         let config_path = dir.path().join("server.json");
 
-        fs::write(
-            &config_path,
-            r#"{"host": "0.0.0.0", "port": 3000}"#,
-        )
-        .unwrap();
+        fs::write(&config_path, r#"{"host": "0.0.0.0", "port": 3000}"#).unwrap();
 
         let config = ServerConfig::from_file(&config_path).unwrap();
         assert_eq!(config.host, "0.0.0.0");
@@ -716,7 +712,12 @@ port: 3000
 
         let result = ServerConfig::from_file(&config_path);
         assert!(result.is_err());
-        assert!(result.unwrap_err().to_string().contains("Unsupported config file format"));
+        assert!(
+            result
+                .unwrap_err()
+                .to_string()
+                .contains("Unsupported config file format")
+        );
     }
 
     #[test]
@@ -809,7 +810,12 @@ max_upload_mb = 50
         let result = config.apply_env_overrides();
 
         assert!(result.is_err());
-        assert!(result.unwrap_err().to_string().contains("KREUZBERG_PORT must be a valid u16"));
+        assert!(
+            result
+                .unwrap_err()
+                .to_string()
+                .contains("KREUZBERG_PORT must be a valid u16")
+        );
 
         // Cleanup
         unsafe {

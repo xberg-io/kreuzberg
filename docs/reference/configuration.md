@@ -159,7 +159,6 @@ kreuzberg serve
 # Basic server configuration
 host = "0.0.0.0"          # Listen on all interfaces
 port = 8000               # API port
-show_download_progress = false
 
 # CORS configuration (empty = allow all)
 cors_origins = [
@@ -1024,6 +1023,7 @@ PDF-specific extraction configuration.
 | `extract_images` | `bool` | `false` | Extract embedded images from PDF pages |
 | `extract_metadata` | `bool` | `true` | Extract PDF metadata (title, author, creation date, etc.) |
 | `passwords` | `list[str]?` | `None` | List of passwords to try for encrypted PDFs (tries in order) |
+| `hierarchy` | `HierarchyConfig?` | `None` | Hierarchy extraction configuration (None = hierarchy extraction disabled) |
 
 ### Example
 

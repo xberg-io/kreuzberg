@@ -1,0 +1,31 @@
+# Kreuzberg Server Configuration (TOML)
+#
+# ServerConfig is loaded SEPARATELY from ExtractionConfig.
+# This file configures the Kreuzberg API server (host, port, CORS, upload limits).
+#
+# Usage:
+#   ServerConfig::from_file("server.toml")
+#
+# Documentation: https://kreuzberg.dev/guides/api-server/
+
+# Server host address (default: "127.0.0.1" for security)
+# Use "127.0.0.1" to bind to localhost only (recommended)
+# Use "0.0.0.0" to bind to all network interfaces (WARNING: exposes to internet)
+host = "127.0.0.1"
+
+# Server port number (default: 8000)
+port = 8000
+
+# CORS allowed origins (default: empty = allow all origins)
+# Empty array: allows requests from any origin
+# Populated array: restricts to specific origins only
+cors_origins = ["https://app.example.com", "https://api.example.com"]
+
+# Maximum request body size in bytes (default: 104857600 = 100 MB)
+max_request_body_bytes = 104857600
+
+# Maximum multipart field size in bytes (default: 104857600 = 100 MB)
+max_multipart_field_bytes = 104857600
+
+# Legacy field for backward compatibility (optional, use max_multipart_field_bytes instead)
+# max_upload_mb = 100

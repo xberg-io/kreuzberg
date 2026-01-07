@@ -1,18 +1,8 @@
 {
-	"$comment": "Kreuzberg Configuration File (JSON). Place this file in one of the following locations: 1. Current directory: ./kreuzberg.json, 2. User config: ~/.config/kreuzberg/config.json, 3. System config: /etc/kreuzberg/config.json. Documentation: https://kreuzberg.dev/guides/configuration/",
+	"$comment": "Kreuzberg Configuration File (JSON). Place this file in one of the following locations: 1. Current directory: ./kreuzberg.json, 2. User config: ~/.config/kreuzberg/config.json, 3. System config: /etc/kreuzberg/config.json. Documentation: https://kreuzberg.dev/guides/configuration/. NOTE: Server configuration (host, port, CORS) is loaded separately. ServerConfig is a separate type from ExtractionConfig. See: https://kreuzberg.dev/guides/api-server/ for server configuration examples.",
 	"use_cache": true,
 	"enable_quality_processing": true,
 	"force_ocr": false,
-	"server": {
-		"host": "0.0.0.0",
-		"port": 8000,
-		"cors_origins": [
-			"https://app.example.com",
-			"https://api.example.com"
-		],
-		"max_request_body_bytes": 104857600,
-		"max_multipart_field_bytes": 104857600
-	},
 	"ocr": {
 		"backend": "tesseract",
 		"language": "eng",

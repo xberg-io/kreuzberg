@@ -1,9 +1,6 @@
 //! API server setup and configuration.
 
-use std::{
-    net::SocketAddr,
-    sync::Arc,
-};
+use std::{net::SocketAddr, sync::Arc};
 
 use axum::{
     Router,
@@ -16,7 +13,7 @@ use tower_http::{
     trace::TraceLayer,
 };
 
-use crate::{core::ServerConfig, ExtractionConfig, Result};
+use crate::{ExtractionConfig, Result, core::ServerConfig};
 
 use super::{
     handlers::{
@@ -304,7 +301,10 @@ pub async fn serve(host: impl AsRef<str>, port: u16) -> Result<()> {
     };
 
     let server_config = load_server_config(None)?;
-    let limits = ApiSizeLimits::new(server_config.max_request_body_bytes, server_config.max_multipart_field_bytes);
+    let limits = ApiSizeLimits::new(
+        server_config.max_request_body_bytes,
+        server_config.max_multipart_field_bytes,
+    );
 
     serve_with_config_and_limits(host, port, extraction_config, limits).await
 }
@@ -375,16 +375,82 @@ pub async fn serve_with_config_and_limits(
         .parse()
         .map_err(|e| crate::error::KreuzbergError::validation(format!("Invalid host address: {}", e)))?;
 
-    let mut server_config = ServerConfig::default();
-    server_config.host = host.as_ref().to_string();
-    server_config.port = port;
-    server_config.max_request_body_bytes = limits.max_request_body_bytes;
-    server_config.max_multipart_field_bytes = limits.max_multipart_field_bytes;
+    let server_config = ServerConfig {
+        host: host.as_ref().to_string(),
+        port,
+        max_request_body_bytes: limits.max_request_body_bytes,
+        max_multipart_field_bytes: limits.max_multipart_field_bytes,
+        ..Default::default()
+    };
 
     let addr = SocketAddr::new(ip, port);
     let app = create_router_with_limits_and_server_config(config, limits, server_config);
 
     tracing::info!("Starting Kreuzberg API server on http://{}:{}", ip, port);
+
+    let listener = tokio::net::TcpListener::bind(addr)
+        .await
+        .map_err(crate::error::KreuzbergError::Io)?;
+
+    axum::serve(listener, app)
+        .await
+        .map_err(|e| crate::error::KreuzbergError::Other(e.to_string()))?;
+
+    Ok(())
+}
+
+/// Start the API server with explicit extraction config and server config.
+///
+/// This function accepts a fully-configured ServerConfig, including CORS origins,
+/// size limits, host, and port. It respects all ServerConfig fields without
+/// re-parsing environment variables, making it ideal for CLI usage where
+/// configuration precedence has already been applied.
+///
+/// # Arguments
+///
+/// * `extraction_config` - Default extraction configuration for all requests
+/// * `server_config` - Server configuration including host, port, CORS, and size limits
+///
+/// # Examples
+///
+/// ```no_run
+/// use kreuzberg::{ExtractionConfig, api::serve_with_server_config, core::ServerConfig};
+///
+/// #[tokio::main]
+/// async fn main() -> kreuzberg::Result<()> {
+///     let extraction_config = ExtractionConfig::default();
+///     let mut server_config = ServerConfig::default();
+///     server_config.host = "0.0.0.0".to_string();
+///     server_config.port = 3000;
+///     server_config.cors_origins = vec!["https://example.com".to_string()];
+///
+///     serve_with_server_config(extraction_config, server_config).await?;
+///     Ok(())
+/// }
+/// ```
+pub async fn serve_with_server_config(extraction_config: ExtractionConfig, server_config: ServerConfig) -> Result<()> {
+    use std::net::IpAddr;
+
+    let ip: IpAddr = server_config
+        .host
+        .parse()
+        .map_err(|e| crate::error::KreuzbergError::validation(format!("Invalid host address: {}", e)))?;
+
+    let limits = ApiSizeLimits::new(
+        server_config.max_request_body_bytes,
+        server_config.max_multipart_field_bytes,
+    );
+
+    let addr = SocketAddr::new(ip, server_config.port);
+    let app = create_router_with_limits_and_server_config(extraction_config, limits, server_config.clone());
+
+    tracing::info!(
+        "Starting Kreuzberg API server on http://{}:{} (request_body_limit={} MB, multipart_field_limit={} MB)",
+        ip,
+        server_config.port,
+        server_config.max_request_body_mb(),
+        server_config.max_multipart_field_mb()
+    );
 
     let listener = tokio::net::TcpListener::bind(addr)
         .await

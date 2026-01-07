@@ -46,7 +46,7 @@ tokio = { version = "1.49.0", features = [
 ] }
 
 serde = { version = "1.0.228", features = ["derive"] }
-serde_json = { version = "1.0.148" }
+serde_json = { version = "1.0.149" }
 
 thiserror = "2.0.17"
 anyhow = "1.0"
@@ -73,7 +73,7 @@ toml = "0.9.10"
 tempfile = "3.24.0"
 criterion = { version = "0.8", features = ["html_reports"] }
 
-lzma-rust2 = { version = "0.15.5" }
+lzma-rust2 = { version = "0.15.6" }
 
 [profile.release]
 lto = "thin"

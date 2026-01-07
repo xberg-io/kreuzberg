@@ -1,0 +1,11 @@
+{
+	"$comment": "Kreuzberg Server Configuration (JSON). ServerConfig is loaded SEPARATELY from ExtractionConfig. This file configures the Kreuzberg API server (host, port, CORS, upload limits). Usage: ServerConfig::from_file('server.json'). Documentation: https://kreuzberg.dev/guides/api-server/",
+	"host": "127.0.0.1",
+	"port": 8000,
+	"cors_origins": [
+		"https://app.example.com",
+		"https://api.example.com"
+	],
+	"max_request_body_bytes": 104857600,
+	"max_multipart_field_bytes": 104857600
+}

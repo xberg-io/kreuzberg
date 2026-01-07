@@ -2,7 +2,7 @@ import { EmbeddingConfig, EmbeddingModelType, ChunkingConfig, ExtractionConfig }
 
 // Example 1: Preset model (recommended)
 // Fast, balanced, or quality preset configurations optimized for common use cases.
-const embeddingConfig = {
+const embeddingConfig: EmbeddingConfig = {
   model: {
     type: "preset",
     name: "balanced",
@@ -22,7 +22,7 @@ const embeddingConfig = {
 
 // Example 2: FastEmbed model (requires embeddings feature)
 // Direct access to specific fastembed models with custom dimensions.
-const embeddingConfig = {
+const embeddingConfigFastEmbed: EmbeddingConfig = {
   model: {
     type: "fastembed",
     model: "BAAI/bge-small-en-v1.5",
@@ -43,7 +43,7 @@ const embeddingConfig = {
 
 // Example 3: Custom HuggingFace model
 // For advanced users wanting specific HuggingFace embedding models.
-const embeddingConfig = {
+const embeddingConfigCustom: EmbeddingConfig = {
   model: {
     type: "custom",
     modelId: "sentence-transformers/all-mpnet-base-v2",
@@ -58,7 +58,7 @@ const embeddingConfig = {
 
 // Integration with ChunkingConfig
 // Add embeddings to your chunking configuration:
-const chunkingConfig = {
+const chunkingConfig: ChunkingConfig = {
   maxChars: 1024,
   maxOverlap: 100,
   preset: "balanced",
@@ -72,7 +72,7 @@ const chunkingConfig = {
   },
 };
 
-const extractionConfig = {
+const extractionConfig: ExtractionConfig = {
   chunking: chunkingConfig,
 };
 
@@ -99,3 +99,4 @@ const extractionConfig = {
 //
 // showDownloadProgress: Display download progress bar
 //   - Useful for monitoring large model downloads
+//

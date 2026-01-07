@@ -1,9 +1,9 @@
-import { extractFile } from '@kreuzberg/wasm';
+import { extractFile, ExtractionConfig, KeywordConfig, YakeParams, RakeParams } from '@kreuzberg/wasm';
 
 // Example 1: Basic YAKE configuration
 // Uses YAKE algorithm with default parameters and English stopword filtering
-async function basicYake() {
-	const config = {
+async function basicYake(): Promise<void> {
+	const config: ExtractionConfig = {
 		keywords: {
 			algorithm: 'yake',
 			maxKeywords: 10,
@@ -21,8 +21,8 @@ async function basicYake() {
 
 // Example 2: Advanced YAKE with custom parameters
 // Fine-tunes YAKE with custom window size for co-occurrence analysis
-async function advancedYake() {
-	const config = {
+async function advancedYake(): Promise<void> {
+	const config: ExtractionConfig = {
 		keywords: {
 			algorithm: 'yake',
 			maxKeywords: 15,
@@ -42,8 +42,8 @@ async function advancedYake() {
 
 // Example 3: RAKE configuration
 // Uses RAKE algorithm for rapid keyword extraction with phrase constraints
-async function rakeConfig() {
-	const config = {
+async function rakeConfig(): Promise<void> {
+	const config: ExtractionConfig = {
 		keywords: {
 			algorithm: 'rake',
 			maxKeywords: 10,

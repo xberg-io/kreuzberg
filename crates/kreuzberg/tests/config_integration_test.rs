@@ -3,6 +3,8 @@
 //! Tests verify the precedence order: CLI > Env > File > Default
 //! These tests use real config files and environment variables.
 
+#![cfg(feature = "api")]
+
 use kreuzberg::ServerConfig;
 use std::fs;
 use tempfile::tempdir;
@@ -125,7 +127,10 @@ fn test_env_only_configuration() {
 
     set_env("KREUZBERG_HOST", "0.0.0.0");
     set_env("KREUZBERG_PORT", "3000");
-    set_env("KREUZBERG_CORS_ORIGINS", "https://api.example.com, https://app.example.com");
+    set_env(
+        "KREUZBERG_CORS_ORIGINS",
+        "https://api.example.com, https://app.example.com",
+    );
 
     // Create default config
     let mut config = ServerConfig::default();

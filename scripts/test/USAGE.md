@@ -417,12 +417,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Build Docker images
         run: |
           docker build -f docker/Dockerfile.core -t goldziher/kreuzberg:core .
           docker build -f docker/Dockerfile.full -t goldziher/kreuzberg:full .
-      
+
       - name: Run configuration tests
         run: ./scripts/test/test-docker-config-local.sh --variant all
 ```

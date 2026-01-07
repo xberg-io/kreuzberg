@@ -451,10 +451,7 @@ pub fn validate_port(port: u16) -> Result<()> {
         Ok(())
     } else {
         Err(KreuzbergError::Validation {
-            message: format!(
-                "Port must be 1-65535, got {}",
-                port
-            ),
+            message: format!("Port must be 1-65535, got {}", port),
             source: None,
         })
     }
@@ -509,16 +506,19 @@ pub fn validate_host(host: &str) -> Result<()> {
     // Check if it's a valid hostname (basic validation)
     // Hostnames must contain only alphanumeric characters, dots, and hyphens
     // Must not look like an invalid IPv4 address (all numeric with dots)
-    let looks_like_ipv4 = host.split('.').all(|part| !part.is_empty() && part.chars().all(|c| c.is_numeric()));
-    if !looks_like_ipv4 && host.chars().all(|c| c.is_alphanumeric() || c == '.' || c == '-') && !host.starts_with('-') && !host.ends_with('-') {
+    let looks_like_ipv4 = host
+        .split('.')
+        .all(|part| !part.is_empty() && part.chars().all(|c| c.is_numeric()));
+    if !looks_like_ipv4
+        && host.chars().all(|c| c.is_alphanumeric() || c == '.' || c == '-')
+        && !host.starts_with('-')
+        && !host.ends_with('-')
+    {
         return Ok(());
     }
 
     Err(KreuzbergError::Validation {
-        message: format!(
-            "Invalid host '{}': must be a valid IP address or hostname",
-            host
-        ),
+        message: format!("Invalid host '{}': must be a valid IP address or hostname", host),
         source: None,
     })
 }
@@ -596,10 +596,7 @@ pub fn validate_upload_size(size: usize) -> Result<()> {
         Ok(())
     } else {
         Err(KreuzbergError::Validation {
-            message: format!(
-                "Upload size must be greater than 0, got {}",
-                size
-            ),
+            message: format!("Upload size must be greater than 0, got {}", size),
             source: None,
         })
     }

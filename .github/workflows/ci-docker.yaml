@@ -114,7 +114,7 @@ jobs:
           compression-level: 0
 
       - name: Upload test results
-        if: always() && !inputs.skip_tests
+        if: always() && !inputs.skip_tests && hashFiles('/tmp/kreuzberg-docker-test-results.json') != ''
         uses: actions/upload-artifact@v6
         with:
           name: docker-test-results-${{ matrix.variant }}

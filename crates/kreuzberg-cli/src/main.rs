@@ -45,12 +45,12 @@
 
 use anyhow::{Context, Result};
 use clap::{Parser, Subcommand};
+#[cfg(feature = "api")]
+use kreuzberg::ServerConfig;
 use kreuzberg::{
     ChunkingConfig, ExtractionConfig, LanguageDetectionConfig, OcrConfig, batch_extract_file_sync, detect_mime_type,
     extract_file_sync,
 };
-#[cfg(feature = "api")]
-use kreuzberg::ServerConfig;
 use serde_json::json;
 use std::path::{Path, PathBuf};
 use tracing_subscriber::EnvFilter;
@@ -618,10 +618,9 @@ fn main() -> Result<()> {
             );
 
             let rt = tokio::runtime::Runtime::new()?;
-            rt.block_on(kreuzberg::api::serve_with_config(
-                &server_config.host,
-                server_config.port,
+            rt.block_on(kreuzberg::api::serve_with_server_config(
                 extraction_config,
+                server_config.clone(),
             ))
             .with_context(|| {
                 format!(

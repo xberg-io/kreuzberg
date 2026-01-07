@@ -76,7 +76,7 @@ GEM
       ffi (~> 1.0)
     rb_sys (0.9.119)
       rake-compiler-dock (= 1.10.0)
-    rbs (3.10.0)
+    rbs (3.10.1)
       logger
     regexp_parser (2.11.3)
     rspec (3.13.2)
@@ -219,7 +219,7 @@ CHECKSUMS
   rb-fsevent (0.11.2) sha256=43900b972e7301d6570f64b850a5aa67833ee7d87b458ee92805d56b7318aefe
   rb-inotify (0.11.1) sha256=a0a700441239b0ff18eb65e3866236cd78613d6b9f78fea1f9ac47a85e47be6e
   rb_sys (0.9.119) sha256=64393fa148e402e1b79b64496d2aabfc7df79da6b822b8bb48dc1141eaf40b4b
-  rbs (3.10.0) sha256=e75b5f1313c71c9ee0fcea68bf97d3e5fe8ec7a641d4b5cd18bbc28c94ddf298
+  rbs (3.10.1) sha256=4e0a9e460dd2b0b763be24734b113da32fc621d383c1119005fe7fb18c73d0c9
   regexp_parser (2.11.3) sha256=ca13f381a173b7a93450e53459075c9b76a10433caadcb2f1180f2c741fc55a4
   rspec (3.13.2) sha256=206284a08ad798e61f86d7ca3e376718d52c0bc944626b2349266f239f820587
   rspec-core (3.13.6) sha256=a8823c6411667b60a8bca135364351dda34cd55e44ff94c4be4633b37d828b2d
