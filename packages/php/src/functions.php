@@ -145,7 +145,21 @@ function batch_extract_files(
     ?ExtractionConfig $config = null,
 ): array {
     try {
-        return \kreuzberg_batch_extract_files($paths, $config?->toJson());
+        $results = \kreuzberg_batch_extract_files($paths, $config?->toJson());
+
+        // Check if any results contain errors in metadata
+        foreach ($results as $result) {
+            // Check if metadata has custom error field
+            if (is_object($result->metadata)) {
+                $error = $result->metadata->getCustom('error');
+                // error is an array with 'message' and 'error_type' keys
+                if (is_array($error) && isset($error['message']) && is_string($error['message']) && !empty($error['message'])) {
+                    throw new KreuzbergException($error['message']);
+                }
+            }
+        }
+
+        return $results;
     } catch (\Exception $e) {
         if ($e instanceof KreuzbergException) {
             throw $e;
@@ -182,7 +196,21 @@ function batch_extract_bytes(
     ?ExtractionConfig $config = null,
 ): array {
     try {
-        return \kreuzberg_batch_extract_bytes($dataList, $mimeTypes, $config?->toJson());
+        $results = \kreuzberg_batch_extract_bytes($dataList, $mimeTypes, $config?->toJson());
+
+        // Check if any results contain errors in metadata
+        foreach ($results as $result) {
+            // Check if metadata has custom error field
+            if (is_object($result->metadata)) {
+                $error = $result->metadata->getCustom('error');
+                // error is an array with 'message' and 'error_type' keys
+                if (is_array($error) && isset($error['message']) && is_string($error['message']) && !empty($error['message'])) {
+                    throw new KreuzbergException($error['message']);
+                }
+            }
+        }
+
+        return $results;
     } catch (\Exception $e) {
         if ($e instanceof KreuzbergException) {
             throw $e;

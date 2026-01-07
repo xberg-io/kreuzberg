@@ -129,10 +129,17 @@ impl ExtractionResult {
             "embeddings" => {
                 // Extract embeddings from chunks if available
                 if let Some(chunks) = &self.chunks {
-                    let embeddings: Vec<Vec<f32>> = chunks.iter().filter_map(|chunk| chunk.embedding.clone()).collect();
+                    let mut php_embeddings = Vec::new();
+                    for chunk in chunks {
+                        if let Some(embedding) = &chunk.embedding {
+                            let mut embedding_obj = HashMap::new();
+                            embedding_obj.insert("vector", embedding.clone().into_zval(false)?);
+                            php_embeddings.push(embedding_obj.into_zval(false)?);
+                        }
+                    }
 
-                    if !embeddings.is_empty() {
-                        Ok(Some(embeddings.into_zval(false)?))
+                    if !php_embeddings.is_empty() {
+                        Ok(Some(php_embeddings.into_zval(false)?))
                     } else {
                         Ok(None)
                     }
@@ -235,6 +242,11 @@ impl ExtractionResult {
 impl ExtractionResult {
     /// Convert from Rust ExtractionResult to PHP ExtractionResult.
     pub fn from_rust(result: kreuzberg::ExtractionResult) -> PhpResult<Self> {
+        Self::from_rust_with_config(result, true)
+    }
+
+    /// Convert from Rust ExtractionResult to PHP ExtractionResult with optional table filtering.
+    pub fn from_rust_with_config(result: kreuzberg::ExtractionResult, extract_tables: bool) -> PhpResult<Self> {
         use serde_json::json;
 
         let mut metadata_obj = serde_json::Map::new();
@@ -327,6 +339,12 @@ impl ExtractionResult {
             None
         };
 
+        // Add error metadata if present (for batch operations)
+        if let Some(error) = &result.metadata.error {
+            let error_json = serde_json::to_value(error).map_err(|e| format!("Failed to serialize error: {}", e))?;
+            metadata_obj.insert("error".to_string(), error_json);
+        }
+
         // Add additional metadata fields (from postprocessors)
         for (key, value) in &result.metadata.additional {
             metadata_obj.insert(key.clone(), value.clone());
@@ -336,11 +354,15 @@ impl ExtractionResult {
         let metadata_json =
             serde_json::to_string(&metadata_obj).map_err(|e| format!("Failed to serialize metadata: {}", e))?;
 
-        let tables = result
-            .tables
-            .into_iter()
-            .map(ExtractedTable::from_rust)
-            .collect::<PhpResult<Vec<_>>>()?;
+        let tables = if extract_tables {
+            result
+                .tables
+                .into_iter()
+                .map(ExtractedTable::from_rust)
+                .collect::<PhpResult<Vec<_>>>()?
+        } else {
+            vec![]
+        };
 
         let images = result
             .images

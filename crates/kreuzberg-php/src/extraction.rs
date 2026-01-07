@@ -9,6 +9,25 @@ use crate::config::parse_config_from_json;
 use crate::error::to_php_exception;
 use crate::types::ExtractionResult;
 
+/// Extract the extract_tables flag from config JSON.
+/// Defaults to true if not specified.
+fn should_extract_tables(config_json: &Option<String>) -> PhpResult<bool> {
+    if let Some(json) = config_json {
+        match serde_json::from_str::<serde_json::Value>(json) {
+            Ok(value) => {
+                // Look for extract_tables field in the JSON config
+                Ok(value.get("extract_tables").and_then(|v| v.as_bool()).unwrap_or(true))
+            }
+            Err(_) => {
+                // If JSON parsing fails, default to true (extract tables)
+                Ok(true)
+            }
+        }
+    } else {
+        Ok(true)
+    }
+}
+
 /// Extract content from a file.
 ///
 /// # Parameters
@@ -48,14 +67,17 @@ pub fn kreuzberg_extract_file(
     mime_type: Option<String>,
     config_json: Option<String>,
 ) -> PhpResult<ExtractionResult> {
-    let rust_config = match config_json {
-        Some(json) => parse_config_from_json(&json).map_err(PhpException::from)?,
+    let rust_config = match &config_json {
+        Some(json) => parse_config_from_json(json).map_err(PhpException::from)?,
         None => Default::default(),
     };
 
+    // Check if tables should be extracted from config
+    let extract_tables = should_extract_tables(&config_json)?;
+
     let result = kreuzberg::extract_file_sync(&path, mime_type.as_deref(), &rust_config).map_err(to_php_exception)?;
 
-    ExtractionResult::from_rust(result)
+    ExtractionResult::from_rust_with_config(result, extract_tables)
 }
 
 /// Extract content from bytes.
@@ -94,8 +116,8 @@ pub fn kreuzberg_extract_bytes(
     mime_type: String,
     config_json: Option<String>,
 ) -> PhpResult<ExtractionResult> {
-    let rust_config = match config_json {
-        Some(json) => parse_config_from_json(&json).map_err(PhpException::from)?,
+    let rust_config = match &config_json {
+        Some(json) => parse_config_from_json(json).map_err(PhpException::from)?,
         None => Default::default(),
     };
 
@@ -143,9 +165,12 @@ pub fn kreuzberg_extract_bytes(
         }
     }
 
+    // Check if tables should be extracted from config
+    let extract_tables = should_extract_tables(&config_json)?;
+
     let result = kreuzberg::extract_bytes_sync(data.as_ref(), &mime_type, &rust_config).map_err(to_php_exception)?;
 
-    ExtractionResult::from_rust(result)
+    ExtractionResult::from_rust_with_config(result, extract_tables)
 }
 
 /// Batch extract content from multiple files.
@@ -187,14 +212,20 @@ pub fn kreuzberg_batch_extract_files(
     paths: Vec<String>,
     config_json: Option<String>,
 ) -> PhpResult<Vec<ExtractionResult>> {
-    let rust_config = match config_json {
-        Some(json) => parse_config_from_json(&json).map_err(PhpException::from)?,
+    let rust_config = match &config_json {
+        Some(json) => parse_config_from_json(json).map_err(PhpException::from)?,
         None => Default::default(),
     };
 
+    // Check if tables should be extracted from config
+    let extract_tables = should_extract_tables(&config_json)?;
+
     let results = kreuzberg::batch_extract_file_sync(paths, &rust_config).map_err(to_php_exception)?;
 
-    results.into_iter().map(ExtractionResult::from_rust).collect()
+    results
+        .into_iter()
+        .map(|r| ExtractionResult::from_rust_with_config(r, extract_tables))
+        .collect()
 }
 
 /// Batch extract content from multiple byte arrays.
@@ -244,10 +275,13 @@ pub fn kreuzberg_batch_extract_bytes(
         .into());
     }
 
-    let rust_config = match config_json {
-        Some(json) => parse_config_from_json(&json).map_err(PhpException::from)?,
+    let rust_config = match &config_json {
+        Some(json) => parse_config_from_json(json).map_err(PhpException::from)?,
         None => Default::default(),
     };
+
+    // Check if tables should be extracted from config
+    let extract_tables = should_extract_tables(&config_json)?;
 
     // Convert Vec<BinarySlice<u8>> to Vec<(Vec<u8>, String)> for the core function
     // BinarySlice provides a reference to the binary data from PHP
@@ -262,7 +296,10 @@ pub fn kreuzberg_batch_extract_bytes(
 
     let results = kreuzberg::batch_extract_bytes_sync(owned_contents, &rust_config).map_err(to_php_exception)?;
 
-    results.into_iter().map(ExtractionResult::from_rust).collect()
+    results
+        .into_iter()
+        .map(|r| ExtractionResult::from_rust_with_config(r, extract_tables))
+        .collect()
 }
 
 /// Detect MIME type from file bytes.

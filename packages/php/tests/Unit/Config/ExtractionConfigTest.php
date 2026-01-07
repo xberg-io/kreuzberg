@@ -94,13 +94,14 @@ final class ExtractionConfigTest extends TestCase
         $config = new ExtractionConfig(
             extractImages: true,
             extractTables: false,
+            preserveFormatting: true,  // Explicitly set to non-default to include in array
         );
         $array = $config->toArray();
 
         $this->assertIsArray($array);
         $this->assertTrue($array['extract_images']);
         $this->assertFalse($array['extract_tables']);
-        $this->assertFalse($array['preserve_formatting']);
+        $this->assertTrue($array['preserve_formatting']);
         $this->assertArrayNotHasKey('ocr', $array);
         $this->assertArrayNotHasKey('pdf', $array);
     }
@@ -346,8 +347,8 @@ final class ExtractionConfigTest extends TestCase
         $this->assertArrayHasKey('pdf', $array);
         $this->assertArrayHasKey('chunking', $array);
         $this->assertArrayHasKey('embedding', $array);
-        $this->assertArrayHasKey('image_extraction', $array);
-        $this->assertArrayHasKey('page', $array);
+        $this->assertArrayHasKey('images', $array);
+        $this->assertArrayHasKey('pages', $array);
         $this->assertArrayHasKey('language_detection', $array);
         $this->assertArrayHasKey('keywords', $array);
     }

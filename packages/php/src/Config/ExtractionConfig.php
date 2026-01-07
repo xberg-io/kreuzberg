@@ -223,14 +223,22 @@ readonly class ExtractionConfig
         }
 
         $imageExtraction = null;
-        if (isset($data['image_extraction']) && is_array($data['image_extraction'])) {
+        if (isset($data['images']) && is_array($data['images'])) {
+            /** @var array<string, mixed> $imageExtractionData */
+            $imageExtractionData = $data['images'];
+            $imageExtraction = ImageExtractionConfig::fromArray($imageExtractionData);
+        } elseif (isset($data['image_extraction']) && is_array($data['image_extraction'])) {
             /** @var array<string, mixed> $imageExtractionData */
             $imageExtractionData = $data['image_extraction'];
             $imageExtraction = ImageExtractionConfig::fromArray($imageExtractionData);
         }
 
         $page = null;
-        if (isset($data['page']) && is_array($data['page'])) {
+        if (isset($data['pages']) && is_array($data['pages'])) {
+            /** @var array<string, mixed> $pageData */
+            $pageData = $data['pages'];
+            $page = PageConfig::fromArray($pageData);
+        } elseif (isset($data['page']) && is_array($data['page'])) {
             /** @var array<string, mixed> $pageData */
             $pageData = $data['page'];
             $page = PageConfig::fromArray($pageData);
@@ -437,19 +445,42 @@ readonly class ExtractionConfig
             }
         }
 
-        return array_filter([
+        // If extractImages is enabled but imageExtraction config is not provided,
+        // auto-create an ImageExtractionConfig to enable image extraction
+        $imageExtraction = $this->imageExtraction;
+        if ($this->extractImages && $imageExtraction === null) {
+            $imageExtraction = new ImageExtractionConfig(extractImages: true);
+        } elseif (!$this->extractImages && $imageExtraction !== null) {
+            // If extractImages is false but imageExtraction config exists, respect the config
+            $imageExtraction = $this->imageExtraction;
+        }
+
+        $result = [
             'ocr' => $this->ocr?->toArray(),
             'pdf' => $this->pdf?->toArray(),
             'chunking' => $chunking?->toArray(),
-            'image_extraction' => $this->imageExtraction?->toArray(),
-            'page' => $this->page?->toArray(),
+            'embedding' => $this->embedding?->toArray(),
+            'images' => $imageExtraction?->toArray(),
+            'pages' => $this->page?->toArray(),
             'language_detection' => $this->languageDetection?->toArray(),
             'keywords' => $this->keywords?->toArray(),
-            'extract_images' => $this->extractImages,
-            'extract_tables' => $this->extractTables,
-            'preserve_formatting' => $this->preserveFormatting,
-            'output_format' => $this->outputFormat,
-        ], static fn ($value): bool => $value !== null);
+        ];
+
+        // Add simple boolean/string fields only if explicitly set to non-default values
+        if ($this->extractImages) {
+            $result['extract_images'] = true;
+        }
+        if (!$this->extractTables) {
+            $result['extract_tables'] = false;
+        }
+        if ($this->preserveFormatting) {
+            $result['preserve_formatting'] = true;
+        }
+        if ($this->outputFormat !== null) {
+            $result['output_format'] = $this->outputFormat;
+        }
+
+        return array_filter($result, static fn ($value): bool => $value !== null);
     }
 
     /**

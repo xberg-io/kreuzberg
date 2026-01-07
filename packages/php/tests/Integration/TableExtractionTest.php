@@ -66,6 +66,9 @@ final class TableExtractionTest extends TestCase
         $kreuzberg = new Kreuzberg($config);
         $result = $kreuzberg->extractFile($pdfFiles[0]);
 
+        // Verify extraction was successful and returned a valid result
+        $this->assertIsArray($result->tables, 'Result should have tables array');
+
         if (!empty($result->tables)) {
             $table = $result->tables[0];
 
@@ -97,6 +100,9 @@ final class TableExtractionTest extends TestCase
         $config = new ExtractionConfig(extractTables: true);
         $kreuzberg = new Kreuzberg($config);
         $result = $kreuzberg->extractFile($pdfFiles[0]);
+
+        // Verify extraction was successful and returned a valid result
+        $this->assertIsArray($result->tables, 'Result should have tables array');
 
         if (!empty($result->tables)) {
             $table = $result->tables[0];
@@ -135,6 +141,10 @@ final class TableExtractionTest extends TestCase
         // Extract with tables enabled for comparison
         $configEnabled = new ExtractionConfig(extractTables: true);
         $resultEnabled = (new Kreuzberg($configEnabled))->extractFile($pdfFiles[0]);
+
+        // Verify both extractions returned valid results
+        $this->assertIsArray($result->tables, 'Result with tables disabled should have tables array');
+        $this->assertIsArray($resultEnabled->tables, 'Result with tables enabled should have tables array');
 
         // When disabled, should have empty or fewer tables than enabled
         if (!empty($resultEnabled->tables)) {
@@ -200,15 +210,17 @@ final class TableExtractionTest extends TestCase
         $config = new ExtractionConfig(extractTables: true);
         $kreuzberg = new Kreuzberg($config);
 
+        $found = false;
         foreach ($pdfFiles as $pdfFile) {
             $result = $kreuzberg->extractFile($pdfFile);
 
-            if (!empty($result->tables)) {
-                $this->assertIsArray(
-                    $result->tables,
-                    'Multiple tables should be returned as array',
-                );
+            $this->assertIsArray(
+                $result->tables,
+                'Result should have tables array',
+            );
 
+            if (!empty($result->tables)) {
+                $found = true;
                 foreach ($result->tables as $table) {
                     $this->assertIsString(
                         $table->markdown,
@@ -219,6 +231,8 @@ final class TableExtractionTest extends TestCase
                 break;
             }
         }
+
+        $this->assertTrue($found || count($pdfFiles) > 0, 'Test should process at least one file');
     }
 
     #[Test]
@@ -233,6 +247,9 @@ final class TableExtractionTest extends TestCase
         $config = new ExtractionConfig(extractTables: true);
         $kreuzberg = new Kreuzberg($config);
         $result = $kreuzberg->extractFile($pdfFiles[0]);
+
+        // Verify extraction was successful and returned a valid result
+        $this->assertIsArray($result->tables, 'Result should have tables array');
 
         if (!empty($result->tables)) {
             $table = $result->tables[0];
@@ -310,6 +327,9 @@ final class TableExtractionTest extends TestCase
         $kreuzberg = new Kreuzberg($config);
         $result = $kreuzberg->extractFile($pdfFiles[0]);
 
+        // Verify extraction was successful and returned a valid result
+        $this->assertIsArray($result->tables, 'Result should have tables array');
+
         if (!empty($result->tables)) {
             $table = $result->tables[0];
 
@@ -343,6 +363,9 @@ final class TableExtractionTest extends TestCase
         $kreuzberg = new Kreuzberg($config);
         $result = $kreuzberg->extractFile($pdfFiles[0]);
 
+        // Verify extraction was successful and returned a valid result
+        $this->assertIsArray($result->tables, 'Result should have tables array');
+
         if (!empty($result->tables)) {
             $markdown = $result->tables[0]->markdown;
 
@@ -372,6 +395,9 @@ final class TableExtractionTest extends TestCase
         $config = new ExtractionConfig(extractTables: true);
         $kreuzberg = new Kreuzberg($config);
         $result = $kreuzberg->extractFile($pdfFiles[0]);
+
+        // Verify extraction was successful and returned a valid result
+        $this->assertIsArray($result->tables, 'Result should have tables array');
 
         if (!empty($result->tables)) {
             $table = $result->tables[0];
@@ -427,6 +453,9 @@ final class TableExtractionTest extends TestCase
         $kreuzberg = new Kreuzberg($config);
         $result = $kreuzberg->extractFile($pdfFiles[0]);
 
+        // Verify extraction was successful and returned a valid result
+        $this->assertIsArray($result->tables, 'Result should have tables array');
+
         if (!empty($result->tables)) {
             foreach ($result->tables as $tableIndex => $table) {
                 // Validate table has cells
@@ -480,6 +509,9 @@ final class TableExtractionTest extends TestCase
         $config = new ExtractionConfig(extractTables: true);
         $kreuzberg = new Kreuzberg($config);
         $result = $kreuzberg->extractFile($pdfFiles[0]);
+
+        // Verify extraction was successful and returned a valid result
+        $this->assertIsArray($result->tables, 'Result should have tables array');
 
         if (!empty($result->tables)) {
             foreach ($result->tables as $tableIndex => $table) {
@@ -594,6 +626,9 @@ final class TableExtractionTest extends TestCase
         $kreuzberg = new Kreuzberg($config);
         $result = $kreuzberg->extractFile($pdfFiles[0]);
 
+        // Verify extraction was successful and returned a valid result
+        $this->assertIsArray($result->tables, 'Result should have tables array');
+
         if (!empty($result->tables)) {
             foreach ($result->tables as $table) {
                 $markdown = $table->markdown;
@@ -653,6 +688,10 @@ final class TableExtractionTest extends TestCase
         $firstResult = $kreuzberg->extractFile($pdfFiles[0]);
         $secondResult = $kreuzberg->extractFile($pdfFiles[0]);
 
+        // Verify both extractions returned valid results
+        $this->assertIsArray($firstResult->tables, 'First result should have tables array');
+        $this->assertIsArray($secondResult->tables, 'Second result should have tables array');
+
         // Compare results
         if (!empty($firstResult->tables) && !empty($secondResult->tables)) {
             $this->assertCount(
@@ -706,6 +745,9 @@ final class TableExtractionTest extends TestCase
         $kreuzberg = new Kreuzberg($config);
         $result = $kreuzberg->extractFile($pdfFiles[0]);
 
+        // Verify extraction was successful and returned a valid result
+        $this->assertIsArray($result->tables, 'Result should have tables array');
+
         if (!empty($result->tables)) {
             foreach ($result->tables as $table) {
                 foreach ($table->cells as $rowIndex => $row) {
@@ -749,6 +791,9 @@ final class TableExtractionTest extends TestCase
         $config = new ExtractionConfig(extractTables: true);
         $kreuzberg = new Kreuzberg($config);
         $result = $kreuzberg->extractFile($pdfFiles[0]);
+
+        // Verify extraction was successful and returned a valid result
+        $this->assertIsArray($result->tables, 'Result should have tables array');
 
         if (!empty($result->tables)) {
             foreach ($result->tables as $tableIndex => $table) {
@@ -812,6 +857,9 @@ final class TableExtractionTest extends TestCase
         $config = new ExtractionConfig(extractTables: true);
         $kreuzberg = new Kreuzberg($config);
         $result = $kreuzberg->extractFile($pdfFiles[0]);
+
+        // Verify extraction was successful and returned a valid result
+        $this->assertIsArray($result->tables, 'Result should have tables array');
 
         if (!empty($result->tables)) {
             foreach ($result->tables as $table) {
