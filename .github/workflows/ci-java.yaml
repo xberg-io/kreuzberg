@@ -173,7 +173,7 @@ jobs:
         run: task java:build:ci
 
       - name: Upload JAR
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: java-jar-${{ matrix.os }}
           path: packages/java/target/*.jar
@@ -181,7 +181,7 @@ jobs:
 
       - name: Upload build JVM logs
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: java-build-logs-${{ matrix.os }}
           path: |
@@ -254,7 +254,7 @@ jobs:
         uses: ./.github/actions/install-task
 
       - name: Download JAR
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: java-jar-${{ matrix.os }}
           path: packages/java/target/
@@ -367,7 +367,7 @@ jobs:
 
       - name: Upload Java unit test reports
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: java-unit-reports-${{ matrix.os }}
           path: |
@@ -377,7 +377,7 @@ jobs:
 
       - name: Upload JVM crash logs
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: java-crash-logs-${{ matrix.os }}
           path: |
@@ -387,7 +387,7 @@ jobs:
 
       - name: Upload test JVM logs
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: java-test-jvm-logs-${{ matrix.os }}
           path: |
@@ -398,7 +398,7 @@ jobs:
 
       - name: Upload Java E2E test reports
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: java-e2e-reports-${{ matrix.os }}
           path: |

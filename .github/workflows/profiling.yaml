@@ -78,7 +78,7 @@ jobs:
         run: scripts/ci/validate/show-disk-space.sh "Disk space before artifact upload"
 
       - name: Upload target artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: profiling-target
           path: |
@@ -106,7 +106,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -142,7 +142,7 @@ jobs:
 
       - name: Upload benchmark artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: profiling-results-kreuzberg-native-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
@@ -150,7 +150,7 @@ jobs:
 
       - name: Upload flamegraph artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: flamegraphs-kreuzberg-native-${{ matrix.mode }}-${{ github.run_id }}
           path: flamegraphs/
@@ -174,7 +174,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -222,7 +222,7 @@ jobs:
 
       - name: Upload benchmark artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: profiling-results-kreuzberg-python-sync-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
@@ -230,7 +230,7 @@ jobs:
 
       - name: Upload flamegraph artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: flamegraphs-kreuzberg-python-sync-${{ matrix.mode }}-${{ github.run_id }}
           path: flamegraphs/
@@ -254,7 +254,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -302,7 +302,7 @@ jobs:
 
       - name: Upload benchmark artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: profiling-results-kreuzberg-python-async-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
@@ -310,7 +310,7 @@ jobs:
 
       - name: Upload flamegraph artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: flamegraphs-kreuzberg-python-async-${{ matrix.mode }}-${{ github.run_id }}
           path: flamegraphs/
@@ -334,7 +334,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -382,7 +382,7 @@ jobs:
 
       - name: Upload benchmark artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: profiling-results-kreuzberg-python-batch-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
@@ -390,7 +390,7 @@ jobs:
 
       - name: Upload flamegraph artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: flamegraphs-kreuzberg-python-batch-${{ matrix.mode }}-${{ github.run_id }}
           path: flamegraphs/
@@ -414,7 +414,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -464,7 +464,7 @@ jobs:
 
       - name: Upload benchmark artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: profiling-results-kreuzberg-node-async-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
@@ -472,7 +472,7 @@ jobs:
 
       - name: Upload flamegraph artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: flamegraphs-kreuzberg-node-async-${{ matrix.mode }}-${{ github.run_id }}
           path: flamegraphs/
@@ -496,7 +496,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -546,7 +546,7 @@ jobs:
 
       - name: Upload benchmark artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: profiling-results-kreuzberg-node-batch-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
@@ -554,7 +554,7 @@ jobs:
 
       - name: Upload flamegraph artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: flamegraphs-kreuzberg-node-batch-${{ matrix.mode }}-${{ github.run_id }}
           path: flamegraphs/
@@ -578,7 +578,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -618,7 +618,7 @@ jobs:
 
       - name: Upload benchmark artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: profiling-results-kreuzberg-wasm-async-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
@@ -626,7 +626,7 @@ jobs:
 
       - name: Upload flamegraph artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: flamegraphs-kreuzberg-wasm-async-${{ matrix.mode }}-${{ github.run_id }}
           path: flamegraphs/
@@ -650,7 +650,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -690,7 +690,7 @@ jobs:
 
       - name: Upload benchmark artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: profiling-results-kreuzberg-wasm-batch-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
@@ -698,7 +698,7 @@ jobs:
 
       - name: Upload flamegraph artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: flamegraphs-kreuzberg-wasm-batch-${{ matrix.mode }}-${{ github.run_id }}
           path: flamegraphs/
@@ -722,7 +722,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -790,7 +790,7 @@ jobs:
 
       - name: Upload benchmark artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: profiling-results-kreuzberg-ruby-sync-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
@@ -798,7 +798,7 @@ jobs:
 
       - name: Upload flamegraph artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: flamegraphs-kreuzberg-ruby-sync-${{ matrix.mode }}-${{ github.run_id }}
           path: flamegraphs/
@@ -822,7 +822,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -890,7 +890,7 @@ jobs:
 
       - name: Upload benchmark artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: profiling-results-kreuzberg-ruby-batch-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
@@ -898,7 +898,7 @@ jobs:
 
       - name: Upload flamegraph artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: flamegraphs-kreuzberg-ruby-batch-${{ matrix.mode }}-${{ github.run_id }}
           path: flamegraphs/
@@ -922,7 +922,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -975,7 +975,7 @@ jobs:
 
       - name: Upload benchmark artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: profiling-results-kreuzberg-go-sync-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
@@ -983,7 +983,7 @@ jobs:
 
       - name: Upload flamegraph artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: flamegraphs-kreuzberg-go-sync-${{ matrix.mode }}-${{ github.run_id }}
           path: flamegraphs/
@@ -1007,7 +1007,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -1060,7 +1060,7 @@ jobs:
 
       - name: Upload benchmark artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: profiling-results-kreuzberg-go-batch-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
@@ -1068,7 +1068,7 @@ jobs:
 
       - name: Upload flamegraph artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: flamegraphs-kreuzberg-go-batch-${{ matrix.mode }}-${{ github.run_id }}
           path: flamegraphs/
@@ -1092,7 +1092,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -1144,7 +1144,7 @@ jobs:
 
       - name: Upload benchmark artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: profiling-results-kreuzberg-java-sync-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
@@ -1152,7 +1152,7 @@ jobs:
 
       - name: Upload flamegraph artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: flamegraphs-kreuzberg-java-sync-${{ matrix.mode }}-${{ github.run_id }}
           path: flamegraphs/
@@ -1176,7 +1176,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -1223,7 +1223,7 @@ jobs:
 
       - name: Upload benchmark artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: profiling-results-kreuzberg-csharp-sync-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
@@ -1231,7 +1231,7 @@ jobs:
 
       - name: Upload flamegraph artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: flamegraphs-kreuzberg-csharp-sync-${{ matrix.mode }}-${{ github.run_id }}
           path: flamegraphs/

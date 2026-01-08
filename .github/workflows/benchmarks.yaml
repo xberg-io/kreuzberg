@@ -103,7 +103,7 @@ jobs:
         run: scripts/ci/validate/show-disk-space.sh "Disk space before artifact upload"
 
       - name: Upload full build artifacts (for Kreuzberg jobs)
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: benchmarks-target
           path: |
@@ -111,7 +111,7 @@ jobs:
           retention-days: 7
 
       - name: Upload benchmark harness binary (for third-party jobs)
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: benchmark-harness-binary
           path: |
@@ -141,7 +141,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -175,7 +175,7 @@ jobs:
 
       - name: Upload artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: benchmarks-kreuzberg-native-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
@@ -201,7 +201,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -247,7 +247,7 @@ jobs:
 
       - name: Upload artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: benchmarks-kreuzberg-python-sync-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
@@ -273,7 +273,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -319,7 +319,7 @@ jobs:
 
       - name: Upload artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: benchmarks-kreuzberg-python-async-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
@@ -345,7 +345,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -391,7 +391,7 @@ jobs:
 
       - name: Upload artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: benchmarks-kreuzberg-python-batch-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
@@ -417,7 +417,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -466,7 +466,7 @@ jobs:
 
       - name: Upload artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: benchmarks-kreuzberg-node-async-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
@@ -492,7 +492,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -541,7 +541,7 @@ jobs:
 
       - name: Upload artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: benchmarks-kreuzberg-node-batch-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
@@ -567,7 +567,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -605,7 +605,7 @@ jobs:
 
       - name: Upload artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: benchmarks-kreuzberg-wasm-async-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
@@ -631,7 +631,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -669,7 +669,7 @@ jobs:
 
       - name: Upload artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: benchmarks-kreuzberg-wasm-batch-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
@@ -695,7 +695,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -774,7 +774,7 @@ jobs:
 
       - name: Upload artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: benchmarks-kreuzberg-ruby-sync-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
@@ -800,7 +800,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -879,7 +879,7 @@ jobs:
 
       - name: Upload artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: benchmarks-kreuzberg-ruby-batch-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
@@ -905,7 +905,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -989,7 +989,7 @@ jobs:
 
       - name: Upload artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: benchmarks-kreuzberg-go-sync-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
@@ -1015,7 +1015,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -1099,7 +1099,7 @@ jobs:
 
       - name: Upload artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: benchmarks-kreuzberg-go-batch-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
@@ -1125,7 +1125,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -1201,7 +1201,7 @@ jobs:
 
       - name: Upload artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: benchmarks-kreuzberg-java-sync-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
@@ -1227,7 +1227,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -1301,7 +1301,7 @@ jobs:
 
       - name: Upload artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: benchmarks-kreuzberg-csharp-sync-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
@@ -1327,7 +1327,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -1375,7 +1375,7 @@ jobs:
 
       - name: Upload artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: benchmarks-kreuzberg-elixir-sync-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
@@ -1401,7 +1401,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -1449,7 +1449,7 @@ jobs:
 
       - name: Upload artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: benchmarks-kreuzberg-elixir-batch-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
@@ -1475,7 +1475,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -1550,7 +1550,7 @@ jobs:
 
       - name: Upload artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: benchmarks-kreuzberg-php-sync-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
@@ -1576,7 +1576,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: ${{ needs.setup.outputs.artifact-name }}
           path: target/release
@@ -1651,7 +1651,7 @@ jobs:
 
       - name: Upload artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: benchmarks-kreuzberg-php-batch-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
@@ -1678,7 +1678,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download benchmark harness binary
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: benchmark-harness-binary
           path: target/release
@@ -1705,7 +1705,7 @@ jobs:
 
       - name: Upload artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: benchmarks-docling-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
@@ -1731,7 +1731,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download benchmark harness binary
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: benchmark-harness-binary
           path: target/release
@@ -1758,7 +1758,7 @@ jobs:
 
       - name: Upload artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: benchmarks-docling-batch-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
@@ -1784,7 +1784,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download benchmark harness binary
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: benchmark-harness-binary
           path: target/release
@@ -1811,7 +1811,7 @@ jobs:
 
       - name: Upload artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: benchmarks-markitdown-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
@@ -1837,7 +1837,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download benchmark harness binary
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: benchmark-harness-binary
           path: target/release
@@ -1870,7 +1870,7 @@ jobs:
 
       - name: Upload artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: benchmarks-pandoc-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
@@ -1896,7 +1896,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download benchmark harness binary
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: benchmark-harness-binary
           path: target/release
@@ -1923,7 +1923,7 @@ jobs:
 
       - name: Upload artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: benchmarks-unstructured-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
@@ -1949,7 +1949,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download benchmark harness binary
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: benchmark-harness-binary
           path: target/release
@@ -1974,7 +1974,7 @@ jobs:
 
       - name: Upload artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: benchmarks-tika-sync-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
@@ -2000,7 +2000,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download benchmark harness binary
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: benchmark-harness-binary
           path: target/release
@@ -2025,7 +2025,7 @@ jobs:
 
       - name: Upload artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: benchmarks-tika-batch-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
@@ -2051,7 +2051,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download benchmark harness binary
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: benchmark-harness-binary
           path: target/release
@@ -2078,7 +2078,7 @@ jobs:
 
       - name: Upload artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: benchmarks-pymupdf4llm-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
@@ -2104,7 +2104,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download benchmark harness binary
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: benchmark-harness-binary
           path: target/release
@@ -2131,7 +2131,7 @@ jobs:
 
       - name: Upload artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: benchmarks-pdfplumber-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
@@ -2157,7 +2157,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download benchmark harness binary
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: benchmark-harness-binary
           path: target/release
@@ -2184,7 +2184,7 @@ jobs:
 
       - name: Upload artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: benchmarks-pdfplumber-batch-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
@@ -2210,7 +2210,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download benchmark harness binary
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: benchmark-harness-binary
           path: target/release
@@ -2237,7 +2237,7 @@ jobs:
 
       - name: Upload artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: benchmarks-mineru-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
@@ -2263,7 +2263,7 @@ jobs:
         run: scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download benchmark harness binary
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: benchmark-harness-binary
           path: target/release
@@ -2290,7 +2290,7 @@ jobs:
 
       - name: Upload artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: benchmarks-mineru-batch-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
@@ -2314,7 +2314,7 @@ jobs:
           cache-key-prefix: aggregate
 
       - name: Download all benchmark artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           pattern: "benchmarks-*"
           path: benchmark-artifacts/

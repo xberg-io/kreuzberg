@@ -430,7 +430,7 @@ jobs:
           fi
 
       - name: Upload gem
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: gem-${{ matrix.os }}
           path: packages/ruby/pkg/*.gem
@@ -456,7 +456,7 @@ jobs:
 
       - name: Upload build logs (on failure)
         if: failure()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: build-logs-${{ matrix.os }}
           path: |
@@ -541,7 +541,7 @@ jobs:
         shell: bash
 
       - name: Download gem
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: gem-${{ matrix.os }}
           path: packages/ruby/pkg/
