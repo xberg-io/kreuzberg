@@ -44,6 +44,7 @@ IMAGE_VERSION=$(extract_version "image")
 TEMPFILE_VERSION=$(extract_version "tempfile")
 CRITERION_VERSION=$(extract_version "criterion")
 LZMA_RUST_VERSION=$(extract_version "lzma-rust2")
+GETRANDOM_VERSION=$(extract_version "getrandom")
 
 echo "Extracted versions from root workspace:"
 echo "  core: $core_version"
@@ -151,6 +152,10 @@ html-to-markdown-rs = { version = "${HTML_TO_MARKDOWN_VERSION}", default-feature
 reqwest = { version = "${REQWEST_VERSION}", default-features = false, features = ["json", "rustls"] }
 image = { version = "${IMAGE_VERSION}", default-features = false }
 lzma-rust2 = { version = "${LZMA_RUST_VERSION}" }
+
+# Fix for WASM builds: ensure getrandom has wasm_js feature enabled
+# This is needed because ring/rustls depend on getrandom without the wasm_js feature
+getrandom = { version = "${GETRANDOM_VERSION}", features = ["wasm_js"] }
 
 # Testing (dev)
 tempfile = "${TEMPFILE_VERSION}"
