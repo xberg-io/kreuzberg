@@ -183,6 +183,12 @@ Write-Host "CMake:"
 try {
   & cmake --version
   Write-Host "✓ CMake available"
+  # Export CMAKE environment variable for immediate availability in build scripts
+  $cmakePath = (Get-Command cmake -ErrorAction Stop).Source
+  if ($cmakePath) {
+    Add-Content -Path $env:GITHUB_ENV -Value "CMAKE=$cmakePath"
+    Write-Host "✓ Set CMAKE=$cmakePath in GITHUB_ENV"
+  }
 }
 catch {
   Write-Host "::error::CMake not found after installation"
