@@ -93,11 +93,11 @@ enum Commands {
         iterations: usize,
 
         /// Enable OCR for image extraction
-        #[arg(long, default_value = "true")]
+        #[arg(long, default_value = "false")]
         ocr: bool,
 
         /// Enable quality assessment
-        #[arg(long, default_value = "true")]
+        #[arg(long, default_value = "false")]
         measure_quality: bool,
     },
 
