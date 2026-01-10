@@ -327,13 +327,14 @@ export async function initWasm(): Promise<void> {
 			}
 
 			let wasmModule: unknown;
+			// Use const variables to make imports dynamic and bypass TypeScript's static module resolution.
+			// This allows typecheck to pass when the WASM module hasn't been built yet (e.g., in CI).
+			const pkgPath = "../pkg/kreuzberg_wasm.js";
+			const fallbackPath = "./kreuzberg_wasm.js";
 			try {
-				// eslint-disable-next-line @typescript-eslint/no-implied-eval
-				wasmModule = await import(/* @vite-ignore */ "../pkg/kreuzberg_wasm.js");
+				wasmModule = await import(/* @vite-ignore */ pkgPath);
 			} catch {
-				// @ts-expect-error - Dynamic import path
-				// eslint-disable-next-line @typescript-eslint/no-implied-eval
-				wasmModule = await import(/* @vite-ignore */ "./kreuzberg_wasm.js");
+				wasmModule = await import(/* @vite-ignore */ fallbackPath);
 			}
 			wasm = wasmModule as unknown as WasmModule;
 
