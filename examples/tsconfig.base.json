@@ -6,6 +6,12 @@
 		"module": "ESNext",
 		"moduleResolution": "bundler",
 
+		"baseUrl": ".",
+		"paths": {
+			"@kreuzberg/wasm": ["../crates/kreuzberg-wasm/dist/index.d.ts"],
+			"@kreuzberg/wasm/*": ["../crates/kreuzberg-wasm/dist/*"]
+		},
+
 		"declaration": true,
 		"declarationMap": true,
 		"sourceMap": true,

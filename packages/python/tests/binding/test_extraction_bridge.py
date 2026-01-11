@@ -6,7 +6,7 @@ All postprocessing is now handled by Rust, not Python.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 import pytest
 
@@ -38,12 +38,10 @@ async def test_extract_bytes_with_valid_mime_type() -> None:
     assert isinstance(result, ExtractionResult)
     assert result.content.strip() == "Hello, World!"
     assert result.mime_type == "text/plain"
-    format_meta: dict[str, Any] = result.metadata.get("format", {})  # type: ignore[assignment]
-    assert isinstance(format_meta, dict)
-    assert format_meta.get("format_type") == "text"
-    assert "line_count" in format_meta
-    assert "word_count" in format_meta
-    assert "character_count" in format_meta
+    assert result.metadata.get("format_type") == "text"
+    assert "line_count" in result.metadata
+    assert "word_count" in result.metadata
+    assert "character_count" in result.metadata
 
 
 def test_extract_bytes_sync_with_valid_mime_type() -> None:
@@ -56,11 +54,9 @@ def test_extract_bytes_sync_with_valid_mime_type() -> None:
     assert isinstance(result, ExtractionResult)
     assert result.content.strip() == "Hello, World!"
     assert result.mime_type == "text/plain"
-    format_meta: dict[str, Any] = result.metadata.get("format", {})  # type: ignore[assignment]
-    assert isinstance(format_meta, dict)
-    assert format_meta.get("format_type") == "text"
-    assert "line_count" in format_meta
-    assert "word_count" in format_meta
+    assert result.metadata.get("format_type") == "text"
+    assert "line_count" in result.metadata
+    assert "word_count" in result.metadata
 
 
 @pytest.mark.asyncio

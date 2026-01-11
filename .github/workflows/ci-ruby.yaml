@@ -115,6 +115,17 @@ jobs:
           toolchain: ${{ runner.os == 'Windows' && 'stable-x86_64-pc-windows-msvc' || '' }}
           target: ${{ runner.os == 'Windows' && 'x86_64-pc-windows-msvc' || '' }}
 
+      - name: Detect partial cache hit and clean stale fingerprints
+        shell: bash
+        run: |
+          if [ -d "target" ]; then
+            echo "Cleaning stale build artifacts to prevent fingerprint errors"
+            cargo clean --release -p kreuzberg-ffi 2>/dev/null || true
+            cargo clean --release -p kreuzberg 2>/dev/null || true
+          else
+            echo "No target directory found, skipping cache cleanup"
+          fi
+
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -498,6 +509,17 @@ jobs:
           cache-key-prefix: ruby-test-${{ matrix.os }}
           toolchain: ${{ runner.os == 'Windows' && 'stable-x86_64-pc-windows-msvc' || '' }}
           target: ${{ runner.os == 'Windows' && 'x86_64-pc-windows-msvc' || '' }}
+
+      - name: Detect partial cache hit and clean stale fingerprints
+        shell: bash
+        run: |
+          if [ -d "target" ]; then
+            echo "Cleaning stale build artifacts to prevent fingerprint errors"
+            cargo clean --release -p kreuzberg-ffi 2>/dev/null || true
+            cargo clean --release -p kreuzberg 2>/dev/null || true
+          else
+            echo "No target directory found, skipping cache cleanup"
+          fi
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
