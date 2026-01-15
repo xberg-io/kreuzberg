@@ -2350,6 +2350,13 @@ jobs:
           ref: ${{ needs.prepare.outputs.tag }}
           fetch-depth: 0
 
+      # Generate checksums BEFORE installing Elixir deps or compiling.
+      # This is critical because RustlerPrecompiled validates checksums during
+      # module compilation. The checksum file must be populated before mix compile.
+      - name: Generate checksums from GitHub release
+        run: |
+          ./scripts/publish/generate_elixir_checksums.sh "${{ needs.prepare.outputs.version }}"
+
       - name: Setup Elixir
         uses: erlef/setup-elixir@v1
         with:
@@ -2360,26 +2367,12 @@ jobs:
         working-directory: packages/elixir
         run: mix deps.get
 
-      - name: Compile project to generate metadata
+      - name: Compile project
         working-directory: packages/elixir
-        # This may fail because checksum file is empty, but metadata is written before the error.
-        # The download step will then populate the checksum file.
-        continue-on-error: true
-        run: mix compile --force
-
-      - name: Generate checksums for precompiled NIFs
-        working-directory: packages/elixir
-        env:
-          # Skip checksum validation during initial compilation to break circular dependency
-          # Mix compiles before running tasks, but compilation would fail due to empty checksum file
-          RUSTLER_PRECOMPILATION_EXAMPLE_BUILD: "true"
-        run: mix rustler_precompiled.download Kreuzberg.Native --all --print
+        run: mix compile
 
       - name: Build documentation
         working-directory: packages/elixir
-        env:
-          RUSTLER_PRECOMPILATION_EXAMPLE_BUILD: "true"
-          RUSTLER_PRECOMPILED_FORCE_BUILD_ALL: "true"
         run: mix docs
 
       - name: Publish to Hex.pm
