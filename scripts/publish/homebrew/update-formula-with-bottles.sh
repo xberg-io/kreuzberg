@@ -7,6 +7,8 @@ tap_dir="${2:-homebrew-tap}"
 tag="${TAG:?TAG not set}"
 version="${VERSION:?VERSION not set}"
 dry_run="${DRY_RUN:-false}"
+max_retries="${MAX_RETRIES:-3}"
+retry_delay="${RETRY_DELAY:-5}"
 
 if [ ! -d "$artifacts_dir" ]; then
   echo "Error: Artifacts directory not found: $artifacts_dir" >&2
@@ -21,12 +23,49 @@ echo "Artifacts: $artifacts_dir"
 declare -A bottle_hashes
 declare -a bottle_tags
 
+# Function to validate SHA256 format (64 hex characters)
+validate_sha256() {
+  local sha256="$1"
+  if [[ ! $sha256 =~ ^[a-f0-9]{64}$ ]]; then
+    echo "Invalid SHA256 format: $sha256" >&2
+    return 1
+  fi
+  return 0
+}
+
+# Function to compute and validate SHA256 with verification
+compute_sha256() {
+  local file="$1"
+  local sha256
+  sha256=$(shasum -a 256 "$file" | cut -d' ' -f1)
+
+  if ! validate_sha256 "$sha256"; then
+    echo "Error: Failed to compute valid SHA256 for $file" >&2
+    return 1
+  fi
+
+  echo "$sha256"
+}
+
+# Process bottle artifacts with validation
 for bottle in "$artifacts_dir"/kreuzberg-*.bottle.tar.gz; do
   if [ -f "$bottle" ]; then
     filename="$(basename "$bottle")"
     without_suffix="${filename%.bottle.tar.gz}"
     bottle_tag="${without_suffix##*.}"
-    sha256=$(shasum -a 256 "$bottle" | cut -d' ' -f1)
+
+    echo "Processing bottle: $filename"
+
+    # Verify file integrity before hashing
+    if ! tar -tzf "$bottle" >/dev/null 2>&1; then
+      echo "Error: Bottle file is corrupted or not a valid tar.gz: $bottle" >&2
+      exit 1
+    fi
+
+    if ! sha256=$(compute_sha256 "$bottle"); then
+      echo "Error: Failed to compute SHA256 for $bottle" >&2
+      exit 1
+    fi
 
     bottle_hashes[$bottle_tag]=$sha256
     bottle_tags+=("$bottle_tag")
@@ -35,9 +74,11 @@ for bottle in "$artifacts_dir"/kreuzberg-*.bottle.tar.gz; do
 done
 
 if [ ${#bottle_hashes[@]} -eq 0 ]; then
-  echo "Warning: No bottle artifacts found" >&2
+  echo "Error: No bottle artifacts found in $artifacts_dir" >&2
   exit 1
 fi
+
+echo "Successfully validated ${#bottle_hashes[@]} bottles"
 
 if [ ! -d "$tap_dir" ]; then
   echo "Cloning homebrew-tap..."
@@ -53,10 +94,59 @@ fi
 
 formula_content=$(<"$formula_path")
 
-# Fetch the SHA256 of the source tarball
+# Function to download file with retry logic and validation
+download_with_retry() {
+  local url="$1"
+  local output_file="$2"
+  local attempt=1
+
+  while [ $attempt -le "$max_retries" ]; do
+    echo "Downloading $url (attempt $attempt/$max_retries)..."
+
+    # Download to temp file with curl checking HTTP status
+    if curl -f -L --max-time 120 --retry 1 --retry-delay 2 -o "$output_file" "$url" 2>/dev/null; then
+      echo "Download successful"
+      return 0
+    else
+      exit_code=$?
+      echo "Download failed with exit code $exit_code" >&2
+
+      if [ $attempt -lt "$max_retries" ]; then
+        echo "Waiting ${retry_delay}s before retry..."
+        sleep "$retry_delay"
+        ((attempt++))
+      else
+        echo "Error: Failed to download after $max_retries attempts" >&2
+        return 1
+      fi
+    fi
+  done
+
+  return 1
+}
+
+# Fetch the SHA256 of the source tarball with proper temp file handling
 echo "Fetching SHA256 of source tarball..."
 tarball_url="https://github.com/kreuzberg-dev/kreuzberg/archive/$tag.tar.gz"
-tarball_sha256=$(curl -sL "$tarball_url" | shasum -a 256 | cut -d' ' -f1)
+tarball_temp=$(mktemp)
+trap 'rm -f "$tarball_temp"' EXIT
+
+if ! download_with_retry "$tarball_url" "$tarball_temp"; then
+  echo "Error: Failed to download source tarball from $tarball_url" >&2
+  exit 1
+fi
+
+# Verify temp file is valid tar.gz before hashing
+if ! tar -tzf "$tarball_temp" >/dev/null 2>&1; then
+  echo "Error: Downloaded tarball is corrupted or not a valid tar.gz" >&2
+  exit 1
+fi
+
+if ! tarball_sha256=$(compute_sha256 "$tarball_temp"); then
+  echo "Error: Failed to compute valid SHA256 for source tarball" >&2
+  exit 1
+fi
+
 echo "Source tarball SHA256: $tarball_sha256"
 
 bottle_block="  bottle do"
