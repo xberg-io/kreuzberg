@@ -23,30 +23,27 @@
 //
 // # Installation
 //
-// 1. Fetch the Go module:
+// The simplest way to get started:
 //
+//	# Step 1: Get the module
 //	go get github.com/kreuzberg-dev/kreuzberg/packages/go/v4@latest
 //
-// 2. Build the native library (kreuzberg-ffi) for your platform:
+//	# Step 2: Download FFI library and generate CGO flags (one-time setup)
+//	go generate github.com/kreuzberg-dev/kreuzberg/packages/go/v4
+//
+//	# Step 3: Build your project
+//	go build
+//
+// The go generate command downloads the pre-built FFI library for your platform
+// and generates a cgo_flags.go file with the correct CGO directives. No environment
+// variables needed!
+//
+// For monorepo development, use the kreuzberg_dev build tag:
 //
 //	cargo build -p kreuzberg-ffi --release
+//	go build -tags kreuzberg_dev
 //
-// 3. Make the library discoverable at runtime:
-//
-// On macOS:
-//
-//	export DYLD_FALLBACK_LIBRARY_PATH=$PWD/target/release
-//
-// On Linux:
-//
-//	export LD_LIBRARY_PATH=$PWD/target/release
-//
-// On Windows:
-//
-//	set PATH=%cd%\target\release;%PATH%
-//
-// Pdfium is bundled in target/release, so no extra system packages are required
-// unless you customize the build.
+// This uses the library from target/release/ directly.
 //
 // # Quick Start
 //
@@ -280,11 +277,13 @@
 //
 // # Troubleshooting
 //
-// Library not found (macOS):
+// Linker errors or "undefined reference to 'kreuzberg_...'":
 //
-//	runtime/cgo: dlopen(/libkreuzberg_ffi.dylib, 0x0001): image not found
+// The FFI library is not installed. Run:
 //
-// Solution: Set DYLD_FALLBACK_LIBRARY_PATH to point at target/release.
+//	go generate github.com/kreuzberg-dev/kreuzberg/packages/go/v4
+//
+// This downloads the library and generates the CGO flags.
 //
 // Missing OCR backend:
 //
@@ -298,12 +297,11 @@
 // Solution: Export the callback function in a *_cgo.go file before using it
 // in RegisterValidator/RegisterPostProcessor.
 //
-// Tests fail with "library not found":
+// Tests in monorepo:
 //
-// Solution: Set LD_LIBRARY_PATH (Linux) or DYLD_FALLBACK_LIBRARY_PATH (macOS)
-// before running `go test ./...`:
+// Use the kreuzberg_dev build tag to test against target/release/:
 //
-//	LD_LIBRARY_PATH=$PWD/target/release go test ./...
+//	go test -tags kreuzberg_dev ./...
 //
 // # FFI Architecture
 //

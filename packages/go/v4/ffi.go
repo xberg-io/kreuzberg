@@ -1,18 +1,22 @@
+//go:build kreuzberg_dev
+// +build kreuzberg_dev
+
 package kreuzberg
 
 /*
-// Kreuzberg FFI - Static Linking Configuration
+// Kreuzberg FFI - Development Build Configuration
 //
-// The library links statically to avoid runtime dependency issues.
-// Binaries built with this package are self-contained.
+// This file is used for development builds within the monorepo.
+// It requires the "kreuzberg_dev" build tag to be enabled.
 //
-// Build locations searched (in order):
-//   1. Development: ${SRCDIR}/../../../target/release/ (monorepo builds)
-//   2. pkg-config: kreuzberg-ffi (if PKG_CONFIG_PATH is set)
+// For production/external usage, run:
+//   go generate github.com/kreuzberg-dev/kreuzberg/packages/go/v4
 //
-// For users installing via go get:
-//   Download pre-built library from GitHub releases and set CGO_LDFLAGS.
-//   See README.md for detailed instructions.
+// This will download the FFI library and generate cgo_flags.go with
+// the correct CGO directives for your platform.
+//
+// Build locations used:
+//   Development: ${SRCDIR}/../../../target/release/ (monorepo builds)
 
 // macOS: Direct path to static library (Apple ld does not support -Bstatic)
 #cgo darwin CFLAGS: -I${SRCDIR}/internal/ffi

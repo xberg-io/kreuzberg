@@ -59,37 +59,27 @@ High-performance document intelligence for Go backed by the Rust core that power
 
 ## Install
 
-Kreuzberg Go binaries are **statically linked** — once built, they are self-contained and require no runtime library dependencies. Only the static library is needed at build time.
+Kreuzberg Go binaries are **statically linked** - once built, they are self-contained and require no runtime library dependencies. Only the static library is needed at build time.
 
 ### Quick Start (Recommended)
 
-Use the install command to automatically download the FFI library for your platform:
+The simplest way to get started is using `go generate`:
 
 ```bash
-# Install the FFI library (downloads from GitHub releases)
-go run github.com/kreuzberg-dev/kreuzberg/packages/go/v4/cmd/install@latest
-
-# The command will print the CGO environment variables needed
-# Example output:
-#   export CGO_CFLAGS="-I$HOME/.kreuzberg/include"
-#   export CGO_LDFLAGS="$HOME/.kreuzberg/lib/darwin_arm64/libkreuzberg_ffi.a -framework CoreFoundation ..."
-```
-
-Then add the Go module to your project:
-
-```bash
+# Step 1: Get the module
 go get github.com/kreuzberg-dev/kreuzberg/packages/go/v4@latest
-```
 
-Build with the CGO flags from the install command:
+# Step 2: Download FFI library and generate CGO flags (one-time setup)
+go generate github.com/kreuzberg-dev/kreuzberg/packages/go/v4
 
-```bash
-# Set the environment variables (add to your shell profile for persistence)
-export CGO_CFLAGS="-I$HOME/.kreuzberg/include"
-export CGO_LDFLAGS="..."  # Use the output from the install command
-
+# Step 3: Build your project
 go build
 ```
+
+That's it! The `go generate` command:
+1. Downloads the pre-built FFI library for your platform
+2. Generates a `cgo_flags.go` file with the correct CGO directives
+3. No environment variables needed!
 
 **Install command options:**
 
@@ -102,25 +92,28 @@ go run github.com/kreuzberg-dev/kreuzberg/packages/go/v4/cmd/install@latest -dir
 
 # Show environment variables for existing installation
 go run github.com/kreuzberg-dev/kreuzberg/packages/go/v4/cmd/install@latest -env
+
+# Skip generating cgo_flags.go (if you prefer setting env vars manually)
+go run github.com/kreuzberg-dev/kreuzberg/packages/go/v4/cmd/install@latest -no-generate
 ```
 
 ### Monorepo Development
 
-For development in the Kreuzberg monorepo:
+For development in the Kreuzberg monorepo, use the `kreuzberg_dev` build tag:
 
 ```bash
 # Build the static FFI library
 cargo build -p kreuzberg-ffi --release
 
-# Go build will automatically link against the static library
-# (from target/release/libkreuzberg_ffi.a)
+# Go build with the dev tag (uses target/release/ paths)
 cd packages/go/v4
-go build -v
+go build -tags kreuzberg_dev -v
 
 # Run your binary (no library path needed - it's statically linked)
 ./v4
 ```
 
+The `kreuzberg_dev` tag enables the development CGO configuration that points to `target/release/`.
 The resulting binary is self-contained and has no runtime dependencies on Kreuzberg libraries.
 
 ### Manual Installation
@@ -228,13 +221,12 @@ func main() {
 Build and run:
 
 ```bash
-# First, install the FFI library (see Install section above)
-go run github.com/kreuzberg-dev/kreuzberg/packages/go/v4/cmd/install@latest
+# First time setup (one-time)
+go get github.com/kreuzberg-dev/kreuzberg/packages/go/v4@latest
+go generate github.com/kreuzberg-dev/kreuzberg/packages/go/v4
 
-# Build using the CGO flags from the install command output
+# Build and run
 go build
-
-# Run - no library paths needed!
 ./myapp
 ```
 
@@ -326,18 +318,26 @@ func init() {
 
 | Issue | Fix |
 |-------|-----|
-| `ld returned 1 exit status` or `undefined reference to 'html_to_markdown_...'` | The static library wasn't found. Make sure `CGO_LDFLAGS` points to the directory containing `libkreuzberg_ffi.a`: `CGO_LDFLAGS="-L/path/to/lib -lkreuzberg_ffi" go build` |
-| `cannot find -lkreuzberg_ffi` | The static library file is missing or in the wrong location. Download it from [GitHub Releases](https://github.com/kreuzberg-dev/kreuzberg/releases) or build it yourself: `cargo build -p kreuzberg-ffi --release` |
-| `undefined: v4.ExtractFile` | This function was removed in v4.1.0. Use `ExtractFileSync` and wrap in goroutine if needed (see migration guide) |
+| `ld returned 1 exit status` or `undefined reference to 'kreuzberg_...'` | The FFI library is not installed. Run `go generate github.com/kreuzberg-dev/kreuzberg/packages/go/v4` to download and configure it. |
+| `cannot find -lkreuzberg_ffi` | The static library file is missing. Run `go generate github.com/kreuzberg-dev/kreuzberg/packages/go/v4` or download manually from [GitHub Releases](https://github.com/kreuzberg-dev/kreuzberg/releases). |
+| Linker errors after `go get` | You need to run `go generate` after getting the module. The generate command downloads the FFI library and creates the CGO configuration. |
+| `undefined: v4.ExtractFile` | This function was removed in v4.1.0. Use `ExtractFileSync` and wrap in goroutine if needed (see migration guide). |
 | `Missing dependency: tesseract` | Install the OCR backend and ensure it is on `PATH`. Errors bubble up as `*v4.MissingDependencyError`. |
 | `undefined: C.customValidator` during build | Export the callback with `//export` in a `*_cgo.go` file before using it in `Register*` helpers. |
 | `Missing dependency: onnxruntime` | Install ONNX Runtime at build time: `brew install onnxruntime` (macOS), `apt install libonnxruntime libonnxruntime-dev` (Linux), `scoop install onnxruntime` (Windows). Required for embeddings functionality. |
 | Embeddings not available on Windows MinGW | Windows MinGW builds cannot link ONNX Runtime (MSVC-only). Use Windows MSVC build for embeddings support, or build without embeddings feature. |
+| Development build in monorepo | Use `go build -tags kreuzberg_dev` to build against `target/release/` without needing `go generate`. |
 
 ## Testing / Tooling
 
-- `task go:lint` – runs `gofmt` and `golangci-lint` (`golangci-lint` pinned to v2.7.2).
-- `task go:test` – executes `go test ./...` (after building the static FFI library).
-- `task e2e:go:verify` – regenerates fixtures via the e2e generator and runs `go test ./...` inside `e2e/go`.
+- `task go:lint` - runs `gofmt` and `golangci-lint` (`golangci-lint` pinned to v2.7.2).
+- `task go:test` - executes `go test -tags kreuzberg_dev ./...` (uses monorepo target/release/).
+- `task e2e:go:verify` - regenerates fixtures via the e2e generator and runs `go test ./...` inside `e2e/go`.
+
+For running tests in the monorepo, always use the `-tags kreuzberg_dev` flag:
+
+```bash
+go test -tags kreuzberg_dev ./...
+```
 
 Need help? Join the [Discord](https://discord.gg/xt9WY3GnKR) or open an issue with logs, platform info, and the steps you tried.
