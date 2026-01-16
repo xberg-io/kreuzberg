@@ -250,6 +250,502 @@ internal class KeywordConfigConverter : JsonConverter<KeywordConfig>
     }
 }
 
+internal class HtmlPreprocessingOptionsConverter : JsonConverter<HtmlPreprocessingOptions>
+{
+    public override HtmlPreprocessingOptions? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType != JsonTokenType.StartObject)
+        {
+            throw new JsonException("Expected StartObject");
+        }
+
+        bool? enabled = null;
+        string? preset = null;
+        bool? removeNavigation = null;
+        bool? removeForms = null;
+
+        while (reader.Read())
+        {
+            if (reader.TokenType == JsonTokenType.EndObject)
+            {
+                break;
+            }
+
+            if (reader.TokenType != JsonTokenType.PropertyName)
+            {
+                continue;
+            }
+
+            var propertyName = reader.GetString();
+            reader.Read();
+
+            switch (propertyName?.ToLowerInvariant())
+            {
+                case "enabled":
+                    enabled = reader.TokenType == JsonTokenType.Null ? null : reader.GetBoolean();
+                    break;
+                case "preset":
+                    preset = reader.TokenType == JsonTokenType.Null ? null : reader.GetString();
+                    break;
+                case "remove_navigation":
+                    removeNavigation = reader.TokenType == JsonTokenType.Null ? null : reader.GetBoolean();
+                    break;
+                case "remove_forms":
+                    removeForms = reader.TokenType == JsonTokenType.Null ? null : reader.GetBoolean();
+                    break;
+            }
+        }
+
+        return new HtmlPreprocessingOptions
+        {
+            Enabled = enabled,
+            Preset = preset,
+            RemoveNavigation = removeNavigation,
+            RemoveForms = removeForms
+        };
+    }
+
+    public override void Write(Utf8JsonWriter writer, HtmlPreprocessingOptions value, JsonSerializerOptions options)
+    {
+        writer.WriteStartObject();
+
+        if (value.Enabled.HasValue)
+        {
+            writer.WritePropertyName("enabled");
+            writer.WriteBooleanValue(value.Enabled.Value);
+        }
+
+        if (value.Preset != null)
+        {
+            writer.WritePropertyName("preset");
+            writer.WriteStringValue(value.Preset);
+        }
+
+        if (value.RemoveNavigation.HasValue)
+        {
+            writer.WritePropertyName("remove_navigation");
+            writer.WriteBooleanValue(value.RemoveNavigation.Value);
+        }
+
+        if (value.RemoveForms.HasValue)
+        {
+            writer.WritePropertyName("remove_forms");
+            writer.WriteBooleanValue(value.RemoveForms.Value);
+        }
+
+        writer.WriteEndObject();
+    }
+}
+
+internal class HtmlConversionOptionsConverter : JsonConverter<HtmlConversionOptions>
+{
+    public override HtmlConversionOptions? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType != JsonTokenType.StartObject)
+        {
+            throw new JsonException("Expected StartObject");
+        }
+
+        string? headingStyle = null;
+        string? listIndentType = null;
+        int? listIndentWidth = null;
+        string? bullets = null;
+        string? strongEmSymbol = null;
+        bool? escapeAsterisks = null;
+        bool? escapeUnderscores = null;
+        bool? escapeMisc = null;
+        bool? escapeAscii = null;
+        string? codeLanguage = null;
+        bool? autolinks = null;
+        string? defaultTitle = null;
+        bool? brInTables = null;
+        bool? hocrSpatialTables = null;
+        string? highlightStyle = null;
+        bool? extractMetadata = null;
+        string? whitespaceMode = null;
+        bool? stripNewlines = null;
+        bool? wrap = null;
+        int? wrapWidth = null;
+        bool? convertAsInline = null;
+        string? subSymbol = null;
+        string? supSymbol = null;
+        string? newlineStyle = null;
+        string? codeBlockStyle = null;
+        List<string>? keepInlineImagesIn = null;
+        string? encoding = null;
+        bool? debug = null;
+        List<string>? stripTags = null;
+        List<string>? preserveTags = null;
+        HtmlPreprocessingOptions? preprocessing = null;
+
+        while (reader.Read())
+        {
+            if (reader.TokenType == JsonTokenType.EndObject)
+            {
+                break;
+            }
+
+            if (reader.TokenType != JsonTokenType.PropertyName)
+            {
+                continue;
+            }
+
+            var propertyName = reader.GetString();
+            reader.Read();
+
+            switch (propertyName?.ToLowerInvariant())
+            {
+                case "heading_style":
+                    headingStyle = reader.TokenType == JsonTokenType.Null ? null : reader.GetString();
+                    break;
+                case "list_indent_type":
+                    listIndentType = reader.TokenType == JsonTokenType.Null ? null : reader.GetString();
+                    break;
+                case "list_indent_width":
+                    listIndentWidth = reader.TokenType == JsonTokenType.Null ? null : reader.GetInt32();
+                    break;
+                case "bullets":
+                    bullets = reader.TokenType == JsonTokenType.Null ? null : reader.GetString();
+                    break;
+                case "strong_em_symbol":
+                    strongEmSymbol = reader.TokenType == JsonTokenType.Null ? null : reader.GetString();
+                    break;
+                case "escape_asterisks":
+                    escapeAsterisks = reader.TokenType == JsonTokenType.Null ? null : reader.GetBoolean();
+                    break;
+                case "escape_underscores":
+                    escapeUnderscores = reader.TokenType == JsonTokenType.Null ? null : reader.GetBoolean();
+                    break;
+                case "escape_misc":
+                    escapeMisc = reader.TokenType == JsonTokenType.Null ? null : reader.GetBoolean();
+                    break;
+                case "escape_ascii":
+                    escapeAscii = reader.TokenType == JsonTokenType.Null ? null : reader.GetBoolean();
+                    break;
+                case "code_language":
+                    codeLanguage = reader.TokenType == JsonTokenType.Null ? null : reader.GetString();
+                    break;
+                case "autolinks":
+                    autolinks = reader.TokenType == JsonTokenType.Null ? null : reader.GetBoolean();
+                    break;
+                case "default_title":
+                    defaultTitle = reader.TokenType == JsonTokenType.Null ? null : reader.GetString();
+                    break;
+                case "br_in_tables":
+                    brInTables = reader.TokenType == JsonTokenType.Null ? null : reader.GetBoolean();
+                    break;
+                case "hocr_spatial_tables":
+                    hocrSpatialTables = reader.TokenType == JsonTokenType.Null ? null : reader.GetBoolean();
+                    break;
+                case "highlight_style":
+                    highlightStyle = reader.TokenType == JsonTokenType.Null ? null : reader.GetString();
+                    break;
+                case "extract_metadata":
+                    extractMetadata = reader.TokenType == JsonTokenType.Null ? null : reader.GetBoolean();
+                    break;
+                case "whitespace_mode":
+                    whitespaceMode = reader.TokenType == JsonTokenType.Null ? null : reader.GetString();
+                    break;
+                case "strip_newlines":
+                    stripNewlines = reader.TokenType == JsonTokenType.Null ? null : reader.GetBoolean();
+                    break;
+                case "wrap":
+                    wrap = reader.TokenType == JsonTokenType.Null ? null : reader.GetBoolean();
+                    break;
+                case "wrap_width":
+                    wrapWidth = reader.TokenType == JsonTokenType.Null ? null : reader.GetInt32();
+                    break;
+                case "convert_as_inline":
+                    convertAsInline = reader.TokenType == JsonTokenType.Null ? null : reader.GetBoolean();
+                    break;
+                case "sub_symbol":
+                    subSymbol = reader.TokenType == JsonTokenType.Null ? null : reader.GetString();
+                    break;
+                case "sup_symbol":
+                    supSymbol = reader.TokenType == JsonTokenType.Null ? null : reader.GetString();
+                    break;
+                case "newline_style":
+                    newlineStyle = reader.TokenType == JsonTokenType.Null ? null : reader.GetString();
+                    break;
+                case "code_block_style":
+                    codeBlockStyle = reader.TokenType == JsonTokenType.Null ? null : reader.GetString();
+                    break;
+                case "keep_inline_images_in":
+                    keepInlineImagesIn = reader.TokenType == JsonTokenType.Null ? null : JsonSerializer.Deserialize<List<string>>(ref reader, options);
+                    break;
+                case "encoding":
+                    encoding = reader.TokenType == JsonTokenType.Null ? null : reader.GetString();
+                    break;
+                case "debug":
+                    debug = reader.TokenType == JsonTokenType.Null ? null : reader.GetBoolean();
+                    break;
+                case "strip_tags":
+                    stripTags = reader.TokenType == JsonTokenType.Null ? null : JsonSerializer.Deserialize<List<string>>(ref reader, options);
+                    break;
+                case "preserve_tags":
+                    preserveTags = reader.TokenType == JsonTokenType.Null ? null : JsonSerializer.Deserialize<List<string>>(ref reader, options);
+                    break;
+                case "preprocessing":
+                    preprocessing = reader.TokenType == JsonTokenType.Null ? null : JsonSerializer.Deserialize<HtmlPreprocessingOptions>(ref reader, options);
+                    break;
+            }
+        }
+
+        return new HtmlConversionOptions
+        {
+            HeadingStyle = headingStyle,
+            ListIndentType = listIndentType,
+            ListIndentWidth = listIndentWidth,
+            Bullets = bullets,
+            StrongEmSymbol = strongEmSymbol,
+            EscapeAsterisks = escapeAsterisks,
+            EscapeUnderscores = escapeUnderscores,
+            EscapeMisc = escapeMisc,
+            EscapeAscii = escapeAscii,
+            CodeLanguage = codeLanguage,
+            Autolinks = autolinks,
+            DefaultTitle = defaultTitle,
+            BrInTables = brInTables,
+            HocrSpatialTables = hocrSpatialTables,
+            HighlightStyle = highlightStyle,
+            ExtractMetadata = extractMetadata,
+            WhitespaceMode = whitespaceMode,
+            StripNewlines = stripNewlines,
+            Wrap = wrap,
+            WrapWidth = wrapWidth,
+            ConvertAsInline = convertAsInline,
+            SubSymbol = subSymbol,
+            SupSymbol = supSymbol,
+            NewlineStyle = newlineStyle,
+            CodeBlockStyle = codeBlockStyle,
+            KeepInlineImagesIn = keepInlineImagesIn,
+            Encoding = encoding,
+            Debug = debug,
+            StripTags = stripTags,
+            PreserveTags = preserveTags,
+            Preprocessing = preprocessing
+        };
+    }
+
+    public override void Write(Utf8JsonWriter writer, HtmlConversionOptions value, JsonSerializerOptions options)
+    {
+        // Check if all properties are null - if so, write null instead of empty object
+        bool hasAnyValue = value.HeadingStyle != null || value.ListIndentType != null ||
+                           value.ListIndentWidth.HasValue || value.Bullets != null ||
+                           value.StrongEmSymbol != null || value.EscapeAsterisks.HasValue ||
+                           value.EscapeUnderscores.HasValue || value.EscapeMisc.HasValue ||
+                           value.EscapeAscii.HasValue || value.CodeLanguage != null ||
+                           value.Autolinks.HasValue || value.DefaultTitle != null ||
+                           value.BrInTables.HasValue || value.HocrSpatialTables.HasValue ||
+                           value.HighlightStyle != null || value.ExtractMetadata.HasValue ||
+                           value.WhitespaceMode != null || value.StripNewlines.HasValue ||
+                           value.Wrap.HasValue || value.WrapWidth.HasValue ||
+                           value.ConvertAsInline.HasValue || value.SubSymbol != null ||
+                           value.SupSymbol != null || value.NewlineStyle != null ||
+                           value.CodeBlockStyle != null || value.KeepInlineImagesIn != null ||
+                           value.Encoding != null || value.Debug.HasValue ||
+                           value.StripTags != null || value.PreserveTags != null ||
+                           value.Preprocessing != null;
+
+        if (!hasAnyValue)
+        {
+            // Write null instead of empty object - FFI will use Option::None and apply defaults
+            writer.WriteNullValue();
+            return;
+        }
+
+        writer.WriteStartObject();
+
+        if (value.HeadingStyle != null)
+        {
+            writer.WritePropertyName("heading_style");
+            writer.WriteStringValue(value.HeadingStyle);
+        }
+
+        if (value.ListIndentType != null)
+        {
+            writer.WritePropertyName("list_indent_type");
+            writer.WriteStringValue(value.ListIndentType);
+        }
+
+        if (value.ListIndentWidth.HasValue)
+        {
+            writer.WritePropertyName("list_indent_width");
+            writer.WriteNumberValue(value.ListIndentWidth.Value);
+        }
+
+        if (value.Bullets != null)
+        {
+            writer.WritePropertyName("bullets");
+            writer.WriteStringValue(value.Bullets);
+        }
+
+        if (value.StrongEmSymbol != null)
+        {
+            writer.WritePropertyName("strong_em_symbol");
+            writer.WriteStringValue(value.StrongEmSymbol);
+        }
+
+        if (value.EscapeAsterisks.HasValue)
+        {
+            writer.WritePropertyName("escape_asterisks");
+            writer.WriteBooleanValue(value.EscapeAsterisks.Value);
+        }
+
+        if (value.EscapeUnderscores.HasValue)
+        {
+            writer.WritePropertyName("escape_underscores");
+            writer.WriteBooleanValue(value.EscapeUnderscores.Value);
+        }
+
+        if (value.EscapeMisc.HasValue)
+        {
+            writer.WritePropertyName("escape_misc");
+            writer.WriteBooleanValue(value.EscapeMisc.Value);
+        }
+
+        if (value.EscapeAscii.HasValue)
+        {
+            writer.WritePropertyName("escape_ascii");
+            writer.WriteBooleanValue(value.EscapeAscii.Value);
+        }
+
+        if (value.CodeLanguage != null)
+        {
+            writer.WritePropertyName("code_language");
+            writer.WriteStringValue(value.CodeLanguage);
+        }
+
+        if (value.Autolinks.HasValue)
+        {
+            writer.WritePropertyName("autolinks");
+            writer.WriteBooleanValue(value.Autolinks.Value);
+        }
+
+        if (value.DefaultTitle != null)
+        {
+            writer.WritePropertyName("default_title");
+            writer.WriteStringValue(value.DefaultTitle);
+        }
+
+        if (value.BrInTables.HasValue)
+        {
+            writer.WritePropertyName("br_in_tables");
+            writer.WriteBooleanValue(value.BrInTables.Value);
+        }
+
+        if (value.HocrSpatialTables.HasValue)
+        {
+            writer.WritePropertyName("hocr_spatial_tables");
+            writer.WriteBooleanValue(value.HocrSpatialTables.Value);
+        }
+
+        if (value.HighlightStyle != null)
+        {
+            writer.WritePropertyName("highlight_style");
+            writer.WriteStringValue(value.HighlightStyle);
+        }
+
+        if (value.ExtractMetadata.HasValue)
+        {
+            writer.WritePropertyName("extract_metadata");
+            writer.WriteBooleanValue(value.ExtractMetadata.Value);
+        }
+
+        if (value.WhitespaceMode != null)
+        {
+            writer.WritePropertyName("whitespace_mode");
+            writer.WriteStringValue(value.WhitespaceMode);
+        }
+
+        if (value.StripNewlines.HasValue)
+        {
+            writer.WritePropertyName("strip_newlines");
+            writer.WriteBooleanValue(value.StripNewlines.Value);
+        }
+
+        if (value.Wrap.HasValue)
+        {
+            writer.WritePropertyName("wrap");
+            writer.WriteBooleanValue(value.Wrap.Value);
+        }
+
+        if (value.WrapWidth.HasValue)
+        {
+            writer.WritePropertyName("wrap_width");
+            writer.WriteNumberValue(value.WrapWidth.Value);
+        }
+
+        if (value.ConvertAsInline.HasValue)
+        {
+            writer.WritePropertyName("convert_as_inline");
+            writer.WriteBooleanValue(value.ConvertAsInline.Value);
+        }
+
+        if (value.SubSymbol != null)
+        {
+            writer.WritePropertyName("sub_symbol");
+            writer.WriteStringValue(value.SubSymbol);
+        }
+
+        if (value.SupSymbol != null)
+        {
+            writer.WritePropertyName("sup_symbol");
+            writer.WriteStringValue(value.SupSymbol);
+        }
+
+        if (value.NewlineStyle != null)
+        {
+            writer.WritePropertyName("newline_style");
+            writer.WriteStringValue(value.NewlineStyle);
+        }
+
+        if (value.CodeBlockStyle != null)
+        {
+            writer.WritePropertyName("code_block_style");
+            writer.WriteStringValue(value.CodeBlockStyle);
+        }
+
+        if (value.KeepInlineImagesIn != null)
+        {
+            writer.WritePropertyName("keep_inline_images_in");
+            JsonSerializer.Serialize(writer, value.KeepInlineImagesIn, options);
+        }
+
+        if (value.Encoding != null)
+        {
+            writer.WritePropertyName("encoding");
+            writer.WriteStringValue(value.Encoding);
+        }
+
+        if (value.Debug.HasValue)
+        {
+            writer.WritePropertyName("debug");
+            writer.WriteBooleanValue(value.Debug.Value);
+        }
+
+        if (value.StripTags != null)
+        {
+            writer.WritePropertyName("strip_tags");
+            JsonSerializer.Serialize(writer, value.StripTags, options);
+        }
+
+        if (value.PreserveTags != null)
+        {
+            writer.WritePropertyName("preserve_tags");
+            JsonSerializer.Serialize(writer, value.PreserveTags, options);
+        }
+
+        if (value.Preprocessing != null)
+        {
+            writer.WritePropertyName("preprocessing");
+            JsonSerializer.Serialize(writer, value.Preprocessing, options);
+        }
+
+        writer.WriteEndObject();
+    }
+}
+
 internal class ByteArrayConverter : JsonConverter<byte[]>
 {
     /// <summary>
@@ -788,7 +1284,8 @@ internal static class Serialization
     internal static readonly JsonSerializerOptions ConfigOptions = new()
     {
         PropertyNameCaseInsensitive = true,
-        DefaultIgnoreCondition = JsonIgnoreCondition.Never,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
         WriteIndented = false,
         Converters = { new MetadataConverter(), new PageConfigConverter(), new KeywordConfigConverter(), new ByteArrayConverter() }
     };

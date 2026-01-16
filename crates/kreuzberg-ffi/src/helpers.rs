@@ -47,351 +47,10 @@ pub fn string_to_c_string(value: String) -> std::result::Result<*mut c_char, Str
 
 /// Parse extraction configuration from JSON string
 pub fn parse_extraction_config_from_json(config_str: &str) -> FfiResult<ExtractionConfig> {
-    use html_to_markdown_rs::options::{
-        CodeBlockStyle, ConversionOptions, HeadingStyle, HighlightStyle, ListIndentType, NewlineStyle,
-        PreprocessingPreset, WhitespaceMode,
-    };
-
-    fn parse_enum<T, F>(value: Option<&serde_json::Value>, parse_fn: F) -> FfiResult<Option<T>>
-    where
-        F: Fn(&str) -> std::result::Result<T, String>,
-    {
-        if let Some(raw) = value {
-            let text = raw
-                .as_str()
-                .ok_or_else(|| "Expected string for html_options enum field".to_string())?;
-            return parse_fn(text).map(Some);
-        }
-        Ok(None)
-    }
-
-    fn parse_heading_style(value: &str) -> FfiResult<HeadingStyle> {
-        match value.to_lowercase().as_str() {
-            "atx" => Ok(HeadingStyle::Atx),
-            "underlined" => Ok(HeadingStyle::Underlined),
-            "atx_closed" => Ok(HeadingStyle::AtxClosed),
-            other => Err(format!(
-                "Invalid heading_style '{}'. Expected one of: atx, underlined, atx_closed",
-                other
-            )),
-        }
-    }
-
-    fn parse_list_indent_type(value: &str) -> FfiResult<ListIndentType> {
-        match value.to_lowercase().as_str() {
-            "spaces" => Ok(ListIndentType::Spaces),
-            "tabs" => Ok(ListIndentType::Tabs),
-            other => Err(format!(
-                "Invalid list_indent_type '{}'. Expected 'spaces' or 'tabs'",
-                other
-            )),
-        }
-    }
-
-    fn parse_highlight_style(value: &str) -> FfiResult<HighlightStyle> {
-        match value.to_lowercase().as_str() {
-            "double_equal" | "==" | "highlight" => Ok(HighlightStyle::DoubleEqual),
-            "html" => Ok(HighlightStyle::Html),
-            "bold" => Ok(HighlightStyle::Bold),
-            "none" => Ok(HighlightStyle::None),
-            other => Err(format!(
-                "Invalid highlight_style '{}'. Expected one of: double_equal, html, bold, none",
-                other
-            )),
-        }
-    }
-
-    fn parse_whitespace_mode(value: &str) -> FfiResult<WhitespaceMode> {
-        match value.to_lowercase().as_str() {
-            "normalized" => Ok(WhitespaceMode::Normalized),
-            "strict" => Ok(WhitespaceMode::Strict),
-            other => Err(format!(
-                "Invalid whitespace_mode '{}'. Expected 'normalized' or 'strict'",
-                other
-            )),
-        }
-    }
-
-    fn parse_newline_style(value: &str) -> FfiResult<NewlineStyle> {
-        match value.to_lowercase().as_str() {
-            "spaces" => Ok(NewlineStyle::Spaces),
-            "backslash" => Ok(NewlineStyle::Backslash),
-            other => Err(format!(
-                "Invalid newline_style '{}'. Expected 'spaces' or 'backslash'",
-                other
-            )),
-        }
-    }
-
-    fn parse_code_block_style(value: &str) -> FfiResult<CodeBlockStyle> {
-        match value.to_lowercase().as_str() {
-            "indented" => Ok(CodeBlockStyle::Indented),
-            "backticks" => Ok(CodeBlockStyle::Backticks),
-            "tildes" => Ok(CodeBlockStyle::Tildes),
-            other => Err(format!(
-                "Invalid code_block_style '{}'. Expected 'indented', 'backticks', or 'tildes'",
-                other
-            )),
-        }
-    }
-
-    fn parse_preprocessing_preset(value: &str) -> FfiResult<PreprocessingPreset> {
-        match value.to_lowercase().as_str() {
-            "minimal" => Ok(PreprocessingPreset::Minimal),
-            "standard" => Ok(PreprocessingPreset::Standard),
-            "aggressive" => Ok(PreprocessingPreset::Aggressive),
-            other => Err(format!(
-                "Invalid preprocessing.preset '{}'. Expected one of: minimal, standard, aggressive",
-                other
-            )),
-        }
-    }
-
-    fn parse_html_options(value: &serde_json::Value) -> FfiResult<ConversionOptions> {
-        let mut opts = ConversionOptions::default();
-        let obj = value
-            .as_object()
-            .ok_or_else(|| "html_options must be an object".to_string())?;
-
-        if let Some(val) = obj.get("heading_style") {
-            opts.heading_style = parse_enum(Some(val), parse_heading_style)?.unwrap_or(opts.heading_style);
-        }
-
-        if let Some(val) = obj.get("list_indent_type") {
-            opts.list_indent_type = parse_enum(Some(val), parse_list_indent_type)?.unwrap_or(opts.list_indent_type);
-        }
-
-        if let Some(val) = obj.get("list_indent_width") {
-            opts.list_indent_width = val
-                .as_u64()
-                .map(|v| v as usize)
-                .ok_or_else(|| "list_indent_width must be an integer".to_string())?;
-        }
-
-        if let Some(val) = obj.get("bullets") {
-            opts.bullets = val
-                .as_str()
-                .map(str::to_string)
-                .ok_or_else(|| "bullets must be a string".to_string())?;
-        }
-
-        if let Some(val) = obj.get("strong_em_symbol") {
-            let symbol = val
-                .as_str()
-                .ok_or_else(|| "strong_em_symbol must be a string".to_string())?;
-            let mut chars = symbol.chars();
-            opts.strong_em_symbol = chars
-                .next()
-                .ok_or_else(|| "strong_em_symbol must not be empty".to_string())?;
-        }
-
-        if let Some(val) = obj.get("escape_asterisks") {
-            opts.escape_asterisks = val
-                .as_bool()
-                .ok_or_else(|| "escape_asterisks must be a boolean".to_string())?;
-        }
-        if let Some(val) = obj.get("escape_underscores") {
-            opts.escape_underscores = val
-                .as_bool()
-                .ok_or_else(|| "escape_underscores must be a boolean".to_string())?;
-        }
-        if let Some(val) = obj.get("escape_misc") {
-            opts.escape_misc = val
-                .as_bool()
-                .ok_or_else(|| "escape_misc must be a boolean".to_string())?;
-        }
-        if let Some(val) = obj.get("escape_ascii") {
-            opts.escape_ascii = val
-                .as_bool()
-                .ok_or_else(|| "escape_ascii must be a boolean".to_string())?;
-        }
-
-        if let Some(val) = obj.get("code_language") {
-            opts.code_language = val
-                .as_str()
-                .map(str::to_string)
-                .ok_or_else(|| "code_language must be a string".to_string())?;
-        }
-
-        if let Some(val) = obj.get("autolinks") {
-            opts.autolinks = val.as_bool().ok_or_else(|| "autolinks must be a boolean".to_string())?;
-        }
-
-        if let Some(val) = obj.get("default_title") {
-            opts.default_title = val
-                .as_bool()
-                .ok_or_else(|| "default_title must be a boolean".to_string())?;
-        }
-
-        if let Some(val) = obj.get("br_in_tables") {
-            opts.br_in_tables = val
-                .as_bool()
-                .ok_or_else(|| "br_in_tables must be a boolean".to_string())?;
-        }
-
-        if let Some(val) = obj.get("hocr_spatial_tables") {
-            opts.hocr_spatial_tables = val
-                .as_bool()
-                .ok_or_else(|| "hocr_spatial_tables must be a boolean".to_string())?;
-        }
-
-        if let Some(val) = obj.get("highlight_style") {
-            opts.highlight_style = parse_enum(Some(val), parse_highlight_style)?.unwrap_or(opts.highlight_style);
-        }
-
-        if let Some(val) = obj.get("extract_metadata") {
-            opts.extract_metadata = val
-                .as_bool()
-                .ok_or_else(|| "extract_metadata must be a boolean".to_string())?;
-        }
-
-        if let Some(val) = obj.get("whitespace_mode") {
-            opts.whitespace_mode = parse_enum(Some(val), parse_whitespace_mode)?.unwrap_or(opts.whitespace_mode);
-        }
-
-        if let Some(val) = obj.get("strip_newlines") {
-            opts.strip_newlines = val
-                .as_bool()
-                .ok_or_else(|| "strip_newlines must be a boolean".to_string())?;
-        }
-
-        if let Some(val) = obj.get("wrap") {
-            opts.wrap = val.as_bool().ok_or_else(|| "wrap must be a boolean".to_string())?;
-        }
-
-        if let Some(val) = obj.get("wrap_width") {
-            opts.wrap_width = val
-                .as_u64()
-                .map(|v| v as usize)
-                .ok_or_else(|| "wrap_width must be an integer".to_string())?;
-        }
-
-        if let Some(val) = obj.get("convert_as_inline") {
-            opts.convert_as_inline = val
-                .as_bool()
-                .ok_or_else(|| "convert_as_inline must be a boolean".to_string())?;
-        }
-
-        if let Some(val) = obj.get("sub_symbol") {
-            opts.sub_symbol = val
-                .as_str()
-                .map(str::to_string)
-                .ok_or_else(|| "sub_symbol must be a string".to_string())?;
-        }
-
-        if let Some(val) = obj.get("sup_symbol") {
-            opts.sup_symbol = val
-                .as_str()
-                .map(str::to_string)
-                .ok_or_else(|| "sup_symbol must be a string".to_string())?;
-        }
-
-        if let Some(val) = obj.get("newline_style") {
-            opts.newline_style = parse_enum(Some(val), parse_newline_style)?.unwrap_or(opts.newline_style);
-        }
-
-        if let Some(val) = obj.get("code_block_style") {
-            opts.code_block_style = parse_enum(Some(val), parse_code_block_style)?.unwrap_or(opts.code_block_style);
-        }
-
-        if let Some(val) = obj.get("keep_inline_images_in") {
-            opts.keep_inline_images_in = val
-                .as_array()
-                .ok_or_else(|| "keep_inline_images_in must be an array".to_string())?
-                .iter()
-                .map(|v| {
-                    v.as_str()
-                        .map(str::to_string)
-                        .ok_or_else(|| "keep_inline_images_in entries must be strings".to_string())
-                })
-                .collect::<std::result::Result<Vec<_>, _>>()?;
-        }
-
-        if let Some(val) = obj.get("encoding") {
-            opts.encoding = val
-                .as_str()
-                .map(str::to_string)
-                .ok_or_else(|| "encoding must be a string".to_string())?;
-        }
-
-        if let Some(val) = obj.get("debug") {
-            opts.debug = val.as_bool().ok_or_else(|| "debug must be a boolean".to_string())?;
-        }
-
-        if let Some(val) = obj.get("strip_tags") {
-            opts.strip_tags = val
-                .as_array()
-                .ok_or_else(|| "strip_tags must be an array".to_string())?
-                .iter()
-                .map(|v| {
-                    v.as_str()
-                        .map(str::to_string)
-                        .ok_or_else(|| "strip_tags entries must be strings".to_string())
-                })
-                .collect::<std::result::Result<Vec<_>, _>>()?;
-        }
-
-        if let Some(val) = obj.get("preserve_tags") {
-            opts.preserve_tags = val
-                .as_array()
-                .ok_or_else(|| "preserve_tags must be an array".to_string())?
-                .iter()
-                .map(|v| {
-                    v.as_str()
-                        .map(str::to_string)
-                        .ok_or_else(|| "preserve_tags entries must be strings".to_string())
-                })
-                .collect::<std::result::Result<Vec<_>, _>>()?;
-        }
-
-        if let Some(val) = obj.get("preprocessing") {
-            let pre = val
-                .as_object()
-                .ok_or_else(|| "preprocessing must be an object".to_string())?;
-            let mut preprocessing = opts.preprocessing.clone();
-
-            if let Some(v) = pre.get("enabled") {
-                preprocessing.enabled = v
-                    .as_bool()
-                    .ok_or_else(|| "preprocessing.enabled must be a boolean".to_string())?;
-            }
-
-            if let Some(v) = pre.get("preset") {
-                let preset = v
-                    .as_str()
-                    .ok_or_else(|| "preprocessing.preset must be a string".to_string())?;
-                preprocessing.preset = parse_preprocessing_preset(preset)?;
-            }
-
-            if let Some(v) = pre.get("remove_navigation") {
-                preprocessing.remove_navigation = v
-                    .as_bool()
-                    .ok_or_else(|| "preprocessing.remove_navigation must be a boolean".to_string())?;
-            }
-
-            if let Some(v) = pre.get("remove_forms") {
-                preprocessing.remove_forms = v
-                    .as_bool()
-                    .ok_or_else(|| "preprocessing.remove_forms must be a boolean".to_string())?;
-            }
-
-            opts.preprocessing = preprocessing;
-        }
-
-        Ok(opts)
-    }
-
-    let value: serde_json::Value =
+    // html-to-markdown-rs v2.22.5+ has #[serde(default)] on ConversionOptions,
+    // so serde can now handle partial deserialization with defaults for missing fields
+    let config: ExtractionConfig =
         serde_json::from_str(config_str).map_err(|e| format!("Failed to parse config JSON: {}", e))?;
-
-    let html_options = value.get("html_options").map(parse_html_options).transpose()?;
-
-    let mut config: ExtractionConfig =
-        serde_json::from_value(value).map_err(|e| format!("Failed to parse config JSON: {}", e))?;
-
-    if let Some(options) = html_options {
-        config.html_options = Some(options);
-    }
 
     Ok(config)
 }
@@ -596,8 +255,8 @@ mod tests {
     fn test_parse_extraction_config_with_html_options() {
         let json = r#"{
             "html_options": {
-                "heading_style": "atx",
-                "escape_asterisks": true,
+                "headingStyle": "atx",
+                "escapeAsterisks": true,
                 "autolinks": false
             }
         }"#;
@@ -620,16 +279,20 @@ mod tests {
     }
 
     #[test]
-    fn test_parse_extraction_config_invalid_heading_style() {
+    fn test_parse_extraction_config_invalid_heading_style_uses_default() {
+        // With #[serde(default)], invalid enum values use the default instead of failing
         let json = r#"{
             "html_options": {
-                "heading_style": "invalid_style"
+                "headingStyle": "invalid_style"
             }
         }"#;
 
         let result = parse_extraction_config_from_json(json);
-        assert!(result.is_err());
-        assert!(result.unwrap_err().contains("Invalid heading_style"));
+        assert!(result.is_ok(), "Parsing should succeed with default values");
+
+        // Invalid enum values should be ignored and default value used
+        let config = result.unwrap();
+        assert!(config.html_options.is_some());
     }
 
     #[test]
@@ -641,7 +304,7 @@ mod tests {
         ];
 
         for (input, _expected) in styles {
-            let json = format!(r#"{{"html_options": {{"heading_style": "{}"}}}}"#, input);
+            let json = format!(r#"{{"html_options": {{"headingStyle": "{}"}}}}"#, input);
             let result = parse_extraction_config_from_json(&json);
             assert!(result.is_ok(), "Failed to parse heading_style: {}", input);
         }
@@ -654,8 +317,8 @@ mod tests {
                 "preprocessing": {
                     "enabled": true,
                     "preset": "aggressive",
-                    "remove_navigation": true,
-                    "remove_forms": false
+                    "removeNavigation": true,
+                    "removeForms": false
                 }
             }
         }"#;

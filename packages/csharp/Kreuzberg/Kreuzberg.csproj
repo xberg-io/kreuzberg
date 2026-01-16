@@ -23,7 +23,7 @@
 
   <ItemGroup>
     <None Include="../README.md" Pack="true" PackagePath="/" />
-    <None Include="runtimes/**" Pack="true" PackagePath="runtimes/" />
+    <None Include="runtimes/**" Pack="true" PackagePath="runtimes/" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <!-- Copy native libraries from kreuzberg-ffi build output to runtimes directory.

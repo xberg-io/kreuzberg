@@ -1435,187 +1435,156 @@ public sealed class HtmlConversionOptions
     /// <summary>
     /// Style for markdown headings (e.g., "setext", "atx").
     /// </summary>
-    [JsonPropertyName("heading_style")]
     public string? HeadingStyle { get; init; }
 
     /// <summary>
     /// Type of indentation for lists (e.g., "space", "tab").
     /// </summary>
-    [JsonPropertyName("list_indent_type")]
     public string? ListIndentType { get; init; }
 
     /// <summary>
     /// Width of list indentation.
     /// </summary>
-    [JsonPropertyName("list_indent_width")]
     public int? ListIndentWidth { get; init; }
 
     /// <summary>
     /// Bullet style for unordered lists (e.g., "-", "*", "+").
     /// </summary>
-    [JsonPropertyName("bullets")]
     public string? Bullets { get; init; }
 
     /// <summary>
     /// Symbol for strong/emphasis text.
     /// </summary>
-    [JsonPropertyName("strong_em_symbol")]
     public string? StrongEmSymbol { get; init; }
 
     /// <summary>
     /// Whether to escape asterisks in output.
     /// </summary>
-    [JsonPropertyName("escape_asterisks")]
     public bool? EscapeAsterisks { get; init; }
 
     /// <summary>
     /// Whether to escape underscores in output.
     /// </summary>
-    [JsonPropertyName("escape_underscores")]
     public bool? EscapeUnderscores { get; init; }
 
     /// <summary>
     /// Whether to escape miscellaneous characters.
     /// </summary>
-    [JsonPropertyName("escape_misc")]
     public bool? EscapeMisc { get; init; }
 
     /// <summary>
     /// Whether to escape ASCII control characters.
     /// </summary>
-    [JsonPropertyName("escape_ascii")]
     public bool? EscapeAscii { get; init; }
 
     /// <summary>
     /// Language for code blocks syntax highlighting.
     /// </summary>
-    [JsonPropertyName("code_language")]
     public string? CodeLanguage { get; init; }
 
     /// <summary>
     /// Whether to automatically convert URLs to hyperlinks.
     /// </summary>
-    [JsonPropertyName("autolinks")]
     public bool? Autolinks { get; init; }
 
     /// <summary>
     /// Default title for documents without one.
     /// </summary>
-    [JsonPropertyName("default_title")]
     public string? DefaultTitle { get; init; }
 
     /// <summary>
     /// Whether to use HTML line breaks in tables.
     /// </summary>
-    [JsonPropertyName("br_in_tables")]
     public bool? BrInTables { get; init; }
 
     /// <summary>
     /// Whether to use hOCR spatial tables.
     /// </summary>
-    [JsonPropertyName("hocr_spatial_tables")]
     public bool? HocrSpatialTables { get; init; }
 
     /// <summary>
     /// Highlighting style for code blocks.
     /// </summary>
-    [JsonPropertyName("highlight_style")]
     public string? HighlightStyle { get; init; }
 
     /// <summary>
     /// Whether to extract and include document metadata.
     /// </summary>
-    [JsonPropertyName("extract_metadata")]
     public bool? ExtractMetadata { get; init; }
 
     /// <summary>
     /// Whitespace handling mode (e.g., "preserve", "collapse").
     /// </summary>
-    [JsonPropertyName("whitespace_mode")]
     public string? WhitespaceMode { get; init; }
 
     /// <summary>
     /// Whether to strip newlines from output.
     /// </summary>
-    [JsonPropertyName("strip_newlines")]
     public bool? StripNewlines { get; init; }
 
     /// <summary>
     /// Whether to wrap text output.
     /// </summary>
-    [JsonPropertyName("wrap")]
     public bool? Wrap { get; init; }
 
     /// <summary>
     /// Text wrapping width in characters.
     /// </summary>
-    [JsonPropertyName("wrap_width")]
     public int? WrapWidth { get; init; }
 
     /// <summary>
     /// Whether to convert HTML as inline content.
     /// </summary>
-    [JsonPropertyName("convert_as_inline")]
     public bool? ConvertAsInline { get; init; }
 
     /// <summary>
     /// Symbol for subscript text.
     /// </summary>
-    [JsonPropertyName("sub_symbol")]
     public string? SubSymbol { get; init; }
 
     /// <summary>
     /// Symbol for superscript text.
     /// </summary>
-    [JsonPropertyName("sup_symbol")]
     public string? SupSymbol { get; init; }
 
     /// <summary>
     /// Newline style for output (e.g., "lf", "crlf").
     /// </summary>
-    [JsonPropertyName("newline_style")]
     public string? NewlineStyle { get; init; }
 
     /// <summary>
     /// Style for code blocks (e.g., "fenced", "indented").
     /// </summary>
-    [JsonPropertyName("code_block_style")]
     public string? CodeBlockStyle { get; init; }
 
     /// <summary>
     /// List of HTML elements to keep inline images in.
     /// </summary>
-    [JsonPropertyName("keep_inline_images_in")]
     public List<string>? KeepInlineImagesIn { get; init; }
 
     /// <summary>
     /// Character encoding for output.
     /// </summary>
-    [JsonPropertyName("encoding")]
     public string? Encoding { get; init; }
 
     /// <summary>
     /// Whether to include debug information in output.
     /// </summary>
-    [JsonPropertyName("debug")]
     public bool? Debug { get; init; }
 
     /// <summary>
     /// HTML tags to strip from output.
     /// </summary>
-    [JsonPropertyName("strip_tags")]
     public List<string>? StripTags { get; init; }
 
     /// <summary>
     /// HTML tags to preserve in output.
     /// </summary>
-    [JsonPropertyName("preserve_tags")]
     public List<string>? PreserveTags { get; init; }
 
     /// <summary>
     /// HTML preprocessing configuration.
     /// </summary>
-    [JsonPropertyName("preprocessing")]
     public HtmlPreprocessingOptions? Preprocessing { get; init; }
 }
 
@@ -1627,25 +1596,21 @@ public sealed class HtmlPreprocessingOptions
     /// <summary>
     /// Whether preprocessing is enabled.
     /// </summary>
-    [JsonPropertyName("enabled")]
     public bool? Enabled { get; init; }
 
     /// <summary>
     /// Named preset for preprocessing strategy.
     /// </summary>
-    [JsonPropertyName("preset")]
     public string? Preset { get; init; }
 
     /// <summary>
     /// Whether to remove navigation elements.
     /// </summary>
-    [JsonPropertyName("remove_navigation")]
     public bool? RemoveNavigation { get; init; }
 
     /// <summary>
     /// Whether to remove form elements.
     /// </summary>
-    [JsonPropertyName("remove_forms")]
     public bool? RemoveForms { get; init; }
 }
 
