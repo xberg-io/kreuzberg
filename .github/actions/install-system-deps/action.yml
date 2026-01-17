@@ -82,7 +82,7 @@ runs:
         path: |
           C:\Program Files\Tesseract-OCR
           C:\ProgramData\chocolatey\lib\tesseract
-        key: tesseract-windows-${{ runner.arch }}-v5
+        key: tesseract-windows-${{ runner.arch }}-v5-data
         restore-keys: |
           tesseract-windows-${{ runner.arch }}-
 

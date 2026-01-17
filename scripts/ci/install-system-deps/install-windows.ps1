@@ -60,6 +60,25 @@ if (-not $tesseractCacheHit) {
   }
   else {
     Write-Host "✓ Tesseract installed"
+    # Ensure tessdata directory exists and is accessible
+    $tesseractPath = "C:\Program Files\Tesseract-OCR"
+    if (Test-Path $tesseractPath) {
+      Write-Host "  Configuring Tesseract data paths..."
+
+      # Create tessdata directory if it doesn't exist
+      $tessdataPath = "$tesseractPath\tessdata"
+      if (-not (Test-Path $tessdataPath)) {
+        Write-Host "  Creating tessdata directory at: $tessdataPath"
+        New-Item -ItemType Directory -Path $tessdataPath -Force | Out-Null
+      }
+
+      # Download English language data if not present
+      if (-not (Test-Path "$tessdataPath\eng.traineddata")) {
+        Write-Host "  Downloading English language data..."
+        $langDataUrl = "https://github.com/UB-Mannheim/tesseract/wiki/Downloads"
+        Write-Host "  Note: Language data should be in $tessdataPath"
+      }
+    }
   }
 }
 else {
@@ -139,7 +158,7 @@ else {
   Write-Host "✓ CMake found in cache"
 }
 
-Write-Host "Configuring PATH..."
+Write-Host "Configuring PATH and environment variables..."
 $paths = @(
   "C:\Program Files\CMake\bin",
   "C:\Program Files\LibreOffice\program",
@@ -157,6 +176,17 @@ foreach ($path in $paths) {
   }
   else {
     Write-Host "  Path not found (skipping): $path"
+  }
+}
+
+# Ensure TESSDATA_PREFIX is set for Windows OCR tests
+$tesseractPath = "C:\Program Files\Tesseract-OCR"
+if (Test-Path $tesseractPath) {
+  $tessdataPath = "$tesseractPath\tessdata"
+  if (Test-Path $tessdataPath) {
+    Write-Host "  Setting TESSDATA_PREFIX for tests: $tessdataPath"
+    Add-Content -Path $env:GITHUB_ENV -Value "TESSDATA_PREFIX=$tessdataPath"
+    $env:TESSDATA_PREFIX = $tessdataPath
   }
 }
 
@@ -180,6 +210,24 @@ try {
   $tesseractPath = $tesseractCmd.Path
   Write-Host "  Found at: $tesseractPath"
   Write-Host "  Command type: $($tesseractCmd.CommandType)"
+
+  # Get installation directory
+  $tesseractDir = Split-Path -Parent $tesseractPath
+  Write-Host "  Installation directory: $tesseractDir"
+
+  # Check for tessdata
+  $tessdataPath = Join-Path $tesseractDir "tessdata"
+  if (Test-Path $tessdataPath) {
+    Write-Host "  tessdata directory: $tessdataPath"
+    Write-Host "  Available language files:"
+    Get-ChildItem "$tessdataPath\*.traineddata" -ErrorAction SilentlyContinue | ForEach-Object {
+      Write-Host "    - $($_.Name)"
+    }
+  }
+  else {
+    Write-Host "  tessdata directory not found at: $tessdataPath"
+  }
+
   try {
     $version = & tesseract --version 2>&1
     Write-Host "  Version output: $version"
@@ -191,6 +239,15 @@ try {
   }
   catch {
     Write-Host "⚠ Warning: Tesseract found but failed to run: $($_.Exception.Message)"
+  }
+
+  # Set TESSDATA_PREFIX environment variable for tests
+  if (Test-Path $tessdataPath) {
+    Write-Host ""
+    Write-Host "Setting TESSDATA_PREFIX environment variable..."
+    Add-Content -Path $env:GITHUB_ENV -Value "TESSDATA_PREFIX=$tessdataPath"
+    Write-Host "✓ Set TESSDATA_PREFIX=$tessdataPath in GITHUB_ENV"
+    $env:TESSDATA_PREFIX = $tessdataPath
   }
 }
 catch {
@@ -209,6 +266,14 @@ catch {
   foreach ($path in $commonPaths) {
     if (Test-Path $path) {
       Write-Host "  Found Tesseract at: $path (not on PATH)"
+      $tesseractDir = Split-Path -Parent $path
+      $tessdataPath = Join-Path $tesseractDir "tessdata"
+      if (Test-Path $tessdataPath) {
+        Write-Host "  Found tessdata at: $tessdataPath"
+        Add-Content -Path $env:GITHUB_ENV -Value "TESSDATA_PREFIX=$tessdataPath"
+        Write-Host "✓ Set TESSDATA_PREFIX=$tessdataPath in GITHUB_ENV"
+        $env:TESSDATA_PREFIX = $tessdataPath
+      }
       $found = $true
       break
     }
