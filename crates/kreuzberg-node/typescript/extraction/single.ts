@@ -13,7 +13,7 @@
  */
 
 import { readFileSync } from "node:fs";
-import type { ExtractionConfigType, ExtractionResult } from "../types.js";
+import type { ExtractionConfig, ExtractionResult } from "../types.js";
 import { getBinding } from "../core/binding.js";
 import { convertResult } from "../core/type-converters.js";
 import { normalizeExtractionConfig } from "../core/config-normalizer.js";
@@ -27,7 +27,7 @@ import { assertUint8Array } from "../core/assertions.js";
  *
  * @param filePath - Path to the file to extract (string). Can be absolute or relative.
  * @param mimeTypeOrConfig - Optional MIME type hint or extraction configuration.
- *   If a string, treated as MIME type. If an object, treated as ExtractionConfigType.
+ *   If a string, treated as MIME type. If an object, treated as ExtractionConfig.
  *   If null, MIME type is auto-detected from file extension or content.
  * @param maybeConfig - Extraction configuration object. If null, uses default extraction settings.
  *   Only used if second parameter is a MIME type string.
@@ -60,11 +60,11 @@ import { assertUint8Array } from "../core/assertions.js";
  */
 export function extractFileSync(
 	filePath: string,
-	mimeTypeOrConfig?: string | null | ExtractionConfigType,
-	maybeConfig?: ExtractionConfigType | null,
+	mimeTypeOrConfig?: string | null | ExtractionConfig,
+	maybeConfig?: ExtractionConfig | null,
 ): ExtractionResult {
 	let mimeType: string | null = null;
-	let config: ExtractionConfigType | null = null;
+	let config: ExtractionConfig | null = null;
 
 	if (typeof mimeTypeOrConfig === "string") {
 		mimeType = mimeTypeOrConfig;
@@ -90,7 +90,7 @@ export function extractFileSync(
  *
  * @param filePath - Path to the file to extract (string). Can be absolute or relative.
  * @param mimeTypeOrConfig - Optional MIME type hint or extraction configuration.
- *   If a string, treated as MIME type. If an object, treated as ExtractionConfigType.
+ *   If a string, treated as MIME type. If an object, treated as ExtractionConfig.
  *   If null, MIME type is auto-detected from file extension or content.
  * @param maybeConfig - Extraction configuration object. If null, uses default extraction settings.
  *   Only used if second parameter is a MIME type string.
@@ -122,11 +122,11 @@ export function extractFileSync(
  */
 export async function extractFile(
 	filePath: string,
-	mimeTypeOrConfig?: string | null | ExtractionConfigType,
-	maybeConfig?: ExtractionConfigType | null,
+	mimeTypeOrConfig?: string | null | ExtractionConfig,
+	maybeConfig?: ExtractionConfig | null,
 ): Promise<ExtractionResult> {
 	let mimeType: string | null = null;
-	let config: ExtractionConfigType | null = null;
+	let config: ExtractionConfig | null = null;
 
 	if (typeof mimeTypeOrConfig === "string") {
 		mimeType = mimeTypeOrConfig;
@@ -174,7 +174,7 @@ export async function extractFile(
 export function extractBytesSync(
 	dataOrPath: Uint8Array | string,
 	mimeType: string,
-	config: ExtractionConfigType | null = null,
+	config: ExtractionConfig | null = null,
 ): ExtractionResult {
 	let data: Uint8Array;
 	if (typeof dataOrPath === "string") {
@@ -219,7 +219,7 @@ export function extractBytesSync(
 export async function extractBytes(
 	dataOrPath: Uint8Array | string,
 	mimeType: string,
-	config: ExtractionConfigType | null = null,
+	config: ExtractionConfig | null = null,
 ): Promise<ExtractionResult> {
 	let data: Uint8Array;
 	if (typeof dataOrPath === "string") {

@@ -14,7 +14,7 @@
  * @internal This module is part of Layer 2 (extraction APIs).
  */
 
-import type { ExtractionConfigType, ExtractionResult } from "../types.js";
+import type { ExtractionConfig, ExtractionResult } from "../types.js";
 import { getBinding } from "../core/binding.js";
 import { convertResult } from "../core/type-converters.js";
 import { normalizeExtractionConfig } from "../core/config-normalizer.js";
@@ -54,7 +54,7 @@ import { assertUint8ArrayList } from "../core/assertions.js";
  */
 export function batchExtractFilesSync(
 	paths: string[],
-	config: ExtractionConfigType | null = null,
+	config: ExtractionConfig | null = null,
 ): ExtractionResult[] {
 	const normalizedConfig = normalizeExtractionConfig(config);
 	const rawResults = getBinding().batchExtractFilesSync(paths, normalizedConfig);
@@ -98,7 +98,7 @@ export function batchExtractFilesSync(
  */
 export async function batchExtractFiles(
 	paths: string[],
-	config: ExtractionConfigType | null = null,
+	config: ExtractionConfig | null = null,
 ): Promise<ExtractionResult[]> {
 	const normalizedConfig = normalizeExtractionConfig(config);
 	const rawResults = await getBinding().batchExtractFiles(paths, normalizedConfig);
@@ -145,7 +145,7 @@ export async function batchExtractFiles(
 export function batchExtractBytesSync(
 	dataList: Uint8Array[],
 	mimeTypes: string[],
-	config: ExtractionConfigType | null = null,
+	config: ExtractionConfig | null = null,
 ): ExtractionResult[] {
 	const buffers = assertUint8ArrayList(dataList, "dataList").map((data) => Buffer.from(data));
 
@@ -202,7 +202,7 @@ export function batchExtractBytesSync(
 export async function batchExtractBytes(
 	dataList: Uint8Array[],
 	mimeTypes: string[],
-	config: ExtractionConfigType | null = null,
+	config: ExtractionConfig | null = null,
 ): Promise<ExtractionResult[]> {
 	const buffers = assertUint8ArrayList(dataList, "dataList").map((data) => Buffer.from(data));
 

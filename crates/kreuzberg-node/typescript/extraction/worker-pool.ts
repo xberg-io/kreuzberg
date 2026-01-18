@@ -13,7 +13,7 @@
  * @internal This module is part of Layer 2 (extraction APIs).
  */
 
-import type { ExtractionConfigType, ExtractionResult, WorkerPool, WorkerPoolStats } from "../types.js";
+import type { ExtractionConfig, ExtractionResult, WorkerPool, WorkerPoolStats } from "../types.js";
 import { getBinding } from "../core/binding.js";
 import { convertResult } from "../core/type-converters.js";
 import { normalizeExtractionConfig } from "../core/config-normalizer.js";
@@ -80,7 +80,7 @@ export function getWorkerPoolStats(pool: WorkerPool): WorkerPoolStats {
  * @param pool - The worker pool instance
  * @param filePath - Path to the file to extract
  * @param mimeTypeOrConfig - Optional MIME type or extraction configuration.
- *   If a string, treated as MIME type. If an object, treated as ExtractionConfigType.
+ *   If a string, treated as MIME type. If an object, treated as ExtractionConfig.
  *   If null, MIME type is auto-detected from file extension or content.
  * @param maybeConfig - Extraction configuration object. If null, uses default extraction settings.
  *   Only used if second parameter is a MIME type string.
@@ -111,11 +111,11 @@ export function getWorkerPoolStats(pool: WorkerPool): WorkerPoolStats {
 export async function extractFileInWorker(
 	pool: WorkerPool,
 	filePath: string,
-	mimeTypeOrConfig?: string | null | ExtractionConfigType,
-	maybeConfig?: ExtractionConfigType | null,
+	mimeTypeOrConfig?: string | null | ExtractionConfig,
+	maybeConfig?: ExtractionConfig | null,
 ): Promise<ExtractionResult> {
 	let mimeType: string | null = null;
-	let config: ExtractionConfigType | null = null;
+	let config: ExtractionConfig | null = null;
 
 	if (typeof mimeTypeOrConfig === "string") {
 		mimeType = mimeTypeOrConfig;
@@ -174,7 +174,7 @@ export async function extractFileInWorker(
 export async function batchExtractFilesInWorker(
 	pool: WorkerPool,
 	paths: string[],
-	config: ExtractionConfigType | null = null,
+	config: ExtractionConfig | null = null,
 ): Promise<ExtractionResult[]> {
 	const normalizedConfig = normalizeExtractionConfig(config);
 	const binding = getBinding();
