@@ -27,21 +27,21 @@ const baseAssertions = createAssertions<any>(new VitestAdapter());
 // The WASM ExtractionResult is structurally compatible with test-utils but lacks the [key: string]: unknown index signature
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const assertions: ExtractionAssertions<any> = {
-	assertExpectedMime: (result, expected) =>
+	assertExpectedMime: (result: any, expected: any) =>
 		baseAssertions.assertExpectedMime(result, expected),
-	assertMinContentLength: (result, minimum) =>
+	assertMinContentLength: (result: any, minimum: any) =>
 		baseAssertions.assertMinContentLength(result, minimum),
-	assertMaxContentLength: (result, maximum) =>
+	assertMaxContentLength: (result: any, maximum: any) =>
 		baseAssertions.assertMaxContentLength(result, maximum),
-	assertContentContainsAny: (result, snippets) =>
+	assertContentContainsAny: (result: any, snippets: any) =>
 		baseAssertions.assertContentContainsAny(result, snippets),
-	assertContentContainsAll: (result, snippets) =>
+	assertContentContainsAll: (result: any, snippets: any) =>
 		baseAssertions.assertContentContainsAll(result, snippets),
-	assertTableCount: (result, minimum, maximum) =>
+	assertTableCount: (result: any, minimum: any, maximum: any) =>
 		baseAssertions.assertTableCount(result, minimum, maximum),
-	assertDetectedLanguages: (result, expected, minConfidence) =>
+	assertDetectedLanguages: (result: any, expected: any, minConfidence: any) =>
 		baseAssertions.assertDetectedLanguages(result, expected, minConfidence),
-	assertMetadataExpectation: (result, path, expectation) =>
+	assertMetadataExpectation: (result: any, path: any, expectation: any) =>
 		baseAssertions.assertMetadataExpectation(result, path, expectation),
 };
 
