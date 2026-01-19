@@ -1,6 +1,6 @@
 use napi::bindgen_prelude::*;
-use napi_derive::napi;
 use napi::threadsafe_function::ThreadsafeFunction;
+use napi_derive::napi;
 
 use kreuzberg::plugins::ProcessingStage;
 

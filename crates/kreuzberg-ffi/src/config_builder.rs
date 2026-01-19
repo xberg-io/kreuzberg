@@ -8,8 +8,8 @@
 
 use crate::helpers::{clear_last_error, set_last_error};
 use kreuzberg::core::config::{
-    ExtractionConfig, OcrConfig, PdfConfig, PostProcessorConfig, ChunkingConfig,
-    ImageExtractionConfig, LanguageDetectionConfig,
+    ChunkingConfig, ExtractionConfig, ImageExtractionConfig, LanguageDetectionConfig, OcrConfig, PdfConfig,
+    PostProcessorConfig,
 };
 use std::ffi::{CStr, c_char};
 use std::ptr;
@@ -34,22 +34,22 @@ impl ConfigBuilder {
     }
 
     fn set_ocr_from_json(&mut self, ocr_json: &str) -> Result<(), String> {
-        let ocr_config: OcrConfig = serde_json::from_str(ocr_json)
-            .map_err(|e| format!("Failed to parse OCR config JSON: {}", e))?;
+        let ocr_config: OcrConfig =
+            serde_json::from_str(ocr_json).map_err(|e| format!("Failed to parse OCR config JSON: {}", e))?;
         self.config.ocr = Some(ocr_config);
         Ok(())
     }
 
     fn set_pdf_from_json(&mut self, pdf_json: &str) -> Result<(), String> {
-        let pdf_config: PdfConfig = serde_json::from_str(pdf_json)
-            .map_err(|e| format!("Failed to parse PDF config JSON: {}", e))?;
+        let pdf_config: PdfConfig =
+            serde_json::from_str(pdf_json).map_err(|e| format!("Failed to parse PDF config JSON: {}", e))?;
         self.config.pdf_options = Some(pdf_config);
         Ok(())
     }
 
     fn set_chunking_from_json(&mut self, chunking_json: &str) -> Result<(), String> {
-        let chunking_config: ChunkingConfig = serde_json::from_str(chunking_json)
-            .map_err(|e| format!("Failed to parse chunking config JSON: {}", e))?;
+        let chunking_config: ChunkingConfig =
+            serde_json::from_str(chunking_json).map_err(|e| format!("Failed to parse chunking config JSON: {}", e))?;
         self.config.chunking = Some(chunking_config);
         Ok(())
     }
@@ -62,8 +62,8 @@ impl ConfigBuilder {
     }
 
     fn set_post_processor_from_json(&mut self, pp_json: &str) -> Result<(), String> {
-        let pp_config: PostProcessorConfig = serde_json::from_str(pp_json)
-            .map_err(|e| format!("Failed to parse post processor config JSON: {}", e))?;
+        let pp_config: PostProcessorConfig =
+            serde_json::from_str(pp_json).map_err(|e| format!("Failed to parse post processor config JSON: {}", e))?;
         self.config.postprocessor = Some(pp_config);
         Ok(())
     }
@@ -116,10 +116,7 @@ pub unsafe extern "C" fn kreuzberg_config_builder_new() -> *mut ConfigBuilder {
 ///
 /// 0 on success, -1 on error (NULL builder)
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn kreuzberg_config_builder_set_use_cache(
-    builder: *mut ConfigBuilder,
-    use_cache: i32,
-) -> i32 {
+pub unsafe extern "C" fn kreuzberg_config_builder_set_use_cache(builder: *mut ConfigBuilder, use_cache: i32) -> i32 {
     if builder.is_null() {
         set_last_error("ConfigBuilder pointer cannot be NULL".to_string());
         return -1;
@@ -141,10 +138,7 @@ pub unsafe extern "C" fn kreuzberg_config_builder_set_use_cache(
 ///
 /// 0 on success, -1 on error (check kreuzberg_last_error)
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn kreuzberg_config_builder_set_ocr(
-    builder: *mut ConfigBuilder,
-    ocr_json: *const c_char,
-) -> i32 {
+pub unsafe extern "C" fn kreuzberg_config_builder_set_ocr(builder: *mut ConfigBuilder, ocr_json: *const c_char) -> i32 {
     if builder.is_null() {
         set_last_error("ConfigBuilder pointer cannot be NULL".to_string());
         return -1;
@@ -184,10 +178,7 @@ pub unsafe extern "C" fn kreuzberg_config_builder_set_ocr(
 ///
 /// 0 on success, -1 on error
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn kreuzberg_config_builder_set_pdf(
-    builder: *mut ConfigBuilder,
-    pdf_json: *const c_char,
-) -> i32 {
+pub unsafe extern "C" fn kreuzberg_config_builder_set_pdf(builder: *mut ConfigBuilder, pdf_json: *const c_char) -> i32 {
     if builder.is_null() {
         set_last_error("ConfigBuilder pointer cannot be NULL".to_string());
         return -1;
@@ -407,9 +398,7 @@ pub unsafe extern "C" fn kreuzberg_config_builder_set_language_detection(
 /// - Do NOT call kreuzberg_config_builder_free() after this function
 /// - The returned ExtractionConfig must be freed with kreuzberg_config_free()
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn kreuzberg_config_builder_build(
-    builder: *mut ConfigBuilder,
-) -> *mut ExtractionConfig {
+pub unsafe extern "C" fn kreuzberg_config_builder_build(builder: *mut ConfigBuilder) -> *mut ExtractionConfig {
     if builder.is_null() {
         set_last_error("ConfigBuilder pointer cannot be NULL".to_string());
         return ptr::null_mut();

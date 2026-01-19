@@ -1,0 +1,196 @@
+//! MCP request parameter types.
+//!
+//! This module defines the parameter structures for all MCP tool calls.
+
+use rmcp::schemars;
+
+/// Request parameters for file extraction.
+#[derive(Debug, serde::Deserialize, serde::Serialize, schemars::JsonSchema)]
+pub struct ExtractFileParams {
+    /// Path to the file to extract
+    pub path: String,
+    /// Optional MIME type hint (auto-detected if not provided)
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub mime_type: Option<String>,
+    /// Enable OCR for scanned documents
+    #[serde(default)]
+    pub enable_ocr: bool,
+    /// Force OCR even if text extraction succeeds
+    #[serde(default)]
+    pub force_ocr: bool,
+    /// Use async extraction (default: false for sync)
+    #[serde(default)]
+    pub r#async: bool,
+}
+
+/// Request parameters for bytes extraction.
+#[derive(Debug, serde::Deserialize, serde::Serialize, schemars::JsonSchema)]
+pub struct ExtractBytesParams {
+    /// Base64-encoded file content
+    pub data: String,
+    /// Optional MIME type hint (auto-detected if not provided)
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub mime_type: Option<String>,
+    /// Enable OCR for scanned documents
+    #[serde(default)]
+    pub enable_ocr: bool,
+    /// Force OCR even if text extraction succeeds
+    #[serde(default)]
+    pub force_ocr: bool,
+    /// Use async extraction (default: false for sync)
+    #[serde(default)]
+    pub r#async: bool,
+}
+
+/// Request parameters for batch file extraction.
+#[derive(Debug, serde::Deserialize, serde::Serialize, schemars::JsonSchema)]
+pub struct BatchExtractFilesParams {
+    /// Paths to files to extract
+    pub paths: Vec<String>,
+    /// Enable OCR for scanned documents
+    #[serde(default)]
+    pub enable_ocr: bool,
+    /// Force OCR even if text extraction succeeds
+    #[serde(default)]
+    pub force_ocr: bool,
+    /// Use async extraction (default: false for sync)
+    #[serde(default)]
+    pub r#async: bool,
+}
+
+/// Request parameters for MIME type detection.
+#[derive(Debug, serde::Deserialize, serde::Serialize, schemars::JsonSchema)]
+pub struct DetectMimeTypeParams {
+    /// Path to the file
+    pub path: String,
+    /// Use content-based detection (default: true)
+    #[serde(default = "default_use_content")]
+    pub use_content: bool,
+}
+
+fn default_use_content() -> bool {
+    true
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_extract_file_params_defaults() {
+        let json = r#"{"path": "/test.pdf"}"#;
+        let params: ExtractFileParams = serde_json::from_str(json).unwrap();
+
+        assert_eq!(params.path, "/test.pdf");
+        assert_eq!(params.mime_type, None);
+        assert!(!params.enable_ocr);
+        assert!(!params.force_ocr);
+        assert!(!params.r#async);
+    }
+
+    #[test]
+    fn test_extract_bytes_params_defaults() {
+        let json = r#"{"data": "SGVsbG8="}"#;
+        let params: ExtractBytesParams = serde_json::from_str(json).unwrap();
+
+        assert_eq!(params.data, "SGVsbG8=");
+        assert_eq!(params.mime_type, None);
+        assert!(!params.enable_ocr);
+        assert!(!params.force_ocr);
+        assert!(!params.r#async);
+    }
+
+    #[test]
+    fn test_batch_extract_files_params_defaults() {
+        let json = r#"{"paths": ["/a.pdf", "/b.pdf"]}"#;
+        let params: BatchExtractFilesParams = serde_json::from_str(json).unwrap();
+
+        assert_eq!(params.paths.len(), 2);
+        assert!(!params.enable_ocr);
+        assert!(!params.force_ocr);
+        assert!(!params.r#async);
+    }
+
+    #[test]
+    fn test_detect_mime_type_params_defaults() {
+        let json = r#"{"path": "/test.pdf"}"#;
+        let params: DetectMimeTypeParams = serde_json::from_str(json).unwrap();
+
+        assert_eq!(params.path, "/test.pdf");
+        assert!(params.use_content);
+    }
+
+    #[test]
+    fn test_detect_mime_type_params_use_content_false() {
+        let json = r#"{"path": "/test.pdf", "use_content": false}"#;
+        let params: DetectMimeTypeParams = serde_json::from_str(json).unwrap();
+
+        assert!(!params.use_content);
+    }
+
+    #[test]
+    fn test_extract_file_params_serialization() {
+        let params = ExtractFileParams {
+            path: "/test.pdf".to_string(),
+            mime_type: Some("application/pdf".to_string()),
+            enable_ocr: true,
+            force_ocr: false,
+            r#async: true,
+        };
+
+        let json = serde_json::to_string(&params).unwrap();
+        let deserialized: ExtractFileParams = serde_json::from_str(&json).unwrap();
+
+        assert_eq!(params.path, deserialized.path);
+        assert_eq!(params.mime_type, deserialized.mime_type);
+        assert_eq!(params.enable_ocr, deserialized.enable_ocr);
+        assert_eq!(params.force_ocr, deserialized.force_ocr);
+        assert_eq!(params.r#async, deserialized.r#async);
+    }
+
+    #[test]
+    fn test_extract_bytes_params_serialization() {
+        let params = ExtractBytesParams {
+            data: "SGVsbG8=".to_string(),
+            mime_type: None,
+            enable_ocr: false,
+            force_ocr: false,
+            r#async: false,
+        };
+
+        let json = serde_json::to_string(&params).unwrap();
+        let deserialized: ExtractBytesParams = serde_json::from_str(&json).unwrap();
+
+        assert_eq!(params.data, deserialized.data);
+    }
+
+    #[test]
+    fn test_batch_extract_params_serialization() {
+        let params = BatchExtractFilesParams {
+            paths: vec!["/a.pdf".to_string(), "/b.pdf".to_string()],
+            enable_ocr: true,
+            force_ocr: true,
+            r#async: true,
+        };
+
+        let json = serde_json::to_string(&params).unwrap();
+        let deserialized: BatchExtractFilesParams = serde_json::from_str(&json).unwrap();
+
+        assert_eq!(params.paths, deserialized.paths);
+        assert_eq!(params.enable_ocr, deserialized.enable_ocr);
+    }
+
+    #[test]
+    fn test_detect_mime_type_params_serialization() {
+        let params = DetectMimeTypeParams {
+            path: "/test.pdf".to_string(),
+            use_content: false,
+        };
+
+        let json = serde_json::to_string(&params).unwrap();
+        let deserialized: DetectMimeTypeParams = serde_json::from_str(&json).unwrap();
+
+        assert_eq!(params.path, deserialized.path);
+        assert_eq!(params.use_content, deserialized.use_content);
+    }
+}

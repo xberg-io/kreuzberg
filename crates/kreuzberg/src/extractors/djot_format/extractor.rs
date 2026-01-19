@@ -3,10 +3,10 @@
 //! Implements the DocumentExtractor and Plugin traits for Djot markup files.
 
 use super::parsing::{extract_complete_djot_content, extract_tables_from_events, extract_text_from_events};
+use crate::Result;
 use crate::core::config::ExtractionConfig;
 use crate::plugins::{DocumentExtractor, Plugin};
 use crate::types::{ExtractionResult, Metadata};
-use crate::Result;
 use async_trait::async_trait;
 use jotdown::{Event, Parser};
 
@@ -79,8 +79,7 @@ impl DocumentExtractor for DjotExtractor {
     ) -> Result<ExtractionResult> {
         let text = String::from_utf8_lossy(content).into_owned();
 
-        let (yaml, remaining_content) =
-            crate::extractors::frontmatter_utils::extract_frontmatter(&text);
+        let (yaml, remaining_content) = crate::extractors::frontmatter_utils::extract_frontmatter(&text);
 
         let mut metadata = if let Some(ref yaml_value) = yaml {
             crate::extractors::frontmatter_utils::extract_metadata_from_yaml(yaml_value)
@@ -89,12 +88,9 @@ impl DocumentExtractor for DjotExtractor {
         };
 
         if !metadata.additional.contains_key("title")
-            && let Some(title) =
-                crate::extractors::frontmatter_utils::extract_title_from_content(&remaining_content)
+            && let Some(title) = crate::extractors::frontmatter_utils::extract_title_from_content(&remaining_content)
         {
-            metadata
-                .additional
-                .insert("title".to_string(), title.into());
+            metadata.additional.insert("title".to_string(), title.into());
         }
 
         // Parse with jotdown and collect events once for extraction
@@ -159,7 +155,8 @@ mod tests {
 
     #[tokio::test]
     async fn test_extract_simple_djot() {
-        let content = b"# Header\n\nThis is a paragraph with *bold* and _italic_ text.\n\n## Subheading\n\nMore content here.";
+        let content =
+            b"# Header\n\nThis is a paragraph with *bold* and _italic_ text.\n\n## Subheading\n\nMore content here.";
         let extractor = DjotExtractor::new();
         let config = ExtractionConfig::default();
 

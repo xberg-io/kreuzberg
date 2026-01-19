@@ -507,10 +507,7 @@ mod tests {
         assert_eq!(image_handling::html_escape("a & b"), "a &amp; b");
         assert_eq!(image_handling::html_escape("<tag>"), "&lt;tag&gt;");
         assert_eq!(image_handling::html_escape("\"quoted\""), "&quot;quoted&quot;");
-        assert_eq!(
-            image_handling::html_escape("'apostrophe'"),
-            "&#x27;apostrophe&#x27;"
-        );
+        assert_eq!(image_handling::html_escape("'apostrophe'"), "&#x27;apostrophe&#x27;");
         assert_eq!(
             image_handling::html_escape("<a href=\"url\" title='test'>text & more</a>"),
             "&lt;a href=&quot;url&quot; title=&#x27;test&#x27;&gt;text &amp; more&lt;/a&gt;"

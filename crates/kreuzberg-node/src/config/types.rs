@@ -13,8 +13,8 @@ use kreuzberg::pdf::HierarchyConfig as RustHierarchyConfig;
 use kreuzberg::{
     ChunkingConfig as RustChunkingConfig, EmbeddingConfig as RustEmbeddingConfig,
     EmbeddingModelType as RustEmbeddingModelType, ExtractionConfig, ImageExtractionConfig as RustImageExtractionConfig,
-    LanguageDetectionConfig as RustLanguageDetectionConfig, OcrConfig as RustOcrConfig,
-    PdfConfig as RustPdfConfig, PostProcessorConfig as RustPostProcessorConfig, TesseractConfig as RustTesseractConfig,
+    LanguageDetectionConfig as RustLanguageDetectionConfig, OcrConfig as RustOcrConfig, PdfConfig as RustPdfConfig,
+    PostProcessorConfig as RustPostProcessorConfig, TesseractConfig as RustTesseractConfig,
     TokenReductionConfig as RustTokenReductionConfig,
 };
 use std::ffi::c_char;

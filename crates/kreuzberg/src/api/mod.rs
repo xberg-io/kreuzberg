@@ -84,16 +84,17 @@
 //!      -d '{"text":"Long text to chunk...","chunker_type":"text"}'
 //! ```
 
+mod config;
 mod error;
 mod handlers;
-mod server;
+mod router;
+mod startup;
 mod types;
 
+pub use config::load_server_config;
 pub use error::ApiError;
-pub use server::{
-    create_router, create_router_with_limits, create_router_with_limits_and_server_config, load_server_config, serve,
-    serve_default, serve_with_config, serve_with_config_and_limits, serve_with_server_config,
-};
+pub use router::{create_router, create_router_with_limits, create_router_with_limits_and_server_config};
+pub use startup::{serve, serve_default, serve_with_config, serve_with_config_and_limits, serve_with_server_config};
 pub use types::{
     ApiSizeLimits, ApiState, CacheClearResponse, CacheStatsResponse, ChunkRequest, ChunkResponse, EmbedRequest,
     EmbedResponse, ErrorResponse, ExtractResponse, HealthResponse, InfoResponse,

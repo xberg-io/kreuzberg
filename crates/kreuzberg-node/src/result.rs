@@ -1,10 +1,10 @@
-use napi::bindgen_prelude::*;
-use napi_derive::napi;
+use crate::KNOWN_FORMAT_FIELDS;
+use crate::config::JsExtractionConfig;
 use kreuzberg::{
     Chunk as RustChunk, ChunkMetadata as RustChunkMetadata, ExtractionConfig, ExtractionResult as RustExtractionResult,
 };
-use crate::config::JsExtractionConfig;
-use crate::KNOWN_FORMAT_FIELDS;
+use napi::bindgen_prelude::*;
+use napi_derive::napi;
 
 #[napi(object)]
 #[derive(serde::Serialize, serde::Deserialize)]

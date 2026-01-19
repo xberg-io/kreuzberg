@@ -9,9 +9,9 @@ use std::io::Read;
 use std::path::Path;
 use zip::ZipArchive;
 
-use crate::error::{KreuzbergError, Result};
 use super::elements::Slide;
 use super::image_handling::get_full_image_path;
+use crate::error::{KreuzbergError, Result};
 
 pub(super) struct PptxContainer {
     pub(super) archive: ZipArchive<File>,

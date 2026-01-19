@@ -392,8 +392,8 @@ fn dict_to_extraction_result(_py: Python<'_>, dict: &Bound<'_, PyAny>) -> Result
 
 /// Extract metadata dict from Python object.
 fn extract_metadata(obj: &Bound<'_, PyAny>) -> Result<HashMap<String, serde_json::Value>> {
-    use pyo3::types::PyDict;
     use super::common::python_to_json;
+    use pyo3::types::PyDict;
 
     let dict = obj.cast::<PyDict>().map_err(|_| KreuzbergError::Validation {
         message: "Metadata must be a dict".to_string(),

@@ -123,7 +123,9 @@ pub mod validator_bridge;
 // Re-export public APIs for backward compatibility
 pub use common::json_value_to_py;
 pub use ocr_bridge::register_ocr_backend;
-pub use processor_bridge::{clear_post_processors, list_post_processors, register_post_processor, unregister_post_processor};
+pub use processor_bridge::{
+    clear_post_processors, list_post_processors, register_post_processor, unregister_post_processor,
+};
 pub use validator_bridge::{clear_validators, list_validators, register_validator, unregister_validator};
 
 // OCR backend management functions
@@ -151,8 +153,7 @@ pub fn list_document_extractors() -> pyo3::PyResult<Vec<String>> {
 
 #[pyo3::pyfunction]
 pub fn unregister_document_extractor(name: &str) -> pyo3::PyResult<()> {
-    kreuzberg::plugins::unregister_extractor(name)
-        .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e.to_string()))
+    kreuzberg::plugins::unregister_extractor(name).map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e.to_string()))
 }
 
 #[pyo3::pyfunction]

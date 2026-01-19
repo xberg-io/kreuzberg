@@ -3,14 +3,14 @@
 //! This module provides the main processing functions that tie together
 //! HTML conversion, image extraction, and metadata handling.
 
-use crate::error::{KreuzbergError, Result};
-use html_to_markdown_rs::{ConversionOptions, InlineImageConfig as LibInlineImageConfig, convert_with_inline_images};
+use super::converter::{convert_html_to_markdown, resolve_conversion_options};
 use super::image_handling::inline_image_to_extracted;
 use super::stack_management::check_wasm_size_limit;
 #[cfg(not(target_arch = "wasm32"))]
 use super::stack_management::{html_requires_large_stack, run_on_dedicated_stack};
 use super::types::HtmlExtractionResult;
-use super::converter::{convert_html_to_markdown, resolve_conversion_options};
+use crate::error::{KreuzbergError, Result};
+use html_to_markdown_rs::{ConversionOptions, InlineImageConfig as LibInlineImageConfig, convert_with_inline_images};
 
 /// Convert HTML with inline image extraction.
 ///

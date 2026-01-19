@@ -10,11 +10,7 @@ pub fn render_block_to_djot(output: &mut String, block: &FormattedBlock, indent_
     let indent = "  ".repeat(indent_level);
 
     // Render attributes if present
-    let attrs_str = block
-        .attributes
-        .as_ref()
-        .map(render_attributes)
-        .unwrap_or_default();
+    let attrs_str = block.attributes.as_ref().map(render_attributes).unwrap_or_default();
 
     match block.block_type {
         BlockType::Heading => {
@@ -225,12 +221,7 @@ pub fn render_block_to_djot(output: &mut String, block: &FormattedBlock, indent_
 }
 
 /// Render a list item with the given marker.
-pub fn render_list_item(
-    output: &mut String,
-    item: &FormattedBlock,
-    indent: &str,
-    marker: &str,
-) {
+pub fn render_list_item(output: &mut String, item: &FormattedBlock, indent: &str, marker: &str) {
     output.push_str(indent);
     output.push_str(marker);
     render_inline_content(output, &item.inline_content);
@@ -243,11 +234,7 @@ pub fn render_list_item(
 /// Render inline content to djot markup.
 pub fn render_inline_content(output: &mut String, elements: &[InlineElement]) {
     for elem in elements {
-        let attrs_str = elem
-            .attributes
-            .as_ref()
-            .map(render_attributes)
-            .unwrap_or_default();
+        let attrs_str = elem.attributes.as_ref().map(render_attributes).unwrap_or_default();
 
         match elem.element_type {
             InlineType::Text => {

@@ -1,10 +1,10 @@
 use napi::bindgen_prelude::*;
 use napi_derive::napi;
 
+use crate::WORKER_POOL;
+use crate::config::JsExtractionConfig;
 use crate::error_handling::convert_error;
 use crate::result::{JsExtractionResult, resolve_config};
-use crate::config::JsExtractionConfig;
-use crate::WORKER_POOL;
 
 pub fn batch_extract_files_sync(
     paths: Vec<String>,

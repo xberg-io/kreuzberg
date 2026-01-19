@@ -9,8 +9,8 @@ use crate::error::{KreuzbergError, Result};
 use crate::text::utf8_validation;
 
 use super::elements::{
-    ElementPosition, Formatting, ImageReference, ListElement, ListItem, ParsedContent, Run,
-    SlideElement, TableCell, TableElement, TableRow, TextElement,
+    ElementPosition, Formatting, ImageReference, ListElement, ListItem, ParsedContent, Run, SlideElement, TableCell,
+    TableElement, TableRow, TextElement,
 };
 
 const P_NAMESPACE: &str = "http://schemas.openxmlformats.org/presentationml/2006/main";

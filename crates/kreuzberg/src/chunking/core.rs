@@ -7,9 +7,9 @@ use crate::error::{KreuzbergError, Result};
 use crate::types::{Chunk, ChunkMetadata, PageBoundary};
 use text_splitter::{Characters, ChunkCapacity, ChunkConfig, MarkdownSplitter, TextSplitter};
 
-use super::config::{ChunkingConfig, ChunkerType, ChunkingResult};
-use super::validation::validate_utf8_boundaries;
 use super::boundaries::calculate_page_range;
+use super::config::{ChunkerType, ChunkingConfig, ChunkingResult};
+use super::validation::validate_utf8_boundaries;
 
 /// Build a ChunkConfig from chunking parameters.
 ///

@@ -1,13 +1,11 @@
 //! HTML to Markdown conversion functionality.
 
-use crate::error::{KreuzbergError, Result};
-use crate::types::HtmlMetadata;
-use html_to_markdown_rs::{
-    ConversionOptions, convert as convert_html, convert_with_metadata, MetadataConfig,
-};
 use super::stack_management::check_wasm_size_limit;
 #[cfg(not(target_arch = "wasm32"))]
 use super::stack_management::{html_requires_large_stack, run_on_dedicated_stack};
+use crate::error::{KreuzbergError, Result};
+use crate::types::HtmlMetadata;
+use html_to_markdown_rs::{ConversionOptions, MetadataConfig, convert as convert_html, convert_with_metadata};
 
 /// Resolve conversion options with sensible defaults.
 ///

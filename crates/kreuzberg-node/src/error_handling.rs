@@ -2,8 +2,8 @@ use napi::bindgen_prelude::*;
 use napi_derive::napi;
 use std::ffi::CStr;
 
-use super::kreuzberg_error_code_name;
 use super::kreuzberg_error_code_description;
+use super::kreuzberg_error_code_name;
 
 /// Converts KreuzbergError to NAPI Error with specific error codes.
 ///

@@ -11,9 +11,7 @@ pub mod pdf;
 pub mod processing;
 
 // Re-export main types for backward compatibility
-pub use extraction::{
-    ExtractionConfig, ImageExtractionConfig, LanguageDetectionConfig, TokenReductionConfig,
-};
+pub use extraction::{ExtractionConfig, ImageExtractionConfig, LanguageDetectionConfig, TokenReductionConfig};
 pub use formats::OutputFormat;
 pub use ocr::OcrConfig;
 pub use page::PageConfig;

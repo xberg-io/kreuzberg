@@ -173,7 +173,8 @@ pub fn kreuzberg_extract_bytes(
                         chunks: None,
                         images: None,
                         pages: None,
-            elements: None,
+                        elements: None,
+                        djot_content: None,
                     };
 
                     return ExtractionResult::from_rust(rust_result);

@@ -1,7 +1,7 @@
 //! Image handling and conversion functionality for HTML extraction.
 
-use html_to_markdown_rs::{InlineImage, InlineImageFormat};
 use super::types::ExtractedInlineImage;
+use html_to_markdown_rs::{InlineImage, InlineImageFormat};
 
 /// Convert InlineImageFormat to a standardized string representation.
 ///

@@ -10,64 +10,53 @@ pub use worker_pool_api::{
 };
 
 // Module declarations
-mod error_handling;
-mod config;
-mod result;
-mod extraction;
 mod batch;
-mod validation;
-mod metadata;
+mod config;
 mod embedding_presets;
+mod error_handling;
+mod extraction;
+mod metadata;
 mod plugins;
+mod result;
+mod validation;
 
 // Re-export all public items from modules
-pub use error_handling::{
-    ErrorClassification, classify_error, get_error_code_name, get_error_code_description,
-};
+pub use error_handling::{ErrorClassification, classify_error, get_error_code_description, get_error_code_name};
 
 pub use config::{
-    JsOcrConfig, JsTesseractConfig, JsEmbeddingModelType, JsEmbeddingConfig, JsChunkingConfig,
-    JsLanguageDetectionConfig, JsTokenReductionConfig, JsHierarchyConfig, JsPdfConfig,
-    JsImageExtractionConfig, JsPostProcessorConfig, JsHtmlPreprocessingOptions, JsHtmlOptions,
-    JsYakeParams, JsRakeParams, JsKeywordConfig, JsPageConfig, JsExtractionConfig,
-    load_extraction_config_from_file, discover_extraction_config,
+    JsChunkingConfig, JsEmbeddingConfig, JsEmbeddingModelType, JsExtractionConfig, JsHierarchyConfig, JsHtmlOptions,
+    JsHtmlPreprocessingOptions, JsImageExtractionConfig, JsKeywordConfig, JsLanguageDetectionConfig, JsOcrConfig,
+    JsPageConfig, JsPdfConfig, JsPostProcessorConfig, JsRakeParams, JsTesseractConfig, JsTokenReductionConfig,
+    JsYakeParams, discover_extraction_config, load_extraction_config_from_file,
 };
 
 pub use result::{
-    JsHierarchicalBlock, JsPageHierarchy, JsPageContent, JsTable, JsExtractedImage,
-    JsChunkMetadata, JsChunk, JsExtractionResult,
+    JsChunk, JsChunkMetadata, JsExtractedImage, JsExtractionResult, JsHierarchicalBlock, JsPageContent,
+    JsPageHierarchy, JsTable,
 };
 
-pub use extraction::{
-    extract_file_sync, extract_bytes_sync, extract_file, extract_bytes,
-};
+pub use extraction::{extract_bytes, extract_bytes_sync, extract_file, extract_file_sync};
 
-pub use batch::{
-    batch_extract_files_sync, batch_extract_bytes_sync, batch_extract_files, batch_extract_bytes,
-};
+pub use batch::{batch_extract_bytes, batch_extract_bytes_sync, batch_extract_files, batch_extract_files_sync};
 
 pub use validation::{
-    validate_binarization_method, validate_ocr_backend, validate_language_code,
-    validate_token_reduction_level, validate_tesseract_psm, validate_tesseract_oem,
-    validate_output_format, validate_confidence, validate_dpi, validate_chunking_params,
-    get_valid_binarization_methods, get_valid_language_codes, get_valid_ocr_backends,
-    get_valid_token_reduction_levels, config_validate_and_normalize, config_get_field_internal,
-    config_merge_internal, get_last_error_code, get_last_panic_context,
+    config_get_field_internal, config_merge_internal, config_validate_and_normalize, get_last_error_code,
+    get_last_panic_context, get_valid_binarization_methods, get_valid_language_codes, get_valid_ocr_backends,
+    get_valid_token_reduction_levels, validate_binarization_method, validate_chunking_params, validate_confidence,
+    validate_dpi, validate_language_code, validate_ocr_backend, validate_output_format, validate_tesseract_oem,
+    validate_tesseract_psm, validate_token_reduction_level,
 };
 
 pub use metadata::{
-    list_document_extractors, unregister_document_extractor, clear_document_extractors,
-    detect_mime_type_from_bytes,
+    clear_document_extractors, detect_mime_type_from_bytes, list_document_extractors, unregister_document_extractor,
 };
 
-pub use embedding_presets::{
-    EmbeddingPreset, list_embedding_presets, get_embedding_preset,
-};
+pub use embedding_presets::{EmbeddingPreset, get_embedding_preset, list_embedding_presets};
 
 pub use plugins::{
-    register_post_processor, unregister_post_processor, clear_post_processors, list_post_processors,
-    register_validator, unregister_validator, clear_validators, list_validators,
-    register_ocr_backend, unregister_ocr_backend, list_ocr_backends, clear_ocr_backends,
+    clear_ocr_backends, clear_post_processors, clear_validators, list_ocr_backends, list_post_processors,
+    list_validators, register_ocr_backend, register_post_processor, register_validator, unregister_ocr_backend,
+    unregister_post_processor, unregister_validator,
 };
 
 // Core imports for utilities and FFI types

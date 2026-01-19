@@ -59,10 +59,10 @@ pub mod validation;
 
 // Re-export submodule types and functions
 pub use boundaries::{calculate_page_range, validate_page_boundaries};
-pub use config::{ChunkingConfig, ChunkingResult, ChunkerType};
+pub use config::{ChunkerType, ChunkingConfig, ChunkingResult};
 pub use core::{chunk_text, chunk_text_with_type, chunk_texts_batch};
 pub use processor::ChunkingProcessor;
-pub use validation::{precompute_utf8_boundaries, validate_utf8_boundaries, ADAPTIVE_VALIDATION_THRESHOLD};
+pub use validation::{ADAPTIVE_VALIDATION_THRESHOLD, precompute_utf8_boundaries, validate_utf8_boundaries};
 
 use crate::error::Result;
 

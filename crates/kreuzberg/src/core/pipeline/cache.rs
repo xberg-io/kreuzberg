@@ -3,8 +3,8 @@
 //! This module manages the caching of post-processors by processing stage,
 //! eliminating repeated registry lock acquisitions.
 
-use crate::plugins::{PostProcessor, ProcessingStage};
 use crate::Result;
+use crate::plugins::{PostProcessor, ProcessingStage};
 use once_cell::sync::Lazy;
 use std::sync::Arc;
 use std::sync::RwLock as StdRwLock;

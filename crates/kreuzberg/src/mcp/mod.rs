@@ -9,6 +9,8 @@
 //! - **extract_bytes**: Extract content from base64-encoded bytes
 //! - **batch_extract_files**: Extract content from multiple files in parallel
 //! - **detect_mime_type**: Detect MIME type of a file
+//! - **cache_stats**: Get cache statistics
+//! - **cache_clear**: Clear the cache
 //!
 //! # Example
 //!
@@ -22,14 +24,18 @@
 //! }
 //! ```
 
+mod errors;
+mod format;
+mod params;
 mod server;
 
-pub use server::{start_mcp_server, start_mcp_server_with_config};
+// Re-export public API for backward compatibility
+pub use server::{KreuzbergMcp, start_mcp_server, start_mcp_server_with_config};
 
 #[cfg(feature = "mcp-http")]
 pub use server::{start_mcp_server_http, start_mcp_server_http_with_config};
 
-pub use server::{BatchExtractFilesParams, DetectMimeTypeParams, ExtractBytesParams, ExtractFileParams, KreuzbergMcp};
+pub use params::{BatchExtractFilesParams, DetectMimeTypeParams, ExtractBytesParams, ExtractFileParams};
 
 #[doc(hidden)]
-pub use server::map_kreuzberg_error_to_mcp;
+pub use errors::map_kreuzberg_error_to_mcp;

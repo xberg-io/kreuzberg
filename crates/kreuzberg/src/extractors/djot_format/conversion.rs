@@ -114,7 +114,7 @@ pub fn djot_to_html(djot_source: &str) -> crate::Result<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::types::{DjotContent, ExtractionResult, FormattedBlock, InlineElement, InlineType, Metadata, BlockType};
+    use crate::types::{BlockType, DjotContent, ExtractionResult, FormattedBlock, InlineElement, InlineType, Metadata};
 
     #[test]
     fn test_djot_content_to_djot_heading() {

@@ -1,6 +1,6 @@
 use napi::bindgen_prelude::*;
-use napi_derive::napi;
 use napi::threadsafe_function::ThreadsafeFunction;
+use napi_derive::napi;
 
 // Plugin impl stub - not currently functional after module refactoring
 

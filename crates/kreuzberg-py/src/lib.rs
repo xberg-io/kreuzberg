@@ -24,7 +24,7 @@ mod ffi;
 mod helpers;
 mod html_options;
 mod keywords;
-mod plugins;  // Now a module directory with submodules
+mod plugins; // Now a module directory with submodules
 mod types;
 mod validation;
 

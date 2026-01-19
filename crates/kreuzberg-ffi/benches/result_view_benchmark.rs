@@ -70,7 +70,7 @@ fn create_test_result(content_size: usize, chunk_count: usize) -> ExtractionResu
         chunks,
         images: None,
         pages: None,
-            elements: None,
+        elements: None,
     }
 }
 

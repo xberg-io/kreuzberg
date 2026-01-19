@@ -57,7 +57,10 @@ pub use validator_bridge::{clear_validators, list_validators, register_validator
 /// # Context Provided
 /// - Which registry failed (POST_PROCESSORS, VALIDATORS, or OCR_BACKENDS)
 /// - Clear indication that the data may be in an inconsistent state
-pub(crate) fn acquire_write_lock<'a, T>(registry: &'a RwLock<T>, registry_name: &str) -> Result<RwLockWriteGuard<'a, T>, String> {
+pub(crate) fn acquire_write_lock<'a, T>(
+    registry: &'a RwLock<T>,
+    registry_name: &str,
+) -> Result<RwLockWriteGuard<'a, T>, String> {
     match registry.write() {
         Ok(guard) => Ok(guard),
         Err(poison) => {
@@ -81,7 +84,10 @@ pub(crate) fn acquire_write_lock<'a, T>(registry: &'a RwLock<T>, registry_name: 
 /// - Which registry failed
 /// - That the lock is poisoned
 /// - A hint that a previous operation may have panicked
-pub(crate) fn acquire_read_lock<'a, T>(registry: &'a RwLock<T>, registry_name: &str) -> Result<RwLockReadGuard<'a, T>, String> {
+pub(crate) fn acquire_read_lock<'a, T>(
+    registry: &'a RwLock<T>,
+    registry_name: &str,
+) -> Result<RwLockReadGuard<'a, T>, String> {
     registry.read().map_err(|_| {
         format!(
             "Failed to acquire {} registry read lock: lock poisoned (possible panic in previous operation)",

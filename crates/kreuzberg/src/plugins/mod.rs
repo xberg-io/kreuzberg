@@ -212,3 +212,10 @@ pub use ocr::{
 pub use processor::{PostProcessor, ProcessingStage, list_post_processors};
 pub use traits::Plugin;
 pub use validator::{Validator, clear_validators, list_validators, register_validator, unregister_validator};
+
+// Re-export registry items for backward compatibility
+pub use registry::{
+    DOCUMENT_EXTRACTOR_REGISTRY, DocumentExtractorRegistry, OCR_BACKEND_REGISTRY, OcrBackendRegistry,
+    POST_PROCESSOR_REGISTRY, PostProcessorRegistry, VALIDATOR_REGISTRY, ValidatorRegistry,
+    get_document_extractor_registry, get_ocr_backend_registry, get_post_processor_registry, get_validator_registry,
+};

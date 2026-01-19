@@ -4,6 +4,8 @@
 //! can process extraction results after initial content extraction.
 
 #[allow(unused_imports)]
+use super::{JsPluginValue, MakeSend, acquire_read_lock, acquire_write_lock};
+#[allow(unused_imports)]
 use async_trait::async_trait;
 #[allow(unused_imports)]
 use js_sys::{Promise, Reflect};
@@ -14,8 +16,6 @@ use std::sync::Arc;
 use wasm_bindgen::prelude::*;
 #[allow(unused_imports)]
 use wasm_bindgen_futures::JsFuture;
-#[allow(unused_imports)]
-use super::{acquire_write_lock, acquire_read_lock, JsPluginValue, MakeSend};
 
 /// Wrapper that makes a JavaScript PostProcessor object usable from Rust.
 ///

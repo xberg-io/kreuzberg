@@ -20,10 +20,7 @@ impl ContentBuilder {
         }
     }
 
-    pub(super) fn with_page_config(
-        capacity: usize,
-        config: Option<crate::core::config::PageConfig>,
-    ) -> Self {
+    pub(super) fn with_page_config(capacity: usize, config: Option<crate::core::config::PageConfig>) -> Self {
         Self {
             content: String::with_capacity(capacity),
             boundaries: if config.is_some() {

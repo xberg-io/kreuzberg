@@ -4,8 +4,7 @@
 
 use super::attributes::parse_jotdown_attributes;
 use crate::types::{
-    Attributes, BlockType, DjotContent, DjotImage, DjotLink, FormattedBlock, InlineElement,
-    InlineType, Metadata, Table,
+    Attributes, BlockType, DjotContent, DjotImage, DjotLink, FormattedBlock, InlineElement, InlineType, Metadata, Table,
 };
 use jotdown::{Container, Event};
 use std::collections::HashMap;
@@ -143,11 +142,7 @@ pub fn extract_tables_from_events(events: &[Event]) -> Vec<Table> {
 /// - Captions
 /// - Smart punctuation
 /// - All other djot features
-pub fn extract_complete_djot_content(
-    events: &[Event],
-    metadata: Metadata,
-    tables: Vec<Table>,
-) -> DjotContent {
+pub fn extract_complete_djot_content(events: &[Event], metadata: Metadata, tables: Vec<Table>) -> DjotContent {
     let plain_text = extract_text_from_events(events);
 
     let mut blocks = Vec::new();
@@ -338,9 +333,7 @@ pub fn extract_complete_djot_content(
                     }
                     Container::TaskListItem { checked } => {
                         let mut attrs = parsed_attrs.unwrap_or_default();
-                        attrs
-                            .key_values
-                            .insert("checked".to_string(), checked.to_string());
+                        attrs.key_values.insert("checked".to_string(), checked.to_string());
                         push_block(
                             &mut state,
                             FormattedBlock {

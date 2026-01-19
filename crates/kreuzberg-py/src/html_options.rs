@@ -196,12 +196,8 @@ fn parse_html_options(dict: &Bound<'_, PyDict>) -> PyResult<ConversionOptions> {
 /// Parse heading style string to HeadingStyle enum.
 /// Delegates to FFI layer for parsing logic.
 fn parse_heading_style(value: &str) -> PyResult<HeadingStyle> {
-    let c_value = CString::new(value).map_err(|_| {
-        PyValueError::new_err(format!(
-            "Invalid heading_style '{}'. Contains null bytes",
-            value
-        ))
-    })?;
+    let c_value = CString::new(value)
+        .map_err(|_| PyValueError::new_err(format!("Invalid heading_style '{}'. Contains null bytes", value)))?;
 
     let discriminant = unsafe { kreuzberg_ffi::kreuzberg_parse_heading_style(c_value.as_ptr()) };
 
@@ -219,12 +215,8 @@ fn parse_heading_style(value: &str) -> PyResult<HeadingStyle> {
 /// Parse list indent type string to ListIndentType enum.
 /// Delegates to FFI layer for parsing logic.
 fn parse_list_indent_type(value: &str) -> PyResult<ListIndentType> {
-    let c_value = CString::new(value).map_err(|_| {
-        PyValueError::new_err(format!(
-            "Invalid list_indent_type '{}'. Contains null bytes",
-            value
-        ))
-    })?;
+    let c_value = CString::new(value)
+        .map_err(|_| PyValueError::new_err(format!("Invalid list_indent_type '{}'. Contains null bytes", value)))?;
 
     let discriminant = unsafe { kreuzberg_ffi::kreuzberg_parse_list_indent_type(c_value.as_ptr()) };
 
@@ -241,12 +233,8 @@ fn parse_list_indent_type(value: &str) -> PyResult<ListIndentType> {
 /// Parse highlight style string to HighlightStyle enum.
 /// Delegates to FFI layer for parsing logic.
 fn parse_highlight_style(value: &str) -> PyResult<HighlightStyle> {
-    let c_value = CString::new(value).map_err(|_| {
-        PyValueError::new_err(format!(
-            "Invalid highlight_style '{}'. Contains null bytes",
-            value
-        ))
-    })?;
+    let c_value = CString::new(value)
+        .map_err(|_| PyValueError::new_err(format!("Invalid highlight_style '{}'. Contains null bytes", value)))?;
 
     let discriminant = unsafe { kreuzberg_ffi::kreuzberg_parse_highlight_style(c_value.as_ptr()) };
 
@@ -289,12 +277,8 @@ fn parse_newline_style(value: &str) -> PyResult<NewlineStyle> {
 /// Parse code block style string to CodeBlockStyle enum.
 /// Delegates to FFI layer for parsing logic.
 fn parse_code_block_style(value: &str) -> PyResult<CodeBlockStyle> {
-    let c_value = CString::new(value).map_err(|_| {
-        PyValueError::new_err(format!(
-            "Invalid code_block_style '{}'. Contains null bytes",
-            value
-        ))
-    })?;
+    let c_value = CString::new(value)
+        .map_err(|_| PyValueError::new_err(format!("Invalid code_block_style '{}'. Contains null bytes", value)))?;
 
     let discriminant = unsafe { kreuzberg_ffi::kreuzberg_parse_code_block_style(c_value.as_ptr()) };
 

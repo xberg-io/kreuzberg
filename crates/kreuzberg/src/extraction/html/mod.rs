@@ -35,11 +35,11 @@ mod types;
 pub use converter::convert_html_to_markdown;
 pub use converter::convert_html_to_markdown_with_metadata;
 pub use processor::process_html;
-pub use types::{ExtractedInlineImage, HtmlExtractionResult};
 pub use types::{
     CodeBlockStyle, HeadingStyle, HighlightStyle, ListIndentType, NewlineStyle, PreprocessingOptions,
     PreprocessingPreset, WhitespaceMode,
 };
+pub use types::{ExtractedInlineImage, HtmlExtractionResult};
 
 // Re-export from html-to-markdown-rs for convenience
 pub use html_to_markdown_rs::ConversionOptions;

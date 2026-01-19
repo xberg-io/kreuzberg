@@ -71,8 +71,7 @@ pub struct LanguageDetectionConfig {
     pub detect_multiple: bool,
 }
 
-static CONFIG_CACHE: LazyLock<DashMap<PathBuf, (SystemTime, Arc<ExtractionConfig>)>> =
-    LazyLock::new(DashMap::new);
+static CONFIG_CACHE: LazyLock<DashMap<PathBuf, (SystemTime, Arc<ExtractionConfig>)>> = LazyLock::new(DashMap::new);
 
 /// Main extraction configuration.
 ///

@@ -201,7 +201,7 @@ mod tests {
     #[test]
     fn test_embedding_config_default() {
         let config = EmbeddingConfig::default();
-        assert_eq!(config.normalize, true);
+        assert!(config.normalize);
         assert_eq!(config.batch_size, 32);
         assert!(config.cache_dir.is_none());
     }

@@ -43,14 +43,16 @@
 
 #![deny(unsafe_code)]
 
+mod commands;
+
 use anyhow::{Context, Result};
 use clap::{Parser, Subcommand};
+#[cfg(feature = "mcp")]
+use commands::mcp_command;
 #[cfg(feature = "api")]
-use kreuzberg::ServerConfig;
-use kreuzberg::{
-    ChunkingConfig, ExtractionConfig, LanguageDetectionConfig, OcrConfig, OutputFormat as ContentOutputFormat,
-    batch_extract_file_sync, detect_mime_type, extract_file_sync,
-};
+use commands::serve_command;
+use commands::{apply_extraction_overrides, batch_command, clear_command, extract_command, load_config, stats_command};
+use kreuzberg::{OutputFormat as ContentOutputFormat, detect_mime_type};
 use serde_json::json;
 use std::path::{Path, PathBuf};
 use tracing_subscriber::EnvFilter;
@@ -414,94 +416,20 @@ fn main() -> Result<()> {
             validate_chunk_params(chunk_size, chunk_overlap)?;
 
             let mut config = load_config(config_path)?;
+            apply_extraction_overrides(
+                &mut config,
+                ocr,
+                force_ocr,
+                no_cache,
+                chunk,
+                chunk_size,
+                chunk_overlap,
+                quality,
+                detect_language,
+                content_format,
+            );
 
-            if let Some(ocr_flag) = ocr {
-                if ocr_flag {
-                    config.ocr = Some(OcrConfig {
-                        backend: "tesseract".to_string(),
-                        language: "eng".to_string(),
-                        tesseract_config: None,
-                    });
-                } else {
-                    config.ocr = None;
-                }
-            }
-            if let Some(force_ocr_flag) = force_ocr {
-                config.force_ocr = force_ocr_flag;
-            }
-            if let Some(no_cache_flag) = no_cache {
-                config.use_cache = !no_cache_flag;
-            }
-            if let Some(chunk_flag) = chunk {
-                if chunk_flag {
-                    let max_chars = chunk_size.unwrap_or(1000);
-                    let max_overlap = chunk_overlap.unwrap_or(200);
-                    config.chunking = Some(ChunkingConfig {
-                        max_chars,
-                        max_overlap,
-                        embedding: None,
-                        preset: None,
-                    });
-                } else {
-                    config.chunking = None;
-                }
-            } else if let Some(ref mut chunking) = config.chunking {
-                if let Some(max_chars) = chunk_size {
-                    chunking.max_chars = max_chars;
-                }
-                if let Some(max_overlap) = chunk_overlap {
-                    chunking.max_overlap = max_overlap;
-                }
-            }
-            if let Some(quality_flag) = quality {
-                config.enable_quality_processing = quality_flag;
-            }
-            if let Some(detect_language_flag) = detect_language {
-                if detect_language_flag {
-                    config.language_detection = Some(LanguageDetectionConfig {
-                        enabled: true,
-                        min_confidence: 0.8,
-                        detect_multiple: false,
-                    });
-                } else {
-                    config.language_detection = None;
-                }
-            }
-            if let Some(content_fmt) = content_format {
-                config.output_format = content_fmt.into();
-            }
-
-            let path_str = path.to_string_lossy().to_string();
-
-            let result = extract_file_sync(&path_str, mime_type.as_deref(), &config).with_context(|| {
-                format!(
-                    "Failed to extract file '{}'. Ensure the file is readable and the format is supported.",
-                    path.display()
-                )
-            })?;
-
-            match format {
-                OutputFormat::Text => {
-                    println!("{}", result.content);
-                }
-                OutputFormat::Json => {
-                    let output = json!({
-                        "content": result.content,
-                        "mime_type": result.mime_type,
-                        "metadata": result.metadata,
-                        "tables": result.tables.iter().map(|t| json!({
-                            "cells": t.cells,
-                            "markdown": t.markdown,
-                            "page_number": t.page_number,
-                        })).collect::<Vec<_>>(),
-                    });
-                    println!(
-                        "{}",
-                        serde_json::to_string_pretty(&output)
-                            .context("Failed to serialize extraction result to JSON")?
-                    );
-                }
-            }
+            extract_command(path, config, mime_type, format)?;
         }
 
         Commands::Batch {
@@ -517,68 +445,20 @@ fn main() -> Result<()> {
             validate_batch_paths(&paths)?;
 
             let mut config = load_config(config_path)?;
+            apply_extraction_overrides(
+                &mut config,
+                ocr,
+                force_ocr,
+                no_cache,
+                None,
+                None,
+                None,
+                quality,
+                None,
+                content_format,
+            );
 
-            if let Some(ocr_flag) = ocr {
-                if ocr_flag {
-                    config.ocr = Some(OcrConfig {
-                        backend: "tesseract".to_string(),
-                        language: "eng".to_string(),
-                        tesseract_config: None,
-                    });
-                } else {
-                    config.ocr = None;
-                }
-            }
-            if let Some(force_ocr_flag) = force_ocr {
-                config.force_ocr = force_ocr_flag;
-            }
-            if let Some(no_cache_flag) = no_cache {
-                config.use_cache = !no_cache_flag;
-            }
-            if let Some(quality_flag) = quality {
-                config.enable_quality_processing = quality_flag;
-            }
-            if let Some(content_fmt) = content_format {
-                config.output_format = content_fmt.into();
-            }
-
-            let path_strs: Vec<String> = paths.iter().map(|p| p.to_string_lossy().to_string()).collect();
-
-            let results = batch_extract_file_sync(path_strs, &config)
-                .with_context(|| format!("Failed to batch extract {} documents. Check that all files are readable and formats are supported.", paths.len()))?;
-
-            match format {
-                OutputFormat::Text => {
-                    for (i, result) in results.iter().enumerate() {
-                        println!("=== Document {} ===", i + 1);
-                        println!("MIME Type: {}", result.mime_type);
-                        println!("Content:\n{}", result.content);
-                        println!();
-                    }
-                }
-                OutputFormat::Json => {
-                    let output: Vec<_> = results
-                        .iter()
-                        .map(|result| {
-                            json!({
-                                "content": result.content,
-                                "mime_type": result.mime_type,
-                                "metadata": result.metadata,
-                                "tables": result.tables.iter().map(|t| json!({
-                                    "cells": t.cells,
-                                    "markdown": t.markdown,
-                                    "page_number": t.page_number,
-                                })).collect::<Vec<_>>(),
-                            })
-                        })
-                        .collect();
-                    println!(
-                        "{}",
-                        serde_json::to_string_pretty(&output)
-                            .context("Failed to serialize batch extraction results to JSON")?
-                    );
-                }
-            }
+            batch_command(paths, config, format)?;
         }
 
         Commands::Detect { path, format } => {
@@ -638,50 +518,8 @@ fn main() -> Result<()> {
             port: cli_port,
             config: config_path,
         } => {
-            // Load extraction config
             let extraction_config = load_config(config_path.clone())?;
-
-            // Load server config from same file or defaults
-            let mut server_config = if let Some(path) = &config_path {
-                ServerConfig::from_file(path).with_context(|| {
-                    format!(
-                        "Failed to load server configuration from '{}'. \
-                         Ensure the file contains valid server settings under [server] section or at root level.",
-                        path.display()
-                    )
-                })?
-            } else {
-                ServerConfig::default()
-            };
-
-            // Apply environment variable overrides (precedence: env vars > config file)
-            server_config.apply_env_overrides()?;
-
-            // CLI args override everything (highest precedence)
-            if let Some(host) = cli_host {
-                server_config.host = host;
-            }
-            if let Some(port) = cli_port {
-                server_config.port = port;
-            }
-
-            // Log the final configuration for debugging
-            tracing::info!(
-                "Starting Kreuzberg API server on http://{}",
-                server_config.listen_addr()
-            );
-
-            let rt = tokio::runtime::Runtime::new()?;
-            rt.block_on(kreuzberg::api::serve_with_server_config(
-                extraction_config,
-                server_config.clone(),
-            ))
-            .with_context(|| {
-                format!(
-                    "Failed to start API server on {}. Ensure the port is not already in use and you have permission to bind to this address.",
-                    server_config.listen_addr()
-                )
-            })?;
+            serve_command(cli_host, cli_port, extraction_config, config_path)?;
         }
 
         #[cfg(feature = "mcp")]
@@ -693,166 +531,23 @@ fn main() -> Result<()> {
             #[cfg(feature = "mcp-http")]
             port,
             #[cfg(not(feature = "mcp-http"))]
-                host: _,
+            host,
             #[cfg(not(feature = "mcp-http"))]
-                port: _,
+            port,
         } => {
             let config = load_config(config_path)?;
-
-            tracing::debug!("Starting Kreuzberg MCP server with transport: {}", transport);
-            let rt = tokio::runtime::Runtime::new()?;
-
-            match transport.to_lowercase().as_str() {
-                "stdio" => {
-                    rt.block_on(kreuzberg::mcp::start_mcp_server_with_config(config))
-                        .map_err(|e| anyhow::anyhow!("Failed to start MCP server: {}", e))?;
-                }
-                "http" => {
-                    #[cfg(not(feature = "mcp-http"))]
-                    {
-                        anyhow::bail!(
-                            "HTTP transport requires 'mcp-http' feature. \
-                             Rebuild with: cargo build --features mcp-http"
-                        );
-                    }
-
-                    #[cfg(feature = "mcp-http")]
-                    {
-                        tracing::debug!("Starting MCP server on http://{}:{}", host, port);
-                        rt.block_on(kreuzberg::mcp::start_mcp_server_http_with_config(&host, port, config))
-                            .map_err(|e| anyhow::anyhow!("Failed to start MCP server on {}:{}: {}", host, port, e))?;
-                    }
-                }
-                other => {
-                    anyhow::bail!("Unknown transport '{}'. Use 'stdio' or 'http'", other);
-                }
-            }
+            mcp_command(config, transport, host, port)?;
         }
 
-        Commands::Cache { command } => {
-            use kreuzberg::cache;
-
-            // OSError/RuntimeError must bubble up - system errors need user reports ~keep
-            let default_cache_dir = std::env::current_dir()
-                .context("Failed to get current directory")?
-                .join(".kreuzberg");
-
-            match command {
-                CacheCommands::Stats { cache_dir, format } => {
-                    let cache_path = cache_dir.unwrap_or(default_cache_dir);
-                    let cache_dir_str = cache_path.to_string_lossy();
-
-                    let stats = cache::get_cache_metadata(&cache_dir_str)
-                        .with_context(|| format!("Failed to get cache statistics from directory '{}'. Ensure the directory exists and is readable.", cache_dir_str))?;
-
-                    match format {
-                        OutputFormat::Text => {
-                            println!("Cache Statistics");
-                            println!("================");
-                            println!("Directory: {}", cache_dir_str);
-                            println!("Total files: {}", stats.total_files);
-                            println!("Total size: {:.2} MB", stats.total_size_mb);
-                            println!("Available space: {:.2} MB", stats.available_space_mb);
-                            println!("Oldest file age: {:.2} days", stats.oldest_file_age_days);
-                            println!("Newest file age: {:.2} days", stats.newest_file_age_days);
-                        }
-                        OutputFormat::Json => {
-                            let output = json!({
-                                "directory": cache_dir_str,
-                                "total_files": stats.total_files,
-                                "total_size_mb": stats.total_size_mb,
-                                "available_space_mb": stats.available_space_mb,
-                                "oldest_file_age_days": stats.oldest_file_age_days,
-                                "newest_file_age_days": stats.newest_file_age_days,
-                            });
-                            println!(
-                                "{}",
-                                serde_json::to_string_pretty(&output)
-                                    .context("Failed to serialize cache statistics to JSON")?
-                            );
-                        }
-                    }
-                }
-
-                CacheCommands::Clear { cache_dir, format } => {
-                    let cache_path = cache_dir.unwrap_or(default_cache_dir);
-                    let cache_dir_str = cache_path.to_string_lossy();
-
-                    let (removed_files, freed_mb) =
-                        cache::clear_cache_directory(&cache_dir_str).with_context(|| {
-                            format!(
-                                "Failed to clear cache directory '{}'. Ensure you have write permissions.",
-                                cache_dir_str
-                            )
-                        })?;
-
-                    match format {
-                        OutputFormat::Text => {
-                            println!("Cache cleared successfully");
-                            println!("Directory: {}", cache_dir_str);
-                            println!("Removed files: {}", removed_files);
-                            println!("Freed space: {:.2} MB", freed_mb);
-                        }
-                        OutputFormat::Json => {
-                            let output = json!({
-                                "directory": cache_dir_str,
-                                "removed_files": removed_files,
-                                "freed_mb": freed_mb,
-                            });
-                            println!(
-                                "{}",
-                                serde_json::to_string_pretty(&output)
-                                    .context("Failed to serialize cache clear results to JSON")?
-                            );
-                        }
-                    }
-                }
+        Commands::Cache { command } => match command {
+            CacheCommands::Stats { cache_dir, format } => {
+                stats_command(cache_dir, format)?;
             }
-        }
+            CacheCommands::Clear { cache_dir, format } => {
+                clear_command(cache_dir, format)?;
+            }
+        },
     }
 
     Ok(())
-}
-
-/// Loads extraction configuration from a file or discovers it automatically.
-///
-/// This function implements the CLI's configuration hierarchy:
-/// 1. Explicit config file (if `--config` flag provided)
-/// 2. Auto-discovered config (searches `kreuzberg.{toml,yaml,json}` in current and parent directories)
-/// 3. Default configuration (if no config file found)
-///
-/// # Configuration File Formats
-///
-/// Supports three formats, determined by file extension:
-/// - `.toml`: TOML format (recommended for humans)
-/// - `.yaml`: YAML format
-/// - `.json`: JSON format
-///
-/// # Errors
-///
-/// Returns an error if:
-/// - Explicit config file has unsupported extension (must be .toml, .yaml, or .json)
-/// - Config file cannot be read or parsed
-/// - Config file contains invalid extraction settings
-fn load_config(config_path: Option<PathBuf>) -> Result<ExtractionConfig> {
-    if let Some(path) = config_path {
-        let path_str = path.to_string_lossy();
-        let path_lower = path_str.to_lowercase();
-        let config = if path_lower.ends_with(".toml") {
-            ExtractionConfig::from_toml_file(&path)
-        } else if path_lower.ends_with(".yaml") {
-            ExtractionConfig::from_yaml_file(&path)
-        } else if path_lower.ends_with(".json") {
-            ExtractionConfig::from_json_file(&path)
-        } else {
-            anyhow::bail!("Config file must have .toml, .yaml, or .json extension (case-insensitive)");
-        };
-        config.with_context(|| format!("Failed to load configuration from '{}'. Ensure the file exists, is readable, and contains valid configuration.", path.display()))
-    } else {
-        match ExtractionConfig::discover() {
-            Ok(Some(config)) => Ok(config),
-            Ok(None) => Ok(ExtractionConfig::default()),
-            Err(e) => Err(e).context("Failed to auto-discover configuration file. Searched for kreuzberg.{toml,yaml,json} in current and parent directories. Use --config to specify an explicit path."),
-        }
-    }
 }
