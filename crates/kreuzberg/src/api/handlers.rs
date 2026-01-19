@@ -92,11 +92,13 @@ pub async fn extract_handler(
                     .map_err(|e| ApiError::validation(crate::error::KreuzbergError::validation(e.to_string())))?;
 
                 config.output_format = match format_str.to_lowercase().as_str() {
-                    "unified" => crate::types::OutputFormat::Unified,
-                    "element_based" | "elements" => crate::types::OutputFormat::ElementBased,
+                    "plain" => crate::core::config::OutputFormat::Plain,
+                    "markdown" => crate::core::config::OutputFormat::Markdown,
+                    "djot" => crate::core::config::OutputFormat::Djot,
+                    "html" => crate::core::config::OutputFormat::Html,
                     _ => {
                         return Err(ApiError::validation(crate::error::KreuzbergError::validation(format!(
-                            "Invalid output_format: '{}'. Valid values: 'unified', 'element_based', 'elements'",
+                            "Invalid output_format: '{}'. Valid values: 'plain', 'markdown', 'djot', 'html'",
                             format_str
                         ))));
                     }

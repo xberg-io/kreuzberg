@@ -25,6 +25,14 @@ typedef struct ExtractionConfig ExtractionConfig;
 typedef struct ExtractionResult ExtractionResult;
 
 
+/**
+ * Opaque builder struct for constructing ExtractionConfig.
+ *
+ * Use kreuzberg_config_builder_new() to create, set fields with setters,
+ * then finalize with kreuzberg_config_builder_build().
+ */
+typedef struct ConfigBuilder ConfigBuilder;
+
 typedef struct Option_ErrorCallback Option_ErrorCallback;
 
 /**
@@ -951,6 +959,170 @@ char *kreuzberg_list_embedding_presets(void);
 char *kreuzberg_get_embedding_preset(const char *name);
 
 /**
+ * Create a new config builder.
+ *
+ * Returns an opaque pointer to ConfigBuilder. Must be freed with
+ * kreuzberg_config_builder_free() or consumed by kreuzberg_config_builder_build().
+ *
+ * # Safety
+ *
+ * The returned pointer must be freed with kreuzberg_config_builder_free()
+ * or passed to kreuzberg_config_builder_build().
+ *
+ * # Example (C)
+ *
+ * ```c
+ * ConfigBuilder* builder = kreuzberg_config_builder_new();
+ * kreuzberg_config_builder_set_use_cache(builder, 1);
+ * ExtractionConfig* config = kreuzberg_config_builder_build(builder);
+ * // builder is now consumed, don't call kreuzberg_config_builder_free
+ * kreuzberg_config_free(config);
+ * ```
+ */
+struct ConfigBuilder *kreuzberg_config_builder_new(void);
+
+/**
+ * Set the use_cache field.
+ *
+ * # Arguments
+ *
+ * * `builder` - Non-null pointer to ConfigBuilder
+ * * `use_cache` - 1 for true, 0 for false
+ *
+ * # Returns
+ *
+ * 0 on success, -1 on error (NULL builder)
+ */
+int32_t kreuzberg_config_builder_set_use_cache(struct ConfigBuilder *builder, int32_t use_cache);
+
+/**
+ * Set OCR configuration from JSON.
+ *
+ * # Arguments
+ *
+ * * `builder` - Non-null pointer to ConfigBuilder
+ * * `ocr_json` - JSON string like `{"backend": "tesseract", "languages": ["en"]}`
+ *
+ * # Returns
+ *
+ * 0 on success, -1 on error (check kreuzberg_last_error)
+ */
+int32_t kreuzberg_config_builder_set_ocr(struct ConfigBuilder *builder, const char *ocr_json);
+
+/**
+ * Set PDF configuration from JSON.
+ *
+ * # Arguments
+ *
+ * * `builder` - Non-null pointer to ConfigBuilder
+ * * `pdf_json` - JSON string for PDF config
+ *
+ * # Returns
+ *
+ * 0 on success, -1 on error
+ */
+int32_t kreuzberg_config_builder_set_pdf(struct ConfigBuilder *builder, const char *pdf_json);
+
+/**
+ * Set chunking configuration from JSON.
+ *
+ * # Arguments
+ *
+ * * `builder` - Non-null pointer to ConfigBuilder
+ * * `chunking_json` - JSON string for chunking config
+ *
+ * # Returns
+ *
+ * 0 on success, -1 on error
+ */
+int32_t kreuzberg_config_builder_set_chunking(struct ConfigBuilder *builder,
+                                              const char *chunking_json);
+
+/**
+ * Set image extraction configuration from JSON.
+ *
+ * # Arguments
+ *
+ * * `builder` - Non-null pointer to ConfigBuilder
+ * * `image_json` - JSON string for image extraction config
+ *
+ * # Returns
+ *
+ * 0 on success, -1 on error
+ */
+int32_t kreuzberg_config_builder_set_image_extraction(struct ConfigBuilder *builder,
+                                                      const char *image_json);
+
+/**
+ * Set post-processor configuration from JSON.
+ *
+ * # Arguments
+ *
+ * * `builder` - Non-null pointer to ConfigBuilder
+ * * `pp_json` - JSON string for post-processor config
+ *
+ * # Returns
+ *
+ * 0 on success, -1 on error
+ */
+int32_t kreuzberg_config_builder_set_post_processor(struct ConfigBuilder *builder,
+                                                    const char *pp_json);
+
+/**
+ * Set language detection configuration from JSON.
+ *
+ * # Arguments
+ *
+ * * `builder` - Non-null pointer to ConfigBuilder
+ * * `ld_json` - JSON string for language detection config
+ *
+ * # Returns
+ *
+ * 0 on success, -1 on error
+ */
+int32_t kreuzberg_config_builder_set_language_detection(struct ConfigBuilder *builder,
+                                                        const char *ld_json);
+
+/**
+ * Build the final ExtractionConfig and consume the builder.
+ *
+ * After calling this function, the builder pointer is invalid and must not be used.
+ * The returned ExtractionConfig must be freed with kreuzberg_config_free().
+ *
+ * # Arguments
+ *
+ * * `builder` - Non-null pointer to ConfigBuilder (will be consumed)
+ *
+ * # Returns
+ *
+ * Pointer to ExtractionConfig on success, NULL on error
+ *
+ * # Safety
+ *
+ * - `builder` is consumed and must not be used after this call
+ * - Do NOT call kreuzberg_config_builder_free() after this function
+ * - The returned ExtractionConfig must be freed with kreuzberg_config_free()
+ */
+ExtractionConfig *kreuzberg_config_builder_build(struct ConfigBuilder *builder);
+
+/**
+ * Free a ConfigBuilder without building.
+ *
+ * Use this to discard a builder without creating a config.
+ * Do NOT call this after kreuzberg_config_builder_build() (builder is already consumed).
+ *
+ * # Arguments
+ *
+ * * `builder` - Pointer to ConfigBuilder, can be NULL (no-op)
+ *
+ * # Safety
+ *
+ * - `builder` can be NULL (no-op)
+ * - Do NOT call this after kreuzberg_config_builder_build()
+ */
+void kreuzberg_config_builder_free(struct ConfigBuilder *builder);
+
+/**
  * Returns the validation error code (0).
  *
  * # C Signature
@@ -1369,6 +1541,99 @@ struct CBatchResult *kreuzberg_batch_extract_files_sync(const char *const *file_
 struct CBatchResult *kreuzberg_batch_extract_bytes_sync(const struct CBytesWithMime *items,
                                                         uintptr_t count,
                                                         const char *config_json);
+
+/**
+ * Parse HeadingStyle from string to discriminant.
+ *
+ * Valid values: "atx", "underlined", "atx_closed" | "atx-closed"
+ * Returns: 0 = Atx, 1 = Underlined, 2 = AtxClosed, -1 = Invalid
+ */
+int32_t kreuzberg_parse_heading_style(const char *value);
+
+/**
+ * Convert HeadingStyle discriminant to string.
+ *
+ * Returns: pointer to static string, or NULL for invalid discriminant
+ */
+const char *kreuzberg_heading_style_to_string(int32_t discriminant);
+
+/**
+ * Parse CodeBlockStyle from string to discriminant.
+ *
+ * Valid values: "indented", "backticks", "tildes"
+ * Returns: 0 = Indented, 1 = Backticks, 2 = Tildes, -1 = Invalid
+ */
+int32_t kreuzberg_parse_code_block_style(const char *value);
+
+/**
+ * Convert CodeBlockStyle discriminant to string.
+ */
+const char *kreuzberg_code_block_style_to_string(int32_t discriminant);
+
+/**
+ * Parse HighlightStyle from string to discriminant.
+ *
+ * Valid values: "double_equal" | "==" | "double-equal", "html", "bold", "none"
+ * Returns: 0 = DoubleEqual, 1 = Html, 2 = Bold, 3 = None, -1 = Invalid
+ */
+int32_t kreuzberg_parse_highlight_style(const char *value);
+
+/**
+ * Convert HighlightStyle discriminant to string.
+ */
+const char *kreuzberg_highlight_style_to_string(int32_t discriminant);
+
+/**
+ * Parse ListIndentType from string to discriminant.
+ *
+ * Valid values: "spaces", "tabs"
+ * Returns: 0 = Spaces, 1 = Tabs, -1 = Invalid
+ */
+int32_t kreuzberg_parse_list_indent_type(const char *value);
+
+/**
+ * Convert ListIndentType discriminant to string.
+ */
+const char *kreuzberg_list_indent_type_to_string(int32_t discriminant);
+
+/**
+ * Parse WhitespaceMode from string to discriminant.
+ *
+ * Valid values: "default", "preserve", "preserve_inner", "collapse"
+ * Returns: 0 = Default, 1 = Preserve, 2 = PreserveInner, 3 = Collapse, -1 = Invalid
+ */
+int32_t kreuzberg_parse_whitespace_mode(const char *value);
+
+/**
+ * Convert WhitespaceMode discriminant to string.
+ */
+const char *kreuzberg_whitespace_mode_to_string(int32_t discriminant);
+
+/**
+ * Parse NewlineStyle from string to discriminant.
+ *
+ * Valid values: "default", "spaces", "backslash"
+ * Returns: 0 = Default, 1 = Spaces, 2 = Backslash, -1 = Invalid
+ */
+int32_t kreuzberg_parse_newline_style(const char *value);
+
+/**
+ * Convert NewlineStyle discriminant to string.
+ */
+const char *kreuzberg_newline_style_to_string(int32_t discriminant);
+
+/**
+ * Parse PreprocessingPreset from string to discriminant.
+ *
+ * Valid values: "none", "conservative", "aggressive"
+ * Returns: 0 = None, 1 = Conservative, 2 = Aggressive, -1 = Invalid
+ */
+int32_t kreuzberg_parse_preprocessing_preset(const char *value);
+
+/**
+ * Convert PreprocessingPreset discriminant to string.
+ */
+const char *kreuzberg_preprocessing_preset_to_string(int32_t discriminant);
 
 /**
  * Free a batch result returned by batch extraction functions.

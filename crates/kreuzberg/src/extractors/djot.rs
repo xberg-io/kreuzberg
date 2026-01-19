@@ -586,7 +586,7 @@ impl DjotExtractor {
                         Container::Link(url, _link_type) => {
                             state.inline_type_stack.push(InlineType::Link);
                             links.push(DjotLink {
-                                href: url.to_string(),
+                                url: url.to_string(),
                                 text: String::new(),
                                 title: None,
                                 attributes: parsed_attrs.clone(),
@@ -1119,6 +1119,7 @@ impl DocumentExtractor for DjotExtractor {
             images: None,
             pages: None,
             djot_content: Some(djot_content),
+            elements: None,
         })
     }
 
@@ -2081,6 +2082,7 @@ mod tests {
             chunks: None,
             images: None,
             pages: None,
+            elements: None,
             djot_content: Some(DjotContent {
                 plain_text: "Hello World".to_string(),
                 blocks: vec![FormattedBlock {
@@ -2123,6 +2125,7 @@ mod tests {
             chunks: None,
             images: None,
             pages: None,
+            elements: None,
             djot_content: None,
         };
 

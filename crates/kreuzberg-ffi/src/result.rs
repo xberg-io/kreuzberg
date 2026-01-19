@@ -399,6 +399,7 @@ mod tests {
             ]),
             images: None,
             pages: None,
+            djot_content: None,
             elements: None,
         }
     }

@@ -675,7 +675,8 @@ fn dict_to_extraction_result(_py: Python<'_>, dict: &Bound<'_, PyAny>) -> Result
         chunks: None,
         images: None,
         pages: None,
-            elements: None,
+        elements: None,
+        djot_content: None,
     })
 }
 

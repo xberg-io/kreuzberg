@@ -694,6 +694,7 @@ mod tests {
             detected_languages: None,
             chunks: None,
             images: None,
+            djot_content: None,
             elements: None,
         };
         let config = ExtractionConfig::default();
@@ -1385,6 +1386,7 @@ Natural language processing enables computers to understand human language.
             images: None,
             pages: None,
             djot_content: None,
+            elements: None,
         };
 
         apply_output_format(&mut result, OutputFormat::Plain);
@@ -1406,6 +1408,7 @@ Natural language processing enables computers to understand human language.
             chunks: None,
             images: None,
             pages: None,
+            elements: None,
             djot_content: Some(DjotContent {
                 plain_text: "Hello World".to_string(),
                 blocks: vec![FormattedBlock {
@@ -1449,6 +1452,7 @@ Natural language processing enables computers to understand human language.
             images: None,
             pages: None,
             djot_content: None,
+            elements: None,
         };
 
         apply_output_format(&mut result, OutputFormat::Djot);
@@ -1470,6 +1474,7 @@ Natural language processing enables computers to understand human language.
             images: None,
             pages: None,
             djot_content: None,
+            elements: None,
         };
 
         apply_output_format(&mut result, OutputFormat::Html);
@@ -1492,6 +1497,7 @@ Natural language processing enables computers to understand human language.
             images: None,
             pages: None,
             djot_content: None,
+            elements: None,
         };
 
         apply_output_format(&mut result, OutputFormat::Html);
@@ -1514,6 +1520,7 @@ Natural language processing enables computers to understand human language.
             images: None,
             pages: None,
             djot_content: None,
+            elements: None,
         };
 
         apply_output_format(&mut result, OutputFormat::Markdown);
@@ -1534,6 +1541,7 @@ Natural language processing enables computers to understand human language.
             images: None,
             pages: None,
             djot_content: None,
+            elements: None,
         };
 
         let config = crate::core::config::ExtractionConfig {
@@ -1558,6 +1566,7 @@ Natural language processing enables computers to understand human language.
             chunks: None,
             images: None,
             pages: None,
+            elements: None,
             djot_content: Some(DjotContent {
                 plain_text: "test content".to_string(),
                 blocks: vec![FormattedBlock {
@@ -1605,6 +1614,7 @@ Natural language processing enables computers to understand human language.
             images: None,
             pages: None,
             djot_content: None,
+            elements: None,
         };
 
         let config = crate::core::config::ExtractionConfig {
@@ -1633,6 +1643,7 @@ Natural language processing enables computers to understand human language.
             chunks: None,
             images: None,
             pages: None,
+            elements: None,
             djot_content: Some(DjotContent {
                 plain_text: "test".to_string(),
                 blocks: vec![],
@@ -1677,6 +1688,7 @@ Natural language processing enables computers to understand human language.
             images: None,
             pages: None,
             djot_content: None,
+            elements: None,
         };
 
         apply_output_format(&mut result, OutputFormat::Djot);
@@ -1709,6 +1721,7 @@ Natural language processing enables computers to understand human language.
             images: None,
             pages: None,
             djot_content: None,
+            elements: None,
         };
 
         apply_output_format(&mut result, OutputFormat::Html);
@@ -1755,6 +1768,7 @@ Natural language processing enables computers to understand human language.
             chunks: None,
             images: None,
             pages: None,
+            elements: None,
             djot_content: Some(djot_content),
         };
 

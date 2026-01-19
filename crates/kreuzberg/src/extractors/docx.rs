@@ -313,6 +313,7 @@ impl DocumentExtractor for DocxExtractor {
             detected_languages: None,
             chunks: None,
             images: Some(vec![]),
+            djot_content: None,
             elements: None,
         })
     }

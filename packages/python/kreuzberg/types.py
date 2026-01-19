@@ -521,6 +521,96 @@ class Table(TypedDict):
     page_number: int
 
 
+class DjotContent(TypedDict, total=False):
+    """Structured Djot document representation.
+
+    Attributes:
+        plain_text: Plain text representation for backward compatibility
+        blocks: Structured block-level content (headings, paragraphs, lists, etc.)
+        metadata: Metadata from YAML frontmatter
+        tables: Extracted tables as structured data
+        images: Extracted images with metadata
+        links: Extracted links with URLs and titles
+        footnotes: Footnote definitions
+        attributes: Attributes mapped by element identifier
+    """
+
+    plain_text: str
+    blocks: list[FormattedBlock]
+    metadata: Metadata
+    tables: list[Table]
+    images: list[DjotImage]
+    links: list[DjotLink]
+    footnotes: list[Footnote]
+    attributes: dict[str, Attributes]
+
+
+class FormattedBlock(TypedDict, total=False):
+    """Block-level element in a Djot document.
+
+    Attributes:
+        block_type: Type of block element
+        level: Heading level (1-6) or nesting level for lists
+        content: Text content for inline elements
+        children: Child blocks for list items and containers
+        attributes: HTML/CSS attributes (id, class, etc.)
+    """
+
+    block_type: str
+    level: int | None
+    content: str | None
+    children: list[FormattedBlock] | None
+    attributes: Attributes | None
+
+
+class DjotImage(TypedDict, total=False):
+    """Image with metadata in Djot document.
+
+    Attributes:
+        url: Image URL or reference
+        alt: Alternative text
+        title: Image title/caption
+        attributes: Image attributes
+    """
+
+    url: str
+    alt: str | None
+    title: str | None
+    attributes: Attributes | None
+
+
+class DjotLink(TypedDict, total=False):
+    """Link in Djot document.
+
+    Attributes:
+        url: Link URL
+        text: Link text
+        title: Link title
+        link_type: Link type (internal, external, email, phone, footnote)
+    """
+
+    url: str
+    text: str
+    title: str | None
+    link_type: str | None
+
+
+class Footnote(TypedDict, total=False):
+    """Footnote definition.
+
+    Attributes:
+        label: Footnote identifier
+        content: Footnote content
+    """
+
+    label: str
+    content: str
+
+
+Attributes = dict[str, str | int | bool | list[str] | None]
+"""HTML/CSS attributes for an element."""
+
+
 class ExtractionResult(TypedDict):
     """Extraction result returned by all extraction functions.
 
@@ -534,6 +624,7 @@ class ExtractionResult(TypedDict):
         images: Optional list of extracted images (with nested OCR results)
         pages: Optional list of per-page content when page extraction is enabled
         elements: Optional list of semantic elements when output_format='element_based'
+        djot_content: Optional structured Djot content when output_format='djot'
     """
 
     content: str
@@ -545,13 +636,18 @@ class ExtractionResult(TypedDict):
     images: list[ExtractedImage] | None
     pages: list[PageContent] | None
     elements: list[Element] | None
+    djot_content: DjotContent | None
 
 
 __all__ = [
     "ArchiveMetadata",
+    "Attributes",
     "BoundingBox",
     "Chunk",
     "ChunkMetadata",
+    "DjotContent",
+    "DjotImage",
+    "DjotLink",
     "Element",
     "ElementMetadata",
     "ElementType",
@@ -560,6 +656,8 @@ __all__ = [
     "ExcelMetadata",
     "ExtractedImage",
     "ExtractionResult",
+    "Footnote",
+    "FormattedBlock",
     "HeaderMetadata",
     "HtmlImageMetadata",
     "HtmlMetadata",

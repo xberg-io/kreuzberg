@@ -250,7 +250,56 @@ module Kreuzberg
     tables: Array[table_hash]?,
     detected_languages: Array[String]?,
     chunks: Array[chunk_hash]?,
-    images: Array[image_hash]?
+    images: Array[image_hash]?,
+    elements: Array[element_hash]?,
+    djot_content: djot_content_hash?
+  }
+
+  type djot_content_hash = {
+    plain_text: String,
+    blocks: Array[formatted_block_hash],
+    metadata_json: String,
+    tables: Array[table_hash],
+    images: Array[djot_image_hash],
+    links: Array[djot_link_hash],
+    footnotes: Array[footnote_hash],
+    attributes: Hash[String, attributes_hash]?
+  }
+
+  type formatted_block_hash = {
+    block_type: String,
+    level: Integer?,
+    content: String?,
+    children: Array[formatted_block_hash]?,
+    attributes: attributes_hash?
+  }
+
+  type djot_image_hash = {
+    url: String,
+    alt: String?,
+    title: String?,
+    attributes: attributes_hash?
+  }
+
+  type djot_link_hash = {
+    url: String,
+    text: String,
+    title: String?,
+    link_type: String?
+  }
+
+  type footnote_hash = {
+    label: String,
+    content: String
+  }
+
+  type attributes_hash = Hash[String, String | Integer | bool | Array[String] | nil]
+
+  type element_hash = {
+    element_id: String,
+    element_type: String,
+    text: String,
+    metadata: Hash[String, untyped]?
   }
 
   type table_hash = {
@@ -359,6 +408,60 @@ module Kreuzberg
       def to_h: () -> image_hash
     end
 
+    # Structured Djot document representation
+    class DjotContent
+      attr_reader plain_text: String
+      attr_reader blocks: Array[DjotContent::FormattedBlock]
+      attr_reader metadata: Hash[untyped, untyped]
+      attr_reader tables: Array[Table]
+      attr_reader images: Array[DjotContent::DjotImage]
+      attr_reader links: Array[DjotContent::DjotLink]
+      attr_reader footnotes: Array[DjotContent::Footnote]
+      attr_reader attributes: Hash[String, untyped]?
+
+      def initialize: (djot_content_hash hash) -> void
+      def to_h: () -> djot_content_hash
+
+      class FormattedBlock
+        attr_reader block_type: String
+        attr_reader level: Integer?
+        attr_reader content: String?
+        attr_reader children: Array[FormattedBlock]?
+        attr_reader attributes: Hash[String, untyped]?
+
+        def initialize: (formatted_block_hash hash) -> void
+        def to_h: () -> formatted_block_hash
+      end
+
+      class DjotImage
+        attr_reader url: String
+        attr_reader alt: String?
+        attr_reader title: String?
+        attr_reader attributes: Hash[String, untyped]?
+
+        def initialize: (djot_image_hash hash) -> void
+        def to_h: () -> djot_image_hash
+      end
+
+      class DjotLink
+        attr_reader url: String
+        attr_reader text: String
+        attr_reader title: String?
+        attr_reader link_type: String?
+
+        def initialize: (djot_link_hash hash) -> void
+        def to_h: () -> djot_link_hash
+      end
+
+      class Footnote
+        attr_reader label: String
+        attr_reader content: String
+
+        def initialize: (label: String, content: String) -> void
+        def to_h: () -> footnote_hash
+      end
+    end
+
     attr_reader content: String
     attr_reader mime_type: String
     attr_reader metadata: Hash[untyped, untyped]
@@ -367,6 +470,7 @@ module Kreuzberg
     attr_reader detected_languages: Array[String]?
     attr_reader chunks: Array[Chunk]?
     attr_reader images: Array[Image]?
+    attr_reader djot_content: DjotContent?
 
     def initialize: (extraction_result_hash hash) -> void
     def to_h: () -> Hash[Symbol, untyped]

@@ -180,6 +180,7 @@ impl DocumentExtractor for PptxExtractor {
             detected_languages: None,
             chunks: None,
             images,
+            djot_content: None,
             elements: None,
         })
     }
@@ -244,6 +245,7 @@ impl DocumentExtractor for PptxExtractor {
             detected_languages: None,
             chunks: None,
             images,
+            djot_content: None,
             elements: None,
         })
     }

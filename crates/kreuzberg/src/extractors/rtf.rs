@@ -774,6 +774,7 @@ impl DocumentExtractor for RtfExtractor {
             detected_languages: None,
             chunks: None,
             images: None,
+            djot_content: None,
             elements: None,
         })
     }

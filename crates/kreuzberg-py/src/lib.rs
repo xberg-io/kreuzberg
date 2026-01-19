@@ -17,9 +17,13 @@ use pyo3::prelude::*;
 use pyo3_async_runtimes::TaskLocals;
 
 mod config;
+mod conversion;
 mod core;
 mod error;
 mod ffi;
+mod helpers;
+mod html_options;
+mod keywords;
 mod plugins;
 mod types;
 mod validation;
@@ -74,10 +78,10 @@ fn _internal_bindings(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<config::ImagePreprocessingConfig>()?;
     m.add_class::<config::HierarchyConfig>()?;
 
-    m.add_class::<config::YakeParams>()?;
-    m.add_class::<config::RakeParams>()?;
-    m.add_class::<config::KeywordAlgorithm>()?;
-    m.add_class::<config::KeywordConfig>()?;
+    m.add_class::<keywords::YakeParams>()?;
+    m.add_class::<keywords::RakeParams>()?;
+    m.add_class::<keywords::KeywordAlgorithm>()?;
+    m.add_class::<keywords::KeywordConfig>()?;
 
     m.add_class::<types::ExtractionResult>()?;
     m.add_class::<types::ExtractedTable>()?;
@@ -135,11 +139,11 @@ fn _internal_bindings(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(validation::get_valid_ocr_backends, m)?)?;
     m.add_function(wrap_pyfunction!(validation::get_valid_token_reduction_levels, m)?)?;
 
-    m.add_function(wrap_pyfunction!(config::config_to_json, m)?)?;
-    m.add_function(wrap_pyfunction!(config::config_get_field, m)?)?;
-    m.add_function(wrap_pyfunction!(config::config_merge, m)?)?;
-    m.add_function(wrap_pyfunction!(config::_discover_extraction_config_impl, m)?)?;
-    m.add_function(wrap_pyfunction!(config::_load_extraction_config_from_file_impl, m)?)?;
+    m.add_function(wrap_pyfunction!(helpers::config_to_json, m)?)?;
+    m.add_function(wrap_pyfunction!(helpers::config_get_field, m)?)?;
+    m.add_function(wrap_pyfunction!(helpers::config_merge, m)?)?;
+    m.add_function(wrap_pyfunction!(helpers::_discover_extraction_config_impl, m)?)?;
+    m.add_function(wrap_pyfunction!(helpers::_load_extraction_config_from_file_impl, m)?)?;
 
     m.add_function(wrap_pyfunction!(ffi::get_error_details, m)?)?;
     m.add_function(wrap_pyfunction!(ffi::classify_error, m)?)?;

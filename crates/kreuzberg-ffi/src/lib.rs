@@ -5,9 +5,11 @@
 
 mod batch_streaming;
 mod config;
+mod config_builder;
 mod error;
 mod extraction;
 mod helpers;
+mod html_options;
 mod memory;
 mod mime;
 mod panic_shield;
@@ -28,6 +30,13 @@ pub use config::{
     kreuzberg_config_get_field, kreuzberg_config_is_valid, kreuzberg_config_merge, kreuzberg_config_to_json,
     kreuzberg_get_embedding_preset, kreuzberg_list_embedding_presets, kreuzberg_load_extraction_config_from_file,
 };
+pub use config_builder::{
+    kreuzberg_config_builder_build, kreuzberg_config_builder_free, kreuzberg_config_builder_new,
+    kreuzberg_config_builder_set_chunking, kreuzberg_config_builder_set_image_extraction,
+    kreuzberg_config_builder_set_language_detection, kreuzberg_config_builder_set_ocr,
+    kreuzberg_config_builder_set_pdf, kreuzberg_config_builder_set_post_processor,
+    kreuzberg_config_builder_set_use_cache,
+};
 pub use error::ErrorCode as KreuzbergErrorCode;
 pub use error::{
     CErrorDetails, kreuzberg_classify_error, kreuzberg_error_code_count, kreuzberg_error_code_description,
@@ -40,6 +49,13 @@ pub use extraction::{
     kreuzberg_extract_bytes_sync_with_config, kreuzberg_extract_file_sync, kreuzberg_extract_file_sync_with_config,
 };
 pub use helpers::*;
+pub use html_options::{
+    kreuzberg_code_block_style_to_string, kreuzberg_heading_style_to_string, kreuzberg_highlight_style_to_string,
+    kreuzberg_list_indent_type_to_string, kreuzberg_newline_style_to_string, kreuzberg_parse_code_block_style,
+    kreuzberg_parse_heading_style, kreuzberg_parse_highlight_style, kreuzberg_parse_list_indent_type,
+    kreuzberg_parse_newline_style, kreuzberg_parse_preprocessing_preset, kreuzberg_parse_whitespace_mode,
+    kreuzberg_preprocessing_preset_to_string, kreuzberg_whitespace_mode_to_string,
+};
 pub use memory::{kreuzberg_clone_string, kreuzberg_free_batch_result, kreuzberg_free_result, kreuzberg_free_string};
 pub use mime::{
     kreuzberg_detect_mime_type, kreuzberg_detect_mime_type_from_bytes, kreuzberg_detect_mime_type_from_path,

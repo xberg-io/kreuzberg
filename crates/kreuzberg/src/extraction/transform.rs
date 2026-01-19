@@ -640,6 +640,7 @@ mod tests {
             detected_languages: None,
             chunks: None,
             images: None,
+            djot_content: None,
             pages: Some(vec![
                 PageContent {
                     page_number: 1,
@@ -750,6 +751,7 @@ mod tests {
             detected_languages: None,
             chunks: None,
             images: None,
+            djot_content: None,
             pages: Some(vec![PageContent {
                 page_number: 1,
                 content: "Some text".to_string(),
@@ -796,6 +798,7 @@ mod tests {
             detected_languages: None,
             chunks: None,
             images: None,
+            djot_content: None,
             pages: None,
             elements: None,
         };
@@ -827,6 +830,7 @@ mod tests {
             detected_languages: None,
             chunks: None,
             images: None,
+            djot_content: None,
             pages: None,
             elements: None,
         };

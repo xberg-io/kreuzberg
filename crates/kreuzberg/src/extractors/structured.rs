@@ -87,6 +87,7 @@ impl DocumentExtractor for StructuredExtractor {
             chunks: None,
             images: None,
             elements: None,
+            djot_content: None,
         })
     }
 

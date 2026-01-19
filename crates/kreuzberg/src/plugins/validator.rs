@@ -755,6 +755,7 @@ mod tests {
             detected_languages: None,
             chunks: None,
             images: None,
+            djot_content: None,
             elements: None,
         };
 

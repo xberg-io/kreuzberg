@@ -19,6 +19,7 @@ namespace Kreuzberg\Types;
  * @property-read array<mixed, mixed>|null $embeddings Generated embeddings if enabled
  * @property-read array<mixed, mixed>|null $tesseract Tesseract OCR configuration results if enabled
  * @property-read array<Element>|null $elements Semantic elements when output_format='element_based'
+ * @property-read DjotContent|null $djotContent Structured Djot content when output_format='djot'
  */
 readonly class ExtractionResult
 {
@@ -32,6 +33,7 @@ readonly class ExtractionResult
      * @param array<Keyword>|null $keywords
      * @param array<mixed, mixed>|null $tesseract
      * @param array<Element>|null $elements
+     * @param DjotContent|null $djotContent
      */
     public function __construct(
         public string $content,
@@ -46,6 +48,7 @@ readonly class ExtractionResult
         public ?array $keywords = null,
         public ?array $tesseract = null,
         public ?array $elements = null,
+        public ?DjotContent $djotContent = null,
     ) {
     }
 
@@ -178,6 +181,13 @@ readonly class ExtractionResult
             );
         }
 
+        $djotContent = null;
+        if (isset($data['djot_content'])) {
+            /** @var array<string, mixed> $djotContentData */
+            $djotContentData = $data['djot_content'];
+            $djotContent = DjotContent::fromArray($djotContentData);
+        }
+
         return new self(
             content: $content,
             mimeType: $mimeType,
@@ -195,6 +205,7 @@ readonly class ExtractionResult
             keywords: $keywords,
             tesseract: $tesseract,
             elements: $elements,
+            djotContent: $djotContent,
         );
     }
 }

@@ -172,6 +172,7 @@ impl DocumentExtractor for BibtexExtractor {
             detected_languages: None,
             chunks: None,
             images: None,
+            djot_content: None,
             elements: None,
         })
     }

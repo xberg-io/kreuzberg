@@ -86,6 +86,7 @@ impl SyncExtractor for EmailExtractor {
             chunks: None,
             images: None,
             pages: None,
+            djot_content: None,
             elements: None,
         })
     }

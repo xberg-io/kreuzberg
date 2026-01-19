@@ -119,6 +119,113 @@ export interface Element {
 	metadata: ElementMetadata;
 }
 
+// ============================================================================
+// Djot structured content types
+
+/**
+ * Structured Djot document representation.
+ *
+ * Provides rich, block-level document structure with formatting,
+ * tables, images, links, and metadata extracted from source documents.
+ * Available when Djot output format is enabled.
+ */
+export interface DjotContent {
+	/** Plain text representation for backward compatibility */
+	plainText: string;
+	/** Structured block-level content (headings, paragraphs, lists, etc.) */
+	blocks: FormattedBlock[];
+	/** Metadata from YAML frontmatter */
+	metadata: Metadata;
+	/** Extracted tables as structured data */
+	tables: Table[];
+	/** Extracted images with metadata */
+	images: DjotImage[];
+	/** Extracted links with URLs and titles */
+	links: DjotLink[];
+	/** Footnote definitions */
+	footnotes: Footnote[];
+	/** Attributes mapped by element identifier */
+	attributes?: Record<string, Attributes>;
+}
+
+/**
+ * Block-level element in a Djot document.
+ *
+ * Represents structural elements like headings, paragraphs, lists, code blocks, etc.
+ */
+export interface FormattedBlock {
+	/** Type of block element */
+	blockType: BlockType;
+	/** Heading level (1-6) for headings, or nesting level for lists */
+	level?: number | null;
+	/** Text content for inline elements */
+	content?: string | null;
+	/** Child blocks for list items and containers */
+	children?: FormattedBlock[] | null;
+	/** Attributes (id, class, etc.) */
+	attributes?: Attributes | null;
+}
+
+/**
+ * Block element type classification.
+ */
+export type BlockType =
+	| "paragraph"
+	| "heading"
+	| "list_item"
+	| "code_block"
+	| "block_quote"
+	| "thematic_break"
+	| "table"
+	| "image"
+	| "footnote_definition"
+	| "raw_block";
+
+/**
+ * HTML/CSS attributes for an element.
+ */
+export interface Attributes {
+	[key: string]: string | number | boolean | string[] | null;
+}
+
+/**
+ * Image with metadata in Djot document.
+ */
+export interface DjotImage {
+	/** Image URL or reference */
+	url: string;
+	/** Alternative text */
+	alt?: string | null;
+	/** Image title/caption */
+	title?: string | null;
+	/** Image attributes */
+	attributes?: Attributes | null;
+}
+
+/**
+ * Link in Djot document.
+ */
+export interface DjotLink {
+	/** Link URL */
+	url: string;
+	/** Link text */
+	text: string;
+	/** Link title */
+	title?: string | null;
+	/** Link type */
+	linkType?: "internal" | "external" | "email" | "phone" | "footnote";
+}
+
+/**
+ * Footnote definition.
+ */
+export interface Footnote {
+	/** Footnote identifier */
+	label: string;
+	/** Footnote content */
+	content: string;
+}
+
 export interface ExtractionResult {
 	content: string;
 	mimeType: string;
@@ -129,6 +236,7 @@ export interface ExtractionResult {
 	images: ExtractedImage[] | null;
 	elements?: Element[] | null;
 	keywords?: ExtractedKeyword[] | null;
+	djotContent?: DjotContent | null;
 
 	/**
 	 * Get the page count from this extraction result.

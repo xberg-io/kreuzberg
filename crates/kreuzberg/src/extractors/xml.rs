@@ -71,6 +71,7 @@ impl SyncExtractor for XmlExtractor {
             chunks: None,
             images: None,
             pages: None,
+            djot_content: None,
             elements: None,
         })
     }

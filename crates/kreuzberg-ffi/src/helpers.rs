@@ -66,6 +66,7 @@ pub fn to_c_extraction_result(result: ExtractionResult) -> std::result::Result<*
         chunks,
         images,
         pages,
+        djot_content: _,
         elements: _,
     } = result;
 
@@ -346,6 +347,7 @@ mod tests {
             chunks: None,
             images: None,
             pages: None,
+            djot_content: None,
             elements: None,
         };
 
@@ -384,6 +386,7 @@ mod tests {
             chunks: None,
             images: None,
             pages: None,
+            djot_content: None,
             elements: None,
         };
 
@@ -432,6 +435,7 @@ mod tests {
             chunks: None,
             images: None,
             pages: None,
+            djot_content: None,
             elements: None,
         };
 
@@ -510,6 +514,7 @@ mod tests {
             chunks: Some(vec![chunk]),
             images: None,
             pages: None,
+            djot_content: None,
             elements: None,
         };
 

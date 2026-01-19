@@ -3,13 +3,11 @@
 //! Provides Python-friendly wrappers around the Rust configuration structs.
 //! All types support both construction and field access from Python.
 
-use html_to_markdown_rs::options::{
-    CodeBlockStyle, ConversionOptions, HeadingStyle, HighlightStyle, ListIndentType, NewlineStyle, PreprocessingPreset,
-    WhitespaceMode,
-};
-use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
-use pyo3::types::{PyAny, PyDict};
+use pyo3::types::PyDict;
+
+use crate::html_options::parse_html_options_dict;
+use crate::keywords::{KeywordAlgorithm, KeywordConfig, RakeParams, YakeParams};
 
 /// Main extraction configuration.
 ///
@@ -25,8 +23,8 @@ use pyo3::types::{PyAny, PyDict};
 #[pyclass(name = "ExtractionConfig", module = "kreuzberg")]
 #[derive(Default)]
 pub struct ExtractionConfig {
-    inner: kreuzberg::ExtractionConfig,
-    html_options_dict: Option<Py<PyDict>>,
+    pub inner: kreuzberg::ExtractionConfig,
+    pub html_options_dict: Option<Py<PyDict>>,
 }
 
 impl Clone for ExtractionConfig {
@@ -92,6 +90,7 @@ impl ExtractionConfig {
                 html_options: html_options_inner,
                 max_concurrent_extractions,
                 pages: pages.map(Into::into),
+                result_format: Default::default(),
                 output_format: Default::default(),
             },
             html_options_dict,
@@ -314,272 +313,6 @@ impl ExtractionConfig {
     }
 }
 
-impl From<ExtractionConfig> for kreuzberg::ExtractionConfig {
-    fn from(config: ExtractionConfig) -> Self {
-        config.inner
-    }
-}
-
-impl From<kreuzberg::ExtractionConfig> for ExtractionConfig {
-    fn from(config: kreuzberg::ExtractionConfig) -> Self {
-        Self {
-            inner: config,
-            html_options_dict: None,
-        }
-    }
-}
-
-fn parse_html_options_dict(
-    options: Option<Bound<'_, PyDict>>,
-) -> PyResult<(Option<ConversionOptions>, Option<Py<PyDict>>)> {
-    if let Some(dict) = options {
-        let parsed = parse_html_options(&dict)?;
-        Ok((Some(parsed), Some(dict.unbind())))
-    } else {
-        Ok((None, None))
-    }
-}
-
-fn parse_html_options(dict: &Bound<'_, PyDict>) -> PyResult<ConversionOptions> {
-    let mut opts = ConversionOptions::default();
-
-    if let Some(value) = dict.get_item("heading_style")? {
-        let style: String = value.extract()?;
-        opts.heading_style = parse_heading_style(&style)?;
-    }
-
-    if let Some(value) = dict.get_item("list_indent_type")? {
-        let value: String = value.extract()?;
-        opts.list_indent_type = parse_list_indent_type(&value)?;
-    }
-
-    if let Some(value) = dict.get_item("list_indent_width")? {
-        opts.list_indent_width = value.extract()?;
-    }
-
-    if let Some(value) = dict.get_item("bullets")? {
-        opts.bullets = value.extract()?;
-    }
-
-    if let Some(value) = dict.get_item("strong_em_symbol")? {
-        let symbol: String = value.extract()?;
-        let mut chars = symbol.chars();
-        let ch = chars
-            .next()
-            .ok_or_else(|| PyValueError::new_err("strong_em_symbol must not be empty"))?;
-        opts.strong_em_symbol = ch;
-    }
-
-    if let Some(value) = dict.get_item("escape_asterisks")? {
-        opts.escape_asterisks = value.extract()?;
-    }
-    if let Some(value) = dict.get_item("escape_underscores")? {
-        opts.escape_underscores = value.extract()?;
-    }
-    if let Some(value) = dict.get_item("escape_misc")? {
-        opts.escape_misc = value.extract()?;
-    }
-    if let Some(value) = dict.get_item("escape_ascii")? {
-        opts.escape_ascii = value.extract()?;
-    }
-
-    if let Some(value) = dict.get_item("code_language")? {
-        opts.code_language = value.extract()?;
-    }
-
-    if let Some(value) = dict.get_item("autolinks")? {
-        opts.autolinks = value.extract()?;
-    }
-
-    if let Some(value) = dict.get_item("default_title")? {
-        opts.default_title = value.extract()?;
-    }
-
-    if let Some(value) = dict.get_item("br_in_tables")? {
-        opts.br_in_tables = value.extract()?;
-    }
-
-    if let Some(value) = dict.get_item("hocr_spatial_tables")? {
-        opts.hocr_spatial_tables = value.extract()?;
-    }
-
-    if let Some(value) = dict.get_item("highlight_style")? {
-        let style: String = value.extract()?;
-        opts.highlight_style = parse_highlight_style(&style)?;
-    }
-
-    if let Some(value) = dict.get_item("extract_metadata")? {
-        opts.extract_metadata = value.extract()?;
-    }
-
-    if let Some(value) = dict.get_item("whitespace_mode")? {
-        let mode: String = value.extract()?;
-        opts.whitespace_mode = parse_whitespace_mode(&mode)?;
-    }
-
-    if let Some(value) = dict.get_item("strip_newlines")? {
-        opts.strip_newlines = value.extract()?;
-    }
-
-    if let Some(value) = dict.get_item("wrap")? {
-        opts.wrap = value.extract()?;
-    }
-
-    if let Some(value) = dict.get_item("wrap_width")? {
-        opts.wrap_width = value.extract()?;
-    }
-
-    if let Some(value) = dict.get_item("convert_as_inline")? {
-        opts.convert_as_inline = value.extract()?;
-    }
-
-    if let Some(value) = dict.get_item("sub_symbol")? {
-        opts.sub_symbol = value.extract()?;
-    }
-
-    if let Some(value) = dict.get_item("sup_symbol")? {
-        opts.sup_symbol = value.extract()?;
-    }
-
-    if let Some(value) = dict.get_item("newline_style")? {
-        let style: String = value.extract()?;
-        opts.newline_style = parse_newline_style(&style)?;
-    }
-
-    if let Some(value) = dict.get_item("code_block_style")? {
-        let style: String = value.extract()?;
-        opts.code_block_style = parse_code_block_style(&style)?;
-    }
-
-    if let Some(value) = dict.get_item("keep_inline_images_in")? {
-        opts.keep_inline_images_in = value.extract()?;
-    }
-
-    if let Some(value) = dict.get_item("encoding")? {
-        opts.encoding = value.extract()?;
-    }
-
-    if let Some(value) = dict.get_item("debug")? {
-        opts.debug = value.extract()?;
-    }
-
-    if let Some(value) = dict.get_item("strip_tags")? {
-        opts.strip_tags = value.extract()?;
-    }
-
-    if let Some(value) = dict.get_item("preserve_tags")? {
-        opts.preserve_tags = value.extract()?;
-    }
-
-    if let Some(value) = dict.get_item("preprocessing")? {
-        let pre_dict: Bound<'_, PyDict> = value.cast::<PyDict>()?.clone();
-        let mut preprocessing = opts.preprocessing.clone();
-
-        if let Some(v) = pre_dict.get_item("enabled")? {
-            preprocessing.enabled = v.extract()?;
-        }
-
-        if let Some(v) = pre_dict.get_item("preset")? {
-            let preset: String = v.extract()?;
-            preprocessing.preset = parse_preprocessing_preset(&preset)?;
-        }
-
-        if let Some(v) = pre_dict.get_item("remove_navigation")? {
-            preprocessing.remove_navigation = v.extract()?;
-        }
-
-        if let Some(v) = pre_dict.get_item("remove_forms")? {
-            preprocessing.remove_forms = v.extract()?;
-        }
-
-        opts.preprocessing = preprocessing;
-    }
-
-    Ok(opts)
-}
-
-fn parse_heading_style(value: &str) -> PyResult<HeadingStyle> {
-    match value.to_lowercase().as_str() {
-        "atx" => Ok(HeadingStyle::Atx),
-        "underlined" => Ok(HeadingStyle::Underlined),
-        "atx_closed" => Ok(HeadingStyle::AtxClosed),
-        other => Err(PyValueError::new_err(format!(
-            "Invalid heading_style '{}'. Expected one of: atx, underlined, atx_closed",
-            other
-        ))),
-    }
-}
-
-fn parse_list_indent_type(value: &str) -> PyResult<ListIndentType> {
-    match value.to_lowercase().as_str() {
-        "spaces" => Ok(ListIndentType::Spaces),
-        "tabs" => Ok(ListIndentType::Tabs),
-        other => Err(PyValueError::new_err(format!(
-            "Invalid list_indent_type '{}'. Expected 'spaces' or 'tabs'",
-            other
-        ))),
-    }
-}
-
-fn parse_highlight_style(value: &str) -> PyResult<HighlightStyle> {
-    match value.to_lowercase().as_str() {
-        "double_equal" | "==" | "highlight" => Ok(HighlightStyle::DoubleEqual),
-        "html" => Ok(HighlightStyle::Html),
-        "bold" => Ok(HighlightStyle::Bold),
-        "none" => Ok(HighlightStyle::None),
-        other => Err(PyValueError::new_err(format!(
-            "Invalid highlight_style '{}'. Expected one of: double_equal, html, bold, none",
-            other
-        ))),
-    }
-}
-
-fn parse_whitespace_mode(value: &str) -> PyResult<WhitespaceMode> {
-    match value.to_lowercase().as_str() {
-        "normalized" => Ok(WhitespaceMode::Normalized),
-        "strict" => Ok(WhitespaceMode::Strict),
-        other => Err(PyValueError::new_err(format!(
-            "Invalid whitespace_mode '{}'. Expected 'normalized' or 'strict'",
-            other
-        ))),
-    }
-}
-
-fn parse_newline_style(value: &str) -> PyResult<NewlineStyle> {
-    match value.to_lowercase().as_str() {
-        "spaces" => Ok(NewlineStyle::Spaces),
-        "backslash" => Ok(NewlineStyle::Backslash),
-        other => Err(PyValueError::new_err(format!(
-            "Invalid newline_style '{}'. Expected 'spaces' or 'backslash'",
-            other
-        ))),
-    }
-}
-
-fn parse_code_block_style(value: &str) -> PyResult<CodeBlockStyle> {
-    match value.to_lowercase().as_str() {
-        "indented" => Ok(CodeBlockStyle::Indented),
-        "backticks" => Ok(CodeBlockStyle::Backticks),
-        "tildes" => Ok(CodeBlockStyle::Tildes),
-        other => Err(PyValueError::new_err(format!(
-            "Invalid code_block_style '{}'. Expected 'indented', 'backticks', or 'tildes'",
-            other
-        ))),
-    }
-}
-
-fn parse_preprocessing_preset(value: &str) -> PyResult<PreprocessingPreset> {
-    match value.to_lowercase().as_str() {
-        "minimal" => Ok(PreprocessingPreset::Minimal),
-        "standard" => Ok(PreprocessingPreset::Standard),
-        "aggressive" => Ok(PreprocessingPreset::Aggressive),
-        other => Err(PyValueError::new_err(format!(
-            "Invalid preprocessing.preset '{}'. Expected one of: minimal, standard, aggressive",
-            other
-        ))),
-    }
-}
-
 /// OCR configuration.
 ///
 /// Example:
@@ -588,7 +321,7 @@ fn parse_preprocessing_preset(value: &str) -> PyResult<PreprocessingPreset> {
 #[pyclass(name = "OcrConfig", module = "kreuzberg")]
 #[derive(Clone)]
 pub struct OcrConfig {
-    inner: kreuzberg::OcrConfig,
+    pub inner: kreuzberg::OcrConfig,
 }
 
 #[pymethods]
@@ -649,18 +382,6 @@ impl OcrConfig {
     }
 }
 
-impl From<OcrConfig> for kreuzberg::OcrConfig {
-    fn from(config: OcrConfig) -> Self {
-        config.inner
-    }
-}
-
-impl From<kreuzberg::OcrConfig> for OcrConfig {
-    fn from(config: kreuzberg::OcrConfig) -> Self {
-        Self { inner: config }
-    }
-}
-
 /// Embedding model type.
 ///
 /// Specifies which model to use for embedding generation.
@@ -682,7 +403,7 @@ impl From<kreuzberg::OcrConfig> for OcrConfig {
 #[pyclass(name = "EmbeddingModelType", module = "kreuzberg")]
 #[derive(Clone)]
 pub struct EmbeddingModelType {
-    inner: kreuzberg::EmbeddingModelType,
+    pub inner: kreuzberg::EmbeddingModelType,
 }
 
 #[pymethods]
@@ -724,18 +445,6 @@ impl EmbeddingModelType {
     }
 }
 
-impl From<EmbeddingModelType> for kreuzberg::EmbeddingModelType {
-    fn from(model: EmbeddingModelType) -> Self {
-        model.inner
-    }
-}
-
-impl From<kreuzberg::EmbeddingModelType> for EmbeddingModelType {
-    fn from(model: kreuzberg::EmbeddingModelType) -> Self {
-        Self { inner: model }
-    }
-}
-
 /// Embedding configuration.
 ///
 /// Controls embedding generation for text chunks.
@@ -757,7 +466,7 @@ impl From<kreuzberg::EmbeddingModelType> for EmbeddingModelType {
 #[pyclass(name = "EmbeddingConfig", module = "kreuzberg")]
 #[derive(Clone)]
 pub struct EmbeddingConfig {
-    inner: kreuzberg::EmbeddingConfig,
+    pub inner: kreuzberg::EmbeddingConfig,
 }
 
 #[pymethods]
@@ -812,18 +521,6 @@ impl EmbeddingConfig {
     }
 }
 
-impl From<EmbeddingConfig> for kreuzberg::EmbeddingConfig {
-    fn from(config: EmbeddingConfig) -> Self {
-        config.inner
-    }
-}
-
-impl From<kreuzberg::EmbeddingConfig> for EmbeddingConfig {
-    fn from(config: kreuzberg::EmbeddingConfig) -> Self {
-        Self { inner: config }
-    }
-}
-
 /// Chunking configuration.
 ///
 /// Controls how text is split into chunks with optional embedding generation.
@@ -855,7 +552,7 @@ impl From<kreuzberg::EmbeddingConfig> for EmbeddingConfig {
 #[pyclass(name = "ChunkingConfig", module = "kreuzberg")]
 #[derive(Clone)]
 pub struct ChunkingConfig {
-    inner: kreuzberg::ChunkingConfig,
+    pub inner: kreuzberg::ChunkingConfig,
 }
 
 #[pymethods]
@@ -933,18 +630,6 @@ impl ChunkingConfig {
     }
 }
 
-impl From<ChunkingConfig> for kreuzberg::ChunkingConfig {
-    fn from(config: ChunkingConfig) -> Self {
-        config.inner
-    }
-}
-
-impl From<kreuzberg::ChunkingConfig> for ChunkingConfig {
-    fn from(config: kreuzberg::ChunkingConfig) -> Self {
-        Self { inner: config }
-    }
-}
-
 /// Image extraction configuration.
 ///
 /// Example:
@@ -953,7 +638,7 @@ impl From<kreuzberg::ChunkingConfig> for ChunkingConfig {
 #[pyclass(name = "ImageExtractionConfig", module = "kreuzberg")]
 #[derive(Clone)]
 pub struct ImageExtractionConfig {
-    inner: kreuzberg::ImageExtractionConfig,
+    pub inner: kreuzberg::ImageExtractionConfig,
 }
 
 #[pymethods]
@@ -1055,18 +740,6 @@ impl ImageExtractionConfig {
     }
 }
 
-impl From<ImageExtractionConfig> for kreuzberg::ImageExtractionConfig {
-    fn from(config: ImageExtractionConfig) -> Self {
-        config.inner
-    }
-}
-
-impl From<kreuzberg::ImageExtractionConfig> for ImageExtractionConfig {
-    fn from(config: kreuzberg::ImageExtractionConfig) -> Self {
-        Self { inner: config }
-    }
-}
-
 /// PDF-specific configuration.
 ///
 /// Example:
@@ -1075,7 +748,7 @@ impl From<kreuzberg::ImageExtractionConfig> for ImageExtractionConfig {
 #[pyclass(name = "PdfConfig", module = "kreuzberg")]
 #[derive(Clone)]
 pub struct PdfConfig {
-    inner: kreuzberg::PdfConfig,
+    pub inner: kreuzberg::PdfConfig,
 }
 
 #[pymethods]
@@ -1152,18 +825,6 @@ impl PdfConfig {
     }
 }
 
-impl From<PdfConfig> for kreuzberg::PdfConfig {
-    fn from(config: PdfConfig) -> Self {
-        config.inner
-    }
-}
-
-impl From<kreuzberg::PdfConfig> for PdfConfig {
-    fn from(config: kreuzberg::PdfConfig) -> Self {
-        Self { inner: config }
-    }
-}
-
 /// Token reduction configuration.
 ///
 /// Example:
@@ -1172,7 +833,7 @@ impl From<kreuzberg::PdfConfig> for PdfConfig {
 #[pyclass(name = "TokenReductionConfig", module = "kreuzberg")]
 #[derive(Clone)]
 pub struct TokenReductionConfig {
-    inner: kreuzberg::TokenReductionConfig,
+    pub inner: kreuzberg::TokenReductionConfig,
 }
 
 #[pymethods]
@@ -1216,18 +877,6 @@ impl TokenReductionConfig {
     }
 }
 
-impl From<TokenReductionConfig> for kreuzberg::TokenReductionConfig {
-    fn from(config: TokenReductionConfig) -> Self {
-        config.inner
-    }
-}
-
-impl From<kreuzberg::TokenReductionConfig> for TokenReductionConfig {
-    fn from(config: kreuzberg::TokenReductionConfig) -> Self {
-        Self { inner: config }
-    }
-}
-
 /// Language detection configuration.
 ///
 /// Example:
@@ -1236,7 +885,7 @@ impl From<kreuzberg::TokenReductionConfig> for TokenReductionConfig {
 #[pyclass(name = "LanguageDetectionConfig", module = "kreuzberg")]
 #[derive(Clone)]
 pub struct LanguageDetectionConfig {
-    inner: kreuzberg::LanguageDetectionConfig,
+    pub inner: kreuzberg::LanguageDetectionConfig,
 }
 
 #[pymethods]
@@ -1291,18 +940,6 @@ impl LanguageDetectionConfig {
     }
 }
 
-impl From<LanguageDetectionConfig> for kreuzberg::LanguageDetectionConfig {
-    fn from(config: LanguageDetectionConfig) -> Self {
-        config.inner
-    }
-}
-
-impl From<kreuzberg::LanguageDetectionConfig> for LanguageDetectionConfig {
-    fn from(config: kreuzberg::LanguageDetectionConfig) -> Self {
-        Self { inner: config }
-    }
-}
-
 /// Post-processor configuration.
 ///
 /// Example:
@@ -1311,7 +948,7 @@ impl From<kreuzberg::LanguageDetectionConfig> for LanguageDetectionConfig {
 #[pyclass(name = "PostProcessorConfig", module = "kreuzberg")]
 #[derive(Clone)]
 pub struct PostProcessorConfig {
-    inner: kreuzberg::PostProcessorConfig,
+    pub inner: kreuzberg::PostProcessorConfig,
 }
 
 #[pymethods]
@@ -1377,18 +1014,6 @@ impl PostProcessorConfig {
     }
 }
 
-impl From<PostProcessorConfig> for kreuzberg::PostProcessorConfig {
-    fn from(config: PostProcessorConfig) -> Self {
-        config.inner
-    }
-}
-
-impl From<kreuzberg::PostProcessorConfig> for PostProcessorConfig {
-    fn from(config: kreuzberg::PostProcessorConfig) -> Self {
-        Self { inner: config }
-    }
-}
-
 /// Image preprocessing configuration for OCR.
 ///
 /// Controls how images are preprocessed before OCR to improve text recognition.
@@ -1403,7 +1028,7 @@ impl From<kreuzberg::PostProcessorConfig> for PostProcessorConfig {
 #[pyclass(name = "ImagePreprocessingConfig", module = "kreuzberg")]
 #[derive(Clone)]
 pub struct ImagePreprocessingConfig {
-    inner: kreuzberg::types::ImagePreprocessingConfig,
+    pub inner: kreuzberg::types::ImagePreprocessingConfig,
 }
 
 #[pymethods]
@@ -1518,18 +1143,6 @@ impl ImagePreprocessingConfig {
     }
 }
 
-impl From<ImagePreprocessingConfig> for kreuzberg::types::ImagePreprocessingConfig {
-    fn from(config: ImagePreprocessingConfig) -> Self {
-        config.inner
-    }
-}
-
-impl From<kreuzberg::types::ImagePreprocessingConfig> for ImagePreprocessingConfig {
-    fn from(config: kreuzberg::types::ImagePreprocessingConfig) -> Self {
-        Self { inner: config }
-    }
-}
-
 /// Tesseract OCR configuration.
 ///
 /// Provides fine-grained control over Tesseract OCR behavior including
@@ -1546,7 +1159,7 @@ impl From<kreuzberg::types::ImagePreprocessingConfig> for ImagePreprocessingConf
 #[pyclass(name = "TesseractConfig", module = "kreuzberg")]
 #[derive(Clone)]
 pub struct TesseractConfig {
-    inner: kreuzberg::types::TesseractConfig,
+    pub inner: kreuzberg::types::TesseractConfig,
 }
 
 #[pymethods]
@@ -1844,299 +1457,6 @@ impl TesseractConfig {
     }
 }
 
-impl From<TesseractConfig> for kreuzberg::types::TesseractConfig {
-    fn from(config: TesseractConfig) -> Self {
-        config.inner
-    }
-}
-
-impl From<kreuzberg::types::TesseractConfig> for TesseractConfig {
-    fn from(config: kreuzberg::types::TesseractConfig) -> Self {
-        Self { inner: config }
-    }
-}
-
-/// Keyword extraction algorithm.
-///
-/// Example:
-///     >>> from kreuzberg import KeywordAlgorithm
-///     >>> algo = KeywordAlgorithm.YAKE
-#[pyclass(name = "KeywordAlgorithm", module = "kreuzberg")]
-#[derive(Clone, Copy, PartialEq, Eq)]
-pub enum KeywordAlgorithm {
-    /// YAKE (Yet Another Keyword Extractor) - statistical approach
-    Yake,
-
-    /// RAKE (Rapid Automatic Keyword Extraction) - co-occurrence based
-    Rake,
-}
-
-impl From<KeywordAlgorithm> for kreuzberg::keywords::KeywordAlgorithm {
-    fn from(algo: KeywordAlgorithm) -> Self {
-        match algo {
-            KeywordAlgorithm::Yake => kreuzberg::keywords::KeywordAlgorithm::Yake,
-            KeywordAlgorithm::Rake => kreuzberg::keywords::KeywordAlgorithm::Rake,
-        }
-    }
-}
-
-impl From<kreuzberg::keywords::KeywordAlgorithm> for KeywordAlgorithm {
-    fn from(algo: kreuzberg::keywords::KeywordAlgorithm) -> Self {
-        match algo {
-            kreuzberg::keywords::KeywordAlgorithm::Yake => KeywordAlgorithm::Yake,
-            kreuzberg::keywords::KeywordAlgorithm::Rake => KeywordAlgorithm::Rake,
-        }
-    }
-}
-
-/// YAKE-specific parameters.
-///
-/// Example:
-///     >>> from kreuzberg import YakeParams
-///     >>> params = YakeParams(window_size=3, deduplicate=True, dedup_threshold=0.8)
-#[pyclass(name = "YakeParams", module = "kreuzberg")]
-#[derive(Clone)]
-pub struct YakeParams {
-    inner: kreuzberg::keywords::YakeParams,
-}
-
-#[pymethods]
-impl YakeParams {
-    #[new]
-    #[pyo3(signature = (window_size=None))]
-    fn new(window_size: Option<usize>) -> Self {
-        Self {
-            inner: kreuzberg::keywords::YakeParams {
-                window_size: window_size.unwrap_or(2),
-            },
-        }
-    }
-
-    #[getter]
-    fn window_size(&self) -> usize {
-        self.inner.window_size
-    }
-
-    #[setter]
-    fn set_window_size(&mut self, value: usize) {
-        self.inner.window_size = value;
-    }
-
-    fn __repr__(&self) -> String {
-        format!("YakeParams(window_size={})", self.inner.window_size)
-    }
-}
-
-impl From<YakeParams> for kreuzberg::keywords::YakeParams {
-    fn from(params: YakeParams) -> Self {
-        params.inner
-    }
-}
-
-impl From<kreuzberg::keywords::YakeParams> for YakeParams {
-    fn from(params: kreuzberg::keywords::YakeParams) -> Self {
-        Self { inner: params }
-    }
-}
-
-/// RAKE-specific parameters.
-///
-/// Example:
-///     >>> from kreuzberg import RakeParams
-///     >>> params = RakeParams(min_word_length=2, max_words_per_phrase=4)
-#[pyclass(name = "RakeParams", module = "kreuzberg")]
-#[derive(Clone)]
-pub struct RakeParams {
-    inner: kreuzberg::keywords::RakeParams,
-}
-
-#[pymethods]
-impl RakeParams {
-    #[new]
-    #[pyo3(signature = (min_word_length=None, max_words_per_phrase=None))]
-    fn new(min_word_length: Option<usize>, max_words_per_phrase: Option<usize>) -> Self {
-        Self {
-            inner: kreuzberg::keywords::RakeParams {
-                min_word_length: min_word_length.unwrap_or(1),
-                max_words_per_phrase: max_words_per_phrase.unwrap_or(3),
-            },
-        }
-    }
-
-    #[getter]
-    fn min_word_length(&self) -> usize {
-        self.inner.min_word_length
-    }
-
-    #[setter]
-    fn set_min_word_length(&mut self, value: usize) {
-        self.inner.min_word_length = value;
-    }
-
-    #[getter]
-    fn max_words_per_phrase(&self) -> usize {
-        self.inner.max_words_per_phrase
-    }
-
-    #[setter]
-    fn set_max_words_per_phrase(&mut self, value: usize) {
-        self.inner.max_words_per_phrase = value;
-    }
-
-    fn __repr__(&self) -> String {
-        format!(
-            "RakeParams(min_word_length={}, max_words_per_phrase={})",
-            self.inner.min_word_length, self.inner.max_words_per_phrase
-        )
-    }
-}
-
-impl From<RakeParams> for kreuzberg::keywords::RakeParams {
-    fn from(params: RakeParams) -> Self {
-        params.inner
-    }
-}
-
-impl From<kreuzberg::keywords::RakeParams> for RakeParams {
-    fn from(params: kreuzberg::keywords::RakeParams) -> Self {
-        Self { inner: params }
-    }
-}
-
-/// Keyword extraction configuration.
-///
-/// Example:
-///     >>> from kreuzberg import KeywordConfig, KeywordAlgorithm
-///     >>> config = KeywordConfig(
-///     ...     algorithm=KeywordAlgorithm.YAKE,
-///     ...     max_keywords=15,
-///     ...     min_score=0.1,
-///     ...     language="en"
-///     ... )
-#[pyclass(name = "KeywordConfig", module = "kreuzberg")]
-#[derive(Clone)]
-pub struct KeywordConfig {
-    inner: kreuzberg::keywords::KeywordConfig,
-}
-
-#[pymethods]
-impl KeywordConfig {
-    #[new]
-    #[pyo3(signature = (
-        algorithm=None,
-        max_keywords=None,
-        min_score=None,
-        ngram_range=None,
-        language=None,
-        yake_params=None,
-        rake_params=None
-    ))]
-    fn new(
-        algorithm: Option<KeywordAlgorithm>,
-        max_keywords: Option<usize>,
-        min_score: Option<f32>,
-        ngram_range: Option<(usize, usize)>,
-        language: Option<String>,
-        yake_params: Option<YakeParams>,
-        rake_params: Option<RakeParams>,
-    ) -> Self {
-        Self {
-            inner: kreuzberg::keywords::KeywordConfig {
-                algorithm: algorithm.map(Into::into).unwrap_or_default(),
-                max_keywords: max_keywords.unwrap_or(10),
-                min_score: min_score.unwrap_or(0.0),
-                ngram_range: ngram_range.unwrap_or((1, 3)),
-                language: language.or_else(|| Some("en".to_string())),
-                yake_params: yake_params.map(Into::into),
-                rake_params: rake_params.map(Into::into),
-            },
-        }
-    }
-
-    #[getter]
-    fn algorithm(&self) -> KeywordAlgorithm {
-        self.inner.algorithm.into()
-    }
-
-    #[setter]
-    fn set_algorithm(&mut self, value: KeywordAlgorithm) {
-        self.inner.algorithm = value.into();
-    }
-
-    #[getter]
-    fn max_keywords(&self) -> usize {
-        self.inner.max_keywords
-    }
-
-    #[setter]
-    fn set_max_keywords(&mut self, value: usize) {
-        self.inner.max_keywords = value;
-    }
-
-    #[getter]
-    fn min_score(&self) -> f32 {
-        self.inner.min_score
-    }
-
-    #[setter]
-    fn set_min_score(&mut self, value: f32) {
-        self.inner.min_score = value;
-    }
-
-    #[getter]
-    fn ngram_range(&self) -> (usize, usize) {
-        self.inner.ngram_range
-    }
-
-    #[setter]
-    fn set_ngram_range(&mut self, value: (usize, usize)) {
-        self.inner.ngram_range = value;
-    }
-
-    #[getter]
-    fn language(&self) -> Option<String> {
-        self.inner.language.clone()
-    }
-
-    #[setter]
-    fn set_language(&mut self, value: Option<String>) {
-        self.inner.language = value;
-    }
-
-    #[getter]
-    fn yake_params(&self) -> Option<YakeParams> {
-        self.inner.yake_params.clone().map(Into::into)
-    }
-
-    #[setter]
-    fn set_yake_params(&mut self, value: Option<YakeParams>) {
-        self.inner.yake_params = value.map(Into::into);
-    }
-
-    #[getter]
-    fn rake_params(&self) -> Option<RakeParams> {
-        self.inner.rake_params.clone().map(Into::into)
-    }
-
-    #[setter]
-    fn set_rake_params(&mut self, value: Option<RakeParams>) {
-        self.inner.rake_params = value.map(Into::into);
-    }
-
-    fn __repr__(&self) -> String {
-        format!(
-            "KeywordConfig(algorithm={:?}, max_keywords={}, min_score={}, language={:?})",
-            self.inner.algorithm, self.inner.max_keywords, self.inner.min_score, self.inner.language
-        )
-    }
-}
-
-impl From<KeywordConfig> for kreuzberg::keywords::KeywordConfig {
-    fn from(config: KeywordConfig) -> Self {
-        config.inner
-    }
-}
-
 /// Page extraction and tracking configuration.
 ///
 /// Controls how pages are extracted, tracked, and represented in the extraction results.
@@ -2147,7 +1467,7 @@ impl From<KeywordConfig> for kreuzberg::keywords::KeywordConfig {
 #[pyclass(name = "PageConfig", module = "kreuzberg")]
 #[derive(Clone)]
 pub struct PageConfig {
-    inner: kreuzberg::core::config::PageConfig,
+    pub inner: kreuzberg::core::config::PageConfig,
 }
 
 #[pymethods]
@@ -2202,18 +1522,6 @@ impl PageConfig {
     }
 }
 
-impl From<PageConfig> for kreuzberg::core::config::PageConfig {
-    fn from(config: PageConfig) -> Self {
-        config.inner
-    }
-}
-
-impl From<kreuzberg::core::config::PageConfig> for PageConfig {
-    fn from(config: kreuzberg::core::config::PageConfig) -> Self {
-        Self { inner: config }
-    }
-}
-
 /// Hierarchy extraction configuration.
 ///
 /// Controls document hierarchy detection based on font size clustering.
@@ -2224,7 +1532,7 @@ impl From<kreuzberg::core::config::PageConfig> for PageConfig {
 #[pyclass(name = "HierarchyConfig", module = "kreuzberg")]
 #[derive(Clone)]
 pub struct HierarchyConfig {
-    inner: kreuzberg::core::config::HierarchyConfig,
+    pub inner: kreuzberg::core::config::HierarchyConfig,
 }
 
 #[pymethods]
@@ -2292,223 +1600,5 @@ impl HierarchyConfig {
             "HierarchyConfig(enabled={}, k_clusters={}, include_bbox={}, ocr_coverage_threshold={:?})",
             self.inner.enabled, self.inner.k_clusters, self.inner.include_bbox, self.inner.ocr_coverage_threshold
         )
-    }
-}
-
-impl From<HierarchyConfig> for kreuzberg::core::config::HierarchyConfig {
-    fn from(config: HierarchyConfig) -> Self {
-        config.inner
-    }
-}
-
-impl From<kreuzberg::core::config::HierarchyConfig> for HierarchyConfig {
-    fn from(config: kreuzberg::core::config::HierarchyConfig) -> Self {
-        Self { inner: config }
-    }
-}
-
-impl From<kreuzberg::keywords::KeywordConfig> for KeywordConfig {
-    fn from(config: kreuzberg::keywords::KeywordConfig) -> Self {
-        Self { inner: config }
-    }
-}
-
-/// Serialize an ExtractionConfig to JSON string.
-///
-/// Converts the configuration to its JSON representation.
-///
-/// Args:
-///     config (ExtractionConfig): Configuration to serialize
-///
-/// Returns:
-///     str: JSON string representation of the config
-///
-/// Example:
-///     >>> from kreuzberg import ExtractionConfig, config_to_json
-///     >>> config = ExtractionConfig(use_cache=True)
-///     >>> json_str = config_to_json(config)
-///     >>> print(json_str)
-#[pyfunction]
-#[pyo3(signature = (config))]
-pub fn config_to_json(config: ExtractionConfig) -> PyResult<String> {
-    serde_json::to_string(&config.inner)
-        .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(format!("Failed to serialize config to JSON: {}", e)))
-}
-
-/// Get a specific field from config.
-///
-/// Retrieves a nested field from the configuration by path. Supports dot notation
-/// for nested fields (e.g., "ocr.backend").
-///
-/// Args:
-///     config (ExtractionConfig): Configuration to query
-///     field_name (str): Field path (e.g., "use_cache", "ocr.backend")
-///
-/// Returns:
-///     Any | None: Field value parsed from JSON, or None if field not found
-///
-/// Example:
-///     >>> from kreuzberg import ExtractionConfig, config_get_field
-///     >>> config = ExtractionConfig(use_cache=True)
-///     >>> use_cache = config_get_field(config, "use_cache")
-///     >>> print(use_cache)  # True
-#[pyfunction]
-#[pyo3(signature = (config, field_name))]
-pub fn config_get_field(config: ExtractionConfig, field_name: &str) -> PyResult<Option<Py<PyAny>>> {
-    let json_value = serde_json::to_value(&config.inner)
-        .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(format!("Failed to serialize config: {}", e)))?;
-
-    let mut current = &json_value;
-    for part in field_name.split('.') {
-        if let Some(obj) = current.as_object() {
-            match obj.get(part) {
-                Some(val) => current = val,
-                None => return Ok(None),
-            }
-        } else {
-            return Ok(None);
-        }
-    }
-
-    Python::attach(|py| {
-        crate::plugins::json_value_to_py(py, current)
-            .map(|v| v.unbind())
-            .map(Some)
-    })
-}
-
-/// Merge two configurations.
-///
-/// Performs a merge of two ExtractionConfig structures, where override takes
-/// precedence. The base config is modified in-place.
-///
-/// Args:
-///     base (ExtractionConfig): Base configuration (will be modified)
-///     override (ExtractionConfig): Override configuration (applied on top of base)
-///
-/// Example:
-///     >>> from kreuzberg import ExtractionConfig, config_merge
-///     >>> base = ExtractionConfig(use_cache=True, force_ocr=False)
-///     >>> override = ExtractionConfig(force_ocr=True)
-///     >>> config_merge(base, override)
-///     >>> print(base.force_ocr)  # True
-///     >>> print(base.use_cache)  # True (unchanged)
-#[pyfunction]
-#[pyo3(signature = (base, override_config))]
-pub fn config_merge(py: Python<'_>, base: Py<ExtractionConfig>, override_config: &ExtractionConfig) -> PyResult<()> {
-    let override_default = kreuzberg::ExtractionConfig::default();
-
-    let mut base_mut = base.borrow_mut(py);
-
-    if override_config.inner.use_cache != override_default.use_cache {
-        base_mut.inner.use_cache = override_config.inner.use_cache;
-    }
-    if override_config.inner.enable_quality_processing != override_default.enable_quality_processing {
-        base_mut.inner.enable_quality_processing = override_config.inner.enable_quality_processing;
-    }
-    if override_config.inner.force_ocr != override_default.force_ocr {
-        base_mut.inner.force_ocr = override_config.inner.force_ocr;
-    }
-    if override_config.inner.ocr.is_some() {
-        base_mut.inner.ocr = override_config.inner.ocr.clone();
-    }
-    if override_config.inner.chunking.is_some() {
-        base_mut.inner.chunking = override_config.inner.chunking.clone();
-    }
-    if override_config.inner.images.is_some() {
-        base_mut.inner.images = override_config.inner.images.clone();
-    }
-    if override_config.inner.pdf_options.is_some() {
-        base_mut.inner.pdf_options = override_config.inner.pdf_options.clone();
-    }
-    if override_config.inner.token_reduction.is_some() {
-        base_mut.inner.token_reduction = override_config.inner.token_reduction.clone();
-    }
-    if override_config.inner.language_detection.is_some() {
-        base_mut.inner.language_detection = override_config.inner.language_detection.clone();
-    }
-    if override_config.inner.keywords.is_some() {
-        base_mut.inner.keywords = override_config.inner.keywords.clone();
-    }
-    if override_config.inner.postprocessor.is_some() {
-        base_mut.inner.postprocessor = override_config.inner.postprocessor.clone();
-    }
-    if override_config.inner.html_options.is_some() {
-        base_mut.inner.html_options = override_config.inner.html_options.clone();
-    }
-    if override_config.inner.max_concurrent_extractions.is_some() {
-        base_mut.inner.max_concurrent_extractions = override_config.inner.max_concurrent_extractions;
-    }
-    if override_config.inner.pages.is_some() {
-        base_mut.inner.pages = override_config.inner.pages.clone();
-    }
-
-    Ok(())
-}
-
-/// Discover extraction configuration from the environment.
-///
-/// Attempts to locate a Kreuzberg configuration file using the following strategy:
-/// 1. If KREUZBERG_CONFIG_PATH environment variable is set, load from that path
-/// 2. Otherwise, search for kreuzberg.toml, kreuzberg.yaml, or kreuzberg.json
-///    in the current directory and parent directories (walking up the tree)
-/// 3. Return None if no configuration file is found
-///
-/// Returns:
-///     ExtractionConfig | None: Configuration if found and valid, None otherwise
-///
-/// # Errors
-/// Raises RuntimeError if the discovered config file is invalid or cannot be parsed.
-#[pyfunction]
-pub fn _discover_extraction_config_impl(py: Python<'_>) -> PyResult<Option<Py<ExtractionConfig>>> {
-    match kreuzberg::ExtractionConfig::discover() {
-        Ok(Some(inner)) => {
-            let config = ExtractionConfig {
-                inner,
-                html_options_dict: None,
-            };
-            Ok(Some(Py::new(py, config)?))
-        }
-        Ok(None) => Ok(None),
-        Err(e) => Err(pyo3::exceptions::PyRuntimeError::new_err(e.to_string())),
-    }
-}
-
-/// Load extraction configuration from a specific file.
-///
-/// Loads an ExtractionConfig from the specified file path. The file format
-/// is determined by the file extension (.toml, .yaml, or .json).
-///
-/// Args:
-///     path (str): Path to the configuration file (absolute or relative)
-///
-/// Returns:
-///     ExtractionConfig: Configuration parsed from the file
-///
-/// # Errors
-/// Raises:
-///     - FileNotFoundError: If the configuration file does not exist
-///     - RuntimeError: If the file cannot be read or parsed
-///     - ValueError: If the file format is invalid or unsupported
-#[pyfunction]
-pub fn _load_extraction_config_from_file_impl(py: Python<'_>, path: &str) -> PyResult<Py<ExtractionConfig>> {
-    match kreuzberg::ExtractionConfig::from_file(path) {
-        Ok(inner) => {
-            let config = ExtractionConfig {
-                inner,
-                html_options_dict: None,
-            };
-            Py::new(py, config).map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e.to_string()))
-        }
-        Err(e) => {
-            let error_msg = e.to_string();
-            if error_msg.contains("No such file") || error_msg.contains("not found") {
-                Err(pyo3::exceptions::PyFileNotFoundError::new_err(error_msg))
-            } else if error_msg.contains("Invalid") || error_msg.contains("malformed") {
-                Err(pyo3::exceptions::PyValueError::new_err(error_msg))
-            } else {
-                Err(pyo3::exceptions::PyRuntimeError::new_err(error_msg))
-            }
-        }
     }
 }

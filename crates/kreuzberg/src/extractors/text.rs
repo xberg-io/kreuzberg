@@ -92,6 +92,7 @@ impl DocumentExtractor for PlainTextExtractor {
             chunks: None,
             images: None,
             elements: None,
+            djot_content: None,
         })
     }
 
@@ -186,6 +187,7 @@ impl DocumentExtractor for MarkdownExtractor {
             chunks: None,
             images: None,
             elements: None,
+            djot_content: None,
         })
     }
 

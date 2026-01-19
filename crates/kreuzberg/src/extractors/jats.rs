@@ -571,6 +571,7 @@ impl DocumentExtractor for JatsExtractor {
             chunks: None,
             images: None,
             pages: None,
+            djot_content: None,
             elements: None,
         })
     }

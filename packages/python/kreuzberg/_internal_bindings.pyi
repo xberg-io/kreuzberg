@@ -1259,6 +1259,39 @@ class Chunk(TypedDict, total=False):
     embedding: list[float] | None
     metadata: dict[str, Any]
 
+class DjotContent(TypedDict, total=False):
+    plain_text: str
+    blocks: list[FormattedBlock]
+    metadata: Metadata
+    tables: list[ExtractedTable]
+    images: list[DjotImage]
+    links: list[DjotLink]
+    footnotes: list[Footnote]
+    attributes: dict[str, Any]
+
+class FormattedBlock(TypedDict, total=False):
+    block_type: str
+    level: int | None
+    content: str | None
+    children: list[FormattedBlock] | None
+    attributes: dict[str, Any] | None
+
+class DjotImage(TypedDict, total=False):
+    url: str
+    alt: str | None
+    title: str | None
+    attributes: dict[str, Any] | None
+
+class DjotLink(TypedDict, total=False):
+    url: str
+    text: str
+    title: str | None
+    link_type: str | None
+
+class Footnote(TypedDict, total=False):
+    label: str
+    content: str
+
 class ExtractionResult:
     content: str
     mime_type: str
@@ -1268,6 +1301,7 @@ class ExtractionResult:
     chunks: list[Chunk] | None
     images: list[ExtractedImage] | None
     pages: list[PageContent] | None
+    djot_content: DjotContent | None
     def get_page_count(self) -> int: ...
     def get_chunk_count(self) -> int: ...
     def get_detected_language(self) -> str | None: ...

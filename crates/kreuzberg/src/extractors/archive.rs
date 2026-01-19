@@ -78,7 +78,8 @@ fn build_archive_result(
         chunks: None,
         images: None,
         pages: None,
-            elements: None,
+        djot_content: None,
+        elements: None,
     }
 }
 

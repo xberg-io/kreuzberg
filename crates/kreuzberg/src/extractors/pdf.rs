@@ -593,6 +593,7 @@ impl DocumentExtractor for PdfExtractor {
             detected_languages: None,
             chunks: None,
             images,
+            djot_content: None,
             elements: None,
         })
     }
