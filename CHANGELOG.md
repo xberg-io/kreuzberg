@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+---
+
+## [4.1.0] - 2026-01-21
+
 ### Added
 
 #### API
@@ -118,7 +122,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Type reference updates: Added Element, ElementType, ElementMetadata, BoundingBox, OutputFormat
   - Code snippets for element-based extraction in all 10 languages
 
+### Changed
+
+#### Codebase
+- **Major refactoring for maintainability**: Split 22 large monolithic files into 110+ focused modules for improved code organization and maintainability
+  - Rust core: Reorganized into logical modules (extraction, validation, mime detection, etc.)
+  - Ruby bindings: Modularized into separate files for extraction, config, plugins, result conversion, etc.
+  - TypeScript test-utils: Split into focused modules for assertions, fixtures, paths, and config mapping
+  - Improved developer experience with clearer module boundaries and responsibilities
+  - No breaking changes to public APIs across all language bindings
+
 ### Fixed
+
+#### CI/CD
+- **Ruby macOS builds**: Removed unused imports in Ruby FFI bindings that caused compilation failures with `-D warnings` flag
+  - Fixed 14 unused import warnings across error_handling, extraction, validation, plugins, config, result, and metadata modules
+  - Added `#[allow(dead_code)]` to unused helper functions in config module
+- **TypeScript tests on ARM64**: Fixed module resolution error for `@kreuzberg/test-utils/config-mapping`
+  - Corrected package.json exports to use `.js` (ESM) and `.cjs` (CommonJS) instead of `.mjs` files
+  - Fixed main and module field paths to match actual tsup build output
+- **Go Windows builds**: Disabled incompatible verbose linker flags that caused CGO compilation errors
+  - Removed `-Wl,-v` and `-Wl,--verbose` flags that trigger "invalid flag in go:cgo_ldflag" errors on Windows
+  - Added TODO comments for future investigation of Windows-specific CGO issues
+- **PHP Windows builds**: Added documentation for cargo fingerprint cache corruption issues
+  - Added TODO comments to track intermittent fingerprint file not found errors on Windows runners
 
 #### Documentation
 - **MkDocs build**: Fixed broken benchmark documentation links in `docs/concepts/performance.md`
