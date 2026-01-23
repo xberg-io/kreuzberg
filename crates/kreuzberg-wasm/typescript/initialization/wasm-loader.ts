@@ -158,12 +158,14 @@ export async function initWasm(): Promise<void> {
 			let wasmModule: unknown;
 			// Use const variables to make imports dynamic and bypass TypeScript's static module resolution.
 			// This allows typecheck to pass when the WASM module hasn't been built yet (e.g., in CI).
-			const pkgPath = "../pkg/kreuzberg_wasm.js";
-			const fallbackPath = "./kreuzberg_wasm.js";
+			// Use URL-based resolution for cross-platform compatibility (especially Windows).
+			const baseUrl = new URL(import.meta.url);
+			const pkgUrl = new URL("../pkg/kreuzberg_wasm.js", baseUrl).href;
+			const fallbackUrl = new URL("./kreuzberg_wasm.js", baseUrl).href;
 			try {
-				wasmModule = await import(/* @vite-ignore */ pkgPath);
+				wasmModule = await import(/* @vite-ignore */ pkgUrl);
 			} catch {
-				wasmModule = await import(/* @vite-ignore */ fallbackPath);
+				wasmModule = await import(/* @vite-ignore */ fallbackUrl);
 			}
 			const loadedModule = wasmModule as unknown as WasmModule;
 			setWasmModule(loadedModule);

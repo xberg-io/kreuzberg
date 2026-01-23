@@ -20,6 +20,37 @@ echo "Tag: $tag"
 echo "Version: $version"
 echo "Artifacts: $artifacts_dir"
 
+# Function to download file with retry logic and validation
+download_with_retry() {
+  local url="$1"
+  local output_file="$2"
+  local attempt=1
+
+  while [ $attempt -le "$max_retries" ]; do
+    echo "Downloading $url (attempt $attempt/$max_retries)..."
+
+    # Download to temp file with curl checking HTTP status
+    if curl -f -L --max-time 120 --retry 1 --retry-delay 2 -o "$output_file" "$url" 2>/dev/null; then
+      echo "Download successful"
+      return 0
+    else
+      exit_code=$?
+      echo "Download failed with exit code $exit_code" >&2
+
+      if [ $attempt -lt "$max_retries" ]; then
+        echo "Waiting ${retry_delay}s before retry..."
+        sleep "$retry_delay"
+        ((attempt++))
+      else
+        echo "Error: Failed to download after $max_retries attempts" >&2
+        return 1
+      fi
+    fi
+  done
+
+  return 1
+}
+
 declare -A bottle_hashes
 declare -a bottle_tags
 
@@ -106,37 +137,6 @@ if [ ! -f "$formula_path" ]; then
 fi
 
 formula_content=$(<"$formula_path")
-
-# Function to download file with retry logic and validation
-download_with_retry() {
-  local url="$1"
-  local output_file="$2"
-  local attempt=1
-
-  while [ $attempt -le "$max_retries" ]; do
-    echo "Downloading $url (attempt $attempt/$max_retries)..."
-
-    # Download to temp file with curl checking HTTP status
-    if curl -f -L --max-time 120 --retry 1 --retry-delay 2 -o "$output_file" "$url" 2>/dev/null; then
-      echo "Download successful"
-      return 0
-    else
-      exit_code=$?
-      echo "Download failed with exit code $exit_code" >&2
-
-      if [ $attempt -lt "$max_retries" ]; then
-        echo "Waiting ${retry_delay}s before retry..."
-        sleep "$retry_delay"
-        ((attempt++))
-      else
-        echo "Error: Failed to download after $max_retries attempts" >&2
-        return 1
-      fi
-    fi
-  done
-
-  return 1
-}
 
 # Fetch the SHA256 of the source tarball with proper temp file handling
 echo "Fetching SHA256 of source tarball..."

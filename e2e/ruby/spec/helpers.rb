@@ -80,7 +80,7 @@ module E2ERuby
     config = build_config(config_hash)
     result = nil
     begin
-      result = Kreuzberg.extract_file_sync(document_path.to_s, config: config)
+      result = Kreuzberg.extract_file_sync(path: document_path.to_s, config: config)
     rescue StandardError => e
       if (reason = skip_reason_for(e, fixture_id, requirements, notes))
         raise RSpec::Core::Pending::SkipDeclaredInExample, reason
