@@ -36,7 +36,7 @@ repos:
 
   # Python: ruff (linting + formatting) + mypy (type checking)
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.14.13
+    rev: v0.14.14
     hooks:
       - id: ruff
         args: [--fix]
@@ -68,7 +68,7 @@ repos:
 
   # Node.js/TypeScript: biome (formatting + linting)
   - repo: https://github.com/biomejs/pre-commit
-    rev: v2.3.11
+    rev: v2.3.12
     hooks:
       - id: biome-check
         files: ^(crates/kreuzberg-node|crates/kreuzberg-wasm)/

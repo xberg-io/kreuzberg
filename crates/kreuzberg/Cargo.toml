@@ -198,7 +198,7 @@ rake = { version = "0.3.6", optional = true }
 axum = { version = "0.8", features = ["macros", "json", "multipart"], optional = true }
 tower = { version = "0.5", optional = true }
 tower-http = { version = "0.6", features = ["cors", "trace", "limit"], optional = true }
-rmcp = { version = "0.13.0", features = [
+rmcp = { version = "0.14.0", features = [
     "server",
     "macros",
     "base64",

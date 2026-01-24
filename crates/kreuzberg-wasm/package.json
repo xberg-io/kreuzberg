@@ -107,13 +107,13 @@
 	},
 	"devDependencies": {
 		"@types/node": "^25.0.10",
-		"@vitest/coverage-v8": "^4.0.17",
-		"@vitest/ui": "^4.0.17",
+		"@vitest/coverage-v8": "^4.0.18",
+		"@vitest/ui": "^4.0.18",
 		"jsdom": "^27.4.0",
 		"oxlint": "^1.41.0",
 		"tsup": "^8.5.1",
 		"typescript": "^5.9.3",
-		"vitest": "^4.0.17"
+		"vitest": "^4.0.18"
 	},
 	"optionalDependencies": {
 		"tesseract-wasm": "^0.11.0"
