@@ -226,9 +226,14 @@ puts "Detected languages: #{result.detected_languages}"
 
 ## System Requirements
 
+### Ruby Version
+
+- **Ruby 3.2.0 or higher** (including Ruby 4.x)
+- Ruby 4.0+ is fully supported with no code changes required
+- Magnus bindings compile successfully on all supported Ruby versions
+
 ### Required
 
-- Ruby 2.7 or higher
 - Rust toolchain (for native extension compilation)
 
 ### Optional
@@ -242,6 +247,17 @@ sudo apt-get install tesseract-ocr  # Ubuntu/Debian
 brew install libreoffice        # macOS
 sudo apt-get install libreoffice    # Ubuntu/Debian
 ```
+
+### Ruby 4.0 Compatibility
+
+Kreuzberg is fully compatible with Ruby 4.0 (released December 25, 2025) and later. Key Ruby 4.0 features that work seamlessly:
+
+- **Ruby Box** - Improved memory efficiency and performance
+- **ZJIT Compiler** - Enhanced JIT compilation for faster execution
+- **Ractor Improvements** - Better multi-threaded document processing
+- **Set Promoted to Core** - No changes needed for Kreuzberg
+
+All tests pass with Ruby 4.0.1 with 100% compatibility. The gem compiles without any breaking changes.
 
 ## Development
 

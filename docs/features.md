@@ -872,7 +872,8 @@ choco install tesseract libreoffice
 
 ### Ruby Requirements
 
-- Ruby 3.3+
+- Ruby 3.2.0 or higher (including Ruby 4.x)
+- Ruby 4.0+ is fully supported with no code changes required
 - Native extension support
 
 ## Docker Images

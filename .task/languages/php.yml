@@ -90,26 +90,26 @@ tasks:
     dir: packages/php
     cmds:
       - composer exec -- php-cs-fixer fix
-      - composer exec -- phpstan analyse
+      - composer exec -- phpstan analyse --memory-limit=512M
 
   lint:check:
     desc: Lint PHP code in check-only mode (php-cs-fixer + phpstan, no fixes)
     dir: packages/php
     cmds:
       - composer exec -- php-cs-fixer fix --dry-run --diff
-      - composer exec -- phpstan analyse
+      - composer exec -- phpstan analyse --memory-limit=512M
 
   lint:phpstan:
     desc: Run static analysis with PHPStan
     dir: packages/php
     cmds:
-      - composer exec -- phpstan analyse
+      - composer exec -- phpstan analyse --memory-limit=512M
 
   lint:phpstan:check:
     desc: Check static analysis with PHPStan in strict mode
     dir: packages/php
     cmds:
-      - composer exec -- phpstan analyse --level=max
+      - composer exec -- phpstan analyse --level=max --memory-limit=512M
 
   format:
     desc: Format PHP code with modifications (php-cs-fixer)
@@ -156,7 +156,7 @@ tasks:
     dir: e2e/php
     cmds:
       - composer exec -- php-cs-fixer fix --dry-run --diff
-      - composer exec -- phpstan analyse
+      - composer exec -- phpstan analyse --memory-limit=512M
 
   e2e:test:
     desc: Run PHP E2E tests

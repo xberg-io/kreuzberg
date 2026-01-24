@@ -241,7 +241,7 @@ Bundler projects can add it to the Gemfile:
 gem 'kreuzberg', '~> 4.0'
 ```
 
-Native extension builds require Ruby 3.3+ plus MSYS2 on Windows. Set `RBENV_VERSION`/`chruby` accordingly and ensure `bundle config set build.kreuzberg --with-cflags="-std=c++17"` if your compiler defaults are older.
+Native extension builds require Ruby 3.2.0 or higher (including Ruby 4.x) plus MSYS2 on Windows. Set `RBENV_VERSION`/`chruby` accordingly and ensure `bundle config set build.kreuzberg --with-cflags="-std=c++17"` if your compiler defaults are older.
 
 Next steps: [Ruby Quick Start](../guides/extraction.md#ruby) • [Ruby API Reference](../reference/api-ruby.md)
 

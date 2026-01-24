@@ -28,7 +28,7 @@ The test suite (`main_test.rb`) is organized into 15 sections, each testing a di
 
 ### Prerequisites
 
-- Ruby 3.2+ (3.2.0 or later)
+- Ruby 3.2.0 or higher (including Ruby 4.x)
 - RubyGems
 - The `kreuzberg` gem (4.0.0-rc.16) installed from RubyGems
 

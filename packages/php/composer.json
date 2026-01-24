@@ -61,7 +61,7 @@
     },
     "scripts": {
         "test": "vendor/bin/phpunit",
-        "phpstan": "vendor/bin/phpstan analyse src --level=max",
+        "phpstan": "vendor/bin/phpstan analyse src --level=max --memory-limit=512M",
         "lint": "@phpstan",
         "format": "vendor/bin/php-cs-fixer fix src",
         "format:check": "vendor/bin/php-cs-fixer fix src --dry-run"

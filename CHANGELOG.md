@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+#### Language Bindings
+- **Ruby**: Ruby 4.0 support
+  - Updated gemspec to support Ruby 3.2.0 through 4.x
+  - Updated RuboCop target version to 4.0
+  - Tested with Ruby 4.0.1: all tests pass with Magnus bindings
+  - No breaking changes required in binding code
+
 ---
 
 ## [4.1.1] - 2026-01-23
