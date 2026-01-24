@@ -24,7 +24,7 @@ thiserror = { workspace = true }
 image = { workspace = true, features = ["png"] }
 
 [build-dependencies]
-cc = { version = "^1.2.53", optional = true }
+cc = { version = "^1.2.54", optional = true }
 cmake = { version = "0.1.57", optional = true }
 zip = { version = "7.2.0", optional = true }
 
