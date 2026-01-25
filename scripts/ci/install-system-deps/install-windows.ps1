@@ -75,8 +75,27 @@ if (-not $tesseractCacheHit) {
       # Download English language data if not present
       if (-not (Test-Path "$tessdataPath\eng.traineddata")) {
         Write-Host "  Downloading English language data..."
-        $langDataUrl = "https://github.com/UB-Mannheim/tesseract/wiki/Downloads"
-        Write-Host "  Note: Language data should be in $tessdataPath"
+        try {
+          $engUrl = "https://github.com/tesseract-ocr/tessdata_fast/raw/main/eng.traineddata"
+          Invoke-WebRequest -Uri $engUrl -OutFile "$tessdataPath\eng.traineddata" -ErrorAction Stop
+          Write-Host "  ✓ Downloaded eng.traineddata"
+        }
+        catch {
+          Write-Host "  ::warning::Failed to download eng.traineddata: $($_.Exception.Message)"
+        }
+      }
+
+      # Download OSD data if not present (needed for orientation detection)
+      if (-not (Test-Path "$tessdataPath\osd.traineddata")) {
+        Write-Host "  Downloading OSD data..."
+        try {
+          $osdUrl = "https://github.com/tesseract-ocr/tessdata_fast/raw/main/osd.traineddata"
+          Invoke-WebRequest -Uri $osdUrl -OutFile "$tessdataPath\osd.traineddata" -ErrorAction Stop
+          Write-Host "  ✓ Downloaded osd.traineddata"
+        }
+        catch {
+          Write-Host "  ::warning::Failed to download osd.traineddata: $($_.Exception.Message)"
+        }
       }
     }
   }

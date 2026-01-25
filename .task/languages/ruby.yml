@@ -147,14 +147,14 @@ tasks:
     desc: Run Ruby E2E tests
     dir: e2e/ruby
     cmds:
-      - "{{.BUNDLE}} exec rspec"
+      - BUNDLE_GEMFILE="../../packages/ruby/Gemfile" {{.BUNDLE}} exec rspec
 
   e2e:lint:
     desc: Lint Ruby E2E code
     dir: e2e/ruby
     cmds:
-      - "{{.BUNDLE}} exec rubocop --config .rubocop.yml"
-      - "{{.BUNDLE}} exec steep check"
+      - BUNDLE_GEMFILE="../../packages/ruby/Gemfile" {{.BUNDLE}} exec rubocop --config .rubocop.yml
+      - BUNDLE_GEMFILE="../../packages/ruby/Gemfile" {{.BUNDLE}} exec steep check
 
   e2e:verify:
     desc: Regenerate and validate Ruby E2E suite (generate + lint + test)

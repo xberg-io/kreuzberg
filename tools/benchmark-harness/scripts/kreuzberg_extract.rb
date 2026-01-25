@@ -103,7 +103,7 @@ def extract_batch(file_paths)
   start_wall = Time.now
   debug_log "Timing start (monotonic): #{start_monotonic.round(6)}, wall: #{start_wall.iso8601(6)}"
 
-  results = Kreuzberg.batch_extract_file(file_paths)
+  results = Kreuzberg.batch_extract_files_sync(paths: file_paths)
 
   end_monotonic = Process.clock_gettime(Process::CLOCK_MONOTONIC)
   end_wall = Time.now
