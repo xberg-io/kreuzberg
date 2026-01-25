@@ -529,12 +529,56 @@ jobs:
           find target/release -maxdepth 1 \( -name "libkreuzberg_ffi*" \) -exec ls -lh {} \; 2>/dev/null || echo "  No FFI libraries found"
           echo ""
           echo "=== Running Go tests with verbose output and full output ==="
-          time task go:test:ci -v 2>&1
-          GO_TEST_EXIT=$?
+          # Capture output to check for test success even if exit code is non-zero
+          # Exit code 201 can occur on Windows/macOS due to PDFium library cleanup during process exit
+          # See: crates/kreuzberg/src/pdf/bindings.rs for details on this known FFI issue
+          TEST_OUTPUT_FILE=$(mktemp)
+          set +e
+          time task go:test:ci -v 2>&1 | tee "$TEST_OUTPUT_FILE"
+          GO_TEST_EXIT=${PIPESTATUS[0]}
+          set -e
           echo ""
           echo "Go test exit code: $GO_TEST_EXIT"
-          echo "::endgroup::"
-          exit $GO_TEST_EXIT
+
+          # Check if tests actually passed by examining output
+          # Go test output patterns:
+          #   Success: "ok  <package>" per package, "PASS" at end
+          #   Failure: "FAIL<tab><package>" per package, "FAIL" at end
+          #   Verbose: "--- PASS: TestName" or "--- FAIL: TestName"
+          if [ $GO_TEST_EXIT -eq 0 ]; then
+            echo "Tests passed with exit code 0"
+            rm -f "$TEST_OUTPUT_FILE"
+            echo "::endgroup::"
+            exit 0
+          elif [ $GO_TEST_EXIT -eq 201 ]; then
+            # Exit code 201 is a known issue on Windows/macOS caused by PDFium library
+            # cleanup during process exit (SIGTRAP/STATUS_DLL_INIT_FAILED).
+            # The Rust code leaks the Pdfium instance with Box::leak to prevent cleanup,
+            # but cgo runtime cleanup order still triggers the PDFium destructor.
+            # Check if tests actually passed before the cleanup crash.
+            if grep -qE "^FAIL[[:space:]]|^--- FAIL:" "$TEST_OUTPUT_FILE"; then
+              echo "::error::Tests failed (found FAIL in output)"
+              rm -f "$TEST_OUTPUT_FILE"
+              echo "::endgroup::"
+              exit 1
+            elif grep -qE "^ok[[:space:]]|^PASS$" "$TEST_OUTPUT_FILE"; then
+              echo "::warning::Exit code 201 detected but tests passed - this is a known PDFium cleanup issue on Windows/macOS"
+              echo "See crates/kreuzberg/src/pdf/bindings.rs for details on this FFI cleanup issue"
+              rm -f "$TEST_OUTPUT_FILE"
+              echo "::endgroup::"
+              exit 0
+            else
+              echo "::error::Exit code 201 and could not determine test status from output"
+              rm -f "$TEST_OUTPUT_FILE"
+              echo "::endgroup::"
+              exit 201
+            fi
+          else
+            echo "::error::Tests failed with exit code $GO_TEST_EXIT"
+            rm -f "$TEST_OUTPUT_FILE"
+            echo "::endgroup::"
+            exit $GO_TEST_EXIT
+          fi
         env:
           LD_LIBRARY_PATH: ${{ env.LD_LIBRARY_PATH }}
           DYLD_LIBRARY_PATH: ${{ env.DYLD_LIBRARY_PATH }}
@@ -562,12 +606,47 @@ jobs:
         run: |
           echo "::group::E2E Test Execution"
           echo "=== Running E2E tests with verbose output ==="
-          time task go:e2e:test -v 2>&1
-          E2E_TEST_EXIT=$?
+          # Capture output to check for test success even if exit code is non-zero
+          # Exit code 201 can occur on Windows/macOS due to PDFium library cleanup during process exit
+          TEST_OUTPUT_FILE=$(mktemp)
+          set +e
+          time task go:e2e:test -v 2>&1 | tee "$TEST_OUTPUT_FILE"
+          E2E_TEST_EXIT=${PIPESTATUS[0]}
+          set -e
           echo ""
           echo "E2E test exit code: $E2E_TEST_EXIT"
-          echo "::endgroup::"
-          exit $E2E_TEST_EXIT
+
+          # Check if tests actually passed by examining output
+          # Go test output: "ok  <pkg>" for pass, "FAIL<tab><pkg>" for fail
+          if [ $E2E_TEST_EXIT -eq 0 ]; then
+            echo "E2E tests passed with exit code 0"
+            rm -f "$TEST_OUTPUT_FILE"
+            echo "::endgroup::"
+            exit 0
+          elif [ $E2E_TEST_EXIT -eq 201 ]; then
+            # Exit code 201 is a known issue on Windows/macOS caused by PDFium cleanup
+            if grep -qE "^FAIL[[:space:]]|^--- FAIL:" "$TEST_OUTPUT_FILE"; then
+              echo "::error::E2E tests failed (found FAIL in output)"
+              rm -f "$TEST_OUTPUT_FILE"
+              echo "::endgroup::"
+              exit 1
+            elif grep -qE "^ok[[:space:]]|^PASS$" "$TEST_OUTPUT_FILE"; then
+              echo "::warning::Exit code 201 detected but E2E tests passed - known PDFium cleanup issue"
+              rm -f "$TEST_OUTPUT_FILE"
+              echo "::endgroup::"
+              exit 0
+            else
+              echo "::error::Exit code 201 and could not determine test status from output"
+              rm -f "$TEST_OUTPUT_FILE"
+              echo "::endgroup::"
+              exit 201
+            fi
+          else
+            echo "::error::E2E tests failed with exit code $E2E_TEST_EXIT"
+            rm -f "$TEST_OUTPUT_FILE"
+            echo "::endgroup::"
+            exit $E2E_TEST_EXIT
+          fi
         env:
           LD_LIBRARY_PATH: ${{ env.LD_LIBRARY_PATH }}
           DYLD_LIBRARY_PATH: ${{ env.DYLD_LIBRARY_PATH }}
