@@ -3,6 +3,14 @@
 use super::types::KeywordAlgorithm;
 use serde::{Deserialize, Serialize};
 
+fn default_max_keywords() -> usize {
+    10
+}
+
+fn default_ngram_range() -> (usize, usize) {
+    (1, 3)
+}
+
 /// YAKE-specific parameters.
 #[cfg(feature = "keywords-yake")]
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -45,15 +53,18 @@ impl Default for RakeParams {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct KeywordConfig {
     /// Algorithm to use for extraction.
+    #[serde(default)]
     pub algorithm: KeywordAlgorithm,
 
     /// Maximum number of keywords to extract (default: 10).
+    #[serde(default = "default_max_keywords")]
     pub max_keywords: usize,
 
     /// Minimum score threshold (0.0-1.0, default: 0.0).
     ///
     /// Keywords with scores below this threshold are filtered out.
     /// Note: Score ranges differ between algorithms.
+    #[serde(default)]
     pub min_score: f32,
 
     /// N-gram range for keyword extraction (min, max).
@@ -61,6 +72,7 @@ pub struct KeywordConfig {
     /// (1, 1) = unigrams only
     /// (1, 2) = unigrams and bigrams
     /// (1, 3) = unigrams, bigrams, and trigrams (default)
+    #[serde(default = "default_ngram_range")]
     pub ngram_range: (usize, usize),
 
     /// Language code for stopword filtering (e.g., "en", "de", "fr").
