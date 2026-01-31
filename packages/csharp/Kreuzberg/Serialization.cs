@@ -917,7 +917,25 @@ internal class MetadataConverter : JsonConverter<Metadata>
                 case "keywords":
                     if (reader.TokenType == JsonTokenType.StartArray)
                     {
-                        metadata.Keywords = JsonSerializer.Deserialize<List<string>>(ref reader, options);
+                        // Keywords can be simple strings or extracted keyword objects.
+                        // Parse as JsonElement to inspect the first element.
+                        using (var keywordsDoc = JsonDocument.ParseValue(ref reader))
+                        {
+                            var keywordsEl = keywordsDoc.RootElement;
+                            using var kwEnum = keywordsEl.EnumerateArray();
+                            if (kwEnum.MoveNext() && kwEnum.Current.ValueKind == JsonValueKind.String)
+                            {
+                                metadata.Keywords = JsonSerializer.Deserialize<List<string>>(keywordsEl.GetRawText(), options);
+                            }
+                            else
+                            {
+                                var extracted = Serialization.TryDeserializeExtractedKeywords(keywordsEl);
+                                if (extracted != null)
+                                {
+                                    metadata.ExtractedKeywords = extracted;
+                                }
+                            }
+                        }
                     }
                     break;
                 default:
@@ -1521,7 +1539,23 @@ internal static class Serialization
 
         if (root.TryGetProperty("keywords", out var metaKeywords) && metaKeywords.ValueKind == JsonValueKind.Array)
         {
-            metadata.Keywords = DeserializeElement<List<string>>(metaKeywords);
+            // Keywords can be either simple strings (document metadata) or
+            // objects with text/score/algorithm (extracted keywords from YAKE/RAKE).
+            // Check the first element to determine the format.
+            using var enumerator = metaKeywords.EnumerateArray();
+            if (enumerator.MoveNext() && enumerator.Current.ValueKind == JsonValueKind.String)
+            {
+                metadata.Keywords = DeserializeElement<List<string>>(metaKeywords);
+            }
+            else
+            {
+                // Extracted keywords (objects) - try to deserialize as ExtractedKeyword list
+                var extracted = TryDeserializeExtractedKeywords(metaKeywords);
+                if (extracted != null)
+                {
+                    metadata.ExtractedKeywords = extracted;
+                }
+            }
         }
 
         if (root.TryGetProperty("language", out var language))
@@ -1991,7 +2025,7 @@ internal static class Serialization
     /// Attempts to deserialize a JSON array as extracted keywords (from YAKE/RAKE algorithms).
     /// Returns null if the array contains simple strings (format-specific keywords like HTML meta keywords).
     /// </summary>
-    private static List<ExtractedKeyword>? TryDeserializeExtractedKeywords(JsonElement keywordsArray)
+    internal static List<ExtractedKeyword>? TryDeserializeExtractedKeywords(JsonElement keywordsArray)
     {
         if (keywordsArray.ValueKind != JsonValueKind.Array)
         {

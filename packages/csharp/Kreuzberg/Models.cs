@@ -651,10 +651,17 @@ public sealed class Metadata
     public List<string>? Authors { get; set; }
 
     /// <summary>
-    /// Keywords/tags.
+    /// Keywords/tags (simple string keywords from document metadata).
     /// </summary>
     [JsonPropertyName("keywords")]
     public List<string>? Keywords { get; set; }
+
+    /// <summary>
+    /// Extracted keywords from YAKE/RAKE algorithms (with scores and metadata).
+    /// Populated when keyword extraction is configured; stored separately from simple keywords.
+    /// </summary>
+    [JsonIgnore]
+    public List<ExtractedKeyword>? ExtractedKeywords { get; set; }
 
     /// <summary>
     /// Primary language (ISO 639 code).
@@ -1274,7 +1281,7 @@ public sealed class LinkMetadata
     /// Additional HTML attributes on the link element.
     /// </summary>
     [JsonPropertyName("attributes")]
-    public List<List<string>> Attributes { get; set; } = new();
+    public Dictionary<string, string> Attributes { get; set; } = new();
 }
 
 /// <summary>
@@ -1316,7 +1323,7 @@ public sealed class HtmlImageMetadata
     /// Additional HTML attributes on the image element.
     /// </summary>
     [JsonPropertyName("attributes")]
-    public List<List<string>> Attributes { get; set; } = new();
+    public Dictionary<string, string> Attributes { get; set; } = new();
 }
 
 /// <summary>

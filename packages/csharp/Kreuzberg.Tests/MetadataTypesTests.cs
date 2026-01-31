@@ -175,12 +175,12 @@ public class MetadataTypesTests
     {
         var link = new LinkMetadata { Href = "https://example.com" };
 
-        link.Attributes.Add(new List<string> { "class", "external-link" });
-        link.Attributes.Add(new List<string> { "data-tracking", "123" });
+        link.Attributes["class"] = "external-link";
+        link.Attributes["data-tracking"] = "123";
 
-        Assert.IsType<List<List<string>>>(link.Attributes);
+        Assert.IsType<Dictionary<string, string>>(link.Attributes);
         Assert.Equal(2, link.Attributes.Count);
-        Assert.Contains(new List<string> { "class", "external-link" }, link.Attributes);
+        Assert.True(link.Attributes.ContainsKey("class") && link.Attributes["class"] == "external-link");
     }
 
     [Fact]
@@ -210,12 +210,12 @@ public class MetadataTypesTests
     {
         var image = new HtmlImageMetadata { Src = "image.jpg" };
 
-        image.Attributes.Add(new List<string> { "loading", "lazy" });
-        image.Attributes.Add(new List<string> { "data-src", "image-hd.jpg" });
+        image.Attributes["loading"] = "lazy";
+        image.Attributes["data-src"] = "image-hd.jpg";
 
-        Assert.IsType<List<List<string>>>(image.Attributes);
+        Assert.IsType<Dictionary<string, string>>(image.Attributes);
         Assert.Equal(2, image.Attributes.Count);
-        Assert.Contains(new List<string> { "loading", "lazy" }, image.Attributes);
+        Assert.True(image.Attributes.ContainsKey("loading") && image.Attributes["loading"] == "lazy");
     }
 
     [Fact]
@@ -345,7 +345,7 @@ public class MetadataTypesTests
             Title = "Test Page",
             LinkType = "internal",
             Rel = new List<string> { "canonical" },
-            Attributes = new List<List<string>> { new List<string> { "class", "nav-link" } }
+            Attributes = new Dictionary<string, string> { { "class", "nav-link" } }
         };
 
         var json = JsonSerializer.Serialize(link, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower });
@@ -360,7 +360,7 @@ public class MetadataTypesTests
         Assert.Single(deserialized.Rel);
         Assert.Equal("canonical", deserialized.Rel[0]);
         Assert.Single(deserialized.Attributes);
-        Assert.Contains(new List<string> { "class", "nav-link" }, deserialized.Attributes);
+        Assert.True(deserialized.Attributes.ContainsKey("class") && deserialized.Attributes["class"] == "nav-link");
     }
 
     [Fact]
@@ -373,7 +373,7 @@ public class MetadataTypesTests
             Title = "Example Photo",
             Dimensions = new[] { 1920, 1080 },
             ImageType = "embedded",
-            Attributes = new List<List<string>> { new List<string> { "srcset", "photo-small.jpg 800w" } }
+            Attributes = new Dictionary<string, string> { { "srcset", "photo-small.jpg 800w" } }
         };
 
         var json = JsonSerializer.Serialize(image, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower });
@@ -389,7 +389,7 @@ public class MetadataTypesTests
         Assert.Equal(1080, deserialized.Dimensions[1]);
         Assert.Equal(image.ImageType, deserialized.ImageType);
         Assert.Single(deserialized.Attributes);
-        Assert.Contains(new List<string> { "srcset", "photo-small.jpg 800w" }, deserialized.Attributes);
+        Assert.True(deserialized.Attributes.ContainsKey("srcset") && deserialized.Attributes["srcset"] == "photo-small.jpg 800w");
     }
 
     [Fact]
@@ -553,7 +553,7 @@ public class MetadataTypesTests
             Assert.IsType<LinkMetadata>(link);
             Assert.NotEmpty(link.Href);
             Assert.IsType<List<string>>(link.Rel);
-            Assert.IsType<List<List<string>>>(link.Attributes);
+            Assert.IsType<Dictionary<string, string>>(link.Attributes);
         }
     }
 
@@ -578,7 +578,7 @@ public class MetadataTypesTests
         {
             Assert.IsType<HtmlImageMetadata>(image);
             Assert.NotEmpty(image.Src);
-            Assert.IsType<List<List<string>>>(image.Attributes);
+            Assert.IsType<Dictionary<string, string>>(image.Attributes);
         }
     }
 
@@ -868,12 +868,12 @@ public class MetadataTypesTests
         {
             Src = "image.jpg",
             Alt = "Test",
-            Attributes = new List<List<string>>
+            Attributes = new Dictionary<string, string>
             {
-                new List<string> { "class", "responsive-image" },
-                new List<string> { "data-lazy", "true" },
-                new List<string> { "srcset", "image-small.jpg 480w, image-medium.jpg 1024w" },
-                new List<string> { "sizes", "(max-width: 600px) 100vw, 50vw" }
+                { "class", "responsive-image" },
+                { "data-lazy", "true" },
+                { "srcset", "image-small.jpg 480w, image-medium.jpg 1024w" },
+                { "sizes", "(max-width: 600px) 100vw, 50vw" }
             }
         };
 
@@ -883,10 +883,10 @@ public class MetadataTypesTests
 
         Assert.NotNull(deserialized);
         Assert.Equal(4, deserialized.Attributes.Count);
-        Assert.Contains(new List<string> { "class", "responsive-image" }, deserialized.Attributes);
-        Assert.Contains(new List<string> { "data-lazy", "true" }, deserialized.Attributes);
-        Assert.Contains(new List<string> { "srcset", "image-small.jpg 480w, image-medium.jpg 1024w" }, deserialized.Attributes);
-        Assert.Contains(new List<string> { "sizes", "(max-width: 600px) 100vw, 50vw" }, deserialized.Attributes);
+        Assert.True(deserialized.Attributes.ContainsKey("class") && deserialized.Attributes["class"] == "responsive-image");
+        Assert.True(deserialized.Attributes.ContainsKey("data-lazy") && deserialized.Attributes["data-lazy"] == "true");
+        Assert.True(deserialized.Attributes.ContainsKey("srcset") && deserialized.Attributes["srcset"] == "image-small.jpg 480w, image-medium.jpg 1024w");
+        Assert.True(deserialized.Attributes.ContainsKey("sizes") && deserialized.Attributes["sizes"] == "(max-width: 600px) 100vw, 50vw");
     }
 
     [Fact]
