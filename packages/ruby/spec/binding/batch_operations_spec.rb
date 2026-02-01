@@ -439,12 +439,14 @@ RSpec.describe 'Batch Operations' do
 
     it 'batch results have consistent structure' do
       paths = []
+      tempfiles = []
 
       3.times do |i|
         file = Tempfile.new(["struct_#{i}", '.txt'])
         file.write("Structure test #{i}")
         file.close
         paths << file.path
+        tempfiles << file
       end
 
       config = Kreuzberg::Config::Extraction.new
