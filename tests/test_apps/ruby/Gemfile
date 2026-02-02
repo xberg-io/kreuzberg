@@ -2,5 +2,5 @@
 
 source 'https://rubygems.org'
 
-gem 'kreuzberg', '4.2.7'
+gem 'kreuzberg', '4.2.8'
 gem 'rspec'

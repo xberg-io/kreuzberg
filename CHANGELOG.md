@@ -11,6 +11,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.2.8] - 2026-02-02
+
+### Fixed
+
+#### Python Bindings
+- **ChunkingConfig serde serialization**: Fixed `config_to_json()` and `config_get_field()` outputting `max_characters`/`overlap` instead of `max_chars`/`max_overlap` by using `serde(rename)` instead of `alias` for backwards-compatible serialization
+
+#### Java Bindings
+- **ARM64 SIGBUS crash in `kreuzberg_get_error_details`**: Added `kreuzberg_get_error_details_ptr()` returning a heap-allocated pointer instead of struct-by-value, fixing ABI mismatch in Java Panama FFI on ARM64 architectures
+- **E2E test compilation errors**: Updated `E2EHelpers` to use `getMetadataMap()` and `getElementType().name()` matching current API
+
+#### Ruby Bindings
+- **`rb_sys` build dependency**: Moved `rb_sys` from development to runtime dependency in gemspec so bundler installs it before compiling the native extension, fixing `LoadError: cannot load such file -- rb_sys/mkmf` for end users
+- **Flaky concurrent extraction test**: Prevented `Tempfile` garbage collection in thread safety test by keeping references alive during concurrent extraction
+
+#### FFI
+- **Added `kreuzberg_free_error_details()`**: New function to properly free heap-allocated `CErrorDetails` structs and their internal string fields
+
+### Changed
+
+#### CI
+- **Rust test parallelization**: Removed `--test-threads=1` from unit test script, enabling parallel test execution across 80+ test files
+- **Rust CI timeout**: Reduced job timeout from 180 to 60 minutes
+
+---
+
 ## [4.2.7] - 2026-02-01
 
 ### Added

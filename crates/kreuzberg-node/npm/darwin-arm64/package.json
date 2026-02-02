@@ -1,6 +1,6 @@
 {
 	"name": "@kreuzberg/node-darwin-arm64",
-	"version": "4.2.7",
+	"version": "4.2.8",
 	"cpu": [
 		"arm64"
 	],

@@ -362,7 +362,7 @@ curl http://localhost:8000/health
 ```json title="Response"
 {
   "status": "healthy",
-  "version": "4.2.7"
+  "version": "4.2.8"
 }
 ```
 
@@ -373,7 +373,7 @@ The response may optionally include a `plugins` object containing information ab
 ```json title="Response with Plugins"
 {
   "status": "healthy",
-  "version": "4.2.7",
+  "version": "4.2.8",
   "plugins": {
     "ocr_backends_count": 2,
     "ocr_backends": ["tesseract"],
@@ -405,7 +405,7 @@ curl http://localhost:8000/info
 
 ```json title="Response"
 {
-  "version": "4.2.7",
+  "version": "4.2.8",
   "rust_backend": true
 }
 ```

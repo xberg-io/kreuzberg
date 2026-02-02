@@ -6,7 +6,7 @@ Configuration precedence in Kreuzberg follows this order (highest to lowest):
 2. **Configuration Files** - TOML, YAML, or JSON config files
 3. **Defaults** - Built-in sensible defaults
 
-This document covers all KREUZBERG_* environment variables for version 4.2.7.
+This document covers all KREUZBERG_* environment variables for version 4.2.8.
 
 ## When to Use Environment Variables
 

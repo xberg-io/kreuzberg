@@ -1,6 +1,6 @@
 {
   "name": "@kreuzberg/e2e-tests",
-  "version": "4.2.7",
+  "version": "4.2.8",
   "type": "module",
   "description": "End-to-end tests for Kreuzberg TypeScript bindings config parity",
   "scripts": {
