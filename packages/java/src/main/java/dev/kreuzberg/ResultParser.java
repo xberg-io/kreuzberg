@@ -90,8 +90,9 @@ final class ResultParser {
 		List<String> authors = (List<String>) metadataMap.get("authors");
 		@SuppressWarnings("unchecked")
 		List<String> keywords = (List<String>) metadataMap.get("keywords");
-		@SuppressWarnings("unchecked")
-		PageStructure pages = (PageStructure) metadataMap.get("pages");
+		// Convert the raw map to PageStructure using Jackson (cannot direct cast from
+		// LinkedHashMap)
+		PageStructure pages = convertValue(metadataMap.get("pages"), PageStructure.class);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> imagePreprocessing = (Map<String, Object>) metadataMap.get("image_preprocessing");
 		@SuppressWarnings("unchecked")
@@ -126,6 +127,19 @@ final class ResultParser {
 	private static String getStringFromMap(Map<String, Object> map, String key) {
 		Object value = map.get(key);
 		return value instanceof String ? (String) value : null;
+	}
+
+	private static <T> T convertValue(Object value, Class<T> targetType) {
+		if (value == null) {
+			return null;
+		}
+		try {
+			return MAPPER.convertValue(value, targetType);
+		} catch (IllegalArgumentException e) {
+			// Jackson conversion failed (e.g., validation error in constructor)
+			// Return null instead of propagating the exception
+			return null;
+		}
 	}
 
 	private static <T> T decode(String json, TypeReference<T> type, T fallback) throws Exception {

@@ -274,6 +274,14 @@ jobs:
         run: scripts/ci/rust/verify-pdfium-pkg-config.sh
         shell: bash
 
+      - name: Cache Hugging Face models (fastembed)
+        uses: ./.github/actions/cache-hf-fastembed
+
+      - name: Setup ONNX Runtime
+        uses: ./.github/actions/setup-onnx-runtime
+        with:
+          ort-version: ${{ env.ORT_VERSION }}
+
       - name: Setup Rust
         uses: ./.github/actions/setup-rust
         with:

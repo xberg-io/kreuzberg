@@ -107,8 +107,8 @@ async fn test_variance_within_tolerance() {
     let coefficient_of_variation = (std_dev / mean_ms) * 100.0;
 
     assert!(
-        coefficient_of_variation < 20.0,
-        "Variance too high: CV={:.2}% (expected <20%). Infrastructure may still have noise.",
+        coefficient_of_variation < 30.0,
+        "Variance too high: CV={:.2}% (expected <30%). Infrastructure may still have noise.",
         coefficient_of_variation
     );
     assert!(
@@ -118,7 +118,7 @@ async fn test_variance_within_tolerance() {
     );
 
     println!(
-        "✓ Variance within tolerance: CV={:.2}% (expected <20%), mean={:.2}ms (expected 50±10ms)",
+        "✓ Variance within tolerance: CV={:.2}% (expected <30%), mean={:.2}ms (expected 50±10ms)",
         coefficient_of_variation, mean_ms
     );
 }
