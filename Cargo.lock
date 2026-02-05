@@ -1250,16 +1250,16 @@ dependencies = [
 
 [[package]]
 name = "criterion"
-version = "0.8.1"
+version = "0.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4d883447757bb0ee46f233e9dc22eb84d93a9508c9b868687b274fc431d886bf"
+checksum = "950046b2aa2492f9a536f5f4f9a3de7b9e2476e575e05bd6c333371add4d98f3"
 dependencies = [
  "alloca",
  "anes",
  "cast",
  "ciborium",
  "clap",
- "criterion-plot 0.8.1",
+ "criterion-plot 0.8.2",
  "itertools 0.13.0",
  "num-traits",
  "oorandom",
@@ -1285,9 +1285,9 @@ dependencies = [
 
 [[package]]
 name = "criterion-plot"
-version = "0.8.1"
+version = "0.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ed943f81ea2faa8dcecbbfa50164acf95d555afec96a27871663b300e387b2e4"
+checksum = "d8d80a2f4f5b554395e47b5d8305bc3d27813bacb73493eb1001e8f76dae29ea"
 dependencies = [
  "cast",
  "itertools 0.13.0",
@@ -1847,8 +1847,8 @@ dependencies = [
  "once_cell",
  "parking_lot",
  "skeptic",
- "ureq 3.1.4",
- "zip 7.2.0",
+ "ureq 3.2.0",
+ "zip 7.3.0",
 ]
 
 [[package]]
@@ -3099,7 +3099,7 @@ dependencies = [
  "bytes",
  "calamine",
  "chardetng",
- "criterion 0.8.1",
+ "criterion 0.8.2",
  "dashmap",
  "dirs",
  "docx-lite",
@@ -3170,13 +3170,13 @@ dependencies = [
  "tracing-subscriber",
  "typst-syntax",
  "unicode-normalization",
- "ureq 3.1.4",
+ "ureq 3.2.0",
  "utoipa",
  "uuid",
  "wasm-bindgen-rayon",
  "whatlang",
  "yake-rust",
- "zip 7.2.0",
+ "zip 7.3.0",
 ]
 
 [[package]]
@@ -3192,7 +3192,7 @@ dependencies = [
  "tokio",
  "tracing",
  "tracing-subscriber",
- "ureq 3.1.4",
+ "ureq 3.2.0",
 ]
 
 [[package]]
@@ -3220,7 +3220,7 @@ dependencies = [
  "ahash",
  "async-trait",
  "cbindgen",
- "criterion 0.8.1",
+ "criterion 0.8.2",
  "html-to-markdown-rs",
  "kreuzberg",
  "log",
@@ -3271,7 +3271,7 @@ dependencies = [
  "image",
  "itertools 0.14.0",
  "js-sys",
- "libloading 0.8.9",
+ "libloading 0.9.0",
  "log",
  "maybe-owned",
  "once_cell",
@@ -3324,7 +3324,7 @@ dependencies = [
  "libc",
  "reqwest 0.13.1",
  "thiserror 2.0.18",
- "zip 7.2.0",
+ "zip 7.3.0",
 ]
 
 [[package]]
@@ -4060,9 +4060,9 @@ dependencies = [
 
 [[package]]
 name = "num-conv"
-version = "0.2.0"
+version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cf97ec579c3c42f953ef76dbf8d55ac91fb219dde70e49aa4a6b7d74e9919050"
+checksum = "51d515d32fb182ee37cda2ccdcb92950d6a3c2893aa280e540671c2cd0f3b1d9"
 
 [[package]]
 name = "num-derive"
@@ -7116,9 +7116,9 @@ dependencies = [
 
 [[package]]
 name = "time"
-version = "0.3.46"
+version = "0.3.45"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9da98b7d9b7dad93488a84b8248efc35352b0b2657397d4167e7ad67e5d535e5"
+checksum = "f9e442fc33d7fdb45aa9bfeb312c095964abdf596f7567261062b2a7107aaabd"
 dependencies = [
  "deranged",
  "itoa",
@@ -7132,15 +7132,15 @@ dependencies = [
 
 [[package]]
 name = "time-core"
-version = "0.1.8"
+version = "0.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7694e1cfe791f8d31026952abf09c69ca6f6fa4e1a1229e18988f06a04a12dca"
+checksum = "8b36ee98fd31ec7426d599183e8fe26932a8dc1fb76ddb6214d05493377d34ca"
 
 [[package]]
 name = "time-macros"
-version = "0.2.26"
+version = "0.2.25"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "78cc610bac2dcee56805c99642447d4c5dbde4d01f752ffea0199aee1f601dc4"
+checksum = "71e552d1249bf61ac2a52db88179fd0673def1e1ad8243a00d9ec9ed71fee3dd"
 dependencies = [
  "num-conv",
  "time-core",
@@ -7767,9 +7767,9 @@ dependencies = [
 
 [[package]]
 name = "ureq"
-version = "3.1.4"
+version = "3.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d39cb1dbab692d82a977c0392ffac19e188bd9186a9f32806f0aaa859d75585a"
+checksum = "fdc97a28575b85cfedf2a7e7d3cc64b3e11bd8ac766666318003abbacc7a21fc"
 dependencies = [
  "base64 0.22.1",
  "cookie_store",
@@ -8805,9 +8805,9 @@ dependencies = [
 
 [[package]]
 name = "zip"
-version = "7.2.0"
+version = "7.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c42e33efc22a0650c311c2ef19115ce232583abbe80850bc8b66509ebef02de0"
+checksum = "268bf6f9ceb991e07155234071501490bb41fd1e39c6a588106dad10ae2a5804"
 dependencies = [
  "aes",
  "bzip2",
@@ -8815,7 +8815,6 @@ dependencies = [
  "crc32fast",
  "deflate64",
  "flate2",
- "generic-array",
  "getrandom 0.3.4",
  "hmac",
  "indexmap",
