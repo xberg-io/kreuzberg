@@ -1,0 +1,12 @@
+{
+  "document": "../../../test_documents/typst/metadata.typ",
+  "file_type": "typ",
+  "file_size": 462,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "Typst document with metadata",
+    "category": "academic"
+  }
+}

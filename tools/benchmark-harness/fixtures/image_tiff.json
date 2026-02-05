@@ -1,0 +1,10 @@
+{
+  "document": "../../../test_documents/images_extra/ocr_image.tiff",
+  "file_type": "tiff",
+  "file_size": 367848,
+  "expected_frameworks": ["kreuzberg"],
+  "metadata": {
+    "description": "TIFF image with text for OCR testing",
+    "category": "image"
+  }
+}

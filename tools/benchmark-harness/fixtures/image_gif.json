@@ -1,0 +1,10 @@
+{
+  "document": "../../../test_documents/images_extra/ocr_image.gif",
+  "file_type": "gif",
+  "file_size": 284525,
+  "expected_frameworks": ["kreuzberg"],
+  "metadata": {
+    "description": "GIF image with text for OCR testing",
+    "category": "image"
+  }
+}

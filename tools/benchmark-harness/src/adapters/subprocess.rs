@@ -609,23 +609,39 @@ impl FrameworkAdapter for SubprocessAdapter {
         let snapshots = monitor.get_snapshots().await;
         let resource_stats = ResourceMonitor::calculate_stats(&samples, &snapshots);
 
-        // Parse batch output to extract per-file OCR status
-        // Try to parse as JSON array; fall back to Unknown OCR status if parsing fails
-        let batch_ocr_statuses: Vec<OcrStatus> = match serde_json::from_str::<Vec<serde_json::Value>>(&stdout) {
-            Ok(batch_results) => batch_results
-                .iter()
-                .map(|item| {
-                    item.get("_ocr_used")
-                        .and_then(|v| v.as_bool())
-                        .map(|used| if used { OcrStatus::Used } else { OcrStatus::NotUsed })
-                        .unwrap_or(OcrStatus::Unknown)
-                })
-                .collect(),
-            Err(_) => {
-                // If batch output is not a JSON array, fall back to Unknown for all files
-                vec![OcrStatus::Unknown; file_paths.len()]
-            }
-        };
+        // Parse batch output to extract per-file OCR status and extraction times
+        // Try to parse as JSON array; fall back to defaults if parsing fails
+        let parsed_batch: Option<Vec<serde_json::Value>> = serde_json::from_str(&stdout).ok();
+
+        let batch_ocr_statuses: Vec<OcrStatus> = parsed_batch
+            .as_ref()
+            .map(|results| {
+                results
+                    .iter()
+                    .map(|item| {
+                        item.get("_ocr_used")
+                            .and_then(|v| v.as_bool())
+                            .map(|used| if used { OcrStatus::Used } else { OcrStatus::NotUsed })
+                            .unwrap_or(OcrStatus::Unknown)
+                    })
+                    .collect()
+            })
+            .unwrap_or_else(|| vec![OcrStatus::Unknown; file_paths.len()]);
+
+        // Extract per-file extraction times from batch JSON results
+        let batch_extraction_times: Vec<Option<Duration>> = parsed_batch
+            .as_ref()
+            .map(|results| {
+                results
+                    .iter()
+                    .map(|item| {
+                        item.get("_extraction_time_ms")
+                            .and_then(|v| v.as_f64())
+                            .map(|ms| Duration::from_secs_f64(ms / 1000.0))
+                    })
+                    .collect()
+            })
+            .unwrap_or_else(|| vec![None; file_paths.len()]);
 
         // Create one result per file instead of a single aggregated result
         // Since batch processing doesn't give us per-file timing, we use average duration
@@ -655,6 +671,10 @@ impl FrameworkAdapter for SubprocessAdapter {
                 // Use per-file OCR status if available, otherwise Unknown
                 let ocr_status = batch_ocr_statuses.get(idx).copied().unwrap_or(OcrStatus::Unknown);
 
+                // Use per-file extraction time if available from batch JSON
+                let extraction_duration = batch_extraction_times.get(idx).copied().flatten();
+                let subprocess_overhead = extraction_duration.map(|ext| avg_duration_per_file.saturating_sub(ext));
+
                 BenchmarkResult {
                     framework: self.name.clone(),
                     file_path: file_path.to_path_buf(),
@@ -662,8 +682,8 @@ impl FrameworkAdapter for SubprocessAdapter {
                     success: true,
                     error_message: None,
                     duration: avg_duration_per_file,
-                    extraction_duration: None,
-                    subprocess_overhead: None,
+                    extraction_duration,
+                    subprocess_overhead,
                     metrics: PerformanceMetrics {
                         peak_memory_bytes: resource_stats.peak_memory_bytes,
                         avg_cpu_percent: resource_stats.avg_cpu_percent,

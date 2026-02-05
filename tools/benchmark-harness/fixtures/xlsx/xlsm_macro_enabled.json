@@ -1,0 +1,16 @@
+{
+  "document": "../../../../test_documents/xlsx/test_01.xlsm",
+  "file_type": "xlsm",
+  "file_size": 162186,
+  "expected_frameworks": [
+    "kreuzberg",
+    "unstructured"
+  ],
+  "metadata": {
+    "description": "Excel macro-enabled workbook (.xlsm format) - converted from test_01.xlsx",
+    "category": "structured",
+    "size_category": "medium",
+    "excel_variant": "macro-enabled",
+    "notes": "XLSM files support VBA macros and advanced Excel features"
+  }
+}

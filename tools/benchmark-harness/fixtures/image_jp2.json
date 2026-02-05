@@ -1,0 +1,10 @@
+{
+  "document": "../../../test_documents/images_extra/ocr_image.jp2",
+  "file_type": "jp2",
+  "file_size": 77298,
+  "expected_frameworks": ["kreuzberg"],
+  "metadata": {
+    "description": "JPEG 2000 image with text for OCR testing",
+    "category": "image"
+  }
+}

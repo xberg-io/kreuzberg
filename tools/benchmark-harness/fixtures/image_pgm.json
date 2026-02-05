@@ -1,0 +1,12 @@
+{
+  "document": "../../../test_documents/images_extra/ocr_image.pgm",
+  "file_type": "pgm",
+  "file_size": 363096,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "Portable Graymap with text for OCR",
+    "category": "image"
+  }
+}

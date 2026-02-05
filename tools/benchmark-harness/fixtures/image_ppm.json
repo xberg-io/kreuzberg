@@ -1,0 +1,12 @@
+{
+  "document": "../../../test_documents/images_extra/ocr_image.ppm",
+  "file_type": "ppm",
+  "file_size": 1089256,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "Portable Pixmap (color) with text for OCR",
+    "category": "image"
+  }
+}

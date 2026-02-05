@@ -1,0 +1,10 @@
+{
+  "document": "../../../test_documents/data_formats/sales_transactions.tsv",
+  "file_type": "tsv",
+  "file_size": 4127,
+  "expected_frameworks": ["kreuzberg"],
+  "metadata": {
+    "description": "Sales transaction ledger",
+    "category": "data"
+  }
+}

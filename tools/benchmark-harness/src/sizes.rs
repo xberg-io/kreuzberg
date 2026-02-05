@@ -1,6 +1,7 @@
 //! Framework size measurement
 //!
 //! Measures the installation footprint of document extraction frameworks.
+//! All sizes must be exactly measured - no estimates allowed.
 
 use crate::{Error, Result};
 use serde::{Deserialize, Serialize};
@@ -19,6 +20,8 @@ pub struct FrameworkSize {
     /// Human-readable description
     pub description: String,
     /// Whether this is from actual measurement or an estimate
+    /// NOTE: This field is deprecated and should always be false.
+    /// If we cannot measure a size, we return an error instead of an estimate.
     #[serde(default)]
     pub estimated: bool,
 }
@@ -68,50 +71,109 @@ const FRAMEWORKS: &[(&str, &str, &str)] = &[
 ];
 
 /// Measure framework sizes
+/// Returns sizes for all frameworks that can be measured.
+/// Frameworks that are not installed are skipped with a warning printed to stderr.
 pub fn measure_framework_sizes() -> Result<FrameworkSizes> {
     let mut sizes = HashMap::new();
 
     for (name, method, description) in FRAMEWORKS {
-        let size = measure_framework(name, method)?;
-        sizes.insert(
-            name.to_string(),
-            FrameworkSize {
-                size_bytes: size.unwrap_or(0),
-                method: method.to_string(),
-                description: description.to_string(),
-                estimated: size.is_none(),
-            },
-        );
+        match measure_framework(name, method) {
+            Ok(Some(size)) => {
+                sizes.insert(
+                    name.to_string(),
+                    FrameworkSize {
+                        size_bytes: size,
+                        method: method.to_string(),
+                        description: description.to_string(),
+                        estimated: false,
+                    },
+                );
+            }
+            Ok(None) => {
+                // This shouldn't happen anymore since measure_framework converts None to Err
+                eprintln!("Warning: {} could not be measured (not installed?)", name);
+            }
+            Err(e) => {
+                eprintln!("Warning: {} could not be measured: {}", name, e);
+            }
+        }
+    }
+
+    Ok(sizes)
+}
+
+/// Measure framework sizes, failing if any framework cannot be measured
+/// Use this for CI/release verification where all sizes must be present.
+pub fn measure_framework_sizes_strict() -> Result<FrameworkSizes> {
+    let mut sizes = HashMap::new();
+    let mut errors = Vec::new();
+
+    for (name, method, description) in FRAMEWORKS {
+        match measure_framework(name, method) {
+            Ok(Some(size)) => {
+                sizes.insert(
+                    name.to_string(),
+                    FrameworkSize {
+                        size_bytes: size,
+                        method: method.to_string(),
+                        description: description.to_string(),
+                        estimated: false,
+                    },
+                );
+            }
+            Ok(None) | Err(_) => {
+                errors.push(format!("{} ({})", name, method));
+            }
+        }
+    }
+
+    if !errors.is_empty() {
+        return Err(Error::Benchmark(format!(
+            "Failed to measure sizes for frameworks: {}. Install these frameworks or use measure_framework_sizes() for lenient mode.",
+            errors.join(", ")
+        )));
     }
 
     Ok(sizes)
 }
 
 /// Measure a single framework
+/// Returns Ok(Some(size)) for successful measurement, Err for measurement failure.
+/// Never returns Ok(None) - if we can't measure, we return an error.
 fn measure_framework(name: &str, method: &str) -> Result<Option<u64>> {
-    match method {
+    let result = match method {
         "pip_package" => measure_pip_package(extract_package_name(name)),
         "npm_package" => measure_npm_package(extract_package_name(name)),
         "binary_size" => measure_binary(name),
         "jar_size" => measure_jar(name),
-        // The following methods are not yet implemented - they return None (estimated)
-        // gem_package: Ruby gem size measurement
-        // wasm_bundle: WebAssembly bundle size
-        // nuget_package: .NET NuGet package size
-        // hex_package: Elixir Hex package size
-        // php_extension: PHP extension size
-        _ => Ok(None),
+        "gem_package" => measure_gem_package(extract_package_name(name)),
+        "wasm_bundle" => measure_wasm_bundle(name),
+        "nuget_package" => measure_nuget_package(name),
+        "hex_package" => measure_hex_package(name),
+        "php_extension" => measure_php_extension(name),
+        _ => Err(Error::Benchmark(format!("Unknown measurement method: {}", method))),
+    };
+
+    // Convert None results to errors - we don't allow estimates
+    match result {
+        Ok(Some(size)) => Ok(Some(size)),
+        Ok(None) => Err(Error::Benchmark(format!(
+            "Could not measure {} - framework may not be installed. Install it first or skip this framework.",
+            name
+        ))),
+        Err(e) => Err(e),
     }
 }
 
-/// Extract Python/npm package name from framework name
+/// Extract Python/npm/gem package name from framework name
 fn extract_package_name(framework: &str) -> &str {
     // Strip -batch suffix and kreuzberg- prefix for lookups
     let name = framework.strip_suffix("-batch").unwrap_or(framework);
 
     match name {
         "kreuzberg-python" => "kreuzberg",
-        "kreuzberg-node" => "@anthropic/kreuzberg",
+        "kreuzberg-node" => "@kreuzberg/node",
+        "kreuzberg-ruby" => "kreuzberg_rb",
         "docling" => "docling",
         "markitdown" => "markitdown",
         "unstructured" => "unstructured",
@@ -174,10 +236,48 @@ fn measure_binary(name: &str) -> Result<Option<u64>> {
     let binary_name = match name {
         "pandoc" => "pandoc",
         "kreuzberg-rust" => "kreuzberg",
+        s if s.starts_with("kreuzberg-go") => "kreuzberg-go",
         _ => return Ok(None),
     };
 
-    // Try which to find binary
+    // For kreuzberg-rust and kreuzberg-go, first try target directory
+    if name.starts_with("kreuzberg-rust") {
+        let target_paths = [
+            "target/release/kreuzberg",
+            "target/debug/kreuzberg",
+            "target/release/libkreuzberg.so",
+            "target/release/libkreuzberg.dylib",
+            "target/release/kreuzberg.dll",
+        ];
+        for path in target_paths {
+            if let Ok(metadata) = fs::metadata(path) {
+                return Ok(Some(metadata.len()));
+            }
+        }
+    }
+
+    // For kreuzberg-go, measure the Go binary or module
+    if name.starts_with("kreuzberg-go") {
+        // Try to find a compiled Go binary
+        let go_paths = [
+            "packages/go/kreuzberg",
+            "packages/go/v2/kreuzberg",
+            "target/release/libkreuzberg_go.so",
+            "target/release/libkreuzberg_go.dylib",
+        ];
+        for path in go_paths {
+            if let Ok(metadata) = fs::metadata(path) {
+                return Ok(Some(metadata.len()));
+            }
+        }
+        // Measure the Go package directory instead
+        let go_pkg_dir = Path::new("packages/go/v2");
+        if go_pkg_dir.exists() {
+            return Ok(Some(dir_size(go_pkg_dir)));
+        }
+    }
+
+    // Try which to find binary in PATH
     let output = Command::new("which").arg(binary_name).output().ok();
 
     if let Some(output) = output {
@@ -208,6 +308,248 @@ fn measure_jar(name: &str) -> Result<Option<u64>> {
             if let Ok(metadata) = fs::metadata(expanded_path) {
                 return Ok(Some(metadata.len()));
             }
+        }
+
+        // Try TIKA_JAR environment variable
+        if let Ok(jar_path) = std::env::var("TIKA_JAR") {
+            if let Ok(metadata) = fs::metadata(&jar_path) {
+                return Ok(Some(metadata.len()));
+            }
+        }
+
+        // Try tools/benchmark-harness/libs directory
+        let libs_dir = Path::new("tools/benchmark-harness/libs");
+        if let Ok(entries) = fs::read_dir(libs_dir) {
+            for entry in entries.flatten() {
+                let path = entry.path();
+                if let Some(name) = path.file_name().and_then(|n| n.to_str()) {
+                    if name.starts_with("tika-app-") && name.ends_with(".jar") {
+                        if let Ok(metadata) = fs::metadata(&path) {
+                            return Ok(Some(metadata.len()));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // For kreuzberg-java, measure the compiled JAR
+    if name.starts_with("kreuzberg-java") {
+        let jar_paths = ["packages/java/target/kreuzberg.jar", "packages/java/target/classes"];
+        for path in jar_paths {
+            let expanded = Path::new(path);
+            if expanded.exists() {
+                if expanded.is_dir() {
+                    return Ok(Some(dir_size(expanded)));
+                } else if let Ok(metadata) = fs::metadata(expanded) {
+                    return Ok(Some(metadata.len()));
+                }
+            }
+        }
+    }
+
+    Ok(None)
+}
+
+/// Measure Ruby gem size using bundle show or gem contents
+fn measure_gem_package(package: &str) -> Result<Option<u64>> {
+    // Map package names to actual gem names
+    let gem_name = match package {
+        "kreuzberg" | "kreuzberg-ruby" => "kreuzberg_rb",
+        other => other,
+    };
+
+    // Try bundle show first (for Bundler-managed gems)
+    if let Ok(output) = Command::new("bundle").args(["show", gem_name]).output() {
+        if output.status.success() {
+            let gem_path = String::from_utf8_lossy(&output.stdout).trim().to_string();
+            if !gem_path.is_empty() {
+                let path = Path::new(&gem_path);
+                if path.exists() {
+                    return Ok(Some(dir_size(path)));
+                }
+            }
+        }
+    }
+
+    // Fall back to gem specification
+    if let Ok(output) = Command::new("ruby")
+        .arg("-e")
+        .arg(format!(
+            "puts Gem::Specification.find_by_name('{}').gem_dir rescue nil",
+            gem_name
+        ))
+        .output()
+    {
+        if output.status.success() {
+            let gem_path = String::from_utf8_lossy(&output.stdout).trim().to_string();
+            if !gem_path.is_empty() {
+                let path = Path::new(&gem_path);
+                if path.exists() {
+                    return Ok(Some(dir_size(path)));
+                }
+            }
+        }
+    }
+
+    // Try workspace packages/ruby directory for development
+    let workspace_ruby = Path::new("packages/ruby");
+    if workspace_ruby.exists() {
+        return Ok(Some(dir_size(workspace_ruby)));
+    }
+
+    Ok(None)
+}
+
+/// Measure WebAssembly bundle size
+fn measure_wasm_bundle(name: &str) -> Result<Option<u64>> {
+    // Look for .wasm files in common locations
+    let wasm_paths = [
+        "packages/wasm/pkg/kreuzberg_bg.wasm",
+        "packages/wasm/dist/kreuzberg.wasm",
+        "target/wasm32-unknown-unknown/release/kreuzberg.wasm",
+        "crates/kreuzberg-wasm/pkg/kreuzberg_wasm_bg.wasm",
+    ];
+
+    for path in wasm_paths {
+        if let Ok(metadata) = fs::metadata(path) {
+            return Ok(Some(metadata.len()));
+        }
+    }
+
+    // Check node_modules for installed WASM package
+    if name.contains("wasm") || name.contains("kreuzberg") {
+        let node_modules_paths = [
+            "node_modules/@kreuzberg/wasm",
+            "packages/typescript/node_modules/@kreuzberg/wasm",
+        ];
+        for path in node_modules_paths {
+            let dir = Path::new(path);
+            if dir.exists() {
+                return Ok(Some(dir_size(dir)));
+            }
+        }
+    }
+
+    Ok(None)
+}
+
+/// Measure .NET NuGet package size
+fn measure_nuget_package(name: &str) -> Result<Option<u64>> {
+    // Try to find the package in common NuGet cache locations
+    let home = std::env::var("HOME").unwrap_or_else(|_| "/root".to_string());
+    let nuget_paths = [
+        format!("{}/.nuget/packages/kreuzberg", home),
+        format!("{}/.nuget/packages/kreuzberg.native", home),
+        "packages/csharp/bin/Release".to_string(),
+        "packages/csharp/bin/Debug".to_string(),
+    ];
+
+    for path in nuget_paths {
+        let dir = Path::new(&path);
+        if dir.exists() {
+            return Ok(Some(dir_size(dir)));
+        }
+    }
+
+    // Try dotnet list to find package location
+    if name.starts_with("kreuzberg-csharp") {
+        let project_path = Path::new("packages/csharp/Kreuzberg.Native/Kreuzberg.Native.csproj");
+        if project_path.exists() {
+            if let Ok(output) = Command::new("dotnet")
+                .args(["list", "package", "--include-transitive"])
+                .current_dir("packages/csharp/Kreuzberg.Native")
+                .output()
+            {
+                if output.status.success() {
+                    // Measure the entire project directory as a proxy
+                    let proj_dir = Path::new("packages/csharp/Kreuzberg.Native");
+                    if proj_dir.exists() {
+                        return Ok(Some(dir_size(proj_dir)));
+                    }
+                }
+            }
+        }
+    }
+
+    Ok(None)
+}
+
+/// Measure Elixir Hex package size
+fn measure_hex_package(name: &str) -> Result<Option<u64>> {
+    // Look in _build directory for compiled Elixir code
+    let build_paths = [
+        "packages/elixir/_build/prod/lib/kreuzberg",
+        "packages/elixir/_build/dev/lib/kreuzberg",
+    ];
+
+    for path in build_paths {
+        let dir = Path::new(path);
+        if dir.exists() {
+            return Ok(Some(dir_size(dir)));
+        }
+    }
+
+    // Try to find in Hex cache
+    let home = std::env::var("HOME").unwrap_or_else(|_| "/root".to_string());
+    let hex_paths = [
+        format!("{}/.hex/packages/hexpm/kreuzberg", home),
+        format!("{}/.mix/archives/kreuzberg", home),
+    ];
+
+    for path in hex_paths {
+        let dir = Path::new(&path);
+        if dir.exists() {
+            return Ok(Some(dir_size(dir)));
+        }
+    }
+
+    // Measure workspace packages/elixir directory
+    if name.starts_with("kreuzberg-elixir") {
+        let elixir_dir = Path::new("packages/elixir");
+        if elixir_dir.exists() {
+            return Ok(Some(dir_size(elixir_dir)));
+        }
+    }
+
+    Ok(None)
+}
+
+/// Measure PHP extension size
+fn measure_php_extension(name: &str) -> Result<Option<u64>> {
+    // Try to find the kreuzberg.so extension
+    if let Ok(output) = Command::new("php")
+        .args(["-r", "echo ini_get('extension_dir');"])
+        .output()
+    {
+        if output.status.success() {
+            let ext_dir = String::from_utf8_lossy(&output.stdout).trim().to_string();
+            let ext_path = Path::new(&ext_dir).join("kreuzberg.so");
+            if let Ok(metadata) = fs::metadata(&ext_path) {
+                return Ok(Some(metadata.len()));
+            }
+        }
+    }
+
+    // Check workspace for built extension
+    let workspace_paths = [
+        "packages/php-ext/target/release/libkreuzberg_php.so",
+        "packages/php-ext/target/release/libkreuzberg_php.dylib",
+        "target/release/libkreuzberg_php.so",
+        "target/release/libkreuzberg_php.dylib",
+    ];
+
+    for path in workspace_paths {
+        if let Ok(metadata) = fs::metadata(path) {
+            return Ok(Some(metadata.len()));
+        }
+    }
+
+    // Measure the entire PHP package directory as fallback
+    if name.starts_with("kreuzberg-php") {
+        let php_dir = Path::new("packages/php-ext");
+        if php_dir.exists() {
+            return Ok(Some(dir_size(php_dir)));
         }
     }
 

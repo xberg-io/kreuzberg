@@ -1,0 +1,12 @@
+{
+  "document": "../../../test_documents/xml/simple_svg.svg",
+  "file_type": "svg",
+  "file_size": 426,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "Simple SVG image",
+    "category": "image"
+  }
+}

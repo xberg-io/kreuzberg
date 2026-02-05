@@ -1,0 +1,13 @@
+{
+  "document": "../../../test_documents/text/simple.txt",
+  "file_type": "txt",
+  "file_size": 17,
+  "expected_frameworks": [
+    "kreuzberg",
+    "pandoc"
+  ],
+  "metadata": {
+    "description": "Simple plain text file",
+    "category": "text"
+  }
+}

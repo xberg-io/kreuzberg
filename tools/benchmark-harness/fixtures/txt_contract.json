@@ -1,0 +1,13 @@
+{
+  "document": "../../../test_documents/text/contract.txt",
+  "file_type": "txt",
+  "file_size": 35,
+  "expected_frameworks": [
+    "kreuzberg",
+    "pandoc"
+  ],
+  "metadata": {
+    "description": "Contract document in plain text",
+    "category": "legal"
+  }
+}

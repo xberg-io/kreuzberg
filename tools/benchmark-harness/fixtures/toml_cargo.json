@@ -1,0 +1,12 @@
+{
+  "document": "../../../test_documents/data_formats/cargo.toml",
+  "file_type": "toml",
+  "file_size": 1983,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "Rust Cargo workspace configuration",
+    "category": "data"
+  }
+}

@@ -84,32 +84,24 @@ impl FrameworkAdapter for NativeAdapter {
     fn supports_format(&self, file_type: &str) -> bool {
         matches!(
             file_type.to_lowercase().as_str(),
-            "pdf"
-                | "docx"
-                | "doc"
-                | "xlsx"
-                | "xls"
-                | "pptx"
-                | "ppt"
-                | "txt"
-                | "md"
-                | "html"
-                | "xml"
-                | "json"
-                | "yaml"
-                | "toml"
-                | "eml"
-                | "msg"
-                | "zip"
-                | "tar"
-                | "gz"
-                | "jpg"
-                | "jpeg"
-                | "png"
-                | "gif"
-                | "bmp"
-                | "tiff"
-                | "webp"
+            // Documents
+            "pdf" | "docx" | "doc" | "odt" | "pptx" | "ppsx" | "pptm" | "ppt" |
+            "xlsx" | "xlsm" | "xlsb" | "xlam" | "xla" | "xls" | "ods" |
+            // Text formats
+            "txt" | "md" | "markdown" | "commonmark" | "html" | "htm" | "xml" | "rtf" | "rst" | "org" |
+            // Data formats
+            "json" | "yaml" | "yml" | "toml" | "csv" | "tsv" |
+            // Email
+            "eml" | "msg" |
+            // Archives
+            "zip" | "tar" | "gz" | "tgz" | "7z" |
+            // Images (OCR supported)
+            "bmp" | "gif" | "jpg" | "jpeg" | "png" | "tiff" | "tif" | "webp" |
+            "jp2" | "jpx" | "jpm" | "mj2" | "pnm" | "pbm" | "pgm" | "ppm" |
+            // Academic/Publishing
+            "epub" | "bib" | "ipynb" | "tex" | "latex" | "typst" | "typ" |
+            // Other
+            "svg" | "djot"
         )
     }
 
@@ -122,11 +114,15 @@ impl FrameworkAdapter for NativeAdapter {
 
         let start = Instant::now();
 
+        // Start extraction timing (same as total for native - no subprocess overhead)
+        let extraction_start = Instant::now();
+
         let extraction_result = tokio::time::timeout(timeout, extract_file(file_path, None, &self.config))
             .await
             .map_err(|_| Error::Timeout(format!("Extraction exceeded {:?}", timeout)))?
             .map_err(|e| Error::Benchmark(format!("Extraction failed: {}", e)));
 
+        let extraction_duration = extraction_start.elapsed();
         let duration = start.elapsed();
 
         // Capture extracted text for quality assessment
@@ -150,8 +146,8 @@ impl FrameworkAdapter for NativeAdapter {
                 success: false,
                 error_message: Some(e.to_string()),
                 duration,
-                extraction_duration: None,
-                subprocess_overhead: None,
+                extraction_duration: Some(extraction_duration),
+                subprocess_overhead: Some(Duration::ZERO), // No subprocess for native Rust
                 metrics: PerformanceMetrics {
                     peak_memory_bytes: resource_stats.peak_memory_bytes,
                     avg_cpu_percent: resource_stats.avg_cpu_percent,
@@ -192,8 +188,8 @@ impl FrameworkAdapter for NativeAdapter {
             success: true,
             error_message: None,
             duration,
-            extraction_duration: None,
-            subprocess_overhead: None,
+            extraction_duration: Some(extraction_duration),
+            subprocess_overhead: Some(Duration::ZERO), // No subprocess for native Rust
             metrics,
             quality: None,
             iterations: vec![],
@@ -265,8 +261,8 @@ impl FrameworkAdapter for NativeAdapter {
                         success: false,
                         error_message: Some(e.to_string()),
                         duration: avg_duration_per_file,
-                        extraction_duration: None,
-                        subprocess_overhead: None,
+                        extraction_duration: Some(avg_duration_per_file), // For native, extraction = total
+                        subprocess_overhead: Some(Duration::ZERO),        // No subprocess for native Rust
                         metrics: PerformanceMetrics {
                             peak_memory_bytes: resource_stats.peak_memory_bytes,
                             avg_cpu_percent: resource_stats.avg_cpu_percent,
@@ -316,8 +312,8 @@ impl FrameworkAdapter for NativeAdapter {
                     success: true,
                     error_message: None,
                     duration: avg_duration_per_file,
-                    extraction_duration: None,
-                    subprocess_overhead: None,
+                    extraction_duration: Some(avg_duration_per_file), // For native, extraction = total
+                    subprocess_overhead: Some(Duration::ZERO),        // No subprocess for native Rust
                     metrics: PerformanceMetrics {
                         peak_memory_bytes: resource_stats.peak_memory_bytes,
                         avg_cpu_percent: resource_stats.avg_cpu_percent,

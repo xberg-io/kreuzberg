@@ -1,0 +1,12 @@
+{
+  "document": "../../../test_documents/typst/minimal.typ",
+  "file_type": "typ",
+  "file_size": 83,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "Minimal Typst document",
+    "category": "academic"
+  }
+}

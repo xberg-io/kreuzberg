@@ -1,0 +1,10 @@
+{
+  "document": "../../../test_documents/data_formats/application.toml",
+  "file_type": "toml",
+  "file_size": 4302,
+  "expected_frameworks": ["kreuzberg"],
+  "metadata": {
+    "description": "Complex application configuration with nested tables",
+    "category": "data"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "document": "../../../test_documents/archives/documents.7z",
+  "file_type": "7z",
+  "file_size": 216,
+  "expected_frameworks": ["kreuzberg"],
+  "metadata": {
+    "description": "7-Zip archive with text documents",
+    "category": "archive"
+  }
+}

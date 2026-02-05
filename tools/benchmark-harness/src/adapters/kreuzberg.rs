@@ -17,11 +17,80 @@ use std::env;
 use std::path::PathBuf;
 
 /// Get supported formats for Kreuzberg bindings
-/// Kreuzberg supports all common document formats
+/// Kreuzberg supports 50+ document, text, data, and image formats
 fn get_kreuzberg_supported_formats() -> Vec<String> {
     vec![
-        "pdf", "docx", "doc", "xlsx", "xls", "pptx", "ppt", "txt", "md", "html", "xml", "json", "yaml", "toml", "eml",
-        "msg", "zip", "tar", "gz", "jpg", "jpeg", "png", "gif", "bmp", "tiff", "webp",
+        // Documents
+        "pdf",
+        "docx",
+        "doc",
+        "odt",
+        "pptx",
+        "ppsx",
+        "pptm",
+        "ppt",
+        "xlsx",
+        "xlsm",
+        "xlsb",
+        "xlam",
+        "xla",
+        "xls",
+        "ods",
+        // Text formats
+        "txt",
+        "md",
+        "markdown",
+        "commonmark",
+        "html",
+        "htm",
+        "xml",
+        "rtf",
+        "rst",
+        "org",
+        // Data formats
+        "json",
+        "yaml",
+        "yml",
+        "toml",
+        "csv",
+        "tsv",
+        // Email
+        "eml",
+        "msg",
+        // Archives
+        "zip",
+        "tar",
+        "gz",
+        "tgz",
+        "7z",
+        // Images (OCR supported)
+        "bmp",
+        "gif",
+        "jpg",
+        "jpeg",
+        "png",
+        "tiff",
+        "tif",
+        "webp",
+        "jp2",
+        "jpx",
+        "jpm",
+        "mj2",
+        "pnm",
+        "pbm",
+        "pgm",
+        "ppm",
+        // Academic/Publishing
+        "epub",
+        "bib",
+        "ipynb",
+        "tex",
+        "latex",
+        "typst",
+        "typ",
+        // Other
+        "svg",
+        "djot",
     ]
     .into_iter()
     .map(|s| s.to_string())

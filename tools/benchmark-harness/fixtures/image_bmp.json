@@ -1,0 +1,12 @@
+{
+  "document": "../../../test_documents/images/bmp_24.bmp",
+  "file_type": "bmp",
+  "file_size": 120054,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "BMP image for OCR testing",
+    "category": "image"
+  }
+}

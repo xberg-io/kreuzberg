@@ -1,0 +1,12 @@
+{
+  "document": "../../../test_documents/typst/headings.typ",
+  "file_type": "typ",
+  "file_size": 310,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "Typst document with headings structure",
+    "category": "academic"
+  }
+}

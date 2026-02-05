@@ -1,0 +1,15 @@
+{
+  "document": "../../../../test_documents/xlsx/test_xla.xla",
+  "file_type": "xla",
+  "file_size": 309,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "Excel add-in (.xla format) - legacy Excel 97-2003 add-in format",
+    "category": "structured",
+    "size_category": "minimal",
+    "excel_variant": "add-in-classic",
+    "notes": "XLA is the legacy Excel 97-2003 add-in format. It is largely superseded by XLAM but may still be encountered in legacy systems. Support is limited in modern Excel versions."
+  }
+}

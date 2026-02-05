@@ -1,0 +1,12 @@
+{
+  "document": "../../../test_documents/images_extra/ocr_image.pnm",
+  "file_type": "pnm",
+  "file_size": 363096,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "Portable Anymap with text for OCR",
+    "category": "image"
+  }
+}

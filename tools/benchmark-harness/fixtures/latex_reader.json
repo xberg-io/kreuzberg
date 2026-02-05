@@ -1,0 +1,13 @@
+{
+  "document": "../../../test_documents/latex/latex-reader.latex",
+  "file_type": "latex",
+  "file_size": 12572,
+  "expected_frameworks": [
+    "kreuzberg",
+    "pandoc"
+  ],
+  "metadata": {
+    "description": "LaTeX reader test document",
+    "category": "academic"
+  }
+}

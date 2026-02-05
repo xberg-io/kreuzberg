@@ -1,0 +1,10 @@
+{
+  "document": "../../../test_documents/archives/documents.tar",
+  "file_type": "tar",
+  "file_size": 49152,
+  "expected_frameworks": ["kreuzberg"],
+  "metadata": {
+    "description": "TAR archive with documents",
+    "category": "archive"
+  }
+}

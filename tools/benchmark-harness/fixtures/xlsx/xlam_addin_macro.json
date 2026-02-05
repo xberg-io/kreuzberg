@@ -1,0 +1,15 @@
+{
+  "document": "../../../../test_documents/xlsx/test_xlam.xlam",
+  "file_type": "xlam",
+  "file_size": 651,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "Excel add-in macro-enabled (.xlam format) - used for Excel extensions and custom functions",
+    "category": "structured",
+    "size_category": "minimal",
+    "excel_variant": "add-in-macro",
+    "notes": "XLAM files are macro-enabled add-ins for Excel. They contain VBA code and custom functions but are designed to be installed as Excel add-ins rather than standalone workbooks."
+  }
+}

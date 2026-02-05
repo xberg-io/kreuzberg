@@ -1,0 +1,15 @@
+{
+  "document": "../../../../test_documents/xlsx/test_xlsb.xlsb",
+  "file_type": "xlsb",
+  "file_size": 651,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "Excel binary workbook (.xlsb format) - proprietary binary format",
+    "category": "structured",
+    "size_category": "minimal",
+    "excel_variant": "binary",
+    "notes": "XLSB is a proprietary binary format introduced in Excel 2007 for faster processing and smaller file sizes. Support is limited in many tools."
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "document": "../../../test_documents/archives/book_war_and_peace_1p.txt.gz",
+  "file_type": "gz",
+  "file_size": 1630,
+  "expected_frameworks": ["kreuzberg"],
+  "metadata": {
+    "description": "Gzip compressed text file",
+    "category": "archive"
+  }
+}

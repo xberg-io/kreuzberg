@@ -1,0 +1,12 @@
+{
+  "document": "../../../test_documents/markdown/tables.djot",
+  "file_type": "djot",
+  "file_size": 2102,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "Djot markup with tables",
+    "category": "markup"
+  }
+}

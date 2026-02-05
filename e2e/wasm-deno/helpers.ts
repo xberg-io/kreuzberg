@@ -34,7 +34,7 @@ export type {
 
 export { extractBytes, initWasm };
 
-const WORKSPACE_ROOT = new URL("../..", import.meta.url).pathname;
+const WORKSPACE_ROOT = new URL("../..", import.meta.url).pathname.replace(/\/$/, "");
 const TEST_DOCUMENTS = `${WORKSPACE_ROOT}/test_documents`;
 
 type PlainRecord = Record<string, unknown>;
