@@ -14,10 +14,10 @@ use async_trait::async_trait;
 use std::borrow::Cow;
 use std::io::Cursor;
 
-/// High-performance DOCX extractor using docx-lite.
+/// High-performance DOCX extractor.
 ///
 /// This extractor provides:
-/// - Fast text extraction via streaming XML parsing (~160 MB/s average)
+/// - Fast text extraction via streaming XML parsing
 /// - Comprehensive metadata extraction (core.xml, app.xml, custom.xml)
 pub struct DocxExtractor;
 
@@ -52,7 +52,7 @@ impl Plugin for DocxExtractor {
     }
 
     fn description(&self) -> &str {
-        "High-performance DOCX text extraction using docx-lite with metadata support"
+        "High-performance DOCX text extraction with metadata support"
     }
 
     fn author(&self) -> &str {
@@ -60,10 +60,10 @@ impl Plugin for DocxExtractor {
     }
 }
 
-/// Convert docx-lite table to Kreuzberg Table struct with markdown representation.
+/// Convert parsed DOCX table to Kreuzberg Table struct with markdown representation.
 ///
 /// # Arguments
-/// * `docx_table` - The table from docx-lite library
+/// * `docx_table` - The parsed DOCX table
 /// * `table_index` - Index of the table in the document (used as page_number)
 ///
 /// # Returns
@@ -96,14 +96,6 @@ fn convert_docx_table_to_table(docx_table: &crate::extraction::docx::parser::Tab
         page_number: table_index + 1,
     }
 }
-
-/// Convert 2D cell data to markdown table format.
-///
-/// # Arguments
-/// * `cells` - 2D vector of cell strings (rows × columns)
-///
-/// # Returns
-/// * `String` - Markdown formatted table
 
 #[async_trait]
 impl DocumentExtractor for DocxExtractor {

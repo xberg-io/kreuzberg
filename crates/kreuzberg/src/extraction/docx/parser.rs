@@ -160,10 +160,13 @@ impl Paragraph {
     /// In DOCX, separate `<w:r>` elements within the same paragraph represent
     /// distinct text runs (e.g. due to formatting changes). These runs need a
     /// space between them to produce readable text.
+    ///
+    /// Empty runs are filtered out to avoid double spaces.
     pub fn to_text(&self) -> String {
         self.runs
             .iter()
             .map(|run| run.text.as_str())
+            .filter(|s| !s.is_empty())
             .collect::<Vec<_>>()
             .join(" ")
     }
@@ -636,4 +639,49 @@ pub fn parse_document(bytes: &[u8]) -> crate::error::Result<Document> {
 pub fn extract_text_from_bytes(bytes: &[u8]) -> crate::error::Result<String> {
     let doc = parse_document(bytes)?;
     Ok(doc.extract_text())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Regression test for #359: DOCX list items missing whitespace between text runs.
+    #[test]
+    fn test_paragraph_to_text_joins_runs_with_space() {
+        let mut para = Paragraph::new();
+        para.add_run(Run::new("Hello".to_string()));
+        para.add_run(Run::new("World".to_string()));
+        assert_eq!(para.to_text(), "Hello World");
+    }
+
+    #[test]
+    fn test_paragraph_to_text_single_run() {
+        let mut para = Paragraph::new();
+        para.add_run(Run::new("Hello".to_string()));
+        assert_eq!(para.to_text(), "Hello");
+    }
+
+    #[test]
+    fn test_paragraph_to_text_empty_runs_filtered() {
+        let mut para = Paragraph::new();
+        para.add_run(Run::new("Hello".to_string()));
+        para.add_run(Run::new(String::new()));
+        para.add_run(Run::new("World".to_string()));
+        assert_eq!(para.to_text(), "Hello World");
+    }
+
+    #[test]
+    fn test_paragraph_to_text_no_runs() {
+        let para = Paragraph::new();
+        assert_eq!(para.to_text(), "");
+    }
+
+    #[test]
+    fn test_paragraph_to_text_three_runs() {
+        let mut para = Paragraph::new();
+        para.add_run(Run::new("The".to_string()));
+        para.add_run(Run::new("quick".to_string()));
+        para.add_run(Run::new("fox".to_string()));
+        assert_eq!(para.to_text(), "The quick fox");
+    }
 }
