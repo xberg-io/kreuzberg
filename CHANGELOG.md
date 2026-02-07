@@ -18,6 +18,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### MIME Type Mappings
 - Added `.docbook` (`application/docbook+xml`) and `.jats` (`application/x-jats+xml`) file extension mappings.
 
+### Added
+
+#### OCR
+- **PaddleOCR backend via ONNX Runtime**: Added a new OCR backend (`kreuzberg-paddle-ocr`) using PaddlePaddle's PP-OCRv4 models converted to ONNX format, run via ONNX Runtime. Supports 6 languages (English, Chinese, Japanese, Korean, German, French) with automatic model downloading and caching. Provides superior CJK recognition compared to Tesseract.
+- **Unified OCR element output architecture**: Extraction results now include structured `OcrElement` data with bounding geometry (rectangles and quadrilaterals), per-element confidence scores, rotation information, and hierarchical levels (word, line, block, page). Available from both PaddleOCR and Tesseract backends.
+- **PaddleOCR support in all bindings**: PaddleOCR is available across Python, Rust, TypeScript/Node.js, Go, Java, PHP, Ruby, C#, and Elixir bindings via the `paddle-ocr` feature flag.
+- **PaddleOCR CLI support**: The `kreuzberg-cli` binary supports `--ocr-backend paddle-ocr` for PaddleOCR extraction.
+- **Shared ORT discovery**: Added `ort_discovery` module for finding ONNX Runtime shared libraries across platforms, shared between PaddleOCR and future ONNX-based backends.
+- **PaddleOCR model setup GitHub Action**: Added `.github/actions/setup-paddle-ocr-models/` action for CI pipelines to download and cache PaddleOCR model files.
+
+#### CI
+- **PaddleOCR CI integration**: Added PaddleOCR to the CI/publish pipelines with dedicated test jobs and model caching.
+
 ### Fixed
 
 #### ODT List and Section Extraction

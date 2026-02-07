@@ -146,7 +146,7 @@ impl PaddleOcrConfig {
     ///
     /// * `threshold` - Detection threshold (0.0-1.0)
     pub fn with_det_db_thresh(mut self, threshold: f32) -> Self {
-        self.det_db_thresh = threshold;
+        self.det_db_thresh = threshold.clamp(0.0, 1.0);
         self
     }
 
@@ -156,7 +156,7 @@ impl PaddleOcrConfig {
     ///
     /// * `threshold` - Box threshold (0.0-1.0)
     pub fn with_det_db_box_thresh(mut self, threshold: f32) -> Self {
-        self.det_db_box_thresh = threshold;
+        self.det_db_box_thresh = threshold.clamp(0.0, 1.0);
         self
     }
 
@@ -166,7 +166,7 @@ impl PaddleOcrConfig {
     ///
     /// * `ratio` - Unclip ratio (typically 1.5-2.0)
     pub fn with_det_db_unclip_ratio(mut self, ratio: f32) -> Self {
-        self.det_db_unclip_ratio = ratio;
+        self.det_db_unclip_ratio = ratio.clamp(1.0, 3.0);
         self
     }
 
@@ -176,7 +176,7 @@ impl PaddleOcrConfig {
     ///
     /// * `length` - Maximum side length in pixels
     pub fn with_det_limit_side_len(mut self, length: u32) -> Self {
-        self.det_limit_side_len = length;
+        self.det_limit_side_len = length.clamp(64, 4096);
         self
     }
 
@@ -186,7 +186,7 @@ impl PaddleOcrConfig {
     ///
     /// * `batch_size` - Number of text regions to process simultaneously
     pub fn with_rec_batch_num(mut self, batch_size: u32) -> Self {
-        self.rec_batch_num = batch_size;
+        self.rec_batch_num = batch_size.clamp(1, 64);
         self
     }
 

@@ -104,7 +104,7 @@ impl AngleNet {
         let mut angle_index = 0;
 
         for (i, value) in src_data.iter().take(angle_cols).enumerate() {
-            if i == 0 || value > &max_value {
+            if *value > max_value {
                 max_value = *value;
                 angle_index = i as i32;
             }

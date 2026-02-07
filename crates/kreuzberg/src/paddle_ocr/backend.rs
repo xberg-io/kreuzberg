@@ -43,7 +43,7 @@ use kreuzberg_paddle_ocr::OcrLite;
 ///
 /// The backend is `Send + Sync` and can be used across threads safely via `Arc`.
 pub struct PaddleOcrBackend {
-    config: PaddleOcrConfig,
+    config: Arc<PaddleOcrConfig>,
     model_paths: Arc<Mutex<Option<ModelPaths>>>,
     /// Lazily initialized OcrLite engine (Mutex for interior mutability as detect() takes &mut self)
     ocr_engine: Arc<Mutex<Option<OcrLite>>>,
@@ -58,7 +58,7 @@ impl PaddleOcrBackend {
     /// Create a new PaddleOCR backend with custom configuration.
     pub fn with_config(config: PaddleOcrConfig) -> Result<Self> {
         Ok(Self {
-            config,
+            config: Arc::new(config),
             model_paths: Arc::new(Mutex::new(None)),
             ocr_engine: Arc::new(Mutex::new(None)),
         })
@@ -205,7 +205,7 @@ impl PaddleOcrBackend {
 
         let image_bytes_owned = image_bytes.to_vec();
         let ocr_engine = Arc::clone(&self.ocr_engine);
-        let config = self.config.clone();
+        let config = Arc::clone(&self.config);
 
         // Run OCR in blocking task to avoid blocking the async runtime
         let text_blocks = tokio::task::spawn_blocking(move || {

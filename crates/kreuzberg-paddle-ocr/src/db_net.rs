@@ -318,12 +318,10 @@ impl DbNet {
         box_points: &[imageproc::point::Point<f32>],
         unclip_ratio: f32,
     ) -> Result<Vec<imageproc::point::Point<i32>>, OcrError> {
-        let points_arr = box_points.to_vec();
-
         let clip_rect_width =
-            ((points_arr[0].x - points_arr[1].x).powi(2) + (points_arr[0].y - points_arr[1].y).powi(2)).sqrt();
+            ((box_points[0].x - box_points[1].x).powi(2) + (box_points[0].y - box_points[1].y).powi(2)).sqrt();
         let clip_rect_height =
-            ((points_arr[1].x - points_arr[2].x).powi(2) + (points_arr[1].y - points_arr[2].y).powi(2)).sqrt();
+            ((box_points[1].x - box_points[2].x).powi(2) + (box_points[1].y - box_points[2].y).powi(2)).sqrt();
 
         if clip_rect_height < 1.001 && clip_rect_width < 1.001 {
             return Ok(Vec::new());
@@ -386,25 +384,23 @@ impl DbNet {
         }
 
         let mut length = 0.0;
-        let pt = box_points[0];
-        let mut x0 = pt.x as f64;
-        let mut y0 = pt.y as f64;
+        let mut x0 = box_points[0].x as f64;
+        let mut y0 = box_points[0].y as f64;
 
-        let mut box_with_first = Vec::from(box_points);
-        box_with_first.push(pt);
-
-        (1..box_with_first.len()).for_each(|idx| {
-            let pts = box_with_first[idx];
-            let x1 = pts.x as f64;
-            let y1 = pts.y as f64;
+        for pt in &box_points[1..] {
+            let x1 = pt.x as f64;
+            let y1 = pt.y as f64;
             let dx = x1 - x0;
             let dy = y1 - y0;
-
             length += (dx * dx + dy * dy).sqrt();
-
             x0 = x1;
             y0 = y1;
-        });
+        }
+
+        // Closing segment back to first point
+        let dx = box_points[0].x as f64 - x0;
+        let dy = box_points[0].y as f64 - y0;
+        length += (dx * dx + dy * dy).sqrt();
 
         length
     }
