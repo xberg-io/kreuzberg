@@ -30,8 +30,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Registered `JatsExtractor` and `DocbookExtractor` in the default extractor registry (extractors existed but were never registered).
 
 #### MIME Type & Extension Mappings
-- Added missing MIME types to `SUPPORTED_MIME_TYPES`: `text/x-fictionbook`, `application/x-fictionbook`, `text/x-bibtex`, `text/docbook`.
-- Added missing file extension mappings: `.fb2`, `.opml`, `.dbk`, `.j2k`, `.j2c`.
+- Added missing MIME types to `SUPPORTED_MIME_TYPES`: `text/x-fictionbook`, `application/x-fictionbook`, `text/x-bibtex`, `text/docbook`, `application/x-pubmed`.
+- Added MIME type aliases for broader compatibility: `text/djot`, `text/jats`, `application/x-epub+zip`, `application/vnd.epub+zip`, `text/rtf`, `text/prs.fallenstein.rst`, `text/x-tex`, `text/org`, `application/x-org`, `application/xhtml+xml`, `text/x-typst`, `image/jpg`.
+- Added missing file extension mappings: `.fb2`, `.opml`, `.dbk`, `.j2k`, `.j2c`, `.ris`, `.nbib`, `.enw`, `.typ`, `.djot`.
 
 #### Security
 - Wired `SecurityLimits` into the archive extraction pipeline: ZIP, TAR, 7z, and GZIP extractors now enforce configurable limits for max archive size, file count, compression ratio, and content size.
@@ -45,6 +46,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed `.typ` files not recognized as Typst format; added `.typ` as an alias for `application/x-typst`.
 - Fixed `.djot` files not recognized; added `.djot` extension mapping to `text/x-djot`.
 - Fixed `application/gzip` rejected by MIME validation; added to `SUPPORTED_MIME_TYPES`.
+- Fixed case-sensitive MIME type validation rejecting valid types with different casing (e.g., `macroEnabled` vs `macroenabled`); added RFC 2045 case-insensitive fallback.
+- Synced `SUPPORTED_MIME_TYPES` with extractor registry to prevent valid formats being rejected before reaching their extractor.
 
 #### Image Extraction
 - Fixed JPEG 2000 images (`.jp2`) not handled by ImageExtractor; added `image/jp2`, `image/jpx`, `image/jpm`, and `image/mj2` to supported types.
@@ -54,6 +57,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### CLI
 - Fixed `.yml` config files rejected by `--config` flag; now accepts both `.yml` and `.yaml`.
+
+#### Benchmark Harness
+- Fixed framework initialization check running before external adapters (Tika, pdfplumber, etc.) were registered, causing false "failed to initialize" errors.
+- Fixed missing `composer install` step in PHP benchmark CI job.
+- Fixed C# benchmark wrapper using wrong MIME type casing for macro-enabled Office formats and incorrect djot MIME type.
+- Fixed WASM benchmark wrapper missing MIME mappings for several supported formats.
+- Added error counts (`framework_errors`, `harness_errors`) and error detail breakdown to benchmark aggregation output.
 
 ---
 

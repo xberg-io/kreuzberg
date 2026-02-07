@@ -156,7 +156,7 @@ lopdf = { version = "0.39.0", optional = true }
 calamine = { version = "0.33.0", features = ["dates"], optional = true }
 polars = { version = "0.52.0", default-features = false, features = ["ipc"], optional = true }
 roxmltree = { version = "0.21.1", optional = true }
-zip = { version = "7.4.0", optional = true }
+zip = { version = "7.4.0", optional = true, default-features = false, features = ["deflate-flate2"] }
 mail-parser = { version = "0.11.1", optional = true }
 msg_parser = { version = "0.1.1", optional = true }
 html-to-markdown-rs = { workspace = true, features = [
@@ -232,7 +232,7 @@ smartcore = { version = "0.4", default-features = false, features = ["serde"] }
 tempfile = { workspace = true }
 filetime = "0.2"
 tar = "0.4.44"
-zip = "7.4.0"
+zip = { version = "7.4.0", default-features = false, features = ["deflate-flate2"] }
 serial_test = "3.3.1"
 anyhow = { workspace = true }
 tokio-test = "0.4"
