@@ -447,14 +447,21 @@ mod build_tesseract {
         let target_windows = is_windows_target(&target);
         let target_msvc = is_msvc_target(&target);
         let target_mingw = is_mingw_target(&target);
-        let target_musl = target.contains("musl");
 
         if target_macos {
             cmake_cxx_flags.push_str("-stdlib=libc++ ");
             cmake_cxx_flags.push_str("-std=c++17 ");
         } else if target_linux {
             cmake_cxx_flags.push_str("-std=c++17 ");
-            if target_musl || env::var("CC").map(|cc| cc.contains("clang")).unwrap_or(false) {
+            // Determine whether to use clang/libc++ or g++/libstdc++.
+            // Use clang only if CXX or CC explicitly contains "clang".
+            // Default to g++ (works in Alpine, musl.cc cross-compilers, and glibc).
+            let use_clang = env::var("CXX")
+                .map(|cxx| cxx.contains("clang"))
+                .or_else(|_| env::var("CC").map(|cc| cc.contains("clang")))
+                .unwrap_or(false);
+
+            if use_clang {
                 cmake_cxx_flags.push_str("-stdlib=libc++ ");
                 let cxx_compiler = env::var("CXX").unwrap_or_else(|_| {
                     if let Ok(target) = env::var("TARGET") {
@@ -550,11 +557,19 @@ mod build_tesseract {
         if target_macos {
             println!("cargo:rustc-link-lib=c++");
         } else if target_linux {
-            if target_musl || env::var("CC").map(|cc| cc.contains("clang")).unwrap_or(false) {
+            let use_clang = env::var("CXX")
+                .map(|cxx| cxx.contains("clang"))
+                .or_else(|_| env::var("CC").map(|cc| cc.contains("clang")))
+                .unwrap_or(false);
+
+            if use_clang {
                 println!("cargo:rustc-link-lib=c++");
             } else {
                 println!("cargo:rustc-link-lib=stdc++");
-                println!("cargo:rustc-link-lib=stdc++fs");
+                if !target_musl {
+                    // stdc++fs merged into libstdc++ in GCC 9+; musl cross-compilers may not ship it
+                    println!("cargo:rustc-link-lib=stdc++fs");
+                }
             }
             println!("cargo:rustc-link-lib=pthread");
             println!("cargo:rustc-link-lib=m");

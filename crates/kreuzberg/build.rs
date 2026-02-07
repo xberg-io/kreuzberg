@@ -772,8 +772,14 @@ fn link_system_frameworks(target: &str) {
         println!("cargo:rustc-link-lib=framework=AppKit");
         println!("cargo:rustc-link-lib=dylib=c++");
     } else if target.contains("linux") {
-        println!("cargo:rustc-link-lib=dylib=stdc++");
-        println!("cargo:rustc-link-lib=dylib=m");
+        if target.contains("musl") {
+            // musl targets produce fully static binaries — avoid dylib= prefix
+            println!("cargo:rustc-link-lib=stdc++");
+            println!("cargo:rustc-link-lib=m");
+        } else {
+            println!("cargo:rustc-link-lib=dylib=stdc++");
+            println!("cargo:rustc-link-lib=dylib=m");
+        }
     } else if target.contains("windows") {
         println!("cargo:rustc-link-lib=dylib=gdi32");
         println!("cargo:rustc-link-lib=dylib=user32");
