@@ -11,9 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-#### Claude Code Skills
+#### Agent Skill for AI Coding Assistants
 
-- **Claude Code skill for document extraction**: Added `skills/kreuzberg/SKILL.md` with comprehensive instructions for using Kreuzberg with Claude Code, including multi-language examples (Python, Rust, Node.js, CLI), OCR configuration, batch processing, and common patterns
+- **Agent Skill for document extraction**: Added `skills/kreuzberg/SKILL.md` following the [Agent Skills](https://agentskills.io) open standard, with comprehensive instructions for Python, Node.js, Rust, and CLI usage. Includes 8 detailed reference files covering API signatures, configuration, supported formats, plugins, and all language bindings. Works with Claude Code, Codex, Gemini CLI, Cursor, VS Code, Amp, Goose, Roo Code, and any compatible tool.
 
 ### Fixed
 
