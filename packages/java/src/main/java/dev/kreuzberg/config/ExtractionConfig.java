@@ -43,6 +43,7 @@ public final class ExtractionConfig {
 	private final KeywordConfig keywords;
 	private final PageConfig pages;
 	private final Integer maxConcurrentExtractions;
+	private final Map<String, Object> securityLimits;
 
 	private ExtractionConfig(Builder builder) {
 		this.useCache = builder.useCache;
@@ -64,6 +65,7 @@ public final class ExtractionConfig {
 		this.keywords = builder.keywords;
 		this.pages = builder.pages;
 		this.maxConcurrentExtractions = builder.maxConcurrentExtractions;
+		this.securityLimits = builder.securityLimits;
 	}
 
 	public static Builder builder() {
@@ -442,6 +444,9 @@ public final class ExtractionConfig {
 		if (maxConcurrentExtractions != null) {
 			map.put("max_concurrent_extractions", maxConcurrentExtractions);
 		}
+		if (securityLimits != null) {
+			map.put("security_limits", securityLimits);
+		}
 		return map;
 	}
 
@@ -577,6 +582,7 @@ public final class ExtractionConfig {
 		private KeywordConfig keywords;
 		private PageConfig pages;
 		private Integer maxConcurrentExtractions;
+		private Map<String, Object> securityLimits;
 
 		private Builder() {
 		}
@@ -696,6 +702,11 @@ public final class ExtractionConfig {
 
 		public Builder maxConcurrentExtractions(Integer maxConcurrentExtractions) {
 			this.maxConcurrentExtractions = maxConcurrentExtractions;
+			return this;
+		}
+
+		public Builder securityLimits(Map<String, Object> securityLimits) {
+			this.securityLimits = securityLimits;
 			return this;
 		}
 

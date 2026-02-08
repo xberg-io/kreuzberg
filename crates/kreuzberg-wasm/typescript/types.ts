@@ -206,6 +206,8 @@ export interface ExtractionConfig {
 	enableQualityProcessing?: boolean;
 	/** Force OCR even if text is available */
 	forceOcr?: boolean;
+	/** Security limits for archive extraction */
+	securityLimits?: Record<string, number>;
 	/** Maximum concurrent extractions */
 	maxConcurrentExtractions?: number;
 	/**

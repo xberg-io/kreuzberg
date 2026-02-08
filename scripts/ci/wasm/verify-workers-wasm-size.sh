@@ -6,8 +6,8 @@ cd crates/kreuzberg-wasm/pkg
 wasm_size=$(wc -c <kreuzberg_wasm_bg.wasm)
 echo "WASM size (uncompressed): $(numfmt --to=iec-i --suffix=B "$wasm_size")"
 
-if [ "$wasm_size" -gt 13631488 ]; then
-  echo "ERROR: WASM bundle exceeds standardized 13MB limit: $wasm_size bytes"
+if [ "$wasm_size" -gt 15728640 ]; then
+  echo "ERROR: WASM bundle exceeds standardized 15MB limit: $wasm_size bytes"
   exit 1
 fi
 

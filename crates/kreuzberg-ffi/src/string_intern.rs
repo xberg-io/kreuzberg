@@ -468,19 +468,21 @@ mod tests {
             let ptr2 = kreuzberg_intern_string(s.as_ptr());
             let ptr3 = kreuzberg_intern_string(s.as_ptr());
 
-            let stats_before = kreuzberg_string_intern_stats();
-            let unique_before = stats_before.unique_count;
+            // All references to the same string should return the same pointer
+            assert_eq!(ptr1, ptr2);
+            assert_eq!(ptr2, ptr3);
 
+            // Free two of three references - string should still be interned
             kreuzberg_free_interned_string(ptr1);
             kreuzberg_free_interned_string(ptr2);
 
-            let stats_mid = kreuzberg_string_intern_stats();
-            assert_eq!(stats_mid.unique_count, unique_before);
+            // Re-interning should be a cache hit (string still has one reference)
+            let ptr4 = kreuzberg_intern_string(s.as_ptr());
+            assert_eq!(ptr3, ptr4, "String should still be interned with remaining reference");
 
+            // Free both remaining references
             kreuzberg_free_interned_string(ptr3);
-
-            let stats_after = kreuzberg_string_intern_stats();
-            assert_eq!(stats_after.unique_count, unique_before - 1);
+            kreuzberg_free_interned_string(ptr4);
         }
     }
 

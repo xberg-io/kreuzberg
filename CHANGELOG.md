@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+### Fixed
+
+#### PDF Error Handling Regression
+- Reverted incorrect change from v4.2.14 that silently returned empty results for corrupted/malformed PDFs instead of propagating errors. Corrupted PDFs now correctly return `PdfError::InvalidPdf` and password-protected PDFs return `PdfError::PasswordRequired` as expected.
+- Removed regression tests that asserted the incorrect empty-result behavior.
+
+#### String Intern Reference Counting Test
+- Fixed flaky `test_intern_reference_counting` test caused by shared global state between concurrent tests. Replaced fragile absolute-count assertions with pointer-equality verification.
+
+#### WASM Size Limit
+- Bumped WASM uncompressed size limit from 13MB to 15MB in CI verification script to accommodate recent office format additions.
+
+### Changed
+
+#### API Parity
+- Added `security_limits` field to all 9 language bindings (TypeScript, Go, Python, Ruby, PHP, Java, C#, WASM, Elixir) for API parity with Rust core `ExtractionConfig`.
+
+---
+
 ## [4.2.14] - 2026-02-07
 
 ### Fixed

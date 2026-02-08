@@ -84,9 +84,23 @@ type ExtractionConfig struct {
 	Postprocessor            *PostProcessorConfig     `json:"postprocessor,omitempty"`
 	HTMLOptions              *HTMLConversionOptions   `json:"html_options,omitempty"`
 	Pages                    *PageConfig              `json:"pages,omitempty"`
+	SecurityLimits           *SecurityLimitsConfig    `json:"security_limits,omitempty"`
 	MaxConcurrentExtractions *int                     `json:"max_concurrent_extractions,omitempty"`
 	OutputFormat             string                   `json:"output_format,omitempty"`
 	ResultFormat             string                   `json:"result_format,omitempty"`
+}
+
+// SecurityLimitsConfig controls security thresholds for archive extraction.
+type SecurityLimitsConfig struct {
+	MaxArchiveSize      *int `json:"max_archive_size,omitempty"`
+	MaxCompressionRatio *int `json:"max_compression_ratio,omitempty"`
+	MaxFilesInArchive   *int `json:"max_files_in_archive,omitempty"`
+	MaxNestingDepth     *int `json:"max_nesting_depth,omitempty"`
+	MaxEntityLength     *int `json:"max_entity_length,omitempty"`
+	MaxContentSize      *int `json:"max_content_size,omitempty"`
+	MaxIterations       *int `json:"max_iterations,omitempty"`
+	MaxXMLDepth         *int `json:"max_xml_depth,omitempty"`
+	MaxTableCells       *int `json:"max_table_cells,omitempty"`
 }
 
 // OCRConfig selects and configures OCR backends.

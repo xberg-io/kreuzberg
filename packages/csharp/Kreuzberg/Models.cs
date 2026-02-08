@@ -1598,6 +1598,13 @@ public sealed class ExtractionConfig
     /// </summary>
     [JsonPropertyName("max_concurrent_extractions")]
     public int? MaxConcurrentExtractions { get; init; }
+
+    /// <summary>
+    /// Security limits for archive extraction (max archive size, compression ratio, etc.).
+    /// </summary>
+    [JsonPropertyName("security_limits")]
+    public Dictionary<string, long>? SecurityLimits { get; init; }
+
     /// <summary>
     /// Content output format (plain, markdown, djot, html).
     /// Default: plain

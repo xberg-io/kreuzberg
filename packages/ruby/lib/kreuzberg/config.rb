@@ -707,7 +707,8 @@ module Kreuzberg
                   :ocr, :chunking, :language_detection, :pdf_options,
                   :images, :postprocessor,
                   :token_reduction, :keywords, :html_options, :pages,
-                  :max_concurrent_extractions, :output_format, :result_format
+                  :max_concurrent_extractions, :output_format, :result_format,
+                  :security_limits
 
       # Alias for backward compatibility - image_extraction is the canonical name
       alias image_extraction images
@@ -732,6 +733,7 @@ module Kreuzberg
         language_detection pdf_options image_extraction
         postprocessor token_reduction keywords html_options pages
         max_concurrent_extractions output_format result_format
+        security_limits
       ].freeze
 
       # Aliases for backward compatibility
@@ -804,7 +806,8 @@ module Kreuzberg
                      pages: nil,
                      max_concurrent_extractions: nil,
                      output_format: nil,
-                     result_format: nil)
+                     result_format: nil,
+                     security_limits: nil)
         kwargs = {
           use_cache: use_cache, enable_quality_processing: enable_quality_processing,
           force_ocr: force_ocr, ocr: ocr, chunking: chunking, language_detection: language_detection,
@@ -812,7 +815,8 @@ module Kreuzberg
           postprocessor: postprocessor,
           token_reduction: token_reduction, keywords: keywords, html_options: html_options,
           pages: pages, max_concurrent_extractions: max_concurrent_extractions,
-          output_format: output_format, result_format: result_format
+          output_format: output_format, result_format: result_format,
+          security_limits: security_limits
         }
         extracted = extract_from_hash(hash, kwargs)
 
@@ -843,6 +847,7 @@ module Kreuzberg
         @max_concurrent_extractions = params[:max_concurrent_extractions]&.to_i
         @output_format = validate_output_format(params[:output_format])
         @result_format = validate_result_format(params[:result_format])
+        @security_limits = params[:security_limits]
       end
 
       def validate_output_format(value)

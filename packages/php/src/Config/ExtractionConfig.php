@@ -167,6 +167,18 @@ readonly class ExtractionConfig
         public ?array $htmlOptions = null,
 
         /**
+         * Security limits for archive extraction.
+         *
+         * Controls maximum archive size, compression ratio, file count, and other
+         * security thresholds to prevent decompression bomb attacks.
+         * When null, default limits are used.
+         *
+         * @var array<string, int>|null
+         * @default null
+         */
+        public ?array $securityLimits = null,
+
+        /**
          * Maximum number of concurrent extraction operations.
          *
          * Controls the degree of parallelism for batch extraction operations.

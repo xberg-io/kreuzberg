@@ -311,6 +311,7 @@ class ExtractionConfig:
     max_concurrent_extractions: int | None
     html_options: HtmlConversionOptions | None
     pages: PageConfig | None
+    security_limits: dict[str, int] | None
     result_format: str
     output_format: str
 
@@ -331,6 +332,7 @@ class ExtractionConfig:
         max_concurrent_extractions: int | None = None,
         html_options: HtmlConversionOptions | None = None,
         pages: PageConfig | None = None,
+        security_limits: dict[str, int] | None = None,
         result_format: str | None = None,
         output_format: str | None = None,
     ) -> None: ...

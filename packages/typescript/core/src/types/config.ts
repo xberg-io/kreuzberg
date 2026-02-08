@@ -267,6 +267,7 @@ export interface ExtractionConfig {
 	htmlOptions?: HtmlConversionOptions;
 	keywords?: KeywordConfig;
 	pages?: PageConfig;
+	securityLimits?: Record<string, number>;
 	maxConcurrentExtractions?: number;
 	/**
 	 * Content text format (default: Plain).

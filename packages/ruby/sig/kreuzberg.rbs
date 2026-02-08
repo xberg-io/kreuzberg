@@ -242,6 +242,7 @@ module Kreuzberg
       attr_reader max_concurrent_extractions: Integer?
       attr_reader output_format: String?
       attr_reader result_format: String?
+      attr_reader security_limits: Hash[String, Integer]?
 
       alias image_extraction images
 
