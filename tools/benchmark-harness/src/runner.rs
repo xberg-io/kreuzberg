@@ -652,14 +652,17 @@ impl BenchmarkRunner {
             adapter.setup().await?;
         }
 
-        if let Some((fixture_path, fixture)) = self.fixtures.fixtures().first() {
-            let fixture_dir = fixture_path.parent().unwrap_or_else(|| std::path::Path::new("."));
-            let warmup_file = fixture.resolve_document_path(fixture_dir);
+        for adapter in &frameworks {
+            // Find the first fixture this adapter supports for warmup
+            let warmup_fixture = self
+                .fixtures
+                .fixtures()
+                .iter()
+                .find(|(_, fixture)| adapter.supports_format(&fixture.file_type));
 
-            for adapter in &frameworks {
-                if !adapter.supports_format(&fixture.file_type) {
-                    continue;
-                }
+            if let Some((fixture_path, fixture)) = warmup_fixture {
+                let fixture_dir = fixture_path.parent().unwrap_or_else(|| std::path::Path::new("."));
+                let warmup_file = fixture.resolve_document_path(fixture_dir);
 
                 println!("Warming up {} with {}...", adapter.name(), warmup_file.display());
                 match adapter.warmup(&warmup_file, self.config.timeout).await {
@@ -671,6 +674,11 @@ impl BenchmarkRunner {
                         eprintln!("  Warning: Warmup failed for {}: {}", adapter.name(), e);
                     }
                 }
+            } else {
+                eprintln!(
+                    "  Warning: No compatible fixture found for warmup of {}",
+                    adapter.name()
+                );
             }
         }
 

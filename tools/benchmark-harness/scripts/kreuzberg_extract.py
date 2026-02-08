@@ -86,6 +86,8 @@ def extract_batch_sync(file_paths: list[str], ocr_enabled: bool) -> list[dict[st
 
 def run_server(ocr_enabled: bool) -> None:
     """Persistent server mode: read paths from stdin, write JSON to stdout."""
+    # Signal readiness after Python + FFI initialization
+    print("READY", flush=True)
     for line in sys.stdin:
         file_path = line.strip()
         if not file_path:

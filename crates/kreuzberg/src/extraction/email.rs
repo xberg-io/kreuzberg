@@ -293,14 +293,11 @@ pub fn parse_msg_content(data: &[u8]) -> Result<EmailExtractionResult> {
     if let Some(ref msg_id) = message_id {
         metadata.insert("message_id".to_string(), msg_id.to_string());
     }
-    if !attachments.is_empty() {
-        let attachment_names: Vec<String> = attachments
-            .iter()
-            .filter_map(|a| a.filename.as_ref())
-            .cloned()
-            .collect();
-        metadata.insert("attachments".to_string(), attachment_names.join(", "));
-    }
+    // NOTE: Do NOT insert "attachments" into the metadata HashMap here.
+    // The attachments are already stored in EmailMetadata.attachments (Vec<String>).
+    // Since both `format` and `additional` use #[serde(flatten)], inserting a
+    // comma-joined string here would overwrite the structured array, breaking
+    // deserialization in Go, C#, and other typed bindings.
 
     Ok(EmailExtractionResult {
         subject,

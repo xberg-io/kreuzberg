@@ -147,6 +147,10 @@ function run_server(?ExtractionConfig $config = null): void
 {
     debug_log("=== SERVER MODE START ===");
 
+    // Signal readiness after PHP + extension initialization
+    echo "READY\n";
+    flush();
+
     while (true) {
         $line = fgets(STDIN);
         if ($line === false) {

@@ -15,6 +15,8 @@ Supports two modes:
 from __future__ import annotations
 
 import json
+import multiprocessing as _mp
+import os
 import sys
 import time
 from typing import Any
@@ -86,32 +88,98 @@ def extract_batch(file_paths: list[str], converter: DocumentConverter) -> list[d
     return outputs
 
 
-def run_server(converter: DocumentConverter) -> None:
+def _worker(fn, args, conn):
+    """Run extraction in a forked child process.
+
+    Closes inherited stdin/stdout so the child cannot corrupt the
+    parent's line-based JSON protocol.
+    """
+    try:
+        sys.stdin.close()
+        sys.stdout = open(os.devnull, "w")
+    except Exception:
+        pass
+    try:
+        result = fn(*args)
+        conn.send(result)
+    except Exception as e:
+        conn.send({"error": str(e), "_extraction_time_ms": 0})
+    finally:
+        conn.close()
+
+
+def _run_with_timeout(fn, args, timeout):
+    """Execute fn(*args) in a forked child with a timeout.
+
+    On timeout the child is killed but the parent stays alive —
+    no expensive process restart is needed.
+    """
+    try:
+        ctx = _mp.get_context("fork")
+        parent_conn, child_conn = ctx.Pipe(duplex=False)
+        p = ctx.Process(target=_worker, args=(fn, args, child_conn))
+        p.start()
+        child_conn.close()
+
+        if parent_conn.poll(timeout=timeout):
+            try:
+                result = parent_conn.recv()
+            except Exception:
+                result = {"error": "worker process crashed", "_extraction_time_ms": 0}
+        else:
+            p.kill()
+            result = {
+                "error": f"extraction timed out after {timeout}s",
+                "_extraction_time_ms": timeout * 1000.0,
+            }
+
+        p.join(timeout=5)
+        if p.is_alive():
+            p.kill()
+            p.join()
+        parent_conn.close()
+        return result
+    except Exception:
+        # Fork not available — fall back to in-process extraction
+        try:
+            return fn(*args)
+        except Exception as e:
+            return {"error": str(e), "_extraction_time_ms": 0}
+
+
+def run_server(converter: DocumentConverter, timeout=None) -> None:
     """Persistent server mode: read paths from stdin, write JSON to stdout."""
+    print("READY", flush=True)
     for line in sys.stdin:
         file_path = line.strip()
         if not file_path:
             continue
-        try:
-            payload = extract_sync(file_path, converter)
-            print(json.dumps(payload), flush=True)
-        except Exception as e:
-            print(json.dumps({"error": str(e), "_extraction_time_ms": 0}), flush=True)
+        if timeout is not None:
+            result = _run_with_timeout(extract_sync, (file_path, converter), timeout)
+        else:
+            try:
+                result = extract_sync(file_path, converter)
+            except Exception as e:
+                result = {"error": str(e), "_extraction_time_ms": 0}
+        print(json.dumps(result), flush=True)
 
 
 def main() -> None:
     ocr_enabled = False
+    timeout = None
     args = []
     for arg in sys.argv[1:]:
         if arg == "--ocr":
             ocr_enabled = True
         elif arg == "--no-ocr":
             ocr_enabled = False
+        elif arg.startswith("--timeout="):
+            timeout = int(arg.split("=", 1)[1])
         else:
             args.append(arg)
 
     if len(args) < 1:
-        print("Usage: docling_extract.py [--ocr|--no-ocr] <mode> <file_path> [additional_files...]", file=sys.stderr)
+        print("Usage: docling_extract.py [--ocr|--no-ocr] [--timeout=SECS] <mode> <file_path> [additional_files...]", file=sys.stderr)
         print("Modes: sync, batch, server", file=sys.stderr)
         sys.exit(1)
 
@@ -123,7 +191,7 @@ def main() -> None:
 
     try:
         if mode == "server":
-            run_server(converter)
+            run_server(converter, timeout=timeout)
 
         elif mode == "sync":
             if len(file_paths) != 1:

@@ -163,6 +163,9 @@ defmodule KreuzbergExtract do
   def run_server(config \\ %{}) do
     debug_log("=== SERVER MODE START ===")
 
+    # Signal readiness after BEAM VM + NIF initialization
+    IO.puts("READY")
+
     IO.stream(:stdio, :line)
     |> Stream.map(&String.trim/1)
     |> Stream.reject(&(&1 == ""))

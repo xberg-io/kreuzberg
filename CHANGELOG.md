@@ -11,6 +11,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+#### Email Attachment Metadata Serialization
+- Fixed email extraction inserting a comma-joined string `"attachments"` into the `additional` metadata HashMap, which via `#[serde(flatten)]` overwrote the structured `EmailMetadata.attachments` array. This caused deserialization failures in Go, C#, and other typed bindings when processing emails with attachments.
+
+#### WASM Office Document Support (DOCX, PPTX, ODT)
+- DOCX, PPTX, and ODT extractors were gated on `#[cfg(all(feature = "tokio-runtime", feature = "office"))]` but `wasm-target` does not enable `tokio-runtime`. Changed cfg gates to `#[cfg(feature = "office")]` with conditional `spawn_blocking` only when `tokio-runtime` is available. Office documents now extract correctly in WASM builds.
+
+#### WASM PDF Support in Non-Browser Runtimes
+- PDFium initialization was guarded by `isBrowser()`, preventing PDF extraction in Node.js, Bun, and Deno. Removed the browser-only restriction so PDFium auto-initializes in all WASM runtimes.
+
+#### Elixir PageBoundary JSON Serialization
+- Added missing `@derive Jason.Encoder` to `PageBoundary`, `PageInfo`, and `PageStructure` structs in the Elixir bindings. Without this, encoding page structure metadata to JSON would fail with a protocol error.
+
 #### Pre-built CLI Binary Missing MCP Command
 - Pre-built standalone CLI binaries were built without the `mcp` feature flag, causing the `kreuzberg mcp` command to be unavailable. The build script now enables all features (`--features all`) to match the Python, Node, and Homebrew builds. Fixes #369.
 
@@ -25,6 +37,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bumped WASM uncompressed size limit from 13MB to 15MB in CI verification script to accommodate recent office format additions.
 
 ### Changed
+
+#### Benchmark Harness: Java JSON Escaping
+- Fixed `quote()` function in `KreuzbergExtractJava.java` to escape all JSON control characters (U+0000–U+001F), not just `\`, `"`, `\n`, `\r`. This resolves 44 harness errors from invalid JSON output on files containing tab, form-feed, or other control characters.
 
 #### API Parity
 - Added `security_limits` field to all 9 language bindings (TypeScript, Go, Python, Ruby, PHP, Java, C#, WASM, Elixir) for API parity with Rust core `ExtractionConfig`.

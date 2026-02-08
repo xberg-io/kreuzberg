@@ -1,4 +1,4 @@
-#![cfg(all(feature = "tokio-runtime", feature = "office"))]
+#![cfg(feature = "office")]
 
 //! PowerPoint presentation extractor.
 
@@ -31,7 +31,7 @@ impl PptxExtractor {
     }
 
     /// Process extracted images with OCR if configured.
-    #[cfg(feature = "ocr")]
+    #[cfg(all(feature = "ocr", feature = "tokio-runtime"))]
     async fn process_images_with_ocr(
         &self,
         mut images: Vec<crate::types::ExtractedImage>,
@@ -125,18 +125,34 @@ impl DocumentExtractor for PptxExtractor {
     ) -> Result<ExtractionResult> {
         let extract_images = config.images.as_ref().is_some_and(|img| img.extract_images);
 
-        let pages_config = config.pages.clone();
-        let pptx_result = if crate::core::batch_mode::is_batch_mode() {
-            let content_owned = content.to_vec();
-            let span = tracing::Span::current();
-            tokio::task::spawn_blocking(move || {
-                let _guard = span.entered();
-                crate::extraction::pptx::extract_pptx_from_bytes(&content_owned, extract_images, pages_config.as_ref())
-            })
-            .await
-            .map_err(|e| crate::error::KreuzbergError::parsing(format!("PPTX extraction task failed: {}", e)))??
-        } else {
-            crate::extraction::pptx::extract_pptx_from_bytes(content, extract_images, config.pages.as_ref())?
+        let pptx_result = {
+            #[cfg(feature = "tokio-runtime")]
+            {
+                let pages_config = config.pages.clone();
+                if crate::core::batch_mode::is_batch_mode() {
+                    let content_owned = content.to_vec();
+                    let span = tracing::Span::current();
+                    tokio::task::spawn_blocking(move || {
+                        let _guard = span.entered();
+                        crate::extraction::pptx::extract_pptx_from_bytes(
+                            &content_owned,
+                            extract_images,
+                            pages_config.as_ref(),
+                        )
+                    })
+                    .await
+                    .map_err(|e| {
+                        crate::error::KreuzbergError::parsing(format!("PPTX extraction task failed: {}", e))
+                    })??
+                } else {
+                    crate::extraction::pptx::extract_pptx_from_bytes(content, extract_images, config.pages.as_ref())?
+                }
+            }
+
+            #[cfg(not(feature = "tokio-runtime"))]
+            {
+                crate::extraction::pptx::extract_pptx_from_bytes(content, extract_images, config.pages.as_ref())?
+            }
         };
 
         let mut additional: AHashMap<Cow<'static, str>, serde_json::Value> = AHashMap::new();
@@ -147,12 +163,12 @@ impl DocumentExtractor for PptxExtractor {
         let images = if extract_images {
             // Image extraction is enabled, return images or empty vector
             if !pptx_result.images.is_empty() {
-                #[cfg(feature = "ocr")]
+                #[cfg(all(feature = "ocr", feature = "tokio-runtime"))]
                 {
                     let processed_images = self.process_images_with_ocr(pptx_result.images, config).await?;
                     Some(processed_images)
                 }
-                #[cfg(not(feature = "ocr"))]
+                #[cfg(not(all(feature = "ocr", feature = "tokio-runtime")))]
                 {
                     Some(pptx_result.images)
                 }
@@ -212,12 +228,12 @@ impl DocumentExtractor for PptxExtractor {
         let images = if extract_images {
             // Image extraction is enabled, return images or empty vector
             if !pptx_result.images.is_empty() {
-                #[cfg(feature = "ocr")]
+                #[cfg(all(feature = "ocr", feature = "tokio-runtime"))]
                 {
                     let processed_images = self.process_images_with_ocr(pptx_result.images, config).await?;
                     Some(processed_images)
                 }
-                #[cfg(not(feature = "ocr"))]
+                #[cfg(not(all(feature = "ocr", feature = "tokio-runtime")))]
                 {
                     Some(pptx_result.images)
                 }

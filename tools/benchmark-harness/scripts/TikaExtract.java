@@ -178,6 +178,10 @@ public final class TikaExtract {
             sharedOcrConfig.setLanguage("eng");
         }
 
+        // Signal readiness after JVM + Tika parser initialization
+        System.out.println("READY");
+        System.out.flush();
+
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         String line;
         while ((line = reader.readLine()) != null) {

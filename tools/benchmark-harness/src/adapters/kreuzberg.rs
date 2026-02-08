@@ -421,9 +421,9 @@ pub fn create_node_batch_adapter(ocr_enabled: bool) -> Result<SubprocessAdapter>
 /// Get supported formats for Kreuzberg WASM bindings.
 ///
 /// The WASM build uses the `wasm-target` feature which enables: pdf, html, xml, email,
-/// language-detection, chunking, quality. It does NOT include: excel, office, archives,
-/// ocr/images. Additionally, PDFium does not initialize in Node.js environments, so PDF
-/// extraction is excluded from benchmarks until browser-based benchmarking is supported.
+/// language-detection, chunking, quality, office. It does NOT include: excel, archives,
+/// ocr/images. PDF uses PDFium (WASM build). Office formats (DOCX, PPTX, ODT) use
+/// native Rust parsers (no tokio required in non-batch mode).
 fn get_kreuzberg_wasm_supported_formats() -> Vec<String> {
     vec![
         // Documents (office feature, in-memory parsers only — no libreoffice on wasm)

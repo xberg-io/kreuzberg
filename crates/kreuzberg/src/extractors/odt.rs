@@ -1,4 +1,4 @@
-#![cfg(all(feature = "tokio-runtime", feature = "office"))]
+#![cfg(feature = "office")]
 
 //! ODT (OpenDocument Text) extractor using native Rust parsing.
 //!
@@ -427,13 +427,39 @@ impl DocumentExtractor for OdtExtractor {
     ) -> Result<ExtractionResult> {
         let content_owned = content.to_vec();
 
-        let (text, tables) = if crate::core::batch_mode::is_batch_mode() {
-            let content_for_task = content_owned.clone();
-            let span = tracing::Span::current();
-            tokio::task::spawn_blocking(move || -> crate::error::Result<(String, Vec<Table>)> {
-                let _guard = span.entered();
+        let (text, tables) = {
+            #[cfg(feature = "tokio-runtime")]
+            if crate::core::batch_mode::is_batch_mode() {
+                let content_for_task = content_owned.clone();
+                let span = tracing::Span::current();
+                tokio::task::spawn_blocking(move || -> crate::error::Result<(String, Vec<Table>)> {
+                    let _guard = span.entered();
 
-                let cursor = Cursor::new(content_for_task);
+                    let cursor = Cursor::new(content_for_task);
+                    let mut archive = zip::ZipArchive::new(cursor).map_err(|e| {
+                        crate::error::KreuzbergError::parsing(format!("Failed to open ZIP archive: {}", e))
+                    })?;
+
+                    let text = extract_content_text(&mut archive)?;
+                    let tables = extract_tables(&mut archive)?;
+                    let embedded_formulas = extract_embedded_formulas(&mut archive)?;
+
+                    let combined_text = if !embedded_formulas.is_empty() {
+                        if !text.is_empty() {
+                            format!("{}\n{}", text, embedded_formulas)
+                        } else {
+                            embedded_formulas
+                        }
+                    } else {
+                        text
+                    };
+
+                    Ok((combined_text, tables))
+                })
+                .await
+                .map_err(|e| crate::error::KreuzbergError::parsing(format!("ODT extraction task failed: {}", e)))??
+            } else {
+                let cursor = Cursor::new(content_owned.clone());
                 let mut archive = zip::ZipArchive::new(cursor)
                     .map_err(|e| crate::error::KreuzbergError::parsing(format!("Failed to open ZIP archive: {}", e)))?;
 
@@ -451,30 +477,31 @@ impl DocumentExtractor for OdtExtractor {
                     text
                 };
 
-                Ok((combined_text, tables))
-            })
-            .await
-            .map_err(|e| crate::error::KreuzbergError::parsing(format!("ODT extraction task failed: {}", e)))??
-        } else {
-            let cursor = Cursor::new(content_owned.clone());
-            let mut archive = zip::ZipArchive::new(cursor)
-                .map_err(|e| crate::error::KreuzbergError::parsing(format!("Failed to open ZIP archive: {}", e)))?;
+                (combined_text, tables)
+            }
 
-            let text = extract_content_text(&mut archive)?;
-            let tables = extract_tables(&mut archive)?;
-            let embedded_formulas = extract_embedded_formulas(&mut archive)?;
+            #[cfg(not(feature = "tokio-runtime"))]
+            {
+                let cursor = Cursor::new(content_owned.clone());
+                let mut archive = zip::ZipArchive::new(cursor)
+                    .map_err(|e| crate::error::KreuzbergError::parsing(format!("Failed to open ZIP archive: {}", e)))?;
 
-            let combined_text = if !embedded_formulas.is_empty() {
-                if !text.is_empty() {
-                    format!("{}\n{}", text, embedded_formulas)
+                let text = extract_content_text(&mut archive)?;
+                let tables = extract_tables(&mut archive)?;
+                let embedded_formulas = extract_embedded_formulas(&mut archive)?;
+
+                let combined_text = if !embedded_formulas.is_empty() {
+                    if !text.is_empty() {
+                        format!("{}\n{}", text, embedded_formulas)
+                    } else {
+                        embedded_formulas
+                    }
                 } else {
-                    embedded_formulas
-                }
-            } else {
-                text
-            };
+                    text
+                };
 
-            (combined_text, tables)
+                (combined_text, tables)
+            }
         };
 
         let mut metadata_map = AHashMap::new();

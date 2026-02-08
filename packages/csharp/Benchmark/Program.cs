@@ -111,6 +111,10 @@ try
             Console.Error.WriteLine("[DEBUG] Entering server mode");
         }
 
+        // Signal readiness after .NET CLR initialization is complete
+        Console.Out.WriteLine("READY");
+        Console.Out.Flush();
+
         string? line;
         while ((line = Console.ReadLine()) != null)
         {

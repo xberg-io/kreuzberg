@@ -4,6 +4,18 @@ use std::{env, path::PathBuf};
 
 use super::ocr_flag;
 
+/// Maximum per-extraction timeout for persistent adapters (seconds).
+const PERSISTENT_MAX_TIMEOUT_SECS: u64 = 180;
+
+/// Margin between the Python-side and Rust-side timeouts.
+/// The Python script handles timeouts internally (via multiprocessing fork),
+/// reporting the result as a JSON error. The Rust-side timeout is a safety net
+/// that only fires if the Python side fails to respond.
+const PYTHON_TIMEOUT_MARGIN_SECS: u64 = 30;
+
+/// Python-side extraction timeout passed via `--timeout=N` CLI arg.
+const PYTHON_EXTRACTION_TIMEOUT_SECS: u64 = PERSISTENT_MAX_TIMEOUT_SECS - PYTHON_TIMEOUT_MARGIN_SECS;
+
 /// Helper function to define supported file types for each framework
 ///
 /// Maps framework names to the file extensions they can actually process.
@@ -140,13 +152,14 @@ pub fn create_docling_adapter(ocr_enabled: bool) -> Result<SubprocessAdapter> {
     let script_path = get_script_path("docling_extract.py")?;
     let (command, mut args) = find_python_with_framework("docling")?;
     args.push(script_path.to_string_lossy().to_string());
+    args.push(format!("--timeout={}", PYTHON_EXTRACTION_TIMEOUT_SECS));
     args.push(ocr_flag(ocr_enabled));
     args.push("server".to_string());
 
     let supported_formats = get_supported_formats("docling");
     Ok(
         SubprocessAdapter::with_persistent_mode("docling", command, args, vec![], supported_formats)
-            .with_max_timeout(Duration::from_secs(180)),
+            .with_max_timeout(Duration::from_secs(PERSISTENT_MAX_TIMEOUT_SECS)),
     )
 }
 
@@ -158,13 +171,14 @@ pub fn create_unstructured_adapter(ocr_enabled: bool) -> Result<SubprocessAdapte
     let script_path = get_script_path("unstructured_extract.py")?;
     let (command, mut args) = find_python_with_framework("unstructured")?;
     args.push(script_path.to_string_lossy().to_string());
+    args.push(format!("--timeout={}", PYTHON_EXTRACTION_TIMEOUT_SECS));
     args.push(ocr_flag(ocr_enabled));
     args.push("server".to_string());
 
     let supported_formats = get_supported_formats("unstructured");
     Ok(
         SubprocessAdapter::with_persistent_mode("unstructured", command, args, vec![], supported_formats)
-            .with_max_timeout(Duration::from_secs(180)),
+            .with_max_timeout(Duration::from_secs(PERSISTENT_MAX_TIMEOUT_SECS)),
     )
 }
 
@@ -173,13 +187,14 @@ pub fn create_markitdown_adapter(ocr_enabled: bool) -> Result<SubprocessAdapter>
     let script_path = get_script_path("markitdown_extract.py")?;
     let (command, mut args) = find_python_with_framework("markitdown")?;
     args.push(script_path.to_string_lossy().to_string());
+    args.push(format!("--timeout={}", PYTHON_EXTRACTION_TIMEOUT_SECS));
     args.push(ocr_flag(ocr_enabled));
     args.push("server".to_string());
 
     let supported_formats = get_supported_formats("markitdown");
     Ok(
         SubprocessAdapter::with_persistent_mode("markitdown", command, args, vec![], supported_formats)
-            .with_max_timeout(Duration::from_secs(180)),
+            .with_max_timeout(Duration::from_secs(PERSISTENT_MAX_TIMEOUT_SECS)),
     )
 }
 
@@ -335,13 +350,14 @@ pub fn create_pymupdf4llm_adapter(ocr_enabled: bool) -> Result<SubprocessAdapter
     let script_path = get_script_path("pymupdf4llm_extract.py")?;
     let (command, mut args) = find_python_with_framework("pymupdf4llm")?;
     args.push(script_path.to_string_lossy().to_string());
+    args.push(format!("--timeout={}", PYTHON_EXTRACTION_TIMEOUT_SECS));
     args.push(ocr_flag(ocr_enabled));
     args.push("server".to_string());
 
     let supported_formats = get_supported_formats("pymupdf4llm");
     Ok(
         SubprocessAdapter::with_persistent_mode("pymupdf4llm", command, args, vec![], supported_formats)
-            .with_max_timeout(Duration::from_secs(180)),
+            .with_max_timeout(Duration::from_secs(PERSISTENT_MAX_TIMEOUT_SECS)),
     )
 }
 
@@ -350,13 +366,14 @@ pub fn create_pdfplumber_adapter(ocr_enabled: bool) -> Result<SubprocessAdapter>
     let script_path = get_script_path("pdfplumber_extract.py")?;
     let (command, mut args) = find_python_with_framework("pdfplumber")?;
     args.push(script_path.to_string_lossy().to_string());
+    args.push(format!("--timeout={}", PYTHON_EXTRACTION_TIMEOUT_SECS));
     args.push(ocr_flag(ocr_enabled));
     args.push("server".to_string());
 
     let supported_formats = get_supported_formats("pdfplumber");
     Ok(
         SubprocessAdapter::with_persistent_mode("pdfplumber", command, args, vec![], supported_formats)
-            .with_max_timeout(Duration::from_secs(180)),
+            .with_max_timeout(Duration::from_secs(PERSISTENT_MAX_TIMEOUT_SECS)),
     )
 }
 
@@ -368,13 +385,14 @@ pub fn create_mineru_adapter(ocr_enabled: bool) -> Result<SubprocessAdapter> {
     let script_path = get_script_path("mineru_extract.py")?;
     let (command, mut args) = find_python_with_framework("mineru")?;
     args.push(script_path.to_string_lossy().to_string());
+    args.push(format!("--timeout={}", PYTHON_EXTRACTION_TIMEOUT_SECS));
     args.push(ocr_flag(ocr_enabled));
     args.push("server".to_string());
 
     let supported_formats = get_supported_formats("mineru");
     Ok(
         SubprocessAdapter::with_persistent_mode("mineru", command, args, vec![], supported_formats)
-            .with_max_timeout(Duration::from_secs(180)),
+            .with_max_timeout(Duration::from_secs(PERSISTENT_MAX_TIMEOUT_SECS)),
     )
 }
 

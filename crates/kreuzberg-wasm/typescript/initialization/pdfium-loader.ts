@@ -3,7 +3,7 @@
  *
  * Handles PDFium-specific WASM module loading and initialization.
  * Provides asynchronous loading of the PDFium WASM module with
- * proper error handling and browser environment detection.
+ * proper error handling across all WASM runtimes (browser, Node.js, Bun, Deno).
  */
 
 import { isBrowser } from "../runtime.js";
@@ -14,7 +14,7 @@ import type { WasmModule } from "./state.js";
  *
  * Loads and binds the PDFium WASM module for PDF extraction.
  * This function is designed for internal use and is called automatically
- * during WASM initialization in browser environments.
+ * during WASM initialization in all supported environments (browser, Node.js, Bun, Deno).
  *
  * PDFium provides high-performance PDF parsing and extraction capabilities,
  * enabling reliable text and metadata extraction from PDF documents.

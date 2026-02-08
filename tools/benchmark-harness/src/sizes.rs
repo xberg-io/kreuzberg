@@ -169,11 +169,42 @@ fn measure_pip_package(package: &str) -> Result<Option<u64>> {
             // Find Location line
             if let Some(location_line) = stdout.lines().find(|l| l.starts_with("Location:")) {
                 let location = location_line.strip_prefix("Location:").unwrap().trim();
+                let location_path = Path::new(location);
 
-                // Calculate total size of package files
-                let package_dir = Path::new(location).join(package.replace('-', "_"));
+                // Try package directory first (e.g. {location}/kreuzberg/)
+                let package_dir = location_path.join(package.replace('-', "_"));
                 if package_dir.exists() {
                     return Ok(Some(dir_size(&package_dir)));
+                }
+
+                // Fall back to summing individual files listed by pip show -f
+                // This handles native extensions (maturin) where files are at top-level
+                let mut in_files_section = false;
+                let mut total_size: u64 = 0;
+                let mut found_files = false;
+                for line in stdout.lines() {
+                    if line.starts_with("Files:") {
+                        in_files_section = true;
+                        continue;
+                    }
+                    if in_files_section {
+                        let file_rel = line.trim();
+                        if file_rel.is_empty() {
+                            continue;
+                        }
+                        // Lines after Files: that don't start with whitespace are new sections
+                        if !line.starts_with(' ') && !line.starts_with('\t') {
+                            break;
+                        }
+                        let file_path = location_path.join(file_rel);
+                        if let Ok(metadata) = fs::metadata(&file_path) {
+                            total_size += metadata.len();
+                            found_files = true;
+                        }
+                    }
+                }
+                if found_files {
+                    return Ok(Some(total_size));
                 }
             }
         }
@@ -182,9 +213,64 @@ fn measure_pip_package(package: &str) -> Result<Option<u64>> {
     Ok(None)
 }
 
-/// Measure npm package size
+/// Measure npm package size including native addon binary
 fn measure_npm_package(package: &str) -> Result<Option<u64>> {
-    // Try npm pack --dry-run to get package size
+    // For kreuzberg-node, measure the native .node addon + JS wrapper
+    // The .node file contains the Rust FFI + pdfium statically linked
+    if package.contains("kreuzberg") && package.contains("node") {
+        let mut total: u64 = 0;
+
+        // Find the native .node addon in the crate directory
+        let node_crate = Path::new("crates/kreuzberg-node");
+        if node_crate.exists() {
+            if let Ok(entries) = fs::read_dir(node_crate) {
+                for entry in entries.flatten() {
+                    let path = entry.path();
+                    if let Some(name) = path.file_name().and_then(|n| n.to_str()) {
+                        // The native addon: kreuzberg-node.linux-x64-gnu.node, etc.
+                        if name.ends_with(".node") {
+                            if let Ok(metadata) = fs::metadata(&path) {
+                                total += metadata.len();
+                            }
+                        }
+                    }
+                }
+            }
+            // Add JS wrapper (dist/ directory)
+            let dist_dir = node_crate.join("dist");
+            if dist_dir.exists() {
+                total += dir_size(&dist_dir);
+            }
+        }
+
+        // Also check npm platform packages (e.g. crates/kreuzberg-node/npm/linux-x64-gnu/)
+        let npm_dir = node_crate.join("npm");
+        if npm_dir.exists() {
+            if let Ok(entries) = fs::read_dir(&npm_dir) {
+                for entry in entries.flatten() {
+                    let platform_dir = entry.path();
+                    if platform_dir.is_dir() {
+                        // Look for .node files in platform dirs
+                        if let Ok(files) = fs::read_dir(&platform_dir) {
+                            for file in files.flatten() {
+                                if file.path().extension().and_then(|e| e.to_str()) == Some("node") {
+                                    if let Ok(metadata) = file.metadata() {
+                                        total += metadata.len();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if total > 0 {
+            return Ok(Some(total));
+        }
+    }
+
+    // For third-party npm packages, fall back to npm pack --dry-run
     let output = Command::new("npm")
         .args(["pack", "--dry-run", "--json", package])
         .output()
@@ -193,7 +279,6 @@ fn measure_npm_package(package: &str) -> Result<Option<u64>> {
     if let Some(output) = output {
         if output.status.success() {
             let stdout = String::from_utf8_lossy(&output.stdout);
-            // Parse JSON output for size
             if let Ok(json) = serde_json::from_str::<serde_json::Value>(&stdout) {
                 if let Some(size) = json.get(0).and_then(|v| v.get("size")).and_then(|v| v.as_u64()) {
                     return Ok(Some(size));
@@ -214,9 +299,13 @@ fn measure_binary(name: &str) -> Result<Option<u64>> {
         _ => return Ok(None),
     };
 
-    // For kreuzberg-rust and kreuzberg-go, first try target directory
+    // For kreuzberg-rust, measure the FFI shared library (used by all bindings)
     if name.starts_with("kreuzberg-rust") {
         let target_paths = [
+            "target/release/libkreuzberg_ffi.so",
+            "target/release/libkreuzberg_ffi.dylib",
+            "target/release/kreuzberg_ffi.dll",
+            "target/release/libkreuzberg_ffi.a",
             "target/release/kreuzberg",
             "target/debug/kreuzberg",
             "target/release/libkreuzberg.so",
@@ -230,12 +319,13 @@ fn measure_binary(name: &str) -> Result<Option<u64>> {
         }
     }
 
-    // For kreuzberg-go, measure the Go binary or module
+    // For kreuzberg-go, measure the FFI shared library (Go links against it via CGO)
     if name.starts_with("kreuzberg-go") {
-        // Try to find a compiled Go binary
         let go_paths = [
+            "target/release/libkreuzberg_ffi.so",
+            "target/release/libkreuzberg_ffi.dylib",
             "packages/go/kreuzberg",
-            "packages/go/v2/kreuzberg",
+            "packages/go/v4/kreuzberg",
             "target/release/libkreuzberg_go.so",
             "target/release/libkreuzberg_go.dylib",
         ];
@@ -244,10 +334,12 @@ fn measure_binary(name: &str) -> Result<Option<u64>> {
                 return Ok(Some(metadata.len()));
             }
         }
-        // Measure the Go package directory instead
-        let go_pkg_dir = Path::new("packages/go/v2");
-        if go_pkg_dir.exists() {
-            return Ok(Some(dir_size(go_pkg_dir)));
+        // Measure the Go package directory
+        for dir in ["packages/go/v4", "packages/go/v2"] {
+            let go_pkg_dir = Path::new(dir);
+            if go_pkg_dir.exists() {
+                return Ok(Some(dir_size(go_pkg_dir)));
+            }
         }
     }
 
@@ -307,18 +399,30 @@ fn measure_jar(name: &str) -> Result<Option<u64>> {
         }
     }
 
-    // For kreuzberg-java, measure the compiled JAR
+    // For kreuzberg-java, measure classes (including JNI natives) + runtime dependencies
     if name.starts_with("kreuzberg-java") {
-        let jar_paths = ["packages/java/target/kreuzberg.jar", "packages/java/target/classes"];
-        for path in jar_paths {
-            let expanded = Path::new(path);
-            if expanded.exists() {
-                if expanded.is_dir() {
-                    return Ok(Some(dir_size(expanded)));
-                } else if let Ok(metadata) = fs::metadata(expanded) {
-                    return Ok(Some(metadata.len()));
-                }
-            }
+        let mut total: u64 = 0;
+
+        // Compiled classes + bundled native libs (in target/classes/natives/)
+        let classes_dir = Path::new("packages/java/target/classes");
+        if classes_dir.exists() {
+            total += dir_size(classes_dir);
+        }
+
+        // Runtime dependency JARs (jackson, etc.)
+        let deps_dir = Path::new("packages/java/target/dependency");
+        if deps_dir.exists() {
+            total += dir_size(deps_dir);
+        }
+
+        if total > 0 {
+            return Ok(Some(total));
+        }
+
+        // Fall back to a pre-built JAR
+        let jar_path = Path::new("packages/java/target/kreuzberg.jar");
+        if let Ok(metadata) = fs::metadata(jar_path) {
+            return Ok(Some(metadata.len()));
         }
     }
 
@@ -366,10 +470,15 @@ fn measure_gem_package(package: &str) -> Result<Option<u64>> {
         }
     }
 
-    // Try workspace packages/ruby directory for development
-    let workspace_ruby = Path::new("packages/ruby");
-    if workspace_ruby.exists() {
-        return Ok(Some(dir_size(workspace_ruby)));
+    // Try workspace packages/ruby — measure only the built gem in pkg/ or lib/
+    // (not ext/, tmp/, vendor/ which contain build artifacts)
+    let ruby_pkg = Path::new("packages/ruby/pkg");
+    if ruby_pkg.exists() {
+        return Ok(Some(dir_size(ruby_pkg)));
+    }
+    let ruby_lib = Path::new("packages/ruby/lib");
+    if ruby_lib.exists() {
+        return Ok(Some(dir_size(ruby_lib)));
     }
 
     Ok(None)
@@ -417,6 +526,8 @@ fn measure_nuget_package(name: &str) -> Result<Option<u64>> {
         format!("{}/.nuget/packages/kreuzberg.native", home),
         "packages/csharp/bin/Release".to_string(),
         "packages/csharp/bin/Debug".to_string(),
+        "packages/csharp/Kreuzberg/bin/Release".to_string(),
+        "packages/csharp/Kreuzberg/bin/Debug".to_string(),
     ];
 
     for path in nuget_paths {
@@ -428,18 +539,25 @@ fn measure_nuget_package(name: &str) -> Result<Option<u64>> {
 
     // Try dotnet list to find package location
     if name.starts_with("kreuzberg-csharp") {
-        let project_path = Path::new("packages/csharp/Kreuzberg.Native/Kreuzberg.Native.csproj");
-        if project_path.exists() {
-            if let Ok(output) = Command::new("dotnet")
-                .args(["list", "package", "--include-transitive"])
-                .current_dir("packages/csharp/Kreuzberg.Native")
-                .output()
-            {
-                if output.status.success() {
-                    // Measure the entire project directory as a proxy
-                    let proj_dir = Path::new("packages/csharp/Kreuzberg.Native");
-                    if proj_dir.exists() {
-                        return Ok(Some(dir_size(proj_dir)));
+        // Check both old and current project directory names
+        let project_dirs = ["packages/csharp/Kreuzberg", "packages/csharp/Kreuzberg.Native"];
+        for proj_dir_str in project_dirs {
+            let proj_dir = Path::new(proj_dir_str);
+            let csproj = proj_dir.join(format!("{}.csproj", proj_dir.file_name().unwrap().to_string_lossy()));
+            if csproj.exists() {
+                // Measure the compiled output (bin directory)
+                let bin_dir = proj_dir.join("bin");
+                if bin_dir.exists() {
+                    return Ok(Some(dir_size(&bin_dir)));
+                }
+                // Fall back to measuring the FFI shared library
+                let ffi_paths = [
+                    "target/release/libkreuzberg_ffi.so",
+                    "target/release/libkreuzberg_ffi.dylib",
+                ];
+                for ffi_path in ffi_paths {
+                    if let Ok(metadata) = fs::metadata(ffi_path) {
+                        return Ok(Some(metadata.len()));
                     }
                 }
             }

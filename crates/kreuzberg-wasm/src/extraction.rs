@@ -107,7 +107,8 @@ pub fn extract_bytes_wasm(data: Uint8Array, mime_type: String, config: Option<Js
 /// Extract content from a web File or Blob (asynchronous).
 ///
 /// Extracts content from a web File (from `<input type="file">`) or Blob object
-/// using the FileReader API. Only available in browser environments.
+/// using the FileReader API. Only available in browser environments (FileReader API limitation).
+/// For server-side environments, use `extractBytes` with file data converted to Uint8Array.
 ///
 /// # JavaScript Parameters
 ///
@@ -276,7 +277,8 @@ pub fn batch_extract_bytes_wasm(
 /// Batch extract from multiple Files or Blobs (asynchronous).
 ///
 /// Processes multiple web File or Blob objects in parallel using the FileReader API.
-/// Only available in browser environments.
+/// Only available in browser environments (FileReader API limitation).
+/// For server-side environments, use `batchExtractBytes` with file data converted to Uint8Array.
 ///
 /// # JavaScript Parameters
 ///

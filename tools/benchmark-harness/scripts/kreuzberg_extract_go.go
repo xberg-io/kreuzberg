@@ -114,6 +114,9 @@ func runServer(ocrEnabled bool) {
 	config := createConfig(ocrEnabled)
 	scanner := bufio.NewScanner(os.Stdin)
 
+	// Signal readiness after runtime + FFI initialization is complete
+	fmt.Println("READY")
+
 	for scanner.Scan() {
 		filePath := scanner.Text()
 		if filePath = filepath.Clean(filePath); filePath == "" {

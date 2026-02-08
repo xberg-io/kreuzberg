@@ -12,6 +12,8 @@ defmodule Kreuzberg.PageBoundary do
     * `:page_number` - Page number (1-indexed)
   """
 
+  @derive Jason.Encoder
+
   @type t :: %__MODULE__{
           byte_start: non_neg_integer(),
           byte_end: non_neg_integer(),
@@ -54,6 +56,8 @@ defmodule Kreuzberg.PageInfo do
     * `:table_count` - Number of tables on this page
     * `:hidden` - Whether this page is hidden
   """
+
+  @derive Jason.Encoder
 
   @type t :: %__MODULE__{
           number: non_neg_integer(),
@@ -120,6 +124,8 @@ defmodule Kreuzberg.PageStructure do
     * `:boundaries` - Optional list of byte offset boundaries per page
     * `:pages` - Optional list of per-page metadata
   """
+
+  @derive Jason.Encoder
 
   @type t :: %__MODULE__{
           total_count: non_neg_integer(),

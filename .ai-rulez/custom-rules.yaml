@@ -16,134 +16,76 @@ rules:
   - name: extraction-pipeline-architecture
     priority: critical
     description: |
-      Kreuzberg's extraction pipeline routes documents through format detection,
-      extractor selection, format conversion (legacy formats), and post-processing
-      with integrated caching. Every document follows this consistent flow to ensure
-      reliability and performance.
-
-      Implementation:
-      - MIME detection: file extension → magic bytes → content analysis
-      - Format conversion: legacy DOC/PPT → DOCX/PPTX via LibreOffice
-      - Extractor selection: priority-based plugin registry
-      - Fallback chain: attempt extractors in priority order
-      - Post-processing: apply configured post-processors sequentially
-      - Caching: content-based cache keys, config-inclusive invalidation
+      Routes documents: detection -> selection -> conversion -> post-processing -> caching.
+      MIME detection: extension -> magic bytes -> content analysis.
+      Legacy DOC/PPT -> DOCX/PPTX via LibreOffice. Priority-based extractor registry
+      with fallback chain. Content-based cache keys with config-inclusive invalidation.
 
     scope:
       - ExtractionConfig cascade through pipeline
       - MIME type detection and routing
       - Extractor registration and fallback
-      - Post-processor chaining
-      - Cache key generation and validation
 
   - name: plugin-system-abstraction
     priority: critical
     description: |
-      All plugins (DocumentExtractor, OcrBackend, PostProcessor, Validator)
-      implement standardized traits with async support, thread safety, and
-      lifecycle management. Plugins are registered dynamically with priority
-      arbitration for capability conflicts.
-
-      Implementation:
-      - Plugin trait: name(), process(), capabilities()
-      - Thread safety: Send + Sync bounds, Arc<RwLock<>> for mutable state
-      - Lifecycle: initialize() on registration, shutdown() on unregistration
-      - Registry: Arc<RwLock<>> with MIME type indexing for O(log n) lookup
-      - Async support: all heavy operations use async/await
-      - Priority system: higher priority (255) selected first, fallback on failure
+      All plugins implement standardized traits (Send + Sync) with async support
+      and lifecycle management. Registered dynamically with priority arbitration.
+      Registry: Arc<RwLock<>> with MIME type indexing for O(log n) lookup.
+      Priority 0-255: higher selected first, fallback on failure.
 
     scope:
       - Trait-based plugin design
       - Thread-safe registry operations
-      - Plugin discovery (Rust static + Python dynamic)
       - Priority-based selection and fallback
-      - Plugin initialization and resource cleanup
 
   - name: cache-first-extraction-strategy
     priority: high
     description: |
-      Check cache before expensive extraction operations using content-based
-      hash keys that include configuration state. Invalidate cache when config
-      changes, track cache hit/miss metrics, and store results with metadata.
-
-      Implementation:
-      - Cache key: blake3(document_bytes + config_json)
-      - Hit check: always check before extraction attempt
-      - Invalidation: clear cache on breaking config changes
-      - Telemetry: record hit rates per document format
-      - Metadata: store with extraction time, extractor name, quality metrics
+      Check cache before extraction. Key: blake3(document_bytes + config_json).
+      Invalidate on breaking config changes. Track hit rates per format.
+      Store with extraction time, extractor name, quality metrics.
 
     scope:
       - Cache key generation strategy
       - Hit/miss tracking and metrics
       - Cache invalidation triggers
-      - Distributed cache support (Redis, Memcached)
-      - Memory-based cache size limits
 
   - name: async-await-consistency
     priority: high
     description: |
-      Primary APIs are async (extract_file, extract_batch). Synchronous wrappers
-      use global Tokio runtime only. No blocking I/O in async contexts. Batch
-      operations use concurrent execution with proper cancellation.
-
-      Implementation:
-      - extract_file() → async, returns Future
-      - extract_sync() → blocking wrapper using tokio::task::block_in_place
-      - extract_batch() → concurrent, preserves input order
-      - Cancellation: CancellationToken on long operations
-      - Timeouts: configurable per-operation
-      - No spawn_blocking in hot paths
+      Primary APIs async. Sync wrappers use global Tokio runtime only.
+      No blocking I/O in async contexts. Batch ops use concurrent execution
+      with CancellationToken. Configurable per-operation timeouts.
 
     scope:
       - Async/await API design
       - Synchronous wrapper implementation
       - Batch processing concurrency
-      - Cancellation token propagation
-      - Timeout enforcement
 
   - name: error-handling-and-recovery
     priority: high
     description: |
-      Graceful error handling with fallback extraction chains. Preserve partial
-      results when possible. Return structured error information with context,
-      root cause, and recovery suggestions.
-
-      Implementation:
-      - Error type: thiserror with detailed context
-      - Fallback: try next extractor on failure
-      - Partial results: batch operations continue on per-document failure
-      - Error metadata: file format, size, extractor tried, root cause
-      - Logging: detailed error logs with file path (sanitized, no full paths)
+      Graceful fallback extraction chains. Preserve partial results when possible.
+      Structured errors (thiserror) with context, root cause, recovery suggestions.
+      Batch ops continue on per-document failure. Sanitized logging (no full paths).
 
     scope:
       - Error type hierarchy (ExtractionError, FormatError, ConfigError)
       - Fallback chain implementation
       - Partial result preservation
-      - Error context enrichment
-      - Error reporting and logging
 
   - name: configuration-cascade-pattern
     priority: high
     description: |
-      Single ExtractionConfig controls all extraction behavior. Config changes
-      don't require code modifications. Different extractors may use different
-      config sections. Validate config values before extraction.
-
-      Implementation:
-      - ExtractionConfig: root struct with sections
-      - MimeConfig: MIME detection options
-      - OcrConfig: OCR engine selection and options
-      - PostProcessorConfig: list of enabled post-processors
-      - CacheConfig: cache strategy and limits
-      - Validation: schema validation before use
+      Single ExtractionConfig controls all behavior. No code changes for config
+      changes. Validate config values before extraction. Sections: MimeConfig,
+      OcrConfig, PostProcessorConfig, CacheConfig.
 
     scope:
       - ExtractionConfig structure design
       - Config validation and defaults
       - Config impact on extractor behavior
-      - Nested config structures
-      - Config versioning and migrations
 
 # =============================================================================
 # OCR INTEGRATION RULES
@@ -152,107 +94,61 @@ rules:
   - name: ocr-backend-pluggability
     priority: critical
     description: |
-      OCR backends are interchangeable via OcrBackend trait. Support Tesseract
-      (C FFI), EasyOCR, PaddleOCR natively. Enable custom backend registration
-      with priority-based selection.
-
-      Implementation:
-      - OcrBackend trait: process_image(), supported_languages(), capabilities()
-      - Tesseract: kreuzberg-tesseract C bindings directly (no Python wrapping)
-      - Python backends: PyO3 FFI with GIL management
-      - Backend independence: failures in one don't affect others
-      - Graceful degradation: continue with fallback backend
+      OCR backends interchangeable via OcrBackend trait. Tesseract via C FFI
+      (kreuzberg-tesseract), EasyOCR/PaddleOCR via PyO3 with GIL management.
+      Backend failures isolated. Graceful degradation to fallback backend.
 
     scope:
       - OcrBackend trait design
       - Tesseract C FFI integration
-      - Python backend PyO3 wrapping
       - GIL management in async code
-      - Backend capability declaration
 
   - name: hocr-parsing-and-table-extraction
     priority: high
     description: |
-      Extract all relevant information from hOCR format for accurate table
-      reconstruction. Parse bounding box coordinates, confidence scores,
-      and formatting information. Convert tables to clean Markdown format.
-
-      Implementation:
-      - hOCR XML parsing: validate structure before processing
-      - Bounding box extraction: pixel-accurate coordinates
-      - Confidence tracking: per-word and per-paragraph scores
-      - Table detection: spatial clustering from word positions
-      - Markdown conversion: valid GFM tables with alignment preservation
+      Parse hOCR XML for bounding boxes, confidence scores, formatting.
+      Reconstruct tables via spatial clustering from word positions.
+      Output clean GFM Markdown tables with alignment.
 
     scope:
       - hOCR XML structure validation
       - Coordinate and confidence parsing
       - Table cell boundary detection
-      - Markdown table generation
-      - Merged cell handling
 
   - name: image-preprocessing-pipeline
     priority: high
     description: |
-      Apply preprocessing conditionally based on image analysis. Upscale
-      low-resolution images (<150 DPI), downsample extremely high-resolution,
-      apply noise reduction and contrast enhancement only when needed.
-
-      Implementation:
-      - Analysis: detect DPI, contrast, noise level
-      - Upscaling: interpolation for <150 DPI images
-      - Downsampling: preserve detail while reducing size
-      - Noise reduction: conditional based on detected noise
-      - Contrast enhancement: conditional based on histogram analysis
-      - Format-specific: PNG (transparency), JPG (compression), TIFF (resolution)
+      Conditional preprocessing based on image analysis. Upscale <150 DPI,
+      downsample extreme high-res. Noise reduction and contrast enhancement
+      (CLAHE) only when needed. Format-specific handling (PNG transparency, etc.).
 
     scope:
       - Image quality analysis
       - Conditional preprocessing steps
       - Format-specific handling
-      - Preprocessing impact metrics
-      - Performance optimization
 
   - name: tesseract-native-integration
     priority: critical
     description: |
-      Use native Tesseract via C FFI for maximum performance. Support all PSM
-      modes (0-13), maintain hOCR output for table reconstruction. Profile
-      performance and optimize C interaction.
-
-      Implementation:
-      - kreuzberg-tesseract: direct C bindings
-      - PSM modes: configurable per-document
-      - hOCR output: always requested for analysis
-      - Language packs: validation before use
-      - Performance profiling: flamegraph analysis
+      Native Tesseract via C FFI (kreuzberg-tesseract). All PSM modes 0-13
+      configurable per-document. hOCR always requested for analysis.
+      Language pack validation before use.
 
     scope:
       - C FFI safety and error handling
       - PSM mode configuration
       - Language pack management
-      - Performance optimization
-      - Memory management in C calls
 
   - name: language-detection-and-support
     priority: high
     description: |
-      Reliably identify text languages from OCR output. Support multi-language
-      documents with language-per-region specification. Handle script mixing
-      (Latin + CJK) gracefully.
-
-      Implementation:
-      - Detection: from OCR output words and confidence
-      - Configuration: per-document and per-region languages
-      - Fallback: use config-specified languages if detection fails
-      - Multi-language: support language-per-document or per-region
-      - Validation: verify language pack availability
+      Identify text languages from OCR output. Multi-language documents with
+      per-region language specification. Handle script mixing (Latin + CJK).
+      Fallback to config-specified languages if detection fails.
 
     scope:
       - Language detection algorithm
-      - Language configuration cascade
       - Multi-language document handling
-      - Script detection and mixing
       - Language pack validation
 
 # =============================================================================
@@ -262,86 +158,50 @@ rules:
   - name: format-specific-extractor-plugins
     priority: high
     description: |
-      Each DocumentExtractor plugin handles specific document formats (PDF,
-      DOCX, XLSX, PPTX, etc.). Declare supported MIME types clearly and handle
-      format-specific edge cases. Return standardized ExtractionResult.
-
-      Implementation:
-      - MIME type declaration: clear list of supported types
-      - Format handling: specialized logic per format
-      - Edge cases: encryption, corruption, unusual features
-      - Result format: standardized ExtractionResult structure
-      - Error handling: format-specific errors with recovery suggestions
+      Each DocumentExtractor handles specific formats (PDF, DOCX, XLSX, PPTX).
+      Clear MIME type declaration. Handle format-specific edge cases (encryption,
+      corruption). Return standardized ExtractionResult.
 
     scope:
       - Format detection and routing
       - Format-specific extraction logic
       - Extractor fallback chain
-      - Edge case handling per format
-      - Result structure consistency
 
   - name: post-processor-chaining
     priority: medium
     description: |
-      Post-processors enhance extraction results applied sequentially. Failures
-      don't prevent other plugins. Track which plugins were applied. Maintain
-      result structure throughout chain.
-
-      Implementation:
-      - Sequential execution: plugins applied in priority order
-      - Failure isolation: errors don't block other processors
-      - Tracking: record applied plugins in result metadata
-      - Configuration: PostProcessorConfig with enabled processors
-      - Structure preservation: maintain ExtractionResult invariants
+      Post-processors applied sequentially by priority. Failures isolated
+      (don't block others). Track applied plugins in result metadata.
+      Maintain ExtractionResult invariants throughout chain.
 
     scope:
       - Post-processor ordering and execution
       - Error handling during chaining
       - Result modification safety
-      - Processor configuration
-      - Applied processor tracking
 
   - name: validator-plugin-quality-control
     priority: medium
     description: |
-      Validators implement quality checks without blocking extraction.
-      Generate detailed ValidationReport with issue detection and
-      recommendations for quality improvement.
-
-      Implementation:
-      - Quality metrics: text density, metadata coverage, structure
-      - Issue detection: common extraction problems
-      - Recommendations: suggestions for config changes
-      - Report generation: structured ValidationReport
-      - Non-blocking: quality control only, extraction continues
+      Validators run quality checks without blocking extraction.
+      Generate ValidationReport with issues and recommendations.
+      Metrics: text density, metadata coverage, structure quality.
 
     scope:
       - Quality metric calculation
       - Issue detection patterns
-      - Recommendation generation
       - Report structure design
-      - Integration with extraction pipeline
 
   - name: python-plugin-dynamic-discovery
     priority: medium
     description: |
-      Dynamically discover Python plugins by scanning module paths for classes
-      implementing plugin protocol. Validate before registration. Handle
-      discovery errors gracefully.
-
-      Implementation:
-      - Module scanning: discover plugin classes at runtime
-      - Protocol validation: check required methods exist
-      - Type validation: verify method signatures
-      - Error handling: graceful failure if discovery fails
-      - Documentation: plugin module structure documented
+      Discover Python plugins by scanning module paths for protocol-implementing
+      classes. Validate required methods and signatures before registration.
+      Graceful failure on discovery errors.
 
     scope:
       - Module discovery patterns
       - Plugin protocol validation
-      - Type signature checking
       - Error recovery
-      - Plugin registration from discovered modules
 
 # =============================================================================
 # PERFORMANCE & CACHING
@@ -350,154 +210,34 @@ rules:
   - name: telemetry-and-observability
     priority: high
     description: |
-      Record extraction telemetry using OpenTelemetry for debugging and
-      optimization. Track file format, size, duration, and cache performance.
-      Sanitize file paths in logs (filename only, no full paths).
-
-      Implementation:
-      - OpenTelemetry spans: extraction, format detection, per-format handling
-      - Metrics: duration, file size, cache hit/miss, format distribution
-      - Attributes: format, extractor, config hash, results quality
-      - Path sanitization: extract filename, avoid full paths
-      - Cache metrics: hit rates, storage size, eviction counts
+      OpenTelemetry spans for extraction, format detection, per-format handling.
+      Metrics: duration, file size, cache hit/miss, format distribution.
+      Path sanitization: filename only, no full paths.
 
     scope:
       - Span instrumentation
       - Metric collection
-      - Event recording
       - Log sanitization
-      - Performance tracking
 
   - name: concurrent-batch-optimization
     priority: high
     description: |
-      Optimize batch extraction with appropriate worker pool sizing. Use Arc
-      for shared state. Handle per-document errors independently while
-      continuing processing. Return results maintaining input order.
-
-      Implementation:
-      - Worker pool: configurable size (default: num_cpus * 2)
-      - Shared state: Arc<DashMap> for cache and plugins
-      - Error isolation: per-document errors don't block others
-      - Order preservation: results ordered as inputs
-      - Metrics: throughput, per-worker load distribution
+      Batch extraction with configurable worker pool (default: num_cpus * 2).
+      Arc<DashMap> for shared state. Per-document error isolation.
+      Results maintain input order.
 
     scope:
       - Worker pool configuration
       - Concurrent execution coordination
       - Error handling in batch mode
-      - Result ordering preservation
-      - Performance optimization
 
   - name: memory-efficiency-streaming
     priority: high
     description: |
-      Minimize memory footprint during extraction. Stream large PDFs when
-      possible. Don't load entire documents into memory. Clear temporary
-      buffers promptly. Use Arc for shared data structures.
-
-      Implementation:
-      - Streaming: support for large documents (>1GB)
-      - Buffer management: clear temporary buffers after use
-      - Shared structures: Arc<> for large parsed documents
-      - Memory profiling: identify and fix leaks
-      - Configuration: adjustable buffer sizes
+      Stream large PDFs (>1GB) when possible. Clear temporary buffers promptly.
+      Arc<> for shared data structures. Adjustable buffer sizes.
 
     scope:
       - Streaming extraction APIs
       - Buffer lifecycle management
-      - Memory usage profiling
-      - Arc usage patterns
       - Large document handling
-
-# =============================================================================
-# COMPATIBILITY & STABILITY
-# =============================================================================
-
-  - name: backward-compatibility-promise
-    priority: high
-    description: |
-      Maintain API stability across versions. Don't change ExtractionResult
-      structure without major version bump. Support multiple config versions.
-      Provide migration paths for breaking changes.
-
-      Implementation:
-      - ExtractionResult: stable structure, additive changes only
-      - Config versioning: support old config formats
-      - Deprecation: clear notices with timeline
-      - Migration: provide migration helpers
-      - Testing: compatibility tests with legacy code
-
-    scope:
-      - ExtractionResult stability
-      - Config version support
-      - Deprecation timeline
-      - Migration tooling
-      - Compatibility testing
-
-  - name: cross-platform-compatibility
-    priority: high
-    description: |
-      Ensure extraction works consistently across Linux, macOS, Windows.
-      Handle platform-specific path issues. Use platform-appropriate tools.
-      Document platform-specific behavior.
-
-      Implementation:
-      - Path handling: PathBuf with platform abstraction
-      - Tool availability: LibreOffice, Tesseract detection
-      - Fallbacks: graceful degradation if tool unavailable
-      - CI/CD: test on multiple platforms
-      - Documentation: known limitations per platform
-
-    scope:
-      - Path abstraction layer
-      - Platform tool detection
-      - Platform-specific fallbacks
-      - Multi-platform testing
-      - Limitation documentation
-
-# =============================================================================
-# CODE QUALITY & DOCUMENTATION
-# =============================================================================
-
-  - name: comprehensive-test-coverage
-    priority: high
-    description: |
-      Test all extraction code paths with real documents. Unit tests for MIME
-      detection and each extractor. Integration tests for full pipeline. Error
-      handling with corrupted documents. Performance benchmarks.
-
-      Implementation:
-      - Unit tests: MIME detection, each extractor
-      - Integration tests: full extraction pipeline
-      - Fixtures: real documents in various formats
-      - Edge cases: corrupted, empty, very large documents
-      - Performance: baseline benchmarks per format
-
-    scope:
-      - Unit test organization
-      - Integration test strategy
-      - Fixture management
-      - Edge case coverage
-      - Performance baseline
-
-  - name: clear-error-messages-and-guidance
-    priority: medium
-    description: |
-      Provide actionable error information with root cause analysis and
-      recovery suggestions. Reference documentation. Include context (filename,
-      format). Make errors grep-friendly.
-
-      Implementation:
-      - Error message format: type + root cause + suggestion
-      - Context: include filename, format, extractor
-      - Documentation links: point to relevant docs
-      - Grep-friendly: structured error codes
-      - Recovery suggestions: specific actionable steps
-
-    scope:
-      - Error message template design
-      - Context inclusion patterns
-      - Documentation reference
-      - Error code standardization
-      - Recovery suggestion generation

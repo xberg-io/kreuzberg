@@ -1,4 +1,4 @@
-#![cfg(all(feature = "tokio-runtime", feature = "office"))]
+#![cfg(feature = "office")]
 
 //! DOCX extractor for high-performance text extraction.
 //!
@@ -8,7 +8,9 @@ use crate::Result;
 use crate::core::config::ExtractionConfig;
 use crate::extraction::{cells_to_markdown, office_metadata};
 use crate::plugins::{DocumentExtractor, Plugin};
-use crate::types::{ExtractionResult, Metadata, PageBoundary, PageInfo, PageStructure, PageUnitType, Table};
+#[cfg(feature = "tokio-runtime")]
+use crate::types::PageBoundary;
+use crate::types::{ExtractionResult, Metadata, PageInfo, PageStructure, PageUnitType, Table};
 use ahash::AHashMap;
 use async_trait::async_trait;
 use std::borrow::Cow;
@@ -112,63 +114,96 @@ impl DocumentExtractor for DocxExtractor {
         mime_type: &str,
         _config: &ExtractionConfig,
     ) -> Result<ExtractionResult> {
-        let (text, tables, page_boundaries) = if crate::core::batch_mode::is_batch_mode() {
-            let content_owned = content.to_vec();
-            let span = tracing::Span::current();
-            tokio::task::spawn_blocking(
-                move || -> crate::error::Result<(String, Vec<Table>, Option<Vec<PageBoundary>>)> {
-                    let _guard = span.entered();
-                    let doc = crate::extraction::docx::parser::parse_document(&content_owned)?;
+        let (text, tables, page_boundaries) = {
+            #[cfg(feature = "tokio-runtime")]
+            if crate::core::batch_mode::is_batch_mode() {
+                let content_owned = content.to_vec();
+                let span = tracing::Span::current();
+                tokio::task::spawn_blocking(
+                    move || -> crate::error::Result<(String, Vec<Table>, Option<Vec<PageBoundary>>)> {
+                        let _guard = span.entered();
+                        let doc = crate::extraction::docx::parser::parse_document(&content_owned)?;
 
-                    let text = doc.extract_text();
+                        let text = doc.extract_text();
 
-                    let tables: Vec<Table> = doc
-                        .tables
-                        .iter()
-                        .enumerate()
-                        .map(|(idx, table)| convert_docx_table_to_table(table, idx))
-                        .collect();
+                        let tables: Vec<Table> = doc
+                            .tables
+                            .iter()
+                            .enumerate()
+                            .map(|(idx, table)| convert_docx_table_to_table(table, idx))
+                            .collect();
 
-                    let page_boundaries = crate::extraction::docx::detect_page_breaks_from_docx(&content_owned)?;
+                        let page_boundaries = crate::extraction::docx::detect_page_breaks_from_docx(&content_owned)?;
 
-                    Ok((text, tables, page_boundaries))
-                },
-            )
-            .await
-            .map_err(|e| crate::error::KreuzbergError::parsing(format!("DOCX extraction task failed: {}", e)))??
-        } else {
-            let doc = crate::extraction::docx::parser::parse_document(content)?;
+                        Ok((text, tables, page_boundaries))
+                    },
+                )
+                .await
+                .map_err(|e| crate::error::KreuzbergError::parsing(format!("DOCX extraction task failed: {}", e)))??
+            } else {
+                let doc = crate::extraction::docx::parser::parse_document(content)?;
 
-            let text = doc.extract_text();
+                let text = doc.extract_text();
 
-            let tables: Vec<Table> = doc
-                .tables
-                .iter()
-                .enumerate()
-                .map(|(idx, table)| convert_docx_table_to_table(table, idx))
-                .collect();
+                let tables: Vec<Table> = doc
+                    .tables
+                    .iter()
+                    .enumerate()
+                    .map(|(idx, table)| convert_docx_table_to_table(table, idx))
+                    .collect();
 
-            let page_boundaries = crate::extraction::docx::detect_page_breaks_from_docx(content)?;
+                let page_boundaries = crate::extraction::docx::detect_page_breaks_from_docx(content)?;
 
-            (text, tables, page_boundaries)
+                (text, tables, page_boundaries)
+            }
+
+            #[cfg(not(feature = "tokio-runtime"))]
+            {
+                let doc = crate::extraction::docx::parser::parse_document(content)?;
+
+                let text = doc.extract_text();
+
+                let tables: Vec<Table> = doc
+                    .tables
+                    .iter()
+                    .enumerate()
+                    .map(|(idx, table)| convert_docx_table_to_table(table, idx))
+                    .collect();
+
+                let page_boundaries = crate::extraction::docx::detect_page_breaks_from_docx(content)?;
+
+                (text, tables, page_boundaries)
+            }
         };
 
-        let mut archive = if crate::core::batch_mode::is_batch_mode() {
-            let content_owned = content.to_vec();
-            let span = tracing::Span::current();
-            tokio::task::spawn_blocking(move || -> crate::error::Result<_> {
-                let _guard = span.entered();
+        let mut archive = {
+            #[cfg(feature = "tokio-runtime")]
+            if crate::core::batch_mode::is_batch_mode() {
+                let content_owned = content.to_vec();
+                let span = tracing::Span::current();
+                tokio::task::spawn_blocking(move || -> crate::error::Result<_> {
+                    let _guard = span.entered();
+                    let cursor = Cursor::new(content_owned);
+                    zip::ZipArchive::new(cursor).map_err(|e| {
+                        crate::error::KreuzbergError::parsing(format!("Failed to open ZIP archive: {}", e))
+                    })
+                })
+                .await
+                .map_err(|e| crate::error::KreuzbergError::parsing(format!("Task join error: {}", e)))??
+            } else {
+                let content_owned = content.to_vec();
                 let cursor = Cursor::new(content_owned);
                 zip::ZipArchive::new(cursor)
-                    .map_err(|e| crate::error::KreuzbergError::parsing(format!("Failed to open ZIP archive: {}", e)))
-            })
-            .await
-            .map_err(|e| crate::error::KreuzbergError::parsing(format!("Task join error: {}", e)))??
-        } else {
-            let content_owned = content.to_vec();
-            let cursor = Cursor::new(content_owned);
-            zip::ZipArchive::new(cursor)
-                .map_err(|e| crate::error::KreuzbergError::parsing(format!("Failed to open ZIP archive: {}", e)))?
+                    .map_err(|e| crate::error::KreuzbergError::parsing(format!("Failed to open ZIP archive: {}", e)))?
+            }
+
+            #[cfg(not(feature = "tokio-runtime"))]
+            {
+                let content_owned = content.to_vec();
+                let cursor = Cursor::new(content_owned);
+                zip::ZipArchive::new(cursor)
+                    .map_err(|e| crate::error::KreuzbergError::parsing(format!("Failed to open ZIP archive: {}", e)))?
+            }
         };
 
         let mut metadata_map = AHashMap::new();

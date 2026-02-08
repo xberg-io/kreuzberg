@@ -140,6 +140,10 @@ end
 def extract_server(ocr_enabled)
   debug_log "=== SERVER MODE START ==="
 
+  # Signal readiness after Ruby + native extension initialization
+  puts "READY"
+  $stdout.flush
+
   STDIN.each_line do |line|
     file_path = line.strip
     next if file_path.empty?

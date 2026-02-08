@@ -1,12 +1,16 @@
-# /// script
-# requires-python = ">=3.10"
-# dependencies = [
-#     "pymupdf4llm>=0.0.17",
-#     "pymupdf-layout>=0.0.1",
-#     "Pillow>=10.0.0",
-# ]
-# ///
-"""PyMuPDF4LLM extraction wrapper for benchmark harness."""
+#!/usr/bin/env python3
+"""Test script for the fork-based extraction timeout mechanism.
+
+Simulates slow and fast extractions in persistent server mode to verify:
+1. Fast extractions complete normally through the fork
+2. Slow extractions are killed by the Python-side timeout
+3. The parent process stays alive after a timeout (no restart needed)
+4. Subsequent fast extractions still work after a timeout
+
+Usage:
+    python3 test_fork_timeout.py --timeout=3 server
+    # Then send file paths via stdin. Files containing "SLOW" sleep for 10s.
+"""
 
 from __future__ import annotations
 
@@ -16,37 +20,30 @@ import os
 import sys
 import time
 
-# Import pymupdf.layout BEFORE pymupdf4llm to enable improved layout analysis
-# and suppress the "Consider using the pymupdf_layout package" info message.
-import pymupdf.layout  # noqa: F401
-import pymupdf4llm
-
-# Suppress MuPDF C-level error/warning messages that can corrupt the
-# persistent server's line-based JSON protocol on stdout.
-# See: https://github.com/pymupdf/PyMuPDF/issues/606
-import pymupdf
-pymupdf.TOOLS.mupdf_display_errors(False)
-
 
 def extract_sync(file_path: str) -> dict:
-    """Extract using PyMuPDF4LLM."""
+    """Simulate extraction — sleep 10s for files containing 'SLOW'."""
     start = time.perf_counter()
-    markdown = pymupdf4llm.to_markdown(file_path, show_progress=False, write_images=False)
-    duration_ms = (time.perf_counter() - start) * 1000.0
 
+    if "SLOW" in file_path:
+        time.sleep(10)
+
+    try:
+        with open(file_path, "r", errors="replace") as f:
+            content = f.read()
+    except Exception as e:
+        content = f"error reading: {e}"
+
+    duration_ms = (time.perf_counter() - start) * 1000.0
     return {
-        "content": markdown,
-        "metadata": {"framework": "pymupdf4llm"},
+        "content": content[:500],
+        "metadata": {"framework": "test-fork-timeout"},
         "_extraction_time_ms": duration_ms,
     }
 
 
 def _worker(fn, args, conn):
-    """Run extraction in a forked child process.
-
-    Closes inherited stdin/stdout so the child cannot corrupt the
-    parent's line-based JSON protocol.
-    """
+    """Run extraction in a forked child process."""
     try:
         sys.stdin.close()
         sys.stdout = open(os.devnull, "w")
@@ -62,11 +59,7 @@ def _worker(fn, args, conn):
 
 
 def _run_with_timeout(fn, args, timeout):
-    """Execute fn(*args) in a forked child with a timeout.
-
-    On timeout the child is killed but the parent stays alive —
-    no expensive process restart is needed.
-    """
+    """Execute fn(*args) in a forked child with a timeout."""
     try:
         ctx = _mp.get_context("fork")
         parent_conn, child_conn = ctx.Pipe(duplex=False)
@@ -93,7 +86,6 @@ def _run_with_timeout(fn, args, timeout):
         parent_conn.close()
         return result
     except Exception:
-        # Fork not available — fall back to in-process extraction
         try:
             return fn(*args)
         except Exception as e:
@@ -118,46 +110,24 @@ def run_server(timeout=None) -> None:
 
 
 def main() -> None:
-    ocr_enabled = False
     timeout = None
     args = []
     for arg in sys.argv[1:]:
-        if arg == "--ocr":
-            ocr_enabled = True
-        elif arg == "--no-ocr":
-            ocr_enabled = False
-        elif arg.startswith("--timeout="):
+        if arg.startswith("--timeout="):
             timeout = int(arg.split("=", 1)[1])
         else:
             args.append(arg)
 
     if len(args) < 1:
-        print("Usage: pymupdf4llm_extract.py [--ocr|--no-ocr] [--timeout=SECS] <mode> <file_path>", file=sys.stderr)
-        print("Modes: sync, server", file=sys.stderr)
+        print("Usage: test_fork_timeout.py [--timeout=SECS] <mode>", file=sys.stderr)
         sys.exit(1)
 
     mode = args[0]
     if mode == "server":
         run_server(timeout=timeout)
-    elif mode == "sync":
-        if len(args) < 2:
-            print("Error: sync mode requires a file path", file=sys.stderr)
-            sys.exit(1)
-        file_path = args[1]
-        try:
-            payload = extract_sync(file_path)
-            print(json.dumps(payload), end="")
-        except Exception as e:
-            print(f"Error extracting with PyMuPDF4LLM: {e}", file=sys.stderr)
-            sys.exit(1)
     else:
-        # Legacy fallback for direct file path
-        try:
-            payload = extract_sync(args[0])
-            print(json.dumps(payload), end="")
-        except Exception as e:
-            print(f"Error extracting with PyMuPDF4LLM: {e}", file=sys.stderr)
-            sys.exit(1)
+        print(f"Unknown mode: {mode}", file=sys.stderr)
+        sys.exit(1)
 
 
 if __name__ == "__main__":

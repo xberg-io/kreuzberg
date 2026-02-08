@@ -7,7 +7,7 @@
  */
 
 import { wrapWasmError } from "../adapters/wasm-adapter.js";
-import { hasWasm, isBrowser, isEdgeEnvironment, isNode } from "../runtime.js";
+import { hasWasm, isEdgeEnvironment, isNode } from "../runtime.js";
 import { initializePdfiumAsync } from "./pdfium-loader.js";
 
 /**
@@ -250,7 +250,7 @@ export async function initWasm(options?: InitWasmOptions): Promise<void> {
 				}
 			}
 
-			if (isBrowser() && loadedModule && typeof loadedModule.initialize_pdfium_render === "function") {
+			if (loadedModule && typeof loadedModule.initialize_pdfium_render === "function") {
 				initializePdfiumAsync(loadedModule).catch((error) => {
 					console.warn("PDFium auto-initialization failed (PDF extraction disabled):", error);
 				});

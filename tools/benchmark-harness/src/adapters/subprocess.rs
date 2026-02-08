@@ -540,6 +540,11 @@ impl SubprocessAdapter {
         if let Some(error_val) = parsed.get("error") {
             let error_msg = error_val.as_str().unwrap_or("unknown error");
             if !error_msg.is_empty() {
+                // Detect Python-side extraction timeouts (from multiprocessing fork
+                // timeout handler) and classify them as Timeout rather than FrameworkError.
+                if error_msg.contains("timed out") {
+                    return Err(Error::Timeout(error_msg.to_string()));
+                }
                 return Err(Error::FrameworkError(error_msg.to_string()));
             }
         }
@@ -1104,7 +1109,58 @@ impl FrameworkAdapter for SubprocessAdapter {
             return Ok(());
         }
 
-        let proc = self.spawn_persistent().await?;
+        let mut proc = self.spawn_persistent().await?;
+
+        // Wait for the process to signal readiness.
+        // Scripts should print "READY" on stdout after initialization (runtime startup,
+        // FFI library loading, model loading, etc.) is complete.
+        // This ensures cold_start measures only framework extraction time, not
+        // JVM startup, `dotnet run` compilation, `go run` compilation, etc.
+        let ready_timeout = std::time::Duration::from_secs(120);
+        let ready_result = tokio::time::timeout(ready_timeout, async {
+            let mut line = String::new();
+            loop {
+                line.clear();
+                let n = proc
+                    .stdout
+                    .read_line(&mut line)
+                    .await
+                    .map_err(|e| Error::Benchmark(format!("Failed to read READY from {}: {}", self.name, e)))?;
+                if n == 0 {
+                    return Err(Error::Benchmark(format!(
+                        "{}: process exited before sending READY signal",
+                        self.name
+                    )));
+                }
+                let trimmed = line.trim();
+                if trimmed == "READY" {
+                    return Ok(());
+                }
+                // Skip non-READY lines (runtime warnings, debug output)
+                if is_debug_enabled() {
+                    eprintln!("[setup:{}] pre-ready line: {}", self.name, trimmed);
+                }
+            }
+        })
+        .await;
+
+        match ready_result {
+            Ok(Ok(())) => {
+                eprintln!("[setup:{}] process ready", self.name);
+            }
+            Ok(Err(e)) => {
+                eprintln!("[setup:{}] process failed during startup: {}", self.name, e);
+                return Err(e);
+            }
+            Err(_) => {
+                eprintln!(
+                    "[setup:{}] warning: no READY signal after {}s — proceeding anyway",
+                    self.name,
+                    ready_timeout.as_secs()
+                );
+            }
+        }
+
         *self.process.lock().await = Some(proc);
         Ok(())
     }
@@ -1184,6 +1240,7 @@ mod tests {
             &script_path,
             r#"
 import json, sys, time
+print("READY", flush=True)
 for line in sys.stdin:
     fp = line.strip()
     if not fp:
@@ -1415,6 +1472,18 @@ for line in sys.stdin:
     }
 
     #[test]
+    fn test_parse_output_python_side_timeout() {
+        // Python-side timeout via multiprocessing fork reports "timed out" → Timeout error
+        let adapter = SubprocessAdapter::new("test", "echo", vec![], vec![], vec!["pdf".to_string()]);
+        let output = r#"{"error": "extraction timed out after 150s", "_extraction_time_ms": 150000.0}"#;
+        let result = adapter.parse_output(output);
+        assert!(result.is_err());
+        let err = result.unwrap_err();
+        assert!(matches!(err, Error::Timeout(_)), "Expected Timeout, got: {:?}", err);
+        assert!(err.to_string().contains("timed out"));
+    }
+
+    #[test]
     fn test_error_to_error_kind_mapping() {
         assert_eq!(error_to_error_kind(&Error::Timeout("test".into())), ErrorKind::Timeout);
         assert_eq!(
@@ -1513,6 +1582,7 @@ for line in sys.stdin:
             &script_path,
             r#"
 import json, sys, time
+print("READY", flush=True)
 for line in sys.stdin:
     fp = line.strip()
     if not fp:
@@ -1561,6 +1631,116 @@ for line in sys.stdin:
             "fast file after timeout should succeed (process was restarted)"
         );
         eprintln!("fast file after restart OK: {:?}", r3.duration);
+
+        adapter.teardown().await.expect("teardown should succeed");
+    }
+
+    #[tokio::test]
+    async fn test_python_side_fork_timeout() {
+        // Test the fork-based timeout mechanism: the Python script handles
+        // timeouts internally by killing only the forked child process,
+        // keeping the parent alive (no Rust-side kill+restart needed).
+        let script_path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("scripts")
+            .join("test_fork_timeout.py");
+        if !script_path.exists() {
+            eprintln!("Skipping test: test_fork_timeout.py not found");
+            return;
+        }
+
+        let tmp_dir = tempfile::TempDir::new().unwrap();
+        let fast_file = tmp_dir.path().join("fast.txt");
+        std::fs::write(&fast_file, "hello fast").unwrap();
+
+        let slow_file = tmp_dir.path().join("SLOW.txt");
+        std::fs::write(&slow_file, "hello slow").unwrap();
+
+        // Python-side timeout = 2s, Rust-side safety net = 10s.
+        // The Python side should fire first.
+        let adapter = SubprocessAdapter::with_persistent_mode(
+            "test-fork-timeout",
+            "python3",
+            vec![
+                script_path.to_string_lossy().to_string(),
+                "--timeout=2".to_string(),
+                "server".to_string(),
+            ],
+            vec![],
+            vec!["txt".to_string()],
+        )
+        .with_max_timeout(Duration::from_secs(10));
+
+        adapter.setup().await.expect("setup should succeed");
+
+        // 1. Fast file through forked child — should succeed
+        let r1 = adapter.extract(&fast_file, Duration::from_secs(30)).await.unwrap();
+        assert!(r1.success, "fast file should succeed through fork");
+        assert!(
+            r1.extracted_text.as_deref().unwrap().contains("hello fast"),
+            "content should contain file text"
+        );
+        eprintln!(
+            "1. fast file OK: duration={:?}, extraction_duration={:?}",
+            r1.duration, r1.extraction_duration
+        );
+
+        // 2. Slow file should be timed out by the Python side (2s < 10s sleep)
+        let start = std::time::Instant::now();
+        let r2 = adapter.extract(&slow_file, Duration::from_secs(30)).await.unwrap();
+        let elapsed = start.elapsed();
+
+        assert!(!r2.success, "slow file should fail");
+        assert_eq!(
+            r2.error_kind,
+            ErrorKind::Timeout,
+            "should be classified as Timeout, got {:?}: {:?}",
+            r2.error_kind,
+            r2.error_message
+        );
+        assert!(
+            r2.error_message.as_deref().unwrap_or("").contains("timed out"),
+            "error should mention 'timed out': {:?}",
+            r2.error_message
+        );
+        // Should have timed out around 2s (Python side), NOT 10s (Rust side)
+        assert!(
+            elapsed < Duration::from_secs(5),
+            "timeout should fire at ~2s (Python side), not 10s — actual: {:?}",
+            elapsed
+        );
+        eprintln!(
+            "2. slow file timed out (Python-side) in {:?}: {:?}",
+            elapsed, r2.error_message
+        );
+
+        // 3. KEY TEST: fast file should STILL work immediately after timeout.
+        //    This proves the parent Python process stayed alive — no kill+restart.
+        let start = std::time::Instant::now();
+        let r3 = adapter.extract(&fast_file, Duration::from_secs(30)).await.unwrap();
+        let elapsed = start.elapsed();
+
+        assert!(
+            r3.success,
+            "fast file after timeout should succeed (parent stayed alive)"
+        );
+        // Should be fast — no process restart overhead
+        assert!(
+            elapsed < Duration::from_secs(2),
+            "post-timeout extraction should be fast (no restart), actual: {:?}",
+            elapsed
+        );
+        eprintln!("3. fast file after timeout OK in {:?}", elapsed);
+
+        // 4. Another slow file to test repeated timeouts don't break anything
+        let r4 = adapter.extract(&slow_file, Duration::from_secs(30)).await.unwrap();
+        assert!(!r4.success, "second slow file should also timeout");
+        assert_eq!(r4.error_kind, ErrorKind::Timeout);
+        eprintln!("4. second timeout OK: {:?}", r4.error_message);
+
+        // 5. Final fast file — parent still alive after two timeouts
+        let r5 = adapter.extract(&fast_file, Duration::from_secs(30)).await.unwrap();
+        assert!(r5.success, "fast file after two timeouts should still succeed");
+        eprintln!("5. fast file after two timeouts OK: {:?}", r5.duration);
 
         adapter.teardown().await.expect("teardown should succeed");
     }

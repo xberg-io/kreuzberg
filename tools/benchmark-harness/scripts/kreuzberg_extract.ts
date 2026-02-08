@@ -74,6 +74,9 @@ async function runServer(ocrEnabled: boolean): Promise<void> {
 		terminal: false,
 	});
 
+	// Signal readiness after Node + NAPI initialization
+	console.log("READY");
+
 	for await (const line of rl) {
 		const filePath = line.trim();
 		if (!filePath) {

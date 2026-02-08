@@ -91,7 +91,7 @@ pub mod bibtex;
 #[cfg(feature = "office")]
 pub mod citation;
 
-#[cfg(all(feature = "tokio-runtime", feature = "office"))]
+#[cfg(feature = "office")]
 pub mod docx;
 
 #[cfg(feature = "office")]
@@ -115,7 +115,7 @@ pub mod jupyter;
 #[cfg(feature = "office")]
 pub mod orgmode;
 
-#[cfg(all(feature = "tokio-runtime", feature = "office"))]
+#[cfg(feature = "office")]
 pub mod odt;
 
 #[cfg(feature = "office")]
@@ -130,7 +130,7 @@ pub mod jats;
 #[cfg(feature = "pdf")]
 pub mod pdf;
 
-#[cfg(all(feature = "tokio-runtime", feature = "office"))]
+#[cfg(feature = "office")]
 pub mod pptx;
 
 #[cfg(feature = "office")]
@@ -166,7 +166,7 @@ pub use bibtex::BibtexExtractor;
 #[cfg(feature = "office")]
 pub use citation::CitationExtractor;
 
-#[cfg(all(feature = "tokio-runtime", feature = "office"))]
+#[cfg(feature = "office")]
 pub use docx::DocxExtractor;
 
 #[cfg(feature = "office")]
@@ -192,7 +192,7 @@ pub use jupyter::JupyterExtractor;
 #[cfg(feature = "office")]
 pub use orgmode::OrgModeExtractor;
 
-#[cfg(all(feature = "tokio-runtime", feature = "office"))]
+#[cfg(feature = "office")]
 pub use odt::OdtExtractor;
 
 #[cfg(feature = "xml")]
@@ -207,7 +207,7 @@ pub use typst::TypstExtractor;
 #[cfg(feature = "pdf")]
 pub use pdf::PdfExtractor;
 
-#[cfg(all(feature = "tokio-runtime", feature = "office"))]
+#[cfg(feature = "office")]
 pub use pptx::PptxExtractor;
 
 #[cfg(feature = "office")]
@@ -312,10 +312,6 @@ pub fn register_default_extractors() -> Result<()> {
         registry.register(Arc::new(OrgModeExtractor::new()))?;
         registry.register(Arc::new(OpmlExtractor::new()))?;
         registry.register(Arc::new(TypstExtractor::new()))?;
-    }
-
-    #[cfg(all(feature = "tokio-runtime", feature = "office"))]
-    {
         registry.register(Arc::new(DocxExtractor::new()))?;
         registry.register(Arc::new(PptxExtractor::new()))?;
         registry.register(Arc::new(OdtExtractor::new()))?;

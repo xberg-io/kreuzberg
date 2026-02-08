@@ -72,9 +72,9 @@
 //!
 //! ### PDF Support
 //!
-//! PDF extraction via PDFium is **only available in browser environments**.
-//! Non-browser WASM runtimes (Deno, Cloudflare Workers) cannot use PDF extraction.
-//! For server-side PDF processing, use the native library bindings.
+//! PDF extraction via PDFium is available in all WASM runtimes (browser, Node.js,
+//! Bun, Deno). PDFium is automatically initialized during `initWasm()`.
+//! If auto-initialization fails, you can call `initializePdfiumAsync()` manually.
 
 use wasm_bindgen::prelude::*;
 

@@ -62,7 +62,7 @@ languages:
         **Format Support Notes:**
         - Modern Office formats (DOCX, XLSX, PPTX) work without LibreOffice
         - Legacy formats (DOC, XLS, PPT) require LibreOffice installation
-        - WASM binding does NOT support LibreOffice formats (use Node.js for full format support)
+        - WASM binding supports DOCX, XLSX, PPTX, and ODT (no LibreOffice required)
     optional_sections:
       - native_vs_wasm_comparison
       - ocr_support
