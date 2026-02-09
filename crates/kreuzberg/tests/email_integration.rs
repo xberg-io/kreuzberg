@@ -325,3 +325,164 @@ async fn test_malformed_email() {
         "Should handle malformed email gracefully"
     );
 }
+
+// ---------------------------------------------------------------------------
+// MSG (Outlook) integration tests — exercises the direct CFB parser
+// ---------------------------------------------------------------------------
+
+/// Test MSG extraction with subject, sender, recipients, and body.
+#[tokio::test]
+async fn test_msg_basic_extraction() {
+    if helpers::skip_if_missing("email/test_email.msg") {
+        return;
+    }
+
+    let config = ExtractionConfig::default();
+    let data = std::fs::read(helpers::get_test_file_path("email/test_email.msg")).unwrap();
+    let result = extract_bytes(&data, "application/vnd.ms-outlook", &config)
+        .await
+        .expect("Should extract MSG successfully");
+
+    assert!(result.content.contains("Subject: Test Email"));
+    assert!(result.content.contains("Test Email"));
+
+    let email_meta = match result.metadata.format.as_ref().expect("format") {
+        kreuzberg::FormatMetadata::Email(m) => m,
+        _ => panic!("Expected Email metadata"),
+    };
+    assert_eq!(result.metadata.subject, Some("Test Email".to_string()));
+    assert!(!email_meta.to_emails.is_empty());
+    assert_eq!(email_meta.attachments.len(), 3);
+}
+
+/// Test MSG with Unicode content (sender, subject, date, message-id).
+#[tokio::test]
+async fn test_msg_unicode() {
+    if helpers::skip_if_missing("email/unicode.msg") {
+        return;
+    }
+
+    let config = ExtractionConfig::default();
+    let data = std::fs::read(helpers::get_test_file_path("email/unicode.msg")).unwrap();
+    let result = extract_bytes(&data, "application/vnd.ms-outlook", &config)
+        .await
+        .expect("Should extract Unicode MSG");
+
+    assert_eq!(result.metadata.subject, Some("Test for TIF files".to_string()));
+
+    let email_meta = match result.metadata.format.as_ref().expect("format") {
+        kreuzberg::FormatMetadata::Email(m) => m,
+        _ => panic!("Expected Email metadata"),
+    };
+    assert_eq!(email_meta.from_email, Some("brizhou@gmail.com".to_string()));
+    assert!(email_meta.to_emails.iter().any(|e| e.contains("brianzhou@me.com")));
+    assert!(email_meta.message_id.is_some());
+    assert!(result.metadata.created_at.is_some());
+}
+
+/// Test MSG with named attachments and MIME types.
+#[tokio::test]
+async fn test_msg_attachments() {
+    if helpers::skip_if_missing("email/attachment.msg") {
+        return;
+    }
+
+    let config = ExtractionConfig::default();
+    let data = std::fs::read(helpers::get_test_file_path("email/attachment.msg")).unwrap();
+    let result = extract_bytes(&data, "application/vnd.ms-outlook", &config)
+        .await
+        .expect("Should extract MSG with attachments");
+
+    let email_meta = match result.metadata.format.as_ref().expect("format") {
+        kreuzberg::FormatMetadata::Email(m) => m,
+        _ => panic!("Expected Email metadata"),
+    };
+    assert_eq!(email_meta.attachments.len(), 3);
+    assert!(result.content.contains("Attachments:"));
+}
+
+/// Test MSG with truncated FAT (cfb strict mode rejects, lenient padding handles).
+#[tokio::test]
+async fn test_msg_truncated_fat() {
+    if helpers::skip_if_missing("email/simple_msg_alt.msg") {
+        return;
+    }
+
+    let config = ExtractionConfig::default();
+    let data = std::fs::read(helpers::get_test_file_path("email/simple_msg_alt.msg")).unwrap();
+    let result = extract_bytes(&data, "application/vnd.ms-outlook", &config)
+        .await
+        .expect("Should handle MSG with truncated FAT via lenient padding");
+
+    assert_eq!(result.metadata.subject, Some("This is the subject".to_string()));
+
+    let email_meta = match result.metadata.format.as_ref().expect("format") {
+        kreuzberg::FormatMetadata::Email(m) => m,
+        _ => panic!("Expected Email metadata"),
+    };
+    assert_eq!(email_meta.from_email, Some("peterpan@neverland.com".to_string()));
+}
+
+/// Test MSG with truncated FAT and attachments.
+#[tokio::test]
+async fn test_msg_truncated_fat_with_attachments() {
+    if helpers::skip_if_missing("email/msg_with_attachments_alt.msg") {
+        return;
+    }
+
+    let config = ExtractionConfig::default();
+    let data = std::fs::read(helpers::get_test_file_path("email/msg_with_attachments_alt.msg")).unwrap();
+    let result = extract_bytes(&data, "application/vnd.ms-outlook", &config)
+        .await
+        .expect("Should handle truncated-FAT MSG with attachments");
+
+    assert_eq!(result.metadata.subject, Some("This is the subject".to_string()));
+    assert!(result.content.contains("Attachments:"));
+}
+
+/// Test that a large MSG with big attachments completes in reasonable time
+/// (regression test for issue #372 — previously hung due to hex-encoding overhead).
+#[tokio::test]
+async fn test_msg_large_attachment_no_hang() {
+    if helpers::skip_if_missing("email/MSG_hang_repro.msg") {
+        return;
+    }
+
+    let config = ExtractionConfig::default();
+    let data = std::fs::read(helpers::get_test_file_path("email/MSG_hang_repro.msg")).unwrap();
+
+    let start = std::time::Instant::now();
+    let result = extract_bytes(&data, "application/vnd.ms-outlook", &config)
+        .await
+        .expect("Should extract large MSG without hanging");
+    let elapsed = start.elapsed();
+
+    assert!(
+        elapsed.as_secs() < 10,
+        "Extraction took {}s — should complete in under 10s",
+        elapsed.as_secs()
+    );
+    assert!(result.content.contains("MSG hang repro"));
+    assert!(result.content.contains("Attachments:"));
+}
+
+/// Test that invalid/corrupt MSG data returns a clear error.
+#[tokio::test]
+async fn test_msg_invalid_data() {
+    let config = ExtractionConfig::default();
+    let result = extract_bytes(b"not a valid MSG", "application/vnd.ms-outlook", &config).await;
+    assert!(result.is_err());
+}
+
+/// Test that a tiny invalid OLE file returns a clear error.
+#[tokio::test]
+async fn test_msg_bad_outlook() {
+    if helpers::skip_if_missing("email/bad_outlook.msg") {
+        return;
+    }
+
+    let config = ExtractionConfig::default();
+    let data = std::fs::read(helpers::get_test_file_path("email/bad_outlook.msg")).unwrap();
+    let result = extract_bytes(&data, "application/vnd.ms-outlook", &config).await;
+    assert!(result.is_err(), "Corrupt MSG should fail gracefully");
+}

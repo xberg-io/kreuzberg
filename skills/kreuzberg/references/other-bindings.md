@@ -183,7 +183,7 @@ docker run -i ghcr.io/kreuzberg-dev/kreuzberg mcp
 
 Image sizes:
 - Core image: 1.0-1.3GB
-- Full image (with LibreOffice): 1.5-2.1GB
+- Full image: ~1.0-1.3GB
 
 See the [Docker guide](https://docs.kreuzberg.dev/guides/docker/) for deployment details.
 

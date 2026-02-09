@@ -216,108 +216,167 @@ pub fn parse_eml_content(data: &[u8]) -> Result<EmailExtractionResult> {
     })
 }
 
-/// Parse .msg file content (Outlook format)
+/// Parse .msg file content (Outlook format).
+///
+/// Reads MSG files directly via the CFB (OLE Compound Document) format,
+/// extracting text properties and attachment metadata without the overhead
+/// of hex-encoding attachment binary data (which caused hangs on large files
+/// with the previous `msg_parser` dependency).
+///
+/// Some MSG files have FAT headers declaring more sectors than the file
+/// actually contains.  The strict `cfb` crate rejects these.  When that
+/// happens we pad the data with zero bytes so the sector count matches
+/// the FAT and retry – the real streams are still within the original
+/// data range and parse correctly.
 pub fn parse_msg_content(data: &[u8]) -> Result<EmailExtractionResult> {
-    let outlook = msg_parser::Outlook::from_slice(data)
-        .map_err(|e| KreuzbergError::parsing(format!("Failed to parse MSG file: {}", e)))?;
+    use std::borrow::Cow;
+    use std::io::Cursor;
 
-    let subject = Some(outlook.subject.clone());
-    let from_email = Some(outlook.sender.email.clone());
-
-    let to_emails = outlook
-        .to
-        .iter()
-        .filter_map(|p| {
-            if p.email.is_empty() {
-                None
-            } else {
-                Some(p.email.clone())
+    // Try strict CFB parsing first; fall back to lenient padding.
+    let padded: Cow<'_, [u8]>;
+    let data_ref: &[u8] = match cfb::CompoundFile::open(Cursor::new(data)) {
+        Ok(_) => data,
+        Err(_first_err) => {
+            padded = pad_cfb_to_fat_size(data);
+            if std::ptr::eq(padded.as_ref(), data) {
+                // Padding didn't help – propagate original error.
+                return Err(KreuzbergError::parsing(format!(
+                    "Failed to parse MSG file: {_first_err}"
+                )));
             }
-        })
-        .collect::<Vec<String>>();
-
-    let cc_emails = outlook
-        .cc
-        .iter()
-        .filter_map(|p| {
-            if p.email.is_empty() {
-                None
-            } else {
-                Some(p.email.clone())
-            }
-        })
-        .collect::<Vec<String>>();
-
-    let bcc_emails = if outlook.bcc.is_empty() {
-        vec![]
-    } else {
-        vec![outlook.bcc.clone()]
+            &padded
+        }
     };
 
-    let date = if outlook.headers.date.is_empty() {
-        None
+    let mut comp = cfb::CompoundFile::open(Cursor::new(data_ref))
+        .map_err(|e| KreuzbergError::parsing(format!("Failed to parse MSG file: {e}")))?;
+
+    extract_msg_from_cfb(&mut comp)
+}
+
+/// Pad an OLE/CFB file so the sector count matches the FAT header.
+///
+/// Some MSG writers emit FAT tables that reference sectors beyond the
+/// physical end of the file.  The `cfb` crate rightfully rejects these
+/// as "Malformed FAT".  By zero-padding to the declared size we let cfb
+/// open the file; streams within the original range parse normally while
+/// the padded area is treated as free sectors.
+fn pad_cfb_to_fat_size(data: &[u8]) -> std::borrow::Cow<'_, [u8]> {
+    use std::borrow::Cow;
+
+    // OLE header is at least 76 bytes; magic D0 CF 11 E0 A1 B1 1A E1.
+    if data.len() < 76 || data[..4] != [0xD0, 0xCF, 0x11, 0xE0] {
+        return Cow::Borrowed(data);
+    }
+
+    let sector_power = u16::from_le_bytes([data[30], data[31]]) as u32;
+    if !(9..=16).contains(&sector_power) {
+        return Cow::Borrowed(data);
+    }
+    let sector_size = 1u64 << sector_power;
+
+    // Number of FAT sectors is at header offset 44 (LE u32).
+    let fat_sectors = u32::from_le_bytes([data[44], data[45], data[46], data[47]]) as u64;
+    // Each FAT sector holds sector_size/4 entries; each entry maps one sector.
+    let fat_entries = fat_sectors * (sector_size / 4);
+    // File must be at least: 1 header sector + fat_entries data sectors.
+    let needed = (1 + fat_entries) * sector_size;
+
+    // Cap at 256 MB to avoid pathological headers causing huge allocations.
+    if needed > 256 * 1024 * 1024 || (data.len() as u64) >= needed {
+        return Cow::Borrowed(data);
+    }
+
+    let mut padded = data.to_vec();
+    padded.resize(needed as usize, 0);
+    Cow::Owned(padded)
+}
+
+/// Internal: extract email fields from an already-opened CFB compound file.
+fn extract_msg_from_cfb<F: std::io::Read + std::io::Seek>(
+    comp: &mut cfb::CompoundFile<F>,
+) -> Result<EmailExtractionResult> {
+    // --- message-level properties ------------------------------------------
+
+    let subject = read_msg_string_prop(comp, "", 0x0037); // PR_SUBJECT
+    let sender_name = read_msg_string_prop(comp, "", 0x0C1A); // PR_SENDER_NAME
+    let from_email = read_msg_string_prop(comp, "", 0x0C1F) // PR_SENDER_EMAIL_ADDRESS
+        .or_else(|| read_msg_string_prop(comp, "", 0x0065)) // PR_SENT_REPRESENTING_EMAIL
+        .filter(|s| !s.is_empty());
+    let display_to = read_msg_string_prop(comp, "", 0x0E04); // PR_DISPLAY_TO
+    let display_cc = read_msg_string_prop(comp, "", 0x0E03); // PR_DISPLAY_CC
+    let display_bcc = read_msg_string_prop(comp, "", 0x0E02); // PR_DISPLAY_BCC
+    let body = read_msg_string_prop(comp, "", 0x1000); // PR_BODY
+    let html_body = read_msg_string_prop(comp, "", 0x1013); // PR_BODY_HTML
+    let message_id = read_msg_string_prop(comp, "", 0x1035) // PR_INTERNET_MESSAGE_ID
+        .filter(|s| !s.is_empty());
+    let headers = read_msg_string_prop(comp, "", 0x007D); // PR_TRANSPORT_MESSAGE_HEADERS
+
+    // Parse date from transport headers (e.g. "Date: Mon, 1 Jan 2024 …").
+    let date = headers.as_ref().and_then(|h| {
+        h.lines()
+            .find(|line| line.starts_with("Date:"))
+            .map(|line| line.trim_start_matches("Date:").trim().to_string())
+    });
+
+    let to_emails = split_display_addresses(&display_to);
+    let cc_emails = split_display_addresses(&display_cc);
+    let bcc_emails = split_display_addresses(&display_bcc);
+
+    let plain_text = body.filter(|s| !s.is_empty());
+    let html_content = html_body.filter(|s| !s.is_empty());
+
+    let cleaned_text = if let Some(ref plain) = plain_text {
+        plain.clone()
+    } else if let Some(ref html) = html_content {
+        clean_html_content(html)
     } else {
-        Some(outlook.headers.date.clone())
+        String::new()
     };
 
-    let message_id = if outlook.headers.message_id.is_empty() {
-        None
-    } else {
-        Some(outlook.headers.message_id.clone())
-    };
+    // --- attachment storages -----------------------------------------------
 
-    let plain_text = if outlook.body.is_empty() {
-        None
-    } else {
-        Some(outlook.body.clone())
-    };
-
-    let html_content = None;
-    let cleaned_text = plain_text.clone().unwrap_or_default();
-
-    let attachments: Vec<EmailAttachment> = outlook
-        .attachments
-        .iter()
-        .map(|att| {
-            let filename = if !att.file_name.is_empty() {
-                Some(att.file_name.clone())
-            } else if !att.display_name.is_empty() {
-                Some(att.display_name.clone())
-            } else {
-                Some(format!("attachment{}", att.extension))
-            };
-
-            let mime_type = if !att.mime_tag.is_empty() {
-                Some(att.mime_tag.clone())
-            } else {
-                Some("application/octet-stream".to_string())
-            };
-
-            let data = if !att.payload.is_empty() {
-                hex::decode(&att.payload).ok().map(Bytes::from)
-            } else {
-                None
-            };
-
-            let size = data.as_ref().map(|d| d.len());
-            let is_image = mime_type.as_ref().map(|m| is_image_mime_type(m)).unwrap_or(false);
-
-            EmailAttachment {
-                name: filename.clone(),
-                filename,
-                mime_type,
-                size,
-                is_image,
-                data,
-            }
-        })
+    let attach_paths: Vec<String> = comp
+        .walk()
+        .filter(|e| e.is_storage() && e.name().starts_with("__attach_"))
+        .map(|e| e.path().to_string_lossy().into_owned())
         .collect();
 
-    let from_name = if !outlook.sender.name.is_empty() {
-        Some(outlook.sender.name.clone())
-    } else {
-        None
-    };
+    let mut attachments = Vec::with_capacity(attach_paths.len());
+    for path in &attach_paths {
+        let long_name = read_msg_string_prop(comp, path, 0x3707); // PR_ATTACH_LONG_FILENAME
+        let short_name = read_msg_string_prop(comp, path, 0x3704); // PR_ATTACH_FILENAME
+        let display_name = read_msg_string_prop(comp, path, 0x3001); // PR_DISPLAY_NAME
+        let extension = read_msg_string_prop(comp, path, 0x3703); // PR_ATTACH_EXTENSION
+        let mime_tag = read_msg_string_prop(comp, path, 0x370E); // PR_ATTACH_MIME_TAG
+
+        let filename = long_name
+            .or(short_name)
+            .or_else(|| display_name.clone())
+            .or_else(|| extension.map(|ext| format!("attachment{ext}")));
+
+        // Read binary attachment data directly — no hex encoding.
+        let bin_path = format!("{path}/__substg1.0_37010102");
+        let binary_data = read_msg_stream(comp, &bin_path);
+        let size = binary_data.as_ref().map(Vec::len);
+        let att_data = binary_data.map(Bytes::from);
+
+        let mime_type = mime_tag
+            .filter(|s| !s.is_empty())
+            .or_else(|| Some("application/octet-stream".to_string()));
+        let is_image = mime_type.as_ref().map(|m| is_image_mime_type(m)).unwrap_or(false);
+
+        attachments.push(EmailAttachment {
+            name: filename.clone(),
+            filename,
+            mime_type,
+            size,
+            is_image,
+            data: att_data,
+        });
+    }
+
+    // --- metadata ----------------------------------------------------------
 
     let mut metadata = HashMap::new();
     if let Some(ref subj) = subject {
@@ -326,8 +385,10 @@ pub fn parse_msg_content(data: &[u8]) -> Result<EmailExtractionResult> {
     if let Some(ref from) = from_email {
         metadata.insert("email_from".to_string(), from.to_string());
     }
-    if let Some(ref name) = from_name {
-        metadata.insert("from_name".to_string(), name.to_string());
+    if let Some(ref name) = sender_name {
+        if !name.is_empty() {
+            metadata.insert("from_name".to_string(), name.to_string());
+        }
     }
     if !to_emails.is_empty() {
         metadata.insert("email_to".to_string(), to_emails.join(", "));
@@ -344,11 +405,6 @@ pub fn parse_msg_content(data: &[u8]) -> Result<EmailExtractionResult> {
     if let Some(ref msg_id) = message_id {
         metadata.insert("message_id".to_string(), msg_id.to_string());
     }
-    // NOTE: Do NOT insert "attachments" into the metadata HashMap here.
-    // The attachments are already stored in EmailMetadata.attachments (Vec<String>).
-    // Since both `format` and `additional` use #[serde(flatten)], inserting a
-    // comma-joined string here would overwrite the structured array, breaking
-    // deserialization in Go, C#, and other typed bindings.
 
     Ok(EmailExtractionResult {
         subject,
@@ -364,6 +420,50 @@ pub fn parse_msg_content(data: &[u8]) -> Result<EmailExtractionResult> {
         attachments,
         metadata,
     })
+}
+
+// --- MSG / CFB helper functions --------------------------------------------
+
+/// Read a raw CFB stream by path; returns `None` for missing or empty streams.
+fn read_msg_stream<F: std::io::Read + std::io::Seek>(comp: &mut cfb::CompoundFile<F>, path: &str) -> Option<Vec<u8>> {
+    use std::io::Read;
+    let mut stream = comp.open_stream(path).ok()?;
+    let mut buf = Vec::new();
+    stream.read_to_end(&mut buf).ok()?;
+    if buf.is_empty() { None } else { Some(buf) }
+}
+
+/// Read a MAPI string property (tries PT_UNICODE then PT_STRING8).
+fn read_msg_string_prop<F: std::io::Read + std::io::Seek>(
+    comp: &mut cfb::CompoundFile<F>,
+    base: &str,
+    prop_id: u16,
+) -> Option<String> {
+    // Try PT_UNICODE (001F) first.
+    let unicode_path = format!("{base}/__substg1.0_{prop_id:04X}001F");
+    if let Some(buf) = read_msg_stream(comp, &unicode_path) {
+        return Some(decode_utf16le_bytes(&buf));
+    }
+    // Fallback to PT_STRING8 (001E).
+    let ansi_path = format!("{base}/__substg1.0_{prop_id:04X}001E");
+    read_msg_stream(comp, &ansi_path).map(|buf| String::from_utf8_lossy(&buf).into_owned())
+}
+
+/// Decode UTF-16LE bytes to a String, stripping trailing NUL chars.
+fn decode_utf16le_bytes(data: &[u8]) -> String {
+    let u16s: Vec<u16> = data.chunks_exact(2).map(|c| u16::from_le_bytes([c[0], c[1]])).collect();
+    String::from_utf16_lossy(&u16s).trim_end_matches('\0').to_string()
+}
+
+/// Split semicolon/comma-separated display addresses into individual strings.
+fn split_display_addresses(display: &Option<String>) -> Vec<String> {
+    display
+        .as_deref()
+        .unwrap_or("")
+        .split([';', ','])
+        .map(|s| s.trim().to_string())
+        .filter(|s| !s.is_empty())
+        .collect()
 }
 
 /// Extract email content from either .eml or .msg format

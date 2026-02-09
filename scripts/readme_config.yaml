@@ -55,19 +55,13 @@ languages:
     ocr_backends:
       - tesseract
       - paddleocr
-    system_requirements:
-      libreoffice_note: |
-        - Optional: [LibreOffice](https://www.libreoffice.org/download/download/) for legacy Office formats (DOC, XLS, PPT, RTF, ODT, ODS, ODP)
-
-        **Format Support Notes:**
-        - Modern Office formats (DOCX, XLSX, PPTX) work without LibreOffice
-        - Legacy formats (DOC, XLS, PPT) require LibreOffice installation
-        - WASM binding supports DOCX, XLSX, PPTX, and ODT (no LibreOffice required)
     optional_sections:
       - native_vs_wasm_comparison
       - ocr_support
       - performance
       - napi_implementation
+    system_requirements:
+      # Legacy formats (DOC, XLS, PPT) are now extracted natively without external tools
     snippets:
       basic_extraction: getting-started/basic_usage.md
       async_extraction: getting-started/extract_file_async.md

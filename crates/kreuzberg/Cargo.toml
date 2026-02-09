@@ -47,7 +47,7 @@ office = [
     "dep:typst-syntax",
     "html",
 ]
-email = ["dep:mail-parser", "dep:msg_parser"]
+email = ["dep:mail-parser", "dep:cfb"]
 html = ["dep:html-to-markdown-rs"]
 xml = ["dep:quick-xml", "dep:roxmltree"]
 archives = ["dep:zip", "dep:tar", "dep:sevenz-rust2", "dep:lzma-rust2", "dep:flate2"]
@@ -117,6 +117,7 @@ cli = [
     "static-pdfium",
     "excel",
     "office",
+    "email",
     "html",
     "ocr",
     "paddle-ocr",
@@ -173,7 +174,6 @@ zip = { version = "7.4.0", optional = true, default-features = false, features =
     "deflate-flate2",
 ] }
 mail-parser = { version = "0.11.1", optional = true }
-msg_parser = { version = "0.1.1", optional = true }
 html-to-markdown-rs = { workspace = true, features = [
     "inline-images",
     "metadata",

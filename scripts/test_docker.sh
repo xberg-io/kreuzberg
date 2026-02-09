@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # - Basic CLI functionality (help, version, mime detection)
-# - LibreOffice conversion (legacy .doc files)
 
 set -euo pipefail
 
@@ -130,10 +129,10 @@ wait_for_container() {
 if [ "$SKIP_BUILD" = false ]; then
   if [ "$VARIANT" = "core" ]; then
     DOCKERFILE="docker/Dockerfile.core"
-    log_info "Building Docker image: $IMAGE_NAME (Core variant - without LibreOffice)"
+    log_info "Building Docker image: $IMAGE_NAME (Core variant)"
   elif [ "$VARIANT" = "full" ]; then
     DOCKERFILE="docker/Dockerfile.full"
-    log_info "Building Docker image: $IMAGE_NAME (Full variant - with LibreOffice)"
+    log_info "Building Docker image: $IMAGE_NAME (Full variant)"
   else
     log_error "Invalid variant: $VARIANT"
     exit 1
@@ -154,7 +153,7 @@ if ! docker images --format "{{.Repository}}:{{.Tag}}" | grep -q "^${IMAGE_NAME}
 fi
 
 log_info "Starting Docker feature tests for: $IMAGE_NAME"
-log_info "Variant: $VARIANT ($([ "$VARIANT" = "full" ] && echo "with LibreOffice" || echo "without LibreOffice"))"
+log_info "Variant: $VARIANT"
 echo "========================================================================"
 
 start_test "Docker image exists"
@@ -284,7 +283,7 @@ else
 fi
 
 if [ "$VARIANT" = "full" ]; then
-  start_test "LibreOffice extraction (legacy .doc file)"
+  start_test "Legacy DOC extraction (native OLE/CFB)"
   container=$(random_container_name)
   output=$(docker run --rm \
     --name "$container" \
@@ -293,19 +292,19 @@ if [ "$VARIANT" = "full" ]; then
     -v "${TEST_DOCS_DIR}:/data:ro" \
     "$IMAGE_NAME" \
     extract /data/doc/unit_test_lists.doc 2>&1 || true)
-  log_verbose "LibreOffice extraction output (first 100 chars): ${output:0:100}"
+  log_verbose "DOC extraction output (first 100 chars): ${output:0:100}"
 
   if [ ${#output} -gt 20 ]; then
     pass_test
   else
-    fail_test "LibreOffice extraction" "Output too short: ${#output} chars"
+    fail_test "DOC extraction" "Output too short: ${#output} chars"
   fi
 else
-  log_info "Skipping LibreOffice .doc test (Core variant - LibreOffice not included)"
+  log_info "Skipping .doc test (Core variant not included)"
 fi
 
 if [ "$VARIANT" = "full" ]; then
-  start_test "LibreOffice PPT extraction (legacy .ppt file)"
+  start_test "Legacy PPT extraction (native OLE)"
   container=$(random_container_name)
 
   if [ -f "${TEST_DOCS_DIR}/doc/test.ppt" ] || [ -f "${TEST_DOCS_DIR}/doc/sample.ppt" ]; then
@@ -320,12 +319,12 @@ if [ "$VARIANT" = "full" ]; then
         -v "${TEST_DOCS_DIR}:/data:ro" \
         "$IMAGE_NAME" \
         extract "/data/doc/${PPT_BASENAME}" 2>&1 || true)
-      log_verbose "LibreOffice PPT extraction output (first 100 chars): ${output:0:100}"
+      log_verbose "PPT extraction output (first 100 chars): ${output:0:100}"
 
       if [ ${#output} -gt 10 ]; then
         pass_test
       else
-        fail_test "LibreOffice PPT extraction" "Output too short: ${#output} chars"
+        fail_test "PPT extraction" "Output too short: ${#output} chars"
       fi
     else
       log_info "No .ppt test file found - skipping PPT test"
@@ -334,7 +333,7 @@ if [ "$VARIANT" = "full" ]; then
     log_info "No .ppt test file found - skipping PPT test"
   fi
 else
-  log_info "Skipping LibreOffice .ppt test (Core variant - LibreOffice not included)"
+  log_info "Skipping .ppt test (Core variant not included)"
 fi
 
 start_test "API server startup and health check"

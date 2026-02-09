@@ -532,7 +532,7 @@ pub fn load_fixtures(fixtures_dir: &Utf8Path) -> Result<Vec<Fixture>> {
 /// Determines whether a fixture should be included for a given WASM target.
 ///
 /// This function filters fixtures based on WASM target-specific constraints:
-/// - Workers target cannot run Office fixtures (LibreOffice not available)
+/// - Workers target cannot run Office fixtures (native parsers not available)
 /// - Workers target has a 500KB size limit for documents
 pub fn should_include_for_wasm(fixture: &Fixture, target: WasmTarget) -> bool {
     // PaddleOCR requires ONNX Runtime which is not available in WASM

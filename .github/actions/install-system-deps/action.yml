@@ -1,7 +1,7 @@
 name: Install System Dependencies
 description: |
   Install and cache platform-specific dependencies required for document conversion.
-  Includes: Tesseract OCR, LibreOffice, fonts, and build tools.
+  Includes: Tesseract OCR, fonts, and build tools.
   Features robust caching with architecture/version awareness, timeout handling, and retry logic.
 
 inputs:
@@ -34,14 +34,6 @@ runs:
         restore-keys: |
           tesseract-macos-${{ runner.arch }}-v5-
           tesseract-macos-${{ runner.arch }}-
-
-    - name: Cache LibreOffice (macOS)
-      if: runner.os == 'macOS'
-      id: cache-libreoffice-macos
-      uses: actions/cache@v5
-      with:
-        path: /Applications/LibreOffice.app
-        key: libreoffice-macos-${{ runner.arch }}-v3
 
     - name: Install dependencies (macOS)
       if: runner.os == 'macOS'
@@ -85,16 +77,6 @@ runs:
         key: tesseract-windows-${{ runner.arch }}-v5-data
         restore-keys: |
           tesseract-windows-${{ runner.arch }}-
-
-    - name: Cache LibreOffice (Windows)
-      if: runner.os == 'Windows'
-      id: cache-libreoffice-windows
-      uses: actions/cache@v5
-      with:
-        path: |
-          C:\Program Files\LibreOffice
-          C:\ProgramData\chocolatey\lib\libreoffice
-        key: libreoffice-windows-${{ runner.arch }}-v3
 
     - name: Cache LLVM (Windows)
       if: runner.os == 'Windows'

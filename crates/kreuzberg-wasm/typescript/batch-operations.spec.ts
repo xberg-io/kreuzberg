@@ -9,7 +9,7 @@
  * 5. Configuration variants
  * 6. Multiple document types (PDFs, text)
  *
- * Note: WASM has limitations - no LibreOffice (no DOCX), no Polars (no Excel/CSV).
+ * Note: WASM has limitations - no Polars (no Excel/CSV).
  * Tests focus on PDF and text formats available in WASM.
  */
 

@@ -31,15 +31,6 @@ sudo apt-get install tesseract-ocr
 # Download from https://github.com/tesseract-ocr/tesseract/wiki/Downloads
 ```
 
-**LibreOffice** (Optional, for legacy Office formats .doc, .ppt):
-```bash title="Terminal"
-# macOS
-brew install libreoffice
-
-# Ubuntu/Debian
-sudo apt-get install libreoffice
-```
-
 
 ## Quick Start
 
@@ -775,7 +766,7 @@ The library should be located in `runtimes/{rid}/native/` in the package.
 If P/Invoke calls fail, verify:
 1. Native library is properly installed
 2. Architecture matches (x64, arm64)
-3. Dependencies are available (Tesseract, LibreOffice if needed)
+3. Dependencies are available (Tesseract if needed for OCR)
 
 ### OCR Not Working
 

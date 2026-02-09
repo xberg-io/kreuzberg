@@ -31,12 +31,12 @@ Kreuzberg offers two Docker image variants optimized for different use cases:
 
 ### Full Image
 
-**Size:** ~1.5-2.1GB
+**Size:** ~1.0-1.3GB
 **Image:** `ghcr.io/kreuzberg-dev/kreuzberg:latest`
 
 **Included Features:**
 - All Core image features
-- LibreOffice 25.8.4 for legacy format conversion
+- Native OLE/CFB parsing for legacy formats
 
 **Additional Formats:**
 - Legacy Word (.doc)
@@ -258,7 +258,7 @@ volumes:
   cache-data:
 ```
 
-**With LibreOffice (Full Image):**
+**With Full Features (Full Image):**
 
 ```yaml title="docker-compose.yaml"
 services:
@@ -440,7 +440,7 @@ docker run -v $(pwd)/documents:/data:ro \
 | **Tesseract OCR** | ✅ 12 languages | ✅ 12 languages | - |
 | **pdfium** | ✅ | ✅ | - |
 | **Modern Office** | ✅ DOCX, PPTX, XLSX | ✅ DOCX, PPTX, XLSX | - |
-| **Legacy Office** | ❌ | ✅ DOC, PPT, XLS | LibreOffice 25.8.4 |
+| **Legacy Office** | ✅ DOC, PPT, XLS (native) | ✅ DOC, PPT, XLS (native) | - |
 | **Pull Time** | ~30s | ~45s | ~15s slower |
 | **Startup Time** | ~1s | ~1s | Negligible |
 
@@ -573,15 +573,8 @@ docker run -p 8000:8000 \
   ghcr.io/kreuzberg-dev/kreuzberg:latest
 ```
 
-### LibreOffice Not Available
-
-LibreOffice is only available in the **Full** image variant. If you need legacy Office format support:
-
-```bash title="Terminal"
-# Switch to full image
-docker pull ghcr.io/kreuzberg-dev/kreuzberg:latest
-docker run -p 8000:8000 ghcr.io/kreuzberg-dev/kreuzberg:latest
-```
+!!! note "Legacy Office Format Support"
+    Since Kreuzberg 4.3, legacy Office formats (.doc, .ppt, .xls) are extracted natively via OLE/CFB parsing without requiring external tools. Both Core and Full images support these formats.
 
 ## Next Steps
 

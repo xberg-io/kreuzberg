@@ -41,7 +41,7 @@
 					"items": {
 						"type": "string"
 					},
-					"description": "Optional external dependencies (e.g., libreoffice, tesseract)."
+					"description": "Optional external dependencies (e.g., tesseract)."
 				}
 			}
 		},

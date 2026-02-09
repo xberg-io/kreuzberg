@@ -156,7 +156,7 @@ pub struct Metadata {
 
 /// Excel/spreadsheet metadata.
 ///
-/// Contains information about sheets in Excel, LibreOffice Calc, and other
+/// Contains information about sheets in Excel, OpenDocument Calc, and other
 /// spreadsheet formats (.xlsx, .xls, .ods, etc.).
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[cfg_attr(feature = "api", derive(utoipa::ToSchema))]

@@ -82,23 +82,6 @@ if ! command -v php >/dev/null 2>&1; then
   brew link --overwrite php >/dev/null 2>&1 || true
 fi
 
-if [ -d "/Applications/LibreOffice.app" ]; then
-  echo "✓ LibreOffice already present"
-else
-  echo "Installing LibreOffice (this may take 10+ minutes, timeout: 20min)..."
-  if retry_with_backoff_timeout 1200 brew install --cask libreoffice; then
-    echo "✓ LibreOffice installed successfully"
-  else
-    exit_code=$?
-    if [ $exit_code -eq 124 ]; then
-      echo "::error::LibreOffice installation timed out after 20 minutes"
-    else
-      echo "::error::LibreOffice installation failed with exit code $exit_code"
-    fi
-    exit 1
-  fi
-fi
-
 echo "::endgroup::"
 
 echo "::group::Verifying macOS installations"
@@ -139,10 +122,6 @@ fi
 echo ""
 echo "Available languages:"
 tesseract --list-langs | head -5
-
-echo ""
-echo "LibreOffice:"
-soffice --version 2>/dev/null || echo "⚠ Warning: soffice not fully available"
 
 echo ""
 echo "PHP:"

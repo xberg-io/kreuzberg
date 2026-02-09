@@ -427,7 +427,7 @@ pub fn create_node_batch_adapter(ocr_enabled: bool) -> Result<SubprocessAdapter>
 /// extraction (no tokio required in non-batch mode).
 fn get_kreuzberg_wasm_supported_formats() -> Vec<String> {
     vec![
-        // Documents (office feature, in-memory parsers only — no libreoffice on wasm)
+        // Documents (office feature, in-memory parsers only — no external tools on wasm)
         "pdf",
         "docx",
         "doc",

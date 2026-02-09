@@ -2,7 +2,6 @@
 
 use bytes::Bytes;
 use serde::{Deserialize, Serialize};
-use std::borrow::Cow;
 use std::collections::HashMap;
 
 use super::extraction::ExtractedImage;
@@ -432,20 +431,4 @@ pub struct CacheStats {
     pub oldest_file_age_days: f64,
     /// Age of the newest cached file in days
     pub newest_file_age_days: f64,
-}
-
-/// LibreOffice conversion result.
-///
-/// Result of converting a legacy office document (e.g., .doc, .ppt)
-/// to a modern format using LibreOffice.
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct LibreOfficeConversionResult {
-    /// Converted file bytes
-    pub converted_bytes: Vec<u8>,
-    /// Original format identifier
-    pub original_format: Cow<'static, str>,
-    /// Target format identifier
-    pub target_format: Cow<'static, str>,
-    /// Target MIME type after conversion
-    pub target_mime: Cow<'static, str>,
 }

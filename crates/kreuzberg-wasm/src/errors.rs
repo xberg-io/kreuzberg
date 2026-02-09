@@ -161,7 +161,7 @@ mod tests {
 
     #[wasm_bindgen_test]
     fn test_convert_error_missing_dependency_returns_jsvalue() {
-        let err = KreuzbergError::MissingDependency("libreoffice".to_string());
+        let err = KreuzbergError::MissingDependency("tesseract".to_string());
         let result = convert_error(err);
 
         assert!(!result.is_null());

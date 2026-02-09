@@ -1,11 +1,10 @@
 {
 	"id": "office_ppt_legacy",
 	"category": "office",
-	"description": "Legacy PowerPoint .ppt file requiring LibreOffice conversion.",
+	"description": "Legacy PowerPoint .ppt extraction via native OLE/CFB parsing.",
 	"document": {
 		"path": "ppt/simple.ppt",
-		"media_type": "application/vnd.ms-powerpoint",
-		"requires_external_tool": ["libreoffice"]
+		"media_type": "application/vnd.ms-powerpoint"
 	},
 	"extraction": {
 		"config": {}
@@ -15,7 +14,7 @@
 		"min_content_length": 10
 	},
 	"skip": {
-		"requires_feature": ["libreoffice"],
-		"notes": "Skip if LibreOffice conversion is unavailable."
+		"requires_feature": ["office"],
+		"notes": "Requires the office feature."
 	}
 }

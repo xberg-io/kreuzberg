@@ -112,7 +112,7 @@ public static class TestHelpers
 
     public static void SkipIfOfficeTestOnWindows(string relativePath)
     {
-        // Office tests timeout on Windows due to LibreOffice conversion delays
+        // Office tests timeout on Windows
         if (OperatingSystem.IsWindows())
         {
             var ext = Path.GetExtension(relativePath).ToLowerInvariant();

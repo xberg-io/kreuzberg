@@ -701,7 +701,6 @@ mcp.start
 **Native Dependencies:**
 
 - Tesseract OCR (for OCR support): `brew install tesseract` (macOS) or `apt-get install tesseract-ocr` (Ubuntu)
-- LibreOffice (for legacy Office formats): `brew install libreoffice` (macOS) or `apt-get install libreoffice` (Ubuntu)
 
 **Platforms:**
 

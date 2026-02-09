@@ -38,7 +38,7 @@ result = await extract_file("document.pdf")          # 140ms
 result = extract_file_sync("document.pdf")           # 140ms
 ```
 
-**Why?** The subprocess call (pdftotext, libreoffice) accounts for 95-99% of time. With only one file, there's nothing to do concurrently, so async provides no benefit.
+**Why?** The extraction call accounts for 95-99% of time. With only one file, there's nothing to do concurrently, so async provides no benefit.
 
 ### Batch/Concurrent Processing
 

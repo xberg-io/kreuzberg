@@ -88,7 +88,7 @@ LABEL org.opencontainers.image.licenses="MIT"
 
 WORKDIR /app
 
-# Download and install dependencies (Core version - without LibreOffice)
+# Download and install dependencies (Core version)
 ARG TARGETARCH
 
 # Install runtime dependencies and download binaries

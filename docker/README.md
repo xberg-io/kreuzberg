@@ -14,13 +14,13 @@ Both variants use **Debian 13 (Trixie) slim** - the latest stable Debian release
 **Base:** debian:trixie-slim
 **Features:** PDF, DOCX, PPTX, images, HTML, XML, text, Excel, email, academic formats (LaTeX, EPUB, etc.)
 **OCR:** Tesseract (12 languages)
-**Missing:** LibreOffice (no legacy .doc, .ppt support)
+**Legacy Office:** Native OLE/CFB parsing support
 
 **When to use:**
 - Production deployments where image size matters
-- When you don't need legacy MS Office format support (.doc, .ppt)
 - Cloud environments with size/bandwidth constraints
 - Kubernetes deployments with frequent pod scaling
+- All use cases (both images have equivalent legacy Office support)
 
 **Build command:**
 ```bash
@@ -29,17 +29,16 @@ docker build -f docker/Dockerfile.core -t kreuzberg:core .
 
 ### 2. Full Image (`Dockerfile.full`)
 
-**Size:** ~1.5-2.1GB
+**Size:** ~1.0-1.3GB
 **Base:** debian:trixie-slim
-**Features:** All core features + LibreOffice for legacy Office formats
+**Features:** All core features with native legacy Office format support
 **OCR:** Tesseract (12 languages)
-**Includes:** LibreOffice 25.8.2 for .doc, .ppt conversion
+**Legacy Office:** Native OLE/CFB parsing for .doc, .ppt, .xls
 
 **When to use:**
-- Need to process legacy MS Office files (.doc, .ppt)
-- Complete document intelligence pipeline
+- Complete document intelligence pipeline with all optional dependencies
 - Development and testing environments
-- When image size is not a constraint
+- When you want maximum feature completeness
 
 **Build command:**
 ```bash
@@ -55,8 +54,7 @@ docker build -f docker/Dockerfile.full -t kreuzberg:full .
 | Rust binary | ~80MB | ~80MB | - |
 | pdfium | ~30MB | ~30MB | - |
 | System libraries | ~100MB | ~100MB | - |
-| **LibreOffice** | - | **~500-800MB** | **+500-800MB** |
-| **Total (approx)** | **~1.0-1.3GB** | **~1.5-2.1GB** | **~500-800MB** |
+| **Total (approx)** | **~1.0-1.3GB** | **~1.0-1.3GB** | **- (same size)** |
 
 ## Default Image
 
@@ -68,7 +66,7 @@ Both images support:
 - `linux/amd64` (x86_64)
 - `linux/arm64` (aarch64)
 
-Architecture-specific binaries (LibreOffice, pdfium) are automatically selected during build.
+Architecture-specific binaries (pdfium) are automatically selected during build.
 
 ## Usage Modes
 
@@ -108,9 +106,9 @@ IMAGE_NAME=kreuzberg:full ./scripts/test_docker.sh
 ## GitHub Actions
 
 The `.github/workflows/publish-docker.yaml` workflow builds and publishes both variants to GitHub Container Registry:
-- `ghcr.io/kreuzberg-dev/kreuzberg:VERSION-core` - Core image without LibreOffice
+- `ghcr.io/kreuzberg-dev/kreuzberg:VERSION-core` - Core image (minimal runtime)
 - `ghcr.io/kreuzberg-dev/kreuzberg:core` - Latest core image
-- `ghcr.io/kreuzberg-dev/kreuzberg:VERSION` - Full image with LibreOffice
+- `ghcr.io/kreuzberg-dev/kreuzberg:VERSION` - Full image (all optional dependencies)
 - `ghcr.io/kreuzberg-dev/kreuzberg:latest` - Latest full image
 
 For local development, use the local tags shown in the build commands above.
@@ -118,13 +116,12 @@ For local development, use the local tags shown in the build commands above.
 ## Recommendations
 
 **Choose Core if:**
-- ✅ You don't need legacy .doc/.ppt support
-- ✅ Image size is a concern
-- ✅ Faster pull/deployment times matter
-- ✅ Cloud costs are sensitive to egress/storage
+- ✅ Minimal runtime setup
+- ✅ Standard document processing needs
+- ✅ Cloud deployments with cost constraints
+- ✅ Kubernetes or container orchestration
 
 **Choose Full if:**
-- ✅ You need complete Office format support
-- ✅ Processing legacy documents (.doc, .ppt)
-- ✅ Image size is not a constraint
-- ✅ You want "batteries included" experience
+- ✅ Want maximum optional dependencies preinstalled
+- ✅ Development and testing environments
+- ✅ "Batteries included" experience preferred

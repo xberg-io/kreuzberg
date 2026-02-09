@@ -98,12 +98,10 @@ yarn add @kreuzberg/node
 - Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.23+ for embeddings support
 - Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
 
-- Optional: [LibreOffice](https://www.libreoffice.org/download/download/) for legacy Office formats (DOC, XLS, PPT, RTF, ODT, ODS, ODP)
-
 **Format Support Notes:**
-- Modern Office formats (DOCX, XLSX, PPTX) work without LibreOffice
-- Legacy formats (DOC, XLS, PPT) require LibreOffice installation
-- WASM binding supports DOCX, XLSX, PPTX, and ODT (no LibreOffice required)
+- Legacy formats (DOC, XLS, PPT) are now extracted natively without external tools
+- Modern Office formats (DOCX, XLSX, PPTX) are fully supported
+- WASM binding supports all document formats via in-memory parsing
 
 
 

@@ -76,7 +76,7 @@ func shouldSkipMissingDependency(err error) bool {
 		return r
 	}, strings.ToLower(err.Error()))
 
-	if strings.Contains(message, "missing dependency") || strings.Contains(message, "libreoffice") {
+	if strings.Contains(message, "missing dependency") {
 		return true
 	}
 	return false

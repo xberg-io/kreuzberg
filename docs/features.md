@@ -11,12 +11,12 @@ Kreuzberg extracts text, tables, and metadata from 75+ file formats:
 **Documents**
 - PDF (`.pdf`) - Native text extraction with optional OCR fallback
 - Microsoft Word (`.docx`, `.doc`) - Modern and legacy formats
-- LibreOffice Writer (`.odt`) - OpenDocument text
+- OpenDocument Text (`.odt`) - OpenDocument text
 - Plain text (`.txt`, `.md`, `.markdown`, `.djot`) - With metadata extraction for Markdown and Djot
 
 **Spreadsheets**
 - Excel (`.xlsx`, `.xls`, `.xlsm`, `.xlsb`) - Modern and legacy formats
-- LibreOffice Calc (`.ods`) - OpenDocument spreadsheet
+- OpenDocument Spreadsheet (`.ods`) - OpenDocument spreadsheet
 - CSV (`.csv`) - Comma-separated values
 - TSV (`.tsv`) - Tab-separated values
 
@@ -868,21 +868,20 @@ See [CLI Usage](cli/usage.md) for complete documentation.
 
 **Required (all platforms):**
 - Tesseract OCR (4.0+) for OCR functionality
-- LibreOffice (optional) for legacy Office formats (.doc, .ppt)
 
 **Installation:**
 ```bash title="Terminal"
 # macOS
-brew install tesseract libreoffice
+brew install tesseract
 
 # Ubuntu/Debian
-apt-get install tesseract-ocr libreoffice
+apt-get install tesseract-ocr
 
 # RHEL/CentOS/Fedora
-dnf install tesseract libreoffice
+dnf install tesseract
 
 # Windows (Chocolatey)
-choco install tesseract libreoffice
+choco install tesseract
 ```
 
 ### Python Requirements

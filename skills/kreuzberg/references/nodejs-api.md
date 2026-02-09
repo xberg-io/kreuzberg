@@ -1183,7 +1183,7 @@ interface OcrBackendProtocol {
 
 ## Supported Document Formats
 
-- **Documents**: PDF, DOCX, PPTX, XLSX, DOC, PPT (with LibreOffice)
+- **Documents**: PDF, DOCX, PPTX, XLSX, DOC, PPT
 - **Text**: Markdown, Plain Text, XML, JSON, YAML, TOML
 - **Web**: HTML (converted to Markdown)
 - **Email**: EML, MSG

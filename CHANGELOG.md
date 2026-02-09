@@ -7,6 +7,76 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+### Added
+
+#### PaddleOCR Backend
+- **PaddleOCR backend via ONNX Runtime**: New OCR backend (`kreuzberg-paddle-ocr`) using PaddlePaddle's PP-OCRv4 models converted to ONNX format, run via ONNX Runtime. Supports 6 languages (English, Chinese, Japanese, Korean, German, French) with automatic model downloading and caching. Provides superior CJK recognition compared to Tesseract.
+- **PaddleOCR support in all bindings**: Available across Python, Rust, TypeScript/Node.js, Go, Java, PHP, Ruby, C#, and Elixir bindings via the `paddle-ocr` feature flag.
+- **PaddleOCR CLI support**: The `kreuzberg-cli` binary supports `--ocr-backend paddle-ocr` for PaddleOCR extraction.
+
+#### Unified OCR Element Output
+- **Structured OCR element data**: Extraction results now include `OcrElement` data with bounding geometry (rectangles and quadrilaterals), per-element confidence scores, rotation information, and hierarchical levels (word, line, block, page). Available from both PaddleOCR and Tesseract backends.
+
+#### Shared ONNX Runtime Discovery
+- **`ort_discovery` module**: Finds ONNX Runtime shared libraries across platforms, shared between PaddleOCR and future ONNX-based backends.
+
+#### Document Structure Output
+- **`DocumentStructure` support across all bindings**: Added structured document output with `include_document_structure` configuration option across Python, TypeScript/Node.js, Go, Java, PHP, Ruby, C#, Elixir, and WASM bindings.
+
+#### Native DOC/PPT Extraction
+- **OLE/CFB-based extraction**: Added native DOC and PPT extraction via OLE/CFB binary parsing. Legacy Office formats no longer require any external tools.
+
+#### musl Linux Support
+- **Re-enabled musl targets**: Added `x86_64-unknown-linux-musl` and `aarch64-unknown-linux-musl` targets for CLI binaries, Python wheels (musllinux), and Node.js native bindings. Resolves glibc 2.38+ requirement for prebuilt CLI binaries on older distros like Ubuntu 22.04 (#364).
+
+### Fixed
+
+#### MSG Extraction Hang on Large Attachments (#372)
+- Fixed `.msg` (Outlook) extraction hanging indefinitely on files with large attachments. Replaced the `msg_parser` crate with direct OLE/CFB parsing using the `cfb` crate — attachment binary data is now read directly without hex-encoding overhead.
+- Added lenient FAT padding for MSG files with truncated sector tables produced by some Outlook versions.
+
+#### Rotated PDF Text Extraction
+- Fixed text extraction returning empty content for PDFs with 90° or 270° page rotation. Kreuzberg now strips `/Rotate` entries from page dictionaries before loading, restoring correct text extraction for all rotation angles.
+
+#### CSV and Excel Extraction Quality
+- Fixed CSV extraction producing near-zero quality scores (0.024) by outputting proper delimited text instead of debug format.
+- Fixed Excel extraction producing low quality scores (0.22) by outputting clean tab/newline-delimited cell text.
+
+#### XML Extraction Quality
+- Improved XML text extraction to better handle namespaced elements, CDATA sections, and mixed content, improving quality scores.
+
+#### WASM Table Extraction
+- Fixed WASM adapter not recognizing `page_number` field (snake_case) from Rust FFI, causing table data to be silently dropped in Deno and Cloudflare Workers tests.
+
+#### PaddleOCR Recognition Model
+- Fixed PaddleOCR recognition model (`en_PP-OCRv4_rec_infer.onnx`) failing to load with `ShapeInferenceError` on ONNX Runtime 1.23.x.
+- Fixed incorrect detection model filename in Docker and CI action (`en_PP-OCRv4_det_infer.onnx` → `ch_PP-OCRv4_det_infer.onnx`).
+
+#### Python Bindings
+- Fixed `OcrConfig` constructor silently ignoring `paddle_ocr_config` and `element_config` keyword arguments.
+
+### Changed
+
+#### Build System
+- Bumped ONNX Runtime from 1.23.2 to 1.24.1 across CI, Docker images, and documentation.
+- Bumped vendored Tesseract from 5.5.1 to 5.5.2.
+- Bumped vendored Leptonica from 1.86.0 to 1.87.0.
+
+### Removed
+
+#### LibreOffice Dependency
+- **LibreOffice is no longer required**: Legacy .doc and .ppt files are now extracted natively via OLE/CFB parsing. LibreOffice has been removed from Docker images, CI pipelines, and system dependency requirements, reducing the full Docker image size by ~500-800MB. Users on Kreuzberg <4.3 still need LibreOffice for these formats.
+
+#### `msg_parser` Dependency
+- Replaced `msg_parser` crate with direct CFB parsing for MSG extraction. Eliminates hex-encoding overhead and reduces dependency count.
+
+#### Guten OCR Backend
+- Removed all references to the unused Guten OCR backend from Node.js and PHP bindings. Renamed `KREUZBERG_DEBUG_GUTEN` env var to `KREUZBERG_DEBUG_OCR`.
+
+---
+
 ## [4.2.15] - 2026-02-08
 
 ### Added
@@ -18,62 +88,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### MIME Type Mappings
 - Added `.docbook` (`application/docbook+xml`) and `.jats` (`application/x-jats+xml`) file extension mappings.
 
-### Added
-
-#### OCR
-- **PaddleOCR backend via ONNX Runtime**: Added a new OCR backend (`kreuzberg-paddle-ocr`) using PaddlePaddle's PP-OCRv4 models converted to ONNX format, run via ONNX Runtime. Supports 6 languages (English, Chinese, Japanese, Korean, German, French) with automatic model downloading and caching. Provides superior CJK recognition compared to Tesseract.
-- **Unified OCR element output architecture**: Extraction results now include structured `OcrElement` data with bounding geometry (rectangles and quadrilaterals), per-element confidence scores, rotation information, and hierarchical levels (word, line, block, page). Available from both PaddleOCR and Tesseract backends.
-- **PaddleOCR support in all bindings**: PaddleOCR is available across Python, Rust, TypeScript/Node.js, Go, Java, PHP, Ruby, C#, and Elixir bindings via the `paddle-ocr` feature flag.
-- **PaddleOCR CLI support**: The `kreuzberg-cli` binary supports `--ocr-backend paddle-ocr` for PaddleOCR extraction.
-- **Shared ORT discovery**: Added `ort_discovery` module for finding ONNX Runtime shared libraries across platforms, shared between PaddleOCR and future ONNX-based backends.
-- **PaddleOCR model setup GitHub Action**: Added `.github/actions/setup-paddle-ocr-models/` action for CI pipelines to download and cache PaddleOCR model files.
-
-#### CI
-- **PaddleOCR CI integration**: Added PaddleOCR to the CI/publish pipelines with dedicated test jobs and model caching.
-
-#### musl Linux Support
-- **Re-enabled musl targets**: Added `x86_64-unknown-linux-musl` and `aarch64-unknown-linux-musl` targets for CLI binaries, Python wheels (musllinux), and Node.js native bindings. Resolves glibc 2.38+ requirement for prebuilt CLI binaries on older distros like Ubuntu 22.04 (#364).
-- **musl CI workflows**: Added dedicated `ci-musl.yaml` workflow for CLI musl build validation with Alpine container smoke tests, and musllinux Python wheel builds to `ci-python.yaml`.
-- **PDFium musl awareness**: Build script now downloads musl-specific PDFium binaries and uses `libstdc++` consistently for all Linux targets (including musl).
-- **musl C++ cross-compilation**: Added `resolve_cxx_compiler()` and `create_musl_cxx_wrapper()` to `kreuzberg-tesseract` build script for correct C++ header resolution when cross-compiling from glibc host to musl target. Skips `-ldl` linking on musl (not available/needed).
-
-#### Build System
-- **Tesseract 5.5.2**: Bumped vendored Tesseract from 5.5.1 to 5.5.2 with `BUILD_TESSERACT_BINARY=OFF` to skip unnecessary binary compilation.
-- **Leptonica 1.87.0**: Bumped vendored Leptonica from 1.86.0 to 1.87.0.
-- **ONNX Runtime 1.24.1**: Bumped ONNX Runtime from 1.23.2 to 1.24.1.
-- **Dead code cleanup**: Removed unused EMSDK constants and `apply_patches()` function from `kreuzberg-tesseract` build script.
-
-### Removed
-
-#### Node.js Bindings
-- **Guten OCR references**: Removed all references to the unused Guten OCR backend. Renamed `KREUZBERG_DEBUG_GUTEN` env var to `KREUZBERG_DEBUG_OCR`.
-
-#### PHP Bindings
-- **Guten OCR backend option**: Removed `'guten'` from the documented backend choices in `OcrConfig`.
-
 ### Fixed
-
-#### PaddleOCR Recognition Model Shape Inference
-- Fixed PaddleOCR recognition model (`en_PP-OCRv4_rec_infer.onnx`) failing to load with `ShapeInferenceError` on ONNX Runtime 1.23.x. A `Squeeze` node incorrectly reduced a rank-1 tensor to a scalar before a `Concat` operation. The fixed model has been re-uploaded to the HuggingFace model repository.
-
-#### CSV and Excel Extraction Quality
-- Fixed CSV extraction producing near-zero quality scores (0.024) by outputting proper delimited text instead of debug format.
-- Fixed Excel extraction producing low quality scores (0.22) by outputting clean tab/newline-delimited cell text.
-
-#### Native DOC/PPT Extraction
-- Added native DOC and PPT extraction via OLE/CFB parsing, replacing the LibreOffice subprocess dependency for legacy Office formats.
-
-#### XML Extraction Quality
-- Improved XML text extraction to better handle namespaced elements, CDATA sections, and mixed content, improving quality scores.
-
-#### WASM Table Extraction
-- Fixed WASM adapter not recognizing `page_number` field (snake_case) from Rust FFI, causing table data to be silently dropped in Deno and Cloudflare Workers tests.
-
-#### Ruby CI ONNX Runtime Discovery
-- Fixed Ruby E2E tests failing with `dlopen failed` for `libonnxruntime.so` by adding ONNX Runtime setup and library path export to the Ruby CI test job.
-
-#### Java E2E Test Compilation
-- Fixed Java E2E helper compilation errors caused by `Metadata` type not being directly castable to `Map` and `Element.getType()` method not existing. Updated to use `Metadata.getAdditional()` and `Element.getElementType()`.
 
 #### ODT List and Section Extraction
 - Fixed ODT extractor not handling `text:list` and `text:section` elements. Documents containing bulleted/numbered lists or sections returned empty content.
@@ -99,16 +114,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### PDF Error Handling Regression
 - Reverted incorrect change from v4.2.14 that silently returned empty results for corrupted/malformed PDFs instead of propagating errors. Corrupted PDFs now correctly return `PdfError::InvalidPdf` and password-protected PDFs return `PdfError::PasswordRequired` as expected.
 
-#### PaddleOCR Model URLs
-- Fixed incorrect detection model filename in Docker and CI action (`en_PP-OCRv4_det_infer.onnx` → `ch_PP-OCRv4_det_infer.onnx`).
-
-#### Python Bindings
-- Fixed `OcrConfig` constructor silently ignoring `paddle_ocr_config` and `element_config` keyword arguments.
-
 ### Changed
-
-#### ONNX Runtime
-- Bumped ONNX Runtime from 1.23.2 to 1.24.1 across CI, Docker images, and documentation. Minimum supported ORT version is 1.23+.
 
 #### API Parity
 - Added `security_limits` field to all 9 language bindings (TypeScript, Go, Python, Ruby, PHP, Java, C#, WASM, Elixir) for API parity with Rust core `ExtractionConfig`.

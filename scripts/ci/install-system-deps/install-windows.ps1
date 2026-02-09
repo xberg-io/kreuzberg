@@ -36,7 +36,6 @@ function Retry-Command {
 $tesseractCacheHit = $env:TESSERACT_CACHE_HIT -eq "true"
 $llvmCacheHit = $env:LLVM_CACHE_HIT -eq "true"
 $cmakeCacheHit = $env:CMAKE_CACHE_HIT -eq "true"
-$libreofficeInstalled = Test-Path "C:\Program Files\LibreOffice\program\soffice.exe"
 $cmakeInstalled = $false
 
 Write-Host "Cache status:"
@@ -104,36 +103,6 @@ else {
   Write-Host "✓ Tesseract found in cache"
 }
 
-if (-not $libreofficeInstalled) {
-  Write-Host "LibreOffice not found, installing (optional for build - needed for tests only, timeout: 20min)..."
-
-  $job = Start-Job -ScriptBlock {
-    choco install -y libreoffice --no-progress
-  }
-
-  $completed = $job | Wait-Job -Timeout 1200
-
-  if (-not $completed) {
-    $job | Stop-Job -Force
-    Write-Host "::warning::LibreOffice installation timed out after 20 minutes (optional dependency)"
-  }
-  else {
-    $result = $job | Receive-Job
-    $exitCode = $job.JobStateInfo.State
-
-    if ($exitCode -ne "Completed") {
-      Write-Host "::warning::LibreOffice installation failed (optional dependency)"
-      Write-Host "Output: $result"
-    }
-    else {
-      Write-Host "✓ LibreOffice installed"
-    }
-  }
-}
-else {
-  Write-Host "✓ LibreOffice already installed"
-}
-
 if (-not $llvmCacheHit) {
   Write-Host "LLVM cache miss, installing LLVM/Clang (required for bindgen)..."
   if (-not (Retry-Command { choco install -y llvm --no-progress } -MaxAttempts 3)) {
@@ -180,7 +149,6 @@ else {
 Write-Host "Configuring PATH and environment variables..."
 $paths = @(
   "C:\Program Files\CMake\bin",
-  "C:\Program Files\LibreOffice\program",
   "C:\Program Files\Tesseract-OCR",
   "C:\Program Files\LLVM\bin",
   "C:\tools\php",
@@ -213,16 +181,6 @@ Write-Host "::endgroup::"
 
 Write-Host "::group::Verifying Windows installations"
 
-Write-Host "LibreOffice:"
-try {
-  & soffice --version 2>$null
-  Write-Host "✓ LibreOffice available"
-}
-catch {
-  Write-Host "⚠ Warning: LibreOffice verification failed"
-}
-
-Write-Host ""
 Write-Host "Tesseract (optional for build):"
 try {
   $tesseractCmd = Get-Command tesseract -ErrorAction Stop

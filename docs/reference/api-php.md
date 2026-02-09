@@ -1758,11 +1758,6 @@ The Kreuzberg native extension must be compiled and installed for your PHP versi
   - Ubuntu: `apt-get install tesseract-ocr`
   - Windows: Download from [GitHub releases](https://github.com/tesseract-ocr/tesseract)
 
-- **LibreOffice** (for legacy Office formats):
-  - macOS: `brew install libreoffice`
-  - Ubuntu: `apt-get install libreoffice`
-  - Windows: Download from [LibreOffice website](https://www.libreoffice.org/)
-
 **Platforms:**
 
 - Linux (x64, arm64)

@@ -33,8 +33,6 @@ The Kreuzberg CLI provides command-line access to all extraction features. This 
     **Docker Images:**
 
     - All features enabled including embeddings (ONNX Runtime included)
-    - Use `kreuzberg/kreuzberg:full` for LibreOffice support
-    - Use `kreuzberg/kreuzberg:core` for smaller image without LibreOffice
 
 ## Basic Usage
 

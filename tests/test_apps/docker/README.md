@@ -20,8 +20,8 @@ The test suite validates:
 - MCP (Model Context Protocol) support over stdio
 - OCR functionality (Tesseract)
 - Embeddings generation (ONNX Runtime)
-- Core-specific features (no LibreOffice, Tesseract OCR)
-- Full-specific features (LibreOffice support for DOCX/XLSX/legacy .doc)
+- Core-specific features (Tesseract OCR)
+- Full-specific features (legacy Office format support via native OLE/CFB)
 - Volume mounting and cache directories
 - Multi-format document extraction (PDF, DOCX, XLSX, ODT, Markdown, images)
 - Force OCR on text documents and image-only PDFs
@@ -95,7 +95,7 @@ bash tests/test-embeddings.sh
 # Core image specific tests
 bash tests/test-core.sh
 
-# Full image specific tests (LibreOffice, legacy Office formats)
+# Full image specific tests (legacy Office formats)
 bash tests/test-full.sh
 ```
 
@@ -207,18 +207,17 @@ Validates ONNX Runtime and embeddings generation.
 Validates core image specific features.
 
 **Tests:**
-- LibreOffice is NOT installed
 - Tesseract OCR is available
 - Text extraction works
 - PDF processing capability
 - Markdown extraction capability
 - ODT document extraction
+- DOCX extraction (native)
 - Image OCR capability
 - ONNX Runtime is available
 - Embeddings generation
 - Cache directory writability
 - Core API endpoints (health, extract)
-- Core correctly rejects modern Office formats (.docx, .xlsx)
 - Tesseract data files available
 - Image size efficiency
 
@@ -229,24 +228,22 @@ Validates core image specific features.
 - ODT extraction
 - Image OCR
 - Embeddings generation
-- Rejection of DOCX files (without LibreOffice)
+- DOCX extraction
 
 ### `test-full.sh`
 
 Validates full image specific features.
 
 **Tests:**
-- LibreOffice IS installed
 - Tesseract OCR is available
 - Office document extraction capability
 - DOCX/XLSX mime type detection
-- LibreOffice dependencies installed
+- Runtime dependencies installed
 - Cache directory writability
-- Legacy .doc file extraction (Word 97-2003)
+- Legacy .doc file extraction (Word 97-2003, native OLE/CFB)
 - Modern .docx file extraction
 - DOCX with tables extraction
 - XLSX spreadsheet extraction
-- LibreOffice soffice binary availability
 - ONNX Runtime availability in full image
 - Image file OCR
 - ODT document processing

@@ -10,15 +10,7 @@ echo "Core Image Specific Tests"
 echo "================================${NC}"
 
 echo ""
-log_info "Test 1: LibreOffice should NOT be available"
-if docker exec kreuzberg-core-test which libreoffice >/dev/null 2>&1; then
-  log_fail "LibreOffice found in core image (should not be present)"
-else
-  log_success "LibreOffice correctly not installed in core image"
-fi
-
-echo ""
-log_info "Test 2: Tesseract OCR is available"
+log_info "Test 1: Tesseract OCR is available"
 if docker exec kreuzberg-core-test which tesseract >/dev/null 2>&1; then
   log_success "Tesseract found in core image"
 else
@@ -138,16 +130,14 @@ else
 fi
 
 echo ""
-log_info "Test 14: Core correctly lacks LibreOffice (.doc/.xlsx support)"
+log_info "Test 14: Core can extract DOCX files natively"
 response=$(curl -s -X POST "$CORE_API/extract" \
   -H "Content-Type: application/json" \
   -d '{"path":"/fixtures/lorem_ipsum.docx"}' 2>/dev/null)
-if assert_contains "$response" "error\|not.*supported\|unsupported" "Core correctly rejects .docx without LibreOffice"; then
-  log_success "Core properly rejects modern Office formats"
-elif assert_contains "$response" "content" "Core processes .docx (may be via alternative method)"; then
-  log_warn "Core may have alternate support for .docx (not LibreOffice)"
+if assert_contains "$response" "content\|success" "Core extracts .docx natively"; then
+  log_success "Core properly extracts modern Office formats"
 else
-  log_info "Core response for .docx: $response"
+  log_warn "Core DOCX response: $response"
 fi
 
 echo ""

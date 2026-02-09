@@ -1,13 +1,14 @@
 # Format Support
 
-Kreuzberg supports 75+ file formats across major categories, providing comprehensive document intelligence capabilities through native Rust extractors and LibreOffice conversion.
+Kreuzberg supports 75+ file formats across major categories, providing comprehensive document intelligence capabilities through native Rust extractors.
 
 ## Overview
 
 Kreuzberg v4 uses a high-performance Rust core with two extraction methods:
 
-- **Native Rust Extractors**: Fast, memory-efficient extractors for common formats
-- **LibreOffice Conversion**: Legacy Microsoft Office format support (`.doc`, `.ppt`)
+- **Native Rust Extractors**: Fast, memory-efficient extractors for all supported formats
+
+> **Note:** LibreOffice was a required system dependency for legacy .doc/.ppt extraction in Kreuzberg < 4.3. Since 4.3, these formats are extracted natively without any external tools.
 
 All formats support async/await and batch processing. Image formats and PDFs support optional OCR when configured.
 
@@ -21,8 +22,8 @@ All formats support async/await and batch processing. Image formats and PDFs sup
 | Excel | `.xlsx`, `.xlsm`, `.xlsb`, `.xls`, `.xlam`, `.xla`, `.ods` | Various Excel MIME types | Native Rust (calamine) | No | Multi-sheet support, formula preservation |
 | PowerPoint | `.pptx`, `.pptm`, `.ppsx` | `application/vnd.openxmlformats-officedocument.presentationml.presentation` | Native Rust (roxmltree) | Yes (for embedded images) | Slide extraction, image OCR, table detection |
 | Word (Modern) | `.docx` | `application/vnd.openxmlformats-officedocument.wordprocessingml.document` | Native Rust | No | Preserves formatting, extracts metadata |
-| Word (Legacy) | `.doc` | `application/msword` | LibreOffice conversion | No | Converts to DOCX then extracts |
-| PowerPoint (Legacy) | `.ppt` | `application/vnd.ms-powerpoint` | LibreOffice conversion | No | Converts to PPTX then extracts |
+| Word (Legacy) | `.doc` | `application/msword` | Native OLE/CFB | Yes | Direct binary parsing |
+| PowerPoint (Legacy) | `.ppt` | `application/vnd.ms-powerpoint` | Native OLE/CFB | Yes | Direct binary parsing |
 | OpenDocument Text | `.odt` | `application/vnd.oasis.opendocument.text` | Native Rust | No | Full OpenDocument support |
 | OpenDocument Spreadsheet | `.ods` | `application/vnd.oasis.opendocument.spreadsheet` | Native Rust (calamine) | No | Multi-sheet support |
 
@@ -127,7 +128,6 @@ graph TD
     B --> C{Extraction Method}
 
     C -->|Native Format| D[Rust Core Extractors]
-    C -->|Legacy Office| F[LibreOffice Conversion]
 
     D --> G[PDF Extractor]
     D --> H[Excel Extractor]
@@ -135,11 +135,7 @@ graph TD
     D --> J[XML/Text/HTML Extractors]
     D --> K[Email Extractor]
     D --> L[Archive Extractor]
-
-    F --> N[Convert DOC→DOCX]
-    F --> O[Convert PPT→PPTX]
-    N --> D
-    O --> D
+    D --> M[OLE/CFB Parser for .doc/.ppt]
 
     G --> P{OCR Needed?}
     I --> P
@@ -151,6 +147,7 @@ graph TD
     J --> R
     K --> R
     L --> R
+    M --> R
 
     R --> S[Post-Processing Pipeline]
     S --> T[Final Result]
@@ -222,24 +219,6 @@ sudo dnf install tesseract
 
 # Install Tesseract OCR on Windows (using Scoop)
 scoop install tesseract
-```
-
-
-### LibreOffice (Optional)
-
-Required for legacy Microsoft Office formats (`.doc`, `.ppt`):
-
-```bash title="Terminal"
-# Install LibreOffice on macOS
-brew install libreoffice
-
-# Install LibreOffice on Ubuntu/Debian
-sudo apt-get install libreoffice
-
-# Install LibreOffice on RHEL/CentOS/Fedora
-sudo dnf install libreoffice
-
-# Windows: Download from https://www.libreoffice.org/download/
 ```
 
 **Docker Note**: All system dependencies are pre-installed in official Kreuzberg Docker images.
@@ -400,11 +379,11 @@ Override with `force_ocr=True` to always use OCR regardless of native text quali
 - **Text/Markdown**: Streaming parser with lazy regex compilation
 - **Archives**: Efficient extraction without full decompression
 
-### LibreOffice Extractors
+### OLE/CFB Extractors
 
-- Higher overhead (~500-2000ms per file)
-- Only used for legacy formats (`.doc`, `.ppt`)
-- Automatic conversion to modern formats
+- Direct binary parsing of OLE2/CFB compound files
+- Used for legacy formats (`.doc`, `.ppt`)
+- No external tool dependencies, native Rust implementation
 
 ### Batch Processing
 

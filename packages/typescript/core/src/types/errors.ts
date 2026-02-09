@@ -378,7 +378,6 @@ export class PluginError extends KreuzbergError {
  * Error thrown when a required system dependency is missing.
  *
  * Missing dependency errors occur when external tools or libraries are not available, such as:
- * - LibreOffice (for DOC/PPT/XLS files)
  * - Tesseract OCR (for OCR processing)
  * - ImageMagick (for image processing)
  * - Poppler (for PDF rendering)
@@ -388,11 +387,11 @@ export class PluginError extends KreuzbergError {
  * import { extractFile, MissingDependencyError } from '@kreuzberg/node';
  *
  * try {
- *   const result = await extractFile('document.doc');
+ *   const result = await extractFile('document.pdf');
  * } catch (error) {
  *   if (error instanceof MissingDependencyError) {
  *     console.error('Missing dependency:', error.message);
- *     console.log('Please install LibreOffice to process DOC files');
+ *     console.log('Please install Tesseract OCR for image processing');
  *   }
  * }
  * ```

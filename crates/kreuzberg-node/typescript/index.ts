@@ -36,7 +36,7 @@
  *
  * ## Supported Formats
  *
- * - **Documents**: PDF, DOCX, PPTX, XLSX, DOC, PPT (with LibreOffice)
+ * - **Documents**: PDF, DOCX, PPTX, XLSX, DOC, PPT
  * - **Text**: Markdown, Plain Text, XML
  * - **Web**: HTML (converted to Markdown)
  * - **Data**: JSON, YAML, TOML

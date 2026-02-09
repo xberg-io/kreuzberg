@@ -345,13 +345,13 @@ Kreuzberg supports 75 file formats across 8 categories:
 | **PDF** | `.pdf` | Native text + OCR for scanned pages |
 | **Images** | `.png`, `.jpg`, `.jpeg`, `.tiff`, `.bmp`, `.webp` | Requires OCR backend |
 | **Office** | `.docx`, `.pptx`, `.xlsx` | Modern formats via native parsers |
-| **Legacy Office** | `.doc`, `.ppt` | Requires LibreOffice |
+| **Legacy Office** | `.doc`, `.ppt` | Native OLE/CFB parsing |
 | **Email** | `.eml`, `.msg` | Full support including attachments |
 | **Web** | `.html`, `.htm` | Converted to Markdown with metadata |
 | **Text** | `.md`, `.txt`, `.xml`, `.json`, `.yaml`, `.toml`, `.csv` | Direct extraction |
 | **Archives** | `.zip`, `.tar`, `.tar.gz`, `.tar.bz2` | Recursive extraction |
 
-See the [installation guide](../getting-started/installation.md#system-dependencies) for optional dependencies (Tesseract, LibreOffice).
+See the [installation guide](../getting-started/installation.md#system-dependencies) for optional dependencies (Tesseract).
 
 ## Page Tracking and Boundaries
 

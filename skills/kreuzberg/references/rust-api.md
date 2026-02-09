@@ -534,7 +534,7 @@ pub enum KreuzbergError {
         source: Option<Box<dyn std::error::Error + Send + Sync>>,
     },
 
-    /// Missing system dependency (Tesseract, LibreOffice)
+    /// Missing system dependency (e.g. Tesseract)
     MissingDependency(String),
 
     /// Plugin-specific errors

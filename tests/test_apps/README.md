@@ -656,7 +656,7 @@ bash tests/test-ocr.sh
 **Last Run:** Expected all to pass
 
 - **Core Image:** Validates Tesseract OCR
-- **Full Image:** Validates LibreOffice support
+- **Full Image:** Validates legacy Office format support
 
 ### Coverage
 
@@ -673,7 +673,7 @@ bash tests/test-ocr.sh
 
 - **Docker:** 20.10+
 - **Docker Compose:** v2 or plugin
-- **Profiles:** core (no LibreOffice), full (with LibreOffice)
+- **Profiles:** core, full
 
 ### API Ports
 
@@ -879,7 +879,7 @@ cd tests/test_apps/{python,node,ruby,go,java,csharp,wasm,docker,homebrew}
 
 ### C#
 - PDFium not bundled in development builds (expected)
-- DOCX/XLSX extraction disabled without LibreOffice
+- DOCX/XLSX extraction requires office feature enabled
 
 ### Homebrew
 - API server test occasionally fails (port binding issue)

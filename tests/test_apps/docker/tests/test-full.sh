@@ -10,25 +10,7 @@ echo "Full Image Specific Tests"
 echo "================================${NC}"
 
 echo ""
-log_info "Test 1: LibreOffice should be available"
-if docker exec kreuzberg-full-test which libreoffice >/dev/null 2>&1; then
-  log_success "LibreOffice correctly installed in full image"
-else
-  log_fail "LibreOffice not found in full image"
-fi
-
-echo ""
-log_info "Test 2: LibreOffice version"
-version=""
-version=$(docker exec kreuzberg-full-test libreoffice --version 2>&1 || echo "unknown")
-if assert_contains "$version" "LibreOffice" "LibreOffice version detected"; then
-  :
-else
-  log_warn "LibreOffice version check inconclusive: $version"
-fi
-
-echo ""
-log_info "Test 3: Tesseract OCR is available"
+log_info "Test 1: Tesseract OCR is available"
 if docker exec kreuzberg-full-test which tesseract >/dev/null 2>&1; then
   log_success "Tesseract found in full image"
 else
@@ -75,7 +57,7 @@ fi
 echo ""
 log_info "Test 7: Full container dependencies check"
 deps_ok=1
-for lib in libfontconfig libxinerama libgl1 libxrender1 libsm6; do
+for lib in libfontconfig libssl3; do
   if docker exec kreuzberg-full-test dpkg -l 2>/dev/null | grep -q "$lib"; then
     :
   else
@@ -84,9 +66,9 @@ for lib in libfontconfig libxinerama libgl1 libxrender1 libsm6; do
   fi
 done
 if [ "$deps_ok" -eq 1 ]; then
-  log_success "Core LibreOffice dependencies verified"
+  log_success "Core runtime dependencies verified"
 else
-  log_warn "Some LibreOffice dependencies may be missing"
+  log_warn "Some runtime dependencies may be missing"
 fi
 
 echo ""
@@ -159,15 +141,7 @@ else
 fi
 
 echo ""
-log_info "Test 15: LibreOffice soffice binary check"
-if docker exec kreuzberg-full-test which soffice >/dev/null 2>&1; then
-  log_success "LibreOffice soffice command found (conversion tool)"
-else
-  log_warn "LibreOffice soffice not directly found, but libreoffice may be available"
-fi
-
-echo ""
-log_info "Test 16: ONNX Runtime availability in full"
+log_info "Test 15: ONNX Runtime availability in full"
 response=$(curl -s -X POST "$FULL_API/extract" \
   -H "Content-Type: application/json" \
   -d '{"path":"/fixtures/sample.txt","generate_embeddings":true}' 2>/dev/null)

@@ -49,7 +49,7 @@ async fn test_pdf_password_protected_async() {
 
 #[cfg(feature = "office")]
 #[tokio::test]
-#[cfg_attr(target_os = "windows", ignore = "LibreOffice tests timeout on Windows CI")]
+#[cfg_attr(target_os = "windows", ignore = "Legacy office tests timeout on Windows CI")]
 async fn test_legacy_doc_extraction_async() {
     if !test_documents_available() {
         return;
@@ -75,7 +75,7 @@ async fn test_legacy_doc_extraction_async() {
         }
         Err(err) => {
             tracing::debug!(
-                "Legacy Office extraction failed (LibreOffice may not be installed): {}",
+                "Legacy Office extraction failed (office feature may not be enabled): {}",
                 err
             );
         }

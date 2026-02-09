@@ -14,10 +14,6 @@ if ! retry_with_backoff sudo apt-get update; then
 fi
 
 packages=(
-  libreoffice
-  libreoffice-writer
-  libreoffice-calc
-  libreoffice-impress
   tesseract-ocr
   tesseract-ocr-eng
   tesseract-ocr-tur
@@ -43,7 +39,7 @@ else
     echo "::error::Package installation timed out after 15 minutes"
   else
     echo "::warning::Some packages failed to install, attempting individual installs..."
-    for pkg in tesseract-ocr libreoffice libssl-dev pkg-config cmake; do
+    for pkg in tesseract-ocr libssl-dev pkg-config cmake; do
       echo "Installing $pkg..."
       if retry_with_backoff_timeout 300 sudo apt-get install -y "$pkg" 2>&1; then
         echo "  ✓ $pkg installed"
@@ -77,14 +73,6 @@ if command -v cmake >/dev/null 2>&1; then
 else
   echo "::error::CMake not found after installation"
   exit 1
-fi
-
-echo ""
-echo "LibreOffice:"
-if soffice --version 2>/dev/null; then
-  echo "✓ LibreOffice available"
-else
-  echo "⚠ Warning: LibreOffice not fully available"
 fi
 
 echo ""
@@ -142,14 +130,6 @@ done
 if [ $tessdata_found -eq 0 ]; then
   echo "::error::Tessdata directory not found in standard locations"
   exit 1
-fi
-
-echo ""
-echo "Testing LibreOffice headless mode..."
-if run_with_timeout 30 soffice --headless --version >/dev/null 2>&1; then
-  echo "✓ LibreOffice headless mode works"
-else
-  echo "⚠ Warning: LibreOffice headless test failed (may still work)"
 fi
 
 echo "::endgroup::"

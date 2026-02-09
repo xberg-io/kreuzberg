@@ -88,11 +88,7 @@ LABEL org.opencontainers.image.licenses="MIT"
 
 WORKDIR /app
 
-# Download and install dependencies
-ARG LIBREOFFICE_VERSION=25.8.4
-ARG TARGETARCH
-
-# Install runtime dependencies and download binaries
+# Install runtime dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         ca-certificates \
@@ -112,37 +108,8 @@ RUN apt-get update && \
         tesseract-ocr-rus \
         tesseract-ocr-hin \
         fontconfig \
-        libxinerama1 \
-        libgl1 \
-        libxrender1 \
-        libsm6 \
         libssl3 \
-        libnss3 \
-        libnspr4 \
-        libdbus-1-3 \
-        libcups2 \
         && \
-    # Download and install LibreOffice (arch-aware)
-    if [ "$TARGETARCH" = "arm64" ]; then \
-        LO_ARCH="aarch64"; \
-        LO_FILE_ARCH="aarch64"; \
-    else \
-        LO_ARCH="x86_64"; \
-        LO_FILE_ARCH="x86-64"; \
-    fi && \
-    curl -fL "https://download.documentfoundation.org/libreoffice/stable/${LIBREOFFICE_VERSION}/deb/${LO_ARCH}/LibreOffice_${LIBREOFFICE_VERSION}_Linux_${LO_FILE_ARCH}_deb.tar.gz" \
-        -o /tmp/libreoffice.tar.gz && \
-    mkdir -p /tmp/libreoffice && \
-    tar -xzf /tmp/libreoffice.tar.gz -C /tmp/libreoffice --strip-components=1 && \
-    (dpkg -i /tmp/libreoffice/DEBS/*.deb || apt-get install -f -y) && \
-    rm -rf /tmp/libreoffice* && \
-    # Create symlinks for LibreOffice executables (handles any version)
-    LO_DIR=$(find /opt -maxdepth 1 -type d -name 'libreoffice*' | head -1) && \
-    if [ -n "$LO_DIR" ] && [ -f "$LO_DIR/program/soffice" ]; then \
-        ln -sf "$LO_DIR/program/soffice" /usr/local/bin/soffice && \
-        ln -sf "$LO_DIR/program/soffice" /usr/local/bin/libreoffice; \
-    fi && \
-    # Clean up
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 

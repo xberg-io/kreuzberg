@@ -84,13 +84,6 @@ To enable optical character recognition for scanned documents:
 - **Ubuntu/Debian**: `sudo apt-get install tesseract-ocr`
 - **Windows**: Download from [tesseract-ocr/tesseract](https://github.com/tesseract-ocr/tesseract)
 
-#### Legacy Office Format Support (Optional)
-
-For `.doc` and `.ppt` file extraction:
-
-- **macOS**: `brew install libreoffice`
-- **Ubuntu/Debian**: `sudo apt-get install libreoffice`
-
 ## Quick Start
 
 > The CLI is available for Linux (x86_64/aarch64), macOS (Apple Silicon), and Windows with consistent behavior across all platforms.

@@ -8,7 +8,6 @@ package dev.kreuzberg;
  * available, such as:
  *
  * <ul>
- * <li>LibreOffice (for DOC/PPT/XLS files)
  * <li>Tesseract OCR (for OCR processing)
  * <li>ImageMagick (for image processing)
  * <li>Poppler (for PDF rendering)
