@@ -555,6 +555,7 @@ mod tests {
                         },
                     ],
                 }),
+                is_blank: None,
             }]),
             ..test_result("")
         };
@@ -607,6 +608,7 @@ mod tests {
                         },
                     ],
                 }),
+                is_blank: None,
             }]),
             ..test_result("")
         };
@@ -645,6 +647,7 @@ mod tests {
                         },
                     ],
                 }),
+                is_blank: None,
             }]),
             ..test_result("")
         };

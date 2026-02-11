@@ -1,3 +1,4 @@
+pub mod blank_detection;
 pub mod structured;
 pub mod text;
 pub mod transform;

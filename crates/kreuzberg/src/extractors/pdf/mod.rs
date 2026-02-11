@@ -85,7 +85,7 @@ impl DocumentExtractor for PdfExtractor {
         let content = &*derotated;
 
         #[cfg(feature = "pdf")]
-        let (pdf_metadata, native_text, tables, page_contents, _boundaries) = {
+        let (mut pdf_metadata, native_text, tables, page_contents, _boundaries) = {
             #[cfg(target_arch = "wasm32")]
             {
                 let pdfium = crate::pdf::bindings::bind_pdfium(PdfError::MetadataExtractionFailed, "initialize Pdfium")
@@ -294,6 +294,17 @@ impl DocumentExtractor for PdfExtractor {
         };
 
         let final_pages = assign_tables_and_images_to_pages(page_contents, &tables, images.as_deref().unwrap_or(&[]));
+
+        // Refine PageInfo.is_blank in page_structure to match PageContent refinement
+        if let (Some(final_pgs), Some(page_structure)) = (&final_pages, &mut pdf_metadata.page_structure)
+            && let Some(ref mut page_infos) = page_structure.pages
+        {
+            for page_info in page_infos.iter_mut() {
+                if let Some(pc) = final_pgs.iter().find(|p| p.page_number == page_info.number) {
+                    page_info.is_blank = pc.is_blank;
+                }
+            }
+        }
 
         Ok(ExtractionResult {
             content: text,

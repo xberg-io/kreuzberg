@@ -229,6 +229,8 @@ function convertPageContent(rawPage: unknown): PageContent {
 		tables: Array.isArray(page["tables"]) ? (page["tables"] as Table[]) : [],
 		// biome-ignore lint/complexity/useLiteralKeys: required for strict TypeScript noPropertyAccessFromIndexSignature
 		images: Array.isArray(page["images"]) ? (page["images"] as unknown[]).map((image) => convertImage(image)) : [],
+		// biome-ignore lint/complexity/useLiteralKeys: required for strict TypeScript noPropertyAccessFromIndexSignature
+		isBlank: (page["isBlank"] as boolean | null | undefined) ?? null,
 	};
 }
 

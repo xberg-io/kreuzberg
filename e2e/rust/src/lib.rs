@@ -302,6 +302,11 @@ pub mod assertions {
         if let Some(exact) = exact_count {
             assert!(count == exact, "Expected exactly {exact} pages, found {count}");
         }
+
+        for page in pages {
+            // is_blank should be present as Option<bool>
+            let _ = page.is_blank;
+        }
     }
 
     /// Assert element count and types.

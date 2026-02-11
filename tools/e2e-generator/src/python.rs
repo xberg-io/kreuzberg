@@ -298,6 +298,9 @@ def assert_pages(
         pytest.fail(f"Expected exactly {exact_count} pages, found {count}")
     if min_count is not None and count < min_count:
         pytest.fail(f"Expected at least {min_count} pages, found {count}")
+    for page in pages:
+        is_blank = page.get("is_blank") if isinstance(page, dict) else getattr(page, "is_blank", None)
+        assert is_blank is None or isinstance(is_blank, bool), f"is_blank should be None or bool, got {type(is_blank)}"
 
 
 def assert_elements(

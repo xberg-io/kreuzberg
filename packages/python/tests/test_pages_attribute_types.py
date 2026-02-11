@@ -75,6 +75,8 @@ def test_pages_with_pdf_single_page(test_documents: Path) -> None:
         assert isinstance(page["content"], str), "content should be string"
         assert isinstance(page["tables"], list), "tables should be list"
         assert isinstance(page["images"], list), "images should be list"
+        is_blank_val = page.get("is_blank")
+        assert is_blank_val is None or isinstance(is_blank_val, bool), "is_blank should be bool or None"
 
 
 def test_pages_with_pdf_multipage(test_documents: Path) -> None:
@@ -171,6 +173,8 @@ def test_page_content_structure(test_documents: Path) -> None:
     assert len(page["content"]) > 0, "content should not be empty"
     assert isinstance(page["tables"], list), "tables should be list"
     assert isinstance(page["images"], list), "images should be list"
+    is_blank_val = page.get("is_blank")
+    assert is_blank_val is None or isinstance(is_blank_val, bool), "is_blank should be bool or None"
 
 
 def test_pages_with_sync_extraction(test_documents: Path) -> None:
@@ -220,10 +224,12 @@ def test_pages_type_hint_with_mypy(test_documents: Path) -> None:
             content: str = page["content"]
             tables = page["tables"]
             images = page["images"]
+            is_blank: bool | None = page.get("is_blank")
             assert isinstance(page_num, int)
             assert isinstance(content, str)
             assert isinstance(tables, list)
             assert isinstance(images, list)
+            assert is_blank is None or isinstance(is_blank, bool)
 
 
 def test_pages_edge_case_empty_pages(tmp_path: Path) -> None:

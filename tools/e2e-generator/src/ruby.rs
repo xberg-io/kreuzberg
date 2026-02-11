@@ -256,6 +256,11 @@ module E2ERuby
       pages = Array(result.pages)
       expect(pages.length).to be >= min_count if min_count
       expect(pages.length).to eq(exact_count) if exact_count
+      pages.each do |page|
+        if page.respond_to?(:is_blank)
+          expect(page.is_blank).to be(nil).or be(true).or be(false)
+        end
+      end
     end
 
     def self.assert_elements(result, min_count: nil, types_include: nil)

@@ -469,6 +469,7 @@ type PageInfo struct {
 	ImageCount *uint64     `json:"image_count,omitempty"`
 	TableCount *uint64     `json:"table_count,omitempty"`
 	Hidden     *bool       `json:"hidden,omitempty"`
+	IsBlank    *bool       `json:"is_blank,omitempty"`
 }
 
 // PageStructure describes the page/slide/sheet structure of a document.
@@ -500,6 +501,7 @@ type PageContent struct {
 	Tables     []Table          `json:"tables,omitempty"`
 	Images     []ExtractedImage `json:"images,omitempty"`
 	Hierarchy  *PageHierarchy   `json:"hierarchy,omitempty"`
+	IsBlank    *bool            `json:"is_blank,omitempty"`
 }
 
 // ElementType defines semantic classification for extracted elements.

@@ -427,6 +427,11 @@ defmodule E2E.Helpers do
       flunk("Page count #{pages_len} != exact count #{opts[:exact_count]}")
     end
 
+    Enum.each(pages, fn page ->
+      is_blank = Map.get(page, :is_blank)
+      assert is_blank == nil or is_boolean(is_blank), "is_blank should be nil or boolean"
+    end)
+
     result
   end
 

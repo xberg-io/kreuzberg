@@ -364,6 +364,15 @@ class Helpers
                 sprintf("Expected at least %d pages, found %d", $minCount, $count)
             );
         }
+
+        foreach ($pages as $page) {
+            if (property_exists($page, 'isBlank')) {
+                Assert::assertTrue(
+                    $page->isBlank === null || is_bool($page->isBlank),
+                    'isBlank should be null or bool'
+                );
+            }
+        }
     }
 
     public static function assertElements(

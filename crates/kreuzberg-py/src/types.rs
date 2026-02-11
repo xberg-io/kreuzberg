@@ -451,6 +451,10 @@ impl ExtractionResult {
                 }
                 page_dict.set_item("images", page_images)?;
 
+                if let Some(is_blank) = page.is_blank {
+                    page_dict.set_item("is_blank", is_blank)?;
+                }
+
                 page_list.append(page_dict)?;
             }
             Some(page_list.unbind())

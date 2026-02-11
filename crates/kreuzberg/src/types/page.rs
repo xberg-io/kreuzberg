@@ -95,6 +95,14 @@ pub struct PageInfo {
     /// Whether this page is hidden (e.g., in presentations)
     #[serde(skip_serializing_if = "Option::is_none")]
     pub hidden: Option<bool>,
+
+    /// Whether this page is blank (no meaningful text, no images, no tables)
+    ///
+    /// A page is considered blank if it has fewer than 3 non-whitespace characters
+    /// and contains no tables or images. This is useful for filtering out empty pages
+    /// in scanned documents or PDFs with blank separator pages.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub is_blank: Option<bool>,
 }
 
 /// Content for a single page/slide.
@@ -141,6 +149,14 @@ pub struct PageContent {
     /// Contains text hierarchy levels (H1-H6) extracted from the page content.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub hierarchy: Option<PageHierarchy>,
+
+    /// Whether this page is blank (no meaningful text content)
+    ///
+    /// Determined during extraction based on text content analysis.
+    /// A page is blank if it has fewer than 3 non-whitespace characters
+    /// and contains no tables or images.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub is_blank: Option<bool>,
 }
 
 /// Page hierarchy structure containing heading levels and block information.

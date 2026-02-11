@@ -137,6 +137,9 @@ pub fn extract_metadata_with_passwords(pdf_bytes: &[u8], passwords: &[&str]) -> 
 /// * `document` - The PDF document to extract metadata from
 /// * `page_boundaries` - Optional vector of PageBoundary entries for building PageStructure.
 ///   If provided, a PageStructure will be built with these boundaries.
+/// * `content` - Optional extracted text content, used for blank page detection.
+///   If provided, `PageInfo.is_blank` will be populated based on text content analysis.
+///   If `None`, `is_blank` will be `None` for all pages.
 ///
 /// # Returns
 ///
@@ -145,21 +148,23 @@ pub fn extract_metadata_with_passwords(pdf_bytes: &[u8], passwords: &[&str]) -> 
 pub fn extract_metadata_from_document(
     document: &PdfDocument<'_>,
     page_boundaries: Option<&[PageBoundary]>,
+    content: Option<&str>,
 ) -> Result<PdfExtractionMetadata> {
-    extract_metadata_from_document_impl(document, page_boundaries)
+    extract_metadata_from_document_impl(document, page_boundaries, content.unwrap_or(""))
 }
 
 /// Internal implementation of metadata extraction that can be reused by unified extraction.
 pub(crate) fn extract_metadata_from_document_impl(
     document: &PdfDocument<'_>,
     page_boundaries: Option<&[PageBoundary]>,
+    content: &str,
 ) -> Result<PdfExtractionMetadata> {
     let pdf_specific = extract_pdf_specific_metadata(document)?;
 
     let common = extract_common_metadata_from_document(document)?;
 
     let page_structure = if let Some(boundaries) = page_boundaries {
-        Some(build_page_structure(document, boundaries)?)
+        Some(build_page_structure(document, boundaries, content)?)
     } else {
         None
     };
@@ -223,7 +228,11 @@ fn extract_pdf_specific_metadata(document: &PdfDocument<'_>) -> Result<PdfMetada
 ///
 /// - Boundaries must not be empty
 /// - Boundary count must match the document's page count
-fn build_page_structure(document: &PdfDocument<'_>, boundaries: &[PageBoundary]) -> Result<PageStructure> {
+fn build_page_structure(
+    document: &PdfDocument<'_>,
+    boundaries: &[PageBoundary],
+    content: &str,
+) -> Result<PageStructure> {
     let total_count = document.pages().len() as usize;
 
     if boundaries.is_empty() {
@@ -250,6 +259,13 @@ fn build_page_structure(document: &PdfDocument<'_>, boundaries: &[PageBoundary])
             None
         };
 
+        let is_blank = if boundary.byte_start <= boundary.byte_end && boundary.byte_end <= content.len() {
+            let page_text = &content[boundary.byte_start..boundary.byte_end];
+            Some(crate::extraction::blank_detection::is_page_text_blank(page_text))
+        } else {
+            None
+        };
+
         pages.push(PageInfo {
             number: page_number,
             title: None,
@@ -257,6 +273,7 @@ fn build_page_structure(document: &PdfDocument<'_>, boundaries: &[PageBoundary])
             image_count: None,
             table_count: None,
             hidden: None,
+            is_blank,
         });
     }
 

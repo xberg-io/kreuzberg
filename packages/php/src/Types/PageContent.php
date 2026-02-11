@@ -15,6 +15,7 @@ namespace Kreuzberg\Types;
  * @property-read array<Table> $tables Tables found on this page
  * @property-read array<ExtractedImage> $images Images found on this page
  * @property-read ?PageHierarchy $hierarchy Hierarchy information for the page
+ * @property-read ?bool $isBlank Whether this page is blank
  */
 readonly class PageContent
 {
@@ -28,6 +29,7 @@ readonly class PageContent
         public array $tables = [],
         public array $images = [],
         public ?PageHierarchy $hierarchy = null,
+        public ?bool $isBlank = null,
     ) {
     }
 
@@ -51,6 +53,9 @@ readonly class PageContent
         /** @var ?array<string, mixed> $hierarchyData */
         $hierarchyData = isset($data['hierarchy']) && is_array($data['hierarchy']) ? $data['hierarchy'] : null;
 
+        /** @var ?bool $isBlank */
+        $isBlank = isset($data['is_blank']) && is_bool($data['is_blank']) ? $data['is_blank'] : null;
+
         return new self(
             pageNumber: $pageNumber,
             content: $content,
@@ -65,6 +70,7 @@ readonly class PageContent
                 $imagesData,
             ),
             hierarchy: $hierarchyData !== null ? PageHierarchy::fromArray($hierarchyData) : null,
+            isBlank: $isBlank,
         );
     }
 }

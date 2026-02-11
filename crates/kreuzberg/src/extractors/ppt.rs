@@ -127,6 +127,7 @@ impl DocumentExtractor for PptExtractor {
                             image_count: None,
                             table_count: None,
                             hidden: None,
+                            is_blank: None,
                         })
                         .collect(),
                 ),

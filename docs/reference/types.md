@@ -517,6 +517,7 @@ pub struct PageInfo {
     pub image_count: Option<usize>,
     pub table_count: Option<usize>,
     pub hidden: Option<bool>,
+    pub is_blank: Option<bool>,
 }
 ```
 
@@ -530,6 +531,7 @@ class PageInfo(TypedDict, total=False):
     image_count: int | None
     table_count: int | None
     hidden: bool | None
+    is_blank: bool | None
 ```
 
 ### TypeScript
@@ -542,6 +544,7 @@ interface PageInfo {
   imageCount?: number;
   tableCount?: number;
   hidden?: boolean;
+  isBlank?: boolean;
 }
 ```
 
@@ -555,6 +558,7 @@ class PageInfo < Dry::Struct
   attribute :image_count, Types::Integer.optional
   attribute :table_count, Types::Integer.optional
   attribute :hidden, Types::Bool.optional
+  attribute :is_blank, Types::Bool.optional
 end
 ```
 
@@ -567,7 +571,8 @@ public record PageInfo(
     Optional<double[]> dimensions,
     Optional<Integer> imageCount,
     Optional<Integer> tableCount,
-    Optional<Boolean> hidden
+    Optional<Boolean> hidden,
+    Optional<Boolean> isBlank
 ) {}
 ```
 
@@ -581,6 +586,7 @@ type PageInfo struct {
     ImageCount  *int      `json:"image_count,omitempty"`
     TableCount  *int      `json:"table_count,omitempty"`
     Hidden      *bool     `json:"hidden,omitempty"`
+    IsBlank     *bool     `json:"is_blank,omitempty"`
 }
 ```
 
@@ -595,6 +601,7 @@ public record PageInfo
     public int? ImageCount { get; init; }
     public int? TableCount { get; init; }
     public bool? Hidden { get; init; }
+    public bool? IsBlank { get; init; }
 }
 ```
 
@@ -605,6 +612,7 @@ public record PageInfo
 - `image_count`: Number of images on page
 - `table_count`: Number of tables on page
 - `hidden`: Whether page/slide is hidden (PPTX)
+- `is_blank`: Whether the page contains no meaningful content (fewer than 3 non-whitespace characters and no tables or images)
 
 ## PageUnitType
 

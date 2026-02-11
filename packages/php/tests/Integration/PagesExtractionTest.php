@@ -110,6 +110,14 @@ final class PagesExtractionTest extends TestCase
                 $this->assertIsInt($page->pageNumber, 'Page number should be an integer');
                 $this->assertGreaterThan(0, $page->pageNumber, 'Page number should be positive');
             }
+
+            // isBlank should be null or a boolean
+            if (property_exists($page, 'isBlank')) {
+                $this->assertTrue(
+                    $page->isBlank === null || is_bool($page->isBlank),
+                    'isBlank should be null or bool',
+                );
+            }
         }
     }
 

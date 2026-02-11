@@ -597,6 +597,12 @@ public sealed class PageContent
     /// </summary>
     [JsonPropertyName("hierarchy")]
     public PageHierarchy? Hierarchy { get; set; }
+
+    /// <summary>
+    /// Whether this page is blank (contains no meaningful content).
+    /// </summary>
+    [JsonPropertyName("is_blank")]
+    public bool? IsBlank { get; set; }
 }
 
 /// <summary>
@@ -1770,6 +1776,12 @@ public sealed class PageInfo
     /// </summary>
     [JsonPropertyName("hidden")]
     public bool? Hidden { get; set; }
+
+    /// <summary>
+    /// Whether this page is blank (contains no meaningful content).
+    /// </summary>
+    [JsonPropertyName("is_blank")]
+    public bool? IsBlank { get; set; }
 }
 
 /// <summary>

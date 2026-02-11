@@ -449,6 +449,11 @@ public class PagesExtractionTests
             // Check required fields
             Assert.True(page.PageNumber > 0, "Page must have a valid page number");
             Assert.NotNull(page.Content);
+            // Verify IsBlank is accessible (null means not determined)
+            if (page.IsBlank.HasValue)
+            {
+                Assert.IsType<bool>(page.IsBlank.Value);
+            }
         }
     }
 

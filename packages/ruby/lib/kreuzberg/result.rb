@@ -140,14 +140,15 @@ module Kreuzberg
     #   @return [Array<Image>] Images on this page
     # @!attribute [r] hierarchy
     #   @return [PageHierarchy, nil] Hierarchy information for the page
-    PageContent = Struct.new(:page_number, :content, :tables, :images, :hierarchy, keyword_init: true) do
+    PageContent = Struct.new(:page_number, :content, :tables, :images, :hierarchy, :is_blank, keyword_init: true) do
       def to_h
         {
           page_number: page_number,
           content: content,
           tables: tables.map(&:to_h),
           images: images.map(&:to_h),
-          hierarchy: hierarchy&.to_h
+          hierarchy: hierarchy&.to_h,
+          is_blank: is_blank
         }
       end
     end
@@ -542,7 +543,8 @@ module Kreuzberg
           content: page_hash['content'],
           tables: parse_tables(page_hash['tables']),
           images: parse_images(page_hash['images']),
-          hierarchy: parse_page_hierarchy(page_hash['hierarchy'])
+          hierarchy: parse_page_hierarchy(page_hash['hierarchy']),
+          is_blank: page_hash['is_blank']
         )
       end
     end

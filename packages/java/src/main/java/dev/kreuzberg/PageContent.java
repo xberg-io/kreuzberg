@@ -24,20 +24,23 @@ import java.util.Optional;
  *            images found on this page
  * @param hierarchy
  *            hierarchy information for the page, or null
+ * @param isBlank
+ *            whether this page is blank, or null
  */
 public record PageContent(@JsonProperty("page_number") int pageNumber, @JsonProperty("content") String content,
 		@JsonDeserialize(contentAs = Table.class) @JsonProperty("tables") List<Table> tables,
 		@JsonDeserialize(contentAs = ExtractedImage.class) @JsonProperty("images") List<ExtractedImage> images,
-		@JsonProperty("hierarchy") PageHierarchy hierarchy) {
+		@JsonProperty("hierarchy") PageHierarchy hierarchy, @JsonProperty("is_blank") Boolean isBlank) {
 	@JsonCreator
 	public PageContent(@JsonProperty("page_number") int pageNumber, @JsonProperty("content") String content,
 			@JsonProperty("tables") List<Table> tables, @JsonProperty("images") List<ExtractedImage> images,
-			@JsonProperty("hierarchy") PageHierarchy hierarchy) {
+			@JsonProperty("hierarchy") PageHierarchy hierarchy, @JsonProperty("is_blank") Boolean isBlank) {
 		this.pageNumber = pageNumber;
 		this.content = content != null ? content : "";
 		this.tables = tables != null ? Collections.unmodifiableList(tables) : List.of();
 		this.images = images != null ? Collections.unmodifiableList(images) : List.of();
 		this.hierarchy = hierarchy;
+		this.isBlank = isBlank;
 	}
 
 	/**
@@ -47,5 +50,14 @@ public record PageContent(@JsonProperty("page_number") int pageNumber, @JsonProp
 	 */
 	public Optional<PageHierarchy> getHierarchy() {
 		return Optional.ofNullable(hierarchy);
+	}
+
+	/**
+	 * Get whether this page is blank (contains no meaningful content).
+	 *
+	 * @return true if blank, false otherwise, empty if not applicable
+	 */
+	public Optional<Boolean> getIsBlank() {
+		return Optional.ofNullable(isBlank);
 	}
 }

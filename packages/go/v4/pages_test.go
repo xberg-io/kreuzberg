@@ -148,6 +148,13 @@ func TestPageContentStructureValidation(t *testing.T) {
 		if page.Content == "" {
 			t.Logf("Page %d: Content is empty (allowed for blank pages)", idx)
 		}
+
+		// Validate IsBlank field exists (should be nil or a bool pointer)
+		if page.IsBlank != nil {
+			t.Logf("Page %d: IsBlank = %v", idx, *page.IsBlank)
+		} else {
+			t.Logf("Page %d: IsBlank is nil (allowed)", idx)
+		}
 	}
 }
 

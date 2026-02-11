@@ -436,6 +436,12 @@ func assertPages(t *testing.T, result *kreuzberg.ExtractionResult, minCount, exa
 	if exactCount != nil && count != *exactCount {
 		t.Fatalf("expected exactly %d pages, found %d", *exactCount, count)
 	}
+	for i, page := range result.Pages {
+		if page.IsBlank != nil {
+			_ = *page.IsBlank // validate it's a valid bool pointer
+		}
+		_ = i
+	}
 }
 
 func assertElements(t *testing.T, result *kreuzberg.ExtractionResult, minCount *int, typesInclude []string) {

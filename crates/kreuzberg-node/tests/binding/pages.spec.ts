@@ -243,6 +243,8 @@ describe("Pages Extraction (Node.js Bindings)", () => {
 				expect(page).toHaveProperty("content");
 				expect(page).toHaveProperty("tables");
 				expect(page).toHaveProperty("images");
+				// isBlank should be a boolean or null/undefined
+				expect(page.isBlank === undefined || page.isBlank === null || typeof page.isBlank === "boolean").toBe(true);
 			}
 		});
 
@@ -329,6 +331,7 @@ describe("Pages Extraction (Node.js Bindings)", () => {
 				expect(typeof page.content).toBe("string");
 				expect(Array.isArray(page.tables)).toBe(true);
 				expect(Array.isArray(page.images)).toBe(true);
+				expect(page.isBlank === undefined || page.isBlank === null || typeof page.isBlank === "boolean").toBe(true);
 			};
 
 			for (const page of result.pages) {

@@ -587,6 +587,8 @@ export interface PageContent {
 	images?: ExtractedImage[];
 	/** Hierarchy information for the page */
 	hierarchy?: PageHierarchy | null;
+	/** Whether this page is blank (contains no meaningful content) */
+	isBlank?: boolean;
 }
 
 /**

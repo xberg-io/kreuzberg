@@ -142,7 +142,7 @@ pub fn extract_text_and_metadata_from_pdf_document(
     let page_config = extraction_config.and_then(|c| c.pages.as_ref());
     let (text, boundaries, page_contents) = extract_text_from_pdf_document(document, page_config, extraction_config)?;
 
-    let metadata = crate::pdf::metadata::extract_metadata_from_document_impl(document, boundaries.as_deref())?;
+    let metadata = crate::pdf::metadata::extract_metadata_from_document_impl(document, boundaries.as_deref(), &text)?;
 
     Ok((text, boundaries, page_contents, metadata))
 }
@@ -395,12 +395,14 @@ fn extract_text_lazy_with_tracking(
                 None
             };
 
+            let is_blank = Some(crate::extraction::blank_detection::is_page_text_blank(&page_text_ref));
             pages.push(PageContent {
                 page_number,
                 content: page_text_ref.to_owned(),
                 tables: Vec::new(),
                 images: Vec::new(),
                 hierarchy,
+                is_blank,
             });
         }
 

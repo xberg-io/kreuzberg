@@ -47,5 +47,12 @@ pub(crate) fn assign_tables_and_images_to_pages(
         }
     }
 
+    // Refine is_blank: pages that gained tables or images are not blank
+    for page in &mut updated_pages {
+        if !page.tables.is_empty() || !page.images.is_empty() {
+            page.is_blank = Some(false);
+        }
+    }
+
     Some(updated_pages)
 }

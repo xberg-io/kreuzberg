@@ -847,6 +847,8 @@ export interface PageInfo {
 	tableCount?: number | null;
 	/** Whether this page is hidden (e.g., in presentations) */
 	hidden?: boolean | null;
+	/** Whether this page is blank (contains no meaningful content) */
+	isBlank?: boolean | null;
 }
 
 /**
@@ -963,6 +965,9 @@ export interface PageContent {
 
 	/** Images found and extracted from this page */
 	images: ExtractedImage[];
+
+	/** Whether this page is blank (contains no meaningful content) */
+	isBlank?: boolean | null;
 }
 
 /**

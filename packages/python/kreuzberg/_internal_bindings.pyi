@@ -1403,6 +1403,7 @@ class PageInfo(TypedDict, total=False):
     image_count: int | None
     table_count: int | None
     hidden: bool | None
+    is_blank: bool | None
 
 class PageStructure(TypedDict, total=False):
     total_count: int
@@ -1780,6 +1781,7 @@ class PageContent(TypedDict):
     content: str
     tables: list[ExtractedTable]
     images: list[ExtractedImage]
+    is_blank: bool | None
 
 class ExtractedTable:
     cells: list[list[str]]

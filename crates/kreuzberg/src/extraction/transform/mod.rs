@@ -298,6 +298,7 @@ mod tests {
                             },
                         ],
                     }),
+                    is_blank: None,
                 },
                 PageContent {
                     page_number: 2,
@@ -305,6 +306,7 @@ mod tests {
                     tables: vec![],
                     images: vec![],
                     hierarchy: None,
+                    is_blank: None,
                 },
             ]),
             elements: None,
@@ -394,6 +396,7 @@ mod tests {
                 tables: vec![Arc::new(table)],
                 images: vec![Arc::new(image)],
                 hierarchy: None,
+                is_blank: None,
             }]),
             elements: None,
             ocr_elements: None,

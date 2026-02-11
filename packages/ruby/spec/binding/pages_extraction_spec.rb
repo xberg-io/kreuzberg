@@ -333,6 +333,8 @@ RSpec.describe 'Pages Extraction' do
       result.pages.each do |page|
         expect(page.page_number).to be > 0
         expect(page.content).not_to be_nil
+        # is_blank should be nil or a boolean
+        expect(page.is_blank).to be_nil.or be(true).or be(false) if page.respond_to?(:is_blank)
       end
     end
 

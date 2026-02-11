@@ -64,6 +64,13 @@ final class PagesExtractionTest extends TestCase
             $this->assertTrue(property_exists($page, 'pageNumber'));
             $this->assertIsString($page->content);
             $this->assertIsInt($page->pageNumber);
+            // isBlank should be null or a boolean
+            if (property_exists($page, 'isBlank')) {
+                $this->assertTrue(
+                    $page->isBlank === null || is_bool($page->isBlank),
+                    'isBlank should be null or bool',
+                );
+            }
         }
     }
 

@@ -60,12 +60,14 @@ impl ContentBuilder {
                 page_number: slide_number as usize,
             });
 
+            let is_blank = Some(crate::extraction::blank_detection::is_page_text_blank(&slide_content));
             self.page_contents.push(crate::types::PageContent {
                 page_number: slide_number as usize,
                 content: slide_content,
                 tables: Vec::new(),
                 images: Vec::new(),
                 hierarchy: None,
+                is_blank,
             });
         }
     }

@@ -459,6 +459,11 @@ export const chunkAssertions = {
         if (typeof minCount === "number") {
             expect(pages.length).toBeGreaterThanOrEqual(minCount);
         }
+        for (const page of pages) {
+            const p = page as Record<string, unknown>;
+            const isBlank = p["isBlank"];
+            expect(isBlank === undefined || isBlank === null || typeof isBlank === "boolean").toBe(true);
+        }
     },
 
     assertElements(

@@ -21,11 +21,13 @@ public final class PageInfo {
 	private final Integer imageCount;
 	private final Integer tableCount;
 	private final Boolean hidden;
+	private final Boolean isBlank;
 
 	@JsonCreator
 	public PageInfo(@JsonProperty("number") long number, @JsonProperty("title") String title,
 			@JsonProperty("dimensions") double[] dimensions, @JsonProperty("image_count") Integer imageCount,
-			@JsonProperty("table_count") Integer tableCount, @JsonProperty("hidden") Boolean hidden) {
+			@JsonProperty("table_count") Integer tableCount, @JsonProperty("hidden") Boolean hidden,
+			@JsonProperty("is_blank") Boolean isBlank) {
 		if (number < 1) {
 			throw new IllegalArgumentException("page number must be positive");
 		}
@@ -38,6 +40,7 @@ public final class PageInfo {
 		this.imageCount = imageCount;
 		this.tableCount = tableCount;
 		this.hidden = hidden;
+		this.isBlank = isBlank;
 	}
 
 	/**
@@ -123,6 +126,15 @@ public final class PageInfo {
 		return hidden != null ? Optional.of(!hidden) : Optional.empty();
 	}
 
+	/**
+	 * Get whether this page is blank (contains no meaningful content).
+	 *
+	 * @return true if blank, false otherwise, empty if not applicable
+	 */
+	public Optional<Boolean> isBlank() {
+		return Optional.ofNullable(isBlank);
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
@@ -134,18 +146,20 @@ public final class PageInfo {
 		PageInfo other = (PageInfo) obj;
 		return number == other.number && Objects.equals(title, other.title)
 				&& java.util.Arrays.equals(dimensions, other.dimensions) && Objects.equals(imageCount, other.imageCount)
-				&& Objects.equals(tableCount, other.tableCount) && Objects.equals(hidden, other.hidden);
+				&& Objects.equals(tableCount, other.tableCount) && Objects.equals(hidden, other.hidden)
+				&& Objects.equals(isBlank, other.isBlank);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(number, title, java.util.Arrays.hashCode(dimensions), imageCount, tableCount, hidden);
+		return Objects.hash(number, title, java.util.Arrays.hashCode(dimensions), imageCount, tableCount, hidden,
+				isBlank);
 	}
 
 	@Override
 	public String toString() {
 		return "PageInfo{" + "number=" + number + ", title=" + title + ", dimensions="
 				+ java.util.Arrays.toString(dimensions) + ", imageCount=" + imageCount + ", tableCount=" + tableCount
-				+ ", hidden=" + hidden + '}';
+				+ ", hidden=" + hidden + ", isBlank=" + isBlank + '}';
 	}
 }

@@ -165,7 +165,19 @@ fn extract_pptx_from_container<R: std::io::Read + std::io::Seek>(
         total_table_count += slide.table_count();
     }
 
-    let (content, boundaries, page_contents) = content_builder.build();
+    let (content, boundaries, mut page_contents) = content_builder.build();
+
+    // Refine is_blank: slides that have images are not blank
+    if let Some(ref mut pcs) = page_contents {
+        for pc in pcs.iter_mut() {
+            if extracted_images
+                .iter()
+                .any(|img| img.page_number == Some(pc.page_number))
+            {
+                pc.is_blank = Some(false);
+            }
+        }
+    }
 
     let page_structure = boundaries.as_ref().map(|bounds| crate::types::PageStructure {
         total_count: slide_count,
@@ -180,6 +192,7 @@ fn extract_pptx_from_container<R: std::io::Read + std::io::Seek>(
                     image_count: None,
                     table_count: None,
                     hidden: None,
+                    is_blank: pc.is_blank,
                 })
                 .collect()
         }),

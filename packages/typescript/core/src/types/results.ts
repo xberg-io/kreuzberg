@@ -245,6 +245,7 @@ export interface PageContent {
 	tables: Table[];
 	images: ExtractedImage[];
 	hierarchy?: PageHierarchy;
+	isBlank?: boolean;
 }
 
 // ============================================================================

@@ -11,6 +11,7 @@ defmodule Kreuzberg.Page do
     * `:tables` - Tables found on this page
     * `:images` - Images found on this page
     * `:hierarchy` - Optional hierarchy information (heading levels and blocks)
+    * `:is_blank` - Whether the page is blank (nil if unknown)
 
   ## Examples
 
@@ -27,11 +28,13 @@ defmodule Kreuzberg.Page do
           content: String.t(),
           tables: list(Kreuzberg.Table.t()),
           images: list(Kreuzberg.Image.t()),
-          hierarchy: Kreuzberg.PageHierarchy.t() | nil
+          hierarchy: Kreuzberg.PageHierarchy.t() | nil,
+          is_blank: boolean() | nil
         }
 
   defstruct [
     :hierarchy,
+    :is_blank,
     page_number: 0,
     content: "",
     tables: [],
@@ -55,7 +58,8 @@ defmodule Kreuzberg.Page do
       content: data["content"] || "",
       tables: normalize_tables(data["tables"]),
       images: normalize_images(data["images"]),
-      hierarchy: normalize_hierarchy(data["hierarchy"])
+      hierarchy: normalize_hierarchy(data["hierarchy"]),
+      is_blank: data["is_blank"]
     }
   end
 
@@ -73,7 +77,8 @@ defmodule Kreuzberg.Page do
         case page.hierarchy do
           nil -> nil
           h -> Kreuzberg.PageHierarchy.to_map(h)
-        end
+        end,
+      "is_blank" => page.is_blank
     }
   end
 

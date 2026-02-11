@@ -348,7 +348,8 @@ module Kreuzberg
     page_number: Integer,
     content: String,
     tables: Array[table_hash],
-    images: Array[image_hash]
+    images: Array[image_hash],
+    is_blank: bool?
   }
 
   type djot_content_hash = {
@@ -574,8 +575,9 @@ module Kreuzberg
       attr_reader tables: Array[Table]
       attr_reader images: Array[Image]?
       attr_reader hierarchy: PageHierarchy?
+      attr_reader is_blank: bool?
 
-      def initialize: (page_number: Integer, content: String, tables: Array[Table], images: Array[Image]?, hierarchy: PageHierarchy?) -> void
+      def initialize: (page_number: Integer, content: String, tables: Array[Table], images: Array[Image]?, hierarchy: PageHierarchy?, is_blank: bool?) -> void
       def to_h: () -> Hash[Symbol, untyped]
     end
 

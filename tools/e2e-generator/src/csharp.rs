@@ -546,6 +546,11 @@ public static class TestHelpers
         {
             throw new XunitException($"Expected at least {minCount.Value} pages, found {count}");
         }
+        foreach (var page in pages)
+        {
+            // IsBlank should be accessible as bool?
+            var _ = page.IsBlank;
+        }
     }
 
     public static void AssertElements(

@@ -55,6 +55,7 @@ defmodule Kreuzberg.PageInfo do
     * `:image_count` - Number of images on this page
     * `:table_count` - Number of tables on this page
     * `:hidden` - Whether this page is hidden
+    * `:is_blank` - Whether this page is blank
   """
 
   @derive Jason.Encoder
@@ -65,7 +66,8 @@ defmodule Kreuzberg.PageInfo do
           dimensions: {float(), float()} | nil,
           image_count: non_neg_integer() | nil,
           table_count: non_neg_integer() | nil,
-          hidden: boolean() | nil
+          hidden: boolean() | nil,
+          is_blank: boolean() | nil
         }
 
   defstruct [
@@ -74,6 +76,7 @@ defmodule Kreuzberg.PageInfo do
     :image_count,
     :table_count,
     :hidden,
+    :is_blank,
     number: 0
   ]
 
@@ -85,7 +88,8 @@ defmodule Kreuzberg.PageInfo do
       dimensions: normalize_dimensions(data["dimensions"]),
       image_count: data["image_count"],
       table_count: data["table_count"],
-      hidden: data["hidden"]
+      hidden: data["hidden"],
+      is_blank: data["is_blank"]
     }
   end
 
@@ -101,7 +105,8 @@ defmodule Kreuzberg.PageInfo do
         end,
       "image_count" => info.image_count,
       "table_count" => info.table_count,
-      "hidden" => info.hidden
+      "hidden" => info.hidden,
+      "is_blank" => info.is_blank
     }
   end
 

@@ -322,6 +322,7 @@ impl DocumentExtractor for DocxExtractor {
                             image_count: None,
                             table_count: None,
                             hidden: None,
+                            is_blank: None,
                         })
                         .collect(),
                 ),

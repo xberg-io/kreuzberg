@@ -437,6 +437,11 @@ export const assertions = {
         if (typeof minCount === "number") {
             assertEquals(pages.length >= minCount, true, `Expected at least ${minCount} pages, got ${pages.length}`);
         }
+        for (const page of pages) {
+            const p = page as Record<string, unknown>;
+            const isBlank = p["isBlank"];
+            assertEquals(isBlank === undefined || isBlank === null || typeof isBlank === "boolean", true, "isBlank should be undefined, null, or boolean");
+        }
     },
 
     assertElements(

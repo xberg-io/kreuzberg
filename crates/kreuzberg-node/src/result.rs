@@ -33,6 +33,7 @@ pub struct JsPageContent {
     #[serde(skip)]
     pub images: Vec<JsExtractedImage>,
     pub hierarchy: Option<JsPageHierarchy>,
+    pub is_blank: Option<bool>,
 }
 
 #[napi(object)]
@@ -260,6 +261,7 @@ impl TryFrom<RustExtractionResult> for JsExtractionResult {
                     tables: page_tables,
                     images: page_images,
                     hierarchy,
+                    is_blank: page.is_blank,
                 });
             }
             Some(js_pages)

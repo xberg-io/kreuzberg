@@ -444,6 +444,13 @@ public final class E2EHelpers {
                 assertTrue(count == exactCount,
                         String.format("Expected exactly %d pages, got %d", exactCount, count));
             }
+            if (pages != null) {
+                for (var page : pages) {
+                    // isBlank should be accessible (Optional<Boolean>)
+                    var isBlank = page.getIsBlank();
+                    assertTrue(isBlank != null, "getIsBlank() should return non-null Optional");
+                }
+            }
         }
 
         public static void assertElements(
