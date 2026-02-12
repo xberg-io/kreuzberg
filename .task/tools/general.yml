@@ -43,3 +43,10 @@ tasks:
     cmds:
       - cmd: actionlint
         ignore_error: true
+
+  update:prek:
+    desc: Update prek (pre-commit) hooks to latest versions
+    cmds:
+      - echo "Updating prek hooks to latest versions..."
+      - prek autoupdate
+      - echo "Pre-commit hooks updated successfully"

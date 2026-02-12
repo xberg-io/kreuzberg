@@ -129,11 +129,13 @@ tasks:
       - python -c "import shutil, os; [shutil.rmtree(os.path.join(r, d), ignore_errors=True) for r, dirs, _ in os.walk('.') for d in dirs if d == '.steep']"
 
   update:
-    desc: Update Ruby dependencies
+    desc: Update Ruby dependencies to latest versions (including major versions)
     dir: packages/ruby
     cmds:
-      - echo "Updating Ruby dependencies..."
-      - "{{.BUNDLE}} update --all"
+      - echo "Updating Ruby dependencies to latest versions..."
+      - "{{.BUNDLE}} update --all --conservative=false"
+      - echo "Checking for remaining outdated dependencies..."
+      - "{{.BUNDLE}} outdated || true"
 
   e2e:generate:
     desc: Generate Ruby E2E tests from fixtures

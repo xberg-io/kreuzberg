@@ -104,10 +104,15 @@ tasks:
       - rm -rf deps
 
   update:
-    desc: Update Elixir dependencies
+    desc: Update Elixir dependencies to latest versions (including major versions)
     dir: packages/elixir
     cmds:
+      - echo "Updating Elixir dependencies to latest versions..."
+      - echo "Note: Elixir requires manual mix.exs edits for major version updates"
+      - mix hex.outdated
       - mix deps.update --all
+      - echo "Checking remaining outdated dependencies..."
+      - mix hex.outdated || true
 
   docs:
     desc: Generate Elixir documentation
