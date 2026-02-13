@@ -53,7 +53,7 @@ serde = { version = "1.0.228", features = ["derive"] }
 serde_json = { version = "1.0.149" }
 thiserror = "2.0.18"
 anyhow = "1.0"
-libc = "0.2.181"
+libc = "0.2.182"
 async-trait = "0.1.89"
 tracing = "0.1"
 ahash = "0.8.12"
@@ -67,10 +67,10 @@ html-to-markdown-rs = { version = "2.24.5", default-features = false }
 reqwest = { version = "0.13.2", default-features = false }
 image = { version = "0.25.9", default-features = false }
 clap = { version = "4.5", features = ["derive", "color", "suggestions"] }
-toml = "1.0.0"
+toml = "1.0.1"
 tempfile = "3.25.0"
 criterion = { version = "0.8", features = ["html_reports"] }
-lzma-rust2 = { version = "0.15.7" }
+lzma-rust2 = { version = "0.16.1" }
 getrandom = { version = "0.4.1", features = ["wasm_js"] }
 pdfium-render = { package = "kreuzberg-pdfium-render", path = "crates/kreuzberg-pdfium-render", version = "4.3" }
 

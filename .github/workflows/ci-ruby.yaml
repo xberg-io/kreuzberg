@@ -145,7 +145,7 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: "3.2"
-          bundler: "4.0.0"
+          bundler: "4.0.3"
           bundler-cache: false
           working-directory: packages/ruby
 
@@ -545,7 +545,7 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: "3.2"
-          bundler: "4.0.0"
+          bundler: "4.0.3"
           bundler-cache: false
           working-directory: packages/ruby
 
