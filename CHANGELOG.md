@@ -11,6 +11,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### Centralized Image OCR Processing
+- **Shared `process_images_with_ocr` function**: Extracted duplicated OCR processing logic from DOCX and PPTX extractors into `extraction::image_ocr` module, providing a single shared implementation for all document extractors.
+
+#### Jupyter Notebook Image Extraction
+- **Base64 image decoding**: Jupyter extractor now decodes embedded base64 image data (PNG, JPEG, GIF, WebP) from notebook cell outputs into `ExtractedImage` structs instead of emitting placeholder text.
+- **OCR on notebook images**: Extracted images are processed with OCR when configured, using the centralized `process_images_with_ocr` function.
+- **SVG handling**: SVG images in notebook outputs are handled as text content (not sent to raster OCR).
+
+#### Markdown Data URI Image Extraction
+- **Data URI image decoding**: Markdown extractor now decodes `data:image/...;base64,...` URIs into `ExtractedImage` structs with proper format detection (PNG, JPEG, GIF, WebP).
+- **OCR on embedded images**: Decoded data URI images are processed with OCR when configured.
+- **HTTP URLs preserved as text**: Non-data URIs (HTTP/HTTPS) are kept as `[Image: url]` text markers without attempting network access or filesystem traversal.
+
 #### PaddleOCR Multi-Language Support (#388)
 - **106+ language support via 12 script families**: PaddleOCR recognition models now cover english, chinese (simplified+traditional+japanese), latin, korean, east slavic (cyrillic), thai, greek, arabic, devanagari, tamil, telugu, and kannada script families.
 - **Per-family recognition model architecture**: Shared detection/classification models with per-family recognition models and dictionaries, downloaded on demand from HuggingFace (`Kreuzberg/paddleocr-onnx-models`).
@@ -38,7 +51,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Table formatting metadata**: Vertical merge (`v_merge`) handled correctly, `grid_span` for horizontal merging, `is_header` row detection.
 - **Drawing image placeholders**: `![alt](image_N)` placeholders in markdown output for embedded images.
 
-### Changed
 
 #### DOCX Extractor Performance & Code Quality
 - **Eliminated 3x code duplication**: Extracted `parse_docx_core()` helper to deduplicate parsing logic across tokio/non-tokio cfg branches.
@@ -49,6 +61,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`write!`/`writeln!` for string building**: Footnote definitions and image placeholders use `write!` to avoid intermediate String allocations.
 - **Safe element indexing**: `to_markdown()` uses `.get()` with `else { continue }` instead of direct indexing to prevent potential panics.
 - **Deduplicated document structure code**: Header/footer loops and footnote/endnote loops consolidated using iterators.
+
+### Fixed
+
+#### Extraction Quality Improvements
+- **LaTeX zero-arg command handling**: Added explicit skip list for 35 zero-argument commands (`\par`, `\noindent`, `\centering`, size commands, etc.). The catch-all handler no longer consumes the next `{...}` group as an argument, preventing silent text loss for unknown zero-arg commands.
+- **Structured data `is_text_field` false positives**: Changed from `.contains()` substring matching to exact equality on the leaf field name. Previously, "width" matched because it contains "id"; "valid" matched because it contains "id". Now only exact leaf name matches are considered.
+- **XML dead code in `Event::End` handler**: Removed unused variable allocation and discarded comparison (`let _ = popped == name_owned`), replaced with simple `element_stack.pop()`.
 
 ### Removed
 - **Dead code cleanup**: Removed unused `Document.lists` field, `ListItem` struct, `process_lists()` method, and `HeaderFooter::extract_text()` method.

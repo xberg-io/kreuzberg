@@ -98,6 +98,23 @@ func getWorkingDir() string {
 	return pwd
 }
 
+// determineOcrUsed checks extraction result metadata to determine if OCR was actually used.
+// Mirrors the native Rust adapter logic: OCR is used when format_type is "ocr",
+// or when format_type is "image" and OCR was enabled in config.
+func determineOcrUsed(meta map[string]any, ocrEnabled bool) bool {
+	if meta == nil {
+		return false
+	}
+	formatType, _ := meta["format_type"].(string)
+	if formatType == "ocr" {
+		return true
+	}
+	if formatType == "image" && ocrEnabled {
+		return true
+	}
+	return false
+}
+
 func boolPtr(v bool) *bool { return &v }
 
 func createConfig(ocrEnabled bool) *kz.ExtractionConfig {
@@ -151,7 +168,7 @@ func runServer(ocrEnabled bool) {
 			Content:          result.Content,
 			Metadata:         meta,
 			ExtractionTimeMs: elapsed,
-			OcrUsed:          ocrEnabled,
+			OcrUsed:          determineOcrUsed(meta, ocrEnabled),
 		}
 		mustEncodeNoNewline(p)
 		fmt.Println()
@@ -191,7 +208,7 @@ func extractSync(path string, ocrEnabled bool) (*payload, error) {
 		Content:          result.Content,
 		Metadata:         meta,
 		ExtractionTimeMs: elapsed,
-		OcrUsed:          ocrEnabled,
+		OcrUsed:          determineOcrUsed(meta, ocrEnabled),
 	}, nil
 }
 
@@ -228,7 +245,7 @@ func extractBatch(paths []string, ocrEnabled bool) (any, error) {
 			Metadata:         meta,
 			ExtractionTimeMs: totalMs,
 			BatchTotalTimeMs: totalMs,
-			OcrUsed:          ocrEnabled,
+			OcrUsed:          determineOcrUsed(meta, ocrEnabled),
 		}, nil
 	}
 
@@ -247,7 +264,7 @@ func extractBatch(paths []string, ocrEnabled bool) (any, error) {
 			Metadata:         meta,
 			ExtractionTimeMs: perMs,
 			BatchTotalTimeMs: totalMs,
-			OcrUsed:          ocrEnabled,
+			OcrUsed:          determineOcrUsed(meta, ocrEnabled),
 		})
 	}
 	return out, nil
@@ -298,7 +315,7 @@ func mustEncodeError(err error, ocrEnabled bool) {
 	errorMap := map[string]interface{}{
 		"error":               err.Error(),
 		"_extraction_time_ms": 0,
-		"_ocr_used":           ocrEnabled,
+		"_ocr_used":           false,
 	}
 	data, marshalErr := json.Marshal(errorMap)
 	if marshalErr != nil {

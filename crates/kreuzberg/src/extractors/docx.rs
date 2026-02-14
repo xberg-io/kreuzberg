@@ -21,9 +21,6 @@ use std::collections::HashMap;
 use std::io::Cursor;
 use std::sync::Arc;
 
-#[cfg(feature = "ocr")]
-use crate::ocr::OcrProcessor;
-
 /// High-performance DOCX extractor.
 ///
 /// This extractor provides:
@@ -41,69 +38,6 @@ impl DocxExtractor {
 impl Default for DocxExtractor {
     fn default() -> Self {
         Self::new()
-    }
-}
-
-impl DocxExtractor {
-    /// Process extracted images with OCR if configured (follows PPTX pattern).
-    #[cfg(all(feature = "ocr", feature = "tokio-runtime"))]
-    async fn process_images_with_ocr(
-        &self,
-        mut images: Vec<ExtractedImage>,
-        config: &ExtractionConfig,
-    ) -> Result<Vec<ExtractedImage>> {
-        if config.ocr.is_none() {
-            return Ok(images);
-        }
-
-        let ocr_config = config.ocr.as_ref().unwrap();
-        let tess_config = ocr_config.tesseract_config.as_ref().cloned().unwrap_or_default();
-        let output_format = config.output_format;
-
-        for image in &mut images {
-            let image_data = image.data.clone();
-            let tess_config_clone = tess_config.clone();
-            let span = tracing::Span::current();
-
-            let ocr_result = tokio::task::spawn_blocking(move || {
-                let _guard = span.entered();
-                let cache_dir = std::env::var("KREUZBERG_CACHE_DIR").ok().map(std::path::PathBuf::from);
-
-                let proc = OcrProcessor::new(cache_dir)?;
-                let ocr_tess_config: crate::ocr::types::TesseractConfig = (&tess_config_clone).into();
-                proc.process_image_with_format(&image_data, &ocr_tess_config, output_format)
-            })
-            .await
-            .map_err(|e| crate::KreuzbergError::Ocr {
-                message: format!("OCR task failed: {}", e),
-                source: None,
-            })?;
-
-            match ocr_result {
-                Ok(ocr_extraction) => {
-                    let extraction_result = ExtractionResult {
-                        content: ocr_extraction.content,
-                        mime_type: ocr_extraction.mime_type.into(),
-                        metadata: Metadata::default(),
-                        tables: vec![],
-                        detected_languages: None,
-                        chunks: None,
-                        images: None,
-                        djot_content: None,
-                        pages: None,
-                        elements: None,
-                        ocr_elements: None,
-                        document: None,
-                    };
-                    image.ocr_result = Some(Box::new(extraction_result));
-                }
-                Err(_) => {
-                    image.ocr_result = None;
-                }
-            }
-        }
-
-        Ok(images)
     }
 }
 
@@ -752,7 +686,7 @@ impl DocumentExtractor for DocxExtractor {
 
         // Run OCR on extracted images if configured
         #[cfg(all(feature = "ocr", feature = "tokio-runtime"))]
-        let extracted_images = self.process_images_with_ocr(extracted_images, config).await?;
+        let extracted_images = crate::extraction::image_ocr::process_images_with_ocr(extracted_images, config).await?;
 
         // Build PageContent from page boundaries
         let page_contents = {

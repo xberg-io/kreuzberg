@@ -75,6 +75,17 @@ function guessMimeType(filePath: string): string | null {
 	return MIME_MAP[ext] ?? null;
 }
 
+/**
+ * Determine if OCR was actually used based on extraction result metadata.
+ * Mirrors the native Rust adapter logic.
+ */
+function determineOcrUsed(metadata: Record<string, unknown>, ocrEnabled: boolean): boolean {
+	const formatType = (metadata?.format_type as string) || "";
+	if (formatType === "ocr") return true;
+	if (formatType === "image" && ocrEnabled) return true;
+	return false;
+}
+
 function createConfig(ocrEnabled: boolean): ExtractionConfig {
 	return {
 		useCache: false,
@@ -89,11 +100,12 @@ async function extractAsync(filePath: string, ocrEnabled: boolean): Promise<Extr
 	const result = await extractFile(filePath, mimeType, config);
 	const durationMs = performance.now() - start;
 
+	const metadata = (result.metadata as Record<string, unknown>) ?? {};
 	return {
 		content: result.content,
-		metadata: (result.metadata as Record<string, unknown>) ?? {},
+		metadata,
 		_extraction_time_ms: durationMs,
-		_ocr_used: ocrEnabled,
+		_ocr_used: determineOcrUsed(metadata, ocrEnabled),
 	};
 }
 
@@ -107,13 +119,16 @@ async function extractBatch(filePaths: string[], ocrEnabled: boolean): Promise<E
 
 	const perFileDurationMs = filePaths.length > 0 ? totalDurationMs / filePaths.length : 0;
 
-	return results.map((result) => ({
-		content: result.content,
-		metadata: (result.metadata as Record<string, unknown>) ?? {},
-		_extraction_time_ms: perFileDurationMs,
-		_batch_total_ms: totalDurationMs,
-		_ocr_used: ocrEnabled,
-	}));
+	return results.map((result) => {
+		const metadata = (result.metadata as Record<string, unknown>) ?? {};
+		return {
+			content: result.content,
+			metadata,
+			_extraction_time_ms: perFileDurationMs,
+			_batch_total_ms: totalDurationMs,
+			_ocr_used: determineOcrUsed(metadata, ocrEnabled),
+		};
+	});
 }
 
 async function runServer(ocrEnabled: boolean): Promise<void> {
@@ -138,7 +153,7 @@ async function runServer(ocrEnabled: boolean): Promise<void> {
 		} catch (err) {
 			const durationMs = performance.now() - start;
 			const error = err as Error;
-			console.log(JSON.stringify({ error: error.message, _extraction_time_ms: durationMs, _ocr_used: ocrEnabled }));
+			console.log(JSON.stringify({ error: error.message, _extraction_time_ms: durationMs, _ocr_used: false }));
 		}
 	}
 }

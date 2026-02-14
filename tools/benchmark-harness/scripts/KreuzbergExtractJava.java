@@ -113,12 +113,12 @@ public final class KreuzbergExtractJava {
                 Path path = Path.of(filePath);
                 ExtractionResult result = Kreuzberg.extractFile(path, BENCH_CONFIG);
                 double elapsedMs = (System.nanoTime() - start) / NANOS_IN_MILLISECOND;
-                String json = toJson(result, elapsedMs);
+                String json = toJson(result, elapsedMs, ocrEnabled);
                 System.out.println(json);
                 System.out.flush();
             } catch (Exception e) {
                 double elapsedMs = (System.nanoTime() - start) / NANOS_IN_MILLISECOND;
-                String errorJson = String.format("{\"error\":%s,\"_extraction_time_ms\":%.3f}",
+                String errorJson = String.format("{\"error\":%s,\"_extraction_time_ms\":%.3f,\"_ocr_used\":false}",
                         quote(fullMessage(e)), elapsedMs);
                 System.out.println(errorJson);
                 System.out.flush();
@@ -156,13 +156,13 @@ public final class KreuzbergExtractJava {
             double perFileMs = totalMs / Math.max(results.size(), 1);
 
             if (results.size() == 1) {
-                String json = toJsonWithBatch(results.get(0), perFileMs, totalMs);
+                String json = toJsonWithBatch(results.get(0), perFileMs, totalMs, ocrEnabled);
                 System.out.print(json);
             } else {
                 System.out.print("[");
                 for (int i = 0; i < results.size(); i++) {
                     if (i > 0) System.out.print(",");
-                    System.out.print(toJsonWithBatch(results.get(i), perFileMs, totalMs));
+                    System.out.print(toJsonWithBatch(results.get(i), perFileMs, totalMs, ocrEnabled));
                 }
                 System.out.print("]");
             }
@@ -216,11 +216,28 @@ public final class KreuzbergExtractJava {
         }
         double elapsedMs = (System.nanoTime() - start) / NANOS_IN_MILLISECOND;
 
-        String json = toJson(result, elapsedMs);
+        String json = toJson(result, elapsedMs, ocrEnabled);
         System.out.print(json);
     }
 
-    private static String toJson(ExtractionResult result, double elapsedMs) {
+    /**
+     * Determine if OCR was actually used based on extraction result metadata.
+     * Mirrors the native Rust adapter logic: OCR is used when format_type is "ocr",
+     * or when format_type is "image" and OCR was enabled in config.
+     */
+    private static boolean determineOcrUsed(ExtractionResult result, boolean ocrEnabled) {
+        Object formatTypeObj = result.getMetadata().getAdditional().get("format_type");
+        String formatType = formatTypeObj != null ? formatTypeObj.toString() : "";
+        if ("ocr".equals(formatType)) {
+            return true;
+        }
+        if ("image".equals(formatType) && ocrEnabled) {
+            return true;
+        }
+        return false;
+    }
+
+    private static String toJson(ExtractionResult result, double elapsedMs, boolean ocrEnabled) {
         StringBuilder builder = new StringBuilder();
         builder.append('{');
         builder.append("\"content\":").append(quote(result.getContent())).append(',');
@@ -230,11 +247,12 @@ public final class KreuzbergExtractJava {
         builder.append("\"date\":").append(optionalToJson(result.getMetadata().getModifiedAt())).append(',');
         builder.append("\"subject\":").append(optionalToJson(result.getMetadata().getSubject()));
         builder.append("},\"_extraction_time_ms\":").append(String.format("%.3f", elapsedMs));
+        builder.append(",\"_ocr_used\":").append(determineOcrUsed(result, ocrEnabled));
         builder.append('}');
         return builder.toString();
     }
 
-    private static String toJsonWithBatch(ExtractionResult result, double perFileMs, double batchTotalMs) {
+    private static String toJsonWithBatch(ExtractionResult result, double perFileMs, double batchTotalMs, boolean ocrEnabled) {
         StringBuilder builder = new StringBuilder();
         builder.append('{');
         builder.append("\"content\":").append(quote(result.getContent())).append(',');
@@ -242,6 +260,7 @@ public final class KreuzbergExtractJava {
         builder.append("\"mimeType\":").append(quote(result.getMimeType()));
         builder.append("},\"_extraction_time_ms\":").append(String.format("%.3f", perFileMs));
         builder.append(",\"_batch_total_ms\":").append(String.format("%.3f", batchTotalMs));
+        builder.append(",\"_ocr_used\":").append(determineOcrUsed(result, ocrEnabled));
         builder.append('}');
         return builder.toString();
     }

@@ -134,7 +134,7 @@ impl<'a> LatexParser<'a> {
         lines: &[&str],
         trimmed: &str,
         i: &mut usize,
-        skip_until_end: &mut Option<String>,
+        _skip_until_end: &mut Option<String>,
     ) -> bool {
         if !trimmed.contains("\\begin{") {
             return false;
@@ -163,7 +163,8 @@ impl<'a> LatexParser<'a> {
                 *i = new_i;
                 true
             }
-            "equation" | "align" | "gather" | "multline" => {
+            "equation" | "equation*" | "align" | "align*" | "gather" | "gather*" | "multline" | "multline*"
+            | "eqnarray" | "eqnarray*" | "math" | "displaymath" | "flalign" | "flalign*" | "cases" => {
                 let (env_content, new_i) = collect_environment(lines, *i, &env_name);
                 self.output.push_str("$$\\begin{");
                 self.output.push_str(&env_name);
@@ -175,26 +176,85 @@ impl<'a> LatexParser<'a> {
                 *i = new_i;
                 true
             }
+            // For all other environments, extract text content instead of dropping
             _ => {
-                *skip_until_end = Some(env_name);
-                false
+                let (env_content, new_i) = collect_environment(lines, *i, &env_name);
+                // Process content line by line to extract text
+                for line in env_content.lines() {
+                    let trimmed_line = line.trim();
+                    if trimmed_line.is_empty() || trimmed_line.starts_with('%') {
+                        continue;
+                    }
+                    // Skip nested \begin/\end markers
+                    if trimmed_line.contains("\\begin{") || trimmed_line.contains("\\end{") {
+                        continue;
+                    }
+                    // Extract caption text from figure/table environments
+                    if trimmed_line.contains("\\caption{") {
+                        if let Some(caption) = extract_braced(trimmed_line, "caption") {
+                            self.output.push_str(&process_line(&caption));
+                            self.output.push('\n');
+                        }
+                        continue;
+                    }
+                    let processed = process_line(trimmed_line);
+                    if !processed.is_empty() {
+                        self.output.push_str(&processed);
+                        self.output.push('\n');
+                    }
+                }
+                *i = new_i;
+                true
             }
         }
     }
 
     /// Processes section headings, display math, and regular content.
     fn process_sections_and_content(&mut self, trimmed: &str, lines: &[&str], i: &mut usize) {
-        if trimmed.starts_with("\\section{") {
-            if let Some(title) = extract_braced(trimmed, "section") {
+        if trimmed.starts_with("\\chapter{") || trimmed.starts_with("\\chapter*{") {
+            let cmd = if trimmed.starts_with("\\chapter*{") {
+                "chapter*"
+            } else {
+                "chapter"
+            };
+            if let Some(title) = extract_braced(trimmed, cmd) {
                 self.output.push_str(&format!("\n# {}\n\n", title));
             }
-        } else if trimmed.starts_with("\\subsection{") {
-            if let Some(title) = extract_braced(trimmed, "subsection") {
+        } else if trimmed.starts_with("\\section{") || trimmed.starts_with("\\section*{") {
+            let cmd = if trimmed.starts_with("\\section*{") {
+                "section*"
+            } else {
+                "section"
+            };
+            if let Some(title) = extract_braced(trimmed, cmd) {
+                self.output.push_str(&format!("\n# {}\n\n", title));
+            }
+        } else if trimmed.starts_with("\\subsection{") || trimmed.starts_with("\\subsection*{") {
+            let cmd = if trimmed.starts_with("\\subsection*{") {
+                "subsection*"
+            } else {
+                "subsection"
+            };
+            if let Some(title) = extract_braced(trimmed, cmd) {
                 self.output.push_str(&format!("## {}\n\n", title));
             }
-        } else if trimmed.starts_with("\\subsubsection{") {
-            if let Some(title) = extract_braced(trimmed, "subsubsection") {
+        } else if trimmed.starts_with("\\subsubsection{") || trimmed.starts_with("\\subsubsection*{") {
+            let cmd = if trimmed.starts_with("\\subsubsection*{") {
+                "subsubsection*"
+            } else {
+                "subsubsection"
+            };
+            if let Some(title) = extract_braced(trimmed, cmd) {
                 self.output.push_str(&format!("### {}\n\n", title));
+            }
+        } else if trimmed.starts_with("\\paragraph{") || trimmed.starts_with("\\paragraph*{") {
+            let cmd = if trimmed.starts_with("\\paragraph*{") {
+                "paragraph*"
+            } else {
+                "paragraph"
+            };
+            if let Some(title) = extract_braced(trimmed, cmd) {
+                self.output.push_str(&format!("#### {}\n\n", title));
             }
         } else if trimmed.starts_with("\\[") {
             // Display math mode

@@ -58,8 +58,8 @@ impl Default for JsonExtractionConfig {
     fn default() -> Self {
         Self {
             extract_schema: false,
-            max_depth: 10,
-            array_item_limit: 100,
+            max_depth: 20,
+            array_item_limit: 500,
             include_type_info: false,
             flatten_nested_objects: true,
             custom_text_field_patterns: Vec::new(),
@@ -76,6 +76,37 @@ const TEXT_FIELD_KEYWORDS: &[&str] = &[
     "body",
     "text",
     "message",
+    "payload",
+    "data",
+    "properties",
+    "metadata",
+    "value",
+    "result",
+    "summary",
+    "label",
+    "comment",
+    "note",
+    "info",
+    "spec",
+    "status",
+    "kind",
+    "type",
+    "key",
+    "id",
+    "url",
+    "path",
+    "author",
+    "email",
+    "address",
+    "version",
+    "tag",
+    "category",
+    "caption",
+    "heading",
+    "abstract",
+    "readme",
+    "changelog",
+    "license",
 ];
 
 pub fn parse_json(data: &[u8], config: Option<JsonExtractionConfig>) -> Result<StructuredDataResult> {
@@ -223,16 +254,24 @@ fn extract_from_json_value(
 }
 
 fn is_text_field(key: &str, custom_patterns: &[String]) -> bool {
-    let key_lower = key.to_lowercase();
+    // Extract leaf field name (last dot-separated segment)
+    let leaf = key.rsplit('.').next().unwrap_or(key);
+    // Strip array index suffix like "[0]"
+    let leaf = if let Some(bracket_pos) = leaf.find('[') {
+        &leaf[..bracket_pos]
+    } else {
+        leaf
+    };
+    let leaf_lower = leaf.to_lowercase();
 
     for keyword in TEXT_FIELD_KEYWORDS {
-        if key_lower.contains(keyword) {
+        if leaf_lower == *keyword {
             return true;
         }
     }
 
     for pattern in custom_patterns {
-        if key_lower.contains(&pattern.to_lowercase()) {
+        if leaf_lower == pattern.to_lowercase() {
             return true;
         }
     }
@@ -465,8 +504,14 @@ mod tests {
         assert!(is_text_field("title", &[]));
         assert!(is_text_field("user.name", &[]));
         assert!(is_text_field("description", &[]));
-        assert!(!is_text_field("id", &[]));
+        assert!(is_text_field("id", &[]));
+        assert!(is_text_field("summary", &[]));
+        assert!(is_text_field("metadata.label", &[]));
         assert!(!is_text_field("count", &[]));
+        assert!(!is_text_field("offset", &[]));
+        // Exact match means "width" no longer matches just because it contains "id" substring
+        assert!(!is_text_field("width", &[]));
+        assert!(!is_text_field("valid", &[]));
     }
 
     #[test]

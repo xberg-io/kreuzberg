@@ -36,6 +36,24 @@ use Kreuzberg\Exceptions\KreuzbergException;
 define('DEBUG', getenv('KREUZBERG_BENCHMARK_DEBUG') === 'true');
 
 /**
+ * Determine if OCR was actually used based on extraction result metadata.
+ * Mirrors the native Rust adapter logic: OCR is used when format_type is "ocr",
+ * or when format_type is "image" and OCR was enabled in config.
+ */
+function determine_ocr_used(array|object $metadata, bool $ocrEnabled): bool
+{
+    $meta = (array)$metadata;
+    $formatType = $meta['format_type'] ?? '';
+    if ($formatType === 'ocr') {
+        return true;
+    }
+    if ($formatType === 'image' && $ocrEnabled) {
+        return true;
+    }
+    return false;
+}
+
+/**
  * Log debug messages to stderr
  */
 function debug_log(string $message): void
@@ -78,11 +96,12 @@ function extract_sync(string $filePath, ?ExtractionConfig $config = null, bool $
     debug_log("Content length: " . strlen($result->content) . " characters");
     debug_log("Result has metadata: " . ($result->metadata !== null ? 'true' : 'false'));
 
+    $metadata = $result->metadata ?? [];
     $payload = [
         'content' => $result->content,
-        'metadata' => $result->metadata ?? [],
+        'metadata' => $metadata,
         '_extraction_time_ms' => $durationMs,
-        '_ocr_used' => $ocrEnabled,
+        '_ocr_used' => determine_ocr_used($metadata, $ocrEnabled),
     ];
 
     debug_log("Output JSON size: " . strlen(json_encode($payload)) . " bytes");
@@ -128,12 +147,13 @@ function extract_batch(array $filePaths, ?ExtractionConfig $config = null, bool 
     $resultsWithTiming = [];
     foreach ($results as $idx => $result) {
         debug_log("  Result[{$idx}] - content length: " . strlen($result->content) . ", has metadata: " . ($result->metadata !== null ? 'true' : 'false'));
+        $metadata = $result->metadata ?? [];
         $resultsWithTiming[] = [
             'content' => $result->content,
-            'metadata' => $result->metadata ?? [],
+            'metadata' => $metadata,
             '_extraction_time_ms' => $perFileDurationMs,
             '_batch_total_ms' => $totalDurationMs,
-            '_ocr_used' => $ocrEnabled,
+            '_ocr_used' => determine_ocr_used($metadata, $ocrEnabled),
         ];
     }
 
@@ -171,11 +191,12 @@ function run_server(?ExtractionConfig $config = null, bool $ocrEnabled = false):
             $result = Kreuzberg\extract_file($filePath, null, $config);
             $durationMs = (microtime(true) - $start) * 1000.0;
 
+            $metadata = $result->metadata ?? [];
             $payload = [
                 'content' => $result->content,
-                'metadata' => $result->metadata ?? [],
+                'metadata' => $metadata,
                 '_extraction_time_ms' => $durationMs,
-                '_ocr_used' => $ocrEnabled,
+                '_ocr_used' => determine_ocr_used($metadata, $ocrEnabled),
             ];
 
             echo json_encode($payload, JSON_THROW_ON_ERROR) . "\n";
@@ -184,7 +205,7 @@ function run_server(?ExtractionConfig $config = null, bool $ocrEnabled = false):
             $errorPayload = [
                 'error' => $e->getMessage(),
                 '_extraction_time_ms' => 0,
-                '_ocr_used' => $ocrEnabled,
+                '_ocr_used' => false,
             ];
             echo json_encode($errorPayload, JSON_THROW_ON_ERROR) . "\n";
             fflush(STDOUT);

@@ -24,6 +24,20 @@ from kreuzberg import (
 )
 
 
+def _determine_ocr_used(metadata: dict[str, Any], ocr_enabled: bool) -> bool:
+    """Determine if OCR was actually used based on extraction result metadata.
+
+    Mirrors the native Rust adapter logic: OCR is used when format_type is "ocr",
+    or when format_type is "image" and OCR was enabled in config.
+    """
+    format_type = (metadata or {}).get("format_type", "")
+    if format_type == "ocr":
+        return True
+    if format_type == "image" and ocr_enabled:
+        return True
+    return False
+
+
 def extract_sync(file_path: str, ocr_enabled: bool) -> dict[str, Any]:
     """Extract using synchronous API."""
     # Use minimal config with cache disabled for benchmarking
@@ -35,11 +49,12 @@ def extract_sync(file_path: str, ocr_enabled: bool) -> dict[str, Any]:
     result = extract_file_sync(file_path, config=config)
     duration_ms = (time.perf_counter() - start) * 1000.0
 
+    metadata = result.metadata or {}
     return {
         "content": result.content,
-        "metadata": result.metadata or {},
+        "metadata": metadata,
         "_extraction_time_ms": duration_ms,
-        "_ocr_used": ocr_enabled,
+        "_ocr_used": _determine_ocr_used(metadata, ocr_enabled),
     }
 
 
@@ -54,11 +69,12 @@ async def extract_async(file_path: str, ocr_enabled: bool) -> dict[str, Any]:
     result = await extract_file(file_path, config=config)
     duration_ms = (time.perf_counter() - start) * 1000.0
 
+    metadata = result.metadata or {}
     return {
         "content": result.content,
-        "metadata": result.metadata or {},
+        "metadata": metadata,
         "_extraction_time_ms": duration_ms,
-        "_ocr_used": ocr_enabled,
+        "_ocr_used": _determine_ocr_used(metadata, ocr_enabled),
     }
 
 
@@ -75,16 +91,17 @@ def extract_batch_sync(file_paths: list[str], ocr_enabled: bool) -> list[dict[st
 
     per_file_duration_ms = total_duration_ms / len(file_paths) if file_paths else 0
 
-    return [
-        {
+    output = []
+    for result in results:
+        metadata = result.metadata or {}
+        output.append({
             "content": result.content,
-            "metadata": result.metadata or {},
+            "metadata": metadata,
             "_extraction_time_ms": per_file_duration_ms,
             "_batch_total_ms": total_duration_ms,
-            "_ocr_used": ocr_enabled,
-        }
-        for result in results
-    ]
+            "_ocr_used": _determine_ocr_used(metadata, ocr_enabled),
+        })
+    return output
 
 
 def run_server(ocr_enabled: bool) -> None:
@@ -101,7 +118,7 @@ def run_server(ocr_enabled: bool) -> None:
             print(json.dumps(payload), flush=True)
         except Exception as e:
             duration_ms = (time.perf_counter() - start) * 1000.0
-            print(json.dumps({"error": str(e), "_extraction_time_ms": duration_ms, "_ocr_used": ocr_enabled}), flush=True)
+            print(json.dumps({"error": str(e), "_extraction_time_ms": duration_ms, "_ocr_used": False}), flush=True)
 
 
 def main() -> None:

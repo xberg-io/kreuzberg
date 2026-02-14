@@ -40,6 +40,9 @@ pub mod ooxml_constants;
 #[cfg(feature = "office")]
 pub mod image_format;
 
+#[cfg(all(feature = "ocr", feature = "tokio-runtime"))]
+pub mod image_ocr;
+
 #[cfg(feature = "office")]
 pub mod ppt;
 

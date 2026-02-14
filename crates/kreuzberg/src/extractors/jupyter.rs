@@ -16,15 +16,22 @@ use crate::core::config::ExtractionConfig;
 #[cfg(feature = "office")]
 use crate::plugins::{DocumentExtractor, Plugin};
 #[cfg(feature = "office")]
-use crate::types::{ExtractionResult, Metadata};
+use crate::types::{ExtractedImage, ExtractionResult, Metadata};
 #[cfg(feature = "office")]
 use ahash::AHashMap;
 #[cfg(feature = "office")]
 use async_trait::async_trait;
 #[cfg(feature = "office")]
+use base64::Engine;
+#[cfg(feature = "office")]
+use bytes::Bytes;
+#[cfg(feature = "office")]
 use serde_json::{Value, json};
 #[cfg(feature = "office")]
 use std::borrow::Cow;
+
+#[cfg(feature = "office")]
+type NotebookContent = (String, AHashMap<Cow<'static, str>, Value>, Vec<ExtractedImage>);
 
 /// Jupyter Notebook extractor.
 ///
@@ -44,12 +51,13 @@ impl JupyterExtractor {
     }
 
     /// Extract content from a Jupyter notebook.
-    fn extract_notebook(content: &[u8]) -> Result<(String, AHashMap<Cow<'static, str>, Value>)> {
+    fn extract_notebook(content: &[u8]) -> Result<NotebookContent> {
         let notebook: Value = serde_json::from_slice(content)
             .map_err(|e| crate::KreuzbergError::parsing(format!("Failed to parse JSON: {}", e)))?;
 
         let mut extracted_content = String::new();
         let mut metadata = AHashMap::new();
+        let mut images = Vec::new();
 
         if let Some(notebook_metadata) = notebook.get("metadata").and_then(|m| m.as_object()) {
             if let Some(kernelspec) = notebook_metadata.get("kernelspec")
@@ -76,11 +84,11 @@ impl JupyterExtractor {
 
         if let Some(cells) = notebook.get("cells").and_then(|c| c.as_array()) {
             for (cell_idx, cell) in cells.iter().enumerate() {
-                Self::extract_cell(cell, cell_idx, &mut extracted_content, &mut metadata)?;
+                Self::extract_cell(cell, cell_idx, &mut extracted_content, &mut metadata, &mut images)?;
             }
         }
 
-        Ok((extracted_content, metadata))
+        Ok((extracted_content, metadata, images))
     }
 
     /// Extract content from a single cell.
@@ -89,6 +97,7 @@ impl JupyterExtractor {
         cell_idx: usize,
         content: &mut String,
         _metadata: &mut AHashMap<Cow<'static, str>, Value>,
+        images: &mut Vec<ExtractedImage>,
     ) -> Result<()> {
         let cell_type = cell.get("cell_type").and_then(|t| t.as_str()).unwrap_or("unknown");
 
@@ -115,7 +124,7 @@ impl JupyterExtractor {
 
         match cell_type {
             "markdown" => Self::extract_markdown_cell(cell, content)?,
-            "code" => Self::extract_code_cell(cell, content)?,
+            "code" => Self::extract_code_cell(cell, cell_idx, content, images)?,
             "raw" => Self::extract_raw_cell(cell, content)?,
             _ => {
                 content.push_str(&format!("Unknown cell type: {}\n", cell_type));
@@ -136,23 +145,31 @@ impl JupyterExtractor {
     }
 
     /// Extract code cell content and outputs.
-    fn extract_code_cell(cell: &Value, content: &mut String) -> Result<()> {
-        if let Some(exec_count) = cell.get("execution_count")
-            && !exec_count.is_null()
-        {
-            content.push_str(&format!("::: {{execution_count={}}}\n", exec_count));
+    fn extract_code_cell(
+        cell: &Value,
+        cell_idx: usize,
+        content: &mut String,
+        images: &mut Vec<ExtractedImage>,
+    ) -> Result<()> {
+        let exec_count = cell.get("execution_count").and_then(|e| e.as_u64());
+
+        if let Some(n) = exec_count {
+            content.push_str(&format!("In [{}]:\n", n));
         }
 
         if let Some(source) = cell.get("source") {
             let cell_text = Self::extract_source(source);
             content.push_str("```python\n");
             content.push_str(&cell_text);
+            if !cell_text.ends_with('\n') {
+                content.push('\n');
+            }
             content.push_str("```\n");
         }
 
         if let Some(outputs) = cell.get("outputs").and_then(|o| o.as_array()) {
             for output in outputs {
-                Self::extract_output(output, content)?;
+                Self::extract_output(output, cell_idx, content, images)?;
             }
         }
 
@@ -180,7 +197,12 @@ impl JupyterExtractor {
     }
 
     /// Extract output from a cell.
-    fn extract_output(output: &Value, content: &mut String) -> Result<()> {
+    fn extract_output(
+        output: &Value,
+        cell_idx: usize,
+        content: &mut String,
+        images: &mut Vec<ExtractedImage>,
+    ) -> Result<()> {
         let output_type = output.get("output_type").and_then(|t| t.as_str()).unwrap_or("unknown");
 
         content.push_str(&format!("::: {{.output .{}", output_type));
@@ -195,7 +217,9 @@ impl JupyterExtractor {
 
         match output_type {
             "stream" => Self::extract_stream_output(output, content)?,
-            "execute_result" | "display_data" => Self::extract_data_output(output, content)?,
+            "execute_result" | "display_data" => {
+                Self::extract_data_output(output, cell_idx, content, images)?;
+            }
             "error" => Self::extract_error_output(output, content)?,
             _ => {
                 content.push_str(&format!("Unknown output type: {}\n", output_type));
@@ -221,26 +245,88 @@ impl JupyterExtractor {
     }
 
     /// Extract data output (execute_result or display_data).
-    fn extract_data_output(output: &Value, content: &mut String) -> Result<()> {
-        if let Some(data) = output.get("data").and_then(|d| d.as_object()) {
-            let mime_types = vec![
-                "text/markdown",
-                "text/html",
-                "image/svg+xml",
-                "image/png",
-                "image/jpeg",
-                "application/json",
-                "text/plain",
-            ];
+    ///
+    /// Prioritizes text/plain for quality scoring. For raster image types,
+    /// decodes base64 data and populates the images collection.
+    fn extract_data_output(
+        output: &Value,
+        cell_idx: usize,
+        content: &mut String,
+        images: &mut Vec<ExtractedImage>,
+    ) -> Result<()> {
+        // Add Out [N]: prefix for execution results
+        if let Some(exec_count) = output.get("execution_count").and_then(|e| e.as_u64()) {
+            content.push_str(&format!("Out [{}]:\n", exec_count));
+        }
 
-            for mime_type in mime_types {
-                if let Some(mime_content) = data.get(mime_type) {
-                    content.push_str(&format!("MIME: {}\n", mime_type));
-                    let mime_text = Self::extract_source(mime_content);
-                    if !mime_text.is_empty() {
-                        content.push_str(&mime_text);
+        if let Some(data) = output.get("data").and_then(|d| d.as_object()) {
+            // Prefer text/plain first - it has the most readable tokens for quality scoring
+            if let Some(plain) = data.get("text/plain") {
+                let text = Self::extract_source(plain);
+                if !text.is_empty() {
+                    content.push_str(&text);
+                    if !text.ends_with('\n') {
                         content.push('\n');
                     }
+                }
+            }
+
+            // Then include markdown/HTML if no plain text was available
+            if !data.contains_key("text/plain") {
+                for mime_type in &["text/markdown", "text/html"] {
+                    if let Some(mime_content) = data.get(*mime_type) {
+                        let mime_text = Self::extract_source(mime_content);
+                        if !mime_text.is_empty() {
+                            content.push_str(&mime_text);
+                            if !mime_text.ends_with('\n') {
+                                content.push('\n');
+                            }
+                        }
+                    }
+                }
+            }
+
+            // For raster image types, extract actual base64-encoded image data
+            for mime_type in &["image/png", "image/jpeg", "image/gif", "image/webp"] {
+                if let Some(image_value) = data.get(*mime_type) {
+                    let base64_str = Self::extract_source(image_value);
+                    let cleaned = base64_str.replace(['\n', '\r'], "");
+                    if let Ok(decoded) = base64::engine::general_purpose::STANDARD.decode(&cleaned) {
+                        let format = match *mime_type {
+                            "image/png" => "png",
+                            "image/jpeg" => "jpeg",
+                            "image/gif" => "gif",
+                            "image/webp" => "webp",
+                            _ => "unknown",
+                        };
+                        images.push(ExtractedImage {
+                            data: Bytes::from(decoded),
+                            format: Cow::Borrowed(format),
+                            image_index: images.len(),
+                            page_number: Some(cell_idx + 1),
+                            width: None,
+                            height: None,
+                            colorspace: None,
+                            bits_per_component: None,
+                            is_mask: false,
+                            description: Some(format!("Notebook cell {} output", cell_idx)),
+                            ocr_result: None,
+                        });
+                        content.push_str(&format!("[Image: {}]\n", mime_type));
+                    }
+                }
+            }
+
+            // Handle SVG as text (not a raster image for OCR)
+            if data.contains_key("image/svg+xml") {
+                content.push_str("[Image: image/svg+xml]\n");
+            }
+
+            // Include JSON output as structured data
+            if let Some(json_content) = data.get("application/json") {
+                if let Ok(formatted) = serde_json::to_string_pretty(json_content) {
+                    content.push_str(&formatted);
+                    content.push('\n');
                 }
             }
         }
@@ -311,7 +397,7 @@ impl DocumentExtractor for JupyterExtractor {
     #[cfg_attr(
         feature = "otel",
         tracing::instrument(
-            skip(self, content, _config),
+            skip(self, content, config),
             fields(
                 extractor.name = self.name(),
                 content.size_bytes = content.len(),
@@ -322,15 +408,30 @@ impl DocumentExtractor for JupyterExtractor {
         &self,
         content: &[u8],
         mime_type: &str,
-        _config: &ExtractionConfig,
+        config: &ExtractionConfig,
     ) -> Result<ExtractionResult> {
-        let (extracted_content, additional_metadata) = Self::extract_notebook(content)?;
+        let (extracted_content, additional_metadata, extracted_images) = Self::extract_notebook(content)?;
 
         let mut metadata_additional = AHashMap::new();
         for (key, value) in additional_metadata {
             metadata_additional.insert(key, json!(value));
         }
 
+        // Process images with OCR if configured and available
+        let images = if !extracted_images.is_empty() {
+            #[cfg(all(feature = "ocr", feature = "tokio-runtime"))]
+            {
+                let processed = crate::extraction::image_ocr::process_images_with_ocr(extracted_images, config).await?;
+                Some(processed)
+            }
+            #[cfg(not(all(feature = "ocr", feature = "tokio-runtime")))]
+            {
+                let _ = config; // suppress unused warning when OCR is disabled
+                Some(extracted_images)
+            }
+        } else {
+            None
+        };
         Ok(ExtractionResult {
             content: extracted_content,
             mime_type: mime_type.to_string().into(),
@@ -342,7 +443,7 @@ impl DocumentExtractor for JupyterExtractor {
             tables: vec![],
             detected_languages: None,
             chunks: None,
-            images: None,
+            images,
             djot_content: None,
             elements: None,
             ocr_elements: None,

@@ -42,6 +42,24 @@ defmodule KreuzbergExtract do
   def struct_to_map(value), do: value
 
   @doc """
+  Determine if OCR was actually used based on extraction result metadata.
+  Mirrors the native Rust adapter logic: OCR is used when format_type is "ocr",
+  or when format_type is "image" and OCR was enabled in config.
+  """
+  def determine_ocr_used(metadata, ocr_enabled) do
+    format_type = cond do
+      is_map(metadata) -> Map.get(metadata, "format_type", Map.get(metadata, :format_type, ""))
+      true -> ""
+    end
+
+    cond do
+      format_type == "ocr" -> true
+      format_type == "image" and ocr_enabled -> true
+      true -> false
+    end
+  end
+
+  @doc """
   Extract a single file synchronously.
   """
   def extract_sync(file_path, config \\ %{}, ocr_enabled \\ false) do
@@ -75,11 +93,12 @@ defmodule KreuzbergExtract do
         debug_log("Result has metadata: true")
         debug_log("Metadata type: map")
 
+        metadata = struct_to_map(extraction_result.metadata)
         payload = %{
           "content" => extraction_result.content,
-          "metadata" => struct_to_map(extraction_result.metadata),
+          "metadata" => metadata,
           "_extraction_time_ms" => duration_ms,
-          "_ocr_used" => ocr_enabled
+          "_ocr_used" => determine_ocr_used(metadata, ocr_enabled)
         }
 
         json_size = payload |> Jason.encode!() |> byte_size()
@@ -141,12 +160,13 @@ defmodule KreuzbergExtract do
             content_length = String.length(extraction_result.content || "")
             debug_log("  Result[#{idx}] - content length: #{content_length}, has metadata: true")
 
+            metadata = struct_to_map(extraction_result.metadata)
             %{
               "content" => extraction_result.content,
-              "metadata" => struct_to_map(extraction_result.metadata),
+              "metadata" => metadata,
               "_extraction_time_ms" => per_file_duration_ms,
               "_batch_total_ms" => total_duration_ms,
-              "_ocr_used" => ocr_enabled
+              "_ocr_used" => determine_ocr_used(metadata, ocr_enabled)
             }
           end)
 
@@ -185,7 +205,7 @@ defmodule KreuzbergExtract do
             error_payload = %{
               "error" => inspect(reason),
               "_extraction_time_ms" => 0,
-              "_ocr_used" => ocr_enabled
+              "_ocr_used" => false
             }
 
             json = Jason.encode!(error_payload)
@@ -197,7 +217,7 @@ defmodule KreuzbergExtract do
           error_payload = %{
             "error" => inspect(e),
             "_extraction_time_ms" => 0,
-            "_ocr_used" => ocr_enabled
+            "_ocr_used" => false
           }
 
           json = Jason.encode!(error_payload)

@@ -106,7 +106,7 @@ public final class TikaExtract {
         }
 
         double elapsedMs = (System.nanoTime() - start) / NANOS_IN_MILLISECOND;
-        String json = toJson(data, elapsedMs);
+        String json = toJson(data, elapsedMs, ocrEnabled);
         System.out.print(json);
     }
 
@@ -138,7 +138,7 @@ public final class TikaExtract {
                 first = false;
 
                 double batchTotalMs = (System.nanoTime() - batchStart) / NANOS_IN_MILLISECOND;
-                jsonArray.append(toJsonWithBatch(data, elapsedMs, batchTotalMs));
+                jsonArray.append(toJsonWithBatch(data, elapsedMs, batchTotalMs, ocrEnabled));
 
                 if (debug) {
                     debugLog("File processed", filePath);
@@ -194,11 +194,11 @@ public final class TikaExtract {
                 long start = System.nanoTime();
                 ExtractionData data = extractFileWithParser(path.toFile(), sharedParser, sharedOcrConfig, debug);
                 double elapsedMs = (System.nanoTime() - start) / NANOS_IN_MILLISECOND;
-                String json = toJson(data, elapsedMs);
+                String json = toJson(data, elapsedMs, ocrEnabled);
                 System.out.println(json);
                 System.out.flush();
             } catch (Exception e) {
-                String errorJson = String.format("{\"error\":%s,\"_extraction_time_ms\":0}", quote(e.getMessage()));
+                String errorJson = String.format("{\"error\":%s,\"_extraction_time_ms\":0,\"_ocr_used\":false}", quote(e.getMessage()));
                 System.out.println(errorJson);
                 System.out.flush();
             }
@@ -264,18 +264,30 @@ public final class TikaExtract {
         return new ExtractionData(content, mimeType);
     }
 
-    private static String toJson(ExtractionData data, double elapsedMs) {
+    /**
+     * Determine if OCR was actually used based on MIME type and OCR config.
+     * OCR is used by Tika when enabled and the file is an image type.
+     */
+    private static boolean determineOcrUsed(String mimeType, boolean ocrEnabled) {
+        if (!ocrEnabled) {
+            return false;
+        }
+        return mimeType != null && mimeType.startsWith("image/");
+    }
+
+    private static String toJson(ExtractionData data, double elapsedMs, boolean ocrEnabled) {
         StringBuilder builder = new StringBuilder();
         builder.append('{');
         builder.append("\"content\":").append(quote(data.getContent())).append(',');
         builder.append("\"metadata\":{");
         builder.append("\"mimeType\":").append(quote(data.getMimeType()));
         builder.append("},\"_extraction_time_ms\":").append(String.format("%.3f", elapsedMs));
+        builder.append(",\"_ocr_used\":").append(determineOcrUsed(data.getMimeType(), ocrEnabled));
         builder.append('}');
         return builder.toString();
     }
 
-    private static String toJsonWithBatch(ExtractionData data, double elapsedMs, double batchTotalMs) {
+    private static String toJsonWithBatch(ExtractionData data, double elapsedMs, double batchTotalMs, boolean ocrEnabled) {
         StringBuilder builder = new StringBuilder();
         builder.append('{');
         builder.append("\"content\":").append(quote(data.getContent())).append(',');
@@ -283,6 +295,7 @@ public final class TikaExtract {
         builder.append("\"mimeType\":").append(quote(data.getMimeType()));
         builder.append("},\"_extraction_time_ms\":").append(String.format("%.3f", elapsedMs));
         builder.append(",\"_batch_total_ms\":").append(String.format("%.3f", batchTotalMs));
+        builder.append(",\"_ocr_used\":").append(determineOcrUsed(data.getMimeType(), ocrEnabled));
         builder.append('}');
         return builder.toString();
     }

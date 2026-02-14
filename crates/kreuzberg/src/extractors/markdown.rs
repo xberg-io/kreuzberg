@@ -9,6 +9,7 @@
 //! - Table extraction as structured data
 //! - Heading structure preservation
 //! - Code block and link extraction
+//! - Data URI image extraction
 //!
 //! Requires the `office` feature (which includes `pulldown-cmark`).
 
@@ -23,9 +24,13 @@ use crate::core::config::ExtractionConfig;
 #[cfg(feature = "office")]
 use crate::plugins::{DocumentExtractor, Plugin};
 #[cfg(feature = "office")]
-use crate::types::{ExtractionResult, Metadata, Table};
+use crate::types::{ExtractedImage, ExtractionResult, Metadata, Table};
 #[cfg(feature = "office")]
 use async_trait::async_trait;
+#[cfg(feature = "office")]
+use base64::Engine;
+#[cfg(feature = "office")]
+use bytes::Bytes;
 #[cfg(feature = "office")]
 use pulldown_cmark::{Event, Options, Parser, Tag, TagEnd};
 #[cfg(feature = "office")]
@@ -38,6 +43,7 @@ use std::borrow::Cow;
 /// - Plain text content
 /// - Tables as structured data
 /// - Document structure (headings, links, code blocks)
+/// - Images from data URIs
 #[cfg(feature = "office")]
 pub struct MarkdownExtractor;
 
@@ -50,18 +56,88 @@ impl MarkdownExtractor {
 
     // Frontmatter utilities moved to shared frontmatter_utils module
 
-    /// Extract plain text from markdown AST.
-    fn extract_text_from_events(events: &[Event]) -> String {
+    /// Extract plain text from markdown AST, collecting data URI images.
+    fn extract_text_from_events(events: &[Event], images: &mut Vec<ExtractedImage>) -> String {
         let mut text = String::new();
+        let mut link_url: Option<String> = None;
+        let mut in_heading = false;
+
         for event in events {
             match event {
+                Event::Start(Tag::Heading { level, .. }) => {
+                    text.push('\n');
+                    let prefix = match *level {
+                        pulldown_cmark::HeadingLevel::H1 => "# ",
+                        pulldown_cmark::HeadingLevel::H2 => "## ",
+                        pulldown_cmark::HeadingLevel::H3 => "### ",
+                        pulldown_cmark::HeadingLevel::H4 => "#### ",
+                        pulldown_cmark::HeadingLevel::H5 => "##### ",
+                        pulldown_cmark::HeadingLevel::H6 => "###### ",
+                    };
+                    text.push_str(prefix);
+                    in_heading = true;
+                }
+                Event::End(TagEnd::Heading(_)) => {
+                    text.push('\n');
+                    in_heading = false;
+                }
+                Event::Start(Tag::Link { dest_url, .. }) => {
+                    link_url = Some(dest_url.to_string());
+                }
+                Event::End(TagEnd::Link) => {
+                    if let Some(url) = link_url.take() {
+                        if !url.is_empty() && !url.starts_with('#') {
+                            text.push_str(" (");
+                            text.push_str(&url);
+                            text.push(')');
+                        }
+                    }
+                }
+                Event::Start(Tag::Image { dest_url, .. }) => {
+                    text.push_str("[Image");
+                    if !dest_url.is_empty() {
+                        text.push_str(": ");
+                        text.push_str(dest_url);
+                    }
+                    text.push(']');
+                    // Extract image from data URIs
+                    if dest_url.starts_with("data:image/") {
+                        if let Some(image) = Self::decode_data_uri_image(dest_url, images.len()) {
+                            images.push(image);
+                        }
+                    }
+                }
+                Event::Start(Tag::CodeBlock(pulldown_cmark::CodeBlockKind::Fenced(lang))) => {
+                    text.push('\n');
+                    text.push_str("```");
+                    if !lang.is_empty() {
+                        text.push_str(lang);
+                    }
+                    text.push('\n');
+                }
+                Event::End(TagEnd::CodeBlock) => {
+                    text.push_str("```\n");
+                }
+                Event::Start(Tag::BlockQuote(_)) => {
+                    text.push_str("\n> ");
+                }
+                Event::Start(Tag::Paragraph) => {
+                    if !in_heading {
+                        text.push('\n');
+                    }
+                }
+                Event::End(TagEnd::Paragraph) => {
+                    text.push('\n');
+                }
                 Event::Text(s) | Event::Code(s) | Event::Html(s) => {
                     text.push_str(s);
                 }
                 Event::SoftBreak | Event::HardBreak => {
                     text.push('\n');
                 }
-                Event::Start(_) | Event::End(_) | Event::TaskListMarker(_) => {}
+                Event::TaskListMarker(checked) => {
+                    text.push_str(if *checked { "[x] " } else { "[ ] " });
+                }
                 Event::FootnoteReference(s) => {
                     text.push('[');
                     text.push_str(s);
@@ -74,6 +150,48 @@ impl MarkdownExtractor {
             }
         }
         text
+    }
+
+    /// Decode a data URI into an `ExtractedImage`.
+    ///
+    /// Supports base64-encoded PNG, JPEG, GIF, and WebP data URIs.
+    /// Returns `None` for non-base64 encodings or unsupported formats.
+    fn decode_data_uri_image(uri: &str, index: usize) -> Option<ExtractedImage> {
+        let after_data = uri.strip_prefix("data:")?;
+        let (mime_and_encoding, data) = after_data.split_once(',')?;
+
+        if !mime_and_encoding.contains("base64") {
+            return None;
+        }
+
+        let format: &str = if mime_and_encoding.contains("image/png") {
+            "png"
+        } else if mime_and_encoding.contains("image/jpeg") {
+            "jpeg"
+        } else if mime_and_encoding.contains("image/gif") {
+            "gif"
+        } else if mime_and_encoding.contains("image/webp") {
+            "webp"
+        } else {
+            return None;
+        };
+
+        let cleaned = data.replace(['\n', '\r'], "");
+        let decoded = base64::engine::general_purpose::STANDARD.decode(&cleaned).ok()?;
+
+        Some(ExtractedImage {
+            data: Bytes::from(decoded),
+            format: Cow::Borrowed(format),
+            image_index: index,
+            page_number: None,
+            width: None,
+            height: None,
+            colorspace: None,
+            bits_per_component: None,
+            is_mask: false,
+            description: None,
+            ocr_result: None,
+        })
     }
 
     /// Extract tables from markdown AST.
@@ -219,9 +337,25 @@ impl DocumentExtractor for MarkdownExtractor {
         let parser = Parser::new_ext(&remaining_content, Options::ENABLE_TABLES);
         let events: Vec<Event> = parser.collect();
 
-        let extracted_text = Self::extract_text_from_events(&events);
+        let mut extracted_images = Vec::new();
+        let extracted_text = Self::extract_text_from_events(&events, &mut extracted_images);
 
         let tables = Self::extract_tables_from_events(&events);
+
+        let images = if !extracted_images.is_empty() {
+            #[cfg(all(feature = "ocr", feature = "tokio-runtime"))]
+            {
+                let processed =
+                    crate::extraction::image_ocr::process_images_with_ocr(extracted_images, _config).await?;
+                Some(processed)
+            }
+            #[cfg(not(all(feature = "ocr", feature = "tokio-runtime")))]
+            {
+                Some(extracted_images)
+            }
+        } else {
+            None
+        };
 
         Ok(ExtractionResult {
             content: extracted_text,
@@ -230,7 +364,7 @@ impl DocumentExtractor for MarkdownExtractor {
             tables,
             detected_languages: None,
             chunks: None,
-            images: None,
+            images,
             djot_content: None,
             pages: None,
             elements: None,
@@ -286,7 +420,7 @@ mod tests {
 
         let parser = Parser::new_ext(&remaining, Options::ENABLE_TABLES);
         let events: Vec<Event> = parser.collect();
-        let extracted = MarkdownExtractor::extract_text_from_events(&events);
+        let extracted = MarkdownExtractor::extract_text_from_events(&events, &mut Vec::new());
 
         assert!(extracted.contains("Header"));
         assert!(extracted.contains("This is a paragraph"));
@@ -394,7 +528,7 @@ mod tests {
 
         let parser = Parser::new_ext(&remaining, Options::ENABLE_TABLES);
         let events: Vec<Event> = parser.collect();
-        let extracted = MarkdownExtractor::extract_text_from_events(&events);
+        let extracted = MarkdownExtractor::extract_text_from_events(&events, &mut Vec::new());
         assert!(extracted.is_empty());
     }
 
@@ -408,7 +542,7 @@ mod tests {
 
         let parser = Parser::new_ext(&remaining, Options::ENABLE_TABLES);
         let events: Vec<Event> = parser.collect();
-        let extracted = MarkdownExtractor::extract_text_from_events(&events);
+        let extracted = MarkdownExtractor::extract_text_from_events(&events, &mut Vec::new());
         assert!(extracted.trim().is_empty());
     }
 
@@ -423,7 +557,7 @@ mod tests {
 
         let parser = Parser::new_ext(&remaining, Options::ENABLE_TABLES);
         let events: Vec<Event> = parser.collect();
-        let extracted = MarkdownExtractor::extract_text_from_events(&events);
+        let extracted = MarkdownExtractor::extract_text_from_events(&events, &mut Vec::new());
 
         assert!(extracted.contains("日本語"));
         assert!(extracted.contains("Español"));
@@ -485,7 +619,7 @@ mod tests {
 
         let parser = Parser::new_ext(&text, Options::ENABLE_TABLES);
         let events: Vec<Event> = parser.collect();
-        let extracted = MarkdownExtractor::extract_text_from_events(&events);
+        let extracted = MarkdownExtractor::extract_text_from_events(&events, &mut Vec::new());
 
         assert!(extracted.contains("Google"));
         assert!(extracted.contains("Rust"));
@@ -498,7 +632,7 @@ mod tests {
 
         let parser = Parser::new_ext(&text, Options::ENABLE_TABLES);
         let events: Vec<Event> = parser.collect();
-        let extracted = MarkdownExtractor::extract_text_from_events(&events);
+        let extracted = MarkdownExtractor::extract_text_from_events(&events, &mut Vec::new());
 
         assert!(extracted.contains("main"));
         assert!(extracted.contains("println"));
@@ -587,5 +721,120 @@ nested:
 
         assert_eq!(metadata.additional.len(), 8, "Should extract all standard fields");
         println!("\nSuccessfully extracted all 8 additional metadata fields");
+    }
+
+    #[test]
+    fn test_decode_data_uri_png() {
+        // 1x1 red PNG pixel (minimal valid PNG)
+        let png_b64 =
+            "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==";
+        let uri = format!("data:image/png;base64,{png_b64}");
+
+        let image = MarkdownExtractor::decode_data_uri_image(&uri, 0);
+        assert!(image.is_some());
+        let img = image.unwrap();
+        assert_eq!(img.format.as_ref(), "png");
+        assert_eq!(img.image_index, 0);
+        assert!(!img.data.is_empty());
+    }
+
+    #[test]
+    fn test_decode_data_uri_jpeg() {
+        // Minimal JPEG-like base64 (tests the decode path)
+        let uri = "data:image/jpeg;base64,/9j/4AAQSkZJRg==";
+
+        let image = MarkdownExtractor::decode_data_uri_image(uri, 3);
+        assert!(image.is_some());
+        let img = image.unwrap();
+        assert_eq!(img.format.as_ref(), "jpeg");
+        assert_eq!(img.image_index, 3);
+    }
+
+    #[test]
+    fn test_decode_data_uri_unsupported_format() {
+        let uri = "data:image/tiff;base64,AAAA";
+        let image = MarkdownExtractor::decode_data_uri_image(uri, 0);
+        assert!(image.is_none());
+    }
+
+    #[test]
+    fn test_decode_data_uri_non_base64() {
+        let uri = "data:image/png,raw-data-here";
+        let image = MarkdownExtractor::decode_data_uri_image(uri, 0);
+        assert!(image.is_none());
+    }
+
+    #[test]
+    fn test_decode_data_uri_invalid_base64() {
+        let uri = "data:image/png;base64,!!!not-valid-base64!!!";
+        let image = MarkdownExtractor::decode_data_uri_image(uri, 0);
+        assert!(image.is_none());
+    }
+
+    #[test]
+    fn test_decode_data_uri_not_data_uri() {
+        let uri = "https://example.com/image.png";
+        let image = MarkdownExtractor::decode_data_uri_image(uri, 0);
+        assert!(image.is_none());
+    }
+
+    #[test]
+    fn test_extract_text_collects_data_uri_images() {
+        let png_b64 =
+            "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==";
+        let md = format!("# Title\n\n![alt](data:image/png;base64,{png_b64})\n\nSome text.");
+
+        let parser = Parser::new_ext(&md, Options::ENABLE_TABLES);
+        let events: Vec<Event> = parser.collect();
+        let mut images = Vec::new();
+        let text = MarkdownExtractor::extract_text_from_events(&events, &mut images);
+
+        assert_eq!(images.len(), 1);
+        assert_eq!(images[0].format.as_ref(), "png");
+        assert!(text.contains("[Image: data:image/png;base64,"));
+    }
+
+    #[test]
+    fn test_extract_text_skips_http_images() {
+        let md = "# Title\n\n![alt](https://example.com/photo.jpg)\n\nSome text.";
+
+        let parser = Parser::new_ext(md, Options::ENABLE_TABLES);
+        let events: Vec<Event> = parser.collect();
+        let mut images = Vec::new();
+        let text = MarkdownExtractor::extract_text_from_events(&events, &mut images);
+
+        assert!(images.is_empty());
+        assert!(text.contains("[Image: https://example.com/photo.jpg]"));
+    }
+
+    #[tokio::test]
+    async fn test_extract_bytes_with_data_uri_image() {
+        let png_b64 =
+            "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==";
+        let md = format!("# Doc\n\n![photo](data:image/png;base64,{png_b64})\n\nText.");
+
+        let extractor = MarkdownExtractor::new();
+        let result = extractor
+            .extract_bytes(md.as_bytes(), "text/markdown", &ExtractionConfig::default())
+            .await
+            .expect("Should extract markdown with data URI image");
+
+        assert!(result.images.is_some());
+        let imgs = result.images.unwrap();
+        assert_eq!(imgs.len(), 1);
+        assert_eq!(imgs[0].format.as_ref(), "png");
+    }
+
+    #[tokio::test]
+    async fn test_extract_bytes_no_images() {
+        let md = b"# Simple\n\nJust text, no images.";
+
+        let extractor = MarkdownExtractor::new();
+        let result = extractor
+            .extract_bytes(md, "text/markdown", &ExtractionConfig::default())
+            .await
+            .expect("Should extract markdown without images");
+
+        assert!(result.images.is_none());
     }
 }

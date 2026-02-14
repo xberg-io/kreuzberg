@@ -50,6 +50,17 @@ rescue LoadError => e
 end
 debug_log "=== Initialization Complete ===" if DEBUG
 
+# Determine if OCR was actually used based on extraction result metadata.
+# Mirrors the native Rust adapter logic: OCR is used when format_type is "ocr",
+# or when format_type is "image" and OCR was enabled in config.
+def determine_ocr_used(metadata, ocr_enabled)
+  format_type = metadata&.dig('format_type') || metadata&.dig(:format_type) || ''
+  return true if format_type == 'ocr'
+  return true if format_type == 'image' && ocr_enabled
+
+  false
+end
+
 def extract_sync(file_path, config = {})
   debug_log "=== SYNC EXTRACTION START ==="
   debug_log "Input: file_path=#{file_path}"
@@ -76,11 +87,13 @@ def extract_sync(file_path, config = {})
   debug_log "Result has metadata: #{!result.metadata.nil?}"
   debug_log "Metadata type: #{result.metadata&.class || 'nil'}"
 
+  metadata = result.metadata || {}
+  ocr_enabled = config.dig(:ocr, :enabled) || false
   payload = {
     content: result.content,
-    metadata: result.metadata || {},
+    metadata: metadata,
     _extraction_time_ms: duration_ms,
-    _ocr_used: config.dig(:ocr, :enabled) || false
+    _ocr_used: determine_ocr_used(metadata, ocr_enabled)
   }
 
   debug_log "Output JSON size: #{JSON.generate(payload).bytesize} bytes"
@@ -119,14 +132,16 @@ def extract_batch(file_paths, config = {})
   per_file_duration_ms = file_paths.length.positive? ? total_duration_ms / file_paths.length : 0
   debug_log "Per-file average duration (milliseconds): #{per_file_duration_ms.round(3)}"
 
+  ocr_enabled = config.dig(:ocr, :enabled) || false
   results_with_timing = results.map.with_index do |result, idx|
     debug_log "  Result[#{idx}] - content length: #{result.content&.length || 'nil'}, has metadata: #{!result.metadata.nil?}"
+    metadata = result.metadata || {}
     {
       content: result.content,
-      metadata: result.metadata || {},
+      metadata: metadata,
       _extraction_time_ms: per_file_duration_ms,
       _batch_total_ms: total_duration_ms,
-      _ocr_used: config.dig(:ocr, :enabled) || false
+      _ocr_used: determine_ocr_used(metadata, ocr_enabled)
     }
   end
 
@@ -161,11 +176,12 @@ def extract_server(ocr_enabled)
       result = Kreuzberg.extract_file(path: file_path, config: config)
       duration_ms = (Process.clock_gettime(Process::CLOCK_MONOTONIC) - start) * 1000.0
 
+      metadata = result.metadata || {}
       payload = {
         content: result.content,
-        metadata: result.metadata || {},
+        metadata: metadata,
         _extraction_time_ms: duration_ms,
-        _ocr_used: ocr_enabled
+        _ocr_used: determine_ocr_used(metadata, ocr_enabled)
       }
 
       puts JSON.generate(payload)
@@ -174,7 +190,7 @@ def extract_server(ocr_enabled)
       error_payload = {
         error: e.message,
         _extraction_time_ms: 0,
-        _ocr_used: ocr_enabled
+        _ocr_used: false
       }
       puts JSON.generate(error_payload)
       $stdout.flush

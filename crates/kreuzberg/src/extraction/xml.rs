@@ -53,6 +53,25 @@ pub fn parse_xml(xml_bytes: &[u8], preserve_whitespace: bool) -> Result<XmlExtra
                 let name_owned = name.into_owned();
                 element_count += 1;
                 unique_elements_set.insert(name_owned.clone());
+
+                // Extract attribute values as text content
+                for attr in e.attributes().flatten() {
+                    let attr_value: Cow<str> = String::from_utf8_lossy(&attr.value);
+                    let trimmed_value = attr_value.trim();
+                    if !trimmed_value.is_empty() {
+                        let attr_key: Cow<str> = String::from_utf8_lossy(attr.key.as_ref());
+                        if !content.is_empty() && !content.ends_with('\n') {
+                            content.push('\n');
+                        }
+                        content.push_str(&name_owned);
+                        content.push('[');
+                        content.push_str(&attr_key);
+                        content.push_str("]: ");
+                        content.push_str(trimmed_value);
+                        content.push('\n');
+                    }
+                }
+
                 element_stack.push(name_owned);
                 last_was_element_tag = true;
             }
@@ -63,24 +82,37 @@ pub fn parse_xml(xml_bytes: &[u8], preserve_whitespace: bool) -> Result<XmlExtra
                 element_count += 1;
                 unique_elements_set.insert(name_owned.clone());
 
-                // For self-closing tags, add element name as context with no text
+                // For self-closing tags, add element name and attributes
                 if !content.is_empty() && !content.ends_with('\n') {
                     content.push('\n');
                 }
-                content.push_str(&name_owned);
-                content.push('\n');
+
+                // Extract attribute values
+                let mut has_attrs = false;
+                for attr in e.attributes().flatten() {
+                    let attr_value: Cow<str> = String::from_utf8_lossy(&attr.value);
+                    let trimmed_value = attr_value.trim();
+                    if !trimmed_value.is_empty() {
+                        let attr_key: Cow<str> = String::from_utf8_lossy(attr.key.as_ref());
+                        content.push_str(&name_owned);
+                        content.push('[');
+                        content.push_str(&attr_key);
+                        content.push_str("]: ");
+                        content.push_str(trimmed_value);
+                        content.push('\n');
+                        has_attrs = true;
+                    }
+                }
+
+                if !has_attrs {
+                    content.push_str(&name_owned);
+                    content.push('\n');
+                }
                 last_was_element_tag = true;
             }
-            Ok(Event::End(e)) => {
-                let name_bytes = e.name().as_ref().to_vec();
-                let name: Cow<str> = String::from_utf8_lossy(&name_bytes);
-                let name_owned = name.into_owned();
-
+            Ok(Event::End(_e)) => {
                 // Pop matching element from stack
-                if let Some(popped) = element_stack.pop() {
-                    // Verify element names match (lenient parsing allows mismatches)
-                    let _ = popped == name_owned;
-                }
+                element_stack.pop();
                 last_was_element_tag = true;
             }
             Ok(Event::Text(e)) => {

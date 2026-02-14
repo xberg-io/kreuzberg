@@ -78,16 +78,113 @@ fn process_command(cmd: &str, chars: &mut std::iter::Peekable<std::str::Chars>, 
                 chars.next();
             }
         }
-        "usepackage" => {
-            // Skip package declarations
+        "usepackage" | "documentclass" | "pagestyle" | "setlength" | "newcommand" | "renewcommand" | "def" | "let"
+        | "input" | "include" | "bibliography" | "bibliographystyle" | "graphicspath" | "geometry" | "hypersetup" => {
+            // Skip preamble/setup commands - consume all braced arguments
+            while chars.peek() == Some(&'{') || chars.peek() == Some(&'[') {
+                if chars.peek() == Some(&'[') {
+                    // Skip optional arguments
+                    chars.next();
+                    while let Some(&c) = chars.peek() {
+                        chars.next();
+                        if c == ']' {
+                            break;
+                        }
+                    }
+                } else {
+                    read_braced_from_chars(chars);
+                }
+            }
+        }
+        "cite" | "citep" | "citet" | "citealp" | "citeauthor" | "citeyear" => {
+            // Skip optional argument [...]
+            if chars.peek() == Some(&'[') {
+                chars.next();
+                while let Some(&c) = chars.peek() {
+                    chars.next();
+                    if c == ']' {
+                        break;
+                    }
+                }
+            }
+            if let Some(key) = read_braced_from_chars(chars) {
+                result.push('[');
+                result.push_str(&key);
+                result.push(']');
+            }
+        }
+        "ref" | "eqref" | "pageref" | "autoref" | "cref" | "Cref" | "nameref" => {
+            if let Some(label) = read_braced_from_chars(chars) {
+                result.push('[');
+                result.push_str(&label);
+                result.push(']');
+            }
+        }
+        "label" => {
+            // Skip labels - they don't produce visible text
             read_braced_from_chars(chars);
         }
-        _ => {
-            // For unknown commands, try to extract and process content
+        "url" => {
+            if let Some(url) = read_braced_from_chars(chars) {
+                result.push_str(&url);
+            }
+        }
+        "href" => {
+            let url = read_braced_from_chars(chars);
+            let text = read_braced_from_chars(chars);
+            match (text, url) {
+                (Some(text), Some(url)) => {
+                    let processed = process_line(&text);
+                    result.push_str(&processed);
+                    result.push_str(" (");
+                    result.push_str(&url);
+                    result.push(')');
+                }
+                (Some(text), None) => {
+                    let processed = process_line(&text);
+                    result.push_str(&processed);
+                }
+                (None, Some(url)) => {
+                    result.push_str(&url);
+                }
+                _ => {}
+            }
+        }
+        "footnote" | "footnotetext" => {
+            if let Some(content) = read_braced_from_chars(chars) {
+                let processed = process_line(&content);
+                result.push_str(" (");
+                result.push_str(&processed);
+                result.push(')');
+            }
+        }
+        "textsuperscript" => {
+            if let Some(content) = read_braced_from_chars(chars) {
+                result.push_str(&content);
+            }
+        }
+        "textsubscript" => {
+            if let Some(content) = read_braced_from_chars(chars) {
+                result.push_str(&content);
+            }
+        }
+        "mbox" | "hbox" | "vbox" | "text" | "mathrm" | "mathbf" | "mathit" | "mathsf" | "mathtt" | "boldsymbol"
+        | "textrm" | "textsf" => {
             if let Some(content) = read_braced_from_chars(chars) {
                 let processed = process_line(&content);
                 result.push_str(&processed);
             }
+        }
+        "par" | "noindent" | "newline" | "linebreak" | "pagebreak" | "newpage" | "clearpage" | "cleardoublepage"
+        | "bigskip" | "medskip" | "smallskip" | "vfill" | "hfill" | "centering" | "raggedright" | "raggedleft"
+        | "maketitle" | "tableofcontents" | "listoffigures" | "listoftables" | "appendix" | "indent" | "relax"
+        | "protect" | "nobreak" | "allowbreak" | "sloppy" | "fussy" | "normalsize" | "small" | "footnotesize"
+        | "large" | "Large" | "LARGE" | "huge" | "Huge" | "tiny" | "scriptsize" => {
+            // Zero-argument commands - skip silently
+        }
+        _ => {
+            // Unknown command: skip command name entirely.
+            // Do not consume braced args since we don't know the command's arity.
         }
     }
 }
