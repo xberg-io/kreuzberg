@@ -7,8 +7,7 @@ let config = ExtractionConfig {
 };
 let result = extract_file("scanned_document.pdf", None, &config).await?;
 
-if let Some(quality) = result.metadata.additional.get("quality_score") {
-    let score: f64 = quality.as_f64().unwrap_or(0.0);
+if let Some(score) = result.quality_score {
     if score < 0.5 {
         println!("Warning: Low quality extraction ({:.2})", score);
     } else {

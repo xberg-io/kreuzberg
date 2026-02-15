@@ -175,7 +175,7 @@ If `enable_quality_processing=True`, Kreuzberg calculates a quality score based 
 - Formatting artifacts (repeated characters, etc.)
 - Metadata consistency
 
-Quality score added to `metadata.additional["quality_score"]`.
+Quality score added to `result.quality_score`.
 
 #### 6.3 Chunking
 

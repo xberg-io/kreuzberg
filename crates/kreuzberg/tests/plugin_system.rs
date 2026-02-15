@@ -9,7 +9,7 @@ use kreuzberg::plugins::registry::{
     DocumentExtractorRegistry, OcrBackendRegistry, PostProcessorRegistry, ValidatorRegistry,
 };
 use kreuzberg::plugins::{DocumentExtractor, Plugin, PostProcessor, ProcessingStage, Validator};
-use kreuzberg::types::{ExtractionResult, Metadata};
+use kreuzberg::types::ExtractionResult;
 use kreuzberg::{KreuzbergError, Result};
 use std::borrow::Cow;
 use std::sync::Arc;
@@ -54,16 +54,7 @@ impl DocumentExtractor for FailingExtractor {
             Ok(ExtractionResult {
                 content: "success".to_string(),
                 mime_type: Cow::Borrowed("text/plain"),
-                metadata: Metadata::default(),
-                tables: vec![],
-                detected_languages: None,
-                chunks: None,
-                images: None,
-                pages: None,
-                elements: None,
-                ocr_elements: None,
-                djot_content: None,
-                document: None,
+                ..Default::default()
             })
         }
     }
@@ -303,16 +294,7 @@ fn test_extractor_priority_ordering_complex() {
             Ok(ExtractionResult {
                 content: "test".to_string(),
                 mime_type: Cow::Borrowed("text/plain"),
-                metadata: Metadata::default(),
-                tables: vec![],
-                detected_languages: None,
-                chunks: None,
-                images: None,
-                pages: None,
-                elements: None,
-                ocr_elements: None,
-                djot_content: None,
-                document: None,
+                ..Default::default()
             })
         }
         fn supported_mime_types(&self) -> &[&str] {
@@ -467,16 +449,7 @@ async fn test_processor_execution_order_within_stage() {
     let mut result = ExtractionResult {
         content: "start".to_string(),
         mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        pages: None,
-        elements: None,
-        ocr_elements: None,
-        djot_content: None,
-        document: None,
+        ..Default::default()
     };
 
     let config = ExtractionConfig::default();
@@ -506,16 +479,7 @@ async fn test_processor_error_propagation() {
     let mut result = ExtractionResult {
         content: "test".to_string(),
         mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        pages: None,
-        elements: None,
-        ocr_elements: None,
-        djot_content: None,
-        document: None,
+        ..Default::default()
     };
 
     let config = ExtractionConfig::default();
@@ -682,16 +646,7 @@ async fn test_validator_content_validation() {
     let short_result = ExtractionResult {
         content: "short".to_string(),
         mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        pages: None,
-        elements: None,
-        ocr_elements: None,
-        djot_content: None,
-        document: None,
+        ..Default::default()
     };
 
     let validation = validators[0].validate(&short_result, &config).await;
@@ -700,16 +655,7 @@ async fn test_validator_content_validation() {
     let long_result = ExtractionResult {
         content: "this is long enough content".to_string(),
         mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        pages: None,
-        elements: None,
-        ocr_elements: None,
-        djot_content: None,
-        document: None,
+        ..Default::default()
     };
 
     let validation = validators[0].validate(&long_result, &config).await;

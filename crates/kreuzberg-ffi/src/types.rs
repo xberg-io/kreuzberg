@@ -51,7 +51,7 @@ impl Drop for CStringGuard {
 /// # Memory Layout
 ///
 /// Must be kept in sync with the Java side's MemoryLayout definition in KreuzbergFFI.java
-/// Field order: 15 pointers (8 bytes each) + 1 bool + 7 bytes padding = 128 bytes total
+/// Field order: 18 pointers (8 bytes each) + 1 bool + 7 bytes padding = 152 bytes total
 ///
 /// The `#[repr(C)]` attribute ensures the struct follows C's memory layout rules:
 /// - Fields are laid out in order
@@ -94,6 +94,12 @@ pub struct CExtractionResult {
     pub ocr_elements_json: *mut c_char,
     /// Document structure as JSON object (null-terminated string, or NULL if not available, must be freed with kreuzberg_free_string)
     pub document_json: *mut c_char,
+    /// JSON-serialized extracted keywords (null-terminated, or null pointer if none, must be freed with kreuzberg_free_string)
+    pub extracted_keywords_json: *mut c_char,
+    /// JSON-serialized quality score (null-terminated, or null pointer if none, must be freed with kreuzberg_free_string)
+    pub quality_score_json: *mut c_char,
+    /// JSON-serialized processing warnings array (null-terminated, or null pointer if empty, must be freed with kreuzberg_free_string)
+    pub processing_warnings_json: *mut c_char,
     /// Whether extraction was successful
     pub success: bool,
     /// Padding to match Java MemoryLayout (7 bytes padding to align to 8-byte boundary)
@@ -156,7 +162,7 @@ pub struct CBatchResult {
 const _: () = {
     const fn assert_c_extraction_result_size() {
         const SIZE: usize = std::mem::size_of::<CExtractionResult>();
-        const _: () = assert!(SIZE == 128, "CExtractionResult size must be 128 bytes");
+        const _: () = assert!(SIZE == 152, "CExtractionResult size must be 152 bytes");
     }
 
     const fn assert_c_extraction_result_alignment() {
@@ -201,8 +207,8 @@ mod tests {
     fn test_c_extraction_result_size() {
         assert_eq!(
             std::mem::size_of::<CExtractionResult>(),
-            128,
-            "CExtractionResult must be exactly 128 bytes"
+            152,
+            "CExtractionResult must be exactly 152 bytes"
         );
     }
 
@@ -336,7 +342,10 @@ mod tests {
         assert_eq!(offset_of!(CExtractionResult, elements_json), 96);
         assert_eq!(offset_of!(CExtractionResult, ocr_elements_json), 104);
         assert_eq!(offset_of!(CExtractionResult, document_json), 112);
-        assert_eq!(offset_of!(CExtractionResult, success), 120);
+        assert_eq!(offset_of!(CExtractionResult, extracted_keywords_json), 120);
+        assert_eq!(offset_of!(CExtractionResult, quality_score_json), 128);
+        assert_eq!(offset_of!(CExtractionResult, processing_warnings_json), 136);
+        assert_eq!(offset_of!(CExtractionResult, success), 144);
     }
 
     /// Verify field offsets in CBatchResult match expectations

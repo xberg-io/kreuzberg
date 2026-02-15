@@ -982,8 +982,7 @@ end
 ```ruby title="custom_validator.rb"
 class QualityScoreValidator
   def call(result)
-    metadata = result[:metadata] || {}
-    quality_score = metadata[:quality_score] || 0.0
+    quality_score = result.quality_score || 0.0
 
     if quality_score < 0.5
       raise Kreuzberg::Errors::ValidationError,

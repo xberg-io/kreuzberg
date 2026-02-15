@@ -8,7 +8,7 @@ async def main() -> None:
     )
     result = await extract_file("document.pdf", config=config)
 
-    quality_score: float = result.metadata.get("quality_score", 0.0)
+    quality_score: float = result.quality_score or 0.0
     print(f"Quality score: {quality_score:.2f}")
 
 asyncio.run(main())

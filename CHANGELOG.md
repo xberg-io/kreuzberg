@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **ExtractionResult typed keyword and quality fields**: `ExtractionResult` now includes typed fields `extracted_keywords: Option<Vec<ExtractedKeyword>>` and `quality_score: Option<f64>` instead of untyped `metadata.additional` entries. Keywords now carry algorithm, score, and position information for better keyword analysis.
+- **ProcessingWarning type for extraction pipeline**: New `ProcessingWarning { source: String, message: String }` type added to `ExtractionResult.processing_warnings` to explicitly surface non-fatal warnings during document processing (e.g., recoverable decoding issues, missing optional features).
+- **Metadata typed fields**: `Metadata` struct now includes typed fields `category`, `tags`, `document_version`, `abstract_text`, and `output_format` for better structured metadata handling across all language bindings.
+- **`output_format` always populated**: The `metadata.output_format` field is now set for all output formats (plain, markdown, djot, html, structured), not just structured. Previously only the structured format populated this field.
+- **Language binding updates for typed fields**: All language bindings (Python, TypeScript/Node.js, Ruby, PHP, Go, Java, C#, Elixir) updated with corresponding typed properties matching the Rust API (e.g., `extractedKeywords`, `qualityScore` in TypeScript; `extracted_keywords`, `quality_score` in Python/Ruby).
+
 ### Fixed
 
 - **PaddleOCR recognition height mismatch (#390)**: Changed `CRNN_DST_HEIGHT` from 32 to 48 pixels to match PP-OCRv4/v5 model input shape `[batch, 3, 48, width]`. The previous value caused ONNX Runtime dimension errors on all platforms.
@@ -21,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Workspace dependency consolidation**: Moved `wasm-bindgen`, `wasm-bindgen-futures`, `js-sys`, `web-sys`, `console_error_panic_hook`, and `log` to workspace-level dependency management, deduplicating versions across `kreuzberg-pdfium-render`, `kreuzberg-wasm`, and `kreuzberg-ffi`.
 - **Docker full image: pre-download all PaddleOCR models**: Replaced broken single-language model download with all 12 recognition script families (english, chinese, latin, korean, eslav, thai, greek, arabic, devanagari, tamil, telugu, kannada) plus dictionaries. Fixed incorrect HuggingFace URLs and cache paths. Added retry logic with backoff for transient HuggingFace 502 errors.
 - **Docker test suite: PaddleOCR verification**: Added `test_paddle_ocr_extraction` to the full variant Docker tests to verify pre-loaded models work end-to-end.
+- **E2E tests updated for typed extraction fields**: End-to-end tests now validate typed `extracted_keywords`, `quality_score`, and `processing_warnings` fields instead of reading from `metadata.additional` dictionary.
 
 ---
 

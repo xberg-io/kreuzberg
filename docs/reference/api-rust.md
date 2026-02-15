@@ -583,6 +583,9 @@ pub struct ExtractionResult {
     pub metadata: Metadata,
     pub tables: Vec<Table>,
     pub detected_languages: Option<Vec<String>>,
+    pub extracted_keywords: Option<Vec<ExtractedKeyword>>,
+    pub quality_score: Option<f64>,
+    pub processing_warnings: Vec<ProcessingWarning>,
 }
 ```
 
@@ -593,6 +596,9 @@ pub struct ExtractionResult {
 - `metadata` (Metadata): Document metadata (format-specific fields)
 - `tables` (Vec<Table>): Vector of extracted tables
 - `detected_languages` (Option<Vec<String>>): Vector of detected language codes (ISO 639-1) if language detection is enabled
+- `extracted_keywords` (Option<Vec<ExtractedKeyword>>): Extracted keywords with scores and algorithm info if keyword extraction is enabled
+- `quality_score` (Option<f64>): Overall extraction quality score (0.0-1.0) if quality processing is enabled
+- `processing_warnings` (Vec<ProcessingWarning>): Non-fatal warnings from pipeline processing
 - `pages` (Option<Vec<PageContent>>): Per-page extracted content when page extraction is enabled via `PageConfig.extract_pages = true`
 
 **Example:**

@@ -5,7 +5,7 @@
 
 use crate::Result;
 use crate::core::config::ExtractionConfig;
-use crate::types::ExtractionResult;
+use crate::types::{ExtractionResult, ProcessingWarning};
 use std::borrow::Cow;
 
 /// Execute chunking if configured.
@@ -19,6 +19,8 @@ pub(super) fn execute_chunking(result: &mut ExtractionResult, config: &Extractio
                 result.chunks = Some(chunking_result.chunks);
 
                 if let Some(ref chunks) = result.chunks {
+                    // DEPRECATED: kept for backward compatibility; will be removed in next major version.
+                    // chunk_count is derivable from result.chunks.len().
                     result.metadata.additional.insert(
                         Cow::Borrowed("chunk_count"),
                         serde_json::Value::Number(serde_json::Number::from(chunks.len())),
@@ -31,6 +33,8 @@ pub(super) fn execute_chunking(result: &mut ExtractionResult, config: &Extractio
                 {
                     match crate::embeddings::generate_embeddings_for_chunks(chunks, embedding_config) {
                         Ok(()) => {
+                            // DEPRECATED: kept for backward compatibility; will be removed in next major version.
+                            // embeddings_generated is derivable from result.chunks having non-None embeddings.
                             result
                                 .metadata
                                 .additional
@@ -38,10 +42,16 @@ pub(super) fn execute_chunking(result: &mut ExtractionResult, config: &Extractio
                         }
                         Err(e) => {
                             tracing::warn!("Embedding generation failed: {e}. Check that ONNX Runtime is installed.");
-                            result.metadata.additional.insert(
-                                Cow::Borrowed("embedding_error"),
-                                serde_json::Value::String(e.to_string()),
-                            );
+                            let error_msg = e.to_string();
+                            result.processing_warnings.push(ProcessingWarning {
+                                source: "embedding".to_string(),
+                                message: error_msg.clone(),
+                            });
+                            // DEPRECATED: kept for backward compatibility; will be removed in next major version.
+                            result
+                                .metadata
+                                .additional
+                                .insert(Cow::Borrowed("embedding_error"), serde_json::Value::String(error_msg));
                         }
                     }
                 }
@@ -51,27 +61,45 @@ pub(super) fn execute_chunking(result: &mut ExtractionResult, config: &Extractio
                     tracing::warn!(
                         "Embedding config provided but embeddings feature is not enabled. Recompile with --features embeddings."
                     );
-                    result.metadata.additional.insert(
-                        Cow::Borrowed("embedding_error"),
-                        serde_json::Value::String("Embeddings feature not enabled".to_string()),
-                    );
+                    let error_msg = "Embeddings feature not enabled".to_string();
+                    result.processing_warnings.push(ProcessingWarning {
+                        source: "embedding".to_string(),
+                        message: error_msg.clone(),
+                    });
+                    // DEPRECATED: kept for backward compatibility; will be removed in next major version.
+                    result
+                        .metadata
+                        .additional
+                        .insert(Cow::Borrowed("embedding_error"), serde_json::Value::String(error_msg));
                 }
             }
             Err(e) => {
-                result.metadata.additional.insert(
-                    Cow::Borrowed("chunking_error"),
-                    serde_json::Value::String(e.to_string()),
-                );
+                let error_msg = e.to_string();
+                result.processing_warnings.push(ProcessingWarning {
+                    source: "chunking".to_string(),
+                    message: error_msg.clone(),
+                });
+                // DEPRECATED: kept for backward compatibility; will be removed in next major version.
+                result
+                    .metadata
+                    .additional
+                    .insert(Cow::Borrowed("chunking_error"), serde_json::Value::String(error_msg));
             }
         }
     }
 
     #[cfg(not(feature = "chunking"))]
     if config.chunking.is_some() {
-        result.metadata.additional.insert(
-            Cow::Borrowed("chunking_error"),
-            serde_json::Value::String("Chunking feature not enabled".to_string()),
-        );
+        let error_msg = "Chunking feature not enabled".to_string();
+        result.processing_warnings.push(ProcessingWarning {
+            source: "chunking".to_string(),
+            message: error_msg.clone(),
+        });
+        // DEPRECATED: kept for backward compatibility; will be removed in next major version.
+        result
+            .metadata
+            .additional
+            .insert(Cow::Borrowed("chunking_error"), serde_json::Value::String(error_msg));
     }
 
     Ok(())
@@ -86,9 +114,15 @@ pub(super) fn execute_language_detection(result: &mut ExtractionResult, config: 
                 result.detected_languages = detected;
             }
             Err(e) => {
+                let error_msg = e.to_string();
+                result.processing_warnings.push(ProcessingWarning {
+                    source: "language_detection".to_string(),
+                    message: error_msg.clone(),
+                });
+                // DEPRECATED: kept for backward compatibility; will be removed in next major version.
                 result.metadata.additional.insert(
                     Cow::Borrowed("language_detection_error"),
-                    serde_json::Value::String(e.to_string()),
+                    serde_json::Value::String(error_msg),
                 );
             }
         }
@@ -96,9 +130,15 @@ pub(super) fn execute_language_detection(result: &mut ExtractionResult, config: 
 
     #[cfg(not(feature = "language-detection"))]
     if config.language_detection.is_some() {
+        let error_msg = "Language detection feature not enabled".to_string();
+        result.processing_warnings.push(ProcessingWarning {
+            source: "language_detection".to_string(),
+            message: error_msg.clone(),
+        });
+        // DEPRECATED: kept for backward compatibility; will be removed in next major version.
         result.metadata.additional.insert(
             Cow::Borrowed("language_detection_error"),
-            serde_json::Value::String("Language detection feature not enabled".to_string()),
+            serde_json::Value::String(error_msg),
         );
     }
 

@@ -11,9 +11,7 @@ var result = await KreuzbergClient.ExtractFileAsync(
     config
 );
 
-var qualityScore = result.Metadata.ContainsKey("quality_score")
-    ? (double)result.Metadata["quality_score"]
-    : 0.0;
+var qualityScore = result.QualityScore;
 
 Console.WriteLine($"Quality score: {qualityScore:F2}");
 ```

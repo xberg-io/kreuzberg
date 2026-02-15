@@ -458,6 +458,9 @@ mod tests {
             elements: None,
             ocr_elements: None,
             document: None,
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: vec![],
         }
     }
 
@@ -726,6 +729,9 @@ mod tests {
             elements: None,
             ocr_elements: None,
             document: None,
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: vec![],
         };
 
         let result_ptr = &result as *const ExtractionResult;

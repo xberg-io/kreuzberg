@@ -6,12 +6,9 @@ public class QualityValidator : IValidator
     public string Name() => "quality-validator";
     public string Version() => "1.0.0";
 
-    public void Validate(Dictionary<string, object> result)
+    public void Validate(ExtractionResult result)
     {
-        var metadata = (Dictionary<string, object>)result["metadata"];
-        var score = metadata.ContainsKey("quality_score")
-            ? Convert.ToDouble(metadata["quality_score"])
-            : 0.0;
+        var score = result.QualityScore;
 
         if (score < 0.5)
             throw new ValidationError($"Quality score too low: {score:F2}");

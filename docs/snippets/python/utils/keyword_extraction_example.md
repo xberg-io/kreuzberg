@@ -12,10 +12,10 @@ async def main() -> None:
     )
     result = await extract_file("research_paper.pdf", config=config)
 
-    keywords: list = result.metadata.get("keywords", [])
+    keywords: list = result.extracted_keywords or []
     for kw in keywords:
-        score: float = kw.get("score", 0.0)
-        text: str = kw.get("text", "")
+        score: float = kw.score or 0.0
+        text: str = kw.text or ""
         print(f"{text}: {score:.3f}")
 
 asyncio.run(main())

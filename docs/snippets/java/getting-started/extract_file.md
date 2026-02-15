@@ -14,7 +14,7 @@ public class ExtractFile {
         ExtractionResult result = Kreuzberg.extractFile("contract.pdf", config);
 
         System.out.println("Extracted " + result.getContent().length() + " characters");
-        System.out.println("Quality score: " + result.getMetadata().get("quality_score"));
+        System.out.println("Quality score: " + result.getQualityScore());
         System.out.println("Processing time: " + result.getMetadata().get("processing_time") + "ms");
     }
 }

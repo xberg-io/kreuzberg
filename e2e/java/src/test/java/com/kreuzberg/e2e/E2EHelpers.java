@@ -544,7 +544,7 @@ public final class E2EHelpers {
                 Integer minCount,
                 Integer maxCount
         ) {
-            var keywordsOpt = result.getMetadata().getKeywords();
+            var keywordsOpt = result.getExtractedKeywords();
             var keywords = keywordsOpt.orElse(null);
             int count = keywords != null ? keywords.size() : 0;
 

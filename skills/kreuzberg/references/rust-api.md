@@ -418,6 +418,49 @@ pub struct ExtractionResult {
 
     /// Djot document structure (if extracting Djot)
     pub djot_content: Option<DjotContent>,
+
+    /// Extracted keywords with relevance scores (if keyword extraction enabled)
+    pub extracted_keywords: Option<Vec<ExtractedKeyword>>,
+
+    /// Quality score for extraction result (0.0-1.0)
+    pub quality_score: Option<f64>,
+
+    /// Non-fatal warnings during processing pipeline
+    pub processing_warnings: Vec<ProcessingWarning>,
+}
+```
+
+### `ExtractedKeyword`
+
+Extracted keyword with relevance score and position information.
+
+```rust
+pub struct ExtractedKeyword {
+    /// Keyword text
+    pub text: String,
+
+    /// Relevance score (0.0-1.0)
+    pub score: f32,
+
+    /// Algorithm used for extraction ("tfidf", "textrank", "yake", etc.)
+    pub algorithm: String,
+
+    /// Character positions in content (if available)
+    pub positions: Option<Vec<usize>>,
+}
+```
+
+### `ProcessingWarning`
+
+Non-fatal warning encountered during document processing.
+
+```rust
+pub struct ProcessingWarning {
+    /// Component that generated the warning
+    pub source: String,
+
+    /// Warning message describing the issue
+    pub message: String,
 }
 ```
 

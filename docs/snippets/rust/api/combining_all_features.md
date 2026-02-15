@@ -42,11 +42,13 @@ let config = ExtractionConfig {
 
 let result = extract_file("document.pdf", None, &config).await?;
 
-if let Some(quality) = result.metadata.additional.get("quality_score") {
-    println!("Quality: {:?}", quality);
+if let Some(quality) = result.quality_score {
+    println!("Quality: {:.2}", quality);
 }
 println!("Languages: {:?}", result.detected_languages);
-println!("Keywords: {:?}", result.metadata.additional.get("keywords"));
+if let Some(keywords) = &result.extracted_keywords {
+    println!("Keywords: {:?}", keywords);
+}
 if let Some(chunks) = result.chunks {
     if let Some(first_chunk) = chunks.first() {
         if let Some(embedding) = &first_chunk.embedding {

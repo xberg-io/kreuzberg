@@ -65,6 +65,12 @@ internal static partial class NativeMethods
         public IntPtr OcrElementsJson;
         /// <summary>JSON object of document structure pointer.</summary>
         public IntPtr DocumentJson;
+        /// <summary>JSON array of extracted keywords pointer.</summary>
+        public IntPtr ExtractedKeywordsJson;
+        /// <summary>JSON quality score pointer.</summary>
+        public IntPtr QualityScoreJson;
+        /// <summary>JSON array of processing warnings pointer.</summary>
+        public IntPtr ProcessingWarningsJson;
 
         /// <summary>Whether extraction succeeded.</summary>
         [MarshalAs(UnmanagedType.I1)]

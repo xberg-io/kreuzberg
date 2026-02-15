@@ -204,6 +204,10 @@ pub fn batch_extract_bytes_sync(
             elements: None,
             ocr_elements: None,
             document: None,
+            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: Vec::new(),
         }));
     }
     Ok(results)

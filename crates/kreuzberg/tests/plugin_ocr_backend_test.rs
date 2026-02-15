@@ -58,16 +58,7 @@ impl OcrBackend for MockOcrBackend {
         Ok(ExtractionResult {
             content: format!("{} (lang: {})", self.return_text, config.language),
             mime_type: Cow::Borrowed("text/plain"),
-            metadata: Metadata::default(),
-            tables: vec![],
-            detected_languages: None,
-            chunks: None,
-            images: None,
-            pages: None,
-            djot_content: None,
-            elements: None,
-            ocr_elements: None,
-            document: None,
+            ..Default::default()
         })
     }
 
@@ -159,16 +150,7 @@ impl OcrBackend for ValidatingOcrBackend {
         Ok(ExtractionResult {
             content: format!("Processed {} bytes", image_bytes.len()),
             mime_type: Cow::Borrowed("text/plain"),
-            metadata: Metadata::default(),
-            tables: vec![],
-            detected_languages: None,
-            chunks: None,
-            images: None,
-            pages: None,
-            djot_content: None,
-            elements: None,
-            ocr_elements: None,
-            document: None,
+            ..Default::default()
         })
     }
 
@@ -225,15 +207,7 @@ impl OcrBackend for MetadataOcrBackend {
             content: "OCR processed text".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             metadata,
-            tables: vec![],
-            detected_languages: None,
-            chunks: None,
-            images: None,
-            pages: None,
-            djot_content: None,
-            elements: None,
-            ocr_elements: None,
-            document: None,
+            ..Default::default()
         })
     }
 

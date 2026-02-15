@@ -555,5 +555,46 @@ pub fn extraction_result_to_ruby(ruby: &Ruby, result: RustExtractionResult) -> R
         set_hash_entry(ruby, &hash, "document", ruby.qnil().as_value())?;
     }
 
+    // Convert extracted keywords
+    if let Some(keywords) = result.extracted_keywords {
+        let keywords_array = ruby.ary_new();
+        for kw in keywords {
+            let kw_hash = ruby.hash_new();
+            kw_hash.aset("text", kw.text.as_str())?;
+            kw_hash.aset("score", ruby.float_from_f64(kw.score as f64).into_value_with(ruby))?;
+            kw_hash.aset("algorithm", kw.algorithm.as_str())?;
+            if kw.positions.is_empty() {
+                kw_hash.aset("positions", ruby.qnil().as_value())?;
+            } else {
+                let positions_array = ruby.ary_new();
+                for pos in kw.positions {
+                    positions_array.push(pos as i64)?;
+                }
+                kw_hash.aset("positions", positions_array)?;
+            }
+            keywords_array.push(kw_hash)?;
+        }
+        set_hash_entry(ruby, &hash, "extracted_keywords", keywords_array.into_value_with(ruby))?;
+    } else {
+        set_hash_entry(ruby, &hash, "extracted_keywords", ruby.qnil().as_value())?;
+    }
+
+    // Convert quality score
+    if let Some(score) = result.quality_score {
+        set_hash_entry(ruby, &hash, "quality_score", ruby.float_from_f64(score).into_value_with(ruby))?;
+    } else {
+        set_hash_entry(ruby, &hash, "quality_score", ruby.qnil().as_value())?;
+    }
+
+    // Convert processing warnings
+    let warnings_array = ruby.ary_new();
+    for warning in result.processing_warnings {
+        let w_hash = ruby.hash_new();
+        w_hash.aset("source", warning.source.as_str())?;
+        w_hash.aset("message", warning.message.as_str())?;
+        warnings_array.push(w_hash)?;
+    }
+    set_hash_entry(ruby, &hash, "processing_warnings", warnings_array.into_value_with(ruby))?;
+
     Ok(hash)
 }

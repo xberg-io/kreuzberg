@@ -289,7 +289,7 @@ def test_config_keywords() -> None:
 
     helpers.assert_expected_mime(result, ["application/pdf"])
     helpers.assert_min_content_length(result, 10)
-    helpers.assert_metadata_expectation(result, "keywords", {"exists": True})
+    helpers.assert_keywords(result, has_keywords=True, min_count=1)
 
 
 def test_config_language_detection() -> None:

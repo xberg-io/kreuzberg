@@ -100,6 +100,7 @@ jobs:
           cache-key-prefix: php-${{ matrix.os }}
           use-sccache: 'true'
           report-stats: 'true'
+          disable-cache: ${{ matrix.os == 'windows-latest' }}
 
       - name: Detect partial cache hit and clean stale fingerprints
         shell: bash

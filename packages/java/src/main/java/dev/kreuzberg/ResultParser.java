@@ -29,6 +29,10 @@ final class ResultParser {
 	};
 	private static final TypeReference<List<PageContent>> PAGE_CONTENT_LIST = new TypeReference<>() {
 	};
+	private static final TypeReference<List<ExtractedKeyword>> KEYWORD_LIST = new TypeReference<>() {
+	};
+	private static final TypeReference<List<ProcessingWarning>> WARNING_LIST = new TypeReference<>() {
+	};
 	private static final TypeReference<Map<String, Object>> METADATA_MAP = new TypeReference<>() {
 	};
 	private static final TypeReference<EmbeddingPreset> EMBEDDING_PRESET = new TypeReference<>() {
@@ -63,6 +67,16 @@ final class ResultParser {
 			String metadataJson, String chunksJson, String imagesJson, String pagesJson, String pageStructureJson,
 			String elementsJson, String ocrElementsJson, String djotContentJson, String language, String date,
 			String subject, String documentStructureJson) throws KreuzbergException {
+		return parse(content, mimeType, tablesJson, detectedLanguagesJson, metadataJson, chunksJson, imagesJson,
+				pagesJson, pageStructureJson, elementsJson, ocrElementsJson, djotContentJson, language, date, subject,
+				documentStructureJson, null, null, null);
+	}
+
+	static ExtractionResult parse(String content, String mimeType, String tablesJson, String detectedLanguagesJson,
+			String metadataJson, String chunksJson, String imagesJson, String pagesJson, String pageStructureJson,
+			String elementsJson, String ocrElementsJson, String djotContentJson, String language, String date,
+			String subject, String documentStructureJson, String extractedKeywordsJson, String qualityScoreStr,
+			String processingWarningsJson) throws KreuzbergException {
 		try {
 			Map<String, Object> metadata = decode(metadataJson, METADATA_MAP, Collections.emptyMap());
 			List<Table> tables = decode(tablesJson, TABLE_LIST, List.of());
@@ -75,13 +89,18 @@ final class ResultParser {
 			List<OcrElement> ocrElements = decode(ocrElementsJson, OCR_ELEMENT_LIST, List.of());
 			DjotContent djotContent = decode(djotContentJson, DJOT_CONTENT, null);
 			DocumentStructure documentStructure = decode(documentStructureJson, DOCUMENT_STRUCTURE, null);
+			List<ExtractedKeyword> extractedKeywords = decode(extractedKeywordsJson, KEYWORD_LIST, null);
+			Double qualityScore = qualityScoreStr != null && !qualityScoreStr.isBlank()
+					? Double.valueOf(qualityScoreStr)
+					: null;
+			List<ProcessingWarning> processingWarnings = decode(processingWarningsJson, WARNING_LIST, null);
 
 			// Build Metadata with FFI-provided language, date, and subject if available
 			Metadata metadataObj = buildMetadata(metadata, language, date, subject);
 
 			return new ExtractionResult(content != null ? content : "", mimeType != null ? mimeType : "", metadataObj,
 					tables, detectedLanguages, chunks, images, pages, pageStructure, elements, ocrElements, djotContent,
-					documentStructure);
+					documentStructure, extractedKeywords, qualityScore, processingWarnings);
 		} catch (Exception e) {
 			throw new KreuzbergException("Failed to parse extraction result", e);
 		}
@@ -89,7 +108,8 @@ final class ResultParser {
 
 	private static final java.util.Set<String> KNOWN_METADATA_KEYS = java.util.Set.of("title", "subject", "language",
 			"created", "modified", "created_at", "modified_at", "created_by", "modified_by", "authors", "keywords",
-			"pages", "image_preprocessing", "json_schema", "error");
+			"pages", "image_preprocessing", "json_schema", "error", "category", "tags", "document_version",
+			"abstract_text", "output_format");
 
 	private static Metadata buildMetadata(Map<String, Object> metadataMap, String language, String date,
 			String subject) {
@@ -116,6 +136,13 @@ final class ResultParser {
 		@SuppressWarnings("unchecked")
 		Map<String, Object> error = (Map<String, Object>) metadataMap.get("error");
 
+		String category = getStringFromMap(metadataMap, "category");
+		@SuppressWarnings("unchecked")
+		List<String> tags = (List<String>) metadataMap.get("tags");
+		String documentVersion = getStringFromMap(metadataMap, "document_version");
+		String abstractText = getStringFromMap(metadataMap, "abstract_text");
+		String outputFormat = getStringFromMap(metadataMap, "output_format");
+
 		Metadata metadata = new Metadata(title != null ? Optional.of(title) : Optional.empty(),
 				actualSubject != null ? Optional.of(actualSubject) : Optional.empty(),
 				authors != null ? Optional.of(authors) : Optional.empty(),
@@ -128,7 +155,12 @@ final class ResultParser {
 				pages != null ? Optional.of(pages) : Optional.empty(),
 				imagePreprocessing != null ? Optional.of(imagePreprocessing) : Optional.empty(),
 				jsonSchema != null ? Optional.of(jsonSchema) : Optional.empty(),
-				error != null ? Optional.of(error) : Optional.empty());
+				error != null ? Optional.of(error) : Optional.empty(),
+				category != null ? Optional.of(category) : Optional.empty(),
+				tags != null ? Optional.of(tags) : Optional.empty(),
+				documentVersion != null ? Optional.of(documentVersion) : Optional.empty(),
+				abstractText != null ? Optional.of(abstractText) : Optional.empty(),
+				outputFormat != null ? Optional.of(outputFormat) : Optional.empty());
 
 		// Add format-specific and other additional fields not handled above
 		for (Map.Entry<String, Object> entry : metadataMap.entrySet()) {
@@ -190,7 +222,8 @@ final class ResultParser {
 					wire.chunks != null ? wire.chunks : List.of(), wire.images != null ? wire.images : List.of(),
 					wire.pages != null ? wire.pages : List.of(), wire.pageStructure,
 					wire.elements != null ? wire.elements : List.of(),
-					wire.ocrElements != null ? wire.ocrElements : List.of(), wire.djotContent, wire.document);
+					wire.ocrElements != null ? wire.ocrElements : List.of(), wire.djotContent, wire.document,
+					wire.extractedKeywords, wire.qualityScore, wire.processingWarnings);
 		} catch (Exception e) {
 			throw new KreuzbergException("Failed to parse result JSON", e);
 		}
@@ -201,7 +234,8 @@ final class ResultParser {
 				result.getMetadata(), result.getTables(), result.getDetectedLanguages(), result.getChunks(),
 				result.getImages(), result.getPages(), result.getPageStructure().orElse(null), result.getElements(),
 				result.getOcrElements(), result.getDjotContent().orElse(null),
-				result.getDocumentStructure().orElse(null));
+				result.getDocumentStructure().orElse(null), result.getExtractedKeywords().orElse(null),
+				result.getQualityScore().orElse(null), result.getProcessingWarnings().orElse(null));
 		return MAPPER.writeValueAsString(wire);
 	}
 
@@ -227,6 +261,9 @@ final class ResultParser {
 		private final List<OcrElement> ocrElements;
 		private final DjotContent djotContent;
 		private final DocumentStructure document;
+		private final List<ExtractedKeyword> extractedKeywords;
+		private final Double qualityScore;
+		private final List<ProcessingWarning> processingWarnings;
 
 		WireExtractionResult(@JsonProperty("content") String content, @JsonProperty("mime_type") String mimeType,
 				@JsonProperty("metadata") Metadata metadata, @JsonProperty("tables") List<Table> tables,
@@ -237,7 +274,10 @@ final class ResultParser {
 				@JsonProperty("elements") List<Element> elements,
 				@JsonProperty("ocr_elements") List<OcrElement> ocrElements,
 				@JsonProperty("djot_content") DjotContent djotContent,
-				@JsonProperty("document") DocumentStructure document) {
+				@JsonProperty("document") DocumentStructure document,
+				@JsonProperty("extracted_keywords") List<ExtractedKeyword> extractedKeywords,
+				@JsonProperty("quality_score") Double qualityScore,
+				@JsonProperty("processing_warnings") List<ProcessingWarning> processingWarnings) {
 			this.content = content;
 			this.mimeType = mimeType;
 			this.metadata = metadata;
@@ -251,6 +291,9 @@ final class ResultParser {
 			this.ocrElements = ocrElements;
 			this.djotContent = djotContent;
 			this.document = document;
+			this.extractedKeywords = extractedKeywords;
+			this.qualityScore = qualityScore;
+			this.processingWarnings = processingWarnings;
 		}
 	}
 }

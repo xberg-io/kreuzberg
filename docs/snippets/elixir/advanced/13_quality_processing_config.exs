@@ -26,9 +26,9 @@ IO.puts("Extracted Content (first 300 chars):")
 IO.puts(content_preview)
 IO.puts("\nTotal content size: #{byte_size(result.content)} bytes")
 
-# Check quality metrics in metadata
-quality_score = result.metadata["quality_score"]
-if quality_score do
+# Check quality metrics
+quality_score = result.quality_score
+if quality_score && quality_score > 0 do
   IO.puts("\nQuality Score: #{quality_score}")
   IO.puts("Quality Status: #{if quality_score >= 0.75, do: "Acceptable", else: "Below threshold"}")
 end

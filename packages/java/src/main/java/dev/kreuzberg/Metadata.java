@@ -36,6 +36,11 @@ public final class Metadata {
 	private final Optional<Map<String, Object>> imagePreprocessing;
 	private final Optional<Map<String, Object>> jsonSchema;
 	private final Optional<Map<String, Object>> error;
+	private final Optional<String> category;
+	private final Optional<List<String>> tags;
+	private final Optional<String> documentVersion;
+	private final Optional<String> abstractText;
+	private final Optional<String> outputFormat;
 	private final Map<String, Object> additional;
 
 	@JsonCreator
@@ -49,7 +54,11 @@ public final class Metadata {
 			@JsonProperty("pages") Optional<PageStructure> pages,
 			@JsonProperty("image_preprocessing") Optional<Map<String, Object>> imagePreprocessing,
 			@JsonProperty("json_schema") Optional<Map<String, Object>> jsonSchema,
-			@JsonProperty("error") Optional<Map<String, Object>> error) {
+			@JsonProperty("error") Optional<Map<String, Object>> error,
+			@JsonProperty("category") Optional<String> category, @JsonProperty("tags") Optional<List<String>> tags,
+			@JsonProperty("document_version") Optional<String> documentVersion,
+			@JsonProperty("abstract_text") Optional<String> abstractText,
+			@JsonProperty("output_format") Optional<String> outputFormat) {
 		this.title = title != null ? title : Optional.empty();
 		this.subject = subject != null ? subject : Optional.empty();
 		this.authors = authors != null && authors.isPresent()
@@ -67,6 +76,13 @@ public final class Metadata {
 		this.imagePreprocessing = imagePreprocessing != null ? imagePreprocessing : Optional.empty();
 		this.jsonSchema = jsonSchema != null ? jsonSchema : Optional.empty();
 		this.error = error != null ? error : Optional.empty();
+		this.category = category != null ? category : Optional.empty();
+		this.tags = tags != null && tags.isPresent()
+				? Optional.of(Collections.unmodifiableList(new ArrayList<>(tags.get())))
+				: Optional.empty();
+		this.documentVersion = documentVersion != null ? documentVersion : Optional.empty();
+		this.abstractText = abstractText != null ? abstractText : Optional.empty();
+		this.outputFormat = outputFormat != null ? outputFormat : Optional.empty();
 		this.additional = new HashMap<>();
 	}
 
@@ -77,6 +93,7 @@ public final class Metadata {
 	 */
 	public static Metadata empty() {
 		return new Metadata(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(),
+				Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(),
 				Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(),
 				Optional.empty(), Optional.empty(), Optional.empty());
 	}
@@ -213,6 +230,56 @@ public final class Metadata {
 	}
 
 	/**
+	 * Get the document category.
+	 *
+	 * @return optional category string
+	 * @since 4.5.0
+	 */
+	public Optional<String> getCategory() {
+		return category;
+	}
+
+	/**
+	 * Get the document tags.
+	 *
+	 * @return optional unmodifiable list of tags
+	 * @since 4.5.0
+	 */
+	public Optional<List<String>> getTags() {
+		return tags;
+	}
+
+	/**
+	 * Get the document version.
+	 *
+	 * @return optional document version string
+	 * @since 4.5.0
+	 */
+	public Optional<String> getDocumentVersion() {
+		return documentVersion;
+	}
+
+	/**
+	 * Get the document abstract text.
+	 *
+	 * @return optional abstract text
+	 * @since 4.5.0
+	 */
+	public Optional<String> getAbstractText() {
+		return abstractText;
+	}
+
+	/**
+	 * Get the output format used during extraction.
+	 *
+	 * @return optional output format string
+	 * @since 4.5.0
+	 */
+	public Optional<String> getOutputFormat() {
+		return outputFormat;
+	}
+
+	/**
 	 * Get additional custom fields from postprocessors and flattened format
 	 * metadata.
 	 *
@@ -231,7 +298,9 @@ public final class Metadata {
 		return !title.isPresent() && !subject.isPresent() && !authors.isPresent() && !keywords.isPresent()
 				&& !language.isPresent() && !createdAt.isPresent() && !modifiedAt.isPresent() && !createdBy.isPresent()
 				&& !modifiedBy.isPresent() && !pages.isPresent() && !imagePreprocessing.isPresent()
-				&& !jsonSchema.isPresent() && !error.isPresent() && additional.isEmpty();
+				&& !jsonSchema.isPresent() && !error.isPresent() && !category.isPresent() && !tags.isPresent()
+				&& !documentVersion.isPresent() && !abstractText.isPresent() && !outputFormat.isPresent()
+				&& additional.isEmpty();
 	}
 
 	@Override
@@ -250,13 +319,17 @@ public final class Metadata {
 				&& Objects.equals(modifiedBy, other.modifiedBy) && Objects.equals(pages, other.pages)
 				&& Objects.equals(imagePreprocessing, other.imagePreprocessing)
 				&& Objects.equals(jsonSchema, other.jsonSchema) && Objects.equals(error, other.error)
+				&& Objects.equals(category, other.category) && Objects.equals(tags, other.tags)
+				&& Objects.equals(documentVersion, other.documentVersion)
+				&& Objects.equals(abstractText, other.abstractText) && Objects.equals(outputFormat, other.outputFormat)
 				&& Objects.equals(additional, other.additional);
 	}
 
 	@Override
 	public int hashCode() {
 		return Objects.hash(title, subject, authors, keywords, language, createdAt, modifiedAt, createdBy, modifiedBy,
-				pages, imagePreprocessing, jsonSchema, error, additional);
+				pages, imagePreprocessing, jsonSchema, error, category, tags, documentVersion, abstractText,
+				outputFormat, additional);
 	}
 
 	@Override
@@ -265,6 +338,8 @@ public final class Metadata {
 				+ keywords + ", language=" + language + ", createdAt=" + createdAt + ", modifiedAt=" + modifiedAt
 				+ ", createdBy=" + createdBy + ", modifiedBy=" + modifiedBy + ", pages=" + pages
 				+ ", imagePreprocessing=" + imagePreprocessing + ", jsonSchema=" + jsonSchema + ", error=" + error
-				+ ", additional=" + additional + '}';
+				+ ", category=" + category + ", tags=" + tags + ", documentVersion=" + documentVersion
+				+ ", abstractText=" + abstractText + ", outputFormat=" + outputFormat + ", additional=" + additional
+				+ '}';
 	}
 }

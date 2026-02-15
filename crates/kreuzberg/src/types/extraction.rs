@@ -15,7 +15,7 @@ use super::tables::Table;
 /// General extraction result used by the core extraction API.
 ///
 /// This is the main result type returned by all extraction functions.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
 #[cfg_attr(feature = "api", schema(no_recursion))]
 pub struct ExtractionResult {
@@ -106,6 +106,48 @@ pub struct ExtractionResult {
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub document: Option<DocumentStructure>,
+
+    /// Extracted keywords when keyword extraction is enabled.
+    ///
+    /// When keyword extraction (RAKE or YAKE) is configured, this field contains
+    /// the extracted keywords with scores, algorithm info, and position data.
+    /// Previously stored in `metadata.additional["keywords"]`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+    pub extracted_keywords: Option<Vec<crate::keywords::Keyword>>,
+
+    /// Document quality score from quality analysis.
+    ///
+    /// A value between 0.0 and 1.0 indicating the overall text quality.
+    /// Previously stored in `metadata.additional["quality_score"]`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    pub quality_score: Option<f64>,
+
+    /// Non-fatal warnings collected during processing pipeline stages.
+    ///
+    /// Captures errors from optional pipeline features (embedding, chunking,
+    /// language detection, output formatting) that don't prevent extraction
+    /// but may indicate degraded results.
+    /// Previously stored as individual keys in `metadata.additional`.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    #[serde(default)]
+    pub processing_warnings: Vec<ProcessingWarning>,
+}
+
+/// A non-fatal warning from a processing pipeline stage.
+///
+/// Captures errors from optional features that don't prevent extraction
+/// but may indicate degraded results.
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
+pub struct ProcessingWarning {
+    /// The pipeline stage or feature that produced this warning
+    /// (e.g., "embedding", "chunking", "language_detection", "output_format").
+    pub source: String,
+    /// Human-readable description of what went wrong.
+    pub message: String,
 }
 
 /// A text chunk with optional embedding and metadata.

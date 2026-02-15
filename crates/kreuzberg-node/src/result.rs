@@ -2,6 +2,7 @@ use crate::KNOWN_FORMAT_FIELDS;
 use crate::config::JsExtractionConfig;
 use kreuzberg::{
     Chunk as RustChunk, ChunkMetadata as RustChunkMetadata, ExtractionConfig, ExtractionResult as RustExtractionResult,
+    ProcessingWarning as RustProcessingWarning,
 };
 use napi::bindgen_prelude::*;
 use napi_derive::napi;
@@ -92,6 +93,22 @@ pub struct JsBoundingBox {
 
 #[napi(object)]
 #[derive(serde::Serialize, serde::Deserialize)]
+pub struct JsExtractedKeyword {
+    pub text: String,
+    pub score: f64,
+    pub algorithm: String,
+    pub positions: Option<Vec<u32>>,
+}
+
+#[napi(object)]
+#[derive(serde::Serialize, serde::Deserialize)]
+pub struct JsProcessingWarning {
+    pub source: String,
+    pub message: String,
+}
+
+#[napi(object)]
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct JsElementMetadata {
     pub page_number: Option<u32>,
     pub filename: Option<String>,
@@ -145,6 +162,12 @@ pub struct JsExtractionResult {
     pub document: Option<serde_json::Value>,
     #[napi(ts_type = "OcrElement[] | null")]
     pub ocr_elements: Option<serde_json::Value>,
+    #[napi(js_name = "extractedKeywords")]
+    pub extracted_keywords: Option<Vec<JsExtractedKeyword>>,
+    #[napi(js_name = "qualityScore")]
+    pub quality_score: Option<f64>,
+    #[napi(js_name = "processingWarnings")]
+    pub processing_warnings: Vec<JsProcessingWarning>,
 }
 
 impl TryFrom<RustExtractionResult> for JsExtractionResult {
@@ -327,6 +350,30 @@ impl TryFrom<RustExtractionResult> for JsExtractionResult {
                 )
             })?;
 
+        let extracted_keywords = val.extracted_keywords.map(|keywords| {
+            keywords
+                .into_iter()
+                .map(|kw| JsExtractedKeyword {
+                    text: kw.text,
+                    score: kw.score as f64,
+                    algorithm: serde_json::to_value(kw.algorithm)
+                        .ok()
+                        .and_then(|v| v.as_str().map(String::from))
+                        .unwrap_or_default(),
+                    positions: kw.positions.map(|p| p.into_iter().map(|v| v as u32).collect()),
+                })
+                .collect()
+        });
+
+        let processing_warnings = val
+            .processing_warnings
+            .into_iter()
+            .map(|w| JsProcessingWarning {
+                source: w.source,
+                message: w.message,
+            })
+            .collect();
+
         Ok(JsExtractionResult {
             content: val.content,
             mime_type: val.mime_type.to_string(),
@@ -376,6 +423,9 @@ impl TryFrom<RustExtractionResult> for JsExtractionResult {
             elements,
             document,
             ocr_elements,
+            extracted_keywords,
+            quality_score: val.quality_score,
+            processing_warnings,
         })
     }
 }
@@ -406,6 +456,19 @@ impl TryFrom<JsExtractionResult> for RustExtractionResult {
             let error = metadata_map
                 .remove("error")
                 .and_then(|v| serde_json::from_value(v).ok());
+            let category = metadata_map
+                .remove("category")
+                .and_then(|v| serde_json::from_value(v).ok());
+            let tags = metadata_map.remove("tags").and_then(|v| serde_json::from_value(v).ok());
+            let document_version = metadata_map
+                .remove("document_version")
+                .and_then(|v| serde_json::from_value(v).ok());
+            let abstract_text = metadata_map
+                .remove("abstract_text")
+                .and_then(|v| serde_json::from_value(v).ok());
+            let output_format = metadata_map
+                .remove("output_format")
+                .and_then(|v| serde_json::from_value(v).ok());
 
             let mut format_fields = serde_json::Map::new();
             for key in KNOWN_FORMAT_FIELDS.iter() {
@@ -432,6 +495,11 @@ impl TryFrom<JsExtractionResult> for RustExtractionResult {
                 image_preprocessing,
                 json_schema,
                 error,
+                category,
+                tags,
+                document_version,
+                abstract_text,
+                output_format,
                 additional,
                 ..Default::default()
             }
@@ -572,6 +640,30 @@ impl TryFrom<JsExtractionResult> for RustExtractionResult {
             document,
             djot_content: None,
             ocr_elements: val.ocr_elements.and_then(|v| serde_json::from_value(v).ok()),
+            extracted_keywords: val.extracted_keywords.map(|keywords| {
+                keywords
+                    .into_iter()
+                    .filter_map(|kw| {
+                        let algorithm: kreuzberg::keywords::KeywordAlgorithm =
+                            serde_json::from_value(serde_json::Value::String(kw.algorithm)).ok()?;
+                        Some(kreuzberg::keywords::Keyword {
+                            text: kw.text,
+                            score: kw.score as f32,
+                            algorithm,
+                            positions: kw.positions.map(|p| p.into_iter().map(|v| v as usize).collect()),
+                        })
+                    })
+                    .collect()
+            }),
+            quality_score: val.quality_score,
+            processing_warnings: val
+                .processing_warnings
+                .into_iter()
+                .map(|w| RustProcessingWarning {
+                    source: w.source,
+                    message: w.message,
+                })
+                .collect(),
         })
     }
 }

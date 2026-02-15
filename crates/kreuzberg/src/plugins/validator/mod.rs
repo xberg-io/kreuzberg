@@ -73,6 +73,10 @@ mod tests {
             elements: None,
             ocr_elements: None,
             document: None,
+            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: Vec::new(),
         };
 
         let config = ExtractionConfig::default();
@@ -96,6 +100,10 @@ mod tests {
             elements: None,
             ocr_elements: None,
             document: None,
+            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: Vec::new(),
         };
 
         let config = ExtractionConfig::default();
@@ -121,6 +129,10 @@ mod tests {
             elements: None,
             ocr_elements: None,
             document: None,
+            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: Vec::new(),
         };
 
         let config = ExtractionConfig::default();
@@ -161,6 +173,10 @@ mod tests {
             elements: None,
             ocr_elements: None,
             document: None,
+            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: Vec::new(),
         };
 
         let config = ExtractionConfig::default();
@@ -213,6 +229,10 @@ mod tests {
             elements: None,
             ocr_elements: None,
             document: None,
+            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: Vec::new(),
         };
 
         let txt_result = ExtractionResult {
@@ -228,6 +248,10 @@ mod tests {
             elements: None,
             ocr_elements: None,
             document: None,
+            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: Vec::new(),
         };
 
         assert!(validator.should_validate(&pdf_result, &config));
@@ -316,6 +340,10 @@ mod tests {
             elements: None,
             ocr_elements: None,
             document: None,
+            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: Vec::new(),
         };
 
         let config = ExtractionConfig::default();
@@ -352,6 +380,10 @@ mod tests {
             elements: None,
             ocr_elements: None,
             document: None,
+            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: Vec::new(),
         };
 
         let config = ExtractionConfig::default();
@@ -383,6 +415,10 @@ mod tests {
             elements: None,
             ocr_elements: None,
             document: None,
+            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: Vec::new(),
         };
 
         let config = ExtractionConfig::default();
@@ -416,6 +452,10 @@ mod tests {
                 elements: None,
                 ocr_elements: None,
                 document: None,
+                #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+                extracted_keywords: None,
+                quality_score: None,
+                processing_warnings: Vec::new(),
             };
 
             assert!(validator.validate(&result, &config).await.is_ok());
@@ -439,6 +479,10 @@ mod tests {
             elements: None,
             ocr_elements: None,
             document: None,
+            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: Vec::new(),
         };
 
         let config = ExtractionConfig::default();

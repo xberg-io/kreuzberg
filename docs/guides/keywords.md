@@ -79,7 +79,7 @@ config = ExtractionConfig(
 
 # Extract paper and get keywords for indexing
 result = await extract_file("research_paper.pdf", config=config)
-keywords = result.metadata.get("keywords", [])
+keywords = result.extracted_keywords or []
 
 # Use for: indexing, citation networks, topic classification
 ```
@@ -138,7 +138,7 @@ config = ExtractionConfig(
 
 # Tag documents for knowledge base
 result = await extract_file("document.pdf", config=config)
-top_keywords = [k for k in result.metadata.get("keywords", []) if k["score"] > 0.4]
+top_keywords = [k for k in (result.extracted_keywords or []) if k["score"] > 0.4]
 # Use for: taxonomy creation, knowledge graph building
 ```
 
@@ -439,7 +439,7 @@ async def analyze_research_paper(pdf_path: str):
     result = await extract_file(pdf_path, config=config)
 
     # Process keywords for research indexing
-    keywords = result.metadata.get("keywords", [])
+    keywords = result.extracted_keywords or []
 
     # Sort by relevance (lower score = more relevant for YAKE)
     sorted_keywords = sorted(keywords, key=lambda k: k["score"])
@@ -482,7 +482,7 @@ async def extract_product_features(product_doc_path: str):
     )
 
     result = await extract_file(product_doc_path, config=config)
-    keywords = result.metadata.get("keywords", [])
+    keywords = result.extracted_keywords or []
 
     # Group features by score tier
     tier_1 = [k for k in keywords if k["score"] > 10.0]  # Core features
@@ -530,7 +530,7 @@ class DocumentTagger:
     async def tag_document(self, doc_path: str) -> list[str]:
         """Extract top N tags for a document."""
         result = await extract_file(doc_path, config=self.config)
-        keywords = result.metadata.get("keywords", [])
+        keywords = result.extracted_keywords or []
 
         # Return just the text, sorted by relevance
         sorted_keywords = sorted(keywords, key=lambda k: k["score"])
@@ -589,7 +589,7 @@ async def compare_algorithms(doc_path: str):
         )
     )
     yake_result = await extract_file(doc_path, config=yake_config)
-    yake_keywords = yake_result.metadata.get("keywords", [])
+    yake_keywords = yake_result.extracted_keywords or []
 
     # Extract with RAKE
     rake_config = ExtractionConfig(
@@ -601,7 +601,7 @@ async def compare_algorithms(doc_path: str):
         )
     )
     rake_result = await extract_file(doc_path, config=rake_config)
-    rake_keywords = rake_result.metadata.get("keywords", [])
+    rake_keywords = rake_result.extracted_keywords or []
 
     # Compare results
     yake_texts = {k["text"] for k in yake_keywords}
@@ -808,7 +808,7 @@ async def benchmark_configuration(
         result = await extract_file(doc_path, config=config)
         elapsed = time.time() - start
 
-        keywords = result.metadata.get("keywords", [])
+        keywords = result.extracted_keywords or []
         keyword_counts.append(len(keywords))
         extraction_times.append(elapsed)
 
@@ -908,7 +908,7 @@ async def keyword_pipeline(doc_path: str):
     print(f"Document language: {language}")
 
     # Get extracted keywords
-    keywords = result.metadata.get("keywords", [])
+    keywords = result.extracted_keywords or []
     print(f"Extracted {len(keywords)} keywords")
 
     return result
@@ -1060,7 +1060,7 @@ async def debug_keywords(doc_path: str):
     print(f"First 200 chars: {result.content[:200]}")
 
     # Step 2: Check keywords
-    keywords = result.metadata.get("keywords", [])
+    keywords = result.extracted_keywords or []
     print(f"\nTotal keywords: {len(keywords)}")
 
     # Step 3: Verify keywords appear in text

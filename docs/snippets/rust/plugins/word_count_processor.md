@@ -21,10 +21,10 @@ impl PostProcessor for WordCountProcessor {
     ) -> Result<()> {
         let word_count = result.content.split_whitespace().count();
 
-        result.metadata.additional.insert(
-            "word_count".to_string(),
-            serde_json::json!(word_count)
-        );
+        result.processing_warnings.push(ProcessingWarning {
+            source: "word-count".to_string(),
+            message: format!("Processed with word count: {}", word_count)
+        });
 
         Ok(())
     }

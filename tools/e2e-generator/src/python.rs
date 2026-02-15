@@ -486,7 +486,7 @@ def assert_keywords(
     min_count: int | None = None,
     max_count: int | None = None,
 ) -> None:
-    keywords = result.metadata.get("keywords") if isinstance(getattr(result, "metadata", None), dict) else None
+    keywords = getattr(result, "extracted_keywords", None)
     if has_keywords is True:
         if keywords is None:
             pytest.fail("Expected keywords but got None")

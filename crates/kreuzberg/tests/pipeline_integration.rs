@@ -10,7 +10,7 @@ use kreuzberg::core::config::{ExtractionConfig, PostProcessorConfig};
 use kreuzberg::core::pipeline::{clear_processor_cache, run_pipeline};
 use kreuzberg::plugins::registry::get_post_processor_registry;
 use kreuzberg::plugins::{Plugin, PostProcessor, ProcessingStage};
-use kreuzberg::types::{ExtractionResult, Metadata};
+use kreuzberg::types::ExtractionResult;
 use kreuzberg::{KreuzbergError, Result};
 use serial_test::serial;
 use std::borrow::Cow;
@@ -136,16 +136,7 @@ async fn test_pipeline_empty_no_processors() {
     let result = ExtractionResult {
         content: "original content".to_string(),
         mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        pages: None,
-        djot_content: None,
-        elements: None,
-        ocr_elements: None,
-        document: None,
+        ..Default::default()
     };
     let config = ExtractionConfig::default();
 
@@ -185,16 +176,7 @@ async fn test_pipeline_single_processor_per_stage() {
     let result = ExtractionResult {
         content: "start".to_string(),
         mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        pages: None,
-        djot_content: None,
-        elements: None,
-        ocr_elements: None,
-        document: None,
+        ..Default::default()
     };
     let config = ExtractionConfig::default();
 
@@ -234,16 +216,7 @@ async fn test_pipeline_multiple_processors_per_stage() {
     let result = ExtractionResult {
         content: "start".to_string(),
         mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        pages: None,
-        djot_content: None,
-        elements: None,
-        ocr_elements: None,
-        document: None,
+        ..Default::default()
     };
     let config = ExtractionConfig::default();
 
@@ -274,16 +247,7 @@ async fn test_pipeline_all_stages_enabled() {
     let result = ExtractionResult {
         content: "start".to_string(),
         mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        pages: None,
-        djot_content: None,
-        elements: None,
-        ocr_elements: None,
-        document: None,
+        ..Default::default()
     };
     let config = ExtractionConfig::default();
 
@@ -312,16 +276,7 @@ async fn test_pipeline_postprocessing_disabled() {
     let result = ExtractionResult {
         content: "start".to_string(),
         mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        pages: None,
-        djot_content: None,
-        elements: None,
-        ocr_elements: None,
-        document: None,
+        ..Default::default()
     };
     let config = ExtractionConfig {
         postprocessor: Some(PostProcessorConfig {
@@ -365,16 +320,7 @@ async fn test_pipeline_early_stage_runs_first() {
     let result = ExtractionResult {
         content: "start".to_string(),
         mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        pages: None,
-        djot_content: None,
-        elements: None,
-        ocr_elements: None,
-        document: None,
+        ..Default::default()
     };
     let config = ExtractionConfig::default();
 
@@ -409,16 +355,7 @@ async fn test_pipeline_middle_stage_runs_second() {
     let result = ExtractionResult {
         content: "start".to_string(),
         mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        pages: None,
-        djot_content: None,
-        elements: None,
-        ocr_elements: None,
-        document: None,
+        ..Default::default()
     };
     let config = ExtractionConfig::default();
 
@@ -449,16 +386,7 @@ async fn test_pipeline_late_stage_runs_last() {
     let result = ExtractionResult {
         content: "start".to_string(),
         mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        pages: None,
-        djot_content: None,
-        elements: None,
-        ocr_elements: None,
-        document: None,
+        ..Default::default()
     };
     let config = ExtractionConfig::default();
 
@@ -489,16 +417,7 @@ async fn test_pipeline_within_stage_priority_order() {
     let result = ExtractionResult {
         content: "start".to_string(),
         mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        pages: None,
-        djot_content: None,
-        elements: None,
-        ocr_elements: None,
-        document: None,
+        ..Default::default()
     };
     let config = ExtractionConfig::default();
 
@@ -561,16 +480,7 @@ async fn test_pipeline_cross_stage_data_flow() {
     let result = ExtractionResult {
         content: "start".to_string(),
         mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        pages: None,
-        djot_content: None,
-        elements: None,
-        ocr_elements: None,
-        document: None,
+        ..Default::default()
     };
     let config = ExtractionConfig::default();
 
@@ -623,16 +533,7 @@ async fn test_pipeline_early_stage_error_recorded() {
     let result = ExtractionResult {
         content: "content".to_string(),
         mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        pages: None,
-        djot_content: None,
-        elements: None,
-        ocr_elements: None,
-        document: None,
+        ..Default::default()
     };
     let config = ExtractionConfig::default();
 
@@ -669,16 +570,7 @@ async fn test_pipeline_middle_stage_error_propagation() {
     let result = ExtractionResult {
         content: "content".to_string(),
         mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        pages: None,
-        djot_content: None,
-        elements: None,
-        ocr_elements: None,
-        document: None,
+        ..Default::default()
     };
     let config = ExtractionConfig::default();
 
@@ -745,16 +637,7 @@ async fn test_pipeline_late_stage_error_doesnt_affect_earlier_stages() {
     let result = ExtractionResult {
         content: "start".to_string(),
         mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        pages: None,
-        djot_content: None,
-        elements: None,
-        ocr_elements: None,
-        document: None,
+        ..Default::default()
     };
     let config = ExtractionConfig::default();
 
@@ -837,16 +720,7 @@ async fn test_pipeline_processor_error_doesnt_stop_other_processors() {
     let result = ExtractionResult {
         content: "start".to_string(),
         mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        pages: None,
-        djot_content: None,
-        elements: None,
-        ocr_elements: None,
-        document: None,
+        ..Default::default()
     };
     let config = ExtractionConfig::default();
 
@@ -919,16 +793,7 @@ async fn test_pipeline_multiple_processor_errors() {
     let result = ExtractionResult {
         content: "start".to_string(),
         mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        pages: None,
-        djot_content: None,
-        elements: None,
-        ocr_elements: None,
-        document: None,
+        ..Default::default()
     };
     let config = ExtractionConfig::default();
 
@@ -965,16 +830,7 @@ async fn test_pipeline_error_context_preservation() {
     let result = ExtractionResult {
         content: "content".to_string(),
         mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        pages: None,
-        djot_content: None,
-        elements: None,
-        ocr_elements: None,
-        document: None,
+        ..Default::default()
     };
     let config = ExtractionConfig::default();
 
@@ -1045,16 +901,7 @@ async fn test_pipeline_metadata_added_in_early_visible_in_middle() {
     let result = ExtractionResult {
         content: "content".to_string(),
         mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        pages: None,
-        djot_content: None,
-        elements: None,
-        ocr_elements: None,
-        document: None,
+        ..Default::default()
     };
     let config = ExtractionConfig::default();
 
@@ -1121,16 +968,7 @@ async fn test_pipeline_content_modified_in_middle_visible_in_late() {
     let result = ExtractionResult {
         content: "start".to_string(),
         mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        pages: None,
-        djot_content: None,
-        elements: None,
-        ocr_elements: None,
-        document: None,
+        ..Default::default()
     };
     let config = ExtractionConfig::default();
 
@@ -1194,16 +1032,7 @@ async fn test_pipeline_multiple_processors_modifying_same_metadata() {
     let result = ExtractionResult {
         content: "content".to_string(),
         mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        pages: None,
-        djot_content: None,
-        elements: None,
-        ocr_elements: None,
-        document: None,
+        ..Default::default()
     };
     let config = ExtractionConfig::default();
 
@@ -1286,16 +1115,7 @@ async fn test_pipeline_processors_reading_previous_output() {
     let result = ExtractionResult {
         content: "content".to_string(),
         mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        pages: None,
-        djot_content: None,
-        elements: None,
-        ocr_elements: None,
-        document: None,
+        ..Default::default()
     };
     let config = ExtractionConfig::default();
 
@@ -1355,16 +1175,7 @@ async fn test_pipeline_large_content_modification() {
     let result = ExtractionResult {
         content: "start".to_string(),
         mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        pages: None,
-        djot_content: None,
-        elements: None,
-        ocr_elements: None,
-        document: None,
+        ..Default::default()
     };
     let config = ExtractionConfig::default();
 
@@ -1395,16 +1206,7 @@ async fn test_pipeline_enabled_processors_whitelist() {
     let result = ExtractionResult {
         content: "start".to_string(),
         mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        pages: None,
-        djot_content: None,
-        elements: None,
-        ocr_elements: None,
-        document: None,
+        ..Default::default()
     };
     let config = ExtractionConfig {
         postprocessor: Some(PostProcessorConfig {
@@ -1446,16 +1248,7 @@ async fn test_pipeline_disabled_processors_blacklist() {
     let result = ExtractionResult {
         content: "start".to_string(),
         mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        pages: None,
-        djot_content: None,
-        elements: None,
-        ocr_elements: None,
-        document: None,
+        ..Default::default()
     };
     let config = ExtractionConfig {
         postprocessor: Some(PostProcessorConfig {
@@ -1497,16 +1290,7 @@ async fn test_pipeline_no_filtering_runs_all() {
     let result = ExtractionResult {
         content: "start".to_string(),
         mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        pages: None,
-        djot_content: None,
-        elements: None,
-        ocr_elements: None,
-        document: None,
+        ..Default::default()
     };
     let config = ExtractionConfig::default();
 
@@ -1539,16 +1323,7 @@ async fn test_pipeline_empty_whitelist_runs_none() {
     let result = ExtractionResult {
         content: "start".to_string(),
         mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        pages: None,
-        djot_content: None,
-        elements: None,
-        ocr_elements: None,
-        document: None,
+        ..Default::default()
     };
     let config = ExtractionConfig {
         postprocessor: Some(PostProcessorConfig {

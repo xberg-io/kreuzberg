@@ -185,6 +185,10 @@ mod tests {
             elements: None,
             ocr_elements: None,
             document: None,
+            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: Vec::new(),
         };
 
         let markup = extraction_result_to_djot(&result).expect("Should convert");
@@ -206,6 +210,10 @@ mod tests {
             elements: None,
             ocr_elements: None,
             document: None,
+            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: Vec::new(),
         };
 
         let markup = extraction_result_to_djot(&result).expect("Should convert");

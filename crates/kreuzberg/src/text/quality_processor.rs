@@ -65,6 +65,8 @@ impl PostProcessor for QualityProcessor {
             crate::text::quality::calculate_quality_score(&result.content, None)
         };
 
+        result.quality_score = Some(quality_score);
+        // DEPRECATED: kept for backward compatibility; will be removed in next major version.
         result.metadata.additional.insert(
             Cow::Borrowed("quality_score"),
             serde_json::Value::Number(
@@ -128,6 +130,10 @@ mod tests {
 	            ocr_elements: None,
 	            djot_content: None,
 	            document: None,
+	            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+	            extracted_keywords: None,
+	            quality_score: None,
+	            processing_warnings: Vec::new(),
 	        };
 
         processor.process(&mut result, &config).await.unwrap();
@@ -158,6 +164,10 @@ mod tests {
             elements: None,
             ocr_elements: None,
             document: None,
+            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: Vec::new(),
         };
 
         processor.process(&mut result, &config).await.unwrap();
@@ -195,6 +205,10 @@ mod tests {
             elements: None,
             ocr_elements: None,
             document: None,
+            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: Vec::new(),
         };
 
         let config_with_quality = ExtractionConfig {
@@ -227,6 +241,10 @@ mod tests {
             elements: None,
             ocr_elements: None,
             document: None,
+            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: Vec::new(),
         };
 
         let long_result = ExtractionResult {
@@ -242,6 +260,10 @@ mod tests {
             elements: None,
             ocr_elements: None,
             document: None,
+            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: Vec::new(),
         };
 
         let short_duration = processor.estimated_duration_ms(&short_result);

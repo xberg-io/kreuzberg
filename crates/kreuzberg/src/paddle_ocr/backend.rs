@@ -405,6 +405,10 @@ impl OcrBackend for PaddleOcrBackend {
             elements: None,
             ocr_elements: ocr_elements_opt,
             document: None,
+            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: Vec::new(),
         })
     }
 

@@ -16,7 +16,7 @@ use kreuzberg::core::extractor::{batch_extract_bytes, extract_bytes};
 use kreuzberg::core::pipeline::run_pipeline;
 use kreuzberg::plugins::registry::{get_document_extractor_registry, get_post_processor_registry};
 use kreuzberg::plugins::{Plugin, PostProcessor, ProcessingStage};
-use kreuzberg::types::{ExtractionResult, Metadata};
+use kreuzberg::types::ExtractionResult;
 use std::borrow::Cow;
 use std::sync::Arc;
 
@@ -378,16 +378,7 @@ async fn test_concurrent_pipeline_processing() {
             let result = ExtractionResult {
                 content: format!("Content {}", i),
                 mime_type: Cow::Borrowed("text/plain"),
-                metadata: Metadata::default(),
-                tables: vec![],
-                detected_languages: None,
-                chunks: None,
-                images: None,
-                pages: None,
-                elements: None,
-                ocr_elements: None,
-                djot_content: None,
-                document: None,
+                ..Default::default()
             };
 
             run_pipeline(result, &config).await

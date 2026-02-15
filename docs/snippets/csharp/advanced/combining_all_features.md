@@ -60,14 +60,11 @@ async Task RunRagPipeline()
         }
     }
 
-    if (result.Metadata?.Additional?.ContainsKey("quality_score") == true)
-    {
-        Console.WriteLine($"Quality score: {result.Metadata.Additional["quality_score"]}");
-    }
+    Console.WriteLine($"Quality score: {result.QualityScore}");
 
-    if (result.Metadata?.Additional?.ContainsKey("keywords") == true)
+    if (result.ExtractedKeywords?.Count > 0)
     {
-        Console.WriteLine($"Keywords: {result.Metadata.Additional["keywords"]}");
+        Console.WriteLine($"Keywords: {string.Join(", ", result.ExtractedKeywords)}");
     }
 }
 

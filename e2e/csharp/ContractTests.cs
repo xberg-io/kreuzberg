@@ -241,8 +241,7 @@ namespace Kreuzberg.E2E.Contract
             var result = KreuzbergClient.ExtractFileSync(documentPath, config);
             TestHelpers.AssertExpectedMime(result, new[] { "application/pdf" });
             TestHelpers.AssertMinContentLength(result, 10);
-            var metadataNode = TestHelpers.MetadataToJson(result.Metadata);
-            TestHelpers.AssertMetadata(metadataNode, "keywords", @"{""exists"": true}");
+            TestHelpers.AssertKeywords(result, true, 1, null);
         }
 
         [SkippableFact]

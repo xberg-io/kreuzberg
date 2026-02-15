@@ -25,8 +25,7 @@ ExtractionConfig config = ExtractionConfig.builder()
 
 ExtractionResult result = Kreuzberg.extractFile("document.pdf", config);
 
-Object qualityScore = result.getMetadata().get("quality_score");
-System.out.printf("Quality: %.2f%n", ((Number)qualityScore).doubleValue());
+System.out.printf("Quality: %.2f%n", result.getQualityScore());
 System.out.println("Languages: " + result.getDetectedLanguages());
 System.out.println("Content length: " + result.getContent().length() + " characters");
 ```

@@ -68,7 +68,7 @@ echo str_repeat('=', 60) . "\n";
 echo "Content length: " . strlen($result->content) . " characters\n";
 
 if (isset($result->metadata)) {
-    $qualityScore = $result->metadata['quality_score'] ?? null;
+    $qualityScore = $result->qualityScore ?? null;
     $confidence = $result->metadata['ocr_confidence'] ?? null;
 
     if ($qualityScore !== null) {

@@ -80,5 +80,6 @@ export type {
 	HierarchicalBlock,
 	PageContent,
 	PageHierarchy,
+	ProcessingWarning,
 	Table,
 } from "./results.js";

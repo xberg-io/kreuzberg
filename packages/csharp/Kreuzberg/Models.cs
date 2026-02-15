@@ -513,6 +513,24 @@ public sealed class ExtractionResult
     /// </summary>
     [JsonPropertyName("document")]
     public DocumentStructure? Document { get; set; }
+
+    /// <summary>
+    /// Extracted keywords when keyword extraction is enabled.
+    /// </summary>
+    [JsonPropertyName("extracted_keywords")]
+    public List<ExtractedKeyword>? ExtractedKeywords { get; set; }
+
+    /// <summary>
+    /// Document quality score (0.0-1.0) from quality analysis.
+    /// </summary>
+    [JsonPropertyName("quality_score")]
+    public double? QualityScore { get; set; }
+
+    /// <summary>
+    /// Non-fatal warnings collected during processing pipeline stages.
+    /// </summary>
+    [JsonPropertyName("processing_warnings")]
+    public List<ProcessingWarning>? ProcessingWarnings { get; set; }
 }
 
 /// <summary>
@@ -925,13 +943,6 @@ public sealed class Metadata
     public List<string>? Keywords { get; set; }
 
     /// <summary>
-    /// Extracted keywords from YAKE/RAKE algorithms (with scores and metadata).
-    /// Populated when keyword extraction is configured; stored separately from simple keywords.
-    /// </summary>
-    [JsonIgnore]
-    public List<ExtractedKeyword>? ExtractedKeywords { get; set; }
-
-    /// <summary>
     /// Primary language (ISO 639 code).
     /// </summary>
     [JsonPropertyName("language")]
@@ -991,7 +1002,35 @@ public sealed class Metadata
     [JsonPropertyName("pages")]
     public PageStructure? Pages { get; set; }
 
+    /// <summary>
+    /// Document category (from frontmatter or classification).
+    /// </summary>
+    [JsonPropertyName("category")]
+    public string? Category { get; set; }
 
+    /// <summary>
+    /// Document tags (from frontmatter).
+    /// </summary>
+    [JsonPropertyName("tags")]
+    public List<string>? Tags { get; set; }
+
+    /// <summary>
+    /// Document version string (from frontmatter).
+    /// </summary>
+    [JsonPropertyName("document_version")]
+    public string? DocumentVersion { get; set; }
+
+    /// <summary>
+    /// Abstract or summary text (from frontmatter).
+    /// </summary>
+    [JsonPropertyName("abstract_text")]
+    public string? AbstractText { get; set; }
+
+    /// <summary>
+    /// Output format identifier.
+    /// </summary>
+    [JsonPropertyName("output_format")]
+    public string? OutputFormat { get; set; }
 
     /// <summary>
     /// Additional untyped metadata fields captured as extension data.
@@ -1124,6 +1163,24 @@ public sealed class ExtractedKeyword
     /// </summary>
     [JsonPropertyName("positions")]
     public List<int>? Positions { get; set; }
+}
+
+/// <summary>
+/// A non-fatal warning from a processing pipeline stage.
+/// </summary>
+public class ProcessingWarning
+{
+    /// <summary>
+    /// The pipeline stage that produced this warning.
+    /// </summary>
+    [JsonPropertyName("source")]
+    public string Source { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Human-readable description of the warning.
+    /// </summary>
+    [JsonPropertyName("message")]
+    public string Message { get; set; } = string.Empty;
 }
 
 /// <summary>

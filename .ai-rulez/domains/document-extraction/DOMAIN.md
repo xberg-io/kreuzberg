@@ -80,7 +80,7 @@ See: `crates/kreuzberg/src/core/config.rs` (ExtractionConfig struct with PdfConf
 10. **Output** -> ExtractionResult
 
 ### Result Structure
-See: `crates/kreuzberg/src/core/result.rs` (ExtractionResult: content, mime_type, metadata, tables, detected_languages, chunks, images, pages)
+See: `crates/kreuzberg/src/core/result.rs` (ExtractionResult: content, mime_type, metadata, tables, detected_languages, chunks, images, pages, elements, djot_content, extracted_keywords, quality_score, processing_warnings)
 
 ## Dependencies & Relationships
 

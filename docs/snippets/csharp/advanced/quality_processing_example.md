@@ -11,9 +11,7 @@ var result = KreuzbergClient.ExtractFile(
     config
 );
 
-var qualityScore = result.Metadata.ContainsKey("quality_score")
-    ? (double)result.Metadata["quality_score"]
-    : 0.0;
+var qualityScore = result.QualityScore;
 
 if (qualityScore < 0.5)
 {

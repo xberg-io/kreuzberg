@@ -681,7 +681,7 @@ public static class TestHelpers
         int? minCount,
         int? maxCount)
     {
-        var keywords = result.Metadata?.Keywords;
+        var keywords = result.ExtractedKeywords;
         if (hasKeywords == true)
         {
             if (keywords is null || keywords.Count == 0)

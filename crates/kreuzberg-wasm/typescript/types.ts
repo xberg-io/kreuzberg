@@ -413,6 +413,88 @@ export interface Element {
 }
 
 /**
+ * Non-fatal warning from the extraction pipeline
+ */
+export interface ProcessingWarning {
+	/** Pipeline stage name that generated this warning */
+	source: string;
+	/** Warning description */
+	message: string;
+}
+
+/**
+ * OCR bounding geometry using rectangle coordinates
+ */
+export interface OcrBoundingGeometryRectangle {
+	type: "rectangle";
+	left: number;
+	top: number;
+	width: number;
+	height: number;
+}
+
+/**
+ * OCR bounding geometry using quadrilateral points
+ */
+export interface OcrBoundingGeometryQuadrilateral {
+	type: "quadrilateral";
+	points: number[][];
+}
+
+export type OcrBoundingGeometry = OcrBoundingGeometryRectangle | OcrBoundingGeometryQuadrilateral;
+
+export interface OcrConfidence {
+	detection?: number;
+	recognition?: number;
+}
+
+export type OcrElementLevel = "word" | "line" | "block" | "page";
+
+/**
+ * Individual OCR element with bounding box and confidence scores
+ */
+export interface OcrElement {
+	text: string;
+	geometry?: OcrBoundingGeometry;
+	confidence?: OcrConfidence;
+	level?: OcrElementLevel;
+	pageNumber?: number;
+	parentId?: string;
+}
+
+export type NodeContentType =
+	| "title"
+	| "heading"
+	| "paragraph"
+	| "list"
+	| "list_item"
+	| "table"
+	| "image"
+	| "code"
+	| "quote"
+	| "formula"
+	| "footnote"
+	| "group"
+	| "page_break";
+
+export type ContentLayer = "body" | "header" | "footer" | "footnote";
+
+export interface DocumentNode {
+	id: string;
+	content: Record<string, unknown>;
+	parent?: number | null;
+	children?: number[] | null;
+	contentLayer?: ContentLayer | null;
+	page?: number | null;
+	pageEnd?: number | null;
+	bbox?: BoundingBox | null;
+}
+
+export interface DocumentStructure {
+	nodes: DocumentNode[];
+}
+
+/**
  * Result of document extraction
  */
 export interface ExtractionResult {
@@ -433,9 +515,17 @@ export interface ExtractionResult {
 	/** Per-page content */
 	pages?: PageContent[] | null;
 	/** Extracted keywords when keyword extraction is enabled */
-	keywords?: ExtractedKeyword[] | null;
+	extractedKeywords?: ExtractedKeyword[] | null;
+	/** Quality score (0.0-1.0) when quality processing is enabled */
+	qualityScore?: number | null;
+	/** Non-fatal warnings from the extraction pipeline */
+	processingWarnings?: ProcessingWarning[] | null;
 	/** Semantic elements when element-based output format is used */
 	elements?: Element[] | null;
+	/** OCR elements with bounding boxes and confidence scores */
+	ocrElements?: OcrElement[] | null;
+	/** Hierarchical document structure */
+	document?: DocumentStructure | null;
 }
 
 /**
@@ -462,6 +552,16 @@ export interface Metadata {
 	lastModifiedBy?: string;
 	/** Number of pages/slides */
 	pageCount?: number;
+	/** Document category */
+	category?: string | null;
+	/** Document tags */
+	tags?: string[];
+	/** Document version */
+	documentVersion?: string | null;
+	/** Document abstract */
+	abstractText?: string | null;
+	/** Output format used (plain, markdown, djot, html, structured) */
+	outputFormat?: string | null;
 	/** Format-specific metadata */
 	formatMetadata?: unknown;
 	/**

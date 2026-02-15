@@ -22,6 +22,11 @@ defmodule Kreuzberg.Metadata do
     * `:image_preprocessing` - Image preprocessing metadata
     * `:json_schema` - JSON schema if applicable
     * `:error` - Error metadata if extraction partially failed
+    * `:category` - Document category classification
+    * `:tags` - List of document tags
+    * `:document_version` - Version of the document
+    * `:abstract_text` - Abstract or summary of the document
+    * `:output_format` - Output format used for extraction
     * `:additional` - Additional metadata fields (flattened from Rust)
   """
 
@@ -29,7 +34,9 @@ defmodule Kreuzberg.Metadata do
   @known_keys MapSet.new([
     "title", "subject", "authors", "keywords", "language",
     "created_at", "modified_at", "created_by", "modified_by",
-    "pages", "image_preprocessing", "json_schema", "error"
+    "pages", "image_preprocessing", "json_schema", "error",
+    "category", "tags", "document_version", "abstract_text", "output_format",
+    "extraction_duration_ms"
   ])
 
   @type t :: %__MODULE__{
@@ -47,6 +54,12 @@ defmodule Kreuzberg.Metadata do
           image_preprocessing: Kreuzberg.ImagePreprocessingMetadata.t() | nil,
           json_schema: map() | nil,
           error: Kreuzberg.ErrorMetadata.t() | nil,
+          category: String.t() | nil,
+          tags: list(String.t()) | nil,
+          document_version: String.t() | nil,
+          abstract_text: String.t() | nil,
+          output_format: String.t() | nil,
+          extraction_duration_ms: non_neg_integer() | nil,
           additional: map()
         }
 
@@ -65,6 +78,12 @@ defmodule Kreuzberg.Metadata do
     :image_preprocessing,
     :json_schema,
     :error,
+    :category,
+    :tags,
+    :document_version,
+    :abstract_text,
+    :output_format,
+    :extraction_duration_ms,
     additional: %{}
   ]
 
@@ -113,6 +132,12 @@ defmodule Kreuzberg.Metadata do
       image_preprocessing: normalize_image_preprocessing(data["image_preprocessing"]),
       json_schema: data["json_schema"],
       error: normalize_error(data["error"]),
+      category: data["category"],
+      tags: data["tags"],
+      document_version: data["document_version"],
+      abstract_text: data["abstract_text"],
+      output_format: data["output_format"],
+      extraction_duration_ms: data["extraction_duration_ms"],
       additional: additional_map
     }
   end
@@ -147,7 +172,13 @@ defmodule Kreuzberg.Metadata do
       "pages" => serialize_pages(metadata.pages),
       "image_preprocessing" => serialize_image_preprocessing(metadata.image_preprocessing),
       "json_schema" => metadata.json_schema,
-      "error" => serialize_error(metadata.error)
+      "error" => serialize_error(metadata.error),
+      "category" => metadata.category,
+      "tags" => metadata.tags,
+      "document_version" => metadata.document_version,
+      "abstract_text" => metadata.abstract_text,
+      "output_format" => metadata.output_format,
+      "extraction_duration_ms" => metadata.extraction_duration_ms
     }
 
     # Re-flatten format and additional into root

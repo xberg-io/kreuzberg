@@ -208,7 +208,7 @@ class MinimumLengthValidator:
 class QualityThresholdValidator:
     """Ensures quality score above threshold"""
     def validate(self, result: ExtractionResult, config: ExtractionConfig) -> None:
-        quality = result.metadata.additional.get("quality_score", 0.0)
+        quality = result.quality_score or 0.0
         if quality < 0.5:
             raise ValidationError("Quality below threshold")
 ```

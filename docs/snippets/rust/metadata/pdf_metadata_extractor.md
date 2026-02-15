@@ -42,10 +42,10 @@ impl PostProcessor for PdfMetadataExtractor {
     ) -> Result<()> {
         self.processed_count.fetch_add(1, Ordering::AcqRel);
 
-        result.metadata.additional.insert(
-            "pdf_processed".to_string(),
-            serde_json::json!(true)
-        );
+        result.processing_warnings.push(ProcessingWarning {
+            source: "pdf-metadata-extractor".to_string(),
+            message: "PDF metadata extracted successfully".to_string()
+        });
 
         Ok(())
     }

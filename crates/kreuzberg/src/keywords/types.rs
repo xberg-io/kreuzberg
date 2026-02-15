@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 
 /// Keyword algorithm selection.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
 #[serde(rename_all = "lowercase")]
 pub enum KeywordAlgorithm {
     /// YAKE (Yet Another Keyword Extractor) - statistical approach
@@ -30,6 +31,7 @@ impl Default for KeywordAlgorithm {
 
 /// Extracted keyword with metadata.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
 pub struct Keyword {
     /// The keyword text.
     pub text: String,

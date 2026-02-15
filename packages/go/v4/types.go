@@ -82,6 +82,20 @@ type AnnotationKind struct {
 	Title          *string `json:"title,omitempty"`
 }
 
+// ExtractedKeyword represents a keyword extracted by RAKE or YAKE algorithms.
+type ExtractedKeyword struct {
+	Text      string  `json:"text"`
+	Score     float32 `json:"score"`
+	Algorithm string  `json:"algorithm"`
+	Positions []int   `json:"positions,omitempty"`
+}
+
+// ProcessingWarning represents a non-fatal warning from a pipeline stage.
+type ProcessingWarning struct {
+	Source  string `json:"source"`
+	Message string `json:"message"`
+}
+
 // ExtractionResult mirrors the Rust ExtractionResult struct returned by the core API.
 type ExtractionResult struct {
 	Content           string             `json:"content"`
@@ -96,6 +110,15 @@ type ExtractionResult struct {
 	OcrElements       []OcrElement       `json:"ocr_elements,omitempty"`
 	DjotContent       *DjotContent       `json:"djot_content,omitempty"`
 	Document          *DocumentStructure `json:"document,omitempty"`
+
+	// ExtractedKeywords contains keywords from RAKE/YAKE extraction.
+	ExtractedKeywords []ExtractedKeyword `json:"extracted_keywords,omitempty"`
+
+	// QualityScore is the document quality score (0.0-1.0).
+	QualityScore *float64 `json:"quality_score,omitempty"`
+
+	// ProcessingWarnings contains non-fatal warnings from pipeline stages.
+	ProcessingWarnings []ProcessingWarning `json:"processing_warnings,omitempty"`
 }
 
 // Table represents a detected table in the source document.
@@ -154,7 +177,23 @@ type Metadata struct {
 	ImagePreprocessing *ImagePreprocessingMetadata `json:"image_preprocessing,omitempty"`
 	JSONSchema         json.RawMessage             `json:"json_schema,omitempty"`
 	Error              *ErrorMetadata              `json:"error,omitempty"`
-	Additional         map[string]json.RawMessage  `json:"-"`
+
+	// Category from frontmatter or classification.
+	Category *string `json:"category,omitempty"`
+
+	// Tags from frontmatter.
+	Tags []string `json:"tags,omitempty"`
+
+	// DocumentVersion from frontmatter.
+	DocumentVersion *string `json:"document_version,omitempty"`
+
+	// AbstractText from frontmatter.
+	AbstractText *string `json:"abstract_text,omitempty"`
+
+	// OutputFormat identifier (e.g., "markdown", "html").
+	OutputFormat *string `json:"output_format,omitempty"`
+
+	Additional map[string]json.RawMessage `json:"-"`
 }
 
 // FormatMetadata represents the discriminated union of metadata formats.

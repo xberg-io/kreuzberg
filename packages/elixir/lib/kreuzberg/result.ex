@@ -18,6 +18,9 @@ defmodule Kreuzberg.ExtractionResult do
     * `:ocr_elements` - Optional list of OCR elements with positioning and confidence
     * `:djot_content` - Optional rich Djot content structure
     * `:document` - Optional hierarchical document structure
+    * `:extracted_keywords` - Optional list of extracted keywords with scores
+    * `:quality_score` - Optional quality score for the extraction (0.0 to 1.0)
+    * `:processing_warnings` - Optional list of warnings generated during processing
   """
 
   @type t :: %__MODULE__{
@@ -32,7 +35,10 @@ defmodule Kreuzberg.ExtractionResult do
           elements: list(Kreuzberg.Element.t()) | nil,
           ocr_elements: list(Kreuzberg.OcrElement.t()) | nil,
           djot_content: Kreuzberg.DjotContent.t() | nil,
-          document: Kreuzberg.DocumentStructure.t() | nil
+          document: Kreuzberg.DocumentStructure.t() | nil,
+          extracted_keywords: list(Kreuzberg.Keyword.t()) | nil,
+          quality_score: float() | nil,
+          processing_warnings: list(Kreuzberg.ProcessingWarning.t())
         }
 
   defstruct [
@@ -44,7 +50,10 @@ defmodule Kreuzberg.ExtractionResult do
     :ocr_elements,
     :djot_content,
     :document,
+    :extracted_keywords,
+    :quality_score,
     content: "",
+    processing_warnings: [],
     mime_type: "",
     metadata: %Kreuzberg.Metadata{},
     tables: []
@@ -81,7 +90,10 @@ defmodule Kreuzberg.ExtractionResult do
       elements: normalize_elements(Keyword.get(opts, :elements)),
       ocr_elements: normalize_ocr_elements(Keyword.get(opts, :ocr_elements)),
       djot_content: normalize_djot_content(Keyword.get(opts, :djot_content)),
-      document: normalize_document(Keyword.get(opts, :document))
+      document: normalize_document(Keyword.get(opts, :document)),
+      extracted_keywords: normalize_keywords(Keyword.get(opts, :extracted_keywords)),
+      quality_score: normalize_quality_score(Keyword.get(opts, :quality_score)),
+      processing_warnings: normalize_processing_warnings(Keyword.get(opts, :processing_warnings))
     }
   end
 
@@ -112,7 +124,12 @@ defmodule Kreuzberg.ExtractionResult do
           nil -> nil
           %Kreuzberg.DocumentStructure{} = doc -> Kreuzberg.DocumentStructure.to_map(doc)
           other -> other
-        end
+        end,
+      "extracted_keywords" =>
+        maybe_map_list(result.extracted_keywords, &Kreuzberg.Keyword.to_map/1),
+      "quality_score" => result.quality_score,
+      "processing_warnings" =>
+        maybe_map_list(result.processing_warnings, &Kreuzberg.ProcessingWarning.to_map/1)
     }
   end
 
@@ -196,4 +213,30 @@ defmodule Kreuzberg.ExtractionResult do
   defp normalize_document(nil), do: nil
   defp normalize_document(%Kreuzberg.DocumentStructure{} = doc), do: doc
   defp normalize_document(map) when is_map(map), do: Kreuzberg.DocumentStructure.from_map(map)
+
+  defp normalize_keywords(nil), do: nil
+  defp normalize_keywords([]), do: []
+
+  defp normalize_keywords(keywords) when is_list(keywords) do
+    Enum.map(keywords, fn
+      %Kreuzberg.Keyword{} = kw -> kw
+      map when is_map(map) -> Kreuzberg.Keyword.from_map(map)
+      other -> other
+    end)
+  end
+
+  defp normalize_quality_score(nil), do: nil
+  defp normalize_quality_score(score) when is_float(score), do: score
+  defp normalize_quality_score(score) when is_integer(score), do: score * 1.0
+
+  defp normalize_processing_warnings(nil), do: []
+  defp normalize_processing_warnings([]), do: []
+
+  defp normalize_processing_warnings(warnings) when is_list(warnings) do
+    Enum.map(warnings, fn
+      %Kreuzberg.ProcessingWarning{} = w -> w
+      map when is_map(map) -> Kreuzberg.ProcessingWarning.from_map(map)
+      other -> other
+    end)
+  end
 end

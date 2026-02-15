@@ -141,7 +141,34 @@ pub struct Metadata {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub extraction_duration_ms: Option<u64>,
 
+    /// Document category (from frontmatter or classification).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub category: Option<String>,
+
+    /// Document tags (from frontmatter).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tags: Option<Vec<String>>,
+
+    /// Document version string (from frontmatter).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub document_version: Option<String>,
+
+    /// Abstract or summary text (from frontmatter).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub abstract_text: Option<String>,
+
+    /// Output format identifier (e.g., "markdown", "html", "text").
+    ///
+    /// Set by the output format pipeline stage when format conversion is applied.
+    /// Previously stored in `metadata.additional["output_format"]`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub output_format: Option<String>,
+
     /// Additional custom fields from postprocessors.
+    ///
+    /// **Deprecated**: Prefer using typed fields on `ExtractionResult` and `Metadata`
+    /// instead of inserting into this map. Typed fields provide better cross-language
+    /// compatibility and type safety. This field will be removed in a future major version.
     ///
     /// This flattened map allows Python/TypeScript postprocessors to add
     /// arbitrary fields (entity extraction, keyword extraction, etc.).

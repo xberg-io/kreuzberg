@@ -474,7 +474,7 @@ describe("contract fixtures", () => {
 			}
 			assertions.assertExpectedMime(result, ["application/pdf"]);
 			assertions.assertMinContentLength(result, 10);
-			assertions.assertMetadataExpectation(result, "keywords", { exists: true });
+			assertions.assertKeywords(result, true, 1, null);
 		},
 		TEST_TIMEOUT_MS,
 	);

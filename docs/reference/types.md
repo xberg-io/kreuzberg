@@ -17,6 +17,9 @@ pub struct ExtractionResult {
     pub detected_languages: Option<Vec<String>>,
     pub chunks: Option<Vec<Chunk>>,
     pub images: Option<Vec<ExtractedImage>>,
+    pub extracted_keywords: Option<Vec<ExtractedKeyword>>,
+    pub quality_score: Option<f64>,
+    pub processing_warnings: Vec<ProcessingWarning>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub djot_content: Option<DjotContent>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -40,6 +43,9 @@ class ExtractionResult(TypedDict):
     detected_languages: list[str] | None
     chunks: list[Chunk] | None
     images: list[ExtractedImage] | None
+    extracted_keywords: list[ExtractedKeyword] | None
+    quality_score: float | None
+    processing_warnings: list[ProcessingWarning]
     djot_content: DjotContent | None
     pages: list[PageContent] | None
     elements: list[Element] | None
@@ -57,6 +63,9 @@ export interface ExtractionResult {
     detectedLanguages: string[] | null;
     chunks: Chunk[] | null;
     images: ExtractedImage[] | null;
+    extractedKeywords?: ExtractedKeyword[];
+    qualityScore?: number;
+    processingWarnings: ProcessingWarning[];
     djotContent?: DjotContent;
     pages?: PageContent[];
     elements?: Element[];
@@ -69,7 +78,8 @@ export interface ExtractionResult {
 ```ruby title="extraction_result.rb"
 class Kreuzberg::Result
     attr_reader :content, :mime_type, :metadata, :tables
-    attr_reader :detected_languages, :chunks, :images, :djot_content, :pages, :elements, :document
+    attr_reader :detected_languages, :chunks, :images, :extracted_keywords, :quality_score, :processing_warnings
+    attr_reader :djot_content, :pages, :elements, :document
 end
 ```
 
@@ -84,6 +94,9 @@ public record ExtractionResult(
     List<String> detectedLanguages,
     List<Chunk> chunks,
     List<ExtractedImage> images,
+    List<ExtractedKeyword> extractedKeywords,
+    Double qualityScore,
+    List<ProcessingWarning> processingWarnings,
     DjotContent djotContent,
     List<PageContent> pages,
     List<Element> elements,
@@ -95,17 +108,20 @@ public record ExtractionResult(
 
 ```go title="extraction_result.go"
 type ExtractionResult struct {
-    Content           string           `json:"content"`
-    MimeType          string           `json:"mime_type"`
-    Metadata          Metadata         `json:"metadata"`
-    Tables            []Table          `json:"tables"`
-    DetectedLanguages []string         `json:"detected_languages,omitempty"`
-    Chunks            []Chunk          `json:"chunks,omitempty"`
-    Images            []ExtractedImage `json:"images,omitempty"`
-    DjotContent       *DjotContent     `json:"djot_content,omitempty"`
-    Pages             []PageContent    `json:"pages,omitempty"`
-    Elements          []Element        `json:"elements,omitempty"`
-    Document          *DocumentStructure `json:"document,omitempty"`
+    Content             string              `json:"content"`
+    MimeType            string              `json:"mime_type"`
+    Metadata            Metadata            `json:"metadata"`
+    Tables              []Table             `json:"tables"`
+    DetectedLanguages   []string            `json:"detected_languages,omitempty"`
+    Chunks              []Chunk             `json:"chunks,omitempty"`
+    Images              []ExtractedImage    `json:"images,omitempty"`
+    ExtractedKeywords   []ExtractedKeyword  `json:"extracted_keywords,omitempty"`
+    QualityScore        *float64            `json:"quality_score,omitempty"`
+    ProcessingWarnings  []ProcessingWarning `json:"processing_warnings"`
+    DjotContent         *DjotContent        `json:"djot_content,omitempty"`
+    Pages               []PageContent       `json:"pages,omitempty"`
+    Elements            []Element           `json:"elements,omitempty"`
+    Document            *DocumentStructure  `json:"document,omitempty"`
 }
 ```
 
@@ -121,11 +137,16 @@ pub struct Metadata {
     pub subject: Option<String>,
     pub authors: Option<Vec<String>>,
     pub keywords: Option<Vec<String>>,
+    pub category: Option<String>,
+    pub tags: Option<Vec<String>>,
     pub language: Option<String>,
     pub created_at: Option<String>,
     pub modified_at: Option<String>,
     pub created_by: Option<String>,
     pub modified_by: Option<String>,
+    pub document_version: Option<String>,
+    pub abstract_text: Option<String>,
+    pub output_format: Option<String>,
     pub pages: Option<PageStructure>,
     pub format: Option<FormatMetadata>,
     pub image_preprocessing: Option<ImagePreprocessingMetadata>,
@@ -158,11 +179,16 @@ class Metadata(TypedDict, total=False):
     subject: str | None
     authors: list[str] | None
     keywords: list[str] | None
+    category: str | None
+    tags: list[str] | None
     language: str | None
     created_at: str | None
     modified_at: str | None
     created_by: str | None
     modified_by: str | None
+    document_version: str | None
+    abstract_text: str | None
+    output_format: str | None
     pages: PageStructure | None
     format_type: Literal["pdf", "excel", "email", "pptx", "archive", "image", "xml", "text", "html", "ocr"]
     # Format-specific fields are included at root level based on format_type
@@ -179,11 +205,16 @@ export interface Metadata {
     subject?: string | null;
     authors?: string[] | null;
     keywords?: string[] | null;
+    category?: string | null;
+    tags?: string[] | null;
     language?: string | null;
     createdAt?: string | null;
     modifiedAt?: string | null;
     createdBy?: string | null;
     modifiedBy?: string | null;
+    documentVersion?: string | null;
+    abstractText?: string | null;
+    outputFormat?: string | null;
     pages?: PageStructure | null;
     format_type?: "pdf" | "excel" | "email" | "pptx" | "archive" | "image" | "xml" | "text" | "html" | "ocr";
     // Format-specific fields are included at root level based on format_type
@@ -211,11 +242,16 @@ public final class Metadata {
     private final Optional<String> subject;
     private final Optional<List<String>> authors;
     private final Optional<List<String>> keywords;
+    private final Optional<String> category;
+    private final Optional<List<String>> tags;
     private final Optional<String> language;
     private final Optional<String> createdAt;
     private final Optional<String> modifiedAt;
     private final Optional<String> createdBy;
     private final Optional<String> modifiedBy;
+    private final Optional<String> documentVersion;
+    private final Optional<String> abstractText;
+    private final Optional<String> outputFormat;
     private final Optional<PageStructure> pages;
     private final Optional<FormatMetadata> format;
     private final Optional<ImagePreprocessingMetadata> imagePreprocessing;
@@ -240,11 +276,16 @@ type Metadata struct {
     Subject            *string                     `json:"subject,omitempty"`
     Authors            []string                    `json:"authors,omitempty"`
     Keywords           []string                    `json:"keywords,omitempty"`
+    Category           *string                     `json:"category,omitempty"`
+    Tags               []string                    `json:"tags,omitempty"`
     Language           *string                     `json:"language,omitempty"`
     CreatedAt          *string                     `json:"created_at,omitempty"`
     ModifiedAt         *string                     `json:"modified_at,omitempty"`
     CreatedBy          *string                     `json:"created_by,omitempty"`
     ModifiedBy         *string                     `json:"modified_by,omitempty"`
+    DocumentVersion    *string                     `json:"document_version,omitempty"`
+    AbstractText       *string                     `json:"abstract_text,omitempty"`
+    OutputFormat       *string                     `json:"output_format,omitempty"`
     Pages              *PageStructure              `json:"pages,omitempty"`
     Format             FormatMetadata              `json:"-"`
     ImagePreprocessing *ImagePreprocessingMetadata `json:"image_preprocessing,omitempty"`
@@ -259,6 +300,112 @@ type FormatMetadata struct {
     Excel   *ExcelMetadata
     Email   *EmailMetadata
     // Additional pointer fields for each supported format type
+}
+```
+
+## ProcessingWarning
+
+Non-fatal warning that occurred during extraction pipeline processing.
+
+### Rust
+
+```rust title="processing_warning.rs"
+pub struct ProcessingWarning {
+    pub source: String,      // Component that generated the warning
+    pub message: String,     // Human-readable warning message
+}
+```
+
+### Python
+
+```python title="processing_warning.py"
+class ProcessingWarning(TypedDict):
+    source: str      # Component that generated the warning
+    message: str     # Human-readable warning message
+```
+
+### TypeScript
+
+```typescript title="processing_warning.ts"
+export interface ProcessingWarning {
+    source: string;      // Component that generated the warning
+    message: string;     // Human-readable warning message
+}
+```
+
+### Java
+
+```java title="ProcessingWarning.java"
+public record ProcessingWarning(
+    String source,       // Component that generated the warning
+    String message       // Human-readable warning message
+) {}
+```
+
+### Go
+
+```go title="processing_warning.go"
+type ProcessingWarning struct {
+    Source  string `json:"source"`
+    Message string `json:"message"`
+}
+```
+
+## ExtractedKeyword
+
+Extracted keyword with score, algorithm information, and positions.
+
+### Rust
+
+```rust title="extracted_keyword.rs"
+pub struct ExtractedKeyword {
+    pub text: String,                    // Keyword text
+    pub score: f32,                      // Score from algorithm (0.0-1.0 range, normalize for comparing algorithms)
+    pub algorithm: String,               // Algorithm used ("YAKE", "RAKE", etc.)
+    pub positions: Option<Vec<usize>>,   // Character positions in content
+}
+```
+
+### Python
+
+```python title="extracted_keyword.py"
+class ExtractedKeyword(TypedDict):
+    text: str                        # Keyword text
+    score: float                     # Score from algorithm
+    algorithm: str                   # Algorithm used ("YAKE", "RAKE", etc.)
+    positions: list[int] | None      # Character positions in content
+```
+
+### TypeScript
+
+```typescript title="extracted_keyword.ts"
+export interface ExtractedKeyword {
+    text: string;                    // Keyword text
+    score: number;                   // Score from algorithm
+    algorithm: string;               // Algorithm used ("YAKE", "RAKE", etc.)
+    positions?: number[];            // Character positions in content
+}
+```
+
+### Java
+
+```java title="ExtractedKeyword.java"
+public record ExtractedKeyword(
+    String text,                     // Keyword text
+    float score,                     // Score from algorithm
+    String algorithm,                // Algorithm used ("YAKE", "RAKE", etc.)
+    List<Integer> positions          // Character positions in content
+) {}
+```
+
+### Go
+
+```go title="extracted_keyword.go"
+type ExtractedKeyword struct {
+    Text      string  `json:"text"`
+    Score     float32 `json:"score"`
+    Algorithm string  `json:"algorithm"`
+    Positions []int64 `json:"positions,omitempty"`
 }
 ```
 

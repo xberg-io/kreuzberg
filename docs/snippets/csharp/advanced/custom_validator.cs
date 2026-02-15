@@ -37,17 +37,13 @@ class QualityScoreValidator : IValidator
 
     public void Validate(ExtractionResult result)
     {
-        if (result.Metadata.Additional != null &&
-            result.Metadata.Additional.TryGetValue("quality_score", out var scoreNode))
-        {
-            var score = scoreNode?.GetValue<double>() ?? 0.0;
+        var score = result.QualityScore;
 
-            if (score < _minScore)
-            {
-                throw new KreuzbergValidationException(
-                    $"Quality score too low: {score:F2} < {_minScore:F2}"
-                );
-            }
+        if (score < _minScore)
+        {
+            throw new KreuzbergValidationException(
+                $"Quality score too low: {score:F2} < {_minScore:F2}"
+            );
         }
     }
 }

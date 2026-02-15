@@ -465,7 +465,7 @@ fn test_config_keywords() {
 
     assertions::assert_expected_mime(&result, &["application/pdf"]);
     assertions::assert_min_content_length(&result, 10);
-    assertions::assert_metadata_expectation(&result, "keywords", &serde_json::json!({"exists":true}));
+    assertions::assert_keywords(&result, Some(true), Some(1), None);
 }
 
 #[test]

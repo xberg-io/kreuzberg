@@ -419,8 +419,7 @@ export const assertions = {
         minCount?: number | null,
         maxCount?: number | null,
     ): void {
-        const metadata = isPlainRecord(result.metadata) ? (result.metadata as PlainRecord) : undefined;
-        const keywords = metadata?.keywords as unknown[] | undefined;
+        const keywords = result.extractedKeywords as unknown[] | undefined;
         if (hasKeywords === true) {
             expect(keywords).toBeDefined();
             expect(Array.isArray(keywords)).toBe(true);

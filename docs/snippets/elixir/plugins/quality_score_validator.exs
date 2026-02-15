@@ -36,8 +36,8 @@ defmodule MyApp.Plugins.QualityScoreValidator do
 
   @impl true
   def validate(result) do
-    # Extract quality score from ExtractionResult struct's metadata map
-    quality_score = result.metadata["quality_score"] || 0.0
+    # Extract quality score from ExtractionResult struct
+    quality_score = result.quality_score
 
     if is_number(quality_score) and quality_score >= 0.5 do
       :ok

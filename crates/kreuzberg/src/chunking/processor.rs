@@ -110,6 +110,10 @@ mod tests {
 	            elements: None,
 	            ocr_elements: None,
 	            document: None,
+	            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+	            extracted_keywords: None,
+	            quality_score: None,
+	            processing_warnings: Vec::new(),
 	        };
 
         processor.process(&mut result, &config).await.unwrap();
@@ -137,6 +141,10 @@ mod tests {
             elements: None,
             ocr_elements: None,
             document: None,
+            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: Vec::new(),
         };
 
         processor.process(&mut result, &config).await.unwrap();
@@ -176,6 +184,10 @@ mod tests {
             elements: None,
             ocr_elements: None,
             document: None,
+            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: Vec::new(),
         };
 
         let config_with_chunking = ExtractionConfig {
@@ -212,6 +224,10 @@ mod tests {
             elements: None,
             ocr_elements: None,
             document: None,
+            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: Vec::new(),
         };
 
         let long_result = ExtractionResult {
@@ -227,6 +243,10 @@ mod tests {
             elements: None,
             ocr_elements: None,
             document: None,
+            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: Vec::new(),
         };
 
         let short_duration = processor.estimated_duration_ms(&short_result);

@@ -139,8 +139,8 @@ mod tests {
         // Test size
         assert_eq!(
             std::mem::size_of::<CExtractionResult>(),
-            128,
-            "CExtractionResult must be exactly 128 bytes"
+            152,
+            "CExtractionResult must be exactly 152 bytes"
         );
 
         // Test alignment
@@ -205,6 +205,9 @@ mod tests {
             elements_json: ptr::null_mut(),
             ocr_elements_json: ptr::null_mut(),
             document_json: ptr::null_mut(),
+            extracted_keywords_json: ptr::null_mut(),
+            quality_score_json: ptr::null_mut(),
+            processing_warnings_json: ptr::null_mut(),
             success: true,
             _padding1: [0u8; 7],
         }))
@@ -521,6 +524,9 @@ mod tests {
                 elements_json: ptr::null_mut(),
                 ocr_elements_json: ptr::null_mut(),
                 document_json: ptr::null_mut(),
+                extracted_keywords_json: ptr::null_mut(),
+                quality_score_json: ptr::null_mut(),
+                processing_warnings_json: ptr::null_mut(),
                 success: true,
                 _padding1: [0u8; 7],
             }));
@@ -533,7 +539,7 @@ mod tests {
     #[test]
     fn test_extraction_result_free_all_fields_allocated() {
         unsafe {
-            // Test freeing a result where ALL 13 string fields are allocated
+            // Test freeing a result where ALL 18 string fields are allocated
             // This verifies that kreuzberg_free_result properly frees all fields
             let result = Box::into_raw(Box::new(CExtractionResult {
                 content: CString::new("test content").unwrap().into_raw(),
@@ -551,11 +557,16 @@ mod tests {
                 elements_json: CString::new("[]").unwrap().into_raw(),
                 ocr_elements_json: ptr::null_mut(),
                 document_json: ptr::null_mut(),
+                extracted_keywords_json: CString::new("[{\"text\":\"test\",\"score\":0.5}]").unwrap().into_raw(),
+                quality_score_json: CString::new("0.85").unwrap().into_raw(),
+                processing_warnings_json: CString::new("[{\"source\":\"chunking\",\"message\":\"warn\"}]")
+                    .unwrap()
+                    .into_raw(),
                 success: true,
                 _padding1: [0u8; 7],
             }));
 
-            // Should properly free all 15 allocated string fields without leaking memory
+            // Should properly free all 18 allocated string fields without leaking memory
             kreuzberg_free_result(result);
         }
     }
@@ -635,7 +646,7 @@ mod tests {
     /// Test CExtractionResult size exactly matches FFI contract
     #[test]
     fn test_c_extraction_result_size() {
-        assert_eq!(std::mem::size_of::<CExtractionResult>(), 128);
+        assert_eq!(std::mem::size_of::<CExtractionResult>(), 152);
         assert_eq!(std::mem::align_of::<CExtractionResult>(), 8);
     }
 

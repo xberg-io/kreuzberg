@@ -66,15 +66,9 @@ fn create_test_result(content_size: usize, chunk_count: usize) -> ExtractionResu
         content,
         mime_type: Cow::Borrowed("application/pdf"),
         metadata,
-        tables: vec![],
         detected_languages: Some(vec!["en".to_string(), "de".to_string()]),
         chunks,
-        images: None,
-        pages: None,
-        elements: None,
-        djot_content: None,
-        ocr_elements: None,
-        document: None,
+        ..Default::default()
     }
 }
 

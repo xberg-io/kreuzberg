@@ -13,7 +13,7 @@ let config = ExtractionConfig {
 
 let result = extract_file("research_paper.pdf", None, &config).await?;
 
-if let Some(keywords) = result.metadata.additional.get("keywords") {
+if let Some(keywords) = &result.extracted_keywords {
     println!("Keywords: {:?}", keywords);
 }
 ```

@@ -88,9 +88,12 @@ impl DocumentExtractor for DjotExtractor {
             Metadata::default()
         };
 
-        if !metadata.additional.contains_key("title")
+        if metadata.title.is_none()
+            && !metadata.additional.contains_key("title")
             && let Some(title) = crate::extractors::frontmatter_utils::extract_title_from_content(&remaining_content)
         {
+            metadata.title = Some(title.clone());
+            // DEPRECATED: kept for backward compatibility; will be removed in next major version.
             metadata.additional.insert(Cow::Borrowed("title"), title.into());
         }
 
@@ -117,6 +120,10 @@ impl DocumentExtractor for DjotExtractor {
             elements: None,
             ocr_elements: None,
             document: None,
+            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: Vec::new(),
         })
     }
 

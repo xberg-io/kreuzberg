@@ -20,6 +20,9 @@ namespace Kreuzberg\Types;
  * @property-read array<OcrElement>|null $ocrElements OCR elements with positioning and confidence when OCR element config enabled
  * @property-read DjotContent|null $djotContent Structured Djot content when output_format='djot'
  * @property-read DocumentStructure|null $document Hierarchical document structure when include_document_structure=true
+ * @property-read array<ExtractedKeyword>|null $extractedKeywords Extracted keywords with scores and algorithm metadata
+ * @property-read float|null $qualityScore Quality score of the extraction (0.0 to 1.0)
+ * @property-read array<ProcessingWarning>|null $processingWarnings Warnings generated during processing
  */
 readonly class ExtractionResult
 {
@@ -34,6 +37,9 @@ readonly class ExtractionResult
      * @param array<OcrElement>|null $ocrElements
      * @param DjotContent|null $djotContent
      * @param DocumentStructure|null $document
+     * @param array<ExtractedKeyword>|null $extractedKeywords
+     * @param float|null $qualityScore
+     * @param array<ProcessingWarning>|null $processingWarnings
      */
     public function __construct(
         public string $content,
@@ -49,6 +55,9 @@ readonly class ExtractionResult
         public ?array $ocrElements = null,
         public ?DjotContent $djotContent = null,
         public ?DocumentStructure $document = null,
+        public ?array $extractedKeywords = null,
+        public ?float $qualityScore = null,
+        public ?array $processingWarnings = null,
     ) {
     }
 
@@ -156,6 +165,36 @@ readonly class ExtractionResult
             $document = DocumentStructure::fromArray($documentData);
         }
 
+        $extractedKeywords = null;
+        if (isset($data['extracted_keywords'])) {
+            /** @var array<array<string, mixed>> $extractedKeywordsData */
+            $extractedKeywordsData = $data['extracted_keywords'];
+            $extractedKeywords = array_map(
+                /** @param array<string, mixed> $keyword */
+                static fn (array $keyword): ExtractedKeyword => ExtractedKeyword::fromArray($keyword),
+                $extractedKeywordsData,
+            );
+        }
+
+        $qualityScore = null;
+        if (isset($data['quality_score'])) {
+            $qualityScoreValue = $data['quality_score'];
+            if (is_numeric($qualityScoreValue)) {
+                $qualityScore = (float) $qualityScoreValue;
+            }
+        }
+
+        $processingWarnings = null;
+        if (isset($data['processing_warnings'])) {
+            /** @var array<array<string, mixed>> $processingWarningsData */
+            $processingWarningsData = $data['processing_warnings'];
+            $processingWarnings = array_map(
+                /** @param array<string, mixed> $warning */
+                static fn (array $warning): ProcessingWarning => ProcessingWarning::fromArray($warning),
+                $processingWarningsData,
+            );
+        }
+
         return new self(
             content: $content,
             mimeType: $mimeType,
@@ -174,6 +213,9 @@ readonly class ExtractionResult
             ocrElements: $ocrElements,
             djotContent: $djotContent,
             document: $document,
+            extractedKeywords: $extractedKeywords,
+            qualityScore: $qualityScore,
+            processingWarnings: $processingWarnings,
         );
     }
 }

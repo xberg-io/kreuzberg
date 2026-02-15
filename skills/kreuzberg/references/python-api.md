@@ -690,6 +690,9 @@ Result object returned by extraction functions.
 | `elements` | list[Element] \| None | Semantic elements if result_format="element_based" |
 | `output_format` | str \| None | Format of the content field (plain, markdown, djot, html) |
 | `result_format` | str \| None | Result format used (unified or element_based) |
+| `extracted_keywords` | list[ExtractedKeyword] \| None | Extracted keywords with relevance scores if keyword extraction enabled |
+| `quality_score` | float \| None | Overall quality score for the extraction result (0.0-1.0) |
+| `processing_warnings` | list[ProcessingWarning] | Non-fatal warnings encountered during extraction pipeline |
 
 **Methods:**
 

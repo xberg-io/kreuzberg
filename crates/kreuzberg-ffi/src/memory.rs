@@ -146,7 +146,7 @@ pub unsafe extern "C" fn kreuzberg_clone_string(s: *const c_char) -> *mut c_char
 ///
 /// # Memory Layout
 ///
-/// This function frees all 13 string fields in CExtractionResult:
+/// This function frees all 18 string fields in CExtractionResult:
 /// 1. content
 /// 2. mime_type
 /// 3. language
@@ -161,6 +161,10 @@ pub unsafe extern "C" fn kreuzberg_clone_string(s: *const c_char) -> *mut c_char
 /// 12. pages_json (FIXED: was missing before PR #3)
 /// 13. elements_json (ADDED: for element-based extraction support)
 /// 14. ocr_elements_json (ADDED: for OCR element output)
+/// 15. document_json (ADDED: for document structure)
+/// 16. extracted_keywords_json (ADDED: for keyword extraction)
+/// 17. quality_score_json (ADDED: for quality analysis)
+/// 18. processing_warnings_json (ADDED: for pipeline warnings)
 ///
 /// # Example (C)
 ///
@@ -220,6 +224,15 @@ pub unsafe extern "C" fn kreuzberg_free_result(result: *mut CExtractionResult) {
         if !result_box.document_json.is_null() {
             unsafe { drop(CString::from_raw(result_box.document_json)) };
         }
+        if !result_box.extracted_keywords_json.is_null() {
+            unsafe { drop(CString::from_raw(result_box.extracted_keywords_json)) };
+        }
+        if !result_box.quality_score_json.is_null() {
+            unsafe { drop(CString::from_raw(result_box.quality_score_json)) };
+        }
+        if !result_box.processing_warnings_json.is_null() {
+            unsafe { drop(CString::from_raw(result_box.processing_warnings_json)) };
+        }
     }
 }
 
@@ -246,6 +259,9 @@ mod tests {
             elements_json: CString::new("[]").unwrap().into_raw(),
             ocr_elements_json: ptr::null_mut(),
             document_json: ptr::null_mut(),
+            extracted_keywords_json: ptr::null_mut(),
+            quality_score_json: CString::new("0.85").unwrap().into_raw(),
+            processing_warnings_json: ptr::null_mut(),
             success: true,
             _padding1: [0u8; 7],
         }))
@@ -269,6 +285,9 @@ mod tests {
             elements_json: ptr::null_mut(),
             ocr_elements_json: ptr::null_mut(),
             document_json: ptr::null_mut(),
+            extracted_keywords_json: ptr::null_mut(),
+            quality_score_json: ptr::null_mut(),
+            processing_warnings_json: ptr::null_mut(),
             success: true,
             _padding1: [0u8; 7],
         }))
@@ -363,6 +382,9 @@ mod tests {
             elements_json: ptr::null_mut(),
             ocr_elements_json: ptr::null_mut(),
             document_json: ptr::null_mut(),
+            extracted_keywords_json: ptr::null_mut(),
+            quality_score_json: ptr::null_mut(),
+            processing_warnings_json: ptr::null_mut(),
             success: true,
             _padding1: [0u8; 7],
         }));
@@ -392,6 +414,9 @@ mod tests {
                 .into_raw(),
             ocr_elements_json: ptr::null_mut(),
             document_json: ptr::null_mut(),
+            extracted_keywords_json: ptr::null_mut(),
+            quality_score_json: ptr::null_mut(),
+            processing_warnings_json: ptr::null_mut(),
             success: true,
             _padding1: [0u8; 7],
         }));

@@ -608,6 +608,9 @@ mod tests {
                 document: None,
                 djot_content: None,
                 ocr_elements: None,
+                extracted_keywords: None,
+                quality_score: None,
+                processing_warnings: vec![],
             };
 
             let py_result =
@@ -641,6 +644,9 @@ mod tests {
                 document: None,
                 djot_content: None,
                 ocr_elements: None,
+                extracted_keywords: None,
+                quality_score: None,
+                processing_warnings: vec![],
             };
             rust_result
                 .metadata

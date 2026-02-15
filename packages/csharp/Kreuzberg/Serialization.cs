@@ -1156,10 +1156,46 @@ internal class MetadataConverter : JsonConverter<Metadata>
                                 if (extracted != null)
                                 {
                                     metadata.ExtractedKeywords = extracted;
+                                    // Backward compatibility: populate Keywords from extracted keyword text values
+                                    if (metadata.Keywords == null)
+                                    {
+                                        metadata.Keywords = extracted.ConvertAll(k => k.Text);
+                                    }
                                 }
                             }
                         }
                     }
+                    break;
+                case "extracted_keywords":
+                    if (reader.TokenType == JsonTokenType.StartArray)
+                    {
+                        using (var ekDoc = JsonDocument.ParseValue(ref reader))
+                        {
+                            var extracted = Serialization.TryDeserializeExtractedKeywords(ekDoc.RootElement);
+                            if (extracted != null)
+                            {
+                                metadata.ExtractedKeywords = extracted;
+                            }
+                        }
+                    }
+                    break;
+                case "category":
+                    metadata.Category = reader.TokenType == JsonTokenType.Null ? null : reader.GetString();
+                    break;
+                case "tags":
+                    if (reader.TokenType != JsonTokenType.Null)
+                    {
+                        metadata.Tags = JsonSerializer.Deserialize<List<string>>(ref reader, options);
+                    }
+                    break;
+                case "document_version":
+                    metadata.DocumentVersion = reader.TokenType == JsonTokenType.Null ? null : reader.GetString();
+                    break;
+                case "abstract_text":
+                    metadata.AbstractText = reader.TokenType == JsonTokenType.Null ? null : reader.GetString();
+                    break;
+                case "output_format":
+                    metadata.OutputFormat = reader.TokenType == JsonTokenType.Null ? null : reader.GetString();
                     break;
                 default:
                     // Store format-specific fields
@@ -1273,7 +1309,41 @@ internal class MetadataConverter : JsonConverter<Metadata>
             JsonSerializer.Serialize(writer, value.Pages, options);
         }
 
+        if (value.ExtractedKeywords != null)
+        {
+            writer.WritePropertyName("extracted_keywords");
+            JsonSerializer.Serialize(writer, value.ExtractedKeywords, options);
+        }
 
+        if (!string.IsNullOrWhiteSpace(value.Category))
+        {
+            writer.WritePropertyName("category");
+            writer.WriteStringValue(value.Category);
+        }
+
+        if (value.Tags != null)
+        {
+            writer.WritePropertyName("tags");
+            JsonSerializer.Serialize(writer, value.Tags, options);
+        }
+
+        if (!string.IsNullOrWhiteSpace(value.DocumentVersion))
+        {
+            writer.WritePropertyName("document_version");
+            writer.WriteStringValue(value.DocumentVersion);
+        }
+
+        if (!string.IsNullOrWhiteSpace(value.AbstractText))
+        {
+            writer.WritePropertyName("abstract_text");
+            writer.WriteStringValue(value.AbstractText);
+        }
+
+        if (!string.IsNullOrWhiteSpace(value.OutputFormat))
+        {
+            writer.WritePropertyName("output_format");
+            writer.WriteStringValue(value.OutputFormat);
+        }
 
         // Write format-specific fields
         WriteFormatFields(writer, value, options);
@@ -1606,6 +1676,7 @@ internal static class Serialization
         "subject",
         "authors",
         "keywords",
+        "extracted_keywords",
         "language",
         "created_at",
         "modified_at",
@@ -1616,6 +1687,11 @@ internal static class Serialization
         "json_schema",
         "error",
         "pages",
+        "category",
+        "tags",
+        "document_version",
+        "abstract_text",
+        "output_format",
     }.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
 
     internal static string SerializeResult(ExtractionResult result)
@@ -1661,6 +1737,21 @@ internal static class Serialization
         if (result.Document != null)
         {
             root["document"] = JsonSerializer.SerializeToNode(result.Document, Options);
+        }
+
+        if (result.ExtractedKeywords != null)
+        {
+            root["extracted_keywords"] = JsonSerializer.SerializeToNode(result.ExtractedKeywords, Options);
+        }
+
+        if (result.QualityScore.HasValue)
+        {
+            root["quality_score"] = result.QualityScore.Value;
+        }
+
+        if (result.ProcessingWarnings != null)
+        {
+            root["processing_warnings"] = JsonSerializer.SerializeToNode(result.ProcessingWarnings, Options);
         }
 
         return root.ToJsonString(Options);
@@ -1720,6 +1811,21 @@ internal static class Serialization
         if (root.TryGetProperty("document", out var documentProp))
         {
             result.Document = DeserializeElement<DocumentStructure>(documentProp);
+        }
+
+        if (root.TryGetProperty("extracted_keywords", out var extractedKeywords))
+        {
+            result.ExtractedKeywords = DeserializeElement<List<ExtractedKeyword>>(extractedKeywords);
+        }
+
+        if (root.TryGetProperty("quality_score", out var qualityScore) && qualityScore.ValueKind == JsonValueKind.Number)
+        {
+            result.QualityScore = qualityScore.GetDouble();
+        }
+
+        if (root.TryGetProperty("processing_warnings", out var processingWarnings))
+        {
+            result.ProcessingWarnings = DeserializeElement<List<ProcessingWarning>>(processingWarnings);
         }
 
         if (root.TryGetProperty("metadata", out var metadata))
@@ -1787,7 +1893,21 @@ internal static class Serialization
                 if (extracted != null)
                 {
                     metadata.ExtractedKeywords = extracted;
+                    // Backward compatibility: populate Keywords from extracted keyword text values
+                    if (metadata.Keywords == null)
+                    {
+                        metadata.Keywords = extracted.ConvertAll(k => k.Text);
+                    }
                 }
+            }
+        }
+
+        if (root.TryGetProperty("extracted_keywords", out var extractedKw) && extractedKw.ValueKind == JsonValueKind.Array)
+        {
+            var extracted = TryDeserializeExtractedKeywords(extractedKw);
+            if (extracted != null)
+            {
+                metadata.ExtractedKeywords = extracted;
             }
         }
 
@@ -1834,6 +1954,31 @@ internal static class Serialization
         if (root.TryGetProperty("pages", out var pages))
         {
             metadata.Pages = DeserializeElement<PageStructure>(pages);
+        }
+
+        if (root.TryGetProperty("category", out var category) && category.ValueKind == JsonValueKind.String)
+        {
+            metadata.Category = category.GetString();
+        }
+
+        if (root.TryGetProperty("tags", out var tags) && tags.ValueKind == JsonValueKind.Array)
+        {
+            metadata.Tags = DeserializeElement<List<string>>(tags);
+        }
+
+        if (root.TryGetProperty("document_version", out var documentVersion) && documentVersion.ValueKind == JsonValueKind.String)
+        {
+            metadata.DocumentVersion = documentVersion.GetString();
+        }
+
+        if (root.TryGetProperty("abstract_text", out var abstractText) && abstractText.ValueKind == JsonValueKind.String)
+        {
+            metadata.AbstractText = abstractText.GetString();
+        }
+
+        if (root.TryGetProperty("output_format", out var outputFormat) && outputFormat.ValueKind == JsonValueKind.String)
+        {
+            metadata.OutputFormat = outputFormat.GetString();
         }
 
         FormatType detectedFormat = FormatType.Unknown;
@@ -2197,6 +2342,30 @@ internal static class Serialization
         if (metadata.Pages != null)
         {
             node["pages"] = JsonSerializer.SerializeToNode(metadata.Pages, Options);
+        }
+        if (metadata.ExtractedKeywords != null)
+        {
+            node["extracted_keywords"] = JsonSerializer.SerializeToNode(metadata.ExtractedKeywords, Options);
+        }
+        if (!string.IsNullOrWhiteSpace(metadata.Category))
+        {
+            node["category"] = metadata.Category;
+        }
+        if (metadata.Tags != null)
+        {
+            node["tags"] = JsonSerializer.SerializeToNode(metadata.Tags, Options);
+        }
+        if (!string.IsNullOrWhiteSpace(metadata.DocumentVersion))
+        {
+            node["document_version"] = metadata.DocumentVersion;
+        }
+        if (!string.IsNullOrWhiteSpace(metadata.AbstractText))
+        {
+            node["abstract_text"] = metadata.AbstractText;
+        }
+        if (!string.IsNullOrWhiteSpace(metadata.OutputFormat))
+        {
+            node["output_format"] = metadata.OutputFormat;
         }
 
         AddFormatFields(metadata, node);

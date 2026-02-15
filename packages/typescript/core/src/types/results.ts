@@ -5,9 +5,17 @@
  * including extracted content, metadata, tables, chunks, images, and keywords.
  */
 
+import type { ExtractedKeyword } from "./config.js";
 import type { Metadata } from "./metadata.js";
 
 // ============================================================================
+
+export interface ProcessingWarning {
+	/** Pipeline stage name that generated this warning */
+	source: string;
+	/** Warning description */
+	message: string;
+}
 
 export interface Table {
 	cells: string[][];
@@ -490,6 +498,9 @@ export interface ExtractionResult {
 	images?: ExtractedImage[];
 	pages?: PageContent[];
 	elements?: Element[];
-	ocr_elements?: OcrElement[];
+	ocrElements?: OcrElement[];
 	document?: DocumentStructure | null;
+	extractedKeywords?: ExtractedKeyword[];
+	qualityScore?: number;
+	processingWarnings: ProcessingWarning[];
 }

@@ -17,6 +17,11 @@ var metadataCoreKeys = map[string]struct{}{
 	"image_preprocessing": {},
 	"json_schema":         {},
 	"error":               {},
+	"category":            {},
+	"tags":                {},
+	"document_version":    {},
+	"abstract_text":       {},
+	"output_format":       {},
 }
 
 var formatFieldSets = map[FormatType][]string{
@@ -40,54 +45,73 @@ var formatFieldSets = map[FormatType][]string{
 	FormatOCR: {"language", "psm", "output_format", "table_count", "table_rows", "table_cols"},
 }
 
-// UnmarshalJSON ensures Metadata captures flattened format unions and additional custom fields.
-func (m *Metadata) UnmarshalJSON(data []byte) error {
-	raw := map[string]json.RawMessage{}
-	if err := json.Unmarshal(data, &raw); err != nil {
-		return err
+func decodeRawString(raw map[string]json.RawMessage, key string) *string {
+	value, exists := raw[key]
+	if !exists {
+		return nil
 	}
-
-	decodeString := func(key string) *string {
-		value, exists := raw[key]
-		if !exists {
-			return nil
-		}
-		var out string
-		if err := json.Unmarshal(value, &out); err != nil {
-			return nil
-		}
-		return &out
+	var out string
+	if err := json.Unmarshal(value, &out); err != nil {
+		return nil
 	}
+	return &out
+}
 
-	decodeStringSlice := func(key string) []string {
-		value, exists := raw[key]
-		if !exists {
-			return nil
-		}
-		var out []string
-		if err := json.Unmarshal(value, &out); err != nil {
-			return nil
-		}
-		return out
+func decodeRawStringSlice(raw map[string]json.RawMessage, key string) []string {
+	value, exists := raw[key]
+	if !exists {
+		return nil
 	}
+	var out []string
+	if err := json.Unmarshal(value, &out); err != nil {
+		return nil
+	}
+	return out
+}
 
-	m.Title = decodeString("title")
-	m.Subject = decodeString("subject")
-	m.Authors = decodeStringSlice("authors")
-	m.Keywords = decodeStringSlice("keywords")
-	m.Language = decodeString("language")
-	m.CreatedAt = decodeString("created_at")
-	m.ModifiedAt = decodeString("modified_at")
-	m.CreatedBy = decodeString("created_by")
-	m.ModifiedBy = decodeString("modified_by")
+func (m *Metadata) decodeCoreFields(raw map[string]json.RawMessage) {
+	m.Title = decodeRawString(raw, "title")
+	m.Subject = decodeRawString(raw, "subject")
+	m.Authors = decodeRawStringSlice(raw, "authors")
+	m.Keywords = decodeRawStringSlice(raw, "keywords")
+	// If keywords field contains objects (from keyword extraction), try to extract text values
+	if m.Keywords == nil {
+		if value, exists := raw["keywords"]; exists {
+			var keywordObjects []struct {
+				Text string `json:"text"`
+			}
+			if err := json.Unmarshal(value, &keywordObjects); err == nil && len(keywordObjects) > 0 {
+				texts := make([]string, 0, len(keywordObjects))
+				for _, kw := range keywordObjects {
+					if kw.Text != "" {
+						texts = append(texts, kw.Text)
+					}
+				}
+				if len(texts) > 0 {
+					m.Keywords = texts
+				}
+			}
+		}
+	}
+	m.Language = decodeRawString(raw, "language")
+	m.CreatedAt = decodeRawString(raw, "created_at")
+	m.ModifiedAt = decodeRawString(raw, "modified_at")
+	m.CreatedBy = decodeRawString(raw, "created_by")
+	m.ModifiedBy = decodeRawString(raw, "modified_by")
+	m.Category = decodeRawString(raw, "category")
+	m.Tags = decodeRawStringSlice(raw, "tags")
+	m.DocumentVersion = decodeRawString(raw, "document_version")
+	m.AbstractText = decodeRawString(raw, "abstract_text")
+	m.OutputFormat = decodeRawString(raw, "output_format")
+}
 
+func (m *Metadata) decodeStructuredFields(raw map[string]json.RawMessage) {
 	if value, ok := raw["pages"]; ok {
 		var pages PageStructure
 		if err := json.Unmarshal(value, &pages); err == nil {
 			m.Pages = &pages
 		}
 	}
-
 	if value, ok := raw["image_preprocessing"]; ok {
 		var meta ImagePreprocessingMetadata
 		if err := json.Unmarshal(value, &meta); err == nil {
@@ -109,6 +133,17 @@ func (m *Metadata) UnmarshalJSON(data []byte) error {
 			m.Format.Type = FormatType(format)
 		}
 	}
+}
+
+// UnmarshalJSON ensures Metadata captures flattened format unions and additional custom fields.
+func (m *Metadata) UnmarshalJSON(data []byte) error {
+	raw := map[string]json.RawMessage{}
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return err
+	}
+
+	m.decodeCoreFields(raw)
+	m.decodeStructuredFields(raw)
 
 	if err := m.decodeFormat(data); err != nil {
 		return err
@@ -179,6 +214,21 @@ func (m Metadata) MarshalJSON() ([]byte, error) {
 	}
 	if m.Error != nil {
 		out["error"] = m.Error
+	}
+	if m.Category != nil {
+		out["category"] = *m.Category
+	}
+	if len(m.Tags) > 0 {
+		out["tags"] = m.Tags
+	}
+	if m.DocumentVersion != nil {
+		out["document_version"] = *m.DocumentVersion
+	}
+	if m.AbstractText != nil {
+		out["abstract_text"] = *m.AbstractText
+	}
+	if m.OutputFormat != nil {
+		out["output_format"] = *m.OutputFormat
 	}
 
 	formatFields, err := m.encodeFormat()

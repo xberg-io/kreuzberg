@@ -430,7 +430,7 @@ public class ContractTest {
             result -> {
                 E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("application/pdf"));
                 E2EHelpers.Assertions.assertMinContentLength(result, 10);
-                E2EHelpers.Assertions.assertMetadataExpectation(result, "keywords", Map.of("exists", true));
+                E2EHelpers.Assertions.assertKeywords(result, true, 1, null);
             }
         );
     }

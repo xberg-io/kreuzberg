@@ -160,14 +160,7 @@ impl OcrBackend for JsOcrBackendWrapper {
             mime_type: Cow::Owned(mime_type),
             metadata,
             tables,
-            detected_languages: None,
-            chunks: None,
-            images: None,
-            pages: None,
-            elements: None,
-            djot_content: None,
-            ocr_elements: None,
-            document: None,
+            ..Default::default()
         })
     }
 
@@ -196,35 +189,15 @@ impl OcrBackend for JsOcrBackendWrapper {
 impl OcrBackend for JsOcrBackendWrapper {
     async fn process_image(&self, _image_bytes: &[u8], _config: &OcrConfig) -> kreuzberg::Result<ExtractionResult> {
         Ok(ExtractionResult {
-            content: String::new(),
             mime_type: Cow::Borrowed("image/jpeg"),
-            metadata: Default::default(),
-            tables: vec![],
-            detected_languages: None,
-            chunks: None,
-            images: None,
-            pages: None,
-            elements: None,
-            djot_content: None,
-            ocr_elements: None,
-            document: None,
+            ..Default::default()
         })
     }
 
     async fn process_file(&self, _path: &std::path::Path, _config: &OcrConfig) -> kreuzberg::Result<ExtractionResult> {
         Ok(ExtractionResult {
-            content: String::new(),
             mime_type: Cow::Borrowed("image/jpeg"),
-            metadata: Default::default(),
-            tables: vec![],
-            detected_languages: None,
-            chunks: None,
-            images: None,
-            pages: None,
-            elements: None,
-            djot_content: None,
-            ocr_elements: None,
-            document: None,
+            ..Default::default()
         })
     }
 

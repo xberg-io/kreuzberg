@@ -151,6 +151,7 @@ func TestContractConfigKeywords(t *testing.T) {
 }`))
 	assertExpectedMime(t, result, []string{"application/pdf"})
 	assertMinContentLength(t, result, 10)
+	assertKeywords(t, result, boolPtr(true), intPtr(1), nil)
 }
 
 func TestContractConfigLanguageDetection(t *testing.T) {

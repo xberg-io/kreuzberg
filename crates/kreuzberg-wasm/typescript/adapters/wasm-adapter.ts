@@ -26,7 +26,20 @@
  * ```
  */
 
-import type { Chunk, ExtractedImage, ExtractionConfig, ExtractionResult, Metadata, Table } from "../types.js";
+import type {
+	Chunk,
+	DocumentStructure,
+	Element,
+	ExtractedImage,
+	ExtractedKeyword,
+	ExtractionConfig,
+	ExtractionResult,
+	Metadata,
+	OcrElement,
+	PageContent,
+	ProcessingWarning,
+	Table,
+} from "../types.js";
 
 /**
  * Maximum file size for processing (512 MB)
@@ -361,6 +374,21 @@ export function jsToExtractionResult(jsValue: unknown): ExtractionResult {
 		detectedLanguages = detectedLanguagesRaw;
 	}
 
+	const extractedKeywords = (result.extractedKeywords ?? result.extracted_keywords ?? null) as
+		| ExtractedKeyword[]
+		| null;
+	const qualityScore =
+		typeof (result.qualityScore ?? result.quality_score) === "number"
+			? ((result.qualityScore ?? result.quality_score) as number)
+			: null;
+	const processingWarnings = (result.processingWarnings ?? result.processing_warnings ?? null) as
+		| ProcessingWarning[]
+		| null;
+	const elements = (result.elements ?? null) as Element[] | null;
+	const ocrElements = (result.ocrElements ?? result.ocr_elements ?? null) as OcrElement[] | null;
+	const document = (result.document ?? null) as DocumentStructure | null;
+	const pages = (result.pages ?? null) as PageContent[] | null;
+
 	return {
 		content: result.content,
 		mimeType,
@@ -369,6 +397,13 @@ export function jsToExtractionResult(jsValue: unknown): ExtractionResult {
 		detectedLanguages,
 		chunks,
 		images,
+		pages,
+		extractedKeywords,
+		qualityScore,
+		processingWarnings,
+		elements,
+		ocrElements,
+		document,
 	};
 }
 

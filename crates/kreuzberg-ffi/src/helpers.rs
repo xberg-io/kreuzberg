@@ -70,6 +70,9 @@ pub fn to_c_extraction_result(result: ExtractionResult) -> std::result::Result<*
         elements,
         ocr_elements,
         document,
+        extracted_keywords,
+        quality_score,
+        processing_warnings,
     } = result;
 
     let sanitized_content = if content.contains('\0') {
@@ -214,6 +217,38 @@ pub fn to_c_extraction_result(result: ExtractionResult) -> std::result::Result<*
         _ => None,
     };
 
+    let extracted_keywords_json_guard = match extracted_keywords {
+        Some(keywords) if !keywords.is_empty() => {
+            let json = serde_json::to_string(&keywords)
+                .map_err(|e| format!("Failed to serialize extracted keywords to JSON: {}", e))?;
+            Some(CStringGuard::new(CString::new(json).map_err(|e| {
+                format!("Failed to convert extracted keywords JSON to C string: {}", e)
+            })?))
+        }
+        _ => None,
+    };
+
+    let quality_score_json_guard = match quality_score {
+        Some(score) => {
+            let json = serde_json::to_string(&score)
+                .map_err(|e| format!("Failed to serialize quality score to JSON: {}", e))?;
+            Some(CStringGuard::new(CString::new(json).map_err(|e| {
+                format!("Failed to convert quality score JSON to C string: {}", e)
+            })?))
+        }
+        None => None,
+    };
+
+    let processing_warnings_json_guard = if !processing_warnings.is_empty() {
+        let json = serde_json::to_string(&processing_warnings)
+            .map_err(|e| format!("Failed to serialize processing warnings to JSON: {}", e))?;
+        Some(CStringGuard::new(CString::new(json).map_err(|e| {
+            format!("Failed to convert processing warnings JSON to C string: {}", e)
+        })?))
+    } else {
+        None
+    };
+
     Ok(Box::into_raw(Box::new(CExtractionResult {
         content: content_guard.into_raw(),
         mime_type: mime_type_guard.into_raw(),
@@ -230,6 +265,9 @@ pub fn to_c_extraction_result(result: ExtractionResult) -> std::result::Result<*
         elements_json: elements_json_guard.map_or(ptr::null_mut(), |g| g.into_raw()),
         ocr_elements_json: ocr_elements_json_guard.map_or(ptr::null_mut(), |g| g.into_raw()),
         document_json: document_json_guard.map_or(ptr::null_mut(), |g| g.into_raw()),
+        extracted_keywords_json: extracted_keywords_json_guard.map_or(ptr::null_mut(), |g| g.into_raw()),
+        quality_score_json: quality_score_json_guard.map_or(ptr::null_mut(), |g| g.into_raw()),
+        processing_warnings_json: processing_warnings_json_guard.map_or(ptr::null_mut(), |g| g.into_raw()),
         success: true,
         _padding1: [0u8; 7],
     })))
@@ -390,6 +428,9 @@ mod tests {
             elements: None,
             ocr_elements: None,
             document: None,
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: vec![],
         };
 
         let c_result = to_c_extraction_result(result);
@@ -431,6 +472,9 @@ mod tests {
             elements: None,
             ocr_elements: None,
             document: None,
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: vec![],
         };
 
         let c_result = to_c_extraction_result(result);
@@ -482,6 +526,9 @@ mod tests {
             elements: None,
             ocr_elements: None,
             document: None,
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: vec![],
         };
 
         let c_result = to_c_extraction_result(result);
@@ -563,6 +610,9 @@ mod tests {
             elements: None,
             ocr_elements: None,
             document: None,
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: vec![],
         };
 
         let c_result = to_c_extraction_result(result);

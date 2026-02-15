@@ -14,7 +14,7 @@ module Kreuzberg
   class Result
     attr_reader :content, :mime_type, :metadata, :metadata_json, :tables,
                 :detected_languages, :chunks, :images, :pages, :elements, :ocr_elements, :djot_content,
-                :document
+                :document, :extracted_keywords, :quality_score, :processing_warnings
 
     # @!attribute [r] cells
     #   @return [Array<Array<String>>] Table cells (2D array)
@@ -332,6 +332,9 @@ module Kreuzberg
       @ocr_elements = parse_ocr_elements(get_value(hash, 'ocr_elements'))
       @djot_content = parse_djot_content(get_value(hash, 'djot_content'))
       @document = parse_document_structure(get_value(hash, 'document'))
+      @extracted_keywords = parse_extracted_keywords(get_value(hash, 'extracted_keywords'))
+      @quality_score = get_value(hash, 'quality_score')
+      @processing_warnings = parse_processing_warnings(get_value(hash, 'processing_warnings'))
     end
     # rubocop:enable Metrics/AbcSize
 
@@ -352,7 +355,10 @@ module Kreuzberg
         elements: serialize_elements,
         ocr_elements: serialize_ocr_elements,
         djot_content: @djot_content&.to_h,
-        document: @document&.to_h
+        document: @document&.to_h,
+        extracted_keywords: @extracted_keywords&.map(&:to_h),
+        quality_score: @quality_score,
+        processing_warnings: @processing_warnings.map(&:to_h)
       }
     end
 
@@ -652,6 +658,30 @@ module Kreuzberg
       return nil if document_data.nil?
 
       DocumentStructure.new(document_data)
+    end
+
+    def parse_extracted_keywords(keywords_data)
+      return nil if keywords_data.nil?
+
+      keywords_data.map do |kw_hash|
+        Kreuzberg::ExtractedKeyword.new(
+          text: kw_hash['text'] || '',
+          score: (kw_hash['score'] || 0.0).to_f,
+          algorithm: kw_hash['algorithm'] || '',
+          positions: kw_hash['positions']
+        )
+      end
+    end
+
+    def parse_processing_warnings(warnings_data)
+      return [] if warnings_data.nil?
+
+      warnings_data.map do |w_hash|
+        Kreuzberg::ProcessingWarning.new(
+          source: w_hash['source'] || '',
+          message: w_hash['message'] || ''
+        )
+      end
     end
   end
   # rubocop:enable Metrics/ClassLength

@@ -31,6 +31,10 @@ async fn test_run_pipeline_basic() {
         elements: None,
         ocr_elements: None,
         document: None,
+        #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+        extracted_keywords: None,
+        quality_score: None,
+        processing_warnings: Vec::new(),
     };
     result.metadata.additional.insert(
         Cow::Borrowed(VALIDATION_MARKER_KEY),
@@ -58,6 +62,10 @@ async fn test_pipeline_with_quality_processing() {
         elements: None,
         ocr_elements: None,
         document: None,
+        #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+        extracted_keywords: None,
+        quality_score: None,
+        processing_warnings: Vec::new(),
     };
     let config = ExtractionConfig {
         enable_quality_processing: true,
@@ -83,6 +91,10 @@ async fn test_pipeline_without_quality_processing() {
         elements: None,
         ocr_elements: None,
         document: None,
+        #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+        extracted_keywords: None,
+        quality_score: None,
+        processing_warnings: Vec::new(),
     };
     let config = ExtractionConfig {
         enable_quality_processing: false,
@@ -109,6 +121,10 @@ async fn test_pipeline_with_chunking() {
         elements: None,
         ocr_elements: None,
         document: None,
+        #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+        extracted_keywords: None,
+        quality_score: None,
+        processing_warnings: Vec::new(),
     };
     let config = ExtractionConfig {
         chunking: Some(crate::ChunkingConfig {
@@ -143,6 +159,10 @@ async fn test_pipeline_without_chunking() {
         elements: None,
         ocr_elements: None,
         document: None,
+        #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+        extracted_keywords: None,
+        quality_score: None,
+        processing_warnings: Vec::new(),
     };
     let config = ExtractionConfig {
         chunking: None,
@@ -176,6 +196,10 @@ async fn test_pipeline_preserves_metadata() {
         elements: None,
         ocr_elements: None,
         document: None,
+        #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+        extracted_keywords: None,
+        quality_score: None,
+        processing_warnings: Vec::new(),
     };
     let config = ExtractionConfig::default();
 
@@ -213,6 +237,10 @@ async fn test_pipeline_preserves_tables() {
         elements: None,
         ocr_elements: None,
         document: None,
+        #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+        extracted_keywords: None,
+        quality_score: None,
+        processing_warnings: Vec::new(),
     };
     let config = ExtractionConfig::default();
 
@@ -247,6 +275,10 @@ async fn test_pipeline_empty_content() {
         elements: None,
         ocr_elements: None,
         document: None,
+        #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+        extracted_keywords: None,
+        quality_score: None,
+        processing_warnings: Vec::new(),
     };
     let config = ExtractionConfig::default();
 
@@ -272,6 +304,10 @@ async fn test_pipeline_with_all_features() {
         elements: None,
         ocr_elements: None,
         document: None,
+        #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+        extracted_keywords: None,
+        quality_score: None,
+        processing_warnings: Vec::new(),
     };
     let config = ExtractionConfig {
         enable_quality_processing: true,
@@ -329,6 +365,10 @@ Natural language processing enables computers to understand human language.
         elements: None,
         ocr_elements: None,
         document: None,
+        #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+        extracted_keywords: None,
+        quality_score: None,
+        processing_warnings: Vec::new(),
     };
 
     #[cfg(feature = "keywords-yake")]
@@ -378,6 +418,10 @@ async fn test_pipeline_without_keyword_config() {
         elements: None,
         ocr_elements: None,
         document: None,
+        #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+        extracted_keywords: None,
+        quality_score: None,
+        processing_warnings: Vec::new(),
     };
 
     let config = ExtractionConfig {
@@ -418,6 +462,10 @@ async fn test_pipeline_keyword_extraction_short_content() {
         elements: None,
         ocr_elements: None,
         document: None,
+        #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+        extracted_keywords: None,
+        quality_score: None,
+        processing_warnings: Vec::new(),
     };
 
     #[cfg(feature = "keywords-yake")]
@@ -557,6 +605,10 @@ async fn test_postprocessor_runs_before_validator() {
         elements: None,
         ocr_elements: None,
         document: None,
+        #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+        extracted_keywords: None,
+        quality_score: None,
+        processing_warnings: Vec::new(),
     };
     result.metadata.additional.insert(
         Cow::Borrowed(VALIDATION_MARKER_KEY),
@@ -656,6 +708,10 @@ async fn test_quality_processing_runs_before_validator() {
         elements: None,
         ocr_elements: None,
         document: None,
+        #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+        extracted_keywords: None,
+        quality_score: None,
+        processing_warnings: Vec::new(),
     };
     result.metadata.additional.insert(
         Cow::Borrowed(VALIDATION_MARKER_KEY),
@@ -856,6 +912,10 @@ async fn test_multiple_postprocessors_run_before_validator() {
         elements: None,
         ocr_elements: None,
         document: None,
+        #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+        extracted_keywords: None,
+        quality_score: None,
+        processing_warnings: Vec::new(),
     };
 
     let config = ExtractionConfig::default();
@@ -875,16 +935,7 @@ async fn test_run_pipeline_with_output_format_plain() {
     let result = ExtractionResult {
         content: "test content".to_string(),
         mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        pages: None,
-        djot_content: None,
-        elements: None,
-        ocr_elements: None,
-        document: None,
+        ..Default::default()
     };
 
     let config = crate::core::config::ExtractionConfig {
@@ -894,6 +945,7 @@ async fn test_run_pipeline_with_output_format_plain() {
 
     let processed = run_pipeline(result, &config).await.unwrap();
     assert_eq!(processed.content, "test content");
+    assert_eq!(processed.metadata.output_format, Some("plain".to_string()));
 }
 
 #[tokio::test]
@@ -903,14 +955,6 @@ async fn test_run_pipeline_with_output_format_djot() {
     let result = ExtractionResult {
         content: "test content".to_string(),
         mime_type: Cow::Borrowed("text/djot"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        pages: None,
-        elements: None,
-        ocr_elements: None,
         djot_content: Some(DjotContent {
             plain_text: "test content".to_string(),
             blocks: vec![FormattedBlock {
@@ -934,7 +978,7 @@ async fn test_run_pipeline_with_output_format_djot() {
             footnotes: vec![],
             attributes: Vec::new(),
         }),
-        document: None,
+        ..Default::default()
     };
 
     let config = crate::core::config::ExtractionConfig {
@@ -945,6 +989,7 @@ async fn test_run_pipeline_with_output_format_djot() {
     let processed = run_pipeline(result, &config).await.unwrap();
     // The content should still be present
     assert!(!processed.content.is_empty());
+    assert_eq!(processed.metadata.output_format, Some("djot".to_string()));
 }
 
 #[tokio::test]
@@ -952,16 +997,7 @@ async fn test_run_pipeline_with_output_format_html() {
     let result = ExtractionResult {
         content: "test content".to_string(),
         mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        pages: None,
-        djot_content: None,
-        elements: None,
-        ocr_elements: None,
-        document: None,
+        ..Default::default()
     };
 
     let config = crate::core::config::ExtractionConfig {
@@ -974,6 +1010,7 @@ async fn test_run_pipeline_with_output_format_html() {
     assert!(processed.content.contains("<pre>"));
     assert!(processed.content.contains("test content"));
     assert!(processed.content.contains("</pre>"));
+    assert_eq!(processed.metadata.output_format, Some("html".to_string()));
 }
 
 #[tokio::test]
@@ -984,14 +1021,6 @@ async fn test_run_pipeline_applies_output_format_last() {
     let result = ExtractionResult {
         content: "test".to_string(),
         mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        pages: None,
-        elements: None,
-        ocr_elements: None,
         djot_content: Some(DjotContent {
             plain_text: "test".to_string(),
             blocks: vec![],
@@ -1002,7 +1031,7 @@ async fn test_run_pipeline_applies_output_format_last() {
             footnotes: vec![],
             attributes: Vec::new(),
         }),
-        document: None,
+        ..Default::default()
     };
 
     let config = crate::core::config::ExtractionConfig {
@@ -1015,4 +1044,5 @@ async fn test_run_pipeline_applies_output_format_last() {
     let processed = run_pipeline(result, &config).await.unwrap();
     // The result should have gone through the pipeline successfully
     assert!(processed.djot_content.is_some());
+    assert_eq!(processed.metadata.output_format, Some("djot".to_string()));
 }

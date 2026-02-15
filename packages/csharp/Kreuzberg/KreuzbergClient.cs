@@ -1220,6 +1220,9 @@ public static class KreuzbergClient
             result.Elements = DeserializeField<List<Element>>(cRes.ElementsJson);
             result.OcrElements = DeserializeField<List<OcrElement>>(cRes.OcrElementsJson);
             result.Document = DeserializeField<DocumentStructure>(cRes.DocumentJson);
+            result.ExtractedKeywords = DeserializeField<List<ExtractedKeyword>>(cRes.ExtractedKeywordsJson);
+            result.QualityScore = DeserializeField<double?>(cRes.QualityScoreJson);
+            result.ProcessingWarnings = DeserializeField<List<ProcessingWarning>>(cRes.ProcessingWarningsJson) ?? new List<ProcessingWarning>();
 
             if (result.Metadata.Pages == null && cRes.PageStructureJson != IntPtr.Zero)
             {

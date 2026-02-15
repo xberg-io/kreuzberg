@@ -173,10 +173,7 @@ jobs:
         shell: pwsh
         run: pwsh -File scripts/ci/ruby/windows-max-path-mitigation.ps1
 
-      - name: Install Ruby deps
-        if: runner.os != 'Windows'
-        shell: bash
-        run: scripts/ci/ruby/install-ruby-deps.sh
+      # Note: Ruby deps for non-Windows are installed by ruby/setup-ruby bundler-cache above.
 
       - name: Install Ruby deps (Windows)
         if: runner.os == 'Windows'

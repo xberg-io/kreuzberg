@@ -38,9 +38,9 @@ func qualityScoreValidator(resultJSON *C.char) *C.char {
 		return nil
 	}
 
-	// Get quality score from metadata
+	// Get quality score from result
 	qualityScore := 0.0
-	if score, ok := metadata["quality_score"].(float64); ok {
+	if score, ok := result["quality_score"].(float64); ok {
 		qualityScore = score
 	}
 

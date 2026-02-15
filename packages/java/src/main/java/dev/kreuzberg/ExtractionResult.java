@@ -13,7 +13,8 @@ import java.util.Optional;
  *
  * <p>
  * Includes extracted content, tables, metadata, detected languages, text
- * chunks, images, page structure information, and Djot content.
+ * chunks, images, page structure information, Djot content, extracted keywords,
+ * quality score, and processing warnings.
  */
 public final class ExtractionResult {
 	private final String content;
@@ -30,11 +31,18 @@ public final class ExtractionResult {
 	@JsonProperty("djot_content")
 	private final DjotContent djotContent;
 	private final DocumentStructure document;
+	@JsonProperty("extracted_keywords")
+	private final List<ExtractedKeyword> extractedKeywords;
+	@JsonProperty("quality_score")
+	private final Double qualityScore;
+	@JsonProperty("processing_warnings")
+	private final List<ProcessingWarning> processingWarnings;
 
 	ExtractionResult(String content, String mimeType, Metadata metadata, List<Table> tables,
 			List<String> detectedLanguages, List<Chunk> chunks, List<ExtractedImage> images, List<PageContent> pages,
 			PageStructure pageStructure, List<Element> elements, List<OcrElement> ocrElements, DjotContent djotContent,
-			DocumentStructure document) {
+			DocumentStructure document, List<ExtractedKeyword> extractedKeywords, Double qualityScore,
+			List<ProcessingWarning> processingWarnings) {
 		this.content = Objects.requireNonNull(content, "content must not be null");
 		this.mimeType = Objects.requireNonNull(mimeType, "mimeType must not be null");
 		this.metadata = metadata != null ? metadata : Metadata.empty();
@@ -52,6 +60,9 @@ public final class ExtractionResult {
 		this.ocrElements = Collections.unmodifiableList(ocrElements != null ? ocrElements : List.of());
 		this.djotContent = djotContent;
 		this.document = document;
+		this.extractedKeywords = extractedKeywords != null ? Collections.unmodifiableList(extractedKeywords) : null;
+		this.qualityScore = qualityScore;
+		this.processingWarnings = processingWarnings != null ? Collections.unmodifiableList(processingWarnings) : null;
 	}
 
 	public String getContent() {
@@ -88,6 +99,11 @@ public final class ExtractionResult {
 		metadata.getImagePreprocessing().ifPresent(v -> map.put("image_preprocessing", v));
 		metadata.getJsonSchema().ifPresent(v -> map.put("json_schema", v));
 		metadata.getError().ifPresent(v -> map.put("error", v));
+		metadata.getCategory().ifPresent(v -> map.put("category", v));
+		metadata.getTags().ifPresent(v -> map.put("tags", v));
+		metadata.getDocumentVersion().ifPresent(v -> map.put("document_version", v));
+		metadata.getAbstractText().ifPresent(v -> map.put("abstract_text", v));
+		metadata.getOutputFormat().ifPresent(v -> map.put("output_format", v));
 		map.putAll(metadata.getAdditional());
 		return Collections.unmodifiableMap(map);
 	}
@@ -176,6 +192,48 @@ public final class ExtractionResult {
 	 */
 	public Optional<DocumentStructure> getDocumentStructure() {
 		return Optional.ofNullable(document);
+	}
+
+	/**
+	 * Get the keywords extracted from the document (optional).
+	 *
+	 * <p>
+	 * Available when keyword extraction is enabled in the extraction configuration.
+	 *
+	 * @return optional unmodifiable list of extracted keywords, or empty if not
+	 *         available
+	 * @since 4.5.0
+	 */
+	public Optional<List<ExtractedKeyword>> getExtractedKeywords() {
+		return Optional.ofNullable(extractedKeywords);
+	}
+
+	/**
+	 * Get the quality score of the extraction (optional).
+	 *
+	 * <p>
+	 * A numeric score indicating the quality of the extraction result. Available
+	 * when quality processing is enabled.
+	 *
+	 * @return optional quality score, or empty if not available
+	 * @since 4.5.0
+	 */
+	public Optional<Double> getQualityScore() {
+		return Optional.ofNullable(qualityScore);
+	}
+
+	/**
+	 * Get the processing warnings generated during extraction (optional).
+	 *
+	 * <p>
+	 * Contains warnings from various processing stages that did not prevent
+	 * extraction but may indicate potential issues.
+	 *
+	 * @return optional unmodifiable list of processing warnings, or empty if none
+	 * @since 4.5.0
+	 */
+	public Optional<List<ProcessingWarning>> getProcessingWarnings() {
+		return Optional.ofNullable(processingWarnings);
 	}
 
 	/**
@@ -343,6 +401,8 @@ public final class ExtractionResult {
 				+ ", tables=" + tables.size() + ", detectedLanguages=" + detectedLanguages + ", chunks=" + chunks.size()
 				+ ", images=" + images.size() + ", pages=" + pages.size() + ", elements=" + elements.size()
 				+ ", ocrElements=" + ocrElements.size() + ", hasDjotContent=" + (djotContent != null)
-				+ ", hasDocumentStructure=" + (document != null) + '}';
+				+ ", hasDocumentStructure=" + (document != null) + ", extractedKeywords="
+				+ (extractedKeywords != null ? extractedKeywords.size() : "null") + ", qualityScore=" + qualityScore
+				+ ", processingWarnings=" + (processingWarnings != null ? processingWarnings.size() : "null") + '}';
 	}
 }

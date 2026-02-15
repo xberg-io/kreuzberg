@@ -440,8 +440,7 @@ pub mod assertions {
         min_count: Option<usize>,
         max_count: Option<usize>,
     ) {
-        // Keywords are stored in metadata.additional["keywords"] as an array of Keyword objects
-        let keywords_opt = result.metadata.additional.get("keywords").and_then(|v| v.as_array());
+        let keywords_opt = result.extracted_keywords.as_ref();
 
         if let Some(true) = has_keywords {
             let keywords = keywords_opt.expect("Expected keywords but got None");

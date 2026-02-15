@@ -225,7 +225,10 @@ defmodule Kreuzberg.Helpers do
           elements: normalized["elements"],
           ocr_elements: normalized["ocr_elements"],
           djot_content: normalized["djot_content"],
-          document: normalized["document"]
+          document: normalized["document"],
+          extracted_keywords: normalized["extracted_keywords"],
+          quality_score: normalized["quality_score"],
+          processing_warnings: normalized["processing_warnings"]
         )
 
         {:ok, result}

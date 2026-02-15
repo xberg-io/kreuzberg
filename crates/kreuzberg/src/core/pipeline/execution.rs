@@ -5,7 +5,7 @@
 
 use crate::core::config::ExtractionConfig;
 use crate::plugins::ProcessingStage;
-use crate::types::ExtractionResult;
+use crate::types::{ExtractionResult, ProcessingWarning};
 use crate::{KreuzbergError, Result};
 use std::borrow::Cow;
 
@@ -37,9 +37,15 @@ pub(super) async fn execute_processors(
                         return Err(err);
                     }
                     Err(err) => {
+                        let error_msg = err.to_string();
+                        result.processing_warnings.push(ProcessingWarning {
+                            source: processor_name.to_string(),
+                            message: error_msg.clone(),
+                        });
+                        // DEPRECATED: kept for backward compatibility; will be removed in next major version.
                         result.metadata.additional.insert(
                             Cow::Owned(format!("processing_error_{processor_name}")),
-                            serde_json::Value::String(err.to_string()),
+                            serde_json::Value::String(error_msg),
                         );
                     }
                 }

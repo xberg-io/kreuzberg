@@ -811,6 +811,10 @@ impl DocumentExtractor for DocxExtractor {
             elements: None,
             ocr_elements: None,
             document: doc_structure,
+            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: Vec::new(),
         })
     }
 

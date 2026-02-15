@@ -20,8 +20,8 @@ if err != nil {
 }
 
 qualityScore := 0.0
-if val, ok := result.Metadata["quality_score"]; ok {
-	qualityScore = val.(float64)
+if result.QualityScore != nil {
+	qualityScore = *result.QualityScore
 }
 
 if qualityScore < 0.5 {

@@ -36,6 +36,7 @@ __all__ = [
     "ErrorDetails",
     "ErrorMetadata",
     "ExtractedImage",
+    "ExtractedKeyword",
     "ExtractedTable",
     "ExtractionConfig",
     "ExtractionResult",
@@ -84,6 +85,7 @@ __all__ = [
     "PdfConfig",
     "PostProcessorConfig",
     "PostProcessorProtocol",
+    "ProcessingWarning",
     "RakeParams",
     "ResultFormat",
     "StructuredData",
@@ -1493,15 +1495,31 @@ class Metadata(TypedDict, total=False):
     # OCR-specific (flattened from OcrMetadata)
     # Note: 'language' overlaps with common field above
     psm: int
-    output_format: str
+    output_format: str | None
     table_count: int
     table_rows: int | None
     table_cols: int | None
+
+    # Additional metadata fields
+    category: str | None
+    tags: list[str] | None
+    document_version: str | None
+    abstract_text: str | None
 
     # Processing metadata
     image_preprocessing: ImagePreprocessingMetadata
     json_schema: Any
     error: ErrorMetadata
+
+class ExtractedKeyword:
+    text: str
+    score: float
+    algorithm: str
+    positions: list[int] | None
+
+class ProcessingWarning:
+    source: str
+    message: str
 
 class ExtractedImage(TypedDict, total=False):
     data: bytes
@@ -1771,6 +1789,9 @@ class ExtractionResult:
     djot_content: DjotContent | None
     output_format: str | None
     result_format: str | None
+    extracted_keywords: list[ExtractedKeyword] | None
+    quality_score: float | None
+    processing_warnings: list[ProcessingWarning]
     def get_page_count(self) -> int: ...
     def get_chunk_count(self) -> int: ...
     def get_detected_language(self) -> str | None: ...

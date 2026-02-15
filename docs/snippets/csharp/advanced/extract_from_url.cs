@@ -30,7 +30,7 @@ class Program
                 config
             );
 
-            Console.WriteLine($"Quality score: {result2.Metadata["quality_score"]}");
+            Console.WriteLine($"Quality score: {result2.QualityScore}");
 
             var urls = new[]
             {

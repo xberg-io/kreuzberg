@@ -538,7 +538,9 @@ interface ExtractionResult {
   images: ExtractedImage[] | null;  // From image extraction
   elements?: Element[] | null;   // From element_based result format
   pages?: PageContent[] | null;  // From page extraction
-  keywords?: ExtractedKeyword[] | null;  // From keyword extraction
+  extractedKeywords?: ExtractedKeyword[] | null;  // Extracted keywords with scores
+  qualityScore?: number | null;  // Overall extraction quality (0.0-1.0)
+  processingWarnings?: ProcessingWarning[];  // Non-fatal warnings from pipeline
 }
 ```
 
@@ -609,6 +611,30 @@ interface PageContent {
 }
 ```
 
+### `ExtractedKeyword`
+
+Extracted keyword with relevance score and position information.
+
+```typescript
+interface ExtractedKeyword {
+  text: string;           // Keyword text
+  score: number;          // Relevance score (0.0-1.0)
+  algorithm: string;      // Algorithm used ("tfidf", "textrank", "yake", etc.)
+  positions?: number[] | null;  // Character positions in content (if available)
+}
+```
+
+### `ProcessingWarning`
+
+Non-fatal warning encountered during document processing.
+
+```typescript
+interface ProcessingWarning {
+  source: string;         // Component that generated the warning
+  message: string;        // Warning message describing the issue
+}
+```
+
 ### `Metadata`
 
 Extraction result metadata (format-specific).
@@ -675,6 +701,12 @@ interface Metadata {
 
   // Page structure
   page_structure?: PageStructure | null;
+
+  // Additional typed fields
+  category?: string | null;
+  tags?: string[];
+  document_version?: string | null;
+  abstract_text?: string | null;
 
   // Custom fields from postprocessors
   [key: string]: unknown;

@@ -11,7 +11,7 @@ config = Kreuzberg::Config::Extraction.new(
 
 result = Kreuzberg.extract_file_sync('research_paper.pdf', config: config)
 
-keywords = result.metadata.get('keywords', [])
+keywords = result.extracted_keywords
 keywords.each do |kw|
   puts "#{kw['text']}: #{kw['score'].round(3)}"
 end

@@ -14,8 +14,8 @@ case Kreuzberg.extract_file("document.pdf", nil, config) do
     IO.puts("=== Quality Processing ===\n")
 
     # Display quality metrics if available
-    quality_score = result.metadata["quality_score"]
-    if quality_score do
+    quality_score = result.quality_score
+    if quality_score && quality_score > 0 do
       IO.puts("Quality Score: #{quality_score}")
       IO.puts("Content Quality: #{quality_status(quality_score)}")
     end

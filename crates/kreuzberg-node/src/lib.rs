@@ -31,8 +31,8 @@ pub use config::{
 };
 
 pub use result::{
-    JsChunk, JsChunkMetadata, JsExtractedImage, JsExtractionResult, JsHierarchicalBlock, JsPageContent,
-    JsPageHierarchy, JsTable,
+    JsChunk, JsChunkMetadata, JsExtractedImage, JsExtractedKeyword, JsExtractionResult, JsHierarchicalBlock,
+    JsPageContent, JsPageHierarchy, JsProcessingWarning, JsTable,
 };
 
 pub use extraction::{extract_bytes, extract_bytes_sync, extract_file, extract_file_sync};

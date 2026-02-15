@@ -46,9 +46,11 @@ func main() {
 		log.Fatalf("extract failed: %v", err)
 	}
 
-	fmt.Printf("Quality: %v\n", result.Metadata.Additional["quality_score"])
+	if result.QualityScore != nil {
+		fmt.Printf("Quality: %.2f\n", *result.QualityScore)
+	}
 	fmt.Printf("Languages: %v\n", result.DetectedLanguages)
-	fmt.Printf("Keywords: %v\n", result.Metadata.Additional["keywords"])
+	fmt.Printf("Keywords: %v\n", result.ExtractedKeywords)
 	if result.Chunks != nil && len(result.Chunks) > 0 && result.Chunks[0].Embedding != nil {
 		fmt.Printf("Chunks: %d with %d dimensions\n", len(result.Chunks), len(result.Chunks[0].Embedding))
 	}

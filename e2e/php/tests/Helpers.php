@@ -585,17 +585,17 @@ class Helpers
         ?int $maxCount = null
     ): void {
         if ($hasKeywords === true) {
-            Assert::assertNotNull($result->getMetadata()->keywords, 'Expected keywords but got null');
-            Assert::assertNotEmpty($result->getMetadata()->keywords ?? [], 'Expected keywords to be non-empty');
+            Assert::assertNotNull($result->extractedKeywords, 'Expected keywords but got null');
+            Assert::assertNotEmpty($result->extractedKeywords ?? [], 'Expected keywords to be non-empty');
         } elseif ($hasKeywords === false) {
-            $keywords = $result->getMetadata()->keywords ?? [];
+            $keywords = $result->extractedKeywords ?? [];
             Assert::assertTrue(
                 $keywords === null || count($keywords) === 0,
                 'Expected keywords to be null or empty'
             );
         }
 
-        $keywords = $result->getMetadata()->keywords ?? [];
+        $keywords = $result->extractedKeywords ?? [];
         $count = count($keywords);
 
         if ($minCount !== null) {

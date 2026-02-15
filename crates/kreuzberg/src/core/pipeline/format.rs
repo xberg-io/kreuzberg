@@ -4,7 +4,7 @@
 //! (Plain, Djot, Markdown, HTML) with proper error handling and metadata recording.
 
 use crate::core::config::OutputFormat;
-use crate::types::ExtractionResult;
+use crate::types::{ExtractionResult, ProcessingWarning};
 use std::borrow::Cow;
 
 /// Apply output format conversion to the extraction result.
@@ -30,6 +30,21 @@ pub fn apply_output_format(result: &mut ExtractionResult, output_format: OutputF
         _ => false,
     };
 
+    // Always record the output format in metadata
+    let format_name = match output_format {
+        OutputFormat::Plain => "plain",
+        OutputFormat::Markdown => "markdown",
+        OutputFormat::Djot => "djot",
+        OutputFormat::Html => "html",
+        OutputFormat::Structured => "structured",
+    };
+    result.metadata.output_format = Some(format_name.to_string());
+    // DEPRECATED: kept for backward compatibility; will be removed in next major version.
+    result.metadata.additional.insert(
+        Cow::Borrowed("output_format"),
+        serde_json::Value::String(format_name.to_string()),
+    );
+
     if already_formatted {
         return; // Skip re-conversion
     }
@@ -46,9 +61,15 @@ pub fn apply_output_format(result: &mut ExtractionResult, output_format: OutputF
                 }
                 Err(e) => {
                     // Keep original content on error, record error in metadata
+                    let error_msg = format!("Failed to convert to djot: {}", e);
+                    result.processing_warnings.push(ProcessingWarning {
+                        source: "output_format".to_string(),
+                        message: error_msg.clone(),
+                    });
+                    // DEPRECATED: kept for backward compatibility; will be removed in next major version.
                     result.metadata.additional.insert(
                         Cow::Borrowed("output_format_error"),
-                        serde_json::Value::String(format!("Failed to convert to djot: {}", e)),
+                        serde_json::Value::String(error_msg),
                     );
                 }
             }
@@ -66,9 +87,15 @@ pub fn apply_output_format(result: &mut ExtractionResult, output_format: OutputF
                     }
                     Err(e) => {
                         // Keep original content on error, record error in metadata
+                        let error_msg = format!("Failed to convert to markdown: {}", e);
+                        result.processing_warnings.push(ProcessingWarning {
+                            source: "output_format".to_string(),
+                            message: error_msg.clone(),
+                        });
+                        // DEPRECATED: kept for backward compatibility; will be removed in next major version.
                         result.metadata.additional.insert(
                             Cow::Borrowed("output_format_error"),
-                            serde_json::Value::String(format!("Failed to convert to markdown: {}", e)),
+                            serde_json::Value::String(error_msg),
                         );
                     }
                 }
@@ -87,18 +114,30 @@ pub fn apply_output_format(result: &mut ExtractionResult, output_format: OutputF
                             }
                             Err(e) => {
                                 // Keep original content on error, record error in metadata
+                                let error_msg = format!("Failed to convert djot to HTML: {}", e);
+                                result.processing_warnings.push(ProcessingWarning {
+                                    source: "output_format".to_string(),
+                                    message: error_msg.clone(),
+                                });
+                                // DEPRECATED: kept for backward compatibility; will be removed in next major version.
                                 result.metadata.additional.insert(
                                     Cow::Borrowed("output_format_error"),
-                                    serde_json::Value::String(format!("Failed to convert djot to HTML: {}", e)),
+                                    serde_json::Value::String(error_msg),
                                 );
                             }
                         }
                     }
                     Err(e) => {
                         // Keep original content on error, record error in metadata
+                        let error_msg = format!("Failed to generate djot for HTML conversion: {}", e);
+                        result.processing_warnings.push(ProcessingWarning {
+                            source: "output_format".to_string(),
+                            message: error_msg.clone(),
+                        });
+                        // DEPRECATED: kept for backward compatibility; will be removed in next major version.
                         result.metadata.additional.insert(
                             Cow::Borrowed("output_format_error"),
-                            serde_json::Value::String(format!("Failed to generate djot for HTML conversion: {}", e)),
+                            serde_json::Value::String(error_msg),
                         );
                     }
                 }
@@ -117,10 +156,7 @@ pub fn apply_output_format(result: &mut ExtractionResult, output_format: OutputF
             // The actual JSON serialization happens at the API layer when
             // returning results. Here we just ensure elements are preserved
             // and update the mime_type to indicate structured output.
-            result.metadata.additional.insert(
-                Cow::Borrowed("output_format"),
-                serde_json::Value::String("structured".to_string()),
-            );
+            // (output_format metadata already set above)
         }
     }
 }
@@ -144,22 +180,13 @@ mod tests {
         let mut result = ExtractionResult {
             content: "Hello World".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
-            metadata: Metadata::default(),
-            tables: vec![],
-            detected_languages: None,
-            chunks: None,
-            images: None,
-            pages: None,
-            djot_content: None,
-            elements: None,
-            ocr_elements: None,
-            document: None,
+            ..Default::default()
         };
 
         apply_output_format(&mut result, OutputFormat::Plain);
 
-        // Plain format should not modify content
         assert_eq!(result.content, "Hello World");
+        assert_eq!(result.metadata.output_format, Some("plain".to_string()));
     }
 
     #[test]
@@ -169,14 +196,6 @@ mod tests {
         let mut result = ExtractionResult {
             content: "Hello World".to_string(),
             mime_type: Cow::Borrowed("text/djot"),
-            metadata: Metadata::default(),
-            tables: vec![],
-            detected_languages: None,
-            chunks: None,
-            images: None,
-            pages: None,
-            elements: None,
-            ocr_elements: None,
             djot_content: Some(DjotContent {
                 plain_text: "Hello World".to_string(),
                 blocks: vec![FormattedBlock {
@@ -200,13 +219,13 @@ mod tests {
                 footnotes: vec![],
                 attributes: Vec::new(),
             }),
-            document: None,
+            ..Default::default()
         };
 
         apply_output_format(&mut result, OutputFormat::Djot);
 
-        // The content should still be present (the function preserves content)
         assert!(!result.content.is_empty());
+        assert_eq!(result.metadata.output_format, Some("djot".to_string()));
     }
 
     #[test]
@@ -214,23 +233,13 @@ mod tests {
         let mut result = ExtractionResult {
             content: "Hello World".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
-            metadata: Metadata::default(),
-            tables: vec![],
-            detected_languages: None,
-            chunks: None,
-            images: None,
-            pages: None,
-            djot_content: None,
-            elements: None,
-            ocr_elements: None,
-            document: None,
+            ..Default::default()
         };
 
         apply_output_format(&mut result, OutputFormat::Djot);
 
-        // Without djot_content, content is converted to djot paragraphs
-        // extraction_result_to_djot creates paragraphs from plain text
         assert!(result.content.contains("Hello World"));
+        assert_eq!(result.metadata.output_format, Some("djot".to_string()));
     }
 
     #[test]
@@ -238,24 +247,15 @@ mod tests {
         let mut result = ExtractionResult {
             content: "Hello World".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
-            metadata: Metadata::default(),
-            tables: vec![],
-            detected_languages: None,
-            chunks: None,
-            images: None,
-            pages: None,
-            djot_content: None,
-            elements: None,
-            ocr_elements: None,
-            document: None,
+            ..Default::default()
         };
 
         apply_output_format(&mut result, OutputFormat::Html);
 
-        // For non-djot documents, HTML wraps content in <pre> tags
         assert!(result.content.contains("<pre>"));
         assert!(result.content.contains("Hello World"));
         assert!(result.content.contains("</pre>"));
+        assert_eq!(result.metadata.output_format, Some("html".to_string()));
     }
 
     #[test]
@@ -263,21 +263,11 @@ mod tests {
         let mut result = ExtractionResult {
             content: "<script>alert('XSS')</script>".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
-            metadata: Metadata::default(),
-            tables: vec![],
-            detected_languages: None,
-            chunks: None,
-            images: None,
-            pages: None,
-            djot_content: None,
-            elements: None,
-            ocr_elements: None,
-            document: None,
+            ..Default::default()
         };
 
         apply_output_format(&mut result, OutputFormat::Html);
 
-        // HTML special characters should be escaped
         assert!(result.content.contains("&lt;"));
         assert!(result.content.contains("&gt;"));
         assert!(!result.content.contains("<script>"));
@@ -288,22 +278,13 @@ mod tests {
         let mut result = ExtractionResult {
             content: "Hello World".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
-            metadata: Metadata::default(),
-            tables: vec![],
-            detected_languages: None,
-            chunks: None,
-            images: None,
-            pages: None,
-            djot_content: None,
-            elements: None,
-            ocr_elements: None,
-            document: None,
+            ..Default::default()
         };
 
         apply_output_format(&mut result, OutputFormat::Markdown);
 
-        // For non-djot documents without djot_content, markdown keeps content as-is
         assert_eq!(result.content, "Hello World");
+        assert_eq!(result.metadata.output_format, Some("markdown".to_string()));
     }
 
     #[test]
@@ -321,20 +302,11 @@ mod tests {
             content: "Hello World".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             metadata,
-            tables: vec![],
-            detected_languages: None,
-            chunks: None,
-            images: None,
-            pages: None,
-            djot_content: None,
-            elements: None,
-            ocr_elements: None,
-            document: None,
+            ..Default::default()
         };
 
         apply_output_format(&mut result, OutputFormat::Djot);
 
-        // Metadata should be preserved
         assert_eq!(result.metadata.title, Some("Test Title".to_string()));
         assert_eq!(
             result.metadata.additional.get("custom_key"),
@@ -355,21 +327,12 @@ mod tests {
         let mut result = ExtractionResult {
             content: "Hello World".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
-            metadata: Metadata::default(),
             tables: vec![table],
-            detected_languages: None,
-            chunks: None,
-            images: None,
-            pages: None,
-            djot_content: None,
-            elements: None,
-            ocr_elements: None,
-            document: None,
+            ..Default::default()
         };
 
         apply_output_format(&mut result, OutputFormat::Html);
 
-        // Tables should be preserved
         assert_eq!(result.tables.len(), 1);
         assert_eq!(result.tables[0].cells[0][0], "A");
     }
@@ -405,21 +368,12 @@ mod tests {
         let mut result = ExtractionResult {
             content: "test".to_string(),
             mime_type: Cow::Borrowed("text/djot"),
-            metadata: Metadata::default(),
-            tables: vec![],
-            detected_languages: None,
-            chunks: None,
-            images: None,
-            pages: None,
-            elements: None,
-            ocr_elements: None,
             djot_content: Some(djot_content),
-            document: None,
+            ..Default::default()
         };
 
         apply_output_format(&mut result, OutputFormat::Djot);
 
-        // djot_content should still be present after format application
         assert!(result.djot_content.is_some());
         assert_eq!(result.djot_content.as_ref().unwrap().blocks.len(), 1);
     }

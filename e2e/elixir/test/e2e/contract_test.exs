@@ -378,7 +378,7 @@ defmodule E2E.ContractTest do
           result
           |> E2E.Helpers.assert_expected_mime(["application/pdf"])
           |> E2E.Helpers.assert_min_content_length(10)
-          |> E2E.Helpers.assert_metadata_expectation("keywords", %{exists: true})
+          |> E2E.Helpers.assert_keywords(has_keywords: true, min_count: 1)
 
         {:skipped, reason} ->
           IO.puts("SKIPPED: #{reason}")

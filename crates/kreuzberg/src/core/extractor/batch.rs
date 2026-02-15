@@ -131,6 +131,10 @@ pub async fn batch_extract_file(
                     elements: None,
                     ocr_elements: None,
                     document: None,
+                    #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+                    extracted_keywords: None,
+                    quality_score: None,
+                    processing_warnings: Vec::new(),
                 });
             }
             Err(join_err) => {
@@ -258,6 +262,10 @@ pub async fn batch_extract_bytes(
                     elements: None,
                     ocr_elements: None,
                     document: None,
+                    #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+                    extracted_keywords: None,
+                    quality_score: None,
+                    processing_warnings: Vec::new(),
                 });
             }
             Err(join_err) => {

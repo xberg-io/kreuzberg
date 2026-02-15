@@ -272,6 +272,51 @@ module Kreuzberg
     const :structured_data, T::Array[StructuredData]
   end
 
+  # Extracted keyword with relevance metadata.
+  #
+  # Represents a single keyword extracted from text along with its relevance score,
+  # the algorithm that extracted it, and optional position information.
+  #
+  # @example
+  #   keyword = Kreuzberg::ExtractedKeyword.new(
+  #     text: "machine learning",
+  #     score: 0.95,
+  #     algorithm: "yake",
+  #     positions: [42, 128]
+  #   )
+  #   puts "#{keyword.text}: #{keyword.score}"
+  #
+  class ExtractedKeyword < T::Struct
+    extend T::Sig
+
+    const :text, String
+
+    const :score, Float
+
+    const :algorithm, String
+
+    const :positions, T.nilable(T::Array[Integer])
+  end
+
+  # Processing warning from a pipeline stage.
+  #
+  # Represents a non-fatal warning generated during document processing.
+  #
+  # @example
+  #   warning = Kreuzberg::ProcessingWarning.new(
+  #     source: "ocr",
+  #     message: "Low confidence on page 3"
+  #   )
+  #   puts "[#{warning.source}] #{warning.message}"
+  #
+  class ProcessingWarning < T::Struct
+    extend T::Sig
+
+    const :source, String
+
+    const :message, String
+  end
+
   # Bounding box for document node positioning.
   #
   # Represents rectangular coordinates for a node within the document.

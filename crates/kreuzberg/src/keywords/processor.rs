@@ -63,6 +63,8 @@ impl PostProcessor for KeywordExtractor {
         let keywords = super::extract_keywords(&result.content, keyword_config)
             .map_err(|e| KreuzbergError::Other(format!("Keyword extraction failed: {}", e)))?;
 
+        result.extracted_keywords = Some(keywords.clone());
+        // DEPRECATED: kept for backward compatibility; will be removed in next major version.
         result
             .metadata
             .additional
@@ -119,6 +121,10 @@ machine learning that uses neural networks with multiple layers.
             ocr_elements: None,
             djot_content: None,
             document: None,
+            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: Vec::new(),
         };
 
         processor.process(&mut result, &config).await.unwrap();
@@ -152,6 +158,10 @@ machine learning that uses neural networks with multiple layers.
             ocr_elements: None,
             djot_content: None,
             document: None,
+            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: Vec::new(),
         };
 
         processor.process(&mut result, &config).await.unwrap();
@@ -181,6 +191,10 @@ machine learning that uses neural networks with multiple layers.
             ocr_elements: None,
             djot_content: None,
             document: None,
+            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: Vec::new(),
         };
 
         processor.process(&mut result, &config).await.unwrap();
@@ -210,6 +224,10 @@ machine learning that uses neural networks with multiple layers.
             ocr_elements: None,
             djot_content: None,
             document: None,
+            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: Vec::new(),
         };
 
         processor.process(&mut result, &config).await.unwrap();
@@ -250,6 +268,10 @@ machine learning that uses neural networks with multiple layers.
             ocr_elements: None,
             djot_content: None,
             document: None,
+            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: Vec::new(),
         };
 
         let config_with_keywords = ExtractionConfig {
@@ -279,6 +301,10 @@ machine learning that uses neural networks with multiple layers.
             ocr_elements: None,
             djot_content: None,
             document: None,
+            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: Vec::new(),
         };
 
         let long_result = ExtractionResult {
@@ -294,6 +320,10 @@ machine learning that uses neural networks with multiple layers.
             ocr_elements: None,
             djot_content: None,
             document: None,
+            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: Vec::new(),
         };
 
         let short_duration = processor.estimated_duration_ms(&short_result);

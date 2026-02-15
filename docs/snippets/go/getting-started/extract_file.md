@@ -23,7 +23,9 @@ func main() {
 	}
 
 	fmt.Printf("Extracted %d characters\n", len(result.Content))
-	fmt.Printf("Quality score: %v\n", result.Metadata["quality_score"])
-	fmt.Printf("Processing time: %vms\n", result.Metadata["processing_time"])
+	if result.QualityScore != nil {
+		fmt.Printf("Quality score: %.2f\n", *result.QualityScore)
+	}
+	fmt.Printf("Processing time: %v\n", result.ProcessingTime)
 }
 ```

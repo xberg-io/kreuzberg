@@ -304,7 +304,7 @@ RSpec.describe 'contract fixtures' do
         ['application/pdf']
       )
       E2ERuby::Assertions.assert_min_content_length(result, 10)
-      E2ERuby::Assertions.assert_metadata_expectation(result, 'keywords', { exists: true })
+      E2ERuby::Assertions.assert_keywords(result, has_keywords: true, min_count: 1)
     end
   end
 

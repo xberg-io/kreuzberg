@@ -343,7 +343,7 @@ class ContractTest extends TestCase
 
         Helpers::assertExpectedMime($result, ['application/pdf']);
         Helpers::assertMinContentLength($result, 10);
-        Helpers::assertMetadataExpectation($result, 'keywords', ['exists' => true]);
+        Helpers::assertKeywords($result, true, 1, null);
     }
 
     /**

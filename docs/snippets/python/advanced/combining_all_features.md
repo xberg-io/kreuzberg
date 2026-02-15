@@ -24,7 +24,7 @@ async def main() -> None:
         ),
     )
     result = await extract_file("document.pdf", config=config)
-    quality = result.metadata.get("quality_score", 0)
+    quality = result.quality_score or 0
     print(f"Quality: {quality:.2f}")
     print(f"Languages: {result.detected_languages}")
     if result.chunks:

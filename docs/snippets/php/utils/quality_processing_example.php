@@ -27,7 +27,7 @@ echo str_repeat('=', 60) . "\n";
 echo "Document: scanned_document.pdf\n";
 echo "Content length: " . strlen($result->content) . " characters\n\n";
 
-$qualityScore = $result->metadata['quality_score'] ?? null;
+$qualityScore = $result->qualityScore ?? null;
 
 if ($qualityScore !== null) {
     echo "Quality Score: " . number_format($qualityScore, 2) . "\n";
@@ -116,7 +116,7 @@ foreach ($documents as $document) {
     }
 
     $result = $kreuzberg->extractFile($document);
-    $score = $result->metadata['quality_score'] ?? 0.0;
+    $score = $result->qualityScore ?? 0.0;
 
     $qualityResults[$document] = [
         'score' => $score,

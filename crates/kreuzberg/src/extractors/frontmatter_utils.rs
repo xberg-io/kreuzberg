@@ -127,11 +127,19 @@ pub fn extract_metadata_from_yaml(yaml: &YamlValue) -> Metadata {
 
     // Title
     if let Some(title) = yaml.get("title").and_then(|v| v.as_str()) {
+        if metadata.title.is_none() {
+            metadata.title = Some(title.to_string());
+        }
+        // DEPRECATED: kept for backward compatibility; will be removed in next major version.
         metadata.additional.insert(Cow::Borrowed("title"), title.into());
     }
 
     // Author
     if let Some(author) = yaml.get("author").and_then(|v| v.as_str()) {
+        if metadata.created_by.is_none() {
+            metadata.created_by = Some(author.to_string());
+        }
+        // DEPRECATED: kept for backward compatibility; will be removed in next major version.
         metadata.additional.insert(Cow::Borrowed("author"), author.into());
     }
 
@@ -144,10 +152,19 @@ pub fn extract_metadata_from_yaml(yaml: &YamlValue) -> Metadata {
     if let Some(keywords) = yaml.get("keywords") {
         match keywords {
             YamlValue::String(s) => {
+                if metadata.keywords.is_none() {
+                    metadata.keywords = Some(s.split(',').map(|k| k.trim().to_string()).collect());
+                }
+                // DEPRECATED: kept for backward compatibility; will be removed in next major version.
                 metadata.additional.insert(Cow::Borrowed("keywords"), s.clone().into());
             }
             YamlValue::Sequence(seq) => {
-                let keywords_str = seq.iter().filter_map(|v| v.as_str()).collect::<Vec<_>>().join(", ");
+                let kw_vec: Vec<String> = seq.iter().filter_map(|v| v.as_str()).map(|s| s.to_string()).collect();
+                if metadata.keywords.is_none() {
+                    metadata.keywords = Some(kw_vec.clone());
+                }
+                let keywords_str = kw_vec.join(", ");
+                // DEPRECATED: kept for backward compatibility; will be removed in next major version.
                 metadata
                     .additional
                     .insert(Cow::Borrowed("keywords"), keywords_str.into());
@@ -162,10 +179,12 @@ pub fn extract_metadata_from_yaml(yaml: &YamlValue) -> Metadata {
     }
 
     // Abstract
-    if let Some(abstract_text) = yaml.get("abstract").and_then(|v| v.as_str()) {
+    if let Some(abstract_val) = yaml.get("abstract").and_then(|v| v.as_str()) {
+        metadata.abstract_text = Some(abstract_val.to_string());
+        // DEPRECATED: kept for backward compatibility; will be removed in next major version.
         metadata
             .additional
-            .insert(Cow::Borrowed("abstract"), abstract_text.into());
+            .insert(Cow::Borrowed("abstract"), abstract_val.into());
     }
 
     // Subject (overrides description if both present)
@@ -175,6 +194,8 @@ pub fn extract_metadata_from_yaml(yaml: &YamlValue) -> Metadata {
 
     // Category
     if let Some(category) = yaml.get("category").and_then(|v| v.as_str()) {
+        metadata.category = Some(category.to_string());
+        // DEPRECATED: kept for backward compatibility; will be removed in next major version.
         metadata.additional.insert(Cow::Borrowed("category"), category.into());
     }
 
@@ -182,10 +203,15 @@ pub fn extract_metadata_from_yaml(yaml: &YamlValue) -> Metadata {
     if let Some(tags) = yaml.get("tags") {
         match tags {
             YamlValue::String(s) => {
+                metadata.tags = Some(s.split(',').map(|t| t.trim().to_string()).collect());
+                // DEPRECATED: kept for backward compatibility; will be removed in next major version.
                 metadata.additional.insert(Cow::Borrowed("tags"), s.clone().into());
             }
             YamlValue::Sequence(seq) => {
-                let tags_str = seq.iter().filter_map(|v| v.as_str()).collect::<Vec<_>>().join(", ");
+                let tags_vec: Vec<String> = seq.iter().filter_map(|v| v.as_str()).map(|s| s.to_string()).collect();
+                metadata.tags = Some(tags_vec.clone());
+                let tags_str = tags_vec.join(", ");
+                // DEPRECATED: kept for backward compatibility; will be removed in next major version.
                 metadata.additional.insert(Cow::Borrowed("tags"), tags_str.into());
             }
             _ => {}
@@ -194,11 +220,17 @@ pub fn extract_metadata_from_yaml(yaml: &YamlValue) -> Metadata {
 
     // Language
     if let Some(language) = yaml.get("language").and_then(|v| v.as_str()) {
+        if metadata.language.is_none() {
+            metadata.language = Some(language.to_string());
+        }
+        // DEPRECATED: kept for backward compatibility; will be removed in next major version.
         metadata.additional.insert(Cow::Borrowed("language"), language.into());
     }
 
     // Version
     if let Some(version) = yaml.get("version").and_then(|v| v.as_str()) {
+        metadata.document_version = Some(version.to_string());
+        // DEPRECATED: kept for backward compatibility; will be removed in next major version.
         metadata.additional.insert(Cow::Borrowed("version"), version.into());
     }
 

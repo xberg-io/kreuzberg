@@ -8,8 +8,7 @@ class QualityScoreValidator
   end
 
   def call(result)
-    metadata = result["metadata"] || {}
-    quality_score = metadata["quality_score"] || 0.0
+    quality_score = result.quality_score || 0.0
 
     if quality_score < @min_score
       raise Kreuzberg::Errors::ValidationError,
@@ -29,7 +28,7 @@ config = Kreuzberg::Config::Extraction.new(
 
 begin
   result = Kreuzberg.extract_file_sync("document.pdf", config: config)
-  puts "Document quality verified: #{result['metadata']['quality_score']}"
+  puts "Document quality verified: #{result.quality_score}"
 rescue Kreuzberg::Errors::ValidationError => e
   puts "Quality check failed: #{e.message}"
 end

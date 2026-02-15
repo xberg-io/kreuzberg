@@ -169,7 +169,7 @@ export interface Metadata {
 
 	title?: string | null;
 	author?: string | null;
-	keywords?: string | null;
+	keywords?: string[] | null;
 	creator?: string | null;
 	producer?: string | null;
 	creation_date?: string | null;
@@ -235,6 +235,14 @@ export interface Metadata {
 
 	error?: ErrorMetadata | null;
 
+	category?: string | null;
+	tags?: string[];
+	document_version?: string | null;
+	abstract_text?: string | null;
+
+	extraction_duration_ms?: number | null;
+
+	/** @deprecated Use typed fields instead of dynamic access. This index signature may be removed in a future version. */
 	// biome-ignore lint/suspicious/noExplicitAny: Postprocessors can add arbitrary metadata fields
 	[key: string]: any;
 }

@@ -12,10 +12,10 @@ let config = ExtractionConfig {
 
 let result = extract_file("verbose_document.pdf", None, &config).await?;
 
-if let Some(original) = result.metadata.additional.get("original_token_count") {
+if let Some(original) = result.original_token_count {
     println!("Original tokens: {}", original);
 }
-if let Some(reduced) = result.metadata.additional.get("token_count") {
+if let Some(reduced) = result.reduced_token_count {
     println!("Reduced tokens: {}", reduced);
 }
 ```

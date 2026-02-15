@@ -642,16 +642,16 @@ func assertKeywords(t *testing.T, result *kreuzberg.ExtractionResult, hasKeyword
 	t.Helper()
 	if hasKeywords != nil {
 		if *hasKeywords {
-			if result.Metadata.Keywords == nil || len(result.Metadata.Keywords) == 0 {
-				t.Fatalf("expected keywords in result but Keywords field is nil or empty")
+			if result.ExtractedKeywords == nil || len(result.ExtractedKeywords) == 0 {
+				t.Fatalf("expected keywords in result but ExtractedKeywords field is nil or empty")
 			}
 		} else {
-			if result.Metadata.Keywords != nil && len(result.Metadata.Keywords) > 0 {
-				t.Fatalf("expected no keywords but found %d", len(result.Metadata.Keywords))
+			if result.ExtractedKeywords != nil && len(result.ExtractedKeywords) > 0 {
+				t.Fatalf("expected no keywords but found %d", len(result.ExtractedKeywords))
 			}
 		}
 	}
-	count := len(result.Metadata.Keywords)
+	count := len(result.ExtractedKeywords)
 	if minCount != nil && count < *minCount {
 		t.Fatalf("expected at least %d keywords, found %d", *minCount, count)
 	}

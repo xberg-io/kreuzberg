@@ -7,7 +7,7 @@ config = Kreuzberg::Config::Extraction.new(
 
 result = Kreuzberg.extract_file_sync('scanned_document.pdf', config: config)
 
-quality_score = result.metadata&.dig('quality_score') || 0.0
+quality_score = result.quality_score || 0.0
 
 if quality_score < 0.5
   puts "Warning: Low quality extraction (#{quality_score.round(2)})"

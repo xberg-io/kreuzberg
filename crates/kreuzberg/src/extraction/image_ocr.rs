@@ -62,6 +62,10 @@ pub async fn process_images_with_ocr(
                     elements: None,
                     ocr_elements: None,
                     document: None,
+                    #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+                    extracted_keywords: None,
+                    quality_score: None,
+                    processing_warnings: Vec::new(),
                 };
                 image.ocr_result = Some(Box::new(extraction_result));
             }

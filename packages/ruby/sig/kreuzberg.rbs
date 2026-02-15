@@ -341,7 +341,22 @@ module Kreuzberg
     elements: Array[element_hash]?,
     ocr_elements: Array[ocr_element_hash]?,
     djot_content: djot_content_hash?,
-    document: document_structure_hash?
+    document: document_structure_hash?,
+    extracted_keywords: Array[extracted_keyword_hash]?,
+    quality_score: Float?,
+    processing_warnings: Array[processing_warning_hash]?
+  }
+
+  type extracted_keyword_hash = {
+    text: String,
+    score: Float,
+    algorithm: String,
+    positions: Array[Integer]?
+  }
+
+  type processing_warning_hash = {
+    source: String,
+    message: String
   }
 
   type page_content_hash = {
@@ -499,6 +514,22 @@ module Kreuzberg
 
   interface _ToH
     def to_h: () -> config_hash
+  end
+
+  class ExtractedKeyword
+    attr_reader text: String
+    attr_reader score: Float
+    attr_reader algorithm: String
+    attr_reader positions: Array[Integer]?
+
+    def initialize: (text: String, score: Float, algorithm: String, ?positions: Array[Integer]?) -> void
+  end
+
+  class ProcessingWarning
+    attr_reader source: String
+    attr_reader message: String
+
+    def initialize: (source: String, message: String) -> void
   end
 
   # Extraction result wrapper
@@ -825,6 +856,9 @@ module Kreuzberg
     attr_reader ocr_elements: Array[OcrElement]?
     attr_reader djot_content: DjotContent?
     attr_reader document: DocumentStructure?
+    attr_reader extracted_keywords: Array[ExtractedKeyword]?
+    attr_reader quality_score: Float?
+    attr_reader processing_warnings: Array[ProcessingWarning]?
 
     def initialize: (extraction_result_hash hash) -> void
     def to_h: () -> Hash[Symbol, untyped]

@@ -19,8 +19,8 @@ func main() {
 	}
 
 	qualityScore := 0.0
-	if quality, ok := result.Metadata.Additional["quality_score"]; ok {
-		qualityScore = quality.(float64)
+	if result.QualityScore != nil {
+		qualityScore = *result.QualityScore
 	}
 
 	if qualityScore < 0.5 {

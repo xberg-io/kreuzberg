@@ -18,8 +18,9 @@
 	"assertions": {
 		"expected_mime": "application/pdf",
 		"min_content_length": 10,
-		"metadata": {
-			"keywords": { "exists": true }
+		"keywords": {
+			"has_keywords": true,
+			"min_count": 1
 		}
 	},
 	"skip": {

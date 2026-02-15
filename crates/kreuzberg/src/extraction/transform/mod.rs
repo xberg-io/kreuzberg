@@ -256,6 +256,11 @@ mod tests {
             json_schema: None,
             error: None,
             extraction_duration_ms: None,
+            category: None,
+            tags: None,
+            document_version: None,
+            abstract_text: None,
+            output_format: None,
             additional: Default::default(),
         }
     }
@@ -312,6 +317,10 @@ mod tests {
             elements: None,
             ocr_elements: None,
             document: None,
+            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: Vec::new(),
         };
 
         let elements = transform_extraction_result_to_elements(&result);
@@ -401,6 +410,10 @@ mod tests {
             elements: None,
             ocr_elements: None,
             document: None,
+            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: Vec::new(),
         };
 
         let elements = transform_extraction_result_to_elements(&result);
@@ -445,6 +458,10 @@ mod tests {
             elements: None,
             ocr_elements: None,
             document: None,
+            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: Vec::new(),
         };
 
         let elements = transform_extraction_result_to_elements(&result);
@@ -479,6 +496,10 @@ mod tests {
             elements: None,
             ocr_elements: None,
             document: None,
+            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: Vec::new(),
         };
 
         let elements = transform_extraction_result_to_elements(&result);

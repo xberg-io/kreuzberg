@@ -65,6 +65,10 @@ mod tests {
                 elements: None,
                 ocr_elements: None,
                 document: None,
+                #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+                extracted_keywords: None,
+                quality_score: None,
+                processing_warnings: Vec::new(),
             })
         }
 
@@ -242,6 +246,10 @@ mod tests {
                     elements: None,
                     ocr_elements: None,
                     document: None,
+                    #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+                    extracted_keywords: None,
+                    quality_score: None,
+                    processing_warnings: Vec::new(),
                 })
             }
 

@@ -10,7 +10,7 @@ use async_trait::async_trait;
 use kreuzberg::core::config::ExtractionConfig;
 use kreuzberg::plugins::registry::{DocumentExtractorRegistry, ValidatorRegistry};
 use kreuzberg::plugins::{DocumentExtractor, Plugin, Validator};
-use kreuzberg::types::{ExtractionResult, Metadata};
+use kreuzberg::types::ExtractionResult;
 use kreuzberg::{KreuzbergError, Result};
 use std::borrow::Cow;
 use std::path::Path;
@@ -121,16 +121,7 @@ impl DocumentExtractor for MockExtractor {
         Ok(ExtractionResult {
             content: format!("Extracted by {}: {}", self.name, String::from_utf8_lossy(content)),
             mime_type: Cow::Owned(mime_type.to_string()),
-            metadata: Metadata::default(),
-            tables: vec![],
-            detected_languages: None,
-            chunks: None,
-            images: None,
-            pages: None,
-            elements: None,
-            ocr_elements: None,
-            djot_content: None,
-            document: None,
+            ..Default::default()
         })
     }
 
