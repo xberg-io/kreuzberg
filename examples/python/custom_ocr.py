@@ -87,8 +87,10 @@ def main() -> None:
         )
     )
 
-    extract_file_sync("scanned_document.pdf", config=config)
+    result = extract_file_sync("scanned_document.pdf", config=config)
+    print(f"Google Vision OCR: {len(result.content)} characters")
 
+    # Register additional backends
     azure_ocr = AzureCognitiveServicesOCR(
         endpoint="https://your-resource.cognitiveservices.azure.com", api_key="your-api-key"
     )
@@ -100,26 +102,33 @@ def main() -> None:
     handwriting_ocr = HandwritingOCR()
     register_ocr_backend(handwriting_ocr)
 
-    for _backend in [google_ocr, azure_ocr, custom_ml_ocr, handwriting_ocr]:
-        pass
+    # List registered backends
+    for backend in [google_ocr, azure_ocr, custom_ml_ocr, handwriting_ocr]:
+        print(f"Registered backend: {backend.name()}")
 
+    # Use each backend
     config = ExtractionConfig(ocr=OcrConfig(backend="azure_ocr", language="eng"))
-    extract_file_sync("document.pdf", config=config)
+    result = extract_file_sync("document.pdf", config=config)
+    print(f"Azure OCR: {len(result.content)} characters")
 
     config = ExtractionConfig(ocr=OcrConfig(backend="custom_ml_ocr", language="eng"))
-    extract_file_sync("document.pdf", config=config)
+    result = extract_file_sync("document.pdf", config=config)
+    print(f"Custom ML OCR: {len(result.content)} characters")
 
     config = ExtractionConfig(ocr=OcrConfig(backend="handwriting_ocr", language="eng"))
-    extract_file_sync("handwritten_notes.pdf", config=config)
+    result = extract_file_sync("handwritten_notes.pdf", config=config)
+    print(f"Handwriting OCR: {len(result.content)} characters")
 
     backends = ["google_vision", "azure_ocr", "tesseract"]
 
     for backend_name in backends:
         try:
             config = ExtractionConfig(ocr=OcrConfig(backend=backend_name, language="eng"))
-            extract_file_sync("document.pdf", config=config)
+            result = extract_file_sync("document.pdf", config=config)
+            print(f"Fallback succeeded with '{backend_name}': {len(result.content)} chars")
             break
-        except Exception:
+        except Exception as e:
+            print(f"Backend '{backend_name}' failed: {e}")
             continue
 
 

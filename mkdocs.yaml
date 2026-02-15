@@ -204,6 +204,8 @@ nav:
   - Migration Guides:
       - v3 to v4: migration/v3-to-v4.md
       - From Unstructured: migration/from-unstructured.md
+      - v4.0 Font Changes: migration/v4.0-fonts.md
+      - v4.0 HTML Metadata: migration/v4.0-html-metadata.md
   - Comparisons:
       - vs Unstructured: comparisons/kreuzberg-vs-unstructured.md
   - Changelog: CHANGELOG.md

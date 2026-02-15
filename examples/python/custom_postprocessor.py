@@ -185,6 +185,7 @@ class KeywordExtractor:
 
 
 def main() -> None:
+    # Register a full pipeline of post-processors
     register_post_processor(MetadataEnricher())
     register_post_processor(PIIRedactor())
     register_post_processor(TextNormalizer())
@@ -192,20 +193,32 @@ def main() -> None:
     register_post_processor(SummaryGenerator(max_summary_length=300))
     register_post_processor(KeywordExtractor())
 
-    extract_file_sync("document.pdf")
+    # Extract with the full pipeline
+    result = extract_file_sync("document.pdf")
+    print(f"Full pipeline — word count: {result.metadata.get('word_count')}")
+    print(f"  PII redacted: {result.metadata.get('pii_redacted')}")
+    print(f"  Keywords: {result.metadata.get('keywords', [])[:5]}")
+    print(f"  Summary: {result.metadata.get('summary', '')[:100]}...")
 
+    # Remove one post-processor and re-extract
     unregister_post_processor("pii_redactor")
 
-    extract_file_sync("document.pdf")
+    result = extract_file_sync("document.pdf")
+    print(f"Without PII redaction — pii_redacted: {result.metadata.get('pii_redacted', False)}")
 
+    # Clear all and extract with no post-processing
     clear_post_processors()
 
-    extract_file_sync("document.pdf")
+    result = extract_file_sync("document.pdf")
+    print(f"No post-processing — metadata keys: {list(result.metadata.keys())[:5]}")
 
+    # Register a minimal pipeline
     register_post_processor(MetadataEnricher())
     register_post_processor(SummaryGenerator(max_summary_length=200))
 
-    extract_file_sync("document.pdf")
+    result = extract_file_sync("document.pdf")
+    print(f"Minimal pipeline — word count: {result.metadata.get('word_count')}")
+    print(f"  Truncated: {result.metadata.get('is_truncated')}")
 
 
 if __name__ == "__main__":

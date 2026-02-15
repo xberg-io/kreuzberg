@@ -273,7 +273,7 @@ kreuzberg = "4.0"
 from kreuzberg import extract_file, ExtractionConfig
 
 # v4 imports (same public API, internal structure changed)
-from kreuzberg import extract_file, ExtractionConfig
+from kreuzberg import extract_file_sync, ExtractionConfig
 ```
 
 #### Configuration Changes
@@ -309,16 +309,16 @@ from kreuzberg import batch_extract
 results = batch_extract(["file1.pdf", "file2.pdf"])
 
 # v4 batch extraction (renamed function)
-from kreuzberg import batch_extract_files
+from kreuzberg import batch_extract_files_sync
 
-results = batch_extract_files(["file1.pdf", "file2.pdf"])
+results = batch_extract_files_sync(["file1.pdf", "file2.pdf"])
 ```
 
 #### Error Handling
 
 ```python title="Python"
 # v3 error handling (single exception type)
-from kreuzberg import KreuzbergException
+from kreuzberg import extract_file, KreuzbergException
 
 try:
     result = extract_file("doc.pdf")
@@ -326,10 +326,10 @@ except KreuzbergException as e:
     print(f"Error: {e}")
 
 # v4 error handling (typed exception hierarchy)
-from kreuzberg import KreuzbergError, ParsingError, ValidationError
+from kreuzberg import extract_file_sync, KreuzbergError, ParsingError, ValidationError
 
 try:
-    result = extract_file("doc.pdf")
+    result = extract_file_sync("doc.pdf")
 except ParsingError as e:
     print(f"Parsing error: {e}")
 except ValidationError as e:
@@ -432,7 +432,7 @@ if "pdf" in result.metadata:
     pages = result.metadata["pdf"]["page_count"]
 
 # v4 metadata access (typed attributes)
-result = extract_file("doc.pdf")
+result = extract_file_sync("doc.pdf")
 if result.metadata.pdf:
     pages = result.metadata.pdf.page_count
 ```
@@ -570,7 +570,7 @@ config = ExtractionConfig(
     ),
 )
 
-result = extract_file("document.pdf", config=config)
+result = extract_file_sync("document.pdf", config=config)
 print(result.detected_languages)
 ```
 
@@ -591,7 +591,7 @@ config = ExtractionConfig(
     ),
 )
 
-result = extract_file("doc.pdf", config=config)
+result = extract_file_sync("doc.pdf", config=config)
 for chunk in result.chunks:
     print(f"Chunk: {len(chunk)} chars")
 ```
@@ -611,7 +611,7 @@ config = ExtractionConfig(
     ),
 )
 
-result = extract_file("encrypted.pdf", config=config)
+result = extract_file_sync("encrypted.pdf", config=config)
 ```
 
 ### Token Reduction
@@ -629,7 +629,7 @@ config = ExtractionConfig(
     ),
 )
 
-result = extract_file("document.pdf", config=config)
+result = extract_file_sync("document.pdf", config=config)
 ```
 
 ### Extract from Bytes
@@ -658,7 +658,7 @@ result = extract_bytes_sync(data, None)
 result = extract_file("doc.pdf")
 
 # v4 structured table extraction
-result = extract_file("doc.pdf")
+result = extract_file_sync("doc.pdf")
 for table in result.tables:
     print(table.markdown)
     print(table.cells)
@@ -702,13 +702,13 @@ v4 provides native APIs for:
 
 ```python title="Python"
 # v4 automatic config discovery
-result = extract_file("doc.pdf")
+result = extract_file_sync("doc.pdf")
 
 # v4 manual config loading
-from kreuzberg import load_config
+from kreuzberg import load_config, extract_file_sync
 
 config = load_config("custom-config.toml")
-result = extract_file("doc.pdf", config=config)
+result = extract_file_sync("doc.pdf", config=config)
 ```
 
 ### Image Extraction
@@ -729,7 +729,7 @@ config = ExtractionConfig(
     ),
 )
 
-result = extract_file("document.pdf", config=config)
+result = extract_file_sync("document.pdf", config=config)
 ```
 
 ### API Server
@@ -1051,7 +1051,7 @@ for chunk in result.chunks:
 **After (v4):**
 
 ```python title="Python"
-from kreuzberg import extract_file, ExtractionConfig, PageConfig
+from kreuzberg import extract_file_sync, ExtractionConfig, PageConfig
 
 config = ExtractionConfig(
     pages=PageConfig(
@@ -1061,7 +1061,7 @@ config = ExtractionConfig(
     ),
 )
 
-result = extract_file("document.pdf", config=config)
+result = extract_file_sync("document.pdf", config=config)
 
 # Access byte-based offsets and page tracking
 for chunk in result.chunks:
@@ -1388,11 +1388,11 @@ KreuzbergError (base)
 
 ### Function Names
 
-| v3                | v4                       |
-| ----------------- | ------------------------ |
-| `batch_extract()` | `batch_extract_files()`  |
-| `extract_bytes()` | `extract_bytes()` (same) |
-| `extract_file()`  | `extract_file()` (same)  |
+| v3                | v4                            |
+| ----------------- | ----------------------------- |
+| `batch_extract()` | `batch_extract_files_sync()`  |
+| `extract_bytes()` | `extract_bytes_sync()` (same) |
+| `extract_file()`  | `extract_file_sync()` (same)  |
 
 ### Removed Features
 
@@ -1407,7 +1407,7 @@ config = ExtractionConfig(
         tesseract_config=TesseractConfig(enable_table_detection=True)
     )
 )
-result = extract_file("doc.pdf", config=config)
+result = extract_file_sync("doc.pdf", config=config)
 ```
 
 #### Entity Extraction, Keyword Extraction, Document Classification
@@ -1507,9 +1507,9 @@ print(result["content"])
 print(result["metadata"])
 
 # v4 basic extraction
-from kreuzberg import extract_file
+from kreuzberg import extract_file_sync
 
-result = extract_file("document.pdf")
+result = extract_file_sync("document.pdf")
 print(result.content)
 print(result.metadata)
 ```
@@ -1528,7 +1528,7 @@ config = ExtractionConfig(
 result = extract_file("scanned.pdf", config=config)
 
 # v4 OCR extraction
-from kreuzberg import extract_file, ExtractionConfig, OcrConfig
+from kreuzberg import extract_file_sync, ExtractionConfig, OcrConfig
 
 config = ExtractionConfig(
     ocr=OcrConfig(
@@ -1537,7 +1537,7 @@ config = ExtractionConfig(
     ),
 )
 
-result = extract_file("scanned.pdf", config=config)
+result = extract_file_sync("scanned.pdf", config=config)
 ```
 
 ### Batch Processing
@@ -1551,9 +1551,9 @@ for result in results:
     print(result["content"])
 
 # v4 batch processing
-from kreuzberg import batch_extract_files
+from kreuzberg import batch_extract_files_sync
 
-results = batch_extract_files(["doc1.pdf", "doc2.pdf", "doc3.pdf"])
+results = batch_extract_files_sync(["doc1.pdf", "doc2.pdf", "doc3.pdf"])
 for result in results:
     print(result.content)
 ```
@@ -1570,10 +1570,10 @@ except KreuzbergException as e:
     print(f"Error: {e}")
 
 # v4 error handling
-from kreuzberg import extract_file, KreuzbergError, ParsingError
+from kreuzberg import extract_file_sync, KreuzbergError, ParsingError
 
 try:
-    result = extract_file("doc.pdf")
+    result = extract_file_sync("doc.pdf")
 except ParsingError as e:
     print(f"Parsing error: {e}")
 except KreuzbergError as e:
@@ -1586,10 +1586,10 @@ except KreuzbergError as e:
 
 ```python title="Python"
 import pytest
-from kreuzberg import extract_file, ExtractionConfig
+from kreuzberg import extract_file_sync, ExtractionConfig
 
 def test_basic_extraction():
-    result = extract_file("tests/fixtures/sample.pdf")
+    result = extract_file_sync("tests/fixtures/sample.pdf")
     assert result.content
     assert result.mime_type == "application/pdf"
 
@@ -1600,40 +1600,40 @@ def test_ocr_extraction():
         ocr=OcrConfig(backend="tesseract", language="eng"),
     )
 
-    result = extract_file("tests/fixtures/scanned.pdf", config=config)
+    result = extract_file_sync("tests/fixtures/scanned.pdf", config=config)
     assert result.content
     assert result.metadata.ocr
 
 def test_batch_processing():
-    from kreuzberg import batch_extract_files
+    from kreuzberg import batch_extract_files_sync
 
     files = ["tests/fixtures/doc1.pdf", "tests/fixtures/doc2.pdf"]
-    results = batch_extract_files(files)
+    results = batch_extract_files_sync(files)
 
     assert len(results) == 2
     for result in results:
         assert result.content
 
 def test_error_handling():
-    from kreuzberg import ParsingError
+    from kreuzberg import ParsingError, extract_file_sync
 
     with pytest.raises(ParsingError):
-        extract_file("tests/fixtures/corrupted.pdf")
+        extract_file_sync("tests/fixtures/corrupted.pdf")
 ```
 
 ### Performance Testing
 
 ```python title="Python"
 import time
-from kreuzberg import extract_file, batch_extract_files
+from kreuzberg import extract_file_sync, batch_extract_files_sync
 
 start = time.time()
-result = extract_file("large_document.pdf")
+result = extract_file_sync("large_document.pdf")
 print(f"Single file: {time.time() - start:.2f}s")
 
 files = [f"document{i}.pdf" for i in range(100)]
 start = time.time()
-results = batch_extract_files(files)
+results = batch_extract_files_sync(files)
 print(f"Batch (100 files): {time.time() - start:.2f}s")
 ```
 
@@ -1689,7 +1689,7 @@ Hierarchy blocks are available through the `page.hierarchy.blocks` structure whe
 #### Python
 
 ```python title="Python"
-from kreuzberg import extract_file, ExtractionConfig, PageConfig, PdfConfig, HierarchyDetectionConfig
+from kreuzberg import extract_file_sync, ExtractionConfig, PageConfig, PdfConfig, HierarchyDetectionConfig
 
 config = ExtractionConfig(
     pages=PageConfig(extract_pages=True),
@@ -1698,7 +1698,7 @@ config = ExtractionConfig(
     )
 )
 
-result = extract_file("document.pdf", config=config)
+result = extract_file_sync("document.pdf", config=config)
 
 # Access hierarchy blocks for each page
 for page in result.pages:
@@ -1783,7 +1783,7 @@ class HierarchyBlock:
 Hierarchy detection can be disabled globally or per-extraction:
 
 ```python title="Python"
-from kreuzberg import ExtractionConfig, PageConfig, PdfConfig, HierarchyDetectionConfig
+from kreuzberg import extract_file_sync, ExtractionConfig, PageConfig, PdfConfig, HierarchyDetectionConfig
 
 # Option 1: Disable in configuration
 config = ExtractionConfig(
@@ -1793,7 +1793,7 @@ config = ExtractionConfig(
     )
 )
 
-result = extract_file("document.pdf", config=config)
+result = extract_file_sync("document.pdf", config=config)
 
 # Option 2: Disable via TOML configuration file
 # kreuzberg.toml
@@ -1835,7 +1835,7 @@ config = HierarchyConfig(
 #### 1. Building Hierarchical RAG Systems
 
 ```python title="Python"
-from kreuzberg import extract_file, ExtractionConfig, PageConfig, PdfConfig, HierarchyDetectionConfig, ChunkingConfig
+from kreuzberg import extract_file_sync, ExtractionConfig, PageConfig, PdfConfig, HierarchyDetectionConfig, ChunkingConfig
 
 config = ExtractionConfig(
     pages=PageConfig(extract_pages=True),
@@ -1845,7 +1845,7 @@ config = ExtractionConfig(
     chunking=ChunkingConfig(max_characters=1000)
 )
 
-result = extract_file("document.pdf", config=config)
+result = extract_file_sync("document.pdf", config=config)
 
 # Build hierarchical knowledge base
 knowledge_base = []
