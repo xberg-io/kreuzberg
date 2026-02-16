@@ -181,9 +181,9 @@ async fn test_ocr_newspaper_english() {
 
 /// Test OCR on Chinese text image.
 ///
-/// Note: Currently using English-only recognition model (en_PP-OCRv4_rec_infer.onnx).
+/// Note: Uses per-family PP-OCRv5 recognition models.
 /// This test verifies the pipeline handles non-English images without crashing,
-/// but cannot produce Chinese characters until a Chinese recognition model is added.
+/// but requires the Chinese recognition model to be cached for accurate results.
 #[tokio::test]
 #[ignore = "requires ONNX Runtime and downloaded models"]
 async fn test_ocr_chinese_text() {

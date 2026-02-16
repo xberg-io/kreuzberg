@@ -40,9 +40,9 @@ kreuzberg = { version = "4.2", features = ["paddle-ocr"] }
 
 PaddleOCR models are automatically downloaded and cached on first use. Supported models include:
 
-- PP-OCRv4 detection model
-- PP-OCRv4 recognition model
-- Mobile angle classification model
+- PP-OCRv5 server detection model
+- PP-OCRv5 per-family recognition models (11 script families)
+- PPOCRv2 mobile angle classification model
 
 ## License
 

@@ -24,7 +24,7 @@ use tempfile::TempDir;
 /// Test that all PaddleOCR language codes map to correct script families.
 #[test]
 fn test_language_to_script_family_all_paddle_codes() {
-    // PP-OCRv5 families (7 families)
+    // PP-OCRv5 families (11 families)
     assert_eq!(language_to_script_family("en"), "english");
     assert_eq!(language_to_script_family("ch"), "chinese");
     assert_eq!(language_to_script_family("japan"), "chinese");
@@ -36,13 +36,10 @@ fn test_language_to_script_family_all_paddle_codes() {
     assert_eq!(language_to_script_family("cyrillic"), "eslav");
     assert_eq!(language_to_script_family("thai"), "thai");
     assert_eq!(language_to_script_family("greek"), "greek");
-
-    // PP-OCRv3 families (5 families)
     assert_eq!(language_to_script_family("arabic"), "arabic");
     assert_eq!(language_to_script_family("devanagari"), "devanagari");
-    assert_eq!(language_to_script_family("ta"), "tamil");
-    assert_eq!(language_to_script_family("te"), "telugu");
-    assert_eq!(language_to_script_family("ka"), "kannada");
+    assert_eq!(language_to_script_family("tamil"), "tamil");
+    assert_eq!(language_to_script_family("telugu"), "telugu");
 }
 
 /// Test that Tesseract-style language codes map correctly to PaddleOCR codes.
@@ -67,21 +64,6 @@ fn test_language_to_script_family_tesseract_codes() {
     assert_eq!(map_language_code("kor"), Some("korean"));
     assert_eq!(language_to_script_family("korean"), "korean");
 
-    assert_eq!(map_language_code("ara"), Some("arabic"));
-    assert_eq!(language_to_script_family("arabic"), "arabic");
-
-    assert_eq!(map_language_code("hin"), Some("devanagari"));
-    assert_eq!(language_to_script_family("devanagari"), "devanagari");
-
-    assert_eq!(map_language_code("tam"), Some("ta"));
-    assert_eq!(language_to_script_family("ta"), "tamil");
-
-    assert_eq!(map_language_code("tel"), Some("te"));
-    assert_eq!(language_to_script_family("te"), "telugu");
-
-    assert_eq!(map_language_code("kan"), Some("ka"));
-    assert_eq!(language_to_script_family("ka"), "kannada");
-
     assert_eq!(map_language_code("tha"), Some("thai"));
     assert_eq!(language_to_script_family("thai"), "thai");
 
@@ -102,11 +84,6 @@ fn test_language_to_script_family_iso639_codes() {
     assert_eq!(map_language_code("zh"), Some("ch"));
     assert_eq!(map_language_code("ja"), Some("japan"));
     assert_eq!(map_language_code("ko"), Some("korean"));
-    assert_eq!(map_language_code("ar"), Some("arabic"));
-    assert_eq!(map_language_code("hi"), Some("devanagari"));
-    assert_eq!(map_language_code("ta"), Some("ta"));
-    assert_eq!(map_language_code("te"), Some("te"));
-    assert_eq!(map_language_code("ka"), Some("ka"));
     assert_eq!(map_language_code("th"), Some("thai"));
     assert_eq!(map_language_code("el"), Some("greek"));
     assert_eq!(map_language_code("ru"), Some("cyrillic"));
@@ -118,11 +95,6 @@ fn test_language_to_script_family_iso639_codes() {
     assert_eq!(language_to_script_family("ch"), "chinese");
     assert_eq!(language_to_script_family("japan"), "chinese");
     assert_eq!(language_to_script_family("korean"), "korean");
-    assert_eq!(language_to_script_family("arabic"), "arabic");
-    assert_eq!(language_to_script_family("devanagari"), "devanagari");
-    assert_eq!(language_to_script_family("ta"), "tamil");
-    assert_eq!(language_to_script_family("te"), "telugu");
-    assert_eq!(language_to_script_family("ka"), "kannada");
     assert_eq!(language_to_script_family("thai"), "thai");
     assert_eq!(language_to_script_family("greek"), "greek");
     assert_eq!(language_to_script_family("cyrillic"), "eslav");
@@ -179,11 +151,6 @@ fn test_map_language_code_normalization() {
     assert_eq!(map_language_code("deu"), Some("german"));
     assert_eq!(map_language_code("german"), Some("german"));
 
-    // Arabic
-    assert_eq!(map_language_code("ar"), Some("arabic"));
-    assert_eq!(map_language_code("ara"), Some("arabic"));
-    assert_eq!(map_language_code("arabic"), Some("arabic"));
-
     // Thai
     assert_eq!(map_language_code("th"), Some("thai"));
     assert_eq!(map_language_code("tha"), Some("thai"));
@@ -201,26 +168,6 @@ fn test_map_language_code_normalization() {
     assert_eq!(map_language_code("uk"), Some("cyrillic"));
     assert_eq!(map_language_code("ukr"), Some("cyrillic"));
     assert_eq!(map_language_code("ukrainian"), Some("cyrillic"));
-
-    // Hindi (Devanagari)
-    assert_eq!(map_language_code("hi"), Some("devanagari"));
-    assert_eq!(map_language_code("hin"), Some("devanagari"));
-    assert_eq!(map_language_code("hindi"), Some("devanagari"));
-
-    // Tamil
-    assert_eq!(map_language_code("ta"), Some("ta"));
-    assert_eq!(map_language_code("tam"), Some("ta"));
-    assert_eq!(map_language_code("tamil"), Some("ta"));
-
-    // Telugu
-    assert_eq!(map_language_code("te"), Some("te"));
-    assert_eq!(map_language_code("tel"), Some("te"));
-    assert_eq!(map_language_code("telugu"), Some("te"));
-
-    // Kannada
-    assert_eq!(map_language_code("ka"), Some("ka"));
-    assert_eq!(map_language_code("kan"), Some("ka"));
-    assert_eq!(map_language_code("kannada"), Some("ka"));
 
     // Latin script languages (should map to "latin")
     assert_eq!(map_language_code("es"), Some("latin"));
@@ -242,8 +189,8 @@ fn test_map_language_code_normalization() {
 /// Test that SUPPORTED_LANGUAGES contains expected entries and correct count.
 #[test]
 fn test_supported_languages_list() {
-    // Should contain 16 entries as documented
-    assert_eq!(SUPPORTED_LANGUAGES.len(), 16);
+    // Should contain 15 entries (11 script families mapped to 15 language codes)
+    assert_eq!(SUPPORTED_LANGUAGES.len(), 15);
 
     // Verify key languages are present
     assert!(SUPPORTED_LANGUAGES.contains(&"ch"));
@@ -253,15 +200,14 @@ fn test_supported_languages_list() {
     assert!(SUPPORTED_LANGUAGES.contains(&"korean"));
     assert!(SUPPORTED_LANGUAGES.contains(&"japan"));
     assert!(SUPPORTED_LANGUAGES.contains(&"chinese_cht"));
-    assert!(SUPPORTED_LANGUAGES.contains(&"ta"));
-    assert!(SUPPORTED_LANGUAGES.contains(&"te"));
-    assert!(SUPPORTED_LANGUAGES.contains(&"ka"));
     assert!(SUPPORTED_LANGUAGES.contains(&"latin"));
-    assert!(SUPPORTED_LANGUAGES.contains(&"arabic"));
     assert!(SUPPORTED_LANGUAGES.contains(&"cyrillic"));
-    assert!(SUPPORTED_LANGUAGES.contains(&"devanagari"));
     assert!(SUPPORTED_LANGUAGES.contains(&"thai"));
     assert!(SUPPORTED_LANGUAGES.contains(&"greek"));
+    assert!(SUPPORTED_LANGUAGES.contains(&"arabic"));
+    assert!(SUPPORTED_LANGUAGES.contains(&"devanagari"));
+    assert!(SUPPORTED_LANGUAGES.contains(&"tamil"));
+    assert!(SUPPORTED_LANGUAGES.contains(&"telugu"));
 }
 
 // ============================================================================
@@ -285,7 +231,7 @@ fn test_model_manager_rec_family_path() {
     let temp_dir = TempDir::new().unwrap();
     let _manager = ModelManager::new(temp_dir.path().to_path_buf());
 
-    // Test all 12 script families
+    // Test all 11 PP-OCRv5 script families
     let families = [
         "english",
         "chinese",
@@ -298,7 +244,6 @@ fn test_model_manager_rec_family_path() {
         "devanagari",
         "tamil",
         "telugu",
-        "kannada",
     ];
 
     for family in families {
@@ -348,12 +293,7 @@ fn test_paddle_language_enum_variants() {
     let _german = PaddleLanguage::German;
     let _french = PaddleLanguage::French;
     let _latin = PaddleLanguage::Latin;
-    let _arabic = PaddleLanguage::Arabic;
     let _cyrillic = PaddleLanguage::Cyrillic;
-    let _devanagari = PaddleLanguage::Devanagari;
-    let _tamil = PaddleLanguage::Tamil;
-    let _telugu = PaddleLanguage::Telugu;
-    let _kannada = PaddleLanguage::Kannada;
     let _traditional_chinese = PaddleLanguage::TraditionalChinese;
     let _thai = PaddleLanguage::Thai;
     let _greek = PaddleLanguage::Greek;
@@ -367,12 +307,7 @@ fn test_paddle_language_enum_variants() {
     assert_eq!(PaddleLanguage::German.code(), "deu");
     assert_eq!(PaddleLanguage::French.code(), "fra");
     assert_eq!(PaddleLanguage::Latin.code(), "latin");
-    assert_eq!(PaddleLanguage::Arabic.code(), "arabic");
     assert_eq!(PaddleLanguage::Cyrillic.code(), "cyrillic");
-    assert_eq!(PaddleLanguage::Devanagari.code(), "devanagari");
-    assert_eq!(PaddleLanguage::Tamil.code(), "ta");
-    assert_eq!(PaddleLanguage::Telugu.code(), "te");
-    assert_eq!(PaddleLanguage::Kannada.code(), "ka");
     assert_eq!(PaddleLanguage::TraditionalChinese.code(), "chinese_cht");
     assert_eq!(PaddleLanguage::Thai.code(), "thai");
     assert_eq!(PaddleLanguage::Greek.code(), "greek");
@@ -435,12 +370,7 @@ fn test_paddle_backend_supports_language_expanded() {
     assert!(backend.supports_language("french"));
     assert!(backend.supports_language("german"));
     assert!(backend.supports_language("latin"));
-    assert!(backend.supports_language("arabic"));
     assert!(backend.supports_language("cyrillic"));
-    assert!(backend.supports_language("devanagari"));
-    assert!(backend.supports_language("ta"));
-    assert!(backend.supports_language("te"));
-    assert!(backend.supports_language("ka"));
     assert!(backend.supports_language("thai"));
     assert!(backend.supports_language("greek"));
     assert!(backend.supports_language("chinese_cht"));
@@ -458,14 +388,9 @@ fn test_paddle_backend_supports_tesseract_mapped_codes() {
     assert!(backend.supports_language("kor")); // → korean
     assert!(backend.supports_language("fra")); // → french
     assert!(backend.supports_language("deu")); // → german
-    assert!(backend.supports_language("ara")); // → arabic
     assert!(backend.supports_language("tha")); // → thai
     assert!(backend.supports_language("ell")); // → greek
     assert!(backend.supports_language("rus")); // → cyrillic
-    assert!(backend.supports_language("hin")); // → devanagari
-    assert!(backend.supports_language("tam")); // → ta
-    assert!(backend.supports_language("tel")); // → te
-    assert!(backend.supports_language("kan")); // → ka
 
     // ISO 639-1 codes
     assert!(backend.supports_language("en"));
@@ -474,13 +399,9 @@ fn test_paddle_backend_supports_tesseract_mapped_codes() {
     assert!(backend.supports_language("ko"));
     assert!(backend.supports_language("fr"));
     assert!(backend.supports_language("de"));
-    assert!(backend.supports_language("ar"));
     assert!(backend.supports_language("th"));
     assert!(backend.supports_language("el"));
     assert!(backend.supports_language("ru"));
-    assert!(backend.supports_language("hi"));
-    assert!(backend.supports_language("ta"));
-    assert!(backend.supports_language("te"));
 }
 
 // ============================================================================

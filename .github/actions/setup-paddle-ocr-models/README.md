@@ -4,7 +4,7 @@ GitHub Action to download and cache PaddleOCR ONNX models for CI testing and dev
 
 ## Overview
 
-This action manages the setup of PaddleOCR PP-OCRv4 ONNX models used by the `kreuzberg-paddle-ocr` crate for optical character recognition testing. It:
+This action manages the setup of PaddleOCR PP-OCRv5 ONNX models used by the `kreuzberg-paddle-ocr` crate for optical character recognition testing. It:
 
 - Downloads three model types (detection, classification, recognition) from Hugging Face
 - Caches models per OS and CPU architecture (Linux x86_64, Linux ARM64, macOS, Windows)
@@ -18,11 +18,11 @@ The action downloads pre-converted ONNX format models from the `Kreuzberg/paddle
 
 | Model Type | File | Size | Purpose |
 |-----------|------|------|---------|
-| Detection (det) | `ch_PP-OCRv4_det_infer.onnx` | ~4.5 MB | Text location detection |
-| Classification (cls) | `ch_ppocr_mobile_v2.0_cls_infer.onnx` | ~1.5 MB | Text orientation classification |
-| Recognition (rec) | `en_PP-OCRv4_rec_infer.onnx` | ~10 MB | Text character recognition |
+| Detection (det) | `PP-OCRv5_server_det_infer.onnx` | ~84 MB | Text location detection (PP-OCRv5 server) |
+| Classification (cls) | `ch_ppocr_mobile_v2.0_cls_infer.onnx` | ~0.6 MB | Text orientation classification |
+| Recognition (rec) | `rec/english/model.onnx` | ~8 MB | Text character recognition (PP-OCRv5) |
 
-**Total cache size: ~16 MB per OS/architecture combination**
+**Total cache size: ~93 MB per OS/architecture combination**
 
 ## Usage
 
@@ -37,7 +37,7 @@ The action downloads pre-converted ONNX format models from the `Kreuzberg/paddle
 ```yaml
 - uses: ./.github/actions/setup-paddle-ocr-models
   with:
-    cache-key-suffix: my-paddle-ocr-v4
+    cache-key-suffix: my-paddle-ocr-v5
 ```
 
 ### Disable Caching
@@ -64,7 +64,7 @@ For cross-architecture builds where caching doesn't help:
 |------|-------------|----------|---------|
 | `cache-enabled` | Enable model caching (set false for cross-arch builds) | No | `true` |
 | `models` | Comma-separated list of models to setup (det,cls,rec or subset) | No | `det,cls,rec` |
-| `cache-key-suffix` | Suffix for cache key to differentiate model sets | No | `paddle-ocr-v4-onnx` |
+| `cache-key-suffix` | Suffix for cache key to differentiate model sets | No | `paddle-ocr-v5-onnx` |
 
 ## Outputs
 
@@ -85,14 +85,14 @@ The action automatically exports:
 Models are cached using GitHub Actions cache with the following key structure:
 
 ```
-paddle-ocr-v4-onnx-{OS}-{ARCHITECTURE}-v1
+paddle-ocr-v5-onnx-{OS}-{ARCHITECTURE}-v4
 ```
 
 Cache restoration order (restore-keys):
-1. Exact match: `paddle-ocr-v4-onnx-{OS}-{ARCHITECTURE}-v1`
-2. OS-Architecture: `paddle-ocr-v4-onnx-{OS}-{ARCHITECTURE}-`
-3. OS only: `paddle-ocr-v4-onnx-{OS}-`
-4. Any: `paddle-ocr-v4-onnx-`
+1. Exact match: `paddle-ocr-v5-onnx-{OS}-{ARCHITECTURE}-v4`
+2. OS-Architecture: `paddle-ocr-v5-onnx-{OS}-{ARCHITECTURE}-`
+3. OS only: `paddle-ocr-v5-onnx-{OS}-`
+4. Any: `paddle-ocr-v5-onnx-`
 
 ## Example: CI Rust Workflow Integration
 
@@ -120,10 +120,9 @@ jobs:
 
 ## Error Handling
 
-The action uses `continue-on-error: true` for individual model downloads. This means:
+The action downloads models sequentially and will fail if a required model download fails. After downloading:
 
-- If a model download fails, it logs a warning but continues
-- The action reports which models are actually available in the output
+- The verify step reports which models are actually available in the output
 - Downstream tests can check `models-available` to know what's available
 - If all models fail, tests can fall back to alternative behavior
 
@@ -168,23 +167,24 @@ drwxr-xr-x cls/
 drwxr-xr-x rec/
 
 ls -lh ~/.cache/kreuzberg/paddle-ocr/det/
--rw-r--r-- model.onnx (4-5 MB)
+-rw-r--r-- model.onnx (~84 MB)
 
 ls -lh ~/.cache/kreuzberg/paddle-ocr/cls/
--rw-r--r-- model.onnx (1-2 MB)
+-rw-r--r-- model.onnx (~0.6 MB)
 
-ls -lh ~/.cache/kreuzberg/paddle-ocr/rec/
--rw-r--r-- model.onnx (9-11 MB)
+ls -lh ~/.cache/kreuzberg/paddle-ocr/rec/english/
+-rw-r--r-- model.onnx (~8 MB)
+-rw-r--r-- dict.txt
 ```
 
 The directory structure must match what `ModelManager` expects in `model_manager.rs`.
 
 ## Performance Impact
 
-- **First run (no cache)**: ~20-30 seconds (download time depends on network)
+- **First run (no cache)**: ~30-60 seconds (download time depends on network)
 - **Cached run**: <1 second (cache restore)
-- **Cache size**: ~16 MB per OS/architecture
-- **Network bandwidth**: ~16 MB download on cache miss
+- **Cache size**: ~93 MB per OS/architecture
+- **Network bandwidth**: ~93 MB download on cache miss
 
 ## Related Actions
 

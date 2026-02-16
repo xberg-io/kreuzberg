@@ -137,7 +137,7 @@ RUN mkdir -p /etc/kreuzberg /app/.config/kreuzberg && \
 RUN mkdir -p /app/.kreuzberg/huggingface && \
     chown -R kreuzberg:kreuzberg /app/.kreuzberg/huggingface
 
-# Pre-download all PaddleOCR ONNX models into cache (det, cls, and all 12 rec families)
+# Pre-download all PaddleOCR ONNX models into cache (det, cls, and all 11 rec families)
 # Uses retry logic to handle transient HuggingFace 502 errors
 RUN set -eux; \
     HF_BASE="https://huggingface.co/Kreuzberg/paddleocr-onnx-models/resolve/main"; \
@@ -158,20 +158,20 @@ RUN set -eux; \
       echo "FAILED: $url"; return 1; \
     }; \
     \
-    # Shared models (detection + classification) \
+    # Shared models (PP-OCRv5 server detection + PPOCRv2 classification) \
     mkdir -p "$CACHE/det" "$CACHE/cls"; \
-    download "$HF_BASE/ch_PP-OCRv4_det_infer.onnx" "$CACHE/det/model.onnx"; \
+    download "$HF_BASE/PP-OCRv5_server_det_infer.onnx" "$CACHE/det/model.onnx"; \
     download "$HF_BASE/ch_ppocr_mobile_v2.0_cls_infer.onnx" "$CACHE/cls/model.onnx"; \
     \
-    # Recognition models + dictionaries for all 12 script families \
-    for family in english chinese latin korean eslav thai greek arabic devanagari tamil telugu kannada; do \
+    # Recognition models + dictionaries for all 11 PP-OCRv5 script families \
+    for family in english chinese latin korean eslav thai greek arabic devanagari tamil telugu; do \
       mkdir -p "$CACHE/rec/$family"; \
       download "$HF_BASE/rec/$family/model.onnx" "$CACHE/rec/$family/model.onnx"; \
       download "$HF_BASE/rec/$family/dict.txt" "$CACHE/rec/$family/dict.txt"; \
     done; \
     \
     chown -R kreuzberg:kreuzberg "$CACHE"; \
-    echo "PaddleOCR models ready: 2 shared + 12 recognition families"
+    echo "PaddleOCR models ready: 2 shared + 11 recognition families"
 
 # Ensure read permissions on tessdata files for non-root user
 # Tessdata is installed in version-specific directory (e.g., tesseract-ocr/5 or tesseract-ocr/4)

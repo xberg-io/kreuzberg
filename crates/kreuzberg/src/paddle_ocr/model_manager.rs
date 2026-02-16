@@ -58,15 +58,15 @@ struct RecModelDefinition {
     model_size_bytes: u64,
 }
 
-/// Shared models: detection (PP-OCRv4) and classification (PPOCRv2).
+/// Shared models: detection (PP-OCRv5 server) and classification (PPOCRv2).
 /// These are language-agnostic and shared across all script families.
 const SHARED_MODELS: &[SharedModelDefinition] = &[
     SharedModelDefinition {
         model_type: "det",
-        remote_filename: "ch_PP-OCRv4_det_infer.onnx",
+        remote_filename: "PP-OCRv5_server_det_infer.onnx",
         local_filename: "model.onnx",
-        sha256_checksum: "d2a7720d45a54257208b1e13e36a8479894cb74155a5efe29462512d42f49da9",
-        size_bytes: 4_745_517,
+        sha256_checksum: "127edf0182bb3d218ad59476377b02ca90296cfb4cc85df55042d671a3e53aeb",
+        size_bytes: 88_118_768,
     },
     SharedModelDefinition {
         model_type: "cls",
@@ -77,14 +77,13 @@ const SHARED_MODELS: &[SharedModelDefinition] = &[
     },
 ];
 
-/// Recognition model definitions for 12 script families.
+/// Recognition model definitions for 11 script families (all PP-OCRv5).
 ///
 /// Each family has a recognition model (`rec/{family}/model.onnx`) and a character
 /// dictionary (`rec/{family}/dict.txt`) hosted on HuggingFace.
 ///
-/// Sources:
-/// - PP-OCRv5 (7 families): english, chinese (server), latin, korean, eslav, thai, greek
-/// - PP-OCRv3 (5 families): arabic, devanagari, tamil, telugu, kannada
+/// All 11 families use PP-OCRv5: english, chinese (server), latin, korean, eslav,
+/// thai, greek, arabic, devanagari, tamil, telugu.
 const REC_MODELS: &[RecModelDefinition] = &[
     RecModelDefinition {
         script_family: "english",
@@ -130,33 +129,27 @@ const REC_MODELS: &[RecModelDefinition] = &[
     },
     RecModelDefinition {
         script_family: "arabic",
-        model_sha256: "7982d371612785238fd99080cff36354deaec84fdc6ff7da9c82af4243fa0c9a",
-        dict_sha256: "ce4725178a558324f33ee967753bd4df865ab4dd2784c8fcdce2aad9825062ca",
-        model_size_bytes: 8_978_664,
+        model_sha256: "5b62055fc6209fa3bb247a9a2a7a9d5100c30868bad8a2fa49ed062f64b83021",
+        dict_sha256: "7f92f7dbb9b75a4787a83bfb4f6d14a8ab515525130c9d40a9036f61cf6999e9",
+        model_size_bytes: 8_022_231,
     },
     RecModelDefinition {
         script_family: "devanagari",
-        model_sha256: "43df175fa3c877fbf7bcc4e5bd1e203e24ec450cd3ea96c9e802c86e39a4d4cf",
-        dict_sha256: "d38810959dae4d0e16c4bdb6e1b000e645b7a43876f04cca746eac93c2b6c643",
-        model_size_bytes: 8_980_224,
+        model_sha256: "2e895a63a7e08932c8b7b65d8bdb87f96b6f075a80c329ab98298ea0915ebf85",
+        dict_sha256: "09c7440bfc5477e5c41052304b6b185aff8c4a5e8b2b4c23c1c706f6fe1ee9fc",
+        model_size_bytes: 7_935_595,
     },
     RecModelDefinition {
         script_family: "tamil",
-        model_sha256: "fba9a00af746c8f3ef4f091cf966880222cd7245a60f6a953670593630c0ca4f",
-        dict_sha256: "5530929b4be4221022d0cd35300a097d99157ddbe04e662d0c088d5f6672f265",
-        model_size_bytes: 8_970_084,
+        model_sha256: "1d3dd137f72273e13b03ad30c7abc55494d6aa723b441c21122479c0622105e0",
+        dict_sha256: "85b541352ae18dc6ba6d47152d8bf8adff6b0266e605d2eef2990c1bf466117b",
+        model_size_bytes: 7_908_975,
     },
     RecModelDefinition {
         script_family: "telugu",
-        model_sha256: "669946d9ad4de93e8d1b13f7e72c59cc2cc2de91bb24e22aad7503a6cc5757ee",
-        dict_sha256: "c0998290b8bfed832b9a6eb4d4d16d88a410b89ab3277d53169b2c4df49c549f",
-        model_size_bytes: 8_976_064,
-    },
-    RecModelDefinition {
-        script_family: "kannada",
-        model_sha256: "52a75cdf860878447a36b911299bf75419ad55b0e8e68f24904af507e19df958",
-        dict_sha256: "baa474fdbeb74c42554f692601fe397610c0522c4240cb9d24feaaf0576eb4ef",
-        model_size_bytes: 8_981_366,
+        model_sha256: "9ba6b6cd4f028f4e5eaa7e29c428b5ea52bd399c02844cddc5d412f139cf7793",
+        dict_sha256: "42f83f5d3fdb50778e4fa5b66c58d99a59ab7792151c5e74f34b8ffd7b61c9d6",
+        model_size_bytes: 7_922_043,
     },
 ];
 
@@ -526,7 +519,6 @@ mod tests {
             "devanagari",
             "tamil",
             "telugu",
-            "kannada",
         ];
         for family in families {
             let def = ModelManager::find_rec_definition(family);
@@ -653,7 +645,7 @@ mod tests {
 
     #[test]
     fn test_rec_model_definitions() {
-        assert_eq!(REC_MODELS.len(), 12);
+        assert_eq!(REC_MODELS.len(), 11);
         let families: Vec<_> = REC_MODELS.iter().map(|m| m.script_family).collect();
         assert!(families.contains(&"english"));
         assert!(families.contains(&"chinese"));
@@ -666,7 +658,6 @@ mod tests {
         assert!(families.contains(&"devanagari"));
         assert!(families.contains(&"tamil"));
         assert!(families.contains(&"telugu"));
-        assert!(families.contains(&"kannada"));
     }
 
     #[test]

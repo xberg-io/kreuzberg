@@ -25,19 +25,18 @@
 //!
 //! # Language Support
 //!
-//! This implementation supports 12 script families covering 106+ languages:
+//! This implementation supports 11 script families (all PP-OCRv5) covering 80+ languages:
 //! - **English**: English-optimized recognition models
-//! - **Chinese**: Simplified and Traditional Chinese
+//! - **Chinese**: Simplified and Traditional Chinese, Japanese
 //! - **Latin**: European languages using Latin script
 //! - **Korean**: Hangul script
 //! - **Eslav**: Cyrillic-based languages (Russian, Ukrainian, etc.)
 //! - **Thai**: Thai script
 //! - **Greek**: Greek script
-//! - **Arabic**: Arabic and Persian scripts
-//! - **Devanagari**: Hindi and related scripts
+//! - **Arabic**: Arabic, Persian, Urdu
+//! - **Devanagari**: Hindi, Marathi, Sanskrit, Nepali
 //! - **Tamil**: Tamil script
 //! - **Telugu**: Telugu script
-//! - **Kannada**: Kannada script
 //!
 //! Models are downloaded on-demand per script family. The English recognition model
 //! and dictionary are downloaded by default. Other language families are automatically
@@ -170,13 +169,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             println!("Downloading PaddleOCR models...\n");
             println!("This may take a few minutes depending on your internet connection.");
             println!("Models being downloaded:");
-            println!("  - Detection model (PP-OCRv4 det)");
-            println!("  - Classification model (Mobile v2.0 cls)");
-            println!("  - Recognition model (PP-OCRv4 rec, English)");
+            println!("  - Detection model (PP-OCRv5 server det)");
+            println!("  - Classification model (PPOCRv2 cls)");
+            println!("  - Recognition model (PP-OCRv5 rec, English)");
             println!("  - Dictionary file (for text recognition)\n");
             println!("Additional language family models are downloaded on-demand.");
-            println!("Supported families: English, Chinese, Latin, Korean, Eslav, Thai,");
-            println!("Greek, Arabic, Devanagari, Tamil, Telugu, Kannada.\n");
+            println!("Supported families: English, Chinese, Latin, Korean, Eslav, Thai, Greek,");
+            println!("Arabic, Devanagari, Tamil, Telugu.\n");
 
             // Download and ensure models exist
             // SHA256 checksums are now embedded and verified automatically
@@ -288,7 +287,7 @@ fn print_usage(program_name: &str) {
     println!("NOTES:");
     println!("    Language-specific models are supported and downloaded on-demand.");
     println!("    Supported script families: English, Chinese, Latin, Korean, Eslav,");
-    println!("    Thai, Greek, Arabic, Devanagari, Tamil, Telugu, Kannada.");
+    println!("    Thai, Greek, Arabic, Devanagari, Tamil, Telugu.");
     println!("    See example documentation for language support details.");
     println!();
     println!("EXAMPLES:");

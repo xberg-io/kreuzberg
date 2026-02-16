@@ -254,18 +254,8 @@ pub enum PaddleLanguage {
     French,
     /// Latin script (covers most European languages)
     Latin,
-    /// Arabic
-    Arabic,
     /// Cyrillic (Russian and related)
     Cyrillic,
-    /// Devanagari (Hindi and related)
-    Devanagari,
-    /// Tamil
-    Tamil,
-    /// Telugu
-    Telugu,
-    /// Kannada
-    Kannada,
     /// Traditional Chinese
     TraditionalChinese,
     /// Thai
@@ -274,6 +264,14 @@ pub enum PaddleLanguage {
     Greek,
     /// East Slavic (Russian, Ukrainian, Belarusian)
     EastSlavic,
+    /// Arabic (Arabic, Persian, Urdu)
+    Arabic,
+    /// Devanagari (Hindi, Marathi, Sanskrit, Nepali)
+    Devanagari,
+    /// Tamil
+    Tamil,
+    /// Telugu
+    Telugu,
 }
 
 impl PaddleLanguage {
@@ -300,16 +298,15 @@ impl PaddleLanguage {
             Self::German => "deu",
             Self::French => "fra",
             Self::Latin => "latin",
-            Self::Arabic => "arabic",
             Self::Cyrillic => "cyrillic",
-            Self::Devanagari => "devanagari",
-            Self::Tamil => "ta",
-            Self::Telugu => "te",
-            Self::Kannada => "ka",
             Self::TraditionalChinese => "chinese_cht",
             Self::Thai => "thai",
             Self::Greek => "greek",
             Self::EastSlavic => "eslav",
+            Self::Arabic => "arabic",
+            Self::Devanagari => "devanagari",
+            Self::Tamil => "tamil",
+            Self::Telugu => "telugu",
         }
     }
 
@@ -341,16 +338,15 @@ impl PaddleLanguage {
             "deu" => Some(Self::German),
             "fra" => Some(Self::French),
             "latin" => Some(Self::Latin),
-            "arabic" => Some(Self::Arabic),
             "cyrillic" => Some(Self::Cyrillic),
-            "devanagari" => Some(Self::Devanagari),
-            "ta" => Some(Self::Tamil),
-            "te" => Some(Self::Telugu),
-            "ka" => Some(Self::Kannada),
             "chinese_cht" => Some(Self::TraditionalChinese),
             "thai" => Some(Self::Thai),
             "greek" => Some(Self::Greek),
             "eslav" => Some(Self::EastSlavic),
+            "arabic" => Some(Self::Arabic),
+            "devanagari" => Some(Self::Devanagari),
+            "tamil" => Some(Self::Tamil),
+            "telugu" => Some(Self::Telugu),
             _ => None,
         }
     }
@@ -366,16 +362,15 @@ impl std::fmt::Display for PaddleLanguage {
             Self::German => write!(f, "German"),
             Self::French => write!(f, "French"),
             Self::Latin => write!(f, "Latin"),
-            Self::Arabic => write!(f, "Arabic"),
             Self::Cyrillic => write!(f, "Cyrillic"),
-            Self::Devanagari => write!(f, "Devanagari"),
-            Self::Tamil => write!(f, "Tamil"),
-            Self::Telugu => write!(f, "Telugu"),
-            Self::Kannada => write!(f, "Kannada"),
             Self::TraditionalChinese => write!(f, "Traditional Chinese"),
             Self::Thai => write!(f, "Thai"),
             Self::Greek => write!(f, "Greek"),
             Self::EastSlavic => write!(f, "East Slavic"),
+            Self::Arabic => write!(f, "Arabic"),
+            Self::Devanagari => write!(f, "Devanagari"),
+            Self::Tamil => write!(f, "Tamil"),
+            Self::Telugu => write!(f, "Telugu"),
         }
     }
 }

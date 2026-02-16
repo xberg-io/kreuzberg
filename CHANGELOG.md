@@ -29,10 +29,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **PaddleOCR recognition models upgraded to PP-OCRv5**: Upgraded arabic, devanagari, tamil, and telugu recognition models from PP-OCRv3 to PP-OCRv5 for improved accuracy. All 11 script families now use PP-OCRv5 models.
 - **PDFium upgraded to chromium/7678**: Upgraded PDFium binary version from 7578 to the latest release (chromium/7678, Feb 2026) across all CI workflows, Docker images, and task configuration. C API is fully backward-compatible with existing bindings.
 - **kreuzberg-pdfium-render trimmed to single version**: Removed support for 22 legacy PDFium API versions (5961-7350 + future), deleting ~328k lines of dead code including bindgen files, C headers, and ~4,256 version-conditional compilation blocks. Removed XFA, V8, Skia, and Win32 feature-gated code paths.
 - **Workspace dependency consolidation**: Moved `wasm-bindgen`, `wasm-bindgen-futures`, `js-sys`, `web-sys`, `console_error_panic_hook`, and `log` to workspace-level dependency management, deduplicating versions across `kreuzberg-pdfium-render`, `kreuzberg-wasm`, and `kreuzberg-ffi`.
-- **Docker full image: pre-download all PaddleOCR models**: Replaced broken single-language model download with all 12 recognition script families (english, chinese, latin, korean, eslav, thai, greek, arabic, devanagari, tamil, telugu, kannada) plus dictionaries. Fixed incorrect HuggingFace URLs and cache paths. Added retry logic with backoff for transient HuggingFace 502 errors.
+- **Docker full image: pre-download all PaddleOCR models**: Replaced broken single-language model download with all 11 recognition script families (english, chinese, latin, korean, eslav, thai, greek, arabic, devanagari, tamil, telugu) plus dictionaries. Fixed incorrect HuggingFace URLs and cache paths. Added retry logic with backoff for transient HuggingFace 502 errors.
 - **Docker test suite: PaddleOCR verification**: Added `test_paddle_ocr_extraction` to the full variant Docker tests to verify pre-loaded models work end-to-end.
 - **E2E tests updated for typed extraction fields**: End-to-end tests now validate typed `extracted_keywords`, `quality_score`, and `processing_warnings` fields instead of reading from `metadata.additional` dictionary.
 
@@ -56,7 +57,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **HTTP URLs preserved as text**: Non-data URIs (HTTP/HTTPS) are kept as `[Image: url]` text markers without attempting network access or filesystem traversal.
 
 #### PaddleOCR Multi-Language Support (#388)
-- **106+ language support via 12 script families**: PaddleOCR recognition models now cover english, chinese (simplified+traditional+japanese), latin, korean, east slavic (cyrillic), thai, greek, arabic, devanagari, tamil, telugu, and kannada script families.
+- **106+ language support via 11 script families**: PaddleOCR recognition models now cover english, chinese (simplified+traditional+japanese), latin, korean, east slavic (cyrillic), thai, greek, arabic, devanagari, tamil, and telugu script families.
 - **Per-family recognition model architecture**: Shared detection/classification models with per-family recognition models and dictionaries, downloaded on demand from HuggingFace (`Kreuzberg/paddleocr-onnx-models`).
 - **Engine pool for concurrent multi-language OCR**: Replaced single-engine architecture with a per-family engine pool (`HashMap<String, Arc<Mutex<OcrLite>>>`), enabling concurrent OCR across different languages.
 - **Backend-agnostic `--ocr-language` CLI flag**: Works with all OCR backends (tesseract, paddle-ocr, easyocr). Tesseract expects ISO 639-3 codes (eng, fra, deu); PaddleOCR accepts flexible codes (en, ch, french, korean) via `map_language_code()`.
@@ -66,7 +67,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### PaddleOCR Engine Internals
 - **CrnnNet recognition height**: Changed to 32 pixels (later found to be incorrect for PP-OCRv4/v5 models; fixed in next release).
-- **Model manager split**: `MODELS` constant replaced with `SHARED_MODELS` (det+cls) and `REC_MODELS` (12 families), with new cache layout `rec/{family}/model.onnx`.
+- **Model manager split**: `MODELS` constant replaced with `SHARED_MODELS` (det+cls) and `REC_MODELS` (11 families), with new cache layout `rec/{family}/model.onnx`.
 - **Language code mapping expanded**: `map_language_code()` now handles Thai, Greek, East Slavic, and additional Latin-script languages.
 
 #### DOCX Full Extraction Pipeline (#387)

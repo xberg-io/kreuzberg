@@ -16,7 +16,7 @@ Kreuzberg provides a pluggable OCR system with multiple backend implementations:
 | Backend | Language | Module | Features |
 |---------|----------|--------|----------|
 | **Tesseract** (Default) | Rust FFI binding | `kreuzberg-tesseract` crate | Multi-language, HOCR output, Tesseract 5.x |
-| **PaddleOCR** | Rust (ONNX Runtime) | `kreuzberg-paddle-ocr` crate | CJK-optimized, 6 languages, auto model download |
+| **PaddleOCR** | Rust (ONNX Runtime) | `kreuzberg-paddle-ocr` crate | 80+ languages, 11 script families, auto model download |
 | **EasyOCR** | Python-only | `kreuzberg-py` embedding | 80+ languages, GPU support |
 
 ## Core OCR Components

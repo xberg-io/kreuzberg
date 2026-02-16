@@ -84,9 +84,9 @@ Kreuzberg supports three OCR backends with different strengths:
 |---------|--------------|-------------|---------------|
 | **Speed** | Fast | Moderate | Very Fast |
 | **Accuracy** | Good | Excellent | Excellent |
-| **Languages** | 100+ | 80+ | 106+ (12 script families) |
+| **Languages** | 100+ | 80+ | 80+ (11 script families) |
 | **Installation** | System package | Python package | Feature flag (native) or Python package |
-| **Model Size** | Small (~10MB) | Large (~100MB) | Medium (~25MB) |
+| **Model Size** | Small (~10MB) | Large (~100MB) | Medium (~120MB base + ~8MB per family) |
 | **CPU/GPU** | CPU only | CPU + GPU | CPU + GPU |
 | **Platform Support** | All | Python only | All (except WASM) |
 | **Best For** | General use, production | High accuracy needs | Speed + accuracy, CJK languages |
@@ -175,7 +175,7 @@ PaddleOCR is available as a native Rust backend in all non-WASM bindings, and al
 
 ## PaddleOCR Script Families
 
-PaddleOCR supports **106+ languages** across **12 script families**. Recognition models are downloaded on demand from HuggingFace on first use:
+PaddleOCR supports **80+ languages** across **11 script families** (all PP-OCRv5). Recognition models are downloaded on demand from HuggingFace on first use:
 
 1. **English** - English, numbers, punctuation
 2. **Chinese** - Simplified Chinese, Traditional Chinese, Japanese
@@ -184,11 +184,10 @@ PaddleOCR supports **106+ languages** across **12 script families**. Recognition
 5. **Slavic** - Russian, Ukrainian, Belarusian, Bulgarian, Serbian, etc.
 6. **Thai** - Thai script
 7. **Greek** - Greek script
-8. **Arabic** - Arabic, Persian, Urdu, Uyghur, etc.
-9. **Devanagari** - Hindi, Marathi, Nepali, Sanskrit, etc.
+8. **Arabic** - Arabic, Persian, Urdu
+9. **Devanagari** - Hindi, Marathi, Sanskrit, Nepali
 10. **Tamil** - Tamil script
 11. **Telugu** - Telugu script
-12. **Kannada** - Kannada script
 
 Per-family models are downloaded automatically and cached locally when first needed. This lazy-loading approach keeps startup time fast while supporting full multilingual capabilities.
 

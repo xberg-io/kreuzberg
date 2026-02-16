@@ -13,7 +13,7 @@ inputs:
   cache-key-suffix:
     description: Suffix for cache key to differentiate model sets
     required: false
-    default: "paddle-ocr-v4-onnx"
+    default: "paddle-ocr-v5-onnx"
 
 outputs:
   cache-hit:
@@ -41,7 +41,7 @@ runs:
       id: cache-models
       with:
         path: ~/.cache/kreuzberg/paddle-ocr
-        key: ${{ inputs.cache-key-suffix }}-${{ runner.os }}-${{ runner.arch }}-v3
+        key: ${{ inputs.cache-key-suffix }}-${{ runner.os }}-${{ runner.arch }}-v4
         restore-keys: |
           ${{ inputs.cache-key-suffix }}-${{ runner.os }}-${{ runner.arch }}-
           ${{ inputs.cache-key-suffix }}-${{ runner.os }}-
@@ -51,7 +51,7 @@ runs:
       if: contains(inputs.models, 'det') && steps.cache-models.outputs.cache-hit != 'true'
       shell: bash
       run: |
-        MODEL_URL="https://huggingface.co/Kreuzberg/paddleocr-onnx-models/resolve/main/ch_PP-OCRv4_det_infer.onnx"
+        MODEL_URL="https://huggingface.co/Kreuzberg/paddleocr-onnx-models/resolve/main/PP-OCRv5_server_det_infer.onnx"
         CACHE_DIR="$HOME/.cache/kreuzberg/paddle-ocr"
         MODEL_DIR="$CACHE_DIR/det"
         MODEL_FILE="$MODEL_DIR/model.onnx"

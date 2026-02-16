@@ -88,6 +88,8 @@ fn _internal_bindings(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<types::ExtractionResult>()?;
     m.add_class::<types::PyChunk>()?;
     m.add_class::<types::ExtractedTable>()?;
+    m.add_class::<types::PyExtractedKeyword>()?;
+    m.add_class::<types::PyProcessingWarning>()?;
 
     m.add_function(wrap_pyfunction!(core::extract_file_sync, m)?)?;
     m.add_function(wrap_pyfunction!(core::extract_bytes_sync, m)?)?;

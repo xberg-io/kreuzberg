@@ -98,8 +98,8 @@ Native Tesseract integration available in all language bindings.
 PaddleOCR is available as a native Rust backend in all non-WASM bindings via the `paddle-ocr` feature flag. Models are automatically downloaded on first use.
 
 - Production-ready OCR using ONNX Runtime
-- Ultra-lightweight models (~25MB total)
-- 106+ language support across 12 script families: English, Chinese, Latin, Korean, Cyrillic, Thai, Greek, Arabic, Devanagari, Tamil, Telugu, Kannada
+- PP-OCRv5 server detection + per-family recognition models
+- 80+ language support across 11 script families: English, Chinese, Latin, Korean, Slavic, Thai, Greek, Arabic, Devanagari, Tamil, Telugu
 - Per-family models downloaded on demand
 - Concurrent multi-language OCR via engine pool
 - Excellent CJK (Chinese, Japanese, Korean) accuracy

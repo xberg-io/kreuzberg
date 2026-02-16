@@ -128,7 +128,7 @@ Set the OCR language using the `--ocr-language` flag. This flag is backend-agnos
 - **Tesseract**: Uses ISO 639-3 codes (three-letter codes)
   - Examples: `eng` (English), `fra` (French), `deu` (German), `spa` (Spanish), `jpn` (Japanese)
 - **PaddleOCR**: Accepts flexible language codes and full language names
-  - Examples: `en`, `ch`, `french`, `korean`, `thai`, `greek`, `arabic`, `cyrillic`, etc.
+  - Examples: `en`, `ch`, `french`, `korean`, `thai`, `greek`, `cyrillic`, etc.
 - **EasyOCR**: Similar flexible format to PaddleOCR
 
 When used with `--ocr true`, the language flag overrides the default language. When used without `--ocr`, it overrides the language specified in your config file.

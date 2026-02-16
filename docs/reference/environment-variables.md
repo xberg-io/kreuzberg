@@ -194,7 +194,7 @@ export KREUZBERG_OCR_LANGUAGE=jpn
 **Supported Codes**: Language codes are backend-agnostic and automatically mapped to the appropriate format for each backend:
 
 - **Tesseract codes** (ISO 639-3): `eng`, `deu`, `fra`, `spa`, `ita`, `por`, `rus`, `chi_sim`, `chi_tra`, `jpn`, `kor`
-- **PaddleOCR codes**: `en`, `ch`, `french`, `german`, `korean`, `thai`, `greek`, `arabic`, `cyrillic`, `devanagari`, `latin`
+- **PaddleOCR codes**: `en`, `ch`, `french`, `german`, `korean`, `thai`, `greek`, `cyrillic`, `latin`, `arabic`, `devanagari`, `tamil`, `telugu`
 - **ISO 639-1 codes**: `en`, `de`, `fr`, `es`, `ja`, `ko`, `zh`, `ru`, `ar`, `th`, `el`
 
 All code formats are accepted regardless of backend — Kreuzberg automatically maps between them.

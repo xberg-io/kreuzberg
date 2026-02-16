@@ -64,6 +64,13 @@ pub struct ExtractionResult {
     djot_content: Option<Py<PyAny>>,
 
     ocr_elements: Option<Py<PyList>>,
+
+    extracted_keywords: Option<Py<PyList>>,
+
+    #[pyo3(get)]
+    pub quality_score: Option<f64>,
+
+    processing_warnings: Py<PyList>,
 }
 
 #[pymethods]
@@ -117,6 +124,16 @@ impl ExtractionResult {
     #[getter]
     fn ocr_elements<'py>(&self, py: Python<'py>) -> Option<Bound<'py, PyList>> {
         self.ocr_elements.as_ref().map(|e| e.bind(py).clone())
+    }
+
+    #[getter]
+    fn extracted_keywords<'py>(&self, py: Python<'py>) -> Option<Bound<'py, PyList>> {
+        self.extracted_keywords.as_ref().map(|kw| kw.bind(py).clone())
+    }
+
+    #[getter]
+    fn processing_warnings<'py>(&self, py: Python<'py>) -> Bound<'py, PyList> {
+        self.processing_warnings.bind(py).clone()
     }
 
     fn __repr__(&self) -> String {
@@ -554,6 +571,41 @@ impl ExtractionResult {
             None
         };
 
+        let extracted_keywords = if let Some(keywords) = result.extracted_keywords {
+            let kw_list = PyList::empty(py);
+            for kw in keywords {
+                let algorithm_str = serde_json::to_value(kw.algorithm)
+                    .ok()
+                    .and_then(|v| v.as_str().map(String::from))
+                    .unwrap_or_default();
+                let positions: Option<Vec<usize>> = kw.positions;
+                let py_kw = PyExtractedKeyword {
+                    text: kw.text,
+                    score: kw.score as f64,
+                    algorithm: algorithm_str,
+                    positions: positions.map(|p| {
+                        PyList::new(py, p.into_iter().map(|v| v as u64).collect::<Vec<_>>())
+                            .unwrap()
+                            .unbind()
+                    }),
+                };
+                kw_list.append(Py::new(py, py_kw)?)?;
+            }
+            Some(kw_list.unbind())
+        } else {
+            None
+        };
+
+        let warnings_list = PyList::empty(py);
+        for warning in result.processing_warnings {
+            let py_warning = PyProcessingWarning {
+                source: warning.source,
+                message: warning.message,
+            };
+            warnings_list.append(Py::new(py, py_warning)?)?;
+        }
+        let processing_warnings = warnings_list.unbind();
+
         Ok(Self {
             content: result.content,
             mime_type: result.mime_type.to_string(),
@@ -569,6 +621,9 @@ impl ExtractionResult {
             result_format,
             djot_content,
             ocr_elements,
+            extracted_keywords,
+            quality_score: result.quality_score,
+            processing_warnings,
         })
     }
 }
@@ -609,8 +664,11 @@ mod tests {
                 djot_content: None,
                 ocr_elements: None,
                 extracted_keywords: None,
-                quality_score: None,
-                processing_warnings: vec![],
+                quality_score: Some(0.85),
+                processing_warnings: vec![kreuzberg::ProcessingWarning {
+                    source: "test".to_string(),
+                    message: "test warning".to_string(),
+                }],
             };
 
             let py_result =
@@ -621,6 +679,9 @@ mod tests {
             assert_eq!(py_result.tables(py).len(), 0);
             assert!(py_result.detected_languages.is_some());
             assert!(py_result.document.is_none());
+            assert!(py_result.extracted_keywords.is_none());
+            assert_eq!(py_result.quality_score, Some(0.85));
+            assert_eq!(py_result.processing_warnings(py).len(), 1);
             assert_eq!(py_result.__str__(), "ExtractionResult: 5 characters");
             let repr = py_result.__repr__();
             assert!(repr.contains("mime_type='text/plain'"));
@@ -634,19 +695,7 @@ mod tests {
             let mut rust_result = kreuzberg::ExtractionResult {
                 content: "data".to_string(),
                 mime_type: Cow::Borrowed("text/plain"),
-                metadata: kreuzberg::Metadata::default(),
-                tables: Vec::new(),
-                detected_languages: None,
-                chunks: None,
-                images: None,
-                pages: None,
-                elements: None,
-                document: None,
-                djot_content: None,
-                ocr_elements: None,
-                extracted_keywords: None,
-                quality_score: None,
-                processing_warnings: vec![],
+                ..Default::default()
             };
             rust_result
                 .metadata
@@ -782,6 +831,79 @@ impl ExtractedTable {
 
     fn __str__(&self) -> String {
         format!("Table on page {} ({} chars)", self.page_number, self.markdown.len())
+    }
+}
+
+/// Extracted keyword with score and algorithm information.
+///
+/// Attributes:
+///     text (str): The keyword text
+///     score (float): Relevance score (higher is better)
+///     algorithm (str): Algorithm used for extraction ("yake" or "rake")
+///     positions (list[int] | None): Character offsets where keyword appears
+///
+/// Example:
+///     >>> from kreuzberg import KeywordConfig, ExtractionConfig
+///     >>> config = ExtractionConfig(keywords=KeywordConfig(max_keywords=5))
+///     >>> result = extract_file_sync("document.pdf", None, config)
+///     >>> if result.extracted_keywords:
+///     ...     for kw in result.extracted_keywords:
+///     ...         print(f"{kw.text}: {kw.score:.3f} ({kw.algorithm})")
+#[pyclass(name = "ExtractedKeyword", module = "kreuzberg")]
+pub struct PyExtractedKeyword {
+    #[pyo3(get)]
+    pub text: String,
+
+    #[pyo3(get)]
+    pub score: f64,
+
+    #[pyo3(get)]
+    pub algorithm: String,
+
+    positions: Option<Py<PyList>>,
+}
+
+#[pymethods]
+impl PyExtractedKeyword {
+    #[getter]
+    fn positions<'py>(&self, py: Python<'py>) -> Option<Bound<'py, PyList>> {
+        self.positions.as_ref().map(|p| p.bind(py).clone())
+    }
+
+    fn __repr__(&self) -> String {
+        format!(
+            "ExtractedKeyword(text='{}', score={:.3}, algorithm='{}')",
+            self.text, self.score, self.algorithm
+        )
+    }
+}
+
+/// Non-fatal warning from a processing pipeline stage.
+///
+/// Attributes:
+///     source (str): Pipeline stage that produced the warning (e.g., "embedding", "chunking")
+///     message (str): Human-readable description of the issue
+///
+/// Example:
+///     >>> result = extract_file_sync("document.pdf", None, config)
+///     >>> for warning in result.processing_warnings:
+///     ...     print(f"[{warning.source}] {warning.message}")
+#[pyclass(name = "ProcessingWarning", module = "kreuzberg")]
+pub struct PyProcessingWarning {
+    #[pyo3(get)]
+    pub source: String,
+
+    #[pyo3(get)]
+    pub message: String,
+}
+
+#[pymethods]
+impl PyProcessingWarning {
+    fn __repr__(&self) -> String {
+        format!(
+            "ProcessingWarning(source='{}', message='{}')",
+            self.source, self.message
+        )
     }
 }
 
