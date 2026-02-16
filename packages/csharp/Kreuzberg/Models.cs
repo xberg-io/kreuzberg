@@ -1033,8 +1033,25 @@ public sealed class Metadata
     public string? OutputFormat { get; set; }
 
     /// <summary>
+    /// Extraction duration in milliseconds (for benchmarking).
+    /// Populated by batch extraction to provide per-file timing information.
+    /// </summary>
+    [JsonPropertyName("extraction_duration_ms")]
+    public long? ExtractionDurationMs { get; set; }
+
+    /// <summary>
     /// Additional untyped metadata fields captured as extension data.
     /// </summary>
+    /// <remarks>
+    /// Deprecated: Prefer using typed fields on <see cref="ExtractionResult"/> and <see cref="Metadata"/>
+    /// instead of inserting into this map. Typed fields provide better cross-language
+    /// compatibility and type safety. This field will be removed in a future major version.
+    /// </remarks>
+    [Obsolete(
+        "Use typed fields on ExtractionResult and Metadata instead of Additional. " +
+        "This field will be removed in v2.0.0.",
+        error: false
+    )]
     [JsonExtensionData]
     public JsonObject? Additional { get; set; }
 }

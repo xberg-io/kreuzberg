@@ -3,25 +3,26 @@ package kreuzberg
 import "encoding/json"
 
 var metadataCoreKeys = map[string]struct{}{
-	"title":               {},
-	"subject":             {},
-	"authors":             {},
-	"keywords":            {},
-	"language":            {},
-	"created_at":          {},
-	"modified_at":         {},
-	"created_by":          {},
-	"modified_by":         {},
-	"pages":               {},
-	"format_type":         {},
-	"image_preprocessing": {},
-	"json_schema":         {},
-	"error":               {},
-	"category":            {},
-	"tags":                {},
-	"document_version":    {},
-	"abstract_text":       {},
-	"output_format":       {},
+	"title":                  {},
+	"subject":                {},
+	"authors":                {},
+	"keywords":               {},
+	"language":               {},
+	"created_at":             {},
+	"modified_at":            {},
+	"created_by":             {},
+	"modified_by":            {},
+	"pages":                  {},
+	"format_type":            {},
+	"image_preprocessing":    {},
+	"json_schema":            {},
+	"error":                  {},
+	"category":               {},
+	"tags":                   {},
+	"document_version":       {},
+	"abstract_text":          {},
+	"output_format":          {},
+	"extraction_duration_ms": {},
 }
 
 var formatFieldSets = map[FormatType][]string{
@@ -103,6 +104,12 @@ func (m *Metadata) decodeCoreFields(raw map[string]json.RawMessage) {
 	m.DocumentVersion = decodeRawString(raw, "document_version")
 	m.AbstractText = decodeRawString(raw, "abstract_text")
 	m.OutputFormat = decodeRawString(raw, "output_format")
+	if value, exists := raw["extraction_duration_ms"]; exists {
+		var dur uint64
+		if err := json.Unmarshal(value, &dur); err == nil {
+			m.ExtractionDurationMs = &dur
+		}
+	}
 }
 
 func (m *Metadata) decodeStructuredFields(raw map[string]json.RawMessage) {
@@ -229,6 +236,9 @@ func (m Metadata) MarshalJSON() ([]byte, error) {
 	}
 	if m.OutputFormat != nil {
 		out["output_format"] = *m.OutputFormat
+	}
+	if m.ExtractionDurationMs != nil {
+		out["extraction_duration_ms"] = *m.ExtractionDurationMs
 	}
 
 	formatFields, err := m.encodeFormat()

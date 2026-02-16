@@ -1507,6 +1507,7 @@ class Metadata(TypedDict, total=False):
     abstract_text: str | None
 
     # Processing metadata
+    extraction_duration_ms: int | None
     image_preprocessing: ImagePreprocessingMetadata
     json_schema: Any
     error: ErrorMetadata

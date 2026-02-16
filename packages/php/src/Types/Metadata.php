@@ -28,7 +28,9 @@ namespace Kreuzberg\Types;
  * @property-read string|null $documentVersion Document version
  * @property-read string|null $abstractText Document abstract text
  * @property-read string|null $outputFormat Output format used for extraction
+ * @property-read int|null $extractionDurationMs Extraction duration in milliseconds (for benchmarking)
  * @property-read array<string, mixed> $custom Additional custom metadata from postprocessors
+ * @deprecated $custom Use typed fields on ExtractionResult and Metadata instead. Will be removed in v2.0.0.
  */
 readonly class Metadata
 {
@@ -57,6 +59,7 @@ readonly class Metadata
         public ?string $documentVersion = null,
         public ?string $abstractText = null,
         public ?string $outputFormat = null,
+        public ?int $extractionDurationMs = null,
         public array $custom = [],
     ) {
     }
@@ -88,6 +91,7 @@ readonly class Metadata
             'document_version',
             'abstract_text',
             'output_format',
+            'extraction_duration_ms',
         ];
 
         /** @var string|null $language */
@@ -144,6 +148,10 @@ readonly class Metadata
         /** @var string|null $outputFormat */
         $outputFormat = $data['output_format'] ?? null;
 
+        $rawDuration = $data['extraction_duration_ms'] ?? null;
+        /** @var int|null $extractionDurationMs */
+        $extractionDurationMs = is_numeric($rawDuration) ? (int) $rawDuration : null;
+
         $custom = [];
         foreach ($data as $key => $value) {
             if (!in_array($key, $knownFields, true)) {
@@ -170,6 +178,7 @@ readonly class Metadata
             documentVersion: $documentVersion,
             abstractText: $abstractText,
             outputFormat: $outputFormat,
+            extractionDurationMs: $extractionDurationMs,
             custom: $custom,
         );
     }

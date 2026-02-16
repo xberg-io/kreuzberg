@@ -1152,15 +1152,11 @@ internal class MetadataConverter : JsonConverter<Metadata>
                             }
                             else
                             {
+                                // Extracted keywords (objects) - extract text values into Keywords
                                 var extracted = Serialization.TryDeserializeExtractedKeywords(keywordsEl);
-                                if (extracted != null)
+                                if (extracted != null && metadata.Keywords == null)
                                 {
-                                    metadata.ExtractedKeywords = extracted;
-                                    // Backward compatibility: populate Keywords from extracted keyword text values
-                                    if (metadata.Keywords == null)
-                                    {
-                                        metadata.Keywords = extracted.ConvertAll(k => k.Text);
-                                    }
+                                    metadata.Keywords = extracted.ConvertAll(k => k.Text);
                                 }
                             }
                         }
@@ -1171,10 +1167,12 @@ internal class MetadataConverter : JsonConverter<Metadata>
                     {
                         using (var ekDoc = JsonDocument.ParseValue(ref reader))
                         {
+                            // extracted_keywords in metadata JSON is for backward compat;
+                            // extract text values into Keywords
                             var extracted = Serialization.TryDeserializeExtractedKeywords(ekDoc.RootElement);
-                            if (extracted != null)
+                            if (extracted != null && metadata.Keywords == null)
                             {
-                                metadata.ExtractedKeywords = extracted;
+                                metadata.Keywords = extracted.ConvertAll(k => k.Text);
                             }
                         }
                     }
@@ -1196,6 +1194,12 @@ internal class MetadataConverter : JsonConverter<Metadata>
                     break;
                 case "output_format":
                     metadata.OutputFormat = reader.TokenType == JsonTokenType.Null ? null : reader.GetString();
+                    break;
+                case "extraction_duration_ms":
+                    if (reader.TokenType == JsonTokenType.Number)
+                    {
+                        metadata.ExtractionDurationMs = reader.GetInt64();
+                    }
                     break;
                 default:
                     // Store format-specific fields
@@ -1309,12 +1313,6 @@ internal class MetadataConverter : JsonConverter<Metadata>
             JsonSerializer.Serialize(writer, value.Pages, options);
         }
 
-        if (value.ExtractedKeywords != null)
-        {
-            writer.WritePropertyName("extracted_keywords");
-            JsonSerializer.Serialize(writer, value.ExtractedKeywords, options);
-        }
-
         if (!string.IsNullOrWhiteSpace(value.Category))
         {
             writer.WritePropertyName("category");
@@ -1345,9 +1343,16 @@ internal class MetadataConverter : JsonConverter<Metadata>
             writer.WriteStringValue(value.OutputFormat);
         }
 
+        if (value.ExtractionDurationMs.HasValue)
+        {
+            writer.WritePropertyName("extraction_duration_ms");
+            writer.WriteNumberValue(value.ExtractionDurationMs.Value);
+        }
+
         // Write format-specific fields
         WriteFormatFields(writer, value, options);
 
+#pragma warning disable CS0618 // Obsolete member access (internal serialization support)
         if (value.Additional != null)
         {
             foreach (var kvp in value.Additional)
@@ -1356,6 +1361,7 @@ internal class MetadataConverter : JsonConverter<Metadata>
                 JsonSerializer.Serialize(writer, kvp.Value, options);
             }
         }
+#pragma warning restore CS0618
 
         writer.WriteEndObject();
     }
@@ -1692,6 +1698,7 @@ internal static class Serialization
         "document_version",
         "abstract_text",
         "output_format",
+        "extraction_duration_ms",
     }.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
 
     internal static string SerializeResult(ExtractionResult result)
@@ -1888,26 +1895,23 @@ internal static class Serialization
             }
             else
             {
-                // Extracted keywords (objects) - try to deserialize as ExtractedKeyword list
+                // Extracted keywords (objects) - extract text values into Keywords
                 var extracted = TryDeserializeExtractedKeywords(metaKeywords);
-                if (extracted != null)
+                if (extracted != null && metadata.Keywords == null)
                 {
-                    metadata.ExtractedKeywords = extracted;
-                    // Backward compatibility: populate Keywords from extracted keyword text values
-                    if (metadata.Keywords == null)
-                    {
-                        metadata.Keywords = extracted.ConvertAll(k => k.Text);
-                    }
+                    metadata.Keywords = extracted.ConvertAll(k => k.Text);
                 }
             }
         }
 
         if (root.TryGetProperty("extracted_keywords", out var extractedKw) && extractedKw.ValueKind == JsonValueKind.Array)
         {
+            // extracted_keywords in metadata JSON is for backward compat;
+            // extract text values into Keywords
             var extracted = TryDeserializeExtractedKeywords(extractedKw);
-            if (extracted != null)
+            if (extracted != null && metadata.Keywords == null)
             {
-                metadata.ExtractedKeywords = extracted;
+                metadata.Keywords = extracted.ConvertAll(k => k.Text);
             }
         }
 
@@ -1981,6 +1985,11 @@ internal static class Serialization
             metadata.OutputFormat = outputFormat.GetString();
         }
 
+        if (root.TryGetProperty("extraction_duration_ms", out var extractionDuration) && extractionDuration.ValueKind == JsonValueKind.Number)
+        {
+            metadata.ExtractionDurationMs = extractionDuration.GetInt64();
+        }
+
         FormatType detectedFormat = FormatType.Unknown;
         if (root.TryGetProperty("format_type", out var formatType))
         {
@@ -2007,10 +2016,12 @@ internal static class Serialization
             }
         }
 
+#pragma warning disable CS0618 // Obsolete member access (internal serialization support)
         if (additional.Count > 0)
         {
             metadata.Additional = additional;
         }
+#pragma warning restore CS0618
 
         return metadata;
     }
@@ -2299,10 +2310,6 @@ internal static class Serialization
         {
             node["keywords"] = JsonSerializer.SerializeToNode(metadata.Keywords, Options);
         }
-        else if (metadata.ExtractedKeywords != null)
-        {
-            node["keywords"] = JsonSerializer.SerializeToNode(metadata.ExtractedKeywords, Options);
-        }
         if (!string.IsNullOrWhiteSpace(metadata.Language))
         {
             node["language"] = metadata.Language;
@@ -2343,10 +2350,6 @@ internal static class Serialization
         {
             node["pages"] = JsonSerializer.SerializeToNode(metadata.Pages, Options);
         }
-        if (metadata.ExtractedKeywords != null)
-        {
-            node["extracted_keywords"] = JsonSerializer.SerializeToNode(metadata.ExtractedKeywords, Options);
-        }
         if (!string.IsNullOrWhiteSpace(metadata.Category))
         {
             node["category"] = metadata.Category;
@@ -2368,8 +2371,14 @@ internal static class Serialization
             node["output_format"] = metadata.OutputFormat;
         }
 
+        if (metadata.ExtractionDurationMs.HasValue)
+        {
+            node["extraction_duration_ms"] = metadata.ExtractionDurationMs.Value;
+        }
+
         AddFormatFields(metadata, node);
 
+#pragma warning disable CS0618 // Obsolete member access (internal serialization support)
         if (metadata.Additional != null)
         {
             foreach (var kvp in metadata.Additional)
@@ -2377,6 +2386,7 @@ internal static class Serialization
                 node[kvp.Key] = kvp.Value?.DeepClone();
             }
         }
+#pragma warning restore CS0618
 
         return node;
     }

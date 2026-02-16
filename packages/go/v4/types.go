@@ -193,6 +193,12 @@ type Metadata struct {
 	// OutputFormat identifier (e.g., "markdown", "html").
 	OutputFormat *string `json:"output_format,omitempty"`
 
+	// ExtractionDurationMs is the extraction duration in milliseconds (for benchmarking).
+	// Populated by batch extraction to provide per-file timing information.
+	ExtractionDurationMs *uint64 `json:"extraction_duration_ms,omitempty"`
+
+	// Deprecated: Use typed fields on ExtractionResult and Metadata instead.
+	// This field will be removed in a future major version.
 	Additional map[string]json.RawMessage `json:"-"`
 }
 

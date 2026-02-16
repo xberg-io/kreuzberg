@@ -415,6 +415,18 @@ func convertCResult(cRes *C.CExtractionResult) (*ExtractionResult, error) {
 		return nil, newSerializationErrorWithContext("failed to decode document structure", err, ErrorCodeValidation, nil)
 	}
 
+	if err := decodeJSONCString(cRes.extracted_keywords_json, &result.ExtractedKeywords); err != nil {
+		return nil, newSerializationErrorWithContext("failed to decode extracted keywords", err, ErrorCodeValidation, nil)
+	}
+
+	if err := decodeJSONCString(cRes.quality_score_json, &result.QualityScore); err != nil {
+		return nil, newSerializationErrorWithContext("failed to decode quality score", err, ErrorCodeValidation, nil)
+	}
+
+	if err := decodeJSONCString(cRes.processing_warnings_json, &result.ProcessingWarnings); err != nil {
+		return nil, newSerializationErrorWithContext("failed to decode processing warnings", err, ErrorCodeValidation, nil)
+	}
+
 	return result, nil
 }
 

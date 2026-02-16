@@ -21,6 +21,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **PaddleOCR recognition height mismatch (#390)**: Changed `CRNN_DST_HEIGHT` from 32 to 48 pixels to match PP-OCRv4/v5 model input shape `[batch, 3, 48, width]`. The previous value caused ONNX Runtime dimension errors on all platforms.
 - **Go binding: `ChunkingConfig` missing `Embedding` field**: Added `Embedding *EmbeddingConfig` to Go's `ChunkingConfig` struct to match the Rust canonical type. Previously, embedding configuration nested inside chunking was silently dropped during JSON round-trip, causing embedding-enabled extractions to run without embeddings.
+- **Go binding: `extracted_keywords`, `quality_score`, `processing_warnings` always nil**: The vendored C header (`packages/go/v4/internal/ffi/kreuzberg.h`) was missing the three new `CExtractionResult` fields, and `convertCResult()` never decoded them. Updated the header and added the missing `decodeJSONCString` calls.
+- **`extraction_duration_ms` missing from Go, Java, PHP, C# bindings**: The `Metadata.extraction_duration_ms` field was present in Rust, TypeScript, and Elixir but absent from four bindings. Added the field with proper serialization/deserialization to all four.
+- **C# `Metadata.Additional` not marked obsolete**: The deprecated `additional` map (superseded by typed fields) was not marked `[Obsolete]` in C#. Added `[Obsolete]` attribute matching the Rust deprecation. Also added `@Deprecated` in Java and `// Deprecated:` doc comment in Go.
+- **Ruby RBS type signatures incomplete**: `packages/ruby/sig/kreuzberg.rbs` lacked struct definitions for all T::Struct types (`ExtractedKeyword`, `ProcessingWarning`, `BoundingBox`, `DocumentNode`, etc.) and inner result classes (`Table`, `Chunk`, `OcrElement`, etc.). Rewrote with comprehensive type definitions matching `types.rb` and `result.rb`.
+- **Python `.pyi` stub missing `extraction_duration_ms`**: Added `extraction_duration_ms: int | None` to the `Metadata` TypedDict in `_internal_bindings.pyi`.
 
 ### Changed
 

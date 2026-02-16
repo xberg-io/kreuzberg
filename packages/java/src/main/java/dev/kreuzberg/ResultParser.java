@@ -109,7 +109,7 @@ final class ResultParser {
 	private static final java.util.Set<String> KNOWN_METADATA_KEYS = java.util.Set.of("title", "subject", "language",
 			"created", "modified", "created_at", "modified_at", "created_by", "modified_by", "authors", "keywords",
 			"pages", "image_preprocessing", "json_schema", "error", "category", "tags", "document_version",
-			"abstract_text", "output_format");
+			"abstract_text", "output_format", "extraction_duration_ms");
 
 	private static Metadata buildMetadata(Map<String, Object> metadataMap, String language, String date,
 			String subject) {
@@ -142,6 +142,10 @@ final class ResultParser {
 		String documentVersion = getStringFromMap(metadataMap, "document_version");
 		String abstractText = getStringFromMap(metadataMap, "abstract_text");
 		String outputFormat = getStringFromMap(metadataMap, "output_format");
+		Object extractionDurationRaw = metadataMap.get("extraction_duration_ms");
+		Long extractionDurationMs = extractionDurationRaw instanceof Number
+				? ((Number) extractionDurationRaw).longValue()
+				: null;
 
 		Metadata metadata = new Metadata(title != null ? Optional.of(title) : Optional.empty(),
 				actualSubject != null ? Optional.of(actualSubject) : Optional.empty(),
@@ -160,7 +164,8 @@ final class ResultParser {
 				tags != null ? Optional.of(tags) : Optional.empty(),
 				documentVersion != null ? Optional.of(documentVersion) : Optional.empty(),
 				abstractText != null ? Optional.of(abstractText) : Optional.empty(),
-				outputFormat != null ? Optional.of(outputFormat) : Optional.empty());
+				outputFormat != null ? Optional.of(outputFormat) : Optional.empty(),
+				extractionDurationMs != null ? Optional.of(extractionDurationMs) : Optional.empty());
 
 		// Add format-specific and other additional fields not handled above
 		for (Map.Entry<String, Object> entry : metadataMap.entrySet()) {

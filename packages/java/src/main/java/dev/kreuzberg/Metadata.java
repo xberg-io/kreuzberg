@@ -41,6 +41,7 @@ public final class Metadata {
 	private final Optional<String> documentVersion;
 	private final Optional<String> abstractText;
 	private final Optional<String> outputFormat;
+	private final Optional<Long> extractionDurationMs;
 	private final Map<String, Object> additional;
 
 	@JsonCreator
@@ -58,7 +59,8 @@ public final class Metadata {
 			@JsonProperty("category") Optional<String> category, @JsonProperty("tags") Optional<List<String>> tags,
 			@JsonProperty("document_version") Optional<String> documentVersion,
 			@JsonProperty("abstract_text") Optional<String> abstractText,
-			@JsonProperty("output_format") Optional<String> outputFormat) {
+			@JsonProperty("output_format") Optional<String> outputFormat,
+			@JsonProperty("extraction_duration_ms") Optional<Long> extractionDurationMs) {
 		this.title = title != null ? title : Optional.empty();
 		this.subject = subject != null ? subject : Optional.empty();
 		this.authors = authors != null && authors.isPresent()
@@ -83,6 +85,7 @@ public final class Metadata {
 		this.documentVersion = documentVersion != null ? documentVersion : Optional.empty();
 		this.abstractText = abstractText != null ? abstractText : Optional.empty();
 		this.outputFormat = outputFormat != null ? outputFormat : Optional.empty();
+		this.extractionDurationMs = extractionDurationMs != null ? extractionDurationMs : Optional.empty();
 		this.additional = new HashMap<>();
 	}
 
@@ -95,7 +98,7 @@ public final class Metadata {
 		return new Metadata(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(),
 				Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(),
 				Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(),
-				Optional.empty(), Optional.empty(), Optional.empty());
+				Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
 	}
 
 	/**
@@ -280,11 +283,24 @@ public final class Metadata {
 	}
 
 	/**
+	 * Get the extraction duration in milliseconds.
+	 *
+	 * @return optional extraction duration for benchmarking
+	 * @since 4.5.0
+	 */
+	public Optional<Long> getExtractionDurationMs() {
+		return extractionDurationMs;
+	}
+
+	/**
 	 * Get additional custom fields from postprocessors and flattened format
 	 * metadata.
 	 *
 	 * @return metadata map with additional fields (never null, may be empty)
+	 * @deprecated Use typed fields on ExtractionResult and Metadata instead. This
+	 *             field will be removed in a future major version.
 	 */
+	@Deprecated
 	public Map<String, Object> getAdditional() {
 		return Collections.unmodifiableMap(additional);
 	}
@@ -300,7 +316,7 @@ public final class Metadata {
 				&& !modifiedBy.isPresent() && !pages.isPresent() && !imagePreprocessing.isPresent()
 				&& !jsonSchema.isPresent() && !error.isPresent() && !category.isPresent() && !tags.isPresent()
 				&& !documentVersion.isPresent() && !abstractText.isPresent() && !outputFormat.isPresent()
-				&& additional.isEmpty();
+				&& !extractionDurationMs.isPresent() && additional.isEmpty();
 	}
 
 	@Override
@@ -322,6 +338,7 @@ public final class Metadata {
 				&& Objects.equals(category, other.category) && Objects.equals(tags, other.tags)
 				&& Objects.equals(documentVersion, other.documentVersion)
 				&& Objects.equals(abstractText, other.abstractText) && Objects.equals(outputFormat, other.outputFormat)
+				&& Objects.equals(extractionDurationMs, other.extractionDurationMs)
 				&& Objects.equals(additional, other.additional);
 	}
 
@@ -329,7 +346,7 @@ public final class Metadata {
 	public int hashCode() {
 		return Objects.hash(title, subject, authors, keywords, language, createdAt, modifiedAt, createdBy, modifiedBy,
 				pages, imagePreprocessing, jsonSchema, error, category, tags, documentVersion, abstractText,
-				outputFormat, additional);
+				outputFormat, extractionDurationMs, additional);
 	}
 
 	@Override
@@ -339,7 +356,7 @@ public final class Metadata {
 				+ ", createdBy=" + createdBy + ", modifiedBy=" + modifiedBy + ", pages=" + pages
 				+ ", imagePreprocessing=" + imagePreprocessing + ", jsonSchema=" + jsonSchema + ", error=" + error
 				+ ", category=" + category + ", tags=" + tags + ", documentVersion=" + documentVersion
-				+ ", abstractText=" + abstractText + ", outputFormat=" + outputFormat + ", additional=" + additional
-				+ '}';
+				+ ", abstractText=" + abstractText + ", outputFormat=" + outputFormat + ", extractionDurationMs="
+				+ extractionDurationMs + ", additional=" + additional + '}';
 	}
 }

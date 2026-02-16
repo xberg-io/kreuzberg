@@ -13,6 +13,203 @@ module Kreuzberg
   ERROR_CODE_OCR: Integer
   ERROR_CODE_MISSING_DEPENDENCY: Integer
 
+  # Semantic element type classification (T.type_alias)
+  type element_type = 'title' | 'narrative_text' | 'heading' | 'list_item' | 'table' | 'image' | 'page_break' | 'code_block' | 'block_quote' | 'footer' | 'header'
+
+  # Bounding box coordinates for element positioning (T::Struct from types.rb)
+  class BoundingBox     attr_reader x0: Float
+    attr_reader y0: Float
+    attr_reader x1: Float
+    attr_reader y1: Float
+
+    def initialize: (x0: Float, y0: Float, x1: Float, y1: Float) -> void
+    def serialize: () -> Hash[Symbol, untyped]
+  end
+
+  # Metadata for a semantic element (T::Struct from types.rb)
+  class ElementMetadata     attr_reader page_number: Integer?
+    attr_reader filename: String?
+    attr_reader coordinates: BoundingBox?
+    attr_reader element_index: Integer?
+    attr_reader additional: Hash[String, String]
+
+    def initialize: (page_number: Integer?, filename: String?, coordinates: BoundingBox?, element_index: Integer?, additional: Hash[String, String]) -> void
+    def serialize: () -> Hash[Symbol, untyped]
+  end
+
+  # Semantic element extracted from document (T::Struct from types.rb)
+  class Element     attr_reader element_id: String
+    attr_reader element_type: String
+    attr_reader text: String
+    attr_reader metadata: ElementMetadata
+
+    def initialize: (element_id: String, element_type: String, text: String, metadata: ElementMetadata) -> void
+    def serialize: () -> Hash[Symbol, untyped]
+  end
+
+  # Header/Heading metadata (T::Struct from types.rb)
+  class HeaderMetadata     attr_reader level: Integer
+    attr_reader text: String
+    attr_reader id: String?
+    attr_reader depth: Integer
+    attr_reader html_offset: Integer
+
+    def initialize: (level: Integer, text: String, id: String?, depth: Integer, html_offset: Integer) -> void
+    def serialize: () -> Hash[Symbol, untyped]
+  end
+
+  # Link metadata (T::Struct from types.rb)
+  class LinkMetadata     attr_reader href: String
+    attr_reader text: String
+    attr_reader title: String?
+    attr_reader link_type: String
+    attr_reader rel: Array[String]
+    attr_reader attributes: Hash[String, String]
+
+    def initialize: (href: String, text: String, title: String?, link_type: String, rel: Array[String], attributes: Hash[String, String]) -> void
+    def serialize: () -> Hash[Symbol, untyped]
+  end
+
+  # Image metadata (T::Struct from types.rb)
+  class ImageMetadata     attr_reader src: String
+    attr_reader alt: String?
+    attr_reader title: String?
+    attr_reader dimensions: Array[Integer]?
+    attr_reader image_type: String
+    attr_reader attributes: Hash[String, String]
+
+    def initialize: (src: String, alt: String?, title: String?, dimensions: Array[Integer]?, image_type: String, attributes: Hash[String, String]) -> void
+    def serialize: () -> Hash[Symbol, untyped]
+  end
+
+  # Structured data metadata (T::Struct from types.rb)
+  class StructuredData     attr_reader data_type: String
+    attr_reader raw_json: String
+    attr_reader schema_type: String?
+
+    def initialize: (data_type: String, raw_json: String, schema_type: String?) -> void
+    def serialize: () -> Hash[Symbol, untyped]
+  end
+
+  # HTML metadata (T::Struct from types.rb)
+  class HtmlMetadata     attr_reader title: String?
+    attr_reader description: String?
+    attr_reader author: String?
+    attr_reader copyright: String?
+    attr_reader keywords: Array[String]
+    attr_reader canonical_url: String?
+    attr_reader language: String?
+    attr_reader text_direction: String?
+    attr_reader mime_type: String?
+    attr_reader charset: String?
+    attr_reader generator: String?
+    attr_reader viewport: String?
+    attr_reader theme_color: String?
+    attr_reader application_name: String?
+    attr_reader robots: String?
+    attr_reader open_graph: Hash[String, String]
+    attr_reader twitter_card: Hash[String, String]
+    attr_reader meta_tags: Hash[String, String]
+    attr_reader headers: Array[HeaderMetadata]
+    attr_reader links: Array[LinkMetadata]
+    attr_reader images: Array[ImageMetadata]
+    attr_reader structured_data: Array[StructuredData]
+
+    def initialize: (
+      title: String?,
+      description: String?,
+      author: String?,
+      copyright: String?,
+      keywords: Array[String],
+      canonical_url: String?,
+      language: String?,
+      text_direction: String?,
+      mime_type: String?,
+      charset: String?,
+      generator: String?,
+      viewport: String?,
+      theme_color: String?,
+      application_name: String?,
+      robots: String?,
+      open_graph: Hash[String, String],
+      twitter_card: Hash[String, String],
+      meta_tags: Hash[String, String],
+      headers: Array[HeaderMetadata],
+      links: Array[LinkMetadata],
+      images: Array[ImageMetadata],
+      structured_data: Array[StructuredData]
+    ) -> void
+    def serialize: () -> Hash[Symbol, untyped]
+  end
+
+  # Extracted keyword with relevance metadata (T::Struct from types.rb)
+  class ExtractedKeyword     attr_reader text: String
+    attr_reader score: Float
+    attr_reader algorithm: String
+    attr_reader positions: Array[Integer]?
+
+    def initialize: (text: String, score: Float, algorithm: String, ?positions: Array[Integer]?) -> void
+    def serialize: () -> Hash[Symbol, untyped]
+  end
+
+  # Processing warning from a pipeline stage (T::Struct from types.rb)
+  class ProcessingWarning     attr_reader source: String
+    attr_reader message: String
+
+    def initialize: (source: String, message: String) -> void
+    def serialize: () -> Hash[Symbol, untyped]
+  end
+
+  # Bounding box for document node positioning (T::Struct from types.rb)
+  class DocumentBoundingBox     attr_reader x0: Float
+    attr_reader y0: Float
+    attr_reader x1: Float
+    attr_reader y1: Float
+
+    def initialize: (x0: Float, y0: Float, x1: Float, y1: Float) -> void
+    def serialize: () -> Hash[Symbol, untyped]
+  end
+
+  # Annotation for a document node (T::Struct from types.rb)
+  class DocumentAnnotation     attr_reader key: String
+    attr_reader value: String
+
+    def initialize: (key: String, value: String) -> void
+    def serialize: () -> Hash[Symbol, untyped]
+  end
+
+  # Single node in the document structure tree (T::Struct from types.rb)
+  class DocumentNode     attr_reader id: String
+    attr_reader content: String
+    attr_reader parent: Integer?
+    attr_reader children: Array[Integer]
+    attr_reader content_layer: String
+    attr_reader page: Integer?
+    attr_reader page_end: Integer?
+    attr_reader bbox: DocumentBoundingBox?
+    attr_reader annotations: Array[DocumentAnnotation]
+
+    def initialize: (
+      id: String,
+      content: String,
+      parent: Integer?,
+      children: Array[Integer],
+      content_layer: String,
+      page: Integer?,
+      page_end: Integer?,
+      bbox: DocumentBoundingBox?,
+      annotations: Array[DocumentAnnotation]
+    ) -> void
+    def serialize: () -> Hash[Symbol, untyped]
+  end
+
+  # Structured document representation (T::Struct from types.rb)
+  class DocumentStructure     attr_reader nodes: Array[DocumentNode]
+
+    def initialize: (nodes: Array[DocumentNode]) -> void
+    def serialize: () -> Hash[Symbol, untyped]
+  end
+
   # Config namespace (defined in lib/kreuzberg/config.rb)
   module Config
     class OCR
@@ -509,6 +706,32 @@ module Kreuzberg
     ocr_result: extraction_result_hash?
   }
 
+  # Metadata hash type - represents the parsed JSON metadata from extraction results.
+  # Fields correspond to the Rust Metadata struct (serialized as JSON and parsed back).
+  #
+  # Common fields:
+  #   "title"                  => String?      - Document title
+  #   "subject"                => String?      - Document subject or description
+  #   "authors"                => Array[String]? - Primary author(s)
+  #   "keywords"               => Array[String]? - Keywords/tags
+  #   "language"               => String?      - Primary language (ISO 639 code)
+  #   "created_at"             => String?      - Creation timestamp (ISO 8601)
+  #   "modified_at"            => String?      - Last modification timestamp (ISO 8601)
+  #   "created_by"             => String?      - User who created the document
+  #   "modified_by"            => String?      - User who last modified the document
+  #   "pages"                  => Hash?        - Page/slide/sheet structure with boundaries
+  #   "format_type"            => String?      - Format discriminator (pdf, docx, excel, etc.)
+  #   "image_preprocessing"    => Hash?        - Image preprocessing metadata
+  #   "json_schema"            => untyped?     - JSON schema for structured data extraction
+  #   "error"                  => Hash?        - Error metadata (for batch operations)
+  #   "extraction_duration_ms" => Integer?     - Extraction duration in milliseconds
+  #   "category"               => String?      - Document category
+  #   "tags"                   => Array[String]? - Document tags
+  #   "document_version"       => String?      - Document version string
+  #   "abstract_text"          => String?      - Abstract or summary text
+  #   "output_format"          => String?      - Output format identifier
+  type metadata_hash = Hash[String, untyped]
+
   type config_hash = Hash[Symbol, untyped]
   type config_input = config_hash | _ToH
 
@@ -516,25 +739,9 @@ module Kreuzberg
     def to_h: () -> config_hash
   end
 
-  class ExtractedKeyword
-    attr_reader text: String
-    attr_reader score: Float
-    attr_reader algorithm: String
-    attr_reader positions: Array[Integer]?
-
-    def initialize: (text: String, score: Float, algorithm: String, ?positions: Array[Integer]?) -> void
-  end
-
-  class ProcessingWarning
-    attr_reader source: String
-    attr_reader message: String
-
-    def initialize: (source: String, message: String) -> void
-  end
-
   # Extraction result wrapper
   class Result
-    # Table structure
+    # Table structure (Struct from result.rb)
     class Table
       attr_reader cells: Array[Array[String]]
       attr_reader markdown: String
@@ -544,7 +751,7 @@ module Kreuzberg
       def to_h: () -> table_hash
     end
 
-    # Text chunk
+    # Text chunk (Struct from result.rb)
     class Chunk
       attr_reader content: String
       attr_reader byte_start: Integer
@@ -570,6 +777,7 @@ module Kreuzberg
       def to_h: () -> chunk_hash
     end
 
+    # Extracted image (Struct from result.rb)
     class Image
       attr_reader data: String
       attr_reader format: String
@@ -599,7 +807,7 @@ module Kreuzberg
       def to_h: () -> image_hash
     end
 
-    # Page content with text and extracted elements
+    # Page content with text and extracted elements (Struct from result.rb)
     class PageContent
       attr_reader page_number: Integer
       attr_reader content: String
@@ -612,7 +820,7 @@ module Kreuzberg
       def to_h: () -> Hash[Symbol, untyped]
     end
 
-    # Hierarchical block element (for page hierarchy)
+    # Hierarchical block element for page hierarchy (Struct from result.rb)
     class HierarchicalBlock
       attr_reader text: String
       attr_reader font_size: Float?
@@ -623,7 +831,7 @@ module Kreuzberg
       def to_h: () -> Hash[Symbol, untyped]
     end
 
-    # Page hierarchy information
+    # Page hierarchy information (Struct from result.rb)
     class PageHierarchy
       attr_reader block_count: Integer
       attr_reader blocks: Array[HierarchicalBlock]
@@ -632,7 +840,7 @@ module Kreuzberg
       def to_h: () -> Hash[Symbol, untyped]
     end
 
-    # Element bounding box coordinates
+    # Element bounding box coordinates (Struct from result.rb)
     class ElementBoundingBox
       attr_reader x0: Float
       attr_reader y0: Float
@@ -643,7 +851,7 @@ module Kreuzberg
       def to_h: () -> Hash[Symbol, untyped]
     end
 
-    # Element metadata
+    # Element metadata (Struct from result.rb)
     class ElementMetadataStruct
       attr_reader page_number: Integer?
       attr_reader filename: String?
@@ -655,7 +863,7 @@ module Kreuzberg
       def to_h: () -> Hash[Symbol, untyped]
     end
 
-    # Structured document element
+    # Structured document element (Struct from result.rb)
     class ElementStruct
       attr_reader element_id: String
       attr_reader element_type: String
@@ -666,7 +874,7 @@ module Kreuzberg
       def to_h: () -> Hash[Symbol, untyped]
     end
 
-    # OCR bounding geometry (type and coordinates)
+    # OCR bounding geometry (class from result.rb)
     class OcrBoundingGeometry
       attr_reader type: String
       attr_reader left: Float?
@@ -678,7 +886,7 @@ module Kreuzberg
       def to_h: () -> ocr_bounding_geometry_hash
     end
 
-    # OCR confidence scores (detection and recognition)
+    # OCR confidence scores (class from result.rb)
     class OcrConfidence
       attr_reader detection: Float?
       attr_reader recognition: Float?
@@ -686,7 +894,7 @@ module Kreuzberg
       def to_h: () -> ocr_confidence_hash
     end
 
-    # OCR rotation information
+    # OCR rotation information (class from result.rb)
     class OcrRotation
       attr_reader angle_degrees: Float?
       attr_reader confidence: Float?
@@ -694,7 +902,7 @@ module Kreuzberg
       def to_h: () -> ocr_rotation_hash
     end
 
-    # OCR text element with geometry and metadata
+    # OCR text element with geometry and metadata (class from result.rb)
     class OcrElement
       attr_reader text: String
       attr_reader geometry: OcrBoundingGeometry?
@@ -708,7 +916,7 @@ module Kreuzberg
       def to_h: () -> ocr_element_hash
     end
 
-    # Structured Djot document representation
+    # Structured Djot document representation (class from djot_content.rb)
     class DjotContent
       attr_reader plain_text: String
       attr_reader blocks: Array[DjotContent::FormattedBlock]
@@ -774,7 +982,8 @@ module Kreuzberg
       end
     end
 
-    # Structured document representation
+    # Structured document representation (class from document_structure.rb)
+    # Note: This is Result::DocumentStructure, distinct from Kreuzberg::DocumentStructure (T::Struct)
     class DocumentStructure
       attr_reader nodes: Array[DocumentNode]
 
@@ -786,7 +995,8 @@ module Kreuzberg
       def parse_nodes: (Array[untyped]? nodes_data) -> Array[DocumentNode]
     end
 
-    # Single node in the document structure tree
+    # Single node in the document structure tree (class from document_structure.rb)
+    # Note: This is Result::DocumentNode, distinct from Kreuzberg::DocumentNode (T::Struct)
     class DocumentNode
       attr_reader id: String
       attr_reader content: Hash[untyped, untyped]
@@ -812,7 +1022,8 @@ module Kreuzberg
       def parse_annotations: (Array[untyped]? annotations_data) -> Array[DocumentAnnotation]
     end
 
-    # Bounding box for document node positioning
+    # Bounding box for document node positioning (class from document_structure.rb)
+    # Note: This is Result::DocumentBoundingBox, distinct from Kreuzberg::DocumentBoundingBox (T::Struct)
     class DocumentBoundingBox
       attr_reader x0: Float?
       attr_reader y0: Float?
@@ -827,7 +1038,8 @@ module Kreuzberg
       def extract_float: (Hash[String | Symbol, untyped] hash, String key) -> Float?
     end
 
-    # Annotation for a document node
+    # Annotation for a document node (class from document_structure.rb)
+    # Note: This is Result::DocumentAnnotation, distinct from Kreuzberg::DocumentAnnotation (T::Struct)
     class DocumentAnnotation
       attr_reader start: Integer
       attr_reader end_offset: Integer
@@ -845,7 +1057,7 @@ module Kreuzberg
 
     attr_reader content: String
     attr_reader mime_type: String
-    attr_reader metadata: Hash[untyped, untyped]
+    attr_reader metadata: metadata_hash
     attr_reader metadata_json: String
     attr_reader tables: Array[Table]
     attr_reader detected_languages: Array[String]?
@@ -871,7 +1083,7 @@ module Kreuzberg
 
     private
 
-    def parse_metadata: (String metadata_json) -> Hash[untyped, untyped]
+    def parse_metadata: (String metadata_json) -> metadata_hash
     def parse_tables: (Array[table_hash]? tables_data) -> Array[Table]
     def parse_detected_languages: (Array[String]? langs_data) -> Array[String]?
     def parse_chunks: (Array[chunk_hash]? chunks_data) -> Array[Chunk]?
@@ -884,12 +1096,18 @@ module Kreuzberg
     def parse_page_hierarchy: (Hash[String, untyped]? hierarchy_data) -> PageHierarchy?
     def parse_djot_content: (Hash[String, untyped]? djot_data) -> DjotContent?
     def parse_document_structure: (Hash[String, untyped]? document_data) -> DocumentStructure?
+    def parse_extracted_keywords: (Array[extracted_keyword_hash]? keywords_data) -> Array[ExtractedKeyword]?
+    def parse_processing_warnings: (Array[processing_warning_hash]? warnings_data) -> Array[ProcessingWarning]
     def get_value: (Hash[String | Symbol, untyped] hash, String key, ?untyped default) -> untyped
     def serialize_tables: () -> Array[table_hash]
     def serialize_chunks: () -> Array[chunk_hash]?
     def serialize_images: () -> Array[image_hash]?
     def serialize_pages: () -> Array[Hash[Symbol, untyped]]?
     def serialize_elements: () -> Array[Hash[Symbol, untyped]]?
+    def serialize_ocr_elements: () -> Array[ocr_element_hash]?
+    def parse_ocr_geometry: (Hash[String, untyped]? data) -> OcrBoundingGeometry?
+    def parse_ocr_confidence: (Hash[String, untyped]? data) -> OcrConfidence?
+    def parse_ocr_rotation: (Hash[String, untyped]? data) -> OcrRotation?
   end
 
   # Module methods (extraction API)
