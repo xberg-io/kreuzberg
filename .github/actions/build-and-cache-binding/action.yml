@@ -183,7 +183,8 @@ runs:
         echo "=== Cache Key Computation ==="
 
         # Primary cache key: exact match required for perfect cache hit
-        CACHE_KEY="${BINDING_NAME}-${PLATFORM}-rust-${RUST_HASH}-binding-${BINDING_HASH}-deps-${DEPS_HASH}-${CACHE_VERSION}"
+        # Version prefix ensures fallback keys respect version boundaries
+        CACHE_KEY="${CACHE_VERSION}-${BINDING_NAME}-${PLATFORM}-rust-${RUST_HASH}-binding-${BINDING_HASH}-deps-${DEPS_HASH}"
 
         echo "  Binding: $BINDING_NAME"
         echo "  Platform: $PLATFORM"
@@ -197,17 +198,17 @@ runs:
         echo "cache-key=$CACHE_KEY" >> "$GITHUB_OUTPUT"
 
         # Fallback restore keys (partial matches for cache misses)
-        # Try 1: Same binding/platform/rust, different binding/deps
-        RESTORE_KEY_1="${BINDING_NAME}-${PLATFORM}-rust-${RUST_HASH}-"
-        # Try 2: Same binding/platform, different rust
-        RESTORE_KEY_2="${BINDING_NAME}-${PLATFORM}-"
-        # Try 3: Same binding, different platform
-        RESTORE_KEY_3="${BINDING_NAME}-"
+        # Note: GitHub Actions cache uses PREFIX matching, so version must come
+        # early in the key to prevent stale cross-version matches. We prefix all
+        # keys with CACHE_VERSION to ensure version bumps invalidate old caches.
+        # Try 1: Same version/binding/platform/rust, different binding/deps hashes
+        RESTORE_KEY_1="${CACHE_VERSION}-${BINDING_NAME}-${PLATFORM}-rust-${RUST_HASH}-"
+        # Try 2: Same version/binding/platform, different rust/binding/deps
+        RESTORE_KEY_2="${CACHE_VERSION}-${BINDING_NAME}-${PLATFORM}-"
 
         echo "fallback-keys<<EOF" >> "$GITHUB_OUTPUT"
         echo "$RESTORE_KEY_1" >> "$GITHUB_OUTPUT"
         echo "$RESTORE_KEY_2" >> "$GITHUB_OUTPUT"
-        echo "$RESTORE_KEY_3" >> "$GITHUB_OUTPUT"
         echo "EOF" >> "$GITHUB_OUTPUT"
 
     - name: Restore binding from cache
@@ -272,6 +273,29 @@ runs:
           echo "✗ Artifacts validation failed - will rebuild"
           exit 0
         fi
+
+    - name: Restore source files after partial cache restore
+      if: env.CACHE_HIT == 'false'
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        echo "=== Restoring source files after partial cache restore ==="
+        # When a fallback cache key matches, old cached files overwrite the
+        # checked-out source tree. Restore source files from git to ensure
+        # the build compiles current code, not stale cached source.
+        CACHE_PATHS="${{ inputs.cache-paths }}"
+        while IFS= read -r path; do
+          if [[ -n "$path" ]]; then
+            # Strip trailing slash for git checkout
+            clean_path="${path%/}"
+            if [[ -d "$clean_path" ]]; then
+              echo "Restoring source files in: $clean_path"
+              git checkout HEAD -- "$clean_path" 2>/dev/null || echo "  (git checkout skipped for $clean_path)"
+            fi
+          fi
+        done <<< "$CACHE_PATHS"
+        echo "✓ Source files restored to match current commit"
 
     - name: Build binding if cache missed
       id: build
