@@ -55,47 +55,51 @@ Kreuzberg automatically determines when OCR is required:
 
 ```mermaid
 flowchart TD
-    Start[Choose OCR Backend] --> Platform{Platform Support}
+    Start[Choose OCR Backend] --> Approach{Approach}
+    Approach -->|Traditional OCR| Traditional
+    Approach -->|Vision Model OCR| VisionModels
+
+    Traditional --> Platform{Platform Support}
     Platform -->|All Platforms| Tesseract
     Platform -->|All except WASM| PaddleOCR[PaddleOCR]
     Platform -->|Python Only| EasyOCR[EasyOCR]
 
-    Tesseract --> TessPriority{Priority}
-    TessPriority -->|Speed| TessSpeed[Tesseract: Fast]
-    TessPriority -->|Accuracy| TessAccuracy[Tesseract: Good]
-    TessPriority -->|Production| TessProd[Tesseract: Best Choice]
+    VisionModels --> Setup{Setup Preference}
+    Setup -->|Easy local setup| Ollama[Ollama]
+    Setup -->|Production GPU| VLLM[vLLM]
 
-    PaddleOCR --> PaddlePriority{Priority}
-    PaddlePriority -->|Speed + Accuracy| PaddleMain[PaddleOCR: Very Fast + Excellent]
-    PaddlePriority -->|CJK Languages| PaddleCJK[PaddleOCR: Best for CJK]
-
-    EasyOCR --> EasyPriority{Priority}
-    EasyPriority -->|Highest Accuracy| Easy[EasyOCR: Excellent Accuracy]
-    EasyPriority -->|GPU Available| GPU[EasyOCR with GPU]
+    Tesseract --> TessProd[Fast, Broad Support]
+    PaddleOCR --> PaddleMain[Very Fast, CJK Excellence]
+    EasyOCR --> Easy[Highest Accuracy - Python]
+    Ollama --> OllamaDesc[One command setup]
+    VLLM --> VLLMDesc[Batched, High Throughput]
 
     style Tesseract fill:#90EE90
     style Easy fill:#FFD700
     style PaddleOCR fill:#87CEEB
+    style Ollama fill:#DDA0DD
+    style VLLM fill:#F0E68C
 ```
 
-Kreuzberg supports three OCR backends with different strengths:
+Kreuzberg supports five OCR backends with different strengths:
 
-| Feature | **Tesseract** | **EasyOCR** | **PaddleOCR** |
-|---------|--------------|-------------|---------------|
-| **Speed** | Fast | Moderate | Very Fast |
-| **Accuracy** | Good | Excellent | Excellent |
-| **Languages** | 100+ | 80+ | 80+ (11 script families) |
-| **Installation** | System package | Python package | Feature flag (native) or Python package |
-| **Model Size** | Small (~10MB) | Large (~100MB) | Medium (~120MB base + ~8MB per family) |
-| **CPU/GPU** | CPU only | CPU + GPU | CPU + GPU |
-| **Platform Support** | All | Python only | All (except WASM) |
-| **Best For** | General use, production | High accuracy needs | Speed + accuracy, CJK languages |
+| Feature | **Tesseract** | **EasyOCR** | **PaddleOCR** | **Ollama** | **vLLM** |
+|---------|--------------|-------------|---------------|------------|----------|
+| **Speed** | Fast | Moderate | Very Fast | Moderate | Fast (batched) |
+| **Accuracy** | Good | Excellent | Excellent | Excellent | Excellent |
+| **Languages** | 100+ | 80+ | 80+ (11 families) | Language-agnostic | Language-agnostic |
+| **Installation** | System package | Python package | Feature flag | `ollama pull glm-ocr` | Docker / pip |
+| **Model Size** | Small (~10MB) | Large (~100MB) | Medium (~120MB) | ~2.2GB (glm-ocr) | ~2.2GB (glm-ocr) |
+| **CPU/GPU** | CPU only | CPU + GPU | CPU + GPU | CPU + GPU | GPU recommended |
+| **Platform Support** | All | Python only | All (except WASM) | All | All |
+| **Best For** | General use | High accuracy (Python) | Speed + CJK | Vision OCR, easy setup | Production GPU inference |
 
 ### Recommendation
 
 - **Production/CLI**: Use **Tesseract** for simplicity and broad platform support
 - **Speed + Accuracy (any binding)**: Use **PaddleOCR** for fast processing with excellent accuracy, especially for CJK languages
 - **Python + Accuracy**: Use **EasyOCR** for best accuracy with deep learning models (Python only)
+- **Vision model OCR**: Use **Ollama** for easy local setup, or **vLLM** for production GPU inference with higher throughput
 
 ## Installation
 
@@ -172,6 +176,110 @@ PaddleOCR is available as a native Rust backend in all non-WASM bindings, and al
 
     !!! warning "Python 3.14 Compatibility"
         The Python PaddleOCR package is not supported on Python 3.14 due to upstream compatibility issues. Use Python 3.10-3.13, or use the native Rust backend which has no Python dependency.
+
+### Ollama OCR
+
+Ollama provides the easiest setup for vision model OCR. One command pulls the model and you're ready:
+
+```bash title="Terminal"
+# Install Ollama (https://ollama.com/download)
+# Then pull the recommended OCR model:
+ollama pull glm-ocr
+
+# Or use the task runner:
+task ocr:setup:ollama
+```
+
+Enable the feature in your project:
+
+```toml title="Cargo.toml"
+[dependencies]
+kreuzberg = { version = "4.3", features = ["ollama-ocr"] }
+```
+
+!!! tip "Environment Variables"
+    - `OLLAMA_HOST` — Override endpoint (default: `http://localhost:11434`)
+    - `OLLAMA_MODEL` — Override model (default: `glm-ocr`)
+
+#### Recommended Models
+
+| Model | Params | Use Case |
+|-------|--------|----------|
+| **glm-ocr** (default) | 0.9B | Best overall OCR (#1 on OmniDocBench, 789/1000) |
+| llava | 7B | General vision + OCR |
+| moondream | 1.9B | Lightweight vision |
+
+### vLLM OCR
+
+vLLM provides production-grade GPU inference with batching and high throughput. Use when you need to process many documents or run OCR as a service.
+
+=== "Docker (Recommended)"
+
+    ```bash title="Terminal"
+    docker run --gpus all -p 8000:8000 vllm/vllm-openai \
+      --model zai-org/GLM-OCR \
+      --max-model-len 8192 \
+      --limit-mm-per-prompt '{"image": 1}'
+    ```
+
+=== "Docker Compose"
+
+    ```yaml title="docker-compose.yml"
+    services:
+      vllm:
+        image: vllm/vllm-openai
+        ports:
+          - "8000:8000"
+        environment:
+          - VLLM_USE_V1=1
+        command: >
+          --model zai-org/GLM-OCR
+          --max-model-len 8192
+          --gpu-memory-utilization 0.9
+          --limit-mm-per-prompt '{"image": 1}'
+          --no-enable-prefix-caching
+        deploy:
+          resources:
+            reservations:
+              devices:
+                - driver: nvidia
+                  count: all
+                  capabilities: [gpu]
+        shm_size: 16gb
+    ```
+
+=== "pip"
+
+    ```bash title="Terminal"
+    pip install vllm
+    vllm serve zai-org/GLM-OCR \
+      --max-model-len 8192 \
+      --limit-mm-per-prompt '{"image": 1}'
+    ```
+
+Enable the feature in your project:
+
+```toml title="Cargo.toml"
+[dependencies]
+kreuzberg = { version = "4.3", features = ["vllm-ocr"] }
+```
+
+!!! tip "Environment Variables"
+    - `VLLM_OCR_BASE_URL` — Override endpoint (default: `http://localhost:8000`)
+    - `VLLM_OCR_MODEL` — Override model (default: `glm-ocr`)
+    - `VLLM_OCR_API_KEY` — Set API key for authenticated endpoints
+
+#### Recommended Models
+
+| Model | Score | Best For |
+|-------|-------|----------|
+| **zai-org/GLM-OCR** (default) | 789/1000 | Best overall, handwritten math |
+| nanonets/Nanonets-OCR-s | 729/1000 | Scene text VQA |
+| nanonets/Nanonets-OCR2-1.5B | 727/1000 | Document-oriented VQA |
+| lightonai/LightOnOCR-2-1B | 679/1000 | Key information extraction |
+
+!!! note "vLLM vs Ollama"
+    Both backends support the same vision models. Choose **Ollama** for easy local setup with a single command. Choose **vLLM** when you need production-grade batching, higher throughput, or want to serve OCR as a shared service on a GPU server.
 
 ## PaddleOCR Script Families
 
@@ -366,6 +474,30 @@ Process PDFs with OCR even when they have a text layer:
 
 !!! tip "GPU Acceleration"
     EasyOCR and PaddleOCR support GPU acceleration via PyTorch/PaddlePaddle. Set `use_gpu=True` to enable.
+
+### Using Ollama
+
+=== "Rust"
+
+    --8<-- "snippets/rust/ocr/ocr_ollama.md"
+
+Custom backend configuration:
+
+=== "Rust"
+
+    --8<-- "snippets/rust/ocr/ocr_ollama_custom.md"
+
+### Using vLLM
+
+=== "Rust"
+
+    --8<-- "snippets/rust/ocr/ocr_vllm.md"
+
+Custom backend configuration:
+
+=== "Rust"
+
+    --8<-- "snippets/rust/ocr/ocr_vllm_custom.md"
 
 ### Using PaddleOCR
 
@@ -606,7 +738,7 @@ kreuzberg extract scanned.pdf --config kreuzberg.toml --ocr true
 
 - `--ocr true` - Enable OCR processing
 - `--ocr-language <code>` - Language code (e.g., `eng`, `deu`, `fra`, `ch`, `ja`, `ru`)
-- `--ocr-backend <backend>` - OCR engine (`tesseract`, `paddle-ocr`, `easyocr`)
+- `--ocr-backend <backend>` - OCR engine (`tesseract`, `paddle-ocr`, `easyocr`, `ollama`, `vllm`)
 - `--force-ocr true` - OCR all pages regardless of text layer
 
 **Example config file (kreuzberg.toml) for OCR settings:**

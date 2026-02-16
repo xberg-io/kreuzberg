@@ -1,0 +1,72 @@
+version: "3"
+
+includes:
+  _cfg:
+    taskfile: ../config/vars.yml
+    internal: true
+
+tasks:
+  setup:ollama:
+    desc: Set up Ollama OCR backend (pull recommended glm-ocr model)
+    cmds:
+      - |
+        echo "Setting up Ollama OCR backend..."
+        if ! command -v ollama &>/dev/null; then
+          echo "Error: Ollama is not installed."
+          echo "Install from https://ollama.com/download"
+          exit 1
+        fi
+        echo "Pulling glm-ocr model (0.9B params, ~2.2GB)..."
+        ollama pull glm-ocr
+        echo ""
+        echo "Ollama OCR ready. Enable in Cargo.toml:"
+        echo '  kreuzberg = { version = "4.3", features = ["ollama-ocr"] }'
+        echo ""
+        echo "Or set the backend in config:"
+        echo '  [ocr]'
+        echo '  backend = "ollama"'
+
+  setup:vllm:
+    desc: Show vLLM OCR setup instructions
+    cmds:
+      - |
+        echo "=== vLLM OCR Backend Setup ==="
+        echo ""
+        echo "1. Install vLLM (https://docs.vllm.ai/en/latest/getting_started/quickstart.html)"
+        echo ""
+        echo "2. Start vLLM with a vision model:"
+        echo "   vllm serve zai-org/GLM-OCR --max-model-len 8192 --limit-mm-per-prompt '{\"image\": 1}'"
+        echo ""
+        echo "   Or with Docker:"
+        echo "   docker run --gpus all -p 8000:8000 vllm/vllm-openai \\"
+        echo "     --model zai-org/GLM-OCR --max-model-len 8192 --limit-mm-per-prompt '{\"image\": 1}'"
+        echo ""
+        echo "3. Enable in Cargo.toml:"
+        echo '   kreuzberg = { version = "4.3", features = ["vllm-ocr"] }'
+        echo ""
+        echo "=== Recommended vLLM .env ==="
+        echo "MODEL=zai-org/GLM-OCR"
+        echo "MAX_MODEL_LEN=8192"
+        echo "GPU_MEMORY_UTILIZATION=0.9"
+        echo 'EXTRA_ARGS=--limit-mm-per-prompt '"'"'{"image": 1}'"'"' --mm-processor-cache-gb 0 --no-enable-prefix-caching'
+        echo ""
+        echo "=== Alternative Models ==="
+        echo "  zai-org/GLM-OCR           - Best overall (789/1000 OmniDocBench)"
+        echo "  nanonets/Nanonets-OCR-s   - Best scene text (729/1000)"
+        echo "  lightonai/LightOnOCR-2-1B - Best key info extraction (679/1000)"
+
+  test:ollama:
+    desc: Run Ollama OCR integration tests (requires running Ollama with glm-ocr)
+    cmds:
+      - cargo test --features "ollama-ocr" --test ollama_ocr_integration -- --ignored
+
+  test:vllm:
+    desc: Run vLLM OCR integration tests (requires running vLLM with a vision model)
+    cmds:
+      - cargo test --features "vllm-ocr" --test vllm_ocr_integration -- --ignored
+
+  test:all:
+    desc: Run all vision OCR integration tests
+    cmds:
+      - task: test:ollama
+      - task: test:vllm

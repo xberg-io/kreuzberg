@@ -47,6 +47,8 @@ includes:
     taskfile: .task/tools/version-sync.yml
   pdfium:
     taskfile: .task/tools/pdfium.yml
+  ocr:
+    taskfile: .task/tools/ocr.yml
   docs:
     taskfile: .task/tools/docs.yml
   typescript:
