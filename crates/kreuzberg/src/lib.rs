@@ -79,6 +79,9 @@ pub mod ocr;
 #[cfg(any(feature = "paddle-ocr", feature = "embeddings"))]
 pub mod ort_discovery;
 
+#[cfg(feature = "ollama-ocr")]
+pub mod ollama_ocr;
+
 #[cfg(feature = "paddle-ocr")]
 pub mod paddle_ocr;
 

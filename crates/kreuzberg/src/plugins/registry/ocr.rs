@@ -34,12 +34,12 @@ impl OcrBackendRegistry {
     /// Logs warnings if backend initialization fails (common in containerized environments
     /// with missing dependencies or permission issues).
     pub fn new() -> Self {
-        #[cfg(any(feature = "ocr", feature = "paddle-ocr"))]
+        #[cfg(any(feature = "ocr", feature = "paddle-ocr", feature = "ollama-ocr"))]
         let mut registry = Self {
             backends: HashMap::new(),
         };
 
-        #[cfg(not(any(feature = "ocr", feature = "paddle-ocr")))]
+        #[cfg(not(any(feature = "ocr", feature = "paddle-ocr", feature = "ollama-ocr")))]
         let registry = Self {
             backends: HashMap::new(),
         };
@@ -92,6 +92,19 @@ impl OcrBackendRegistry {
                         e
                     );
                 }
+            }
+        }
+
+        #[cfg(feature = "ollama-ocr")]
+        {
+            use crate::ollama_ocr::OllamaOcrBackend;
+            let backend = OllamaOcrBackend::new();
+            if let Err(e) = registry.register(Arc::new(backend)) {
+                tracing::error!(
+                    "Failed to register Ollama OCR backend: {}. \
+                     Ollama OCR functionality will be unavailable.",
+                    e
+                );
             }
         }
 
