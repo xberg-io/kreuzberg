@@ -674,6 +674,88 @@ func assertContentNotEmpty(t *testing.T, result *kreuzberg.ExtractionResult) {
 		t.Fatalf("expected content to be non-empty, but it is empty")
 	}
 }
+
+func assertTableBoundingBoxes(t *testing.T, result *kreuzberg.ExtractionResult) {
+	t.Helper()
+	for i, table := range result.Tables {
+		if table.BoundingBox == nil {
+			t.Fatalf("table %d expected to have bounding box", i)
+		}
+	}
+}
+
+func assertTableContentContainsAny(t *testing.T, result *kreuzberg.ExtractionResult, snippets []string) {
+	t.Helper()
+	if len(snippets) == 0 {
+		return
+	}
+	var allContent string
+	for _, table := range result.Tables {
+		allContent += strings.ToLower(table.Content) + " "
+	}
+	for _, snippet := range snippets {
+		if strings.Contains(allContent, strings.ToLower(snippet)) {
+			return
+		}
+	}
+	t.Fatalf("expected table content to contain any of %v", snippets)
+}
+
+func assertImageBoundingBoxes(t *testing.T, result *kreuzberg.ExtractionResult) {
+	t.Helper()
+	for i, img := range result.Images {
+		if img.BoundingBox == nil {
+			t.Fatalf("image %d expected to have bounding box", i)
+		}
+	}
+}
+
+func assertQualityScore(t *testing.T, result *kreuzberg.ExtractionResult, hasScore *bool, minScore, maxScore *float64) {
+	t.Helper()
+	if hasScore != nil && *hasScore {
+		if result.QualityScore == nil {
+			t.Fatalf("expected quality score to be present")
+		}
+	}
+	if minScore != nil && result.QualityScore != nil {
+		if *result.QualityScore < *minScore {
+			t.Fatalf("expected quality score >= %f, got %f", *minScore, *result.QualityScore)
+		}
+	}
+	if maxScore != nil && result.QualityScore != nil {
+		if *result.QualityScore > *maxScore {
+			t.Fatalf("expected quality score <= %f, got %f", *maxScore, *result.QualityScore)
+		}
+	}
+}
+
+func assertProcessingWarnings(t *testing.T, result *kreuzberg.ExtractionResult, maxCount *int, isEmpty *bool) {
+	t.Helper()
+	warnings := result.ProcessingWarnings
+	if isEmpty != nil && *isEmpty {
+		if len(warnings) != 0 {
+			t.Fatalf("expected processing warnings to be empty, got %d", len(warnings))
+		}
+	}
+	if maxCount != nil && len(warnings) > *maxCount {
+		t.Fatalf("expected at most %d processing warnings, got %d", *maxCount, len(warnings))
+	}
+}
+
+func assertDjotContent(t *testing.T, result *kreuzberg.ExtractionResult, hasContent *bool, minBlocks *int) {
+	t.Helper()
+	if hasContent != nil && *hasContent {
+		if result.DjotContent == "" {
+			t.Fatalf("expected djot content to be present")
+		}
+	}
+	if minBlocks != nil && result.DjotContent != "" {
+		blocks := strings.Split(result.DjotContent, "\n\n")
+		if len(blocks) < *minBlocks {
+			t.Fatalf("expected at least %d djot blocks, got %d", *minBlocks, len(blocks))
+		}
+	}
+}
 "#;
 
 pub fn generate(fixtures: &[Fixture], output_root: &Utf8Path) -> Result<()> {
@@ -925,6 +1007,19 @@ fn render_assertions(assertions: &Assertions) -> String {
             .map(|v| format!("intPtr({v})"))
             .unwrap_or_else(|| "nil".to_string());
         writeln!(buffer, "    assertTableCount(t, result, {min_literal}, {max_literal})").unwrap();
+        if tables.has_bounding_boxes == Some(true) {
+            writeln!(buffer, "    assertTableBoundingBoxes(t, result)").unwrap();
+        }
+        if let Some(snippets) = tables.content_contains_any.as_ref() {
+            if !snippets.is_empty() {
+                writeln!(
+                    buffer,
+                    "    assertTableContentContainsAny(t, result, {})",
+                    render_string_slice(snippets)
+                )
+                .unwrap();
+            }
+        }
     }
     if let Some(lang) = assertions.detected_languages.as_ref() {
         let expected = render_string_slice(&lang.expects);
@@ -978,6 +1073,9 @@ fn render_assertions(assertions: &Assertions) -> String {
             min_count, max_count, formats_include
         )
         .unwrap();
+        if images.has_bounding_boxes == Some(true) {
+            writeln!(buffer, "    assertImageBoundingBoxes(t, result)").unwrap();
+        }
     }
     if let Some(pages) = assertions.pages.as_ref() {
         let min_count = pages
@@ -1075,6 +1173,58 @@ fn render_assertions(assertions: &Assertions) -> String {
     }
     if assertions.content_not_empty == Some(true) {
         writeln!(buffer, "    assertContentNotEmpty(t, result)").unwrap();
+    }
+    if let Some(qs) = assertions.quality_score.as_ref() {
+        let has_score = qs
+            .has_score
+            .map(|v| format!("boolPtr({v})"))
+            .unwrap_or_else(|| "nil".to_string());
+        let min_score = qs
+            .min_score
+            .map(|v| format!("floatPtr({v})"))
+            .unwrap_or_else(|| "nil".to_string());
+        let max_score = qs
+            .max_score
+            .map(|v| format!("floatPtr({v})"))
+            .unwrap_or_else(|| "nil".to_string());
+        writeln!(
+            buffer,
+            "    assertQualityScore(t, result, {}, {}, {})",
+            has_score, min_score, max_score
+        )
+        .unwrap();
+    }
+    if let Some(pw) = assertions.processing_warnings.as_ref() {
+        let max_count = pw
+            .max_count
+            .map(|v| format!("intPtr({v})"))
+            .unwrap_or_else(|| "nil".to_string());
+        let is_empty = pw
+            .is_empty
+            .map(|v| format!("boolPtr({v})"))
+            .unwrap_or_else(|| "nil".to_string());
+        writeln!(
+            buffer,
+            "    assertProcessingWarnings(t, result, {}, {})",
+            max_count, is_empty
+        )
+        .unwrap();
+    }
+    if let Some(dc) = assertions.djot_content.as_ref() {
+        let has_content = dc
+            .has_content
+            .map(|v| format!("boolPtr({v})"))
+            .unwrap_or_else(|| "nil".to_string());
+        let min_blocks = dc
+            .min_blocks
+            .map(|v| format!("intPtr({v})"))
+            .unwrap_or_else(|| "nil".to_string());
+        writeln!(
+            buffer,
+            "    assertDjotContent(t, result, {}, {})",
+            has_content, min_blocks
+        )
+        .unwrap();
     }
     buffer
 }

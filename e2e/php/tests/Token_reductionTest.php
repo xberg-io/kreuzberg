@@ -16,6 +16,26 @@ use PHPUnit\Framework\TestCase;
 class Token_reductionTest extends TestCase
 {
     /**
+     * Tests aggressive token reduction mode significantly reduces content
+     */
+    public function test_token_reduction_aggressive(): void
+    {
+        $documentPath = Helpers::resolveDocument('pdf/fake_memo.pdf');
+        if (!file_exists($documentPath)) {
+            $this->markTestSkipped('Skipping token_reduction_aggressive: missing document at ' . $documentPath);
+        }
+
+        $config = Helpers::buildConfig(['token_reduction' => ['mode' => 'aggressive']]);
+
+        $kreuzberg = new Kreuzberg($config);
+        $result = $kreuzberg->extractFile($documentPath);
+
+        Helpers::assertExpectedMime($result, ['application/pdf']);
+        Helpers::assertMinContentLength($result, 5);
+        Helpers::assertContentNotEmpty($result);
+    }
+
+    /**
      * Tests basic token reduction on PDF document
      */
     public function test_token_reduction_basic(): void
@@ -32,6 +52,26 @@ class Token_reductionTest extends TestCase
 
         Helpers::assertExpectedMime($result, ['application/pdf']);
         Helpers::assertMinContentLength($result, 5);
+        Helpers::assertContentNotEmpty($result);
+    }
+
+    /**
+     * Tests light token reduction mode preserves most content
+     */
+    public function test_token_reduction_light(): void
+    {
+        $documentPath = Helpers::resolveDocument('pdf/fake_memo.pdf');
+        if (!file_exists($documentPath)) {
+            $this->markTestSkipped('Skipping token_reduction_light: missing document at ' . $documentPath);
+        }
+
+        $config = Helpers::buildConfig(['token_reduction' => ['mode' => 'light']]);
+
+        $kreuzberg = new Kreuzberg($config);
+        $result = $kreuzberg->extractFile($documentPath);
+
+        Helpers::assertExpectedMime($result, ['application/pdf']);
+        Helpers::assertMinContentLength($result, 10);
         Helpers::assertContentNotEmpty($result);
     }
 

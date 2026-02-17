@@ -1,0 +1,27 @@
+{
+	"id": "config_pages_extract",
+	"description": "Tests page extraction config producing per-page content array",
+	"tags": ["contract", "config"],
+	"document": {
+		"path": "pdf/fake_memo.pdf"
+	},
+	"extraction": {
+		"method": "sync",
+		"input_type": "file",
+		"config": {
+			"pages": {
+				"extract_pages": true
+			}
+		}
+	},
+	"assertions": {
+		"expected_mime": "application/pdf",
+		"min_content_length": 10,
+		"pages": {
+			"min_count": 1
+		}
+	},
+	"skip": {
+		"requires_feature": ["pdf"]
+	}
+}

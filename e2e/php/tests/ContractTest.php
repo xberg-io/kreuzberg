@@ -208,6 +208,72 @@ class ContractTest extends TestCase
     }
 
     /**
+     * Tests markdown-aware chunker type
+     */
+    public function test_config_chunking_markdown(): void
+    {
+        $documentPath = Helpers::resolveDocument('pdf/fake_memo.pdf');
+        if (!file_exists($documentPath)) {
+            $this->markTestSkipped('Skipping config_chunking_markdown: missing document at ' . $documentPath);
+        }
+
+        Helpers::skipIfFeatureUnavailable('chunking');
+
+        $config = Helpers::buildConfig(['chunking' => ['chunker_type' => 'markdown', 'max_chars' => 500, 'max_overlap' => 50]]);
+
+        $kreuzberg = new Kreuzberg($config);
+        $result = $kreuzberg->extractFile($documentPath);
+
+        Helpers::assertExpectedMime($result, ['application/pdf']);
+        Helpers::assertMinContentLength($result, 10);
+        Helpers::assertChunks($result, 1, null, true, null);
+    }
+
+    /**
+     * Tests chunking with very small chunk size produces more chunks
+     */
+    public function test_config_chunking_small(): void
+    {
+        $documentPath = Helpers::resolveDocument('pdf/fake_memo.pdf');
+        if (!file_exists($documentPath)) {
+            $this->markTestSkipped('Skipping config_chunking_small: missing document at ' . $documentPath);
+        }
+
+        Helpers::skipIfFeatureUnavailable('chunking');
+
+        $config = Helpers::buildConfig(['chunking' => ['max_chars' => 100, 'max_overlap' => 20]]);
+
+        $kreuzberg = new Kreuzberg($config);
+        $result = $kreuzberg->extractFile($documentPath);
+
+        Helpers::assertExpectedMime($result, ['application/pdf']);
+        Helpers::assertMinContentLength($result, 10);
+        Helpers::assertChunks($result, 2, null, true, null);
+    }
+
+    /**
+     * Tests djot output format produces djot_content field
+     */
+    public function test_config_djot_content(): void
+    {
+        $documentPath = Helpers::resolveDocument('pdf/fake_memo.pdf');
+        if (!file_exists($documentPath)) {
+            $this->markTestSkipped('Skipping config_djot_content: missing document at ' . $documentPath);
+        }
+
+        Helpers::skipIfFeatureUnavailable('pdf');
+
+        $config = Helpers::buildConfig(['output_format' => 'djot']);
+
+        $kreuzberg = new Kreuzberg($config);
+        $result = $kreuzberg->extractFile($documentPath);
+
+        Helpers::assertExpectedMime($result, ['application/pdf']);
+        Helpers::assertMinContentLength($result, 10);
+        Helpers::assertDjotContent($result, true, null);
+    }
+
+    /**
      * Tests include_document_structure config produces document tree
      */
     public function test_config_document_structure(): void
@@ -246,6 +312,27 @@ class ContractTest extends TestCase
     }
 
     /**
+     * Tests document structure extraction with heading nodes on a DOCX
+     */
+    public function test_config_document_structure_headings(): void
+    {
+        $documentPath = Helpers::resolveDocument('office/docx/headers.docx');
+        if (!file_exists($documentPath)) {
+            $this->markTestSkipped('Skipping config_document_structure_headings: missing document at ' . $documentPath);
+        }
+
+        Helpers::skipIfFeatureUnavailable('office');
+
+        $config = Helpers::buildConfig(['include_document_structure' => true]);
+
+        $kreuzberg = new Kreuzberg($config);
+        $result = $kreuzberg->extractFile($documentPath);
+
+        Helpers::assertExpectedMime($result, ['application/vnd.openxmlformats-officedocument.wordprocessingml.document']);
+        Helpers::assertDocument($result, true, 1, ['heading', 'paragraph'], null);
+    }
+
+    /**
      * Tests document structure with DOCX heading-driven nesting
      */
     public function test_config_document_structure_with_headings(): void
@@ -262,6 +349,27 @@ class ContractTest extends TestCase
 
         Helpers::assertExpectedMime($result, ['application/vnd.openxmlformats-officedocument.wordprocessingml.document']);
         Helpers::assertDocument($result, true, 1, null, null);
+    }
+
+    /**
+     * Tests element-based result format with element type assertions on DOCX
+     */
+    public function test_config_element_types(): void
+    {
+        $documentPath = Helpers::resolveDocument('office/docx/headers.docx');
+        if (!file_exists($documentPath)) {
+            $this->markTestSkipped('Skipping config_element_types: missing document at ' . $documentPath);
+        }
+
+        Helpers::skipIfFeatureUnavailable('office');
+
+        $config = Helpers::buildConfig(['result_format' => 'element_based']);
+
+        $kreuzberg = new Kreuzberg($config);
+        $result = $kreuzberg->extractFile($documentPath);
+
+        Helpers::assertExpectedMime($result, ['application/vnd.openxmlformats-officedocument.wordprocessingml.document']);
+        Helpers::assertElements($result, 1, ['title', 'narrative_text']);
     }
 
     /**
@@ -367,22 +475,132 @@ class ContractTest extends TestCase
     }
 
     /**
-     * Tests page configuration with page assertions
+     * Tests multi-language detection config
      */
-    public function test_config_pages(): void
+    public function test_config_language_multi(): void
     {
-        $documentPath = Helpers::resolveDocument('pdf/multi_page.pdf');
+        $documentPath = Helpers::resolveDocument('pdf/fake_memo.pdf');
         if (!file_exists($documentPath)) {
-            $this->markTestSkipped('Skipping config_pages: missing document at ' . $documentPath);
+            $this->markTestSkipped('Skipping config_language_multi: missing document at ' . $documentPath);
         }
 
-        $config = Helpers::buildConfig(['pages' => ['end' => 3, 'start' => 1]]);
+        Helpers::skipIfFeatureUnavailable('language-detection');
+
+        $config = Helpers::buildConfig(['language_detection' => ['detect_multiple' => true, 'enabled' => true]]);
 
         $kreuzberg = new Kreuzberg($config);
         $result = $kreuzberg->extractFile($documentPath);
 
         Helpers::assertExpectedMime($result, ['application/pdf']);
         Helpers::assertMinContentLength($result, 10);
+        Helpers::assertDetectedLanguages($result, ['eng'], null);
+    }
+
+    /**
+     * Tests page extraction and page marker configuration
+     */
+    public function test_config_pages(): void
+    {
+        $documentPath = Helpers::resolveDocument('pdf/fake_memo.pdf');
+        if (!file_exists($documentPath)) {
+            $this->markTestSkipped('Skipping config_pages: missing document at ' . $documentPath);
+        }
+
+        Helpers::skipIfFeatureUnavailable('pdf');
+
+        $config = Helpers::buildConfig(['pages' => ['extract_pages' => true, 'insert_page_markers' => true]]);
+
+        $kreuzberg = new Kreuzberg($config);
+        $result = $kreuzberg->extractFile($documentPath);
+
+        Helpers::assertExpectedMime($result, ['application/pdf']);
+        Helpers::assertMinContentLength($result, 10);
+        Helpers::assertContentContainsAny($result, ['PAGE']);
+    }
+
+    /**
+     * Tests page extraction config producing per-page content array
+     */
+    public function test_config_pages_extract(): void
+    {
+        $documentPath = Helpers::resolveDocument('pdf/fake_memo.pdf');
+        if (!file_exists($documentPath)) {
+            $this->markTestSkipped('Skipping config_pages_extract: missing document at ' . $documentPath);
+        }
+
+        Helpers::skipIfFeatureUnavailable('pdf');
+
+        $config = Helpers::buildConfig(['pages' => ['extract_pages' => true]]);
+
+        $kreuzberg = new Kreuzberg($config);
+        $result = $kreuzberg->extractFile($documentPath);
+
+        Helpers::assertExpectedMime($result, ['application/pdf']);
+        Helpers::assertMinContentLength($result, 10);
+        Helpers::assertPages($result, 1, null);
+    }
+
+    /**
+     * Tests page marker insertion in extracted content
+     */
+    public function test_config_pages_markers(): void
+    {
+        $documentPath = Helpers::resolveDocument('pdf/fake_memo.pdf');
+        if (!file_exists($documentPath)) {
+            $this->markTestSkipped('Skipping config_pages_markers: missing document at ' . $documentPath);
+        }
+
+        Helpers::skipIfFeatureUnavailable('pdf');
+
+        $config = Helpers::buildConfig(['pages' => ['insert_page_markers' => true]]);
+
+        $kreuzberg = new Kreuzberg($config);
+        $result = $kreuzberg->extractFile($documentPath);
+
+        Helpers::assertExpectedMime($result, ['application/pdf']);
+        Helpers::assertMinContentLength($result, 10);
+        Helpers::assertContentContainsAny($result, ['PAGE']);
+    }
+
+    /**
+     * Tests PDF hierarchy extraction config with block-level structure
+     */
+    public function test_config_pdf_hierarchy(): void
+    {
+        $documentPath = Helpers::resolveDocument('pdf/fake_memo.pdf');
+        if (!file_exists($documentPath)) {
+            $this->markTestSkipped('Skipping config_pdf_hierarchy: missing document at ' . $documentPath);
+        }
+
+        Helpers::skipIfFeatureUnavailable('pdf');
+
+        $config = Helpers::buildConfig(['pages' => ['extract_pages' => true], 'pdf_options' => ['hierarchy' => ['enabled' => true, 'include_bbox' => true]]]);
+
+        $kreuzberg = new Kreuzberg($config);
+        $result = $kreuzberg->extractFile($documentPath);
+
+        Helpers::assertExpectedMime($result, ['application/pdf']);
+        Helpers::assertMinContentLength($result, 50);
+    }
+
+    /**
+     * Tests postprocessor config is accepted and extraction succeeds
+     */
+    public function test_config_postprocessor(): void
+    {
+        $documentPath = Helpers::resolveDocument('pdf/fake_memo.pdf');
+        if (!file_exists($documentPath)) {
+            $this->markTestSkipped('Skipping config_postprocessor: missing document at ' . $documentPath);
+        }
+
+        $config = Helpers::buildConfig(['postprocessor' => ['enabled' => true]]);
+
+        $kreuzberg = new Kreuzberg($config);
+        $result = $kreuzberg->extractFile($documentPath);
+
+        Helpers::assertExpectedMime($result, ['application/pdf']);
+        Helpers::assertMinContentLength($result, 10);
+        Helpers::assertContentNotEmpty($result);
     }
 
     /**
@@ -403,6 +621,49 @@ class ContractTest extends TestCase
         Helpers::assertExpectedMime($result, ['application/pdf']);
         Helpers::assertMinContentLength($result, 10);
         Helpers::assertContentNotEmpty($result);
+    }
+
+    /**
+     * Tests quality scoring produces a score value in [0.0, 1.0]
+     */
+    public function test_config_quality_enabled(): void
+    {
+        $documentPath = Helpers::resolveDocument('pdf/fake_memo.pdf');
+        if (!file_exists($documentPath)) {
+            $this->markTestSkipped('Skipping config_quality_enabled: missing document at ' . $documentPath);
+        }
+
+        Helpers::skipIfFeatureUnavailable('quality');
+
+        $config = Helpers::buildConfig(['enable_quality_processing' => true]);
+
+        $kreuzberg = new Kreuzberg($config);
+        $result = $kreuzberg->extractFile($documentPath);
+
+        Helpers::assertExpectedMime($result, ['application/pdf']);
+        Helpers::assertMinContentLength($result, 10);
+        Helpers::assertQualityScore($result, true, 0, 1);
+    }
+
+    /**
+     * Tests structured (JSON) output format config
+     */
+    public function test_config_structured_output(): void
+    {
+        $documentPath = Helpers::resolveDocument('pdf/fake_memo.pdf');
+        if (!file_exists($documentPath)) {
+            $this->markTestSkipped('Skipping config_structured_output: missing document at ' . $documentPath);
+        }
+
+        Helpers::skipIfFeatureUnavailable('pdf');
+
+        $config = Helpers::buildConfig(['output_format' => 'structured']);
+
+        $kreuzberg = new Kreuzberg($config);
+        $result = $kreuzberg->extractFile($documentPath);
+
+        Helpers::assertExpectedMime($result, ['application/pdf']);
+        Helpers::assertMinContentLength($result, 10);
     }
 
     /**

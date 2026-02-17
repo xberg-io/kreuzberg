@@ -9,6 +9,27 @@ import { assertions, buildConfig, extractBytes, initWasm, resolveDocument, shoul
 // Initialize WASM module once at module load time
 await initWasm();
 
+Deno.test("token_reduction_aggressive", { permissions: { read: true } }, async () => {
+	const documentBytes = await resolveDocument("pdf/fake_memo.pdf");
+	const config = buildConfig({ token_reduction: { mode: "aggressive" } });
+	let result: ExtractionResult | null = null;
+	try {
+		// Sync file extraction - WASM uses extractBytes with pre-read bytes
+		result = await extractBytes(documentBytes, "application/octet-stream", config);
+	} catch (error) {
+		if (shouldSkipFixture(error, "token_reduction_aggressive", [], undefined)) {
+			return;
+		}
+		throw error;
+	}
+	if (result === null) {
+		return;
+	}
+	assertions.assertExpectedMime(result, ["application/pdf"]);
+	assertions.assertMinContentLength(result, 5);
+	assertions.assertContentNotEmpty(result);
+});
+
 Deno.test("token_reduction_basic", { permissions: { read: true } }, async () => {
 	const documentBytes = await resolveDocument("pdf/fake_memo.pdf");
 	const config = buildConfig({ token_reduction: { mode: "moderate" } });
@@ -27,6 +48,27 @@ Deno.test("token_reduction_basic", { permissions: { read: true } }, async () => 
 	}
 	assertions.assertExpectedMime(result, ["application/pdf"]);
 	assertions.assertMinContentLength(result, 5);
+	assertions.assertContentNotEmpty(result);
+});
+
+Deno.test("token_reduction_light", { permissions: { read: true } }, async () => {
+	const documentBytes = await resolveDocument("pdf/fake_memo.pdf");
+	const config = buildConfig({ token_reduction: { mode: "light" } });
+	let result: ExtractionResult | null = null;
+	try {
+		// Sync file extraction - WASM uses extractBytes with pre-read bytes
+		result = await extractBytes(documentBytes, "application/octet-stream", config);
+	} catch (error) {
+		if (shouldSkipFixture(error, "token_reduction_light", [], undefined)) {
+			return;
+		}
+		throw error;
+	}
+	if (result === null) {
+		return;
+	}
+	assertions.assertExpectedMime(result, ["application/pdf"]);
+	assertions.assertMinContentLength(result, 10);
 	assertions.assertContentNotEmpty(result);
 });
 

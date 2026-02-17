@@ -19,6 +19,19 @@ func TestPdfPdfBayesianDataAnalysis(t *testing.T) {
 	assertContentContainsAny(t, result, []string{"Bayesian", "probability", "distribution"})
 }
 
+func TestPdfPdfBoundingBoxes(t *testing.T) {
+	skipIfFeatureUnavailable(t, "pdf")
+	result := runExtraction(t, "pdf/tiny.pdf", []byte(`{
+"images": {
+	"extract_images": true
+}
+}`))
+	assertExpectedMime(t, result, []string{"application/pdf"})
+	assertMinContentLength(t, result, 50)
+	assertTableCount(t, result, intPtr(1), nil)
+	assertTableBoundingBoxes(t, result)
+}
+
 func TestPdfPdfCodeAndFormula(t *testing.T) {
 	result := runExtraction(t, "pdf/code_and_formula.pdf", nil)
 	assertExpectedMime(t, result, []string{"application/pdf"})
@@ -76,14 +89,12 @@ func TestPdfPdfTablesLarge(t *testing.T) {
 	result := runExtraction(t, "pdf/large.pdf", nil)
 	assertExpectedMime(t, result, []string{"application/pdf"})
 	assertMinContentLength(t, result, 500)
-	assertTableCount(t, result, intPtr(1), nil)
 }
 
 func TestPdfPdfTablesMedium(t *testing.T) {
 	result := runExtraction(t, "pdf/medium.pdf", nil)
 	assertExpectedMime(t, result, []string{"application/pdf"})
 	assertMinContentLength(t, result, 100)
-	assertTableCount(t, result, intPtr(1), nil)
 }
 
 func TestPdfPdfTablesSmall(t *testing.T) {

@@ -1,0 +1,22 @@
+{
+	"id": "token_reduction_light",
+	"description": "Tests light token reduction mode preserves most content",
+	"tags": ["token_reduction"],
+	"document": {
+		"path": "pdf/fake_memo.pdf"
+	},
+	"extraction": {
+		"method": "sync",
+		"input_type": "file",
+		"config": {
+			"token_reduction": {
+				"mode": "light"
+			}
+		}
+	},
+	"assertions": {
+		"expected_mime": "application/pdf",
+		"min_content_length": 10,
+		"content_not_empty": true
+	}
+}

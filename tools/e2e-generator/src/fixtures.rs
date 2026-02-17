@@ -178,6 +178,15 @@ pub struct Assertions {
     /// Whether content must be non-empty
     #[serde(default)]
     pub content_not_empty: Option<bool>,
+    /// Quality score assertions
+    #[serde(default)]
+    pub quality_score: Option<QualityScoreAssertion>,
+    /// Processing warnings assertions
+    #[serde(default)]
+    pub processing_warnings: Option<ProcessingWarningsAssertion>,
+    /// Djot content assertions
+    #[serde(default)]
+    pub djot_content: Option<DjotContentAssertion>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -186,6 +195,12 @@ pub struct TableAssertion {
     pub min: Option<usize>,
     #[serde(default)]
     pub max: Option<usize>,
+    /// Whether tables should have bounding boxes populated
+    #[serde(default)]
+    pub has_bounding_boxes: Option<bool>,
+    /// Assert any table cell contains one of these strings
+    #[serde(default)]
+    pub content_contains_any: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -215,6 +230,9 @@ pub struct ImageAssertion {
     pub max_count: Option<usize>,
     #[serde(default)]
     pub formats_include: Option<Vec<String>>,
+    /// Whether images should have bounding boxes populated
+    #[serde(default)]
+    pub has_bounding_boxes: Option<bool>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -282,6 +300,45 @@ pub struct DocumentAssertion {
     /// Whether the document should have group nodes
     #[serde(default)]
     pub has_groups: Option<bool>,
+}
+
+/// Quality score assertions
+#[allow(dead_code)]
+#[derive(Debug, Clone, Deserialize)]
+pub struct QualityScoreAssertion {
+    /// Whether quality_score should be present
+    #[serde(default)]
+    pub has_score: Option<bool>,
+    /// Minimum quality score value
+    #[serde(default)]
+    pub min_score: Option<f64>,
+    /// Maximum quality score value
+    #[serde(default)]
+    pub max_score: Option<f64>,
+}
+
+/// Processing warnings assertions
+#[allow(dead_code)]
+#[derive(Debug, Clone, Deserialize)]
+pub struct ProcessingWarningsAssertion {
+    /// Maximum number of warnings allowed
+    #[serde(default)]
+    pub max_count: Option<usize>,
+    /// Whether warnings should be empty
+    #[serde(default)]
+    pub is_empty: Option<bool>,
+}
+
+/// Djot content assertions
+#[allow(dead_code)]
+#[derive(Debug, Clone, Deserialize)]
+pub struct DjotContentAssertion {
+    /// Whether djot_content should be present
+    #[serde(default)]
+    pub has_content: Option<bool>,
+    /// Minimum number of blocks in djot content
+    #[serde(default)]
+    pub min_blocks: Option<usize>,
 }
 
 #[allow(dead_code)]

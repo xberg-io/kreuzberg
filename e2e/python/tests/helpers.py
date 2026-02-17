@@ -468,3 +468,78 @@ def assert_content_not_empty(result: Any) -> None:
     content = getattr(result, "content", None)
     if content is None or len(content.strip()) == 0:
         pytest.fail("Expected non-empty content")
+
+
+def assert_table_bounding_boxes(result: Any, expected: bool) -> None:
+    if expected:
+        tables = getattr(result, "tables", None) or []
+        assert len(tables) > 0, "Expected tables with bounding boxes but no tables found"
+        for table in tables:
+            bb = getattr(table, "bounding_box", None) or (
+                table.get("bounding_box") if isinstance(table, dict) else None
+            )
+            assert bb is not None, "Expected table to have bounding_box but it was None"
+
+
+def assert_table_content_contains_any(result: Any, snippets: list[str]) -> None:
+    tables = getattr(result, "tables", None) or []
+    assert len(tables) > 0, "Expected tables but none found"
+    all_cells = [
+        str(cell).lower()
+        for table in tables
+        for row in (getattr(table, "cells", None) or (table.get("cells") if isinstance(table, dict) else []) or [])
+        for cell in row
+    ]
+    found = any(s.lower() in cell for s in snippets for cell in all_cells)
+    assert found, f"No table cell contains any of {snippets}"
+
+
+def assert_image_bounding_boxes(result: Any, expected: bool) -> None:
+    if expected:
+        images = getattr(result, "images", None) or []
+        assert len(images) > 0, "Expected images with bounding boxes but no images found"
+        for img in images:
+            bb = getattr(img, "bounding_box", None) or (img.get("bounding_box") if isinstance(img, dict) else None)
+            assert bb is not None, "Expected image to have bounding_box but it was None"
+
+
+def assert_quality_score(
+    result: Any, has_score: bool | None = None, min_score: float | None = None, max_score: float | None = None
+) -> None:
+    score = getattr(result, "quality_score", None)
+    if isinstance(result, dict):
+        score = result.get("quality_score")
+    if has_score is True:
+        assert score is not None, "Expected quality_score to be present"
+    if has_score is False:
+        assert score is None, "Expected quality_score to be absent"
+    if min_score is not None:
+        assert score is not None, "quality_score must be present for min_score check"
+        assert score >= min_score, f"quality_score {score} < {min_score}"
+    if max_score is not None:
+        assert score is not None, "quality_score must be present for max_score check"
+        assert score <= max_score, f"quality_score {score} > {max_score}"
+
+
+def assert_processing_warnings(result: Any, max_count: int | None = None, is_empty: bool | None = None) -> None:
+    warnings = getattr(result, "processing_warnings", None) or []
+    if isinstance(result, dict):
+        warnings = result.get("processing_warnings", [])
+    if max_count is not None:
+        assert len(warnings) <= max_count, f"processing_warnings count {len(warnings)} > {max_count}"
+    if is_empty is True:
+        assert len(warnings) == 0, f"Expected empty processing_warnings, got {len(warnings)}"
+
+
+def assert_djot_content(result: Any, has_content: bool | None = None, min_blocks: int | None = None) -> None:
+    djot = getattr(result, "djot_content", None)
+    if isinstance(result, dict):
+        djot = result.get("djot_content")
+    if has_content is True:
+        assert djot is not None, "Expected djot_content to be present"
+    if has_content is False:
+        assert djot is None, "Expected djot_content to be absent"
+    if min_blocks is not None:
+        assert djot is not None, "djot_content required for min_blocks assertion"
+        blocks = getattr(djot, "blocks", None) or (djot.get("blocks") if isinstance(djot, dict) else [])
+        assert len(blocks or []) >= min_blocks, f"djot_content blocks {len(blocks or [])} < {min_blocks}"

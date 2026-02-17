@@ -1,0 +1,22 @@
+{
+	"id": "config_postprocessor",
+	"description": "Tests postprocessor config is accepted and extraction succeeds",
+	"tags": ["contract", "config"],
+	"document": {
+		"path": "pdf/fake_memo.pdf"
+	},
+	"extraction": {
+		"method": "sync",
+		"input_type": "file",
+		"config": {
+			"postprocessor": {
+				"enabled": true
+			}
+		}
+	},
+	"assertions": {
+		"expected_mime": "application/pdf",
+		"min_content_length": 10,
+		"content_not_empty": true
+	}
+}

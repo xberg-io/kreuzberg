@@ -3,7 +3,7 @@
 	"title": "Kreuzberg E2E Fixture",
 	"description": "Defines a single end-to-end extraction scenario shared across language bindings.",
 	"type": "object",
-	"required": ["id", "description", "document", "extraction", "assertions"],
+	"required": ["id", "description"],
 	"properties": {
 		"id": {
 			"type": "string",
@@ -111,6 +111,10 @@
 						"type": "string"
 					}
 				},
+				"content_not_empty": {
+					"type": "boolean",
+					"description": "Assert that extracted content is non-empty after trimming whitespace."
+				},
 				"tables": {
 					"type": "object",
 					"properties": {
@@ -121,6 +125,17 @@
 						"max": {
 							"type": "integer",
 							"minimum": 0
+						},
+						"has_bounding_boxes": {
+							"type": "boolean",
+							"description": "Assert that tables have bounding boxes populated."
+						},
+						"content_contains_any": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							},
+							"description": "Assert any table cell contains one of these strings."
 						}
 					},
 					"additionalProperties": false
@@ -182,6 +197,10 @@
 							"items": {
 								"type": "string"
 							}
+						},
+						"has_bounding_boxes": {
+							"type": "boolean",
+							"description": "Assert that images have bounding boxes populated."
 						}
 					},
 					"additionalProperties": false
@@ -216,9 +235,122 @@
 					},
 					"additionalProperties": false
 				},
+				"ocr_elements": {
+					"type": "object",
+					"properties": {
+						"has_elements": {
+							"type": "boolean",
+							"description": "Whether OCR elements should be present."
+						},
+						"elements_have_geometry": {
+							"type": "boolean",
+							"description": "Whether OCR elements should have bounding box geometry."
+						},
+						"elements_have_confidence": {
+							"type": "boolean",
+							"description": "Whether OCR elements should have confidence scores."
+						},
+						"min_count": {
+							"type": "integer",
+							"minimum": 0
+						}
+					},
+					"additionalProperties": false
+				},
+				"document": {
+					"type": "object",
+					"properties": {
+						"has_document": {
+							"type": "boolean",
+							"description": "Whether a document structure tree should be present."
+						},
+						"min_node_count": {
+							"type": "integer",
+							"minimum": 0
+						},
+						"node_types_include": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							},
+							"description": "Node types that must be present in the document tree."
+						},
+						"has_groups": {
+							"type": "boolean",
+							"description": "Whether group nodes must be present."
+						}
+					},
+					"additionalProperties": false
+				},
+				"keywords": {
+					"type": "object",
+					"properties": {
+						"has_keywords": {
+							"type": "boolean",
+							"description": "Whether keywords should be present."
+						},
+						"min_count": {
+							"type": "integer",
+							"minimum": 0
+						},
+						"max_count": {
+							"type": "integer",
+							"minimum": 0
+						}
+					},
+					"additionalProperties": false
+				},
+				"quality_score": {
+					"type": "object",
+					"properties": {
+						"has_score": {
+							"type": "boolean",
+							"description": "Whether quality_score should be present."
+						},
+						"min_score": {
+							"type": "number",
+							"minimum": 0,
+							"maximum": 1
+						},
+						"max_score": {
+							"type": "number",
+							"minimum": 0,
+							"maximum": 1
+						}
+					},
+					"additionalProperties": false
+				},
+				"processing_warnings": {
+					"type": "object",
+					"properties": {
+						"max_count": {
+							"type": "integer",
+							"minimum": 0
+						},
+						"is_empty": {
+							"type": "boolean",
+							"description": "Whether processing_warnings should be empty."
+						}
+					},
+					"additionalProperties": false
+				},
+				"djot_content": {
+					"type": "object",
+					"properties": {
+						"has_content": {
+							"type": "boolean",
+							"description": "Whether djot_content should be present."
+						},
+						"min_blocks": {
+							"type": "integer",
+							"minimum": 0
+						}
+					},
+					"additionalProperties": false
+				},
 				"output_format_is": {
 					"type": "string",
-					"enum": ["plain", "markdown", "html", "djot"],
+					"enum": ["plain", "markdown", "html", "djot", "structured"],
 					"description": "Assert that the output format matches expected value."
 				},
 				"result_format_is": {
@@ -247,6 +379,22 @@
 				}
 			},
 			"additionalProperties": false
+		},
+		"api_category": {
+			"type": "string",
+			"description": "Plugin API category for plugin API fixtures."
+		},
+		"api_function": {
+			"type": "string",
+			"description": "Plugin API function name."
+		},
+		"test_spec": {
+			"type": "object",
+			"description": "Full test specification for plugin API fixtures."
+		},
+		"plugin_skip": {
+			"type": "object",
+			"description": "Per-language skip directives for plugin API fixtures."
 		}
 	},
 	"additionalProperties": false

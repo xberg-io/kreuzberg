@@ -354,6 +354,61 @@ module E2ERuby
       expect(result.content).not_to be_empty
     end
 
+    def self.assert_table_bounding_boxes(result)
+      tables = Array(result.tables)
+      tables.each do |table|
+        expect(table.bounding_box).not_to be_nil
+      end
+    end
+
+    def self.assert_table_content_contains_any(result, snippets)
+      return if snippets.empty?
+
+      tables = Array(result.tables)
+      all_content = tables.map { |t| t.content.to_s.downcase }.join(' ')
+      expect(snippets.any? { |snippet| all_content.include?(snippet.downcase) }).to be(true)
+    end
+
+    def self.assert_image_bounding_boxes(result)
+      images = Array(result.images)
+      images.each do |image|
+        expect(image.bounding_box).not_to be_nil
+      end
+    end
+
+    def self.assert_quality_score(result, has_score: nil, min_score: nil, max_score: nil)
+      if has_score
+        expect(result.quality_score).not_to be_nil
+      end
+      if min_score && result.quality_score
+        expect(result.quality_score).to be >= min_score
+      end
+      if max_score && result.quality_score
+        expect(result.quality_score).to be <= max_score
+      end
+    end
+
+    def self.assert_processing_warnings(result, max_count: nil, is_empty: nil)
+      warnings = Array(result.processing_warnings)
+      if is_empty == true
+        expect(warnings).to be_empty
+      end
+      if max_count
+        expect(warnings.length).to be <= max_count
+      end
+    end
+
+    def self.assert_djot_content(result, has_content: nil, min_blocks: nil)
+      if has_content
+        expect(result.djot_content).not_to be_nil
+        expect(result.djot_content).not_to be_empty
+      end
+      if min_blocks && result.djot_content
+        blocks = result.djot_content.split("\\n\\n")
+        expect(blocks.length).to be >= min_blocks
+      end
+    end
+
     class << self
       private
 

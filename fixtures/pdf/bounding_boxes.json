@@ -1,0 +1,28 @@
+{
+	"id": "pdf_bounding_boxes",
+	"description": "Tests bounding box extraction on PDF tables and images",
+	"tags": ["pdf", "bounding_boxes"],
+	"document": {
+		"path": "pdf/tiny.pdf"
+	},
+	"extraction": {
+		"method": "sync",
+		"input_type": "file",
+		"config": {
+			"images": {
+				"extract_images": true
+			}
+		}
+	},
+	"assertions": {
+		"expected_mime": "application/pdf",
+		"min_content_length": 50,
+		"tables": {
+			"min": 1,
+			"has_bounding_boxes": true
+		}
+	},
+	"skip": {
+		"requires_feature": ["pdf"]
+	}
+}

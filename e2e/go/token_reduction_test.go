@@ -5,6 +5,17 @@ package e2e
 
 import "testing"
 
+func TestTokenReductionTokenReductionAggressive(t *testing.T) {
+	result := runExtraction(t, "pdf/fake_memo.pdf", []byte(`{
+"token_reduction": {
+	"mode": "aggressive"
+}
+}`))
+	assertExpectedMime(t, result, []string{"application/pdf"})
+	assertMinContentLength(t, result, 5)
+	assertContentNotEmpty(t, result)
+}
+
 func TestTokenReductionTokenReductionBasic(t *testing.T) {
 	result := runExtraction(t, "pdf/fake_memo.pdf", []byte(`{
 "token_reduction": {
@@ -13,6 +24,17 @@ func TestTokenReductionTokenReductionBasic(t *testing.T) {
 }`))
 	assertExpectedMime(t, result, []string{"application/pdf"})
 	assertMinContentLength(t, result, 5)
+	assertContentNotEmpty(t, result)
+}
+
+func TestTokenReductionTokenReductionLight(t *testing.T) {
+	result := runExtraction(t, "pdf/fake_memo.pdf", []byte(`{
+"token_reduction": {
+	"mode": "light"
+}
+}`))
+	assertExpectedMime(t, result, []string{"application/pdf"})
+	assertMinContentLength(t, result, 10)
 	assertContentNotEmpty(t, result)
 }
 

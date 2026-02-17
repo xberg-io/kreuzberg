@@ -1,0 +1,29 @@
+{
+	"id": "config_chunking_small",
+	"description": "Tests chunking with very small chunk size produces more chunks",
+	"tags": ["contract", "config", "chunking"],
+	"document": {
+		"path": "pdf/fake_memo.pdf"
+	},
+	"extraction": {
+		"method": "sync",
+		"input_type": "file",
+		"config": {
+			"chunking": {
+				"max_chars": 100,
+				"max_overlap": 20
+			}
+		}
+	},
+	"assertions": {
+		"expected_mime": "application/pdf",
+		"min_content_length": 10,
+		"chunks": {
+			"min_count": 2,
+			"each_has_content": true
+		}
+	},
+	"skip": {
+		"requires_feature": ["chunking"]
+	}
+}

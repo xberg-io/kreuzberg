@@ -9,6 +9,29 @@ defmodule E2E.TokenReductionTest do
   use ExUnit.Case, async: false
 
   describe "token_reduction fixtures" do
+    test "token_reduction_aggressive" do
+      case E2E.Helpers.run_fixture(
+             "token_reduction_aggressive",
+             "pdf/fake_memo.pdf",
+             %{token_reduction: %{mode: "aggressive"}},
+             requirements: [],
+             notes: nil,
+             skip_if_missing: true
+           ) do
+        {:ok, result} ->
+          result
+          |> E2E.Helpers.assert_expected_mime(["application/pdf"])
+          |> E2E.Helpers.assert_min_content_length(5)
+          |> E2E.Helpers.assert_content_not_empty()
+
+        {:skipped, reason} ->
+          IO.puts("SKIPPED: #{reason}")
+
+        {:error, reason} ->
+          flunk("Extraction failed: #{inspect(reason)}")
+      end
+    end
+
     test "token_reduction_basic" do
       case E2E.Helpers.run_fixture(
              "token_reduction_basic",
@@ -22,6 +45,29 @@ defmodule E2E.TokenReductionTest do
           result
           |> E2E.Helpers.assert_expected_mime(["application/pdf"])
           |> E2E.Helpers.assert_min_content_length(5)
+          |> E2E.Helpers.assert_content_not_empty()
+
+        {:skipped, reason} ->
+          IO.puts("SKIPPED: #{reason}")
+
+        {:error, reason} ->
+          flunk("Extraction failed: #{inspect(reason)}")
+      end
+    end
+
+    test "token_reduction_light" do
+      case E2E.Helpers.run_fixture(
+             "token_reduction_light",
+             "pdf/fake_memo.pdf",
+             %{token_reduction: %{mode: "light"}},
+             requirements: [],
+             notes: nil,
+             skip_if_missing: true
+           ) do
+        {:ok, result} ->
+          result
+          |> E2E.Helpers.assert_expected_mime(["application/pdf"])
+          |> E2E.Helpers.assert_min_content_length(10)
           |> E2E.Helpers.assert_content_not_empty()
 
         {:skipped, reason} ->

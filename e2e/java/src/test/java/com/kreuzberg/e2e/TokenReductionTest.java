@@ -29,6 +29,24 @@ public class TokenReductionTest {
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     @Test
+    public void tokenReductionAggressive() throws Exception {
+        JsonNode config = MAPPER.readTree("{\"token_reduction\":{\"mode\":\"aggressive\"}}");
+        E2EHelpers.runFixture(
+            "token_reduction_aggressive",
+            "pdf/fake_memo.pdf",
+            config,
+            Collections.emptyList(),
+            null,
+            true,
+            result -> {
+                E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("application/pdf"));
+                E2EHelpers.Assertions.assertMinContentLength(result, 5);
+                E2EHelpers.Assertions.assertContentNotEmpty(result);
+            }
+        );
+    }
+
+    @Test
     public void tokenReductionBasic() throws Exception {
         JsonNode config = MAPPER.readTree("{\"token_reduction\":{\"mode\":\"moderate\"}}");
         E2EHelpers.runFixture(
@@ -41,6 +59,24 @@ public class TokenReductionTest {
             result -> {
                 E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("application/pdf"));
                 E2EHelpers.Assertions.assertMinContentLength(result, 5);
+                E2EHelpers.Assertions.assertContentNotEmpty(result);
+            }
+        );
+    }
+
+    @Test
+    public void tokenReductionLight() throws Exception {
+        JsonNode config = MAPPER.readTree("{\"token_reduction\":{\"mode\":\"light\"}}");
+        E2EHelpers.runFixture(
+            "token_reduction_light",
+            "pdf/fake_memo.pdf",
+            config,
+            Collections.emptyList(),
+            null,
+            true,
+            result -> {
+                E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("application/pdf"));
+                E2EHelpers.Assertions.assertMinContentLength(result, 10);
                 E2EHelpers.Assertions.assertContentNotEmpty(result);
             }
         );

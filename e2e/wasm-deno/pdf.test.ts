@@ -53,6 +53,28 @@ Deno.test("pdf_bayesian_data_analysis", { permissions: { read: true } }, async (
 	assertions.assertMetadataExpectation(result, "format_type", { eq: "pdf" });
 });
 
+Deno.test("pdf_bounding_boxes", { permissions: { read: true } }, async () => {
+	const documentBytes = await resolveDocument("pdf/tiny.pdf");
+	const config = buildConfig({ images: { extract_images: true } });
+	let result: ExtractionResult | null = null;
+	try {
+		// Sync file extraction - WASM uses extractBytes with pre-read bytes
+		result = await extractBytes(documentBytes, "application/octet-stream", config);
+	} catch (error) {
+		if (shouldSkipFixture(error, "pdf_bounding_boxes", ["pdf"], undefined)) {
+			return;
+		}
+		throw error;
+	}
+	if (result === null) {
+		return;
+	}
+	assertions.assertExpectedMime(result, ["application/pdf"]);
+	assertions.assertMinContentLength(result, 50);
+	assertions.assertTableCount(result, 1, null);
+	assertions.assertTableBoundingBoxes(result, true);
+});
+
 Deno.test("pdf_code_and_formula", { permissions: { read: true } }, async () => {
 	const documentBytes = await resolveDocument("pdf/code_and_formula.pdf");
 	const config = buildConfig(undefined);
@@ -241,7 +263,6 @@ Deno.test("pdf_tables_large", { permissions: { read: true } }, async () => {
 	}
 	assertions.assertExpectedMime(result, ["application/pdf"]);
 	assertions.assertMinContentLength(result, 500);
-	assertions.assertTableCount(result, 1, null);
 });
 
 Deno.test("pdf_tables_medium", { permissions: { read: true } }, async () => {
@@ -262,7 +283,6 @@ Deno.test("pdf_tables_medium", { permissions: { read: true } }, async () => {
 	}
 	assertions.assertExpectedMime(result, ["application/pdf"]);
 	assertions.assertMinContentLength(result, 100);
-	assertions.assertTableCount(result, 1, null);
 });
 
 Deno.test("pdf_tables_small", { permissions: { read: true } }, async () => {

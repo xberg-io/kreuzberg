@@ -315,6 +315,60 @@ public class ContractTest {
     }
 
     @Test
+    public void configChunkingMarkdown() throws Exception {
+        JsonNode config = MAPPER.readTree("{\"chunking\":{\"chunker_type\":\"markdown\",\"max_chars\":500,\"max_overlap\":50}}");
+        E2EHelpers.runFixture(
+            "config_chunking_markdown",
+            "pdf/fake_memo.pdf",
+            config,
+            Arrays.asList("chunking"),
+            null,
+            true,
+            result -> {
+                E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("application/pdf"));
+                E2EHelpers.Assertions.assertMinContentLength(result, 10);
+                E2EHelpers.Assertions.assertChunks(result, 1, null, true, null);
+            }
+        );
+    }
+
+    @Test
+    public void configChunkingSmall() throws Exception {
+        JsonNode config = MAPPER.readTree("{\"chunking\":{\"max_chars\":100,\"max_overlap\":20}}");
+        E2EHelpers.runFixture(
+            "config_chunking_small",
+            "pdf/fake_memo.pdf",
+            config,
+            Arrays.asList("chunking"),
+            null,
+            true,
+            result -> {
+                E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("application/pdf"));
+                E2EHelpers.Assertions.assertMinContentLength(result, 10);
+                E2EHelpers.Assertions.assertChunks(result, 2, null, true, null);
+            }
+        );
+    }
+
+    @Test
+    public void configDjotContent() throws Exception {
+        JsonNode config = MAPPER.readTree("{\"output_format\":\"djot\"}");
+        E2EHelpers.runFixture(
+            "config_djot_content",
+            "pdf/fake_memo.pdf",
+            config,
+            Arrays.asList("pdf"),
+            null,
+            true,
+            result -> {
+                E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("application/pdf"));
+                E2EHelpers.Assertions.assertMinContentLength(result, 10);
+                E2EHelpers.Assertions.assertDjotContent(result, true, null);
+            }
+        );
+    }
+
+    @Test
     public void configDocumentStructure() throws Exception {
         JsonNode config = MAPPER.readTree("{\"include_document_structure\":true}");
         E2EHelpers.runFixture(
@@ -349,6 +403,23 @@ public class ContractTest {
     }
 
     @Test
+    public void configDocumentStructureHeadings() throws Exception {
+        JsonNode config = MAPPER.readTree("{\"include_document_structure\":true}");
+        E2EHelpers.runFixture(
+            "config_document_structure_headings",
+            "office/docx/headers.docx",
+            config,
+            Arrays.asList("office"),
+            null,
+            true,
+            result -> {
+                E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("application/vnd.openxmlformats-officedocument.wordprocessingml.document"));
+                E2EHelpers.Assertions.assertDocument(result, true, 1, Arrays.asList("heading", "paragraph"), null);
+            }
+        );
+    }
+
+    @Test
     public void configDocumentStructureWithHeadings() throws Exception {
         JsonNode config = MAPPER.readTree("{\"include_document_structure\":true}");
         E2EHelpers.runFixture(
@@ -361,6 +432,23 @@ public class ContractTest {
             result -> {
                 E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("application/vnd.openxmlformats-officedocument.wordprocessingml.document"));
                 E2EHelpers.Assertions.assertDocument(result, true, 1, null, null);
+            }
+        );
+    }
+
+    @Test
+    public void configElementTypes() throws Exception {
+        JsonNode config = MAPPER.readTree("{\"result_format\":\"element_based\"}");
+        E2EHelpers.runFixture(
+            "config_element_types",
+            "office/docx/headers.docx",
+            config,
+            Arrays.asList("office"),
+            null,
+            true,
+            result -> {
+                E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("application/vnd.openxmlformats-officedocument.wordprocessingml.document"));
+                E2EHelpers.Assertions.assertElements(result, 1, Arrays.asList("title", "narrative_text"));
             }
         );
     }
@@ -454,11 +542,100 @@ public class ContractTest {
     }
 
     @Test
+    public void configLanguageMulti() throws Exception {
+        JsonNode config = MAPPER.readTree("{\"language_detection\":{\"detect_multiple\":true,\"enabled\":true}}");
+        E2EHelpers.runFixture(
+            "config_language_multi",
+            "pdf/fake_memo.pdf",
+            config,
+            Arrays.asList("language-detection"),
+            null,
+            true,
+            result -> {
+                E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("application/pdf"));
+                E2EHelpers.Assertions.assertMinContentLength(result, 10);
+                E2EHelpers.Assertions.assertDetectedLanguages(result, Arrays.asList("eng"), null);
+            }
+        );
+    }
+
+    @Test
     public void configPages() throws Exception {
-        JsonNode config = MAPPER.readTree("{\"pages\":{\"end\":3,\"start\":1}}");
+        JsonNode config = MAPPER.readTree("{\"pages\":{\"extract_pages\":true,\"insert_page_markers\":true}}");
         E2EHelpers.runFixture(
             "config_pages",
-            "pdf/multi_page.pdf",
+            "pdf/fake_memo.pdf",
+            config,
+            Arrays.asList("pdf"),
+            null,
+            true,
+            result -> {
+                E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("application/pdf"));
+                E2EHelpers.Assertions.assertMinContentLength(result, 10);
+                E2EHelpers.Assertions.assertContentContainsAny(result, Arrays.asList("PAGE"));
+            }
+        );
+    }
+
+    @Test
+    public void configPagesExtract() throws Exception {
+        JsonNode config = MAPPER.readTree("{\"pages\":{\"extract_pages\":true}}");
+        E2EHelpers.runFixture(
+            "config_pages_extract",
+            "pdf/fake_memo.pdf",
+            config,
+            Arrays.asList("pdf"),
+            null,
+            true,
+            result -> {
+                E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("application/pdf"));
+                E2EHelpers.Assertions.assertMinContentLength(result, 10);
+                E2EHelpers.Assertions.assertPages(result, 1, null);
+            }
+        );
+    }
+
+    @Test
+    public void configPagesMarkers() throws Exception {
+        JsonNode config = MAPPER.readTree("{\"pages\":{\"insert_page_markers\":true}}");
+        E2EHelpers.runFixture(
+            "config_pages_markers",
+            "pdf/fake_memo.pdf",
+            config,
+            Arrays.asList("pdf"),
+            null,
+            true,
+            result -> {
+                E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("application/pdf"));
+                E2EHelpers.Assertions.assertMinContentLength(result, 10);
+                E2EHelpers.Assertions.assertContentContainsAny(result, Arrays.asList("PAGE"));
+            }
+        );
+    }
+
+    @Test
+    public void configPdfHierarchy() throws Exception {
+        JsonNode config = MAPPER.readTree("{\"pages\":{\"extract_pages\":true},\"pdf_options\":{\"hierarchy\":{\"enabled\":true,\"include_bbox\":true}}}");
+        E2EHelpers.runFixture(
+            "config_pdf_hierarchy",
+            "pdf/fake_memo.pdf",
+            config,
+            Arrays.asList("pdf"),
+            null,
+            true,
+            result -> {
+                E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("application/pdf"));
+                E2EHelpers.Assertions.assertMinContentLength(result, 50);
+            }
+        );
+    }
+
+    @Test
+    public void configPostprocessor() throws Exception {
+        JsonNode config = MAPPER.readTree("{\"postprocessor\":{\"enabled\":true}}");
+        E2EHelpers.runFixture(
+            "config_postprocessor",
+            "pdf/fake_memo.pdf",
             config,
             Collections.emptyList(),
             null,
@@ -466,6 +643,7 @@ public class ContractTest {
             result -> {
                 E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("application/pdf"));
                 E2EHelpers.Assertions.assertMinContentLength(result, 10);
+                E2EHelpers.Assertions.assertContentNotEmpty(result);
             }
         );
     }
@@ -484,6 +662,41 @@ public class ContractTest {
                 E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("application/pdf"));
                 E2EHelpers.Assertions.assertMinContentLength(result, 10);
                 E2EHelpers.Assertions.assertContentNotEmpty(result);
+            }
+        );
+    }
+
+    @Test
+    public void configQualityEnabled() throws Exception {
+        JsonNode config = MAPPER.readTree("{\"enable_quality_processing\":true}");
+        E2EHelpers.runFixture(
+            "config_quality_enabled",
+            "pdf/fake_memo.pdf",
+            config,
+            Arrays.asList("quality"),
+            null,
+            true,
+            result -> {
+                E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("application/pdf"));
+                E2EHelpers.Assertions.assertMinContentLength(result, 10);
+                E2EHelpers.Assertions.assertQualityScore(result, true, 0.00, 1.00);
+            }
+        );
+    }
+
+    @Test
+    public void configStructuredOutput() throws Exception {
+        JsonNode config = MAPPER.readTree("{\"output_format\":\"structured\"}");
+        E2EHelpers.runFixture(
+            "config_structured_output",
+            "pdf/fake_memo.pdf",
+            config,
+            Arrays.asList("pdf"),
+            null,
+            true,
+            result -> {
+                E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("application/pdf"));
+                E2EHelpers.Assertions.assertMinContentLength(result, 10);
             }
         );
     }

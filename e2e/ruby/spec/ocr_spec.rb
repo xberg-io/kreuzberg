@@ -65,6 +65,46 @@ RSpec.describe 'ocr fixtures' do
     end
   end
 
+  it 'ocr_paddle_element_hierarchy' do
+    E2ERuby.skip_if_feature_unavailable('paddle-ocr')
+    E2ERuby.skip_if_feature_unavailable('paddle-ocr')
+    E2ERuby.run_fixture(
+      'ocr_paddle_element_hierarchy',
+      'images/test_hello_world.png',
+      { force_ocr: true, ocr: { backend: 'paddle-ocr', element_config: { build_hierarchy: true, include_elements: true }, language: 'en' } },
+      requirements: %w[paddle-ocr paddle-ocr onnxruntime],
+      notes: 'Requires PaddleOCR with ONNX Runtime',
+      skip_if_missing: true
+    ) do |result|
+      E2ERuby::Assertions.assert_expected_mime(
+        result,
+        ['image/png']
+      )
+      E2ERuby::Assertions.assert_min_content_length(result, 5)
+      E2ERuby::Assertions.assert_ocr_elements(result, has_elements: true, elements_have_geometry: true, elements_have_confidence: true)
+    end
+  end
+
+  it 'ocr_paddle_element_levels' do
+    E2ERuby.skip_if_feature_unavailable('paddle-ocr')
+    E2ERuby.skip_if_feature_unavailable('paddle-ocr')
+    E2ERuby.run_fixture(
+      'ocr_paddle_element_levels',
+      'images/test_hello_world.png',
+      { force_ocr: true, ocr: { backend: 'paddle-ocr', element_config: { include_elements: true, min_level: 'word' }, language: 'en' } },
+      requirements: %w[paddle-ocr paddle-ocr onnxruntime],
+      notes: 'Requires PaddleOCR with ONNX Runtime',
+      skip_if_missing: true
+    ) do |result|
+      E2ERuby::Assertions.assert_expected_mime(
+        result,
+        ['image/png']
+      )
+      E2ERuby::Assertions.assert_min_content_length(result, 5)
+      E2ERuby::Assertions.assert_ocr_elements(result, has_elements: true, elements_have_geometry: true, min_count: 1)
+    end
+  end
+
   it 'ocr_paddle_image_chinese' do
     E2ERuby.skip_if_feature_unavailable('paddle-ocr')
     E2ERuby.skip_if_feature_unavailable('paddle-ocr')
@@ -189,9 +229,9 @@ RSpec.describe 'ocr fixtures' do
     E2ERuby.run_fixture(
       'ocr_pdf_image_only_german',
       'pdf/image_only_german_pdf.pdf',
-      { force_ocr: true, ocr: { backend: 'tesseract', language: 'eng' } },
+      { force_ocr: true, ocr: { backend: 'tesseract', language: 'deu' } },
       requirements: %w[tesseract tesseract],
-      notes: 'Skip if OCR backend unavailable.',
+      notes: 'Requires Tesseract OCR with German language data.',
       skip_if_missing: true
     ) do |result|
       E2ERuby::Assertions.assert_expected_mime(
@@ -237,6 +277,43 @@ RSpec.describe 'ocr fixtures' do
       )
       E2ERuby::Assertions.assert_min_content_length(result, 20)
       E2ERuby::Assertions.assert_content_contains_any(result, %w[Docling Markdown JSON])
+    end
+  end
+
+  it 'ocr_tesseract_elements' do
+    E2ERuby.skip_if_feature_unavailable('tesseract')
+    E2ERuby.run_fixture(
+      'ocr_tesseract_elements',
+      'images/test_hello_world.png',
+      { force_ocr: true, ocr: { backend: 'tesseract', element_config: { include_elements: true }, language: 'eng' } },
+      requirements: %w[tesseract tesseract],
+      notes: 'Requires Tesseract OCR backend',
+      skip_if_missing: true
+    ) do |result|
+      E2ERuby::Assertions.assert_expected_mime(
+        result,
+        ['image/png']
+      )
+      E2ERuby::Assertions.assert_min_content_length(result, 5)
+      E2ERuby::Assertions.assert_ocr_elements(result, has_elements: true, elements_have_geometry: true, elements_have_confidence: true)
+    end
+  end
+
+  it 'ocr_tesseract_language_german' do
+    E2ERuby.skip_if_feature_unavailable('tesseract')
+    E2ERuby.run_fixture(
+      'ocr_tesseract_language_german',
+      'pdf/image_only_german_pdf.pdf',
+      { force_ocr: true, ocr: { backend: 'tesseract', language: 'deu' } },
+      requirements: %w[tesseract tesseract],
+      notes: 'Requires Tesseract OCR with German language data (deu)',
+      skip_if_missing: true
+    ) do |result|
+      E2ERuby::Assertions.assert_expected_mime(
+        result,
+        ['application/pdf']
+      )
+      E2ERuby::Assertions.assert_min_content_length(result, 20)
     end
   end
 end

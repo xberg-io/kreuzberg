@@ -666,3 +666,85 @@ func assertContentNotEmpty(t *testing.T, result *kreuzberg.ExtractionResult) {
 		t.Fatalf("expected content to be non-empty, but it is empty")
 	}
 }
+
+func assertTableBoundingBoxes(t *testing.T, result *kreuzberg.ExtractionResult) {
+	t.Helper()
+	for i, table := range result.Tables {
+		if table.BoundingBox == nil {
+			t.Fatalf("table %d expected to have bounding box", i)
+		}
+	}
+}
+
+func assertTableContentContainsAny(t *testing.T, result *kreuzberg.ExtractionResult, snippets []string) {
+	t.Helper()
+	if len(snippets) == 0 {
+		return
+	}
+	var allContent string
+	for _, table := range result.Tables {
+		allContent += strings.ToLower(table.Content) + " "
+	}
+	for _, snippet := range snippets {
+		if strings.Contains(allContent, strings.ToLower(snippet)) {
+			return
+		}
+	}
+	t.Fatalf("expected table content to contain any of %v", snippets)
+}
+
+func assertImageBoundingBoxes(t *testing.T, result *kreuzberg.ExtractionResult) {
+	t.Helper()
+	for i, img := range result.Images {
+		if img.BoundingBox == nil {
+			t.Fatalf("image %d expected to have bounding box", i)
+		}
+	}
+}
+
+func assertQualityScore(t *testing.T, result *kreuzberg.ExtractionResult, hasScore *bool, minScore, maxScore *float64) {
+	t.Helper()
+	if hasScore != nil && *hasScore {
+		if result.QualityScore == nil {
+			t.Fatalf("expected quality score to be present")
+		}
+	}
+	if minScore != nil && result.QualityScore != nil {
+		if *result.QualityScore < *minScore {
+			t.Fatalf("expected quality score >= %f, got %f", *minScore, *result.QualityScore)
+		}
+	}
+	if maxScore != nil && result.QualityScore != nil {
+		if *result.QualityScore > *maxScore {
+			t.Fatalf("expected quality score <= %f, got %f", *maxScore, *result.QualityScore)
+		}
+	}
+}
+
+func assertProcessingWarnings(t *testing.T, result *kreuzberg.ExtractionResult, maxCount *int, isEmpty *bool) {
+	t.Helper()
+	warnings := result.ProcessingWarnings
+	if isEmpty != nil && *isEmpty {
+		if len(warnings) != 0 {
+			t.Fatalf("expected processing warnings to be empty, got %d", len(warnings))
+		}
+	}
+	if maxCount != nil && len(warnings) > *maxCount {
+		t.Fatalf("expected at most %d processing warnings, got %d", *maxCount, len(warnings))
+	}
+}
+
+func assertDjotContent(t *testing.T, result *kreuzberg.ExtractionResult, hasContent *bool, minBlocks *int) {
+	t.Helper()
+	if hasContent != nil && *hasContent {
+		if result.DjotContent == "" {
+			t.Fatalf("expected djot content to be present")
+		}
+	}
+	if minBlocks != nil && result.DjotContent != "" {
+		blocks := strings.Split(result.DjotContent, "\n\n")
+		if len(blocks) < *minBlocks {
+			t.Fatalf("expected at least %d djot blocks, got %d", *minBlocks, len(blocks))
+		}
+	}
+}

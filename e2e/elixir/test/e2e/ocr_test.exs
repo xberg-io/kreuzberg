@@ -79,6 +79,70 @@ defmodule E2E.OcrTest do
       end
     end
 
+    test "ocr_paddle_element_hierarchy" do
+      case E2E.Helpers.run_fixture(
+             "ocr_paddle_element_hierarchy",
+             "images/test_hello_world.png",
+             %{
+               force_ocr: true,
+               ocr: %{
+                 backend: "paddle-ocr",
+                 element_config: %{build_hierarchy: true, include_elements: true},
+                 language: "en"
+               }
+             },
+             requirements: ["paddle-ocr", "paddle-ocr", "onnxruntime"],
+             notes: "Requires PaddleOCR with ONNX Runtime",
+             skip_if_missing: true
+           ) do
+        {:ok, result} ->
+          result
+          |> E2E.Helpers.assert_expected_mime(["image/png"])
+          |> E2E.Helpers.assert_min_content_length(5)
+          |> E2E.Helpers.assert_ocr_elements(
+            has_elements: true,
+            elements_have_geometry: true,
+            elements_have_confidence: true
+          )
+
+        {:skipped, reason} ->
+          IO.puts("SKIPPED: #{reason}")
+
+        {:error, reason} ->
+          flunk("Extraction failed: #{inspect(reason)}")
+      end
+    end
+
+    test "ocr_paddle_element_levels" do
+      case E2E.Helpers.run_fixture(
+             "ocr_paddle_element_levels",
+             "images/test_hello_world.png",
+             %{
+               force_ocr: true,
+               ocr: %{
+                 backend: "paddle-ocr",
+                 element_config: %{include_elements: true, min_level: "word"},
+                 language: "en"
+               }
+             },
+             requirements: ["paddle-ocr", "paddle-ocr", "onnxruntime"],
+             notes: "Requires PaddleOCR with ONNX Runtime",
+             skip_if_missing: true
+           ) do
+        {:ok, result} ->
+          result
+          |> E2E.Helpers.assert_expected_mime(["image/png"])
+          |> E2E.Helpers.assert_min_content_length(5)
+          |> E2E.Helpers.assert_ocr_elements(has_elements: true, elements_have_geometry: true, min_count: 1)
+
+        {:skipped, reason} ->
+          IO.puts("SKIPPED: #{reason}")
+
+        {:error, reason} ->
+          flunk("Extraction failed: #{inspect(reason)}")
+      end
+    end
+
     test "ocr_paddle_image_chinese" do
       case E2E.Helpers.run_fixture(
              "ocr_paddle_image_chinese",
@@ -233,9 +297,9 @@ defmodule E2E.OcrTest do
       case E2E.Helpers.run_fixture(
              "ocr_pdf_image_only_german",
              "pdf/image_only_german_pdf.pdf",
-             %{force_ocr: true, ocr: %{backend: "tesseract", language: "eng"}},
+             %{force_ocr: true, ocr: %{backend: "tesseract", language: "deu"}},
              requirements: ["tesseract", "tesseract"],
-             notes: "Skip if OCR backend unavailable.",
+             notes: "Requires Tesseract OCR with German language data.",
              skip_if_missing: true
            ) do
         {:ok, result} ->
@@ -288,6 +352,58 @@ defmodule E2E.OcrTest do
           |> E2E.Helpers.assert_expected_mime(["application/pdf"])
           |> E2E.Helpers.assert_min_content_length(20)
           |> E2E.Helpers.assert_content_contains_any(["Docling", "Markdown", "JSON"])
+
+        {:skipped, reason} ->
+          IO.puts("SKIPPED: #{reason}")
+
+        {:error, reason} ->
+          flunk("Extraction failed: #{inspect(reason)}")
+      end
+    end
+
+    test "ocr_tesseract_elements" do
+      case E2E.Helpers.run_fixture(
+             "ocr_tesseract_elements",
+             "images/test_hello_world.png",
+             %{
+               force_ocr: true,
+               ocr: %{backend: "tesseract", element_config: %{include_elements: true}, language: "eng"}
+             },
+             requirements: ["tesseract", "tesseract"],
+             notes: "Requires Tesseract OCR backend",
+             skip_if_missing: true
+           ) do
+        {:ok, result} ->
+          result
+          |> E2E.Helpers.assert_expected_mime(["image/png"])
+          |> E2E.Helpers.assert_min_content_length(5)
+          |> E2E.Helpers.assert_ocr_elements(
+            has_elements: true,
+            elements_have_geometry: true,
+            elements_have_confidence: true
+          )
+
+        {:skipped, reason} ->
+          IO.puts("SKIPPED: #{reason}")
+
+        {:error, reason} ->
+          flunk("Extraction failed: #{inspect(reason)}")
+      end
+    end
+
+    test "ocr_tesseract_language_german" do
+      case E2E.Helpers.run_fixture(
+             "ocr_tesseract_language_german",
+             "pdf/image_only_german_pdf.pdf",
+             %{force_ocr: true, ocr: %{backend: "tesseract", language: "deu"}},
+             requirements: ["tesseract", "tesseract"],
+             notes: "Requires Tesseract OCR with German language data (deu)",
+             skip_if_missing: true
+           ) do
+        {:ok, result} ->
+          result
+          |> E2E.Helpers.assert_expected_mime(["application/pdf"])
+          |> E2E.Helpers.assert_min_content_length(20)
 
         {:skipped, reason} ->
           IO.puts("SKIPPED: #{reason}")

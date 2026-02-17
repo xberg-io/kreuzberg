@@ -1,0 +1,22 @@
+{
+	"id": "token_reduction_aggressive",
+	"description": "Tests aggressive token reduction mode significantly reduces content",
+	"tags": ["token_reduction"],
+	"document": {
+		"path": "pdf/fake_memo.pdf"
+	},
+	"extraction": {
+		"method": "sync",
+		"input_type": "file",
+		"config": {
+			"token_reduction": {
+				"mode": "aggressive"
+			}
+		}
+	},
+	"assertions": {
+		"expected_mime": "application/pdf",
+		"min_content_length": 5,
+		"content_not_empty": true
+	}
+}

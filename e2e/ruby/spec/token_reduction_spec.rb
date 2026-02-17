@@ -9,6 +9,24 @@
 require_relative 'spec_helper'
 
 RSpec.describe 'token_reduction fixtures' do
+  it 'token_reduction_aggressive' do
+    E2ERuby.run_fixture(
+      'token_reduction_aggressive',
+      'pdf/fake_memo.pdf',
+      { token_reduction: { mode: 'aggressive' } },
+      requirements: [],
+      notes: nil,
+      skip_if_missing: true
+    ) do |result|
+      E2ERuby::Assertions.assert_expected_mime(
+        result,
+        ['application/pdf']
+      )
+      E2ERuby::Assertions.assert_min_content_length(result, 5)
+      E2ERuby::Assertions.assert_content_not_empty(result)
+    end
+  end
+
   it 'token_reduction_basic' do
     E2ERuby.run_fixture(
       'token_reduction_basic',
@@ -23,6 +41,24 @@ RSpec.describe 'token_reduction fixtures' do
         ['application/pdf']
       )
       E2ERuby::Assertions.assert_min_content_length(result, 5)
+      E2ERuby::Assertions.assert_content_not_empty(result)
+    end
+  end
+
+  it 'token_reduction_light' do
+    E2ERuby.run_fixture(
+      'token_reduction_light',
+      'pdf/fake_memo.pdf',
+      { token_reduction: { mode: 'light' } },
+      requirements: [],
+      notes: nil,
+      skip_if_missing: true
+    ) do |result|
+      E2ERuby::Assertions.assert_expected_mime(
+        result,
+        ['application/pdf']
+      )
+      E2ERuby::Assertions.assert_min_content_length(result, 10)
       E2ERuby::Assertions.assert_content_not_empty(result)
     end
   end

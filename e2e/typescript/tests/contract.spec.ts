@@ -287,6 +287,90 @@ describe("contract fixtures", () => {
 	);
 
 	it(
+		"config_chunking_markdown",
+		() => {
+			const documentPath = resolveDocument("pdf/fake_memo.pdf");
+			if (!existsSync(documentPath)) {
+				console.warn("Skipping config_chunking_markdown: missing document at", documentPath);
+				return;
+			}
+			const config = buildConfig({ chunking: { chunker_type: "markdown", max_chars: 500, max_overlap: 50 } });
+			let result: ExtractionResult | null = null;
+			try {
+				result = extractFileSync(documentPath, null, config);
+			} catch (error) {
+				if (shouldSkipFixture(error, "config_chunking_markdown", ["chunking"], undefined)) {
+					return;
+				}
+				throw error;
+			}
+			if (result === null) {
+				return;
+			}
+			assertions.assertExpectedMime(result, ["application/pdf"]);
+			assertions.assertMinContentLength(result, 10);
+			chunkAssertions.assertChunks(result, 1, null, true, null);
+		},
+		TEST_TIMEOUT_MS,
+	);
+
+	it(
+		"config_chunking_small",
+		() => {
+			const documentPath = resolveDocument("pdf/fake_memo.pdf");
+			if (!existsSync(documentPath)) {
+				console.warn("Skipping config_chunking_small: missing document at", documentPath);
+				return;
+			}
+			const config = buildConfig({ chunking: { max_chars: 100, max_overlap: 20 } });
+			let result: ExtractionResult | null = null;
+			try {
+				result = extractFileSync(documentPath, null, config);
+			} catch (error) {
+				if (shouldSkipFixture(error, "config_chunking_small", ["chunking"], undefined)) {
+					return;
+				}
+				throw error;
+			}
+			if (result === null) {
+				return;
+			}
+			assertions.assertExpectedMime(result, ["application/pdf"]);
+			assertions.assertMinContentLength(result, 10);
+			chunkAssertions.assertChunks(result, 2, null, true, null);
+		},
+		TEST_TIMEOUT_MS,
+	);
+
+	it(
+		"config_djot_content",
+		() => {
+			const documentPath = resolveDocument("pdf/fake_memo.pdf");
+			if (!existsSync(documentPath)) {
+				console.warn("Skipping config_djot_content: missing document at", documentPath);
+				return;
+			}
+			const config = buildConfig({ output_format: "djot" });
+			let result: ExtractionResult | null = null;
+			try {
+				result = extractFileSync(documentPath, null, config);
+			} catch (error) {
+				if (shouldSkipFixture(error, "config_djot_content", ["pdf"], undefined)) {
+					return;
+				}
+				throw error;
+			}
+			if (result === null) {
+				return;
+			}
+			assertions.assertExpectedMime(result, ["application/pdf"]);
+			assertions.assertMinContentLength(result, 10);
+			assertions.assertDjotContent(result, true, undefined);
+		},
+		TEST_TIMEOUT_MS,
+	);
+
+	it(
 		"config_document_structure",
 		() => {
 			const documentPath = resolveDocument("pdf/fake_memo.pdf");
@@ -341,6 +425,35 @@ describe("contract fixtures", () => {
 	);
 
 	it(
+		"config_document_structure_headings",
+		() => {
+			const documentPath = resolveDocument("office/docx/headers.docx");
+			if (!existsSync(documentPath)) {
+				console.warn("Skipping config_document_structure_headings: missing document at", documentPath);
+				return;
+			}
+			const config = buildConfig({ include_document_structure: true });
+			let result: ExtractionResult | null = null;
+			try {
+				result = extractFileSync(documentPath, null, config);
+			} catch (error) {
+				if (shouldSkipFixture(error, "config_document_structure_headings", ["office"], undefined)) {
+					return;
+				}
+				throw error;
+			}
+			if (result === null) {
+				return;
+			}
+			assertions.assertExpectedMime(result, [
+				"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+			]);
+			chunkAssertions.assertDocument(result, true, 1, ["heading", "paragraph"], null);
+		},
+		TEST_TIMEOUT_MS,
+	);
+
+	it(
 		"config_document_structure_with_headings",
 		() => {
 			const documentPath = resolveDocument("docx/fake.docx");
@@ -365,6 +478,35 @@ describe("contract fixtures", () => {
 				"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 			]);
 			chunkAssertions.assertDocument(result, true, 1, null, null);
+		},
+		TEST_TIMEOUT_MS,
+	);
+
+	it(
+		"config_element_types",
+		() => {
+			const documentPath = resolveDocument("office/docx/headers.docx");
+			if (!existsSync(documentPath)) {
+				console.warn("Skipping config_element_types: missing document at", documentPath);
+				return;
+			}
+			const config = buildConfig({ result_format: "element_based" });
+			let result: ExtractionResult | null = null;
+			try {
+				result = extractFileSync(documentPath, null, config);
+			} catch (error) {
+				if (shouldSkipFixture(error, "config_element_types", ["office"], undefined)) {
+					return;
+				}
+				throw error;
+			}
+			if (result === null) {
+				return;
+			}
+			assertions.assertExpectedMime(result, [
+				"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+			]);
+			chunkAssertions.assertElements(result, 1, ["title", "narrative_text"]);
 		},
 		TEST_TIMEOUT_MS,
 	);
@@ -508,19 +650,19 @@ describe("contract fixtures", () => {
 	);
 
 	it(
-		"config_pages",
+		"config_language_multi",
 		() => {
-			const documentPath = resolveDocument("pdf/multi_page.pdf");
+			const documentPath = resolveDocument("pdf/fake_memo.pdf");
 			if (!existsSync(documentPath)) {
-				console.warn("Skipping config_pages: missing document at", documentPath);
+				console.warn("Skipping config_language_multi: missing document at", documentPath);
 				return;
 			}
-			const config = buildConfig({ pages: { end: 3, start: 1 } });
+			const config = buildConfig({ language_detection: { detect_multiple: true, enabled: true } });
 			let result: ExtractionResult | null = null;
 			try {
 				result = extractFileSync(documentPath, null, config);
 			} catch (error) {
-				if (shouldSkipFixture(error, "config_pages", [], undefined)) {
+				if (shouldSkipFixture(error, "config_language_multi", ["language-detection"], undefined)) {
 					return;
 				}
 				throw error;
@@ -530,6 +672,149 @@ describe("contract fixtures", () => {
 			}
 			assertions.assertExpectedMime(result, ["application/pdf"]);
 			assertions.assertMinContentLength(result, 10);
+			assertions.assertDetectedLanguages(result, ["eng"], null);
+		},
+		TEST_TIMEOUT_MS,
+	);
+
+	it(
+		"config_pages",
+		() => {
+			const documentPath = resolveDocument("pdf/fake_memo.pdf");
+			if (!existsSync(documentPath)) {
+				console.warn("Skipping config_pages: missing document at", documentPath);
+				return;
+			}
+			const config = buildConfig({ pages: { extract_pages: true, insert_page_markers: true } });
+			let result: ExtractionResult | null = null;
+			try {
+				result = extractFileSync(documentPath, null, config);
+			} catch (error) {
+				if (shouldSkipFixture(error, "config_pages", ["pdf"], undefined)) {
+					return;
+				}
+				throw error;
+			}
+			if (result === null) {
+				return;
+			}
+			assertions.assertExpectedMime(result, ["application/pdf"]);
+			assertions.assertMinContentLength(result, 10);
+			assertions.assertContentContainsAny(result, ["PAGE"]);
+		},
+		TEST_TIMEOUT_MS,
+	);
+
+	it(
+		"config_pages_extract",
+		() => {
+			const documentPath = resolveDocument("pdf/fake_memo.pdf");
+			if (!existsSync(documentPath)) {
+				console.warn("Skipping config_pages_extract: missing document at", documentPath);
+				return;
+			}
+			const config = buildConfig({ pages: { extract_pages: true } });
+			let result: ExtractionResult | null = null;
+			try {
+				result = extractFileSync(documentPath, null, config);
+			} catch (error) {
+				if (shouldSkipFixture(error, "config_pages_extract", ["pdf"], undefined)) {
+					return;
+				}
+				throw error;
+			}
+			if (result === null) {
+				return;
+			}
+			assertions.assertExpectedMime(result, ["application/pdf"]);
+			assertions.assertMinContentLength(result, 10);
+			chunkAssertions.assertPages(result, 1, null);
+		},
+		TEST_TIMEOUT_MS,
+	);
+
+	it(
+		"config_pages_markers",
+		() => {
+			const documentPath = resolveDocument("pdf/fake_memo.pdf");
+			if (!existsSync(documentPath)) {
+				console.warn("Skipping config_pages_markers: missing document at", documentPath);
+				return;
+			}
+			const config = buildConfig({ pages: { insert_page_markers: true } });
+			let result: ExtractionResult | null = null;
+			try {
+				result = extractFileSync(documentPath, null, config);
+			} catch (error) {
+				if (shouldSkipFixture(error, "config_pages_markers", ["pdf"], undefined)) {
+					return;
+				}
+				throw error;
+			}
+			if (result === null) {
+				return;
+			}
+			assertions.assertExpectedMime(result, ["application/pdf"]);
+			assertions.assertMinContentLength(result, 10);
+			assertions.assertContentContainsAny(result, ["PAGE"]);
+		},
+		TEST_TIMEOUT_MS,
+	);
+
+	it(
+		"config_pdf_hierarchy",
+		() => {
+			const documentPath = resolveDocument("pdf/fake_memo.pdf");
+			if (!existsSync(documentPath)) {
+				console.warn("Skipping config_pdf_hierarchy: missing document at", documentPath);
+				return;
+			}
+			const config = buildConfig({
+				pages: { extract_pages: true },
+				pdf_options: { hierarchy: { enabled: true, include_bbox: true } },
+			});
+			let result: ExtractionResult | null = null;
+			try {
+				result = extractFileSync(documentPath, null, config);
+			} catch (error) {
+				if (shouldSkipFixture(error, "config_pdf_hierarchy", ["pdf"], undefined)) {
+					return;
+				}
+				throw error;
+			}
+			if (result === null) {
+				return;
+			}
+			assertions.assertExpectedMime(result, ["application/pdf"]);
+			assertions.assertMinContentLength(result, 50);
+		},
+		TEST_TIMEOUT_MS,
+	);
+
+	it(
+		"config_postprocessor",
+		() => {
+			const documentPath = resolveDocument("pdf/fake_memo.pdf");
+			if (!existsSync(documentPath)) {
+				console.warn("Skipping config_postprocessor: missing document at", documentPath);
+				return;
+			}
+			const config = buildConfig({ postprocessor: { enabled: true } });
+			let result: ExtractionResult | null = null;
+			try {
+				result = extractFileSync(documentPath, null, config);
+			} catch (error) {
+				if (shouldSkipFixture(error, "config_postprocessor", [], undefined)) {
+					return;
+				}
+				throw error;
+			}
+			if (result === null) {
+				return;
+			}
+			assertions.assertExpectedMime(result, ["application/pdf"]);
+			assertions.assertMinContentLength(result, 10);
+			assertions.assertContentNotEmpty(result);
 		},
 		TEST_TIMEOUT_MS,
 	);
@@ -558,6 +843,61 @@ describe("contract fixtures", () => {
 			assertions.assertExpectedMime(result, ["application/pdf"]);
 			assertions.assertMinContentLength(result, 10);
 			assertions.assertContentNotEmpty(result);
+		},
+		TEST_TIMEOUT_MS,
+	);
+
+	it(
+		"config_quality_enabled",
+		() => {
+			const documentPath = resolveDocument("pdf/fake_memo.pdf");
+			if (!existsSync(documentPath)) {
+				console.warn("Skipping config_quality_enabled: missing document at", documentPath);
+				return;
+			}
+			const config = buildConfig({ enable_quality_processing: true });
+			let result: ExtractionResult | null = null;
+			try {
+				result = extractFileSync(documentPath, null, config);
+			} catch (error) {
+				if (shouldSkipFixture(error, "config_quality_enabled", ["quality"], undefined)) {
+					return;
+				}
+				throw error;
+			}
+			if (result === null) {
+				return;
+			}
+			assertions.assertExpectedMime(result, ["application/pdf"]);
+			assertions.assertMinContentLength(result, 10);
+			assertions.assertQualityScore(result, true, 0, 1);
+		},
+		TEST_TIMEOUT_MS,
+	);
+
+	it(
+		"config_structured_output",
+		() => {
+			const documentPath = resolveDocument("pdf/fake_memo.pdf");
+			if (!existsSync(documentPath)) {
+				console.warn("Skipping config_structured_output: missing document at", documentPath);
+				return;
+			}
+			const config = buildConfig({ output_format: "structured" });
+			let result: ExtractionResult | null = null;
+			try {
+				result = extractFileSync(documentPath, null, config);
+			} catch (error) {
+				if (shouldSkipFixture(error, "config_structured_output", ["pdf"], undefined)) {
+					return;
+				}
+				throw error;
+			}
+			if (result === null) {
+				return;
+			}
+			assertions.assertExpectedMime(result, ["application/pdf"]);
+			assertions.assertMinContentLength(result, 10);
 		},
 		TEST_TIMEOUT_MS,
 	);

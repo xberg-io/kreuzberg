@@ -726,6 +726,111 @@ public static class TestHelpers
             throw new XunitException("Expected content to be non-empty, but it is empty");
         }
     }
+
+    public static void AssertTableBoundingBoxes(ExtractionResult result)
+    {
+        var tables = result.Tables;
+        if (tables is not null)
+        {
+            for (var i = 0; i < tables.Count; i++)
+            {
+                if (tables[i].BoundingBox is null)
+                {
+                    throw new XunitException($"Table {i} expected to have bounding box");
+                }
+            }
+        }
+    }
+
+    public static void AssertTableContentContainsAny(ExtractionResult result, IEnumerable<string> snippets)
+    {
+        var list = snippets.ToArray();
+        if (list.Length == 0) return;
+        var tables = result.Tables;
+        var allContent = string.Join(" ", (tables ?? new List<Table>()).Select(t => (t.Content ?? "").ToLowerInvariant()));
+        foreach (var snippet in list)
+        {
+            if (allContent.Contains(snippet.ToLowerInvariant()))
+            {
+                return;
+            }
+        }
+        throw new XunitException($"Expected table content to contain any of [{string.Join(", ", list)}]");
+    }
+
+    public static void AssertImageBoundingBoxes(ExtractionResult result)
+    {
+        var images = result.Images;
+        if (images is not null)
+        {
+            for (var i = 0; i < images.Count; i++)
+            {
+                if (images[i].BoundingBox is null)
+                {
+                    throw new XunitException($"Image {i} expected to have bounding box");
+                }
+            }
+        }
+    }
+
+    public static void AssertQualityScore(ExtractionResult result, bool? hasScore, double? minScore, double? maxScore)
+    {
+        if (hasScore == true)
+        {
+            if (result.QualityScore is null)
+            {
+                throw new XunitException("Expected quality score to be present");
+            }
+        }
+        if (minScore.HasValue && result.QualityScore.HasValue)
+        {
+            if (result.QualityScore.Value < minScore.Value)
+            {
+                throw new XunitException($"Expected quality score >= {minScore.Value}, got {result.QualityScore.Value}");
+            }
+        }
+        if (maxScore.HasValue && result.QualityScore.HasValue)
+        {
+            if (result.QualityScore.Value > maxScore.Value)
+            {
+                throw new XunitException($"Expected quality score <= {maxScore.Value}, got {result.QualityScore.Value}");
+            }
+        }
+    }
+
+    public static void AssertProcessingWarnings(ExtractionResult result, int? maxCount, bool? isEmpty)
+    {
+        var warnings = result.ProcessingWarnings;
+        var count = warnings?.Count ?? 0;
+        if (isEmpty == true && count != 0)
+        {
+            throw new XunitException($"Expected processing warnings to be empty, got {count}");
+        }
+        if (maxCount.HasValue && count > maxCount.Value)
+        {
+            throw new XunitException($"Expected at most {maxCount.Value} processing warnings, got {count}");
+        }
+    }
+
+    public static void AssertDjotContent(ExtractionResult result, bool? hasContent, int? minBlocks)
+    {
+        var djotContent = result.DjotContent;
+        if (hasContent == true)
+        {
+            if (string.IsNullOrEmpty(djotContent))
+            {
+                throw new XunitException("Expected djot content to be present");
+            }
+        }
+        if (minBlocks.HasValue && !string.IsNullOrEmpty(djotContent))
+        {
+            var blocks = djotContent.Split(new[] { "\n\n" }, StringSplitOptions.None);
+            if (blocks.Length < minBlocks.Value)
+            {
+                throw new XunitException($"Expected at least {minBlocks.Value} djot blocks, got {blocks.Length}");
+            }
+        }
+    }
 }
 "#;
 
@@ -1025,6 +1130,18 @@ fn render_assertions(buffer: &mut String, assertions: &Assertions) -> Result<()>
             "            TestHelpers.AssertTableCount(result, {}, {});",
             min_str, max_str
         )?;
+        if tables.has_bounding_boxes == Some(true) {
+            writeln!(buffer, "            TestHelpers.AssertTableBoundingBoxes(result);")?;
+        }
+        if let Some(snippets) = tables.content_contains_any.as_ref() {
+            if !snippets.is_empty() {
+                writeln!(
+                    buffer,
+                    "            TestHelpers.AssertTableContentContainsAny(result, new[] {{ {} }});",
+                    render_string_array(snippets)
+                )?;
+            }
+        }
     }
 
     if let Some(languages) = assertions.detected_languages.as_ref() {
@@ -1099,6 +1216,9 @@ fn render_assertions(buffer: &mut String, assertions: &Assertions) -> Result<()>
             "            TestHelpers.AssertImages(result, {}, {}, {});",
             min_count, max_count, formats_include
         )?;
+        if images.has_bounding_boxes == Some(true) {
+            writeln!(buffer, "            TestHelpers.AssertImageBoundingBoxes(result);")?;
+        }
     }
 
     if let Some(pages) = assertions.pages.as_ref() {
@@ -1202,6 +1322,55 @@ fn render_assertions(buffer: &mut String, assertions: &Assertions) -> Result<()>
 
     if assertions.content_not_empty == Some(true) {
         writeln!(buffer, "            TestHelpers.AssertContentNotEmpty(result);")?;
+    }
+    if let Some(qs) = assertions.quality_score.as_ref() {
+        let has_score = qs
+            .has_score
+            .map(|v| if v { "true" } else { "false" }.to_string())
+            .unwrap_or_else(|| "null".to_string());
+        let min_score = qs
+            .min_score
+            .map(|v| format!("{}", v))
+            .unwrap_or_else(|| "null".to_string());
+        let max_score = qs
+            .max_score
+            .map(|v| format!("{}", v))
+            .unwrap_or_else(|| "null".to_string());
+        writeln!(
+            buffer,
+            "            TestHelpers.AssertQualityScore(result, {}, {}, {});",
+            has_score, min_score, max_score
+        )?;
+    }
+    if let Some(pw) = assertions.processing_warnings.as_ref() {
+        let max_count = pw
+            .max_count
+            .map(|v| format!("{}", v))
+            .unwrap_or_else(|| "null".to_string());
+        let is_empty = pw
+            .is_empty
+            .map(|v| if v { "true" } else { "false" }.to_string())
+            .unwrap_or_else(|| "null".to_string());
+        writeln!(
+            buffer,
+            "            TestHelpers.AssertProcessingWarnings(result, {}, {});",
+            max_count, is_empty
+        )?;
+    }
+    if let Some(dc) = assertions.djot_content.as_ref() {
+        let has_content = dc
+            .has_content
+            .map(|v| if v { "true" } else { "false" }.to_string())
+            .unwrap_or_else(|| "null".to_string());
+        let min_blocks = dc
+            .min_blocks
+            .map(|v| format!("{}", v))
+            .unwrap_or_else(|| "null".to_string());
+        writeln!(
+            buffer,
+            "            TestHelpers.AssertDjotContent(result, {}, {});",
+            has_content, min_blocks
+        )?;
     }
 
     Ok(())

@@ -244,6 +244,81 @@ describe("contract", () => {
 		assertions.assertChunks(result, 1, null, true, null);
 	});
 
+	it("config_chunking_markdown", async () => {
+		const documentBytes = getFixture("pdf/fake_memo.pdf");
+		if (documentBytes === null) {
+			console.warn("[SKIP] Test skipped: fixture not available in Cloudflare Workers environment");
+			return;
+		}
+
+		const config = buildConfig({ chunking: { chunker_type: "markdown", max_chars: 500, max_overlap: 50 } });
+		let result: ExtractionResult | null = null;
+		try {
+			result = await extractBytes(documentBytes, "application/octet-stream", config);
+		} catch (error) {
+			if (shouldSkipFixture(error, "config_chunking_markdown", ["chunking"], undefined)) {
+				return;
+			}
+			throw error;
+		}
+		if (result === null) {
+			return;
+		}
+		assertions.assertExpectedMime(result, ["application/pdf"]);
+		assertions.assertMinContentLength(result, 10);
+		assertions.assertChunks(result, 1, null, true, null);
+	});
+
+	it("config_chunking_small", async () => {
+		const documentBytes = getFixture("pdf/fake_memo.pdf");
+		if (documentBytes === null) {
+			console.warn("[SKIP] Test skipped: fixture not available in Cloudflare Workers environment");
+			return;
+		}
+
+		const config = buildConfig({ chunking: { max_chars: 100, max_overlap: 20 } });
+		let result: ExtractionResult | null = null;
+		try {
+			result = await extractBytes(documentBytes, "application/octet-stream", config);
+		} catch (error) {
+			if (shouldSkipFixture(error, "config_chunking_small", ["chunking"], undefined)) {
+				return;
+			}
+			throw error;
+		}
+		if (result === null) {
+			return;
+		}
+		assertions.assertExpectedMime(result, ["application/pdf"]);
+		assertions.assertMinContentLength(result, 10);
+		assertions.assertChunks(result, 2, null, true, null);
+	});
+
+	it("config_djot_content", async () => {
+		const documentBytes = getFixture("pdf/fake_memo.pdf");
+		if (documentBytes === null) {
+			console.warn("[SKIP] Test skipped: fixture not available in Cloudflare Workers environment");
+			return;
+		}
+
+		const config = buildConfig({ output_format: "djot" });
+		let result: ExtractionResult | null = null;
+		try {
+			result = await extractBytes(documentBytes, "application/octet-stream", config);
+		} catch (error) {
+			if (shouldSkipFixture(error, "config_djot_content", ["pdf"], undefined)) {
+				return;
+			}
+			throw error;
+		}
+		if (result === null) {
+			return;
+		}
+		assertions.assertExpectedMime(result, ["application/pdf"]);
+		assertions.assertMinContentLength(result, 10);
+		assertions.assertDjotContent(result, true, null);
+	});
+
 	it("config_document_structure", async () => {
 		const documentBytes = getFixture("pdf/fake_memo.pdf");
 		if (documentBytes === null) {
@@ -292,6 +367,30 @@ describe("contract", () => {
 		assertions.assertDocument(result, false, null, null, null);
 	});
 
+	it("config_document_structure_headings", async () => {
+		const documentBytes = getFixture("office/docx/headers.docx");
+		if (documentBytes === null) {
+			console.warn("[SKIP] Test skipped: fixture not available in Cloudflare Workers environment");
+			return;
+		}
+
+		const config = buildConfig({ include_document_structure: true });
+		let result: ExtractionResult | null = null;
+		try {
+			result = await extractBytes(documentBytes, "application/octet-stream", config);
+		} catch (error) {
+			if (shouldSkipFixture(error, "config_document_structure_headings", ["office"], undefined)) {
+				return;
+			}
+			throw error;
+		}
+		if (result === null) {
+			return;
+		}
+		assertions.assertExpectedMime(result, ["application/vnd.openxmlformats-officedocument.wordprocessingml.document"]);
+		assertions.assertDocument(result, true, 1, ["heading", "paragraph"], null);
+	});
+
 	it("config_document_structure_with_headings", async () => {
 		const documentBytes = getFixture("docx/fake.docx");
 		if (documentBytes === null) {
@@ -314,6 +413,30 @@ describe("contract", () => {
 		}
 		assertions.assertExpectedMime(result, ["application/vnd.openxmlformats-officedocument.wordprocessingml.document"]);
 		assertions.assertDocument(result, true, 1, null, null);
+	});
+
+	it("config_element_types", async () => {
+		const documentBytes = getFixture("office/docx/headers.docx");
+		if (documentBytes === null) {
+			console.warn("[SKIP] Test skipped: fixture not available in Cloudflare Workers environment");
+			return;
+		}
+
+		const config = buildConfig({ result_format: "element_based" });
+		let result: ExtractionResult | null = null;
+		try {
+			result = await extractBytes(documentBytes, "application/octet-stream", config);
+		} catch (error) {
+			if (shouldSkipFixture(error, "config_element_types", ["office"], undefined)) {
+				return;
+			}
+			throw error;
+		}
+		if (result === null) {
+			return;
+		}
+		assertions.assertExpectedMime(result, ["application/vnd.openxmlformats-officedocument.wordprocessingml.document"]);
+		assertions.assertElements(result, 1, ["title", "narrative_text"]);
 	});
 
 	it("config_force_ocr", async () => {
@@ -414,19 +537,19 @@ describe("contract", () => {
 		assertions.assertDetectedLanguages(result, ["eng"], 0.5);
 	});
 
-	it("config_pages", async () => {
-		const documentBytes = getFixture("pdf/multi_page.pdf");
+	it("config_language_multi", async () => {
+		const documentBytes = getFixture("pdf/fake_memo.pdf");
 		if (documentBytes === null) {
 			console.warn("[SKIP] Test skipped: fixture not available in Cloudflare Workers environment");
 			return;
 		}
 
-		const config = buildConfig({ pages: { end: 3, start: 1 } });
+		const config = buildConfig({ language_detection: { detect_multiple: true, enabled: true } });
 		let result: ExtractionResult | null = null;
 		try {
 			result = await extractBytes(documentBytes, "application/octet-stream", config);
 		} catch (error) {
-			if (shouldSkipFixture(error, "config_pages", [], undefined)) {
+			if (shouldSkipFixture(error, "config_language_multi", ["language-detection"], undefined)) {
 				return;
 			}
 			throw error;
@@ -436,6 +559,134 @@ describe("contract", () => {
 		}
 		assertions.assertExpectedMime(result, ["application/pdf"]);
 		assertions.assertMinContentLength(result, 10);
+		assertions.assertDetectedLanguages(result, ["eng"], null);
+	});
+
+	it("config_pages", async () => {
+		const documentBytes = getFixture("pdf/fake_memo.pdf");
+		if (documentBytes === null) {
+			console.warn("[SKIP] Test skipped: fixture not available in Cloudflare Workers environment");
+			return;
+		}
+
+		const config = buildConfig({ pages: { extract_pages: true, insert_page_markers: true } });
+		let result: ExtractionResult | null = null;
+		try {
+			result = await extractBytes(documentBytes, "application/octet-stream", config);
+		} catch (error) {
+			if (shouldSkipFixture(error, "config_pages", ["pdf"], undefined)) {
+				return;
+			}
+			throw error;
+		}
+		if (result === null) {
+			return;
+		}
+		assertions.assertExpectedMime(result, ["application/pdf"]);
+		assertions.assertMinContentLength(result, 10);
+		assertions.assertContentContainsAny(result, ["PAGE"]);
+	});
+
+	it("config_pages_extract", async () => {
+		const documentBytes = getFixture("pdf/fake_memo.pdf");
+		if (documentBytes === null) {
+			console.warn("[SKIP] Test skipped: fixture not available in Cloudflare Workers environment");
+			return;
+		}
+
+		const config = buildConfig({ pages: { extract_pages: true } });
+		let result: ExtractionResult | null = null;
+		try {
+			result = await extractBytes(documentBytes, "application/octet-stream", config);
+		} catch (error) {
+			if (shouldSkipFixture(error, "config_pages_extract", ["pdf"], undefined)) {
+				return;
+			}
+			throw error;
+		}
+		if (result === null) {
+			return;
+		}
+		assertions.assertExpectedMime(result, ["application/pdf"]);
+		assertions.assertMinContentLength(result, 10);
+		assertions.assertPages(result, 1, null);
+	});
+
+	it("config_pages_markers", async () => {
+		const documentBytes = getFixture("pdf/fake_memo.pdf");
+		if (documentBytes === null) {
+			console.warn("[SKIP] Test skipped: fixture not available in Cloudflare Workers environment");
+			return;
+		}
+
+		const config = buildConfig({ pages: { insert_page_markers: true } });
+		let result: ExtractionResult | null = null;
+		try {
+			result = await extractBytes(documentBytes, "application/octet-stream", config);
+		} catch (error) {
+			if (shouldSkipFixture(error, "config_pages_markers", ["pdf"], undefined)) {
+				return;
+			}
+			throw error;
+		}
+		if (result === null) {
+			return;
+		}
+		assertions.assertExpectedMime(result, ["application/pdf"]);
+		assertions.assertMinContentLength(result, 10);
+		assertions.assertContentContainsAny(result, ["PAGE"]);
+	});
+
+	it("config_pdf_hierarchy", async () => {
+		const documentBytes = getFixture("pdf/fake_memo.pdf");
+		if (documentBytes === null) {
+			console.warn("[SKIP] Test skipped: fixture not available in Cloudflare Workers environment");
+			return;
+		}
+
+		const config = buildConfig({
+			pages: { extract_pages: true },
+			pdf_options: { hierarchy: { enabled: true, include_bbox: true } },
+		});
+		let result: ExtractionResult | null = null;
+		try {
+			result = await extractBytes(documentBytes, "application/octet-stream", config);
+		} catch (error) {
+			if (shouldSkipFixture(error, "config_pdf_hierarchy", ["pdf"], undefined)) {
+				return;
+			}
+			throw error;
+		}
+		if (result === null) {
+			return;
+		}
+		assertions.assertExpectedMime(result, ["application/pdf"]);
+		assertions.assertMinContentLength(result, 50);
+	});
+
+	it("config_postprocessor", async () => {
+		const documentBytes = getFixture("pdf/fake_memo.pdf");
+		if (documentBytes === null) {
+			console.warn("[SKIP] Test skipped: fixture not available in Cloudflare Workers environment");
+			return;
+		}
+
+		const config = buildConfig({ postprocessor: { enabled: true } });
+		let result: ExtractionResult | null = null;
+		try {
+			result = await extractBytes(documentBytes, "application/octet-stream", config);
+		} catch (error) {
+			if (shouldSkipFixture(error, "config_postprocessor", [], undefined)) {
+				return;
+			}
+			throw error;
+		}
+		if (result === null) {
+			return;
+		}
+		assertions.assertExpectedMime(result, ["application/pdf"]);
+		assertions.assertMinContentLength(result, 10);
+		assertions.assertContentNotEmpty(result);
 	});
 
 	it("config_quality_disabled", async () => {
@@ -461,6 +712,55 @@ describe("contract", () => {
 		assertions.assertExpectedMime(result, ["application/pdf"]);
 		assertions.assertMinContentLength(result, 10);
 		assertions.assertContentNotEmpty(result);
+	});
+
+	it("config_quality_enabled", async () => {
+		const documentBytes = getFixture("pdf/fake_memo.pdf");
+		if (documentBytes === null) {
+			console.warn("[SKIP] Test skipped: fixture not available in Cloudflare Workers environment");
+			return;
+		}
+
+		const config = buildConfig({ enable_quality_processing: true });
+		let result: ExtractionResult | null = null;
+		try {
+			result = await extractBytes(documentBytes, "application/octet-stream", config);
+		} catch (error) {
+			if (shouldSkipFixture(error, "config_quality_enabled", ["quality"], undefined)) {
+				return;
+			}
+			throw error;
+		}
+		if (result === null) {
+			return;
+		}
+		assertions.assertExpectedMime(result, ["application/pdf"]);
+		assertions.assertMinContentLength(result, 10);
+		assertions.assertQualityScore(result, true, 0, 1);
+	});
+
+	it("config_structured_output", async () => {
+		const documentBytes = getFixture("pdf/fake_memo.pdf");
+		if (documentBytes === null) {
+			console.warn("[SKIP] Test skipped: fixture not available in Cloudflare Workers environment");
+			return;
+		}
+
+		const config = buildConfig({ output_format: "structured" });
+		let result: ExtractionResult | null = null;
+		try {
+			result = await extractBytes(documentBytes, "application/octet-stream", config);
+		} catch (error) {
+			if (shouldSkipFixture(error, "config_structured_output", ["pdf"], undefined)) {
+				return;
+			}
+			throw error;
+		}
+		if (result === null) {
+			return;
+		}
+		assertions.assertExpectedMime(result, ["application/pdf"]);
+		assertions.assertMinContentLength(result, 10);
 	});
 
 	it("config_use_cache_false", async () => {

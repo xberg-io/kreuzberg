@@ -44,6 +44,22 @@ namespace Kreuzberg.E2E.Pdf
         }
 
         [SkippableFact]
+        public void PdfBoundingBoxes()
+        {
+            TestHelpers.SkipIfFeatureUnavailable("pdf");
+            TestHelpers.SkipIfLegacyOfficeDisabled("pdf/tiny.pdf");
+            TestHelpers.SkipIfOfficeTestOnWindows("pdf/tiny.pdf");
+            var documentPath = TestHelpers.EnsureDocument("pdf/tiny.pdf", true);
+            var config = TestHelpers.BuildConfig("{\"images\":{\"extract_images\":true}}");
+
+            var result = KreuzbergClient.ExtractFileSync(documentPath, config);
+            TestHelpers.AssertExpectedMime(result, new[] { "application/pdf" });
+            TestHelpers.AssertMinContentLength(result, 50);
+            TestHelpers.AssertTableCount(result, 1, null);
+            TestHelpers.AssertTableBoundingBoxes(result);
+        }
+
+        [SkippableFact]
         public void PdfCodeAndFormula()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("pdf/code_and_formula.pdf");

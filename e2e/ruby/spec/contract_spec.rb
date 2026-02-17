@@ -185,6 +185,63 @@ RSpec.describe 'contract fixtures' do
     end
   end
 
+  it 'config_chunking_markdown' do
+    E2ERuby.skip_if_feature_unavailable('chunking')
+    E2ERuby.run_fixture(
+      'config_chunking_markdown',
+      'pdf/fake_memo.pdf',
+      { chunking: { chunker_type: 'markdown', max_chars: 500, max_overlap: 50 } },
+      requirements: %w[chunking],
+      notes: nil,
+      skip_if_missing: true
+    ) do |result|
+      E2ERuby::Assertions.assert_expected_mime(
+        result,
+        ['application/pdf']
+      )
+      E2ERuby::Assertions.assert_min_content_length(result, 10)
+      E2ERuby::Assertions.assert_chunks(result, min_count: 1, each_has_content: true)
+    end
+  end
+
+  it 'config_chunking_small' do
+    E2ERuby.skip_if_feature_unavailable('chunking')
+    E2ERuby.run_fixture(
+      'config_chunking_small',
+      'pdf/fake_memo.pdf',
+      { chunking: { max_chars: 100, max_overlap: 20 } },
+      requirements: %w[chunking],
+      notes: nil,
+      skip_if_missing: true
+    ) do |result|
+      E2ERuby::Assertions.assert_expected_mime(
+        result,
+        ['application/pdf']
+      )
+      E2ERuby::Assertions.assert_min_content_length(result, 10)
+      E2ERuby::Assertions.assert_chunks(result, min_count: 2, each_has_content: true)
+    end
+  end
+
+  it 'config_djot_content' do
+    E2ERuby.skip_if_feature_unavailable('pdf')
+    E2ERuby.run_fixture(
+      'config_djot_content',
+      'pdf/fake_memo.pdf',
+      { output_format: 'djot' },
+      requirements: %w[pdf],
+      notes: nil,
+      skip_if_missing: true
+    ) do |result|
+      E2ERuby::Assertions.assert_expected_mime(
+        result,
+        ['application/pdf']
+      )
+      E2ERuby::Assertions.assert_min_content_length(result, 10)
+      E2ERuby::Assertions.assert_djot_content(result, has_content: true)
+    end
+  end
+
   it 'config_document_structure' do
     E2ERuby.run_fixture(
       'config_document_structure',
@@ -219,6 +276,24 @@ RSpec.describe 'contract fixtures' do
     end
   end
 
+  it 'config_document_structure_headings' do
+    E2ERuby.skip_if_feature_unavailable('office')
+    E2ERuby.run_fixture(
+      'config_document_structure_headings',
+      'office/docx/headers.docx',
+      { include_document_structure: true },
+      requirements: %w[office],
+      notes: nil,
+      skip_if_missing: true
+    ) do |result|
+      E2ERuby::Assertions.assert_expected_mime(
+        result,
+        ['application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+      )
+      E2ERuby::Assertions.assert_document(result, has_document: true, min_node_count: 1, node_types_include: %w[heading paragraph])
+    end
+  end
+
   it 'config_document_structure_with_headings' do
     E2ERuby.run_fixture(
       'config_document_structure_with_headings',
@@ -233,6 +308,24 @@ RSpec.describe 'contract fixtures' do
         ['application/vnd.openxmlformats-officedocument.wordprocessingml.document']
       )
       E2ERuby::Assertions.assert_document(result, has_document: true, min_node_count: 1)
+    end
+  end
+
+  it 'config_element_types' do
+    E2ERuby.skip_if_feature_unavailable('office')
+    E2ERuby.run_fixture(
+      'config_element_types',
+      'office/docx/headers.docx',
+      { result_format: 'element_based' },
+      requirements: %w[office],
+      notes: nil,
+      skip_if_missing: true
+    ) do |result|
+      E2ERuby::Assertions.assert_expected_mime(
+        result,
+        ['application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+      )
+      E2ERuby::Assertions.assert_elements(result, min_count: 1, types_include: %w[title narrative_text])
     end
   end
 
@@ -326,11 +419,105 @@ RSpec.describe 'contract fixtures' do
     end
   end
 
+  it 'config_language_multi' do
+    E2ERuby.skip_if_feature_unavailable('language-detection')
+    E2ERuby.run_fixture(
+      'config_language_multi',
+      'pdf/fake_memo.pdf',
+      { language_detection: { detect_multiple: true, enabled: true } },
+      requirements: %w[language-detection],
+      notes: nil,
+      skip_if_missing: true
+    ) do |result|
+      E2ERuby::Assertions.assert_expected_mime(
+        result,
+        ['application/pdf']
+      )
+      E2ERuby::Assertions.assert_min_content_length(result, 10)
+      E2ERuby::Assertions.assert_detected_languages(result, %w[eng], nil)
+    end
+  end
+
   it 'config_pages' do
+    E2ERuby.skip_if_feature_unavailable('pdf')
     E2ERuby.run_fixture(
       'config_pages',
-      'pdf/multi_page.pdf',
-      { pages: { end: 3, start: 1 } },
+      'pdf/fake_memo.pdf',
+      { pages: { extract_pages: true, insert_page_markers: true } },
+      requirements: %w[pdf],
+      notes: nil,
+      skip_if_missing: true
+    ) do |result|
+      E2ERuby::Assertions.assert_expected_mime(
+        result,
+        ['application/pdf']
+      )
+      E2ERuby::Assertions.assert_min_content_length(result, 10)
+      E2ERuby::Assertions.assert_content_contains_any(result, %w[PAGE])
+    end
+  end
+
+  it 'config_pages_extract' do
+    E2ERuby.skip_if_feature_unavailable('pdf')
+    E2ERuby.run_fixture(
+      'config_pages_extract',
+      'pdf/fake_memo.pdf',
+      { pages: { extract_pages: true } },
+      requirements: %w[pdf],
+      notes: nil,
+      skip_if_missing: true
+    ) do |result|
+      E2ERuby::Assertions.assert_expected_mime(
+        result,
+        ['application/pdf']
+      )
+      E2ERuby::Assertions.assert_min_content_length(result, 10)
+      E2ERuby::Assertions.assert_pages(result, min_count: 1)
+    end
+  end
+
+  it 'config_pages_markers' do
+    E2ERuby.skip_if_feature_unavailable('pdf')
+    E2ERuby.run_fixture(
+      'config_pages_markers',
+      'pdf/fake_memo.pdf',
+      { pages: { insert_page_markers: true } },
+      requirements: %w[pdf],
+      notes: nil,
+      skip_if_missing: true
+    ) do |result|
+      E2ERuby::Assertions.assert_expected_mime(
+        result,
+        ['application/pdf']
+      )
+      E2ERuby::Assertions.assert_min_content_length(result, 10)
+      E2ERuby::Assertions.assert_content_contains_any(result, %w[PAGE])
+    end
+  end
+
+  it 'config_pdf_hierarchy' do
+    E2ERuby.skip_if_feature_unavailable('pdf')
+    E2ERuby.run_fixture(
+      'config_pdf_hierarchy',
+      'pdf/fake_memo.pdf',
+      { pages: { extract_pages: true }, pdf_options: { hierarchy: { enabled: true, include_bbox: true } } },
+      requirements: %w[pdf],
+      notes: nil,
+      skip_if_missing: true
+    ) do |result|
+      E2ERuby::Assertions.assert_expected_mime(
+        result,
+        ['application/pdf']
+      )
+      E2ERuby::Assertions.assert_min_content_length(result, 50)
+    end
+  end
+
+  it 'config_postprocessor' do
+    E2ERuby.run_fixture(
+      'config_postprocessor',
+      'pdf/fake_memo.pdf',
+      { postprocessor: { enabled: true } },
       requirements: [],
       notes: nil,
       skip_if_missing: true
@@ -340,6 +527,7 @@ RSpec.describe 'contract fixtures' do
         ['application/pdf']
       )
       E2ERuby::Assertions.assert_min_content_length(result, 10)
+      E2ERuby::Assertions.assert_content_not_empty(result)
     end
   end
 
@@ -358,6 +546,43 @@ RSpec.describe 'contract fixtures' do
       )
       E2ERuby::Assertions.assert_min_content_length(result, 10)
       E2ERuby::Assertions.assert_content_not_empty(result)
+    end
+  end
+
+  it 'config_quality_enabled' do
+    E2ERuby.skip_if_feature_unavailable('quality')
+    E2ERuby.run_fixture(
+      'config_quality_enabled',
+      'pdf/fake_memo.pdf',
+      { enable_quality_processing: true },
+      requirements: %w[quality],
+      notes: nil,
+      skip_if_missing: true
+    ) do |result|
+      E2ERuby::Assertions.assert_expected_mime(
+        result,
+        ['application/pdf']
+      )
+      E2ERuby::Assertions.assert_min_content_length(result, 10)
+      E2ERuby::Assertions.assert_quality_score(result, has_score: true, min_score: 0, max_score: 1)
+    end
+  end
+
+  it 'config_structured_output' do
+    E2ERuby.skip_if_feature_unavailable('pdf')
+    E2ERuby.run_fixture(
+      'config_structured_output',
+      'pdf/fake_memo.pdf',
+      { output_format: 'structured' },
+      requirements: %w[pdf],
+      notes: nil,
+      skip_if_missing: true
+    ) do |result|
+      E2ERuby::Assertions.assert_expected_mime(
+        result,
+        ['application/pdf']
+      )
+      E2ERuby::Assertions.assert_min_content_length(result, 10)
     end
   end
 

@@ -72,12 +72,19 @@ describe("ocr", () => {
 			return;
 		}
 
-		const config = buildConfig({ force_ocr: true, ocr: { backend: "tesseract", language: "eng" } });
+		const config = buildConfig({ force_ocr: true, ocr: { backend: "tesseract", language: "deu" } });
 		let result: ExtractionResult | null = null;
 		try {
 			result = await extractBytes(documentBytes, "application/pdf", config);
 		} catch (error) {
-			if (shouldSkipFixture(error, "ocr_pdf_image_only_german", ["tesseract"], "Skip if OCR backend unavailable.")) {
+			if (
+				shouldSkipFixture(
+					error,
+					"ocr_pdf_image_only_german",
+					["tesseract"],
+					"Requires Tesseract OCR with German language data.",
+				)
+			) {
 				return;
 			}
 			throw error;
@@ -146,5 +153,64 @@ describe("ocr", () => {
 		assertions.assertExpectedMime(result, ["application/pdf"]);
 		assertions.assertMinContentLength(result, 20);
 		assertions.assertContentContainsAny(result, ["Docling", "Markdown", "JSON"]);
+	});
+
+	it("ocr_tesseract_elements", async () => {
+		const documentBytes = getFixture("images/test_hello_world.png");
+		if (documentBytes === null) {
+			console.warn("[SKIP] Test skipped: fixture not available in Cloudflare Workers environment");
+			return;
+		}
+
+		const config = buildConfig({
+			force_ocr: true,
+			ocr: { backend: "tesseract", element_config: { include_elements: true }, language: "eng" },
+		});
+		let result: ExtractionResult | null = null;
+		try {
+			result = await extractBytes(documentBytes, "image/png", config);
+		} catch (error) {
+			if (shouldSkipFixture(error, "ocr_tesseract_elements", ["tesseract"], "Requires Tesseract OCR backend")) {
+				return;
+			}
+			throw error;
+		}
+		if (result === null) {
+			return;
+		}
+		assertions.assertExpectedMime(result, ["image/png"]);
+		assertions.assertMinContentLength(result, 5);
+		assertions.assertOcrElements(result, true, true, true, null);
+	});
+
+	it("ocr_tesseract_language_german", async () => {
+		const documentBytes = getFixture("pdf/image_only_german_pdf.pdf");
+		if (documentBytes === null) {
+			console.warn("[SKIP] Test skipped: fixture not available in Cloudflare Workers environment");
+			return;
+		}
+
+		const config = buildConfig({ force_ocr: true, ocr: { backend: "tesseract", language: "deu" } });
+		let result: ExtractionResult | null = null;
+		try {
+			result = await extractBytes(documentBytes, "application/pdf", config);
+		} catch (error) {
+			if (
+				shouldSkipFixture(
+					error,
+					"ocr_tesseract_language_german",
+					["tesseract"],
+					"Requires Tesseract OCR with German language data (deu)",
+				)
+			) {
+				return;
+			}
+			throw error;
+		}
+		if (result === null) {
+			return;
+		}
+		assertions.assertExpectedMime(result, ["application/pdf"]);
+		assertions.assertMinContentLength(result, 20);
 	});
 });

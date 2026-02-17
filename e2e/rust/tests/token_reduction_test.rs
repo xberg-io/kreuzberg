@@ -7,6 +7,37 @@ use e2e_rust::{assertions, resolve_document};
 use kreuzberg::core::config::ExtractionConfig;
 
 #[test]
+fn test_token_reduction_aggressive() {
+    // Tests aggressive token reduction mode significantly reduces content
+
+    let document_path = resolve_document("pdf/fake_memo.pdf");
+    if !document_path.exists() {
+        println!(
+            "Skipping token_reduction_aggressive: missing document at {}",
+            document_path.display()
+        );
+        return;
+    }
+    let config: ExtractionConfig = serde_json::from_str(
+        r#"{
+  "token_reduction": {
+    "mode": "aggressive"
+  }
+}"#,
+    )
+    .expect("Fixture config should deserialize");
+
+    let result = match kreuzberg::extract_file_sync(&document_path, None, &config) {
+        Err(err) => panic!("Extraction failed for token_reduction_aggressive: {err:?}"),
+        Ok(result) => result,
+    };
+
+    assertions::assert_expected_mime(&result, &["application/pdf"]);
+    assertions::assert_min_content_length(&result, 5);
+    assertions::assert_content_not_empty(&result);
+}
+
+#[test]
 fn test_token_reduction_basic() {
     // Tests basic token reduction on PDF document
 
@@ -34,6 +65,37 @@ fn test_token_reduction_basic() {
 
     assertions::assert_expected_mime(&result, &["application/pdf"]);
     assertions::assert_min_content_length(&result, 5);
+    assertions::assert_content_not_empty(&result);
+}
+
+#[test]
+fn test_token_reduction_light() {
+    // Tests light token reduction mode preserves most content
+
+    let document_path = resolve_document("pdf/fake_memo.pdf");
+    if !document_path.exists() {
+        println!(
+            "Skipping token_reduction_light: missing document at {}",
+            document_path.display()
+        );
+        return;
+    }
+    let config: ExtractionConfig = serde_json::from_str(
+        r#"{
+  "token_reduction": {
+    "mode": "light"
+  }
+}"#,
+    )
+    .expect("Fixture config should deserialize");
+
+    let result = match kreuzberg::extract_file_sync(&document_path, None, &config) {
+        Err(err) => panic!("Extraction failed for token_reduction_light: {err:?}"),
+        Ok(result) => result,
+    };
+
+    assertions::assert_expected_mime(&result, &["application/pdf"]);
+    assertions::assert_min_content_length(&result, 10);
     assertions::assert_content_not_empty(&result);
 }
 

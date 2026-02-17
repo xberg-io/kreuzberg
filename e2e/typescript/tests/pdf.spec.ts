@@ -71,6 +71,35 @@ describe("pdf fixtures", () => {
 	);
 
 	it(
+		"pdf_bounding_boxes",
+		() => {
+			const documentPath = resolveDocument("pdf/tiny.pdf");
+			if (!existsSync(documentPath)) {
+				console.warn("Skipping pdf_bounding_boxes: missing document at", documentPath);
+				return;
+			}
+			const config = buildConfig({ images: { extract_images: true } });
+			let result: ExtractionResult | null = null;
+			try {
+				result = extractFileSync(documentPath, null, config);
+			} catch (error) {
+				if (shouldSkipFixture(error, "pdf_bounding_boxes", ["pdf"], undefined)) {
+					return;
+				}
+				throw error;
+			}
+			if (result === null) {
+				return;
+			}
+			assertions.assertExpectedMime(result, ["application/pdf"]);
+			assertions.assertMinContentLength(result, 50);
+			assertions.assertTableCount(result, 1, null);
+			assertions.assertTableBoundingBoxes(result, true);
+		},
+		TEST_TIMEOUT_MS,
+	);
+
+	it(
 		"pdf_code_and_formula",
 		() => {
 			const documentPath = resolveDocument("pdf/code_and_formula.pdf");

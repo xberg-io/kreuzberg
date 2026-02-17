@@ -9,6 +9,31 @@ import { describe, expect, it } from "vitest";
 import { assertions, buildConfig, getFixture, shouldSkipFixture } from "./helpers.js";
 
 describe("token_reduction", () => {
+	it("token_reduction_aggressive", async () => {
+		const documentBytes = getFixture("pdf/fake_memo.pdf");
+		if (documentBytes === null) {
+			console.warn("[SKIP] Test skipped: fixture not available in Cloudflare Workers environment");
+			return;
+		}
+
+		const config = buildConfig({ token_reduction: { mode: "aggressive" } });
+		let result: ExtractionResult | null = null;
+		try {
+			result = await extractBytes(documentBytes, "application/octet-stream", config);
+		} catch (error) {
+			if (shouldSkipFixture(error, "token_reduction_aggressive", [], undefined)) {
+				return;
+			}
+			throw error;
+		}
+		if (result === null) {
+			return;
+		}
+		assertions.assertExpectedMime(result, ["application/pdf"]);
+		assertions.assertMinContentLength(result, 5);
+		assertions.assertContentNotEmpty(result);
+	});
+
 	it("token_reduction_basic", async () => {
 		const documentBytes = getFixture("pdf/fake_memo.pdf");
 		if (documentBytes === null) {
@@ -31,6 +56,31 @@ describe("token_reduction", () => {
 		}
 		assertions.assertExpectedMime(result, ["application/pdf"]);
 		assertions.assertMinContentLength(result, 5);
+		assertions.assertContentNotEmpty(result);
+	});
+
+	it("token_reduction_light", async () => {
+		const documentBytes = getFixture("pdf/fake_memo.pdf");
+		if (documentBytes === null) {
+			console.warn("[SKIP] Test skipped: fixture not available in Cloudflare Workers environment");
+			return;
+		}
+
+		const config = buildConfig({ token_reduction: { mode: "light" } });
+		let result: ExtractionResult | null = null;
+		try {
+			result = await extractBytes(documentBytes, "application/octet-stream", config);
+		} catch (error) {
+			if (shouldSkipFixture(error, "token_reduction_light", [], undefined)) {
+				return;
+			}
+			throw error;
+		}
+		if (result === null) {
+			return;
+		}
+		assertions.assertExpectedMime(result, ["application/pdf"]);
+		assertions.assertMinContentLength(result, 10);
 		assertions.assertContentNotEmpty(result);
 	});
 

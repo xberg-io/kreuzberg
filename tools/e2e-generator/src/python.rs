@@ -507,6 +507,77 @@ def assert_content_not_empty(result: Any) -> None:
     content = getattr(result, "content", None)
     if content is None or len(content.strip()) == 0:
         pytest.fail("Expected non-empty content")
+
+
+def assert_table_bounding_boxes(result: Any, expected: bool) -> None:
+    if expected:
+        tables = getattr(result, "tables", None) or []
+        assert len(tables) > 0, "Expected tables with bounding boxes but no tables found"
+        for table in tables:
+            bb = getattr(table, "bounding_box", None) or (table.get("bounding_box") if isinstance(table, dict) else None)
+            assert bb is not None, "Expected table to have bounding_box but it was None"
+
+
+def assert_table_content_contains_any(result: Any, snippets: list[str]) -> None:
+    tables = getattr(result, "tables", None) or []
+    assert len(tables) > 0, "Expected tables but none found"
+    all_cells = [
+        str(cell).lower()
+        for table in tables
+        for row in (getattr(table, "cells", None) or (table.get("cells") if isinstance(table, dict) else []) or [])
+        for cell in row
+    ]
+    found = any(s.lower() in cell for s in snippets for cell in all_cells)
+    assert found, f"No table cell contains any of {snippets}"
+
+
+def assert_image_bounding_boxes(result: Any, expected: bool) -> None:
+    if expected:
+        images = getattr(result, "images", None) or []
+        assert len(images) > 0, "Expected images with bounding boxes but no images found"
+        for img in images:
+            bb = getattr(img, "bounding_box", None) or (img.get("bounding_box") if isinstance(img, dict) else None)
+            assert bb is not None, "Expected image to have bounding_box but it was None"
+
+
+def assert_quality_score(result: Any, has_score: bool | None = None, min_score: float | None = None, max_score: float | None = None) -> None:
+    score = getattr(result, "quality_score", None)
+    if isinstance(result, dict):
+        score = result.get("quality_score")
+    if has_score is True:
+        assert score is not None, "Expected quality_score to be present"
+    if has_score is False:
+        assert score is None, "Expected quality_score to be absent"
+    if min_score is not None:
+        assert score is not None, "quality_score must be present for min_score check"
+        assert score >= min_score, f"quality_score {score} < {min_score}"
+    if max_score is not None:
+        assert score is not None, "quality_score must be present for max_score check"
+        assert score <= max_score, f"quality_score {score} > {max_score}"
+
+
+def assert_processing_warnings(result: Any, max_count: int | None = None, is_empty: bool | None = None) -> None:
+    warnings = getattr(result, "processing_warnings", None) or []
+    if isinstance(result, dict):
+        warnings = result.get("processing_warnings", [])
+    if max_count is not None:
+        assert len(warnings) <= max_count, f"processing_warnings count {len(warnings)} > {max_count}"
+    if is_empty is True:
+        assert len(warnings) == 0, f"Expected empty processing_warnings, got {len(warnings)}"
+
+
+def assert_djot_content(result: Any, has_content: bool | None = None, min_blocks: int | None = None) -> None:
+    djot = getattr(result, "djot_content", None)
+    if isinstance(result, dict):
+        djot = result.get("djot_content")
+    if has_content is True:
+        assert djot is not None, "Expected djot_content to be present"
+    if has_content is False:
+        assert djot is None, "Expected djot_content to be absent"
+    if min_blocks is not None:
+        assert djot is not None, "djot_content required for min_blocks assertion"
+        blocks = getattr(djot, "blocks", None) or (djot.get("blocks") if isinstance(djot, dict) else [])
+        assert len(blocks or []) >= min_blocks, f"djot_content blocks {len(blocks or [])} < {min_blocks}"
 "#;
 
 pub fn generate(fixtures: &[Fixture], output_root: &Utf8Path) -> Result<()> {
@@ -765,6 +836,22 @@ fn render_assertions(assertions: &Assertions) -> String {
             "    helpers.assert_table_count(result, {min_literal}, {max_literal})"
         )
         .unwrap();
+        if let Some(has_bb) = tables.has_bounding_boxes {
+            writeln!(
+                buffer,
+                "    helpers.assert_table_bounding_boxes(result, {})",
+                if has_bb { "True" } else { "False" }
+            )
+            .unwrap();
+        }
+        if let Some(ref contains) = tables.content_contains_any {
+            writeln!(
+                buffer,
+                "    helpers.assert_table_content_contains_any(result, {})",
+                render_string_list(contains)
+            )
+            .unwrap();
+        }
     }
     if let Some(languages) = assertions.detected_languages.as_ref() {
         let expected = render_string_list(&languages.expects);
@@ -823,6 +910,14 @@ fn render_assertions(assertions: &Assertions) -> String {
             args.push(format!("formats_include={}", render_string_list(formats)));
         }
         writeln!(buffer, "    helpers.assert_images(result, {})", args.join(", ")).unwrap();
+        if let Some(has_bb) = images.has_bounding_boxes {
+            writeln!(
+                buffer,
+                "    helpers.assert_image_bounding_boxes(result, {})",
+                if has_bb { "True" } else { "False" }
+            )
+            .unwrap();
+        }
     }
 
     if let Some(pages) = assertions.pages.as_ref() {
@@ -924,6 +1019,47 @@ fn render_assertions(assertions: &Assertions) -> String {
 
     if assertions.content_not_empty == Some(true) {
         writeln!(buffer, "    helpers.assert_content_not_empty(result)").unwrap();
+    }
+
+    if let Some(quality_score) = assertions.quality_score.as_ref() {
+        let mut args = Vec::new();
+        if let Some(has_score) = quality_score.has_score {
+            args.push(format!("has_score={}", if has_score { "True" } else { "False" }));
+        }
+        if let Some(min_score) = quality_score.min_score {
+            args.push(format!("min_score={min_score}"));
+        }
+        if let Some(max_score) = quality_score.max_score {
+            args.push(format!("max_score={max_score}"));
+        }
+        writeln!(buffer, "    helpers.assert_quality_score(result, {})", args.join(", ")).unwrap();
+    }
+
+    if let Some(processing_warnings) = assertions.processing_warnings.as_ref() {
+        let mut args = Vec::new();
+        if let Some(max_count) = processing_warnings.max_count {
+            args.push(format!("max_count={max_count}"));
+        }
+        if let Some(is_empty) = processing_warnings.is_empty {
+            args.push(format!("is_empty={}", if is_empty { "True" } else { "False" }));
+        }
+        writeln!(
+            buffer,
+            "    helpers.assert_processing_warnings(result, {})",
+            args.join(", ")
+        )
+        .unwrap();
+    }
+
+    if let Some(djot_content) = assertions.djot_content.as_ref() {
+        let mut args = Vec::new();
+        if let Some(has_content) = djot_content.has_content {
+            args.push(format!("has_content={}", if has_content { "True" } else { "False" }));
+        }
+        if let Some(min_blocks) = djot_content.min_blocks {
+            args.push(format!("min_blocks={min_blocks}"));
+        }
+        writeln!(buffer, "    helpers.assert_djot_content(result, {})", args.join(", ")).unwrap();
     }
 
     if !buffer.ends_with('\n') {

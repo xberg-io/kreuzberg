@@ -1,0 +1,30 @@
+{
+	"id": "config_pdf_hierarchy",
+	"description": "Tests PDF hierarchy extraction config with block-level structure",
+	"tags": ["contract", "config", "pdf"],
+	"document": {
+		"path": "pdf/fake_memo.pdf"
+	},
+	"extraction": {
+		"method": "sync",
+		"input_type": "file",
+		"config": {
+			"pdf_options": {
+				"hierarchy": {
+					"enabled": true,
+					"include_bbox": true
+				}
+			},
+			"pages": {
+				"extract_pages": true
+			}
+		}
+	},
+	"assertions": {
+		"expected_mime": "application/pdf",
+		"min_content_length": 50
+	},
+	"skip": {
+		"requires_feature": ["pdf"]
+	}
+}

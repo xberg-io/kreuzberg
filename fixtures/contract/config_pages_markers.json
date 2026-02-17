@@ -1,0 +1,25 @@
+{
+	"id": "config_pages_markers",
+	"description": "Tests page marker insertion in extracted content",
+	"tags": ["contract", "config"],
+	"document": {
+		"path": "pdf/fake_memo.pdf"
+	},
+	"extraction": {
+		"method": "sync",
+		"input_type": "file",
+		"config": {
+			"pages": {
+				"insert_page_markers": true
+			}
+		}
+	},
+	"assertions": {
+		"expected_mime": "application/pdf",
+		"min_content_length": 10,
+		"content_contains_any": ["PAGE"]
+	},
+	"skip": {
+		"requires_feature": ["pdf"]
+	}
+}

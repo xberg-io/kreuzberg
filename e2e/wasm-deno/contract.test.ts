@@ -202,6 +202,69 @@ Deno.test("config_chunking", { permissions: { read: true } }, async () => {
 	assertions.assertChunks(result, 1, null, true, null);
 });
 
+Deno.test("config_chunking_markdown", { permissions: { read: true } }, async () => {
+	const documentBytes = await resolveDocument("pdf/fake_memo.pdf");
+	const config = buildConfig({ chunking: { chunker_type: "markdown", max_chars: 500, max_overlap: 50 } });
+	let result: ExtractionResult | null = null;
+	try {
+		// Sync file extraction - WASM uses extractBytes with pre-read bytes
+		result = await extractBytes(documentBytes, "application/octet-stream", config);
+	} catch (error) {
+		if (shouldSkipFixture(error, "config_chunking_markdown", ["chunking"], undefined)) {
+			return;
+		}
+		throw error;
+	}
+	if (result === null) {
+		return;
+	}
+	assertions.assertExpectedMime(result, ["application/pdf"]);
+	assertions.assertMinContentLength(result, 10);
+	assertions.assertChunks(result, 1, null, true, null);
+});
+
+Deno.test("config_chunking_small", { permissions: { read: true } }, async () => {
+	const documentBytes = await resolveDocument("pdf/fake_memo.pdf");
+	const config = buildConfig({ chunking: { max_chars: 100, max_overlap: 20 } });
+	let result: ExtractionResult | null = null;
+	try {
+		// Sync file extraction - WASM uses extractBytes with pre-read bytes
+		result = await extractBytes(documentBytes, "application/octet-stream", config);
+	} catch (error) {
+		if (shouldSkipFixture(error, "config_chunking_small", ["chunking"], undefined)) {
+			return;
+		}
+		throw error;
+	}
+	if (result === null) {
+		return;
+	}
+	assertions.assertExpectedMime(result, ["application/pdf"]);
+	assertions.assertMinContentLength(result, 10);
+	assertions.assertChunks(result, 2, null, true, null);
+});
+
+Deno.test("config_djot_content", { permissions: { read: true } }, async () => {
+	const documentBytes = await resolveDocument("pdf/fake_memo.pdf");
+	const config = buildConfig({ output_format: "djot" });
+	let result: ExtractionResult | null = null;
+	try {
+		// Sync file extraction - WASM uses extractBytes with pre-read bytes
+		result = await extractBytes(documentBytes, "application/octet-stream", config);
+	} catch (error) {
+		if (shouldSkipFixture(error, "config_djot_content", ["pdf"], undefined)) {
+			return;
+		}
+		throw error;
+	}
+	if (result === null) {
+		return;
+	}
+	assertions.assertExpectedMime(result, ["application/pdf"]);
+	assertions.assertMinContentLength(result, 10);
+	assertions.assertDjotContent(result, true, null);
+});
+
 Deno.test("config_document_structure", { permissions: { read: true } }, async () => {
 	const documentBytes = await resolveDocument("pdf/fake_memo.pdf");
 	const config = buildConfig({ include_document_structure: true });
@@ -242,6 +305,26 @@ Deno.test("config_document_structure_disabled", { permissions: { read: true } },
 	assertions.assertDocument(result, false, null, null, null);
 });
 
+Deno.test("config_document_structure_headings", { permissions: { read: true } }, async () => {
+	const documentBytes = await resolveDocument("office/docx/headers.docx");
+	const config = buildConfig({ include_document_structure: true });
+	let result: ExtractionResult | null = null;
+	try {
+		// Sync file extraction - WASM uses extractBytes with pre-read bytes
+		result = await extractBytes(documentBytes, "application/octet-stream", config);
+	} catch (error) {
+		if (shouldSkipFixture(error, "config_document_structure_headings", ["office"], undefined)) {
+			return;
+		}
+		throw error;
+	}
+	if (result === null) {
+		return;
+	}
+	assertions.assertExpectedMime(result, ["application/vnd.openxmlformats-officedocument.wordprocessingml.document"]);
+	assertions.assertDocument(result, true, 1, ["heading", "paragraph"], null);
+});
+
 Deno.test("config_document_structure_with_headings", { permissions: { read: true } }, async () => {
 	const documentBytes = await resolveDocument("docx/fake.docx");
 	const config = buildConfig({ include_document_structure: true });
@@ -260,6 +343,26 @@ Deno.test("config_document_structure_with_headings", { permissions: { read: true
 	}
 	assertions.assertExpectedMime(result, ["application/vnd.openxmlformats-officedocument.wordprocessingml.document"]);
 	assertions.assertDocument(result, true, 1, null, null);
+});
+
+Deno.test("config_element_types", { permissions: { read: true } }, async () => {
+	const documentBytes = await resolveDocument("office/docx/headers.docx");
+	const config = buildConfig({ result_format: "element_based" });
+	let result: ExtractionResult | null = null;
+	try {
+		// Sync file extraction - WASM uses extractBytes with pre-read bytes
+		result = await extractBytes(documentBytes, "application/octet-stream", config);
+	} catch (error) {
+		if (shouldSkipFixture(error, "config_element_types", ["office"], undefined)) {
+			return;
+		}
+		throw error;
+	}
+	if (result === null) {
+		return;
+	}
+	assertions.assertExpectedMime(result, ["application/vnd.openxmlformats-officedocument.wordprocessingml.document"]);
+	assertions.assertElements(result, 1, ["title", "narrative_text"]);
 });
 
 Deno.test("config_force_ocr", { permissions: { read: true } }, async () => {
@@ -344,15 +447,15 @@ Deno.test("config_language_detection", { permissions: { read: true } }, async ()
 	assertions.assertDetectedLanguages(result, ["eng"], 0.5);
 });
 
-Deno.test("config_pages", { permissions: { read: true } }, async () => {
-	const documentBytes = await resolveDocument("pdf/multi_page.pdf");
-	const config = buildConfig({ pages: { end: 3, start: 1 } });
+Deno.test("config_language_multi", { permissions: { read: true } }, async () => {
+	const documentBytes = await resolveDocument("pdf/fake_memo.pdf");
+	const config = buildConfig({ language_detection: { detect_multiple: true, enabled: true } });
 	let result: ExtractionResult | null = null;
 	try {
 		// Sync file extraction - WASM uses extractBytes with pre-read bytes
 		result = await extractBytes(documentBytes, "application/octet-stream", config);
 	} catch (error) {
-		if (shouldSkipFixture(error, "config_pages", [], undefined)) {
+		if (shouldSkipFixture(error, "config_language_multi", ["language-detection"], undefined)) {
 			return;
 		}
 		throw error;
@@ -362,6 +465,114 @@ Deno.test("config_pages", { permissions: { read: true } }, async () => {
 	}
 	assertions.assertExpectedMime(result, ["application/pdf"]);
 	assertions.assertMinContentLength(result, 10);
+	assertions.assertDetectedLanguages(result, ["eng"], null);
+});
+
+Deno.test("config_pages", { permissions: { read: true } }, async () => {
+	const documentBytes = await resolveDocument("pdf/fake_memo.pdf");
+	const config = buildConfig({ pages: { extract_pages: true, insert_page_markers: true } });
+	let result: ExtractionResult | null = null;
+	try {
+		// Sync file extraction - WASM uses extractBytes with pre-read bytes
+		result = await extractBytes(documentBytes, "application/octet-stream", config);
+	} catch (error) {
+		if (shouldSkipFixture(error, "config_pages", ["pdf"], undefined)) {
+			return;
+		}
+		throw error;
+	}
+	if (result === null) {
+		return;
+	}
+	assertions.assertExpectedMime(result, ["application/pdf"]);
+	assertions.assertMinContentLength(result, 10);
+	assertions.assertContentContainsAny(result, ["PAGE"]);
+});
+
+Deno.test("config_pages_extract", { permissions: { read: true } }, async () => {
+	const documentBytes = await resolveDocument("pdf/fake_memo.pdf");
+	const config = buildConfig({ pages: { extract_pages: true } });
+	let result: ExtractionResult | null = null;
+	try {
+		// Sync file extraction - WASM uses extractBytes with pre-read bytes
+		result = await extractBytes(documentBytes, "application/octet-stream", config);
+	} catch (error) {
+		if (shouldSkipFixture(error, "config_pages_extract", ["pdf"], undefined)) {
+			return;
+		}
+		throw error;
+	}
+	if (result === null) {
+		return;
+	}
+	assertions.assertExpectedMime(result, ["application/pdf"]);
+	assertions.assertMinContentLength(result, 10);
+	assertions.assertPages(result, 1, null);
+});
+
+Deno.test("config_pages_markers", { permissions: { read: true } }, async () => {
+	const documentBytes = await resolveDocument("pdf/fake_memo.pdf");
+	const config = buildConfig({ pages: { insert_page_markers: true } });
+	let result: ExtractionResult | null = null;
+	try {
+		// Sync file extraction - WASM uses extractBytes with pre-read bytes
+		result = await extractBytes(documentBytes, "application/octet-stream", config);
+	} catch (error) {
+		if (shouldSkipFixture(error, "config_pages_markers", ["pdf"], undefined)) {
+			return;
+		}
+		throw error;
+	}
+	if (result === null) {
+		return;
+	}
+	assertions.assertExpectedMime(result, ["application/pdf"]);
+	assertions.assertMinContentLength(result, 10);
+	assertions.assertContentContainsAny(result, ["PAGE"]);
+});
+
+Deno.test("config_pdf_hierarchy", { permissions: { read: true } }, async () => {
+	const documentBytes = await resolveDocument("pdf/fake_memo.pdf");
+	const config = buildConfig({
+		pages: { extract_pages: true },
+		pdf_options: { hierarchy: { enabled: true, include_bbox: true } },
+	});
+	let result: ExtractionResult | null = null;
+	try {
+		// Sync file extraction - WASM uses extractBytes with pre-read bytes
+		result = await extractBytes(documentBytes, "application/octet-stream", config);
+	} catch (error) {
+		if (shouldSkipFixture(error, "config_pdf_hierarchy", ["pdf"], undefined)) {
+			return;
+		}
+		throw error;
+	}
+	if (result === null) {
+		return;
+	}
+	assertions.assertExpectedMime(result, ["application/pdf"]);
+	assertions.assertMinContentLength(result, 50);
+});
+
+Deno.test("config_postprocessor", { permissions: { read: true } }, async () => {
+	const documentBytes = await resolveDocument("pdf/fake_memo.pdf");
+	const config = buildConfig({ postprocessor: { enabled: true } });
+	let result: ExtractionResult | null = null;
+	try {
+		// Sync file extraction - WASM uses extractBytes with pre-read bytes
+		result = await extractBytes(documentBytes, "application/octet-stream", config);
+	} catch (error) {
+		if (shouldSkipFixture(error, "config_postprocessor", [], undefined)) {
+			return;
+		}
+		throw error;
+	}
+	if (result === null) {
+		return;
+	}
+	assertions.assertExpectedMime(result, ["application/pdf"]);
+	assertions.assertMinContentLength(result, 10);
+	assertions.assertContentNotEmpty(result);
 });
 
 Deno.test("config_quality_disabled", { permissions: { read: true } }, async () => {
@@ -383,6 +594,47 @@ Deno.test("config_quality_disabled", { permissions: { read: true } }, async () =
 	assertions.assertExpectedMime(result, ["application/pdf"]);
 	assertions.assertMinContentLength(result, 10);
 	assertions.assertContentNotEmpty(result);
+});
+
+Deno.test("config_quality_enabled", { permissions: { read: true } }, async () => {
+	const documentBytes = await resolveDocument("pdf/fake_memo.pdf");
+	const config = buildConfig({ enable_quality_processing: true });
+	let result: ExtractionResult | null = null;
+	try {
+		// Sync file extraction - WASM uses extractBytes with pre-read bytes
+		result = await extractBytes(documentBytes, "application/octet-stream", config);
+	} catch (error) {
+		if (shouldSkipFixture(error, "config_quality_enabled", ["quality"], undefined)) {
+			return;
+		}
+		throw error;
+	}
+	if (result === null) {
+		return;
+	}
+	assertions.assertExpectedMime(result, ["application/pdf"]);
+	assertions.assertMinContentLength(result, 10);
+	assertions.assertQualityScore(result, true, 0, 1);
+});
+
+Deno.test("config_structured_output", { permissions: { read: true } }, async () => {
+	const documentBytes = await resolveDocument("pdf/fake_memo.pdf");
+	const config = buildConfig({ output_format: "structured" });
+	let result: ExtractionResult | null = null;
+	try {
+		// Sync file extraction - WASM uses extractBytes with pre-read bytes
+		result = await extractBytes(documentBytes, "application/octet-stream", config);
+	} catch (error) {
+		if (shouldSkipFixture(error, "config_structured_output", ["pdf"], undefined)) {
+			return;
+		}
+		throw error;
+	}
+	if (result === null) {
+		return;
+	}
+	assertions.assertExpectedMime(result, ["application/pdf"]);
+	assertions.assertMinContentLength(result, 10);
 });
 
 Deno.test("config_use_cache_false", { permissions: { read: true } }, async () => {

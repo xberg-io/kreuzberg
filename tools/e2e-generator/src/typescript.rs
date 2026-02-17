@@ -444,6 +444,121 @@ export const assertions = {
         expect(result.content).toBeDefined();
         expect(result.content.trim().length).toBeGreaterThan(0);
     },
+
+    assertTableBoundingBoxes(result: ExtractionResult, expected: boolean): void {
+        const tables = Array.isArray(result.tables) ? result.tables : [];
+        for (const table of tables) {
+            const boundingBox = (table as PlainRecord).boundingBox ?? (table as PlainRecord).bounding_box;
+            if (expected) {
+                expect(boundingBox).toBeDefined();
+            } else {
+                expect(boundingBox == null).toBe(true);
+            }
+        }
+    },
+
+    assertTableContentContainsAny(result: ExtractionResult, snippets: string[]): void {
+        if (!snippets.length) {
+            return;
+        }
+        const tables = Array.isArray(result.tables) ? result.tables : [];
+        const allCellText = tables.flatMap((table) => {
+            const rows = (table as PlainRecord).rows;
+            if (!Array.isArray(rows)) {
+                return [];
+            }
+            return rows.flatMap((row) => {
+                if (!Array.isArray(row)) {
+                    return [];
+                }
+                return row.map((cell) => {
+                    const text = (cell as PlainRecord).text ?? (cell as PlainRecord).content ?? String(cell);
+                    return typeof text === "string" ? text : String(text);
+                });
+            });
+        });
+        const loweredCells = allCellText.map((t) => t.toLowerCase());
+        expect(snippets.some((snippet) => loweredCells.some((cell) => cell.includes(snippet.toLowerCase())))).toBe(true);
+    },
+
+    assertImageBoundingBoxes(result: ExtractionResult, expected: boolean): void {
+        const images = (result as unknown as PlainRecord).images as unknown[] | undefined;
+        if (!Array.isArray(images)) {
+            return;
+        }
+        for (const image of images) {
+            const boundingBox = (image as PlainRecord).boundingBox ?? (image as PlainRecord).bounding_box;
+            if (expected) {
+                expect(boundingBox).toBeDefined();
+            } else {
+                expect(boundingBox == null).toBe(true);
+            }
+        }
+    },
+
+    assertQualityScore(
+        result: ExtractionResult,
+        hasScore?: boolean | null,
+        minScore?: number | null,
+        maxScore?: number | null,
+    ): void {
+        const qualityScore = (result as unknown as PlainRecord).qualityScore
+            ?? (result as unknown as PlainRecord).quality_score;
+        if (hasScore === true) {
+            expect(qualityScore).toBeDefined();
+            expect(qualityScore).not.toBeNull();
+        }
+        if (hasScore === false) {
+            expect(qualityScore == null).toBe(true);
+        }
+        if (typeof qualityScore === "number") {
+            if (typeof minScore === "number") {
+                expect(qualityScore).toBeGreaterThanOrEqual(minScore);
+            }
+            if (typeof maxScore === "number") {
+                expect(qualityScore).toBeLessThanOrEqual(maxScore);
+            }
+        }
+    },
+
+    assertProcessingWarnings(
+        result: ExtractionResult,
+        maxCount?: number | null,
+        isEmpty?: boolean | null,
+    ): void {
+        const warnings = (result as unknown as PlainRecord).processingWarnings
+            ?? (result as unknown as PlainRecord).processing_warnings;
+        if (isEmpty === true) {
+            if (warnings != null) {
+                expect(Array.isArray(warnings) && warnings.length === 0).toBe(true);
+            }
+        }
+        if (Array.isArray(warnings) && typeof maxCount === "number") {
+            expect(warnings.length).toBeLessThanOrEqual(maxCount);
+        }
+    },
+
+    assertDjotContent(
+        result: ExtractionResult,
+        hasContent?: boolean | null,
+        minBlocks?: number | null,
+    ): void {
+        const djotContent = (result as unknown as PlainRecord).djotContent
+            ?? (result as unknown as PlainRecord).djot_content;
+        if (hasContent === true) {
+            expect(djotContent).toBeDefined();
+            expect(djotContent).not.toBeNull();
+        }
+        if (hasContent === false) {
+            expect(djotContent == null).toBe(true);
+        }
+        if (djotContent != null && typeof minBlocks === "number") {
+            const blocks = (djotContent as PlainRecord).blocks ?? (djotContent as PlainRecord).nodes;
+            if (Array.isArray(blocks)) {
+                expect(blocks.length).toBeGreaterThanOrEqual(minBlocks);
+            }
+        }
+    },
 };
 
 function lookupMetadataPath(metadata: PlainRecord, path: string): unknown {
@@ -992,6 +1107,22 @@ fn render_assertions(assertions: &Assertions) -> String {
             .map(|value| value.to_string())
             .unwrap_or_else(|| "null".into());
         buffer.push_str(&format!("    assertions.assertTableCount(result, {min}, {max});\n"));
+
+        if let Some(has_bb) = tables.has_bounding_boxes {
+            buffer.push_str(&format!(
+                "    assertions.assertTableBoundingBoxes(result, {});\n",
+                has_bb
+            ));
+        }
+
+        if let Some(snippets) = tables.content_contains_any.as_ref() {
+            if !snippets.is_empty() {
+                buffer.push_str(&format!(
+                    "    assertions.assertTableContentContainsAny(result, {});\n",
+                    render_string_array(snippets)
+                ));
+            }
+        }
     }
 
     if let Some(languages) = assertions.detected_languages.as_ref() {
@@ -1042,6 +1173,13 @@ fn render_assertions(assertions: &Assertions) -> String {
         buffer.push_str(&format!(
             "    chunkAssertions.assertImages(result, {min}, {max}, {formats});\n"
         ));
+
+        if let Some(has_bb) = images.has_bounding_boxes {
+            buffer.push_str(&format!(
+                "    assertions.assertImageBoundingBoxes(result, {});\n",
+                has_bb
+            ));
+        }
     }
 
     if let Some(pages) = assertions.pages.as_ref() {
@@ -1124,6 +1262,52 @@ fn render_assertions(assertions: &Assertions) -> String {
 
     if assertions.content_not_empty == Some(true) {
         buffer.push_str("    assertions.assertContentNotEmpty(result);\n");
+    }
+
+    if let Some(quality_score) = assertions.quality_score.as_ref() {
+        let has_score = quality_score
+            .has_score
+            .map(|v| v.to_string())
+            .unwrap_or_else(|| "undefined".into());
+        let min_score = quality_score
+            .min_score
+            .map(|v| v.to_string())
+            .unwrap_or_else(|| "undefined".into());
+        let max_score = quality_score
+            .max_score
+            .map(|v| v.to_string())
+            .unwrap_or_else(|| "undefined".into());
+        buffer.push_str(&format!(
+            "    assertions.assertQualityScore(result, {has_score}, {min_score}, {max_score});\n"
+        ));
+    }
+
+    if let Some(processing_warnings) = assertions.processing_warnings.as_ref() {
+        let max_count = processing_warnings
+            .max_count
+            .map(|v| v.to_string())
+            .unwrap_or_else(|| "undefined".into());
+        let is_empty = processing_warnings
+            .is_empty
+            .map(|v| v.to_string())
+            .unwrap_or_else(|| "undefined".into());
+        buffer.push_str(&format!(
+            "    assertions.assertProcessingWarnings(result, {max_count}, {is_empty});\n"
+        ));
+    }
+
+    if let Some(djot_content) = assertions.djot_content.as_ref() {
+        let has_content = djot_content
+            .has_content
+            .map(|v| v.to_string())
+            .unwrap_or_else(|| "undefined".into());
+        let min_blocks = djot_content
+            .min_blocks
+            .map(|v| v.to_string())
+            .unwrap_or_else(|| "undefined".into());
+        buffer.push_str(&format!(
+            "    assertions.assertDjotContent(result, {has_content}, {min_blocks});\n"
+        ));
     }
 
     buffer

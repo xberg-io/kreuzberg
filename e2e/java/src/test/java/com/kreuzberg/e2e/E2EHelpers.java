@@ -571,5 +571,82 @@ public final class E2EHelpers {
             assertTrue(content != null && !content.isEmpty(),
                     "Expected content to be non-empty");
         }
+
+        public static void assertTableBoundingBoxes(ExtractionResult result) {
+            var tables = result.getTables();
+            if (tables != null) {
+                for (int i = 0; i < tables.size(); i++) {
+                    assertNotNull(tables.get(i).getBoundingBox(),
+                            String.format("Table %d expected to have bounding box", i));
+                }
+            }
+        }
+
+        public static void assertTableContentContainsAny(ExtractionResult result, List<String> snippets) {
+            if (snippets.isEmpty()) return;
+            var tables = result.getTables();
+            StringBuilder allContent = new StringBuilder();
+            if (tables != null) {
+                for (var table : tables) {
+                    allContent.append(table.getContent() != null ? table.getContent().toLowerCase() : "").append(" ");
+                }
+            }
+            String combined = allContent.toString();
+            boolean found = snippets.stream()
+                    .anyMatch(snippet -> combined.contains(snippet.toLowerCase()));
+            assertTrue(found,
+                    String.format("Expected table content to contain any of %s", snippets));
+        }
+
+        public static void assertImageBoundingBoxes(ExtractionResult result) {
+            var images = result.getImages();
+            if (images != null) {
+                for (int i = 0; i < images.size(); i++) {
+                    assertNotNull(images.get(i).getBoundingBox(),
+                            String.format("Image %d expected to have bounding box", i));
+                }
+            }
+        }
+
+        public static void assertQualityScore(ExtractionResult result, Boolean hasScore, Double minScore, Double maxScore) {
+            if (hasScore != null && hasScore) {
+                assertNotNull(result.getQualityScore(), "Expected quality score to be present");
+            }
+            Double score = result.getQualityScore().orElse(null);
+            if (minScore != null && score != null) {
+                assertTrue(score >= minScore,
+                        String.format("Expected quality score >= %f, got %f", minScore, score));
+            }
+            if (maxScore != null && score != null) {
+                assertTrue(score <= maxScore,
+                        String.format("Expected quality score <= %f, got %f", maxScore, score));
+            }
+        }
+
+        public static void assertProcessingWarnings(ExtractionResult result, Integer maxCount, Boolean isEmpty) {
+            var warnings = result.getProcessingWarnings();
+            int count = warnings != null ? warnings.size() : 0;
+            if (isEmpty != null && isEmpty) {
+                assertTrue(count == 0,
+                        String.format("Expected processing warnings to be empty, got %d", count));
+            }
+            if (maxCount != null) {
+                assertTrue(count <= maxCount,
+                        String.format("Expected at most %d processing warnings, got %d", maxCount, count));
+            }
+        }
+
+        public static void assertDjotContent(ExtractionResult result, Boolean hasContent, Integer minBlocks) {
+            var djotContent = result.getDjotContent().orElse(null);
+            if (hasContent != null && hasContent) {
+                assertTrue(djotContent != null && !djotContent.isEmpty(),
+                        "Expected djot content to be present");
+            }
+            if (minBlocks != null && djotContent != null && !djotContent.isEmpty()) {
+                String[] blocks = djotContent.split("\n\n");
+                assertTrue(blocks.length >= minBlocks,
+                        String.format("Expected at least %d djot blocks, got %d", minBlocks, blocks.length));
+            }
+        }
     }
 }

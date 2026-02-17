@@ -1,22 +1,26 @@
 {
 	"id": "config_pages",
-	"description": "Tests page configuration with page assertions",
+	"description": "Tests page extraction and page marker configuration",
 	"tags": ["contract", "config"],
 	"document": {
-		"path": "pdf/multi_page.pdf"
+		"path": "pdf/fake_memo.pdf"
 	},
 	"extraction": {
 		"method": "sync",
 		"input_type": "file",
 		"config": {
 			"pages": {
-				"start": 1,
-				"end": 3
+				"extract_pages": true,
+				"insert_page_markers": true
 			}
 		}
 	},
 	"assertions": {
 		"expected_mime": "application/pdf",
-		"min_content_length": 10
+		"min_content_length": 10,
+		"content_contains_any": ["PAGE"]
+	},
+	"skip": {
+		"requires_feature": ["pdf"]
 	}
 }

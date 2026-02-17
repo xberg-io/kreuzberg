@@ -115,6 +115,88 @@ describe("ocr fixtures", () => {
 	);
 
 	it(
+		"ocr_paddle_element_hierarchy",
+		() => {
+			const documentPath = resolveDocument("images/test_hello_world.png");
+			if (!existsSync(documentPath)) {
+				console.warn("Skipping ocr_paddle_element_hierarchy: missing document at", documentPath);
+				console.warn("Notes: Requires PaddleOCR with ONNX Runtime");
+				return;
+			}
+			const config = buildConfig({
+				force_ocr: true,
+				ocr: {
+					backend: "paddle-ocr",
+					element_config: { build_hierarchy: true, include_elements: true },
+					language: "en",
+				},
+			});
+			let result: ExtractionResult | null = null;
+			try {
+				result = extractFileSync(documentPath, null, config);
+			} catch (error) {
+				if (
+					shouldSkipFixture(
+						error,
+						"ocr_paddle_element_hierarchy",
+						["onnxruntime", "paddle-ocr"],
+						"Requires PaddleOCR with ONNX Runtime",
+					)
+				) {
+					return;
+				}
+				throw error;
+			}
+			if (result === null) {
+				return;
+			}
+			assertions.assertExpectedMime(result, ["image/png"]);
+			assertions.assertMinContentLength(result, 5);
+			chunkAssertions.assertOcrElements(result, true, true, true, null);
+		},
+		TEST_TIMEOUT_MS,
+	);
+
+	it(
+		"ocr_paddle_element_levels",
+		() => {
+			const documentPath = resolveDocument("images/test_hello_world.png");
+			if (!existsSync(documentPath)) {
+				console.warn("Skipping ocr_paddle_element_levels: missing document at", documentPath);
+				console.warn("Notes: Requires PaddleOCR with ONNX Runtime");
+				return;
+			}
+			const config = buildConfig({
+				force_ocr: true,
+				ocr: { backend: "paddle-ocr", element_config: { include_elements: true, min_level: "word" }, language: "en" },
+			});
+			let result: ExtractionResult | null = null;
+			try {
+				result = extractFileSync(documentPath, null, config);
+			} catch (error) {
+				if (
+					shouldSkipFixture(
+						error,
+						"ocr_paddle_element_levels",
+						["onnxruntime", "paddle-ocr"],
+						"Requires PaddleOCR with ONNX Runtime",
+					)
+				) {
+					return;
+				}
+				throw error;
+			}
+			if (result === null) {
+				return;
+			}
+			assertions.assertExpectedMime(result, ["image/png"]);
+			assertions.assertMinContentLength(result, 5);
+			chunkAssertions.assertOcrElements(result, true, true, null, 1);
+		},
+		TEST_TIMEOUT_MS,
+	);
+
+	it(
 		"ocr_paddle_image_chinese",
 		() => {
 			const documentPath = resolveDocument("images/chi_sim_image.jpeg");
@@ -344,15 +426,22 @@ describe("ocr fixtures", () => {
 			const documentPath = resolveDocument("pdf/image_only_german_pdf.pdf");
 			if (!existsSync(documentPath)) {
 				console.warn("Skipping ocr_pdf_image_only_german: missing document at", documentPath);
-				console.warn("Notes: Skip if OCR backend unavailable.");
+				console.warn("Notes: Requires Tesseract OCR with German language data.");
 				return;
 			}
-			const config = buildConfig({ force_ocr: true, ocr: { backend: "tesseract", language: "eng" } });
+			const config = buildConfig({ force_ocr: true, ocr: { backend: "tesseract", language: "deu" } });
 			let result: ExtractionResult | null = null;
 			try {
 				result = extractFileSync(documentPath, null, config);
 			} catch (error) {
-				if (shouldSkipFixture(error, "ocr_pdf_image_only_german", ["tesseract"], "Skip if OCR backend unavailable.")) {
+				if (
+					shouldSkipFixture(
+						error,
+						"ocr_pdf_image_only_german",
+						["tesseract"],
+						"Requires Tesseract OCR with German language data.",
+					)
+				) {
 					return;
 				}
 				throw error;
@@ -434,6 +523,73 @@ describe("ocr fixtures", () => {
 			assertions.assertExpectedMime(result, ["application/pdf"]);
 			assertions.assertMinContentLength(result, 20);
 			assertions.assertContentContainsAny(result, ["Docling", "Markdown", "JSON"]);
+		},
+		TEST_TIMEOUT_MS,
+	);
+
+	it(
+		"ocr_tesseract_elements",
+		() => {
+			const documentPath = resolveDocument("images/test_hello_world.png");
+			if (!existsSync(documentPath)) {
+				console.warn("Skipping ocr_tesseract_elements: missing document at", documentPath);
+				console.warn("Notes: Requires Tesseract OCR backend");
+				return;
+			}
+			const config = buildConfig({
+				force_ocr: true,
+				ocr: { backend: "tesseract", element_config: { include_elements: true }, language: "eng" },
+			});
+			let result: ExtractionResult | null = null;
+			try {
+				result = extractFileSync(documentPath, null, config);
+			} catch (error) {
+				if (shouldSkipFixture(error, "ocr_tesseract_elements", ["tesseract"], "Requires Tesseract OCR backend")) {
+					return;
+				}
+				throw error;
+			}
+			if (result === null) {
+				return;
+			}
+			assertions.assertExpectedMime(result, ["image/png"]);
+			assertions.assertMinContentLength(result, 5);
+			chunkAssertions.assertOcrElements(result, true, true, true, null);
+		},
+		TEST_TIMEOUT_MS,
+	);
+
+	it(
+		"ocr_tesseract_language_german",
+		() => {
+			const documentPath = resolveDocument("pdf/image_only_german_pdf.pdf");
+			if (!existsSync(documentPath)) {
+				console.warn("Skipping ocr_tesseract_language_german: missing document at", documentPath);
+				console.warn("Notes: Requires Tesseract OCR with German language data (deu)");
+				return;
+			}
+			const config = buildConfig({ force_ocr: true, ocr: { backend: "tesseract", language: "deu" } });
+			let result: ExtractionResult | null = null;
+			try {
+				result = extractFileSync(documentPath, null, config);
+			} catch (error) {
+				if (
+					shouldSkipFixture(
+						error,
+						"ocr_tesseract_language_german",
+						["tesseract"],
+						"Requires Tesseract OCR with German language data (deu)",
+					)
+				) {
+					return;
+				}
+				throw error;
+			}
+			if (result === null) {
+				return;
+			}
+			assertions.assertExpectedMime(result, ["application/pdf"]);
+			assertions.assertMinContentLength(result, 20);
 		},
 		TEST_TIMEOUT_MS,
 	);

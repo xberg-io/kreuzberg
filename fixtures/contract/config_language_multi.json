@@ -1,0 +1,28 @@
+{
+	"id": "config_language_multi",
+	"description": "Tests multi-language detection config",
+	"tags": ["contract", "config", "language_detection"],
+	"document": {
+		"path": "pdf/fake_memo.pdf"
+	},
+	"extraction": {
+		"method": "sync",
+		"input_type": "file",
+		"config": {
+			"language_detection": {
+				"enabled": true,
+				"detect_multiple": true
+			}
+		}
+	},
+	"assertions": {
+		"expected_mime": "application/pdf",
+		"min_content_length": 10,
+		"detected_languages": {
+			"expects": ["eng"]
+		}
+	},
+	"skip": {
+		"requires_feature": ["language-detection"]
+	}
+}

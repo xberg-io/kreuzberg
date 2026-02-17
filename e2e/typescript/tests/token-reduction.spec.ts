@@ -13,6 +13,34 @@ const TEST_TIMEOUT_MS = 60_000;
 
 describe("token_reduction fixtures", () => {
 	it(
+		"token_reduction_aggressive",
+		() => {
+			const documentPath = resolveDocument("pdf/fake_memo.pdf");
+			if (!existsSync(documentPath)) {
+				console.warn("Skipping token_reduction_aggressive: missing document at", documentPath);
+				return;
+			}
+			const config = buildConfig({ token_reduction: { mode: "aggressive" } });
+			let result: ExtractionResult | null = null;
+			try {
+				result = extractFileSync(documentPath, null, config);
+			} catch (error) {
+				if (shouldSkipFixture(error, "token_reduction_aggressive", [], undefined)) {
+					return;
+				}
+				throw error;
+			}
+			if (result === null) {
+				return;
+			}
+			assertions.assertExpectedMime(result, ["application/pdf"]);
+			assertions.assertMinContentLength(result, 5);
+			assertions.assertContentNotEmpty(result);
+		},
+		TEST_TIMEOUT_MS,
+	);
+
+	it(
 		"token_reduction_basic",
 		() => {
 			const documentPath = resolveDocument("pdf/fake_memo.pdf");
@@ -35,6 +63,34 @@ describe("token_reduction fixtures", () => {
 			}
 			assertions.assertExpectedMime(result, ["application/pdf"]);
 			assertions.assertMinContentLength(result, 5);
+			assertions.assertContentNotEmpty(result);
+		},
+		TEST_TIMEOUT_MS,
+	);
+
+	it(
+		"token_reduction_light",
+		() => {
+			const documentPath = resolveDocument("pdf/fake_memo.pdf");
+			if (!existsSync(documentPath)) {
+				console.warn("Skipping token_reduction_light: missing document at", documentPath);
+				return;
+			}
+			const config = buildConfig({ token_reduction: { mode: "light" } });
+			let result: ExtractionResult | null = null;
+			try {
+				result = extractFileSync(documentPath, null, config);
+			} catch (error) {
+				if (shouldSkipFixture(error, "token_reduction_light", [], undefined)) {
+					return;
+				}
+				throw error;
+			}
+			if (result === null) {
+				return;
+			}
+			assertions.assertExpectedMime(result, ["application/pdf"]);
+			assertions.assertMinContentLength(result, 10);
 			assertions.assertContentNotEmpty(result);
 		},
 		TEST_TIMEOUT_MS,

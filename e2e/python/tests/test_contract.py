@@ -185,6 +185,55 @@ def test_config_chunking() -> None:
     helpers.assert_chunks(result, min_count=1, each_has_content=True)
 
 
+def test_config_chunking_markdown() -> None:
+    """Tests markdown-aware chunker type"""
+
+    document_path = helpers.resolve_document("pdf/fake_memo.pdf")
+    if not document_path.exists():
+        pytest.skip(f"Skipping config_chunking_markdown: missing document at {document_path}")
+
+    config = helpers.build_config({"chunking": {"chunker_type": "markdown", "max_chars": 500, "max_overlap": 50}})
+
+    result = extract_file_sync(document_path, None, config)
+
+    helpers.assert_expected_mime(result, ["application/pdf"])
+    helpers.assert_min_content_length(result, 10)
+    helpers.assert_chunks(result, min_count=1, each_has_content=True)
+
+
+def test_config_chunking_small() -> None:
+    """Tests chunking with very small chunk size produces more chunks"""
+
+    document_path = helpers.resolve_document("pdf/fake_memo.pdf")
+    if not document_path.exists():
+        pytest.skip(f"Skipping config_chunking_small: missing document at {document_path}")
+
+    config = helpers.build_config({"chunking": {"max_chars": 100, "max_overlap": 20}})
+
+    result = extract_file_sync(document_path, None, config)
+
+    helpers.assert_expected_mime(result, ["application/pdf"])
+    helpers.assert_min_content_length(result, 10)
+    helpers.assert_chunks(result, min_count=2, each_has_content=True)
+
+
+def test_config_djot_content() -> None:
+    """Tests djot output format produces djot_content field"""
+
+    document_path = helpers.resolve_document("pdf/fake_memo.pdf")
+    if not document_path.exists():
+        pytest.skip(f"Skipping config_djot_content: missing document at {document_path}")
+
+    config = helpers.build_config({"output_format": "djot"})
+
+    result = extract_file_sync(document_path, None, config)
+
+    helpers.assert_expected_mime(result, ["application/pdf"])
+    helpers.assert_min_content_length(result, 10)
+    helpers.assert_output_format(result, "djot")
+    helpers.assert_djot_content(result, has_content=True)
+
+
 def test_config_document_structure() -> None:
     """Tests include_document_structure config produces document tree"""
 
@@ -215,6 +264,21 @@ def test_config_document_structure_disabled() -> None:
     helpers.assert_document(result, has_document=False)
 
 
+def test_config_document_structure_headings() -> None:
+    """Tests document structure extraction with heading nodes on a DOCX"""
+
+    document_path = helpers.resolve_document("office/docx/headers.docx")
+    if not document_path.exists():
+        pytest.skip(f"Skipping config_document_structure_headings: missing document at {document_path}")
+
+    config = helpers.build_config({"include_document_structure": True})
+
+    result = extract_file_sync(document_path, None, config)
+
+    helpers.assert_expected_mime(result, ["application/vnd.openxmlformats-officedocument.wordprocessingml.document"])
+    helpers.assert_document(result, has_document=True, min_node_count=1, node_types_include=["heading", "paragraph"])
+
+
 def test_config_document_structure_with_headings() -> None:
     """Tests document structure with DOCX heading-driven nesting"""
 
@@ -228,6 +292,22 @@ def test_config_document_structure_with_headings() -> None:
 
     helpers.assert_expected_mime(result, ["application/vnd.openxmlformats-officedocument.wordprocessingml.document"])
     helpers.assert_document(result, has_document=True, min_node_count=1)
+
+
+def test_config_element_types() -> None:
+    """Tests element-based result format with element type assertions on DOCX"""
+
+    document_path = helpers.resolve_document("office/docx/headers.docx")
+    if not document_path.exists():
+        pytest.skip(f"Skipping config_element_types: missing document at {document_path}")
+
+    config = helpers.build_config({"result_format": "element_based"})
+
+    result = extract_file_sync(document_path, None, config)
+
+    helpers.assert_expected_mime(result, ["application/vnd.openxmlformats-officedocument.wordprocessingml.document"])
+    helpers.assert_elements(result, min_count=1, types_include=["title", "narrative_text"])
+    helpers.assert_result_format(result, "element_based")
 
 
 def test_config_force_ocr() -> None:
@@ -308,19 +388,101 @@ def test_config_language_detection() -> None:
     helpers.assert_detected_languages(result, ["eng"], 0.5)
 
 
-def test_config_pages() -> None:
-    """Tests page configuration with page assertions"""
+def test_config_language_multi() -> None:
+    """Tests multi-language detection config"""
 
-    document_path = helpers.resolve_document("pdf/multi_page.pdf")
+    document_path = helpers.resolve_document("pdf/fake_memo.pdf")
     if not document_path.exists():
-        pytest.skip(f"Skipping config_pages: missing document at {document_path}")
+        pytest.skip(f"Skipping config_language_multi: missing document at {document_path}")
 
-    config = helpers.build_config({"pages": {"end": 3, "start": 1}})
+    config = helpers.build_config({"language_detection": {"detect_multiple": True, "enabled": True}})
 
     result = extract_file_sync(document_path, None, config)
 
     helpers.assert_expected_mime(result, ["application/pdf"])
     helpers.assert_min_content_length(result, 10)
+    helpers.assert_detected_languages(result, ["eng"], None)
+
+
+def test_config_pages() -> None:
+    """Tests page extraction and page marker configuration"""
+
+    document_path = helpers.resolve_document("pdf/fake_memo.pdf")
+    if not document_path.exists():
+        pytest.skip(f"Skipping config_pages: missing document at {document_path}")
+
+    config = helpers.build_config({"pages": {"extract_pages": True, "insert_page_markers": True}})
+
+    result = extract_file_sync(document_path, None, config)
+
+    helpers.assert_expected_mime(result, ["application/pdf"])
+    helpers.assert_min_content_length(result, 10)
+    helpers.assert_content_contains_any(result, ["PAGE"])
+
+
+def test_config_pages_extract() -> None:
+    """Tests page extraction config producing per-page content array"""
+
+    document_path = helpers.resolve_document("pdf/fake_memo.pdf")
+    if not document_path.exists():
+        pytest.skip(f"Skipping config_pages_extract: missing document at {document_path}")
+
+    config = helpers.build_config({"pages": {"extract_pages": True}})
+
+    result = extract_file_sync(document_path, None, config)
+
+    helpers.assert_expected_mime(result, ["application/pdf"])
+    helpers.assert_min_content_length(result, 10)
+    helpers.assert_pages(result, min_count=1)
+
+
+def test_config_pages_markers() -> None:
+    """Tests page marker insertion in extracted content"""
+
+    document_path = helpers.resolve_document("pdf/fake_memo.pdf")
+    if not document_path.exists():
+        pytest.skip(f"Skipping config_pages_markers: missing document at {document_path}")
+
+    config = helpers.build_config({"pages": {"insert_page_markers": True}})
+
+    result = extract_file_sync(document_path, None, config)
+
+    helpers.assert_expected_mime(result, ["application/pdf"])
+    helpers.assert_min_content_length(result, 10)
+    helpers.assert_content_contains_any(result, ["PAGE"])
+
+
+def test_config_pdf_hierarchy() -> None:
+    """Tests PDF hierarchy extraction config with block-level structure"""
+
+    document_path = helpers.resolve_document("pdf/fake_memo.pdf")
+    if not document_path.exists():
+        pytest.skip(f"Skipping config_pdf_hierarchy: missing document at {document_path}")
+
+    config = helpers.build_config(
+        {"pages": {"extract_pages": True}, "pdf_options": {"hierarchy": {"enabled": True, "include_bbox": True}}}
+    )
+
+    result = extract_file_sync(document_path, None, config)
+
+    helpers.assert_expected_mime(result, ["application/pdf"])
+    helpers.assert_min_content_length(result, 50)
+
+
+def test_config_postprocessor() -> None:
+    """Tests postprocessor config is accepted and extraction succeeds"""
+
+    document_path = helpers.resolve_document("pdf/fake_memo.pdf")
+    if not document_path.exists():
+        pytest.skip(f"Skipping config_postprocessor: missing document at {document_path}")
+
+    config = helpers.build_config({"postprocessor": {"enabled": True}})
+
+    result = extract_file_sync(document_path, None, config)
+
+    helpers.assert_expected_mime(result, ["application/pdf"])
+    helpers.assert_min_content_length(result, 10)
+    helpers.assert_content_not_empty(result)
 
 
 def test_config_quality_disabled() -> None:
@@ -337,6 +499,38 @@ def test_config_quality_disabled() -> None:
     helpers.assert_expected_mime(result, ["application/pdf"])
     helpers.assert_min_content_length(result, 10)
     helpers.assert_content_not_empty(result)
+
+
+def test_config_quality_enabled() -> None:
+    """Tests quality scoring produces a score value in [0.0, 1.0]"""
+
+    document_path = helpers.resolve_document("pdf/fake_memo.pdf")
+    if not document_path.exists():
+        pytest.skip(f"Skipping config_quality_enabled: missing document at {document_path}")
+
+    config = helpers.build_config({"enable_quality_processing": True})
+
+    result = extract_file_sync(document_path, None, config)
+
+    helpers.assert_expected_mime(result, ["application/pdf"])
+    helpers.assert_min_content_length(result, 10)
+    helpers.assert_quality_score(result, has_score=True, min_score=0, max_score=1)
+
+
+def test_config_structured_output() -> None:
+    """Tests structured (JSON) output format config"""
+
+    document_path = helpers.resolve_document("pdf/fake_memo.pdf")
+    if not document_path.exists():
+        pytest.skip(f"Skipping config_structured_output: missing document at {document_path}")
+
+    config = helpers.build_config({"output_format": "structured"})
+
+    result = extract_file_sync(document_path, None, config)
+
+    helpers.assert_expected_mime(result, ["application/pdf"])
+    helpers.assert_min_content_length(result, 10)
+    helpers.assert_output_format(result, "structured")
 
 
 def test_config_use_cache_false() -> None:

@@ -465,6 +465,40 @@ export const assertions = {
         }
     },
 
+    assertOcrElements(
+        result: ExtractionResult,
+        hasElements?: boolean | null,
+        elementsHaveGeometry?: boolean | null,
+        elementsHaveConfidence?: boolean | null,
+        minCount?: number | null,
+    ): void {
+        const ocrElements = ((result as unknown as PlainRecord).ocrElements ?? (result as unknown as PlainRecord).ocr_elements) as unknown[] | undefined;
+        if (hasElements) {
+            assertExists(ocrElements, "Expected ocrElements to be defined");
+            if (!Array.isArray(ocrElements)) {
+                throw new Error("Expected ocrElements to be an array");
+            }
+            assertEquals(ocrElements.length > 0, true, "Expected ocrElements to be non-empty");
+        }
+        if (Array.isArray(ocrElements)) {
+            if (typeof minCount === "number") {
+                assertEquals(ocrElements.length >= minCount, true, `Expected at least ${minCount} OCR elements, got ${ocrElements.length}`);
+            }
+            if (elementsHaveGeometry) {
+                for (const el of ocrElements) {
+                    const geometry = (el as PlainRecord).geometry;
+                    assertExists(geometry, "Expected OCR element to have geometry");
+                }
+            }
+            if (elementsHaveConfidence) {
+                for (const el of ocrElements) {
+                    const confidence = (el as PlainRecord).confidence;
+                    assertExists(confidence, "Expected OCR element to have confidence");
+                }
+            }
+        }
+    },
+
     assertDocument(
         result: ExtractionResult,
         hasDocument: boolean,
@@ -522,6 +556,107 @@ export const assertions = {
 
     assertContentNotEmpty(result: ExtractionResult): void {
         assertEquals(result.content.length > 0, true, "Expected content to be non-empty");
+    },
+
+    assertTableBoundingBoxes(result: ExtractionResult, expected: boolean): void {
+        if (expected) {
+            const tables = Array.isArray(result.tables) ? result.tables : [];
+            assertEquals(tables.length > 0, true, "Expected tables with bounding boxes but no tables found");
+            for (const table of tables) {
+                const bb = (table as PlainRecord).boundingBox ?? (table as PlainRecord).bounding_box;
+                assertExists(bb, "Expected table to have bounding_box but it was null");
+            }
+        }
+    },
+
+    assertTableContentContainsAny(result: ExtractionResult, snippets: string[]): void {
+        if (!snippets.length) {
+            return;
+        }
+        const tables = Array.isArray(result.tables) ? result.tables : [];
+        assertEquals(tables.length > 0, true, "Expected tables but none found");
+        const allCells: string[] = [];
+        for (const table of tables) {
+            const cells = (table as PlainRecord).cells as unknown[][] | undefined;
+            if (Array.isArray(cells)) {
+                for (const row of cells) {
+                    for (const cell of row) {
+                        allCells.push(String(cell).toLowerCase());
+                    }
+                }
+            }
+        }
+        const found = snippets.some((s) => allCells.some((cell) => cell.includes(s.toLowerCase())));
+        assertEquals(found, true, `No table cell contains any of [${snippets.join(", ")}]`);
+    },
+
+    assertImageBoundingBoxes(result: ExtractionResult, expected: boolean): void {
+        if (expected) {
+            const images = (result as unknown as PlainRecord).images as unknown[] | undefined;
+            assertExists(images, "Expected images with bounding boxes but no images found");
+            assertEquals(Array.isArray(images) && images.length > 0, true, "Expected images with bounding boxes but no images found");
+            for (const img of images!) {
+                const bb = (img as PlainRecord).boundingBox ?? (img as PlainRecord).bounding_box;
+                assertExists(bb, "Expected image to have bounding_box but it was null");
+            }
+        }
+    },
+
+    assertQualityScore(
+        result: ExtractionResult,
+        hasScore?: boolean | null,
+        minScore?: number | null,
+        maxScore?: number | null,
+    ): void {
+        const score = (result as unknown as PlainRecord).qualityScore ?? (result as unknown as PlainRecord).quality_score;
+        if (hasScore === true) {
+            assertExists(score, "Expected quality_score to be present");
+        }
+        if (hasScore === false) {
+            assertEquals(score == null, true, "Expected quality_score to be absent");
+        }
+        if (typeof minScore === "number") {
+            assertExists(score, "quality_score required for min_score assertion");
+            assertEquals(Number(score) >= minScore, true, `quality_score ${score} < ${minScore}`);
+        }
+        if (typeof maxScore === "number") {
+            assertExists(score, "quality_score required for max_score assertion");
+            assertEquals(Number(score) <= maxScore, true, `quality_score ${score} > ${maxScore}`);
+        }
+    },
+
+    assertProcessingWarnings(
+        result: ExtractionResult,
+        maxCount?: number | null,
+        isEmpty?: boolean | null,
+    ): void {
+        const warnings = ((result as unknown as PlainRecord).processingWarnings ?? (result as unknown as PlainRecord).processing_warnings) as unknown[] | undefined;
+        const list = Array.isArray(warnings) ? warnings : [];
+        if (typeof maxCount === "number") {
+            assertEquals(list.length <= maxCount, true, `processing_warnings count ${list.length} > ${maxCount}`);
+        }
+        if (isEmpty === true) {
+            assertEquals(list.length, 0, `Expected empty processing_warnings, got ${list.length}`);
+        }
+    },
+
+    assertDjotContent(
+        result: ExtractionResult,
+        hasContent?: boolean | null,
+        minBlocks?: number | null,
+    ): void {
+        const djot = (result as unknown as PlainRecord).djotContent ?? (result as unknown as PlainRecord).djot_content;
+        if (hasContent === true) {
+            assertExists(djot, "Expected djot_content to be present");
+        }
+        if (hasContent === false) {
+            assertEquals(djot == null, true, "Expected djot_content to be absent");
+        }
+        if (typeof minBlocks === "number") {
+            assertExists(djot, "djot_content required for min_blocks assertion");
+            const blocks = Array.isArray(djot) ? djot : ((djot as PlainRecord)?.blocks as unknown[] | undefined) ?? [];
+            assertEquals(blocks.length >= minBlocks, true, `djot_content blocks ${blocks.length} < ${minBlocks}`);
+        }
     },
 };
 
@@ -849,6 +984,18 @@ fn render_assertions(assertions: &Assertions) -> String {
             .map(|value| value.to_string())
             .unwrap_or_else(|| "null".into());
         buffer.push_str(&format!("    assertions.assertTableCount(result, {min}, {max});\n"));
+        if let Some(has_bb) = tables.has_bounding_boxes {
+            buffer.push_str(&format!(
+                "    assertions.assertTableBoundingBoxes(result, {});\n",
+                if has_bb { "true" } else { "false" }
+            ));
+        }
+        if let Some(ref contains) = tables.content_contains_any {
+            buffer.push_str(&format!(
+                "    assertions.assertTableContentContainsAny(result, {});\n",
+                render_string_array(contains)
+            ));
+        }
     }
 
     if let Some(languages) = assertions.detected_languages.as_ref() {
@@ -899,6 +1046,12 @@ fn render_assertions(assertions: &Assertions) -> String {
         buffer.push_str(&format!(
             "    assertions.assertImages(result, {min}, {max}, {formats});\n"
         ));
+        if let Some(has_bb) = images.has_bounding_boxes {
+            buffer.push_str(&format!(
+                "    assertions.assertImageBoundingBoxes(result, {});\n",
+                if has_bb { "true" } else { "false" }
+            ));
+        }
     }
 
     if let Some(pages) = assertions.pages.as_ref() {
@@ -979,6 +1132,52 @@ fn render_assertions(assertions: &Assertions) -> String {
 
     if assertions.content_not_empty == Some(true) {
         buffer.push_str("    assertions.assertContentNotEmpty(result);\n");
+    }
+
+    if let Some(quality_score) = assertions.quality_score.as_ref() {
+        let has_score = quality_score
+            .has_score
+            .map(|v| v.to_string())
+            .unwrap_or_else(|| "null".into());
+        let min_score = quality_score
+            .min_score
+            .map(|v| v.to_string())
+            .unwrap_or_else(|| "null".into());
+        let max_score = quality_score
+            .max_score
+            .map(|v| v.to_string())
+            .unwrap_or_else(|| "null".into());
+        buffer.push_str(&format!(
+            "    assertions.assertQualityScore(result, {has_score}, {min_score}, {max_score});\n"
+        ));
+    }
+
+    if let Some(processing_warnings) = assertions.processing_warnings.as_ref() {
+        let max_count = processing_warnings
+            .max_count
+            .map(|v| v.to_string())
+            .unwrap_or_else(|| "null".into());
+        let is_empty = processing_warnings
+            .is_empty
+            .map(|v| v.to_string())
+            .unwrap_or_else(|| "null".into());
+        buffer.push_str(&format!(
+            "    assertions.assertProcessingWarnings(result, {max_count}, {is_empty});\n"
+        ));
+    }
+
+    if let Some(djot_content) = assertions.djot_content.as_ref() {
+        let has_content = djot_content
+            .has_content
+            .map(|v| v.to_string())
+            .unwrap_or_else(|| "null".into());
+        let min_blocks = djot_content
+            .min_blocks
+            .map(|v| v.to_string())
+            .unwrap_or_else(|| "null".into());
+        buffer.push_str(&format!(
+            "    assertions.assertDjotContent(result, {has_content}, {min_blocks});\n"
+        ));
     }
 
     buffer

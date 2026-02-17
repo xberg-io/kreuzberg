@@ -81,6 +81,52 @@ class OcrTest extends TestCase
     }
 
     /**
+     * Tests PaddleOCR with element hierarchy building enabled
+     */
+    public function test_ocr_paddle_element_hierarchy(): void
+    {
+        $documentPath = Helpers::resolveDocument('images/test_hello_world.png');
+        if (!file_exists($documentPath)) {
+            $this->markTestSkipped('Skipping ocr_paddle_element_hierarchy: missing document at ' . $documentPath);
+        }
+
+        Helpers::skipIfFeatureUnavailable('paddle-ocr');
+        Helpers::skipIfFeatureUnavailable('paddle-ocr');
+
+        $config = Helpers::buildConfig(['force_ocr' => true, 'ocr' => ['backend' => 'paddle-ocr', 'element_config' => ['build_hierarchy' => true, 'include_elements' => true], 'language' => 'en']]);
+
+        $kreuzberg = new Kreuzberg($config);
+        $result = $kreuzberg->extractFile($documentPath);
+
+        Helpers::assertExpectedMime($result, ['image/png']);
+        Helpers::assertMinContentLength($result, 5);
+        Helpers::assertOcrElements($result, true, true, true, null);
+    }
+
+    /**
+     * Tests PaddleOCR with word-level element extraction
+     */
+    public function test_ocr_paddle_element_levels(): void
+    {
+        $documentPath = Helpers::resolveDocument('images/test_hello_world.png');
+        if (!file_exists($documentPath)) {
+            $this->markTestSkipped('Skipping ocr_paddle_element_levels: missing document at ' . $documentPath);
+        }
+
+        Helpers::skipIfFeatureUnavailable('paddle-ocr');
+        Helpers::skipIfFeatureUnavailable('paddle-ocr');
+
+        $config = Helpers::buildConfig(['force_ocr' => true, 'ocr' => ['backend' => 'paddle-ocr', 'element_config' => ['include_elements' => true, 'min_level' => 'word'], 'language' => 'en']]);
+
+        $kreuzberg = new Kreuzberg($config);
+        $result = $kreuzberg->extractFile($documentPath);
+
+        Helpers::assertExpectedMime($result, ['image/png']);
+        Helpers::assertMinContentLength($result, 5);
+        Helpers::assertOcrElements($result, true, true, null, 1);
+    }
+
+    /**
      * Chinese OCR with PaddleOCR - its core strength.
      */
     public function test_ocr_paddle_image_chinese(): void
@@ -229,7 +275,7 @@ class OcrTest extends TestCase
 
         Helpers::skipIfFeatureUnavailable('tesseract');
 
-        $config = Helpers::buildConfig(['force_ocr' => true, 'ocr' => ['backend' => 'tesseract', 'language' => 'eng']]);
+        $config = Helpers::buildConfig(['force_ocr' => true, 'ocr' => ['backend' => 'tesseract', 'language' => 'deu']]);
 
         $kreuzberg = new Kreuzberg($config);
         $result = $kreuzberg->extractFile($documentPath);
@@ -280,6 +326,49 @@ class OcrTest extends TestCase
         Helpers::assertExpectedMime($result, ['application/pdf']);
         Helpers::assertMinContentLength($result, 20);
         Helpers::assertContentContainsAny($result, ['Docling', 'Markdown', 'JSON']);
+    }
+
+    /**
+     * Tests Tesseract OCR with element-level structured output including geometry
+     */
+    public function test_ocr_tesseract_elements(): void
+    {
+        $documentPath = Helpers::resolveDocument('images/test_hello_world.png');
+        if (!file_exists($documentPath)) {
+            $this->markTestSkipped('Skipping ocr_tesseract_elements: missing document at ' . $documentPath);
+        }
+
+        Helpers::skipIfFeatureUnavailable('tesseract');
+
+        $config = Helpers::buildConfig(['force_ocr' => true, 'ocr' => ['backend' => 'tesseract', 'element_config' => ['include_elements' => true], 'language' => 'eng']]);
+
+        $kreuzberg = new Kreuzberg($config);
+        $result = $kreuzberg->extractFile($documentPath);
+
+        Helpers::assertExpectedMime($result, ['image/png']);
+        Helpers::assertMinContentLength($result, 5);
+        Helpers::assertOcrElements($result, true, true, true, null);
+    }
+
+    /**
+     * Tests Tesseract OCR with German language configuration
+     */
+    public function test_ocr_tesseract_language_german(): void
+    {
+        $documentPath = Helpers::resolveDocument('pdf/image_only_german_pdf.pdf');
+        if (!file_exists($documentPath)) {
+            $this->markTestSkipped('Skipping ocr_tesseract_language_german: missing document at ' . $documentPath);
+        }
+
+        Helpers::skipIfFeatureUnavailable('tesseract');
+
+        $config = Helpers::buildConfig(['force_ocr' => true, 'ocr' => ['backend' => 'tesseract', 'language' => 'deu']]);
+
+        $kreuzberg = new Kreuzberg($config);
+        $result = $kreuzberg->extractFile($documentPath);
+
+        Helpers::assertExpectedMime($result, ['application/pdf']);
+        Helpers::assertMinContentLength($result, 20);
     }
 
 }

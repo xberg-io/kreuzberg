@@ -82,6 +82,44 @@ public class OcrTest {
     }
 
     @Test
+    public void ocrPaddleElementHierarchy() throws Exception {
+        JsonNode config = MAPPER.readTree("{\"force_ocr\":true,\"ocr\":{\"backend\":\"paddle-ocr\",\"element_config\":{\"build_hierarchy\":true,\"include_elements\":true},\"language\":\"en\"}}");
+        E2EHelpers.skipIfPaddleOcrUnavailable();
+        E2EHelpers.runFixture(
+            "ocr_paddle_element_hierarchy",
+            "images/test_hello_world.png",
+            config,
+            Arrays.asList("paddle-ocr", "paddle-ocr", "onnxruntime"),
+            "Requires PaddleOCR with ONNX Runtime",
+            true,
+            result -> {
+                E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("image/png"));
+                E2EHelpers.Assertions.assertMinContentLength(result, 5);
+                E2EHelpers.Assertions.assertOcrElements(result, true, true, true, null);
+            }
+        );
+    }
+
+    @Test
+    public void ocrPaddleElementLevels() throws Exception {
+        JsonNode config = MAPPER.readTree("{\"force_ocr\":true,\"ocr\":{\"backend\":\"paddle-ocr\",\"element_config\":{\"include_elements\":true,\"min_level\":\"word\"},\"language\":\"en\"}}");
+        E2EHelpers.skipIfPaddleOcrUnavailable();
+        E2EHelpers.runFixture(
+            "ocr_paddle_element_levels",
+            "images/test_hello_world.png",
+            config,
+            Arrays.asList("paddle-ocr", "paddle-ocr", "onnxruntime"),
+            "Requires PaddleOCR with ONNX Runtime",
+            true,
+            result -> {
+                E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("image/png"));
+                E2EHelpers.Assertions.assertMinContentLength(result, 5);
+                E2EHelpers.Assertions.assertOcrElements(result, true, true, null, 1);
+            }
+        );
+    }
+
+    @Test
     public void ocrPaddleImageChinese() throws Exception {
         JsonNode config = MAPPER.readTree("{\"force_ocr\":true,\"ocr\":{\"backend\":\"paddle-ocr\",\"language\":\"ch\"}}");
         E2EHelpers.skipIfPaddleOcrUnavailable();
@@ -196,13 +234,13 @@ public class OcrTest {
 
     @Test
     public void ocrPdfImageOnlyGerman() throws Exception {
-        JsonNode config = MAPPER.readTree("{\"force_ocr\":true,\"ocr\":{\"backend\":\"tesseract\",\"language\":\"eng\"}}");
+        JsonNode config = MAPPER.readTree("{\"force_ocr\":true,\"ocr\":{\"backend\":\"tesseract\",\"language\":\"deu\"}}");
         E2EHelpers.runFixture(
             "ocr_pdf_image_only_german",
             "pdf/image_only_german_pdf.pdf",
             config,
             Arrays.asList("tesseract", "tesseract"),
-            "Skip if OCR backend unavailable.",
+            "Requires Tesseract OCR with German language data.",
             true,
             result -> {
                 E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("application/pdf"));
@@ -243,6 +281,41 @@ public class OcrTest {
                 E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("application/pdf"));
                 E2EHelpers.Assertions.assertMinContentLength(result, 20);
                 E2EHelpers.Assertions.assertContentContainsAny(result, Arrays.asList("Docling", "Markdown", "JSON"));
+            }
+        );
+    }
+
+    @Test
+    public void ocrTesseractElements() throws Exception {
+        JsonNode config = MAPPER.readTree("{\"force_ocr\":true,\"ocr\":{\"backend\":\"tesseract\",\"element_config\":{\"include_elements\":true},\"language\":\"eng\"}}");
+        E2EHelpers.runFixture(
+            "ocr_tesseract_elements",
+            "images/test_hello_world.png",
+            config,
+            Arrays.asList("tesseract", "tesseract"),
+            "Requires Tesseract OCR backend",
+            true,
+            result -> {
+                E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("image/png"));
+                E2EHelpers.Assertions.assertMinContentLength(result, 5);
+                E2EHelpers.Assertions.assertOcrElements(result, true, true, true, null);
+            }
+        );
+    }
+
+    @Test
+    public void ocrTesseractLanguageGerman() throws Exception {
+        JsonNode config = MAPPER.readTree("{\"force_ocr\":true,\"ocr\":{\"backend\":\"tesseract\",\"language\":\"deu\"}}");
+        E2EHelpers.runFixture(
+            "ocr_tesseract_language_german",
+            "pdf/image_only_german_pdf.pdf",
+            config,
+            Arrays.asList("tesseract", "tesseract"),
+            "Requires Tesseract OCR with German language data (deu)",
+            true,
+            result -> {
+                E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("application/pdf"));
+                E2EHelpers.Assertions.assertMinContentLength(result, 20);
             }
         );
     }

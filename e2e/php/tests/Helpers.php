@@ -635,6 +635,146 @@ class Helpers
         );
     }
 
+    public static function assertTableBoundingBoxes(ExtractionResult $result, bool $expected): void
+    {
+        if ($expected) {
+            $tables = $result->tables ?? [];
+            Assert::assertNotEmpty($tables, 'Expected tables with bounding boxes but no tables found');
+            foreach ($tables as $table) {
+                $bb = $table->boundingBox ?? $table->bounding_box ?? null;
+                Assert::assertNotNull($bb, 'Expected table to have bounding_box but it was null');
+            }
+        }
+    }
+
+    public static function assertTableContentContainsAny(ExtractionResult $result, array $snippets): void
+    {
+        $tables = $result->tables ?? [];
+        Assert::assertNotEmpty($tables, 'Expected tables but none found');
+
+        $allCells = [];
+        foreach ($tables as $table) {
+            $cells = $table->cells ?? [];
+            foreach ($cells as $row) {
+                foreach ($row as $cell) {
+                    $allCells[] = strtolower((string)$cell);
+                }
+            }
+        }
+
+        $found = false;
+        foreach ($snippets as $snippet) {
+            foreach ($allCells as $cell) {
+                if (str_contains($cell, strtolower($snippet))) {
+                    $found = true;
+                    break 2;
+                }
+            }
+        }
+
+        Assert::assertTrue(
+            $found,
+            sprintf('No table cell contains any of %s', json_encode($snippets))
+        );
+    }
+
+    public static function assertImageBoundingBoxes(ExtractionResult $result, bool $expected): void
+    {
+        if ($expected) {
+            $images = $result->images ?? [];
+            Assert::assertNotEmpty($images, 'Expected images with bounding boxes but no images found');
+            foreach ($images as $image) {
+                $bb = $image->boundingBox ?? $image->bounding_box ?? null;
+                Assert::assertNotNull($bb, 'Expected image to have bounding_box but it was null');
+            }
+        }
+    }
+
+    public static function assertQualityScore(
+        ExtractionResult $result,
+        ?bool $hasScore = null,
+        ?float $minScore = null,
+        ?float $maxScore = null
+    ): void {
+        $score = $result->qualityScore ?? $result->quality_score ?? null;
+
+        if ($hasScore === true) {
+            Assert::assertNotNull($score, 'Expected quality_score to be present');
+        }
+
+        if ($hasScore === false) {
+            Assert::assertNull($score, 'Expected quality_score to be absent');
+        }
+
+        if ($minScore !== null) {
+            Assert::assertNotNull($score, 'quality_score required for min_score assertion');
+            Assert::assertGreaterThanOrEqual(
+                $minScore,
+                (float)$score,
+                sprintf('quality_score %f < %f', (float)$score, $minScore)
+            );
+        }
+
+        if ($maxScore !== null) {
+            Assert::assertNotNull($score, 'quality_score required for max_score assertion');
+            Assert::assertLessThanOrEqual(
+                $maxScore,
+                (float)$score,
+                sprintf('quality_score %f > %f', (float)$score, $maxScore)
+            );
+        }
+    }
+
+    public static function assertProcessingWarnings(
+        ExtractionResult $result,
+        ?int $maxCount = null,
+        ?bool $isEmpty = null
+    ): void {
+        $warnings = $result->processingWarnings ?? $result->processing_warnings ?? [];
+
+        if ($maxCount !== null) {
+            Assert::assertLessThanOrEqual(
+                $maxCount,
+                count($warnings),
+                sprintf('processing_warnings count %d > %d', count($warnings), $maxCount)
+            );
+        }
+
+        if ($isEmpty === true) {
+            Assert::assertCount(
+                0,
+                $warnings,
+                sprintf('Expected empty processing_warnings, got %d', count($warnings))
+            );
+        }
+    }
+
+    public static function assertDjotContent(
+        ExtractionResult $result,
+        ?bool $hasContent = null,
+        ?int $minBlocks = null
+    ): void {
+        $djot = $result->djotContent ?? $result->djot_content ?? null;
+
+        if ($hasContent === true) {
+            Assert::assertNotNull($djot, 'Expected djot_content to be present');
+        }
+
+        if ($hasContent === false) {
+            Assert::assertNull($djot, 'Expected djot_content to be absent');
+        }
+
+        if ($minBlocks !== null) {
+            Assert::assertNotNull($djot, 'djot_content required for min_blocks assertion');
+            $blocks = is_object($djot) ? ($djot->blocks ?? []) : ($djot['blocks'] ?? []);
+            Assert::assertGreaterThanOrEqual(
+                $minBlocks,
+                count($blocks),
+                sprintf('djot_content blocks %d < %d', count($blocks), $minBlocks)
+            );
+        }
+    }
+
     public static function skipIfFeatureUnavailable(string $feature): void
     {
         $envVar = 'KREUZBERG_' . strtoupper(str_replace('-', '_', $feature)) . '_AVAILABLE';

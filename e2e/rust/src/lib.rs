@@ -477,6 +477,141 @@ pub mod assertions {
         assert!(!result.content.trim().is_empty(), "Expected non-empty content");
     }
 
+    /// Assert that all tables have bounding boxes when expected is true.
+    pub fn assert_table_bounding_boxes(result: &ExtractionResult, expected: bool) {
+        if expected {
+            assert!(
+                !result.tables.is_empty(),
+                "Expected tables with bounding boxes but no tables found"
+            );
+            for table in &result.tables {
+                assert!(
+                    table.bounding_box.is_some(),
+                    "Expected table to have bounding_box but it was None"
+                );
+            }
+        }
+    }
+
+    /// Assert that at least one table cell contains any of the provided snippets.
+    pub fn assert_table_content_contains_any(result: &ExtractionResult, snippets: &[&str]) {
+        assert!(!result.tables.is_empty(), "Expected tables but none found");
+        let all_cells: Vec<&str> = result
+            .tables
+            .iter()
+            .flat_map(|t| t.cells.iter())
+            .flat_map(|row| row.iter())
+            .map(|s| s.as_str())
+            .collect();
+        let found = snippets.iter().any(|snippet| {
+            let lower = snippet.to_lowercase();
+            all_cells.iter().any(|cell| cell.to_lowercase().contains(&lower))
+        });
+        assert!(
+            found,
+            "No table cell contains any of {:?}. Cells: {:?}",
+            snippets, all_cells
+        );
+    }
+
+    /// Assert that all images have bounding boxes when expected is true.
+    pub fn assert_image_bounding_boxes(result: &ExtractionResult, expected: bool) {
+        if expected {
+            let images = result
+                .images
+                .as_ref()
+                .expect("Expected images with bounding boxes but images is None");
+            assert!(
+                !images.is_empty(),
+                "Expected images with bounding boxes but no images found"
+            );
+            for image in images {
+                assert!(
+                    image.bounding_box.is_some(),
+                    "Expected image to have bounding_box but it was None"
+                );
+            }
+        }
+    }
+
+    /// Assert quality score presence and range.
+    pub fn assert_quality_score(
+        result: &ExtractionResult,
+        has_score: Option<bool>,
+        min_score: Option<f64>,
+        max_score: Option<f64>,
+    ) {
+        if let Some(true) = has_score {
+            assert!(
+                result.quality_score.is_some(),
+                "Expected quality_score to be present but it was None"
+            );
+        }
+        if let Some(false) = has_score {
+            assert!(
+                result.quality_score.is_none(),
+                "Expected quality_score to be absent but it was Some"
+            );
+        }
+        if let Some(min) = min_score {
+            let score = result
+                .quality_score
+                .expect("quality_score required for min_score assertion");
+            assert!(score >= min, "quality_score {score} is less than minimum {min}");
+        }
+        if let Some(max) = max_score {
+            let score = result
+                .quality_score
+                .expect("quality_score required for max_score assertion");
+            assert!(score <= max, "quality_score {score} is greater than maximum {max}");
+        }
+    }
+
+    /// Assert processing warnings count and emptiness.
+    pub fn assert_processing_warnings(result: &ExtractionResult, max_count: Option<usize>, is_empty: Option<bool>) {
+        if let Some(max) = max_count {
+            assert!(
+                result.processing_warnings.len() <= max,
+                "processing_warnings count {} exceeds maximum {max}",
+                result.processing_warnings.len()
+            );
+        }
+        if let Some(true) = is_empty {
+            assert!(
+                result.processing_warnings.is_empty(),
+                "Expected processing_warnings to be empty but found {}",
+                result.processing_warnings.len()
+            );
+        }
+    }
+
+    /// Assert djot content presence and block count.
+    pub fn assert_djot_content(result: &ExtractionResult, has_content: Option<bool>, min_blocks: Option<usize>) {
+        if let Some(true) = has_content {
+            assert!(
+                result.djot_content.is_some(),
+                "Expected djot_content to be present but it was None"
+            );
+        }
+        if let Some(false) = has_content {
+            assert!(
+                result.djot_content.is_none(),
+                "Expected djot_content to be absent but it was Some"
+            );
+        }
+        if let Some(min) = min_blocks {
+            let djot = result
+                .djot_content
+                .as_ref()
+                .expect("djot_content required for min_blocks assertion");
+            assert!(
+                djot.blocks.len() >= min,
+                "djot_content blocks count {} is less than minimum {min}",
+                djot.blocks.len()
+            );
+        }
+    }
+
     fn lookup_path<'a>(value: &'a Value, path: &str) -> Option<&'a Value> {
         if let Some(found) = lookup_path_inner(value, path) {
             return Some(found);

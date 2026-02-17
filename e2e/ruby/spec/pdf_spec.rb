@@ -47,6 +47,26 @@ RSpec.describe 'pdf fixtures' do
     end
   end
 
+  it 'pdf_bounding_boxes' do
+    E2ERuby.skip_if_feature_unavailable('pdf')
+    E2ERuby.run_fixture(
+      'pdf_bounding_boxes',
+      'pdf/tiny.pdf',
+      { images: { extract_images: true } },
+      requirements: %w[pdf],
+      notes: nil,
+      skip_if_missing: true
+    ) do |result|
+      E2ERuby::Assertions.assert_expected_mime(
+        result,
+        ['application/pdf']
+      )
+      E2ERuby::Assertions.assert_min_content_length(result, 50)
+      E2ERuby::Assertions.assert_table_count(result, 1, nil)
+      E2ERuby::Assertions.assert_table_bounding_boxes(result)
+    end
+  end
+
   it 'pdf_code_and_formula' do
     E2ERuby.run_fixture(
       'pdf_code_and_formula',

@@ -190,9 +190,19 @@ fn run_rubocop_format(dir: &Utf8Path) {
 }
 
 fn run_google_java_format(dir: &Utf8Path) {
+    let java_dir = dir.join("src/test/java");
+    let java_files: Vec<_> = walkdir::WalkDir::new(java_dir.as_str())
+        .into_iter()
+        .filter_map(|e| e.ok())
+        .filter(|e| e.path().extension().is_some_and(|ext| ext == "java"))
+        .map(|e| e.path().to_path_buf())
+        .collect();
+    if java_files.is_empty() {
+        return;
+    }
     let status = std::process::Command::new("google-java-format")
-        .args(["--replace"])
-        .arg(dir.join("src/test/java").as_str())
+        .arg("--replace")
+        .args(&java_files)
         .status();
     match status {
         Ok(s) if s.success() => {}

@@ -644,6 +644,146 @@ class Helpers
         );
     }
 
+    public static function assertTableBoundingBoxes(ExtractionResult $result, bool $expected): void
+    {
+        if ($expected) {
+            $tables = $result->tables ?? [];
+            Assert::assertNotEmpty($tables, 'Expected tables with bounding boxes but no tables found');
+            foreach ($tables as $table) {
+                $bb = $table->boundingBox ?? $table->bounding_box ?? null;
+                Assert::assertNotNull($bb, 'Expected table to have bounding_box but it was null');
+            }
+        }
+    }
+
+    public static function assertTableContentContainsAny(ExtractionResult $result, array $snippets): void
+    {
+        $tables = $result->tables ?? [];
+        Assert::assertNotEmpty($tables, 'Expected tables but none found');
+
+        $allCells = [];
+        foreach ($tables as $table) {
+            $cells = $table->cells ?? [];
+            foreach ($cells as $row) {
+                foreach ($row as $cell) {
+                    $allCells[] = strtolower((string)$cell);
+                }
+            }
+        }
+
+        $found = false;
+        foreach ($snippets as $snippet) {
+            foreach ($allCells as $cell) {
+                if (str_contains($cell, strtolower($snippet))) {
+                    $found = true;
+                    break 2;
+                }
+            }
+        }
+
+        Assert::assertTrue(
+            $found,
+            sprintf('No table cell contains any of %s', json_encode($snippets))
+        );
+    }
+
+    public static function assertImageBoundingBoxes(ExtractionResult $result, bool $expected): void
+    {
+        if ($expected) {
+            $images = $result->images ?? [];
+            Assert::assertNotEmpty($images, 'Expected images with bounding boxes but no images found');
+            foreach ($images as $image) {
+                $bb = $image->boundingBox ?? $image->bounding_box ?? null;
+                Assert::assertNotNull($bb, 'Expected image to have bounding_box but it was null');
+            }
+        }
+    }
+
+    public static function assertQualityScore(
+        ExtractionResult $result,
+        ?bool $hasScore = null,
+        ?float $minScore = null,
+        ?float $maxScore = null
+    ): void {
+        $score = $result->qualityScore ?? $result->quality_score ?? null;
+
+        if ($hasScore === true) {
+            Assert::assertNotNull($score, 'Expected quality_score to be present');
+        }
+
+        if ($hasScore === false) {
+            Assert::assertNull($score, 'Expected quality_score to be absent');
+        }
+
+        if ($minScore !== null) {
+            Assert::assertNotNull($score, 'quality_score required for min_score assertion');
+            Assert::assertGreaterThanOrEqual(
+                $minScore,
+                (float)$score,
+                sprintf('quality_score %f < %f', (float)$score, $minScore)
+            );
+        }
+
+        if ($maxScore !== null) {
+            Assert::assertNotNull($score, 'quality_score required for max_score assertion');
+            Assert::assertLessThanOrEqual(
+                $maxScore,
+                (float)$score,
+                sprintf('quality_score %f > %f', (float)$score, $maxScore)
+            );
+        }
+    }
+
+    public static function assertProcessingWarnings(
+        ExtractionResult $result,
+        ?int $maxCount = null,
+        ?bool $isEmpty = null
+    ): void {
+        $warnings = $result->processingWarnings ?? $result->processing_warnings ?? [];
+
+        if ($maxCount !== null) {
+            Assert::assertLessThanOrEqual(
+                $maxCount,
+                count($warnings),
+                sprintf('processing_warnings count %d > %d', count($warnings), $maxCount)
+            );
+        }
+
+        if ($isEmpty === true) {
+            Assert::assertCount(
+                0,
+                $warnings,
+                sprintf('Expected empty processing_warnings, got %d', count($warnings))
+            );
+        }
+    }
+
+    public static function assertDjotContent(
+        ExtractionResult $result,
+        ?bool $hasContent = null,
+        ?int $minBlocks = null
+    ): void {
+        $djot = $result->djotContent ?? $result->djot_content ?? null;
+
+        if ($hasContent === true) {
+            Assert::assertNotNull($djot, 'Expected djot_content to be present');
+        }
+
+        if ($hasContent === false) {
+            Assert::assertNull($djot, 'Expected djot_content to be absent');
+        }
+
+        if ($minBlocks !== null) {
+            Assert::assertNotNull($djot, 'djot_content required for min_blocks assertion');
+            $blocks = is_object($djot) ? ($djot->blocks ?? []) : ($djot['blocks'] ?? []);
+            Assert::assertGreaterThanOrEqual(
+                $minBlocks,
+                count($blocks),
+                sprintf('djot_content blocks %d < %d', count($blocks), $minBlocks)
+            );
+        }
+    }
+
     public static function skipIfFeatureUnavailable(string $feature): void
     {
         $envVar = 'KREUZBERG_' . strtoupper(str_replace('-', '_', $feature)) . '_AVAILABLE';
@@ -882,6 +1022,22 @@ fn render_assertions(assertions: &Assertions) -> String {
             min_literal, max_literal
         )
         .unwrap();
+        if let Some(has_bb) = tables.has_bounding_boxes {
+            writeln!(
+                buffer,
+                "        Helpers::assertTableBoundingBoxes($result, {});",
+                if has_bb { "true" } else { "false" }
+            )
+            .unwrap();
+        }
+        if let Some(ref contains) = tables.content_contains_any {
+            writeln!(
+                buffer,
+                "        Helpers::assertTableContentContainsAny($result, {});",
+                render_string_array(contains)
+            )
+            .unwrap();
+        }
     }
     if let Some(languages) = assertions.detected_languages.as_ref() {
         let expected = render_string_array(&languages.expects);
@@ -949,6 +1105,14 @@ fn render_assertions(assertions: &Assertions) -> String {
             min_count, max_count, formats_include
         )
         .unwrap();
+        if let Some(has_bb) = images.has_bounding_boxes {
+            writeln!(
+                buffer,
+                "        Helpers::assertImageBoundingBoxes($result, {});",
+                if has_bb { "true" } else { "false" }
+            )
+            .unwrap();
+        }
     }
     if let Some(pages) = assertions.pages.as_ref() {
         let min_count = pages
@@ -1054,6 +1218,61 @@ fn render_assertions(assertions: &Assertions) -> String {
 
     if assertions.content_not_empty == Some(true) {
         writeln!(buffer, "        Helpers::assertContentNotEmpty($result);").unwrap();
+    }
+
+    if let Some(quality_score) = assertions.quality_score.as_ref() {
+        let has_score = quality_score
+            .has_score
+            .map(|v| if v { "true" } else { "false" }.to_string())
+            .unwrap_or_else(|| "null".to_string());
+        let min_score = quality_score
+            .min_score
+            .map(|v| v.to_string())
+            .unwrap_or_else(|| "null".to_string());
+        let max_score = quality_score
+            .max_score
+            .map(|v| v.to_string())
+            .unwrap_or_else(|| "null".to_string());
+        writeln!(
+            buffer,
+            "        Helpers::assertQualityScore($result, {}, {}, {});",
+            has_score, min_score, max_score
+        )
+        .unwrap();
+    }
+
+    if let Some(processing_warnings) = assertions.processing_warnings.as_ref() {
+        let max_count = processing_warnings
+            .max_count
+            .map(|v| v.to_string())
+            .unwrap_or_else(|| "null".to_string());
+        let is_empty = processing_warnings
+            .is_empty
+            .map(|v| if v { "true" } else { "false" }.to_string())
+            .unwrap_or_else(|| "null".to_string());
+        writeln!(
+            buffer,
+            "        Helpers::assertProcessingWarnings($result, {}, {});",
+            max_count, is_empty
+        )
+        .unwrap();
+    }
+
+    if let Some(djot_content) = assertions.djot_content.as_ref() {
+        let has_content = djot_content
+            .has_content
+            .map(|v| if v { "true" } else { "false" }.to_string())
+            .unwrap_or_else(|| "null".to_string());
+        let min_blocks = djot_content
+            .min_blocks
+            .map(|v| v.to_string())
+            .unwrap_or_else(|| "null".to_string());
+        writeln!(
+            buffer,
+            "        Helpers::assertDjotContent($result, {}, {});",
+            has_content, min_blocks
+        )
+        .unwrap();
     }
 
     buffer

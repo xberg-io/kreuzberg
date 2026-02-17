@@ -4,8 +4,8 @@
 // Tests for pdf fixtures.
 #![allow(clippy::too_many_lines)]
 use e2e_rust::{assertions, resolve_document};
+use kreuzberg::KreuzbergError;
 use kreuzberg::core::config::ExtractionConfig;
-
 #[test]
 fn test_pdf_assembly_technical() {
     // Assembly language technical manual with large body of text.
@@ -54,6 +54,49 @@ fn test_pdf_bayesian_data_analysis() {
     assertions::assert_min_content_length(&result, 10000);
     assertions::assert_content_contains_any(&result, &["Bayesian", "probability", "distribution"]);
     assertions::assert_metadata_expectation(&result, "format_type", &serde_json::json!({"eq":"pdf"}));
+}
+
+#[test]
+fn test_pdf_bounding_boxes() {
+    // Tests bounding box extraction on PDF tables and images
+
+    let document_path = resolve_document("pdf/tiny.pdf");
+    if !document_path.exists() {
+        println!(
+            "Skipping pdf_bounding_boxes: missing document at {}",
+            document_path.display()
+        );
+        return;
+    }
+    let config: ExtractionConfig = serde_json::from_str(
+        r#"{
+  "images": {
+    "extract_images": true
+  }
+}"#,
+    )
+    .expect("Fixture config should deserialize");
+
+    let result = match kreuzberg::extract_file_sync(&document_path, None, &config) {
+        Err(KreuzbergError::MissingDependency(dep)) => {
+            println!("Skipping pdf_bounding_boxes: missing dependency {dep}", dep = dep);
+            return;
+        }
+        Err(KreuzbergError::UnsupportedFormat(fmt)) => {
+            println!(
+                "Skipping pdf_bounding_boxes: unsupported format {fmt} (requires optional tool)",
+                fmt = fmt
+            );
+            return;
+        }
+        Err(err) => panic!("Extraction failed for pdf_bounding_boxes: {err:?}"),
+        Ok(result) => result,
+    };
+
+    assertions::assert_expected_mime(&result, &["application/pdf"]);
+    assertions::assert_min_content_length(&result, 50);
+    assertions::assert_table_count(&result, Some(1), None);
+    assertions::assert_table_bounding_boxes(&result, true);
 }
 
 #[test]

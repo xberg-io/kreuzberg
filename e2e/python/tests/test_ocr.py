@@ -64,6 +64,56 @@ def test_ocr_paddle_confidence_filter() -> None:
     helpers.assert_min_content_length(result, 1)
 
 
+def test_ocr_paddle_element_hierarchy() -> None:
+    """Tests PaddleOCR with element hierarchy building enabled"""
+
+    document_path = helpers.resolve_document("images/test_hello_world.png")
+    if not document_path.exists():
+        pytest.skip(f"Skipping ocr_paddle_element_hierarchy: missing document at {document_path}")
+
+    config = helpers.build_config(
+        {
+            "force_ocr": True,
+            "ocr": {
+                "backend": "paddle-ocr",
+                "element_config": {"build_hierarchy": True, "include_elements": True},
+                "language": "en",
+            },
+        }
+    )
+
+    result = extract_file_sync(document_path, None, config)
+
+    helpers.assert_expected_mime(result, ["image/png"])
+    helpers.assert_min_content_length(result, 5)
+    helpers.assert_ocr_elements(result, has_elements=True, elements_have_geometry=True, elements_have_confidence=True)
+
+
+def test_ocr_paddle_element_levels() -> None:
+    """Tests PaddleOCR with word-level element extraction"""
+
+    document_path = helpers.resolve_document("images/test_hello_world.png")
+    if not document_path.exists():
+        pytest.skip(f"Skipping ocr_paddle_element_levels: missing document at {document_path}")
+
+    config = helpers.build_config(
+        {
+            "force_ocr": True,
+            "ocr": {
+                "backend": "paddle-ocr",
+                "element_config": {"include_elements": True, "min_level": "word"},
+                "language": "en",
+            },
+        }
+    )
+
+    result = extract_file_sync(document_path, None, config)
+
+    helpers.assert_expected_mime(result, ["image/png"])
+    helpers.assert_min_content_length(result, 5)
+    helpers.assert_ocr_elements(result, has_elements=True, elements_have_geometry=True, min_count=1)
+
+
 def test_ocr_paddle_image_chinese() -> None:
     """Chinese OCR with PaddleOCR - its core strength."""
 
@@ -181,7 +231,7 @@ def test_ocr_pdf_image_only_german() -> None:
     if not document_path.exists():
         pytest.skip(f"Skipping ocr_pdf_image_only_german: missing document at {document_path}")
 
-    config = helpers.build_config({"force_ocr": True, "ocr": {"backend": "tesseract", "language": "eng"}})
+    config = helpers.build_config({"force_ocr": True, "ocr": {"backend": "tesseract", "language": "deu"}})
 
     result = extract_file_sync(document_path, None, config)
 
@@ -219,3 +269,39 @@ def test_ocr_pdf_tesseract() -> None:
     helpers.assert_expected_mime(result, ["application/pdf"])
     helpers.assert_min_content_length(result, 20)
     helpers.assert_content_contains_any(result, ["Docling", "Markdown", "JSON"])
+
+
+def test_ocr_tesseract_elements() -> None:
+    """Tests Tesseract OCR with element-level structured output including geometry"""
+
+    document_path = helpers.resolve_document("images/test_hello_world.png")
+    if not document_path.exists():
+        pytest.skip(f"Skipping ocr_tesseract_elements: missing document at {document_path}")
+
+    config = helpers.build_config(
+        {
+            "force_ocr": True,
+            "ocr": {"backend": "tesseract", "element_config": {"include_elements": True}, "language": "eng"},
+        }
+    )
+
+    result = extract_file_sync(document_path, None, config)
+
+    helpers.assert_expected_mime(result, ["image/png"])
+    helpers.assert_min_content_length(result, 5)
+    helpers.assert_ocr_elements(result, has_elements=True, elements_have_geometry=True, elements_have_confidence=True)
+
+
+def test_ocr_tesseract_language_german() -> None:
+    """Tests Tesseract OCR with German language configuration"""
+
+    document_path = helpers.resolve_document("pdf/image_only_german_pdf.pdf")
+    if not document_path.exists():
+        pytest.skip(f"Skipping ocr_tesseract_language_german: missing document at {document_path}")
+
+    config = helpers.build_config({"force_ocr": True, "ocr": {"backend": "tesseract", "language": "deu"}})
+
+    result = extract_file_sync(document_path, None, config)
+
+    helpers.assert_expected_mime(result, ["application/pdf"])
+    helpers.assert_min_content_length(result, 20)

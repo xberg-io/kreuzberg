@@ -718,4 +718,109 @@ public static class TestHelpers
             throw new XunitException("Expected content to be non-empty, but it is empty");
         }
     }
+
+    public static void AssertTableBoundingBoxes(ExtractionResult result)
+    {
+        var tables = result.Tables;
+        if (tables is not null)
+        {
+            for (var i = 0; i < tables.Count; i++)
+            {
+                if (tables[i].BoundingBox is null)
+                {
+                    throw new XunitException($"Table {i} expected to have bounding box");
+                }
+            }
+        }
+    }
+
+    public static void AssertTableContentContainsAny(ExtractionResult result, IEnumerable<string> snippets)
+    {
+        var list = snippets.ToArray();
+        if (list.Length == 0) return;
+        var tables = result.Tables;
+        var allContent = string.Join(" ", (tables ?? new List<Table>()).Select(t => (t.Content ?? "").ToLowerInvariant()));
+        foreach (var snippet in list)
+        {
+            if (allContent.Contains(snippet.ToLowerInvariant()))
+            {
+                return;
+            }
+        }
+        throw new XunitException($"Expected table content to contain any of [{string.Join(", ", list)}]");
+    }
+
+    public static void AssertImageBoundingBoxes(ExtractionResult result)
+    {
+        var images = result.Images;
+        if (images is not null)
+        {
+            for (var i = 0; i < images.Count; i++)
+            {
+                if (images[i].BoundingBox is null)
+                {
+                    throw new XunitException($"Image {i} expected to have bounding box");
+                }
+            }
+        }
+    }
+
+    public static void AssertQualityScore(ExtractionResult result, bool? hasScore, double? minScore, double? maxScore)
+    {
+        if (hasScore == true)
+        {
+            if (result.QualityScore is null)
+            {
+                throw new XunitException("Expected quality score to be present");
+            }
+        }
+        if (minScore.HasValue && result.QualityScore.HasValue)
+        {
+            if (result.QualityScore.Value < minScore.Value)
+            {
+                throw new XunitException($"Expected quality score >= {minScore.Value}, got {result.QualityScore.Value}");
+            }
+        }
+        if (maxScore.HasValue && result.QualityScore.HasValue)
+        {
+            if (result.QualityScore.Value > maxScore.Value)
+            {
+                throw new XunitException($"Expected quality score <= {maxScore.Value}, got {result.QualityScore.Value}");
+            }
+        }
+    }
+
+    public static void AssertProcessingWarnings(ExtractionResult result, int? maxCount, bool? isEmpty)
+    {
+        var warnings = result.ProcessingWarnings;
+        var count = warnings?.Count ?? 0;
+        if (isEmpty == true && count != 0)
+        {
+            throw new XunitException($"Expected processing warnings to be empty, got {count}");
+        }
+        if (maxCount.HasValue && count > maxCount.Value)
+        {
+            throw new XunitException($"Expected at most {maxCount.Value} processing warnings, got {count}");
+        }
+    }
+
+    public static void AssertDjotContent(ExtractionResult result, bool? hasContent, int? minBlocks)
+    {
+        var djotContent = result.DjotContent;
+        if (hasContent == true)
+        {
+            if (string.IsNullOrEmpty(djotContent))
+            {
+                throw new XunitException("Expected djot content to be present");
+            }
+        }
+        if (minBlocks.HasValue && !string.IsNullOrEmpty(djotContent))
+        {
+            var blocks = djotContent.Split(new[] { "\n\n" }, StringSplitOptions.None);
+            if (blocks.Length < minBlocks.Value)
+            {
+                throw new XunitException($"Expected at least {minBlocks.Value} djot blocks, got {blocks.Length}");
+            }
+        }
+    }
 }

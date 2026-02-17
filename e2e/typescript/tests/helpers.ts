@@ -443,6 +443,113 @@ export const assertions = {
 		expect(result.content).toBeDefined();
 		expect(result.content.trim().length).toBeGreaterThan(0);
 	},
+
+	assertTableBoundingBoxes(result: ExtractionResult, expected: boolean): void {
+		const tables = Array.isArray(result.tables) ? result.tables : [];
+		for (const table of tables) {
+			const boundingBox = (table as PlainRecord).boundingBox ?? (table as PlainRecord).bounding_box;
+			if (expected) {
+				expect(boundingBox).toBeDefined();
+			} else {
+				expect(boundingBox == null).toBe(true);
+			}
+		}
+	},
+
+	assertTableContentContainsAny(result: ExtractionResult, snippets: string[]): void {
+		if (!snippets.length) {
+			return;
+		}
+		const tables = Array.isArray(result.tables) ? result.tables : [];
+		const allCellText = tables.flatMap((table) => {
+			const rows = (table as PlainRecord).rows;
+			if (!Array.isArray(rows)) {
+				return [];
+			}
+			return rows.flatMap((row) => {
+				if (!Array.isArray(row)) {
+					return [];
+				}
+				return row.map((cell) => {
+					const text = (cell as PlainRecord).text ?? (cell as PlainRecord).content ?? String(cell);
+					return typeof text === "string" ? text : String(text);
+				});
+			});
+		});
+		const loweredCells = allCellText.map((t) => t.toLowerCase());
+		expect(snippets.some((snippet) => loweredCells.some((cell) => cell.includes(snippet.toLowerCase())))).toBe(true);
+	},
+
+	assertImageBoundingBoxes(result: ExtractionResult, expected: boolean): void {
+		const images = (result as unknown as PlainRecord).images as unknown[] | undefined;
+		if (!Array.isArray(images)) {
+			return;
+		}
+		for (const image of images) {
+			const boundingBox = (image as PlainRecord).boundingBox ?? (image as PlainRecord).bounding_box;
+			if (expected) {
+				expect(boundingBox).toBeDefined();
+			} else {
+				expect(boundingBox == null).toBe(true);
+			}
+		}
+	},
+
+	assertQualityScore(
+		result: ExtractionResult,
+		hasScore?: boolean | null,
+		minScore?: number | null,
+		maxScore?: number | null,
+	): void {
+		const qualityScore =
+			(result as unknown as PlainRecord).qualityScore ?? (result as unknown as PlainRecord).quality_score;
+		if (hasScore === true) {
+			expect(qualityScore).toBeDefined();
+			expect(qualityScore).not.toBeNull();
+		}
+		if (hasScore === false) {
+			expect(qualityScore == null).toBe(true);
+		}
+		if (typeof qualityScore === "number") {
+			if (typeof minScore === "number") {
+				expect(qualityScore).toBeGreaterThanOrEqual(minScore);
+			}
+			if (typeof maxScore === "number") {
+				expect(qualityScore).toBeLessThanOrEqual(maxScore);
+			}
+		}
+	},
+
+	assertProcessingWarnings(result: ExtractionResult, maxCount?: number | null, isEmpty?: boolean | null): void {
+		const warnings =
+			(result as unknown as PlainRecord).processingWarnings ?? (result as unknown as PlainRecord).processing_warnings;
+		if (isEmpty === true) {
+			if (warnings != null) {
+				expect(Array.isArray(warnings) && warnings.length === 0).toBe(true);
+			}
+		}
+		if (Array.isArray(warnings) && typeof maxCount === "number") {
+			expect(warnings.length).toBeLessThanOrEqual(maxCount);
+		}
+	},
+
+	assertDjotContent(result: ExtractionResult, hasContent?: boolean | null, minBlocks?: number | null): void {
+		const djotContent =
+			(result as unknown as PlainRecord).djotContent ?? (result as unknown as PlainRecord).djot_content;
+		if (hasContent === true) {
+			expect(djotContent).toBeDefined();
+			expect(djotContent).not.toBeNull();
+		}
+		if (hasContent === false) {
+			expect(djotContent == null).toBe(true);
+		}
+		if (djotContent != null && typeof minBlocks === "number") {
+			const blocks = (djotContent as PlainRecord).blocks ?? (djotContent as PlainRecord).nodes;
+			if (Array.isArray(blocks)) {
+				expect(blocks.length).toBeGreaterThanOrEqual(minBlocks);
+			}
+		}
+	},
 };
 
 function lookupMetadataPath(metadata: PlainRecord, path: string): unknown {
@@ -552,7 +659,7 @@ export const chunkAssertions = {
 		}
 		for (const page of pages) {
 			const p = page as Record<string, unknown>;
-			const isBlank = p.isBlank;
+			const isBlank = p["isBlank"];
 			expect(isBlank === undefined || isBlank === null || typeof isBlank === "boolean").toBe(true);
 		}
 	},

@@ -531,6 +531,143 @@ defmodule E2E.Helpers do
     end
   end
 
+  def assert_table_bounding_boxes(result, expected) do
+    if expected do
+      tables = result.tables || []
+
+      if Enum.empty?(tables) do
+        flunk("Expected tables with bounding boxes but no tables found")
+      end
+
+      Enum.each(tables, fn table ->
+        bb = Map.get(table, :bounding_box) || Map.get(table, "bounding_box")
+        assert bb != nil, "Expected table to have bounding_box but it was nil"
+      end)
+    end
+
+    result
+  end
+
+  def assert_table_content_contains_any(result, snippets) do
+    tables = result.tables || []
+
+    if Enum.empty?(tables) do
+      flunk("Expected tables but none found")
+    end
+
+    all_cells =
+      tables
+      |> Enum.flat_map(fn table ->
+        cells = Map.get(table, :cells) || Map.get(table, "cells") || []
+
+        Enum.flat_map(cells || [], fn row ->
+          Enum.map(row, fn cell -> String.downcase(to_string(cell)) end)
+        end)
+      end)
+
+    found =
+      Enum.any?(snippets, fn snippet ->
+        lowered = String.downcase(snippet)
+        Enum.any?(all_cells, fn cell -> String.contains?(cell, lowered) end)
+      end)
+
+    if !found do
+      flunk("No table cell contains any of #{inspect(snippets)}")
+    end
+
+    result
+  end
+
+  def assert_image_bounding_boxes(result, expected) do
+    if expected do
+      images = result.images || []
+
+      if Enum.empty?(images) do
+        flunk("Expected images with bounding boxes but no images found")
+      end
+
+      Enum.each(images, fn img ->
+        bb = Map.get(img, :bounding_box) || Map.get(img, "bounding_box")
+        assert bb != nil, "Expected image to have bounding_box but it was nil"
+      end)
+    end
+
+    result
+  end
+
+  def assert_quality_score(result, opts) do
+    score = Map.get(result, :quality_score) || Map.get(result, "quality_score")
+
+    if opts[:has_score] == true do
+      assert score != nil, "Expected quality_score to be present"
+    end
+
+    if opts[:has_score] == false do
+      assert score == nil, "Expected quality_score to be absent"
+    end
+
+    if opts[:min_score] && score != nil do
+      if score < opts[:min_score] do
+        flunk("quality_score #{score} < #{opts[:min_score]}")
+      end
+    end
+
+    if opts[:max_score] && score != nil do
+      if score > opts[:max_score] do
+        flunk("quality_score #{score} > #{opts[:max_score]}")
+      end
+    end
+
+    result
+  end
+
+  def assert_processing_warnings(result, opts) do
+    warnings = Map.get(result, :processing_warnings) || Map.get(result, "processing_warnings") || []
+
+    if opts[:max_count] do
+      if length(warnings) > opts[:max_count] do
+        flunk("processing_warnings count #{length(warnings)} > #{opts[:max_count]}")
+      end
+    end
+
+    if opts[:is_empty] == true do
+      if length(warnings) != 0 do
+        flunk("Expected empty processing_warnings, got #{length(warnings)}")
+      end
+    end
+
+    result
+  end
+
+  def assert_djot_content(result, opts) do
+    djot = Map.get(result, :djot_content) || Map.get(result, "djot_content")
+
+    if opts[:has_content] == true do
+      assert djot != nil, "Expected djot_content to be present"
+    end
+
+    if opts[:has_content] == false do
+      assert djot == nil, "Expected djot_content to be absent"
+    end
+
+    if opts[:min_blocks] do
+      assert djot != nil, "djot_content required for min_blocks assertion"
+
+      blocks =
+        if is_map(djot) do
+          Map.get(djot, :blocks) || Map.get(djot, "blocks") || []
+        else
+          []
+        end
+
+      if length(blocks) < opts[:min_blocks] do
+        flunk("djot_content blocks #{length(blocks)} < #{opts[:min_blocks]}")
+      end
+    end
+
+    result
+  end
+
   # Private helpers
 
   defp fetch_metadata_value(metadata, path) do
@@ -873,6 +1010,18 @@ fn render_assertions(assertions: &Assertions) -> String {
             "E2E.Helpers.assert_table_count({}, {})",
             min_literal, max_literal
         ));
+        if let Some(has_bb) = tables.has_bounding_boxes {
+            pipes.push(format!(
+                "E2E.Helpers.assert_table_bounding_boxes({})",
+                if has_bb { "true" } else { "false" }
+            ));
+        }
+        if let Some(ref contains) = tables.content_contains_any {
+            pipes.push(format!(
+                "E2E.Helpers.assert_table_content_contains_any({})",
+                render_string_list(contains)
+            ));
+        }
     }
 
     if let Some(languages) = assertions.detected_languages.as_ref() {
@@ -929,6 +1078,12 @@ fn render_assertions(assertions: &Assertions) -> String {
         }
         if !args.is_empty() {
             pipes.push(format!("E2E.Helpers.assert_images({})", args.join(", ")));
+        }
+        if let Some(has_bb) = images.has_bounding_boxes {
+            pipes.push(format!(
+                "E2E.Helpers.assert_image_bounding_boxes({})",
+                if has_bb { "true" } else { "false" }
+            ));
         }
     }
 
@@ -1014,6 +1169,48 @@ fn render_assertions(assertions: &Assertions) -> String {
 
     if assertions.content_not_empty == Some(true) {
         pipes.push("E2E.Helpers.assert_content_not_empty()".into());
+    }
+
+    if let Some(quality_score) = assertions.quality_score.as_ref() {
+        let mut args = Vec::new();
+        if let Some(has_score) = quality_score.has_score {
+            args.push(format!("has_score: {}", if has_score { "true" } else { "false" }));
+        }
+        if let Some(min_score) = quality_score.min_score {
+            args.push(format!("min_score: {min_score}"));
+        }
+        if let Some(max_score) = quality_score.max_score {
+            args.push(format!("max_score: {max_score}"));
+        }
+        if !args.is_empty() {
+            pipes.push(format!("E2E.Helpers.assert_quality_score({})", args.join(", ")));
+        }
+    }
+
+    if let Some(processing_warnings) = assertions.processing_warnings.as_ref() {
+        let mut args = Vec::new();
+        if let Some(max_count) = processing_warnings.max_count {
+            args.push(format!("max_count: {}", render_numeric_literal(max_count as u64)));
+        }
+        if let Some(is_empty) = processing_warnings.is_empty {
+            args.push(format!("is_empty: {}", if is_empty { "true" } else { "false" }));
+        }
+        if !args.is_empty() {
+            pipes.push(format!("E2E.Helpers.assert_processing_warnings({})", args.join(", ")));
+        }
+    }
+
+    if let Some(djot_content) = assertions.djot_content.as_ref() {
+        let mut args = Vec::new();
+        if let Some(has_content) = djot_content.has_content {
+            args.push(format!("has_content: {}", if has_content { "true" } else { "false" }));
+        }
+        if let Some(min_blocks) = djot_content.min_blocks {
+            args.push(format!("min_blocks: {}", render_numeric_literal(min_blocks as u64)));
+        }
+        if !args.is_empty() {
+            pipes.push(format!("E2E.Helpers.assert_djot_content({})", args.join(", ")));
+        }
     }
 
     if pipes.is_empty() {

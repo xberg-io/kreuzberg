@@ -580,6 +580,83 @@ public final class E2EHelpers {
             assertTrue(content != null && !content.isEmpty(),
                     "Expected content to be non-empty");
         }
+
+        public static void assertTableBoundingBoxes(ExtractionResult result) {
+            var tables = result.getTables();
+            if (tables != null) {
+                for (int i = 0; i < tables.size(); i++) {
+                    assertNotNull(tables.get(i).getBoundingBox(),
+                            String.format("Table %d expected to have bounding box", i));
+                }
+            }
+        }
+
+        public static void assertTableContentContainsAny(ExtractionResult result, List<String> snippets) {
+            if (snippets.isEmpty()) return;
+            var tables = result.getTables();
+            StringBuilder allContent = new StringBuilder();
+            if (tables != null) {
+                for (var table : tables) {
+                    allContent.append(table.getContent() != null ? table.getContent().toLowerCase() : "").append(" ");
+                }
+            }
+            String combined = allContent.toString();
+            boolean found = snippets.stream()
+                    .anyMatch(snippet -> combined.contains(snippet.toLowerCase()));
+            assertTrue(found,
+                    String.format("Expected table content to contain any of %s", snippets));
+        }
+
+        public static void assertImageBoundingBoxes(ExtractionResult result) {
+            var images = result.getImages();
+            if (images != null) {
+                for (int i = 0; i < images.size(); i++) {
+                    assertNotNull(images.get(i).getBoundingBox(),
+                            String.format("Image %d expected to have bounding box", i));
+                }
+            }
+        }
+
+        public static void assertQualityScore(ExtractionResult result, Boolean hasScore, Double minScore, Double maxScore) {
+            if (hasScore != null && hasScore) {
+                assertNotNull(result.getQualityScore(), "Expected quality score to be present");
+            }
+            Double score = result.getQualityScore().orElse(null);
+            if (minScore != null && score != null) {
+                assertTrue(score >= minScore,
+                        String.format("Expected quality score >= %f, got %f", minScore, score));
+            }
+            if (maxScore != null && score != null) {
+                assertTrue(score <= maxScore,
+                        String.format("Expected quality score <= %f, got %f", maxScore, score));
+            }
+        }
+
+        public static void assertProcessingWarnings(ExtractionResult result, Integer maxCount, Boolean isEmpty) {
+            var warnings = result.getProcessingWarnings();
+            int count = warnings != null ? warnings.size() : 0;
+            if (isEmpty != null && isEmpty) {
+                assertTrue(count == 0,
+                        String.format("Expected processing warnings to be empty, got %d", count));
+            }
+            if (maxCount != null) {
+                assertTrue(count <= maxCount,
+                        String.format("Expected at most %d processing warnings, got %d", maxCount, count));
+            }
+        }
+
+        public static void assertDjotContent(ExtractionResult result, Boolean hasContent, Integer minBlocks) {
+            var djotContent = result.getDjotContent().orElse(null);
+            if (hasContent != null && hasContent) {
+                assertTrue(djotContent != null && !djotContent.isEmpty(),
+                        "Expected djot content to be present");
+            }
+            if (minBlocks != null && djotContent != null && !djotContent.isEmpty()) {
+                String[] blocks = djotContent.split("\n\n");
+                assertTrue(blocks.length >= minBlocks,
+                        String.format("Expected at least %d djot blocks, got %d", minBlocks, blocks.length));
+            }
+        }
     }
 }
 "#;
@@ -1440,6 +1517,17 @@ fn render_assertions(assertions: &Assertions) -> String {
             "                E2EHelpers.Assertions.assertTableCount(result, {}, {});\n",
             min_literal, max_literal
         ));
+        if tables.has_bounding_boxes == Some(true) {
+            buffer.push_str("                E2EHelpers.Assertions.assertTableBoundingBoxes(result);\n");
+        }
+        if let Some(snippets) = tables.content_contains_any.as_ref() {
+            if !snippets.is_empty() {
+                buffer.push_str(&format!(
+                    "                E2EHelpers.Assertions.assertTableContentContainsAny(result, {});\n",
+                    render_string_list(snippets)
+                ));
+            }
+        }
     }
 
     if let Some(languages) = assertions.detected_languages.as_ref() {
@@ -1505,6 +1593,9 @@ fn render_assertions(assertions: &Assertions) -> String {
             "                E2EHelpers.Assertions.assertImages(result, {}, {}, {});\n",
             min_literal, max_literal, formats_expr
         ));
+        if images.has_bounding_boxes == Some(true) {
+            buffer.push_str("                E2EHelpers.Assertions.assertImageBoundingBoxes(result);\n");
+        }
     }
 
     if let Some(pages) = assertions.pages.as_ref() {
@@ -1603,6 +1694,50 @@ fn render_assertions(assertions: &Assertions) -> String {
 
     if assertions.content_not_empty == Some(true) {
         buffer.push_str("                E2EHelpers.Assertions.assertContentNotEmpty(result);\n");
+    }
+
+    if let Some(qs) = assertions.quality_score.as_ref() {
+        let has_score = qs
+            .has_score
+            .map(|v| v.to_string())
+            .unwrap_or_else(|| "null".to_string());
+        let min_score = qs
+            .min_score
+            .map(|v| format!("{:.2}", v))
+            .unwrap_or_else(|| "null".to_string());
+        let max_score = qs
+            .max_score
+            .map(|v| format!("{:.2}", v))
+            .unwrap_or_else(|| "null".to_string());
+        buffer.push_str(&format!(
+            "                E2EHelpers.Assertions.assertQualityScore(result, {}, {}, {});\n",
+            has_score, min_score, max_score
+        ));
+    }
+    if let Some(pw) = assertions.processing_warnings.as_ref() {
+        let max_count = pw
+            .max_count
+            .map(|v| v.to_string())
+            .unwrap_or_else(|| "null".to_string());
+        let is_empty = pw.is_empty.map(|v| v.to_string()).unwrap_or_else(|| "null".to_string());
+        buffer.push_str(&format!(
+            "                E2EHelpers.Assertions.assertProcessingWarnings(result, {}, {});\n",
+            max_count, is_empty
+        ));
+    }
+    if let Some(dc) = assertions.djot_content.as_ref() {
+        let has_content = dc
+            .has_content
+            .map(|v| v.to_string())
+            .unwrap_or_else(|| "null".to_string());
+        let min_blocks = dc
+            .min_blocks
+            .map(|v| v.to_string())
+            .unwrap_or_else(|| "null".to_string());
+        buffer.push_str(&format!(
+            "                E2EHelpers.Assertions.assertDjotContent(result, {}, {});\n",
+            has_content, min_blocks
+        ));
     }
 
     buffer

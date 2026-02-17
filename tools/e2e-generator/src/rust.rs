@@ -424,6 +424,74 @@ fn render_assertions(assertions: &Assertions) -> String {
         buffer.push_str("    assertions::assert_content_not_empty(&result);\n");
     }
 
+    if let Some(tables) = assertions.tables.as_ref() {
+        if let Some(has_bb) = tables.has_bounding_boxes {
+            buffer.push_str(&format!(
+                "    assertions::assert_table_bounding_boxes(&result, {has_bb});\n"
+            ));
+        }
+        if let Some(ref contains) = tables.content_contains_any {
+            buffer.push_str(&format!(
+                "    assertions::assert_table_content_contains_any(&result, &{});\n",
+                render_string_slice(contains)
+            ));
+        }
+    }
+
+    if let Some(images) = assertions.images.as_ref() {
+        if let Some(has_bb) = images.has_bounding_boxes {
+            buffer.push_str(&format!(
+                "    assertions::assert_image_bounding_boxes(&result, {has_bb});\n"
+            ));
+        }
+    }
+
+    if let Some(quality) = assertions.quality_score.as_ref() {
+        let has_score = quality
+            .has_score
+            .map(|v| format!("Some({v})"))
+            .unwrap_or_else(|| "None".into());
+        let min_score = quality
+            .min_score
+            .map(|v| format!("Some({v:?})"))
+            .unwrap_or_else(|| "None".into());
+        let max_score = quality
+            .max_score
+            .map(|v| format!("Some({v:?})"))
+            .unwrap_or_else(|| "None".into());
+        buffer.push_str(&format!(
+            "    assertions::assert_quality_score(&result, {has_score}, {min_score}, {max_score});\n"
+        ));
+    }
+
+    if let Some(warnings) = assertions.processing_warnings.as_ref() {
+        let max_count = warnings
+            .max_count
+            .map(|v| format!("Some({v})"))
+            .unwrap_or_else(|| "None".into());
+        let is_empty = warnings
+            .is_empty
+            .map(|v| format!("Some({v})"))
+            .unwrap_or_else(|| "None".into());
+        buffer.push_str(&format!(
+            "    assertions::assert_processing_warnings(&result, {max_count}, {is_empty});\n"
+        ));
+    }
+
+    if let Some(djot) = assertions.djot_content.as_ref() {
+        let has_content = djot
+            .has_content
+            .map(|v| format!("Some({v})"))
+            .unwrap_or_else(|| "None".into());
+        let min_blocks = djot
+            .min_blocks
+            .map(|v| format!("Some({v})"))
+            .unwrap_or_else(|| "None".into());
+        buffer.push_str(&format!(
+            "    assertions::assert_djot_content(&result, {has_content}, {min_blocks});\n"
+        ));
+    }
+
     buffer
 }
 

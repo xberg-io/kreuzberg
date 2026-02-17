@@ -143,6 +143,108 @@ fn test_ocr_paddle_confidence_filter() {
 }
 
 #[test]
+fn test_ocr_paddle_element_hierarchy() {
+    // Tests PaddleOCR with element hierarchy building enabled
+
+    let document_path = resolve_document("images/test_hello_world.png");
+    if !document_path.exists() {
+        println!(
+            "Skipping ocr_paddle_element_hierarchy: missing document at {}",
+            document_path.display()
+        );
+        return;
+    }
+    let config: ExtractionConfig = serde_json::from_str(
+        r#"{
+  "force_ocr": true,
+  "ocr": {
+    "backend": "paddle-ocr",
+    "element_config": {
+      "build_hierarchy": true,
+      "include_elements": true
+    },
+    "language": "en"
+  }
+}"#,
+    )
+    .expect("Fixture config should deserialize");
+
+    let result = match kreuzberg::extract_file_sync(&document_path, None, &config) {
+        Err(KreuzbergError::MissingDependency(dep)) => {
+            println!(
+                "Skipping ocr_paddle_element_hierarchy: missing dependency {dep}",
+                dep = dep
+            );
+            return;
+        }
+        Err(KreuzbergError::UnsupportedFormat(fmt)) => {
+            println!(
+                "Skipping ocr_paddle_element_hierarchy: unsupported format {fmt} (requires optional tool)",
+                fmt = fmt
+            );
+            return;
+        }
+        Err(err) => panic!("Extraction failed for ocr_paddle_element_hierarchy: {err:?}"),
+        Ok(result) => result,
+    };
+
+    assertions::assert_expected_mime(&result, &["image/png"]);
+    assertions::assert_min_content_length(&result, 5);
+    assertions::assert_ocr_elements(&result, Some(true), Some(true), Some(true), None);
+}
+
+#[test]
+fn test_ocr_paddle_element_levels() {
+    // Tests PaddleOCR with word-level element extraction
+
+    let document_path = resolve_document("images/test_hello_world.png");
+    if !document_path.exists() {
+        println!(
+            "Skipping ocr_paddle_element_levels: missing document at {}",
+            document_path.display()
+        );
+        return;
+    }
+    let config: ExtractionConfig = serde_json::from_str(
+        r#"{
+  "force_ocr": true,
+  "ocr": {
+    "backend": "paddle-ocr",
+    "element_config": {
+      "include_elements": true,
+      "min_level": "word"
+    },
+    "language": "en"
+  }
+}"#,
+    )
+    .expect("Fixture config should deserialize");
+
+    let result = match kreuzberg::extract_file_sync(&document_path, None, &config) {
+        Err(KreuzbergError::MissingDependency(dep)) => {
+            println!(
+                "Skipping ocr_paddle_element_levels: missing dependency {dep}",
+                dep = dep
+            );
+            return;
+        }
+        Err(KreuzbergError::UnsupportedFormat(fmt)) => {
+            println!(
+                "Skipping ocr_paddle_element_levels: unsupported format {fmt} (requires optional tool)",
+                fmt = fmt
+            );
+            return;
+        }
+        Err(err) => panic!("Extraction failed for ocr_paddle_element_levels: {err:?}"),
+        Ok(result) => result,
+    };
+
+    assertions::assert_expected_mime(&result, &["image/png"]);
+    assertions::assert_min_content_length(&result, 5);
+    assertions::assert_ocr_elements(&result, Some(true), Some(true), None, Some(1));
+}
+
+#[test]
 fn test_ocr_paddle_image_chinese() {
     // Chinese OCR with PaddleOCR - its core strength.
 
@@ -434,7 +536,7 @@ fn test_ocr_pdf_image_only_german() {
   "force_ocr": true,
   "ocr": {
     "backend": "tesseract",
-    "language": "eng"
+    "language": "deu"
   }
 }"#,
     )
@@ -549,4 +651,97 @@ fn test_ocr_pdf_tesseract() {
     assertions::assert_expected_mime(&result, &["application/pdf"]);
     assertions::assert_min_content_length(&result, 20);
     assertions::assert_content_contains_any(&result, &["Docling", "Markdown", "JSON"]);
+}
+
+#[test]
+fn test_ocr_tesseract_elements() {
+    // Tests Tesseract OCR with element-level structured output including geometry
+
+    let document_path = resolve_document("images/test_hello_world.png");
+    if !document_path.exists() {
+        println!(
+            "Skipping ocr_tesseract_elements: missing document at {}",
+            document_path.display()
+        );
+        return;
+    }
+    let config: ExtractionConfig = serde_json::from_str(
+        r#"{
+  "force_ocr": true,
+  "ocr": {
+    "backend": "tesseract",
+    "element_config": {
+      "include_elements": true
+    },
+    "language": "eng"
+  }
+}"#,
+    )
+    .expect("Fixture config should deserialize");
+
+    let result = match kreuzberg::extract_file_sync(&document_path, None, &config) {
+        Err(KreuzbergError::MissingDependency(dep)) => {
+            println!("Skipping ocr_tesseract_elements: missing dependency {dep}", dep = dep);
+            return;
+        }
+        Err(KreuzbergError::UnsupportedFormat(fmt)) => {
+            println!(
+                "Skipping ocr_tesseract_elements: unsupported format {fmt} (requires optional tool)",
+                fmt = fmt
+            );
+            return;
+        }
+        Err(err) => panic!("Extraction failed for ocr_tesseract_elements: {err:?}"),
+        Ok(result) => result,
+    };
+
+    assertions::assert_expected_mime(&result, &["image/png"]);
+    assertions::assert_min_content_length(&result, 5);
+    assertions::assert_ocr_elements(&result, Some(true), Some(true), Some(true), None);
+}
+
+#[test]
+fn test_ocr_tesseract_language_german() {
+    // Tests Tesseract OCR with German language configuration
+
+    let document_path = resolve_document("pdf/image_only_german_pdf.pdf");
+    if !document_path.exists() {
+        println!(
+            "Skipping ocr_tesseract_language_german: missing document at {}",
+            document_path.display()
+        );
+        return;
+    }
+    let config: ExtractionConfig = serde_json::from_str(
+        r#"{
+  "force_ocr": true,
+  "ocr": {
+    "backend": "tesseract",
+    "language": "deu"
+  }
+}"#,
+    )
+    .expect("Fixture config should deserialize");
+
+    let result = match kreuzberg::extract_file_sync(&document_path, None, &config) {
+        Err(KreuzbergError::MissingDependency(dep)) => {
+            println!(
+                "Skipping ocr_tesseract_language_german: missing dependency {dep}",
+                dep = dep
+            );
+            return;
+        }
+        Err(KreuzbergError::UnsupportedFormat(fmt)) => {
+            println!(
+                "Skipping ocr_tesseract_language_german: unsupported format {fmt} (requires optional tool)",
+                fmt = fmt
+            );
+            return;
+        }
+        Err(err) => panic!("Extraction failed for ocr_tesseract_language_german: {err:?}"),
+        Ok(result) => result,
+    };
+
+    assertions::assert_expected_mime(&result, &["application/pdf"]);
+    assertions::assert_min_content_length(&result, 20);
 }

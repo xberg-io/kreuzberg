@@ -13,6 +13,22 @@ from kreuzberg import (
 from . import helpers
 
 
+def test_token_reduction_aggressive() -> None:
+    """Tests aggressive token reduction mode significantly reduces content"""
+
+    document_path = helpers.resolve_document("pdf/fake_memo.pdf")
+    if not document_path.exists():
+        pytest.skip(f"Skipping token_reduction_aggressive: missing document at {document_path}")
+
+    config = helpers.build_config({"token_reduction": {"mode": "aggressive"}})
+
+    result = extract_file_sync(document_path, None, config)
+
+    helpers.assert_expected_mime(result, ["application/pdf"])
+    helpers.assert_min_content_length(result, 5)
+    helpers.assert_content_not_empty(result)
+
+
 def test_token_reduction_basic() -> None:
     """Tests basic token reduction on PDF document"""
 
@@ -26,6 +42,22 @@ def test_token_reduction_basic() -> None:
 
     helpers.assert_expected_mime(result, ["application/pdf"])
     helpers.assert_min_content_length(result, 5)
+    helpers.assert_content_not_empty(result)
+
+
+def test_token_reduction_light() -> None:
+    """Tests light token reduction mode preserves most content"""
+
+    document_path = helpers.resolve_document("pdf/fake_memo.pdf")
+    if not document_path.exists():
+        pytest.skip(f"Skipping token_reduction_light: missing document at {document_path}")
+
+    config = helpers.build_config({"token_reduction": {"mode": "light"}})
+
+    result = extract_file_sync(document_path, None, config)
+
+    helpers.assert_expected_mime(result, ["application/pdf"])
+    helpers.assert_min_content_length(result, 10)
     helpers.assert_content_not_empty(result)
 
 

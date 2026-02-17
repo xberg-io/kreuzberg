@@ -58,6 +58,29 @@ class PdfTest extends TestCase
     }
 
     /**
+     * Tests bounding box extraction on PDF tables and images
+     */
+    public function test_pdf_bounding_boxes(): void
+    {
+        $documentPath = Helpers::resolveDocument('pdf/tiny.pdf');
+        if (!file_exists($documentPath)) {
+            $this->markTestSkipped('Skipping pdf_bounding_boxes: missing document at ' . $documentPath);
+        }
+
+        Helpers::skipIfFeatureUnavailable('pdf');
+
+        $config = Helpers::buildConfig(['images' => ['extract_images' => true]]);
+
+        $kreuzberg = new Kreuzberg($config);
+        $result = $kreuzberg->extractFile($documentPath);
+
+        Helpers::assertExpectedMime($result, ['application/pdf']);
+        Helpers::assertMinContentLength($result, 50);
+        Helpers::assertTableCount($result, 1, null);
+        Helpers::assertTableBoundingBoxes($result, true);
+    }
+
+    /**
      * PDF containing code snippets and formulas should retain substantial content.
      */
     public function test_pdf_code_and_formula(): void

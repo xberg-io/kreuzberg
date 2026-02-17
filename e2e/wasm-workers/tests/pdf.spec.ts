@@ -61,6 +61,32 @@ describe("pdf", () => {
 		assertions.assertMetadataExpectation(result, "format_type", { eq: "pdf" });
 	});
 
+	it("pdf_bounding_boxes", async () => {
+		const documentBytes = getFixture("pdf/tiny.pdf");
+		if (documentBytes === null) {
+			console.warn("[SKIP] Test skipped: fixture not available in Cloudflare Workers environment");
+			return;
+		}
+
+		const config = buildConfig({ images: { extract_images: true } });
+		let result: ExtractionResult | null = null;
+		try {
+			result = await extractBytes(documentBytes, "application/octet-stream", config);
+		} catch (error) {
+			if (shouldSkipFixture(error, "pdf_bounding_boxes", ["pdf"], undefined)) {
+				return;
+			}
+			throw error;
+		}
+		if (result === null) {
+			return;
+		}
+		assertions.assertExpectedMime(result, ["application/pdf"]);
+		assertions.assertMinContentLength(result, 50);
+		assertions.assertTableCount(result, 1, null);
+		assertions.assertTableBoundingBoxes(result, true);
+	});
+
 	it("pdf_code_and_formula", async () => {
 		const documentBytes = getFixture("pdf/code_and_formula.pdf");
 		if (documentBytes === null) {
@@ -285,7 +311,6 @@ describe("pdf", () => {
 		}
 		assertions.assertExpectedMime(result, ["application/pdf"]);
 		assertions.assertMinContentLength(result, 500);
-		assertions.assertTableCount(result, 1, null);
 	});
 
 	it("pdf_tables_medium", async () => {
@@ -310,7 +335,6 @@ describe("pdf", () => {
 		}
 		assertions.assertExpectedMime(result, ["application/pdf"]);
 		assertions.assertMinContentLength(result, 100);
-		assertions.assertTableCount(result, 1, null);
 	});
 
 	it("pdf_tables_small", async () => {

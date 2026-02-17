@@ -1,0 +1,27 @@
+{
+	"id": "ocr_tesseract_language_german",
+	"category": "ocr",
+	"description": "Tests Tesseract OCR with German language configuration",
+	"document": {
+		"path": "pdf/image_only_german_pdf.pdf",
+		"media_type": "application/pdf",
+		"requires_external_tool": ["tesseract"]
+	},
+	"extraction": {
+		"config": {
+			"ocr": {
+				"backend": "tesseract",
+				"language": "deu"
+			},
+			"force_ocr": true
+		}
+	},
+	"assertions": {
+		"expected_mime": "application/pdf",
+		"min_content_length": 20
+	},
+	"skip": {
+		"requires_feature": ["tesseract"],
+		"notes": "Requires Tesseract OCR with German language data (deu)"
+	}
+}

@@ -59,13 +59,20 @@ Deno.test("ocr_image_no_text", { permissions: { read: true } }, async () => {
 
 Deno.test("ocr_pdf_image_only_german", { permissions: { read: true } }, async () => {
 	const documentBytes = await resolveDocument("pdf/image_only_german_pdf.pdf");
-	const config = buildConfig({ force_ocr: true, ocr: { backend: "tesseract", language: "eng" } });
+	const config = buildConfig({ force_ocr: true, ocr: { backend: "tesseract", language: "deu" } });
 	let result: ExtractionResult | null = null;
 	try {
 		// Sync file extraction - WASM uses extractBytes with pre-read bytes
 		result = await extractBytes(documentBytes, "application/pdf", config);
 	} catch (error) {
-		if (shouldSkipFixture(error, "ocr_pdf_image_only_german", ["tesseract"], "Skip if OCR backend unavailable.")) {
+		if (
+			shouldSkipFixture(
+				error,
+				"ocr_pdf_image_only_german",
+				["tesseract"],
+				"Requires Tesseract OCR with German language data.",
+			)
+		) {
 			return;
 		}
 		throw error;
@@ -121,4 +128,55 @@ Deno.test("ocr_pdf_tesseract", { permissions: { read: true } }, async () => {
 	assertions.assertExpectedMime(result, ["application/pdf"]);
 	assertions.assertMinContentLength(result, 20);
 	assertions.assertContentContainsAny(result, ["Docling", "Markdown", "JSON"]);
+});
+
+Deno.test("ocr_tesseract_elements", { permissions: { read: true } }, async () => {
+	const documentBytes = await resolveDocument("images/test_hello_world.png");
+	const config = buildConfig({
+		force_ocr: true,
+		ocr: { backend: "tesseract", element_config: { include_elements: true }, language: "eng" },
+	});
+	let result: ExtractionResult | null = null;
+	try {
+		// Sync file extraction - WASM uses extractBytes with pre-read bytes
+		result = await extractBytes(documentBytes, "image/png", config);
+	} catch (error) {
+		if (shouldSkipFixture(error, "ocr_tesseract_elements", ["tesseract"], "Requires Tesseract OCR backend")) {
+			return;
+		}
+		throw error;
+	}
+	if (result === null) {
+		return;
+	}
+	assertions.assertExpectedMime(result, ["image/png"]);
+	assertions.assertMinContentLength(result, 5);
+	assertions.assertOcrElements(result, true, true, true, null);
+});
+
+Deno.test("ocr_tesseract_language_german", { permissions: { read: true } }, async () => {
+	const documentBytes = await resolveDocument("pdf/image_only_german_pdf.pdf");
+	const config = buildConfig({ force_ocr: true, ocr: { backend: "tesseract", language: "deu" } });
+	let result: ExtractionResult | null = null;
+	try {
+		// Sync file extraction - WASM uses extractBytes with pre-read bytes
+		result = await extractBytes(documentBytes, "application/pdf", config);
+	} catch (error) {
+		if (
+			shouldSkipFixture(
+				error,
+				"ocr_tesseract_language_german",
+				["tesseract"],
+				"Requires Tesseract OCR with German language data (deu)",
+			)
+		) {
+			return;
+		}
+		throw error;
+	}
+	if (result === null) {
+		return;
+	}
+	assertions.assertExpectedMime(result, ["application/pdf"]);
+	assertions.assertMinContentLength(result, 20);
 });

@@ -12,6 +12,20 @@ namespace Kreuzberg.E2E.TokenReduction
     public class TokenReductionTests
     {
         [SkippableFact]
+        public void TokenReductionAggressive()
+        {
+            TestHelpers.SkipIfLegacyOfficeDisabled("pdf/fake_memo.pdf");
+            TestHelpers.SkipIfOfficeTestOnWindows("pdf/fake_memo.pdf");
+            var documentPath = TestHelpers.EnsureDocument("pdf/fake_memo.pdf", true);
+            var config = TestHelpers.BuildConfig("{\"token_reduction\":{\"mode\":\"aggressive\"}}");
+
+            var result = KreuzbergClient.ExtractFileSync(documentPath, config);
+            TestHelpers.AssertExpectedMime(result, new[] { "application/pdf" });
+            TestHelpers.AssertMinContentLength(result, 5);
+            TestHelpers.AssertContentNotEmpty(result);
+        }
+
+        [SkippableFact]
         public void TokenReductionBasic()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("pdf/fake_memo.pdf");
@@ -22,6 +36,20 @@ namespace Kreuzberg.E2E.TokenReduction
             var result = KreuzbergClient.ExtractFileSync(documentPath, config);
             TestHelpers.AssertExpectedMime(result, new[] { "application/pdf" });
             TestHelpers.AssertMinContentLength(result, 5);
+            TestHelpers.AssertContentNotEmpty(result);
+        }
+
+        [SkippableFact]
+        public void TokenReductionLight()
+        {
+            TestHelpers.SkipIfLegacyOfficeDisabled("pdf/fake_memo.pdf");
+            TestHelpers.SkipIfOfficeTestOnWindows("pdf/fake_memo.pdf");
+            var documentPath = TestHelpers.EnsureDocument("pdf/fake_memo.pdf", true);
+            var config = TestHelpers.BuildConfig("{\"token_reduction\":{\"mode\":\"light\"}}");
+
+            var result = KreuzbergClient.ExtractFileSync(documentPath, config);
+            TestHelpers.AssertExpectedMime(result, new[] { "application/pdf" });
+            TestHelpers.AssertMinContentLength(result, 10);
             TestHelpers.AssertContentNotEmpty(result);
         }
 

@@ -47,6 +47,23 @@ def test_pdf_bayesian_data_analysis() -> None:
     helpers.assert_metadata_expectation(result, "format_type", {"eq": "pdf"})
 
 
+def test_pdf_bounding_boxes() -> None:
+    """Tests bounding box extraction on PDF tables and images"""
+
+    document_path = helpers.resolve_document("pdf/tiny.pdf")
+    if not document_path.exists():
+        pytest.skip(f"Skipping pdf_bounding_boxes: missing document at {document_path}")
+
+    config = helpers.build_config({"images": {"extract_images": True}})
+
+    result = extract_file_sync(document_path, None, config)
+
+    helpers.assert_expected_mime(result, ["application/pdf"])
+    helpers.assert_min_content_length(result, 50)
+    helpers.assert_table_count(result, 1, None)
+    helpers.assert_table_bounding_boxes(result, True)
+
+
 def test_pdf_code_and_formula() -> None:
     """PDF containing code snippets and formulas should retain substantial content."""
 

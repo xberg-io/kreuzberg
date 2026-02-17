@@ -11,7 +11,7 @@
 		"config": {
 			"ocr": {
 				"backend": "tesseract",
-				"language": "eng"
+				"language": "deu"
 			},
 			"force_ocr": true
 		}
@@ -27,6 +27,6 @@
 	},
 	"skip": {
 		"requires_feature": ["tesseract"],
-		"notes": "Skip if OCR backend unavailable."
+		"notes": "Requires Tesseract OCR with German language data."
 	}
 }
