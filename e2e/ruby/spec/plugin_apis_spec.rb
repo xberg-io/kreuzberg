@@ -7,7 +7,7 @@
 # Generated from plugin API fixtures.
 # To regenerate: cargo run -p kreuzberg-e2e-generator -- generate --lang ruby
 
-# rubocop:disable RSpec/DescribeClass, RSpec/ExampleLength, Metrics/BlockLength
+# rubocop:disable Metrics/BlockLength
 
 require 'spec_helper'
 require 'tmpdir'
@@ -55,7 +55,6 @@ RSpec.describe 'Configuration' do
       expect(config.language_detection.enabled).to eq(false)
     end
   end
-
 end
 
 RSpec.describe 'Document Extractor Management' do
@@ -74,7 +73,6 @@ RSpec.describe 'Document Extractor Management' do
   it 'Unregister nonexistent document extractor gracefully' do
     expect { Kreuzberg.unregister_document_extractor('nonexistent-extractor-xyz') }.not_to raise_error
   end
-
 end
 
 RSpec.describe 'Mime Utilities' do
@@ -99,7 +97,6 @@ RSpec.describe 'Mime Utilities' do
     expect(result).to be_an(Array)
     expect(result).to include('pdf')
   end
-
 end
 
 RSpec.describe 'Ocr Backend Management' do
@@ -118,7 +115,6 @@ RSpec.describe 'Ocr Backend Management' do
   it 'Unregister nonexistent OCR backend gracefully' do
     expect { Kreuzberg.unregister_ocr_backend('nonexistent-backend-xyz') }.not_to raise_error
   end
-
 end
 
 RSpec.describe 'Post Processor Management' do
@@ -133,7 +129,6 @@ RSpec.describe 'Post Processor Management' do
     expect(result).to be_an(Array)
     expect(result).to all(be_a(String))
   end
-
 end
 
 RSpec.describe 'Validator Management' do
@@ -148,7 +143,6 @@ RSpec.describe 'Validator Management' do
     expect(result).to be_an(Array)
     expect(result).to all(be_a(String))
   end
-
 end
 
-# rubocop:enable RSpec/DescribeClass, RSpec/ExampleLength, Metrics/BlockLength
+# rubocop:enable, Metrics/BlockLength

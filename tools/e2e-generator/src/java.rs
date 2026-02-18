@@ -1520,13 +1520,13 @@ fn render_assertions(assertions: &Assertions) -> String {
         if tables.has_bounding_boxes == Some(true) {
             buffer.push_str("                E2EHelpers.Assertions.assertTableBoundingBoxes(result);\n");
         }
-        if let Some(snippets) = tables.content_contains_any.as_ref() {
-            if !snippets.is_empty() {
-                buffer.push_str(&format!(
-                    "                E2EHelpers.Assertions.assertTableContentContainsAny(result, {});\n",
-                    render_string_list(snippets)
-                ));
-            }
+        if let Some(snippets) = tables.content_contains_any.as_ref()
+            && !snippets.is_empty()
+        {
+            buffer.push_str(&format!(
+                "                E2EHelpers.Assertions.assertTableContentContainsAny(result, {});\n",
+                render_string_list(snippets)
+            ));
         }
     }
 

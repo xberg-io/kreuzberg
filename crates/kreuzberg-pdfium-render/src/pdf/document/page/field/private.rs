@@ -495,22 +495,22 @@ mod tests {
         let flags = text.get_flags_impl();
 
         assert!(!flags.contains(PdfFormFieldFlags::ReadOnly));
-        assert_eq!(text.is_read_only(), false);
+        assert!(!text.is_read_only());
 
         assert!(!flags.contains(PdfFormFieldFlags::Required));
-        assert_eq!(text.is_required(), false);
+        assert!(!text.is_required());
 
         assert!(!flags.contains(PdfFormFieldFlags::NoExport));
-        assert_eq!(text.is_exported_on_submit(), true);
+        assert!(text.is_exported_on_submit());
 
         assert!(!flags.contains(PdfFormFieldFlags::TextMultiline));
-        assert_eq!(text.is_multiline(), false);
+        assert!(!text.is_multiline());
 
         assert!(!flags.contains(PdfFormFieldFlags::TextPassword));
-        assert_eq!(text.is_password(), false);
+        assert!(!text.is_password());
 
         assert!(flags.contains(PdfFormFieldFlags::TextDoNotSpellCheck));
-        assert_eq!(text.is_spell_checked(), false);
+        assert!(!text.is_spell_checked());
 
         Ok(())
     }

@@ -5,7 +5,7 @@
 #
 # Tests for keywords fixtures.
 
-# rubocop:disable RSpec/DescribeClass, RSpec/ExampleLength, Metrics/BlockLength
+# rubocop:disable Metrics/BlockLength
 require_relative 'spec_helper'
 
 RSpec.describe 'keywords fixtures' do
@@ -47,4 +47,4 @@ RSpec.describe 'keywords fixtures' do
     end
   end
 end
-# rubocop:enable RSpec/DescribeClass, RSpec/ExampleLength, Metrics/BlockLength
+# rubocop:enable, Metrics/BlockLength

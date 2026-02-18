@@ -733,13 +733,13 @@ fn render_assertions(assertions: &Assertions) -> String {
         if tables.has_bounding_boxes == Some(true) {
             buffer.push_str("      E2ERuby::Assertions.assert_table_bounding_boxes(result)\n");
         }
-        if let Some(snippets) = tables.content_contains_any.as_ref() {
-            if !snippets.is_empty() {
-                buffer.push_str(&format!(
-                    "      E2ERuby::Assertions.assert_table_content_contains_any(result, {})\n",
-                    render_string_array(snippets)
-                ));
-            }
+        if let Some(snippets) = tables.content_contains_any.as_ref()
+            && !snippets.is_empty()
+        {
+            buffer.push_str(&format!(
+                "      E2ERuby::Assertions.assert_table_content_contains_any(result, {})\n",
+                render_string_array(snippets)
+            ));
         }
     }
 

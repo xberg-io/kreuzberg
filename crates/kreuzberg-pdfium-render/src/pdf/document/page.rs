@@ -4,13 +4,17 @@
 pub mod annotation;
 pub mod annotations;
 pub mod boundaries;
+pub mod extraction;
 pub mod field;
 pub(crate) mod index_cache;
 pub mod links;
 pub mod object;
 pub mod objects;
+pub mod paragraph;
 pub mod render_config;
 pub mod size;
+pub mod struct_element;
+pub mod struct_tree;
 pub mod text;
 
 use object::ownership::PdfPageObjectOwnership;
@@ -30,6 +34,7 @@ use crate::pdf::document::page::objects::PdfPageObjects;
 use crate::pdf::document::page::objects::common::PdfPageObjectsCommon;
 use crate::pdf::document::page::render_config::{PdfPageRenderSettings, PdfRenderConfig};
 use crate::pdf::document::page::size::PdfPagePaperSize;
+use crate::pdf::document::page::struct_tree::PdfStructTree;
 use crate::pdf::document::page::text::PdfPageText;
 use crate::pdf::font::PdfFont;
 use crate::pdf::matrix::{PdfMatrix, PdfMatrixValue};
@@ -369,6 +374,21 @@ impl<'a> PdfPage<'a> {
             Err(PdfiumError::PdfiumLibraryInternalError(PdfiumInternalError::Unknown))
         } else {
             Ok(PdfPageText::from_pdfium(text_handle, self, self.bindings))
+        }
+    }
+
+    /// Returns the structure tree for this page, if the PDF is tagged.
+    /// Returns `None` for untagged PDFs or if the structure tree cannot be loaded.
+    ///
+    /// The returned [PdfStructTree] provides access to semantic document structure
+    /// including element types (paragraphs, headings, tables, etc.), alternative text,
+    /// and marked content identifiers.
+    pub fn struct_tree(&self) -> Option<PdfStructTree<'_>> {
+        let tree_handle = self.bindings.FPDF_StructTree_GetForPage(self.page_handle);
+        if tree_handle.is_null() {
+            None
+        } else {
+            Some(PdfStructTree::from_pdfium(tree_handle, self.bindings))
         }
     }
 
@@ -1026,7 +1046,7 @@ mod tests {
 
         let render_config = PdfRenderConfig::new().set_target_width(500).set_maximum_height(500);
 
-        for (_index, page) in document.pages().iter().enumerate() {
+        for page in document.pages().iter() {
             let rendered_page = page.render_with_config(&render_config)?.as_image();
 
             let (width, _height) = rendered_page.dimensions();

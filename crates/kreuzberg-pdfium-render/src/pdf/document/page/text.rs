@@ -448,7 +448,7 @@ mod tests {
             assert_eq!(txt.text().trim(), expected);
             assert_eq!(page_text.for_object(txt).trim(), expected);
 
-            for (index, char) in txt.chars(&page_text)?.iter().enumerate() {
+            for (index, char) in txt.chars(page_text)?.iter().enumerate() {
                 assert_eq!(txt.text().chars().nth(index), char.unicode_char());
                 assert_eq!(expected.chars().nth(index), char.unicode_char());
             }
@@ -476,7 +476,7 @@ mod tests {
             .filter(|path| path.extension() == Some(OsStr::new("pdf")))
             .collect::<Vec<_>>();
 
-        assert!(samples.len() > 0);
+        assert!(!samples.is_empty());
 
         for sample in samples {
             println!("Testing all text objects in file {}", sample.display());

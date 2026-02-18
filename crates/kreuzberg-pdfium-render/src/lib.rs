@@ -68,6 +68,7 @@ pub mod prelude {
         pdf::document::page::annotation::{PdfPageAnnotation, PdfPageAnnotationCommon, PdfPageAnnotationType},
         pdf::document::page::annotations::*,
         pdf::document::page::boundaries::*,
+        pdf::document::page::extraction::*,
         pdf::document::page::field::button::*,
         pdf::document::page::field::checkbox::*,
         pdf::document::page::field::combo::*,
@@ -80,6 +81,8 @@ pub mod prelude {
         pdf::document::page::field::unknown::*,
         pdf::document::page::field::{PdfFormField, PdfFormFieldCommon, PdfFormFieldType},
         pdf::document::page::links::*,
+        pdf::document::page::object::content_mark::*,
+        pdf::document::page::object::content_marks::*,
         pdf::document::page::object::group::*,
         pdf::document::page::object::image::*,
         pdf::document::page::object::path::*,
@@ -95,6 +98,8 @@ pub mod prelude {
         pdf::document::page::objects::*,
         pdf::document::page::render_config::*,
         pdf::document::page::size::*,
+        pdf::document::page::struct_element::*,
+        pdf::document::page::struct_tree::*,
         pdf::document::page::text::char::*,
         pdf::document::page::text::chars::*,
         pdf::document::page::text::search::*,
@@ -138,7 +143,7 @@ mod tests {
         // Runs the code in the main example at the top of README.md.
 
         fn export_pdf_to_jpegs(path: &impl AsRef<Path>, password: Option<&str>) -> Result<(), PdfiumError> {
-            let pdfium = Pdfium::default();
+            let pdfium = Pdfium;
 
             let document = pdfium.load_pdf_from_file(path, password)?;
 
@@ -164,7 +169,7 @@ mod tests {
     #[test]
     #[cfg(not(pdfium_use_static))]
     fn test_dynamic_bindings() -> Result<(), PdfiumError> {
-        let pdfium = Pdfium::default();
+        let pdfium = Pdfium;
 
         let document = pdfium.load_pdf_from_file(&test_fixture_path("form-test.pdf"), None)?;
 

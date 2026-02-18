@@ -968,13 +968,13 @@ fn render_assertions(assertions: &Assertions) -> String {
             ));
         }
 
-        if let Some(snippets) = tables.content_contains_any.as_ref() {
-            if !snippets.is_empty() {
-                buffer.push_str(&format!(
-                    "        assertions.assertTableContentContainsAny(result, {});\n",
-                    render_string_array(snippets)
-                ));
-            }
+        if let Some(snippets) = tables.content_contains_any.as_ref()
+            && !snippets.is_empty()
+        {
+            buffer.push_str(&format!(
+                "        assertions.assertTableContentContainsAny(result, {});\n",
+                render_string_array(snippets)
+            ));
         }
     }
 

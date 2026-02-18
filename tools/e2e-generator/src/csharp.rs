@@ -1133,14 +1133,14 @@ fn render_assertions(buffer: &mut String, assertions: &Assertions) -> Result<()>
         if tables.has_bounding_boxes == Some(true) {
             writeln!(buffer, "            TestHelpers.AssertTableBoundingBoxes(result);")?;
         }
-        if let Some(snippets) = tables.content_contains_any.as_ref() {
-            if !snippets.is_empty() {
-                writeln!(
-                    buffer,
-                    "            TestHelpers.AssertTableContentContainsAny(result, new[] {{ {} }});",
-                    render_string_array(snippets)
-                )?;
-            }
+        if let Some(snippets) = tables.content_contains_any.as_ref()
+            && !snippets.is_empty()
+        {
+            writeln!(
+                buffer,
+                "            TestHelpers.AssertTableContentContainsAny(result, new[] {{ {} }});",
+                render_string_array(snippets)
+            )?;
         }
     }
 

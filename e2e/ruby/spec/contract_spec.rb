@@ -5,7 +5,7 @@
 #
 # Tests for contract fixtures.
 
-# rubocop:disable RSpec/DescribeClass, RSpec/ExampleLength, Metrics/BlockLength
+# rubocop:disable Metrics/BlockLength
 require_relative 'spec_helper'
 
 RSpec.describe 'contract fixtures' do
@@ -255,7 +255,8 @@ RSpec.describe 'contract fixtures' do
         result,
         ['application/pdf']
       )
-      E2ERuby::Assertions.assert_document(result, has_document: true, min_node_count: 1, node_types_include: %w[paragraph])
+      E2ERuby::Assertions.assert_document(result, has_document: true, min_node_count: 1,
+                                                  node_types_include: %w[paragraph])
     end
   end
 
@@ -290,7 +291,8 @@ RSpec.describe 'contract fixtures' do
         result,
         ['application/vnd.openxmlformats-officedocument.wordprocessingml.document']
       )
-      E2ERuby::Assertions.assert_document(result, has_document: true, min_node_count: 1, node_types_include: %w[heading paragraph])
+      E2ERuby::Assertions.assert_document(result, has_document: true, min_node_count: 1,
+                                                  node_types_include: %w[heading paragraph])
     end
   end
 
@@ -724,4 +726,4 @@ RSpec.describe 'contract fixtures' do
     end
   end
 end
-# rubocop:enable RSpec/DescribeClass, RSpec/ExampleLength, Metrics/BlockLength
+# rubocop:enable, Metrics/BlockLength

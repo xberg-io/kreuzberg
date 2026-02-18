@@ -358,6 +358,143 @@ pub fn extract_chars_with_fonts(page: &PdfPage) -> Result<Vec<CharData>> {
     Ok(char_data_list)
 }
 
+/// Text segment data extracted from PDF using pdfium's pre-merged segments.
+///
+/// Pdfium merges characters sharing the same baseline and font settings into segments,
+/// providing correct word boundaries without gap-based heuristics. Each segment contains
+/// the full text run, bounding box, and font metadata sampled from the first character.
+#[derive(Debug, Clone)]
+pub struct SegmentData {
+    /// The segment text content (may contain spaces / multiple words)
+    pub text: String,
+    /// Left x position in PDF units
+    pub x: f32,
+    /// Bottom y position in PDF units (PDF coordinate system, y=0 at bottom)
+    pub y: f32,
+    /// Width of the segment bounding box
+    pub width: f32,
+    /// Height of the segment bounding box
+    pub height: f32,
+    /// Font size in points (from first character)
+    pub font_size: f32,
+    /// Whether the font is bold
+    pub is_bold: bool,
+    /// Whether the font is italic
+    pub is_italic: bool,
+    /// Baseline Y position (from first character origin, falls back to bounds bottom)
+    pub baseline_y: f32,
+}
+
+/// Extract text segments from a PDF page using pdfium's segment merging.
+///
+/// Instead of extracting individual characters and reconstructing words from gap heuristics,
+/// this function uses pdfium's `PdfPageTextSegments` which automatically merge characters
+/// sharing the same baseline and font settings into contiguous text runs.
+///
+/// Font metadata (bold, italic, font size) is sampled from the first character of each segment.
+///
+/// # Performance
+///
+/// Typically 10-50x fewer items than character-level extraction, with far fewer FFI calls
+/// per item (one segment.text() + one segment.chars() sample vs N chars with 4+ FFI calls each).
+pub fn extract_segments_from_page(page: &PdfPage) -> Result<Vec<SegmentData>> {
+    let page_text = page
+        .text()
+        .map_err(|e| PdfError::TextExtractionFailed(format!("Failed to get page text: {}", e)))?;
+
+    let segments = page_text.segments();
+    let seg_count = segments.len();
+    let mut segment_data_list = Vec::with_capacity(seg_count);
+
+    for i in 0..seg_count {
+        let Ok(segment) = segments.get(i) else {
+            continue;
+        };
+
+        let text = segment.text();
+        // Skip empty/whitespace-only segments
+        if text.trim().is_empty() {
+            continue;
+        }
+
+        let bounds = segment.bounds();
+        let seg_left = bounds.left().value;
+        let seg_bottom = bounds.bottom().value;
+        let seg_width = bounds.width().value;
+        let seg_height = bounds.height().value;
+
+        // Sample font metadata from the first non-whitespace character in the segment
+        let chars = match segment.chars() {
+            Ok(c) => c,
+            Err(_) => continue,
+        };
+
+        let char_count = chars.len();
+        let mut font_size = DEFAULT_FONT_SIZE;
+        let mut is_bold = false;
+        let mut is_italic = false;
+        let mut baseline_y = seg_bottom;
+        let mut sampled = false;
+
+        for ci in 0..char_count {
+            let Ok(ch) = chars.get(ci) else { continue };
+            let Some(uc) = ch.unicode_char() else { continue };
+            if uc.is_whitespace() || uc.is_control() {
+                continue;
+            }
+
+            let fs = ch.unscaled_font_size().value;
+            font_size = if fs > 0.0 { fs } else { DEFAULT_FONT_SIZE };
+
+            let (font_name, is_bold_flag, is_italic_flag) = ch.font_info();
+
+            let (bold_from_name, italic_from_name, bold_from_weight) = if !is_bold_flag || !is_italic_flag {
+                let name_lower = font_name.to_lowercase();
+                let bold_n = name_lower.contains("bold");
+                let italic_n = name_lower.contains("italic") || name_lower.contains("oblique");
+                let bold_w = ch
+                    .font_weight()
+                    .map(|w| {
+                        matches!(
+                            w,
+                            PdfFontWeight::Weight700Bold | PdfFontWeight::Weight800 | PdfFontWeight::Weight900
+                        )
+                    })
+                    .unwrap_or(false);
+                (bold_n, italic_n, bold_w)
+            } else {
+                (false, false, false)
+            };
+
+            is_bold = is_bold_flag || bold_from_name || bold_from_weight;
+            is_italic = is_italic_flag || italic_from_name;
+
+            baseline_y = ch.origin().map(|(_x, y)| y.value).unwrap_or(seg_bottom);
+
+            sampled = true;
+            break;
+        }
+
+        if !sampled {
+            continue;
+        }
+
+        segment_data_list.push(SegmentData {
+            text,
+            x: seg_left,
+            y: seg_bottom,
+            width: seg_width,
+            height: seg_height,
+            font_size,
+            is_bold,
+            is_italic,
+            baseline_y,
+        });
+    }
+
+    Ok(segment_data_list)
+}
+
 /// Merge characters into text blocks using a greedy clustering algorithm.
 ///
 /// Groups characters based on spatial proximity using weighted distance and

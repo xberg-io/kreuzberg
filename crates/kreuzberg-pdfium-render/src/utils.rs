@@ -469,7 +469,7 @@ pub(crate) mod test {
         {
             Ok(bindings) => Pdfium::new(bindings), // Create new bindings
             Err(PdfiumError::PdfiumLibraryBindingsAlreadyInitialized) => Pdfium {}, // Re-use existing bindings
-            Err(e) => Err(e).unwrap(),             // Explicitly re-throw the error
+            Err(e) => panic!("{:?}", e),           // Explicitly re-throw the error
         }
     }
 }

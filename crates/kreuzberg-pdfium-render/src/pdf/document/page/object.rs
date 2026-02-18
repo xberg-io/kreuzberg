@@ -1,5 +1,7 @@
 //! Defines the [PdfPageObject] enum, exposing functionality related to a single renderable page object.
 
+pub(crate) mod content_mark;
+pub(crate) mod content_marks;
 pub(crate) mod group;
 pub(crate) mod image;
 pub(crate) mod ownership;
@@ -22,6 +24,7 @@ use crate::pdf::document::PdfDocument;
 use crate::pdf::document::page::annotation::objects::PdfPageAnnotationObjects;
 use crate::pdf::document::page::annotation::private::internal::PdfPageAnnotationPrivate;
 use crate::pdf::document::page::annotation::{PdfPageAnnotation, PdfPageAnnotationCommon};
+use crate::pdf::document::page::object::content_marks::PdfPageObjectContentMarks;
 use crate::pdf::document::page::object::image::PdfPageImageObject;
 use crate::pdf::document::page::object::path::PdfPagePathObject;
 use crate::pdf::document::page::object::private::internal::PdfPageObjectPrivate;
@@ -820,6 +823,20 @@ pub trait PdfPageObjectCommon<'a> {
     /// than this object. Pdfium only supports safely moving objects within the
     /// same document, not across documents.
     fn move_to_annotation(&mut self, annotation: &mut PdfPageAnnotation) -> Result<(), PdfiumError>;
+
+    /// Returns the marked content ID (MCID) for this page object, if any.
+    ///
+    /// The MCID links this object to an element in the page's structure tree,
+    /// providing a bridge between visual content and semantic document structure.
+    /// Returns `None` if this object has no associated marked content ID.
+    fn marked_content_id(&self) -> Option<i32>;
+
+    /// Returns the collection of content marks associated with this page object.
+    ///
+    /// Content marks provide metadata about page objects (e.g., "P", "Span", "Artifact")
+    /// and can contain key-value parameters. Use the returned collection to iterate
+    /// over marks or access them by index.
+    fn content_marks(&self) -> PdfPageObjectContentMarks<'_>;
 }
 
 // Blanket implementation for all PdfPageObject types.
@@ -1121,6 +1138,18 @@ where
         }
 
         self.add_object_to_annotation(annotation.objects())
+    }
+
+    #[inline]
+    fn marked_content_id(&self) -> Option<i32> {
+        let mcid = self.bindings().FPDFPageObj_GetMarkedContentID(self.object_handle());
+
+        if mcid == -1 { None } else { Some(mcid) }
+    }
+
+    #[inline]
+    fn content_marks(&self) -> PdfPageObjectContentMarks<'_> {
+        PdfPageObjectContentMarks::from_pdfium(self.object_handle(), self.bindings())
     }
 }
 

@@ -129,12 +129,11 @@ pub fn apply_extraction_overrides(
     }
 
     // Override language on existing OCR config when --ocr-language is used without --ocr
-    if ocr.is_none() {
-        if let Some(lang) = ocr_language {
-            if let Some(ref mut existing_ocr) = config.ocr {
-                existing_ocr.language = lang.to_string();
-            }
-        }
+    if ocr.is_none()
+        && let Some(lang) = ocr_language
+        && let Some(ref mut existing_ocr) = config.ocr
+    {
+        existing_ocr.language = lang.to_string();
     }
     if let Some(force_ocr_flag) = force_ocr {
         config.force_ocr = force_ocr_flag;

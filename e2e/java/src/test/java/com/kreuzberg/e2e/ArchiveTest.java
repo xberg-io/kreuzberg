@@ -4,20 +4,10 @@ package com.kreuzberg.e2e;
 // CHECKSTYLE.OFF: LineLength - generated code
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.kreuzberg.BytesWithMime;
-import dev.kreuzberg.ExtractionResult;
-import dev.kreuzberg.Kreuzberg;
-import dev.kreuzberg.config.ExtractionConfig;
-import org.junit.jupiter.api.Test;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
 // CHECKSTYLE.ON: UnusedImports
 // CHECKSTYLE.ON: LineLength
 
@@ -26,57 +16,56 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /** Tests for archive fixtures. */
 public class ArchiveTest {
-    private static final ObjectMapper MAPPER = new ObjectMapper();
+  private static final ObjectMapper MAPPER = new ObjectMapper();
 
-    @Test
-    public void archiveSevenzBasic() throws Exception {
-        JsonNode config = null;
-        E2EHelpers.runFixture(
-            "archive_sevenz_basic",
-            "archives/documents.7z",
-            config,
-            Collections.emptyList(),
-            null,
-            true,
-            result -> {
-                E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("application/x-7z-compressed"));
-                E2EHelpers.Assertions.assertMinContentLength(result, 10);
-            }
-        );
-    }
+  @Test
+  public void archiveSevenzBasic() throws Exception {
+    JsonNode config = null;
+    E2EHelpers.runFixture(
+        "archive_sevenz_basic",
+        "archives/documents.7z",
+        config,
+        Collections.emptyList(),
+        null,
+        true,
+        result -> {
+          E2EHelpers.Assertions.assertExpectedMime(
+              result, Arrays.asList("application/x-7z-compressed"));
+          E2EHelpers.Assertions.assertMinContentLength(result, 10);
+        });
+  }
 
-    @Test
-    public void archiveTarBasic() throws Exception {
-        JsonNode config = null;
-        E2EHelpers.runFixture(
-            "archive_tar_basic",
-            "archives/documents.tar",
-            config,
-            Collections.emptyList(),
-            null,
-            true,
-            result -> {
-                E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("application/x-tar", "application/tar"));
-                E2EHelpers.Assertions.assertMinContentLength(result, 10);
-            }
-        );
-    }
+  @Test
+  public void archiveTarBasic() throws Exception {
+    JsonNode config = null;
+    E2EHelpers.runFixture(
+        "archive_tar_basic",
+        "archives/documents.tar",
+        config,
+        Collections.emptyList(),
+        null,
+        true,
+        result -> {
+          E2EHelpers.Assertions.assertExpectedMime(
+              result, Arrays.asList("application/x-tar", "application/tar"));
+          E2EHelpers.Assertions.assertMinContentLength(result, 10);
+        });
+  }
 
-    @Test
-    public void archiveZipBasic() throws Exception {
-        JsonNode config = null;
-        E2EHelpers.runFixture(
-            "archive_zip_basic",
-            "archives/documents.zip",
-            config,
-            Collections.emptyList(),
-            null,
-            true,
-            result -> {
-                E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("application/zip", "application/x-zip-compressed"));
-                E2EHelpers.Assertions.assertMinContentLength(result, 10);
-            }
-        );
-    }
-
+  @Test
+  public void archiveZipBasic() throws Exception {
+    JsonNode config = null;
+    E2EHelpers.runFixture(
+        "archive_zip_basic",
+        "archives/documents.zip",
+        config,
+        Collections.emptyList(),
+        null,
+        true,
+        result -> {
+          E2EHelpers.Assertions.assertExpectedMime(
+              result, Arrays.asList("application/zip", "application/x-zip-compressed"));
+          E2EHelpers.Assertions.assertMinContentLength(result, 10);
+        });
+  }
 }

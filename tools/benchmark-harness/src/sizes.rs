@@ -208,10 +208,10 @@ fn measure_pip_package(package: &str) -> Result<Option<u64>> {
 
     // For third-party packages, use pip-weigh to get accurate total size
     // including all transitive dependencies in an isolated environment.
-    if package != "kreuzberg" {
-        if let Some(size) = measure_pip_weigh(package) {
-            return Ok(Some(size));
-        }
+    if package != "kreuzberg"
+        && let Some(size) = measure_pip_weigh(package)
+    {
+        return Ok(Some(size));
     }
 
     let output = Command::new("uv")

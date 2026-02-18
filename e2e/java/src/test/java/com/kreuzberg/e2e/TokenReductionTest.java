@@ -4,20 +4,10 @@ package com.kreuzberg.e2e;
 // CHECKSTYLE.OFF: LineLength - generated code
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.kreuzberg.BytesWithMime;
-import dev.kreuzberg.ExtractionResult;
-import dev.kreuzberg.Kreuzberg;
-import dev.kreuzberg.config.ExtractionConfig;
-import org.junit.jupiter.api.Test;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
 // CHECKSTYLE.ON: UnusedImports
 // CHECKSTYLE.ON: LineLength
 
@@ -26,79 +16,76 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /** Tests for token_reduction fixtures. */
 public class TokenReductionTest {
-    private static final ObjectMapper MAPPER = new ObjectMapper();
+  private static final ObjectMapper MAPPER = new ObjectMapper();
 
-    @Test
-    public void tokenReductionAggressive() throws Exception {
-        JsonNode config = MAPPER.readTree("{\"token_reduction\":{\"mode\":\"aggressive\"}}");
-        E2EHelpers.runFixture(
-            "token_reduction_aggressive",
-            "pdf/fake_memo.pdf",
-            config,
-            Collections.emptyList(),
-            null,
-            true,
-            result -> {
-                E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("application/pdf"));
-                E2EHelpers.Assertions.assertMinContentLength(result, 5);
-                E2EHelpers.Assertions.assertContentNotEmpty(result);
-            }
-        );
-    }
+  @Test
+  public void tokenReductionAggressive() throws Exception {
+    JsonNode config = MAPPER.readTree("{\"token_reduction\":{\"mode\":\"aggressive\"}}");
+    E2EHelpers.runFixture(
+        "token_reduction_aggressive",
+        "pdf/fake_memo.pdf",
+        config,
+        Collections.emptyList(),
+        null,
+        true,
+        result -> {
+          E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("application/pdf"));
+          E2EHelpers.Assertions.assertMinContentLength(result, 5);
+          E2EHelpers.Assertions.assertContentNotEmpty(result);
+        });
+  }
 
-    @Test
-    public void tokenReductionBasic() throws Exception {
-        JsonNode config = MAPPER.readTree("{\"token_reduction\":{\"mode\":\"moderate\"}}");
-        E2EHelpers.runFixture(
-            "token_reduction_basic",
-            "pdf/fake_memo.pdf",
-            config,
-            Collections.emptyList(),
-            null,
-            true,
-            result -> {
-                E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("application/pdf"));
-                E2EHelpers.Assertions.assertMinContentLength(result, 5);
-                E2EHelpers.Assertions.assertContentNotEmpty(result);
-            }
-        );
-    }
+  @Test
+  public void tokenReductionBasic() throws Exception {
+    JsonNode config = MAPPER.readTree("{\"token_reduction\":{\"mode\":\"moderate\"}}");
+    E2EHelpers.runFixture(
+        "token_reduction_basic",
+        "pdf/fake_memo.pdf",
+        config,
+        Collections.emptyList(),
+        null,
+        true,
+        result -> {
+          E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("application/pdf"));
+          E2EHelpers.Assertions.assertMinContentLength(result, 5);
+          E2EHelpers.Assertions.assertContentNotEmpty(result);
+        });
+  }
 
-    @Test
-    public void tokenReductionLight() throws Exception {
-        JsonNode config = MAPPER.readTree("{\"token_reduction\":{\"mode\":\"light\"}}");
-        E2EHelpers.runFixture(
-            "token_reduction_light",
-            "pdf/fake_memo.pdf",
-            config,
-            Collections.emptyList(),
-            null,
-            true,
-            result -> {
-                E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("application/pdf"));
-                E2EHelpers.Assertions.assertMinContentLength(result, 10);
-                E2EHelpers.Assertions.assertContentNotEmpty(result);
-            }
-        );
-    }
+  @Test
+  public void tokenReductionLight() throws Exception {
+    JsonNode config = MAPPER.readTree("{\"token_reduction\":{\"mode\":\"light\"}}");
+    E2EHelpers.runFixture(
+        "token_reduction_light",
+        "pdf/fake_memo.pdf",
+        config,
+        Collections.emptyList(),
+        null,
+        true,
+        result -> {
+          E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("application/pdf"));
+          E2EHelpers.Assertions.assertMinContentLength(result, 10);
+          E2EHelpers.Assertions.assertContentNotEmpty(result);
+        });
+  }
 
-    @Test
-    public void tokenReductionWithChunking() throws Exception {
-        JsonNode config = MAPPER.readTree("{\"chunking\":{\"max_chars\":500,\"max_overlap\":50},\"token_reduction\":{\"mode\":\"moderate\"}}");
-        E2EHelpers.runFixture(
-            "token_reduction_with_chunking",
-            "pdf/fake_memo.pdf",
-            config,
-            Collections.emptyList(),
-            null,
-            true,
-            result -> {
-                E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("application/pdf"));
-                E2EHelpers.Assertions.assertMinContentLength(result, 5);
-                E2EHelpers.Assertions.assertChunks(result, 1, null, true, null);
-                E2EHelpers.Assertions.assertContentNotEmpty(result);
-            }
-        );
-    }
-
+  @Test
+  public void tokenReductionWithChunking() throws Exception {
+    JsonNode config =
+        MAPPER.readTree(
+            "{\"chunking\":{\"max_chars\":500,\"max_overlap\":50},\"token_reduction\":{\"mode\":\"moderate\"}}");
+    E2EHelpers.runFixture(
+        "token_reduction_with_chunking",
+        "pdf/fake_memo.pdf",
+        config,
+        Collections.emptyList(),
+        null,
+        true,
+        result -> {
+          E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("application/pdf"));
+          E2EHelpers.Assertions.assertMinContentLength(result, 5);
+          E2EHelpers.Assertions.assertChunks(result, 1, null, true, null);
+          E2EHelpers.Assertions.assertContentNotEmpty(result);
+        });
+  }
 }

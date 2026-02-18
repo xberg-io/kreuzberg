@@ -1,12 +1,14 @@
-//! PDF-to-Markdown renderer using character-level font analysis.
+//! PDF-to-Markdown renderer using segment-level font analysis.
 //!
-//! Converts PDF documents into structured markdown by analyzing per-character
-//! font metrics (size, bold, italic, baseline position) to reconstruct headings,
+//! Converts PDF documents into structured markdown by analyzing pdfium text segments
+//! (pre-merged character runs sharing baseline + font settings) to reconstruct headings,
 //! paragraphs, inline formatting, and list items.
 
 use crate::pdf::error::Result;
+#[cfg(test)]
+use crate::pdf::hierarchy::CharData;
 use crate::pdf::hierarchy::{
-    BoundingBox, CharData, TextBlock, assign_heading_levels_smart, cluster_font_sizes, extract_chars_with_fonts,
+    BoundingBox, SegmentData, TextBlock, assign_heading_levels_smart, cluster_font_sizes, extract_segments_from_page,
 };
 use pdfium_render::prelude::*;
 
@@ -14,6 +16,7 @@ use pdfium_render::prelude::*;
 /// Baseline Y tolerance as a fraction of the smaller font size for same-line grouping.
 const BASELINE_Y_TOLERANCE_FRACTION: f32 = 0.5;
 /// Gap threshold as a fraction of the average font size for word-break detection.
+#[cfg(test)]
 const WORD_GAP_FRACTION: f32 = 0.3;
 /// Multiplier for median line spacing to detect paragraph breaks.
 const PARAGRAPH_GAP_MULTIPLIER: f32 = 1.5;
@@ -81,8 +84,151 @@ struct PdfParagraph {
     is_list_item: bool,
 }
 
+/// Detect column boundaries from segments by finding vertical gutters.
+/// Returns column regions sorted left-to-right. Single-column pages return one region.
+fn detect_columns_from_segments(segments: &[SegmentData], page_width: f32, page_height: f32) -> Vec<ColumnRegion> {
+    if segments.is_empty() || page_width <= 0.0 || page_height <= 0.0 {
+        return vec![ColumnRegion {
+            x_min: 0.0,
+            x_max: page_width,
+        }];
+    }
+
+    // Estimate avg char width from segment widths / text lengths
+    let total_width: f32 = segments.iter().map(|s| s.width).sum();
+    let total_chars: usize = segments.iter().map(|s| s.text.len()).sum();
+    let avg_char_width = if total_chars > 0 {
+        total_width / total_chars as f32
+    } else {
+        COLUMN_HISTOGRAM_BIN_WIDTH
+    };
+    let min_gutter_width = avg_char_width * MIN_GUTTER_WIDTH_MULTIPLIER;
+
+    // Build histogram of segment presence per x-bin, tracking y-span
+    let num_bins = ((page_width / COLUMN_HISTOGRAM_BIN_WIDTH).ceil() as usize).max(1);
+    let mut bin_y_min = vec![f32::INFINITY; num_bins];
+    let mut bin_y_max = vec![f32::NEG_INFINITY; num_bins];
+    let mut bin_count = vec![0u32; num_bins];
+
+    for seg in segments {
+        let bin_start = ((seg.x / COLUMN_HISTOGRAM_BIN_WIDTH).floor() as usize).min(num_bins - 1);
+        let bin_end = (((seg.x + seg.width) / COLUMN_HISTOGRAM_BIN_WIDTH).ceil() as usize).min(num_bins);
+        for b in bin_start..bin_end {
+            bin_y_min[b] = bin_y_min[b].min(seg.baseline_y);
+            bin_y_max[b] = bin_y_max[b].max(seg.baseline_y);
+            bin_count[b] += 1;
+        }
+    }
+
+    // Find gutter regions: consecutive empty bins
+    let mut gutters: Vec<(f32, f32)> = Vec::new();
+    let mut gutter_start: Option<usize> = None;
+
+    for (i, &count) in bin_count.iter().enumerate() {
+        if count == 0 {
+            if gutter_start.is_none() {
+                gutter_start = Some(i);
+            }
+        } else if let Some(start) = gutter_start {
+            let x_start = start as f32 * COLUMN_HISTOGRAM_BIN_WIDTH;
+            let x_end = i as f32 * COLUMN_HISTOGRAM_BIN_WIDTH;
+            if x_end - x_start >= min_gutter_width {
+                let left_y_min = bin_y_min[..start].iter().copied().fold(f32::INFINITY, f32::min);
+                let left_y_max = bin_y_max[..start].iter().copied().fold(f32::NEG_INFINITY, f32::max);
+                let left_span = if left_y_max > left_y_min {
+                    (left_y_max - left_y_min).abs()
+                } else {
+                    0.0
+                };
+
+                let right_y_min = bin_y_min[i..].iter().copied().fold(f32::INFINITY, f32::min);
+                let right_y_max = bin_y_max[i..].iter().copied().fold(f32::NEG_INFINITY, f32::max);
+                let right_span = if right_y_max > right_y_min {
+                    (right_y_max - right_y_min).abs()
+                } else {
+                    0.0
+                };
+
+                if left_span.max(right_span) >= page_height * MIN_GUTTER_HEIGHT_FRACTION {
+                    gutters.push((x_start, x_end));
+                }
+            }
+            gutter_start = None;
+        }
+    }
+
+    if gutters.is_empty() {
+        return vec![ColumnRegion {
+            x_min: 0.0,
+            x_max: page_width,
+        }];
+    }
+
+    // Build column regions from gutters
+    let mut columns: Vec<ColumnRegion> = Vec::new();
+    let mut prev_x = 0.0_f32;
+    for (gl, gr) in &gutters {
+        if *gl > prev_x {
+            columns.push(ColumnRegion {
+                x_min: prev_x,
+                x_max: *gl,
+            });
+        }
+        prev_x = *gr;
+    }
+    if prev_x < page_width {
+        columns.push(ColumnRegion {
+            x_min: prev_x,
+            x_max: page_width,
+        });
+    }
+
+    // Filter out columns with no segments
+    columns.retain(|col| segments.iter().any(|s| s.x >= col.x_min && s.x < col.x_max));
+
+    if columns.is_empty() {
+        vec![ColumnRegion {
+            x_min: 0.0,
+            x_max: page_width,
+        }]
+    } else {
+        columns
+    }
+}
+
+/// Split segments into column groups based on detected column regions.
+fn split_segments_by_columns<'a>(segments: &'a [SegmentData], columns: &[ColumnRegion]) -> Vec<Vec<&'a SegmentData>> {
+    let mut column_segments: Vec<Vec<&SegmentData>> = vec![Vec::new(); columns.len()];
+    for seg in segments {
+        let center_x = seg.x + seg.width / 2.0;
+        let mut assigned = false;
+        for (i, col) in columns.iter().enumerate() {
+            if center_x >= col.x_min && center_x < col.x_max {
+                column_segments[i].push(seg);
+                assigned = true;
+                break;
+            }
+        }
+        if !assigned {
+            let nearest = columns
+                .iter()
+                .enumerate()
+                .min_by(|(_, a), (_, b)| {
+                    let da = (center_x - (a.x_min + a.x_max) / 2.0).abs();
+                    let db = (center_x - (b.x_min + b.x_max) / 2.0).abs();
+                    da.partial_cmp(&db).unwrap_or(std::cmp::Ordering::Equal)
+                })
+                .map(|(i, _)| i)
+                .unwrap_or(0);
+            column_segments[nearest].push(seg);
+        }
+    }
+    column_segments
+}
+
 /// Detect column boundaries by finding vertical gutters in character x-positions.
 /// Returns column regions sorted left-to-right. Single-column pages return one region.
+#[cfg(test)]
 fn detect_columns(chars: &[CharData], page_width: f32, page_height: f32) -> Vec<ColumnRegion> {
     if chars.is_empty() || page_width <= 0.0 || page_height <= 0.0 {
         return vec![ColumnRegion {
@@ -201,39 +347,6 @@ fn detect_columns(chars: &[CharData], page_width: f32, page_height: f32) -> Vec<
     }
 }
 
-/// Split characters into column groups based on detected column regions.
-fn split_chars_by_columns<'a>(chars: &'a [CharData], columns: &[ColumnRegion]) -> Vec<Vec<&'a CharData>> {
-    let mut column_chars: Vec<Vec<&CharData>> = vec![Vec::new(); columns.len()];
-    for ch in chars {
-        if ch.text.trim().is_empty() {
-            continue;
-        }
-        let center_x = ch.x + ch.width / 2.0;
-        let mut assigned = false;
-        for (i, col) in columns.iter().enumerate() {
-            if center_x >= col.x_min && center_x < col.x_max {
-                column_chars[i].push(ch);
-                assigned = true;
-                break;
-            }
-        }
-        if !assigned {
-            let nearest = columns
-                .iter()
-                .enumerate()
-                .min_by(|(_, a), (_, b)| {
-                    let da = (center_x - (a.x_min + a.x_max) / 2.0).abs();
-                    let db = (center_x - (b.x_min + b.x_max) / 2.0).abs();
-                    da.partial_cmp(&db).unwrap_or(std::cmp::Ordering::Equal)
-                })
-                .map(|(i, _)| i)
-                .unwrap_or(0);
-            column_chars[nearest].push(ch);
-        }
-    }
-    column_chars
-}
-
 /// Render an entire PDF document as markdown using character-level font analysis.
 ///
 /// Extracts characters from every page, clusters font sizes globally to determine
@@ -255,7 +368,7 @@ pub fn render_document_as_markdown(document: &PdfDocument, k_clusters: usize) ->
 /// Render a PDF document as markdown with inline table embedding.
 ///
 /// Tables with bounding boxes are inserted at their correct vertical position,
-/// and characters overlapping table regions are filtered to avoid duplication.
+/// and segments overlapping table regions are filtered to avoid duplication.
 pub fn render_document_as_markdown_with_tables(
     document: &PdfDocument,
     k_clusters: usize,
@@ -264,33 +377,56 @@ pub fn render_document_as_markdown_with_tables(
     let pages = document.pages();
     let page_count = pages.len();
 
-    // Stage 1: Extract chars from all pages
-    let mut all_page_chars: Vec<Vec<CharData>> = Vec::with_capacity(page_count as usize);
-    let mut page_dimensions: Vec<(f32, f32)> = Vec::with_capacity(page_count as usize);
+    // Stage 0: Try structure tree extraction for each page.
+    // Track which pages were successfully extracted via structure tree.
+    let mut struct_tree_results: Vec<Option<Vec<PdfParagraph>>> = Vec::with_capacity(page_count as usize);
+    let mut heuristic_pages: Vec<usize> = Vec::new();
+
     for i in 0..page_count {
         let page = pages.get(i).map_err(|e| {
             crate::pdf::error::PdfError::TextExtractionFailed(format!("Failed to get page {}: {:?}", i, e))
         })?;
-        let mut chars = extract_chars_with_fonts(&page)?;
-        let (page_w, page_h) = (page.width().value, page.height().value);
-        page_dimensions.push((page_w, page_h));
 
-        // Filter out characters that fall within table bounding boxes on this page
-        let page_tables: Vec<&crate::types::Table> =
-            tables.iter().filter(|t| t.page_number == (i as usize) + 1).collect();
+        match extract_page_content(&page) {
+            Ok(extraction) if extraction.method == ExtractionMethod::StructureTree && !extraction.blocks.is_empty() => {
+                let paragraphs = extracted_blocks_to_paragraphs(&extraction.blocks);
+                if paragraphs.is_empty() {
+                    struct_tree_results.push(None);
+                    heuristic_pages.push(i as usize);
+                } else {
+                    struct_tree_results.push(Some(paragraphs));
+                }
+            }
+            _ => {
+                struct_tree_results.push(None);
+                heuristic_pages.push(i as usize);
+            }
+        }
+    }
+
+    // Stage 1: Extract segments from pages that need heuristic extraction.
+    let mut all_page_segments: Vec<Vec<SegmentData>> = vec![Vec::new(); page_count as usize];
+    let mut page_dimensions: Vec<(f32, f32)> = vec![(0.0, 0.0); page_count as usize];
+
+    for &i in &heuristic_pages {
+        let page = pages.get(i as PdfPageIndex).map_err(|e| {
+            crate::pdf::error::PdfError::TextExtractionFailed(format!("Failed to get page {}: {:?}", i, e))
+        })?;
+        let mut segments = extract_segments_from_page(&page)?;
+        let (page_w, page_h) = (page.width().value, page.height().value);
+        page_dimensions[i] = (page_w, page_h);
+
+        // Filter out segments that fall within table bounding boxes on this page
+        let page_tables: Vec<&crate::types::Table> = tables.iter().filter(|t| t.page_number == i + 1).collect();
         if !page_tables.is_empty() {
-            chars.retain(|ch| {
+            segments.retain(|seg| {
                 !page_tables.iter().any(|t| {
                     if let Some(ref bbox) = t.bounding_box {
-                        // CharData uses PDF coordinates (baseline_y with y=0 at bottom).
-                        // BoundingBox uses PDF coordinates (y0=bottom, y1=top).
-                        // Use center-point containment to avoid edge cases where
-                        // characters partially overlap the bounding box boundary.
-                        let char_center_x = ch.x + ch.width / 2.0;
-                        char_center_x >= bbox.x0 as f32
-                            && char_center_x <= bbox.x1 as f32
-                            && ch.baseline_y >= bbox.y0 as f32
-                            && ch.baseline_y <= bbox.y1 as f32
+                        let seg_center_x = seg.x + seg.width / 2.0;
+                        seg_center_x >= bbox.x0 as f32
+                            && seg_center_x <= bbox.x1 as f32
+                            && seg.baseline_y >= bbox.y0 as f32
+                            && seg.baseline_y <= bbox.y1 as f32
                     } else {
                         false
                     }
@@ -298,13 +434,10 @@ pub fn render_document_as_markdown_with_tables(
             });
         }
 
-        all_page_chars.push(chars);
+        all_page_segments[i] = segments;
     }
 
-    // Stage 2: Global font-size clustering
-    // Build lightweight TextBlocks from all chars - only font_size matters for clustering.
-    // Text and bbox are unused by the clustering algorithm, so we use empty defaults
-    // to avoid heap-allocating a String per character (100k+ chars in large PDFs).
+    // Stage 2: Global font-size clustering (only for heuristic pages).
     let mut all_blocks: Vec<TextBlock> = Vec::new();
     let empty_bbox = BoundingBox {
         left: 0.0,
@@ -312,15 +445,12 @@ pub fn render_document_as_markdown_with_tables(
         right: 0.0,
         bottom: 0.0,
     };
-    for page_chars in &all_page_chars {
-        for ch in page_chars {
-            if ch.text.trim().is_empty() || ch.text.chars().any(|c| c.is_control()) {
-                continue; // Skip whitespace/control chars for clustering
-            }
+    for &i in &heuristic_pages {
+        for seg in &all_page_segments[i] {
             all_blocks.push(TextBlock {
                 text: String::new(),
                 bbox: empty_bbox,
-                font_size: ch.font_size,
+                font_size: seg.font_size,
             });
         }
     }
@@ -332,38 +462,41 @@ pub fn render_document_as_markdown_with_tables(
         assign_heading_levels_smart(&clusters)
     };
 
-    // Stage 3: Per-page structured extraction
-    let mut all_page_paragraphs: Vec<Vec<PdfParagraph>> = Vec::new();
-    for (page_idx, page_chars) in all_page_chars.iter().enumerate() {
-        let (page_w, page_h) = page_dimensions[page_idx];
-        let columns = detect_columns(page_chars, page_w, page_h);
-
-        let mut page_paragraphs: Vec<PdfParagraph> = Vec::new();
-
-        if columns.len() <= 1 {
-            // Single column: existing path
-            let words = chars_to_words(page_chars);
-            let lines = words_to_lines(words);
-            let mut paragraphs = lines_to_paragraphs(lines);
-            classify_paragraphs(&mut paragraphs, &heading_map);
-            page_paragraphs = paragraphs;
+    // Stage 3: Per-page structured extraction (heuristic for remaining pages).
+    let mut all_page_paragraphs: Vec<Vec<PdfParagraph>> = Vec::with_capacity(page_count as usize);
+    for i in 0..page_count as usize {
+        if let Some(paragraphs) = struct_tree_results[i].take() {
+            all_page_paragraphs.push(paragraphs);
         } else {
-            // Multi-column: process each column independently
-            let column_char_groups = split_chars_by_columns(page_chars, &columns);
-            for col_chars in &column_char_groups {
-                if col_chars.is_empty() {
-                    continue;
-                }
-                let owned: Vec<CharData> = col_chars.iter().map(|c| (*c).clone()).collect();
-                let words = chars_to_words(&owned);
+            let page_segments = &all_page_segments[i];
+            let (page_w, page_h) = page_dimensions[i];
+            let columns = detect_columns_from_segments(page_segments, page_w, page_h);
+
+            let mut page_paragraphs: Vec<PdfParagraph> = Vec::new();
+
+            if columns.len() <= 1 {
+                let words = segments_to_words(page_segments);
                 let lines = words_to_lines(words);
                 let mut paragraphs = lines_to_paragraphs(lines);
                 classify_paragraphs(&mut paragraphs, &heading_map);
-                page_paragraphs.extend(paragraphs);
+                page_paragraphs = paragraphs;
+            } else {
+                let column_segment_groups = split_segments_by_columns(page_segments, &columns);
+                for col_segments in &column_segment_groups {
+                    if col_segments.is_empty() {
+                        continue;
+                    }
+                    let owned: Vec<SegmentData> = col_segments.iter().map(|s| (*s).clone()).collect();
+                    let words = segments_to_words(&owned);
+                    let lines = words_to_lines(words);
+                    let mut paragraphs = lines_to_paragraphs(lines);
+                    classify_paragraphs(&mut paragraphs, &heading_map);
+                    page_paragraphs.extend(paragraphs);
+                }
             }
-        }
 
-        all_page_paragraphs.push(page_paragraphs);
+            all_page_paragraphs.push(page_paragraphs);
+        }
     }
 
     // Stage 4: Assemble markdown with inline tables
@@ -401,11 +534,117 @@ fn needs_space_between(prev: &str, next: &str) -> bool {
     !(prev_ends_cjk && next_starts_cjk)
 }
 
+/// Convert pre-merged text segments into words by splitting on whitespace.
+///
+/// Each segment's `.text` already has correct word boundaries from pdfium's merging.
+/// We split on whitespace to get individual words, distributing the segment's bounding
+/// box proportionally across words. This replaces the fragile character-gap detection.
+fn segments_to_words(segments: &[SegmentData]) -> Vec<PdfWord> {
+    if segments.is_empty() {
+        return Vec::new();
+    }
+
+    let mut words: Vec<PdfWord> = Vec::new();
+
+    for seg in segments {
+        let trimmed = seg.text.trim();
+        if trimmed.is_empty() {
+            continue;
+        }
+
+        // Split segment text into individual words on whitespace
+        let seg_words: Vec<&str> = trimmed.split_whitespace().collect();
+        if seg_words.is_empty() {
+            continue;
+        }
+
+        // Total character count for proportional width distribution
+        let total_chars: usize = seg_words.iter().map(|w| w.len()).sum();
+        if total_chars == 0 {
+            continue;
+        }
+
+        // Distribute the segment's width proportionally across words
+        let mut x_offset = seg.x;
+        for word_text in &seg_words {
+            let word_frac = word_text.len() as f32 / total_chars as f32;
+            let word_width = seg.width * word_frac;
+
+            // Handle CJK: each CJK character should be its own word
+            let chars_vec: Vec<char> = word_text.chars().collect();
+            let has_cjk = chars_vec.iter().any(|c| is_cjk_char(*c));
+
+            if has_cjk {
+                // Split CJK characters individually, keep non-CJK runs together
+                let char_width = if chars_vec.is_empty() {
+                    word_width
+                } else {
+                    word_width / chars_vec.len() as f32
+                };
+
+                let mut run_start = 0;
+                let mut run_x = x_offset;
+                while run_start < chars_vec.len() {
+                    let is_cjk_run = is_cjk_char(chars_vec[run_start]);
+                    if is_cjk_run {
+                        // Each CJK char is its own word
+                        words.push(PdfWord {
+                            text: chars_vec[run_start].to_string(),
+                            x_start: run_x,
+                            x_end: run_x + char_width,
+                            baseline_y: seg.baseline_y,
+                            font_size: seg.font_size,
+                            is_bold: seg.is_bold,
+                            is_italic: seg.is_italic,
+                        });
+                        run_x += char_width;
+                        run_start += 1;
+                    } else {
+                        // Collect non-CJK run
+                        let mut run_end = run_start + 1;
+                        while run_end < chars_vec.len() && !is_cjk_char(chars_vec[run_end]) {
+                            run_end += 1;
+                        }
+                        let run_text: String = chars_vec[run_start..run_end].iter().collect();
+                        let run_w = char_width * (run_end - run_start) as f32;
+                        words.push(PdfWord {
+                            text: run_text,
+                            x_start: run_x,
+                            x_end: run_x + run_w,
+                            baseline_y: seg.baseline_y,
+                            font_size: seg.font_size,
+                            is_bold: seg.is_bold,
+                            is_italic: seg.is_italic,
+                        });
+                        run_x += run_w;
+                        run_start = run_end;
+                    }
+                }
+            } else {
+                words.push(PdfWord {
+                    text: word_text.to_string(),
+                    x_start: x_offset,
+                    x_end: x_offset + word_width,
+                    baseline_y: seg.baseline_y,
+                    font_size: seg.font_size,
+                    is_bold: seg.is_bold,
+                    is_italic: seg.is_italic,
+                });
+            }
+
+            x_offset += word_width;
+        }
+    }
+
+    words
+}
+
 /// Convert raw character data into words by detecting spatial gaps.
 ///
 /// Characters are sorted by baseline_y then x. Characters sharing a baseline
 /// (within tolerance) are grouped into lines, then split into words when the
 /// horizontal gap exceeds a fraction of the average font size.
+#[cfg(test)]
 fn chars_to_words(chars: &[CharData]) -> Vec<PdfWord> {
     if chars.is_empty() {
         return Vec::new();
@@ -493,6 +732,7 @@ fn chars_to_words(chars: &[CharData]) -> Vec<PdfWord> {
 }
 
 /// Build a PdfWord from a sequence of characters.
+#[cfg(test)]
 fn finalize_word(chars: &[&CharData]) -> PdfWord {
     let text: String = chars.iter().map(|c| c.text.as_str()).collect();
     let x_start = chars.iter().map(|c| c.x).fold(f32::INFINITY, f32::min);
@@ -1129,9 +1369,178 @@ fn render_words_with_markup_refs(words: &[&PdfWord]) -> String {
     result
 }
 
+/// Converts extracted blocks from the structure tree API into the local [PdfParagraph] type
+/// used by the markdown assembly pipeline.
+fn extracted_blocks_to_paragraphs(blocks: &[ExtractedBlock]) -> Vec<PdfParagraph> {
+    let mut paragraphs = Vec::new();
+
+    for block in blocks {
+        // Recursively process children first (e.g., table cells, list items).
+        if !block.children.is_empty() {
+            paragraphs.extend(extracted_blocks_to_paragraphs(&block.children));
+            continue;
+        }
+
+        if block.text.is_empty() {
+            continue;
+        }
+
+        let heading_level = match &block.role {
+            ContentRole::Heading { level } => Some(*level),
+            _ => None,
+        };
+
+        let is_list_item = matches!(&block.role, ContentRole::ListItem { .. });
+
+        // Build the full text, prepending list label if present.
+        let full_text = if let ContentRole::ListItem { label: Some(ref l) } = block.role {
+            format!("{} {}", l, block.text)
+        } else {
+            block.text.clone()
+        };
+
+        // Create a single-line paragraph from the block text.
+        let font_size = block.font_size.unwrap_or(12.0);
+        let words: Vec<PdfWord> = full_text
+            .split_whitespace()
+            .map(|w| PdfWord {
+                text: w.to_string(),
+                x_start: 0.0,
+                x_end: 0.0,
+                baseline_y: 0.0,
+                font_size,
+                is_bold: block.is_bold,
+                is_italic: block.is_italic,
+            })
+            .collect();
+
+        if words.is_empty() {
+            continue;
+        }
+
+        let line = PdfLine {
+            words,
+            baseline_y: 0.0,
+            y_top: 0.0,
+            y_bottom: 0.0,
+            dominant_font_size: font_size,
+            is_bold: block.is_bold,
+            is_italic: block.is_italic,
+        };
+
+        paragraphs.push(PdfParagraph {
+            lines: vec![line],
+            dominant_font_size: font_size,
+            heading_level,
+            is_bold: block.is_bold,
+            is_italic: block.is_italic,
+            is_list_item,
+        });
+    }
+
+    paragraphs
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn make_extracted_block(role: ContentRole, text: &str) -> ExtractedBlock {
+        ExtractedBlock {
+            role,
+            text: text.to_string(),
+            bounds: None,
+            font_size: Some(12.0),
+            is_bold: false,
+            is_italic: false,
+            children: Vec::new(),
+        }
+    }
+
+    #[test]
+    fn test_extracted_blocks_to_paragraphs_heading() {
+        let blocks = vec![make_extracted_block(ContentRole::Heading { level: 2 }, "Section Title")];
+        let paragraphs = extracted_blocks_to_paragraphs(&blocks);
+        assert_eq!(paragraphs.len(), 1);
+        assert_eq!(paragraphs[0].heading_level, Some(2));
+        assert!(!paragraphs[0].is_list_item);
+    }
+
+    #[test]
+    fn test_extracted_blocks_to_paragraphs_body() {
+        let blocks = vec![make_extracted_block(ContentRole::Paragraph, "Body text")];
+        let paragraphs = extracted_blocks_to_paragraphs(&blocks);
+        assert_eq!(paragraphs.len(), 1);
+        assert_eq!(paragraphs[0].heading_level, None);
+        assert!(!paragraphs[0].is_list_item);
+        assert_eq!(paragraphs[0].lines[0].words.len(), 2);
+    }
+
+    #[test]
+    fn test_extracted_blocks_to_paragraphs_list_item_with_label() {
+        let blocks = vec![ExtractedBlock {
+            role: ContentRole::ListItem {
+                label: Some("1.".to_string()),
+            },
+            text: "First item".to_string(),
+            bounds: None,
+            font_size: Some(12.0),
+            is_bold: false,
+            is_italic: false,
+            children: Vec::new(),
+        }];
+        let paragraphs = extracted_blocks_to_paragraphs(&blocks);
+        assert_eq!(paragraphs.len(), 1);
+        assert!(paragraphs[0].is_list_item);
+        // Label should be prepended: "1. First item" = 3 words
+        let text: String = paragraphs[0].lines[0]
+            .words
+            .iter()
+            .map(|w| w.text.as_str())
+            .collect::<Vec<_>>()
+            .join(" ");
+        assert_eq!(text, "1. First item");
+    }
+
+    #[test]
+    fn test_extracted_blocks_to_paragraphs_empty_text() {
+        let blocks = vec![make_extracted_block(ContentRole::Paragraph, "")];
+        let paragraphs = extracted_blocks_to_paragraphs(&blocks);
+        assert!(paragraphs.is_empty());
+    }
+
+    #[test]
+    fn test_extracted_blocks_to_paragraphs_children_processed() {
+        let blocks = vec![ExtractedBlock {
+            role: ContentRole::Other("Table".to_string()),
+            text: String::new(),
+            bounds: None,
+            font_size: None,
+            is_bold: false,
+            is_italic: false,
+            children: vec![
+                make_extracted_block(ContentRole::Paragraph, "Cell 1"),
+                make_extracted_block(ContentRole::Paragraph, "Cell 2"),
+            ],
+        }];
+        let paragraphs = extracted_blocks_to_paragraphs(&blocks);
+        assert_eq!(paragraphs.len(), 2);
+        let text1: String = paragraphs[0].lines[0]
+            .words
+            .iter()
+            .map(|w| w.text.as_str())
+            .collect::<Vec<_>>()
+            .join(" ");
+        assert_eq!(text1, "Cell 1");
+    }
+
+    #[test]
+    fn test_extracted_blocks_to_paragraphs_whitespace_only() {
+        let blocks = vec![make_extracted_block(ContentRole::Paragraph, "   ")];
+        let paragraphs = extracted_blocks_to_paragraphs(&blocks);
+        // split_whitespace on "   " returns empty iterator, so no words, paragraph skipped
+        assert!(paragraphs.is_empty());
+    }
 
     /// Helper to create a CharData with specified properties.
     fn make_char(text: &str, x: f32, baseline_y: f32, font_size: f32, is_bold: bool, is_italic: bool) -> CharData {
@@ -2010,5 +2419,122 @@ mod tests {
         let bottom_pos = result.find("Bottom").unwrap();
         assert!(top_pos < table_pos, "Top should come before table");
         assert!(table_pos < bottom_pos, "Table should come before Bottom");
+    }
+
+    // ---- Segment-based extraction tests ----
+
+    /// Helper to create a SegmentData with specified properties.
+    fn make_segment(
+        text: &str,
+        x: f32,
+        baseline_y: f32,
+        width: f32,
+        font_size: f32,
+        is_bold: bool,
+        is_italic: bool,
+    ) -> SegmentData {
+        SegmentData {
+            text: text.to_string(),
+            x,
+            y: baseline_y,
+            width,
+            height: font_size,
+            font_size,
+            is_bold,
+            is_italic,
+            baseline_y,
+        }
+    }
+
+    fn plain_segment(text: &str, x: f32, baseline_y: f32, width: f32, font_size: f32) -> SegmentData {
+        make_segment(text, x, baseline_y, width, font_size, false, false)
+    }
+
+    #[test]
+    fn test_segments_to_words_single_word() {
+        let segments = vec![plain_segment("Hello", 0.0, 100.0, 50.0, 12.0)];
+        let words = segments_to_words(&segments);
+        assert_eq!(words.len(), 1);
+        assert_eq!(words[0].text, "Hello");
+    }
+
+    #[test]
+    fn test_segments_to_words_multiple_words_in_segment() {
+        // A single segment containing multiple space-separated words
+        let segments = vec![plain_segment("Hello World Foo", 0.0, 100.0, 150.0, 12.0)];
+        let words = segments_to_words(&segments);
+        assert_eq!(words.len(), 3);
+        assert_eq!(words[0].text, "Hello");
+        assert_eq!(words[1].text, "World");
+        assert_eq!(words[2].text, "Foo");
+    }
+
+    #[test]
+    fn test_segments_to_words_preserves_bold_italic() {
+        let segments = vec![make_segment("Bold text", 0.0, 100.0, 100.0, 12.0, true, false)];
+        let words = segments_to_words(&segments);
+        assert_eq!(words.len(), 2);
+        assert!(words[0].is_bold);
+        assert!(!words[0].is_italic);
+        assert!(words[1].is_bold);
+    }
+
+    #[test]
+    fn test_segments_to_words_multiple_segments() {
+        let segments = vec![
+            plain_segment("First", 0.0, 100.0, 50.0, 12.0),
+            plain_segment("Second", 60.0, 100.0, 60.0, 12.0),
+        ];
+        let words = segments_to_words(&segments);
+        assert_eq!(words.len(), 2);
+        assert_eq!(words[0].text, "First");
+        assert_eq!(words[1].text, "Second");
+    }
+
+    #[test]
+    fn test_segments_to_words_cjk_splitting() {
+        // CJK characters should each be their own word
+        let segments = vec![plain_segment("\u{4e16}\u{754c}", 0.0, 100.0, 24.0, 12.0)];
+        let words = segments_to_words(&segments);
+        assert_eq!(words.len(), 2);
+        assert_eq!(words[0].text, "\u{4e16}");
+        assert_eq!(words[1].text, "\u{754c}");
+    }
+
+    #[test]
+    fn test_segments_to_words_empty_segments() {
+        let segments: Vec<SegmentData> = vec![];
+        let words = segments_to_words(&segments);
+        assert!(words.is_empty());
+    }
+
+    #[test]
+    fn test_segments_to_words_whitespace_only() {
+        let segments = vec![plain_segment("   ", 0.0, 100.0, 30.0, 12.0)];
+        let words = segments_to_words(&segments);
+        assert!(words.is_empty());
+    }
+
+    #[test]
+    fn test_segments_to_words_proportional_x_positions() {
+        // Two words of equal length should split the x-range equally
+        let segments = vec![plain_segment("AB CD", 10.0, 100.0, 100.0, 12.0)];
+        let words = segments_to_words(&segments);
+        assert_eq!(words.len(), 2);
+        // "AB" is 2 chars, "CD" is 2 chars => equal split
+        assert!((words[0].x_start - 10.0).abs() < 0.01);
+        assert!((words[1].x_start - 60.0).abs() < 0.01); // 10 + 100*0.5
+    }
+
+    #[test]
+    fn test_segments_to_words_different_baselines_become_separate_lines() {
+        // Segments on different baselines should produce words that words_to_lines groups separately
+        let segments = vec![
+            plain_segment("Line one", 0.0, 100.0, 80.0, 12.0),
+            plain_segment("Line two", 0.0, 85.0, 80.0, 12.0),
+        ];
+        let words = segments_to_words(&segments);
+        let lines = words_to_lines(words);
+        assert_eq!(lines.len(), 2);
     }
 }

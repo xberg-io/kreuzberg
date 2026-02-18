@@ -438,12 +438,12 @@ fn render_assertions(assertions: &Assertions) -> String {
         }
     }
 
-    if let Some(images) = assertions.images.as_ref() {
-        if let Some(has_bb) = images.has_bounding_boxes {
-            buffer.push_str(&format!(
-                "    assertions::assert_image_bounding_boxes(&result, {has_bb});\n"
-            ));
-        }
+    if let Some(images) = assertions.images.as_ref()
+        && let Some(has_bb) = images.has_bounding_boxes
+    {
+        buffer.push_str(&format!(
+            "    assertions::assert_image_bounding_boxes(&result, {has_bb});\n"
+        ));
     }
 
     if let Some(quality) = assertions.quality_score.as_ref() {

@@ -5,7 +5,7 @@
 #
 # Tests for office fixtures.
 
-# rubocop:disable RSpec/DescribeClass, RSpec/ExampleLength, Metrics/BlockLength
+# rubocop:disable Metrics/BlockLength
 require_relative 'spec_helper'
 
 RSpec.describe 'office fixtures' do
@@ -194,7 +194,9 @@ RSpec.describe 'office fixtures' do
         ['application/vnd.openxmlformats-officedocument.wordprocessingml.document']
       )
       E2ERuby::Assertions.assert_min_content_length(result, 50)
-      E2ERuby::Assertions.assert_content_contains_all(result, ['Simple uniform table', 'Nested Table', 'merged cells', 'Header Col'])
+      E2ERuby::Assertions.assert_content_contains_all(result,
+                                                      ['Simple uniform table', 'Nested Table', 'merged cells',
+                                                       'Header Col'])
       E2ERuby::Assertions.assert_table_count(result, 1, nil)
     end
   end
@@ -650,4 +652,4 @@ RSpec.describe 'office fixtures' do
     end
   end
 end
-# rubocop:enable RSpec/DescribeClass, RSpec/ExampleLength, Metrics/BlockLength
+# rubocop:enable, Metrics/BlockLength

@@ -487,8 +487,8 @@ mod tests {
         assert_eq!(object.get_rotation_clockwise_degrees(), 35.0);
         assert_eq!(object.get_horizontal_translation().value, 0.0);
         assert_eq!(object.get_vertical_translation().value, 0.0);
-        assert_eq!(object.get_horizontal_scale(), 0.8191520571708679); // Rotating affects the scale factors
-        assert_eq!(object.get_vertical_scale(), 0.8191520571708679); // Rotating affects the scale factors
+        assert_eq!(object.get_horizontal_scale(), 0.819_152_06); // Rotating affects the scale factors
+        assert_eq!(object.get_vertical_scale(), 0.819_152_06); // Rotating affects the scale factors
 
         Ok(())
     }

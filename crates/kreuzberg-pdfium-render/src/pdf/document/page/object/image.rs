@@ -963,6 +963,13 @@ impl<'a> Iterator for PdfPageImageObjectFiltersIterator<'a> {
     }
 }
 
+impl<'a> Drop for PdfPageImageObject<'a> {
+    /// Closes this [PdfPageImageObject], releasing held memory.
+    fn drop(&mut self) {
+        self.drop_impl();
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1076,12 +1083,5 @@ mod tests {
         assert_eq!(image_object.get_processed_image_with_height(&document, 50)?.width(), 25);
 
         Ok(())
-    }
-}
-
-impl<'a> Drop for PdfPageImageObject<'a> {
-    /// Closes this [PdfPageImageObject], releasing held memory.
-    fn drop(&mut self) {
-        self.drop_impl();
     }
 }

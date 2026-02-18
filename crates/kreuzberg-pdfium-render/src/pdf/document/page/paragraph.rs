@@ -1,18 +1,12 @@
 //! Defines the [PdfParagraph] struct, exposing functionality related to a group of
 //! styled text strings that should be laid out together on a `PdfPage` as single paragraph.
 
-#![allow(unused)] // AJRC - 28/1/23 - Suppress unused function warnings during development of PdfParagraph
-
 use crate::bindgen::FPDF_PAGEOBJECT;
-use crate::error::PdfiumError;
+use crate::error::{PdfiumError, PdfiumInternalError};
 use crate::pdf::document::PdfDocument;
-use crate::pdf::document::fonts::PdfFontToken;
-use crate::pdf::document::page::PdfPage;
-use crate::pdf::document::page::object::group::PdfPageGroupObject;
 use crate::pdf::document::page::object::private::internal::PdfPageObjectPrivate;
 use crate::pdf::document::page::object::text::PdfPageTextObject;
 use crate::pdf::document::page::object::{PdfPageObject, PdfPageObjectCommon};
-use crate::pdf::document::page::objects::common::PdfPageObjectsCommon;
 use crate::pdf::font::PdfFont;
 use crate::pdf::points::PdfPoints;
 use itertools::Itertools;
@@ -94,20 +88,6 @@ impl<'a> PdfStyledString<'a> {
         // It's more expensive to try to match the fonts based on name, so we try to match
         // based on FPDF_FONT handles first.
 
-        println!(
-            "does_match_object_styling()? {} ==? {}, {:?} ==? {:?}, {} ==? {}, {} ==? {}, {} ==? {}",
-            self.font_size().value,
-            other_font_size.value,
-            self.font().handle(),
-            other_font.handle(),
-            self.font().is_all_caps(),
-            other_font.is_all_caps(),
-            self.font().is_small_caps(),
-            other_font.is_small_caps(),
-            self.font().family(),
-            other_font.family()
-        );
-
         if self.font_size() != other_font_size {
             return false;
         }
@@ -151,6 +131,7 @@ enum PdfParagraphFragment<'a> {
 /// Controls the overflow behaviour of a [PdfParagraph] that, due to changes in its content,
 /// needs to overflow the maximum bounds of the original page objects from which it was defined.
 #[derive(Copy, Clone, Debug, PartialEq)]
+#[allow(unused)]
 pub enum PdfParagraphOverflowBehaviour {
     /// The maximum line width will be adjusted so that the paragraph's height stays the same.
     FixHeightExpandWidth,
@@ -164,6 +145,7 @@ pub enum PdfParagraphOverflowBehaviour {
 
 /// Controls the line alignment behaviour of a [PdfParagraph].
 #[derive(Copy, Clone, Debug, PartialEq)]
+#[allow(unused)]
 pub enum PdfParagraphAlignment {
     /// All lines will be non-justified, aligned to the left.
     LeftAlign,
@@ -234,15 +216,16 @@ impl<'a> PdfLine<'a> {
 /// be created from existing groups of page objects, or created by scratch; once created, text in
 /// a paragraph can be edited and re-formatted, and then used to generate a group of text objects
 /// that can be placed on a page.
-#[doc(hidden)]
 pub struct PdfParagraph<'a> {
     fragments: Vec<PdfParagraphFragment<'a>>,
     bottom: Option<PdfPoints>,
     left: Option<PdfPoints>,
     max_width: Option<PdfPoints>,
+    #[allow(unused)]
     max_height: Option<PdfPoints>,
     overflow: PdfParagraphOverflowBehaviour,
     alignment: PdfParagraphAlignment,
+    #[allow(unused)]
     first_line_indent: PdfPoints,
 }
 
@@ -266,6 +249,7 @@ impl<'a> PdfParagraph<'a> {
     //     Self::from_iter(objects.as_slice())
     // }
 
+    /// Creates a set of one or more [PdfParagraph] objects from the given slice of page objects.
     pub fn from_objects(objects: &'a [PdfPageObject<'a>]) -> Vec<PdfParagraph<'a>> {
         let mut lines = Vec::new();
 
@@ -307,7 +291,7 @@ impl<'a> PdfParagraph<'a> {
                     None => objects_top = Some(object_top),
                 }
 
-                let object_height = object.bounds().map(|bounds| bounds.height()).unwrap_or(PdfPoints::ZERO);
+                let _object_height = object.bounds().map(|bounds| bounds.height()).unwrap_or(PdfPoints::ZERO);
 
                 let object_left = object.bounds().map(|bounds| bounds.left()).unwrap_or(PdfPoints::ZERO);
 
@@ -334,9 +318,9 @@ impl<'a> PdfParagraph<'a> {
                 (object_bottom, object_top, object_left, object_right, object)
             })
             .sorted_by(|a, b| {
-                let (a_bottom, a_top, _, a_right) = (a.0, a.1, a.2, a.3);
+                let (a_bottom, _a_top, _, a_right) = (a.0, a.1, a.2, a.3);
 
-                let (b_bottom, b_top, b_left, _) = (b.0, b.1, b.2, b.3);
+                let (_b_bottom, b_top, b_left, _) = (b.0, b.1, b.2, b.3);
 
                 // Keep track of the paragraph maximum bounds as we examine objects.
 
@@ -369,14 +353,13 @@ impl<'a> PdfParagraph<'a> {
 
         let mut current_line_bottom = PdfPoints::ZERO;
         let mut current_line_left = PdfPoints::ZERO;
-        let mut current_line_right = PdfPoints::ZERO;
+        let current_line_right = PdfPoints::ZERO;
         let mut current_line_alignment = PdfLineAlignment::None;
 
         let mut last_object_bottom = None;
         let mut last_object_height = None;
         let mut last_object_left = None;
         let mut last_object_right = None;
-        let mut last_object_width = None;
 
         for (bottom, top, left, right, object) in positioned_objects.iter() {
             let top = *top;
@@ -405,8 +388,6 @@ impl<'a> PdfParagraph<'a> {
                 {
                     // Yes, this line break probably indicates a new paragraph.
 
-                    println!("starting a new line with alignment {:?}", next_line_alignment);
-
                     lines.push(PdfLine::new(
                         current_line_alignment,
                         current_line_bottom,
@@ -422,14 +403,11 @@ impl<'a> PdfParagraph<'a> {
                 } else {
                     // The line break probably just represents a carriage-return rather than the
                     // deliberate end of a paragraph.
-
-                    println!("carriage return");
                 }
             }
 
             last_object_left = Some(left);
             last_object_right = Some(right);
-            last_object_width = Some(right - left);
             last_object_bottom = Some(bottom);
             last_object_height = Some(top - bottom);
 
@@ -469,24 +447,9 @@ impl<'a> PdfParagraph<'a> {
                             " "
                         };
 
-                        println!(
-                            "styling matches, push \"{}\" onto \"{}\", separated by \"{}\"",
-                            object.text(),
-                            last_string.text(),
-                            separator
-                        );
-
                         last_string.push(object.text(), separator);
-
-                        println!(
-                            "last_object_right = {:?},  this object left = {:?}",
-                            last_object_right,
-                            object.bounds().unwrap().left(),
-                        );
                     } else {
                         // The styles of the two text objects are different, so they can't be merged.
-
-                        println!("styling differs, start new fragment with \"{}\"", object.text());
 
                         current_line_fragments.push(PdfParagraphFragment::StyledString(
                             PdfStyledString::from_text_object(object),
@@ -494,8 +457,6 @@ impl<'a> PdfParagraph<'a> {
                     }
                 } else {
                     // The last fragment wasn't a string fragment, so we have to start a new fragment.
-
-                    println!("start new text fragment with \"{}\"", object.text());
 
                     current_line_fragments.push(PdfParagraphFragment::StyledString(PdfStyledString::from_text_object(
                         object,
@@ -536,8 +497,6 @@ impl<'a> PdfParagraph<'a> {
         let mut first_line_alignment = last_line_alignment;
 
         for mut line in lines.drain(..) {
-            println!("********* got line: {:?}", line.alignment);
-
             if line.alignment != last_line_alignment {
                 // TODO: this won't work as expected for non-force-justified paragraphs
                 // where the last line in the paragraph is left-aligned, not justified
@@ -691,7 +650,7 @@ impl<'a> PdfParagraph<'a> {
         }
     }
 
-    /// Creates a new, empty [PdfPageParagraphObject] with the given maximum line width,
+    /// Creates a new, empty [PdfParagraph] with the given maximum line width,
     /// overflow, and alignment settings.
     #[inline]
     pub fn empty(
@@ -763,8 +722,6 @@ impl<'a> PdfParagraph<'a> {
     /// Returns the text contained within all text fragments in this paragraph.
     #[inline]
     pub fn text(&self) -> String {
-        println!(">>>> text(): fragments count = {}", self.fragments.len());
-
         self.fragments
             .iter()
             .filter_map(|fragment| match fragment {
@@ -790,32 +747,80 @@ impl<'a> PdfParagraph<'a> {
     }
 
     /// Assembles the fragments in this paragraph into lines, taking into account the paragraph's
-    /// current sizing, overflow, indent, and alignment settings.
-    fn to_lines(&self) -> Vec<PdfLine<'_>> {
-        todo!()
+    /// current sizing, overflow, indent, and alignment settings. Consumes the paragraph and
+    /// returns the assembled lines.
+    fn into_lines(self) -> Vec<PdfLine<'a>> {
+        let mut lines: Vec<PdfLine<'a>> = Vec::new();
+        let mut current_fragments: Vec<PdfParagraphFragment<'a>> = Vec::new();
+        let mut current_width = PdfPoints::ZERO;
+        let current_bottom = self.bottom.unwrap_or(PdfPoints::ZERO);
+        let current_left = self.left.unwrap_or(PdfPoints::ZERO);
+
+        let effective_max_width = self.max_width.unwrap_or(PdfPoints::new(f32::MAX));
+
+        for fragment in self.fragments {
+            match fragment {
+                PdfParagraphFragment::LineBreak(alignment) => {
+                    if !current_fragments.is_empty() {
+                        lines.push(PdfLine::new(
+                            alignment,
+                            current_bottom,
+                            current_left,
+                            current_width,
+                            std::mem::take(&mut current_fragments),
+                        ));
+                        current_width = PdfPoints::ZERO;
+                    }
+                }
+                PdfParagraphFragment::StyledString(ref styled) => {
+                    // Estimate width from text length and font size
+                    let estimated_width = PdfPoints::new(styled.text().len() as f32 * styled.font_size().value * 0.5);
+
+                    if current_width.value + estimated_width.value > effective_max_width.value
+                        && !current_fragments.is_empty()
+                    {
+                        // Line break needed
+                        lines.push(PdfLine::new(
+                            PdfLineAlignment::None,
+                            current_bottom,
+                            current_left,
+                            current_width,
+                            std::mem::take(&mut current_fragments),
+                        ));
+                        current_width = PdfPoints::ZERO;
+                    }
+
+                    current_width = PdfPoints::new(current_width.value + estimated_width.value);
+                    current_fragments.push(fragment);
+                }
+                PdfParagraphFragment::NonTextObject(_) => {
+                    current_fragments.push(fragment);
+                }
+            }
+        }
+
+        // Flush remaining fragments
+        if !current_fragments.is_empty() {
+            lines.push(PdfLine::new(
+                PdfLineAlignment::None,
+                current_bottom,
+                current_left,
+                current_width,
+                current_fragments,
+            ));
+        }
+
+        lines
     }
 
     /// Assembles the fragments in this paragraph into lines, taking into account the paragraph's
     /// current sizing, overflow, indent, and alignment settings, and generates new page objects for
     /// each line, adding all generated page objects to a new [PdfPageGroupObject].
-    pub fn as_group(&self) -> PdfPageGroupObject<'_> {
-        todo!()
-    }
-
-    pub fn d(&self) {
-        for (index, f) in self.fragments.iter().enumerate() {
-            match f {
-                PdfParagraphFragment::StyledString(s) => {
-                    println!("{}: {}", index, s.text());
-                }
-                PdfParagraphFragment::LineBreak(_) => {
-                    println!("{}: line break", index);
-                }
-                PdfParagraphFragment::NonTextObject(_) => {
-                    println!("{}: not a text object", index);
-                }
-            }
-        }
+    ///
+    /// Note: Full implementation requires a `PdfDocument` reference to create text objects.
+    /// This is currently a placeholder for future layout rendering support.
+    pub fn as_group(&self) -> Result<(), PdfiumError> {
+        Err(PdfiumError::PdfiumLibraryInternalError(PdfiumInternalError::Unknown))
     }
 }
 
@@ -823,7 +828,7 @@ impl<'a> PdfParagraph<'a> {
 mod tests {
     use crate::pdf::document::page::paragraph::PdfParagraph;
     use crate::prelude::*;
-    use crate::utils::test::{test_bind_to_pdfium, test_fixture_path}; // Temporary until PdfParagraph is included in the prelude.
+    use crate::utils::test::{test_bind_to_pdfium, test_fixture_path};
 
     #[test]
     fn test_paragraph_construction() -> Result<(), PdfiumError> {
@@ -837,12 +842,34 @@ mod tests {
 
         let paragraphs = PdfParagraph::from_objects(objects.as_slice());
 
-        for p in paragraphs.iter() {
-            p.d();
-            // println!("{}", paragraph.text_separated(" "));
+        // Verify that paragraphs were constructed from the page objects
+        assert!(
+            !paragraphs.is_empty(),
+            "Expected at least one paragraph from page objects"
+        );
+
+        // Verify text extraction works for each paragraph
+        for paragraph in paragraphs.iter() {
+            let text = paragraph.text();
+            // Each paragraph should produce some text (the test fixture has text content)
+            assert!(
+                !text.trim().is_empty() || paragraph.is_empty(),
+                "Non-empty paragraph should produce non-empty text"
+            );
         }
 
-        // assert!(false); // Interferes with pipeline build - but we do need to test something concrete here
+        // Verify text_separated also works
+        for paragraph in paragraphs.iter() {
+            let separated = paragraph.text_separated(" ");
+            let plain = paragraph.text();
+            // Both text methods should return content for non-empty paragraphs
+            if !paragraph.is_empty() {
+                assert!(
+                    !separated.is_empty() || !plain.is_empty(),
+                    "Text extraction should return content for non-empty paragraphs"
+                );
+            }
+        }
 
         Ok(())
     }

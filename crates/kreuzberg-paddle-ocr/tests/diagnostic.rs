@@ -412,11 +412,11 @@ fn diagnostic_crnn_model_output() {
 }
 
 fn discover_ort() {
-    if let Ok(path) = std::env::var("ORT_DYLIB_PATH") {
-        if std::path::Path::new(&path).exists() {
-            eprintln!("ORT found via ORT_DYLIB_PATH: {}", path);
-            return;
-        }
+    if let Ok(path) = std::env::var("ORT_DYLIB_PATH")
+        && std::path::Path::new(&path).exists()
+    {
+        eprintln!("ORT found via ORT_DYLIB_PATH: {}", path);
+        return;
     }
 
     let candidates = [

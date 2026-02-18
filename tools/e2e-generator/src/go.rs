@@ -1010,15 +1010,15 @@ fn render_assertions(assertions: &Assertions) -> String {
         if tables.has_bounding_boxes == Some(true) {
             writeln!(buffer, "    assertTableBoundingBoxes(t, result)").unwrap();
         }
-        if let Some(snippets) = tables.content_contains_any.as_ref() {
-            if !snippets.is_empty() {
-                writeln!(
-                    buffer,
-                    "    assertTableContentContainsAny(t, result, {})",
-                    render_string_slice(snippets)
-                )
-                .unwrap();
-            }
+        if let Some(snippets) = tables.content_contains_any.as_ref()
+            && !snippets.is_empty()
+        {
+            writeln!(
+                buffer,
+                "    assertTableContentContainsAny(t, result, {})",
+                render_string_slice(snippets)
+            )
+            .unwrap();
         }
     }
     if let Some(lang) = assertions.detected_languages.as_ref() {
