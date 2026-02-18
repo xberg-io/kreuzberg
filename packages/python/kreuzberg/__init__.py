@@ -330,7 +330,8 @@ def _ensure_ocr_backend_registered(
 
     backend_name = config.ocr.backend
 
-    if backend_name == "tesseract":
+    # Native Rust backends — skip Python-side registration, handled by Rust core
+    if backend_name in ("tesseract", "paddleocr", "paddle-ocr"):
         return
 
     kwargs_map = {

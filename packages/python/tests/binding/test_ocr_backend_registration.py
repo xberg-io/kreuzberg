@@ -66,6 +66,18 @@ def test_ensure_ocr_backend_skips_tesseract() -> None:
     assert not kreuzberg._REGISTERED_OCR_BACKENDS
 
 
+def test_ensure_ocr_backend_skips_paddleocr() -> None:
+    config = ExtractionConfig(ocr=OcrConfig(backend="paddleocr", language="en"))
+    kreuzberg._ensure_ocr_backend_registered(config, None)
+    assert not kreuzberg._REGISTERED_OCR_BACKENDS
+
+
+def test_ensure_ocr_backend_skips_paddle_ocr_hyphenated() -> None:
+    config = ExtractionConfig(ocr=OcrConfig(backend="paddle-ocr", language="en"))
+    kreuzberg._ensure_ocr_backend_registered(config, None)
+    assert not kreuzberg._REGISTERED_OCR_BACKENDS
+
+
 def test_ensure_ocr_backend_registers_easyocr_once(monkeypatch: pytest.MonkeyPatch) -> None:
     registrations: list[Any] = []
     created: deque[Any] = deque()
