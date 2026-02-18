@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import sys
 import types
-from typing import Any
+from typing import Any, cast
 from unittest.mock import patch
 
 import pytest
@@ -25,6 +25,10 @@ def _make_mock_rapidocr_module() -> Any:
         return value
 
     class Result:
+        boxes = (
+            ((1, 2), (3, 2), (3, 4), (1, 4)),
+            ((10, 20), (30, 20), (30, 40), (10, 40)),
+        )
         txts = ("hello", "world")
         scores = (0.9, 0.8)
         img = type("Img", (), {"shape": (120, 320, 3)})()
@@ -41,7 +45,7 @@ def _make_mock_rapidocr_module() -> Any:
     module.LangDet = lang_det
     module.LangRec = lang_rec
     module.LangCls = LangCls
-    return module
+    return cast("types.ModuleType", module)
 
 
 def test_rapidocr_import_error() -> None:
@@ -69,6 +73,10 @@ def test_rapidocr_backend_process_image_success() -> None:
     assert result["metadata"]["text_regions"] == 2
     assert result["metadata"]["width"] == 320
     assert result["metadata"]["height"] == 120
+    assert result["metadata"]["boxes"] == [
+        [[1.0, 2.0], [3.0, 2.0], [3.0, 4.0], [1.0, 4.0]],
+        [[10.0, 20.0], [30.0, 20.0], [30.0, 40.0], [10.0, 40.0]],
+    ]
 
 
 def test_rapidocr_backend_unsupported_language() -> None:
@@ -86,7 +94,7 @@ def test_rapidocr_backend_init_failure_raises_ocr_error() -> None:
     """RapidOCRBackend should wrap engine init errors with OCRError."""
     from kreuzberg.ocr.rapidocr import RapidOCRBackend
 
-    mock_rapidocr = _make_mock_rapidocr_module()
+    mock_rapidocr = cast("Any", _make_mock_rapidocr_module())
 
     class FailingRapidOCR:
         def __init__(self, *_args: Any, **_kwargs: Any) -> None:

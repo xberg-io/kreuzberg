@@ -90,28 +90,30 @@ class RapidOCRBackend:
         self._engines: dict[str, Any] = {}
 
     def name(self) -> str:
-        """Return the backend identifier."""
+        """Return backend identifier used by Kreuzberg OCR config."""
         return "rapid-ocr"
 
     def supported_languages(self) -> list[str]:
-        """Return the list of supported language codes and aliases."""
+        """Return normalized and alias language codes accepted by this backend."""
         return sorted(set(_LANGUAGE_ALIASES.keys()) | _RAPIDOCR_LANGS)
 
     def initialize(self) -> None:
-        """Warm up the default language engine."""
+        """Eagerly initialize the default language OCR engine."""
         self._get_engine(self.default_language)
 
     def shutdown(self) -> None:
-        """Release cached OCR engines."""
+        """Release cached RapidOCR engine instances."""
         self._engines.clear()
 
     def process_image(self, image_bytes: bytes, language: str) -> dict[str, Any]:
-        """Run OCR on image bytes and return normalized extraction output."""
+        """Run OCR for raw image bytes and return Kreuzberg's backend response shape."""
         normalized_language = self._normalize_language(language)
         engine = self._get_engine(normalized_language)
 
         try:
             result = engine(image_bytes)
+            raw_boxes = getattr(result, "boxes", None)
+            boxes = self._normalize_boxes(raw_boxes)
             txts = list(getattr(result, "txts", []) or [])
             scores = list(getattr(result, "scores", []) or [])
 
@@ -122,8 +124,10 @@ class RapidOCRBackend:
                 "backend": "rapid-ocr",
                 "language": normalized_language,
                 "confidence": confidence,
-                "text_regions": len(txts),
+                "text_regions": max(len(txts), len(boxes)),
             }
+            if boxes:
+                metadata["boxes"] = boxes
 
             img = getattr(result, "img", None)
             if img is not None and hasattr(img, "shape") and len(img.shape) >= 2:
@@ -140,7 +144,7 @@ class RapidOCRBackend:
             raise OCRError(msg) from e
 
     def process_file(self, path: str, language: str) -> dict[str, Any]:
-        """Read an image file and process it with RapidOCR."""
+        """Run OCR for an image path by delegating to ``process_image``."""
         image_bytes = Path(path).read_bytes()
         return self.process_image(image_bytes, language)
 
@@ -156,6 +160,39 @@ class RapidOCRBackend:
                     "supported_languages": sorted(self.supported_languages()),
                 },
             )
+        return normalized
+
+    @staticmethod
+    def _normalize_boxes(raw_boxes: Any) -> list[list[list[float]]]:
+        """Convert RapidOCR box output into JSON-serializable quadrilateral points."""
+        normalized: list[list[list[float]]] = []
+
+        try:
+            boxes = list(raw_boxes)
+        except TypeError:
+            return normalized
+
+        for raw_box in boxes:
+            box = raw_box.tolist() if hasattr(raw_box, "tolist") else raw_box
+
+            try:
+                points = list(box)
+            except TypeError:
+                continue
+
+            quad: list[list[float]] = []
+            for raw_point in points:
+                point = raw_point.tolist() if hasattr(raw_point, "tolist") else raw_point
+                if not isinstance(point, (list, tuple)) or len(point) < 2:
+                    continue
+                try:
+                    quad.append([float(point[0]), float(point[1])])
+                except (TypeError, ValueError):
+                    continue
+
+            if len(quad) >= 4:
+                normalized.append(quad[:4])
+
         return normalized
 
     def _get_engine(self, language: str) -> Any:
