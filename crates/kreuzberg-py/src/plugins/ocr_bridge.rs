@@ -12,7 +12,7 @@ use std::sync::Arc;
 use kreuzberg::core::config::OcrConfig;
 use kreuzberg::plugins::registry::get_ocr_backend_registry;
 use kreuzberg::plugins::{OcrBackend, OcrBackendType, Plugin};
-use kreuzberg::types::ExtractionResult;
+use kreuzberg::types::{ExtractionResult, OcrElement};
 use kreuzberg::{KreuzbergError, Result};
 
 use super::common::validate_plugin_object;
@@ -371,6 +371,10 @@ fn dict_to_extraction_result(_py: Python<'_>, dict: &Bound<'_, PyAny>) -> Result
         Ok(t) if !t.is_none() => extract_tables(&t)?,
         _ => vec![],
     };
+    let ocr_elements = match dict.get_item("ocr_elements") {
+        Ok(ocr) if !ocr.is_none() => Some(extract_ocr_elements(&ocr)?),
+        _ => None,
+    };
 
     Ok(ExtractionResult {
         content,
@@ -387,7 +391,7 @@ fn dict_to_extraction_result(_py: Python<'_>, dict: &Bound<'_, PyAny>) -> Result
         elements: None,
         document: None,
         djot_content: None,
-        ocr_elements: None,
+        ocr_elements,
         extracted_keywords: None,
         quality_score: None,
         processing_warnings: vec![],
@@ -552,6 +556,99 @@ fn extract_tables(obj: &Bound<'_, PyAny>) -> Result<Vec<kreuzberg::types::Table>
     }
 
     Ok(tables)
+}
+
+/// Extract OCR elements from Python object.
+fn extract_ocr_elements(obj: &Bound<'_, PyAny>) -> Result<Vec<OcrElement>> {
+    use super::common::python_to_json;
+
+    let json_value = python_to_json(obj)?;
+    serde_json::from_value::<Vec<OcrElement>>(json_value).map_err(|e| KreuzbergError::Validation {
+        message: format!("Python OCR result 'ocr_elements' has invalid shape: {}", e),
+        source: None,
+    })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::plugins::common::json_value_to_py;
+    use kreuzberg::types::OcrBoundingGeometry;
+    use std::sync::Once;
+
+    fn prepare_python() {
+        static INIT: Once = Once::new();
+        INIT.call_once(Python::initialize);
+    }
+
+    fn with_py<F, R>(f: F) -> R
+    where
+        F: FnOnce(Python<'_>) -> R,
+    {
+        prepare_python();
+        Python::attach(f)
+    }
+
+    #[test]
+    fn dict_to_extraction_result_parses_ocr_elements() {
+        with_py(|py| {
+            let payload = serde_json::json!({
+                "content": "hello world",
+                "metadata": {"backend": "rapid-ocr"},
+                "ocr_elements": [
+                    {
+                        "text": "hello",
+                        "geometry": {
+                            "type": "quadrilateral",
+                            "points": [[1, 2], [10, 2], [10, 12], [1, 12]]
+                        },
+                        "confidence": {"recognition": 0.9},
+                        "level": "line",
+                        "page_number": 1
+                    }
+                ]
+            });
+
+            let py_obj = json_value_to_py(py, &payload).expect("payload should convert");
+            let result = dict_to_extraction_result(py, &py_obj).expect("conversion should succeed");
+
+            let elements = result.ocr_elements.expect("ocr_elements should be present");
+            assert_eq!(elements.len(), 1);
+            assert_eq!(elements[0].text, "hello");
+            assert_eq!(elements[0].page_number, 1);
+            match &elements[0].geometry {
+                OcrBoundingGeometry::Quadrilateral { points } => {
+                    assert_eq!(points[0], (1, 2));
+                }
+                _ => panic!("expected quadrilateral geometry"),
+            }
+        });
+    }
+
+    #[test]
+    fn dict_to_extraction_result_rejects_invalid_ocr_elements() {
+        with_py(|py| {
+            let payload = serde_json::json!({
+                "content": "hello world",
+                "ocr_elements": [
+                    {
+                        "text": "hello",
+                        "geometry": {"type": "quadrilateral", "points": [[1, 2], [10, 2]]},
+                        "confidence": {"recognition": "bad"}
+                    }
+                ]
+            });
+
+            let py_obj = json_value_to_py(py, &payload).expect("payload should convert");
+            let err = dict_to_extraction_result(py, &py_obj).expect_err("invalid ocr_elements should fail");
+            match err {
+                KreuzbergError::Validation { message, .. } => {
+                    assert!(message.contains("ocr_elements"), "message was: {message}");
+                }
+                other => panic!("expected validation error, got: {other:?}"),
+            }
+        });
+    }
 }
 
 /// Register a Python OCR backend with the Rust core.

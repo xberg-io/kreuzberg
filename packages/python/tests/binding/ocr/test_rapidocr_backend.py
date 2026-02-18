@@ -77,6 +77,22 @@ def test_rapidocr_backend_process_image_success() -> None:
         [[1.0, 2.0], [3.0, 2.0], [3.0, 4.0], [1.0, 4.0]],
         [[10.0, 20.0], [30.0, 20.0], [30.0, 40.0], [10.0, 40.0]],
     ]
+    assert result["ocr_elements"] == [
+        {
+            "text": "hello",
+            "geometry": {"type": "quadrilateral", "points": [[1, 2], [3, 2], [3, 4], [1, 4]]},
+            "confidence": {"recognition": 0.9},
+            "level": "line",
+            "page_number": 1,
+        },
+        {
+            "text": "world",
+            "geometry": {"type": "quadrilateral", "points": [[10, 20], [30, 20], [30, 40], [10, 40]]},
+            "confidence": {"recognition": 0.8},
+            "level": "line",
+            "page_number": 1,
+        },
+    ]
 
 
 def test_rapidocr_backend_unsupported_language() -> None:

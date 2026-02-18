@@ -116,6 +116,7 @@ class RapidOCRBackend:
             boxes = self._normalize_boxes(raw_boxes)
             txts = list(getattr(result, "txts", []) or [])
             scores = list(getattr(result, "scores", []) or [])
+            ocr_elements = self._build_ocr_elements(boxes, txts, scores)
 
             content = "\n".join(str(txt).strip() for txt in txts if str(txt).strip())
             confidence = sum(float(score) for score in scores) / len(scores) if scores else 0.0
@@ -138,6 +139,7 @@ class RapidOCRBackend:
                 "content": content,
                 "metadata": metadata,
                 "tables": [],
+                "ocr_elements": ocr_elements,
             }
         except Exception as e:
             msg = f"RapidOCR processing failed: {e}"
@@ -194,6 +196,37 @@ class RapidOCRBackend:
                 normalized.append(quad[:4])
 
         return normalized
+
+    @staticmethod
+    def _build_ocr_elements(
+        boxes: list[list[list[float]]],
+        txts: list[str],
+        scores: list[float],
+    ) -> list[dict[str, Any]]:
+        """Build Kreuzberg OCR elements with quadrilateral geometry from RapidOCR output."""
+        elements: list[dict[str, Any]] = []
+
+        for idx, box in enumerate(boxes):
+            text = str(txts[idx]).strip() if idx < len(txts) else ""
+            if not text:
+                continue
+
+            recognition = float(scores[idx]) if idx < len(scores) else 0.0
+            points = [[round(x), round(y)] for x, y in box[:4]]
+            if len(points) < 4:
+                continue
+
+            elements.append(
+                {
+                    "text": text,
+                    "geometry": {"type": "quadrilateral", "points": points},
+                    "confidence": {"recognition": recognition},
+                    "level": "line",
+                    "page_number": 1,
+                }
+            )
+
+        return elements
 
     def _get_engine(self, language: str) -> Any:
         if language in self._engines:
