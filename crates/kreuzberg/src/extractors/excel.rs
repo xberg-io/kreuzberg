@@ -2,6 +2,7 @@
 
 use crate::Result;
 use crate::core::config::ExtractionConfig;
+use crate::core::config::formats::OutputFormat;
 use crate::plugins::{DocumentExtractor, Plugin};
 use crate::types::{ExcelMetadata, ExtractionResult, Metadata, Table};
 use ahash::AHashMap;
@@ -76,7 +77,7 @@ impl Plugin for ExcelExtractor {
 #[async_trait]
 impl DocumentExtractor for ExcelExtractor {
     #[cfg_attr(feature = "otel", tracing::instrument(
-        skip(self, content, _config),
+        skip(self, content, config),
         fields(
             extractor.name = self.name(),
             content.size_bytes = content.len(),
@@ -86,7 +87,7 @@ impl DocumentExtractor for ExcelExtractor {
         &self,
         content: &[u8],
         mime_type: &str,
-        _config: &ExtractionConfig,
+        config: &ExtractionConfig,
     ) -> Result<ExtractionResult> {
         let extension = match mime_type {
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" => ".xlsx",
@@ -114,7 +115,12 @@ impl DocumentExtractor for ExcelExtractor {
             crate::extraction::excel::read_excel_bytes(content, extension)?
         };
 
-        let text_content = crate::extraction::excel::excel_to_text(&workbook);
+        let content = match config.output_format {
+            OutputFormat::Markdown | OutputFormat::Djot | OutputFormat::Html => {
+                crate::extraction::excel::excel_to_markdown(&workbook)
+            }
+            _ => crate::extraction::excel::excel_to_text(&workbook),
+        };
         let tables = Self::sheets_to_tables(&workbook);
 
         let sheet_names: Vec<String> = workbook.sheets.iter().map(|s| s.name.clone()).collect();
@@ -131,7 +137,7 @@ impl DocumentExtractor for ExcelExtractor {
         }
 
         Ok(ExtractionResult {
-            content: text_content,
+            content,
             mime_type: mime_type.to_string().into(),
             metadata: Metadata {
                 format: Some(crate::types::FormatMetadata::Excel(excel_metadata)),
@@ -156,18 +162,23 @@ impl DocumentExtractor for ExcelExtractor {
     }
 
     #[cfg_attr(feature = "otel", tracing::instrument(
-        skip(self, path, _config),
+        skip(self, path, config),
         fields(
             extractor.name = self.name(),
         )
     ))]
-    async fn extract_file(&self, path: &Path, mime_type: &str, _config: &ExtractionConfig) -> Result<ExtractionResult> {
+    async fn extract_file(&self, path: &Path, mime_type: &str, config: &ExtractionConfig) -> Result<ExtractionResult> {
         let path_str = path
             .to_str()
             .ok_or_else(|| crate::KreuzbergError::validation("Invalid file path".to_string()))?;
 
         let workbook = crate::extraction::excel::read_excel_file(path_str)?;
-        let text_content = crate::extraction::excel::excel_to_text(&workbook);
+        let content = match config.output_format {
+            OutputFormat::Markdown | OutputFormat::Djot | OutputFormat::Html => {
+                crate::extraction::excel::excel_to_markdown(&workbook)
+            }
+            _ => crate::extraction::excel::excel_to_text(&workbook),
+        };
         let tables = Self::sheets_to_tables(&workbook);
 
         let sheet_names: Vec<String> = workbook.sheets.iter().map(|s| s.name.clone()).collect();
@@ -184,7 +195,7 @@ impl DocumentExtractor for ExcelExtractor {
         }
 
         Ok(ExtractionResult {
-            content: text_content,
+            content,
             mime_type: mime_type.to_string().into(),
             metadata: Metadata {
                 format: Some(crate::types::FormatMetadata::Excel(excel_metadata)),

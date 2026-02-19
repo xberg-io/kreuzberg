@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - WASM bindings now export `detectMimeFromBytes` and `getExtensionsForMime` MIME utility functions
 - Node.js NAPI-RS binding correctly exposes `annotations` field on `ExtractionResult`
 - Python output format validation tests updated to reflect `json` as a valid format (alias for `structured`)
+- XLSX extraction with `output_format="markdown"` now produces markdown tables instead of plain text (#405)
 
 ---
 
