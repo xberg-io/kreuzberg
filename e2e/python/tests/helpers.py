@@ -563,6 +563,10 @@ def assert_annotations(result: Any, has_annotations: bool = False, min_count: in
         assert annotations is not None, "Expected annotations to be present"
         assert isinstance(annotations, (list, tuple)), f"Expected annotations to be a list, got {type(annotations)}"
         assert len(annotations) > 0, "Expected annotations to be non-empty"
-    if annotations is not None and isinstance(annotations, (list, tuple)):
-        if min_count is not None and len(annotations) < min_count:
-            pytest.fail(f"Expected at least {min_count} annotations, found {len(annotations)}")
+    if (
+        annotations is not None
+        and isinstance(annotations, (list, tuple))
+        and min_count is not None
+        and len(annotations) < min_count
+    ):
+        pytest.fail(f"Expected at least {min_count} annotations, found {len(annotations)}")

@@ -492,6 +492,31 @@ export interface DocumentStructure {
 	nodes: DocumentNode[];
 }
 
+/**
+ * Type of PDF annotation.
+ */
+export type PdfAnnotationType = "text" | "highlight" | "link" | "stamp" | "underline" | "strike_out" | "other";
+
+/**
+ * Bounding box for a PDF annotation.
+ */
+export interface PdfAnnotationBoundingBox {
+	x0: number;
+	y0: number;
+	x1: number;
+	y1: number;
+}
+
+/**
+ * A PDF annotation extracted from a document.
+ */
+export interface PdfAnnotation {
+	annotationType: PdfAnnotationType;
+	content?: string | null;
+	pageNumber: number;
+	boundingBox?: PdfAnnotationBoundingBox | null;
+}
+
 export interface ExtractionResult {
 	content: string;
 	mimeType: string;
@@ -507,4 +532,5 @@ export interface ExtractionResult {
 	extractedKeywords?: ExtractedKeyword[];
 	qualityScore?: number;
 	processingWarnings: ProcessingWarning[];
+	annotations?: PdfAnnotation[];
 }

@@ -657,6 +657,18 @@ public final class E2EHelpers {
                         String.format("Expected at least %d djot blocks, got %d", minBlocks, blockCount));
             }
         }
+
+        public static void assertAnnotations(ExtractionResult result, Boolean hasAnnotations, Integer minCount) {
+            var annotations = result.getAnnotations().orElse(null);
+            if (hasAnnotations != null && hasAnnotations) {
+                assertTrue(annotations != null && !annotations.isEmpty(),
+                        "Expected annotations to be present and non-empty");
+            }
+            if (annotations != null && minCount != null) {
+                assertTrue(annotations.size() >= minCount,
+                        String.format("Expected at least %d annotations, got %d", minCount, annotations.size()));
+            }
+        }
     }
 }
 "#;

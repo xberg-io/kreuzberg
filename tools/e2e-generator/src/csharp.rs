@@ -831,6 +831,25 @@ public static class TestHelpers
             }
         }
     }
+
+    public static void AssertAnnotations(ExtractionResult result, bool hasAnnotations, int? minCount)
+    {
+        var annotations = result.Annotations;
+        if (hasAnnotations)
+        {
+            if (annotations is null || annotations.Count == 0)
+            {
+                throw new XunitException("Expected annotations to be present and non-empty");
+            }
+        }
+        if (annotations is not null && minCount.HasValue)
+        {
+            if (annotations.Count < minCount.Value)
+            {
+                throw new XunitException($"Expected at least {minCount.Value} annotations, got {annotations.Count}");
+            }
+        }
+    }
 }
 "#;
 

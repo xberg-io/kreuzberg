@@ -775,6 +775,28 @@ class Helpers
         }
     }
 
+    public static function assertAnnotations(
+        ExtractionResult $result,
+        bool $hasAnnotations = false,
+        ?int $minCount = null
+    ): void {
+        $annotations = $result->annotations ?? null;
+
+        if ($hasAnnotations) {
+            Assert::assertNotNull($annotations, 'Expected annotations to be present');
+            Assert::assertIsArray($annotations);
+            Assert::assertNotEmpty($annotations, 'Expected annotations to be non-empty');
+        }
+
+        if ($annotations !== null && is_array($annotations) && $minCount !== null) {
+            Assert::assertGreaterThanOrEqual(
+                $minCount,
+                count($annotations),
+                sprintf('Expected at least %d annotations, got %d', $minCount, count($annotations))
+            );
+        }
+    }
+
     public static function skipIfFeatureUnavailable(string $feature): void
     {
         $envVar = 'KREUZBERG_' . strtoupper(str_replace('-', '_', $feature)) . '_AVAILABLE';

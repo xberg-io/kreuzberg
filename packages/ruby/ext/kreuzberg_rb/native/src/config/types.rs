@@ -240,11 +240,40 @@ pub fn parse_pdf_config(ruby: &Ruby, hash: RHash) -> Result<PdfConfig, Error> {
         None
     };
 
+    let extract_annotations = if let Some(val) = get_kw(ruby, hash, "extract_annotations") {
+        bool::try_convert(val)?
+    } else {
+        false
+    };
+
+    let top_margin_fraction = if let Some(val) = get_kw(ruby, hash, "top_margin_fraction") {
+        if !val.is_nil() {
+            Some(f32::try_convert(val)?)
+        } else {
+            None
+        }
+    } else {
+        None
+    };
+
+    let bottom_margin_fraction = if let Some(val) = get_kw(ruby, hash, "bottom_margin_fraction") {
+        if !val.is_nil() {
+            Some(f32::try_convert(val)?)
+        } else {
+            None
+        }
+    } else {
+        None
+    };
+
     let config = PdfConfig {
         extract_images,
         passwords,
         extract_metadata,
         hierarchy,
+        extract_annotations,
+        top_margin_fraction,
+        bottom_margin_fraction,
     };
 
     Ok(config)

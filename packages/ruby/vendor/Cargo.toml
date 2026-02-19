@@ -2,7 +2,7 @@
 members = ["kreuzberg", "kreuzberg-ffi", "kreuzberg-tesseract", "kreuzberg-paddle-ocr", "kreuzberg-pdfium-render"]
 
 [workspace.package]
-version = "4.3.4"
+version = "4.3.6"
 edition = "2024"
 rust-version = "1.91"
 authors = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
@@ -21,7 +21,7 @@ console_error_panic_hook = "0.1"
 criterion = { version = "0.8", features = ["html_reports"] }
 getrandom = { version = "0.4.1", features = ["wasm_js"] }
 hex = "0.4.3"
-html-to-markdown-rs = { version = "2.25.0", default-features = false }
+html-to-markdown-rs = { version = "2.25.1", default-features = false }
 image = { version = "0.25.9", default-features = false }
 js-sys = "0.3"
 libc = "0.2.182"
@@ -37,7 +37,7 @@ serde_json = { version = "1.0.149" }
 tempfile = "3.25.0"
 thiserror = "2.0.18"
 tokio = { version = "1.49.0", features = ["rt", "rt-multi-thread", "macros", "sync", "process", "fs", "time", "io-util"] }
-toml = "1.0.1"
+toml = "1.0.3"
 tracing = "0.1"
 wasm-bindgen = { version = "0.2", features = ["enable-interning"] }
 wasm-bindgen-futures = "0.4"

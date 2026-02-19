@@ -756,6 +756,20 @@ func assertDjotContent(t *testing.T, result *kreuzberg.ExtractionResult, hasCont
 		}
 	}
 }
+
+func assertAnnotations(t *testing.T, result *kreuzberg.ExtractionResult, hasAnnotations bool, minCount *int) {
+	t.Helper()
+	if hasAnnotations {
+		if result.Annotations == nil || len(result.Annotations) == 0 {
+			t.Fatalf("expected annotations to be present and non-empty")
+		}
+	}
+	if result.Annotations != nil && minCount != nil {
+		if len(result.Annotations) < *minCount {
+			t.Fatalf("expected at least %d annotations, got %d", *minCount, len(result.Annotations))
+		}
+	}
+}
 "#;
 
 pub fn generate(fixtures: &[Fixture], output_root: &Utf8Path) -> Result<()> {

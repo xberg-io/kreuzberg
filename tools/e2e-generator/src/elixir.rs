@@ -668,6 +668,24 @@ defmodule E2E.Helpers do
     result
   end
 
+  def assert_annotations(result, opts) do
+    annotations = Map.get(result, :annotations) || Map.get(result, "annotations")
+
+    if opts[:has_annotations] == true do
+      assert annotations != nil, "Expected annotations to be present"
+      assert is_list(annotations), "Expected annotations to be a list"
+      assert length(annotations) > 0, "Expected annotations to be non-empty"
+    end
+
+    if annotations != nil and is_list(annotations) and opts[:min_count] do
+      if length(annotations) < opts[:min_count] do
+        flunk("Expected at least #{opts[:min_count]} annotations, got #{length(annotations)}")
+      end
+    end
+
+    result
+  end
+
   # Private helpers
 
   defp fetch_metadata_value(metadata, path) do

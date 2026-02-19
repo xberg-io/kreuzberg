@@ -269,7 +269,6 @@ class TestOutputFormatValidation:
 
     def test_invalid_output_format_raises_error(self) -> None:
         """Invalid output format raises ValidationError."""
-        assert not validate_output_format("json"), "JSON not a valid extraction output format"
         assert not validate_output_format("xml"), "XML not a valid extraction output format"
         assert not validate_output_format("invalid"), "Invalid format should fail"
 
@@ -277,6 +276,7 @@ class TestOutputFormatValidation:
         """Valid output formats pass validation."""
         assert validate_output_format("text"), "text should be valid"
         assert validate_output_format("markdown"), "markdown should be valid"
+        assert validate_output_format("json"), "json should be valid (alias for structured)"
 
     def test_empty_output_format_raises_error(self) -> None:
         """Empty output format raises ValidationError."""

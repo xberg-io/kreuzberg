@@ -114,7 +114,6 @@ def test_validate_output_format_valid() -> None:
 
 def test_validate_output_format_invalid() -> None:
     """Test validation of invalid output format."""
-    assert not validate_output_format("json")
     assert not validate_output_format("invalid")
 
 
