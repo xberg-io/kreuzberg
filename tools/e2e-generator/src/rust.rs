@@ -492,6 +492,17 @@ fn render_assertions(assertions: &Assertions) -> String {
         ));
     }
 
+    if let Some(annotations) = assertions.annotations.as_ref() {
+        let has_annotations = annotations.has_annotations;
+        let min_count = annotations
+            .min_count
+            .map(|v| format!("Some({v})"))
+            .unwrap_or_else(|| "None".into());
+        buffer.push_str(&format!(
+            "    assertions::assert_annotations(&result, {has_annotations}, {min_count});\n"
+        ));
+    }
+
     buffer
 }
 

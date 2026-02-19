@@ -159,6 +159,7 @@ impl DocumentExtractor for ImageExtractor {
                     extracted_keywords: None,
                     quality_score: None,
                     processing_warnings: Vec::new(),
+                    annotations: None,
                 });
             }
         }
@@ -186,6 +187,7 @@ impl DocumentExtractor for ImageExtractor {
             extracted_keywords: None,
             quality_score: None,
             processing_warnings: Vec::new(),
+            annotations: None,
         })
     }
 

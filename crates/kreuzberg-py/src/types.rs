@@ -71,6 +71,8 @@ pub struct ExtractionResult {
     pub quality_score: Option<f64>,
 
     processing_warnings: Py<PyList>,
+
+    annotations: Option<Py<PyList>>,
 }
 
 #[pymethods]
@@ -134,6 +136,11 @@ impl ExtractionResult {
     #[getter]
     fn processing_warnings<'py>(&self, py: Python<'py>) -> Bound<'py, PyList> {
         self.processing_warnings.bind(py).clone()
+    }
+
+    #[getter]
+    fn annotations<'py>(&self, py: Python<'py>) -> Option<Bound<'py, PyList>> {
+        self.annotations.as_ref().map(|a| a.bind(py).clone())
     }
 
     fn __repr__(&self) -> String {
@@ -625,6 +632,34 @@ impl ExtractionResult {
         }
         let processing_warnings = warnings_list.unbind();
 
+        let annotations = if let Some(annots) = result.annotations {
+            let annot_list = PyList::empty(py);
+            for annot in annots {
+                let type_str = serde_json::to_value(annot.annotation_type)
+                    .ok()
+                    .and_then(|v| v.as_str().map(String::from))
+                    .unwrap_or_default();
+                let bbox = annot.bounding_box.map(|bb| {
+                    let dict = PyDict::new(py);
+                    dict.set_item("x0", bb.x0).unwrap();
+                    dict.set_item("y0", bb.y0).unwrap();
+                    dict.set_item("x1", bb.x1).unwrap();
+                    dict.set_item("y1", bb.y1).unwrap();
+                    dict.unbind()
+                });
+                let py_annot = PyPdfAnnotation {
+                    annotation_type: type_str,
+                    content: annot.content,
+                    page_number: annot.page_number,
+                    bounding_box: bbox,
+                };
+                annot_list.append(Py::new(py, py_annot)?)?;
+            }
+            Some(annot_list.unbind())
+        } else {
+            None
+        };
+
         Ok(Self {
             content: result.content,
             mime_type: result.mime_type.to_string(),
@@ -643,6 +678,7 @@ impl ExtractionResult {
             extracted_keywords,
             quality_score: result.quality_score,
             processing_warnings,
+            annotations,
         })
     }
 }
@@ -688,6 +724,7 @@ mod tests {
                     source: "test".to_string(),
                     message: "test warning".to_string(),
                 }],
+                annotations: None,
             };
 
             let py_result =
@@ -925,6 +962,45 @@ impl PyProcessingWarning {
         format!(
             "ProcessingWarning(source='{}', message='{}')",
             self.source, self.message
+        )
+    }
+}
+
+/// PDF annotation extracted from a document page.
+///
+/// Attributes:
+///     annotation_type (str): Type of annotation ("text", "highlight", "link", "stamp",
+///         "underline", "strike_out", "other")
+///     content (str | None): Text content of the annotation (e.g., comment text, link URL)
+///     page_number (int): Page number where the annotation appears (1-indexed)
+///     bounding_box (dict | None): Bounding box with x0, y0, x1, y1 coordinates
+///
+/// Example:
+///     >>> result = extract_file_sync("annotated.pdf", None, ExtractionConfig())
+///     >>> if result.annotations:
+///     ...     for annot in result.annotations:
+///     ...         print(f"[{annot.annotation_type}] page {annot.page_number}: {annot.content}")
+#[pyclass(name = "PdfAnnotation", module = "kreuzberg")]
+pub struct PyPdfAnnotation {
+    #[pyo3(get)]
+    pub annotation_type: String,
+
+    #[pyo3(get)]
+    pub content: Option<String>,
+
+    #[pyo3(get)]
+    pub page_number: usize,
+
+    #[pyo3(get)]
+    pub bounding_box: Option<Py<PyDict>>,
+}
+
+#[pymethods]
+impl PyPdfAnnotation {
+    fn __repr__(&self) -> String {
+        format!(
+            "PdfAnnotation(type='{}', page={}, content={:?})",
+            self.annotation_type, self.page_number, self.content
         )
     }
 }

@@ -12,6 +12,19 @@ namespace Kreuzberg.E2E.Pdf
     public class PdfTests
     {
         [SkippableFact]
+        public void PdfAnnotations()
+        {
+            TestHelpers.SkipIfLegacyOfficeDisabled("pdf/test_article.pdf");
+            TestHelpers.SkipIfOfficeTestOnWindows("pdf/test_article.pdf");
+            var documentPath = TestHelpers.EnsureDocument("pdf/test_article.pdf", true);
+            var config = TestHelpers.BuildConfig("{\"pdf_options\":{\"extract_annotations\":true}}");
+
+            var result = KreuzbergClient.ExtractFileSync(documentPath, config);
+            TestHelpers.AssertExpectedMime(result, new[] { "application/pdf" });
+            TestHelpers.AssertAnnotations(result, true, 1);
+        }
+
+        [SkippableFact]
         public void PdfAssemblyTechnical()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("pdf/assembly_language_for_beginners_al4_b_en.pdf");

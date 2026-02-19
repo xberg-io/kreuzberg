@@ -90,6 +90,9 @@ namespace Kreuzberg;
 [JsonSerializable(typeof(HierarchicalBlock))]
 [JsonSerializable(typeof(PageHierarchy))]
 [JsonSerializable(typeof(EmbeddingPreset))]
+[JsonSerializable(typeof(PdfAnnotation))]
+[JsonSerializable(typeof(PdfAnnotationBoundingBox))]
+[JsonSerializable(typeof(List<PdfAnnotation>))]
 
 internal partial class KreuzbergJsonContext : JsonSerializerContext
 {

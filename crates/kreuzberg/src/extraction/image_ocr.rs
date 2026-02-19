@@ -66,6 +66,7 @@ pub async fn process_images_with_ocr(
                     extracted_keywords: None,
                     quality_score: None,
                     processing_warnings: Vec::new(),
+                    annotations: None,
                 };
                 image.ocr_result = Some(Box::new(extraction_result));
             }

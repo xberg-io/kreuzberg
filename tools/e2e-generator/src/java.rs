@@ -1740,6 +1740,18 @@ fn render_assertions(assertions: &Assertions) -> String {
         ));
     }
 
+    if let Some(annotations) = assertions.annotations.as_ref() {
+        let has_annotations = annotations.has_annotations.to_string();
+        let min_count = annotations
+            .min_count
+            .map(|v| v.to_string())
+            .unwrap_or_else(|| "null".to_string());
+        buffer.push_str(&format!(
+            "                E2EHelpers.Assertions.assertAnnotations(result, {}, {});\n",
+            has_annotations, min_count
+        ));
+    }
+
     buffer
 }
 

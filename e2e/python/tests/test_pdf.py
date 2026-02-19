@@ -13,6 +13,21 @@ from kreuzberg import (
 from . import helpers
 
 
+def test_pdf_annotations() -> None:
+    """PDF with annotations should extract annotation data when enabled."""
+
+    document_path = helpers.resolve_document("pdf/test_article.pdf")
+    if not document_path.exists():
+        pytest.skip(f"Skipping pdf_annotations: missing document at {document_path}")
+
+    config = helpers.build_config({"pdf_options": {"extract_annotations": True}})
+
+    result = extract_file_sync(document_path, None, config)
+
+    helpers.assert_expected_mime(result, ["application/pdf"])
+    helpers.assert_annotations(result, has_annotations=True, min_count=1)
+
+
 def test_pdf_assembly_technical() -> None:
     """Assembly language technical manual with large body of text."""
 

@@ -144,7 +144,8 @@ defmodule Kreuzberg.Image do
       images: map["images"],
       pages: map["pages"],
       elements: map["elements"],
-      djot_content: map["djot_content"]
+      djot_content: map["djot_content"],
+      annotations: map["annotations"]
     )
   end
 

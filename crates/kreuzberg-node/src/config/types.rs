@@ -331,6 +331,9 @@ impl From<JsPdfConfig> for RustPdfConfig {
             passwords: val.passwords,
             extract_metadata: val.extract_metadata.unwrap_or(true),
             hierarchy: val.hierarchy.map(|h| h.into()),
+            extract_annotations: false,
+            top_margin_fraction: None,
+            bottom_margin_fraction: None,
         }
     }
 }

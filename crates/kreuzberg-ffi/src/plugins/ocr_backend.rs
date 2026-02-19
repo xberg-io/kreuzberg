@@ -174,6 +174,7 @@ impl OcrBackend for FfiOcrBackend {
             extracted_keywords: None,
             quality_score: None,
             processing_warnings: vec![],
+            annotations: None,
         })
     }
 

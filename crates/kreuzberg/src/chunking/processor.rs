@@ -114,6 +114,7 @@ mod tests {
 	            extracted_keywords: None,
 	            quality_score: None,
 	            processing_warnings: Vec::new(),
+	            annotations: None,
 	        };
 
         processor.process(&mut result, &config).await.unwrap();
@@ -145,6 +146,7 @@ mod tests {
             extracted_keywords: None,
             quality_score: None,
             processing_warnings: Vec::new(),
+            annotations: None,
         };
 
         processor.process(&mut result, &config).await.unwrap();
@@ -188,6 +190,7 @@ mod tests {
             extracted_keywords: None,
             quality_score: None,
             processing_warnings: Vec::new(),
+            annotations: None,
         };
 
         let config_with_chunking = ExtractionConfig {
@@ -228,6 +231,7 @@ mod tests {
             extracted_keywords: None,
             quality_score: None,
             processing_warnings: Vec::new(),
+            annotations: None,
         };
 
         let long_result = ExtractionResult {
@@ -247,6 +251,7 @@ mod tests {
             extracted_keywords: None,
             quality_score: None,
             processing_warnings: Vec::new(),
+            annotations: None,
         };
 
         let short_duration = processor.estimated_duration_ms(&short_result);

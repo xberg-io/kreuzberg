@@ -135,6 +135,7 @@ function mapPdfConfig(raw: PlainRecord): PdfConfig {
 		);
 	}
 	assignBooleanField(config, raw, "extract_metadata", "extractMetadata");
+	assignBooleanField(config, raw, "extract_annotations", "extractAnnotations");
 	return config as unknown as PdfConfig;
 }
 
@@ -673,6 +674,24 @@ export const assertions = {
 			assertExists(djot, "djot_content required for min_blocks assertion");
 			const blocks = Array.isArray(djot) ? djot : (((djot as PlainRecord)?.blocks as unknown[] | undefined) ?? []);
 			assertEquals(blocks.length >= minBlocks, true, `djot_content blocks ${blocks.length} < ${minBlocks}`);
+		}
+	},
+
+	assertAnnotations(result: ExtractionResult, hasAnnotations: boolean = false, minCount?: number | null): void {
+		const annotations = (result as unknown as PlainRecord).annotations as unknown[] | undefined;
+		if (hasAnnotations) {
+			assertExists(annotations, "Expected annotations to be present");
+			assertEquals(Array.isArray(annotations), true, "Expected annotations to be an array");
+			assertEquals((annotations as unknown[]).length > 0, true, "Expected at least one annotation");
+		}
+		if (annotations !== undefined && annotations !== null && Array.isArray(annotations)) {
+			if (typeof minCount === "number") {
+				assertEquals(
+					annotations.length >= minCount,
+					true,
+					`Expected at least ${minCount} annotations, got ${annotations.length}`,
+				);
+			}
 		}
 	},
 };

@@ -89,6 +89,20 @@ pub async fn run_pipeline(mut result: ExtractionResult, config: &ExtractionConfi
         result.document = Some(crate::extraction::transform::transform_to_document_structure(&result));
     }
 
+    // Apply NFC unicode normalization to all text content.
+    // This ensures consistent representation of composed characters (e.g., é vs e+combining accent)
+    // across all extraction backends (PDF, OCR, DOCX, HTML, etc.).
+    #[cfg(feature = "quality")]
+    {
+        use unicode_normalization::UnicodeNormalization;
+        result.content = result.content.nfc().collect();
+        if let Some(pages) = result.pages.as_mut() {
+            for page in pages.iter_mut() {
+                page.content = page.content.nfc().collect();
+            }
+        }
+    }
+
     // Apply output format conversion as the final step
     apply_output_format(&mut result, config.output_format);
 
@@ -136,6 +150,18 @@ pub fn run_pipeline_sync(mut result: ExtractionResult, config: &ExtractionConfig
     // Transform to structured document tree if requested (only if not already populated by extractor)
     if config.include_document_structure && result.document.is_none() {
         result.document = Some(crate::extraction::transform::transform_to_document_structure(&result));
+    }
+
+    // Apply NFC unicode normalization to all text content.
+    #[cfg(feature = "quality")]
+    {
+        use unicode_normalization::UnicodeNormalization;
+        result.content = result.content.nfc().collect();
+        if let Some(pages) = result.pages.as_mut() {
+            for page in pages.iter_mut() {
+                page.content = page.content.nfc().collect();
+            }
+        }
     }
 
     // Apply output format conversion as the final step

@@ -49,6 +49,9 @@ async fn test_full_hierarchy_extraction() {
                 include_bbox: true,
                 ocr_coverage_threshold: None,
             }),
+            extract_annotations: false,
+            top_margin_fraction: None,
+            bottom_margin_fraction: None,
         }),
         ..Default::default()
     };
@@ -161,6 +164,9 @@ async fn test_hierarchy_disabled() {
                 include_bbox: true,
                 ocr_coverage_threshold: None,
             }),
+            extract_annotations: false,
+            top_margin_fraction: None,
+            bottom_margin_fraction: None,
         }),
         ..Default::default()
     };
@@ -216,6 +222,9 @@ async fn test_hierarchy_with_explicit_disabled() {
                 include_bbox: true,
                 ocr_coverage_threshold: None,
             }),
+            extract_annotations: false,
+            top_margin_fraction: None,
+            bottom_margin_fraction: None,
         }),
         ..Default::default()
     };
@@ -272,6 +281,9 @@ async fn test_hierarchy_different_k_clusters() {
                     include_bbox: true,
                     ocr_coverage_threshold: None,
                 }),
+                extract_annotations: false,
+                top_margin_fraction: None,
+                bottom_margin_fraction: None,
             }),
             ..Default::default()
         };

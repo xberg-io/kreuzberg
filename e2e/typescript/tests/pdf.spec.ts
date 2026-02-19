@@ -13,6 +13,33 @@ const TEST_TIMEOUT_MS = 60_000;
 
 describe("pdf fixtures", () => {
 	it(
+		"pdf_annotations",
+		() => {
+			const documentPath = resolveDocument("pdf/test_article.pdf");
+			if (!existsSync(documentPath)) {
+				console.warn("Skipping pdf_annotations: missing document at", documentPath);
+				return;
+			}
+			const config = buildConfig({ pdf_options: { extract_annotations: true } });
+			let result: ExtractionResult | null = null;
+			try {
+				result = extractFileSync(documentPath, null, config);
+			} catch (error) {
+				if (shouldSkipFixture(error, "pdf_annotations", [], undefined)) {
+					return;
+				}
+				throw error;
+			}
+			if (result === null) {
+				return;
+			}
+			assertions.assertExpectedMime(result, ["application/pdf"]);
+			assertions.assertAnnotations(result, true, 1);
+		},
+		TEST_TIMEOUT_MS,
+	);
+
+	it(
 		"pdf_assembly_technical",
 		() => {
 			const documentPath = resolveDocument("pdf/assembly_language_for_beginners_al4_b_en.pdf");

@@ -94,6 +94,7 @@ impl DocumentExtractor for PdfExtractor {
             boundaries,
             pre_rendered_markdown,
             has_font_encoding_issues,
+            pdf_annotations,
         ) = {
             #[cfg(target_arch = "wasm32")]
             {
@@ -155,6 +156,7 @@ impl DocumentExtractor for PdfExtractor {
                             boundaries,
                             pre_rendered_markdown,
                             has_font_encoding_issues,
+                            pdf_annotations,
                         ) = extract_all_from_document(&document, &config_owned)
                             .map_err(|e| PdfError::ExtractionFailed(e.to_string()))?;
 
@@ -176,6 +178,7 @@ impl DocumentExtractor for PdfExtractor {
                             boundaries,
                             pre_rendered_markdown,
                             has_font_encoding_issues,
+                            pdf_annotations,
                         ))
                     })
                     .await
@@ -432,6 +435,10 @@ impl DocumentExtractor for PdfExtractor {
             extracted_keywords: None,
             quality_score: None,
             processing_warnings: Vec::new(),
+            #[cfg(feature = "pdf")]
+            annotations: pdf_annotations,
+            #[cfg(not(feature = "pdf"))]
+            annotations: None,
         })
     }
 

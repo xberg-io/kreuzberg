@@ -409,6 +409,18 @@ module E2ERuby
       expect(blocks.length).to be >= min_blocks
     end
 
+    def self.assert_annotations(result, has_annotations: false, min_count: nil)
+      annotations = result.annotations
+      if has_annotations
+        expect(annotations).not_to be_nil
+        expect(annotations).to be_a(Array)
+        expect(annotations.length).not_to eq(0)
+      end
+      return unless annotations.is_a?(Array)
+
+      expect(annotations.length).to be >= min_count if min_count
+    end
+
     class << self
       private
 
@@ -950,6 +962,22 @@ fn render_assertions(assertions: &Assertions) -> String {
         if !args.is_empty() {
             buffer.push_str(&format!(
                 "      E2ERuby::Assertions.assert_djot_content(result, {})\n",
+                args.join(", ")
+            ));
+        }
+    }
+
+    if let Some(annotations) = assertions.annotations.as_ref() {
+        let mut args = vec![format!(
+            "has_annotations: {}",
+            if annotations.has_annotations { "true" } else { "false" }
+        )];
+        if let Some(min_count) = annotations.min_count {
+            args.push(format!("min_count: {}", render_numeric_literal(min_count as u64)));
+        }
+        if !args.is_empty() {
+            buffer.push_str(&format!(
+                "      E2ERuby::Assertions.assert_annotations(result, {})\n",
                 args.join(", ")
             ));
         }

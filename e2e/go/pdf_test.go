@@ -5,6 +5,16 @@ package e2e
 
 import "testing"
 
+func TestPdfPdfAnnotations(t *testing.T) {
+	result := runExtraction(t, "pdf/test_article.pdf", []byte(`{
+"pdf_options": {
+	"extract_annotations": true
+}
+}`))
+	assertExpectedMime(t, result, []string{"application/pdf"})
+	assertAnnotations(t, result, true, intPtr(1))
+}
+
 func TestPdfPdfAssemblyTechnical(t *testing.T) {
 	result := runExtraction(t, "pdf/assembly_language_for_beginners_al4_b_en.pdf", nil)
 	assertExpectedMime(t, result, []string{"application/pdf"})

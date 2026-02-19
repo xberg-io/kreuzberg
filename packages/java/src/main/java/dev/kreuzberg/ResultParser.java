@@ -33,6 +33,8 @@ final class ResultParser {
 	};
 	private static final TypeReference<List<ProcessingWarning>> WARNING_LIST = new TypeReference<>() {
 	};
+	private static final TypeReference<List<PdfAnnotation>> ANNOTATION_LIST = new TypeReference<>() {
+	};
 	private static final TypeReference<Map<String, Object>> METADATA_MAP = new TypeReference<>() {
 	};
 	private static final TypeReference<EmbeddingPreset> EMBEDDING_PRESET = new TypeReference<>() {
@@ -77,6 +79,16 @@ final class ResultParser {
 			String elementsJson, String ocrElementsJson, String djotContentJson, String language, String date,
 			String subject, String documentStructureJson, String extractedKeywordsJson, String qualityScoreStr,
 			String processingWarningsJson) throws KreuzbergException {
+		return parse(content, mimeType, tablesJson, detectedLanguagesJson, metadataJson, chunksJson, imagesJson,
+				pagesJson, pageStructureJson, elementsJson, ocrElementsJson, djotContentJson, language, date, subject,
+				documentStructureJson, extractedKeywordsJson, qualityScoreStr, processingWarningsJson, null);
+	}
+
+	static ExtractionResult parse(String content, String mimeType, String tablesJson, String detectedLanguagesJson,
+			String metadataJson, String chunksJson, String imagesJson, String pagesJson, String pageStructureJson,
+			String elementsJson, String ocrElementsJson, String djotContentJson, String language, String date,
+			String subject, String documentStructureJson, String extractedKeywordsJson, String qualityScoreStr,
+			String processingWarningsJson, String annotationsJson) throws KreuzbergException {
 		try {
 			Map<String, Object> metadata = decode(metadataJson, METADATA_MAP, Collections.emptyMap());
 			List<Table> tables = decode(tablesJson, TABLE_LIST, List.of());
@@ -94,13 +106,14 @@ final class ResultParser {
 					? Double.valueOf(qualityScoreStr)
 					: null;
 			List<ProcessingWarning> processingWarnings = decode(processingWarningsJson, WARNING_LIST, null);
+			List<PdfAnnotation> annotations = decode(annotationsJson, ANNOTATION_LIST, null);
 
 			// Build Metadata with FFI-provided language, date, and subject if available
 			Metadata metadataObj = buildMetadata(metadata, language, date, subject);
 
 			return new ExtractionResult(content != null ? content : "", mimeType != null ? mimeType : "", metadataObj,
 					tables, detectedLanguages, chunks, images, pages, pageStructure, elements, ocrElements, djotContent,
-					documentStructure, extractedKeywords, qualityScore, processingWarnings);
+					documentStructure, extractedKeywords, qualityScore, processingWarnings, annotations);
 		} catch (Exception e) {
 			throw new KreuzbergException("Failed to parse extraction result", e);
 		}
@@ -228,7 +241,7 @@ final class ResultParser {
 					wire.pages != null ? wire.pages : List.of(), wire.pageStructure,
 					wire.elements != null ? wire.elements : List.of(),
 					wire.ocrElements != null ? wire.ocrElements : List.of(), wire.djotContent, wire.document,
-					wire.extractedKeywords, wire.qualityScore, wire.processingWarnings);
+					wire.extractedKeywords, wire.qualityScore, wire.processingWarnings, wire.annotations);
 		} catch (Exception e) {
 			throw new KreuzbergException("Failed to parse result JSON", e);
 		}
@@ -240,7 +253,8 @@ final class ResultParser {
 				result.getImages(), result.getPages(), result.getPageStructure().orElse(null), result.getElements(),
 				result.getOcrElements(), result.getDjotContent().orElse(null),
 				result.getDocumentStructure().orElse(null), result.getExtractedKeywords().orElse(null),
-				result.getQualityScore().orElse(null), result.getProcessingWarnings().orElse(null));
+				result.getQualityScore().orElse(null), result.getProcessingWarnings().orElse(null),
+				result.getAnnotations().orElse(null));
 		return MAPPER.writeValueAsString(wire);
 	}
 
@@ -269,6 +283,7 @@ final class ResultParser {
 		private final List<ExtractedKeyword> extractedKeywords;
 		private final Double qualityScore;
 		private final List<ProcessingWarning> processingWarnings;
+		private final List<PdfAnnotation> annotations;
 
 		WireExtractionResult(@JsonProperty("content") String content, @JsonProperty("mime_type") String mimeType,
 				@JsonProperty("metadata") Metadata metadata, @JsonProperty("tables") List<Table> tables,
@@ -282,7 +297,8 @@ final class ResultParser {
 				@JsonProperty("document") DocumentStructure document,
 				@JsonProperty("extracted_keywords") List<ExtractedKeyword> extractedKeywords,
 				@JsonProperty("quality_score") Double qualityScore,
-				@JsonProperty("processing_warnings") List<ProcessingWarning> processingWarnings) {
+				@JsonProperty("processing_warnings") List<ProcessingWarning> processingWarnings,
+				@JsonProperty("annotations") List<PdfAnnotation> annotations) {
 			this.content = content;
 			this.mimeType = mimeType;
 			this.metadata = metadata;
@@ -299,6 +315,7 @@ final class ResultParser {
 			this.extractedKeywords = extractedKeywords;
 			this.qualityScore = qualityScore;
 			this.processingWarnings = processingWarnings;
+			this.annotations = annotations;
 		}
 	}
 }

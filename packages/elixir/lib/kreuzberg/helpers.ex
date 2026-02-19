@@ -228,7 +228,8 @@ defmodule Kreuzberg.Helpers do
           document: normalized["document"],
           extracted_keywords: normalized["extracted_keywords"],
           quality_score: normalized["quality_score"],
-          processing_warnings: normalized["processing_warnings"]
+          processing_warnings: normalized["processing_warnings"],
+          annotations: normalized["annotations"]
         )
 
         {:ok, result}

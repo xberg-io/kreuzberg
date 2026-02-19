@@ -104,6 +104,7 @@ impl OcrBackend for RubyOcrBackend {
                 extracted_keywords: None,
                 quality_score: None,
                 processing_warnings: vec![],
+                annotations: None,
             })
         })
     }

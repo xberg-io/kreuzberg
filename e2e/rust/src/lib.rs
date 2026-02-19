@@ -585,6 +585,30 @@ pub mod assertions {
         }
     }
 
+    /// Assert annotations presence and count.
+    pub fn assert_annotations(result: &ExtractionResult, has_annotations: bool, min_count: Option<usize>) {
+        if has_annotations {
+            let annotations = result
+                .annotations
+                .as_ref()
+                .expect("Expected annotations in result but field is None");
+            assert!(!annotations.is_empty(), "Expected non-empty annotations");
+
+            if let Some(min) = min_count {
+                assert!(
+                    annotations.len() >= min,
+                    "Expected at least {min} annotations, found {}",
+                    annotations.len()
+                );
+            }
+        } else {
+            assert!(
+                result.annotations.is_none() || result.annotations.as_ref().is_some_and(|a| a.is_empty()),
+                "Expected no annotations but found some"
+            );
+        }
+    }
+
     /// Assert djot content presence and block count.
     pub fn assert_djot_content(result: &ExtractionResult, has_content: Option<bool>, min_blocks: Option<usize>) {
         if let Some(true) = has_content {

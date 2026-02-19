@@ -135,6 +135,7 @@ pub async fn batch_extract_file(
                     extracted_keywords: None,
                     quality_score: None,
                     processing_warnings: Vec::new(),
+                    annotations: None,
                 });
             }
             Err(join_err) => {
@@ -266,6 +267,7 @@ pub async fn batch_extract_bytes(
                     extracted_keywords: None,
                     quality_score: None,
                     processing_warnings: Vec::new(),
+                    annotations: None,
                 });
             }
             Err(join_err) => {

@@ -73,6 +73,7 @@ pub fn to_c_extraction_result(result: ExtractionResult) -> std::result::Result<*
         extracted_keywords,
         quality_score,
         processing_warnings,
+        annotations,
     } = result;
 
     let sanitized_content = if content.contains('\0') {
@@ -249,6 +250,17 @@ pub fn to_c_extraction_result(result: ExtractionResult) -> std::result::Result<*
         None
     };
 
+    let annotations_json_guard = match annotations {
+        Some(anns) if !anns.is_empty() => {
+            let json =
+                serde_json::to_string(&anns).map_err(|e| format!("Failed to serialize annotations to JSON: {}", e))?;
+            Some(CStringGuard::new(CString::new(json).map_err(|e| {
+                format!("Failed to convert annotations JSON to C string: {}", e)
+            })?))
+        }
+        _ => None,
+    };
+
     Ok(Box::into_raw(Box::new(CExtractionResult {
         content: content_guard.into_raw(),
         mime_type: mime_type_guard.into_raw(),
@@ -268,6 +280,7 @@ pub fn to_c_extraction_result(result: ExtractionResult) -> std::result::Result<*
         extracted_keywords_json: extracted_keywords_json_guard.map_or(ptr::null_mut(), |g| g.into_raw()),
         quality_score_json: quality_score_json_guard.map_or(ptr::null_mut(), |g| g.into_raw()),
         processing_warnings_json: processing_warnings_json_guard.map_or(ptr::null_mut(), |g| g.into_raw()),
+        annotations_json: annotations_json_guard.map_or(ptr::null_mut(), |g| g.into_raw()),
         success: true,
         _padding1: [0u8; 7],
     })))
@@ -431,6 +444,7 @@ mod tests {
             extracted_keywords: None,
             quality_score: None,
             processing_warnings: vec![],
+            annotations: None,
         };
 
         let c_result = to_c_extraction_result(result);
@@ -475,6 +489,7 @@ mod tests {
             extracted_keywords: None,
             quality_score: None,
             processing_warnings: vec![],
+            annotations: None,
         };
 
         let c_result = to_c_extraction_result(result);
@@ -529,6 +544,7 @@ mod tests {
             extracted_keywords: None,
             quality_score: None,
             processing_warnings: vec![],
+            annotations: None,
         };
 
         let c_result = to_c_extraction_result(result);
@@ -614,6 +630,7 @@ mod tests {
             extracted_keywords: None,
             quality_score: None,
             processing_warnings: vec![],
+            annotations: None,
         };
 
         let c_result = to_c_extraction_result(result);

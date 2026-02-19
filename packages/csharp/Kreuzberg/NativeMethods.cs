@@ -71,6 +71,8 @@ internal static partial class NativeMethods
         public IntPtr QualityScoreJson;
         /// <summary>JSON array of processing warnings pointer.</summary>
         public IntPtr ProcessingWarningsJson;
+        /// <summary>JSON array of PDF annotations pointer.</summary>
+        public IntPtr AnnotationsJson;
 
         /// <summary>Whether extraction succeeded.</summary>
         [MarshalAs(UnmanagedType.I1)]

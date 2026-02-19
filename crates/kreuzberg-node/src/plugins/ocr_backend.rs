@@ -146,6 +146,7 @@ impl RustOcrBackend for JsOcrBackend {
             extracted_keywords: None,
             quality_score: None,
             processing_warnings: vec![],
+            annotations: None,
         })
     }
 

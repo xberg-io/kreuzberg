@@ -20,6 +20,22 @@ public class PdfTest {
   private static final ObjectMapper MAPPER = new ObjectMapper();
 
   @Test
+  public void pdfAnnotations() throws Exception {
+    JsonNode config = MAPPER.readTree("{\"pdf_options\":{\"extract_annotations\":true}}");
+    E2EHelpers.runFixture(
+        "pdf_annotations",
+        "pdf/test_article.pdf",
+        config,
+        Collections.emptyList(),
+        null,
+        true,
+        result -> {
+          E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("application/pdf"));
+          E2EHelpers.Assertions.assertAnnotations(result, true, 1);
+        });
+  }
+
+  @Test
   public void pdfAssemblyTechnical() throws Exception {
     JsonNode config = null;
     E2EHelpers.runFixture(

@@ -83,6 +83,8 @@ __all__ = [
     "PageInfo",
     "PageStructure",
     "ParsingError",
+    "PdfAnnotation",
+    "PdfAnnotationType",
     "PdfConfig",
     "PostProcessorConfig",
     "PostProcessorProtocol",
@@ -1523,6 +1525,32 @@ class ProcessingWarning:
     source: str
     message: str
 
+PdfAnnotationType: TypeAlias = Literal[
+    "text",
+    "highlight",
+    "link",
+    "stamp",
+    "underline",
+    "strike_out",
+    "other",
+]
+
+class PdfAnnotation:
+    """A PDF annotation extracted from a document page.
+
+    Attributes:
+        annotation_type (str): Type of annotation ("text", "highlight", "link",
+            "stamp", "underline", "strike_out", "other")
+        content (str | None): Text content of the annotation
+        page_number (int): Page number where the annotation appears (1-indexed)
+        bounding_box (BoundingBox | None): Bounding box coordinates
+    """
+
+    annotation_type: str
+    content: str | None
+    page_number: int
+    bounding_box: BoundingBox | None
+
 class ExtractedImage(TypedDict, total=False):
     data: bytes
     format: str
@@ -1795,6 +1823,7 @@ class ExtractionResult:
     extracted_keywords: list[ExtractedKeyword] | None
     quality_score: float | None
     processing_warnings: list[ProcessingWarning]
+    annotations: list[PdfAnnotation] | None
     def get_page_count(self) -> int: ...
     def get_chunk_count(self) -> int: ...
     def get_detected_language(self) -> str | None: ...

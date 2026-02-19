@@ -81,7 +81,8 @@ class KreuzbergTest {
 					result.getPages(), result.getPageStructure().orElse(null), result.getElements(),
 					result.getOcrElements(), result.getDjotContent().orElse(null),
 					result.getDocumentStructure().orElse(null), result.getExtractedKeywords().orElse(null),
-					result.getQualityScore().orElse(null), result.getProcessingWarnings().orElse(null));
+					result.getQualityScore().orElse(null), result.getProcessingWarnings().orElse(null),
+					result.getAnnotations().orElse(null));
 		};
 
 		Kreuzberg.registerPostProcessor(name, processor);

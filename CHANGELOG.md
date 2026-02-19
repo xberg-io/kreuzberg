@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+### Added
+
+- NFC unicode normalization applied to all extraction outputs, ensuring consistent representation of composed characters across all backends (gated behind `quality` feature)
+- Configurable PDF page margin fractions (`top_margin_fraction`, `bottom_margin_fraction`) in `PdfConfig`
+- PDF annotation extraction with new `PdfAnnotation` type supporting `Text`, `Highlight`, `Link`, `Stamp`, `Underline`, `StrikeOut`, and `Other` annotation types
+- `extract_annotations` configuration option in `PdfConfig`
+- `annotations` field on `ExtractionResult` across all language bindings (Rust, Python, TypeScript, Ruby, PHP, Go, Java, C#, Elixir, WASM)
+
+### Fixed
+
+- PDF table recognition now validates column alignment, preventing body text pages from being misclassified as tables
+
+---
+
 ## [4.3.6]
 
 ### Added

@@ -111,6 +111,18 @@ pub struct JsProcessingWarning {
 
 #[napi(object)]
 #[derive(serde::Serialize, serde::Deserialize)]
+pub struct JsPdfAnnotation {
+    #[napi(js_name = "annotationType")]
+    pub annotation_type: String,
+    pub content: Option<String>,
+    #[napi(js_name = "pageNumber")]
+    pub page_number: u32,
+    #[napi(js_name = "boundingBox")]
+    pub bounding_box: Option<JsBoundingBox>,
+}
+
+#[napi(object)]
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct JsElementMetadata {
     pub page_number: Option<u32>,
     pub filename: Option<String>,
@@ -172,6 +184,7 @@ pub struct JsExtractionResult {
     pub quality_score: Option<f64>,
     #[napi(js_name = "processingWarnings")]
     pub processing_warnings: Vec<JsProcessingWarning>,
+    pub annotations: Option<Vec<JsPdfAnnotation>>,
 }
 
 impl TryFrom<RustExtractionResult> for JsExtractionResult {
@@ -408,6 +421,29 @@ impl TryFrom<RustExtractionResult> for JsExtractionResult {
             })
             .collect();
 
+        let annotations = val.annotations.map(|annots| {
+            annots
+                .into_iter()
+                .map(|a| {
+                    let type_str = serde_json::to_value(a.annotation_type)
+                        .ok()
+                        .and_then(|v| v.as_str().map(String::from))
+                        .unwrap_or_default();
+                    JsPdfAnnotation {
+                        annotation_type: type_str,
+                        content: a.content,
+                        page_number: a.page_number as u32,
+                        bounding_box: a.bounding_box.map(|bb| JsBoundingBox {
+                            x0: bb.x0,
+                            y0: bb.y0,
+                            x1: bb.x1,
+                            y1: bb.y1,
+                        }),
+                    }
+                })
+                .collect()
+        });
+
         Ok(JsExtractionResult {
             content: val.content,
             mime_type: val.mime_type.to_string(),
@@ -467,6 +503,7 @@ impl TryFrom<RustExtractionResult> for JsExtractionResult {
             extracted_keywords,
             quality_score: val.quality_score,
             processing_warnings,
+            annotations,
         })
     }
 }
@@ -717,6 +754,26 @@ impl TryFrom<JsExtractionResult> for RustExtractionResult {
                     message: w.message,
                 })
                 .collect(),
+            annotations: val.annotations.map(|annots| {
+                annots
+                    .into_iter()
+                    .filter_map(|a| {
+                        let annotation_type: kreuzberg::types::PdfAnnotationType =
+                            serde_json::from_value(serde_json::Value::String(a.annotation_type)).ok()?;
+                        Some(kreuzberg::types::PdfAnnotation {
+                            annotation_type,
+                            content: a.content,
+                            page_number: a.page_number as usize,
+                            bounding_box: a.bounding_box.map(|bb| kreuzberg::types::BoundingBox {
+                                x0: bb.x0,
+                                y0: bb.y0,
+                                x1: bb.x1,
+                                y1: bb.y1,
+                            }),
+                        })
+                    })
+                    .collect()
+            }),
         })
     }
 }

@@ -187,6 +187,9 @@ pub struct Assertions {
     /// Djot content assertions
     #[serde(default)]
     pub djot_content: Option<DjotContentAssertion>,
+    /// Annotation extraction assertions
+    #[serde(default)]
+    pub annotations: Option<AnnotationAssertion>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -339,6 +342,18 @@ pub struct DjotContentAssertion {
     /// Minimum number of blocks in djot content
     #[serde(default)]
     pub min_blocks: Option<usize>,
+}
+
+/// Annotation extraction assertions
+#[allow(dead_code)]
+#[derive(Debug, Clone, Deserialize)]
+pub struct AnnotationAssertion {
+    /// Whether annotations should be present in the result
+    #[serde(default)]
+    pub has_annotations: bool,
+    /// Minimum number of annotations expected
+    #[serde(default)]
+    pub min_count: Option<usize>,
 }
 
 #[allow(dead_code)]

@@ -1378,6 +1378,19 @@ fn render_assertions(buffer: &mut String, assertions: &Assertions) -> Result<()>
         )?;
     }
 
+    if let Some(annotations) = assertions.annotations.as_ref() {
+        let has_annotations = if annotations.has_annotations { "true" } else { "false" };
+        let min_count = annotations
+            .min_count
+            .map(|v| format!("{}", v))
+            .unwrap_or_else(|| "null".to_string());
+        writeln!(
+            buffer,
+            "            TestHelpers.AssertAnnotations(result, {}, {});",
+            has_annotations, min_count
+        )?;
+    }
+
     Ok(())
 }
 

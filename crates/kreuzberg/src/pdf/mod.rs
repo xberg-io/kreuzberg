@@ -36,6 +36,8 @@
 //! This module requires the `pdf` feature. The `ocr` feature enables additional
 //! functionality in the PDF extractor for rendering pages to images.
 #[cfg(feature = "pdf")]
+pub mod annotations;
+#[cfg(feature = "pdf")]
 pub(crate) mod bindings;
 #[cfg(all(feature = "pdf", feature = "bundled-pdfium"))]
 pub mod bundled;
@@ -60,6 +62,8 @@ pub mod text;
 
 #[cfg(feature = "pdf")]
 pub use crate::core::config::HierarchyConfig;
+#[cfg(feature = "pdf")]
+pub use annotations::extract_annotations_from_document;
 #[cfg(all(feature = "pdf", feature = "bundled-pdfium"))]
 pub use bundled::extract_bundled_pdfium;
 #[cfg(feature = "pdf")]

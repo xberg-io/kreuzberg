@@ -9,6 +9,30 @@ import { describe, expect, it } from "vitest";
 import { assertions, buildConfig, getFixture, shouldSkipFixture } from "./helpers.js";
 
 describe("pdf", () => {
+	it("pdf_annotations", async () => {
+		const documentBytes = getFixture("pdf/test_article.pdf");
+		if (documentBytes === null) {
+			console.warn("[SKIP] Test skipped: fixture not available in Cloudflare Workers environment");
+			return;
+		}
+
+		const config = buildConfig({ pdf_options: { extract_annotations: true } });
+		let result: ExtractionResult | null = null;
+		try {
+			result = await extractBytes(documentBytes, "application/pdf", config);
+		} catch (error) {
+			if (shouldSkipFixture(error, "pdf_annotations", [], undefined)) {
+				return;
+			}
+			throw error;
+		}
+		if (result === null) {
+			return;
+		}
+		assertions.assertExpectedMime(result, ["application/pdf"]);
+		assertions.assertAnnotations(result, true, 1);
+	});
+
 	it("pdf_assembly_technical", async () => {
 		const documentBytes = getFixture("pdf/assembly_language_for_beginners_al4_b_en.pdf");
 		if (documentBytes === null) {

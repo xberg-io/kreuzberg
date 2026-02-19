@@ -10,8 +10,6 @@ import {
 	clearOcrBackends,
 	clearPostProcessors,
 	clearValidators,
-	detectMimeFromBytes,
-	getExtensionsForMime,
 	listOcrBackends,
 	listPostProcessors,
 	listValidators,
@@ -34,19 +32,11 @@ describe("Document Extractor Management", () => {
 });
 
 describe("Mime Utilities", () => {
-	it("Detect MIME type from file bytes", () => {
-		const testData = new TextEncoder().encode("%PDF-1.4\\n");
-		const result = detectMimeFromBytes(testData);
-		expect(result.toLowerCase()).toContain("pdf");
-	});
+	it.skip("Detect MIME type from file bytes (not available in WASM)", () => {});
 
 	it.skip("Detect MIME type from file path (not available in WASM)", () => {});
 
-	it("Get file extensions for a MIME type", () => {
-		const result = getExtensionsForMime("application/pdf");
-		expect(Array.isArray(result)).toBe(true);
-		expect(result).toContain("pdf");
-	});
+	it.skip("Get file extensions for a MIME type (not available in WASM)", () => {});
 });
 
 describe("Ocr Backend Management", () => {

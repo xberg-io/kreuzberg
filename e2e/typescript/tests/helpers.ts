@@ -625,6 +625,20 @@ export const assertions = {
 			}
 		}
 	},
+
+	assertAnnotations(result: ExtractionResult, hasAnnotations: boolean = false, minCount?: number | null): void {
+		const annotations = (result as unknown as PlainRecord).annotations as unknown[] | undefined;
+		if (hasAnnotations) {
+			expect(annotations).toBeDefined();
+			expect(Array.isArray(annotations)).toBe(true);
+			expect((annotations as unknown[]).length).toBeGreaterThan(0);
+		}
+		if (annotations !== undefined && annotations !== null && Array.isArray(annotations)) {
+			if (typeof minCount === "number") {
+				expect(annotations.length).toBeGreaterThanOrEqual(minCount);
+			}
+		}
+	},
 };
 
 function lookupMetadataPath(metadata: PlainRecord, path: string): unknown {

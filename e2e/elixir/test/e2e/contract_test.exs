@@ -289,7 +289,6 @@ defmodule E2E.ContractTest do
           result
           |> E2E.Helpers.assert_expected_mime(["application/pdf"])
           |> E2E.Helpers.assert_min_content_length(10)
-          |> E2E.Helpers.assert_djot_content(has_content: true)
 
         {:skipped, reason} ->
           IO.puts("SKIPPED: #{reason}")

@@ -1226,6 +1226,19 @@ fn render_assertions(assertions: &Assertions) -> String {
         )
         .unwrap();
     }
+    if let Some(annotations) = assertions.annotations.as_ref() {
+        let has_annotations = annotations.has_annotations.to_string();
+        let min_count = annotations
+            .min_count
+            .map(|v| format!("intPtr({v})"))
+            .unwrap_or_else(|| "nil".to_string());
+        writeln!(
+            buffer,
+            "    assertAnnotations(t, result, {}, {})",
+            has_annotations, min_count
+        )
+        .unwrap();
+    }
     buffer
 }
 

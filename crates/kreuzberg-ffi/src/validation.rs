@@ -773,7 +773,7 @@ mod tests {
     #[test]
     fn test_validate_output_format_invalid() {
         unsafe {
-            assert_eq!(kreuzberg_validate_output_format(c"json".as_ptr()), 0);
+            assert_eq!(kreuzberg_validate_output_format(c"xml".as_ptr()), 0);
         }
     }
 

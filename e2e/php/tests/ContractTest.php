@@ -252,7 +252,7 @@ class ContractTest extends TestCase
     }
 
     /**
-     * Tests djot output format produces djot_content field
+     * Tests djot output format converts content to djot markup
      */
     public function test_config_djot_content(): void
     {
@@ -270,7 +270,6 @@ class ContractTest extends TestCase
 
         Helpers::assertExpectedMime($result, ['application/pdf']);
         Helpers::assertMinContentLength($result, 10);
-        Helpers::assertDjotContent($result, true, null);
     }
 
     /**

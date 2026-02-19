@@ -9,6 +9,26 @@ import { assertions, buildConfig, extractBytes, initWasm, resolveDocument, shoul
 // Initialize WASM module once at module load time
 await initWasm();
 
+Deno.test("pdf_annotations", { permissions: { read: true } }, async () => {
+	const config = buildConfig({ pdf_options: { extract_annotations: true } });
+	let result: ExtractionResult | null = null;
+	try {
+		const documentBytes = await resolveDocument("pdf/test_article.pdf");
+		// Sync file extraction - WASM uses extractBytes with pre-read bytes
+		result = await extractBytes(documentBytes, "application/pdf", config);
+	} catch (error) {
+		if (shouldSkipFixture(error, "pdf_annotations", [], undefined)) {
+			return;
+		}
+		throw error;
+	}
+	if (result === null) {
+		return;
+	}
+	assertions.assertExpectedMime(result, ["application/pdf"]);
+	assertions.assertAnnotations(result, true, 1);
+});
+
 Deno.test("pdf_assembly_technical", { permissions: { read: true } }, async () => {
 	const config = buildConfig(undefined);
 	let result: ExtractionResult | null = null;

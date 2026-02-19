@@ -189,6 +189,7 @@ mod tests {
             extracted_keywords: None,
             quality_score: None,
             processing_warnings: Vec::new(),
+            annotations: None,
         };
 
         let markup = extraction_result_to_djot(&result).expect("Should convert");
@@ -214,6 +215,7 @@ mod tests {
             extracted_keywords: None,
             quality_score: None,
             processing_warnings: Vec::new(),
+            annotations: None,
         };
 
         let markup = extraction_result_to_djot(&result).expect("Should convert");

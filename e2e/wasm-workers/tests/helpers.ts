@@ -111,6 +111,7 @@ function mapPdfConfig(raw: PlainRecord): PdfConfig {
 		config.passwords = raw.passwords.filter((item: unknown): item is string => typeof item === "string");
 	}
 	assignBooleanField(config as PlainRecord, raw, "extract_metadata", "extractMetadata");
+	assignBooleanField(config as PlainRecord, raw, "extract_annotations", "extractAnnotations");
 	return config;
 }
 
@@ -612,6 +613,20 @@ export const assertions = {
 			const blocks = (djotContent as PlainRecord).blocks ?? (djotContent as PlainRecord).nodes;
 			if (Array.isArray(blocks)) {
 				expect(blocks.length).toBeGreaterThanOrEqual(minBlocks);
+			}
+		}
+	},
+
+	assertAnnotations(result: ExtractionResult, hasAnnotations: boolean = false, minCount?: number | null): void {
+		const annotations = (result as unknown as PlainRecord).annotations as unknown[] | undefined;
+		if (hasAnnotations) {
+			expect(annotations).toBeDefined();
+			expect(Array.isArray(annotations)).toBe(true);
+			expect((annotations as unknown[]).length).toBeGreaterThan(0);
+		}
+		if (annotations !== undefined && annotations !== null && Array.isArray(annotations)) {
+			if (typeof minCount === "number") {
+				expect(annotations.length).toBeGreaterThanOrEqual(minCount);
 			}
 		}
 	},

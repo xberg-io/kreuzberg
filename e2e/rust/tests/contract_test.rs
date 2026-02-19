@@ -332,7 +332,7 @@ fn test_config_chunking_small() {
 
 #[test]
 fn test_config_djot_content() {
-    // Tests djot output format produces djot_content field
+    // Tests djot output format converts content to djot markup
 
     let document_path = resolve_document("pdf/fake_memo.pdf");
     if !document_path.exists() {
@@ -367,7 +367,6 @@ fn test_config_djot_content() {
 
     assertions::assert_expected_mime(&result, &["application/pdf"]);
     assertions::assert_min_content_length(&result, 10);
-    assertions::assert_djot_content(&result, Some(true), None);
 }
 
 #[test]

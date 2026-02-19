@@ -69,6 +69,7 @@ mod tests {
                 extracted_keywords: None,
                 quality_score: None,
                 processing_warnings: Vec::new(),
+                annotations: None,
             })
         }
 
@@ -250,6 +251,7 @@ mod tests {
                     extracted_keywords: None,
                     quality_score: None,
                     processing_warnings: Vec::new(),
+                    annotations: None,
                 })
             }
 

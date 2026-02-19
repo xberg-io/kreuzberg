@@ -32,6 +32,7 @@ async fn test_run_pipeline_basic() {
         extracted_keywords: None,
         quality_score: None,
         processing_warnings: Vec::new(),
+        annotations: None,
     };
     result.metadata.additional.insert(
         Cow::Borrowed(VALIDATION_MARKER_KEY),
@@ -70,6 +71,7 @@ async fn test_pipeline_with_quality_processing() {
         extracted_keywords: None,
         quality_score: None,
         processing_warnings: Vec::new(),
+        annotations: None,
     };
     let config = ExtractionConfig {
         enable_quality_processing: true,
@@ -100,6 +102,7 @@ async fn test_pipeline_without_quality_processing() {
         extracted_keywords: None,
         quality_score: None,
         processing_warnings: Vec::new(),
+        annotations: None,
     };
     let config = ExtractionConfig {
         enable_quality_processing: false,
@@ -135,6 +138,7 @@ async fn test_pipeline_with_chunking() {
         extracted_keywords: None,
         quality_score: None,
         processing_warnings: Vec::new(),
+        annotations: None,
     };
     let config = ExtractionConfig {
         chunking: Some(crate::ChunkingConfig {
@@ -174,6 +178,7 @@ async fn test_pipeline_without_chunking() {
         extracted_keywords: None,
         quality_score: None,
         processing_warnings: Vec::new(),
+        annotations: None,
     };
     let config = ExtractionConfig {
         chunking: None,
@@ -216,6 +221,7 @@ async fn test_pipeline_preserves_metadata() {
         extracted_keywords: None,
         quality_score: None,
         processing_warnings: Vec::new(),
+        annotations: None,
     };
     let config = ExtractionConfig {
         postprocessor: Some(crate::core::config::PostProcessorConfig {
@@ -265,6 +271,7 @@ async fn test_pipeline_preserves_tables() {
         extracted_keywords: None,
         quality_score: None,
         processing_warnings: Vec::new(),
+        annotations: None,
     };
     let config = ExtractionConfig {
         postprocessor: Some(crate::core::config::PostProcessorConfig {
@@ -308,6 +315,7 @@ async fn test_pipeline_empty_content() {
         extracted_keywords: None,
         quality_score: None,
         processing_warnings: Vec::new(),
+        annotations: None,
     };
     let config = ExtractionConfig::default();
 
@@ -336,6 +344,7 @@ async fn test_pipeline_with_all_features() {
         extracted_keywords: None,
         quality_score: None,
         processing_warnings: Vec::new(),
+        annotations: None,
     };
     let config = ExtractionConfig {
         enable_quality_processing: true,
@@ -397,6 +406,7 @@ Natural language processing enables computers to understand human language.
         extracted_keywords: None,
         quality_score: None,
         processing_warnings: Vec::new(),
+        annotations: None,
     };
 
     #[cfg(feature = "keywords-yake")]
@@ -448,6 +458,7 @@ async fn test_pipeline_without_keyword_config() {
         extracted_keywords: None,
         quality_score: None,
         processing_warnings: Vec::new(),
+        annotations: None,
     };
 
     let config = ExtractionConfig {
@@ -492,6 +503,7 @@ async fn test_pipeline_keyword_extraction_short_content() {
         extracted_keywords: None,
         quality_score: None,
         processing_warnings: Vec::new(),
+        annotations: None,
     };
 
     #[cfg(feature = "keywords-yake")]
@@ -632,6 +644,7 @@ async fn test_postprocessor_runs_before_validator() {
         extracted_keywords: None,
         quality_score: None,
         processing_warnings: Vec::new(),
+        annotations: None,
     };
     result.metadata.additional.insert(
         Cow::Borrowed(VALIDATION_MARKER_KEY),
@@ -734,6 +747,7 @@ async fn test_quality_processing_runs_before_validator() {
         extracted_keywords: None,
         quality_score: None,
         processing_warnings: Vec::new(),
+        annotations: None,
     };
     result.metadata.additional.insert(
         Cow::Borrowed(VALIDATION_MARKER_KEY),
@@ -936,6 +950,7 @@ async fn test_multiple_postprocessors_run_before_validator() {
         extracted_keywords: None,
         quality_score: None,
         processing_warnings: Vec::new(),
+        annotations: None,
     };
 
     let config = ExtractionConfig::default();
@@ -1033,6 +1048,85 @@ async fn test_run_pipeline_with_output_format_html() {
     assert!(processed.content.contains("test content"));
     assert!(processed.content.contains("</pre>"));
     assert_eq!(processed.metadata.output_format, Some("html".to_string()));
+}
+
+#[tokio::test]
+#[serial]
+#[cfg(feature = "quality")]
+async fn test_nfc_normalization_decomposes_to_composed() {
+    // NFC normalization should convert decomposed characters to composed form.
+    // "e\u{0301}" (e + combining acute accent) → "\u{00e9}" (é precomposed)
+    let result = ExtractionResult {
+        content: "caf\u{0065}\u{0301}".to_string(), // "café" with decomposed é
+        mime_type: Cow::Borrowed("text/plain"),
+        ..Default::default()
+    };
+    let config = ExtractionConfig {
+        postprocessor: Some(crate::core::config::PostProcessorConfig {
+            enabled: false,
+            ..Default::default()
+        }),
+        ..Default::default()
+    };
+
+    let processed = run_pipeline(result, &config).await.unwrap();
+    assert_eq!(processed.content, "caf\u{00e9}"); // composed é
+    assert!(!processed.content.contains('\u{0301}')); // no combining accent
+}
+
+#[tokio::test]
+#[serial]
+#[cfg(feature = "quality")]
+async fn test_nfc_normalization_idempotent_on_ascii() {
+    // NFC on already-normalized/ASCII text should be a no-op.
+    let result = ExtractionResult {
+        content: "Hello, world! 123".to_string(),
+        mime_type: Cow::Borrowed("text/plain"),
+        ..Default::default()
+    };
+    let config = ExtractionConfig {
+        postprocessor: Some(crate::core::config::PostProcessorConfig {
+            enabled: false,
+            ..Default::default()
+        }),
+        ..Default::default()
+    };
+
+    let processed = run_pipeline(result, &config).await.unwrap();
+    assert_eq!(processed.content, "Hello, world! 123");
+}
+
+#[tokio::test]
+#[serial]
+#[cfg(feature = "quality")]
+async fn test_nfc_normalization_applies_to_page_content() {
+    use crate::types::PageContent;
+
+    let result = ExtractionResult {
+        content: "caf\u{0065}\u{0301}".to_string(),
+        mime_type: Cow::Borrowed("text/plain"),
+        pages: Some(vec![PageContent {
+            page_number: 1,
+            content: "re\u{0301}sume\u{0301}".to_string(), // "résumé" decomposed
+            tables: vec![],
+            images: vec![],
+            hierarchy: None,
+            is_blank: None,
+        }]),
+        ..Default::default()
+    };
+    let config = ExtractionConfig {
+        postprocessor: Some(crate::core::config::PostProcessorConfig {
+            enabled: false,
+            ..Default::default()
+        }),
+        ..Default::default()
+    };
+
+    let processed = run_pipeline(result, &config).await.unwrap();
+    assert_eq!(processed.content, "caf\u{00e9}");
+    let pages = processed.pages.unwrap();
+    assert_eq!(pages[0].content, "r\u{00e9}sum\u{00e9}");
 }
 
 #[tokio::test]

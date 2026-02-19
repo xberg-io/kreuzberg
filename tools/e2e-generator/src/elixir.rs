@@ -1213,6 +1213,19 @@ fn render_assertions(assertions: &Assertions) -> String {
         }
     }
 
+    if let Some(annotations) = assertions.annotations.as_ref() {
+        let mut args = vec![format!(
+            "has_annotations: {}",
+            if annotations.has_annotations { "true" } else { "false" }
+        )];
+        if let Some(min_count) = annotations.min_count {
+            args.push(format!("min_count: {}", render_numeric_literal(min_count as u64)));
+        }
+        if !args.is_empty() {
+            pipes.push(format!("E2E.Helpers.assert_annotations({})", args.join(", ")));
+        }
+    }
+
     if pipes.is_empty() {
         return String::new();
     }

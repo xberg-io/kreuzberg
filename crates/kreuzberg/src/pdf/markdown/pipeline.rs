@@ -17,7 +17,7 @@ use super::types::PdfParagraph;
 
 /// Render an entire PDF document as markdown.
 pub fn render_document_as_markdown(document: &PdfDocument, k_clusters: usize) -> Result<String> {
-    render_document_as_markdown_with_tables(document, k_clusters, &[])
+    render_document_as_markdown_with_tables(document, k_clusters, &[], None, None)
 }
 
 /// Render a PDF document as markdown, with tables interleaved at their positions.
@@ -25,6 +25,8 @@ pub fn render_document_as_markdown_with_tables(
     document: &PdfDocument,
     k_clusters: usize,
     tables: &[crate::types::Table],
+    top_margin: Option<f32>,
+    bottom_margin: Option<f32>,
 ) -> Result<String> {
     let pages = document.pages();
     let page_count = pages.len();
@@ -71,8 +73,10 @@ pub fn render_document_as_markdown_with_tables(
 
         // Filter out segments in page margins (headers/footers/page numbers)
         let page_height = page.height().value;
-        let top_cutoff = page_height * (1.0 - PAGE_TOP_MARGIN_FRACTION);
-        let bottom_cutoff = page_height * PAGE_BOTTOM_MARGIN_FRACTION;
+        let top_frac = top_margin.unwrap_or(PAGE_TOP_MARGIN_FRACTION).clamp(0.0, 0.5);
+        let bottom_frac = bottom_margin.unwrap_or(PAGE_BOTTOM_MARGIN_FRACTION).clamp(0.0, 0.5);
+        let top_cutoff = page_height * (1.0 - top_frac);
+        let bottom_cutoff = page_height * bottom_frac;
 
         let mut filtered: Vec<SegmentData> = segments
             .into_iter()

@@ -1,6 +1,7 @@
 //! Core types for document extraction.
 
 // Module declarations
+pub mod annotations;
 pub mod djot;
 pub mod document_structure;
 pub mod extraction;
@@ -12,6 +13,7 @@ pub mod serde_helpers;
 pub mod tables;
 
 // Re-export all types for backward compatibility
+pub use annotations::*;
 pub use djot::*;
 pub use document_structure::{
     AnnotationKind, ContentLayer, DocumentNode, DocumentStructure, GridCell, NodeContent, NodeId, NodeIndex, TableGrid,

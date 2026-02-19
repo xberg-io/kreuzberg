@@ -5,14 +5,18 @@
 //! When the "memory-profiling" feature is enabled, provides additional allocation
 //! hotspot analysis and heap snapshot tracking.
 //!
-//! # Memory Measurement Methodology
+//! # Measurement Methodology
 //!
-//! Memory measurements include the entire process tree (parent + all child processes).
-//! This is critical for accurate measurement of extraction frameworks that spawn
-//! subprocesses (e.g., pandoc, tika). Without this, measurements would only capture
-//! the ~12MB wrapper process memory, not the actual extraction work.
+//! Both memory and CPU measurements include the entire process tree (parent + all
+//! child processes). This is critical for accurate measurement of extraction
+//! frameworks that spawn subprocesses (e.g., pandoc, tika). Without this,
+//! measurements would only capture the idle wrapper process, not the actual
+//! extraction work happening in child processes.
 //!
-//! Changed in v4.0.0-rc.30: Previously only measured parent process memory.
+//! Changed in v4.0: Previously only measured parent process memory.
+//! Changed in v4.3.7: CPU now also measures the entire process tree (previously
+//! only measured parent process CPU, causing near-zero readings for subprocess-based
+//! frameworks).
 
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -102,7 +106,8 @@ pub struct ResourceSample {
     pub vm_size_bytes: u64,
     /// Major page faults count
     pub page_faults: u64,
-    /// CPU usage percentage (0.0 - 100.0 * num_cpus)
+    /// CPU usage percentage normalized across cores (0.0 - 100.0)
+    /// Includes the entire process tree (parent + all child processes).
     pub cpu_percent: f64,
     /// Timestamp when sample was taken (relative to monitoring start)
     pub timestamp_ms: u64,
@@ -174,6 +179,37 @@ fn collect_process_tree_vm(pid: Pid, system: &System) -> u64 {
         // Recursively add all child processes
         for child_pid in get_child_processes(pid, system) {
             total += collect_process_tree_vm(child_pid, system);
+        }
+    }
+
+    total
+}
+
+/// Collect total CPU usage from a process and all its descendants
+///
+/// Recursively traverses the process tree, summing CPU usage from the parent
+/// and all child processes. This mirrors `collect_process_tree_memory` to ensure
+/// CPU measurement is consistent with memory measurement.
+///
+/// Without this, subprocess-based frameworks (tika, pandoc, etc.) show near-zero
+/// CPU because only the idle parent/wrapper process is measured, while the actual
+/// extraction work happens in child processes.
+///
+/// # Arguments
+/// * `pid` - The root process ID to measure
+/// * `system` - System instance with refreshed process information
+///
+/// # Returns
+/// Total CPU usage percentage for the entire process tree (0.0 - 100.0 * num_cores)
+fn collect_process_tree_cpu(pid: Pid, system: &System) -> f64 {
+    let mut total = 0.0;
+
+    if let Some(proc) = system.process(pid) {
+        total += proc.cpu_usage() as f64;
+
+        // Recursively add all child processes
+        for child_pid in get_child_processes(pid, system) {
+            total += collect_process_tree_cpu(child_pid, system);
         }
     }
 
@@ -252,11 +288,15 @@ impl ResourceMonitor {
                 // This is critical for accurate memory measurement of subprocess-based frameworks
                 system.refresh_processes_specifics(ProcessesToUpdate::All, false, refresh_kind);
 
-                if let Some(process) = system.process(pid) {
+                if system.process(pid).is_some() {
                     let elapsed = start.elapsed();
 
                     let cpu_count = num_cpus::get() as f64;
-                    let normalized_cpu_percent = (process.cpu_usage() as f64) / cpu_count;
+                    // Collect CPU from entire process tree (parent + all children)
+                    // This mirrors collect_process_tree_memory to ensure CPU measurement
+                    // captures subprocess work, not just the idle parent process.
+                    let tree_cpu = collect_process_tree_cpu(pid, &system);
+                    let normalized_cpu_percent = tree_cpu / cpu_count;
 
                     // Collect memory from entire process tree (parent + all children)
                     let tree_memory = collect_process_tree_memory(pid, &system);

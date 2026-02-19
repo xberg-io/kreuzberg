@@ -461,6 +461,7 @@ mod tests {
             extracted_keywords: None,
             quality_score: None,
             processing_warnings: vec![],
+            annotations: None,
         }
     }
 
@@ -732,6 +733,7 @@ mod tests {
             extracted_keywords: None,
             quality_score: None,
             processing_warnings: vec![],
+            annotations: None,
         };
 
         let result_ptr = &result as *const ExtractionResult;

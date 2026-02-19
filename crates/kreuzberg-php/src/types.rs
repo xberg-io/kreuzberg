@@ -62,6 +62,7 @@ pub(crate) fn json_value_to_php(value: &serde_json::Value) -> PhpResult<Zval> {
 /// - `images` (array|null): Extracted images with their data
 /// - `chunks` (array|null): Text chunks with optional embeddings
 /// - `pages` (array|null): Per-page extraction results
+/// - `annotations` (array|null): PDF annotations (text, highlight, link, etc.)
 ///
 /// # Example
 ///
@@ -124,6 +125,9 @@ pub struct ExtractionResult {
 
     /// OCR elements with spatial/confidence metadata
     ocr_elements_json: Option<String>,
+
+    /// PDF annotations
+    pub annotations: Option<Vec<PdfAnnotation>>,
 }
 
 #[php_impl]
@@ -277,6 +281,13 @@ impl ExtractionResult {
                     Ok(None)
                 }
             }
+            "annotations" => {
+                if let Some(annotations) = &self.annotations {
+                    Ok(Some(annotations.clone().into_zval(false)?))
+                } else {
+                    Ok(None)
+                }
+            }
             _ => Ok(None),
         }
     }
@@ -336,6 +347,12 @@ impl ExtractionResult {
         self.chunks
             .as_ref()
             .map(|chunks| chunks.iter().filter_map(|chunk| chunk.embedding.clone()).collect())
+    }
+
+    /// Get all PDF annotations.
+    #[php(name = "getAnnotations")]
+    pub fn get_annotations(&self) -> Option<Vec<PdfAnnotation>> {
+        self.annotations.clone()
     }
 }
 
@@ -536,6 +553,16 @@ impl ExtractionResult {
             .transpose()
             .map_err(|e| format!("Failed to serialize ocr_elements: {}", e))?;
 
+        // Convert annotations if present
+        let annotations = result
+            .annotations
+            .map(|anns| {
+                anns.into_iter()
+                    .map(PdfAnnotation::from_rust)
+                    .collect::<PhpResult<Vec<_>>>()
+            })
+            .transpose()?;
+
         Ok(Self {
             content: result.content,
             mime_type: result.mime_type.to_string(),
@@ -552,6 +579,7 @@ impl ExtractionResult {
             elements_json,
             document_json,
             ocr_elements_json,
+            annotations,
         })
     }
 }
@@ -1007,6 +1035,153 @@ impl Metadata {
             .get(&key)
             .map(|v| v.shallow_clone())
             .unwrap_or_else(Zval::new))
+    }
+}
+
+/// PDF annotation type classification.
+///
+/// Represents the type of a PDF annotation (text, highlight, link, etc.).
+///
+/// # Values
+///
+/// - `Text` - Sticky note / text annotation
+/// - `Highlight` - Highlighted text region
+/// - `Link` - Hyperlink annotation
+/// - `Stamp` - Rubber stamp annotation
+/// - `Underline` - Underline text markup
+/// - `StrikeOut` - Strikeout text markup
+/// - `Other` - Any other annotation type
+#[php_class]
+#[php(name = "Kreuzberg\\Types\\PdfAnnotationType")]
+#[derive(Clone, Debug)]
+pub struct PdfAnnotationType {
+    /// String representation of the annotation type
+    #[php(prop)]
+    pub value: String,
+}
+
+#[php_impl]
+impl PdfAnnotationType {
+    /// Check if this is a text annotation.
+    pub fn is_text(&self) -> bool {
+        self.value == "text"
+    }
+
+    /// Check if this is a highlight annotation.
+    pub fn is_highlight(&self) -> bool {
+        self.value == "highlight"
+    }
+
+    /// Check if this is a link annotation.
+    pub fn is_link(&self) -> bool {
+        self.value == "link"
+    }
+
+    /// Check if this is a stamp annotation.
+    pub fn is_stamp(&self) -> bool {
+        self.value == "stamp"
+    }
+
+    /// Check if this is an underline annotation.
+    pub fn is_underline(&self) -> bool {
+        self.value == "underline"
+    }
+
+    /// Check if this is a strikeout annotation.
+    pub fn is_strike_out(&self) -> bool {
+        self.value == "strike_out"
+    }
+
+    /// Check if this is an 'other' annotation type.
+    pub fn is_other(&self) -> bool {
+        self.value == "other"
+    }
+}
+
+impl PdfAnnotationType {
+    /// Convert from Rust PdfAnnotationType to PHP PdfAnnotationType.
+    pub fn from_rust(annotation_type: kreuzberg::PdfAnnotationType) -> Self {
+        let value = match annotation_type {
+            kreuzberg::PdfAnnotationType::Text => "text",
+            kreuzberg::PdfAnnotationType::Highlight => "highlight",
+            kreuzberg::PdfAnnotationType::Link => "link",
+            kreuzberg::PdfAnnotationType::Stamp => "stamp",
+            kreuzberg::PdfAnnotationType::Underline => "underline",
+            kreuzberg::PdfAnnotationType::StrikeOut => "strike_out",
+            kreuzberg::PdfAnnotationType::Other => "other",
+        };
+        Self {
+            value: value.to_string(),
+        }
+    }
+}
+
+/// PDF annotation extracted from a document page.
+///
+/// # Properties
+///
+/// - `annotation_type` (PdfAnnotationType): The type of annotation
+/// - `content` (string|null): Text content of the annotation
+/// - `page_number` (int): Page number where the annotation appears (1-indexed)
+/// - `bounding_box` (array|null): Bounding box as {x0, y0, x1, y1} or null
+///
+/// # Example
+///
+/// ```php
+/// foreach ($result->annotations as $annotation) {
+///     echo "Annotation on page {$annotation->page_number}: ";
+///     echo $annotation->annotation_type->value . "\n";
+///     if ($annotation->content !== null) {
+///         echo "  Content: {$annotation->content}\n";
+///     }
+/// }
+/// ```
+#[php_class]
+#[php(name = "Kreuzberg\\Types\\PdfAnnotation")]
+#[derive(Clone, Debug)]
+pub struct PdfAnnotation {
+    /// The type of annotation
+    pub annotation_type: PdfAnnotationType,
+
+    /// Text content of the annotation (e.g., comment text, link URL)
+    #[php(prop)]
+    pub content: Option<String>,
+
+    /// Page number where the annotation appears (1-indexed)
+    #[php(prop)]
+    pub page_number: usize,
+
+    /// Bounding box as associative array {x0, y0, x1, y1} or null
+    #[php(prop)]
+    pub bounding_box: Option<HashMap<String, f64>>,
+}
+
+#[php_impl]
+impl PdfAnnotation {
+    /// Get the annotation type.
+    #[php(name = "getAnnotationType")]
+    pub fn get_annotation_type(&self) -> PdfAnnotationType {
+        self.annotation_type.clone()
+    }
+}
+
+impl PdfAnnotation {
+    /// Convert from Rust PdfAnnotation to PHP PdfAnnotation.
+    pub fn from_rust(annotation: kreuzberg::PdfAnnotation) -> PhpResult<Self> {
+        let bounding_box = annotation.bounding_box.map(|bb| {
+            let mut map = HashMap::new();
+            map.insert("x0".to_string(), bb.x0);
+            map.insert("y0".to_string(), bb.y0);
+            map.insert("x1".to_string(), bb.x1);
+            map.insert("y1".to_string(), bb.y1);
+            map
+        });
+        Ok(Self {
+            annotation_type: PdfAnnotationType::from_rust(annotation.annotation_type),
+            content: annotation.content,
+            page_number: annotation.page_number,
+            bounding_box,
+        })
     }
 }
 

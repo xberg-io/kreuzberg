@@ -640,5 +640,38 @@ pub fn extraction_result_to_ruby(ruby: &Ruby, result: RustExtractionResult) -> R
     }
     set_hash_entry(ruby, &hash, "processing_warnings", warnings_array.into_value_with(ruby))?;
 
+    // Convert annotations
+    if let Some(annotations) = result.annotations {
+        let annotations_array = ruby.ary_new();
+        for annot in annotations {
+            let annot_hash = ruby.hash_new();
+            let type_str = serde_json::to_value(&annot.annotation_type)
+                .ok()
+                .and_then(|v| v.as_str().map(String::from))
+                .unwrap_or_default();
+            annot_hash.aset("annotation_type", type_str.as_str())?;
+            if let Some(content) = annot.content {
+                annot_hash.aset("content", content.as_str())?;
+            } else {
+                annot_hash.aset("content", ruby.qnil().as_value())?;
+            }
+            annot_hash.aset("page_number", annot.page_number as i64)?;
+            if let Some(bbox) = annot.bounding_box {
+                let bbox_hash = ruby.hash_new();
+                bbox_hash.aset("x0", bbox.x0)?;
+                bbox_hash.aset("y0", bbox.y0)?;
+                bbox_hash.aset("x1", bbox.x1)?;
+                bbox_hash.aset("y1", bbox.y1)?;
+                annot_hash.aset("bounding_box", bbox_hash)?;
+            } else {
+                annot_hash.aset("bounding_box", ruby.qnil().as_value())?;
+            }
+            annotations_array.push(annot_hash)?;
+        }
+        set_hash_entry(ruby, &hash, "annotations", annotations_array.into_value_with(ruby))?;
+    } else {
+        set_hash_entry(ruby, &hash, "annotations", ruby.qnil().as_value())?;
+    }
+
     Ok(hash)
 }

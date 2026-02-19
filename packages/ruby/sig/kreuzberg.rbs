@@ -525,6 +525,15 @@ module Kreuzberg
   end
 
   # Extraction result type
+  type pdf_annotation_type = 'text' | 'highlight' | 'link' | 'stamp' | 'underline' | 'strike_out' | 'other'
+
+  type pdf_annotation_hash = {
+    annotation_type: String,
+    content: String?,
+    page_number: Integer,
+    bounding_box: { x0: Float, y0: Float, x1: Float, y1: Float }?
+  }
+
   type extraction_result_hash = {
     content: String,
     mime_type: String,
@@ -541,7 +550,8 @@ module Kreuzberg
     document: document_structure_hash?,
     extracted_keywords: Array[extracted_keyword_hash]?,
     quality_score: Float?,
-    processing_warnings: Array[processing_warning_hash]?
+    processing_warnings: Array[processing_warning_hash]?,
+    annotations: Array[pdf_annotation_hash]?
   }
 
   type extracted_keyword_hash = {
@@ -1076,6 +1086,18 @@ module Kreuzberg
     attr_reader extracted_keywords: Array[ExtractedKeyword]?
     attr_reader quality_score: Float?
     attr_reader processing_warnings: Array[ProcessingWarning]?
+    attr_reader annotations: Array[PdfAnnotation]?
+
+    # PDF annotation extracted from a document page (Struct from result.rb)
+    class PdfAnnotation
+      attr_reader annotation_type: String
+      attr_reader content: String?
+      attr_reader page_number: Integer
+      attr_reader bounding_box: BoundingBox?
+
+      def initialize: (annotation_type: String, content: String?, page_number: Integer, bounding_box: BoundingBox?) -> void
+      def to_h: () -> pdf_annotation_hash
+    end
 
     def initialize: (extraction_result_hash hash) -> void
     def to_h: () -> Hash[Symbol, untyped]
@@ -1113,6 +1135,7 @@ module Kreuzberg
     def parse_ocr_geometry: (Hash[String, untyped]? data) -> OcrBoundingGeometry?
     def parse_ocr_confidence: (Hash[String, untyped]? data) -> OcrConfidence?
     def parse_ocr_rotation: (Hash[String, untyped]? data) -> OcrRotation?
+    def parse_annotations: (Array[pdf_annotation_hash]? annotations_data) -> Array[PdfAnnotation]?
   end
 
   # Module methods (extraction API)

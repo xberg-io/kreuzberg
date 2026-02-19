@@ -891,6 +891,9 @@ impl PdfConfig {
                 passwords,
                 extract_metadata: extract_metadata.unwrap_or(true),
                 hierarchy: hierarchy.map(|h| h.inner),
+                extract_annotations: false,
+                top_margin_fraction: None,
+                bottom_margin_fraction: None,
             },
         }
     }

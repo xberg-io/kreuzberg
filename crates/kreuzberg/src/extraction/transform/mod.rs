@@ -321,6 +321,7 @@ mod tests {
             extracted_keywords: None,
             quality_score: None,
             processing_warnings: Vec::new(),
+            annotations: None,
         };
 
         let elements = transform_extraction_result_to_elements(&result);
@@ -416,6 +417,7 @@ mod tests {
             extracted_keywords: None,
             quality_score: None,
             processing_warnings: Vec::new(),
+            annotations: None,
         };
 
         let elements = transform_extraction_result_to_elements(&result);
@@ -464,6 +466,7 @@ mod tests {
             extracted_keywords: None,
             quality_score: None,
             processing_warnings: Vec::new(),
+            annotations: None,
         };
 
         let elements = transform_extraction_result_to_elements(&result);
@@ -587,6 +590,7 @@ mod tests {
             extracted_keywords: None,
             quality_score: None,
             processing_warnings: Vec::new(),
+            annotations: None,
         };
 
         let elements = transform_extraction_result_to_elements(&result);

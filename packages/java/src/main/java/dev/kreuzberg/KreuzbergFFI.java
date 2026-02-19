@@ -121,8 +121,8 @@ public final class KreuzbergFFI {
 			ValueLayout.ADDRESS.withName("elements_json"), ValueLayout.ADDRESS.withName("ocr_elements_json"),
 			ValueLayout.ADDRESS.withName("document_json"), ValueLayout.ADDRESS.withName("extracted_keywords_json"),
 			ValueLayout.ADDRESS.withName("quality_score_json"),
-			ValueLayout.ADDRESS.withName("processing_warnings_json"), ValueLayout.JAVA_BOOLEAN.withName("success"),
-			MemoryLayout.paddingLayout(7));
+			ValueLayout.ADDRESS.withName("processing_warnings_json"), ValueLayout.ADDRESS.withName("annotations_json"),
+			ValueLayout.JAVA_BOOLEAN.withName("success"), MemoryLayout.paddingLayout(7));
 
 	public static final long CONTENT_OFFSET = C_EXTRACTION_RESULT_LAYOUT
 			.byteOffset(MemoryLayout.PathElement.groupElement("content"));
@@ -160,6 +160,8 @@ public final class KreuzbergFFI {
 			.byteOffset(MemoryLayout.PathElement.groupElement("quality_score_json"));
 	public static final long PROCESSING_WARNINGS_OFFSET = C_EXTRACTION_RESULT_LAYOUT
 			.byteOffset(MemoryLayout.PathElement.groupElement("processing_warnings_json"));
+	public static final long ANNOTATIONS_JSON_OFFSET = C_EXTRACTION_RESULT_LAYOUT
+			.byteOffset(MemoryLayout.PathElement.groupElement("annotations_json"));
 	public static final long SUCCESS_OFFSET = C_EXTRACTION_RESULT_LAYOUT
 			.byteOffset(MemoryLayout.PathElement.groupElement("success"));
 

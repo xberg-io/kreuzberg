@@ -288,6 +288,9 @@ fn test_ocr_custom_threshold() {
                 include_bbox: true,
                 ocr_coverage_threshold: Some(0.25),
             }),
+            extract_annotations: false,
+            top_margin_fraction: None,
+            bottom_margin_fraction: None,
         }),
         ..Default::default()
     };

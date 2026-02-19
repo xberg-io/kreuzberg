@@ -608,6 +608,24 @@ export const assertions = {
             }
         }
     },
+
+    assertAnnotations(
+        result: ExtractionResult,
+        hasAnnotations: boolean = false,
+        minCount?: number | null,
+    ): void {
+        const annotations = (result as unknown as PlainRecord).annotations as unknown[] | undefined;
+        if (hasAnnotations) {
+            expect(annotations).toBeDefined();
+            expect(Array.isArray(annotations)).toBe(true);
+            expect((annotations as unknown[]).length).toBeGreaterThan(0);
+        }
+        if (annotations !== undefined && annotations !== null && Array.isArray(annotations)) {
+            if (typeof minCount === "number") {
+                expect(annotations.length).toBeGreaterThanOrEqual(minCount);
+            }
+        }
+    },
 };
 
 function lookupMetadataPath(metadata: PlainRecord, path: string): unknown {
@@ -1356,6 +1374,17 @@ fn render_assertions(assertions: &Assertions) -> String {
             .unwrap_or_else(|| "undefined".into());
         buffer.push_str(&format!(
             "    assertions.assertDjotContent(result, {has_content}, {min_blocks});\n"
+        ));
+    }
+
+    if let Some(annotations) = assertions.annotations.as_ref() {
+        let has_annotations = annotations.has_annotations.to_string();
+        let min_count = annotations
+            .min_count
+            .map(|v| v.to_string())
+            .unwrap_or_else(|| "null".into());
+        buffer.push_str(&format!(
+            "    assertions.assertAnnotations(result, {has_annotations}, {min_count});\n"
         ));
     }
 

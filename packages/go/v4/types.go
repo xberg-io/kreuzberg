@@ -96,6 +96,39 @@ type ProcessingWarning struct {
 	Message string `json:"message"`
 }
 
+// PdfAnnotationType enumerates the types of PDF annotations.
+type PdfAnnotationType string
+
+const (
+	PdfAnnotationTypeText      PdfAnnotationType = "text"
+	PdfAnnotationTypeHighlight PdfAnnotationType = "highlight"
+	PdfAnnotationTypeLink      PdfAnnotationType = "link"
+	PdfAnnotationTypeStamp     PdfAnnotationType = "stamp"
+	PdfAnnotationTypeUnderline PdfAnnotationType = "underline"
+	PdfAnnotationTypeStrikeOut PdfAnnotationType = "strike_out"
+	PdfAnnotationTypeOther     PdfAnnotationType = "other"
+)
+
+// PdfAnnotationBoundingBox represents the spatial location of an annotation on a page.
+type PdfAnnotationBoundingBox struct {
+	X0 float64 `json:"x0"`
+	Y0 float64 `json:"y0"`
+	X1 float64 `json:"x1"`
+	Y1 float64 `json:"y1"`
+}
+
+// PdfAnnotation represents an annotation extracted from a PDF document.
+type PdfAnnotation struct {
+	// AnnotationType is the type of annotation (Text, Highlight, Link, etc.).
+	AnnotationType PdfAnnotationType `json:"annotation_type"`
+	// Content is the text content of the annotation, if any.
+	Content *string `json:"content,omitempty"`
+	// PageNumber is the 1-indexed page number where the annotation appears.
+	PageNumber int `json:"page_number"`
+	// BoundingBox is the spatial location of the annotation on the page, if available.
+	BoundingBox *PdfAnnotationBoundingBox `json:"bounding_box,omitempty"`
+}
+
 // ExtractionResult mirrors the Rust ExtractionResult struct returned by the core API.
 type ExtractionResult struct {
 	Content           string             `json:"content"`
@@ -119,6 +152,9 @@ type ExtractionResult struct {
 
 	// ProcessingWarnings contains non-fatal warnings from pipeline stages.
 	ProcessingWarnings []ProcessingWarning `json:"processing_warnings,omitempty"`
+
+	// Annotations contains PDF annotations extracted from the document.
+	Annotations []PdfAnnotation `json:"annotations,omitempty"`
 }
 
 // Table represents a detected table in the source document.

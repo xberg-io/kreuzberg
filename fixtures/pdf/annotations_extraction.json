@@ -1,0 +1,23 @@
+{
+	"id": "pdf_annotations",
+	"category": "pdf",
+	"description": "PDF with annotations should extract annotation data when enabled.",
+	"document": {
+		"path": "pdf/test_article.pdf",
+		"media_type": "application/pdf"
+	},
+	"extraction": {
+		"config": {
+			"pdf_options": {
+				"extract_annotations": true
+			}
+		}
+	},
+	"assertions": {
+		"expected_mime": "application/pdf",
+		"annotations": {
+			"has_annotations": true,
+			"min_count": 1
+		}
+	}
+}

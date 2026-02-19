@@ -77,6 +77,7 @@ mod tests {
             extracted_keywords: None,
             quality_score: None,
             processing_warnings: Vec::new(),
+            annotations: None,
         };
 
         let config = ExtractionConfig::default();
@@ -104,6 +105,7 @@ mod tests {
             extracted_keywords: None,
             quality_score: None,
             processing_warnings: Vec::new(),
+            annotations: None,
         };
 
         let config = ExtractionConfig::default();
@@ -133,6 +135,7 @@ mod tests {
             extracted_keywords: None,
             quality_score: None,
             processing_warnings: Vec::new(),
+            annotations: None,
         };
 
         let config = ExtractionConfig::default();
@@ -177,6 +180,7 @@ mod tests {
             extracted_keywords: None,
             quality_score: None,
             processing_warnings: Vec::new(),
+            annotations: None,
         };
 
         let config = ExtractionConfig::default();
@@ -233,6 +237,7 @@ mod tests {
             extracted_keywords: None,
             quality_score: None,
             processing_warnings: Vec::new(),
+            annotations: None,
         };
 
         let txt_result = ExtractionResult {
@@ -252,6 +257,7 @@ mod tests {
             extracted_keywords: None,
             quality_score: None,
             processing_warnings: Vec::new(),
+            annotations: None,
         };
 
         assert!(validator.should_validate(&pdf_result, &config));
@@ -344,6 +350,7 @@ mod tests {
             extracted_keywords: None,
             quality_score: None,
             processing_warnings: Vec::new(),
+            annotations: None,
         };
 
         let config = ExtractionConfig::default();
@@ -384,6 +391,7 @@ mod tests {
             extracted_keywords: None,
             quality_score: None,
             processing_warnings: Vec::new(),
+            annotations: None,
         };
 
         let config = ExtractionConfig::default();
@@ -420,6 +428,7 @@ mod tests {
             extracted_keywords: None,
             quality_score: None,
             processing_warnings: Vec::new(),
+            annotations: None,
         };
 
         let config = ExtractionConfig::default();
@@ -457,6 +466,7 @@ mod tests {
                 extracted_keywords: None,
                 quality_score: None,
                 processing_warnings: Vec::new(),
+                annotations: None,
             };
 
             assert!(validator.validate(&result, &config).await.is_ok());
@@ -484,6 +494,7 @@ mod tests {
             extracted_keywords: None,
             quality_score: None,
             processing_warnings: Vec::new(),
+            annotations: None,
         };
 
         let config = ExtractionConfig::default();

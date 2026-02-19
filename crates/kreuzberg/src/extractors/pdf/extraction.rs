@@ -4,7 +4,7 @@
 
 use crate::Result;
 use crate::core::config::{ExtractionConfig, OutputFormat};
-use crate::types::{PageBoundary, PageContent};
+use crate::types::{PageBoundary, PageContent, PdfAnnotation};
 
 #[cfg(feature = "pdf")]
 use crate::types::Table;
@@ -18,8 +18,9 @@ pub(crate) type PdfExtractionPhaseResult = (
     Vec<Table>,
     Option<Vec<PageContent>>,
     Option<Vec<PageBoundary>>,
-    Option<String>, // pre-rendered markdown (when output_format == Markdown)
-    bool,           // has_font_encoding_issues (unicode map errors detected)
+    Option<String>,             // pre-rendered markdown (when output_format == Markdown)
+    bool,                       // has_font_encoding_issues (unicode map errors detected)
+    Option<Vec<PdfAnnotation>>, // extracted annotations (when extract_annotations is enabled)
 );
 
 /// Extract text, metadata, and tables from a PDF document using a single shared instance.
@@ -66,7 +67,19 @@ pub(crate) fn extract_all_from_document(
             .map(|h| h.k_clusters)
             .unwrap_or(4);
 
-        match crate::pdf::markdown::render_document_as_markdown_with_tables(document, k, &tables) {
+        let (top_margin, bottom_margin) = config
+            .pdf_options
+            .as_ref()
+            .map(|opts| (opts.top_margin_fraction, opts.bottom_margin_fraction))
+            .unwrap_or((None, None));
+
+        match crate::pdf::markdown::render_document_as_markdown_with_tables(
+            document,
+            k,
+            &tables,
+            top_margin,
+            bottom_margin,
+        ) {
             Ok(md) if !md.trim().is_empty() => Some(md),
             Ok(_) => {
                 tracing::warn!("Markdown rendering produced empty output, will fall back to plain text");
@@ -83,6 +96,14 @@ pub(crate) fn extract_all_from_document(
 
     let has_font_encoding_issues = sample_unicode_map_errors(document);
 
+    // Extract annotations when configured.
+    let annotations = if config.pdf_options.as_ref().is_some_and(|opts| opts.extract_annotations) {
+        let extracted = crate::pdf::annotations::extract_annotations_from_document(document);
+        if extracted.is_empty() { None } else { Some(extracted) }
+    } else {
+        None
+    };
+
     Ok((
         pdf_metadata,
         native_text,
@@ -91,6 +112,7 @@ pub(crate) fn extract_all_from_document(
         boundaries,
         pre_rendered_markdown,
         has_font_encoding_issues,
+        annotations,
     ))
 }
 
@@ -146,6 +168,35 @@ fn sample_unicode_map_errors(document: &PdfDocument) -> bool {
     false
 }
 
+/// Check whether words on a page exhibit column alignment consistent with a table.
+///
+/// Groups word left-edges into buckets and checks that at least 2 buckets each contain
+/// multiple words. Body text typically has uniform left-alignment (1 column), while
+/// tables have 2+ distinct x-position clusters.
+#[cfg(all(feature = "pdf", feature = "ocr"))]
+fn has_column_alignment(words: &[crate::ocr::table::HocrWord]) -> bool {
+    if words.len() < 4 {
+        return false;
+    }
+
+    // Bucket word left positions using a tolerance of 15px
+    const BUCKET_TOLERANCE: u32 = 15;
+    let mut buckets: Vec<(u32, usize)> = Vec::new(); // (representative_x, count)
+
+    for w in words {
+        let x = w.left;
+        if let Some(bucket) = buckets.iter_mut().find(|(bx, _)| x.abs_diff(*bx) <= BUCKET_TOLERANCE) {
+            bucket.1 += 1;
+        } else {
+            buckets.push((x, 1));
+        }
+    }
+
+    // A table needs at least 2 columns where each column has ≥2 words
+    let significant_columns = buckets.iter().filter(|(_, count)| *count >= 2).count();
+    significant_columns >= 2
+}
+
 /// Extract tables from PDF document using native text positions.
 ///
 /// This function converts PDF character positions to HocrWord format,
@@ -167,6 +218,12 @@ fn extract_tables_from_document(
 
         // Need at least 6 words for a meaningful table
         if words.len() < 6 {
+            continue;
+        }
+
+        // Pre-validate column alignment: real tables have words clustering at
+        // consistent x-positions. Body text scattered across the page won't.
+        if !has_column_alignment(&words) {
             continue;
         }
 
@@ -338,5 +395,151 @@ mod tests {
         assert_eq!(deserialized.y0, 20.25);
         assert_eq!(deserialized.x1, 100.75);
         assert_eq!(deserialized.y1, 200.5);
+    }
+
+    #[test]
+    #[cfg(all(feature = "pdf", feature = "ocr"))]
+    fn test_has_column_alignment_table_layout() {
+        use crate::ocr::table::HocrWord;
+
+        // Simulate a 2-column table: words at x=50 and x=300
+        let words = vec![
+            HocrWord {
+                text: "Name".into(),
+                left: 50,
+                top: 100,
+                width: 60,
+                height: 12,
+                confidence: 95.0,
+            },
+            HocrWord {
+                text: "Age".into(),
+                left: 300,
+                top: 100,
+                width: 40,
+                height: 12,
+                confidence: 95.0,
+            },
+            HocrWord {
+                text: "Alice".into(),
+                left: 50,
+                top: 120,
+                width: 60,
+                height: 12,
+                confidence: 95.0,
+            },
+            HocrWord {
+                text: "30".into(),
+                left: 300,
+                top: 120,
+                width: 30,
+                height: 12,
+                confidence: 95.0,
+            },
+            HocrWord {
+                text: "Bob".into(),
+                left: 50,
+                top: 140,
+                width: 50,
+                height: 12,
+                confidence: 95.0,
+            },
+            HocrWord {
+                text: "25".into(),
+                left: 300,
+                top: 140,
+                width: 30,
+                height: 12,
+                confidence: 95.0,
+            },
+        ];
+        assert!(super::has_column_alignment(&words));
+    }
+
+    #[test]
+    #[cfg(all(feature = "pdf", feature = "ocr"))]
+    fn test_has_column_alignment_body_text() {
+        use crate::ocr::table::HocrWord;
+
+        // Body text: words flow left-to-right on each line with distinct x positions.
+        // Each word has a unique left-edge so no bucket accumulates >= 2 words,
+        // meaning column alignment should NOT be detected.
+        let words = vec![
+            HocrWord {
+                text: "This".into(),
+                left: 50,
+                top: 100,
+                width: 40,
+                height: 12,
+                confidence: 95.0,
+            },
+            HocrWord {
+                text: "is".into(),
+                left: 100,
+                top: 100,
+                width: 20,
+                height: 12,
+                confidence: 95.0,
+            },
+            HocrWord {
+                text: "some".into(),
+                left: 130,
+                top: 100,
+                width: 45,
+                height: 12,
+                confidence: 95.0,
+            },
+            HocrWord {
+                text: "body".into(),
+                left: 185,
+                top: 100,
+                width: 45,
+                height: 12,
+                confidence: 95.0,
+            },
+            HocrWord {
+                text: "text".into(),
+                left: 240,
+                top: 100,
+                width: 40,
+                height: 12,
+                confidence: 95.0,
+            },
+            HocrWord {
+                text: "here".into(),
+                left: 290,
+                top: 100,
+                width: 40,
+                height: 12,
+                confidence: 95.0,
+            },
+        ];
+        assert!(!super::has_column_alignment(&words));
+    }
+
+    #[test]
+    #[cfg(all(feature = "pdf", feature = "ocr"))]
+    fn test_has_column_alignment_too_few_words() {
+        use crate::ocr::table::HocrWord;
+
+        let words = vec![
+            HocrWord {
+                text: "Hello".into(),
+                left: 50,
+                top: 100,
+                width: 60,
+                height: 12,
+                confidence: 95.0,
+            },
+            HocrWord {
+                text: "World".into(),
+                left: 300,
+                top: 100,
+                width: 60,
+                height: 12,
+                confidence: 95.0,
+            },
+        ];
+        assert!(!super::has_column_alignment(&words));
     }
 }

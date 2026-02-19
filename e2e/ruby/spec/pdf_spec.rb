@@ -9,6 +9,23 @@
 require_relative 'spec_helper'
 
 RSpec.describe 'pdf fixtures' do
+  it 'pdf_annotations' do
+    E2ERuby.run_fixture(
+      'pdf_annotations',
+      'pdf/test_article.pdf',
+      { pdf_options: { extract_annotations: true } },
+      requirements: [],
+      notes: nil,
+      skip_if_missing: true
+    ) do |result|
+      E2ERuby::Assertions.assert_expected_mime(
+        result,
+        ['application/pdf']
+      )
+      E2ERuby::Assertions.assert_annotations(result, has_annotations: true, min_count: 1)
+    end
+  end
+
   it 'pdf_assembly_technical' do
     E2ERuby.run_fixture(
       'pdf_assembly_technical',

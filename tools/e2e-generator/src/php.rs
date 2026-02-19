@@ -1275,6 +1275,20 @@ fn render_assertions(assertions: &Assertions) -> String {
         .unwrap();
     }
 
+    if let Some(annotations) = assertions.annotations.as_ref() {
+        let has_annotations = if annotations.has_annotations { "true" } else { "false" };
+        let min_count = annotations
+            .min_count
+            .map(|v| v.to_string())
+            .unwrap_or_else(|| "null".to_string());
+        writeln!(
+            buffer,
+            "        Helpers::assertAnnotations($result, {}, {});",
+            has_annotations, min_count
+        )
+        .unwrap();
+    }
+
     buffer
 }
 

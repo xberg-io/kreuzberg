@@ -427,6 +427,10 @@ func convertCResult(cRes *C.CExtractionResult) (*ExtractionResult, error) {
 		return nil, newSerializationErrorWithContext("failed to decode processing warnings", err, ErrorCodeValidation, nil)
 	}
 
+	if err := decodeJSONCString(cRes.annotations_json, &result.Annotations); err != nil {
+		return nil, newSerializationErrorWithContext("failed to decode annotations", err, ErrorCodeValidation, nil)
+	}
+
 	return result, nil
 }
 

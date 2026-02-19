@@ -24,6 +24,21 @@ pub struct PdfConfig {
     /// Hierarchy extraction configuration (None = hierarchy extraction disabled)
     #[serde(default)]
     pub hierarchy: Option<HierarchyConfig>,
+
+    /// Extract PDF annotations (text notes, highlights, links, stamps).
+    /// Default: false
+    #[serde(default)]
+    pub extract_annotations: bool,
+
+    /// Top margin fraction (0.0–1.0) of page height to exclude headers/running heads.
+    /// Default: 0.06 (6%)
+    #[serde(default)]
+    pub top_margin_fraction: Option<f32>,
+
+    /// Bottom margin fraction (0.0–1.0) of page height to exclude footers/page numbers.
+    /// Default: 0.05 (5%)
+    #[serde(default)]
+    pub bottom_margin_fraction: Option<f32>,
 }
 
 /// Hierarchy extraction configuration for PDF text structure analysis.
@@ -107,5 +122,22 @@ mod tests {
         assert_eq!(config.k_clusters, 3);
         assert!(!config.include_bbox);
         assert_eq!(config.ocr_coverage_threshold, Some(0.7));
+    }
+
+    #[test]
+    #[cfg(feature = "pdf")]
+    fn test_pdf_config_custom_margins() {
+        use super::*;
+        let config = PdfConfig {
+            extract_images: false,
+            passwords: None,
+            extract_metadata: true,
+            hierarchy: None,
+            extract_annotations: false,
+            top_margin_fraction: Some(0.10),
+            bottom_margin_fraction: Some(0.08),
+        };
+        assert_eq!(config.top_margin_fraction, Some(0.10));
+        assert_eq!(config.bottom_margin_fraction, Some(0.08));
     }
 }

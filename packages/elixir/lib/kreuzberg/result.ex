@@ -21,6 +21,7 @@ defmodule Kreuzberg.ExtractionResult do
     * `:extracted_keywords` - Optional list of extracted keywords with scores
     * `:quality_score` - Optional quality score for the extraction (0.0 to 1.0)
     * `:processing_warnings` - Optional list of warnings generated during processing
+    * `:annotations` - Optional list of PDF annotations (text, highlight, link, etc.)
   """
 
   @type t :: %__MODULE__{
@@ -38,7 +39,8 @@ defmodule Kreuzberg.ExtractionResult do
           document: Kreuzberg.DocumentStructure.t() | nil,
           extracted_keywords: list(Kreuzberg.Keyword.t()) | nil,
           quality_score: float() | nil,
-          processing_warnings: list(Kreuzberg.ProcessingWarning.t())
+          processing_warnings: list(Kreuzberg.ProcessingWarning.t()),
+          annotations: list(Kreuzberg.PdfAnnotation.t()) | nil
         }
 
   defstruct [
@@ -52,6 +54,7 @@ defmodule Kreuzberg.ExtractionResult do
     :document,
     :extracted_keywords,
     :quality_score,
+    :annotations,
     content: "",
     processing_warnings: [],
     mime_type: "",
@@ -93,7 +96,8 @@ defmodule Kreuzberg.ExtractionResult do
       document: normalize_document(Keyword.get(opts, :document)),
       extracted_keywords: normalize_keywords(Keyword.get(opts, :extracted_keywords)),
       quality_score: normalize_quality_score(Keyword.get(opts, :quality_score)),
-      processing_warnings: normalize_processing_warnings(Keyword.get(opts, :processing_warnings))
+      processing_warnings: normalize_processing_warnings(Keyword.get(opts, :processing_warnings)),
+      annotations: normalize_annotations(Keyword.get(opts, :annotations))
     }
   end
 
@@ -129,7 +133,9 @@ defmodule Kreuzberg.ExtractionResult do
         maybe_map_list(result.extracted_keywords, &Kreuzberg.Keyword.to_map/1),
       "quality_score" => result.quality_score,
       "processing_warnings" =>
-        maybe_map_list(result.processing_warnings, &Kreuzberg.ProcessingWarning.to_map/1)
+        maybe_map_list(result.processing_warnings, &Kreuzberg.ProcessingWarning.to_map/1),
+      "annotations" =>
+        maybe_map_list(result.annotations, &Kreuzberg.PdfAnnotation.to_map/1)
     }
   end
 
@@ -236,6 +242,17 @@ defmodule Kreuzberg.ExtractionResult do
     Enum.map(warnings, fn
       %Kreuzberg.ProcessingWarning{} = w -> w
       map when is_map(map) -> Kreuzberg.ProcessingWarning.from_map(map)
+      other -> other
+    end)
+  end
+
+  defp normalize_annotations(nil), do: nil
+  defp normalize_annotations([]), do: []
+
+  defp normalize_annotations(annotations) when is_list(annotations) do
+    Enum.map(annotations, fn
+      %Kreuzberg.PdfAnnotation{} = annotation -> annotation
+      map when is_map(map) -> Kreuzberg.PdfAnnotation.from_map(map)
       other -> other
     end)
   end

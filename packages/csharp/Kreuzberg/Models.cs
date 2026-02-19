@@ -531,6 +531,74 @@ public sealed class ExtractionResult
     /// </summary>
     [JsonPropertyName("processing_warnings")]
     public List<ProcessingWarning>? ProcessingWarnings { get; set; }
+
+    /// <summary>
+    /// PDF annotations extracted from the document, if any.
+    /// Available when the document is a PDF containing annotations such as
+    /// comments, highlights, links, stamps, underlines, or strikeouts.
+    /// </summary>
+    [JsonPropertyName("annotations")]
+    public List<PdfAnnotation>? Annotations { get; set; }
+}
+
+/// <summary>
+/// Represents an annotation extracted from a PDF document.
+/// </summary>
+public sealed class PdfAnnotation
+{
+    /// <summary>
+    /// The type of annotation (e.g., "text", "highlight", "link", "stamp", "underline", "strike_out", "other").
+    /// </summary>
+    [JsonPropertyName("annotation_type")]
+    public string AnnotationType { get; init; } = string.Empty;
+
+    /// <summary>
+    /// The text content of the annotation, if available.
+    /// </summary>
+    [JsonPropertyName("content")]
+    public string? Content { get; init; }
+
+    /// <summary>
+    /// The page number where the annotation appears (1-indexed).
+    /// </summary>
+    [JsonPropertyName("page_number")]
+    public int PageNumber { get; init; }
+
+    /// <summary>
+    /// The bounding box coordinates of the annotation on the page, if available.
+    /// </summary>
+    [JsonPropertyName("bounding_box")]
+    public PdfAnnotationBoundingBox? BoundingBox { get; init; }
+}
+
+/// <summary>
+/// Bounding box for a PDF annotation (PDF coordinates).
+/// </summary>
+public sealed class PdfAnnotationBoundingBox
+{
+    /// <summary>
+    /// Left x-coordinate.
+    /// </summary>
+    [JsonPropertyName("x0")]
+    public double X0 { get; init; }
+
+    /// <summary>
+    /// Bottom y-coordinate.
+    /// </summary>
+    [JsonPropertyName("y0")]
+    public double Y0 { get; init; }
+
+    /// <summary>
+    /// Right x-coordinate.
+    /// </summary>
+    [JsonPropertyName("x1")]
+    public double X1 { get; init; }
+
+    /// <summary>
+    /// Top y-coordinate.
+    /// </summary>
+    [JsonPropertyName("y1")]
+    public double Y1 { get; init; }
 }
 
 /// <summary>

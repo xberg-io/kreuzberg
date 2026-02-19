@@ -125,6 +125,7 @@ function mapPdfConfig(raw: PlainRecord): PdfConfig {
         config.passwords = raw.passwords.filter((item: unknown): item is string => typeof item === "string");
     }
     assignBooleanField(config as PlainRecord, raw, "extract_metadata", "extractMetadata");
+    assignBooleanField(config as PlainRecord, raw, "extract_annotations", "extractAnnotations");
     return config;
 }
 
@@ -626,6 +627,20 @@ export const assertions = {
             const blocks = (djotContent as PlainRecord).blocks ?? (djotContent as PlainRecord).nodes;
             if (Array.isArray(blocks)) {
                 expect(blocks.length).toBeGreaterThanOrEqual(minBlocks);
+            }
+        }
+    },
+
+    assertAnnotations(result: ExtractionResult, hasAnnotations: boolean = false, minCount?: number | null): void {
+        const annotations = (result as unknown as PlainRecord).annotations as unknown[] | undefined;
+        if (hasAnnotations) {
+            expect(annotations).toBeDefined();
+            expect(Array.isArray(annotations)).toBe(true);
+            expect((annotations as unknown[]).length).toBeGreaterThan(0);
+        }
+        if (annotations !== undefined && annotations !== null && Array.isArray(annotations)) {
+            if (typeof minCount === "number") {
+                expect(annotations.length).toBeGreaterThanOrEqual(minCount);
             }
         }
     },
@@ -1165,6 +1180,17 @@ fn render_assertions(assertions: &Assertions) -> String {
         ));
     }
 
+    if let Some(annotations) = assertions.annotations.as_ref() {
+        let has_annotations = annotations.has_annotations.to_string();
+        let min_count = annotations
+            .min_count
+            .map(|v| v.to_string())
+            .unwrap_or_else(|| "null".into());
+        buffer.push_str(&format!(
+            "        assertions.assertAnnotations(result, {has_annotations}, {min_count});\n"
+        ));
+    }
+
     buffer
 }
 
@@ -1236,7 +1262,10 @@ fn is_workers_available(fixture: &Fixture) -> bool {
 
     let pattern = fixture.test_spec.as_ref().map(|ts| ts.pattern.as_str()).unwrap_or("");
 
-    !matches!(pattern, "config_from_file" | "config_discover" | "mime_from_path")
+    !matches!(
+        pattern,
+        "config_from_file" | "config_discover" | "mime_from_path" | "mime_from_bytes" | "mime_extension_lookup"
+    )
 }
 
 /// Map fixture function names to WASM JS export names.

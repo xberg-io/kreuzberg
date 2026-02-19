@@ -82,6 +82,7 @@ mod tests {
             extracted_keywords: None,
             quality_score: None,
             processing_warnings: Vec::new(),
+            annotations: None,
         };
 
         let config = ExtractionConfig::default();
@@ -140,6 +141,7 @@ mod tests {
             extracted_keywords: None,
             quality_score: None,
             processing_warnings: Vec::new(),
+            annotations: None,
         };
 
         let config = ExtractionConfig::default();
@@ -215,6 +217,7 @@ mod tests {
             extracted_keywords: None,
             quality_score: None,
             processing_warnings: Vec::new(),
+            annotations: None,
         };
 
         let config = ExtractionConfig::default();
@@ -253,6 +256,7 @@ mod tests {
             extracted_keywords: None,
             quality_score: None,
             processing_warnings: Vec::new(),
+            annotations: None,
         };
 
         let config = ExtractionConfig::default();
@@ -288,6 +292,7 @@ mod tests {
             extracted_keywords: None,
             quality_score: None,
             processing_warnings: Vec::new(),
+            annotations: None,
         };
 
         assert_eq!(processor.estimated_duration_ms(&result), 0);
@@ -347,6 +352,7 @@ mod tests {
             extracted_keywords: None,
             quality_score: None,
             processing_warnings: Vec::new(),
+            annotations: None,
         };
 
         let txt_result = ExtractionResult {
@@ -366,6 +372,7 @@ mod tests {
             extracted_keywords: None,
             quality_score: None,
             processing_warnings: Vec::new(),
+            annotations: None,
         };
 
         assert!(processor.should_process(&pdf_result, &config));
@@ -404,6 +411,7 @@ mod tests {
             extracted_keywords: None,
             quality_score: None,
             processing_warnings: Vec::new(),
+            annotations: None,
         };
 
         let config = ExtractionConfig::default();

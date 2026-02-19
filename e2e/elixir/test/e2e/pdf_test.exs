@@ -9,6 +9,28 @@ defmodule E2E.PdfTest do
   use ExUnit.Case, async: false
 
   describe "pdf fixtures" do
+    test "pdf_annotations" do
+      case E2E.Helpers.run_fixture(
+             "pdf_annotations",
+             "pdf/test_article.pdf",
+             %{pdf_options: %{extract_annotations: true}},
+             requirements: [],
+             notes: nil,
+             skip_if_missing: true
+           ) do
+        {:ok, result} ->
+          result
+          |> E2E.Helpers.assert_expected_mime(["application/pdf"])
+          |> E2E.Helpers.assert_annotations(has_annotations: true, min_count: 1)
+
+        {:skipped, reason} ->
+          IO.puts("SKIPPED: #{reason}")
+
+        {:error, reason} ->
+          flunk("Extraction failed: #{inspect(reason)}")
+      end
+    end
+
     test "pdf_assembly_technical" do
       case E2E.Helpers.run_fixture(
              "pdf_assembly_technical",

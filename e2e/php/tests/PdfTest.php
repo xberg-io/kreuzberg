@@ -16,6 +16,25 @@ use PHPUnit\Framework\TestCase;
 class PdfTest extends TestCase
 {
     /**
+     * PDF with annotations should extract annotation data when enabled.
+     */
+    public function test_pdf_annotations(): void
+    {
+        $documentPath = Helpers::resolveDocument('pdf/test_article.pdf');
+        if (!file_exists($documentPath)) {
+            $this->markTestSkipped('Skipping pdf_annotations: missing document at ' . $documentPath);
+        }
+
+        $config = Helpers::buildConfig(['pdf_options' => ['extract_annotations' => true]]);
+
+        $kreuzberg = new Kreuzberg($config);
+        $result = $kreuzberg->extractFile($documentPath);
+
+        Helpers::assertExpectedMime($result, ['application/pdf']);
+        Helpers::assertAnnotations($result, true, 1);
+    }
+
+    /**
      * Assembly language technical manual with large body of text.
      */
     public function test_pdf_assembly_technical(): void

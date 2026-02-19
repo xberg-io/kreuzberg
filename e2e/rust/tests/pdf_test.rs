@@ -7,6 +7,36 @@ use e2e_rust::{assertions, resolve_document};
 use kreuzberg::KreuzbergError;
 use kreuzberg::core::config::ExtractionConfig;
 #[test]
+fn test_pdf_annotations() {
+    // PDF with annotations should extract annotation data when enabled.
+
+    let document_path = resolve_document("pdf/test_article.pdf");
+    if !document_path.exists() {
+        println!(
+            "Skipping pdf_annotations: missing document at {}",
+            document_path.display()
+        );
+        return;
+    }
+    let config: ExtractionConfig = serde_json::from_str(
+        r#"{
+  "pdf_options": {
+    "extract_annotations": true
+  }
+}"#,
+    )
+    .expect("Fixture config should deserialize");
+
+    let result = match kreuzberg::extract_file_sync(&document_path, None, &config) {
+        Err(err) => panic!("Extraction failed for pdf_annotations: {err:?}"),
+        Ok(result) => result,
+    };
+
+    assertions::assert_expected_mime(&result, &["application/pdf"]);
+    assertions::assert_annotations(&result, true, Some(1));
+}
+
+#[test]
 fn test_pdf_assembly_technical() {
     // Assembly language technical manual with large body of text.
 

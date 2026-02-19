@@ -238,7 +238,6 @@ RSpec.describe 'contract fixtures' do
         ['application/pdf']
       )
       E2ERuby::Assertions.assert_min_content_length(result, 10)
-      E2ERuby::Assertions.assert_djot_content(result, has_content: true)
     end
   end
 

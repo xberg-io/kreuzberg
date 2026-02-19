@@ -143,6 +143,7 @@ function mapPdfConfig(raw: PlainRecord): PdfConfig {
         (config as unknown as PdfConfig).passwords = raw.passwords.filter((item: unknown): item is string => typeof item === "string");
     }
     assignBooleanField(config, raw, "extract_metadata", "extractMetadata");
+    assignBooleanField(config, raw, "extract_annotations", "extractAnnotations");
     return config as unknown as PdfConfig;
 }
 
@@ -659,6 +660,20 @@ export const assertions = {
             assertExists(djot, "djot_content required for min_blocks assertion");
             const blocks = Array.isArray(djot) ? djot : ((djot as PlainRecord)?.blocks as unknown[] | undefined) ?? [];
             assertEquals(blocks.length >= minBlocks, true, `djot_content blocks ${blocks.length} < ${minBlocks}`);
+        }
+    },
+
+    assertAnnotations(result: ExtractionResult, hasAnnotations: boolean = false, minCount?: number | null): void {
+        const annotations = (result as unknown as PlainRecord).annotations as unknown[] | undefined;
+        if (hasAnnotations) {
+            assertExists(annotations, "Expected annotations to be present");
+            assertEquals(Array.isArray(annotations), true, "Expected annotations to be an array");
+            assertEquals((annotations as unknown[]).length > 0, true, "Expected at least one annotation");
+        }
+        if (annotations !== undefined && annotations !== null && Array.isArray(annotations)) {
+            if (typeof minCount === "number") {
+                assertEquals(annotations.length >= minCount, true, `Expected at least ${minCount} annotations, got ${annotations.length}`);
+            }
         }
     },
 };
@@ -1180,6 +1195,17 @@ fn render_assertions(assertions: &Assertions) -> String {
             .unwrap_or_else(|| "null".into());
         buffer.push_str(&format!(
             "    assertions.assertDjotContent(result, {has_content}, {min_blocks});\n"
+        ));
+    }
+
+    if let Some(annotations) = assertions.annotations.as_ref() {
+        let has_annotations = annotations.has_annotations.to_string();
+        let min_count = annotations
+            .min_count
+            .map(|v| v.to_string())
+            .unwrap_or_else(|| "null".into());
+        buffer.push_str(&format!(
+            "    assertions.assertAnnotations(result, {has_annotations}, {min_count});\n"
         ));
     }
 

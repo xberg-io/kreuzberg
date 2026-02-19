@@ -401,6 +401,18 @@ module E2ERuby
       expect(blocks.length).to be >= min_blocks
     end
 
+    def self.assert_annotations(result, has_annotations: false, min_count: nil)
+      annotations = result.annotations
+      if has_annotations
+        expect(annotations).not_to be_nil
+        expect(annotations).to be_a(Array)
+        expect(annotations.length).not_to eq(0)
+      end
+      return unless annotations.is_a?(Array)
+
+      expect(annotations.length).to be >= min_count if min_count
+    end
+
     class << self
       private
 

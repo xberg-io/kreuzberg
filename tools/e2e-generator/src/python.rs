@@ -588,6 +588,19 @@ def assert_djot_content(result: Any, has_content: bool | None = None, min_blocks
         assert djot is not None, "djot_content required for min_blocks assertion"
         blocks = getattr(djot, "blocks", None) or (djot.get("blocks") if isinstance(djot, dict) else [])
         assert len(blocks or []) >= min_blocks, f"djot_content blocks {len(blocks or [])} < {min_blocks}"
+
+
+def assert_annotations(result: Any, has_annotations: bool = False, min_count: int | None = None) -> None:
+    annotations = getattr(result, "annotations", None)
+    if isinstance(result, dict):
+        annotations = result.get("annotations")
+    if has_annotations:
+        assert annotations is not None, "Expected annotations to be present"
+        assert isinstance(annotations, (list, tuple)), f"Expected annotations to be a list, got {type(annotations)}"
+        assert len(annotations) > 0, "Expected annotations to be non-empty"
+    if annotations is not None and isinstance(annotations, (list, tuple)):
+        if min_count is not None and len(annotations) < min_count:
+            pytest.fail(f"Expected at least {min_count} annotations, found {len(annotations)}")
 "#;
 
 pub fn generate(fixtures: &[Fixture], output_root: &Utf8Path) -> Result<()> {
@@ -1070,6 +1083,17 @@ fn render_assertions(assertions: &Assertions) -> String {
             args.push(format!("min_blocks={min_blocks}"));
         }
         writeln!(buffer, "    helpers.assert_djot_content(result, {})", args.join(", ")).unwrap();
+    }
+
+    if let Some(annotations) = assertions.annotations.as_ref() {
+        let mut args = vec![format!(
+            "has_annotations={}",
+            if annotations.has_annotations { "True" } else { "False" }
+        )];
+        if let Some(min_count) = annotations.min_count {
+            args.push(format!("min_count={min_count}"));
+        }
+        writeln!(buffer, "    helpers.assert_annotations(result, {})", args.join(", ")).unwrap();
     }
 
     if !buffer.ends_with('\n') {

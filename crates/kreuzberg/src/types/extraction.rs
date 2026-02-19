@@ -134,6 +134,15 @@ pub struct ExtractionResult {
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub processing_warnings: Vec<ProcessingWarning>,
+
+    /// PDF annotations extracted from the document.
+    ///
+    /// When annotation extraction is enabled via `PdfConfig::extract_annotations`,
+    /// this field contains text notes, highlights, links, stamps, and other
+    /// annotations found in PDF documents.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    pub annotations: Option<Vec<super::annotations::PdfAnnotation>>,
 }
 
 /// A non-fatal warning from a processing pipeline stage.
