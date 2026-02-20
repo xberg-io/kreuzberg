@@ -547,9 +547,9 @@ dependencies = [
 
 [[package]]
 name = "biblib"
-version = "0.3.2"
+version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "877d134cd77e9e3c8b90e848d5e28e3126aa8db8d66a6f97e7af89c468f631a9"
+checksum = "4c77aa973819174a86ee2ea4828393ef6f11e8a427d02ee458af72ba5d770cd5"
 dependencies = [
  "compact_str",
  "either",
