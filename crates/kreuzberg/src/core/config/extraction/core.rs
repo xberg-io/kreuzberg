@@ -87,10 +87,10 @@ pub struct ExtractionConfig {
     #[serde(default)]
     pub html_options: Option<html_to_markdown_rs::ConversionOptions>,
 
-    /// Maximum concurrent extractions in batch operations (None = num_cpus * 2).
+    /// Maximum concurrent extractions in batch operations (None = (num_cpus × 1.5).ceil()).
     ///
     /// Limits parallelism to prevent resource exhaustion when processing
-    /// large batches. Defaults to twice the number of CPU cores.
+    /// large batches. Defaults to (num_cpus × 1.5).ceil() when not set.
     #[serde(default)]
     pub max_concurrent_extractions: Option<usize>,
 

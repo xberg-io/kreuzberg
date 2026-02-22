@@ -19,7 +19,7 @@ use super::file::extract_file;
 /// This function processes multiple files in parallel, automatically managing
 /// concurrency to prevent resource exhaustion. The concurrency limit can be
 /// configured via `ExtractionConfig::max_concurrent_extractions` or defaults
-/// to `num_cpus * 2`.
+/// to `(num_cpus * 1.5).ceil()`.
 ///
 /// # Arguments
 ///
@@ -153,7 +153,7 @@ pub async fn batch_extract_file(
 /// This function processes multiple byte arrays in parallel, automatically managing
 /// concurrency to prevent resource exhaustion. The concurrency limit can be
 /// configured via `ExtractionConfig::max_concurrent_extractions` or defaults
-/// to `num_cpus * 2`.
+/// to `(num_cpus * 1.5).ceil()`.
 ///
 /// # Arguments
 ///

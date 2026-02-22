@@ -59,13 +59,11 @@ let mime_type = EXT_TO_MIME.get(extension.as_str())
 Whether the MIME type was detected or explicitly provided, it must be supported:
 
 ```rust title="mime_detection.rs"
-pub fn validate_mime_type(mime_type: &str) -> Result<()> {
+pub fn validate_mime_type(mime_type: &str) -> Result<String> {
     if SUPPORTED_TYPES.contains(mime_type) {
-        Ok(())
+        Ok(mime_type.to_string())
     } else {
-        Err(KreuzbergError::UnsupportedFormat {
-            mime_type: mime_type.to_string(),
-        })
+        Err(KreuzbergError::UnsupportedFormat(mime_type.to_string()))
     }
 }
 ```
@@ -76,80 +74,80 @@ Kreuzberg supports multiple file formats across many categories:
 
 ### Documents
 
-| Extension | MIME Type |
-|-----------|-----------|
-| `.pdf` | `application/pdf` |
-| `.docx` | `application/vnd.openxmlformats-officedocument.wordprocessingml.document` |
-| `.doc` | `application/msword` |
-| `.odt` | `application/vnd.oasis.opendocument.text` |
-| `.rtf` | `application/rtf` |
+| Extension | MIME Type                                                                 |
+| --------- | ------------------------------------------------------------------------- |
+| `.pdf`    | `application/pdf`                                                         |
+| `.docx`   | `application/vnd.openxmlformats-officedocument.wordprocessingml.document` |
+| `.doc`    | `application/msword`                                                      |
+| `.odt`    | `application/vnd.oasis.opendocument.text`                                 |
+| `.rtf`    | `application/rtf`                                                         |
 
 ### Spreadsheets
 
-| Extension | MIME Type |
-|-----------|-----------|
-| `.xlsx` | `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet` |
-| `.xls` | `application/vnd.ms-excel` |
-| `.xlsm` | `application/vnd.ms-excel.sheet.macroEnabled.12` |
-| `.xlsb` | `application/vnd.ms-excel.sheet.binary.macroEnabled.12` |
-| `.ods` | `application/vnd.oasis.opendocument.spreadsheet` |
-| `.csv` | `text/csv` |
-| `.tsv` | `text/tab-separated-values` |
+| Extension | MIME Type                                                           |
+| --------- | ------------------------------------------------------------------- |
+| `.xlsx`   | `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet` |
+| `.xls`    | `application/vnd.ms-excel`                                          |
+| `.xlsm`   | `application/vnd.ms-excel.sheet.macroEnabled.12`                    |
+| `.xlsb`   | `application/vnd.ms-excel.sheet.binary.macroEnabled.12`             |
+| `.ods`    | `application/vnd.oasis.opendocument.spreadsheet`                    |
+| `.csv`    | `text/csv`                                                          |
+| `.tsv`    | `text/tab-separated-values`                                         |
 
 ### Presentations
 
-| Extension | MIME Type |
-|-----------|-----------|
-| `.pptx` | `application/vnd.openxmlformats-officedocument.presentationml.presentation` |
-| `.ppt` | `application/vnd.ms-powerpoint` |
-| `.odp` | `application/vnd.oasis.opendocument.presentation` |
+| Extension | MIME Type                                                                   |
+| --------- | --------------------------------------------------------------------------- |
+| `.pptx`   | `application/vnd.openxmlformats-officedocument.presentationml.presentation` |
+| `.ppt`    | `application/vnd.ms-powerpoint`                                             |
+| `.odp`    | `application/vnd.oasis.opendocument.presentation`                           |
 
 ### Images
 
-| Extension | MIME Type |
-|-----------|-----------|
-| `.jpg`, `.jpeg` | `image/jpeg` |
-| `.png` | `image/png` |
-| `.gif` | `image/gif` |
-| `.bmp` | `image/bmp` |
-| `.tiff`, `.tif` | `image/tiff` |
-| `.webp` | `image/webp` |
-| `.svg` | `image/svg+xml` |
+| Extension       | MIME Type       |
+| --------------- | --------------- |
+| `.jpg`, `.jpeg` | `image/jpeg`    |
+| `.png`          | `image/png`     |
+| `.gif`          | `image/gif`     |
+| `.bmp`          | `image/bmp`     |
+| `.tiff`, `.tif` | `image/tiff`    |
+| `.webp`         | `image/webp`    |
+| `.svg`          | `image/svg+xml` |
 
 ### Text and Markup
 
-| Extension | MIME Type |
-|-----------|-----------|
-| `.txt` | `text/plain` |
-| `.md`, `.markdown` | `text/markdown` |
-| `.html`, `.htm` | `text/html` |
-| `.xml` | `application/xml` |
-| `.json` | `application/json` |
-| `.yaml` | `application/x-yaml` |
-| `.toml` | `application/toml` |
+| Extension          | MIME Type            |
+| ------------------ | -------------------- |
+| `.txt`             | `text/plain`         |
+| `.md`, `.markdown` | `text/markdown`      |
+| `.html`, `.htm`    | `text/html`          |
+| `.xml`             | `application/xml`    |
+| `.json`            | `application/json`   |
+| `.yaml`            | `application/x-yaml` |
+| `.toml`            | `application/toml`   |
 
 ### Email
 
-| Extension | MIME Type |
-|-----------|-----------|
-| `.eml` | `message/rfc822` |
-| `.msg` | `application/vnd.ms-outlook` |
+| Extension | MIME Type                    |
+| --------- | ---------------------------- |
+| `.eml`    | `message/rfc822`             |
+| `.msg`    | `application/vnd.ms-outlook` |
 
 ### Archives
 
-| Extension | MIME Type |
-|-----------|-----------|
-| `.zip` | `application/zip` |
-| `.tar` | `application/x-tar` |
-| `.gz` | `application/gzip` |
-| `.7z` | `application/x-7z-compressed` |
+| Extension | MIME Type                     |
+| --------- | ----------------------------- |
+| `.zip`    | `application/zip`             |
+| `.tar`    | `application/x-tar`           |
+| `.gz`     | `application/gzip`            |
+| `.7z`     | `application/x-7z-compressed` |
 
 ### Ebooks
 
-| Extension | MIME Type |
-|-----------|-----------|
-| `.epub` | `application/epub+zip` |
-| `.mobi` | `application/x-mobipocket-ebook` |
+| Extension | MIME Type                        |
+| --------- | -------------------------------- |
+| `.epub`   | `application/epub+zip`           |
+| `.mobi`   | `application/x-mobipocket-ebook` |
 
 ## Explicit MIME Type Override
 
@@ -189,15 +187,15 @@ result = extract_file("document.pdf", mime_type=PDF_MIME_TYPE, config=config)
 Kreuzberg provides utility functions for MIME type operations:
 
 ```rust title="mime_detection.rs"
-// Automatically detect MIME type from file path extension
-pub fn detect_mime_type(path: impl AsRef<Path>) -> Result<String>
+// Detect MIME type from file path (by extension). check_exists: if true, file must exist.
+pub fn detect_mime_type(path: impl AsRef<Path>, check_exists: bool) -> Result<String>
 
-// Verify that a MIME type is supported by Kreuzberg
-pub fn validate_mime_type(mime_type: &str) -> Result<()>
+// Validate that a MIME type is supported; returns the validated (possibly normalized) string.
+pub fn validate_mime_type(mime_type: &str) -> Result<String>
 
-// Auto-detect MIME type or validate explicit type if provided
+// If mime_type provided, validate it; else detect from path. Errors if both are None.
 pub fn detect_or_validate(
-    path: impl AsRef<Path>,
+    path: Option<&Path>,
     mime_type: Option<&str>
 ) -> Result<String>
 ```

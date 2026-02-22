@@ -22,7 +22,7 @@ async fn main() -> kreuzberg::Result<()> {
     };
 
     let result = extract_file("document.pdf", None::<&str>, &config).await?;
-    println!("Chunks with embeddings: {}", result.chunks.len());
+    println!("Chunks with embeddings: {}", result.chunks.as_ref().map(|c| c.len()).unwrap_or(0));
     Ok(())
 }
 ```

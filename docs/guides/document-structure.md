@@ -46,19 +46,19 @@ flowchart LR
 
 ### Feature Comparison Table
 
-| Aspect | Unified | Element-Based | Document Structure |
-|--------|---------|---------------|--------------------|
-| **Output Structure** | Single `content` field | Array of elements | Flat `Vec<DocumentNode>` with index references |
-| **Hierarchy** | None | Inferred from levels | Explicit parent/child indices |
-| **Traversal** | Sequential iteration | Flat array filtering | Tree walking (parent → children) |
-| **Nesting** | Not supported | No parent-child links | Full parent-child relationships |
-| **Annotations** | No inline support | No inline support | TextAnnotation per node (bold, italic, links) |
-| **Tables** | `result.tables` array | Table elements | TableGrid with cell structure |
-| **Content Layers** | Not classified | Not classified | ContentLayer (body, header, footer, footnote) |
-| **Node IDs** | Not provided | `element_id` | Deterministic `NodeId` |
-| **Page Ranges** | `page` per element | `page_number` | `page` and `page_end` |
-| **Bounding Boxes** | Per-element `coordinates` | Per-element `coordinates` | Per-node `bbox` |
-| **Best For** | LLM prompts, full-text search | RAG chunking, semantic search | Hierarchical document apps, knowledge graphs |
+| Aspect               | Unified                       | Element-Based                 | Document Structure                             |
+| -------------------- | ----------------------------- | ----------------------------- | ---------------------------------------------- |
+| **Output Structure** | Single `content` field        | Array of elements             | Flat `Vec<DocumentNode>` with index references |
+| **Hierarchy**        | None                          | Inferred from levels          | Explicit parent/child indices                  |
+| **Traversal**        | Sequential iteration          | Flat array filtering          | Tree walking (parent → children)               |
+| **Nesting**          | Not supported                 | No parent-child links         | Full parent-child relationships                |
+| **Annotations**      | No inline support             | No inline support             | TextAnnotation per node (bold, italic, links)  |
+| **Tables**           | `result.tables` array         | Table elements                | TableGrid with cell structure                  |
+| **Content Layers**   | Not classified                | Not classified                | ContentLayer (body, header, footer, footnote)  |
+| **Node IDs**         | Not provided                  | `element_id`                  | Deterministic `NodeId`                         |
+| **Page Ranges**      | `page` per element            | `page_number`                 | `page` and `page_end`                          |
+| **Bounding Boxes**   | Per-element `coordinates`     | Per-element `coordinates`     | Per-node `bbox`                                |
+| **Best For**         | LLM prompts, full-text search | RAG chunking, semantic search | Hierarchical document apps, knowledge graphs   |
 
 ## Enabling Document Structure
 
@@ -116,7 +116,7 @@ To enable document structure output, set `include_document_structure: true` in y
         ..Default::default()
     };
 
-    let result = extract_file_sync("document.pdf", Some(config))?;
+    let result = extract_file_sync("document.pdf", None, &config)?;
 
     // Access document structure
     if let Some(doc_struct) = result.document {
@@ -326,14 +326,17 @@ Document structure supports 13 distinct node types, each with specific content f
 The main document title.
 
 **Content fields**:
+
 - `text: String` — Title text
 
 **Metadata**:
+
 - `node_type: "title"`
 - `content_layer: ContentLayer` — Usually Body
 - `page: Option<u32>` — Page where title appears
 
 **Example JSON**:
+
 ```json
 {
   "id": "node-a3f2b1c4",
@@ -362,15 +365,18 @@ The main document title.
 Section and subsection headings with hierarchy levels.
 
 **Content fields**:
+
 - `level: u8` — Heading level (1-6)
 - `text: String` — Heading text
 
 **Metadata**:
+
 - `node_type: "heading"`
 - `parent: Option<NodeIndex>` — Parent section or title
 - `children: Vec<NodeIndex>` — Child nodes (paragraphs, subheadings, etc.)
 
 **Example JSON**:
+
 ```json
 {
   "id": "node-f2c9d3e8",
@@ -399,13 +405,16 @@ Section and subsection headings with hierarchy levels.
 Body paragraphs and narrative text.
 
 **Content fields**:
+
 - `text: String` — Paragraph text
 
 **Metadata**:
+
 - `node_type: "paragraph"`
 - `annotations: Vec<TextAnnotation>` — Inline formatting (bold, italic, links)
 
 **Example JSON**:
+
 ```json
 {
   "id": "node-d4b7f3a9",
@@ -435,13 +444,16 @@ Body paragraphs and narrative text.
 Container node for list items (bullet, numbered, lettered, indented).
 
 **Content fields**:
+
 - `ordered: bool` — Whether list is ordered (numbered/lettered) or unordered (bullet)
 
 **Metadata**:
+
 - `node_type: "list"`
 - `children: Vec<NodeIndex>` — Child list_item nodes
 
 **Example JSON**:
+
 ```json
 {
   "id": "node-e5a9c3b7",
@@ -462,13 +474,16 @@ Container node for list items (bullet, numbered, lettered, indented).
 Individual list item within a list container.
 
 **Content fields**:
+
 - `text: String` — List item text
 
 **Metadata**:
+
 - `node_type: "list_item"`
 - `parent: Option<NodeIndex>` — Parent list node
 
 **Example JSON**:
+
 ```json
 {
   "id": "node-c2f8d1a6",
@@ -490,13 +505,16 @@ Individual list item within a list container.
 Structured tabular data with cell-level information.
 
 **Content fields**:
+
 - `grid: TableGrid` — Grid structure with rows, columns, and cells
 
 **Metadata**:
+
 - `node_type: "table"`
 - `page` and `page_end` — Page range for multi-page tables
 
 **Example JSON**:
+
 ```json
 {
   "id": "node-b1f4a8c2",
@@ -545,14 +563,17 @@ Structured tabular data with cell-level information.
 Embedded images and visual content.
 
 **Content fields**:
+
 - `description: Option<String>` — Alt text or image description
 - `image_index: Option<u32>` — Reference to image in extraction result
 
 **Metadata**:
+
 - `node_type: "image"`
 - `page: Option<u32>` — Page containing image
 
 **Example JSON**:
+
 ```json
 {
   "id": "node-a7d2f1c9",
@@ -580,14 +601,17 @@ Embedded images and visual content.
 Code blocks with optional language specification.
 
 **Content fields**:
+
 - `text: String` — Code block text
 - `language: Option<String>` — Programming language (e.g., "python", "rust", "javascript")
 
 **Metadata**:
+
 - `node_type: "code"`
 - `content_layer: ContentLayer` — Usually Body
 
 **Example JSON**:
+
 ```json
 {
   "id": "node-c9f3a2e7",
@@ -612,10 +636,12 @@ Quoted text blocks with optional attribution.
 **Content fields**: None (container node)
 
 **Metadata**:
+
 - `node_type: "quote"`
 - `children: Vec<NodeIndex>` — Child nodes (typically paragraphs)
 
 **Example JSON**:
+
 ```json
 {
   "id": "node-d1b8f4c3",
@@ -635,13 +661,16 @@ Quoted text blocks with optional attribution.
 Mathematical formulas and equations.
 
 **Content fields**:
+
 - `text: String` — Formula text (plain text, LaTeX, or MathML)
 
 **Metadata**:
+
 - `node_type: "formula"`
 - `page: Option<u32>` — Page containing formula
 
 **Example JSON**:
+
 ```json
 {
   "id": "node-e3c7a9f2",
@@ -668,13 +697,16 @@ Mathematical formulas and equations.
 Footnote and endnote content.
 
 **Content fields**:
+
 - `text: String` — Footnote text
 
 **Metadata**:
+
 - `node_type: "footnote"`
 - `content_layer: ContentLayer` — Usually Footnote
 
 **Example JSON**:
+
 ```json
 {
   "id": "node-f8a1b2c3",
@@ -695,15 +727,18 @@ Footnote and endnote content.
 Semantic grouping container for sections with optional heading.
 
 **Content fields**:
+
 - `label: Option<String>` — Section label or identifier
 - `heading_level: Option<u8>` — Heading level if group has a title
 - `heading_text: Option<String>` — Heading text for the group
 
 **Metadata**:
+
 - `node_type: "group"`
 - `children: Vec<NodeIndex>` — Child nodes in section
 
 **Example JSON**:
+
 ```json
 {
   "id": "node-g1h2i3j4",
@@ -728,11 +763,13 @@ Page boundary marker in multi-page documents.
 **Content fields**: None (marker node)
 
 **Metadata**:
+
 - `node_type: "page_break"`
 - `page: Option<u32>` — Starting page number
 - `page_end: Option<u32>` — Ending page number (if transitioning)
 
 **Example JSON**:
+
 ```json
 {
   "id": "node-pb-0001",
@@ -752,12 +789,12 @@ Page boundary marker in multi-page documents.
 
 Content layers classify nodes by their position and role in the document layout:
 
-| Layer | Description | Typical Nodes | Example |
-|-------|-------------|---------------|---------|
-| **body** | Main document content | Headings, paragraphs, lists, tables, images | Chapter text, sections |
-| **header** | Page header content | Title text, repeated headers | "Chapter 5: Advanced ML" |
-| **footer** | Page footer content | Page numbers, copyright | "© 2025 | Page 42" |
-| **footnote** | Footnotes and endnotes | Footnote text, references | "1. See Smith (2020)" |
+| Layer        | Description            | Typical Nodes                               | Example                  |
+| ------------ | ---------------------- | ------------------------------------------- | ------------------------ | -------- |
+| **body**     | Main document content  | Headings, paragraphs, lists, tables, images | Chapter text, sections   |
+| **header**   | Page header content    | Title text, repeated headers                | "Chapter 5: Advanced ML" |
+| **footer**   | Page footer content    | Page numbers, copyright                     | "© 2025                  | Page 42" |
+| **footnote** | Footnotes and endnotes | Footnote text, references                   | "1. See Smith (2020)"    |
 
 Access content layer:
 
@@ -795,16 +832,16 @@ Paragraphs and other text nodes can include inline annotations for formatting an
 
 ### AnnotationKind Types
 
-| Kind | Fields | Example |
-|------|--------|---------|
-| **bold** | None | `{"start": 0, "end": 5, "kind": {"annotation_type": "bold"}}` |
-| **italic** | None | `{"start": 10, "end": 20, "kind": {"annotation_type": "italic"}}` |
-| **underline** | None | Underlined text |
-| **strikethrough** | None | ~~Deleted~~ text |
-| **code** | None | `inline_code` |
-| **subscript** | None | H₂O |
-| **superscript** | None | E=mc² |
-| **link** | `url: String`, `title: Option<String>` | Links with optional titles |
+| Kind              | Fields                                 | Example                                                           |
+| ----------------- | -------------------------------------- | ----------------------------------------------------------------- |
+| **bold**          | None                                   | `{"start": 0, "end": 5, "kind": {"annotation_type": "bold"}}`     |
+| **italic**        | None                                   | `{"start": 10, "end": 20, "kind": {"annotation_type": "italic"}}` |
+| **underline**     | None                                   | Underlined text                                                   |
+| **strikethrough** | None                                   | ~~Deleted~~ text                                                  |
+| **code**          | None                                   | `inline_code`                                                     |
+| **subscript**     | None                                   | H₂O                                                               |
+| **superscript**   | None                                   | E=mc²                                                             |
+| **link**          | `url: String`, `title: Option<String>` | Links with optional titles                                        |
 
 ### Working with Annotations
 

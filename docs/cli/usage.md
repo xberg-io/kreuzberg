@@ -25,7 +25,7 @@ The Kreuzberg CLI provides command-line access to all extraction features. This 
     --8<-- "snippets/cli/install_go_sdk.md"
 
 !!! info "Feature Availability"
-    **Homebrew Installation:**
+**Homebrew Installation:**
 
     - ✅ Text extraction (PDF, Office, images, 75+ formats)
     - ✅ OCR with Tesseract
@@ -165,21 +165,36 @@ Configure OCR backend, language, and Tesseract options in your config file (see 
 
 ### Using Config Files
 
-Kreuzberg automatically discovers configuration files by searching the current directory and parent directories for:
-
-1. `./kreuzberg.{toml,yaml,yml,json}` in the current directory
-2. `../kreuzberg.{toml,yaml,yml,json}` in the parent directory (and so on, up the directory tree)
+Kreuzberg automatically discovers a configuration file by searching the current directory and parent directories for **`kreuzberg.toml`** only. If you use YAML or JSON, specify the file explicitly with `--config`.
 
 ```bash title="Terminal"
-# Extract using discovered configuration
+# Extract using discovered configuration (finds kreuzberg.toml)
 kreuzberg extract document.pdf
 ```
 
 ### Specify Config File
 
+You can load TOML, YAML (`.yaml` or `.yml`), or JSON via `--config`:
+
 ```bash title="Terminal"
 kreuzberg extract document.pdf --config my-config.toml
+kreuzberg extract document.pdf --config kreuzberg.yaml
+kreuzberg extract document.pdf --config my-config.json
 ```
+
+### Inline JSON Config
+
+Override or supply config without a file using inline JSON (merged after config file, before individual flags):
+
+```bash title="Terminal"
+# Inline JSON (applied after config file)
+kreuzberg extract document.pdf --config-json '{"ocr":{"backend":"tesseract"},"chunking":{"max_chars":1000}}'
+
+# Base64-encoded JSON (useful in shells where quoting is awkward)
+kreuzberg extract document.pdf --config-json-base64 eyJvY3IiOnsiYmFja2VuZCI6InRlc3NlcmFjdCJ9fQ==
+```
+
+Both `extract` and `batch` support `--config-json` and `--config-json-base64`.
 
 ### Example Config Files
 
@@ -447,15 +462,17 @@ kreuzberg detect document.pdf
 
 ## Docker Usage
 
+Use the CLI image `ghcr.io/kreuzberg-dev/kreuzberg-cli:latest` for command-line usage. The full image `ghcr.io/kreuzberg-dev/kreuzberg:latest` also includes the CLI.
+
 ### Basic Docker
 
 ```bash title="Terminal"
 # Extract document using Docker with mounted directory
-docker run -v $(pwd):/data ghcr.io/kreuzberg-dev/kreuzberg:latest \
+docker run -v $(pwd):/data ghcr.io/kreuzberg-dev/kreuzberg-cli:latest \
   extract /data/document.pdf
 
 # Extract and save output to host directory using shell redirection
-docker run -v $(pwd):/data ghcr.io/kreuzberg-dev/kreuzberg:latest \
+docker run -v $(pwd):/data ghcr.io/kreuzberg-dev/kreuzberg-cli:latest \
   extract /data/document.pdf > output.txt
 ```
 
@@ -463,7 +480,7 @@ docker run -v $(pwd):/data ghcr.io/kreuzberg-dev/kreuzberg:latest \
 
 ```bash title="Terminal"
 # Extract with OCR using Docker
-docker run -v $(pwd):/data ghcr.io/kreuzberg-dev/kreuzberg:latest \
+docker run -v $(pwd):/data ghcr.io/kreuzberg-dev/kreuzberg-cli:latest \
   extract /data/scanned.pdf --ocr true
 ```
 
@@ -472,11 +489,11 @@ docker run -v $(pwd):/data ghcr.io/kreuzberg-dev/kreuzberg:latest \
 **docker-compose.yaml:**
 
 ```yaml title="docker-compose.yaml"
-version: '3.8'
+version: "3.8"
 
 services:
   kreuzberg:
-    image: ghcr.io/kreuzberg-dev/kreuzberg:latest
+    image: ghcr.io/kreuzberg-dev/kreuzberg-cli:latest
     volumes:
       - ./documents:/input
     command: extract /input/document.pdf --ocr true
@@ -558,8 +575,9 @@ The `serve` command starts a RESTful HTTP API server:
 # Start server on default host (127.0.0.1) and port (8000)
 kreuzberg serve
 
-# Start server on specific host and port
+# Start server on specific host and port (-H / -p are short forms)
 kreuzberg serve --host 0.0.0.0 --port 8000
+kreuzberg serve -H 0.0.0.0 -p 8000
 
 # Start server with custom configuration file
 kreuzberg serve --config kreuzberg.toml --host 0.0.0.0 --port 8000
@@ -568,6 +586,7 @@ kreuzberg serve --config kreuzberg.toml --host 0.0.0.0 --port 8000
 ### Server Endpoints
 
 The server provides the following endpoints:
+
 - `POST /extract` - Extract text from uploaded files
 - `POST /batch` - Batch extract from multiple files
 - `GET /detect` - Detect MIME type of file
@@ -597,6 +616,7 @@ kreuzberg mcp --config kreuzberg.toml --transport stdio
 ```
 
 The MCP server provides tools for AI agents:
+
 - `extract_file` - Extract text from a file path
 - `extract_bytes` - Extract text from base64-encoded bytes
 - `batch_extract` - Extract from multiple files
@@ -643,9 +663,12 @@ kreuzberg --help
 kreuzberg extract --help
 kreuzberg batch --help
 kreuzberg detect --help
+kreuzberg version --help
 kreuzberg serve --help
 kreuzberg mcp --help
 kreuzberg cache --help
+kreuzberg cache stats --help
+kreuzberg cache clear --help
 ```
 
 ### Version Information

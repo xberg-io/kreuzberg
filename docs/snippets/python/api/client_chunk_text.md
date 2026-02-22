@@ -19,8 +19,8 @@ with httpx.Client() as client:
             "text": "Your long text content here...",
             "chunker_type": "text",
             "config": {
-                "max_chars": 1000,
-                "max_overlap": 50,
+                "max_characters": 1000,
+                "overlap": 50,
                 "trim": True
             }
         }

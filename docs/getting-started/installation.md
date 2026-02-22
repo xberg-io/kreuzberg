@@ -4,22 +4,22 @@ Kreuzberg is available in multiple formats optimized for different runtimes: nat
 
 ## Which Package Should I Install?
 
-| Runtime/Environment | Package | Performance | Best For |
-|-------------------|---------|-------------|----------|
-| **Node.js** | `@kreuzberg/node` | Fastest (native) | Server-side Node applications, native performance |
-| **Bun** | `@kreuzberg/node` | Fastest (native) | Bun runtime, native performance |
-| **Browser** | `@kreuzberg/wasm` | Good (WASM) | Client-side apps, no native dependencies |
-| **Deno** | `@kreuzberg/wasm` | Good (WASM) | Deno runtime, pure WASM execution |
-| **Cloudflare Workers** | `@kreuzberg/wasm` | Good (WASM) | Serverless functions, edge computing |
-| **Python** | `kreuzberg` | Fastest (native) | Server-side Python, native performance |
-| **Ruby** | `kreuzberg` | Fastest (native) | Ruby applications, native performance |
-| **Elixir** | `kreuzberg` | Fastest (native) | Elixir/Phoenix apps, BEAM runtime |
-| **Java** | `dev.kreuzberg:kreuzberg` | Fastest (native) | Server-side Java apps, FFM API |
-| **Go** | `github.com/.../go/v4` | Fastest (native) | Server-side Go, cgo bindings |
-| **PHP** | `kreuzberg/kreuzberg` | Fastest (native) | PHP applications, ext-ffi |
-| **C#/.NET** | `Kreuzberg` (NuGet) | Fastest (native) | .NET applications, P/Invoke |
-| **Rust** | `kreuzberg` crate | Fastest (native) | Rust projects, full control |
-| **CLI/Docker** | `kreuzberg-cli` | Fastest (native) | Command-line usage, batch processing |
+| Runtime/Environment    | Package                   | Performance      | Best For                                          |
+| ---------------------- | ------------------------- | ---------------- | ------------------------------------------------- |
+| **Node.js**            | `@kreuzberg/node`         | Fastest (native) | Server-side Node applications, native performance |
+| **Bun**                | `@kreuzberg/node`         | Fastest (native) | Bun runtime, native performance                   |
+| **Browser**            | `@kreuzberg/wasm`         | Good (WASM)      | Client-side apps, no native dependencies          |
+| **Deno**               | `@kreuzberg/wasm`         | Good (WASM)      | Deno runtime, pure WASM execution                 |
+| **Cloudflare Workers** | `@kreuzberg/wasm`         | Good (WASM)      | Serverless functions, edge computing              |
+| **Python**             | `kreuzberg`               | Fastest (native) | Server-side Python, native performance            |
+| **Ruby**               | `kreuzberg`               | Fastest (native) | Ruby applications, native performance             |
+| **Elixir**             | `kreuzberg`               | Fastest (native) | Elixir/Phoenix apps, BEAM runtime                 |
+| **Java**               | `dev.kreuzberg:kreuzberg` | Fastest (native) | Server-side Java apps, FFM API                    |
+| **Go**                 | `github.com/.../go/v4`    | Fastest (native) | Server-side Go, cgo bindings                      |
+| **PHP**                | `kreuzberg/kreuzberg`     | Fastest (native) | PHP applications, ext-ffi                         |
+| **C#/.NET**            | `Kreuzberg` (NuGet)       | Fastest (native) | .NET applications, P/Invoke                       |
+| **Rust**               | `kreuzberg` crate         | Fastest (native) | Rust projects, full control                       |
+| **CLI/Docker**         | `kreuzberg-cli`           | Fastest (native) | Command-line usage, batch processing              |
 
 ### Performance Notes
 
@@ -148,52 +148,52 @@ yarn add @kreuzberg/wasm
 ```html title="index.html"
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <script type="module">
-        import { initWasm, extractFromFile } from '@kreuzberg/wasm';
+      import { initWasm, extractFromFile } from "@kreuzberg/wasm";
 
-        window.initKreuzberg = async () => {
-            await initWasm();
-            console.log('Kreuzberg initialized');
-        };
+      window.initKreuzberg = async () => {
+        await initWasm();
+        console.log("Kreuzberg initialized");
+      };
 
-        window.extractFile = async (file) => {
-            const result = await extractFromFile(file);
-            console.log(result.content);
-        };
+      window.extractFile = async (file) => {
+        const result = await extractFromFile(file);
+        console.log(result.content);
+      };
     </script>
-</head>
-<body>
+  </head>
+  <body>
     <input type="file" id="file" />
-</body>
+  </body>
 </html>
 ```
 
 ### Deno
 
 ```typescript title="main.ts"
-import { initWasm, extractFile } from 'npm:@kreuzberg/wasm';
+import { initWasm, extractFile } from "npm:@kreuzberg/wasm";
 
 await initWasm();
-const result = await extractFile('./document.pdf');
+const result = await extractFile("./document.pdf");
 console.log(result.content);
 ```
 
 ### Cloudflare Workers
 
 ```typescript title="worker.ts"
-import { initWasm, extractBytes } from '@kreuzberg/wasm';
+import { initWasm, extractBytes } from "@kreuzberg/wasm";
 
 export default {
-    async fetch(request: Request): Promise<Response> {
-        await initWasm();
+  async fetch(request: Request): Promise<Response> {
+    await initWasm();
 
-        const file = await request.arrayBuffer();
-        const bytes = new Uint8Array(file);
-        const result = await extractBytes(bytes, 'application/pdf');
+    const file = await request.arrayBuffer();
+    const bytes = new Uint8Array(file);
+    const result = await extractBytes(bytes, "application/pdf");
 
-        return new Response(JSON.stringify({ content: result.content }));
-    },
+    return new Response(JSON.stringify({ content: result.content }));
+  },
 };
 ```
 
@@ -202,25 +202,26 @@ export default {
 OCR support requires browser Web Workers and additional memory. Enable it selectively:
 
 ```typescript title="ocr-example.ts"
-import { initWasm, enableOcr, extractFromFile } from '@kreuzberg/wasm';
+import { initWasm, enableOcr, extractFromFile } from "@kreuzberg/wasm";
 
 await initWasm();
 
-const fileInput = document.getElementById('file');
-fileInput.addEventListener('change', async (e) => {
-    const file = e.target.files[0];
+const fileInput = document.getElementById("file");
+fileInput.addEventListener("change", async (e) => {
+  const file = e.target.files[0];
 
-    if (file.type.startsWith('image/')) {
-        // Enable OCR only for images
-        await enableOcr();
-    }
+  if (file.type.startsWith("image/")) {
+    // Enable OCR only for images
+    await enableOcr();
+  }
 
-    const result = await extractFromFile(file);
-    console.log(result.content);
+  const result = await extractFromFile(file);
+  console.log(result.content);
 });
 ```
 
 WASM bindings work in:
+
 - Modern browsers (Chrome 74+, Firefox 79+, Safari 14+, Edge 79+)
 - Node.js 22+
 - Deno 1.35+

@@ -7,11 +7,12 @@ fn main() -> kreuzberg::Result<()> {
             backend: "tesseract".to_string(),
             language: "eng".to_string(),
             tesseract_config: None,
+            ..Default::default()
         }),
         ..Default::default()
     };
 
-    let result = extract_file_sync("scanned.pdf", None::<&str>, &config)?;
+    let result = extract_file_sync("scanned.pdf", None, &config)?;
     println!("Content length: {}", result.content.len());
     println!("Tables detected: {}", result.tables.len());
     Ok(())

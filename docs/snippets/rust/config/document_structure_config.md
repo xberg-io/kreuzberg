@@ -6,7 +6,7 @@ let config = ExtractionConfig {
     ..Default::default()
 };
 
-let result = extract_file_sync("document.pdf", Some(config))?;
+let result = extract_file_sync("document.pdf", None, &config)?;
 
 if let Some(document) = &result.document {
     for node in &document.nodes {

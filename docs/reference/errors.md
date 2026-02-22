@@ -12,10 +12,17 @@ Kreuzberg uses a comprehensive error system based on the `KreuzbergError` enum. 
 
 **Application errors are wrapped with context:**
 
-- `Parsing` - Document format errors, corrupt files
-- `Validation` - Invalid configuration or parameters
-- `Ocr` - OCR processing failures
-- `MissingDependency` - Missing optional system dependencies
+- `Parsing` - Document format errors, corrupt files (struct: `{ message, source }`)
+- `Validation` - Invalid configuration or parameters (struct: `{ message, source }`)
+- `Ocr` - OCR processing failures (struct: `{ message, source }`)
+- `Cache` - Cache read/write failures (struct: `{ message, source }`)
+- `ImageProcessing` - Image manipulation failures (struct: `{ message, source }`)
+- `Serialization` - JSON/MessagePack serialization errors (struct: `{ message, source }`)
+- `MissingDependency` - Missing optional system dependencies (e.g. Tesseract)
+- `Plugin` - Plugin-specific errors (struct: `{ message, plugin_name }`)
+- `LockPoisoned` - Mutex/RwLock poisoning (internal)
+- `UnsupportedFormat` - Unsupported MIME type or format
+- `Other` - Catch-all for uncommon errors
 
 ## Error Variants
 

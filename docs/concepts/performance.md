@@ -264,8 +264,10 @@ To measure Kreuzberg's performance for your specific use case, we recommend:
 
 === "Rust"
     ```rust title="performance_example.rs"
-    use kreuzberg::{extract_file_sync, batch_extract_files_sync};
+    use kreuzberg::{extract_file_sync, batch_extract_file_sync, ExtractionConfig};
     use std::time::Instant;
+
+    let config = ExtractionConfig::default();
 
     // Single file timing
     let start = Instant::now();
@@ -275,7 +277,7 @@ To measure Kreuzberg's performance for your specific use case, we recommend:
     // Batch processing
     let files: Vec<_> = (0..100).map(|i| format!("doc{}.pdf", i)).collect();
     let batch_start = Instant::now();
-    let results = batch_extract_files_sync(&files, &config)?;
+    let results = batch_extract_file_sync(files, &config)?;
     println!("Batch (100): {:?}", batch_start.elapsed());
     ```
 

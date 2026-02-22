@@ -1264,16 +1264,19 @@ catch (KreuzbergException ex)
 The C# bindings use P/Invoke to load the native `libkreuzberg_ffi` library. The library is automatically included in the NuGet package and loaded at runtime.
 
 **Linux library search paths:**
+
 - `/usr/lib/libkreuzberg_ffi.so`
 - `/usr/local/lib/libkreuzberg_ffi.so`
 - Directories in `LD_LIBRARY_PATH`
 
 **macOS library search paths:**
+
 - `/usr/local/lib/libkreuzberg_ffi.dylib`
 - `/opt/homebrew/lib/libkreuzberg_ffi.dylib`
 - Directories in `DYLD_LIBRARY_PATH`
 
 **Windows library search paths:**
+
 - `kreuzberg_ffi.dll` in the application directory
 - Directories in `PATH`
 

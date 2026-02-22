@@ -1,15 +1,16 @@
 ```rust title="Element-Based Output (Rust)"
-use kreuzberg::{extract_file_sync, ExtractionConfig, OutputFormat};
+use kreuzberg::{extract_file_sync, ExtractionConfig};
+use kreuzberg::types::OutputFormat as ResultFormat;
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // Configure element-based output
+fn main() -> kreuzberg::Result<()> {
+    // Configure element-based output (result_format controls Unified vs ElementBased)
     let config = ExtractionConfig {
-        output_format: OutputFormat::ElementBased,
+        result_format: ResultFormat::ElementBased,
         ..Default::default()
     };
 
     // Extract document
-    let result = extract_file_sync("document.pdf", Some(config))?;
+    let result = extract_file_sync("document.pdf", None, &config)?;
 
     // Access elements
     if let Some(elements) = result.elements {
@@ -23,7 +24,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
             if let Some(coords) = &element.metadata.coordinates {
                 println!("Coords: ({}, {}) - ({}, {})",
-                    coords.left, coords.top, coords.right, coords.bottom);
+                    coords.x0, coords.y0, coords.x1, coords.y1);
             }
 
             println!("---");
@@ -36,7 +37,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         for title in titles {
             let level = title.metadata.additional.get("level")
-                .and_then(|v| v.as_str())
+                .map(|v| v.as_ref())
                 .unwrap_or("unknown");
             println!("[{}] {}", level, title.text);
         }

@@ -1,5 +1,6 @@
 ```rust title="Rust"
 use kreuzberg::{extract_file, ExtractionConfig, OcrConfig};
+use kreuzberg::types::OcrElementConfig;
 
 #[tokio::main]
 async fn main() -> kreuzberg::Result<()> {
@@ -7,6 +8,10 @@ async fn main() -> kreuzberg::Result<()> {
         ocr: Some(OcrConfig {
             backend: "paddleocr".to_string(),
             language: "en".to_string(),
+            element_config: Some(OcrElementConfig {
+                include_elements: true,
+                ..Default::default()
+            }),
             ..Default::default()
         }),
         ..Default::default()
@@ -20,7 +25,7 @@ async fn main() -> kreuzberg::Result<()> {
             println!("Confidence: {:.2}", element.confidence.recognition);
             println!("Geometry: {:?}", element.geometry);
             if let Some(rotation) = &element.rotation {
-                println!("Rotation: {}°", rotation.angle);
+                println!("Rotation: {}°", rotation.angle_degrees);
             }
             println!();
         }

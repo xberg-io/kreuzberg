@@ -1,20 +1,19 @@
 ```rust title="simple_benchmark.rs"
-use kreuzberg::{Kreuzberg, ExtractionConfig, CacheConfig};
+use kreuzberg::{extract_file_sync, extract_file, ExtractionConfig};
 use std::time::Instant;
 
 #[tokio::main]
-async fn main() -> anyhow::Result<()> {
+async fn main() -> kreuzberg::Result<()> {
     let config = ExtractionConfig {
         use_cache: false,
         ..Default::default()
     };
-    let kreuzberg = Kreuzberg::new(config)?;
     let file_path = "document.pdf";
     let num_runs = 10;
 
     let start = Instant::now();
     for _ in 0..num_runs {
-        let _ = kreuzberg.extract_file(file_path).await?;
+        let _ = extract_file_sync(file_path, None, &config)?;
     }
     let sync_duration = start.elapsed().as_secs_f64();
     let avg_sync = sync_duration / num_runs as f64;
@@ -26,7 +25,7 @@ async fn main() -> anyhow::Result<()> {
     let start = Instant::now();
     let mut tasks = vec![];
     for _ in 0..num_runs {
-        tasks.push(kreuzberg.extract_file(file_path));
+        tasks.push(extract_file(file_path, None, &config));
     }
     let results = futures::future::join_all(tasks).await;
     for result in results {
@@ -39,21 +38,20 @@ async fn main() -> anyhow::Result<()> {
     println!("  - Average: {:.3}s per extraction", async_duration / num_runs as f64);
     println!("  - Speedup: {:.1}x", sync_duration / async_duration);
 
-    let cache_config = ExtractionConfig {
+    let config_cached = ExtractionConfig {
         use_cache: true,
         ..Default::default()
     };
-    let kreuzberg_cached = Kreuzberg::new(cache_config)?;
 
     println!("\nFirst extraction (populates cache)...");
     let start = Instant::now();
-    let result1 = kreuzberg_cached.extract_file(file_path).await?;
+    let _result1 = extract_file_sync(file_path, None, &config_cached)?;
     let first_duration = start.elapsed().as_secs_f64();
     println!("  - Time: {:.3}s", first_duration);
 
     println!("Second extraction (from cache)...");
     let start = Instant::now();
-    let result2 = kreuzberg_cached.extract_file(file_path).await?;
+    let _result2 = extract_file_sync(file_path, None, &config_cached)?;
     let cached_duration = start.elapsed().as_secs_f64();
     println!("  - Time: {:.3}s", cached_duration);
     println!("  - Cache speedup: {:.1}x", first_duration / cached_duration);

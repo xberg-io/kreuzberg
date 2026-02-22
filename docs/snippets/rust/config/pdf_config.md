@@ -12,9 +12,9 @@ fn main() -> kreuzberg::Result<()> {
         ..Default::default()
     };
 
-    let result = extract_file_sync("encrypted.pdf", None::<&str>, &config)?;
-    println!("Title: {:?}", result.metadata.get("title"));
-    println!("Author: {:?}", result.metadata.get("author"));
+    let result = extract_file_sync("encrypted.pdf", None, &config)?;
+    println!("Title: {:?}", result.metadata.title);
+    println!("Authors: {:?}", result.metadata.authors);
     Ok(())
 }
 ```

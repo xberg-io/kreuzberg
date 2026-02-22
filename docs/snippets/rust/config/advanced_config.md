@@ -11,6 +11,9 @@ async fn main() -> kreuzberg::Result<()> {
             backend: "tesseract".to_string(),
             language: "eng".to_string(),
             tesseract_config: None,
+            output_format: None,
+            paddle_ocr_config: None,
+            element_config: None,
         }),
         chunking: Some(ChunkingConfig {
             max_characters: 1000,
@@ -51,9 +54,10 @@ async fn main() -> kreuzberg::Result<()> {
 
     let result = extract_file("document.pdf", None::<&str>, &config).await?;
     println!("Content: {}", result.content);
-    println!("Language: {}", result.language);
-    println!("Keywords: {:?}", result.keywords);
-    println!("Chunks: {}", result.chunks.len());
+    if let Some(langs) = &result.detected_languages {
+        println!("Languages: {:?}", langs);
+    }
+    println!("Chunks: {}", result.chunks.as_ref().map(|c| c.len()).unwrap_or(0));
     Ok(())
 }
 ```

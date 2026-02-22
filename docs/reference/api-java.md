@@ -23,6 +23,7 @@ dependencies {
 ```
 
 **Requirements:**
+
 - Java 25 or later
 - libkreuzberg_ffi native library (auto-loaded)
 - Optional: Tesseract or EasyOCR/PaddleOCR for OCR functionality
@@ -674,6 +675,7 @@ for (Chunk chunk : result.getChunks()) {
 Per-page extracted content when page extraction is enabled via `PageConfig.extractPages = true`.
 
 Each page contains:
+
 - Page number (1-indexed)
 - Text content for that page
 - Tables on that page

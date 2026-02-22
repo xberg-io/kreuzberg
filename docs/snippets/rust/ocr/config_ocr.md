@@ -10,6 +10,7 @@ fn main() {
                 psm: 3,
                 ..Default::default()
             }),
+            ..Default::default()
         }),
         ..Default::default()
     };

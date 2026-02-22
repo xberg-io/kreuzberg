@@ -15,8 +15,8 @@ flowchart LR
     SingleMode --> SyncAsync{Sync or Async?}
     BatchMode --> SyncAsync
 
-    SyncAsync -->|Sync| SyncFuncs[extract_file_sync<br/>extract_bytes_sync<br/>batch_extract_files_sync<br/>batch_extract_bytes_sync]
-    SyncAsync -->|Async| AsyncFuncs[extract_file<br/>extract_bytes<br/>batch_extract_files<br/>batch_extract_bytes]
+    SyncAsync -->|Sync| SyncFuncs[extract_file_sync<br/>extract_bytes_sync<br/>batch_extract_file_sync<br/>batch_extract_bytes_sync]
+    SyncAsync -->|Async| AsyncFuncs[extract_file<br/>extract_bytes<br/>batch_extract_file<br/>batch_extract_bytes]
 
     style FileFunctions fill:#87CEEB
     style BytesFunctions fill:#FFD700
@@ -112,8 +112,8 @@ flowchart TD
     CheckConcurrency -->|Yes| UseAsyncConcurrent[Use Async<br/>Better concurrency]
     CheckConcurrency -->|No| UseSyncBatch[Use Sync<br/>Adequate]
 
-    UseAsync --> AsyncFunctions[extract_file<br/>extract_bytes<br/>batch_extract_files<br/>batch_extract_bytes]
-    UseSyncSimple --> SyncFunctions[extract_file_sync<br/>extract_bytes_sync<br/>batch_extract_files_sync<br/>batch_extract_bytes_sync]
+    UseAsync --> AsyncFunctions[extract_file<br/>extract_bytes<br/>batch_extract_file<br/>batch_extract_bytes]
+    UseSyncSimple --> SyncFunctions[extract_file_sync<br/>extract_bytes_sync<br/>batch_extract_file_sync<br/>batch_extract_bytes_sync]
     UseSyncSingle --> SyncFunctions
     UseAsyncConcurrent --> AsyncFunctions
     UseSyncBatch --> SyncFunctions
@@ -130,16 +130,16 @@ flowchart TD
 All TypeScript/Node.js examples in this guide use the `@kreuzberg/node` package. Import synchronous APIs from the root module and asynchronous helpers from the same namespace. See the [TypeScript API Reference](../reference/api-typescript.md) for complete type definitions.
 
 ```typescript title="basic_extraction.ts"
-import { extractFileSync, ExtractionConfig } from '@kreuzberg/node';
+import { extractFileSync, ExtractionConfig } from "@kreuzberg/node";
 
 // Extract a document using synchronous API
-const result = extractFileSync('document.pdf', null, new ExtractionConfig());
+const result = extractFileSync("document.pdf", null, new ExtractionConfig());
 console.log(result.content);
 ```
 
 ## Ruby {#ruby}
 
-Ruby bindings mirror the same function names (`extract_file_sync`, `extract_bytes`, `batch_extract_files`, etc.) under the `Kreuzberg` module. Configuration objects live under `Kreuzberg::Config`. See the [Ruby API Reference](../reference/api-ruby.md) for details.
+Ruby bindings mirror the same function names (`extract_file_sync`, `extract_bytes`, `batch_extract_file`, etc.) under the `Kreuzberg` module. Configuration objects live under `Kreuzberg::Config`. See the [Ruby API Reference](../reference/api-ruby.md) for details.
 
 ```ruby title="basic_extraction.rb"
 require 'kreuzberg'
@@ -151,7 +151,7 @@ puts result.content
 ```
 
 !!! tip "When to Use Async"
-    Use async variants when you're already in an async context or processing multiple files concurrently. For simple scripts, sync variants are simpler and just as fast.
+Use async variants when you're already in an async context or processing multiple files concurrently. For simple scripts, sync variants are simpler and just as fast.
 
 ## Extract from Bytes
 
@@ -226,7 +226,7 @@ Extract from data already loaded in memory.
     --8<-- "snippets/wasm/api/extract_bytes_async.md"
 
 !!! note "MIME Type Detection"
-    Kreuzberg automatically detects MIME types from file extensions. When extracting from bytes, you must provide the MIME type explicitly.
+Kreuzberg automatically detects MIME types from file extensions. When extracting from bytes, you must provide the MIME type explicitly.
 
 ## Batch Processing
 
@@ -334,22 +334,22 @@ flowchart TD
 ```
 
 !!! tip "Performance"
-    Batch processing provides automatic parallelization. For large sets of files, this can be 2-5x faster than processing files sequentially.
+Batch processing provides automatic parallelization. For large sets of files, this can be 2-5x faster than processing files sequentially.
 
 ## Supported Formats
 
 Kreuzberg supports 75 file formats across 8 categories:
 
-| Format | Extensions | Notes |
-|--------|-----------|-------|
-| **PDF** | `.pdf` | Native text + OCR for scanned pages |
-| **Images** | `.png`, `.jpg`, `.jpeg`, `.tiff`, `.bmp`, `.webp` | Requires OCR backend |
-| **Office** | `.docx`, `.pptx`, `.xlsx` | Modern formats via native parsers |
-| **Legacy Office** | `.doc`, `.ppt` | Native OLE/CFB parsing |
-| **Email** | `.eml`, `.msg` | Full support including attachments |
-| **Web** | `.html`, `.htm` | Converted to Markdown with metadata |
-| **Text** | `.md`, `.txt`, `.xml`, `.json`, `.yaml`, `.toml`, `.csv` | Direct extraction |
-| **Archives** | `.zip`, `.tar`, `.tar.gz`, `.tar.bz2` | Recursive extraction |
+| Format            | Extensions                                               | Notes                               |
+| ----------------- | -------------------------------------------------------- | ----------------------------------- |
+| **PDF**           | `.pdf`                                                   | Native text + OCR for scanned pages |
+| **Images**        | `.png`, `.jpg`, `.jpeg`, `.tiff`, `.bmp`, `.webp`        | Requires OCR backend                |
+| **Office**        | `.docx`, `.pptx`, `.xlsx`                                | Modern formats via native parsers   |
+| **Legacy Office** | `.doc`, `.ppt`                                           | Native OLE/CFB parsing              |
+| **Email**         | `.eml`, `.msg`                                           | Full support including attachments  |
+| **Web**           | `.html`, `.htm`                                          | Converted to Markdown with metadata |
+| **Text**          | `.md`, `.txt`, `.xml`, `.json`, `.yaml`, `.toml`, `.csv` | Direct extraction                   |
+| **Archives**      | `.zip`, `.tar`, `.tar.gz`, `.tar.bz2`                    | Recursive extraction                |
 
 See the [installation guide](../getting-started/installation.md#system-dependencies) for optional dependencies (Tesseract).
 
@@ -440,7 +440,7 @@ All extraction functions raise exceptions on failure:
     --8<-- "snippets/wasm/api/error_handling_wasm.md"
 
 !!! warning "System Errors"
-    `OSError` (Python), `IOException` (Rust), and system-level errors always bubble up to users. These indicate real system problems that need to be addressed (permissions, disk space, etc.).
+`OSError` (Python), `IOException` (Rust), and system-level errors always bubble up to users. These indicate real system problems that need to be addressed (permissions, disk space, etc.).
 
 ## Next Steps
 

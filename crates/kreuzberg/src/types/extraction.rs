@@ -50,9 +50,9 @@ pub struct ExtractionResult {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub pages: Option<Vec<PageContent>>,
 
-    /// Semantic elements when element-based output format is enabled.
+    /// Semantic elements when element-based result format is enabled.
     ///
-    /// When output_format is set to ElementBased, this field contains semantic
+    /// When result_format is set to ElementBased, this field contains semantic
     /// elements with type classification, unique identifiers, and metadata for
     /// Unstructured-compatible element-based processing.
     #[serde(skip_serializing_if = "Option::is_none", default)]

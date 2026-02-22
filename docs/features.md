@@ -829,15 +829,14 @@ Disk-based caching improves performance for repeated operations:
 Primary CLI for document extraction.
 
 ```bash title="Terminal"
-kreuzberg extract document.pdf --ocr --format json
+kreuzberg extract document.pdf --ocr true --format json
 ```
 
 **Features:**
 - Batch processing with glob patterns
-- Parallel processing (`--parallel`)
 - Output format selection (text, JSON)
 - OCR configuration
-- Progress reporting
+- Config file and inline JSON (`--config`, `--config-json`, `--config-json-base64`)
 
 ### Serve Command
 

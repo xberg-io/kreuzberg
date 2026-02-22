@@ -41,7 +41,7 @@
 //! #         -> kreuzberg::Result<ExtractionResult> {
 //! #         Ok(ExtractionResult {
 //! #             content: String::new(),
-//! #             mime_type: String::new().into(),
+//! #             mime_type: std::borrow::Cow::Borrowed("text/plain"),
 //! #             metadata: Metadata::default(),
 //! #             tables: vec![],
 //! #             detected_languages: None,
@@ -130,7 +130,7 @@
 //!
 //!         Ok(ExtractionResult {
 //!             content: extracted_text,
-//!             mime_type: "application/json".to_string().into(),
+//!             mime_type: std::borrow::Cow::Borrowed("application/json"),
 //!             metadata,
 //!             tables: vec![],
 //!             detected_languages: None,

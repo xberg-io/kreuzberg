@@ -43,6 +43,7 @@ pub enum OcrBackendType {
 /// use kreuzberg::plugins::{Plugin, OcrBackend, OcrBackendType};
 /// use kreuzberg::{Result, OcrConfig};
 /// use async_trait::async_trait;
+/// use std::borrow::Cow;
 /// use std::path::Path;
 /// use std::borrow::Cow;
 /// use kreuzberg::types::{ExtractionResult, Metadata};
@@ -119,6 +120,7 @@ pub trait OcrBackend: Plugin {
     /// # use kreuzberg::plugins::{Plugin, OcrBackend};
     /// # use kreuzberg::{Result, OcrConfig};
     /// # use async_trait::async_trait;
+    /// # use std::borrow::Cow;
     /// # use std::path::Path;
     /// # use std::borrow::Cow;
     /// # use kreuzberg::types::{ExtractionResult, Metadata};
@@ -310,6 +312,7 @@ pub trait OcrBackend: Plugin {
 /// use kreuzberg::{Result, OcrConfig};
 /// use kreuzberg::types::{ExtractionResult, Metadata};
 /// use async_trait::async_trait;
+/// use std::borrow::Cow;
 /// use std::sync::Arc;
 /// use std::path::Path;
 /// use std::borrow::Cow;

@@ -6,7 +6,7 @@ Configuration precedence in Kreuzberg follows this order (highest to lowest):
 2. **Configuration Files** - TOML, YAML, or JSON config files
 3. **Defaults** - Built-in sensible defaults
 
-This document covers all KREUZBERG_* environment variables for version 4.3.8.
+This document covers all KREUZBERG\_\* environment variables for version 4.3.8.
 
 ## When to Use Environment Variables
 
@@ -219,6 +219,7 @@ export KREUZBERG_OCR_BACKEND=paddleocr
 ```
 
 **Performance Notes**:
+
 - **tesseract**: Fastest, best for English and Latin scripts
 - **easyocr**: Slower, excellent multilingual support
 - **paddleocr**: Fast with good accuracy for many languages
@@ -318,12 +319,12 @@ export KREUZBERG_OUTPUT_FORMAT=html
 
 **Use Cases**:
 
-| Format | Use Case |
-|--------|----------|
-| `plain` | Raw extracted text without formatting |
+| Format     | Use Case                                                        |
+| ---------- | --------------------------------------------------------------- |
+| `plain`    | Raw extracted text without formatting                           |
 | `markdown` | Structured text with headings, lists, emphasis (RAG, LLM input) |
-| `djot` | Lightweight markup, alternative to Markdown |
-| `html` | Rich formatted output for web display |
+| `djot`     | Lightweight markup, alternative to Markdown                     |
+| `html`     | Rich formatted output for web display                           |
 
 **Example:**
 
@@ -359,13 +360,13 @@ export KREUZBERG_TOKEN_REDUCTION_MODE=maximum
 
 **Impact on Tokens**:
 
-| Mode | Typical Reduction | Use Case |
-|------|------------------|----------|
-| `off` | 0% | Full preservation, no compression |
-| `light` | 10-15% | Minimal impact, clean up obvious redundancy |
-| `moderate` | 25-35% | Balanced approach for most scenarios |
-| `aggressive` | 40-50% | Significant compression, still readable |
-| `maximum` | 50-70% | Extreme compression, lose some detail |
+| Mode         | Typical Reduction | Use Case                                    |
+| ------------ | ----------------- | ------------------------------------------- |
+| `off`        | 0%                | Full preservation, no compression           |
+| `light`      | 10-15%            | Minimal impact, clean up obvious redundancy |
+| `moderate`   | 25-35%            | Balanced approach for most scenarios        |
+| `aggressive` | 40-50%            | Significant compression, still readable     |
+| `maximum`    | 50-70%            | Extreme compression, lose some detail       |
 
 ## Runtime Configuration
 
@@ -420,6 +421,7 @@ export KREUZBERG_CI_DEBUG=yes
 ```
 
 **Use Cases**:
+
 - Debugging slow OCR operations
 - Tracing cache hits/misses
 - Performance profiling in CI pipelines
@@ -442,6 +444,7 @@ export KREUZBERG_DEBUG_OCR=1
 ```
 
 **Diagnostic Information**:
+
 - Whether OCR fallback was triggered
 - Character counts (whitespace, alphanumeric)
 - Word counts and coverage ratios
@@ -512,6 +515,7 @@ export KREUZBERG_RUN_FULL_OCR=1
 ```
 
 **Warning**:
+
 - These tests can take 10+ minutes
 - Require OCR backends to be installed and working
 - Produce large temporary files
@@ -522,7 +526,7 @@ export KREUZBERG_RUN_FULL_OCR=1
 ### Basic Configuration
 
 ```yaml title="Docker Compose - Basic Setup"
-version: '3.8'
+version: "3.8"
 services:
   kreuzberg:
     image: kreuzberg:latest
@@ -538,7 +542,7 @@ services:
 ### Production Configuration
 
 ```yaml title="Docker Compose - Production Setup"
-version: '3.8'
+version: "3.8"
 services:
   kreuzberg:
     image: kreuzberg:latest
@@ -550,7 +554,7 @@ services:
       KREUZBERG_HOST: "0.0.0.0"
       KREUZBERG_PORT: "8000"
       KREUZBERG_CORS_ORIGINS: "https://app.example.com, https://admin.example.com"
-      KREUZBERG_MAX_REQUEST_BODY_BYTES: "209715200"  # 200 MB
+      KREUZBERG_MAX_REQUEST_BODY_BYTES: "209715200" # 200 MB
       KREUZBERG_MAX_MULTIPART_FIELD_BYTES: "209715200"
       KREUZBERG_CACHE_DIR: "/data/cache"
       KREUZBERG_OCR_LANGUAGE: "eng"
@@ -567,7 +571,7 @@ volumes:
 ### Multilingual Configuration
 
 ```yaml title="Docker Compose - Multilingual Setup"
-version: '3.8'
+version: "3.8"
 services:
   kreuzberg:
     image: kreuzberg:latest
@@ -576,15 +580,15 @@ services:
     environment:
       KREUZBERG_HOST: "0.0.0.0"
       KREUZBERG_PORT: "8000"
-      KREUZBERG_OCR_BACKEND: "easyocr"  # Better multilingual support
-      KREUZBERG_OCR_LANGUAGE: "fra"  # French
+      KREUZBERG_OCR_BACKEND: "easyocr" # Better multilingual support
+      KREUZBERG_OCR_LANGUAGE: "fra" # French
       KREUZBERG_CACHE_ENABLED: "true"
 ```
 
 ### Development Configuration
 
 ```yaml title="Docker Compose - Development Setup"
-version: '3.8'
+version: "3.8"
 services:
   kreuzberg:
     image: kreuzberg:latest
@@ -593,8 +597,8 @@ services:
     environment:
       KREUZBERG_HOST: "127.0.0.1"
       KREUZBERG_PORT: "8000"
-      KREUZBERG_CACHE_ENABLED: "false"  # Disable for fresh testing
-      KREUZBERG_CI_DEBUG: "1"  # Enable debug output
+      KREUZBERG_CACHE_ENABLED: "false" # Disable for fresh testing
+      KREUZBERG_CI_DEBUG: "1" # Enable debug output
       KREUZBERG_DEBUG_OCR: "1"
       KREUZBERG_CACHE_DIR: "/tmp/kreuzberg"
 ```

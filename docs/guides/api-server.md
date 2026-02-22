@@ -9,6 +9,7 @@ Kreuzberg provides two server modes for programmatic access: an HTTP REST API se
 A production-ready HTTP API server providing RESTful endpoints for document extraction, health checks, and cache management.
 
 **Best for:**
+
 - Web applications
 - Microservices integration
 - General HTTP clients
@@ -19,6 +20,7 @@ A production-ready HTTP API server providing RESTful endpoints for document extr
 A Model Context Protocol server that exposes Kreuzberg as tools for AI agents and assistants.
 
 **Best for:**
+
 - AI agent integration (Claude, GPT, etc.)
 - Agentic workflows
 - Tool use by language models
@@ -67,9 +69,9 @@ Extract text from uploaded files via multipart form data.
 - **Method:** POST
 - **Content-Type:** `multipart/form-data`
 - **Fields:**
-    - `files` (required, repeatable): Files to extract
-    - `config` (optional): JSON configuration overrides
-    - `output_format` (optional): Output format for extracted text - `plain`, `markdown`, `djot`, or `html` (default: `plain`)
+  - `files` (required, repeatable): Files to extract
+  - `config` (optional): JSON configuration overrides
+  - `output_format` (optional): Output format for extracted text - `plain`, `markdown`, `djot`, or `html` (default: `plain`)
 
 **Response:** JSON array of extraction results
 
@@ -122,8 +124,8 @@ Generate embeddings for text strings without document extraction.
 - **Method:** POST
 - **Content-Type:** `application/json`
 - **Body:**
-    - `texts` (required): Array of strings to generate embeddings for
-    - `config` (optional): Embedding configuration overrides
+  - `texts` (required): Array of strings to generate embeddings for
+  - `config` (optional): Embedding configuration overrides
 
 **Response:** JSON object containing embeddings, model info, dimensions, and count
 
@@ -163,12 +165,12 @@ curl -X POST http://localhost:8000/embed \
 
 **Available Embedding Presets:**
 
-| Preset | Model | Dimensions | Use Case |
-|--------|-------|------------|----------|
-| `fast` | AllMiniLML6V2Q | 384 | Quick prototyping, development |
-| `balanced` | BGEBaseENV15 | 768 | General-purpose RAG, production (default) |
-| `quality` | BGELargeENV15 | 1024 | Complex documents, maximum accuracy |
-| `multilingual` | MultilingualE5Base | 768 | International documents, 100+ languages |
+| Preset         | Model              | Dimensions | Use Case                                  |
+| -------------- | ------------------ | ---------- | ----------------------------------------- |
+| `fast`         | AllMiniLML6V2Q     | 384        | Quick prototyping, development            |
+| `balanced`     | BGEBaseENV15       | 768        | General-purpose RAG, production (default) |
+| `quality`      | BGELargeENV15      | 1024       | Complex documents, maximum accuracy       |
+| `multilingual` | MultilingualE5Base | 768        | International documents, 100+ languages   |
 
 **Use Cases:**
 
@@ -188,17 +190,17 @@ Chunk text into smaller pieces with configurable overlap for RAG (Retrieval-Augm
 - **Method:** POST
 - **Content-Type:** `application/json`
 - **Body:**
-    - `text` (required): The text string to chunk
-    - `chunker_type` (optional): Type of chunker to use - `"text"` (default) or `"markdown"`
-    - `config` (optional): Chunking configuration object
+  - `text` (required): The text string to chunk
+  - `chunker_type` (optional): Type of chunker to use - `"text"` (default) or `"markdown"`
+  - `config` (optional): Chunking configuration object
 
 **Configuration Options:**
 
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `max_characters` | integer | 2000 | Maximum characters per chunk |
-| `overlap` | integer | 100 | Number of overlapping characters between chunks |
-| `trim` | boolean | true | Whether to trim whitespace from chunks |
+| Field            | Type    | Default | Description                                     |
+| ---------------- | ------- | ------- | ----------------------------------------------- |
+| `max_characters` | integer | 2000    | Maximum characters per chunk                    |
+| `overlap`        | integer | 100     | Number of overlapping characters between chunks |
+| `trim`           | boolean | true    | Whether to trim whitespace from chunks          |
 
 **Example:**
 
@@ -268,20 +270,20 @@ curl -X POST http://localhost:8000/chunk \
 
 **Response Fields:**
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `chunks` | array | Array of chunk objects |
-| `chunks[].content` | string | The text content of this chunk |
-| `chunks[].byte_start` | integer | Starting byte offset in original text |
-| `chunks[].byte_end` | integer | Ending byte offset in original text |
-| `chunks[].chunk_index` | integer | Zero-based index of this chunk |
-| `chunks[].total_chunks` | integer | Total number of chunks produced |
-| `chunks[].first_page` | integer/null | First page number (for PDF sources) |
-| `chunks[].last_page` | integer/null | Last page number (for PDF sources) |
-| `chunk_count` | integer | Total number of chunks |
-| `config` | object | Configuration used for chunking |
-| `input_size_bytes` | integer | Size of input text in bytes |
-| `chunker_type` | string | Type of chunker used |
+| Field                   | Type         | Description                           |
+| ----------------------- | ------------ | ------------------------------------- |
+| `chunks`                | array        | Array of chunk objects                |
+| `chunks[].content`      | string       | The text content of this chunk        |
+| `chunks[].byte_start`   | integer      | Starting byte offset in original text |
+| `chunks[].byte_end`     | integer      | Ending byte offset in original text   |
+| `chunks[].chunk_index`  | integer      | Zero-based index of this chunk        |
+| `chunks[].total_chunks` | integer      | Total number of chunks produced       |
+| `chunks[].first_page`   | integer/null | First page number (for PDF sources)   |
+| `chunks[].last_page`    | integer/null | Last page number (for PDF sources)    |
+| `chunk_count`           | integer      | Total number of chunks                |
+| `config`                | object       | Configuration used for chunking       |
+| `input_size_bytes`      | integer      | Size of input text in bytes           |
+| `chunker_type`          | string       | Type of chunker used                  |
 
 **Use Cases:**
 
@@ -293,10 +295,10 @@ curl -X POST http://localhost:8000/chunk \
 
 **Error Responses:**
 
-| Status | Error Type | Description |
-|--------|------------|-------------|
-| 400 | `ValidationError` | Empty text or invalid chunker_type |
-| 500 | Internal errors | Server processing errors |
+| Status | Error Type        | Description                        |
+| ------ | ----------------- | ---------------------------------- |
+| 400    | `ValidationError` | Empty text or invalid chunker_type |
+| 500    | Internal errors   | Server processing errors           |
 
 **Client Examples:**
 
@@ -471,13 +473,7 @@ curl -X DELETE http://localhost:8000/cache/clear
 
 #### Configuration File Discovery
 
-The server automatically discovers configuration files in this order:
-
-1. `./kreuzberg.toml` (current directory)
-2. `./kreuzberg.yaml`
-3. `./kreuzberg.json`
-4. Parent directories (recursive search)
-5. Default configuration (if no file found)
+The server uses the same configuration discovery as the CLI: it searches the current directory and parent directories for **`kreuzberg.toml`** only. If no file is found, default configuration is used. To use YAML or JSON, pass an explicit path with `--config path/to/config.yaml` (or `.json`).
 
 **Example kreuzberg.toml:**
 
@@ -582,11 +578,11 @@ KREUZBERG_CORS_ORIGINS="https://app.example.com,https://api.example.com"
 
 **HTTP Status Codes:**
 
-| Status Code | Error Type | Meaning |
-|------------|------------|---------|
-| 400 | `ValidationError` | Invalid input parameters |
-| 422 | `ParsingError`, `OcrError` | Document processing failed |
-| 500 | Internal errors | Server errors |
+| Status Code | Error Type                 | Meaning                    |
+| ----------- | -------------------------- | -------------------------- |
+| 400         | `ValidationError`          | Invalid input parameters   |
+| 422         | `ParsingError`, `OcrError` | Document processing failed |
+| 500         | Internal errors            | Server errors              |
 
 **Example:**
 
@@ -672,13 +668,13 @@ Extract content from a file path.
 
 **Parameters:**
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `path` | string | Yes | File path to extract |
-| `mime_type` | string | No | MIME type hint |
-| `enable_ocr` | boolean | No | Enable OCR (default: false) |
-| `force_ocr` | boolean | No | Force OCR even if text exists (default: false) |
-| `async` | boolean | No | Use async extraction (default: true) |
+| Parameter    | Type    | Required | Description                                    |
+| ------------ | ------- | -------- | ---------------------------------------------- |
+| `path`       | string  | Yes      | File path to extract                           |
+| `mime_type`  | string  | No       | MIME type hint                                 |
+| `enable_ocr` | boolean | No       | Enable OCR (default: false)                    |
+| `force_ocr`  | boolean | No       | Force OCR even if text exists (default: false) |
+| `async`      | boolean | No       | Use async extraction (default: true)           |
 
 **Example MCP Request:**
 
@@ -702,13 +698,13 @@ Extract content from base64-encoded file data.
 
 **Parameters:**
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `data` | string | Yes | Base64-encoded file content |
-| `mime_type` | string | No | MIME type hint |
-| `enable_ocr` | boolean | No | Enable OCR |
-| `force_ocr` | boolean | No | Force OCR |
-| `async` | boolean | No | Use async extraction |
+| Parameter    | Type    | Required | Description                 |
+| ------------ | ------- | -------- | --------------------------- |
+| `data`       | string  | Yes      | Base64-encoded file content |
+| `mime_type`  | string  | No       | MIME type hint              |
+| `enable_ocr` | boolean | No       | Enable OCR                  |
+| `force_ocr`  | boolean | No       | Force OCR                   |
+| `async`      | boolean | No       | Use async extraction        |
 
 #### batch_extract_files
 
@@ -716,12 +712,12 @@ Extract multiple files in parallel.
 
 **Parameters:**
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `paths` | array[string] | Yes | File paths to extract |
-| `enable_ocr` | boolean | No | Enable OCR |
-| `force_ocr` | boolean | No | Force OCR |
-| `async` | boolean | No | Use async extraction |
+| Parameter    | Type          | Required | Description           |
+| ------------ | ------------- | -------- | --------------------- |
+| `paths`      | array[string] | Yes      | File paths to extract |
+| `enable_ocr` | boolean       | No       | Enable OCR            |
+| `force_ocr`  | boolean       | No       | Force OCR             |
+| `async`      | boolean       | No       | Use async extraction  |
 
 #### detect_mime_type
 
@@ -729,10 +725,10 @@ Detect file format and return MIME type.
 
 **Parameters:**
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `path` | string | Yes | File path |
-| `use_content` | boolean | No | Content-based detection (default: true) |
+| Parameter     | Type    | Required | Description                             |
+| ------------- | ------- | -------- | --------------------------------------- |
+| `path`        | string  | Yes      | File path                               |
+| `use_content` | boolean | No       | Content-based detection (default: true) |
 
 #### cache_stats
 
@@ -826,7 +822,7 @@ Clear all cached files.
 **Docker Compose Example:**
 
 ```yaml title="docker-compose.yaml"
-version: '3.8'
+version: "3.8"
 
 services:
   kreuzberg-api:
@@ -842,7 +838,17 @@ services:
       # Mount configuration and cache directories
       - ./config:/config
       - ./cache:/app/.kreuzberg
-    command: ["kreuzberg", "serve", "-H", "0.0.0.0", "-p", "8000", "--config", "/config/kreuzberg.toml"]
+    command:
+      [
+        "kreuzberg",
+        "serve",
+        "-H",
+        "0.0.0.0",
+        "-p",
+        "8000",
+        "--config",
+        "/config/kreuzberg.toml",
+      ]
     restart: unless-stopped
     healthcheck:
       # Health check for container orchestration
@@ -869,7 +875,7 @@ kind: Deployment
 metadata:
   name: kreuzberg-api
 spec:
-  replicas: 3  # Deploy 3 replicas for high availability
+  replicas: 3 # Deploy 3 replicas for high availability
   selector:
     matchLabels:
       app: kreuzberg-api
@@ -879,39 +885,39 @@ spec:
         app: kreuzberg-api
     spec:
       containers:
-      - name: kreuzberg
-        image: ghcr.io/kreuzberg-dev/kreuzberg:latest
-        ports:
-        - containerPort: 8000
-        env:
-        # Production environment configuration
-        - name: KREUZBERG_CORS_ORIGINS
-          value: "https://myapp.com"
-        - name: KREUZBERG_MAX_UPLOAD_SIZE_MB
-          value: "500"
-        command: ["kreuzberg", "serve", "-H", "0.0.0.0", "-p", "8000"]
-        livenessProbe:
-          # Check if container is alive and healthy
-          httpGet:
-            path: /health
-            port: 8000
-          initialDelaySeconds: 10
-          periodSeconds: 30
-        readinessProbe:
-          # Check if container is ready to accept traffic
-          httpGet:
-            path: /health
-            port: 8000
-          initialDelaySeconds: 5
-          periodSeconds: 10
-        resources:
-          # Resource limits for optimal performance
-          requests:
-            memory: "512Mi"
-            cpu: "500m"
-          limits:
-            memory: "2Gi"
-            cpu: "2000m"
+        - name: kreuzberg
+          image: ghcr.io/kreuzberg-dev/kreuzberg:latest
+          ports:
+            - containerPort: 8000
+          env:
+            # Production environment configuration
+            - name: KREUZBERG_CORS_ORIGINS
+              value: "https://myapp.com"
+            - name: KREUZBERG_MAX_UPLOAD_SIZE_MB
+              value: "500"
+          command: ["kreuzberg", "serve", "-H", "0.0.0.0", "-p", "8000"]
+          livenessProbe:
+            # Check if container is alive and healthy
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          readinessProbe:
+            # Check if container is ready to accept traffic
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            # Resource limits for optimal performance
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "2Gi"
+              cpu: "2000m"
 ---
 apiVersion: v1
 kind: Service
@@ -921,10 +927,10 @@ spec:
   selector:
     app: kreuzberg-api
   ports:
-  - protocol: TCP
-    port: 80
-    targetPort: 8000
-  type: LoadBalancer  # Expose service via load balancer
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+  type: LoadBalancer # Expose service via load balancer
 ```
 
 ### Reverse Proxy Configuration
@@ -1068,6 +1074,7 @@ export KREUZBERG_MAX_UPLOAD_SIZE_MB=1000
 ```
 
 See the [File Size Limits Reference](../reference/file-size-limits.md) for comprehensive documentation including:
+
 - Memory impact calculations
 - Reverse proxy configuration
 - Error handling and troubleshooting

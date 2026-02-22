@@ -33,7 +33,7 @@ fn main() -> kreuzberg::Result<()> {
 
     if let Some(chunks) = result.chunks {
         for chunk in chunks {
-            println!("Chunk: {}...", &chunk[..100.min(chunk.len())]);
+            println!("Chunk: {}...", &chunk.content[..100.min(chunk.content.len())]);
         }
     }
 

@@ -134,7 +134,7 @@ func ExtractFileSync(path string, config *ExtractionConfig) (*ExtractionResult, 
 **Parameters:**
 
 - `path` (string): Path to the file to extract (absolute or relative)
-- `config` (*ExtractionConfig): Optional extraction configuration; uses defaults if nil
+- `config` (\*ExtractionConfig): Optional extraction configuration; uses defaults if nil
 
 **Returns:**
 
@@ -195,7 +195,7 @@ func ExtractFile(ctx context.Context, path string, config *ExtractionConfig) (*E
 
 - `ctx` (context.Context): Context for cancellation and timeout
 - `path` (string): Path to the file
-- `config` (*ExtractionConfig): Optional configuration
+- `config` (\*ExtractionConfig): Optional configuration
 
 **Returns:**
 
@@ -236,7 +236,7 @@ func ExtractBytesSync(data []byte, mimeType string, config *ExtractionConfig) (*
 
 - `data` ([]byte): Document bytes
 - `mimeType` (string): MIME type (e.g., "application/pdf", "text/plain")
-- `config` (*ExtractionConfig): Optional configuration
+- `config` (\*ExtractionConfig): Optional configuration
 
 **Returns:**
 
@@ -282,7 +282,7 @@ func ExtractBytes(ctx context.Context, data []byte, mimeType string, config *Ext
 - `ctx` (context.Context): Context for cancellation and timeout
 - `data` ([]byte): Document bytes
 - `mimeType` (string): MIME type
-- `config` (*ExtractionConfig): Optional configuration
+- `config` (\*ExtractionConfig): Optional configuration
 
 **Returns:**
 
@@ -316,7 +316,7 @@ func BatchExtractFilesSync(paths []string, config *ExtractionConfig) ([]*Extract
 **Parameters:**
 
 - `paths` ([]string): Slice of file paths
-- `config` (*ExtractionConfig): Configuration applied to all files
+- `config` (\*ExtractionConfig): Configuration applied to all files
 
 **Returns:**
 
@@ -364,7 +364,7 @@ func BatchExtractFiles(ctx context.Context, paths []string, config *ExtractionCo
 
 - `ctx` (context.Context): Context for cancellation
 - `paths` ([]string): File paths
-- `config` (*ExtractionConfig): Configuration for all files
+- `config` (\*ExtractionConfig): Configuration for all files
 
 **Returns:**
 
@@ -386,7 +386,7 @@ func BatchExtractBytesSync(items []BytesWithMime, config *ExtractionConfig) ([]*
 **Parameters:**
 
 - `items` ([]BytesWithMime): Slice of {Data, MimeType} pairs
-- `config` (*ExtractionConfig): Configuration applied to all items
+- `config` (\*ExtractionConfig): Configuration applied to all items
 
 **Returns:**
 
@@ -441,7 +441,7 @@ func BatchExtractBytes(ctx context.Context, items []BytesWithMime, config *Extra
 
 - `ctx` (context.Context): Context for cancellation
 - `items` ([]BytesWithMime): Document slice
-- `config` (*ExtractionConfig): Configuration
+- `config` (\*ExtractionConfig): Configuration
 
 **Returns:**
 
@@ -750,6 +750,7 @@ fmt.Printf("Number of images: %d\n", len(result.Images))
 Per-page extracted content when page extraction is enabled via `PageConfig.ExtractPages = true`.
 
 Each page contains:
+
 - Page number (1-indexed)
 - Text content for that page
 - Tables on that page
@@ -930,9 +931,9 @@ type ChunkMetadata struct {
 - `ByteStart` (int): UTF-8 byte offset in content (inclusive)
 - `ByteEnd` (int): UTF-8 byte offset in content (exclusive)
 - `CharCount` (int): Number of characters in chunk
-- `TokenCount` (*int): Estimated token count (if configured)
-- `FirstPage` (*int): First page this chunk appears on (1-indexed, only when page boundaries available)
-- `LastPage` (*int): Last page this chunk appears on (1-indexed, only when page boundaries available)
+- `TokenCount` (\*int): Estimated token count (if configured)
+- `FirstPage` (\*int): First page this chunk appears on (1-indexed, only when page boundaries available)
+- `LastPage` (\*int): Last page this chunk appears on (1-indexed, only when page boundaries available)
 
 **Page tracking:** When `PageStructure.Boundaries` is available and chunking is enabled, `FirstPage` and `LastPage` are automatically calculated based on byte offsets.
 

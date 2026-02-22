@@ -838,7 +838,7 @@ IO.inspect(atom)
 ## Configuration
 
 !!! warning "Deprecated API"
-    The `force_ocr` parameter has been deprecated in favor of the new `ocr` configuration object.
+The `force_ocr` parameter has been deprecated in favor of the new `ocr` configuration object.
 
     **Old pattern (no longer supported):**
     ```elixir
@@ -1216,6 +1216,7 @@ Register a custom post-processor plugin.
 **Module Interface:**
 
 The post-processor module should implement:
+
 - `process(data)` - Applies custom processing to extraction result data
 
 **Example:**
@@ -1253,6 +1254,7 @@ Register a custom validator plugin.
 **Module Interface:**
 
 The validator module should implement:
+
 - `validate(data)` - Validates data and returns `:ok` or `{:error, reason}`
 
 **Example:**
@@ -1290,6 +1292,7 @@ Register a custom OCR backend plugin.
 **Module Interface:**
 
 The OCR backend module should implement:
+
 - `recognize(image_data, language)` - Performs OCR on image data
 - `supported_languages()` - Returns list of supported language codes
 

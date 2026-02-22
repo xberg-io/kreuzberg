@@ -11,22 +11,16 @@ Primary extraction result containing document content, metadata, and structured 
 ```rust title="extraction_result.rs"
 pub struct ExtractionResult {
     pub content: String,
-    pub mime_type: Cow<'static, str>,  // Serializes as String
+    pub mime_type: Cow<'static, str>,  // MIME type string (serializes as String)
     pub metadata: Metadata,
     pub tables: Vec<Table>,
     pub detected_languages: Option<Vec<String>>,
     pub chunks: Option<Vec<Chunk>>,
     pub images: Option<Vec<ExtractedImage>>,
-    pub extracted_keywords: Option<Vec<ExtractedKeyword>>,
-    pub quality_score: Option<f64>,
-    pub processing_warnings: Vec<ProcessingWarning>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub djot_content: Option<DjotContent>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub pages: Option<Vec<PageContent>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub elements: Option<Vec<Element>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    pub djot_content: Option<DjotContent>,
+    pub ocr_elements: Option<Vec<OcrElement>>,
     pub document: Option<DocumentStructure>,
 }
 ```
@@ -56,20 +50,17 @@ class ExtractionResult(TypedDict):
 
 ```typescript title="extraction_result.ts"
 export interface ExtractionResult {
-    content: string;
-    mimeType: string;
-    metadata: Metadata;
-    tables: Table[];
-    detectedLanguages: string[] | null;
-    chunks: Chunk[] | null;
-    images: ExtractedImage[] | null;
-    extractedKeywords?: ExtractedKeyword[];
-    qualityScore?: number;
-    processingWarnings: ProcessingWarning[];
-    djotContent?: DjotContent;
-    pages?: PageContent[];
-    elements?: Element[];
-    document?: DocumentStructure;
+  content: string;
+  mimeType: string;
+  metadata: Metadata;
+  tables: Table[];
+  detectedLanguages: string[] | null;
+  chunks: Chunk[] | null;
+  images: ExtractedImage[] | null;
+  djotContent?: DjotContent;
+  pages?: PageContent[];
+  elements?: Element[];
+  document?: DocumentStructure;
 }
 ```
 
@@ -152,6 +143,7 @@ pub struct Metadata {
     pub image_preprocessing: Option<ImagePreprocessingMetadata>,
     pub json_schema: Option<serde_json::Value>,
     pub error: Option<ErrorMetadata>,
+    pub extraction_duration_ms: Option<u64>,
     pub additional: HashMap<String, serde_json::Value>,
 }
 
@@ -201,27 +193,32 @@ class Metadata(TypedDict, total=False):
 
 ```typescript title="metadata.ts"
 export interface Metadata {
-    title?: string | null;
-    subject?: string | null;
-    authors?: string[] | null;
-    keywords?: string[] | null;
-    category?: string | null;
-    tags?: string[] | null;
-    language?: string | null;
-    createdAt?: string | null;
-    modifiedAt?: string | null;
-    createdBy?: string | null;
-    modifiedBy?: string | null;
-    documentVersion?: string | null;
-    abstractText?: string | null;
-    outputFormat?: string | null;
-    pages?: PageStructure | null;
-    format_type?: "pdf" | "excel" | "email" | "pptx" | "archive" | "image" | "xml" | "text" | "html" | "ocr";
-    // Format-specific fields are included at root level based on format_type
-    image_preprocessing?: ImagePreprocessingMetadata | null;
-    json_schema?: Record<string, unknown> | null;
-    error?: ErrorMetadata | null;
-    [key: string]: any;
+  title?: string | null;
+  subject?: string | null;
+  authors?: string[] | null;
+  keywords?: string[] | null;
+  language?: string | null;
+  createdAt?: string | null;
+  modifiedAt?: string | null;
+  createdBy?: string | null;
+  modifiedBy?: string | null;
+  pages?: PageStructure | null;
+  format_type?:
+    | "pdf"
+    | "excel"
+    | "email"
+    | "pptx"
+    | "archive"
+    | "image"
+    | "xml"
+    | "text"
+    | "html"
+    | "ocr";
+  // Format-specific fields are included at root level based on format_type
+  image_preprocessing?: ImagePreprocessingMetadata | null;
+  json_schema?: Record<string, unknown> | null;
+  error?: ErrorMetadata | null;
+  [key: string]: any;
 }
 ```
 
@@ -418,6 +415,7 @@ Contains page structure information when page tracking is available. This field 
 **When populated**: Only when the document format supports page tracking (PDF, PPTX, DOCX, XLSX) and extraction is successful.
 
 **Available fields**:
+
 - `total_count`: Total number of pages/slides/sheets in the document
 - `unit_type`: Type of paginated unit ("page", "slide", or "sheet")
 - `boundaries`: Byte offset boundaries for each page (enables O(1) lookups from byte positions to page numbers)
@@ -447,12 +445,14 @@ if metadata.get("pages"):
 
 ```typescript title="TypeScript - Accessing Page Structure"
 if (metadata.pages) {
-    console.log(`Document has ${metadata.pages.totalCount} pages`);
-    if (metadata.pages.boundaries) {
-        for (const boundary of metadata.pages.boundaries) {
-            console.log(`Page ${boundary.pageNumber}: bytes ${boundary.byteStart}-${boundary.byteEnd}`);
-        }
+  console.log(`Document has ${metadata.pages.totalCount} pages`);
+  if (metadata.pages.boundaries) {
+    for (const boundary of metadata.pages.boundaries) {
+      console.log(
+        `Page ${boundary.pageNumber}: bytes ${boundary.byteStart}-${boundary.byteEnd}`,
+      );
     }
+  }
 }
 ```
 
@@ -564,6 +564,7 @@ public record PageStructure
 ```
 
 **Fields:**
+
 - `total_count`: Total number of pages/slides/sheets
 - `unit_type`: Distinction between Page/Slide/Sheet
 - `boundaries`: Byte offset ranges for each page (enables O(1) lookups)
@@ -646,6 +647,7 @@ public record PageBoundary
 ```
 
 **Fields:**
+
 - `byte_start`: UTF-8 byte offset (inclusive)
 - `byte_end`: UTF-8 byte offset (exclusive)
 - `page_number`: 1-indexed page number
@@ -753,6 +755,7 @@ public record PageInfo
 ```
 
 **Fields:**
+
 - `number`: 1-indexed page number
 - `title`: Page/slide title (PPTX)
 - `dimensions`: Width and height in points (PDF, PPTX)
@@ -832,6 +835,7 @@ public enum PageUnitType
 ```
 
 **Values:**
+
 - `Page`: Standard document pages (PDF, DOCX)
 - `Slide`: Presentation slides (PPTX)
 - `Sheet`: Spreadsheet sheets (XLSX)
@@ -877,15 +881,15 @@ class PdfMetadata(TypedDict, total=False):
 
 ```typescript title="pdf_metadata.ts"
 export interface PdfMetadata {
-    title?: string | null;
-    author?: string | null;
-    subject?: string | null;
-    keywords?: string | null;
-    creator?: string | null;
-    producer?: string | null;
-    creationDate?: string | null;
-    modificationDate?: string | null;
-    pageCount?: number;
+  title?: string | null;
+  author?: string | null;
+  subject?: string | null;
+  keywords?: string | null;
+  creator?: string | null;
+  producer?: string | null;
+  creationDate?: string | null;
+  modificationDate?: string | null;
+  pageCount?: number;
 }
 ```
 
@@ -946,8 +950,8 @@ class ExcelMetadata(TypedDict, total=False):
 
 ```typescript title="excel_metadata.ts"
 export interface ExcelMetadata {
-    sheetCount?: number;
-    sheetNames?: string[];
+  sheetCount?: number;
+  sheetNames?: string[];
 }
 ```
 
@@ -1004,13 +1008,13 @@ class EmailMetadata(TypedDict, total=False):
 
 ```typescript title="email_metadata.ts"
 export interface EmailMetadata {
-    fromEmail?: string | null;
-    fromName?: string | null;
-    toEmails?: string[];
-    ccEmails?: string[];
-    bccEmails?: string[];
-    messageId?: string | null;
-    attachments?: string[];
+  fromEmail?: string | null;
+  fromName?: string | null;
+  toEmails?: string[];
+  ccEmails?: string[];
+  bccEmails?: string[];
+  messageId?: string | null;
+  attachments?: string[];
 }
 ```
 
@@ -1073,11 +1077,11 @@ class ArchiveMetadata(TypedDict, total=False):
 
 ```typescript title="archive_metadata.ts"
 export interface ArchiveMetadata {
-    format?: string;
-    fileCount?: number;
-    fileList?: string[];
-    totalSize?: number;
-    compressedSize?: number | null;
+  format?: string;
+  fileCount?: number;
+  fileList?: string[];
+  totalSize?: number;
+  compressedSize?: number | null;
 }
 ```
 
@@ -1134,10 +1138,10 @@ class ImageMetadata(TypedDict, total=False):
 
 ```typescript title="image_metadata.ts"
 export interface ImageMetadata {
-    width?: number;
-    height?: number;
-    format?: string;
-    exif?: Record<string, string>;
+  width?: number;
+  height?: number;
+  format?: string;
+  exif?: Record<string, string>;
 }
 ```
 
@@ -1214,21 +1218,21 @@ class HtmlMetadata(TypedDict, total=False):
 
 ```typescript title="html_metadata.ts"
 export interface HtmlMetadata {
-    title?: string | null;
-    description?: string | null;
-    keywords: string[];
-    author?: string | null;
-    canonicalUrl?: string | null;
-    baseHref?: string | null;
-    language?: string | null;
-    textDirection?: string | null;
-    openGraph: Record<string, string>;
-    twitterCard: Record<string, string>;
-    metaTags: Record<string, string>;
-    headers: HeaderMetadata[];
-    links: LinkMetadata[];
-    images: ImageMetadataType[];
-    structuredData: StructuredData[];
+  title?: string | null;
+  description?: string | null;
+  keywords: string[];
+  author?: string | null;
+  canonicalUrl?: string | null;
+  baseHref?: string | null;
+  language?: string | null;
+  textDirection?: string | null;
+  openGraph: Record<string, string>;
+  twitterCard: Record<string, string>;
+  metaTags: Record<string, string>;
+  headers: HeaderMetadata[];
+  links: LinkMetadata[];
+  images: ImageMetadataType[];
+  structuredData: StructuredData[];
 }
 ```
 
@@ -1330,11 +1334,11 @@ class HeaderMetadata(TypedDict, total=False):
 
 ```typescript title="header_metadata.ts"
 export interface HeaderMetadata {
-    level: number;
-    text: string;
-    id?: string | null;
-    depth: number;
-    htmlOffset: number;
+  level: number;
+  text: string;
+  id?: string | null;
+  depth: number;
+  htmlOffset: number;
 }
 ```
 
@@ -1376,6 +1380,7 @@ public record HeaderMetadata
 ```
 
 **Fields:**
+
 - `level`: Header level 1-6 (h1 through h6)
 - `text`: Normalized text content of the header
 - `id`: Optional HTML id attribute
@@ -1415,12 +1420,12 @@ class LinkMetadata(TypedDict, total=False):
 
 ```typescript title="link_metadata.ts"
 export interface LinkMetadata {
-    href: string;
-    text: string;
-    title?: string | null;
-    linkType: LinkType;
-    rel: string[];
-    attributes: Record<string, string>;
+  href: string;
+  text: string;
+  title?: string | null;
+  linkType: LinkType;
+  rel: string[];
+  attributes: Record<string, string>;
 }
 ```
 
@@ -1465,6 +1470,7 @@ public record LinkMetadata
 ```
 
 **Fields:**
+
 - `href`: The href URL value
 - `text`: Link text content (normalized)
 - `title`: Optional title attribute
@@ -1498,7 +1504,13 @@ LinkType = Literal["anchor", "internal", "external", "email", "phone", "other"]
 ### TypeScript
 
 ```typescript title="link_type.ts"
-export type LinkType = "anchor" | "internal" | "external" | "email" | "phone" | "other";
+export type LinkType =
+  | "anchor"
+  | "internal"
+  | "external"
+  | "email"
+  | "phone"
+  | "other";
 ```
 
 ### Java
@@ -1544,6 +1556,7 @@ public enum LinkType
 ```
 
 **Values:**
+
 - `Anchor`: Anchor link (#section)
 - `Internal`: Internal link (same domain)
 - `External`: External link (different domain)
@@ -1584,12 +1597,12 @@ class ImageMetadataType(TypedDict, total=False):
 
 ```typescript title="image_metadata_type.ts"
 export interface ImageMetadataType {
-    src: string;
-    alt?: string | null;
-    title?: string | null;
-    dimensions?: [number, number] | null;
-    imageType: ImageType;
-    attributes: Record<string, string>;
+  src: string;
+  alt?: string | null;
+  title?: string | null;
+  dimensions?: [number, number] | null;
+  imageType: ImageType;
+  attributes: Record<string, string>;
 }
 ```
 
@@ -1634,6 +1647,7 @@ public record ImageMetadataType
 ```
 
 **Fields:**
+
 - `src`: Image source (URL, data URI, or SVG content)
 - `alt`: Alternative text from alt attribute
 - `title`: Title attribute
@@ -1705,6 +1719,7 @@ public enum ImageType
 ```
 
 **Values:**
+
 - `DataUri`: Data URI image
 - `InlineSvg`: Inline SVG
 - `External`: External image URL
@@ -1737,9 +1752,9 @@ class StructuredData(TypedDict, total=False):
 
 ```typescript title="structured_data.ts"
 export interface StructuredData {
-    dataType: StructuredDataType;
-    rawJson: string;
-    schemaType?: string | null;
+  dataType: StructuredDataType;
+  rawJson: string;
+  schemaType?: string | null;
 }
 ```
 
@@ -1775,6 +1790,7 @@ public record StructuredData
 ```
 
 **Fields:**
+
 - `data_type`: Type of structured data (JSON-LD, Microdata, RDFa)
 - `raw_json`: Raw JSON string representation
 - `schema_type`: Schema type if detectable (e.g., "Article", "Event", "Product")
@@ -1839,6 +1855,7 @@ public enum StructuredDataType
 ```
 
 **Values:**
+
 - `JsonLd`: JSON-LD structured data
 - `Microdata`: Microdata structured data
 - `RDFa`: RDFa structured data
@@ -1876,12 +1893,12 @@ class TextMetadata(TypedDict, total=False):
 
 ```typescript title="text_metadata.ts"
 export interface TextMetadata {
-    lineCount?: number;
-    wordCount?: number;
-    characterCount?: number;
-    headers?: string[] | null;
-    links?: [string, string][] | null;
-    codeBlocks?: [string, string][] | null;
+  lineCount?: number;
+  wordCount?: number;
+  characterCount?: number;
+  headers?: string[] | null;
+  links?: [string, string][] | null;
+  codeBlocks?: [string, string][] | null;
 }
 ```
 
@@ -1942,11 +1959,11 @@ class PptxMetadata(TypedDict, total=False):
 
 ```typescript title="pptx_metadata.ts"
 export interface PptxMetadata {
-    title?: string | null;
-    author?: string | null;
-    description?: string | null;
-    summary?: string | null;
-    fonts?: string[];
+  title?: string | null;
+  author?: string | null;
+  description?: string | null;
+  summary?: string | null;
+  fonts?: string[];
 }
 ```
 
@@ -2007,12 +2024,12 @@ class OcrMetadata(TypedDict, total=False):
 
 ```typescript title="ocr_metadata.ts"
 export interface OcrMetadata {
-    language?: string;
-    psm?: number;
-    outputFormat?: string;
-    tableCount?: number;
-    tableRows?: number | null;
-    tableCols?: number | null;
+  language?: string;
+  psm?: number;
+  outputFormat?: string;
+  tableCount?: number;
+  tableRows?: number | null;
+  tableCols?: number | null;
 }
 ```
 
@@ -2071,10 +2088,9 @@ class Table(TypedDict):
 
 ```typescript title="table.ts"
 export interface Table {
-    cells: string[][];
-    markdown: string;
-    pageNumber: number;
-    boundingBox?: BoundingBox | null;
+  cells: string[][];
+  markdown: string;
+  pageNumber: number;
 }
 ```
 
@@ -2152,19 +2168,19 @@ class Chunk(TypedDict, total=False):
 
 ```typescript title="chunk.ts"
 export interface ChunkMetadata {
-    byteStart: number;
-    byteEnd: number;
-    tokenCount?: number | null;
-    chunkIndex: number;
-    totalChunks: number;
-    firstPage?: number | null;
-    lastPage?: number | null;
+  byteStart: number;
+  byteEnd: number;
+  tokenCount?: number | null;
+  chunkIndex: number;
+  totalChunks: number;
+  firstPage?: number | null;
+  lastPage?: number | null;
 }
 
 export interface Chunk {
-    content: string;
-    embedding?: number[] | null;
-    metadata: ChunkMetadata;
+  content: string;
+  embedding?: number[] | null;
+  metadata: ChunkMetadata;
 }
 ```
 
@@ -2245,6 +2261,7 @@ pub struct ExtractedImage {
 ```
 
 **Field notes:**
+
 - `data`: Uses `Bytes` for cheap cloning of large image buffers
 - `format`: Uses `Cow<'static, str>` to avoid allocation for static format literals (e.g., "jpeg", "png"). In serialized JSON, appears as a regular string.
 - All other fields serialize as expected for their types
@@ -2271,18 +2288,17 @@ class ExtractedImage(TypedDict, total=False):
 
 ```typescript title="extracted_image.ts"
 export interface ExtractedImage {
-    data: Uint8Array;
-    format: string;
-    imageIndex: number;
-    pageNumber?: number | null;
-    width?: number | null;
-    height?: number | null;
-    colorspace?: string | null;
-    bitsPerComponent?: number | null;
-    isMask: boolean;
-    description?: string | null;
-    ocrResult?: ExtractionResult | null;
-    boundingBox?: BoundingBox | null;
+  data: Uint8Array;
+  format: string;
+  imageIndex: number;
+  pageNumber?: number | null;
+  width?: number | null;
+  height?: number | null;
+  colorspace?: string | null;
+  bitsPerComponent?: number | null;
+  isMask: boolean;
+  description?: string | null;
+  ocrResult?: ExtractionResult | null;
 }
 ```
 
@@ -2382,18 +2398,18 @@ class ExtractionConfig:
 
 ```typescript title="extraction_config.ts"
 export interface ExtractionConfig {
-    useCache?: boolean;
-    enableQualityProcessing?: boolean;
-    ocr?: OcrConfig;
-    forceOcr?: boolean;
-    chunking?: ChunkingConfig;
-    images?: ImageExtractionConfig;
-    pdfOptions?: PdfConfig;
-    tokenReduction?: TokenReductionConfig;
-    languageDetection?: LanguageDetectionConfig;
-    keywords?: KeywordConfig;
-    postprocessor?: PostProcessorConfig;
-    maxConcurrentExtractions?: number;
+  useCache?: boolean;
+  enableQualityProcessing?: boolean;
+  ocr?: OcrConfig;
+  forceOcr?: boolean;
+  chunking?: ChunkingConfig;
+  images?: ImageExtractionConfig;
+  pdfOptions?: PdfConfig;
+  tokenReduction?: TokenReductionConfig;
+  languageDetection?: LanguageDetectionConfig;
+  keywords?: KeywordConfig;
+  postprocessor?: PostProcessorConfig;
+  maxConcurrentExtractions?: number;
 }
 ```
 
@@ -2463,9 +2479,9 @@ class OcrConfig:
 
 ```typescript title="ocr_config.ts"
 export interface OcrConfig {
-    backend: string;
-    language?: string;
-    tesseractConfig?: TesseractConfig;
+  backend: string;
+  language?: string;
+  tesseractConfig?: TesseractConfig;
 }
 ```
 
@@ -2555,12 +2571,12 @@ class ChunkingConfig:
 
 ```typescript title="chunking_config.ts"
 export interface ChunkingConfig {
-    maxCharacters?: number;
-    overlap?: number;
-    trim?: boolean;
-    chunkerType?: ChunkerType;
-    embedding?: EmbeddingConfig;
-    preset?: string;
+  maxCharacters?: number;
+  overlap?: number;
+  trim?: boolean;
+  chunkerType?: ChunkerType;
+  embedding?: EmbeddingConfig;
+  preset?: string;
 }
 ```
 
@@ -2694,17 +2710,17 @@ class EmbeddingModelType:
 
 ```typescript title="embedding_config.ts"
 export interface EmbeddingConfig {
-    model: EmbeddingModelType;
-    normalize?: boolean;
-    batchSize?: number;
-    showDownloadProgress?: boolean;
-    cacheDir?: string;
+  model: EmbeddingModelType;
+  normalize?: boolean;
+  batchSize?: number;
+  showDownloadProgress?: boolean;
+  cacheDir?: string;
 }
 
 export type EmbeddingModelType =
-    | { type: "preset"; name: string }
-    | { type: "fastembed"; model: string; dimensions: number }
-    | { type: "custom"; modelId: string; dimensions: number };
+  | { type: "preset"; name: string }
+  | { type: "fastembed"; model: string; dimensions: number }
+  | { type: "custom"; modelId: string; dimensions: number };
 ```
 
 ### ImageExtractionConfig
@@ -2741,12 +2757,12 @@ class ImageExtractionConfig:
 
 ```typescript title="image_extraction_config.ts"
 export interface ImageExtractionConfig {
-    extractImages?: boolean;
-    targetDpi?: number;
-    maxImageDimension?: number;
-    autoAdjustDpi?: boolean;
-    minDpi?: number;
-    maxDpi?: number;
+  extractImages?: boolean;
+  targetDpi?: number;
+  maxImageDimension?: number;
+  autoAdjustDpi?: boolean;
+  minDpi?: number;
+  maxDpi?: number;
 }
 ```
 
@@ -2804,9 +2820,9 @@ class PdfConfig:
 
 ```typescript title="pdf_config.ts"
 export interface PdfConfig {
-    extractImages?: boolean;
-    passwords?: string[];
-    extractMetadata?: boolean;
+  extractImages?: boolean;
+  passwords?: string[];
+  extractMetadata?: boolean;
 }
 ```
 
@@ -2866,8 +2882,8 @@ class TokenReductionConfig:
 
 ```typescript title="token_reduction_config.ts"
 export interface TokenReductionConfig {
-    mode?: string;
-    preserveImportantWords?: boolean;
+  mode?: string;
+  preserveImportantWords?: boolean;
 }
 ```
 
@@ -2927,9 +2943,9 @@ class LanguageDetectionConfig:
 
 ```typescript title="language_detection_config.ts"
 export interface LanguageDetectionConfig {
-    enabled?: boolean;
-    minConfidence?: number;
-    detectMultiple?: boolean;
+  enabled?: boolean;
+  minConfidence?: number;
+  detectMultiple?: boolean;
 }
 ```
 
@@ -3008,22 +3024,22 @@ class KeywordConfig:
 
 ```typescript title="keyword_config.ts"
 export interface YakeParams {
-    windowSize?: number;
+  windowSize?: number;
 }
 
 export interface RakeParams {
-    minWordLength?: number;
-    maxWordsPerPhrase?: number;
+  minWordLength?: number;
+  maxWordsPerPhrase?: number;
 }
 
 export interface KeywordConfig {
-    algorithm?: KeywordAlgorithm;
-    maxKeywords?: number;
-    minScore?: number;
-    ngramRange?: [number, number];
-    language?: string;
-    yakeParams?: YakeParams;
-    rakeParams?: RakeParams;
+  algorithm?: KeywordAlgorithm;
+  maxKeywords?: number;
+  minScore?: number;
+  ngramRange?: [number, number];
+  language?: string;
+  yakeParams?: YakeParams;
+  rakeParams?: RakeParams;
 }
 ```
 
@@ -3123,18 +3139,18 @@ class ImagePreprocessingMetadata(TypedDict, total=False):
 
 ```typescript title="image_preprocessing_metadata.ts"
 export interface ImagePreprocessingMetadata {
-    originalDimensions?: [number, number];
-    originalDpi?: [number, number];
-    targetDpi?: number;
-    scaleFactor?: number;
-    autoAdjusted?: boolean;
-    finalDpi?: number;
-    newDimensions?: [number, number] | null;
-    resampleMethod?: string;
-    dimensionClamped?: boolean;
-    calculatedDpi?: number | null;
-    skippedResize?: boolean;
-    resizeError?: string | null;
+  originalDimensions?: [number, number];
+  originalDpi?: [number, number];
+  targetDpi?: number;
+  scaleFactor?: number;
+  autoAdjusted?: boolean;
+  finalDpi?: number;
+  newDimensions?: [number, number] | null;
+  resampleMethod?: string;
+  dimensionClamped?: boolean;
+  calculatedDpi?: number | null;
+  skippedResize?: boolean;
+  resizeError?: string | null;
 }
 ```
 
@@ -3222,13 +3238,13 @@ class ImagePreprocessingConfig:
 
 ```typescript title="image_preprocessing_config.ts"
 export interface ImagePreprocessingConfig {
-    targetDpi?: number;
-    autoRotate?: boolean;
-    deskew?: boolean;
-    denoise?: boolean;
-    contrastEnhance?: boolean;
-    binarizationMethod?: string;
-    invertColors?: boolean;
+  targetDpi?: number;
+  autoRotate?: boolean;
+  deskew?: boolean;
+  denoise?: boolean;
+  contrastEnhance?: boolean;
+  binarizationMethod?: string;
+  invertColors?: boolean;
 }
 ```
 
@@ -3296,8 +3312,8 @@ class ErrorMetadata(TypedDict, total=False):
 
 ```typescript title="error_metadata.ts"
 export interface ErrorMetadata {
-    errorType?: string;
-    message?: string;
+  errorType?: string;
+  message?: string;
 }
 ```
 
@@ -3352,8 +3368,8 @@ class XmlMetadata(TypedDict, total=False):
 
 ```typescript title="xml_metadata.ts"
 export interface XmlMetadata {
-    elementCount?: number;
-    uniqueElements?: string[];
+  elementCount?: number;
+  uniqueElements?: string[];
 }
 ```
 
@@ -3411,9 +3427,9 @@ class PostProcessorConfig:
 
 ```typescript title="post_processor_config.ts"
 export interface PostProcessorConfig {
-    enabled?: boolean;
-    enabledProcessors?: string[];
-    disabledProcessors?: string[];
+  enabled?: boolean;
+  enabledProcessors?: string[];
+  disabledProcessors?: string[];
 }
 ```
 
@@ -3494,17 +3510,17 @@ class HierarchyConfig:
 
 ```typescript title="hierarchy_config.ts"
 export interface HierarchyConfig {
-    /** Enable hierarchy extraction. Default: true. */
-    enabled?: boolean;
+  /** Enable hierarchy extraction. Default: true. */
+  enabled?: boolean;
 
-    /** Number of font size clusters (2-10). Default: 6. */
-    kClusters?: number;
+  /** Number of font size clusters (2-10). Default: 6. */
+  kClusters?: number;
 
-    /** Include bounding box information. Default: true. */
-    includeBbox?: boolean;
+  /** Include bounding box information. Default: true. */
+  includeBbox?: boolean;
 
-    /** OCR coverage threshold (0.0-1.0). Default: null. */
-    ocrCoverageThreshold?: number | null;
+  /** OCR coverage threshold (0.0-1.0). Default: null. */
+  ocrCoverageThreshold?: number | null;
 }
 ```
 
@@ -3655,14 +3671,14 @@ config = ExtractionConfig(pdf_options=pdf_config)
 
 ```typescript title="TypeScript - HierarchyConfig Setup"
 const hierarchyConfig: HierarchyConfig = {
-    enabled: true,
-    kClusters: 6,
-    includeBbox: true,
-    ocrCoverageThreshold: 0.5
+  enabled: true,
+  kClusters: 6,
+  includeBbox: true,
+  ocrCoverageThreshold: 0.5,
 };
 
 const pdfConfig: PdfConfig = {
-    hierarchy: hierarchyConfig
+  hierarchy: hierarchyConfig,
 };
 ```
 
@@ -3721,11 +3737,11 @@ class PageHierarchy(TypedDict):
 
 ```typescript title="page_hierarchy.ts"
 export interface PageHierarchy {
-    /** Total number of hierarchy blocks extracted from the page */
-    blockCount: number;
+  /** Total number of hierarchy blocks extracted from the page */
+  blockCount: number;
 
-    /** Array of hierarchical text blocks ordered by document position */
-    blocks: HierarchicalBlock[];
+  /** Array of hierarchical text blocks ordered by document position */
+  blocks: HierarchicalBlock[];
 }
 ```
 
@@ -3833,20 +3849,20 @@ class HierarchicalBlock(TypedDict, total=False):
 
 ```typescript title="hierarchical_block.ts"
 export interface HierarchicalBlock {
-    /** The text content of this block */
-    text: string;
+  /** The text content of this block */
+  text: string;
 
-    /** Hierarchy level: "h1" through "h6" or "body" */
-    level: "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "body";
+  /** Hierarchy level: "h1" through "h6" or "body" */
+  level: "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "body";
 
-    /** Font size in points */
-    fontSize: number;
+  /** Font size in points */
+  fontSize: number;
 
-    /** Bounding box [left, top, right, bottom] in PDF coordinates, or null */
-    bbox?: [number, number, number, number] | null;
+  /** Bounding box [left, top, right, bottom] in PDF coordinates, or null */
+  bbox?: [number, number, number, number] | null;
 
-    /** Index position of this block in the blocks array */
-    blockIndex: number;
+  /** Index position of this block in the blocks array */
+  blockIndex: number;
 }
 ```
 
@@ -4016,24 +4032,26 @@ if result.get('pages'):
 ```
 
 ```typescript title="TypeScript - Iterating PageHierarchy Blocks"
-import { extract } from 'kreuzberg';
+import { extract } from "kreuzberg";
 
-const result = await extract('document.pdf');
+const result = await extract("document.pdf");
 
 if (result.pages) {
-    for (const page of result.pages) {
-        if (page.hierarchy) {
-            const { blockCount, blocks } = page.hierarchy;
-            console.log(`Found ${blockCount} blocks:`);
-            for (const block of blocks) {
-                console.log(`  [${block.level}] ${block.text}`);
-                if (block.bbox) {
-                    const [left, top, right, bottom] = block.bbox;
-                    console.log(`    Position: (${left}, ${top}) to (${right}, ${bottom})`);
-                }
-            }
+  for (const page of result.pages) {
+    if (page.hierarchy) {
+      const { blockCount, blocks } = page.hierarchy;
+      console.log(`Found ${blockCount} blocks:`);
+      for (const block of blocks) {
+        console.log(`  [${block.level}] ${block.text}`);
+        if (block.bbox) {
+          const [left, top, right, bottom] = block.bbox;
+          console.log(
+            `    Position: (${left}, ${top}) to (${right}, ${bottom})`,
+          );
         }
+      }
     }
+  }
 }
 ```
 
@@ -4090,18 +4108,18 @@ if result.Pages != nil {
 
 Cross-language type equivalents showing how Kreuzberg types map across Rust, Python, TypeScript, Ruby, Java, and Go:
 
-| Purpose | Rust | Python | TypeScript | Ruby | Java | Go |
-|---------|------|--------|------------|------|------|-----|
-| String | `String` | `str` | `string` | `String` | `String` | `string` |
-| Optional/Nullable | `Option<T>` | `T \| None` | `T \| null` | `T or nil` | `Optional<T>` | `*T` |
-| Array/List | `Vec<T>` | `list[T]` | `T[]` | `Array` | `List<T>` | `[]T` |
-| Tuple/Pair | `(T, U)` | `tuple[T, U]` | `[T, U]` | `Array` | `Pair<T,U>` | `[2]T` |
-| Dictionary/Map | `HashMap<K,V>` | `dict[K, V]` | `Record<K, V>` | `Hash` | `Map<K, V>` | `map[K]V` |
-| Integer | `i32`, `i64`, `usize` | `int` | `number` | `Integer` | `int`, `long` | `int`, `int64` |
-| Float | `f32`, `f64` | `float` | `number` | `Float` | `float`, `double` | `float32`, `float64` |
-| Boolean | `bool` | `bool` | `boolean` | `Boolean` | `boolean` | `bool` |
-| Bytes | `Vec<u8>` | `bytes` | `Uint8Array` | `String` (binary) | `byte[]` | `[]byte` |
-| Union/Enum | `enum` | `Literal` | `union` | `case` statement | `sealed class` | custom struct |
+| Purpose           | Rust                  | Python        | TypeScript     | Ruby              | Java              | Go                   |
+| ----------------- | --------------------- | ------------- | -------------- | ----------------- | ----------------- | -------------------- |
+| String            | `String`              | `str`         | `string`       | `String`          | `String`          | `string`             |
+| Optional/Nullable | `Option<T>`           | `T \| None`   | `T \| null`    | `T or nil`        | `Optional<T>`     | `*T`                 |
+| Array/List        | `Vec<T>`              | `list[T]`     | `T[]`          | `Array`           | `List<T>`         | `[]T`                |
+| Tuple/Pair        | `(T, U)`              | `tuple[T, U]` | `[T, U]`       | `Array`           | `Pair<T,U>`       | `[2]T`               |
+| Dictionary/Map    | `HashMap<K,V>`        | `dict[K, V]`  | `Record<K, V>` | `Hash`            | `Map<K, V>`       | `map[K]V`            |
+| Integer           | `i32`, `i64`, `usize` | `int`         | `number`       | `Integer`         | `int`, `long`     | `int`, `int64`       |
+| Float             | `f32`, `f64`          | `float`       | `number`       | `Float`           | `float`, `double` | `float32`, `float64` |
+| Boolean           | `bool`                | `bool`        | `boolean`      | `Boolean`         | `boolean`         | `bool`               |
+| Bytes             | `Vec<u8>`             | `bytes`       | `Uint8Array`   | `String` (binary) | `byte[]`          | `[]byte`             |
+| Union/Enum        | `enum`                | `Literal`     | `union`        | `case` statement  | `sealed class`    | custom struct        |
 
 ## Nullability and Optionals
 
@@ -4191,10 +4209,10 @@ class Element(TypedDict):
 
 ```typescript title="element.ts"
 export interface Element {
-    elementId: string;
-    elementType: ElementType;
-    text: string;
-    metadata: ElementMetadata;
+  elementId: string;
+  elementType: ElementType;
+  text: string;
+  metadata: ElementMetadata;
 }
 ```
 
@@ -4269,10 +4287,10 @@ end
 
 ```typescript title="element.ts"
 export interface Element {
-    elementId: string;
-    elementType: ElementType;
-    text: string;
-    metadata: ElementMetadata;
+  elementId: string;
+  elementType: ElementType;
+  text: string;
+  metadata: ElementMetadata;
 }
 ```
 
@@ -4380,17 +4398,17 @@ ElementType = Literal[
 
 ```typescript title="element_type.ts"
 export type ElementType =
-    | "title"
-    | "narrative_text"
-    | "list_item"
-    | "table"
-    | "image"
-    | "page_break"
-    | "heading"
-    | "code_block"
-    | "block_quote"
-    | "header"
-    | "footer";
+  | "title"
+  | "narrative_text"
+  | "list_item"
+  | "table"
+  | "image"
+  | "page_break"
+  | "heading"
+  | "code_block"
+  | "block_quote"
+  | "header"
+  | "footer";
 ```
 
 ### Ruby
@@ -4520,17 +4538,17 @@ end
 
 ```typescript title="element_type.ts"
 export type ElementType =
-    | "title"
-    | "narrative_text"
-    | "list_item"
-    | "table"
-    | "image"
-    | "page_break"
-    | "heading"
-    | "code_block"
-    | "block_quote"
-    | "header"
-    | "footer";
+  | "title"
+  | "narrative_text"
+  | "list_item"
+  | "table"
+  | "image"
+  | "page_break"
+  | "heading"
+  | "code_block"
+  | "block_quote"
+  | "header"
+  | "footer";
 ```
 
 ## ElementMetadata
@@ -4565,11 +4583,11 @@ class ElementMetadata(TypedDict, total=False):
 
 ```typescript title="element_metadata.ts"
 export interface ElementMetadata {
-    pageNumber?: number | null;
-    filename?: string | null;
-    coordinates?: BoundingBox | null;
-    elementIndex?: number | null;
-    additional?: Record<string, string>;
+  pageNumber?: number | null;
+  filename?: string | null;
+  coordinates?: BoundingBox | null;
+  elementIndex?: number | null;
+  additional?: Record<string, string>;
 }
 ```
 
@@ -4650,11 +4668,11 @@ end
 
 ```typescript title="element_metadata.ts"
 export interface ElementMetadata {
-    pageNumber?: number | null;
-    filename?: string | null;
-    coordinates?: BoundingBox | null;
-    elementIndex?: number | null;
-    additional?: Record<string, string>;
+  pageNumber?: number | null;
+  filename?: string | null;
+  coordinates?: BoundingBox | null;
+  elementIndex?: number | null;
+  additional?: Record<string, string>;
 }
 ```
 
@@ -4688,10 +4706,10 @@ class BoundingBox(TypedDict):
 
 ```typescript title="bounding_box.ts"
 export interface BoundingBox {
-    x0: number;
-    y0: number;
-    x1: number;
-    y1: number;
+  x0: number;
+  y0: number;
+  x1: number;
+  y1: number;
 }
 ```
 
@@ -4766,10 +4784,10 @@ end
 
 ```typescript title="bounding_box.ts"
 export interface BoundingBox {
-    x0: number;
-    y0: number;
-    x1: number;
-    y1: number;
+  x0: number;
+  y0: number;
+  x1: number;
+  y1: number;
 }
 ```
 
@@ -5124,69 +5142,74 @@ class AnnotationKind(TypedDict, total=False):
 
 ```typescript title="document_structure.ts"
 export interface DocumentStructure {
-    nodes: DocumentNode[];
+  nodes: DocumentNode[];
 }
 
 export interface DocumentNode {
-    id: string;
-    content: NodeContent;
-    parent: number | null;
-    children: number[];
-    contentLayer: ContentLayer;
-    page: number | null;
-    pageEnd: number | null;
-    bbox: BoundingBox | null;
-    annotations: TextAnnotation[];
+  id: string;
+  content: NodeContent;
+  parent: number | null;
+  children: number[];
+  contentLayer: ContentLayer;
+  page: number | null;
+  pageEnd: number | null;
+  bbox: BoundingBox | null;
+  annotations: TextAnnotation[];
 }
 
 export type ContentLayer = "body" | "header" | "footer" | "footnote";
 
 export type NodeContent =
-    | { nodeType: "title"; text: string }
-    | { nodeType: "heading"; level: number; text: string }
-    | { nodeType: "paragraph"; text: string }
-    | { nodeType: "list"; ordered: boolean }
-    | { nodeType: "listItem"; text: string }
-    | { nodeType: "table"; grid: TableGrid }
-    | { nodeType: "image"; description?: string; imageIndex?: number }
-    | { nodeType: "code"; text: string; language?: string }
-    | { nodeType: "quote" }
-    | { nodeType: "formula"; text: string }
-    | { nodeType: "footnote"; text: string }
-    | { nodeType: "group"; label?: string; headingLevel?: number; headingText?: string }
-    | { nodeType: "pageBreak" };
+  | { nodeType: "title"; text: string }
+  | { nodeType: "heading"; level: number; text: string }
+  | { nodeType: "paragraph"; text: string }
+  | { nodeType: "list"; ordered: boolean }
+  | { nodeType: "listItem"; text: string }
+  | { nodeType: "table"; grid: TableGrid }
+  | { nodeType: "image"; description?: string; imageIndex?: number }
+  | { nodeType: "code"; text: string; language?: string }
+  | { nodeType: "quote" }
+  | { nodeType: "formula"; text: string }
+  | { nodeType: "footnote"; text: string }
+  | {
+      nodeType: "group";
+      label?: string;
+      headingLevel?: number;
+      headingText?: string;
+    }
+  | { nodeType: "pageBreak" };
 
 export interface TableGrid {
-    rows: number;
-    cols: number;
-    cells: GridCell[];
+  rows: number;
+  cols: number;
+  cells: GridCell[];
 }
 
 export interface GridCell {
-    content: string;
-    row: number;
-    col: number;
-    rowSpan: number;
-    colSpan: number;
-    isHeader: boolean;
-    bbox: BoundingBox | null;
+  content: string;
+  row: number;
+  col: number;
+  rowSpan: number;
+  colSpan: number;
+  isHeader: boolean;
+  bbox: BoundingBox | null;
 }
 
 export interface TextAnnotation {
-    start: number;
-    end: number;
-    kind: AnnotationKind;
+  start: number;
+  end: number;
+  kind: AnnotationKind;
 }
 
 export type AnnotationKind =
-    | { annotationType: "bold" }
-    | { annotationType: "italic" }
-    | { annotationType: "underline" }
-    | { annotationType: "strikethrough" }
-    | { annotationType: "code" }
-    | { annotationType: "subscript" }
-    | { annotationType: "superscript" }
-    | { annotationType: "link"; url: string; title?: string };
+  | { annotationType: "bold" }
+  | { annotationType: "italic" }
+  | { annotationType: "underline" }
+  | { annotationType: "strikethrough" }
+  | { annotationType: "code" }
+  | { annotationType: "subscript" }
+  | { annotationType: "superscript" }
+  | { annotationType: "link"; url: string; title?: string };
 ```
 
 ### Ruby
@@ -5684,67 +5707,72 @@ end
 
 ```typescript title="document_structure_wasm.ts"
 export interface DocumentStructure {
-    nodes: DocumentNode[];
+  nodes: DocumentNode[];
 }
 
 export interface DocumentNode {
-    id: string;
-    content: NodeContent;
-    parent: number | null;
-    children: number[];
-    contentLayer: ContentLayer;
-    page: number | null;
-    pageEnd: number | null;
-    bbox: BoundingBox | null;
-    annotations: TextAnnotation[];
+  id: string;
+  content: NodeContent;
+  parent: number | null;
+  children: number[];
+  contentLayer: ContentLayer;
+  page: number | null;
+  pageEnd: number | null;
+  bbox: BoundingBox | null;
+  annotations: TextAnnotation[];
 }
 
 export type ContentLayer = "body" | "header" | "footer" | "footnote";
 
 export type NodeContent =
-    | { nodeType: "title"; text: string }
-    | { nodeType: "heading"; level: number; text: string }
-    | { nodeType: "paragraph"; text: string }
-    | { nodeType: "list"; ordered: boolean }
-    | { nodeType: "listItem"; text: string }
-    | { nodeType: "table"; grid: TableGrid }
-    | { nodeType: "image"; description?: string; imageIndex?: number }
-    | { nodeType: "code"; text: string; language?: string }
-    | { nodeType: "quote" }
-    | { nodeType: "formula"; text: string }
-    | { nodeType: "footnote"; text: string }
-    | { nodeType: "group"; label?: string; headingLevel?: number; headingText?: string }
-    | { nodeType: "pageBreak" };
+  | { nodeType: "title"; text: string }
+  | { nodeType: "heading"; level: number; text: string }
+  | { nodeType: "paragraph"; text: string }
+  | { nodeType: "list"; ordered: boolean }
+  | { nodeType: "listItem"; text: string }
+  | { nodeType: "table"; grid: TableGrid }
+  | { nodeType: "image"; description?: string; imageIndex?: number }
+  | { nodeType: "code"; text: string; language?: string }
+  | { nodeType: "quote" }
+  | { nodeType: "formula"; text: string }
+  | { nodeType: "footnote"; text: string }
+  | {
+      nodeType: "group";
+      label?: string;
+      headingLevel?: number;
+      headingText?: string;
+    }
+  | { nodeType: "pageBreak" };
 
 export interface TableGrid {
-    rows: number;
-    cols: number;
-    cells: GridCell[];
+  rows: number;
+  cols: number;
+  cells: GridCell[];
 }
 
 export interface GridCell {
-    content: string;
-    row: number;
-    col: number;
-    rowSpan: number;
-    colSpan: number;
-    isHeader: boolean;
-    bbox: BoundingBox | null;
+  content: string;
+  row: number;
+  col: number;
+  rowSpan: number;
+  colSpan: number;
+  isHeader: boolean;
+  bbox: BoundingBox | null;
 }
 
 export interface TextAnnotation {
-    start: number;
-    end: number;
-    kind: AnnotationKind;
+  start: number;
+  end: number;
+  kind: AnnotationKind;
 }
 
 export type AnnotationKind =
-    | { annotationType: "bold" }
-    | { annotationType: "italic" }
-    | { annotationType: "underline" }
-    | { annotationType: "strikethrough" }
-    | { annotationType: "code" }
-    | { annotationType: "subscript" }
-    | { annotationType: "superscript" }
-    | { annotationType: "link"; url: string; title?: string };
+  | { annotationType: "bold" }
+  | { annotationType: "italic" }
+  | { annotationType: "underline" }
+  | { annotationType: "strikethrough" }
+  | { annotationType: "code" }
+  | { annotationType: "subscript" }
+  | { annotationType: "superscript" }
+  | { annotationType: "link"; url: string; title?: string };
 ```

@@ -35,13 +35,13 @@ flowchart LR
 
 Element-based output is designed for compatibility with Unstructured.io, with some enhancements:
 
-| Aspect | Unstructured | Kreuzberg | Notes |
-|--------|--------------|-----------|-------|
-| **Output Structure** | Array of elements | `elements` field in result | Kreuzberg also includes other fields |
-| **Element Types** | PascalCase strings | snake_case strings | `Title` → `title`, `NarrativeText` → `narrative_text` |
-| **Metadata** | Basic (page_number, filename) | Rich (coordinates, hierarchy, format-specific) | Kreuzberg includes bounding boxes from PDF |
-| **Element IDs** | Not always present | Always present | Deterministic hash-based IDs |
-| **Compatibility Mode** | N/A | Set `output_format=element_based` | Element array structure matches Unstructured |
+| Aspect                 | Unstructured                  | Kreuzberg                                      | Notes                                                 |
+| ---------------------- | ----------------------------- | ---------------------------------------------- | ----------------------------------------------------- |
+| **Output Structure**   | Array of elements             | `elements` field in result                     | Kreuzberg also includes other fields                  |
+| **Element Types**      | PascalCase strings            | snake_case strings                             | `Title` → `title`, `NarrativeText` → `narrative_text` |
+| **Metadata**           | Basic (page_number, filename) | Rich (coordinates, hierarchy, format-specific) | Kreuzberg includes bounding boxes from PDF            |
+| **Element IDs**        | Not always present            | Always present                                 | Deterministic hash-based IDs                          |
+| **Compatibility Mode** | N/A                           | Set `output_format=element_based`              | Element array structure matches Unstructured          |
 
 ## Element Types Reference
 
@@ -52,12 +52,14 @@ Kreuzberg supports 11 element types. Each element type represents a specific sem
 Document titles and headings with optional hierarchy metadata.
 
 **Characteristics**:
+
 - Headings (H1-H6 from PDF hierarchy or HTML)
 - Document titles
 - Section headings
 - Includes `level` metadata (`h1` through `h6`) when available
 
 **Example**:
+
 ```json
 {
   "element_id": "elem-a3f2b1c4",
@@ -79,12 +81,14 @@ Document titles and headings with optional hierarchy metadata.
 Paragraphs and narrative text blocks.
 
 **Characteristics**:
+
 - Paragraph text
 - Body content
 - Prose text blocks
 - Split on double newlines or paragraph boundaries
 
 **Example**:
+
 ```json
 {
   "element_id": "elem-f9c8a2e1",
@@ -102,6 +106,7 @@ Paragraphs and narrative text blocks.
 Individual list items (bullets, numbered, lettered, or indented).
 
 **Characteristics**:
+
 - Bullet list items (`•`, `-`, `*`)
 - Numbered list items (`1.`, `2.`, etc.)
 - Lettered list items (`a.`, `b.`, `A.`, `B.`)
@@ -109,11 +114,13 @@ Individual list items (bullets, numbered, lettered, or indented).
 - Each list item is a separate element
 
 **Metadata fields**:
+
 - `list_type`: `bullet`, `numbered`, `lettered`, `indented`
 - `list_marker`: The actual marker used (e.g., `"1."`, `"•"`, `"a."`)
 - `indent_level`: Indentation depth (0-based)
 
 **Example**:
+
 ```json
 {
   "element_id": "elem-d4b7f3a9",
@@ -136,17 +143,20 @@ Individual list items (bullets, numbered, lettered, or indented).
 Tabular data extracted from documents.
 
 **Characteristics**:
+
 - Tables from PDFs, DOCX, HTML, etc.
 - Text representation (tab-separated or Markdown)
 - Cell data preserved in metadata
 - Includes table structure (rows × columns)
 
 **Metadata fields**:
+
 - `row_count`: Number of rows
 - `column_count`: Number of columns
 - `cells`: 2D array of cell values (when available)
 
 **Example**:
+
 ```json
 {
   "element_id": "elem-c2f8d1a6",
@@ -169,6 +179,7 @@ Tabular data extracted from documents.
 Images and visual content with metadata.
 
 **Characteristics**:
+
 - Embedded images (from PDFs, DOCX, HTML, etc.)
 - Image format detection (PNG, JPEG, TIFF, etc.)
 - Dimensions (width × height in pixels)
@@ -176,12 +187,14 @@ Images and visual content with metadata.
 - Alt text when available
 
 **Metadata fields**:
+
 - `format`: Image format (`jpeg`, `png`, `tiff`, etc.)
 - `width`: Width in pixels
 - `height`: Height in pixels
 - `alt_text`: Alternative text (from HTML or DOCX)
 
 **Example**:
+
 ```json
 {
   "element_id": "elem-e5a9c3b7",
@@ -205,12 +218,14 @@ Images and visual content with metadata.
 Page boundary markers in multi-page documents.
 
 **Characteristics**:
+
 - Inserted between pages in PDF, DOCX, PPTX
 - Indicates transition from one page to the next
 - Useful for maintaining document structure
 - Text field typically empty or contains page number info
 
 **Example**:
+
 ```json
 {
   "element_id": "elem-b1f4a8c2",
@@ -231,12 +246,14 @@ Page boundary markers in multi-page documents.
 Section headings (beyond the main title).
 
 **Characteristics**:
+
 - Section and subsection headings
 - Mapped from document structure
 - May include hierarchy level
 - Distinct from `title` element type
 
 **Example**:
+
 ```json
 {
   "element_id": "elem-f2c9d3e8",
@@ -257,16 +274,19 @@ Section headings (beyond the main title).
 Code snippets and programming language blocks.
 
 **Characteristics**:
+
 - Code blocks from Markdown, Jupyter, source files
 - Programming language detection (when available)
 - Syntax preserved with indentation
 - Extracted from fenced code blocks or code cells
 
 **Metadata fields**:
+
 - `language`: Programming language (e.g., `python`, `javascript`, `rust`)
 - `line_count`: Number of lines in code block
 
 **Example**:
+
 ```json
 {
   "element_id": "elem-a7d2f1c9",
@@ -288,12 +308,14 @@ Code snippets and programming language blocks.
 Quoted text blocks.
 
 **Characteristics**:
+
 - Blockquotes from Markdown, HTML
 - Quoted passages
 - Indented quotes
 - Typically starts with `>` in Markdown
 
 **Example**:
+
 ```json
 {
   "element_id": "elem-c9f3a2e7",
@@ -311,12 +333,14 @@ Quoted text blocks.
 Page header content (recurring text at top of pages).
 
 **Characteristics**:
+
 - Header text from page layouts
 - Recurring content across pages
 - Document title or chapter name in headers
 - Typically excluded from main content flow
 
 **Example**:
+
 ```json
 {
   "element_id": "elem-d1b8f4c3",
@@ -337,12 +361,14 @@ Page header content (recurring text at top of pages).
 Page footer content (recurring text at bottom of pages).
 
 **Characteristics**:
+
 - Footer text from page layouts
 - Page numbers, copyright notices
 - Document metadata in footers
 - Recurring content across pages
 
 **Example**:
+
 ```json
 {
   "element_id": "elem-e3c7a9f2",
@@ -364,13 +390,13 @@ Every element includes a `metadata` object with the following fields:
 
 ### Core Metadata Fields
 
-| Field | Type | Description | Availability |
-|-------|------|-------------|--------------|
-| `page_number` | `Option<usize>` | Page number (1-indexed) | PDF, DOCX, PPTX |
-| `filename` | `Option<String>` | Original filename or document title | All formats |
-| `coordinates` | `Option<BoundingBox>` | Bounding box coordinates | PDF (native), OCR results |
-| `element_index` | `usize` | Zero-indexed position in element array | Always present |
-| `additional` | `Map<String, String>` | Element-type-specific metadata | Varies by type |
+| Field           | Type                  | Description                            | Availability              |
+| --------------- | --------------------- | -------------------------------------- | ------------------------- |
+| `page_number`   | `Option<usize>`       | Page number (1-indexed)                | PDF, DOCX, PPTX           |
+| `filename`      | `Option<String>`      | Original filename or document title    | All formats               |
+| `coordinates`   | `Option<BoundingBox>` | Bounding box coordinates               | PDF (native), OCR results |
+| `element_index` | `usize`               | Zero-indexed position in element array | Always present            |
+| `additional`    | `Map<String, String>` | Element-type-specific metadata         | Varies by type            |
 
 ### BoundingBox Structure
 
@@ -388,6 +414,7 @@ When available (primarily for PDFs and OCR), coordinates are provided as:
 ```
 
 **Coordinate System** (PDF coordinates):
+
 - Origin: Bottom-left corner of page
 - Units: Points (1/72 inch)
 - `x0`, `x1`: Horizontal position (left → right)
@@ -398,28 +425,33 @@ When available (primarily for PDFs and OCR), coordinates are provided as:
 ### Additional Metadata by Element Type
 
 #### Title Additional Metadata
+
 - `level`: Hierarchy level (`h1`, `h2`, `h3`, `h4`, `h5`, `h6`)
 - `font_size`: Font size in points (PDF only)
 - `font_name`: Font family (PDF only)
 
 #### ListItem Additional Metadata
+
 - `list_type`: `bullet`, `numbered`, `lettered`, `indented`
 - `list_marker`: Actual marker text (e.g., `"1."`, `"•"`, `"a."`)
 - `indent_level`: Indentation depth (0-based)
 
 #### Table Additional Metadata
+
 - `row_count`: Number of rows
 - `column_count`: Number of columns
 - `cells`: 2D array of cell values (when available)
 - `format`: Table representation format (`markdown`, `tab_separated`)
 
 #### Image Additional Metadata
+
 - `format`: Image format (`png`, `jpeg`, `tiff`, `webp`, etc.)
 - `width`: Width in pixels
 - `height`: Height in pixels
 - `alt_text`: Alternative text (when available)
 
 #### CodeBlock Additional Metadata
+
 - `language`: Programming language identifier
 - `line_count`: Number of lines
 
@@ -467,15 +499,16 @@ To enable element-based output, set `output_format` to `element_based` (or `elem
 === "Rust"
 
     ```rust
-    use kreuzberg::{extract_file_sync, ExtractionConfig, OutputFormat};
+    use kreuzberg::{extract_file_sync, ExtractionConfig};
+    use kreuzberg::types::OutputFormat as ResultFormat;
 
-    // Element-based output configuration
+    // Element-based result structure (result_format), not content format (output_format)
     let config = ExtractionConfig {
-        output_format: OutputFormat::ElementBased,
+        result_format: ResultFormat::ElementBased,
         ..Default::default()
     };
 
-    let result = extract_file_sync("document.pdf", Some(config))?;
+    let result = extract_file_sync("document.pdf", None, &config)?;
 
     // Access elements
     if let Some(elements) = result.elements {
@@ -1041,23 +1074,24 @@ print_hierarchy(hierarchy)
 
 ## Comparison: Unified vs Element-Based vs Document Structure
 
-| Aspect | Unified Output (Default) | Element-Based Output | Document Structure |
-|--------|-------------------------|----------------------|-------------------|
-| **Use Case** | Full document text, metadata extraction | Semantic segmentation, element-level processing | Hierarchical document representation, tree traversal |
-| **Output Structure** | Single `content` field + metadata | Array of `elements` with individual metadata | Tree of `DocumentNode` with parent/child links |
-| **Granularity** | Document-level | Element-level (flat list) | Node-level (hierarchical tree) |
-| **Performance** | Fastest (less processing) | Moderate (element detection) | Moderate (tree construction) |
-| **Hierarchy** | None (flat text) | Flat list with level metadata | True tree with parent/child relationships |
-| **Config Flag** | Default | `result_format: "element_based"` | `include_document_structure: true` |
-| **Result Field** | `content` | `elements` | `document` |
-| **Table Support** | `result.tables` array | `element_type == "table"` | `NodeContent::Table` with structured `TableGrid` |
-| **Annotations** | None | None | Inline `TextAnnotation` (bold, italic, links) |
-| **Content Layers** | None | None | Body, Header, Footer, Footnote per node |
-| **Best For** | LLM prompts, full-text search | Unstructured.io compat, semantic search | Document analysis, tree-based processing, rich formatting |
+| Aspect               | Unified Output (Default)                | Element-Based Output                            | Document Structure                                        |
+| -------------------- | --------------------------------------- | ----------------------------------------------- | --------------------------------------------------------- |
+| **Use Case**         | Full document text, metadata extraction | Semantic segmentation, element-level processing | Hierarchical document representation, tree traversal      |
+| **Output Structure** | Single `content` field + metadata       | Array of `elements` with individual metadata    | Tree of `DocumentNode` with parent/child links            |
+| **Granularity**      | Document-level                          | Element-level (flat list)                       | Node-level (hierarchical tree)                            |
+| **Performance**      | Fastest (less processing)               | Moderate (element detection)                    | Moderate (tree construction)                              |
+| **Hierarchy**        | None (flat text)                        | Flat list with level metadata                   | True tree with parent/child relationships                 |
+| **Config Flag**      | Default                                 | `result_format: "element_based"`                | `include_document_structure: true`                        |
+| **Result Field**     | `content`                               | `elements`                                      | `document`                                                |
+| **Table Support**    | `result.tables` array                   | `element_type == "table"`                       | `NodeContent::Table` with structured `TableGrid`          |
+| **Annotations**      | None                                    | None                                            | Inline `TextAnnotation` (bold, italic, links)             |
+| **Content Layers**   | None                                    | None                                            | Body, Header, Footer, Footnote per node                   |
+| **Best For**         | LLM prompts, full-text search           | Unstructured.io compat, semantic search         | Document analysis, tree-based processing, rich formatting |
 
 ### When to Choose Each Format
 
 **Choose Unified Output** for:
+
 - ✅ Passing full document text to LLMs
 - ✅ Simple search and retrieval workflows
 - ✅ Maximum extraction performance
@@ -1066,6 +1100,7 @@ print_hierarchy(hierarchy)
 - ✅ Table and image arrays with structured metadata
 
 **Choose Element-Based Output** for:
+
 - ✅ Compatibility with Unstructured.io workflows
 - ✅ Semantic segmentation of documents
 - ✅ Element-level metadata (coordinates, types)
@@ -1075,6 +1110,7 @@ print_hierarchy(hierarchy)
 - ✅ Hierarchical document reconstruction
 
 **Choose Document Structure** for:
+
 - ✅ True hierarchical document representation
 - ✅ Tree-based traversal and processing
 - ✅ Preserving document nesting (sections, subsections)
@@ -1084,6 +1120,7 @@ print_hierarchy(hierarchy)
 - ✅ Document diffing and comparison (deterministic node IDs)
 
 **Use Multiple Modes** when you need:
+
 - ✅ Element-based processing + per-page content
 - ✅ Full document text + semantic segmentation
 - ✅ Migration from Unstructured with gradual adoption
@@ -1095,14 +1132,14 @@ If you're migrating from Unstructured.io to Kreuzberg, element-based output prov
 
 ### Key Differences
 
-| Aspect | Unstructured | Kreuzberg |
-|--------|--------------|-----------|
-| **Element Types** | PascalCase (`Title`, `NarrativeText`) | snake_case (`title`, `narrative_text`) |
-| **Output Structure** | Array of elements (top-level) | `elements` field in result object |
-| **Element IDs** | Optional | Always present (deterministic hash) |
-| **Metadata** | Basic (page_number, filename) | Rich (coordinates, additional fields) |
-| **Coordinates** | Optional | Always included when available (PDF) |
-| **API Endpoint** | `/general/v0/general` | `/extract` with `output_format=element_based` |
+| Aspect               | Unstructured                          | Kreuzberg                                     |
+| -------------------- | ------------------------------------- | --------------------------------------------- |
+| **Element Types**    | PascalCase (`Title`, `NarrativeText`) | snake_case (`title`, `narrative_text`)        |
+| **Output Structure** | Array of elements (top-level)         | `elements` field in result object             |
+| **Element IDs**      | Optional                              | Always present (deterministic hash)           |
+| **Metadata**         | Basic (page_number, filename)         | Rich (coordinates, additional fields)         |
+| **Coordinates**      | Optional                              | Always included when available (PDF)          |
+| **API Endpoint**     | `/general/v0/general`                 | `/extract` with `output_format=element_based` |
 
 ### Migration Steps
 
