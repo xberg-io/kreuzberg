@@ -3,6 +3,7 @@
 use crate::Result;
 use crate::core::config::ExtractionConfig;
 use crate::core::config::formats::OutputFormat;
+use crate::extractors::SyncExtractor;
 use crate::plugins::{DocumentExtractor, Plugin};
 use crate::types::{ExcelMetadata, ExtractionResult, Metadata, Table};
 use ahash::AHashMap;
@@ -74,7 +75,70 @@ impl Plugin for ExcelExtractor {
     }
 }
 
-#[async_trait]
+impl SyncExtractor for ExcelExtractor {
+    fn extract_sync(&self, content: &[u8], mime_type: &str, config: &ExtractionConfig) -> Result<ExtractionResult> {
+        let extension = match mime_type {
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" => ".xlsx",
+            "application/vnd.ms-excel.sheet.macroEnabled.12" => ".xlsm",
+            "application/vnd.ms-excel.addin.macroEnabled.12" => ".xlam",
+            "application/vnd.ms-excel.template.macroEnabled.12" => ".xltm",
+            "application/vnd.ms-excel" => ".xls",
+            "application/vnd.ms-excel.addin.macroEnabled" => ".xla",
+            "application/vnd.ms-excel.sheet.binary.macroEnabled.12" => ".xlsb",
+            "application/vnd.oasis.opendocument.spreadsheet" => ".ods",
+            _ => ".xlsx",
+        };
+
+        let workbook = crate::extraction::excel::read_excel_bytes(content, extension)?;
+        let content_text = match config.output_format {
+            OutputFormat::Markdown | OutputFormat::Djot | OutputFormat::Html => {
+                crate::extraction::excel::excel_to_markdown(&workbook)
+            }
+            _ => crate::extraction::excel::excel_to_text(&workbook),
+        };
+        let tables = Self::sheets_to_tables(&workbook);
+
+        let sheet_names: Vec<String> = workbook.sheets.iter().map(|s| s.name.clone()).collect();
+        let excel_metadata = ExcelMetadata {
+            sheet_count: workbook.sheets.len(),
+            sheet_names,
+        };
+
+        let mut additional = AHashMap::new();
+        for (key, value) in &workbook.metadata {
+            if key != "sheet_count" && key != "sheet_names" {
+                additional.insert(Cow::Owned(key.clone()), serde_json::json!(value));
+            }
+        }
+
+        Ok(ExtractionResult {
+            content: content_text,
+            mime_type: mime_type.to_string().into(),
+            metadata: Metadata {
+                format: Some(crate::types::FormatMetadata::Excel(excel_metadata)),
+                additional,
+                ..Default::default()
+            },
+            pages: None,
+            tables,
+            detected_languages: None,
+            chunks: None,
+            images: None,
+            djot_content: None,
+            elements: None,
+            ocr_elements: None,
+            document: None,
+            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: Vec::new(),
+            annotations: None,
+        })
+    }
+}
+
+#[cfg_attr(not(target_arch = "wasm32"), async_trait)]
+#[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
 impl DocumentExtractor for ExcelExtractor {
     #[cfg_attr(feature = "otel", tracing::instrument(
         skip(self, content, config),
@@ -101,18 +165,29 @@ impl DocumentExtractor for ExcelExtractor {
             _ => ".xlsx",
         };
 
-        let workbook = if crate::core::batch_mode::is_batch_mode() {
-            let content_owned = content.to_vec();
-            let extension_owned = extension.to_string();
-            let span = tracing::Span::current();
-            tokio::task::spawn_blocking(move || {
-                let _guard = span.entered();
-                crate::extraction::excel::read_excel_bytes(&content_owned, &extension_owned)
-            })
-            .await
-            .map_err(|e| crate::error::KreuzbergError::parsing(format!("Excel extraction task failed: {}", e)))??
-        } else {
-            crate::extraction::excel::read_excel_bytes(content, extension)?
+        let workbook = {
+            #[cfg(feature = "tokio-runtime")]
+            {
+                if crate::core::batch_mode::is_batch_mode() {
+                    let content_owned = content.to_vec();
+                    let extension_owned = extension.to_string();
+                    let span = tracing::Span::current();
+                    tokio::task::spawn_blocking(move || {
+                        let _guard = span.entered();
+                        crate::extraction::excel::read_excel_bytes(&content_owned, &extension_owned)
+                    })
+                    .await
+                    .map_err(|e| {
+                        crate::error::KreuzbergError::parsing(format!("Excel extraction task failed: {}", e))
+                    })??
+                } else {
+                    crate::extraction::excel::read_excel_bytes(content, extension)?
+                }
+            }
+            #[cfg(not(feature = "tokio-runtime"))]
+            {
+                crate::extraction::excel::read_excel_bytes(content, extension)?
+            }
         };
 
         let content = match config.output_format {
@@ -234,6 +309,10 @@ impl DocumentExtractor for ExcelExtractor {
 
     fn priority(&self) -> i32 {
         50
+    }
+
+    fn as_sync_extractor(&self) -> Option<&dyn SyncExtractor> {
+        Some(self)
     }
 }
 

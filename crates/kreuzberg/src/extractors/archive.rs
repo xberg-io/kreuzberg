@@ -6,6 +6,7 @@ use crate::extraction::archive::{
     ArchiveMetadata as ExtractedMetadata, extract_7z_metadata, extract_7z_text_content, extract_gzip,
     extract_tar_metadata, extract_tar_text_content, extract_zip_metadata, extract_zip_text_content,
 };
+use crate::extractors::SyncExtractor;
 use crate::extractors::security::ZipBombValidator;
 use crate::plugins::{DocumentExtractor, Plugin};
 use crate::types::{ArchiveMetadata, ExtractionResult, Metadata};
@@ -138,7 +139,8 @@ impl Plugin for ZipExtractor {
     }
 }
 
-#[async_trait]
+#[cfg_attr(not(target_arch = "wasm32"), async_trait)]
+#[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
 impl DocumentExtractor for ZipExtractor {
     #[cfg_attr(feature = "otel", tracing::instrument(
         skip(self, content, config),
@@ -180,6 +182,32 @@ impl DocumentExtractor for ZipExtractor {
 
     fn priority(&self) -> i32 {
         50
+    }
+
+    fn as_sync_extractor(&self) -> Option<&dyn SyncExtractor> {
+        Some(self)
+    }
+}
+
+impl SyncExtractor for ZipExtractor {
+    fn extract_sync(&self, content: &[u8], mime_type: &str, config: &ExtractionConfig) -> Result<ExtractionResult> {
+        let limits = config.security_limits.clone().unwrap_or_default();
+        let cursor = Cursor::new(content);
+        let mut archive = zip::ZipArchive::new(cursor)
+            .map_err(|e| crate::error::KreuzbergError::parsing(format!("Failed to read ZIP archive: {}", e)))?;
+        let validator = ZipBombValidator::new(limits.clone());
+        validator
+            .validate(&mut archive)
+            .map_err(|e| crate::error::KreuzbergError::validation(e.to_string()))?;
+
+        let extraction_metadata = extract_zip_metadata(content, &limits)?;
+        let text_contents = extract_zip_text_content(content, &limits)?;
+        Ok(build_archive_result(
+            extraction_metadata,
+            text_contents,
+            "ZIP",
+            mime_type,
+        ))
     }
 }
 
@@ -227,7 +255,8 @@ impl Plugin for TarExtractor {
     }
 }
 
-#[async_trait]
+#[cfg_attr(not(target_arch = "wasm32"), async_trait)]
+#[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
 impl DocumentExtractor for TarExtractor {
     #[cfg_attr(feature = "otel", tracing::instrument(
         skip(self, content, config),
@@ -264,6 +293,24 @@ impl DocumentExtractor for TarExtractor {
 
     fn priority(&self) -> i32 {
         50
+    }
+
+    fn as_sync_extractor(&self) -> Option<&dyn SyncExtractor> {
+        Some(self)
+    }
+}
+
+impl SyncExtractor for TarExtractor {
+    fn extract_sync(&self, content: &[u8], mime_type: &str, config: &ExtractionConfig) -> Result<ExtractionResult> {
+        let limits = config.security_limits.clone().unwrap_or_default();
+        let extraction_metadata = extract_tar_metadata(content, &limits)?;
+        let text_contents = extract_tar_text_content(content, &limits)?;
+        Ok(build_archive_result(
+            extraction_metadata,
+            text_contents,
+            "TAR",
+            mime_type,
+        ))
     }
 }
 
@@ -311,7 +358,8 @@ impl Plugin for SevenZExtractor {
     }
 }
 
-#[async_trait]
+#[cfg_attr(not(target_arch = "wasm32"), async_trait)]
+#[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
 impl DocumentExtractor for SevenZExtractor {
     #[cfg_attr(feature = "otel", tracing::instrument(
         skip(self, content, config),
@@ -343,6 +391,24 @@ impl DocumentExtractor for SevenZExtractor {
 
     fn priority(&self) -> i32 {
         50
+    }
+
+    fn as_sync_extractor(&self) -> Option<&dyn SyncExtractor> {
+        Some(self)
+    }
+}
+
+impl SyncExtractor for SevenZExtractor {
+    fn extract_sync(&self, content: &[u8], mime_type: &str, config: &ExtractionConfig) -> Result<ExtractionResult> {
+        let limits = config.security_limits.clone().unwrap_or_default();
+        let extraction_metadata = extract_7z_metadata(content, &limits)?;
+        let text_contents = extract_7z_text_content(content, &limits)?;
+        Ok(build_archive_result(
+            extraction_metadata,
+            text_contents,
+            "7Z",
+            mime_type,
+        ))
     }
 }
 
@@ -390,7 +456,8 @@ impl Plugin for GzipExtractor {
     }
 }
 
-#[async_trait]
+#[cfg_attr(not(target_arch = "wasm32"), async_trait)]
+#[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
 impl DocumentExtractor for GzipExtractor {
     #[cfg_attr(feature = "otel", tracing::instrument(
         skip(self, content, config),
@@ -421,6 +488,23 @@ impl DocumentExtractor for GzipExtractor {
 
     fn priority(&self) -> i32 {
         50
+    }
+
+    fn as_sync_extractor(&self) -> Option<&dyn SyncExtractor> {
+        Some(self)
+    }
+}
+
+impl SyncExtractor for GzipExtractor {
+    fn extract_sync(&self, content: &[u8], mime_type: &str, config: &ExtractionConfig) -> Result<ExtractionResult> {
+        let limits = config.security_limits.clone().unwrap_or_default();
+        let (extraction_metadata, text_contents) = extract_gzip(content, &limits)?;
+        Ok(build_archive_result(
+            extraction_metadata,
+            text_contents,
+            "GZIP",
+            mime_type,
+        ))
     }
 }
 

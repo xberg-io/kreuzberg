@@ -32,6 +32,7 @@ static-pdfium = ["pdf"]
 bundled-pdfium = ["pdf"]
 system-pdfium = ["pdf"]
 excel = ["dep:calamine", "tokio-runtime"]
+excel-wasm = ["dep:calamine"]
 office = [
     "dep:cfb",
     "dep:roxmltree",
@@ -99,6 +100,8 @@ wasm-target = [
     "quality",
     "office",
     "mdx",
+    "excel-wasm",
+    "archives",
 ]
 wasm-threads = ["dep:wasm-bindgen-rayon"]
 

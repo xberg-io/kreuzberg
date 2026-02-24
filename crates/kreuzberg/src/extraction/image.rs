@@ -4,7 +4,6 @@
 //! including support for multi-frame TIFF files.
 
 use crate::error::{KreuzbergError, Result};
-use exif::{In, Reader, Tag};
 use image::ImageReader;
 use std::collections::HashMap;
 use std::io::Cursor;
@@ -18,6 +17,7 @@ pub(crate) fn is_jp2(bytes: &[u8]) -> bool {
 }
 
 /// Check if bytes start with J2K codestream magic (SOC marker).
+#[allow(dead_code)]
 pub(crate) fn is_j2k(bytes: &[u8]) -> bool {
     bytes.len() >= 4 && bytes[0] == 0xFF && bytes[1] == 0x4F && bytes[2] == 0xFF && bytes[3] == 0x51
 }
@@ -291,6 +291,7 @@ pub(crate) fn decode_jp2_to_rgb(bytes: &[u8]) -> Result<image::RgbImage> {
 const JBIG2_MAGIC: &[u8] = &[0x97, 0x4A, 0x42, 0x32, 0x0D, 0x0A, 0x1A, 0x0A];
 
 /// Check if bytes start with JBIG2 magic bytes.
+#[allow(dead_code)]
 pub(crate) fn is_jbig2(bytes: &[u8]) -> bool {
     bytes.len() >= JBIG2_MAGIC.len() && bytes[..JBIG2_MAGIC.len()] == *JBIG2_MAGIC
 }
@@ -365,7 +366,11 @@ pub fn extract_image_metadata(bytes: &[u8]) -> Result<ImageMetadata> {
 ///
 /// Returns a HashMap of EXIF tags and their values.
 /// If EXIF data is not available or cannot be parsed, returns an empty HashMap.
+/// Requires the `ocr` feature for kamadak-exif; returns empty map under `ocr-wasm`.
+#[cfg(feature = "ocr")]
 fn extract_exif_data(bytes: &[u8]) -> HashMap<String, String> {
+    use exif::{In, Reader, Tag};
+
     let mut exif_map = HashMap::new();
 
     let exif_reader = match Reader::new().read_from_container(&mut Cursor::new(bytes)) {
@@ -402,6 +407,12 @@ fn extract_exif_data(bytes: &[u8]) -> HashMap<String, String> {
     }
 
     exif_map
+}
+
+/// Stub EXIF extraction for `ocr-wasm` (kamadak-exif not available on WASM).
+#[cfg(all(feature = "ocr-wasm", not(feature = "ocr")))]
+fn extract_exif_data(_bytes: &[u8]) -> HashMap<String, String> {
+    HashMap::new()
 }
 
 /// Result of OCR extraction from an image with optional page tracking.

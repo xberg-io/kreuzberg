@@ -63,6 +63,10 @@ pub mod image;
 #[cfg(feature = "language-detection")]
 pub mod language_detection;
 
+// Note: `image` module (DPI, resize, preprocessing) requires full `ocr` feature
+// due to fast_image_resize dependency. The `ocr` module requires tokio and native
+// deps (JP2, JBIG2), so it stays `ocr`-only. WASM OCR uses the JS bridge instead.
+
 #[cfg(feature = "stopwords")]
 pub mod stopwords;
 

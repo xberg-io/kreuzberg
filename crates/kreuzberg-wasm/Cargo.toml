@@ -45,7 +45,7 @@ wasm-bindgen-test = "0.3"
 [features]
 default = []
 embeddings = ["kreuzberg/embeddings"]
-ocr-wasm = ["dep:kreuzberg-tesseract", "dep:image"]
+ocr-wasm = ["dep:kreuzberg-tesseract", "dep:image", "kreuzberg/ocr-wasm"]
 threads = ["dep:wasm-bindgen-rayon"]
 console_error_panic_hook = ["dep:console_error_panic_hook"]
 

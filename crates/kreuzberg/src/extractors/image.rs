@@ -21,7 +21,7 @@ impl ImageExtractor {
     }
 
     /// Extract text from image using OCR with optional page tracking for multi-frame TIFFs.
-    #[cfg(feature = "ocr")]
+    #[cfg(any(feature = "ocr", feature = "ocr-wasm"))]
     async fn extract_with_ocr(
         &self,
         content: &[u8],
@@ -50,19 +50,30 @@ impl ImageExtractor {
 
         let ocr_result = backend.process_image(content, &ocr_config_with_format).await?;
 
-        let ocr_text = ocr_result.content.clone();
-        let ocr_extraction_result = crate::extraction::image::extract_text_from_image_with_ocr(
-            content,
-            mime_type,
-            ocr_text,
-            config.pages.as_ref(),
-        )?;
+        // Full OCR with TIFF multi-frame support (requires tiff crate)
+        #[cfg(feature = "ocr")]
+        {
+            let ocr_text = ocr_result.content.clone();
+            let ocr_extraction_result = crate::extraction::image::extract_text_from_image_with_ocr(
+                content,
+                mime_type,
+                ocr_text,
+                config.pages.as_ref(),
+            )?;
 
-        let mut result = ocr_result;
-        result.content = ocr_extraction_result.content;
-        result.pages = ocr_extraction_result.page_contents;
+            let mut result = ocr_result;
+            result.content = ocr_extraction_result.content;
+            result.pages = ocr_extraction_result.page_contents;
 
-        Ok(result)
+            Ok(result)
+        }
+
+        // Simplified OCR path for WASM (no TIFF multi-frame support)
+        #[cfg(not(feature = "ocr"))]
+        {
+            let _ = mime_type;
+            Ok(ocr_result)
+        }
     }
 }
 
@@ -98,7 +109,8 @@ impl Plugin for ImageExtractor {
     }
 }
 
-#[async_trait]
+#[cfg_attr(not(target_arch = "wasm32"), async_trait)]
+#[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
 impl DocumentExtractor for ImageExtractor {
     #[cfg_attr(feature = "otel", tracing::instrument(
         skip(self, content, config),
@@ -123,7 +135,7 @@ impl DocumentExtractor for ImageExtractor {
         };
 
         if config.ocr.is_some() {
-            #[cfg(feature = "ocr")]
+            #[cfg(any(feature = "ocr", feature = "ocr-wasm"))]
             {
                 let mut ocr_result = self.extract_with_ocr(content, mime_type, config).await?;
 
@@ -132,7 +144,7 @@ impl DocumentExtractor for ImageExtractor {
 
                 return Ok(ocr_result);
             }
-            #[cfg(not(feature = "ocr"))]
+            #[cfg(not(any(feature = "ocr", feature = "ocr-wasm")))]
             {
                 let content_text = format!(
                     "Image: {} {}x{}",

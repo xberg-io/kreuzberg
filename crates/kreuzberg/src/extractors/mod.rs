@@ -71,7 +71,7 @@ pub mod frontmatter_utils;
 #[cfg(feature = "archives")]
 pub mod security;
 
-#[cfg(feature = "ocr")]
+#[cfg(any(feature = "ocr", feature = "ocr-wasm"))]
 pub mod image;
 
 #[cfg(feature = "archives")]
@@ -80,7 +80,7 @@ pub mod archive;
 #[cfg(feature = "email")]
 pub mod email;
 
-#[cfg(feature = "excel")]
+#[cfg(any(feature = "excel", feature = "excel-wasm"))]
 pub mod excel;
 
 #[cfg(feature = "html")]
@@ -156,7 +156,7 @@ pub use csv::CsvExtractor;
 pub use structured::StructuredExtractor;
 pub use text::{MarkdownExtractor, PlainTextExtractor};
 
-#[cfg(feature = "ocr")]
+#[cfg(any(feature = "ocr", feature = "ocr-wasm"))]
 pub use image::ImageExtractor;
 
 #[cfg(feature = "archives")]
@@ -165,7 +165,7 @@ pub use archive::{GzipExtractor, SevenZExtractor, TarExtractor, ZipExtractor};
 #[cfg(feature = "email")]
 pub use email::EmailExtractor;
 
-#[cfg(feature = "excel")]
+#[cfg(any(feature = "excel", feature = "excel-wasm"))]
 pub use excel::ExcelExtractor;
 
 #[cfg(feature = "html")]
@@ -301,7 +301,7 @@ pub fn register_default_extractors() -> Result<()> {
     registry.register(Arc::new(StructuredExtractor::new()))?;
     registry.register(Arc::new(CsvExtractor::new()))?;
 
-    #[cfg(feature = "ocr")]
+    #[cfg(any(feature = "ocr", feature = "ocr-wasm"))]
     registry.register(Arc::new(ImageExtractor::new()))?;
 
     #[cfg(feature = "xml")]
@@ -314,7 +314,7 @@ pub fn register_default_extractors() -> Result<()> {
     #[cfg(feature = "pdf")]
     registry.register(Arc::new(PdfExtractor::new()))?;
 
-    #[cfg(feature = "excel")]
+    #[cfg(any(feature = "excel", feature = "excel-wasm"))]
     registry.register(Arc::new(ExcelExtractor::new()))?;
 
     registry.register(Arc::new(DjotExtractor::new()))?;
@@ -389,7 +389,7 @@ mod tests {
         assert!(extractor_names.contains(&"djot-extractor".to_string()));
         assert!(extractor_names.contains(&"csv-extractor".to_string()));
 
-        #[cfg(feature = "ocr")]
+        #[cfg(any(feature = "ocr", feature = "ocr-wasm"))]
         {
             expected_count += 1;
             assert!(extractor_names.contains(&"image-extractor".to_string()));
@@ -409,7 +409,7 @@ mod tests {
             assert!(extractor_names.contains(&"pdf-extractor".to_string()));
         }
 
-        #[cfg(feature = "excel")]
+        #[cfg(any(feature = "excel", feature = "excel-wasm"))]
         {
             expected_count += 1;
             assert!(extractor_names.contains(&"excel-extractor".to_string()));

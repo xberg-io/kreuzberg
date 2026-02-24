@@ -3,7 +3,7 @@ pub mod structured;
 pub mod text;
 pub mod transform;
 
-#[cfg(feature = "ocr")]
+#[cfg(any(feature = "ocr", feature = "ocr-wasm"))]
 pub mod image;
 
 /// Capacity estimation utilities for string pre-allocation.
@@ -19,7 +19,7 @@ pub mod archive;
 #[cfg(feature = "email")]
 pub mod email;
 
-#[cfg(feature = "excel")]
+#[cfg(any(feature = "excel", feature = "excel-wasm"))]
 pub mod excel;
 
 #[cfg(feature = "html")]
@@ -62,7 +62,7 @@ pub use transform::{
     transform_to_document_structure,
 };
 
-#[cfg(feature = "ocr")]
+#[cfg(any(feature = "ocr", feature = "ocr-wasm"))]
 pub use image::{ImageMetadata, extract_image_metadata};
 
 #[cfg(feature = "archives")]
@@ -74,7 +74,7 @@ pub use archive::{
 #[cfg(feature = "email")]
 pub use email::{build_email_text_output, extract_email_content, parse_eml_content, parse_msg_content};
 
-#[cfg(feature = "excel")]
+#[cfg(any(feature = "excel", feature = "excel-wasm"))]
 pub use excel::{excel_to_markdown, read_excel_bytes, read_excel_file};
 
 #[cfg(feature = "html")]

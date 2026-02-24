@@ -128,7 +128,7 @@ pub enum KreuzbergError {
     Other(String),
 }
 
-#[cfg(feature = "excel")]
+#[cfg(any(feature = "excel", feature = "excel-wasm"))]
 impl From<calamine::Error> for KreuzbergError {
     fn from(err: calamine::Error) -> Self {
         KreuzbergError::Parsing {
@@ -333,7 +333,7 @@ mod tests {
     }
 
     #[test]
-    #[cfg(feature = "excel")]
+    #[cfg(any(feature = "excel", feature = "excel-wasm"))]
     fn test_calamine_error_conversion() {
         let cal_err = calamine::Error::Msg("invalid Excel file");
         let krz_err: KreuzbergError = cal_err.into();
