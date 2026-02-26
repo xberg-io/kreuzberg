@@ -57,7 +57,7 @@ env:
 jobs:
   test-docker:
     name: Build and Test Docker Image (${{ matrix.variant }})
-    if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
+    if: (github.repository == 'kreuzberg-dev/kreuzberg' || github.repository == 'chikingsley/kreuzberg') && github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 180
     permissions:
@@ -168,7 +168,7 @@ jobs:
 
   test-docker-cli:
     name: Build and Test Docker CLI Image
-    if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
+    if: (github.repository == 'kreuzberg-dev/kreuzberg' || github.repository == 'chikingsley/kreuzberg') && github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 180
     permissions:

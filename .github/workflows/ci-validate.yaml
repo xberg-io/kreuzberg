@@ -89,7 +89,7 @@ env:
 jobs:
   validate:
     name: Validate (Lint & Format)
-    if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
+    if: (github.repository == 'kreuzberg-dev/kreuzberg' || github.repository == 'chikingsley/kreuzberg') && github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 180
     steps:

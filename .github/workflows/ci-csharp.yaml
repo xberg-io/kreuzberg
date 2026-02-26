@@ -66,7 +66,7 @@ env:
 jobs:
   build-csharp:
     name: C# Build + Smoke (${{ matrix.os }})
-    if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
+    if: (github.repository == 'kreuzberg-dev/kreuzberg' || github.repository == 'chikingsley/kreuzberg') && github.actor != 'dependabot[bot]'
     timeout-minutes: 180
     strategy:
       fail-fast: true
@@ -181,7 +181,7 @@ jobs:
 
   test-csharp:
     name: C# Tests (${{ matrix.os }})
-    if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
+    if: (github.repository == 'kreuzberg-dev/kreuzberg' || github.repository == 'chikingsley/kreuzberg') && github.actor != 'dependabot[bot]'
     needs: build-csharp
     timeout-minutes: 180
     strategy:
