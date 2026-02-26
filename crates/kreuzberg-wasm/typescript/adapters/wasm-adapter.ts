@@ -77,6 +77,35 @@ function isBoolean(value: unknown): value is boolean {
 }
 
 /**
+ * Coerce WASM image bytes into Uint8Array.
+ *
+ * Rust -> JS serialization paths can produce either Uint8Array, generic typed arrays,
+ * ArrayBuffer, or plain number arrays depending on runtime and bridge behavior.
+ */
+function coerceToUint8Array(value: unknown): Uint8Array | null {
+	if (value instanceof Uint8Array) {
+		return value;
+	}
+
+	if (value instanceof ArrayBuffer) {
+		return new Uint8Array(value);
+	}
+
+	if (ArrayBuffer.isView(value)) {
+		return new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
+	}
+
+	if (Array.isArray(value)) {
+		if (!value.every((item) => typeof item === "number" && Number.isFinite(item) && item >= 0 && item <= 255)) {
+			return null;
+		}
+		return Uint8Array.from(value);
+	}
+
+	return null;
+}
+
+/**
  * Convert a File or Blob to Uint8Array
  *
  * Handles both browser File API and server-side Blob-like objects,
@@ -309,8 +338,9 @@ export function jsToExtractionResult(jsValue: unknown): ExtractionResult {
 					throw new Error("Invalid image structure");
 				}
 				const img = image as Record<string, unknown>;
-				if (!(img.data instanceof Uint8Array)) {
-					throw new Error("Invalid image: data must be Uint8Array");
+				const imageData = coerceToUint8Array(img.data);
+				if (!imageData) {
+					throw new Error("Invalid image: data must be Uint8Array-compatible bytes");
 				}
 				if (typeof img.format !== "string") {
 					throw new Error("Invalid image: missing format");
@@ -351,7 +381,7 @@ export function jsToExtractionResult(jsValue: unknown): ExtractionResult {
 				}
 
 				return {
-					data: img.data,
+					data: imageData,
 					format: img.format,
 					imageIndex: imageIndex,
 					pageNumber: pageNumber ?? null,

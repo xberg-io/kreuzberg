@@ -7,6 +7,7 @@ import type {
 	LanguageDetectionConfig,
 	Metadata,
 	OcrConfig,
+	PageExtractionConfig,
 	PdfConfig,
 	PostProcessorConfig,
 	Table,
@@ -126,6 +127,16 @@ function mapImageExtractionConfig(raw: PlainRecord): ImageExtractionConfig {
 	return config as unknown as ImageExtractionConfig;
 }
 
+function mapPageExtractionConfig(raw: PlainRecord): PageExtractionConfig {
+	const config: PlainRecord = {};
+	assignBooleanField(config, raw, "extract_pages", "extractPages");
+	assignBooleanField(config, raw, "insert_page_markers", "insertPageMarkers");
+	if (typeof raw.marker_format === "string") {
+		(config as unknown as PageExtractionConfig).markerFormat = raw.marker_format;
+	}
+	return config as unknown as PageExtractionConfig;
+}
+
 function mapPdfConfig(raw: PlainRecord): PdfConfig {
 	const config: PlainRecord = {};
 	assignBooleanField(config, raw, "extract_images", "extractImages");
@@ -184,6 +195,12 @@ export function buildConfig(raw: unknown): ExtractionConfig {
 	assignBooleanField(target, source, "force_ocr", "forceOcr");
 	assignBooleanField(target, source, "include_document_structure", "includeDocumentStructure");
 	assignNumberField(target, source, "max_concurrent_extractions", "maxConcurrentExtractions");
+	if (typeof source.output_format === "string") {
+		target.outputFormat = source.output_format;
+	}
+	if (typeof source.result_format === "string") {
+		target.resultFormat = source.result_format;
+	}
 
 	if (isPlainRecord(source.ocr)) {
 		const mapped = mapOcrConfig(source.ocr as PlainRecord);
@@ -198,6 +215,10 @@ export function buildConfig(raw: unknown): ExtractionConfig {
 
 	if (isPlainRecord(source.images)) {
 		result.images = mapImageExtractionConfig(source.images as PlainRecord);
+	}
+
+	if (isPlainRecord(source.pages)) {
+		result.pages = mapPageExtractionConfig(source.pages as PlainRecord);
 	}
 
 	if (isPlainRecord(source.pdf_options)) {
