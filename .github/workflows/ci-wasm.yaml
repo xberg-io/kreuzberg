@@ -79,7 +79,7 @@ jobs:
 
   unit-tests:
     name: Unit Tests (${{ matrix.os }})
-    if: (github.repository == 'kreuzberg-dev/kreuzberg' || github.repository == 'chikingsley/kreuzberg') && github.actor != 'dependabot[bot]'
+    if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     runs-on: ${{ matrix.os }}
     timeout-minutes: 180
     permissions:
@@ -150,7 +150,7 @@ jobs:
 
   build-wasm-targets:
     name: Build WASM (${{ matrix.os }})
-    if: (github.repository == 'kreuzberg-dev/kreuzberg' || github.repository == 'chikingsley/kreuzberg') && github.actor != 'dependabot[bot]'
+    if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     runs-on: ${{ matrix.os }}
     timeout-minutes: 180
     permissions:
@@ -245,7 +245,7 @@ jobs:
 
   type-definitions:
     name: Type Definitions Check
-    if: (github.repository == 'kreuzberg-dev/kreuzberg' || github.repository == 'chikingsley/kreuzberg') && github.actor != 'dependabot[bot]'
+    if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 180
     permissions:
@@ -296,7 +296,7 @@ jobs:
 
   integration-tests-node:
     name: Integration Tests (Node ${{ matrix.node-version }})
-    if: (github.repository == 'kreuzberg-dev/kreuzberg' || github.repository == 'chikingsley/kreuzberg') && github.actor != 'dependabot[bot]'
+    if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     needs: [build-wasm-targets]
     runs-on: ubuntu-latest
     timeout-minutes: 180
@@ -342,7 +342,7 @@ jobs:
 
   deno-tests:
     name: Deno Tests
-    if: (github.repository == 'kreuzberg-dev/kreuzberg' || github.repository == 'chikingsley/kreuzberg') && github.actor != 'dependabot[bot]'
+    if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 180
     permissions:
@@ -407,7 +407,7 @@ jobs:
 
   workers-tests:
     name: Cloudflare Workers Tests
-    if: (github.repository == 'kreuzberg-dev/kreuzberg' || github.repository == 'chikingsley/kreuzberg') && github.actor != 'dependabot[bot]'
+    if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 180
     permissions:

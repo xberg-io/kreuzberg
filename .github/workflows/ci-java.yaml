@@ -67,7 +67,7 @@ env:
 jobs:
   build-java:
     name: Java Bindings (${{ matrix.os }})
-    if: (github.repository == 'kreuzberg-dev/kreuzberg' || github.repository == 'chikingsley/kreuzberg') && github.actor != 'dependabot[bot]'
+    if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     timeout-minutes: 180
     strategy:
       fail-fast: true
@@ -202,7 +202,7 @@ jobs:
 
   test-java:
     name: Java Tests (${{ matrix.os }})
-    if: (github.repository == 'kreuzberg-dev/kreuzberg' || github.repository == 'chikingsley/kreuzberg') && github.actor != 'dependabot[bot]'
+    if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     needs: build-java
     timeout-minutes: 180
     strategy:

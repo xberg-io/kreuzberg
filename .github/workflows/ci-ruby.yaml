@@ -72,7 +72,7 @@ env:
 jobs:
   build-ruby-gem:
     name: Ruby Gem (${{ matrix.os }})
-    if: (github.repository == 'kreuzberg-dev/kreuzberg' || github.repository == 'chikingsley/kreuzberg') && github.actor != 'dependabot[bot]'
+    if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     timeout-minutes: 180
     strategy:
       fail-fast: true
@@ -510,7 +510,7 @@ jobs:
 
   test-ruby:
     name: Ruby Tests (${{ matrix.os }})
-    if: (github.repository == 'kreuzberg-dev/kreuzberg' || github.repository == 'chikingsley/kreuzberg') && github.actor != 'dependabot[bot]'
+    if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     needs: build-ruby-gem
     timeout-minutes: 180
     strategy:

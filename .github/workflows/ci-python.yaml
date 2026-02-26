@@ -69,7 +69,7 @@ env:
 jobs:
   build-and-smoke-python:
     name: Python Build + Smoke (${{ matrix.target }})
-    if: (github.repository == 'kreuzberg-dev/kreuzberg' || github.repository == 'chikingsley/kreuzberg') && github.actor != 'dependabot[bot]'
+    if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     timeout-minutes: 180
     strategy:
       fail-fast: true
@@ -210,7 +210,7 @@ jobs:
 
   build-python-sdist:
     name: Python Sdist
-    if: (github.repository == 'kreuzberg-dev/kreuzberg' || github.repository == 'chikingsley/kreuzberg') && github.actor != 'dependabot[bot]'
+    if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     timeout-minutes: 180
     runs-on: ubuntu-latest
     steps:
@@ -245,7 +245,7 @@ jobs:
 
   test-python:
     name: Python Tests (${{ matrix.os }})
-    if: (github.repository == 'kreuzberg-dev/kreuzberg' || github.repository == 'chikingsley/kreuzberg') && github.actor != 'dependabot[bot]'
+    if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     needs: build-and-smoke-python
     timeout-minutes: 180
     strategy:
