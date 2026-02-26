@@ -127,7 +127,7 @@ def test_ensure_ocr_backend_registers_rapidocr_once(monkeypatch: pytest.MonkeyPa
 
     kreuzberg._ensure_ocr_backend_registered(config, None, {})
     assert len(registrations) == 1
-    assert created[0].kwargs["languages"] == ["fra"]
+    assert created[0].kwargs["language"] == "eng"
 
     kreuzberg._ensure_ocr_backend_registered(config, {}, None)
     assert len(registrations) == 1

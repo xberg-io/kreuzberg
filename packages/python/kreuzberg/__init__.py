@@ -325,8 +325,8 @@ def _hash_kwargs(kwargs: dict[str, Any]) -> str:
 
 def _ensure_ocr_backend_registered(
     config: ExtractionConfig,
-    easyocr_kwargs: dict[str, Any] | None,
-    rapidocr_kwargs: dict[str, Any] | None,
+    easyocr_kwargs: dict[str, Any] | None = None,
+    rapidocr_kwargs: dict[str, Any] | None = None,
 ) -> None:
     if config.ocr is None:
         return
