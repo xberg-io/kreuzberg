@@ -19,6 +19,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **WASM Excel extraction** (`excel-wasm` feature): Calamine-based Excel/spreadsheet extraction available in WASM without requiring Tokio runtime.
 - **WASM archive extraction**: ZIP, TAR, 7z, and GZIP archive extraction now available in WASM via synchronous extractor implementations.
 - **WASM PDF annotations**: PDF annotations (text notes, highlights, links, stamps) are now exposed in the WASM TypeScript API via the `annotations` field on `ExtractionResult`.
+- **C FFI distribution**: Official C shared library (`libkreuzberg`) with cbindgen-generated header, cmake packaging (`find_package(kreuzberg)`), pkg-config support, and prebuilt binaries for Linux x86_64/aarch64, macOS arm64, and Windows x86_64. Includes 10 test files, benchmark harness integration, and full API reference documentation.
+- **Go FFI bindings**: Go package (`packages/go/v4`) consuming the C FFI shared library with prebuilt binaries published as GitHub release assets for all four platforms.
+- **C as 12th e2e test language**: The e2e-generator now produces C test files exercising the FFI API, with 15 passing test cases.
+- **R distribution via r-universe**: Switched R package distribution from CRAN to r-universe for faster release cycles and easier native compilation. Includes vendoring script for offline builds.
 
 ### Fixed
 
