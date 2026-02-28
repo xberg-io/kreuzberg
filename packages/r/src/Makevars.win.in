@@ -1,4 +1,7 @@
-TARGET_DIR = ./rust/target
+# Use a short target dir to avoid Windows MAX_PATH (260 char) issues.
+# CMake scratch paths inside cargo's OUT_DIR can exceed the limit when
+# the R temp install directory is deeply nested.
+TARGET_DIR = C:/tmp/kr
 LIBDIR = $(TARGET_DIR)/release
 STATLIB = $(LIBDIR)/kreuzberg_r.lib
 PKG_LIBS = -L$(LIBDIR) -lkreuzberg_r -lws2_32 -ladvapi32 -luserenv -lbcrypt -lntdll @ADDITIONAL_PKG_LIBS@
@@ -23,4 +26,4 @@ C_clean:
 	rm -Rf $(SHLIB) $(STATLIB) $(OBJECTS)
 
 clean:
-	rm -Rf $(SHLIB) $(STATLIB) $(OBJECTS) rust/target
+	rm -Rf $(SHLIB) $(STATLIB) $(OBJECTS) $(TARGET_DIR)
