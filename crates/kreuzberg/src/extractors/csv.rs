@@ -243,17 +243,19 @@ fn parse_csv(text: &str, delimiter: char) -> Vec<Vec<String>> {
 
 /// Decode raw CSV bytes with encoding detection.
 ///
-/// Tries UTF-8 first (zero-copy fast path). When the bytes are not valid UTF-8
-/// and the `quality` feature is enabled, falls back to `safe_decode` which uses
-/// `chardetng` + `encoding_rs` to detect Shift-JIS, cp932, windows-1252, etc.
-/// Without the `quality` feature, falls back to lossy UTF-8 conversion.
+/// Tries UTF-8 first (zero-copy fast path). When the bytes are not valid UTF-8,
+/// attempts to detect and decode using common encodings (Shift-JIS, cp932,
+/// windows-1252, etc.) using encoding_rs.
+///
+/// When the `quality` feature is enabled, uses chardetng for more sophisticated
+/// encoding detection. Without it, tries common encodings in order.
 fn decode_csv_bytes(content: &[u8]) -> String {
     // Fast path: valid UTF-8.
     if let Ok(s) = std::str::from_utf8(content) {
         return s.to_string();
     }
 
-    // Non-UTF-8 content: use encoding detection when available.
+    // Non-UTF-8 content: use encoding detection.
     #[cfg(feature = "quality")]
     {
         crate::text::safe_decode(content, None)
@@ -261,8 +263,45 @@ fn decode_csv_bytes(content: &[u8]) -> String {
 
     #[cfg(not(feature = "quality"))]
     {
-        String::from_utf8_lossy(content).into_owned()
+        decode_csv_bytes_fallback(content)
     }
+}
+
+/// Fallback encoding detection for CSV files without the `quality` feature.
+///
+/// Tries common CSV encodings (Shift-JIS, cp932, windows-1252, etc.) in order,
+/// selecting the first one that decodes without errors.
+#[cfg(not(feature = "quality"))]
+fn decode_csv_bytes_fallback(content: &[u8]) -> String {
+    // Common encoding labels used in CSV files, especially in East Asia
+    let encoding_labels = [
+        "shift_jis",    // Japanese Shift-JIS (common for CSV from Japanese systems)
+        "windows-31j",  // Windows CP932 (Microsoft's Shift-JIS variant)
+        "windows-1252", // Western European (common default)
+        "iso-8859-1",   // Latin-1 fallback
+        "gb18030",      // Simplified Chinese
+        "big5",         // Traditional Chinese
+    ];
+
+    // Try each encoding and use the first one that decodes without errors
+    for label in &encoding_labels {
+        if let Some(encoding) = encoding_rs::Encoding::for_label(label.as_bytes()) {
+            let (decoded, _, had_errors) = encoding.decode(content);
+            if !had_errors {
+                return decoded.into_owned();
+            }
+        }
+    }
+
+    // If all encodings had errors, try Shift-JIS anyway
+    // This handles files with a few garbled characters gracefully
+    if let Some(shift_jis) = encoding_rs::Encoding::for_label(b"shift_jis") {
+        let (decoded, _, _) = shift_jis.decode(content);
+        return decoded.into_owned();
+    }
+
+    // Final fallback: lossy UTF-8 conversion
+    String::from_utf8_lossy(content).into_owned()
 }
 
 /// Build a Markdown table from parsed rows.
@@ -424,6 +463,40 @@ mod tests {
             detect_delimiter("\"last, first\";age;city\n\"doe, john\";30;NYC\n\"smith, jane\";25;LA"),
             ';'
         );
+    }
+
+    #[test]
+    fn test_decode_csv_bytes_shift_jis() {
+        // Shift-JIS encoded CSV: "名前,年齢,住所"
+        // This is the header row from test_mskanji.csv
+        let shift_jis_data = vec![
+            0x96u8, 0xbc, 0x91, 0x4f, 0x2c, 0x94, 0x4e, 0x97, 0xee, 0x2c, 0x8f, 0x5a, 0x8f, 0x8a,
+        ];
+
+        let decoded = decode_csv_bytes(&shift_jis_data);
+
+        // Should decode to correct Japanese text
+        assert!(decoded.contains("名前"), "Should contain '名前' (Name)");
+        assert!(decoded.contains("年齢"), "Should contain '年齢' (Age)");
+        assert!(decoded.contains("住所"), "Should contain '住所' (Address)");
+
+        // Should NOT contain replacement characters (mojibake)
+        assert!(
+            !decoded.contains("□"),
+            "Should not contain mojibake replacement characters"
+        );
+        assert!(
+            !decoded.contains("\u{FFFD}"),
+            "Should not contain Unicode replacement characters"
+        );
+    }
+
+    #[test]
+    fn test_decode_csv_bytes_utf8() {
+        // UTF-8 encoded data should pass through unchanged
+        let utf8_data = "名前,年齢,住所".as_bytes();
+        let decoded = decode_csv_bytes(utf8_data);
+        assert_eq!(decoded, "名前,年齢,住所");
     }
 
     #[tokio::test]
