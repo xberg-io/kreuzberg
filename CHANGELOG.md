@@ -24,8 +24,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **`cells_to_text()` shared utility**: Tab-separated plain text table formatter alongside existing `cells_to_markdown()`. Used by DOCX, PPTX, ODT, RTF, and DocBook extractors for plain text table rendering.
 
+### Changed
+
+- **CLI includes all features**: `kreuzberg-cli` now depends on `kreuzberg` with the `full` feature set instead of a separate `cli` subset. The `cli` feature group has been removed from `kreuzberg`. This ensures the CLI supports all formats including archives (7z, tar, gz, zip).
+
 ### Fixed
 
+- **PPTX text run spacing**: Adjacent text runs within paragraphs are now joined with smart spacing instead of being concatenated directly ("HelloWorld" → "Hello World").
+- **CSV Shift-JIS/cp932 encoding detection**: `encoding_rs` is now a non-optional dependency. CSV files with Shift-JIS encoding are correctly decoded instead of producing mojibake. Fallback encoding detection tries common encodings (Shift-JIS, cp932, windows-1252, iso-8859-1, gb18030, big5).
+- **EML multipart body extraction**: All text/html body parts are now extracted by iterating over all indices instead of only index 0. Nested `message/rfc822` parts in multipart/digest are recursively extracted.
+- **EPUB media tag leakage**: `<video>`, `<audio>`, `<source>`, `<track>`, `<object>`, `<embed>`, `<iframe>` tags no longer leak into extracted text. Added `<br>` → newline and `<hr>` → newline handling.
+- **FB2 poem extraction**: Added support for `<poem>`, `<stanza>`, and `<v>` (verse) elements. Previously poetry content was silently dropped.
+- **FB2 Unicode sub/superscript**: Characters inside `<sup>` and `<sub>` are converted to Unicode equivalents. Added strikethrough support, horizontal rules for `<empty-line>`, and footnote extraction from notes body.
+- **ODT StarMath-to-Unicode conversion**: Mathematical formulas in ODT files are now converted to Unicode equivalents (Greek letters, operators, super/subscripts) instead of raw StarMath syntax.
+- **BibTeX output format**: Output now uses `@type{key, field = {value}}` format matching standard BibTeX conventions.
+- **LaTeX display math**: `\[...\]` display math environments are converted to `$...$` format.
+- **RST directive preservation**: Field lists, directive markers, and `.. code-block::` directives are preserved in extracted text.
+- **RTF table cell separators**: Plain mode now uses pipe delimiters for table cells instead of tabs.
+- **Typst extraction improvements**: Layout directives stripped, headings output as plain text, tables extracted with column-aware layout, links output as display text only.
 - **DOCX field codes refined**: Field instructions (between `begin` and `separate`) are now skipped while field results (between `separate` and `end`) are preserved. Previously all content between field begin/end was dropped, losing visible text like "Figure 1:" and page numbers.
 - **DOCX drawing alt text in plain text**: `to_plain_text()` now emits image alt text from `wp:docPr` descriptions instead of silently skipping drawings.
 - **DOCX/drawing/table XML entity decoding**: `get_attr()` helpers in `drawing.rs` and `table.rs` now use `quick_xml::escape::unescape()` to correctly decode XML entities like `&#xA;` in attribute values.

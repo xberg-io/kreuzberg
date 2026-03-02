@@ -6,5 +6,9 @@
 	"metadata": {
 		"description": "Gzipped TAR archive with documents",
 		"category": "archive"
+	},
+	"ground_truth": {
+		"text_file": "../../../test_documents/ground_truth/tgz/documents.txt",
+		"source": "kreuzberg"
 	}
 }

@@ -6,5 +6,9 @@
 	"metadata": {
 		"description": "Gzip compressed text file",
 		"category": "archive"
+	},
+	"ground_truth": {
+		"text_file": "../../../test_documents/ground_truth/gz/book_war_and_peace_1p.txt",
+		"source": "kreuzberg"
 	}
 }

@@ -126,20 +126,6 @@ full = [
     "otel",
 ]
 server = ["pdf", "excel", "html", "ocr", "paddle-ocr", "chunking", "api", "mcp"]
-cli = [
-    "pdf",
-    "excel",
-    "office",
-    "email",
-    "html",
-    "xml",
-    "ocr",
-    "paddle-ocr",
-    "language-detection",
-    "chunking",
-    "quality",
-    "mdx",
-]
 
 [build-dependencies]
 tracing = { workspace = true }
