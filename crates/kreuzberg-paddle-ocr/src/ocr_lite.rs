@@ -8,10 +8,12 @@ use crate::{
     base_net::BaseNet,
     crnn_net::CrnnNet,
     db_net::DbNet,
+    layout_net::{LayoutNet, LayoutResult},
     ocr_error::OcrError,
     ocr_result::{OcrResult, Point, TextBlock},
     ocr_utils::OcrUtils,
     scale_param::ScaleParam,
+    sla_net::{SlaNet, TableStructureResult},
 };
 
 #[derive(Debug)]
@@ -19,6 +21,8 @@ pub struct OcrLite {
     db_net: DbNet,
     angle_net: AngleNet,
     crnn_net: CrnnNet,
+    sla_net: Option<SlaNet>,
+    layout_net: Option<LayoutNet>,
 }
 
 impl Default for OcrLite {
@@ -33,7 +37,69 @@ impl OcrLite {
             db_net: DbNet::new(),
             angle_net: AngleNet::new(),
             crnn_net: CrnnNet::new(),
+            sla_net: None,
+            layout_net: None,
         }
+    }
+
+    /// Initialize the SLANet table structure model (optional).
+    pub fn init_table_model(
+        &mut self,
+        table_path: &str,
+        num_thread: usize,
+    ) -> Result<(), OcrError> {
+        let mut sla = SlaNet::new();
+        sla.init_model(table_path, num_thread, None)?;
+        self.sla_net = Some(sla);
+        Ok(())
+    }
+
+    /// Detect table structure in an image using SLANet.
+    ///
+    /// Returns `Ok(None)` if SLANet is not loaded or no table is found.
+    pub fn detect_table_structure(
+        &mut self,
+        img_src: &image::RgbImage,
+    ) -> Result<Option<TableStructureResult>, OcrError> {
+        match &mut self.sla_net {
+            Some(sla) => sla.detect(img_src),
+            None => Ok(None),
+        }
+    }
+
+    /// Returns whether the table model is loaded.
+    pub fn has_table_model(&self) -> bool {
+        self.sla_net.is_some()
+    }
+
+    /// Initialize the PicoDet layout detection model (optional).
+    pub fn init_layout_model(
+        &mut self,
+        layout_path: &str,
+        num_thread: usize,
+    ) -> Result<(), OcrError> {
+        let mut layout = LayoutNet::new();
+        layout.init_model(layout_path, num_thread, None)?;
+        self.layout_net = Some(layout);
+        Ok(())
+    }
+
+    /// Detect layout regions (tables) in an image using PicoDet.
+    ///
+    /// Returns `Ok(None)` if the layout model is not loaded.
+    pub fn detect_layout(
+        &mut self,
+        img_src: &image::RgbImage,
+    ) -> Result<Option<LayoutResult>, OcrError> {
+        match &mut self.layout_net {
+            Some(layout) => Ok(Some(layout.detect(img_src)?)),
+            None => Ok(None),
+        }
+    }
+
+    /// Returns whether the layout model is loaded.
+    pub fn has_layout_model(&self) -> bool {
+        self.layout_net.is_some()
     }
 
     pub fn init_models(

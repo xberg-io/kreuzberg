@@ -68,7 +68,7 @@ impl fmt::Display for TextLine {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TextBlock {
     pub box_points: Vec<Point>,
     pub box_score: f32,

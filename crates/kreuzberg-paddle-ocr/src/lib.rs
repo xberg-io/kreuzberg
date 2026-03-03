@@ -20,12 +20,16 @@ pub mod angle_net;
 pub mod base_net;
 pub mod crnn_net;
 pub mod db_net;
+pub mod layout_net;
 pub mod ocr_error;
 pub mod ocr_lite;
 pub mod ocr_result;
 pub mod ocr_utils;
 pub mod scale_param;
+pub mod sla_net;
 
+pub use layout_net::{LayoutDetection, LayoutNet, LayoutResult};
 pub use ocr_error::OcrError;
 pub use ocr_lite::OcrLite;
 pub use ocr_result::{Angle, OcrResult, Point, TextBlock, TextBox, TextLine};
+pub use sla_net::{SlaNet, TableStructureResult};
