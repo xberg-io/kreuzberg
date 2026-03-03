@@ -28,6 +28,14 @@ use super::{is_language_supported, language_to_script_family, map_language_code}
 
 use kreuzberg_paddle_ocr::OcrLite;
 
+/// Per-table result: SLANet structure + OCR text blocks from the cropped region.
+/// Both SLANet cell bboxes and OCR text bboxes are in crop-local coordinates,
+/// following PaddleOCR's reference pipeline where OCR runs on the crop.
+struct TableOcrResult {
+    structure: kreuzberg_paddle_ocr::TableStructureResult,
+    crop_text_blocks: Vec<kreuzberg_paddle_ocr::TextBlock>,
+}
+
 /// PaddleOCR backend using ONNX Runtime.
 ///
 /// Maintains a pool of OCR engines keyed by script family. Each family has its own
@@ -140,6 +148,52 @@ impl PaddleOcrBackend {
                 source: None,
             })?;
 
+        // Load SLANet table model if available in cache.
+        // We always load it during engine init (it's small and fast) so that
+        // per-request enable_table_detection can use it without re-initializing.
+        if self.model_manager.is_table_model_cached() || self.config.enable_table_detection {
+            match self.model_manager.ensure_table_model() {
+                Ok(table_paths) => {
+                    let table_model_path = Self::find_onnx_model(&table_paths.table_model)?;
+                    let table_path_str = table_model_path.to_str().ok_or_else(|| crate::KreuzbergError::Ocr {
+                        message: "Invalid table model path".to_string(),
+                        source: None,
+                    })?;
+                    if let Err(e) = ocr_lite.init_table_model(table_path_str, num_threads) {
+                        tracing::warn!(family, error = %e, "Failed to load SLANet table model, falling back to heuristic");
+                    } else {
+                        tracing::info!(family, "SLANet table model loaded");
+                    }
+                }
+                Err(e) => {
+                    tracing::warn!(family, error = %e, "Failed to download SLANet table model, falling back to heuristic");
+                }
+            }
+        }
+
+        // Load PicoDet layout detection model for table region detection.
+        // When available, layout detection identifies table regions first,
+        // then SLANet processes only the cropped table regions (not full page).
+        if self.model_manager.is_layout_model_cached() || self.config.enable_table_detection {
+            match self.model_manager.ensure_layout_model() {
+                Ok(layout_paths) => {
+                    let layout_model_path = Self::find_onnx_model(&layout_paths.layout_model)?;
+                    let layout_path_str = layout_model_path.to_str().ok_or_else(|| crate::KreuzbergError::Ocr {
+                        message: "Invalid layout model path".to_string(),
+                        source: None,
+                    })?;
+                    if let Err(e) = ocr_lite.init_layout_model(layout_path_str, num_threads) {
+                        tracing::warn!(family, error = %e, "Failed to load layout detection model");
+                    } else {
+                        tracing::info!(family, "PicoDet layout detection model loaded");
+                    }
+                }
+                Err(e) => {
+                    tracing::warn!(family, error = %e, "Failed to download layout detection model");
+                }
+            }
+        }
+
         tracing::info!(family, "PaddleOCR engine initialized successfully");
 
         let engine = Arc::new(Mutex::new(ocr_lite));
@@ -204,14 +258,14 @@ impl PaddleOcrBackend {
         image_bytes: &[u8],
         language: &str,
         effective_config: Arc<PaddleOcrConfig>,
-    ) -> Result<(String, Vec<OcrElement>)> {
+    ) -> Result<(String, Vec<OcrElement>, Vec<TableOcrResult>)> {
         let family = language_to_script_family(language);
         let engine = self.get_or_init_engine_for_family(family)?;
 
         let image_bytes_owned = image_bytes.to_vec();
         let config = effective_config;
 
-        let text_blocks = tokio::task::spawn_blocking(move || {
+        let (text_blocks, table_results) = tokio::task::spawn_blocking(move || {
             catch_unwind(std::panic::AssertUnwindSafe(|| {
                 Self::perform_ocr(&image_bytes_owned, &engine, &config)
             }))
@@ -239,15 +293,16 @@ impl PaddleOcrBackend {
             .collect::<Vec<_>>()
             .join("\n");
 
-        Ok((text, ocr_elements))
+        Ok((text, ocr_elements, table_results))
     }
 
     /// Perform actual OCR inference (runs in blocking context).
+    /// Returns full-page text blocks and per-table results with crop-local OCR.
     fn perform_ocr(
         image_bytes: &[u8],
         ocr_engine: &Arc<Mutex<OcrLite>>,
         config: &PaddleOcrConfig,
-    ) -> Result<Vec<kreuzberg_paddle_ocr::TextBlock>> {
+    ) -> Result<(Vec<kreuzberg_paddle_ocr::TextBlock>, Vec<TableOcrResult>)> {
         let img = image::load_from_memory(image_bytes)
             .map_err(|e| crate::KreuzbergError::Ocr {
                 message: format!("Failed to decode image: {}", e),
@@ -268,6 +323,7 @@ impl PaddleOcrBackend {
         let do_angle = config.use_angle_cls;
         let most_angle = false;
 
+        // Full-page OCR for text extraction
         let result = engine_guard
             .detect(
                 &img,
@@ -289,7 +345,122 @@ impl PaddleOcrBackend {
             "PaddleOCR detection completed"
         );
 
-        Ok(result.text_blocks)
+        // Table detection: layout detect -> crop -> OCR on crop + SLANet on crop
+        // Following PaddleOCR reference: both OCR and SLANet run on the same
+        // cropped region so coordinates are naturally in the same space.
+        let mut table_results: Vec<TableOcrResult> = Vec::new();
+
+        if config.enable_table_detection && engine_guard.has_table_model() {
+            if engine_guard.has_layout_model() {
+                match engine_guard.detect_layout(&img) {
+                    Ok(Some(layout_result)) => {
+                        let table_dets: Vec<_> = layout_result
+                            .detections
+                            .iter()
+                            .filter(|d| d.label == "table")
+                            .collect();
+
+                        tracing::debug!(table_count = table_dets.len(), "Layout detection found table regions");
+
+                        for det in &table_dets {
+                            let [x1, y1, x2, y2] = det.bbox;
+                            let cx1 = (x1 as u32).min(img.width());
+                            let cy1 = (y1 as u32).min(img.height());
+                            let cw = ((x2 - x1) as u32).min(img.width().saturating_sub(cx1));
+                            let ch = ((y2 - y1) as u32).min(img.height().saturating_sub(cy1));
+
+                            if cw < 10 || ch < 10 {
+                                continue;
+                            }
+
+                            let cropped = image::imageops::crop_imm(&img, cx1, cy1, cw, ch).to_image();
+
+                            // When the crop is very wide (aspect > 2:1), pad to
+                            // square so SLANet sees content at usable resolution.
+                            // Cell bboxes (decode_bbox: x*w, y*h) will be in padded
+                            // image space but content is at top-left, so Y coords
+                            // in the content region (0..ch) match the crop space.
+                            let slanet_input = if cw > ch * 2 {
+                                let side = cw;
+                                let mut padded = image::RgbImage::from_pixel(
+                                    side, side, image::Rgb([255, 255, 255]),
+                                );
+                                image::imageops::overlay(&mut padded, &cropped, 0, 0);
+                                padded
+                            } else {
+                                cropped.clone()
+                            };
+
+                            let table_result = match engine_guard.detect_table_structure(&slanet_input) {
+                                Ok(Some(r)) => r,
+                                Ok(None) => {
+                                    tracing::debug!("SLANet found no table structure in cropped region");
+                                    continue;
+                                }
+                                Err(e) => {
+                                    tracing::warn!(error = %e, "SLANet failed on cropped table region");
+                                    continue;
+                                }
+                            };
+
+                            // Run OCR on the same crop (matching PaddleOCR reference)
+                            let crop_ocr = engine_guard
+                                .detect(
+                                    &cropped,
+                                    padding,
+                                    max_side_len,
+                                    box_score_thresh,
+                                    box_thresh,
+                                    un_clip_ratio,
+                                    do_angle,
+                                    most_angle,
+                                )
+                                .map_err(|e| crate::KreuzbergError::Ocr {
+                                    message: format!("PaddleOCR crop OCR failed: {}", e),
+                                    source: None,
+                                })?;
+
+                            tracing::debug!(
+                                crop_text_blocks = crop_ocr.text_blocks.len(),
+                                slanet_cells = table_result.cell_bboxes.len(),
+                                "Table crop OCR + SLANet completed"
+                            );
+
+                            table_results.push(TableOcrResult {
+                                structure: table_result,
+                                crop_text_blocks: crop_ocr.text_blocks,
+                            });
+                        }
+                    }
+                    Ok(None) => {}
+                    Err(e) => {
+                        tracing::warn!(error = %e, "Layout detection failed, falling back to full-page SLANet");
+                        if let Ok(Some(table_result)) = engine_guard.detect_table_structure(&img) {
+                            table_results.push(TableOcrResult {
+                                structure: table_result,
+                                crop_text_blocks: result.text_blocks.clone(),
+                            });
+                        }
+                    }
+                }
+            } else {
+                // No layout model: run SLANet on full page (legacy behavior)
+                match engine_guard.detect_table_structure(&img) {
+                    Ok(Some(table_result)) => {
+                        table_results.push(TableOcrResult {
+                            structure: table_result,
+                            crop_text_blocks: result.text_blocks.clone(),
+                        });
+                    }
+                    Ok(None) => {}
+                    Err(e) => {
+                        tracing::warn!(error = %e, "SLANet table detection failed");
+                    }
+                }
+            }
+        }
+
+        Ok((result.text_blocks, table_results))
     }
 }
 
@@ -336,35 +507,92 @@ impl OcrBackend for PaddleOcrBackend {
         // Map language code to PaddleOCR language, then use it for engine selection
         let paddle_lang = map_language_code(&config.language).unwrap_or("en");
 
-        let (text, ocr_elements) = self
+        let (text, ocr_elements, slanet_results) = self
             .do_ocr(image_bytes, paddle_lang, Arc::clone(&effective_config))
             .await?;
 
-        // Table detection
+        // Table detection: use SLANet results (possibly multiple from layout detection)
         let mut tables: Vec<Table> = vec![];
         let mut table_count = 0;
         let mut table_rows: Option<usize> = None;
         let mut table_cols: Option<usize> = None;
 
-        if effective_config.enable_table_detection && !ocr_elements.is_empty() {
-            let words = elements_to_hocr_words(&ocr_elements, 0.3);
+        if effective_config.enable_table_detection {
+            if !slanet_results.is_empty() {
+                for table_ocr in &slanet_results {
+                    // Both SLANet cell bboxes and OCR text bboxes are in crop-local
+                    // coordinates (OCR ran on the crop, matching PaddleOCR reference).
+                    // Convert OCR text blocks to axis-aligned bboxes for IoU matching.
+                    let ocr_boxes: Vec<(String, [f32; 4])> = table_ocr
+                        .crop_text_blocks
+                        .iter()
+                        .filter_map(|tb| {
+                            if tb.box_points.len() < 4 || tb.text.is_empty() {
+                                return None;
+                            }
+                            let x_min = tb.box_points.iter().map(|p| p.x).min().unwrap_or(0) as f32;
+                            let y_min = tb.box_points.iter().map(|p| p.y).min().unwrap_or(0) as f32;
+                            let x_max = tb.box_points.iter().map(|p| p.x).max().unwrap_or(0) as f32;
+                            let y_max = tb.box_points.iter().map(|p| p.y).max().unwrap_or(0) as f32;
+                            Some((tb.text.clone(), [x_min, y_min, x_max, y_max]))
+                        })
+                        .collect();
 
-            if !words.is_empty() {
-                let cells = reconstruct_table(&words, 20, 0.5);
+                    let mut cells = kreuzberg_paddle_ocr::sla_net::html_to_table_cells_iou(
+                        &table_ocr.structure.html_tokens,
+                        &table_ocr.structure.cell_bboxes,
+                        &ocr_boxes,
+                    );
 
-                if !cells.is_empty() {
-                    table_count = 1;
-                    table_rows = Some(cells.len());
-                    table_cols = cells.first().map(|row| row.len());
+                    // Strip trailing all-empty rows
+                    while cells.last().map_or(false, |row| row.iter().all(|c| c.is_empty())) {
+                        cells.pop();
+                    }
 
-                    let table_markdown = table_to_markdown(&cells);
+                    if !cells.is_empty() {
+                        if table_rows.is_none() {
+                            table_rows = Some(cells.len());
+                            table_cols = cells.first().map(|row| row.len());
+                        }
 
-                    tables.push(Table {
-                        cells,
-                        markdown: table_markdown,
-                        page_number: 1,
-                        bounding_box: None,
-                    });
+                        let table_markdown = kreuzberg_paddle_ocr::sla_net::cells_to_markdown(&cells);
+
+                        tables.push(Table {
+                            cells,
+                            markdown: table_markdown,
+                            page_number: 1,
+                            bounding_box: None,
+                        });
+                    }
+                }
+
+                table_count = tables.len();
+
+                tracing::debug!(
+                    table_count,
+                    "SLANet table detection completed"
+                );
+            } else if !ocr_elements.is_empty() {
+                // Fallback: heuristic table detection
+                let words = elements_to_hocr_words(&ocr_elements, 0.3);
+
+                if !words.is_empty() {
+                    let cells = reconstruct_table(&words, 20, 0.5);
+
+                    if !cells.is_empty() {
+                        table_count = 1;
+                        table_rows = Some(cells.len());
+                        table_cols = cells.first().map(|row| row.len());
+
+                        let table_markdown = table_to_markdown(&cells);
+
+                        tables.push(Table {
+                            cells,
+                            markdown: table_markdown,
+                            page_number: 1,
+                            bounding_box: None,
+                        });
+                    }
                 }
             }
         }

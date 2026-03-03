@@ -77,6 +77,27 @@ const SHARED_MODELS: &[SharedModelDefinition] = &[
     },
 ];
 
+/// SLANet-plus table structure recognition model.
+const TABLE_MODEL: SharedModelDefinition = SharedModelDefinition {
+    model_type: "table",
+    remote_filename: "slanet-plus.onnx",
+    local_filename: "model.onnx",
+    sha256_checksum: "d57a942af6a2f57d6a4a0372573c696a2379bf5857c45e2ac69993f3b334514b",
+    size_bytes: 7_758_305,
+};
+
+/// PP-DocLayout-M — 23-class document layout detection model (PicoDet-L architecture).
+/// Detects: paragraph_title, image, text, number, abstract, content, figure_title,
+/// formula, table, table_title, reference, doc_title, footnote, header, algorithm,
+/// footer, seal, chart_title, chart, formula_number, header_image, footer_image, aside_text.
+const LAYOUT_MODEL: SharedModelDefinition = SharedModelDefinition {
+    model_type: "layout",
+    remote_filename: "pp-doclayout-m.onnx",
+    local_filename: "model.onnx",
+    sha256_checksum: "8e458bfc919bbf7a35be9802485b5cd30151cb356364cfad09911d2ee1fc1f76",
+    size_bytes: 23_496_727,
+};
+
 /// Recognition model definitions for 11 script families (all PP-OCRv5).
 ///
 /// Each family has a recognition model (`rec/{family}/model.onnx`) and a character
@@ -169,6 +190,20 @@ pub struct RecModelPaths {
     pub rec_model: PathBuf,
     /// Path to the character dictionary file.
     pub dict_file: PathBuf,
+}
+
+/// Path to the table structure recognition model.
+#[derive(Debug, Clone)]
+pub struct TableModelPath {
+    /// Path to the table model directory.
+    pub table_model: PathBuf,
+}
+
+/// Path to the layout detection model.
+#[derive(Debug, Clone)]
+pub struct LayoutModelPath {
+    /// Path to the layout model directory.
+    pub layout_model: PathBuf,
 }
 
 /// Combined paths to all models needed for OCR (backward compatibility).
@@ -269,6 +304,52 @@ impl ModelManager {
             rec_model: rec_dir,
             dict_file,
         })
+    }
+
+    /// Ensures the SLANet table structure recognition model exists locally.
+    ///
+    /// Downloads from HuggingFace if not cached.
+    pub fn ensure_table_model(&self) -> Result<TableModelPath, KreuzbergError> {
+        let model_file = self.model_file_path(TABLE_MODEL.model_type);
+        if !model_file.exists() {
+            tracing::info!("Downloading SLANet table structure model...");
+            self.download_shared_model(&TABLE_MODEL)?;
+        } else {
+            tracing::debug!("Table structure model found in cache");
+        }
+
+        Ok(TableModelPath {
+            table_model: self.model_path(TABLE_MODEL.model_type),
+        })
+    }
+
+    /// Checks if the table structure model is cached.
+    pub fn is_table_model_cached(&self) -> bool {
+        let f = self.model_file_path(TABLE_MODEL.model_type);
+        f.exists() && f.is_file()
+    }
+
+    /// Ensures the PicoDet layout detection model exists locally.
+    ///
+    /// Downloads from HuggingFace if not cached.
+    pub fn ensure_layout_model(&self) -> Result<LayoutModelPath, KreuzbergError> {
+        let model_file = self.model_file_path(LAYOUT_MODEL.model_type);
+        if !model_file.exists() {
+            tracing::info!("Downloading PicoDet layout detection model...");
+            self.download_shared_model(&LAYOUT_MODEL)?;
+        } else {
+            tracing::debug!("Layout detection model found in cache");
+        }
+
+        Ok(LayoutModelPath {
+            layout_model: self.model_path(LAYOUT_MODEL.model_type),
+        })
+    }
+
+    /// Checks if the layout detection model is cached.
+    pub fn is_layout_model_cached(&self) -> bool {
+        let f = self.model_file_path(LAYOUT_MODEL.model_type);
+        f.exists() && f.is_file()
     }
 
     /// Backward-compatible method that ensures all models for English exist.
