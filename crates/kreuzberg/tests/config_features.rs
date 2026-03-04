@@ -361,7 +361,9 @@ async fn test_token_reduction_aggressive() {
         ..Default::default()
     };
 
-    let text = "This is a very long sentence with many unnecessary words that could be reduced. ".repeat(5);
+    let text =
+        "This is a very long sentence with many unnecessary words like 'the' and 'is' and 'a' that could be reduced. "
+            .repeat(5);
     let text_bytes = text.as_bytes();
 
     let result = extract_bytes(text_bytes, "text/plain", &config)
@@ -369,6 +371,12 @@ async fn test_token_reduction_aggressive() {
         .expect("Should extract successfully");
 
     assert!(!result.content.is_empty());
+    assert!(
+        result.content.len() < text.len(),
+        "Content should be reduced in size. Original: {}, Reduced: {}",
+        text.len(),
+        result.content.len()
+    );
 }
 
 /// Test token reduction in conservative mode.

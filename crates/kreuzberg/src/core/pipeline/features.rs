@@ -105,6 +105,64 @@ pub(super) fn execute_chunking(result: &mut ExtractionResult, config: &Extractio
     Ok(())
 }
 
+/// Execute token reduction if configured.
+pub(super) fn execute_token_reduction(result: &mut ExtractionResult, config: &ExtractionConfig) -> Result<()> {
+    #[cfg(feature = "quality")]
+    if let Some(ref tr_config) = config.token_reduction {
+        use crate::text::token_reduction::{ReductionLevel, TokenReductionConfig as DetailedConfig, reduce_tokens};
+
+        let level = ReductionLevel::from(tr_config.mode.as_str());
+
+        if level != ReductionLevel::Off {
+            let detailed_config = DetailedConfig {
+                level,
+                ..DetailedConfig::default()
+            };
+
+            // Use detected language as hint if available, otherwise use OCR language if set
+            let lang_hint = result
+                .detected_languages
+                .as_ref()
+                .and_then(|langs| langs.first().map(|s| s.as_str()))
+                .or(config.ocr.as_ref().map(|ocr| ocr.language.as_str()));
+
+            match reduce_tokens(&result.content, &detailed_config, lang_hint) {
+                Ok(reduced) => {
+                    result.content = reduced;
+                }
+                Err(e) => {
+                    let error_msg = e.to_string();
+                    result.processing_warnings.push(ProcessingWarning {
+                        source: "token_reduction".to_string(),
+                        message: error_msg.clone(),
+                    });
+                    // DEPRECATED: kept for backward compatibility; will be removed in next major version.
+                    result.metadata.additional.insert(
+                        Cow::Borrowed("token_reduction_error"),
+                        serde_json::Value::String(error_msg),
+                    );
+                }
+            }
+        }
+    }
+
+    #[cfg(not(feature = "quality"))]
+    if config.token_reduction.is_some() {
+        let error_msg = "Token reduction requires the quality feature to be enabled".to_string();
+        result.processing_warnings.push(ProcessingWarning {
+            source: "token_reduction".to_string(),
+            message: error_msg.clone(),
+        });
+        // DEPRECATED: kept for backward compatibility; will be removed in next major version.
+        result.metadata.additional.insert(
+            Cow::Borrowed("token_reduction_error"),
+            serde_json::Value::String(error_msg),
+        );
+    }
+
+    Ok(())
+}
+
 /// Execute language detection if configured.
 pub(super) fn execute_language_detection(result: &mut ExtractionResult, config: &ExtractionConfig) -> Result<()> {
     #[cfg(feature = "language-detection")]
