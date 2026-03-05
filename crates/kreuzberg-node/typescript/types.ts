@@ -1007,29 +1007,30 @@ export interface PageContent {
  */
 export interface Metadata {
 	language?: string | null;
-	date?: string | null;
+	createdAt?: string | null;
+	modifiedAt?: string | null;
 	subject?: string | null;
 
-	format_type?: "pdf" | "excel" | "email" | "pptx" | "archive" | "image" | "xml" | "text" | "html" | "ocr";
+	formatType?: "pdf" | "excel" | "email" | "pptx" | "archive" | "image" | "xml" | "text" | "html" | "ocr";
 
 	title?: string | null;
-	author?: string | null;
-	keywords?: string | null;
+	authors?: string[] | null;
+	keywords?: string[] | null;
 	creator?: string | null;
 	producer?: string | null;
-	creation_date?: string | null;
-	modification_date?: string | null;
-	page_count?: number;
+	creationDate?: string | null;
+	modificationDate?: string | null;
+	pageCount?: number;
 
-	sheet_count?: number;
-	sheet_names?: string[];
+	sheetCount?: number;
+	sheetNames?: string[];
 
-	from_email?: string | null;
-	from_name?: string | null;
-	to_emails?: string[];
-	cc_emails?: string[];
-	bcc_emails?: string[];
-	message_id?: string | null;
+	fromEmail?: string | null;
+	fromName?: string | null;
+	toEmails?: string[];
+	ccEmails?: string[];
+	bccEmails?: string[];
+	messageId?: string | null;
 	attachments?: string[];
 
 	description?: string | null;
@@ -1037,17 +1038,17 @@ export interface Metadata {
 	fonts?: string[];
 
 	format?: string;
-	file_count?: number;
-	file_list?: string[];
-	total_size?: number;
-	compressed_size?: number | null;
+	fileCount?: number;
+	fileList?: string[];
+	totalSize?: number;
+	compressedSize?: number | null;
 
 	width?: number;
 	height?: number;
 	exif?: Record<string, string>;
 
-	element_count?: number;
-	unique_elements?: string[];
+	elementCount?: number;
+	uniqueElements?: string[];
 
 	line_count?: number;
 	word_count?: number;

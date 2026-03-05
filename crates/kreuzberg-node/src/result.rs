@@ -6,6 +6,7 @@ use kreuzberg::{
 };
 use napi::bindgen_prelude::*;
 use napi_derive::napi;
+use serde_json::Value;
 
 #[napi(object)]
 #[derive(serde::Serialize, serde::Deserialize)]
@@ -193,6 +194,9 @@ impl TryFrom<RustExtractionResult> for JsExtractionResult {
     fn try_from(val: RustExtractionResult) -> Result<Self> {
         let metadata = serde_json::to_value(&val.metadata)
             .map_err(|e| Error::new(Status::GenericFailure, format!("Failed to serialize metadata: {}", e)))?;
+
+        // Transform snake_case keys from Rust core to camelCase for TypeScript/Node.js
+        let metadata = snake_to_camel(metadata);
 
         let images = if let Some(imgs) = val.images {
             let mut js_images = Vec::with_capacity(imgs.len());
@@ -776,4 +780,38 @@ impl TryFrom<JsExtractionResult> for RustExtractionResult {
             }),
         })
     }
+}
+
+/// Recursively convert snake_case keys in a JSON Value to camelCase.
+fn snake_to_camel(val: Value) -> Value {
+    match val {
+        Value::Object(map) => {
+            let mut new_map = serde_json::Map::with_capacity(map.len());
+            for (key, value) in map {
+                let new_key = to_camel_case(&key);
+                new_map.insert(new_key, snake_to_camel(value));
+            }
+            Value::Object(new_map)
+        }
+        Value::Array(arr) => Value::Array(arr.into_iter().map(snake_to_camel).collect()),
+        _ => val,
+    }
+}
+
+/// Simple snake_case to camelCase converter for keys.
+fn to_camel_case(s: &str) -> String {
+    let mut camel = String::with_capacity(s.len());
+    let mut capitalize_next = false;
+
+    for c in s.chars() {
+        if c == '_' {
+            capitalize_next = true;
+        } else if capitalize_next {
+            camel.push(c.to_ascii_uppercase());
+            capitalize_next = false;
+        } else {
+            camel.push(c);
+        }
+    }
+    camel
 }

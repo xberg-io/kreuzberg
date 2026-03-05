@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+### Fixed
+
+- **Node.js Metadata casing standardization**: Standardized all `Metadata` and `EmailMetadata` fields to `camelCase` (e.g., `pageCount`, `creationDate`, `fromEmail`) to provide a consistent TypeScript-native experience. Implemented a recursive `snake_to_camel` transformation in the Rust bridge to ensure non-leaky API behavior.
+- **Node.js pluralization**: Corrected pluralization for `authors` and `keywords` (string array) in the Node.js/TypeScript bindings to align with the core Rust implementation and documentation.
+
 ## [4.4.2]
 
 ### Fixed
