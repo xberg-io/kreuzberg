@@ -42,7 +42,7 @@ repos:
 
   # Python: ruff (linting + formatting) + mypy (type checking)
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.4
+    rev: v0.15.5
     hooks:
       - id: ruff
         args: [--fix]
@@ -98,7 +98,7 @@ repos:
 
   # JavaScript/TypeScript/JSON/CSS: biome (formatting + linting with autofixes)
   - repo: https://github.com/biomejs/pre-commit
-    rev: v2.4.5
+    rev: v2.4.6
     hooks:
       - id: biome-format
         exclude: ^tools/benchmark-harness/fixtures/

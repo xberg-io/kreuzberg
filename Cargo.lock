@@ -430,7 +430,7 @@ checksum = "2af50177e190e07a26ab74f8b1efbfe2ef87da2116221318cb1c2e82baf7de06"
 
 [[package]]
 name = "benchmark-harness"
-version = "4.4.2"
+version = "4.4.3"
 dependencies = [
  "ahash",
  "async-trait",
@@ -1595,7 +1595,7 @@ checksum = "d0881ea181b1df73ff77ffaaf9c7544ecc11e82fba9b5f27b262a3c73a332555"
 
 [[package]]
 name = "e2e-rust"
-version = "4.4.2"
+version = "4.4.3"
 dependencies = [
  "async-trait",
  "hex",
@@ -3079,7 +3079,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg"
-version = "4.4.2"
+version = "4.4.3"
 dependencies = [
  "ahash",
  "anyhow",
@@ -3169,7 +3169,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-cli"
-version = "4.4.2"
+version = "4.4.3"
 dependencies = [
  "anyhow",
  "base64 0.22.1",
@@ -3185,7 +3185,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-e2e-generator"
-version = "4.4.2"
+version = "4.4.3"
 dependencies = [
  "anyhow",
  "assert_cmd",
@@ -3200,7 +3200,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-ffi"
-version = "4.4.2"
+version = "4.4.3"
 dependencies = [
  "ahash",
  "async-trait",
@@ -3219,7 +3219,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-node"
-version = "4.4.2"
+version = "4.4.3"
 dependencies = [
  "ahash",
  "async-trait",
@@ -3243,7 +3243,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-paddle-ocr"
-version = "4.4.2"
+version = "4.4.3"
 dependencies = [
  "geo-clipper",
  "geo-types",
@@ -3257,7 +3257,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-pdfium-render"
-version = "4.4.2"
+version = "4.4.3"
 dependencies = [
  "bindgen",
  "bitflags 2.11.0",
@@ -3281,7 +3281,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-php"
-version = "4.4.2"
+version = "4.4.3"
 dependencies = [
  "ahash",
  "ctor",
@@ -3297,7 +3297,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-py"
-version = "4.4.2"
+version = "4.4.3"
 dependencies = [
  "ahash",
  "async-trait",
@@ -3314,7 +3314,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-tesseract"
-version = "4.4.2"
+version = "4.4.3"
 dependencies = [
  "cc",
  "cmake",
@@ -3326,7 +3326,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-wasm"
-version = "4.4.2"
+version = "4.4.3"
 dependencies = [
  "async-trait",
  "base64 0.22.1",
@@ -3352,7 +3352,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg_rustler"
-version = "4.4.2"
+version = "4.4.3"
 dependencies = [
  "kreuzberg",
  "rustler",
@@ -5853,7 +5853,7 @@ checksum = "67b1b7a3b5fe4f1376887184045fcf45c69e92af734b7aaddc05fb777b6fbd03"
 
 [[package]]
 name = "snippet-runner"
-version = "4.4.2"
+version = "4.4.3"
 dependencies = [
  "clap",
  "rayon",
@@ -6918,9 +6918,9 @@ dependencies = [
 
 [[package]]
 name = "uuid"
-version = "1.21.0"
+version = "1.22.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b672338555252d43fd2240c714dc444b8c6fb0a5c5335e65a07bba7742735ddb"
+checksum = "a68d3c8f01c0cfa54a75291d83601161799e4a89a39e0929f4b0354d88757a37"
 dependencies = [
  "getrandom 0.4.2",
  "js-sys",
@@ -7261,9 +7261,9 @@ dependencies = [
 
 [[package]]
 name = "which"
-version = "8.0.0"
+version = "8.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d3fabb953106c3c8eea8306e4393700d7657561cb43122571b172bbfb7c7ba1d"
+checksum = "3a824aeba0fbb27264f815ada4cff43d65b1741b7a4ed7629ff9089148c4a4e0"
 dependencies = [
  "env_home",
  "rustix",
@@ -7665,9 +7665,9 @@ checksum = "d6bbff5f0aada427a1e5a6da5f1f98158182f26556f345ac9e04d36d0ebed650"
 
 [[package]]
 name = "winnow"
-version = "0.7.14"
+version = "0.7.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5a5364e9d77fcdeeaa6062ced926ee3381faa2ee02d3eb83a5c27a8825540829"
+checksum = "df79d97927682d2fd8adb29682d1140b343be4ac0f08fd68b7765d9c059d3945"
 
 [[package]]
 name = "winsafe"

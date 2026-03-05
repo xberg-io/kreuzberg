@@ -1977,9 +1977,9 @@ dependencies = [
 
 [[package]]
 name = "html-to-markdown-rs"
-version = "2.27.2"
+version = "2.28.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "06f53f29c48f234830ccc312f652770723419fe9b3529fa5e0b027a0fedb7869"
+checksum = "842656c6f85a8e7b35fd5656646ffa0d6644cdcfe429634c7d9923a5626e330b"
 dependencies = [
  "ahash",
  "astral-tl",
@@ -2729,7 +2729,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-rb"
-version = "4.4.2"
+version = "4.4.3"
 dependencies = [
  "async-trait",
  "html-to-markdown-rs",
@@ -5700,9 +5700,9 @@ dependencies = [
 
 [[package]]
 name = "uuid"
-version = "1.21.0"
+version = "1.22.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b672338555252d43fd2240c714dc444b8c6fb0a5c5335e65a07bba7742735ddb"
+checksum = "a68d3c8f01c0cfa54a75291d83601161799e4a89a39e0929f4b0354d88757a37"
 dependencies = [
  "getrandom 0.4.2",
  "js-sys",
@@ -6314,9 +6314,9 @@ checksum = "d6bbff5f0aada427a1e5a6da5f1f98158182f26556f345ac9e04d36d0ebed650"
 
 [[package]]
 name = "winnow"
-version = "0.7.14"
+version = "0.7.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5a5364e9d77fcdeeaa6062ced926ee3381faa2ee02d3eb83a5c27a8825540829"
+checksum = "df79d97927682d2fd8adb29682d1140b343be4ac0f08fd68b7765d9c059d3945"
 
 [[package]]
 name = "wit-bindgen"

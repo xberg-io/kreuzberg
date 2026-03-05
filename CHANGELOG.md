@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased]
+## [4.4.3]
 
 ### Added
 
@@ -21,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **PDF garbled text for positioned/tabular content** ([#431](https://github.com/kreuzberg-dev/kreuzberg/issues/431)): PDF text extraction now detects X-position gaps between consecutive characters and inserts spaces when the gap exceeds `0.8 × avg_font_size`. Previously, characters placed at specific coordinates without explicit space characters were concatenated without spaces.
 - **Chunk page metadata drift with overlap** ([#439](https://github.com/kreuzberg-dev/kreuzberg/issues/439)): Chunk byte offsets are now computed via pointer arithmetic from the source text, fixing cumulative drift that caused chunks to report incorrect page numbers when overlap is enabled.
 - **Node.js metadata casing**: Standardized all `Metadata` and `EmailMetadata` fields to `camelCase` (e.g., `pageCount`, `creationDate`, `fromEmail`) in the Node.js/TypeScript bindings. Also corrected pluralization for `authors` and `keywords`.
+- **WASM build failure on Windows CI**: CMake try-compile checks on Windows used the host MSVC compiler (`cl.exe`), which rejected GCC/Clang flags like `-Wno-implicit-function-declaration`. Added `CMAKE_TRY_COMPILE_TARGET_TYPE=STATIC_LIBRARY` to both `build_leptonica_wasm` and `build_tesseract_wasm` to skip linking during cross-compilation checks.
+- **WASM OCR build panic when `git`/`patch` unavailable**: The tesseract WASM patch (`tesseract.diff`) application panicked when both `git apply` and `patch` commands failed. Added programmatic C++ source fixups as a fallback, applying all necessary changes (CPUID guard, pixa_debug_ unique_ptr conversion, source list trimming) via string replacement when the diff patch cannot be applied.
 
 ## [4.4.2]
 
