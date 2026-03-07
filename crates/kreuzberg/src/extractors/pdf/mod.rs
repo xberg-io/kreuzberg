@@ -22,6 +22,9 @@ use crate::pdf::error::PdfError;
 #[cfg(feature = "ocr")]
 pub use ocr::{NativeTextStats, OcrFallbackDecision, evaluate_native_text_for_ocr, evaluate_per_page_ocr};
 
+#[cfg(feature = "pdf")]
+use pdfium_render::prelude::{PdfDocument, Pdfium};
+
 use extraction::extract_all_from_document;
 #[cfg(feature = "ocr")]
 use ocr::extract_with_ocr;
@@ -112,14 +115,7 @@ impl DocumentExtractor for PdfExtractor {
                         }
                     })?;
 
-                let document = pdfium.load_pdf_from_byte_slice(content, None).map_err(|e| {
-                    let err_msg = crate::pdf::error::format_pdfium_error(e);
-                    if err_msg.contains("password") || err_msg.contains("Password") {
-                        PdfError::PasswordRequired
-                    } else {
-                        PdfError::InvalidPdf(err_msg)
-                    }
-                })?;
+                let document = load_pdf_from_byte_slice(&pdfium, &content, &config)?;
 
                 extract_all_from_document(&document, config)?
             }
@@ -135,17 +131,7 @@ impl DocumentExtractor for PdfExtractor {
                         let pdfium =
                             crate::pdf::bindings::bind_pdfium(PdfError::MetadataExtractionFailed, "initialize Pdfium")?;
 
-                        let document = match pdfium.load_pdf_from_byte_slice(&content_owned, None) {
-                            Ok(doc) => doc,
-                            Err(e) => {
-                                let err_msg = crate::pdf::error::format_pdfium_error(e);
-                                if err_msg.contains("password") || err_msg.contains("Password") {
-                                    return Err(PdfError::PasswordRequired);
-                                } else {
-                                    return Err(PdfError::InvalidPdf(err_msg));
-                                }
-                            }
-                        };
+                        let document = load_pdf_from_byte_slice(&pdfium, &content_owned, &config_owned)?;
 
                         let (
                             pdf_metadata,
@@ -191,14 +177,7 @@ impl DocumentExtractor for PdfExtractor {
                     let pdfium =
                         crate::pdf::bindings::bind_pdfium(PdfError::MetadataExtractionFailed, "initialize Pdfium")?;
 
-                    let document = pdfium.load_pdf_from_byte_slice(content, None).map_err(|e| {
-                        let err_msg = crate::pdf::error::format_pdfium_error(e);
-                        if err_msg.contains("password") || err_msg.contains("Password") {
-                            PdfError::PasswordRequired
-                        } else {
-                            PdfError::InvalidPdf(err_msg)
-                        }
-                    })?;
+                    let document = load_pdf_from_byte_slice(&pdfium, content, config)?;
 
                     extract_all_from_document(&document, config)?
                 }
@@ -208,14 +187,7 @@ impl DocumentExtractor for PdfExtractor {
                 let pdfium =
                     crate::pdf::bindings::bind_pdfium(PdfError::MetadataExtractionFailed, "initialize Pdfium")?;
 
-                let document = pdfium.load_pdf_from_byte_slice(content, None).map_err(|e| {
-                    let err_msg = crate::pdf::error::format_pdfium_error(e);
-                    if err_msg.contains("password") || err_msg.contains("Password") {
-                        PdfError::PasswordRequired
-                    } else {
-                        PdfError::InvalidPdf(err_msg)
-                    }
-                })?;
+                let document = load_pdf_from_byte_slice(&pdfium, &content, &config)?;
 
                 extract_all_from_document(&document, config)?
             }
@@ -474,6 +446,39 @@ impl DocumentExtractor for PdfExtractor {
     fn priority(&self) -> i32 {
         50
     }
+}
+
+/// Loads a PDF from a byte slice, using the config's passwords if needed,
+/// in the order they are provided.
+#[cfg(feature = "pdf")]
+fn load_pdf_from_byte_slice<'pdf>(
+    pdfium: &'pdf Pdfium,
+    content: &'pdf [u8],
+    config: &ExtractionConfig,
+) -> std::result::Result<PdfDocument<'pdf>, PdfError> {
+    let passwords = [None].into_iter().chain(
+        config
+            .pdf_options
+            .iter()
+            .flat_map(|o| &o.passwords)
+            .flatten()
+            .map(String::as_str)
+            .map(Some),
+    );
+
+    for pwd in passwords {
+        match pdfium.load_pdf_from_byte_slice(content, pwd) {
+            Ok(doc) => return Ok(doc),
+            Err(e) => {
+                let err_msg = crate::pdf::error::format_pdfium_error(e);
+                if !err_msg.contains("password") && !err_msg.contains("Password") {
+                    return Err(PdfError::InvalidPdf(err_msg));
+                }
+            }
+        };
+    }
+
+    Err(PdfError::PasswordRequired)
 }
 
 #[cfg(test)]
