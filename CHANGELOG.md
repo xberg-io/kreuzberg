@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+### Added
+
+- **Centralized FFI metadata casing**: Moved `snake_to_camel` recursive JSON transformation logic into the Rust core (`kreuzberg::utils::json_utils`) and applied it to the FFI layer (`kreuzberg-ffi`). This ensures all metadata returned via FFI (used by Go, Java, C#, etc.) consistently uses `camelCase` for dynamic fields.
+
+### Changed
+
+- **Node.js refactor**: Updated `@kreuzberg/node` to use the centralized core casing utility, eliminating redundant bridge-level transformation logic.
+
+---
+
 ## [4.4.3]
 
 ### Added
