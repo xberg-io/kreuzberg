@@ -2903,19 +2903,11 @@ jobs:
           name: python-sdist
           path: dist
 
-      - name: List artifacts
-        run: ls -R dist
-
       - name: Publish to PyPI
-        if: ${{ needs.prepare.outputs.dry_run != 'true' }}
-        uses: pypa/gh-action-pypi-publish@release/v1
+        uses: kreuzberg-dev/actions/publish-pypi@v1
         with:
           packages-dir: dist
-          skip-existing: true
-
-      - name: Dry run summary
-        if: ${{ needs.prepare.outputs.dry_run == 'true' }}
-        run: (echo "Dry run requested; artifacts staged for PyPI:" && ls -1 dist) >> "$GITHUB_STEP_SUMMARY"
+          dry-run: ${{ needs.prepare.outputs.dry_run }}
 
   publish-rubygems:
     name: Publish Ruby gems
@@ -3371,23 +3363,13 @@ jobs:
           name: csharp-nuget
           path: dist
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: "10.0.x"
-
-      - name: Ensure dotnet is available
-        run: scripts/publish/csharp/ensure-dotnet.sh
-
       - name: Publish to NuGet
-        if: ${{ needs.prepare.outputs.dry_run != 'true' }}
+        uses: kreuzberg-dev/actions/publish-nuget@v1
+        with:
+          packages-dir: dist
+          dry-run: ${{ needs.prepare.outputs.dry_run }}
         env:
-          NUGET_AUTH_TOKEN: ${{ secrets.NUGET_API_KEY }}
-        run: dotnet nuget push "dist/*.nupkg" --source https://api.nuget.org/v3/index.json --api-key "${{ secrets.NUGET_API_KEY }}" --skip-duplicate && echo "NuGet package published." >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Dry run summary
-        if: ${{ needs.prepare.outputs.dry_run == 'true' }}
-        run: (echo "Dry run requested; NuGet publish skipped." && ls -1 dist/*.nupkg) >> "$GITHUB_STEP_SUMMARY"
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
 
   publish-php:
     name: Publish PHP package and PIE packages
