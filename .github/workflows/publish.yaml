@@ -166,119 +166,112 @@ jobs:
     needs: prepare
     if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.release_python == 'true' }}
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     outputs:
       exists: ${{ steps.check.outputs.exists }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: Check PyPI for existing version
         id: check
-        run: scripts/publish/check_pypi.sh "${{ needs.prepare.outputs.version }}" >> "$GITHUB_OUTPUT"
+        uses: kreuzberg-dev/actions/check-registry@v1
+        with:
+          registry: pypi
+          package: kreuzberg
+          version: ${{ needs.prepare.outputs.version }}
 
   check-npm:
     name: Check if Node package exists on npm
     needs: prepare
     if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.release_node == 'true' }}
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     outputs:
       exists: ${{ steps.check.outputs.exists }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: Check npm for existing version
         id: check
-        run: scripts/publish/check_npm.sh "${{ needs.prepare.outputs.version }}" >> "$GITHUB_OUTPUT"
+        uses: kreuzberg-dev/actions/check-registry@v1
+        with:
+          registry: npm
+          package: "@kreuzberg/node"
+          version: ${{ needs.prepare.outputs.version }}
 
   check-wasm:
     name: Check if WASM package exists on npm
     needs: prepare
     if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.release_wasm == 'true' }}
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     outputs:
       exists: ${{ steps.check.outputs.exists }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: Check npm for existing WASM package
         id: check
-        run: scripts/publish/check_wasm.sh "${{ needs.prepare.outputs.version }}" >> "$GITHUB_OUTPUT"
+        uses: kreuzberg-dev/actions/check-registry@v1
+        with:
+          registry: npm
+          package: "@kreuzberg/wasm"
+          version: ${{ needs.prepare.outputs.version }}
 
   check-rubygems:
     name: Check if Ruby gem exists on RubyGems
     needs: prepare
     if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.release_ruby == 'true' }}
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     outputs:
       exists: ${{ steps.check.outputs.exists }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: Check RubyGems for existing version
         id: check
-        run: scripts/publish/check_rubygems.sh "${{ needs.prepare.outputs.version }}" >> "$GITHUB_OUTPUT"
+        uses: kreuzberg-dev/actions/check-registry@v1
+        with:
+          registry: rubygems
+          package: kreuzberg
+          version: ${{ needs.prepare.outputs.version }}
 
   check-maven:
     name: Check if Java package exists on Maven Central
     needs: prepare
     if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.release_java == 'true' }}
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     outputs:
       exists: ${{ steps.check.outputs.exists }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: Check Maven Central for existing version
         id: check
-        run: scripts/publish/check_maven.sh "${{ needs.prepare.outputs.version }}" >> "$GITHUB_OUTPUT"
+        uses: kreuzberg-dev/actions/check-registry@v1
+        with:
+          registry: maven
+          package: "dev.kreuzberg:kreuzberg"
+          version: ${{ needs.prepare.outputs.version }}
 
   check-nuget:
     name: Check if C# package exists on NuGet
     needs: prepare
     if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.release_csharp == 'true' }}
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     outputs:
       exists: ${{ steps.check.outputs.exists }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: Check NuGet for existing version
         id: check
-        run: scripts/publish/check_nuget.sh "${{ needs.prepare.outputs.version }}" >> "$GITHUB_OUTPUT"
+        uses: kreuzberg-dev/actions/check-registry@v1
+        with:
+          registry: nuget
+          package: Kreuzberg
+          version: ${{ needs.prepare.outputs.version }}
 
   check-packagist:
     name: Check if PHP package exists on Packagist
     needs: prepare
     if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.release_php == 'true' }}
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     outputs:
       exists: ${{ steps.check.outputs.exists }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: Check Packagist for existing version
         id: check
-        run: scripts/publish/check_packagist.sh "${{ needs.prepare.outputs.version }}" >> "$GITHUB_OUTPUT"
+        uses: kreuzberg-dev/actions/check-registry@v1
+        with:
+          registry: packagist
+          package: kreuzberg/kreuzberg
+          version: ${{ needs.prepare.outputs.version }}
 
   check-cli:
     name: Check if CLI assets already published
@@ -374,38 +367,52 @@ jobs:
     needs: prepare
     if: ${{ needs.prepare.outputs.is_tag == 'true' }}
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     outputs:
-      kreuzberg_exists: ${{ steps.check.outputs.kreuzberg_exists }}
+      kreuzberg_exists: ${{ steps.check.outputs.exists }}
       tesseract_exists: ${{ steps.check.outputs.tesseract_exists }}
       paddle_exists: ${{ steps.check.outputs.paddle_exists }}
       cli_exists: ${{ steps.check.outputs.cli_exists }}
-      exists: ${{ steps.check.outputs.all_exist }}
+      exists: ${{ steps.derive.outputs.all_exist }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: Check crates.io for existing versions
         id: check
-        run: scripts/publish/check_cratesio.sh "${{ needs.prepare.outputs.version }}" >> "$GITHUB_OUTPUT"
+        uses: kreuzberg-dev/actions/check-registry@v1
+        with:
+          registry: cratesio
+          package: kreuzberg
+          version: ${{ needs.prepare.outputs.version }}
+          extra-packages: |
+            tesseract_exists=kreuzberg-tesseract
+            paddle_exists=kreuzberg-paddle-ocr
+            cli_exists=kreuzberg-cli
+
+      - name: Derive all_exist
+        id: derive
+        run: |
+          if [[ "${{ steps.check.outputs.exists }}" == "true" && \
+                "${{ steps.check.outputs.tesseract_exists }}" == "true" && \
+                "${{ steps.check.outputs.paddle_exists }}" == "true" && \
+                "${{ steps.check.outputs.cli_exists }}" == "true" ]]; then
+            echo "all_exist=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "all_exist=false" >> "$GITHUB_OUTPUT"
+          fi
 
   check-hex:
     name: Check if Elixir package exists on Hex.pm
     needs: prepare
     if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.release_elixir == 'true' }}
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     outputs:
       exists: ${{ steps.check.outputs.exists }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: Check Hex.pm for existing version
         id: check
-        run: scripts/publish/check_hex.sh "${{ needs.prepare.outputs.version }}" >> "$GITHUB_OUTPUT"
+        uses: kreuzberg-dev/actions/check-registry@v1
+        with:
+          registry: hex
+          package: kreuzberg
+          version: ${{ needs.prepare.outputs.version }}
 
   check-homebrew:
     name: Check if Homebrew formula already published
@@ -413,35 +420,17 @@ jobs:
     if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.release_homebrew == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    permissions:
-      contents: read
     outputs:
       exists: ${{ steps.check.outputs.exists }}
     steps:
       - name: Check Homebrew tap for formula
         id: check
-        timeout-minutes: 3
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VERSION: ${{ needs.prepare.outputs.version }}
-        run: |
-          # Check if Formula/kreuzberg.rb exists and contains the current version
-          # Use timeout to prevent hanging on API issues
-          # Validate API response and handle base64 decoding errors gracefully
-          api_response=$(timeout 120s gh api repos/kreuzberg-dev/homebrew-tap/contents/Formula/kreuzberg.rb --jq '.content' 2>/dev/null || echo "")
-
-          if [[ -n "$api_response" ]] && [[ "$api_response" != "null" ]]; then
-            if echo "$api_response" | base64 -d 2>/dev/null | grep -q "version \"${VERSION}\""; then
-              echo "exists=true" >> "$GITHUB_OUTPUT"
-              echo "Homebrew formula already contains version ${VERSION}" >> "$GITHUB_STEP_SUMMARY"
-            else
-              echo "exists=false" >> "$GITHUB_OUTPUT"
-              echo "Homebrew formula does not contain version ${VERSION} or check failed" >> "$GITHUB_STEP_SUMMARY"
-            fi
-          else
-            echo "exists=false" >> "$GITHUB_OUTPUT"
-            echo "Homebrew formula check failed (API error or file not found)" >> "$GITHUB_STEP_SUMMARY"
-          fi
+        uses: kreuzberg-dev/actions/check-registry@v1
+        with:
+          registry: homebrew
+          package: kreuzberg
+          version: ${{ needs.prepare.outputs.version }}
+          tap-repo: kreuzberg-dev/homebrew-tap
 
   python-wheels:
     name: Build Python wheels (${{ matrix.label }})
