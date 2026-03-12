@@ -156,7 +156,7 @@ pub(super) fn merge_continuation_paragraphs(paragraphs: &mut Vec<PdfParagraph>) 
 }
 
 /// Check if a paragraph's last line ends with sentence-terminating punctuation.
-fn ends_with_sentence_terminator(para: &PdfParagraph) -> bool {
+pub(super) fn ends_with_sentence_terminator(para: &PdfParagraph) -> bool {
     let last_text = para
         .lines
         .last()

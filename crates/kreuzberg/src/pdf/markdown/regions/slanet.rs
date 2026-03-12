@@ -260,35 +260,10 @@ fn match_words_to_cell(
     let mut matched: Vec<(&crate::pdf::table_reconstruct::HocrWord, f32, f32)> = Vec::new();
 
     for &word in words {
-        let w_left = word.left as f32;
-        let w_top = word.top as f32;
-        let w_right = w_left + word.width as f32;
-        let w_bottom = w_top + word.height as f32;
-
-        let word_area = word.width as f32 * word.height as f32;
-        if word_area <= 0.0 {
-            // Zero-area word: fall back to center-point containment
-            let cx = w_left + word.width as f32 / 2.0;
-            let cy = w_top + word.height as f32 / 2.0;
-            if cx >= cell_left && cx <= cell_right && cy >= cell_top && cy <= cell_bottom {
-                matched.push((word, cx, cy));
-            }
-            continue;
-        }
-
-        // Compute intersection area
-        let inter_left = w_left.max(cell_left);
-        let inter_top = w_top.max(cell_top);
-        let inter_right = w_right.min(cell_right);
-        let inter_bottom = w_bottom.min(cell_bottom);
-        let inter_w = (inter_right - inter_left).max(0.0);
-        let inter_h = (inter_bottom - inter_top).max(0.0);
-        let inter_area = inter_w * inter_h;
-
-        // Require at least 20% of word area overlaps with cell (docling threshold)
-        if inter_area / word_area >= 0.2 {
-            let cx = w_left + word.width as f32 / 2.0;
-            let cy = w_top + word.height as f32 / 2.0;
+        let iow = word_hint_iow(word, cell_left, cell_top, cell_right, cell_bottom);
+        if iow >= 0.2 {
+            let cx = word.left as f32 + word.width as f32 / 2.0;
+            let cy = word.top as f32 + word.height as f32 / 2.0;
             matched.push((word, cx, cy));
         }
     }

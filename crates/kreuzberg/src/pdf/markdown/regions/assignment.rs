@@ -60,6 +60,7 @@ pub(in crate::pdf::markdown) fn assign_segments_to_regions<'a>(
         .map(|&hint| LayoutRegion {
             hint,
             segment_indices: Vec::new(),
+            merged_bbox: None,
         })
         .collect();
 
@@ -206,6 +207,7 @@ pub(in crate::pdf::markdown) fn assign_segments_to_regions_refined<'a>(
             result_regions.push(LayoutRegion {
                 hint: confident_original[ri].1,
                 segment_indices: refined_region.segment_indices.clone(),
+                merged_bbox: None,
             });
         }
     }
@@ -287,6 +289,7 @@ fn compute_refined_hints(
 
 /// Compute intersection-over-self: the fraction of the segment's area that
 /// overlaps with the region's bounding box.
+#[allow(clippy::too_many_arguments)]
 fn intersection_over_self(
     seg_left: f32,
     seg_bottom: f32,

@@ -84,63 +84,43 @@ pub(in crate::pdf::markdown) fn extract_tables_from_layout_hints(
         let table_cells = match post_process_table(table_cells, true) {
             Some(cleaned) => cleaned,
             None => {
-                // Table reconstruction failed — render words as fallback text so
-                // content isn't silently dropped. Sort by position (top→bottom,
-                // left→right) and group into lines.
-                let mut sorted_words = table_words;
-                // Use a fixed row threshold based on median height to ensure
-                // the comparator implements a total order (transitivity).
-                let median_height = {
-                    let mut heights: Vec<u32> = sorted_words.iter().map(|w| w.height).collect();
-                    heights.sort_unstable();
-                    heights.get(heights.len() / 2).copied().unwrap_or(10)
-                };
-                let row_threshold = median_height / 2;
-                sorted_words.sort_by(|a, b| {
-                    let ay = a.top;
-                    let by = b.top;
-                    if ay.abs_diff(by) > row_threshold {
-                        ay.cmp(&by)
-                    } else {
-                        a.left.cmp(&b.left)
-                    }
-                });
-
-                let mut lines: Vec<String> = Vec::new();
-                let mut current_line = String::new();
-                let mut last_top: Option<u32> = None;
-
-                for w in &sorted_words {
-                    let same_line = last_top.is_some_and(|lt| lt.abs_diff(w.top) <= w.height / 2);
-                    if same_line {
-                        current_line.push(' ');
-                        current_line.push_str(w.text.trim());
-                    } else {
-                        if !current_line.is_empty() {
-                            lines.push(std::mem::take(&mut current_line));
-                        }
-                        current_line = w.text.trim().to_string();
-                    }
-                    last_top = Some(w.top);
-                }
-                if !current_line.is_empty() {
-                    lines.push(current_line);
-                }
-
-                let markdown = lines.join("\n\n");
-                if markdown.is_empty() {
-                    continue;
-                }
-
-                tables.push(Table {
-                    cells: Vec::new(),
-                    markdown,
-                    page_number: page_index + 1,
-                    bounding_box,
-                });
+                // Table reconstruction failed — the Table hint was a false positive.
+                // Do NOT emit a table with bounding_box: that would add the bbox to
+                // extracted_table_bboxes_by_page, suppressing legitimate text segments
+                // in assign_segments_to_regions (IoS >= 0.5 check). Instead, skip this
+                // hint entirely and let the text fall through as unassigned segments
+                // in the normal pipeline.
+                tracing::trace!(
+                    page = page_index,
+                    hint_left = hint.left,
+                    hint_right = hint.right,
+                    words = table_words.len(),
+                    "table reconstruction failed — skipping false-positive Table hint"
+                );
                 continue;
             }
         };
+
+        // Reject degenerate tables with too many empty cells.
+        // False-positive Table hints (e.g. in RTL documents) often produce
+        // tables where most cells are empty because the content is not truly
+        // tabular. Skip these to avoid polluting output with markdown table
+        // formatting characters that hurt TF1.
+        let total_cells: usize = table_cells.iter().map(|row| row.len()).sum();
+        let empty_cells: usize = table_cells
+            .iter()
+            .flat_map(|row| row.iter())
+            .filter(|cell| cell.trim().is_empty())
+            .count();
+        if total_cells > 0 && empty_cells as f64 / total_cells as f64 > 0.5 {
+            tracing::trace!(
+                page = page_index,
+                total_cells,
+                empty_cells,
+                "table has >50% empty cells — skipping degenerate table"
+            );
+            continue;
+        }
 
         let markdown = table_to_markdown(&table_cells);
 

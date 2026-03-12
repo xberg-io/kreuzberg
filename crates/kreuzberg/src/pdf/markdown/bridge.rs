@@ -396,6 +396,11 @@ pub(super) fn build_ligature_repair_map(page: &PdfPage) -> Option<Vec<(char, &'s
 }
 
 /// Apply ligature repairs to a text string using a page-specific repair map.
+///
+/// After replacing ligature characters, collapses spurious spaces that result
+/// from the replacement: e.g., "ﬁ rst" → "fi rst" → "first". When a ligature
+/// expansion is immediately followed by a space and a lowercase letter, the
+/// space is removed (matching Docling's regex-based post-processing).
 pub(super) fn apply_ligature_repairs(text: &str, repair_map: &[(char, &str)]) -> String {
     let mut result = String::with_capacity(text.len() + 16);
     for ch in text.chars() {
@@ -405,7 +410,29 @@ pub(super) fn apply_ligature_repairs(text: &str, repair_map: &[(char, &str)]) ->
             result.push(ch);
         }
     }
-    result
+
+    // Post-processing: collapse "fi rst" → "first" patterns.
+    // After a ligature expansion (fi, fl, ff, ffi, ffl), if the next char is a
+    // space followed by a lowercase letter, remove the space.
+    let ligature_endings: &[&str] = &["fi", "fl", "ff", "ffi", "ffl"];
+    let mut collapsed = String::with_capacity(result.len());
+    let chars: Vec<char> = result.chars().collect();
+    let mut i = 0;
+    while i < chars.len() {
+        if chars[i] == ' ' && i > 0 && i + 1 < chars.len() && chars[i + 1].is_lowercase() {
+            // Check if the text before the space ends with a ligature expansion
+            let should_collapse = ligature_endings.iter().any(|lig| collapsed.ends_with(lig));
+            if should_collapse {
+                // Skip the space
+                i += 1;
+                continue;
+            }
+        }
+        collapsed.push(chars[i]);
+        i += 1;
+    }
+
+    collapsed
 }
 
 /// Repair ligature corruption using contextual heuristics.
@@ -500,15 +527,13 @@ pub(super) fn repair_contextual_ligatures(text: &str) -> String {
 /// slash, and bullet characters. This improves TF1 by ensuring extracted text
 /// matches ground truth tokenization.
 pub(super) fn normalize_unicode_text(text: &str) -> String {
-    if !text.contains([
-        '\u{2018}', '\u{2019}', '\u{201C}', '\u{201D}', '\u{2044}', '\u{2013}', '\u{2014}',
-    ]) {
+    if !text.contains(['\u{2018}', '\u{2019}', '\u{201C}', '\u{201D}', '\u{2044}', '\u{2022}']) {
         return text.to_string();
     }
-    text.replace(['\u{2018}', '\u{2019}'], "'")  // right single quote
-        .replace(['\u{201C}', '\u{201D}'], "\"") // right double quote
+    text.replace(['\u{2018}', '\u{2019}'], "'")  // curly single quotes
+        .replace(['\u{201C}', '\u{201D}'], "\"") // curly double quotes
         .replace('\u{2044}', "/")  // fraction slash
-        .replace(['\u{2013}', '\u{2014}'], "-") // em dash
+        .replace('\u{2022}', "\u{00B7}") // bullet → middle dot
 }
 
 /// Check if text contains ligature corruption patterns.

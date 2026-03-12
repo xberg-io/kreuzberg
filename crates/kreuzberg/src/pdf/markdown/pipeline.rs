@@ -490,7 +490,17 @@ pub fn render_document_as_markdown_with_tables(
             let page_segments = std::mem::take(&mut all_page_segments[i]);
             let mut paragraphs = if let Some(hints) = layout_hints.and_then(|h| h.get(i))
                 && !hints.is_empty()
-            {
+                // Only use layout-guided assembly if the page has text-class hints.
+                // If all hints are Table/Picture, the layout path adds no value and
+                // causes text duplication (segments fall through as unassigned body
+                // text alongside the extracted table).
+                && hints.iter().any(|h| {
+                    h.confidence >= 0.5
+                        && !matches!(
+                            h.class,
+                            super::types::LayoutHintClass::Table | super::types::LayoutHintClass::Picture
+                        )
+                }) {
                 // Layout-guided assembly: assign segments to layout regions
                 // BEFORE line/paragraph assembly, ensuring paragraph boundaries
                 // align with the model's structural predictions.

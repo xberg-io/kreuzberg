@@ -17,9 +17,6 @@ const STRICTLY_ABOVE_EPS: f32 = 1e-3;
 /// X-padding when querying for predecessor/successor candidates (in points).
 const HORIZONTAL_OVERLAP_PADDING: f32 = 0.1;
 
-/// X-padding for the interruption corridor (in points).
-const INTERRUPTION_CORRIDOR_PADDING: f32 = 1.0;
-
 /// Maximum horizontal dilation as a fraction of page width.
 const MAX_DILATION_FRACTION: f32 = 0.15;
 
@@ -53,13 +50,17 @@ pub(in crate::pdf::markdown) fn order_regions_reading_order(regions: &mut [Layou
 
     // Sort headers/footers by Y (top-first for headers, bottom-first for footers)
     header_indices.sort_by(|&a, &b| {
-        let a_cy = (regions[a].hint.top + regions[a].hint.bottom) / 2.0;
-        let b_cy = (regions[b].hint.top + regions[b].hint.bottom) / 2.0;
+        let (_, a_bot, _, a_top) = regions[a].bbox();
+        let (_, b_bot, _, b_top) = regions[b].bbox();
+        let a_cy = (a_top + a_bot) / 2.0;
+        let b_cy = (b_top + b_bot) / 2.0;
         b_cy.total_cmp(&a_cy)
     });
     footer_indices.sort_by(|&a, &b| {
-        let a_cy = (regions[a].hint.top + regions[a].hint.bottom) / 2.0;
-        let b_cy = (regions[b].hint.top + regions[b].hint.bottom) / 2.0;
+        let (_, a_bot, _, a_top) = regions[a].bbox();
+        let (_, b_bot, _, b_top) = regions[b].bbox();
+        let a_cy = (a_top + a_bot) / 2.0;
+        let b_cy = (b_top + b_bot) / 2.0;
         b_cy.total_cmp(&a_cy)
     });
 
@@ -90,13 +91,13 @@ fn sort_simple(indices: &[usize], regions: &[LayoutRegion], page_height: f32) ->
     let mut sorted = indices.to_vec();
     if y_tolerance > 0.0 {
         sorted.sort_by(|&a, &b| {
-            let a_cy = (regions[a].hint.top + regions[a].hint.bottom) / 2.0;
-            let b_cy = (regions[b].hint.top + regions[b].hint.bottom) / 2.0;
+            let (a_left, a_bot, _, a_top) = regions[a].bbox();
+            let (b_left, b_bot, _, b_top) = regions[b].bbox();
+            let a_cy = (a_top + a_bot) / 2.0;
+            let b_cy = (b_top + b_bot) / 2.0;
             let a_row = (a_cy / y_tolerance).round() as i64;
             let b_row = (b_cy / y_tolerance).round() as i64;
-            b_row
-                .cmp(&a_row)
-                .then_with(|| regions[a].hint.left.total_cmp(&regions[b].hint.left))
+            b_row.cmp(&a_row).then_with(|| a_left.total_cmp(&b_left))
         });
     }
     sorted
@@ -110,13 +111,17 @@ fn dag_reading_order(body_indices: &[usize], regions: &[LayoutRegion], _page_hei
     let n = body_indices.len();
 
     // Extract bboxes for the body regions (in PDF coords: y=0 at bottom)
+    // Use effective bbox (merged union if available) for correct spatial ordering.
     let bboxes: Vec<RegionBbox> = body_indices
         .iter()
-        .map(|&idx| RegionBbox {
-            left: regions[idx].hint.left,
-            bottom: regions[idx].hint.bottom,
-            right: regions[idx].hint.right,
-            top: regions[idx].hint.top,
+        .map(|&idx| {
+            let (left, bottom, right, top) = regions[idx].bbox();
+            RegionBbox {
+                left,
+                bottom,
+                right,
+                top,
+            }
         })
         .collect();
 
@@ -229,9 +234,7 @@ fn build_dag(bboxes: &[RegionBbox]) -> (Vec<Vec<usize>>, Vec<Vec<usize>>) {
 
 /// Check if any element w interrupts the vertical corridor between i (above) and j (below).
 fn has_interruption(bboxes: &[RegionBbox], i: usize, j: usize) -> bool {
-    // Corridor: horizontal range = union of i and j (with padding), vertical = between j.top and i.bottom
-    let corridor_left = bboxes[i].left.min(bboxes[j].left) - INTERRUPTION_CORRIDOR_PADDING;
-    let corridor_right = bboxes[i].right.max(bboxes[j].right) + INTERRUPTION_CORRIDOR_PADDING;
+    // Corridor: vertical range = between j.top and i.bottom
     let corridor_bottom = bboxes[j].top; // top of j (lower element)
     let corridor_top = bboxes[i].bottom; // bottom of i (upper element)
 
@@ -244,10 +247,11 @@ fn has_interruption(bboxes: &[RegionBbox], i: usize, j: usize) -> bool {
             continue;
         }
 
-        // w must horizontally overlap the corridor (union of i and j, with padding)
-        let overlaps_corridor = bbox_w.right > corridor_left && bbox_w.left < corridor_right;
+        // w must horizontally overlap i OR j individually (Docling semantics)
+        let overlaps_i = bbox_w.right > bboxes[i].left && bbox_w.left < bboxes[i].right;
+        let overlaps_j = bbox_w.right > bboxes[j].left && bbox_w.left < bboxes[j].right;
 
-        if !overlaps_corridor {
+        if !(overlaps_i || overlaps_j) {
             continue;
         }
 
@@ -281,14 +285,14 @@ fn apply_dilation(
         let mut target_left = bboxes[i].left;
         let mut target_right = bboxes[i].right;
 
-        // Expand toward predecessors
-        for &pred in &up_map[i] {
+        // Expand toward first predecessor only (Docling semantics)
+        if let Some(&pred) = up_map[i].first() {
             target_left = target_left.min(bboxes[pred].left);
             target_right = target_right.max(bboxes[pred].right);
         }
 
-        // Expand toward successors
-        for &succ in &dn_map[i] {
+        // Expand toward first successor only (Docling semantics)
+        if let Some(&succ) = dn_map[i].first() {
             target_left = target_left.min(bboxes[succ].left);
             target_right = target_right.max(bboxes[succ].right);
         }

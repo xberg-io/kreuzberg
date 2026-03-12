@@ -167,15 +167,14 @@ fn recognize_single_table(
         return None;
     }
 
-    // Collect OCR elements that fall within this table region
+    // Collect OCR elements that overlap the table region (≥20% of element area)
     let table_elements: Vec<&OcrElement> = elements
         .iter()
         .filter(|e| {
             if e.text.trim().is_empty() {
                 return false;
             }
-            let (cx, cy) = element_center_f32(e);
-            point_in_bbox(cx, cy, table_bbox)
+            element_bbox_iow(e, table_bbox) >= 0.2
         })
         .collect();
 
@@ -279,12 +278,18 @@ fn build_markdown_table(
 }
 
 /// Match OCR elements to a cell bbox, returning the cell's text content.
+///
+/// Uses intersection-over-word-area (IoW) matching: an element is assigned to
+/// this cell if the overlap between the element bbox and cell bbox covers at
+/// least 20% of the element's area. This is more robust than center-point
+/// containment for elements that straddle cell boundaries.
 fn match_elements_to_cell(elements: &[&OcrElement], cell_bbox: &BBox) -> String {
     let mut matched: Vec<(&OcrElement, f32, f32)> = Vec::new();
 
     for elem in elements {
-        let (cx, cy) = element_center_f32(elem);
-        if point_in_bbox(cx, cy, cell_bbox) {
+        let iow = element_bbox_iow(elem, cell_bbox);
+        if iow >= 0.2 {
+            let (cx, cy) = element_center_f32(elem);
             matched.push((elem, cx, cy));
         }
     }
@@ -841,6 +846,34 @@ fn group_elements_into_lines<'a>(elements: &[&'a OcrElement]) -> Vec<Vec<&'a Ocr
 fn plain_text_join(elements: &[OcrElement]) -> String {
     let refs: Vec<&OcrElement> = elements.iter().collect();
     elements_to_paragraphs(&refs)
+}
+
+/// Compute intersection-over-word-area (IoW) between an OCR element and a BBox.
+///
+/// Returns the fraction of the element's area that overlaps with the given bbox.
+/// For zero-area elements, falls back to center-point containment (returns 0.0 or 1.0).
+fn element_bbox_iow(elem: &OcrElement, bbox: &BBox) -> f32 {
+    let (left, top, width, height) = elem.geometry.to_aabb();
+    let e_left = left as f32;
+    let e_top = top as f32;
+    let e_right = e_left + width as f32;
+    let e_bottom = e_top + height as f32;
+    let elem_area = width as f32 * height as f32;
+
+    if elem_area <= 0.0 {
+        // Zero-area element: fall back to center-point containment
+        let cx = e_left + width as f32 / 2.0;
+        let cy = e_top + height as f32 / 2.0;
+        return if point_in_bbox(cx, cy, bbox) { 1.0 } else { 0.0 };
+    }
+
+    let inter_left = e_left.max(bbox.x1);
+    let inter_top = e_top.max(bbox.y1);
+    let inter_right = e_right.min(bbox.x2);
+    let inter_bottom = e_bottom.min(bbox.y2);
+    let inter_area = (inter_right - inter_left).max(0.0) * (inter_bottom - inter_top).max(0.0);
+
+    inter_area / elem_area
 }
 
 /// Get element center as f32 (for matching with BBox which uses f32).

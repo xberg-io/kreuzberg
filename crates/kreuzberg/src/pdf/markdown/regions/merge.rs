@@ -1,5 +1,6 @@
 //! Region-aware paragraph merging: continuation, code blocks, list items, code demotion.
 
+use crate::pdf::markdown::paragraphs::ends_with_sentence_terminator;
 use crate::pdf::markdown::types::{LayoutHintClass, PdfParagraph};
 
 /// Merge continuation paragraphs, respecting layout class boundaries.
@@ -105,20 +106,6 @@ pub(in crate::pdf::markdown) fn merge_list_continuations(paragraphs: &mut Vec<Pd
         }
         i += 1;
     }
-}
-
-/// Check if a paragraph's last line ends with sentence-terminating punctuation.
-fn ends_with_sentence_terminator(para: &PdfParagraph) -> bool {
-    let last_text = para
-        .lines
-        .last()
-        .and_then(|l| l.segments.last())
-        .map(|s| s.text.trim_end())
-        .unwrap_or("");
-    matches!(
-        last_text.chars().last(),
-        Some('.' | '?' | '!' | ':' | ';' | '\u{3002}' | '\u{FF1F}' | '\u{FF01}')
-    )
 }
 
 /// Demote code blocks that don't contain actual code.

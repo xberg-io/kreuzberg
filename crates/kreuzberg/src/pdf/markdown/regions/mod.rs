@@ -29,6 +29,17 @@ pub(super) use tables::extract_tables_from_layout_hints;
 struct LayoutRegion<'a> {
     hint: &'a LayoutHint,
     segment_indices: Vec<usize>,
+    /// Overridden bounding box after merging fragmented regions.
+    /// When set, spatial comparisons use this instead of `hint`'s bbox.
+    merged_bbox: Option<(f32, f32, f32, f32)>, // (left, bottom, right, top)
+}
+
+impl<'a> LayoutRegion<'a> {
+    /// Effective bounding box: merged union if available, otherwise hint's bbox.
+    fn bbox(&self) -> (f32, f32, f32, f32) {
+        self.merged_bbox
+            .unwrap_or((self.hint.left, self.hint.bottom, self.hint.right, self.hint.top))
+    }
 }
 
 /// Assemble paragraphs using layout-region-guided segment assignment.
@@ -64,8 +75,78 @@ pub(super) fn assemble_region_paragraphs(
         "layout regions assigned"
     );
 
-    // Determine page height for reading order (from segment extents)
+    // Determine page extents for reading order and TOC detection
     let page_height = segments.iter().map(|s| s.y + s.height).fold(0.0_f32, f32::max);
+    let page_left = segments.iter().map(|s| s.x).fold(f32::MAX, f32::min);
+    let page_right = segments.iter().map(|s| s.x + s.width).fold(0.0_f32, f32::max);
+    let page_width = page_right - page_left;
+
+    // Detect Text regions that span multiple columns and redirect to fallback.
+    // When the layout model produces a Text region covering both columns of a
+    // multi-column page, the region assembly interleaves left/right column text
+    // into a single paragraph. The baseline XY-Cut pipeline handles this correctly
+    // via column splitting.
+    //
+    // Two checks:
+    // 1. Oversized regions (>= 30% page area and wide) — likely full-page blocks.
+    // 2. Multi-column regions — wide regions where segments cluster into two
+    //    distinct X-bands, indicating they span a column gutter.
+    let mut extra_unassigned: Vec<usize> = Vec::new();
+    if page_width > 0.0 && page_height > 0.0 {
+        let page_area = page_width * page_height;
+        for region in regions.iter_mut() {
+            if region.hint.class != LayoutHintClass::Text || region.segment_indices.len() < 4 {
+                continue;
+            }
+
+            let region_width = region.hint.right - region.hint.left;
+            let region_height = region.hint.top - region.hint.bottom;
+            let region_area = region_width * region_height;
+
+            // Check 1: oversized region (area-based)
+            if region_area >= page_area * 0.30 && region_width >= page_width * 0.65 {
+                tracing::trace!(
+                    page = page_index,
+                    segments = region.segment_indices.len(),
+                    area_fraction = region_area / page_area,
+                    "oversized Text region detected — redirecting to fallback pipeline"
+                );
+                extra_unassigned.append(&mut region.segment_indices);
+                continue;
+            }
+
+            // Check 2: multi-column detection for wide regions.
+            // A region wider than 55% of page width with >= 6 segments might span
+            // two columns. Check if segments cluster into left/right halves.
+            if region.segment_indices.len() >= 6 && region_width >= page_width * 0.55 {
+                let mid_x = (region.hint.left + region.hint.right) / 2.0;
+                let mut left_count = 0_usize;
+                let mut right_count = 0_usize;
+                for &idx in &region.segment_indices {
+                    let seg_cx = segments[idx].x + segments[idx].width / 2.0;
+                    if seg_cx < mid_x {
+                        left_count += 1;
+                    } else {
+                        right_count += 1;
+                    }
+                }
+                let total = left_count + right_count;
+                let minority = left_count.min(right_count);
+                // If both halves have >= 25% of segments, this is likely two columns
+                if total > 0 && minority as f32 / total as f32 >= 0.25 {
+                    tracing::trace!(
+                        page = page_index,
+                        segments = total,
+                        left_count,
+                        right_count,
+                        region_width,
+                        "multi-column Text region detected — redirecting to fallback pipeline"
+                    );
+                    extra_unassigned.append(&mut region.segment_indices);
+                }
+            }
+        }
+    }
 
     // Pre-merge fragmented Title/SectionHeader regions before reading order.
     // The layout model sometimes splits a single semantic element (e.g., a multi-line
@@ -104,9 +185,12 @@ pub(super) fn assemble_region_paragraphs(
         }
 
         // Text quality gate: skip regions with garbled/non-text content.
-        // Music sheets, embedded images, and other non-text regions produce
-        // paragraphs where < 30% of characters are alphanumeric/whitespace.
-        {
+        // Only applied to regions NOT classified as Text, SectionHeader, or Title,
+        // since those are inherently text regions.
+        if !matches!(
+            region.hint.class,
+            LayoutHintClass::Text | LayoutHintClass::SectionHeader | LayoutHintClass::Title
+        ) {
             let region_text: String = paragraphs
                 .iter()
                 .flat_map(|p| p.lines.iter())
@@ -142,10 +226,11 @@ pub(super) fn assemble_region_paragraphs(
         all_paragraphs.extend(paragraphs);
     }
 
-    // Handle unassigned segments via standard pipeline
-    if !unassigned_indices.is_empty() {
-        let unassigned_segments: Vec<SegmentData> =
-            unassigned_indices.iter().map(|&idx| segments[idx].clone()).collect();
+    // Handle unassigned segments (including oversized-region-redirected) via standard pipeline
+    let mut all_unassigned = unassigned_indices;
+    all_unassigned.extend(extra_unassigned);
+    if !all_unassigned.is_empty() {
+        let unassigned_segments: Vec<SegmentData> = all_unassigned.iter().map(|&idx| segments[idx].clone()).collect();
         let mut fallback = assemble_fallback(unassigned_segments, heading_map);
         all_paragraphs.append(&mut fallback);
     }
@@ -225,9 +310,19 @@ fn merge_fragmented_regions(regions: &mut Vec<LayoutRegion>) {
             let close_enough = h_gap <= MERGE_GAP_THRESHOLD && v_gap <= MERGE_GAP_THRESHOLD;
 
             if close_enough || (in_same_band && (h_gap <= MERGE_GAP_THRESHOLD || v_gap <= MERGE_GAP_THRESHOLD)) {
-                // Merge j into i: take segment indices
+                // Merge j into i: take segment indices and update merged bbox
                 let j_segments = std::mem::take(&mut regions[j].segment_indices);
                 regions[i].segment_indices.extend(j_segments);
+
+                let (i_left, i_bottom, i_right, i_top) = regions[i].bbox();
+                let (j_left, j_bottom, j_right, j_top) = regions[j].bbox();
+                regions[i].merged_bbox = Some((
+                    i_left.min(j_left),
+                    i_bottom.min(j_bottom),
+                    i_right.max(j_right),
+                    i_top.max(j_top),
+                ));
+
                 regions.remove(j);
                 merged_count += 1;
                 // Don't increment j — check next element at same index
@@ -286,12 +381,15 @@ fn associate_captions(paragraphs: &mut [PdfParagraph]) {
     }
 }
 
-/// Scan backward from `cap_idx` for the nearest table/picture paragraph.
-/// Skips other captions but stops at any non-caption, non-table, non-picture element.
+/// Scan backward from `cap_idx` for the nearest table/picture/code paragraph.
+/// Skips other captions but stops at any non-caption, non-parent element.
 fn find_parent_backward(paragraphs: &[PdfParagraph], cap_idx: usize) -> Option<usize> {
     for i in (0..cap_idx).rev() {
         let class = paragraphs[i].layout_class;
-        if class == Some(LayoutHintClass::Table) || class == Some(LayoutHintClass::Picture) {
+        if class == Some(LayoutHintClass::Table)
+            || class == Some(LayoutHintClass::Picture)
+            || class == Some(LayoutHintClass::Code)
+        {
             return Some(i);
         }
         if class == Some(LayoutHintClass::Caption) {
@@ -302,12 +400,15 @@ fn find_parent_backward(paragraphs: &[PdfParagraph], cap_idx: usize) -> Option<u
     None
 }
 
-/// Scan forward from `cap_idx` for the nearest table/picture paragraph.
+/// Scan forward from `cap_idx` for the nearest table/picture/code paragraph.
 fn find_parent_forward(paragraphs: &[PdfParagraph], cap_idx: usize) -> Option<usize> {
-    for i in (cap_idx + 1)..paragraphs.len() {
-        let class = paragraphs[i].layout_class;
-        if class == Some(LayoutHintClass::Table) || class == Some(LayoutHintClass::Picture) {
-            return Some(i);
+    for (offset, p) in paragraphs[(cap_idx + 1)..].iter().enumerate() {
+        let class = p.layout_class;
+        if class == Some(LayoutHintClass::Table)
+            || class == Some(LayoutHintClass::Picture)
+            || class == Some(LayoutHintClass::Code)
+        {
+            return Some(cap_idx + 1 + offset);
         }
         if class == Some(LayoutHintClass::Caption) {
             continue;
@@ -320,8 +421,8 @@ fn find_parent_forward(paragraphs: &[PdfParagraph], cap_idx: usize) -> Option<us
 /// Associate FOOTNOTE paragraphs with their preceding TABLE or PICTURE parent.
 ///
 /// For each table/picture, scans forward for consecutive footnote paragraphs
-/// (skipping captions) and associates them. Footnotes are rendered after
-/// the parent element and its captions.
+/// and associates them. Stops at any non-footnote element (including captions),
+/// matching Docling's behavior.
 fn associate_footnotes(paragraphs: &mut [PdfParagraph]) {
     // Collect indices of table/picture paragraphs
     let parent_indices: Vec<usize> = paragraphs
@@ -338,14 +439,12 @@ fn associate_footnotes(paragraphs: &mut [PdfParagraph]) {
 
     for &parent_idx in &parent_indices {
         // Scan forward from the parent for consecutive footnotes
-        for i in (parent_idx + 1)..paragraphs.len() {
-            let class = paragraphs[i].layout_class;
+        for item in paragraphs.iter_mut().skip(parent_idx + 1) {
+            let class = item.layout_class;
             if class == Some(LayoutHintClass::Footnote) {
-                paragraphs[i].caption_for = Some(parent_idx);
-            } else if class == Some(LayoutHintClass::Caption) {
-                continue; // Skip captions (already associated)
+                item.caption_for = Some(parent_idx);
             } else {
-                break; // Non-footnote, non-caption — stop
+                break; // Any non-footnote element — stop (including captions)
             }
         }
     }
@@ -521,6 +620,7 @@ mod tests {
             .map(|h| LayoutRegion {
                 hint: h,
                 segment_indices: Vec::new(),
+                merged_bbox: None,
             })
             .collect();
         reading_order::order_regions_reading_order(&mut regions, 800.0);
@@ -539,6 +639,7 @@ mod tests {
             .map(|h| LayoutRegion {
                 hint: h,
                 segment_indices: Vec::new(),
+                merged_bbox: None,
             })
             .collect();
         reading_order::order_regions_reading_order(&mut regions, 800.0);
@@ -651,6 +752,7 @@ mod tests {
             .map(|h| LayoutRegion {
                 hint: h,
                 segment_indices: Vec::new(),
+                merged_bbox: None,
             })
             .collect();
         reading_order::order_regions_reading_order(&mut regions, 800.0);
@@ -675,6 +777,7 @@ mod tests {
             .map(|h| LayoutRegion {
                 hint: h,
                 segment_indices: Vec::new(),
+                merged_bbox: None,
             })
             .collect();
         reading_order::order_regions_reading_order(&mut regions, 800.0);
@@ -704,6 +807,7 @@ mod tests {
             .map(|h| LayoutRegion {
                 hint: h,
                 segment_indices: Vec::new(),
+                merged_bbox: None,
             })
             .collect();
         reading_order::order_regions_reading_order(&mut regions, 800.0);
@@ -757,6 +861,7 @@ mod tests {
             .map(|h| LayoutRegion {
                 hint: h,
                 segment_indices: Vec::new(),
+                merged_bbox: None,
             })
             .collect();
         reading_order::order_regions_reading_order(&mut regions, 800.0);
@@ -784,6 +889,7 @@ mod tests {
             .map(|h| LayoutRegion {
                 hint: h,
                 segment_indices: Vec::new(),
+                merged_bbox: None,
             })
             .collect();
         reading_order::order_regions_reading_order(&mut regions, 800.0);
@@ -821,6 +927,7 @@ mod tests {
             .map(|h| LayoutRegion {
                 hint: h,
                 segment_indices: Vec::new(),
+                merged_bbox: None,
             })
             .collect();
         reading_order::order_regions_reading_order(&mut regions, 800.0);
@@ -851,6 +958,7 @@ mod tests {
             .map(|h| LayoutRegion {
                 hint: h,
                 segment_indices: Vec::new(),
+                merged_bbox: None,
             })
             .collect();
         reading_order::order_regions_reading_order(&mut regions, 800.0);
