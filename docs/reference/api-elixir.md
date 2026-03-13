@@ -863,32 +863,46 @@ Main configuration struct for extraction operations.
 ```elixir title="Elixir"
 @type t :: %Kreuzberg.ExtractionConfig{
   chunking: map() | nil,
-  ocr: map() | nil,
-  language_detection: map() | nil,
-  postprocessor: map() | nil,
-  images: map() | nil,
-  pages: map() | nil,
-  token_reduction: map() | nil,
-  keywords: map() | nil,
-  pdf_options: map() | nil,
-  use_cache: boolean(),
   enable_quality_processing: boolean(),
+  force_ocr: boolean(),
+  html_options: map() | nil,
+  images: map() | nil,
+  include_document_structure: boolean(),
+  keywords: map() | nil,
+  language_detection: map() | nil,
+  max_concurrent_extractions: non_neg_integer() | nil,
+  ocr: map() | nil,
+  output_format: String.t(),
+  pages: map() | nil,
+  pdf_options: map() | nil,
+  postprocessor: map() | nil,
+  result_format: String.t(),
+  security_limits: map() | nil,
+  token_reduction: map() | nil,
+  use_cache: boolean(),
 }
 ```
 
 **Fields:**
 
-- `chunking` (map | nil): Text chunking configuration
-- `ocr` (map | nil): OCR configuration
-- `language_detection` (map | nil): Language detection settings
-- `postprocessor` (map | nil): Post-processor configuration
-- `images` (map | nil): Image extraction configuration
-- `pages` (map | nil): Page-level extraction configuration
-- `token_reduction` (map | nil): Token reduction settings
-- `keywords` (map | nil): Keyword extraction configuration
-- `pdf_options` (map | nil): PDF-specific options
-- `use_cache` (boolean): Enable result caching (default: true)
-- `enable_quality_processing` (boolean): Enable quality post-processing (default: true)
+- `chunking` (map | nil): Text chunking configuration.
+- `enable_quality_processing` (boolean): Enable quality post-processing (default: true).
+- `force_ocr` (boolean): Force OCR even for searchable PDFs (default: false).
+- `html_options` (map | nil): HTML to Markdown conversion options.
+- `images` (map | nil): Image extraction configuration.
+- `include_document_structure` (boolean): Include hierarchical document structure in results (default: false).
+- `keywords` (map | nil): Keyword extraction configuration.
+- `language_detection` (map | nil): Language detection settings.
+- `max_concurrent_extractions` (non_neg_integer | nil): Maximum concurrent extractions in batch operations.
+- `ocr` (map | nil): OCR configuration.
+- `output_format` (String): Content text format — `"plain"`, `"markdown"`, `"djot"`, `"html"` (default: `"plain"`).
+- `pages` (map | nil): Page-level extraction configuration.
+- `pdf_options` (map | nil): PDF-specific options.
+- `postprocessor` (map | nil): Post-processor configuration.
+- `result_format` (String): Result structure format — `"unified"`, `"element_based"` (default: `"unified"`).
+- `security_limits` (map | nil): Security limits for extraction.
+- `token_reduction` (map | nil): Token reduction settings.
+- `use_cache` (boolean): Enable result caching (default: true).
 
 **Example - Basic configuration:**
 
@@ -981,27 +995,43 @@ Result struct returned by all extraction functions.
 
 ```elixir title="Elixir"
 @type t :: %Kreuzberg.ExtractionResult{
-  content: String.t(),
-  mime_type: String.t(),
-  metadata: map(),
-  tables: [map()],
-  detected_languages: [String.t()] | nil,
+  annotations: [map()] | nil,
   chunks: [map()] | nil,
+  content: String.t(),
+  detected_languages: [String.t()] | nil,
+  djot_content: map() | nil,
+  document: map() | nil,
+  elements: [map()] | nil,
+  extracted_keywords: [map()] | nil,
   images: [map()] | nil,
-  pages: [map()] | nil
+  metadata: map(),
+  mime_type: String.t(),
+  ocr_elements: [map()] | nil,
+  pages: [map()] | nil,
+  processing_warnings: [map()],
+  quality_score: float() | nil,
+  tables: [map()],
 }
 ```
 
 **Fields:**
 
-- `content` (String): Extracted text content
-- `mime_type` (String): MIME type of the processed document
-- `metadata` (map): Document metadata (format-specific fields)
-- `tables` (list): List of extracted tables
-- `detected_languages` (list | nil): List of detected language codes (ISO 639-1) if language detection is enabled
-- `chunks` (list | nil): List of text chunks with embeddings when chunking is enabled
-- `images` (list | nil): List of extracted images when image extraction is enabled
-- `pages` (list | nil): Per-page extracted content when page extraction is enabled
+- `annotations` (list | nil): PDF annotations (text notes, highlights, links, stamps) when annotation extraction is enabled via `pdf_options`.
+- `chunks` (list | nil): List of text chunks with embeddings when chunking is enabled.
+- `content` (String): Extracted text content.
+- `detected_languages` (list | nil): List of detected language codes (ISO 639-1) if language detection is enabled.
+- `djot_content` (map | nil): Rich Djot content structure when extracting Djot documents with structured extraction enabled.
+- `document` (map | nil): Hierarchical document structure when `include_document_structure` is true.
+- `elements` (list | nil): Semantic elements when `result_format` is `"element_based"`.
+- `extracted_keywords` (list | nil): Extracted keywords with scores when keyword extraction is configured.
+- `images` (list | nil): List of extracted images when image extraction is enabled.
+- `metadata` (map): Document metadata (format-specific fields).
+- `mime_type` (String): MIME type of the processed document.
+- `ocr_elements` (list | nil): OCR elements with bounding geometry and confidence when OCR element extraction is enabled.
+- `pages` (list | nil): Per-page extracted content when page extraction is enabled.
+- `processing_warnings` (list): Non-fatal warnings from processing pipeline stages (default: `[]`).
+- `quality_score` (float | nil): Document quality score between 0.0 and 1.0.
+- `tables` (list): List of extracted tables.
 
 **Example - Basic result access:**
 
@@ -1057,36 +1087,36 @@ Document metadata dictionary. Fields vary by document format.
 
 **Common Fields:**
 
-- `"language"` (String): Document language (ISO 639-1 code)
-- `"date"` (String): Document date (ISO 8601 format)
-- `"subject"` (String): Document subject
-- `"format_type"` (String): Format discriminator ("pdf", "excel", "email", etc.)
+- `"date"` (String): Document date (ISO 8601 format).
+- `"format_type"` (String): Format discriminator ("pdf", "excel", "email", etc.).
+- `"language"` (String): Document language (ISO 639-1 code).
+- `"subject"` (String): Document subject.
 
 **PDF-Specific Fields** (when `format_type == "pdf"`):
 
-- `"title"` (String): PDF title
-- `"author"` (String): PDF author
-- `"page_count"` (integer): Number of pages
-- `"creation_date"` (String): Creation date (ISO 8601)
-- `"modification_date"` (String): Modification date (ISO 8601)
-- `"creator"` (String): Creator application
-- `"producer"` (String): Producer application
-- `"keywords"` (String): PDF keywords
+- `"author"` (String): PDF author.
+- `"creation_date"` (String): Creation date (ISO 8601).
+- `"creator"` (String): Creator application.
+- `"keywords"` (String): PDF keywords.
+- `"modification_date"` (String): Modification date (ISO 8601).
+- `"page_count"` (integer): Number of pages.
+- `"producer"` (String): Producer application.
+- `"title"` (String): PDF title.
 
 **Excel-Specific Fields** (when `format_type == "excel"`):
 
-- `"sheet_count"` (integer): Number of sheets
-- `"sheet_names"` (list): List of sheet names
+- `"sheet_count"` (integer): Number of sheets.
+- `"sheet_names"` (list): List of sheet names.
 
 **Email-Specific Fields** (when `format_type == "email"`):
 
-- `"from_email"` (String): Sender email address
-- `"from_name"` (String): Sender name
-- `"to_emails"` (list): Recipient email addresses
-- `"cc_emails"` (list): CC email addresses
-- `"bcc_emails"` (list): BCC email addresses
-- `"message_id"` (String): Email message ID
-- `"attachments"` (list): List of attachment filenames
+- `"attachments"` (list): List of attachment filenames.
+- `"bcc_emails"` (list): BCC email addresses.
+- `"cc_emails"` (list): CC email addresses.
+- `"from_email"` (String): Sender email address.
+- `"from_name"` (String): Sender name.
+- `"message_id"` (String): Email message ID.
+- `"to_emails"` (list): Recipient email addresses.
 
 **Example:**
 
@@ -1109,9 +1139,9 @@ Extracted table structure.
 
 **Fields:**
 
-- `"cells"` (list): 2D array of table cells (rows x columns)
-- `"markdown"` (String): Table rendered as markdown
-- `"page_number"` (integer): Page number where table was found
+- `"cells"` (list): 2D array of table cells (rows x columns).
+- `"markdown"` (String): Table rendered as markdown.
+- `"page_number"` (integer): Page number where table was found.
 
 **Example:**
 
