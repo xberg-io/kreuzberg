@@ -373,15 +373,15 @@ fn type_compat(ext_block: &MdBlock, gt_block: &MdBlock) -> f64 {
         return (1.0 - 0.1 * distance as f64).max(0.6);
     }
 
-    // Heading ↔ Paragraph: partial credit — wrong type but content preserved
+    // Heading ↔ Paragraph: symmetric partial credit — wrong type but content preserved
     if ext.is_heading() && gt == MdBlockType::Paragraph {
-        return 0.3;
+        return 0.25;
     }
     if ext == MdBlockType::Paragraph && gt.is_heading() {
         if is_bold_wrapped(&ext_block.content) {
             return 0.4; // bold paragraph is a plausible heading
         }
-        return 0.2; // missed heading detection, but content is there
+        return 0.25; // missed heading detection, but content is there
     }
 
     // ListItem ↔ Paragraph: structurally different but close
@@ -1100,7 +1100,7 @@ mod tests {
             content: "X".into(),
             index: 0,
         };
-        assert!((type_compat(&a, &b) - 0.2).abs() < 0.01);
+        assert!((type_compat(&a, &b) - 0.25).abs() < 0.01);
     }
 
     #[test]

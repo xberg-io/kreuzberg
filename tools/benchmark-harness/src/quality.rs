@@ -14,7 +14,7 @@ use std::collections::HashMap;
 ///   quality_score = 0.5 * f1_text + 0.2 * f1_numeric + 0.3 * f1_layout
 ///
 /// When `ground_truth_markdown` is `None`, falls back to text-only scoring:
-///   quality_score = 0.7 * f1_text + 0.3 * f1_numeric
+///   quality_score = 0.6 * f1_text + 0.4 * f1_numeric
 pub fn compute_quality_with_structure(
     extracted: &str,
     ground_truth: &str,
@@ -36,16 +36,16 @@ pub fn compute_quality_with_structure(
 /// Compute quality metrics comparing extracted text against ground truth
 ///
 /// Algorithm:
-/// 1. Tokenize both texts: lowercase, split on whitespace, strip non-alphanumeric chars except periods
+/// 1. Tokenize both texts: lowercase, split on whitespace, strip non-alphanumeric chars except periods and commas
 ///    - "3.14" is preserved as a single token
-///    - "3,14" becomes "314" (comma is stripped, not a delimiter)
+///    - "3,14" is preserved as a single token (European decimal format)
 /// 2. Build token multisets (bag of words with counts)
 /// 3. Compute precision = |intersection| / |extracted tokens|
 /// 4. Compute recall = |intersection| / |ground truth tokens|
 /// 5. F1 = 2 * precision * recall / (precision + recall)
 ///    - If both token sets are empty, F1 = 1.0 (vacuously perfect match)
 /// 6. Separate F1 for all tokens vs numeric-only tokens
-/// 7. quality_score = 0.7 * f1_text + 0.3 * f1_numeric
+/// 7. quality_score = 0.6 * f1_text + 0.4 * f1_numeric
 pub fn compute_quality(extracted: &str, ground_truth: &str) -> QualityMetrics {
     let extracted_tokens = tokenize(extracted);
     let truth_tokens = tokenize(ground_truth);
@@ -59,7 +59,7 @@ pub fn compute_quality(extracted: &str, ground_truth: &str) -> QualityMetrics {
     // f1_score_layout is not implemented (skip per plan)
     let f1_score_layout = 0.0;
 
-    let quality_score = 0.7 * f1_score_text + 0.3 * f1_score_numeric;
+    let quality_score = 0.6 * f1_score_text + 0.4 * f1_score_numeric;
 
     let (missing_tokens, extra_tokens) = compute_token_diff(&extracted_tokens, &truth_tokens);
 
@@ -74,23 +74,28 @@ pub fn compute_quality(extracted: &str, ground_truth: &str) -> QualityMetrics {
 }
 
 /// Tokenize text: lowercase, split on whitespace, strip non-alphanumeric characters
+/// (preserving `.` and `,` only when embedded between alphanumeric chars, e.g. "3.14", "3,14")
 pub fn tokenize(text: &str) -> Vec<String> {
     text.to_lowercase()
         .split_whitespace()
         .map(|w| {
-            w.chars()
-                .filter(|c| c.is_alphanumeric() || *c == '.')
-                .collect::<String>()
+            // First pass: keep alphanumeric, periods, and commas
+            let kept: String = w
+                .chars()
+                .filter(|c| c.is_alphanumeric() || *c == '.' || *c == ',')
+                .collect();
+            // Second pass: strip leading/trailing periods and commas
+            kept.trim_matches(|c: char| c == '.' || c == ',').to_string()
         })
         .filter(|w| !w.is_empty())
         .collect()
 }
 
-/// Filter tokens to only those matching numeric patterns (digits with optional decimal)
+/// Filter tokens to only those containing numeric characters (Unicode-aware)
 fn filter_numeric(tokens: &[String]) -> Vec<String> {
     tokens
         .iter()
-        .filter(|t| t.chars().any(|c| c.is_ascii_digit()))
+        .filter(|t| t.chars().any(|c| c.is_numeric()))
         .cloned()
         .collect()
 }
@@ -189,7 +194,7 @@ mod tests {
         let text = "Hello world this is a test";
         let result = compute_quality(text, text);
         assert!((result.f1_score_text - 1.0).abs() < 0.001);
-        assert!((result.quality_score - 1.0).abs() < 0.01); // 0.7*1.0 + 0.3*1.0 (no numerics = both empty = perfect)
+        assert!((result.quality_score - 1.0).abs() < 0.01); // 0.6*1.0 + 0.4*1.0 (no numerics = both empty = perfect)
     }
 
     #[test]
