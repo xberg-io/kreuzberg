@@ -25,6 +25,7 @@
 //! # }
 //! ```
 use bytes::Bytes;
+use encoding_rs::Encoding;
 
 use crate::error::{KreuzbergError, Result};
 use crate::types::{EmailAttachment, EmailExtractionResult};
@@ -428,25 +429,30 @@ fn extract_msg_from_cfb<F: std::io::Read + std::io::Seek>(
 ) -> Result<EmailExtractionResult> {
     // --- message-level properties ------------------------------------------
 
-    let subject = read_msg_string_prop(comp, "", 0x0037); // PR_SUBJECT
-    let sender_name = read_msg_string_prop(comp, "", 0x0C1A); // PR_SENDER_NAME
-    let sender_email = read_msg_string_prop(comp, "", 0x0C1F) // PR_SENDER_EMAIL_ADDRESS
-        .or_else(|| read_msg_string_prop(comp, "", 0x0065)) // PR_SENT_REPRESENTING_EMAIL
+    // Read the message code page (PR_MESSAGE_CODEPAGE 0x3FFD, fall back to PR_INTERNET_CPID 0x3FDE).
+    // This governs how PT_STRING8 (ANSI) property bytes should be decoded.
+    let codepage = read_msg_int_prop(comp, "", 0x3FFD) // PR_MESSAGE_CODEPAGE
+        .or_else(|| read_msg_int_prop(comp, "", 0x3FDE)); // PR_INTERNET_CPID
+
+    let subject = read_msg_string_prop(comp, "", 0x0037, codepage); // PR_SUBJECT
+    let sender_name = read_msg_string_prop(comp, "", 0x0C1A, codepage); // PR_SENDER_NAME
+    let sender_email = read_msg_string_prop(comp, "", 0x0C1F, codepage) // PR_SENDER_EMAIL_ADDRESS
+        .or_else(|| read_msg_string_prop(comp, "", 0x0065, codepage)) // PR_SENT_REPRESENTING_EMAIL
         .filter(|s| !s.is_empty());
     let from_email = sender_email.as_ref().map(|email| match sender_name.as_deref() {
         Some(name) if !name.is_empty() => format!("\"{}\" <{}>", name, email),
         _ => email.clone(),
     });
-    let body = read_msg_string_prop(comp, "", 0x1000); // PR_BODY
-    let html_body = read_msg_string_prop(comp, "", 0x1013); // PR_BODY_HTML
-    let message_id = read_msg_string_prop(comp, "", 0x1035) // PR_INTERNET_MESSAGE_ID
+    let body = read_msg_string_prop(comp, "", 0x1000, codepage); // PR_BODY
+    let html_body = read_msg_string_prop(comp, "", 0x1013, codepage); // PR_BODY_HTML
+    let message_id = read_msg_string_prop(comp, "", 0x1035, codepage) // PR_INTERNET_MESSAGE_ID
         .filter(|s| !s.is_empty());
 
     // --- date: prefer PR_CLIENT_SUBMIT_TIME, fall back to transport headers ---
     let date = read_msg_filetime_prop(comp, "", 0x0039) // PR_CLIENT_SUBMIT_TIME
         .or_else(|| read_msg_filetime_prop(comp, "", 0x0E06)) // PR_MESSAGE_DELIVERY_TIME
         .or_else(|| {
-            let headers = read_msg_string_prop(comp, "", 0x007D); // PR_TRANSPORT_MESSAGE_HEADERS
+            let headers = read_msg_string_prop(comp, "", 0x007D, codepage); // PR_TRANSPORT_MESSAGE_HEADERS
             headers.as_ref().and_then(|h| {
                 h.lines()
                     .find(|line| line.starts_with("Date:"))
@@ -455,7 +461,7 @@ fn extract_msg_from_cfb<F: std::io::Read + std::io::Seek>(
         });
 
     // --- recipients: read from substorages for full email addresses -----------
-    let (to_emails, cc_emails, bcc_emails) = read_msg_recipients(comp);
+    let (to_emails, cc_emails, bcc_emails) = read_msg_recipients(comp, codepage);
 
     let plain_text = body.filter(|s| !s.is_empty());
     let html_content = html_body.filter(|s| !s.is_empty());
@@ -478,11 +484,11 @@ fn extract_msg_from_cfb<F: std::io::Read + std::io::Seek>(
 
     let mut attachments = Vec::with_capacity(attach_paths.len());
     for path in &attach_paths {
-        let long_name = read_msg_string_prop(comp, path, 0x3707); // PR_ATTACH_LONG_FILENAME
-        let short_name = read_msg_string_prop(comp, path, 0x3704); // PR_ATTACH_FILENAME
-        let display_name = read_msg_string_prop(comp, path, 0x3001); // PR_DISPLAY_NAME
-        let extension = read_msg_string_prop(comp, path, 0x3703); // PR_ATTACH_EXTENSION
-        let mime_tag = read_msg_string_prop(comp, path, 0x370E); // PR_ATTACH_MIME_TAG
+        let long_name = read_msg_string_prop(comp, path, 0x3707, codepage); // PR_ATTACH_LONG_FILENAME
+        let short_name = read_msg_string_prop(comp, path, 0x3704, codepage); // PR_ATTACH_FILENAME
+        let display_name = read_msg_string_prop(comp, path, 0x3001, codepage); // PR_DISPLAY_NAME
+        let extension = read_msg_string_prop(comp, path, 0x3703, codepage); // PR_ATTACH_EXTENSION
+        let mime_tag = read_msg_string_prop(comp, path, 0x370E, codepage); // PR_ATTACH_MIME_TAG
 
         let filename = long_name
             .or(short_name)
@@ -567,20 +573,88 @@ fn read_msg_stream<F: std::io::Read + std::io::Seek>(comp: &mut cfb::CompoundFil
     if buf.is_empty() { None } else { Some(buf) }
 }
 
+/// Map a Windows code page number to an `encoding_rs` `Encoding`.
+///
+/// Falls back to windows-1252 (the most common legacy ANSI code page) for unknown values.
+fn encoding_for_windows_codepage(cp: u32) -> &'static Encoding {
+    let label: &[u8] = match cp {
+        65001 => b"utf-8",
+        20127 => b"us-ascii",
+        1250 => b"windows-1250",
+        1251 => b"windows-1251",
+        1252 => b"windows-1252",
+        1253 => b"windows-1253",
+        1254 => b"windows-1254",
+        1255 => b"windows-1255",
+        1256 => b"windows-1256",
+        1257 => b"windows-1257",
+        1258 => b"windows-1258",
+        932 | 10001 => b"shift_jis",
+        936 | 10008 => b"gbk",
+        949 | 10003 => b"euc-kr",
+        950 | 10002 => b"big5",
+        28591 => b"iso-8859-1",
+        28592 => b"iso-8859-2",
+        28595 => b"iso-8859-5",
+        28597 => b"iso-8859-7",
+        28599 => b"iso-8859-9",
+        _ => b"windows-1252",
+    };
+    Encoding::for_label(label).unwrap_or(encoding_rs::WINDOWS_1252)
+}
+
+/// Read a PT_LONG (0x0003) integer property from the `__properties_version1.0` stream.
+fn read_msg_int_prop<F: std::io::Read + std::io::Seek>(
+    comp: &mut cfb::CompoundFile<F>,
+    base: &str,
+    prop_id: u16,
+) -> Option<u32> {
+    use std::io::Read;
+
+    let props_path = format!("{base}/__properties_version1.0");
+    let mut stream = comp.open_stream(&props_path).ok()?;
+    let mut buf = Vec::new();
+    stream.read_to_end(&mut buf).ok()?;
+
+    // Message-level properties have a 32-byte header; recipient/attachment have 8-byte.
+    let header_size: usize = if base.is_empty() { 32 } else { 8 };
+    let mut offset = header_size;
+
+    while offset + 16 <= buf.len() {
+        let ptype = u16::from_le_bytes([buf[offset], buf[offset + 1]]);
+        let pid = u16::from_le_bytes([buf[offset + 2], buf[offset + 3]]);
+
+        if pid == prop_id && ptype == 0x0003 {
+            // PT_LONG — value sits in the first 4 bytes of the 8-byte value field
+            return Some(u32::from_le_bytes(buf[offset + 8..offset + 12].try_into().ok()?));
+        }
+        offset += 16;
+    }
+    None
+}
+
 /// Read a MAPI string property (tries PT_UNICODE then PT_STRING8).
+///
+/// `codepage` is the Windows code page to use when decoding PT_STRING8 bytes.
+/// Pass `None` to fall back to windows-1252 (safe default for legacy MSG files).
 fn read_msg_string_prop<F: std::io::Read + std::io::Seek>(
     comp: &mut cfb::CompoundFile<F>,
     base: &str,
     prop_id: u16,
+    codepage: Option<u32>,
 ) -> Option<String> {
     // Try PT_UNICODE (001F) first.
     let unicode_path = format!("{base}/__substg1.0_{prop_id:04X}001F");
     if let Some(buf) = read_msg_stream(comp, &unicode_path) {
         return Some(decode_utf16le_bytes(&buf));
     }
-    // Fallback to PT_STRING8 (001E).
+    // Fallback to PT_STRING8 (001E), decoded with the message code page.
     let ansi_path = format!("{base}/__substg1.0_{prop_id:04X}001E");
-    read_msg_stream(comp, &ansi_path).map(|buf| String::from_utf8_lossy(&buf).into_owned())
+    read_msg_stream(comp, &ansi_path).map(|buf| {
+        let encoding = codepage.map(encoding_for_windows_codepage).unwrap_or(encoding_rs::WINDOWS_1252);
+let (decoded, _, _) = encoding.decode(&buf);
+        decoded.trim_end_matches('\0').to_string()
+    })
 }
 
 /// Decode UTF-16LE bytes to a String, stripping trailing NUL chars.
@@ -668,6 +742,7 @@ fn filetime_to_iso8601(filetime: u64) -> Option<String> {
 /// Returns (to, cc, bcc) vectors. Each entry is formatted as `"Name" <email>` or just `email`.
 fn read_msg_recipients<F: std::io::Read + std::io::Seek>(
     comp: &mut cfb::CompoundFile<F>,
+    codepage: Option<u32>,
 ) -> (Vec<String>, Vec<String>, Vec<String>) {
     // Collect recipient storage paths
     let recip_paths: Vec<String> = comp
@@ -681,9 +756,9 @@ fn read_msg_recipients<F: std::io::Read + std::io::Seek>(
     let mut bcc_emails = Vec::new();
 
     for path in &recip_paths {
-        let display_name = read_msg_string_prop(comp, path, 0x3001); // PR_DISPLAY_NAME
-        let email_addr = read_msg_string_prop(comp, path, 0x39FE) // PR_SMTP_ADDRESS
-            .or_else(|| read_msg_string_prop(comp, path, 0x3003)) // PR_EMAIL_ADDRESS
+        let display_name = read_msg_string_prop(comp, path, 0x3001, codepage); // PR_DISPLAY_NAME
+        let email_addr = read_msg_string_prop(comp, path, 0x39FE, codepage) // PR_SMTP_ADDRESS
+            .or_else(|| read_msg_string_prop(comp, path, 0x3003, codepage)) // PR_EMAIL_ADDRESS
             .filter(|s| !s.is_empty());
 
         let formatted = match (&display_name, &email_addr) {
