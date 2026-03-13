@@ -43,9 +43,9 @@ office = [
     "dep:biblib",
     "dep:org",
     "dep:dbase",
-    "dep:hwpers",
     "html",
 ]
+hwp = ["dep:hwpers"]
 email = ["dep:mail-parser", "dep:cfb"]
 html = ["dep:html-to-markdown-rs"]
 xml = ["dep:quick-xml", "dep:roxmltree"]
@@ -113,6 +113,7 @@ formats = [
     "pdf",
     "excel",
     "office",
+    "hwp",
     "email",
     "html",
     "xml",

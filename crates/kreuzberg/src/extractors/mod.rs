@@ -83,7 +83,7 @@ pub mod email;
 #[cfg(any(feature = "excel", feature = "excel-wasm"))]
 pub mod excel;
 
-#[cfg(feature = "office")]
+#[cfg(feature = "hwp")]
 pub mod hwp;
 
 #[cfg(feature = "html")]
@@ -174,7 +174,7 @@ pub use email::EmailExtractor;
 #[cfg(any(feature = "excel", feature = "excel-wasm"))]
 pub use excel::ExcelExtractor;
 
-#[cfg(feature = "office")]
+#[cfg(feature = "hwp")]
 pub use hwp::HwpExtractor;
 
 #[cfg(feature = "html")]
@@ -351,6 +351,10 @@ pub fn register_default_extractors() -> Result<()> {
         registry.register(Arc::new(PptxExtractor::new()))?;
         registry.register(Arc::new(OdtExtractor::new()))?;
         registry.register(Arc::new(DbfExtractor::new()))?;
+    }
+
+    #[cfg(feature = "hwp")]
+    {
         registry.register(Arc::new(HwpExtractor::new()))?;
     }
 
