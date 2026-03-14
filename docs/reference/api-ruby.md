@@ -18,72 +18,128 @@ gem install kreuzberg
 
 ## Core Functions
 
-### Kreuzberg.extract_file_sync()
+### Kreuzberg.batch_extract_bytes()
 
-Extract content from a file (synchronous).
+Extract text from multiple byte arrays in parallel (asynchronous via Tokio runtime).
 
 **Signature:**
 
 ```ruby title="Ruby"
-Kreuzberg.extract_file_sync(path, mime_type: nil, config: nil) -> Kreuzberg::Result
+Kreuzberg.batch_extract_bytes(data_list, mime_types, config: nil) -> Array<Kreuzberg::Result>
 ```
 
 **Parameters:**
 
-- `path` (String): Path to the file to extract
-- `mime_type` (String, nil): Optional MIME type hint. If nil, MIME type is auto-detected
-- `config` (Hash, Kreuzberg::Config::Extraction, nil): Extraction configuration. Uses defaults if nil
+- `data_list` (Array<String>): Array of byte strings (binary data)
+- `mime_types` (Array<String>): Array of MIME types corresponding to each byte array
+- `config` (Hash, Kreuzberg::Config::Extraction, nil): Extraction configuration applied to all items
+
+**Returns:**
+
+- `Array<Kreuzberg::Result>`: Array of extraction result objects
+
+---
+
+### Kreuzberg.batch_extract_bytes_sync()
+
+Extract text from multiple byte arrays in parallel (synchronous).
+
+**Signature:**
+
+```ruby title="Ruby"
+Kreuzberg.batch_extract_bytes_sync(data_list, mime_types, config: nil) -> Array<Kreuzberg::Result>
+```
+
+**Parameters:**
+
+Same as [`batch_extract_bytes()`](#kreuzbergbatch_extract_bytes).
+
+**Returns:**
+
+- `Array<Kreuzberg::Result>`: Array of extraction result objects
+
+---
+
+### Kreuzberg.batch_extract_files()
+
+Extract content from multiple files in parallel (asynchronous via Tokio runtime).
+
+**Signature:**
+
+```ruby title="Ruby"
+Kreuzberg.batch_extract_files(paths, config: nil) -> Array<Kreuzberg::Result>
+```
+
+**Parameters:**
+
+- `paths` (Array<String>): Array of file paths to extract
+- `config` (Hash, Kreuzberg::Config::Extraction, nil): Extraction configuration applied to all files
+
+**Returns:**
+
+- `Array<Kreuzberg::Result>`: Array of extraction result objects
+
+---
+
+### Kreuzberg.batch_extract_files_sync()
+
+Extract content from multiple files in parallel (synchronous).
+
+**Signature:**
+
+```ruby title="Ruby"
+Kreuzberg.batch_extract_files_sync(paths, config: nil) -> Array<Kreuzberg::Result>
+```
+
+**Parameters:**
+
+Same as [`batch_extract_files()`](#kreuzbergbatch_extract_files).
+
+**Returns:**
+
+- `Array<Kreuzberg::Result>`: Array of extraction result objects
+
+---
+
+### Kreuzberg.extract_bytes()
+
+Extract content from bytes (asynchronous via Tokio runtime).
+
+**Signature:**
+
+```ruby title="Ruby"
+Kreuzberg.extract_bytes(data, mime_type, config: nil) -> Kreuzberg::Result
+```
+
+**Parameters:**
+
+- `data` (String): Binary data to extract (Ruby String in binary encoding)
+- `mime_type` (String): MIME type of the data (required for format detection)
+- `config` (Hash, Kreuzberg::Config::Extraction, nil): Extraction configuration
 
 **Returns:**
 
 - `Kreuzberg::Result`: Extraction result object
 
-**Raises:**
+---
 
-- `StandardError`: Base error for all extraction failures
+### Kreuzberg.extract_bytes_sync()
 
-**Example - Basic usage:**
+Extract content from bytes (synchronous).
 
-```ruby title="error_handling.rb"
-require 'kreuzberg'
+**Signature:**
 
-result = Kreuzberg.extract_file_sync("document.pdf")
-puts result.content
-puts "Pages: #{result.metadata['page_count']}"
+```ruby title="Ruby"
+Kreuzberg.extract_bytes_sync(data, mime_type, config: nil) -> Kreuzberg::Result
 ```
 
-**Example - With configuration hash:**
+**Parameters:**
 
-```ruby title="config.rb"
-require 'kreuzberg'
+Same as [`extract_bytes()`](#kreuzbergextract_bytes).
 
-config = {
-  ocr: {
-    backend: 'tesseract',
-    language: 'eng'
-  }
-}
-result = Kreuzberg.extract_file_sync("scanned.pdf", config: config)
-```
+**Returns:**
 
-**Example - With config object:**
-
-```ruby title="config.rb"
-require 'kreuzberg'
-
-config = Kreuzberg::Config::Extraction.new(
-  ocr: Kreuzberg::OcrConfig.new(backend: "tesseract")
-)
-result = Kreuzberg.extract_file_sync("document.pdf", config: config)
-```
-
-**Example - With explicit MIME type:**
-
-```ruby title="config.rb"
-require 'kreuzberg'
-
-result = Kreuzberg.extract_file_sync("document.pdf", mime_type: "application/pdf")
-```
+- `Kreuzberg::Result`: Extraction result object
 
 ---
 
@@ -101,121 +157,33 @@ Kreuzberg.extract_file(path, mime_type: nil, config: nil) -> Kreuzberg::Result
 
 **Parameters:**
 
-Same as [`extract_file_sync()`](#kreuzbergextract_file_sync).
-
-**Returns:**
-
-- `Kreuzberg::Result`: Extraction result object
-
-**Examples:**
-
-```ruby title="basic_extraction.rb"
-# Equivalent to extract_file_sync in Ruby
-result = Kreuzberg.extract_file("document.pdf")
-puts result.content
-```
-
----
-
-### Kreuzberg.extract_bytes_sync()
-
-Extract content from bytes (synchronous).
-
-**Signature:**
-
-```ruby title="Ruby"
-Kreuzberg.extract_bytes_sync(data, mime_type, config: nil) -> Kreuzberg::Result
-```
-
-**Parameters:**
-
-- `data` (String): Binary data to extract (Ruby String in binary encoding)
-- `mime_type` (String): MIME type of the data (required for format detection)
+- `path` (String): Path to the file to extract
+- `mime_type` (String, nil): Optional MIME type hint
 - `config` (Hash, Kreuzberg::Config::Extraction, nil): Extraction configuration
 
 **Returns:**
 
 - `Kreuzberg::Result`: Extraction result object
 
-**Examples:**
-
-```ruby title="basic_extraction.rb"
-data = File.binread("document.pdf")
-result = Kreuzberg.extract_bytes_sync(data, "application/pdf")
-puts result.content
-```
-
 ---
 
-### Kreuzberg.extract_bytes()
+### Kreuzberg.extract_file_sync()
 
-Extract content from bytes (asynchronous via Tokio runtime).
+Extract content from a file (synchronous).
 
 **Signature:**
 
 ```ruby title="Ruby"
-Kreuzberg.extract_bytes(data, mime_type, config: nil) -> Kreuzberg::Result
+Kreuzberg.extract_file_sync(path, mime_type: nil, config: nil) -> Kreuzberg::Result
 ```
 
 **Parameters:**
 
-Same as [`extract_bytes_sync()`](#kreuzbergextract_bytes_sync).
+Same as [`extract_file()`](#kreuzbergextract_file).
 
 **Returns:**
 
 - `Kreuzberg::Result`: Extraction result object
-
----
-
-### Kreuzberg.batch_extract_files_sync()
-
-Extract content from multiple files in parallel (synchronous).
-
-**Signature:**
-
-```ruby title="Ruby"
-Kreuzberg.batch_extract_files_sync(paths, config: nil) -> Array<Kreuzberg::Result>
-```
-
-**Parameters:**
-
-- `paths` (Array<String>): Array of file paths to extract
-- `config` (Hash, Kreuzberg::Config::Extraction, nil): Extraction configuration applied to all files
-
-**Returns:**
-
-- `Array<Kreuzberg::Result>`: Array of extraction result objects
-
-**Examples:**
-
-```ruby title="basic_extraction.rb"
-paths = ["doc1.pdf", "doc2.docx", "doc3.xlsx"]
-results = Kreuzberg.batch_extract_files_sync(paths)
-
-results.each_with_index do |result, i|
-  puts "#{paths[i]}: #{result.content.length} characters"
-end
-```
-
----
-
-### Kreuzberg.batch_extract_files()
-
-Extract content from multiple files in parallel (asynchronous via Tokio runtime).
-
-**Signature:**
-
-```ruby title="Ruby"
-Kreuzberg.batch_extract_files(paths, config: nil) -> Array<Kreuzberg::Result>
-```
-
-**Parameters:**
-
-Same as [`batch_extract_files_sync()`](#kreuzbergbatch_extract_files_sync).
-
-**Returns:**
-
-- `Array<Kreuzberg::Result>`: Array of extraction result objects
 
 ---
 
@@ -262,24 +230,49 @@ result = Kreuzberg.extract_file_sync("document.pdf", config: config)
     - `enable_table_detection` (Boolean): Enable table detection. Default: false
     - `tessedit_char_whitelist` (String): Character whitelist. Default: nil
     - `tessedit_char_blacklist` (String): Character blacklist. Default: nil
-
+  - `paddle_ocr_config` (Hash): PaddleOCR-specific options
+    - `use_angle_cls` (Boolean): Use angle classification. Default: false
+    - `det_db_thresh` (Float): Detection threshold. Default: 0.3
+    - `rec_batch_num` (Integer): Recognition batch size. Default: 6
+  - `element_config` (Hash): OCR element extraction options
+    - `include_elements` (Boolean): Include semantic elements. Default: false
+    - `min_confidence` (Float): Minimum confidence threshold (0.0-1.0).
 
 - `pdf_options` (Hash): PDF-specific options
-  - `passwords` (Array<String>): Passwords to try for encrypted PDFs. Default: nil
+  - `extract_annotations` (Boolean): Extract PDF annotations. Default: false
   - `extract_images` (Boolean): Extract images from PDF. Default: false
-  - `image_dpi` (Integer): DPI for image extraction. Default: 300
+  - `extract_metadata` (Boolean): Extract PDF metadata. Default: true
+  - `font_config` (Hash): Custom font settings
+    - `enabled` (Boolean): Enable custom font loading. Default: true
+    - `custom_font_dirs` (Array<String>): List of directories to search for fonts.
+  - `hierarchy` (Hash): Document hierarchy detection
+    - `enabled` (Boolean): Enable structural detection. Default: true
+    - `k_clusters` (Integer): Number of font clusters for detection. Default: 6
+  - `passwords` (Array<String>): Passwords to try for encrypted PDFs. Default: nil
+  - `top_margin_fraction` (Float): Fractional top margin to ignore (0.0-1.0).
+  - `bottom_margin_fraction` (Float): Fractional bottom margin to ignore (0.0-1.0).
 
 - `chunking` (Hash): Text chunking options
-  - `chunk_size` (Integer): Maximum chunk size in tokens. Default: 512
-  - `chunk_overlap` (Integer): Overlap between chunks. Default: 50
-  - `chunking_strategy` (String): Strategy ("fixed", "semantic"). Default: "fixed"
-  - `sizing_type` (String, nil): How chunk size is measured. Options: `"characters"` (default) or `"tokenizer"`. Default: nil (characters)
-  - `sizing_model` (String, nil): HuggingFace model ID for tokenizer-based sizing (e.g. `"bert-base-uncased"`). Required when `sizing_type` is `"tokenizer"`. Default: nil
-  - `sizing_cache_dir` (String, nil): Optional directory to cache downloaded tokenizer files. Default: nil
+  - `enabled` (Boolean): Enable chunking. Default: true
+  - `max_chars` (Integer): Maximum chunk size in characters. Default: 1000
+  - `max_overlap` (Integer): Overlap between chunks. Default: 200
+  - `preset` (String): Chunking preset ("balanced", "semantic", "fixed").
+  - `embedding` (Hash): Embedding model for semantic chunking
 
 - `language_detection` (Hash): Language detection options
   - `enabled` (Boolean): Enable language detection. Default: true
-  - `confidence_threshold` (Float): Minimum confidence (0.0-1.0). Default: 0.5
+  - `min_confidence` (Float): Minimum confidence (0.0-1.0). Default: 0.5
+  - `detect_multiple` (Boolean): Detect multiple languages per document. Default: false
+
+- `image_extraction` (Hash): Image processing options
+  - `extract_images` (Boolean): Enable image extraction. Default: true
+  - `target_dpi` (Integer): Desired DPI for images. Default: 300
+  - `max_image_dimension` (Integer): Maximum dimension for scaling. Default: 2000
+  - `auto_adjust_dpi` (Boolean): Enable automatic DPI adjustment. Default: true
+
+- `token_reduction` (Hash): Token reduction strategies
+  - `mode` (String): Mode ("off", "light", "moderate", "aggressive"). Default: "off"
+  - `preserve_important_words` (Boolean): Preserve contextually important tokens. Default: true
 
 ---
 
@@ -328,12 +321,23 @@ Result object returned by all extraction functions.
 
 **Attributes:**
 
+- `annotations` (Array<Hash>, nil): Extracted PDF annotations
+- `chunks` (Array<Hash>, nil): Text chunks if chunking is enabled
 - `content` (String): Extracted text content
-- `mime_type` (String): MIME type of the processed document
+- `detected_languages` (Array<String>, nil): Array of detected language codes
+- `djot_content` (String, nil): Extracted content in Djot format
+- `document` (Hash, nil): Hierarchical document structure
+- `elements` (Array<Hash>, nil): Semantic elements (e.g., headings, paragraphs)
+- `extracted_keywords` (Array<String>, nil): Keywords extracted from the text
+- `images` (Array<Hash>, nil): Extracted images
 - `metadata` (Hash): Document metadata (format-specific fields)
+- `metadata_json` (String): Serialized metadata in JSON format
+- `mime_type` (String): MIME type of the processed document
+- `ocr_elements` (Array<Hash>, nil): Low-level OCR elements (words, lines)
+- `pages` (Array<Hash>, nil): Per-page extracted content
+- `processing_warnings` (Array<String>): Warnings encountered during extraction
+- `quality_score` (Float, nil): Estimated quality score of the extraction
 - `tables` (Array<Hash>): Array of extracted tables
-- `detected_languages` (Array<String>, nil): Array of detected language codes if language detection is enabled
-- `pages` (Array<Hash>, nil): Per-page extracted content when page extraction is enabled via `PageConfig.extract_pages = true`
 
 **Example:**
 
@@ -425,55 +429,34 @@ end
 
 ### Metadata Hash
 
-Document metadata with format-specific fields.
+Document metadata with cross-platform standardized fields.
 
-**Common Fields:**
+**Fields:**
 
-- `language` (String): Document language (ISO 639-1 code)
-- `date` (String): Document date (ISO 8601 format)
-- `subject` (String): Document subject
-- `format_type` (String): Format discriminator ("pdf", "excel", "email", etc.)
-
-**PDF-Specific Fields** (when `format_type == "pdf"`):
-
-- `title` (String): PDF title
-- `author` (String): PDF author
-- `page_count` (Integer): Number of pages
-- `creation_date` (String): Creation date (ISO 8601)
-- `modification_date` (String): Modification date (ISO 8601)
-- `creator` (String): Creator application
-- `producer` (String): Producer application
-- `keywords` (String): PDF keywords
-
-**Excel-Specific Fields** (when `format_type == "excel"`):
-
-- `sheet_count` (Integer): Number of sheets
-- `sheet_names` (Array<String>): List of sheet names
-
-**Email-Specific Fields** (when `format_type == "email"`):
-
-- `from_email` (String): Sender email address
-- `from_name` (String): Sender name
-- `to_emails` (Array<String>): Recipient email addresses
-- `cc_emails` (Array<String>): CC email addresses
-- `bcc_emails` (Array<String>): BCC email addresses
-- `message_id` (String): Email message ID
-- `attachments` (Array<String>): List of attachment filenames
+- `authors` (Array<String>): Document authors.
+- `created_at` (String, nil): Creation timestamp (ISO 8601).
+- `created_by` (String, nil): Application that created the document.
+- `custom` (Hash): Custom/extended metadata fields.
+- `date` (String, nil): Primary document date.
+- `format_type` (String): Format discriminator (e.g., "pdf", "docx").
+- `keywords` (Array<String>): Document keywords/tags.
+- `language` (String, nil): Primary document language code.
+- `modified_at` (String, nil): Last modification timestamp.
+- `page_count` (Integer, nil): Total number of pages.
+- `producer` (String, nil): Software that produced the file.
+- `subject` (String, nil): Document subject or summary.
+- `title` (String, nil): Document title.
 
 **Example:**
 
-```ruby title="basic_extraction.rb"
+```ruby title="metadata.rb"
 result = Kreuzberg.extract_file_sync("document.pdf")
 metadata = result.metadata
 
-if metadata['format_type'] == 'pdf'
-  puts "Title: #{metadata['title']}"
-  puts "Author: #{metadata['author']}"
-  puts "Pages: #{metadata['page_count']}"
-end
+puts "Title: #{metadata['title']}"
+puts "Format: #{metadata['format_type']}"
+puts "Pages: #{metadata['page_count']}"
 ```
-
-See the Types Reference for complete metadata field documentation.
 
 ---
 
@@ -555,7 +538,16 @@ end
 
 ## Error Handling
 
-All errors are raised as `StandardError` with descriptive messages.
+All Kreuzberg errors are raised as standardized Ruby exceptions.
+
+**Exception Types:**
+
+- `Kreuzberg::Errors::ConfigurationError`: Raised for invalid configuration options.
+- `Kreuzberg::Errors::ExtractionError`: Base class for all extraction-time failures.
+- `Kreuzberg::Errors::FFIError`: Raised for low-level communication failures with the core engine.
+- `Kreuzberg::Errors::NotFoundError`: Raised when a file or resource is not found.
+- `Kreuzberg::Errors::TimeoutError`: Raised when an extraction operation times out.
+- `Kreuzberg::Errors::ValidationError`: Raised when results fail registered validations.
 
 **Example:**
 
@@ -563,20 +555,12 @@ All errors are raised as `StandardError` with descriptive messages.
 begin
   result = Kreuzberg.extract_file_sync("document.pdf")
   puts result.content
-rescue StandardError => e
+rescue Kreuzberg::Errors::ValidationError => e
+  puts "Validation failed: #{e.message}"
+rescue Kreuzberg::Errors::ExtractionError => e
   puts "Extraction failed: #{e.message}"
-
-  # Check error details
-  case e.message
-  when /file not found/i
-    puts "File does not exist"
-  when /parsing/i
-    puts "Failed to parse document"
-  when /OCR/i
-    puts "OCR processing failed"
-  else
-    puts "Unknown error"
-  end
+rescue StandardError => e
+  puts "Unexpected error: #{e.message}"
 end
 ```
 
@@ -1084,34 +1068,27 @@ result = Kreuzberg.extract_file_sync('scanned.pdf', config)
 
 ### Plugin Management
 
-**Listing Plugins:**
+**Methods:**
 
-```ruby title="basic_extraction.rb"
-# List all registered plugins
-post_processors = Kreuzberg.list_post_processors
-validators = Kreuzberg.list_validators
-ocr_backends = Kreuzberg.list_ocr_backends
+- `Kreuzberg.clear_ocr_backends`: Unregister all OCR backends.
+- `Kreuzberg.clear_post_processors`: Unregister all post-processors.
+- `Kreuzberg.clear_validators`: Unregister all validators.
+- `Kreuzberg.list_ocr_backends`: List names of registered OCR backends.
+- `Kreuzberg.list_post_processors`: List names of registered post-processors.
+- `Kreuzberg.list_validators`: List names of registered validators.
+- `Kreuzberg.register_ocr_backend(backend)`: Register a new OCR backend.
+- `Kreuzberg.register_post_processor(name, priority, processor)`: Register a new post-processor.
+- `Kreuzberg.register_validator(name, priority, validator)`: Register a new validator.
+- `Kreuzberg.unregister_ocr_backend(name)`: Unregister an OCR backend by name.
+- `Kreuzberg.unregister_post_processor(name)`: Unregister a post-processor by name.
+- `Kreuzberg.unregister_validator(name)`: Unregister a validator by name.
 
-puts "Post-processors: #{post_processors.join(', ')}"
-puts "Validators: #{validators.join(', ')}"
-puts "OCR backends: #{ocr_backends.join(', ')}"
-```
+**Example:**
 
-**Clearing Plugins:**
+```ruby title="plugins.rb"
+# List available OCR backends
+puts "OCR Backends: #{Kreuzberg.list_ocr_backends.join(', ')}"
 
-```ruby title="with_ocr.rb"
-# Clear all post-processors
-Kreuzberg.clear_post_processors
-
-# Clear all validators
-Kreuzberg.clear_validators
-```
-
-**Unregistering Specific Plugins:**
-
-```ruby title="custom_validator.rb"
-# Unregister by name
+# Register and unregister
 Kreuzberg.unregister_post_processor('word_count')
-Kreuzberg.unregister_validator('min_length')
-Kreuzberg.unregister_ocr_backend('cloud-ocr')
 ```
