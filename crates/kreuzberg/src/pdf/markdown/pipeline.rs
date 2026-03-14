@@ -3,6 +3,7 @@
 use crate::pdf::error::Result;
 use crate::pdf::hierarchy::{BoundingBox, SegmentData, TextBlock, assign_heading_levels_smart, cluster_font_sizes};
 use pdfium_render::prelude::*;
+use rayon::prelude::*;
 
 use super::assembly::assemble_markdown_with_tables;
 use super::bridge::{ImagePosition, extracted_blocks_to_paragraphs, filter_sidebar_blocks, objects_to_page_data};
@@ -342,6 +343,186 @@ fn build_heading_map(
     Ok((heading_map, struct_tree_needs_classify))
 }
 
+/// Per-page input bundle for Stage 3 parallel processing.
+///
+/// Each page's data is pre-extracted before `into_par_iter` so all threads
+/// receive owned, non-overlapping slices of the document's data.
+struct PageInput {
+    /// Index of this page in the document (0-based).
+    page_index: usize,
+    /// Paragraphs from the PDF structure tree, if extraction succeeded.
+    struct_paragraphs: Option<Vec<PdfParagraph>>,
+    /// Segments from heuristic extraction (non-empty only when `struct_paragraphs` is `None`).
+    heuristic_segments: Vec<SegmentData>,
+    /// Layout hints for this page, if layout detection was run.
+    page_hints: Option<Vec<LayoutHint>>,
+    /// Bounding boxes of tables that were successfully extracted for this page.
+    table_bboxes: Vec<crate::types::BoundingBox>,
+    /// Whether this page's structure-tree paragraphs need font-size classification.
+    needs_classify: bool,
+}
+
+/// Process a single page's data through Stage 3: classification, text repair,
+/// layout overrides, dehyphenation, and list splitting.
+///
+/// This function is intentionally free of any shared mutable state so it can be
+/// called from multiple threads via `rayon::par_iter`.
+fn process_single_page(
+    input: PageInput,
+    heading_map: &[(f32, Option<u8>)],
+    doc_body_font_size: Option<f32>,
+) -> Vec<PdfParagraph> {
+    let PageInput {
+        page_index: i,
+        struct_paragraphs,
+        heuristic_segments,
+        page_hints,
+        table_bboxes,
+        needs_classify,
+    } = input;
+
+    if let Some(mut paragraphs) = struct_paragraphs {
+        // Apply heading classification to struct tree pages that have
+        // font size variation but no structure-tree-level headings.
+        if needs_classify {
+            tracing::debug!(
+                page = i,
+                "PDF markdown pipeline: classifying struct tree page via font-size clustering"
+            );
+            classify_paragraphs(&mut paragraphs, heading_map);
+        }
+        // Merge consecutive body-text paragraphs from structure tree.
+        // Many PDFs tag each visual line as a separate <P>, causing over-splitting.
+        merge_continuation_paragraphs(&mut paragraphs);
+        // Apply layout detection overrides when available.
+        if let Some(ref hints) = page_hints {
+            super::layout_classify::apply_layout_overrides(&mut paragraphs, hints, 0.5, 0.2);
+            retain_page_furniture_safely(&mut paragraphs);
+        }
+        paragraphs
+    } else {
+        let page_segments = heuristic_segments;
+        let mut paragraphs = if let Some(ref hints) = page_hints
+            && !hints.is_empty()
+            // Only use layout-guided assembly if the page has text-class hints.
+            // If all hints are Table/Picture, the layout path adds no value and
+            // causes text duplication (segments fall through as unassigned body
+            // text alongside the extracted table).
+            && hints.iter().any(|h| {
+                h.confidence >= 0.5
+                    && !matches!(
+                        h.class,
+                        super::types::LayoutHintClass::Table | super::types::LayoutHintClass::Picture
+                    )
+            }) {
+            // Layout-guided assembly: assign segments to layout regions
+            // BEFORE line/paragraph assembly, ensuring paragraph boundaries
+            // align with the model's structural predictions.
+            super::regions::assemble_region_paragraphs(
+                page_segments,
+                hints,
+                heading_map,
+                0.5,
+                doc_body_font_size,
+                i,
+                &table_bboxes,
+            )
+        } else {
+            // Standard pipeline: XY-Cut → lines → paragraphs → classify
+            // First, suppress segments that overlap with successfully extracted tables
+            // to prevent text duplication (table content appearing as both a table and body text).
+            if !table_bboxes.is_empty() {
+                tracing::debug!(
+                    page = i,
+                    table_bboxes = table_bboxes.len(),
+                    segments = page_segments.len(),
+                    bbox_0 = ?table_bboxes.first().map(|b| (b.x0, b.y0, b.x1, b.y1)),
+                    seg_0 = ?page_segments.first().map(|s| (s.x, s.y, s.width, s.height)),
+                    "standard pipeline: table suppression active"
+                );
+            }
+            let page_segments = if !table_bboxes.is_empty() {
+                page_segments
+                    .into_iter()
+                    .filter(|seg| {
+                        let seg_area = seg.width * seg.height;
+                        if seg_area <= 0.0 || seg.text.trim().is_empty() {
+                            return true; // Keep zero-area/empty segments
+                        }
+                        !table_bboxes.iter().any(|bb| {
+                            let inter_left = seg.x.max(bb.x0 as f32);
+                            let inter_right = (seg.x + seg.width).min(bb.x1 as f32);
+                            let inter_bottom = seg.y.max(bb.y0 as f32);
+                            let inter_top = (seg.y + seg.height).min(bb.y1 as f32);
+                            if inter_left >= inter_right || inter_bottom >= inter_top {
+                                return false;
+                            }
+                            let inter_area = (inter_right - inter_left) * (inter_top - inter_bottom);
+                            inter_area / seg_area >= 0.5
+                        })
+                    })
+                    .collect::<Vec<_>>()
+            } else {
+                page_segments
+            };
+            let column_groups = split_segments_into_columns(&page_segments);
+            let mut paras: Vec<PdfParagraph> = if column_groups.len() <= 1 {
+                let lines = segments_to_lines(page_segments);
+                lines_to_paragraphs(lines)
+            } else {
+                let mut all_paras = Vec::new();
+                for group in column_groups {
+                    let col_segments: Vec<_> = group.into_iter().map(|idx| page_segments[idx].clone()).collect();
+                    let lines = segments_to_lines(col_segments);
+                    all_paras.extend(lines_to_paragraphs(lines));
+                }
+                all_paras
+            };
+            classify_paragraphs(&mut paras, heading_map);
+            // Apply layout hint overrides to the standard pipeline output.
+            // This path runs when the page didn't qualify for region-based
+            // assembly (multi-column, oversized regions, no text-class hints).
+            // Without this, layout detection results are silently discarded.
+            if let Some(ref hints) = page_hints {
+                super::layout_classify::apply_layout_overrides(&mut paras, hints, 0.5, 0.2);
+            }
+            merge_continuation_paragraphs(&mut paras);
+            paras
+        };
+        retain_page_furniture_safely(&mut paragraphs);
+        // Apply contextual ligature repair to heuristic pages where
+        // chars_to_segments didn't catch encoding issues (pdfium
+        // doesn't always flag broken ToUnicode CMaps).
+        {
+            let mut all_text = String::new();
+            for p in &paragraphs {
+                for l in &p.lines {
+                    for s in &l.segments {
+                        if !all_text.is_empty() {
+                            all_text.push(' ');
+                        }
+                        all_text.push_str(&s.text);
+                    }
+                }
+            }
+            if text_has_ligature_corruption(&all_text) {
+                apply_to_all_segments(&mut paragraphs, repair_contextual_ligatures);
+            }
+            // Repair broken word spacing (single-letter fragments like "M ust")
+            // caused by broken font CMap/ToUnicode tables.
+            if text_has_broken_word_spacing(&all_text) {
+                apply_to_all_segments(&mut paragraphs, repair_broken_word_spacing);
+            }
+        }
+        // Normalize Unicode characters (curly quotes, fraction slash, etc.)
+        apply_to_all_segments(&mut paragraphs, normalize_unicode_text);
+        // Dehyphenate: heuristic path has positional data for
+        // full-line detection, enabling both hyphen and no-hyphen joins.
+        dehyphenate_paragraphs(&mut paragraphs, true);
+        paragraphs
+    }
+}
+
 /// Render a PDF document as markdown, with tables interleaved at their positions.
 ///
 /// Returns (markdown, has_font_encoding_issues).
@@ -520,158 +701,30 @@ pub fn render_document_as_markdown_with_tables(
         map
     };
 
-    // Stage 3: Per-page structured extraction.
-    let mut all_page_paragraphs: Vec<Vec<PdfParagraph>> = Vec::with_capacity(page_count as usize);
-    for i in 0..page_count as usize {
-        if let Some(mut paragraphs) = struct_tree_results[i].take() {
-            // Apply heading classification to struct tree pages that have
-            // font size variation but no structure-tree-level headings.
-            if struct_tree_needs_classify.contains(&i) {
-                tracing::debug!(
-                    page = i,
-                    "PDF markdown pipeline: classifying struct tree page via font-size clustering"
-                );
-                classify_paragraphs(&mut paragraphs, &heading_map);
-            }
-            // Merge consecutive body-text paragraphs from structure tree.
-            // Many PDFs tag each visual line as a separate <P>, causing over-splitting.
-            merge_continuation_paragraphs(&mut paragraphs);
-            // Apply layout detection overrides when available.
-            if let Some(hints) = layout_hints.and_then(|h| h.get(i)) {
-                super::layout_classify::apply_layout_overrides(&mut paragraphs, hints, 0.5, 0.2);
-                retain_page_furniture_safely(&mut paragraphs);
-            }
-            all_page_paragraphs.push(paragraphs);
-        } else {
-            let page_segments = std::mem::take(&mut all_page_segments[i]);
-            let mut paragraphs = if let Some(hints) = layout_hints.and_then(|h| h.get(i))
-                && !hints.is_empty()
-                // Only use layout-guided assembly if the page has text-class hints.
-                // If all hints are Table/Picture, the layout path adds no value and
-                // causes text duplication (segments fall through as unassigned body
-                // text alongside the extracted table).
-                && hints.iter().any(|h| {
-                    h.confidence >= 0.5
-                        && !matches!(
-                            h.class,
-                            super::types::LayoutHintClass::Table | super::types::LayoutHintClass::Picture
-                        )
-                }) {
-                // Layout-guided assembly: assign segments to layout regions
-                // BEFORE line/paragraph assembly, ensuring paragraph boundaries
-                // align with the model's structural predictions.
-                let page_table_bboxes = extracted_table_bboxes_by_page
-                    .get(&i)
-                    .map(|v| v.as_slice())
-                    .unwrap_or(&[]);
-                super::regions::assemble_region_paragraphs(
-                    page_segments,
-                    hints,
-                    &heading_map,
-                    0.5,
-                    doc_body_font_size,
-                    i,
-                    page_table_bboxes,
-                )
-            } else {
-                // Standard pipeline: XY-Cut → lines → paragraphs → classify
-                // First, suppress segments that overlap with successfully extracted tables
-                // to prevent text duplication (table content appearing as both a table and body text).
-                let page_table_bboxes = extracted_table_bboxes_by_page
-                    .get(&i)
-                    .map(|v| v.as_slice())
-                    .unwrap_or(&[]);
-                if !page_table_bboxes.is_empty() {
-                    tracing::debug!(
-                        page = i,
-                        table_bboxes = page_table_bboxes.len(),
-                        segments = page_segments.len(),
-                        bbox_0 = ?page_table_bboxes.first().map(|b| (b.x0, b.y0, b.x1, b.y1)),
-                        seg_0 = ?page_segments.first().map(|s| (s.x, s.y, s.width, s.height)),
-                        "standard pipeline: table suppression active"
-                    );
-                }
-                let page_segments = if !page_table_bboxes.is_empty() {
-                    page_segments
-                        .into_iter()
-                        .filter(|seg| {
-                            let seg_area = seg.width * seg.height;
-                            if seg_area <= 0.0 || seg.text.trim().is_empty() {
-                                return true; // Keep zero-area/empty segments
-                            }
-                            !page_table_bboxes.iter().any(|bb| {
-                                let inter_left = seg.x.max(bb.x0 as f32);
-                                let inter_right = (seg.x + seg.width).min(bb.x1 as f32);
-                                let inter_bottom = seg.y.max(bb.y0 as f32);
-                                let inter_top = (seg.y + seg.height).min(bb.y1 as f32);
-                                if inter_left >= inter_right || inter_bottom >= inter_top {
-                                    return false;
-                                }
-                                let inter_area = (inter_right - inter_left) * (inter_top - inter_bottom);
-                                inter_area / seg_area >= 0.5
-                            })
-                        })
-                        .collect::<Vec<_>>()
-                } else {
-                    page_segments
-                };
-                let column_groups = split_segments_into_columns(&page_segments);
-                let mut paras: Vec<PdfParagraph> = if column_groups.len() <= 1 {
-                    let lines = segments_to_lines(page_segments);
-                    lines_to_paragraphs(lines)
-                } else {
-                    let mut all_paras = Vec::new();
-                    for group in column_groups {
-                        let col_segments: Vec<_> = group.into_iter().map(|idx| page_segments[idx].clone()).collect();
-                        let lines = segments_to_lines(col_segments);
-                        all_paras.extend(lines_to_paragraphs(lines));
-                    }
-                    all_paras
-                };
-                classify_paragraphs(&mut paras, &heading_map);
-                // Apply layout hint overrides to the standard pipeline output.
-                // This path runs when the page didn't qualify for region-based
-                // assembly (multi-column, oversized regions, no text-class hints).
-                // Without this, layout detection results are silently discarded.
-                if let Some(hints) = layout_hints.and_then(|h| h.get(i)) {
-                    super::layout_classify::apply_layout_overrides(&mut paras, hints, 0.5, 0.2);
-                }
-                merge_continuation_paragraphs(&mut paras);
-                paras
-            };
-            retain_page_furniture_safely(&mut paragraphs);
-            // Apply contextual ligature repair to heuristic pages where
-            // chars_to_segments didn't catch encoding issues (pdfium
-            // doesn't always flag broken ToUnicode CMaps).
-            {
-                let mut all_text = String::new();
-                for p in &paragraphs {
-                    for l in &p.lines {
-                        for s in &l.segments {
-                            if !all_text.is_empty() {
-                                all_text.push(' ');
-                            }
-                            all_text.push_str(&s.text);
-                        }
-                    }
-                }
-                if text_has_ligature_corruption(&all_text) {
-                    apply_to_all_segments(&mut paragraphs, repair_contextual_ligatures);
-                }
-                // Repair broken word spacing (single-letter fragments like "M ust")
-                // caused by broken font CMap/ToUnicode tables.
-                if text_has_broken_word_spacing(&all_text) {
-                    apply_to_all_segments(&mut paragraphs, repair_broken_word_spacing);
-                }
-            }
-            // Normalize Unicode characters (curly quotes, fraction slash, etc.)
-            apply_to_all_segments(&mut paragraphs, normalize_unicode_text);
-            // Dehyphenate: heuristic path has positional data for
-            // full-line detection, enabling both hyphen and no-hyphen joins.
-            dehyphenate_paragraphs(&mut paragraphs, true);
-            all_page_paragraphs.push(paragraphs);
-        }
-    }
+    // Stage 3: Per-page structured extraction (parallelised with rayon).
+    //
+    // Pre-split all per-page owned data into a Vec<PageInput> so that rayon can
+    // hand each worker an independent chunk with no shared mutable state.
+    // Shared read-only data (heading_map, layout_hints, etc.) is accessed via
+    // immutable references, which are Sync and safe to share across threads.
+    let page_inputs: Vec<PageInput> = (0..page_count as usize)
+        .map(|i| PageInput {
+            page_index: i,
+            struct_paragraphs: struct_tree_results[i].take(),
+            heuristic_segments: std::mem::take(&mut all_page_segments[i]),
+            page_hints: layout_hints.and_then(|h| h.get(i)).cloned(),
+            table_bboxes: extracted_table_bboxes_by_page
+                .get(&i)
+                .cloned()
+                .unwrap_or_default(),
+            needs_classify: struct_tree_needs_classify.contains(&i),
+        })
+        .collect();
+
+    let all_page_paragraphs: Vec<Vec<PdfParagraph>> = page_inputs
+        .into_par_iter()
+        .map(|input| process_single_page(input, &heading_map, doc_body_font_size))
+        .collect();
 
     // Refine heading hierarchy across the document: merge split titles and
     // demote numbered section headings when a title H1 is detected.

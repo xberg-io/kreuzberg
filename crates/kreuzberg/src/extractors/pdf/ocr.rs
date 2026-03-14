@@ -340,7 +340,60 @@ pub(crate) async fn extract_with_ocr(
         registry.get(&ocr_config.backend)?
     };
 
-    // Initialize SLANet for table structure recognition when layout detection is active
+    // Encode all page images to PNG bytes in parallel (CPU-bound).
+    // Each element is (page_idx, image_data, width, height).
+    use rayon::prelude::*;
+    let encoded_pages: crate::Result<Vec<(usize, Vec<u8>, u32, u32)>> = images
+        .par_iter()
+        .enumerate()
+        .map(|(page_idx, image)| {
+            let rgb_image = image.to_rgb8();
+            let (width, height) = rgb_image.dimensions();
+            let mut image_bytes = Cursor::new(Vec::new());
+            let encoder = PngEncoder::new(&mut image_bytes);
+            encoder
+                .write_image(&rgb_image, width, height, image::ColorType::Rgb8.into())
+                .map_err(|e| crate::KreuzbergError::Parsing {
+                    message: format!("Failed to encode image: {}", e),
+                    source: None,
+                })?;
+            Ok((page_idx, image_bytes.into_inner(), width, height))
+        })
+        .collect();
+    let encoded_pages = encoded_pages?;
+
+    // Run OCR on all pages concurrently. Each page spawns a tokio task so
+    // the async backend (which internally uses spawn_blocking) can run in
+    // parallel across the thread pool.
+    // `backend` is already an `Arc<dyn OcrBackend>`; clone it cheaply per task.
+    let ocr_config_owned = ocr_config.clone();
+
+    let mut join_set: tokio::task::JoinSet<(usize, crate::Result<crate::types::ExtractionResult>)> =
+        tokio::task::JoinSet::new();
+
+    for (page_idx, image_data, _width, _height) in &encoded_pages {
+        let backend_clone = std::sync::Arc::clone(&backend);
+        let config_clone = ocr_config_owned.clone();
+        let data_clone = image_data.clone();
+        let idx = *page_idx;
+        join_set.spawn(async move {
+            let result = backend_clone.process_image(&data_clone, &config_clone).await;
+            (idx, result)
+        });
+    }
+
+    // Collect results, preserving page order.
+    let mut ocr_results: Vec<Option<crate::types::ExtractionResult>> = vec![None; images.len()];
+    while let Some(join_result) = join_set.join_next().await {
+        let (page_idx, ocr_result) = join_result.map_err(|e| crate::KreuzbergError::Plugin {
+            message: format!("OCR task panicked: {}", e),
+            plugin_name: "ocr".to_string(),
+        })?;
+        ocr_results[page_idx] = Some(ocr_result?);
+    }
+
+    // Initialize SLANet for table structure recognition when layout detection is active.
+    // SLANet requires mutable access so pages are processed sequentially after OCR.
     #[cfg(feature = "layout-detection")]
     let mut slanet = if layout_detections.is_some() {
         crate::layout::take_or_create_slanet()
@@ -352,21 +405,12 @@ pub(crate) async fn extract_with_ocr(
     let mut conf_sum: f64 = 0.0;
     let mut conf_count: usize = 0;
 
-    for (page_idx, image) in images.iter().enumerate() {
-        let rgb_image = image.to_rgb8();
-        let (width, height) = rgb_image.dimensions();
-
-        let mut image_bytes = Cursor::new(Vec::new());
-        let encoder = PngEncoder::new(&mut image_bytes);
-        encoder
-            .write_image(&rgb_image, width, height, image::ColorType::Rgb8.into())
-            .map_err(|e| crate::KreuzbergError::Parsing {
-                message: format!("Failed to encode image: {}", e),
-                source: None,
-            })?;
-
-        let image_data = image_bytes.into_inner();
-        let ocr_result = backend.process_image(&image_data, ocr_config).await?;
+    for (page_idx, ocr_result) in ocr_results.into_iter().enumerate() {
+        // SAFETY: every slot was filled in the join loop above; None is unreachable.
+        let ocr_result = ocr_result.expect("OCR result missing for page");
+        let (_page_idx_enc, _image_data, width, height) = &encoded_pages[page_idx];
+        let width = *width;
+        let height = *height;
 
         // Accumulate mean_text_conf from per-page OCR results.
         if let Some(conf_val) = ocr_result
@@ -388,10 +432,10 @@ pub(crate) async fn extract_with_ocr(
         {
             let detection = detections.get(page_idx);
 
-            // Run SLANet table recognition if available
+            // Run SLANet table recognition if available (requires mutable model).
             let recognized_tables = match (detection, slanet.as_mut()) {
                 (Some(det), Some(model)) => {
-                    let rgb = image.to_rgb8();
+                    let rgb = images[page_idx].to_rgb8();
                     crate::ocr::layout_assembly::recognize_page_tables(&rgb, det, elements, model)
                 }
                 _ => Vec::new(),
