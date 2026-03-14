@@ -1,4 +1,4 @@
-use crate::enums::TessPageSegMode;
+use crate::enums::{TessPageIteratorLevel, TessPageSegMode};
 use crate::error::{Result, TesseractError};
 use crate::page_iterator::{TessBaseAPIGetIterator, TessPageIteratorDelete};
 use crate::result_iterator::TessResultIteratorDelete;
@@ -8,6 +8,65 @@ use std::ffi::{CStr, CString};
 use std::os::raw::{c_char, c_double, c_float, c_int, c_void};
 use std::path::Path;
 use std::sync::{Arc, Mutex};
+
+/// Batch bounding box results from Tesseract layout analysis.
+///
+/// Holds all bounding boxes returned in a single FFI call, along with optional
+/// block and paragraph IDs when available (e.g., from `get_textlines`).
+///
+/// Each box is represented as `(x, y, width, height)` in image coordinates.
+///
+/// # Examples
+///
+/// ```rust,no_run
+/// # use kreuzberg_tesseract::TesseractAPI;
+/// # let api = TesseractAPI::new();
+/// # api.init("/tessdata", "eng").unwrap();
+/// # api.set_image(&[], 1, 1, 1, 1).unwrap();
+/// let words = api.get_words().unwrap();
+/// for i in 0..words.len() {
+///     if let Some((x, y, w, h)) = words.get(i) {
+///         println!("Word at ({x},{y}) size {w}x{h}");
+///     }
+/// }
+/// ```
+pub struct BoundingBoxArray {
+    boxes: Vec<(i32, i32, i32, i32)>,
+    block_ids: Option<Vec<i32>>,
+    para_ids: Option<Vec<i32>>,
+}
+
+impl BoundingBoxArray {
+    /// Returns the number of bounding boxes in the array.
+    pub fn len(&self) -> usize {
+        self.boxes.len()
+    }
+
+    /// Returns `true` if the array contains no bounding boxes.
+    pub fn is_empty(&self) -> bool {
+        self.boxes.is_empty()
+    }
+
+    /// Returns the bounding box at `index` as `(x, y, width, height)`, or `None` if out of range.
+    pub fn get(&self, index: usize) -> Option<(i32, i32, i32, i32)> {
+        self.boxes.get(index).copied()
+    }
+
+    /// Returns the block ID for the box at `index`, if block IDs were captured.
+    pub fn block_id(&self, index: usize) -> Option<i32> {
+        self.block_ids.as_ref()?.get(index).copied()
+    }
+
+    /// Returns the paragraph ID for the box at `index`, if paragraph IDs were captured.
+    pub fn para_id(&self, index: usize) -> Option<i32> {
+        self.para_ids.as_ref()?.get(index).copied()
+    }
+
+    /// Returns an iterator over all `(x, y, width, height)` tuples.
+    pub fn iter(&self) -> impl Iterator<Item = &(i32, i32, i32, i32)> {
+        self.boxes.iter()
+    }
+}
 
 #[derive(Clone)]
 pub struct TesseractConfiguration {
@@ -1615,6 +1674,328 @@ impl TesseractAPI {
         Ok(PageIterator::new(iterator))
     }
 
+    /// Get all word bounding boxes in a single FFI call.
+    ///
+    /// Calls `TessBaseAPIGetWords` and returns every word bounding box as a
+    /// [`BoundingBoxArray`].  This is more efficient than iterating via
+    /// [`get_iterator`](Self::get_iterator) when only bounding boxes are needed.
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`BoundingBoxArray`] containing `(x, y, width, height)` for every
+    /// word detected on the current page, or an error if the engine returns null.
+    ///
+    /// # Examples
+    ///
+    /// ```rust,no_run
+    /// # use kreuzberg_tesseract::TesseractAPI;
+    /// # let api = TesseractAPI::new();
+    /// # api.init("/tessdata", "eng").unwrap();
+    /// # api.set_image(&[], 1, 1, 1, 1).unwrap();
+    /// let words = api.get_words().unwrap();
+    /// println!("{} words found", words.len());
+    /// ```
+    pub fn get_words(&self) -> Result<BoundingBoxArray> {
+        let handle = self.handle.lock().map_err(|_| TesseractError::MutexLockError)?;
+        // SAFETY: TessBaseAPIGetWords() returns a newly-allocated BOXA* (Leptonica bounding-box
+        // array) containing one BOX per detected word.  This is safe because:
+        // 1. *handle is a valid pointer to an initialized Tesseract engine with an image set
+        // 2. We pass null for the PIXA** parameter — Tesseract accepts null and simply skips
+        //    image extraction, returning only the bounding boxes
+        // 3. The returned pointer is either null (no words found is treated as an error) or a
+        //    valid BOXA* that we own and must free with boxaDestroy
+        // 4. The mutex ensures exclusive access during the call
+        let boxa = unsafe { TessBaseAPIGetWords(*handle, std::ptr::null_mut()) };
+        if boxa.is_null() {
+            return Err(TesseractError::NullPointerError);
+        }
+        // SAFETY: boxa is a valid non-null BOXA* returned by TessBaseAPIGetWords.
+        // boxaGetCount reads the count field and returns an i32 — no allocation, safe to call.
+        let count = unsafe { boxaGetCount(boxa) };
+        let mut boxes = Vec::with_capacity(count as usize);
+        for i in 0..count {
+            let mut x = 0_i32;
+            let mut y = 0_i32;
+            let mut w = 0_i32;
+            let mut h = 0_i32;
+            // SAFETY: boxaGetBox with L_NOCOPY (0) returns a borrowed pointer into the BOXA
+            // that is valid for the lifetime of boxa.  We immediately call boxGetGeometry to
+            // extract the geometry into local variables and never store the BOX pointer beyond
+            // this iteration.  boxGetGeometry writes into the four i32 locals and returns 0 on
+            // success.  Both calls are safe because:
+            // 1. boxa is a valid non-null BOXA* (checked above)
+            // 2. i is in [0, count) — within bounds of the array
+            // 3. All four *mut i32 are valid, properly aligned stack locals
+            // 4. The BOX* returned by boxaGetBox with L_NOCOPY is an interior pointer into boxa
+            //    and remains valid until boxaDestroy is called below
+            let bx = unsafe { boxaGetBox(boxa, i, 0) };
+            if !bx.is_null() {
+                unsafe { boxGetGeometry(bx, &mut x, &mut y, &mut w, &mut h) };
+            }
+            boxes.push((x, y, w, h));
+        }
+        // SAFETY: boxaDestroy takes a *mut *mut BOXA, sets the pointer to null, and frees the
+        // array together with all contained BOX objects.  This must be called exactly once — we
+        // have transferred all data into `boxes` above, so using boxa after this point would be
+        // use-after-free.  We pass &mut boxa (a mutable reference to the local variable) which
+        // satisfies the *mut *mut BOXA parameter.
+        let mut boxa_mut = boxa;
+        unsafe { boxaDestroy(&mut boxa_mut) };
+        Ok(BoundingBoxArray {
+            boxes,
+            block_ids: None,
+            para_ids: None,
+        })
+    }
+
+    /// Get all region bounding boxes in a single FFI call.
+    ///
+    /// Calls `TessBaseAPIGetRegions` and returns every layout region as a
+    /// [`BoundingBoxArray`].
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`BoundingBoxArray`] containing `(x, y, width, height)` for every
+    /// region on the current page, or an error if the engine returns null.
+    ///
+    /// # Examples
+    ///
+    /// ```rust,no_run
+    /// # use kreuzberg_tesseract::TesseractAPI;
+    /// # let api = TesseractAPI::new();
+    /// # api.init("/tessdata", "eng").unwrap();
+    /// # api.set_image(&[], 1, 1, 1, 1).unwrap();
+    /// let regions = api.get_regions().unwrap();
+    /// println!("{} regions found", regions.len());
+    /// ```
+    pub fn get_regions(&self) -> Result<BoundingBoxArray> {
+        let handle = self.handle.lock().map_err(|_| TesseractError::MutexLockError)?;
+        // SAFETY: TessBaseAPIGetRegions() returns a newly-allocated BOXA* containing one BOX per
+        // layout region.  Safety invariants are identical to get_words():
+        // 1. *handle is a valid pointer to an initialized Tesseract engine with an image set
+        // 2. null is passed for the PIXA** — Tesseract skips image extraction
+        // 3. We own the returned BOXA* and must free it with boxaDestroy
+        // 4. The mutex ensures exclusive access
+        let boxa = unsafe { TessBaseAPIGetRegions(*handle, std::ptr::null_mut()) };
+        if boxa.is_null() {
+            return Err(TesseractError::NullPointerError);
+        }
+        // SAFETY: See get_words() for full explanation — same pattern applies here.
+        let count = unsafe { boxaGetCount(boxa) };
+        let mut boxes = Vec::with_capacity(count as usize);
+        for i in 0..count {
+            let mut x = 0_i32;
+            let mut y = 0_i32;
+            let mut w = 0_i32;
+            let mut h = 0_i32;
+            let bx = unsafe { boxaGetBox(boxa, i, 0) };
+            if !bx.is_null() {
+                unsafe { boxGetGeometry(bx, &mut x, &mut y, &mut w, &mut h) };
+            }
+            boxes.push((x, y, w, h));
+        }
+        let mut boxa_mut = boxa;
+        // SAFETY: boxaDestroy sets boxa_mut to null after freeing — called exactly once.
+        unsafe { boxaDestroy(&mut boxa_mut) };
+        Ok(BoundingBoxArray {
+            boxes,
+            block_ids: None,
+            para_ids: None,
+        })
+    }
+
+    /// Get all textline bounding boxes with block and paragraph IDs.
+    ///
+    /// Calls `TessBaseAPIGetTextlines1` with `raw_image=FALSE` and `raw_padding=0`,
+    /// capturing both the `blockids` and `paraids` arrays alongside the bounding boxes.
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`BoundingBoxArray`] where [`BoundingBoxArray::block_id`] and
+    /// [`BoundingBoxArray::para_id`] return the corresponding IDs for each textline.
+    ///
+    /// # Examples
+    ///
+    /// ```rust,no_run
+    /// # use kreuzberg_tesseract::TesseractAPI;
+    /// # let api = TesseractAPI::new();
+    /// # api.init("/tessdata", "eng").unwrap();
+    /// # api.set_image(&[], 1, 1, 1, 1).unwrap();
+    /// let lines = api.get_textlines().unwrap();
+    /// for i in 0..lines.len() {
+    ///     let (x, y, w, h) = lines.get(i).unwrap();
+    ///     let block = lines.block_id(i).unwrap_or(-1);
+    ///     println!("Line {i}: ({x},{y},{w},{h}) block={block}");
+    /// }
+    /// ```
+    pub fn get_textlines(&self) -> Result<BoundingBoxArray> {
+        let handle = self.handle.lock().map_err(|_| TesseractError::MutexLockError)?;
+        let mut blockids_ptr: *mut c_int = std::ptr::null_mut();
+        let mut paraids_ptr: *mut c_int = std::ptr::null_mut();
+        // SAFETY: TessBaseAPIGetTextlines1() returns a newly-allocated BOXA* and optionally
+        // heap-allocates int arrays for blockids/paraids.  This is safe because:
+        // 1. *handle is a valid pointer to an initialized Tesseract engine with an image set
+        // 2. raw_image=0 (FALSE) and raw_padding=0 are valid inputs
+        // 3. null is passed for the PIXA** — Tesseract skips image extraction
+        // 4. &mut blockids_ptr and &mut paraids_ptr are valid mutable references to null-initialized
+        //    local variables; Tesseract will write heap-allocated int* values into them if the
+        //    call succeeds
+        // 5. We own all returned allocations (BOXA* + two int* arrays) and free them below
+        // 6. The mutex ensures exclusive access
+        let boxa = unsafe {
+            TessBaseAPIGetTextlines1(
+                *handle,
+                0,                        // raw_image = FALSE
+                0,                        // raw_padding = 0
+                std::ptr::null_mut(),     // pixa** — not needed
+                &mut blockids_ptr,
+                &mut paraids_ptr,
+            )
+        };
+        if boxa.is_null() {
+            return Err(TesseractError::NullPointerError);
+        }
+        // SAFETY: See get_words() — same Leptonica traversal pattern.
+        let count = unsafe { boxaGetCount(boxa) };
+        let n = count as usize;
+        let mut boxes = Vec::with_capacity(n);
+        for i in 0..count {
+            let mut x = 0_i32;
+            let mut y = 0_i32;
+            let mut w = 0_i32;
+            let mut h = 0_i32;
+            let bx = unsafe { boxaGetBox(boxa, i, 0) };
+            if !bx.is_null() {
+                unsafe { boxGetGeometry(bx, &mut x, &mut y, &mut w, &mut h) };
+            }
+            boxes.push((x, y, w, h));
+        }
+        // Collect blockids if Tesseract allocated the array.
+        // SAFETY: blockids_ptr is either null (Tesseract chose not to populate it) or a valid
+        // heap-allocated int array of exactly `count` elements written by Tesseract.
+        // We copy the values into a Vec and then free the array with TessDeleteIntArray, which
+        // is the correct Tesseract-provided free function for int arrays.
+        let block_ids = if blockids_ptr.is_null() {
+            None
+        } else {
+            let mut v = Vec::with_capacity(n);
+            for i in 0..count {
+                v.push(unsafe { *blockids_ptr.offset(i as isize) });
+            }
+            // SAFETY: TessDeleteIntArray frees the Tesseract-allocated int array exactly once.
+            unsafe { TessDeleteIntArray(blockids_ptr) };
+            Some(v)
+        };
+        // Collect paraids if Tesseract allocated the array — same pattern as blockids.
+        let para_ids = if paraids_ptr.is_null() {
+            None
+        } else {
+            let mut v = Vec::with_capacity(n);
+            for i in 0..count {
+                v.push(unsafe { *paraids_ptr.offset(i as isize) });
+            }
+            // SAFETY: TessDeleteIntArray frees the Tesseract-allocated int array exactly once.
+            unsafe { TessDeleteIntArray(paraids_ptr) };
+            Some(v)
+        };
+        let mut boxa_mut = boxa;
+        // SAFETY: boxaDestroy sets boxa_mut to null after freeing — called exactly once.
+        unsafe { boxaDestroy(&mut boxa_mut) };
+        Ok(BoundingBoxArray {
+            boxes,
+            block_ids,
+            para_ids,
+        })
+    }
+
+    /// Get all component bounding boxes at the specified iterator level.
+    ///
+    /// Calls `TessBaseAPIGetComponentImages` and returns every matching component as a
+    /// [`BoundingBoxArray`].
+    ///
+    /// # Arguments
+    ///
+    /// * `level` - The [`TessPageIteratorLevel`] granularity (block, paragraph, line, word, symbol).
+    /// * `text_only` - If `true`, only text components are returned; if `false`, all components.
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`BoundingBoxArray`] containing `(x, y, width, height)` for every
+    /// matching component, or an error if the engine returns null.
+    ///
+    /// # Examples
+    ///
+    /// ```rust,no_run
+    /// # use kreuzberg_tesseract::{TesseractAPI, TessPageIteratorLevel};
+    /// # let api = TesseractAPI::new();
+    /// # api.init("/tessdata", "eng").unwrap();
+    /// # api.set_image(&[], 1, 1, 1, 1).unwrap();
+    /// let components = api.get_component_images(TessPageIteratorLevel::RIL_WORD, true).unwrap();
+    /// println!("{} text components at word level", components.len());
+    /// ```
+    pub fn get_component_images(&self, level: TessPageIteratorLevel, text_only: bool) -> Result<BoundingBoxArray> {
+        let handle = self.handle.lock().map_err(|_| TesseractError::MutexLockError)?;
+        let mut blockids_ptr: *mut c_int = std::ptr::null_mut();
+        // SAFETY: TessBaseAPIGetComponentImages() returns a newly-allocated BOXA* and optionally
+        // heap-allocates an int array for blockids.  This is safe because:
+        // 1. *handle is a valid pointer to an initialized Tesseract engine with an image set
+        // 2. level as c_int is a valid TessPageIteratorLevel enum value
+        // 3. text_only as c_int (0 or 1) is a valid BOOL parameter
+        // 4. null is passed for the PIXA** — Tesseract skips image extraction
+        // 5. &mut blockids_ptr is a valid mutable reference to a null-initialized local; Tesseract
+        //    writes a heap-allocated int* into it if the call succeeds
+        // 6. We own all returned allocations and free them below
+        // 7. The mutex ensures exclusive access
+        let boxa = unsafe {
+            TessBaseAPIGetComponentImages(
+                *handle,
+                level as c_int,
+                text_only as c_int,
+                std::ptr::null_mut(),    // pixa** — not needed
+                &mut blockids_ptr,
+            )
+        };
+        if boxa.is_null() {
+            return Err(TesseractError::NullPointerError);
+        }
+        // SAFETY: See get_words() — same Leptonica traversal pattern.
+        let count = unsafe { boxaGetCount(boxa) };
+        let n = count as usize;
+        let mut boxes = Vec::with_capacity(n);
+        for i in 0..count {
+            let mut x = 0_i32;
+            let mut y = 0_i32;
+            let mut w = 0_i32;
+            let mut h = 0_i32;
+            let bx = unsafe { boxaGetBox(boxa, i, 0) };
+            if !bx.is_null() {
+                unsafe { boxGetGeometry(bx, &mut x, &mut y, &mut w, &mut h) };
+            }
+            boxes.push((x, y, w, h));
+        }
+        // Collect blockids if Tesseract allocated the array.
+        // SAFETY: Same pattern as get_textlines() blockids collection.
+        let block_ids = if blockids_ptr.is_null() {
+            None
+        } else {
+            let mut v = Vec::with_capacity(n);
+            for i in 0..count {
+                v.push(unsafe { *blockids_ptr.offset(i as isize) });
+            }
+            // SAFETY: TessDeleteIntArray frees the Tesseract-allocated int array exactly once.
+            unsafe { TessDeleteIntArray(blockids_ptr) };
+            Some(v)
+        };
+        let mut boxa_mut = boxa;
+        // SAFETY: boxaDestroy sets boxa_mut to null after freeing — called exactly once.
+        unsafe { boxaDestroy(&mut boxa_mut) };
+        Ok(BoundingBoxArray {
+            boxes,
+            block_ids,
+            para_ids: None,
+        })
+    }
+
     /// Gets both page and result iterators for full text analysis
     pub fn get_iterators(&self) -> Result<(PageIterator, ResultIterator)> {
         self.recognize()?;
@@ -1832,5 +2213,33 @@ unsafe extern "C" {
     fn TessBaseAPIGetSourceYResolution(handle: *mut c_void) -> c_int;
     fn TessBaseAPIGetDatapath(handle: *mut c_void) -> *const c_char;
     fn TessBaseAPIGetThresholdedImage(handle: *mut c_void) -> *mut c_void;
+
+    // Batch layout-analysis functions returning Leptonica BOXA* arrays.
+    // BOXA* and PIXA* are opaque Leptonica types represented here as *mut c_void.
+    fn TessBaseAPIGetWords(handle: *mut c_void, pixa: *mut *mut c_void) -> *mut c_void;
+    fn TessBaseAPIGetRegions(handle: *mut c_void, pixa: *mut *mut c_void) -> *mut c_void;
+    fn TessBaseAPIGetTextlines1(
+        handle: *mut c_void,
+        raw_image: c_int,
+        raw_padding: c_int,
+        pixa: *mut *mut c_void,
+        blockids: *mut *mut c_int,
+        paraids: *mut *mut c_int,
+    ) -> *mut c_void;
+    fn TessBaseAPIGetComponentImages(
+        handle: *mut c_void,
+        level: c_int,
+        text_only: c_int,
+        pixa: *mut *mut c_void,
+        blockids: *mut *mut c_int,
+    ) -> *mut c_void;
+
+    // Leptonica BOXA traversal and destruction.
+    fn boxaGetCount(boxa: *mut c_void) -> c_int;
+    // accessflag: L_NOCOPY=0 returns borrowed interior pointer (valid until boxaDestroy).
+    fn boxaGetBox(boxa: *mut c_void, index: c_int, accessflag: c_int) -> *mut c_void;
+    fn boxGetGeometry(bx: *mut c_void, px: *mut c_int, py: *mut c_int, pw: *mut c_int, ph: *mut c_int) -> c_int;
+    // boxaDestroy sets *pboxa to null after freeing, so we pass *mut *mut c_void.
+    fn boxaDestroy(pboxa: *mut *mut c_void);
 
 }

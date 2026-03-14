@@ -162,4 +162,4 @@ pub use enums::{
     TessTextlineOrder, TessWritingDirection,
 };
 mod api;
-pub use api::TesseractAPI;
+pub use api::{BoundingBoxArray, TesseractAPI};
