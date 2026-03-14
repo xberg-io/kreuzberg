@@ -12,9 +12,8 @@ use std::borrow::Cow;
 use crate::pdf::hierarchy::SegmentData;
 use pdfium_render::prelude::*;
 
-use super::constants::MAX_HEADING_WORD_COUNT;
 use super::text_repair::{apply_ligature_repairs, build_ligature_repair_map, normalize_text_encoding};
-use super::types::{PdfLine, PdfParagraph};
+use super::types::PdfParagraph;
 
 // Alias to distinguish from our local PdfParagraph type.
 use pdfium_render::prelude::PdfParagraph as PdfiumParagraph;
@@ -105,143 +104,12 @@ fn filter_blocks_recursive(blocks: &[ExtractedBlock], left_cutoff: f32, right_cu
 
 /// Convert extracted blocks from the structure tree API into PdfParagraphs.
 ///
-/// Structure tree heading levels are validated against font size and word count
-/// to prevent broken structure trees from marking body text as headings.
+/// Converts via the unified DTO path:
+/// `ExtractedBlock` → `PageContent` (via `adapters::from_structure_tree`) →
+/// `Vec<PdfParagraph>` (via `content_convert::content_to_paragraphs`).
 pub(super) fn extracted_blocks_to_paragraphs(blocks: &[ExtractedBlock]) -> Vec<PdfParagraph> {
-    // First pass: collect font sizes to determine body font size
-    let body_font_size = estimate_body_font_size(blocks);
-
-    // Second pass: convert blocks with validated heading levels
-    let mut paragraphs = Vec::new();
-    convert_blocks(blocks, body_font_size, &mut paragraphs);
-    paragraphs
-}
-
-/// Recursively estimate the body (most common) font size from all leaf blocks.
-fn estimate_body_font_size(blocks: &[ExtractedBlock]) -> f32 {
-    let mut sizes: Vec<f32> = Vec::new();
-    collect_font_sizes(blocks, &mut sizes);
-
-    if sizes.is_empty() {
-        return 12.0;
-    }
-
-    super::lines::most_frequent_font_size(sizes.into_iter())
-}
-
-fn collect_font_sizes(blocks: &[ExtractedBlock], sizes: &mut Vec<f32>) {
-    for block in blocks {
-        if !block.children.is_empty() {
-            collect_font_sizes(&block.children, sizes);
-        } else if !block.text.trim().is_empty() {
-            sizes.push(block.font_size.unwrap_or(12.0));
-        }
-    }
-}
-
-/// Recursively convert blocks to paragraphs with heading validation.
-fn convert_blocks(blocks: &[ExtractedBlock], _body_font_size: f32, paragraphs: &mut Vec<PdfParagraph>) {
-    for block in blocks {
-        if !block.children.is_empty() {
-            convert_blocks(&block.children, _body_font_size, paragraphs);
-            continue;
-        }
-
-        if block.text.trim().is_empty() {
-            continue;
-        }
-
-        let mut is_list_item = matches!(&block.role, ContentRole::ListItem { .. });
-
-        let full_text = if let ContentRole::ListItem { label: Some(ref l) } = block.role {
-            format!("{} {}", l, block.text)
-        } else {
-            block.text.clone()
-        };
-
-        // Also detect list items from text content (e.g. starts with bullet or number prefix)
-        if !is_list_item {
-            let first_word = full_text.split_whitespace().next().unwrap_or("");
-            is_list_item = super::paragraphs::is_list_prefix(first_word);
-        }
-
-        let font_size = block.font_size.unwrap_or(12.0);
-        let word_count = full_text.split_whitespace().count();
-
-        // Extract semantic flags from the structure tree role and font properties.
-        let is_code_block = matches!(&block.role, ContentRole::Code);
-        let is_formula = matches!(&block.role, ContentRole::Other(s) if s == "Formula");
-        let is_monospace = block.is_monospace || is_code_block;
-
-        // Trust structure tree heading tags — they are author-intent metadata.
-        // Only guard against degenerate cases (body text tagged as heading).
-        let heading_level = match &block.role {
-            ContentRole::Heading { level } => {
-                if word_count <= MAX_HEADING_WORD_COUNT {
-                    Some(*level)
-                } else {
-                    None
-                }
-            }
-            _ => None,
-        };
-
-        // Extract block-level bounding box for spatial matching with layout hints.
-        // We store the bbox on the paragraph rather than distributing it across
-        // word segments — proportional distribution gives inaccurate per-word
-        // positions that confuse spatial matching.
-        let block_bbox = block.bounds.as_ref().map(|bounds| {
-            let left = bounds.left().value;
-            let bottom = bounds.bottom().value;
-            let right = bounds.right().value;
-            let top = bounds.top().value;
-            (left, bottom, right, top)
-        });
-
-        // Create segments from the block text (one per whitespace-delimited word).
-        // Segments have zero positions — spatial matching uses block_bbox instead.
-        let segments: Vec<SegmentData> = full_text
-            .split_whitespace()
-            .map(|w| SegmentData {
-                text: w.to_string(),
-                x: 0.0,
-                y: 0.0,
-                width: 0.0,
-                height: 0.0,
-                font_size,
-                is_bold: block.is_bold,
-                is_italic: block.is_italic,
-                is_monospace,
-                baseline_y: 0.0,
-            })
-            .collect();
-
-        if segments.is_empty() {
-            continue;
-        }
-
-        let line = PdfLine {
-            segments,
-            baseline_y: 0.0,
-            dominant_font_size: font_size,
-            is_bold: block.is_bold,
-            is_monospace,
-        };
-
-        paragraphs.push(PdfParagraph {
-            lines: vec![line],
-            dominant_font_size: font_size,
-            heading_level,
-            is_bold: block.is_bold,
-            is_list_item,
-            is_code_block,
-            is_formula,
-            is_page_furniture: false,
-            layout_class: None,
-            caption_for: None,
-            block_bbox,
-        });
-    }
+    let page_content = super::adapters::from_structure_tree(blocks, 0.0, 0.0, 0);
+    super::content_convert::content_to_paragraphs(&page_content)
 }
 
 /// Extract text segments and image positions from a PDF page.

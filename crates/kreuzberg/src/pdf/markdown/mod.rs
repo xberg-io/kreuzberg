@@ -13,6 +13,7 @@ mod columns;
 mod constants;
 #[allow(dead_code)] // Wired incrementally — consumers added in subsequent commits.
 pub(crate) mod content;
+mod content_convert;
 pub(crate) mod geometry;
 pub(crate) mod layout_classify;
 mod lines;

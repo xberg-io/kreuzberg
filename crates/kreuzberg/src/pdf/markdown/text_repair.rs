@@ -424,6 +424,7 @@ pub(super) fn normalize_text_encoding(text: &str) -> String {
 }
 
 /// Apply a text transformation to every segment in every paragraph.
+#[allow(dead_code)] // Will be used when pipeline.rs triple-nested loops are replaced.
 pub(super) fn apply_to_all_segments(paragraphs: &mut [PdfParagraph], repair_fn: impl Fn(&str) -> String) {
     for para in paragraphs {
         for line in &mut para.lines {
