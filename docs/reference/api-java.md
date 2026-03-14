@@ -34,31 +34,31 @@ View package on [Maven Central](https://central.sonatype.com/artifact/dev.kreuzb
 
 ## Core Functions
 
-### extractFile()
+### batchExtractBytes()
 
-Extract content from a file (synchronous).
+Extract content from multiple byte arrays in parallel (synchronous).
 
 **Signature:**
 
 ```java title="Java"
-public static ExtractionResult extractFile(String path) throws IOException, KreuzbergException
-public static ExtractionResult extractFile(Path path) throws IOException, KreuzbergException
-public static ExtractionResult extractFile(Path path, ExtractionConfig config) throws IOException, KreuzbergException
+public static List<ExtractionResult> batchExtractBytes(List<BytesWithMime> items, ExtractionConfig config)
+    throws KreuzbergException
 ```
 
 **Parameters:**
 
-- `path` (String | Path): Path to the file to extract
-- `config` (ExtractionConfig): Optional extraction configuration. Uses defaults if null
+- `items` (List<BytesWithMime>): List of byte data with MIME types
+- `config` (ExtractionConfig): Optional extraction configuration applied to all items. Uses defaults if null.
 
 **Returns:**
 
-- `ExtractionResult`: Extraction result containing content, metadata, and tables
+- `List<ExtractionResult>`: List of extraction results in the same order as input items
 
 **Throws:**
 
-- `IOException`: If file not found or not readable
-- `KreuzbergException`: Base exception for all extraction errors (subclasses: `ParsingException`, `OcrException`, `MissingDependencyException`)
+- `KreuzbergException`: If batch extraction fails
+
+---
 
 **Example - Basic usage:**
 
@@ -171,6 +171,23 @@ byte[] docxBytes = /* ... */;
 ExtractionResult result = Kreuzberg.extractBytes(docxBytes, "application/vnd.openxmlformats-officedocument.wordprocessingml.document", config);
 ```
 
+### batchExtractBytesAsync()
+
+Extract multiple byte arrays in parallel (asynchronous).
+
+**Signature:**
+
+```java title="Java"
+public static CompletableFuture<List<ExtractionResult>> batchExtractBytesAsync(
+    List<BytesWithMime> items,
+    ExtractionConfig config
+)
+```
+
+**Returns:**
+
+- `CompletableFuture<List<ExtractionResult>>`: Future that completes with the list of results
+
 ---
 
 ### batchExtractFiles()
@@ -197,124 +214,6 @@ public static List<ExtractionResult> batchExtractFiles(List<String> paths, Extra
 
 - `KreuzbergException`: If batch extraction fails
 
-**Example:**
-
-```java title="BatchProcessing.java"
-import dev.kreuzberg.Kreuzberg;
-import java.util.List;
-
-// Process multiple files in parallel for better performance
-List<String> filePaths = List.of(
-    "doc1.pdf",
-    "doc2.docx",
-    "doc3.xlsx"
-);
-
-List<ExtractionResult> results = Kreuzberg.batchExtractFiles(filePaths, null);
-
-// Display extraction results for each file
-for (int i = 0; i < filePaths.size(); i++) {
-    System.out.println(filePaths.get(i) + ": " + results.get(i).getContent().length() + " characters");
-}
-```
-
----
-
-### batchExtractBytes()
-
-Extract content from multiple byte arrays in parallel (synchronous).
-
-**Signature:**
-
-```java title="Java"
-public static List<ExtractionResult> batchExtractBytes(List<BytesWithMime> items, ExtractionConfig config)
-    throws KreuzbergException
-```
-
-**Parameters:**
-
-- `items` (List<BytesWithMime>): List of byte data with MIME types
-- `config` (ExtractionConfig): Optional extraction configuration
-
-**Returns:**
-
-- `List<ExtractionResult>`: List of extraction results
-
-**Throws:**
-
-- `KreuzbergException`: If batch extraction fails
-
-**Example:**
-
-```java title="BatchProcessing.java"
-import dev.kreuzberg.Kreuzberg;
-import dev.kreuzberg.BytesWithMime;
-import java.util.List;
-
-// Process multiple in-memory documents in parallel
-List<BytesWithMime> items = List.of(
-    new BytesWithMime(pdfBytes, "application/pdf"),
-    new BytesWithMime(docxBytes, "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
-);
-
-List<ExtractionResult> results = Kreuzberg.batchExtractBytes(items, null);
-```
-
----
-
-### extractFileAsync()
-
-Extract content from a file (asynchronous).
-
-**Signature:**
-
-```java title="Java"
-public static CompletableFuture<ExtractionResult> extractFileAsync(Path path, ExtractionConfig config)
-```
-
-**Parameters:**
-
-- `path` (Path): File path to extract
-- `config` (ExtractionConfig): Optional extraction configuration
-
-**Returns:**
-
-- `CompletableFuture<ExtractionResult>`: Future that completes with the extraction result
-
-**Example:**
-
-```java title="AsyncExtraction.java"
-// Asynchronous extraction with error handling
-Kreuzberg.extractFileAsync(Path.of("document.pdf"), null)
-    .thenAccept(result -> System.out.println(result.getContent()))
-    .exceptionally(e -> {
-        System.err.println("Error: " + e.getMessage());
-        return null;
-    });
-```
-
----
-
-### extractBytesAsync()
-
-Extract content from bytes (asynchronous).
-
-**Signature:**
-
-```java title="Java"
-public static CompletableFuture<ExtractionResult> extractBytesAsync(
-    byte[] data,
-    String mimeType,
-    ExtractionConfig config
-)
-```
-
-**Returns:**
-
-- `CompletableFuture<ExtractionResult>`: Future that completes with the extraction result
-
----
-
 ### batchExtractFilesAsync()
 
 Extract multiple files in parallel (asynchronous).
@@ -334,22 +233,314 @@ public static CompletableFuture<List<ExtractionResult>> batchExtractFilesAsync(
 
 ---
 
-### batchExtractBytesAsync()
+### clearDocumentExtractors()
 
-Extract multiple byte arrays in parallel (asynchronous).
+Remove all registered custom document extractors.
 
 **Signature:**
 
 ```java title="Java"
-public static CompletableFuture<List<ExtractionResult>> batchExtractBytesAsync(
-    List<BytesWithMime> items,
-    ExtractionConfig config
-)
+public static void clearDocumentExtractors() throws KreuzbergException
+```
+
+---
+
+### clearOCRBackends()
+
+Remove all registered custom OCR backends.
+
+**Signature:**
+
+```java title="Java"
+public static void clearOCRBackends() throws KreuzbergException
+```
+
+---
+
+### clearPostProcessors()
+
+Remove all registered custom post-processors.
+
+**Signature:**
+
+```java title="Java"
+public static void clearPostProcessors() throws KreuzbergException
+```
+
+---
+
+### clearValidators()
+
+Remove all registered custom validators.
+
+**Signature:**
+
+```java title="Java"
+public static void clearValidators() throws KreuzbergException
+```
+
+---
+
+### detectMimeType()
+
+Detect MIME type from file path or raw bytes.
+
+**Signature:**
+
+```java title="Java"
+public static String detectMimeType(String path) throws KreuzbergException
+public static String detectMimeType(String path, boolean checkExists) throws KreuzbergException
+public static String detectMimeType(byte[] data) throws KreuzbergException
+```
+
+**Parameters:**
+
+- `path` (String): Path to the file
+- `checkExists` (boolean): Whether to verify file existence (default: true)
+- `data` (byte[]): Raw bytes to analyze
+
+**Returns:**
+
+- `String`: Detected MIME type (e.g., "application/pdf")
+
+---
+
+### detectMimeTypeFromPath()
+
+Detect MIME type from a file path (alias for `detectMimeType(path, true)`).
+
+**Signature:**
+
+```java title="Java"
+public static String detectMimeTypeFromPath(String path) throws KreuzbergException
+```
+
+---
+
+### discoverExtractionConfig()
+
+Discover extraction configuration from environment or configuration files.
+
+**Signature:**
+
+```java title="Java"
+public static Optional<ExtractionConfig> discoverExtractionConfig() throws KreuzbergException
 ```
 
 **Returns:**
 
-- `CompletableFuture<List<ExtractionResult>>`: Future that completes with extraction results
+- `Optional<ExtractionConfig>`: Discovered configuration if found
+
+---
+
+### getEmbeddingPreset()
+
+Retrieve details of a specific embedding preset.
+
+**Signature:**
+
+```java title="Java"
+public static Optional<EmbeddingPreset> getEmbeddingPreset(String name) throws KreuzbergException
+```
+
+---
+
+### getExtensionsForMime()
+
+Get common file extensions for a given MIME type.
+
+**Signature:**
+
+```java title="Java"
+public static List<String> getExtensionsForMime(String mimeType) throws KreuzbergException
+```
+
+**Returns:**
+
+- `List<String>`: List of extensions (e.g., ["pdf"])
+
+---
+
+### getVersion()
+
+Get the current version of the Kreuzberg library.
+
+**Signature:**
+
+```java title="Java"
+public static String getVersion()
+```
+
+---
+
+### listDocumentExtractors()
+
+List names of all registered document extractors.
+
+**Signature:**
+
+```java title="Java"
+public static List<String> listDocumentExtractors() throws KreuzbergException
+```
+
+---
+
+### listEmbeddingPresets()
+
+List names of all available embedding presets.
+
+**Signature:**
+
+```java title="Java"
+public static List<String> listEmbeddingPresets() throws KreuzbergException
+```
+
+---
+
+### listOCRBackends()
+
+List names of all registered OCR backends.
+
+**Signature:**
+
+```java title="Java"
+public static List<String> listOCRBackends() throws KreuzbergException
+```
+
+---
+
+### listPostProcessors()
+
+List names of all registered post-processors.
+
+**Signature:**
+
+```java title="Java"
+public static List<String> listPostProcessors() throws KreuzbergException
+```
+
+---
+
+### listValidators()
+
+List names of all registered validators.
+
+**Signature:**
+
+```java title="Java"
+public static List<String> listValidators() throws KreuzbergException
+```
+
+---
+
+### loadExtractionConfigFromFile()
+
+Load extraction configuration from a file.
+
+**Signature:**
+
+```java title="Java"
+public static ExtractionConfig loadExtractionConfigFromFile(Path path) throws KreuzbergException
+```
+
+---
+
+### registerOcrBackend()
+
+Register a custom OCR backend.
+
+**Signature:**
+
+```java title="Java"
+public static void registerOcrBackend(String name, OcrBackend backend) throws KreuzbergException
+public static void registerOcrBackend(String name, OcrBackend backend, List<String> supportedLanguages) throws KreuzbergException
+```
+
+---
+
+### registerPostProcessor()
+
+Register a custom post-processor.
+
+**Signature:**
+
+```java title="Java"
+public static void registerPostProcessor(String name, PostProcessor processor) throws KreuzbergException
+public static void registerPostProcessor(String name, PostProcessor processor, int priority, ProcessingStage stage) throws KreuzbergException
+```
+
+---
+
+### registerValidator()
+
+Register a custom validator.
+
+**Signature:**
+
+```java title="Java"
+public static void registerValidator(String name, Validator validator) throws KreuzbergException
+public static void registerValidator(String name, Validator validator, int priority) throws KreuzbergException
+```
+
+---
+
+### unregisterDocumentExtractor()
+
+Unregister a document extractor by name.
+
+**Signature:**
+
+```java title="Java"
+public static void unregisterDocumentExtractor(String name) throws KreuzbergException
+```
+
+---
+
+### unregisterOCRBackend()
+
+Unregister an OCR backend by name.
+
+**Signature:**
+
+```java title="Java"
+public static void unregisterOCRBackend(String name) throws KreuzbergException
+```
+
+---
+
+### unregisterPostProcessor()
+
+Unregister a post-processor by name.
+
+**Signature:**
+
+```java title="Java"
+public static void unregisterPostProcessor(String name) throws KreuzbergException
+```
+
+---
+
+### unregisterValidator()
+
+Unregister a validator by name.
+
+**Signature:**
+
+```java title="Java"
+public static void unregisterValidator(String name) throws KreuzbergException
+```
+
+---
+
+### validateMimeType()
+
+Validate a MIME type string and return its normalized form.
+
+**Signature:**
+
+```java title="Java"
+public static String validateMimeType(String mimeType) throws KreuzbergException
+```
 
 ---
 
@@ -373,6 +564,7 @@ ExtractionConfig config = ExtractionConfig.builder()
     .includeDocumentStructure(false)                   // Include document structure (default: false)
     .keywords(KeywordConfig)                           // Keyword extraction settings
     .languageDetection(LanguageDetectionConfig)        // Language detection settings
+    .layout(LayoutDetectionConfig)                     // Layout detection settings
     .maxConcurrentExtractions(4)                       // Max concurrent extractions
     .ocr(OcrConfig)                                    // OCR configuration
     .outputFormat("plain")                             // Content format: "plain", "markdown", "djot", "html"
@@ -632,29 +824,43 @@ KeywordConfig keywords = KeywordConfig.builder()
 
 ### ExtractionResult
 
-Result of a document extraction operation.
+Result of a document extraction operation. All fields follow camelCase naming conventions.
 
 **Accessors:**
 
 ```java title="ResultAccess.java"
-// Access extracted content and metadata (alphabetically sorted)
-Optional<List<PdfAnnotation>> annotations = result.getAnnotations();  // PDF annotations
-List<Chunk> chunks = result.getChunks();                              // Text chunks
+// Core fields
 String content = result.getContent();                                // Extracted text content
-List<String> languages = result.getDetectedLanguages();               // Detected languages
-Optional<DjotContent> djotContent = result.getDjotContent();         // Djot content structure
-Optional<DocumentStructure> docStructure = result.getDocumentStructure(); // Document structure
-List<Element> elements = result.getElements();                       // Semantic elements
-Optional<List<ExtractedKeyword>> keywords = result.getExtractedKeywords(); // Extracted keywords
-List<ExtractedImage> images = result.getImages();                    // Extracted images
-Metadata metadata = result.getMetadata();                            // Document metadata (typed)
 String mimeType = result.getMimeType();                              // Detected MIME type
-List<OcrElement> ocrElements = result.getOcrElements();              // OCR elements with geometry
-List<PageContent> pages = result.getPages();                         // Per-page content
-Optional<PageStructure> pageStructure = result.getPageStructure();   // Page structure info
-Optional<List<ProcessingWarning>> warnings = result.getProcessingWarnings(); // Processing warnings
-Optional<Double> qualityScore = result.getQualityScore();            // Quality score (0.0–1.0)
+Metadata metadata = result.getMetadata();                            // Document metadata (typed)
+
+// Extraction artifacts
 List<Table> tables = result.getTables();                              // Extracted tables
+List<Chunk> chunks = result.getChunks();                              // Text chunks
+List<ExtractedImage> images = result.getImages();                    // Extracted images
+List<PageContent> pages = result.getPages();                         // Per-page content
+
+// Semantic & OCR elements
+List<Element> elements = result.getElements();                       // Semantic elements
+List<OcrElement> ocrElements = result.getOcrElements();              // OCR elements with geometry
+
+// Structure & Analysis
+Optional<DjotContent> djotContent = result.getDjotContent();         // Djot content structure
+Optional<DocumentStructure> document = result.getDocumentStructure(); // Document structure
+Optional<PageStructure> pageStructure = result.getPageStructure();   // Page structure info
+List<String> detectedLanguages = result.getDetectedLanguages();      // All detected languages
+Optional<String> detectedLanguage = result.getDetectedLanguage();    // Primary detected language
+Optional<List<ExtractedKeyword>> keywords = result.getExtractedKeywords(); // Extracted keywords
+
+// Quality & Warnings
+Optional<Double> qualityScore = result.getQualityScore();            // Quality score (0.0–1.0)
+Optional<List<ProcessingWarning>> warnings = result.getProcessingWarnings(); // Processing warnings
+Optional<List<PdfAnnotation>> annotations = result.getAnnotations();  // PDF annotations
+
+// Helper methods
+int pageCount = result.getPageCount();                               // Total page count
+int chunkCount = result.getChunkCount();                             // Total chunk count
+Optional<Object> title = result.getMetadataField("title");           // Unified metadata access
 ```
 
 **Example - Accessing results:**
@@ -665,16 +871,17 @@ ExtractionResult result = Kreuzberg.extractFile("document.pdf");
 // Display basic extraction statistics
 System.out.println("Content length: " + result.getContent().length());
 System.out.println("MIME: " + result.getMimeType());
-System.out.println("Tables: " + result.getTables().size());
-System.out.println("Languages: " + result.getDetectedLanguages());
+System.out.println("Pages: " + result.getPageCount());
+System.out.println("Chunks: " + result.getChunkCount());
 
-// Extract specific metadata fields
-Object pageCount = result.getMetadata().get("page_count");
-Object author = result.getMetadata().get("author");
+// Access typed metadata
+Metadata meta = result.getMetadata();
+meta.getTitle().ifPresent(t -> System.out.println("Title: " + t));
+meta.getAuthors().ifPresent(a -> System.out.println("Authors: " + String.join(", ", a)));
 
 // Process chunks for RAG workflows
 for (Chunk chunk : result.getChunks()) {
-    System.out.println("Chunk " + chunk.getIndex() + ": " + chunk.getContent());
+    System.out.println("Chunk [" + chunk.getMetadata().getChunkIndex() + "]: " + chunk.getContent());
 }
 ```
 
@@ -754,6 +961,34 @@ if (result.getPages() != null) {
 }
 ```
 
+### Metadata
+
+Typed document metadata extracted from various formats.
+
+**Accessors:**
+
+```java title="MetadataAccess.java"
+Optional<String> title = metadata.getTitle();
+Optional<String> subject = metadata.getSubject();
+Optional<List<String>> authors = metadata.getAuthors();
+Optional<List<String>> keywords = metadata.getKeywords();
+Optional<String> language = metadata.getLanguage();
+Optional<String> createdAt = metadata.getCreatedAt();
+Optional<String> modifiedAt = metadata.getModifiedAt();
+Optional<String> createdBy = metadata.getCreatedBy();
+Optional<String> modifiedBy = metadata.getModifiedBy();
+Optional<PageStructure> pages = metadata.getPages();
+Optional<String> category = metadata.getCategory();
+Optional<List<String>> tags = metadata.getTags();
+Optional<String> version = metadata.getDocumentVersion();
+Optional<String> abstractText = metadata.getAbstractText();
+Optional<String> outputFormat = metadata.getOutputFormat();
+Optional<Long> durationMs = metadata.getExtractionDurationMs();
+
+// Form-specific or post-processor metadata (legacy)
+Map<String, Object> additional = metadata.getAdditional();
+```
+
 ---
 
 ### Table
@@ -763,14 +998,16 @@ Represents a table extracted from a document.
 **Accessors:**
 
 ```java title="TableAccess.java"
-// Access table data in various formats
-String cell = table.getCell(row, col);                // Get cell value
-List<List<String>> cells = table.getCells();           // 2D list of cell values
-int cols = table.getColumnCount();                     // Number of columns
-String markdown = table.getMarkdown();                 // Markdown representation
-int pageNumber = table.getPageNumber();                // Page number (1-indexed)
-List<String> row = table.getRow(rowIndex);            // Get row
+List<List<String>> cells = table.cells();              // 2D list of cell values
+String markdown = table.markdown();                    // Markdown representation
+int pageNumber = table.pageNumber();                   // Page number (1-indexed)
+BoundingBox boundingBox = table.boundingBox();         // Bounding box coordinates
+
+// Helper methods
 int rows = table.getRowCount();                        // Number of rows
+int cols = table.getColumnCount();                     // Number of columns
+String cell = table.getCell(row, col);                // Get specific cell
+List<String> row = table.getRow(rowIndex);            // Get specific row
 ```
 
 **Example:**
@@ -803,10 +1040,9 @@ Represents a chunk of extracted text (for RAG/embeddings).
 **Accessors:**
 
 ```java title="ChunkAccess.java"
-// Access chunk data for RAG and embedding workflows
 String content = chunk.getContent();                   // Chunk text
-int index = chunk.getIndex();                          // Chunk index
-Optional<Map<String, Object>> metadata = chunk.getMetadata(); // Chunk metadata
+ChunkMetadata metadata = chunk.getMetadata();          // Chunk metadata
+Optional<List<Float>> embedding = chunk.getEmbedding(); // Embedding vector
 ```
 
 **Example:**
@@ -832,30 +1068,31 @@ for (Chunk chunk : result.getChunks()) {
 
 ### ChunkMetadata
 
-Metadata for a single text chunk.
+Metadata describing where a chunk appears within the original document.
 
 **Accessors:**
 
 ```java title="ChunkMetadataAccess.java"
-// Access chunk metadata for page tracking and boundaries
-int byteEnd = metadata.getByteEnd();                                             // UTF-8 byte offset (exclusive)
-int byteStart = metadata.getByteStart();                                         // UTF-8 byte offset (inclusive)
-int charCount = metadata.getCharCount();                                         // Number of characters
-Optional<Integer> firstPage = metadata.getFirstPage();                           // First page (1-indexed)
-Optional<HeadingContext> headingContext = metadata.getHeadingContext();           // Heading hierarchy
-Optional<Integer> lastPage = metadata.getLastPage();                             // Last page (1-indexed)
-Optional<Integer> tokenCount = metadata.getTokenCount();                         // Estimated token count
+long byteStart = metadata.getByteStart();              // UTF-8 start byte offset
+long byteEnd = metadata.getByteEnd();                  // UTF-8 end byte offset
+int chunkIndex = metadata.getChunkIndex();             // 0-based index
+int totalChunks = metadata.getTotalChunks();           // Total chunks in document
+Optional<Long> firstPage = metadata.getFirstPage();    // Start page number
+Optional<Long> lastPage = metadata.getLastPage();      // End page number
+Optional<Integer> tokenCount = metadata.getTokenCount(); // Token count
+Optional<HeadingContext> headings = metadata.getHeadingContext(); // Heading hierarchy
 ```
 
 **Fields:**
 
-- `byteEnd` (int): UTF-8 byte offset in content (exclusive).
-- `byteStart` (int): UTF-8 byte offset in content (inclusive).
-- `charCount` (int): Number of characters in chunk.
-- `firstPage` (Optional\<Integer\>): First page this chunk appears on (1-indexed, only when page boundaries available).
-- `headingContext` (Optional\<HeadingContext\>): Heading hierarchy when using Markdown chunker. Only populated when chunker_type is set to markdown.
-- `lastPage` (Optional\<Integer\>): Last page this chunk appears on (1-indexed, only when page boundaries available).
+- `byteEnd` (long): UTF-8 byte offset in content (exclusive).
+- `byteStart` (long): UTF-8 byte offset in content (inclusive).
+- `chunkIndex` (int): Zero-based index of this chunk.
+- `totalChunks` (int): Total number of chunks in document.
+- `firstPage` (Optional\<Long\>): First page this chunk appears on (1-indexed).
+- `lastPage` (Optional\<Long\>): Last page this chunk appears on (1-indexed).
 - `tokenCount` (Optional\<Integer\>): Estimated token count (if configured).
+- `headingContext` (Optional\<HeadingContext\>): Heading hierarchy for section-based chunking.
 
 **Page tracking:** When `PageStructure.boundaries` is available and chunking is enabled, `firstPage` and `lastPage` are automatically calculated based on byte offsets.
 
@@ -912,12 +1149,43 @@ Represents an image extracted from a document.
 **Accessors:**
 
 ```java title="ImageAccess.java"
-// Access extracted image data and metadata
-Optional<String> caption = image.getCaption();         // Image caption
-byte[] data = image.getData();                         // Image binary data
-String format = image.getFormat();                     // Image format (png, jpg, etc.)
-String mimeType = image.getMimeType();                 // MIME type
-int pageNumber = image.getPageNumber();                // Page number
+byte[] data = image.data();                            // Image binary data
+String format = image.format();                        // Image format (png, jpg, etc.)
+String mimeType = image.mimeType();                    // MIME type
+int pageNumber = image.pageNumber();                   // Page number (1-indexed)
+ImageDimensions dimensions = image.dimensions();       // Image width and height
+BoundingBox boundingBox = image.boundingBox();         // Location in document
+Optional<String> ocrResult = image.ocrResult();        // Text extracted from image
+```
+
+---
+
+### OcrElement
+
+Represents a low-level text element detected via OCR.
+
+**Accessors:**
+
+```java title="OcrElementAccess.java"
+String text = element.text();                          // Detected text
+BoundingBox geometry = element.geometry();             // Element coordinates
+double confidence = element.confidence();              // OCR confidence (0.0–1.0)
+int level = element.level();                           // Semantic level (e.g., word, line)
+```
+
+---
+
+### BoundingBox
+
+Represents spatial coordinates for elements in a document.
+
+**Accessors:**
+
+```java title="BoundingBoxAccess.java"
+double left = box.left();                              // X-coordinate (left)
+double top = box.top();                                // Y-coordinate (top)
+double width = box.width();                            // Element width
+double height = box.height();                          // Element height
 ```
 
 ---
@@ -1664,3 +1932,21 @@ brew install tesseract
 ```
 
 **"OutOfMemoryError with large files"** - Use streaming or batch processing with smaller batches.
+
+---
+
+### LayoutDetectionConfig
+
+Configuration for ONNX-based document layout detection.
+
+**Builder Methods:**
+
+```java title="LayoutDetectionConfig.java"
+LayoutDetectionConfig config = LayoutDetectionConfig.builder()
+    .applyHeuristics(true)             // Apply heuristic post-processing (default: true)
+    .confidenceThreshold(0.5)          // Min confidence threshold (0.0-1.0)
+    .preset("fast")                    // Model preset: "fast", "accurate"
+    .build();
+```
+
+---
