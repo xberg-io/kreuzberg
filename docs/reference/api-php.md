@@ -557,34 +557,52 @@ Main configuration class for extraction operations.
 readonly class ExtractionConfig
 {
     public function __construct(
-        public ?OcrConfig $ocr = null,
-        public ?PdfConfig $pdf = null,
         public ?ChunkingConfig $chunking = null,
-        public ?EmbeddingConfig $embedding = null,
-        public ?ImageExtractionConfig $imageExtraction = null,
-        public ?PageConfig $page = null,
-        public ?LanguageDetectionConfig $languageDetection = null,
-        public ?KeywordConfig $keyword = null,
+        public bool $enableQualityProcessing = true,
         public bool $extractImages = false,
         public bool $extractTables = true,
-        public bool $preserveFormatting = false,
+        public bool $forceOcr = false,
+        public ?array $htmlOptions = null,
+        public ?ImageExtractionConfig $imageExtraction = null,
+        public bool $includeDocumentStructure = false,
+        public ?KeywordConfig $keyword = null,
+        public ?LanguageDetectionConfig $languageDetection = null,
+        public ?int $maxConcurrentExtractions = null,
+        public ?OcrConfig $ocr = null,
+        public string $outputFormat = 'plain',
+        public ?PageConfig $page = null,
+        public ?PdfConfig $pdf = null,
+        public ?PostProcessorConfig $postprocessor = null,
+        public string $resultFormat = 'unified',
+        public ?array $securityLimits = null,
+        public ?TokenReductionConfig $tokenReduction = null,
+        public bool $useCache = true,
     );
 }
 ```
 
 **Fields:**
 
-- `$ocr` (OcrConfig|null): OCR configuration. Default: null (no OCR)
-- `$pdf` (PdfConfig|null): PDF-specific configuration. Default: null
 - `$chunking` (ChunkingConfig|null): Text chunking configuration. Default: null
-- `$embedding` (EmbeddingConfig|null): Embedding generation configuration. Default: null
-- `$imageExtraction` (ImageExtractionConfig|null): Image extraction configuration. Default: null
-- `$page` (PageConfig|null): Page extraction configuration. Default: null
-- `$languageDetection` (LanguageDetectionConfig|null): Language detection configuration. Default: null
-- `$keyword` (KeywordConfig|null): Keyword extraction configuration. Default: null
+- `$enableQualityProcessing` (bool): Enable quality post-processing enhancements. Default: true
 - `$extractImages` (bool): Extract images from documents. Default: false
 - `$extractTables` (bool): Extract tables from documents. Default: true
-- `$preserveFormatting` (bool): Preserve original formatting. Default: false
+- `$forceOcr` (bool): Force OCR on all documents regardless of document type. Default: false
+- `$htmlOptions` (array<string, mixed>|null): HTML to Markdown conversion options. Default: null
+- `$imageExtraction` (ImageExtractionConfig|null): Image extraction configuration. Default: null
+- `$includeDocumentStructure` (bool): Include hierarchical document structure in results. Default: false
+- `$keyword` (KeywordConfig|null): Keyword extraction configuration. Default: null
+- `$languageDetection` (LanguageDetectionConfig|null): Language detection configuration. Default: null
+- `$maxConcurrentExtractions` (int|null): Maximum concurrent extractions for batch operations. Default: null
+- `$ocr` (OcrConfig|null): OCR configuration. Default: null (no OCR)
+- `$outputFormat` (string): Output format for extracted content ('plain', 'markdown', 'djot', 'html'). Default: 'plain'
+- `$page` (PageConfig|null): Page extraction configuration. Default: null
+- `$pdf` (PdfConfig|null): PDF-specific configuration. Default: null
+- `$postprocessor` (PostProcessorConfig|null): Post-processor configuration. Default: null
+- `$resultFormat` (string): Result format ('unified', 'element_based'). Default: 'unified'
+- `$securityLimits` (array<string, int>|null): Security limits for archive extraction. Default: null
+- `$tokenReduction` (TokenReductionConfig|null): Token reduction configuration. Default: null
+- `$useCache` (bool): Enable caching of extraction results. Default: true
 
 **Examples:**
 
@@ -603,6 +621,9 @@ $config = new ExtractionConfig(
 
 // Advanced configuration
 $config = new ExtractionConfig(
+    chunking: new ChunkingConfig(maxChunkSize: 1000),
+    extractImages: true,
+    extractTables: true,
     ocr: new OcrConfig(
         backend: 'tesseract',
         language: 'eng'
@@ -610,11 +631,56 @@ $config = new ExtractionConfig(
     pdf: new PdfConfig(
         extractImages: true,
         extractMetadata: true
-    ),
-    extractImages: true,
-    extractTables: true,
-    preserveFormatting: true,
+    )
 );
+```
+
+---
+
+### ExtractionConfigBuilder
+
+Builder class for constructing `ExtractionConfig` instances with a fluent interface. This is the recommended approach for complex configurations.
+
+**Signature:**
+
+```php title="PHP"
+class ExtractionConfigBuilder
+{
+    public function build(): ExtractionConfig;
+    public function withChunking(?ChunkingConfig $chunking): self;
+    public function withEnableQualityProcessing(bool $enableQualityProcessing): self;
+    public function withForceOcr(bool $forceOcr): self;
+    public function withHtmlOptions(?array $htmlOptions = null): self;
+    public function withImages(?ImageExtractionConfig $images): self;
+    public function withKeywords(?KeywordConfig $keywords): self;
+    public function withLanguageDetection(?LanguageDetectionConfig $languageDetection): self;
+    public function withMaxConcurrentExtractions(?int $maxConcurrentExtractions): self;
+    public function withOcr(?OcrConfig $ocr): self;
+    public function withOutputFormat(string $outputFormat): self;
+    public function withPages(?PageConfig $pages): self;
+    public function withPdfOptions(?PdfConfig $pdfOptions): self;
+    public function withPostprocessor(?PostProcessorConfig $postprocessor): self;
+    public function withResultFormat(string $resultFormat): self;
+    public function withTokenReduction(?TokenReductionConfig $tokenReduction): self;
+    public function withUseCache(bool $useCache): self;
+}
+```
+
+**Examples:**
+
+```php title="extraction_config_builder.php"
+<?php
+
+use Kreuzberg\Config\ExtractionConfig;
+use Kreuzberg\Config\OcrConfig;
+use Kreuzberg\Config\ChunkingConfig;
+
+$config = ExtractionConfig::builder()
+    ->withOcr(new OcrConfig(backend: 'tesseract', language: 'eng'))
+    ->withChunking(new ChunkingConfig(maxChunkSize: 1000))
+    ->withUseCache(true)
+    ->withMaxConcurrentExtractions(8)
+    ->build();
 ```
 
 ---
@@ -1034,28 +1100,44 @@ Result object returned by all extraction functions.
 readonly class ExtractionResult
 {
     public function __construct(
-        public string $content,
-        public string $mimeType,
-        public Metadata $metadata,
-        public array $tables = [],
-        public ?array $detectedLanguages = null,
+        public ?array $annotations = null,
         public ?array $chunks = null,
+        public string $content,
+        public ?array $detectedLanguages = null,
+        public ?DjotContent $djotContent = null,
+        public ?DocumentStructure $document = null,
+        public ?array $elements = null,
+        public ?array $extractedKeywords = null,
         public ?array $images = null,
+        public Metadata $metadata,
+        public string $mimeType,
+        public ?array $ocrElements = null,
         public ?array $pages = null,
+        public ?array $processingWarnings = null,
+        public ?float $qualityScore = null,
+        public array $tables = [],
     );
 }
 ```
 
 **Fields:**
 
-- `$content` (string): Extracted text content
-- `$mimeType` (string): MIME type of the processed document
-- `$metadata` (Metadata): Document metadata (format-specific fields)
-- `$tables` (array<Table>): Array of extracted tables
-- `$detectedLanguages` (array<string>|null): Array of detected language codes (ISO 639-1) if language detection is enabled
+- `$annotations` (array<PdfAnnotation>|null): PDF annotations (links, highlights, notes)
 - `$chunks` (array<Chunk>|null): Text chunks with embeddings and metadata
+- `$content` (string): Extracted text content
+- `$detectedLanguages` (array<string>|null): Array of detected language codes (ISO 639-1) if language detection is enabled
+- `$djotContent` (DjotContent|null): Structured Djot content
+- `$document` (DocumentStructure|null): Hierarchical document structure
+- `$elements` (array<Element>|null): Semantic elements when `resultFormat='element_based'`
+- `$extractedKeywords` (array<ExtractedKeyword>|null): Extracted keywords with scores
 - `$images` (array<ExtractedImage>|null): Extracted images (with nested OCR results)
+- `$metadata` (Metadata): Document metadata (format-specific fields)
+- `$mimeType` (string): MIME type of the processed document
+- `$ocrElements` (array<OcrElement>|null): OCR elements with positioning and confidence
 - `$pages` (array<PageContent>|null): Per-page extracted content when page extraction is enabled
+- `$processingWarnings` (array<ProcessingWarning>|null): Non-fatal processing warnings
+- `$qualityScore` (float|null): Document extraction quality score (0.0 to 1.0)
+- `$tables` (array<Table>): Array of extracted tables
 
 **Examples:**
 
@@ -1107,19 +1189,19 @@ readonly class Metadata
 
 **Common Fields:**
 
-- `$language` (string|null): Document language (ISO 639-1 code)
-- `$date` (string|null): Document date (ISO 8601 format)
-- `$subject` (string|null): Document subject
-- `$formatType` (string|null): Format discriminator ("pdf", "excel", "email", etc.)
-- `$title` (string|null): Document title
 - `$authors` (array<string>|null): Document authors
-- `$keywords` (array<string>|null): Document keywords
 - `$createdAt` (string|null): Creation date (ISO 8601)
-- `$modifiedAt` (string|null): Modification date (ISO 8601)
 - `$createdBy` (string|null): Creator/application name
-- `$producer` (string|null): Producer/generator
-- `$pageCount` (int|null): Number of pages
 - `$custom` (array<string, mixed>): Additional custom metadata from postprocessors
+- `$date` (string|null): Document date (ISO 8601 format)
+- `$formatType` (string|null): Format discriminator ("pdf", "excel", "email", etc.)
+- `$keywords` (array<string>|null): Document keywords
+- `$language` (string|null): Document language (ISO 639-1 code)
+- `$modifiedAt` (string|null): Modification date (ISO 8601)
+- `$pageCount` (int|null): Number of pages
+- `$producer` (string|null): Producer/generator
+- `$subject` (string|null): Document subject
+- `$title` (string|null): Document title
 
 **Examples:**
 
@@ -1150,6 +1232,7 @@ Extracted table structure.
 readonly class Table
 {
     public function __construct(
+        public ?BoundingBox $boundingBox = null,
         public array $cells,
         public string $markdown,
         public int $pageNumber,
@@ -1159,6 +1242,7 @@ readonly class Table
 
 **Fields:**
 
+- `$boundingBox` (BoundingBox|null): Bounding box coordinates if available
 - `$cells` (array<array<string>>): 2D array of table cells (rows x columns)
 - `$markdown` (string): Table rendered as markdown
 - `$pageNumber` (int): Page number where table was found
@@ -1223,26 +1307,30 @@ Metadata for a single text chunk.
 readonly class ChunkMetadata
 {
     public function __construct(
-        public int $byteStart,
         public int $byteEnd,
+        public int $byteStart,
         public int $charCount,
-        public ?int $tokenCount = null,
+        public int $chunkIndex,
         public ?int $firstPage = null,
-        public ?int $lastPage = null,
         public ?HeadingContext $headingContext = null,
+        public ?int $lastPage = null,
+        public ?int $tokenCount = null,
+        public int $totalChunks,
     );
 }
 ```
 
 **Fields:**
 
-- `$byteStart` (int): UTF-8 byte offset in content (inclusive)
 - `$byteEnd` (int): UTF-8 byte offset in content (exclusive)
+- `$byteStart` (int): UTF-8 byte offset in content (inclusive)
 - `$charCount` (int): Number of characters in chunk
-- `$tokenCount` (int|null): Estimated token count (if configured)
+- `$chunkIndex` (int): Chunk index (0-based)
 - `$firstPage` (int|null): First page this chunk appears on (1-indexed)
-- `$lastPage` (int|null): Last page this chunk appears on (1-indexed)
 - `$headingContext` (?HeadingContext): Heading hierarchy when using Markdown chunker. Only populated when chunker_type is set to markdown.
+- `$lastPage` (int|null): Last page this chunk appears on (1-indexed)
+- `$tokenCount` (int|null): Estimated token count (if configured)
+- `$totalChunks` (int): Total number of chunks
 
 ---
 
@@ -1256,24 +1344,36 @@ Extracted image with optional OCR results.
 readonly class ExtractedImage
 {
     public function __construct(
+        public ?int $bitsPerComponent = null,
+        public ?BoundingBox $boundingBox = null,
+        public ?string $colorspace = null,
         public string $data,
+        public ?string $description = null,
         public string $format,
-        public int $width,
-        public int $height,
-        public int $pageNumber,
+        public ?int $height = null,
+        public int $imageIndex,
+        public bool $isMask = false,
         public ?ExtractionResult $ocrResult = null,
+        public ?int $pageNumber = null,
+        public ?int $width = null,
     );
 }
 ```
 
 **Fields:**
 
+- `$bitsPerComponent` (int|null): Bits per color component
+- `$boundingBox` (BoundingBox|null): Bounding box coordinates if available
+- `$colorspace` (string|null): Image colorspace
 - `$data` (string): Image data (base64 encoded or raw bytes)
+- `$description` (string|null): Image description/alt text
 - `$format` (string): Image format (e.g., "png", "jpeg")
-- `$width` (int): Image width in pixels
-- `$height` (int): Image height in pixels
-- `$pageNumber` (int): Page number where image was found
+- `$height` (int|null): Image height in pixels
+- `$imageIndex` (int): Image index within document
+- `$isMask` (bool): Whether image is a mask
 - `$ocrResult` (ExtractionResult|null): OCR result if OCR was performed on the image
+- `$pageNumber` (int|null): Page number where image was found
+- `$width` (int|null): Image width in pixels
 
 ---
 
