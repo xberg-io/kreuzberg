@@ -870,6 +870,7 @@ Main configuration struct for extraction operations.
   include_document_structure: boolean(),
   keywords: map() | nil,
   language_detection: map() | nil,
+  layout: map() | nil,
   max_concurrent_extractions: non_neg_integer() | nil,
   ocr: map() | nil,
   output_format: String.t(),
@@ -893,6 +894,7 @@ Main configuration struct for extraction operations.
 - `include_document_structure` (boolean): Include hierarchical document structure in results (default: false).
 - `keywords` (map | nil): Keyword extraction configuration.
 - `language_detection` (map | nil): Language detection settings.
+- `layout` (map | nil): Layout detection configuration.
 - `max_concurrent_extractions` (non_neg_integer | nil): Maximum concurrent extractions in batch operations.
 - `ocr` (map | nil): OCR configuration.
 - `output_format` (String): Content text format — `"plain"`, `"markdown"`, `"djot"`, `"html"` (default: `"plain"`).
@@ -995,43 +997,43 @@ Result struct returned by all extraction functions.
 
 ```elixir title="Elixir"
 @type t :: %Kreuzberg.ExtractionResult{
-  annotations: [map()] | nil,
-  chunks: [map()] | nil,
+  annotations: [Kreuzberg.DocumentTextAnnotation.t()] | nil,
+  chunks: [Kreuzberg.Chunk.t()] | nil,
   content: String.t(),
   detected_languages: [String.t()] | nil,
-  djot_content: map() | nil,
-  document: map() | nil,
-  elements: [map()] | nil,
-  extracted_keywords: [map()] | nil,
-  images: [map()] | nil,
-  metadata: map(),
+  djot_content: Kreuzberg.DjotContent.t() | nil,
+  document: Kreuzberg.DocumentStructure.t() | nil,
+  elements: [Kreuzberg.Element.t()] | nil,
+  extracted_keywords: [Kreuzberg.Keyword.t()] | nil,
+  images: [Kreuzberg.Image.t()] | nil,
+  metadata: Kreuzberg.Metadata.t(),
   mime_type: String.t(),
-  ocr_elements: [map()] | nil,
-  pages: [map()] | nil,
-  processing_warnings: [map()],
+  ocr_elements: [Kreuzberg.OcrElement.t()] | nil,
+  pages: [Kreuzberg.Page.t()] | nil,
+  processing_warnings: [Kreuzberg.ProcessingWarning.t()],
   quality_score: float() | nil,
-  tables: [map()],
+  tables: [Kreuzberg.Table.t()],
 }
 ```
 
 **Fields:**
 
-- `annotations` (list | nil): PDF annotations (text notes, highlights, links, stamps) when annotation extraction is enabled via `pdf_options`.
-- `chunks` (list | nil): List of text chunks with embeddings when chunking is enabled.
+- `annotations` (list | nil): PDF annotations (text notes, highlights, links, stamps) as `Kreuzberg.DocumentTextAnnotation` structs.
+- `chunks` (list | nil): List of text chunks with embeddings (`Kreuzberg.Chunk`) when chunking is enabled.
 - `content` (String): Extracted text content.
 - `detected_languages` (list | nil): List of detected language codes (ISO 639-1) if language detection is enabled.
-- `djot_content` (map | nil): Rich Djot content structure when extracting Djot documents with structured extraction enabled.
-- `document` (map | nil): Hierarchical document structure when `include_document_structure` is true.
-- `elements` (list | nil): Semantic elements when `result_format` is `"element_based"`.
-- `extracted_keywords` (list | nil): Extracted keywords with scores when keyword extraction is configured.
-- `images` (list | nil): List of extracted images when image extraction is enabled.
-- `metadata` (map): Document metadata (format-specific fields).
+- `djot_content` (Kreuzberg.DjotContent | nil): Rich Djot content structure.
+- `document` (Kreuzberg.DocumentStructure | nil): Hierarchical document structure when `include_document_structure` is true.
+- `elements` (list | nil): Semantic elements (`Kreuzberg.Element`) when `result_format` is `"element_based"`.
+- `extracted_keywords` (list | nil): Extracted keywords with scores (`Kreuzberg.Keyword`).
+- `images` (list | nil): List of extracted images (`Kreuzberg.Image`).
+- `metadata` (Kreuzberg.Metadata): Document metadata.
 - `mime_type` (String): MIME type of the processed document.
-- `ocr_elements` (list | nil): OCR elements with bounding geometry and confidence when OCR element extraction is enabled.
-- `pages` (list | nil): Per-page extracted content when page extraction is enabled.
-- `processing_warnings` (list): Non-fatal warnings from processing pipeline stages (default: `[]`).
+- `ocr_elements` (list | nil): OCR elements (`Kreuzberg.OcrElement`) with bounding geometry and confidence.
+- `pages` (list | nil): Per-page extracted content (`Kreuzberg.Page`).
+- `processing_warnings` (list): Non-fatal warnings (`Kreuzberg.ProcessingWarning`) from processing pipeline stages.
 - `quality_score` (float | nil): Document quality score between 0.0 and 1.0.
-- `tables` (list): List of extracted tables.
+- `tables` (list): List of extracted tables (`Kreuzberg.Table`).
 
 **Example - Basic result access:**
 
@@ -1087,36 +1089,27 @@ Document metadata dictionary. Fields vary by document format.
 
 **Common Fields:**
 
-- `"date"` (String): Document date (ISO 8601 format).
-- `"format_type"` (String): Format discriminator ("pdf", "excel", "email", etc.).
-- `"language"` (String): Document language (ISO 639-1 code).
-- `"subject"` (String): Document subject.
-
-**PDF-Specific Fields** (when `format_type == "pdf"`):
-
-- `"author"` (String): PDF author.
-- `"creation_date"` (String): Creation date (ISO 8601).
-- `"creator"` (String): Creator application.
-- `"keywords"` (String): PDF keywords.
-- `"modification_date"` (String): Modification date (ISO 8601).
-- `"page_count"` (integer): Number of pages.
-- `"producer"` (String): Producer application.
-- `"title"` (String): PDF title.
-
-**Excel-Specific Fields** (when `format_type == "excel"`):
-
-- `"sheet_count"` (integer): Number of sheets.
-- `"sheet_names"` (list): List of sheet names.
-
-**Email-Specific Fields** (when `format_type == "email"`):
-
-- `"attachments"` (list): List of attachment filenames.
-- `"bcc_emails"` (list): BCC email addresses.
-- `"cc_emails"` (list): CC email addresses.
-- `"from_email"` (String): Sender email address.
-- `"from_name"` (String): Sender name.
-- `"message_id"` (String): Email message ID.
-- `"to_emails"` (list): Recipient email addresses.
+- `title` (String | nil): Document title.
+- `subject` (String | nil): Document subject or description.
+- `authors` (list(String) | nil): List of author names.
+- `keywords` (list(String) | nil): List of keywords.
+- `language` (String | nil): Primary language (ISO 639-1 code).
+- `created_at` (String | nil): Creation date (ISO 8601).
+- `modified_at` (String | nil): Last modification date (ISO 8601).
+- `created_by` (String | nil): Application that created the document.
+- `modified_by` (String | nil): Application that last modified the document.
+- `pages` (Kreuzberg.PageStructure | nil): Page structure information.
+- `format` (map | nil): Format-specific metadata (flattened fields).
+- `image_preprocessing` (Kreuzberg.ImagePreprocessingMetadata | nil): Image preprocessing metadata.
+- `json_schema` (map | nil): JSON schema if applicable.
+- `error` (Kreuzberg.ErrorMetadata | nil): Error metadata if extraction partially failed.
+- `category` (String | nil): Document category classification.
+- `tags` (list(String) | nil): List of document tags.
+- `document_version` (String | nil): Version of the document.
+- `abstract_text` (String | nil): Abstract or summary of the document.
+- `output_format` (String | nil): Output format used for extraction.
+- `extraction_duration_ms` (non_neg_integer | nil): Time taken for extraction in milliseconds.
+- `additional` (map): Additional metadata fields.
 
 **Example:**
 
@@ -1139,9 +1132,10 @@ Extracted table structure.
 
 **Fields:**
 
-- `"cells"` (list): 2D array of table cells (rows x columns).
-- `"markdown"` (String): Table rendered as markdown.
-- `"page_number"` (integer): Page number where table was found.
+- `cells` (list(list(String))): 2D array of table cells (rows x columns).
+- `markdown` (String): Table rendered as markdown.
+- `page_number` (non_neg_integer): Page number where table was found (0-indexed).
+- `bounding_box` (Kreuzberg.BoundingBox | nil): Bounding box coordinates if available.
 
 **Example:**
 
@@ -1149,11 +1143,11 @@ Extracted table structure.
 {:ok, result} = Kreuzberg.extract_file("invoice.pdf")
 
 Enum.each(result.tables, fn table ->
-  IO.puts("Table on page #{table["page_number"]}:")
-  IO.puts(table["markdown"])
+  IO.puts("Table on page #{table.page_number}:")
+  IO.puts(table.markdown)
 
   # Access raw cell data
-  Enum.each(table["cells"], fn row ->
+  Enum.each(table.cells, fn row ->
     IO.inspect(row)
   end)
 end)
@@ -1689,42 +1683,230 @@ IO.puts("Word count: #{result.metadata["word_count"]}")
 
 ## Type Reference
 
+## Type Reference
+
+### BoundingBox
+
+Coordinates for element positioning.
+
+**Fields:**
+
+- `x0` (float): Left x-coordinate.
+- `y0` (float): Bottom y-coordinate.
+- `x1` (float): Right x-coordinate.
+- `y1` (float): Top y-coordinate.
+
+---
+
+### Chunk
+
+A text fragment with embedding.
+
+**Fields:**
+
+- `content` (String): Text content.
+- `embedding` (list(float) | nil): Vector embedding.
+- `metadata` (Kreuzberg.ChunkMetadata): Positioning metadata.
+
+---
+
+### ChunkMetadata
+
+Positioning and context for a chunk.
+
+**Fields:**
+
+- `byte_start` (non_neg_integer): Start byte offset.
+- `byte_end` (non_neg_integer): End byte offset.
+- `chunk_index` (non_neg_integer): Position index.
+- `first_page` (non_neg_integer | nil): First page number.
+- `heading_context` (map | nil): Hierarchical heading context.
+- `last_page` (non_neg_integer | nil): Last page number.
+- `token_count` (non_neg_integer | nil): Number of tokens.
+- `total_chunks` (non_neg_integer): Total chunk count.
+
+---
+
+### DjotContent
+
+Structured Djot document.
+
+**Fields:**
+
+- `attributes` (list): Element attributes.
+- `blocks` (list(Kreuzberg.DjotFormattedBlock)): Block-level elements.
+- `footnotes` (list(Kreuzberg.DjotFootnote)): Footnote definitions.
+- `images` (list(Kreuzberg.DjotImage)): Extracted images.
+- `links` (list(Kreuzberg.DjotLink)): Extracted links.
+- `metadata` (Kreuzberg.Metadata): Document metadata.
+- `plain_text` (String): Plain text fallback.
+- `tables` (list(Kreuzberg.Table)): Extracted tables.
+
+---
+
+### DocumentNode
+
+A node in the hierarchical document tree.
+
+**Fields:**
+
+- `annotations` (list(Kreuzberg.DocumentTextAnnotation)): Inline annotations.
+- `bbox` (Kreuzberg.BoundingBox | nil): Node bounding box.
+- `children` (list(non_neg_integer)): Indices of child nodes.
+- `content` (map): Type-specific content data.
+- `content_layer` (String | nil): Layer (body, header, etc.).
+- `id` (String): Unique node identifier.
+- `node_type` (String): Semantic type description.
+- `page_number` (non_neg_integer | nil): Starting page.
+- `page_number_end` (non_neg_integer | nil): Ending page.
+- `parent` (non_neg_integer | nil): Index of parent node.
+
+---
+
+### DocumentStructure
+
+Hierarchical representation of the document.
+
+**Fields:**
+
+- `nodes` (list(Kreuzberg.DocumentNode)): Flat list of nodes forming a tree.
+
+---
+
+### Element
+
+Semantic element (Unstructured compatibility).
+
+**Fields:**
+
+- `element_id` (String): Deterministic unique ID.
+- `element_type` (atom): Semantic type (e.g., `:narrative_text`).
+- `metadata` (Kreuzberg.ElementMetadata): Positioning and source metadata.
+- `text` (String): Text content.
+
+---
+
+### Image
+
+Extracted image with metadata.
+
+**Fields:**
+
+- `bits_per_component` (non_neg_integer | nil): Bit depth.
+- `bounding_box` (map | nil): Box coordinates.
+- `colorspace` (String | nil): Color space (e.g., "RGB").
+- `data` (binary): Raw image data.
+- `description` (String | nil): Alt text or description.
+- `format` (String): Format ("png", "jpeg", etc.).
+- `height` (non_neg_integer | nil): Pixel height.
+- `image_index` (non_neg_integer): Position in document.
+- `is_mask` (boolean): Whether it's a mask image.
+- `ocr_result` (Kreuzberg.ExtractionResult | nil): Recursive OCR results.
+- `page_number` (non_neg_integer | nil): Page where found.
+- `width` (non_neg_integer | nil): Pixel width.
+
+---
+
+### Keyword
+
+Extracted keyword with relevance score.
+
+**Fields:**
+
+- `score` (float): Relevance score (0.0 to 1.0).
+- `text` (String): Keyword text.
+
+---
+
+### OcrBoundingGeometry
+
+Geometry for OCR elements.
+
+**Fields:**
+
+- `height` (float): Height in pixels.
+- `left` (float): X-coordinate.
+- `top` (float): Y-coordinate.
+- `type` (String): Geometry type ("rect", etc.).
+- `width` (float): Width in pixels.
+
+---
+
+### OcrElement
+
+Detailed OCR element.
+
+**Fields:**
+
+- `backend_metadata` (map | nil): Backend-specific data.
+- `confidence` (Kreuzberg.OcrConfidence | nil): Confidence scores.
+- `geometry` (Kreuzberg.OcrBoundingGeometry | nil): Relative positioning.
+- `level` (String | nil): Hierarchy level ("word", "line", etc.).
+- `page_number` (non_neg_integer | nil): Page where found.
+- `parent_id` (String | nil): ID of parent element.
+- `rotation` (map | nil): Angle and orientation.
+- `text` (String): Recognized text.
+
+---
+
+### Page
+
+Single page from a document.
+
+**Fields:**
+
+- `content` (String): Page text.
+- `hierarchy` (map | nil): Structural hierarchy.
+- `images` (list(Kreuzberg.Image)): Page images.
+- `is_blank` (boolean | nil): Blank page detection.
+- `page_number` (non_neg_integer): 0-indexed page number.
+- `tables` (list(Kreuzberg.Table)): Page tables.
+
+---
+
+### ProcessingWarning
+
+Warning from the extraction pipeline.
+
+**Fields:**
+
+- `message` (String): Warning description.
+- `source` (String): Component that issued the warning.
+
+---
+
 ### Complete Type Specifications
 
 ```elixir title="types.exs"
-# Configuration types
-@type config_option :: ExtractionConfig.t() | map() | keyword() | nil
-
-# Result types
+# Core types
 @type extraction_result :: {:ok, ExtractionResult.t()} | {:error, String.t()}
 @type batch_result :: {:ok, [ExtractionResult.t()]} | {:error, String.t()}
 
-# Async types
+# Config & Options
+@type config_option :: ExtractionConfig.t() | map() | keyword() | nil
+
+# Async Task types
 @type async_result :: Task.t(extraction_result())
 @type async_batch_result :: Task.t(batch_result())
 
 # Plugin types
+@type ocr_backend :: module()
 @type post_processor :: module()
 @type validator :: module()
-@type ocr_backend :: module()
 
-# Cache types
+# Status & Stats
 @type cache_stats :: %{
-  "total_files" => non_neg_integer(),
-  "total_size_mb" => float(),
-  "available_space_mb" => float(),
-  "oldest_file_age_days" => non_neg_integer(),
-  "newest_file_age_days" => non_neg_integer()
+  required(String.t()) => non_neg_integer() | float()
 }
 
-# Error types
+# Errors
 @type error_reason ::
-  :invalid_format |
-  :invalid_config |
-  :ocr_error |
   :extraction_error |
+  :invalid_config |
+  :invalid_format |
   :io_error |
   :nif_error |
+  :ocr_error |
   :unknown_error
 ```
 
