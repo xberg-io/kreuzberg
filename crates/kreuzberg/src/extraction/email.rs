@@ -360,10 +360,7 @@ fn collect_nested_message_html(message: &mail_parser::Message<'_>, out: &mut Vec
 /// the FAT and retry – the real streams are still within the original
 /// data range and parse correctly.
 ///
-/// `fallback_codepage` is a Windows code page number to use when the MSG file
-/// does not specify one via `PR_MESSAGE_CODEPAGE` or `PR_INTERNET_CPID`.
-/// Pass `None` to fall back to windows-1252.
-pub fn parse_msg_content(data: &[u8], fallback_codepage: Option<u32>) -> Result<EmailExtractionResult> {
+pub(crate) fn parse_msg_content(data: &[u8], fallback_codepage: Option<u32>) -> Result<EmailExtractionResult> {
     use std::borrow::Cow;
     use std::io::Cursor;
 
@@ -857,7 +854,7 @@ fn extract_raw_date_header(data: &[u8]) -> Option<String> {
 }
 
 /// Extract email content from either .eml or .msg format
-pub fn extract_email_content(data: &[u8], mime_type: &str, fallback_codepage: Option<u32>) -> Result<EmailExtractionResult> {
+pub(crate) fn extract_email_content(data: &[u8], mime_type: &str, fallback_codepage: Option<u32>) -> Result<EmailExtractionResult> {
     if data.is_empty() {
         return Err(KreuzbergError::validation("Email content is empty".to_string()));
     }
@@ -1504,44 +1501,35 @@ mod tests {
 
     #[test]
     fn test_parse_msg_content_invalid_with_fallback() {
-        // Signature test: invalid data with fallback codepage still returns error
+        // With a user-configured fallback, invalid data still returns an error.
         let result = parse_msg_content(b"not a msg file", Some(1251));
         assert!(result.is_err());
         assert!(matches!(result.unwrap_err(), KreuzbergError::Parsing { .. }));
     }
 
     #[test]
-    fn test_parse_msg_content_invalid_default_unchanged() {
-        // Signature test: None fallback behaves identically to before
-        let result = parse_msg_content(b"not a msg file", None);
-        assert!(result.is_err());
-        assert!(matches!(result.unwrap_err(), KreuzbergError::Parsing { .. }));
-    }
-
-    #[test]
     fn test_extract_email_content_invalid_codepage_is_silent() {
-        // Unknown codepage 99999 should not cause an error on a valid EML file
+        // Unknown codepage 99999 should not cause an error on a valid EML file.
+        // EML ignores fallback_codepage (it's MSG-only), so this tests no panic.
         let eml = b"From: a@b.com\r\nSubject: Test\r\n\r\nBody";
-        // EML ignores fallback_codepage (it's MSG-only), so this just tests no panic
         let result = extract_email_content(eml, "message/rfc822", Some(99999));
         assert!(result.is_ok());
     }
 
     #[test]
     fn test_parse_msg_default_unchanged_with_real_fixture() {
-        // Existing fixture — behavior with None fallback must be identical to before.
         // This is a Western English fixture, so windows-1252 default is correct.
         let data = include_bytes!(
             "../../../../test_documents/vendored/unstructured/msg/fake-email.msg"
         );
-        let result_default = parse_msg_content(data, None).unwrap();
-        assert!(!result_default.cleaned_text.is_empty());
+        let result = parse_msg_content(data, None).unwrap();
+        assert!(!result.cleaned_text.is_empty());
     }
 
     #[test]
     fn test_parse_msg_invalid_codepage_falls_back_silently() {
-        // codepage 99999 is unrecognized → silently falls back to windows-1252.
-        // For a Western English fixture, the result must be identical to None fallback.
+        // An unrecognized fallback codepage (99999) silently degrades to windows-1252.
+        // For a Western English fixture the output is identical to the no-fallback case.
         let data = include_bytes!(
             "../../../../test_documents/vendored/unstructured/msg/fake-email.msg"
         );

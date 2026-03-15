@@ -72,7 +72,7 @@ pub use archive::{
 };
 
 #[cfg(feature = "email")]
-pub use email::{build_email_text_output, extract_email_content, parse_eml_content, parse_msg_content};
+pub use email::{build_email_text_output, parse_eml_content};
 
 #[cfg(any(feature = "excel", feature = "excel-wasm"))]
 pub use excel::{excel_to_markdown, read_excel_bytes, read_excel_file};
