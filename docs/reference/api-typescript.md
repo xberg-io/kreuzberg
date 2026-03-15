@@ -477,6 +477,8 @@ interface OcrConfig {
 - `backend` (string): OCR backend to use. Options: "tesseract", "paddle-ocr". Default: "tesseract"
 - `language` (string): Language code for OCR (ISO 639-3). Default: "eng"
 - `tesseractConfig` (TesseractConfig | null): Tesseract-specific configuration. Default: null
+- `modelTier` (string | null): <span class="version-badge">v4.5.0</span> PaddleOCR model tier: "server" (high accuracy, ~88MB det model) or "mobile" (lightweight, ~4.5MB det model). Default: "server"
+- `padding` (number | null): <span class="version-badge">v4.5.0</span> Padding in pixels (0-100) added around the image before PaddleOCR detection. Default: 10
 
 **Example:**
 

@@ -16,5 +16,6 @@
 		"text_file": "../../../test_documents/ground_truth/pdf/pdf_ocr_rotated_90.md",
 		"source": "vision",
 		"markdown_file": "../../../test_documents/ground_truth/pdf/pdf_ocr_rotated_90.md"
-	}
+	},
+	"ground_truth_text": "Docling bundles PDF document conversion to JSON and Markdown in an easy self contained package"
 }

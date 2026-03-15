@@ -77,14 +77,22 @@ pub mod keywords;
 #[cfg(feature = "ocr")]
 pub mod ocr;
 
-#[cfg(any(feature = "paddle-ocr", feature = "embeddings", feature = "layout-detection"))]
+#[cfg(any(
+    feature = "paddle-ocr",
+    feature = "embeddings",
+    feature = "layout-detection",
+    feature = "auto-rotate"
+))]
 pub mod ort_discovery;
 
-#[cfg(any(feature = "paddle-ocr", feature = "layout-detection"))]
+#[cfg(any(feature = "paddle-ocr", feature = "layout-detection", feature = "auto-rotate"))]
 pub(crate) mod model_download;
 
 #[cfg(feature = "paddle-ocr")]
 pub mod paddle_ocr;
+
+#[cfg(feature = "auto-rotate")]
+pub mod doc_orientation;
 
 #[cfg(feature = "layout-detection")]
 pub mod layout;

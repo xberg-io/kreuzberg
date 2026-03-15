@@ -240,7 +240,9 @@ module Kreuzberg
       attr_reader det_db_unclip_ratio: Float?
       attr_reader det_limit_side_len: Integer?
       attr_reader rec_batch_num: Integer?
-      def initialize: (?language: String?, ?cache_dir: String?, ?use_angle_cls: bool?, ?enable_table_detection: bool?, ?det_db_thresh: Float?, ?det_db_box_thresh: Float?, ?det_db_unclip_ratio: Float?, ?det_limit_side_len: Integer?, ?rec_batch_num: Integer?) -> void
+      attr_reader padding: Integer?
+      attr_reader model_tier: String?
+      def initialize: (?language: String?, ?cache_dir: String?, ?use_angle_cls: bool?, ?enable_table_detection: bool?, ?det_db_thresh: Float?, ?det_db_box_thresh: Float?, ?det_db_unclip_ratio: Float?, ?det_limit_side_len: Integer?, ?rec_batch_num: Integer?, ?padding: Integer?, ?model_tier: String?) -> void
       def to_h: () -> Hash[Symbol, untyped]
     end
 

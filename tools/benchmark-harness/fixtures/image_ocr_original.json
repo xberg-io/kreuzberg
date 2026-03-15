@@ -1,0 +1,7 @@
+{
+	"document": "../../../test_documents/images/ocr_test_original.png",
+	"file_type": "png",
+	"file_size": 33383,
+	"expected_frameworks": [],
+	"ground_truth_text": "Docling bundles PDF document conversion to JSON and Markdown in an easy self contained package"
+}

@@ -6,10 +6,14 @@ use ort::{
     value::Tensor,
 };
 
-const MEAN_VALUES: [f32; 3] = [127.5, 127.5, 127.5];
-const NORM_VALUES: [f32; 3] = [1.0 / 127.5, 1.0 / 127.5, 1.0 / 127.5];
-const ANGLE_DST_WIDTH: u32 = 192;
-const ANGLE_DST_HEIGHT: u32 = 48;
+// PP-LCNet_x1_0_textline_ori preprocessing (ImageNet normalization).
+// Input: resize to 160×80, normalize with ImageNet mean/std.
+// Formula in substract_mean_normalize: (pixel - MEAN) * NORM
+// For ImageNet: (pixel/255 - mean) / std = (pixel - mean*255) * (1/(std*255))
+const MEAN_VALUES: [f32; 3] = [0.485 * 255.0, 0.456 * 255.0, 0.406 * 255.0];
+const NORM_VALUES: [f32; 3] = [1.0 / (0.229 * 255.0), 1.0 / (0.224 * 255.0), 1.0 / (0.225 * 255.0)];
+const ANGLE_DST_WIDTH: u32 = 160;
+const ANGLE_DST_HEIGHT: u32 = 80;
 const ANGLE_COLS: usize = 2;
 
 #[derive(Debug)]
@@ -37,7 +41,7 @@ impl BaseNet for AngleNet {
 
 impl AngleNet {
     pub fn get_angles(
-        &mut self,
+        &self,
         part_imgs: &[image::RgbImage],
         do_angle: bool,
         most_angle: bool,
@@ -66,8 +70,8 @@ impl AngleNet {
         Ok(angles)
     }
 
-    fn get_angle(&mut self, img_src: &image::RgbImage) -> Result<Angle, OcrError> {
-        let Some(session) = &mut self.session else {
+    fn get_angle(&self, img_src: &image::RgbImage) -> Result<Angle, OcrError> {
+        let Some(session) = &self.session else {
             return Err(OcrError::SessionNotInitialized);
         };
 
@@ -82,7 +86,12 @@ impl AngleNet {
 
         let input_tensors = Tensor::from_array(input_tensors)?;
 
-        let outputs = session.run(inputs![self.input_names[0].as_str() => input_tensors])?;
+        // SAFETY: ONNX Runtime C API is thread-safe for concurrent inference.
+        #[allow(unsafe_code)]
+        let outputs = unsafe {
+            let session_ptr = session as *const Session as *mut Session;
+            (*session_ptr).run(inputs![self.input_names[0].as_str() => input_tensors])?
+        };
 
         let angle = Self::score_to_angle(&outputs, ANGLE_COLS)?;
 

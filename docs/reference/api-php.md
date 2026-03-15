@@ -707,6 +707,7 @@ readonly class OcrConfig
 - `$backend` (string): OCR backend to use. Options: "tesseract", "paddle-ocr". Default: "tesseract"
 - `$language` (string): Language code for OCR (ISO 639-3). Default: "eng"
 - `$tesseractConfig` (TesseractConfig|null): Tesseract-specific configuration. Default: null
+- `$paddleOcrConfig` (PaddleOcrConfig|null): <span class="version-badge">v4.5.0</span> PaddleOCR-specific configuration. Fields: `$modelTier` (string, "server" or "mobile", default "server"), `$padding` (int, 0-100, default 10). Default: null
 
 **Examples:**
 

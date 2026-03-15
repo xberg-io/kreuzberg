@@ -58,8 +58,8 @@ struct RecModelDefinition {
     model_size_bytes: u64,
 }
 
-/// Shared models: detection (PP-OCRv5 server) and classification (PPOCRv2).
-/// These are language-agnostic and shared across all script families.
+/// Legacy v1 shared models — kept for backward compatibility with `ensure_shared_models()`.
+/// New code should use `ensure_v2_shared_models()` instead.
 const SHARED_MODELS: &[SharedModelDefinition] = &[
     SharedModelDefinition {
         model_type: "det",
@@ -77,26 +77,11 @@ const SHARED_MODELS: &[SharedModelDefinition] = &[
     },
 ];
 
-/// Recognition model definitions for 11 script families (all PP-OCRv5).
+/// Per-script-family recognition models (PP-OCRv5).
 ///
-/// Each family has a recognition model (`rec/{family}/model.onnx`) and a character
-/// dictionary (`rec/{family}/dict.txt`) hosted on HuggingFace.
-///
-/// All 11 families use PP-OCRv5: english, chinese (server), latin, korean, eslav,
-/// thai, greek, arabic, devanagari, tamil, telugu.
+/// English and Chinese families are handled by v2 unified models.
+/// These 9 families use per-script models for scripts not covered by the unified model.
 const REC_MODELS: &[RecModelDefinition] = &[
-    RecModelDefinition {
-        script_family: "english",
-        model_sha256: "4e16deb22c4da6468bdca539b2cd3c8687825538b67109177c47d359ab994cd7",
-        dict_sha256: "0364294b29befa0dafb381b8a2cfa000337ff447728140b266459686f13fed4d",
-        model_size_bytes: 7_830_888,
-    },
-    RecModelDefinition {
-        script_family: "chinese",
-        model_sha256: "26fa4f47060f58e25962b9af6beaee05c8182b90e026c4ecc6db165d9dfdc38a",
-        dict_sha256: "d4f1e80e20cf72770b2fff3e825cd7fb5909bac4784677e307307b2fbdde4304",
-        model_size_bytes: 84_468_836,
-    },
     RecModelDefinition {
         script_family: "latin",
         model_sha256: "614ffc2d6d3902d360fad7f1b0dd455ee45e877069d14c4e51a99dc4ef144409",
@@ -152,6 +137,108 @@ const REC_MODELS: &[RecModelDefinition] = &[
         model_size_bytes: 7_922_043,
     },
 ];
+
+// ============================================================================
+// V2 model definitions (tier-aware)
+// ============================================================================
+
+/// V2 detection model definition (tier-aware).
+#[derive(Debug, Clone)]
+struct V2DetModelDefinition {
+    tier: &'static str,
+    remote_filename: &'static str,
+    sha256_checksum: &'static str,
+    #[allow(dead_code)]
+    size_bytes: u64,
+}
+
+/// V2 recognition model definition (unified multilingual models).
+#[derive(Debug, Clone)]
+struct V2RecModelDefinition {
+    /// Engine pool key (e.g. "unified_server", "unified_mobile", "en_mobile").
+    model_key: &'static str,
+    remote_model: &'static str,
+    remote_dict: &'static str,
+    model_sha256: &'static str,
+    dict_sha256: &'static str,
+    #[allow(dead_code)]
+    model_size_bytes: u64,
+}
+
+/// V2 detection models: server (PP-OCRv5, 88MB) and mobile (PP-OCRv5, 4.7MB).
+const V2_DET_MODELS: &[V2DetModelDefinition] = &[
+    V2DetModelDefinition {
+        tier: "server",
+        remote_filename: "v2/det/server.onnx",
+        sha256_checksum: "d5f46afc7a2b7fe5773c4ce6ff05c9e23631eb5de0f59d7a90404d9c49678f3c",
+        size_bytes: 88_047_983,
+    },
+    V2DetModelDefinition {
+        tier: "mobile",
+        remote_filename: "v2/det/mobile.onnx",
+        sha256_checksum: "c8d9b07063420ce5365c74e42532de48238feeeedcdb7a330b195708bc38a93f",
+        size_bytes: 4_766_440,
+    },
+];
+
+/// V2 recognition models: unified server/mobile (CJK+English) and English-only mobile.
+const V2_REC_MODELS: &[V2RecModelDefinition] = &[
+    V2RecModelDefinition {
+        model_key: "unified_server",
+        remote_model: "v2/rec/unified_server/model.onnx",
+        remote_dict: "v2/rec/unified_server/dict.txt",
+        model_sha256: "00667becb28bcd49dfbcb8c7724aa8d6e8f01a1444db66e404182431e0fcbc14",
+        dict_sha256: "74f75c9f414da39d503635e76c6871baf8ab8df3b5a47072d55b9344483086c9",
+        model_size_bytes: 84_480_012,
+    },
+    V2RecModelDefinition {
+        model_key: "unified_mobile",
+        remote_model: "v2/rec/unified_mobile/model.onnx",
+        remote_dict: "v2/rec/unified_mobile/dict.txt",
+        model_sha256: "bcb195e3463eb9e46ef419b8a01ea4729577de5fd63c64f0a762e43bd64256e7",
+        dict_sha256: "74f75c9f414da39d503635e76c6871baf8ab8df3b5a47072d55b9344483086c9",
+        model_size_bytes: 16_529_870,
+    },
+    V2RecModelDefinition {
+        model_key: "en_mobile",
+        remote_model: "v2/rec/en_mobile/model.onnx",
+        remote_dict: "v2/rec/en_mobile/dict.txt",
+        model_sha256: "70b2450eed39599af6b996c27a2f1a0ef30eeb49f9f66dd3e74f28f652befc89",
+        dict_sha256: "854c6bb3e5a9a8ceac81fa700927e86a8da0e9b329a2846c57fc686be9db93e5",
+        model_size_bytes: 7_843_511,
+    },
+];
+
+/// V2 text line orientation model (PP-LCNet, replaces old PPOCRv2 angle classifier).
+const V2_CLS_MODEL: SharedModelDefinition = SharedModelDefinition {
+    model_type: "cls",
+    remote_filename: "v2/classifiers/PP-LCNet_x1_0_textline_ori.onnx",
+    local_filename: "model.onnx",
+    sha256_checksum: "1090f9f483a115f904beefe04acc9d28edf0c0b7b08cf0dd8d0ea59a9e0f2735",
+    size_bytes: 6_775_212,
+};
+
+/// V2 document orientation model (PP-LCNet, for page-level auto_rotate).
+const V2_DOC_ORI_MODEL: SharedModelDefinition = SharedModelDefinition {
+    model_type: "doc_ori",
+    remote_filename: "v2/classifiers/PP-LCNet_x1_0_doc_ori.onnx",
+    local_filename: "model.onnx",
+    sha256_checksum: "6b742aebce6f0f7f71f747931ac7becfc7c96c51641e14943b291eeb334e7947",
+    size_bytes: 6_785_465,
+};
+
+/// Resolved recognition model with engine pool key for sharing.
+#[derive(Debug, Clone)]
+pub struct ResolvedRecModel {
+    /// Directory containing model.onnx.
+    pub model_dir: PathBuf,
+    /// Path to the character dictionary file.
+    pub dict_file: PathBuf,
+    /// Engine pool key for sharing engines across script families.
+    /// Multiple families may share the same key (e.g. chinese and japanese
+    /// both map to "v2:unified_server" when using server tier).
+    pub model_key: String,
+}
 
 /// Paths to shared models (detection + classification).
 #[derive(Debug, Clone)]
@@ -287,14 +374,14 @@ impl ModelManager {
     /// Backward-compatible method that ensures all models for English exist.
     pub fn ensure_models_exist(&self) -> Result<ModelPaths, KreuzbergError> {
         let shared = self.ensure_shared_models()?;
-        let rec = self.ensure_rec_model("english")?;
+        let rec = self.resolve_rec_model("english", "server")?;
 
         tracing::info!("All PaddleOCR models ready (english)");
 
         Ok(ModelPaths {
             det_model: shared.det_model,
             cls_model: shared.cls_model,
-            rec_model: rec.rec_model,
+            rec_model: rec.model_dir,
             dict_file: rec.dict_file,
         })
     }
@@ -399,9 +486,12 @@ impl ModelManager {
         rec_dir.join("model.onnx").exists() && rec_dir.join("dict.txt").exists()
     }
 
-    /// Checks if all required models are cached (shared + English rec).
+    /// Checks if all required models are cached (shared + English v2 rec).
     pub fn are_models_cached(&self) -> bool {
-        self.are_shared_models_cached() && self.is_rec_model_cached("english")
+        let v2_rec_dir = self.cache_dir.join("v2").join("rec").join("unified_server");
+        self.are_shared_models_cached()
+            && v2_rec_dir.join("model.onnx").exists()
+            && v2_rec_dir.join("dict.txt").exists()
     }
 
     /// Clears all cached models from the cache directory.
@@ -442,7 +532,7 @@ impl ModelManager {
 
     /// Returns the manifest of all PaddleOCR model files with checksums and sizes.
     ///
-    /// This includes shared models (det, cls) and all 11 recognition model families.
+    /// This includes shared models (det, cls) and all 9 per-script recognition model families.
     /// Paths are relative to the cache root (prefixed with "paddle-ocr/").
     pub fn manifest() -> Vec<ModelManifestEntry> {
         let mut entries = Vec::new();
@@ -484,19 +574,205 @@ impl ModelManager {
         entries
     }
 
-    /// Ensures all models for all script families are downloaded and cached.
+    /// Ensures all v2 models are downloaded and cached.
     ///
-    /// Unlike `ensure_models_exist()` which only ensures English, this eagerly
-    /// downloads shared models plus all 11 recognition model families.
+    /// Downloads:
+    /// - Both detection tiers (server + mobile)
+    /// - Classification model (PP-LCNet textline_ori)
+    /// - Document orientation model (PP-LCNet doc_ori)
+    /// - All v2 unified rec models (server, mobile, en_mobile)
+    /// - All per-script rec models for uncovered scripts
     pub fn ensure_all_models(&self) -> Result<(), KreuzbergError> {
-        self.ensure_shared_models()?;
+        // V2 shared models (both tiers)
+        self.ensure_v2_shared_models("server")?;
+        self.ensure_v2_det_model("mobile")?; // cls is same for both tiers
 
+        // Document orientation model
+        self.ensure_doc_ori_model()?;
+
+        // V2 unified rec models
+        for v2_rec in V2_REC_MODELS {
+            self.ensure_v2_rec_model(v2_rec.model_key)?;
+        }
+
+        // Per-script rec models for uncovered scripts
         for rec in REC_MODELS {
             self.ensure_rec_model(rec.script_family)?;
         }
 
-        tracing::info!("All PaddleOCR models ready (all {} families)", REC_MODELS.len());
+        tracing::info!(
+            "All PaddleOCR v2 models ready ({} v2 rec + {} per-script families)",
+            V2_REC_MODELS.len(),
+            REC_MODELS.len()
+        );
         Ok(())
+    }
+
+    // ========================================================================
+    // V2 tier-aware model resolution
+    // ========================================================================
+
+    /// Ensures the v2 detection model for the given tier is cached locally.
+    ///
+    /// Downloads from HuggingFace if not cached. Returns the path to the
+    /// directory containing the ONNX model file.
+    pub fn ensure_v2_det_model(&self, tier: &str) -> Result<PathBuf, KreuzbergError> {
+        let definition = V2_DET_MODELS
+            .iter()
+            .find(|d| d.tier == tier)
+            .ok_or_else(|| KreuzbergError::Plugin {
+                message: format!("Invalid model_tier \"{tier}\". Valid values: \"server\", \"mobile\""),
+                plugin_name: "paddle-ocr".to_string(),
+            })?;
+
+        let det_dir = self.cache_dir.join("v2").join("det").join(tier);
+        let model_file = det_dir.join("model.onnx");
+
+        if !model_file.exists() {
+            tracing::info!(tier, "Downloading v2 detection model...");
+            fs::create_dir_all(&det_dir)?;
+            let cached_path = self.hf_download(definition.remote_filename)?;
+            Self::verify_checksum(&cached_path, definition.sha256_checksum, &format!("v2/det/{tier}"))?;
+            fs::copy(&cached_path, &model_file).map_err(|e| KreuzbergError::Plugin {
+                message: format!("Failed to copy v2 det model: {e}"),
+                plugin_name: "paddle-ocr".to_string(),
+            })?;
+            tracing::info!(tier, "V2 detection model saved");
+        }
+
+        Ok(det_dir)
+    }
+
+    /// Ensures the v2 classification model is cached locally.
+    ///
+    /// The cls model is the same for both tiers.
+    pub fn ensure_v2_cls_model(&self) -> Result<PathBuf, KreuzbergError> {
+        let cls_dir = self.cache_dir.join("v2").join("cls");
+        let model_file = cls_dir.join("model.onnx");
+
+        if !model_file.exists() {
+            tracing::info!("Downloading v2 classification model...");
+            fs::create_dir_all(&cls_dir)?;
+            let cached_path = self.hf_download(V2_CLS_MODEL.remote_filename)?;
+            Self::verify_checksum(&cached_path, V2_CLS_MODEL.sha256_checksum, "v2/cls")?;
+            fs::copy(&cached_path, &model_file).map_err(|e| KreuzbergError::Plugin {
+                message: format!("Failed to copy v2 cls model: {e}"),
+                plugin_name: "paddle-ocr".to_string(),
+            })?;
+            tracing::info!("V2 classification model saved");
+        }
+
+        Ok(cls_dir)
+    }
+
+    /// Ensures the v2 document orientation model is cached locally.
+    ///
+    /// Used for page-level auto_rotate when PaddleOCR backend is active.
+    pub fn ensure_doc_ori_model(&self) -> Result<PathBuf, KreuzbergError> {
+        let ori_dir = self.cache_dir.join("v2").join("doc_ori");
+        let model_file = ori_dir.join("model.onnx");
+
+        if !model_file.exists() {
+            tracing::info!("Downloading v2 document orientation model...");
+            fs::create_dir_all(&ori_dir)?;
+            let cached_path = self.hf_download(V2_DOC_ORI_MODEL.remote_filename)?;
+            Self::verify_checksum(&cached_path, V2_DOC_ORI_MODEL.sha256_checksum, "v2/doc_ori")?;
+            fs::copy(&cached_path, &model_file).map_err(|e| KreuzbergError::Plugin {
+                message: format!("Failed to copy v2 doc_ori model: {e}"),
+                plugin_name: "paddle-ocr".to_string(),
+            })?;
+            tracing::info!("V2 document orientation model saved");
+        }
+
+        Ok(ori_dir)
+    }
+
+    /// Ensures v2 shared models (det + cls) are cached for the given tier.
+    pub fn ensure_v2_shared_models(&self, tier: &str) -> Result<SharedModelPaths, KreuzbergError> {
+        let det_model = self.ensure_v2_det_model(tier)?;
+        let cls_model = self.ensure_v2_cls_model()?;
+        Ok(SharedModelPaths { det_model, cls_model })
+    }
+
+    /// Resolves the recognition model for a script family and tier.
+    ///
+    /// Returns the model directory, dict file path, and a model key for
+    /// engine pool sharing. Multiple families may share the same model key
+    /// (e.g. chinese and japanese both use "v2:unified_server").
+    ///
+    /// # Selection matrix
+    ///
+    /// | Family | Server | Mobile |
+    /// |---|---|---|
+    /// | english | v2 unified_server (84MB) | v2 en_mobile (7.8MB) |
+    /// | chinese (ch, jpn, chinese_cht) | v2 unified_server (84MB) | v2 unified_mobile (16.5MB) |
+    /// | all others | per-script (unchanged) | per-script (unchanged) |
+    pub fn resolve_rec_model(&self, family: &str, tier: &str) -> Result<ResolvedRecModel, KreuzbergError> {
+        match (family, tier) {
+            // English + Chinese families use v2 unified models
+            ("english", "server") | ("chinese", "server") => self.ensure_v2_rec_model("unified_server"),
+            ("chinese", "mobile") => self.ensure_v2_rec_model("unified_mobile"),
+            ("english", "mobile") => self.ensure_v2_rec_model("en_mobile"),
+
+            // All other scripts: per-script models (no tier distinction)
+            _ => {
+                let rec_paths = self.ensure_rec_model(family)?;
+                Ok(ResolvedRecModel {
+                    model_dir: rec_paths.rec_model,
+                    dict_file: rec_paths.dict_file,
+                    model_key: format!("v1:{family}"),
+                })
+            }
+        }
+    }
+
+    /// Ensures a v2 recognition model is cached and returns resolved paths.
+    fn ensure_v2_rec_model(&self, model_key: &str) -> Result<ResolvedRecModel, KreuzbergError> {
+        let definition =
+            V2_REC_MODELS
+                .iter()
+                .find(|d| d.model_key == model_key)
+                .ok_or_else(|| KreuzbergError::Plugin {
+                    message: format!("Unknown v2 rec model key: {model_key}"),
+                    plugin_name: "paddle-ocr".to_string(),
+                })?;
+
+        let rec_dir = self.cache_dir.join("v2").join("rec").join(model_key);
+        let model_file = rec_dir.join("model.onnx");
+        let dict_file = rec_dir.join("dict.txt");
+
+        if !model_file.exists() || !dict_file.exists() {
+            tracing::info!(model_key, "Downloading v2 recognition model...");
+            fs::create_dir_all(&rec_dir)?;
+
+            // Download model
+            let cached_model = self.hf_download(definition.remote_model)?;
+            Self::verify_checksum(&cached_model, definition.model_sha256, &format!("v2/rec/{model_key}"))?;
+            fs::copy(&cached_model, &model_file).map_err(|e| KreuzbergError::Plugin {
+                message: format!("Failed to copy v2 rec model: {e}"),
+                plugin_name: "paddle-ocr".to_string(),
+            })?;
+
+            // Download dict
+            let cached_dict = self.hf_download(definition.remote_dict)?;
+            Self::verify_checksum(
+                &cached_dict,
+                definition.dict_sha256,
+                &format!("v2/rec/{model_key}/dict"),
+            )?;
+            fs::copy(&cached_dict, &dict_file).map_err(|e| KreuzbergError::Plugin {
+                message: format!("Failed to copy v2 rec dict: {e}"),
+                plugin_name: "paddle-ocr".to_string(),
+            })?;
+
+            tracing::info!(model_key, "V2 recognition model and dict saved");
+        }
+
+        Ok(ResolvedRecModel {
+            model_dir: rec_dir,
+            dict_file,
+            model_key: format!("v2:{model_key}"),
+        })
     }
 
     /// Recursively calculates the size of a directory in bytes.
@@ -554,8 +830,6 @@ mod tests {
     #[test]
     fn test_find_rec_definition_all_families() {
         let families = [
-            "english",
-            "chinese",
             "latin",
             "korean",
             "eslav",
@@ -632,8 +906,8 @@ mod tests {
         }
         assert!(!manager.are_models_cached());
 
-        // Add english rec
-        let rec_dir = manager.rec_family_path("english");
+        // Add v2 unified_server rec (used for english)
+        let rec_dir = manager.cache_dir().join("v2").join("rec").join("unified_server");
         fs::create_dir_all(&rec_dir).unwrap();
         fs::write(rec_dir.join("model.onnx"), "fake").unwrap();
         fs::write(rec_dir.join("dict.txt"), "#\na\n ").unwrap();
@@ -691,10 +965,10 @@ mod tests {
 
     #[test]
     fn test_rec_model_definitions() {
-        assert_eq!(REC_MODELS.len(), 11);
+        assert_eq!(REC_MODELS.len(), 9);
         let families: Vec<_> = REC_MODELS.iter().map(|m| m.script_family).collect();
-        assert!(families.contains(&"english"));
-        assert!(families.contains(&"chinese"));
+        assert!(!families.contains(&"english"));
+        assert!(!families.contains(&"chinese"));
         assert!(families.contains(&"latin"));
         assert!(families.contains(&"korean"));
         assert!(families.contains(&"eslav"));
@@ -712,12 +986,14 @@ mod tests {
         let manager = ModelManager::new(temp_dir.path().to_path_buf());
 
         // Pre-populate cache so ensure_models_exist doesn't try to download
+        // v1 shared models (det, cls)
         for model_type in &["det", "cls"] {
             let dir = manager.model_path(model_type);
             fs::create_dir_all(&dir).unwrap();
             fs::write(dir.join("model.onnx"), "fake").unwrap();
         }
-        let rec_dir = manager.rec_family_path("english");
+        // v2 unified_server rec model (used by ensure_models_exist for english)
+        let rec_dir = temp_dir.path().join("v2").join("rec").join("unified_server");
         fs::create_dir_all(&rec_dir).unwrap();
         fs::write(rec_dir.join("model.onnx"), "fake").unwrap();
         fs::write(rec_dir.join("dict.txt"), "#\na\n ").unwrap();
@@ -752,14 +1028,14 @@ mod tests {
         let temp_dir = TempDir::new().unwrap();
         let manager = ModelManager::new(temp_dir.path().to_path_buf());
 
-        let rec_dir = manager.rec_family_path("chinese");
+        let rec_dir = manager.rec_family_path("latin");
         fs::create_dir_all(&rec_dir).unwrap();
         fs::write(rec_dir.join("model.onnx"), "fake").unwrap();
         fs::write(rec_dir.join("dict.txt"), "#\na\n ").unwrap();
 
-        let paths = manager.ensure_rec_model("chinese").unwrap();
-        assert!(paths.rec_model.ends_with("rec/chinese"));
-        assert!(paths.dict_file.ends_with("rec/chinese/dict.txt"));
+        let paths = manager.ensure_rec_model("latin").unwrap();
+        assert!(paths.rec_model.ends_with("rec/latin"));
+        assert!(paths.dict_file.ends_with("rec/latin/dict.txt"));
     }
 
     #[test]
@@ -805,18 +1081,20 @@ mod tests {
     fn test_manifest_returns_all_models() {
         let entries = ModelManager::manifest();
 
-        // 2 shared (det, cls) + 11 rec families * 2 (model + dict) = 24
-        assert_eq!(entries.len(), 2 + 11 * 2);
+        // 2 shared (det, cls) + 9 rec families * 2 (model + dict) = 20
+        assert_eq!(entries.len(), 2 + 9 * 2);
 
         // Check shared models present
         let paths: Vec<&str> = entries.iter().map(|e| e.relative_path.as_str()).collect();
         assert!(paths.contains(&"paddle-ocr/det/model.onnx"));
         assert!(paths.contains(&"paddle-ocr/cls/model.onnx"));
 
-        // Check all rec families present
+        // English and Chinese should NOT be in per-script manifest
+        assert!(!paths.contains(&"paddle-ocr/rec/english/model.onnx"));
+        assert!(!paths.contains(&"paddle-ocr/rec/chinese/model.onnx"));
+
+        // Check all per-script rec families present
         for family in &[
-            "english",
-            "chinese",
             "latin",
             "korean",
             "eslav",
@@ -886,17 +1164,35 @@ mod tests {
         let temp_dir = TempDir::new().unwrap();
         let manager = ModelManager::new(temp_dir.path().to_path_buf());
 
-        // Pre-populate shared models
-        for model_type in &["det", "cls"] {
-            let dir = manager.model_path(model_type);
+        let v2_dir = temp_dir.path().join("v2");
+
+        // Pre-populate v2 det models (server + mobile)
+        for tier in &["server", "mobile"] {
+            let dir = v2_dir.join("det").join(tier);
             fs::create_dir_all(&dir).unwrap();
             fs::write(dir.join("model.onnx"), "fake").unwrap();
         }
 
-        // Pre-populate all rec families
+        // Pre-populate v2 cls model
+        let cls_dir = v2_dir.join("cls");
+        fs::create_dir_all(&cls_dir).unwrap();
+        fs::write(cls_dir.join("model.onnx"), "fake").unwrap();
+
+        // Pre-populate v2 doc_ori model
+        let doc_ori_dir = v2_dir.join("doc_ori");
+        fs::create_dir_all(&doc_ori_dir).unwrap();
+        fs::write(doc_ori_dir.join("model.onnx"), "fake").unwrap();
+
+        // Pre-populate v2 rec models (unified_server, unified_mobile, en_mobile)
+        for model_key in &["unified_server", "unified_mobile", "en_mobile"] {
+            let dir = v2_dir.join("rec").join(model_key);
+            fs::create_dir_all(&dir).unwrap();
+            fs::write(dir.join("model.onnx"), "fake").unwrap();
+            fs::write(dir.join("dict.txt"), "#\na\n ").unwrap();
+        }
+
+        // Pre-populate per-script rec families (9 families, no english/chinese)
         for family in &[
-            "english",
-            "chinese",
             "latin",
             "korean",
             "eslav",

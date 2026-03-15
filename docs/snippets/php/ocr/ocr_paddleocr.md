@@ -11,7 +11,10 @@ use Kreuzberg\Config\OcrConfig;
 $config = new ExtractionConfig(
     ocr: new OcrConfig(
         backend: 'paddle-ocr',
-        language: 'en'
+        language: 'en',
+        paddleOcrConfig: new PaddleOcrConfig(
+            modelTier: 'mobile'
+        )
     )
 );
 

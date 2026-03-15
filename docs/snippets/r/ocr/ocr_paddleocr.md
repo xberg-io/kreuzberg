@@ -1,8 +1,8 @@
 ```r title="R"
 library(kreuzberg)
 
-# Configure PaddleOCR backend
-ocr <- ocr_config(backend = "paddle-ocr", language = "en")
+# Configure PaddleOCR backend with mobile model tier
+ocr <- ocr_config(backend = "paddle-ocr", language = "en", model_tier = "mobile")
 config <- extraction_config(force_ocr = TRUE, ocr = ocr)
 
 # Extract text from an image using PaddleOCR

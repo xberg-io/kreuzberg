@@ -9,10 +9,14 @@ import (
 
 func main() {
 	lang := "en"
+	modelTier := "mobile"
 	cfg := &kreuzberg.ExtractionConfig{
 		OCR: &kreuzberg.OCRConfig{
 			Backend:  "paddle-ocr",
 			Language: &lang,
+			PaddleOcr: &kreuzberg.PaddleOcrConfig{
+				ModelTier: modelTier,
+			},
 		},
 	}
 

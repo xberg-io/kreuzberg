@@ -475,7 +475,7 @@ pub struct OcrConfig {
 - `language` (String): Language code for OCR (ISO 639-3) (e.g. "eng", "deu"). Default: "eng"
 - `tesseract_config` (Option<TesseractConfig>): Tesseract-specific configuration. Default: None
 - `output_format` (Option<OutputFormat>): Output format for OCR results. Default: None
-- `paddle_ocr_config` (Option<serde_json::Value>): PaddleOCR-specific options (when backend is "paddleocr"). Default: None
+- `paddle_ocr_config` (Option<serde_json::Value>): PaddleOCR-specific options (when backend is "paddleocr"). Supports `model_tier` <span class="version-badge">v4.5.0</span> ("server" or "mobile") and `padding` <span class="version-badge">v4.5.0</span> (0-100, default 10). Default: None
 - `element_config` (Option<OcrElementConfig>): OCR element extraction (bounding boxes, confidence). Default: None
 
 **Methods:**

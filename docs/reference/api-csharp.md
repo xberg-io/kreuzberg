@@ -1381,8 +1381,13 @@ Configuration for OCR processing.
 - `Backend` (string?): The OCR backend to use (e.g., "tesseract", "paddle").
 - `ElementConfig` (OcrElementConfig?): Configuration for OCR element extraction.
 - `Language` (string?): The language to recognize (e.g., "eng", "deu").
-- `PaddleOcrConfig` (PaddleOcrConfig?): PaddleOCR-specific configuration options.
+- `PaddleOcrConfig` (PaddleOcrConfig?): PaddleOCR-specific configuration options (see below).
 - `TesseractConfig` (TesseractConfig?): Tesseract-specific configuration options.
+
+**PaddleOcrConfig Properties:** <span class="version-badge">v4.5.0</span>
+
+- `ModelTier` (string?): Model tier: "server" (high accuracy, ~88MB det model) or "mobile" (lightweight, ~4.5MB det model). Default: "server"
+- `Padding` (int?): Padding in pixels (0-100) added around the image before detection. Default: 10
 
 ---
 

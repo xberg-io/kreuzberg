@@ -109,7 +109,7 @@ impl CrnnNet {
     }
 
     pub fn get_text_lines(
-        &mut self,
+        &self,
         part_imgs: &[image::RgbImage],
         angle_rollback_records: &HashMap<usize, image::RgbImage>,
         angle_rollback_threshold: f32,
@@ -131,8 +131,8 @@ impl CrnnNet {
         Ok(text_lines)
     }
 
-    fn get_text_line(&mut self, img_src: &image::RgbImage) -> Result<TextLine, OcrError> {
-        let Some(session) = &mut self.session else {
+    fn get_text_line(&self, img_src: &image::RgbImage) -> Result<TextLine, OcrError> {
+        let Some(session) = &self.session else {
             return Err(OcrError::SessionNotInitialized);
         };
 
@@ -150,7 +150,12 @@ impl CrnnNet {
 
         let input_tensors = Tensor::from_array(input_tensors)?;
 
-        let outputs = session.run(inputs![self.input_names[0].as_str() => input_tensors])?;
+        // SAFETY: ONNX Runtime C API is thread-safe for concurrent inference.
+        #[allow(unsafe_code)]
+        let outputs = unsafe {
+            let session_ptr = session as *const Session as *mut Session;
+            (*session_ptr).run(inputs![self.input_names[0].as_str() => input_tensors])?
+        };
 
         let (_, red_data) = outputs.iter().next().ok_or_else(|| {
             OcrError::Io(std::io::Error::new(

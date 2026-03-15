@@ -931,6 +931,24 @@ config = %Kreuzberg.ExtractionConfig{
 {:ok, result} = Kreuzberg.extract_file("scanned.pdf", nil, config)
 ```
 
+**PaddleOCR-specific fields:** <span class="version-badge">v4.5.0</span>
+
+When using PaddleOCR, the `ocr` map supports:
+
+- `"model_tier"` (String): Model tier: "server" (high accuracy, ~88MB det model) or "mobile" (lightweight, ~4.5MB det model). Default: "server"
+- `"padding"` (Integer): Padding in pixels (0-100) added around the image before detection. Default: 10
+
+```elixir title="paddle_ocr_config.exs"
+config = %Kreuzberg.ExtractionConfig{
+  ocr: %{
+    "backend" => "paddle-ocr",
+    "language" => "en",
+    "model_tier" => "mobile",
+    "padding" => 10
+  }
+}
+```
+
 **Example - Chunking configuration:**
 
 ```elixir title="chunking_config.exs"

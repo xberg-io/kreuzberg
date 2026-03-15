@@ -6,7 +6,11 @@ var config = new ExtractionConfig
     Ocr = new OcrConfig
     {
         Backend = "paddle-ocr",
-        Language = "en"
+        Language = "en",
+        PaddleOcrConfig = new PaddleOcrConfig
+        {
+            ModelTier = "mobile"
+        }
     }
 };
 

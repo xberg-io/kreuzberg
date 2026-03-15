@@ -21,6 +21,12 @@ pub struct OcrLite {
     crnn_net: CrnnNet,
 }
 
+// SAFETY: OcrLite inference methods (&self) use unsafe pointer casts to call
+// ort Session::run, which is thread-safe at the ONNX Runtime C API level.
+// After initialization (&mut self), no mutable state is accessed during inference.
+unsafe impl Send for OcrLite {}
+unsafe impl Sync for OcrLite {}
+
 impl Default for OcrLite {
     fn default() -> Self {
         Self::new()
@@ -104,7 +110,7 @@ impl OcrLite {
     }
 
     fn detect_base(
-        &mut self,
+        &self,
         img_src: &image::RgbImage,
         padding: u32,
         max_side_len: u32,
@@ -156,7 +162,7 @@ impl OcrLite {
     /// - `do_angle` - Whether to perform angle detection
     /// - `most_angle` - Use most common angle for all text regions
     pub fn detect(
-        &mut self,
+        &self,
         img_src: &image::RgbImage,
         padding: u32,
         max_side_len: u32,
@@ -197,7 +203,7 @@ impl OcrLite {
     /// - `most_angle` - Use most common angle
     /// - `angle_rollback_threshold` - If text score is below this value (or NaN), angle correction is reverted
     pub fn detect_angle_rollback(
-        &mut self,
+        &self,
         img_src: &image::RgbImage,
         padding: u32,
         max_side_len: u32,
@@ -223,7 +229,7 @@ impl OcrLite {
     }
 
     pub fn detect_from_path(
-        &mut self,
+        &self,
         img_path: &str,
         padding: u32,
         max_side_len: u32,
@@ -248,7 +254,7 @@ impl OcrLite {
     }
 
     fn detect_once(
-        &mut self,
+        &self,
         img_src: &image::RgbImage,
         scale: &ScaleParam,
         padding: u32,

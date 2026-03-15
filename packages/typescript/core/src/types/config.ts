@@ -70,8 +70,14 @@ export interface PaddleOcrConfig {
 	/** Maximum side length for detection preprocessing. Default: 960. */
 	detLimitSideLen?: number;
 
-	/** Batch size for text recognition. Default: 30. */
+	/** Batch size for text recognition. Default: 6. */
 	recBatchNum?: number;
+
+	/** Padding in pixels added around image before detection (0-100). Default: 10. */
+	padding?: number;
+
+	/** Model tier: "server" (default, high accuracy) or "mobile" (lightweight, faster). */
+	modelTier?: string;
 }
 
 export interface OcrConfig {

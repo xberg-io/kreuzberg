@@ -348,6 +348,7 @@ Configuration for OCR (Optical Character Recognition) processing on images and s
 | `backend`          | `str`              | `"tesseract"` | OCR backend to use: `"tesseract"`, `"easyocr"`, `"paddleocr"`         |
 | `language`         | `str`              | `"eng"`       | Language code(s) for OCR, e.g., `"eng"`, `"eng+fra"`, `"eng+deu+fra"` |
 | `tesseract_config` | `TesseractConfig?` | `None`        | Tesseract-specific configuration options                              |
+| `paddle_ocr_config` | `PaddleOcrConfig?` | `None`       | PaddleOCR-specific configuration options                              |
 
 ### Example
 
@@ -382,6 +383,17 @@ Configuration for OCR (Optical Character Recognition) processing on images and s
 === "TypeScript"
 
     --8<-- "snippets/typescript/config/config_ocr.md"
+
+---
+
+## PaddleOcrConfig <span class="version-badge">v4.5.0</span>
+
+PaddleOCR-specific configuration for model selection and detection tuning.
+
+| Field              | Type   | Default      | Description                                                                                                                        |
+| ------------------ | ------ | ------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `model_tier` <span class="version-badge">v4.5.0</span> | `str`  | `"server"`   | Model tier: `"server"` (high accuracy, ~88MB det model) or `"mobile"` (lightweight, ~4.5MB det model) |
+| `padding` <span class="version-badge">v4.5.0</span>    | `int`  | `10`         | Padding in pixels (0-100) added around the image before detection                                     |
 
 ---
 

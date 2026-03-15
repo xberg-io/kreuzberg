@@ -167,27 +167,12 @@ pub fn warm_command(
         let paddle_dir = cache_base.join("paddle-ocr");
         let manager = kreuzberg::paddle_ocr::ModelManager::new(paddle_dir);
 
-        let was_cached = manager.are_shared_models_cached()
-            && kreuzberg::paddle_ocr::ModelManager::manifest()
-                .iter()
-                .filter(|e| e.relative_path.starts_with("paddle-ocr/rec/"))
-                .all(|e| {
-                    let family = e
-                        .relative_path
-                        .strip_prefix("paddle-ocr/rec/")
-                        .and_then(|s| s.split('/').next())
-                        .unwrap_or("");
-                    manager.is_rec_model_cached(family)
-                });
-
-        if was_cached {
-            already_cached.push("paddle-ocr (all families)".to_string());
-        } else {
-            manager
-                .ensure_all_models()
-                .context("Failed to download PaddleOCR models")?;
-            downloaded.push("paddle-ocr (all families)".to_string());
-        }
+        // ensure_all_models downloads v2 det (server+mobile), cls (PP-LCNet),
+        // doc_ori, v2 unified rec models, and all per-script rec families
+        manager
+            .ensure_all_models()
+            .context("Failed to download PaddleOCR v2 models")?;
+        downloaded.push("paddle-ocr v2 (server+mobile det, cls, doc_ori, unified+per-script rec)".to_string());
     }
 
     #[cfg(feature = "layout-detection")]

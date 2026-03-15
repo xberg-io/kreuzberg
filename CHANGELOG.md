@@ -29,6 +29,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Acceleration config support across all 10 language bindings**: `AccelerationConfig` fully typed and tested across Python, TypeScript, Ruby, Go, Java, PHP, C#, Elixir, Node, and C FFI.
 - **Embedding benchmark subcommand in benchmark harness**: New `embed-benchmark` CLI command for performance profiling of the embedding pipeline (`tools/benchmark-harness/src/embed_benchmark.rs`).
 - **E2E test fixture for acceleration config**: Comprehensive test coverage for `AccelerationConfig` serialization and cross-language binding parity.
+- **PaddleOCR v2 model tier system**: New `model_tier` field in `PaddleOcrConfig` allows choosing between `"server"` (default, high accuracy ~88MB detection) and `"mobile"` (lightweight ~4.5MB detection, faster inference). Available across all language bindings.
+- **PP-LCNet classification models**: Replaced legacy PPOCRv2 angle classifier (585KB) with PP-LCNet_x1_0_textline_ori (6.7MB) for improved text line orientation detection. Added PP-LCNet_x1_0_doc_ori for page-level document orientation detection with PaddleOCR backend `auto_rotate`.
+- **Unified multilingual recognition models**: PP-OCRv5 unified server (84MB, 18K+ chars) and mobile (16.5MB) recognition models replace per-script English and Chinese models. Covers CJK, English, Latin, and symbol recognition in a single model. Per-script models retained for 9 other script families (Korean, Arabic, Thai, Greek, Devanagari, Tamil, Telugu, Latin, East Slavic).
+- **PaddleOCR mobile benchmark pipelines**: New `paddle-mobile` and `paddle-mobile+layout` pipelines in the benchmark harness for comparing server vs mobile tier quality and performance.
+- **`padding` field in PaddleOcrConfig bindings**: Previously only available in Rust, now exposed across Python, TypeScript, Ruby, and Go bindings.
 
 ### Fixed
 
@@ -43,6 +48,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **PaddleOCR v2 models**: All PaddleOCR models updated to v2 generation. Detection uses PP-OCRv5 server/mobile, classification uses PP-LCNet, recognition uses unified multilingual models for CJK/English. V1 models remain on HuggingFace for older kreuzberg versions.
+- **CLI `cache warm` downloads v2 models**: The warm command now downloads both server and mobile detection models, the new PP-LCNet classifiers, document orientation model, all v2 unified recognition models, and all per-script recognition models.
 - **Layout pipeline no longer forces heuristic extraction**: When layout detection is enabled, structure tree extraction proceeds normally instead of being forced into the heuristic path. Proportional matching applies layout hints to structure tree paragraphs, preserving text quality.
 - **Global ONNX model caching**: Layout detection engine and SLANet table recognition model are now cached globally and reused across document extractions, avoiding expensive ONNX session recreation in batch processing scenarios.
 - **Docker model pre-download uses `cache warm`**: The `Dockerfile.full` now uses `kreuzberg cache warm` instead of manual curl-based download scripts, simplifying the build and ensuring consistency with the CLI's model management.

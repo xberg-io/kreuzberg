@@ -503,6 +503,8 @@ ocr_config(backend = "tesseract", language = "eng", dpi = NULL, ...) -> list
 | `backend` | character | OCR backend ("tesseract" or "paddle-ocr"). Default: "tesseract" |
 | `dpi` | integer, NULL | DPI for OCR processing |
 | `language` | character | Language code (ISO 639-3). Default: "eng" |
+| `model_tier` | character, NULL | <span class="version-badge">v4.5.0</span> PaddleOCR model tier: "server" (high accuracy, ~88MB det model) or "mobile" (lightweight, ~4.5MB det model). Default: "server" |
+| `padding` | integer, NULL | <span class="version-badge">v4.5.0</span> Padding in pixels (0-100) added around the image before PaddleOCR detection. Default: 10 |
 | ... | | Additional OCR options |
 
 **Returns:**

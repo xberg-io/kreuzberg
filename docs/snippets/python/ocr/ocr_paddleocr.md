@@ -2,7 +2,7 @@
 from kreuzberg import extract_file_sync, ExtractionConfig, OcrConfig
 
 config: ExtractionConfig = ExtractionConfig(
-    ocr=OcrConfig(backend="paddleocr", language="en")
+    ocr=OcrConfig(backend="paddleocr", language="en", model_tier="mobile")
 )
 
 result = extract_file_sync("scanned.pdf", config=config)

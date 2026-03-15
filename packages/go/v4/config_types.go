@@ -131,6 +131,8 @@ type PaddleOcrConfig struct {
 	DetDbUnclipRatio     *float64 `json:"det_db_unclip_ratio,omitempty"`
 	DetLimitSideLen      *int     `json:"det_limit_side_len,omitempty"`
 	RecBatchNum          *int     `json:"rec_batch_num,omitempty"`
+	Padding              *int     `json:"padding,omitempty"`
+	ModelTier            string   `json:"model_tier,omitempty"`
 }
 
 // OCRConfig selects and configures OCR backends.

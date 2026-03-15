@@ -777,6 +777,8 @@ type PaddleOcrConfig struct {
 	DetLimitSideLen      *int     // Detection side length limit
 	EnableTableDetection *bool    // Detect tables in images
 	Language             string   // Language code
+	ModelTier            string   // (v4.5.0) Model tier: "server" (default, ~88MB det) or "mobile" (~4.5MB det)
+	Padding              *int     // (v4.5.0) Padding in pixels (0-100) around image before detection. Default: 10
 	RecBatchNum          *int     // Recognition batch size
 	UseAngleCls          *bool    // Use angle classification
 }

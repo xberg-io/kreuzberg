@@ -288,6 +288,8 @@ class PaddleOcrConfig:
     det_db_unclip_ratio: float | None
     det_limit_side_len: int | None
     rec_batch_num: int | None
+    padding: int | None
+    model_tier: str | None
     def __init__(
         self,
         *,
@@ -300,6 +302,8 @@ class PaddleOcrConfig:
         det_db_unclip_ratio: float | None = ...,
         det_limit_side_len: int | None = ...,
         rec_batch_num: int | None = ...,
+        padding: int | None = ...,
+        model_tier: str | None = ...,
     ) -> None: ...
 
 class PostProcessorProtocol(Protocol):

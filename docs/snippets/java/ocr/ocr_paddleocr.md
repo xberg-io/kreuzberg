@@ -13,6 +13,9 @@ public class Main {
                 .ocr(OcrConfig.builder()
                     .backend("paddle-ocr")
                     .language("en")
+                    .paddleOcrConfig(PaddleOcrConfig.builder()
+                        .modelTier("mobile")
+                        .build())
                     .build())
                 .build();
 

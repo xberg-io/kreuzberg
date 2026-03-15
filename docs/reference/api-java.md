@@ -601,6 +601,19 @@ OcrConfig ocr = OcrConfig.builder()
     .backend("tesseract")          // "tesseract", "easyocr", "paddleocr", etc.
     .language("eng")               // Language code(s), comma-separated for multiple
     .tesseractConfig(config)       // Tesseract-specific configuration
+    .paddleOcrConfig(paddleConfig) // PaddleOCR-specific configuration
+    .build();
+```
+
+**PaddleOcrConfig Fields:** <span class="version-badge">v4.5.0</span>
+
+- `modelTier` (String): Model tier: "server" (high accuracy, ~88MB det model) or "mobile" (lightweight, ~4.5MB det model). Default: "server"
+- `padding` (Integer): Padding in pixels (0-100) added around the image before detection. Default: 10
+
+```java title="PaddleOcrConfiguration.java"
+PaddleOcrConfig paddleConfig = PaddleOcrConfig.builder()
+    .modelTier("mobile")
+    .padding(10)
     .build();
 ```
 

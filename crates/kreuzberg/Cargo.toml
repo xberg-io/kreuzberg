@@ -73,15 +73,28 @@ paddle-ocr = [
     "dep:image",
     "dep:hf-hub",
     "dep:ureq",
+    "dep:ort",
+    "dep:ndarray",
     "html",
     "tokio-runtime",
     "ocr",
+    "auto-rotate",
 ]
 # Bundle ORT binaries via the official Microsoft release (includes CoreML on macOS, CUDA on Linux).
 # When active, no system ORT library is required and ort_discovery is skipped.
 ort-bundled = ["ort/download-binaries", "ort/tls-native"]
 ort-dynamic = ["ort/load-dynamic"]
 # Layout detection via ONNX Runtime (YOLO + RT-DETR)
+# Document orientation detection using PP-LCNet for auto_rotate
+auto-rotate = [
+    "dep:ort",
+    "dep:ndarray",
+    "dep:hf-hub",
+    "dep:sha2",
+    "dep:image",
+    "dep:ureq",
+    "ort-bundled",
+]
 layout-detection = [
     "dep:ort",
     "dep:ndarray",

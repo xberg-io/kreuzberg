@@ -43,14 +43,14 @@ impl BaseNet for DbNet {
 
 impl DbNet {
     pub fn get_text_boxes(
-        &mut self,
+        &self,
         img_src: &image::RgbImage,
         scale: &ScaleParam,
         box_score_thresh: f32,
         box_thresh: f32,
         un_clip_ratio: f32,
     ) -> Result<Vec<TextBox>, OcrError> {
-        let Some(session) = &mut self.session else {
+        let Some(session) = &self.session else {
             return Err(OcrError::SessionNotInitialized);
         };
 
@@ -65,7 +65,14 @@ impl DbNet {
 
         let tensor = Tensor::from_array(input_tensors)?;
 
-        let outputs = session.run(inputs![self.input_names[0].as_str() => tensor])?;
+        // SAFETY: ONNX Runtime's C API (OrtRun) is thread-safe for concurrent inference
+        // on the same session. The ort crate's `&mut self` requirement is overly
+        // conservative. This matches the pattern used in kreuzberg's embedding engine.
+        #[allow(unsafe_code)]
+        let outputs = unsafe {
+            let session_ptr = session as *const Session as *mut Session;
+            (*session_ptr).run(inputs![self.input_names[0].as_str() => tensor])?
+        };
 
         let text_boxes = Self::get_text_boxes_core(
             &outputs,

@@ -42,7 +42,9 @@ mod model_manager;
 
 pub use backend::PaddleOcrBackend;
 pub use config::{PaddleLanguage, PaddleOcrConfig};
-pub use model_manager::{CacheStats, ModelManager, ModelManifestEntry, ModelPaths, RecModelPaths, SharedModelPaths};
+pub use model_manager::{
+    CacheStats, ModelManager, ModelManifestEntry, ModelPaths, RecModelPaths, ResolvedRecModel, SharedModelPaths,
+};
 
 /// Supported languages for PaddleOCR.
 ///

@@ -9,6 +9,8 @@
 //! | P4 | tesseract+layout  | P3 + layout: fast                                |
 //! | P5 | paddleocr         | output_format: Markdown, ocr: paddleocr, force    |
 //! | P6 | paddleocr+layout  | P5 + layout: fast                                |
+//! | P7 | paddleocr-mobile  | P5 + model_tier: mobile                           |
+//! | P8 | paddleocr-mobile+layout | P7 + layout: fast                           |
 
 use crate::Result;
 use crate::comparison::{Pipeline, PipelineResult};
@@ -162,6 +164,7 @@ fn build_config(pipeline: Pipeline) -> kreuzberg::ExtractionConfig {
             ocr: Some(OcrConfig {
                 backend: "paddleocr".to_string(),
                 language: "eng".to_string(),
+                auto_rotate: true,
                 ..Default::default()
             }),
             ..base
@@ -171,10 +174,57 @@ fn build_config(pipeline: Pipeline) -> kreuzberg::ExtractionConfig {
             ocr: Some(OcrConfig {
                 backend: "paddleocr".to_string(),
                 language: "eng".to_string(),
+                auto_rotate: true,
                 ..Default::default()
             }),
             layout: Some(LayoutDetectionConfig {
                 preset: "accurate".to_string(),
+                ..Default::default()
+            }),
+            ..base
+        },
+        Pipeline::PaddleMobile => kreuzberg::ExtractionConfig {
+            force_ocr: true,
+            ocr: Some(OcrConfig {
+                backend: "paddleocr".to_string(),
+                language: "eng".to_string(),
+                auto_rotate: true,
+                paddle_ocr_config: Some(serde_json::json!({"model_tier": "mobile"})),
+                ..Default::default()
+            }),
+            ..base
+        },
+        Pipeline::PaddleMobileLayout => kreuzberg::ExtractionConfig {
+            force_ocr: true,
+            ocr: Some(OcrConfig {
+                backend: "paddleocr".to_string(),
+                language: "eng".to_string(),
+                auto_rotate: true,
+                paddle_ocr_config: Some(serde_json::json!({"model_tier": "mobile"})),
+                ..Default::default()
+            }),
+            layout: Some(LayoutDetectionConfig {
+                preset: "fast".to_string(),
+                ..Default::default()
+            }),
+            ..base
+        },
+        Pipeline::TesseractAutoRotate => kreuzberg::ExtractionConfig {
+            force_ocr: true,
+            ocr: Some(OcrConfig {
+                backend: "tesseract".to_string(),
+                language: "eng".to_string(),
+                auto_rotate: true,
+                ..Default::default()
+            }),
+            ..base
+        },
+        Pipeline::PaddleNoRotate => kreuzberg::ExtractionConfig {
+            force_ocr: true,
+            ocr: Some(OcrConfig {
+                backend: "paddleocr".to_string(),
+                language: "eng".to_string(),
+                auto_rotate: false,
                 ..Default::default()
             }),
             ..base
@@ -408,7 +458,15 @@ async fn extract_and_score(
 /// Run the pipeline benchmark.
 pub async fn run_pipeline_benchmark(config: &PipelineBenchmarkConfig) -> Result<Vec<PipelineDocResult>> {
     let filter = CorpusFilter {
-        file_types: Some(vec!["pdf".to_string()]),
+        file_types: Some(vec![
+            "pdf".to_string(),
+            "png".to_string(),
+            "jpg".to_string(),
+            "jpeg".to_string(),
+            "tiff".to_string(),
+            "bmp".to_string(),
+            "webp".to_string(),
+        ]),
         require_ground_truth: true,
         name_patterns: config.doc_filter.clone(),
         ..Default::default()

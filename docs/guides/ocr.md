@@ -86,7 +86,7 @@ Kreuzberg supports three OCR backends with different strengths:
 | **Accuracy** | Good | Excellent | Excellent |
 | **Languages** | 100+ | 80+ | 80+ (11 script families) |
 | **Installation** | System package | Python package | Feature flag (native) or Python package |
-| **Model Size** | Small (~10MB) | Large (~100MB) | Medium (~120MB base + ~8MB per family) |
+| **Model Size** | Small (~10MB) | Large (~100MB) | Server: ~120MB base + ~8MB per family; Mobile: ~8MB base + ~4.5MB per family |
 | **CPU/GPU** | CPU only | CPU + GPU | CPU + GPU |
 | **Platform Support** | All | Python only | All (except WASM) |
 | **Best For** | General use, production | High accuracy needs | Speed + accuracy, CJK languages |
@@ -94,7 +94,7 @@ Kreuzberg supports three OCR backends with different strengths:
 ### Recommendation
 
 - **Production/CLI**: Use **Tesseract** for simplicity and broad platform support
-- **Speed + Accuracy (any binding)**: Use **PaddleOCR** for fast processing with excellent accuracy, especially for CJK languages
+- **Speed + Accuracy (any binding)**: Use **PaddleOCR** for fast processing with excellent accuracy, especially for CJK languages. Use `model_tier="server"` (default, ~88MB det model) for highest accuracy or `model_tier="mobile"` (~4.5MB det model) for lightweight/edge deployments
 - **Python + Accuracy**: Use **EasyOCR** for best accuracy with deep learning models (Python only)
 
 ## Installation
