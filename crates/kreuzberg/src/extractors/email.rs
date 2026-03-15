@@ -48,7 +48,7 @@ impl Plugin for EmailExtractor {
 
 impl SyncExtractor for EmailExtractor {
     fn extract_sync(&self, content: &[u8], mime_type: &str, _config: &ExtractionConfig) -> Result<ExtractionResult> {
-        let email_result = crate::extraction::email::extract_email_content(content, mime_type)?;
+        let email_result = crate::extraction::email::extract_email_content(content, mime_type, None)?;
 
         let text = crate::extraction::email::build_email_text_output(&email_result);
 

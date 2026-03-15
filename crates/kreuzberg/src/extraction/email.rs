@@ -359,7 +359,7 @@ fn collect_nested_message_html(message: &mail_parser::Message<'_>, out: &mut Vec
 /// happens we pad the data with zero bytes so the sector count matches
 /// the FAT and retry – the real streams are still within the original
 /// data range and parse correctly.
-pub fn parse_msg_content(data: &[u8]) -> Result<EmailExtractionResult> {
+pub fn parse_msg_content(data: &[u8], fallback_codepage: Option<u32>) -> Result<EmailExtractionResult> {
     use std::borrow::Cow;
     use std::io::Cursor;
 
@@ -382,7 +382,7 @@ pub fn parse_msg_content(data: &[u8]) -> Result<EmailExtractionResult> {
     let mut comp = cfb::CompoundFile::open(Cursor::new(data_ref))
         .map_err(|e| KreuzbergError::parsing(format!("Failed to parse MSG file: {e}")))?;
 
-    extract_msg_from_cfb(&mut comp)
+    extract_msg_from_cfb(&mut comp, fallback_codepage)
 }
 
 /// Pad an OLE/CFB file so the sector count matches the FAT header.
@@ -426,13 +426,15 @@ fn pad_cfb_to_fat_size(data: &[u8]) -> std::borrow::Cow<'_, [u8]> {
 /// Internal: extract email fields from an already-opened CFB compound file.
 fn extract_msg_from_cfb<F: std::io::Read + std::io::Seek>(
     comp: &mut cfb::CompoundFile<F>,
+    fallback_codepage: Option<u32>,
 ) -> Result<EmailExtractionResult> {
     // --- message-level properties ------------------------------------------
 
-    // Read the message code page (PR_MESSAGE_CODEPAGE 0x3FFD, fall back to PR_INTERNET_CPID 0x3FDE).
-    // This governs how PT_STRING8 (ANSI) property bytes should be decoded.
+    // Read the message code page. File-specified codepage always wins;
+    // fall back to user-configured fallback, then windows-1252.
     let codepage = read_msg_int_prop(comp, "", 0x3FFD) // PR_MESSAGE_CODEPAGE
-        .or_else(|| read_msg_int_prop(comp, "", 0x3FDE)); // PR_INTERNET_CPID
+        .or_else(|| read_msg_int_prop(comp, "", 0x3FDE)) // PR_INTERNET_CPID
+        .or(fallback_codepage);
 
     let subject = read_msg_string_prop(comp, "", 0x0037, codepage); // PR_SUBJECT
     let sender_name = read_msg_string_prop(comp, "", 0x0C1A, codepage); // PR_SENDER_NAME
@@ -851,14 +853,14 @@ fn extract_raw_date_header(data: &[u8]) -> Option<String> {
 }
 
 /// Extract email content from either .eml or .msg format
-pub fn extract_email_content(data: &[u8], mime_type: &str) -> Result<EmailExtractionResult> {
+pub fn extract_email_content(data: &[u8], mime_type: &str, fallback_codepage: Option<u32>) -> Result<EmailExtractionResult> {
     if data.is_empty() {
         return Err(KreuzbergError::validation("Email content is empty".to_string()));
     }
 
     match mime_type {
         "message/rfc822" | "text/plain" => parse_eml_content(data),
-        "application/vnd.ms-outlook" => parse_msg_content(data),
+        "application/vnd.ms-outlook" => parse_msg_content(data, fallback_codepage),
         _ => Err(KreuzbergError::validation(format!(
             "Unsupported email MIME type: {}",
             mime_type
@@ -1061,14 +1063,14 @@ mod tests {
 
     #[test]
     fn test_extract_email_content_empty_data() {
-        let result = extract_email_content(b"", "message/rfc822");
+        let result = extract_email_content(b"", "message/rfc822", None);
         assert!(result.is_err());
         assert!(matches!(result.unwrap_err(), KreuzbergError::Validation { .. }));
     }
 
     #[test]
     fn test_extract_email_content_invalid_mime_type() {
-        let result = extract_email_content(b"test", "application/pdf");
+        let result = extract_email_content(b"test", "application/pdf", None);
         assert!(result.is_err());
         assert!(matches!(result.unwrap_err(), KreuzbergError::Validation { .. }));
     }
@@ -1081,7 +1083,7 @@ mod tests {
 
     #[test]
     fn test_parse_msg_content_invalid() {
-        let result = parse_msg_content(b"not a msg file");
+        let result = parse_msg_content(b"not a msg file", None);
         assert!(result.is_err());
         assert!(matches!(result.unwrap_err(), KreuzbergError::Parsing { .. }));
     }
@@ -1272,8 +1274,8 @@ mod tests {
     fn test_extract_email_content_mime_variants() {
         let eml_content = b"From: test@example.com\r\n\r\nBody";
 
-        assert!(extract_email_content(eml_content, "message/rfc822").is_ok());
-        assert!(extract_email_content(eml_content, "text/plain").is_ok());
+        assert!(extract_email_content(eml_content, "message/rfc822", None).is_ok());
+        assert!(extract_email_content(eml_content, "text/plain", None).is_ok());
     }
 
     #[test]
@@ -1494,5 +1496,30 @@ mod tests {
             "Expected content missing from cleaned_text: {}",
             result.cleaned_text
         );
+    }
+
+    #[test]
+    fn test_parse_msg_content_invalid_with_fallback() {
+        // Signature test: invalid data with fallback codepage still returns error
+        let result = parse_msg_content(b"not a msg file", Some(1251));
+        assert!(result.is_err());
+        assert!(matches!(result.unwrap_err(), KreuzbergError::Parsing { .. }));
+    }
+
+    #[test]
+    fn test_parse_msg_content_invalid_default_unchanged() {
+        // Signature test: None fallback behaves identically to before
+        let result = parse_msg_content(b"not a msg file", None);
+        assert!(result.is_err());
+        assert!(matches!(result.unwrap_err(), KreuzbergError::Parsing { .. }));
+    }
+
+    #[test]
+    fn test_extract_email_content_invalid_codepage_is_silent() {
+        // Unknown codepage 99999 should not cause an error on a valid EML file
+        let eml = b"From: a@b.com\r\nSubject: Test\r\n\r\nBody";
+        // EML ignores fallback_codepage (it's MSG-only), so this just tests no panic
+        let result = extract_email_content(eml, "message/rfc822", Some(99999));
+        assert!(result.is_ok());
     }
 }
