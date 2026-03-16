@@ -409,6 +409,11 @@ impl DocumentExtractor for PdfExtractor {
             if config.ocr.is_some() {
                 (run_ocr_with_layout(content, config).await?, true)
             } else {
+                tracing::warn!(
+                    "force_ocr=true is set but OCR is not configured (ocr is None). "
+                    "Native text extraction will be used instead. "
+                    "To use OCR, configure ExtractionConfig.ocr with an OcrConfig."
+                );
                 (native_text, false)
             }
         } else if let Some(ocr_config) = config.ocr.as_ref() {
@@ -498,7 +503,16 @@ impl DocumentExtractor for PdfExtractor {
         };
 
         #[cfg(not(feature = "ocr"))]
-        let (text, used_ocr) = (native_text, false);
+        let (text, used_ocr) = {
+            if config.force_ocr {
+                tracing::warn!(
+                    "force_ocr=true is set but the 'ocr' feature is not enabled. \
+                     Native text extraction will be used instead. \
+                     To use OCR, enable the 'ocr' feature when building Kreuzberg."
+                );
+            }
+            (native_text, false)
+        };
 
         // Post-processing: use pre-rendered markdown from initial document load if available.
         // The markdown was rendered during the first document load to avoid redundant PDF parsing.
@@ -1053,5 +1067,34 @@ mod tests {
     fn test_pdf_extractor_without_feature_pdf() {
         let extractor = PdfExtractor::new();
         assert_eq!(extractor.name(), "pdf-extractor");
+    }
+
+    #[tokio::test]
+    #[cfg(feature = "pdf")]
+    async fn test_force_ocr_without_ocr_config_warns() {
+        let extractor = PdfExtractor::new();
+
+        // Test force_ocr=true without OCR config - should not panic but warn
+        let config = ExtractionConfig {
+            force_ocr: true,
+            ocr: None, // OCR not configured
+            ..Default::default()
+        };
+
+        let pdf_path =
+            std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../test_documents/pdf/fake_memo.pdf");
+        if let Ok(content) = std::fs::read(pdf_path) {
+            // This should succeed but use native text (with a warning)
+            let result = extractor.extract_bytes(&content, "application/pdf", &config).await;
+            assert!(
+                result.is_ok(),
+                "Extraction should succeed even when force_ocr=true without OCR config: {:?}",
+                result.err()
+            );
+
+            let extraction_result = result.unwrap();
+            // Content should still be extracted (via native text)
+            assert!(!extraction_result.content.is_empty(), "Content should not be empty");
+        }
     }
 }
