@@ -20,8 +20,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **`parse_msg_content` / `extract_email_content` signatures** (`email` feature): Both functions now accept a `fallback_codepage: Option<u32>` parameter. Pass `None` to retain the previous windows-1252 default behaviour. Callers using the high-level `ExtractionConfig` API are unaffected.
-
 - **Layout preset default**: Changed from `"fast"` to `"accurate"`. Both mapped to the same RT-DETR model; the `Fast` variant has been removed. The `"fast"` string is still accepted for backwards compatibility.
 
 - **Experimental: pdf_oxide text extraction backend** (`pdf-oxide` feature): Pure Rust PDF text extraction using [pdf_oxide](https://crates.io/crates/pdf_oxide). Parses PDF content streams directly with adaptive TJ-offset thresholds, providing an alternative to pdfium for text extraction. Opt-in only, not included in `full` feature set.
