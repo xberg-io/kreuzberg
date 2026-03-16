@@ -541,12 +541,9 @@ impl DocumentExtractor for PdfExtractor {
                         .into_iter()
                         .enumerate()
                         .map(|(idx, img)| {
-                            let format = img
-                                .filters
-                                .first()
-                                .cloned()
-                                .map(std::borrow::Cow::Owned)
-                                .unwrap_or(std::borrow::Cow::Borrowed("unknown"));
+                            // Use the decoded format (e.g. "jpeg", "png") rather than the
+                            // PDF filter name (e.g. "DCTDecode", "FlateDecode").
+                            let format = std::borrow::Cow::Owned(img.decoded_format.clone());
                             crate::types::ExtractedImage {
                                 data: img.data,
                                 format,
