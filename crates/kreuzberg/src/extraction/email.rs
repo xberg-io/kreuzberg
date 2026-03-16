@@ -360,7 +360,7 @@ fn collect_nested_message_html(message: &mail_parser::Message<'_>, out: &mut Vec
 /// the FAT and retry – the real streams are still within the original
 /// data range and parse correctly.
 ///
-pub(crate) fn parse_msg_content(data: &[u8], fallback_codepage: Option<u32>) -> Result<EmailExtractionResult> {
+pub fn parse_msg_content(data: &[u8], fallback_codepage: Option<u32>) -> Result<EmailExtractionResult> {
     use std::borrow::Cow;
     use std::io::Cursor;
 
@@ -854,7 +854,7 @@ fn extract_raw_date_header(data: &[u8]) -> Option<String> {
 }
 
 /// Extract email content from either .eml or .msg format
-pub(crate) fn extract_email_content(data: &[u8], mime_type: &str, fallback_codepage: Option<u32>) -> Result<EmailExtractionResult> {
+pub fn extract_email_content(data: &[u8], mime_type: &str, fallback_codepage: Option<u32>) -> Result<EmailExtractionResult> {
     if data.is_empty() {
         return Err(KreuzbergError::validation("Email content is empty".to_string()));
     }
