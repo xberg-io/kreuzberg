@@ -27,7 +27,7 @@ simd-utf8 = ["dep:simdutf8"]
 
 tokio-runtime = ["dep:tokio"]
 
-pdf = ["dep:pdfium-render", "dep:lopdf", "dep:image", "html"]
+pdf = ["dep:pdfium-render", "dep:lopdf", "dep:image", "dep:flate2", "html"]
 # Experimental: use pdf_oxide for text extraction (pure Rust, no C++ deps).
 # Provides cleaner word spacing for PDFs with broken font CMaps.
 # Requires 'pdf' feature. Not included in 'full' — opt-in only.
