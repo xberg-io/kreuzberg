@@ -11,13 +11,12 @@ use super::classify::{
     classify_paragraphs, demote_heading_runs, demote_unnumbered_subsections, mark_cross_page_repeating_text,
     refine_heading_hierarchy,
 };
-use super::columns::split_segments_into_columns;
 use super::constants::{
     FULL_LINE_FRACTION, MIN_FONT_SIZE, MIN_HEADING_FONT_GAP, MIN_HEADING_FONT_RATIO, PAGE_BOTTOM_MARGIN_FRACTION,
     PAGE_TOP_MARGIN_FRACTION,
 };
-use super::lines::{is_cjk_char, segments_to_lines};
-use super::paragraphs::{lines_to_paragraphs, merge_continuation_paragraphs, split_embedded_list_items};
+use super::lines::is_cjk_char;
+use super::paragraphs::{merge_continuation_paragraphs, split_embedded_list_items};
 use super::render::inject_image_placeholders;
 use super::text_repair::{
     apply_ligature_repairs, apply_to_all_segments, build_ligature_repair_map, normalize_unicode_text,
@@ -382,6 +381,40 @@ fn process_single_page(
     } = input;
 
     if let Some(mut paragraphs) = struct_paragraphs {
+        // When layout hints are available and paragraphs have positional data,
+        // convert to pseudo-segments and run through region assembly for better
+        // structural alignment with layout model predictions.
+        let has_text_hints = page_hints.as_ref().is_some_and(|hints| {
+            hints.iter().any(|h| {
+                h.confidence >= 0.5
+                    && !matches!(
+                        h.class,
+                        super::types::LayoutHintClass::Table | super::types::LayoutHintClass::Picture
+                    )
+            })
+        });
+        let has_positional_data = paragraphs.iter().any(|p| p.block_bbox.is_some());
+
+        if has_text_hints && has_positional_data {
+            // Convert struct-tree paragraphs to pseudo-segments using block_bbox
+            let pseudo_segments = paragraphs_to_pseudo_segments(&paragraphs);
+            if !pseudo_segments.is_empty() {
+                let hints = page_hints.as_ref().unwrap();
+                let mut region_paras = super::regions::assemble_region_paragraphs(
+                    pseudo_segments,
+                    hints,
+                    heading_map,
+                    0.5,
+                    doc_body_font_size,
+                    i,
+                    &table_bboxes,
+                );
+                retain_page_furniture_safely(&mut region_paras);
+                return region_paras;
+            }
+        }
+
+        // Fallback: original struct-tree processing
         // Apply heading classification to struct tree pages that have
         // font size variation but no structure-tree-level headings.
         if needs_classify {
@@ -465,19 +498,7 @@ fn process_single_page(
             } else {
                 page_segments
             };
-            let column_groups = split_segments_into_columns(&page_segments);
-            let mut paras: Vec<PdfParagraph> = if column_groups.len() <= 1 {
-                let lines = segments_to_lines(page_segments);
-                lines_to_paragraphs(lines)
-            } else {
-                let mut all_paras = Vec::new();
-                for group in column_groups {
-                    let col_segments: Vec<_> = group.into_iter().map(|idx| page_segments[idx].clone()).collect();
-                    let lines = segments_to_lines(col_segments);
-                    all_paras.extend(lines_to_paragraphs(lines));
-                }
-                all_paras
-            };
+            let mut paras = super::regions::assemble_standard_pipeline(&page_segments);
             classify_paragraphs(&mut paras, heading_map);
             // Apply layout hint overrides to the standard pipeline output.
             // This path runs when the page didn't qualify for region-based
@@ -616,8 +637,11 @@ pub fn render_document_as_markdown_with_tables(
         .find(|(_, level)| level.is_none())
         .map(|(size, _)| *size);
 
-    // Extract tables from layout-detected Table regions using character-level
-    // word extraction. This must happen before segments are consumed by Stage 3.
+    // Extract tables from layout-detected Table regions.
+    // Uses the same segments as region assembly (from Stage 1) converted to
+    // word-level HocrWords, ensuring consistency between table extraction
+    // and text flow. Falls back to character-level extraction for pages
+    // without heuristic segments (structure-tree-only pages).
     let mut layout_tables: Vec<crate::types::Table> = Vec::new();
     if let Some(hints_pages) = layout_hints {
         // Try TATR for neural table structure recognition when layout images are available.
@@ -632,6 +656,7 @@ pub fn render_document_as_markdown_with_tables(
         // structure-tree pages. The structure tree flattens tables into
         // paragraphs — layout-detected tables with TATR structure
         // recognition produce proper markdown tables.
+        #[allow(clippy::needless_range_loop)] // indexes into both hints_pages and all_page_segments
         for page_idx in 0..page_count as usize {
             let Some(hints) = hints_pages.get(page_idx) else {
                 continue;
@@ -650,31 +675,59 @@ pub fn render_document_as_markdown_with_tables(
                 continue;
             }
 
-            let page = pages.get(page_idx as PdfPageIndex).map_err(|e| {
-                crate::pdf::error::PdfError::TextExtractionFailed(format!(
-                    "Failed to get page {} for table extraction: {:?}",
-                    page_idx, e
-                ))
-            })?;
+            // Use Stage 1 segments when available (same source as region assembly).
+            // For structure-tree-only pages (empty segments), fall back to
+            // character-level extraction via extract_words_from_page.
+            let page_segments = &all_page_segments[page_idx];
+            let (words, page_height) = if !page_segments.is_empty() {
+                // Get page height from layout results (avoids pdfium page fetch)
+                #[cfg(feature = "layout-detection")]
+                let ph = layout_results.and_then(|r| r.get(page_idx)).map(|r| r.page_height_pts);
+                #[cfg(not(feature = "layout-detection"))]
+                let ph: Option<f32> = None;
 
-            let page_height = page.height().value;
+                let page_height = match ph {
+                    Some(h) => h,
+                    None => {
+                        let page = pages.get(page_idx as PdfPageIndex).map_err(|e| {
+                            crate::pdf::error::PdfError::TextExtractionFailed(format!(
+                                "Failed to get page {} for table extraction: {:?}",
+                                page_idx, e
+                            ))
+                        })?;
+                        page.height().value
+                    }
+                };
 
-            // Extract character-level words from the page (accurate positions)
-            let words = match crate::pdf::table::extract_words_from_page(&page, 0.0) {
-                Ok(w) if !w.is_empty() => w,
-                Ok(_) => {
-                    tracing::debug!(page = page_idx, "table extraction: no words on page, skipping");
-                    continue;
-                }
-                Err(e) => {
-                    tracing::debug!(page = page_idx, error = %e, "table extraction: word extraction failed");
-                    continue;
+                let w = crate::pdf::table_reconstruct::segments_to_words(page_segments, page_height);
+                (w, page_height)
+            } else {
+                // Fallback: structure-tree-only pages need character-level extraction
+                let page = pages.get(page_idx as PdfPageIndex).map_err(|e| {
+                    crate::pdf::error::PdfError::TextExtractionFailed(format!(
+                        "Failed to get page {} for table extraction: {:?}",
+                        page_idx, e
+                    ))
+                })?;
+                let page_height = page.height().value;
+                match crate::pdf::table::extract_words_from_page(&page, 0.0) {
+                    Ok(w) => (w, page_height),
+                    Err(e) => {
+                        tracing::debug!(page = page_idx, error = %e, "table extraction: word extraction failed");
+                        continue;
+                    }
                 }
             };
+
+            if words.is_empty() {
+                tracing::debug!(page = page_idx, "table extraction: no words on page, skipping");
+                continue;
+            }
 
             tracing::debug!(
                 page = page_idx,
                 word_count = words.len(),
+                from_segments = !page_segments.is_empty(),
                 has_images = layout_images.is_some(),
                 has_results = layout_results.is_some(),
                 "table extraction: attempting TATR"
@@ -999,6 +1052,43 @@ fn filter_standalone_page_numbers(segments: &mut Vec<SegmentData>) {
     for &idx in candidates.iter().rev() {
         segments.remove(idx);
     }
+}
+
+/// Convert structure-tree paragraphs with block_bbox into pseudo-segments.
+///
+/// Each paragraph becomes a single `SegmentData` positioned at its block_bbox,
+/// with its full text content joined. This enables region assembly to assign
+/// struct-tree content to layout regions using spatial overlap.
+fn paragraphs_to_pseudo_segments(paragraphs: &[super::types::PdfParagraph]) -> Vec<crate::pdf::hierarchy::SegmentData> {
+    let mut segments = Vec::new();
+    for para in paragraphs {
+        let (left, bottom, right, top) = match para.block_bbox {
+            Some(bbox) => bbox,
+            None => continue,
+        };
+        let text: String = para
+            .lines
+            .iter()
+            .map(|l| l.segments.iter().map(|s| s.text.as_str()).collect::<Vec<_>>().join(" "))
+            .collect::<Vec<_>>()
+            .join(" ");
+        if text.trim().is_empty() {
+            continue;
+        }
+        segments.push(crate::pdf::hierarchy::SegmentData {
+            text,
+            x: left,
+            y: bottom,
+            width: right - left,
+            height: top - bottom,
+            font_size: para.dominant_font_size,
+            is_bold: para.is_bold,
+            is_italic: false,
+            is_monospace: para.is_code_block,
+            baseline_y: bottom,
+        });
+    }
+    segments
 }
 
 /// Dehyphenate paragraphs by rejoining words split across line boundaries.

@@ -16,7 +16,7 @@ use crate::pdf::hierarchy::SegmentData;
 use super::classify::classify_paragraphs;
 use super::columns::split_segments_into_columns;
 use super::lines::segments_to_lines;
-use super::paragraphs::{lines_to_paragraphs, merge_continuation_paragraphs};
+use super::paragraphs::lines_to_paragraphs;
 use super::types::{LayoutHint, LayoutHintClass, PdfParagraph};
 
 // Re-exports for use by pipeline.rs and other siblings
@@ -80,38 +80,9 @@ pub(super) fn assemble_region_paragraphs(
         return assemble_fallback(segments, heading_map);
     }
 
-    // Pre-assignment quality gate: detect multi-column pages where the layout
-    // model produces many narrow Text hints (each ~single-column width).
-    // On such pages, the assignment step clips text segments at region boundaries,
-    // losing words near the column gutter. The baseline XY-Cut pipeline handles
-    // two-column layouts correctly, so redirect the entire page to fallback.
-    {
-        let page_left_pre = segments.iter().map(|s| s.x).fold(f32::MAX, f32::min);
-        let page_right_pre = segments.iter().map(|s| s.x + s.width).fold(0.0_f32, f32::max);
-        let page_width_pre = page_right_pre - page_left_pre;
-        let is_multicol = detect_page_multicolumn(&segments, page_width_pre, page_left_pre);
-        if is_multicol && page_width_pre > 0.0 {
-            let confident_text_hints: Vec<&LayoutHint> = hints
-                .iter()
-                .filter(|h| h.confidence >= min_confidence && h.class == LayoutHintClass::Text)
-                .collect();
-            if confident_text_hints.len() >= 4 {
-                let narrow_count = confident_text_hints
-                    .iter()
-                    .filter(|h| (h.right - h.left) < page_width_pre * 0.55)
-                    .count();
-                if narrow_count as f32 / confident_text_hints.len() as f32 >= 0.75 {
-                    tracing::trace!(
-                        page = page_index,
-                        text_hints = confident_text_hints.len(),
-                        narrow_count,
-                        "multi-column page with narrow Text hints — skipping layout assembly"
-                    );
-                    return assemble_fallback(segments, heading_map);
-                }
-            }
-        }
-    }
+    // Multi-column narrow-hint gate removed: region assignment + per-region
+    // column splitting now handles multi-column pages correctly. Layout hints
+    // for individual columns are valid and should be used.
 
     let (mut regions, unassigned_indices) =
         assignment::assign_segments_to_regions_refined(&segments, hints, min_confidence, extracted_table_bboxes);
@@ -134,23 +105,10 @@ pub(super) fn assemble_region_paragraphs(
     let page_right = segments.iter().map(|s| s.x + s.width).fold(0.0_f32, f32::max);
     let page_width = page_right - page_left;
 
-    // Detect Text regions that span multiple columns and redirect to fallback.
-    // When the layout model produces a Text region covering both columns of a
-    // multi-column page, the region assembly interleaves left/right column text
-    // into a single paragraph. The baseline XY-Cut pipeline handles this correctly
-    // via column splitting.
-    //
-    // Two checks:
-    // 1. Oversized regions (>= 30% page area and wide) — likely full-page blocks.
-    // 2. Multi-column regions — wide regions where segments cluster into two
-    //    distinct X-bands, indicating they span a column gutter.
-    // Page-level multi-column detection: if the page's segments cluster into
-    // two distinct X-bands, ALL wide Text regions should use the fallback
-    // pipeline (XY-Cut column splitting) regardless of per-region segment count.
-    // This prevents text interleaving when the layout model creates regions
-    // that span both columns of a 2-column page.
-    let page_is_multicolumn = detect_page_multicolumn(&segments, page_width, page_left);
-
+    // Detect wide Text regions that span a real column gutter and redirect
+    // those to fallback. Only triggers when segments show a clear gap (>15%
+    // of region width) in the middle, indicating the region genuinely spans
+    // two columns rather than being a large single-column block.
     let mut extra_unassigned: Vec<usize> = Vec::new();
     if page_width > 0.0 && page_height > 0.0 {
         let page_area = page_width * page_height;
@@ -161,14 +119,12 @@ pub(super) fn assemble_region_paragraphs(
             }
 
             let region_width = region.hint.right - region.hint.left;
-            let region_height = region.hint.top - region.hint.bottom;
-            let region_area = region_width * region_height;
+            let region_area = (region_width) * (region.hint.top - region.hint.bottom);
 
-            // Check 1: oversized region (area-based).
-            // A Text region covering >= 25% of page area and >= 65% of page width
-            // is likely a TOC, multi-paragraph block, or full-page text that the
-            // fallback XY-Cut pipeline handles more accurately.
-            if region_area >= page_area * 0.25 && region_width >= page_width * 0.65 {
+            // Oversized region (area-based): relaxed from 25% to 50%.
+            // A Text region covering >= 50% of page area and >= 65% of page width
+            // is likely a full-page block where XY-Cut handles layout better.
+            if region_area >= page_area * 0.50 && region_width >= page_width * 0.65 {
                 tracing::trace!(
                     page = page_index,
                     segments = region.segment_indices.len(),
@@ -179,69 +135,20 @@ pub(super) fn assemble_region_paragraphs(
                 continue;
             }
 
-            // Check 1b: dense Text region — many segments in a wide region.
-            // Regions with >= 15 segments spanning >= 50% of page width are
-            // likely TOC pages, dense lists, or multi-paragraph blocks where
-            // segment-to-line assembly within a single region merges entries
-            // that should stay separate. The fallback pipeline's column
-            // splitting preserves the correct line breaks.
-            if region.segment_indices.len() >= 15 && region_width >= page_width * 0.50 {
+            // Per-region column gutter detection: only redirect if segments have
+            // a clear gap (>15% of region width) indicating an actual column gutter.
+            // This replaces the previous blanket multi-column fallbacks.
+            if region.segment_indices.len() >= 6
+                && region_width >= page_width * 0.55
+                && region_has_column_gutter(&segments, &region.segment_indices, region.hint.left, region_width)
+            {
                 tracing::trace!(
                     page = page_index,
                     segments = region.segment_indices.len(),
                     region_width,
-                    page_width,
-                    "dense Text region detected — redirecting to fallback pipeline"
+                    "Text region with column gutter detected — redirecting to fallback pipeline"
                 );
                 extra_unassigned.append(&mut region.segment_indices);
-                continue;
-            }
-
-            // Check 2: multi-column page with wide region.
-            // On pages detected as multi-column, any Text region spanning >= 55%
-            // of page width likely covers both columns. Redirect to fallback where
-            // XY-Cut column splitting handles the layout correctly.
-            if page_is_multicolumn && region_width >= page_width * 0.55 {
-                tracing::trace!(
-                    page = page_index,
-                    segments = region.segment_indices.len(),
-                    region_width,
-                    page_width,
-                    "wide Text region on multi-column page — redirecting to fallback pipeline"
-                );
-                extra_unassigned.append(&mut region.segment_indices);
-                continue;
-            }
-
-            // Check 3: multi-column detection for wide regions (per-region check).
-            // A region wider than 55% of page width with >= 6 segments might span
-            // two columns. Check if segments cluster into left/right halves.
-            if region.segment_indices.len() >= 6 && region_width >= page_width * 0.55 {
-                let mid_x = (region.hint.left + region.hint.right) / 2.0;
-                let mut left_count = 0_usize;
-                let mut right_count = 0_usize;
-                for &idx in &region.segment_indices {
-                    let seg_cx = segments[idx].x + segments[idx].width / 2.0;
-                    if seg_cx < mid_x {
-                        left_count += 1;
-                    } else {
-                        right_count += 1;
-                    }
-                }
-                let total = left_count + right_count;
-                let minority = left_count.min(right_count);
-                // If both halves have >= 25% of segments, this is likely two columns
-                if total > 0 && minority as f32 / total as f32 >= 0.25 {
-                    tracing::trace!(
-                        page = page_index,
-                        segments = total,
-                        left_count,
-                        right_count,
-                        region_width,
-                        "multi-column Text region detected — redirecting to fallback pipeline"
-                    );
-                    extra_unassigned.append(&mut region.segment_indices);
-                }
             }
         }
     }
@@ -259,6 +166,24 @@ pub(super) fn assemble_region_paragraphs(
     // Assemble paragraphs per region
     for region in &regions {
         if region.segment_indices.is_empty() {
+            continue;
+        }
+
+        // Table regions: skip only if TATR successfully extracted a table for
+        // this hint (bbox overlaps an extracted_table_bbox). If extraction failed,
+        // recover the segments to the unassigned pool so text isn't lost.
+        if region.hint.class == LayoutHintClass::Table {
+            let table_extracted = extracted_table_bboxes.iter().any(|bb| {
+                // Check if this Table hint produced a successful extraction
+                let overlap_x = region.hint.right.min(bb.x1 as f32) - region.hint.left.max(bb.x0 as f32);
+                let overlap_y = region.hint.top.min(bb.y1 as f32) - region.hint.bottom.max(bb.y0 as f32);
+                overlap_x > 0.0 && overlap_y > 0.0
+            });
+            if table_extracted {
+                continue; // Text captured by TATR — skip
+            }
+            // TATR failed for this table hint — recover segments as unassigned
+            extra_unassigned.extend(region.segment_indices.iter());
             continue;
         }
 
@@ -355,59 +280,39 @@ pub(super) fn assemble_region_paragraphs(
     all_paragraphs
 }
 
-/// Detect whether a page has a multi-column layout by analyzing segment positions.
+/// Check whether a region's segments have a clear column gutter.
 ///
-/// Checks if segments cluster into two or more distinct horizontal bands with a
-/// clear gutter between them. A page is considered multi-column if:
-/// 1. There are enough segments to detect columns (>= 8).
-/// 2. Segments form two distinct X-position clusters with a gap > 10% of page width.
-/// 3. Both clusters have a meaningful number of segments (>= 20% each).
-fn detect_page_multicolumn(segments: &[SegmentData], page_width: f32, page_left: f32) -> bool {
-    if segments.len() < 8 || page_width <= 0.0 {
+/// Sorts segment center-X positions within the region and looks for a gap
+/// exceeding 15% of the region width in the middle third of the X range.
+/// Returns true if such a gutter exists, indicating the region spans two columns.
+fn region_has_column_gutter(
+    segments: &[SegmentData],
+    segment_indices: &[usize],
+    region_left: f32,
+    region_width: f32,
+) -> bool {
+    if segment_indices.len() < 6 || region_width <= 0.0 {
         return false;
     }
 
-    // Collect left-edge x positions of all segments (relative to page left)
-    let mut x_positions: Vec<f32> = segments
+    let mut cx_positions: Vec<f32> = segment_indices
         .iter()
-        .filter(|s| !s.text.trim().is_empty() && s.width > 0.0)
-        .map(|s| s.x - page_left)
+        .map(|&idx| segments[idx].x + segments[idx].width / 2.0 - region_left)
         .collect();
+    cx_positions.sort_by(|a, b| a.total_cmp(b));
 
-    if x_positions.len() < 8 {
-        return false;
-    }
+    let gutter_threshold = region_width * 0.15;
+    let n = cx_positions.len();
+    // Only look in the middle region (25%-75% of segments) to avoid edge effects
+    let start = (n as f32 * 0.20).ceil() as usize;
+    let end = n.saturating_sub(start);
 
-    x_positions.sort_by(|a, b| a.total_cmp(b));
-
-    // Look for a gap in the distribution of x positions that indicates a column gutter.
-    // The gutter should be:
-    // - At least 10% of page width
-    // - Located roughly in the middle half of the page (25%-75%)
-    // - Dividing segments into two groups of at least 20% each
-    let n = x_positions.len();
-    let min_group_size = (n as f32 * 0.20).ceil() as usize;
-    let gutter_threshold = page_width * 0.10;
-
-    for i in min_group_size..n.saturating_sub(min_group_size) {
-        let gap = x_positions[i] - x_positions[i - 1];
+    for i in start..end {
+        let gap = cx_positions[i] - cx_positions[i - 1];
         if gap >= gutter_threshold {
-            // Check that the gap is in the middle half of the page
-            let gap_center = (x_positions[i] + x_positions[i - 1]) / 2.0;
-            let relative_position = gap_center / page_width;
-            if (0.25..=0.75).contains(&relative_position) {
-                tracing::trace!(
-                    gap,
-                    gap_center,
-                    left_count = i,
-                    right_count = n - i,
-                    "page multi-column detection: gutter found"
-                );
-                return true;
-            }
+            return true;
         }
     }
-
     false
 }
 
@@ -606,9 +511,20 @@ fn associate_footnotes(paragraphs: &mut [PdfParagraph]) {
 
 /// Standard pipeline fallback for segments not covered by layout regions.
 fn assemble_fallback(segments: Vec<SegmentData>, heading_map: &[(f32, Option<u8>)]) -> Vec<PdfParagraph> {
-    let column_groups = split_segments_into_columns(&segments);
-    let mut paragraphs: Vec<PdfParagraph> = if column_groups.len() <= 1 {
-        let lines = segments_to_lines(segments);
+    let mut paragraphs = assemble_standard_pipeline(&segments);
+    classify_paragraphs(&mut paragraphs, heading_map);
+    // Note: merge_continuation_paragraphs is NOT called here — the caller
+    // (assemble_region_paragraphs) applies merge_continuation_paragraphs_region_aware
+    // on the combined result, which handles both region and fallback paragraphs.
+    paragraphs
+}
+
+/// Shared column-splitting → lines → paragraphs assembly used by both
+/// the fallback path in region assembly and the standard pipeline in `pipeline.rs`.
+pub(super) fn assemble_standard_pipeline(segments: &[SegmentData]) -> Vec<PdfParagraph> {
+    let column_groups = split_segments_into_columns(segments);
+    if column_groups.len() <= 1 {
+        let lines = segments_to_lines(segments.to_vec());
         lines_to_paragraphs(lines)
     } else {
         let mut all_paragraphs = Vec::new();
@@ -618,10 +534,7 @@ fn assemble_fallback(segments: Vec<SegmentData>, heading_map: &[(f32, Option<u8>
             all_paragraphs.extend(lines_to_paragraphs(lines));
         }
         all_paragraphs
-    };
-    classify_paragraphs(&mut paragraphs, heading_map);
-    merge_continuation_paragraphs(&mut paragraphs);
-    paragraphs
+    }
 }
 
 #[cfg(test)]
@@ -833,8 +746,10 @@ mod tests {
     }
 
     #[test]
-    fn test_table_regions_excluded_when_extracted() {
-        // Segments within successfully extracted table bboxes are dropped.
+    fn test_table_regions_assigned_not_suppressed() {
+        // Segments overlapping Table regions are assigned to the Table region
+        // (not suppressed). The caller skips Table-class regions, preventing
+        // body text emission while TATR captures the content separately.
         let segments = vec![make_segment("text", 10.0, 700.0, 40.0, 12.0)];
         let hints = vec![make_hint(LayoutHintClass::Table, 0.9, 0.0, 690.0, 200.0, 720.0)];
         let extracted_bbox = crate::types::BoundingBox {
@@ -844,19 +759,29 @@ mod tests {
             y1: 720.0,
         };
         let (regions, unassigned) = assignment::assign_segments_to_regions(&segments, &hints, 0.5, &[extracted_bbox]);
-        assert!(regions.is_empty());
-        assert_eq!(unassigned.len(), 0); // dropped, not unassigned
+        assert_eq!(regions.len(), 1);
+        assert_eq!(regions[0].hint.class, LayoutHintClass::Table);
+        assert_eq!(regions[0].segment_indices.len(), 1);
+        assert!(unassigned.is_empty());
     }
 
     #[test]
-    fn test_table_regions_recovered_when_extraction_fails() {
-        // Segments in Table hints that did NOT produce tables should fall through.
-        let segments = vec![make_segment("text", 10.0, 700.0, 40.0, 12.0)];
-        let hints = vec![make_hint(LayoutHintClass::Table, 0.9, 0.0, 690.0, 200.0, 720.0)];
-        // No extracted bboxes → table extraction failed for this hint
+    fn test_table_region_competes_with_text_region() {
+        // Segment at the border of a Table and Text region is assigned
+        // to whichever has higher IoS, not unconditionally suppressed.
+        let segments = vec![make_segment("border text", 100.0, 700.0, 40.0, 12.0)];
+        // Text region covers left side; Table region covers right side.
+        // Segment is mostly in the Text region (x=100, width=40 → center at 120).
+        let hints = vec![
+            make_hint(LayoutHintClass::Text, 0.9, 80.0, 690.0, 130.0, 720.0),
+            make_hint(LayoutHintClass::Table, 0.9, 125.0, 690.0, 300.0, 720.0),
+        ];
         let (regions, unassigned) = assignment::assign_segments_to_regions(&segments, &hints, 0.5, &[]);
-        assert!(regions.is_empty());
-        assert_eq!(unassigned.len(), 1); // recovered to unassigned
+        // Segment should be assigned to Text region (higher IoS)
+        assert_eq!(regions.len(), 2);
+        assert_eq!(regions[0].segment_indices.len(), 1); // Text region got it
+        assert!(regions[1].segment_indices.is_empty()); // Table region empty
+        assert!(unassigned.is_empty());
     }
 
     #[test]

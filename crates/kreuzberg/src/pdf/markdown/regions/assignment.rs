@@ -23,26 +23,24 @@ const MAX_REFINEMENT_ITERATIONS: usize = 3;
 /// Among qualifying regions, the one with highest IoS wins; ties broken by
 /// smallest area (most specific region).
 ///
-/// Table and Picture regions are excluded from text assignment (handled by
-/// separate pipelines). Segments within those regions are dropped entirely
-/// to avoid duplicating content that appears in the extracted tables.
+/// Table regions participate in assignment so that segments at the table-text
+/// boundary are assigned to whichever region they overlap most, rather than
+/// being suppressed with a hard threshold. Segments assigned to Table regions
+/// are not emitted as body text (the caller skips Table-class regions).
+/// Picture regions are excluded (handled via separate suppression).
 pub(in crate::pdf::markdown) fn assign_segments_to_regions<'a>(
     segments: &[SegmentData],
     hints: &'a [LayoutHint],
     min_confidence: f32,
-    extracted_table_bboxes: &[crate::types::BoundingBox],
+    _extracted_table_bboxes: &[crate::types::BoundingBox],
 ) -> (Vec<LayoutRegion<'a>>, Vec<usize>) {
     let confident_hints: Vec<&LayoutHint> = hints
         .iter()
         .filter(|h| h.confidence >= min_confidence)
-        // Exclude Table and Picture — handled by separate pipelines
-        .filter(|h| !matches!(h.class, LayoutHintClass::Table | LayoutHintClass::Picture))
+        // Exclude only Picture — Table participates in assignment so segments
+        // compete via IoS rather than being suppressed by a hard 50% threshold.
+        .filter(|h| h.class != LayoutHintClass::Picture)
         .collect();
-
-    // Only suppress segments in Table bboxes that actually produced valid tables.
-    // If a Table hint failed extraction, its segments should fall through to
-    // the unassigned pool so text isn't silently lost.
-    let suppress_bboxes = extracted_table_bboxes;
 
     // Collect Picture region bounding boxes for suppression.
     // Segments within Picture regions are OCR artifacts (text rendered inside
@@ -52,7 +50,7 @@ pub(in crate::pdf::markdown) fn assign_segments_to_regions<'a>(
         .filter(|h| h.confidence >= min_confidence && h.class == LayoutHintClass::Picture)
         .collect();
 
-    if confident_hints.is_empty() && suppress_bboxes.is_empty() && picture_hints.is_empty() {
+    if confident_hints.is_empty() && picture_hints.is_empty() {
         let all_indices: Vec<usize> = (0..segments.len()).collect();
         return (Vec::new(), all_indices);
     }
@@ -87,18 +85,7 @@ pub(in crate::pdf::markdown) fn assign_segments_to_regions<'a>(
         let seg_bottom = seg.y;
         let seg_top = seg.y + seg.height;
 
-        // Check if this segment overlaps a successfully extracted table.
-        // Use IoS (intersection-over-self) instead of center-point to catch
-        // segments that straddle the table boundary.
         let seg_rect = Rect::from_lbrt(seg_left, seg_bottom, seg_right, seg_top);
-        let in_extracted_table = suppress_bboxes.iter().any(|bb| {
-            let hint_rect = Rect::from_lbrt(bb.x0 as f32, bb.y0 as f32, bb.x1 as f32, bb.y1 as f32);
-            seg_rect.intersection_over_self(&hint_rect) >= 0.5
-        });
-        if in_extracted_table {
-            suppressed_count += 1;
-            continue;
-        }
 
         // Suppress segments inside Picture regions — but only if the text
         // looks like OCR artifacts (garbled hex, figure labels, etc.).
@@ -182,7 +169,7 @@ pub(in crate::pdf::markdown) fn assign_segments_to_regions_refined<'a>(
     }
 
     // Collect Picture hints from the original hints to carry through iterations.
-    // The refined hints only contain text-bearing regions (non-Table/non-Picture),
+    // The refined hints contain text-bearing and Table regions (non-Picture),
     // but Picture bboxes must remain available for segment suppression.
     let picture_hints: Vec<LayoutHint> = hints
         .iter()
@@ -223,7 +210,8 @@ pub(in crate::pdf::markdown) fn assign_segments_to_regions_refined<'a>(
         .iter()
         .enumerate()
         .filter(|(_, h)| h.confidence >= min_confidence)
-        .filter(|(_, h)| !matches!(h.class, LayoutHintClass::Table | LayoutHintClass::Picture))
+        // Exclude only Picture — Table participates in assignment
+        .filter(|(_, h)| h.class != LayoutHintClass::Picture)
         .collect();
 
     for (ri, refined_region) in final_regions_refined.iter().enumerate() {
@@ -257,6 +245,14 @@ fn compute_refined_hints(
 
         if region.segment_indices.is_empty() {
             // No segments — keep original bbox
+            refined.push(base_hint.clone());
+            continue;
+        }
+
+        // Table regions should not be refined — they need to keep their full
+        // model-predicted bbox to absorb all overlapping segments. Shrinking
+        // would cause border segments to reassign to adjacent Text regions.
+        if base_hint.class == LayoutHintClass::Table {
             refined.push(base_hint.clone());
             continue;
         }

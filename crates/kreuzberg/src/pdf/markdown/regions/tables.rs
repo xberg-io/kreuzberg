@@ -6,12 +6,12 @@ use crate::types::Table;
 
 use super::table_recognition::word_hint_iow;
 
-/// Extract tables from layout-detected Table regions using character-level words.
+/// Extract tables from layout-detected Table regions using word-level data.
 ///
-/// Uses `extract_words_from_page()` for accurate word positions (character-level
-/// splitting via pdfium), then filters words by Table hint bboxes. This is more
-/// accurate than using segment-level data which may merge multiple table columns
-/// into one segment.
+/// Filters the provided words by Table hint bboxes and reconstructs table
+/// structure using heuristic column/row detection. The caller is responsible
+/// for providing words (typically from `segments_to_words` for consistency
+/// with region assembly, or from `extract_words_from_page` as fallback).
 pub(in crate::pdf::markdown) fn extract_tables_from_layout_hints(
     words: &[crate::pdf::table_reconstruct::HocrWord],
     hints: &[LayoutHint],

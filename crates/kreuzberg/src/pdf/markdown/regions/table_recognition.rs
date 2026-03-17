@@ -62,47 +62,17 @@ pub(in crate::pdf::markdown) fn recognize_tables_for_native_page(
     let sx = img_w as f32 / page_result.page_width_pts;
     let sy = img_h as f32 / page_result.page_height_pts;
 
-    // Count non-table structural hints on this page (SectionHeader, Title, Text, ListItem).
-    // If the page has many structural elements, Table hints that overlap them
-    // are likely false positives (structured forms misclassified as tables).
-    let structural_hint_count = hints
-        .iter()
-        .filter(|h| {
-            matches!(
-                h.class,
-                LayoutHintClass::SectionHeader
-                    | LayoutHintClass::Title
-                    | LayoutHintClass::Text
-                    | LayoutHintClass::ListItem
-            ) && h.confidence >= 0.5
-        })
-        .count();
-
     let table_hints: Vec<&LayoutHint> = hints
         .iter()
         .filter(|h| {
             if h.class != LayoutHintClass::Table || h.confidence < 0.5 {
                 return false;
             }
-            // Skip Table hints when the page has many structural elements.
-            // A page with 4+ structural hints (headings, text, lists) alongside
-            // multiple tables is likely a form, not tabular data. The table
-            // extraction would suppress structured text and hurt quality.
-            if structural_hint_count >= 4 {
-                let table_area = (h.right - h.left) * (h.top - h.bottom);
-                let page_area = page_result.page_width_pts * page_result.page_height_pts;
-                // Only skip small table hints (<30% of page) on structured pages.
-                // Large tables (>30%) on structured pages could be genuine.
-                if table_area < page_area * 0.3 {
-                    tracing::debug!(
-                        page = page_index,
-                        structural_hints = structural_hint_count,
-                        table_area_pct = table_area / page_area * 100.0,
-                        "Skipping small Table hint on page with many structural elements"
-                    );
-                    return false;
-                }
-            }
+            // Structural hint guard relaxed: region assignment now handles
+            // text/table overlap correctly by assigning segments to Table
+            // regions instead of suppressing them. Small tables on structured
+            // pages are now allowed through since double-counting is prevented
+            // by the region-first assembly approach.
             true
         })
         .collect();

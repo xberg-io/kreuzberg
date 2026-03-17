@@ -25,6 +25,72 @@ pub fn segment_to_hocr_word(seg: &SegmentData, page_height: f32) -> HocrWord {
     }
 }
 
+/// Split a `SegmentData` into word-level `HocrWord`s for table reconstruction.
+///
+/// Pdfium segments can contain multiple whitespace-separated words (merged by
+/// shared baseline + font). For table cell matching, each word needs its own
+/// bounding box so it can be assigned to the correct column/cell.
+///
+/// Single-word segments use `segment_to_hocr_word` directly (fast path).
+/// Multi-word segments get proportional bbox estimation per word based on
+/// byte offset within the segment text.
+pub fn split_segment_to_words(seg: &SegmentData, page_height: f32) -> Vec<HocrWord> {
+    let trimmed = seg.text.trim();
+    if trimmed.is_empty() {
+        return Vec::new();
+    }
+
+    // Fast path: single word
+    if !trimmed.contains(char::is_whitespace) {
+        return vec![segment_to_hocr_word(seg, page_height)];
+    }
+
+    let text = &seg.text;
+    let total_bytes = text.len() as f32;
+    if total_bytes <= 0.0 {
+        return Vec::new();
+    }
+
+    let top_image = (page_height - (seg.y + seg.height)).round().max(0.0) as u32;
+    let seg_height = seg.height.round().max(0.0) as u32;
+
+    let mut words = Vec::new();
+    let mut search_start = 0;
+    for word in text.split_whitespace() {
+        // Find byte offset of this word in the original text
+        let byte_offset = text[search_start..].find(word).map(|pos| search_start + pos);
+        let Some(offset) = byte_offset else {
+            continue;
+        };
+        search_start = offset + word.len();
+
+        let frac_start = offset as f32 / total_bytes;
+        let frac_width = word.len() as f32 / total_bytes;
+
+        words.push(HocrWord {
+            text: word.to_string(),
+            left: (seg.x + frac_start * seg.width).round().max(0.0) as u32,
+            top: top_image,
+            width: (frac_width * seg.width).round().max(1.0) as u32,
+            height: seg_height,
+            confidence: 95.0,
+        });
+    }
+
+    words
+}
+
+/// Convert a page's segments to word-level `HocrWord`s for table extraction.
+///
+/// Splits multi-word segments into individual words with proportional bounding
+/// boxes, ensuring each word can be independently matched to table cells.
+pub fn segments_to_words(segments: &[SegmentData], page_height: f32) -> Vec<HocrWord> {
+    segments
+        .iter()
+        .flat_map(|seg| split_segment_to_words(seg, page_height))
+        .collect()
+}
+
 /// Post-process a raw table grid to validate structure and clean up.
 ///
 /// Returns `None` if the table fails structural validation.
@@ -331,4 +397,89 @@ fn normalize_data_cell(cell: &mut String) {
     }
 
     *cell = text;
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn make_seg(text: &str, x: f32, y: f32, width: f32, height: f32) -> SegmentData {
+        SegmentData {
+            text: text.to_string(),
+            x,
+            y,
+            width,
+            height,
+            font_size: height,
+            is_bold: false,
+            is_italic: false,
+            is_monospace: false,
+            baseline_y: y,
+        }
+    }
+
+    #[test]
+    fn test_split_single_word() {
+        let seg = make_seg("Hello", 100.0, 500.0, 50.0, 12.0);
+        let words = split_segment_to_words(&seg, 800.0);
+        assert_eq!(words.len(), 1);
+        assert_eq!(words[0].text, "Hello");
+        assert_eq!(words[0].left, 100);
+    }
+
+    #[test]
+    fn test_split_two_words() {
+        let seg = make_seg("Col A", 100.0, 500.0, 100.0, 12.0);
+        let words = split_segment_to_words(&seg, 800.0);
+        assert_eq!(words.len(), 2);
+        assert_eq!(words[0].text, "Col");
+        assert_eq!(words[1].text, "A");
+        // "A" starts at byte 4 of "Col A" (len=5), so frac_start = 4/5 = 0.8
+        // word_x = 100 + 0.8 * 100 = 180
+        assert_eq!(words[1].left, 180);
+    }
+
+    #[test]
+    fn test_split_empty_segment() {
+        let seg = make_seg("   ", 100.0, 500.0, 50.0, 12.0);
+        let words = split_segment_to_words(&seg, 800.0);
+        assert!(words.is_empty());
+    }
+
+    #[test]
+    fn test_split_many_words() {
+        let seg = make_seg("a b c d", 0.0, 0.0, 700.0, 12.0);
+        let words = split_segment_to_words(&seg, 800.0);
+        assert_eq!(words.len(), 4);
+        assert_eq!(words[0].text, "a");
+        assert_eq!(words[1].text, "b");
+        assert_eq!(words[2].text, "c");
+        assert_eq!(words[3].text, "d");
+        // Words should be spaced across the 700pt width
+        assert!(words[1].left > words[0].left);
+        assert!(words[2].left > words[1].left);
+        assert!(words[3].left > words[2].left);
+    }
+
+    #[test]
+    fn test_split_y_coordinate_conversion() {
+        // Segment at y=500 (PDF bottom-up), height=12, page_height=800
+        // Image top = 800 - (500 + 12) = 288
+        let seg = make_seg("word", 100.0, 500.0, 50.0, 12.0);
+        let words = split_segment_to_words(&seg, 800.0);
+        assert_eq!(words[0].top, 288);
+        assert_eq!(words[0].height, 12);
+    }
+
+    #[test]
+    fn test_segments_to_words_multiple() {
+        let segs = vec![
+            make_seg("Hello", 10.0, 700.0, 40.0, 12.0),
+            make_seg("World", 55.0, 700.0, 40.0, 12.0),
+        ];
+        let words = segments_to_words(&segs, 800.0);
+        assert_eq!(words.len(), 2);
+        assert_eq!(words[0].text, "Hello");
+        assert_eq!(words[1].text, "World");
+    }
 }
