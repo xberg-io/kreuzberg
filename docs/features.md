@@ -1,977 +1,302 @@
 # Features
 
-Kreuzberg is a comprehensive document intelligence library supporting 88+ file formats with advanced extraction, OCR, and processing capabilities. This page documents all features and their availability across language bindings.
+Kreuzberg is a document intelligence library built on a Rust core with bindings for 12 languages. It extracts text, tables, and metadata from 88+ file formats, runs OCR when needed, and feeds the results through a configurable post-processing pipeline -- chunking, embeddings, keyword extraction, and more.
 
-## Core Extraction Features
+This page is a map of what Kreuzberg can do. Each section links to the guide or reference page where you will find configuration details and code examples.
 
-### File Format Support
+![Kreuzberg features overview -- 88+ input formats flow through extraction, OCR, and processing to produce text, tables, chunks, and metadata](assets/features-overview.png)
 
-Kreuzberg extracts text, tables, and metadata from 88+ file formats:
+---
 
-**Documents**
-- PDF (`.pdf`) - Native text extraction with optional OCR fallback
-- Microsoft Word (`.docx`, `.doc`) - Modern and legacy formats
-- OpenDocument Text (`.odt`) - OpenDocument text
-- Plain text (`.txt`, `.md`, `.markdown`, `.djot`, `.mdx`) - With metadata extraction for Markdown, Djot, and MDX
+## Format Support
 
-**Spreadsheets**
-- Excel (`.xlsx`, `.xls`, `.xlsm`, `.xlsb`) - Modern and legacy formats
-- OpenDocument Spreadsheet (`.ods`) - OpenDocument spreadsheet
-- CSV (`.csv`) - Comma-separated values
-- TSV (`.tsv`) - Tab-separated values
+Kreuzberg handles 88+ file formats through native Rust extractors. No external tools such as LibreOffice are required.
 
-**Presentations**
-- PowerPoint (`.pptx`, `.ppt`) - Modern and legacy formats
+=== "Documents"
 
-**Images**
-- Common formats: JPEG, PNG, GIF, BMP, TIFF, WebP
-- Advanced formats: JPEG 2000 (`.jp2`, `.jpx`, `.jpm`, `.mj2`)
-- Portable formats: PNM, PBM, PGM, PPM
+    PDF, Word (`.docx`, `.doc`), OpenDocument (`.odt`), PowerPoint (`.pptx`, `.ppt`), Plain text, Markdown, Djot, MDX, RTF, reStructuredText, Org Mode, Hangul (`.hwp`, `.hwpx`)
 
-**Email**
-- EML (`.eml`) - RFC 822 email format
-- MSG (`.msg`) - Microsoft Outlook format
+=== "Spreadsheets"
 
-**Web & Markup**
-- HTML (`.html`, `.htm`) - Converted to Markdown
-- XML (`.xml`) - Streaming parser for large files
-- SVG (`.svg`) - Scalable vector graphics
+    Excel (`.xlsx`, `.xls`, `.xlsm`, `.xlsb`), OpenDocument Spreadsheet (`.ods`), CSV, TSV, dBASE (`.dbf`)
 
-**Structured Data**
-- JSON (`.json`) - JavaScript Object Notation
-- YAML (`.yaml`) - YAML Ain't Markup Language
-- TOML (`.toml`) - Tom's Obvious Minimal Language
+=== "Images"
 
-**Archives**
-- ZIP (`.zip`) - ZIP archives
-- TAR (`.tar`, `.tgz`) - Tape archives
-- GZIP (`.gz`) - GNU zip
-- 7-Zip (`.7z`) - 7-Zip archives
+    JPEG, PNG, GIF, BMP, TIFF, WebP, JPEG 2000 (`.jp2`, `.jpx`, `.jpm`, `.mj2`), JBIG2, PNM/PBM/PGM/PPM
 
-### Extraction Capabilities
+=== "Email"
 
-**Text Extraction**
-- Native text extraction from all supported formats
-- Preserves formatting and structure where applicable
-- Handles multi-byte character encodings (UTF-8, UTF-16, etc.)
-- Mojibake detection and correction
+    EML (RFC 822), MSG (Outlook)
 
-**Table Extraction**
-- Structured table data from PDFs, spreadsheets, and Word documents
-- Cell-level extraction with row/column indexing
-- Markdown and JSON output formats
-- Merged cell support
+=== "Web and Markup"
 
-**Metadata Extraction**
-- Document properties (title, author, creation date, etc.)
-- Page count, word count, character count
-- MIME type detection
-- Format-specific metadata (Excel sheets, PDF annotations, etc.)
+    HTML, XHTML, XML, SVG
 
-**Image Extraction**
-- Extract embedded images from PDFs and Office documents
-- Image preprocessing for OCR optimization
-- Format conversion and resolution normalization
+=== "Structured Data"
 
-## OCR (Optical Character Recognition)
+    JSON, YAML, TOML
 
-### Tesseract OCR
+=== "Archives"
 
-Native Tesseract integration available in all language bindings.
+    ZIP, TAR, GZIP, 7-Zip
 
-**Features:**
-- 100+ language support via Tesseract language packs
-- Page segmentation modes (PSM) for different layouts
-- OCR Engine Modes (OEM) for accuracy tuning
-- Confidence scoring per word/line
-- hOCR output format support
-- Automatic image preprocessing
+=== "Academic"
 
-**Configuration:**
-- Language selection (single or multi-language)
-- PSM and OEM mode selection
-- Custom Tesseract configuration strings
-- Whitelist/blacklist character sets
+    EPUB, BibTeX, RIS, CSL, LaTeX, Typst, JATS, DocBook, OPML
 
-### PaddleOCR (Native)
+For the full format matrix with MIME types, extraction methods, and special capabilities, see the [Format Support Reference](reference/formats.md).
 
-PaddleOCR is available as a native Rust backend in all non-WASM bindings via the `paddle-ocr` feature flag. Models are automatically downloaded on first use.
+---
 
-- Production-ready OCR using ONNX Runtime
-- PP-OCRv5 server detection + per-family recognition models
-- 80+ language support across 11 script families: English, Chinese, Latin, Korean, Slavic, Thai, Greek, Arabic, Devanagari, Tamil, Telugu
-- Per-family models downloaded on demand
-- Concurrent multi-language OCR via engine pool
-- Excellent CJK (Chinese, Japanese, Korean) accuracy
-- No Python dependency required
-- Also available as a Python package (`pip install kreuzberg[paddleocr]`, requires Python <3.14)
+## Extraction Pipeline
 
-### Python-Specific OCR Backend
+Every file -- whether a single PDF or a batch of thousands -- flows through the same multi-stage pipeline:
 
-**EasyOCR** (`pip install kreuzberg[easyocr]`)
-- Deep learning-based OCR engine (Python only)
-- 80+ language support
-- GPU acceleration support (CUDA)
-- Better accuracy for certain scripts (CJK, Arabic, etc.)
-- Requires Python <3.14
-
-### OCR Features
-
-- **Automatic fallback**: Use OCR when native text extraction fails
-- **Force OCR mode**: Override native extraction with OCR
-- **Caching**: OCR results cached to disk for performance
-- **Image preprocessing**: Automatic contrast, deskew, and noise reduction
-- **Multi-language detection**: Process documents with mixed languages
-
-### Multi-Backend OCR Pipeline <span class="version-badge">v4.5.0</span>
-
-Chain multiple OCR backends with quality-based fallback. If the primary backend produces low-quality output, the pipeline automatically falls back to the next backend.
-
-**Features:**
-- Configurable priority order across backends (e.g., Tesseract → PaddleOCR)
-- Per-stage language and backend-specific settings
-- 16 tunable quality threshold parameters for fallback decisions
-- Auto-rotate support for page orientation detection (0/90/180/270 degrees)
-- Default pipeline auto-constructed when `paddle-ocr` feature is enabled
-
-## Layout Detection <span class="version-badge">v4.5.0</span>
-
-Detect and classify document regions (tables, figures, headers, text blocks, etc.) using ONNX-based deep learning models. See the [Layout Detection Guide](guides/layout-detection.md) for full documentation.
-
-**Model Presets:**
-
-| Preset       | Model      | Classes | Best For                                    |
-| ------------ | ---------- | ------- | ------------------------------------------- |
-| `"fast"`     | YOLO       | 11      | High-throughput pipelines, general documents |
-| `"accurate"` | RT-DETR v2 | 17      | Complex layouts, forms, mixed-content pages  |
-
-**Capabilities:**
-- 17 document element classes (Text, Table, Picture, SectionHeader, Title, Code, Form, etc.)
-- SLANet table structure recognition for accurate HTML table recovery with colspan/rowspan
-- Layout-enhanced heading detection with confidence-based overrides
-- Automatic model download and caching from HuggingFace
-- GPU acceleration via ONNX Runtime (CUDA, CoreML, TensorRT)
-- Available across all language bindings (Python, Node, Ruby, Go, Java, C#, PHP, WASM)
-
-**Configuration:**
-```python title="layout_config.py"
-from kreuzberg import ExtractionConfig, LayoutDetectionConfig
-
-config = ExtractionConfig(
-    layout=LayoutDetectionConfig(
-        preset="accurate",
-        confidence_threshold=0.5,
-        apply_heuristics=True,
-    )
-)
+```mermaid
+flowchart LR
+    A[Input File] --> B[MIME Detection]
+    B --> C[Format Extractor]
+    C --> D{OCR Needed?}
+    D -->|Yes| E[OCR Engine]
+    D -->|No| F[Post-Processing]
+    E --> F
+    F --> G[ExtractionResult]
 ```
 
-## Advanced Processing Features
+1. **MIME detection** -- Kreuzberg identifies the file type from magic bytes and extension, then selects the matching native extractor from the registry.
+2. **Format extraction** -- The extractor pulls text, tables, metadata, and optionally images from the file. PDF extraction uses pdfium; Office formats use streaming XML parsers; images pass directly to OCR.
+3. **OCR** -- When the extractor finds no text layer (or `force_ocr` is set), the file is routed to the configured OCR backend. The OCR result replaces or supplements the extracted text.
+4. **Post-processing** -- Validators, quality processing, chunking, embeddings, keyword extraction, and any registered post-processor plugins run in sequence.
+5. **Caching** -- If caching is enabled, results are stored keyed by a content hash so repeated extractions skip the entire pipeline.
 
-### Language Detection
+For a deep dive into each stage, see [Extraction Pipeline](concepts/extraction-pipeline.md).
 
-Automatic language detection for extracted text using fast-langdetect.
+---
 
-**Capabilities:**
-- 60+ language detection
-- Confidence scoring
-- Multi-language detection (detect all languages in document)
-- Configurable confidence thresholds
-- ISO 639-1 and ISO 639-3 code support
+## OCR Engines
 
-**Configuration:**
-```python title="language_detection_config.py"
-# Configure language detection with multiple language support
-LanguageDetectionConfig(
-    detect_multiple=True,
-    confidence_threshold=0.7
-)
+Kreuzberg supports three OCR backends. You can use one backend, or chain multiple backends into a fallback pipeline that automatically retries with the next engine when quality is low.
+
+### Backend Comparison
+
+| | Tesseract | PaddleOCR | EasyOCR |
+|---|---|---|---|
+| **Languages** | 100+ | 80+ (11 script families) | 80+ |
+| **Best for** | General purpose, broad language coverage | CJK, complex scripts, high accuracy | GPU-accelerated workloads |
+| **Platform** | All bindings including WASM | All non-WASM bindings | Python only |
+| **Install** | System package (`tesseract-ocr`) | Cargo feature `paddle-ocr` or `pip install kreuzberg[paddleocr]` | `pip install kreuzberg[easyocr]` |
+| **Runtime** | C library (Tesseract 4.0+) | ONNX Runtime (models downloaded on first use) | PyTorch (optional CUDA) |
+| **Python version** | Any | Native: any. Python package: <3.14 | <3.14 |
+
+### Multi-Backend Pipeline
+
+!!! info "Added in v4.5.0"
+
+When the `paddle-ocr` feature is enabled, Kreuzberg automatically constructs a fallback pipeline: Tesseract runs first, and if the output falls below configurable quality thresholds (16 tunable parameters), PaddleOCR takes over. You can also define a custom ordering across all three backends.
+
+The pipeline supports auto-rotate for page orientation detection (0/90/180/270 degrees) and per-stage language and backend-specific settings.
+
+```mermaid
+flowchart TD
+    A[Image / Scanned Page] --> B[Primary Backend]
+    B --> C{Quality Above Threshold?}
+    C -->|Yes| D[Return Result]
+    C -->|No| E[Fallback Backend]
+    E --> F{Quality Above Threshold?}
+    F -->|Yes| D
+    F -->|No| G[Return Best Result]
 ```
 
-### Content Chunking
+For backend configuration, language selection, and PSM/OEM modes, see the [OCR Guide](guides/ocr.md).
 
-Split extracted text into semantic chunks for LLM processing.
+---
 
-**Chunking Strategies:**
-- **Recursive**: Split by paragraphs, sentences, then words
-- **Semantic**: Preserve semantic boundaries
-- **Markdown** <span class="version-badge">v4.5.0</span>: Heading-aware chunker that populates heading hierarchy on each chunk, preserving document structure context
-- **Token-based sizing** <span class="version-badge">v4.5.0</span>: Size chunks by token count using HuggingFace tokenizers (requires `chunking-tokenizers` Cargo feature). Supports any HuggingFace tokenizer model (e.g., `Xenova/gpt-4o`, `Xenova/cl100k_base`, `bert-base-uncased`)
+## Processing Features
 
-**Features:**
-- Configurable chunk size and overlap
-- Metadata preservation per chunk (including heading hierarchy for Markdown chunking)
-- Character position tracking
-- Optional embedding generation
+After extraction, Kreuzberg can run a chain of processing steps. Each is optional and configured independently through `ExtractionConfig`.
 
-**Configuration:**
-```python title="chunking_config.py"
-# Configure content chunking with size and overlap settings
-ChunkingConfig(
-    max_chars=1000,
-    max_overlap=200
-)
+### For RAG Pipelines
+
+**Content Chunking** -- Split extracted text into sized chunks for LLM consumption. Strategies include recursive (paragraph/sentence/word splitting), semantic, and Markdown-aware chunking that preserves heading hierarchy. Chunks can be sized by character count or by token count using any HuggingFace tokenizer.
+
+**Embeddings** -- Generate vector embeddings locally using FastEmbed. Choose from preset models (`"fast"`, `"balanced"`, `"quality"`) or any FastEmbed-compatible model. Embeddings are generated in-process with no external API calls.
+
+**Page Tracking** -- Extract per-page content with byte-accurate offsets for O(1) page lookups. Chunks are automatically mapped to their source pages, enabling precise citations in retrieval systems. Supported for PDF (byte-accurate), PPTX (slide boundaries), and DOCX (best-effort page breaks). See [Extraction Basics](guides/extraction.md) for usage.
+
+**PDF Hierarchy Detection** -- Detect document structure from PDFs using K-means clustering on block characteristics (font size, weight, indentation, position). Blocks are assigned to semantic levels (title, section, subsection, paragraph) without relying on explicit heading tags. See the [PDF Hierarchy Guide](guides/pdf-hierarchy.md).
+
+### For Search and Indexing
+
+**Keyword Extraction** -- Extract key phrases using YAKE (unsupervised, language-independent) or RAKE (fast statistical method). Configurable n-gram ranges and language-specific stopword filtering. See the [Keyword Extraction Guide](guides/keywords.md).
+
+**Language Detection** -- Identify 60+ languages with confidence scoring using fast-langdetect. Supports multi-language detection for documents with mixed content.
+
+**Metadata Extraction** -- Pull document properties (title, author, creation date), page/word/character counts, and format-specific metadata (Excel sheet names, PDF annotations).
+
+### For Data Quality
+
+**Quality Processing** -- Unicode normalization (NFC/NFD/NFKC/NFKD), whitespace and line break standardization, encoding detection, and mojibake correction.
+
+**Token Reduction** -- Reduce token count while preserving meaning through TF-IDF-based extractive summarization. Three modes: light (~15% reduction), moderate (~30%), and aggressive (~50%).
+
+**Table Extraction** -- Structured table data from PDFs, spreadsheets, and Word documents with cell-level row/column indexing, merged cell support, and Markdown or JSON output.
+
+---
+
+## Layout Detection
+
+!!! info "Added in v4.5.0"
+
+Detect and classify document regions using ONNX-based deep learning models. Layout detection identifies tables, figures, headers, text blocks, code sections, forms, and more, then feeds that structure into extraction for better accuracy.
+
+### Model Presets
+
+| Preset | Model | Element Classes | Use Case |
+|---|---|---|---|
+| `"fast"` | YOLO | 11 | High-throughput pipelines, general documents |
+| `"accurate"` | RT-DETR v2 | 17 | Complex layouts, forms, mixed-content pages |
+
+Layout detection includes SLANet table structure recognition for HTML table recovery with colspan/rowspan, heading detection with confidence-based overrides, and GPU acceleration via ONNX Runtime (CUDA, CoreML, TensorRT).
+
+Models are automatically downloaded and cached from HuggingFace on first use. Available across all language bindings.
+
+For configuration and usage examples, see the [Layout Detection Guide](guides/layout-detection.md).
+
+---
+
+## Plugin System
+
+Kreuzberg's extraction pipeline is extensible through four plugin types, each hooking into a different stage:
+
+```mermaid
+flowchart LR
+    A[File Input] --> B[Document Extractor Plugin]
+    B --> C[OCR Backend Plugin]
+    C --> D[Validator Plugin]
+    D --> E[Post-Processor Plugin]
+    E --> F[Output]
 ```
 
-### Embeddings
-
-Generate vector embeddings for chunks using FastEmbed.
-
-**Embedding Models:**
-- **Preset models**: `"fast"`, `"balanced"`, `"quality"`
-- **FastEmbed models**: Any model from FastEmbed catalog
-- **Custom models**: Bring your own embedding model
-
-**Features:**
-- Local embedding generation (no API calls)
-- Automatic model download and caching
-- Multiple embedding dimensions (384, 512, 768, 1024)
-- Batch processing for performance
-- Optional L2 normalization
-
-**Configuration:**
-```python title="embedding_config.py"
-# Configure embedding generation with balanced preset model
-EmbeddingConfig(
-    model=EmbeddingModelType.preset("balanced"),
-    normalize=True
-)
-```
-
-### Token Reduction
-
-Reduce token count while preserving semantic meaning using extractive summarization.
-
-**Reduction Modes:**
-- **Light** (`"light"`): ~15% reduction, minimal information loss
-- **Moderate** (`"moderate"`): ~30% reduction, balanced approach
-- **Aggressive** (`"aggressive"`): ~50% reduction, maximum compression
-
-**Algorithm:**
-- TF-IDF based sentence scoring
-- Stopword filtering with language-specific lists
-- Position-aware scoring (preserve important sections)
-- Configurable reduction targets
-
-**Configuration:**
-```python title="token_reduction_config.py"
-# Configure token reduction with moderate compression
-TokenReductionConfig(
-    mode="moderate"
-)
-```
-
-### Quality Processing
-
-Enhance extraction quality with text normalization and cleanup.
-
-**Processing Steps:**
-- Unicode normalization (NFC/NFD/NFKC/NFKD)
-- Whitespace normalization
-- Line break standardization
-- Encoding detection and correction
-- Mojibake fixing
-- Character set validation
-
-**Configuration:**
-```python title="extraction_config.py"
-# Enable quality processing for text normalization and cleanup
-ExtractionConfig(
-    enable_quality_processing=True
-)
-```
-
-### Keyword Extraction
-
-Extract keywords and key phrases from documents.
-
-**Algorithms:**
-- **YAKE** (Yet Another Keyword Extractor): Unsupervised, language-independent
-- **RAKE** (Rapid Automatic Keyword Extraction): Fast statistical method
-
-**Features:**
-- Configurable number of keywords
-- N-gram support (1-3 word phrases)
-- Language-specific stopword filtering
-- Relevance scoring
-
-**Configuration:**
-```python title="keyword_extraction_config.py"
-# Configure keyword extraction using YAKE algorithm
-KeywordConfig(
-    algorithm=KeywordAlgorithm.Yake,
-    max_keywords=10,
-    ngram_range=(1,3)
-)
-```
-
-### Page Tracking and Boundaries
-
-Extract per-page content and track precise page boundaries with byte-accurate offsets.
-
-**Capabilities:**
-- Per-page content extraction (text, tables, images per page)
-- Byte-offset page boundaries for O(1) page lookups
-- Automatic chunk-to-page mapping when chunking is enabled
-- Page markers in combined text for LLM context
-- Format-specific page types (Page/Slide/Sheet)
-
-**Supported Formats:**
-- **PDF**: Full byte-accurate tracking, O(1) performance
-- **PPTX**: Slide boundary tracking
-- **DOCX**: Best-effort page break detection
-
-**Configuration:**
-```python title="page_tracking.py"
-config = ExtractionConfig(
-    pages=PageConfig(
-        extract_pages=True,          # Get pages array
-        insert_page_markers=True,     # Add markers in content
-        marker_format="--- Page {page_num} ---"
-    )
-)
-```
-
-**Use Cases:**
-- Precise location references in RAG systems
-- Page-aware embeddings and retrieval
-- Per-page processing workflows
-- Document structure analysis
-- Page-filtered search results
-
-### PDF Hierarchy Detection
-
-Automatically detect and extract document structure from PDF documents using K-means clustering to identify semantic hierarchies of blocks.
-
-**Algorithm Overview:**
-
-The PDF hierarchy detection system analyzes PDF content blocks to infer document structure without relying on explicit heading tags or format markers. The approach uses K-means clustering to identify semantic levels and group related content:
-
-1. **Block Analysis**: Extracts all text blocks from PDF with position, size, and styling information
-2. **Feature Extraction**: Computes features for each block including size, indentation, font characteristics, and position
-3. **K-means Clustering**: Groups blocks into semantic levels (typically 3-5 levels) representing document hierarchy
-4. **Hierarchy Inference**: Maps clustered blocks to hierarchical levels (title, section, subsection, paragraph, etc.)
-5. **Relationship Detection**: Links related blocks using spatial proximity and semantic similarity
-
-**K-means Clustering Details:**
-
-The clustering algorithm identifies optimal semantic levels by analyzing block characteristics:
-
-- **Number of Clusters**: Automatically determined (typically 3-5 levels) based on content distribution
-- **Features Used**: Font size, text weight, indentation, position, text length
-- **Convergence**: Iterative refinement until cluster stability
-- **Output**: Each block assigned to a semantic level with confidence scores
-
-**Configuration Options:**
-
-```python title="hierarchy_config.py"
-from kreuzberg import ExtractionConfig, PdfConfig, HierarchyConfig
-
-config = ExtractionConfig(
-    pdf_options=PdfConfig(
-        hierarchy_detection=HierarchyConfig(
-            enabled=True,                      # Enable hierarchy detection
-            k_clusters=6,                      # Number of clusters for semantic levels
-            include_bbox=True,                 # Include bounding box in output
-            ocr_coverage_threshold=None        # OCR coverage threshold (None = auto)
-        )
-    )
-)
-```
-
-**Output Structure:**
-
-```python title="hierarchy_output.py"
-# Access hierarchy from extraction result
-result = extract_file("document.pdf", config=config)
-
-# Hierarchy blocks available at page level
-for page in result.pages:
-    for block in page.hierarchy.blocks:
-        print(f"Level {block.level}: {block.text}")
-        print(f"Font Size: {block.font_size}")
-        print(f"Bounding Box: {block.bbox}")
-```
-
-**Use Cases:**
-
-**1. Retrieval Augmented Generation (RAG)**
-- Build hierarchical knowledge bases with semantic structure
-- Improve retrieval precision by understanding document context
-- Support structured queries using hierarchy levels
-- Enable context-aware chunk selection during retrieval
-
-**2. Document Indexing**
-- Create multi-level indexes for better navigation
-- Support breadcrumb-style navigation in user interfaces
-- Index content by semantic section for faster lookup
-- Generate table of contents automatically
-
-**3. Semantic Chunking**
-- Respect logical document structure when splitting content
-- Keep related sections together despite content length
-- Assign semantic metadata to chunks based on hierarchy
-- Preserve hierarchical context for embeddings
-
-**4. Content Analysis**
-- Identify document structure patterns
-- Analyze section-level statistics and summaries
-- Generate outline or abstract from hierarchy
-- Detect anomalies in document structure
-
-**5. Knowledge Base Construction**
-- Organize extracted content into structured collections
-- Map hierarchy to graph databases or knowledge graphs
-- Support structured navigation and exploration
-- Enable hierarchy-aware search and filtering
-
-**Integration with Other Features:**
-
-The hierarchy detection integrates seamlessly with other Kreuzberg features:
-
-```python title="combined_features.py"
-from kreuzberg import ExtractionConfig, ChunkingConfig, EmbeddingConfig, PdfConfig, HierarchyDetectionConfig
-
-config = ExtractionConfig(
-    # Enable hierarchy detection
-    pdf_options=PdfConfig(
-        hierarchy_detection=HierarchyDetectionConfig(enabled=True)
-    ),
-    # Combine with semantic chunking
-    chunking=ChunkingConfig(
-        max_chars=1000,
-        max_overlap=200
-    ),
-    # Generate embeddings for chunks
-    embeddings=EmbeddingConfig(
-        model=EmbeddingModelType.preset("balanced")
-    )
-)
-
-result = extract_file("document.pdf", config=config)
-
-# Use hierarchy information to enrich chunks
-for chunk in result.chunks:
-    # Find which hierarchy block this chunk belongs to
-    containing_block = find_hierarchy_block(chunk, result)
-    print(f"Chunk belongs to: {containing_block.text}")
-    print(f"Semantic level: {containing_block.level}")
-```
-
-**Performance Characteristics:**
-
-- **Time Complexity**: O(n·k·i) where n = blocks, k = clusters, i = iterations (typically < 100ms for average documents)
-- **Memory Usage**: Linear with document size (O(n) for n blocks)
-- **GPU Support**: Optional GPU acceleration for large documents (100+ pages)
-- **Caching**: Results cached based on document content hash
-
-## Batch Processing
-
-### Parallel Extraction
-
-Process multiple documents concurrently using async/await or thread pools.
-
-**Async API:**
-```python title="batch_extraction.py"
-# Process multiple documents concurrently using async batch extraction
-results = await batch_extract_file(
-    ["doc1.pdf", "doc2.pdf", "doc3.pdf"],
-    config=config
-)
-```
-
-**Features:**
-- Automatic concurrency based on CPU count
-- Configurable worker limits
-- Error handling per document
-- Progress tracking
-- Memory-efficient streaming for large batches
-
-### Caching
-
-Intelligent caching system for expensive operations.
-
-**Cached Operations:**
-- OCR results (per image hash)
-- Language detection results
-- Embedding vectors
-- Extracted metadata
-
-**Cache Features:**
-- Disk-based storage
-- Automatic cache invalidation
-- Configurable cache directory
-- Cache statistics and management
-- LRU eviction policy
-
-**Configuration:**
-```python title="cache_config.py"
-# Enable caching with custom directory
-ExtractionConfig(
-    use_cache=True,
-    cache_dir="/custom/cache/path"
-)
-```
-
-## Configuration & Discovery
-
-### Configuration Methods
-
-Kreuzberg supports four configuration methods:
-
-1. **Programmatic**: Create configuration objects in code
-2. **TOML files**: `kreuzberg.toml`
-3. **YAML files**: `kreuzberg.yaml`
-4. **JSON files**: `kreuzberg.json`
-
-### Automatic Discovery
-
-Configuration files automatically discovered in order:
-
-1. Current directory: `./kreuzberg.{toml,yaml,json}`
-2. User config: `~/.config/kreuzberg/config.{toml,yaml,json}`
-3. System config: `/etc/kreuzberg/config.{toml,yaml,json}`
-
-**Discovery API:**
-```python title="config_discovery.py"
-# Automatically discover and load configuration from filesystem
-config = ExtractionConfig.discover()
-```
-
-### Environment Variables
-
-Override configuration via environment variables:
-
-- `KREUZBERG_CONFIG_PATH`: Path to config file
-- `KREUZBERG_CACHE_DIR`: Cache directory
-- `KREUZBERG_OCR_BACKEND`: OCR backend selection
-- `KREUZBERG_OCR_LANGUAGE`: OCR language
-
-## Plugin System <span class="version-badge">v4.0.0</span>
-
-### Plugin Types
-
-Extensible architecture supporting four plugin types:
-
-**Document Extractors**
-- Add support for custom file formats
-- Override default extractors
-- Priority-based selection
-
-**OCR Backends**
-- Integrate cloud OCR services
-- Custom OCR engines
-- Preprocessing pipelines
-
-**Post Processors**
-- Transform extraction results
-- Add custom metadata
-- Filter or enhance content
-
-**Validators**
-- Validate extraction results
-- Enforce quality standards
-- Custom error handling
-
-### Plugin Registration
-
-**Rust:**
-```rust title="plugin_registration.rs"
-// Register custom document extractor with priority 50
-let registry = get_document_extractor_registry();
-registry.register("custom", Arc::new(MyExtractor), 50)?;
-```
-
-**Python:**
-```python title="plugin_registration.py"
-# Register custom document extractor plugin
-from kreuzberg.plugins import register_extractor
-
-register_extractor(MyExtractor(), priority=50)
-```
-
-### Plugin Discovery
-
-Automatic plugin discovery from:
-- Python entry points
-- Configuration files
-- Environment variables
-
-## Server Modes <span class="version-badge">v4.0.0</span>
-
-### HTTP REST API Server
-
-Production-ready RESTful API server.
-
-**Endpoints:**
-- `POST /extract` - Extract from uploaded files
-- `GET /health` - Health check
-- `GET /info` - Server information
-- `GET /cache/stats` - Cache statistics
-- `POST /cache/clear` - Clear cache
-
-**Features:**
-- File upload support
-- JSON/multipart request handling
-- CORS configuration
-- Request logging and metrics
-- Graceful shutdown
-
-**Start Server:**
-```bash title="Terminal"
-kreuzberg serve --host 0.0.0.0 --port 8000
-```
-
-### Model Context Protocol (MCP) Server
-
-Stdio-based MCP server for AI agent integration.
-
-**Tools:**
-- `extract_file` - Extract from file path
-- `extract_bytes` - Extract from base64 bytes
-- `batch_extract` - Extract from multiple files
-
-**Features:**
-- Stdio transport (Claude Desktop, Continue.dev, etc.)
-- JSON-RPC 2.0 protocol
-- Streaming results
-- Error handling
-
-**Start Server:**
-```bash title="Terminal"
-kreuzberg mcp
-```
-
-**Claude Desktop Configuration:**
-```json title="claude_desktop_config.json"
-// Configure kreuzberg MCP server in Claude Desktop
-{
-  "mcpServers": {
-    "kreuzberg": {
-      "command": "kreuzberg",
-      "args": ["mcp"]
-    }
-  }
-}
-```
-
-## AI Coding Assistants <span class="version-badge new">v4.2.15</span>
-
-Kreuzberg ships with an [Agent Skill](https://agentskills.io) that teaches AI coding assistants how to use the library correctly. Install it into any project with the [Vercel Skills CLI](https://github.com/vercel-labs/skills):
+| Plugin Type | Purpose | Example |
+|---|---|---|
+| **Document Extractors** | Add support for custom file formats or override defaults | Proprietary format parser |
+| **OCR Backends** | Integrate cloud OCR services or custom engines | AWS Textract, Google Vision |
+| **Validators** | Enforce quality standards on extraction results | Minimum word count check |
+| **Post-Processors** | Transform or enrich results after extraction | PII redaction, custom metadata |
+
+Plugins are registered with a priority value that determines execution order. Discovery works through Python entry points, configuration files, or environment variables.
+
+For the architecture overview, see [Plugin System](concepts/plugin-system.md). For implementation guidance, see [Creating Plugins](guides/plugins.md).
+
+---
+
+## Deployment Modes
+
+| Mode | When to Use | Details |
+|---|---|---|
+| **Library** | Embedding extraction into your application | Import the package in Python, TypeScript, Rust, Go, Ruby, C#, Java, PHP, Elixir, R, or C |
+| **CLI** | One-off extractions, scripting, CI pipelines | `kreuzberg extract document.pdf --format json` -- see [CLI Usage](cli/usage.md) |
+| **REST API** | Multi-service architectures, language-agnostic access | `kreuzberg serve --port 8000` -- see [API Server Guide](guides/api-server.md) |
+| **MCP Server** | AI agent integration (Claude Desktop, Continue.dev) | `kreuzberg mcp` -- stdio transport with JSON-RPC 2.0 |
+| **Docker** | Reproducible deployments with all dependencies bundled | `ghcr.io/kreuzberg-dev/kreuzberg:latest` -- see [Docker Guide](guides/docker.md) |
+
+---
+
+## Language Bindings
+
+Kreuzberg's Rust core is exposed through native bindings for 12 languages. All bindings share the same extraction engine and produce identical results.
+
+### Binding Tiers
+
+**Full feature parity with async API** -- Python (PyO3), TypeScript/Node.js (NAPI-RS), Rust
+
+**Full features, synchronous API** -- Go, Ruby, C#, Java
+
+**Subset or constrained environment** -- TypeScript/WASM (browser/edge, no filesystem or server modes), PHP, Elixir, R, C (FFI)
+
+!!! note "TypeScript: Native vs WASM"
+    **Native** (`@kreuzberg/node`) runs at full speed with complete feature parity including servers, plugins, and config file discovery. **WASM** (`@kreuzberg/wasm`) runs in browsers and edge runtimes at 60-80% of native speed with no native dependencies, but lacks filesystem access, server modes, and file-based configuration. Choose Native for server-side Node.js; choose WASM for browser or edge deployments.
+
+### Rust Feature Flags
+
+Rust builds are modular through Cargo features. Nothing is enabled by default -- you opt into exactly what you need:
+
+| Category | Features |
+|---|---|
+| **Format extractors** | `pdf`, `excel`, `office`, `email`, `html`, `xml`, `archives`, `markdown`, `djot`, `mdx` |
+| **Processing** | `ocr`, `paddle-ocr`, `language-detection`, `chunking`, `embeddings`, `quality`, `keywords`, `stopwords` |
+| **Servers** | `api`, `mcp` |
+| **Bundles** | `full` (all extractors + processing), `server`, `cli` |
+
+### Package Installation
+
+=== "Python"
+
+    ```bash
+    pip install kreuzberg                  # Core + Tesseract
+    pip install kreuzberg[paddleocr]       # + PaddleOCR
+    pip install kreuzberg[easyocr]         # + EasyOCR
+    pip install kreuzberg[all]             # Everything
+    ```
+
+=== "TypeScript"
+
+    ```bash
+    npm install @kreuzberg/node            # Native (Node.js/Bun)
+    npm install @kreuzberg/wasm            # WASM (browser/edge)
+    ```
+
+=== "Rust"
+
+    ```toml
+    [dependencies]
+    kreuzberg = { version = "4.0", features = ["pdf", "ocr", "chunking"] }
+    ```
+
+=== "Other"
+
+    ```bash
+    gem install kreuzberg                  # Ruby
+    go get github.com/kreuzberg-dev/kreuzberg/packages/go/v4  # Go
+    dotnet add package kreuzberg.dev       # C#
+    ```
+
+For API details per language, see the [API Reference](reference/api-python.md).
+
+---
+
+## Configuration
+
+Kreuzberg supports four configuration methods, checked in this order:
+
+1. **Programmatic** -- Construct `ExtractionConfig` objects in code (all bindings)
+2. **TOML** -- `kreuzberg.toml`
+3. **YAML** -- `kreuzberg.yaml`
+4. **JSON** -- `kreuzberg.json`
+
+Config files are auto-discovered from the current directory, `~/.config/kreuzberg/`, and `/etc/kreuzberg/`. Environment variables (`KREUZBERG_CONFIG_PATH`, `KREUZBERG_CACHE_DIR`, `KREUZBERG_OCR_BACKEND`, `KREUZBERG_OCR_LANGUAGE`) override file-based settings.
+
+For the full configuration schema and examples, see the [Configuration Guide](guides/configuration.md).
+
+---
+
+## AI Coding Assistants
+
+!!! info "Added in v4.2.15"
+
+Kreuzberg ships with an [Agent Skill](https://agentskills.io) that teaches AI coding assistants the complete API across Python, TypeScript, Rust, and CLI. Install it with:
 
 ```bash
 npx skills add kreuzberg-dev/kreuzberg
 ```
 
-**Supported Tools:**
+Compatible with Claude Code, Codex, Gemini CLI, Cursor, VS Code, Amp, Goose, Roo Code, and any tool supporting the Agent Skills standard. See the [AI Coding Assistants Guide](guides/agent-skills.md).
 
-- Claude Code, Codex, Gemini CLI, Cursor, VS Code, Amp, Goose, Roo Code, and any tool supporting the [Agent Skills](https://agentskills.io) open standard.
-
-**What It Covers:**
-
-- Complete API knowledge for Python, Node.js/TypeScript, Rust, and CLI
-- Extraction flows (sync/async, file/bytes, single/batch)
-- Configuration (OCR, chunking, output format, PDF options)
-- Embedding generation and RAG pipeline setup
-- Error handling patterns per language
-- Plugin system (post-processors, validators, OCR backends)
-- Correct field names and signatures (avoids common pitfalls)
-
-**Reference Files:**
-
-The skill includes 8 detailed reference files covering Python API, Node.js API, Rust API, CLI commands, configuration schema, supported formats, advanced features, and other language bindings (Go, Ruby, Java, C#, PHP, Elixir).
-
-See [AI Coding Assistants Guide](guides/agent-skills.md) for details.
-
-## Language Binding Comparison
-
-### Feature Availability
-
-| Feature | C# | Go | Python | Ruby | Rust | TypeScript (Native) | TypeScript (WASM) |
-|---------|----|----|--------|------|------|--------------------|-------------------|
-| **Core Extraction** | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| All file formats | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| Table extraction | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| Metadata extraction | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| **OCR** | | | | | | | |
-| Tesseract | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| EasyOCR | ✗ | ✗ | ✓ (optional) | ✗ | ✗ | ✗ | ✗ |
-| PaddleOCR | ✓ | ✓ | ✓ (optional) | ✓ | ✓ | ✓ | ✗ |
-| **Processing** | | | | | | | |
-| Language detection | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| Content chunking | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| Embeddings | ✓ | ✓* | ✓ | ✓ | ✓ | ✓ | ✓ |
-| Token reduction | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| Quality processing | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| Keyword extraction | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| **Configuration** | | | | | | | |
-| Programmatic config | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| File-based config | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✗ |
-| Config discovery | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✗ |
-| **Plugin System** | | | | | | | |
-| Document extractors | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | Limited |
-| OCR backends | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | Limited |
-| Post processors | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | Limited |
-| Validators | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | Limited |
-| **Servers** | | | | | | | |
-| HTTP REST API | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✗ |
-| MCP Server | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✗ |
-| **APIs** | | | | | | | |
-| Sync API | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| Async API | ✗ | ✗ | ✓ | ✗ | ✓ | ✓ | ✓ |
-| Batch processing | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| Streaming | ✗ | ✗ | ✗ | ✗ | ✓ | ✗ | ✗ |
-| **File I/O** | | | | | | | |
-| File system access | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | Limited* |
-
-**Platform Notes:**
-- `*` Go embeddings not available on Windows (MinGW cannot link ONNX Runtime which requires MSVC)
-- `*` WASM: File system access limited to browser File API (read-only), Cloudflare Workers, or Deno (with permissions)
-
-### TypeScript Binding Differences
-
-**Native (`@kreuzberg/node`):**
-- Fastest performance (100% of native speed)
-- Full feature parity with other language bindings
-- Full file I/O capabilities
-- Server-side HTTP/MCP servers supported
-- File-based configuration discovery
-- Plugin system with custom implementations
-
-**WASM (`@kreuzberg/wasm`):**
-- Cross-platform browser compatibility (60-80% of native speed)
-- Zero native dependencies
-- Limited file system access (browser File API only)
-- No server mode support (use worker/edge runtime instead)
-- Plugins limited to in-memory registration (no filesystem)
-- Configuration via programmatic API only
-
-Choose **Native** for server-side Node.js applications. Choose **WASM** for browser/edge environments.
-
-### Package Distribution
-
-| Language | Package Manager | Modular Features | Full Package |
-|----------|----------------|------------------|--------------|
-| C# | `kreuzberg.dev` | ✗ | ✓ (default) |
-| Go | go.pkg.dev | ✗ | ✓ (default) |
-| Python | PyPI (`pip`) | ✗ | ✓ (default) |
-| Ruby | RubyGems (`gem`) | ✗ | ✓ (default) |
-| Rust | crates.io | ✓ | ✗ (opt-in) |
-| TypeScript | npm | ✗ | ✓ (default) |
-
-### Rust Feature Flags
-
-Rust provides fine-grained control over included components via Cargo features:
-
-**Format Extractors:**
-- `pdf` - PDF extraction (pdfium)
-- `excel` - Excel/spreadsheet support
-- `office` - Office document support (Word, PowerPoint)
-- `email` - Email extraction (EML, MSG)
-- `html` - HTML to Markdown conversion
-- `xml` - XML streaming parser
-- `archives` - Archive extraction (ZIP, TAR, 7z)
-- `markdown` - Markdown extraction
-- `djot` - Djot extraction
-- `mdx` - MDX extraction
-
-**Processing Features:**
-- `ocr` - Tesseract OCR integration
-- `language-detection` - Language detection
-- `chunking` - Content chunking
-- `embeddings` - Embedding generation (requires `chunking`)
-- `quality` - Quality processing and text normalization
-- `keywords` - Keyword extraction (YAKE + RAKE)
-- `stopwords` - Stopword filtering
-
-**Server Features:**
-- `api` - HTTP REST API server
-- `mcp` - Model Context Protocol server
-
-**Convenience Bundles:**
-- `full` - All format extractors + all processing features
-- `server` - Server features + common extractors
-- `cli` - CLI features + common extractors
-
-**Example Cargo.toml:**
-```toml title="Cargo.toml"
-[dependencies]
-kreuzberg = { version = "4.0", features = ["pdf", "ocr", "chunking"] }
-```
-
-**Default:** No features enabled (minimal build)
-
-### Python Optional Dependencies
-
-Python bindings include all core features by default. Optional OCR backends require separate installation:
-
-```bash title="Terminal"
-# Core package (Tesseract OCR only)
-pip install kreuzberg
-
-# With EasyOCR
-pip install kreuzberg[easyocr]
-
-# With PaddleOCR
-pip install kreuzberg[paddleocr]
-
-# All optional features
-pip install kreuzberg[all]
-```
-
-**Note:** EasyOCR requires Python <3.14 due to PyTorch dependencies. The Python PaddleOCR package also requires Python <3.14, but the native Rust PaddleOCR backend has no Python dependency and works on all platforms.
-
-### TypeScript/Ruby Packages
-
-**TypeScript** provides two packages with different feature sets:
-
-```bash title="Terminal"
-# Native TypeScript - full features (Node.js/Bun)
-npm install @kreuzberg/node
-
-# WASM TypeScript - browser/edge compatible (60-80% of native speed)
-npm install @kreuzberg/wasm
-```
-
-**Ruby** includes all features in a single package:
-
-```bash title="Terminal"
-# Ruby - full package
-gem install kreuzberg
-```
-
-## Performance Characteristics
-
-### Rust Core
-
-Kreuzberg's Rust core provides efficient performance for document processing:
-
-**Key Optimizations:**
-- Streaming parsers for large documents
-- Concurrent extraction with configurable worker pools
-- Intelligent caching of expensive operations
-
-### Memory Efficiency
-
-**Streaming Support:**
-- XML: Constant memory regardless of file size
-- Plain text: Line-by-line streaming for large files
-- Archives: Extract on-demand without loading entire archive
-
-### Caching
-
-Disk-based caching improves performance for repeated operations:
-
-- Cache results for OCR, language detection, and embeddings
-- Automatic cache invalidation based on file content hash
-- Configurable cache directory and eviction policy
-
-## CLI Tools
-
-### Extract Command
-
-Primary CLI for document extraction.
-
-```bash title="Terminal"
-kreuzberg extract document.pdf --ocr true --format json
-```
-
-**Features:**
-- Batch processing with glob patterns
-- Output format selection (text, JSON)
-- OCR configuration
-- Config file and inline JSON (`--config`, `--config-json`, `--config-json-base64`)
-
-### Serve Command
-
-Start HTTP REST API server.
-
-```bash title="Terminal"
-kreuzberg serve --host 0.0.0.0 --port 8000 --config production.toml
-```
-
-### MCP Command
-
-Start Model Context Protocol server.
-
-```bash title="Terminal"
-kreuzberg mcp --config kreuzberg.toml
-```
-
-### Cache Management
-
-```bash title="Terminal"
-# View cache statistics
-kreuzberg cache stats
-
-# Clear cache
-kreuzberg cache clear
-```
-
-See [CLI Usage](cli/usage.md) for complete documentation.
-
-## System Requirements
-
-### Runtime Dependencies
-
-**Required (all platforms):**
-- Tesseract OCR (4.0+) for OCR functionality
-
-**Installation:**
-```bash title="Terminal"
-# macOS
-brew install tesseract
-
-# Ubuntu/Debian
-apt-get install tesseract-ocr
-
-# RHEL/CentOS/Fedora
-dnf install tesseract
-
-# Windows (Chocolatey)
-choco install tesseract
-```
-
-### Python Requirements
-
-- Python 3.10+
-- Optional: CUDA toolkit for GPU-accelerated OCR (EasyOCR)
-
-### TypeScript/Node.js Requirements
-
-- Node.js 18+
-- Native module support (node-gyp)
-
-### Rust Requirements
-
-- Rust 1.80+ (edition 2024)
-- Cargo for building from source
-
-### Ruby Requirements
-
-- Ruby 3.2.0 or higher (including Ruby 4.x)
-- Ruby 4.0+ is fully supported with no code changes required
-- Native extension support
-
-## Docker Images <span class="version-badge">v4.0.0</span>
-
-Pre-built Docker images available on Docker Hub:
-
-**Variants:**
-- `ghcr.io/kreuzberg-dev/kreuzberg:latest` - Core + Tesseract
-- `ghcr.io/kreuzberg-dev/kreuzberg:latest` - All features
-
-**Usage:**
-```bash title="Terminal"
-docker run -v $(pwd):/data ghcr.io/kreuzberg-dev/kreuzberg:latest \
-  extract /data/document.pdf --ocr
-```
-
-See [Installation Guide](getting-started/installation.md) for detailed instructions.
+---
 
 ## Next Steps
 
-- [Installation](getting-started/installation.md) - Install Kreuzberg
-- [Quick Start](getting-started/quickstart.md) - Get started in 5 minutes
-- [Configuration](guides/configuration.md) - Configure extraction behavior
-- [API Reference](reference/api-python.md) - Complete API documentation
+- [Installation](getting-started/installation.md) -- Install Kreuzberg for your language
+- [Quick Start](getting-started/quickstart.md) -- Extract your first document in 5 minutes
+- [Architecture](concepts/architecture.md) -- Understand the Rust core and binding layers
+- [Performance](concepts/performance.md) -- Benchmarks and optimization guidance
