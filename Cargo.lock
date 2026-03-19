@@ -3439,7 +3439,7 @@ dependencies = [
  "wasm-bindgen-rayon",
  "whatlang",
  "yake-rust",
- "zip 8.2.0",
+ "zip 8.3.0",
 ]
 
 [[package]]
@@ -3596,7 +3596,7 @@ dependencies = [
  "image 0.25.10",
  "reqwest",
  "thiserror 2.0.18",
- "zip 8.2.0",
+ "zip 8.3.0",
 ]
 
 [[package]]
@@ -8339,9 +8339,9 @@ dependencies = [
 
 [[package]]
 name = "zip"
-version = "8.2.0"
+version = "8.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b680f2a0cd479b4cff6e1233c483fdead418106eae419dc60200ae9850f6d004"
+checksum = "4a243cfad17427fc077f529da5a95abe4e94fd2bfdb601611870a6557cc67657"
 dependencies = [
  "crc32fast",
  "flate2",

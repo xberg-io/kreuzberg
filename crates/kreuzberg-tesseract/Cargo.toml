@@ -25,7 +25,7 @@ image = { workspace = true, features = ["png"] }
 [build-dependencies]
 cc = { version = "^1.2.57", optional = true }
 cmake = { version = "0.1.57", optional = true }
-zip = { version = "8.2.0", optional = true, default-features = false, features = [
+zip = { version = "8.3.0", optional = true, default-features = false, features = [
     "deflate-flate2-zlib-rs",
 ] }
 
