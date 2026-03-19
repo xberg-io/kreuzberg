@@ -49,7 +49,7 @@
         <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
         <maven-pmd-plugin.version>3.28.0</maven-pmd-plugin.version>
         <versions-maven-plugin.version>2.21.0</versions-maven-plugin.version>
-        <exec-maven-plugin.version>3.6.2</exec-maven-plugin.version>
+        <exec-maven-plugin.version>3.6.3</exec-maven-plugin.version>
         <build-helper-maven-plugin.version>3.6.1</build-helper-maven-plugin.version>
         <checkstyle.version>13.3.0</checkstyle.version>
         <pmd.version>7.19.0</pmd.version>
