@@ -2031,9 +2031,9 @@ dependencies = [
 
 [[package]]
 name = "html-to-markdown-rs"
-version = "2.28.2"
+version = "2.28.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3f9377e16af590b764fd98fd176027cf8831c5335f8964f3f643753e38913a4e"
+checksum = "6869b5e058b5ebb8c176269406b692d0695b4b19c36e532b56a2c355590978ae"
 dependencies = [
  "ahash",
  "astral-tl",
@@ -2051,9 +2051,9 @@ dependencies = [
 
 [[package]]
 name = "html5ever"
-version = "0.38.0"
+version = "0.39.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1054432bae2f14e0061e33d23402fbaa67a921d319d56adc6bcf887ddad1cbc2"
+checksum = "46a1761807faccc9a19e86944bbf40610014066306f96edcdedc2fb714bcb7b8"
 dependencies = [
  "log",
  "markup5ever",
@@ -2781,7 +2781,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg"
-version = "4.4.6"
+version = "4.5.0"
 dependencies = [
  "ahash",
  "async-trait",
@@ -2864,7 +2864,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-ffi"
-version = "4.4.6"
+version = "4.5.0"
 dependencies = [
  "ahash",
  "async-trait",
@@ -2880,7 +2880,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-paddle-ocr"
-version = "4.4.6"
+version = "4.5.0"
 dependencies = [
  "geo-clipper",
  "geo-types",
@@ -2894,7 +2894,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-pdfium-render"
-version = "4.4.6"
+version = "4.5.0"
 dependencies = [
  "bitflags",
  "bytemuck",
@@ -2917,7 +2917,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-rb"
-version = "4.4.6"
+version = "4.5.0"
 dependencies = [
  "async-trait",
  "html-to-markdown-rs",
@@ -2934,7 +2934,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-tesseract"
-version = "4.4.6"
+version = "4.5.0"
 dependencies = [
  "cc",
  "cmake",
@@ -3209,9 +3209,9 @@ dependencies = [
 
 [[package]]
 name = "markup5ever"
-version = "0.38.0"
+version = "0.39.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8983d30f2915feeaaab2d6babdd6bc7e9ed1a00b66b5e6d74df19aa9c0e91862"
+checksum = "7122d987ec5f704ee56f6e5b41a7d93722e9aae27ae07cafa4036c4d3f9757de"
 dependencies = [
  "log",
  "tendril",

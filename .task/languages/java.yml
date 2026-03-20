@@ -9,14 +9,14 @@ includes:
     internal: true
 
 vars:
-  JAVA_VERSION: "17"
+  JAVA_VERSION: "25"
 
 tasks:
   install:
     desc: Install Java dependencies
     dir: packages/java
     cmds:
-      - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.1-tem && sdk use maven 3.9.11; fi && mvn clean install -DskipTests'
+      - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.2-tem && sdk use maven 3.9.11; fi && mvn clean install -DskipTests'
         platforms: [linux, darwin]
       - cmd: mvn clean install -DskipTests
         platforms: [windows]
@@ -30,7 +30,7 @@ tasks:
   build:
     desc: Build Java package (depends on Rust FFI)
     cmds:
-      - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.1-tem && sdk use maven 3.9.11; fi && mvn -f packages/java/pom.xml clean package -DskipTests'
+      - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.2-tem && sdk use maven 3.9.11; fi && mvn -f packages/java/pom.xml clean package -DskipTests'
         platforms: [linux, darwin]
       - cmd: mvn -f packages/java/pom.xml clean package -DskipTests
         platforms: [windows]
@@ -39,7 +39,7 @@ tasks:
     desc: Build Java package in debug mode
     dir: packages/java
     cmds:
-      - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.1-tem && sdk use maven 3.9.11; fi && mvn clean package -DskipTests -DdebugMode=true'
+      - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.2-tem && sdk use maven 3.9.11; fi && mvn clean package -DskipTests -DdebugMode=true'
         platforms: [linux, darwin]
       - cmd: mvn clean package -DskipTests -DdebugMode=true
         platforms: [windows]
@@ -47,7 +47,7 @@ tasks:
   build:release:
     desc: Build Java package in release mode (optimized)
     cmds:
-      - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.1-tem && sdk use maven 3.9.11; fi && mvn -f packages/java/pom.xml clean package -DskipTests -Pproduction'
+      - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.2-tem && sdk use maven 3.9.11; fi && mvn -f packages/java/pom.xml clean package -DskipTests -Pproduction'
         platforms: [linux, darwin]
       - cmd: mvn -f packages/java/pom.xml clean package -DskipTests -Pproduction
         platforms: [windows]
@@ -55,7 +55,7 @@ tasks:
   build:ci:
     desc: Build Java package in CI mode
     cmds:
-      - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.1-tem && sdk use maven 3.9.11; fi && mvn -f packages/java/pom.xml clean package -DskipTests'
+      - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.2-tem && sdk use maven 3.9.11; fi && mvn -f packages/java/pom.xml clean package -DskipTests'
         platforms: [linux, darwin]
       - cmd: mvn -f packages/java/pom.xml clean package -DskipTests
         platforms: [windows]
@@ -69,7 +69,7 @@ tasks:
     desc: Run Java tests (parallel execution for 4x speed)
     dir: packages/java
     cmds:
-      - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.1-tem && sdk use maven 3.9.11; fi && mvn test -q'
+      - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.2-tem && sdk use maven 3.9.11; fi && mvn test -q'
         platforms: [linux, darwin]
       - cmd: mvn test -q
         platforms: [windows]
@@ -80,7 +80,7 @@ tasks:
       MAVEN_OPTS: "-Xmx1024m"
     dir: packages/java
     cmds:
-      - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.1-tem && sdk use maven 3.9.11; fi && mvn test -B -q'
+      - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.2-tem && sdk use maven 3.9.11; fi && mvn test -B -q'
         platforms: [linux, darwin]
       - cmd: mvn test -B -q
         platforms: [windows]
@@ -89,7 +89,7 @@ tasks:
     desc: Run Java tests with verbose output
     dir: packages/java
     cmds:
-      - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.1-tem && sdk use maven 3.9.11; fi && mvn test -X'
+      - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.2-tem && sdk use maven 3.9.11; fi && mvn test -X'
         platforms: [linux, darwin]
       - cmd: mvn test -X
         platforms: [windows]
@@ -122,7 +122,7 @@ tasks:
     desc: Clean Java build artifacts
     dir: packages/java
     cmds:
-      - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.1-tem && sdk use maven 3.9.11; fi && mvn clean'
+      - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.2-tem && sdk use maven 3.9.11; fi && mvn clean'
         platforms: [linux, darwin]
       - cmd: mvn clean
         platforms: [windows]
@@ -131,7 +131,7 @@ tasks:
     desc: Update Java dependencies and plugins (including linters)
     dir: packages/java
     cmds:
-      - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.1-tem && sdk use maven 3.9.11; fi && echo "Updating Java dependencies and plugins..." && mvn -DallowSnapshots=false versions:use-latest-releases -DprocessDependencies=true -DprocessParent=false && echo "Updating plugin versions in properties..." && mvn -DallowSnapshots=false versions:update-properties && echo "Displaying final dependency updates..." && mvn -DallowSnapshots=false versions:display-dependency-updates && echo "Displaying final plugin updates..." && mvn -DallowSnapshots=false versions:display-plugin-updates'
+      - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.2-tem && sdk use maven 3.9.11; fi && echo "Updating Java dependencies and plugins..." && mvn -DallowSnapshots=false versions:use-latest-releases -DprocessDependencies=true -DprocessParent=false && echo "Updating plugin versions in properties..." && mvn -DallowSnapshots=false versions:update-properties && echo "Displaying final dependency updates..." && mvn -DallowSnapshots=false versions:display-dependency-updates && echo "Displaying final plugin updates..." && mvn -DallowSnapshots=false versions:display-plugin-updates'
         platforms: [linux, darwin]
       - cmd: |
           echo "Updating Java dependencies and plugins..."
@@ -157,14 +157,14 @@ tasks:
     desc: Format Java E2E code
     dir: e2e/java
     cmds:
-      - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.1-tem && sdk use maven 3.9.11; fi && if grep -q spotless-maven-plugin pom.xml; then mvn -q spotless:apply; fi'
+      - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.2-tem && sdk use maven 3.9.11; fi && if grep -q spotless-maven-plugin pom.xml; then mvn -q spotless:apply; fi'
         platforms: [linux, darwin]
 
   e2e:lint:
     desc: Lint Java E2E code
     dir: e2e/java
     cmds:
-      - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.1-tem && sdk use maven 3.9.11; fi && mvn checkstyle:check && mvn pmd:check pmd:cpd-check'
+      - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.2-tem && sdk use maven 3.9.11; fi && mvn checkstyle:check && mvn pmd:check pmd:cpd-check'
         platforms: [linux, darwin]
       - cmd: |
           mvn checkstyle:check
@@ -175,7 +175,7 @@ tasks:
     desc: Run Java E2E tests
     dir: e2e/java
     cmds:
-      - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.1-tem && sdk use maven 3.9.11; fi && mvn -B -DtrimStackTrace=false -Dsurefire.useFile=false test'
+      - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.2-tem && sdk use maven 3.9.11; fi && mvn -B -DtrimStackTrace=false -Dsurefire.useFile=false test'
         platforms: [linux, darwin]
       - cmd: mvn -B -DtrimStackTrace=false -Dsurefire.useFile=false test
         platforms: [windows]

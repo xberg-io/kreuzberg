@@ -9,7 +9,7 @@ if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then
   set +u
   # shellcheck source=/dev/null
   source ~/.sdkman/bin/sdkman-init.sh
-  sdk use java 25.0.1-tem 2>/dev/null || true
+  sdk use java 25.0.2-tem 2>/dev/null || true
   sdk use maven 3.9.11 2>/dev/null || true
   set -u
 fi

@@ -220,13 +220,12 @@
             </plugin>
 
             <!-- PMD Plugin for code quality checks -->
-            <!-- NOTE: targetJdk pinned to 21 to align with project toolchain -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
                 <version>${maven-pmd-plugin.version}</version>
                 <configuration>
-                    <targetJdk>21</targetJdk>
+                    <targetJdk>${maven.compiler.release}</targetJdk>
                     <typeResolution>false</typeResolution>
                     <rulesets>
                         <ruleset>/rulesets/java/quickstart.xml</ruleset>

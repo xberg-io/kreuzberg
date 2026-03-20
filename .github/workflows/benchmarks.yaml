@@ -882,7 +882,7 @@ jobs:
         id: setup-java
         with:
           distribution: 'temurin'
-          java-version: '25'
+          java-version: '25.0.2+10'
 
       - name: Setup Maven
         uses: kreuzberg-dev/actions/setup-maven@v1
@@ -1591,7 +1591,7 @@ jobs:
         id: setup-java
         with:
           distribution: 'temurin'
-          java-version: '25'
+          java-version: '25.0.2+10'
 
       - name: Run benchmark
         env:
