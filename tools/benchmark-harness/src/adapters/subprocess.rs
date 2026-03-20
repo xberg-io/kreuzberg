@@ -1709,6 +1709,24 @@ for line in sys.stdin:
         // Test the fork-based timeout mechanism: the Python script handles
         // timeouts internally by killing only the forked child process,
         // keeping the parent alive (no Rust-side kill+restart needed).
+        //
+        // Skip on macOS where multiprocessing.fork is unreliable with Python 3.13+.
+        if cfg!(target_os = "macos") {
+            let output = std::process::Command::new("python3")
+                .args(["-c", "import sys; print(sys.version_info[:2])"])
+                .output();
+            if let Ok(out) = output {
+                let ver = String::from_utf8_lossy(&out.stdout);
+                if ver.contains("(3, 13)") || ver.contains("(3, 14)") || ver.contains("(3, 15)") {
+                    eprintln!(
+                        "Skipping test: multiprocessing.fork unreliable on macOS with Python {}",
+                        ver.trim()
+                    );
+                    return;
+                }
+            }
+        }
+
         let script_path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
             .join("scripts")
             .join("test_fork_timeout.py");

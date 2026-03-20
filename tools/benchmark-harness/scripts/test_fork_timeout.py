@@ -59,37 +59,44 @@ def _worker(fn, args, conn):
 
 
 def _run_with_timeout(fn, args, timeout):
-    """Execute fn(*args) in a forked child with a timeout."""
-    try:
-        ctx = _mp.get_context("fork")
-        parent_conn, child_conn = ctx.Pipe(duplex=False)
-        p = ctx.Process(target=_worker, args=(fn, args, child_conn))
-        p.start()
-        child_conn.close()
+    """Execute fn(*args) in a child process with a timeout.
 
-        if parent_conn.poll(timeout=timeout):
-            try:
-                result = parent_conn.recv()
-            except Exception:
-                result = {"error": "worker process crashed", "_extraction_time_ms": 0}
-        else:
-            p.kill()
-            result = {
-                "error": f"extraction timed out after {timeout}s",
-                "_extraction_time_ms": timeout * 1000.0,
-            }
-
-        p.join(timeout=5)
-        if p.is_alive():
-            p.kill()
-            p.join()
-        parent_conn.close()
-        return result
-    except Exception:
+    Tries 'fork' context first (fast, shares parent state), falls back to
+    'spawn' on platforms where fork is unsafe (macOS with Python 3.12+).
+    """
+    for method in ("fork", "spawn"):
         try:
-            return fn(*args)
-        except Exception as e:
-            return {"error": str(e), "_extraction_time_ms": 0}
+            ctx = _mp.get_context(method)
+            parent_conn, child_conn = ctx.Pipe(duplex=False)
+            p = ctx.Process(target=_worker, args=(fn, args, child_conn))
+            p.start()
+            child_conn.close()
+
+            if parent_conn.poll(timeout=timeout):
+                try:
+                    result = parent_conn.recv()
+                except Exception:
+                    result = {"error": "worker process crashed", "_extraction_time_ms": 0}
+            else:
+                p.kill()
+                result = {
+                    "error": f"extraction timed out after {timeout}s",
+                    "_extraction_time_ms": timeout * 1000.0,
+                }
+
+            p.join(timeout=5)
+            if p.is_alive():
+                p.kill()
+                p.join()
+            parent_conn.close()
+            return result
+        except Exception:
+            continue
+    # All methods failed, run inline
+    try:
+        return fn(*args)
+    except Exception as e:
+        return {"error": str(e), "_extraction_time_ms": 0}
 
 
 def run_server(timeout=None) -> None:

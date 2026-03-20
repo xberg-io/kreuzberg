@@ -1049,8 +1049,8 @@ mod tests {
 
     #[test]
     fn test_frameworks_list_complete() {
-        // 10 kreuzberg bindings + 11 third-party = 21 total
-        assert_eq!(FRAMEWORKS.len(), 21);
+        // 13 kreuzberg bindings + 12 third-party = 25 total
+        assert_eq!(FRAMEWORKS.len(), 25);
 
         // Check all kreuzberg bindings present
         let names: Vec<&str> = FRAMEWORKS.iter().map(|(n, _, _)| *n).collect();
