@@ -211,6 +211,11 @@ nav:
       - v4.0 Font Changes: migration/v4.0-fonts.md
       - v4.0 HTML Metadata: migration/v4.0-html-metadata.md
   - Comparisons:
+      - comparisons/index.md
       - vs Unstructured: comparisons/kreuzberg-vs-unstructured.md
+      - vs Docling: comparisons/kreuzberg-vs-docling.md
+      - vs Apache Tika: comparisons/kreuzberg-vs-tika.md
+      - vs MarkItDown: comparisons/kreuzberg-vs-markitdown.md
+      - vs MinerU: comparisons/kreuzberg-vs-mineru.md
   - Changelog: CHANGELOG.md
   - Contributing: contributing.md
