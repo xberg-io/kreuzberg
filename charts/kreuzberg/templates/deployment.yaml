@@ -1,0 +1,125 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "kreuzberg.fullname" . }}
+  labels:
+    {{- include "kreuzberg.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  selector:
+    matchLabels:
+      {{- include "kreuzberg.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "kreuzberg.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "kreuzberg.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: {{ include "kreuzberg.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if .Values.config.serverEnabled }}
+          args:
+            - serve
+            - --host
+            - 0.0.0.0
+            - --port
+            - "8000"
+            {{- with .Values.config.extraArgs }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+          livenessProbe:
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          env:
+            {{- range .Values.env }}
+            {{- if or (ne .name "TESSDATA_PREFIX") $.Values.tesseract.enabled }}
+            - name: {{ .name }}
+              value: {{ tpl (.value | toString) $ | quote }}
+            {{- end }}
+            {{- end }}
+            {{- if .Values.extraEnv }}
+            {{- toYaml .Values.extraEnv | nindent 12 }}
+            {{- end }}
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            {{- if .Values.configMap.enabled }}
+            - name: config
+              mountPath: {{ .Values.configMap.mountPath }}
+            {{- end }}
+            {{- if .Values.persistence.enabled }}
+            - name: cache
+              mountPath: {{ .Values.persistence.mountPath }}
+            {{- end }}
+            {{- if .Values.tesseract.enabled }}
+            {{- if or .Values.tesseract.configMapName .Values.tesseract.pvcName }}
+            - name: tessdata
+              mountPath: {{ .Values.tesseract.mountPath }}
+            {{- end }}
+            {{- end }}
+      volumes:
+        - name: tmp
+          emptyDir: {}
+        {{- if .Values.configMap.enabled }}
+        - name: config
+          configMap:
+            name: {{ include "kreuzberg.fullname" . }}
+        {{- end }}
+        {{- if .Values.persistence.enabled }}
+        - name: cache
+          {{- if .Values.persistence.existingClaim }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.existingClaim }}
+          {{- else }}
+          persistentVolumeClaim:
+            claimName: {{ include "kreuzberg.fullname" . }}-cache
+          {{- end }}
+        {{- end }}
+        {{- if .Values.tesseract.enabled }}
+        {{- if .Values.tesseract.configMapName }}
+        - name: tessdata
+          configMap:
+            name: {{ .Values.tesseract.configMapName }}
+        {{- else if .Values.tesseract.pvcName }}
+        - name: tessdata
+          persistentVolumeClaim:
+            claimName: {{ .Values.tesseract.pvcName }}
+        {{- end }}
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

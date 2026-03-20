@@ -1,0 +1,203 @@
+# Global values shared across subcharts
+global:
+  imageRegistry: ""
+  imagePullSecrets: []
+  storageClass: ""
+
+# -- Replica count for the Kreuzberg deployment
+replicaCount: 1
+
+# -- Number of old ReplicaSets to retain
+revisionHistoryLimit: 10
+
+image:
+  # -- Image registry (defaults to global.imageRegistry)
+  registry: ""
+  # -- Image repository for the Kreuzberg container
+  repository: kreuzberg-dev/kreuzberg
+  # -- Image pull policy
+  pullPolicy: IfNotPresent
+  # -- Image tag (defaults to .Chart.AppVersion)
+  tag: ""
+
+# -- Image pull secrets for private repositories
+imagePullSecrets: []
+# -- Override the name of the chart
+nameOverride: ""
+# -- Override the fullname of the chart
+fullnameOverride: ""
+
+serviceAccount:
+  # -- Specifies whether a service account should be created
+  create: true
+  # -- Annotations to add to the service account
+  annotations: {}
+  # -- The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+# -- Annotations to add to the pod
+podAnnotations: {}
+
+# -- Pod security context
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+  seccompProfile:
+    type: RuntimeDefault
+
+# -- Container security context
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
+
+service:
+  # -- Service type
+  type: ClusterIP
+  # -- Service port
+  port: 8000
+  # -- Service target port (for the container)
+  targetPort: http
+  # -- Service annotations
+  annotations: {}
+
+ingress:
+  # -- Enable ingress
+  enabled: false
+  # -- Ingress class name
+  className: ""
+  # -- Ingress annotations
+  annotations: {}
+  # -- Ingress hosts configuration
+  hosts:
+    - host: kreuzberg.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  # -- Ingress TLS configuration
+  tls: []
+  #  - secretName: kreuzberg-tls
+  #    hosts:
+  #      - kreuzberg.local
+
+resources:
+  # -- CPU/Memory limits and requests
+  # We recommend setting these based on your workload and document types
+  # limits:
+  #   cpu: 2000m
+  #   memory: 4Gi
+  # requests:
+  #   cpu: 500m
+  #   memory: 1Gi
+  limits: {}
+  requests: {}
+
+# -- Liveness probe configuration
+livenessProbe:
+  httpGet:
+    path: /health
+    port: http
+  initialDelaySeconds: 15
+  periodSeconds: 20
+
+# -- Readiness probe configuration
+readinessProbe:
+  httpGet:
+    path: /health
+    port: http
+  initialDelaySeconds: 5
+  periodSeconds: 10
+
+autoscaling:
+  # -- Enable horizontal pod autoscaling
+  enabled: false
+  # -- Minimum replicas
+  minReplicas: 1
+  # -- Maximum replicas
+  maxReplicas: 10
+  # -- Target CPU utilization
+  targetCPUUtilizationPercentage: 80
+  # -- Target memory utilization
+  targetMemoryUtilizationPercentage: 80
+
+# -- Pod Disruption Budget
+podDisruptionBudget:
+  enabled: false
+  minAvailable: 1
+
+# -- Node selector for pod placement
+nodeSelector: {}
+
+# -- Tolerations for pod placement
+tolerations: []
+
+# -- Affinity for pod placement
+affinity: {}
+
+# -- Environment variables to add to the container
+env:
+  # -- Logging level (error, warn, info, debug, trace)
+  - name: RUST_LOG
+    value: "info"
+  # -- Tesseract data location
+  - name: TESSDATA_PREFIX
+    value: "/usr/share/tesseract-ocr/5/tessdata"
+  # -- Cache directory for models and temporary files
+  - name: KREUZBERG_CACHE_DIR
+    value: "/app/.kreuzberg"
+  # -- Hugging Face cache directory
+  - name: HF_HOME
+    value: "/app/.kreuzberg/huggingface"
+
+# -- Extra environment variables for the container
+extraEnv: []
+
+# -- Configuration for the Kreuzberg ConfigMap
+configMap:
+  # -- Create a ConfigMap for Kreuzberg configuration
+  enabled: false
+  # -- ConfigMap data (e.g., kreuzberg.toml)
+  data: {}
+  # -- Mount path for the ConfigMap
+  mountPath: /etc/kreuzberg
+
+# -- Configuration for external storage
+persistence:
+  # -- Enable persistent storage for cache and models
+  enabled: true
+  # -- Storage class name (defaults to global.storageClass)
+  storageClass: ""
+  # -- Access modes for the PVC
+  accessModes:
+    - ReadWriteOnce
+  # -- Storage size
+  size: 10Gi
+  # -- Mount path for the persistent volume
+  mountPath: /app/.kreuzberg
+  # -- Use an existing PVC
+  existingClaim: ""
+
+# -- Configuration for tesseract (tessdata)
+tesseract:
+  # -- Enable Tesseract OCR support in the application
+  enabled: true
+  # -- Mount path for custom tessdata
+  mountPath: /usr/share/tesseract-ocr/5/tessdata
+  # -- ConfigMap name for custom tessdata (must be created separately)
+  configMapName: ""
+  # -- PVC name for custom tessdata (must be created separately)
+  pvcName: ""
+
+# -- Configuration for the Kreuzberg server
+config:
+  # -- Enable the API server (default)
+  serverEnabled: true
+  # -- Additional flags for the 'serve' command
+  extraArgs: []

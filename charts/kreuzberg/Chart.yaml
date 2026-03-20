@@ -1,0 +1,32 @@
+apiVersion: v2
+name: kreuzberg
+description: Official Helm chart for Kreuzberg document intelligence
+type: application
+version: 0.1.0
+appVersion: "4.5.0"
+kubeVersion: ">=1.19.0"
+keywords:
+  - document-intelligence
+  - ocr
+  - tesseract
+  - paddleocr
+  - pdfium
+  - embeddings
+home: https://github.com/kreuzberg-dev/kreuzberg
+sources:
+  - https://github.com/kreuzberg-dev/kreuzberg
+maintainers:
+  - name: kreuzberg-dev
+    email: contact@kreuzberg.ai
+    url: https://github.com/kreuzberg-dev
+icon: https://raw.githubusercontent.com/kreuzberg-dev/kreuzberg/main/docs/assets/logo.svg
+annotations:
+  artifacthub.io/license: MIT
+  artifacthub.io/category: utilities
+  artifacthub.io/maintainers: |
+    - name: kreuzberg-dev
+      email: contact@kreuzberg.ai
+  artifacthub.io/changes: |
+    - kind: added
+      description: Initial release of the official Helm chart
+  category: Application
