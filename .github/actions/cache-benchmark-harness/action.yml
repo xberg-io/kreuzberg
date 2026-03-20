@@ -183,7 +183,7 @@ runs:
     # Restore from cache
     - name: Restore benchmark-harness binary from cache
       id: cache-restore
-      uses: ./.github/actions/cache-binding-artifact
+      uses: kreuzberg-dev/actions/cache-binding-artifact@v1
       with:
         binding-name: benchmark-harness
         cache-key: ${{ steps.generate-cache-key.outputs.cache-key }}
@@ -284,7 +284,7 @@ runs:
     # Save to cache if build occurred
     - name: Save benchmark-harness binary to cache
       if: steps.cache-restore.outputs.cache-hit != 'true'
-      uses: ./.github/actions/cache-binding-artifact
+      uses: kreuzberg-dev/actions/cache-binding-artifact@v1
       with:
         binding-name: benchmark-harness
         cache-key: ${{ steps.generate-cache-key.outputs.cache-key }}
