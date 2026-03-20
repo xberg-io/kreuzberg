@@ -2,14 +2,56 @@
 
 Deploy Kreuzberg to Kubernetes with proper OCR configuration, permissions, and observability.
 
-## Requirements
+## Helm Chart (Recommended)
 
-- Tesseract OCR initialization via `TESSDATA_PREFIX`
-- Non-root container (UID 1000, GID 1000)
-- Persistent volumes for Tesseract data and cache
-- Health checks and resource limits
+The easiest way to deploy Kreuzberg is using the official Helm chart.
 
-## Quick Start
+### Installation
+
+```bash
+helm repo add kreuzberg https://docs.kreuzberg.dev
+helm repo update
+helm install kreuzberg kreuzberg/kreuzberg
+```
+
+### Configuration
+
+You can customize the deployment by creating a `values.yaml` file:
+
+```yaml
+replicaCount: 3
+
+resources:
+  requests:
+    cpu: 1000m
+    memory: 1Gi
+  limits:
+    cpu: 2000m
+    memory: 4Gi
+
+persistence:
+  enabled: true
+  size: 10Gi
+
+ingress:
+  enabled: true
+  className: nginx
+  hosts:
+    - host: kreuzberg.example.com
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+```
+
+Apply your configuration:
+
+```bash
+helm upgrade --install kreuzberg kreuzberg/kreuzberg -f values.yaml
+```
+
+Refer to the [Helm Chart Documentation](https://github.com/kreuzberg-dev/kreuzberg/tree/main/charts/kreuzberg) for all available options.
+
+## Manual Manifests (Alternative)
 
 ```yaml title="minimal-deployment.yaml"
 apiVersion: apps/v1

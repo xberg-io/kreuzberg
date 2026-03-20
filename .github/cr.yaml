@@ -1,0 +1,6 @@
+chart-search-root: charts
+charts-repo: https://docs.kreuzberg.dev
+index-path: index.yaml
+pages-branch: gh-pages
+owner: kreuzberg-dev
+project: kreuzberg
