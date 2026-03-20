@@ -1,13 +1,11 @@
-#!/bin/bash
-set -e
+#!/usr/bin/env bash
+set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR/.."
 
-export DYLD_LIBRARY_PATH="$REPO_ROOT/target/release:$DYLD_LIBRARY_PATH"
-export LD_LIBRARY_PATH="$REPO_ROOT/target/release:$LD_LIBRARY_PATH"
-export PKG_CONFIG_PATH="$REPO_ROOT/crates/kreuzberg-ffi:$PKG_CONFIG_PATH"
+echo "=== Installing kreuzberg FFI library ==="
+go generate github.com/kreuzberg-dev/kreuzberg/packages/go/v4
 
-cd "$SCRIPT_DIR"
-# Use kreuzberg_dev tag for development builds within monorepo
-go test -tags kreuzberg_dev -v ./...
+echo "=== Running tests ==="
+go test -v ./...
