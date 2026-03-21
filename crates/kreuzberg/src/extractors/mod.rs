@@ -86,6 +86,9 @@ pub mod excel;
 #[cfg(feature = "hwp")]
 pub mod hwp;
 
+#[cfg(feature = "iwork")]
+pub mod iwork;
+
 #[cfg(feature = "html")]
 pub mod html;
 
@@ -176,6 +179,9 @@ pub use excel::ExcelExtractor;
 
 #[cfg(feature = "hwp")]
 pub use hwp::HwpExtractor;
+
+#[cfg(feature = "iwork")]
+pub use iwork::{keynote::KeynoteExtractor, numbers::NumbersExtractor, pages::PagesExtractor};
 
 #[cfg(feature = "html")]
 pub use html::HtmlExtractor;
@@ -356,6 +362,13 @@ pub fn register_default_extractors() -> Result<()> {
     #[cfg(feature = "hwp")]
     {
         registry.register(Arc::new(HwpExtractor::new()))?;
+    }
+
+    #[cfg(feature = "iwork")]
+    {
+        registry.register(Arc::new(PagesExtractor::new()))?;
+        registry.register(Arc::new(NumbersExtractor::new()))?;
+        registry.register(Arc::new(KeynoteExtractor::new()))?;
     }
 
     #[cfg(feature = "mdx")]
