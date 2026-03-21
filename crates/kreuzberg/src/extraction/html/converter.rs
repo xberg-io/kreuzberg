@@ -238,6 +238,19 @@ mod tests {
     }
 
     #[test]
+    fn test_html_with_table_colspan() {
+        let html = "<table><tr><th colspan=\"2\">Header</th></tr><tr><td>Data 1</td><td>Data 2</td></tr></table>";
+        let (_markdown, _metadata, tables) =
+            convert_html_to_markdown_with_tables(html, None, None).unwrap();
+        assert_eq!(tables.len(), 1);
+        let table = &tables[0];
+        // Checking if html_to_markdown_rs::TableData has col_span
+        assert_eq!(table.cells.len(), 2);
+        assert_eq!(table.cells[0].len(), 1);
+        assert_eq!(table.cells[0][0], "Header");
+    }
+
+    #[test]
     fn test_preprocessing_config() {
         let html = "<nav>Navigation</nav><p>Content</p>";
         let mut options = ConversionOptions::default();
