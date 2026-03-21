@@ -50,6 +50,7 @@ office = [
     "html",
 ]
 hwp = ["dep:hwpers"]
+iwork = ["dep:zip", "dep:snap", "dep:prost"]
 email = ["dep:mail-parser", "dep:cfb"]
 html = ["dep:html-to-markdown-rs"]
 xml = ["dep:quick-xml", "dep:roxmltree"]
@@ -153,6 +154,7 @@ formats = [
     "excel",
     "office",
     "hwp",
+    "iwork",
     "email",
     "html",
     "xml",
@@ -250,6 +252,8 @@ biblib = { version = "0.4", default-features = false, features = [
 org = { version = "0.3", optional = true }
 dbase = { workspace = true, optional = true }
 hwpers = { workspace = true, optional = true }
+snap = { version = "1.1", optional = true }
+prost = { version = "0.13", optional = true }
 
 kreuzberg-tesseract = { path = "../kreuzberg-tesseract", version = "4.5.1", optional = true }
 image = { workspace = true, default-features = false, features = [
