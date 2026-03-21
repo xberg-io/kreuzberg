@@ -220,6 +220,68 @@ impl OcrBackend for MetadataOcrBackend {
     }
 }
 
+struct DocumentProcessingOcrBackend {
+    name: String,
+    image_call_count: AtomicUsize,
+    document_call_count: AtomicUsize,
+    supports_doc_override: bool,
+}
+
+impl Plugin for DocumentProcessingOcrBackend {
+    fn name(&self) -> &str {
+        &self.name
+    }
+
+    fn version(&self) -> String {
+        "1.0.0".to_string()
+    }
+
+    fn initialize(&self) -> Result<()> {
+        Ok(())
+    }
+
+    fn shutdown(&self) -> Result<()> {
+        Ok(())
+    }
+}
+
+#[async_trait]
+impl OcrBackend for DocumentProcessingOcrBackend {
+    async fn process_image(&self, _image_bytes: &[u8], _config: &OcrConfig) -> Result<ExtractionResult> {
+        self.image_call_count.fetch_add(1, Ordering::SeqCst);
+        
+        use std::borrow::Cow;
+        Ok(ExtractionResult {
+            content: "Processed via image extraction".to_string(),
+            mime_type: Cow::Borrowed("text/plain"),
+            ..Default::default()
+        })
+    }
+    
+    fn supports_document_processing(&self) -> bool {
+        self.supports_doc_override
+    }
+    
+    async fn process_document(&self, _document_path: &std::path::Path, _config: &OcrConfig) -> Result<ExtractionResult> {
+        self.document_call_count.fetch_add(1, Ordering::SeqCst);
+        
+        use std::borrow::Cow;
+        Ok(ExtractionResult {
+            content: "Processed natively as document".to_string(),
+            mime_type: Cow::Borrowed("text/plain"),
+            ..Default::default()
+        })
+    }
+
+    fn supports_language(&self, _lang: &str) -> bool {
+        true
+    }
+
+    fn backend_type(&self) -> OcrBackendType {
+        OcrBackendType::Custom
+    }
+}
+
 #[serial]
 #[test]
 fn test_register_custom_ocr_backend() {
@@ -785,4 +847,136 @@ fn test_unregister_ocr_backend() {
         !backend.initialized.load(Ordering::Acquire),
         "Backend should be shutdown after unregistration"
     );
+}
+
+#[serial]
+#[test]
+fn test_ocr_backend_document_processing_fallback() {
+    let test_document = "../../test_documents/pdf/ocr_test.pdf";
+    let registry = get_ocr_backend_registry();
+
+    {
+        let mut reg = registry.write().expect("Operation failed");
+        reg.shutdown_all().expect("Operation failed");
+    }
+
+    // Backend that DOES NOT support document processing natively
+    let backend = Arc::new(DocumentProcessingOcrBackend {
+        name: "fallback-ocr".to_string(),
+        image_call_count: AtomicUsize::new(0),
+        document_call_count: AtomicUsize::new(0),
+        supports_doc_override: false,
+    });
+
+    {
+        let mut reg = registry.write().expect("Operation failed");
+        reg.register(Arc::clone(&backend) as Arc<dyn OcrBackend>)
+            .expect("Operation failed");
+    }
+
+    let ocr_config = OcrConfig {
+        backend: "fallback-ocr".to_string(),
+        language: "eng".to_string(),
+        ..Default::default()
+    };
+
+    let config = ExtractionConfig {
+        ocr: Some(ocr_config),
+        force_ocr: true,
+        ..Default::default()
+    };
+
+    // Use async environment if required or standard sync method
+    let result = extract_file_sync(test_document, None, &config);
+
+    assert!(result.is_ok(), "Extraction failed: {:?}", result.err());
+
+    let extraction_result = result.expect("Operation failed");
+    assert!(
+        extraction_result.content.contains("Processed via image extraction"),
+        "Custom OCR fallback was not used. Content: {}",
+        extraction_result.content
+    );
+
+    // It should have called process_image multiple times (one for each PDF page)
+    assert!(
+        backend.image_call_count.load(Ordering::SeqCst) > 0,
+        "OCR fallback to image extraction was not called"
+    );
+    assert_eq!(
+        backend.document_call_count.load(Ordering::SeqCst),
+        0,
+        "Native process_document was called unexpectedly"
+    );
+
+    {
+        let mut reg = registry.write().expect("Operation failed");
+        reg.shutdown_all().expect("Operation failed");
+    }
+}
+
+#[serial]
+#[test]
+fn test_ocr_backend_document_processing_override() {
+    let test_document = "../../test_documents/pdf/ocr_test.pdf";
+    let registry = get_ocr_backend_registry();
+
+    {
+        let mut reg = registry.write().expect("Operation failed");
+        reg.shutdown_all().expect("Operation failed");
+    }
+
+    // Backend that DOES support document processing
+    let backend = Arc::new(DocumentProcessingOcrBackend {
+        name: "override-ocr".to_string(),
+        image_call_count: AtomicUsize::new(0),
+        document_call_count: AtomicUsize::new(0),
+        supports_doc_override: true,
+    });
+
+    {
+        let mut reg = registry.write().expect("Operation failed");
+        reg.register(Arc::clone(&backend) as Arc<dyn OcrBackend>)
+            .expect("Operation failed");
+    }
+
+    let ocr_config = OcrConfig {
+        backend: "override-ocr".to_string(),
+        language: "eng".to_string(),
+        ..Default::default()
+    };
+
+    let config = ExtractionConfig {
+        ocr: Some(ocr_config),
+        force_ocr: true,
+        ..Default::default()
+    };
+
+    let result = extract_file_sync(test_document, None, &config);
+
+    assert!(result.is_ok(), "Extraction failed: {:?}", result.err());
+
+    let extraction_result = result.expect("Operation failed");
+    assert!(
+        extraction_result.content.contains("Processed natively as document"),
+        "Custom OCR document override was not used. Content: {}",
+        extraction_result.content
+    );
+
+    // It should have exactly one call to process_document natively
+    assert_eq!(
+        backend.image_call_count.load(Ordering::SeqCst),
+        0,
+        "process_image was called unexpectedly"
+    );
+    assert_eq!(
+        backend.document_call_count.load(Ordering::SeqCst),
+        1,
+        "process_document was not called exactly once"
+    );
+
+    {
+        let mut reg = registry.write().expect("Operation failed");
+        reg.shutdown_all().expect("Operation failed");
+    }
 }
