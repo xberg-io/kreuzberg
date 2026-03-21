@@ -18,7 +18,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Bundled eng.traineddata**: The `kreuzberg-tesseract` build now downloads and bundles `eng.traineddata` (tessdata_fast, ~4MB) so English OCR works out of the box with zero runtime configuration.
+- **General extraction result caching**: All file types (PDF, Office, HTML, archives, etc.) are now cached — not just OCR results. Repeated extractions of the same file with the same config return instantly from cache.
+- **Cache namespace isolation**: New `cache_namespace` field on `ExtractionConfig` enables multi-tenant cache isolation on shared filesystems. Available via `--cache-namespace` CLI flag and across all language bindings.
+- **Per-request cache TTL**: New `cache_ttl_secs` field on `ExtractionConfig` overrides the global TTL for individual extractions. Set to `0` to skip cache entirely. Available via `--cache-ttl-secs` CLI flag.
+- **Cache namespace deletion**: `delete_namespace()` removes all cache entries under a namespace. `get_stats_filtered()` returns per-namespace statistics.
+- **Multi-worker cleanup safety**: Cache cleanup no longer triggers excessively when multiple worker pods share the same cache directory.
+- **Bundled eng.traineddata**: English OCR works out of the box with zero runtime configuration (~4MB bundled at build time).
 - **Tessdata in `cache warm`**: `kreuzberg-cli cache warm` now downloads all tessdata_fast language files (~120 languages) to `KREUZBERG_CACHE_DIR/tessdata/`, giving full Tesseract language support without system packages.
 - **Tessdata in `cache manifest`**: `kreuzberg-cli cache manifest` now includes all tessdata files with source URLs, enabling `--sync-cache` to download tessdata alongside models.
 - **`KREUZBERG_CACHE_DIR/tessdata` resolution**: `resolve_tessdata_path()` now checks `KREUZBERG_CACHE_DIR/tessdata` and the bundled build path before falling back to system paths. Resolution order: `TESSDATA_PREFIX` env → `KREUZBERG_CACHE_DIR/tessdata` → bundled tessdata → system paths.

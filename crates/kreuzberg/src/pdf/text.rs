@@ -278,13 +278,13 @@ fn extract_text_lazy_fast_path(document: &PdfDocument<'_>) -> Result<PdfTextExtr
         let load_ms = _t.elapsed_ms();
 
         let _t2 = crate::utils::timing::Instant::now();
-        let page_text = text.all();
+        let page_text = text.all_respaced(0.25);
         let get_ms = _t2.elapsed_ms();
         let page_size = page_text.len();
 
         if load_ms > 1000.0 || get_ms > 1000.0 {
             tracing::warn!(
-                "slow page {}/{}: FPDFText_LoadPage={:.0}ms text.all()={:.0}ms chars={}",
+                "slow page {}/{}: FPDFText_LoadPage={:.0}ms text.all_respaced()={:.0}ms chars={}",
                 page_idx + 1,
                 page_count,
                 load_ms,
@@ -368,13 +368,13 @@ fn extract_text_lazy_with_tracking(
         let load_ms = _t.elapsed_ms();
 
         let _t2 = crate::utils::timing::Instant::now();
-        let page_text_ref = text.all();
+        let page_text_ref = text.all_respaced(0.25);
         let get_ms = _t2.elapsed_ms();
         let page_size = page_text_ref.len();
 
         if load_ms > 1000.0 || get_ms > 1000.0 {
             tracing::warn!(
-                "slow page {}/{}: FPDFText_LoadPage={:.0}ms text.all()={:.0}ms chars={}",
+                "slow page {}/{}: FPDFText_LoadPage={:.0}ms text.all_respaced()={:.0}ms chars={}",
                 page_number,
                 document.pages().len(),
                 load_ms,

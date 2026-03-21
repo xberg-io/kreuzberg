@@ -68,6 +68,90 @@ impl<'a> PdfPageTextSegment<'a> {
         self.text.inside_rect(self.bounds)
     }
 
+    /// Returns text with corrected word spacing by filtering spurious generated spaces.
+    ///
+    /// Iterates characters within the segment and only inserts a space when the
+    /// horizontal gap between adjacent characters exceeds `font_size * space_ratio`.
+    /// This filters out spaces that pdfium inserts mid-word due to aggressive
+    /// inter-glyph spacing heuristics.
+    ///
+    /// Typical `space_ratio` values: 0.25 (MinerU's threshold), 0.3 (conservative).
+    pub fn text_respaced(&self, space_ratio: f32) -> String {
+        let chars = match self.chars() {
+            Ok(c) => c,
+            Err(_) => return self.text(),
+        };
+        let count = chars.len();
+        if count == 0 {
+            return String::new();
+        }
+
+        let mut result = String::with_capacity(count);
+        let mut prev_right_x: Option<f32> = None;
+        let mut prev_font_size: f32 = 12.0;
+
+        for i in 0..count {
+            let ch = match chars.get(i) {
+                Ok(c) => c,
+                Err(_) => continue,
+            };
+
+            if ch.is_generated().unwrap_or(false) {
+                if let Some(prev_r) = prev_right_x {
+                    let mut next_left: Option<f32> = None;
+                    let mut next_fs: Option<f32> = None;
+                    for j in (i + 1)..count {
+                        if let Ok(next_ch) = chars.get(j)
+                            && !next_ch.is_generated().unwrap_or(false)
+                        {
+                            if let Ok(bounds) = next_ch.tight_bounds() {
+                                next_left = Some(bounds.left().value);
+                            } else if let Ok((ox, _)) = next_ch.origin() {
+                                next_left = Some(ox.value);
+                            }
+                            let nfs = next_ch.scaled_font_size().value;
+                            if nfs > 0.0 {
+                                next_fs = Some(nfs);
+                            }
+                            break;
+                        }
+                    }
+                    if let Some(nl) = next_left {
+                        let gap = nl - prev_r;
+                        let ref_fs = next_fs.unwrap_or(prev_font_size);
+                        if gap > ref_fs * space_ratio {
+                            result.push(' ');
+                        }
+                    } else {
+                        result.push(' ');
+                    }
+                }
+                continue;
+            }
+
+            if let Some(uc) = ch.unicode_char() {
+                if uc == '\r' {
+                    result.push('\n');
+                    prev_right_x = None;
+                    continue;
+                }
+                result.push(uc);
+            }
+
+            let fs = ch.scaled_font_size().value;
+            if fs > 0.0 {
+                prev_font_size = fs;
+            }
+            if let Ok(bounds) = ch.tight_bounds() {
+                prev_right_x = Some(bounds.right().value);
+            } else if let Ok((ox, _)) = ch.origin() {
+                prev_right_x = Some(ox.value + prev_font_size * 0.6);
+            }
+        }
+
+        result
+    }
+
     /// Returns a collection of all the [PdfPageTextChar] characters that lie within the bounds of
     /// this [PdfPageTextSegment] in the containing [PdfPage], in the order in which they are
     /// defined in the document.

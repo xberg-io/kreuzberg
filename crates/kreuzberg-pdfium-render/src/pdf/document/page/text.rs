@@ -229,8 +229,8 @@ impl<'a> PdfPageText<'a> {
         self.inside_rect(self.page.page_size())
     }
 
-    /// Returns all page text with intelligent space insertion, filtering out spurious
-    /// spaces that pdfium's heuristic inserts mid-word.
+    /// Returns all page text with corrected word spacing, filtering out spurious
+    /// spaces that pdfium inserts mid-word due to aggressive inter-glyph heuristics.
     ///
     /// For each generated space character (`is_generated() == true`), checks whether
     /// the horizontal gap between the preceding character's right edge and the following
@@ -238,7 +238,7 @@ impl<'a> PdfPageText<'a> {
     /// when the gap is large enough to represent a true word boundary.
     ///
     /// `space_ratio` controls sensitivity: 0.25 matches MinerU's threshold.
-    pub fn text_with_smart_spacing(&self, space_ratio: f32) -> String {
+    pub fn all_respaced(&self, space_ratio: f32) -> String {
         let chars = self.chars();
         let count = chars.len();
         if count == 0 {
@@ -262,19 +262,19 @@ impl<'a> PdfPageText<'a> {
                     let mut next_left_x: Option<f32> = None;
                     let mut next_font_size: Option<f32> = None;
                     for j in (i + 1)..count {
-                        if let Ok(next_ch) = chars.get(j) {
-                            if !next_ch.is_generated().unwrap_or(false) {
-                                if let Ok(bounds) = next_ch.tight_bounds() {
-                                    next_left_x = Some(bounds.left().value);
-                                } else if let Ok((ox, _)) = next_ch.origin() {
-                                    next_left_x = Some(ox.value);
-                                }
-                                let nfs = next_ch.scaled_font_size().value;
-                                if nfs > 0.0 {
-                                    next_font_size = Some(nfs);
-                                }
-                                break;
+                        if let Ok(next_ch) = chars.get(j)
+                            && !next_ch.is_generated().unwrap_or(false)
+                        {
+                            if let Ok(bounds) = next_ch.tight_bounds() {
+                                next_left_x = Some(bounds.left().value);
+                            } else if let Ok((ox, _)) = next_ch.origin() {
+                                next_left_x = Some(ox.value);
                             }
+                            let nfs = next_ch.scaled_font_size().value;
+                            if nfs > 0.0 {
+                                next_font_size = Some(nfs);
+                            }
+                            break;
                         }
                     }
 
@@ -364,6 +364,87 @@ impl<'a> PdfPageText<'a> {
         assert_eq!(result, chars_count);
 
         get_string_from_pdfium_utf16le_bytes(cast_slice(buffer.as_slice()).to_vec()).unwrap_or_default()
+    }
+
+    /// Returns text within the given rectangle with corrected word spacing.
+    ///
+    /// Like [`inside_rect()`] but reconstructs text from individual characters,
+    /// filtering out spurious spaces that pdfium inserts mid-word.
+    /// See [`all_respaced()`] for details on the `space_ratio` parameter.
+    pub fn inside_rect_respaced(&self, rect: PdfRect, space_ratio: f32) -> String {
+        let chars = match self.chars_inside_rect(rect) {
+            Ok(c) => c,
+            Err(_) => return self.inside_rect(rect),
+        };
+        let count = chars.len();
+        if count == 0 {
+            return String::new();
+        }
+
+        let mut result = String::with_capacity(count);
+        let mut prev_right_x: Option<f32> = None;
+        let mut prev_font_size: f32 = 12.0;
+
+        for i in 0..count {
+            let ch = match chars.get(i) {
+                Ok(c) => c,
+                Err(_) => continue,
+            };
+
+            if ch.is_generated().unwrap_or(false) {
+                if let Some(prev_r) = prev_right_x {
+                    let mut next_left: Option<f32> = None;
+                    let mut next_fs: Option<f32> = None;
+                    for j in (i + 1)..count {
+                        if let Ok(next_ch) = chars.get(j)
+                            && !next_ch.is_generated().unwrap_or(false)
+                        {
+                            if let Ok(bounds) = next_ch.tight_bounds() {
+                                next_left = Some(bounds.left().value);
+                            } else if let Ok((ox, _)) = next_ch.origin() {
+                                next_left = Some(ox.value);
+                            }
+                            let nfs = next_ch.scaled_font_size().value;
+                            if nfs > 0.0 {
+                                next_fs = Some(nfs);
+                            }
+                            break;
+                        }
+                    }
+                    if let Some(nl) = next_left {
+                        let gap = nl - prev_r;
+                        let ref_fs = next_fs.unwrap_or(prev_font_size);
+                        if gap > ref_fs * space_ratio {
+                            result.push(' ');
+                        }
+                    } else {
+                        result.push(' ');
+                    }
+                }
+                continue;
+            }
+
+            if let Some(uc) = ch.unicode_char() {
+                if uc == '\r' {
+                    result.push('\n');
+                    prev_right_x = None;
+                    continue;
+                }
+                result.push(uc);
+            }
+
+            let fs = ch.scaled_font_size().value;
+            if fs > 0.0 {
+                prev_font_size = fs;
+            }
+            if let Ok(bounds) = ch.tight_bounds() {
+                prev_right_x = Some(bounds.right().value);
+            } else if let Ok((ox, _)) = ch.origin() {
+                prev_right_x = Some(ox.value + prev_font_size * 0.6);
+            }
+        }
+
+        result
     }
 
     /// Returns all characters assigned to the given [PdfPageTextObject] in this [PdfPageText] object,

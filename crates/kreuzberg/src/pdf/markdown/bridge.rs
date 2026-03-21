@@ -364,7 +364,7 @@ fn extract_segments_merged(page: &PdfPage, page_height: f32) -> Option<Vec<Segme
             Ok(s) => s,
             Err(_) => continue,
         };
-        let text = seg.text();
+        let text = seg.text_respaced(0.25);
         if text.trim().is_empty() {
             continue;
         }
@@ -435,7 +435,7 @@ fn extract_segments_merged(page: &PdfPage, page_height: f32) -> Option<Vec<Segme
                 // Multi-cell group: re-extract from merged bbox using pdfium.
                 // The bbox is in PDF coordinates (bottom-left origin).
                 let rect = PdfRect::new_from_values(group.pdf_bottom, group.pdf_left, group.pdf_top, group.pdf_right);
-                let reextracted = text_obj.inside_rect(rect);
+                let reextracted = text_obj.inside_rect_respaced(rect, 0.25);
                 if reextracted.trim().is_empty() {
                     // Fallback: concatenate individual cell texts.
                     group.cells.iter().map(|c| c.text.as_str()).collect::<Vec<_>>().join("")

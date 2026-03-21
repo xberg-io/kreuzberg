@@ -208,6 +208,15 @@ pub struct ExtractionOverrides {
     /// Common values: 1250 (Central European), 1251 (Cyrillic), 1252 (Western).
     #[arg(long)]
     pub msg_codepage: Option<u32>,
+
+    // ── Cache ─────────────────────────────────────────────────────────
+    /// Cache namespace for tenant isolation.
+    #[arg(long)]
+    pub cache_namespace: Option<String>,
+
+    /// Per-request cache TTL in seconds (0 = skip cache).
+    #[arg(long)]
+    pub cache_ttl_secs: Option<u64>,
 }
 
 impl ExtractionOverrides {
@@ -298,6 +307,7 @@ impl ExtractionOverrides {
         self.apply_pdf(config);
         self.apply_token_reduction(config);
         self.apply_email(config);
+        self.apply_cache(config);
     }
 
     // ── Private helpers ──────────────────────────────────────────────
@@ -560,6 +570,15 @@ impl ExtractionOverrides {
         if let Some(codepage) = self.msg_codepage {
             let email = config.email.get_or_insert_with(Default::default);
             email.msg_fallback_codepage = Some(codepage);
+        }
+    }
+
+    fn apply_cache(&self, config: &mut ExtractionConfig) {
+        if let Some(ns) = &self.cache_namespace {
+            config.cache_namespace = Some(ns.clone());
+        }
+        if let Some(ttl) = self.cache_ttl_secs {
+            config.cache_ttl_secs = Some(ttl);
         }
     }
 }

@@ -128,7 +128,7 @@ fn extract_segments_from_api(text_obj: &PdfPageText) -> Vec<ExtractedSegment> {
             Ok(s) => s,
             Err(_) => continue,
         };
-        let text = seg.text();
+        let text = seg.text_respaced(0.25);
         if text.trim().is_empty() {
             continue;
         }
@@ -207,64 +207,26 @@ pub(crate) fn extract_page_text_data(page: &PdfPage) -> Option<PageTextData> {
             Err(_) => continue,
         };
 
-        // Generated chars (pdfium's synthetic word boundaries): only insert a space
-        // if the gap between adjacent real characters exceeds font_size * 0.25.
-        // This filters out spurious spaces that pdfium inserts mid-word when
-        // inter-character spacing is wider than its aggressive threshold.
+        // Generated chars (pdfium's synthetic word boundaries): push as space markers.
+        // Space filtering is now handled at the pdfium bindings level via _respaced APIs.
         if ch.is_generated().unwrap_or(false) {
-            let should_insert = if let Some(last) = extracted.last() {
-                // Find the next non-generated character to measure the actual gap.
-                let mut next_left: Option<f32> = None;
-                let mut next_fs: Option<f32> = None;
-                for j in (i + 1)..char_count {
-                    if let Ok(next_ch) = chars.get(j) {
-                        if !next_ch.is_generated().unwrap_or(false) {
-                            if let Ok(b) = next_ch.tight_bounds() {
-                                next_left = Some(b.left().value);
-                            } else if let Ok((ox, _)) = next_ch.origin() {
-                                next_left = Some(ox.value);
-                            }
-                            let nfs = next_ch.scaled_font_size().value;
-                            if nfs > 0.0 {
-                                next_fs = Some(nfs);
-                            }
-                            break;
-                        }
-                    }
-                }
-                match next_left {
-                    Some(nl) => {
-                        let gap = nl - last.right_x;
-                        let ref_fs = next_fs.unwrap_or(last.font_size);
-                        gap > ref_fs * 0.25
-                    }
-                    None => true, // end of text — keep space
-                }
-            } else {
-                false
-            };
-
-            if should_insert {
-                let (x, y) = extracted
-                    .last()
-                    .map_or((0.0, 0.0), |c| (c.right_x, c.y));
-                let space_fs = extracted.last().map_or(12.0, |c| c.font_size);
-                extracted.push(ExtractedChar {
-                    ch: ' ',
-                    x,
-                    y,
-                    right_x: x + space_fs * 0.6,
-                    font_size: space_fs,
-                    is_bold: false,
-                    is_italic: false,
-                    is_monospace: false,
-                    is_symbolic: false,
-                    has_map_error: false,
-                    is_generated: true,
-                    is_hyphen: false,
-                    font_weight: 0,
-                });
-            }
+            let (x, y) = extracted.last().map_or((0.0, 0.0), |c| (c.right_x, c.y));
+            let space_fs = extracted.last().map_or(12.0, |c| c.font_size);
+            extracted.push(ExtractedChar {
+                ch: ' ',
+                x,
+                y,
+                right_x: x + space_fs * 0.6,
+                font_size: space_fs,
+                is_bold: false,
+                is_italic: false,
+                is_monospace: false,
+                is_symbolic: false,
+                has_map_error: false,
+                is_generated: true,
+                is_hyphen: false,
+                font_weight: 0,
+            });
             continue;
         }
 
@@ -368,7 +330,7 @@ pub(crate) fn extract_page_text_data(page: &PdfPage) -> Option<PageTextData> {
     let _ = has_any_map_error; // used only to gate repair_map construction above
 
     // Extract full page text and segment-level data in the same pass.
-    let full_text = text_obj.all();
+    let full_text = text_obj.all_respaced(0.25);
     let segments = extract_segments_from_api(&text_obj);
 
     Some(PageTextData {
