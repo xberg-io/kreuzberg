@@ -22,7 +22,7 @@ class OcrBackendProtocol(Protocol):
         process_image: Process image bytes and return extraction result
 
     Optional Methods:
-        process_file: Process file from path (defaults to reading and calling process_image)
+        process_document: Process multi-page document from path (e.g., PDF)
         initialize: Called when backend is registered (e.g., load models)
         shutdown: Called when backend is unregistered (e.g., cleanup resources)
         version: Return backend version string (defaults to '1.0.0')
@@ -106,7 +106,7 @@ class OcrBackendProtocol(Protocol):
         ...
 
     def process_file(self, path: str, language: str) -> dict[str, Any]:
-        """Process file from path (optional, defaults to reading and calling process_image).
+        """Process image file from path (optional, defaults to reading and calling process_image).
 
         Backends can override this method if they have optimized file processing
         that avoids loading the entire file into memory.
@@ -117,6 +117,22 @@ class OcrBackendProtocol(Protocol):
 
         Returns:
             Same format as process_image()
+
+        """
+        ...
+
+    def process_document(self, path: str, language: str) -> dict[str, Any]:
+        """Process multi-page document from path (optional).
+
+        Backends can override this method if they have optimized document processing
+        (e.g., for PDFs) that can process all pages efficiently.
+
+        Args:
+            path: Path to document file (e.g., .pdf)
+            language: Language code for OCR
+
+        Returns:
+            Same format as process_image(), typically with concatenated content.
 
         """
         ...
