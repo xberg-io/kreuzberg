@@ -286,6 +286,27 @@ pub trait OcrBackend: Plugin {
     fn supports_table_detection(&self) -> bool {
         false
     }
+
+    /// Check if the backend supports direct document-level processing (e.g. for PDFs).
+    ///
+    /// Defaults to `false`. Override if the backend has optimized document processing.
+    fn supports_document_processing(&self) -> bool {
+        false
+    }
+
+    /// Process a document file directly via OCR.
+    ///
+    /// Only called if `supports_document_processing` returns `true`.
+    ///
+    /// # Arguments
+    ///
+    /// * `path` - Path to the document file (e.g. .pdf)
+    /// * `config` - OCR configuration
+    async fn process_document(&self, _path: &Path, _config: &OcrConfig) -> Result<ExtractionResult> {
+        Err(crate::KreuzbergError::Other(
+            "Document-level OCR processing not supported by this backend".to_string(),
+        ))
+    }
 }
 
 /// Register an OCR backend with the global registry.
