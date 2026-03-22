@@ -13,6 +13,9 @@ readme = "README.md"
 keywords = ["ffi", "bindings", "document", "extraction", "api"]
 categories = ["development-tools::ffi", "text-processing"]
 
+[package.metadata.cargo-machete]
+ignored = ["cbindgen"]
+
 [lib]
 crate-type = ["cdylib", "staticlib", "rlib"]
 
@@ -26,15 +29,15 @@ keywords-rake = []
 layout-detection = ["kreuzberg/layout-detection"]
 
 [dependencies]
-serde_json = { workspace = true }
-serde = { workspace = true }
-async-trait = { workspace = true }
-tokio = { workspace = true }
-html-to-markdown-rs = { workspace = true }
-rayon = { workspace = true, optional = true }
-log = { workspace = true }
 ahash = { workspace = true }
+async-trait = { workspace = true }
 ctor = { workspace = true }
+html-to-markdown-rs = { workspace = true }
+log = { workspace = true }
+rayon = { workspace = true, optional = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tokio = { workspace = true }
 
 [target.'cfg(all(windows, target_env = "gnu"))'.dependencies]
 kreuzberg = { workspace = true, features = [
@@ -65,12 +68,9 @@ kreuzberg = { workspace = true, features = ["bundled-pdfium", "full"] }
 cbindgen = "0.29"
 
 [dev-dependencies]
-tempfile = { workspace = true }
 criterion = { version = "0.8", features = ["html_reports"] }
+tempfile = { workspace = true }
 
 [[bench]]
 name = "result_view_benchmark"
 harness = false
-
-[package.metadata.cargo-machete]
-ignored = ["cbindgen"]

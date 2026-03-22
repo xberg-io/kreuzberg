@@ -5,7 +5,6 @@
 #
 # Tests for ocr fixtures.
 
-# rubocop:disable Metrics/BlockLength
 require_relative 'spec_helper'
 
 RSpec.describe 'ocr fixtures' do
@@ -71,7 +70,9 @@ RSpec.describe 'ocr fixtures' do
     E2ERuby.run_fixture(
       'ocr_paddle_element_hierarchy',
       'images/test_hello_world.png',
-      { force_ocr: true, ocr: { backend: 'paddle-ocr', element_config: { build_hierarchy: true, include_elements: true }, language: 'en' } },
+      { force_ocr: true,
+        ocr: { backend: 'paddle-ocr', element_config: { build_hierarchy: true, include_elements: true },
+               language: 'en' } },
       requirements: %w[paddle-ocr paddle-ocr onnxruntime],
       notes: 'Requires PaddleOCR with ONNX Runtime',
       skip_if_missing: true
@@ -81,7 +82,8 @@ RSpec.describe 'ocr fixtures' do
         ['image/png']
       )
       E2ERuby::Assertions.assert_min_content_length(result, 5)
-      E2ERuby::Assertions.assert_ocr_elements(result, has_elements: true, elements_have_geometry: true, elements_have_confidence: true)
+      E2ERuby::Assertions.assert_ocr_elements(result, has_elements: true, elements_have_geometry: true,
+                                                      elements_have_confidence: true)
     end
   end
 
@@ -91,7 +93,8 @@ RSpec.describe 'ocr fixtures' do
     E2ERuby.run_fixture(
       'ocr_paddle_element_levels',
       'images/test_hello_world.png',
-      { force_ocr: true, ocr: { backend: 'paddle-ocr', element_config: { include_elements: true, min_level: 'word' }, language: 'en' } },
+      { force_ocr: true,
+        ocr: { backend: 'paddle-ocr', element_config: { include_elements: true, min_level: 'word' }, language: 'en' } },
       requirements: %w[paddle-ocr paddle-ocr onnxruntime],
       notes: 'Requires PaddleOCR with ONNX Runtime',
       skip_if_missing: true
@@ -150,7 +153,8 @@ RSpec.describe 'ocr fixtures' do
     E2ERuby.run_fixture(
       'ocr_paddle_markdown',
       'images/test_hello_world.png',
-      { force_ocr: true, ocr: { backend: 'paddle-ocr', language: 'en', paddle_ocr_config: { output_format: 'markdown' } } },
+      { force_ocr: true,
+        ocr: { backend: 'paddle-ocr', language: 'en', paddle_ocr_config: { output_format: 'markdown' } } },
       requirements: %w[paddle-ocr paddle-ocr onnxruntime],
       notes: 'Tests markdown output format parity with Tesseract',
       skip_if_missing: true
@@ -200,7 +204,8 @@ RSpec.describe 'ocr fixtures' do
         ['image/png']
       )
       E2ERuby::Assertions.assert_min_content_length(result, 5)
-      E2ERuby::Assertions.assert_ocr_elements(result, has_elements: true, elements_have_geometry: true, elements_have_confidence: true)
+      E2ERuby::Assertions.assert_ocr_elements(result, has_elements: true, elements_have_geometry: true,
+                                                      elements_have_confidence: true)
     end
   end
 
@@ -210,7 +215,8 @@ RSpec.describe 'ocr fixtures' do
     E2ERuby.run_fixture(
       'ocr_paddle_table_detection',
       'images/simple_table.png',
-      { force_ocr: true, ocr: { backend: 'paddle-ocr', language: 'en', paddle_ocr_config: { enable_table_detection: true } } },
+      { force_ocr: true,
+        ocr: { backend: 'paddle-ocr', language: 'en', paddle_ocr_config: { enable_table_detection: true } } },
       requirements: %w[paddle-ocr paddle-ocr onnxruntime],
       notes: 'Tests table detection capability with PaddleOCR',
       skip_if_missing: true
@@ -295,7 +301,8 @@ RSpec.describe 'ocr fixtures' do
         ['image/png']
       )
       E2ERuby::Assertions.assert_min_content_length(result, 5)
-      E2ERuby::Assertions.assert_ocr_elements(result, has_elements: true, elements_have_geometry: true, elements_have_confidence: true)
+      E2ERuby::Assertions.assert_ocr_elements(result, has_elements: true, elements_have_geometry: true,
+                                                      elements_have_confidence: true)
     end
   end
 
@@ -304,7 +311,8 @@ RSpec.describe 'ocr fixtures' do
     E2ERuby.run_fixture(
       'ocr_tesseract_elements_min_count',
       'images/test_hello_world.png',
-      { force_ocr: true, ocr: { backend: 'tesseract', element_config: { include_elements: true, min_level: 'line' }, language: 'eng' } },
+      { force_ocr: true,
+        ocr: { backend: 'tesseract', element_config: { include_elements: true, min_level: 'line' }, language: 'eng' } },
       requirements: %w[tesseract tesseract],
       notes: 'Requires Tesseract OCR backend',
       skip_if_missing: true
@@ -336,4 +344,3 @@ RSpec.describe 'ocr fixtures' do
     end
   end
 end
-# rubocop:enable Metrics/BlockLength

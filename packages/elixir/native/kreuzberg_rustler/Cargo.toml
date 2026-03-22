@@ -10,13 +10,13 @@ repository = "https://github.com/kreuzberg-dev/kreuzberg"
 name = "kreuzberg_rustler"
 crate-type = ["cdylib"]
 
+[features]
+keywords-yake = ["kreuzberg/keywords-yake"]
+keywords-rake = ["kreuzberg/keywords-rake"]
+pdf = ["kreuzberg/pdf"]
+
 [dependencies]
 kreuzberg = { workspace = true, features = ["bundled-pdfium", "full"] }
 
 rustler = { version = "0.37" }
 serde_json = "1.0"
-
-[features]
-keywords-yake = ["kreuzberg/keywords-yake"]
-keywords-rake = ["kreuzberg/keywords-rake"]
-pdf = ["kreuzberg/pdf"]

@@ -13,7 +13,7 @@ kreuzberg = { workspace = true, features = ["bundled-pdfium", "full"] }
 serde_json = { workspace = true }
 
 [dev-dependencies]
-tokio = { workspace = true, features = ["macros"] }
 async-trait = { workspace = true }
-tempfile = { workspace = true }
 hex = { workspace = true }
+tempfile = { workspace = true }
+tokio = { workspace = true, features = ["macros"] }

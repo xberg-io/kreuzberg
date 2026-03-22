@@ -15,26 +15,26 @@ categories = ["api-bindings", "text-processing"]
 crate-type = ["cdylib"]
 
 [dependencies]
-kreuzberg = { workspace = true, features = ["bundled-pdfium", "full"] }
-kreuzberg-ffi = { workspace = true }
-
-bytes = { workspace = true }
-napi = { version = "3", default-features = false, features = ["napi8", "async", "serde-json"] }
-napi-derive = "3"
-tokio = { workspace = true, features = ["time"] }
-serde = { workspace = true }
-serde_json = { workspace = true }
+ahash = { workspace = true }
 async-trait = { workspace = true }
 base64 = { workspace = true }
-once_cell = { workspace = true }
-html-to-markdown-rs = { workspace = true }
-lazy_static = { workspace = true }
-num_cpus = { workspace = true }
-ahash = { workspace = true }
-ctor = { workspace = true }
 
-[build-dependencies]
-napi-build = "2.3"
+bytes = { workspace = true }
+ctor = { workspace = true }
+html-to-markdown-rs = { workspace = true }
+kreuzberg = { workspace = true, features = ["bundled-pdfium", "full"] }
+kreuzberg-ffi = { workspace = true }
+lazy_static = { workspace = true }
+napi = { version = "3", default-features = false, features = ["napi8", "async", "serde-json"] }
+napi-derive = "3"
+num_cpus = { workspace = true }
+once_cell = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tokio = { workspace = true, features = ["time"] }
 
 [target.'cfg(all(any(windows, unix), target_arch = "x86_64", not(target_env = "musl")))'.dependencies]
 mimalloc-rust = "0.2"
+
+[build-dependencies]
+napi-build = "2.3"

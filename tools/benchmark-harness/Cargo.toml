@@ -9,6 +9,10 @@ repository.workspace = true
 homepage = "https://kreuzberg.dev"
 default-run = "benchmark-harness"
 
+[lib]
+name = "benchmark_harness"
+path = "src/lib.rs"
+
 [[bin]]
 name = "benchmark-harness"
 path = "src/main.rs"
@@ -17,40 +21,36 @@ path = "src/main.rs"
 name = "kreuzberg-extract"
 path = "src/bin/kreuzberg_extract.rs"
 
-[lib]
-name = "benchmark_harness"
-path = "src/lib.rs"
-
-[dependencies]
-kreuzberg = { path = "../../crates/kreuzberg", features = ["full", "bundled-pdfium"] }
-tokio = { workspace = true, features = ["full"] }
-serde = { workspace = true }
-serde_json = { workspace = true }
-thiserror = { workspace = true }
-
-clap = { workspace = true }
-
-async-trait = { workspace = true }
-
-sysinfo = "0.38"
-
-ahash = { workspace = true }
-num_cpus = { workspace = true }
-which = "8"
-chrono = { workspace = true }
-shellexpand = "3"
-
-pprof = { version = "0.15", features = ["flamegraph", "criterion"], optional = true }
-tikv-jemallocator = { version = "0.6", optional = true }
-tikv-jemalloc-ctl = { version = "0.6", features = ["stats"], optional = true }
-rayon = { workspace = true }
-tempfile = { workspace = true }
-tracing = { workspace = true }
-tracing-subscriber = { version = "0.3", features = ["env-filter"] }
-
-[dev-dependencies]
-
 [features]
 default = []
 profiling = ["pprof"]
 memory-profiling = ["tikv-jemallocator", "tikv-jemalloc-ctl"]
+
+[dependencies]
+
+ahash = { workspace = true }
+
+async-trait = { workspace = true }
+chrono = { workspace = true }
+
+clap = { workspace = true }
+kreuzberg = { path = "../../crates/kreuzberg", features = ["full", "bundled-pdfium"] }
+num_cpus = { workspace = true }
+
+pprof = { version = "0.15", features = ["flamegraph", "criterion"], optional = true }
+rayon = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+shellexpand = "3"
+
+sysinfo = "0.38"
+tempfile = { workspace = true }
+thiserror = { workspace = true }
+tikv-jemalloc-ctl = { version = "0.6", features = ["stats"], optional = true }
+tikv-jemallocator = { version = "0.6", optional = true }
+tokio = { workspace = true, features = ["full"] }
+tracing = { workspace = true }
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+which = "8"
+
+[dev-dependencies]

@@ -40,11 +40,17 @@ repos:
     hooks:
       - id: pyproject-fmt
 
+  - repo: https://github.com/DevinR528/cargo-sort
+    rev: "v2.1.3"
+    hooks:
+      - id: cargo-sort
+        args: [-w]
+
   - repo: https://github.com/ComPWA/taplo-pre-commit
     rev: v0.9.3
     hooks:
       - id: taplo-format
-        exclude: "pyproject.toml"
+        exclude: "pyproject.toml|Cargo.toml"
 
   # Python: ruff (linting + formatting) + mypy (type checking)
   - repo: https://github.com/astral-sh/ruff-pre-commit
@@ -64,10 +70,11 @@ repos:
   - repo: https://github.com/AndrejOrsula/pre-commit-cargo
     rev: 0.5.0
     hooks:
-        - id: cargo-fmt
-          args: ["--all"]
-        - id: cargo-clippy
-          args: [
+      - id: cargo-fmt
+        args: ["--all"]
+      - id: cargo-clippy
+        args:
+          [
             "--fix",
             "--allow-dirty",
             "--allow-staged",
@@ -87,9 +94,9 @@ repos:
             "-D",
             "warnings",
           ]
-        # NOTE: cargo-doc and cargo-fix removed from pre-commit — they each trigger
-        # a full workspace compilation and are redundant with clippy --fix.
-        # Doc warnings are caught in CI (ci-validate).
+      # NOTE: cargo-doc and cargo-fix removed from pre-commit — they each trigger
+      # a full workspace compilation and are redundant with clippy --fix.
+      # Doc warnings are caught in CI (ci-validate).
 
   - repo: https://github.com/bnjbvr/cargo-machete
     rev: v0.9.1
@@ -110,15 +117,22 @@ repos:
         exclude: ^tools/benchmark-harness/fixtures/
       - id: biome-lint
 
+  - repo: https://github.com/oxc-project/mirrors-oxlint
+    rev: v1.56.0
+    hooks:
+      - id: oxlint
+        args: ["--fix"]
+        exclude: ^tools/benchmark-harness/fixtures/
+
   # C/C++: formatting and linting
   - repo: https://github.com/pocc/pre-commit-hooks
     rev: v1.3.5
     hooks:
       - id: clang-format
-        args: [ --style=file ]
+        args: [--style=file]
         files: (^crates/kreuzberg-ffi/tests/c/|^tools/benchmark-harness/scripts/.*\.c$)
       - id: cppcheck
-        args: [ "--std=c11", "--enable=warning,style,performance", "--suppress=missingIncludeSystem" ]
+        args: ["--std=c11", "--enable=warning,style,performance", "--suppress=missingIncludeSystem", "--suppress=unusedStructMember"]
         files: (^crates/kreuzberg-ffi/tests/c/|^tools/benchmark-harness/scripts/.*\.c$)
 
   - repo: https://github.com/checkmake/checkmake
@@ -154,11 +168,20 @@ repos:
     hooks:
       - id: actionlint
 
-  # Local hooks for unsupported languages (Ruby, Java, C#, PHP) and custom configurations
+  # Java: copy-paste detection and style checking
+  - repo: https://github.com/gherynos/pre-commit-java
+    rev: v0.6.36
+    hooks:
+      - id: cpd
+        exclude: ^\.mvn/wrapper/
+      - id: checkstyle
+        args: ["-c", "packages/java/checkstyle.xml", "-p", "packages/java/checkstyle.properties"]
+        exclude: ^\.mvn/wrapper/
+
+  # Local hooks for unsupported languages (Ruby, Java, C#, PHP, Elixir, R) and custom configurations
   - repo: local
     hooks:
-
-      # Ruby - prek doesn't support Ruby yet
+      # Ruby
       - id: ruby-format
         name: Ruby formatting (rubocop)
         entry: task ruby:format
@@ -177,26 +200,15 @@ repos:
         require_serial: true
         stages: [commit]
 
-      # Java - prek doesn't support Java
-      - id: java-format
-        name: Java formatting (spotless)
-        entry: task java:format
+      # Java (maven verify — cpd/checkstyle handled by pre-commit-java above)
+      - id: java-verify
+        name: maven verify (java)
+        entry: bash -lc 'if [ -f "$HOME/.sdkman/bin/sdkman-init.sh" ]; then source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk env; fi; MAVEN_OPTS="${MAVEN_OPTS:-} --enable-native-access=ALL-UNNAMED -Dsun.misc.unsafe.memory.access=allow" mvn -f packages/java/pom.xml -B -DskipTests -Dgpg.skip=true -Dskip.rust.ffi=true verify'
         language: system
-        files: \.java$
+        files: ^packages/java/
         pass_filenames: false
-        require_serial: true
-        stages: [commit]
 
-      - id: java-lint
-        name: Java linting (checkstyle + pmd)
-        entry: task java:lint
-        language: system
-        files: \.java$
-        pass_filenames: false
-        require_serial: true
-        stages: [commit]
-
-      # C# - prek doesn't support C#
+      # C#
       - id: csharp-format
         name: C# formatting (dotnet format)
         entry: task csharp:format
@@ -215,7 +227,7 @@ repos:
         require_serial: true
         stages: [commit]
 
-      # PHP - prek doesn't support PHP
+      # PHP
       - id: php-format
         name: PHP formatting (php-cs-fixer)
         entry: task php:format
@@ -234,7 +246,22 @@ repos:
         require_serial: true
         stages: [commit]
 
-      # R - prek doesn't support R yet
+      # Elixir
+      - id: mix-credo
+        name: mix credo
+        entry: bash -c 'cd packages/elixir && MIX_ENV=dev mix credo --strict'
+        language: system
+        files: ^packages/elixir/
+        pass_filenames: false
+
+      - id: mix-format
+        name: mix format
+        entry: bash -c 'cd packages/elixir && MIX_ENV=dev mix format --check-formatted'
+        language: system
+        files: ^packages/elixir/
+        pass_filenames: false
+
+      # R
       - id: r-format
         name: R formatting (styler)
         entry: task r:format

@@ -11,26 +11,26 @@ homepage = "https://kreuzberg.dev"
 keywords = ["php", "ffi", "document", "extraction", "bindings"]
 categories = ["api-bindings", "text-processing"]
 
+[package.metadata.cargo-machete]
+ignored = ["serde"]
+
 [lib]
 name = "kreuzberg_php"
 crate-type = ["cdylib"]
 test = false
 
+[features]
+default = []
+
 [dependencies]
-kreuzberg = { workspace = true, features = ["bundled-pdfium", "full"] }
+ahash = { workspace = true }
 
 ctor = { workspace = true }
 ext-php-rs = "0.15"
+kreuzberg = { workspace = true, features = ["bundled-pdfium", "full"] }
 num_cpus = { workspace = true }
 once_cell = { workspace = true }
 parking_lot = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 tokio = { workspace = true }
-ahash = { workspace = true }
-
-[features]
-default = []
-
-[package.metadata.cargo-machete]
-ignored = ["serde"]

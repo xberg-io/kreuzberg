@@ -16,39 +16,6 @@ build = "build.rs"
 links = "kreuzberg_tesseract"
 exclude = ["tessdata/*", "third_party/*"]
 
-[dependencies]
-thiserror = { workspace = true }
-
-[dev-dependencies]
-image = { workspace = true, features = ["png"] }
-
-[build-dependencies]
-cc = { version = "^1.2.57", optional = true }
-cmake = { version = "0.1.57", optional = true }
-zip = { version = "8.3.0", optional = true, default-features = false, features = [
-    "deflate-flate2-zlib-rs",
-] }
-
-# Use native-tls on Windows to avoid aws-lc-sys CMake build issues with MinGW
-[target.'cfg(target_os = "windows")'.build-dependencies]
-reqwest = { workspace = true, default-features = false, features = [
-    "blocking",
-    "native-tls",
-], optional = true }
-
-[target.'cfg(not(target_os = "windows"))'.build-dependencies]
-reqwest = { workspace = true, default-features = false, features = [
-    "blocking",
-    "rustls",
-], optional = true }
-
-[features]
-default = ["static-linking"]
-build-tesseract = ["cc", "cmake", "reqwest", "zip"]
-build-tesseract-wasm = ["cmake", "reqwest", "zip"]
-static-linking = ["build-tesseract"]
-dynamic-linking = []
-
 [package.metadata.docs.rs]
 features = ["docs-only"]
 rustdoc-args = ["--cfg", "docsrs"]
@@ -59,3 +26,36 @@ ignored = ["cc", "cmake", "reqwest", "zip"]
 [lib]
 name = "kreuzberg_tesseract"
 crate-type = ["lib"]
+
+[features]
+default = ["static-linking"]
+build-tesseract = ["cc", "cmake", "reqwest", "zip"]
+build-tesseract-wasm = ["cmake", "reqwest", "zip"]
+static-linking = ["build-tesseract"]
+dynamic-linking = []
+
+[dependencies]
+thiserror = { workspace = true }
+
+[build-dependencies]
+cc = { version = "^1.2.57", optional = true }
+cmake = { version = "0.1.57", optional = true }
+zip = { version = "8.3.1", optional = true, default-features = false, features = [
+    "deflate-flate2-zlib-rs",
+] }
+
+[target.'cfg(not(target_os = "windows"))'.build-dependencies]
+reqwest = { workspace = true, default-features = false, features = [
+    "blocking",
+    "rustls",
+], optional = true }
+
+# Use native-tls on Windows to avoid aws-lc-sys CMake build issues with MinGW
+[target.'cfg(target_os = "windows")'.build-dependencies]
+reqwest = { workspace = true, default-features = false, features = [
+    "blocking",
+    "native-tls",
+], optional = true }
+
+[dev-dependencies]
+image = { workspace = true, features = ["png"] }

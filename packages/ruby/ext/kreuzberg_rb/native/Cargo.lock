@@ -1221,9 +1221,9 @@ checksum = "807800ff3288b621186fe0a8f3392c4652068257302709c24efd918c3dffcdc2"
 
 [[package]]
 name = "der"
-version = "0.7.10"
+version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e7c1832837b905bbfb5101e07cc24c8deddf52f93225eee6ead5f4d63d53ddcb"
+checksum = "71fd89660b2dc699704064e59e9dba0147b903e85319429e131620d022be411b"
 dependencies = [
  "pem-rfc7468",
  "zeroize",
@@ -2027,7 +2027,7 @@ dependencies = [
  "serde",
  "serde_json",
  "thiserror 2.0.18",
- "ureq 3.2.1",
+ "ureq 3.3.0",
  "windows-sys 0.61.2",
 ]
 
@@ -2807,7 +2807,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg"
-version = "4.5.1"
+version = "4.5.2"
 dependencies = [
  "ahash",
  "async-trait",
@@ -2857,6 +2857,7 @@ dependencies = [
  "parking_lot",
  "pastey 0.2.1",
  "pkg-config",
+ "prost",
  "pulldown-cmark",
  "quick-xml 0.39.2",
  "rake",
@@ -2870,6 +2871,7 @@ dependencies = [
  "serde_yaml_ng",
  "sevenz-rust2",
  "sha2",
+ "snap",
  "tar",
  "text-splitter",
  "thiserror 2.0.18",
@@ -2882,16 +2884,16 @@ dependencies = [
  "tracing",
  "tracing-opentelemetry",
  "unicode-normalization",
- "ureq 3.2.1",
+ "ureq 3.3.0",
  "utoipa",
  "whatlang",
  "yake-rust",
- "zip 8.3.0",
+ "zip 8.3.1",
 ]
 
 [[package]]
 name = "kreuzberg-ffi"
-version = "4.5.1"
+version = "4.5.2"
 dependencies = [
  "ahash",
  "async-trait",
@@ -2907,7 +2909,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-paddle-ocr"
-version = "4.5.1"
+version = "4.5.2"
 dependencies = [
  "geo-clipper",
  "geo-types",
@@ -2921,7 +2923,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-pdfium-render"
-version = "4.5.1"
+version = "4.5.2"
 dependencies = [
  "bitflags",
  "bytemuck",
@@ -2944,7 +2946,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-rb"
-version = "4.5.1"
+version = "4.5.2"
 dependencies = [
  "async-trait",
  "html-to-markdown-rs",
@@ -2961,13 +2963,13 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-tesseract"
-version = "4.5.1"
+version = "4.5.2"
 dependencies = [
  "cc",
  "cmake",
  "reqwest",
  "thiserror 2.0.18",
- "zip 8.3.0",
+ "zip 8.3.1",
 ]
 
 [[package]]
@@ -3739,7 +3741,7 @@ dependencies = [
  "ort-sys",
  "smallvec",
  "tracing",
- "ureq 3.2.1",
+ "ureq 3.3.0",
 ]
 
 [[package]]
@@ -3750,7 +3752,7 @@ checksum = "d7b497d21a8b6fbb4b5a544f8fadb77e801a09ae0add9e411d31c6f89e3c1e90"
 dependencies = [
  "hmac-sha256",
  "lzma-rust2 0.15.7",
- "ureq 3.2.1",
+ "ureq 3.3.0",
 ]
 
 [[package]]
@@ -3806,9 +3808,9 @@ dependencies = [
 
 [[package]]
 name = "pem-rfc7468"
-version = "0.7.0"
+version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "88b39c9bfcfc231068454382784bb460aae594343fb030d46e9f50a645418412"
+checksum = "a6305423e0e7738146434843d1694d621cce767262b2a86910beab705e4493d9"
 dependencies = [
  "base64ct",
 ]
@@ -3998,6 +4000,29 @@ version = "1.0.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "52717f9a02b6965224f95ca2a81e2e0c5c43baacd28ca057577988930b6c3d5b"
 dependencies = [
+ "quote",
+ "syn",
+]
+
+[[package]]
+name = "prost"
+version = "0.14.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d2ea70524a2f82d518bce41317d0fae74151505651af45faf1ffbd6fd33f0568"
+dependencies = [
+ "bytes",
+ "prost-derive",
+]
+
+[[package]]
+name = "prost-derive"
+version = "0.14.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "27c6023962132f4b30eb4c172c91ce92d933da334c59c23cddee82358ddafb0b"
+dependencies = [
+ "anyhow",
+ "itertools 0.14.0",
+ "proc-macro2",
  "quote",
  "syn",
 ]
@@ -4980,6 +5005,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "67b1b7a3b5fe4f1376887184045fcf45c69e92af734b7aaddc05fb777b6fbd03"
 
 [[package]]
+name = "snap"
+version = "1.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1b6b67fb9a61334225b5b790716f609cd58395f895b3fe8b328786812a40bc3b"
+
+[[package]]
 name = "socket2"
 version = "0.6.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5772,9 +5803,9 @@ dependencies = [
 
 [[package]]
 name = "ureq"
-version = "3.2.1"
+version = "3.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4ab5172ab0c2b6d01a9bb4f9332f7c1211193ea002742188040d09ea4eafe867"
+checksum = "dea7109cdcd5864d4eeb1b58a1648dc9bf520360d7af16ec26d0a9354bafcfc0"
 dependencies = [
  "base64 0.22.1",
  "cookie_store",
@@ -5796,9 +5827,9 @@ dependencies = [
 
 [[package]]
 name = "ureq-proto"
-version = "0.5.3"
+version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d81f9efa9df032be5934a46a068815a10a042b494b6a58cb0a1a97bb5467ed6f"
+checksum = "e994ba84b0bd1b1b0cf92878b7ef898a5c1760108fe7b6010327e274917a808c"
 dependencies = [
  "base64 0.22.1",
  "http",
@@ -6848,9 +6879,9 @@ dependencies = [
 
 [[package]]
 name = "zip"
-version = "8.3.0"
+version = "8.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4a243cfad17427fc077f529da5a95abe4e94fd2bfdb601611870a6557cc67657"
+checksum = "5c546feb4481b0fbafb4ef0d79b6204fc41c6f9884b1b73b1d73f82442fc0845"
 dependencies = [
  "crc32fast",
  "flate2",
@@ -6928,9 +6959,9 @@ dependencies = [
 
 [[package]]
 name = "zune-jpeg"
-version = "0.5.13"
+version = "0.5.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ec5f41c76397b7da451efd19915684f727d7e1d516384ca6bd0ec43ec94de23c"
+checksum = "0b7a1c0af6e5d8d1363f4994b7a091ccf963d8b694f7da5b0b9cceb82da2c0a6"
 dependencies = [
  "zune-core",
 ]

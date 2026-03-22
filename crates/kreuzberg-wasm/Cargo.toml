@@ -11,37 +11,14 @@ keywords = ["wasm", "webassembly", "document", "extraction", "bindings"]
 categories = ["api-bindings", "text-processing"]
 readme = "README.md"
 
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = false
+
+[package.metadata.cargo-machete]
+ignored = ["getrandom", "getrandom_compat", "image", "serde", "uuid"]
+
 [lib]
 crate-type = ["cdylib", "rlib"]
-
-[dependencies]
-kreuzberg = { workspace = true, default-features = false, features = ["wasm-target"] }
-
-wasm-bindgen = { workspace = true }
-wasm-bindgen-futures = { workspace = true }
-wasm-bindgen-rayon = { version = "1.3", optional = true }
-serde-wasm-bindgen = "0.6"
-js-sys = { workspace = true }
-web-sys = { workspace = true }
-# Use getrandom with wasm_js feature for WASM compatibility
-getrandom = { version = "0.4", features = ["wasm_js"] }
-# Also need to explicitly depend on 0.3.4 to enable wasm_js for transitive deps
-getrandom_compat = { package = "getrandom", version = "=0.3.4", features = ["wasm_js"] }
-uuid = { version = "1.22", features = ["js"] }
-serde = { workspace = true }
-serde_json = { workspace = true }
-serde_yaml = "0.9"
-toml = { workspace = true }
-base64 = { workspace = true }
-async-trait = "0.1"
-console_error_panic_hook = { workspace = true, optional = true }
-kreuzberg-tesseract = { path = "../kreuzberg-tesseract", version = "4.3", default-features = false, features = [
-    "build-tesseract-wasm",
-], optional = true }
-image = { workspace = true, features = ["png", "jpeg", "gif", "bmp", "tiff"], optional = true }
-
-[dev-dependencies]
-wasm-bindgen-test = "0.3"
 
 [features]
 default = []
@@ -50,8 +27,31 @@ ocr-wasm = ["dep:kreuzberg-tesseract", "dep:image", "kreuzberg/ocr-wasm"]
 threads = ["dep:wasm-bindgen-rayon"]
 console_error_panic_hook = ["dep:console_error_panic_hook"]
 
-[package.metadata.wasm-pack.profile.release]
-wasm-opt = false
+[dependencies]
+async-trait = "0.1"
+base64 = { workspace = true }
+console_error_panic_hook = { workspace = true, optional = true }
+# Use getrandom with wasm_js feature for WASM compatibility
+getrandom = { version = "0.4", features = ["wasm_js"] }
+# Also need to explicitly depend on 0.3.4 to enable wasm_js for transitive deps
+getrandom_compat = { package = "getrandom", version = "=0.3.4", features = ["wasm_js"] }
+image = { workspace = true, features = ["png", "jpeg", "gif", "bmp", "tiff"], optional = true }
+js-sys = { workspace = true }
+kreuzberg = { workspace = true, default-features = false, features = ["wasm-target"] }
+kreuzberg-tesseract = { path = "../kreuzberg-tesseract", version = "4.3", default-features = false, features = [
+    "build-tesseract-wasm",
+], optional = true }
+serde = { workspace = true }
+serde-wasm-bindgen = "0.6"
+serde_json = { workspace = true }
+serde_yaml = "0.9"
+toml = { workspace = true }
+uuid = { version = "1.22", features = ["js"] }
 
-[package.metadata.cargo-machete]
-ignored = ["getrandom", "getrandom_compat", "image", "serde", "uuid"]
+wasm-bindgen = { workspace = true }
+wasm-bindgen-futures = { workspace = true }
+wasm-bindgen-rayon = { version = "1.3", optional = true }
+web-sys = { workspace = true }
+
+[dev-dependencies]
+wasm-bindgen-test = "0.3"
