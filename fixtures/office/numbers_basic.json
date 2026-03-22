@@ -1,0 +1,16 @@
+{
+	"id": "office_numbers_basic",
+	"category": "office",
+	"description": "Numbers document extraction baseline.",
+	"document": {
+		"path": "iwork/test.numbers",
+		"media_type": "application/x-iwork-numbers-sffnumbers"
+	},
+	"extraction": {
+		"config": {}
+	},
+	"assertions": {
+		"expected_mime": "application/x-iwork-numbers-sffnumbers",
+		"min_content_length": 10
+	}
+}
