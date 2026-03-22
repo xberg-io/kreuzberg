@@ -3357,6 +3357,7 @@ Configuration for ONNX-based document layout detection. Analyzes PDF pages to id
 | `preset`               | `str`      | `"fast"` | Model preset: `"fast"` (YOLO DocLayNet, 11 classes) or `"accurate"` (RT-DETR, 17 classes)     |
 | `confidence_threshold` | `float?`   | `None`   | Confidence threshold override (0.0-1.0). If None, uses the model's built-in default threshold |
 | `apply_heuristics`     | `bool`     | `true`   | Apply postprocessing heuristics (containment filtering, deduplication)                         |
+| `table_model`          | `str?`     | `None` (uses `"tatr"`) | Table structure recognition model. Options: `"tatr"` (30MB, default), `"slanet_wired"` (365MB, bordered tables), `"slanet_wireless"` (365MB, borderless tables), `"slanet_plus"` (7.78MB, lightweight), `"slanet_auto"` (~737MB, classifier-routed). See [Table Structure Models](../guides/layout-detection.md#table-structure-models). |
 
 ### Model Presets
 
@@ -3377,6 +3378,7 @@ Configuration for ONNX-based document layout detection. Analyzes PDF pages to id
             preset="accurate",
             confidence_threshold=0.5,
             apply_heuristics=True,
+            table_model="tatr",  # or "slanet_wired", "slanet_wireless", "slanet_auto", "slanet_plus"
         )
     )
     ```
@@ -3391,6 +3393,7 @@ Configuration for ONNX-based document layout detection. Analyzes PDF pages to id
         preset: "accurate",
         confidenceThreshold: 0.5,
         applyHeuristics: true,
+        tableModel: "tatr", // or "slanet_wired", "slanet_wireless", "slanet_auto", "slanet_plus"
       },
     });
     ```

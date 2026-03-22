@@ -76,6 +76,43 @@ Uses an RT-DETR v2 model with NMS-free detection. Detects all 17 layout classes 
 
 `DocumentIndex`, `Code`, `CheckboxSelected`, `CheckboxUnselected`, `Form`, `KeyValueRegion`
 
+## Table Structure Models <span class="version-badge">unreleased</span>
+
+When layout detection identifies a table region, a **table structure model** analyzes its internal structure (rows, columns, headers, spanning cells) to produce accurate markdown tables.
+
+### Model Comparison
+
+| Model | Config Value | Size | Speed (CPU) | Best For |
+|-------|-------------|------|-------------|----------|
+| TATR | `"tatr"` (default) | 30 MB | Fast | General-purpose, consistent results |
+| SLANeXT Wired | `"slanet_wired"` | 365 MB | Moderate | Bordered/gridlined tables |
+| SLANeXT Wireless | `"slanet_wireless"` | 365 MB | Moderate | Borderless tables |
+| SLANeXT Auto | `"slanet_auto"` | ~737 MB | Slower | Mixed documents (auto-classifies per page) |
+| SLANet-plus | `"slanet_plus"` | 7.78 MB | Fastest | Resource-constrained environments |
+
+### Choosing a Table Model
+
+**TATR** (default) is a Microsoft DETR-based model that detects rows, columns, headers, and spanning cells from cropped table regions. It produces consistent results across document types and is the smallest full-featured option.
+
+**SLANeXT** (PaddleOCR) takes a fundamentally different approach: it runs on the full page image and outputs HTML structure tokens with cell bounding boxes. Two specialized variants exist -- **wired** (optimized for bordered tables with visible gridlines) and **wireless** (optimized for borderless tables). The **auto** mode uses a PP-LCNet classifier to automatically select the appropriate variant per page.
+
+**SLANet-plus** is a lightweight PaddleOCR model suitable for edge deployment or high-throughput pipelines where table quality is secondary to speed.
+
+### Benchmark Results
+
+On a 171-document PDF corpus (CPU, Apple Silicon):
+
+| Model | Avg SF1 | Avg TF1 | Avg Time/Doc |
+|-------|---------|---------|--------------|
+| TATR (default) | 40.8% | 88.5% | ~1.7s |
+| SLANeXT Wireless | 40.6% | 88.5% | ~1.7s |
+| SLANeXT Auto | 40.6% | 88.2% | ~2.0s |
+
+Aggregate scores are comparable, but per-document variance is significant. SLANeXT improves SF1 by 13-20% on some documents (embedded PDFs, academic papers) while TATR performs better on others (invoices, forms).
+
+!!! note "Model Download"
+    SLANeXT models are **not** downloaded by default. Use `cache warm --all-table-models` to pre-download them, or they will download automatically on first use.
+
 ## Configuration
 
 ### Programmatic Configuration
@@ -90,6 +127,7 @@ Uses an RT-DETR v2 model with NMS-free detection. Detects all 17 layout classes 
             preset="accurate",
             confidence_threshold=0.5,
             apply_heuristics=True,
+            table_model="tatr",  # or "slanet_wired", "slanet_wireless", "slanet_auto", "slanet_plus"
         )
     )
 
@@ -106,6 +144,7 @@ Uses an RT-DETR v2 model with NMS-free detection. Detects all 17 layout classes 
         preset: "accurate",
         confidenceThreshold: 0.5,
         applyHeuristics: true,
+        tableModel: "tatr", // or "slanet_wired", "slanet_wireless", "slanet_auto", "slanet_plus"
       },
     });
     ```
@@ -120,6 +159,8 @@ Uses an RT-DETR v2 model with NMS-free detection. Detects all 17 layout classes 
             preset: "accurate".to_string(),
             confidence_threshold: Some(0.5),
             apply_heuristics: true,
+            table_model: Some("tatr".to_string()), // or "slanet_wired", "slanet_wireless", etc.
+            ..Default::default()
         }),
         ..Default::default()
     };
@@ -134,6 +175,7 @@ Uses an RT-DETR v2 model with NMS-free detection. Detects all 17 layout classes 
     preset = "fast"
     # confidence_threshold = 0.4   # optional override
     apply_heuristics = true
+    # table_model = "tatr"         # default; or "slanet_wired", "slanet_wireless", "slanet_auto", "slanet_plus"
     ```
 
 === "YAML"
@@ -143,6 +185,7 @@ Uses an RT-DETR v2 model with NMS-free detection. Detects all 17 layout classes 
       preset: fast
       # confidence_threshold: 0.4
       apply_heuristics: true
+      # table_model: tatr  # or slanet_wired, slanet_wireless, slanet_auto, slanet_plus
     ```
 
 ### Environment Variable
@@ -222,6 +265,7 @@ Layout detection in Kreuzberg builds on outstanding work from the open-source co
 
 - **[Docling](https://github.com/DS4SD/docling)** — We use the Docling Heron RT-DETR v2 model for document layout analysis. The Docling project's approach to document understanding, heuristics, and layout classification has been a significant influence on our pipeline design.
 - **[TATR (Table Transformer)](https://github.com/microsoft/table-transformer)** — Table structure recognition uses a TATR ONNX model to detect rows, columns, headers, and spanning cells within layout-detected table regions, enabling accurate markdown table generation with colspan/rowspan support.
+- **[PaddleOCR](https://github.com/PaddlePaddle/PaddleOCR)** — SLANeXT table structure recognition and PP-LCNet table classifier models provide alternative table analysis backends optimized for wired and wireless table layouts.
 
 ## Related Documentation
 

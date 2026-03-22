@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - **Apple iWork Format Support**: Native parsing for modern (2013+) `.pages`, `.numbers`, and `.key` files via a new `iwork` feature flag. Uses zero-allocation protobuf text extraction from Snappy-compressed IWA containers.
+- **SLANeXT table structure recognition models**: Alternative table structure backends alongside TATR. New `table_model` field on `LayoutDetectionConfig` selects the backend. Options: `"tatr"` (default, 30MB), `"slanet_wired"` (365MB, bordered tables), `"slanet_wireless"` (365MB, borderless tables), `"slanet_plus"` (7.78MB, lightweight), `"slanet_auto"` (classifier-routed, ~737MB). Available across all 12 language bindings and CLI (`--layout-table-model`).
+- **PP-LCNet table classifier**: Automatic wired/wireless table detection for SLANeXT auto mode. Uses center-crop preprocessing with BGR channel order matching PaddleOCR convention.
+- **CLI `cache warm --all-table-models`**: Opt-in download of SLANeXT model variants (~730MB). Default warm downloads only RT-DETR + TATR.
+- **ISO 21111-10 benchmark fixture**: Table-heavy ISO standard document with MinerU ground truth for table extraction benchmarking.
 
 ---
 
