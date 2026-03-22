@@ -30,6 +30,9 @@ All formats support async/await and batch processing. Image formats and PDFs sup
 | OpenDocument Spreadsheet | `.ods` | `application/vnd.oasis.opendocument.spreadsheet` | Native Rust (calamine) | No | Multi-sheet support |
 | dBASE | `.dbf` | `application/x-dbf` | Native Rust (dbase) | No | Table data extraction, field type support |
 | Hangul Word Processor | `.hwp`, `.hwpx` | `application/x-hwp` | Native Rust (hwpers) | No | Korean document format, text extraction |
+| Apple Pages | `.pages` | `application/x-iwork-pages-sffpages` | Native Rust | No | Modern iWork format support |
+| Apple Numbers | `.numbers` | `application/x-iwork-numbers-sffnumbers` | Native Rust | No | Spreadsheet extraction |
+| Apple Keynote | `.key` | `application/x-iwork-keynote-sffkey` | Native Rust | No | Slide and speaker notes extraction |
 
 ### Text & Markup
 

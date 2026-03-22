@@ -17,7 +17,9 @@ Kreuzberg handles 88+ file formats through native Rust extractors. No external t
     <div class="format-chips">
     <span class="format-chip">PDF <code>.pdf</code></span>
     <span class="format-chip">Word <code>.docx .doc</code></span>
+    <span class="format-chip">Pages <code>.pages</code></span>
     <span class="format-chip">PowerPoint <code>.pptx .ppt</code></span>
+    <span class="format-chip">Keynote <code>.key</code></span>
     <span class="format-chip">OpenDocument <code>.odt</code></span>
     <span class="format-chip">Plain text <code>.txt</code></span>
     <span class="format-chip">Markdown <code>.md</code></span>
@@ -33,6 +35,7 @@ Kreuzberg handles 88+ file formats through native Rust extractors. No external t
 
     <div class="format-chips">
     <span class="format-chip">Excel <code>.xlsx .xls .xlsm .xlsb</code></span>
+    <span class="format-chip">Numbers <code>.numbers</code></span>
     <span class="format-chip">OpenDocument <code>.ods</code></span>
     <span class="format-chip">CSV <code>.csv</code></span>
     <span class="format-chip">TSV <code>.tsv</code></span>
