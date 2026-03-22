@@ -308,7 +308,7 @@ class EasyOCRBackend:
             from PIL import Image, ImageSequence  # noqa: PLC0415
             with Image.open(path) as img:
                 pages = []
-                for i, page in enumerate(ImageSequence.Iterator(img)):
+                for page in ImageSequence.Iterator(img):
                     page_data = self._process_pil_image(page, language)
                     pages.append(page_data)
 
@@ -382,7 +382,7 @@ class EasyOCRBackend:
             "tables": [],
         }
 
-    def process_file(self, path: str, language: str) -> dict[str, Any]:
+    def process_image_file(self, path: str, language: str) -> dict[str, Any]:
         """Process image file using EasyOCR.
 
         Args:
