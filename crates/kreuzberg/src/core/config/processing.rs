@@ -13,12 +13,14 @@ use std::path::PathBuf;
 ///
 /// * `Text` - Generic text splitter, splits on whitespace and punctuation
 /// * `Markdown` - Markdown-aware splitter, preserves formatting and structure
+/// * `Yaml` - YAML-aware splitter, creates one chunk per top-level key
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
 #[serde(rename_all = "lowercase")]
 pub enum ChunkerType {
     #[default]
     Text,
     Markdown,
+    Yaml,
 }
 
 /// How chunk size is measured.

@@ -3,7 +3,9 @@
 //! This module provides a PostProcessor plugin that chunks text content in
 //! extraction results.
 
+use crate::chunking::config::{ChunkerType, ChunkingConfig};
 use crate::plugins::{Plugin, PostProcessor, ProcessingStage};
+use crate::types::Metadata;
 use crate::{ExtractionConfig, ExtractionResult, KreuzbergError, Result};
 use async_trait::async_trait;
 
@@ -54,7 +56,10 @@ impl PostProcessor for ChunkingProcessor {
             None => return Ok(()),
         };
 
-        let chunking_result = crate::chunking::chunk_text(&result.content, chunking_config, None)
+        let inferred = maybe_infer_yaml_chunker(chunking_config, &result.metadata);
+        let effective_config = inferred.as_ref().unwrap_or(chunking_config);
+
+        let chunking_result = crate::chunking::chunk_text(&result.content, effective_config, None)
             .map_err(|e| KreuzbergError::Other(format!("Chunking failed: {}", e)))?;
         result.chunks = Some(chunking_result.chunks);
 
@@ -73,6 +78,28 @@ impl PostProcessor for ChunkingProcessor {
         let text_length = result.content.len();
         (text_length / 10240).max(1) as u64
     }
+}
+
+/// Returns an overridden config if auto-inference applies, or None to use the original.
+///
+/// If the user left the chunker type at default (`Text`) and the document metadata
+/// indicates a YAML or JSON data format, returns a config with `Yaml` chunker type.
+/// An explicit non-default choice by the user is never overridden.
+fn maybe_infer_yaml_chunker(config: &ChunkingConfig, metadata: &Metadata) -> Option<ChunkingConfig> {
+    if config.chunker_type != ChunkerType::Text {
+        return None;
+    }
+
+    let is_structured = metadata
+        .additional
+        .get("data_format")
+        .and_then(|v| v.as_str())
+        .is_some_and(|fmt| fmt == "yaml" || fmt == "json");
+
+    is_structured.then(|| ChunkingConfig {
+        chunker_type: ChunkerType::Yaml,
+        ..config.clone()
+    })
 }
 
 #[cfg(test)]
@@ -114,6 +141,7 @@ mod tests {
 	            quality_score: None,
 	            processing_warnings: Vec::new(),
 	            annotations: None,
+            children: None,
 	        };
 
         processor.process(&mut result, &config).await.unwrap();
@@ -146,6 +174,7 @@ mod tests {
             quality_score: None,
             processing_warnings: Vec::new(),
             annotations: None,
+            children: None,
         };
 
         processor.process(&mut result, &config).await.unwrap();
@@ -190,6 +219,7 @@ mod tests {
             quality_score: None,
             processing_warnings: Vec::new(),
             annotations: None,
+            children: None,
         };
 
         let config_with_chunking = ExtractionConfig {
@@ -230,6 +260,7 @@ mod tests {
             quality_score: None,
             processing_warnings: Vec::new(),
             annotations: None,
+            children: None,
         };
 
         let long_result = ExtractionResult {
@@ -250,11 +281,188 @@ mod tests {
             quality_score: None,
             processing_warnings: Vec::new(),
             annotations: None,
+            children: None,
         };
 
         let short_duration = processor.estimated_duration_ms(&short_result);
         let long_duration = processor.estimated_duration_ms(&long_result);
 
         assert!(long_duration > short_duration);
+    }
+
+    fn make_metadata_with_format(format: &str) -> Metadata {
+        let mut metadata = Metadata::default();
+        metadata
+            .additional
+            .insert(Cow::Borrowed("data_format"), serde_json::json!(format));
+        metadata
+    }
+
+    #[tokio::test]
+    async fn test_auto_infer_yaml_from_metadata() {
+        let processor = ChunkingProcessor;
+        let config = ExtractionConfig {
+            chunking: Some(ChunkingConfig {
+                max_characters: 10000,
+                overlap: 0,
+                trim: true,
+                chunker_type: crate::chunking::ChunkerType::Text,
+                ..Default::default()
+            }),
+            ..Default::default()
+        };
+
+        let yaml_content = "server:\n  host: localhost\n  port: 8080";
+        let mut result = ExtractionResult {
+            content: yaml_content.to_string(),
+            mime_type: Cow::Borrowed("text/yaml"),
+            metadata: make_metadata_with_format("yaml"),
+            tables: vec![],
+            detected_languages: None,
+            chunks: None,
+            images: None,
+            djot_content: None,
+            pages: None,
+            elements: None,
+            ocr_elements: None,
+            document: None,
+            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: Vec::new(),
+            annotations: None,
+            children: None,
+        };
+
+        processor.process(&mut result, &config).await.unwrap();
+        let chunks = result.chunks.unwrap();
+        // Yaml chunker produces section-prefixed chunks
+        assert!(chunks[0].content.contains("# server > host"));
+    }
+
+    #[tokio::test]
+    async fn test_auto_infer_json_from_metadata() {
+        let processor = ChunkingProcessor;
+        let config = ExtractionConfig {
+            chunking: Some(ChunkingConfig {
+                max_characters: 10000,
+                overlap: 0,
+                trim: true,
+                chunker_type: crate::chunking::ChunkerType::Text,
+                ..Default::default()
+            }),
+            ..Default::default()
+        };
+
+        let json_content = r#"{"name": "test", "version": "1.0"}"#;
+        let mut result = ExtractionResult {
+            content: json_content.to_string(),
+            mime_type: Cow::Borrowed("application/json"),
+            metadata: make_metadata_with_format("json"),
+            tables: vec![],
+            detected_languages: None,
+            chunks: None,
+            images: None,
+            djot_content: None,
+            pages: None,
+            elements: None,
+            ocr_elements: None,
+            document: None,
+            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: Vec::new(),
+            annotations: None,
+            children: None,
+        };
+
+        processor.process(&mut result, &config).await.unwrap();
+        let chunks = result.chunks.unwrap();
+        // JSON chunker produces section-prefixed chunks
+        assert!(chunks[0].content.contains("# name"));
+    }
+
+    #[tokio::test]
+    async fn test_explicit_type_not_overridden() {
+        let processor = ChunkingProcessor;
+        let config = ExtractionConfig {
+            chunking: Some(ChunkingConfig {
+                max_characters: 10000,
+                overlap: 0,
+                trim: true,
+                chunker_type: crate::chunking::ChunkerType::Markdown,
+                ..Default::default()
+            }),
+            ..Default::default()
+        };
+
+        let yaml_content = "server:\n  host: localhost\n  port: 8080";
+        let mut result = ExtractionResult {
+            content: yaml_content.to_string(),
+            mime_type: Cow::Borrowed("text/yaml"),
+            metadata: make_metadata_with_format("yaml"),
+            tables: vec![],
+            detected_languages: None,
+            chunks: None,
+            images: None,
+            djot_content: None,
+            pages: None,
+            elements: None,
+            ocr_elements: None,
+            document: None,
+            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: Vec::new(),
+            annotations: None,
+            children: None,
+        };
+
+        processor.process(&mut result, &config).await.unwrap();
+        let chunks = result.chunks.unwrap();
+        // Markdown chunker does NOT produce "# server > host" section headers
+        assert!(!chunks[0].content.contains("# server > host"));
+    }
+
+    #[tokio::test]
+    async fn test_missing_data_format_no_inference() {
+        let processor = ChunkingProcessor;
+        let config = ExtractionConfig {
+            chunking: Some(ChunkingConfig {
+                max_characters: 10000,
+                overlap: 0,
+                trim: true,
+                chunker_type: crate::chunking::ChunkerType::Text,
+                ..Default::default()
+            }),
+            ..Default::default()
+        };
+
+        let yaml_content = "server:\n  host: localhost\n  port: 8080";
+        let mut result = ExtractionResult {
+            content: yaml_content.to_string(),
+            mime_type: Cow::Borrowed("text/yaml"),
+            metadata: Metadata::default(), // No data_format in metadata
+            tables: vec![],
+            detected_languages: None,
+            chunks: None,
+            images: None,
+            djot_content: None,
+            pages: None,
+            elements: None,
+            ocr_elements: None,
+            document: None,
+            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
+            extracted_keywords: None,
+            quality_score: None,
+            processing_warnings: Vec::new(),
+            annotations: None,
+            children: None,
+        };
+
+        processor.process(&mut result, &config).await.unwrap();
+        let chunks = result.chunks.unwrap();
+        // Without data_format metadata, should NOT auto-infer yaml chunking
+        assert!(!chunks[0].content.contains("# server > host"));
     }
 }

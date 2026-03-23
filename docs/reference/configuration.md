@@ -618,7 +618,7 @@ Configuration for splitting extracted text into overlapping chunks, useful for v
 | `embedding`      | `EmbeddingConfig?` | `None`  | Optional embedding generation for each chunk                                      |
 | `preset`         | `str?`             | `None`  | Chunking preset: `"small"` (500/100), `"medium"` (1000/200), `"large"` (2000/400) |
 | `trim`           | `bool`             | `true`  | Whether to trim whitespace from chunk boundaries                                  |
-| `chunker_type`   | `ChunkerType`      | `Text`  | Type of chunker: `Text` or `Markdown`                                             |
+| `chunker_type`   | `ChunkerType`      | `Text`  | Type of chunker: `Text`, `Markdown`, or `Yaml`                                    |
 | `sizing` <span class="version-badge">v4.5.0</span> | `ChunkSizing`      | `Characters` | Controls how chunk size is measured. `Characters` counts characters (default). `Tokenizer` counts tokens using a HuggingFace tokenizer model. Requires the `chunking-tokenizers` feature |
 
 **Note:** `max_chars` and `max_overlap` are accepted as aliases for `max_characters` and `overlap` respectively for backwards compatibility.

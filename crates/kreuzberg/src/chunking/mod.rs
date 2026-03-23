@@ -15,6 +15,7 @@
 //!
 //! - **Text**: Generic text splitter, splits on whitespace and punctuation
 //! - **Markdown**: Markdown-aware splitter, preserves formatting and structure
+//! - **Yaml**: YAML-aware splitter, creates one chunk per top-level key
 //!
 //! # Example
 //!
@@ -61,6 +62,7 @@ pub mod processor;
 #[cfg(feature = "chunking-tokenizers")]
 mod tokenizer_cache;
 pub mod validation;
+mod yaml_section;
 
 // Re-export submodule types and functions
 pub use boundaries::{calculate_page_range, validate_page_boundaries};

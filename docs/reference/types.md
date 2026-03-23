@@ -2748,6 +2748,10 @@ type ChunkingConfig struct {
 
 Chunking strategy type for text processing.
 
+- **Text** — Generic text splitter, splits on whitespace and punctuation
+- **Markdown** — Markdown-aware splitter, preserves formatting and structure
+- **Yaml** — YAML-aware splitter, creates one chunk per top-level key with key name prepended as context
+
 #### Rust
 
 ```rust title="chunker_type.rs"
@@ -2756,6 +2760,7 @@ pub enum ChunkerType {
     #[default]
     Text,
     Markdown,
+    Yaml,
 }
 ```
 
@@ -2767,12 +2772,13 @@ from enum import Enum
 class ChunkerType(str, Enum):
     TEXT = "text"
     MARKDOWN = "markdown"
+    YAML = "yaml"
 ```
 
 #### TypeScript
 
 ```typescript title="chunker_type.ts"
-export type ChunkerType = "text" | "markdown";
+export type ChunkerType = "text" | "markdown" | "yaml";
 ```
 
 #### Java
@@ -2780,7 +2786,8 @@ export type ChunkerType = "text" | "markdown";
 ```java title="ChunkerType.java"
 public enum ChunkerType {
     TEXT("text"),
-    MARKDOWN("markdown");
+    MARKDOWN("markdown"),
+    YAML("yaml");
 
     private final String value;
 
@@ -2802,6 +2809,7 @@ type ChunkerType string
 const (
     ChunkerTypeText     ChunkerType = "text"
     ChunkerTypeMarkdown ChunkerType = "markdown"
+    ChunkerTypeYaml     ChunkerType = "yaml"
 )
 ```
 
