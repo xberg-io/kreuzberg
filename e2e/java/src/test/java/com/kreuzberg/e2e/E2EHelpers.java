@@ -337,7 +337,8 @@ public final class E2EHelpers {
         Integer maxCount,
         Boolean eachHasContent,
         Boolean eachHasEmbedding,
-        Boolean eachHasHeadingContext) {
+        Boolean eachHasHeadingContext,
+        Boolean contentStartsWithHeading) {
       var chunks = result.getChunks();
       int count = chunks != null ? chunks.size() : 0;
       if (minCount != null) {
@@ -373,6 +374,15 @@ public final class E2EHelpers {
           assertTrue(
               chunk.getMetadata().getHeadingContext().isEmpty(),
               "Expected each chunk to have no heading_context");
+        }
+      }
+      if (chunks != null && contentStartsWithHeading != null && contentStartsWithHeading) {
+        String headingPrefix = String.valueOf((char) 35);
+        for (var chunk : chunks) {
+          String content = chunk.getContent();
+          assertTrue(
+              content != null && content.startsWith(headingPrefix),
+              "Expected each chunk content to start with a heading");
         }
       }
     }

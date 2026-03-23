@@ -140,6 +140,7 @@ function mapChunkingConfig(raw: PlainRecord): ChunkingConfig {
 	if (typeof raw.chunker_type === "string") {
 		(config as PlainRecord).chunkerType = raw.chunker_type;
 	}
+	assignBooleanField(config as PlainRecord, raw, "prepend_heading_context", "prependHeadingContext");
 	return config;
 }
 
@@ -377,8 +378,7 @@ export function buildConfig(raw: unknown): ExtractionConfig {
 
 	if (isPlainRecord(source.email)) {
 		const email = source.email as PlainRecord;
-		target.email =
-			typeof email.msg_fallback_codepage === "number" ? { msgFallbackCodepage: email.msg_fallback_codepage } : {};
+		target.email = (typeof email.msg_fallback_codepage === "number" ? { msgFallbackCodepage: email.msg_fallback_codepage } : {});
 	}
 
 	if (typeof source.output_format === "string") {
@@ -762,10 +762,6 @@ export const chunkAssertions = {
 		}
 		if (contentStartsWithHeading === true) {
 			for (const chunk of chunks) {
-				const headingContext = ((chunk as PlainRecord).metadata as PlainRecord | undefined)?.headingContext;
-				if (headingContext == null) {
-					continue;
-				}
 				const content = (chunk as PlainRecord).content;
 				expect(typeof content === "string" && content.charCodeAt(0) === 35).toBe(true);
 			}

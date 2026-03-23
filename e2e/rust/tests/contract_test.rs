@@ -374,7 +374,7 @@ fn test_config_chunking() {
 
     assertions::assert_expected_mime(&result, &["application/pdf"]);
     assertions::assert_min_content_length(&result, 10);
-    assertions::assert_chunks(&result, Some(1), None, Some(true), None, None);
+    assertions::assert_chunks(&result, Some(1), None, Some(true), None, None, None);
 }
 
 #[test]
@@ -420,7 +420,7 @@ fn test_config_chunking_heading_context() {
     };
 
     assertions::assert_min_content_length(&result, 10);
-    assertions::assert_chunks(&result, Some(2), None, Some(true), None, Some(true));
+    assertions::assert_chunks(&result, Some(2), None, Some(true), None, Some(true), None);
 }
 
 #[test]
@@ -464,7 +464,7 @@ fn test_config_chunking_markdown() {
 
     assertions::assert_expected_mime(&result, &["application/pdf"]);
     assertions::assert_min_content_length(&result, 10);
-    assertions::assert_chunks(&result, Some(1), None, Some(true), None, None);
+    assertions::assert_chunks(&result, Some(1), None, Some(true), None, None, None);
 }
 
 #[test]
@@ -510,7 +510,54 @@ fn test_config_chunking_no_headings() {
     };
 
     assertions::assert_min_content_length(&result, 10);
-    assertions::assert_chunks(&result, Some(2), None, Some(true), None, Some(false));
+    assertions::assert_chunks(&result, Some(2), None, Some(true), None, Some(false), None);
+}
+
+#[test]
+fn test_config_chunking_prepend_heading_context() {
+    // Tests markdown chunker prepends heading hierarchy to chunk content
+
+    let document_path = resolve_document("markdown/extraction_test.md");
+    if !document_path.exists() {
+        println!(
+            "Skipping config_chunking_prepend_heading_context: missing document at {}",
+            document_path.display()
+        );
+        return;
+    }
+    let config: ExtractionConfig = serde_json::from_str(
+        r#"{
+  "chunking": {
+    "chunker_type": "markdown",
+    "max_chars": 300,
+    "max_overlap": 50,
+    "prepend_heading_context": true
+  }
+}"#,
+    )
+    .expect("Fixture config should deserialize");
+
+    let result = match kreuzberg::extract_file_sync(&document_path, None, &config) {
+        Err(KreuzbergError::MissingDependency(dep)) => {
+            println!(
+                "Skipping config_chunking_prepend_heading_context: missing dependency {dep}",
+                dep = dep
+            );
+            return;
+        }
+        Err(KreuzbergError::UnsupportedFormat(fmt)) => {
+            println!(
+                "Skipping config_chunking_prepend_heading_context: unsupported format {fmt} (requires optional tool)",
+                fmt = fmt
+            );
+            return;
+        }
+        Err(err) => panic!("Extraction failed for config_chunking_prepend_heading_context: {err:?}"),
+        Ok(result) => result,
+    };
+
+    assertions::assert_min_content_length(&result, 10);
+    assertions::assert_chunks(&result, Some(2), None, Some(true), None, Some(true), Some(true));
 }
 
 #[test]
@@ -553,7 +600,7 @@ fn test_config_chunking_small() {
 
     assertions::assert_expected_mime(&result, &["application/pdf"]);
     assertions::assert_min_content_length(&result, 10);
-    assertions::assert_chunks(&result, Some(2), None, Some(true), None, None);
+    assertions::assert_chunks(&result, Some(2), None, Some(true), None, None, None);
 }
 
 #[test]
@@ -586,7 +633,7 @@ fn test_config_chunking_text() {
 
     assertions::assert_expected_mime(&result, &["application/pdf"]);
     assertions::assert_min_content_length(&result, 10);
-    assertions::assert_chunks(&result, Some(1), None, Some(true), None, None);
+    assertions::assert_chunks(&result, Some(1), None, Some(true), None, None, None);
 }
 
 #[test]
@@ -635,7 +682,7 @@ fn test_config_chunking_tokenizer() {
     };
 
     assertions::assert_min_content_length(&result, 10);
-    assertions::assert_chunks(&result, Some(2), None, Some(true), None, None);
+    assertions::assert_chunks(&result, Some(2), None, Some(true), None, None, None);
 }
 
 #[test]

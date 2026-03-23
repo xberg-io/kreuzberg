@@ -261,6 +261,8 @@ impl PdfExtractor {
         config: &ExtractionConfig,
         path: Option<&std::path::Path>,
     ) -> Result<ExtractionResult> {
+        let _ = &path; // used only when `ocr` feature is enabled
+
         // Strip /Rotate from page dicts to work around pdfium text extraction bug
         // where FPDFText_CountChars returns 0 for 90°/270° rotated pages.
         #[cfg(feature = "pdf")]

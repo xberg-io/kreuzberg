@@ -416,6 +416,33 @@ defmodule E2E.ContractTest do
       end
     end
 
+    test "config_chunking_prepend_heading_context" do
+      case E2E.Helpers.run_fixture(
+             "config_chunking_prepend_heading_context",
+             "markdown/extraction_test.md",
+             %{chunking: %{chunker_type: "markdown", max_chars: 300, max_overlap: 50, prepend_heading_context: true}},
+             requirements: ["chunking"],
+             notes: nil,
+             skip_if_missing: true
+           ) do
+        {:ok, result} ->
+          result
+          |> E2E.Helpers.assert_min_content_length(10)
+          |> E2E.Helpers.assert_chunks(
+            min_count: 2,
+            each_has_content: true,
+            each_has_heading_context: true,
+            content_starts_with_heading: true
+          )
+
+        {:skipped, reason} ->
+          IO.puts("SKIPPED: #{reason}")
+
+        {:error, reason} ->
+          flunk("Extraction failed: #{inspect(reason)}")
+      end
+    end
+
     test "config_chunking_small" do
       case E2E.Helpers.run_fixture(
              "config_chunking_small",

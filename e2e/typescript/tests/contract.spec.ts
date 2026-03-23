@@ -425,7 +425,7 @@ describe("contract fixtures", () => {
 			}
 			assertions.assertExpectedMime(result, ["application/pdf"]);
 			assertions.assertMinContentLength(result, 10);
-			chunkAssertions.assertChunks(result, 1, null, true, null, null);
+			chunkAssertions.assertChunks(result, 1, null, true, null, null, null);
 		},
 		TEST_TIMEOUT_MS,
 	);
@@ -452,7 +452,7 @@ describe("contract fixtures", () => {
 				return;
 			}
 			assertions.assertMinContentLength(result, 10);
-			chunkAssertions.assertChunks(result, 2, null, true, null, true);
+			chunkAssertions.assertChunks(result, 2, null, true, null, true, null);
 		},
 		TEST_TIMEOUT_MS,
 	);
@@ -480,7 +480,7 @@ describe("contract fixtures", () => {
 			}
 			assertions.assertExpectedMime(result, ["application/pdf"]);
 			assertions.assertMinContentLength(result, 10);
-			chunkAssertions.assertChunks(result, 1, null, true, null, null);
+			chunkAssertions.assertChunks(result, 1, null, true, null, null, null);
 		},
 		TEST_TIMEOUT_MS,
 	);
@@ -507,7 +507,36 @@ describe("contract fixtures", () => {
 				return;
 			}
 			assertions.assertMinContentLength(result, 10);
-			chunkAssertions.assertChunks(result, 2, null, true, null, false);
+			chunkAssertions.assertChunks(result, 2, null, true, null, false, null);
+		},
+		TEST_TIMEOUT_MS,
+	);
+
+	it(
+		"config_chunking_prepend_heading_context",
+		() => {
+			const documentPath = resolveDocument("markdown/extraction_test.md");
+			if (!existsSync(documentPath)) {
+				console.warn("Skipping config_chunking_prepend_heading_context: missing document at", documentPath);
+				return;
+			}
+			const config = buildConfig({
+				chunking: { chunker_type: "markdown", max_chars: 300, max_overlap: 50, prepend_heading_context: true },
+			});
+			let result: ExtractionResult | null = null;
+			try {
+				result = extractFileSync(documentPath, null, config);
+			} catch (error) {
+				if (shouldSkipFixture(error, "config_chunking_prepend_heading_context", ["chunking"], undefined)) {
+					return;
+				}
+				throw error;
+			}
+			if (result === null) {
+				return;
+			}
+			assertions.assertMinContentLength(result, 10);
+			chunkAssertions.assertChunks(result, 2, null, true, null, true, true);
 		},
 		TEST_TIMEOUT_MS,
 	);
@@ -535,7 +564,7 @@ describe("contract fixtures", () => {
 			}
 			assertions.assertExpectedMime(result, ["application/pdf"]);
 			assertions.assertMinContentLength(result, 10);
-			chunkAssertions.assertChunks(result, 2, null, true, null, null);
+			chunkAssertions.assertChunks(result, 2, null, true, null, null, null);
 		},
 		TEST_TIMEOUT_MS,
 	);
@@ -563,7 +592,7 @@ describe("contract fixtures", () => {
 			}
 			assertions.assertExpectedMime(result, ["application/pdf"]);
 			assertions.assertMinContentLength(result, 10);
-			chunkAssertions.assertChunks(result, 1, null, true, null, null);
+			chunkAssertions.assertChunks(result, 1, null, true, null, null, null);
 		},
 		TEST_TIMEOUT_MS,
 	);
@@ -600,7 +629,7 @@ describe("contract fixtures", () => {
 				return;
 			}
 			assertions.assertMinContentLength(result, 10);
-			chunkAssertions.assertChunks(result, 2, null, true, null, null);
+			chunkAssertions.assertChunks(result, 2, null, true, null, null, null);
 		},
 		TEST_TIMEOUT_MS,
 	);

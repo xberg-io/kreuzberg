@@ -516,7 +516,7 @@ public class ContractTest {
         result -> {
           E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("application/pdf"));
           E2EHelpers.Assertions.assertMinContentLength(result, 10);
-          E2EHelpers.Assertions.assertChunks(result, 1, null, true, null, null);
+          E2EHelpers.Assertions.assertChunks(result, 1, null, true, null, null, null);
         });
   }
 
@@ -534,7 +534,7 @@ public class ContractTest {
         true,
         result -> {
           E2EHelpers.Assertions.assertMinContentLength(result, 10);
-          E2EHelpers.Assertions.assertChunks(result, 2, null, true, null, true);
+          E2EHelpers.Assertions.assertChunks(result, 2, null, true, null, true, null);
         });
   }
 
@@ -553,7 +553,7 @@ public class ContractTest {
         result -> {
           E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("application/pdf"));
           E2EHelpers.Assertions.assertMinContentLength(result, 10);
-          E2EHelpers.Assertions.assertChunks(result, 1, null, true, null, null);
+          E2EHelpers.Assertions.assertChunks(result, 1, null, true, null, null, null);
         });
   }
 
@@ -571,7 +571,25 @@ public class ContractTest {
         true,
         result -> {
           E2EHelpers.Assertions.assertMinContentLength(result, 10);
-          E2EHelpers.Assertions.assertChunks(result, 2, null, true, null, false);
+          E2EHelpers.Assertions.assertChunks(result, 2, null, true, null, false, null);
+        });
+  }
+
+  @Test
+  public void configChunkingPrependHeadingContext() throws Exception {
+    JsonNode config =
+        MAPPER.readTree(
+            "{\"chunking\":{\"chunker_type\":\"markdown\",\"max_chars\":300,\"max_overlap\":50,\"prepend_heading_context\":true}}");
+    E2EHelpers.runFixture(
+        "config_chunking_prepend_heading_context",
+        "markdown/extraction_test.md",
+        config,
+        Arrays.asList("chunking"),
+        null,
+        true,
+        result -> {
+          E2EHelpers.Assertions.assertMinContentLength(result, 10);
+          E2EHelpers.Assertions.assertChunks(result, 2, null, true, null, true, true);
         });
   }
 
@@ -588,7 +606,7 @@ public class ContractTest {
         result -> {
           E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("application/pdf"));
           E2EHelpers.Assertions.assertMinContentLength(result, 10);
-          E2EHelpers.Assertions.assertChunks(result, 2, null, true, null, null);
+          E2EHelpers.Assertions.assertChunks(result, 2, null, true, null, null, null);
         });
   }
 
@@ -607,7 +625,7 @@ public class ContractTest {
         result -> {
           E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("application/pdf"));
           E2EHelpers.Assertions.assertMinContentLength(result, 10);
-          E2EHelpers.Assertions.assertChunks(result, 1, null, true, null, null);
+          E2EHelpers.Assertions.assertChunks(result, 1, null, true, null, null, null);
         });
   }
 
@@ -625,7 +643,7 @@ public class ContractTest {
         true,
         result -> {
           E2EHelpers.Assertions.assertMinContentLength(result, 10);
-          E2EHelpers.Assertions.assertChunks(result, 2, null, true, null, null);
+          E2EHelpers.Assertions.assertChunks(result, 2, null, true, null, null, null);
         });
   }
 

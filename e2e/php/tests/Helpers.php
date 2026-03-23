@@ -208,7 +208,8 @@ class Helpers
         ?int $maxCount,
         ?bool $eachHasContent,
         ?bool $eachHasEmbedding,
-        ?bool $eachHasHeadingContext = null
+        ?bool $eachHasHeadingContext = null,
+        ?bool $contentStartsWithHeading = null
     ): void {
         $chunks = $result->chunks ?? [];
         $count = count($chunks);
@@ -260,6 +261,15 @@ class Helpers
                 Assert::assertNull(
                     $chunk->metadata->heading_context ?? null,
                     sprintf("Chunk %d should have no heading_context", $i)
+                );
+            }
+        }
+        if ($contentStartsWithHeading === true) {
+            foreach ($chunks as $i => $chunk) {
+                Assert::assertStringStartsWith(
+                    '#',
+                    $chunk->content ?? '',
+                    sprintf("Chunk %d content should start with a heading (#)", $i)
                 );
             }
         }

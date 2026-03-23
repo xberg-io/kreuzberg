@@ -298,6 +298,15 @@ static void test_contract_config_chunking_no_headings(void) {
     kreuzberg_free_result(result);
 }
 
+static void test_contract_config_chunking_prepend_heading_context(void) {
+    if (skip_if_feature_unavailable("chunking")) return;
+    CExtractionResult *result = run_extraction("markdown/extraction_test.md", "{\"chunking\":{\"chunker_type\":\"markdown\",\"max_chars\":300,\"max_overlap\":50,\"prepend_heading_context\":true}}");
+    if (!result) return; /* skipped */
+    assert_min_content_length(result, 10);
+    assert_chunks(result, 1, 2, 0, 0);
+    kreuzberg_free_result(result);
+}
+
 static void test_contract_config_chunking_small(void) {
     if (skip_if_feature_unavailable("chunking")) return;
     CExtractionResult *result = run_extraction("pdf/fake_memo.pdf", "{\"chunking\":{\"max_chars\":100,\"max_overlap\":20}}");
@@ -686,6 +695,7 @@ int main(void) {
     test_contract_config_chunking_heading_context();
     test_contract_config_chunking_markdown();
     test_contract_config_chunking_no_headings();
+    test_contract_config_chunking_prepend_heading_context();
     test_contract_config_chunking_small();
     test_contract_config_chunking_text();
     test_contract_config_chunking_tokenizer();
