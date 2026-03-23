@@ -2748,6 +2748,10 @@ type ChunkingConfig struct {
 
 Chunking strategy type for text processing.
 
+- **Text** — Generic text splitter, splits on whitespace and punctuation
+- **Markdown** — Markdown-aware splitter, preserves formatting and structure
+- **MarkdownHeading** — Splits at heading boundaries, prepends heading hierarchy path to each chunk (e.g., `# Setup > ## Install`). Inspired by [Anthropic's Contextual Retrieval (2024)](https://www.anthropic.com/news/contextual-retrieval).
+
 #### Rust
 
 ```rust title="chunker_type.rs"
@@ -2756,6 +2760,7 @@ pub enum ChunkerType {
     #[default]
     Text,
     Markdown,
+    MarkdownHeading,
 }
 ```
 
@@ -2767,12 +2772,13 @@ from enum import Enum
 class ChunkerType(str, Enum):
     TEXT = "text"
     MARKDOWN = "markdown"
+    MARKDOWN_HEADING = "markdown_heading"
 ```
 
 #### TypeScript
 
 ```typescript title="chunker_type.ts"
-export type ChunkerType = "text" | "markdown";
+export type ChunkerType = "text" | "markdown" | "markdown_heading";
 ```
 
 #### Java
@@ -2780,7 +2786,8 @@ export type ChunkerType = "text" | "markdown";
 ```java title="ChunkerType.java"
 public enum ChunkerType {
     TEXT("text"),
-    MARKDOWN("markdown");
+    MARKDOWN("markdown"),
+    MARKDOWN_HEADING("markdown_heading");
 
     private final String value;
 
@@ -2800,8 +2807,9 @@ public enum ChunkerType {
 type ChunkerType string
 
 const (
-    ChunkerTypeText     ChunkerType = "text"
-    ChunkerTypeMarkdown ChunkerType = "markdown"
+    ChunkerTypeText            ChunkerType = "text"
+    ChunkerTypeMarkdown        ChunkerType = "markdown"
+    ChunkerTypeMarkdownHeading ChunkerType = "markdown_heading"
 )
 ```
 

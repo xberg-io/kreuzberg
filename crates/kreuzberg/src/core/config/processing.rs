@@ -13,12 +13,18 @@ use std::path::PathBuf;
 ///
 /// * `Text` - Generic text splitter, splits on whitespace and punctuation
 /// * `Markdown` - Markdown-aware splitter, preserves formatting and structure
+/// * `MarkdownHeading` - Splits at heading boundaries, prepends heading hierarchy
+///   path to each chunk (e.g., "# Setup > ## Install"). Inspired by Anthropic's
+///   Contextual Retrieval (2024) which showed 49% fewer retrieval failures when
+///   adding document context to chunks.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
 #[serde(rename_all = "lowercase")]
 pub enum ChunkerType {
     #[default]
     Text,
     Markdown,
+    #[serde(rename = "markdown_heading")]
+    MarkdownHeading,
 }
 
 /// How chunk size is measured.

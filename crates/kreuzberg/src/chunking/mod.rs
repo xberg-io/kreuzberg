@@ -15,6 +15,7 @@
 //!
 //! - **Text**: Generic text splitter, splits on whitespace and punctuation
 //! - **Markdown**: Markdown-aware splitter, preserves formatting and structure
+//! - **MarkdownHeading**: Splits at heading boundaries, prepends heading hierarchy path
 //!
 //! # Example
 //!
@@ -57,6 +58,7 @@ mod builder;
 pub mod config;
 pub mod core;
 mod headings;
+pub(crate) mod markdown_heading;
 pub mod processor;
 #[cfg(feature = "chunking-tokenizers")]
 mod tokenizer_cache;

@@ -61,6 +61,11 @@ pub fn chunk_text(
         validate_utf8_boundaries(text, boundaries)?;
     }
 
+    // MarkdownHeading creates new content (prepends heading path), so it can't use the generic &str splitter.
+    if config.chunker_type == ChunkerType::MarkdownHeading {
+        return super::markdown_heading::chunk_markdown_by_headings(text, config, page_boundaries);
+    }
+
     let text_chunks: Vec<&str> = match &config.sizing {
         #[cfg(feature = "chunking-tokenizers")]
         crate::core::config::ChunkSizing::Tokenizer { model, .. } => {
@@ -82,8 +87,8 @@ pub fn chunk_text(
 
     let mut chunks = build_chunks(text, text_chunks, page_boundaries)?;
 
-    // For Markdown chunker, resolve heading context for each chunk.
-    if config.chunker_type == ChunkerType::Markdown {
+    // For Markdown-based chunkers, resolve heading context for each chunk.
+    if matches!(config.chunker_type, ChunkerType::Markdown | ChunkerType::MarkdownHeading) {
         let heading_map = build_heading_map(text);
         if !heading_map.is_empty() {
             for chunk in &mut chunks {
@@ -105,7 +110,11 @@ fn split_with_config<'a, S: ChunkSizer>(
 ) -> Vec<&'a str> {
     match chunker_type {
         ChunkerType::Text => TextSplitter::new(config).chunks(text).collect(),
-        ChunkerType::Markdown => MarkdownSplitter::new(config).chunks(text).collect(),
+        ChunkerType::Markdown | ChunkerType::MarkdownHeading => {
+            // MarkdownHeading is handled via early return in chunk_text() before
+            // reaching this point. If we get here, fall back to MarkdownSplitter.
+            MarkdownSplitter::new(config).chunks(text).collect()
+        }
     }
 }
 
