@@ -118,6 +118,7 @@ pub fn get_mime_from_extension(extension: String) -> Option<String> {
         "svg" => Some("image/svg+xml".to_string()),
         "eml" => Some("message/rfc822".to_string()),
         "msg" => Some("application/vnd.ms-outlook".to_string()),
+        "pst" => Some("application/vnd.ms-outlook-pst".to_string()),
         "zip" => Some("application/zip".to_string()),
         "tar" => Some("application/x-tar".to_string()),
         "gz" => Some("application/gzip".to_string()),
