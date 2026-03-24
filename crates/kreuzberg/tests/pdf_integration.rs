@@ -10,7 +10,31 @@ mod helpers;
 
 use helpers::*;
 use kreuzberg::core::config::ExtractionConfig;
-use kreuzberg::{PdfConfig, extract_file_sync};
+use kreuzberg::{PdfConfig, extract_bytes_sync, extract_file_sync};
+
+/// Corrupted / garbage bytes passed as PDF must return a handled error, not panic.
+///
+/// This is a regression guard for issue #544: previously, malformed PDFs could
+/// trigger a Rust panic via `.unwrap()` / `.expect()` calls in the extraction
+/// path, crashing the host process when called through FFI (Python, Node, etc.).
+#[test]
+fn test_corrupted_pdf_returns_error_not_panic() {
+    let config = ExtractionConfig::default();
+
+    // Pure garbage — not even a PDF header.
+    let result = extract_bytes_sync(b"not a pdf", "application/pdf", &config);
+    assert!(result.is_err(), "Garbage bytes should return Err, not Ok");
+
+    // Truncated PDF header with no content.
+    let result = extract_bytes_sync(b"%PDF-1.4\n%%EOF", "application/pdf", &config);
+    assert!(result.is_err(), "Truncated PDF should return Err, not Ok");
+
+    // Binary noise with a valid-looking PDF header.
+    let mut noisy = b"%PDF-1.7\n".to_vec();
+    noisy.extend(std::iter::repeat(0xEFu8).take(256));
+    let result = extract_bytes_sync(&noisy, "application/pdf", &config);
+    assert!(result.is_err(), "Corrupt PDF body should return Err, not Ok");
+}
 
 #[test]
 fn test_pdf_password_protected_fails_gracefully() {
