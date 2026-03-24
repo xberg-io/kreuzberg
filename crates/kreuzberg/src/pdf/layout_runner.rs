@@ -306,9 +306,14 @@ pub fn detect_layout_for_document(
 
             TL_ENGINE.with(|cell| {
                 let mut engine_ref = cell.borrow_mut();
-                let tl_engine = engine_ref.get_or_insert_with(|| {
-                    LayoutEngine::from_config(engine_config.clone()).expect("thread-local LayoutEngine init failed")
-                });
+                if engine_ref.is_none() {
+                    let engine = LayoutEngine::from_config(engine_config.clone())
+                        .map_err(|e| format!("thread-local LayoutEngine init failed: {e}"))?;
+                    *engine_ref = Some(engine);
+                }
+                let tl_engine = engine_ref.as_mut().ok_or_else(|| {
+                    "thread-local LayoutEngine missing after init".to_string()
+                })?;
 
                 let inference_start = Instant::now();
                 let (detection, detect_timings) = tl_engine
