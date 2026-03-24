@@ -381,39 +381,99 @@ pub(crate) async fn extract_mixed_ocr_native(
         return Ok(native_text.to_string());
     }
 
-    // Convert 1-indexed page numbers to 0-indexed for rendering (deduplicated)
-    let page_indices: Vec<usize> = ocr_set.iter().map(|&p| p - 1).collect();
+    // Convert 1-indexed page numbers to 0-indexed for rendering (sorted + deduplicated)
+    let mut page_indices: Vec<usize> = ocr_set.iter().map(|&p| p - 1).collect();
+    page_indices.sort_unstable();
     let page_images = render_selected_pages_for_ocr(content, &page_indices)?;
 
-    // OCR each selected page individually and collect results by page number (1-indexed)
-    let mut ocr_results: std::collections::HashMap<usize, String> = std::collections::HashMap::new();
+    if page_images.is_empty() {
+        return Ok(native_text.to_string());
+    }
 
-    for (page_idx, image) in &page_images {
-        let page_num = page_idx + 1; // back to 1-indexed
-        let single_image = std::slice::from_ref(image);
-        let (text, _conf) = extract_with_ocr(
-            Some(content),
-            Some(single_image),
-            #[cfg(feature = "layout-detection")]
-            None,
-            config,
-            path,
-        )
-        .await?;
-        ocr_results.insert(page_num, text);
+    // OCR all selected pages concurrently using the same batched pipeline pattern
+    // as extract_with_ocr: rayon-parallel PNG encoding + tokio JoinSet OCR calls.
+    use image::ImageEncoder;
+    use image::codecs::png::PngEncoder;
+    use rayon::prelude::*;
+    use std::io::Cursor;
+    use std::sync::Arc;
+
+    let default_ocr_config = crate::core::config::OcrConfig::default();
+    let ocr_config = config.ocr.as_ref().unwrap_or(&default_ocr_config);
+
+    let backend = {
+        let registry = crate::plugins::registry::get_ocr_backend_registry();
+        let registry = registry.read();
+        registry.get(&ocr_config.backend)?
+    };
+
+    let batch_size = config
+        .concurrency
+        .as_ref()
+        .and_then(|c| c.max_threads)
+        .unwrap_or_else(|| num_cpus::get().min(4))
+        .max(1);
+
+    let ocr_config_owned = ocr_config.clone();
+    let total = page_images.len();
+    let mut ocr_results: std::collections::HashMap<usize, String> = std::collections::HashMap::with_capacity(total);
+
+    // Process in batches to bound peak memory (PNG buffers freed between batches)
+    for batch_start in (0..total).step_by(batch_size) {
+        let batch_end = (batch_start + batch_size).min(total);
+        let batch_slice = &page_images[batch_start..batch_end];
+
+        // Encode this batch's images to PNG in parallel (CPU-bound, rayon)
+        let encoded: crate::Result<Vec<(usize, Arc<Vec<u8>>)>> = batch_slice
+            .par_iter()
+            .map(|(page_idx, image)| {
+                let rgb = image.to_rgb8();
+                let (w, h) = rgb.dimensions();
+                let mut buf = Cursor::new(Vec::new());
+                PngEncoder::new(&mut buf)
+                    .write_image(&rgb, w, h, image::ColorType::Rgb8.into())
+                    .map_err(|e| crate::KreuzbergError::Parsing {
+                        message: format!("Failed to encode page {} for OCR: {}", page_idx + 1, e),
+                        source: None,
+                    })?;
+                Ok((*page_idx, Arc::new(buf.into_inner())))
+            })
+            .collect();
+        let encoded = encoded?;
+
+        // OCR this batch concurrently (tokio JoinSet)
+        let mut join_set = tokio::task::JoinSet::new();
+        for (page_idx, data) in &encoded {
+            let backend_clone = Arc::clone(&backend);
+            let config_clone = ocr_config_owned.clone();
+            let data_clone = Arc::clone(data);
+            let idx = *page_idx;
+            join_set.spawn(async move {
+                let result = backend_clone.process_image(&data_clone, &config_clone).await;
+                (idx, result)
+            });
+        }
+
+        while let Some(join_result) = join_set.join_next().await {
+            let (page_idx, result) = join_result.map_err(|e| crate::KreuzbergError::Plugin {
+                message: format!("OCR task panicked: {}", e),
+                plugin_name: "ocr".to_string(),
+            })?;
+            let extraction_result = result?;
+            ocr_results.insert(page_idx + 1, extraction_result.content); // 1-indexed
+        }
+        // encoded PNGs dropped here — memory freed before next batch
     }
 
     // Assemble final text by replacing OCR pages in-place within the native text.
-    // We preserve the original byte structure — native page slices keep their
-    // whitespace intact, and OCR results replace them without extra separators.
+    // Process boundaries in reverse byte order so offsets remain valid after replacement.
     let mut result = native_text.to_string();
 
-    // Process boundaries in reverse order so byte offsets remain valid after replacement
     let mut sorted_boundaries: Vec<&crate::types::PageBoundary> = boundaries
         .iter()
         .filter(|b| b.byte_end <= native_text.len() && b.byte_start <= b.byte_end)
         .collect();
-    sorted_boundaries.sort_by(|a, b| b.byte_start.cmp(&a.byte_start));
+    sorted_boundaries.sort_unstable_by(|a, b| b.byte_start.cmp(&a.byte_start));
 
     for boundary in sorted_boundaries {
         if let Some(ocr_text) = ocr_results.get(&boundary.page_number) {
