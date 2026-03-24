@@ -591,6 +591,24 @@ RSpec.describe 'contract fixtures' do
     end
   end
 
+  it 'config_force_ocr_pages' do
+    E2ERuby.skip_if_feature_unavailable('ocr')
+    E2ERuby.run_fixture(
+      'config_force_ocr_pages',
+      'pdf/fake_memo.pdf',
+      { force_ocr_pages: [1], ocr: { backend: 'tesseract', language: 'eng' } },
+      requirements: %w[ocr],
+      notes: nil,
+      skip_if_missing: true
+    ) do |result|
+      E2ERuby::Assertions.assert_expected_mime(
+        result,
+        ['application/pdf']
+      )
+      E2ERuby::Assertions.assert_min_content_length(result, 1)
+    end
+  end
+
   it 'config_html_options' do
     E2ERuby.run_fixture(
       'config_html_options',

@@ -875,6 +875,17 @@ pub fn parse_extraction_config(ruby: &Ruby, opts: Option<RHash>) -> Result<Extra
             config.force_ocr = bool::try_convert(val)?;
         }
 
+        if let Some(val) = get_kw(ruby, hash, "force_ocr_pages")
+            && val.equal(ruby.qnil()).ok() != Some(true)
+        {
+            let pages_array = magnus::RArray::try_convert(val)?;
+            let pages: Vec<usize> = pages_array
+                .into_iter()
+                .map(|v| usize::try_convert(v))
+                .collect::<Result<Vec<_>, _>>()?;
+            config.force_ocr_pages = Some(pages);
+        }
+
         if let Some(val) = get_kw(ruby, hash, "include_document_structure") {
             config.include_document_structure = bool::try_convert(val)?;
         }

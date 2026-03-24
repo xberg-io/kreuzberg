@@ -297,6 +297,97 @@ pub(crate) fn render_pages_for_ocr(content: &[u8]) -> crate::Result<Vec<image::D
     Ok(images)
 }
 
+/// Render only specific PDF pages to images for OCR processing.
+///
+/// `page_indices` are 0-indexed. Only the requested pages are rendered,
+/// returned as `(page_index, image)` pairs.
+#[cfg(feature = "ocr")]
+pub(crate) fn render_selected_pages_for_ocr(
+    content: &[u8],
+    page_indices: &[usize],
+) -> crate::Result<Vec<(usize, image::DynamicImage)>> {
+    use crate::pdf::rendering::{PageRenderOptions, PdfRenderer};
+
+    let renderer = PdfRenderer::new().map_err(|e| crate::KreuzbergError::Parsing {
+        message: format!("Failed to initialize PDF renderer: {}", e),
+        source: None,
+    })?;
+
+    let render_options = PageRenderOptions::default();
+    let mut images = Vec::with_capacity(page_indices.len());
+    for &idx in page_indices {
+        let image = renderer
+            .render_page_to_image(content, idx, &render_options)
+            .map_err(|e| crate::KreuzbergError::Parsing {
+                message: format!("Failed to render PDF page {}: {}", idx, e),
+                source: None,
+            })?;
+        images.push((idx, image));
+    }
+
+    Ok(images)
+}
+
+/// Build mixed text from native extraction and per-page OCR results.
+///
+/// For each page boundary, if the page is in `ocr_page_numbers` (1-indexed),
+/// use the OCR result; otherwise use the native text slice.
+#[cfg(feature = "ocr")]
+pub(crate) async fn extract_mixed_ocr_native(
+    native_text: &str,
+    boundaries: &[crate::types::PageBoundary],
+    ocr_page_numbers: &[usize],
+    content: &[u8],
+    config: &ExtractionConfig,
+    path: Option<&std::path::Path>,
+) -> crate::Result<String> {
+    use std::collections::HashSet;
+
+    let ocr_set: HashSet<usize> = ocr_page_numbers.iter().copied().collect();
+
+    // Convert 1-indexed page numbers to 0-indexed for rendering
+    let page_indices: Vec<usize> = ocr_page_numbers.iter().map(|&p| p.saturating_sub(1)).collect();
+    let page_images = render_selected_pages_for_ocr(content, &page_indices)?;
+
+    // OCR each selected page individually and collect results by page number (1-indexed)
+    let mut ocr_results: std::collections::HashMap<usize, String> = std::collections::HashMap::new();
+
+    for (page_idx, image) in &page_images {
+        let page_num = page_idx + 1; // back to 1-indexed
+        let single_image = std::slice::from_ref(image);
+        let (text, _conf) = extract_with_ocr(
+            Some(content),
+            Some(single_image),
+            #[cfg(feature = "layout-detection")]
+            None,
+            config,
+            path,
+        )
+        .await?;
+        ocr_results.insert(page_num, text);
+    }
+
+    // Assemble final text: use OCR for selected pages, native for the rest
+    let mut parts: Vec<String> = Vec::with_capacity(boundaries.len());
+    for boundary in boundaries {
+        if boundary.byte_end > native_text.len() || boundary.byte_start > boundary.byte_end {
+            continue;
+        }
+        if ocr_set.contains(&boundary.page_number) {
+            if let Some(ocr_text) = ocr_results.get(&boundary.page_number) {
+                parts.push(ocr_text.clone());
+            } else {
+                // Fallback to native if OCR failed for this page
+                parts.push(native_text[boundary.byte_start..boundary.byte_end].to_string());
+            }
+        } else {
+            parts.push(native_text[boundary.byte_start..boundary.byte_end].to_string());
+        }
+    }
+
+    Ok(parts.join("\n"))
+}
+
 /// Extract text from PDF using OCR on pre-rendered page images.
 ///
 /// When `layout_detections` are provided (pixel-space, from the same images),

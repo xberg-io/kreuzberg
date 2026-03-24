@@ -686,6 +686,27 @@ class ContractTest extends TestCase
     }
 
     /**
+     * Tests that force_ocr_pages config field is accepted for selective page OCR
+     */
+    public function test_config_force_ocr_pages(): void
+    {
+        $documentPath = Helpers::resolveDocument('pdf/fake_memo.pdf');
+        if (!file_exists($documentPath)) {
+            $this->markTestSkipped('Skipping config_force_ocr_pages: missing document at ' . $documentPath);
+        }
+
+        Helpers::skipIfFeatureUnavailable('ocr');
+
+        $config = Helpers::buildConfig(['force_ocr_pages' => [1], 'ocr' => ['backend' => 'tesseract', 'language' => 'eng']]);
+
+        $kreuzberg = new Kreuzberg($config);
+        $result = $kreuzberg->extractFile($documentPath);
+
+        Helpers::assertExpectedMime($result, ['application/pdf']);
+        Helpers::assertMinContentLength($result, 1);
+    }
+
+    /**
      * Tests extraction with HTML conversion options configured
      */
     public function test_config_html_options(): void

@@ -569,6 +569,21 @@ def test_config_force_ocr() -> None:
     helpers.assert_min_content_length(result, 5)
 
 
+def test_config_force_ocr_pages() -> None:
+    """Tests that force_ocr_pages config field is accepted for selective page OCR"""
+
+    document_path = helpers.resolve_document("pdf/fake_memo.pdf")
+    if not document_path.exists():
+        pytest.skip(f"Skipping config_force_ocr_pages: missing document at {document_path}")
+
+    config = helpers.build_config({"force_ocr_pages": [1], "ocr": {"backend": "tesseract", "language": "eng"}})
+
+    result = extract_file_sync(document_path, None, config)
+
+    helpers.assert_expected_mime(result, ["application/pdf"])
+    helpers.assert_min_content_length(result, 1)
+
+
 def test_config_html_options() -> None:
     """Tests extraction with HTML conversion options configured"""
 

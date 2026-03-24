@@ -767,6 +767,28 @@ defmodule E2E.ContractTest do
       end
     end
 
+    test "config_force_ocr_pages" do
+      case E2E.Helpers.run_fixture(
+             "config_force_ocr_pages",
+             "pdf/fake_memo.pdf",
+             %{force_ocr_pages: [1], ocr: %{backend: "tesseract", language: "eng"}},
+             requirements: ["ocr"],
+             notes: nil,
+             skip_if_missing: true
+           ) do
+        {:ok, result} ->
+          result
+          |> E2E.Helpers.assert_expected_mime(["application/pdf"])
+          |> E2E.Helpers.assert_min_content_length(1)
+
+        {:skipped, reason} ->
+          IO.puts("SKIPPED: #{reason}")
+
+        {:error, reason} ->
+          flunk("Extraction failed: #{inspect(reason)}")
+      end
+    end
+
     test "config_html_options" do
       case E2E.Helpers.run_fixture(
              "config_html_options",

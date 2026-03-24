@@ -2083,6 +2083,12 @@ public sealed class ExtractionConfig
     public bool? ForceOcr { get; init; }
 
     /// <summary>
+    /// List of 1-indexed page numbers to force OCR on. If null, uses the ForceOcr setting.
+    /// </summary>
+    [JsonPropertyName("force_ocr_pages")]
+    public IReadOnlyList<long>? ForceOcrPages { get; init; }
+
+    /// <summary>
     /// Text chunking configuration for splitting long documents. If null, chunking is disabled.
     /// </summary>
     [JsonPropertyName("chunking")]
@@ -3169,6 +3175,10 @@ public sealed class FileExtractionConfig
     /// <summary>Override force OCR for this file.</summary>
     [JsonPropertyName("force_ocr")]
     public bool? ForceOcr { get; init; }
+
+    /// <summary>List of 1-indexed page numbers to force OCR on for this file.</summary>
+    [JsonPropertyName("force_ocr_pages")]
+    public IReadOnlyList<long>? ForceOcrPages { get; init; }
 
     /// <summary>Override chunking configuration for this file.</summary>
     [JsonPropertyName("chunking")]

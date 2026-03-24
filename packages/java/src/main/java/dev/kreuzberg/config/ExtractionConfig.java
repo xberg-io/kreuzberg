@@ -8,7 +8,9 @@ import dev.kreuzberg.KreuzbergFFI;
 import java.io.IOException;
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -27,6 +29,7 @@ public final class ExtractionConfig {
 	private final boolean useCache;
 	private final boolean enableQualityProcessing;
 	private final boolean forceOcr;
+	private final List<Long> forceOcrPages;
 	private final boolean useCacheSet;
 	private final boolean enableQualityProcessingSet;
 	private final boolean forceOcrSet;
@@ -58,6 +61,7 @@ public final class ExtractionConfig {
 		this.useCache = builder.useCache;
 		this.enableQualityProcessing = builder.enableQualityProcessing;
 		this.forceOcr = builder.forceOcr;
+		this.forceOcrPages = builder.forceOcrPages;
 		this.useCacheSet = builder.useCacheSet;
 		this.enableQualityProcessingSet = builder.enableQualityProcessingSet;
 		this.forceOcrSet = builder.forceOcrSet;
@@ -100,6 +104,10 @@ public final class ExtractionConfig {
 
 	public boolean isForceOcr() {
 		return forceOcr;
+	}
+
+	public List<Long> getForceOcrPages() {
+		return forceOcrPages;
 	}
 
 	/**
@@ -505,6 +513,9 @@ public final class ExtractionConfig {
 		if (includeDefaults || forceOcrSet) {
 			map.put("force_ocr", forceOcr);
 		}
+		if (forceOcrPages != null) {
+			map.put("force_ocr_pages", forceOcrPages);
+		}
 		if (includeDefaults || includeDocumentStructureSet) {
 			map.put("include_document_structure", includeDocumentStructure);
 		}
@@ -588,6 +599,18 @@ public final class ExtractionConfig {
 		}
 		if (raw.containsKey("force_ocr")) {
 			builder.forceOcr(asBoolean(raw.get("force_ocr"), builder.forceOcr));
+		}
+		if (raw.containsKey("force_ocr_pages")) {
+			Object val = raw.get("force_ocr_pages");
+			if (val instanceof List) {
+				List<Long> pages = new ArrayList<>();
+				for (Object item : (List<?>) val) {
+					if (item instanceof Number) {
+						pages.add(((Number) item).longValue());
+					}
+				}
+				builder.forceOcrPages(pages);
+			}
 		}
 		if (raw.containsKey("include_document_structure")) {
 			builder.includeDocumentStructure(asBoolean(raw.get("include_document_structure"), false));
@@ -728,6 +751,7 @@ public final class ExtractionConfig {
 		private boolean useCache = true;
 		private boolean enableQualityProcessing = true;
 		private boolean forceOcr = false;
+		private List<Long> forceOcrPages = null;
 		private boolean includeDocumentStructure = false;
 		private boolean useCacheSet = false;
 		private boolean enableQualityProcessingSet = false;
@@ -773,6 +797,11 @@ public final class ExtractionConfig {
 		public Builder forceOcr(boolean forceOcr) {
 			this.forceOcr = forceOcr;
 			this.forceOcrSet = true;
+			return this;
+		}
+
+		public Builder forceOcrPages(List<Long> forceOcrPages) {
+			this.forceOcrPages = forceOcrPages;
 			return this;
 		}
 

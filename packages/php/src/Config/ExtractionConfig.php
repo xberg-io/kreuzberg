@@ -71,6 +71,17 @@ readonly class ExtractionConfig
         public bool $forceOcr = false,
 
         /**
+         * List of 1-indexed page numbers to force OCR on.
+         *
+         * When set, OCR is forced only for the specified pages. If null, the
+         * forceOcr setting applies to all pages.
+         *
+         * @var int[]|null
+         * @default null
+         */
+        public ?array $forceOcrPages = null,
+
+        /**
          * Text chunking configuration.
          *
          * Configures how extracted text is split into chunks for processing,
@@ -325,6 +336,18 @@ readonly class ExtractionConfig
             $forceOcr = (bool) $forceOcr;
         }
 
+        /** @var int[]|null $forceOcrPages */
+        $forceOcrPages = null;
+        if (isset($data['force_ocr_pages']) && is_array($data['force_ocr_pages'])) {
+            $pages = [];
+            foreach ($data['force_ocr_pages'] as $page) {
+                if (is_int($page)) {
+                    $pages[] = $page;
+                }
+            }
+            $forceOcrPages = $pages !== [] ? $pages : null;
+        }
+
         /** @var int|null $maxConcurrentExtractions */
         $maxConcurrentExtractions = $data['max_concurrent_extractions'] ?? null;
         if ($maxConcurrentExtractions !== null && !is_int($maxConcurrentExtractions)) {
@@ -489,6 +512,7 @@ readonly class ExtractionConfig
             enableQualityProcessing: $enableQualityProcessing,
             ocr: $ocr,
             forceOcr: $forceOcr,
+            forceOcrPages: $forceOcrPages,
             chunking: $chunking,
             images: $imageExtraction,
             pdfOptions: $pdf,
@@ -693,6 +717,10 @@ readonly class ExtractionConfig
         // forceOcr defaults to false, so only add if true
         if ($this->forceOcr) {
             $result['force_ocr'] = true;
+        }
+        // forceOcrPages defaults to null, so only add if set
+        if ($this->forceOcrPages !== null) {
+            $result['force_ocr_pages'] = $this->forceOcrPages;
         }
         // maxConcurrentExtractions defaults to null, so only add if set
         if ($this->maxConcurrentExtractions !== null) {

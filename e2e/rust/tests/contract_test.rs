@@ -1064,6 +1064,51 @@ fn test_config_force_ocr() {
 }
 
 #[test]
+fn test_config_force_ocr_pages() {
+    // Tests that force_ocr_pages config field is accepted for selective page OCR
+
+    let document_path = resolve_document("pdf/fake_memo.pdf");
+    if !document_path.exists() {
+        println!(
+            "Skipping config_force_ocr_pages: missing document at {}",
+            document_path.display()
+        );
+        return;
+    }
+    let config: ExtractionConfig = serde_json::from_str(
+        r#"{
+  "force_ocr_pages": [
+    1
+  ],
+  "ocr": {
+    "backend": "tesseract",
+    "language": "eng"
+  }
+}"#,
+    )
+    .expect("Fixture config should deserialize");
+
+    let result = match kreuzberg::extract_file_sync(&document_path, None, &config) {
+        Err(KreuzbergError::MissingDependency(dep)) => {
+            println!("Skipping config_force_ocr_pages: missing dependency {dep}", dep = dep);
+            return;
+        }
+        Err(KreuzbergError::UnsupportedFormat(fmt)) => {
+            println!(
+                "Skipping config_force_ocr_pages: unsupported format {fmt} (requires optional tool)",
+                fmt = fmt
+            );
+            return;
+        }
+        Err(err) => panic!("Extraction failed for config_force_ocr_pages: {err:?}"),
+        Ok(result) => result,
+    };
+
+    assertions::assert_expected_mime(&result, &["application/pdf"]);
+    assertions::assert_min_content_length(&result, 1);
+}
+
+#[test]
 fn test_config_html_options() {
     // Tests extraction with HTML conversion options configured
 

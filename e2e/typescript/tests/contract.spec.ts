@@ -941,6 +941,33 @@ describe("contract fixtures", () => {
 	);
 
 	it(
+		"config_force_ocr_pages",
+		() => {
+			const documentPath = resolveDocument("pdf/fake_memo.pdf");
+			if (!existsSync(documentPath)) {
+				console.warn("Skipping config_force_ocr_pages: missing document at", documentPath);
+				return;
+			}
+			const config = buildConfig({ force_ocr_pages: [1], ocr: { backend: "tesseract", language: "eng" } });
+			let result: ExtractionResult | null = null;
+			try {
+				result = extractFileSync(documentPath, null, config);
+			} catch (error) {
+				if (shouldSkipFixture(error, "config_force_ocr_pages", ["ocr"], undefined)) {
+					return;
+				}
+				throw error;
+			}
+			if (result === null) {
+				return;
+			}
+			assertions.assertExpectedMime(result, ["application/pdf"]);
+			assertions.assertMinContentLength(result, 1);
+		},
+		TEST_TIMEOUT_MS,
+	);
+
+	it(
 		"config_html_options",
 		() => {
 			const documentPath = resolveDocument("html/complex_table.html");

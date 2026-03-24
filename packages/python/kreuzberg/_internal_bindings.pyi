@@ -537,6 +537,7 @@ class ExtractionConfig:
     enable_quality_processing: bool
     ocr: OcrConfig | None
     force_ocr: bool
+    force_ocr_pages: list[int] | None
     chunking: ChunkingConfig | None
     images: ImageExtractionConfig | None
     pdf_options: PdfConfig | None
@@ -566,6 +567,7 @@ class ExtractionConfig:
         enable_quality_processing: bool | None = None,
         ocr: OcrConfig | None = None,
         force_ocr: bool | None = None,
+        force_ocr_pages: list[int] | None = None,
         chunking: ChunkingConfig | None = None,
         images: ImageExtractionConfig | None = None,
         pdf_options: PdfConfig | None = None,
@@ -604,6 +606,7 @@ class FileExtractionConfig:
     enable_quality_processing: bool | None
     ocr: OcrConfig | None
     force_ocr: bool | None
+    force_ocr_pages: list[int] | None
     chunking: ChunkingConfig | None
     images: ImageExtractionConfig | None
     pdf_options: PdfConfig | None
@@ -625,6 +628,7 @@ class FileExtractionConfig:
         enable_quality_processing: bool | None = None,
         ocr: OcrConfig | None = None,
         force_ocr: bool | None = None,
+        force_ocr_pages: list[int] | None = None,
         chunking: ChunkingConfig | None = None,
         images: ImageExtractionConfig | None = None,
         pdf_options: PdfConfig | None = None,

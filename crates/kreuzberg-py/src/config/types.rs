@@ -45,6 +45,7 @@ impl ExtractionConfig {
         enable_quality_processing=None,
         ocr=None,
         force_ocr=None,
+        force_ocr_pages=None,
         chunking=None,
         images=None,
         pdf_options=None,
@@ -72,6 +73,7 @@ impl ExtractionConfig {
         enable_quality_processing: Option<bool>,
         ocr: Option<OcrConfig>,
         force_ocr: Option<bool>,
+        force_ocr_pages: Option<Vec<usize>>,
         chunking: Option<ChunkingConfig>,
         images: Option<ImageExtractionConfig>,
         pdf_options: Option<PdfConfig>,
@@ -100,6 +102,7 @@ impl ExtractionConfig {
                 enable_quality_processing: enable_quality_processing.unwrap_or(true),
                 ocr: ocr.map(Into::into),
                 force_ocr: force_ocr.unwrap_or(false),
+                force_ocr_pages,
                 chunking: chunking.map(Into::into),
                 images: images.map(Into::into),
                 pdf_options: pdf_options.map(Into::into),
@@ -194,6 +197,16 @@ impl ExtractionConfig {
     #[setter]
     fn set_force_ocr(&mut self, value: bool) {
         self.inner.force_ocr = value;
+    }
+
+    #[getter]
+    fn force_ocr_pages(&self) -> Option<Vec<usize>> {
+        self.inner.force_ocr_pages.clone()
+    }
+
+    #[setter]
+    fn set_force_ocr_pages(&mut self, value: Option<Vec<usize>>) {
+        self.inner.force_ocr_pages = value;
     }
 
     #[getter]
@@ -2266,6 +2279,7 @@ impl FileExtractionConfig {
         enable_quality_processing=None,
         ocr=None,
         force_ocr=None,
+        force_ocr_pages=None,
         chunking=None,
         images=None,
         pdf_options=None,
@@ -2286,6 +2300,7 @@ impl FileExtractionConfig {
         enable_quality_processing: Option<bool>,
         ocr: Option<OcrConfig>,
         force_ocr: Option<bool>,
+        force_ocr_pages: Option<Vec<usize>>,
         chunking: Option<ChunkingConfig>,
         images: Option<ImageExtractionConfig>,
         pdf_options: Option<PdfConfig>,
@@ -2307,6 +2322,7 @@ impl FileExtractionConfig {
                 enable_quality_processing,
                 ocr: ocr.map(Into::into),
                 force_ocr,
+                force_ocr_pages,
                 chunking: chunking.map(Into::into),
                 images: images.map(Into::into),
                 pdf_options: pdf_options.map(Into::into),
@@ -2383,6 +2399,16 @@ impl FileExtractionConfig {
     #[setter]
     fn set_force_ocr(&mut self, value: Option<bool>) {
         self.inner.force_ocr = value;
+    }
+
+    #[getter]
+    fn force_ocr_pages(&self) -> Option<Vec<usize>> {
+        self.inner.force_ocr_pages.clone()
+    }
+
+    #[setter]
+    fn set_force_ocr_pages(&mut self, value: Option<Vec<usize>>) {
+        self.inner.force_ocr_pages = value;
     }
 
     #[getter]

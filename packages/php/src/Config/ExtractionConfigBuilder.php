@@ -30,6 +30,8 @@ class ExtractionConfigBuilder
     private bool $enableQualityProcessing = true;
     private ?OcrConfig $ocr = null;
     private bool $forceOcr = false;
+    /** @var int[]|null */
+    private ?array $forceOcrPages = null;
     private ?ChunkingConfig $chunking = null;
     private ?ImageExtractionConfig $images = null;
     private ?PdfConfig $pdfOptions = null;
@@ -92,6 +94,18 @@ class ExtractionConfigBuilder
     public function withForceOcr(bool $forceOcr): self
     {
         $this->forceOcr = $forceOcr;
+        return $this;
+    }
+
+    /**
+     * Set the list of page numbers to force OCR on.
+     *
+     * @param int[]|null $forceOcrPages 1-indexed page numbers to force OCR on
+     * @return self For method chaining
+     */
+    public function withForceOcrPages(?array $forceOcrPages): self
+    {
+        $this->forceOcrPages = $forceOcrPages;
         return $this;
     }
 
@@ -306,6 +320,7 @@ class ExtractionConfigBuilder
             enableQualityProcessing: $this->enableQualityProcessing,
             ocr: $this->ocr,
             forceOcr: $this->forceOcr,
+            forceOcrPages: $this->forceOcrPages,
             chunking: $this->chunking,
             images: $this->images,
             pdfOptions: $this->pdfOptions,

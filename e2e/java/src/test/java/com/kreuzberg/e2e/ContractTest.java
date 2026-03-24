@@ -859,6 +859,24 @@ public class ContractTest {
   }
 
   @Test
+  public void configForceOcrPages() throws Exception {
+    JsonNode config =
+        MAPPER.readTree(
+            "{\"force_ocr_pages\":[1],\"ocr\":{\"backend\":\"tesseract\",\"language\":\"eng\"}}");
+    E2EHelpers.runFixture(
+        "config_force_ocr_pages",
+        "pdf/fake_memo.pdf",
+        config,
+        Arrays.asList("ocr"),
+        null,
+        true,
+        result -> {
+          E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("application/pdf"));
+          E2EHelpers.Assertions.assertMinContentLength(result, 1);
+        });
+  }
+
+  @Test
   public void configHtmlOptions() throws Exception {
     JsonNode config = MAPPER.readTree("{\"html_options\":{\"include_links\":true}}");
     E2EHelpers.runFixture(

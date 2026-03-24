@@ -662,6 +662,26 @@ Deno.test("config_force_ocr", { permissions: { read: true, net: true } }, async 
 	assertions.assertMinContentLength(result, 5);
 });
 
+Deno.test("config_force_ocr_pages", { permissions: { read: true, net: true } }, async () => {
+	const config = buildConfig({ force_ocr_pages: [1], ocr: { backend: "tesseract", language: "eng" } });
+	let result: ExtractionResult | null = null;
+	try {
+		const documentBytes = await resolveDocument("pdf/fake_memo.pdf");
+		// Sync file extraction - WASM uses extractBytes with pre-read bytes
+		result = await extractBytes(documentBytes, "application/octet-stream", config);
+	} catch (error) {
+		if (shouldSkipFixture(error, "config_force_ocr_pages", ["ocr"], undefined)) {
+			return;
+		}
+		throw error;
+	}
+	if (result === null) {
+		return;
+	}
+	assertions.assertExpectedMime(result, ["application/pdf"]);
+	assertions.assertMinContentLength(result, 1);
+});
+
 Deno.test("config_html_options", { permissions: { read: true, net: true } }, async () => {
 	const config = buildConfig({ html_options: { include_links: true } });
 	let result: ExtractionResult | null = null;

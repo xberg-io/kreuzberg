@@ -84,6 +84,7 @@ type ExtractionConfig struct {
 	EnableQualityProcessing  *bool                    `json:"enable_quality_processing,omitempty"`
 	OCR                      *OCRConfig               `json:"ocr,omitempty"`
 	ForceOCR                 *bool                    `json:"force_ocr,omitempty"`
+	ForceOCRPages            *[]uint64                `json:"force_ocr_pages,omitempty"`
 	Chunking                 *ChunkingConfig          `json:"chunking,omitempty"`
 	Images                   *ImageExtractionConfig   `json:"images,omitempty"`
 	PdfOptions               *PdfConfig               `json:"pdf_options,omitempty"`
@@ -423,6 +424,7 @@ type FileExtractionConfig struct {
 	EnableQualityProcessing  *bool                    `json:"enable_quality_processing,omitempty"`
 	OCR                      *OCRConfig               `json:"ocr,omitempty"`
 	ForceOCR                 *bool                    `json:"force_ocr,omitempty"`
+	ForceOCRPages            *[]uint64                `json:"force_ocr_pages,omitempty"`
 	Chunking                 *ChunkingConfig          `json:"chunking,omitempty"`
 	Images                   *ImageExtractionConfig   `json:"images,omitempty"`
 	PdfOptions               *PdfConfig               `json:"pdf_options,omitempty"`

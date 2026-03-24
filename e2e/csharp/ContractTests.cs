@@ -473,6 +473,20 @@ namespace Kreuzberg.E2E.Contract
         }
 
         [SkippableFact]
+        public void ConfigForceOcrPages()
+        {
+            TestHelpers.SkipIfFeatureUnavailable("ocr");
+            TestHelpers.SkipIfLegacyOfficeDisabled("pdf/fake_memo.pdf");
+            TestHelpers.SkipIfOfficeTestOnWindows("pdf/fake_memo.pdf");
+            var documentPath = TestHelpers.EnsureDocument("pdf/fake_memo.pdf", true);
+            var config = TestHelpers.BuildConfig("{\"force_ocr_pages\":[1],\"ocr\":{\"backend\":\"tesseract\",\"language\":\"eng\"}}");
+
+            var result = KreuzbergClient.ExtractFileSync(documentPath, config);
+            TestHelpers.AssertExpectedMime(result, new[] { "application/pdf" });
+            TestHelpers.AssertMinContentLength(result, 1);
+        }
+
+        [SkippableFact]
         public void ConfigHtmlOptions()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("html/complex_table.html");

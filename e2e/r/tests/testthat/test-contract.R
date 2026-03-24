@@ -468,6 +468,20 @@ test_that("config_force_ocr", {
   assert_min_content_length(result, 5L)
 })
 
+test_that("config_force_ocr_pages", {
+  skip_if_feature_unavailable("ocr")
+  result <- run_fixture(
+    "config_force_ocr_pages",
+    "pdf/fake_memo.pdf",
+    list(force_ocr_pages = c(1L), ocr = list(backend = "tesseract", language = "eng")),
+    requirements = c("ocr"),
+    notes = NULL,
+    skip_if_missing = TRUE
+  )
+  assert_expected_mime(result, c("application/pdf"))
+  assert_min_content_length(result, 1L)
+})
+
 test_that("config_html_options", {
   result <- run_fixture(
     "config_html_options",

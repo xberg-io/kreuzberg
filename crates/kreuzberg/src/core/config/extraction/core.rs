@@ -47,6 +47,15 @@ pub struct ExtractionConfig {
     #[serde(default)]
     pub force_ocr: bool,
 
+    /// Force OCR on specific pages only (1-indexed page numbers).
+    ///
+    /// When set, only the listed pages are OCR'd regardless of text layer quality.
+    /// Unlisted pages use native text extraction. Ignored when `force_ocr` is `true`.
+    /// Only applies to PDF documents.
+    #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub force_ocr_pages: Option<Vec<usize>>,
+
     /// Text chunking configuration (None = chunking disabled)
     #[serde(default)]
     pub chunking: Option<ChunkingConfig>,
@@ -209,6 +218,7 @@ impl Default for ExtractionConfig {
             enable_quality_processing: true,
             ocr: None,
             force_ocr: false,
+            force_ocr_pages: None,
             chunking: None,
             images: None,
             #[cfg(feature = "pdf")]
@@ -268,6 +278,7 @@ impl ExtractionConfig {
             ref enable_quality_processing,
             ref ocr,
             ref force_ocr,
+            ref force_ocr_pages,
             ref chunking,
             ref images,
             #[cfg(feature = "pdf")]
@@ -298,6 +309,9 @@ impl ExtractionConfig {
         }
         if let Some(v) = force_ocr {
             config.force_ocr = *v;
+        }
+        if let Some(v) = force_ocr_pages {
+            config.force_ocr_pages = Some(v.clone());
         }
         if let Some(v) = chunking {
             config.chunking = Some(v.clone());

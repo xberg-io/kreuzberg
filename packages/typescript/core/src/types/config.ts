@@ -410,6 +410,7 @@ export interface ExtractionConfig {
 	enableQualityProcessing?: boolean;
 	ocr?: OcrConfig;
 	forceOcr?: boolean;
+	forceOcrPages?: number[];
 	chunking?: ChunkingConfig;
 	images?: ImageExtractionConfig;
 	pdfOptions?: PdfConfig;

@@ -334,6 +334,21 @@ func TestContractConfigForceOcr(t *testing.T) {
 	assertMinContentLength(t, result, 5)
 }
 
+func TestContractConfigForceOcrPages(t *testing.T) {
+	skipIfFeatureUnavailable(t, "ocr")
+	result := runExtraction(t, "pdf/fake_memo.pdf", []byte(`{
+"force_ocr_pages": [
+	1
+],
+"ocr": {
+	"backend": "tesseract",
+	"language": "eng"
+}
+}`))
+	assertExpectedMime(t, result, []string{"application/pdf"})
+	assertMinContentLength(t, result, 1)
+}
+
 func TestContractConfigHtmlOptions(t *testing.T) {
 	result := runExtraction(t, "html/complex_table.html", []byte(`{
 "html_options": {

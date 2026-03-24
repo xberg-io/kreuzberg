@@ -3,6 +3,7 @@ package dev.kreuzberg.config;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,6 +30,7 @@ public final class FileExtractionConfig {
 	private final Boolean enableQualityProcessing;
 	private final OcrConfig ocr;
 	private final Boolean forceOcr;
+	private final List<Long> forceOcrPages;
 	private final ChunkingConfig chunking;
 	private final ImageExtractionConfig images;
 	private final PdfConfig pdfOptions;
@@ -48,6 +50,7 @@ public final class FileExtractionConfig {
 		this.enableQualityProcessing = builder.enableQualityProcessing;
 		this.ocr = builder.ocr;
 		this.forceOcr = builder.forceOcr;
+		this.forceOcrPages = builder.forceOcrPages;
 		this.chunking = builder.chunking;
 		this.images = builder.images;
 		this.pdfOptions = builder.pdfOptions;
@@ -78,6 +81,10 @@ public final class FileExtractionConfig {
 
 	public Boolean getForceOcr() {
 		return forceOcr;
+	}
+
+	public List<Long> getForceOcrPages() {
+		return forceOcrPages;
 	}
 
 	public ChunkingConfig getChunking() {
@@ -160,6 +167,9 @@ public final class FileExtractionConfig {
 		if (forceOcr != null) {
 			map.put("force_ocr", forceOcr);
 		}
+		if (forceOcrPages != null) {
+			map.put("force_ocr_pages", forceOcrPages);
+		}
 		if (chunking != null) {
 			map.put("chunking", chunking.toMap());
 		}
@@ -222,6 +232,7 @@ public final class FileExtractionConfig {
 		private Boolean enableQualityProcessing;
 		private OcrConfig ocr;
 		private Boolean forceOcr;
+		private List<Long> forceOcrPages;
 		private ChunkingConfig chunking;
 		private ImageExtractionConfig images;
 		private PdfConfig pdfOptions;
@@ -244,6 +255,11 @@ public final class FileExtractionConfig {
 
 		public Builder ocr(OcrConfig ocr) {
 			this.ocr = ocr;
+			return this;
+		}
+
+		public Builder forceOcrPages(List<Long> forceOcrPages) {
+			this.forceOcrPages = forceOcrPages;
 			return this;
 		}
 
