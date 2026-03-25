@@ -1,4 +1,5 @@
 ---
+description: "ocr uackend plugin"
 name: ocr-backend-plugin
 ---
 Implement custom OCR backends

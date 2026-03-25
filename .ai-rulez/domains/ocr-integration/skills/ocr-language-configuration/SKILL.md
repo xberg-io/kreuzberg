@@ -1,4 +1,5 @@
 ---
+description: "ocr language configuration"
 name: ocr-language-configuration
 ---
 Configure OCR for multiple languages

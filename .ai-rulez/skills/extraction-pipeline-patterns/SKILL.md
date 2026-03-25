@@ -1,4 +1,5 @@
 ---
+description: "extraction pipeline patterns"
 name: extraction-pipeline-patterns
 priority: critical
 ---

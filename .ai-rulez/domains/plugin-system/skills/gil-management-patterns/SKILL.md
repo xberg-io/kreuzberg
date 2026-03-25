@@ -1,4 +1,5 @@
 ---
+description: "gil management patterns"
 name: gil-management-patterns
 ---
 Manage Python GIL efficiently

@@ -1,4 +1,7 @@
-______________________________________________________________________
+---
+description: "plugin architecture patterns"
+priority: critical
+---
 
 ## priority: critical
 

@@ -1,4 +1,5 @@
 ---
+description: "python ocr uackend integration"
 name: python-ocr-backend-integration
 ---
 Integrate EasyOCR and PaddleOCR via Python

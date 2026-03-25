@@ -1,4 +1,5 @@
 ---
+description: "image preprocessing pipeline"
 name: image-preprocessing-pipeline
 ---
 Prepare images for optimal OCR accuracy

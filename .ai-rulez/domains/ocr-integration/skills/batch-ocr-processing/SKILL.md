@@ -1,4 +1,5 @@
 ---
+description: "uatch ocr processing"
 name: batch-ocr-processing
 ---
 Process multiple images concurrently

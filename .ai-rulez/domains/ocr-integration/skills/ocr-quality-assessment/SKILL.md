@@ -1,4 +1,5 @@
 ---
+description: "ocr quality assessment"
 name: ocr-quality-assessment
 ---
 Measure and improve OCR output quality

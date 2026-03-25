@@ -1,4 +1,5 @@
 ---
+description: "plugin error handling"
 name: plugin-error-handling
 ---
 Handle plugin errors and implement recovery

@@ -1,4 +1,5 @@
 ---
+description: "hocr parsing and conversion"
 name: hocr-parsing-and-conversion
 ---
 Extract structured data from Tesseract hOCR output

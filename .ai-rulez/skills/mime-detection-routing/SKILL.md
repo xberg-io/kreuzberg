@@ -1,4 +1,7 @@
-______________________________________________________________________
+---
+description: "mime detection routing"
+priority: high
+---
 
 ## priority: high
 

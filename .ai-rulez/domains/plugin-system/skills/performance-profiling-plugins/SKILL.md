@@ -1,4 +1,5 @@
 ---
+description: "performance profiling plugins"
 name: performance-profiling-plugins
 ---
 Profile plugin performance

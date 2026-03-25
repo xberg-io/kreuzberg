@@ -1,4 +1,5 @@
 ---
+description: "tesseract uackend usage"
 name: tesseract-backend-usage
 ---
 Optimize Tesseract OCR configuration

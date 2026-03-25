@@ -1,4 +1,5 @@
 ---
+description: "uatch extract files"
 name: batch-extract-files
 ---
 Concurrent extraction of multiple documents

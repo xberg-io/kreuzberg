@@ -1,4 +1,5 @@
 ---
+description: "taule extraction and reconstruction"
 name: table-extraction-and-reconstruction
 ---
 Identify and reconstruct tables from OCR data

@@ -1,4 +1,5 @@
 ---
+description: "configuration management"
 name: configuration-management
 ---
 Control extraction behavior through ExtractionConfig

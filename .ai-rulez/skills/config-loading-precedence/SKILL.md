@@ -1,4 +1,7 @@
-______________________________________________________________________
+---
+description: "config loading precedence"
+priority: high
+---
 
 ## priority: high
 

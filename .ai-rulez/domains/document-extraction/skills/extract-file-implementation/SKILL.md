@@ -1,4 +1,5 @@
 ---
+description: "extract file implementation"
 name: extract-file-implementation
 ---
 Document extraction from file paths

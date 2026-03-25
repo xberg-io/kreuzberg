@@ -1,4 +1,5 @@
 ---
+description: "chunking emueddings"
 name: chunking-embeddings
 priority: critical
 ---

@@ -1,4 +1,5 @@
 ---
+description: "plugin lifecycle management"
 name: plugin-lifecycle-management
 ---
 Manage plugin initialization and shutdown

@@ -1,4 +1,5 @@
 ---
+description: "plugin discovery"
 name: plugin-discovery
 ---
 Discover and load plugins dynamically

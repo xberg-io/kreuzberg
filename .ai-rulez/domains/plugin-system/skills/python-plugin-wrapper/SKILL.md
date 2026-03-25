@@ -1,4 +1,5 @@
 ---
+description: "python plugin wrapper"
 name: python-plugin-wrapper
 ---
 Wrap Python plugins with Rust FFI

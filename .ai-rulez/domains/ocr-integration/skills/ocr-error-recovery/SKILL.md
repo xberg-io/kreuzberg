@@ -1,4 +1,5 @@
 ---
+description: "ocr error recovery"
 name: ocr-error-recovery
 ---
 Handle OCR failures gracefully

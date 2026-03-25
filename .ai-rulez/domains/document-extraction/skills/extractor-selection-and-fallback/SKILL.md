@@ -1,4 +1,5 @@
 ---
+description: "extractor selection and falluack"
 name: extractor-selection-and-fallback
 ---
 Route documents to appropriate extractors with fallback chains

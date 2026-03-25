@@ -49,16 +49,6 @@ struct LayoutDetectionBundle {
 fn run_layout_detection(content: &[u8], config: &ExtractionConfig) -> Option<LayoutDetectionBundle> {
     let layout_config = config.layout.as_ref()?;
 
-    // Only run for output formats that use the markdown pipeline.
-    let needs_structured = matches!(
-        config.output_format,
-        OutputFormat::Markdown | OutputFormat::Djot | OutputFormat::Html
-    );
-    if !needs_structured {
-        tracing::debug!("Layout detection skipped: output format does not use markdown pipeline");
-        return None;
-    }
-
     let mut engine = match crate::layout::take_or_create_engine(layout_config) {
         Ok(e) => e,
         Err(e) => {
@@ -101,14 +91,6 @@ fn run_layout_detection_on_images(
 ) -> Option<Vec<crate::layout::DetectionResult>> {
     let layout_config = config.layout.as_ref()?;
 
-    let needs_structured = matches!(
-        config.output_format,
-        OutputFormat::Markdown | OutputFormat::Djot | OutputFormat::Html
-    );
-    if !needs_structured {
-        return None;
-    }
-
     let mut engine = match crate::layout::take_or_create_engine(layout_config) {
         Ok(e) => e,
         Err(e) => {
@@ -149,13 +131,13 @@ async fn run_ocr_with_layout(
     content: &[u8],
     config: &ExtractionConfig,
     path: Option<&std::path::Path>,
-) -> crate::Result<String> {
+) -> crate::Result<(String, Vec<crate::types::Table>)> {
     let default_ocr_config = crate::core::config::OcrConfig::default();
     let ocr_config = config.ocr.as_ref().unwrap_or(&default_ocr_config);
 
     // Check for pipeline configuration
     if let Some(pipeline) = ocr_config.effective_pipeline() {
-        return ocr::run_ocr_pipeline(
+        let text = ocr::run_ocr_pipeline(
             Some(content),
             None, // No images rendered yet
             #[cfg(feature = "layout-detection")]
@@ -164,7 +146,8 @@ async fn run_ocr_with_layout(
             &pipeline,
             path,
         )
-        .await;
+        .await?;
+        return Ok((text, Vec::new()));
     }
 
     let images = ocr::render_pages_for_ocr(content)?;
@@ -172,7 +155,7 @@ async fn run_ocr_with_layout(
     #[cfg(feature = "layout-detection")]
     let layout_detections = run_layout_detection_on_images(&images, config);
 
-    let (text, _mean_conf) = extract_with_ocr(
+    let (text, _mean_conf, ocr_tables) = extract_with_ocr(
         Some(content),
         Some(&images),
         #[cfg(feature = "layout-detection")]
@@ -181,7 +164,7 @@ async fn run_ocr_with_layout(
         path,
     )
     .await?;
-    Ok(text)
+    Ok((text, ocr_tables))
 }
 
 /// PDF document extractor using pypdfium2 and playa-pdf.
@@ -273,7 +256,7 @@ impl PdfExtractor {
         let (
             mut pdf_metadata,
             native_text,
-            tables,
+            mut tables,
             page_contents,
             boundaries,
             pre_rendered_markdown,
@@ -442,8 +425,12 @@ impl PdfExtractor {
         };
 
         #[cfg(feature = "ocr")]
+        let mut ocr_tables: Vec<crate::types::Table> = Vec::new();
+        #[cfg(feature = "ocr")]
         let (text, used_ocr) = if config.force_ocr {
-            (run_ocr_with_layout(content, config, path).await?, true)
+            let (ocr_text, ocr_tbls) = run_ocr_with_layout(content, config, path).await?;
+            ocr_tables = ocr_tbls;
+            (ocr_text, true)
         } else if let Some(ref ocr_pages) = config.force_ocr_pages {
             if !ocr_pages.is_empty() {
                 if let Some(ref bounds) = boundaries {
@@ -541,7 +528,9 @@ impl PdfExtractor {
                 );
                 (native_text, false)
             } else if decision.fallback || has_font_encoding_issues {
-                (run_ocr_with_layout(content, config, path).await?, true)
+                let (ocr_text, ocr_tbls) = run_ocr_with_layout(content, config, path).await?;
+                ocr_tables = ocr_tbls;
+                (ocr_text, true)
             } else {
                 (native_text, false)
             }
@@ -551,6 +540,14 @@ impl PdfExtractor {
 
         #[cfg(not(feature = "ocr"))]
         let (text, used_ocr) = (native_text, false);
+
+        // Merge OCR-detected tables with native-extracted tables.
+        // When OCR was used, its TATR-detected tables may be more accurate for scanned pages.
+        #[cfg(feature = "ocr")]
+        if !ocr_tables.is_empty() {
+            tables.extend(ocr_tables);
+            tables.sort_by_key(|t| t.page_number);
+        }
 
         // Post-processing: use pre-rendered markdown from initial document load if available.
         // The markdown was rendered during the first document load to avoid redundant PDF parsing.

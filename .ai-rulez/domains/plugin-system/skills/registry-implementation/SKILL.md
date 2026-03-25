@@ -1,4 +1,5 @@
 ---
+description: "registry implementation"
 name: registry-implementation
 ---
 Build plugin registry systems

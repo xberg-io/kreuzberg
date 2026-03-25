@@ -1,4 +1,5 @@
 ---
+description: "mock plugin creation"
 name: mock-plugin-creation
 ---
 Create mock plugins for testing

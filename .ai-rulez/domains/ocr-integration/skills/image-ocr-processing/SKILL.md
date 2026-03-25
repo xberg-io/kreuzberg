@@ -1,4 +1,5 @@
 ---
+description: "image ocr processing"
 name: image-ocr-processing
 ---
 Process image documents with OCR

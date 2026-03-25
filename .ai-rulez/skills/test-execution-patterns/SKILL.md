@@ -1,4 +1,5 @@
 ---
+description: "test execution patterns"
 name: test-execution-patterns
 priority: critical
 ---

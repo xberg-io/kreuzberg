@@ -1,4 +1,5 @@
 ---
+description: "api server mcp"
 name: api-server-mcp
 priority: critical
 ---

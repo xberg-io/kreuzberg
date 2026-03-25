@@ -359,7 +359,7 @@ pub(crate) async fn extract_mixed_ocr_native(
     ocr_page_numbers: &[usize],
     content: &[u8],
     config: &ExtractionConfig,
-    path: Option<&std::path::Path>,
+    _path: Option<&std::path::Path>,
 ) -> crate::Result<String> {
     use std::collections::HashSet;
 
@@ -506,7 +506,7 @@ pub(crate) async fn extract_with_ocr(
     #[cfg(feature = "layout-detection")] layout_detections: Option<&[crate::layout::DetectionResult]>,
     config: &ExtractionConfig,
     path: Option<&std::path::Path>,
-) -> crate::Result<(String, Option<f64>)> {
+) -> crate::Result<(String, Option<f64>, Vec<crate::types::Table>)> {
     use crate::plugins::registry::get_ocr_backend_registry;
     use image::ImageEncoder;
     use image::codecs::png::PngEncoder;
@@ -576,7 +576,7 @@ pub(crate) async fn extract_with_ocr(
             .get("mean_text_conf")
             .and_then(|v| v.as_f64())
             .map(|v| v / 100.0);
-        return Ok((result.content, mean_conf));
+        return Ok((result.content, mean_conf, Vec::new()));
     }
 
     // Encode and OCR pages in bounded batches so that at most `batch_size`
@@ -669,6 +669,7 @@ pub(crate) async fn extract_with_ocr(
     };
 
     let mut page_texts = Vec::with_capacity(images_to_use.len());
+    let mut collected_tables: Vec<crate::types::Table> = Vec::new();
     let mut conf_sum: f64 = 0.0;
     let mut conf_count: usize = 0;
 
@@ -705,6 +706,45 @@ pub(crate) async fn extract_with_ocr(
                 }
                 _ => Vec::new(),
             };
+
+            // Collect recognized tables as Table structs for ExtractionResult.tables
+            for rt in &recognized_tables {
+                if !rt.markdown.is_empty() {
+                    // Parse markdown pipe-table into cells (rows x columns).
+                    // Skip separator rows (e.g. "| --- | :---: | ---: |") by checking
+                    // whether the content between pipes is exclusively dashes/colons/spaces.
+                    let cells: Vec<Vec<String>> = rt
+                        .markdown
+                        .lines()
+                        .filter(|line| {
+                            let trimmed = line.trim();
+                            if trimmed.is_empty() || !trimmed.contains('|') {
+                                return false;
+                            }
+                            // A separator row has only separator chars between pipes
+                            let inner = trimmed.trim_matches('|');
+                            !inner.split('|').all(|seg| {
+                                let s = seg.trim();
+                                !s.is_empty() && s.chars().all(|c| c == '-' || c == ':')
+                            })
+                        })
+                        .map(|line| {
+                            line.trim()
+                                .trim_matches('|')
+                                .split('|')
+                                .map(|cell| cell.trim().to_string())
+                                .collect()
+                        })
+                        .collect();
+
+                    collected_tables.push(crate::types::Table {
+                        cells,
+                        markdown: rt.markdown.clone(),
+                        page_number: page_idx + 1, // 1-indexed
+                        bounding_box: None, // Image-space bbox; PDF-space conversion requires page dimensions not available here
+                    });
+                }
+            }
 
             // Convert OcrElements to PageContent via unified adapter.
             let mut page_content = crate::pdf::markdown::adapters::from_ocr_elements(elements, height as f32);
@@ -812,7 +852,7 @@ pub(crate) async fn extract_with_ocr(
         }
         result.push_str(text);
     }
-    Ok((result, mean_text_conf))
+    Ok((result, mean_text_conf, collected_tables))
 }
 
 /// Run a multi-backend OCR pipeline with quality-based fallback.
@@ -898,7 +938,7 @@ pub(crate) async fn run_ocr_pipeline(
         .await;
 
         match result {
-            Ok((text, mean_conf)) => {
+            Ok((text, mean_conf, _stage_ocr_tables)) => {
                 let text_score = compute_quality_score(&text, &pipeline.quality_thresholds);
 
                 // Blend the heuristic text score with the native Tesseract mean_text_conf

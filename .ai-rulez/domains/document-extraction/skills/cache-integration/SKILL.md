@@ -1,4 +1,5 @@
 ---
+description: "cache integration"
 name: cache-integration
 ---
 Optimize extraction with content-based caching
