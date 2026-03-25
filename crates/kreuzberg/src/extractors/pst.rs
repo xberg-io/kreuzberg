@@ -78,16 +78,17 @@ impl SyncExtractor for PstExtractor {
                 attachments: attachment_names,
             };
 
-            (first.subject.clone(), Some(crate::types::FormatMetadata::Email(email_metadata)), first.date.clone())
+            (
+                first.subject.clone(),
+                Some(crate::types::FormatMetadata::Email(email_metadata)),
+                first.date.clone(),
+            )
         } else {
             (None, None, None)
         };
 
         let mut additional: AHashMap<Cow<'static, str>, serde_json::Value> = AHashMap::new();
-        additional.insert(
-            Cow::Borrowed("message_count"),
-            serde_json::json!(messages.len()),
-        );
+        additional.insert(Cow::Borrowed("message_count"), serde_json::json!(messages.len()));
 
         Ok(ExtractionResult {
             content: content_text,
@@ -177,7 +178,11 @@ impl DocumentExtractor for PstExtractor {
                 attachments: attachment_names,
             };
 
-            (first.subject.clone(), Some(crate::types::FormatMetadata::Email(email_metadata)), first.date.clone())
+            (
+                first.subject.clone(),
+                Some(crate::types::FormatMetadata::Email(email_metadata)),
+                first.date.clone(),
+            )
         } else {
             (None, None, None)
         };

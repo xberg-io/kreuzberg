@@ -184,6 +184,27 @@ fn push_heading_group(
         doc.add_child(*parent_idx, group_idx);
     }
 
+    // Insert a Heading child node inside the Group so downstream consumers
+    // can find headings via NodeContent::Heading (matches DOCX builder behavior).
+    let heading_index = doc.len() as u32;
+    let heading_node = DocumentNode {
+        id: NodeId::generate("heading", text, page, heading_index),
+        content: NodeContent::Heading {
+            level,
+            text: text.to_string(),
+        },
+        parent: Some(group_idx),
+        children: vec![],
+        content_layer: ContentLayer::Body,
+        page,
+        page_end: None,
+        bbox,
+        annotations: vec![],
+        attributes: None,
+    };
+    let heading_idx = doc.push_node(heading_node);
+    doc.nodes[group_idx.0 as usize].children.push(heading_idx);
+
     section_stack.push((level, group_idx));
 }
 
@@ -332,22 +353,53 @@ fn process_text_content(
 }
 
 /// Add paragraphs split on double newlines.
+///
+/// Detects markdown heading markers (`#` through `######`) and creates
+/// heading groups instead of plain paragraphs.
 fn add_paragraphs(doc: &mut DocumentStructure, section_stack: &[(u8, NodeIndex)], text: &str, page: Option<u32>) {
+    let mut local_stack: Vec<(u8, NodeIndex)> = section_stack.to_vec();
+
     for paragraph in text.split("\n\n").filter(|p| !p.trim().is_empty()) {
         let para_text = paragraph.trim();
         if para_text.is_empty() {
             continue;
         }
-        push_content_node(
-            doc,
-            section_stack,
-            NodeContent::Paragraph {
-                text: para_text.to_string(),
-            },
-            page,
-            None,
-        );
+
+        if let Some((level, heading_text)) = parse_markdown_heading(para_text) {
+            push_heading_group(doc, &mut local_stack, level, heading_text, page, None);
+        } else {
+            push_content_node(
+                doc,
+                &local_stack,
+                NodeContent::Paragraph {
+                    text: para_text.to_string(),
+                },
+                page,
+                None,
+            );
+        }
     }
+}
+
+/// Parse a markdown heading line into (level, text).
+fn parse_markdown_heading(line: &str) -> Option<(u8, &str)> {
+    let trimmed = line.trim();
+    if !trimmed.starts_with('#') {
+        return None;
+    }
+    let hashes = trimmed.bytes().take_while(|&b| b == b'#').count();
+    if hashes == 0 || hashes > 6 {
+        return None;
+    }
+    let rest = &trimmed[hashes..];
+    if !rest.is_empty() && !rest.starts_with(' ') {
+        return None;
+    }
+    let text = rest.trim();
+    if text.is_empty() {
+        return None;
+    }
+    Some((hashes as u8, text))
 }
 
 // ============================================================================
@@ -670,9 +722,14 @@ mod tests {
         let doc = transform_to_document_structure(&result);
         assert!(doc.validate().is_ok());
 
-        // H3 Group should be nested under H1 Group (no phantom H2)
-        assert_eq!(doc.nodes[0].children.len(), 1);
-        let h3_idx = doc.nodes[0].children[0];
+        // H1 Group should have 2 children: Heading("Title") + H3 Group
+        assert_eq!(doc.nodes[0].children.len(), 2);
+        let heading_idx = doc.nodes[0].children[0];
+        assert!(matches!(
+            doc.nodes[heading_idx.0 as usize].content,
+            NodeContent::Heading { level: 1, .. }
+        ));
+        let h3_idx = doc.nodes[0].children[1];
         assert_eq!(doc.nodes[h3_idx.0 as usize].parent, Some(NodeIndex(0)));
     }
 

@@ -28,12 +28,16 @@ builtins:
   - pyo3
   - typescript
   - napi-rs
+  - go
+  - java
   - ruby
   - magnus
   - php
   - ext-php-rs
+  - csharp
   - elixir
   - rustler
+  - r
   - wasm
   - security
   - git-workflow

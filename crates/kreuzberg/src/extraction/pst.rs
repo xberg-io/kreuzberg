@@ -80,7 +80,9 @@ pub fn extract_pst_messages(pst_data: &[u8]) -> Result<(Vec<EmailExtractionResul
 /// occurs when the full PST is first read into a `Vec<u8>` and then written
 /// back out to a tempfile before parsing.
 #[cfg(feature = "email")]
-pub(crate) fn extract_pst_from_path(path: &std::path::Path) -> Result<(Vec<EmailExtractionResult>, Vec<ProcessingWarning>)> {
+pub(crate) fn extract_pst_from_path(
+    path: &std::path::Path,
+) -> Result<(Vec<EmailExtractionResult>, Vec<ProcessingWarning>)> {
     extract_from_path(path)
 }
 
@@ -122,7 +124,10 @@ fn extract_from_path(path: &std::path::Path) -> Result<(Vec<EmailExtractionResul
                     Err(e) => {
                         warnings.push(ProcessingWarning {
                             source: Cow::Borrowed("pst_extraction"),
-                            message: Cow::Owned(format!("Failed to create entry ID for message node {:?}: {}", node, e)),
+                            message: Cow::Owned(format!(
+                                "Failed to create entry ID for message node {:?}: {}",
+                                node, e
+                            )),
                         });
                         continue;
                     }
@@ -186,10 +191,7 @@ fn extract_message_content(message: &dyn PstMessage) -> EmailExtractionResult {
     let plain_text = get_str_prop(props, 0x1000); // PR_BODY
     let html_content = get_str_prop(props, 0x1013); // PR_HTML (handles String or Binary via prop_value_to_string)
 
-    let cleaned_text = plain_text
-        .clone()
-        .or_else(|| html_content.clone())
-        .unwrap_or_default();
+    let cleaned_text = plain_text.clone().or_else(|| html_content.clone()).unwrap_or_default();
 
     let date = props.get(0x0E06).and_then(|v| {
         if let PropertyValue::Time(ft) = v {
@@ -279,10 +281,7 @@ fn extract_message_content(message: &dyn PstMessage) -> EmailExtractionResult {
 
 /// Get a string value from message properties by property ID.
 #[cfg(feature = "email")]
-fn get_str_prop(
-    props: &outlook_pst::messaging::message::MessageProperties,
-    prop_id: u16,
-) -> Option<String> {
+fn get_str_prop(props: &outlook_pst::messaging::message::MessageProperties, prop_id: u16) -> Option<String> {
     prop_value_to_string(props.get(prop_id)?)
 }
 

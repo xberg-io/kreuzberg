@@ -13,9 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Per-file batch extraction timeouts** (#546): New `extraction_timeout_secs` on `ExtractionConfig` (batch-level default) and `timeout_secs` on `FileExtractionConfig` (per-file override). Timeouts apply after semaphore acquisition. New `KreuzbergError::Timeout` variant with `elapsed_ms` and `limit_ms` fields. All binding layers updated.
 - **Page-level OCR overrides** (#432): New `force_ocr_pages` option (1-indexed) on both `ExtractionConfig` and `FileExtractionConfig`. Enables selective OCR on specific pages of mixed-quality PDFs while preserving native text on others.
+- **PST extraction support** (#502): Extract emails from Microsoft Outlook PST archives via the `outlook-pst` crate. Iterative depth-first folder traversal with depth cap of 50. Feature-gated under `email`.
+- **JSONL/NDJSON extraction** (#575): Native `.jsonl`/`.ndjson` extraction via `StructuredExtractor`. Registered as `application/x-ndjson` MIME type.
 
 ### Fixed
 
+- **DocumentStructure missing Heading nodes for PDFs**: `push_heading_group` now inserts a `Heading` child inside each `Group` node (matching DOCX builder behavior). Fallback `add_paragraphs` now detects markdown heading markers and creates heading groups instead of flat paragraphs.
 - **Layout detection returns empty tables on scanned PDFs** (#574): Three independent bugs caused `result.tables` to always be `[]` for scanned/image-based PDFs: (1) layout detection was gated behind a `needs_structured` output-format check, silently skipping detection for `Plain` (the default); (2) TATR-recognized tables in the OCR path were inlined as markdown text but never converted to `Table` structs; (3) `run_ocr_with_layout` returned only text, discarding table data. All three paths now propagate tables correctly.
 - **PDF layout engine panic on malformed input** (#544): Replaced the panicking `.expect()` inside the thread-local `LayoutEngine` initializer in `layout_runner.rs` with proper `Result`-based error propagation. A failure to initialise the layout engine now returns a descriptive error instead of crashing the host process via FFI (Python, Node, etc.).
 
