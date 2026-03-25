@@ -19,7 +19,9 @@ flowchart LR
 
     Ext --> Map{"Known\nextension?"}
     Map -->|Yes| Validate["Validate against\nsupported types"]
-    Map -->|No| Fallback["application/\noctet-stream"] --> Validate
+    Map -->|No| Guess["Try fallback detection\n(mime_guess)"]
+    Guess -->|Detected| Validate
+    Guess -->|Unknown| Fail
 
     Validate -->|Supported| OK(["✅ Use this\nMIME type"]):::good
     Validate -->|Unsupported| Fail(["❌ UnsupportedFormat\nerror"]):::bad
@@ -38,7 +40,7 @@ If you don't, Kreuzberg extracts the file extension and looks it up in an intern
 - **Dots stripped:** `.txt` becomes `txt`
 - **Last extension only:** `archive.tar.gz` uses `gz`, not `tar`
 
-```rust title="detect.rs"
+```rust title="detect.rs (simplified extension-map step)"
 let extension = path.extension()
     .and_then(|e| e.to_str())
     .unwrap_or("")
@@ -48,7 +50,7 @@ let mime_type = EXT_TO_MIME.get(extension.as_str())
     .ok_or(UnsupportedFormat)?;
 ```
 
-If the extension isn't in the map, the MIME type defaults to `application/octet-stream`.
+If the extension is not in the map, Kreuzberg attempts a secondary detection using `mime_guess`. If detection still fails, it returns `UnsupportedFormat`.
 
 ### Step 2: Validate
 
@@ -197,7 +199,7 @@ Three utility functions for working with MIME types programmatically:
 
 **Multiple extensions.** Only the last extension is used. `file.tar.gz` resolves to `application/gzip` (from `.gz`), not `application/x-tar`.
 
-**No extension.** Files without an extension (like `Makefile` or `Dockerfile`) default to `application/octet-stream`. You'll need to provide an explicit MIME type for these:
+**No extension.** Files without an extension (like `Makefile` or `Dockerfile`) often cannot be auto-detected. In that case, Kreuzberg returns an error and you should provide an explicit MIME type:
 
 ```python
 result = extract_file("Makefile", mime_type="text/plain", config=config)

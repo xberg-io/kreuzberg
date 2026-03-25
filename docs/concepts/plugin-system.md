@@ -267,7 +267,7 @@ The bridge handles type conversion between languages:
 | `String` | `str` | `string` |
 | Structs | Dataclasses | Plain objects |
 
-For large data like file bytes and image buffers, the bindings use buffer protocols to pass memory by reference rather than copying it. A Python plugin that receives `data: bytes` gets a zero-copy view into Rust-owned memory, not a duplicate.
+For large data like file bytes and image buffers, the bindings are designed to minimize copying and use buffer protocols where supported. A Python plugin may receive file data as `bytes` or another buffer-compatible type, depending on the binding implementation and runtime behavior.
 
 ---
 

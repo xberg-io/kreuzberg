@@ -203,8 +203,8 @@ The pipeline follows a deliberate error strategy: fail early for things the deve
 | MIME detection | `UnsupportedFormat` | Pipeline stops. The file type isn't supported. |
 | Format extraction | `ParsingError` | Pipeline stops. The file is corrupt or the format couldn't be parsed. |
 | Validators | `ValidationError` | Pipeline stops. The result didn't meet your defined requirements. |
-| Post-processors | Any exception | Error is logged. Pipeline continues. Result is returned without that transformation. |
-| System | `OSError`, `MemoryError` | Always propagated. These indicate infrastructure problems. |
+| Post-processors | Non-fatal processor error | Error is logged. Pipeline continues. Result is returned without that transformation. |
+| System | I/O failure, out-of-memory, or other system-level failure | Always propagated. These indicate infrastructure problems. |
 
 For the complete error taxonomy, see [Error Handling](../reference/errors.md).
 

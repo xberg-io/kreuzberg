@@ -74,7 +74,7 @@ with ThreadPoolExecutor() as executor:
 ```
 
 ```rust title="rust_parallel.rs"
-let results = batch_extract_file(&files, None, &config).await?;  # all cores
+let results = batch_extract_file(&files, None, &config).await?;  // all cores
 ```
 
 Batch extraction scales near-linearly with core count.
@@ -160,7 +160,7 @@ Extraction and OCR results are cached by a hash of file content + configuration.
 
 ### Batch Processing
 
-`batch_extract_file` distributes files across cores using Tokio's work-stealing scheduler. For 10 files, batch processing is typically ~6x faster than sequential extraction.
+In Python, `batch_extract_files` distributes files across cores through the Rust runtime. For 10 files, batch processing is typically ~6x faster than sequential extraction.
 
 ```python title="batch_vs_sequential.py"
 # Sequential: one at a time (~5s for 10 files)
@@ -168,7 +168,7 @@ for file in files:
     result = extract_file(file, config=config)
 
 # Batch: all cores working (~0.8s for 10 files)
-results = batch_extract_file(files, config=config)
+results = batch_extract_files(files, config=config)
 ```
 
 ### Lazy Initialization
