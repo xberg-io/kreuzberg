@@ -16,20 +16,21 @@ mod metadata;
 mod parsing;
 
 use crate::Result;
-use crate::core::config::ExtractionConfig;
+use crate::core::config::{ExtractionConfig, OutputFormat};
 use crate::plugins::{DocumentExtractor, Plugin};
 use crate::types::ExtractionResult;
 use crate::types::Metadata;
+use crate::types::ProcessingWarning;
 use ahash::AHashMap;
 use async_trait::async_trait;
 use std::borrow::Cow;
 use std::io::Cursor;
 use zip::ZipArchive;
 
-use content::extract_content;
 use content::extract_text_from_xhtml;
-use metadata::extract_metadata;
-use parsing::{parse_container_xml, read_file_from_zip, resolve_path};
+use content::read_body_documents;
+use metadata::{build_additional_metadata, parse_opf};
+use parsing::{parse_container_xml, read_file_from_zip};
 
 /// EPUB format extractor using permissive-licensed dependencies.
 ///
@@ -51,73 +52,133 @@ impl Default for EpubExtractor {
 }
 
 #[cfg(feature = "office")]
+struct RenderedSpineDocument {
+    content_fragment: String,
+    content_fully_converted: bool,
+    document: Option<crate::types::document_structure::DocumentStructure>,
+    warnings: Vec<ProcessingWarning>,
+}
+
+#[cfg(feature = "office")]
+fn trim_trailing_newlines(s: &str) -> &str {
+    s.trim_end_matches(['\n', '\r'])
+}
+
+#[cfg(feature = "office")]
 impl EpubExtractor {
-    /// Build a `DocumentStructure` from the EPUB spine.
-    ///
-    /// Uses the full HTML structure walker for each chapter's XHTML, preserving
-    /// inline formatting annotations (bold, italic, links, etc.) and proper
-    /// element types (lists, tables, code blocks).
-    ///
-    /// Accepts the already-parsed `spine_hrefs` from content extraction to avoid
-    /// redundantly re-reading and re-parsing the OPF file from the ZIP archive.
+    fn build_fallback_document_structure(
+        document: &content::EpubSpineDocument,
+        index: usize,
+    ) -> crate::types::document_structure::DocumentStructure {
+        use crate::types::builder::DocumentStructureBuilder;
+
+        let mut builder = DocumentStructureBuilder::new().source_format("epub");
+        let chapter_title =
+            extract_title_from_xhtml(&document.xhtml).unwrap_or_else(|| format!("Chapter {}", index + 1));
+        builder.push_heading(1, &chapter_title, None, None);
+
+        let text = extract_text_from_xhtml(&document.xhtml);
+        for paragraph in text.split("\n\n") {
+            let trimmed = paragraph.trim();
+            if !trimmed.is_empty() {
+                builder.push_paragraph(trimmed, vec![], None, None);
+            }
+        }
+
+        builder.build()
+    }
+
+    /// Render a spine document once.
+    fn render_spine_document(
+        document: &content::EpubSpineDocument,
+        index: usize,
+        config: &ExtractionConfig,
+    ) -> RenderedSpineDocument {
+        let wants_markup = matches!(config.output_format, OutputFormat::Markdown | OutputFormat::Djot);
+        let mut warnings = Vec::new();
+
+        let (content_fragment, content_fully_converted) = if wants_markup {
+            match crate::extraction::html::convert_html_to_markdown_with_metadata(
+                &document.xhtml,
+                config.html_options.clone(),
+                Some(config.output_format),
+            ) {
+                Ok((converted, _)) => (trim_trailing_newlines(&converted).to_string(), true),
+                Err(err) => {
+                    warnings.push(ProcessingWarning {
+                        source: std::borrow::Cow::Borrowed("epub"),
+                        message: std::borrow::Cow::Owned(format!(
+                            "XHTML conversion failed for spine item '{}'; falling back to plain text: {}",
+                            document.file_path, err
+                        )),
+                    });
+                    (extract_text_from_xhtml(&document.xhtml).trim_end().to_string(), false)
+                }
+            }
+        } else {
+            (extract_text_from_xhtml(&document.xhtml).trim_end().to_string(), true)
+        };
+
+        let document = if config.include_document_structure {
+            let chapter_structure = crate::extraction::html::structure::build_document_structure(&document.xhtml);
+
+            if chapter_structure.nodes.is_empty() {
+                warnings.push(ProcessingWarning {
+                    source: std::borrow::Cow::Borrowed("epub"),
+                    message: std::borrow::Cow::Owned(format!(
+                        "Document structure extraction produced no nodes for spine item '{}'; falling back to plain-text structure",
+                        document.file_path
+                    )),
+                });
+                Some(Self::build_fallback_document_structure(document, index))
+            } else {
+                Some(chapter_structure)
+            }
+        } else {
+            None
+        };
+
+        RenderedSpineDocument {
+            content_fragment,
+            content_fully_converted,
+            document,
+            warnings,
+        }
+    }
+
     fn build_document_structure(
-        archive: &mut ZipArchive<Cursor<Vec<u8>>>,
-        spine_hrefs: &[String],
-        manifest_dir: &str,
+        rendered_documents: &[RenderedSpineDocument],
     ) -> Option<crate::types::document_structure::DocumentStructure> {
         use crate::types::builder::DocumentStructureBuilder;
 
         let mut builder = DocumentStructureBuilder::new().source_format("epub");
+        let mut has_nodes = false;
 
-        for (index, href) in spine_hrefs.iter().enumerate() {
-            let file_path = resolve_path(manifest_dir, href);
-            let xhtml_content = match read_file_from_zip(archive, &file_path) {
-                Ok(content) => content,
-                Err(_) => continue,
+        for rendered in rendered_documents {
+            let Some(chapter_structure) = &rendered.document else {
+                continue;
             };
 
-            // Use the HTML structure walker for rich extraction (inline formatting,
-            // links, lists, etc.) from each chapter's XHTML content.
-            let sanitized = content::strip_doctype_for_title(&xhtml_content);
-            let chapter_structure = crate::extraction::html::structure::build_document_structure(&sanitized);
-
-            if chapter_structure.nodes.is_empty() {
-                // Fallback: extract plain text if structure walker produces nothing
-                let chapter_title =
-                    extract_title_from_xhtml(&xhtml_content).unwrap_or_else(|| format!("Chapter {}", index + 1));
-                builder.push_heading(1, &chapter_title, None, None);
-
-                let text = extract_text_from_xhtml(&xhtml_content);
-                for paragraph in text.split("\n\n") {
-                    let trimmed = paragraph.trim();
-                    if !trimmed.is_empty() {
-                        builder.push_paragraph(trimmed, vec![], None, None);
-                    }
-                }
-            } else {
-                // Merge the chapter's nodes into our combined structure.
-                // Use push_raw with the node's content layer to preserve structure.
-                for node in &chapter_structure.nodes {
-                    builder.push_raw(
-                        node.content.clone(),
-                        None,
-                        None,
-                        node.content_layer,
-                        node.annotations.clone(),
-                    );
-                }
+            for node in &chapter_structure.nodes {
+                has_nodes = true;
+                builder.push_raw(
+                    node.content.clone(),
+                    None,
+                    None,
+                    node.content_layer,
+                    node.annotations.clone(),
+                );
             }
         }
 
-        Some(builder.build())
+        if has_nodes { Some(builder.build()) } else { None }
     }
 }
 
 /// Extract the first heading text from XHTML content.
 #[cfg(feature = "office")]
 fn extract_title_from_xhtml(xhtml: &str) -> Option<String> {
-    // Strip DOCTYPE for roxmltree
-    let sanitized = content::strip_doctype_for_title(xhtml);
+    let sanitized = content::normalize_xhtml(xhtml);
     let doc = roxmltree::Document::parse(&sanitized).ok()?;
 
     for node in doc.root().descendants() {
@@ -203,11 +264,30 @@ impl DocumentExtractor for EpubExtractor {
         };
 
         let opf_xml = read_file_from_zip(&mut archive, &opf_path)?;
-
-        let (extracted_content, fully_converted, processing_warnings, spine_hrefs) =
-            extract_content(&mut archive, &opf_path, &manifest_dir, config)?;
-
-        let (epub_metadata, additional_metadata) = extract_metadata(&opf_xml)?;
+        let package = parse_opf(&opf_xml, &manifest_dir)?;
+        let additional_metadata = build_additional_metadata(&package.metadata);
+        let (documents, mut processing_warnings) = read_body_documents(&mut archive, &package)?;
+        let mut rendered_documents = Vec::with_capacity(documents.len());
+        for (index, document) in documents.iter().enumerate() {
+            let mut rendered = Self::render_spine_document(document, index, config);
+            processing_warnings.append(&mut rendered.warnings);
+            rendered_documents.push(rendered);
+        }
+        let mut extracted_content = String::new();
+        for rendered in &rendered_documents {
+            if !rendered.content_fragment.is_empty() {
+                if !extracted_content.is_empty() && !extracted_content.ends_with('\n') {
+                    extracted_content.push('\n');
+                }
+                extracted_content.push_str(&rendered.content_fragment);
+                extracted_content.push('\n');
+            }
+        }
+        let extracted_content = trim_trailing_newlines(&extracted_content).to_string();
+        let fully_converted = matches!(config.output_format, OutputFormat::Markdown | OutputFormat::Djot)
+            && rendered_documents
+                .iter()
+                .all(|rendered| rendered.content_fully_converted);
         let metadata_map: AHashMap<Cow<'static, str>, serde_json::Value> = additional_metadata
             .into_iter()
             .map(|(k, v)| (Cow::Owned(k), v))
@@ -227,7 +307,7 @@ impl DocumentExtractor for EpubExtractor {
 
         // Build document structure from spine chapters (only when requested)
         let document = if config.include_document_structure {
-            Self::build_document_structure(&mut archive, &spine_hrefs, &manifest_dir)
+            Self::build_document_structure(&rendered_documents)
         } else {
             None
         };
@@ -236,10 +316,10 @@ impl DocumentExtractor for EpubExtractor {
             content: extracted_content,
             mime_type: mime_type.to_string().into(),
             metadata: Metadata {
-                title: epub_metadata.title,
-                authors: epub_metadata.creator.map(|c| vec![c]),
-                language: epub_metadata.language,
-                created_at: epub_metadata.date,
+                title: package.metadata.title,
+                authors: package.metadata.creator.map(|c| vec![c]),
+                language: package.metadata.language,
+                created_at: package.metadata.date,
                 additional: metadata_map,
                 output_format: pre_formatted,
                 ..Default::default()
@@ -337,7 +417,9 @@ mod tests {
   </spine>
 </package>"#;
 
-        let (epub_meta, additional) = metadata::extract_metadata(opf).expect("Metadata parse failed");
+        let package = metadata::parse_opf(opf, "").expect("Metadata parse failed");
+        let epub_meta = package.metadata;
+        let additional = metadata::build_additional_metadata(&epub_meta);
         assert_eq!(epub_meta.title, Some("Test Book".to_string()));
         assert_eq!(epub_meta.coverage, Some("Worldwide".to_string()));
         assert_eq!(epub_meta.format, Some("application/epub+zip".to_string()));

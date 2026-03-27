@@ -6,100 +6,245 @@
 //! For `OutputFormat::Markdown` / `OutputFormat::Djot`, this converts XHTML through the HTML
 //! conversion pipeline so structural elements (like headings) are preserved.
 
-use crate::Result;
-use crate::core::config::{ExtractionConfig, OutputFormat};
 use crate::types::ProcessingWarning;
+use ahash::AHashSet;
+use std::cmp::Ordering;
 use std::io::Cursor;
 use zip::ZipArchive;
 
-use super::metadata::parse_opf;
-use super::parsing::{read_file_from_zip, resolve_path};
+use super::metadata::{EpubPackageDocument, ManifestItem};
+use super::parsing::read_file_from_zip;
 
-fn trim_trailing_newlines(s: &str) -> &str {
-    s.trim_end_matches(['\n', '\r'])
+#[derive(Debug, Clone)]
+/// A resolved XHTML spine document prepared for EPUB extraction.
+///
+/// The stored XHTML is sanitized so all downstream extraction paths see the
+/// same body content: packaging prelude is removed, and specialized navigation
+/// sections are stripped when they should not surface in extracted text.
+pub(super) struct EpubSpineDocument {
+    pub(super) file_path: String,
+    pub(super) xhtml: String,
 }
 
-/// Extract text content from an EPUB document by reading in spine order.
-///
-/// Returns `(content, fully_converted, warnings, spine_hrefs)` where `spine_hrefs`
-/// are the already-parsed spine item paths, available for reuse by callers (e.g.
-/// `build_document_structure`) without re-reading/re-parsing the OPF file.
-pub(super) fn extract_content(
+/// Read all body documents from the EPUB archive and downgrade per-item I/O
+/// failures into processing warnings.
+pub(super) fn read_body_documents(
     archive: &mut ZipArchive<Cursor<Vec<u8>>>,
-    opf_path: &str,
-    manifest_dir: &str,
-    config: &ExtractionConfig,
-) -> Result<(String, bool, Vec<ProcessingWarning>, Vec<String>)> {
-    let opf_xml = read_file_from_zip(archive, opf_path)?;
-    let (_, spine_hrefs) = parse_opf(&opf_xml)?;
+    package: &EpubPackageDocument,
+) -> crate::Result<(Vec<EpubSpineDocument>, Vec<ProcessingWarning>)> {
+    let mut documents = Vec::new();
+    let mut warnings = Vec::new();
 
-    let mut content = String::new();
-    let wants_markup = matches!(config.output_format, OutputFormat::Markdown | OutputFormat::Djot);
-    let mut warnings: Vec<ProcessingWarning> = Vec::new();
-    let mut had_markup_fallback = false;
+    for spine_item in &package.spine_items {
+        let Some(source_item) = package.manifest.get(&spine_item.idref) else {
+            warnings.push(ProcessingWarning {
+                source: std::borrow::Cow::Borrowed("epub"),
+                message: std::borrow::Cow::Owned(format!(
+                    "Spine item '{}' references a missing manifest entry",
+                    spine_item.idref
+                )),
+            });
+            continue;
+        };
 
-    for (index, href) in spine_hrefs.iter().enumerate() {
-        let file_path = resolve_path(manifest_dir, href);
+        let render_item = match resolve_renderable_manifest_item(package, &spine_item.idref) {
+            Ok(render_item) => render_item,
+            Err(err) => {
+                warnings.push(ProcessingWarning {
+                    source: std::borrow::Cow::Borrowed("epub"),
+                    message: std::borrow::Cow::Owned(format!(
+                        "Skipping spine item '{}' (href '{}'): {}",
+                        spine_item.idref, source_item.raw_href, err
+                    )),
+                });
+                continue;
+            }
+        };
+
+        let file_path =
+            render_item
+                .resolved_path()
+                .map(str::to_owned)
+                .map_err(|message| crate::KreuzbergError::Parsing {
+                    message: format!(
+                        "Unsafe manifest href for spine item '{}' (href '{}'): {}",
+                        spine_item.idref, render_item.raw_href, message
+                    ),
+                    source: None,
+                })?;
+        let guide_toc_candidate = source_item
+            .path
+            .as_deref()
+            .is_some_and(|path| package.is_guide_toc_candidate_path(path))
+            || render_item
+                .path
+                .as_deref()
+                .is_some_and(|path| package.is_guide_toc_candidate_path(path));
 
         match read_file_from_zip(archive, &file_path) {
-            Ok(xhtml_content) => {
-                // Preserve structural elements like headings by converting XHTML → Markdown/Djot
-                // using the same conversion pipeline as the HTML extractor. Use the API variant
-                // that disables YAML/frontmatter injection.
-                let extracted = if wants_markup {
-                    match crate::extraction::html::convert_html_to_markdown_with_metadata(
-                        &xhtml_content,
-                        config.html_options.clone(),
-                        Some(config.output_format),
-                    ) {
-                        Ok((converted, _)) => converted,
-                        Err(err) => {
-                            had_markup_fallback = true;
-                            warnings.push(ProcessingWarning {
-                                source: std::borrow::Cow::Borrowed("epub"),
-                                message: std::borrow::Cow::Owned(format!(
-                                    "XHTML conversion failed for spine item '{}'; falling back to plain text: {}",
-                                    file_path, err
-                                )),
-                            });
-                            extract_text_from_xhtml(&xhtml_content)
-                        }
-                    }
-                } else {
-                    // Default: plain text extraction (no markup syntax).
-                    extract_text_from_xhtml(&xhtml_content)
-                };
+            Ok(raw_xhtml) => {
+                let normalized_xhtml = normalize_xhtml(&raw_xhtml);
+                let render_xhtml = strip_specialized_navigation_sections(&strip_document_head(&normalized_xhtml));
 
-                let extracted = if wants_markup {
-                    trim_trailing_newlines(&extracted)
-                } else {
-                    extracted.trim_end()
-                };
-
-                if !extracted.is_empty() {
-                    if index > 0 && !content.ends_with('\n') {
-                        content.push('\n');
-                    }
-                    content.push_str(extracted);
-                    content.push('\n');
+                if guide_toc_candidate && looks_like_navigation_document(&render_xhtml) {
+                    continue;
                 }
+
+                if extract_text_from_xhtml(&render_xhtml).is_empty() {
+                    continue;
+                }
+
+                documents.push(EpubSpineDocument {
+                    file_path,
+                    xhtml: render_xhtml,
+                });
             }
             Err(err) => {
                 warnings.push(ProcessingWarning {
                     source: std::borrow::Cow::Borrowed("epub"),
                     message: std::borrow::Cow::Owned(format!(
-                        "Failed to read spine item '{}' from EPUB archive: {}",
-                        file_path, err
+                        "Failed to read body spine item '{}' (idref '{}') from EPUB archive: {}",
+                        file_path, spine_item.idref, err
                     )),
                 });
-                continue;
             }
         }
     }
 
-    let content = trim_trailing_newlines(&content).to_string();
-    let fully_converted = wants_markup && !had_markup_fallback;
-    Ok((content, fully_converted, warnings, spine_hrefs))
+    Ok((documents, warnings))
+}
+
+fn resolve_renderable_manifest_item<'a>(
+    package: &'a EpubPackageDocument,
+    start_idref: &str,
+) -> Result<&'a ManifestItem, String> {
+    let mut current_id = start_idref;
+    let mut visited = AHashSet::new();
+
+    loop {
+        if !visited.insert(current_id.to_string()) {
+            return Err(format!("manifest fallback cycle detected at '{}'", current_id));
+        }
+
+        let Some(item) = package.manifest.get(current_id) else {
+            return Err(format!("missing manifest entry '{}'", current_id));
+        };
+
+        if item.is_renderable_body_document() {
+            return Ok(item);
+        }
+
+        let Some(next_id) = item.fallback.as_deref() else {
+            let media_type = item.media_type.as_deref().unwrap_or("unknown");
+            return Err(format!(
+                "no renderable XHTML/DTBook fallback found for media type '{}'",
+                media_type
+            ));
+        };
+
+        current_id = next_id;
+    }
+}
+
+fn strip_xml_elements<F>(xhtml: &str, mut predicate: F) -> String
+where
+    F: FnMut(roxmltree::Node<'_, '_>) -> bool,
+{
+    let Ok(doc) = roxmltree::Document::parse(xhtml) else {
+        return xhtml.to_string();
+    };
+
+    let mut ranges = doc
+        .descendants()
+        .filter(|node| node.is_element())
+        .filter(|node| predicate(*node))
+        .map(|node| node.range())
+        .collect::<Vec<_>>();
+
+    if ranges.is_empty() {
+        return xhtml.to_string();
+    }
+
+    ranges.sort_by(|left, right| match left.start.cmp(&right.start) {
+        Ordering::Equal => right.end.cmp(&left.end),
+        order => order,
+    });
+
+    let mut stripped = String::with_capacity(xhtml.len());
+    let mut cursor = 0usize;
+    for range in ranges {
+        if range.start < cursor {
+            continue;
+        }
+        stripped.push_str(&xhtml[cursor..range.start]);
+        cursor = range.end;
+    }
+    stripped.push_str(&xhtml[cursor..]);
+    stripped
+}
+
+fn strip_document_head(xhtml: &str) -> String {
+    strip_xml_elements(xhtml, |node| node.tag_name().name().eq_ignore_ascii_case("head"))
+}
+
+fn strip_specialized_navigation_sections(xhtml: &str) -> String {
+    strip_xml_elements(xhtml, |node| {
+        node.tag_name().name().eq_ignore_ascii_case("nav") && is_specialized_navigation_node(node)
+    })
+}
+
+fn is_specialized_navigation_node(node: roxmltree::Node<'_, '_>) -> bool {
+    node.attributes().any(|attr| {
+        attr.name().eq_ignore_ascii_case("type")
+            && attr
+                .value()
+                .split_ascii_whitespace()
+                .any(|value| matches!(value.to_ascii_lowercase().as_str(), "toc" | "landmarks" | "page-list"))
+    })
+}
+
+fn looks_like_navigation_document(xhtml: &str) -> bool {
+    let Ok(doc) = roxmltree::Document::parse(xhtml) else {
+        return false;
+    };
+
+    let mut link_count = 0usize;
+    let mut list_item_count = 0usize;
+    let mut paragraph_count = 0usize;
+    let mut heading_or_title_mentions_contents = false;
+
+    for node in doc.descendants().filter(|node| node.is_element()) {
+        match node.tag_name().name().to_ascii_lowercase().as_str() {
+            "nav"
+                if node.attributes().any(|attr| {
+                    attr.name().eq_ignore_ascii_case("type")
+                        && attr
+                            .value()
+                            .split_ascii_whitespace()
+                            .any(|value| value.eq_ignore_ascii_case("toc"))
+                }) =>
+            {
+                return true;
+            }
+            "a" => link_count += 1,
+            "li" => list_item_count += 1,
+            "p" => paragraph_count += 1,
+            "title" | "h1" | "h2"
+                if node.text().is_some_and(|text| {
+                    matches!(
+                        text.trim().to_ascii_lowercase().as_str(),
+                        "contents" | "table of contents"
+                    )
+                }) =>
+            {
+                heading_or_title_mentions_contents = true;
+            }
+            _ => {}
+        }
+    }
+
+    (link_count >= 2 && list_item_count >= 2 && paragraph_count <= 1)
+        || (heading_or_title_mentions_contents && link_count >= 2)
 }
 
 /// Block-level HTML/XHTML elements that should produce newlines before/after their content.
@@ -162,21 +307,20 @@ const SKIP_ELEMENTS: &[&str] = &[
 /// at block-level element boundaries.
 pub(super) fn extract_text_from_xhtml(xhtml: &str) -> String {
     // Try direct XML tree traversal first (lossless path).
-    if let Some((text, _)) = try_extract_via_roxmltree(xhtml) {
+    if let Some(text) = try_extract_via_roxmltree(xhtml) {
         return text;
     }
 
     // Fallback: strip HTML tags character-by-character.
-    strip_html_tags(xhtml)
+    let normalized = normalize_xhtml(xhtml);
+    strip_html_tags(&normalized)
 }
 
 /// Attempt to extract plain text via `roxmltree` XML parsing.
 ///
 /// Returns `None` if the document cannot be parsed as XML/XHTML.
-fn try_extract_via_roxmltree(xhtml: &str) -> Option<(String, bool)> {
-    // Remove DOCTYPE declaration to avoid XXE/DTD parsing issues with roxmltree.
-    // roxmltree rejects DTDs for security, so we strip them before parsing.
-    let sanitized = strip_doctype(xhtml);
+fn try_extract_via_roxmltree(xhtml: &str) -> Option<String> {
+    let sanitized = normalize_xhtml(xhtml);
 
     match roxmltree::Document::parse(&sanitized) {
         Ok(doc) => {
@@ -189,75 +333,62 @@ fn try_extract_via_roxmltree(xhtml: &str) -> Option<(String, bool)> {
             let result = collapse_blank_lines(&output);
             let result = result.trim().to_string();
 
-            if result.is_empty() { None } else { Some((result, true)) }
+            if result.is_empty() { None } else { Some(result) }
         }
         Err(_) => None,
     }
 }
 
-/// Re-export of `strip_doctype` for use in `mod.rs` title extraction.
-pub(super) fn strip_doctype_for_title(xml: &str) -> String {
-    strip_doctype(xml)
+/// Normalize XHTML so downstream HTML/XHTML processing sees chapter markup
+/// without EPUB packaging prelude.
+///
+/// This strips XML declarations and doctypes, which are valid in EPUB chapter
+/// files but should not surface in extracted Markdown or interfere with safe parsing.
+pub(super) fn normalize_xhtml(xml: &str) -> String {
+    strip_xml_prelude(xml)
 }
 
-/// Remove DOCTYPE declaration from XML/XHTML to allow safe parsing with roxmltree.
+/// Remove XML declarations and DOCTYPE declarations from XML/XHTML.
 ///
-/// DTD declarations can cause security issues (XXE attacks), and roxmltree rejects them.
-/// This function safely removes the DOCTYPE declaration while preserving the rest of the document.
-fn strip_doctype(xml: &str) -> String {
-    // Find and remove <!DOCTYPE ...> declarations. We need to handle nested brackets
-    // in the DOCTYPE (e.g., <!DOCTYPE html [internal subset]>)
-    let mut result = String::new();
-    let mut in_doctype = false;
-    let mut bracket_depth = 0;
+/// EPUB chapter files often begin with an XML declaration followed by a DOCTYPE.
+/// Those are packaging details, not body content, and `roxmltree` rejects DTDs.
+fn strip_xml_prelude(xml: &str) -> String {
+    let mut rest = xml.trim_start();
 
-    let mut chars = xml.chars().peekable();
+    loop {
+        if let Some(tail) = rest.strip_prefix("<?xml")
+            && let Some(end) = tail.find("?>")
+        {
+            rest = tail[end + 2..].trim_start();
+            continue;
+        }
 
-    while let Some(ch) = chars.next() {
-        if !in_doctype && ch == '<' {
-            // Check if this starts a DOCTYPE
-            let start_pos = result.len();
-            result.push(ch);
+        if let Some(tail) = rest.strip_prefix("<!DOCTYPE")
+            && let Some(end) = find_doctype_end(tail)
+        {
+            rest = tail[end + 1..].trim_start();
+            continue;
+        }
 
-            if chars.peek() == Some(&'!') {
-                result.push(chars.next().unwrap());
-                let next_chars: String = chars.clone().take(7).collect();
-                if next_chars.starts_with("DOCTYPE") {
-                    // This is a DOCTYPE declaration, skip it
-                    in_doctype = true;
-                    bracket_depth = 0;
-                    // Consume the DOCTYPE keyword and everything up to the closing >
-                    for c in chars.by_ref() {
-                        if c == '[' {
-                            bracket_depth += 1;
-                        } else if c == ']' {
-                            bracket_depth -= 1;
-                        } else if c == '>' && bracket_depth == 0 {
-                            in_doctype = false;
-                            break;
-                        }
-                    }
-                    // Remove what we added to result (the '<!')
-                    result.truncate(start_pos);
-                } else {
-                    // Not a DOCTYPE, keep what we added
-                }
-            }
-        } else if in_doctype {
-            // Already in a DOCTYPE, continue consuming
-            if ch == '[' {
-                bracket_depth += 1;
-            } else if ch == ']' {
-                bracket_depth -= 1;
-            } else if ch == '>' && bracket_depth == 0 {
-                in_doctype = false;
-            }
-        } else {
-            result.push(ch);
+        break;
+    }
+
+    rest.to_string()
+}
+
+fn find_doctype_end(tail: &str) -> Option<usize> {
+    let mut bracket_depth: usize = 0;
+
+    for (idx, ch) in tail.char_indices() {
+        match ch {
+            '[' => bracket_depth += 1,
+            ']' => bracket_depth = bracket_depth.saturating_sub(1),
+            '>' if bracket_depth == 0 => return Some(idx),
+            _ => {}
         }
     }
 
-    result
+    None
 }
 
 /// Recursively visit an XML node and append its text to `output`.

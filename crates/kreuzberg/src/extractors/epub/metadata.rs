@@ -5,7 +5,9 @@
 
 use crate::Result;
 use roxmltree;
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
+
+use super::parsing::resolve_path;
 
 /// Metadata extracted from OPF (Open Packaging Format) file
 #[derive(Debug, Default, Clone)]
@@ -27,11 +29,234 @@ pub(super) struct OepbMetadata {
     pub(super) cover_image_href: Option<String>,
 }
 
-/// Extract metadata from EPUB OPF file
-pub(super) fn extract_metadata(opf_xml: &str) -> Result<(OepbMetadata, BTreeMap<String, serde_json::Value>)> {
-    let mut additional_metadata = BTreeMap::new();
+#[derive(Debug, Clone)]
+pub(super) struct EpubPackageDocument {
+    pub(super) metadata: OepbMetadata,
+    pub(super) manifest: BTreeMap<String, ManifestItem>,
+    pub(super) spine_items: Vec<EpubSpineItem>,
+    guide_toc_paths: BTreeSet<String>,
+}
 
-    let (epub_metadata, _) = parse_opf(opf_xml)?;
+impl EpubPackageDocument {
+    pub(super) fn is_guide_toc_candidate_path(&self, path: &str) -> bool {
+        self.guide_toc_paths.contains(path)
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+/// A spine entry extracted from the OPF package document.
+pub(super) struct EpubSpineItem {
+    pub(super) idref: String,
+}
+
+#[derive(Debug, Clone)]
+/// Manifest metadata used to enrich spine entries after OPF parsing.
+pub(super) struct ManifestItem {
+    pub(super) raw_href: String,
+    pub(super) path: Option<String>,
+    path_resolution_error: Option<String>,
+    pub(super) media_type: Option<String>,
+    pub(super) fallback: Option<String>,
+}
+
+impl ManifestItem {
+    pub(super) fn is_renderable_body_document(&self) -> bool {
+        matches!(
+            self.media_type.as_deref(),
+            Some("application/xhtml+xml") | Some("application/x-dtbook+xml")
+        ) || self.media_type.is_none() && has_renderable_extension(&self.raw_href)
+    }
+
+    pub(super) fn resolved_path(&self) -> std::result::Result<&str, String> {
+        self.path.as_deref().ok_or_else(|| {
+            self.path_resolution_error
+                .clone()
+                .unwrap_or_else(|| format!("unable to resolve manifest href '{}'", self.raw_href))
+        })
+    }
+}
+
+fn has_renderable_extension(href: &str) -> bool {
+    let href = href
+        .split_once('#')
+        .map(|(path, _)| path)
+        .unwrap_or(href)
+        .rsplit('/')
+        .next()
+        .unwrap_or(href);
+
+    href.rsplit_once('.')
+        .map(|(_, ext)| {
+            matches!(
+                ext.to_ascii_lowercase().as_str(),
+                "xhtml" | "html" | "htm" | "xml" | "dtbook"
+            )
+        })
+        .unwrap_or(false)
+}
+
+/// Parse OPF file and extract metadata and spine order
+pub(super) fn parse_opf(xml: &str, opf_dir: &str) -> Result<EpubPackageDocument> {
+    match roxmltree::Document::parse(xml) {
+        Ok(doc) => {
+            let root = doc.root();
+
+            let mut package = EpubPackageDocument {
+                metadata: OepbMetadata::default(),
+                manifest: BTreeMap::new(),
+                spine_items: Vec::new(),
+                guide_toc_paths: BTreeSet::new(),
+            };
+            let mut manifest: BTreeMap<String, ManifestItem> = BTreeMap::new();
+
+            for node in root.descendants() {
+                match node.tag_name().name() {
+                    "title" => {
+                        if let Some(text) = node.text() {
+                            package.metadata.title = Some(text.trim().to_string());
+                        }
+                    }
+                    "creator" => {
+                        if let Some(text) = node.text() {
+                            package.metadata.creator = Some(text.trim().to_string());
+                        }
+                    }
+                    "date" => {
+                        if let Some(text) = node.text() {
+                            package.metadata.date = Some(text.trim().to_string());
+                        }
+                    }
+                    "language" => {
+                        if let Some(text) = node.text() {
+                            package.metadata.language = Some(text.trim().to_string());
+                        }
+                    }
+                    "identifier" => {
+                        if let Some(text) = node.text() {
+                            package.metadata.identifier = Some(text.trim().to_string());
+                        }
+                    }
+                    "publisher" => {
+                        if let Some(text) = node.text() {
+                            package.metadata.publisher = Some(text.trim().to_string());
+                        }
+                    }
+                    "subject" => {
+                        if let Some(text) = node.text() {
+                            package.metadata.subject = Some(text.trim().to_string());
+                        }
+                    }
+                    "description" => {
+                        if let Some(text) = node.text() {
+                            package.metadata.description = Some(text.trim().to_string());
+                        }
+                    }
+                    "rights" => {
+                        if let Some(text) = node.text() {
+                            package.metadata.rights = Some(text.trim().to_string());
+                        }
+                    }
+                    "coverage" => {
+                        if let Some(text) = node.text() {
+                            package.metadata.coverage = Some(text.trim().to_string());
+                        }
+                    }
+                    "format" => {
+                        if let Some(text) = node.text() {
+                            package.metadata.format = Some(text.trim().to_string());
+                        }
+                    }
+                    "relation" => {
+                        if let Some(text) = node.text() {
+                            package.metadata.relation = Some(text.trim().to_string());
+                        }
+                    }
+                    "source" => {
+                        if let Some(text) = node.text() {
+                            package.metadata.source = Some(text.trim().to_string());
+                        }
+                    }
+                    "type" => {
+                        if let Some(text) = node.text() {
+                            package.metadata.dc_type = Some(text.trim().to_string());
+                        }
+                    }
+                    "item" => {
+                        if let Some(id) = node.attribute("id")
+                            && let Some(href) = node.attribute("href")
+                        {
+                            let (path, path_resolution_error) = match resolve_path(opf_dir, href) {
+                                Ok(resolved_href) => (Some(resolved_href.path), None),
+                                Err(err) => (None, Some(err.to_string())),
+                            };
+                            manifest.insert(
+                                id.to_string(),
+                                ManifestItem {
+                                    raw_href: href.to_string(),
+                                    path,
+                                    path_resolution_error,
+                                    media_type: node.attribute("media-type").map(ToString::to_string),
+                                    fallback: node.attribute("fallback").map(ToString::to_string),
+                                },
+                            );
+                        }
+                    }
+                    "reference" => {
+                        if node
+                            .attribute("type")
+                            .is_some_and(|kind| kind.eq_ignore_ascii_case("toc"))
+                            && let Some(href) = node.attribute("href")
+                        {
+                            let resolved_href = resolve_path(opf_dir, href)?;
+                            package.guide_toc_paths.insert(resolved_href.path);
+                        }
+                    }
+                    _ => {}
+                }
+            }
+
+            // Find cover image via <meta name="cover" content="item-id"/>
+            let mut cover_item_id = None;
+            for node in root.descendants() {
+                if node.tag_name().name() == "meta"
+                    && node.attribute("name") == Some("cover")
+                    && let Some(content) = node.attribute("content")
+                {
+                    cover_item_id = Some(content.to_string());
+                    break;
+                }
+            }
+
+            if let Some(cover_id) = cover_item_id
+                && let Some(href) = manifest.get(&cover_id)
+                && let Ok(path) = href.resolved_path()
+            {
+                package.metadata.cover_image_href = Some(path.to_string());
+            }
+
+            for node in root.descendants() {
+                if node.tag_name().name() == "itemref"
+                    && let Some(idref) = node.attribute("idref")
+                {
+                    package.spine_items.push(EpubSpineItem {
+                        idref: idref.to_string(),
+                    });
+                }
+            }
+
+            package.manifest = manifest;
+            Ok(package)
+        }
+        Err(e) => Err(crate::KreuzbergError::Parsing {
+            message: format!("Failed to parse OPF file: {}", e),
+            source: None,
+        }),
+    }
+}
+
+/// Convert parsed EPUB metadata into the extractor's generic metadata map.
+pub(super) fn build_additional_metadata(epub_metadata: &OepbMetadata) -> BTreeMap<String, serde_json::Value> {
+    let mut additional_metadata = BTreeMap::new();
 
     if let Some(ref identifier) = epub_metadata.identifier {
         additional_metadata.insert("identifier".to_string(), serde_json::json!(identifier.clone()));
@@ -77,134 +302,5 @@ pub(super) fn extract_metadata(opf_xml: &str) -> Result<(OepbMetadata, BTreeMap<
         additional_metadata.insert("cover_image".to_string(), serde_json::json!(cover_href.clone()));
     }
 
-    Ok((epub_metadata, additional_metadata))
-}
-
-/// Parse OPF file and extract metadata and spine order
-pub(super) fn parse_opf(xml: &str) -> Result<(OepbMetadata, Vec<String>)> {
-    match roxmltree::Document::parse(xml) {
-        Ok(doc) => {
-            let root = doc.root();
-
-            let mut metadata = OepbMetadata::default();
-            let mut manifest: BTreeMap<String, String> = BTreeMap::new();
-            let mut spine_order: Vec<String> = Vec::new();
-
-            for node in root.descendants() {
-                match node.tag_name().name() {
-                    "title" => {
-                        if let Some(text) = node.text() {
-                            metadata.title = Some(text.trim().to_string());
-                        }
-                    }
-                    "creator" => {
-                        if let Some(text) = node.text() {
-                            metadata.creator = Some(text.trim().to_string());
-                        }
-                    }
-                    "date" => {
-                        if let Some(text) = node.text() {
-                            metadata.date = Some(text.trim().to_string());
-                        }
-                    }
-                    "language" => {
-                        if let Some(text) = node.text() {
-                            metadata.language = Some(text.trim().to_string());
-                        }
-                    }
-                    "identifier" => {
-                        if let Some(text) = node.text() {
-                            metadata.identifier = Some(text.trim().to_string());
-                        }
-                    }
-                    "publisher" => {
-                        if let Some(text) = node.text() {
-                            metadata.publisher = Some(text.trim().to_string());
-                        }
-                    }
-                    "subject" => {
-                        if let Some(text) = node.text() {
-                            metadata.subject = Some(text.trim().to_string());
-                        }
-                    }
-                    "description" => {
-                        if let Some(text) = node.text() {
-                            metadata.description = Some(text.trim().to_string());
-                        }
-                    }
-                    "rights" => {
-                        if let Some(text) = node.text() {
-                            metadata.rights = Some(text.trim().to_string());
-                        }
-                    }
-                    "coverage" => {
-                        if let Some(text) = node.text() {
-                            metadata.coverage = Some(text.trim().to_string());
-                        }
-                    }
-                    "format" => {
-                        if let Some(text) = node.text() {
-                            metadata.format = Some(text.trim().to_string());
-                        }
-                    }
-                    "relation" => {
-                        if let Some(text) = node.text() {
-                            metadata.relation = Some(text.trim().to_string());
-                        }
-                    }
-                    "source" => {
-                        if let Some(text) = node.text() {
-                            metadata.source = Some(text.trim().to_string());
-                        }
-                    }
-                    "type" => {
-                        if let Some(text) = node.text() {
-                            metadata.dc_type = Some(text.trim().to_string());
-                        }
-                    }
-                    "item" => {
-                        if let Some(id) = node.attribute("id")
-                            && let Some(href) = node.attribute("href")
-                        {
-                            manifest.insert(id.to_string(), href.to_string());
-                        }
-                    }
-                    _ => {}
-                }
-            }
-
-            // Find cover image via <meta name="cover" content="item-id"/>
-            let mut cover_item_id = None;
-            for node in root.descendants() {
-                if node.tag_name().name() == "meta"
-                    && node.attribute("name") == Some("cover")
-                    && let Some(content) = node.attribute("content")
-                {
-                    cover_item_id = Some(content.to_string());
-                    break;
-                }
-            }
-
-            if let Some(cover_id) = cover_item_id
-                && let Some(href) = manifest.get(&cover_id)
-            {
-                metadata.cover_image_href = Some(href.clone());
-            }
-
-            for node in root.descendants() {
-                if node.tag_name().name() == "itemref"
-                    && let Some(idref) = node.attribute("idref")
-                    && let Some(href) = manifest.get(idref)
-                {
-                    spine_order.push(href.clone());
-                }
-            }
-
-            Ok((metadata, spine_order))
-        }
-        Err(e) => Err(crate::KreuzbergError::Parsing {
-            message: format!("Failed to parse OPF file: {}", e),
-            source: None,
-        }),
-    }
+    additional_metadata
 }
