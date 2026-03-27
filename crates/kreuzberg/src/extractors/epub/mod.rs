@@ -264,9 +264,10 @@ impl DocumentExtractor for EpubExtractor {
         };
 
         let opf_xml = read_file_from_zip(&mut archive, &opf_path)?;
-        let package = parse_opf(&opf_xml, &manifest_dir)?;
+        let (package, mut processing_warnings) = parse_opf(&opf_xml, &manifest_dir)?;
         let additional_metadata = build_additional_metadata(&package.metadata);
-        let (documents, mut processing_warnings) = read_body_documents(&mut archive, &package)?;
+        let (documents, content_warnings) = read_body_documents(&mut archive, &package)?;
+        processing_warnings.extend(content_warnings);
         let mut rendered_documents = Vec::with_capacity(documents.len());
         for (index, document) in documents.iter().enumerate() {
             let mut rendered = Self::render_spine_document(document, index, config);
@@ -417,7 +418,7 @@ mod tests {
   </spine>
 </package>"#;
 
-        let package = metadata::parse_opf(opf, "").expect("Metadata parse failed");
+        let (package, _warnings) = metadata::parse_opf(opf, "").expect("Metadata parse failed");
         let epub_meta = package.metadata;
         let additional = metadata::build_additional_metadata(&epub_meta);
         assert_eq!(epub_meta.title, Some("Test Book".to_string()));

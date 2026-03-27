@@ -1036,7 +1036,7 @@ module Kreuzberg
         new(**normalize_hash_keys(hash))
       end
 
-      def initialize(hash = nil,
+      def initialize(hash = nil, # rubocop:disable Metrics/MethodLength
                      use_cache: true,
                      enable_quality_processing: true,
                      force_ocr: false,

@@ -4,6 +4,7 @@
 //! Dublin Core metadata following EPUB2 and EPUB3 standards.
 
 use crate::Result;
+use crate::types::ProcessingWarning;
 use roxmltree;
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -96,11 +97,12 @@ fn has_renderable_extension(href: &str) -> bool {
 }
 
 /// Parse OPF file and extract metadata and spine order
-pub(super) fn parse_opf(xml: &str, opf_dir: &str) -> Result<EpubPackageDocument> {
+pub(super) fn parse_opf(xml: &str, opf_dir: &str) -> Result<(EpubPackageDocument, Vec<ProcessingWarning>)> {
     match roxmltree::Document::parse(xml) {
         Ok(doc) => {
             let root = doc.root();
 
+            let mut warnings = Vec::new();
             let mut package = EpubPackageDocument {
                 metadata: OepbMetadata::default(),
                 manifest: BTreeMap::new(),
@@ -207,8 +209,20 @@ pub(super) fn parse_opf(xml: &str, opf_dir: &str) -> Result<EpubPackageDocument>
                             .is_some_and(|kind| kind.eq_ignore_ascii_case("toc"))
                             && let Some(href) = node.attribute("href")
                         {
-                            let resolved_href = resolve_path(opf_dir, href)?;
-                            package.guide_toc_paths.insert(resolved_href.path);
+                            match resolve_path(opf_dir, href) {
+                                Ok(resolved_href) => {
+                                    package.guide_toc_paths.insert(resolved_href.path);
+                                }
+                                Err(e) => {
+                                    warnings.push(ProcessingWarning {
+                                        source: std::borrow::Cow::Borrowed("epub"),
+                                        message: std::borrow::Cow::Owned(format!(
+                                            "Skipping malformed guide reference '{}': {}",
+                                            href, e
+                                        )),
+                                    });
+                                }
+                            }
                         }
                     }
                     _ => {}
@@ -245,7 +259,7 @@ pub(super) fn parse_opf(xml: &str, opf_dir: &str) -> Result<EpubPackageDocument>
             }
 
             package.manifest = manifest;
-            Ok(package)
+            Ok((package, warnings))
         }
         Err(e) => Err(crate::KreuzbergError::Parsing {
             message: format!("Failed to parse OPF file: {}", e),

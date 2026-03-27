@@ -593,3 +593,135 @@ async fn test_epub_rejects_manifest_paths_that_escape_package_root() {
         "Expected root-escape validation error, got: {err}"
     );
 }
+
+fn build_epub_with_manifest_fallback_cycle() -> Vec<u8> {
+    let container_xml = r#"<?xml version="1.0" encoding="UTF-8"?>
+<container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">
+  <rootfiles>
+    <rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/>
+  </rootfiles>
+</container>"#;
+
+    let opf_xml = r#"<?xml version="1.0" encoding="UTF-8"?>
+<package version="3.0" unique-identifier="bookid" xmlns="http://www.idpf.org/2007/opf">
+  <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <dc:title>Fallback Cycle Test</dc:title>
+    <dc:language>en</dc:language>
+  </metadata>
+  <manifest>
+    <item id="item-a" href="a.svg" media-type="image/svg+xml" fallback="item-b"/>
+    <item id="item-b" href="b.svg" media-type="image/svg+xml" fallback="item-a"/>
+  </manifest>
+  <spine>
+    <itemref idref="item-a"/>
+  </spine>
+</package>"#;
+
+    let mut cursor = Cursor::new(Vec::<u8>::new());
+    let mut writer = start_epub_writer(&mut cursor);
+    let options = FileOptions::<()>::default().compression_method(zip::CompressionMethod::Stored);
+    writer
+        .add_directory("OEBPS/", options)
+        .expect("zip add_directory failed");
+
+    for (path, contents) in [
+        ("META-INF/container.xml", container_xml),
+        ("OEBPS/content.opf", opf_xml),
+        ("OEBPS/a.svg", "<svg xmlns=\"http://www.w3.org/2000/svg\"></svg>"),
+        ("OEBPS/b.svg", "<svg xmlns=\"http://www.w3.org/2000/svg\"></svg>"),
+    ] {
+        writer.start_file(path, options).expect("zip start_file failed");
+        writer.write_all(contents.as_bytes()).expect("zip write file failed");
+    }
+
+    writer.finish().expect("zip finish failed");
+    cursor.into_inner()
+}
+
+fn build_epub_with_empty_spine() -> Vec<u8> {
+    let container_xml = r#"<?xml version="1.0" encoding="UTF-8"?>
+<container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">
+  <rootfiles>
+    <rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/>
+  </rootfiles>
+</container>"#;
+
+    let opf_xml = r#"<?xml version="1.0" encoding="UTF-8"?>
+<package version="3.0" unique-identifier="bookid" xmlns="http://www.idpf.org/2007/opf">
+  <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <dc:title>Empty Spine Test</dc:title>
+    <dc:language>en</dc:language>
+  </metadata>
+  <manifest>
+    <item id="chapter1" href="chapter1.xhtml" media-type="application/xhtml+xml"/>
+  </manifest>
+  <spine>
+  </spine>
+</package>"#;
+
+    let chapter_xhtml = r#"<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head><title>Chapter One</title></head>
+  <body>
+    <h1>Chapter One</h1>
+    <p>This content is in the manifest but not in the spine.</p>
+  </body>
+</html>"#;
+
+    let mut cursor = Cursor::new(Vec::<u8>::new());
+    let mut writer = start_epub_writer(&mut cursor);
+    let options = FileOptions::<()>::default().compression_method(zip::CompressionMethod::Stored);
+    writer
+        .add_directory("OEBPS/", options)
+        .expect("zip add_directory failed");
+
+    for (path, contents) in [
+        ("META-INF/container.xml", container_xml),
+        ("OEBPS/content.opf", opf_xml),
+        ("OEBPS/chapter1.xhtml", chapter_xhtml),
+    ] {
+        writer.start_file(path, options).expect("zip start_file failed");
+        writer.write_all(contents.as_bytes()).expect("zip write file failed");
+    }
+
+    writer.finish().expect("zip finish failed");
+    cursor.into_inner()
+}
+
+#[tokio::test]
+async fn test_epub_manifest_fallback_cycle_produces_warning_without_panic() {
+    let bytes = build_epub_with_manifest_fallback_cycle();
+    let extractor = EpubExtractor::new();
+
+    let result = extractor
+        .extract_bytes(&bytes, "application/epub+zip", &ExtractionConfig::default())
+        .await
+        .expect("EPUB extraction should not panic on fallback cycles");
+
+    let has_cycle_warning = result
+        .processing_warnings
+        .iter()
+        .any(|w| w.message.contains("fallback cycle"));
+    assert!(
+        has_cycle_warning,
+        "Expected a warning about fallback cycle, got warnings: {:?}",
+        result.processing_warnings
+    );
+}
+
+#[tokio::test]
+async fn test_epub_empty_spine_produces_empty_content_without_error() {
+    let bytes = build_epub_with_empty_spine();
+    let extractor = EpubExtractor::new();
+
+    let result = extractor
+        .extract_bytes(&bytes, "application/epub+zip", &ExtractionConfig::default())
+        .await
+        .expect("EPUB extraction should succeed with empty spine");
+
+    assert!(
+        result.content.trim().is_empty(),
+        "Expected empty or whitespace-only content for empty spine, got: '{}'",
+        result.content
+    );
+}

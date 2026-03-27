@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **EPUB spine semantics refactor** (#594): Richer OPF package model preserves manifest fallback chains, guide references, and non-linear spine items. Navigation chrome stripped from output. Malformed guide references now produce warnings instead of hard failures. Tested for fallback cycles and empty spines.
 - **DOCX image extraction for `<a:blip>` with child elements** (#591): Images with high-quality settings (containing `<a:extLst>` children) were not extracted because only `Event::Empty` was handled. Now also handles `Event::Start` for `<a:blip>`.
 - **OCR table extraction returned empty results via pipeline path** (#593): Layout detection was gated behind a `needs_structured` check, skipping it for the default `Plain` output format. Tables from `run_ocr_pipeline` were discarded. Both paths now propagate tables correctly.
 - **Missing `chunker_type` field in bindings** (#592): Exposed `chunker_type`, `sizing_cache_dir`, and `prepend_heading_context` fields across Python, TypeScript/WASM, Go, C#, PHP bindings.
