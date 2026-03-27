@@ -181,7 +181,9 @@ pub fn parse_drawing(reader: &mut Reader<&[u8]>) -> Drawing {
                         });
                     }
                     b"blip" => {
-                        drawing.image_ref = get_attr(e, b"embed").or_else(|| get_attr(e, b"link"));
+                        if drawing.image_ref.is_none() {
+                            drawing.image_ref = get_attr(e, b"embed").or_else(|| get_attr(e, b"link"));
+                        }
                     }
                     b"wrapNone" => {
                         if let DrawingType::Anchored(ref mut anchor) = drawing.drawing_type {
@@ -587,8 +589,11 @@ mod tests {
         let drawing = parse_drawing_from_xml(xml);
 
         assert_eq!(drawing.drawing_type, DrawingType::Inline);
-        assert_eq!(drawing.image_ref, Some("rId4".to_string()),
-            "image_ref must be extracted even when <a:blip> has child elements");
+        assert_eq!(
+            drawing.image_ref,
+            Some("rId4".to_string()),
+            "image_ref must be extracted even when <a:blip> has child elements"
+        );
     }
 
     #[test]

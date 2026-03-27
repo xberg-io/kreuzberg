@@ -21,7 +21,7 @@ def test_rendering_functions_exist() -> None:
 
 
 def test_render_pdf_page_nonexistent_file() -> None:
-    with pytest.raises((OSError, RuntimeError)):
+    with pytest.raises((OSError, RuntimeError), match=r"(No such file|cannot find the path|does not exist)"):
         render_pdf_page("/nonexistent/path/to/document.pdf", 0)
 
 
@@ -40,7 +40,7 @@ def test_render_pdf_page_negative_index() -> None:
 
 
 def test_iterator_nonexistent_file() -> None:
-    with pytest.raises((OSError, RuntimeError)):
+    with pytest.raises((OSError, RuntimeError), match=r"(No such file|cannot find the path|does not exist)"):
         with PdfPageIterator("/nonexistent/path/to/document.pdf") as _it:
             pass
 
@@ -66,5 +66,5 @@ def test_iterator_early_termination() -> None:
 
 
 def test_render_pdf_page_empty_path() -> None:
-    with pytest.raises((OSError, RuntimeError)):
+    with pytest.raises((OSError, RuntimeError), match=r"(No such file|cannot find the path|does not exist)"):
         render_pdf_page("", 0)

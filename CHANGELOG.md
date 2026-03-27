@@ -30,8 +30,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **DOCX image extraction for `<a:blip>` with child elements** (#591): Images with high-quality settings (containing `<a:extLst>` children) were not extracted because only `Event::Empty` was handled. Now also handles `Event::Start` for `<a:blip>`.
+- **OCR table extraction returned empty results via pipeline path** (#593): Layout detection was gated behind a `needs_structured` check, skipping it for the default `Plain` output format. Tables from `run_ocr_pipeline` were discarded. Both paths now propagate tables correctly.
+- **Missing `chunker_type` field in bindings** (#592): Exposed `chunker_type`, `sizing_cache_dir`, and `prepend_heading_context` fields across Python, TypeScript/WASM, Go, C#, PHP bindings.
+- **Full API parity across all 10 bindings**: Added `max_archive_depth` to all bindings. Added missing `acceleration`, `email` to Ruby/R. Added `layout` to PHP. Added 7 missing fields to WASM. Fixed parity script regex for Go slice types.
 - **`test_pipeline_with_all_features` assertion without `quality` feature**: `quality_score` assertion now gated behind `#[cfg(feature = "quality")]`.
 - **Node Windows publish failure**: Prepare script fallback used bash-specific `mkdir -p` and `echo >` which fail on Windows. Replaced with cross-platform `node -e` fallback.
+- **CI Validate path triggers too narrow**: Broadened glob patterns to cover `docs/**`, `biome.json`, `.task/**`, and other lintable paths that prek hooks check.
+- **Publish pipeline ORT bundling**: Added configurable `strategy` input (`system`/`bundled`) to `setup-onnx-runtime` action. Set `strategy: bundled` for all publish jobs so `ort-bundled` cargo feature takes effect, producing self-contained binaries.
 
 ---
 

@@ -13,9 +13,9 @@
 	},
 	"devDependencies": {
 		"@types/node": "^25.5.0",
-		"@vitest/ui": "^4.1.1",
+		"@vitest/ui": "^4.1.2",
 		"oxlint": "^1.57.0",
 		"typescript": "^6.0.2",
-		"vitest": "^4.1.1"
+		"vitest": "^4.1.2"
 	}
 }

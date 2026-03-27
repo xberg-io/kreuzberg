@@ -14,10 +14,10 @@
 		"@cloudflare/workers-types": "^4.20260317.1",
 		"@kreuzberg/test-utils": "workspace:*",
 		"@kreuzberg/wasm": "workspace:*",
-		"@vitest/runner": "~4.1.1",
-		"@vitest/snapshot": "~4.1.1",
-		"@vitest/ui": "~4.1.1",
-		"vitest": "~4.1.1"
+		"@vitest/runner": "~4.1.2",
+		"@vitest/snapshot": "~4.1.2",
+		"@vitest/ui": "~4.1.2",
+		"vitest": "~4.1.2"
 	},
 	"version": "4.6.2"
 }

@@ -39,7 +39,7 @@ thiserror = { workspace = true }
 
 [build-dependencies]
 cc = { version = "^1.2.57", optional = true }
-cmake = { version = "0.1.57", optional = true }
+cmake = { version = "0.1.58", optional = true }
 zip = { version = ">=7.0.0, <7.4.0", optional = true, default-features = false, features = [
     "deflate-flate2-zlib-rs",
 ] }
