@@ -716,7 +716,7 @@ pub(crate) async fn extract_with_ocr(
         // Sequential post-processing for this batch utilizing TATR.
         for offset in 0..batch_count {
             let page_idx = batch_start + offset;
-            let ocr_result = batch_ocr_results[offset].take().expect("OCR result missing for page");
+            let mut ocr_result = batch_ocr_results[offset].take().expect("OCR result missing for page");
             #[cfg(feature = "layout-detection")]
             let height = encoded_batch[offset].3;
 
@@ -731,7 +731,10 @@ pub(crate) async fn extract_with_ocr(
             }
 
             // Accumulate OCR elements from this page.
-            if let Some(ref elems) = ocr_result.ocr_elements {
+            if let Some(ref mut elems) = ocr_result.ocr_elements {
+                for elem in elems.iter_mut() {
+                    elem.page_number = page_idx + 1;
+                }
                 all_ocr_elements.extend(elems.iter().cloned());
             }
 
@@ -741,8 +744,31 @@ pub(crate) async fn extract_with_ocr(
                 && !elements.is_empty()
             {
                 let detection = detections.get(page_idx);
-                let recognized_tables = match (detection, tatr_model.as_mut()) {
-                    (Some(det), Some(model)) => {
+
+                // Scale layout detection bounding boxes from layout-model resolution
+                // (e.g. 640×640) to OCR render resolution so that coordinates are
+                // consistent when passed to recognize_page_tables and detection_to_layout_hints.
+                // `width` and `height` come from the encoded PNG dimensions, i.e. they are
+                // the actual pixel dimensions of the OCR-rendered page image.
+                let ocr_render_width = encoded_batch[offset].2;
+                let ocr_render_height = encoded_batch[offset].3;
+                let scaled_detection: Option<crate::layout::DetectionResult> = detection.map(|det| {
+                    let sx = ocr_render_width as f32 / det.page_width as f32;
+                    let sy = ocr_render_height as f32 / det.page_height as f32;
+                    let mut scaled = det.clone();
+                    scaled.page_width = ocr_render_width;
+                    scaled.page_height = ocr_render_height;
+                    for region in &mut scaled.detections {
+                        region.bbox.x1 *= sx;
+                        region.bbox.y1 *= sy;
+                        region.bbox.x2 *= sx;
+                        region.bbox.y2 *= sy;
+                    }
+                    scaled
+                });
+
+                let recognized_tables = match (scaled_detection.as_ref(), tatr_model.as_mut()) {
+                    (Some(scaled_det), Some(model)) => {
                         // Decode the page image from its PNG for TATR table recognition.
                         // When pre-rendered images are available, use them directly.
                         // Otherwise, decode from the PNG we already encoded.
@@ -757,7 +783,7 @@ pub(crate) async fn extract_with_ocr(
                                 })?;
                             decoded.to_rgb8()
                         };
-                        crate::ocr::layout_assembly::recognize_page_tables(&rgb, det, elements, model)
+                        crate::ocr::layout_assembly::recognize_page_tables(&rgb, scaled_det, elements, model)
                     }
                     _ => Vec::new(),
                 };
@@ -801,8 +827,8 @@ pub(crate) async fn extract_with_ocr(
                 crate::pdf::markdown::reorder_elements_reading_order(&mut page_content.elements);
                 let mut paragraphs = crate::pdf::markdown::content_to_paragraphs(&page_content);
 
-                if let Some(det) = detection {
-                    let hints = detection_to_layout_hints(det, height as f32);
+                if let Some(ref scaled_det) = scaled_detection {
+                    let hints = detection_to_layout_hints(scaled_det, height as f32);
                     crate::pdf::markdown::layout_classify::apply_layout_overrides(
                         &mut paragraphs,
                         &hints,
@@ -987,7 +1013,7 @@ pub(crate) async fn run_ocr_pipeline(
     config: &ExtractionConfig,
     pipeline: &crate::core::config::OcrPipelineConfig,
     path: Option<&std::path::Path>,
-) -> crate::Result<(String, Vec<crate::types::OcrElement>)> {
+) -> crate::Result<(String, Vec<crate::types::Table>, Vec<crate::types::OcrElement>)> {
     use crate::plugins::registry::get_ocr_backend_registry;
 
     let default_ocr_config = crate::core::config::OcrConfig::default();
@@ -1018,7 +1044,7 @@ pub(crate) async fn run_ocr_pipeline(
         });
     }
 
-    let mut best_result: Option<(String, f64, Vec<crate::types::OcrElement>)> = None;
+    let mut best_result: Option<(String, f64, Vec<crate::types::Table>, Vec<crate::types::OcrElement>)> = None;
 
     for stage in &available_stages {
         // Build a modified config for this stage
@@ -1056,7 +1082,7 @@ pub(crate) async fn run_ocr_pipeline(
         .await;
 
         match result {
-            Ok((text, mean_conf, _stage_tables, stage_ocr_elements)) => {
+            Ok((text, mean_conf, stage_tables, stage_ocr_elements)) => {
                 let text_score = compute_quality_score(&text, &pipeline.quality_thresholds);
 
                 let score = match mean_conf {
@@ -1074,16 +1100,16 @@ pub(crate) async fn run_ocr_pipeline(
                 );
 
                 if score >= pipeline.quality_thresholds.pipeline_min_quality {
-                    return Ok((text, stage_ocr_elements));
+                    return Ok((text, stage_tables, stage_ocr_elements));
                 }
 
                 // Track best-so-far
                 match best_result {
-                    Some((_, best_score, _)) if score > best_score => {
-                        best_result = Some((text, score, stage_ocr_elements));
+                    Some((_, best_score, _, _)) if score > best_score => {
+                        best_result = Some((text, score, stage_tables, stage_ocr_elements));
                     }
                     None => {
-                        best_result = Some((text, score, stage_ocr_elements));
+                        best_result = Some((text, score, stage_tables, stage_ocr_elements));
                     }
                     _ => {}
                 }
@@ -1100,13 +1126,13 @@ pub(crate) async fn run_ocr_pipeline(
 
     // Return best result (with warning) or error if all backends failed entirely
     match best_result {
-        Some((text, score, elements)) => {
+        Some((text, score, tables, elements)) => {
             tracing::warn!(
                 score,
                 threshold = pipeline.quality_thresholds.pipeline_min_quality,
                 "All OCR pipeline backends produced suboptimal quality, using best result"
             );
-            Ok((text, elements))
+            Ok((text, tables, elements))
         }
         None => Err(crate::KreuzbergError::Parsing {
             message: "All OCR pipeline backends failed".to_string(),
