@@ -36,7 +36,7 @@ use Kreuzberg\Types\ExtractionResult;
  */
 final readonly class Kreuzberg
 {
-    public const VERSION = '4.0.0';
+    public const VERSION = '4.6.3';
 
     public function __construct(
         private ?ExtractionConfig $defaultConfig = null,

@@ -64,7 +64,9 @@ if (!extension_loaded('kreuzberg') && !extension_loaded('kreuzberg-php')) {
 // Imports
 // ---------------------------------------------------------------------------
 
+use Kreuzberg\Config\AccelerationConfig;
 use Kreuzberg\Config\ChunkingConfig;
+use Kreuzberg\Config\EmailConfig;
 use Kreuzberg\Config\ExtractionConfig;
 use Kreuzberg\Config\ExtractionConfigBuilder;
 use Kreuzberg\Config\ImageExtractionConfig;
@@ -1064,6 +1066,123 @@ $runner->test('ExtractionResult content is a string', function () use ($testDocu
     $result = Kreuzberg::extractFileSync($files[0]);
     assert_true(is_string($result->content), 'content should be a string');
     assert_greater_than(0, strlen($result->content), 'content length');
+});
+
+// =========================================================================
+// Section 18: AccelerationConfig (4.6.3+)
+// =========================================================================
+
+$runner->section('18. AccelerationConfig (4.6.3+)');
+
+$runner->test('AccelerationConfig default construction', function (): void {
+    $acc = new AccelerationConfig();
+    assert_instance_of(AccelerationConfig::class, $acc);
+    assert_equals('auto', $acc->provider, 'provider should default to auto');
+    assert_equals(0, $acc->deviceId, 'deviceId should default to 0');
+});
+
+$runner->test('AccelerationConfig with custom provider', function (): void {
+    $acc = new AccelerationConfig(provider: 'cpu');
+    assert_equals('cpu', $acc->provider, 'provider should be cpu');
+});
+
+$runner->test('AccelerationConfig with device_id', function (): void {
+    $acc = new AccelerationConfig(provider: 'cuda', deviceId: 1);
+    assert_equals('cuda', $acc->provider, 'provider');
+    assert_equals(1, $acc->deviceId, 'deviceId');
+});
+
+$runner->test('AccelerationConfig::toArray() omits defaults', function (): void {
+    $acc = new AccelerationConfig();
+    $array = $acc->toArray();
+    assert_true(is_array($array), 'toArray should return array');
+    // Default values (provider=auto, deviceId=0) are omitted from toArray
+    assert_false(array_key_exists('provider', $array), 'default provider should be omitted');
+});
+
+$runner->test('AccelerationConfig::toArray() includes non-default provider', function (): void {
+    $acc = new AccelerationConfig(provider: 'cpu');
+    $array = $acc->toArray();
+    assert_true(is_array($array), 'toArray should return array');
+    assert_equals('cpu', $array['provider'], 'provider in array');
+});
+
+$runner->test('ExtractionConfig with AccelerationConfig', function (): void {
+    $acc = new AccelerationConfig(provider: 'auto');
+    $config = new ExtractionConfig(acceleration: $acc);
+    assert_instance_of(AccelerationConfig::class, $config->acceleration, 'acceleration should be AccelerationConfig');
+    assert_equals('auto', $config->acceleration->provider, 'provider');
+});
+
+// =========================================================================
+// Section 19: EmailConfig (4.6.3+)
+// =========================================================================
+
+$runner->section('19. EmailConfig (4.6.3+)');
+
+$runner->test('EmailConfig default construction', function (): void {
+    $email = new EmailConfig();
+    assert_instance_of(EmailConfig::class, $email);
+    assert_equals(null, $email->msgFallbackCodepage, 'msgFallbackCodepage should default to null');
+});
+
+$runner->test('EmailConfig with fallback codepage', function (): void {
+    $email = new EmailConfig(msgFallbackCodepage: 1252);
+    assert_equals(1252, $email->msgFallbackCodepage, 'msgFallbackCodepage should be 1252');
+});
+
+$runner->test('EmailConfig::toArray() produces valid array', function (): void {
+    $email = new EmailConfig(msgFallbackCodepage: 1251);
+    $array = $email->toArray();
+    assert_true(is_array($array), 'toArray should return array');
+    assert_equals(1251, $array['msg_fallback_codepage'], 'msg_fallback_codepage in array');
+});
+
+$runner->test('ExtractionConfig with EmailConfig', function (): void {
+    $email = new EmailConfig(msgFallbackCodepage: 1252);
+    $config = new ExtractionConfig(email: $email);
+    assert_instance_of(EmailConfig::class, $config->email, 'email should be EmailConfig');
+    assert_equals(1252, $config->email->msgFallbackCodepage, 'msgFallbackCodepage');
+});
+
+// =========================================================================
+// Section 20: maxArchiveDepth and PDF Page Rendering (4.6.2+/4.6.3+)
+// =========================================================================
+
+$runner->section('20. maxArchiveDepth & PDF Page Rendering (4.6.2+/4.6.3+)');
+
+$runner->test('ExtractionConfig maxArchiveDepth defaults to 3', function (): void {
+    $config = new ExtractionConfig();
+    assert_equals(3, $config->maxArchiveDepth, 'maxArchiveDepth should default to 3');
+});
+
+$runner->test('ExtractionConfig with custom maxArchiveDepth', function (): void {
+    $config = new ExtractionConfig(maxArchiveDepth: 10);
+    assert_equals(10, $config->maxArchiveDepth, 'maxArchiveDepth should be 10');
+});
+
+$runner->test('maxArchiveDepth serializes to array', function (): void {
+    $config = new ExtractionConfig(maxArchiveDepth: 5);
+    $array = $config->toArray();
+    assert_true(is_array($array), 'toArray should return array');
+    assert_array_key('max_archive_depth', $array, 'should have max_archive_depth key');
+    assert_equals(5, $array['max_archive_depth'], 'max_archive_depth value');
+});
+
+$runner->test('render_pdf_page function exists', function (): void {
+    assert_true(function_exists('Kreuzberg\render_pdf_page'), 'render_pdf_page function should exist');
+});
+
+$runner->test('render_pdf_pages_iter function exists', function (): void {
+    assert_true(function_exists('Kreuzberg\render_pdf_pages_iter'), 'render_pdf_pages_iter function should exist');
+});
+
+$runner->test('render_pdf_page raises exception for nonexistent file', function (): void {
+    assert_throws(
+        KreuzbergException::class,
+        static fn () => \Kreuzberg\render_pdf_page('/nonexistent/path/to/document.pdf', 0),
+        'nonexistent file for render_pdf_page'
+    );
 });
 
 // =========================================================================

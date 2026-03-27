@@ -572,5 +572,100 @@ runner.test('PanicContext is defined in Errors') do
   defined?(Kreuzberg::Errors::PanicContext) == 'constant'
 end
 
+runner.start_section('PDF Page Rendering (4.6.2+)')
+
+runner.test('render_pdf_page method is accessible') do
+  Kreuzberg.respond_to?(:render_pdf_page)
+end
+
+runner.test('render_pdf_pages_iter method is accessible') do
+  Kreuzberg.respond_to?(:render_pdf_pages_iter)
+end
+
+runner.test('render_pdf_page raises IOError for nonexistent file') do
+  Kreuzberg.render_pdf_page('/nonexistent/path/to/document.pdf', 0)
+  false
+rescue Kreuzberg::Errors::IOError, RuntimeError
+  true
+end
+
+runner.test('render_pdf_pages_iter raises IOError for nonexistent file') do
+  Kreuzberg.render_pdf_pages_iter('/nonexistent/path/to/document.pdf').first
+  false
+rescue Kreuzberg::Errors::IOError, RuntimeError, StopIteration
+  true
+end
+
+runner.start_section('Extraction Config New Fields (4.6.3+)')
+
+runner.test('Acceleration config class is accessible') do
+  defined?(Kreuzberg::Config::Acceleration) == 'constant'
+end
+
+runner.test('Acceleration config creation with defaults') do
+  acc = Kreuzberg::Config::Acceleration.new
+  acc.provider == 'auto'
+end
+
+runner.test('Acceleration config creation with custom provider') do
+  acc = Kreuzberg::Config::Acceleration.new(provider: 'cpu')
+  acc.provider == 'cpu'
+end
+
+runner.test('Acceleration config to_h serialization') do
+  acc = Kreuzberg::Config::Acceleration.new(provider: 'cpu', device_id: 1)
+  h = acc.to_h
+  h.is_a?(Hash) && h[:provider] == 'cpu' && h[:device_id] == 1
+end
+
+runner.test('Email config class is accessible') do
+  defined?(Kreuzberg::Config::Email) == 'constant'
+end
+
+runner.test('Email config creation with defaults') do
+  email = Kreuzberg::Config::Email.new
+  email.msg_fallback_codepage.nil?
+end
+
+runner.test('Email config creation with codepage') do
+  email = Kreuzberg::Config::Email.new(msg_fallback_codepage: 1252)
+  email.msg_fallback_codepage == 1252
+end
+
+runner.test('Email config to_h serialization') do
+  email = Kreuzberg::Config::Email.new(msg_fallback_codepage: 1251)
+  h = email.to_h
+  h.is_a?(Hash) && h[:msg_fallback_codepage] == 1251
+end
+
+runner.test('Extraction config max_archive_depth has default') do
+  config = Kreuzberg::Config::Extraction.new
+  config.respond_to?(:max_archive_depth)
+end
+
+runner.test('Extraction config with max_archive_depth') do
+  config = Kreuzberg::Config::Extraction.new(max_archive_depth: 5)
+  config.max_archive_depth == 5
+end
+
+runner.test('Extraction config with acceleration') do
+  acc = Kreuzberg::Config::Acceleration.new(provider: 'cpu')
+  config = Kreuzberg::Config::Extraction.new(acceleration: acc)
+  config.acceleration.is_a?(Kreuzberg::Config::Acceleration)
+end
+
+runner.test('Extraction config with email') do
+  email = Kreuzberg::Config::Email.new(msg_fallback_codepage: 1252)
+  config = Kreuzberg::Config::Extraction.new(email: email)
+  config.email.is_a?(Kreuzberg::Config::Email)
+end
+
+runner.test('Extraction config with acceleration serializes to hash') do
+  acc = Kreuzberg::Config::Acceleration.new(provider: 'auto')
+  config = Kreuzberg::Config::Extraction.new(acceleration: acc)
+  hash = config.to_h
+  hash.is_a?(Hash) && hash.key?(:acceleration)
+end
+
 success = runner.summary?
 exit(success ? 0 : 1)
