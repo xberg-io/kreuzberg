@@ -2,6 +2,7 @@
 name: Deskewing Accuracy
 priority: high
 ---
+
 Correct text angle errors reliably
 
 - Detect text angle automatically

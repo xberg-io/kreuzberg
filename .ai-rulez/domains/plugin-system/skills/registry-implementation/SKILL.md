@@ -2,6 +2,7 @@
 description: "registry implementation"
 name: registry-implementation
 ---
+
 Build plugin registry systems
 
 1. Define registry struct:

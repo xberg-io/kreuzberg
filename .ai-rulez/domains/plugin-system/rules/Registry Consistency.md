@@ -2,6 +2,7 @@
 name: Registry Consistency
 priority: high
 ---
+
 Maintain registry consistency across operations
 
 - Register and indices stay synchronized

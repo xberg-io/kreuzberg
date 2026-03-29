@@ -2,6 +2,7 @@
 name: OCR Integration
 priority: high
 ---
+
 Delegate image/embedded image extraction to OCR domain
 
 - Route image documents to OCR subsystem

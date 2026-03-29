@@ -2,6 +2,7 @@
 name: Static Rust Plugin Registration
 priority: high
 ---
+
 Register Rust plugins directly via code
 
 - Instantiate plugin struct

@@ -2,6 +2,7 @@
 name: Cache Performance
 priority: high
 ---
+
 Ensure caching provides measurable benefits
 
 - Measure cache hit rates regularly

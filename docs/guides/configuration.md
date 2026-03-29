@@ -332,6 +332,7 @@ ocr:
 For complete documentation of all configuration fields, see [Configuration Reference](../reference/configuration.md).
 
 Key sections include:
+
 - [ExtractionConfig](../reference/configuration.md#extractionconfig) - Main configuration
 - [OcrConfig](../reference/configuration.md#ocrconfig) - OCR options
 - [TesseractConfig](../reference/configuration.md#tesseractconfig) - Fine-grained OCR tuning

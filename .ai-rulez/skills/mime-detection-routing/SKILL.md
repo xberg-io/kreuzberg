@@ -9,7 +9,7 @@ priority: high
 
 ## Detection Flow
 
-```
+```text
 Extension → EXT_TO_MIME map → validate → Registry lookup → Extractor
 ```
 

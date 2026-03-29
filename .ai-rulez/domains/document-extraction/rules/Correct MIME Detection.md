@@ -2,6 +2,7 @@
 name: Correct MIME Detection
 priority: high
 ---
+
 Reliably identify document formats
 
 - Check file extension first (fast path)

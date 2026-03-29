@@ -2,6 +2,7 @@
 name: Tesseract Native Integration
 priority: high
 ---
+
 Use native Tesseract via C FFI for performance
 
 - Use kreuzberg-tesseract C bindings directly

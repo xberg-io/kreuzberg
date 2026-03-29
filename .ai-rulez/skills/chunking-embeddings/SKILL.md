@@ -12,7 +12,7 @@ priority: critical
 
 **Location**: `crates/kreuzberg/src/chunking/`, `crates/kreuzberg/src/embeddings.rs`
 
-```
+```text
 Extracted Text
     |
 [1. Normalization] -> Clean whitespace, remove control chars
@@ -35,9 +35,10 @@ Output: Vec<Chunk> with text, vectors, metadata
 | **Fixed-Size** | Sliding window with configurable overlap | Uniform chunks for embedding models with fixed token limits |
 | **Semantic** | Split by sentences, merge/split by similarity threshold | Smart context preservation for LLM consumption and semantic search |
 | **Syntax-Aware** | Split by paragraph/section/heading/code-block structure | Preserving document structure (sections, code blocks) in RAG |
-| **Recursive** (LangChain pattern) | Try separators in order: `\n\n`, `\n`, ` `, `` | Best general-purpose chunking; auto-finds optimal split points |
+| **Recursive** (LangChain pattern) | Try separators in order: `\n\n`, `\n`, ``,`` | Best general-purpose chunking; auto-finds optimal split points |
 
 Key config fields per strategy (see struct definitions in `chunking/mod.rs`):
+
 - Fixed-Size: `chunk_size`, `overlap`, `trim_whitespace`
 - Semantic: `target_chunk_size`, `min/max_chunk_size`, `semantic_threshold`, `use_sentence_boundaries`
 - Syntax-Aware: `chunk_by` (Paragraph/Section/Heading/Sentence/CodeBlock), `max_chunk_size`, `respect_code_blocks`
@@ -73,6 +74,7 @@ Usage: set `config.chunking.preset = Some("balanced")` in `ExtractionConfig`.
 ### Embedding Pattern
 
 `TextEmbeddingManager` provides singleton-cached models per config. Pattern:
+
 1. `get_or_init_model()` -- lazy-loads ONNX model (downloads if needed), caches in `Arc<RwLock<HashMap>>`
 2. `embed_chunks()` -- collects chunk texts, calls `model.embed(texts, batch_size)`, zips results back to `ChunkWithEmbedding`
 
@@ -81,6 +83,7 @@ Default config: `batch_size=256`, `device=CPU`, `parallel_requests=4`.
 ### ONNX Runtime Requirement
 
 Embeddings require ONNX Runtime. Feature-gated via:
+
 ```toml
 [features]
 embeddings = ["dep:fastembed", "dep:ort"]
@@ -91,6 +94,7 @@ Install: `brew install onnxruntime` (macOS) / `apt install libonnxruntime libonn
 ## RAG Integration Pattern
 
 The full extraction-to-RAG pipeline:
+
 1. **Extract**: `extract_file(path, config)` -> `ExtractionResult`
 2. **Chunk**: Apply preset strategy to `result.content` -> `Vec<Chunk>`
 3. **Embed**: If embedding config present, `TextEmbeddingManager::embed_chunks()` -> `Vec<ChunkWithEmbedding>`

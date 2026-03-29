@@ -2,6 +2,7 @@
 name: Dynamic Registration
 priority: high
 ---
+
 Support runtime plugin registration/unregistration
 
 - Plugins can be registered after initialization

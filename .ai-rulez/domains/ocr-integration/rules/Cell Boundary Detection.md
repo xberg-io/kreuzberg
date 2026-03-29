@@ -2,6 +2,7 @@
 name: Cell Boundary Detection
 priority: high
 ---
+
 Accurately determine table cell boundaries
 
 - Use spatial clustering on word positions

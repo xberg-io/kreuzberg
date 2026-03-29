@@ -2,6 +2,7 @@
 name: hOCR Parsing Fidelity
 priority: high
 ---
+
 Extract all relevant information from hOCR format
 
 - Parse bounding box coordinates accurately

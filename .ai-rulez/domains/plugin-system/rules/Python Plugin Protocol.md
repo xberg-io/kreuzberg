@@ -2,6 +2,7 @@
 name: Python Plugin Protocol
 priority: high
 ---
+
 Define Python plugin interface clearly
 
 - Class-based plugin definition

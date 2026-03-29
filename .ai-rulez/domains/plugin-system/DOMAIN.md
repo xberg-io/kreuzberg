@@ -7,21 +7,25 @@ Core extensibility architecture for Kreuzberg. Manages plugin discovery, lifecyc
 ## Key Responsibilities
 
 ### 1. Plugin Architecture
+
 - **Base Plugin Trait**: Common interface (name, version, initialize, shutdown) with Send + Sync
 - **Type-Specific Traits**: DocumentExtractor, OcrBackend, PostProcessor, Validator
 - **Lifecycle Methods**: Initialize/shutdown hooks for resource management
 
 ### 2. Plugin Discovery
+
 - **Static Registration**: Direct Rust plugin instantiation and registration
 - **Python Plugin Discovery**: Module path scanning, class detection, protocol validation, GIL management
 - **Plugin Validation**: Verify trait implementation before registration
 
 ### 3. Priority Selection System
+
 - Priority 0-255: higher wins. Default 50. Custom overrides > 50, fallbacks < 50
 - MIME type arbitration: highest-priority plugin selected, fallback chain on failure
 - Capability-based selection considering languages, dependencies, performance
 
 ### 4. Registry Management
+
 - Separate registries per type: DocumentExtractorRegistry, OcrBackendRegistry, PostProcessorRegistry, ValidatorRegistry
 - Thread-safe via RwLock, MIME type indexing for O(log n) lookup
 - Dynamic registration/unregistration with optional event hooks
@@ -95,26 +99,31 @@ class MyCustomExtractor:
 Async method support with GIL management, exception handling, error translation.
 
 ### Plugin Registry
+
 See: `crates/kreuzberg/src/plugins/registry.rs` (DocumentExtractorRegistry: Arc<RwLock<Vec<Arc<dyn DocumentExtractor>>>> with MIME type index, register/unregister/get_for_mime/list_all/clear)
 
 ## Integration with Kreuzberg Architecture
 
 ### Document Extraction Pipeline
-```
+
+```text
 1. Detect MIME type
 2. Query registry for matching plugins (sorted by priority)
 3. Iterate attempting extraction; success -> return, failure -> next plugin
 ```
 
 ### OCR Pipeline Integration
-```
+
+```text
 1. Receive image + config -> query capable backends -> sort by priority -> execute -> cache
 ```
 
 ### Post-Processing Chain
+
 Sequential execution in priority order. See: `crates/kreuzberg/src/core/config.rs` (PostProcessorConfig, PostProcessorSpec)
 
 ### Python Plugin Registration
+
 ```rust
 pub fn register_ocr_backend(name: String, python_obj: Py<PyAny>, priority: u8) -> PyResult<()>;
 pub fn register_post_processor(name: String, python_obj: Py<PyAny>, priority: u8) -> PyResult<()>;
@@ -125,30 +134,36 @@ pub fn register_post_processor(name: String, python_obj: Py<PyAny>, priority: u8
 ### Critical GIL Patterns Used
 
 1. **Temporary GIL Acquisition** (Python::attach)
+
    ```rust
    Python::attach(|py| {
        let result = python_obj.bind(py).call_method0("name")?;
        result.extract::<String>()
    })
    ```
+
    Use for quick operations (reading attributes, simple calls)
 
 2. **GIL Release During Expensive Operations** (py.detach)
+
    ```rust
    py.detach(|| {
        let registry = get_registry();
        registry.write()?.register(backend)
    })
    ```
+
    Use for I/O, lock acquisition, expensive computation
 
 3. **Async Python Calls** (tokio::task::spawn_blocking)
+
    ```rust
    let python_obj = Python::attach(|py| python_obj.clone_ref(py));
    tokio::task::spawn_blocking(move || {
        Python::attach(|py| obj.bind(py).call_method1("process_image", (bytes, config)))
    }).await?
    ```
+
    Use for async trait implementations
 
 4. **Caching to Minimize GIL Acquisitions**
@@ -157,19 +172,23 @@ pub fn register_post_processor(name: String, python_obj: Py<PyAny>, priority: u8
 ## Data Flow
 
 ### Plugin Registration
+
 1. Instantiate plugin (Rust or Python) -> validate traits -> find registry -> assign priority -> index update -> initialize
 
 ### Plugin Selection & Execution
+
 1. Query by capability -> sort by priority -> iterate (fallback chain) -> execute -> cache result
 
 ## Dependencies & Relationships
 
 ### Upstream
+
 - **Rust Core**: Base plugin traits and registries
 - **PyO3**: Python FFI
 - **async-trait**: Async trait support
 
 ### Downstream
+
 - **Document Extraction Domain**: Uses DocumentExtractor plugins
 - **OCR Integration Domain**: Uses OcrBackend plugins
 - **Post-Processing / Validation**: Uses PostProcessor and Validator plugins

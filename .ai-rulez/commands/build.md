@@ -4,6 +4,7 @@ aliases: [b]
 usage: "/build"
 description: "Build the project"
 ---
+
 # Build
 
 Build the project using the standard task runner.

@@ -74,6 +74,7 @@ Install via one of the supported package managers:
 
 
 **Maven:**
+
 ```xml
 <dependency>
     <groupId>dev.kreuzberg</groupId>
@@ -86,6 +87,7 @@ Install via one of the supported package managers:
 
 
 **Gradle:**
+
 ```gradle
 implementation 'dev.kreuzberg:kreuzberg:4.6.3'
 ```

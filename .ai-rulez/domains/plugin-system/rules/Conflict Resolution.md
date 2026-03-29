@@ -2,6 +2,7 @@
 name: Conflict Resolution
 priority: high
 ---
+
 Resolve conflicts between plugins claiming same capability
 
 - Multiple extractors can support same MIME type

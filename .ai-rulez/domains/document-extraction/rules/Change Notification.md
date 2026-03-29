@@ -2,6 +2,7 @@
 name: Change Notification
 priority: high
 ---
+
 Communicate significant changes
 
 - Document breaking changes

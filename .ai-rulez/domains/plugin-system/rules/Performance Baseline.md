@@ -2,6 +2,7 @@
 name: Performance Baseline
 priority: high
 ---
+
 Establish and maintain performance baselines
 
 - Benchmark plugin registration overhead

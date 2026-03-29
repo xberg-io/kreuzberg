@@ -2577,21 +2577,25 @@ echo "File is accessible!\n";
 **Migration Steps:**
 
 1. Update PHP to 8.2+:
+
    ```bash
    php -v  # Check current version
    ```
 
 2. Update Composer dependency:
+
    ```bash
    composer require kreuzberg/kreuzberg:^4.0
    ```
 
 3. Update extension:
+
    ```bash
    pie install kreuzberg/kreuzberg-ext:^4.0
    ```
 
 4. Update code:
+
    ```php
    // Before
    use Kreuzberg\Config\Config;

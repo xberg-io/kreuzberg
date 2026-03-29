@@ -2,6 +2,7 @@
 name: OCR Backend Interface
 priority: high
 ---
+
 Implement OcrBackend trait completely
 
 - Implement async process_image()

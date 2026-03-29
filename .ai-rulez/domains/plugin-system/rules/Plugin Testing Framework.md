@@ -2,6 +2,7 @@
 name: Plugin Testing Framework
 priority: high
 ---
+
 Test all plugin implementations
 
 - Unit tests for plugin logic

@@ -2,6 +2,7 @@
 name: Lifecycle Management
 priority: high
 ---
+
 Properly implement plugin lifecycle
 
 - Plugin::initialize() called once at registration

@@ -4,6 +4,7 @@ aliases: [l]
 usage: "/lint"
 description: "Run linting and formatting checks via prek"
 ---
+
 # Lint
 
 Run all linters and formatters using prek.

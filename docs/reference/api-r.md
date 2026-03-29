@@ -798,6 +798,7 @@ writeBin(png, "first_page.png")
 ## Error Handling
 
 Errors are raised as typed conditions with class hierarchy:
+
 - `kreuzberg_error` (base)
   - `ValidationError`
   - `ParsingError`

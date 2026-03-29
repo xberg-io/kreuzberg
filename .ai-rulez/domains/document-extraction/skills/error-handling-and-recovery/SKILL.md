@@ -2,6 +2,7 @@
 description: "error handling and recovery"
 name: error-handling-and-recovery
 ---
+
 Implement robust error handling
 
 1. Classify error types

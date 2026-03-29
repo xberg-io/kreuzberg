@@ -2,6 +2,7 @@
 name: Memory Efficiency
 priority: high
 ---
+
 Plugins must not consume excessive memory
 
 - Profile plugin memory usage

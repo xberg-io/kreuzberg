@@ -412,7 +412,7 @@ HF_HOME=/app/.kreuzberg/huggingface    # HuggingFace/ONNX model cache
 
 **Cache Directory Structure:**
 
-```
+```text
 /app/.kreuzberg/
 ├── huggingface/     # Embedding models (downloaded on first use, ~90MB-1.2GB)
 ├── embeddings/      # ONNX runtime cache

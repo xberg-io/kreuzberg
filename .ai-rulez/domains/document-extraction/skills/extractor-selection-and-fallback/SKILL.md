@@ -2,6 +2,7 @@
 description: "extractor selection and falluack"
 name: extractor-selection-and-fallback
 ---
+
 Route documents to appropriate extractors with fallback chains
 
 1. Query registry for MIME type

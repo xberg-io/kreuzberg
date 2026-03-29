@@ -2,6 +2,7 @@
 name: Extractor Configuration
 priority: high
 ---
+
 Respect ExtractionConfig in extraction behavior
 
 - Read relevant config sections

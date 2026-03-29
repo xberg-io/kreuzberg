@@ -2,6 +2,7 @@
 name: Integration Testing
 priority: high
 ---
+
 Test OCR integration with extraction pipeline
 
 - Test image document extraction

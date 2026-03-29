@@ -2,6 +2,7 @@
 description: "tesseract uackend usage"
 name: tesseract-backend-usage
 ---
+
 Optimize Tesseract OCR configuration
 
 1. Validate language packs installed

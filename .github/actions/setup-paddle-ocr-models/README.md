@@ -84,11 +84,12 @@ The action automatically exports:
 
 Models are cached using GitHub Actions cache with the following key structure:
 
-```
+```text
 paddle-ocr-v5-onnx-{OS}-{ARCHITECTURE}-v4
 ```
 
 Cache restoration order (restore-keys):
+
 1. Exact match: `paddle-ocr-v5-onnx-{OS}-{ARCHITECTURE}-v4`
 2. OS-Architecture: `paddle-ocr-v5-onnx-{OS}-{ARCHITECTURE}-`
 3. OS only: `paddle-ocr-v5-onnx-{OS}-`
@@ -130,7 +131,7 @@ The action downloads models sequentially and will fail if a required model downl
 
 Models are downloaded from:
 
-```
+```text
 https://huggingface.co/Kreuzberg/paddleocr-onnx-models/resolve/main/
 ```
 
@@ -148,6 +149,7 @@ If this repository becomes unavailable, the action will fail gracefully. Alterna
 ### Download timeouts
 
 If downloads timeout:
+
 - Increase the 300-second timeout in the action steps
 - Check Hugging Face API availability
 - Try reducing the number of models (`models: "det,rec"`)
@@ -161,7 +163,8 @@ ls -lh ~/.cache/kreuzberg/paddle-ocr/
 ```
 
 Expected output:
-```
+
+```text
 drwxr-xr-x det/
 drwxr-xr-x cls/
 drwxr-xr-x rec/
@@ -195,5 +198,5 @@ The directory structure must match what `ModelManager` expects in `model_manager
 ## See Also
 
 - [PaddleOCR Documentation](https://github.com/PaddlePaddle/PaddleOCR)
-- [kreuzberg-paddle-ocr crate](../../crates/kreuzberg-paddle-ocr)
-- [ModelManager source](../../crates/kreuzberg/src/paddle_ocr/model_manager.rs)
+- [kreuzberg-paddle-ocr crate](../../../crates/kreuzberg-paddle-ocr)
+- [ModelManager source](../../../crates/kreuzberg/src/paddle_ocr/model_manager.rs)

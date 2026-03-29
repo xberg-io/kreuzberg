@@ -2,6 +2,7 @@
 name: Single Responsibility
 priority: high
 ---
+
 Each component in extraction pipeline has focused responsibility
 
 - MIME detection handles format identification only

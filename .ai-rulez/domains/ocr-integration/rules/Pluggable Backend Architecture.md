@@ -2,6 +2,7 @@
 name: Pluggable Backend Architecture
 priority: high
 ---
+
 OCR backends must be interchangeable and selectable
 
 - Implement OcrBackend trait for all backends

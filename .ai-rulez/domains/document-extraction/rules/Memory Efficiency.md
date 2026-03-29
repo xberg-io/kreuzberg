@@ -2,6 +2,7 @@
 name: Memory Efficiency
 priority: high
 ---
+
 Minimize memory footprint during extraction
 
 - Stream large PDFs when possible

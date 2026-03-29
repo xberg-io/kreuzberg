@@ -735,6 +735,7 @@ Configuration for ONNX-based document layout analysis.
 **Type Definition:**
 
 <!-- skip -->
+
 ```typescript title="TypeScript"
 interface LayoutDetectionConfig {
   preset?: string;              // "fast" or "accurate" (default)
@@ -752,6 +753,7 @@ interface LayoutDetectionConfig {
 **Example:**
 
 <!-- skip -->
+
 ```typescript title="layout_config.ts"
 const config: ExtractionConfig = {
   layout: {
@@ -956,6 +958,7 @@ if (result.detectedLanguages) {
 Per-page extracted content when page extraction is enabled via `PageConfig.extractPages = true`.
 
 Each page contains:
+
 - Page number (1-indexed)
 - Text content for that page
 - Tables on that page

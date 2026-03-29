@@ -2,6 +2,7 @@
 name: Format-Specific Preprocessing
 priority: high
 ---
+
 Tailor preprocessing to image format characteristics
 
 - PNG: Preserve transparency, optimize for digital

@@ -2,6 +2,7 @@
 name: Configuration Cascade
 priority: high
 ---
+
 Apply OCR configuration consistently
 
 - TesseractConfig controls all OCR behavior

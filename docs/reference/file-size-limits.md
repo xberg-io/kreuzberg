@@ -23,6 +23,7 @@ The default configuration allows:
 - **Individual file:** 100 MB (104,857,600 bytes)
 
 These defaults are suitable for typical document processing workloads including:
+
 - Standard PDF documents and scanned pages
 - Office documents (Word, Excel, PowerPoint)
 - High-resolution images
@@ -467,17 +468,20 @@ Validate file sizes before upload to provide better user experience:
 **Solutions:**
 
 1. **Increase limit:**
+
    ```bash
    export KREUZBERG_MAX_UPLOAD_SIZE_MB=500
    ```
 
 2. **Check reverse proxy limits:**
+
    ```nginx
    # Nginx: ensure client_max_body_size matches or exceeds Kreuzberg limit
    client_max_body_size 500M;
    ```
 
 3. **Validate file size before upload:**
+
    ```bash
    # Check actual file size
    ls -lh document.pdf
@@ -490,6 +494,7 @@ Validate file sizes before upload to provide better user experience:
 **Solutions:**
 
 1. **Increase container memory:**
+
    ```yaml
    deploy:
      resources:
@@ -498,6 +503,7 @@ Validate file sizes before upload to provide better user experience:
    ```
 
 2. **Reduce upload limit:**
+
    ```bash
    export KREUZBERG_MAX_UPLOAD_SIZE_MB=200
    ```
@@ -507,6 +513,7 @@ Validate file sizes before upload to provide better user experience:
    - Implement request queuing at the application level
 
 4. **Monitor memory usage:**
+
    ```bash
    # Docker
    docker stats kreuzberg-api
@@ -522,12 +529,14 @@ Validate file sizes before upload to provide better user experience:
 **Solutions:**
 
 1. **Increase reverse proxy timeouts:**
+
    ```nginx
    proxy_read_timeout 600s;  # 10 minutes
    proxy_send_timeout 600s;
    ```
 
 2. **Enable streaming:**
+
    ```nginx
    proxy_request_buffering off;
    ```

@@ -1732,7 +1732,7 @@ try (var iter = Kreuzberg.PdfPageIterator.open(Path.of("document.pdf"), 150)) {
 
 Kreuzberg uses a checked exception model for error handling.
 
-```
+```text
 Exception
 ├── IOException (from java.io)
 ├── KreuzbergException

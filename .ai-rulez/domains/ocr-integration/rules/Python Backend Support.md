@@ -2,6 +2,7 @@
 name: Python Backend Support
 priority: high
 ---
+
 Enable EasyOCR/PaddleOCR via Python plugin interface
 
 - Wrap Python backends via PyO3 FFI

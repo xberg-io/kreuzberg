@@ -2,6 +2,7 @@
 name: Error Handling Protocol
 priority: high
 ---
+
 All extraction operations must handle errors gracefully
 
 - Document failures with error context

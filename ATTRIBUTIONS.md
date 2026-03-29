@@ -6,7 +6,7 @@ This document acknowledges the sources of test documents and baseline data used 
 
 Test documents and reference baseline outputs derived from the Pandoc test suite:
 
-- **Source**: https://github.com/jgm/pandoc
+- **Source**: <https://github.com/jgm/pandoc>
 - **License**: GPL-2.0-or-later
 - **Usage**: Test documents and reference baselines only (no code copied from Pandoc)
 - **Attribution**: John MacFarlane and Pandoc contributors
@@ -17,23 +17,28 @@ Test documents and reference baseline outputs derived from the Pandoc test suite
 The following test documents were copied from the Pandoc repository to `/test_documents/`:
 
 #### Org Mode
+
 - `org-select-tags.org` - SELECT_TAGS and EXCLUDE_TAGS testing
 - `pandoc-tables.org` - Org Mode table formats
 - `pandoc-writer.org` - Comprehensive Pandoc test suite in Org Mode format
 
 #### Typst
+
 - `typst-reader.typ` - Fibonacci sequence with mathematical formulas
 - `undergradmath.typ` - Comprehensive undergraduate mathematics document (16KB)
 
 #### DocBook
+
 - `docbook-chapter.docbook` - Recursive section hierarchy (7 nested levels)
 - `docbook-reader.docbook` - Comprehensive DocBook 4.4 test suite (36KB, 1704 lines)
 - `docbook-xref.docbook` - Cross-reference (xref) functionality testing
 
 #### JATS
+
 - `jats-reader.xml` - Comprehensive JATS (Z39.96) Journal Archiving test document (38KB, 1460 lines)
 
 #### FictionBook
+
 - `test_documents/fictionbook/pandoc/` - 13 FictionBook test files including:
   - `basic.fb2` - Basic FictionBook structure
   - `images-embedded.fb2` - Embedded base64 images
@@ -48,6 +53,7 @@ The following test documents were copied from the Pandoc repository to `/test_do
   - And others
 
 #### OPML
+
 - `opml-reader.opml` - OPML 2.0 outline structure (US states example)
 - `pandoc-writer.opml` - Comprehensive Pandoc test suite in OPML format
 
@@ -87,7 +93,7 @@ This script processes all test documents and generates fresh baselines using the
 
 DOCX XML parser vendored into `crates/kreuzberg/src/extraction/docx/parser.rs`:
 
-- **Source**: https://github.com/v-lawyer/docx-lite
+- **Source**: <https://github.com/v-lawyer/docx-lite>
 - **License**: MIT OR Apache-2.0
 - **Authors**: V-Lawyer Team
 - **Version**: 0.2.0 (vendored with modifications)
@@ -103,7 +109,7 @@ DOCX XML parser vendored into `crates/kreuzberg/src/extraction/docx/parser.rs`:
 
 Vendored HWP text extraction code from the hwpers crate:
 
-- **Source**: https://github.com/Indosaram/hwpers
+- **Source**: <https://github.com/Indosaram/hwpers>
 - **License**: MIT OR Apache-2.0
 - **Authors**: HWP Parser Contributors
 - **Vendored Version**: 0.5.0
@@ -118,9 +124,9 @@ Vendored HWP text extraction code from the hwpers crate:
 
 Vendored source code from the paddle-ocr-rs crate for PaddleOCR via ONNX Runtime integration:
 
-- **Source**: https://github.com/mg-chao/paddle-ocr-rs
+- **Source**: <https://github.com/mg-chao/paddle-ocr-rs>
 - **Original License**: Apache-2.0
-- **Author**: mg-chao (chao@mgchao.top)
+- **Author**: mg-chao (<chao@mgchao.top>)
 - **Vendored Version**: 0.6.1
 - **Location**: `crates/kreuzberg-paddle-ocr/`
 - **Purpose**: Text detection and recognition using PaddlePaddle's OCR models via ONNX Runtime
@@ -157,9 +163,9 @@ The original Apache-2.0 license is compatible with MIT relicensing. The original
 
 High-level idiomatic Rust wrapper around Pdfium, forked for Kreuzberg integration:
 
-- **Source**: https://github.com/ajrcarey/pdfium-render
+- **Source**: <https://github.com/ajrcarey/pdfium-render>
 - **Original License**: MIT OR Apache-2.0
-- **Author**: Alastair Carey (alastair@alastaircarey.com)
+- **Author**: Alastair Carey (<alastair@alastaircarey.com>)
 - **Forked Version**: 0.8.x (with patches)
 - **Location**: `crates/kreuzberg-pdfium-render/`
 - **Purpose**: PDF rendering and text extraction via Google's Pdfium library
@@ -183,7 +189,7 @@ The original MIT OR Apache-2.0 dual license permits relicensing under MIT alone.
 
 Text embedding inference pipeline vendored into `crates/kreuzberg/src/embeddings/engine.rs`:
 
-- **Source**: https://github.com/Anush008/fastembed-rs
+- **Source**: <https://github.com/Anush008/fastembed-rs>
 - **License**: Apache-2.0
 - **Author**: Anush008 and contributors
 - **Vendored Version**: Based on 0.2.x
@@ -208,7 +214,7 @@ The original Apache-2.0 license is fully compatible with Kreuzberg's MIT license
 
 Test documents derived from the `numbers-parser` test suite:
 
-- **Source**: https://github.com/masaccio/numbers-parser
+- **Source**: <https://github.com/masaccio/numbers-parser>
 - **License**: MIT
 - **Author**: Jon Connell (masaccio)
 - **Usage**: Test documents and reference baselines only (no code copied)

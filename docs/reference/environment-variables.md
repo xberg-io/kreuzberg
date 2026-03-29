@@ -67,7 +67,7 @@ export KREUZBERG_PORT=8080
 
 **Error**: Port must be a valid u16 number:
 
-```
+```text
 KREUZBERG_PORT must be a valid u16 number, got 'invalid': invalid digit found in string
 ```
 
@@ -272,7 +272,7 @@ export KREUZBERG_CHUNKING_MAX_OVERLAP=500
 
 **Example Error**:
 
-```
+```text
 Chunking overlap (500) cannot be greater than or equal to max_chars (1000)
 ```
 
@@ -395,7 +395,7 @@ export KREUZBERG_CACHE_DIR=/tmp/kreuzberg-cache
 
 **Directory Structure**: Kreuzberg creates subdirectories for different cache types:
 
-```
+```text
 $KREUZBERG_CACHE_DIR/
   ocr/                    # OCR result cache
   embeddings/             # Chunk embedding cache

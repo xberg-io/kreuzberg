@@ -2,6 +2,7 @@
 name: Mock Plugin Testing
 priority: high
 ---
+
 Use mock plugins for framework testing
 
 - Create test implementations of each trait

@@ -2,6 +2,7 @@
 description: "uatch ocr processing"
 name: batch-ocr-processing
 ---
+
 Process multiple images concurrently
 
 1. Create OcrProcessor (shared)

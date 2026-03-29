@@ -23,7 +23,8 @@ Kreuzberg provides a pluggable OCR system with multiple backend implementations:
 ## Core OCR Components
 
 ### 1. OCR Module Structure
-```
+
+```text
 crates/kreuzberg/src/ocr/
 ├── mod.rs                 # OCR system orchestration
 ├── processor.rs           # Main OCR processing pipeline
@@ -114,7 +115,7 @@ impl LanguageRegistry {
 
 **Location**: `crates/kreuzberg/src/extraction/image.rs` (16KB)
 
-```
+```text
 Input Image
     ↓
 [1. Load & Validate] → Check format, dimensions, color space
@@ -206,6 +207,7 @@ pub struct TableDetectionConfig {
 ```
 
 **Pattern**: Detect table regions via:
+
 1. Horizontal/vertical line detection (Hough transform or morphological operations)
 2. Grid structure validation (rows × columns consistency)
 3. Cell content extraction (OCR each cell)
@@ -216,11 +218,13 @@ pub struct TableDetectionConfig {
 **Location**: `crates/kreuzberg/src/ocr/hocr.rs`
 
 Tesseract's hOCR output contains XML with bounding boxes:
+
 ```xml
 <span class="ocr_word" id="word_1_1" title="bbox 100 200 250 230">word</span>
 ```
 
 Kreuzberg parses hOCR to:
+
 - Extract text with character-level bounding boxes
 - Preserve reading order (top-left → bottom-right)
 - Identify table structures via bbox clustering
@@ -362,6 +366,7 @@ pub async fn batch_ocr(
 **Location**: `crates/kreuzberg/src/core/config.rs`
 
 OCR backend selection precedence:
+
 1. **Explicit config** - `config.image.ocr_backend = Some("aws-textract")`
 2. **Plugin registered** - Check if backend registered in plugins registry
 3. **Platform-specific default** - Python: EasyOCR, Others: Tesseract

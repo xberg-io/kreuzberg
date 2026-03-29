@@ -4,6 +4,7 @@ aliases: [f]
 usage: "/fix"
 description: "Auto-fix linting, formatting, and common issues"
 ---
+
 # Fix
 
 Automatically fix as many issues as possible:

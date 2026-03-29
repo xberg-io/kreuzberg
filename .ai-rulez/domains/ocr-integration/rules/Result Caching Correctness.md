@@ -2,6 +2,7 @@
 name: Result Caching Correctness
 priority: high
 ---
+
 Cache OCR results reliably and invalidate appropriately
 
 - Use content hash for cache keys (not filename)

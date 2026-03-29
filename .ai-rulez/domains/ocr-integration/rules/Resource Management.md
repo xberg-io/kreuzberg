@@ -2,6 +2,7 @@
 name: Resource Management
 priority: high
 ---
+
 Manage OCR resource allocation efficiently
 
 - Share OCR processor instance across calls

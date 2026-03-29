@@ -2,6 +2,7 @@
 name: API Documentation
 priority: high
 ---
+
 Maintain clear, complete API documentation
 
 - Document all public functions

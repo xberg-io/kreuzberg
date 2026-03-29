@@ -2,6 +2,7 @@
 description: "mime detection implementation"
 name: mime-detection-implementation
 ---
+
 Detect document formats reliably
 
 1. Check file extension

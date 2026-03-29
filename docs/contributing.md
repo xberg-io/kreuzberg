@@ -9,8 +9,8 @@ Thank you for your interest in contributing to Kreuzberg! This guide covers ever
 Welcome! Here's how to get started:
 
 1. **Pick an issue** that matches your experience level:
-      - [Good first issue](https://github.com/kreuzberg-dev/kreuzberg/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) — small, well-scoped tasks ideal for newcomers
-      - [Help wanted](https://github.com/kreuzberg-dev/kreuzberg/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22) — tasks where we'd especially appreciate community help
+   - [Good first issue](https://github.com/kreuzberg-dev/kreuzberg/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) — small, well-scoped tasks ideal for newcomers
+   - [Help wanted](https://github.com/kreuzberg-dev/kreuzberg/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22) — tasks where we'd especially appreciate community help
 2. **Read through the issue** and any existing comments
 3. **Leave a comment** letting maintainers know you'd like to work on it
 4. **Ask questions** — we're here to help!
@@ -112,7 +112,7 @@ task node:test
 
 We use [Conventional Commits](https://www.conventionalcommits.org/). The pre-commit hook validates this.
 
-```
+```text
 feat: add PDF table extraction support
 fix: handle empty MIME type in archive entries
 docs: update Python API reference for v4.4

@@ -74,42 +74,49 @@ All 15 configuration types from the requirements are covered:
 ## Test Coverage by Category
 
 ### Type Definitions
+
 - Valid type creation with all fields
 - Optional field support (undefined handling)
 - Nested and composite types
 - Algorithm selection and presets
 
 ### WASM Serialization
+
 - JSON.stringify/parse round-trip tests
 - Undefined field omission
 - Nested structure serialization
 - Complex type serialization (arrays, objects)
 
 ### Worker Message Passing
+
 - structuredClone compatibility
 - Deep nesting preservation
 - ExtractionConfig composition in workers
 - Complex nested extraction configs
 
 ### Type Safety
+
 - Type enforcement for booleans, numbers, strings
 - Array type validation
 - Nested object type validation
 - Union type validation (e.g., KeywordAlgorithm)
 
 ### Edge Cases
+
 - Zero values (zero chunk size, zero DPI, zero keywords)
 - Very large values (100000+ chunk sizes, 1000+ concurrent operations)
 - Empty arrays and strings
 - Boundary values (0.0-1.0 for scores, min-max ranges)
 
 ### Immutability Patterns
+
 - Spread operator updates
 - Nested object spreading
 - Selective field overrides
 - Complex nested updates
 
 ### Nesting in ExtractionConfig
+
 - Proper nesting of all config types
 - Null config handling
 - Configuration composition with other options
@@ -146,7 +153,8 @@ vitest --coverage crates/kreuzberg-wasm/typescript/config/
 ## Test Patterns Used
 
 ### Describe Block Structure
-```
+
+```text
 - Type definitions
 - WASM serialization
 - Worker message passing
@@ -158,6 +166,7 @@ vitest --coverage crates/kreuzberg-wasm/typescript/config/
 ```
 
 ### Common Test Patterns
+
 1. Direct type assertion tests
 2. JSON serialization round-trip tests
 3. structuredClone worker communication tests

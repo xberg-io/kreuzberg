@@ -1561,7 +1561,7 @@ Document metadata.
 
 To enable multi-threaded extraction, set these HTTP headers:
 
-```
+```text
 Cross-Origin-Opener-Policy: same-origin
 Cross-Origin-Embedder-Policy: require-corp
 ```
@@ -2011,12 +2011,14 @@ const result = await extractBytes(pdfBytes, 'application/pdf', {
 **Symptoms:** "Failed to load WASM module" error on initialization
 
 **Causes:**
+
 - Network issues preventing WASM download
 - Bundler misconfiguration (not handling .wasm files correctly)
 - CORS restrictions blocking module fetch
 - Module not included in bundle
 
 **Solutions:**
+
 1. Check browser network tab for failed requests
 2. Configure bundler (see "WASM module failed to initialize" section)
 3. Ensure CORS headers allow WASM requests
@@ -2029,12 +2031,14 @@ const result = await extractBytes(pdfBytes, 'application/pdf', {
 **Symptoms:** Multi-threading features disabled, or "SharedArrayBuffer is not available" warning
 
 **Causes:**
+
 - HTTPS context not used (required for security)
 - Missing Cross-Origin-Opener-Policy (COOP) headers
 - Missing Cross-Origin-Embedder-Policy (COEP) headers
 - Old browser version without SharedArrayBuffer support
 
 **Solutions:**
+
 1. Ensure application runs over HTTPS in production
 2. Set required headers (see Platform-Specific Notes > Browser section):
    - `Cross-Origin-Opener-Policy: same-origin`
@@ -2049,15 +2053,18 @@ const result = await extractBytes(pdfBytes, 'application/pdf', {
 **Symptoms:** "No OCR backend available" error or OCR produces no output
 
 **Causes:**
+
 - WASM module not built with `ocr-wasm` feature (for native OCR)
 - Not in browser environment and native OCR unavailable (for browser fallback)
 - Training data not loading from jsDelivr CDN
 - Language model not available for selected language
 
 **Solutions:**
+
 1. Enable native WASM OCR by building with the `ocr-wasm` feature flag. This embeds `kreuzberg-tesseract` into the WASM binary and works in all environments.
 
 2. Check if OCR is available after enabling:
+
    ```typescript title="check_ocr.ts"
    import { enableOcr, listOcrBackends } from '@kreuzberg/wasm';
 
@@ -2072,6 +2079,7 @@ const result = await extractBytes(pdfBytes, 'application/pdf', {
    ```
 
 3. Check supported languages:
+
    ```typescript title="check_ocr_languages.ts"
    import { getOcrBackend } from '@kreuzberg/wasm';
 
@@ -2088,6 +2096,7 @@ const result = await extractBytes(pdfBytes, 'application/pdf', {
    - May fail without internet connection
 
 5. Handle initialization errors gracefully:
+
    ```typescript title="ocr_graceful.ts"
    import { enableOcr, extractBytes } from '@kreuzberg/wasm';
 
@@ -2113,11 +2122,13 @@ const result = await extractBytes(pdfBytes, 'application/pdf', {
 **Symptoms:** Large bundle size or slow initial load
 
 **Context:**
+
 - WASM module: ~5MB uncompressed
 - Gzip compressed: ~1.5-2MB
 - OCR training data (per language): ~20-50MB (downloaded on demand, cached)
 
 **Optimization strategies:**
+
 1. Use code splitting to load WASM only when needed
 2. Compress with gzip/brotli (bundlers do this automatically)
 3. Load training data selectively (only load languages you need)

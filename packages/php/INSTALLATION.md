@@ -47,6 +47,7 @@ pie install kreuzberg/kreuzberg
 ```
 
 PIE will:
+
 1. Download the extension source code
 2. Check for Rust toolchain (install if needed)
 3. Compile the extension for your PHP version
@@ -211,16 +212,19 @@ php test.php
 ### Extension Not Loading
 
 **Check php.ini location:**
+
 ```bash
 php --ini
 ```
 
 **Verify extension directive:**
+
 ```bash
 grep -r "kreuzberg" $(php --ini | grep "Scan for additional" | cut -d: -f2 | xargs)
 ```
 
 **Check for errors:**
+
 ```bash
 php -m 2>&1 | grep -i error
 ```
@@ -228,11 +232,13 @@ php -m 2>&1 | grep -i error
 ### Build Failures
 
 **Rust toolchain missing:**
+
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
 
 **PHP dev headers missing:**
+
 ```bash
 # Ubuntu/Debian
 sudo apt install php-dev
@@ -246,6 +252,7 @@ brew install php
 ```
 
 **Wrong PHP version:**
+
 ```bash
 php --version  # Must be 8.4+
 ```
@@ -253,6 +260,7 @@ php --version  # Must be 8.4+
 ### PIE Issues
 
 **PIE not found:**
+
 ```bash
 # Ensure global Composer bin is in PATH
 export PATH="$PATH:$HOME/.composer/vendor/bin"
@@ -309,9 +317,9 @@ composer remove kreuzberg/kreuzberg
 
 ## Support
 
-- **Documentation**: https://kreuzberg.dev
-- **GitHub Issues**: https://github.com/kreuzberg-dev/kreuzberg/issues
-- **Discord**: https://discord.gg/xt9WY3GnKR
+- **Documentation**: <https://kreuzberg.dev>
+- **GitHub Issues**: <https://github.com/kreuzberg-dev/kreuzberg/issues>
+- **Discord**: <https://discord.gg/xt9WY3GnKR>
 
 ## Next Steps
 

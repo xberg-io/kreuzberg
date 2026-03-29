@@ -10,7 +10,7 @@ This crate provides Python bindings to the Rust core library (`crates/kreuzberg`
 
 ### Binding Layers
 
-```
+```text
 Python Package (packages/python/kreuzberg/)
     ↓
 PyO3 Bindings (crates/kreuzberg-py) ← This crate
@@ -85,6 +85,7 @@ The bindings use `pyo3_async_runtimes` for high-performance async Python callbac
 #### Pattern: spawn_blocking vs into_future
 
 **Traditional pattern (slow)**:
+
 ```rust
 tokio::task::spawn_blocking(move || {
     Python::attach(|py| {
@@ -95,6 +96,7 @@ tokio::task::spawn_blocking(move || {
 ```
 
 **Optimized pattern (fast)**:
+
 ```rust
 // Check if Python function is async
 let is_async = Python::attach(|py| {
@@ -116,6 +118,7 @@ if is_async {
 ```
 
 **Performance impact**:
+
 - Fast operations (<10ms): ~25-30x speedup
 - Medium operations (50ms): ~10% speedup
 - Overhead reduction: ~4.8ms → ~0.17ms
@@ -142,6 +145,7 @@ fn init_async_runtime() -> PyResult<()> {
 ```
 
 **Usage from Python**:
+
 ```python
 from kreuzberg._internal_bindings import init_async_runtime
 init_async_runtime()  # Call once at startup
@@ -192,6 +196,7 @@ Python::with_gil(|py| async move {
 #### spawn_blocking vs block_in_place
 
 **For long-running operations (OCR)**:
+
 ```rust
 tokio::task::spawn_blocking(move || {
     Python::attach(|py| { /* OCR processing */ })
@@ -199,6 +204,7 @@ tokio::task::spawn_blocking(move || {
 ```
 
 **For quick operations (PostProcessor/Validator)**:
+
 ```rust
 let result = tokio::task::block_in_place(|| {
     Python::attach(|py| { /* validation */ })
@@ -315,9 +321,9 @@ uv run python tests/benchmark_async_simple.py
 
 ## References
 
-- **PyO3 Documentation**: https://pyo3.rs/v0.27/
-- **pyo3-async-runtimes**: https://docs.rs/pyo3-async-runtimes/0.27
-- **Spikard** (async patterns reference): https://github.com/Goldziher/spikard
+- **PyO3 Documentation**: <https://pyo3.rs/v0.27/>
+- **pyo3-async-runtimes**: <https://docs.rs/pyo3-async-runtimes/0.27>
+- **Spikard** (async patterns reference): <https://github.com/Goldziher/spikard>
 - **Kreuzberg Core**: `../kreuzberg/`
 
 ## Performance Best Practices
@@ -325,6 +331,7 @@ uv run python tests/benchmark_async_simple.py
 ### For Plugin Authors
 
 1. **Use async for I/O-bound operations**:
+
    ```python
    async def process_image(self, image_bytes, language):
        async with httpx.AsyncClient() as client:
@@ -333,6 +340,7 @@ uv run python tests/benchmark_async_simple.py
    ```
 
 2. **Use sync for CPU-bound operations**:
+
    ```python
    def process_image(self, image_bytes, language):
        # CPU-intensive operation
@@ -341,6 +349,7 @@ uv run python tests/benchmark_async_simple.py
    ```
 
 3. **Call `init_async_runtime()` once at startup** (optional, auto-initializes):
+
    ```python
    from kreuzberg._internal_bindings import init_async_runtime
    init_async_runtime()

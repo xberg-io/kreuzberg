@@ -2,6 +2,7 @@
 name: Extractor Fallback Chain
 priority: high
 ---
+
 Implement robust fallback when primary extraction fails
 
 - Select highest-priority extractor for MIME type

@@ -2,6 +2,7 @@
 name: Language Support Declaration
 priority: high
 ---
+
 Accurately declare language support
 
 - List all supported languages

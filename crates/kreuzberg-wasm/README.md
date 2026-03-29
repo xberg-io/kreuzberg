@@ -74,6 +74,7 @@ Install via one of the supported package managers:
 
 
 **npm:**
+
 ```bash
 npm install @kreuzberg/wasm
 ```
@@ -82,6 +83,7 @@ npm install @kreuzberg/wasm
 
 
 **pnpm:**
+
 ```bash
 pnpm add @kreuzberg/wasm
 ```
@@ -90,6 +92,7 @@ pnpm add @kreuzberg/wasm
 
 
 **yarn:**
+
 ```bash
 yarn add @kreuzberg/wasm
 ```

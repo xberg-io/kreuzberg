@@ -105,6 +105,7 @@ README templates are Jinja2 files with access to:
 ### Template Variables
 
 From configuration:
+
 - `{{ description }}` - Language description
 - `{{ version }}` - Version number
 - `{{ license }}` - License type
@@ -134,6 +135,7 @@ Includes code snippets from the docs/snippets directory:
 **Snippet Formats:**
 
 Markdown (.md):
+
 ```markdown
 # Title
 
@@ -142,7 +144,9 @@ Some explanation...
 ```python title="Python"
 # Code here
 ```
-```
+
+
+```text
 
 Raw code files (.py, .go, etc.):
 ```python
@@ -176,7 +180,7 @@ The `include_snippet_filter` function handles:
 
 ## CLI Arguments
 
-```
+```text
 --language LANG        Generate README for specific language only
 --dry-run             Preview generation without writing to disk
 --validate            Validate existing READMEs match generated output
@@ -303,6 +307,7 @@ python scripts/generate_readme.py --language python -v
 - Jinja2: `pip install jinja2`
 
 Install together:
+
 ```bash
 pip install pyyaml jinja2
 ```
@@ -325,11 +330,13 @@ pip install pyyaml jinja2
 2. Create `scripts/readme_templates/rust.md.jinja`
 
 3. Test generation:
+
 ```bash
 python scripts/generate_readme.py --language rust --dry-run
 ```
 
 4. Commit templates and config:
+
 ```bash
 git add scripts/readme_config.yaml scripts/readme_templates/rust.md.jinja
 git commit -m "docs: add Rust README template"

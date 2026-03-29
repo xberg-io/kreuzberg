@@ -2,6 +2,7 @@
 name: Plugin Isolation
 priority: high
 ---
+
 Plugins must not depend on or interfere with each other
 
 - Plugins have independent initialization

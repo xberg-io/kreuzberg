@@ -42,26 +42,31 @@ Test all variants with default settings:
 ### Common Commands
 
 **Test only core variant:**
+
 ```bash
 ./scripts/test/test-docker-config-local.sh --variant core
 ```
 
 **Test only full variant:**
+
 ```bash
 ./scripts/test/test-docker-config-local.sh --variant full
 ```
 
 **Enable verbose output:**
+
 ```bash
 ./scripts/test/test-docker-config-local.sh --verbose
 ```
 
 **Keep containers after testing:**
+
 ```bash
 ./scripts/test/test-docker-config-local.sh --keep-containers
 ```
 
 **Combine multiple options:**
+
 ```bash
 ./scripts/test/test-docker-config-local.sh --variant full --verbose --keep-containers
 ```
@@ -73,6 +78,7 @@ Test all variants with default settings:
 **What it tests**: System-wide configuration path (recommended)
 
 **Docker command**:
+
 ```bash
 docker run -v /local/config.toml:/etc/kreuzberg/kreuzberg.toml:ro kreuzberg:full
 ```
@@ -86,6 +92,7 @@ docker run -v /local/config.toml:/etc/kreuzberg/kreuzberg.toml:ro kreuzberg:full
 **What it tests**: User-level configuration path (alternative location)
 
 **Docker command**:
+
 ```bash
 docker run -v /local/config.toml:/app/.config/kreuzberg/config.toml:ro kreuzberg:full
 ```
@@ -99,6 +106,7 @@ docker run -v /local/config.toml:/app/.config/kreuzberg/config.toml:ro kreuzberg
 **What it tests**: Explicit configuration path specification
 
 **Docker command**:
+
 ```bash
 docker run \
   -v /local/config.toml:/app/custom-config.toml:ro \
@@ -116,6 +124,7 @@ docker run \
 **What it tests**: Environment variables override config file settings
 
 **Docker command**:
+
 ```bash
 docker run \
   -v /local/config.toml:/etc/kreuzberg/kreuzberg.toml:ro \
@@ -132,6 +141,7 @@ docker run \
 **What it tests**: Configuration in TOML format
 
 **Config file**:
+
 ```toml
 [server]
 host = "0.0.0.0"
@@ -152,6 +162,7 @@ language = "eng"
 **What it tests**: Configuration in YAML format
 
 **Config file**:
+
 ```yaml
 server:
   host: "0.0.0.0"
@@ -172,6 +183,7 @@ ocr:
 **What it tests**: Configuration in JSON format
 
 **Config file**:
+
 ```json
 {
   "server": {
@@ -195,6 +207,7 @@ ocr:
 **What it tests**: Security of read-only mounted volumes
 
 **Docker command**:
+
 ```bash
 docker run -v /local/config.toml:/etc/kreuzberg/kreuzberg.toml:ro kreuzberg:full
 ```
@@ -207,7 +220,7 @@ docker run -v /local/config.toml:/etc/kreuzberg/kreuzberg.toml:ro kreuzberg:full
 
 ### Success Output
 
-```
+```text
 ╔════════════════════════════════════════════════════════╗
 ║ Docker Configuration Volume Mount Test Suite           ║
 ╚════════════════════════════════════════════════════════╝
@@ -226,7 +239,7 @@ Test 01: Volume mount to /etc/kreuzberg/kreuzberg.toml (variant: core)
 
 ### Failure Output
 
-```
+```text
 Test 02: Custom path with --config flag (variant: core)
 [FAIL] Test failed: Failed to start container with custom --config flag
 [FAIL]   Details: Container logs:
@@ -235,7 +248,7 @@ Test 02: Custom path with --config flag (variant: core)
 
 ### Summary
 
-```
+```text
 ╔════════════════════════════════════════════════════════╗
 ║ Test Summary                                           ║
 ╚════════════════════════════════════════════════════════╝
@@ -259,6 +272,7 @@ Tested Variants:
 ```
 
 Verbose output shows:
+
 - Container IDs
 - Docker arguments
 - Service startup timing
@@ -315,7 +329,7 @@ docker rm test-container
 
 ### Docker Not Found
 
-```
+```text
 [ERROR] Docker is not installed or not in PATH
 ```
 
@@ -328,7 +342,7 @@ export PATH=$PATH:/usr/local/bin  # or wherever docker is installed
 
 ### Docker Daemon Not Running
 
-```
+```text
 [ERROR] Docker daemon is not running or you don't have permissions
 ```
 
@@ -347,7 +361,7 @@ docker ps
 
 ### Image Not Found
 
-```
+```text
 [WARN] Skipping tests for variant: full (image not found)
 ```
 
@@ -359,7 +373,7 @@ docker build -f docker/Dockerfile.full -t kreuzberg:full .
 
 ### Port Already in Use
 
-```
+```text
 [FAIL] Test failed: Failed to start container
 [FAIL]   Details: port is already allocated
 ```
@@ -377,28 +391,32 @@ docker ps -a --filter "name=kreuzberg-config-test" --format "{{.Names}}" | \
 
 ### Health Check Timeout
 
-```
+```text
 [FAIL] Test failed: Service failed to start (health check timeout)
 ```
 
 **Debugging**:
 
 1. Check container is still running:
+
 ```bash
 docker ps | grep kreuzberg-config-test
 ```
 
 2. View container logs:
+
 ```bash
 docker logs <container-name>
 ```
 
 3. Check if service is binding to port:
+
 ```bash
 docker exec <container-name> netstat -tuln | grep 8000
 ```
 
 4. Increase timeout (edit script):
+
 ```bash
 TIMEOUT_SECONDS=60  # Change from 30
 ```

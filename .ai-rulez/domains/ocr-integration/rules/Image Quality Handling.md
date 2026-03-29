@@ -2,6 +2,7 @@
 name: Image Quality Handling
 priority: high
 ---
+
 Handle diverse image qualities robustly
 
 - Process blurry images with preprocessing

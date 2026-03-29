@@ -10,7 +10,7 @@ This crate provides Ruby bindings to the Rust core library (`crates/kreuzberg`) 
 
 ### Binding Layers
 
-```
+```text
 Ruby Package (packages/ruby/)
     ↓
 Magnus Bindings (packages/ruby/ext/kreuzberg_rb/native) ← This crate
@@ -35,6 +35,7 @@ Unlike NAPI-RS (Node.js) and PyO3 (Python), Magnus **does not have a pyo3-async-
 #### Async Functions Use Tokio Runtime with GVL Blocking
 
 **Implementation** (from `src/lib.rs:584-602`):
+
 ```rust
 fn extract_file(args: &[Value]) -> Result<RHash, Error> {
     let ruby = Ruby::get().expect("Ruby not initialized");
@@ -58,12 +59,14 @@ fn extract_file(args: &[Value]) -> Result<RHash, Error> {
 ```
 
 **What This Means**:
+
 - ✅ **Works correctly** - Executes async Rust code successfully
 - ⚠️ **Blocks Ruby thread** - Ruby thread frozen during async operations
 - ❌ **No concurrency** - No performance benefit over synchronous calls from Ruby's perspective
 - ❌ **GVL held** - Global VM Lock held during entire async operation
 
 **Ruby Usage**:
+
 ```ruby
 # This looks like it might be async, but it blocks the Ruby thread
 result = Kreuzberg.extract_file("document.pdf")
@@ -85,11 +88,13 @@ result = Kreuzberg.extract_file("document.pdf")
 > "Ruby does have a function to release the GVL called `rb_thread_call_without_gvl`, but it's hard to use correctly and Magnus doesn't expose it yet."
 
 **Implications**:
+
 - Async Rust operations **block the Ruby GVL**
 - No concurrent Ruby execution during async Rust calls
 - Performance similar to synchronous operations from Ruby's perspective
 
 **Future Enhancement**: Safe `rb_thread_call_without_gvl` integration could enable:
+
 - True concurrent async operations
 - GVL release during Rust async waits
 - Performance improvements for I/O-bound operations
@@ -99,6 +104,7 @@ result = Kreuzberg.extract_file("document.pdf")
 Both approaches currently have **equivalent performance** from Ruby's perspective:
 
 **Synchronous Function**:
+
 ```rust
 fn extract_file_sync(args: &[Value]) -> Result<RHash, Error> {
     let config = parse_extraction_config(&ruby, opts)?;
@@ -109,6 +115,7 @@ fn extract_file_sync(args: &[Value]) -> Result<RHash, Error> {
 ```
 
 **Asynchronous Function**:
+
 ```rust
 fn extract_file(args: &[Value]) -> Result<RHash, Error> {
     let config = parse_extraction_config(&ruby, opts)?;
@@ -136,6 +143,7 @@ Kreuzberg.register_post_processor("uppercase", ->(result) {
 ```
 
 **Implementation** (`src/lib.rs:831-939`):
+
 - Wraps Ruby Proc in `RubyPostProcessor` struct
 - Implements `PostProcessor` trait
 - Marked `unsafe impl Send + Sync` (safe due to Ruby GVL)
@@ -150,6 +158,7 @@ Kreuzberg.register_validator("min_length", ->(result) {
 ```
 
 **Implementation** (`src/lib.rs:954-1047`):
+
 - Wraps Ruby Proc in `RubyValidator` struct
 - Implements `Validator` trait
 - Validates extraction results
@@ -173,6 +182,7 @@ Kreuzberg.register_ocr_backend("custom", CustomOcr.new)
 ```
 
 **Implementation** (`src/lib.rs:1070-1169`):
+
 - Wraps Ruby object in `RubyOcrBackend` struct
 - Implements `OcrBackend` trait
 - Calls Ruby methods for OCR processing
@@ -198,6 +208,7 @@ unsafe impl Sync for RubyPostProcessor {}
 ```
 
 **Justification**:
+
 - Ruby's Global VM Lock ensures thread safety
 - `magnus::Value` is thread-safe under GVL
 - Rust async runtime can safely schedule Ruby callbacks
@@ -244,8 +255,8 @@ All features are passed through from the `kreuzberg` crate via `features = ["ful
 
 ## References
 
-- **Magnus Documentation**: https://docs.rs/magnus
-- **Magnus GitHub**: https://github.com/matsadler/magnus
+- **Magnus Documentation**: <https://docs.rs/magnus>
+- **Magnus GitHub**: <https://github.com/matsadler/magnus>
 - **Kreuzberg Core**: `../kreuzberg/`
 - **Ruby Package**: `../../packages/ruby/`
 
@@ -254,6 +265,7 @@ All features are passed through from the `kreuzberg` crate via `features = ["ful
 ### For Plugin Authors
 
 1. **Sync is currently equivalent to async**: Both block the Ruby GVL
+
    ```ruby
    # These have equivalent performance
    result = Kreuzberg.extract_file_sync("document.pdf")
@@ -261,6 +273,7 @@ All features are passed through from the `kreuzberg` crate via `features = ["ful
    ```
 
 2. **Use Ruby threads for concurrency**:
+
    ```ruby
    # Process multiple files concurrently
    files = ["doc1.pdf", "doc2.pdf", "doc3.pdf"]
@@ -271,6 +284,7 @@ All features are passed through from the `kreuzberg` crate via `features = ["ful
    ```
 
 3. **Batch API is more efficient**:
+
    ```ruby
    # Prefer batch API for multiple files
    results = Kreuzberg.batch_extract_files_sync(["doc1.pdf", "doc2.pdf"])
@@ -310,12 +324,14 @@ All features are passed through from the `kreuzberg` crate via `features = ["ful
 ### When to Use Ruby Bindings
 
 **Ruby bindings are best for**:
+
 - ✅ **Rails applications** (ActiveJob for background processing)
 - ✅ **Ruby scripts** (existing Ruby codebases)
 - ✅ **Simple extraction** (single-file processing)
 - ✅ **Batch processing** (batch API handles concurrency)
 
 **Consider other bindings for**:
+
 - ❌ **High concurrency** (use Node.js/NAPI-RS instead)
 - ❌ **Real-time processing** (use Node.js/NAPI-RS instead)
 - ❌ **I/O-bound workloads** (use Python/PyO3 or Node.js/NAPI-RS)
@@ -339,12 +355,14 @@ fn process_document(path: String) -> String {
 ```
 
 **How it works**:
+
 - Uses `rb_thread_call_without_gvl` internally (the hard-to-use-correctly function)
 - Provides `#[without_gvl]` attribute macro for safe GVL release
 - Enforces safety via `GvlSafe` trait (similar to `Send` + `Sync`)
 - Functions can only accept/return types implementing `GvlSafe`
 
 **Dependencies**:
+
 ```toml
 [dependencies]
 lucchetto = "0.4.0"
@@ -353,11 +371,13 @@ rb-sys = "0"
 ```
 
 **Safety Model**:
+
 - `GvlSafe` trait prevents accessing Ruby objects from GVL-free code
 - Custom types can implement `GvlSafe` if they don't interact with Ruby VM
 - Compile-time verification via trait bounds
 
 **Limitations**:
+
 - ⚠️ **Experimental**: Author notes potential memory bugs and unsafe code
 - ⚠️ **0.4.0 version**: Early stage, API may change
 - ⚠️ **Documentation**: 0% coverage, review source code before use
@@ -395,11 +415,13 @@ fn extract_file_sync(args: &[Value]) -> Result<RHash, Error> {
 ```
 
 **Performance Impact**:
+
 - ✅ **Enables true concurrency**: Ruby threads can run during Rust operations
 - ✅ **No GVL blocking**: Long operations don't freeze Ruby runtime
 - ✅ **Thread-level parallelism**: Multiple Ruby threads can process different files
 
 **Recommendation**:
+
 - **Monitor lucchetto development** before production use
 - **Test thoroughly** in development environment
 - **Consider for CPU-bound operations** (PDF extraction, OCR, image processing)
@@ -415,8 +437,9 @@ Potential areas for async enhancement:
 4. **Streaming results** - Chunked extraction without blocking GVL
 
 **Contributing**: If you're interested in improving async support, check:
-- Lucchetto crate: https://github.com/Maaarcocr/lucchetto
-- Magnus GitHub Issues: https://github.com/matsadler/magnus/issues
+
+- Lucchetto crate: <https://github.com/Maaarcocr/lucchetto>
+- Magnus GitHub Issues: <https://github.com/matsadler/magnus/issues>
 - `rb_thread_call_without_gvl` discussions
 - Ruby Fiber-based async patterns
 

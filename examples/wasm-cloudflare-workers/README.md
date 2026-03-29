@@ -74,6 +74,7 @@ npm run typecheck
 Health check endpoint.
 
 **Response:**
+
 ```json
 {
   "status": "healthy",
@@ -87,6 +88,7 @@ Health check endpoint.
 API documentation and available endpoints.
 
 **Response:**
+
 ```json
 {
   "name": "Kreuzberg WASM API",
@@ -101,10 +103,12 @@ API documentation and available endpoints.
 Extract text and structured data from documents.
 
 **Request:**
+
 - Content-Type: `multipart/form-data`
 - Form field: `file` (required) - Document file to process
 
 **Example:**
+
 ```bash
 curl -X POST \
   -F "file=@document.pdf" \
@@ -113,6 +117,7 @@ curl -X POST \
 ```
 
 **Response:**
+
 ```json
 {
   "text": "Extracted text content...",
@@ -134,6 +139,7 @@ curl -X POST \
 ```
 
 **Status Codes:**
+
 - `200 OK` - Extraction successful
 - `400 Bad Request` - Missing or invalid file
 - `404 Not Found` - Unknown endpoint
@@ -156,6 +162,7 @@ All errors return JSON with consistent format:
 ```
 
 **Common Error Codes:**
+
 - `MISSING_FILE` - No file provided
 - `FILE_TOO_LARGE` - File exceeds size limit
 - `UNSUPPORTED_FILE_TYPE` - Document format not supported
@@ -173,6 +180,7 @@ npm run deploy
 ```
 
 This will deploy to your Cloudflare account. You'll need:
+
 1. Cloudflare account credentials
 2. Domain configured in Cloudflare (for production)
 
@@ -216,10 +224,12 @@ const CORS_HEADERS = {
 ### Timeouts
 
 Cloudflare Workers have different timeout limits:
+
 - **Free tier**: 10 seconds CPU time
 - **Pro/Business**: 30 seconds CPU time
 
 For large files, consider:
+
 1. Using smaller files for testing
 2. Upgrading to Pro/Business plan
 3. Implementing chunked processing
@@ -233,6 +243,7 @@ Cloudflare Workers provide sub-millisecond startup times. WASM module loading ha
 ### Memory Usage
 
 The WASM module and processing consume:
+
 - ~30MB base module size
 - ~50-100MB per large document extraction
 - Available memory: Worker isolated context (~128MB)
@@ -278,7 +289,7 @@ console.log(data);
 
 ### Project Structure
 
-```
+```text
 src/
 ├── index.ts          # Main worker handler with all endpoints
 └── types/            # TypeScript type definitions
@@ -301,6 +312,7 @@ Full TypeScript support with strict mode enabled.
 ### "Module not found: @kreuzberg/wasm"
 
 Ensure the package is installed:
+
 ```bash
 npm install @kreuzberg/wasm
 ```
@@ -308,6 +320,7 @@ npm install @kreuzberg/wasm
 ### "WASM module not available"
 
 The WASM module requires proper bundler support. Make sure:
+
 1. You're using the correct Node.js version (18+)
 2. The bundler is configured properly (handled by wrangler)
 3. WASM modules are available in node_modules
@@ -315,6 +328,7 @@ The WASM module requires proper bundler support. Make sure:
 ### Processing Timeouts
 
 If files consistently timeout:
+
 1. Try with smaller files first
 2. Check available CPU time (upgrade plan if needed)
 3. Monitor worker logs in Cloudflare dashboard
@@ -322,10 +336,12 @@ If files consistently timeout:
 ### Large File Issues
 
 Cloudflare Workers have memory limits:
+
 - Free/Pro: ~128MB available per request
 - Business: Higher limits available
 
 For files >50MB, consider:
+
 1. Preprocessing/compression on client
 2. Using the Node.js version of Kreuzberg for larger batches
 3. Implementing chunked processing
@@ -335,6 +351,7 @@ For files >50MB, consider:
 ### Input Validation
 
 The example includes:
+
 - File size validation (100MB limit)
 - File type validation
 - Form data validation
@@ -353,6 +370,7 @@ const CORS_HEADERS = {
 ### Rate Limiting
 
 Implement using Cloudflare's rate limiting rules in dashboard:
+
 1. Go to Workers Routes
 2. Configure rate limiting rules
 3. Set thresholds per IP/path

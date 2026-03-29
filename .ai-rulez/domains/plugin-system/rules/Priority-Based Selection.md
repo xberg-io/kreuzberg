@@ -2,6 +2,7 @@
 name: Priority-Based Selection
 priority: high
 ---
+
 Use priority to arbitrate between multiple plugins
 
 - Higher priority plugins selected first (255 = highest)

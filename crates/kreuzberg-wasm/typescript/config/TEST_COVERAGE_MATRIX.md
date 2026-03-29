@@ -5,6 +5,7 @@ Comprehensive mapping of 15 configuration types to test coverage across all test
 ## Coverage by Configuration Type
 
 ### 1. ExtractionConfig (Root Configuration)
+
 **File**: `extraction-config.spec.ts` (194 LOC)
 
 | Test Category | Coverage |
@@ -23,6 +24,7 @@ Comprehensive mapping of 15 configuration types to test coverage across all test
 ---
 
 ### 2. ChunkingConfig
+
 **File**: `chunking-config.spec.ts` (153 LOC)
 
 | Test Category | Coverage |
@@ -41,6 +43,7 @@ Comprehensive mapping of 15 configuration types to test coverage across all test
 ---
 
 ### 3. KeywordConfig (with YAKE/RAKE)
+
 **File**: `keyword-config.spec.ts` (302 LOC)
 
 | Test Category | Coverage |
@@ -60,6 +63,7 @@ Comprehensive mapping of 15 configuration types to test coverage across all test
 ---
 
 ### 4. ImageExtractionConfig
+
 **File**: `image-extraction-config.spec.ts` (209 LOC)
 
 | Test Category | Coverage |
@@ -79,6 +83,7 @@ Comprehensive mapping of 15 configuration types to test coverage across all test
 ---
 
 ### 5. OcrConfig
+
 **File**: `ocr-config.spec.ts` (284 LOC)
 
 | Test Category | Coverage |
@@ -99,6 +104,7 @@ Comprehensive mapping of 15 configuration types to test coverage across all test
 ---
 
 ### 6. TesseractConfig
+
 **File**: `simple-configs.spec.ts` (part 5, lines 434-560)
 
 | Test Category | Coverage |
@@ -117,6 +123,7 @@ Comprehensive mapping of 15 configuration types to test coverage across all test
 ---
 
 ### 7. PdfConfig
+
 **File**: `pdf-config.spec.ts` (212 LOC)
 
 | Test Category | Coverage |
@@ -136,6 +143,7 @@ Comprehensive mapping of 15 configuration types to test coverage across all test
 ---
 
 ### 8. PageExtractionConfig
+
 **File**: `simple-configs.spec.ts` (part 3, lines 188-251)
 
 | Test Category | Coverage |
@@ -153,6 +161,7 @@ Comprehensive mapping of 15 configuration types to test coverage across all test
 ---
 
 ### 9. LanguageDetectionConfig
+
 **File**: `simple-configs.spec.ts` (part 4, lines 252-322)
 
 | Test Category | Coverage |
@@ -169,6 +178,7 @@ Comprehensive mapping of 15 configuration types to test coverage across all test
 ---
 
 ### 10. TokenReductionConfig
+
 **File**: `simple-configs.spec.ts` (part 1, lines 19-65)
 
 | Test Category | Coverage |
@@ -185,6 +195,7 @@ Comprehensive mapping of 15 configuration types to test coverage across all test
 ---
 
 ### 11. PostProcessorConfig
+
 **File**: `simple-configs.spec.ts` (part 2, lines 66-147)
 
 | Test Category | Coverage |
@@ -201,6 +212,7 @@ Comprehensive mapping of 15 configuration types to test coverage across all test
 ---
 
 ### 12. ImagePreprocessingConfig
+
 **File**: `composite-configs.spec.ts` (lines 55-77)
 
 | Test Category | Coverage |
@@ -216,6 +228,7 @@ Comprehensive mapping of 15 configuration types to test coverage across all test
 ---
 
 ### 13. HierarchyConfig
+
 **File**: `composite-configs.spec.ts` (lines 15-56)
 
 | Test Category | Coverage |
@@ -232,6 +245,7 @@ Comprehensive mapping of 15 configuration types to test coverage across all test
 ---
 
 ### 14. FontConfig
+
 **File**: `pdf-config.spec.ts` (lines 1-85)
 
 | Test Category | Coverage |
@@ -247,6 +261,7 @@ Comprehensive mapping of 15 configuration types to test coverage across all test
 ---
 
 ### 15. EmbeddingConfig
+
 **File**: `composite-configs.spec.ts` (integration patterns)
 
 | Test Category | Coverage |
@@ -287,24 +302,28 @@ Comprehensive mapping of 15 configuration types to test coverage across all test
 ## Test Quality Assurance
 
 ### Type Coverage
+
 - All 15 configuration types tested
 - All public properties tested
 - All nested configurations tested
 - All optional fields tested
 
 ### Serialization Coverage
+
 - JSON serialization round-trip
 - WASM boundary handling
 - Worker communication (structuredClone)
 - Undefined field handling
 
 ### Validation Coverage
+
 - Type enforcement (typeof checks)
 - Array type validation
 - Optional field handling
 - Boundary value testing
 
 ### Edge Case Coverage
+
 - Zero values
 - Maximum values
 - Empty collections
@@ -338,6 +357,7 @@ vitest --watch crates/kreuzberg-wasm/typescript/config/
 ## Conclusion
 
 This comprehensive test suite provides:
+
 - 100% coverage of all 15 configuration types
 - 400+ individual test cases
 - Real-world usage scenarios

@@ -2,6 +2,7 @@
 name: Python Plugin Discovery
 priority: high
 ---
+
 Dynamically discover Python plugins
 
 - Scan module paths for plugin classes

@@ -2,6 +2,7 @@
 description: "ocr error recovery"
 name: ocr-error-recovery
 ---
+
 Handle OCR failures gracefully
 
 1. Attempt OCR with selected backend

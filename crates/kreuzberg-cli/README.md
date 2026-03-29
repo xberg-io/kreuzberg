@@ -12,7 +12,7 @@ The CLI supports 91+ file formats including PDF, DOCX, PPTX, XLSX, images, HTML,
 
 ### Binary Structure
 
-```
+```text
 Kreuzberg Core Library (crates/kreuzberg)
     |
 Kreuzberg CLI (crates/kreuzberg-cli) <- This crate
@@ -267,6 +267,7 @@ The CLI supports configuration files in TOML, YAML, or JSON formats. Configurati
 5. **Default**: Uses built-in defaults if no config found
 
 Configuration precedence (highest to lowest):
+
 1. Individual CLI flags (`--ocr`, `--chunk-size`, etc.)
 2. Inline JSON config (`--config-json` or `--config-json-base64`)
 3. Config file (`--config path.toml`)
@@ -344,6 +345,7 @@ kreuzberg extract <PATH> [OPTIONS]
 ```
 
 **Options:**
+
 - `--config <PATH>`: Configuration file (TOML, YAML, or JSON)
 - `--config-json <JSON>`: Inline JSON configuration
 - `--config-json-base64 <BASE64>`: Base64-encoded JSON configuration
@@ -414,6 +416,7 @@ kreuzberg batch <PATHS>... [OPTIONS]
 ```
 
 **Options:**
+
 - `--config <PATH>`: Configuration file (TOML, YAML, or JSON)
 - `--config-json <JSON>`: Inline JSON configuration
 - `--config-json-base64 <BASE64>`: Base64-encoded JSON configuration
@@ -449,6 +452,7 @@ kreuzberg detect <PATH> [OPTIONS]
 ```
 
 **Options:**
+
 - `--format <FORMAT>`: Output format (`text` or `json`), default: `text`
 
 **Examples:**
@@ -470,6 +474,7 @@ kreuzberg formats [OPTIONS]
 ```
 
 **Options:**
+
 - `--format <FORMAT>`: Output format (`text` or `json`), default: `text`
 
 **Examples:**
@@ -501,6 +506,7 @@ kreuzberg cache stats [--cache-dir <DIR>] [--format <FORMAT>]
 ```
 
 **Options:**
+
 - `--cache-dir <DIR>`: Cache directory (default: `.kreuzberg` in current directory)
 - `--format <FORMAT>`: Output format (`text` or `json`), default: `text`
 
@@ -513,6 +519,7 @@ kreuzberg cache clear [--cache-dir <DIR>] [--format <FORMAT>]
 ```
 
 **Options:**
+
 - `--cache-dir <DIR>`: Cache directory (default: `.kreuzberg` in current directory)
 - `--format <FORMAT>`: Output format (`text` or `json`), default: `text`
 
@@ -525,6 +532,7 @@ kreuzberg cache warm [--cache-dir <DIR>] [--format <FORMAT>] [--all-embeddings] 
 ```
 
 **Options:**
+
 - `--cache-dir <DIR>`: Cache directory (default: `.kreuzberg` or `KREUZBERG_CACHE_DIR`)
 - `--format <FORMAT>`: Output format (`text` or `json`), default: `text`
 - `--all-embeddings`: Download all 4 embedding model presets (fast, balanced, quality, multilingual)
@@ -539,6 +547,7 @@ kreuzberg cache manifest [--format <FORMAT>]
 ```
 
 **Options:**
+
 - `--format <FORMAT>`: Output format (`text` or `json`), default: `json`
 
 **Examples:**
@@ -572,6 +581,7 @@ kreuzberg serve [OPTIONS]
 ```
 
 **Options:**
+
 - `-H, --host <HOST>`: Host to bind to (default: `127.0.0.1`)
 - `--port <PORT>`: Port to bind to (default: `8000`)
 - `--config <PATH>`: Configuration file (TOML, YAML, or JSON)
@@ -598,6 +608,7 @@ kreuzberg mcp [OPTIONS]
 ```
 
 **Options:**
+
 - `--config <PATH>`: Configuration file (TOML, YAML, or JSON)
 - `--transport <MODE>`: Transport mode: `stdio` (default) or `http`
 - `--host <HOST>`: HTTP host (only for `--transport http`, default: `127.0.0.1`)
@@ -647,6 +658,7 @@ kreuzberg embed [OPTIONS]
 ```
 
 **Options:**
+
 - `--text <TEXT>`: Text to embed (repeatable for batch embedding; reads from stdin if omitted)
 - `--preset <PRESET>`: Embedding preset (`fast`, `balanced`, `quality`, `multilingual`), default: `balanced`
 - `--format <FORMAT>`: Output format (`text` or `json`), default: `json`
@@ -676,6 +688,7 @@ kreuzberg chunk [OPTIONS]
 ```
 
 **Options:**
+
 - `--text <TEXT>`: Text to chunk (reads from stdin if omitted)
 - `--config <PATH>`: Configuration file (TOML, YAML, or JSON)
 - `--chunk-size <SIZE>`: Chunk size in characters
@@ -738,6 +751,7 @@ kreuzberg version [--format <FORMAT>]
 ```
 
 **Options:**
+
 - `--format <FORMAT>`: Output format (`text` or `json`), default: `text`
 
 **Examples:**
@@ -815,39 +829,46 @@ RUST_LOG=kreuzberg=debug kreuzberg extract document.pdf
 ## Performance Tips
 
 1. **Use batch processing** for multiple files instead of sequential extraction:
+
    ```bash
    kreuzberg batch *.pdf  # Parallel processing
    ```
 
 2. **Enable caching** to avoid reprocessing the same documents:
+
    ```bash
    # Cache is enabled by default
    kreuzberg extract document.pdf
    ```
 
 3. **Use appropriate chunk sizes** for LLM processing:
+
    ```bash
    kreuzberg extract long.pdf --chunk true --chunk-size 2000
    ```
 
 4. **Tune OCR settings** for better performance:
+
    ```bash
    kreuzberg extract scanned.pdf --ocr true
    # Adjust tesseract_config in configuration file for optimization
    ```
 
 5. **Monitor cache size** and clear when needed:
+
    ```bash
    kreuzberg cache stats
    kreuzberg cache clear
    ```
 
 6. **Pre-warm models** for containerized deployments:
+
    ```bash
    kreuzberg cache warm --all-embeddings
    ```
 
 7. **Use hardware acceleration** when available:
+
    ```bash
    kreuzberg extract scanned.pdf --ocr true --acceleration coreml  # macOS
    kreuzberg extract scanned.pdf --ocr true --acceleration cuda    # NVIDIA GPU
@@ -856,6 +877,7 @@ RUST_LOG=kreuzberg=debug kreuzberg extract document.pdf
 ## Features
 
 ### Default Features
+
 None by default. The binary includes core extraction.
 
 ### Optional Features
@@ -983,8 +1005,8 @@ RUST_LOG=debug cargo test -p kreuzberg-cli -- --nocapture
 ## References
 
 - **Kreuzberg Core**: `../kreuzberg/`
-- **Main Documentation**: https://docs.kreuzberg.dev
-- **GitHub Repository**: https://github.com/kreuzberg-dev/kreuzberg
+- **Main Documentation**: <https://docs.kreuzberg.dev>
+- **GitHub Repository**: <https://github.com/kreuzberg-dev/kreuzberg>
 - **Configuration Guide**: See example configuration sections above
 
 ## Contributing

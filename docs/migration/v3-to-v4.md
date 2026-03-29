@@ -156,6 +156,7 @@ ONNX Runtime is not available in Alpine repositories. Use Debian/Ubuntu base or 
 
 1. Run `sudo ldconfig` after installing ONNX Runtime
 2. Or add library path to `LD_LIBRARY_PATH`:
+
    ```bash title="Terminal"
    export LD_LIBRARY_PATH=/usr/lib:/usr/local/lib:$LD_LIBRARY_PATH
    ```
@@ -168,6 +169,7 @@ ONNX Runtime is not available in Alpine repositories. Use Debian/Ubuntu base or 
 
 1. Install via Homebrew (recommended): `brew install onnxruntime`
 2. Or set `DYLD_FALLBACK_LIBRARY_PATH`:
+
    ```bash title="Terminal"
    export DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib:/usr/local/lib
    ```
@@ -1271,7 +1273,7 @@ result.pages.each do |page|
 end
 ```
 
-##### C#
+##### C
 
 **After (v4):**
 

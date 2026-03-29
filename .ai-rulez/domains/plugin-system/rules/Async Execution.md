@@ -2,6 +2,7 @@
 name: Async Execution
 priority: high
 ---
+
 Support non-blocking async OCR execution
 
 - Implement async process_image() trait

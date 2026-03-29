@@ -2,6 +2,7 @@
 name: Telemetry & Observability
 priority: high
 ---
+
 Record extraction telemetry for debugging and optimization
 
 - Use OpenTelemetry spans for extraction operations

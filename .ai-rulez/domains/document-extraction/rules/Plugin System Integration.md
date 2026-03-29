@@ -2,6 +2,7 @@
 name: Plugin System Integration
 priority: high
 ---
+
 Use plugin system for format extensibility
 
 - Register built-in extractors as plugins

@@ -13,6 +13,7 @@ These examples showcase both Object-Oriented Programming (OOP) and procedural AP
 **Purpose**: Introduction to Kreuzberg's core functionality
 
 **Topics Covered**:
+
 - Simple file extraction (OOP and procedural APIs)
 - Extraction with configuration
 - Extracting from bytes
@@ -22,6 +23,7 @@ These examples showcase both Object-Oriented Programming (OOP) and procedural AP
 - Basic error handling
 
 **Run**:
+
 ```bash
 php basic_usage.php
 ```
@@ -33,6 +35,7 @@ php basic_usage.php
 **Purpose**: Demonstrate complex configurations with all available options
 
 **Topics Covered**:
+
 - PDF-specific configuration (page ranges, image extraction)
 - Advanced OCR configuration with Tesseract options
 - Image extraction with size filters and OCR
@@ -43,6 +46,7 @@ php basic_usage.php
 - Dynamic configuration based on file type
 
 **Run**:
+
 ```bash
 php advanced_config.php
 ```
@@ -54,6 +58,7 @@ php advanced_config.php
 **Purpose**: Efficient processing of multiple documents in parallel
 
 **Topics Covered**:
+
 - Batch file extraction (OOP and procedural)
 - Batch extraction from bytes
 - Processing multiple file formats
@@ -64,6 +69,7 @@ php advanced_config.php
 - Mixed file type processing
 
 **Run**:
+
 ```bash
 php batch_processing.php
 ```
@@ -75,6 +81,7 @@ php batch_processing.php
 **Purpose**: Optical Character Recognition from scanned documents and images
 
 **Topics Covered**:
+
 - Basic OCR extraction with Tesseract
 - Multi-language OCR (English, German, etc.)
 - Page Segmentation Mode (PSM) configuration
@@ -87,6 +94,7 @@ php batch_processing.php
 - Performance comparison of OCR configurations
 
 **Run**:
+
 ```bash
 php ocr_example.php
 ```
@@ -98,6 +106,7 @@ php ocr_example.php
 **Purpose**: Text chunking for RAG (Retrieval-Augmented Generation) applications
 
 **Topics Covered**:
+
 - Basic text chunking with overlap
 - Small chunks for fine-grained retrieval
 - Large chunks for context
@@ -110,6 +119,7 @@ php ocr_example.php
 - Comparing chunking strategies
 
 **Run**:
+
 ```bash
 php chunking_example.php
 ```
@@ -121,6 +131,7 @@ php chunking_example.php
 **Purpose**: Generate embeddings for semantic search and RAG
 
 **Topics Covered**:
+
 - Basic embedding generation
 - Different embedding models (MiniLM, MPNet)
 - Normalized vs non-normalized embeddings
@@ -133,6 +144,7 @@ php chunking_example.php
 - Best practices for production use
 
 **Run**:
+
 ```bash
 php embeddings_example.php
 ```
@@ -144,6 +156,7 @@ php embeddings_example.php
 **Purpose**: Comprehensive error handling strategies
 
 **Topics Covered**:
+
 - Basic error handling with try-catch
 - File not found errors
 - Invalid file format handling
@@ -159,6 +172,7 @@ php embeddings_example.php
 - Error handling best practices
 
 **Run**:
+
 ```bash
 php error_handling.php
 ```
@@ -170,6 +184,7 @@ php error_handling.php
 **Purpose**: Extract and work with detailed document metadata
 
 **Topics Covered**:
+
 - Basic metadata extraction
 - Detailed metadata fields (title, author, dates, etc.)
 - Custom metadata fields
@@ -183,6 +198,7 @@ php error_handling.php
 - Exporting metadata to JSON
 
 **Run**:
+
 ```bash
 php metadata_extraction.php
 ```
@@ -194,6 +210,7 @@ php metadata_extraction.php
 **Purpose**: Non-blocking document extraction using the async API
 
 **Topics Covered**:
+
 - Single file async extraction (OOP and procedural APIs)
 - Non-blocking polling with `isReady()` and `tryGetResult()`
 - Blocking wait with timeout via `wait()`
@@ -202,6 +219,7 @@ php metadata_extraction.php
 - Procedural batch async API
 
 **Run**:
+
 ```bash
 php async_extraction.php
 ```
@@ -217,17 +235,20 @@ php async_extraction.php
 ## Installation
 
 1. Install the Kreuzberg PHP extension:
+
 ```bash
 # Follow installation instructions in the main README
 ```
 
 2. Install Composer dependencies:
+
 ```bash
 cd packages/php
 composer install
 ```
 
 3. Run examples:
+
 ```bash
 cd examples/php
 php basic_usage.php
@@ -238,6 +259,7 @@ php basic_usage.php
 All examples demonstrate both API styles:
 
 ### Object-Oriented API
+
 ```php
 use Kreuzberg\Kreuzberg;
 use Kreuzberg\Config\ExtractionConfig;
@@ -247,6 +269,7 @@ $result = $kreuzberg->extractFile('document.pdf');
 ```
 
 ### Procedural API
+
 ```php
 use function Kreuzberg\extract_file;
 
@@ -285,27 +308,32 @@ try {
 ## Common Use Cases
 
 ### Document Processing Pipeline
+
 1. Extract text: `basic_usage.php`
 2. Handle errors: `error_handling.php`
 3. Process in batch: `batch_processing.php`
 
 ### RAG Application
+
 1. Chunk text: `chunking_example.php`
 2. Generate embeddings: `embeddings_example.php`
 3. Store in vector database
 4. Implement semantic search
 
 ### OCR Workflow
+
 1. Configure OCR: `ocr_example.php`
 2. Process scanned documents
 3. Extract tables and images: `metadata_extraction.php`
 
 ### Async Processing
+
 1. Async extraction: `async_extraction.php`
 2. Batch async: `async_extraction.php` (Example 5)
 3. Concurrent extractions for maximum throughput
 
 ### Metadata Extraction
+
 1. Extract metadata: `metadata_extraction.php`
 2. Advanced configuration: `advanced_config.php`
 3. Export to JSON or database
@@ -334,6 +362,7 @@ Examples reference sample documents from `../sample-documents/` directory. Creat
 ## Support
 
 For issues or questions:
+
 - GitHub Issues: [kreuzberg-dev/kreuzberg](https://github.com/kreuzberg-dev/kreuzberg)
 - Documentation: [kreuzberg.dev](https://kreuzberg.dev)
 

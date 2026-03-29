@@ -2,6 +2,7 @@
 name: Plugin Compatibility
 priority: high
 ---
+
 Document plugin compatibility requirements
 
 - Minimum Kreuzberg version

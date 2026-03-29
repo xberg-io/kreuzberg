@@ -8,7 +8,7 @@ This directory contains PHPUnit-based E2E tests that are automatically generated
 
 ## Directory Structure
 
-```
+```text
 e2e/php/
 ├── bootstrap.php          # PHPUnit bootstrap file
 ├── phpunit.xml           # PHPUnit configuration
@@ -36,6 +36,7 @@ cargo run -p kreuzberg-e2e-generator -- generate --lang php
 ### Prerequisites
 
 1. Build and install the Kreuzberg PHP extension:
+
    ```bash
    cd packages/php
    composer install
@@ -147,11 +148,12 @@ Example fixture structure:
 
 ### Extension Not Loaded
 
-```
+```text
 Error: Kreuzberg PHP extension is not loaded.
 ```
 
 **Solution**: Build and install the extension:
+
 ```bash
 cd packages/php
 composer build
@@ -159,7 +161,7 @@ composer build
 
 ### Missing Test Documents
 
-```
+```text
 Error: test_documents directory not found
 ```
 
@@ -185,6 +187,7 @@ These tests can be integrated into CI pipelines. Ensure:
 4. Sufficient memory is allocated
 
 Example CI command:
+
 ```bash
 cd e2e/php && phpunit --testdox
 ```

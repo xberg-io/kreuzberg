@@ -2,6 +2,7 @@
 description: "gil management patterns"
 name: gil-management-patterns
 ---
+
 Manage Python GIL efficiently
 
 1. For quick Python operations:

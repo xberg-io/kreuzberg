@@ -2,6 +2,7 @@
 name: Capability Declaration
 priority: high
 ---
+
 Declare OCR capabilities accurately
 
 - Declare table detection support

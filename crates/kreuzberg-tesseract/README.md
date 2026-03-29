@@ -45,6 +45,7 @@ kreuzberg-tesseract = { version = "1.0.0-rc.1", features = ["dynamic-linking"], 
 ```
 
 **System requirements for dynamic linking:**
+
 - Tesseract 5.x libraries installed (`libtesseract`, `libleptonica`)
 - macOS: `brew install tesseract leptonica`
 - Ubuntu/Debian: `sudo apt-get install libtesseract-dev libleptonica-dev`
@@ -81,7 +82,7 @@ When using dynamic linking with system-installed libraries, you need:
 
 No C++ compiler or CMake required for dynamic linking builds.
 
-For a full development environment checklist (including optional tooling suggestions), see [CONTRIBUTING.md](CONTRIBUTING.md).
+For a full development environment checklist (including optional tooling suggestions), see [CONTRIBUTING.md](../../CONTRIBUTING.md).
 
 ## Environment Variables
 
@@ -126,6 +127,7 @@ The project includes several integration tests that verify OCR functionality. To
    ```
 
 2. Run the tests:
+
    ```bash
    cargo test
    ```
@@ -374,16 +376,18 @@ This project is based on the original [tesseract-rs](https://github.com/cafercan
 
 ## Contributing
 
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+We welcome contributions! Please see our [Contributing Guide](../../CONTRIBUTING.md) for details.
 
 ### Quick Start for Contributors
 
 1. Fork and clone the repository
 2. Install uv and set up git hooks:
+
    ```bash
    curl -LsSf https://astral.sh/uv/install.sh | sh
    uvx prek install
    ```
+
 3. Make your changes following our commit message format
 4. Run tests: `cargo test`
 5. Submit a Pull Request
@@ -394,6 +398,6 @@ Our commit messages follow the [Conventional Commits](https://www.conventionalco
 
 This project uses [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) and [Leptonica](http://leptonica.org/). We are grateful to the maintainers and contributors of these projects.
 
-```
+```text
 
 ```

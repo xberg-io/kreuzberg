@@ -2,6 +2,7 @@
 name: Table Detection Accuracy
 priority: high
 ---
+
 Reliably identify and extract table structure
 
 - Detect tables from hOCR bounding boxes

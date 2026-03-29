@@ -20,7 +20,8 @@
 Keyword extraction automatically identifies important terms and phrases from document text without manual annotation or training. Instead of reading through entire documents, you get a ranked list of the most relevant keywords that capture the document's essence.
 
 **Example**:
-```
+
+```text
 Input Text:
 "Machine learning is a subset of artificial intelligence that enables
 systems to learn and improve from experience without explicit programming.
@@ -171,7 +172,7 @@ top_keywords = [k for k in (result.extracted_keywords or []) if k["score"] > 0.4
 
 **Important**: YAKE scores range from 0.0 to 1.0, where **lower scores indicate higher relevance**.
 
-```
+```text
 Score Range:
 0.0 - 0.2  → Highly relevant (top keywords)
 0.2 - 0.4  → Relevant keywords
@@ -208,6 +209,7 @@ config = KeywordConfig(
 ```
 
 **Practical Values**:
+
 - `window_size=1-2`: Technical documents, narrow domains
 - `window_size=2-3`: General-purpose documents (default works best)
 - `window_size=3-4`: News articles, discussion-heavy documents
@@ -243,7 +245,7 @@ config = KeywordConfig(
 
 **Important**: RAKE scores are unbounded and higher scores indicate higher relevance.
 
-```
+```text
 Score Range:
 0+ - Higher scores = more relevant
 Typical Range:
@@ -287,6 +289,7 @@ config = KeywordConfig(
 ```
 
 **Parameter Effects**:
+
 - `min_word_length`: Higher values filter out short function words
 - `max_words_per_phrase`: Controls phrase complexity
 
@@ -636,6 +639,7 @@ asyncio.run(compare_algorithms("document.pdf"))
 ### 1. Choosing the Right Algorithm
 
 **Use YAKE when:**
+
 - You need general-purpose keyword extraction
 - Your documents are in various domains
 - You want minimal tuning
@@ -643,6 +647,7 @@ asyncio.run(compare_algorithms("document.pdf"))
 - Language support is important
 
 **Use RAKE when:**
+
 - You need multi-word phrase extraction
 - Documents follow consistent structure
 - You can afford language-specific tuning
@@ -949,6 +954,7 @@ result = await extract_file("document.pdf", config=config)
 ### Issue: Getting Too Few Keywords
 
 **Symptoms**:
+
 - Fewer keywords returned than `max_keywords`
 - Only 1-2 keywords extracted from large documents
 
@@ -972,6 +978,7 @@ config.keywords.language = "fr"  # Was "en"
 ### Issue: Getting Too Many Low-Quality Keywords
 
 **Symptoms**:
+
 - Too many irrelevant keywords returned
 - Keywords are mostly stopwords or filler terms
 
@@ -994,6 +1001,7 @@ config.keywords.ngram_range = (1, 2)  # Was (1, 3)
 ### Issue: Wrong Algorithm for Document Type
 
 **Symptoms**:
+
 - YAKE returns mostly single words when you need phrases
 - RAKE returns fewer results than YAKE
 
@@ -1012,6 +1020,7 @@ config.keywords.ngram_range = (1, 1)
 ### Issue: Keyword Extraction Very Slow
 
 **Symptoms**:
+
 - Extraction time increases significantly with keywords enabled
 - CPU usage spikes during keyword processing
 
@@ -1038,6 +1047,7 @@ config.max_concurrent_extractions = 4  # Reduce parallelism
 ### Issue: Keywords Don't Match Document Content
 
 **Symptoms**:
+
 - Extracted keywords seem unrelated to document
 - Different results on similar documents
 

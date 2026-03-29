@@ -2,6 +2,7 @@
 name: Result Enhancement
 priority: high
 ---
+
 Implement post-processors for result enhancement
 
 - Modify ExtractionResult in-place

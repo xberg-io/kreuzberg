@@ -2,6 +2,7 @@
 name: Error Handling in Extractors
 priority: high
 ---
+
 Handle errors and provide recovery options
 
 - Return meaningful error types

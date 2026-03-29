@@ -37,15 +37,18 @@ A comprehensive patch that makes Tesseract compatible with WASM compilation. The
 #### 3. Pointer Type Fixes (src/ccmain/pageiterator.cpp, src/ccmain/pagesegmain.cpp, src/ccmain/tesseractclass.cpp)
 
 **Changed from stack allocation to heap allocation** in `tesseractclass.h`:
+
 - `pixa_debug_` changed from `DebugPixa` to `std::unique_ptr<DebugPixa>`
 - This prevents large allocations on the stack, which is limited in WASM
 
 **Updated all references** throughout the codebase:
+
 - `.get()` calls added where raw pointers are needed
 - Arrow operator `->` replaces dot operator `.` for member access
 - Null checks added before dereferencing to prevent crashes
 
 **Affected functions**:
+
 - `PageIterator::Orientation()` - added null vector check
 - `Tesseract::AutoPageSeg()` - updated pointer passing
 - `Tesseract::SetupPageSegAndDetectOrientation()` - multiple pointer updates

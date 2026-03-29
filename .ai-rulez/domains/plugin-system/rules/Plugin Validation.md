@@ -2,6 +2,7 @@
 name: Plugin Validation
 priority: high
 ---
+
 Validate plugins before registration
 
 - Check trait implementation

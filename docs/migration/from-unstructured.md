@@ -5,12 +5,14 @@ This guide helps you migrate from Unstructured.io to Kreuzberg for document inte
 ## Quick Start
 
 **Unstructured API**:
+
 ```bash
 curl -X POST "https://api.unstructured.io/general/v0/general" \
   -F 'files=@document.pdf'
 ```
 
 **Kreuzberg API**:
+
 ```bash
 curl -X POST "http://localhost:8080/extract" \
   -F 'files=@document.pdf' \
@@ -24,6 +26,7 @@ curl -X POST "http://localhost:8080/extract" \
 Kreuzberg's default output provides richer metadata than Unstructured:
 
 **Kreuzberg Unified**:
+
 ```json
 {
   "content": "Full document text...",
@@ -47,6 +50,7 @@ Kreuzberg's default output provides richer metadata than Unstructured:
 ### Element-Based Output
 
 **Kreuzberg** (when `output_format=element_based`):
+
 ```json
 {
   "elements": [
@@ -82,6 +86,7 @@ Kreuzberg's default output provides richer metadata than Unstructured:
 ```
 
 **Unstructured**:
+
 ```json
 [
   {
@@ -132,6 +137,7 @@ Kreuzberg's default output provides richer metadata than Unstructured:
 ### Python
 
 **Unstructured**:
+
 ```python
 from unstructured.partition.auto import partition
 
@@ -141,6 +147,7 @@ for element in elements:
 ```
 
 **Kreuzberg**:
+
 ```python
 from kreuzberg import extract_bytes
 
@@ -164,6 +171,7 @@ for page in result.pages:
 ### TypeScript
 
 **Unstructured** (via API):
+
 ```typescript
 const formData = new FormData();
 formData.append('files', fileBlob);
@@ -176,6 +184,7 @@ const elements = await response.json();
 ```
 
 **Kreuzberg**:
+
 ```typescript
 import { extractBytes } from 'kreuzberg';
 
@@ -201,6 +210,7 @@ for (const page of result.pages) {
 ### cURL
 
 **Unstructured**:
+
 ```bash
 curl -X POST "https://api.unstructured.io/general/v0/general" \
   -H "unstructured-api-key: $API_KEY" \
@@ -209,6 +219,7 @@ curl -X POST "https://api.unstructured.io/general/v0/general" \
 ```
 
 **Kreuzberg**:
+
 ```bash
 # Element-based output
 curl -X POST "http://localhost:8080/extract" \
@@ -298,14 +309,15 @@ for page in result.pages:
 
 ## Getting Help
 
-- **Documentation**: https://github.com/kreuzberg-dev/kreuzberg
-- **Issues**: https://github.com/kreuzberg-dev/kreuzberg/issues
+- **Documentation**: <https://github.com/kreuzberg-dev/kreuzberg>
+- **Issues**: <https://github.com/kreuzberg-dev/kreuzberg/issues>
 - **Examples**: See `examples/` directory for full workflow samples
 - **API Reference**: See `docs/api/` for endpoint documentation
 
 ## Next Steps
 
 After migration:
+
 1. Review the [Kreuzberg vs Unstructured Comparison](../comparisons/kreuzberg-vs-unstructured.md)
 2. Explore Kreuzberg-specific features (hierarchy, per-page metadata, embeddings)
 3. Optimize your pipeline with native Rust performance

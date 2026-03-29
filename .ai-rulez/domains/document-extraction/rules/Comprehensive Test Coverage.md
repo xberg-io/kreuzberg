@@ -2,6 +2,7 @@
 name: Comprehensive Test Coverage
 priority: high
 ---
+
 Test all extraction code paths
 
 - Unit tests for MIME detection

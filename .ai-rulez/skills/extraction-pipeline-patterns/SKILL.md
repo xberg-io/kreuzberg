@@ -11,6 +11,7 @@ priority: critical
 ## Core Pipeline Architecture
 
 The extraction pipeline (`crates/kreuzberg/src/core/pipeline.rs`, `crates/kreuzberg/src/extraction/`) orchestrates:
+
 1. **Format Detection** - MIME type inference + extension validation -> select appropriate extractor
 2. **Intelligent Extraction** - Route to format-specific extractors (PDF, DOCX, Excel, HTML, images, archives, etc.)
 3. **Fallback Strategies** - Password-protected PDFs, OCR for images, nested archive handling, corrupted file recovery
@@ -102,6 +103,7 @@ Plugin registry loaded at startup, cached for zero-cost lookup.
 Conditional compilation: modules gated with `#[cfg(feature = "...")]`. Runtime `validate_config()` warns if requested feature not compiled in.
 
 ### Feature Flag Critical Rules
+
 1. **Never mix conflicting features** - e.g., `ocr-minimal` + `tesseract` should error at compile time
 2. **Always provide feature diagnostics** - Config validation must warn if feature unavailable
 3. **Default to maximum feature set** - Unless embedded/minimal specifically requested

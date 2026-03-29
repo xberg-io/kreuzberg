@@ -2,6 +2,7 @@
 name: Graceful Backend Degradation
 priority: high
 ---
+
 Continue operation when backends fail
 
 - Catch backend exceptions

@@ -2,6 +2,7 @@
 name: Format Conversion Before Extraction
 priority: high
 ---
+
 Convert legacy Office formats before processing
 
 - Detect legacy DOC, PPT formats

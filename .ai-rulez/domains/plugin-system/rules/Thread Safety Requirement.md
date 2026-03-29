@@ -2,6 +2,7 @@
 name: Thread Safety Requirement
 priority: high
 ---
+
 All plugins must be Send + Sync for concurrent execution
 
 - Plugin implementations must be thread-safe

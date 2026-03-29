@@ -1058,7 +1058,7 @@ Split text into chunks with configurable size and overlap.
 - **Name:** `kreuzberg-mcp`
 - **Title:** Kreuzberg Document Intelligence MCP Server
 - **Version:** Current package version
-- **Website:** https://kreuzberg-dev.github.io/kreuzberg/
+- **Website:** <https://kreuzberg-dev.github.io/kreuzberg/>
 - **Protocol:** MCP (Model Context Protocol)
 - **Transport:** stdio (stdin/stdout)
 

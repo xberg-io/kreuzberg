@@ -2,6 +2,7 @@
 name: Plugin Development Guide
 priority: high
 ---
+
 Provide comprehensive plugin development documentation
 
 - Plugin trait definitions documented

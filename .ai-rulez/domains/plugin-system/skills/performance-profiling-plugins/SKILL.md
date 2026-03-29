@@ -2,6 +2,7 @@
 description: "performance profiling plugins"
 name: performance-profiling-plugins
 ---
+
 Profile plugin performance
 
 1. Measure plugin registration time

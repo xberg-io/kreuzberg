@@ -2,6 +2,7 @@
 name: Language Pack Validation
 priority: high
 ---
+
 Verify Tesseract language packs before use
 
 - Check language pack installation

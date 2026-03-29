@@ -2,6 +2,7 @@
 name: GIL Performance Optimization
 priority: high
 ---
+
 Minimize GIL overhead in Python plugins
 
 - Profile GIL usage (typical: 5-55us per call)

@@ -14,7 +14,7 @@ priority: critical
 
 Kreuzberg provides a dual REST API + MCP server built with Axum + Tokio.
 
-```
+```text
 Request Flow:
 HTTP Client / AI Agent (Claude)
     |
@@ -66,6 +66,7 @@ JSON Response / MCP ToolResult
 Server initialization pattern: Create `ApiState` (holds `ExtractionConfig` + `ExtractionCache`), build Axum `Router` with all REST + MCP routes, apply middleware layers (body limits, CORS, tracing), serve via `tokio::net::TcpListener`.
 
 Key middleware layers applied in order:
+
 - `DefaultBodyLimit::max(100MB)` + `RequestBodyLimitLayer` -- configurable via env vars
 - `CorsLayer::permissive()` -- restrict in production via `CORS_ALLOWED_ORIGINS`
 - `TraceLayer::new_for_http()` -- request/response logging
@@ -95,6 +96,7 @@ LRU cache keyed by `SHA256(file_content)`, stores `Arc<ExtractionResult>`. Defau
 **Location**: `crates/kreuzberg/src/api/error.rs`
 
 `ApiError` enum maps to HTTP status codes:
+
 - `MissingFile` -> 400, `FileNotFound` -> 404
 - `OnnxRuntimeMissing` / `TesseractMissing` -> 503 (with remediation message)
 - `PayloadTooLarge` -> 413
@@ -117,6 +119,7 @@ Three tools are registered:
 | `get_capabilities` | List supported formats, features, backends | (none) |
 
 **Tool registration pattern** (example: `extract_file`):
+
 ```rust
 // Define Tool with name, description, JSON Schema inputSchema
 // Register with server.register_tool(tool, handler_fn)
@@ -128,6 +131,7 @@ Three tools are registered:
 ### MCP Resources (Static Knowledge)
 
 Three resources provide static information to agents:
+
 - `kreuzberg://formats` -- Supported format list as JSON
 - `kreuzberg://features` -- Cross-binding feature matrix (from `FEATURE_MATRIX.md`)
 - `kreuzberg://api-reference` -- Generated API documentation
@@ -135,6 +139,7 @@ Three resources provide static information to agents:
 ### MCP Prompts (Agent Templates)
 
 Two prompts guide agent extraction workflows:
+
 - `extract_for_rag` -- Document type-specific RAG extraction guidance (research paper, contract, report). Recommends chunking preset and embedding config.
 - `batch_document_processing` -- Optimal concurrency, grouping, and error handling for batch workflows.
 
@@ -166,6 +171,7 @@ Two prompts guide agent extraction workflows:
 ## Environment Configuration
 
 See `.env.example` for all configurable variables. Key categories:
+
 - **Server**: `KREUZBERG_HOST`, `KREUZBERG_PORT`
 - **Size limits**: `KREUZBERG_MAX_REQUEST_BODY_BYTES` (default 100MB), `KREUZBERG_MAX_MULTIPART_FIELD_BYTES`
 - **Features**: `KREUZBERG_ENABLE_OCR`, `KREUZBERG_ENABLE_EMBEDDINGS`, `KREUZBERG_ENABLE_KEYWORDS`
@@ -177,6 +183,7 @@ See `.env.example` for all configurable variables. Key categories:
 ## Critical Rules
 
 ### REST API Rules
+
 1. **Always validate multipart file uploads** - Check MIME type, size, magic bytes
 2. **Timeout long-running extractions** - Set per-handler timeout (5 min default)
 3. **Stream large files** - Never buffer entire multi-GB file in memory
@@ -189,6 +196,7 @@ See `.env.example` for all configurable variables. Key categories:
 10. **Logging all requests** - Track extraction metrics for observability
 
 ### MCP Rules
+
 1. **All tools must have timeout** - Prevent hanging on large files (default 5 min)
 2. **Error responses must be detailed** - Include suggestions for missing dependencies
 3. **Feature gates must be checked** - Return helpful message if feature unavailable (embeddings, OCR)

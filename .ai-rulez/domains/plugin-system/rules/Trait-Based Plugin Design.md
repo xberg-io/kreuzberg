@@ -2,6 +2,7 @@
 name: Trait-Based Plugin Design
 priority: high
 ---
+
 All plugins must implement standardized trait interfaces
 
 - Every plugin implements base Plugin trait

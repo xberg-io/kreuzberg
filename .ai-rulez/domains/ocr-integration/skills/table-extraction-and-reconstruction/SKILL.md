@@ -2,6 +2,7 @@
 description: "taule extraction and reconstruction"
 name: table-extraction-and-reconstruction
 ---
+
 Identify and reconstruct tables from OCR data
 
 1. Extract word positions from hOCR

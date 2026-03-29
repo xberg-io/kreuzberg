@@ -11,6 +11,7 @@ A comprehensive local Docker testing script that validates all configuration vol
 #### Purpose
 
 Tests Docker configuration in various scenarios:
+
 - Volume mounts to `/etc/kreuzberg/kreuzberg.toml` (recommended system path)
 - Volume mounts to `/app/.config/kreuzberg/config.toml` (user path)
 - Custom paths with `--config` flag
@@ -42,16 +43,19 @@ Tests Docker configuration in various scenarios:
 #### Examples
 
 Test both core and full variants:
+
 ```bash
 ./test-docker-config-local.sh
 ```
 
 Test only the full variant with verbose output:
+
 ```bash
 ./test-docker-config-local.sh --variant full --verbose
 ```
 
 Test core variant and keep containers for inspection:
+
 ```bash
 ./test-docker-config-local.sh --variant core --keep-containers
 ```
@@ -95,6 +99,7 @@ The script runs 8 test cases for each variant:
 #### Validation Method
 
 For each test, the script:
+
 1. Creates a temporary configuration file in the specified format
 2. Starts a Docker container with the configuration mounted
 3. Waits for the service to become healthy (up to 30 seconds)
@@ -105,6 +110,7 @@ For each test, the script:
 #### Output
 
 The script provides clear, color-coded output:
+
 - `[PASS]` - Test passed (green)
 - `[FAIL]` - Test failed (red)
 - `[INFO]` - Informational messages (blue)
@@ -112,7 +118,8 @@ The script provides clear, color-coded output:
 - `[DEBUG]` - Debug information (yellow, with `--verbose`)
 
 Example output:
-```
+
+```text
 ╔════════════════════════════════════════════════════════╗
 ║ Docker Configuration Volume Mount Test Suite           ║
 ╚════════════════════════════════════════════════════════╝
@@ -150,15 +157,19 @@ Tested Variants:
 #### Troubleshooting
 
 **Error: Docker is not installed or not in PATH**
-- Install Docker from https://www.docker.com/products/docker-desktop
+
+- Install Docker from <https://www.docker.com/products/docker-desktop>
 - Ensure Docker is in your system PATH
 
 **Error: Docker daemon is not running**
+
 - Start Docker Desktop or the Docker daemon
 - On Linux: `sudo systemctl start docker`
 
 **Error: Docker image does not exist**
+
 - Build the required image(s):
+
   ```bash
   cd /path/to/kreuzberg
   docker build -f docker/Dockerfile.core -t kreuzberg:core .
@@ -166,11 +177,13 @@ Tested Variants:
   ```
 
 **Tests timing out**
+
 - Check system resources (CPU, memory)
 - Increase timeout: Modify `TIMEOUT_SECONDS=30` in the script
 - Check Docker logs: `docker logs <container-name>`
 
 **Port conflicts**
+
 - Ensure ports 18100-18199 are available
 - Check for existing containers: `docker ps -a`
 - Kill conflicting containers: `docker kill <container-name>`
@@ -186,6 +199,7 @@ The script respects these environment variables:
 | `KEEP_CONTAINERS` | Keep containers via environment | `false` |
 
 Example:
+
 ```bash
 VERBOSE=true ./test-docker-config-local.sh --variant core
 ```
@@ -193,6 +207,7 @@ VERBOSE=true ./test-docker-config-local.sh --variant core
 #### Temporary Files
 
 The script creates temporary configuration files in `/tmp/kreuzberg-config-test-$PID/`:
+
 - `kreuzberg.toml` - TOML format test config
 - `config.yaml` - YAML format test config
 - `config.json` - JSON format test config
@@ -240,6 +255,7 @@ echo "Configuration tests passed!"
 #### Future Enhancements
 
 Potential improvements:
+
 - Parallel test execution for faster results
 - Additional validation endpoints (beyond `/health`)
 - Configuration value verification (test that config was actually loaded)

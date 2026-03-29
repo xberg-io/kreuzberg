@@ -15,7 +15,7 @@ The Go binding exposes the same extraction capabilities as the other languages t
 
 Kreuzberg Go binaries are **statically linked** — once built, they are self-contained and require no runtime library dependencies. Only the static library is needed at build time.
 
-### Add the package to your `go.mod`:
+### Add the package to your `go.mod`
 
 ```bash title="Terminal"
 go get github.com/kreuzberg-dev/kreuzberg/packages/go/v4@latest
@@ -195,7 +195,9 @@ for i, result := range results {
 	log.Printf("Item %d: %s format\n", i, result.MimeType)
 }
 ```
-```
+
+
+```text
 
 ---
 
@@ -266,7 +268,9 @@ for i, result := range results {
 	fmt.Printf("File %d: extracted %d chars\n", i, len(result.Content))
 }
 ```
-```
+
+
+```text
 
 ---
 

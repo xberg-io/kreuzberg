@@ -249,7 +249,7 @@ kreuzberg = { version = "4.0", features = ["static-pdfium"] }
 kreuzberg = { version = "4.0", features = ["system-pdfium"] }
 ```
 
-For detailed information, see the [PDFium Linking Guide](../../docs/guides/pdfium-linking.md).
+For detailed information, see the [PDF Rendering Guide](../../docs/guides/pdf-rendering.md).
 
 **Note:** Language bindings (Python, TypeScript, Ruby, Java, Go) automatically bundle PDFium. No configuration needed.
 

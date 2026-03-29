@@ -20,6 +20,7 @@ dotnet add package Kreuzberg
 ### Optional System Dependencies
 
 **Tesseract OCR** (Required for OCR functionality):
+
 ```bash title="Terminal"
 # macOS
 brew install tesseract
@@ -764,6 +765,7 @@ The library should be located in `runtimes/{rid}/native/` in the package.
 ### P/Invoke Errors
 
 If P/Invoke calls fail, verify:
+
 1. Native library is properly installed
 2. Architecture matches (x64, arm64)
 3. Dependencies are available (Tesseract if needed for OCR)
@@ -779,6 +781,7 @@ tesseract --version
 ### Memory Issues
 
 For large documents, consider:
+
 1. Enabling chunking to process in smaller pieces
 2. Using batch extraction for memory efficiency
 3. Calling GC.Collect() after processing large batches

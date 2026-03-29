@@ -2,6 +2,7 @@
 name: Format-Specific Extractors
 priority: high
 ---
+
 Each extractor handles specific document formats
 
 - Implement for single or related MIME types

@@ -62,6 +62,7 @@ pie install kreuzberg/kreuzberg
 ```
 
 PIE will:
+
 1. Download the extension source from GitHub
 2. Compile it for the current PHP version
 3. Install it to the PHP extension directory
@@ -76,6 +77,7 @@ pie info kreuzberg/kreuzberg
 ```
 
 This shows:
+
 - Extension description
 - PHP version requirements
 - Available configure options
@@ -90,6 +92,7 @@ The build script `scripts/publish/php/build-pie-package.sh` creates PIE-compatib
 ```
 
 This creates a tarball containing:
+
 - Compiled extension binary
 - composer.json with PIE metadata
 - package.xml for PECL compatibility
@@ -114,12 +117,14 @@ Each platform gets a separate package with the pre-compiled extension binary.
 To test PIE installation during development:
 
 1. Build the extension:
+
    ```bash
    cd crates/kreuzberg-php
    cargo build --release
    ```
 
 2. Create a PIE package:
+
    ```bash
    VERSION=4.0.0 ./scripts/publish/php/build-pie-package.sh linux-x86_64 ./dist
    ```
@@ -131,8 +136,8 @@ To test PIE installation during development:
 For PIE to discover the extension, it must be published to Packagist:
 
 1. Ensure the package is on GitHub
-2. Submit it to Packagist at https://packagist.org/packages/submit
-3. The package will appear on https://packagist.org/extensions
+2. Submit it to Packagist at <https://packagist.org/packages/submit>
+3. The package will appear on <https://packagist.org/extensions>
 
 Once published, users can install it with:
 
@@ -165,11 +170,12 @@ For PIE to build the extension from source, users need:
 ### PIE Can't Find the Package
 
 Ensure the package is published on Packagist and appears at:
-https://packagist.org/packages/kreuzberg/kreuzberg
+<https://packagist.org/packages/kreuzberg/kreuzberg>
 
 ### Build Fails
 
 Check that all build requirements are installed:
+
 ```bash
 # Check Rust
 cargo --version
@@ -184,22 +190,24 @@ gcc --version  # or clang --version
 ### Extension Not Loading
 
 Verify the extension was installed:
+
 ```bash
 php -m | grep kreuzberg
 ```
 
 Check php.ini configuration:
+
 ```bash
 php --ini
 ```
 
 ## Resources
 
-- **PIE GitHub**: https://github.com/php/pie
-- **PIE Documentation**: https://www.php.net/manual/en/install.pie.intro.php
-- **Packagist Extensions**: https://packagist.org/extensions
-- **Kreuzberg Repository**: https://github.com/kreuzberg-dev/kreuzberg
-- **Issue Tracker**: https://github.com/kreuzberg-dev/kreuzberg/issues
+- **PIE GitHub**: <https://github.com/php/pie>
+- **PIE Documentation**: <https://www.php.net/manual/en/install.pie.intro.php>
+- **Packagist Extensions**: <https://packagist.org/extensions>
+- **Kreuzberg Repository**: <https://github.com/kreuzberg-dev/kreuzberg>
+- **Issue Tracker**: <https://github.com/kreuzberg-dev/kreuzberg/issues>
 
 ## License
 

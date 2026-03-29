@@ -2,6 +2,7 @@
 name: Backward Compatibility
 priority: high
 ---
+
 Maintain API stability across versions
 
 - Don't change ExtractionResult structure without major version

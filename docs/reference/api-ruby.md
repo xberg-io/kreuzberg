@@ -402,6 +402,7 @@ end
 Per-page extracted content when page extraction is enabled via `PageConfig.extract_pages = true`.
 
 Each page hash contains:
+
 - `page_number` (Integer): 1-indexed page number
 - `content` (String): Text content for that page
 - `tables` (Array<Hash>): Tables on that page
@@ -809,6 +810,7 @@ end
 Extract text from multiple byte arrays synchronously.
 
 **Parameters:**
+
 - `data_list` (Array<String>): Array of byte strings (binary data)
 - `mime_types` (Array<String>): Array of MIME types corresponding to each byte array
 - `config` (Hash, optional): Extraction configuration

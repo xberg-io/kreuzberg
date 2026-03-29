@@ -2,6 +2,7 @@
 name: Priority Stability
 priority: high
 ---
+
 Maintain consistent priority semantics
 
 - Priority values documented in API

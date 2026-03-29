@@ -2,6 +2,7 @@
 name: Configuration Cascade
 priority: high
 ---
+
 Use single ExtractionConfig for all extraction behavior control
 
 - All extractors respect ExtractionConfig settings

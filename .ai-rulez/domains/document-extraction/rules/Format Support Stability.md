@@ -2,6 +2,7 @@
 name: Format Support Stability
 priority: high
 ---
+
 Maintain consistent extraction quality for supported formats
 
 - Test extraction quality regularly

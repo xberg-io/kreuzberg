@@ -19,7 +19,7 @@ A complete, production-ready browser application for document extraction using t
 
 This application requires special HTTP headers to enable `SharedArrayBuffer` support for WebAssembly multi-threading:
 
-```
+```text
 Cross-Origin-Opener-Policy: same-origin
 Cross-Origin-Embedder-Policy: require-corp
 ```
@@ -27,19 +27,24 @@ Cross-Origin-Embedder-Policy: require-corp
 These headers are **automatically set by the Vite development server**. For production deployment, configure these headers in your web server or CDN:
 
 ### Nginx
+
 ```nginx
 add_header Cross-Origin-Opener-Policy "same-origin";
 add_header Cross-Origin-Embedder-Policy "require-corp";
 ```
 
 ### Cloudflare
+
 Use `_headers` file or Page Rules with custom headers.
 
 ### AWS CloudFront
+
 Add custom headers via Origin Response Lambda function.
 
 ### Vercel
+
 Configure in `vercel.json`:
+
 ```json
 {
   "headers": [
@@ -95,7 +100,7 @@ This generates an optimized bundle in the `dist` directory.
 
 ## Project Structure
 
-```
+```text
 wasm-browser/
 ├── index.html              # Entry HTML with COOP/COEP meta tags
 ├── vite.config.ts          # Vite configuration with COOP/COEP headers
@@ -155,6 +160,7 @@ const result = await extractBytes(fileData, mimeType);
 ### SharedArrayBuffer Error
 
 If you see `SharedArrayBuffer is not defined`:
+
 1. Ensure COOP/COEP headers are properly configured
 2. Check browser console for CSP errors
 3. Verify the application is served over HTTPS (if required by your deployment)

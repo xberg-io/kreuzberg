@@ -464,6 +464,7 @@ CRenderPageResult* kreuzberg_render_pdf_page(const char* file_path, size_t page_
 - `CRenderPageResult*`: Pointer to a single page render result, or NULL on error. Free with `kreuzberg_free_render_page_result`.
 
 ---
+
 ### kreuzberg_free_render_page_result
 
 Free a single page result returned by `kreuzberg_render_pdf_page`.
@@ -1175,7 +1176,9 @@ int32_t kreuzberg_get_result_view(const CExtractionResult *result, CExtractionRe
 int32_t kreuzberg_view_get_content(const CExtractionResultView *view, const uint8_t **out_ptr, uintptr_t *out_len);
 int32_t kreuzberg_view_get_mime_type(const CExtractionResultView *view, const uint8_t **out_ptr, uintptr_t *out_len);
 ```
-```
+
+
+```text
 
 Views are used in streaming callbacks. They are valid only during the callback invocation. Copy any data you need to keep.
 
@@ -1212,7 +1215,8 @@ The following fields are standard across all document types and can be queried v
 | `subject` | Document subject | `string` |
 | `title` | Document title | `string` |
 | `version` | Document version | `string` |
-```
+
+```text
 
 ---
 
@@ -1398,7 +1402,9 @@ const char *kreuzberg_preprocessing_preset_to_string(int32_t preset);
 ```c
 const char *kreuzberg_whitespace_mode_to_string(int32_t mode);
 ```
-```
+
+
+```text
 
 Access via:
 

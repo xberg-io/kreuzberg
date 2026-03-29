@@ -195,7 +195,7 @@ The skill covers the plugin architecture for custom post-processors, validators,
 
 ## Skill File Structure
 
-```
+```text
 skills/kreuzberg/
 ├── SKILL.md                        # Main skill (~400 lines)
 └── references/

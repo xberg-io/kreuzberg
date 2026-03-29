@@ -5,6 +5,7 @@ This directory contains end-to-end tests for Python, TypeScript, and Ruby langua
 ## Overview
 
 The E2E tests validate that:
+
 1. Config fields serialize correctly to JSON
 2. Extraction operations produce results with different output formats
 3. Result formats affect the structure of extraction results
@@ -111,6 +112,7 @@ pytest tests/test_config_parity.py -v
 ```
 
 Requirements:
+
 - Python 3.10+
 - kreuzberg package installed
 - pytest
@@ -131,6 +133,7 @@ pnpm test
 ```
 
 Requirements:
+
 - Node.js 18+
 - @kreuzberg/node package installed
 - vitest
@@ -144,6 +147,7 @@ bundle exec rspec spec/config_parity_spec.rb
 ```
 
 Requirements:
+
 - Ruby 3.2+
 - kreuzberg gem installed
 - rspec
@@ -177,6 +181,7 @@ The tests cover:
 ## Test Documents
 
 Tests use sample documents from:
+
 - `test_documents/text/report.txt` - Sample text document
 - Fallback: Auto-generated sample text if file not found
 
@@ -187,12 +192,14 @@ All tests are designed to be runnable without external dependencies by using eit
 ### Format Values
 
 **OutputFormat** (case-sensitive):
+
 - `Plain` - Raw text only
 - `Markdown` - Markdown formatted output
 - `Djot` - Djot markup format
 - `Html` - HTML formatted output
 
 **ResultFormat** (case-sensitive):
+
 - `Unified` - All content in a single field
 - `Elements` - Semantic elements with structure
 
@@ -205,6 +212,7 @@ All tests are designed to be runnable without external dependencies by using eit
 ### Error Cases
 
 All three languages test:
+
 - Invalid format names raise appropriate errors
 - Case sensitivity (lowercase versions fail)
 - Type validation at construction time
@@ -221,6 +229,7 @@ To add tests for new config fields:
 ## CI Integration
 
 These tests should be run as part of:
+
 - Language-specific binding CI (ci-python, ci-typescript, ci-ruby)
 - Pre-release validation
 - Configuration consistency checks

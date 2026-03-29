@@ -2,6 +2,7 @@
 name: Language Detection Accuracy
 priority: high
 ---
+
 Reliably identify text languages from OCR
 
 - Detect language from OCR output

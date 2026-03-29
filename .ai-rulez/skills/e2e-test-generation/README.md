@@ -6,7 +6,7 @@ All E2E test files under `e2e/` are **auto-generated** from shared fixture defin
 
 ## Architecture
 
-```
+```text
 fixtures/*.json          → Single source of truth (test definitions)
 tools/e2e-generator/     → Rust-based code generator
   src/main.rs            → CLI: `generate --lang <lang>` | `list`
@@ -32,15 +32,18 @@ Each language generator file (e.g., `python.rs`) contains an **embedded helper t
 ## Workflow
 
 ### Adding/Modifying Test Assertions
+
 1. Edit the generator template in `tools/e2e-generator/src/<language>.rs`
 2. Regenerate: `task e2e:generate:all` or `bash scripts/task/e2e-generate.sh <lang>`
 3. The generated files in `e2e/` will be updated
 
 ### Adding New Test Fixtures
+
 1. Create a JSON fixture in `fixtures/<category>/`
 2. Regenerate tests for all languages
 
 ### Fixture Schema
+
 ```json
 {
   "id": "fixture_id",
@@ -55,15 +58,19 @@ Each language generator file (e.g., `python.rs`) contains an **embedded helper t
 ## Common Pitfalls
 
 ### Dict vs Attribute Access
+
 Some bindings (Python PyO3, Node NAPI-RS) return document structures as dicts/plain objects from JSON serialization. Generator helpers must handle both dict-key and attribute access patterns.
 
 ### Snake Case vs Camel Case
+
 - Rust serde serializes fields as `snake_case` (e.g., `node_type`)
 - NAPI-RS `#[napi(object)]` converts to `camelCase` for struct fields but NOT for serialized JSON values
 - Generator helpers should check both `node_type` and `nodeType` patterns
 
 ### Config Field Names
+
 Each binding has its own config parsing that maps JSON field names to language-idiomatic names:
+
 - Python: snake_case (`include_document_structure`)
 - TypeScript/Node: camelCase mapping via `buildConfig` helper (`includeDocumentStructure`)
 - Ruby: symbol keys via `symbolize_keys` (`include_document_structure:`)
@@ -71,6 +78,7 @@ Each binding has its own config parsing that maps JSON field names to language-i
 When adding new config fields to the Rust core, ensure ALL binding config parsers are updated.
 
 ## Generated Files (Never Edit Directly)
+
 - `e2e/python/tests/helpers.py`
 - `e2e/python/tests/test_*.py`
 - `e2e/typescript/tests/helpers.ts`

@@ -2,6 +2,7 @@
 name: Error Information Preservation
 priority: high
 ---
+
 Provide detailed error context for debugging
 
 - Include image characteristics in errors

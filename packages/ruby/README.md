@@ -74,6 +74,7 @@ Install via one of the supported package managers:
 
 
 **gem:**
+
 ```bash
 gem install kreuzberg
 ```
@@ -82,6 +83,7 @@ gem install kreuzberg
 
 
 **Bundler:**
+
 ```ruby
 gem 'kreuzberg'
 ```

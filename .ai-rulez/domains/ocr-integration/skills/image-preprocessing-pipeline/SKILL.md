@@ -2,6 +2,7 @@
 description: "image preprocessing pipeline"
 name: image-preprocessing-pipeline
 ---
+
 Prepare images for optimal OCR accuracy
 
 1. Analyze image characteristics (resolution, color, noise)

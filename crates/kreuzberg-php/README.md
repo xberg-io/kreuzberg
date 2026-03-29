@@ -27,7 +27,8 @@ cargo build --release -p kreuzberg-php
 ```
 
 The compiled extension will be at:
-```
+
+```text
 target/release/libkreuzberg.so    # Linux
 target/release/libkreuzberg.dylib  # macOS
 target/release/kreuzberg.dll       # Windows
@@ -37,6 +38,7 @@ target/release/kreuzberg.dll       # Windows
 
 1. Copy the compiled library to your PHP extension directory
 2. Add to php.ini:
+
    ```ini
    extension=kreuzberg
    ```
@@ -151,6 +153,7 @@ print_r($extensions); // ["pdf"]
 ### Functions
 
 #### kreuzberg_extract_file
+
 ```php
 function kreuzberg_extract_file(
     string $path,
@@ -160,6 +163,7 @@ function kreuzberg_extract_file(
 ```
 
 #### kreuzberg_extract_bytes
+
 ```php
 function kreuzberg_extract_bytes(
     string $data,
@@ -169,6 +173,7 @@ function kreuzberg_extract_bytes(
 ```
 
 #### kreuzberg_batch_extract_files
+
 ```php
 function kreuzberg_batch_extract_files(
     array $paths,
@@ -177,6 +182,7 @@ function kreuzberg_batch_extract_files(
 ```
 
 #### kreuzberg_batch_extract_bytes
+
 ```php
 function kreuzberg_batch_extract_bytes(
     array $data_list,
@@ -186,26 +192,31 @@ function kreuzberg_batch_extract_bytes(
 ```
 
 #### kreuzberg_version
+
 ```php
 function kreuzberg_version(): string
 ```
 
 #### kreuzberg_detect_mime_type_from_bytes
+
 ```php
 function kreuzberg_detect_mime_type_from_bytes(string $data): string
 ```
 
 #### kreuzberg_detect_mime_type_from_path
+
 ```php
 function kreuzberg_detect_mime_type_from_path(string $path): string
 ```
 
 #### kreuzberg_validate_mime_type
+
 ```php
 function kreuzberg_validate_mime_type(string $mime_type): string
 ```
 
 #### kreuzberg_get_extensions_for_mime
+
 ```php
 function kreuzberg_get_extensions_for_mime(string $mime_type): array
 ```
@@ -213,6 +224,7 @@ function kreuzberg_get_extensions_for_mime(string $mime_type): array
 ### Classes
 
 #### ExtractionResult
+
 ```php
 class ExtractionResult {
     public string $content;
@@ -231,6 +243,7 @@ class ExtractionResult {
 ```
 
 #### ExtractedTable
+
 ```php
 class ExtractedTable {
     public array $cells;
@@ -240,6 +253,7 @@ class ExtractedTable {
 ```
 
 #### ExtractionConfig
+
 ```php
 class ExtractionConfig {
     public bool $use_cache;
@@ -262,6 +276,7 @@ class ExtractionConfig {
 ```
 
 #### OcrConfig
+
 ```php
 class OcrConfig {
     public string $backend;

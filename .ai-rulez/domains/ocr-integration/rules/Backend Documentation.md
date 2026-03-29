@@ -2,6 +2,7 @@
 name: Backend Documentation
 priority: high
 ---
+
 Document OCR backend capabilities and limitations
 
 - List supported languages

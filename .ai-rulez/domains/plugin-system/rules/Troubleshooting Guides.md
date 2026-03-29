@@ -2,6 +2,7 @@
 name: Troubleshooting Guides
 priority: high
 ---
+
 Provide troubleshooting for common plugin issues
 
 - Plugin registration failures

@@ -75,7 +75,7 @@ The FFI exposes extraction functions, configuration management, plugin registrat
 
 ### FFI Bridge Layers
 
-```
+```text
 Language-Specific Bindings
     ↓
 Kreuzberg FFI C Library (crates/kreuzberg-ffi) ← This crate
@@ -150,6 +150,7 @@ cargo build --release -p kreuzberg-ffi
 ```
 
 This creates two variants in `crates/kreuzberg-ffi/`:
+
 - **kreuzberg-ffi.pc**: Development version (prefix points to repository)
 - **kreuzberg-ffi-install.pc**: Installation version (prefix=/usr/local)
 
@@ -169,7 +170,7 @@ Pre-built C FFI packages are available from the [releases page](https://github.c
 
 Each `c-ffi-{platform}.tar.gz` archive contains:
 
-```
+```text
 include/kreuzberg.h
 lib/libkreuzberg_ffi.{so|dylib|dll}
 lib/libkreuzberg_ffi.{a|lib}
@@ -286,9 +287,11 @@ All extraction functions return opaque pointers (NULL on error). Error messages 
 Extract text and metadata from a file.
 
 **Parameters:**
+
 - `file_path`: Absolute or relative file path (must exist, null-terminated C string)
 
 **Returns:**
+
 - `CExtractionResult*`: Opaque pointer to extraction result (NULL on error). Must be freed with `kreuzberg_free_result()`.
 
 **Example:**
@@ -312,10 +315,12 @@ if (result == NULL || !result->success) {
 Extract text and metadata from a file using a custom configuration.
 
 **Parameters:**
+
 - `file_path`: Absolute or relative file path (must exist)
 - `config`: Pointer to an `ExtractionConfig` (opaque, created via config builder functions). Pass NULL for defaults.
 
 **Returns:**
+
 - `CExtractionResult*`: Opaque pointer to extraction result (NULL on error). Must be freed with `kreuzberg_free_result()`.
 
 #### `CExtractionResult* kreuzberg_extract_bytes_sync(const uint8_t *data, size_t data_len, const char *mime_type)`
@@ -323,11 +328,13 @@ Extract text and metadata from a file using a custom configuration.
 Extract from a byte buffer (e.g., file in memory).
 
 **Parameters:**
+
 - `data`: Pointer to byte buffer
 - `data_len`: Buffer length in bytes
 - `mime_type`: MIME type as null-terminated C string (required)
 
 **Returns:**
+
 - `CExtractionResult*`: Opaque pointer (NULL on error). Must be freed with `kreuzberg_free_result()`.
 
 **Example:**
@@ -362,11 +369,13 @@ free(buffer);
 Process multiple files in parallel.
 
 **Parameters:**
+
 - `paths`: Array of file path strings
 - `paths_count`: Number of paths in array
 - `config`: Pointer to an `ExtractionConfig` (pass NULL for defaults)
 
 **Returns:**
+
 - `CBatchResult*`: Opaque pointer containing array of results. Must be freed with `kreuzberg_free_batch_result()`.
 
 **Example:**
@@ -394,9 +403,11 @@ kreuzberg_free_batch_result(batch);
 Identify the MIME type of a file using magic bytes and file signatures.
 
 **Parameters:**
+
 - `path`: File path to analyze
 
 **Returns:**
+
 - `char*`: MIME type string (must be freed with `kreuzberg_free_string`), or NULL on error.
 
 **Example:**
@@ -454,10 +465,12 @@ kreuzberg_config_free(config);
 Register a custom OCR backend implemented in the calling language.
 
 **Parameters:**
+
 - `backend_name`: Unique identifier for the backend (e.g., "custom-ocr")
 - `callback`: Function pointer matching `char* (*)(const uint8_t* data, size_t len, const char* lang)`
 
 **Returns:**
+
 - `true` on success, `false` on failure (e.g., NULL name)
 
 **Example (C):**
@@ -490,6 +503,7 @@ kreuzberg_free_string(backends);
 Retrieve the last error message.
 
 **Returns:**
+
 - `const char*`: Error message string (NULL if no error). This is a thread-local pointer; do not free it.
 
 Note: Error messages are thread-local and persist until the next Kreuzberg function call on the same thread.
@@ -499,6 +513,7 @@ Note: Error messages are thread-local and persist until the next Kreuzberg funct
 Retrieve the error code for the last error.
 
 **Returns:**
+
 - Error code: 0 (Success), 1 (GenericError), 2 (Panic), 3 (InvalidArgument), 4 (IoError), 5 (ParsingError), 6 (OcrError), 7 (MissingDependency)
 
 **Example:**
@@ -770,6 +785,7 @@ private static extern IntPtr kreuzberg_extract_file(
 ## Supported Features
 
 ### Default Features
+
 - `html`: HTML to Markdown conversion support
 - `embeddings`: Text embedding extraction via ONNX models (requires ONNX Runtime - must be installed separately)
 
@@ -792,6 +808,7 @@ scoop install onnxruntime
 Without ONNX Runtime, embeddings functionality will raise errors at runtime.
 
 ### Core Feature (Windows MinGW Compatibility)
+
 - `core`: Minimal feature set for cross-platform compatibility
   - Includes: `html` (HTML to Markdown conversion)
   - Excludes: `embeddings` (ONNX Runtime not available on MinGW)
@@ -815,6 +832,7 @@ cargo build --release -p kreuzberg-ffi
 ```
 
 **Why MinGW Requires core Feature:**
+
 - ONNX Runtime distributes Windows binaries compiled with MSVC toolchain
 - MSVC .lib files use different name mangling and linking conventions than MinGW
 - MinGW's GNU toolchain cannot consume MSVC import libraries
@@ -941,10 +959,10 @@ for (int i = 0; i < 10; i++) {
 ## References
 
 - **Kreuzberg Core**: `../kreuzberg/`
-- **C FFI Standards**: https://en.cppreference.com/w/c
-- **cbindgen Documentation**: https://rust-lang.github.io/cbindgen/
-- **Project Homepage**: https://kreuzberg.dev
-- **GitHub Repository**: https://github.com/kreuzberg-dev/kreuzberg
+- **C FFI Standards**: <https://en.cppreference.com/w/c>
+- **cbindgen Documentation**: <https://rust-lang.github.io/cbindgen/>
+- **Project Homepage**: <https://kreuzberg.dev>
+- **GitHub Repository**: <https://github.com/kreuzberg-dev/kreuzberg>
 
 ## Contributing
 

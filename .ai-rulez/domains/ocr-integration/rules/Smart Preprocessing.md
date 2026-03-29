@@ -2,6 +2,7 @@
 name: Smart Preprocessing
 priority: high
 ---
+
 Apply preprocessing conditionally based on image analysis
 
 - Analyze image before preprocessing

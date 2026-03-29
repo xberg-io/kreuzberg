@@ -2,6 +2,7 @@
 name: Table to Markdown Conversion
 priority: high
 ---
+
 Convert tables to clean Markdown format
 
 - Generate valid Markdown tables

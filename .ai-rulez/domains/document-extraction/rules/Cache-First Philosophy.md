@@ -2,6 +2,7 @@
 name: Cache-First Philosophy
 priority: high
 ---
+
 Check cache before expensive extraction operations
 
 - Use content-based hash for cache keys

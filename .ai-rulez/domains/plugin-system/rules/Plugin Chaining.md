@@ -2,6 +2,7 @@
 name: Plugin Chaining
 priority: high
 ---
+
 Support sequential post-processor execution
 
 - Plugins applied in priority order

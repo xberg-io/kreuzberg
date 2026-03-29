@@ -50,7 +50,7 @@ If `ORT_LIB_LOCATION` is not set, tests fail with: `libonnxruntime.dylib: cannot
 
 ## Test Execution Workflow
 
-```
+```text
 task <lang>:test
   -> scripts/<lang>/test.sh
     -> source scripts/lib/common.sh
@@ -62,6 +62,7 @@ task <lang>:test
 ```
 
 ### Required Build Order
+
 1. `cargo build --release --package kreuzberg-ffi` (Rust FFI library)
 2. PDFium runtime (auto-downloaded by test scripts)
 3. Set `ORT_LIB_LOCATION` if testing embeddings
@@ -70,17 +71,21 @@ task <lang>:test
 ## Key Debugging Patterns
 
 ### 1. Check Environment Setup
+
 ```bash
 export CI=true VERBOSE_MODE=true && task go:test
 ```
+
 Shows: Go version, working directory, library paths, CGO flags.
 
 ### 2. Verify FFI Library Exists
+
 ```bash
 ls target/release/libkreuzberg_ffi.{dylib,so,dll}
 ```
 
 ### 3. Verify ONNX Runtime
+
 ```bash
 echo $ORT_LIB_LOCATION && ls $ORT_LIB_LOCATION/libonnxruntime*
 ```
@@ -110,11 +115,13 @@ echo $ORT_LIB_LOCATION && ls $ORT_LIB_LOCATION/libonnxruntime*
 ## Summary Checklist
 
 Before running tests:
+
 - [ ] Built FFI library (`cargo build --release --package kreuzberg-ffi`)
 - [ ] Set `ORT_LIB_LOCATION` if testing embeddings
 - [ ] Using `task <language>:test` (NOT direct test commands)
 
 When tests fail in CI:
+
 - [ ] Reproduce locally with `task <language>:test`
 - [ ] Check env vars match CI setup
 - [ ] Verify dependencies (ONNX Runtime, PDFium)

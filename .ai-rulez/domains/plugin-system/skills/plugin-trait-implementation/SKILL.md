@@ -2,6 +2,7 @@
 description: "plugin trait implementation"
 name: plugin-trait-implementation
 ---
+
 Implement plugins using trait interfaces
 
 1. Define plugin struct

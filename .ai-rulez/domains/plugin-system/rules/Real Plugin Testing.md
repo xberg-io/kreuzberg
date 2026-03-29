@@ -2,6 +2,7 @@
 name: Real Plugin Testing
 priority: high
 ---
+
 Test with actual built-in plugins
 
 - Register and use built-in plugins

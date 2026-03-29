@@ -7,11 +7,13 @@ The README generation system is an automated solution that generates consistent,
 ### Why This System Exists
 
 Kreuzberg supports **10+ language bindings** (Python, TypeScript, Go, Java, PHP, Ruby, C#, Elixir, WebAssembly, and more). Maintaining separate, manually-written READMEs for each language is:
+
 - **Time-consuming** - Changes must be replicated across all language docs
 - **Error-prone** - Inconsistencies arise between language versions
 - **Difficult to scale** - Adding new languages requires writing new docs from scratch
 
 This system solves these problems by:
+
 - **Centralizing content** through reusable templates and partials
 - **Maintaining consistency** across all language bindings
 - **Enabling rapid updates** - modify one template, update all READMEs
@@ -56,6 +58,7 @@ languages:
 ```
 
 **Key Features:**
+
 - **Multi-language support** - Configure all bindings in one file
 - **Feature flags** - Enable/disable sections per language
 - **Conditional rendering** - Show language-specific content only when needed
@@ -67,7 +70,7 @@ Templates use Jinja2 to generate README content by combining reusable partials.
 
 #### Template Hierarchy
 
-```
+```text
 readme_templates/
 ├── language_package.md.jinja      # Generic language template (used as fallback)
 ├── python.md.jinja                 # Python-specific template
@@ -83,11 +86,13 @@ readme_templates/
 #### Template Variable Context
 
 Templates receive a context dictionary containing:
+
 - `language` - Language code (python, go, java, etc.)
 - All configuration from `readme_config.yaml` - name, description, features, etc.
 - Jinja2 filters and globals - `include_snippet` for loading code examples
 
 Example:
+
 ```jinja2
 # {{ name }}
 
@@ -111,7 +116,7 @@ Example:
 
 The Python script orchestrates the generation process.
 
-```
+```text
 generate_readme.py
 ├── load_config()           - Parse readme_config.yaml
 ├── setup_jinja_env()       - Configure Jinja2 with custom filters
@@ -131,6 +136,7 @@ python scripts/generate_readme.py
 ```
 
 **Output:**
+
 - `packages/python/README.md` - Python binding README
 - `packages/typescript/README.md` - TypeScript binding README
 - `packages/go/README.md` - Go binding README
@@ -154,7 +160,8 @@ python scripts/generate_readme.py --dry-run
 ```
 
 Output shows which files would be created:
-```
+
+```text
 INFO: [DRY-RUN] Would generate: /path/to/packages/python/README.md
 INFO: [DRY-RUN] Would generate: /path/to/packages/go/README.md
 ```
@@ -168,10 +175,12 @@ python scripts/generate_readme.py --validate
 ```
 
 **Output Examples:**
+
 - `INFO: Valid: /path/to/packages/python/README.md` - In sync
 - `WARNING: Out of date: /path/to/packages/go/README.md` - Needs regeneration
 
 Validate specific language:
+
 ```bash
 python scripts/generate_readme.py --language python --validate
 ```
@@ -277,6 +286,7 @@ mkdir -p docs/snippets/{language_code}/{subdirectories}
 ```
 
 Example for Kotlin:
+
 ```bash
 mkdir -p packages/kotlin
 mkdir -p docs/snippets/kotlin/getting-started
@@ -421,6 +431,7 @@ Generates GitHub badge links for all language versions:
 ```
 
 Output:
+
 ```markdown
 [![Rust](https://img.shields.io/...)](...)
 [![Python](https://img.shields.io/...)](...)
@@ -436,10 +447,12 @@ Generates installation instructions for the language:
 ```
 
 Uses context:
+
 - `package_manager` - Installation tools (pip, npm, cargo, etc.)
 - `package_name` - Package identifier
 
 Output varies by package manager:
+
 ```markdown
 ### Package Installation
 
@@ -457,6 +470,7 @@ Lists supported file formats and capabilities:
 ```
 
 Includes:
+
 - Supported file formats (56+ types)
 - Key capabilities (with feature flags)
 - Performance characteristics
@@ -552,6 +566,7 @@ The `include_snippet` filter is a custom Jinja2 filter that loads and formats co
 #### Supported File Formats
 
 **Markdown Files (`.md`):**
+
 ```markdown
 # Getting Started
 
@@ -563,17 +578,23 @@ from kreuzberg import extract_file_sync
 result = extract_file_sync("document.pdf")
 print(result.content)
 ```
-```
+
+
+```text
 
 Filter extracts the code block:
 ```
+
+
 ```python
 from kreuzberg import extract_file_sync
 
 result = extract_file_sync("document.pdf")
 print(result.content)
 ```
-```
+
+
+```text
 
 **Raw Code Files (`.py`, `.go`, `.ts`, etc.):**
 ```python
@@ -584,14 +605,17 @@ print(result.content)
 ```
 
 Filter wraps it automatically:
-```
+
+```text
 ```python
 from kreuzberg import extract_file_sync
 
 result = extract_file_sync("document.pdf")
 print(result.content)
 ```
-```
+
+
+```text
 
 #### Extension Mapping
 
@@ -618,13 +642,15 @@ The filter automatically detects language from file extensions:
 The filter provides clear error messages:
 
 **Snippet Not Found:**
-```
+
+```text
 FileNotFoundError: Snippet not found: /path/to/docs/snippets/python/getting-started/basic.md
 Looking for: docs/snippets/python/getting-started/basic.md
 ```
 
 **Invalid Markdown (no code block):**
-```
+
+```text
 ValueError: No code block found in markdown snippet: /path/to/file.md
 Ensure file contains code wrapped in triple backticks
 ```
@@ -739,6 +765,7 @@ Common optional section names used across languages:
 To add a custom section:
 
 1. **Add to configuration:**
+
    ```yaml
    python:
      optional_sections:
@@ -746,6 +773,7 @@ To add a custom section:
    ```
 
 2. **Add to template:**
+
    ```jinja2
    {% if 'my_custom_section' in optional_sections %}
    ## My Custom Section
@@ -755,6 +783,7 @@ To add a custom section:
    ```
 
 3. **Regenerate README:**
+
    ```bash
    python scripts/generate_readme.py --language python
    ```
@@ -765,7 +794,7 @@ To add a custom section:
 
 Snippets are organized by language and category:
 
-```
+```text
 docs/snippets/
 ├── python/
 │   ├── getting-started/
@@ -813,7 +842,8 @@ print(result.content)
 ```
 
 The `include_snippet` filter automatically extracts the code block.
-```
+
+```text
 
 #### Option 2: Raw Code Files
 
@@ -832,6 +862,7 @@ The filter automatically wraps this in markdown fences.
 ### Referencing Snippets
 
 In configuration:
+
 ```yaml
 snippets:
   basic_extraction: docs/snippets/python/getting-started/01_basic_extraction.py
@@ -839,6 +870,7 @@ snippets:
 ```
 
 In templates:
+
 ```jinja2
 {{ snippets.basic_extraction | include_snippet(language) }}
 {{ snippets.async_extraction | include_snippet(language) }}
@@ -848,7 +880,7 @@ In templates:
 
 Use numbered prefixes for sequential examples:
 
-```
+```text
 01_basic_extraction.py     # First example
 02_async_extraction.py     # Second example
 03_batch_processing.py     # Third example
@@ -873,6 +905,7 @@ This makes it clear which examples build on each other.
 #### Making Template Changes
 
 1. **Edit the template file:**
+
    ```bash
    # Edit generic template used by all languages
    vim scripts/readme_templates/language_package.md.jinja
@@ -882,16 +915,19 @@ This makes it clear which examples build on each other.
    ```
 
 2. **Preview changes (dry-run):**
+
    ```bash
    python scripts/generate_readme.py --dry-run --language python
    ```
 
 3. **Generate new README:**
+
    ```bash
    python scripts/generate_readme.py --language python
    ```
 
 4. **Review output:**
+
    ```bash
    less packages/python/README.md
    ```
@@ -922,41 +958,51 @@ python scripts/generate_readme.py --verbose --language python
 Common template errors:
 
 **Undefined variable:**
-```
+
+```text
 UndefinedError: 'ocr_backends' is undefined
 ```
+
 Solution: Check configuration has the required field.
 
 **Invalid filter:**
-```
+
+```text
 FilterArgumentError: 'include_snippet' takes 2 arguments
 ```
+
 Solution: Verify filter call has correct number of arguments.
 
 **Invalid syntax:**
-```
+
+```text
 TemplateAssertionError: No filter named 'nonexistent'
 ```
+
 Solution: Check filter name spelling.
 
 ### Making Configuration Changes
 
 1. **Edit configuration:**
+
    ```bash
    vim scripts/readme_config.yaml
    ```
 
 2. **Validate YAML syntax:**
+
    ```bash
    python -c "import yaml; yaml.safe_load(open('scripts/readme_config.yaml'))"
    ```
 
 3. **Test changes:**
+
    ```bash
    python scripts/generate_readme.py --dry-run
    ```
 
 4. **Apply changes:**
+
    ```bash
    python scripts/generate_readme.py
    ```
@@ -966,11 +1012,13 @@ Solution: Check filter name spelling.
 Reusable content blocks can be extracted into partials:
 
 1. **Create the partial:**
+
    ```bash
    vim scripts/readme_templates/partials/my_section.md.jinja
    ```
 
 2. **Add content:**
+
    ```jinja2
    ## My Custom Section
 
@@ -980,11 +1028,13 @@ Reusable content blocks can be extracted into partials:
    ```
 
 3. **Include in main template:**
+
    ```jinja2
    {% include 'partials/my_section.md.jinja' %}
    ```
 
 4. **Regenerate:**
+
    ```bash
    python scripts/generate_readme.py
    ```
@@ -994,16 +1044,19 @@ Reusable content blocks can be extracted into partials:
 Before committing changes:
 
 1. **Generate all READMEs:**
+
    ```bash
    python scripts/generate_readme.py
    ```
 
 2. **Verify outputs:**
+
    ```bash
    git diff packages/*/README.md
    ```
 
 3. **Check with validation:**
+
    ```bash
    python scripts/generate_readme.py --validate
    ```
@@ -1026,18 +1079,21 @@ python scripts/generate_readme.py --validate
 #### CI Workflow
 
 1. **On pull request:**
+
    ```yaml
    - name: Validate READMEs
      run: python scripts/generate_readme.py --validate
    ```
 
 2. **If validation fails:**
-   ```
+
+   ```text
    WARNING: Out of date: /path/to/packages/python/README.md
    ERROR: Some READMEs are out of date
    ```
 
 3. **Fix by regenerating:**
+
    ```bash
    python scripts/generate_readme.py
    git add packages/*/README.md
@@ -1082,11 +1138,13 @@ jobs:
 To keep READMEs synchronized with templates:
 
 1. **Run before committing:**
+
    ```bash
    python scripts/generate_readme.py
    ```
 
 2. **Add to pre-commit hook:**
+
    ```bash
    # .git/hooks/pre-commit
    #!/bin/bash
@@ -1108,36 +1166,39 @@ To keep READMEs synchronized with templates:
 
 #### Issue: "Configuration file not found"
 
-```
+```text
 FileNotFoundError: Configuration file not found: /path/to/scripts/readme_config.yaml
 Create readme_config.yaml in scripts/ directory.
 ```
 
 **Solution:** Ensure `readme_config.yaml` exists in the `scripts/` directory:
+
 ```bash
 ls scripts/readme_config.yaml
 ```
 
 #### Issue: "Templates directory not found"
 
-```
+```text
 FileNotFoundError: Templates directory not found: /path/to/scripts/readme_templates/
 Create readme_templates/ directory in scripts/
 ```
 
 **Solution:** Ensure template directory exists:
+
 ```bash
 ls -la scripts/readme_templates/
 ```
 
 #### Issue: "Template not found" for language
 
-```
+```text
 TemplateNotFound: Template not found: python.md.jinja
 Expected at: /path/to/scripts/readme_templates/python.md.jinja
 ```
 
 **Solution:** Create template or rely on fallback `language_package.md.jinja`:
+
 ```bash
 # Either create language template
 touch scripts/readme_templates/python.md.jinja
@@ -1148,12 +1209,13 @@ grep 'template:' scripts/readme_config.yaml
 
 #### Issue: "Snippet not found"
 
-```
+```text
 FileNotFoundError: Snippet not found: /path/to/docs/snippets/python/basic.py
 Looking for: docs/snippets/python/basic.py
 ```
 
 **Solution:** Create the snippet file or update configuration reference:
+
 ```bash
 # Create missing snippet
 mkdir -p docs/snippets/python/getting-started
@@ -1165,12 +1227,13 @@ vim scripts/readme_config.yaml
 
 #### Issue: "No code block found in markdown snippet"
 
-```
+```text
 ValueError: No code block found in markdown snippet: /path/to/file.md
 Ensure file contains code wrapped in triple backticks
 ```
 
 **Solution:** Ensure markdown files have proper code blocks:
+
 ```markdown
 # Title
 
@@ -1180,7 +1243,9 @@ Description here.
 # Code must be wrapped in triple backticks
 print("hello")
 ```
-```
+
+
+```text
 
 Correct format:
 - Opening: ``` (three backticks)
@@ -1191,8 +1256,10 @@ Correct format:
 #### Issue: YAML parsing error
 
 ```
+
 ValueError: Failed to parse YAML configuration: mapping values are not allowed here
-```
+
+```text
 
 **Solution:** Check YAML syntax in `readme_config.yaml`:
 ```bash
@@ -1208,11 +1275,12 @@ python -c "import yaml; yaml.safe_load(open('scripts/readme_config.yaml'))"
 
 #### Issue: Jinja2 undefined variable
 
-```
+```text
 UndefinedError: 'package_manager' is undefined
 ```
 
 **Solution:** Verify configuration has required fields:
+
 ```bash
 # Check language has the field
 grep -A 20 'python:' scripts/readme_config.yaml | grep 'package_manager'
@@ -1223,6 +1291,7 @@ grep -A 20 'python:' scripts/readme_config.yaml | grep 'package_manager'
 If generation fails with memory errors:
 
 1. **Check snippet sizes:**
+
    ```bash
    find docs/snippets -type f -exec wc -l {} + | sort -rn | head
    ```
@@ -1240,21 +1309,25 @@ If generation fails with memory errors:
 **Debug step-by-step:**
 
 1. **Validate configuration:**
+
    ```bash
    python -c "import yaml; import json; print(json.dumps(yaml.safe_load(open('scripts/readme_config.yaml')), indent=2))" | grep -A 50 'python:'
    ```
 
 2. **Check template:**
+
    ```bash
    head -20 scripts/readme_templates/language_package.md.jinja
    ```
 
 3. **Generate with debug output:**
+
    ```bash
    python scripts/generate_readme.py --verbose --language python
    ```
 
 4. **Compare outputs:**
+
    ```bash
    python scripts/generate_readme.py --dry-run --language python > /tmp/generated.md
    diff /tmp/generated.md packages/python/README.md
@@ -1265,18 +1338,21 @@ If generation fails with memory errors:
 **Solution:**
 
 1. **Clear Python cache:**
+
    ```bash
    find . -type d -name __pycache__ -exec rm -rf {} +
    find . -type f -name "*.pyc" -delete
    ```
 
 2. **Verify files were written:**
+
    ```bash
    ls -la packages/python/README.md
    stat packages/python/README.md  # Check modification time
    ```
 
 3. **Regenerate explicitly:**
+
    ```bash
    rm packages/python/README.md  # Delete old file
    python scripts/generate_readme.py --language python
@@ -1285,6 +1361,7 @@ If generation fails with memory errors:
 ### Debugging Commands
 
 **Test configuration loading:**
+
 ```bash
 python -c "
 import yaml
@@ -1297,6 +1374,7 @@ with open('scripts/readme_config.yaml') as f:
 ```
 
 **Test template rendering (single snippet):**
+
 ```bash
 python -c "
 from pathlib import Path
@@ -1320,6 +1398,7 @@ except Exception as e:
 ```
 
 **Validate specific README:**
+
 ```bash
 python scripts/generate_readme.py --language python --validate --verbose
 ```

@@ -726,7 +726,7 @@ Model files are cached locally to avoid re-downloading on subsequent runs.
 
 **Default cache location:**
 
-```
+```text
 ~/.cache/kreuzberg/embeddings/
 ```
 
@@ -1115,7 +1115,7 @@ Both algorithms analyze text independently and require no external training data
 
 The `ngram_range` parameter controls the size of keyword phrases:
 
-```
+```text
 ngram_range: (1, 1)  → Single words only: "python", "machine", "learning"
 ngram_range: (1, 2)  → 1-2 word phrases: "python", "machine learning", "deep learning"
 ngram_range: (1, 3)  → 1-3 word phrases: "python", "machine learning", "deep neural networks"
@@ -1377,7 +1377,7 @@ Both algorithms analyze text independently and require no external training data
 
 The `ngram_range` parameter controls the size of keyword phrases:
 
-```
+```text
 ngram_range: (1, 1)  → Single words only: "python", "machine", "learning"
 ngram_range: (1, 2)  → 1-2 word phrases: "python", "machine learning", "deep learning"
 ngram_range: (1, 3)  → 1-3 word phrases: "python", "machine learning", "deep neural networks"
@@ -1693,7 +1693,7 @@ Each extracted block contains:
 
 Extract hierarchical structure for understanding document semantics and building knowledge graphs:
 
-```
+```text
 H1: Document Title
   H2: Section 1
     H3: Subsection 1.1
@@ -1794,7 +1794,7 @@ fmt.Printf(" [%s] %s...
 }
 }
 
-````
+````text
 
 === "Java"
 
@@ -2166,7 +2166,7 @@ if (text_block_coverage < ocr_coverage_threshold) {
 run_ocr() // Trigger OCR on pages with insufficient text coverage
 }
 
-````
+````text
 
 **Common Scenarios:**
 
@@ -2270,7 +2270,7 @@ The extracted hierarchy is returned in `PageContent.hierarchy` when pages are ex
 
 1. **Always enable page extraction** when using hierarchy:
 
-   ```
+   ```text
    pages = PageConfig(extract_pages=True)
    ```
 
@@ -2389,7 +2389,7 @@ Each extracted block contains:
 
 Extract hierarchical structure for understanding document semantics and building knowledge graphs:
 
-```
+```text
 H1: Document Title
   H2: Section 1
     H3: Subsection 1.1
@@ -2490,7 +2490,7 @@ fmt.Printf(" [%s] %s...
 }
 }
 
-````
+````text
 
 === "Java"
 
@@ -2862,7 +2862,7 @@ if (text_block_coverage < ocr_coverage_threshold) {
 run_ocr() // Trigger OCR on pages with insufficient text coverage
 }
 
-````
+````text
 
 **Common Scenarios:**
 
@@ -2966,7 +2966,7 @@ The extracted hierarchy is returned in `PageContent.hierarchy` when pages are ex
 
 1. **Always enable page extraction** when using hierarchy:
 
-   ```
+   ```text
    pages = PageConfig(extract_pages=True)
    ```
 
@@ -3828,9 +3828,11 @@ For complete working examples, see the [examples directory](https://github.com/k
 
 - Never commit config files containing API keys or passwords to version control
 - Use environment variables for sensitive data:
+
   ```bash title="Terminal"
   export KREUZBERG_OCR_API_KEY="your-key-here"
   ```
+
 - Add `kreuzberg.toml` to `.gitignore` if it contains secrets
 - Use separate config files for development vs. production
 
@@ -3839,6 +3841,7 @@ For complete working examples, see the [examples directory](https://github.com/k
 - `passwords` field attempts passwords in order until one succeeds
 - Passwords are not logged or cached
 - Use environment variables for sensitive passwords:
+
   ```python title="secure_config.py"
   import os
   config = PdfConfig(passwords=[os.getenv("PDF_PASSWORD")])

@@ -26,7 +26,7 @@ The FFI layer is thoroughly tested through:
 
 ## Error That Led to Disabling
 
-```
+```text
 error: linking with `cc` failed: exit status: 1
 rust-lld: error: undefined symbol: kreuzberg_last_error
 rust-lld: error: undefined symbol: kreuzberg_load_extraction_config_from_file

@@ -2,6 +2,7 @@
 name: Troubleshooting Guides
 priority: high
 ---
+
 Provide troubleshooting for common OCR issues
 
 - Low OCR accuracy: preprocessing options

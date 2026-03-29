@@ -2,6 +2,7 @@
 name: Preprocessing Pipeline Consistency
 priority: high
 ---
+
 Apply preprocessing consistently across all images
 
 - Define standard preprocessing pipeline

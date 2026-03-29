@@ -2,6 +2,7 @@
 name: Efficient Lookups
 priority: high
 ---
+
 Optimize plugin selection performance
 
 - O(log n) MIME type lookup via indexing

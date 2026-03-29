@@ -19,6 +19,7 @@
 PDF hierarchy detection is an advanced feature that automatically identifies and extracts document structure from PDFs. It analyzes text properties (primarily font size) to classify content into hierarchical levels corresponding to HTML heading tags (H1-H6) and body text.
 
 Instead of treating all text equally, the system recognizes that:
+
 - **Large text** typically represents main headings (H1)
 - **Medium text** represents subheadings (H2, H3, etc.)
 - **Small text** represents body content
@@ -63,7 +64,7 @@ PDF hierarchy detection combines three sophisticated techniques:
 
 The system extracts every character from the PDF, preserving critical metadata:
 
-```
+```text
 Character Data:
   Text: "A"
   Position: (100.0, 50.0) - x, y coordinates
@@ -83,13 +84,15 @@ Individual characters are merged into text blocks using a greedy clustering algo
 This weighting reflects how text is typically laid out: characters on the same line (small Y distance) should be grouped together, while characters at different X positions on different lines should be separate.
 
 **Merging Thresholds**:
+
 - Characters are merged if they satisfy distance criteria:
   - X-distance threshold: `font_size × 2.0` (allows up to 2 character widths apart)
   - Y-distance threshold: `font_size × 1.5` (allows for slight vertical alignment variations)
 - Characters with intersection ratio > 0.05 are also merged (overlapping text)
 
 **Example of block merging**:
-```
+
+```text
 Characters: ['H', 'e', 'l', 'l', 'o']
 After merging: TextBlock { text: "Hello", font_size: 12.0 }
 ```
@@ -98,7 +101,7 @@ After merging: TextBlock { text: "Hello", font_size: 12.0 }
 
 Once blocks are created, the system clusters them by font size using K-means algorithm:
 
-```
+```text
 Font sizes: [24.0, 24.1, 18.0, 18.2, 12.0, 12.1, 12.0, 12.3]
 K = 6 clusters (default)
 
@@ -110,6 +113,7 @@ Result:
 ```
 
 **Algorithm Details**:
+
 - Initialization: Uses actual unique font sizes from the document, sorted in descending order
 - Iteration: Up to 100 iterations with convergence threshold of 0.01 points
 - Termination: Stops early when centroids stabilize or max iterations reached
@@ -118,7 +122,7 @@ Result:
 
 Clusters are mapped to heading levels based on font size ranking:
 
-```
+```text
 Cluster 0 (largest font) → H1
 Cluster 1 (2nd largest)  → H2
 Cluster 2 (3rd largest)  → H3
@@ -164,13 +168,14 @@ pub struct HierarchyConfig {
 
 Controls whether hierarchy extraction is performed.
 
-```
+```text
 Default: true
 Type: boolean
 Effect: When false, no PageHierarchy is included in output
 ```
 
 **When to disable**:
+
 - When you only need raw text extraction
 - For performance-sensitive applications (enables ~5% performance improvement)
 - When document has no clear hierarchy structure
@@ -179,7 +184,7 @@ Effect: When false, no PageHierarchy is included in output
 
 Specifies the number of font size clusters to create, directly mapping to heading levels.
 
-```
+```text
 Default: 6
 Valid Range: 2-10
 Mapping: k_clusters = 6 provides H1-H6 (6 heading levels)
@@ -208,18 +213,20 @@ Mapping: k_clusters = 6 provides H1-H6 (6 heading levels)
 
 Controls whether bounding box information is included in the output.
 
-```
+```text
 Default: true
 Type: boolean
 Effect: When true, each block includes (left, top, right, bottom) coordinates
 ```
 
 **When to disable**:
+
 - Reducing output size (10-15% smaller JSON)
 - When spatial information is not needed
 - For performance optimization
 
 **When to enable** (recommended):
+
 - Building document visualization tools
 - Implementing text selection/highlighting
 - Creating PDF annotation systems
@@ -229,7 +236,7 @@ Effect: When true, each block includes (left, top, right, bottom) coordinates
 
 Determines when Optical Character Recognition (OCR) should be triggered based on text block coverage.
 
-```
+```text
 Default: None (OCR triggering disabled)
 Valid Range: 0.0-1.0
 Semantics: Trigger OCR if text_area / page_area < threshold
@@ -237,7 +244,7 @@ Semantics: Trigger OCR if text_area / page_area < threshold
 
 **Understanding the threshold**:
 
-```
+```text
 ocr_coverage_threshold: 0.5
 means: "If less than 50% of the page has text, run OCR"
 
@@ -524,6 +531,7 @@ pub struct PageHierarchy {
 ```
 
 **JSON Representation**:
+
 ```json title="PageHierarchy JSON Output"
 {
   "block_count": 5,
@@ -583,7 +591,7 @@ pub struct HierarchicalBlock {
 
 The `level` field can have the following values:
 
-```
+```text
 "h1"   - Top-level heading (largest font typically)
 "h2"   - Secondary heading
 "h3"   - Tertiary heading
@@ -678,6 +686,7 @@ Hierarchy detection is less useful when:
 ### 2. Choosing the Right k_clusters Value
 
 **Start with analysis**:
+
 ```python title="Analyze Font Size Distribution"
 # Analyze font sizes in your sample PDFs
 from collections import Counter
@@ -694,6 +703,7 @@ recommended_k = min(len(unique_sizes) + 1, 8)
 ```
 
 **Testing strategy**:
+
 ```python title="Test Multiple k_clusters Values"
 # Test multiple k values
 for k in [3, 4, 5, 6, 7]:
@@ -709,7 +719,8 @@ for k in [3, 4, 5, 6, 7]:
 ```
 
 **Optimization decision tree**:
-```
+
+```text
 Does your document have only 1-2 heading sizes?
   → Use k_clusters = 2-3
 
@@ -729,6 +740,7 @@ Are you unsure?
 ### 3. Performance Optimization
 
 **For maximum performance**:
+
 ```python title="Maximum Performance Configuration"
 config = ExtractionConfig(
     pdf_options=PdfConfig(
@@ -742,6 +754,7 @@ config = ExtractionConfig(
 ```
 
 **For balanced performance**:
+
 ```python title="Balanced Performance Configuration"
 config = ExtractionConfig(
     pdf_options=PdfConfig(
@@ -758,6 +771,7 @@ config = ExtractionConfig(
 ```
 
 **Performance impact**:
+
 - Hierarchy extraction: ~5-10% overhead
 - Reducing k_clusters from 6 to 4: ~2-3% speedup
 - Disabling bbox: ~10% size reduction
@@ -766,12 +780,14 @@ config = ExtractionConfig(
 ### 4. Handling Edge Cases
 
 **Very short documents** (< 10 text blocks):
+
 ```python title="Short Document Configuration"
 # Reduce k to number of blocks / 2
 config.pdf_options.hierarchy.k_clusters = 3
 ```
 
 **Documents with many similar font sizes**:
+
 ```python title="Similar Font Sizes Configuration"
 # May result in many "body" classifications
 # Adjust expectations or reduce k_clusters
@@ -779,6 +795,7 @@ config.pdf_options.hierarchy.k_clusters = 4
 ```
 
 **Scanned/OCR documents**:
+
 ```python title="OCR Document Configuration"
 # OCR may introduce font size variations
 config.pdf_options.hierarchy.ocr_coverage_threshold = 0.5
@@ -789,6 +806,7 @@ config.pdf_options.hierarchy.k_clusters = 3
 ### 5. Data Quality Assurance
 
 **Validation workflow**:
+
 ```python title="Hierarchy Validation Function"
 def validate_hierarchy(result):
     issues = []
@@ -837,12 +855,14 @@ for issue in issues:
 ### Issue: No hierarchy blocks returned
 
 **Symptoms**:
+
 - `page.hierarchy` is None
 - `page.hierarchy.blocks` is empty
 
 **Causes and Solutions**:
 
 1. **Hierarchy extraction is disabled**:
+
    ```python
    # Check configuration
    if config.pdf_options.hierarchy.enabled:
@@ -850,6 +870,7 @@ for issue in issues:
    ```
 
 2. **PDF has no extractable text**:
+
    ```python
    # Check if raw text extraction works
    if not result.text:
@@ -858,6 +879,7 @@ for issue in issues:
    ```
 
 3. **Very small document**:
+
    ```python
    # K-means needs at least k blocks
    if len(all_blocks) < k_clusters:
@@ -866,6 +888,7 @@ for issue in issues:
    ```
 
 **Solution workflow**:
+
 ```python title="Debugging Empty Hierarchy"
 # Step 1: Verify extraction works
 config.pdf_options.hierarchy.enabled = True
@@ -895,6 +918,7 @@ if not page.hierarchy.blocks:
 ### Issue: Too many "body" level blocks
 
 **Symptoms**:
+
 - All or most blocks classified as "body" instead of headings
 - No H1, H2, etc. blocks found
 
@@ -913,6 +937,7 @@ if not page.hierarchy.blocks:
    - Solution: Increase clustering specificity
 
 **Solutions**:
+
 ```python title="Fixing Too Many Body Blocks"
 # Solution 1: Reduce k_clusters
 config.pdf_options.hierarchy.k_clusters = 4  # From 6
@@ -934,6 +959,7 @@ if stdev(font_sizes) < 2.0:
 ### Issue: Unexpected hierarchy levels (e.g., H3 with small font, H1 with medium font)
 
 **Symptoms**:
+
 - Levels don't match what you expect based on visual inspection
 - Font sizes don't correlate with heading levels
 
@@ -949,6 +975,7 @@ if stdev(font_sizes) < 2.0:
    - Multiple font groups of similar size
 
 **Understanding the behavior**:
+
 ```python title="Understanding Level Assignment"
 # What's happening:
 # - K-means identifies distinct font size clusters
@@ -971,6 +998,7 @@ for block in result.pages[0].hierarchy.blocks:
 ```
 
 **Solution - If appearance doesn't match expectations**:
+
 ```python title="Custom Level Adjustment"
 # The hierarchy is mathematically correct
 # Adjust expectations or:
@@ -996,6 +1024,7 @@ def adjust_hierarchy(blocks):
 ### Issue: Performance degradation with hierarchy enabled
 
 **Symptoms**:
+
 - Extraction is noticeably slower with hierarchy enabled
 - Memory usage increases significantly
 
@@ -1050,14 +1079,17 @@ for k in [3, 4, 5, 6]:
 ### Issue: Inconsistent results across runs
 
 **Symptoms**:
+
 - Same PDF produces different hierarchy each time it's processed
 - Blocks have different levels on different runs
 
 **Likely cause**:
+
 - K-means algorithm has random initialization in some implementations
 - However, Kreuzberg uses deterministic initialization from actual font sizes
 
 **Debugging**:
+
 ```python title="Debugging Inconsistent Results"
 # This should NOT happen with Kreuzberg's implementation
 # If you observe inconsistency, it might be due to:
@@ -1076,6 +1108,7 @@ result = await extract(pdf_bytes, config)
 When troubleshooting, provide:
 
 1. **Configuration used**:
+
    ```python
    import json
    config_dict = {
@@ -1087,6 +1120,7 @@ When troubleshooting, provide:
    ```
 
 2. **Sample of actual output**:
+
    ```python
    if result.pages:
        page = result.pages[0]
@@ -1096,6 +1130,7 @@ When troubleshooting, provide:
    ```
 
 3. **Font size distribution**:
+
    ```python
    font_sizes = [b.font_size for p in result.pages
                  for b in p.hierarchy.blocks]

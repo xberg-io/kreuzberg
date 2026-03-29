@@ -20,6 +20,7 @@ deno run --allow-read basic.ts
 ```
 
 Demonstrates:
+
 - `extractBytes()` - async extraction from byte arrays
 - `extractBytesSync()` - synchronous extraction from byte arrays
 - Configuration options (quality, chunking, caching)
@@ -37,6 +38,7 @@ deno run --allow-read batch.ts
 ```
 
 Demonstrates:
+
 - Parallel batch processing
 - Error handling for mixed results
 - Performance metrics
@@ -55,6 +57,7 @@ deno run --allow-read ocr.ts
 **Note:** OCR functionality requires Tesseract backend to be available in your environment.
 
 Demonstrates:
+
 - OCR with language selection (English, German, etc.)
 - Force OCR on text-based PDFs
 - Configuration with Tesseract options
@@ -136,7 +139,7 @@ interface ChunkingConfig {
 
 Sample documents are expected in the `fixtures/` directory. The examples include fallback handling for missing fixtures.
 
-```
+```text
 examples/wasm-deno/
 ├── fixtures/
 │   └── sample.pdf     # Example PDF document

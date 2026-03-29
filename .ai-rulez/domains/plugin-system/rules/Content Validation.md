@@ -2,6 +2,7 @@
 name: Content Validation
 priority: high
 ---
+
 Implement quality checks and validation
 
 - Validate extraction quality

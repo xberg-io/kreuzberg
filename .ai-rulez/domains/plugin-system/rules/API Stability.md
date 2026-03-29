@@ -2,6 +2,7 @@
 name: API Stability
 priority: high
 ---
+
 Maintain stable plugin API across versions
 
 - Plugin traits are public and stable

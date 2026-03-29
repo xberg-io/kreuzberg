@@ -2,6 +2,7 @@
 description: "plugin error handling"
 name: plugin-error-handling
 ---
+
 Handle plugin errors and implement recovery
 
 1. Classify plugin errors:

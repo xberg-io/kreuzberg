@@ -2,6 +2,7 @@
 name: Post-Processing Pipeline
 priority: high
 ---
+
 Apply post-processors to enhance extraction results
 
 - Apply configured post-processors sequentially

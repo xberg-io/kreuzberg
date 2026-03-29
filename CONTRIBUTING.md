@@ -13,7 +13,7 @@ Welcome! We're glad you're here. Start by choosing an issue that matches your ex
 
 Want to work on something bigger or propose a new feature? [Open a discussion](https://github.com/kreuzberg-dev/kreuzberg/issues) with maintainers first.
 
-## Jump right in!
+## Jump right in
 
 **Quick fixes** (typos, small doc improvements):
 

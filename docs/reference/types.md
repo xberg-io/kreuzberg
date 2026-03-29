@@ -551,7 +551,7 @@ type PageStructure struct {
 }
 ```
 
-### C#
+### C
 
 ```csharp title="PageStructure.cs"
 public record PageStructure
@@ -635,7 +635,7 @@ type PageBoundary struct {
 }
 ```
 
-### C#
+### C
 
 ```csharp title="PageBoundary.cs"
 public record PageBoundary
@@ -739,7 +739,7 @@ type PageInfo struct {
 }
 ```
 
-### C#
+### C
 
 ```csharp title="PageInfo.cs"
 public record PageInfo
@@ -823,7 +823,7 @@ const (
 )
 ```
 
-### C#
+### C
 
 ```csharp title="PageUnitType.cs"
 public enum PageUnitType
@@ -1280,7 +1280,7 @@ type HtmlMetadata struct {
 }
 ```
 
-#### C#
+#### C
 
 ```csharp title="HtmlMetadata.cs"
 public record HtmlMetadata
@@ -1366,7 +1366,7 @@ type HeaderMetadata struct {
 }
 ```
 
-### C#
+### C
 
 ```csharp title="HeaderMetadata.cs"
 public record HeaderMetadata
@@ -1455,7 +1455,7 @@ type LinkMetadata struct {
 }
 ```
 
-### C#
+### C
 
 ```csharp title="LinkMetadata.cs"
 public record LinkMetadata
@@ -1541,7 +1541,7 @@ const (
 )
 ```
 
-### C#
+### C
 
 ```csharp title="LinkType.cs"
 public enum LinkType
@@ -1632,7 +1632,7 @@ type ImageMetadataType struct {
 }
 ```
 
-### C#
+### C
 
 ```csharp title="ImageMetadataType.cs"
 public record ImageMetadataType
@@ -1706,7 +1706,7 @@ const (
 )
 ```
 
-### C#
+### C
 
 ```csharp title="ImageType.cs"
 public enum ImageType
@@ -1778,7 +1778,7 @@ type StructuredData struct {
 }
 ```
 
-### C#
+### C
 
 ```csharp title="StructuredData.cs"
 public record StructuredData
@@ -1843,7 +1843,7 @@ const (
 )
 ```
 
-### C#
+### C
 
 ```csharp title="StructuredDataType.cs"
 public enum StructuredDataType
@@ -3959,7 +3959,7 @@ type HierarchyConfig struct {
 }
 ```
 
-#### C#
+#### C
 
 ```csharp title="HierarchyConfig.cs"
 public sealed class HierarchyConfig
@@ -4136,7 +4136,7 @@ type ConcurrencyConfig struct {
 }
 ```
 
-#### C#
+#### C
 
 ```csharp title="ConcurrencyConfig.cs"
 public sealed class ConcurrencyConfig
@@ -4219,7 +4219,7 @@ type PageHierarchy struct {
 }
 ```
 
-### C#
+### C
 
 ```csharp title="PageHierarchy.cs"
 public record PageHierarchy
@@ -4360,7 +4360,7 @@ type BoundingBox struct {
 }
 ```
 
-### C#
+### C
 
 ```csharp title="HierarchicalBlock.cs"
 public record HierarchicalBlock
@@ -4694,7 +4694,7 @@ type Element struct {
 }
 ```
 
-### C#
+### C
 
 ```csharp title="Element.cs"
 public record Element(
@@ -4789,7 +4789,7 @@ String elementId;
 type ElementID string
 ```
 
-### C#
+### C
 
 ```csharp title="ElementId.cs"
 public class Element
@@ -4930,7 +4930,7 @@ const (
 )
 ```
 
-### C#
+### C
 
 ```csharp title="ElementType.cs"
 public enum ElementType
@@ -5075,7 +5075,7 @@ type ElementMetadata struct {
 }
 ```
 
-### C#
+### C
 
 ```csharp title="ElementMetadata.cs"
 public record ElementMetadata(
@@ -5194,7 +5194,7 @@ type BoundingBox struct {
 }
 ```
 
-### C#
+### C
 
 ```csharp title="BoundingBox.cs"
 public record BoundingBox(
@@ -5317,7 +5317,7 @@ const (
 )
 ```
 
-### C#
+### C
 
 ```csharp title="OutputFormat.cs"
 public enum OutputFormat
@@ -5857,7 +5857,7 @@ type AnnotationKind struct {
 }
 ```
 
-### C#
+### C
 
 ```csharp title="DocumentStructure.cs"
 public sealed class DocumentStructure

@@ -2,6 +2,7 @@
 description: "python plugin wrapper"
 name: python-plugin-wrapper
 ---
+
 Wrap Python plugins with Rust FFI
 
 1. Create wrapper struct holding Py<PyAny>

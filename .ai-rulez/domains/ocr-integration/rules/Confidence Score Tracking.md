@@ -2,6 +2,7 @@
 name: Confidence Score Tracking
 priority: high
 ---
+
 Track OCR confidence at appropriate granularity
 
 - Record confidence per word

@@ -2,6 +2,7 @@
 description: "image ocr processing"
 name: image-ocr-processing
 ---
+
 Process image documents with OCR
 
 1. Create OcrProcessor with cache config

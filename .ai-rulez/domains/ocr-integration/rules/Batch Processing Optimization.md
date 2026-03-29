@@ -2,6 +2,7 @@
 name: Batch Processing Optimization
 priority: high
 ---
+
 Optimize batch OCR operations
 
 - Process images concurrently

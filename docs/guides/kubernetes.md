@@ -89,7 +89,7 @@ kubectl apply -f minimal-deployment.yaml
 
 Without correct `TESSDATA_PREFIX`, OCR will silently fail:
 
-```
+```text
 Warning: Image-based extraction attempted but OCR backend not available
 Falling back to non-OCR extraction
 ```
@@ -328,23 +328,27 @@ kubectl logs deployment/kreuzberg-api --previous
 ### Plugin Initialization Failed
 
 **Symptom:**
-```
+
+```text
 [ERROR] Plugin load failed: OcrBackend not initialized
 ```
 
 **Fix:**
 
 1. Verify TESSDATA_PREFIX:
+
 ```bash
 kubectl exec -it pod/kreuzberg-api-xxx -- printenv TESSDATA_PREFIX
 ```
 
 2. Check tessdata files exist:
+
 ```bash
 kubectl exec -it pod/kreuzberg-api-xxx -- ls -la /usr/share/tesseract-ocr/4.00/tessdata/
 ```
 
 3. Ensure environment variable is set in manifest:
+
 ```yaml
 env:
 - name: TESSDATA_PREFIX
@@ -354,13 +358,15 @@ env:
 ### MissingDependencyError
 
 **Symptom:**
-```
+
+```text
 [ERROR] MissingDependencyError: tesseract not found in PATH
 ```
 
 **Fix:**
 
 Verify you're using the official image:
+
 ```bash
 kubectl get deployment kreuzberg-api -o jsonpath='{.spec.template.spec.containers[0].image}'
 ```
@@ -370,13 +376,15 @@ Should be: `ghcr.io/kreuzberg-dev/kreuzberg:latest`
 ### Language Not Found
 
 **Symptom:**
-```
+
+```text
 [ERROR] Tesseract language not found: deu
 ```
 
 **Fix:**
 
 Check available languages:
+
 ```bash
 kubectl exec -it pod/kreuzberg-api-xxx -- tesseract --list-langs
 ```
@@ -386,7 +394,8 @@ Use pre-installed languages or mount custom tessdata via PVC.
 ### Permission Denied
 
 **Symptom:**
-```
+
+```text
 [ERROR] Failed to create cache directory: Permission denied
 ```
 
@@ -395,6 +404,7 @@ Use pre-installed languages or mount custom tessdata via PVC.
 Use init container or fsGroup (see Permissions section).
 
 Verify permissions:
+
 ```bash
 kubectl exec -it pod/kreuzberg-api-xxx -- ls -la /app/.kreuzberg
 # Should show files owned by 1000:1000
@@ -403,13 +413,15 @@ kubectl exec -it pod/kreuzberg-api-xxx -- ls -la /app/.kreuzberg
 ### Out of Memory
 
 **Symptom:**
-```
+
+```text
 OOMKilled
 ```
 
 **Fix:**
 
 Increase memory limits:
+
 ```yaml
 resources:
   limits:
@@ -417,6 +429,7 @@ resources:
 ```
 
 Reduce OCR resource usage:
+
 ```yaml
 env:
 - name: KREUZBERG_PDF_DPI
@@ -428,13 +441,15 @@ env:
 ### Startup Probe Timeout
 
 **Symptom:**
-```
+
+```text
 Startup probe failed 30 times, giving up
 ```
 
 **Fix:**
 
 Increase timeout:
+
 ```yaml
 startupProbe:
   failureThreshold: 60  # 600s = 10 minutes
@@ -732,31 +747,37 @@ spec:
 Before reporting issues:
 
 1. **Verify TESSDATA_PREFIX:**
+
 ```bash
 kubectl exec -it pod/kreuzberg-api-xxx -- printenv TESSDATA_PREFIX
 ```
 
 2. **Check Tesseract availability:**
+
 ```bash
 kubectl exec -it pod/kreuzberg-api-xxx -- tesseract --list-langs
 ```
 
 3. **Review logs:**
+
 ```bash
 kubectl logs deployment/kreuzberg-api | grep -i "plugin\|ocr\|tessdata"
 ```
 
 4. **Verify pod resources:**
+
 ```bash
 kubectl describe pod deployment/kreuzberg-api
 ```
 
 5. **Check volume permissions:**
+
 ```bash
 kubectl exec -it pod/kreuzberg-api-xxx -- ls -la /app/.kreuzberg
 ```
 
 6. **Test health endpoint:**
+
 ```bash
 kubectl port-forward service/kreuzberg-api 8000:8000
 curl http://localhost:8000/health

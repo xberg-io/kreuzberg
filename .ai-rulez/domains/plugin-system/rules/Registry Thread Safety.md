@@ -2,6 +2,7 @@
 name: Registry Thread Safety
 priority: high
 ---
+
 Registries must support concurrent access
 
 - Use Arc<RwLock<>> for registry storage

@@ -7,6 +7,7 @@ Comprehensive, behavior-driven test suite for the Kreuzberg PHP bindings.
 All tests follow **Behavior-Driven Development (BDD)** principles:
 
 ✅ **DO TEST:**
+
 - User-facing behavior and functionality
 - Observable outcomes users can see
 - Real-world document processing scenarios
@@ -14,6 +15,7 @@ All tests follow **Behavior-Driven Development (BDD)** principles:
 - Configuration effects on results
 
 ❌ **DO NOT TEST:**
+
 - Implementation details (getters, setters)
 - Constants or type definitions
 - Framework features (array_map, etc.)
@@ -21,7 +23,7 @@ All tests follow **Behavior-Driven Development (BDD)** principles:
 
 ## Directory Structure
 
-```
+```text
 tests/
 ├── bootstrap.php                      # PHPUnit bootstrap file
 ├── Unit/                              # Unit tests (48 tests)
@@ -38,7 +40,8 @@ tests/
 ```
 
 **E2E Tests:**
-```
+
+```text
 e2e/php/tests/
 ├── CompleteWorkflowTest.php          # End-to-end workflows
 └── Helpers.php                       # E2E test utilities
@@ -49,17 +52,20 @@ e2e/php/tests/
 ### Prerequisites
 
 1. **Install dependencies:**
+
    ```bash
    cd packages/php
    composer install
    ```
 
 2. **Build the Kreuzberg extension:**
+
    ```bash
    composer build
    ```
 
 3. **Verify extension is loaded:**
+
    ```bash
    php -m | grep kreuzberg
    ```
@@ -139,21 +145,25 @@ phpunit
 ### Advanced Options
 
 **Verbose output:**
+
 ```bash
 ./vendor/bin/phpunit --testdox
 ```
 
 **Stop on first failure:**
+
 ```bash
 ./vendor/bin/phpunit --stop-on-failure
 ```
 
 **List all available groups:**
+
 ```bash
 ./vendor/bin/phpunit --list-groups
 ```
 
 **Coverage report (requires Xdebug or PCOV):**
+
 ```bash
 ./vendor/bin/phpunit --coverage-html coverage/
 ```
@@ -163,6 +173,7 @@ phpunit
 ### Unit Tests (48 tests)
 
 **DocumentExtractionTest.php** - Core extraction behavior
+
 - Extracts text from PDFs and Office documents
 - Handles file and byte extraction
 - Auto-detects MIME types
@@ -171,6 +182,7 @@ phpunit
 - Supports multiple document formats
 
 **BatchProcessingTest.php** (11 tests)
+
 - Processes multiple files in parallel
 - Handles byte arrays
 - Maintains result order
@@ -179,6 +191,7 @@ phpunit
 - Handles empty batches
 
 **ErrorHandlingTest.php** (21 tests)
+
 - Nonexistent files
 - Invalid paths and null bytes
 - Corrupted data
@@ -189,6 +202,7 @@ phpunit
 - Meaningful error messages
 
 **ConfigTest.php** - Configuration objects
+
 - Default and custom values
 - Nested configurations
 - Array serialization
@@ -198,6 +212,7 @@ phpunit
 ### Integration Tests (63 tests)
 
 **DocumentFormatsTest.php** (14 tests)
+
 - PDF, DOCX, ODT, EPUB, Markdown
 - Metadata extraction
 - MIME type detection
@@ -205,6 +220,7 @@ phpunit
 - Complex documents with formulas/lists
 
 **OcrExtractionTest.php** (11 tests)
+
 - Tesseract OCR backend
 - Multiple language support
 - Page segmentation modes
@@ -213,6 +229,7 @@ phpunit
 - UTF-8 output validation
 
 **TableExtractionTest.php** (12 tests)
+
 - PDF and ODT table extraction
 - Markdown representation
 - Page number tracking
@@ -221,6 +238,7 @@ phpunit
 - Table structure validation
 
 **ChunkingAndEmbeddingsTest.php** (11 tests)
+
 - Chunk size and overlap configuration
 - Sentence boundary respect
 - Embedding generation
@@ -230,6 +248,7 @@ phpunit
 - UTF-8 validation
 
 **ExtensionTest.php** - PHP extension verification
+
 - Extension loading
 - Function availability
 - MIME type detection
@@ -239,6 +258,7 @@ phpunit
 ### E2E Tests
 
 **CompleteWorkflowTest.php** - Complete workflows
+
 - Full PDF extraction pipeline
 - OCR workflow on images
 - Batch processing mixed documents
@@ -250,6 +270,7 @@ phpunit
 - API consistency across formats
 
 **Helpers.php** - E2E utilities
+
 - Document path resolution
 - Config building
 - MIME type assertions
@@ -420,6 +441,7 @@ final class BatchProcessingTest extends TestCase
 **Error:** `Kreuzberg extension is not loaded`
 
 **Solution:**
+
 ```bash
 cd packages/php
 composer build
@@ -437,6 +459,7 @@ php -m | grep kreuzberg
 **Error:** `Allowed memory size exhausted`
 
 **Solution:**
+
 ```bash
 php -d memory_limit=1G ./vendor/bin/phpunit
 ```
@@ -444,11 +467,13 @@ php -d memory_limit=1G ./vendor/bin/phpunit
 ### Skipped Tests
 
 Many tests skip if:
+
 - Kreuzberg extension is not loaded
 - Test files are missing
 - Optional features unavailable
 
 View skip reasons:
+
 ```bash
 ./vendor/bin/phpunit --verbose
 ```
@@ -456,11 +481,13 @@ View skip reasons:
 ## Continuous Integration
 
 Tests run automatically on:
+
 - Pull requests
 - Commits to main branch
 - Release builds
 
 Example CI commands:
+
 ```bash
 # Unit tests (fast, no extension required for some)
 ./vendor/bin/phpunit --group unit
@@ -477,11 +504,13 @@ cd ../../e2e/php && phpunit
 **Total Tests:** 111+ comprehensive tests
 
 **Test Breakdown:**
+
 - Unit Tests: 48 tests
 - Integration Tests: 63 tests
 - E2E Tests: Multiple workflow tests
 
 **Coverage Areas:**
+
 - Document extraction (PDF, DOCX, ODT, Markdown, EPUB, etc.)
 - Batch processing
 - OCR with Tesseract
@@ -491,6 +520,7 @@ cd ../../e2e/php && phpunit
 - Complete end-to-end workflows
 
 **Quick Start:**
+
 ```bash
 # Install and build
 composer install
