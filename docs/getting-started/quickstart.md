@@ -446,15 +446,15 @@ Access format-specific metadata from extracted documents:
     # Save to file and parse metadata
     kreuzberg extract document.pdf --format json > result.json
 
-    # Extract PDF metadata
-    cat result.json | jq '.metadata.pdf'
+    # Extract PDF metadata (flat structure with format_type discriminator)
+    cat result.json | jq '.metadata'
 
     # Extract HTML metadata
-    kreuzberg extract page.html --format json | jq '.metadata.html'
+    kreuzberg extract page.html --format json | jq '.metadata'
 
     # Get specific fields
     kreuzberg extract document.pdf --format json | \
-      jq '.metadata | {page_count, author, title}'
+      jq '.metadata | {page_count, authors, title}'
 
     # Process multiple files
     kreuzberg batch documents/*.pdf --format json > all_metadata.json
@@ -466,12 +466,11 @@ Access format-specific metadata from extracted documents:
     {
       "content": "Extracted text...",
       "metadata": {
-        "mime_type": "application/pdf",
-        "pdf": {
-          "page_count": 10,
-          "author": "John Doe",
-          "title": "Document Title"
-        }
+        "title": "Document Title",
+        "authors": ["John Doe"],
+        "created_by": "LaTeX with hyperref package",
+        "format_type": "pdf",
+        "page_count": 10
       }
     }
     ```
