@@ -38,6 +38,7 @@ pub mod extractor;
 pub mod formats;
 pub mod io;
 pub mod mime;
+pub(crate) mod path_resolver;
 pub mod pipeline;
 pub mod server_config;
 

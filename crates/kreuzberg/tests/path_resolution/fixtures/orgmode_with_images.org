@@ -1,0 +1,9 @@
+* Test Document
+
+Here is an image:
+
+[[file:images/test_image.png]]
+
+And a nested one:
+
+[[file:images/subfolder/nested.png]]

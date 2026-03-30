@@ -614,7 +614,7 @@ impl OrgModeExtractor {
                 {
                     use crate::types::document_structure::ContentLayer;
                     use crate::types::internal::{ElementKind, InternalElement, InternalElementId};
-                    let alt = if display == url { String::new() } else { display };
+                    let alt = if display == url { String::new() } else { display.clone() };
                     let kind = ElementKind::Image { image_index: u32::MAX };
                     let id = InternalElementId::generate(kind.discriminant(), &alt, None, 0);
                     b.push_element(InternalElement {
@@ -632,6 +632,9 @@ impl OrgModeExtractor {
                         ocr_confidence: None,
                         ocr_rotation: None,
                     });
+                    // Also emit a URI so path resolution can find the image
+                    let label = if display == url { None } else { Some(display) };
+                    b.push_uri(Uri::image(&url, label));
                     i += 1;
                     continue;
                 }
@@ -901,6 +904,20 @@ impl DocumentExtractor for OrgModeExtractor {
             doc.push_table(table);
         }
 
+        Ok(doc)
+    }
+
+    async fn extract_file(
+        &self,
+        path: &std::path::Path,
+        mime_type: &str,
+        config: &ExtractionConfig,
+    ) -> Result<InternalDocument> {
+        let bytes = crate::core::io::open_file_bytes(path)?;
+        let mut doc = self.extract_bytes(&bytes, mime_type, config).await?;
+        if let Some(base_dir) = path.parent() {
+            crate::core::path_resolver::resolve_image_uris(&mut doc, base_dir, config);
+        }
         Ok(doc)
     }
 
