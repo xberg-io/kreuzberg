@@ -709,3 +709,36 @@ def assert_is_png(data: bytes) -> None:
 def assert_min_byte_length(data: bytes, min_length: int) -> None:
     """Assert data is at least min_length bytes."""
     assert len(data) >= min_length, f"Expected at least {min_length} bytes, got {len(data)}"
+
+
+def assert_embed_result(
+    result: list[list[float]],
+    *,
+    count: int | None = None,
+    dimensions: int | None = None,
+    no_nan: bool = False,
+    no_inf: bool = False,
+    non_zero: bool = False,
+    normalized: bool = False,
+) -> None:
+    """Assert properties of a standalone embed() result."""
+    import math
+
+    assert isinstance(result, list), f"Expected list of embeddings, got {type(result)}"
+    if count is not None:
+        assert len(result) == count, f"Expected {count} embeddings, got {len(result)}"
+    for i, vec in enumerate(result):
+        assert isinstance(vec, list), f"Embedding {i} is not a list"
+        if dimensions is not None:
+            assert len(vec) == dimensions, f"Embedding {i}: expected {dimensions} dims, got {len(vec)}"
+        if no_nan:
+            nan_vals = [v for v in vec if math.isnan(v)]
+            assert not nan_vals, f"Embedding {i} contains NaN values"
+        if no_inf:
+            inf_vals = [v for v in vec if math.isinf(v)]
+            assert not inf_vals, f"Embedding {i} contains Inf values"
+        if non_zero:
+            assert any(v != 0.0 for v in vec), f"Embedding {i} is all zeros"
+        if normalized:
+            norm = math.sqrt(sum(v * v for v in vec))
+            assert abs(norm - 1.0) < 1e-4, f"Embedding {i} L2 norm {norm:.6f} != 1.0 (not normalized)"

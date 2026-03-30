@@ -915,4 +915,48 @@ public static class TestHelpers
         Assert.NotNull(data);
         Assert.True(data.Length >= minLength, $"Expected at least {minLength} bytes, got {data.Length}");
     }
+
+    public static void AssertEmbedResult(IEnumerable<float[]> results, int count, int dimensions, bool noNan, bool noInf, bool nonZero)
+    {
+        Assert.NotNull(results);
+        var resultList = results.ToList();
+        if (count >= 0)
+        {
+            Assert.Equal(count, resultList.Count);
+        }
+        if (resultList.Count > 0)
+        {
+            for (int i = 0; i < resultList.Count; i++)
+            {
+                var vector = resultList[i];
+                Assert.NotNull(vector);
+                if (dimensions > 0)
+                {
+                    Assert.Equal(dimensions, vector.Length);
+                }
+
+                bool hasNonZero = false;
+                for (int j = 0; j < vector.Length; j++)
+                {
+                    float v = vector[j];
+                    if (noNan)
+                    {
+                        Assert.False(float.IsNaN(v), $"Vector {i} element {j} is NaN");
+                    }
+                    if (noInf)
+                    {
+                        Assert.False(float.IsInfinity(v), $"Vector {i} element {j} is Infinity");
+                    }
+                    if (v != 0.0f)
+                    {
+                        hasNonZero = true;
+                    }
+                }
+                if (nonZero)
+                {
+                    Assert.True(hasNonZero, $"Vector {i} is all zeros");
+                }
+            }
+        }
+    }
 }

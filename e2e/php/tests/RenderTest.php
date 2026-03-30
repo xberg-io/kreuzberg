@@ -24,9 +24,7 @@ class RenderTest extends TestCase
             $this->markTestSkipped('Missing document: ' . $documentPath);
         }
         $pngData = render_pdf_page($documentPath, 0, 72);
-        if (is_array($pngData)) {
-            $pngData = pack('C*', ...$pngData);
-        }
+        if (is_array($pngData)) { $pngData = pack('C*', ...$pngData); }
         Helpers::assertIsPng($pngData);
         Helpers::assertMinByteLength($pngData, 50);
     }
@@ -39,17 +37,12 @@ class RenderTest extends TestCase
         }
         $pages = [];
         foreach (render_pdf_pages_iter($documentPath, 150) as $pngData) {
-            if (is_array($pngData)) {
-                $pngData = pack('C*', ...$pngData);
-            }
+            if (is_array($pngData)) { $pngData = pack('C*', ...$pngData); }
             Helpers::assertIsPng($pngData);
             $pages[] = $pngData;
         }
-        $this->assertGreaterThanOrEqual(
-            1,
-            count($pages),
-            sprintf('Expected at least 1 pages, got %d', count($pages))
-        );
+        $this->assertGreaterThanOrEqual(1, count($pages),
+            sprintf('Expected at least 1 pages, got %d', count($pages)));
     }
 
     public function test_render_single_page(): void
@@ -59,9 +52,7 @@ class RenderTest extends TestCase
             $this->markTestSkipped('Missing document: ' . $documentPath);
         }
         $pngData = render_pdf_page($documentPath, 0, 150);
-        if (is_array($pngData)) {
-            $pngData = pack('C*', ...$pngData);
-        }
+        if (is_array($pngData)) { $pngData = pack('C*', ...$pngData); }
         Helpers::assertIsPng($pngData);
         Helpers::assertMinByteLength($pngData, 100);
     }

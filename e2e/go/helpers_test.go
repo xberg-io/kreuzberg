@@ -681,3 +681,51 @@ func assertMinByteLength(t *testing.T, data []byte, minLen int) {
 		t.Fatalf("expected at least %d bytes, got %d", minLen, len(data))
 	}
 }
+
+func assertEmbedResult(t *testing.T, result [][]float32, count *int, dims *int, noNan, noInf, nonZero, normalized bool) {
+	t.Helper()
+	if count != nil && len(result) != *count {
+		t.Fatalf("expected %d embeddings, got %d", *count, len(result))
+	}
+	for i, vec := range result {
+		if dims != nil && len(vec) != *dims {
+			t.Fatalf("embedding %d: expected %d dims, got %d", i, *dims, len(vec))
+		}
+		if noNan {
+			for _, v := range vec {
+				if v != v { // NaN check
+					t.Fatalf("embedding %d contains NaN", i)
+				}
+			}
+		}
+		if noInf {
+			for _, v := range vec {
+				if v > 1e38 || v < -1e38 { // Simple Inf check for float32
+					t.Fatalf("embedding %d contains Inf", i)
+				}
+			}
+		}
+		if nonZero {
+			hasNonZero := false
+			for _, v := range vec {
+				if v != 0 {
+					hasNonZero = true
+					break
+				}
+			}
+			if !hasNonZero {
+				t.Fatalf("embedding %d is all zeros", i)
+			}
+		}
+		if normalized {
+			var sqSum float64 = 0
+			for _, v := range vec {
+				sqSum += float64(v * v)
+			}
+			// Approximate sqrt by checking bounds of sqSum
+			if sqSum < 0.999 || sqSum > 1.001 {
+				t.Fatalf("embedding %d squared sum is %f (not normalized)", i, sqSum)
+			}
+		}
+	}
+}
