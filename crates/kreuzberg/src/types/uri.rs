@@ -60,14 +60,10 @@ pub fn classify_uri(url: &str) -> UriKind {
 }
 
 impl Uri {
-    /// Create a new hyperlink URI.
+    /// Create a new hyperlink URI, auto-classifying `mailto:` as Email and `#` as Anchor.
     pub fn hyperlink(url: impl Into<String>, label: Option<String>) -> Self {
         let url = url.into();
-        let kind = if url.starts_with("mailto:") {
-            UriKind::Email
-        } else {
-            UriKind::Hyperlink
-        };
+        let kind = classify_uri(&url);
         Self {
             url,
             label,

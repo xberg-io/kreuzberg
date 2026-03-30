@@ -16,6 +16,8 @@ use std::borrow::Cow;
 use std::collections::HashSet;
 
 #[cfg(feature = "office")]
+use crate::types::document_structure::{AnnotationKind, TextAnnotation};
+#[cfg(feature = "office")]
 use biblatex::{Bibliography, ChunksExt};
 
 /// BibTeX bibliography extractor.
@@ -132,24 +134,70 @@ impl DocumentExtractor for BibtexExtractor {
 
                     formatted_entries.push_str("}\n\n");
 
-                    // Extract URIs from URL and DOI fields
+                    // Extract URIs from URL and DOI fields.
+                    // Use entry title as label when available, falling back to BibTeX key.
+                    let link_label = entry_fields
+                        .get("title")
+                        .filter(|t| !t.is_empty())
+                        .cloned()
+                        .unwrap_or_else(|| key.clone());
+
                     if let Some(url) = entry_fields.get("url")
                         && !url.is_empty()
                     {
-                        builder.push_uri(Uri::citation(url, Some(key.clone())));
+                        builder.push_uri(Uri::hyperlink(url.as_str(), Some(link_label.clone())));
                     }
                     if let Some(doi) = entry_fields.get("doi")
                         && !doi.is_empty()
                     {
                         builder.push_uri(Uri::citation(
                             format!("https://doi.org/{}", doi),
-                            Some(key.clone()),
+                            Some(link_label.clone()),
                         ));
                     }
 
-                    // Build citation element with attributes
+                    // Build citation element with attributes.
                     let citation_text = formatted_entries[entry_start..].trim().to_string();
                     let idx = builder.push_citation(&citation_text, &key, None);
+
+                    // Attach Link annotations for url (hyperlink) and doi (citation).
+                    let mut link_annotations = Vec::new();
+                    let text_len = citation_text.len() as u32;
+
+                    if let Some(url) = entry_fields.get("url") {
+                        if !url.is_empty() {
+                            link_annotations.push(TextAnnotation {
+                                start: 0,
+                                end: text_len,
+                                kind: AnnotationKind::Link {
+                                    url: url.clone(),
+                                    title: Some(link_label.clone()),
+                                },
+                            });
+                        }
+                    }
+
+                    if let Some(doi) = entry_fields.get("doi") {
+                        if !doi.is_empty() {
+                            let doi_url = if doi.starts_with("http") {
+                                doi.clone()
+                            } else {
+                                format!("https://doi.org/{doi}")
+                            };
+                            link_annotations.push(TextAnnotation {
+                                start: 0,
+                                end: text_len,
+                                kind: AnnotationKind::Link {
+                                    url: doi_url,
+                                    title: Some(link_label.clone()),
+                                },
+                            });
+                        }
+                    }
+
+                    if !link_annotations.is_empty() {
+                        builder.set_annotations(idx, link_annotations);
+                    }
 
                     // Store per-entry fields in additional metadata
                     let fields_json: serde_json::Map<String, serde_json::Value> = entry_fields

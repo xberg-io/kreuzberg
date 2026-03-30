@@ -424,10 +424,14 @@ fn element_to_node_content(
         }
         ElementKind::Image { image_index } => {
             let description = images.get(image_index as usize).and_then(|img| img.description.clone());
+            let src = elem
+                .attributes
+                .as_ref()
+                .and_then(|attrs| attrs.get("src").cloned());
             NodeContent::Image {
                 description,
                 image_index: Some(image_index),
-                src: None,
+                src,
             }
         }
         ElementKind::PageBreak => NodeContent::PageBreak,

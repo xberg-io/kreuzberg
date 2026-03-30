@@ -310,12 +310,22 @@ fn build_internal_elements(
                                 bounding_box: None,
                                 source_path: None,
                             };
-                            builder.push_image(description, image, None, None);
+                            let idx = builder.push_image(description, image, None, None);
+                            if let Some(h) = href {
+                                let mut attrs = AHashMap::with_capacity(1);
+                                attrs.insert("src".to_string(), h.to_string());
+                                builder.set_attributes(idx, attrs);
+                            }
                         } else {
                             // No image data available — emit placeholder
                             let text_val = description.or(href).unwrap_or("");
                             let elem = InternalElement::text(ElementKind::Image { image_index: 0 }, text_val, 0);
-                            builder.push_element(elem);
+                            let idx = builder.push_element(elem);
+                            if let Some(h) = href {
+                                let mut attrs = AHashMap::with_capacity(1);
+                                attrs.insert("src".to_string(), h.to_string());
+                                builder.set_attributes(idx, attrs);
+                            }
                         }
                     }
                 }

@@ -335,7 +335,9 @@ fn build_internal_document(doc: &crate::extraction::docx::parser::Document) -> I
                         || lower.contains("quote")
                 });
 
-                if let Some(level) = heading_level {
+                // Track the element index from whichever branch pushes the element,
+                // so we can scan for hyperlink URIs unconditionally afterward.
+                let element_idx: Option<u32> = if let Some(level) = heading_level {
                     // Close any open list before a heading
                     if current_list_numbering_id.is_some() {
                         builder.end_list();
@@ -350,6 +352,7 @@ fn build_internal_document(doc: &crate::extraction::docx::parser::Document) -> I
                     if !annotations.is_empty() {
                         builder.set_annotations(idx, annotations.clone());
                     }
+                    Some(idx)
                 } else if is_quote_style {
                     // Close any open list before a blockquote
                     if current_list_numbering_id.is_some() {
@@ -358,8 +361,8 @@ fn build_internal_document(doc: &crate::extraction::docx::parser::Document) -> I
                     }
                     builder.push_quote_start();
                     let para_idx = builder.push_paragraph(&text, annotations.clone(), None, None);
-                    let _ = para_idx;
                     builder.push_quote_end();
+                    Some(para_idx)
                 } else if let Some(nid) = paragraph.numbering_id {
                     // Push any preceding math formulas as standalone nodes
                     for formula in &math_formulas {
@@ -381,7 +384,10 @@ fn build_internal_document(doc: &crate::extraction::docx::parser::Document) -> I
                             current_list_numbering_id = Some(nid);
                             current_list_ordered = is_ordered;
                         }
-                        builder.push_list_item(&text, current_list_ordered, annotations.clone(), None, None);
+                        let li_idx = builder.push_list_item(&text, current_list_ordered, annotations.clone(), None, None);
+                        Some(li_idx)
+                    } else {
+                        None
                     }
                 } else {
                     // Close any open list before a non-list paragraph
@@ -394,62 +400,47 @@ fn build_internal_document(doc: &crate::extraction::docx::parser::Document) -> I
                         builder.push_formula(formula, None, None);
                     }
                     if !text.is_empty() {
-                        // Check for inline footnote/endnote references in the text ([^N])
-                        // and extract hyperlinks from runs
                         let para_idx = builder.push_paragraph(&text, annotations.clone(), None, None);
+                        Some(para_idx)
+                    } else {
+                        None
+                    }
+                };
 
-                        // Scan runs for hyperlink URLs to create InternalLink relationships
-                        // and extract URIs
-                        for run in &paragraph.runs {
-                            if run.math_latex.is_some() || run.text.is_empty() {
-                                continue;
-                            }
-                            if let Some(ref url) = run.hyperlink_url {
-                                if url.starts_with('#') {
-                                    // Internal link: create a relationship
-                                    let anchor_key = url.trim_start_matches('#').to_string();
-                                    builder.push_relationship(
-                                        para_idx,
-                                        RelationshipTarget::Key(anchor_key),
-                                        RelationshipKind::InternalLink,
-                                    );
-                                    builder.push_uri(Uri {
-                                        url: url.clone(),
-                                        label: Some(run.text.clone()),
-                                        page: None,
-                                        kind: UriKind::Anchor,
-                                    });
-                                } else {
-                                    let kind = if url.starts_with("mailto:") {
-                                        UriKind::Email
-                                    } else {
-                                        UriKind::Hyperlink
-                                    };
-                                    builder.push_uri(Uri {
-                                        url: url.clone(),
-                                        label: Some(run.text.clone()),
-                                        page: None,
-                                        kind,
-                                    });
-                                }
-                            }
+                // Scan runs for hyperlink URLs to create InternalLink relationships and extract URIs.
+                // This runs for ALL paragraph types: headings, quotes, list items, and plain paragraphs.
+                if let Some(elem_idx) = element_idx {
+                    for run in &paragraph.runs {
+                        if run.math_latex.is_some() || run.text.is_empty() {
+                            continue;
                         }
-
-                        // Scan for inline footnote/endnote references ([^N]) in text
-                        let mut search_start = 0;
-                        while let Some(start) = text[search_start..].find("[^") {
-                            let abs_start = search_start + start;
-                            if let Some(end) = text[abs_start..].find(']') {
-                                let ref_id = &text[abs_start + 2..abs_start + end];
-                                if !ref_id.is_empty() && ref_id.chars().all(|c| c.is_ascii_digit()) {
-                                    let key = format!("fn{}", ref_id);
-                                    builder.push_footnote_ref(ref_id, &key, None);
-                                    // Relationship is auto-created by push_footnote_ref
-                                }
-                                search_start = abs_start + end + 1;
-                            } else {
-                                break;
+                        if let Some(ref url) = run.hyperlink_url {
+                            if url.starts_with('#') {
+                                let anchor_key = url.trim_start_matches('#').to_string();
+                                builder.push_relationship(
+                                    elem_idx,
+                                    RelationshipTarget::Key(anchor_key),
+                                    RelationshipKind::InternalLink,
+                                );
                             }
+                            builder.push_uri(Uri::hyperlink(url.as_str(), Some(run.text.clone())));
+                        }
+                    }
+
+                    // Scan for inline footnote/endnote references ([^N]) in text
+                    let mut search_start = 0;
+                    while let Some(start) = text[search_start..].find("[^") {
+                        let abs_start = search_start + start;
+                        if let Some(end) = text[abs_start..].find(']') {
+                            let ref_id = &text[abs_start + 2..abs_start + end];
+                            if !ref_id.is_empty() && ref_id.chars().all(|c| c.is_ascii_digit()) {
+                                let key = format!("fn{}", ref_id);
+                                builder.push_footnote_ref(ref_id, &key, None);
+                                // Relationship is auto-created by push_footnote_ref
+                            }
+                            search_start = abs_start + end + 1;
+                        } else {
+                            break;
                         }
                     }
                 }
@@ -552,7 +543,16 @@ fn build_internal_document(doc: &crate::extraction::docx::parser::Document) -> I
                 let text_val = description.as_deref().unwrap_or("");
                 let elem = InternalElement::text(kind, text_val, 0);
                 let elem = if let Some(b) = bbox { elem.with_bbox(b) } else { elem };
-                builder.push_element(elem);
+                let img_elem_idx = builder.push_element(elem);
+
+                // Store the resolved image path as an attribute on the image element
+                if let Some(ref rid) = drawing.image_ref {
+                    if let Some(path) = doc.image_relationships.get(rid) {
+                        let mut attrs = AHashMap::new();
+                        attrs.insert("image_uri".to_string(), path.clone());
+                        builder.set_attributes(img_elem_idx, attrs);
+                    }
+                }
             }
         }
     }
