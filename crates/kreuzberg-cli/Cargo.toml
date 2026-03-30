@@ -49,6 +49,7 @@ clap = { workspace = true }
 clap_complete = "4.6"
 kreuzberg = { workspace = true, features = ["formats", "tokio-runtime", "simd-utf8"] }
 serde_json = { workspace = true }
+serde_toon_format = { workspace = true }
 tokio = { workspace = true }
 tracing = { workspace = true }
 tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
