@@ -18,7 +18,8 @@ use kreuzberg::{
     FileExtractionConfig, ImageExtractionConfig as RustImageExtractionConfig,
     LanguageDetectionConfig as RustLanguageDetectionConfig, OcrConfig as RustOcrConfig, PdfConfig as RustPdfConfig,
     PostProcessorConfig as RustPostProcessorConfig, TesseractConfig as RustTesseractConfig,
-    TokenReductionConfig as RustTokenReductionConfig,
+    TokenReductionConfig as RustTokenReductionConfig, TreeSitterConfig as RustTreeSitterConfig,
+    TreeSitterProcessConfig as RustTreeSitterProcessConfig,
 };
 use std::ffi::c_char;
 
@@ -181,6 +182,108 @@ impl From<JsTesseractConfig> for RustTesseractConfig {
             config.tessedit_char_whitelist = whitelist;
         }
         config
+    }
+}
+
+/// Tree-sitter processing options for Node.js bindings.
+#[napi(object)]
+pub struct JsTreeSitterProcessConfig {
+    /// Extract structural items (functions, classes, structs, etc.). Default: true.
+    pub structure: Option<bool>,
+    /// Extract import statements. Default: true.
+    pub imports: Option<bool>,
+    /// Extract export statements. Default: true.
+    pub exports: Option<bool>,
+    /// Extract comments. Default: false.
+    pub comments: Option<bool>,
+    /// Extract docstrings. Default: false.
+    pub docstrings: Option<bool>,
+    /// Extract symbol definitions. Default: false.
+    pub symbols: Option<bool>,
+    /// Include parse diagnostics. Default: false.
+    pub diagnostics: Option<bool>,
+    /// Maximum chunk size in bytes. None disables chunking.
+    pub chunk_max_size: Option<u32>,
+}
+
+impl From<JsTreeSitterProcessConfig> for RustTreeSitterProcessConfig {
+    fn from(val: JsTreeSitterProcessConfig) -> Self {
+        let mut config = RustTreeSitterProcessConfig::default();
+        if let Some(v) = val.structure {
+            config.structure = v;
+        }
+        if let Some(v) = val.imports {
+            config.imports = v;
+        }
+        if let Some(v) = val.exports {
+            config.exports = v;
+        }
+        if let Some(v) = val.comments {
+            config.comments = v;
+        }
+        if let Some(v) = val.docstrings {
+            config.docstrings = v;
+        }
+        if let Some(v) = val.symbols {
+            config.symbols = v;
+        }
+        if let Some(v) = val.diagnostics {
+            config.diagnostics = v;
+        }
+        if let Some(v) = val.chunk_max_size {
+            config.chunk_max_size = Some(v as usize);
+        }
+        config
+    }
+}
+
+impl From<RustTreeSitterProcessConfig> for JsTreeSitterProcessConfig {
+    fn from(val: RustTreeSitterProcessConfig) -> Self {
+        Self {
+            structure: Some(val.structure),
+            imports: Some(val.imports),
+            exports: Some(val.exports),
+            comments: Some(val.comments),
+            docstrings: Some(val.docstrings),
+            symbols: Some(val.symbols),
+            diagnostics: Some(val.diagnostics),
+            chunk_max_size: val.chunk_max_size.map(|v| v as u32),
+        }
+    }
+}
+
+/// Tree-sitter language pack configuration for Node.js bindings.
+#[napi(object)]
+pub struct JsTreeSitterConfig {
+    /// Custom cache directory for downloaded grammars.
+    pub cache_dir: Option<String>,
+    /// Languages to pre-download on init (e.g., ["python", "rust"]).
+    pub languages: Option<Vec<String>>,
+    /// Language groups to pre-download (e.g., ["web", "systems", "scripting"]).
+    pub groups: Option<Vec<String>>,
+    /// Processing options for code analysis.
+    pub process: Option<JsTreeSitterProcessConfig>,
+}
+
+impl From<JsTreeSitterConfig> for RustTreeSitterConfig {
+    fn from(val: JsTreeSitterConfig) -> Self {
+        RustTreeSitterConfig {
+            cache_dir: val.cache_dir.map(std::path::PathBuf::from),
+            languages: val.languages,
+            groups: val.groups,
+            process: val.process.map(Into::into).unwrap_or_default(),
+        }
+    }
+}
+
+impl From<RustTreeSitterConfig> for JsTreeSitterConfig {
+    fn from(val: RustTreeSitterConfig) -> Self {
+        Self {
+            cache_dir: val.cache_dir.and_then(|p| p.to_str().map(String::from)),
+            languages: val.languages,
+            groups: val.groups,
+            process: Some(JsTreeSitterProcessConfig::from(val.process)),
+        }
     }
 }
 
@@ -1165,6 +1268,8 @@ pub struct JsExtractionConfig {
     pub max_archive_depth: Option<u32>,
     /// Default per-file extraction timeout in seconds
     pub extraction_timeout_secs: Option<u32>,
+    /// Tree-sitter language pack configuration for code analysis
+    pub tree_sitter: Option<JsTreeSitterConfig>,
 }
 
 impl TryFrom<JsPageConfig> for kreuzberg::core::config::PageConfig {
@@ -1252,6 +1357,7 @@ impl TryFrom<JsExtractionConfig> for ExtractionConfig {
             cache_namespace: val.cache_namespace,
             cache_ttl_secs: val.cache_ttl_secs.map(|v| v as u64),
             max_archive_depth: val.max_archive_depth.map(|v| v as usize).unwrap_or(3),
+            tree_sitter: val.tree_sitter.map(Into::into),
         })
     }
 }
@@ -1429,6 +1535,7 @@ impl TryFrom<ExtractionConfig> for JsExtractionConfig {
             cache_ttl_secs: val.cache_ttl_secs.map(|v| v as u32),
             max_archive_depth: Some(val.max_archive_depth as u32),
             extraction_timeout_secs: val.extraction_timeout_secs.map(|v| v as u32),
+            tree_sitter: val.tree_sitter.map(JsTreeSitterConfig::from),
         })
     }
 }
@@ -1562,6 +1669,8 @@ pub struct JsFileExtractionConfig {
     pub layout: Option<JsLayoutDetectionConfig>,
     /// Per-file extraction timeout in seconds
     pub timeout_secs: Option<u32>,
+    /// Tree-sitter language pack configuration for code analysis
+    pub tree_sitter: Option<JsTreeSitterConfig>,
 }
 
 impl TryFrom<JsFileExtractionConfig> for FileExtractionConfig {
@@ -1614,6 +1723,7 @@ impl TryFrom<JsFileExtractionConfig> for FileExtractionConfig {
             include_document_structure: val.include_document_structure,
             layout: val.layout.map(Into::into),
             timeout_secs: val.timeout_secs.map(|v| v as u64),
+            tree_sitter: val.tree_sitter.map(Into::into),
         })
     }
 }
@@ -1759,6 +1869,7 @@ impl TryFrom<FileExtractionConfig> for JsFileExtractionConfig {
             include_document_structure: val.include_document_structure,
             layout: val.layout.map(JsLayoutDetectionConfig::from),
             timeout_secs: val.timeout_secs.map(|v| v as u32),
+            tree_sitter: val.tree_sitter.map(JsTreeSitterConfig::from),
         })
     }
 }

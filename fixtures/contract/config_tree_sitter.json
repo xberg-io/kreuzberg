@@ -1,0 +1,34 @@
+{
+	"id": "config_tree_sitter",
+	"description": "Tests tree-sitter configuration round-trip",
+	"tags": ["contract", "config", "tree-sitter"],
+	"document": {
+		"path": "code/hello.py"
+	},
+	"extraction": {
+		"method": "sync",
+		"input_type": "file",
+		"config": {
+			"tree_sitter": {
+				"languages": ["python", "rust"],
+				"groups": ["web"],
+				"process": {
+					"structure": true,
+					"imports": true,
+					"exports": true,
+					"comments": false,
+					"docstrings": false,
+					"symbols": false,
+					"diagnostics": false
+				}
+			}
+		}
+	},
+	"assertions": {
+		"expected_mime": "text/x-source-code",
+		"min_content_length": 5
+	},
+	"skip": {
+		"requires_feature": ["tree-sitter"]
+	}
+}

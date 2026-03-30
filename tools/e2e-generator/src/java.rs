@@ -106,12 +106,17 @@ public final class E2EHelpers {
         return details;
     }
 
-    public static void skipIfPaddleOcrUnavailable() {
-        String flag = System.getenv("KREUZBERG_PADDLE_OCR_AVAILABLE");
+    public static void skipIfFeatureUnavailable(String feature) {
+        String envVar = "KREUZBERG_" + feature.replace("-", "_").toUpperCase() + "_AVAILABLE";
+        String flag = System.getenv(envVar);
         Assumptions.assumeTrue(
                 flag != null && !flag.isEmpty() && !"0".equals(flag) && !"false".equalsIgnoreCase(flag),
-                "Skipping: PaddleOCR not available (set KREUZBERG_PADDLE_OCR_AVAILABLE=1)"
+                String.format("Skipping: feature '%s' not available (set %s=1)", feature, envVar)
         );
+    }
+
+    public static void skipIfPaddleOcrUnavailable() {
+        skipIfFeatureUnavailable("paddle-ocr");
     }
 
     public static void runFixture(
@@ -967,15 +972,21 @@ fn render_test(fixture: &Fixture) -> Result<String> {
         "false"
     };
 
-    // Skip if fixture requires paddle-ocr and it's not available
-    let requires_paddle = fixture.skip().requires_feature.iter().any(|f| f == "paddle-ocr")
-        || fixture
-            .document()
-            .requires_external_tool
-            .iter()
-            .any(|t| t == "paddle-ocr");
-    if requires_paddle {
-        writeln!(body, "        E2EHelpers.skipIfPaddleOcrUnavailable();")?;
+    // Skip if fixture requires features that may not be available
+    let skip_directive = fixture.skip();
+    let doc = fixture.document();
+    let all_features: Vec<&str> = skip_directive
+        .requires_feature
+        .iter()
+        .chain(doc.requires_external_tool.iter().filter(|t| *t == "paddle-ocr"))
+        .map(|s| s.as_str())
+        .collect();
+    for feature in &all_features {
+        writeln!(
+            body,
+            "        E2EHelpers.skipIfFeatureUnavailable({});",
+            render_java_string(feature)
+        )?;
     }
 
     let skip_platforms = &fixture.skip().skip_on_platform;

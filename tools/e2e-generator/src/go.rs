@@ -1736,76 +1736,77 @@ fn render_mime_extension_lookup(
 /// Render property assertion for config objects
 fn render_property_assertion(prop: &crate::fixtures::ObjectPropertyAssertion, code: &mut String) -> Result<()> {
     let parts: Vec<&str> = prop.path.split('.').collect();
+    let go_path = parts.iter().map(|p| to_pascal_case(p)).collect::<Vec<_>>().join(".");
+    let display_path = parts.join(".");
 
-    if parts.len() == 1 {
-        if let Some(exists) = prop.exists
-            && exists
-        {
-            writeln!(code, "    if config.{} == nil {{", to_pascal_case(parts[0]))?;
-            writeln!(code, "        t.Fatal(\"Config should have {} property\")", parts[0])?;
-            writeln!(code, "    }}")?;
-        }
-    } else if parts.len() == 2 {
-        let parent = to_pascal_case(parts[0]);
-        let child = to_pascal_case(parts[1]);
-
-        if let Some(exists) = prop.exists
-            && exists
-        {
-            writeln!(code, "    if config.{} == nil {{", parent)?;
-            writeln!(code, "        t.Fatal(\"Config should have {} property\")", parts[0])?;
-            writeln!(code, "    }}")?;
-        }
-
-        if let Some(value) = &prop.value {
-            match value {
-                Value::Number(n) => {
-                    writeln!(code, "    if config.{}.{} == nil {{", parent, child)?;
-                    writeln!(
-                        code,
-                        "        t.Errorf(\"Expected {}.{}={}, got nil\")",
-                        parts[0], parts[1], n
-                    )?;
-                    writeln!(code, "    }} else if *config.{}.{} != {} {{", parent, child, n)?;
-                    writeln!(
-                        code,
-                        "        t.Errorf(\"Expected {}.{}={}, got %v\", *config.{}.{})",
-                        parts[0], parts[1], n, parent, child
-                    )?;
-                    writeln!(code, "    }}")?;
-                }
-                Value::Bool(b) => {
-                    writeln!(code, "    if config.{}.{} == nil {{", parent, child)?;
-                    writeln!(
-                        code,
-                        "        t.Errorf(\"Expected {}.{}={}, got nil\")",
-                        parts[0], parts[1], b
-                    )?;
-                    writeln!(code, "    }} else if *config.{}.{} != {} {{", parent, child, b)?;
-                    writeln!(
-                        code,
-                        "        t.Errorf(\"Expected {}.{}={}, got %v\", *config.{}.{})",
-                        parts[0], parts[1], b, parent, child
-                    )?;
-                    writeln!(code, "    }}")?;
-                }
-                Value::String(s) => {
-                    writeln!(code, "    if config.{}.{} == nil {{", parent, child)?;
-                    writeln!(
-                        code,
-                        "        t.Errorf(\"Expected {}.{}={}, got nil\")",
-                        parts[0], parts[1], s
-                    )?;
-                    writeln!(code, "    }} else if *config.{}.{} != \"{}\" {{", parent, child, s)?;
-                    writeln!(
-                        code,
-                        "        t.Errorf(\"Expected {}.{}={}, got %v\", *config.{}.{})",
-                        parts[0], parts[1], s, parent, child
-                    )?;
-                    writeln!(code, "    }}")?;
-                }
-                _ => {}
+    if let Some(exists) = prop.exists
+        && exists
+    {
+        // For nested paths, check each intermediate is non-nil
+        let mut checked = String::from("config");
+        for (i, part) in parts.iter().enumerate() {
+            let pascal = to_pascal_case(part);
+            let parent = checked.clone();
+            checked = format!("{}.{}", checked, pascal);
+            if i < parts.len() - 1 {
+                // intermediate: must be non-nil to traverse deeper
+                writeln!(code, "    if {}.{} == nil {{", parent, pascal)?;
+                writeln!(
+                    code,
+                    "        t.Fatal(\"Config should have {} property\")",
+                    parts[..=i].join(".")
+                )?;
+                writeln!(code, "    }}")?;
+            } else {
+                // leaf: existence check
+                writeln!(code, "    if {}.{} == nil {{", parent, pascal)?;
+                writeln!(
+                    code,
+                    "        t.Fatal(\"Config should have {} property\")",
+                    display_path
+                )?;
+                writeln!(code, "    }}")?;
             }
+        }
+    }
+
+    if let Some(value) = &prop.value {
+        let accessor = format!("config.{}", go_path);
+        match value {
+            Value::Number(n) => {
+                writeln!(code, "    if {} == nil {{", accessor)?;
+                writeln!(code, "        t.Errorf(\"Expected {}={}, got nil\")", display_path, n)?;
+                writeln!(code, "    }} else if *{} != {} {{", accessor, n)?;
+                writeln!(
+                    code,
+                    "        t.Errorf(\"Expected {}={}, got %v\", *{})",
+                    display_path, n, accessor
+                )?;
+                writeln!(code, "    }}")?;
+            }
+            Value::Bool(b) => {
+                writeln!(code, "    if {} == nil {{", accessor)?;
+                writeln!(code, "        t.Errorf(\"Expected {}={}, got nil\")", display_path, b)?;
+                writeln!(code, "    }} else if *{} != {} {{", accessor, b)?;
+                writeln!(
+                    code,
+                    "        t.Errorf(\"Expected {}={}, got %v\", *{})",
+                    display_path, b, accessor
+                )?;
+                writeln!(code, "    }}")?;
+            }
+            Value::String(s) => {
+                writeln!(code, "    if {} == nil {{", accessor)?;
+                writeln!(code, "        t.Errorf(\"Expected {}={}, got nil\")", display_path, s)?;
+                writeln!(code, "    }} else if *{} != \"{}\" {{", accessor, s)?;
+                writeln!(
+                    code,
+                    "        t.Errorf(\"Expected {}={}, got %v\", *{})",
+                    display_path, s, accessor
+                )?;
+                writeln!(code, "    }}")?;
+            }
+            _ => {}
         }
     }
 

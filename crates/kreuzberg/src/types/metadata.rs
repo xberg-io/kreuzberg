@@ -65,6 +65,9 @@ pub enum FormatMetadata {
     #[cfg_attr(feature = "api", schema(value_type = HtmlMetadata))]
     Html(Box<HtmlMetadata>),
     Ocr(OcrMetadata),
+    #[cfg(feature = "tree-sitter")]
+    #[cfg_attr(feature = "api", schema(value_type = serde_json::Value))]
+    Code(tree_sitter_language_pack::ProcessResult),
 }
 
 /// Extraction result metadata.

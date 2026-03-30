@@ -210,6 +210,162 @@ module Kreuzberg
     def serialize: () -> Hash[Symbol, untyped]
   end
 
+  # Code span location (tree-sitter process result)
+  class CodeSpan
+    attr_reader start_byte: Integer
+    attr_reader end_byte: Integer
+    attr_reader start_line: Integer
+    attr_reader start_column: Integer
+    attr_reader end_line: Integer
+    attr_reader end_column: Integer
+
+    def initialize: (start_byte: Integer, end_byte: Integer, start_line: Integer, start_column: Integer, end_line: Integer, end_column: Integer) -> void
+    def to_h: () -> Hash[Symbol, untyped]
+  end
+
+  # File-level code metrics (tree-sitter process result)
+  class CodeFileMetrics
+    attr_reader total_lines: Integer
+    attr_reader code_lines: Integer
+    attr_reader comment_lines: Integer
+    attr_reader blank_lines: Integer
+    attr_reader total_bytes: Integer
+    attr_reader node_count: Integer
+    attr_reader error_count: Integer
+    attr_reader max_depth: Integer
+
+    def initialize: (total_lines: Integer, code_lines: Integer, comment_lines: Integer, blank_lines: Integer, total_bytes: Integer, node_count: Integer, error_count: Integer, max_depth: Integer) -> void
+    def to_h: () -> Hash[Symbol, untyped]
+  end
+
+  # Code structure item (tree-sitter process result)
+  class CodeStructureItem
+    attr_reader kind: String
+    attr_reader name: String?
+    attr_reader visibility: String?
+    attr_reader span: CodeSpan
+    attr_reader children: Array[CodeStructureItem]
+    attr_reader decorators: Array[String]
+    attr_reader doc_comment: String?
+    attr_reader signature: String?
+    attr_reader body_span: CodeSpan?
+
+    def initialize: (kind: String, name: String?, visibility: String?, span: CodeSpan, children: Array[CodeStructureItem], decorators: Array[String], doc_comment: String?, signature: String?, body_span: CodeSpan?) -> void
+    def to_h: () -> Hash[Symbol, untyped]
+  end
+
+  # Import information (tree-sitter process result)
+  class CodeImportInfo
+    attr_reader source: String
+    attr_reader items: Array[String]
+    attr_reader alias: String?
+    attr_reader is_wildcard: bool
+    attr_reader span: CodeSpan
+
+    def initialize: (source: String, items: Array[String], alias: String?, is_wildcard: bool, span: CodeSpan) -> void
+    def to_h: () -> Hash[Symbol, untyped]
+  end
+
+  # Export information (tree-sitter process result)
+  class CodeExportInfo
+    attr_reader name: String
+    attr_reader kind: String
+    attr_reader span: CodeSpan
+
+    def initialize: (name: String, kind: String, span: CodeSpan) -> void
+    def to_h: () -> Hash[Symbol, untyped]
+  end
+
+  # Symbol information (tree-sitter process result)
+  class CodeSymbolInfo
+    attr_reader name: String
+    attr_reader kind: String
+    attr_reader type_annotation: String?
+    attr_reader span: CodeSpan
+
+    def initialize: (name: String, kind: String, type_annotation: String?, span: CodeSpan) -> void
+    def to_h: () -> Hash[Symbol, untyped]
+  end
+
+  # Comment information (tree-sitter process result)
+  class CodeCommentInfo
+    attr_reader text: String
+    attr_reader kind: String
+    attr_reader span: CodeSpan
+
+    def initialize: (text: String, kind: String, span: CodeSpan) -> void
+    def to_h: () -> Hash[Symbol, untyped]
+  end
+
+  # Documentation section (tree-sitter process result)
+  class CodeDocSection
+    attr_reader kind: String
+    attr_reader name: String?
+    attr_reader content: String
+
+    def initialize: (kind: String, name: String?, content: String) -> void
+    def to_h: () -> Hash[Symbol, untyped]
+  end
+
+  # Docstring information (tree-sitter process result)
+  class CodeDocstringInfo
+    attr_reader text: String
+    attr_reader format: String
+    attr_reader associated_item: String?
+    attr_reader span: CodeSpan
+    attr_reader sections: Array[CodeDocSection]
+
+    def initialize: (text: String, format: String, associated_item: String?, span: CodeSpan, sections: Array[CodeDocSection]) -> void
+    def to_h: () -> Hash[Symbol, untyped]
+  end
+
+  # Diagnostic from code analysis (tree-sitter process result)
+  class CodeDiagnostic
+    attr_reader message: String
+    attr_reader severity: String
+    attr_reader span: CodeSpan
+
+    def initialize: (message: String, severity: String, span: CodeSpan) -> void
+    def to_h: () -> Hash[Symbol, untyped]
+  end
+
+  # Chunk context (tree-sitter process result)
+  class CodeChunkContext
+    attr_reader parent_name: String?
+    attr_reader parent_kind: String?
+
+    def initialize: (parent_name: String?, parent_kind: String?) -> void
+    def to_h: () -> Hash[Symbol, untyped]
+  end
+
+  # Code chunk (tree-sitter process result)
+  class CodeChunk
+    attr_reader content: String
+    attr_reader language: String
+    attr_reader span: CodeSpan
+    attr_reader context: CodeChunkContext?
+
+    def initialize: (content: String, language: String, span: CodeSpan, context: CodeChunkContext?) -> void
+    def to_h: () -> Hash[Symbol, untyped]
+  end
+
+  # Full code processing result (tree-sitter process result)
+  class CodeProcessResult
+    attr_reader language: String
+    attr_reader metrics: CodeFileMetrics
+    attr_reader structure: Array[CodeStructureItem]
+    attr_reader imports: Array[CodeImportInfo]
+    attr_reader exports: Array[CodeExportInfo]
+    attr_reader comments: Array[CodeCommentInfo]
+    attr_reader docstrings: Array[CodeDocstringInfo]
+    attr_reader symbols: Array[CodeSymbolInfo]
+    attr_reader diagnostics: Array[CodeDiagnostic]
+    attr_reader chunks: Array[CodeChunk]
+
+    def initialize: (language: String, metrics: CodeFileMetrics, structure: Array[CodeStructureItem], imports: Array[CodeImportInfo], exports: Array[CodeExportInfo], comments: Array[CodeCommentInfo], docstrings: Array[CodeDocstringInfo], symbols: Array[CodeSymbolInfo], diagnostics: Array[CodeDiagnostic], chunks: Array[CodeChunk]) -> void
+    def to_h: () -> Hash[Symbol, untyped]
+  end
+
   # Config namespace (defined in lib/kreuzberg/config.rb)
   module Config
     class OCR
@@ -491,6 +647,30 @@ module Kreuzberg
       def to_h: () -> Hash[Symbol, untyped]
     end
 
+    class TreeSitterProcessConfig
+      attr_reader structure: bool
+      attr_reader imports: bool
+      attr_reader exports: bool
+      attr_reader comments: bool
+      attr_reader docstrings: bool
+      attr_reader symbols: bool
+      attr_reader diagnostics: bool
+      attr_reader chunk_max_size: Integer?
+
+      def initialize: (?structure: bool, ?imports: bool, ?exports: bool, ?comments: bool, ?docstrings: bool, ?symbols: bool, ?diagnostics: bool, ?chunk_max_size: Integer?) -> void
+      def to_h: () -> Hash[Symbol, untyped]
+    end
+
+    class TreeSitterConfig
+      attr_reader cache_dir: String?
+      attr_reader languages: Array[String]?
+      attr_reader groups: Array[String]?
+      attr_reader process: TreeSitterProcessConfig?
+
+      def initialize: (?cache_dir: String?, ?languages: Array[String]?, ?groups: Array[String]?, ?process: (TreeSitterProcessConfig | Hash[Symbol, untyped])?) -> void
+      def to_h: () -> Hash[Symbol, untyped]
+    end
+
     class Extraction
       attr_reader use_cache: bool
       attr_reader enable_quality_processing: bool
@@ -514,6 +694,7 @@ module Kreuzberg
       attr_reader concurrency: Concurrency?
       attr_reader acceleration: Acceleration?
       attr_reader email: Email?
+      attr_reader tree_sitter: TreeSitterConfig?
       attr_reader max_concurrent_extractions: Integer?
       attr_reader max_archive_depth: Integer
       attr_reader output_format: String?
@@ -544,6 +725,7 @@ module Kreuzberg
         ?concurrency: (Concurrency | Hash[Symbol, untyped])?,
         ?acceleration: (Acceleration | Hash[Symbol, untyped])?,
         ?email: (Email | Hash[Symbol, untyped])?,
+        ?tree_sitter: (TreeSitterConfig | Hash[Symbol, untyped])?,
         ?max_concurrent_extractions: Integer?,
         ?max_archive_depth: Integer,
         ?output_format: String?,

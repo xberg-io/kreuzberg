@@ -124,4 +124,9 @@ pub struct FileExtractionConfig {
     /// affecting other files in the batch.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub timeout_secs: Option<u64>,
+
+    /// Override tree-sitter configuration for this file.
+    #[cfg(feature = "tree-sitter")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tree_sitter: Option<super::super::tree_sitter::TreeSitterConfig>,
 }

@@ -1,0 +1,33 @@
+{
+	"id": "config_tree_sitter_process",
+	"description": "Tests tree-sitter process config with all options enabled",
+	"tags": ["contract", "config", "tree-sitter"],
+	"document": {
+		"path": "code/hello.py"
+	},
+	"extraction": {
+		"method": "sync",
+		"input_type": "file",
+		"config": {
+			"tree_sitter": {
+				"process": {
+					"structure": true,
+					"imports": true,
+					"exports": true,
+					"comments": true,
+					"docstrings": true,
+					"symbols": true,
+					"diagnostics": true,
+					"chunk_max_size": 2000
+				}
+			}
+		}
+	},
+	"assertions": {
+		"expected_mime": "text/x-source-code",
+		"min_content_length": 5
+	},
+	"skip": {
+		"requires_feature": ["tree-sitter"]
+	}
+}

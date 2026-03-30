@@ -137,6 +137,15 @@ pub use paddle_ocr::{CacheStats, ModelManager, ModelPaths, PaddleLanguage, Paddl
 #[cfg(feature = "layout-detection")]
 pub use core::config::LayoutDetectionConfig;
 
+#[cfg(feature = "tree-sitter")]
+pub use core::config::{TreeSitterConfig, TreeSitterProcessConfig};
+#[cfg(feature = "tree-sitter")]
+pub use tree_sitter_language_pack::{
+    ChunkContext, CodeChunk, CommentInfo, CommentKind, Diagnostic, DiagnosticSeverity, DocstringFormat, DocstringInfo,
+    ExportInfo, ExportKind, FileMetrics, ImportInfo, ProcessConfig, ProcessResult, Span, StructureItem, StructureKind,
+    SymbolInfo, SymbolKind,
+};
+
 #[cfg(feature = "layout-detection")]
 pub use layout::LayoutPreset;
 

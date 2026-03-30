@@ -172,6 +172,7 @@ defmodule Kreuzberg.ExtractionConfig do
           security_limits: nested_config,
           email: nested_config,
           concurrency: nested_config,
+          tree_sitter: Kreuzberg.TreeSitterConfig.t() | nested_config,
           use_cache: boolean(),
           enable_quality_processing: boolean(),
           force_ocr: boolean(),
@@ -203,6 +204,7 @@ defmodule Kreuzberg.ExtractionConfig do
     :security_limits,
     :email,
     :concurrency,
+    :tree_sitter,
     :cache_namespace,
     :cache_ttl_secs,
     :extraction_timeout_secs,
@@ -412,6 +414,7 @@ defmodule Kreuzberg.ExtractionConfig do
       "security_limits" => normalize_nested_config(config.security_limits),
       "email" => normalize_email_config(config.email),
       "concurrency" => normalize_concurrency_config(config.concurrency),
+      "tree_sitter" => normalize_nested_config(config.tree_sitter),
       "use_cache" => config.use_cache,
       "enable_quality_processing" => config.enable_quality_processing,
       "force_ocr" => config.force_ocr,
@@ -693,7 +696,8 @@ defmodule Kreuzberg.ExtractionConfig do
          :ok <- validate_nested_field(config.email, "email"),
          :ok <- validate_email_config(config.email),
          :ok <- validate_nested_field(config.concurrency, "concurrency"),
-         :ok <- validate_concurrency_config(config.concurrency) do
+         :ok <- validate_concurrency_config(config.concurrency),
+         :ok <- validate_nested_field(config.tree_sitter, "tree_sitter") do
       {:ok, config}
     end
   end
@@ -823,6 +827,7 @@ defmodule Kreuzberg.ExtractionConfig do
       security_limits: Map.get(map, "security_limits"),
       email: Map.get(map, "email"),
       concurrency: Map.get(map, "concurrency"),
+      tree_sitter: Map.get(map, "tree_sitter"),
       use_cache: Map.get(map, "use_cache", true),
       enable_quality_processing: Map.get(map, "enable_quality_processing", true),
       force_ocr: Map.get(map, "force_ocr", false),

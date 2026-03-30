@@ -211,6 +211,14 @@ pub struct ExtractionConfig {
     /// Set to 0 to disable recursive extraction (legacy behavior).
     #[serde(default = "default_archive_depth")]
     pub max_archive_depth: usize,
+
+    /// Tree-sitter language pack configuration (None = tree-sitter disabled).
+    ///
+    /// When set, enables code file extraction using tree-sitter parsers.
+    /// Controls grammar download behavior and code analysis options.
+    #[cfg(feature = "tree-sitter")]
+    #[serde(default)]
+    pub tree_sitter: Option<super::super::tree_sitter::TreeSitterConfig>,
 }
 
 impl Default for ExtractionConfig {
@@ -248,6 +256,8 @@ impl Default for ExtractionConfig {
             email: None,
             concurrency: None,
             max_archive_depth: default_archive_depth(),
+            #[cfg(feature = "tree-sitter")]
+            tree_sitter: None,
         }
     }
 }
@@ -299,6 +309,8 @@ impl ExtractionConfig {
             #[cfg(feature = "layout-detection")]
             ref layout,
             ref timeout_secs,
+            #[cfg(feature = "tree-sitter")]
+            ref tree_sitter,
         } = *overrides;
 
         let mut config = self.clone();
@@ -360,6 +372,10 @@ impl ExtractionConfig {
         }
         if let Some(v) = timeout_secs {
             config.extraction_timeout_secs = Some(*v);
+        }
+        #[cfg(feature = "tree-sitter")]
+        if let Some(v) = tree_sitter {
+            config.tree_sitter = Some(v.clone());
         }
 
         config

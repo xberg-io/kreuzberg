@@ -65,6 +65,9 @@ xml = ["dep:quick-xml", "dep:roxmltree"]
 archives = ["dep:zip", "dep:tar", "dep:sevenz-rust2", "dep:flate2"]
 mdx = []
 
+tree-sitter = ["dep:tree-sitter-language-pack"]
+tree-sitter-wasm = ["tree-sitter"]
+
 ocr = [
     "dep:kreuzberg-tesseract",
     "dep:image",
@@ -168,6 +171,7 @@ wasm-target = [
     "mdx",
     "excel-wasm",
     "archives",
+    "tree-sitter-wasm",
 ]
 wasm-threads = ["dep:wasm-bindgen-rayon"]
 
@@ -200,6 +204,7 @@ full = [
     "api",
     "mcp",
     "otel",
+    "tree-sitter",
 ]
 server = [
     "pdf",
@@ -368,10 +373,16 @@ ureq = { version = "3.3", default-features = false, features = [
     "json",
 ], optional = true }
 
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies.tree-sitter-language-pack]
+workspace = true
+features = ["dynamic-loading", "download", "serde"]
+optional = true
+
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 # Override getrandom to enable js feature for WASM targets
 # This is needed because ring/rustls (via ureq) depend on getrandom without js feature
 getrandom = { workspace = true }
+tree-sitter-language-pack = { workspace = true, default-features = false, features = ["wasm", "serde"], optional = true }
 wasm-bindgen-rayon = { version = "1.3", optional = true }
 
 [build-dependencies]

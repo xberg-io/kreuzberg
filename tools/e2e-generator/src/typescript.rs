@@ -25,6 +25,8 @@ import type {
     PostProcessorConfig,
     TesseractConfig,
     TokenReductionConfig,
+    TreeSitterConfig,
+    TreeSitterProcessConfig,
 } from "@kreuzberg/node";
 
 const WORKSPACE_ROOT = resolve(__dirname, "../../..");
@@ -262,6 +264,34 @@ function mapKeywordConfig(raw: PlainRecord): KeywordConfig {
     return config;
 }
 
+function mapTreeSitterProcessConfig(raw: PlainRecord): TreeSitterProcessConfig {
+    const config: TreeSitterProcessConfig = {};
+    const target = config as PlainRecord;
+    assignBooleanField(target, raw, "structure", "structure");
+    assignBooleanField(target, raw, "imports", "imports");
+    assignBooleanField(target, raw, "exports", "exports");
+    assignBooleanField(target, raw, "comments", "comments");
+    assignBooleanField(target, raw, "docstrings", "docstrings");
+    assignBooleanField(target, raw, "symbols", "symbols");
+    assignBooleanField(target, raw, "diagnostics", "diagnostics");
+    assignNumberField(target, raw, "chunk_max_size", "chunkMaxSize");
+    return config;
+}
+
+function mapTreeSitterConfig(raw: PlainRecord): TreeSitterConfig {
+    const config: TreeSitterConfig = {};
+    const target = config as PlainRecord;
+    if (typeof raw.cache_dir === "string") { target.cacheDir = raw.cache_dir; }
+    const languages = mapStringArray(raw.languages);
+    if (languages) { config.languages = languages; }
+    const groups = mapStringArray(raw.groups);
+    if (groups) { config.groups = groups; }
+    if (isPlainRecord(raw.process)) {
+        config.process = mapTreeSitterProcessConfig(raw.process as PlainRecord);
+    }
+    return config;
+}
+
 export function buildConfig(raw: unknown): ExtractionConfig {
     if (!isPlainRecord(raw)) {
         return {};
@@ -354,6 +384,10 @@ export function buildConfig(raw: unknown): ExtractionConfig {
                 ? { msgFallbackCodepage: email.msg_fallback_codepage }
                 : {}),
         };
+    }
+
+    if (isPlainRecord(source.tree_sitter)) {
+        target.treeSitter = mapTreeSitterConfig(source.tree_sitter as PlainRecord);
     }
 
     if (typeof source.output_format === "string") {

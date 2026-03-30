@@ -232,6 +232,34 @@ impl From<kreuzberg::AccelerationConfig> for AccelerationConfig {
     }
 }
 
+/// Convert TreeSitterProcessConfig to its inner Rust type
+impl From<TreeSitterProcessConfig> for kreuzberg::core::config::TreeSitterProcessConfig {
+    fn from(config: TreeSitterProcessConfig) -> Self {
+        config.inner
+    }
+}
+
+/// Convert Rust TreeSitterProcessConfig to Python wrapper
+impl From<kreuzberg::core::config::TreeSitterProcessConfig> for TreeSitterProcessConfig {
+    fn from(config: kreuzberg::core::config::TreeSitterProcessConfig) -> Self {
+        Self { inner: config }
+    }
+}
+
+/// Convert TreeSitterConfig to its inner Rust type
+impl From<TreeSitterConfig> for kreuzberg::core::config::TreeSitterConfig {
+    fn from(config: TreeSitterConfig) -> Self {
+        config.inner
+    }
+}
+
+/// Convert Rust TreeSitterConfig to Python wrapper
+impl From<kreuzberg::core::config::TreeSitterConfig> for TreeSitterConfig {
+    fn from(config: kreuzberg::core::config::TreeSitterConfig) -> Self {
+        Self { inner: config }
+    }
+}
+
 /// Convert FileExtractionConfig to its inner Rust type
 impl From<FileExtractionConfig> for kreuzberg::FileExtractionConfig {
     fn from(config: FileExtractionConfig) -> Self {

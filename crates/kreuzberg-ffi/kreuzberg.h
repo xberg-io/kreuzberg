@@ -1182,6 +1182,30 @@ int32_t kreuzberg_config_builder_set_layout(struct ConfigBuilder *builder,
                                             const char *layout_json);
 
 /**
+ * Set tree-sitter configuration from JSON.
+ *
+ * # Arguments
+ *
+ * * `builder` - Non-null pointer to ConfigBuilder
+ * * `ts_json` - JSON string like `{"languages": ["python", "rust"], "process": {"structure": true}}`
+ *
+ * # Returns
+ *
+ * 0 on success, -1 on error (check kreuzberg_last_error)
+ *
+ * # Safety
+ *
+ * This function is meant to be called from C/FFI code. The caller must ensure:
+ * - `builder` must be a valid, non-null pointer previously returned by `kreuzberg_config_builder_new`
+ * - The pointer must be properly aligned and point to a valid ConfigBuilder instance
+ * - `ts_json` must be a valid, non-null pointer to a null-terminated UTF-8 string
+ * - The string pointer must remain valid for the duration of the function call
+ */
+KREUZBERG_EXPORT
+int32_t kreuzberg_config_builder_set_tree_sitter(struct ConfigBuilder *builder,
+                                                 const char *ts_json);
+
+/**
  * Set acceleration configuration from JSON.
  *
  * # Arguments

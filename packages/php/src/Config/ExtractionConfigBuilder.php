@@ -48,6 +48,7 @@ class ExtractionConfigBuilder
     private ?string $cacheNamespace = null;
     private ?int $cacheTtlSecs = null;
     private ?int $extractionTimeoutSecs = null;
+    private ?TreeSitterConfig $treeSitter = null;
 
     /**
      * Set whether to enable caching of extraction results.
@@ -309,6 +310,18 @@ class ExtractionConfigBuilder
     }
 
     /**
+     * Set the tree-sitter configuration.
+     *
+     * @param TreeSitterConfig|null $treeSitter Tree-sitter settings
+     * @return self For method chaining
+     */
+    public function withTreeSitter(?TreeSitterConfig $treeSitter): self
+    {
+        $this->treeSitter = $treeSitter;
+        return $this;
+    }
+
+    /**
      * Build and return the configured ExtractionConfig instance.
      *
      * @return ExtractionConfig The constructed configuration object
@@ -337,6 +350,7 @@ class ExtractionConfigBuilder
             cacheNamespace: $this->cacheNamespace,
             cacheTtlSecs: $this->cacheTtlSecs,
             extractionTimeoutSecs: $this->extractionTimeoutSecs,
+            treeSitter: $this->treeSitter,
         );
     }
 }

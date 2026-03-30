@@ -65,7 +65,8 @@ impl ExtractionConfig {
         concurrency=None,
         cache_namespace=None,
         cache_ttl_secs=None,
-        extraction_timeout_secs=None
+        extraction_timeout_secs=None,
+        tree_sitter=None
     ))]
     #[allow(clippy::too_many_arguments)]
     fn new(
@@ -94,6 +95,7 @@ impl ExtractionConfig {
         cache_namespace: Option<String>,
         cache_ttl_secs: Option<u64>,
         extraction_timeout_secs: Option<u64>,
+        tree_sitter: Option<TreeSitterConfig>,
     ) -> PyResult<Self> {
         let (html_options_inner, html_options_dict) = parse_html_options_dict(html_options)?;
         Ok(Self {
@@ -154,6 +156,7 @@ impl ExtractionConfig {
                 email: email.map(Into::into),
                 concurrency: concurrency.map(Into::into),
                 max_archive_depth: 3,
+                tree_sitter: tree_sitter.map(Into::into),
             },
             html_options_dict,
         })
@@ -401,6 +404,16 @@ impl ExtractionConfig {
     #[setter]
     fn set_concurrency(&mut self, value: Option<ConcurrencyConfig>) {
         self.inner.concurrency = value.map(Into::into);
+    }
+
+    #[getter]
+    fn tree_sitter(&self) -> Option<TreeSitterConfig> {
+        self.inner.tree_sitter.clone().map(Into::into)
+    }
+
+    #[setter]
+    fn set_tree_sitter(&mut self, value: Option<TreeSitterConfig>) {
+        self.inner.tree_sitter = value.map(Into::into);
     }
 
     #[getter]
@@ -2268,6 +2281,238 @@ impl HierarchyConfig {
     }
 }
 
+/// Processing options for tree-sitter code analysis.
+///
+/// Controls which analysis features are enabled when extracting code files.
+///
+/// Example:
+///     >>> from kreuzberg import TreeSitterProcessConfig
+///     >>> config = TreeSitterProcessConfig(structure=True, comments=True, docstrings=True)
+#[pyclass(name = "TreeSitterProcessConfig", module = "kreuzberg", from_py_object)]
+#[derive(Clone)]
+pub struct TreeSitterProcessConfig {
+    pub inner: kreuzberg::core::config::TreeSitterProcessConfig,
+}
+
+#[pymethods]
+impl TreeSitterProcessConfig {
+    #[new]
+    #[pyo3(signature = (
+        structure=None,
+        imports=None,
+        exports=None,
+        comments=None,
+        docstrings=None,
+        symbols=None,
+        diagnostics=None,
+        chunk_max_size=None
+    ))]
+    fn new(
+        structure: Option<bool>,
+        imports: Option<bool>,
+        exports: Option<bool>,
+        comments: Option<bool>,
+        docstrings: Option<bool>,
+        symbols: Option<bool>,
+        diagnostics: Option<bool>,
+        chunk_max_size: Option<usize>,
+    ) -> Self {
+        Self {
+            inner: kreuzberg::core::config::TreeSitterProcessConfig {
+                structure: structure.unwrap_or(true),
+                imports: imports.unwrap_or(true),
+                exports: exports.unwrap_or(true),
+                comments: comments.unwrap_or(false),
+                docstrings: docstrings.unwrap_or(false),
+                symbols: symbols.unwrap_or(false),
+                diagnostics: diagnostics.unwrap_or(false),
+                chunk_max_size,
+            },
+        }
+    }
+
+    #[getter]
+    fn structure(&self) -> bool {
+        self.inner.structure
+    }
+
+    #[setter]
+    fn set_structure(&mut self, value: bool) {
+        self.inner.structure = value;
+    }
+
+    #[getter]
+    fn imports(&self) -> bool {
+        self.inner.imports
+    }
+
+    #[setter]
+    fn set_imports(&mut self, value: bool) {
+        self.inner.imports = value;
+    }
+
+    #[getter]
+    fn exports(&self) -> bool {
+        self.inner.exports
+    }
+
+    #[setter]
+    fn set_exports(&mut self, value: bool) {
+        self.inner.exports = value;
+    }
+
+    #[getter]
+    fn comments(&self) -> bool {
+        self.inner.comments
+    }
+
+    #[setter]
+    fn set_comments(&mut self, value: bool) {
+        self.inner.comments = value;
+    }
+
+    #[getter]
+    fn docstrings(&self) -> bool {
+        self.inner.docstrings
+    }
+
+    #[setter]
+    fn set_docstrings(&mut self, value: bool) {
+        self.inner.docstrings = value;
+    }
+
+    #[getter]
+    fn symbols(&self) -> bool {
+        self.inner.symbols
+    }
+
+    #[setter]
+    fn set_symbols(&mut self, value: bool) {
+        self.inner.symbols = value;
+    }
+
+    #[getter]
+    fn diagnostics(&self) -> bool {
+        self.inner.diagnostics
+    }
+
+    #[setter]
+    fn set_diagnostics(&mut self, value: bool) {
+        self.inner.diagnostics = value;
+    }
+
+    #[getter]
+    fn chunk_max_size(&self) -> Option<usize> {
+        self.inner.chunk_max_size
+    }
+
+    #[setter]
+    fn set_chunk_max_size(&mut self, value: Option<usize>) {
+        self.inner.chunk_max_size = value;
+    }
+
+    fn __repr__(&self) -> String {
+        format!(
+            "TreeSitterProcessConfig(structure={}, imports={}, exports={}, comments={}, docstrings={}, symbols={}, diagnostics={}, chunk_max_size={:?})",
+            self.inner.structure,
+            self.inner.imports,
+            self.inner.exports,
+            self.inner.comments,
+            self.inner.docstrings,
+            self.inner.symbols,
+            self.inner.diagnostics,
+            self.inner.chunk_max_size
+        )
+    }
+}
+
+/// Configuration for tree-sitter language pack integration.
+///
+/// Controls grammar download behavior and code analysis options.
+///
+/// Example:
+///     >>> from kreuzberg import TreeSitterConfig, TreeSitterProcessConfig
+///     >>> config = TreeSitterConfig(
+///     ...     languages=["python", "rust"],
+///     ...     groups=["web"],
+///     ...     process=TreeSitterProcessConfig(comments=True)
+///     ... )
+#[pyclass(name = "TreeSitterConfig", module = "kreuzberg", from_py_object)]
+#[derive(Clone)]
+pub struct TreeSitterConfig {
+    pub inner: kreuzberg::core::config::TreeSitterConfig,
+}
+
+#[pymethods]
+impl TreeSitterConfig {
+    #[new]
+    #[pyo3(signature = (cache_dir=None, languages=None, groups=None, process=None))]
+    fn new(
+        cache_dir: Option<String>,
+        languages: Option<Vec<String>>,
+        groups: Option<Vec<String>>,
+        process: Option<TreeSitterProcessConfig>,
+    ) -> Self {
+        Self {
+            inner: kreuzberg::core::config::TreeSitterConfig {
+                cache_dir: cache_dir.map(std::path::PathBuf::from),
+                languages,
+                groups,
+                process: process.map(Into::into).unwrap_or_default(),
+            },
+        }
+    }
+
+    #[getter]
+    fn cache_dir(&self) -> Option<String> {
+        self.inner.cache_dir.as_ref().map(|p| p.display().to_string())
+    }
+
+    #[setter]
+    fn set_cache_dir(&mut self, value: Option<String>) {
+        self.inner.cache_dir = value.map(std::path::PathBuf::from);
+    }
+
+    #[getter]
+    fn languages(&self) -> Option<Vec<String>> {
+        self.inner.languages.clone()
+    }
+
+    #[setter]
+    fn set_languages(&mut self, value: Option<Vec<String>>) {
+        self.inner.languages = value;
+    }
+
+    #[getter]
+    fn groups(&self) -> Option<Vec<String>> {
+        self.inner.groups.clone()
+    }
+
+    #[setter]
+    fn set_groups(&mut self, value: Option<Vec<String>>) {
+        self.inner.groups = value;
+    }
+
+    #[getter]
+    fn process(&self) -> TreeSitterProcessConfig {
+        TreeSitterProcessConfig {
+            inner: self.inner.process.clone(),
+        }
+    }
+
+    #[setter]
+    fn set_process(&mut self, value: TreeSitterProcessConfig) {
+        self.inner.process = value.inner;
+    }
+
+    fn __repr__(&self) -> String {
+        format!(
+            "TreeSitterConfig(cache_dir={:?}, languages={:?}, groups={:?}, process=...)",
+            self.inner.cache_dir, self.inner.languages, self.inner.groups
+        )
+    }
+}
+
 /// Per-file extraction configuration overrides for batch processing.
 ///
 /// All fields are optional — `None` means "use the batch-level default."
@@ -2315,7 +2560,8 @@ impl FileExtractionConfig {
         output_format=None,
         include_document_structure=None,
         layout=None,
-        timeout_secs=None
+        timeout_secs=None,
+        tree_sitter=None
     ))]
     #[allow(clippy::too_many_arguments)]
     fn new(
@@ -2337,6 +2583,7 @@ impl FileExtractionConfig {
         include_document_structure: Option<bool>,
         layout: Option<LayoutDetectionConfig>,
         timeout_secs: Option<u64>,
+        tree_sitter: Option<TreeSitterConfig>,
     ) -> PyResult<Self> {
         let (html_options_inner, html_options_dict) = parse_html_options_dict(html_options)?;
         Ok(Self {
@@ -2388,6 +2635,7 @@ impl FileExtractionConfig {
                 include_document_structure,
                 layout: layout.map(Into::into),
                 timeout_secs,
+                tree_sitter: tree_sitter.map(Into::into),
             },
             html_options_dict,
         })
@@ -2615,6 +2863,16 @@ impl FileExtractionConfig {
     #[setter]
     fn set_timeout_secs(&mut self, value: Option<u64>) {
         self.inner.timeout_secs = value;
+    }
+
+    #[getter]
+    fn tree_sitter(&self) -> Option<TreeSitterConfig> {
+        self.inner.tree_sitter.clone().map(Into::into)
+    }
+
+    #[setter]
+    fn set_tree_sitter(&mut self, value: Option<TreeSitterConfig>) {
+        self.inner.tree_sitter = value.map(Into::into);
     }
 
     fn __repr__(&self) -> String {

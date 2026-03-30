@@ -89,6 +89,7 @@ tokio = { version = "1.50.0", features = [
 ] }
 toml = "1.1.0"
 tracing = "0.1"
+tree-sitter-language-pack = { path = "../../tree-sitter-language-pack/crates/ts-pack-core", default-features = false, features = ["serde"] }
 wasm-bindgen = { version = "0.2", features = ["enable-interning"] }
 wasm-bindgen-futures = "0.4"
 web-sys = { version = "0.3", features = [

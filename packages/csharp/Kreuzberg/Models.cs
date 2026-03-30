@@ -2054,6 +2054,90 @@ public sealed class AccelerationConfig
 }
 
 /// <summary>
+/// Configuration for tree-sitter code analysis processing options.
+/// </summary>
+public sealed class TreeSitterProcessConfig
+{
+    /// <summary>
+    /// Whether to extract code structure information.
+    /// </summary>
+    [JsonPropertyName("structure")]
+    public bool? Structure { get; init; }
+
+    /// <summary>
+    /// Whether to extract import statements.
+    /// </summary>
+    [JsonPropertyName("imports")]
+    public bool? Imports { get; init; }
+
+    /// <summary>
+    /// Whether to extract export statements.
+    /// </summary>
+    [JsonPropertyName("exports")]
+    public bool? Exports { get; init; }
+
+    /// <summary>
+    /// Whether to extract comments.
+    /// </summary>
+    [JsonPropertyName("comments")]
+    public bool? Comments { get; init; }
+
+    /// <summary>
+    /// Whether to extract docstrings.
+    /// </summary>
+    [JsonPropertyName("docstrings")]
+    public bool? Docstrings { get; init; }
+
+    /// <summary>
+    /// Whether to extract symbol definitions.
+    /// </summary>
+    [JsonPropertyName("symbols")]
+    public bool? Symbols { get; init; }
+
+    /// <summary>
+    /// Whether to extract diagnostics information.
+    /// </summary>
+    [JsonPropertyName("diagnostics")]
+    public bool? Diagnostics { get; init; }
+
+    /// <summary>
+    /// Maximum size of code chunks for processing.
+    /// </summary>
+    [JsonPropertyName("chunk_max_size")]
+    public int? ChunkMaxSize { get; init; }
+}
+
+/// <summary>
+/// Configuration for tree-sitter language pack integration.
+/// </summary>
+public sealed class TreeSitterConfig
+{
+    /// <summary>
+    /// Directory for caching tree-sitter language packs.
+    /// </summary>
+    [JsonPropertyName("cache_dir")]
+    public string? CacheDir { get; init; }
+
+    /// <summary>
+    /// List of specific languages to enable for tree-sitter parsing.
+    /// </summary>
+    [JsonPropertyName("languages")]
+    public string[]? Languages { get; init; }
+
+    /// <summary>
+    /// List of language groups to enable for tree-sitter parsing.
+    /// </summary>
+    [JsonPropertyName("groups")]
+    public string[]? Groups { get; init; }
+
+    /// <summary>
+    /// Processing options for tree-sitter code analysis.
+    /// </summary>
+    [JsonPropertyName("process")]
+    public TreeSitterProcessConfig? Process { get; init; }
+}
+
+/// <summary>
 /// Configuration for document extraction, controlling extraction behavior and features.
 /// </summary>
 public sealed class ExtractionConfig
@@ -2221,6 +2305,13 @@ public sealed class ExtractionConfig
     /// </summary>
     [JsonPropertyName("max_archive_depth")]
     public int? MaxArchiveDepth { get; init; }
+
+    /// <summary>
+    /// Tree-sitter language pack integration configuration.
+    /// If null, tree-sitter processing is disabled.
+    /// </summary>
+    [JsonPropertyName("tree_sitter")]
+    public TreeSitterConfig? TreeSitter { get; init; }
 
 }
 
@@ -3959,4 +4050,346 @@ public sealed class LayoutDetectionConfig
     /// </summary>
     [JsonPropertyName("table_model")]
     public string? TableModel { get; init; }
+}
+
+// ============================================================================
+// Tree-sitter ProcessResult types (serialized from Rust via serde)
+// ============================================================================
+
+/// <summary>
+/// Byte/line/column range in source code.
+/// </summary>
+public sealed class CodeSpan
+{
+    /// <summary>Start byte offset.</summary>
+    [JsonPropertyName("start_byte")]
+    public int StartByte { get; init; }
+
+    /// <summary>End byte offset.</summary>
+    [JsonPropertyName("end_byte")]
+    public int EndByte { get; init; }
+
+    /// <summary>Start line number (0-based).</summary>
+    [JsonPropertyName("start_line")]
+    public int StartLine { get; init; }
+
+    /// <summary>Start column number (0-based).</summary>
+    [JsonPropertyName("start_column")]
+    public int StartColumn { get; init; }
+
+    /// <summary>End line number (0-based).</summary>
+    [JsonPropertyName("end_line")]
+    public int EndLine { get; init; }
+
+    /// <summary>End column number (0-based).</summary>
+    [JsonPropertyName("end_column")]
+    public int EndColumn { get; init; }
+}
+
+/// <summary>
+/// Aggregate metrics for a parsed source file.
+/// </summary>
+public sealed class CodeFileMetrics
+{
+    /// <summary>Total number of lines.</summary>
+    [JsonPropertyName("total_lines")]
+    public int TotalLines { get; init; }
+
+    /// <summary>Number of lines containing code.</summary>
+    [JsonPropertyName("code_lines")]
+    public int CodeLines { get; init; }
+
+    /// <summary>Number of lines containing comments.</summary>
+    [JsonPropertyName("comment_lines")]
+    public int CommentLines { get; init; }
+
+    /// <summary>Number of blank lines.</summary>
+    [JsonPropertyName("blank_lines")]
+    public int BlankLines { get; init; }
+
+    /// <summary>Total byte size of the file.</summary>
+    [JsonPropertyName("total_bytes")]
+    public int TotalBytes { get; init; }
+
+    /// <summary>Number of AST nodes.</summary>
+    [JsonPropertyName("node_count")]
+    public int NodeCount { get; init; }
+
+    /// <summary>Number of parse errors.</summary>
+    [JsonPropertyName("error_count")]
+    public int ErrorCount { get; init; }
+
+    /// <summary>Maximum AST depth.</summary>
+    [JsonPropertyName("max_depth")]
+    public int MaxDepth { get; init; }
+}
+
+/// <summary>
+/// A structural element (function, class, etc.) in source code.
+/// </summary>
+public sealed class CodeStructureItem
+{
+    /// <summary>Kind of structure (e.g. "function", "class", "method").</summary>
+    [JsonPropertyName("kind")]
+    public string Kind { get; init; } = string.Empty;
+
+    /// <summary>Name of the item, if available.</summary>
+    [JsonPropertyName("name")]
+    public string? Name { get; init; }
+
+    /// <summary>Visibility modifier (e.g. "public", "private").</summary>
+    [JsonPropertyName("visibility")]
+    public string? Visibility { get; init; }
+
+    /// <summary>Source span of the item.</summary>
+    [JsonPropertyName("span")]
+    public CodeSpan Span { get; init; } = new();
+
+    /// <summary>Nested child structure items.</summary>
+    [JsonPropertyName("children")]
+    public CodeStructureItem[] Children { get; init; } = [];
+
+    /// <summary>Decorators/attributes applied to the item.</summary>
+    [JsonPropertyName("decorators")]
+    public string[] Decorators { get; init; } = [];
+
+    /// <summary>Associated documentation comment text.</summary>
+    [JsonPropertyName("doc_comment")]
+    public string? DocComment { get; init; }
+
+    /// <summary>Full signature of the item.</summary>
+    [JsonPropertyName("signature")]
+    public string? Signature { get; init; }
+
+    /// <summary>Source span of the item body, if applicable.</summary>
+    [JsonPropertyName("body_span")]
+    public CodeSpan? BodySpan { get; init; }
+}
+
+/// <summary>
+/// An import/include/require statement.
+/// </summary>
+public sealed class CodeImportInfo
+{
+    /// <summary>Module or path being imported.</summary>
+    [JsonPropertyName("source")]
+    public string Source { get; init; } = string.Empty;
+
+    /// <summary>Specific items imported from the source.</summary>
+    [JsonPropertyName("items")]
+    public string[] Items { get; init; } = [];
+
+    /// <summary>Alias for the import, if any.</summary>
+    [JsonPropertyName("alias")]
+    public string? Alias { get; init; }
+
+    /// <summary>Whether this is a wildcard import (e.g. import *).</summary>
+    [JsonPropertyName("is_wildcard")]
+    public bool IsWildcard { get; init; }
+
+    /// <summary>Source span of the import statement.</summary>
+    [JsonPropertyName("span")]
+    public CodeSpan Span { get; init; } = new();
+}
+
+/// <summary>
+/// An exported symbol from source code.
+/// </summary>
+public sealed class CodeExportInfo
+{
+    /// <summary>Name of the exported symbol.</summary>
+    [JsonPropertyName("name")]
+    public string Name { get; init; } = string.Empty;
+
+    /// <summary>Kind of export (e.g. "function", "class", "variable").</summary>
+    [JsonPropertyName("kind")]
+    public string Kind { get; init; } = string.Empty;
+
+    /// <summary>Source span of the export.</summary>
+    [JsonPropertyName("span")]
+    public CodeSpan Span { get; init; } = new();
+}
+
+/// <summary>
+/// A symbol (variable, constant, type alias, etc.) in source code.
+/// </summary>
+public sealed class CodeSymbolInfo
+{
+    /// <summary>Name of the symbol.</summary>
+    [JsonPropertyName("name")]
+    public string Name { get; init; } = string.Empty;
+
+    /// <summary>Kind of symbol (e.g. "variable", "constant", "type_alias").</summary>
+    [JsonPropertyName("kind")]
+    public string Kind { get; init; } = string.Empty;
+
+    /// <summary>Type annotation, if present.</summary>
+    [JsonPropertyName("type_annotation")]
+    public string? TypeAnnotation { get; init; }
+
+    /// <summary>Source span of the symbol.</summary>
+    [JsonPropertyName("span")]
+    public CodeSpan Span { get; init; } = new();
+}
+
+/// <summary>
+/// A comment in source code.
+/// </summary>
+public sealed class CodeCommentInfo
+{
+    /// <summary>Text content of the comment.</summary>
+    [JsonPropertyName("text")]
+    public string Text { get; init; } = string.Empty;
+
+    /// <summary>Kind of comment (e.g. "line", "block").</summary>
+    [JsonPropertyName("kind")]
+    public string Kind { get; init; } = string.Empty;
+
+    /// <summary>Source span of the comment.</summary>
+    [JsonPropertyName("span")]
+    public CodeSpan Span { get; init; } = new();
+}
+
+/// <summary>
+/// A section within a docstring (e.g. @param, @returns).
+/// </summary>
+public sealed class CodeDocSection
+{
+    /// <summary>Section kind (e.g. "param", "returns", "description").</summary>
+    [JsonPropertyName("kind")]
+    public string Kind { get; init; } = string.Empty;
+
+    /// <summary>Parameter or section name, if applicable.</summary>
+    [JsonPropertyName("name")]
+    public string? Name { get; init; }
+
+    /// <summary>Content of the section.</summary>
+    [JsonPropertyName("content")]
+    public string Content { get; init; } = string.Empty;
+}
+
+/// <summary>
+/// A documentation comment/docstring.
+/// </summary>
+public sealed class CodeDocstringInfo
+{
+    /// <summary>Full text of the docstring.</summary>
+    [JsonPropertyName("text")]
+    public string Text { get; init; } = string.Empty;
+
+    /// <summary>Docstring format (e.g. "javadoc", "restructuredtext", "google").</summary>
+    [JsonPropertyName("format")]
+    public string Format { get; init; } = string.Empty;
+
+    /// <summary>Name of the associated code item, if any.</summary>
+    [JsonPropertyName("associated_item")]
+    public string? AssociatedItem { get; init; }
+
+    /// <summary>Source span of the docstring.</summary>
+    [JsonPropertyName("span")]
+    public CodeSpan Span { get; init; } = new();
+
+    /// <summary>Parsed sections of the docstring.</summary>
+    [JsonPropertyName("sections")]
+    public CodeDocSection[] Sections { get; init; } = [];
+}
+
+/// <summary>
+/// A parse error or warning from tree-sitter.
+/// </summary>
+public sealed class CodeDiagnostic
+{
+    /// <summary>Diagnostic message.</summary>
+    [JsonPropertyName("message")]
+    public string Message { get; init; } = string.Empty;
+
+    /// <summary>Severity level (e.g. "error", "warning").</summary>
+    [JsonPropertyName("severity")]
+    public string Severity { get; init; } = string.Empty;
+
+    /// <summary>Source span of the diagnostic.</summary>
+    [JsonPropertyName("span")]
+    public CodeSpan Span { get; init; } = new();
+}
+
+/// <summary>
+/// Parent context for a code chunk.
+/// </summary>
+public sealed class CodeChunkContext
+{
+    /// <summary>Name of the parent structure item.</summary>
+    [JsonPropertyName("parent_name")]
+    public string? ParentName { get; init; }
+
+    /// <summary>Kind of the parent structure item.</summary>
+    [JsonPropertyName("parent_kind")]
+    public string? ParentKind { get; init; }
+}
+
+/// <summary>
+/// A chunk of source code with optional context.
+/// </summary>
+public sealed class CodeChunk
+{
+    /// <summary>Source code content of the chunk.</summary>
+    [JsonPropertyName("content")]
+    public string Content { get; init; } = string.Empty;
+
+    /// <summary>Programming language of the chunk.</summary>
+    [JsonPropertyName("language")]
+    public string Language { get; init; } = string.Empty;
+
+    /// <summary>Source span of the chunk.</summary>
+    [JsonPropertyName("span")]
+    public CodeSpan Span { get; init; } = new();
+
+    /// <summary>Optional parent context for the chunk.</summary>
+    [JsonPropertyName("context")]
+    public CodeChunkContext? Context { get; init; }
+}
+
+/// <summary>
+/// Complete result of tree-sitter code analysis.
+/// </summary>
+public sealed class CodeProcessResult
+{
+    /// <summary>Detected programming language.</summary>
+    [JsonPropertyName("language")]
+    public string Language { get; init; } = string.Empty;
+
+    /// <summary>File-level metrics.</summary>
+    [JsonPropertyName("metrics")]
+    public CodeFileMetrics Metrics { get; init; } = new();
+
+    /// <summary>Structural items (functions, classes, etc.).</summary>
+    [JsonPropertyName("structure")]
+    public CodeStructureItem[] Structure { get; init; } = [];
+
+    /// <summary>Import statements.</summary>
+    [JsonPropertyName("imports")]
+    public CodeImportInfo[] Imports { get; init; } = [];
+
+    /// <summary>Export declarations.</summary>
+    [JsonPropertyName("exports")]
+    public CodeExportInfo[] Exports { get; init; } = [];
+
+    /// <summary>Comments found in the source.</summary>
+    [JsonPropertyName("comments")]
+    public CodeCommentInfo[] Comments { get; init; } = [];
+
+    /// <summary>Docstrings found in the source.</summary>
+    [JsonPropertyName("docstrings")]
+    public CodeDocstringInfo[] Docstrings { get; init; } = [];
+
+    /// <summary>Symbols (variables, constants, etc.).</summary>
+    [JsonPropertyName("symbols")]
+    public CodeSymbolInfo[] Symbols { get; init; } = [];
+
+    /// <summary>Parse diagnostics (errors, warnings).</summary>
+    [JsonPropertyName("diagnostics")]
+    public CodeDiagnostic[] Diagnostics { get; init; } = [];
+
+    /// <summary>Code chunks for RAG/retrieval.</summary>
+    [JsonPropertyName("chunks")]
+    public CodeChunk[] Chunks { get; init; } = [];
 }

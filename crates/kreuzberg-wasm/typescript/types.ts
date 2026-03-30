@@ -230,6 +230,154 @@ export interface ConcurrencyConfig {
 }
 
 /**
+ * Processing options for tree-sitter code analysis.
+ *
+ * Controls which analysis features are enabled when extracting code files.
+ */
+export interface TreeSitterProcessConfig {
+	/** Extract structural items (functions, classes, structs, etc.). Default: true */
+	structure?: boolean;
+	/** Extract import statements. Default: true */
+	imports?: boolean;
+	/** Extract export statements. Default: true */
+	exports?: boolean;
+	/** Extract comments. Default: false */
+	comments?: boolean;
+	/** Extract docstrings. Default: false */
+	docstrings?: boolean;
+	/** Extract symbol definitions. Default: false */
+	symbols?: boolean;
+	/** Include parse diagnostics. Default: false */
+	diagnostics?: boolean;
+	/** Maximum chunk size in bytes. undefined disables chunking */
+	chunkMaxSize?: number;
+}
+
+/**
+ * Configuration for tree-sitter language pack integration.
+ *
+ * Controls grammar download behavior and code analysis options.
+ */
+export interface TreeSitterConfig {
+	/** Custom cache directory for downloaded grammars */
+	cacheDir?: string;
+	/** Languages to pre-download on init (e.g., ["python", "rust"]) */
+	languages?: string[];
+	/** Language groups to pre-download (e.g., ["web", "systems", "scripting"]) */
+	groups?: string[];
+	/** Processing options for code analysis */
+	process?: TreeSitterProcessConfig;
+}
+
+// ============================================================================
+// Tree-sitter ProcessResult types (serialized from Rust via serde)
+// ============================================================================
+
+export interface CodeSpan {
+	start_byte: number;
+	end_byte: number;
+	start_line: number;
+	start_column: number;
+	end_line: number;
+	end_column: number;
+}
+
+export interface CodeFileMetrics {
+	total_lines: number;
+	code_lines: number;
+	comment_lines: number;
+	blank_lines: number;
+	total_bytes: number;
+	node_count: number;
+	error_count: number;
+	max_depth: number;
+}
+
+export interface CodeStructureItem {
+	kind: string;
+	name?: string;
+	visibility?: string;
+	span: CodeSpan;
+	children: CodeStructureItem[];
+	decorators: string[];
+	doc_comment?: string;
+	signature?: string;
+	body_span?: CodeSpan;
+}
+
+export interface CodeImportInfo {
+	source: string;
+	items: string[];
+	alias?: string;
+	is_wildcard: boolean;
+	span: CodeSpan;
+}
+
+export interface CodeExportInfo {
+	name: string;
+	kind: string;
+	span: CodeSpan;
+}
+
+export interface CodeSymbolInfo {
+	name: string;
+	kind: string;
+	type_annotation?: string;
+	span: CodeSpan;
+}
+
+export interface CodeCommentInfo {
+	text: string;
+	kind: string;
+	span: CodeSpan;
+}
+
+export interface CodeDocSection {
+	kind: string;
+	name?: string;
+	content: string;
+}
+
+export interface CodeDocstringInfo {
+	text: string;
+	format: string;
+	associated_item?: string;
+	span: CodeSpan;
+	sections: CodeDocSection[];
+}
+
+export interface CodeDiagnostic {
+	message: string;
+	severity: string;
+	span: CodeSpan;
+}
+
+export interface CodeChunkContext {
+	parent_name?: string;
+	parent_kind?: string;
+}
+
+export interface CodeChunk {
+	content: string;
+	language: string;
+	span: CodeSpan;
+	context?: CodeChunkContext;
+}
+
+export interface CodeProcessResult {
+	language: string;
+	metrics: CodeFileMetrics;
+	structure: CodeStructureItem[];
+	imports: CodeImportInfo[];
+	exports: CodeExportInfo[];
+	comments: CodeCommentInfo[];
+	docstrings: CodeDocstringInfo[];
+	symbols: CodeSymbolInfo[];
+	diagnostics: CodeDiagnostic[];
+	chunks: CodeChunk[];
+}
+
+/**
  * Configuration for document extraction
  */
 export interface ExtractionConfig {
@@ -305,6 +453,8 @@ export interface ExtractionConfig {
 	cacheNamespace?: string;
 	/** Per-request cache TTL in seconds */
 	cacheTtlSecs?: number;
+	/** Tree-sitter configuration for code file extraction */
+	treeSitter?: TreeSitterConfig;
 }
 
 /**
