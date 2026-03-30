@@ -1,0 +1,27 @@
+{
+	"id": "embed_async",
+	"description": "Standalone embedding via async API path with balanced preset",
+	"tags": ["embed"],
+	"embed": {
+		"texts": ["Async embedding test"],
+		"config": {
+			"model": { "type": "preset", "name": "balanced" },
+			"normalize": true
+		},
+		"async_variant": true
+	},
+	"assertions": {
+		"embed": {
+			"count": 1,
+			"dimensions": 768,
+			"no_nan": true,
+			"no_inf": true,
+			"non_zero": true
+		}
+	},
+	"skip": {
+		"requires_feature": ["embeddings"],
+		"skip_on_platform": ["x86_64-pc-windows-msvc"],
+		"notes": "Embeddings not supported on Windows MSVC"
+	}
+}

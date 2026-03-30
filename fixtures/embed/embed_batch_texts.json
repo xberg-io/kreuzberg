@@ -1,0 +1,28 @@
+{
+	"id": "embed_batch_texts",
+	"description": "Standalone embedding of a batch of 3 texts with fast preset",
+	"tags": ["embed"],
+	"embed": {
+		"texts": ["Text one", "Text two", "Text three"],
+		"config": {
+			"model": { "type": "preset", "name": "fast" },
+			"normalize": true,
+			"batch_size": 32
+		}
+	},
+	"assertions": {
+		"embed": {
+			"count": 3,
+			"dimensions": 384,
+			"no_nan": true,
+			"no_inf": true,
+			"non_zero": true,
+			"normalized": true
+		}
+	},
+	"skip": {
+		"requires_feature": ["embeddings"],
+		"skip_on_platform": ["x86_64-pc-windows-msvc"],
+		"notes": "Embeddings not supported on Windows MSVC"
+	}
+}

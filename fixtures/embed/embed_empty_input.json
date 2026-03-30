@@ -1,0 +1,22 @@
+{
+	"id": "embed_empty_input",
+	"description": "Standalone embedding with empty text list returns empty result without error",
+	"tags": ["embed"],
+	"embed": {
+		"texts": [],
+		"config": {
+			"model": { "type": "preset", "name": "balanced" }
+		}
+	},
+	"assertions": {
+		"embed": {
+			"count": 0,
+			"no_nan": true,
+			"no_inf": true
+		}
+	},
+	"skip": {
+		"requires_feature": ["embeddings"],
+		"skip_on_platform": ["x86_64-pc-windows-msvc"]
+	}
+}

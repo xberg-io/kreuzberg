@@ -1,0 +1,27 @@
+{
+	"id": "embed_single_text",
+	"description": "Standalone embedding of a single text with balanced preset",
+	"tags": ["embed"],
+	"embed": {
+		"texts": ["Hello, Kreuzberg!"],
+		"config": {
+			"model": { "type": "preset", "name": "balanced" },
+			"normalize": true
+		}
+	},
+	"assertions": {
+		"embed": {
+			"count": 1,
+			"dimensions": 768,
+			"no_nan": true,
+			"no_inf": true,
+			"non_zero": true,
+			"normalized": true
+		}
+	},
+	"skip": {
+		"requires_feature": ["embeddings"],
+		"skip_on_platform": ["x86_64-pc-windows-msvc"],
+		"notes": "Embeddings not supported on Windows MSVC"
+	}
+}
