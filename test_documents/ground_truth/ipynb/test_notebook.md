@@ -1,23 +1,14 @@
-
-
 # Test Notebook
 
-``` python
-print("markitdown")
-```
+    print("markitdown")
 
-    markitdown
+markitdown
 
 ## Code Cell Below
 
-``` python
-# comment in code
-print(42)
-```
+    # comment in code
+    print(42)
 
-    42
+42
 
-End
-
-------------------------------------------------------------------------
-
+End ---
