@@ -1,3 +1,5 @@
+## Example Test
+
 | MC | What is 2+2? | 4 | correct | 3 | incorrect |  |  |  |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | MA | What C datatypes are 8 bits? (assume i386) | int |  | float |  | double |  | char |
@@ -6,6 +8,8 @@
 | ORD | Rank the following in their order of operation. | Parentheses | Exponents | Division | Addition |  |  |  |
 | FIB | The student activities fee is | 95 | dollars for students enrolled in | 19 | units or more, |  |  |  |
 | MAT | Match the lower-case greek letter with its capital form. | λ | Λ | α | γ | Γ | φ | Φ |
+
+## Format Abbr.
 
 | http://www.cmu.edu/blackboard |  |
 | --- | --- |
@@ -24,9 +28,11 @@
 | NUM | Numeric Response |
 | SR | Short response |
 | OP | Opinion |
-| FIB_PLUS | Multiple Fill in the Blank |
-| JUMBLED_SENTENCE | Jumbled Sentence |
-| QUIZ_BOWL | Quiz Bowl |
+| FIB\_PLUS | Multiple Fill in the Blank |
+| JUMBLED\_SENTENCE | Jumbled Sentence |
+| QUIZ\_BOWL | Quiz Bowl |
+
+## Readme
 
 | http://www.cmu.edu/blackboard |
 | --- |
@@ -47,4 +53,4 @@
 |  |
 |  |
 | About |
-| This is an example and template for preparing Blackboard tests offline. See the full directions at: http://www.cmu.edu/blackboard/evaluate#manage_tests/import_questions |
+| This is an example and template for preparing Blackboard tests offline. See the full directions at: http://www.cmu.edu/blackboard/evaluate\#manage\_tests/import\_questions |
