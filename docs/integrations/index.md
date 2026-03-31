@@ -8,6 +8,7 @@ Kreuzberg integrates with AI frameworks, databases, and search engines — bring
 
 | Integration | Framework | Package | Docs |
 |---|---|---|---|
+| Open WebUI | [Open WebUI](https://openwebui.com/) | Built-in (v4.7.0+) | [Open WebUI](openwebui.md) |
 | LangChain | [LangChain](https://www.langchain.com/) | [`langchain-kreuzberg`](https://pypi.org/project/langchain-kreuzberg/) | [GitHub](https://github.com/kreuzberg-dev/langchain-kreuzberg) |
 | LlamaIndex | [LlamaIndex](https://www.llamaindex.ai/) | [`llama-index-readers-kreuzberg`](https://pypi.org/project/llama-index-readers-kreuzberg/) | [GitHub](https://github.com/kreuzberg-dev/llama-index-kreuzberg) |
 | Haystack | [Haystack](https://haystack.deepset.ai/) | [`kreuzberg-haystack`](https://pypi.org/project/kreuzberg-haystack/) | [GitHub](https://github.com/deepset-ai/haystack-core-integrations/tree/main/integrations/kreuzberg) |

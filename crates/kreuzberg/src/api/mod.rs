@@ -16,6 +16,8 @@
 //! - `GET /cache/manifest` - Get model manifest with checksums and sizes
 //! - `POST /cache/warm` - Pre-download models to cache
 //! - `DELETE /cache/clear` - Clear all cached files
+//! - `PUT /process` - OpenWebUI "External" engine compatibility
+//! - `POST /v1/convert/file` - OpenWebUI "Docling" engine compatibility (docling-serve drop-in)
 //!
 //! # Examples
 //!
@@ -93,6 +95,7 @@ mod error;
 mod handlers;
 #[cfg(feature = "api")]
 pub mod openapi;
+mod openweb;
 mod router;
 mod startup;
 mod types;
@@ -103,6 +106,7 @@ pub use router::{create_router, create_router_with_limits, create_router_with_li
 pub use startup::{serve, serve_default, serve_with_config, serve_with_config_and_limits, serve_with_server_config};
 pub use types::{
     ApiSizeLimits, ApiState, CacheClearResponse, CacheStatsResponse, ChunkRequest, ChunkResponse, DetectResponse,
-    EmbedRequest, EmbedResponse, ErrorResponse, ExtractResponse, HealthResponse, InfoResponse, ManifestEntryResponse,
-    ManifestResponse, VersionResponse, WarmRequest, WarmResponse,
+    DoclingCompatDocument, DoclingCompatResponse, EmbedRequest, EmbedResponse, ErrorResponse, ExtractResponse,
+    HealthResponse, InfoResponse, ManifestEntryResponse, ManifestResponse, OpenWebDocumentMetadata,
+    OpenWebDocumentResponse, VersionResponse, WarmRequest, WarmResponse,
 };

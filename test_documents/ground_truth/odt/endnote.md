@@ -1,3 +1,6 @@
-Some text[^1] with an endnote.
+[^1]
 
-[^1]: Endnote text
+Some text with an endnote.\[^i\]
+
+[^1]:
+    Endnote text

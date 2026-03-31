@@ -8,13 +8,9 @@
 
 ### Hawaii
 
-### **Nevada**
+### \*\*Nevada\*\*
 
-I lived here *once*.
-
-Loved it.
-
-#### [Reno](http://www.reno.gov)
+#### Reno
 
 #### Las Vegas
 

@@ -5,7 +5,7 @@ use std::sync::Arc;
 use axum::{
     Router,
     extract::DefaultBodyLimit,
-    routing::{delete, get, post},
+    routing::{delete, get, post, put},
 };
 use tower_http::{
     catch_panic::CatchPanicLayer,
@@ -24,6 +24,7 @@ use super::{
         cache_clear_handler, cache_manifest_handler, cache_stats_handler, cache_warm_handler, chunk_handler,
         detect_handler, embed_handler, extract_handler, formats_handler, health_handler, info_handler, version_handler,
     },
+    openweb::{openweb_docling_handler, openweb_external_handler},
     types::{ApiSizeLimits, ApiState},
 };
 
@@ -172,7 +173,10 @@ pub fn create_router_with_limits_and_server_config(
         .route("/cache/stats", get(cache_stats_handler))
         .route("/cache/clear", delete(cache_clear_handler))
         .route("/cache/manifest", get(cache_manifest_handler))
-        .route("/cache/warm", post(cache_warm_handler));
+        .route("/cache/warm", post(cache_warm_handler))
+        // OpenWebUI compatibility endpoints
+        .route("/process", put(openweb_external_handler))
+        .route("/v1/convert/file", post(openweb_docling_handler));
 
     // Add OpenAPI schema endpoint if API feature is enabled
     #[cfg(feature = "api")]

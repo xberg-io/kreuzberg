@@ -397,6 +397,52 @@ pub struct WarmResponse {
     pub already_cached: Vec<String>,
 }
 
+// ---------------------------------------------------------------------------
+// OpenWebUI compatibility types
+// ---------------------------------------------------------------------------
+
+/// OpenWebUI "External" engine response format.
+///
+/// Returned by `PUT /process` for the OpenWebUI external document loader.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
+pub struct OpenWebDocumentResponse {
+    /// Extracted text content
+    pub page_content: String,
+    /// Document metadata
+    pub metadata: OpenWebDocumentMetadata,
+}
+
+/// Metadata for the OpenWebUI external document loader response.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
+pub struct OpenWebDocumentMetadata {
+    /// Original filename
+    #[cfg_attr(feature = "api", schema(example = "document.pdf"))]
+    pub source: String,
+}
+
+/// OpenWebUI "Docling" engine response format.
+///
+/// Returned by `POST /v1/convert/file` for docling-serve compatibility.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
+pub struct DoclingCompatResponse {
+    /// Converted document content
+    pub document: DoclingCompatDocument,
+    /// Processing status
+    #[cfg_attr(feature = "api", schema(example = "success"))]
+    pub status: String,
+}
+
+/// Document content in the docling-serve response format.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
+pub struct DoclingCompatDocument {
+    /// Markdown content of the converted document
+    pub md_content: String,
+}
+
 /// Chunking configuration response.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[cfg_attr(feature = "api", derive(utoipa::ToSchema))]

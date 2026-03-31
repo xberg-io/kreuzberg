@@ -1,11 +1,5 @@
 # Effects of Caffeine on Human Health
 
-A Systematic Review and Meta-Analysis
-
-John A. Smith, Jane B. Johnson, Robert C. Williams
-
-PLoS Medicine, Volume 2, Issue 4, 2005
-
 ## Abstract
 
 ### Background
@@ -40,18 +34,20 @@ We included randomized controlled trials and observational studies examining caf
 
 We identified 47 studies meeting inclusion criteria.
 
-| Study   | Year | Population  | Outcome             |
-|---------|------|-------------|---------------------|
-| Study A | 2003 | 100 adults  | Increased alertness |
-| Study B | 2004 | 50 subjects | Sleep disruption    |
+## Characteristics of Included Studies
 
-Table 1: Characteristics of Included Studies
+Summary of study design and population characteristics.
+
+| Study | Year | Population | Outcome |
+| --- | --- | --- | --- |
+| Study A | 2003 | 100 adults | Increased alertness |
+| Study B | 2004 | 50 subjects | Sleep disruption |
 
 ## Discussion
 
 Our findings suggest that caffeine has complex effects on human health.
 
-Low to moderate consumption may provide cognitive benefits [1], while high doses may lead to adverse effects [2].
+Low to moderate consumption may provide cognitive benefits 1 , while high doses may lead to adverse effects 2 .
 
 ## Conclusions
 

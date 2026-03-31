@@ -1,3 +1,3 @@
-![Abbildung 1: Image caption](Pictures/10000000000000FA000000FAD6A15225.jpg)
+![](image_0.jpeg)
 
-Image caption
+![](image_1.jpeg)

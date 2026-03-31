@@ -178,6 +178,7 @@ nav:
       - C# Bindings: guides/csharp.md
   - Integrations:
       - integrations/index.md
+      - Open WebUI: integrations/openwebui.md
       - SurrealDB: integrations/surrealdb.md
   - CLI: cli/usage.md
   - API Reference:

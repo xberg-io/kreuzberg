@@ -42,6 +42,8 @@ use utoipa::OpenApi;
         crate::api::handlers::embed_handler,
         crate::api::handlers::chunk_handler,
         crate::api::handlers::version_handler,
+        crate::api::openweb::openweb_external_handler,
+        crate::api::openweb::openweb_docling_handler,
     ),
     components(
         schemas(
@@ -84,6 +86,10 @@ use utoipa::OpenApi;
             crate::types::tables::Table,
             crate::types::page::PageContent,
             crate::types::djot::DjotContent,
+            crate::api::types::OpenWebDocumentResponse,
+            crate::api::types::OpenWebDocumentMetadata,
+            crate::api::types::DoclingCompatResponse,
+            crate::api::types::DoclingCompatDocument,
         )
     ),
     tags(
@@ -91,7 +97,8 @@ use utoipa::OpenApi;
         (name = "extraction", description = "Document extraction endpoints"),
         (name = "cache", description = "Cache management endpoints"),
         (name = "embeddings", description = "Text embedding generation"),
-        (name = "chunking", description = "Text chunking operations")
+        (name = "chunking", description = "Text chunking operations"),
+        (name = "openweb", description = "OpenWebUI compatibility endpoints")
     )
 )]
 pub struct ApiDoc;
