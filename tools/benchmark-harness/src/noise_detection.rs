@@ -122,11 +122,14 @@ fn in_code_block(line_idx: usize, code_ranges: &[CodeRange]) -> bool {
 }
 
 /// Identifies fenced code block ranges (``` or ~~~) using a simple state machine.
+/// Also detects indented code blocks (4+ space or 1+ tab indentation on
+/// consecutive lines, preceded by a blank line).
 fn find_code_ranges(lines: &[&str]) -> Vec<CodeRange> {
     let mut ranges = Vec::new();
     let mut in_fence = false;
     let mut fence_start = 0;
 
+    // First pass: fenced code blocks
     for (i, line) in lines.iter().enumerate() {
         let trimmed = line.trim();
         if trimmed.starts_with("```") || trimmed.starts_with("~~~") {
@@ -141,6 +144,40 @@ fn find_code_ranges(lines: &[&str]) -> Vec<CodeRange> {
                 in_fence = true;
             }
         }
+    }
+
+    // Second pass: indented code blocks (4 spaces or 1 tab, preceded by blank line)
+    let mut i = 0;
+    while i < lines.len() {
+        // Skip lines already inside fenced code blocks
+        if in_code_block(i, &ranges) {
+            i += 1;
+            continue;
+        }
+
+        let is_indented_code = lines[i].starts_with("    ") || lines[i].starts_with('\t');
+        if is_indented_code {
+            // Check that it's preceded by a blank line or start of document
+            let preceded_by_blank = i == 0 || lines[i - 1].trim().is_empty();
+            if preceded_by_blank {
+                let block_start = i;
+                // Consume all consecutive indented or blank lines
+                while i < lines.len()
+                    && (lines[i].starts_with("    ") || lines[i].starts_with('\t') || lines[i].trim().is_empty())
+                {
+                    i += 1;
+                }
+                // Only mark as code if we had at least one indented line
+                // (block_start was already verified as indented)
+                let block_end = i.saturating_sub(1);
+                ranges.push(CodeRange {
+                    start: block_start,
+                    end: block_end,
+                });
+                continue;
+            }
+        }
+        i += 1;
     }
 
     ranges
@@ -158,7 +195,27 @@ fn truncate_context(s: &str, max_len: usize) -> String {
     }
 }
 
+/// Returns true if ALL occurrences of `tag` in `lower` are preceded by a backslash,
+/// indicating they are markdown-escaped and not real HTML.
+fn all_tag_occurrences_escaped(lower: &str, tag: &str) -> bool {
+    let mut start = 0;
+    let mut found_any = false;
+    while let Some(pos) = lower[start..].find(tag) {
+        let abs_pos = start + pos;
+        found_any = true;
+        // Check if preceded by backslash
+        if abs_pos == 0 || lower.as_bytes()[abs_pos - 1] != b'\\' {
+            return false;
+        }
+        start = abs_pos + tag.len();
+    }
+    found_any // should always be true since caller verified contains()
+}
+
 /// Detects HTML tags outside code blocks.
+///
+/// Skips tags that are backslash-escaped (e.g., `\<br\>`) since those are
+/// literal text in markdown, not actual HTML remnants.
 fn detect_html_remnants(lines: &[&str], code_ranges: &[CodeRange]) -> Vec<NoiseIssue> {
     let html_tags = [
         "<table", "</table", "<tr", "</tr", "<td", "</td", "<th", "</th", "<div", "</div", "<span", "</span", "<p>",
@@ -174,7 +231,7 @@ fn detect_html_remnants(lines: &[&str], code_ranges: &[CodeRange]) -> Vec<NoiseI
         }
         let lower = line.to_lowercase();
         for tag in &html_tags {
-            if lower.contains(tag) {
+            if lower.contains(tag) && !all_tag_occurrences_escaped(&lower, tag) {
                 issues.push(NoiseIssue {
                     kind: NoiseKind::HtmlRemnant,
                     line: i + 1,
@@ -255,9 +312,67 @@ const MARKDOWN_STRUCTURAL_PUNCT: &[char] = &[
     '-', '|', '*', '_', '=', '~', ':', '#', '>', // block-level
     '.', '/', '!', '[', ']', '(', ')', '\\', // inline syntax
     '&', ';', // HTML entities
+    '\'', '"', // quotes (RST underlines, attribute values)
+    '+', // list markers, diff markers
 ];
 
-/// Detects garbled text: lines with >70% non-ASCII or 4+ consecutive non-structural punctuation.
+/// Returns true if the character belongs to a recognized non-Latin script that
+/// commonly appears in multilingual documents: Arabic, CJK, Cyrillic, Greek,
+/// Hebrew, Devanagari, Thai, Korean Hangul, Japanese Kana, etc.
+///
+/// This is intentionally broad to avoid flagging legitimate multilingual content.
+fn is_known_script_char(c: char) -> bool {
+    let cp = c as u32;
+    matches!(cp,
+        // Latin Extended / accented (not garbled)
+        0x00C0..=0x024F |
+        // Greek and Coptic
+        0x0370..=0x03FF |
+        // Cyrillic
+        0x0400..=0x04FF |
+        // Armenian
+        0x0530..=0x058F |
+        // Hebrew
+        0x0590..=0x05FF |
+        // Arabic (including supplement, extended-A)
+        0x0600..=0x06FF | 0x0750..=0x077F | 0x08A0..=0x08FF |
+        // Devanagari
+        0x0900..=0x097F |
+        // Bengali, Gurmukhi, Gujarati, Oriya, Tamil, Telugu, Kannada, Malayalam
+        0x0980..=0x0DFF |
+        // Thai
+        0x0E00..=0x0E7F |
+        // Georgian
+        0x10A0..=0x10FF |
+        // Korean Hangul Jamo
+        0x1100..=0x11FF |
+        // CJK Unified Ideographs (+ extension A + compatibility)
+        0x2E80..=0x9FFF |
+        // Korean Hangul Syllables
+        0xAC00..=0xD7AF |
+        // CJK Compatibility Ideographs
+        0xF900..=0xFAFF |
+        // Arabic Presentation Forms
+        0xFB50..=0xFDFF | 0xFE70..=0xFEFF |
+        // CJK extension B+ (supplementary)
+        0x20000..=0x2FA1F
+    )
+}
+
+/// Returns true if the non-ASCII characters on this line are predominantly from
+/// recognized scripts (not mojibake / encoding errors).
+fn is_legitimate_multilingual(non_ws_chars: &[char]) -> bool {
+    let non_ascii_chars: Vec<char> = non_ws_chars.iter().copied().filter(|c| !c.is_ascii()).collect();
+    if non_ascii_chars.is_empty() {
+        return true;
+    }
+    let known_count = non_ascii_chars.iter().filter(|c| is_known_script_char(**c)).count();
+    // If 80%+ of non-ASCII chars are from known scripts, it's likely legit
+    (known_count as f64 / non_ascii_chars.len() as f64) >= 0.8
+}
+
+/// Detects garbled text: lines with >70% non-ASCII (unless from known scripts)
+/// or 4+ consecutive non-structural punctuation.
 fn detect_garbled_text(lines: &[&str], code_ranges: &[CodeRange]) -> Vec<NoiseIssue> {
     let mut issues = Vec::new();
 
@@ -281,10 +396,11 @@ fn detect_garbled_text(lines: &[&str], code_ranges: &[CodeRange]) -> Vec<NoiseIs
             continue;
         }
 
-        // Check non-ASCII ratio (raised from 40% to 70% to avoid flagging multilingual text)
+        // Check non-ASCII ratio, but only flag if the non-ASCII characters are NOT
+        // from recognized scripts (Arabic, CJK, Cyrillic, Greek, etc.)
         let non_ascii_count = non_ws_chars.iter().filter(|c| !c.is_ascii()).count();
         let ratio = non_ascii_count as f64 / non_ws_chars.len() as f64;
-        if ratio > 0.7 {
+        if ratio > 0.7 && !is_legitimate_multilingual(&non_ws_chars) {
             issues.push(NoiseIssue {
                 kind: NoiseKind::GarbledText,
                 line: i + 1,
@@ -352,7 +468,25 @@ fn detect_empty_headings(lines: &[&str], code_ranges: &[CodeRange]) -> Vec<Noise
     issues
 }
 
+/// Counts unescaped pipe characters in a table row.
+///
+/// Escaped pipes (`\|`) are literal pipe characters inside cell content and
+/// should NOT be counted as column delimiters.
+fn count_unescaped_pipes(s: &str) -> usize {
+    let bytes = s.as_bytes();
+    let mut count = 0;
+    for (i, &b) in bytes.iter().enumerate() {
+        if b == b'|' && (i == 0 || bytes[i - 1] != b'\\') {
+            count += 1;
+        }
+    }
+    count
+}
+
 /// Detects broken pipe tables with inconsistent column counts.
+///
+/// Uses [`count_unescaped_pipes`] to ignore escaped pipes (`\|`) that appear
+/// as literal content inside table cells.
 fn detect_broken_tables(lines: &[&str], code_ranges: &[CodeRange]) -> Vec<NoiseIssue> {
     let mut issues = Vec::new();
 
@@ -369,7 +503,7 @@ fn detect_broken_tables(lines: &[&str], code_ranges: &[CodeRange]) -> Vec<NoiseI
 
         let trimmed = line.trim();
         if trimmed.starts_with('|') {
-            let col_count = trimmed.matches('|').count();
+            let col_count = count_unescaped_pipes(trimmed);
             if table_start.is_none() {
                 // Start of a new table
                 table_start = Some(i);
@@ -959,6 +1093,31 @@ Normal paragraph.
 
     #[test]
     fn test_garbled_text() {
+        // Use private-use area characters and replacement chars to simulate
+        // real mojibake, which should still be flagged. Latin-Extended chars
+        // (like a-umlaut, o-umlaut) are legitimate and should NOT be flagged.
+        let md = "\
+# Title
+
+\u{FFFD}\u{FFFD}\u{FFFD}\u{FFFD}\u{FFFD}\u{FFFD}\u{FFFD}\u{FFFD}\u{FFFD}\u{FFFD}\u{FFFD}\u{FFFD}\u{FFFD}\u{FFFD}\u{FFFD}\u{FFFD}\u{FFFD}\u{FFFD}\u{FFFD}\u{FFFD}\u{FFFD}
+
+Normal text here.
+";
+        let report = detect_noise(md);
+        let garbled: Vec<_> = report
+            .issues
+            .iter()
+            .filter(|i| i.kind == NoiseKind::GarbledText)
+            .collect();
+        assert!(
+            !garbled.is_empty(),
+            "Expected garbled text detection for mojibake / replacement characters"
+        );
+    }
+
+    #[test]
+    fn test_german_umlauts_not_flagged_as_garbled() {
+        // German text with umlauts is legitimate multilingual content
         let md = "\
 # Title
 
@@ -973,8 +1132,9 @@ Normal text here.
             .filter(|i| i.kind == NoiseKind::GarbledText)
             .collect();
         assert!(
-            !garbled.is_empty(),
-            "Expected garbled text detection for high non-ASCII line"
+            garbled.is_empty(),
+            "German umlauts should not be flagged as garbled text, got: {:?}",
+            garbled
         );
     }
 
@@ -1189,11 +1349,12 @@ This line has some CJK chars \u{4f60}\u{597d} mixed with English text here.
 
     #[test]
     fn test_truly_garbled_text_still_flagged() {
-        // Mojibake / truly garbled text with high non-ASCII ratio (>70%)
+        // Mojibake using Private Use Area and misc symbols that don't belong
+        // to any recognized script. These should be flagged as garbled.
         let md = "\
 # Title
 
-\u{00c3}\u{00a9}\u{00c3}\u{00a8}\u{00c3}\u{00aa}\u{00c3}\u{00ab}\u{00c3}\u{00a0}\u{00c3}\u{00a2}\u{00c3}\u{00a4}\u{00c3}\u{00a6}\u{00c3}\u{00b9}\u{00c3}\u{00bb}\u{00c3}\u{00bc}\u{00c3}\u{00b1}\u{00c3}\u{00a7}\u{00c3}\u{00b0}\u{00c3}\u{00be}
+\u{FFFD}\u{E000}\u{FFFD}\u{E001}\u{FFFD}\u{E002}\u{FFFD}\u{E003}\u{FFFD}\u{E004}\u{FFFD}\u{E005}\u{FFFD}\u{E006}\u{FFFD}\u{E007}\u{FFFD}\u{E008}\u{FFFD}\u{E009}
 
 Normal text here.
 ";
@@ -1205,7 +1366,7 @@ Normal text here.
             .collect();
         assert!(
             !garbled.is_empty(),
-            "Truly garbled text (high non-ASCII ratio) should still be flagged"
+            "Truly garbled text (Private Use Area / replacement chars) should still be flagged"
         );
     }
 
@@ -1653,6 +1814,163 @@ Normal text.
             rep_issues.is_empty(),
             "Title Case table headers under 40 chars should not be flagged, got {} issues",
             rep_issues.len()
+        );
+    }
+
+    // ---- False-positive regression tests for escaped HTML, indented code, escaped pipes ----
+
+    #[test]
+    fn test_escaped_html_tags_not_flagged() {
+        // Backslash-escaped HTML tags like \<br\> are literal text, not HTML remnants
+        let md = "\
+# Wikipedia Infobox
+
+| Traded as | \\<br\\>Nasdaq: MSFT |
+|---|---|
+| Brands | \\<br\\>Windows, Xbox |
+";
+        let report = detect_noise(md);
+        let html_issues: Vec<_> = report
+            .issues
+            .iter()
+            .filter(|i| i.kind == NoiseKind::HtmlRemnant)
+            .collect();
+        assert!(
+            html_issues.is_empty(),
+            "Backslash-escaped HTML tags should not be flagged, got: {:?}",
+            html_issues
+        );
+    }
+
+    #[test]
+    fn test_real_html_still_flagged_alongside_escaped() {
+        // A line with both escaped AND real HTML should still be flagged
+        let md = "\
+# Title
+
+\\<br\\> but also <div>real html</div> here.
+";
+        let report = detect_noise(md);
+        let html_issues: Vec<_> = report
+            .issues
+            .iter()
+            .filter(|i| i.kind == NoiseKind::HtmlRemnant)
+            .collect();
+        assert!(
+            !html_issues.is_empty(),
+            "Line with real (non-escaped) HTML tags should still be flagged"
+        );
+    }
+
+    #[test]
+    fn test_indented_code_block_html_not_flagged() {
+        // Indented code blocks (4 spaces) should not have their HTML flagged
+        let md = "\
+# Title
+
+Here's a code example:
+
+    <div>
+        <p>This is inside an indented code block</p>
+    </div>
+
+Normal paragraph after.
+";
+        let report = detect_noise(md);
+        let html_issues: Vec<_> = report
+            .issues
+            .iter()
+            .filter(|i| i.kind == NoiseKind::HtmlRemnant)
+            .collect();
+        assert!(
+            html_issues.is_empty(),
+            "HTML inside indented code blocks should not be flagged, got: {:?}",
+            html_issues
+        );
+    }
+
+    #[test]
+    fn test_escaped_pipes_not_counted_in_broken_table() {
+        // Escaped pipes \| in cell content should not affect column count
+        let md = "\
+| Col1 | Col2 | Col3 |
+|------|------|------|
+| a\\|b | c | d |
+| e | f\\|g | h |
+";
+        let report = detect_noise(md);
+        let table_issues: Vec<_> = report
+            .issues
+            .iter()
+            .filter(|i| i.kind == NoiseKind::BrokenTable)
+            .collect();
+        assert!(
+            table_issues.is_empty(),
+            "Escaped pipes in table cells should not cause BrokenTable, got: {:?}",
+            table_issues
+        );
+    }
+
+    #[test]
+    fn test_pure_arabic_text_not_flagged_as_garbled() {
+        // Pure Arabic text (>70% non-ASCII) from a recognized script should NOT be flagged
+        let md = "\
+# Document
+
+\u{062a}\u{062d}\u{0633}\u{064a}\u{0646} \u{0627}\u{0644}\u{0625}\u{0646}\u{062a}\u{0627}\u{062c}\u{064a}\u{0629} \u{0648}\u{062d}\u{0644} \u{0627}\u{0644}\u{0645}\u{0634}\u{0643}\u{0644}\u{0627}\u{062a}
+";
+        let report = detect_noise(md);
+        let garbled: Vec<_> = report
+            .issues
+            .iter()
+            .filter(|i| i.kind == NoiseKind::GarbledText)
+            .collect();
+        assert!(
+            garbled.is_empty(),
+            "Pure Arabic text should not be flagged as garbled, got: {:?}",
+            garbled
+        );
+    }
+
+    #[test]
+    fn test_pure_chinese_text_not_flagged_as_garbled() {
+        // Pure Chinese text (>70% non-ASCII) should NOT be flagged
+        let md = "\
+# Document
+
+\u{80a1}\u{7968}\u{4ee3}\u{7801}\u{ff1a}\u{4e09}\u{96f6}\u{4e8c}\u{4e00}\u{516b} \u{80a1}\u{7968}\u{7b80}\u{79f0}\u{ff1a}\u{5b89}\u{5229}\u{80a1}\u{4efd}
+";
+        let report = detect_noise(md);
+        let garbled: Vec<_> = report
+            .issues
+            .iter()
+            .filter(|i| i.kind == NoiseKind::GarbledText)
+            .collect();
+        assert!(
+            garbled.is_empty(),
+            "Pure Chinese text should not be flagged as garbled, got: {:?}",
+            garbled
+        );
+    }
+
+    #[test]
+    fn test_pure_cyrillic_text_not_flagged_as_garbled() {
+        // Pure Cyrillic/Russian text should NOT be flagged
+        let md = "\
+# Document
+
+\u{0420}\u{0430}\u{0437}\u{0434}\u{0435}\u{043b}\u{003a} \u{0424}\u{0438}\u{043d}\u{0430}\u{043b}\u{044c}\u{043d}\u{044b}\u{0439} \u{044d}\u{043a}\u{0437}\u{0430}\u{043c}\u{0435}\u{043d}
+";
+        let report = detect_noise(md);
+        let garbled: Vec<_> = report
+            .issues
+            .iter()
+            .filter(|i| i.kind == NoiseKind::GarbledText)
+            .collect();
+        assert!(
+            garbled.is_empty(),
+            "Pure Cyrillic text should not be flagged as garbled, got: {:?}",
+            garbled
         );
     }
 }

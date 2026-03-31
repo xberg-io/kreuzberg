@@ -24,6 +24,12 @@ pub fn render_markdown(doc: &InternalDocument) -> String {
     let mut output = String::new();
     format_commonmark(root, &options, &mut output).expect("comrak formatting should not fail");
 
+    // Safety net: decode any HTML entities that slipped through from other code paths.
+    // `&#10;` (newline) → space, `&#2;` (STX control char) → removed.
+    if output.contains("&#") {
+        output = output.replace("&#10;", " ").replace("&#2;", "");
+    }
+
     // Trim trailing whitespace but keep single trailing newline
     let trimmed_len = output.trim_end().len();
     if trimmed_len == 0 {
