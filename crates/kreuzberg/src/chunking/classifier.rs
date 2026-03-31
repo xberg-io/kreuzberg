@@ -34,7 +34,7 @@ use crate::types::{ChunkType, HeadingContext};
 ///
 /// assert_eq!(classify_chunk("# Introduction", None), ChunkType::Heading);
 /// assert_eq!(
-///     classify_chunk("The Investor shall subscribe and pay...", None),
+///     classify_chunk("The Investor shall subscribe for the Shares and agrees to pay the subscription price. The Company shall deliver the Share certificates upon receipt.", None),
 ///     ChunkType::OperativeClause,
 /// );
 /// assert_eq!(classify_chunk("Some unrecognized text.", None), ChunkType::Unknown);
