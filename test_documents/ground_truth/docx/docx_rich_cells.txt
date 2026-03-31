@@ -11,7 +11,7 @@ Table with rich cells
 |                                        |                                                                                        |
 | - A Third                              | - B Third                                                                              |
 +----------------------------------------+----------------------------------------------------------------------------------------+
-| First Paragraph                        | This is simple text with bold, ~~strikethrough~~ and italic formatting with x² and H₂O |
+| First Paragraph                        | This is simple text with bold, ~~strikethrough~~ and italic formatting with x2 and H2O |
 | Second Paragraph                       |                                                                                        |
 |                                        |                                                                                        |
 | Third paragraph before a numbered list |                                                                                        |

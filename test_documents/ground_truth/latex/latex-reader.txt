@@ -1,6 +1,12 @@
-This is a set of tests for pandoc. Most of them are adapted from John Gruber’s markdown test suite.
+title: Pandoc Test Suite
 
-------------------------------------------------------------------------
+author: John MacFarlane \and Anonymous
+
+date: July 17, 2006
+
+This is a set of tests for pandoc. Most of them are adapted from John Gruber's markdown test suite.
+
+---
 
 Headers
 
@@ -24,20 +30,19 @@ Level 2
 
 with no blank line
 
-------------------------------------------------------------------------
+---
 
 Paragraphs
 
-Here’s a regular paragraph.
+Here's a regular paragraph.
 
 In Markdown 1.0.0 and earlier. Version 8. This line turns into a list item. Because a hard-wrapped line in the middle of a paragraph looked like a list item.
 
-Here’s one with a bullet. * criminey.
+Here's one with a bullet. * criminey.
 
-There should be a hard line break
-here.
+There should be a hard line break here.
 
-------------------------------------------------------------------------
+---
 
 Block Quotes
 
@@ -77,15 +82,15 @@ Box-style:
 
   2.  take out the trash
 
-Here’s a nested one:
+Here's a nested one:
 
   Joe said:
 
-    Don’t quote me.
+    Don't quote me.
 
 And a following paragraph.
 
-------------------------------------------------------------------------
+---
 
 Code Blocks
 
@@ -103,12 +108,13 @@ And:
 
         this code block is indented by two tabs
 
-    These should not be escaped:  \$ \\ \> \[ \{
+    These should not be escaped:  $ \\ > [ {
 
-this has two
-lines
+this has {two
 
-------------------------------------------------------------------------
+lines}
+
+---
 
 Lists
 
@@ -200,8 +206,6 @@ Multiple paragraphs:
 
 1.  Item 1, graf one.
 
-    Item 1. graf two. The quick brown fox jumped over the lazy dog’s back.
-
 2.  Item 2.
 
 3.  Item 3.
@@ -214,7 +218,7 @@ Nested
 
     - Tab
 
-Here’s another:
+Here's another:
 
 1.  First
 
@@ -254,29 +258,27 @@ Tabs and spaces
 
 Fancy list markers
 
-(2) begins with 2
+1. begins with 2
 
-(3) and now 3
+2. and now 3
 
-    with a continuation
+   1. sublist with roman numerals, starting with 4
 
-    iv. sublist with roman numerals, starting with 4
+   2. more items
 
-    v.  more items
+      1. a subsublist
 
-        (A) a subsublist
-
-        (B) a subsublist
+      2. a subsublist
 
 Nesting:
 
-A.  Upper Alpha
+1. Upper Alpha
 
-    I.  Upper Roman.
+   1. Upper Roman.
 
-        (6) Decimal start with 6
+      1. Decimal start with 6
 
-            c)  Lower alpha with paren
+         1. Lower alpha with paren
 
 Autonumbering:
 
@@ -292,79 +294,63 @@ M.A. 2007
 
 B. Williams
 
-------------------------------------------------------------------------
+---
 
 Definition Lists
 
 Tight using spaces:
 
-apple
+- apple: red fruit
 
-    red fruit
+- orange: orange fruit
 
-orange
-
-    orange fruit
-
-banana
-
-    yellow fruit
+- banana: yellow fruit
 
 Tight using tabs:
 
-apple
+- apple: red fruit
 
-    red fruit
+- orange: orange fruit
 
-orange
-
-    orange fruit
-
-banana
-
-    yellow fruit
+- banana: yellow fruit
 
 Loose:
 
-apple
+- apple: red fruit
 
-    red fruit
+- orange: orange fruit
 
-orange
-
-    orange fruit
-
-banana
-
-    yellow fruit
+- banana: yellow fruit
 
 Multiple blocks with italics:
 
-apple
+- apple: red fruit
 
-    red fruit
-
-    contains seeds, crisp, pleasant to taste
-
-orange
-
-    orange fruit
-
-        { orange code block }
-
-      orange block quote
+- orange: orange fruit
 
 HTML Blocks
 
 Simple block on one line:
 
-foo And nested without indentation:
+foo
 
-foo bar Interpreted markdown in a table:
+And nested without indentation:
 
-This is emphasized And this is strong Here’s a simple block:
+foo
 
-foo This should be a code block, though:
+bar
+
+Interpreted markdown in a table:
+
+This is emphasized
+
+And this is strong
+
+Here's a simple block:
+
+foo
+
+This should be a code block, though:
 
     <div>
         foo
@@ -376,7 +362,9 @@ As should this:
 
 Now, nested:
 
-foo This should just be an HTML comment:
+foo
+
+This should just be an HTML comment:
 
 Multiline:
 
@@ -390,9 +378,9 @@ Code:
 
     <hr />
 
-Hr’s:
+Hr's:
 
-------------------------------------------------------------------------
+---
 
 Inline Markup
 
@@ -410,29 +398,33 @@ This is strong and em.
 
 So is this word.
 
-This is code: >, $, \, \$, <html>.
+This is code: >, $, \, $, <html>.
 
-~~This is strikeout.~~
+This is strikeout.
 
-Superscripts: a^(bc)d a^(hello) a^(hello there).
+Superscripts: abcd
 
-Subscripts: H₂O, H₂₃O, H_(many of them)O.
+ahello ahello there.
 
-These should not be superscripts or subscripts, because of the unescaped spaces: a^b c^d, a∼b c∼d.
+Subscripts: H2O, H23O,
 
-------------------------------------------------------------------------
+Hmany of themO.
+
+These should not be superscripts or subscripts, because of the unescaped spaces: a^b c^d, a\simb c\simd.
+
+---
 
 Smart quotes, ellipses, dashes
 
-“Hello,” said the spider. “ ‘Shelob’ is my name.”
+"Hello," said the spider. " 'Shelob' is my name."
 
-‘A’, ‘B’, and ‘C’ are letters.
+'A', 'B', and 'C' are letters.
 
-‘Oak,’ ‘elm,’ and ‘beech’ are names of trees. So is ‘pine.’
+'Oak,' 'elm,' and 'beech' are names of trees. So is 'pine.'
 
-‘He said, “I want to go.” ’ Were you alive in the 70’s?
+'He said, "I want to go." ' Were you alive in the 70's?
 
-Here is some quoted ‘code’ and a “quoted link”.
+Here is some quoted 'code' and a "quoted link".
 
 Some dashes: one—two—three—four—five.
 
@@ -440,37 +432,35 @@ Dashes between numbers: 5–7, 255–66, 1987–1999.
 
 Ellipses…and…and….
 
-------------------------------------------------------------------------
+---
 
 LaTeX
 
-- 
+- smith.1899
 
-- 
+- $2+2=4$
 
-- 2 + 2 = 4
+- $x \in y$
 
-- x ∈ y
+- $\alpha \wedge \omega$
 
-- α ∧ ω
+- $223$
 
-- 223
-
-- p-Tree
+- $p$-Tree
 
 - $\frac{d}{dx}f(x)=\lim_{h\to 0}\frac{f(x+h)-f(x)}{h}$
 
-- Here’s one that has a line break in it: α + ω × x².
+- Here's one that has a line break in it: $\alpha + \omega \times x^2$.
 
-These shouldn’t be math:
+These shouldn't be math:
 
 - To get the famous equation, write $e = mc^2$.
 
-- $22,000 is a lot of money. So is $34,000. (It worked if “lot” is emphasized.)
+- $22,000 is a lot of money. So is $34,000. (It worked if "lot" is emphasized.)
 
 - Escaped $: $73 this should be emphasized 23$.
 
-Here’s a LaTeX table:
+Here's a LaTeX table:
 
   Animal   Number
   -------- --------
@@ -484,7 +474,7 @@ A table with one column:
    Vegetable
   -----------
 
-------------------------------------------------------------------------
+---
 
 Special Characters
 
@@ -512,7 +502,7 @@ This & that.
 
 Backslash: \
 
-Backtick: ‘
+Backtick: '
 
 Asterisk: *
 
@@ -542,7 +532,7 @@ Plus: +
 
 Minus: -
 
-------------------------------------------------------------------------
+---
 
 Links
 
@@ -594,13 +584,13 @@ Foo biz.
 
 With ampersands
 
-Here’s a link with an ampersand in the URL.
+Here's a link with an ampersand in the URL.
 
-Here’s a link with an amersand in the link text: AT&T.
+Here's a link with an amersand in the link text: AT&T.
 
-Here’s an inline link.
+Here's an inline link.
 
-Here’s an inline link in pointy braces.
+Here's an inline link in pointy braces.
 
 Autolinks
 
@@ -620,44 +610,38 @@ Auto-links should not occur here: <http://example.com/>
 
     or here: <http://example.com/>
 
-------------------------------------------------------------------------
+---
 
 Images
 
-From “Voyage dans la Lune” by Georges Melies (1902):
+From "Voyage dans la Lune" by Georges Melies (1902):
 
-[image]
+[image: lalune.jpg]
 
-Here is a movie [image] icon.
+[image: movie.jpg]
 
-------------------------------------------------------------------------
+---
 
 Footnotes
 
-Here is a footnote reference,[1] and another.[2] This should not be a footnote reference, because it contains a space.[^my note] Here is an inline note.[3]
+Here is a footnote reference, { Here is the footnote. It can go anywhere after the footnote reference. It need not be placed at the end of the document. }
 
-  Notes can go in quotes.[4]
+and another. { Here's the long note. This one contains multiple blocks.
 
-1.  And in list items.[5]
+Subsequent blocks are indented to show that they belong to the footnote (as with list items).
+
+      { <code> }
+
+If you want, you can indent every line, but you can also be lazy and just indent the first line of each block. }
+
+This should not be a footnote reference, because it contains a space.[^my note] Here is an inline note. { This is easier to type. Inline notes may contain links and ] verbatim characters, as well as [bracketed text]. }
+
+  Notes can go in quotes. { In quote. }
+
+1. And in list items. In list.
 
 This paragraph should not be part of the note, as it is not indented.
 
 Escaped characters
 
 $ % & # _ { }
-
-[1] Here is the footnote. It can go anywhere after the footnote reference. It need not be placed at the end of the document.
-
-[2] Here’s the long note. This one contains multiple blocks.
-
-Subsequent blocks are indented to show that they belong to the footnote (as with list items).
-
-      { <code> }
-
-If you want, you can indent every line, but you can also be lazy and just indent the first line of each block.
-
-[3] This is easier to type. Inline notes may contain links and ] verbatim characters, as well as [bracketed text].
-
-[4] In quote.
-
-[5] In list.
