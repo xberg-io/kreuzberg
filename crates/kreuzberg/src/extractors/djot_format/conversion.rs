@@ -191,6 +191,8 @@ mod tests {
             processing_warnings: Vec::new(),
             annotations: None,
             children: None,
+            uris: None,
+            formatted_content: None,
         };
 
         let markup = extraction_result_to_djot(&result).expect("Should convert");
@@ -218,6 +220,8 @@ mod tests {
             processing_warnings: Vec::new(),
             annotations: None,
             children: None,
+            uris: None,
+            formatted_content: None,
         };
 
         let markup = extraction_result_to_djot(&result).expect("Should convert");

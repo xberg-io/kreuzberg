@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/odt/footnote.odt",
+  "file_type": "odt",
+  "file_size": 10843,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "odt test: footnote",
+    "source": "pandoc-generated",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/odt/footnote.txt",
+    "markdown_file": "../../../../test_documents/ground_truth/odt/footnote.md",
+    "source": "pandoc"
+  }
+}

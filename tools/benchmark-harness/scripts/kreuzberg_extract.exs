@@ -258,7 +258,7 @@ defmodule KreuzbergExtract do
       # Merge force_ocr into config if enabled
       request_config =
         if force_ocr do
-          Map.put(config, "ocr", %{"enabled" => true})
+          Map.put(config, "ocr", %{"backend" => "tesseract"})
         else
           config
         end
@@ -337,7 +337,7 @@ defmodule KreuzbergExtract do
 
     config =
       if ocr_enabled do
-        Map.put(config, "ocr", %{"enabled" => true})
+        Map.put(config, "ocr", %{"backend" => "tesseract"})
       else
         config
       end

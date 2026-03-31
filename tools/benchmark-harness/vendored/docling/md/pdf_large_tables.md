@@ -4,11 +4,11 @@ Brandon Smock
 
 Rohith Pesala Microsoft Redmond, WA
 
-Robin Abraham brsmock,ropesala,robin.abraham@microsoft.com
+Robin Abraham brsmock,ropesala,<robin.abraham@microsoft.com>
 
 ## Abstract
 
-Recently, significant progress has been made applying machine learning to the problem of table structure inference and extraction from unstructured documents. However, one of the greatest challenges remains the creation of datasets with complete, unambiguous ground truth at scale. To address this, we develop a new, more comprehensive dataset for table extraction, called PubTables-1M. PubTables-1M contains nearly one million tables from scientific articles, supports multiple input modalities, and contains detailed header and location information for table structures, making it useful for a wide variety of modeling approaches. It also addresses a significant source of ground truth inconsistency observed in prior datasets called oversegmentation, using a novel canonicalization procedure. We demonstrate that these improvements lead to a significant increase in training performance and a more reliable estimate of model performance at evaluation for table structure recognition. Further, we show that transformer-based object detection models trained on PubTables-1M produce excellent results for all three tasks of detection, structure recognition, and functional analysis without the need for any special customization for these tasks. Data and code will be released at https://github. com/microsoft/table-transformer .
+Recently, significant progress has been made applying machine learning to the problem of table structure inference and extraction from unstructured documents. However, one of the greatest challenges remains the creation of datasets with complete, unambiguous ground truth at scale. To address this, we develop a new, more comprehensive dataset for table extraction, called PubTables-1M. PubTables-1M contains nearly one million tables from scientific articles, supports multiple input modalities, and contains detailed header and location information for table structures, making it useful for a wide variety of modeling approaches. It also addresses a significant source of ground truth inconsistency observed in prior datasets called oversegmentation, using a novel canonicalization procedure. We demonstrate that these improvements lead to a significant increase in training performance and a more reliable estimate of model performance at evaluation for table structure recognition. Further, we show that transformer-based object detection models trained on PubTables-1M produce excellent results for all three tasks of detection, structure recognition, and functional analysis without the need for any special customization for these tasks. Data and code will be released at <https://github>. com/microsoft/table-transformer .
 
 ## 1. Introduction
 
@@ -80,7 +80,7 @@ To address these and other challenges, we develop a new large-scale dataset for 
 - To reduce additional sources of error, we implement several quality verification and control steps and provide measurable guarantees about the quality of the ground truth.
 - We show that data improvements alone lead to a significant increase in performance for TSR models, due both to improved training and a more reliable estimate of performance at evaluation.
 
-1 https://www.ncbi.nlm.nih.gov/pmc/tools/openftlist/
+1 <https://www.ncbi.nlm.nih.gov/pmc/tools/openftlist/>
 
 was opacity of bapoplas
 
@@ -427,7 +427,9 @@ We would like to thank Pramod Sharma, Natalia Larios Delgado, Joseph N. Wilson, 
 - [10] Saul B Needleman and Christian D Wunsch. A general method applicable to the search for similarities in the amino acid sequence of two proteins. Journal of molecular biology , 48(3):443-453, 1970. 4
 - [11] Ermelinda Oro and Massimo Ruffolo. TREX: An approach for recognizing and extracting tables from PDF documents. In 2009 10th International Conference on Document Analysis and Recognition , pages 906-910. IEEE, 2009. 1
 - [12] Shubham Singh Paliwal, D Vishwanath, Rohit Rahul, Monika Sharma, and Lovekesh Vig. Tablenet: Deep learning model
+
 13. for end-to-end table detection and tabular data extraction from scanned document images. In 2019 International Conference on Document Analysis and Recognition (ICDAR) , pages 128133. IEEE, 2019. 1
+
 - [13] David Pinto, Andrew McCallum, Xing Wei, and W Bruce Croft. Table extraction using conditional random fields. In Proceedings of the 26th annual international ACM SIGIR conference on Research and development in informaion retrieval , pages 235-242, 2003. 5
 - [14] Devashish Prasad, Ayan Gadpal, Kshitij Kapadni, Manish Visave, and Kavita Sultanpure. CascadeTabNet: An approach for end to end table detection and structure recognition from image-based documents. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshops , pages 572-573, 2020. 1, 3
 - [15] Shah Rukh Qasim, Hassan Mahmood, and Faisal Shafait. Rethinking table recognition using graph neural networks. In 2019 International Conference on Document Analysis and Recognition (ICDAR) , pages 142-147. IEEE, 2019. 3

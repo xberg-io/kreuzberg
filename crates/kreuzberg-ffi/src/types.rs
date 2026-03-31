@@ -51,7 +51,7 @@ impl Drop for CStringGuard {
 /// # Memory Layout
 ///
 /// Must be kept in sync with the Java side's MemoryLayout definition in KreuzbergFFI.java
-/// Field order: 19 pointers (8 bytes each) + 1 bool + 7 bytes padding = 160 bytes total
+/// Field order: 21 pointers (8 bytes each) + 1 bool + 7 bytes padding = 176 bytes total
 ///
 /// The `#[repr(C)]` attribute ensures the struct follows C's memory layout rules:
 /// - Fields are laid out in order
@@ -104,6 +104,8 @@ pub struct CExtractionResult {
     pub subject: *mut c_char,
     /// Tables as JSON array (null-terminated string, or NULL if no tables, must be freed with kreuzberg_free_string)
     pub tables_json: *mut c_char,
+    /// JSON-serialized URIs/links array (null-terminated, or null pointer if none, must be freed with kreuzberg_free_string)
+    pub uris_json: *mut c_char,
     /// Whether extraction was successful
     pub success: bool,
     /// Padding to match Java MemoryLayout (7 bytes padding to align to 8-byte boundary)
@@ -166,7 +168,7 @@ pub struct CBatchResult {
 const _: () = {
     const fn assert_c_extraction_result_size() {
         const SIZE: usize = std::mem::size_of::<CExtractionResult>();
-        const _: () = assert!(SIZE == 168, "CExtractionResult size must be 168 bytes");
+        const _: () = assert!(SIZE == 176, "CExtractionResult size must be 176 bytes");
     }
 
     const fn assert_c_extraction_result_alignment() {
@@ -211,8 +213,8 @@ mod tests {
     fn test_c_extraction_result_size() {
         assert_eq!(
             std::mem::size_of::<CExtractionResult>(),
-            168,
-            "CExtractionResult must be exactly 168 bytes"
+            176,
+            "CExtractionResult must be exactly 176 bytes"
         );
     }
 
@@ -351,7 +353,8 @@ mod tests {
         assert_eq!(offset_of!(CExtractionResult, quality_score_json), 136);
         assert_eq!(offset_of!(CExtractionResult, subject), 144);
         assert_eq!(offset_of!(CExtractionResult, tables_json), 152);
-        assert_eq!(offset_of!(CExtractionResult, success), 160);
+        assert_eq!(offset_of!(CExtractionResult, uris_json), 160);
+        assert_eq!(offset_of!(CExtractionResult, success), 168);
     }
 
     /// Verify field offsets in CBatchResult match expectations

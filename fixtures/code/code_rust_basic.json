@@ -1,0 +1,21 @@
+{
+	"id": "code_rust_basic",
+	"category": "code",
+	"tags": ["code", "rust", "tree-sitter"],
+	"description": "Smoke test: Rust source code file extraction",
+	"document": {
+		"path": "code/main.rs",
+		"media_type": "text/x-source-code"
+	},
+	"extraction": {
+		"config": {}
+	},
+	"assertions": {
+		"expected_mime": "text/x-source-code",
+		"min_content_length": 10,
+		"content_contains_all": ["struct Store", "fn main", "HashMap"]
+	},
+	"skip": {
+		"requires_feature": ["tree-sitter"]
+	}
+}

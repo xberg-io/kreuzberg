@@ -8,37 +8,37 @@ Kobo Reading App: This is another nice e-reader app that's available for Windows
 
 ## Frostborn The Undying Wizard Frostborn
 
-RIDMARK ARBAN is the  ray Knight, and he quests for the ruined citadel of Urd Morlemoch, seeking a way to stop the return of the dreaded Frostborn. For if he does not find a way to stop them, the Frostborn shall entomb the world in ice forever. MORI NA is the cunninng Witch of the Hills, feared and mistrusted by the townsmen of Moraime.
+RIDMARK ARBAN is the ray Knight, and he quests for the ruined citadel of Urd Morlemoch, seeking a way to stop the return of the dreaded Frostborn. For if he does not find a way to stop them, the Frostborn shall entomb the world in ice forever. MORI NA is the cunninng Witch of the Hills, feared and mistrusted by the townsmen of Moraime.
 
-## Amazon.com: Frostborn: The Undying Wizard (Frostborn #3 ...
+## Amazon.com: Frostborn: The Undying Wizard (Frostborn #3
 
-RIDMARK ARBAN is the  ray Knight, and he quests for the ruined citadel of Urd Morlemoch, seeking a way to stop the return of the dreaded Frostborn. For if he does not find a way to stop them, the Frostborn shall entomb the world in ice forever. MORI NA is the cunninng Witch of the Hills, feared and mistrusted by the townsmen of Moraime.
+RIDMARK ARBAN is the ray Knight, and he quests for the ruined citadel of Urd Morlemoch, seeking a way to stop the return of the dreaded Frostborn. For if he does not find a way to stop them, the Frostborn shall entomb the world in ice forever. MORI NA is the cunninng Witch of the Hills, feared and mistrusted by the townsmen of Moraime.
 
 ## The Undying Wizard (Frostborn, #3) by Jonathan Moeller
 
 For if he does not find a way to stop them, the Frostborn shall entomb the world in ice forever. MORI NA is the cunninng Witch of the Hills, feared and mistrusted by the townsmen of Moraime. Yet darker things stir in the hills.
 
-## Frostborn: The Undying Wizard (Volume 3): Moeller ...
+## Frostborn: The Undying Wizard (Volume 3): Moeller
 
-Ridmark Arban is the  ray Knight, and he quests for the ruined citadel of Urd Morlemoch, seeking a way to stop the return of the dreaded Frostborn. For if he does not find a way to stop them, the Frostborn shall entomb the world in ice forever. Morigna is the cunninng Witch of…
+Ridmark Arban is the ray Knight, and he quests for the ruined citadel of Urd Morlemoch, seeking a way to stop the return of the dreaded Frostborn. For if he does not find a way to stop them, the Frostborn shall entomb the world in ice forever. Morigna is the cunninng Witch of…
 
 ## Frostborn: The Undying Wizard on Apple Books
 
-Ridmark Arban is the  ray Knight, and he quests for the ruined citadel of Urd Morlemoch, seeking a way to stop the return of the dreaded Frostborn. For if he does not find a way to stop them, the Frostborn shall entomb the world in ice forever. Morigna is the cunning Witch of the Hills, feared and mistrusted by the townsmen of Moraime.
+Ridmark Arban is the ray Knight, and he quests for the ruined citadel of Urd Morlemoch, seeking a way to stop the return of the dreaded Frostborn. For if he does not find a way to stop them, the Frostborn shall entomb the world in ice forever. Morigna is the cunning Witch of the Hills, feared and mistrusted by the townsmen of Moraime.
 
-## Frostborn: The Undying Wizard by Jonathan Moeller ...
+## Frostborn: The Undying Wizard by Jonathan Moeller
 
-Overview. RIDMARK ARBAN is the  ray Knight, and he quests for the ruined citadel of Urd Morlemoch, seeking a way to stop the return of the dreaded Frostborn. For if he does not find a way to stop them, the Frostborn shall entomb the world in ice forever. MORI NA is the cunninng Witch of the Hills, feared and mistrusted by the townsmen of Moraime. Yet darker things stir in the hills.
+Overview. RIDMARK ARBAN is the ray Knight, and he quests for the ruined citadel of Urd Morlemoch, seeking a way to stop the return of the dreaded Frostborn. For if he does not find a way to stop them, the Frostborn shall entomb the world in ice forever. MORI NA is the cunninng Witch of the Hills, feared and mistrusted by the townsmen of Moraime. Yet darker things stir in the hills.
 
-## Frostborn: The Undying Wizard (Frostborn Series #3) by ...
+## Frostborn: The Undying Wizard (Frostborn Series #3) by
 
-Frostborn: The Undying Wizard (Frostborn #3) - Ebook written by Jonathan Moeller. Read this book using  oogle Play Books app on your PC, android, iOS devices. Download for offline reading,...
+Frostborn: The Undying Wizard (Frostborn #3) - Ebook written by Jonathan Moeller. Read this book using oogle Play Books app on your PC, android, iOS devices. Download for offline reading,...
 
-## Frostborn: The Undying Wizard (Frostborn #3) by Jonathan ...
+## Frostborn: The Undying Wizard (Frostborn #3) by Jonathan
 
-Read "Frostborn: The Undying Wizard (Frostborn #3)" by Jonathan Moeller available from Rakuten Kobo. RIDMARK ARBAN is the  ray Knight, and he quests for the ruined citadel of Urd Morlemoch, seeking a way to stop the retur...
+Read "Frostborn: The Undying Wizard (Frostborn #3)" by Jonathan Moeller available from Rakuten Kobo. RIDMARK ARBAN is the ray Knight, and he quests for the ruined citadel of Urd Morlemoch, seeking a way to stop the retur...
 
-## Frostborn: The Undying Wizard (Frostborn #3) eBook by ...
+## Frostborn: The Undying Wizard (Frostborn #3) eBook by
 
 For if he does not find a way to stop them, the Frostborn shall entomb the world in ice forever.
 
@@ -46,23 +46,23 @@ Copyright : ecigrr.com
 
 Morigna is the cunning Witch of the Hills, feared and mistrusted by the townsmen of Moraime. Yet darker things stir in the hills.
 
-## Frostborn: The Undying Wizard: Frostborn Series, Book 3 ...
+## Frostborn: The Undying Wizard: Frostborn Series, Book 3
 
 On his quest to prevent the return of the Frostborn Ridmark and his band keep getting sidetracked by dark forces. This time it's a wizard who doesn't want to die and will do anything to prolong his life. Lots of sword and sorcery but not a lot of character development, Ridmark is still on his guilt trip.
 
-## Frostborn: The Undying Wizard (Frostborn #3) eBook ...
+## Frostborn: The Undying Wizard (Frostborn #3) eBook
 
 For if he does not find a way to stop them, the Frostborn shall entomb the world in ice forever. MORI NA is the cunninng Witch of the Hills, feared and mistrusted by the townsmen of Moraime. Yet darker things stir in the hills.
 
-## Frostborn: The Undying Wizard: Volume 3: Amazon.co.uk ...
+## Frostborn: The Undying Wizard: Volume 3: Amazon.co.uk
 
 For if he does not find a way to stop them, the Frostborn shall entomb the world in ice forever. MORI NA is the cunninng Witch of the Hills, feared and mistrusted by the townsmen of Moraime. Yet darker things stir in the hills.
 
 ## Frostborn: The Undying Wizard (Frostborn #3) on Apple Books
 
-Combined for the first time in one volume are the first three books of the internationally bestselling FROSTBORN saga - FROSTBORN: THE  RAY KNI HT, FROSTBORN: THE EI HTFOLD KNIFE, FROSTBORN: THE UNDYIN  WIZARD, and the prequel novel FROSTBORN: THE FIRST QUEST. RIDMARK ARBAN was once a Swordbearer, a knight of renown.
+Combined for the first time in one volume are the first three books of the internationally bestselling FROSTBORN saga - FROSTBORN: THE RAY KNI HT, FROSTBORN: THE EI HTFOLD KNIFE, FROSTBORN: THE UNDYIN WIZARD, and the prequel novel FROSTBORN: THE FIRST QUEST. RIDMARK ARBAN was once a Swordbearer, a knight of renown.
 
-## Frostborn Omnibus One (Frostborn: The  ray Knight ...
+## Frostborn Omnibus One (Frostborn: The ray Knight
 
 The story of Frostborn opens where Moeller explains about an event that happened a thousand years earlier. He continues to explain how the last grandson of an Arthur Pendragon helped many survivors of Britain through a gate that was opened through a magic spell.
 
@@ -70,15 +70,15 @@ The story of Frostborn opens where Moeller explains about an event that happened
 
 For if he does not find a way to stop them, the Frostborn shall entomb the world in ice forever. MORI NA is the cunninng Witch of the Hills, feared and mistrusted by the townsmen of Moraime. Yet darker things stir in the hills.
 
-## Frostborn: The Undying Wizard (Frostborn #3) eBook ...
+## Frostborn: The Undying Wizard (Frostborn #3) eBook
 
 Frostborn | RIDMARK ARBAN is the  ray Knight, and he quests for the ruined citadel of Urd Morlemoch, seeking a way to stop the return of the dreaded Frostborn. For if he does not find a way to stop them, the Frostborn shall entomb the world in ice forever.
 
 ## Frostborn : The Undying Wizard by Jonathan Moeller
 
-Frostborn: The Undying Wizard (Frostborn #3) Book 3 RIDMARK ARBAN is the  ray Knight, and he quests for the ruined citadel of Urd Morlemoch, seeking a way to stop the return of the dreaded Frostborn.
+Frostborn: The Undying Wizard (Frostborn #3) Book 3 RIDMARK ARBAN is the ray Knight, and he quests for the ruined citadel of Urd Morlemoch, seeking a way to stop the return of the dreaded Frostborn.
 
-## Frostborn Omnibus One by Jonathan Moeller - Books on ...
+## Frostborn Omnibus One by Jonathan Moeller - Books on
 
 For if he does not find a way to stop them, the Frostborn shall entomb the world in ice forever. Smashwords - Frostborn: The Undying Wizard (Frostborn #3) - a book by Jonathan Moeller Search
 

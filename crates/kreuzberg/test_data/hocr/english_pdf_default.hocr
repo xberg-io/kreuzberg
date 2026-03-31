@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+ <head>
+  <title></title>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+  <meta name='ocr-system' content='tesseract 5.5.1' />
+  <meta name='ocr-capabilities' content='ocr_page ocr_carea ocr_par ocr_line ocrx_word ocrp_dir ocrp_lang ocrp_wconf'/>
+ </head>
+ <body>
+  <div class='ocr_page' id='page_1' title='image "/var/folders/f8/_s_ks96d60x_6g__y7vft2wc0000gn/T/tmpy65g4kro.png"; bbox 0 0 1275 1651; ppageno 0; scan_res 70 70'>
+   <div class='ocr_carea' id='block_1_1' title="bbox 915 100 1199 152">
+    <p class='ocr_par' id='par_1_1' lang='eng' title="bbox 915 100 1199 152">
+     <span class='ocr_line' id='line_1_1' title="bbox 915 100 982 119; baseline 0 0; x_size 23.75; x_descenders 4.75; x_ascenders 6.477273">
+      <span class='ocrx_word' id='word_1_1' title='bbox 915 100 982 119; x_wconf 90'>IDRH</span>
+     </span>
+     <span class='ocr_line' id='line_1_2' title="bbox 915 131 1199 152; baseline -0.004 0; x_size 26.310345; x_descenders 5.3103447; x_ascenders 7">
+      <span class='ocrx_word' id='word_1_2' title='bbox 915 131 1140 152; x_wconf 92'>Non-text-searchable</span>
+      <span class='ocrx_word' id='word_1_3' title='bbox 1149 132 1199 151; x_wconf 96'>PDF</span>
+     </span>
+    </p>
+   </div>
+   <div class='ocr_carea' id='block_1_2' title="bbox 137 180 1040 303">
+    <p class='ocr_par' id='par_1_2' lang='eng' title="bbox 137 180 1040 303">
+     <span class='ocr_line' id='line_1_3' title="bbox 158 180 1036 206; baseline 0.001 -6; x_size 27; x_descenders 6; x_ascenders 7">
+      <span class='ocrx_word' id='word_1_4' title='bbox 158 180 208 201; x_wconf 96'>This</span>
+      <span class='ocrx_word' id='word_1_5' title='bbox 217 180 234 201; x_wconf 96'>is</span>
+      <span class='ocrx_word' id='word_1_6' title='bbox 242 187 267 201; x_wconf 96'>an</span>
+      <span class='ocrx_word' id='word_1_7' title='bbox 276 180 369 206; x_wconf 96'>example</span>
+      <span class='ocrx_word' id='word_1_8' title='bbox 377 180 403 201; x_wconf 96'>of</span>
+      <span class='ocrx_word' id='word_1_9' title='bbox 408 187 420 201; x_wconf 93'>a</span>
+      <span class='ocrx_word' id='word_1_10' title='bbox 427 180 647 201; x_wconf 93'>non-text-searchable</span>
+      <span class='ocrx_word' id='word_1_11' title='bbox 655 181 711 201; x_wconf 96'>PDF.</span>
+      <span class='ocrx_word' id='word_1_12' title='bbox 721 181 813 201; x_wconf 96'>Because</span>
+      <span class='ocrx_word' id='word_1_13' title='bbox 822 180 836 201; x_wconf 96'>it</span>
+      <span class='ocrx_word' id='word_1_14' title='bbox 844 187 886 201; x_wconf 96'>was</span>
+      <span class='ocrx_word' id='word_1_15' title='bbox 895 180 975 201; x_wconf 96'>created</span>
+      <span class='ocrx_word' id='word_1_16' title='bbox 983 180 1036 201; x_wconf 96'>from</span>
+     </span>
+     <span class='ocr_line' id='line_1_4' title="bbox 137 212 1023 239; baseline 0 -6; x_size 26; x_descenders 6; x_ascenders 6">
+      <span class='ocrx_word' id='word_1_17' title='bbox 137 219 162 233; x_wconf 96'>an</span>
+      <span class='ocrx_word' id='word_1_18' title='bbox 171 213 238 239; x_wconf 96'>image</span>
+      <span class='ocrx_word' id='word_1_19' title='bbox 246 213 311 233; x_wconf 96'>rather</span>
+      <span class='ocrx_word' id='word_1_20' title='bbox 318 213 366 233; x_wconf 95'>than</span>
+      <span class='ocrx_word' id='word_1_21' title='bbox 374 219 386 233; x_wconf 95'>a</span>
+      <span class='ocrx_word' id='word_1_22' title='bbox 394 216 435 233; x_wconf 96'>text</span>
+      <span class='ocrx_word' id='word_1_23' title='bbox 443 213 559 237; x_wconf 96'>document,</span>
+      <span class='ocrx_word' id='word_1_24' title='bbox 569 213 583 233; x_wconf 96'>it</span>
+      <span class='ocrx_word' id='word_1_25' title='bbox 591 216 665 233; x_wconf 96'>cannot</span>
+      <span class='ocrx_word' id='word_1_26' title='bbox 673 213 699 233; x_wconf 96'>be</span>
+      <span class='ocrx_word' id='word_1_27' title='bbox 707 213 804 233; x_wconf 96'>rendered</span>
+      <span class='ocrx_word' id='word_1_28' title='bbox 812 219 834 233; x_wconf 96'>as</span>
+      <span class='ocrx_word' id='word_1_29' title='bbox 842 212 898 239; x_wconf 96'>plain</span>
+      <span class='ocrx_word' id='word_1_30' title='bbox 906 216 947 233; x_wconf 96'>text</span>
+      <span class='ocrx_word' id='word_1_31' title='bbox 955 213 982 239; x_wconf 96'>by</span>
+      <span class='ocrx_word' id='word_1_32' title='bbox 990 213 1023 233; x_wconf 96'>the</span>
+     </span>
+     <span class='ocr_line' id='line_1_5' title="bbox 137 245 1019 271; baseline 0 -6; x_size 26; x_descenders 6; x_ascenders 6">
+      <span class='ocrx_word' id='word_1_33' title='bbox 137 246 187 265; x_wconf 96'>PDF</span>
+      <span class='ocrx_word' id='word_1_34' title='bbox 195 245 270 265; x_wconf 96'>reader.</span>
+      <span class='ocrx_word' id='word_1_35' title='bbox 280 245 342 269; x_wconf 96'>Thus,</span>
+      <span class='ocrx_word' id='word_1_36' title='bbox 351 245 470 271; x_wconf 95'>attempting</span>
+      <span class='ocrx_word' id='word_1_37' title='bbox 478 248 499 265; x_wconf 96'>to</span>
+      <span class='ocrx_word' id='word_1_38' title='bbox 508 245 571 265; x_wconf 96'>select</span>
+      <span class='ocrx_word' id='word_1_39' title='bbox 578 245 612 265; x_wconf 96'>the</span>
+      <span class='ocrx_word' id='word_1_40' title='bbox 620 248 662 265; x_wconf 96'>text</span>
+      <span class='ocrx_word' id='word_1_41' title='bbox 670 251 697 265; x_wconf 96'>on</span>
+      <span class='ocrx_word' id='word_1_42' title='bbox 705 245 738 265; x_wconf 96'>the</span>
+      <span class='ocrx_word' id='word_1_43' title='bbox 746 251 798 271; x_wconf 97'>page</span>
+      <span class='ocrx_word' id='word_1_44' title='bbox 807 251 829 265; x_wconf 97'>as</span>
+      <span class='ocrx_word' id='word_1_45' title='bbox 837 245 915 271; x_wconf 96'>though</span>
+      <span class='ocrx_word' id='word_1_46' title='bbox 923 245 938 265; x_wconf 96'>it</span>
+      <span class='ocrx_word' id='word_1_47' title='bbox 946 251 999 265; x_wconf 96'>were</span>
+      <span class='ocrx_word' id='word_1_48' title='bbox 1007 251 1019 265; x_wconf 96'>a</span>
+     </span>
+     <span class='ocr_line' id='line_1_6' title="bbox 137 277 1040 303; baseline -0.001 -5; x_size 26; x_descenders 5; x_ascenders 7">
+      <span class='ocrx_word' id='word_1_49' title='bbox 137 281 179 298; x_wconf 96'>text</span>
+      <span class='ocrx_word' id='word_1_50' title='bbox 187 277 297 298; x_wconf 96'>document</span>
+      <span class='ocrx_word' id='word_1_51' title='bbox 305 284 328 298; x_wconf 96'>or</span>
+      <span class='ocrx_word' id='word_1_52' title='bbox 335 277 420 298; x_wconf 96'>website</span>
+      <span class='ocrx_word' id='word_1_53' title='bbox 428 277 470 297; x_wconf 96'>will</span>
+      <span class='ocrx_word' id='word_1_54' title='bbox 478 281 514 298; x_wconf 97'>not</span>
+      <span class='ocrx_word' id='word_1_55' title='bbox 522 277 585 302; x_wconf 96'>work,</span>
+      <span class='ocrx_word' id='word_1_56' title='bbox 594 277 706 303; x_wconf 96'>regardless</span>
+      <span class='ocrx_word' id='word_1_57' title='bbox 715 277 741 298; x_wconf 96'>of</span>
+      <span class='ocrx_word' id='word_1_58' title='bbox 745 277 793 298; x_wconf 96'>how</span>
+      <span class='ocrx_word' id='word_1_59' title='bbox 800 277 867 303; x_wconf 96'>neatly</span>
+      <span class='ocrx_word' id='word_1_60' title='bbox 876 277 891 298; x_wconf 96'>it</span>
+      <span class='ocrx_word' id='word_1_61' title='bbox 899 277 916 298; x_wconf 96'>is</span>
+      <span class='ocrx_word' id='word_1_62' title='bbox 925 277 1040 303; x_wconf 96'>organized.</span>
+     </span>
+    </p>
+   </div>
+  </div>
+ </body>
+</html>

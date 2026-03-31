@@ -15,7 +15,6 @@ use crate::types::OcrElementConfig;
 /// All fields default to the values that match the previous hardcoded behavior,
 /// so `OcrQualityThresholds::default()` preserves existing semantics exactly.
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
 pub struct OcrQualityThresholds {
     /// Minimum total non-whitespace characters to consider text substantive.
     #[serde(default = "default_min_total_non_whitespace")]
@@ -158,7 +157,6 @@ fn default_pipeline_min_quality() -> f64 {
 
 /// A single backend stage in the OCR pipeline.
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
 pub struct OcrPipelineStage {
     /// Backend name: "tesseract", "paddleocr", "easyocr", or a custom registered name.
     pub backend: String,
@@ -190,7 +188,6 @@ fn default_priority() -> u32 {
 /// produces output, quality is evaluated. If it meets `quality_thresholds.pipeline_min_quality`,
 /// the result is accepted. Otherwise the next backend is tried.
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
 pub struct OcrPipelineConfig {
     /// Ordered list of backends to try. Sorted by priority (descending) at runtime.
     pub stages: Vec<OcrPipelineStage>,
@@ -202,7 +199,6 @@ pub struct OcrPipelineConfig {
 
 /// OCR configuration.
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
 pub struct OcrConfig {
     /// OCR backend: tesseract, easyocr, paddleocr
     #[serde(default = "default_tesseract_backend")]

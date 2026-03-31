@@ -44,7 +44,7 @@ fn main() {
                             e
                         );
                     } else {
-                        println!("cargo:warning=Copied {} to {}", pdfium_lib.display(), dest.display());
+                        eprintln!("Copied {} to {}", pdfium_lib.display(), dest.display());
 
                         if target.contains("darwin") {
                             let binary_path = bin_dir.join("benchmark-harness");

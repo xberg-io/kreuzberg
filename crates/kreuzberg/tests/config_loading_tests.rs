@@ -18,6 +18,7 @@ fn test_from_file_toml_succeeds() {
 
     let toml_content = r#"
 [ocr]
+enabled = true
 backend = "tesseract"
 
 [chunking]
@@ -47,6 +48,7 @@ fn test_from_file_yaml_succeeds() {
 
     let yaml_content = r#"
 ocr:
+  enabled: true
   backend: tesseract
 chunking:
   max_characters: 1000
@@ -76,6 +78,7 @@ fn test_from_file_json_succeeds() {
     let json_content = r#"
 {
   "ocr": {
+    "enabled": true,
     "backend": "tesseract"
   },
   "chunking": {
@@ -107,7 +110,7 @@ fn test_from_file_yml_extension_succeeds() {
 
     let yml_content = r#"
 ocr:
-  backend: tesseract
+  enabled: true
 "#;
 
     fs::write(&config_path, yml_content).expect("Operation failed");
@@ -224,7 +227,7 @@ fn test_discover_finds_config_in_current_dir() {
 
     let toml_content = r#"
 [ocr]
-backend = "tesseract"
+enabled = true
 "#;
 
     fs::write(&config_path, toml_content).expect("Operation failed");
@@ -254,7 +257,7 @@ fn test_discover_finds_config_in_parent_dir() {
 
     let toml_content = r#"
 [ocr]
-backend = "tesseract"
+enabled = true
 "#;
 
     fs::write(&config_path, toml_content).expect("Operation failed");
@@ -303,8 +306,8 @@ fn test_discover_returns_none_when_not_found() {
 fn test_discover_file_name_preference() {
     let temp_dir = TempDir::new().expect("Operation failed");
 
-    fs::write(temp_dir.path().join("kreuzberg.toml"), "[ocr]\nbackend = \"tesseract\"").expect("Operation failed");
-    fs::write(temp_dir.path().join(".kreuzberg.toml"), "[ocr]\nbackend = \"easyocr\"").expect("Operation failed");
+    fs::write(temp_dir.path().join("kreuzberg.toml"), "[ocr]\nenabled = true").expect("Operation failed");
+    fs::write(temp_dir.path().join(".kreuzberg.toml"), "[ocr]\nenabled = false").expect("Operation failed");
 
     let original_dir = std::env::current_dir().expect("Operation failed");
     if std::env::set_current_dir(temp_dir.path()).is_err() {
@@ -329,7 +332,7 @@ fn test_discover_with_nested_directories() {
 
     let toml_content = r#"
 [ocr]
-backend = "tesseract"
+enabled = true
 "#;
 
     fs::write(&config_path, toml_content).expect("Operation failed");
@@ -365,6 +368,7 @@ fn test_from_file_comprehensive_config() {
 
     let toml_content = r#"
 [ocr]
+enabled = true
 backend = "tesseract"
 
 [chunking]
@@ -375,6 +379,9 @@ max_overlap = 200
 enabled = true
 
 [images]
+enabled = true
+
+[pdf_options]
 extract_images = true
 "#;
 
@@ -391,6 +398,8 @@ extract_images = true
         "Should have language detection config"
     );
     assert!(config.images.is_some(), "Should have image extraction config");
+    #[cfg(feature = "pdf")]
+    assert!(config.pdf_options.is_some(), "Should have PDF config");
 }
 
 /// Test config validation with invalid values.

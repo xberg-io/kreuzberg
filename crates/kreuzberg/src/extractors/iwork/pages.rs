@@ -2,12 +2,11 @@
 
 use crate::Result;
 use crate::core::config::ExtractionConfig;
-use crate::extractors::iwork::{dedup_text, extract_text_from_proto, read_iwa_file};
+use crate::extractors::iwork::{dedup_text, extract_metadata_from_zip, extract_text_from_proto, read_iwa_file};
 use crate::plugins::{DocumentExtractor, Plugin};
-use crate::types::{ExtractionResult, Metadata};
-use ahash::AHashMap;
+use crate::types::internal::InternalDocument;
+use crate::types::internal_builder::InternalDocumentBuilder;
 use async_trait::async_trait;
-use std::borrow::Cow;
 
 /// Apple Pages document extractor.
 ///
@@ -55,35 +54,85 @@ impl Plugin for PagesExtractor {
     }
 }
 
+/// Parsed Pages data: document text blocks and metadata.
+struct PagesData {
+    /// Text blocks from the main document IWA files (prioritized).
+    document_texts: Vec<String>,
+    /// Additional text from annotation/data-record IWA files.
+    supplementary_texts: Vec<String>,
+    /// Metadata extracted from the ZIP archive.
+    metadata: crate::types::metadata::Metadata,
+}
+
 /// Parse a Pages ZIP and extract all text from IWA files.
 ///
 /// Pages stores its content in:
 /// - `Index/Document.iwa` — main document text
 /// - `Index/AnnotationAuthorStorage.iwa` — comments/annotations
 /// - Any `DataRecords/*.iwa` — embedded data blocks
-fn parse_pages(content: &[u8]) -> Result<String> {
-    // Collect all IWA paths inside the archive
+///
+/// We prioritize Document IWA files for the main body and separate
+/// annotation/data content.
+fn parse_pages(content: &[u8]) -> Result<PagesData> {
     let iwa_paths = super::collect_iwa_paths(content)?;
+    let metadata = extract_metadata_from_zip(content);
 
-    let mut all_texts: Vec<String> = Vec::new();
+    // Separate document-content IWA files from annotations and data records
+    let mut doc_paths: Vec<&String> = Vec::new();
+    let mut other_paths: Vec<&String> = Vec::new();
 
-    // Attempt to read each IWA file and extract its text
     for path in &iwa_paths {
+        let filename = path.rsplit('/').next().unwrap_or(path);
+        if filename.starts_with("Document") || filename.starts_with("Section") || filename.starts_with("Text") {
+            doc_paths.push(path);
+        } else {
+            other_paths.push(path);
+        }
+    }
+
+    // If no document-specific paths were found, treat all paths as document content
+    if doc_paths.is_empty() {
+        doc_paths = iwa_paths.iter().collect();
+        other_paths.clear();
+    }
+
+    let mut doc_texts: Vec<String> = Vec::new();
+    for path in &doc_paths {
         match read_iwa_file(content, path) {
             Ok(decompressed) => {
                 let texts = extract_text_from_proto(&decompressed);
-                all_texts.extend(texts);
+                doc_texts.extend(texts);
             }
             Err(_) => {
-                // Some IWA files may fail decompression (e.g., newer Snappy variants)
-                // Skip gracefully to produce partial results rather than hard failure
                 tracing::debug!("Skipping IWA file (decompression failed): {path}");
             }
         }
     }
 
-    let deduplicated = dedup_text(all_texts);
-    Ok(deduplicated.join("\n"))
+    let mut other_texts_raw: Vec<String> = Vec::new();
+    for path in &other_paths {
+        match read_iwa_file(content, path) {
+            Ok(decompressed) => {
+                let texts = extract_text_from_proto(&decompressed);
+                other_texts_raw.extend(texts);
+            }
+            Err(_) => {
+                tracing::debug!("Skipping IWA file (decompression failed): {path}");
+            }
+        }
+    }
+
+    let document_texts = dedup_text(doc_texts);
+    let supplementary_texts: Vec<String> = dedup_text(other_texts_raw)
+        .into_iter()
+        .filter(|t| !document_texts.contains(t))
+        .collect();
+
+    Ok(PagesData {
+        document_texts,
+        supplementary_texts,
+        metadata,
+    })
 }
 
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
@@ -93,9 +142,9 @@ impl DocumentExtractor for PagesExtractor {
         &self,
         content: &[u8],
         mime_type: &str,
-        config: &ExtractionConfig,
-    ) -> Result<ExtractionResult> {
-        let text = {
+        _config: &ExtractionConfig,
+    ) -> Result<InternalDocument> {
+        let data = {
             #[cfg(feature = "tokio-runtime")]
             if crate::core::batch_mode::is_batch_mode() {
                 let content_owned = content.to_vec();
@@ -114,37 +163,9 @@ impl DocumentExtractor for PagesExtractor {
             parse_pages(content)?
         };
 
-        let document = if config.include_document_structure {
-            Some(build_pages_document_structure(&text))
-        } else {
-            None
-        };
-
-        let additional: AHashMap<Cow<'static, str>, serde_json::Value> = AHashMap::new();
-
-        Ok(ExtractionResult {
-            content: text,
-            mime_type: mime_type.to_string().into(),
-            metadata: Metadata {
-                additional,
-                ..Default::default()
-            },
-            pages: None,
-            tables: vec![],
-            detected_languages: None,
-            chunks: None,
-            images: None,
-            djot_content: None,
-            elements: None,
-            ocr_elements: None,
-            document,
-            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-            extracted_keywords: None,
-            quality_score: None,
-            processing_warnings: Vec::new(),
-            annotations: None,
-            children: None,
-        })
+        let mut doc = build_pages_internal_document(&data);
+        doc.mime_type = std::borrow::Cow::Owned(mime_type.to_string());
+        Ok(doc)
     }
 
     fn supported_mime_types(&self) -> &[&str] {
@@ -156,28 +177,53 @@ impl DocumentExtractor for PagesExtractor {
     }
 }
 
-/// Build a `DocumentStructure` from extracted Pages text.
+/// Build an `InternalDocument` from parsed Pages data.
 ///
-/// Maps text content to paragraphs. If the text contains blank-line separators
-/// (`\n\n`), each block becomes a paragraph. Otherwise, each non-empty line
-/// becomes its own paragraph.
-fn build_pages_document_structure(text: &str) -> crate::types::document_structure::DocumentStructure {
-    use crate::types::builder::DocumentStructureBuilder;
+/// Applies heading detection heuristics: short lines (under 80 chars) that
+/// appear before longer text blocks are treated as headings. Metadata from the
+/// ZIP archive is applied to the document.
+fn build_pages_internal_document(data: &PagesData) -> InternalDocument {
+    let mut builder = InternalDocumentBuilder::new("pages");
 
-    let mut builder = DocumentStructureBuilder::new().source_format("pages");
+    // Apply metadata
+    if data.metadata.title.is_some() || data.metadata.authors.is_some() {
+        builder.set_metadata(data.metadata.clone());
+    }
 
-    if text.contains("\n\n") {
-        // Multi-paragraph content separated by blank lines
-        for paragraph in text.split("\n\n") {
-            let trimmed = paragraph.trim();
-            if !trimmed.is_empty() {
-                builder.push_paragraph(trimmed, vec![], None, None);
-            }
+    // Emit the first text block as the document title if it looks like one
+    // (short, no sentence-ending punctuation, appears before body text).
+    let texts = &data.document_texts;
+    let mut start_idx = 0;
+    if let Some(first) = texts.first() {
+        let trimmed = first.trim();
+        if !trimmed.is_empty() && is_likely_title(trimmed) && texts.len() > 1 {
+            builder.push_title(trimmed, None, None);
+            start_idx = 1;
         }
-    } else {
-        // Single-spaced content: each line becomes a paragraph
-        for line in text.lines() {
-            let trimmed = line.trim();
+    }
+
+    // Emit remaining document text with heading detection
+    for text in &texts[start_idx..] {
+        let trimmed = text.trim();
+        if trimmed.is_empty() {
+            continue;
+        }
+
+        if is_likely_heading(trimmed) {
+            builder.push_heading(2, trimmed, None, None);
+        } else {
+            builder.push_paragraph(trimmed, vec![], None, None);
+        }
+    }
+
+    // Emit supplementary text (annotations, data records) under a separate section
+    if !data.supplementary_texts.is_empty() {
+        let has_body = !data.document_texts.is_empty();
+        if has_body {
+            builder.push_heading(2, "Annotations", None, None);
+        }
+        for text in &data.supplementary_texts {
+            let trimmed = text.trim();
             if !trimmed.is_empty() {
                 builder.push_paragraph(trimmed, vec![], None, None);
             }
@@ -185,6 +231,30 @@ fn build_pages_document_structure(text: &str) -> crate::types::document_structur
     }
 
     builder.build()
+}
+
+/// Heuristic: a string looks like a document title if it is short, does not
+/// end with sentence-terminating punctuation, and contains at least one
+/// alphabetic character.
+fn is_likely_title(s: &str) -> bool {
+    s.len() <= 100
+        && !s.ends_with('.')
+        && !s.ends_with('!')
+        && !s.ends_with('?')
+        && s.chars().any(|c| c.is_alphabetic())
+        && !s.contains('\n')
+}
+
+/// Heuristic: a string looks like a heading if it is relatively short, does
+/// not end with sentence-terminating punctuation, and starts with an uppercase
+/// letter or a digit.
+fn is_likely_heading(s: &str) -> bool {
+    s.len() <= 80
+        && !s.ends_with('.')
+        && !s.ends_with(',')
+        && !s.contains('\n')
+        && s.chars().next().is_some_and(|c| c.is_uppercase() || c.is_ascii_digit())
+        && s.split_whitespace().count() <= 10
 }
 
 #[cfg(test)]

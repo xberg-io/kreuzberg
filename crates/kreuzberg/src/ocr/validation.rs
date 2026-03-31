@@ -1,10 +1,10 @@
 use super::error::OcrError;
 use super::utils::MINIMAL_SUPPORTED_TESSERACT_VERSION;
-use std::collections::HashSet;
+use ahash::AHashSet;
 use std::sync::LazyLock;
 
-pub static TESSERACT_SUPPORTED_LANGUAGE_CODES: LazyLock<HashSet<&'static str>> = LazyLock::new(|| {
-    let mut set = HashSet::new();
+pub static TESSERACT_SUPPORTED_LANGUAGE_CODES: LazyLock<AHashSet<&'static str>> = LazyLock::new(|| {
+    let mut set = AHashSet::new();
     set.insert("afr");
     set.insert("amh");
     set.insert("ara");

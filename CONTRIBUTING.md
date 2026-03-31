@@ -41,10 +41,33 @@ Kreuzberg is a polyglot project with many areas where you can help:
 
 ## Development setup
 
-Get up and running in two steps:
+### System dependencies
 
-1. **Install [Task](https://taskfile.dev/installation/)** — our task runner for all build and test workflows
-2. **Run setup:**
+**Required for all contributions:**
+
+- [Git](https://git-scm.com/)
+- [Task](https://taskfile.dev/installation/) — our task runner for all build and test workflows
+- [Rust](https://rustup.rs/) stable (via `rustup`) — the `wasm32-unknown-unknown` target is configured automatically via `rust-toolchain.toml`
+
+**Required for WASM builds** (tree-sitter, tesseract, and pdfium compile C/C++ to wasm):
+
+- [WASI SDK](https://github.com/WebAssembly/wasi-sdk/releases) — install to `$HOME/wasi-sdk` or set `WASI_SDK_PATH`
+
+**Language-specific toolchains** (only install what you need):
+
+| Language | Version | Tool |
+|----------|---------|------|
+| Python | 3.10+ | [`uv`](https://docs.astral.sh/uv/) |
+| Node.js | 20+ | [`pnpm`](https://pnpm.io/) |
+| Ruby | 3.2+ | `rbenv` or `rvm` |
+| Go | 1.26+ | [Official installer](https://go.dev/dl/) |
+| Java | 25+ | JDK (via [sdkman](https://sdkman.io/)) |
+| .NET | 10+ | `dotnet` |
+| PHP | 8.1+ | `composer` |
+| Elixir | 1.14+ | `mix` (OTP 25+) |
+| R | 4.1+ | [CRAN](https://cran.r-project.org/) |
+
+### Getting started
 
 ```bash
 task setup

@@ -2,10 +2,11 @@
 
 use crate::Result;
 use crate::core::config::ExtractionConfig;
-use crate::core::config::formats::OutputFormat;
 use crate::extractors::SyncExtractor;
 use crate::plugins::{DocumentExtractor, Plugin};
-use crate::types::{ExcelMetadata, ExtractionResult, Metadata, Table};
+use crate::types::internal::InternalDocument;
+use crate::types::internal_builder::InternalDocumentBuilder;
+use crate::types::{ExcelMetadata, Metadata};
 use ahash::AHashMap;
 use async_trait::async_trait;
 use std::borrow::Cow;
@@ -14,6 +15,13 @@ use std::path::Path;
 /// Excel spreadsheet extractor using calamine.
 ///
 /// Supports: .xlsx, .xlsm, .xlam, .xltm, .xls, .xla, .xlsb, .ods
+///
+/// # Limitations
+///
+/// - **Hyperlinks**: calamine (v0.34) does not expose cell hyperlink data in its
+///   public API. Excel files may contain hyperlinks via the `HYPERLINK()` formula
+///   or via the relationships XML, but neither is accessible through the crate.
+///   This would require either a calamine upstream change or manual OOXML parsing.
 pub struct ExcelExtractor;
 
 impl Default for ExcelExtractor {
@@ -27,55 +35,23 @@ impl ExcelExtractor {
         Self
     }
 
-    /// Build a `DocumentStructure` from the workbook.
+    /// Build an `InternalDocument` from the workbook.
     ///
-    /// Each sheet becomes a heading (level 1) followed by a table.
-    fn build_document_structure(
-        workbook: &crate::types::ExcelWorkbook,
-    ) -> crate::types::document_structure::DocumentStructure {
-        use crate::types::builder::DocumentStructureBuilder;
-        let mut builder = DocumentStructureBuilder::new().source_format("excel");
+    /// Each sheet becomes a table. Sheet headings are omitted to match
+    /// the canonical libreoffice+pandoc ground truth format (which renders
+    /// only data tables with no sheet-name headings).
+    fn build_internal_document(workbook: &crate::types::ExcelWorkbook) -> InternalDocument {
+        let mut builder = InternalDocumentBuilder::new("excel");
 
-        for sheet in &workbook.sheets {
-            builder.push_heading(1, &sheet.name, None, None);
-
+        for (sheet_index, sheet) in workbook.sheets.iter().enumerate() {
             if let Some(ref cells) = sheet.table_cells
                 && !cells.is_empty()
             {
-                builder.push_table_from_cells(cells, None);
+                builder.push_table_from_cells(cells, Some((sheet_index + 1) as u32), None);
             }
         }
 
         builder.build()
-    }
-
-    /// Convert Excel workbook sheets to Table structs.
-    ///
-    /// Each sheet becomes a table with the first row as headers,
-    /// remaining rows as data, and the sheet name as caption.
-    /// Uses pre-extracted cells from ExcelSheet::table_cells to avoid
-    /// expensive markdown re-parsing (40-60% performance improvement).
-    fn sheets_to_tables(workbook: &crate::types::ExcelWorkbook) -> Vec<Table> {
-        let mut tables = Vec::with_capacity(workbook.sheets.len());
-
-        for (sheet_index, sheet) in workbook.sheets.iter().enumerate() {
-            if sheet.row_count == 0 || sheet.col_count == 0 {
-                continue;
-            }
-
-            if let Some(cells) = &sheet.table_cells
-                && !cells.is_empty()
-            {
-                tables.push(Table {
-                    cells: cells.clone(),
-                    markdown: sheet.markdown.clone(),
-                    page_number: sheet_index + 1,
-                    bounding_box: None,
-                });
-            }
-        }
-
-        tables
     }
 }
 
@@ -97,8 +73,68 @@ impl Plugin for ExcelExtractor {
     }
 }
 
+impl ExcelExtractor {
+    /// Build an InternalDocument from a workbook with metadata.
+    fn workbook_to_internal_document(workbook: &crate::types::ExcelWorkbook) -> InternalDocument {
+        let mut doc = Self::build_internal_document(workbook);
+
+        let sheet_names: Vec<String> = workbook.sheets.iter().map(|s| s.name.clone()).collect();
+        let excel_metadata = ExcelMetadata {
+            sheet_count: workbook.sheets.len(),
+            sheet_names,
+        };
+
+        let mut additional = AHashMap::new();
+        let wb_meta = &workbook.metadata;
+
+        // Map office metadata to standard Metadata fields
+        let title = wb_meta.get("title").cloned();
+        let subject = wb_meta.get("subject").cloned();
+        let created_by = wb_meta.get("created_by").or_else(|| wb_meta.get("creator")).cloned();
+        let modified_by = wb_meta.get("modified_by").cloned();
+        let created_at = wb_meta.get("created_at").cloned();
+        let modified_at = wb_meta.get("modified_at").cloned();
+        let authors = created_by.as_ref().map(|a| vec![a.clone()]);
+        let keywords = wb_meta.get("keywords").map(|k| {
+            k.split(',')
+                .map(|s| s.trim().to_string())
+                .filter(|s| !s.is_empty())
+                .collect()
+        });
+        let language = wb_meta.get("language").cloned();
+
+        // Put remaining metadata into additional map (excluding standard fields)
+        for (key, value) in &workbook.metadata {
+            match key.as_str() {
+                "sheet_count" | "sheet_names" | "title" | "subject" | "created_by" | "creator" | "modified_by"
+                | "created_at" | "modified_at" | "keywords" | "language" => {}
+                _ => {
+                    additional.insert(Cow::Owned(key.clone()), serde_json::json!(value));
+                }
+            }
+        }
+
+        doc.metadata = Metadata {
+            title,
+            subject,
+            authors,
+            keywords,
+            language,
+            created_at,
+            modified_at,
+            created_by,
+            modified_by,
+            format: Some(crate::types::FormatMetadata::Excel(excel_metadata)),
+            additional,
+            ..Default::default()
+        };
+
+        doc
+    }
+}
+
 impl SyncExtractor for ExcelExtractor {
-    fn extract_sync(&self, content: &[u8], mime_type: &str, config: &ExtractionConfig) -> Result<ExtractionResult> {
+    fn extract_sync(&self, content: &[u8], mime_type: &str, _config: &ExtractionConfig) -> Result<InternalDocument> {
         let extension = match mime_type {
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" => ".xlsx",
             "application/vnd.ms-excel.sheet.macroEnabled.12" => ".xlsm",
@@ -112,68 +148,28 @@ impl SyncExtractor for ExcelExtractor {
         };
 
         let workbook = crate::extraction::excel::read_excel_bytes(content, extension)?;
-        let content_text = match config.output_format {
-            OutputFormat::Markdown | OutputFormat::Djot | OutputFormat::Html => {
-                crate::extraction::excel::excel_to_markdown(&workbook)
-            }
-            _ => crate::extraction::excel::excel_to_text(&workbook),
-        };
-        let tables = Self::sheets_to_tables(&workbook);
-        let document = if config.include_document_structure {
-            Some(Self::build_document_structure(&workbook))
-        } else {
-            None
-        };
-
-        let sheet_names: Vec<String> = workbook.sheets.iter().map(|s| s.name.clone()).collect();
-        let excel_metadata = ExcelMetadata {
-            sheet_count: workbook.sheets.len(),
-            sheet_names,
-        };
-
-        let mut additional = AHashMap::new();
-        for (key, value) in &workbook.metadata {
-            if key != "sheet_count" && key != "sheet_names" {
-                additional.insert(Cow::Owned(key.clone()), serde_json::json!(value));
-            }
-        }
-
-        Ok(ExtractionResult {
-            content: content_text,
-            mime_type: mime_type.to_string().into(),
-            metadata: Metadata {
-                format: Some(crate::types::FormatMetadata::Excel(excel_metadata)),
-                additional,
-                ..Default::default()
-            },
-            pages: None,
-            tables,
-            detected_languages: None,
-            chunks: None,
-            images: None,
-            djot_content: None,
-            elements: None,
-            ocr_elements: None,
-            document,
-            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-            extracted_keywords: None,
-            quality_score: None,
-            processing_warnings: Vec::new(),
-            annotations: None,
-            children: None,
-        })
+        let mut doc = Self::workbook_to_internal_document(&workbook);
+        doc.mime_type = Cow::Owned(mime_type.to_string());
+        Ok(doc)
     }
 }
 
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
 impl DocumentExtractor for ExcelExtractor {
+    #[cfg_attr(feature = "otel", tracing::instrument(
+        skip(self, content, _config),
+        fields(
+            extractor.name = self.name(),
+            content.size_bytes = content.len(),
+        )
+    ))]
     async fn extract_bytes(
         &self,
         content: &[u8],
         mime_type: &str,
-        config: &ExtractionConfig,
-    ) -> Result<ExtractionResult> {
+        _config: &ExtractionConfig,
+    ) -> Result<InternalDocument> {
         let extension = match mime_type {
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" => ".xlsx",
             "application/vnd.ms-excel.sheet.macroEnabled.12" => ".xlsm",
@@ -211,114 +207,26 @@ impl DocumentExtractor for ExcelExtractor {
             }
         };
 
-        let content = match config.output_format {
-            OutputFormat::Markdown | OutputFormat::Djot | OutputFormat::Html => {
-                crate::extraction::excel::excel_to_markdown(&workbook)
-            }
-            _ => crate::extraction::excel::excel_to_text(&workbook),
-        };
-        let tables = Self::sheets_to_tables(&workbook);
-        let document = if config.include_document_structure {
-            Some(Self::build_document_structure(&workbook))
-        } else {
-            None
-        };
-
-        let sheet_names: Vec<String> = workbook.sheets.iter().map(|s| s.name.clone()).collect();
-        let excel_metadata = ExcelMetadata {
-            sheet_count: workbook.sheets.len(),
-            sheet_names,
-        };
-
-        let mut additional = AHashMap::new();
-        for (key, value) in &workbook.metadata {
-            if key != "sheet_count" && key != "sheet_names" {
-                additional.insert(Cow::Owned(key.clone()), serde_json::json!(value));
-            }
-        }
-
-        Ok(ExtractionResult {
-            content,
-            mime_type: mime_type.to_string().into(),
-            metadata: Metadata {
-                format: Some(crate::types::FormatMetadata::Excel(excel_metadata)),
-                additional,
-                ..Default::default()
-            },
-            pages: None,
-            tables,
-            detected_languages: None,
-            chunks: None,
-            images: None,
-            djot_content: None,
-            elements: None,
-            ocr_elements: None,
-            document,
-            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-            extracted_keywords: None,
-            quality_score: None,
-            processing_warnings: Vec::new(),
-            annotations: None,
-            children: None,
-        })
+        let mut doc = Self::workbook_to_internal_document(&workbook);
+        doc.mime_type = Cow::Owned(mime_type.to_string());
+        Ok(doc)
     }
 
-    async fn extract_file(&self, path: &Path, mime_type: &str, config: &ExtractionConfig) -> Result<ExtractionResult> {
+    #[cfg_attr(feature = "otel", tracing::instrument(
+        skip(self, path, _config),
+        fields(
+            extractor.name = self.name(),
+        )
+    ))]
+    async fn extract_file(&self, path: &Path, mime_type: &str, _config: &ExtractionConfig) -> Result<InternalDocument> {
         let path_str = path
             .to_str()
             .ok_or_else(|| crate::KreuzbergError::validation("Invalid file path".to_string()))?;
 
         let workbook = crate::extraction::excel::read_excel_file(path_str)?;
-        let content = match config.output_format {
-            OutputFormat::Markdown | OutputFormat::Djot | OutputFormat::Html => {
-                crate::extraction::excel::excel_to_markdown(&workbook)
-            }
-            _ => crate::extraction::excel::excel_to_text(&workbook),
-        };
-        let tables = Self::sheets_to_tables(&workbook);
-        let document = if config.include_document_structure {
-            Some(Self::build_document_structure(&workbook))
-        } else {
-            None
-        };
-
-        let sheet_names: Vec<String> = workbook.sheets.iter().map(|s| s.name.clone()).collect();
-        let excel_metadata = ExcelMetadata {
-            sheet_count: workbook.sheets.len(),
-            sheet_names,
-        };
-
-        let mut additional = AHashMap::new();
-        for (key, value) in &workbook.metadata {
-            if key != "sheet_count" && key != "sheet_names" {
-                additional.insert(Cow::Owned(key.clone()), serde_json::json!(value));
-            }
-        }
-
-        Ok(ExtractionResult {
-            content,
-            mime_type: mime_type.to_string().into(),
-            metadata: Metadata {
-                format: Some(crate::types::FormatMetadata::Excel(excel_metadata)),
-                additional,
-                ..Default::default()
-            },
-            pages: None,
-            tables,
-            detected_languages: None,
-            chunks: None,
-            images: None,
-            djot_content: None,
-            elements: None,
-            ocr_elements: None,
-            document,
-            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-            extracted_keywords: None,
-            quality_score: None,
-            processing_warnings: Vec::new(),
-            annotations: None,
-            children: None,
-        })
+        let mut doc = Self::workbook_to_internal_document(&workbook);
+        doc.mime_type = Cow::Owned(mime_type.to_string());
+        Ok(doc)
     }
 
     fn supported_mime_types(&self) -> &[&str] {
@@ -363,162 +271,5 @@ mod tests {
         assert_eq!(mime_types.len(), 9);
         assert!(mime_types.contains(&"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
         assert!(mime_types.contains(&"application/vnd.ms-excel"));
-    }
-
-    #[test]
-    fn test_sheets_to_tables_conversion() {
-        use crate::types::ExcelSheet;
-        use std::collections::HashMap;
-
-        let sheet = ExcelSheet {
-            name: "TestSheet".to_string(),
-            markdown: r#"## TestSheet
-
-| Name | Age | City |
-| --- | --- | --- |
-| Alice | 30 | NYC |
-| Bob | 25 | LA |
-"#
-            .to_string(),
-            row_count: 3,
-            col_count: 3,
-            cell_count: 9,
-            table_cells: Some(vec![
-                vec!["Name".to_string(), "Age".to_string(), "City".to_string()],
-                vec!["Alice".to_string(), "30".to_string(), "NYC".to_string()],
-                vec!["Bob".to_string(), "25".to_string(), "LA".to_string()],
-            ]),
-        };
-
-        let workbook = crate::types::ExcelWorkbook {
-            sheets: vec![sheet],
-            metadata: HashMap::new(),
-        };
-
-        let tables = ExcelExtractor::sheets_to_tables(&workbook);
-
-        assert_eq!(tables.len(), 1);
-        assert_eq!(tables[0].page_number, 1);
-        assert_eq!(tables[0].cells.len(), 3);
-        assert_eq!(tables[0].cells[0], vec!["Name", "Age", "City"]);
-        assert_eq!(tables[0].cells[1], vec!["Alice", "30", "NYC"]);
-        assert_eq!(tables[0].cells[2], vec!["Bob", "25", "LA"]);
-    }
-
-    #[test]
-    fn test_sheets_to_tables_empty_sheet() {
-        use crate::types::ExcelSheet;
-        use std::collections::HashMap;
-
-        let sheet = ExcelSheet {
-            name: "EmptySheet".to_string(),
-            markdown: "## EmptySheet\n\n*Empty sheet*".to_string(),
-            row_count: 0,
-            col_count: 0,
-            cell_count: 0,
-            table_cells: None,
-        };
-
-        let workbook = crate::types::ExcelWorkbook {
-            sheets: vec![sheet],
-            metadata: HashMap::new(),
-        };
-
-        let tables = ExcelExtractor::sheets_to_tables(&workbook);
-        assert_eq!(tables.len(), 0);
-    }
-
-    #[test]
-    fn test_sheets_to_tables_multiple_sheets() {
-        use crate::types::ExcelSheet;
-        use std::collections::HashMap;
-
-        let sheet1 = ExcelSheet {
-            name: "Sheet1".to_string(),
-            markdown: r#"## Sheet1
-
-| Col1 | Col2 |
-| --- | --- |
-| A | B |
-"#
-            .to_string(),
-            row_count: 2,
-            col_count: 2,
-            cell_count: 4,
-            table_cells: Some(vec![
-                vec!["Col1".to_string(), "Col2".to_string()],
-                vec!["A".to_string(), "B".to_string()],
-            ]),
-        };
-
-        let sheet2 = ExcelSheet {
-            name: "Sheet2".to_string(),
-            markdown: r#"## Sheet2
-
-| X | Y |
-| --- | --- |
-| 1 | 2 |
-"#
-            .to_string(),
-            row_count: 2,
-            col_count: 2,
-            cell_count: 4,
-            table_cells: Some(vec![
-                vec!["X".to_string(), "Y".to_string()],
-                vec!["1".to_string(), "2".to_string()],
-            ]),
-        };
-
-        let workbook = crate::types::ExcelWorkbook {
-            sheets: vec![sheet1, sheet2],
-            metadata: HashMap::new(),
-        };
-
-        let tables = ExcelExtractor::sheets_to_tables(&workbook);
-
-        assert_eq!(tables.len(), 2);
-        assert_eq!(tables[0].page_number, 1);
-        assert_eq!(tables[1].page_number, 2);
-    }
-
-    #[test]
-    fn test_sheets_to_tables_preserves_cell_content() {
-        use crate::types::ExcelSheet;
-        use std::collections::HashMap;
-
-        let sheet = ExcelSheet {
-            name: "TestSheet".to_string(),
-            markdown: r#"## TestSheet
-
-| Name | Value | Amount |
-| --- | --- | --- |
-| Item\|A | 100 | $1,000 |
-| Item B | 200 | $2,000 |
-"#
-            .to_string(),
-            row_count: 3,
-            col_count: 3,
-            cell_count: 9,
-            table_cells: Some(vec![
-                vec!["Name".to_string(), "Value".to_string(), "Amount".to_string()],
-                vec!["Item|A".to_string(), "100".to_string(), "$1,000".to_string()],
-                vec!["Item B".to_string(), "200".to_string(), "$2,000".to_string()],
-            ]),
-        };
-
-        let workbook = crate::types::ExcelWorkbook {
-            sheets: vec![sheet],
-            metadata: HashMap::new(),
-        };
-
-        let tables = ExcelExtractor::sheets_to_tables(&workbook);
-
-        assert_eq!(tables.len(), 1);
-        assert_eq!(
-            tables[0].cells[1][0], "Item|A",
-            "Escaped characters should be preserved"
-        );
-        assert_eq!(tables[0].cells[1][2], "$1,000");
-        assert_eq!(tables[0].cells[2][0], "Item B");
     }
 }

@@ -109,6 +109,15 @@ pub struct PptxExtractionResult {
     /// Structured document representation
     #[serde(skip_serializing_if = "Option::is_none")]
     pub document: Option<DocumentStructure>,
+    /// Hyperlinks discovered in slides as (url, optional_label) pairs.
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub hyperlinks: Vec<(String, Option<String>)>,
+    /// Office metadata extracted from docProps/core.xml and docProps/app.xml.
+    ///
+    /// Contains keys like "title", "author", "created_by", "subject", "keywords",
+    /// "modified_by", "created_at", "modified_at", etc.
+    #[serde(skip_serializing_if = "HashMap::is_empty", default)]
+    pub office_metadata: HashMap<String, String>,
 }
 
 /// Email extraction result.
@@ -220,7 +229,6 @@ pub struct OcrTableBoundingBox {
 /// for different document types.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default)]
-#[serde(deny_unknown_fields)]
 pub struct ImagePreprocessingConfig {
     /// Target DPI for the image (300 is standard, 600 for small text).
     pub target_dpi: i32,

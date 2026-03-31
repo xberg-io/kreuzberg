@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/jats/sample_article.jats",
+  "file_type": "jats",
+  "file_size": 7772,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "jats test: sample_article",
+    "source": "pandoc-generated",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "markdown_file": "../../../../test_documents/ground_truth/jats/sample_article.md",
+    "source": "pandoc",
+    "text_file": "../../../../test_documents/ground_truth/jats/sample_article.txt"
+  }
+}

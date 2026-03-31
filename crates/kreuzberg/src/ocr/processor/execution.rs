@@ -12,11 +12,12 @@ use crate::image::normalize_image_dpi;
 use crate::ocr::cache::OcrCache;
 use crate::ocr::conversion::{TsvRow, iterator_word_to_element, tsv_row_to_element};
 use crate::ocr::error::OcrError;
-use crate::ocr::hocr::convert_hocr_to_markdown;
+use crate::ocr::hocr_parser::parse_hocr_to_internal_document;
 #[cfg(feature = "pdf")]
 use crate::ocr::table::post_process_table;
 use crate::ocr::table::{extract_words_from_tsv, reconstruct_table, table_to_markdown};
 use crate::ocr::types::{BatchItemResult, TesseractConfig};
+use crate::types::internal::ElementKind;
 use crate::types::{OcrExtractionResult, OcrTable, OcrTableBoundingBox};
 use kreuzberg_tesseract::{TessPageSegMode, TessPolyBlockType, TesseractAPI};
 use std::cell::RefCell;
@@ -937,9 +938,18 @@ pub(super) fn perform_ocr(
                 .get_hocr_text(0)
                 .map_err(|e| OcrError::ProcessingFailed(format!("Failed to extract hOCR: {}", e)))?;
 
-            // Pass output format from extraction config
-            let output_format = extraction_config.map(|c| c.output_format);
-            let content = convert_hocr_to_markdown(&hocr, None, output_format)?;
+            // Parse hOCR into structured InternalDocument, then flatten to text.
+            let internal_doc = parse_hocr_to_internal_document(&hocr);
+            let content = internal_doc
+                .elements
+                .iter()
+                .filter_map(|e| match e.kind {
+                    ElementKind::PageBreak => Some("\n---\n".to_string()),
+                    _ if !e.text.is_empty() => Some(e.text.clone()),
+                    _ => None,
+                })
+                .collect::<Vec<_>>()
+                .join("\n\n");
 
             // Set mime_type based on actual output format
             let mime_type = extraction_config

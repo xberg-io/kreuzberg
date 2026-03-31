@@ -10,6 +10,7 @@
 #[cfg(all(test, feature = "xml"))]
 mod jats_extractor_tests {
     use kreuzberg::core::config::ExtractionConfig;
+    use kreuzberg::extraction::derive::derive_extraction_result;
     use kreuzberg::extractors::JatsExtractor;
     use kreuzberg::plugins::{DocumentExtractor, Plugin};
     use std::path::PathBuf;
@@ -78,12 +79,16 @@ mod jats_extractor_tests {
 
         let extractor = JatsExtractor::new();
         let config = ExtractionConfig::default();
-        let result = extractor
+        let doc_result = extractor
             .extract_bytes(jats_content.as_bytes(), "application/x-jats+xml", &config)
             .await;
 
-        assert!(result.is_ok());
-        let extraction = result.expect("Operation failed");
+        assert!(doc_result.is_ok());
+        let extraction = derive_extraction_result(
+            doc_result.expect("Operation failed"),
+            false,
+            kreuzberg::OutputFormat::Plain,
+        );
 
         assert!(extraction.content.contains("Effects of Caffeine"));
         assert!(extraction.content.contains("Introduction"));
@@ -139,12 +144,16 @@ mod jats_extractor_tests {
 
         let extractor = JatsExtractor::new();
         let config = ExtractionConfig::default();
-        let result = extractor
+        let doc_result = extractor
             .extract_bytes(jats_content.as_bytes(), "application/x-jats+xml", &config)
             .await;
 
-        assert!(result.is_ok());
-        let extraction = result.expect("Operation failed");
+        assert!(doc_result.is_ok());
+        let extraction = derive_extraction_result(
+            doc_result.expect("Operation failed"),
+            false,
+            kreuzberg::OutputFormat::Plain,
+        );
 
         let subject = extraction.metadata.subject.expect("Operation failed");
         assert!(subject.contains("Alpha"));
@@ -196,12 +205,16 @@ mod jats_extractor_tests {
 
         let extractor = JatsExtractor::new();
         let config = ExtractionConfig::default();
-        let result = extractor
+        let doc_result = extractor
             .extract_bytes(jats_content.as_bytes(), "application/x-jats+xml", &config)
             .await;
 
-        assert!(result.is_ok());
-        let extraction = result.expect("Operation failed");
+        assert!(doc_result.is_ok());
+        let extraction = derive_extraction_result(
+            doc_result.expect("Operation failed"),
+            false,
+            kreuzberg::OutputFormat::Plain,
+        );
 
         assert!(extraction.content.contains("Introduction"));
         assert!(extraction.content.contains("Methods"));
@@ -268,12 +281,16 @@ mod jats_extractor_tests {
 
         let extractor = JatsExtractor::new();
         let config = ExtractionConfig::default();
-        let result = extractor
+        let doc_result = extractor
             .extract_bytes(jats_content.as_bytes(), "application/x-jats+xml", &config)
             .await;
 
-        assert!(result.is_ok());
-        let extraction = result.expect("Operation failed");
+        assert!(doc_result.is_ok());
+        let extraction = derive_extraction_result(
+            doc_result.expect("Operation failed"),
+            false,
+            kreuzberg::OutputFormat::Plain,
+        );
 
         assert_eq!(extraction.tables.len(), 1);
         let table = &extraction.tables[0];
@@ -322,12 +339,16 @@ mod jats_extractor_tests {
 
         let extractor = JatsExtractor::new();
         let config = ExtractionConfig::default();
-        let result = extractor
+        let doc_result = extractor
             .extract_bytes(jats_content.as_bytes(), "application/x-jats+xml", &config)
             .await;
 
-        assert!(result.is_ok());
-        let extraction = result.expect("Operation failed");
+        assert!(doc_result.is_ok());
+        let extraction = derive_extraction_result(
+            doc_result.expect("Operation failed"),
+            false,
+            kreuzberg::OutputFormat::Plain,
+        );
 
         assert_eq!(extraction.tables.len(), 2);
         assert_eq!(extraction.tables[0].cells[0].len(), 2);
@@ -385,12 +406,16 @@ mod jats_extractor_tests {
 
         let extractor = JatsExtractor::new();
         let config = ExtractionConfig::default();
-        let result = extractor
+        let doc_result = extractor
             .extract_bytes(jats_content.as_bytes(), "application/x-jats+xml", &config)
             .await;
 
-        assert!(result.is_ok());
-        let extraction = result.expect("Operation failed");
+        assert!(doc_result.is_ok());
+        let extraction = derive_extraction_result(
+            doc_result.expect("Operation failed"),
+            false,
+            kreuzberg::OutputFormat::Plain,
+        );
 
         assert!(extraction.content.contains("Previous research"));
         assert!(extraction.content.contains("Other studies"));
@@ -424,12 +449,16 @@ mod jats_extractor_tests {
 
         let extractor = JatsExtractor::new();
         let config = ExtractionConfig::default();
-        let result = extractor
+        let doc_result = extractor
             .extract_bytes(jats_content.as_bytes(), "application/x-jats+xml", &config)
             .await;
 
-        assert!(result.is_ok());
-        let extraction = result.expect("Operation failed");
+        assert!(doc_result.is_ok());
+        let extraction = derive_extraction_result(
+            doc_result.expect("Operation failed"),
+            false,
+            kreuzberg::OutputFormat::Plain,
+        );
 
         let subject = extraction.metadata.subject.expect("Operation failed");
         assert!(subject.contains("background") || subject.contains("Background") || subject.contains("Abstract"));
@@ -452,12 +481,16 @@ mod jats_extractor_tests {
 
         let extractor = JatsExtractor::new();
         let config = ExtractionConfig::default();
-        let result = extractor
+        let doc_result = extractor
             .extract_bytes(jats_content.as_bytes(), "application/x-jats+xml", &config)
             .await;
 
-        assert!(result.is_ok());
-        let extraction = result.expect("Operation failed");
+        assert!(doc_result.is_ok());
+        let extraction = derive_extraction_result(
+            doc_result.expect("Operation failed"),
+            false,
+            kreuzberg::OutputFormat::Plain,
+        );
 
         assert!(extraction.metadata.subject.is_some());
     }
@@ -481,12 +514,16 @@ mod jats_extractor_tests {
 
         let extractor = JatsExtractor::new();
         let config = ExtractionConfig::default();
-        let result = extractor
+        let doc_result = extractor
             .extract_bytes(jats_content.as_bytes(), "application/x-jats+xml", &config)
             .await;
 
-        assert!(result.is_ok());
-        let extraction = result.expect("Operation failed");
+        assert!(doc_result.is_ok());
+        let extraction = derive_extraction_result(
+            doc_result.expect("Operation failed"),
+            false,
+            kreuzberg::OutputFormat::Plain,
+        );
 
         assert!(extraction.metadata.created_at.is_some());
     }
@@ -506,12 +543,16 @@ mod jats_extractor_tests {
 
         let extractor = JatsExtractor::new();
         let config = ExtractionConfig::default();
-        let result = extractor
+        let doc_result = extractor
             .extract_bytes(jats_content.as_bytes(), "application/x-jats+xml", &config)
             .await;
 
-        assert!(result.is_ok());
-        let extraction = result.expect("Operation failed");
+        assert!(doc_result.is_ok());
+        let extraction = derive_extraction_result(
+            doc_result.expect("Operation failed"),
+            false,
+            kreuzberg::OutputFormat::Plain,
+        );
         assert!(extraction.content.is_empty() || extraction.content.trim().is_empty());
     }
 
@@ -573,12 +614,16 @@ mod jats_extractor_tests {
 
         let extractor = JatsExtractor::new();
         let config = ExtractionConfig::default();
-        let result = extractor
+        let doc_result = extractor
             .extract_bytes(jats_content.as_bytes(), "application/x-jats+xml", &config)
             .await;
 
-        assert!(result.is_ok());
-        let extraction = result.expect("Operation failed");
+        assert!(doc_result.is_ok());
+        let extraction = derive_extraction_result(
+            doc_result.expect("Operation failed"),
+            false,
+            kreuzberg::OutputFormat::Plain,
+        );
 
         assert!(extraction.content.contains("First paragraph"));
         assert!(extraction.content.contains("Second paragraph"));
@@ -606,12 +651,16 @@ mod jats_extractor_tests {
 
         let extractor = JatsExtractor::new();
         let config = ExtractionConfig::default();
-        let result = extractor
+        let doc_result = extractor
             .extract_bytes(jats_content.as_bytes(), "application/x-jats+xml", &config)
             .await;
 
-        assert!(result.is_ok());
-        let extraction = result.expect("Operation failed");
+        assert!(doc_result.is_ok());
+        let extraction = derive_extraction_result(
+            doc_result.expect("Operation failed"),
+            false,
+            kreuzberg::OutputFormat::Plain,
+        );
 
         let subject = extraction.metadata.subject.expect("Operation failed");
         assert!(subject.contains("keyword") || subject.contains("Keyword"));
@@ -625,12 +674,16 @@ mod jats_extractor_tests {
 
         let test_file = jats_fixture("sample_article.jats");
         if test_file.exists() {
-            let result = extractor
+            let doc_result = extractor
                 .extract_file(&test_file, "application/x-jats+xml", &config)
                 .await;
 
-            assert!(result.is_ok());
-            let extraction = result.expect("Operation failed");
+            assert!(doc_result.is_ok());
+            let extraction = derive_extraction_result(
+                doc_result.expect("Operation failed"),
+                false,
+                kreuzberg::OutputFormat::Plain,
+            );
 
             assert!(!extraction.content.is_empty());
             assert!(extraction.metadata.subject.is_some());

@@ -7,24 +7,97 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased]
+## [4.7.0] - 2026-03-30
 
-### Changed
+### Added
 
-- **Strict config validation via `#[serde(deny_unknown_fields)]`**: All extraction config structs (30 total) now reject unknown keys during deserialization. Typos and invalid fields in TOML/YAML/JSON config files are caught at load time instead of silently ignored. Enums are excluded.
+- **Unified InternalDocument architecture**: All extractors now return a canonical `InternalDocument` with typed elements, relationships, images, and tables. Replaces format-specific intermediate representations.
+- **Unified rendering layer**: New `new_markdown.rs` renderer produces CommonMark from `InternalDocument`, supporting headings, lists, tables, code blocks, formulas, footnotes, images, and inline annotations (bold, italic, links).
+- **PDF structure pipeline**: Full rewrite of PDF extraction using `page.text().all()` for clean text, char-indexed font metadata for heading/bold detection, segment-based paragraph gap detection, and pdfium segment bounding boxes for precise paragraph regions.
+- **Image extraction across 8 formats**: Embedded images now extracted as `ExtractedImage` with binary data, format, dimensions, and alt text. Supported for DOCX, PPTX, PDF, EPUB, ODT, HTML (data URIs), RTF (hex-decoded), and Markdown/MDX/Jupyter. Markdown output renders as `![alt](image_N.ext)` with binary data in `ExtractionResult.images`.
+- **Recursive OCR on embedded images**: When OCR is configured, extracted images from EPUB, ODT, HTML, and RTF are processed through `process_images_with_ocr()`, producing nested `ExtractionResult` in `ExtractedImage.ocr_result`.
+- **PDF watermark artifact filtering**: Uses pdfium's `/Artifact` content marks (PDF tagged content spec) to identify and filter watermark text from output.
+- **Vertical table header reconstruction**: Detects and fixes rotated column headers in PDF tables where pdfium extracts characters as spaced single characters in reverse order (e.g., "y t i r o h t u A o N" → "NoAuthority").
+- **Position-based page furniture detection**: Cross-page repeating text detection now uses actual page margins (top/bottom 10%) and page heights instead of word-count heuristics.
+- **html-to-markdown v3 migration**: Switched to html-to-markdown v3 with unified `convert()` API returning `ConversionResult` (content, metadata, tables, images, document structure in a single call). Uses visitor-based table collection. hOCR module vendored as `table_core`.
+- **Markdown ground truth for 336 documents**: Pandoc-generated GT across 10 formats (DOCX, HTML, RTF, PPTX, EPUB, ODT, XLSX, XLS, CSV, DOC) for structural quality benchmarking. All 371 markdown GT files cleaned of HTML remnants (415 tables converted to GFM pipe tables, 28 inline tags fixed).
+- **Multi-format benchmark support**: Pipeline benchmark now scores all document formats (not just PDF), shows file type per document, replaces NaN with "—", and reports ground truth loading errors.
+- **Comprehensive PDF pipeline tracing**: Trace-level logging across heading lifecycle (layout overrides, demotion passes, furniture detection, render layer) for debugging.
+- **Pages API for PDF extraction**: Per-page content now properly wired through the extraction pipeline via `prebuilt_pages` on `InternalDocument`, making `result.pages` available for PDF documents.
+- **TOON wire format**: Token-Oriented Object Notation support across CLI (`--format toon`), API (`Accept: application/toon`), MCP (`response_format: "toon"`), and all 11 language bindings (Python, Node.js, WASM, C FFI, PHP, Ruby, Elixir, Go, Java, C#, R). TOON is a token-efficient alternative to JSON for LLM prompts — losslessly convertible to/from JSON but uses ~30-50% fewer tokens. Core functions `serialize_to_toon()` and `serialize_to_json()` exposed as public API.
+- **Renderer registry**: Trait-based `Renderer` and `RendererRegistry` for custom output format plugins. Built-in renderers (markdown, HTML, djot, plain) registered at startup. External crates can register custom renderers (e.g., DOCX output) via `register_renderer()`.
+- **comrak-based rendering**: Markdown and HTML rendering now uses comrak AST bridge instead of hand-rolled string building. Produces GFM-compliant markdown and semantic HTML5. Paragraph consolidation merges consecutive same-format paragraphs at sentence boundaries (fixes DOCX CV fragmentation where each visual line was a separate `*...*` italic block).
+- **Benchmark quality scoring improvements**: Content normalization for HTML blocks in markdown scoring, Image↔Paragraph and Table↔ListItem type compatibility, `correct` field in `QualityMetrics`, HTML detection in ground truth validation.
+- **URI extraction**: New `Uri` type with `UriKind` classification (Hyperlink, Image, Anchor, Citation, Reference, Email) extracted from 20+ document formats. URIs are always-on, deduplicated by (url, kind) pair, and capped at 100k per document. Available in `ExtractionResult.uris`.
+- **Recursive email attachment extraction**: EML/MSG/PST attachments are now recursively extracted as `ArchiveEntry` children using the same pattern as archive extractors. Nested `message/rfc822` parts also extracted as children. Respects `max_archive_depth`.
+- **PDF embedded file extraction**: PDF file attachments (portfolios) are now recursively extracted as `ArchiveEntry` children via lopdf. Includes filename sanitization, decompression size limits, and name tree depth guards.
+- **PDF bookmark/outline extraction**: Document outlines (bookmarks) extracted as URIs — page destinations as `UriKind::Anchor`, external links as `UriKind::Hyperlink`.
+- **DOCX/PPTX embedded object extraction**: OLE objects and embedded files from `word/embeddings/` and `ppt/embeddings/` directories are now recursively extracted as children.
+- **PPTX hyperlink extraction**: Hyperlinks from slide XML (`<a:hlinkClick>` in run properties) now resolved via relationship files and extracted as URIs.
+- **Image path resolution for markup formats**: When using `extract_file()`, relative image paths in Markdown, MDX, LaTeX, RST, OrgMode, Typst, Djot, and DocBook are resolved from the filesystem and extracted as `ExtractedImage` data. OS-agnostic with path traversal prevention.
+- **Unified image OCR pipeline stage**: Image OCR moved from per-extractor calls to a single pipeline stage after derivation. All extracted images (including path-resolved markup images) are now OCR'd uniformly when OCR is configured. Concurrency limited to 8 concurrent tasks.
+- **FictionBook image and link extraction**: Base64-encoded `<binary>` images and `<a>` hyperlinks now extracted from FB2 documents.
+- **Apple iWork extractor improvements**: Numbers outputs tables instead of paragraphs, Keynote has improved slide structure, Pages has heading detection. All three extract metadata from ZIP plist.
+
+### Code Intelligence
+
+- **Tree-sitter integration** for 248 programming languages via [tree-sitter-language-pack](https://github.com/kreuzberg-dev/tree-sitter-language-pack)
+  - Extract functions, classes, imports, exports, symbols, docstrings, diagnostics
+  - Syntax-aware code chunking
+  - Language detection from file extension and shebang
+  - Dynamic grammar download (native) / 30-language static subset (WASM)
+  - New `tree-sitter` and `tree-sitter-wasm` feature flags (included in `full` and `wasm-target`)
+  - `TreeSitterConfig` and `TreeSitterProcessConfig` in `ExtractionConfig`
+  - Re-exported TSLP types (`ProcessResult`, `StructureItem`, `FileMetrics`, etc.)
+  - [TSLP documentation](https://docs.tree-sitter-language-pack.kreuzberg.dev)
+
+### Typed Metadata
+
+- New `FormatMetadata` variants: `Code`, `Csv`, `Bibtex`, `Citation`, `FictionBook`, `Dbf`, `Jats`, `Epub`, `Pst`
+- Extended `PptxMetadata` with `image_count` and `table_count`
+- Migrated deprecated `metadata.additional` writes to typed fields across all extractors
+- Strong types for all new metadata variants across all 11 language bindings
 
 ### Fixed
 
+- **Metadata standardization**: Metadata from PPTX, Excel, ODT, RST, OrgMode, Typst, RTF, JATS, DOC, PPT, HTML, Email, BibTeX, and Citation extractors now mapped to standard `Metadata` struct fields (title, authors, dates, keywords, language) instead of only `additional` map.
+- **MDX link parity with Markdown**: Links and annotations in headings and list items now extracted (was silently dropped).
+- **RST hyperlink extraction**: Inline hyperlinks (`` `text <url>`_ ``) and reference targets now extracted.
+- **LaTeX `\url{}` extraction**: `\url{...}` commands now extracted as URIs alongside `\href`.
+- **OrgMode image detection**: Added .webp, .bmp, .tiff, .avif to recognized image extensions.
+- **BibTeX URI classification**: URL fields now correctly classified as Hyperlink (was Citation). Entry title used as label instead of BibTeX key.
+- **JATS title field**: Article title now stored in `metadata.title` (was only in `subject`).
+- **PDF bookmark stack safety**: Sibling traversal converted from recursion to iterative loop preventing stack overflow on wide outlines.
+- **PDF embedded file security**: Filename sanitization (strip directory components), decompressed size limit (50MB), name tree depth limit (50 levels).
+
+- **Tesseract C++ exception crash** (#606): Fixed fatal runtime error where C++ exceptions from Tesseract unwound through Rust FFI frames, triggering `std::terminate()`. Now compiles Tesseract with `-fno-exceptions` on macOS, Linux, and MinGW. The Tesseract CLI executable target (which uses `try`/`catch`) is patched out of CMakeLists.txt at build time since only the library is needed.
+
+- **ExtractionConfig rejects unknown fields**: `#[serde(deny_unknown_fields)]` added to `ExtractionConfig`. Previously, typos or invalid fields (e.g., `layout_analysis` instead of `layout`) were silently ignored.
+- **RTF delimiter space consumption**: Fixed space-in-word bug where font encoding directives (`\loch`, `\hich`, `\dbch`) caused spaces mid-word ("H eading" → "Heading"). Root cause: RTF spec requires consuming trailing delimiter space after control words.
+- **PPTX markdown mode**: Derive plain/markdown mode from `output_format` config instead of hardcoding `plain=true`. Tables now render as markdown tables, lists get bullet markers, text elements get newline separation.
+- **EPUB test compilation**: Added `InternalDocument::content()` method and fixed `epub_spine_semantics_tests` to use it instead of removed `.content` field.
+- **HTML extraction rewrite**: Replaced ~400-line manual HTML tag parser with html-to-markdown v3's `DocumentStructure` mapping. Single-pass conversion eliminates CSS/script content leakage and `[image: X]` placeholder artifacts.
+- **Chunking heading context with plain output**: Fixed `heading_context` always returning `None` when using plain text output format. The markdown chunker now receives the original markdown for heading map building even when content is rendered as plain text.
+- **WASM build compatibility**: Inlined workspace-inherited fields (`version`, `edition`, `authors`) in kreuzberg-wasm Cargo.toml because wasm-pack 0.14.0 cannot resolve `field.workspace = true` references.
+- **Pre-commit hooks**: Fixed rumdl hook config (use `rumdl-fmt` from official repo), wasm build (feature-gate layout config access), kreuzberg-node build (missing `formatted_content` field), broken relative links in READMEs and CHANGELOG.
+- **Binding compilation**: Added missing `formatted_content` field to kreuzberg-py and kreuzberg-php binding crates.
+- **PDF heading body_size_guard**: Narrowed guard range from `≤ body+0.5` to `body±1.5pt` so headings well below body font size (e.g., 8pt in 12pt body) pass through.
+- **RTF table extraction**: Fixed critical bug where table cell content was written to both result string and TableState, causing cells to appear as individual lines instead of proper markdown tables.
+- **DOCX merged cells**: Repeat content across gridSpan (horizontal) and vMerge (vertical) spans. Added `source_path` field to `ExtractedImage` for DOCX image relationship paths.
+- **DOCX formatting**: Merge adjacent runs with identical formatting to prevent spurious `****` sequences. Strip `<u>` underline HTML tags.
 - **Python wheel `__isoc23_strtoll` error on older Linux distributions** (#588): Downgraded the Linux build environment `manylinux` target from `manylinux_2_39` to `manylinux_2_28` for pre-compiled Python wheels to ensure compatibility with systems using glibc versions prior to 2.39 (e.g., Ubuntu 20.04/22.04, Debian 11/12).
-- **`clear_ocr_backends` now resets to built-in defaults**: Previously, clearing OCR backends permanently emptied the registry, causing subsequent OCR extractions to fail with "No available OCR backends for pipeline." Now re-registers Tesseract and PaddleOCR defaults after clearing.
+- **`clear_ocr_backends` now fully clears the registry**: Calls `shutdown_all()` instead of `reset_to_defaults()`, so the backend list is empty after clearing as expected by the API contract.
 - **Go macOS link failure**: Added missing `-framework Foundation` to CGO LDFLAGS. ORT's CoreML provider uses Foundation for NSLog/NSFileManager, causing undefined symbol errors on macOS.
 - **Tesseract Windows MinGW build (Elixir/Go/C FFI publish)**: CMake resolved bare `g++` to MSVC `cl.exe` on CI runners with both toolchains. Added `resolve_mingw_compiler()` to find absolute paths from MSYS2 subsystem dirs. Bumped Tesseract cache key to invalidate stale MSVC-compiled artifacts.
 - **Windows GNU ORT linking**: `bundled` strategy on Windows GNU now uses dynamic linking with pre-downloaded Microsoft ORT (pyke.io has no static binaries for `x86_64-pc-windows-gnu`). Documented ONNX Runtime DLL requirement for Go, Elixir, and C/C++ on Windows.
 
-### Documented
+### Changed
 
-- Windows feature limitations for Go and C/C++ bindings (no PaddleOCR, layout detection, or auto-rotate on MinGW/GNU target).
-- ONNX Runtime runtime requirement for Go, Elixir, and C/C++ Windows bindings.
+- **PDF text extraction**: Full rewrite from segment-indexed assembly to `page.text().all()` + char-indexed font metadata. Produces cleaner text with correct word spacing.
+- **hOCR table reconstruction vendored**: `HocrWord`, `reconstruct_table`, `table_to_markdown` moved from `html-to-markdown-rs::hocr` to `kreuzberg::table_core` module.
+- **CLI format flags**: `--format` (`-f`) now supports `text`, `json`, and `toon` wire formats. `--output-format` renamed to `--content-format` (deprecated alias kept with warning). `OutputFormat` enum gains `Custom(String)` variant for extensible format plugins.
+- **html-to-markdown-rs v3.0.0**: Switched from git dependency to crates.io release.
+- **License policy**: MPL-2.0 and LGPL-2.1 no longer globally allowed — pinned to specific crate exceptions (cbindgen, option-ext, r-efi). Unicode-DFS-2016 allowed for comrak dependency.
 
 ---
 
@@ -760,7 +833,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Markdown formatting**: Bold (`**`), italic (`*`), underline (`<u>`), strikethrough (`~~`), and hyperlinks rendered as markdown.
 - **Table formatting metadata**: Vertical merge (`v_merge`) handled correctly, `grid_span` for horizontal merging, `is_header` row detection.
 - **Drawing image placeholders**: `![alt](image_N)` placeholders in markdown output for embedded images.
-
 
 #### DOCX Extractor Performance & Code Quality
 

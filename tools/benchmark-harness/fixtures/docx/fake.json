@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/docx/fake.docx",
+  "file_type": "docx",
+  "file_size": 36602,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "docx test: fake",
+    "source": "pandoc-generated",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/docx/fake.txt",
+    "markdown_file": "../../../../test_documents/ground_truth/docx/fake.md",
+    "source": "pandoc"
+  }
+}

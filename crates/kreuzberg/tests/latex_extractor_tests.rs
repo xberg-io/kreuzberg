@@ -18,6 +18,7 @@
 #![cfg(feature = "office")]
 
 use kreuzberg::core::config::ExtractionConfig;
+use kreuzberg::extraction::derive::derive_extraction_result;
 use kreuzberg::extractors::latex::LatexExtractor;
 use kreuzberg::plugins::DocumentExtractor;
 use std::fs;
@@ -41,10 +42,11 @@ async fn test_latex_minimal_extraction() {
     let content = fs::read(test_file_path("minimal.tex")).expect("Failed to read minimal.tex");
 
     let extractor = LatexExtractor::new();
-    let result = extractor
+    let doc = extractor
         .extract_bytes(&content, "text/x-tex", &ExtractionConfig::default())
         .await
         .expect("Should extract minimal LaTeX");
+    let result = derive_extraction_result(doc, false, kreuzberg::OutputFormat::Plain);
 
     assert!(
         !result.content.is_empty(),
@@ -63,10 +65,11 @@ async fn test_latex_metadata_extraction() {
     let content = fs::read(test_file_path("basic_sections.tex")).expect("Failed to read basic_sections.tex");
 
     let extractor = LatexExtractor::new();
-    let result = extractor
+    let doc = extractor
         .extract_bytes(&content, "text/x-tex", &ExtractionConfig::default())
         .await
         .expect("Should extract LaTeX with metadata");
+    let result = derive_extraction_result(doc, false, kreuzberg::OutputFormat::Plain);
 
     assert_eq!(
         result.metadata.additional.get("title").and_then(|v| v.as_str()),
@@ -92,10 +95,11 @@ async fn test_latex_section_hierarchy() {
     let content = fs::read(test_file_path("basic_sections.tex")).expect("Failed to read basic_sections.tex");
 
     let extractor = LatexExtractor::new();
-    let result = extractor
+    let doc = extractor
         .extract_bytes(&content, "text/x-tex", &ExtractionConfig::default())
         .await
         .expect("Should extract LaTeX sections");
+    let result = derive_extraction_result(doc, false, kreuzberg::OutputFormat::Plain);
 
     assert!(
         result.content.contains("Introduction"),
@@ -133,10 +137,11 @@ async fn test_latex_text_formatting() {
     let content = fs::read(test_file_path("formatting.tex")).expect("Failed to read formatting.tex");
 
     let extractor = LatexExtractor::new();
-    let result = extractor
+    let doc = extractor
         .extract_bytes(&content, "text/x-tex", &ExtractionConfig::default())
         .await
         .expect("Should extract LaTeX formatting");
+    let result = derive_extraction_result(doc, false, kreuzberg::OutputFormat::Plain);
 
     assert!(
         result.content.contains("Text Formatting"),
@@ -184,10 +189,11 @@ async fn test_latex_math_extraction() {
     let content = fs::read(test_file_path("math.tex")).expect("Failed to read math.tex");
 
     let extractor = LatexExtractor::new();
-    let result = extractor
+    let doc = extractor
         .extract_bytes(&content, "text/x-tex", &ExtractionConfig::default())
         .await
         .expect("Should extract LaTeX math");
+    let result = derive_extraction_result(doc, false, kreuzberg::OutputFormat::Plain);
 
     assert!(
         result.content.contains("Math Formulas"),
@@ -230,10 +236,11 @@ async fn test_latex_table_extraction() {
     let content = fs::read(test_file_path("tables.tex")).expect("Failed to read tables.tex");
 
     let extractor = LatexExtractor::new();
-    let result = extractor
+    let doc = extractor
         .extract_bytes(&content, "text/x-tex", &ExtractionConfig::default())
         .await
         .expect("Should extract LaTeX tables");
+    let result = derive_extraction_result(doc, false, kreuzberg::OutputFormat::Plain);
 
     assert!(
         result.content.contains("Tables"),
@@ -292,10 +299,11 @@ async fn test_latex_list_itemize() {
     let content = fs::read(test_file_path("lists.tex")).expect("Failed to read lists.tex");
 
     let extractor = LatexExtractor::new();
-    let result = extractor
+    let doc = extractor
         .extract_bytes(&content, "text/x-tex", &ExtractionConfig::default())
         .await
         .expect("Should extract LaTeX lists");
+    let result = derive_extraction_result(doc, false, kreuzberg::OutputFormat::Plain);
 
     assert!(
         result.content.contains("First item"),
@@ -323,10 +331,11 @@ async fn test_latex_list_nested() {
     let content = fs::read(test_file_path("lists.tex")).expect("Failed to read lists.tex");
 
     let extractor = LatexExtractor::new();
-    let result = extractor
+    let doc = extractor
         .extract_bytes(&content, "text/x-tex", &ExtractionConfig::default())
         .await
         .expect("Should extract LaTeX nested lists");
+    let result = derive_extraction_result(doc, false, kreuzberg::OutputFormat::Plain);
 
     assert!(
         result.content.contains("Nested item 1"),
@@ -344,10 +353,11 @@ async fn test_latex_list_enumerate() {
     let content = fs::read(test_file_path("lists.tex")).expect("Failed to read lists.tex");
 
     let extractor = LatexExtractor::new();
-    let result = extractor
+    let doc = extractor
         .extract_bytes(&content, "text/x-tex", &ExtractionConfig::default())
         .await
         .expect("Should extract LaTeX enumerate");
+    let result = derive_extraction_result(doc, false, kreuzberg::OutputFormat::Plain);
 
     assert!(
         result.content.contains("First numbered item"),
@@ -370,10 +380,11 @@ async fn test_latex_list_description() {
     let content = fs::read(test_file_path("lists.tex")).expect("Failed to read lists.tex");
 
     let extractor = LatexExtractor::new();
-    let result = extractor
+    let doc = extractor
         .extract_bytes(&content, "text/x-tex", &ExtractionConfig::default())
         .await
         .expect("Should extract LaTeX description lists");
+    let result = derive_extraction_result(doc, false, kreuzberg::OutputFormat::Plain);
 
     assert!(
         result.content.contains("Term 1"),
@@ -412,10 +423,11 @@ async fn test_latex_unicode_handling() {
     let content = fs::read(test_file_path("unicode.tex")).expect("Failed to read unicode.tex");
 
     let extractor = LatexExtractor::new();
-    let result = extractor
+    let doc = extractor
         .extract_bytes(&content, "text/x-tex", &ExtractionConfig::default())
         .await
         .expect("Should extract LaTeX with Unicode");
+    let result = derive_extraction_result(doc, false, kreuzberg::OutputFormat::Plain);
 
     assert!(
         result.content.contains("אֳרָנִים") || result.content.contains("Hebrew"),
@@ -433,10 +445,11 @@ async fn test_latex_no_content_loss_bug() {
     let content = fs::read(test_file_path("minimal.tex")).expect("Failed to read minimal.tex");
 
     let extractor = LatexExtractor::new();
-    let result = extractor
+    let doc = extractor
         .extract_bytes(&content, "text/x-tex", &ExtractionConfig::default())
         .await
         .expect("Should extract minimal LaTeX");
+    let result = derive_extraction_result(doc, false, kreuzberg::OutputFormat::Plain);
 
     assert!(
         !result.content.is_empty(),
@@ -457,15 +470,17 @@ async fn test_latex_extraction_deterministic() {
 
     let extractor = LatexExtractor::new();
 
-    let result1 = extractor
+    let doc_result1 = extractor
         .extract_bytes(&content, "text/x-tex", &ExtractionConfig::default())
         .await
         .expect("Should extract LaTeX (first run)");
+    let result1 = derive_extraction_result(doc_result1, false, kreuzberg::OutputFormat::Plain);
 
-    let result2 = extractor
+    let doc_result2 = extractor
         .extract_bytes(&content, "text/x-tex", &ExtractionConfig::default())
         .await
         .expect("Should extract LaTeX (second run)");
+    let result2 = derive_extraction_result(doc_result2, false, kreuzberg::OutputFormat::Plain);
 
     assert_eq!(
         result1.content, result2.content,
@@ -483,10 +498,11 @@ async fn test_latex_empty_document_handling() {
     let empty_latex = b"\\documentclass{article}\n\\begin{document}\n\\end{document}";
 
     let extractor = LatexExtractor::new();
-    let result = extractor
+    let doc = extractor
         .extract_bytes(empty_latex, "text/x-tex", &ExtractionConfig::default())
         .await
         .expect("Should handle empty LaTeX without panicking");
+    let result = derive_extraction_result(doc, false, kreuzberg::OutputFormat::Plain);
 
     assert!(
         result.content.trim().is_empty(),

@@ -251,6 +251,7 @@ The test runner produces three types of output:
 - **⊘** - Test skipped (feature not available)
 
 Final summary shows:
+
 - Total number of tests
 - Number passed
 - Number failed

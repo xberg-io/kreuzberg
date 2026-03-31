@@ -1,6 +1,6 @@
 {
 	"name": "@kreuzberg/node",
-	"version": "4.6.3",
+	"version": "4.7.0",
 	"description": "Kreuzberg document intelligence - Node.js native bindings",
 	"author": {
 		"name": "Na'aman Hirschfeld",
@@ -106,7 +106,7 @@
 		"version": "napi version"
 	},
 	"devDependencies": {
-		"@napi-rs/cli": "^3.5.1",
+		"@napi-rs/cli": "^3.6.0",
 		"@types/archiver": "^7.0.0",
 		"@types/node": "^25.5.0",
 		"@types/which": "^3.0.4",

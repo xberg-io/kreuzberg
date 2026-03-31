@@ -35,8 +35,8 @@
 //! ```
 
 use super::error::PdfError;
+use ahash::AHashMap;
 use once_cell::sync::Lazy;
-use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::sync::RwLock;
@@ -50,7 +50,7 @@ use pdfium_render::prelude::FontDescriptor;
 /// Protected by `RwLock` for concurrent read access during PDF processing.
 static FONT_CACHE: Lazy<RwLock<FontCacheState>> = Lazy::new(|| {
     RwLock::new(FontCacheState {
-        fonts: HashMap::new(),
+        fonts: AHashMap::new(),
         initialized: false,
     })
 });
@@ -58,7 +58,7 @@ static FONT_CACHE: Lazy<RwLock<FontCacheState>> = Lazy::new(|| {
 /// Internal state for the font cache.
 struct FontCacheState {
     /// Map from font path (relative identifier) to loaded font bytes
-    fonts: HashMap<String, Arc<[u8]>>,
+    fonts: AHashMap<String, Arc<[u8]>>,
     /// Whether the cache has been initialized
     initialized: bool,
 }
@@ -113,8 +113,8 @@ fn load_font_file(path: &Path) -> Result<Arc<[u8]>, PdfError> {
 /// # Returns
 ///
 /// A HashMap mapping font identifiers (relative paths) to loaded font bytes.
-fn discover_system_fonts() -> Result<HashMap<String, Arc<[u8]>>, PdfError> {
-    let mut fonts = HashMap::new();
+fn discover_system_fonts() -> Result<AHashMap<String, Arc<[u8]>>, PdfError> {
+    let mut fonts = AHashMap::new();
     const MAX_FONT_SIZE: u64 = 50 * 1024 * 1024;
 
     for dir in system_font_directories() {

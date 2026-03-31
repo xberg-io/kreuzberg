@@ -1,11 +1,12 @@
-//! ExtractionResult -> R named list conversion
+//! ExtractionResult -> R named list conversion and serialization
 
 use crate::helpers::json_to_robj;
 use crate::error::to_r_error;
 use extendr_api::prelude::*;
+use kreuzberg::ExtractionResult;
 
 /// Convert an ExtractionResult to an R named list
-pub fn extraction_result_to_list(result: kreuzberg::ExtractionResult) -> extendr_api::Result<List> {
+pub fn extraction_result_to_list(result: ExtractionResult) -> extendr_api::Result<List> {
     // Serialize to JSON then convert to R objects
     let json_value = serde_json::to_value(&result).map_err(to_r_error)?;
     let robj = json_to_robj(&json_value)?;

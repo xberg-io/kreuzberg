@@ -13,7 +13,7 @@ This test application validates the Kreuzberg C# library (v4.3.6) by testing doc
 
 ## Project Structure
 
-```
+```text
 .
 ├── KreuzbergSmokeTest.csproj    # .NET project file
 ├── Program.cs                    # Main smoke test runner
@@ -104,7 +104,7 @@ dotnet run -c Release
 
 ### Standard Extraction Tests
 
-```
+```text
 Starting kreuzberg 4.3.6 test suite
 Test documents directory: /path/to/test_documents
 --------------------------------------------------------------------------------
@@ -131,7 +131,7 @@ Failed: 0/7
 
 If the native library isn't found or PDFium isn't bundled:
 
-```
+```text
 TEST  PDF             tiny.pdf                       FAIL
       Error: KreuzbergException: Failed to extract file
 ```
@@ -172,6 +172,7 @@ The test suite covers:
 If you get "DllNotFoundException" or similar:
 
 1. Ensure the Rust FFI library is built:
+
    ```bash
    cd ../../kreuzberg
    cargo build --release --package kreuzberg-ffi
@@ -181,11 +182,13 @@ If you get "DllNotFoundException" or similar:
 2. Verify the native library is in the runtime directory or PATH
 
 3. On macOS, you may need to set:
+
    ```bash
    export DYLD_LIBRARY_PATH=../../kreuzberg/target/release
    ```
 
 4. On Linux, you may need to set:
+
    ```bash
    export LD_LIBRARY_PATH=../../kreuzberg/target/release
    ```
@@ -208,7 +211,7 @@ dotnet --list-sdks
 dotnet --version
 ```
 
-If not installed, download from: https://dotnet.microsoft.com/download
+If not installed, download from: <https://dotnet.microsoft.com/download>
 
 ### OCR Extraction Returns 0 Characters
 

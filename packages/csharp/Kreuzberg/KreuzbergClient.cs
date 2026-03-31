@@ -718,7 +718,7 @@ public static class KreuzbergClient
     /// <summary>
     /// Returns the version string of the native Kreuzberg library.
     /// </summary>
-    /// <returns>Version string in format "4.6.3" or similar</returns>
+    /// <returns>Version string in format "4.7.0" or similar</returns>
     /// <example>
     /// <code>
     /// var version = KreuzbergClient.GetVersion();
@@ -1312,6 +1312,7 @@ public static class KreuzbergClient
             result.QualityScore = DeserializeField<double?>(cRes.QualityScoreJson);
             result.ProcessingWarnings = DeserializeField<List<ProcessingWarning>>(cRes.ProcessingWarningsJson) ?? new List<ProcessingWarning>();
             result.Annotations = DeserializeField<List<PdfAnnotation>>(cRes.AnnotationsJson);
+            result.Uris = DeserializeField<List<ExtractedUri>>(cRes.UrisJson);
 
             if (result.Metadata.Pages == null && cRes.PageStructureJson != IntPtr.Zero)
             {

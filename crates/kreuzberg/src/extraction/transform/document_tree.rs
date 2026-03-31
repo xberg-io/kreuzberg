@@ -77,6 +77,7 @@ pub fn transform_to_document_structure(result: &ExtractionResult) -> DocumentStr
                     NodeContent::Image {
                         description: image.description.clone(),
                         image_index: Some(idx as u32),
+                        src: None,
                     },
                     Some(page_num),
                     None,
@@ -121,6 +122,7 @@ pub fn transform_to_document_structure(result: &ExtractionResult) -> DocumentStr
                     NodeContent::Image {
                         description: image.description.clone(),
                         image_index: Some(idx as u32),
+                        src: None,
                     },
                     Some(page_num),
                     None,
@@ -553,6 +555,8 @@ mod tests {
             processing_warnings: Vec::new(),
             annotations: None,
             children: None,
+            uris: None,
+            formatted_content: None,
         }
     }
 

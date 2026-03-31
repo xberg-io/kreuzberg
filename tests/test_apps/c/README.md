@@ -40,7 +40,7 @@ The test suite (`main.c`) validates 15 sections of the C FFI API:
 
 ## File Structure
 
-```
+```text
 tests/test_apps/c/
 ├── main.c              # Comprehensive test suite
 ├── Makefile            # Build instructions
@@ -68,7 +68,7 @@ make KREUZBERG_ROOT=/path/to/kreuzberg
 
 ## Expected Output
 
-```
+```text
 ================================================================================
 KREUZBERG C FFI COMPREHENSIVE TEST SUITE
 ================================================================================

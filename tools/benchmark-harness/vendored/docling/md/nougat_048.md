@@ -2,11 +2,11 @@
 
 ## Qiushi Zhou
 
-The University of Melbourne Melbourne, Australia qiushi.zhou@unimelb.edu.au
+The University of Melbourne Melbourne, Australia <qiushi.zhou@unimelb.edu.au>
 
 ## Hao-Ping Lee
 
-National Chiao Tung University Hsinchu, Taiwan dimension4.cs03@nctu.edu.tw
+National Chiao Tung University Hsinchu, Taiwan <dimension4.cs03@nctu.edu.tw>
 
 ## ABSTRACT
 
@@ -20,33 +20,33 @@ Premature technology, privacy, intrusiveness, power consumption, and user habits
 
 eyewear, wearable, sensor, context awareness
 
-## ACMReference Format:
+## ACMReference Format
 
 Qiushi Zhou, Joshua Newn, Benjamin Tag, Hao-Ping Lee, Chaofan Wang, and Eduardo Velloso. 2019. Ubiquitous Smart Eyewear
 
-Permission to make digital or hard copies of all or part of this work for personal or classroom use is granted without fee provided that copies are not made or distributed for profit or commercial advantage and that copies bear this notice and the full citation on the first page. Copyrights for components of this work owned by others than ACM must be honored. Abstracting with credit is permitted. To copy otherwise, or republish, to post on servers or to redistribute to lists, requires prior specific permission and/or a fee. Request permissions from permissions@acm.org.
+Permission to make digital or hard copies of all or part of this work for personal or classroom use is granted without fee provided that copies are not made or distributed for profit or commercial advantage and that copies bear this notice and the full citation on the first page. Copyrights for components of this work owned by others than ACM must be honored. Abstracting with credit is permitted. To copy otherwise, or republish, to post on servers or to redistribute to lists, requires prior specific permission and/or a fee. Request permissions from <permissions@acm.org>.
 
 UbiComp/ISWC '19 Adjunct, September 9-13, 2019, London, United Kingdom © 2019 Association for Computing Machinery.
 
-ACM ISBN 978-1-4503-6869-8/19/09...$15.00 https://doi.org/10.1145/3341162.3348392
+ACM ISBN 978-1-4503-6869-8/19/09...$15.00 <https://doi.org/10.1145/3341162.3348392>
 
 ## Joshua Newn
 
-The University of Melbourne Melbourne, Australia joshua.newn@unimelb.edu.au
+The University of Melbourne Melbourne, Australia <joshua.newn@unimelb.edu.au>
 
 ## Chaofan Wang
 
-The University of Melbourne Melbourne, Australia chaofanw@student.unimelb.edu.au
+The University of Melbourne Melbourne, Australia <chaofanw@student.unimelb.edu.au>
 
 ## Benjamin Tag
 
-The University of Melbourne Melbourne, Australia benjamin.tag@unimelb.edu.au
+The University of Melbourne Melbourne, Australia <benjamin.tag@unimelb.edu.au>
 
 ## Eduardo Velloso
 
-The University of Melbourne Melbourne, Australia eduardo.velloso@unimelb.edu.au
+The University of Melbourne Melbourne, Australia <eduardo.velloso@unimelb.edu.au>
 
-Interactions using Implicit Sensing and Unobtrusive Information Output. In Adjunct Proceedings of the 2019 ACM International Joint Conference on Pervasive and Ubiquitous Computing and the 2019 International Symposium on Wearable Computers (UbiComp/ISWC '19 Adjunct), September 9-13, 2019, London, United Kingdom. ACM, New York, NY, USA, 6 pages. https://doi.org/10.1145/3341162.3348392
+Interactions using Implicit Sensing and Unobtrusive Information Output. In Adjunct Proceedings of the 2019 ACM International Joint Conference on Pervasive and Ubiquitous Computing and the 2019 International Symposium on Wearable Computers (UbiComp/ISWC '19 Adjunct), September 9-13, 2019, London, United Kingdom. ACM, New York, NY, USA, 6 pages. <https://doi.org/10.1145/3341162.3348392>
 
 ## 1 INTRODUCTION
 
@@ -66,21 +66,21 @@ As smart wearable devices gain traction from consumers as ubiquitous computers, 
 
 Other commercial smart eyewear abandoned advanced display technologies for a more compact form factor to suit everyday use scenarios. Vue 6 supports essential functions that require connectivity with a smartphone. It provides functions such as calling, navigation and a music player implemented with bone conduction for audio output and an integrated touchpad for control. It is also equipped with Inertial Measurement Unit (IMU) and infrared proximity sensors for activity tracking. Other eyewear devices are explicitly designed for sensing purposes. JINS MEME 7 is equipped with Electrooculography (EOG) and IMU sensors for physiological data logging in everyday settings. Pupil Invisible 8 is embedded with miniature infrared eye trackers to provide everyday gaze tracking. Due to the lack of output channels for these devices, their appeal to the general public is limited. Privacy is another concern regarding the use of Pupil
 
-1 https://www.microsoft.com/en-us/hololens
+1 <https://www.microsoft.com/en-us/hololens>
 
-3 https://www.google.com/glass/start/
+3 <https://www.google.com/glass/start/>
 
-2 https://www.magicleap.com/
+2 <https://www.magicleap.com/>
 
-4 https://www.bynorth.com/
+4 <https://www.bynorth.com/>
 
-6 https://www.enjoyvue.com/
+6 <https://www.enjoyvue.com/>
 
-5 https://www.vuzix.com/products/blade-smart-glasses
+5 <https://www.vuzix.com/products/blade-smart-glasses>
 
-7 https://jins-meme.com/en/
+7 <https://jins-meme.com/en/>
 
-8 https://pupil-labs.com/news/2019-01-09/pupil-invisible-beta-launch.html
+8 <https://pupil-labs.com/news/2019-01-09/pupil-invisible-beta-launch.html>
 
 Invisible because of its discrete environmental data collection ability. Other eyewear such as SKUGGA 9 and CTRL Eyewear 10 provide automatic tinting control using ambient light sensors without any interaction functionality.
 
@@ -94,9 +94,9 @@ The often bulky form factor induced by excessive functionality in high-end smart
 
 Glasses and wristwatches are two of the most common functional gadgets found on our bodies in our everyday life [5, 8]. Despite sharing the early inceptions, the two devices followed distinct digitisation processes. Whereas analogue watches face steadily decreasing user numbers, smartwatches are catching up [2]. During the evolution of analogue watches to becoming smartwatches, hybrid systems were developed. The development presented with devices that displayed limited digital information, with lowresolution digital watches utilizing numerical interfaces, and, more recently, fitness wristbands with similar displays. These low-resolution devices are still popular despite the advent of smartwatches because of their simplistic functionality, low cost and often specific use scenarios.
 
-9 http://skuggaeyewear.com/
+9 <http://skuggaeyewear.com/>
 
-10 http://www.e-tintproducts.com/ctrl-eyewear/
+10 <http://www.e-tintproducts.com/ctrl-eyewear/>
 
 WATCHES
 
@@ -185,11 +185,11 @@ Combining head movement detection by IMU sensors with physical contextual inform
 
 Implicit assistance contributes to better accessibility in scenarios where users could not reach other devices, such as
 
-11 https://www.apple.com/au/apple-watch-series-4
+11 <https://www.apple.com/au/apple-watch-series-4>
 
-13 https://core-electronics.com.au/sparkfun-transparent-oled-hud-
+13 <https://core-electronics.com.au/sparkfun-transparent-oled-hud->
 
-12 https://buy.garmin.com/en-AU/AU/p/605739
+12 <https://buy.garmin.com/en-AU/AU/p/605739>
 
 breakout-qwiic.html
 
@@ -214,21 +214,21 @@ In this paper, we first identified the problem of the low acceptance of smart gl
 
 ## REFERENCES
 
-- [1] Enrico Costanza, Samuel A. Inverso, Elan Pavlov, Rebecca Allen, and Pattie Maes. 2006. Eye-q: Eyeglass Peripheral Display for Subtle Intimate Notifications. In Proceedings of the 8th Conference on Humancomputer Interaction with Mobile Devices and Services (MobileHCI '06) . ACM, New York, NY, USA, 211-218. https://doi.org/10.1145/1152215. 1152261 event-place: Helsinki, Finland.
-- [3] Artem Dementyev and Christian Holz. 2017. DualBlink: A Wearable Device to Continuously Detect, Track, and Actuate Blinking For Alleviating Dry Eyes and Computer Vision Syndrome. Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies 1, 1 (March 2017), 1-19. https://doi.org/10.1145/3053330
-- [2] Tony Danova. 2015. THE SMARTWATCH REPORT: The market for luxury wristwatches, retail distribution, and Apple WatchâĂŹs big opportunity. https://www.businessinsider.com/the-smartwatchreport-the-market-for-luxury-wristwatches-retail-distribution-andapple-watchs-big-opportunity-2015-2
-- [4] Shoya Ishimaru, Kai Kunze, Koichi Kise, Jens Weppner, Andreas Dengel, Paul Lukowicz, and Andreas Bulling. 2014. In the Blink of an Eye: Combining Head Motion and Eye Blink Frequency for Activity Recognition with Google Glass. In Proceedings of the 5th Augmented Human International Conference (AH '14) . ACM, New York, NY, USA, 15:1-15:4. https://doi.org/10.1145/2582051.2582066 event-place: Kobe, Japan.
-- [6] Katsutoshi Masai, Yuta Sugiura, Masa Ogata, Kai Kunze, Masahiko Inami, and Maki Sugimoto. 2016. Facial Expression Recognition in Daily Life by Embedded Photo Reflective Sensors on Smart Eyewear. In Proceedings of the 21st International Conference on Intelligent User Interfaces - IUI '16 . ACM Press, Sonoma, California, USA, 317-326. https://doi.org/10.1145/2856767.2856770
-- [5] Natasha Lomas. 2014. Global wearables market to grow 17% in 2017, 310M devices sold, $30.5BN revenue: Gartner. http://social.techcrunch.com/2017/08/24/global-wearables-marketto-grow-17-in-2017-310m-devices-sold-30-5bn-revenue-gartner/
+- [1] Enrico Costanza, Samuel A. Inverso, Elan Pavlov, Rebecca Allen, and Pattie Maes. 2006. Eye-q: Eyeglass Peripheral Display for Subtle Intimate Notifications. In Proceedings of the 8th Conference on Humancomputer Interaction with Mobile Devices and Services (MobileHCI '06) . ACM, New York, NY, USA, 211-218. <https://doi.org/10.1145/1152215>. 1152261 event-place: Helsinki, Finland.
+- [3] Artem Dementyev and Christian Holz. 2017. DualBlink: A Wearable Device to Continuously Detect, Track, and Actuate Blinking For Alleviating Dry Eyes and Computer Vision Syndrome. Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies 1, 1 (March 2017), 1-19. <https://doi.org/10.1145/3053330>
+- [2] Tony Danova. 2015. THE SMARTWATCH REPORT: The market for luxury wristwatches, retail distribution, and Apple WatchâĂŹs big opportunity. <https://www.businessinsider.com/the-smartwatchreport-the-market-for-luxury-wristwatches-retail-distribution-andapple-watchs-big-opportunity-2015-2>
+- [4] Shoya Ishimaru, Kai Kunze, Koichi Kise, Jens Weppner, Andreas Dengel, Paul Lukowicz, and Andreas Bulling. 2014. In the Blink of an Eye: Combining Head Motion and Eye Blink Frequency for Activity Recognition with Google Glass. In Proceedings of the 5th Augmented Human International Conference (AH '14) . ACM, New York, NY, USA, 15:1-15:4. <https://doi.org/10.1145/2582051.2582066> event-place: Kobe, Japan.
+- [6] Katsutoshi Masai, Yuta Sugiura, Masa Ogata, Kai Kunze, Masahiko Inami, and Maki Sugimoto. 2016. Facial Expression Recognition in Daily Life by Embedded Photo Reflective Sensors on Smart Eyewear. In Proceedings of the 21st International Conference on Intelligent User Interfaces - IUI '16 . ACM Press, Sonoma, California, USA, 317-326. <https://doi.org/10.1145/2856767.2856770>
+- [5] Natasha Lomas. 2014. Global wearables market to grow 17% in 2017, 310M devices sold, $30.5BN revenue: Gartner. <http://social.techcrunch.com/2017/08/24/global-wearables-marketto-grow-17-in-2017-310m-devices-sold-30-5bn-revenue-gartner/>
 - [7] Bence Nanay. 2013. Between perception and action . Oxford University Press.
-- [9] Alex Olwal and Bernard Kress. 2018. 1D eyewear: peripheral, hidden LEDs and near-eye holographic displays for unobtrusive augmentation. In Proceedings of the 2018 ACM International Symposium on Wearable Computers - ISWC '18 . ACM Press, Singapore, Singapore, 184-187. https://doi.org/10.1145/3267242.3267288
-- [8] Statistics Netherlands. 2013. More than 6 in 10 people wear glasses or contact lenses. https://www.cbs.nl/en-gb/news/2013/38/more-than6-in-10-people-wear-glasses-or-contact-lenses
-- [10] Jussi Rantala, Jari Kangas, Poika Isokoski, Deepak Akkil, Oleg Åăpakov, and Roope Raisamo. 2015. Haptic Feedback of Gaze Gestures with Glasses: Localization Accuracy and Effectiveness. In Adjunct Proceedings of the 2015 ACM International Joint Conference on Pervasive and Ubiquitous Computing and Proceedings of the 2015 ACM International Symposium on Wearable Computers (UbiComp/ISWC'15 Adjunct) . ACM, NewYork, NY, USA, 855-862. https://doi.org/10.1145/2800835.2804334 event-place: Osaka, Japan.
+- [9] Alex Olwal and Bernard Kress. 2018. 1D eyewear: peripheral, hidden LEDs and near-eye holographic displays for unobtrusive augmentation. In Proceedings of the 2018 ACM International Symposium on Wearable Computers - ISWC '18 . ACM Press, Singapore, Singapore, 184-187. <https://doi.org/10.1145/3267242.3267288>
+- [8] Statistics Netherlands. 2013. More than 6 in 10 people wear glasses or contact lenses. <https://www.cbs.nl/en-gb/news/2013/38/more-than6-in-10-people-wear-glasses-or-contact-lenses>
+- [10] Jussi Rantala, Jari Kangas, Poika Isokoski, Deepak Akkil, Oleg Åăpakov, and Roope Raisamo. 2015. Haptic Feedback of Gaze Gestures with Glasses: Localization Accuracy and Effectiveness. In Adjunct Proceedings of the 2015 ACM International Joint Conference on Pervasive and Ubiquitous Computing and Proceedings of the 2015 ACM International Symposium on Wearable Computers (UbiComp/ISWC'15 Adjunct) . ACM, NewYork, NY, USA, 855-862. <https://doi.org/10.1145/2800835.2804334> event-place: Osaka, Japan.
 
 UbiComp/ISWC '19 Adjunct, September 9-13, 2019, London, United Kingdom
 
 - [11] Albrecht Schmidt. 2005. Interactive context-aware systems interacting with ambient intelligence. Ambient intelligence 159 (2005).
-- [13] Benjamin Tag, Andrew W. Vargo, Aman Gupta, George Chernyshov, Kai Kunze, and Tilman Dingler. 2019. Continuous Alertness Assessments: Using EOG Glasses to Unobtrusively Monitor Fatigue Levels In-The-Wild. In Proceedings of the 2019 CHI Conference on Human Factors in Computing Systems - CHI '19 . ACM Press, Glasgow, Scotland Uk, 1-12. https://doi.org/10.1145/3290605.3300694
-- [12] E Temple Smith. 1928. THE HISTORY OF SPECTACLES. Medical Journal of Australia 2, 19 (1928), 578-587. https://doi.org/10.5694/j. 1326-5377.1928.tb13682.x
+- [13] Benjamin Tag, Andrew W. Vargo, Aman Gupta, George Chernyshov, Kai Kunze, and Tilman Dingler. 2019. Continuous Alertness Assessments: Using EOG Glasses to Unobtrusively Monitor Fatigue Levels In-The-Wild. In Proceedings of the 2019 CHI Conference on Human Factors in Computing Systems - CHI '19 . ACM Press, Glasgow, Scotland Uk, 1-12. <https://doi.org/10.1145/3290605.3300694>
+- [12] E Temple Smith. 1928. THE HISTORY OF SPECTACLES. Medical Journal of Australia 2, 19 (1928), 578-587. <https://doi.org/10.5694/j>. 1326-5377.1928.tb13682.x
 - [14] Yuji Uema and Kazutaka Inoue. 2017. JINS MEME algorithm for estimation and tracking of concentration of users. In Proceedings of the 2017 ACM International Joint Conference on Pervasive and Ubiquitous Computing and Proceedings of the 2017 ACM International Symposium on Wearable Computers . ACM, 297-300.
 - [15] Qiushi Zhou, Joshua Newn, Namrata Srivastava, Tilman Dingler, Jorge Goncalves, and Eduardo Velloso. 2019. Cognitive Aid: Task Assistance Based On Mental Workload Estimation. In Extended Abstracts of the 2019 CHI Conference on Human Factors in Computing Systems (CHI EA '19) . ACM, New York, NY, USA, LBW2315:1-LBW2315:6. https: //doi.org/10.1145/3290607.3313010 event-place: Glasgow, Scotland Uk.

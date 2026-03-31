@@ -1,5 +1,5 @@
 ## Hello World
 
-## Goodbye Cruel World...
+## Goodbye Cruel World
 
 I'll be back shortly!

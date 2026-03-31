@@ -152,6 +152,23 @@ pub struct ExtractionResult {
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub children: Option<Vec<ArchiveEntry>>,
+
+    /// URIs/links discovered during document extraction.
+    ///
+    /// Contains hyperlinks, image references, citations, email addresses, and
+    /// other URI-like references found in the document. Always extracted when
+    /// present in the source document.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    pub uris: Option<Vec<super::uri::Uri>>,
+
+    /// Pre-rendered content in the requested output format.
+    ///
+    /// Populated during `derive_extraction_result` before tree derivation consumes
+    /// element data. `apply_output_format` swaps this into `content` at the end
+    /// of the pipeline, after post-processors have operated on plain text.
+    #[serde(skip)]
+    pub formatted_content: Option<String>,
 }
 
 /// A single file extracted from an archive.
@@ -333,6 +350,12 @@ pub struct ExtractedImage {
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub bounding_box: Option<BoundingBox>,
+
+    /// Original source path of the image within the document archive (e.g., "media/image1.png" in DOCX).
+    /// Used for rendering image references when the binary data is not extracted.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    pub source_path: Option<String>,
 }
 
 // ============================================================================

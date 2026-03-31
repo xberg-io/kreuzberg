@@ -22,7 +22,7 @@ We are seeking candidates who are experienced and willing to take a hands-on app
 2. Safeguarding, preferably with knowledge of HR, Equality and Diversity
 3. Volunteering or who currently uses our services or similar
 
-## As a Trustee you will:
+## As a Trustee you will
 
 -  Receive induction, training and reimbursable expenses
 -  Have the opportunity to drive the scaling of our charity
@@ -36,7 +36,7 @@ An application form can be downloaded from the Cycling Projects website (link to
 - Charity Commission Declaration form
 - HMRC Fit and Proper Persons Declaration
 
-A completed application form (including details of referees), CV and accompanying declaration documents should be returned by email to Trustees@Cycling.org.uk
+A completed application form (including details of referees), CV and accompanying declaration documents should be returned by email to <Trustees@Cycling.org.uk>
 
 Deadline for applications:
 

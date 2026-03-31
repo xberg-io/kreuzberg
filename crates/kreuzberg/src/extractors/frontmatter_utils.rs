@@ -9,7 +9,6 @@
 use crate::types::Metadata;
 
 use serde_yaml_ng::Value as YamlValue;
-use std::borrow::Cow;
 
 /// Extract YAML frontmatter from document content.
 ///
@@ -105,7 +104,7 @@ pub fn extract_frontmatter(content: &str) -> (Option<YamlValue>, String) {
 /// Extracts the following YAML fields into Kreuzberg metadata:
 /// - **Standard fields**: title, author, date, description (as subject)
 /// - **Extended fields**: abstract, subject, category, tags, language, version
-/// - **Array fields** (keywords, tags): converted to comma-separated strings
+/// - **Array fields** (keywords, tags): stored as `Vec<String>` in typed fields
 ///
 /// # Arguments
 ///
@@ -120,27 +119,23 @@ pub fn extract_frontmatter(content: &str) -> (Option<YamlValue>, String) {
 /// ```rust,ignore
 /// let yaml = serde_yaml_ng::from_str("title: Test\nauthor: John").unwrap();
 /// let metadata = extract_metadata_from_yaml(&yaml);
-/// assert_eq!(metadata.additional.get("title"), Some(&"Test".into()));
+/// assert_eq!(metadata.title.as_deref(), Some("Test"));
 /// ```
 pub fn extract_metadata_from_yaml(yaml: &YamlValue) -> Metadata {
     let mut metadata = Metadata::default();
 
     // Title
-    if let Some(title) = yaml.get("title").and_then(|v| v.as_str()) {
-        if metadata.title.is_none() {
-            metadata.title = Some(title.to_string());
-        }
-        // DEPRECATED: kept for backward compatibility; will be removed in next major version.
-        metadata.additional.insert(Cow::Borrowed("title"), title.into());
+    if let Some(title) = yaml.get("title").and_then(|v| v.as_str())
+        && metadata.title.is_none()
+    {
+        metadata.title = Some(title.to_string());
     }
 
     // Author
-    if let Some(author) = yaml.get("author").and_then(|v| v.as_str()) {
-        if metadata.created_by.is_none() {
-            metadata.created_by = Some(author.to_string());
-        }
-        // DEPRECATED: kept for backward compatibility; will be removed in next major version.
-        metadata.additional.insert(Cow::Borrowed("author"), author.into());
+    if let Some(author) = yaml.get("author").and_then(|v| v.as_str())
+        && metadata.created_by.is_none()
+    {
+        metadata.created_by = Some(author.to_string());
     }
 
     // Date (map to created_at)
@@ -155,19 +150,12 @@ pub fn extract_metadata_from_yaml(yaml: &YamlValue) -> Metadata {
                 if metadata.keywords.is_none() {
                     metadata.keywords = Some(s.split(',').map(|k| k.trim().to_string()).collect());
                 }
-                // DEPRECATED: kept for backward compatibility; will be removed in next major version.
-                metadata.additional.insert(Cow::Borrowed("keywords"), s.clone().into());
             }
             YamlValue::Sequence(seq) => {
                 let kw_vec: Vec<String> = seq.iter().filter_map(|v| v.as_str()).map(|s| s.to_string()).collect();
                 if metadata.keywords.is_none() {
-                    metadata.keywords = Some(kw_vec.clone());
+                    metadata.keywords = Some(kw_vec);
                 }
-                let keywords_str = kw_vec.join(", ");
-                // DEPRECATED: kept for backward compatibility; will be removed in next major version.
-                metadata
-                    .additional
-                    .insert(Cow::Borrowed("keywords"), keywords_str.into());
             }
             _ => {}
         }
@@ -181,10 +169,6 @@ pub fn extract_metadata_from_yaml(yaml: &YamlValue) -> Metadata {
     // Abstract
     if let Some(abstract_val) = yaml.get("abstract").and_then(|v| v.as_str()) {
         metadata.abstract_text = Some(abstract_val.to_string());
-        // DEPRECATED: kept for backward compatibility; will be removed in next major version.
-        metadata
-            .additional
-            .insert(Cow::Borrowed("abstract"), abstract_val.into());
     }
 
     // Subject (overrides description if both present)
@@ -195,8 +179,6 @@ pub fn extract_metadata_from_yaml(yaml: &YamlValue) -> Metadata {
     // Category
     if let Some(category) = yaml.get("category").and_then(|v| v.as_str()) {
         metadata.category = Some(category.to_string());
-        // DEPRECATED: kept for backward compatibility; will be removed in next major version.
-        metadata.additional.insert(Cow::Borrowed("category"), category.into());
     }
 
     // Tags (support both string and array)
@@ -204,34 +186,25 @@ pub fn extract_metadata_from_yaml(yaml: &YamlValue) -> Metadata {
         match tags {
             YamlValue::String(s) => {
                 metadata.tags = Some(s.split(',').map(|t| t.trim().to_string()).collect());
-                // DEPRECATED: kept for backward compatibility; will be removed in next major version.
-                metadata.additional.insert(Cow::Borrowed("tags"), s.clone().into());
             }
             YamlValue::Sequence(seq) => {
                 let tags_vec: Vec<String> = seq.iter().filter_map(|v| v.as_str()).map(|s| s.to_string()).collect();
-                metadata.tags = Some(tags_vec.clone());
-                let tags_str = tags_vec.join(", ");
-                // DEPRECATED: kept for backward compatibility; will be removed in next major version.
-                metadata.additional.insert(Cow::Borrowed("tags"), tags_str.into());
+                metadata.tags = Some(tags_vec);
             }
             _ => {}
         }
     }
 
     // Language
-    if let Some(language) = yaml.get("language").and_then(|v| v.as_str()) {
-        if metadata.language.is_none() {
-            metadata.language = Some(language.to_string());
-        }
-        // DEPRECATED: kept for backward compatibility; will be removed in next major version.
-        metadata.additional.insert(Cow::Borrowed("language"), language.into());
+    if let Some(language) = yaml.get("language").and_then(|v| v.as_str())
+        && metadata.language.is_none()
+    {
+        metadata.language = Some(language.to_string());
     }
 
     // Version
     if let Some(version) = yaml.get("version").and_then(|v| v.as_str()) {
         metadata.document_version = Some(version.to_string());
-        // DEPRECATED: kept for backward compatibility; will be removed in next major version.
-        metadata.additional.insert(Cow::Borrowed("version"), version.into());
     }
 
     metadata
@@ -338,7 +311,7 @@ mod tests {
         assert!(remaining.contains("# Content"));
 
         let metadata = extract_metadata_from_yaml(&yaml.unwrap());
-        assert_eq!(metadata.additional.get("title").and_then(|v| v.as_str()), Some("Test"));
+        assert_eq!(metadata.title.as_deref(), Some("Test"));
     }
 
     #[test]
@@ -359,7 +332,7 @@ mod tests {
         assert!(remaining.contains("# Content"));
 
         let metadata = extract_metadata_from_yaml(&yaml.unwrap());
-        assert_eq!(metadata.additional.get("title").and_then(|v| v.as_str()), Some("Test"));
+        assert_eq!(metadata.title.as_deref(), Some("Test"));
     }
 
     #[test]
@@ -371,10 +344,7 @@ mod tests {
         assert!(remaining.contains("# Content"));
 
         let metadata = extract_metadata_from_yaml(&yaml.unwrap());
-        assert_eq!(
-            metadata.additional.get("title").and_then(|v| v.as_str()),
-            Some("Before --- After")
-        );
+        assert_eq!(metadata.title.as_deref(), Some("Before --- After"));
     }
 
     #[test]
@@ -386,7 +356,7 @@ mod tests {
         assert!(remaining.contains("# Body"));
 
         let metadata = extract_metadata_from_yaml(&yaml.unwrap());
-        assert_eq!(metadata.additional.get("title").and_then(|v| v.as_str()), Some("Test"));
+        assert_eq!(metadata.title.as_deref(), Some("Test"));
     }
 
     #[test]
@@ -471,18 +441,12 @@ version: 1.0
         let yaml: YamlValue = serde_yaml_ng::from_str(yaml_str).unwrap();
         let metadata = extract_metadata_from_yaml(&yaml);
 
-        assert_eq!(
-            metadata.additional.get("title").and_then(|v| v.as_str()),
-            Some("Test Document")
-        );
-        assert_eq!(
-            metadata.additional.get("author").and_then(|v| v.as_str()),
-            Some("John Doe")
-        );
+        assert_eq!(metadata.title.as_deref(), Some("Test Document"));
+        assert_eq!(metadata.created_by.as_deref(), Some("John Doe"));
         assert_eq!(metadata.created_at, Some("2024-01-15".to_string()));
-        assert!(metadata.additional.contains_key("keywords"));
+        assert!(metadata.keywords.is_some());
         assert_eq!(metadata.subject, Some("Test Subject".to_string()));
-        assert!(metadata.additional.contains_key("tags"));
+        assert!(metadata.tags.is_some());
     }
 
     #[test]
@@ -496,8 +460,8 @@ tags: "tag1, tag2"
         let metadata = extract_metadata_from_yaml(&yaml);
 
         assert_eq!(
-            metadata.additional.get("keywords").and_then(|v| v.as_str()),
-            Some("single, keyword, string")
+            metadata.keywords.as_deref(),
+            Some(["single", "keyword", "string"].map(String::from).as_slice())
         );
     }
 }

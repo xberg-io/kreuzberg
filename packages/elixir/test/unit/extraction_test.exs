@@ -279,7 +279,7 @@ defmodule KreuzbergTest.Unit.ExtractionTest do
     test "map config with nested options" do
       {:ok, result} =
         Kreuzberg.extract("text", "text/plain", %{
-          "pdf_config" => %{
+          "pdf_options" => %{
             "extract_text" => true,
             "preserve_formatting" => true
           }
@@ -289,14 +289,15 @@ defmodule KreuzbergTest.Unit.ExtractionTest do
     end
 
     @tag :unit
-    test "map config does not raise error on invalid key" do
-      {:ok, result} =
+    test "map config raises error on invalid key" do
+      {:error, error} =
         Kreuzberg.extract("text", "text/plain", %{
           "unknown_option" => "value"
         })
 
-      # Should not raise, just ignore unknown keys
-      assert result.content == "text"
+      # Rust rejects unknown config keys (deny_unknown_fields)
+      assert is_binary(error)
+      assert error =~ "unknown_option"
     end
   end
 
@@ -351,14 +352,14 @@ defmodule KreuzbergTest.Unit.ExtractionTest do
     @tag :unit
     test "Config.to_map returns string keys" do
       config = %Kreuzberg.ExtractionConfig{
-        ocr: %{"enabled" => true}
+        ocr: %{"backend" => "tesseract"}
       }
 
       map = Kreuzberg.ExtractionConfig.to_map(config)
 
       # Should have string keys
       assert is_map_key(map, "ocr")
-      assert Map.get(map, "ocr") == %{"enabled" => true}
+      assert Map.get(map, "ocr") == %{"backend" => "tesseract"}
     end
 
     @tag :unit

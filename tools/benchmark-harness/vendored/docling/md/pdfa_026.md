@@ -8,37 +8,37 @@ Project Title:
 
 Mata ------------------------------------------- Contact Person: So n Pham-Gallardo
 
-Le  ad Agency:  Monterey County Resource Management Agency
+Le ad Agency: Monterey County Resource Management Agency
 
-Mailing Address: 1441  Schilling Place, 2nd Floor
+Mailing Address: 1441 Schilling Place, 2nd Floor
 
 Phone: 831-755-5226
 
-City:  Salinas
+City: Salinas
 
 Zip: 93901
 
-County:  Monterey
+County: Monterey
 
 Project Location:
 
 County:Monterey
 
-City/Nearest Community:  Pebble Beach
+City/Nearest Community: Pebble Beach
 
 ---~---------
 
-----------------
+- - - - - - - - -
 
 Cross Streets:
 
 - [ ] El Bosque Drive
 
-Zip Code:  93953
+Zip Code: 93953
 
------
+- - - - - - - - -
 
-Longitude/Latitude (degrees, minutes and seconds):  ~
+Longitude/Latitude (degrees, minutes and seconds): ~
 
 0
 
@@ -46,13 +46,13 @@ Longitude/Latitude (degrees, minutes and seconds):  ~
 
 .1l1\_ 0 ~,
 
-14.58" W  Total Acres:  0.37
+14.58" W Total Acres: 0.37
 
---------
+- - - - - - - - -
 
-Assessor's  Parcel No.:008-091-005-000
+Assessor's Parcel No.:008-091-005-000
 
-Section: \_\_\_  Twp.: \_\_\_\_ Range: \_\_\_\_ Base: \_\_\_
+Section: \_\_\_ Twp.: \_\_\_\_ Range: \_\_\_\_ Base: \_\_\_
 
 \_
 
@@ -64,13 +64,13 @@ State Hwy#: Highway 68
 
 Airports:------------
 
-Waterways:  \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_  \_
+Waterways: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ \_
 
-Railways:  \_\_\_\_\_\_\_\_  \_
+Railways: \_\_\_\_\_\_\_\_ \_
 
 Schools:
 
-## ------ Document Type:
+## ------ Document Type
 
 CEQA:
 
@@ -82,9 +82,9 @@ CEQA:
 
 - [x] ~ Mit Neg Dec
 
--------
+- - - - - - - - -
 
-## Local Action Type:
+## Local Action Type
 
 - [ ] 0 General Plan Update
 
@@ -94,7 +94,7 @@ CEQA:
 
 - [ ] 0 Community Plan
 
-- - - - - - - - - -
+- - - - - - - - -
 
 - [ ] 0 Draft EIR
 
@@ -114,9 +114,9 @@ Other:
 
 - [ ] □ Site Plan
 
-----------
+- - - - - - - - -
 
-- - - -
+- - - - - - - - -
 
 - - - - - - - - -
 
@@ -138,9 +138,9 @@ Other:
 
 - [ ] □ FONSI
 
-- - - -
+- - - - - - - - -
 
-- - - - - - - -
+- - - - - - - - -
 
 - - - - - - - - -
 
@@ -162,9 +162,9 @@ Other:
 
 ------ --------------- ---------
 
-## Development Type:
+## Development Type
 
-- ~ Residential:  Units \_1  \_\_\_ Acres 0.37
+- ~ Residential: Units \_1 \_\_\_ Acres 0.37
 
 - [ ] 0 Office:
 
@@ -172,7 +172,7 @@ Sq.ft.
 
 Acres \_\_ \_
 
-Employees  \_\_ \_
+Employees \_\_ \_
 
 - [ ] 0 Transportation:
 
@@ -180,17 +180,17 @@ Type
 
 - [ ] 0 Commercial:Sq.ft.
 
-Acres  \_\_
+Acres \_\_
 
 \_
 
-Employees  \_\_ \_
+Employees \_\_ \_
 
---------------
+- - - - - - - - -
 
 - [ ] □ Mining:
 
-Mineral  -------------
+Mineral -------------
 
 - [ ] 0 Industrial:
 
@@ -198,39 +198,39 @@ Sq.ft.
 
 Acres \_\_ \_
 
-Employees.  \_\_ \_
+Employees. \_\_ \_
 
 - [ ] □ Power:
 
 Type \_\_\_\_\_\_\_
 
-MW  \_\_\_\_\_  \_
+MW \_\_\_\_\_ \_
 
 - [ ] 0 Educational:
 
--------------------
+- - - - - - - - -
 
 - [ ] 0 Waste Treatment:Type
 
-MGD  -----
+MGD -----
 
 - [ ] □ Recreational:
 
 - [ ] □ Hazardous Waste:Type
 
--------------------
+- - - - - - - - -
 
 - [ ] □
 
-Water Facilities:Type  ------- MGD  -----
+Water Facilities:Type ------- MGD -----
 
---------------
+- - - - - - - - -
 
 - [ ] □ Other:
 
-\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_  \_
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ \_
 
-## Project Issues Discussed in Document:
+## Project Issues Discussed in Document
 
 - [x] I&amp;] AestheticNisual
 
@@ -296,7 +296,7 @@ Water Facilities:Type  ------- MGD  -----
 
 - [ ] 0
 
-Other:  --------
+Other: --------
 
 -
 
@@ -306,20 +306,20 @@ Other:  --------
 
 --
 
-## Present Land Use/Zoning/General Plan Designation:
+## Present Land Use/Zoning/General Plan Designation
 
 Residential - Medium Density
 
 Project Description:
 
-(please use a separate page if  necessary)
+(please use a separate page if necessary)
 
 The proposed project would require a Combined Development Permit consisting of:
 
-- 1)  Coastal Administrative Permit and Design Approval to allow construction of a 4,208 sf two-story residence w ith attached 900 sf garage, first floor terrace, second floor terrace, and covered porch;
-- 2)  Coastal Development Permit to allow development on slopes in excess of 30%;
-- 3)  Coastal Development Permit to allow removal of 18 trees (Monterey pine); and
-- 4)  Coastal Development Permit to allow development within 100 feet of environmentally sensitive habitat area.
+- 1) Coastal Administrative Permit and Design Approval to allow construction of a 4,208 sf two-story residence w ith attached 900 sf garage, first floor terrace, second floor terrace, and covered porch;
+- 2) Coastal Development Permit to allow development on slopes in excess of 30%;
+- 3) Coastal Development Permit to allow removal of 18 trees (Monterey pine); and
+- 4) Coastal Development Permit to allow development within 100 feet of environmentally sensitive habitat area.
 
 Print Form
 
@@ -341,7 +341,7 @@ Lead Agencies may recommend State Clearinghouse distribution by marking agencies
 
 - [ ] Caltrans District #
 
-- [ ] Caltrans Division of  Aeronautics
+- [ ] Caltrans Division of Aeronautics
 
 - [ ] Caltrans Planning
 
@@ -379,25 +379,25 @@ Food &amp; Agriculture, Department of
 
 ## Local Public Review Period (to be filled in by lead agency)
 
-Starting Date \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_  \_
+Starting Date \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ \_
 
-## Lead Agency (Complete if applicable):
+## Lead Agency (Complete if applicable)
 
-Consulting Firm: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_  \_
+Consulting Firm: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ \_
 
-Address:  -------------------
+Address: -------------------
 
-City/St  ate/Zip: - - - - - - - - -------
+City/St ate/Zip: - - - - - - - - -------
 
-Contact:  -------------------
+Contact: -------------------
 
 Phone:
 
---------------------
+- - - - - - - - -
 
-- [ ] Office of  Historic Preservation
+- [ ] Office of Historic Preservation
 
-- [ ] Office of  Public School Construction
+- [ ] Office of Public School Construction
 
 - [ ] \_\_\_ Parks &amp; Recreation, Department of
 
@@ -423,29 +423,29 @@ Phone:
 
 - [ ] SWRCB: Clean Water Grants
 
-- [ ] \_\_  SWRCB: Water Quality
+- [ ] \_\_ SWRCB: Water Quality
 
-- [ ] \_\_  SWRCB: Water Rights
+- [ ] \_\_ SWRCB: Water Rights
 
-- [ ] \_\_  Tahoe Regional Planning Agency
+- [ ] \_\_ Tahoe Regional Planning Agency
 
 - [ ] \_\_\_ Toxic Substances Control, Department of
 
 - [ ] \_\_\_ Water Resources, Department of
 
-Other:  -------------------
+Other: -------------------
 
-- [ ] 0th  er:
+- [ ] 0th er:
 
--------------------
+- - - - - - - - -
 
-Ending Date \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_  \_
+Ending Date \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ \_
 
 Applicant:
 
 Henry Mata
 
-Address:  998
+Address: 998
 
 N TEMPERANCE AVE
 

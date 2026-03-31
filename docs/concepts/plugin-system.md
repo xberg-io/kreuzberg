@@ -1,8 +1,8 @@
 # Plugin System <span class="version-badge">v4.0.0</span>
 
-Kreuzberg's extraction pipeline is entirely plugin-driven. Every format extractor, OCR engine, post-processor, and validator is a plugin that registers itself into a typed registry. The pipeline queries these registries at each stage to find the right handler. You extend Kreuzberg by writing your own plugin and registering it. The pipeline picks it up automatically.
+Kreuzberg's extraction pipeline is entirely plugin-driven. Every format extractor, OCR engine, post-processor, validator, and renderer is a plugin that registers itself into a typed registry. The pipeline queries these registries at each stage to find the right handler. You extend Kreuzberg by writing your own plugin and registering it. The pipeline picks it up automatically.
 
-This page explains the four plugin types, the registry mechanism, the plugin lifecycle, and how plugins work across language boundaries.
+This page explains the five plugin types, the registry mechanism, the plugin lifecycle, and how plugins work across language boundaries.
 
 ---
 
@@ -18,6 +18,7 @@ flowchart TB
         O["OcrBackend\n<i>Runs OCR on images</i>"]
         V["Validator\n<i>Rejects bad results</i>"]
         P["PostProcessor\n<i>Transforms results</i>"]
+        R["Renderer\n<i>Formats output</i>"]
     end
 
     subgraph layer2 ["Registries store them"]
@@ -26,6 +27,7 @@ flowchart TB
         OR["OCR Registry\n<i>name → backend</i>"]
         VR["Validator Registry\n<i>name → validator</i>"]
         PR["Processor Registry\n<i>stage → processors</i>"]
+        RR["Renderer Registry\n<i>name → renderer</i>"]
     end
 
     subgraph layer3 ["Pipeline uses them"]
@@ -34,29 +36,33 @@ flowchart TB
         P2["OCR"]
         P3["Validation"]
         P4["Post-\nprocessing"]
+        P5["Rendering"]
     end
 
     E --> ER
     O --> OR
     V --> VR
     P --> PR
+    R --> RR
 
     ER --> P1
     OR --> P2
     VR --> P3
     PR --> P4
+    RR --> P5
 
     style ER fill:#bbdefb,stroke:#1565c0
     style OR fill:#c8e6c9,stroke:#2e7d32
     style VR fill:#ffccbc,stroke:#d84315
     style PR fill:#fff9c4,stroke:#f9a825
+    style RR fill:#e1bee7,stroke:#7b1fa2
 ```
 
 You register a plugin once. From that point on, the pipeline uses it wherever the MIME type, name, or stage matches. No wiring, no config files, no boilerplate.
 
 ---
 
-## The Four Plugin Types
+## The Five Plugin Types
 
 ### DocumentExtractor
 
@@ -186,6 +192,42 @@ Validators run before post-processors. This means you can catch and reject bad r
 
 ---
 
+### Renderer <span class="version-badge">v4.7.0</span>
+
+A `Renderer` converts the internal document representation into a specific output format. It declares a name and provides a `render` method that takes an `InternalDocument` and produces formatted text.
+
+```rust title="renderer_trait.rs"
+pub trait Renderer: Plugin {
+    fn name(&self) -> &str;
+
+    fn render(&self, document: &InternalDocument) -> Result<String>;
+}
+```
+
+Kreuzberg ships with four built-in renderers:
+
+| Renderer | Output | Description |
+|----------|--------|-------------|
+| **markdown** | GFM Markdown | GitHub Flavored Markdown via comrak AST bridge. Tables, headings, lists. |
+| **html** | HTML5 | Full HTML5 rendering via comrak. |
+| **djot** | Djot | Djot markup format. |
+| **plain** | Plain text | Raw text with no markup. |
+
+To register a custom renderer:
+
+```rust title="custom_renderer.rs"
+use kreuzberg::plugins::registry::get_renderer_registry;
+use std::sync::Arc;
+
+let registry = get_renderer_registry();
+let mut registry = registry.write().unwrap();
+registry.register(Arc::new(MyCustomRenderer))?;
+```
+
+Custom renderers participate in the pipeline just like built-in ones. When the user requests your renderer's name via `--content-format`, the RendererRegistry dispatches to your implementation.
+
+---
+
 ## Plugin Lifecycle
 
 Every plugin, regardless of type, follows the same lifecycle from creation to shutdown.
@@ -222,8 +264,7 @@ The registration pattern is the same in every language. Get the registry, call r
     ```rust
     let registry = get_document_extractor_registry();
     let mut registry = registry.write().unwrap();
-    registry.register("my-pdf", Arc::new(MyPDFExtractor::new()))?;
-    ```
+    registry.register("my-pdf", Arc::new(MyPDFExtractor::new()))?;```
 
 === "Python"
     ```python

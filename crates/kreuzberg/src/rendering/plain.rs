@@ -1,288 +1,451 @@
-//! Render a `DocumentStructure` tree to plain text.
+//! Render an `InternalDocument` to plain text.
+//!
+//! Emits text only, with no formatting. Double newlines separate blocks.
+//! Annotations are stripped. Tables are rendered as space-separated columns.
 
-use crate::types::document_structure::{ContentLayer, DocumentStructure, NodeContent, NodeIndex, TableGrid};
+use crate::types::document_structure::ContentLayer;
+use crate::types::internal::{ElementKind, InternalDocument};
 
-/// Render a `DocumentStructure` to plain text.
-///
-/// Strips all formatting — headings become plain lines, tables become
-/// space-separated text, annotations are ignored.
-pub fn render_to_plain(doc: &DocumentStructure) -> String {
-    let mut out = String::new();
+use super::common::{get_admonition_kind, get_admonition_title, parse_metadata_entries, render_table_plain};
 
-    for (idx, _node) in doc.body_roots() {
-        render_node(doc, idx, &mut out);
-    }
+/// Render an `InternalDocument` to plain text.
+pub fn render_plain(doc: &InternalDocument) -> String {
+    let mut out = String::with_capacity(doc.elements.len() * 80);
 
-    // Footnotes
-    let footnotes: Vec<_> = doc
-        .furniture_roots()
-        .filter(|(_, n)| n.content_layer == ContentLayer::Footnote)
-        .collect();
-    if !footnotes.is_empty() {
-        out.push('\n');
-        for (idx, _) in footnotes {
-            render_node(doc, idx, &mut out);
+    for elem in &doc.elements {
+        // Only render body-layer elements in main pass
+        if elem.layer != ContentLayer::Body {
+            continue;
         }
-    }
 
-    let trimmed = out.trim_end();
-    if trimmed.is_empty() {
-        return String::new();
-    }
-    let mut result = trimmed.to_string();
-    result.push('\n');
-    result
-}
+        // Skip container markers
+        if elem.kind.is_container_start() || elem.kind.is_container_end() {
+            continue;
+        }
 
-fn render_node(doc: &DocumentStructure, idx: NodeIndex, out: &mut String) {
-    let node = match doc.get(idx) {
-        Some(n) => n,
-        None => return,
-    };
-
-    match &node.content {
-        NodeContent::Title { text }
-        | NodeContent::Heading { text, .. }
-        | NodeContent::Paragraph { text }
-        | NodeContent::Footnote { text } => {
-            out.push_str(text);
-            out.push_str("\n\n");
-        }
-        NodeContent::ListItem { text } => {
-            out.push_str(text);
-            out.push('\n');
-        }
-        NodeContent::List { .. } => {
-            for child_idx in &node.children {
-                render_node(doc, *child_idx, out);
-            }
-            out.push('\n');
-        }
-        NodeContent::Table { grid } => {
-            render_table_plain(out, grid);
-            out.push('\n');
-        }
-        NodeContent::Image { description, .. } => {
-            if let Some(desc) = description {
-                out.push_str(&format!("[Image: {}]\n\n", desc));
-            }
-        }
-        NodeContent::Code { text, .. } => {
-            out.push_str(text);
-            if !text.ends_with('\n') {
-                out.push('\n');
-            }
-            out.push('\n');
-        }
-        NodeContent::Quote => {
-            for child_idx in &node.children {
-                render_node(doc, *child_idx, out);
-            }
-        }
-        NodeContent::Formula { text } => {
-            out.push_str(text);
-            out.push_str("\n\n");
-        }
-        NodeContent::Group { heading_text, .. } => {
-            // If the group has heading_text but no Heading child, render it as
-            // plain text so the section title is not silently lost.
-            if let Some(ht) = heading_text {
-                let has_heading_child = node.children.iter().any(|c| {
-                    doc.get(*c)
-                        .is_some_and(|n| matches!(n.content, NodeContent::Heading { .. }))
-                });
-                if !has_heading_child {
-                    out.push_str(ht);
+        match elem.kind {
+            ElementKind::Title | ElementKind::Heading { .. } | ElementKind::Paragraph => {
+                if !elem.text.is_empty() {
+                    out.push_str(&elem.text);
                     out.push_str("\n\n");
                 }
             }
-            for child_idx in &node.children {
-                render_node(doc, *child_idx, out);
+            ElementKind::ListItem { .. } => {
+                out.push_str(&elem.text);
+                out.push('\n');
             }
-        }
-        NodeContent::PageBreak => {
-            out.push('\n');
-        }
-        NodeContent::Slide { title, .. } => {
-            if let Some(t) = title {
-                out.push_str(t);
+            ElementKind::Code => {
+                out.push_str(&elem.text);
+                if !elem.text.ends_with('\n') {
+                    out.push('\n');
+                }
+                out.push('\n');
+            }
+            ElementKind::Formula => {
+                out.push_str(&elem.text);
                 out.push_str("\n\n");
             }
-            for child_idx in &node.children {
-                render_node(doc, *child_idx, out);
+            ElementKind::Table { table_index } => {
+                if let Some(table) = doc.tables.get(table_index as usize) {
+                    let table_str = if !table.cells.is_empty() {
+                        render_table_plain(&table.cells)
+                    } else {
+                        // TATR produces markdown directly without populating cells.
+                        table.markdown.clone()
+                    };
+                    if !table_str.trim().is_empty() {
+                        out.push_str(&table_str);
+                        out.push('\n');
+                    }
+                }
             }
-        }
-        NodeContent::DefinitionList => {
-            for child_idx in &node.children {
-                render_node(doc, *child_idx, out);
+            ElementKind::Image { image_index } => {
+                if let Some(img) = doc.images.get(image_index as usize)
+                    && let Some(ref desc) = img.description
+                    && !desc.is_empty()
+                {
+                    out.push_str("[Image: ");
+                    out.push_str(desc);
+                    out.push_str("]\n\n");
+                }
             }
-        }
-        NodeContent::DefinitionItem { term, definition } => {
-            out.push_str(term);
-            out.push_str(": ");
-            out.push_str(definition);
-            out.push_str("\n\n");
-        }
-        NodeContent::Citation { text, .. } => {
-            out.push_str(text);
-            out.push_str("\n\n");
-        }
-        NodeContent::Admonition { kind, title } => {
-            if let Some(t) = title {
-                out.push_str(t);
-            } else {
-                out.push_str(kind);
+            ElementKind::FootnoteRef => {
+                // Skip in plain text
             }
-            out.push_str("\n\n");
-            for child_idx in &node.children {
-                render_node(doc, *child_idx, out);
+            ElementKind::FootnoteDefinition => {
+                // Skip in body pass; footnotes rendered at end
             }
-        }
-        NodeContent::RawBlock { content, .. } => {
-            out.push_str(content);
-            if !content.ends_with('\n') {
+            ElementKind::Citation => {
+                // Render just the text
+                if !elem.text.is_empty() {
+                    out.push_str(&elem.text);
+                    out.push_str("\n\n");
+                }
+            }
+            ElementKind::PageBreak => {
                 out.push('\n');
             }
-            out.push('\n');
-        }
-        NodeContent::MetadataBlock { entries } => {
-            for (key, value) in entries {
-                out.push_str(key);
+            ElementKind::Slide { .. } => {
+                if !elem.text.is_empty() {
+                    out.push_str(&elem.text);
+                    out.push_str("\n\n");
+                }
+            }
+            ElementKind::DefinitionTerm => {
+                out.push_str(&elem.text);
                 out.push_str(": ");
-                out.push_str(value);
+            }
+            ElementKind::DefinitionDescription => {
+                out.push_str(&elem.text);
+                out.push_str("\n\n");
+            }
+            ElementKind::Admonition => {
+                let title = get_admonition_title(elem);
+                if let Some(t) = title {
+                    out.push_str(t);
+                } else {
+                    out.push_str(get_admonition_kind(elem));
+                }
+                out.push_str("\n\n");
+                if !elem.text.is_empty() {
+                    out.push_str(&elem.text);
+                    out.push_str("\n\n");
+                }
+            }
+            ElementKind::RawBlock => {
+                out.push_str(&elem.text);
+                if !elem.text.ends_with('\n') {
+                    out.push('\n');
+                }
                 out.push('\n');
             }
-            out.push('\n');
+            ElementKind::MetadataBlock => {
+                let entries = parse_metadata_entries(&elem.text);
+                if !entries.is_empty() {
+                    for (key, value) in &entries {
+                        out.push_str(key);
+                        out.push_str(": ");
+                        out.push_str(value);
+                        out.push('\n');
+                    }
+                    out.push('\n');
+                } else if !elem.text.is_empty() {
+                    out.push_str(&elem.text);
+                    if !elem.text.ends_with('\n') {
+                        out.push('\n');
+                    }
+                    out.push('\n');
+                }
+            }
+            ElementKind::OcrText { .. } => {
+                if !elem.text.is_empty() {
+                    out.push_str(&elem.text);
+                    out.push_str("\n\n");
+                }
+            }
+            // Container markers handled above
+            ElementKind::ListStart { .. }
+            | ElementKind::ListEnd
+            | ElementKind::QuoteStart
+            | ElementKind::QuoteEnd
+            | ElementKind::GroupStart
+            | ElementKind::GroupEnd => {}
         }
     }
-}
 
-fn render_table_plain(out: &mut String, grid: &TableGrid) {
-    if grid.rows == 0 || grid.cols == 0 {
-        return;
-    }
-
-    let mut rows: Vec<Vec<&str>> = vec![vec![""; grid.cols as usize]; grid.rows as usize];
-    for cell in &grid.cells {
-        if (cell.row as usize) < rows.len() && (cell.col as usize) < rows[0].len() {
-            rows[cell.row as usize][cell.col as usize] = &cell.content;
-        }
-    }
-
-    for row in &rows {
-        out.push_str(&row.join(" "));
+    // Footnotes at end
+    let has_footnotes = doc
+        .elements
+        .iter()
+        .any(|e| e.kind == ElementKind::FootnoteDefinition && e.layer == ContentLayer::Footnote);
+    if has_footnotes {
         out.push('\n');
+        for elem in &doc.elements {
+            if elem.kind == ElementKind::FootnoteDefinition && elem.layer == ContentLayer::Footnote {
+                out.push_str(&elem.text);
+                out.push_str("\n\n");
+            }
+        }
     }
+
+    // Plain text content string: trim trailing whitespace, no trailing newline
+    // (matches derive_content_string behavior — post-processors expect this)
+    out.truncate(out.trim_end().len());
+    out
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::types::builder::DocumentStructureBuilder;
+    use crate::types::document_structure::ContentLayer;
+    use crate::types::internal_builder::InternalDocumentBuilder;
+
+    // ========================================================================
+    // 1. Element rendering tests
+    // ========================================================================
 
     #[test]
-    fn test_plain_paragraphs() {
-        let mut b = DocumentStructureBuilder::new();
-        b.push_paragraph("Hello.", vec![], None, None);
-        b.push_paragraph("World.", vec![], None, None);
+    fn test_render_plain_title() {
+        let mut b = InternalDocumentBuilder::new("test");
+        b.push_title("My Document", None, None);
         let doc = b.build();
-
-        let plain = render_to_plain(&doc);
-        assert_eq!(plain, "Hello.\n\nWorld.\n");
+        let out = render_plain(&doc);
+        assert_eq!(out, "My Document");
     }
 
     #[test]
-    fn test_plain_headings_are_plain() {
-        let mut b = DocumentStructureBuilder::new();
-        b.push_heading(1, "Title", None, None);
-        b.push_paragraph("Body.", vec![], None, None);
+    fn test_render_plain_heading() {
+        let mut b = InternalDocumentBuilder::new("test");
+        b.push_heading(2, "Section", None, None);
         let doc = b.build();
-
-        let plain = render_to_plain(&doc);
-        assert!(plain.contains("Title"));
-        assert!(!plain.contains('#'));
+        let out = render_plain(&doc);
+        assert_eq!(out, "Section");
     }
 
     #[test]
-    fn test_plain_empty() {
-        let doc = DocumentStructureBuilder::new().build();
-        assert_eq!(render_to_plain(&doc), "");
+    fn test_render_plain_paragraph() {
+        let mut b = InternalDocumentBuilder::new("test");
+        b.push_paragraph("Hello world.", vec![], None, None);
+        let doc = b.build();
+        let out = render_plain(&doc);
+        assert_eq!(out, "Hello world.");
     }
 
     #[test]
-    fn test_plain_code_block() {
-        let mut b = DocumentStructureBuilder::new();
-        b.push_code("fn main() {}", Some("rust"), None);
+    fn test_render_plain_list_items() {
+        let mut b = InternalDocumentBuilder::new("test");
+        b.push_list(false);
+        b.push_list_item("Alpha", false, vec![], None, None);
+        b.push_list_item("Beta", false, vec![], None, None);
+        b.end_list();
         let doc = b.build();
-
-        let plain = render_to_plain(&doc);
-        assert!(plain.contains("fn main() {}"));
-        assert!(!plain.contains("```")); // No markdown fences
+        let out = render_plain(&doc);
+        assert!(out.contains("Alpha\n"), "got: {}", out);
+        assert!(out.contains("Beta"), "got: {}", out);
     }
 
     #[test]
-    fn test_plain_definition_list() {
-        let mut b = DocumentStructureBuilder::new();
-        let dl = b.push_definition_list(None);
-        b.push_definition_item(dl, "Term", "Definition", None);
+    fn test_render_plain_ordered_list() {
+        let mut b = InternalDocumentBuilder::new("test");
+        b.push_list(true);
+        b.push_list_item("First", true, vec![], None, None);
+        b.push_list_item("Second", true, vec![], None, None);
+        b.end_list();
         let doc = b.build();
-
-        let plain = render_to_plain(&doc);
-        assert!(plain.contains("Term: Definition"));
+        let out = render_plain(&doc);
+        // Plain text just outputs the text, no numbering
+        assert!(out.contains("First"), "got: {}", out);
+        assert!(out.contains("Second"), "got: {}", out);
     }
 
     #[test]
-    fn test_plain_citation() {
-        let mut b = DocumentStructureBuilder::new();
-        b.push_citation("doe2024", "Doe, J. (2024). Paper.", None);
+    fn test_render_plain_code_block() {
+        let mut b = InternalDocumentBuilder::new("test");
+        b.push_code("fn main() {}", Some("rust"), None, None);
         let doc = b.build();
-
-        let plain = render_to_plain(&doc);
-        assert!(plain.contains("Doe, J. (2024). Paper."));
-        assert!(!plain.contains("doe2024")); // Key not shown in plain text
+        let out = render_plain(&doc);
+        assert!(out.contains("fn main() {}"), "got: {}", out);
     }
 
     #[test]
-    fn test_plain_metadata_block() {
-        let mut b = DocumentStructureBuilder::new();
-        b.push_metadata_block(
-            vec![
-                ("From".to_string(), "alice@example.com".to_string()),
-                ("Subject".to_string(), "Hello".to_string()),
-            ],
-            None,
-        );
+    fn test_render_plain_formula() {
+        let mut b = InternalDocumentBuilder::new("test");
+        b.push_formula("E = mc^2", None, None);
         let doc = b.build();
-
-        let plain = render_to_plain(&doc);
-        assert!(plain.contains("From: alice@example.com"));
-        assert!(plain.contains("Subject: Hello"));
+        let out = render_plain(&doc);
+        assert!(out.contains("E = mc^2"), "got: {}", out);
     }
 
     #[test]
-    fn test_plain_admonition() {
-        let mut b = DocumentStructureBuilder::new();
-        b.push_admonition("warning", Some("Danger"), None);
-        b.push_paragraph("Be careful.", vec![], None, None);
-        b.exit_container();
+    fn test_render_plain_table() {
+        let mut b = InternalDocumentBuilder::new("test");
+        let cells = vec![
+            vec!["Name".to_string(), "Age".to_string()],
+            vec!["Alice".to_string(), "30".to_string()],
+        ];
+        b.push_table_from_cells(&cells, None, None);
         let doc = b.build();
-
-        let plain = render_to_plain(&doc);
-        assert!(plain.contains("Danger"));
-        assert!(plain.contains("Be careful."));
+        let out = render_plain(&doc);
+        assert!(out.contains("Name Age"), "got: {}", out);
+        assert!(out.contains("Alice 30"), "got: {}", out);
     }
 
     #[test]
-    fn test_plain_list() {
-        let mut b = DocumentStructureBuilder::new();
-        let list = b.push_list(false, None);
-        b.push_list_item(list, "First", None);
-        b.push_list_item(list, "Second", None);
+    fn test_render_plain_image() {
+        let mut b = InternalDocumentBuilder::new("test");
+        let image = crate::types::ExtractedImage {
+            data: bytes::Bytes::new(),
+            format: std::borrow::Cow::Borrowed("png"),
+            image_index: 0,
+            page_number: None,
+            width: None,
+            height: None,
+            colorspace: None,
+            bits_per_component: None,
+            is_mask: false,
+            description: Some("A nice photo".to_string()),
+            ocr_result: None,
+            bounding_box: None,
+            source_path: None,
+        };
+        b.push_image(Some("A nice photo"), image, None, None);
         let doc = b.build();
+        let out = render_plain(&doc);
+        assert!(out.contains("[Image: A nice photo]"), "got: {}", out);
+    }
 
-        let plain = render_to_plain(&doc);
-        assert!(plain.contains("First"));
-        assert!(plain.contains("Second"));
-        assert!(!plain.contains('-')); // No markdown bullets
+    #[test]
+    fn test_render_plain_page_break() {
+        let mut b = InternalDocumentBuilder::new("test");
+        b.push_paragraph("Before", vec![], None, None);
+        b.push_page_break();
+        b.push_paragraph("After", vec![], None, None);
+        let doc = b.build();
+        let out = render_plain(&doc);
+        assert!(out.contains("Before"), "got: {}", out);
+        assert!(out.contains("After"), "got: {}", out);
+    }
+
+    #[test]
+    fn test_render_plain_slide() {
+        let mut b = InternalDocumentBuilder::new("test");
+        b.push_slide(1, Some("Slide Title"), None);
+        let doc = b.build();
+        let out = render_plain(&doc);
+        assert!(out.contains("Slide Title"), "got: {}", out);
+    }
+
+    #[test]
+    fn test_render_plain_definition_term_and_description() {
+        let mut b = InternalDocumentBuilder::new("test");
+        b.push_definition_term("Rust", None);
+        b.push_definition_description("A systems language", None);
+        let doc = b.build();
+        let out = render_plain(&doc);
+        assert!(out.contains("Rust: "), "got: {}", out);
+        assert!(out.contains("A systems language"), "got: {}", out);
+    }
+
+    #[test]
+    fn test_render_plain_admonition_with_title() {
+        let mut b = InternalDocumentBuilder::new("test");
+        b.push_admonition("warning", Some("Be careful"), None);
+        let doc = b.build();
+        let out = render_plain(&doc);
+        assert!(out.contains("Be careful"), "got: {}", out);
+    }
+
+    #[test]
+    fn test_render_plain_admonition_without_title() {
+        let mut b = InternalDocumentBuilder::new("test");
+        b.push_admonition("note", None, None);
+        let doc = b.build();
+        let out = render_plain(&doc);
+        assert!(out.contains("note"), "got: {}", out);
+    }
+
+    #[test]
+    fn test_render_plain_raw_block() {
+        let mut b = InternalDocumentBuilder::new("test");
+        b.push_raw_block("tex", "\\LaTeX{}", None);
+        let doc = b.build();
+        let out = render_plain(&doc);
+        assert!(out.contains("\\LaTeX{}"), "got: {}", out);
+    }
+
+    #[test]
+    fn test_render_plain_metadata_block() {
+        let mut b = InternalDocumentBuilder::new("test");
+        let entries = vec![("Author".to_string(), "Alice".to_string())];
+        b.push_metadata_block(&entries, None);
+        let doc = b.build();
+        let out = render_plain(&doc);
+        assert!(out.contains("Author: Alice"), "got: {}", out);
+    }
+
+    #[test]
+    fn test_render_plain_empty_document() {
+        let b = InternalDocumentBuilder::new("test");
+        let doc = b.build();
+        let out = render_plain(&doc);
+        assert_eq!(out, "");
+    }
+
+    // ========================================================================
+    // 2. Plain text has no annotations (stripped)
+    // ========================================================================
+
+    #[test]
+    fn test_render_plain_strips_annotations() {
+        use crate::types::document_structure::{AnnotationKind, TextAnnotation};
+        let mut b = InternalDocumentBuilder::new("test");
+        let ann = vec![TextAnnotation {
+            start: 0,
+            end: 5,
+            kind: AnnotationKind::Bold,
+        }];
+        b.push_paragraph("Hello world", ann, None, None);
+        let doc = b.build();
+        let out = render_plain(&doc);
+        // No formatting markers, just raw text
+        assert_eq!(out, "Hello world");
+    }
+
+    // ========================================================================
+    // 3. Nested structure tests (containers skipped in plain)
+    // ========================================================================
+
+    #[test]
+    fn test_render_plain_blockquote_content() {
+        let mut b = InternalDocumentBuilder::new("test");
+        b.push_quote_start();
+        b.push_paragraph("Quoted text.", vec![], None, None);
+        b.push_quote_end();
+        let doc = b.build();
+        let out = render_plain(&doc);
+        // Plain text just outputs the content, no quote markers
+        assert!(out.contains("Quoted text."), "got: {}", out);
+    }
+
+    #[test]
+    fn test_render_plain_nested_list() {
+        let mut b = InternalDocumentBuilder::new("test");
+        b.push_list(false);
+        b.push_list_item("Outer", false, vec![], None, None);
+        b.push_list(false);
+        b.push_list_item("Inner", false, vec![], None, None);
+        b.end_list();
+        b.end_list();
+        let doc = b.build();
+        let out = render_plain(&doc);
+        assert!(out.contains("Outer"), "got: {}", out);
+        assert!(out.contains("Inner"), "got: {}", out);
+    }
+
+    // ========================================================================
+    // 4. Footnote tests
+    // ========================================================================
+
+    #[test]
+    fn test_render_plain_footnote_definitions_at_end() {
+        let mut b = InternalDocumentBuilder::new("test");
+        b.push_paragraph("Main text", vec![], None, None);
+        b.push_footnote_ref("1", "fn1", None);
+        let def = b.push_footnote_definition("A note.", "fn1", None);
+        b.set_layer(def, ContentLayer::Footnote);
+        let doc = b.build();
+        let out = render_plain(&doc);
+        // Footnote refs are skipped in plain text, but definitions appear at end
+        assert!(out.contains("Main text"), "got: {}", out);
+        assert!(out.contains("A note."), "got: {}", out);
+    }
+
+    #[test]
+    fn test_render_plain_citation() {
+        let mut b = InternalDocumentBuilder::new("test");
+        b.push_citation("Smith 2024", "smith2024", None);
+        let doc = b.build();
+        let out = render_plain(&doc);
+        assert!(out.contains("Smith 2024"), "got: {}", out);
     }
 }

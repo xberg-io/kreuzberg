@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/epub/epub2_no_cover.epub",
+  "file_type": "epub",
+  "file_size": 3584,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "epub test: epub2_no_cover",
+    "source": "pandoc-generated",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/epub/epub2_no_cover.txt",
+    "markdown_file": "../../../../test_documents/ground_truth/epub/epub2_no_cover.md",
+    "source": "pandoc"
+  }
+}

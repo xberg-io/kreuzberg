@@ -83,7 +83,7 @@ class KreuzbergTest {
 					result.getOcrElements(), result.getDjotContent().orElse(null),
 					result.getDocumentStructure().orElse(null), result.getExtractedKeywords().orElse(null),
 					result.getQualityScore().orElse(null), result.getProcessingWarnings().orElse(null),
-					result.getAnnotations().orElse(null));
+					result.getAnnotations().orElse(null), result.getUris().orElse(null));
 		};
 		// CPD-ON
 

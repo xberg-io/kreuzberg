@@ -102,19 +102,31 @@ pub fn ruby_cache_stats() -> Result<RHash, Error> {
 
 // Validation wrapper functions
 pub fn validate_binarization_method(method: String) -> Result<i32, Error> {
-    unsafe { Ok(kreuzberg_validate_binarization_method(method.as_ptr() as *const std::os::raw::c_char)) }
+    let c_method = std::ffi::CString::new(method)
+        .map_err(|_| runtime_error("Invalid string: contains null byte"))?;
+    // SAFETY: c_method is a valid null-terminated C string that outlives the FFI call.
+    unsafe { Ok(kreuzberg_validate_binarization_method(c_method.as_ptr())) }
 }
 
 pub fn validate_ocr_backend(backend: String) -> Result<i32, Error> {
-    unsafe { Ok(kreuzberg_validate_ocr_backend(backend.as_ptr() as *const std::os::raw::c_char)) }
+    let c_backend = std::ffi::CString::new(backend)
+        .map_err(|_| runtime_error("Invalid string: contains null byte"))?;
+    // SAFETY: c_backend is a valid null-terminated C string that outlives the FFI call.
+    unsafe { Ok(kreuzberg_validate_ocr_backend(c_backend.as_ptr())) }
 }
 
 pub fn validate_language_code(code: String) -> Result<i32, Error> {
-    unsafe { Ok(kreuzberg_validate_language_code(code.as_ptr() as *const std::os::raw::c_char)) }
+    let c_code = std::ffi::CString::new(code)
+        .map_err(|_| runtime_error("Invalid string: contains null byte"))?;
+    // SAFETY: c_code is a valid null-terminated C string that outlives the FFI call.
+    unsafe { Ok(kreuzberg_validate_language_code(c_code.as_ptr())) }
 }
 
 pub fn validate_token_reduction_level(level: String) -> Result<i32, Error> {
-    unsafe { Ok(kreuzberg_validate_token_reduction_level(level.as_ptr() as *const std::os::raw::c_char)) }
+    let c_level = std::ffi::CString::new(level)
+        .map_err(|_| runtime_error("Invalid string: contains null byte"))?;
+    // SAFETY: c_level is a valid null-terminated C string that outlives the FFI call.
+    unsafe { Ok(kreuzberg_validate_token_reduction_level(c_level.as_ptr())) }
 }
 
 pub fn validate_tesseract_psm(psm: i32) -> Result<i32, Error> {
@@ -126,7 +138,10 @@ pub fn validate_tesseract_oem(oem: i32) -> Result<i32, Error> {
 }
 
 pub fn validate_output_format(format: String) -> Result<i32, Error> {
-    unsafe { Ok(kreuzberg_validate_output_format(format.as_ptr() as *const std::os::raw::c_char)) }
+    let c_format = std::ffi::CString::new(format)
+        .map_err(|_| runtime_error("Invalid string: contains null byte"))?;
+    // SAFETY: c_format is a valid null-terminated C string that outlives the FFI call.
+    unsafe { Ok(kreuzberg_validate_output_format(c_format.as_ptr())) }
 }
 
 pub fn validate_confidence(confidence: f64) -> Result<i32, Error> {

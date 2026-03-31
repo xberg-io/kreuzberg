@@ -88,7 +88,17 @@ impl ContentBuilder {
 
     pub(super) fn add_text(&mut self, text: &str) {
         if !text.trim().is_empty() {
+            // Ensure a blank-line separator between consecutive text blocks
+            if !self.content.is_empty() && !self.content.ends_with("\n\n") {
+                if !self.content.ends_with('\n') {
+                    self.content.push('\n');
+                }
+                self.content.push('\n');
+            }
             self.content.push_str(text);
+            if !self.content.ends_with('\n') {
+                self.content.push('\n');
+            }
         }
     }
 
@@ -98,7 +108,7 @@ impl ContentBuilder {
                 self.content.push_str("# ");
             }
             self.content.push_str(title.trim());
-            self.content.push('\n');
+            self.content.push_str("\n\n");
         }
     }
 
@@ -169,9 +179,28 @@ impl ContentBuilder {
         self.content.push('\n');
     }
 
+    #[allow(dead_code)]
     pub(super) fn add_image(&mut self, _image_id: &str, _slide_number: u32) {
         if !self.plain {
             self.content.push_str("![image]()\n");
+        }
+    }
+
+    pub(super) fn add_image_with_desc(&mut self, _image_id: &str, description: Option<&str>, target: &str) {
+        if !self.plain {
+            // Normalize alt text: replace newlines with spaces for valid markdown
+            let alt = description
+                .map(|d| d.replace('\n', " ").replace('\r', ""))
+                .unwrap_or_default();
+            let src = if target.is_empty() {
+                String::new()
+            } else {
+                target.to_string()
+            };
+            if !self.content.is_empty() && !self.content.ends_with('\n') {
+                self.content.push('\n');
+            }
+            self.content.push_str(&format!("![{}]({})\n", alt.trim(), src));
         }
     }
 

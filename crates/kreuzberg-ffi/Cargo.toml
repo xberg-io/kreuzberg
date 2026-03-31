@@ -27,6 +27,7 @@ pdf = []
 keywords-yake = []
 keywords-rake = []
 layout-detection = ["kreuzberg/layout-detection"]
+tree-sitter = []
 
 [dependencies]
 ahash = { workspace = true }
@@ -58,6 +59,7 @@ kreuzberg = { workspace = true, features = [
     "api",
     "mcp",
     "otel",
+    "tree-sitter",
     "bundled-pdfium",
 ] }
 

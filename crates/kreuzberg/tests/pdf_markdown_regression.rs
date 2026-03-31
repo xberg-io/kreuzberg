@@ -374,7 +374,7 @@ fn run_quality_gate(
             }
         };
 
-        let result = match extract_with_format(&pdf_path, format) {
+        let result = match extract_with_format(&pdf_path, format.clone()) {
             Some(r) => r,
             None => {
                 println!(

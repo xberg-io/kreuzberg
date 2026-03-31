@@ -42,7 +42,7 @@ SELECT M
 
 START / STOP
 
-+
+-
 
 <!-- image -->
 
@@ -60,7 +60,7 @@ START / STOP
 - -Safe against short-circuit
 - -Safe against wrong polarity by connecting battery on the charger
 - -Simple signalling of green, red, yellow LED, acoustic buzzer and OLED screen
-- -Set the settings by  turning  and by pressing the selection button
+- -Set the settings by turning and by pressing the selection button
 - -"Burst Charge" menu for completely discharged battery
 - -Working temperature range from 0º to 35ºC
 - -Charging is independent of oscillations in the supply voltage (PWM technology)
@@ -86,7 +86,7 @@ PINE: 04:18
 
 218Vac
 
-+ AND - CONNECTING CABLE
+- AND - CONNECTING CABLE
 
 AP- 3000
 
@@ -123,7 +123,7 @@ The battery charger is designed to charge only 12V, 24V, 36V ali 48V lead (Pb) b
 
 Tip: The battery is fully charged only a few hours after the green LED light is on and thee screen appears heading "Float" and the value of 100%. You can use the battery immediately after the green LED flashes when the charge is up to 90%, but it is recommended at least 1x per month to leave the battery on the charger to be fully charged.
 
-Warning: If the battery is properly connected and all three LED  blinks, but the charger does not  charge,   then   the  battery   is   over-discharged.  In   this   case   choose   function » Burst Charge « (instruction - page 9).
+Warning: If the battery is properly connected and all three LED blinks, but the charger does not charge, then the battery is over-discharged. In this case choose function » Burst Charge « (instruction - page 9).
 
 ## LEGEND OF LED SIGNALS WHILE CHARGING THE BATTERY
 
@@ -209,9 +209,9 @@ voltage ( VOLT ),
 
 ,…), current ( AMPS ), emitted charge ( CAP ), charging time ( TIME ), battery type select ( TRA charger status ( Ready ,…), battery charge in % and ambient temperature.
 
-By pressing the button, the system goes into main menu.  By turning the button, we set the wanted section and choose it by pressing a selection button. Choosing menus: » Status «, » BattType « (battery type), » Contrast « (display contrast), » Burst « (menu for forced charging), » Current « (max. current) in » BattSize « (battery size menu).
+By pressing the button, the system goes into main menu. By turning the button, we set the wanted section and choose it by pressing a selection button. Choosing menus: » Status «, » BattType « (battery type), » Contrast « (display contrast), » Burst « (menu for forced charging), » Current « (max. current) in » BattSize « (battery size menu).
 
-By turning the button in one and the other side, put the cursor on the proper place. By pressing on the button confirm the new selected type of battery. Then It's hear a short beep and the system goes into main menu.  Charging programs are: Universal ( UNI ), GEL , Standard ( STA ), CaCaWET ( WET ),  LeadCrystal ( LC ), U-I , AGM , Traction ( TRA ). The charging program is still selected after switching off the device.
+By turning the button in one and the other side, put the cursor on the proper place. By pressing on the button confirm the new selected type of battery. Then It's hear a short beep and the system goes into main menu. Charging programs are: Universal ( UNI ), GEL , Standard ( STA ), CaCaWET ( WET ), LeadCrystal ( LC ), U-I , AGM , Traction ( TRA ). The charging program is still selected after switching off the device.
 
 By turning and by pressing the button, can be set screen brightness in » Contrast « menu. Reduced brightness levels extends the lifetime of the screen.
 
@@ -247,13 +247,13 @@ Button enable
 
 ›xi†
 
-If we charge a fully discharged battery with a voltage below 6V, the system will not start charging, therefore we choose the  » Burst Charge « menu then » Yes « and press button to confirm choice to activate forced charging with the singlepulse. (After the beep, we automatically return to the main menu.) If necessary, repeat the entire procedure several times, up to 100x..
+If we charge a fully discharged battery with a voltage below 6V, the system will not start charging, therefore we choose the » Burst Charge « menu then » Yes « and press button to confirm choice to activate forced charging with the singlepulse. (After the beep, we automatically return to the main menu.) If necessary, repeat the entire procedure several times, up to 100x..
 
 The Start / Stop key can be used to start charging after the battery and charger have been connected. »Button enable« . When set to » Button disable «, the start of charging is activated when the + and are connected to the battery.
 
-By turning and by pressing the button select » Current «. In » Current limit MENU « can set  limit of the charging current in the range of 20 to 100%, based on the rated charging current.
+By turning and by pressing the button select » Current «. In » Current limit MENU « can set limit of the charging current in the range of 20 to 100%, based on the rated charging current.
 
-In » Battery size MENU «,  can select battery size within the limit between 50 in 1000Ah
+In » Battery size MENU «, can select battery size within the limit between 50 in 1000Ah
 
 VOLT: 38.60
 
@@ -331,11 +331,11 @@ Following charging phases are: Ready , Bulk (main charge), Abso (absorption), Eq
 
 Picture of display appears, when the battery is fully charged ( Float ). After the battery charger is disconnected from the battery, value of the charge ( CAP ) and the charging time ( TIME ) stay in memory. At the recharging both the value will be cleared.
 
-If you want to charge with a constant linear current  UoIo (non pulsed) in Battery select menu select ' UoIo ' caption.
+If you want to charge with a constant linear current UoIo (non pulsed) in Battery select menu select ' UoIo ' caption.
 
 The wanted voltage U0 and maximum current I 0 can be selected in the submenu » UoIo Menu «.
 
-By turning and by pressing the button select  wanted voltage Uo (48.0V-68.0V) and Io (1.8A-50.3A). Finally, confirm with OK to leave the menu.
+By turning and by pressing the button select wanted voltage Uo (48.0V-68.0V) and Io (1.8A-50.3A). Finally, confirm with OK to leave the menu.
 
 Heading Ca (calibration of the reference voltage Uo) in Cb (calibration value) do not change!
 
@@ -383,17 +383,17 @@ It happens that the line fuse in installation does not allow such a large consum
 | BATTERY SIZE MENU   |
 |---------------------|
 
-The battery,  which is filled  can be small (less than 50Ah) or large, over 1000Ah. Depending on the size of the battery, the ability to receive el. energy during the absorption phase is very different. The charging profile therefore adjusts to the size of the battery during the absorption, equalization and maintenance phases. To make sure that battery charging is really optimal,  select the size  (capacity) of the battery in the » BattSize MENU«
+The battery, which is filled can be small (less than 50Ah) or large, over 1000Ah. Depending on the size of the battery, the ability to receive el. energy during the absorption phase is very different. The charging profile therefore adjusts to the size of the battery during the absorption, equalization and maintenance phases. To make sure that battery charging is really optimal, select the size (capacity) of the battery in the » BattSize MENU«
 
-## BUTTON START/ STOP  (BUTTON MENU)
+## BUTTON START/ STOP (BUTTON MENU)
 
-Start/stop button can be used to start charging when the battery and charger are connected.   In   the   menu,   the   key   is   activated   by   selecting »enable« .   Before disconnected the battery from  the charger, when charging has been completed, press the button again. If we want a button will be deactivated, in this case the charging will begin immediately when the battery and charger are connected, then select »disable« in the menu.
+Start/stop button can be used to start charging when the battery and charger are connected. In the menu, the key is activated by selecting »enable« . Before disconnected the battery from the charger, when charging has been completed, press the button again. If we want a button will be deactivated, in this case the charging will begin immediately when the battery and charger are connected, then select »disable« in the menu.
 
 ## CHARGING WITH LINEAR CURRENT
 
-For special purposes where we need a stable voltage and current for charging (example: car tuning) , device also offer this option. Charging current is linear. We can set it in the section » Battery Type« by select » UoIo« . In the submenu » UoIo Menu «,  which  automatically displays on-screen, set the desired voltage and current, and confirm with » OK« . The system automatically enters the » Status menu« and on the upper right corner of the screen we see the inscription » U-I «.
+For special purposes where we need a stable voltage and current for charging (example: car tuning) , device also offer this option. Charging current is linear. We can set it in the section » Battery Type« by select » UoIo« . In the submenu » UoIo Menu «, which automatically displays on-screen, set the desired voltage and current, and confirm with » OK« . The system automatically enters the » Status menu« and on the upper right corner of the screen we see the inscription » U-I «.
 
-There are technical constraints of the device, which is not possible to set, for example voltage of  62V and current 50A at the same time. An example relates to 48V battery charger.
+There are technical constraints of the device, which is not possible to set, for example voltage of 62V and current 50A at the same time. An example relates to 48V battery charger.
 
 | Selected voltage Uo   | Max selected current Io   |
 |-----------------------|---------------------------|
@@ -416,9 +416,9 @@ There are technical constraints of the device, which is not possible to set, for
 
 ## HOW AND WHEN TO USE THE BURST CHARGING
 
-When charging an overdischarged battery which has a voltage below 6V (at 12V charger), the system does not start charging, even though the charger is properly connected. In this case,  choose the heading » Burst Charge «, then » Yes « and press button to confirm choice to activate forced charging with the single-pulse. (After the beep, the setting automatically returns to the main menu.)
+When charging an overdischarged battery which has a voltage below 6V (at 12V charger), the system does not start charging, even though the charger is properly connected. In this case, choose the heading » Burst Charge «, then » Yes « and press button to confirm choice to activate forced charging with the single-pulse. (After the beep, the setting automatically returns to the main menu.)
 
-If necessary, repeat the entire procedure several times, up to 100x. Repeat until a voltage of 6V is reached at 12V charger  (For the other chargers, see table below). From then on the system automatically starts charging.
+If necessary, repeat the entire procedure several times, up to 100x. Repeat until a voltage of 6V is reached at 12V charger (For the other chargers, see table below). From then on the system automatically starts charging.
 
 | Charger model:   | AP-3000 12V   | AP-3000 24V   | AP-3000 36V   | AP-3000 48V   |
 |------------------|---------------|---------------|---------------|---------------|
@@ -426,7 +426,7 @@ If necessary, repeat the entire procedure several times, up to 100x. Repeat unti
 
 ## MAINS VOLTAGE IS TOO LOW
 
-In the event of a low supply voltage, all voltages below 210Vac count for this, the charging current is gradually reduced to 35% of the rated value. This happens at 90Vac. The device can therefore also be used in environments where the mains voltage   fluctuates.   Current   from   the   grid   will   never   exceed   16A.   The   system automatically protects itself from destruction, as does the network installation and the 16A mains fuse. The charging current decreases gradually, as the table below shows. The mains voltage is displayed in the status menu on the left below. If the charger is in standby mode and not fully charged, the power supply is displayed with considerable error. After charging the charger, the voltage measurement error is minimal.
+In the event of a low supply voltage, all voltages below 210Vac count for this, the charging current is gradually reduced to 35% of the rated value. This happens at 90Vac. The device can therefore also be used in environments where the mains voltage fluctuates. Current from the grid will never exceed 16A. The system automatically protects itself from destruction, as does the network installation and the 16A mains fuse. The charging current decreases gradually, as the table below shows. The mains voltage is displayed in the status menu on the left below. If the charger is in standby mode and not fully charged, the power supply is displayed with considerable error. After charging the charger, the voltage measurement error is minimal.
 
 | Uac[V]   |   210 |   200 |   190 |   180 |   170 |   160 |   150 |   140 |   130 |   120 |   110 |   100 |   90 |
 |----------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|------|
@@ -434,13 +434,13 @@ In the event of a low supply voltage, all voltages below 210Vac count for this, 
 
 <!-- image -->
 
-## DESCRIPTION OF THE  PULSE  BATTERY CHARGING TECHNOLOGY
+## DESCRIPTION OF THE PULSE BATTERY CHARGING TECHNOLOGY
 
-Pulse charging system is electrode specific charging system; it is new technology of battery charging. It presents a small revolution on this area, because the results in practice  are   drastically  better.   With   this   technology   is   possible   very   fast   and   very precise   charging,   because   only   electrochemical   condition   of   battery   "dictates"   the charging phase and charging current, which is momentarily correctly for the battery.
+Pulse charging system is electrode specific charging system; it is new technology of battery charging. It presents a small revolution on this area, because the results in practice are drastically better. With this technology is possible very fast and very precise charging, because only electrochemical condition of battery "dictates" the charging phase and charging current, which is momentarily correctly for the battery.
 
-When   charging   with   pulse   charger   AP-3000,   does   not   come   to   the gasification of the electrolyte and warming up, that destroys (breaks) cell leadacid batteries. So as a result, pulse charging majorly prolong battery life and shortens the charging time.
+When charging with pulse charger AP-3000, does not come to the gasification of the electrolyte and warming up, that destroys (breaks) cell leadacid batteries. So as a result, pulse charging majorly prolong battery life and shortens the charging time.
 
-We can say that pulse charging technology works as transformer between battery chemistry and signals that commands the charge. Each battery is "treated" individually. Your experience with this charging method please send to info@eyraelektronika.si .
+We can say that pulse charging technology works as transformer between battery chemistry and signals that commands the charge. Each battery is "treated" individually. Your experience with this charging method please send to <info@eyraelektronika.si> .
 
 ## TECHNICAL DATA
 
@@ -483,13 +483,13 @@ We can say that pulse charging technology works as transformer between battery c
 | Red LED is on and the LCD Screen displays »Error«.                                                      | - devices has overheated - to high ambient temperatures - fan error | - reduce the ambient temperature - service intervention - clean up fan |
 | Battery is connected but the charger is not charging, all LED blinking. The screen shows right voltage. | - button Start/ Stop in on                                          | - press Start/ Stop button                                             |
 
-## WARNING!
+## WARNING
 
 - The charger is designed for indoor use (do not expose the charger to rain).
 - Charger AP3000 48V/14A can not use unauthorized person!
 - During charging ensure adequate ventilation!
 - Never hold with hand red and black crocodile + and - and push BURST button!
-- We  recommend   disconnecting   the   battery   from   the   car   if   the CaCaWET or Traction charging program is used.
+- We recommend disconnecting the battery from the car if the CaCaWET or Traction charging program is used.
 - The charger AP-3000 has a built-in security feature that stops the automatic charging start if charger detects an over-discharged battery. Over-discharged battery could be in damage. In this case, choose the » Burst Charge « menu then » Yes « and press the button to activate forced charging with the single-pulse. If necessary, repeat the entire procedure several times, up to 100x, until a voltage of 6V is reached at 12V charger (For the other chargers, see technical data), then the system automatically starts charging. From this moment on, the user is obliged to control the charging of batteries. Because in case of a defect on the battery, it can overheat, begin to gasify and in extreme cases may happen an explosion and /or a fire.
 
 ## SERVICE AND GUARANTEE
@@ -498,16 +498,16 @@ We can say that pulse charging technology works as transformer between battery c
 
 Tel.++386 (0)1 7869-037    Fax++386 (0)1 7869-038
 
-e-mail: info@eyra-elektronika.si    http://www.eyra-elektronika.si
+e-mail: <info@eyra-elektronika.si>    <http://www.eyra-elektronika.si>
 
 ## GUARANTEE STATEMENT
 
-## Guarantee  conditions:
+## Guarantee conditions
 
 1. The guarantee is valid for 24 months from the date of sale.
 2. The guarantee repairs are carried out exclusively by an authorized service center.
 3. The guarantee applies only to the charger, and not to any other device connected to this module.
-4. The guarantee and liability does not include any fees, postal costs,  damages and any costs related to the  failure of this device.
+4. The guarantee and liability does not include any fees, postal costs, damages and any costs related to the failure of this device.
 5. The guarantee does not apply to batteries, mechanical damage or lightning strikes.
 6. The guarantee does not apply if the device was mounted or used in violation of the instructions.
 7. The guarantee does not apply if an unauthorized person interferes with the device.
@@ -523,11 +523,11 @@ company:
 
 name and surname of the seller:
 
--------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
 
 signature of the seller:
 
--------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
 
 date of sale:
 

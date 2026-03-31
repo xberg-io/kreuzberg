@@ -51,6 +51,7 @@
 //!     match std::env::var("TESSDATA_PREFIX") {
 //!         Ok(dir) => {
 //!             let path = PathBuf::from(dir);
+//!             let path = if path.ends_with("tessdata") { path } else { path.join("tessdata") };
 //!             println!("Using TESSDATA_PREFIX directory: {:?}", path);
 //!             path
 //!         }

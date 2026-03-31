@@ -119,7 +119,7 @@ enum Commands {
         ///
         /// Controls how the CLI displays results, not the extraction content format.
         #[arg(short, long, default_value = "text")]
-        format: OutputFormat,
+        format: WireFormat,
 
         /// Extraction configuration overrides
         #[command(flatten)]
@@ -151,7 +151,7 @@ enum Commands {
         ///
         /// Controls how the CLI displays results, not the extraction content format.
         #[arg(short, long, default_value = "json")]
-        format: OutputFormat,
+        format: WireFormat,
 
         /// Extraction configuration overrides
         #[command(flatten)]
@@ -171,21 +171,21 @@ enum Commands {
 
         /// Output format (text or json)
         #[arg(short, long, default_value = "text")]
-        format: OutputFormat,
+        format: WireFormat,
     },
 
     /// List all supported document formats
     Formats {
         /// Output format (text or json)
         #[arg(short, long, default_value = "text")]
-        format: OutputFormat,
+        format: WireFormat,
     },
 
     /// Show version information
     Version {
         /// Output format (text or json)
         #[arg(short, long, default_value = "text")]
-        format: OutputFormat,
+        format: WireFormat,
     },
 
     /// Cache management operations
@@ -261,7 +261,7 @@ enum Commands {
 
         /// Output format (text or json)
         #[arg(short, long, default_value = "json")]
-        format: OutputFormat,
+        format: WireFormat,
     },
 
     /// Chunk text for processing
@@ -296,7 +296,7 @@ enum Commands {
 
         /// Output format (text or json)
         #[arg(short, long, default_value = "json")]
-        format: OutputFormat,
+        format: WireFormat,
     },
 
     /// Generate shell completions
@@ -330,7 +330,7 @@ enum CacheCommands {
 
         /// Output format (text or json)
         #[arg(short, long, default_value = "text")]
-        format: OutputFormat,
+        format: WireFormat,
     },
 
     /// Clear the cache
@@ -341,7 +341,7 @@ enum CacheCommands {
 
         /// Output format (text or json)
         #[arg(short, long, default_value = "text")]
-        format: OutputFormat,
+        format: WireFormat,
     },
 
     /// Output model manifest (expected model files, checksums, sizes)
@@ -352,7 +352,7 @@ enum CacheCommands {
     Manifest {
         /// Output format (text or json)
         #[arg(short, long, default_value = "json")]
-        format: OutputFormat,
+        format: WireFormat,
     },
 
     /// Download all models eagerly
@@ -373,7 +373,7 @@ enum CacheCommands {
 
         /// Output format (text or json)
         #[arg(short, long, default_value = "text")]
-        format: OutputFormat,
+        format: WireFormat,
 
         /// Download all embedding model presets (fast, balanced, quality, multilingual)
         #[arg(long)]
@@ -393,19 +393,21 @@ enum CacheCommands {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-enum OutputFormat {
+enum WireFormat {
     Text,
     Json,
+    Toon,
 }
 
-impl std::str::FromStr for OutputFormat {
+impl std::str::FromStr for WireFormat {
     type Err = String;
 
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
         match s.to_lowercase().as_str() {
-            "text" => Ok(OutputFormat::Text),
-            "json" => Ok(OutputFormat::Json),
-            _ => Err(format!("Invalid format: {}. Use 'text' or 'json'", s)),
+            "text" => Ok(WireFormat::Text),
+            "json" => Ok(WireFormat::Json),
+            "toon" => Ok(WireFormat::Toon),
+            _ => Err(format!("Invalid format: {}. Use 'text', 'json', or 'toon'", s)),
         }
     }
 }
@@ -636,10 +638,10 @@ fn main() -> Result<()> {
             })?;
 
             match format {
-                OutputFormat::Text => {
+                WireFormat::Text => {
                     println!("{}", style::success(&mime_type));
                 }
-                OutputFormat::Json => {
+                WireFormat::Json => {
                     let output = json!({
                         "path": path_str,
                         "mime_type": mime_type,
@@ -650,23 +652,40 @@ fn main() -> Result<()> {
                             .context("Failed to serialize MIME type detection result to JSON")?
                     );
                 }
+                WireFormat::Toon => {
+                    let output = json!({
+                        "path": path_str,
+                        "mime_type": mime_type,
+                    });
+                    println!(
+                        "{}",
+                        serde_toon::to_string(&output)
+                            .context("Failed to serialize MIME type detection result to TOON")?
+                    );
+                }
             }
         }
 
         Commands::Formats { format } => {
             let formats = kreuzberg::list_supported_formats();
             match format {
-                OutputFormat::Text => {
+                WireFormat::Text => {
                     println!("{:<15} {}", style::label("EXTENSION"), style::label("MIME TYPE"));
                     println!("{}", style::dim(&format!("{:<15} ---------", "---------")));
                     for f in &formats {
                         println!("{:<15} {}", style::success(&format!(".{}", f.extension)), f.mime_type);
                     }
                 }
-                OutputFormat::Json => {
+                WireFormat::Json => {
                     println!(
                         "{}",
                         serde_json::to_string_pretty(&formats).context("Failed to serialize formats to JSON")?
+                    );
+                }
+                WireFormat::Toon => {
+                    println!(
+                        "{}",
+                        serde_toon::to_string(&formats).context("Failed to serialize formats to TOON")?
                     );
                 }
             }
@@ -677,10 +696,10 @@ fn main() -> Result<()> {
             let name = env!("CARGO_PKG_NAME");
 
             match format {
-                OutputFormat::Text => {
+                WireFormat::Text => {
                     println!("{} {}", style::label(name), style::success(version));
                 }
-                OutputFormat::Json => {
+                WireFormat::Json => {
                     let output = json!({
                         "name": name,
                         "version": version,
@@ -689,6 +708,16 @@ fn main() -> Result<()> {
                         "{}",
                         serde_json::to_string_pretty(&output)
                             .context("Failed to serialize version information to JSON")?
+                    );
+                }
+                WireFormat::Toon => {
+                    let output = json!({
+                        "name": name,
+                        "version": version,
+                    });
+                    println!(
+                        "{}",
+                        serde_toon::to_string(&output).context("Failed to serialize version information to TOON")?
                     );
                 }
             }

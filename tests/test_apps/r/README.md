@@ -52,7 +52,7 @@ Rscript main_test.R
 
 ### Expected Output
 
-```
+```text
 ================================================================================
 KREUZBERG R BINDINGS COMPREHENSIVE TEST SUITE
 ================================================================================
@@ -93,6 +93,7 @@ If the `test_documents/` directory is not found, these tests are automatically s
 ## API Surface Verified
 
 ### Extraction Functions
+
 - `extract_file_sync(path, mime_type, config)`
 - `extract_file(path, mime_type, config)`
 - `extract_bytes_sync(data, mime_type, config)`
@@ -103,6 +104,7 @@ If the `test_documents/` directory is not found, these tests are automatically s
 - `batch_extract_bytes(data_list, mime_types, config)`
 
 ### Configuration Functions
+
 - `extraction_config(...)` - Main config builder
 - `ocr_config(backend, language, dpi, ...)` - OCR settings
 - `chunking_config(max_characters, overlap, ...)` - Chunking settings
@@ -110,34 +112,39 @@ If the `test_documents/` directory is not found, these tests are automatically s
 - `from_file(path)` - Load config from file
 
 ### MIME Type Functions
+
 - `detect_mime_type(data)` - From raw bytes
 - `detect_mime_type_from_path(path)` - From file path
 - `validate_mime_type(mime_type)` - Validate MIME string
 - `get_extensions_for_mime(mime_type)` - Get file extensions
 
 ### Validation Functions
+
 - `validate_ocr_backend_name(backend)`
 - `validate_language_code(code)`
 - `validate_output_format(format)`
 
 ### Plugin Registry
+
 - `list_post_processors()` / `clear_post_processors()` / `unregister_post_processor(name)`
 - `list_validators()` / `clear_validators()` / `unregister_validator(name)`
 - `list_ocr_backends()` / `clear_ocr_backends()` / `unregister_ocr_backend(name)`
 - `list_document_extractors()` / `clear_document_extractors()` / `unregister_document_extractor(name)`
 
 ### Cache
+
 - `clear_cache()`
 - `cache_stats()`
 
 ### Result S3 Object
+
 - `content(result)`, `mime_type(result)`, `page_count(result)`, `chunk_count(result)`
 - `detected_language(result)`, `metadata_field(result, name)`
 - `print()`, `summary()`, `format()` methods
 
 ## File Structure
 
-```
+```text
 tests/test_apps/r/
   main_test.R      # Comprehensive test script (112 tests)
   run_tests.sh     # Convenience runner with library path setup

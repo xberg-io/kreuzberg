@@ -67,6 +67,11 @@ pub fn merge_configs(base: &mut ExtractionConfig, override_config: &ExtractionCo
     if override_config.extraction_timeout_secs.is_some() {
         base.extraction_timeout_secs = override_config.extraction_timeout_secs;
     }
+
+    #[cfg(feature = "tree-sitter")]
+    if override_config.tree_sitter.is_some() {
+        base.tree_sitter = override_config.tree_sitter.clone();
+    }
 }
 
 #[cfg(test)]

@@ -10,6 +10,12 @@ includes:
 
 vars:
   WASM_DIR: "{{.ROOT}}/crates/kreuzberg-wasm"
+  WASI_SDK:
+    sh: echo "${WASI_SDK_PATH:-$HOME/wasi-sdk}"
+  WASI_CC:
+    sh: echo "${WASI_SDK_PATH:-$HOME/wasi-sdk}/bin/clang"
+  WASI_AR:
+    sh: echo "${WASI_SDK_PATH:-$HOME/wasi-sdk}/bin/ar"
 
 tasks:
   install:
@@ -29,6 +35,8 @@ tasks:
     dir: crates/kreuzberg-wasm
     env:
       RUSTFLAGS:
+      CC_wasm32_unknown_unknown: "{{.WASI_CC}}"
+      AR_wasm32_unknown_unknown: "{{.WASI_AR}}"
     cmds:
       - pnpm run build
 
@@ -37,6 +45,8 @@ tasks:
     dir: crates/kreuzberg-wasm
     env:
       RUSTFLAGS:
+      CC_wasm32_unknown_unknown: "{{.WASI_CC}}"
+      AR_wasm32_unknown_unknown: "{{.WASI_AR}}"
     cmds:
       - pnpm run build
 
@@ -46,6 +56,8 @@ tasks:
     env:
       NODE_ENV: production
       RUSTFLAGS:
+      CC_wasm32_unknown_unknown: "{{.WASI_CC}}"
+      AR_wasm32_unknown_unknown: "{{.WASI_AR}}"
     cmds:
       - pnpm run build
 
@@ -55,6 +67,8 @@ tasks:
     env:
       NODE_ENV: production
       RUSTFLAGS:
+      CC_wasm32_unknown_unknown: "{{.WASI_CC}}"
+      AR_wasm32_unknown_unknown: "{{.WASI_AR}}"
     cmds:
       - pnpm run build:ci
 
@@ -63,6 +77,8 @@ tasks:
     dir: crates/kreuzberg-wasm
     env:
       RUSTFLAGS:
+      CC_wasm32_unknown_unknown: "{{.WASI_CC}}"
+      AR_wasm32_unknown_unknown: "{{.WASI_AR}}"
     cmds:
       - pnpm run build:wasm:web
 
@@ -71,6 +87,8 @@ tasks:
     dir: crates/kreuzberg-wasm
     env:
       RUSTFLAGS:
+      CC_wasm32_unknown_unknown: "{{.WASI_CC}}"
+      AR_wasm32_unknown_unknown: "{{.WASI_AR}}"
     cmds:
       - pnpm run build:wasm:bundler
 
@@ -79,6 +97,8 @@ tasks:
     dir: crates/kreuzberg-wasm
     env:
       RUSTFLAGS:
+      CC_wasm32_unknown_unknown: "{{.WASI_CC}}"
+      AR_wasm32_unknown_unknown: "{{.WASI_AR}}"
     cmds:
       - pnpm run build:wasm:nodejs
 
@@ -87,6 +107,8 @@ tasks:
     dir: crates/kreuzberg-wasm
     env:
       RUSTFLAGS:
+      CC_wasm32_unknown_unknown: "{{.WASI_CC}}"
+      AR_wasm32_unknown_unknown: "{{.WASI_AR}}"
     cmds:
       - pnpm run build:wasm:deno
 
@@ -95,6 +117,8 @@ tasks:
     dir: crates/kreuzberg-wasm
     env:
       RUSTFLAGS:
+      CC_wasm32_unknown_unknown: "{{.WASI_CC}}"
+      AR_wasm32_unknown_unknown: "{{.WASI_AR}}"
     cmds:
       - pnpm run build:all
 
@@ -144,6 +168,9 @@ tasks:
 
   clippy:
     desc: Run clippy on kreuzberg-wasm crate
+    env:
+      CC_wasm32_unknown_unknown: "{{.WASI_CC}}"
+      AR_wasm32_unknown_unknown: "{{.WASI_AR}}"
     cmds:
       - cargo clippy -p kreuzberg-wasm --target wasm32-unknown-unknown -- -D warnings
 

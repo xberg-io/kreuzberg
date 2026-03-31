@@ -1,15 +1,20 @@
 {
-	"document": "../../../../test_documents/vendored/unstructured/doc/simple.doc",
-	"file_type": "doc",
-	"file_size": 15872,
-	"expected_frameworks": ["kreuzberg", "tika", "unstructured"],
-	"metadata": {
-		"description": "Document from unstructured test suite",
-		"source": "unstructured",
-		"size_category": "small"
-	},
-	"ground_truth": {
-		"text_file": "../../../../test_documents/ground_truth/doc/simple.txt",
-		"source": "vision"
-	}
+  "document": "../../../../test_documents/vendored/unstructured/doc/simple.doc",
+  "file_type": "doc",
+  "file_size": 15872,
+  "expected_frameworks": [
+    "kreuzberg",
+    "tika",
+    "unstructured"
+  ],
+  "metadata": {
+    "description": "Document from unstructured test suite",
+    "source": "unstructured",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/doc/simple.txt",
+    "source": "pandoc",
+    "markdown_file": "../../../../test_documents/ground_truth/doc/simple.md"
+  }
 }

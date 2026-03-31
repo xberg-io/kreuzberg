@@ -28,10 +28,10 @@
 //! ```
 use crate::error::{KreuzbergError, Result};
 use crate::types::XmlExtractionResult;
+use ahash::AHashSet;
 use quick_xml::Reader;
 use quick_xml::events::Event;
 use std::borrow::Cow;
-use std::collections::HashSet;
 
 /// SVG text-bearing elements whose text content should be extracted.
 const SVG_TEXT_ELEMENTS: &[&str] = &["text", "tspan", "title", "desc", "textPath", "altGlyph"];
@@ -74,7 +74,7 @@ fn parse_xml_inner(xml_bytes: &[u8], preserve_whitespace: bool, svg_mode: bool) 
 
     let mut content = String::new();
     let mut element_count = 0usize;
-    let mut unique_elements_set = HashSet::new();
+    let mut unique_elements_set = AHashSet::new();
     let mut buf = Vec::new();
     let mut element_stack: Vec<String> = Vec::new();
     let mut had_depth1_element = false;

@@ -1,6 +1,6 @@
 ## HOUSE BILL NO. 4918
 
-May  25,  2021,  Introduced  by  Reps.  Camilleri,  Young,  Puri,  Aiyash,  Rogers,  Hope,  Hood, Hammoud,  Pohutsky,  Weiss,  Manoogian,  Morse,  Cavanagh,  Brabec,  Cynthia  Johnson, Haadsma, Sowerby, Tyrone Carter, Steckloff, Garza, Rabhi, LaGrand and Ellison and referred to the Committee on Communications and Technology.
+May 25, 2021, Introduced by Reps. Camilleri, Young, Puri, Aiyash, Rogers, Hope, Hood, Hammoud, Pohutsky, Weiss, Manoogian, Morse, Cavanagh, Brabec, Cynthia Johnson, Haadsma, Sowerby, Tyrone Carter, Steckloff, Garza, Rabhi, LaGrand and Ellison and referred to the Committee on Communications and Technology.
 
 A bill to amend 1991 PA 179, entitled "Michigan telecommunications act,"
 
@@ -62,7 +62,7 @@ RMW
 
 amended by 2014 PA 52, and by adding sections 301a, 306, 308, 309b, 311, 312, 314, 321, 362, 504, and 602.
 
-## THE PEOPLE OF THE STATE OF MICHIGAN ENACT:
+## THE PEOPLE OF THE STATE OF MICHIGAN ENACT
 
 Sec. 102. As used in this act:
 
@@ -691,17 +691,22 @@ RMW
 
 28
 
-## promulgated before January 1, 2006 shall expire on June 30, 2011.
+## promulgated before January 1, 2006 shall expire on June 30, 2011
 
 - (3) The commission shall permit the electronic filing of any pleadings, tariffs, or any other document required or allowed to be filed with the commission under this act.
+
 2. Sec. 205. (1) The commission may investigate and resolve complaints under this act. The penalties under this act shall must not be imposed for a violation that occurred more than 2 years before the date the complaint was filed.
+
 - (2) If the commission finds, after notice and hearing, that the rates, quality, general availability, or conditions for a regulated service, including broadband, violate this act, an order of the commission under this act, or is adverse to the public interest, the commission may require changes in how the telecommunication services are provided. The commission's authority includes, but is not limited to, the revocation of a license and issuing cease and desist orders.
 
 Sec. 210. (1) Except under the terms of a mandatory protective order, trade secrets and commercial or financial information submitted under this act are exempt from disclosure under the freedom of information act, 1976 PA 442, MCL 15.231 to 15.246.
 
 - (2) If information is disclosed under a mandatory protective
+
 2. order, then the information may be included in the commission's evidentiary record if admissible, but shall remain remains confidential.
+
 - (3) There is a rebuttable presumption that cost studies, customer usage data, marketing studies, and contracts between providers are trade secrets or commercial or financial information protected under subsection (1). The burden of removing the
+
 4. presumption under this subsection is with the party seeking to have 29
 
 RMW
@@ -849,7 +854,7 @@ RMW
 
 29
 
-## within the provider's service area where the provider is offering residential basic local exchange service.
+## within the provider's service area where the provider is offering residential basic local exchange service
 
 - Sec. 303. (1) The sale or transfer of shares of stock of a provider of primary basic local exchange service is not a sale or transfer of a license or a discontinuance of service.
 - (2) The commission has the authority to approve or deny a proposed addition, elimination, or modification of an area code in this state. The commission shall give public notice and shall conduct a public hearing in the affected geographic area before an addition, elimination, or modification of an area code is made in this state.
@@ -991,15 +996,20 @@ RMW
 
 - (3) Notice to customers of a rate alteration is required for a rate alteration under subsection (2)(c) or (d) and must be included in or on the bill of each affected customer of the provider at least 1 billing cycle before the effective date of the rate alteration.
 - (4) The notice required under subsection (3) must contain at
+
 3. least all of the following information:
 4. (a) A statement that the customer's rate may change.
 5. (b) An estimate of the amount of the annual change for the
 6. typical residential customer that would result by the rate change.
 7. (c) A statement that a customer may comment on or receive complete details of the rate alteration by calling or writing the commission. The statement must also include the telephone number and address of the commission. Complete details of the rate alteration must be provided free of charge to the customer at the expense of the provider.
+
 - (5) Except as otherwise provided in subsections (2) and (6), an altered primary basic local exchange rate takes effect 90 days after the date of the notice required by subsection (3).
 - (6) On receipt of a complaint or pursuant to a determination under subsection (2)(d), the commission may require a filing under section 203 to review a proposed rate alteration under subsection (2)(d). The commission's final order may approve, modify, or reject
+
 10. the rate alteration.
+
 - (7) In reviewing a rate alteration under subsection (6), the commission shall consider only 1 or more of the following factors if relevant to the rate alteration as specified by the provider:
+
 12. (a) Total service long run incremental cost of basic local exchange services.
 
 RMW
@@ -1496,9 +1506,13 @@ Sec. 311. (1) A telecommunication provider of both basic local exchange service 
 
 - (2) All other providers of intrastate special toll access service, switched toll access services, toll, or WATS shall impute to themselves in the aggregate on a service by service basis their individual cost of special or switched toll access service or its equivalent in their pricing.
 - (3) Telecommunication services that utilize special or switched toll access service must be made available for resale by the telecommunication provider offering the service.
+
 3. Sec. 312. (1) The commission shall not review or set the rates for toll service.
+
 - (2) The commission shall require that toll service is
+
 5. universally available to all persons within the state.
+
 - (3) On commission review and approval, all providers of toll 28 service shall make available to their customers adjacent exchange 29
 
 RMW
@@ -2010,6 +2024,7 @@ Sec. 321. A provider of a regulated telecommunication service shall not charge a
 Sec. 353a. (1) When negotiating a successor interconnection agreement, unless the parties agree otherwise, the parties shall use an interconnection agreement which that has been approved by the commission in the 3-year period immediately preceding the commencement of negotiations as the baseline document. A party requesting the adoption of language different than that found in the baseline document in an arbitration proceeding bears the burden of persuasion that the requested change is lawful and appropriate.
 
 - (2) If a party negotiating an interconnection agreement takes a position that the opposing party believes is contrary to a prior ruling of the commission in an arbitration proceeding, the opposing party may file a motion with the commission for a determination under this section. The motion shall must be filed no later than 90 days from after the commencement of negotiations. The commission shall rule upon on the motion within 21 days of after the date the motion is filed, and the commission shall determine the extent to which the issue may be relitigated.
+
 2. Sec. 362. (1) The rate of a provider of local exchange service is subject to subsection (2) if all of the following apply:
 3. (a) The provider has a service that competes with a service of another provider.
 4. (b) The other provider utilizes a service, including any unbundled service element or basic network component, from the provider of local exchange service that is not available within the
@@ -2079,6 +2094,7 @@ relevant market or geographic area from any other provider of local
 29
 
 - (2) The rate of a telecommunication service must exceed the sum of both of the following:
+
 2. (a) The tariffed rates, including access, carrier common line, residual interconnection, and similar charges, for the noncompetitive service or its functional equivalent that is actually used by the provider of local exchange service, as those rates would be charged a customer for the use of that service.
 3. (b) The total service long run incremental costs of all other components of the provider of local exchange service.
 

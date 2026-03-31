@@ -1,11 +1,11 @@
 use super::super::error::OcrError;
 use super::super::utils::{TSV_MIN_FIELDS, TSV_WORD_LEVEL};
-use html_to_markdown_rs::hocr::HocrWord;
+use crate::table_core::HocrWord;
 
-/// Extract words from Tesseract TSV output and convert to HocrWord format
+/// Extract words from Tesseract TSV output and convert to HocrWord format.
 ///
 /// This parses Tesseract's TSV format (level, page_num, block_num, ...) and
-/// converts it to the HocrWord format used by html-to-markdown-rs for table reconstruction.
+/// converts it to the HocrWord format used for table reconstruction.
 pub fn extract_words_from_tsv(tsv_data: &str, min_confidence: f64) -> Result<Vec<HocrWord>, OcrError> {
     let mut words = Vec::new();
 

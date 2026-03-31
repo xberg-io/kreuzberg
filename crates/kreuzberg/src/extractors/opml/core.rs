@@ -6,7 +6,8 @@
 use crate::Result;
 use crate::core::config::ExtractionConfig;
 use crate::plugins::{DocumentExtractor, Plugin};
-use crate::types::{ExtractionResult, Metadata};
+use crate::types::internal::InternalDocument;
+use crate::types::metadata::Metadata;
 use async_trait::async_trait;
 
 #[cfg(feature = "office")]
@@ -63,7 +64,7 @@ impl DocumentExtractor for OpmlExtractor {
     #[cfg_attr(
         feature = "otel",
         tracing::instrument(
-            skip(self, content, config),
+            skip(self, content, _config),
             fields(
                 extractor.name = self.name(),
                 content.size_bytes = content.len(),
@@ -74,39 +75,36 @@ impl DocumentExtractor for OpmlExtractor {
         &self,
         content: &[u8],
         mime_type: &str,
-        config: &ExtractionConfig,
-    ) -> Result<ExtractionResult> {
-        let (extracted_content, metadata_map) = parser::extract_content_and_metadata(content)?;
+        _config: &ExtractionConfig,
+    ) -> Result<InternalDocument> {
+        let (_extracted_content, mut metadata_map) = parser::extract_content_and_metadata(content)?;
 
-        let document = if config.include_document_structure {
-            Some(parser::build_document_structure(content)?)
-        } else {
-            None
+        // Map standard OPML metadata to typed Metadata fields
+        let meta_title = metadata_map
+            .remove("title")
+            .and_then(|v| v.as_str().map(|s| s.to_string()));
+        let meta_created_by = metadata_map
+            .remove("ownerName")
+            .and_then(|v| v.as_str().map(|s| s.to_string()));
+        let meta_created_at = metadata_map
+            .remove("dateCreated")
+            .and_then(|v| v.as_str().map(|s| s.to_string()));
+        let meta_modified_at = metadata_map
+            .remove("dateModified")
+            .and_then(|v| v.as_str().map(|s| s.to_string()));
+
+        let mut doc = parser::build_internal_document(content)?;
+        doc.mime_type = std::borrow::Cow::Owned(mime_type.to_string());
+        doc.metadata = Metadata {
+            title: meta_title,
+            created_by: meta_created_by,
+            created_at: meta_created_at,
+            modified_at: meta_modified_at,
+            additional: metadata_map,
+            ..Default::default()
         };
 
-        Ok(ExtractionResult {
-            content: extracted_content,
-            mime_type: mime_type.to_string().into(),
-            metadata: Metadata {
-                additional: metadata_map,
-                ..Default::default()
-            },
-            pages: None,
-            tables: vec![],
-            detected_languages: None,
-            chunks: None,
-            images: None,
-            djot_content: None,
-            elements: None,
-            ocr_elements: None,
-            document,
-            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-            extracted_keywords: None,
-            quality_score: None,
-            processing_warnings: Vec::new(),
-            annotations: None,
-            children: None,
-        })
+        Ok(doc)
     }
 
     fn supported_mime_types(&self) -> &[&str] {
@@ -170,12 +168,11 @@ mod tests {
             .extract_bytes(opml, "text/x-opml", &ExtractionConfig::default())
             .await
             .expect("Should extract OPML asynchronously");
+        let result =
+            crate::extraction::derive::derive_extraction_result(result, true, crate::core::config::OutputFormat::Plain);
 
         assert_eq!(result.mime_type, "text/x-opml");
         assert!(result.content.contains("Item"));
-        assert_eq!(
-            result.metadata.additional.get("title").and_then(|v| v.as_str()),
-            Some("Async Test")
-        );
+        assert_eq!(result.metadata.title.as_deref(), Some("Async Test"));
     }
 }

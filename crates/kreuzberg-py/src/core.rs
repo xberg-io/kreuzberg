@@ -69,26 +69,27 @@ fn build_bytes_items(
     Ok(items)
 }
 
-/// Map an OutputFormat enum to a static string slice — no allocation needed.
-fn output_format_to_str(fmt: &kreuzberg::core::config::formats::OutputFormat) -> &'static str {
+/// Map an OutputFormat enum to a string.
+fn output_format_to_str(fmt: &kreuzberg::core::config::formats::OutputFormat) -> String {
     match fmt {
-        kreuzberg::core::config::formats::OutputFormat::Plain => "plain",
-        kreuzberg::core::config::formats::OutputFormat::Markdown => "markdown",
-        kreuzberg::core::config::formats::OutputFormat::Djot => "djot",
-        kreuzberg::core::config::formats::OutputFormat::Html => "html",
-        kreuzberg::core::config::formats::OutputFormat::Structured => "structured",
+        kreuzberg::core::config::formats::OutputFormat::Plain => "plain".to_string(),
+        kreuzberg::core::config::formats::OutputFormat::Markdown => "markdown".to_string(),
+        kreuzberg::core::config::formats::OutputFormat::Djot => "djot".to_string(),
+        kreuzberg::core::config::formats::OutputFormat::Html => "html".to_string(),
+        kreuzberg::core::config::formats::OutputFormat::Structured => "structured".to_string(),
+        kreuzberg::core::config::formats::OutputFormat::Custom(name) => name.clone(),
     }
 }
 
-fn result_format_to_str(fmt: &kreuzberg::types::OutputFormat) -> &'static str {
+fn result_format_to_str(fmt: &kreuzberg::types::OutputFormat) -> String {
     match fmt {
-        kreuzberg::types::OutputFormat::Unified => "unified",
-        kreuzberg::types::OutputFormat::ElementBased => "element_based",
+        kreuzberg::types::OutputFormat::Unified => "unified".to_string(),
+        kreuzberg::types::OutputFormat::ElementBased => "element_based".to_string(),
     }
 }
 
 /// Extract format strings from ExtractionConfig before it's consumed.
-fn extract_format_strings(config: &ExtractionConfig) -> (Option<&'static str>, Option<&'static str>) {
+fn extract_format_strings(config: &ExtractionConfig) -> (Option<String>, Option<String>) {
     (
         Some(output_format_to_str(&config.inner.output_format)),
         Some(result_format_to_str(&config.inner.result_format)),
@@ -113,12 +114,12 @@ fn collect_per_item_formats(
                         .as_ref()
                         .and_then(|c| c.inner.output_format.as_ref())
                         .map(output_format_to_str)
-                        .unwrap_or(default_output);
+                        .unwrap_or_else(|| default_output.clone());
                     let result = fc
                         .as_ref()
                         .and_then(|c| c.inner.result_format.as_ref())
                         .map(result_format_to_str)
-                        .unwrap_or(default_result);
+                        .unwrap_or_else(|| default_result.clone());
                     (output, result)
                 })
                 .collect();
@@ -130,18 +131,23 @@ fn collect_per_item_formats(
 
 /// Per-item format info that can be either explicit per-item or a repeated default.
 enum PerItemFormats {
-    Explicit(Vec<(&'static str, &'static str)>),
-    Default(&'static str, &'static str),
+    Explicit(Vec<(String, String)>),
+    Default(String, String),
 }
 
 impl PerItemFormats {
-    fn get(&self, index: usize) -> (&'static str, &'static str) {
+    fn get(&self, index: usize) -> (&str, &str) {
         match self {
             PerItemFormats::Explicit(formats) => formats
                 .get(index)
-                .copied()
-                .unwrap_or_else(|| formats.last().copied().unwrap_or(("plain", "unified"))),
-            PerItemFormats::Default(output, result) => (output, result),
+                .map(|(a, b)| (a.as_str(), b.as_str()))
+                .unwrap_or_else(|| {
+                    formats
+                        .last()
+                        .map(|(a, b)| (a.as_str(), b.as_str()))
+                        .unwrap_or(("plain", "unified"))
+                }),
+            PerItemFormats::Default(output, result) => (output.as_str(), result.as_str()),
         }
     }
 }
@@ -217,7 +223,7 @@ pub fn extract_file_sync(
     })
     .map_err(to_py_err)?;
 
-    ExtractionResult::from_rust(result, py, output_fmt, result_fmt)
+    ExtractionResult::from_rust(result, py, output_fmt.as_deref(), result_fmt.as_deref())
 }
 
 /// Extract content from bytes (synchronous).
@@ -255,7 +261,7 @@ pub fn extract_bytes_sync(
     let result =
         Python::detach(py, || kreuzberg::extract_bytes_sync(&data, &mime_type, &rust_config)).map_err(to_py_err)?;
 
-    ExtractionResult::from_rust(result, py, output_fmt, result_fmt)
+    ExtractionResult::from_rust(result, py, output_fmt.as_deref(), result_fmt.as_deref())
 }
 
 /// Batch extract content from multiple files (synchronous).
@@ -414,7 +420,7 @@ pub fn extract_file<'py>(
         let result = kreuzberg::extract_file(&path_str, mime_type.as_deref(), &rust_config)
             .await
             .map_err(to_py_err)?;
-        Python::attach(|py| ExtractionResult::from_rust(result, py, output_fmt, result_fmt))
+        Python::attach(|py| ExtractionResult::from_rust(result, py, output_fmt.as_deref(), result_fmt.as_deref()))
     })
 }
 
@@ -455,7 +461,7 @@ pub fn extract_bytes<'py>(
         let result = kreuzberg::extract_bytes(&data, &mime_type, &rust_config)
             .await
             .map_err(to_py_err)?;
-        Python::attach(|py| ExtractionResult::from_rust(result, py, output_fmt, result_fmt))
+        Python::attach(|py| ExtractionResult::from_rust(result, py, output_fmt.as_deref(), result_fmt.as_deref()))
     })
 }
 

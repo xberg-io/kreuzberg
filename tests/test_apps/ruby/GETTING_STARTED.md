@@ -22,6 +22,7 @@ ruby main_test.rb
 ### 3. Check Results
 
 The output will show:
+
 - Test results (✓ pass, ✗ fail, ⊘ skip)
 - Any errors or failures with details
 - Summary with counts
@@ -52,7 +53,7 @@ The output will show:
 
 The main test file `main_test.rb` is organized into 15 sections:
 
-```
+```text
 Section 1: Module Imports & Setup (3 tests)
 Section 2: Configuration Classes (18 tests)
 Section 3: Error Classes (11 tests)
@@ -72,7 +73,7 @@ Section 15: Error Context (2 tests)
 
 ## Example Output
 
-```
+```text
 ================================================================================
 KREUZBERG RUBY BINDINGS COMPREHENSIVE TEST SUITE
 ================================================================================
@@ -151,6 +152,7 @@ gem install kreuzberg --pre --user-install
 All test files are in: `<kreuzberg-root>/test_apps/ruby/`
 
 Key files:
+
 - `main_test.rb` - The comprehensive test suite
 - `README.md` - Full documentation
 - `Gemfile` - Gem dependencies

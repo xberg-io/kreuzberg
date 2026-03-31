@@ -8,6 +8,7 @@
 #![cfg(feature = "office")]
 
 use kreuzberg::core::config::{ExtractionConfig, OutputFormat};
+use kreuzberg::extraction::derive::derive_extraction_result;
 use kreuzberg::extractors::EpubExtractor;
 use kreuzberg::plugins::DocumentExtractor;
 use std::io::{Cursor, Write};
@@ -95,10 +96,11 @@ async fn test_epub_markdown_output_keeps_headings() {
         ..Default::default()
     };
 
-    let result = extractor
+    let doc = extractor
         .extract_bytes(&bytes, "application/epub+zip", &config)
         .await
         .expect("EPUB extraction should succeed");
+    let result = derive_extraction_result(doc, false, kreuzberg::OutputFormat::Plain);
 
     assert!(
         result.processing_warnings.is_empty(),
@@ -128,10 +130,11 @@ async fn test_epub_djot_output_keeps_headings() {
         ..Default::default()
     };
 
-    let result = extractor
+    let doc = extractor
         .extract_bytes(&bytes, "application/epub+zip", &config)
         .await
         .expect("EPUB extraction should succeed");
+    let result = derive_extraction_result(doc, false, kreuzberg::OutputFormat::Plain);
 
     assert!(
         result.processing_warnings.is_empty(),
@@ -158,10 +161,11 @@ async fn test_epub_plain_output_does_not_inject_markdown_headings() {
 
     let config = ExtractionConfig::default();
 
-    let result = extractor
+    let doc = extractor
         .extract_bytes(&bytes, "application/epub+zip", &config)
         .await
         .expect("EPUB extraction should succeed");
+    let result = derive_extraction_result(doc, false, kreuzberg::OutputFormat::Plain);
 
     assert!(
         result.processing_warnings.is_empty(),

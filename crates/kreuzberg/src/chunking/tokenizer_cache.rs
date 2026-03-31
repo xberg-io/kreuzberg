@@ -4,7 +4,7 @@
 //! for subsequent calls. File-level caching is handled by the `hf-hub` crate
 //! (defaults to `~/.cache/huggingface/`, configurable via `HF_HOME` env var).
 
-use std::collections::HashMap;
+use ahash::AHashMap;
 use std::sync::{Arc, RwLock};
 
 use once_cell::sync::Lazy;
@@ -15,8 +15,8 @@ use crate::KreuzbergError;
 ///
 /// Keyed by model ID string. Once a tokenizer is loaded and parsed,
 /// it's stored here to avoid re-downloading and re-parsing on subsequent calls.
-static TOKENIZER_CACHE: Lazy<RwLock<HashMap<String, Arc<tokenizers::Tokenizer>>>> =
-    Lazy::new(|| RwLock::new(HashMap::new()));
+static TOKENIZER_CACHE: Lazy<RwLock<AHashMap<String, Arc<tokenizers::Tokenizer>>>> =
+    Lazy::new(|| RwLock::new(AHashMap::new()));
 
 /// Get a cached tokenizer or initialize one from HuggingFace Hub.
 ///

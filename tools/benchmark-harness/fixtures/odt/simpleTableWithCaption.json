@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/odt/simpleTableWithCaption.odt",
+  "file_type": "odt",
+  "file_size": 10396,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "odt test: simpleTableWithCaption",
+    "source": "pandoc-generated",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/odt/simpleTableWithCaption.txt",
+    "markdown_file": "../../../../test_documents/ground_truth/odt/simpleTableWithCaption.md",
+    "source": "pandoc"
+  }
+}

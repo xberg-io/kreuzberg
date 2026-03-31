@@ -414,7 +414,7 @@ async fn run_pipeline(
 /// Run the full comparison across all documents and pipelines.
 pub async fn run_comparison(config: &ComparisonConfig) -> Result<Vec<DocResult>> {
     let filter = CorpusFilter {
-        file_types: Some(vec!["pdf".to_string()]),
+        file_types: None, // All formats with ground truth
         require_ground_truth: true,
         require_markdown_ground_truth: true,
         name_patterns: config.name_filter.clone().into_iter().collect(),

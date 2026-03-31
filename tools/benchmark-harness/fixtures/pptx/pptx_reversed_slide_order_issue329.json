@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/pptx/pptx_reversed_slide_order_issue329.pptx",
+  "file_type": "pptx",
+  "file_size": 3758132,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "pptx test: pptx_reversed_slide_order_issue329",
+    "source": "pandoc-generated",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/pptx/pptx_reversed_slide_order_issue329.txt",
+    "markdown_file": "../../../../test_documents/ground_truth/pptx/pptx_reversed_slide_order_issue329.md",
+    "source": "pandoc"
+  }
+}

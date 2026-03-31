@@ -23,8 +23,11 @@ use super::container::PptxContainer;
 
 use crate::extraction::ooxml_constants::DRAWINGML_NAMESPACE;
 
-/// Extract comprehensive metadata from PPTX using office_metadata module
-pub(super) fn extract_metadata<R: Read + Seek>(archive: &mut ZipArchive<R>) -> PptxMetadata {
+/// Extract comprehensive metadata from PPTX using office_metadata module.
+///
+/// Returns `(PptxMetadata, HashMap<String, String>)` where the second element
+/// contains office metadata keys (title, author, created_by, etc.).
+pub(super) fn extract_metadata<R: Read + Seek>(archive: &mut ZipArchive<R>) -> (PptxMetadata, HashMap<String, String>) {
     #[cfg(feature = "office")]
     {
         let mut metadata_map = HashMap::new();
@@ -108,18 +111,26 @@ pub(super) fn extract_metadata<R: Read + Seek>(archive: &mut ZipArchive<R>) -> P
             }
         }
 
-        PptxMetadata {
-            slide_count,
-            slide_names,
-        }
+        (
+            PptxMetadata {
+                slide_count,
+                slide_names,
+                image_count: None,
+                table_count: None,
+            },
+            metadata_map,
+        )
     }
 
     #[cfg(not(feature = "office"))]
     {
-        PptxMetadata {
-            slide_count: 0,
-            slide_names: Vec::new(),
-        }
+        (
+            PptxMetadata {
+                slide_count: 0,
+                slide_names: Vec::new(),
+            },
+            HashMap::new(),
+        )
     }
 }
 

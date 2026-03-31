@@ -767,8 +767,6 @@ const config: ExtractionConfig = {
 
 ---
 
-
-
 ### ChunkingConfig
 
 Text chunking configuration for splitting long documents.

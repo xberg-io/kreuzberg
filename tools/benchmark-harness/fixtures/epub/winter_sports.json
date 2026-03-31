@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/epub/winter_sports.epub",
+  "file_type": "epub",
+  "file_size": 210376,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "epub test: winter_sports",
+    "source": "pandoc-generated",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/epub/winter_sports.txt",
+    "markdown_file": "../../../../test_documents/ground_truth/epub/winter_sports.md",
+    "source": "pandoc"
+  }
+}

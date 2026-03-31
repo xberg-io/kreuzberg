@@ -12,8 +12,22 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import sys
 from pathlib import Path
+
+# HTML tags that should not appear in GFM ground truth markdown.
+# These indicate pandoc artifacts or incomplete cleanup.
+_HTML_TAG_PATTERN = re.compile(
+    r"</?(?:div|span|table|thead|tbody|tr|td|th|ul|ol|li|p|br|hr|"
+    r"b|strong|i|em|u|s|del|ins|sub|sup|mark|small|big|"
+    r"blockquote|pre|code|img|a|h[1-6]|section|article|header|footer|nav|"
+    r"figure|figcaption|caption|col|colgroup|details|summary|abbr|"
+    r"dl|dt|dd|fieldset|form|input|label|select|textarea|button|"
+    r"audio|video|source|canvas|iframe|object|embed|ruby|rt|rp|wbr"
+    r")(?:\s[^>]*)?\s*/?>",
+    re.IGNORECASE,
+)
 
 
 def get_repo_root() -> Path:
@@ -99,6 +113,53 @@ def validate_ground_truth_structure(repo_root: Path) -> list[str]:
     return errors
 
 
+def validate_no_html_in_markdown_gt(repo_root: Path) -> list[str]:
+    """Validate that markdown ground truth files contain no HTML tags.
+
+    GFM ground truth must be pure markdown with no HTML remnants.
+    HTML indicates incomplete cleanup from pandoc or other generators.
+    """
+    errors = []
+    ground_truth_dir = repo_root / "test_documents" / "ground_truth"
+
+    if not ground_truth_dir.exists():
+        return errors
+
+    md_files = sorted(ground_truth_dir.rglob("*.md"))
+    files_with_html = 0
+
+    for md_file in md_files:
+        try:
+            content = md_file.read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            continue
+
+        # Skip files in code blocks (``` ... ```)
+        # Simple approach: remove fenced code blocks before scanning
+        cleaned = re.sub(r"```[\s\S]*?```", "", content)
+        # Also skip inline code
+        cleaned = re.sub(r"`[^`]+`", "", cleaned)
+
+        matches = list(_HTML_TAG_PATTERN.finditer(cleaned))
+        if matches:
+            files_with_html += 1
+            rel_path = md_file.relative_to(repo_root)
+            # Show first few matches
+            examples = [m.group() for m in matches[:3]]
+            examples_str = ", ".join(examples)
+            suffix = f" (and {len(matches) - 3} more)" if len(matches) > 3 else ""
+            errors.append(
+                f"HTML in markdown GT: {rel_path} — {len(matches)} tag(s): {examples_str}{suffix}"
+            )
+
+    if files_with_html > 0:
+        print(f"Found {files_with_html} markdown GT files containing HTML tags")
+    else:
+        print("All markdown GT files are HTML-free")
+
+    return errors
+
+
 def validate_benchmark_fixtures(repo_root: Path) -> list[str]:
     """Validate that benchmark fixture files reference existing documents."""
     errors = []
@@ -156,6 +217,11 @@ def main() -> int:
     # Validate ground truth mapping
     print("Validating ground truth mapping...")
     errors = validate_ground_truth_mapping(repo_root)
+    all_errors.extend(errors)
+
+    # Validate no HTML in markdown ground truth
+    print("Checking markdown GT for HTML remnants...")
+    errors = validate_no_html_in_markdown_gt(repo_root)
     all_errors.extend(errors)
 
     # Validate benchmark fixtures

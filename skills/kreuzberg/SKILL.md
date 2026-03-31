@@ -1,7 +1,7 @@
 ---
 name: kreuzberg
 description: >-
-  Extract text, tables, metadata, and images from 97+ document formats
+  Extract text, tables, metadata, and images from 91+ document formats
   (PDF, Office, images, HTML, email, archives, academic) using Kreuzberg.
   Use when writing code that calls Kreuzberg APIs in Python, Node.js/TypeScript,
   Rust, or CLI. Covers installation, extraction (sync/async), configuration
@@ -15,7 +15,7 @@ metadata:
 
 # Kreuzberg Document Extraction
 
-Kreuzberg is a high-performance document intelligence library with a Rust core and native bindings for Python, Node.js/TypeScript, Ruby, Go, Java, C#, PHP, and Elixir. It extracts text, tables, metadata, and images from 97+ file formats including PDF, Office documents, images (with OCR), HTML, email, archives, and academic formats.
+Kreuzberg is a high-performance document intelligence library with a Rust core and native bindings for Python, Node.js/TypeScript, Ruby, Go, Java, C#, PHP, and Elixir. It extracts text, tables, metadata, and images from 91+ file formats including PDF, Office documents, images (with OCR), HTML, email, archives, and academic formats.
 
 Use this skill when writing code that:
 
@@ -305,13 +305,6 @@ config = ExtractionConfig(force_ocr=True)  # OCR even if text is extractable
 | Elements | `result.elements` | `result.elements` | `result.elements` | Semantic elements (if element_based format) |
 | Pages | `result.pages` | `result.pages` | `result.pages` | Per-page content (if page extraction enabled) |
 | Keywords | `result.keywords` | `result.keywords` | `result.keywords` | Extracted keywords (if enabled) |
-| Quality score | `result.quality_score` | `result.qualityScore` | `result.quality_score` | Text quality score 0.0-1.0 |
-| Warnings | `result.processing_warnings` | `result.processingWarnings` | `result.processing_warnings` | Non-fatal pipeline warnings |
-| Djot content | `result.djot_content` | `result.djotContent` | `result.djot_content` | Structured Djot content (if Djot output) |
-| OCR elements | `result.ocr_elements` | `result.ocrElements` | `result.ocr_elements` | OCR elements with spatial/confidence data |
-| Document tree | `result.document` | `result.document` | `result.document` | Hierarchical document structure (if enabled) |
-| Annotations | `result.annotations` | `result.annotations` | `result.annotations` | PDF annotations (if enabled) |
-| Children | `result.children` | `result.children` | `result.children` | Nested results from archive contents |
 
 ## Error Handling
 

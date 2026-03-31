@@ -129,6 +129,38 @@ All image formats support OCR when configured with `ocr` parameter in `Extractio
 | POD | `text/x-pod` | Native (pod-parser) | Perl documentation format |
 | DokuWiki | `text/x-dokuwiki` | Native (dokuwiki-parser) | Wiki markup format |
 
+## Wire Formats vs Content Formats
+
+Kreuzberg distinguishes between two kinds of format:
+
+### Wire Formats (`--format`)
+
+Wire formats control how the extraction result is **serialized** for output. They determine the structure of the data you receive.
+
+| Format | Flag | Description |
+|--------|------|-------------|
+| **Text** | `--format text` | Plain text output of the `content` field only. Default for `extract`. |
+| **JSON** | `--format json` | Standard JSON serialization of the full result object. Default for `batch`. |
+| **TOON** | `--format toon` | Token-Oriented Object Notation. Losslessly convertible to/from JSON, but optimized for LLM prompts. Produces ~30-50% fewer tokens than equivalent JSON. |
+
+TOON is designed for RAG and LLM pipelines where every token counts against context window limits and API costs. It encodes the same information as JSON but uses a more compact notation that language models parse equally well.
+
+### Content Formats (`--content-format`)
+
+Content formats control how extracted text is **rendered** inside the `content` field of the result. This determines the markup used for the document's textual content.
+
+| Format | Flag | Description |
+|--------|------|-------------|
+| **Plain** | `--content-format plain` | Raw text with no markup. Default. |
+| **Markdown** | `--content-format markdown` | GitHub Flavored Markdown (GFM) via comrak. Tables, headings, lists preserved. |
+| **HTML** | `--content-format html` | HTML5 rendering via comrak. |
+| **Djot** | `--content-format djot` | Djot markup format. |
+
+Wire format and content format are orthogonal. You can combine them freely, for example `--content-format markdown --format toon` produces a TOON-serialized result where the `content` field contains Markdown-formatted text.
+
+!!! note
+    The `--output-format` flag is a deprecated alias for `--content-format` and will be removed in a future release.
+
 ## Architecture Diagram
 
 ```mermaid

@@ -55,6 +55,7 @@ pnpm typecheck
 ## API Coverage
 
 ### Fully Working (100%)
+
 - ✓ Version info (`__version__`)
 - ✓ MIME type detection (`detectMimeType()`, `validateMimeType()`, `getExtensionsForMime()`)
 - ✓ Error handling (error codes, classification, all error types)
@@ -63,11 +64,13 @@ pnpm typecheck
 - ✓ Plugin listing (`listPostProcessors()`, `listValidators()`, `listOcrBackends()`)
 
 ### Partially Working (40-80%)
+
 - ⚠ Extraction functions (basic usage works, configuration complex)
 - ⚠ Batch operations (works with proper mimeTypes array)
 - ⚠ Plugin registry (listing works, registration broken)
 
 ### Known Issues
+
 - ✗ ExtractionConfig builder pattern missing (use `.fromFile()` or `.discover()`)
 - ✗ Plugin registration fails (validator, OCR backend registration broken)
 - ✗ `detectMimeTypeFromPath()` not exported from main module
@@ -76,7 +79,7 @@ See [TEST_REPORT.md](./TEST_REPORT.md) for detailed findings.
 
 ## Project Structure
 
-```
+```text
 .
 ├── package.json                  # npm dependencies
 ├── tsconfig.json               # Strict TypeScript config
@@ -129,7 +132,9 @@ await extractFile('document.pdf', null, {
 ## Test Files Included
 
 ### main.test.ts
+
 Comprehensive test suite with 77 tests covering:
+
 - Version information
 - MIME type detection and validation
 - Extraction configuration
@@ -143,7 +148,9 @@ Comprehensive test suite with 77 tests covering:
 **Purpose**: Document actual API capabilities and limitations
 
 ### api-corrections.test.ts
+
 Corrected test suite with 31 tests using actual API signatures:
+
 - Verified extraction function signatures
 - File-based configuration loading
 - Batch processing with mimeTypes arrays

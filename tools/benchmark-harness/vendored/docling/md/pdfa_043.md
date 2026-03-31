@@ -114,7 +114,7 @@ Table H: Applications for review under Part 5 of the Act (by type of applicant)
 | Applications by persons to whom information the subject of access application relates (see section 54 of the Act) |                                   0 | 0%          |
 | Total                                                                                                             |                                   0 |             |
 
-## Table I: Applications transferred to other agencies.
+## Table I: Applications transferred to other agencies
 
 |                                 |   Number of applications transferred | %of Total   |
 |---------------------------------|--------------------------------------|-------------|

@@ -45,11 +45,12 @@ cargo run -p kreuzberg-e2e-generator -- generate --lang <lang> --fixtures fixtur
 
 ## Node.js / TypeScript
 
-```
+```text
 tests/test_apps/typescript/
 ```
 
 **Install & Run:**
+
 ```bash
 cd tests/test_apps/typescript
 npm install
@@ -62,11 +63,12 @@ npm test
 
 ## Java
 
-```
+```text
 tests/test_apps/java/
 ```
 
 **Install & Run:**
+
 ```bash
 cd tests/test_apps/java
 mvn clean test
@@ -75,6 +77,7 @@ mvn clean test
 **Results:** 234 tests, 225 passed, 9 skipped (PaddleOCR), 0 failures (100%)
 
 **Notes:**
+
 - Requires Java 25+ with FFM API
 - Uses `kreuzberg` from Maven Central
 - Surefire runs with `--enable-native-access=ALL-UNNAMED`
@@ -83,11 +86,12 @@ mvn clean test
 
 ## Python
 
-```
+```text
 tests/test_apps/python/
 ```
 
 **Install & Run:**
+
 ```bash
 cd tests/test_apps/python
 pip install kreuzberg==4.4.3
@@ -100,11 +104,12 @@ python -m pytest  # or run main.py directly
 
 ## Elixir
 
-```
+```text
 tests/test_apps/elixir/
 ```
 
 **Install & Run:**
+
 ```bash
 cd tests/test_apps/elixir
 mix deps.get
@@ -117,11 +122,12 @@ mix test
 
 ## Go
 
-```
+```text
 tests/test_apps/go/
 ```
 
 **Install & Run:**
+
 ```bash
 cd tests/test_apps/go
 # Requires kreuzberg C FFI library built in target/release/
@@ -131,6 +137,7 @@ bash run_tests.sh
 **Results:** 145/145 passed (100%)
 
 **Notes:**
+
 - Uses CGO; requires `libkreuzberg_ffi` native library
 - `run_tests.sh` sets `DYLD_LIBRARY_PATH`/`LD_LIBRARY_PATH` and `PKG_CONFIG_PATH`
 - Tests use `-tags kreuzberg_dev` for monorepo builds
@@ -139,11 +146,12 @@ bash run_tests.sh
 
 ## Ruby
 
-```
+```text
 tests/test_apps/ruby/
 ```
 
 **Install & Run:**
+
 ```bash
 cd tests/test_apps/ruby
 bundle install
@@ -156,7 +164,7 @@ bundle exec rspec
 
 ## WASM
 
-```
+```text
 tests/test_apps/wasm/
 ```
 
@@ -164,13 +172,14 @@ tests/test_apps/wasm/
 
 ---
 
-## C#
+## C
 
-```
+```text
 tests/test_apps/csharp/
 ```
 
 **Install & Run:**
+
 ```bash
 cd tests/test_apps/csharp
 dotnet test
@@ -182,11 +191,12 @@ dotnet test
 
 ## Rust
 
-```
+```text
 tests/test_apps/rust/
 ```
 
 **Install & Run:**
+
 ```bash
 cd tests/test_apps/rust
 cargo test --release
@@ -198,11 +208,12 @@ Uses `kreuzberg = "4.4.3"` from crates.io with features: `static-pdfium`, `excel
 
 ## CLI
 
-```
+```text
 tests/test_apps/cli/
 ```
 
 **Install & Run:**
+
 ```bash
 bash tests/test_apps/cli/tests/install.sh
 ```
@@ -213,11 +224,12 @@ Installs `kreuzberg-cli` v4.4.3 from crates.io via `cargo install` and validates
 
 ## Docker
 
-```
+```text
 tests/test_apps/docker/
 ```
 
 **Run:**
+
 ```bash
 cd tests/test_apps/docker
 docker compose --profile core up -d    # Core image
@@ -225,6 +237,7 @@ docker compose --profile full up -d    # Full image (with OCR)
 ```
 
 Tests two Docker images from GHCR:
+
 - `ghcr.io/kreuzberg-dev/kreuzberg:4.4.3-core` (port 8000)
 - `ghcr.io/kreuzberg-dev/kreuzberg:4.4.3` (port 8001)
 

@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/rst/readme.rst",
+  "file_type": "rst",
+  "file_size": 903,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "rst test: readme",
+    "source": "pandoc-generated",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "markdown_file": "../../../../test_documents/ground_truth/rst/readme.md",
+    "source": "pandoc",
+    "text_file": "../../../../test_documents/ground_truth/rst/readme.txt"
+  }
+}

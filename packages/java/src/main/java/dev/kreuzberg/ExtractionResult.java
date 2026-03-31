@@ -39,12 +39,14 @@ public final class ExtractionResult {
 	private final List<ProcessingWarning> processingWarnings;
 	@JsonProperty("annotations")
 	private final List<PdfAnnotation> annotations;
+	@JsonProperty("uris")
+	private final List<Uri> uris;
 
 	ExtractionResult(String content, String mimeType, Metadata metadata, List<Table> tables,
 			List<String> detectedLanguages, List<Chunk> chunks, List<ExtractedImage> images, List<PageContent> pages,
 			PageStructure pageStructure, List<Element> elements, List<OcrElement> ocrElements, DjotContent djotContent,
 			DocumentStructure document, List<ExtractedKeyword> extractedKeywords, Double qualityScore,
-			List<ProcessingWarning> processingWarnings, List<PdfAnnotation> annotations) {
+			List<ProcessingWarning> processingWarnings, List<PdfAnnotation> annotations, List<Uri> uris) {
 		this.content = Objects.requireNonNull(content, "content must not be null");
 		this.mimeType = Objects.requireNonNull(mimeType, "mimeType must not be null");
 		this.metadata = metadata != null ? metadata : Metadata.empty();
@@ -66,6 +68,7 @@ public final class ExtractionResult {
 		this.qualityScore = qualityScore;
 		this.processingWarnings = processingWarnings != null ? Collections.unmodifiableList(processingWarnings) : null;
 		this.annotations = annotations != null ? Collections.unmodifiableList(annotations) : null;
+		this.uris = uris != null ? Collections.unmodifiableList(uris) : null;
 	}
 
 	public String getContent() {
@@ -253,6 +256,19 @@ public final class ExtractionResult {
 	}
 
 	/**
+	 * Get the URIs/links discovered during document extraction (optional).
+	 *
+	 * <p>
+	 * Contains hyperlinks, image references, citations, email addresses, and
+	 * other URI-like references found in the document.
+	 *
+	 * @return optional unmodifiable list of URIs, or empty if none
+	 */
+	public Optional<List<Uri>> getUris() {
+		return Optional.ofNullable(uris);
+	}
+
+	/**
 	 * Check if the extraction was successful.
 	 *
 	 * <p>
@@ -420,6 +436,7 @@ public final class ExtractionResult {
 				+ ", hasDocumentStructure=" + (document != null) + ", extractedKeywords="
 				+ (extractedKeywords != null ? extractedKeywords.size() : "null") + ", qualityScore=" + qualityScore
 				+ ", processingWarnings=" + (processingWarnings != null ? processingWarnings.size() : "null")
-				+ ", annotations=" + (annotations != null ? annotations.size() : "null") + '}';
+				+ ", annotations=" + (annotations != null ? annotations.size() : "null")
+				+ ", uris=" + (uris != null ? uris.size() : "null") + '}';
 	}
 }

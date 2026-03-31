@@ -14,7 +14,7 @@ This test suite verifies that Kreuzberg v4.3.6 (or later) installs correctly via
 ## Prerequisites
 
 - **macOS** (10.13 or later)
-- **Homebrew** installed (https://brew.sh)
+- **Homebrew** installed (<https://brew.sh>)
 - **curl** - For downloading test documents and making HTTP requests
 - **jq** (optional) - For parsing JSON responses in tests
 - **bash** - Shell scripts use bash syntax
@@ -22,16 +22,19 @@ This test suite verifies that Kreuzberg v4.3.6 (or later) installs correctly via
 ## Installation
 
 1. Clone or download this test suite:
+
    ```bash
    cd test_apps/homebrew
    ```
 
 2. Make scripts executable:
+
    ```bash
    chmod +x tests/*.sh
    ```
 
 3. (Optional) Install dependencies via Brewfile:
+
    ```bash
    brew bundle
    ```
@@ -39,6 +42,7 @@ This test suite verifies that Kreuzberg v4.3.6 (or later) installs correctly via
 ## Usage
 
 ### Run All Tests
+
 ```bash
 ./tests/test-all.sh
 ```
@@ -46,28 +50,32 @@ This test suite verifies that Kreuzberg v4.3.6 (or later) installs correctly via
 ### Run Individual Tests
 
 Install Kreuzberg from Homebrew:
+
 ```bash
 ./tests/install.sh
 ```
 
 Test CLI functionality:
+
 ```bash
 ./tests/test-cli.sh
 ```
 
 Test API server:
+
 ```bash
 ./tests/test-api.sh
 ```
 
 Test MCP server:
+
 ```bash
 ./tests/test-mcp.sh
 ```
 
 ## Test Structure
 
-```
+```text
 homebrew/
 ├── README.md                 # This file
 ├── Brewfile                  # Optional Homebrew dependencies
@@ -85,12 +93,14 @@ homebrew/
 ## Test Details
 
 ### install.sh
+
 - Checks if Homebrew is installed
 - Installs Kreuzberg via `brew install kreuzberg`
 - Verifies installation succeeded
 - Displays installed version
 
 ### test-cli.sh
+
 - Tests `kreuzberg --version`
 - Tests `kreuzberg --help`
 - Downloads a sample PDF if needed
@@ -98,6 +108,7 @@ homebrew/
 - Verifies output file contains valid JSON and extracted content
 
 ### test-api.sh
+
 - Starts Kreuzberg API server on `127.0.0.1:8000`
 - Waits for server readiness (health check)
 - Tests health endpoint: `GET /health`
@@ -106,6 +117,7 @@ homebrew/
 - Gracefully shuts down the server
 
 ### test-mcp.sh
+
 - Starts Kreuzberg MCP server
 - Verifies successful startup
 - Tests MCP protocol initialization
@@ -114,6 +126,7 @@ homebrew/
 - Gracefully shuts down the server
 
 ### test-all.sh
+
 - Runs all tests in sequence (install → CLI → API → MCP)
 - Generates a summary report (`test_report.txt`)
 - Reports pass/fail status for each test
@@ -122,30 +135,36 @@ homebrew/
 ## Troubleshooting
 
 ### Homebrew Not Found
+
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
 ### Kreuzberg Installation Fails
+
 - Check Homebrew is up to date: `brew update`
 - Check if formula exists: `brew search kreuzberg`
 - Review Homebrew logs: `brew log kreuzberg`
 
 ### API Server Won't Start
+
 - Check if port 8000 is already in use: `lsof -i :8000`
 - Try a different port by editing `test-api.sh`
 - Check server logs in `/tmp/kreuzberg_api.log`
 
 ### MCP Server Issues
+
 - Check socket permissions: `ls -la /tmp/kreuzberg.sock` (if applicable)
 - Review MCP logs in `/tmp/kreuzberg_mcp.log`
 - Ensure no other MCP instances are running
 
 ### Test Document Download Fails
+
 - Check internet connectivity: `curl -I https://www.w3.org/`
 - Manual download: `curl -o test_documents/table.pdf https://www.w3.org/WAI/WCAG21/Techniques/pdf/img/table.pdf`
 
 ### Timeout Issues
+
 - Increase timeout values in test scripts (search for `timeout` or `sleep`)
 - Ensure system has sufficient CPU/memory available
 - Check system load: `uptime`
@@ -181,6 +200,6 @@ export VERBOSE=1
 
 ## Support
 
-For issues with Kreuzberg itself, see: https://github.com/kreuzberg-dev/kreuzberg
+For issues with Kreuzberg itself, see: <https://github.com/kreuzberg-dev/kreuzberg>
 
-For Homebrew issues, see: https://docs.brew.sh
+For Homebrew issues, see: <https://docs.brew.sh>

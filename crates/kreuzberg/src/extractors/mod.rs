@@ -6,7 +6,8 @@
 use crate::Result;
 use crate::core::config::ExtractionConfig;
 use crate::plugins::registry::get_document_extractor_registry;
-use crate::types::ExtractionResult;
+
+use crate::types::internal::InternalDocument;
 use once_cell::sync::Lazy;
 use std::sync::Arc;
 
@@ -57,9 +58,12 @@ pub trait SyncExtractor {
     ///
     /// # Returns
     ///
-    /// An `ExtractionResult` containing the extracted content and metadata.
-    fn extract_sync(&self, content: &[u8], mime_type: &str, config: &ExtractionConfig) -> Result<ExtractionResult>;
+    /// An `InternalDocument` containing the extracted elements, metadata, and tables.
+    fn extract_sync(&self, content: &[u8], mime_type: &str, config: &ExtractionConfig) -> Result<InternalDocument>;
 }
+
+#[cfg(feature = "tree-sitter")]
+pub mod code;
 
 pub mod csv;
 pub mod structured;
@@ -68,6 +72,7 @@ pub mod text;
 pub mod djot_format;
 pub mod frontmatter_utils;
 
+pub(crate) mod annotation_utils;
 pub(crate) mod markdown_utils;
 
 #[cfg(feature = "archives")]
@@ -164,6 +169,9 @@ pub mod xml;
 
 #[cfg(feature = "xml")]
 pub mod docbook;
+
+#[cfg(feature = "tree-sitter")]
+pub use code::CodeExtractor;
 
 pub use csv::CsvExtractor;
 pub use markdown::MarkdownExtractor;
@@ -383,6 +391,9 @@ pub fn register_default_extractors() -> Result<()> {
     #[cfg(feature = "html")]
     registry.register(Arc::new(HtmlExtractor::new()))?;
 
+    #[cfg(feature = "tree-sitter")]
+    registry.register(Arc::new(CodeExtractor::new()))?;
+
     #[cfg(feature = "archives")]
     {
         registry.register(Arc::new(ZipExtractor::new()))?;
@@ -498,6 +509,12 @@ mod tests {
         {
             expected_count += 1;
             assert!(extractor_names.contains(&"html-extractor".to_string()));
+        }
+
+        #[cfg(feature = "tree-sitter")]
+        {
+            expected_count += 1;
+            assert!(extractor_names.contains(&"code-extractor".to_string()));
         }
 
         #[cfg(feature = "archives")]

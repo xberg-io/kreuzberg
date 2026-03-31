@@ -18,7 +18,7 @@ High-performance document intelligence library for Rust. Extract text, metadata,
 
 This is the core Rust library that powers the Python, TypeScript, and Ruby bindings.
 
-> **🚀 Version 4.6.3 Release**
+> **🚀 Version 4.7.0 Release**
 > This is a pre-release version. We invite you to test the library and [report any issues](https://github.com/kreuzberg-dev/kreuzberg/issues) you encounter.
 >
 > **Note**: The Rust crate is not currently published to crates.io for this RC. Use git dependencies or language bindings (Python, TypeScript, Ruby) instead.
@@ -249,7 +249,7 @@ kreuzberg = { version = "4.0", features = ["static-pdfium"] }
 kreuzberg = { version = "4.0", features = ["system-pdfium"] }
 ```
 
-For detailed information, see the [PDF Rendering Guide](../../docs/guides/pdf-rendering.md).
+For detailed information, see the PDFium Linking Guide in the project documentation.
 
 **Note:** Language bindings (Python, TypeScript, Ruby, Java, Go) automatically bundle PDFium. No configuration needed.
 

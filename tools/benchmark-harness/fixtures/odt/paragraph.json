@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/odt/paragraph.odt",
+  "file_type": "odt",
+  "file_size": 8538,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "odt test: paragraph",
+    "source": "pandoc-generated",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/odt/paragraph.txt",
+    "markdown_file": "../../../../test_documents/ground_truth/odt/paragraph.md",
+    "source": "pandoc"
+  }
+}

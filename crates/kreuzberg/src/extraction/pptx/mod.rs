@@ -140,7 +140,7 @@ fn extract_pptx_from_container<R: std::io::Read + std::io::Seek>(
         ..Default::default()
     };
 
-    let metadata = extract_metadata(&mut container.archive);
+    let (metadata, office_metadata) = extract_metadata(&mut container.archive);
 
     let notes = extract_all_notes(&mut container)?;
 
@@ -153,6 +153,7 @@ fn extract_pptx_from_container<R: std::io::Read + std::io::Seek>(
     let mut total_image_count = 0;
     let mut total_table_count = 0;
     let mut extracted_images = Vec::new();
+    let mut collected_hyperlinks: Vec<(String, Option<String>)> = Vec::new();
     let mut doc_builder = if include_structure {
         Some(DocumentStructureBuilder::new().source_format("pptx"))
     } else {
@@ -182,6 +183,9 @@ fn extract_pptx_from_container<R: std::io::Read + std::io::Seek>(
         if let Some(ref mut builder) = doc_builder {
             build_slide_structure(&slide, builder, &mut image_index_counter);
         }
+
+        // Collect hyperlinks from runs that have hlinkClick references
+        collect_slide_hyperlinks(&slide, &mut collected_hyperlinks);
 
         if config.extract_images
             && let Ok(image_data) = iterator.get_slide_images(&slide)
@@ -227,6 +231,7 @@ fn extract_pptx_from_container<R: std::io::Read + std::io::Seek>(
                     description,
                     ocr_result: None,
                     bounding_box: bbox,
+                    source_path: None,
                 });
             }
         }
@@ -282,6 +287,8 @@ fn extract_pptx_from_container<R: std::io::Read + std::io::Seek>(
         page_structure,
         page_contents,
         document,
+        hyperlinks: collected_hyperlinks,
+        office_metadata,
     })
 }
 
@@ -457,21 +464,62 @@ fn build_slide_structure(
     doc_builder.exit_container();
 }
 
+/// Collect hyperlinks from all runs in a slide by resolving `hlinkClick` rIds
+/// against the slide's hyperlink relationships.
+fn collect_slide_hyperlinks(slide: &elements::Slide, out: &mut Vec<(String, Option<String>)>) {
+    // Helper: iterate all runs from all elements
+    let mut visit_runs = |runs: &[Run]| {
+        for run in runs {
+            if let Some(ref hlink_id) = run.hyperlink_id
+                && let Some(href) = slide.hyperlinks.iter().find(|h| h.id == *hlink_id)
+            {
+                let label = if run.text.trim().is_empty() {
+                    None
+                } else {
+                    Some(run.text.trim().to_string())
+                };
+                out.push((href.url.clone(), label));
+            }
+        }
+    };
+
+    for elem in &slide.elements {
+        match elem {
+            SlideElement::Text(text, _) => visit_runs(&text.runs),
+            SlideElement::List(list, _) => {
+                for item in &list.items {
+                    visit_runs(&item.runs);
+                }
+            }
+            SlideElement::Table(table, _) => {
+                for row in &table.rows {
+                    for cell in &row.cells {
+                        visit_runs(&cell.runs);
+                    }
+                }
+            }
+            _ => {}
+        }
+    }
+}
+
 // Re-export Slide implementation methods for internal use
 impl elements::Slide {
     fn from_xml(slide_number: u32, xml_data: &[u8], rels_data: Option<&[u8]>) -> Result<Self> {
         let elements = parser::parse_slide_xml(xml_data)?;
 
-        let images = if let Some(rels) = rels_data {
-            parser::parse_slide_rels(rels)?
+        let (images, hyperlinks) = if let Some(rels) = rels_data {
+            let slide_rels = parser::parse_slide_rels(rels)?;
+            (slide_rels.images, slide_rels.hyperlinks)
         } else {
-            Vec::new()
+            (Vec::new(), Vec::new())
         };
 
         Ok(Self {
             slide_number,
             elements,
             images,
+            hyperlinks,
         })
     }
 
@@ -488,7 +536,38 @@ impl elements::Slide {
             (pos.y, pos.x)
         });
 
+        // Find the slide title: first short text element in y-sorted order.
+        // We emit it first, then skip it in the main loop.
+        let title_idx = element_indices.iter().find_map(|&idx| {
+            if let SlideElement::Text(text, _) = &self.elements[idx] {
+                let plain = join_runs_with_spacing(&text.runs, Run::extract);
+                let normalized = plain.replace('\n', " ");
+                if normalized.len() < 100 && !normalized.trim().is_empty() {
+                    return Some(idx);
+                }
+            }
+            None
+        });
+
+        // Emit title first as a heading
+        if let Some(tidx) = title_idx
+            && let SlideElement::Text(text, _) = &self.elements[tidx]
+        {
+            let text_content: String = if config.plain {
+                join_runs_with_spacing(&text.runs, Run::extract)
+            } else {
+                join_runs_with_spacing(&text.runs, Run::render_as_md)
+            };
+            let normalized = text_content.replace('\n', " ");
+            builder.add_title(normalized.trim());
+        }
+
         for &idx in &element_indices {
+            // Skip the title element we already emitted
+            if Some(idx) == title_idx {
+                continue;
+            }
+
             match &self.elements[idx] {
                 SlideElement::Text(text, _) => {
                     let text_content: String = if config.plain {
@@ -497,36 +576,39 @@ impl elements::Slide {
                         join_runs_with_spacing(&text.runs, Run::render_as_md)
                     };
 
-                    let normalized = text_content.replace('\n', " ");
-                    let is_title = normalized.len() < 100 && !normalized.trim().is_empty();
-
-                    if is_title {
-                        builder.add_title(normalized.trim());
-                    } else {
-                        builder.add_text(&text_content);
-                    }
+                    // All remaining text elements are body text, not titles
+                    builder.add_text(&text_content);
                 }
                 SlideElement::Table(table, _) => {
+                    let extract_fn: fn(&Run) -> String = if config.plain { Run::extract } else { Run::render_as_md };
                     let table_rows: Vec<Vec<String>> = table
                         .rows
                         .iter()
                         .map(|row| {
                             row.cells
                                 .iter()
-                                .map(|cell| join_runs_with_spacing(&cell.runs, Run::extract))
+                                .map(|cell| join_runs_with_spacing(&cell.runs, extract_fn))
                                 .collect()
                         })
                         .collect();
                     builder.add_table(&table_rows);
                 }
                 SlideElement::List(list, _) => {
+                    let extract_fn: fn(&Run) -> String = if config.plain { Run::extract } else { Run::render_as_md };
                     for item in &list.items {
-                        let item_text = join_runs_with_spacing(&item.runs, Run::extract);
+                        let item_text = join_runs_with_spacing(&item.runs, extract_fn);
                         builder.add_list_item(item.level, item.is_ordered, &item_text);
                     }
                 }
                 SlideElement::Image(img_ref, _) => {
-                    builder.add_image(&img_ref.id, self.slide_number);
+                    // Resolve image target from rels
+                    let target = self
+                        .images
+                        .iter()
+                        .find(|rel| rel.id == img_ref.id)
+                        .map(|rel| rel.target.as_str())
+                        .unwrap_or("");
+                    builder.add_image_with_desc(&img_ref.id, img_ref.description.as_deref(), target);
                 }
                 SlideElement::Unknown => {}
             }

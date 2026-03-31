@@ -8,10 +8,10 @@ use kreuzberg::cache;
 use serde_json::json;
 use std::path::PathBuf;
 
-use crate::{OutputFormat, style};
+use crate::{WireFormat, style};
 
 /// Execute cache stats command
-pub fn stats_command(cache_dir: Option<PathBuf>, format: OutputFormat) -> Result<()> {
+pub fn stats_command(cache_dir: Option<PathBuf>, format: WireFormat) -> Result<()> {
     let default_cache_dir = std::env::current_dir()
         .context("Failed to get current directory")?
         .join(".kreuzberg");
@@ -27,7 +27,7 @@ pub fn stats_command(cache_dir: Option<PathBuf>, format: OutputFormat) -> Result
     })?;
 
     match format {
-        OutputFormat::Text => {
+        WireFormat::Text => {
             println!("{}", style::header("Cache Statistics"));
             println!("{}", style::dim("================"));
             println!("{} {}", style::label("Directory:"), style::success(&cache_dir_str));
@@ -49,7 +49,7 @@ pub fn stats_command(cache_dir: Option<PathBuf>, format: OutputFormat) -> Result
                 stats.newest_file_age_days
             );
         }
-        OutputFormat::Json => {
+        WireFormat::Json => {
             let output = json!({
                 "directory": cache_dir_str,
                 "total_files": stats.total_files,
@@ -63,13 +63,27 @@ pub fn stats_command(cache_dir: Option<PathBuf>, format: OutputFormat) -> Result
                 serde_json::to_string_pretty(&output).context("Failed to serialize cache statistics to JSON")?
             );
         }
+        WireFormat::Toon => {
+            let output = json!({
+                "directory": cache_dir_str,
+                "total_files": stats.total_files,
+                "total_size_mb": stats.total_size_mb,
+                "available_space_mb": stats.available_space_mb,
+                "oldest_file_age_days": stats.oldest_file_age_days,
+                "newest_file_age_days": stats.newest_file_age_days,
+            });
+            println!(
+                "{}",
+                serde_toon::to_string(&output).context("Failed to serialize cache statistics to TOON")?
+            );
+        }
     }
 
     Ok(())
 }
 
 /// Execute cache clear command
-pub fn clear_command(cache_dir: Option<PathBuf>, format: OutputFormat) -> Result<()> {
+pub fn clear_command(cache_dir: Option<PathBuf>, format: WireFormat) -> Result<()> {
     let default_cache_dir = std::env::current_dir()
         .context("Failed to get current directory")?
         .join(".kreuzberg");
@@ -85,13 +99,13 @@ pub fn clear_command(cache_dir: Option<PathBuf>, format: OutputFormat) -> Result
     })?;
 
     match format {
-        OutputFormat::Text => {
+        WireFormat::Text => {
             println!("{}", style::success("Cache cleared successfully"));
             println!("{} {}", style::label("Directory:"), style::success(&cache_dir_str));
             println!("{} {}", style::label("Removed files:"), removed_files);
             println!("{} {:.2} MB", style::label("Freed space:"), freed_mb);
         }
-        OutputFormat::Json => {
+        WireFormat::Json => {
             let output = json!({
                 "directory": cache_dir_str,
                 "removed_files": removed_files,
@@ -102,13 +116,24 @@ pub fn clear_command(cache_dir: Option<PathBuf>, format: OutputFormat) -> Result
                 serde_json::to_string_pretty(&output).context("Failed to serialize cache clear results to JSON")?
             );
         }
+        WireFormat::Toon => {
+            let output = json!({
+                "directory": cache_dir_str,
+                "removed_files": removed_files,
+                "freed_mb": freed_mb,
+            });
+            println!(
+                "{}",
+                serde_toon::to_string(&output).context("Failed to serialize cache clear results to TOON")?
+            );
+        }
     }
 
     Ok(())
 }
 
 /// Execute cache manifest command - outputs expected model files with checksums.
-pub fn manifest_command(format: OutputFormat) -> Result<()> {
+pub fn manifest_command(format: WireFormat) -> Result<()> {
     let mut entries = Vec::new();
 
     #[cfg(feature = "paddle-ocr")]
@@ -130,7 +155,7 @@ pub fn manifest_command(format: OutputFormat) -> Result<()> {
     let version = env!("CARGO_PKG_VERSION");
 
     match format {
-        OutputFormat::Text => {
+        WireFormat::Text => {
             println!(
                 "{} {}",
                 style::header("Model Manifest"),
@@ -172,7 +197,7 @@ pub fn manifest_command(format: OutputFormat) -> Result<()> {
                 total_size_bytes as f64 / 1_048_576.0
             );
         }
-        OutputFormat::Json => {
+        WireFormat::Json => {
             let output = json!({
                 "kreuzberg_version": version,
                 "total_size_bytes": total_size_bytes,
@@ -184,6 +209,18 @@ pub fn manifest_command(format: OutputFormat) -> Result<()> {
                 serde_json::to_string_pretty(&output).context("Failed to serialize manifest to JSON")?
             );
         }
+        WireFormat::Toon => {
+            let output = json!({
+                "kreuzberg_version": version,
+                "total_size_bytes": total_size_bytes,
+                "model_count": entries.len(),
+                "models": entries,
+            });
+            println!(
+                "{}",
+                serde_toon::to_string(&output).context("Failed to serialize manifest to TOON")?
+            );
+        }
     }
 
     Ok(())
@@ -192,7 +229,7 @@ pub fn manifest_command(format: OutputFormat) -> Result<()> {
 /// Execute cache warm command - eagerly downloads all models.
 pub fn warm_command(
     cache_dir: Option<PathBuf>,
-    format: OutputFormat,
+    format: WireFormat,
     all_embeddings: bool,
     embedding_model: Option<String>,
     all_table_models: bool,
@@ -303,7 +340,7 @@ pub fn warm_command(
     }
 
     match format {
-        OutputFormat::Text => {
+        WireFormat::Text => {
             if !downloaded.is_empty() {
                 println!("{}", style::label("Downloaded:"));
                 for d in &downloaded {
@@ -321,7 +358,7 @@ pub fn warm_command(
                 style::success(&cache_base.display().to_string())
             );
         }
-        OutputFormat::Json => {
+        WireFormat::Json => {
             let output = json!({
                 "cache_dir": cache_base.to_string_lossy(),
                 "downloaded": downloaded,
@@ -330,6 +367,17 @@ pub fn warm_command(
             println!(
                 "{}",
                 serde_json::to_string_pretty(&output).context("Failed to serialize warm results to JSON")?
+            );
+        }
+        WireFormat::Toon => {
+            let output = json!({
+                "cache_dir": cache_base.to_string_lossy(),
+                "downloaded": downloaded,
+                "already_cached": already_cached,
+            });
+            println!(
+                "{}",
+                serde_toon::to_string(&output).context("Failed to serialize warm results to TOON")?
             );
         }
     }

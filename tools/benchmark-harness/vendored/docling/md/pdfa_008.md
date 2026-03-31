@@ -22,7 +22,7 @@ As the product and batch number are applied to the silicone-coated paper, all pr
 
 Solvent polyacrylate, permanent, removable by heat
 
-## Area of use:
+## Area of use
 
 ORALITE  reflective films series 5600 FLEET ENGINEER GRADE were especially developed for high quality car wrappings to produce lettering, markings and decorations which may be applied within contour markings in accordance with ECE 104. They are suitable for use on cutting plotters and provide good adaptability including to corrugations and rivets.
 
@@ -88,7 +88,7 @@ ORALITE  reflective films series 5600 FLEET ENGINEER GRADE are available i
 
 5600E - 364 ruby
 
-The statements in this information sheet are based upon our knowledge and practical experience. This data is intended only as a source of information and is given without guarantee and does not constitute a warranty. Due to the wide variety of possible uses and applications  customers  should  independently  determine  the  suitability  of  this  material  for  their  specific  purpose,  prior  to  use.
+The statements in this information sheet are based upon our knowledge and practical experience. This data is intended only as a source of information and is given without guarantee and does not constitute a warranty. Due to the wide variety of possible uses and applications customers should independently determine the suitability of this material for their specific purpose, prior to use.
 
 <!-- image -->
 
@@ -118,4 +118,4 @@ The statements in this information sheet are based upon our knowledge and practi
 
 <!-- image -->
 
-E-mail: verkauf@orafol.de - Internet: http://www.orafol.com
+E-mail: <verkauf@orafol.de> - Internet: <http://www.orafol.com>

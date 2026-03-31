@@ -58,6 +58,7 @@ public final class ExtractionConfig {
 	private final Long extractionTimeoutSecs;
 	private final Integer maxArchiveDepth;
 	private final boolean maxArchiveDepthSet;
+	private final TreeSitterConfig treeSitter;
 
 	private ExtractionConfig(Builder builder) {
 		this.useCache = builder.useCache;
@@ -92,6 +93,7 @@ public final class ExtractionConfig {
 		this.extractionTimeoutSecs = builder.extractionTimeoutSecs;
 		this.maxArchiveDepth = builder.maxArchiveDepth;
 		this.maxArchiveDepthSet = builder.maxArchiveDepthSet;
+		this.treeSitter = builder.treeSitter;
 	}
 
 	public static Builder builder() {
@@ -277,6 +279,15 @@ public final class ExtractionConfig {
 	 */
 	public Integer getMaxArchiveDepth() {
 		return maxArchiveDepth;
+	}
+
+	/**
+	 * Get the tree-sitter language pack integration configuration.
+	 *
+	 * @return the tree-sitter configuration, or null if not set
+	 */
+	public TreeSitterConfig getTreeSitter() {
+		return treeSitter;
 	}
 
 	/**
@@ -598,6 +609,9 @@ public final class ExtractionConfig {
 		if (maxArchiveDepthSet || maxArchiveDepth != null) {
 			map.put("max_archive_depth", maxArchiveDepth);
 		}
+		if (treeSitter != null) {
+			map.put("tree_sitter", treeSitter.toMap());
+		}
 		return map;
 	}
 
@@ -719,6 +733,10 @@ public final class ExtractionConfig {
 		if (raw.containsKey("max_archive_depth")) {
 			builder.maxArchiveDepth(asInteger(raw.get("max_archive_depth")));
 		}
+		Map<String, Object> treeSitterMap = asMap(raw.get("tree_sitter"));
+		if (treeSitterMap != null) {
+			builder.treeSitter(TreeSitterConfig.fromMap(treeSitterMap));
+		}
 	}
 
 	private static boolean asBoolean(Object value, boolean defaultValue) {
@@ -799,6 +817,7 @@ public final class ExtractionConfig {
 		private Long extractionTimeoutSecs;
 		private Integer maxArchiveDepth;
 		private boolean maxArchiveDepthSet = false;
+		private TreeSitterConfig treeSitter;
 
 		private Builder() {
 		}
@@ -1052,6 +1071,18 @@ public final class ExtractionConfig {
 		public Builder maxArchiveDepth(Integer maxArchiveDepth) {
 			this.maxArchiveDepth = maxArchiveDepth;
 			this.maxArchiveDepthSet = true;
+			return this;
+		}
+
+		/**
+		 * Set the tree-sitter language pack integration configuration.
+		 *
+		 * @param treeSitter
+		 *            the tree-sitter configuration
+		 * @return this builder for chaining
+		 */
+		public Builder treeSitter(TreeSitterConfig treeSitter) {
+			this.treeSitter = treeSitter;
 			return this;
 		}
 

@@ -20,7 +20,6 @@ use serde::{Deserialize, Serialize};
 /// ```
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
-#[serde(deny_unknown_fields)]
 pub struct ConcurrencyConfig {
     /// Maximum number of threads for all internal thread pools.
     ///

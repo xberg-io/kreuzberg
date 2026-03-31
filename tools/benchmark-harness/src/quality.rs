@@ -30,6 +30,7 @@ pub fn compute_quality_with_structure(
             0.5 * metrics.f1_score_text + 0.2 * metrics.f1_score_numeric + 0.3 * metrics.f1_score_layout;
     }
 
+    metrics.correct = metrics.quality_score >= 0.95;
     metrics
 }
 
@@ -63,6 +64,8 @@ pub fn compute_quality(extracted: &str, ground_truth: &str) -> QualityMetrics {
 
     let (missing_tokens, extra_tokens) = compute_token_diff(&extracted_tokens, &truth_tokens);
 
+    let correct = quality_score >= 0.95;
+
     QualityMetrics {
         f1_score_text,
         f1_score_numeric,
@@ -70,6 +73,7 @@ pub fn compute_quality(extracted: &str, ground_truth: &str) -> QualityMetrics {
         quality_score,
         missing_tokens,
         extra_tokens,
+        correct,
     }
 }
 

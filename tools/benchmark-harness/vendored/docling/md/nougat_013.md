@@ -8,7 +8,7 @@ A talk by Guillaume Wiatr, Principal &amp; Founder of MetaHelm
 
 ## Introduction
 
-Someone schedules a meeting, and you're in charge. So what's the first thing you do? Open up a PowerPoint template? That might be the correct answer, but what if, rather than showing the audience a static product, you took them through an involving process?  What if you built the visuals as you went along with markers, paper, whiteboards, and your own humble drawing skills? We've done it and seen it, and the result is a more engaged audience that contributes better ideas and remembers what you've shown them. If you can put a stick figure down on paper, you can run a better meeting, and we'll gladly show you how.
+Someone schedules a meeting, and you're in charge. So what's the first thing you do? Open up a PowerPoint template? That might be the correct answer, but what if, rather than showing the audience a static product, you took them through an involving process? What if you built the visuals as you went along with markers, paper, whiteboards, and your own humble drawing skills? We've done it and seen it, and the result is a more engaged audience that contributes better ideas and remembers what you've shown them. If you can put a stick figure down on paper, you can run a better meeting, and we'll gladly show you how.
 
 ## Description
 

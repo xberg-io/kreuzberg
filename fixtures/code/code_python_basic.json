@@ -1,0 +1,21 @@
+{
+	"id": "code_python_basic",
+	"category": "code",
+	"tags": ["code", "python", "tree-sitter"],
+	"description": "Smoke test: Python source code file extraction",
+	"document": {
+		"path": "code/hello.py",
+		"media_type": "text/x-source-code"
+	},
+	"extraction": {
+		"config": {}
+	},
+	"assertions": {
+		"expected_mime": "text/x-source-code",
+		"min_content_length": 10,
+		"content_contains_all": ["def greet", "class Greeter", "import os"]
+	},
+	"skip": {
+		"requires_feature": ["tree-sitter"]
+	}
+}

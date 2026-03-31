@@ -22,7 +22,7 @@ Conclusions: The results indicate that substitutions of core residue 70 are rela
 
 Hepatitis C virus (HCV) infection is a major cause of cirrhosis and hepatocellular cancer affecting approximately 170 million persons worldwide [1]. Combination therapy with pegylated interferon and ribavirin (PegIFN/RBV), given for 24 to 72 weeks, may eradicate the infection and stop progression of liver damage [2-4], but many patients do not achieve sustained virologic response (SVR). For this reason, and in light of high
 
-* Correspondence: erik.alestig@gu.se
+- Correspondence: <erik.alestig@gu.se>
 
 1 Department of Infection and Virology, University of Gothenburg, Gothenburg, Sweden
 
@@ -146,7 +146,7 @@ Table 2 Host and viral baseline parameters in patients with and without treatmen
 
 The virologic response was not associated with substitutions at residue 91. However, a poor response was associated with substitutions of core residue 70: One of the 7 patients (14%) with substitutions at residue 70 (six subtype 1b strains with Q70 and one subtype 1a strain with P70) achieved SVR, as compared with 28 of 43 patients (65%) carrying strains with R70 (p = 0.03).
 
-Substitutions of core residues 70 and 91 were closely linked to subgenotype 1b: Six (5 non-SVR) of 13 genotype 1b strains had Q70, while only one of 37 subgenotype 1a strain had a substitution (P70) at this site (p = 0.0007). Similarly, all 1a strains had cysteine at residue 91, while in 1b 9 had methionine and 4 had leucine (p &lt; 0.0001). This association between core variability and genotype was further explored by analysis of 3313 sequences from the HCV Database Project (http://hcv. lanl.gov/), showing a predominance ( ≥ 93%) of R70 in genotypes 1a, 2, 3 and 4, and high rates of Q70 in 1b, 5 and 6 (Table 3). In the 13 patients carrying subtype 1b
+Substitutions of core residues 70 and 91 were closely linked to subgenotype 1b: Six (5 non-SVR) of 13 genotype 1b strains had Q70, while only one of 37 subgenotype 1a strain had a substitution (P70) at this site (p = 0.0007). Similarly, all 1a strains had cysteine at residue 91, while in 1b 9 had methionine and 4 had leucine (p &lt; 0.0001). This association between core variability and genotype was further explored by analysis of 3313 sequences from the HCV Database Project (<http://hcv>. lanl.gov/), showing a predominance ( ≥ 93%) of R70 in genotypes 1a, 2, 3 and 4, and high rates of Q70 in 1b, 5 and 6 (Table 3). In the 13 patients carrying subtype 1b
 
 Table 3 Distribution of amino acids at residue 70 and 91 of the core region
 
@@ -161,7 +161,7 @@ Table 3 Distribution of amino acids at residue 70 and 91 of the core region
 | 5        | 86%             | 14%             | -               | -               | -               | -               | 100%            | 14    |
 | 6        | 60%             | 13%             | 13%             | 15%             | 100%            | -               | -               | 55    |
 
-A total of 3317 sequences found on 31 st of March 2010 in the The Hepatitis C Virus (HCV) Database Project (http://hcv.lanl.gov/) were analysed. Values less than 1% not shown.
+A total of 3317 sequences found on 31 st of March 2010 in the The Hepatitis C Virus (HCV) Database Project (<http://hcv.lanl.gov/>) were analysed. Values less than 1% not shown.
 
 strains, the correlation was strong: 7 of 8 responders had arginine (R70) and 5 non-responders had glutamine (Q70) at residue 70 (p = 0.005). In contrast, in the 37 patients with 1a infection, all the 21 patients with SVR carried HCV with R70, while 15 of the 16 non-SVR carried strains with R70.
 
@@ -236,35 +236,35 @@ Received: 4 October 2010 Accepted: 12 May 2011 Published: 12 May 2011
 3. Poynard T, McHutchison J, Manns M, Trepo C, Lindsay K, Goodman Z, Ling MH, Albrecht J: Impact of pegylated interferon alfa-2b and ribavirin on liver fibrosis in patients with chronic hepatitis C. Gastroenterology 2002, 122 :1303-1313.
 4. Manns MP, McHutchison JG, Gordon SC, Rustgi VK, Shiffman M, Reindollar R, Goodman ZD, Koury K, Ling M, Albrecht JK: Peginterferon alfa-2b plus ribavirin compared with interferon alfa-2b plus ribavirin for
 5. initial treatment of chronic hepatitis C: a randomised trial. Lancet 2001, 358 :958-965.
-5. Kau A, Vermehren J, Sarrazin C: Treatment predictors of a sustained virologic response in hepatitis B and C. J Hepatol 2008, 49 :634-651.
-6. Berg T, von Wagner M, Nasser S, Sarrazin C, Heintges T, Gerlach T, Buggisch P, Goeser T, Rasenack J, Pape GR, et al : Extended treatment duration for hepatitis C virus type 1: comparing 48 versus 72 weeks of peginterferon-alfa-2a plus ribavirin. Gastroenterology 2006, 130 :1086-1097.
-7. Enomoto N, Sakuma I, Asahina Y, Kurosaki M, Murakami T, Yamamoto C, Izumi N, Marumo F, Sato C: Comparison of full-length sequences of interferon-sensitive and resistant hepatitis C virus 1b. Sensitivity to interferon is conferred by amino acid substitutions in the NS5A region. J Clin Invest 1995, 96 :224-230.
-8. Zeuzem S, Lee JH, Roth WK: Mutations in the nonstructural 5A gene of European hepatitis C virus isolates and response to interferon alfa. Hepatology 1997, 25 :740-744.
-9. Schinkel J, Spaan WJ, Kroes AC: Meta-analysis of mutations in the NS5A gene and hepatitis C virus resistance to interferon therapy: uniting discordant conclusions. Antivir Ther 2004, 9 :275-286.
-10. Odeberg J, Yun Z, Sonnerborg A, Weiland O, Lundeberg J: Variation in the hepatitis C virus NS5a region in relation to hypervariable region 1 heterogeneity during interferon treatment. J Med Virol 1998, 56 :33-38.
-11. Akuta N, Suzuki F, Sezaki H, Suzuki Y, Hosaka T, Someya T, Kobayashi M, Saitoh S, Watahiki S, Sato J, et al : Association of amino acid substitution pattern in core protein of hepatitis C virus genotype 1b high viral load and non-virological response to interferon-ribavirin combination therapy. Intervirology 2005, 48 :372-380.
-12. Kurbanov F, Tanaka Y, Matsuura K, Sugauchi F, Elkady A, Khan A, Hasegawa I, Ohno T, Tokuda H, Mizokami M: Positive selection of core 70Q variant genotype 1b hepatitis C virus strains induced by pegylated interferon and ribavirin. J Infect Dis 2010, 201 :1663-1671.
-13. Akuta N, Suzuki F, Hirakawa M, Kawamura Y, Yatsuji H, Sezaki H, Suzuki Y, Hosaka T, Kobayashi M, Saitoh S, et al : Amino acid substitutions in the hepatitis C virus core region of genotype 1b affect very early viral dynamics during treatment with telaprevir, peginterferon, and ribavirin. J Med Virol 2010, 82 :575-582.
-14. Akuta N, Suzuki F, Kawamura Y, Yatsuji H, Sezaki H, Suzuki Y, Hosaka T, Kobayashi M, Arase Y, Ikeda K, et al : Prediction of response to pegylated interferon and ribavirin in hepatitis C by polymorphisms in the viral core protein and very early dynamics of viremia. Intervirology 2007, 50 :361-368.
-15. Ge D, Fellay J, Thompson AJ, Simon JS, Shianna KV, Urban TJ, Heinzen EL, Qiu P, Bertelsen AH, Muir AJ, et al : Genetic variation in IL28B predicts hepatitis C treatment-induced viral clearance. Nature 2009, 461 :399-401.
-16. McCarthy JJ, Li JH, Thompson A, Suchindran S, Lao XQ, Patel K, Tillmann HL, Muir AJ, McHutchison JG: Replicated Association Between an Interleukin28B Gene Variant and a Sustained Response to Pegylated Interferon and Ribavirin. Gastroenterology 2010.
-17. Thomas DL, Thio CL, Martin MP, Qi Y, Ge D, O ' Huigin C, Kidd J, Kidd K, Khakoo SI, Alexander G, et al : Genetic variation in IL28B and spontaneous clearance of hepatitis C virus. Nature 2009, 461 :798-801.
-18. Lindh M, Alestig E, Arnholm B, Eilard A, Hellstrand K, Lagging M, Wahlberg T, Wejstal R, Westin J, Norkrans G: Response prediction and treatment tailoring for chronic hepatitis C virus genotype 1 infection. J Clin Microbiol 2007, 45 :2439-2445.
-19. Akuta N, Suzuki F, Hirakawa M, Kawamura Y, Yatsuji H, Sezaki H, Suzuki Y, Hosaka T, Kobayashi M, Saitoh S, et al : A matched case-controlled study of 48 and 72 weeks of peginterferon plus ribavirin combination therapy in patients infected with HCV genotype 1b in Japan: amino acid substitutions in HCV core region as predictor of sustained virological response. J Med Virol 2009, 81 :452-458.
-20. Akuta N, Suzuki F, Kawamura Y, Yatsuji H, Sezaki H, Suzuki Y, Hosaka T, Kobayashi M, Arase Y, Ikeda K, Kumada H: Predictors of viral kinetics to peginterferon plus ribavirin combination therapy in Japanese patients infected with hepatitis C virus genotype 1b. J Med Virol 2007, 79 :1686-1695.
-21. Donlin MJ, Cannon NA, Yao E, Li J, Wahed A, Taylor MW, Belle SH, Di Bisceglie AM, Aurora R, Tavis JE: Pretreatment sequence diversity differences in the full-length hepatitis C virus open reading frame correlate with early response to therapy. J Virol 2007, 81 :8211-8224.
-22. Nguyen MH, Keeffe EB: Prevalence and treatment of hepatitis C virus genotypes 4, 5, and 6. Clin Gastroenterol Hepatol 2005, 3 :S97-S101.
+6. Kau A, Vermehren J, Sarrazin C: Treatment predictors of a sustained virologic response in hepatitis B and C. J Hepatol 2008, 49 :634-651.
+7. Berg T, von Wagner M, Nasser S, Sarrazin C, Heintges T, Gerlach T, Buggisch P, Goeser T, Rasenack J, Pape GR, et al : Extended treatment duration for hepatitis C virus type 1: comparing 48 versus 72 weeks of peginterferon-alfa-2a plus ribavirin. Gastroenterology 2006, 130 :1086-1097.
+8. Enomoto N, Sakuma I, Asahina Y, Kurosaki M, Murakami T, Yamamoto C, Izumi N, Marumo F, Sato C: Comparison of full-length sequences of interferon-sensitive and resistant hepatitis C virus 1b. Sensitivity to interferon is conferred by amino acid substitutions in the NS5A region. J Clin Invest 1995, 96 :224-230.
+9. Zeuzem S, Lee JH, Roth WK: Mutations in the nonstructural 5A gene of European hepatitis C virus isolates and response to interferon alfa. Hepatology 1997, 25 :740-744.
+10. Schinkel J, Spaan WJ, Kroes AC: Meta-analysis of mutations in the NS5A gene and hepatitis C virus resistance to interferon therapy: uniting discordant conclusions. Antivir Ther 2004, 9 :275-286.
+11. Odeberg J, Yun Z, Sonnerborg A, Weiland O, Lundeberg J: Variation in the hepatitis C virus NS5a region in relation to hypervariable region 1 heterogeneity during interferon treatment. J Med Virol 1998, 56 :33-38.
+12. Akuta N, Suzuki F, Sezaki H, Suzuki Y, Hosaka T, Someya T, Kobayashi M, Saitoh S, Watahiki S, Sato J, et al : Association of amino acid substitution pattern in core protein of hepatitis C virus genotype 1b high viral load and non-virological response to interferon-ribavirin combination therapy. Intervirology 2005, 48 :372-380.
+13. Kurbanov F, Tanaka Y, Matsuura K, Sugauchi F, Elkady A, Khan A, Hasegawa I, Ohno T, Tokuda H, Mizokami M: Positive selection of core 70Q variant genotype 1b hepatitis C virus strains induced by pegylated interferon and ribavirin. J Infect Dis 2010, 201 :1663-1671.
+14. Akuta N, Suzuki F, Hirakawa M, Kawamura Y, Yatsuji H, Sezaki H, Suzuki Y, Hosaka T, Kobayashi M, Saitoh S, et al : Amino acid substitutions in the hepatitis C virus core region of genotype 1b affect very early viral dynamics during treatment with telaprevir, peginterferon, and ribavirin. J Med Virol 2010, 82 :575-582.
+15. Akuta N, Suzuki F, Kawamura Y, Yatsuji H, Sezaki H, Suzuki Y, Hosaka T, Kobayashi M, Arase Y, Ikeda K, et al : Prediction of response to pegylated interferon and ribavirin in hepatitis C by polymorphisms in the viral core protein and very early dynamics of viremia. Intervirology 2007, 50 :361-368.
+16. Ge D, Fellay J, Thompson AJ, Simon JS, Shianna KV, Urban TJ, Heinzen EL, Qiu P, Bertelsen AH, Muir AJ, et al : Genetic variation in IL28B predicts hepatitis C treatment-induced viral clearance. Nature 2009, 461 :399-401.
+17. McCarthy JJ, Li JH, Thompson A, Suchindran S, Lao XQ, Patel K, Tillmann HL, Muir AJ, McHutchison JG: Replicated Association Between an Interleukin28B Gene Variant and a Sustained Response to Pegylated Interferon and Ribavirin. Gastroenterology 2010.
+18. Thomas DL, Thio CL, Martin MP, Qi Y, Ge D, O ' Huigin C, Kidd J, Kidd K, Khakoo SI, Alexander G, et al : Genetic variation in IL28B and spontaneous clearance of hepatitis C virus. Nature 2009, 461 :798-801.
+19. Lindh M, Alestig E, Arnholm B, Eilard A, Hellstrand K, Lagging M, Wahlberg T, Wejstal R, Westin J, Norkrans G: Response prediction and treatment tailoring for chronic hepatitis C virus genotype 1 infection. J Clin Microbiol 2007, 45 :2439-2445.
+20. Akuta N, Suzuki F, Hirakawa M, Kawamura Y, Yatsuji H, Sezaki H, Suzuki Y, Hosaka T, Kobayashi M, Saitoh S, et al : A matched case-controlled study of 48 and 72 weeks of peginterferon plus ribavirin combination therapy in patients infected with HCV genotype 1b in Japan: amino acid substitutions in HCV core region as predictor of sustained virological response. J Med Virol 2009, 81 :452-458.
+21. Akuta N, Suzuki F, Kawamura Y, Yatsuji H, Sezaki H, Suzuki Y, Hosaka T, Kobayashi M, Arase Y, Ikeda K, Kumada H: Predictors of viral kinetics to peginterferon plus ribavirin combination therapy in Japanese patients infected with hepatitis C virus genotype 1b. J Med Virol 2007, 79 :1686-1695.
+22. Donlin MJ, Cannon NA, Yao E, Li J, Wahed A, Taylor MW, Belle SH, Di Bisceglie AM, Aurora R, Tavis JE: Pretreatment sequence diversity differences in the full-length hepatitis C virus open reading frame correlate with early response to therapy. J Virol 2007, 81 :8211-8224.
+23. Nguyen MH, Keeffe EB: Prevalence and treatment of hepatitis C virus genotypes 4, 5, and 6. Clin Gastroenterol Hepatol 2005, 3 :S97-S101.
 
-23. Kumthip K, Pantip C, Chusri P, Thongsawat S, O ' Brien A, Nelson KE, Maneekarn N: Correlation between mutations in the core and NS5A genes of hepatitis C virus genotypes 1a, 1b, 3a, 3b, 6f and the response to pegylated interferon and ribavirin combination therapy. J Viral Hepat 2010.
-24. Legrand-Abravanel F, Colson P, Leguillou-Guillemette H, Alric L, Ravaux I, Lunel-Fabiani F, Bouviers-Alias M, Trimoulet P, Chaix ML, Hezode C, et al : Influence of the HCV subtype on the virological response to pegylated interferon and ribavirin therapy. J Med Virol 2009, 81 :2029-2035.
+24. Kumthip K, Pantip C, Chusri P, Thongsawat S, O ' Brien A, Nelson KE, Maneekarn N: Correlation between mutations in the core and NS5A genes of hepatitis C virus genotypes 1a, 1b, 3a, 3b, 6f and the response to pegylated interferon and ribavirin combination therapy. J Viral Hepat 2010.
+25. Legrand-Abravanel F, Colson P, Leguillou-Guillemette H, Alric L, Ravaux I, Lunel-Fabiani F, Bouviers-Alias M, Trimoulet P, Chaix ML, Hezode C, et al : Influence of the HCV subtype on the virological response to pegylated interferon and ribavirin therapy. J Med Virol 2009, 81 :2029-2035.
 
 ## Pre-publication history
 
-The pre-publication history for this paper can be accessed here: http://www.biomedcentral.com/1471-2334/11/124/prepub doi:10.1186/1471-2334-11-124 Cite this article as: Alestig et al .: Core mutations, IL28B polymorphisms and response to peginterferon/ribavirin treatment in Swedish patients with hepatitis C virus genotype 1 infection. BMC Infectious Diseases 2011
+The pre-publication history for this paper can be accessed here: <http://www.biomedcentral.com/1471-2334/11/124/prepub> doi:10.1186/1471-2334-11-124 Cite this article as: Alestig et al .: Core mutations, IL28B polymorphisms and response to peginterferon/ribavirin treatment in Swedish patients with hepatitis C virus genotype 1 infection. BMC Infectious Diseases 2011
 
 11 :124.
 
-## Submit your next manuscript to BioMed Central and take full advantage of:
+## Submit your next manuscript to BioMed Central and take full advantage of
 
 - Convenient online submission
 - Thorough peer review
@@ -273,6 +273,6 @@ The pre-publication history for this paper can be accessed here: http://www.biom
 - Inclusion in PubMed, CAS, Scopus and Google Scholar
 - Research which is freely available for redistribution
 
-Submit your manuscript at www.biomedcentral.com/submit
+Submit your manuscript at <https://www.biomedcentral.com/submit>
 
 <!-- image -->

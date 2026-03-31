@@ -192,6 +192,24 @@ impl DocumentStructureBuilder {
         let content = NodeContent::Image {
             description: description.map(|s| s.to_string()),
             image_index,
+            src: None,
+        };
+        self.push_body_node(content, page, bbox, vec![])
+    }
+
+    /// Push an image node with source URL.
+    pub fn push_image_with_src(
+        &mut self,
+        description: Option<&str>,
+        src: Option<&str>,
+        image_index: Option<u32>,
+        page: Option<u32>,
+        bbox: Option<BoundingBox>,
+    ) -> NodeIndex {
+        let content = NodeContent::Image {
+            description: description.map(|s| s.to_string()),
+            image_index,
+            src: src.map(|s| s.to_string()),
         };
         self.push_body_node(content, page, bbox, vec![])
     }

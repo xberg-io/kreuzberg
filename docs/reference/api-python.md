@@ -77,7 +77,6 @@ def batch_extract_bytes_sync(
 - `config` (ExtractionConfig | None): Extraction configuration applied to all items
 - `easyocr_kwargs` (dict | None): EasyOCR initialization options
 
-
 **Returns:**
 
 - `list[ExtractionResult]`: List of extraction results (one per data item)
@@ -129,7 +128,6 @@ def batch_extract_files_sync(
 - `paths` (list[str | Path]): List of file paths to extract
 - `config` (ExtractionConfig | None): Extraction configuration applied to all files
 - `easyocr_kwargs` (dict | None): EasyOCR initialization options
-
 
 **Returns:**
 
@@ -197,7 +195,6 @@ def extract_bytes_sync(
 - `mime_type` (str): MIME type of the data (required for format detection)
 - `config` (ExtractionConfig | None): Extraction configuration. Uses defaults if None
 - `easyocr_kwargs` (dict | None): EasyOCR initialization options
-
 
 **Returns:**
 
@@ -282,7 +279,6 @@ def extract_file_sync(
 - `mime_type` (str | None): Optional MIME type hint. If None, MIME type is auto-detected from file extension and content
 - `config` (ExtractionConfig | None): Extraction configuration. Uses defaults if None
 - `easyocr_kwargs` (dict | None): EasyOCR initialization options (languages, use_gpu, beam_width, etc.)
-
 
 **Returns:**
 
@@ -900,7 +896,6 @@ Strongly-typed metadata dictionary. Fields vary by document format.
 - `producer` (str): Document producer/generator
 - `subject` (str): Document subject/description
 - `title` (str): Document title
-
 
 **Excel-Specific Fields** (when `format_type == "excel"`):
 

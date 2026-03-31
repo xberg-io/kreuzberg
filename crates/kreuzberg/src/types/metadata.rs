@@ -65,6 +65,23 @@ pub enum FormatMetadata {
     #[cfg_attr(feature = "api", schema(value_type = HtmlMetadata))]
     Html(Box<HtmlMetadata>),
     Ocr(OcrMetadata),
+    Csv(CsvMetadata),
+    #[cfg(feature = "office")]
+    Bibtex(BibtexMetadata),
+    #[cfg(feature = "office")]
+    Citation(CitationMetadata),
+    #[cfg(feature = "office")]
+    FictionBook(FictionBookMetadata),
+    #[cfg(feature = "office")]
+    Dbf(DbfMetadata),
+    #[cfg(feature = "xml")]
+    Jats(JatsMetadata),
+    #[cfg(feature = "office")]
+    Epub(EpubMetadata),
+    Pst(PstMetadata),
+    #[cfg(feature = "tree-sitter")]
+    #[cfg_attr(feature = "api", schema(value_type = serde_json::Value))]
+    Code(tree_sitter_language_pack::ProcessResult),
 }
 
 /// Extraction result metadata.
@@ -530,8 +547,8 @@ impl HtmlMetadata {
 }
 
 #[cfg(feature = "html")]
-impl From<html_to_markdown_rs::ExtendedMetadata> for HtmlMetadata {
-    fn from(metadata: html_to_markdown_rs::ExtendedMetadata) -> Self {
+impl From<html_to_markdown_rs::HtmlMetadata> for HtmlMetadata {
+    fn from(metadata: html_to_markdown_rs::HtmlMetadata) -> Self {
         let text_dir = metadata.document.text_direction.map(|td| match td {
             html_to_markdown_rs::TextDirection::LeftToRight => TextDirection::LeftToRight,
             html_to_markdown_rs::TextDirection::RightToLeft => TextDirection::RightToLeft,
@@ -654,6 +671,12 @@ pub struct PptxMetadata {
     pub slide_count: usize,
     /// Names of slides (if available)
     pub slide_names: Vec<String>,
+    /// Number of embedded images
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub image_count: Option<usize>,
+    /// Number of tables
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub table_count: Option<usize>,
 }
 
 /// Word document metadata.
@@ -692,4 +715,141 @@ pub struct DocxMetadata {
     // numbering_catalog: OnceCell<Arc<NumberingCatalog>>, // Week 12-13: Numbering
     // sections: Vec<SectionProperties>,                 // Week 3-4: Section properties
     // document_settings: DocumentSettings,              // Week 11: Settings.xml
+}
+
+// ── Format-specific metadata structs (non-additional) ──────────────────
+
+/// CSV/TSV file metadata.
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
+pub struct CsvMetadata {
+    pub row_count: usize,
+    pub column_count: usize,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub delimiter: Option<String>,
+    pub has_header: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub column_types: Option<Vec<String>>,
+}
+
+/// BibTeX bibliography metadata.
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
+pub struct BibtexMetadata {
+    pub entry_count: usize,
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub citation_keys: Vec<String>,
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub authors: Vec<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub year_range: Option<YearRange>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub entry_types: Option<BTreeMap<String, usize>>,
+}
+
+/// Citation file metadata (RIS, PubMed, EndNote).
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
+pub struct CitationMetadata {
+    pub citation_count: usize,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub format: Option<String>,
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub authors: Vec<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub year_range: Option<YearRange>,
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub dois: Vec<String>,
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub keywords: Vec<String>,
+}
+
+/// Year range for bibliographic metadata.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
+pub struct YearRange {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub min: Option<u32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub max: Option<u32>,
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub years: Vec<u32>,
+}
+
+/// FictionBook (FB2) metadata.
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
+pub struct FictionBookMetadata {
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub genres: Vec<String>,
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub sequences: Vec<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub annotation: Option<String>,
+}
+
+/// dBASE (DBF) file metadata.
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
+pub struct DbfMetadata {
+    pub record_count: usize,
+    pub field_count: usize,
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub fields: Vec<DbfFieldInfo>,
+}
+
+/// dBASE field information.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
+pub struct DbfFieldInfo {
+    pub name: String,
+    pub field_type: String,
+}
+
+/// JATS (Journal Article Tag Suite) metadata.
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
+pub struct JatsMetadata {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub copyright: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub license: Option<String>,
+    #[serde(skip_serializing_if = "BTreeMap::is_empty", default)]
+    pub history_dates: BTreeMap<String, String>,
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub contributor_roles: Vec<ContributorRole>,
+}
+
+/// JATS contributor with role.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
+pub struct ContributorRole {
+    pub name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub role: Option<String>,
+}
+
+/// EPUB metadata (Dublin Core extensions).
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
+pub struct EpubMetadata {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub coverage: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub dc_format: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub relation: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub source: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub dc_type: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cover_image: Option<String>,
+}
+
+/// Outlook PST archive metadata.
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
+pub struct PstMetadata {
+    pub message_count: usize,
 }

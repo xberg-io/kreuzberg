@@ -27,14 +27,24 @@ allow = [
     "CC0-1.0",
     "CDLA-Permissive-2.0",
     "Unicode-3.0",
+    "Unicode-DFS-2016",
     "bzip2-1.0.6",
-    "MPL-2.0",
     "BSL-1.0",
     "OpenSSL",
     "NCSA",
 ]
 confidence-threshold = 0.8
-exceptions = []
+
+# Per-crate exceptions for copyleft licenses.
+# These are pinned to specific crates — nothing else can use these licenses.
+exceptions = [
+    # cbindgen: build-time C header generator, not linked into binaries
+    { allow = ["MPL-2.0"], crate = "cbindgen" },
+    # option-ext: tiny utility (transitive dep of cbindgen)
+    { allow = ["MPL-2.0"], crate = "option-ext" },
+    # r-efi: UEFI bindings, platform-specific transitive dep, never linked
+    { allow = ["LGPL-2.1-or-later"], crate = "r-efi" },
+]
 
 #[[licenses.clarify]]
 #{ path = "LICENSE", hash = 0xbd0eed23 }

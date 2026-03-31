@@ -22,7 +22,7 @@ Proposition A.2 (Gaussian Mechanism (Balle &amp; Wang, 2018)) . Suppose f : D �
 
 where Φ is the cdf of standard normal distribution.
 
-* Equal contribution 1 Microsoft 2 Work done as part of the Microsoft AI Residency Program. Correspondence to: Sivakanth Gopi &lt; sigopi@microsoft.com &gt; , Janardhan Kulkarni &lt; jakul@microsoft.com &gt; , Judy Hanwen Shen &lt; hashe@microsoft.com &gt; .
+- Equal contribution 1 Microsoft 2 Work done as part of the Microsoft AI Residency Program. Correspondence to: Sivakanth Gopi &lt; <sigopi@microsoft.com> &gt; , Janardhan Kulkarni &lt; <jakul@microsoft.com> &gt; , Judy Hanwen Shen &lt; <hashe@microsoft.com> &gt; .
 
 Proceedings of the 37 th International Conference on Machine Learning , Vienna, Austria, PMLR 119, 2020. Copyright 2020 by the author(s).
 
@@ -160,7 +160,7 @@ Input: H : Current histogram
 
 W : A subset of U of size at most ∆ 0
 
-```
+```text
 Output: H : Updated histogram for u in W do H[ u ] ← H[ u ] + 1 | W |
 ```
 
@@ -176,7 +176,7 @@ Proof. Proof is exactly the same as that of Theorem 3.1.
 
 Algorithm 2
 
-```
+```text
 GAUSSIAN weighted update Input: H : Current histogram W : A subset of U of size at most ∆ 0 Output: H : Updated histogram for u in W do H[ u ] ← H[ u ] + √ 1 | W | end for
 ```
 
@@ -202,7 +202,7 @@ In this section, we give a simple counter example to illustrate how the sensitiv
 
 ## Algorithm 3 GREEDY POLICY update
 
-```
+```text
 Input: H : Current histogram W : A subset of U of size at most ∆ 0 Γ : cutoff parameter Output: H : Updated histogram // Build cost dictionary G G = {} // Empty dictionary for u ∈ W do if H [ u ] < Γ then // Gap to cutoff for items below cutoff Γ G [ u ] ← Γ -H [ u ] end if end for budget ← 1 // Each user gets a total budget of 1 // Sort in increasing order of the gap Γ -H [ u ] G ← sort( G ) // Let u 1 , u 2 , . . . , u | G | be the sorted order for j = 1 to | G | do if G [ u j ] ≤ budget then H [ u j ] ← H [ u j ] + G [ u j ] budget ← budget G [ u j ] else H [ u j ] ← H [ u j ]+ budget break end if end for
 ```
 

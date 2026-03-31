@@ -2,7 +2,7 @@
 
 Martin Thoma
 
-E-Mail: info@martin-thoma.de
+E-Mail: <info@martin-thoma.de>
 
 Abstract -Recent machine learning techniques can be modified to produce creative results. Those results did not exist before; it is not a trivial combination of the data which was fed into the machine learning system. The obtained results come in multiple forms: As images, as text and as audio.
 
@@ -178,17 +178,17 @@ However, by now it is obvious that machine learning algorithms cannot compete wi
 
 ## REFERENCES
 
-- [Cop87] D. Cope, 'Experiments in music intelligence (emi),' 1987. [Online]. Available: http://hdl.handle.net/2027/spo.bbp2372.1987. 025
+- [Cop87] D. Cope, 'Experiments in music intelligence (emi),' 1987. [Online]. Available: <http://hdl.handle.net/2027/spo.bbp2372.1987>. 025
 - [Cop05] --, Computer models of musical creativity . MIT Press Cambridge, 2005.
-- [Cop12] --, 'Emily howell fugue,' YouTube, Oct. 2012. [Online]. Available: https://www.youtube.com/watch?v=jLRc uCwI
-- [Cop13] --, 'The well-programmed clavier: Style in computer music composition,' XRDS: Crossroads, The ACM Magazine for Students , vol. 19, no. 4, pp. 16-20, 2013. [Online]. Available: http://dl.acm.org/citation.cfm?id=2460444
-- [Cur14] A. Curtis, 'Now then,' BBC, Jul. 2014. [Online]. Available: http://www.bbc.co.uk/blogs/adamcurtis/entries/ 78691781-c9b7-30a0-9a0a-3ff76e8bfe58
+- [Cop12] --, 'Emily howell fugue,' YouTube, Oct. 2012. [Online]. Available: <https://www.youtube.com/watch?v=jLRc> uCwI
+- [Cop13] --, 'The well-programmed clavier: Style in computer music composition,' XRDS: Crossroads, The ACM Magazine for Students , vol. 19, no. 4, pp. 16-20, 2013. [Online]. Available: <http://dl.acm.org/citation.cfm?id=2460444>
+- [Cur14] A. Curtis, 'Now then,' BBC, Jul. 2014. [Online]. Available: <http://www.bbc.co.uk/blogs/adamcurtis/entries/> 78691781-c9b7-30a0-9a0a-3ff76e8bfe58
 - [Gad06] A. Gadsby, Ed., Dictionary of Contemporary English . Pearson Education Limited, 2006.
-- [GEB15] L. A. Gatys, A. S. Ecker, and M. Bethge, 'A neural algorithm of artistic style,' arXiv preprint arXiv:1508.06576 , 2015. [Online]. Available: http://arxiv.org/abs/1508.06576
-- [goo15] 'Inceptionism: Going deeper into neural networks,' Google Photos, Jun. 2015. [Online]. Available: https://goo.gl/Bydofw
-- [HS97] S. Hochreiter and J. Schmidhuber, 'Long short-term memory,' Neural computation , vol. 9, no. 8, pp. 1735-1780, 1997. [Online]. Available: http://ieeexplore.ieee.org/xpl/freeabs all.jsp? arnumber=6795963
-- [hut] '50'000 euro prize for compressing human knowledge.' [Online]. Available: http://prize.hutter1.net/
-- [HZRS15] K. He, X. Zhang, S. Ren, and J. Sun, 'Deep residual learning for image recognition,' arXiv preprint arXiv:1512.03385 , 2015. [Online]. Available: http://arxiv.org/abs/1512.03385
+- [GEB15] L. A. Gatys, A. S. Ecker, and M. Bethge, 'A neural algorithm of artistic style,' arXiv preprint arXiv:1508.06576 , 2015. [Online]. Available: <http://arxiv.org/abs/1508.06576>
+- [goo15] 'Inceptionism: Going deeper into neural networks,' Google Photos, Jun. 2015. [Online]. Available: <https://goo.gl/Bydofw>
+- [HS97] S. Hochreiter and J. Schmidhuber, 'Long short-term memory,' Neural computation , vol. 9, no. 8, pp. 1735-1780, 1997. [Online]. Available: <http://ieeexplore.ieee.org/xpl/freeabs> all.jsp? arnumber=6795963
+- [hut] '50'000 euro prize for compressing human knowledge.' [Online]. Available: <http://prize.hutter1.net/>
+- [HZRS15] K. He, X. Zhang, S. Ren, and J. Sun, 'Deep residual learning for image recognition,' arXiv preprint arXiv:1512.03385 , 2015. [Online]. Available: <http://arxiv.org/abs/1512.03385>
 
 [Joh15a]
 
@@ -200,34 +200,35 @@ However, by now it is obvious that machine learning algorithms cannot compete wi
 
 D. Johnson, 'Biaxial recurrent neural network for music composition,' GitHub, Aug. 2015. [Online]. Available: https: //github.com/hexahedria/biaxial-rnn-music-composition
 
---, 'Composing music with recurrent neural networks,' Personal Blog, Aug. 2015. [Online]. Available: http://www.hexahedria.com/2015/08/03/ composing-music-with-recurrent-neural-networks/
+--, 'Composing music with recurrent neural networks,' Personal Blog, Aug. 2015. [Online]. Available: <http://www.hexahedria.com/2015/08/03/> composing-music-with-recurrent-neural-networks/
 
-J. Johnson, 'neural-style,' GitHub, Jan. 2016. [Online]. Available: https://github.com/jcjohnson/neural-style
+J. Johnson, 'neural-style,' GitHub, Jan. 2016. [Online]. Available: <https://github.com/jcjohnson/neural-style>
 
-- A. Karpathy, 'char-rnn,' GitHub, Nov. 2015. [Online]. Available: https://github.com/karpathy/char-rnn
-2. [Kar15b] --, 'The unreasonable effectiveness of recurrent neural networks,' Personal Blog, May 2015. [Online]. Available: http://karpathy.github.io/2015/05/21/rnn-effectiveness/
+- A. Karpathy, 'char-rnn,' GitHub, Nov. 2015. [Online]. Available: <https://github.com/karpathy/char-rnn>
+
+2. [Kar15b] --, 'The unreasonable effectiveness of recurrent neural networks,' Personal Blog, May 2015. [Online]. Available: <http://karpathy.github.io/2015/05/21/rnn-effectiveness/>
 3. [KMN + 02] T. Kanungo, D. Mount, N. Netanyahu, C. Piatko, R. Silverman, and A. Wu, 'An efficient k-means clustering algorithm: analysis and implementation,' Pattern Analysis and Machine Intelligence, IEEE Transactions on , vol. 24, no. 7, pp. 881-892, Jul 2002.
 4. [Mit97] T. M. Mitchell, Machine learning , ser. McGraw Hill series in computer science. McGraw-Hill, 1997.
 
-[MOT15] A. Mordvintsev, C. Olah, and M. Tyka, 'Inceptionism: Going deeper into neural networks,' googleresearch.blogspot.co.uk, Jun. 2015. [Online]. Available: http://googleresearch.blogspot.de/ 2015/06/inceptionism-going-deeper-into-neural.html
+[MOT15] A. Mordvintsev, C. Olah, and M. Tyka, 'Inceptionism: Going deeper into neural networks,' googleresearch.blogspot.co.uk, Jun. 2015. [Online]. Available: <http://googleresearch.blogspot.de/> 2015/06/inceptionism-going-deeper-into-neural.html
 
 [Nie15]
 
-- M. A. Nielsen, Neural Networks and Deep Learning . Determination Press, 2015. [Online]. Available: http://neuralnetworksanddeeplearning.com/chap6.html# introducing convolutional networks
+- M. A. Nielsen, Neural Networks and Deep Learning . Determination Press, 2015. [Online]. Available: <http://neuralnetworksanddeeplearning.com/chap6.html#> introducing convolutional networks
 
 [NV15]
 
-A. Nayebi and M. Vitelli, 'GRUV: Algorithmic music generation using recurrent neural networks,' 2015. [Online]. Available: http://cs224d.stanford.edu/reports/NayebiAran.pdf
+A. Nayebi and M. Vitelli, 'GRUV: Algorithmic music generation using recurrent neural networks,' 2015. [Online]. Available: <http://cs224d.stanford.edu/reports/NayebiAran.pdf>
 
 - [Red] 'Deepdream,' Reddit. [Online]. Available: com/r/deepdream/
 
 [Shi14]
 
-https://www.reddit.
+<https://www.reddit>.
 
-Y. Shih, 'Style transfer for headshot portraits,' YouTube, Jun. 2014. [Online]. Available: https://www.youtube.com/watch?v= Hj5lGFzlubU
+Y. Shih, 'Style transfer for headshot portraits,' YouTube, Jun. 2014. [Online]. Available: <https://www.youtube.com/watch?v=> Hj5lGFzlubU
 
-- [SPB + 14] Y. Shih, S. Paris, C. Barnes, W. T. Freeman, and F. Durand, 'Style transfer for headshot portraits,' ACM Transactions on Graphics (TOG) , vol. 33, no. 4, p. 148, 2014. [Online]. Available: http://dl.acm.org/citation.cfm?id=2601137
+- [SPB + 14] Y. Shih, S. Paris, C. Barnes, W. T. Freeman, and F. Durand, 'Style transfer for headshot portraits,' ACM Transactions on Graphics (TOG) , vol. 33, no. 4, p. 148, 2014. [Online]. Available: <http://dl.acm.org/citation.cfm?id=2601137>
 
 [TL05]
 
@@ -235,13 +236,13 @@ P. Tresset and F. F. Leymarie, 'Generative portrait sketching,' in Proceedings o
 
 [Vit15]
 
-M. Vitelli, 'Algorithmic music generation with recurrent neural networks,' YouTube, Jun. 2015. [Online]. Available: https://youtu.be/0VTI1BBLydE
+M. Vitelli, 'Algorithmic music generation with recurrent neural networks,' YouTube, Jun. 2015. [Online]. Available: <https://youtu.be/0VTI1BBLydE>
 
-- [VKMT13] C. Vondrick, A. Khosla, T. Malisiewicz, and A. Torralba, 'Hoggles: Visualizing object detection features,' in Computer Vision (ICCV), 2013 IEEE International Conference on . IEEE, 2013, pp. 1-8. [Online]. Available: http://ieeexplore.ieee.org/ xpls/abs all.jsp?arnumber=6751109
+- [VKMT13] C. Vondrick, A. Khosla, T. Malisiewicz, and A. Torralba, 'Hoggles: Visualizing object detection features,' in Computer Vision (ICCV), 2013 IEEE International Conference on . IEEE, 2013, pp. 1-8. [Online]. Available: <http://ieeexplore.ieee.org/> xpls/abs all.jsp?arnumber=6751109
 
 [VL15]
 
-O. Vinyals and Q. Le, 'A neural conversational model,' arXiv preprint arXiv:1506.05869 , Jul. 2015. [Online]. Available: http://arxiv.org/abs/1506.05869v2
+O. Vinyals and Q. Le, 'A neural conversational model,' arXiv preprint arXiv:1506.05869 , Jul. 2015. [Online]. Available: <http://arxiv.org/abs/1506.05869v2>
 
 [VN15]
 
@@ -249,7 +250,7 @@ O. Vinyals and Q. Le, 'A neural conversational model,' arXiv preprint arXiv:1506
 
 [ZF14]
 
-- M. Vitelli and A. Nayebi, 'GRUV,' Aug. 2015. [Online]. Available: https://github.com/MattVitelli/GRUV
+- M. Vitelli and A. Nayebi, 'GRUV,' Aug. 2015. [Online]. Available: <https://github.com/MattVitelli/GRUV>
 - J. Weizenbaum, Computer Power and Human Reason: From Judgement to Calculation . W.H.Freeman &amp; Co Ltd, 1976.
 
 M. D. Zeiler and R. Fergus, 'Visualizing and understanding convolutional networks,' in Computer Vision-ECCV 2014 . Springer, 2014, pp. 818-833.
@@ -262,27 +263,27 @@ The following texts were generated by [Kar15a] and published by Karpathy on [Kar
 
 ## A. Shakespeare
 
-## PANDARUS:
+## PANDARUS
 
 Alas, I think he shall be come approached and the day When little srain would be attain'd into being never fed, And who is but a chain and subjects of his death, I should not sleep.
 
-## Second Senator:
+## Second Senator
 
 They are away this miseries, produced upon my soul, Breaking and strongly should be buried, when I perish The earth and thoughts of many states.
 
-## DUKE VINCENTIO:
+## DUKE VINCENTIO
 
 Well, your wit is in the care of side and that.
 
-## Second Lord:
+## Second Lord
 
 They would be ruled after this chamber, and my fair nues begun out of the fact, to be conveyed, Whose noble souls I'll have the heart of the wars.
 
-## Clown:
+## Clown
 
 Come, sir, I will make did behold your worship.
 
-## VIOLA:
+## VIOLA
 
 I'll drink it.
 
@@ -290,7 +291,7 @@ I'll drink it.
 
 Naturalism and decision for the majority of Arab countries' capitalide was grounded by the Irish language by [[John Clair]], [[An Imperial Japanese Revolt]], associated with Guangzham's sovereignty. His generals were the powerful ruler of the Portugal in the [[Protestant Immineners]], which could be said to be directly in Cantonese Communication, which followed a ceremony and set inspired prison, training. The emperor travelled back to [[Antioch, Perth, October 25|21]] to note, the Kingdom of Costa Rica, unsuccessful fashioned the [[Thrales]], [[Cynth's Dajoard]], known in western [[Scotland]], near Italy to the conquest of India with the conflict. Copyright was the succession of independence in the slop of Syrian influence that was a famous German movement based on a more popular servicious, non-doctrinal and sexual power post. Many governments recognize the military housing of the [[Civil Liberalization and Infantry Resolution 265 National Party in Hungary]], that is sympathetic to be to the [[Punjab Resolution]]
 
-(PJS)[http://www.humah.yahoo.com/guardian.
+(PJS)[<http://www.humah.yahoo.com/guardian>.
 
 cfm/7754800786d17551963s89.htm Official economics Adjoint for the Nazism, Montgomery was swear to advance to the resources for those Socialism's rule, was starting to signing a major tripad of aid exile.]]
 
@@ -298,10 +299,10 @@ cfm/7754800786d17551963s89.htm Official economics Adjoint for the Nazism, Montgo
 
 /*
 
-```
+```text
 * Increment the size file of the new incorrect UI_FILTER group information * of the size generatively. */ static int indicate_policy(void) { int error; if (fd == MARN_EPT) { /* * The kernel blank will coeld it to userspace. */ if (ss->segment < mem_total) unblock_graph_and_set_blocked(); else ret = 1; goto bail; } segaddr = in_SB(in.addr); selector = seg / 16; setup_works = true; for (i = 0; i < blocks; i++) { seq = buf[i++]; bpf = bd->bd.next + i * search; if (fd) { current = blocked; } } rw->name = "Getjbbregs"; bprm_self_clearl(&iv->version); regs->new = blocks[(BPF_STATS << info->historidac)] | PFMR_CLOBATHINC_SECONDS << 12; return segtable; } D. Linux Code, 2 /* * Copyright (c) 2006-2010, Intel Mobile Communications. All rights reserved. * * This program is free software; you can redistribute it and/or modify it * under the terms of the GNU General Public License version 2 as published by * the Free Software Foundation. * * This program is distributed in the hope that it will be useful, * but WITHOUT ANY WARRANTY; without even the implied warranty of * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the * * GNU General Public License for more details. * * You should have received a copy of the GNU General Public License * along with this program; if not, write to the Free Software Foundation, * Inc., 675 Mass Ave, Cambridge, MA 02139, USA. */ #include <linux/kexec.h> #include <linux/errno.h> #include <linux/io.h> #include <linux/platform_device.h> #include <linux/multi.h>
 ```
 
-```
+```text
 #include <linux/ckevent.h> #include <asm/io.h> #include <asm/prom.h> #include <asm/e820.h> #include <asm/system_info.h> #include <asm/setew.h> #include <asm/pgproto.h> #define REG_PG vesa_slot_addr_pack #define PFM_NOCOMP AFSR(0, load) #define STACK_DDR(type) (func) #define SWAP_ALLOCATE(nr) (e) #define emulate_sigs() arch_get_unaligned_child() #define access_rw(TST) asm volatile("movd %%esp, %0, %3" : : "r" (0)); \ if (__type & DO_READ) static void stat_PC_SEC __read_mostly offsetof(struct seq_argsqueue, \ pC>[1]); static void os_prefix(unsigned long sys) { #ifdef CONFIG_PREEMPT PUT_PARAM_RAID(2, sel) = get_state_state(); set_pid_sum((unsigned long)state, current_state_str(), (unsigned long)-1->lr_full; low; }
 ```

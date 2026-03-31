@@ -9,73 +9,22 @@
 //! - Paragraphs and text content with inline formatting
 //! - Inline markup: emphasis, strong, strikethrough, subscript, superscript, code
 //! - Blockquotes and notes
+//! - Embedded images from `<binary>` elements (base64-encoded)
+//! - Hyperlinks from `<a>` elements
 
 use crate::Result;
 use crate::core::config::ExtractionConfig;
-use crate::extraction::{cells_to_markdown, cells_to_text};
+use crate::extraction::cells_to_markdown;
 use crate::plugins::{DocumentExtractor, Plugin};
-use crate::types::{ExtractionResult, Metadata, Table};
+use crate::types::internal::InternalDocument;
+use crate::types::internal_builder::InternalDocumentBuilder;
+use crate::types::uri::Uri;
+use crate::types::{ExtractedImage, Metadata, Table};
 use async_trait::async_trait;
+use base64::Engine;
+use bytes::Bytes;
 use quick_xml::Reader;
 use quick_xml::events::Event;
-
-const HORIZONTAL_RULE: &str = "------------------------------------------------------------------------";
-
-/// Convert a character to its Unicode superscript equivalent, if available.
-fn char_to_superscript(c: char) -> Option<char> {
-    match c {
-        '0' => Some('\u{2070}'),
-        '1' => Some('\u{00B9}'),
-        '2' => Some('\u{00B2}'),
-        '3' => Some('\u{00B3}'),
-        '4' => Some('\u{2074}'),
-        '5' => Some('\u{2075}'),
-        '6' => Some('\u{2076}'),
-        '7' => Some('\u{2077}'),
-        '8' => Some('\u{2078}'),
-        '9' => Some('\u{2079}'),
-        '+' => Some('\u{207A}'),
-        '-' => Some('\u{207B}'),
-        '=' => Some('\u{207C}'),
-        '(' => Some('\u{207D}'),
-        ')' => Some('\u{207E}'),
-        'n' => Some('\u{207F}'),
-        'i' => Some('\u{2071}'),
-        _ => None,
-    }
-}
-
-/// Convert a character to its Unicode subscript equivalent, if available.
-fn char_to_subscript(c: char) -> Option<char> {
-    match c {
-        '0' => Some('\u{2080}'),
-        '1' => Some('\u{2081}'),
-        '2' => Some('\u{2082}'),
-        '3' => Some('\u{2083}'),
-        '4' => Some('\u{2084}'),
-        '5' => Some('\u{2085}'),
-        '6' => Some('\u{2086}'),
-        '7' => Some('\u{2087}'),
-        '8' => Some('\u{2088}'),
-        '9' => Some('\u{2089}'),
-        '+' => Some('\u{208A}'),
-        '-' => Some('\u{208B}'),
-        '=' => Some('\u{208C}'),
-        '(' => Some('\u{208D}'),
-        ')' => Some('\u{208E}'),
-        _ => None,
-    }
-}
-
-/// Convert a string to Unicode superscript characters where possible.
-fn to_superscript(s: &str) -> String {
-    s.chars().map(|c| char_to_superscript(c).unwrap_or(c)).collect()
-}
-
-/// Convert a string to Unicode subscript characters where possible.
-fn to_subscript(s: &str) -> String {
-    s.chars().map(|c| char_to_subscript(c).unwrap_or(c)).collect()
-}
 
 /// Resolve an XML entity reference name to its character(s).
 fn resolve_entity(name: &str) -> Option<&'static str> {
@@ -124,154 +73,6 @@ impl Default for FictionBookExtractor {
 impl FictionBookExtractor {
     pub fn new() -> Self {
         Self
-    }
-
-    /// Extract paragraph content with optional markdown formatting preservation.
-    /// When `plain` is true, skips most inline formatting markers but keeps
-    /// strikethrough and converts sub/superscript to Unicode.
-    fn extract_paragraph_content(reader: &mut Reader<&[u8]>, plain: bool) -> Result<String> {
-        let mut text = String::new();
-        let mut depth = 0;
-        let mut in_sub = false;
-        let mut in_sup = false;
-        let mut sub_buf = String::new();
-        let mut sup_buf = String::new();
-        let mut last_was_open_marker = false;
-
-        loop {
-            match reader.read_event() {
-                Ok(Event::Start(e)) => {
-                    let name = e.name();
-                    let tag = crate::utils::xml_tag_name(name.as_ref());
-                    depth += 1;
-                    match tag.as_ref() {
-                        "emphasis" if !plain => {
-                            text.push('*');
-                            last_was_open_marker = true;
-                        }
-                        "strong" if !plain => {
-                            text.push_str("**");
-                            last_was_open_marker = true;
-                        }
-                        "strikethrough" => {
-                            text.push_str("~~");
-                            last_was_open_marker = true;
-                        }
-                        "code" if !plain => {
-                            text.push('`');
-                            last_was_open_marker = true;
-                        }
-                        "sub" if plain => {
-                            in_sub = true;
-                            sub_buf.clear();
-                        }
-                        "sup" if plain => {
-                            in_sup = true;
-                            sup_buf.clear();
-                        }
-                        "sub" => {
-                            text.push('~');
-                            last_was_open_marker = true;
-                        }
-                        "sup" => {
-                            text.push('^');
-                            last_was_open_marker = true;
-                        }
-                        _ => {}
-                    }
-                }
-                Ok(Event::End(e)) => {
-                    let name = e.name();
-                    let tag = crate::utils::xml_tag_name(name.as_ref());
-                    if tag == "p" && depth <= 1 {
-                        break;
-                    }
-                    last_was_open_marker = false;
-                    match tag.as_ref() {
-                        "emphasis" if !plain => text.push('*'),
-                        "strong" if !plain => text.push_str("**"),
-                        "strikethrough" => text.push_str("~~"),
-                        "code" if !plain => text.push('`'),
-                        "sub" if plain => {
-                            in_sub = false;
-                            text.push_str(&to_subscript(&sub_buf));
-                        }
-                        "sup" if plain => {
-                            in_sup = false;
-                            text.push_str(&to_superscript(&sup_buf));
-                        }
-                        "sub" => text.push('~'),
-                        "sup" => text.push('^'),
-                        _ => {}
-                    }
-                    if depth > 0 {
-                        depth -= 1;
-                    }
-                }
-                Ok(Event::Text(t)) => {
-                    let decoded = String::from_utf8_lossy(t.as_ref()).to_string();
-                    let had_leading_space = decoded.starts_with(char::is_whitespace);
-                    let had_trailing_space = decoded.ends_with(char::is_whitespace);
-                    let normalized = crate::utils::normalize_whitespace(&decoded);
-                    let trimmed = normalized.as_ref();
-                    if !trimmed.is_empty() {
-                        if in_sub {
-                            sub_buf.push_str(trimmed);
-                        } else if in_sup {
-                            sup_buf.push_str(trimmed);
-                        } else {
-                            let starts_with_punct = trimmed.starts_with(['.', ',', ';', ':', '!', '?', ')', ']', '[']);
-                            let needs_space = !text.is_empty()
-                                && !text.ends_with(' ')
-                                && !last_was_open_marker
-                                && !starts_with_punct
-                                && (had_leading_space
-                                    || !text.ends_with(|c: char| {
-                                        c == '&'
-                                            || c == '<'
-                                            || c == '>'
-                                            || c == '"'
-                                            || c == '\''
-                                            || ('\u{2070}'..='\u{209F}').contains(&c)
-                                            || c == '\u{00B9}'
-                                            || c == '\u{00B2}'
-                                            || c == '\u{00B3}'
-                                    }));
-                            if needs_space {
-                                text.push(' ');
-                            }
-                            text.push_str(trimmed);
-                            if had_trailing_space && !text.ends_with(' ') {
-                                text.push(' ');
-                            }
-                        }
-                        last_was_open_marker = false;
-                    }
-                }
-                Ok(Event::GeneralRef(r)) => {
-                    let resolved = resolve_general_ref(r.as_ref());
-                    if !resolved.is_empty() {
-                        if in_sub {
-                            sub_buf.push_str(&resolved);
-                        } else if in_sup {
-                            sup_buf.push_str(&resolved);
-                        } else {
-                            text.push_str(&resolved);
-                        }
-                    }
-                }
-                Ok(Event::Eof) => break,
-                Err(e) => {
-                    return Err(crate::error::KreuzbergError::parsing(format!(
-                        "XML parsing error: {}",
-                        e
-                    )));
-                }
-                _ => {}
-            }
-        }
-
-        Ok(text.trim().to_string())
     }
 
     /// Extract text content from a FictionBook element and its children.
@@ -355,99 +156,6 @@ impl FictionBookExtractor {
             .join("\n");
 
         Ok(text)
-    }
-
-    /// Extract a table from FB2 `<table>` element.
-    /// FB2 tables use `<tr>` for rows and `<td>`/`<th>` for cells.
-    fn extract_table(reader: &mut Reader<&[u8]>) -> Result<Vec<Vec<String>>> {
-        let mut table: Vec<Vec<String>> = Vec::new();
-        let mut current_row: Vec<String> = Vec::new();
-        let mut in_row = false;
-        let mut table_depth = 1;
-
-        loop {
-            match reader.read_event() {
-                Ok(Event::Start(e)) => {
-                    let name = e.name();
-                    let tag = crate::utils::xml_tag_name(name.as_ref());
-                    match tag.as_ref() {
-                        "table" => table_depth += 1,
-                        "tr" => {
-                            in_row = true;
-                            current_row.clear();
-                        }
-                        "td" | "th" if in_row => {
-                            let cell_text = Self::extract_text_content(reader)?;
-                            current_row.push(cell_text);
-                        }
-                        _ => {}
-                    }
-                }
-                Ok(Event::End(e)) => {
-                    let name = e.name();
-                    let tag = crate::utils::xml_tag_name(name.as_ref());
-                    match tag.as_ref() {
-                        "table" => {
-                            table_depth -= 1;
-                            if table_depth == 0 {
-                                break;
-                            }
-                        }
-                        "tr" if in_row => {
-                            if !current_row.is_empty() {
-                                table.push(std::mem::take(&mut current_row));
-                            }
-                            in_row = false;
-                        }
-                        _ => {}
-                    }
-                }
-                Ok(Event::Eof) => break,
-                Err(e) => {
-                    return Err(crate::error::KreuzbergError::parsing(format!(
-                        "XML parsing error in table: {}",
-                        e
-                    )));
-                }
-                _ => {}
-            }
-        }
-
-        Ok(table)
-    }
-
-    /// Extract all tables from FictionBook body for the `tables` field in ExtractionResult.
-    fn extract_tables_from_body(data: &[u8]) -> Result<Vec<Table>> {
-        let mut reader = Reader::from_reader(data);
-        let mut tables = Vec::new();
-        let mut table_index = 0;
-
-        loop {
-            match reader.read_event() {
-                Ok(Event::Start(e)) => {
-                    let name = e.name();
-                    let tag = crate::utils::xml_tag_name(name.as_ref());
-                    if tag == "table"
-                        && let Ok(cells) = Self::extract_table(&mut reader)
-                        && !cells.is_empty()
-                    {
-                        let markdown = cells_to_markdown(&cells);
-                        tables.push(Table {
-                            cells,
-                            markdown,
-                            page_number: table_index + 1,
-                            bounding_box: None,
-                        });
-                        table_index += 1;
-                    }
-                }
-                Ok(Event::Eof) => break,
-                Err(_) => break,
-                _ => {}
-            }
-        }
-
-        Ok(tables)
     }
 
     /// Extract metadata from FictionBook document.
@@ -680,157 +388,34 @@ impl FictionBookExtractor {
 
         if !genres.is_empty() {
             metadata.subject = Some(genres.join(", "));
-            additional.insert(std::borrow::Cow::Borrowed("genres"), serde_json::json!(genres));
-        }
-
-        if !sequences.is_empty() {
-            additional.insert(std::borrow::Cow::Borrowed("sequences"), serde_json::json!(sequences));
         }
 
         if !authors.is_empty() {
             metadata.authors = Some(authors);
         }
 
-        if !annotation_text.is_empty() {
-            additional.insert(
-                std::borrow::Cow::Borrowed("annotation"),
-                serde_json::json!(annotation_text),
-            );
-        }
+        let fb_metadata = crate::types::metadata::FictionBookMetadata {
+            genres,
+            sequences,
+            annotation: if annotation_text.is_empty() {
+                None
+            } else {
+                Some(annotation_text)
+            },
+        };
+        metadata.format = Some(crate::types::metadata::FormatMetadata::FictionBook(fb_metadata));
 
         metadata.additional = additional;
 
         Ok(metadata)
     }
 
-    /// Extract content from FictionBook document body sections.
-    fn extract_body_content(data: &[u8], plain: bool) -> Result<String> {
-        let mut reader = Reader::from_reader(data);
-        let mut content = String::new();
-        let mut in_body = false;
-        let mut is_notes_body = false;
-        let mut footnotes = Vec::new();
-
-        loop {
-            match reader.read_event() {
-                Ok(Event::Start(e)) => {
-                    let name = e.name();
-                    let tag = crate::utils::xml_tag_name(name.as_ref());
-
-                    if tag == "body" {
-                        let mut is_notes = false;
-                        for a in e.attributes().flatten() {
-                            let attr_name = String::from_utf8_lossy(a.key.as_ref());
-                            if attr_name == "name" {
-                                let val = String::from_utf8_lossy(a.value.as_ref());
-                                if val == "notes" {
-                                    is_notes = true;
-                                    break;
-                                }
-                            }
-                        }
-                        if is_notes {
-                            is_notes_body = true;
-                        } else {
-                            in_body = true;
-                        }
-                    } else if tag == "section" && is_notes_body {
-                        // Extract footnote from notes body
-                        if let Ok(note) = Self::extract_footnote_section(&mut reader, plain)
-                            && !note.is_empty()
-                        {
-                            footnotes.push(note);
-                        }
-                    } else if tag == "section" && in_body {
-                        match Self::extract_section_content(&mut reader, plain) {
-                            Ok(section_content) if !section_content.is_empty() => {
-                                if !content.is_empty() && !content.ends_with("\n\n") {
-                                    content.push('\n');
-                                }
-                                content.push_str(&section_content);
-                                content.push('\n');
-                            }
-                            _ => {}
-                        }
-                    } else if tag == "poem" && in_body {
-                        match Self::extract_poem_content(&mut reader, plain) {
-                            Ok(poem_content) if !poem_content.is_empty() => {
-                                if !content.is_empty() && !content.ends_with("\n\n") {
-                                    content.push('\n');
-                                }
-                                content.push_str(&poem_content);
-                                content.push('\n');
-                            }
-                            _ => {}
-                        }
-                    } else if tag == "p" && in_body {
-                        match Self::extract_paragraph_content(&mut reader, plain) {
-                            Ok(para) if !para.is_empty() => {
-                                content.push_str(&para);
-                                content.push_str("\n\n");
-                            }
-                            _ => {}
-                        }
-                    } else if tag == "title" && in_body {
-                        match Self::extract_text_content(&mut reader) {
-                            Ok(title_content) if !title_content.is_empty() => {
-                                if plain {
-                                    content.push_str(&format!("{}\n\n", title_content));
-                                } else {
-                                    content.push_str(&format!("# {}\n\n", title_content));
-                                }
-                            }
-                            _ => {}
-                        }
-                    }
-                }
-                Ok(Event::Empty(e)) => {
-                    let name = e.name();
-                    let tag = crate::utils::xml_tag_name(name.as_ref());
-                    if tag == "empty-line" && in_body {
-                        content.push_str(HORIZONTAL_RULE);
-                        content.push_str("\n\n");
-                    }
-                }
-                Ok(Event::End(e)) => {
-                    let name = e.name();
-                    let tag = crate::utils::xml_tag_name(name.as_ref());
-                    if tag == "body" {
-                        if is_notes_body {
-                            is_notes_body = false;
-                        } else {
-                            in_body = false;
-                        }
-                    }
-                }
-                Ok(Event::Eof) => break,
-                Err(_) => break,
-                _ => {}
-            }
-        }
-
-        // Append footnotes at the end
-        if !footnotes.is_empty() {
-            if !content.ends_with('\n') {
-                content.push('\n');
-            }
-            for note in &footnotes {
-                content.push_str(note);
-                content.push('\n');
-            }
-        }
-
-        Ok(content.trim().to_string())
-    }
-
-    /// Extract a footnote section from the notes body.
-    fn extract_footnote_section(reader: &mut Reader<&[u8]>, plain: bool) -> Result<String> {
-        let mut text = String::new();
-        let mut section_depth = 1;
-        let mut note_id = String::new();
-
-        // Try to get the note ID from the section attributes (already consumed by caller)
-        // We'll just extract the content
+    /// Extract a single table from the XML reader (positioned just after `<table>`).
+    fn extract_table(reader: &mut Reader<&[u8]>) -> Result<Vec<Vec<String>>> {
+        let mut table: Vec<Vec<String>> = Vec::new();
+        let mut current_row: Vec<String> = Vec::new();
+        let mut in_row = false;
+        let mut table_depth = 1;
 
         loop {
             match reader.read_event() {
@@ -838,23 +423,14 @@ impl FictionBookExtractor {
                     let name = e.name();
                     let tag = crate::utils::xml_tag_name(name.as_ref());
                     match tag.as_ref() {
-                        "section" => section_depth += 1,
-                        "title" => {
-                            if let Ok(title) = Self::extract_text_content(reader)
-                                && !title.is_empty()
-                            {
-                                note_id = title;
-                            }
+                        "table" => table_depth += 1,
+                        "tr" => {
+                            in_row = true;
+                            current_row.clear();
                         }
-                        "p" => {
-                            if let Ok(para) = Self::extract_paragraph_content(reader, plain)
-                                && !para.is_empty()
-                            {
-                                if !text.is_empty() {
-                                    text.push(' ');
-                                }
-                                text.push_str(&para);
-                            }
+                        "td" | "th" if in_row => {
+                            let cell_text = Self::extract_text_content(reader)?;
+                            current_row.push(cell_text);
                         }
                         _ => {}
                     }
@@ -862,407 +438,146 @@ impl FictionBookExtractor {
                 Ok(Event::End(e)) => {
                     let name = e.name();
                     let tag = crate::utils::xml_tag_name(name.as_ref());
-                    if tag == "section" {
-                        section_depth -= 1;
-                        if section_depth == 0 {
-                            break;
-                        }
-                    }
-                }
-                Ok(Event::Eof) => break,
-                Err(_) => break,
-                _ => {}
-            }
-        }
-
-        if text.is_empty() {
-            return Ok(String::new());
-        }
-
-        if !note_id.is_empty() {
-            Ok(format!("[{}] {}", note_id, text))
-        } else {
-            Ok(text)
-        }
-    }
-
-    /// Extract content from a poem element.
-    fn extract_poem_content(reader: &mut Reader<&[u8]>, plain: bool) -> Result<String> {
-        let mut content = String::new();
-        let mut poem_depth = 1;
-
-        loop {
-            match reader.read_event() {
-                Ok(Event::Start(e)) => {
-                    let name = e.name();
-                    let tag = crate::utils::xml_tag_name(name.as_ref());
-
                     match tag.as_ref() {
-                        "poem" => {
-                            poem_depth += 1;
-                        }
-                        "title" => match Self::extract_text_content(reader) {
-                            Ok(title_text) if !title_text.is_empty() => {
-                                if plain {
-                                    content.push_str(&format!("{}\n\n", title_text));
-                                } else {
-                                    content.push_str(&format!("# {}\n\n", title_text));
-                                }
-                            }
-                            _ => {}
-                        },
-                        "epigraph" => match Self::extract_text_content(reader) {
-                            Ok(epigraph_text) if !epigraph_text.is_empty() => {
-                                if !plain {
-                                    content.push_str("> ");
-                                }
-                                content.push_str(&epigraph_text);
-                                content.push_str("\n\n");
-                            }
-                            _ => {}
-                        },
-                        "stanza" => match Self::extract_stanza_content(reader, plain) {
-                            Ok(stanza_text) if !stanza_text.is_empty() => {
-                                content.push_str(&stanza_text);
-                                content.push_str("\n\n");
-                            }
-                            _ => {}
-                        },
-                        "text-author" => match Self::extract_text_content(reader) {
-                            Ok(author) if !author.is_empty() => {
-                                content.push_str(&author);
-                                content.push_str("\n\n");
-                            }
-                            _ => {}
-                        },
-                        "date" => match Self::extract_text_content(reader) {
-                            Ok(date) if !date.is_empty() => {
-                                content.push_str(&date);
-                                content.push_str("\n\n");
-                            }
-                            _ => {}
-                        },
-                        "p" => match Self::extract_paragraph_content(reader, plain) {
-                            Ok(para) if !para.is_empty() => {
-                                content.push_str(&para);
-                                content.push_str("\n\n");
-                            }
-                            _ => {}
-                        },
-                        _ => {}
-                    }
-                }
-                Ok(Event::End(e)) => {
-                    let name = e.name();
-                    let tag = crate::utils::xml_tag_name(name.as_ref());
-                    if tag == "poem" {
-                        poem_depth -= 1;
-                        if poem_depth == 0 {
-                            break;
-                        }
-                    }
-                }
-                Ok(Event::Eof) => break,
-                Err(_) => break,
-                _ => {}
-            }
-        }
-
-        Ok(content.trim().to_string())
-    }
-
-    /// Extract a single verse line (content of <v> tag).
-    fn extract_verse_line(reader: &mut Reader<&[u8]>, plain: bool) -> Result<String> {
-        let mut text = String::new();
-        let mut depth = 0;
-        let mut in_sub = false;
-        let mut in_sup = false;
-        let mut sub_buf = String::new();
-        let mut sup_buf = String::new();
-        let mut last_was_open_marker = false;
-
-        loop {
-            match reader.read_event() {
-                Ok(Event::Start(e)) => {
-                    let name = e.name();
-                    let tag = crate::utils::xml_tag_name(name.as_ref());
-                    depth += 1;
-                    match tag.as_ref() {
-                        "emphasis" if !plain => {
-                            text.push('*');
-                            last_was_open_marker = true;
-                        }
-                        "strong" if !plain => {
-                            text.push_str("**");
-                            last_was_open_marker = true;
-                        }
-                        "strikethrough" => {
-                            text.push_str("~~");
-                            last_was_open_marker = true;
-                        }
-                        "code" if !plain => {
-                            text.push('`');
-                            last_was_open_marker = true;
-                        }
-                        "sub" if plain => {
-                            in_sub = true;
-                            sub_buf.clear();
-                        }
-                        "sup" if plain => {
-                            in_sup = true;
-                            sup_buf.clear();
-                        }
-                        "sub" => {
-                            text.push('~');
-                            last_was_open_marker = true;
-                        }
-                        "sup" => {
-                            text.push('^');
-                            last_was_open_marker = true;
-                        }
-                        _ => {}
-                    }
-                }
-                Ok(Event::End(e)) => {
-                    let name = e.name();
-                    let tag = crate::utils::xml_tag_name(name.as_ref());
-                    if tag == "v" && depth == 0 {
-                        break;
-                    }
-                    last_was_open_marker = false;
-                    match tag.as_ref() {
-                        "emphasis" if !plain => text.push('*'),
-                        "strong" if !plain => text.push_str("**"),
-                        "strikethrough" => text.push_str("~~"),
-                        "code" if !plain => text.push('`'),
-                        "sub" if plain => {
-                            in_sub = false;
-                            text.push_str(&to_subscript(&sub_buf));
-                        }
-                        "sup" if plain => {
-                            in_sup = false;
-                            text.push_str(&to_superscript(&sup_buf));
-                        }
-                        "sub" => text.push('~'),
-                        "sup" => text.push('^'),
-                        _ => {}
-                    }
-                    if depth > 0 {
-                        depth -= 1;
-                    }
-                }
-                Ok(Event::Text(t)) => {
-                    let decoded = String::from_utf8_lossy(t.as_ref()).to_string();
-                    let had_leading_space = decoded.starts_with(char::is_whitespace);
-                    let had_trailing_space = decoded.ends_with(char::is_whitespace);
-                    let normalized = crate::utils::normalize_whitespace(&decoded);
-                    let trimmed = normalized.as_ref();
-                    if !trimmed.is_empty() {
-                        if in_sub {
-                            sub_buf.push_str(trimmed);
-                        } else if in_sup {
-                            sup_buf.push_str(trimmed);
-                        } else {
-                            let starts_with_punct = trimmed.starts_with(['.', ',', ';', ':', '!', '?', ')', ']', '[']);
-                            let needs_space = !text.is_empty()
-                                && !text.ends_with(' ')
-                                && !last_was_open_marker
-                                && !starts_with_punct
-                                && (had_leading_space
-                                    || !text.ends_with(|c: char| {
-                                        c == '&'
-                                            || c == '<'
-                                            || c == '>'
-                                            || c == '"'
-                                            || c == '\''
-                                            || ('\u{2070}'..='\u{209F}').contains(&c)
-                                            || c == '\u{00B9}'
-                                            || c == '\u{00B2}'
-                                            || c == '\u{00B3}'
-                                    }));
-                            if needs_space {
-                                text.push(' ');
-                            }
-                            text.push_str(trimmed);
-                            if had_trailing_space && !text.ends_with(' ') {
-                                text.push(' ');
-                            }
-                        }
-                        last_was_open_marker = false;
-                    }
-                }
-                Ok(Event::GeneralRef(r)) => {
-                    let resolved = resolve_general_ref(r.as_ref());
-                    if !resolved.is_empty() {
-                        if in_sub {
-                            sub_buf.push_str(&resolved);
-                        } else if in_sup {
-                            sup_buf.push_str(&resolved);
-                        } else {
-                            text.push_str(&resolved);
-                        }
-                    }
-                }
-                Ok(Event::Eof) => break,
-                Err(_) => break,
-                _ => {}
-            }
-        }
-
-        Ok(text.trim().to_string())
-    }
-
-    /// Extract content from a stanza element (contains verse lines).
-    fn extract_stanza_content(reader: &mut Reader<&[u8]>, plain: bool) -> Result<String> {
-        let mut content = String::new();
-        let mut stanza_depth = 1;
-
-        loop {
-            match reader.read_event() {
-                Ok(Event::Start(e)) => {
-                    let name = e.name();
-                    let tag = crate::utils::xml_tag_name(name.as_ref());
-
-                    match tag.as_ref() {
-                        "stanza" => {
-                            stanza_depth += 1;
-                        }
-                        "subtitle" => match Self::extract_text_content(reader) {
-                            Ok(subtitle_text) if !subtitle_text.is_empty() => {
-                                if plain {
-                                    content.push_str(&format!("{}\n\n", subtitle_text));
-                                } else {
-                                    content.push_str(&format!("*{}*\n\n", subtitle_text));
-                                }
-                            }
-                            _ => {}
-                        },
-                        "title" => match Self::extract_text_content(reader) {
-                            Ok(title_text) if !title_text.is_empty() => {
-                                if plain {
-                                    content.push_str(&format!("{}\n\n", title_text));
-                                } else {
-                                    content.push_str(&format!("## {}\n\n", title_text));
-                                }
-                            }
-                            _ => {}
-                        },
-                        "v" => match Self::extract_verse_line(reader, plain) {
-                            Ok(verse) if !verse.is_empty() => {
-                                content.push_str(&verse);
-                                content.push('\n');
-                            }
-                            _ => {}
-                        },
-                        _ => {}
-                    }
-                }
-                Ok(Event::End(e)) => {
-                    let name = e.name();
-                    let tag = crate::utils::xml_tag_name(name.as_ref());
-                    if tag == "stanza" {
-                        stanza_depth -= 1;
-                        if stanza_depth == 0 {
-                            break;
-                        }
-                    }
-                }
-                Ok(Event::Eof) => break,
-                Err(_) => break,
-                _ => {}
-            }
-        }
-
-        Ok(content.trim().to_string())
-    }
-
-    /// Extract content from a section with proper hierarchy.
-    fn extract_section_content(reader: &mut Reader<&[u8]>, plain: bool) -> Result<String> {
-        let mut content = String::new();
-        let mut section_depth = 1;
-
-        loop {
-            match reader.read_event() {
-                Ok(Event::Start(e)) => {
-                    let name = e.name();
-                    let tag = crate::utils::xml_tag_name(name.as_ref());
-
-                    match tag.as_ref() {
-                        "section" => {
-                            section_depth += 1;
-                        }
-                        "title" => match Self::extract_text_content(reader) {
-                            Ok(title_text) if !title_text.is_empty() => {
-                                if plain {
-                                    content.push_str(&format!("{}\n\n", title_text));
-                                } else {
-                                    let heading_level = std::cmp::min(section_depth + 1, 6);
-                                    let heading = "#".repeat(heading_level);
-                                    content.push_str(&format!("{} {}\n\n", heading, title_text));
-                                }
-                            }
-                            _ => {}
-                        },
-                        "p" => match Self::extract_paragraph_content(reader, plain) {
-                            Ok(para) if !para.is_empty() => {
-                                content.push_str(&para);
-                                content.push_str("\n\n");
-                            }
-                            _ => {}
-                        },
-                        "poem" => match Self::extract_poem_content(reader, plain) {
-                            Ok(poem_text) if !poem_text.is_empty() => {
-                                content.push_str(&poem_text);
-                                content.push_str("\n\n");
-                            }
-                            _ => {}
-                        },
-                        "cite" => match Self::extract_text_content(reader) {
-                            Ok(cite_content) if !cite_content.is_empty() => {
-                                if !plain {
-                                    content.push_str("> ");
-                                } else {
-                                    content.push_str("  ");
-                                }
-                                content.push_str(&cite_content);
-                                content.push_str("\n\n");
-                            }
-                            _ => {}
-                        },
                         "table" => {
-                            if let Ok(table_cells) = Self::extract_table(reader)
-                                && !table_cells.is_empty()
-                            {
-                                if plain {
-                                    content.push_str(&cells_to_text(&table_cells));
-                                } else {
-                                    content.push_str(&cells_to_markdown(&table_cells));
-                                }
-                                content.push_str("\n\n");
+                            table_depth -= 1;
+                            if table_depth == 0 {
+                                break;
                             }
                         }
-                        "empty-line" => {
-                            content.push_str(HORIZONTAL_RULE);
-                            content.push_str("\n\n");
+                        "tr" if in_row => {
+                            if !current_row.is_empty() {
+                                table.push(std::mem::take(&mut current_row));
+                            }
+                            in_row = false;
                         }
                         _ => {}
                     }
                 }
-                Ok(Event::Empty(e)) => {
+                Ok(Event::Eof) => break,
+                Err(e) => {
+                    return Err(crate::error::KreuzbergError::parsing(format!(
+                        "XML parsing error in table: {}",
+                        e
+                    )));
+                }
+                _ => {}
+            }
+        }
+
+        Ok(table)
+    }
+
+    /// Extract all tables from the FictionBook body.
+    fn extract_tables_from_body(data: &[u8]) -> Result<Vec<Table>> {
+        let mut reader = Reader::from_reader(data);
+        let mut tables = Vec::new();
+        let mut table_index = 0;
+
+        loop {
+            match reader.read_event() {
+                Ok(Event::Start(e)) => {
                     let name = e.name();
                     let tag = crate::utils::xml_tag_name(name.as_ref());
-                    if tag == "empty-line" {
-                        content.push_str(HORIZONTAL_RULE);
-                        content.push_str("\n\n");
+                    if tag == "table"
+                        && let Ok(cells) = Self::extract_table(&mut reader)
+                        && !cells.is_empty()
+                    {
+                        let markdown = cells_to_markdown(&cells);
+                        tables.push(Table {
+                            cells,
+                            markdown,
+                            page_number: table_index + 1,
+                            bounding_box: None,
+                        });
+                        table_index += 1;
                     }
                 }
-                Ok(Event::End(e)) => {
+                Ok(Event::Eof) => break,
+                Err(_) => break,
+                _ => {}
+            }
+        }
+
+        Ok(tables)
+    }
+
+    /// Extract embedded images from `<binary>` elements in FictionBook XML.
+    ///
+    /// FB2 embeds images as base64-encoded data inside `<binary>` elements with
+    /// `content-type` and `id` attributes:
+    /// ```xml
+    /// <binary id="cover.jpg" content-type="image/jpeg">base64data...</binary>
+    /// ```
+    fn extract_binary_images(data: &[u8]) -> Vec<ExtractedImage> {
+        let mut reader = Reader::from_reader(data);
+        let mut images = Vec::new();
+        let mut image_index = 0;
+
+        loop {
+            match reader.read_event() {
+                Ok(Event::Start(e)) => {
                     let name = e.name();
                     let tag = crate::utils::xml_tag_name(name.as_ref());
-                    if tag == "section" {
-                        section_depth -= 1;
-                        if section_depth == 0 {
-                            break;
+                    if tag == "binary" {
+                        let mut content_type = String::new();
+                        let mut id = String::new();
+                        for attr in e.attributes().flatten() {
+                            let attr_name = String::from_utf8_lossy(attr.key.as_ref());
+                            let attr_value = String::from_utf8_lossy(attr.value.as_ref());
+                            if attr_name == "content-type" {
+                                content_type = attr_value.to_string();
+                            } else if attr_name == "id" {
+                                id = attr_value.to_string();
+                            }
+                        }
+
+                        // Read the base64 text content
+                        let mut b64_text = String::new();
+                        loop {
+                            match reader.read_event() {
+                                Ok(Event::Text(t)) => {
+                                    b64_text.push_str(&String::from_utf8_lossy(t.as_ref()));
+                                }
+                                Ok(Event::End(_)) => break,
+                                Ok(Event::Eof) => break,
+                                Err(_) => break,
+                                _ => {}
+                            }
+                        }
+
+                        // Strip whitespace from base64 data and decode
+                        let cleaned: String = b64_text.chars().filter(|c| !c.is_whitespace()).collect();
+                        if cleaned.is_empty() {
+                            continue;
+                        }
+
+                        if let Ok(decoded) = base64::engine::general_purpose::STANDARD.decode(&cleaned) {
+                            // Determine format from content-type or detect from bytes
+                            let format = if let Some(subtype) = content_type.strip_prefix("image/") {
+                                std::borrow::Cow::Owned(subtype.to_string())
+                            } else {
+                                crate::extraction::image_format::detect_image_format(&decoded)
+                            };
+
+                            let description = if id.is_empty() { None } else { Some(id) };
+
+                            images.push(ExtractedImage {
+                                data: Bytes::from(decoded),
+                                format,
+                                image_index,
+                                page_number: None,
+                                width: None,
+                                height: None,
+                                colorspace: None,
+                                bits_per_component: None,
+                                is_mask: false,
+                                description,
+                                ocr_result: None,
+                                bounding_box: None,
+                                source_path: None,
+                            });
+                            image_index += 1;
                         }
                     }
                 }
@@ -1272,19 +587,101 @@ impl FictionBookExtractor {
             }
         }
 
-        Ok(content.trim().to_string())
+        images
     }
 
-    /// Build a `DocumentStructure` from FictionBook XML content.
-    fn build_document_structure(data: &[u8]) -> Result<crate::types::document_structure::DocumentStructure> {
-        use crate::types::builder::DocumentStructureBuilder;
-
+    /// Extract hyperlinks from `<a>` elements in FictionBook XML body.
+    ///
+    /// FB2 uses `<a>` elements with `l:href` or `xlink:href` attributes for links:
+    /// ```xml
+    /// <a l:href="http://example.com">link text</a>
+    /// <a xlink:href="#note1">footnote ref</a>
+    /// ```
+    fn extract_links(data: &[u8]) -> Vec<Uri> {
         let mut reader = Reader::from_reader(data);
-        let mut builder = DocumentStructureBuilder::new().source_format("fictionbook");
+        let mut uris = Vec::new();
+        let mut in_body = false;
+
+        loop {
+            match reader.read_event() {
+                Ok(Event::Start(e)) => {
+                    let name = e.name();
+                    let tag = crate::utils::xml_tag_name(name.as_ref());
+                    if tag == "body" {
+                        in_body = true;
+                    } else if tag == "a" && in_body {
+                        let mut href = String::new();
+                        for attr in e.attributes().flatten() {
+                            let attr_name = String::from_utf8_lossy(attr.key.as_ref());
+                            // FB2 uses l:href or xlink:href; also check plain href
+                            if attr_name == "l:href" || attr_name == "xlink:href" || attr_name == "href" {
+                                href = String::from_utf8_lossy(attr.value.as_ref()).to_string();
+                                break;
+                            }
+                        }
+
+                        if href.is_empty() {
+                            continue;
+                        }
+
+                        // Collect label text from the <a> element
+                        let mut label_text = String::new();
+                        let mut depth = 1;
+                        loop {
+                            match reader.read_event() {
+                                Ok(Event::Start(_)) => depth += 1,
+                                Ok(Event::End(_)) => {
+                                    depth -= 1;
+                                    if depth == 0 {
+                                        break;
+                                    }
+                                }
+                                Ok(Event::Text(t)) => {
+                                    let decoded = String::from_utf8_lossy(t.as_ref());
+                                    let trimmed = decoded.trim();
+                                    if !trimmed.is_empty() {
+                                        if !label_text.is_empty() {
+                                            label_text.push(' ');
+                                        }
+                                        label_text.push_str(trimmed);
+                                    }
+                                }
+                                Ok(Event::Eof) => break,
+                                Err(_) => break,
+                                _ => {}
+                            }
+                        }
+
+                        let label = if label_text.is_empty() { None } else { Some(label_text) };
+
+                        uris.push(Uri::hyperlink(&href, label));
+                    }
+                }
+                Ok(Event::End(e)) => {
+                    let name = e.name();
+                    let tag = crate::utils::xml_tag_name(name.as_ref());
+                    if tag == "body" {
+                        in_body = false;
+                    }
+                }
+                Ok(Event::Eof) => break,
+                Err(_) => break,
+                _ => {}
+            }
+        }
+
+        uris
+    }
+
+    /// Build an `InternalDocument` from FictionBook XML content.
+    fn build_internal_document(data: &[u8]) -> Result<InternalDocument> {
+        let mut reader = Reader::from_reader(data);
+        let mut builder = InternalDocumentBuilder::new("fictionbook");
 
         let mut in_body = false;
         let mut is_notes_body = false;
         let mut section_depth: u8 = 0;
+        let mut footnote_counter: u32 = 0;
 
         loop {
             match reader.read_event() {
@@ -1320,7 +717,6 @@ impl FictionBookExtractor {
                             _ => {}
                         }
                     } else if tag == "p" && in_body && !is_notes_body {
-                        // Extract paragraph with inline formatting info for annotations
                         match Self::extract_paragraph_with_annotations(&mut reader) {
                             Ok((text, annotations)) if !text.is_empty() => {
                                 builder.push_paragraph(&text, annotations, None, None);
@@ -1330,24 +726,25 @@ impl FictionBookExtractor {
                     } else if tag == "cite" && in_body {
                         match Self::extract_text_content(&mut reader) {
                             Ok(text) if !text.is_empty() => {
-                                builder.push_quote(None);
+                                builder.push_quote_start();
                                 builder.push_paragraph(&text, vec![], None, None);
-                                builder.exit_container();
+                                builder.push_quote_end();
                             }
                             _ => {}
                         }
                     } else if (tag == "programlisting" || tag == "code") && in_body {
                         match Self::extract_text_content(&mut reader) {
                             Ok(text) if !text.is_empty() => {
-                                builder.push_code(&text, None, None);
+                                builder.push_code(&text, None, None, None);
                             }
                             _ => {}
                         }
                     } else if tag == "section" && is_notes_body {
-                        // Extract footnote
                         match Self::extract_footnote_text(&mut reader) {
                             Ok(text) if !text.is_empty() => {
-                                builder.push_footnote(&text, None);
+                                footnote_counter += 1;
+                                let key = format!("fn-{}", footnote_counter);
+                                builder.push_footnote_definition(&text, &key, None);
                             }
                             _ => {}
                         }
@@ -1536,43 +933,34 @@ impl DocumentExtractor for FictionBookExtractor {
         &self,
         content: &[u8],
         mime_type: &str,
-        config: &ExtractionConfig,
-    ) -> Result<ExtractionResult> {
+        _config: &ExtractionConfig,
+    ) -> Result<InternalDocument> {
         let metadata = Self::extract_metadata(content)?;
-        let plain = matches!(
-            config.output_format,
-            crate::core::config::OutputFormat::Plain | crate::core::config::OutputFormat::Structured
-        );
 
-        let extracted_content = Self::extract_body_content(content, plain)?;
         let tables = Self::extract_tables_from_body(content)?;
+        let images = Self::extract_binary_images(content);
+        let links = Self::extract_links(content);
 
-        let document = if config.include_document_structure {
-            Some(Self::build_document_structure(content)?)
-        } else {
-            None
-        };
+        let mut doc = Self::build_internal_document(content)?;
+        doc.mime_type = std::borrow::Cow::Owned(mime_type.to_string());
+        doc.metadata = metadata;
 
-        Ok(ExtractionResult {
-            content: extracted_content,
-            mime_type: mime_type.to_string().into(),
-            metadata,
-            tables,
-            detected_languages: None,
-            chunks: None,
-            images: None,
-            djot_content: None,
-            pages: None,
-            elements: None,
-            ocr_elements: None,
-            document,
-            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-            extracted_keywords: None,
-            quality_score: None,
-            processing_warnings: Vec::new(),
-            annotations: None,
-            children: None,
-        })
+        // Add extracted tables
+        for table in tables {
+            doc.push_table(table);
+        }
+
+        // Add extracted images
+        for image in images {
+            doc.push_image(image);
+        }
+
+        // Add extracted links
+        for uri in links {
+            doc.push_uri(uri);
+        }
+
+        Ok(doc)
     }
 
     fn supported_mime_types(&self) -> &[&str] {
@@ -1690,9 +1078,11 @@ mod tests {
             "expected adventure genre, got: {subject}"
         );
 
-        let genres = metadata.additional.get("genres").expect("expected genres array");
-        assert!(genres.is_array());
-        assert_eq!(genres.as_array().expect("genres should be an array").len(), 2);
+        let fb_meta = match &metadata.format {
+            Some(crate::types::metadata::FormatMetadata::FictionBook(fb)) => fb,
+            other => panic!("expected FictionBook format metadata, got: {:?}", other),
+        };
+        assert_eq!(fb_meta.genres.len(), 2);
     }
 
     #[test]
@@ -1711,12 +1101,13 @@ mod tests {
 </FictionBook>"#;
 
         let metadata = FictionBookExtractor::extract_metadata(fb2).expect("Metadata extraction failed");
-        let annotation = metadata.additional.get("annotation").expect("expected annotation");
+        let fb_meta = match &metadata.format {
+            Some(crate::types::metadata::FormatMetadata::FictionBook(fb)) => fb,
+            other => panic!("expected FictionBook format metadata, got: {:?}", other),
+        };
+        let annotation = fb_meta.annotation.as_deref().expect("expected annotation");
         assert!(
-            annotation
-                .as_str()
-                .expect("annotation should be a string")
-                .contains("book annotation"),
+            annotation.contains("book annotation"),
             "expected annotation text, got: {}",
             annotation
         );
@@ -1736,22 +1127,150 @@ mod tests {
 </FictionBook>"#;
 
         let metadata = FictionBookExtractor::extract_metadata(fb2).expect("Metadata extraction failed");
-        let sequences = metadata.additional.get("sequences").expect("expected sequences");
-        assert!(sequences.is_array());
-        let arr = sequences.as_array().expect("sequences should be an array");
-        assert_eq!(arr.len(), 1);
+        let fb_meta = match &metadata.format {
+            Some(crate::types::metadata::FormatMetadata::FictionBook(fb)) => fb,
+            other => panic!("expected FictionBook format metadata, got: {:?}", other),
+        };
+        assert_eq!(fb_meta.sequences.len(), 1);
         assert!(
-            arr[0]
-                .as_str()
-                .expect("sequence entry should be a string")
-                .contains("Foundation Series")
+            fb_meta.sequences[0].contains("Foundation Series"),
+            "expected Foundation Series, got: {}",
+            fb_meta.sequences[0]
         );
         assert!(
-            arr[0]
-                .as_str()
-                .expect("sequence entry should be a string")
-                .contains("#3")
+            fb_meta.sequences[0].contains("#3"),
+            "expected #3, got: {}",
+            fb_meta.sequences[0]
         );
+    }
+
+    #[test]
+    fn test_fictionbook_binary_images() {
+        // A minimal 1x1 red PNG as base64
+        let png_b64 =
+            "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwADhQGAWjR9awAAAABJRU5ErkJggg==";
+        let fb2 = format!(
+            r#"<?xml version="1.0" encoding="UTF-8"?>
+<FictionBook>
+  <description>
+    <title-info><lang>en</lang></title-info>
+  </description>
+  <body><section><p>Content with image.</p></section></body>
+  <binary id="cover.png" content-type="image/png">{}</binary>
+</FictionBook>"#,
+            png_b64
+        );
+
+        let images = FictionBookExtractor::extract_binary_images(fb2.as_bytes());
+        assert_eq!(images.len(), 1);
+        assert_eq!(images[0].format, "png");
+        assert_eq!(images[0].image_index, 0);
+        assert_eq!(images[0].description, Some("cover.png".to_string()));
+        assert!(!images[0].data.is_empty(), "image data should not be empty");
+        // Verify it starts with PNG magic bytes
+        assert!(images[0].data.starts_with(&[0x89, 0x50, 0x4E, 0x47]));
+    }
+
+    #[test]
+    fn test_fictionbook_binary_images_multiple() {
+        let fb2 = br#"<?xml version="1.0" encoding="UTF-8"?>
+<FictionBook>
+  <description>
+    <title-info><lang>en</lang></title-info>
+  </description>
+  <body><section><p>Content.</p></section></body>
+  <binary id="img1.jpg" content-type="image/jpeg">AAAA</binary>
+  <binary id="img2.gif" content-type="image/gif">BBBB</binary>
+</FictionBook>"#;
+
+        let images = FictionBookExtractor::extract_binary_images(fb2);
+        // Both entries are present (even if base64 decodes to short data)
+        assert_eq!(images.len(), 2);
+        assert_eq!(images[0].image_index, 0);
+        assert_eq!(images[1].image_index, 1);
+        assert_eq!(images[0].format, "jpeg");
+        assert_eq!(images[1].format, "gif");
+    }
+
+    #[test]
+    fn test_fictionbook_binary_images_empty() {
+        let fb2 = br#"<?xml version="1.0" encoding="UTF-8"?>
+<FictionBook>
+  <description>
+    <title-info><lang>en</lang></title-info>
+  </description>
+  <body><section><p>No images here.</p></section></body>
+</FictionBook>"#;
+
+        let images = FictionBookExtractor::extract_binary_images(fb2);
+        assert!(images.is_empty());
+    }
+
+    #[test]
+    fn test_fictionbook_links() {
+        let fb2 = br##"<?xml version="1.0" encoding="UTF-8"?>
+<FictionBook>
+  <description>
+    <title-info><lang>en</lang></title-info>
+  </description>
+  <body>
+    <section>
+      <p>Visit <a l:href="http://example.com">Example Site</a> for more.</p>
+      <p>See <a xlink:href="#note1">footnote 1</a> below.</p>
+      <p>Also <a href="https://rust-lang.org">Rust</a> is great.</p>
+    </section>
+  </body>
+</FictionBook>"##;
+
+        let links = FictionBookExtractor::extract_links(fb2);
+        assert_eq!(links.len(), 3);
+
+        assert_eq!(links[0].url, "http://example.com");
+        assert_eq!(links[0].label, Some("Example Site".to_string()));
+        assert_eq!(links[0].kind, crate::types::uri::UriKind::Hyperlink);
+
+        assert_eq!(links[1].url, "#note1");
+        assert_eq!(links[1].label, Some("footnote 1".to_string()));
+        assert_eq!(links[1].kind, crate::types::uri::UriKind::Anchor);
+
+        assert_eq!(links[2].url, "https://rust-lang.org");
+        assert_eq!(links[2].label, Some("Rust".to_string()));
+        assert_eq!(links[2].kind, crate::types::uri::UriKind::Hyperlink);
+    }
+
+    #[test]
+    fn test_fictionbook_links_no_body() {
+        let fb2 = br#"<?xml version="1.0" encoding="UTF-8"?>
+<FictionBook>
+  <description>
+    <title-info>
+      <annotation><a l:href="http://meta-link.com">meta</a></annotation>
+      <lang>en</lang>
+    </title-info>
+  </description>
+</FictionBook>"#;
+
+        // Links outside <body> should not be extracted
+        let links = FictionBookExtractor::extract_links(fb2);
+        assert!(links.is_empty());
+    }
+
+    #[test]
+    fn test_fictionbook_links_empty_href() {
+        let fb2 = br#"<?xml version="1.0" encoding="UTF-8"?>
+<FictionBook>
+  <description>
+    <title-info><lang>en</lang></title-info>
+  </description>
+  <body>
+    <section>
+      <p>A link with <a l:href="">no href</a>.</p>
+    </section>
+  </body>
+</FictionBook>"#;
+
+        let links = FictionBookExtractor::extract_links(fb2);
+        assert!(links.is_empty());
     }
 
     #[test]

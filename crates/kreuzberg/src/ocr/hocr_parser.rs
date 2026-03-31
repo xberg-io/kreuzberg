@@ -1,0 +1,826 @@
+//! hOCR → [`InternalDocument`] parser.
+//!
+//! Adapted from [`html_to_markdown_rs::hocr`] property and element parsing.
+//!
+//! This module parses hOCR HTML produced by Tesseract (and compatible engines)
+//! into kreuzberg's [`InternalDocument`] representation, preserving bounding boxes,
+//! confidence scores, and page structure.
+//!
+//! ## hOCR hierarchy handled
+//!
+//! ```text
+//! ocr_page  →  PageBreak between pages
+//!   ocr_carea / ocrx_block
+//!     ocr_par  →  InternalElement (OcrText::Block)
+//!       ocr_line / ocrx_line  →  line break within paragraph
+//!         ocrx_word  →  word text with bbox and confidence
+//! ```
+
+use crate::types::extraction::BoundingBox;
+use crate::types::internal::{ElementKind, InternalDocument, InternalElement};
+use crate::types::ocr_elements::{OcrBoundingGeometry, OcrConfidence, OcrElementLevel};
+
+// ============================================================================
+// Public API
+// ============================================================================
+
+/// Parse hOCR HTML into an [`InternalDocument`] with full spatial and confidence metadata.
+///
+/// This is the primary entry point. It replaces the older `convert_hocr_to_markdown` path
+/// by producing structured [`InternalElement`]s directly, preserving OCR geometry and
+/// confidence that the markdown conversion discards.
+///
+/// # Arguments
+///
+/// * `hocr_html` — raw hOCR output from Tesseract (or compatible engine).
+///
+/// # Output mapping
+///
+/// | hOCR element   | kreuzberg element                             |
+/// |---------------|-----------------------------------------------|
+/// | `ocr_page`    | `PageBreak` between consecutive pages         |
+/// | `ocr_par`     | `OcrText { level: Block }` with union bbox    |
+/// | `ocr_line`    | newline separator within a paragraph          |
+/// | `ocrx_word`   | word text, bbox, `x_wconf` → `OcrConfidence` |
+///
+/// Page numbers come from the `ppageno` title property (converted to 1-indexed).
+pub fn parse_hocr_to_internal_document(hocr_html: &str) -> InternalDocument {
+    let mut doc = InternalDocument::new("ocr");
+    doc.mime_type = std::borrow::Cow::Borrowed("application/x-hocr");
+
+    let mut element_index: u32 = 0;
+    let mut last_page: Option<u32> = None;
+
+    let bytes = hocr_html.as_bytes();
+    let mut pos = 0;
+
+    while pos < bytes.len() {
+        let Some(tag_start) = memchr(b'<', &bytes[pos..]).map(|i| pos + i) else {
+            break;
+        };
+        let Some(tag_end) = memchr(b'>', &bytes[tag_start..]).map(|i| tag_start + i) else {
+            break;
+        };
+        let tag_content = &hocr_html[tag_start + 1..tag_end];
+        pos = tag_end + 1;
+
+        // Skip closing / self-closing tags
+        if tag_content.starts_with('/') || tag_content.ends_with('/') {
+            continue;
+        }
+
+        // ── ocr_page ─────────────────────────────────────────────
+        if has_class(tag_content, "ocr_page") {
+            let title = extract_title_attr(tag_content);
+            let props = parse_title_properties(&title);
+            let page_number = props.ppageno.map(|p| p + 1); // 0-indexed → 1-indexed
+
+            if let Some(prev) = last_page
+                && page_number != Some(prev)
+            {
+                let pb = InternalElement::text(ElementKind::PageBreak, "", 0).with_index(element_index);
+                element_index += 1;
+                doc.push_element(pb);
+            }
+            last_page = page_number;
+            continue;
+        }
+
+        // ── ocr_par ──────────────────────────────────────────────
+        if is_paragraph_tag(tag_content) {
+            let (paragraph, end_pos) = parse_paragraph(hocr_html, pos, last_page.unwrap_or(1), element_index);
+            pos = end_pos;
+
+            if let Some(elem) = paragraph {
+                element_index += 1;
+                doc.push_element(elem);
+            }
+        }
+    }
+
+    doc
+}
+
+// ============================================================================
+// hOCR property parsing (adapted from html-to-markdown parser.rs)
+// ============================================================================
+
+/// Parsed properties from an hOCR `title` attribute.
+#[derive(Debug, Default)]
+struct HocrProperties {
+    /// Bounding box: (x1, y1, x2, y2).
+    bbox: Option<(u32, u32, u32, u32)>,
+    /// Word confidence 0–100.
+    x_wconf: Option<f64>,
+    /// Physical page number (0-indexed from Tesseract).
+    ppageno: Option<u32>,
+    /// Text rotation angle.
+    textangle: Option<f64>,
+    /// Baseline (slope, constant).
+    baseline: Option<(f64, i32)>,
+    /// Font name.
+    x_font: Option<String>,
+    /// Font size in points.
+    x_fsize: Option<u32>,
+}
+
+/// Parse all properties from an hOCR title attribute string.
+///
+/// Handles the semicolon-separated `key value ...` format produced by Tesseract:
+///
+/// ```text
+/// bbox 100 50 200 150; x_wconf 95; ppageno 0
+/// ```
+fn parse_title_properties(title: &str) -> HocrProperties {
+    let mut props = HocrProperties::default();
+
+    for part in title.split(';') {
+        let part = part.trim();
+        if part.is_empty() {
+            continue;
+        }
+
+        let mut tokens = part.split_whitespace();
+        let Some(key) = tokens.next() else {
+            continue;
+        };
+
+        match key {
+            "bbox" => {
+                let coords: Vec<u32> = tokens.filter_map(|s| s.parse().ok()).collect();
+                if coords.len() == 4 {
+                    props.bbox = Some((coords[0], coords[1], coords[2], coords[3]));
+                }
+            }
+            "x_wconf" => {
+                if let Some(val) = tokens.next().and_then(|s| s.parse::<f64>().ok()) {
+                    props.x_wconf = Some(val);
+                }
+            }
+            "ppageno" => {
+                if let Some(val) = tokens.next().and_then(|s| s.parse::<u32>().ok()) {
+                    props.ppageno = Some(val);
+                }
+            }
+            "textangle" => {
+                if let Some(val) = tokens.next().and_then(|s| s.parse::<f64>().ok()) {
+                    props.textangle = Some(val);
+                }
+            }
+            "baseline" => {
+                let slope = tokens.next().and_then(|s| s.parse::<f64>().ok());
+                let constant = tokens.next().and_then(|s| s.parse::<i32>().ok());
+                if let (Some(s), Some(c)) = (slope, constant) {
+                    props.baseline = Some((s, c));
+                }
+            }
+            "x_font" => {
+                props.x_font = parse_quoted_value(part);
+            }
+            "x_fsize" => {
+                if let Some(val) = tokens.next().and_then(|s| s.parse::<u32>().ok()) {
+                    props.x_fsize = Some(val);
+                }
+            }
+            _ => {}
+        }
+    }
+
+    props
+}
+
+/// Extract a quoted string value from a property part like `x_font "Arial"`.
+fn parse_quoted_value(part: &str) -> Option<String> {
+    let start = part.find('"')?;
+    let end = part[start + 1..].find('"')?;
+    Some(part[start + 1..start + 1 + end].to_string())
+}
+
+// ============================================================================
+// Word accumulator
+// ============================================================================
+
+/// A word extracted from hOCR with its metadata.
+struct HocrWordInfo {
+    text: String,
+    x0: u32,
+    y0: u32,
+    x1: u32,
+    y1: u32,
+    confidence: Option<f64>,
+}
+
+// ============================================================================
+// Paragraph parsing
+// ============================================================================
+
+/// Parse a single `<p class="ocr_par">` (or `<span class="ocr_par">`) and all nested
+/// content up to the matching closing tag.
+///
+/// Returns the constructed element (if any words were found) and the byte position
+/// after the closing tag.
+fn parse_paragraph(html: &str, start: usize, page: u32, element_index: u32) -> (Option<InternalElement>, usize) {
+    let bytes = html.as_bytes();
+    let mut pos = start;
+
+    let mut lines: Vec<Vec<HocrWordInfo>> = Vec::new();
+    let mut current_line: Vec<HocrWordInfo> = Vec::new();
+    let mut in_line = false;
+
+    // Track nesting depth for the paragraph container so we can find the
+    // correct closing tag even when paragraphs contain nested block elements.
+    let mut depth: u32 = 1; // we already consumed the opening tag
+
+    while pos < bytes.len() {
+        let Some(tag_start) = memchr(b'<', &bytes[pos..]).map(|i| pos + i) else {
+            break;
+        };
+        let Some(tag_end) = memchr(b'>', &bytes[tag_start..]).map(|i| tag_start + i) else {
+            break;
+        };
+        let tag_content = &html[tag_start + 1..tag_end];
+        pos = tag_end + 1;
+
+        // ── closing tags ─────────────────────────────────────────
+        if let Some(stripped) = tag_content.strip_prefix('/') {
+            let closing_name = stripped.trim().to_ascii_lowercase();
+            if closing_name == "p" || closing_name == "span" || closing_name == "div" {
+                depth = depth.saturating_sub(1);
+                if depth == 0 {
+                    // End of our paragraph — flush current line
+                    if !current_line.is_empty() {
+                        lines.push(std::mem::take(&mut current_line));
+                    }
+                    break;
+                }
+            }
+            continue;
+        }
+
+        // Skip self-closing
+        if tag_content.ends_with('/') {
+            continue;
+        }
+
+        // Track nesting depth for p/span/div tags that are NOT hOCR elements
+        let tag_name = tag_content.split_whitespace().next().unwrap_or("").to_ascii_lowercase();
+
+        // ── ocr_line / ocrx_line ─────────────────────────────────
+        if has_class(tag_content, "ocr_line") || has_class(tag_content, "ocrx_line") {
+            if in_line && !current_line.is_empty() {
+                lines.push(std::mem::take(&mut current_line));
+            }
+            in_line = true;
+            if tag_name == "p" || tag_name == "span" || tag_name == "div" {
+                depth += 1;
+            }
+            continue;
+        }
+
+        // ── ocrx_word ────────────────────────────────────────────
+        if has_class(tag_content, "ocrx_word") {
+            let title = extract_title_attr(tag_content);
+            let props = parse_title_properties(&title);
+
+            // Extract text content up to the next `<` (may span nested formatting tags)
+            let word_text = extract_inner_text(html, pos);
+            let trimmed = decode_html_entities(&word_text);
+            let trimmed = trimmed.trim();
+
+            // Advance past the word content and its closing tag(s)
+            pos = skip_to_matching_close(html, pos, &tag_name);
+
+            if !trimmed.is_empty() {
+                let (x0, y0, x1, y1) = props.bbox.unwrap_or((0, 0, 0, 0));
+                current_line.push(HocrWordInfo {
+                    text: trimmed.to_string(),
+                    x0,
+                    y0,
+                    x1,
+                    y1,
+                    confidence: props.x_wconf,
+                });
+            }
+            continue;
+        }
+
+        // Track depth for non-hOCR container tags
+        if tag_name == "p" || tag_name == "span" || tag_name == "div" {
+            depth += 1;
+        }
+    }
+
+    // Build the element from collected lines
+    let all_words: Vec<&HocrWordInfo> = lines.iter().flat_map(|l| l.iter()).collect();
+    if all_words.is_empty() {
+        return (None, pos);
+    }
+
+    // Text: words joined by spaces within lines, lines joined by newlines
+    let text: String = lines
+        .iter()
+        .map(|line| line.iter().map(|w| w.text.as_str()).collect::<Vec<_>>().join(" "))
+        .collect::<Vec<_>>()
+        .join("\n");
+
+    // Compute union bounding box and average confidence
+    let mut min_x0 = u32::MAX;
+    let mut min_y0 = u32::MAX;
+    let mut max_x1 = 0u32;
+    let mut max_y1 = 0u32;
+    let mut conf_sum = 0.0f64;
+    let mut conf_count = 0u32;
+
+    for word in &all_words {
+        if word.x1 > 0 || word.y1 > 0 {
+            min_x0 = min_x0.min(word.x0);
+            min_y0 = min_y0.min(word.y0);
+            max_x1 = max_x1.max(word.x1);
+            max_y1 = max_y1.max(word.y1);
+        }
+        if let Some(c) = word.confidence {
+            conf_sum += c;
+            conf_count += 1;
+        }
+    }
+
+    let has_valid_bbox = max_x1 > 0 || max_y1 > 0;
+
+    let bbox = if has_valid_bbox {
+        Some(BoundingBox {
+            x0: min_x0 as f64,
+            y0: min_y0 as f64,
+            x1: max_x1 as f64,
+            y1: max_y1 as f64,
+        })
+    } else {
+        None
+    };
+
+    let ocr_geometry = if has_valid_bbox {
+        Some(OcrBoundingGeometry::Rectangle {
+            left: min_x0,
+            top: min_y0,
+            width: max_x1.saturating_sub(min_x0),
+            height: max_y1.saturating_sub(min_y0),
+        })
+    } else {
+        None
+    };
+
+    let ocr_confidence = if conf_count > 0 {
+        Some(OcrConfidence::from_tesseract(conf_sum / conf_count as f64))
+    } else {
+        None
+    };
+
+    let kind = ElementKind::OcrText {
+        level: OcrElementLevel::Block,
+    };
+
+    let mut elem = InternalElement::text(kind, text, 0)
+        .with_page(page)
+        .with_index(element_index);
+
+    elem.bbox = bbox;
+    elem.ocr_geometry = ocr_geometry;
+    elem.ocr_confidence = ocr_confidence;
+
+    (Some(elem), pos)
+}
+
+// ============================================================================
+// Lightweight HTML helpers
+// ============================================================================
+
+/// Fast single-byte search (equivalent to `memchr::memchr` but without the dependency).
+#[inline]
+fn memchr(needle: u8, haystack: &[u8]) -> Option<usize> {
+    haystack.iter().position(|&b| b == needle)
+}
+
+/// Check if a tag's class attribute contains the given class name.
+fn has_class(tag_content: &str, cls: &str) -> bool {
+    if let Some(class_start) = tag_content.find("class=") {
+        let rest = &tag_content[class_start + 6..];
+        let quote = rest.as_bytes().first().copied().unwrap_or(b'"');
+        if quote == b'"' || quote == b'\'' {
+            let inner = &rest[1..];
+            if let Some(end) = inner.find(quote as char) {
+                let class_value = &inner[..end];
+                return class_value.split_whitespace().any(|c| c == cls);
+            }
+        }
+    }
+    false
+}
+
+/// Check if tag content opens a paragraph element (`<p class="ocr_par">` or
+/// `<span class="ocr_par">` etc.).
+fn is_paragraph_tag(tag_content: &str) -> bool {
+    has_class(tag_content, "ocr_par")
+}
+
+/// Extract the `title="..."` attribute value from raw tag content.
+fn extract_title_attr(tag_content: &str) -> String {
+    if let Some(title_start) = tag_content.find("title=") {
+        let rest = &tag_content[title_start + 6..];
+        let quote = rest.as_bytes().first().copied().unwrap_or(b'"');
+        if quote == b'"' || quote == b'\'' {
+            let inner = &rest[1..];
+            if let Some(end) = inner.find(quote as char) {
+                return inner[..end].to_string();
+            }
+        }
+    }
+    String::new()
+}
+
+/// Extract all text content inside an element, stripping nested tags.
+///
+/// Walks from `pos` collecting text nodes and descending into nested tags
+/// until the matching close tag for the current element is reached.
+fn extract_inner_text(html: &str, start: usize) -> String {
+    let bytes = html.as_bytes();
+    let mut result = String::new();
+    let mut pos = start;
+    let mut depth: u32 = 1;
+
+    while pos < bytes.len() && depth > 0 {
+        if let Some(lt) = memchr(b'<', &bytes[pos..]).map(|i| pos + i) {
+            // Collect text before this tag
+            result.push_str(&html[pos..lt]);
+
+            if let Some(gt) = memchr(b'>', &bytes[lt..]).map(|i| lt + i) {
+                let tag = &html[lt + 1..gt];
+                if tag.starts_with('/') {
+                    depth -= 1;
+                } else if !tag.ends_with('/') {
+                    depth += 1;
+                }
+                pos = gt + 1;
+            } else {
+                break;
+            }
+        } else {
+            result.push_str(&html[pos..]);
+            break;
+        }
+    }
+
+    result
+}
+
+/// Skip past the matching closing tag for a tag that was just opened.
+///
+/// `tag_name` is the lowercase name of the opening tag (e.g. "span").
+/// Returns the byte position after the closing `>`.
+fn skip_to_matching_close(html: &str, start: usize, tag_name: &str) -> usize {
+    let bytes = html.as_bytes();
+    let mut pos = start;
+    let mut depth: u32 = 1;
+
+    while pos < bytes.len() && depth > 0 {
+        let Some(lt) = memchr(b'<', &bytes[pos..]).map(|i| pos + i) else {
+            break;
+        };
+        let Some(gt) = memchr(b'>', &bytes[lt..]).map(|i| lt + i) else {
+            break;
+        };
+        let tag = &html[lt + 1..gt];
+
+        if let Some(stripped) = tag.strip_prefix('/') {
+            let name = stripped.split_whitespace().next().unwrap_or("");
+            if name.eq_ignore_ascii_case(tag_name) {
+                depth -= 1;
+            }
+        } else if !tag.ends_with('/') {
+            let name = tag.split_whitespace().next().unwrap_or("");
+            if name.eq_ignore_ascii_case(tag_name) {
+                depth += 1;
+            }
+        }
+
+        pos = gt + 1;
+    }
+
+    pos
+}
+
+/// Decode common HTML entities in text content.
+fn decode_html_entities(text: &str) -> String {
+    if !text.contains('&') {
+        return text.to_string();
+    }
+    text.replace("&amp;", "&")
+        .replace("&lt;", "<")
+        .replace("&gt;", ">")
+        .replace("&quot;", "\"")
+        .replace("&#39;", "'")
+        .replace("&apos;", "'")
+        .replace("&#x27;", "'")
+        .replace("&nbsp;", " ")
+}
+
+// ============================================================================
+// Tests
+// ============================================================================
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_empty_hocr() {
+        let doc = parse_hocr_to_internal_document("");
+        assert!(doc.elements.is_empty());
+    }
+
+    #[test]
+    fn test_single_page_single_paragraph() {
+        let hocr = r#"<div class="ocr_page" title="bbox 0 0 1000 1500; ppageno 0">
+            <p class="ocr_par" title="bbox 100 100 900 200">
+                <span class="ocr_line" title="bbox 100 100 900 150">
+                    <span class="ocrx_word" title="bbox 100 100 200 140; x_wconf 95">Hello</span>
+                    <span class="ocrx_word" title="bbox 210 100 350 140; x_wconf 90">World</span>
+                </span>
+            </p>
+        </div>"#;
+
+        let doc = parse_hocr_to_internal_document(hocr);
+        let elements = doc.elements;
+
+        // Should have exactly one paragraph element (no page break for first page)
+        assert_eq!(elements.len(), 1);
+
+        let elem = &elements[0];
+        assert_eq!(elem.text, "Hello World");
+        assert_eq!(elem.page, Some(1)); // ppageno 0 → page 1
+
+        // Check bounding box is the union
+        let bbox = elem.bbox.as_ref().unwrap();
+        assert_eq!(bbox.x0, 100.0);
+        assert_eq!(bbox.y0, 100.0);
+        assert_eq!(bbox.x1, 350.0);
+        assert_eq!(bbox.y1, 140.0);
+
+        // Check confidence
+        let conf = elem.ocr_confidence.as_ref().unwrap();
+        // Average of 95 and 90 = 92.5, normalized to 0–1 → 0.925
+        assert!((conf.recognition - 0.925).abs() < 0.01);
+    }
+
+    #[test]
+    fn test_multi_line_paragraph() {
+        let hocr = r#"<div class="ocr_page" title="ppageno 0">
+            <p class="ocr_par">
+                <span class="ocr_line" title="bbox 10 10 200 30">
+                    <span class="ocrx_word" title="bbox 10 10 50 30">Line</span>
+                    <span class="ocrx_word" title="bbox 60 10 100 30">one</span>
+                </span>
+                <span class="ocr_line" title="bbox 10 40 200 60">
+                    <span class="ocrx_word" title="bbox 10 40 50 60">Line</span>
+                    <span class="ocrx_word" title="bbox 60 40 100 60">two</span>
+                </span>
+            </p>
+        </div>"#;
+
+        let doc = parse_hocr_to_internal_document(hocr);
+        let elements = doc.elements;
+        assert_eq!(elements.len(), 1);
+        assert_eq!(elements[0].text, "Line one\nLine two");
+    }
+
+    #[test]
+    fn test_multi_page_inserts_page_breaks() {
+        let hocr = r#"
+        <div class="ocr_page" title="ppageno 0">
+            <p class="ocr_par">
+                <span class="ocrx_word" title="bbox 10 10 50 30">Page1</span>
+            </p>
+        </div>
+        <div class="ocr_page" title="ppageno 1">
+            <p class="ocr_par">
+                <span class="ocrx_word" title="bbox 10 10 50 30">Page2</span>
+            </p>
+        </div>"#;
+
+        let doc = parse_hocr_to_internal_document(hocr);
+        let elements = doc.elements;
+
+        // page1-paragraph, page-break, page2-paragraph
+        assert_eq!(elements.len(), 3);
+        assert!(matches!(elements[0].kind, ElementKind::OcrText { .. }));
+        assert!(matches!(elements[1].kind, ElementKind::PageBreak));
+        assert!(matches!(elements[2].kind, ElementKind::OcrText { .. }));
+        assert_eq!(elements[0].page, Some(1));
+        assert_eq!(elements[2].page, Some(2));
+    }
+
+    #[test]
+    fn test_html_entity_decoding() {
+        let hocr = r#"<div class="ocr_page" title="ppageno 0">
+            <p class="ocr_par">
+                <span class="ocrx_word" title="bbox 10 10 50 30">&amp;foo&lt;bar&gt;</span>
+            </p>
+        </div>"#;
+
+        let doc = parse_hocr_to_internal_document(hocr);
+        assert_eq!(doc.elements[0].text, "&foo<bar>");
+    }
+
+    #[test]
+    fn test_words_without_bbox_still_included() {
+        let hocr = r#"<div class="ocr_page" title="ppageno 0">
+            <p class="ocr_par">
+                <span class="ocrx_word">NoBbox</span>
+            </p>
+        </div>"#;
+
+        let doc = parse_hocr_to_internal_document(hocr);
+        assert_eq!(doc.elements.len(), 1);
+        assert_eq!(doc.elements[0].text, "NoBbox");
+        assert!(doc.elements[0].bbox.is_none());
+    }
+
+    #[test]
+    fn test_nested_formatting_tags() {
+        let hocr = r#"<div class="ocr_page" title="ppageno 0">
+            <p class="ocr_par">
+                <span class="ocrx_word" title="bbox 10 10 50 30"><strong>Bold</strong></span>
+                <span class="ocrx_word" title="bbox 60 10 100 30"><em>Italic</em></span>
+            </p>
+        </div>"#;
+
+        let doc = parse_hocr_to_internal_document(hocr);
+        assert_eq!(doc.elements[0].text, "Bold Italic");
+    }
+
+    #[test]
+    fn test_property_parsing() {
+        let props = parse_title_properties("bbox 100 50 200 150; x_wconf 95.5; ppageno 3; textangle 7.2");
+        assert_eq!(props.bbox, Some((100, 50, 200, 150)));
+        assert_eq!(props.x_wconf, Some(95.5));
+        assert_eq!(props.ppageno, Some(3));
+        assert_eq!(props.textangle, Some(7.2));
+    }
+
+    #[test]
+    fn test_baseline_parsing() {
+        let props = parse_title_properties("baseline 0.015 -18");
+        assert_eq!(props.baseline, Some((0.015, -18)));
+    }
+
+    #[test]
+    fn test_font_parsing() {
+        let props = parse_title_properties("x_font \"Comic Sans MS\"; x_fsize 12");
+        assert_eq!(props.x_font, Some("Comic Sans MS".to_string()));
+        assert_eq!(props.x_fsize, Some(12));
+    }
+
+    #[test]
+    fn test_has_class() {
+        assert!(has_class(
+            r#"div class="ocr_page" title="bbox 0 0 100 100""#,
+            "ocr_page"
+        ));
+        assert!(!has_class(r#"div class="ocr_page""#, "ocr_par"));
+        assert!(has_class(r#"span class="ocrx_word ocr_line""#, "ocrx_word"));
+        assert!(has_class(r#"span class="ocrx_word ocr_line""#, "ocr_line"));
+    }
+
+    #[test]
+    fn test_extract_title_attr() {
+        let title = extract_title_attr(r#"div class="ocr_page" title="bbox 0 0 100 200; ppageno 0""#);
+        assert_eq!(title, "bbox 0 0 100 200; ppageno 0");
+    }
+
+    #[test]
+    fn test_ocr_geometry_set() {
+        let hocr = r#"<div class="ocr_page" title="ppageno 0">
+            <p class="ocr_par">
+                <span class="ocrx_word" title="bbox 50 60 150 100; x_wconf 88">test</span>
+            </p>
+        </div>"#;
+
+        let doc = parse_hocr_to_internal_document(hocr);
+        let elem = &doc.elements[0];
+        let geom = elem.ocr_geometry.as_ref().unwrap();
+        match geom {
+            OcrBoundingGeometry::Rectangle {
+                left,
+                top,
+                width,
+                height,
+            } => {
+                assert_eq!(left, &50);
+                assert_eq!(top, &60);
+                assert_eq!(width, &100);
+                assert_eq!(height, &40);
+            }
+            _ => panic!("Expected Rectangle geometry"),
+        }
+    }
+
+    // Integration tests with real hOCR data
+
+    #[test]
+    fn test_english_pdf_real_data() {
+        let hocr = include_str!("../../test_data/hocr/english_pdf_default.hocr");
+        let doc = parse_hocr_to_internal_document(hocr);
+        assert!(
+            !doc.elements.is_empty(),
+            "Should extract elements from English PDF hOCR"
+        );
+        // Verify we got text content
+        let total_text: String = doc
+            .elements
+            .iter()
+            .map(|e| e.text.as_str())
+            .collect::<Vec<_>>()
+            .join(" ");
+        assert!(!total_text.trim().is_empty(), "Should have non-empty text");
+        // Verify page numbers are set
+        let has_pages = doc.elements.iter().any(|e| e.page.is_some());
+        assert!(has_pages, "Should have page numbers");
+    }
+
+    #[test]
+    fn test_german_pdf_real_data() {
+        let hocr = include_str!("../../test_data/hocr/german_pdf_default.hocr");
+        let doc = parse_hocr_to_internal_document(hocr);
+        assert!(!doc.elements.is_empty(), "Should extract elements from German PDF hOCR");
+        // German text should preserve umlauts
+        let total_text: String = doc
+            .elements
+            .iter()
+            .map(|e| e.text.as_str())
+            .collect::<Vec<_>>()
+            .join(" ");
+        assert!(!total_text.trim().is_empty(), "Should have non-empty German text");
+    }
+
+    #[test]
+    fn test_invoice_image_real_data() {
+        let hocr = include_str!("../../test_data/hocr/invoice_image_default.hocr");
+        let doc = parse_hocr_to_internal_document(hocr);
+        assert!(!doc.elements.is_empty(), "Should extract elements from invoice hOCR");
+        // Invoices typically have numbers
+        let total_text: String = doc
+            .elements
+            .iter()
+            .map(|e| e.text.as_str())
+            .collect::<Vec<_>>()
+            .join(" ");
+        assert!(
+            total_text.chars().any(|c| c.is_ascii_digit()),
+            "Invoice should contain numbers"
+        );
+    }
+
+    #[test]
+    fn test_word_confidence_real_data() {
+        // This file contains <p> tags with title attributes (x_wconf, x_confs)
+        // but without standard hOCR class structure (ocr_page/ocr_par/ocrx_word),
+        // so the parser correctly produces no elements.
+        let hocr = include_str!("../../test_data/hocr/word_confidence.hocr");
+        let doc = parse_hocr_to_internal_document(hocr);
+        assert!(
+            doc.elements.is_empty(),
+            "Non-hOCR-classed elements should not be extracted"
+        );
+    }
+
+    #[test]
+    fn test_utf8_encoding_real_data() {
+        // This file contains a plain <p> tag without hOCR classes,
+        // so the parser correctly produces no elements. It verifies
+        // that the parser does not crash on UTF-8 content with special chars.
+        let hocr = include_str!("../../test_data/hocr/utf8_encoding.hocr");
+        let doc = parse_hocr_to_internal_document(hocr);
+        assert!(
+            doc.elements.is_empty(),
+            "Non-hOCR-classed UTF-8 content should not be extracted"
+        );
+    }
+
+    #[test]
+    fn test_v4_with_tables_and_code() {
+        let hocr = include_str!("../../test_data/hocr/v4_code_formula.hocr");
+        let doc = parse_hocr_to_internal_document(hocr);
+        assert!(
+            !doc.elements.is_empty(),
+            "Should extract from v4 hOCR with code/formula"
+        );
+    }
+
+    #[test]
+    fn test_v4_embedded_tables() {
+        let hocr = include_str!("../../test_data/hocr/v4_embedded_tables.hocr");
+        let doc = parse_hocr_to_internal_document(hocr);
+        assert!(
+            !doc.elements.is_empty(),
+            "Should extract from v4 hOCR with embedded tables"
+        );
+    }
+}

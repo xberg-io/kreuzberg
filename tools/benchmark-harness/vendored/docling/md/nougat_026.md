@@ -66,7 +66,7 @@ Print Date:
 
 <!-- image -->
 
-For buildings For buildings which are planned for rebuild, retrofit or replacement this report shall identify;  Whether the hospital owner intends to rebuild, retrofit or replace the building to SPC2, SPC3, SPC4 or SPC5 per 130061(c)(1)(A).  The deadline, as described in Section 130060 or 130061.5,for rebuild, retrofit or replacement of the building that the hospital owner intends to meet, and the applicable extension for which the hospital owner has been approved per  Section 130061(c)(1)(B)
+For buildings For buildings which are planned for rebuild, retrofit or replacement this report shall identify;  Whether the hospital owner intends to rebuild, retrofit or replace the building to SPC2, SPC3, SPC4 or SPC5 per 130061(c)(1)(A). The deadline, as described in Section 130060 or 130061.5,for rebuild, retrofit or replacement of the building that the hospital owner intends to meet, and the applicable extension for which the hospital owner has been approved per Section 130061(c)(1)(B)
 
 <!-- image -->
 

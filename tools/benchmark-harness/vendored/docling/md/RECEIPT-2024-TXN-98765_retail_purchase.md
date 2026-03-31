@@ -44,6 +44,6 @@ RETURN POLICY Returns within 30 days Receipt required Electronics must be unopen
 
 ## *TXN98765202411231432*
 
-Thank you for shopping! www.techmart.example.com
+Thank you for shopping! <https://www.techmart.example.com>
 
 ===================================

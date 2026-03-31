@@ -4,9 +4,9 @@ October 16, 2020
 
 Jody Pellissey, Executive Director Wek'eezhli Renewable Resources Board
 
-102 A 4504 49th A  venue Yellowknife, NT XIA 1A7
+102 A 4504 49th A venue Yellowknife, NT XIA 1A7
 
-E-mail: jpellissey@wrrb.ca
+E-mail: <jpellissey@wrrb.ca>
 
 Sent via e-mail
 
@@ -14,9 +14,9 @@ Re: 2021-2024 Diga Revised Joint Management Proposal
 
 Dear Jody Pellissey,
 
-The Dehq~ Renewable Resources Council (DRRC) has concerns regarding the  joint proposal by Environmental and Natural Resources (ENR) and TljchQ Government (TG) entitled "Revised Joint Proposal on Management Actions  for Wolves (diga) on the Bathurst and Bluenose-East Barren-ground Caribou (nkwr;,) Herd Winter Ranges: 2021 -2024."
+The Dehq~ Renewable Resources Council (DRRC) has concerns regarding the joint proposal by Environmental and Natural Resources (ENR) and TljchQ Government (TG) entitled "Revised Joint Proposal on Management Actions for Wolves (diga) on the Bathurst and Bluenose-East Barren-ground Caribou (nkwr;,) Herd Winter Ranges: 2021 -2024."
 
-For many years now, Dehq~ and other Sahtu communities have been expressing their concerns regarding diga (wolf) culls to ENR and co-management bodies including the Sahtu Renwable Resources Board (SRRB) and the Wek'eezhii  Renewable Resources Board (WRRB). At the 2016 SRRB hearing on Bluenose East, Elders from all 5 Sahtu communities described the important relationship between diga and 1ekw~ (caribou). The Elders explained that the diga keep the  1ekwlr populations healthy, that killing all the diga might actually wipe out the 1ekw~. and that the diga must be respected. This relationship is also described in Dehqfs Belarew1 ie Gots'~  7ekw~, or caribou conservation plan, which was formally approved as a community conservation plan by the SRRB and was accepted and endorsed by the Minister of  the Environment and Natural Resources in 2016.
+For many years now, Dehq~ and other Sahtu communities have been expressing their concerns regarding diga (wolf) culls to ENR and co-management bodies including the Sahtu Renwable Resources Board (SRRB) and the Wek'eezhii Renewable Resources Board (WRRB). At the 2016 SRRB hearing on Bluenose East, Elders from all 5 Sahtu communities described the important relationship between diga and 1ekw~ (caribou). The Elders explained that the diga keep the 1ekwlr populations healthy, that killing all the diga might actually wipe out the 1ekw~. and that the diga must be respected. This relationship is also described in Dehqfs Belarew1 ie Gots'~ 7ekw~, or caribou conservation plan, which was formally approved as a community conservation plan by the SRRB and was accepted and endorsed by the Minister of the Environment and Natural Resources in 2016.
 
 <!-- image -->
 
@@ -26,7 +26,7 @@ P.O Box 156 Deline, NT X0E0G0
 
 Ph: (867) 589-4224 Fax: (867) 589-4230
 
-drrc  manager@gov.deline.ca
+drrc <manager@gov.deline.ca>
 
 <!-- image -->
 
@@ -38,11 +38,11 @@ P.O Box 156 Deline, NT XOEOGO
 
 Ph: (867) 589-4224 Fax: (867) 589-4230
 
-drrc  manager@gov.deline.ca
+drrc <manager@gov.deline.ca>
 
-The DRRC is concerned that ENR and TG's  joint proposal has not considered the perspective of Sahtu Dene Elders. The DRRC does not believe that aerial shooting is respectful of  the diga, and is concerned that this approach will not protect 7ekw~. In addition to being opposed to this specific method of  diga culls, the DRRC is opposed to any diga culls occurring in or near the overlap area between the DehqCr and WRRB boundaries.
+The DRRC is concerned that ENR and TG's joint proposal has not considered the perspective of Sahtu Dene Elders. The DRRC does not believe that aerial shooting is respectful of the diga, and is concerned that this approach will not protect 7ekw~. In addition to being opposed to this specific method of diga culls, the DRRC is opposed to any diga culls occurring in or near the overlap area between the DehqCr and WRRB boundaries.
 
-The DRRC requests information on where the diga culls will be occurring and what impact they will have on diga within the Dehq1r area specifically and within the Sahtu region generally. The DRRC requests that the WRRB hold a full hearing to ensure that there is sufficient consultation on this matter of  great importance to the DehqCr Got'tQCr·
+The DRRC requests information on where the diga culls will be occurring and what impact they will have on diga within the Dehq1r area specifically and within the Sahtu region generally. The DRRC requests that the WRRB hold a full hearing to ensure that there is sufficient consultation on this matter of great importance to the DehqCr Got'tQCr·
 
 Sincerely,
 

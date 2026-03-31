@@ -52,21 +52,21 @@ Gender ( M/F)
 
 US Citizen
 
-## Eligibility and Requirements:
+## Eligibility and Requirements
 
 1. Be a graduating senior from any LISD High School
 2. Complete and sign this form, including signature of H.S. Counselor or Principal
 3. Attach a copy of your High School transcript to this application
 4. Attach a double spaced, 750-word essay on the
 5. following selected topic:a. The Contributions of Freemasonry in Texas History
-5. I hereby grant permission for my essay to be used in Masonic publications
-6. I hereby authorize Leander ISD to make available to Norton Moses Lodge Scholarship committee information concerning my academic records
+6. I hereby grant permission for my essay to be used in Masonic publications
+7. I hereby authorize Leander ISD to make available to Norton Moses Lodge Scholarship committee information concerning my academic records
 
 ## Counselor or Principal's Certification
 
 I hereby certify that the academic information and summary of school activities as submitted are true and correct to the best of my knowledge
 
-## Applicant's Certification:
+## Applicant's Certification
 
 I hereby certify that the academic information and summary of school activities as submitted are true and correct to the best of my knowledge. I understand that submitting false information will automatically disqualify me from consideration for a scholarship.
 

@@ -4,11 +4,11 @@
 
 Nathann Cohen, Frédéric Havet, William Lochet, Raul Lopes
 
-## To cite this version:
+## To cite this version
 
 Nathann Cohen, Frédéric Havet, William Lochet, Raul Lopes. Bispindle in strongly connected digraphs with large chromatic number. Electronic Notes in Discrete Mathematics, Elsevier, 2017, 62, pp.69 - 74. ￿10.1016/j.endm.2017.10.013￿. ￿hal-01634307￿
 
-## HAL Id: hal-01634307 https://hal.inria.fr/hal-01634307
+## HAL Id: hal-01634307 <https://hal.inria.fr/hal-01634307>
 
 Submitted on 13 Nov 2017
 
@@ -16,7 +16,7 @@ HAL is a multi-disciplinary open access archive for the deposit and disseminatio
 
 L'archive ouverte pluridisciplinaire HAL , est destinée au dépôt et à la diffusion de documents scientifiques de niveau recherche, publiés ou non, émanant des établissements d'enseignement et de recherche français ou étrangers, des laboratoires publics ou privés.
 
-## Bispindle in strongly connected digraphs with large chromatic number.
+## Bispindle in strongly connected digraphs with large chromatic number
 
 Nathann Cohen 1
 
@@ -46,7 +46,7 @@ Throughout this paper, the chromatic number of a digraph D , denoted by χ ( D )
 
 A classical result due to Gallai, Hasse, Roy and Vitaver is the following.
 
-```
+```text
 Theorem 1.1 (Gallai [8], Hasse [9], Roy [11], Vitaver [12]) If χ ( D ) ≥ k , then D contains a dipath of length k -1 .
 ```
 
@@ -58,13 +58,13 @@ However the following celebrated theorem of Bondy shows that the story does not 
 
 Theorem 1.2 (Bondy [2]) Every strongly connected digraph with chromatic number at least k contains a directed cycle of length at least k .
 
-1 nathann.cohen@gmail.com
+1 <nathann.cohen@gmail.com>
 
-2 frederic.havet@cnrs.fr
+2 <frederic.havet@cnrs.fr>
 
-3 william.lochet@gmail.com
+3 <william.lochet@gmail.com>
 
-4 raul.wayne@gmail.com
+4 <raul.wayne@gmail.com>
 
 The strong connectivity assumption is indeed necessary, as transitive tournaments contain no directed cycle but can have arbitrarily high chromatic number.
 
@@ -120,7 +120,7 @@ For i ∈ { 0 , 1 , 2 } , let D i be the spanning subdigraph of D [ S ] with arc
 
 Clearly, χ ( D 1 ) ≤ k , and we show that χ ( D 2 ) ≤ 4 k 2 +2. To bound χ ( D 0 ) we partition the vertex set according to the above-mention colouring φ of ⋃ S . Using the rainbow property, we prove that the subdigraph of D 0 induced by the vertices of colour c has chromatic number at most 2 · (4 k ) 4 k + 1 for all colour c . Hence χ ( D 0 ) ≤ (2 · (4 k ) 4 k + 1) α k . This gives the result for β k = k (4 k 2 +2)(2 · (4 k ) 4 k +1) α k . /square
 
-## Lemma 2.3 χ ( D ′ ) ≤ 8 k .
+## Lemma 2.3 χ ( D ′ ) ≤ 8 k
 
 Proof. First note that since D is strongly connected so is D ′ .
 

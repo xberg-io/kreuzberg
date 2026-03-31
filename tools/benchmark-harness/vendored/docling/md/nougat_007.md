@@ -12,7 +12,7 @@ The privilege of letting member children at the age of 10 be dropped off so that
 
 ## RULES/spaceliningAND/spaceliningREGULATIONS
 
-## Children ages 10 - 14:
+## Children ages 10 - 14
 
 - Must have a 2021 Child Consent Form at the Front Desk
 - Must have paid the 2021 Child Consent fee of $75 per child.
@@ -40,7 +40,7 @@ Unsafe or inappropriate behavior may result in suspension from using the club fo
 
 ## PARTICIPANT'S/spaceliningINFORMATION
 
-Name: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ Date of birth: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ Gender:     Male     Female
+Name: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ Date of birth: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ Gender: Male Female
 
 Child's cell number (if applicable): : \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
@@ -90,7 +90,7 @@ Name as shown on card: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\
 
 Credit card number: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ Expiration date: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ CCV number: \_\_\_\_\_\_\_\_\_\_\_
 
-## To be completed by LRRC staff:
+## To be completed by LRRC staff
 
 Date: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
@@ -100,15 +100,15 @@ NOW/spaceliningSIGN/spaceliningTHE/spaceliningW AIVER/spacelining ON/spacelining
 
 ## RELEASE OF LIABILITY &amp; ASSUMPTION OF RISK AGREEMENT
 
-I understand and acknowledge that this is an agreement between myself and the auspices of the Li/ttle Rock Athletic Centers, LLC, dba Li/ttle Rock Athletic Club, Li/ttle Rock Racquet Club, North Li/ttle Rock Athletic Club and Downtown Athletic Club (collectively referred to as LRAC).  I further acknowledge that I have the ability to read and have been provided the opportunity to read this agreement before signing.
+I understand and acknowledge that this is an agreement between myself and the auspices of the Li/ttle Rock Athletic Centers, LLC, dba Li/ttle Rock Athletic Club, Li/ttle Rock Racquet Club, North Li/ttle Rock Athletic Club and Downtown Athletic Club (collectively referred to as LRAC). I further acknowledge that I have the ability to read and have been provided the opportunity to read this agreement before signing.
 
 I understand and agree that being allowed to participate and utilize the equipment, programs, supplies, services, staff and facilities at LRAC is good and valuable consideration for this agreement.
 
-I understand that the nature of LRAC's facilities and equipment contemplate that other members, guests and staff will have access to the equipment, supplies and services available at LRAC. While LRAC takes reasonable steps to insure the safety and sanitization of the equipment, programs, supplies, services and facilities, it cannot and does not guarantee that the equipment, programs, supplies, services and facilities are germ / virus free (this includes, but is not limited to COVID-19). I acknowledge the individual responsibility regarding these issues and hereby waive any and all claims related to such issues should I or my children choose to participate and/or utilize the equipment, programs, supplies, services and facilities. I also acknowledge the individual responsibility regarding the fact that other members, guests or staff may be present and may have medical conditions and/or infections wholly independent of LRAC.  I hereby waive any and all claims related to such issues should I or my children choose to participate and/or utilize the equipment, programs, supplies, services and facilities while other members, guests or staff are present.
+I understand that the nature of LRAC's facilities and equipment contemplate that other members, guests and staff will have access to the equipment, supplies and services available at LRAC. While LRAC takes reasonable steps to insure the safety and sanitization of the equipment, programs, supplies, services and facilities, it cannot and does not guarantee that the equipment, programs, supplies, services and facilities are germ / virus free (this includes, but is not limited to COVID-19). I acknowledge the individual responsibility regarding these issues and hereby waive any and all claims related to such issues should I or my children choose to participate and/or utilize the equipment, programs, supplies, services and facilities. I also acknowledge the individual responsibility regarding the fact that other members, guests or staff may be present and may have medical conditions and/or infections wholly independent of LRAC. I hereby waive any and all claims related to such issues should I or my children choose to participate and/or utilize the equipment, programs, supplies, services and facilities while other members, guests or staff are present.
 
-RELEASE AND AGREEMENT NOT TO SUE: I understand, acknowledge and agree that the equipment, programs, supplies, services and facilities at LRAC are voluntary and that they involve inherent risks. The risk of injury includes the risk of use and the risk of misuse.  The possible injuries include the potential for permanent paralysis and death. I knowingly and freely assume all such risks, both known and unknown and assume full responsibility for my participation and that of my children. I knowingly and freely agree to waive any claim for injury sustained at LRAC and agree not to sue LRAC (including its managers, officers, officials and/or employees) whether or not the claim for injury was caused by the negligence of LRAC, its managers, officers, officials and/or employees.  I further agree to indemnify and hold harmless LRAC against any and all damage, loss, cost and expense related to any injury or harm I or my children might sustain.
+RELEASE AND AGREEMENT NOT TO SUE: I understand, acknowledge and agree that the equipment, programs, supplies, services and facilities at LRAC are voluntary and that they involve inherent risks. The risk of injury includes the risk of use and the risk of misuse. The possible injuries include the potential for permanent paralysis and death. I knowingly and freely assume all such risks, both known and unknown and assume full responsibility for my participation and that of my children. I knowingly and freely agree to waive any claim for injury sustained at LRAC and agree not to sue LRAC (including its managers, officers, officials and/or employees) whether or not the claim for injury was caused by the negligence of LRAC, its managers, officers, officials and/or employees. I further agree to indemnify and hold harmless LRAC against any and all damage, loss, cost and expense related to any injury or harm I or my children might sustain.
 
-Photography and/or Video - I understand that LRAC periodically takes facility and group photographs and videos and uses the resulting content for lawful purposes including, publicity, illustration, advertising and web content. I grant to LRAC and all its subsidiaries the right to take photographs and/or videos of myself or my  children. I authorize LRAC, its assigns and transferees to copyright, use and publish the same in print and/or electronically. I agree that LRAC may edit and use such photographs and/or videos for any lawful purpose..
+Photography and/or Video - I understand that LRAC periodically takes facility and group photographs and videos and uses the resulting content for lawful purposes including, publicity, illustration, advertising and web content. I grant to LRAC and all its subsidiaries the right to take photographs and/or videos of myself or my children. I authorize LRAC, its assigns and transferees to copyright, use and publish the same in print and/or electronically. I agree that LRAC may edit and use such photographs and/or videos for any lawful purpose..
 
 Text and Email Communication - By opting in to receiving text and email messages from LRAC, I agree to allow LRAC and all its subsidiaries, agents and service providers to contact me with promotional and informational texts and emails at the phone number(s) and/or email address(es) provided. I acknowledge that providing these phone numbers and email addresses is not a condition of receiving any property, goods or services. By listing this information, I certify that it is accurate and that I own the rights to use it and give consent for it/their use. Additionally, I understand that I may unsubscribe at any time to these communications.
 

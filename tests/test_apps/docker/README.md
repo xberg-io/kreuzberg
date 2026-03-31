@@ -59,6 +59,7 @@ docker-compose ps
 ```
 
 With profiles:
+
 - **core**: Only `kreuzberg-core-test` should show `(healthy)`
 - **full**: Only `kreuzberg-full-test` should show `(healthy)`
 - **all**: Both should show `(healthy)`
@@ -115,6 +116,7 @@ docker-compose down -v
 Master test runner that executes all test suites in sequence and provides a comprehensive summary.
 
 **Usage:**
+
 ```bash
 bash tests/test-all.sh
 ```
@@ -126,6 +128,7 @@ bash tests/test-all.sh
 Validates container lifecycle and basic health checks.
 
 **Tests:**
+
 - Container existence
 - Container running status
 - Health check passing
@@ -136,6 +139,7 @@ Validates container lifecycle and basic health checks.
 Validates command-line interface functionality.
 
 **Tests:**
+
 - Version command
 - Help/usage commands
 - Subcommand availability (extract, serve, mcp)
@@ -146,20 +150,22 @@ Validates command-line interface functionality.
 Validates HTTP API server endpoints.
 
 **Tests:**
+
 - Health endpoint (GET /health)
 - Extract endpoint (POST /extract)
 - API response format
 - Text extraction via API
 - Status codes
 
-**Core Container API:** http://localhost:8000
-**Full Container API:** http://localhost:8001
+**Core Container API:** <http://localhost:8000>
+**Full Container API:** <http://localhost:8001>
 
 ### `test-mcp.sh`
 
 Validates MCP (Model Context Protocol) support.
 
 **Tests:**
+
 - MCP command availability
 - MCP stdio mode
 - MCP help/usage
@@ -170,6 +176,7 @@ Validates MCP (Model Context Protocol) support.
 Validates OCR (Optical Character Recognition) capabilities.
 
 **Tests:**
+
 - OCR on JPEG images
 - OCR on PNG images
 - Force OCR on image-only PDFs
@@ -179,6 +186,7 @@ Validates OCR (Optical Character Recognition) capabilities.
 - OCR image extraction from various formats
 
 **Features:**
+
 - Tests default OCR behavior
 - Tests force OCR with `force_ocr` flag
 - Tests multiple image formats (JPG, PNG)
@@ -189,6 +197,7 @@ Validates OCR (Optical Character Recognition) capabilities.
 Validates ONNX Runtime and embeddings generation.
 
 **Tests:**
+
 - Embeddings generation for text files
 - Embeddings for PDF documents
 - Embeddings for DOCX documents
@@ -197,6 +206,7 @@ Validates ONNX Runtime and embeddings generation.
 - Embeddings endpoint availability
 
 **Features:**
+
 - Tests `generate_embeddings` flag
 - Tests `embedding_model` parameter
 - Validates ONNX Runtime availability
@@ -207,6 +217,7 @@ Validates ONNX Runtime and embeddings generation.
 Validates core image specific features.
 
 **Tests:**
+
 - Tesseract OCR is available
 - Text extraction works
 - PDF processing capability
@@ -221,7 +232,8 @@ Validates core image specific features.
 - Tesseract data files available
 - Image size efficiency
 
-**API Tests (via http://localhost:8000):**
+**API Tests (via <http://localhost:8000>):**
+
 - PDF extraction
 - Text file extraction
 - Markdown extraction
@@ -235,6 +247,7 @@ Validates core image specific features.
 Validates full image specific features.
 
 **Tests:**
+
 - Tesseract OCR is available
 - Office document extraction capability
 - DOCX/XLSX mime type detection
@@ -250,7 +263,8 @@ Validates full image specific features.
 - Full API health checks
 - Disk space usage
 
-**API Tests (via http://localhost:8001):**
+**API Tests (via <http://localhost:8001>):**
+
 - Legacy .doc extraction
 - DOCX extraction
 - DOCX with tables extraction
@@ -265,28 +279,34 @@ Validates full image specific features.
 Real test documents (symlinked from `kreuzberg/test_documents/`):
 
 ### Text & Markup
+
 - **sample.txt** - Plain text file for basic extraction testing
 - **extraction_test.md** - Markdown document with formatting
 
 ### PDFs
+
 - **tiny.pdf** - Small PDF with tables (text-based)
 - **medium.pdf** - Medium-sized PDF with multiple tables
 - **large.pdf** - Large PDF with complex content (text + images)
 - **image_only_german_pdf.pdf** - Scanned PDF (image-only, requires OCR)
 
 ### Microsoft Office (Modern)
+
 - **lorem_ipsum.docx** - Standard DOCX document
 - **docx_tables.docx** - DOCX document with tables
 - **word_sample.docx** - DOCX sample document
 - **stanley_cups.xlsx** - XLSX spreadsheet with data
 
 ### Office Documents (Legacy)
+
 - **unit_test_lists.doc** - Legacy Word 97-2003 document (.doc format)
 
 ### OpenDocument
+
 - **simple.odt** - OpenDocument Text format
 
 ### Images
+
 - **example.jpg** - JPEG image for OCR testing
 - **sample.png** - PNG image for OCR testing
 - **ocr_image.jpg** - Image with text for OCR testing
@@ -375,6 +395,7 @@ curl -X POST http://localhost:8000/extract \
 ### Containers Won't Start
 
 Check logs:
+
 ```bash
 docker-compose logs kreuzberg-core-test
 docker-compose logs kreuzberg-full-test
@@ -411,6 +432,7 @@ docker exec kreuzberg-core-test netstat -tlnp | grep 8000
 ### OCR Tests Failing
 
 Tesseract data files should be available at:
+
 ```bash
 docker exec kreuzberg-core-test ls /usr/share/tesseract-ocr/5/tessdata/
 ```
@@ -418,6 +440,7 @@ docker exec kreuzberg-core-test ls /usr/share/tesseract-ocr/5/tessdata/
 ## Image Tags
 
 The docker-compose configuration uses:
+
 - `kreuzberg/kreuzberg:v4.0` for both core and full
 
 To use different tags, edit `docker-compose.yml`:
@@ -441,7 +464,8 @@ Tests use color coding:
 - **BLUE** `[INFO]` - Informational message
 
 Example output:
-```
+
+```text
 [INFO] Test 1: Core container exists
 [PASS] Core container exists
 [PASS] Core container is running

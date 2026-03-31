@@ -19,11 +19,17 @@ use crate::core::config::ExtractionConfig;
 #[cfg(feature = "office")]
 use crate::plugins::{DocumentExtractor, Plugin};
 #[cfg(feature = "office")]
-use crate::types::builder::DocumentStructureBuilder;
+use crate::types::document_structure::{AnnotationKind, TextAnnotation};
 #[cfg(feature = "office")]
-use crate::types::document_structure::{AnnotationKind, DocumentStructure, TextAnnotation};
+use crate::types::internal::InternalDocument;
 #[cfg(feature = "office")]
-use crate::types::{ExtractionResult, Metadata, Table};
+use crate::types::internal::{RelationshipKind, RelationshipTarget};
+#[cfg(feature = "office")]
+use crate::types::internal_builder::InternalDocumentBuilder;
+#[cfg(feature = "office")]
+use crate::types::uri::Uri;
+#[cfg(feature = "office")]
+use crate::types::{Metadata, Table};
 #[cfg(feature = "office")]
 use ahash::AHashMap;
 #[cfg(feature = "office")]
@@ -57,6 +63,17 @@ impl RstExtractor {
         let mut additional: AHashMap<Cow<'static, str>, serde_json::Value> = AHashMap::new();
 
         let text = Self::extract_text_from_rst(content, &mut additional);
+
+        // Map standard fields from additional to typed Metadata fields
+        metadata.title = additional
+            .remove(&Cow::Borrowed("title"))
+            .and_then(|v| v.as_str().map(|s| s.to_string()));
+        metadata.authors = additional
+            .remove(&Cow::Borrowed("author"))
+            .and_then(|v| v.as_str().map(|s| vec![s.to_string()]));
+        metadata.created_at = additional
+            .remove(&Cow::Borrowed("date"))
+            .and_then(|v| v.as_str().map(|s| s.to_string()));
 
         metadata.additional = additional;
         (text, metadata)
@@ -446,12 +463,50 @@ impl RstExtractor {
                 i = end + 2;
                 continue;
             }
-            // `interpreted text`
+            // `interpreted text` or `link text <url>`_  (RST inline hyperlink)
             if bytes[i] == b'`'
                 && (i + 1 >= len || bytes[i + 1] != b'`')
                 && let Some(end) = Self::find_closing_single_backtick(raw, i + 1)
             {
                 let inner = &raw[i + 1..end];
+                // Check for trailing `_ (hyperlink marker)
+                let after_close = end + 1; // position after closing backtick
+                if after_close < len && bytes[after_close] == b'_' {
+                    // RST inline hyperlink: `link text <url>`_
+                    if let Some(angle_start) = inner.rfind('<')
+                        && let Some(angle_end) = inner.rfind('>')
+                        && angle_end > angle_start
+                    {
+                        let url = inner[angle_start + 1..angle_end].trim().to_string();
+                        let link_text = inner[..angle_start].trim();
+                        let start = out.len() as u32;
+                        out.push_str(link_text);
+                        let end_off = out.len() as u32;
+                        if start < end_off {
+                            annotations.push(TextAnnotation {
+                                start,
+                                end: end_off,
+                                kind: AnnotationKind::Link { url, title: None },
+                            });
+                        }
+                        i = after_close + 1; // skip past the trailing _
+                        continue;
+                    }
+                    // Plain reference like `Python`_ — treat as code/interpreted text
+                    let start = out.len() as u32;
+                    out.push_str(inner);
+                    let end_off = out.len() as u32;
+                    if start < end_off {
+                        annotations.push(TextAnnotation {
+                            start,
+                            end: end_off,
+                            kind: AnnotationKind::Code,
+                        });
+                    }
+                    i = after_close + 1;
+                    continue;
+                }
+                // Regular interpreted text (no trailing _)
                 let start = out.len() as u32;
                 out.push_str(inner);
                 let end_off = out.len() as u32;
@@ -465,8 +520,9 @@ impl RstExtractor {
                 i = end + 1;
                 continue;
             }
-            out.push(bytes[i] as char);
-            i += 1;
+            let ch = raw[i..].chars().next().unwrap();
+            out.push(ch);
+            i += ch.len_utf8();
         }
 
         (out, annotations)
@@ -545,12 +601,13 @@ impl RstExtractor {
         opts
     }
 
-    /// Build a `DocumentStructure` from RST content.
-    fn build_document_structure(content: &str) -> DocumentStructure {
-        let mut builder = DocumentStructureBuilder::new().source_format("rst");
+    /// Build an `InternalDocument` from RST content.
+    ///
+    /// Handles sections, paragraphs, code blocks, tables, footnotes, citations,
+    /// and cross-references.
+    pub fn build_internal_document(content: &str) -> InternalDocument {
+        let mut b = InternalDocumentBuilder::new("rst");
         let lines: Vec<&str> = content.lines().collect();
-        // Determine heading level order from the underline characters used.
-        // RST heading levels are defined by the order of appearance of underline characters.
         let mut heading_char_order: Vec<char> = Vec::new();
         let mut i = 0;
 
@@ -563,7 +620,6 @@ impl RstExtractor {
                 && trimmed.len() > 1
                 && let Some((key, value)) = Self::parse_field_list_line(trimmed)
             {
-                // Collect continuation lines
                 let mut full_value = value;
                 while i + 1 < lines.len() {
                     let next = lines[i + 1];
@@ -575,7 +631,7 @@ impl RstExtractor {
                         break;
                     }
                 }
-                builder.push_metadata_block(vec![(key, full_value)], None);
+                b.push_metadata_block(&[(key, full_value)], None);
                 i += 1;
                 continue;
             }
@@ -591,7 +647,7 @@ impl RstExtractor {
                     .position(|&c| c == underline_char)
                     .map(|p| (p + 1) as u8)
                     .unwrap_or(1);
-                builder.push_heading(level, trimmed, None, None);
+                b.push_heading(level, trimmed, None, None);
                 i += 2;
                 continue;
             }
@@ -608,23 +664,20 @@ impl RstExtractor {
                     None
                 };
                 i += 1;
-                // Skip blank lines after directive
                 while i < lines.len() && lines[i].trim().is_empty() {
                     i += 1;
                 }
-                // Collect indented content
                 let mut code_content = String::new();
                 while i < lines.len() && (lines[i].starts_with("   ") || lines[i].is_empty()) {
                     if !code_content.is_empty() {
                         code_content.push('\n');
                     }
-                    // Strip 3-space indent
                     if lines[i].starts_with("   ") {
                         code_content.push_str(&lines[i][3..]);
                     }
                     i += 1;
                 }
-                builder.push_code(code_content.trim_end(), language, None);
+                b.push_code(code_content.trim_end(), language, None, None);
                 continue;
             }
 
@@ -637,9 +690,8 @@ impl RstExtractor {
                 || trimmed.starts_with(".. tip::")
             {
                 let kind = trimmed.strip_prefix(".. ").unwrap_or("").trim_end_matches("::").trim();
-                builder.push_admonition(kind, None, None);
+                b.push_admonition(kind, None, None);
                 i += 1;
-                // Collect indented content as paragraphs
                 let mut admonition_text = String::new();
                 while i < lines.len() && (lines[i].starts_with("   ") || lines[i].is_empty()) {
                     if !lines[i].is_empty() {
@@ -651,33 +703,26 @@ impl RstExtractor {
                     i += 1;
                 }
                 if !admonition_text.is_empty() {
-                    builder.push_paragraph(&admonition_text, vec![], None, None);
+                    b.push_paragraph(&admonition_text, vec![], None, None);
                 }
-                builder.exit_container();
                 continue;
             }
 
-            // Image directive with options
+            // Image directive
             if trimmed.starts_with(".. image::") {
                 let uri = trimmed.strip_prefix(".. image::").unwrap_or("").trim();
                 i += 1;
                 let opts = Self::parse_image_options(&lines, &mut i);
                 let alt = opts.get("alt").cloned();
-                let description = alt.as_deref().or(if uri.is_empty() { None } else { Some(uri) });
-                let img_idx = builder.push_image(description, None, None, None);
-                // Store width/height and uri as attributes
-                let mut attrs = AHashMap::new();
+                let desc = alt.as_deref().unwrap_or(uri);
                 if !uri.is_empty() {
+                    b.push_uri(Uri::image(uri, alt.clone()));
+                }
+                let idx = b.push_paragraph(&format!("[image: {}]", desc), vec![], None, None);
+                if !uri.is_empty() {
+                    let mut attrs = ahash::AHashMap::new();
                     attrs.insert("src".to_string(), uri.to_string());
-                }
-                if let Some(w) = opts.get("width") {
-                    attrs.insert("width".to_string(), w.clone());
-                }
-                if let Some(h) = opts.get("height") {
-                    attrs.insert("height".to_string(), h.clone());
-                }
-                if !attrs.is_empty() {
-                    builder.set_attributes(img_idx, attrs);
+                    b.set_attributes(idx, attrs);
                 }
                 continue;
             }
@@ -691,7 +736,6 @@ impl RstExtractor {
                 } else {
                     inline_math.to_string()
                 };
-                // Collect indented math content
                 while i < lines.len() && (lines[i].starts_with("   ") || lines[i].is_empty()) {
                     if !lines[i].is_empty() {
                         if !math_content.is_empty() {
@@ -702,8 +746,62 @@ impl RstExtractor {
                     i += 1;
                 }
                 if !math_content.is_empty() {
-                    builder.push_formula(&math_content, None);
+                    b.push_formula(&math_content, None, None);
                 }
+                continue;
+            }
+
+            // Footnote definitions: .. [1] text  or  .. [#label] text
+            if trimmed.starts_with(".. [")
+                && let Some(close) = trimmed.find(']')
+                && close > 4
+            {
+                let label = &trimmed[4..close];
+                let footnote_text = trimmed[close + 1..].trim();
+                let mut full_text = footnote_text.to_string();
+                i += 1;
+                while i < lines.len() && (lines[i].starts_with("   ") || lines[i].starts_with("\t")) {
+                    if !full_text.is_empty() {
+                        full_text.push(' ');
+                    }
+                    full_text.push_str(lines[i].trim());
+                    i += 1;
+                }
+                // Determine if it's a citation or footnote
+                let is_citation = label.chars().all(|c| c.is_alphanumeric() || c == '_' || c == '-')
+                    && !label.chars().all(|c| c.is_ascii_digit())
+                    && !label.starts_with('#');
+                if is_citation {
+                    b.push_citation(&full_text, label, None);
+                } else {
+                    b.push_footnote_definition(&full_text, label, None);
+                }
+                continue;
+            }
+
+            // Reference target directives: .. _label: url
+            if trimmed.starts_with(".. _")
+                && let Some(colon_pos) = trimmed[4..].find(": ")
+            {
+                let label = &trimmed[4..4 + colon_pos];
+                let url = trimmed[4 + colon_pos + 2..].trim();
+                if !url.is_empty() && !label.is_empty() {
+                    let idx = b.push_paragraph(
+                        label,
+                        vec![TextAnnotation {
+                            start: 0,
+                            end: label.len() as u32,
+                            kind: AnnotationKind::Link {
+                                url: url.to_string(),
+                                title: None,
+                            },
+                        }],
+                        None,
+                        None,
+                    );
+                    let _ = idx;
+                }
+                i += 1;
                 continue;
             }
 
@@ -711,63 +809,6 @@ impl RstExtractor {
             if trimmed.starts_with(".. ") || trimmed == ".." {
                 i += 1;
                 while i < lines.len() && (lines[i].starts_with("   ") || lines[i].is_empty()) {
-                    i += 1;
-                }
-                continue;
-            }
-
-            // Definition list: term followed by indented definition
-            if !trimmed.is_empty()
-                && !Self::is_list_item(line)
-                && i + 1 < lines.len()
-                && !lines[i + 1].trim().is_empty()
-                && (lines[i + 1].starts_with("   ") || lines[i + 1].starts_with("\t"))
-                && !Self::is_section_underline(lines[i + 1])
-            {
-                // Check if this really is a definition list (term + indented definition)
-                let term = trimmed.to_string();
-                i += 1;
-                let mut definition = String::new();
-                while i < lines.len() && (lines[i].starts_with("   ") || lines[i].starts_with("\t")) {
-                    if !definition.is_empty() {
-                        definition.push(' ');
-                    }
-                    definition.push_str(lines[i].trim());
-                    i += 1;
-                }
-                let dl = builder.push_definition_list(None);
-                builder.push_definition_item(dl, &term, &definition, None);
-                continue;
-            }
-
-            // List items
-            if Self::is_list_item(line) {
-                let is_ordered = {
-                    let t = trimmed.trim_start();
-                    if let Some(space_pos) = t.find(' ') {
-                        let prefix = &t[..space_pos];
-                        prefix.ends_with('.') || prefix.ends_with(')')
-                    } else {
-                        false
-                    }
-                };
-                let list_idx = builder.push_list(is_ordered, None);
-                // Collect consecutive list items
-                while i < lines.len() && Self::is_list_item(lines[i]) {
-                    let item_trimmed = lines[i].trim();
-                    // Strip bullet/number prefix
-                    let text = if let Some(rest) = item_trimmed
-                        .strip_prefix("* ")
-                        .or_else(|| item_trimmed.strip_prefix("+ "))
-                        .or_else(|| item_trimmed.strip_prefix("- "))
-                    {
-                        rest
-                    } else if let Some(space_pos) = item_trimmed.find(' ') {
-                        &item_trimmed[space_pos + 1..]
-                    } else {
-                        item_trimmed
-                    };
-                    builder.push_list_item(list_idx, text, None);
                     i += 1;
                 }
                 continue;
@@ -782,52 +823,97 @@ impl RstExtractor {
                 }
                 let cells = Self::parse_grid_table_cells(&table_lines);
                 if !cells.is_empty() {
-                    builder.push_table_from_cells(&cells, None);
+                    b.push_table_from_cells(&cells, None, None);
                 }
                 continue;
             }
 
-            // Footnote definitions: .. [1] text  or  .. [#label] text
-            if trimmed.starts_with(".. [")
-                && let Some(close) = trimmed.find(']')
-                && close > 4
-            {
-                let label = &trimmed[4..close];
-                let footnote_text = trimmed[close + 1..].trim();
-                // Collect continuation lines
-                let mut full_text = footnote_text.to_string();
-                i += 1;
-                while i < lines.len() && (lines[i].starts_with("   ") || lines[i].starts_with("\t")) {
-                    if !full_text.is_empty() {
-                        full_text.push(' ');
+            // List items
+            if Self::is_list_item(line) {
+                let is_ordered = {
+                    let t = trimmed.trim_start();
+                    if let Some(space_pos) = t.find(' ') {
+                        let prefix = &t[..space_pos];
+                        prefix.ends_with('.') || prefix.ends_with(')')
+                    } else {
+                        false
                     }
-                    full_text.push_str(lines[i].trim());
+                };
+                b.push_list(is_ordered);
+                while i < lines.len() && Self::is_list_item(lines[i]) {
+                    let item_trimmed = lines[i].trim();
+                    let text = if let Some(rest) = item_trimmed
+                        .strip_prefix("* ")
+                        .or_else(|| item_trimmed.strip_prefix("+ "))
+                        .or_else(|| item_trimmed.strip_prefix("- "))
+                    {
+                        rest
+                    } else if let Some(space_pos) = item_trimmed.find(' ') {
+                        &item_trimmed[space_pos + 1..]
+                    } else {
+                        item_trimmed
+                    };
+                    b.push_list_item(text, is_ordered, vec![], None, None);
                     i += 1;
                 }
-                let display = if full_text.is_empty() {
-                    format!("[{}]", label)
-                } else {
-                    format!("[{}] {}", label, full_text)
-                };
-                builder.push_footnote(&display, None);
+                b.end_list();
                 continue;
             }
 
-            // Regular paragraph with inline markup scanning
+            // Regular paragraph with footnote refs and cross-references
             if !trimmed.is_empty() && !Self::is_markup_line(line) {
-                // Check for footnote references first
                 let footnote_refs = Self::find_footnote_references(trimmed);
                 let (stripped, annotations) = Self::parse_inline_markup(trimmed);
-                builder.push_paragraph(&stripped, annotations, None, None);
-                for fref in footnote_refs {
-                    builder.push_footnote(&format!("[{}]", fref), None);
+                let idx = b.push_paragraph(&stripped, annotations, None, None);
+
+                // Emit footnote reference relationships
+                for fref in &footnote_refs {
+                    let ref_idx = b.push_footnote_ref(&format!("[{}]", fref), fref, None);
+                    let _ = ref_idx;
                 }
+
+                // Check for cross-reference patterns like :ref:`target`
+                Self::extract_rst_cross_refs(trimmed, idx, &mut b);
             }
 
             i += 1;
         }
 
-        builder.build()
+        b.build()
+    }
+
+    /// Extract RST cross-reference roles (`:ref:`, `:doc:`, etc.) and emit relationships.
+    fn extract_rst_cross_refs(line: &str, source_idx: u32, b: &mut InternalDocumentBuilder) {
+        let roles = [":ref:", ":doc:", ":numref:"];
+        for role in &roles {
+            let mut search_from = 0;
+            while let Some(pos) = line[search_from..].find(role) {
+                let abs_pos = search_from + pos;
+                let after = &line[abs_pos + role.len()..];
+                if after.starts_with('`')
+                    && let Some(close) = after[1..].find('`')
+                {
+                    let target = &after[1..1 + close];
+                    // Handle <display text> patterns
+                    let key = if let Some(angle_pos) = target.find('<') {
+                        let end = target.find('>').unwrap_or(target.len());
+                        &target[angle_pos + 1..end]
+                    } else {
+                        target
+                    };
+                    if !key.is_empty() {
+                        b.push_relationship(
+                            source_idx,
+                            RelationshipTarget::Key(key.to_string()),
+                            RelationshipKind::CrossReference,
+                        );
+                    }
+                    search_from = abs_pos + role.len() + 1 + close + 1;
+                    continue;
+                }
+                search_from = abs_pos + role.len();
+            }
+        }
     }
 
     /// Parse cells from grid table lines (for DocumentStructure).
@@ -946,39 +1032,33 @@ impl DocumentExtractor for RstExtractor {
         content: &[u8],
         mime_type: &str,
         config: &ExtractionConfig,
-    ) -> Result<ExtractionResult> {
+    ) -> Result<InternalDocument> {
+        let _ = config;
         let text = String::from_utf8_lossy(content).into_owned();
 
-        let (extracted_text, metadata) = Self::extract_text_and_metadata(&text);
+        let (_extracted_text, metadata) = Self::extract_text_and_metadata(&text);
 
         let tables = Self::extract_tables(&text);
 
-        let document = if config.include_document_structure {
-            Some(Self::build_document_structure(&text))
-        } else {
-            None
-        };
+        let mut doc = Self::build_internal_document(&text);
+        doc.mime_type = Cow::Owned(mime_type.to_string());
+        doc.metadata = metadata;
 
-        Ok(ExtractionResult {
-            content: extracted_text,
-            mime_type: mime_type.to_string().into(),
-            metadata,
-            tables,
-            detected_languages: None,
-            chunks: None,
-            images: None,
-            djot_content: None,
-            pages: None,
-            elements: None,
-            ocr_elements: None,
-            document,
-            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-            extracted_keywords: None,
-            quality_score: None,
-            processing_warnings: Vec::new(),
-            annotations: None,
-            children: None,
-        })
+        // Add tables to InternalDocument
+        for table in tables {
+            doc.push_table(table);
+        }
+
+        Ok(doc)
+    }
+
+    async fn extract_file(
+        &self,
+        path: &std::path::Path,
+        mime_type: &str,
+        config: &ExtractionConfig,
+    ) -> Result<InternalDocument> {
+        crate::core::path_resolver::extract_file_with_image_resolution(self, path, mime_type, config).await
     }
 
     fn supported_mime_types(&self) -> &[&str] {

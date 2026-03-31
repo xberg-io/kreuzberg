@@ -2,12 +2,11 @@
 
 use crate::Result;
 use crate::core::config::ExtractionConfig;
-use crate::extractors::iwork::{dedup_text, extract_text_from_proto, read_iwa_file};
+use crate::extractors::iwork::{dedup_text, extract_metadata_from_zip, extract_text_from_proto, read_iwa_file};
 use crate::plugins::{DocumentExtractor, Plugin};
-use crate::types::{ExtractionResult, Metadata};
-use ahash::AHashMap;
+use crate::types::internal::InternalDocument;
+use crate::types::internal_builder::InternalDocumentBuilder;
 use async_trait::async_trait;
-use std::borrow::Cow;
 
 /// Apple Numbers spreadsheet extractor.
 ///
@@ -56,22 +55,55 @@ impl Plugin for NumbersExtractor {
     }
 }
 
+/// Parsed Numbers data: per-sheet cell values and optional metadata.
+struct NumbersData {
+    /// Each entry is (sheet_name, cell_values).
+    sheets: Vec<(String, Vec<String>)>,
+    /// Metadata extracted from the ZIP archive.
+    metadata: crate::types::metadata::Metadata,
+}
+
 /// Parse a Numbers ZIP and extract all text from IWA files.
 ///
 /// Numbers stores its content across many IWA files:
 /// - `Index/CalculationEngine.iwa` — formula cells and sheet data
 /// - `Index/Document.iwa` — document structure and sheet names
 /// - `tables/DataStore.iwa` — table cell string values
-fn parse_numbers(content: &[u8]) -> Result<String> {
+///
+/// We group IWA paths by table/sheet and extract cell values per-sheet so the
+/// output can be structured as tables rather than flat paragraphs.
+fn parse_numbers(content: &[u8]) -> Result<NumbersData> {
     let iwa_paths = super::collect_iwa_paths(content)?;
+    let metadata = extract_metadata_from_zip(content);
 
-    let mut all_texts: Vec<String> = Vec::new();
+    // Separate table-related IWA files from other IWA files.
+    // Numbers stores table cell data under `Index/Tables/` or in paths containing `Table`
+    // and document structure in `Index/Document.iwa`.
+    let mut table_paths: Vec<&String> = Vec::new();
+    let mut other_paths: Vec<&String> = Vec::new();
 
     for path in &iwa_paths {
+        if path.contains("Table") || path.contains("DataStore") {
+            table_paths.push(path);
+        } else {
+            other_paths.push(path);
+        }
+    }
+
+    // If there were no table-specific paths, treat all paths as table data
+    // (older Numbers formats may not use the Table/ prefix).
+    if table_paths.is_empty() {
+        table_paths = iwa_paths.iter().collect();
+        other_paths.clear();
+    }
+
+    // Extract table cell values
+    let mut table_texts: Vec<String> = Vec::new();
+    for path in &table_paths {
         match read_iwa_file(content, path) {
             Ok(decompressed) => {
                 let texts = extract_text_from_proto(&decompressed);
-                all_texts.extend(texts);
+                table_texts.extend(texts);
             }
             Err(_) => {
                 tracing::debug!("Skipping IWA file (decompression failed): {path}");
@@ -79,15 +111,46 @@ fn parse_numbers(content: &[u8]) -> Result<String> {
         }
     }
 
-    let deduplicated = dedup_text(all_texts);
+    // Extract any additional text from non-table IWA files (labels, sheet names, etc.)
+    let mut other_texts: Vec<String> = Vec::new();
+    for path in &other_paths {
+        match read_iwa_file(content, path) {
+            Ok(decompressed) => {
+                let texts = extract_text_from_proto(&decompressed);
+                other_texts.extend(texts);
+            }
+            Err(_) => {
+                tracing::debug!("Skipping IWA file (decompression failed): {path}");
+            }
+        }
+    }
 
-    // Filter out very short noise tokens (common in spreadsheet binary data)
-    let filtered: Vec<String> = deduplicated
-        .into_iter()
-        .filter(|s| s.len() >= 2 && s.chars().any(|c| c.is_alphanumeric()))
-        .collect();
+    let table_deduped = dedup_text(table_texts);
+    let other_deduped = dedup_text(other_texts);
 
-    Ok(filtered.join("\n"))
+    // Filter out noise tokens (common in spreadsheet binary data)
+    let filter = |texts: Vec<String>| -> Vec<String> {
+        texts
+            .into_iter()
+            .filter(|s| s.len() >= 2 && s.chars().any(|c| c.is_alphanumeric()))
+            .collect()
+    };
+
+    let table_filtered = filter(table_deduped);
+    let other_filtered = filter(other_deduped);
+
+    // Build per-sheet data. Without full protobuf schema we cannot reliably
+    // determine sheet boundaries, so we emit one sheet for table data and one
+    // for any remaining text labels.
+    let mut sheets = Vec::new();
+    if !table_filtered.is_empty() {
+        sheets.push(("Sheet Data".to_string(), table_filtered));
+    }
+    if !other_filtered.is_empty() {
+        sheets.push(("Document Info".to_string(), other_filtered));
+    }
+
+    Ok(NumbersData { sheets, metadata })
 }
 
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
@@ -97,9 +160,9 @@ impl DocumentExtractor for NumbersExtractor {
         &self,
         content: &[u8],
         mime_type: &str,
-        config: &ExtractionConfig,
-    ) -> Result<ExtractionResult> {
-        let text = {
+        _config: &ExtractionConfig,
+    ) -> Result<InternalDocument> {
+        let data = {
             #[cfg(feature = "tokio-runtime")]
             if crate::core::batch_mode::is_batch_mode() {
                 let content_owned = content.to_vec();
@@ -118,37 +181,9 @@ impl DocumentExtractor for NumbersExtractor {
             parse_numbers(content)?
         };
 
-        let document = if config.include_document_structure {
-            Some(build_numbers_document_structure(&text))
-        } else {
-            None
-        };
-
-        let additional: AHashMap<Cow<'static, str>, serde_json::Value> = AHashMap::new();
-
-        Ok(ExtractionResult {
-            content: text,
-            mime_type: mime_type.to_string().into(),
-            metadata: Metadata {
-                additional,
-                ..Default::default()
-            },
-            pages: None,
-            tables: vec![],
-            detected_languages: None,
-            chunks: None,
-            images: None,
-            djot_content: None,
-            elements: None,
-            ocr_elements: None,
-            document,
-            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-            extracted_keywords: None,
-            quality_score: None,
-            processing_warnings: Vec::new(),
-            annotations: None,
-            children: None,
-        })
+        let mut doc = build_numbers_internal_document(&data);
+        doc.mime_type = std::borrow::Cow::Owned(mime_type.to_string());
+        Ok(doc)
     }
 
     fn supported_mime_types(&self) -> &[&str] {
@@ -160,23 +195,30 @@ impl DocumentExtractor for NumbersExtractor {
     }
 }
 
-/// Build a `DocumentStructure` from extracted Numbers text.
+/// Build an `InternalDocument` from extracted Numbers data.
 ///
-/// Since Numbers extracts flat cell text values, we create a heading
-/// for "Sheet Data" and push each line as a paragraph.
-fn build_numbers_document_structure(text: &str) -> crate::types::document_structure::DocumentStructure {
-    use crate::types::builder::DocumentStructureBuilder;
+/// Outputs cell values as tables (one per sheet) rather than flat paragraphs,
+/// reflecting the spreadsheet nature of the .numbers format.
+fn build_numbers_internal_document(data: &NumbersData) -> InternalDocument {
+    let mut builder = InternalDocumentBuilder::new("numbers");
 
-    let mut builder = DocumentStructureBuilder::new().source_format("numbers");
+    // Apply any metadata we could extract from the ZIP archive.
+    if data.metadata.title.is_some() || data.metadata.authors.is_some() {
+        builder.set_metadata(data.metadata.clone());
+    }
 
-    if !text.trim().is_empty() {
-        builder.push_heading(1, "Sheet Data", None, None);
-        for line in text.lines() {
-            let trimmed = line.trim();
-            if !trimmed.is_empty() {
-                builder.push_paragraph(trimmed, vec![], None, None);
-            }
+    for (sheet_name, cell_values) in &data.sheets {
+        if cell_values.is_empty() {
+            continue;
         }
+
+        builder.push_heading(1, sheet_name, None, None);
+
+        // Build a single-column table from the cell values. Without full
+        // protobuf schema knowledge we cannot reliably determine column
+        // boundaries, so each value gets its own row in a single-column table.
+        let cells: Vec<Vec<String>> = cell_values.iter().map(|v| vec![v.clone()]).collect();
+        builder.push_table_from_cells(&cells, None, None);
     }
 
     builder.build()

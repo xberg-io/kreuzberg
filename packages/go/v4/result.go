@@ -3,19 +3,17 @@ package kreuzberg
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 )
-
-/*
-#include "internal/ffi/kreuzberg.h"
-#include <stdlib.h>
-*/
-import "C"
 
 // GetPageCount returns the total number of pages/slides/sheets in the document.
 // Returns -1 if there is an error (check the error return value).
 // This method provides efficient access to page count metadata without JSON parsing.
 func (r *ExtractionResult) GetPageCount() (int, error) {
 	if r.Metadata.Pages != nil {
+		if r.Metadata.Pages.TotalCount > math.MaxInt {
+			return -1, fmt.Errorf("page count %d exceeds max int", r.Metadata.Pages.TotalCount)
+		}
 		return int(r.Metadata.Pages.TotalCount), nil
 	}
 	return 0, nil

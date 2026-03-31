@@ -130,7 +130,7 @@ extract_sync <- function(file_path, config = NULL) {
   debug_log(sprintf("Result has metadata: %s", !is.null(result$metadata)))
 
   metadata <- result$metadata %||% list()
-  ocr_enabled <- if (is.null(config)) FALSE else (!is.null(config$ocr) && config$ocr$enabled)
+  ocr_enabled <- if (is.null(config)) FALSE else !is.null(config$ocr)
 
   payload <- list(
     content = result$content,
@@ -186,7 +186,7 @@ extract_batch <- function(file_paths, config = NULL) {
   per_file_duration_ms <- if (length(file_paths) > 0) total_duration_ms / length(file_paths) else 0
   debug_log(sprintf("Per-file average duration (milliseconds): %f", per_file_duration_ms))
 
-  ocr_enabled <- if (is.null(config)) FALSE else (!is.null(config$ocr) && config$ocr$enabled)
+  ocr_enabled <- if (is.null(config)) FALSE else !is.null(config$ocr)
   peak_mem <- peak_memory_bytes()
 
   results_with_timing <- lapply(seq_along(results), function(idx) {
@@ -244,7 +244,7 @@ extract_server <- function(ocr_enabled) {
       config <- extraction_config(use_cache = FALSE)
 
       if (ocr_enabled || force_ocr) {
-        config <- extraction_config(ocr = list(enabled = TRUE), use_cache = FALSE)
+        config <- extraction_config(ocr = list(backend = "tesseract"), use_cache = FALSE)
       }
 
       start <- Sys.time()
@@ -327,7 +327,7 @@ main <- function() {
 
       config <- extraction_config(use_cache = FALSE)
       if (ocr_enabled) {
-        config <- extraction_config(ocr = list(enabled = TRUE), use_cache = FALSE)
+        config <- extraction_config(ocr = list(backend = "tesseract"), use_cache = FALSE)
       }
 
       payload <- extract_sync(file_paths[1], config)
@@ -344,7 +344,7 @@ main <- function() {
 
       config <- extraction_config(use_cache = FALSE)
       if (ocr_enabled) {
-        config <- extraction_config(ocr = list(enabled = TRUE), use_cache = FALSE)
+        config <- extraction_config(ocr = list(backend = "tesseract"), use_cache = FALSE)
       }
 
       results <- extract_batch(file_paths, config)

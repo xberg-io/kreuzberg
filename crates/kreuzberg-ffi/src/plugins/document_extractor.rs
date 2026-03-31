@@ -103,7 +103,7 @@ impl kreuzberg::plugins::DocumentExtractor for FfiDocumentExtractor {
         content: &[u8],
         mime_type: &str,
         config: &ExtractionConfig,
-    ) -> Result<ExtractionResult> {
+    ) -> Result<kreuzberg::types::internal::InternalDocument> {
         let config_json = serde_json::to_string(config).map_err(|e| KreuzbergError::Validation {
             message: format!("Failed to serialize ExtractionConfig: {}", e),
             source: Some(Box::new(e)),
@@ -170,13 +170,34 @@ impl kreuzberg::plugins::DocumentExtractor for FfiDocumentExtractor {
             ))
         })??;
 
-        serde_json::from_str(&result_json).map_err(|e| KreuzbergError::Parsing {
-            message: format!(
-                "Failed to deserialize ExtractionResult from extractor '{}': {}",
-                extractor_name_parse, e
-            ),
-            source: Some(Box::new(e)),
-        })
+        let extraction_result: ExtractionResult =
+            serde_json::from_str(&result_json).map_err(|e| KreuzbergError::Parsing {
+                message: format!(
+                    "Failed to deserialize ExtractionResult from extractor '{}': {}",
+                    extractor_name_parse, e
+                ),
+                source: Some(Box::new(e)),
+            })?;
+
+        // Convert ExtractionResult from FFI callback to InternalDocument.
+        // FFI callers return ExtractionResult JSON; we convert to the internal format.
+        let mut doc = kreuzberg::types::internal::InternalDocument::new("ffi");
+        doc.metadata = extraction_result.metadata;
+        doc.tables = extraction_result.tables;
+        doc.mime_type = extraction_result.mime_type;
+        if let Some(images) = extraction_result.images {
+            doc.images = images;
+        }
+        if let Some(annotations) = extraction_result.annotations {
+            doc.annotations = Some(annotations);
+        }
+        // Push content as a paragraph element
+        if !extraction_result.content.is_empty() {
+            use kreuzberg::types::internal::{ElementKind, InternalElement};
+            let elem = InternalElement::text(ElementKind::Paragraph, &extraction_result.content, 0);
+            doc.push_element(elem);
+        }
+        Ok(doc)
     }
 
     async fn extract_file(
@@ -184,7 +205,7 @@ impl kreuzberg::plugins::DocumentExtractor for FfiDocumentExtractor {
         path: &std::path::Path,
         mime_type: &str,
         config: &ExtractionConfig,
-    ) -> Result<ExtractionResult> {
+    ) -> Result<kreuzberg::types::internal::InternalDocument> {
         let content = tokio::fs::read(path).await.map_err(KreuzbergError::Io)?;
         self.extract_bytes(&content, mime_type, config).await
     }

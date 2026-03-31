@@ -22,9 +22,12 @@ mod utilities;
 use crate::Result;
 use crate::core::config::ExtractionConfig;
 use crate::plugins::{DocumentExtractor, Plugin};
-use crate::types::builder::DocumentStructureBuilder;
-use crate::types::document_structure::{AnnotationKind, DocumentStructure, TextAnnotation};
-use crate::types::{ExtractionResult, Metadata, Table};
+use crate::types::document_structure::{AnnotationKind, TextAnnotation};
+use crate::types::internal::InternalDocument;
+use crate::types::internal::{RelationshipKind, RelationshipTarget};
+use crate::types::internal_builder::InternalDocumentBuilder;
+use crate::types::uri::Uri;
+use crate::types::{Metadata, Table};
 use async_trait::async_trait;
 
 use std::sync::LazyLock;
@@ -157,6 +160,21 @@ impl LatexExtractor {
             }
         }
 
+        // Handle \url{url} — URL is both content and link target
+        if let Some(after_url_cmd) = text.strip_prefix("\\url{")
+            && let Some((url, consumed)) = Self::read_braced_content(after_url_cmd)
+        {
+            let total = "\\url{".len() + consumed;
+            return Some((
+                AnnotationKind::Link {
+                    url: url.clone(),
+                    title: None,
+                },
+                url,
+                total,
+            ));
+        }
+
         None
     }
 
@@ -221,18 +239,19 @@ impl LatexExtractor {
         Self::read_braced_content(after).map(|(text, _)| text)
     }
 
-    /// Build a `DocumentStructure` from LaTeX source via a lightweight second pass.
-    fn build_document_structure(source: &str) -> DocumentStructure {
-        let mut builder = DocumentStructureBuilder::new().source_format("latex");
+    /// Build an `InternalDocument` from LaTeX source.
+    ///
+    /// Captures `\label{}` as anchors, `\ref{}` as CrossReference relationships,
+    /// `\cite{}` as CitationReference relationships, and footnotes.
+    pub fn build_internal_document(source: &str) -> InternalDocument {
+        let mut b = InternalDocumentBuilder::new("latex");
         let lines: Vec<&str> = source.lines().collect();
         let mut in_document = false;
         let is_plain_tex = source.contains("\\bye") && !source.contains("\\begin{document}");
         if is_plain_tex {
             in_document = true;
         }
-        // When the document contains \chapter, use absolute LaTeX hierarchy
-        // (chapter=1, section=2, ...). Otherwise, section starts at level 1.
-        // Use a static AHashMap for O(1) lookup instead of a linear scan.
+
         let has_chapters = source.contains("\\chapter{") || source.contains("\\chapter*{");
         let heading_map = if has_chapters {
             &*HEADING_LEVELS_WITH_CHAPTERS
@@ -240,7 +259,7 @@ impl LatexExtractor {
             &*HEADING_LEVELS_NO_CHAPTERS
         };
 
-        // Extract metadata from preamble (\title, \author, \date)
+        // Extract metadata from preamble
         let mut metadata_entries: Vec<(String, String)> = Vec::new();
         for &cmd in &["title", "author", "date"] {
             if let Some(value) = utilities::extract_braced(source, cmd)
@@ -250,7 +269,7 @@ impl LatexExtractor {
             }
         }
         if !metadata_entries.is_empty() {
-            builder.push_metadata_block(metadata_entries, None);
+            b.push_metadata_block(&metadata_entries, None);
         }
 
         let mut i = 0;
@@ -261,17 +280,14 @@ impl LatexExtractor {
             if is_plain_tex && trimmed.contains("\\bye") {
                 break;
             }
-
             if !is_plain_tex && trimmed.contains("\\begin{document}") {
                 in_document = true;
                 i += 1;
                 continue;
             }
-
             if !is_plain_tex && trimmed.contains("\\end{document}") {
                 break;
             }
-
             if !in_document {
                 i += 1;
                 continue;
@@ -285,8 +301,9 @@ impl LatexExtractor {
                     "itemize" | "enumerate" | "description" => {
                         let ordered = env_name == "enumerate";
                         let (env_content, new_i) = collect_environment(&lines, i, &env_name);
-                        let list_idx = builder.push_list(ordered, None);
-                        Self::build_list_items(&mut builder, &env_content, list_idx);
+                        b.push_list(ordered);
+                        Self::build_internal_list_items(&mut b, &env_content, ordered);
+                        b.end_list();
                         i = new_i;
                         continue;
                     }
@@ -294,16 +311,15 @@ impl LatexExtractor {
                         let (env_content, new_i) = collect_environment(&lines, i, "tabular");
                         let cells = Self::parse_tabular_cells(&env_content);
                         if !cells.is_empty() {
-                            builder.push_table_from_cells(&cells, None);
+                            b.push_table_from_cells(&cells, None, None);
                         }
                         i = new_i;
                         continue;
                     }
                     "table" => {
                         let (env_content, new_i) = collect_environment(&lines, i, "table");
-                        // Extract caption from the table environment
                         let caption = Self::extract_caption(&env_content);
-                        // Extract tabular inside table environment
+                        let label = Self::extract_label(&env_content);
                         let end_tag = "\\end{tabular}";
                         if env_content.contains("\\begin{tabular}")
                             && let Some(start) = env_content.find("\\begin{tabular}")
@@ -314,11 +330,17 @@ impl LatexExtractor {
                             let (inner_content, _) = collect_environment(&inner_lines, 0, "tabular");
                             let cells = Self::parse_tabular_cells(&inner_content);
                             if !cells.is_empty() {
-                                let idx = builder.push_table_from_cells(&cells, None);
+                                let idx = b.push_table_from_cells(&cells, None, None);
+                                if let Some(lbl) = label {
+                                    b.set_anchor(idx, &lbl);
+                                }
                                 if let Some(cap) = caption {
-                                    let mut attrs = ahash::AHashMap::new();
-                                    attrs.insert("caption".to_string(), cap);
-                                    builder.set_attributes(idx, attrs);
+                                    let cap_idx = b.push_paragraph(&cap, vec![], None, None);
+                                    b.push_relationship(
+                                        cap_idx,
+                                        RelationshipTarget::Index(idx),
+                                        RelationshipKind::Caption,
+                                    );
                                 }
                             }
                         }
@@ -328,13 +350,16 @@ impl LatexExtractor {
                     "figure" => {
                         let (env_content, new_i) = collect_environment(&lines, i, "figure");
                         let caption = Self::extract_caption(&env_content);
-                        // Extract \includegraphics from figure content
+                        let label = Self::extract_label(&env_content);
                         if let Some(path) = Self::extract_includegraphics_path(&env_content) {
-                            let idx = builder.push_image(Some(&path), None, None, None);
+                            b.push_uri(Uri::image(&path, caption.clone()));
+                            let idx = b.push_paragraph(&format!("[image: {}]", path), vec![], None, None);
+                            if let Some(lbl) = label {
+                                b.set_anchor(idx, &lbl);
+                            }
                             if let Some(cap) = caption {
-                                let mut attrs = ahash::AHashMap::new();
-                                attrs.insert("caption".to_string(), cap);
-                                builder.set_attributes(idx, attrs);
+                                let cap_idx = b.push_paragraph(&cap, vec![], None, None);
+                                b.push_relationship(cap_idx, RelationshipTarget::Index(idx), RelationshipKind::Caption);
                             }
                         }
                         i = new_i;
@@ -344,24 +369,26 @@ impl LatexExtractor {
                     | "eqnarray" | "eqnarray*" | "math" | "displaymath" | "flalign" | "flalign*" | "cases" => {
                         let (env_content, new_i) = collect_environment(&lines, i, &env_name);
                         let formula_text = format!("\\begin{{{}}}\n{}\\end{{{}}}", env_name, env_content, env_name);
-                        builder.push_formula(&formula_text, None);
+                        let idx = b.push_formula(&formula_text, None, None);
+                        // Check for \label inside math environments
+                        if let Some(lbl) = Self::extract_label(&env_content) {
+                            b.set_anchor(idx, &lbl);
+                        }
                         i = new_i;
                         continue;
                     }
                     "lstlisting" | "verbatim" | "minted" => {
                         let (env_content, new_i) = collect_environment(&lines, i, &env_name);
-                        // Try to extract language from lstlisting options
                         let language = if env_name == "lstlisting" || env_name == "minted" {
                             Self::extract_code_language(trimmed)
                         } else {
                             None
                         };
-                        builder.push_code(env_content.trim(), language, None);
+                        b.push_code(env_content.trim(), language, None, None);
                         i = new_i;
                         continue;
                     }
                     _ => {
-                        // Skip other environments
                         let (_, new_i) = collect_environment(&lines, i, &env_name);
                         i = new_i;
                         continue;
@@ -369,22 +396,22 @@ impl LatexExtractor {
                 }
             }
 
-            // Handle heading commands — O(1) map lookup instead of a linear scan.
-            // Strip the leading backslash from `trimmed` (e.g. "\section{Intro}" → "section{Intro}"),
-            // then extract the bare command name up to the first `{` or `[` to look it up.
+            // Handle heading commands
             let mut handled = false;
             if let Some(after_backslash) = trimmed.strip_prefix('\\') {
-                // Find where the command name ends (first `{`, `[`, or whitespace)
                 let cmd_end = after_backslash
                     .find(|c: char| c == '{' || c == '[' || c.is_whitespace())
                     .unwrap_or(after_backslash.len());
                 let cmd_name = &after_backslash[..cmd_end];
                 if let Some(&level) = heading_map.get(cmd_name) {
-                    let rest = &after_backslash[cmd_end..];
-                    let rest = rest.trim_start();
+                    let rest = &after_backslash[cmd_end..].trim_start();
                     if rest.starts_with('{') || rest.starts_with('[') {
                         if let Some(title) = extract_heading_title(trimmed, cmd_name) {
-                            builder.push_heading(level, &title, None, None);
+                            let idx = b.push_heading(level, &title, None, None);
+                            // Check for \label on the same or next line
+                            if let Some(lbl) = Self::extract_label(trimmed) {
+                                b.set_anchor(idx, &lbl);
+                            }
                         }
                         handled = true;
                     }
@@ -392,16 +419,22 @@ impl LatexExtractor {
             }
 
             if !handled && !trimmed.is_empty() && !trimmed.starts_with('%') {
-                // Handle standalone \includegraphics outside figure environments
+                // \includegraphics outside figure
                 if trimmed.contains("\\includegraphics")
                     && let Some(path) = Self::extract_includegraphics_path(trimmed)
                 {
-                    builder.push_image(Some(&path), None, None, None);
+                    b.push_uri(Uri::image(&path, None));
+                    b.push_paragraph(&format!("[image: {}]", path), vec![], None, None);
                     i += 1;
                     continue;
                 }
 
-                // Handle display math \[...\]
+                // \ref{} → CrossReference
+                Self::extract_refs(trimmed, &mut b, "\\ref{", RelationshipKind::CrossReference);
+                // \cite{} → CitationReference
+                Self::extract_refs(trimmed, &mut b, "\\cite{", RelationshipKind::CitationReference);
+
+                // Display math
                 if trimmed.starts_with("\\[") {
                     let mut math_content = trimmed.to_string();
                     if !trimmed.contains("\\]") {
@@ -417,12 +450,8 @@ impl LatexExtractor {
                     }
                     let formula = math_content.trim_start_matches("\\[").trim_end_matches("\\]").trim();
                     if !formula.is_empty() {
-                        builder.push_formula(formula, None);
+                        b.push_formula(formula, None, None);
                     }
-                } else if trimmed.contains('$') && !trimmed.starts_with('\\') {
-                    // Lines containing inline math - treat as paragraph with annotations
-                    let (text, annotations) = Self::strip_inline_commands(trimmed);
-                    builder.push_paragraph(&text, annotations, None, None);
                 } else if !trimmed.starts_with('\\')
                     || trimmed.starts_with("\\textbf")
                     || trimmed.starts_with("\\emph")
@@ -430,17 +459,18 @@ impl LatexExtractor {
                     || trimmed.starts_with("\\underline")
                     || trimmed.starts_with("\\texttt")
                     || trimmed.starts_with("\\href")
+                    || trimmed.starts_with("\\url")
                 {
-                    // Extract footnotes before processing inline formatting.
-                    // Each \footnote{text} is emitted as a separate footnote node,
-                    // and the command is removed from the paragraph text.
+                    // Extract footnotes
                     let mut line_text = trimmed.to_string();
                     while let Some(fn_start) = line_text.find("\\footnote{") {
                         let after = &line_text[fn_start + "\\footnote{".len()..];
                         if let Some((fn_text, consumed)) = Self::read_braced_content(after) {
                             let fn_stripped = utilities::clean_text(&fn_text);
                             if !fn_stripped.is_empty() {
-                                builder.push_footnote(&fn_stripped, None);
+                                let fn_key = format!("fn:{}", fn_stripped.chars().take(20).collect::<String>());
+                                b.push_footnote_ref(&fn_stripped, &fn_key, None);
+                                b.push_footnote_definition(&fn_stripped, &fn_key, None);
                             }
                             let end = fn_start + "\\footnote{".len() + consumed;
                             line_text = format!("{}{}", &line_text[..fn_start], &line_text[end..]);
@@ -452,7 +482,20 @@ impl LatexExtractor {
                     let line_text = line_text.trim();
                     if !line_text.is_empty() {
                         let (text, annotations) = Self::strip_inline_commands(line_text);
-                        builder.push_paragraph(&text, annotations, None, None);
+                        // Extract URIs from link annotations
+                        for ann in &annotations {
+                            if let AnnotationKind::Link { url, .. } = &ann.kind
+                                && !url.is_empty()
+                            {
+                                let label = text.get(ann.start as usize..ann.end as usize).map(|s| s.to_string());
+                                b.push_uri(Uri::hyperlink(url, label));
+                            }
+                        }
+                        let idx = b.push_paragraph(&text, annotations, None, None);
+                        // Check for \label in this line
+                        if let Some(lbl) = Self::extract_label(line_text) {
+                            b.set_anchor(idx, &lbl);
+                        }
                     }
                 }
             }
@@ -460,7 +503,63 @@ impl LatexExtractor {
             i += 1;
         }
 
-        builder.build()
+        b.build()
+    }
+
+    /// Extract `\label{key}` from text.
+    fn extract_label(text: &str) -> Option<String> {
+        let prefix = "\\label{";
+        let start = text.find(prefix)?;
+        let after = &text[start + prefix.len()..];
+        Self::read_braced_content(after).map(|(content, _)| content)
+    }
+
+    /// Extract `\ref{key}` or `\cite{key}` references and emit relationships.
+    fn extract_refs(text: &str, b: &mut InternalDocumentBuilder, prefix: &str, kind: RelationshipKind) {
+        let mut search_from = 0;
+        while let Some(pos) = text[search_from..].find(prefix) {
+            let abs_pos = search_from + pos;
+            let after = &text[abs_pos + prefix.len()..];
+            if let Some((key, consumed)) = Self::read_braced_content(after) {
+                // For \cite, handle comma-separated keys
+                let keys: Vec<&str> = key.split(',').map(|k| k.trim()).collect();
+                for k in keys {
+                    if !k.is_empty() {
+                        // Push a reference marker element
+                        let ref_text = format!("[{}]", k);
+                        let idx = b.push_paragraph(&ref_text, vec![], None, None);
+                        b.push_relationship(idx, RelationshipTarget::Key(k.to_string()), kind);
+                    }
+                }
+                search_from = abs_pos + prefix.len() + consumed;
+            } else {
+                break;
+            }
+        }
+    }
+
+    /// Build list items for InternalDocument.
+    fn build_internal_list_items(b: &mut InternalDocumentBuilder, content: &str, ordered: bool) {
+        for line in content.lines() {
+            let trimmed = line.trim();
+            if trimmed.starts_with("\\item") {
+                let after = trimmed.strip_prefix("\\item").unwrap_or("").trim();
+                let text = if after.starts_with('[') {
+                    if let Some(bracket_end) = after.find(']') {
+                        let label = &after[1..bracket_end];
+                        let rest = after[bracket_end + 1..].trim();
+                        format!("{}: {}", label, rest)
+                    } else {
+                        after.to_string()
+                    }
+                } else {
+                    after.to_string()
+                };
+                if !text.is_empty() {
+                    b.push_list_item(&text, ordered, vec![], None, None);
+                }
+            }
+        }
     }
 
     /// Parse tabular cells from environment content.
@@ -486,35 +585,6 @@ impl LatexExtractor {
             }
         }
         rows
-    }
-
-    /// Build list items from a list environment's content.
-    fn build_list_items(
-        builder: &mut DocumentStructureBuilder,
-        content: &str,
-        list_idx: crate::types::document_structure::NodeIndex,
-    ) {
-        for line in content.lines() {
-            let trimmed = line.trim();
-            if trimmed.starts_with("\\item") {
-                let after = trimmed.strip_prefix("\\item").unwrap_or("").trim();
-                // Handle \item[label] for description lists
-                let text = if after.starts_with('[') {
-                    if let Some(bracket_end) = after.find(']') {
-                        let label = &after[1..bracket_end];
-                        let rest = after[bracket_end + 1..].trim();
-                        format!("{}: {}", label, rest)
-                    } else {
-                        after.to_string()
-                    }
-                } else {
-                    after.to_string()
-                };
-                if !text.is_empty() {
-                    builder.push_list_item(list_idx, &text, None);
-                }
-            }
-        }
     }
 
     /// Extract language from code environment options.
@@ -584,35 +654,23 @@ impl DocumentExtractor for LatexExtractor {
         content: &[u8],
         mime_type: &str,
         config: &ExtractionConfig,
-    ) -> Result<ExtractionResult> {
-        let latex_str = String::from_utf8_lossy(content).to_string();
-        let (text, metadata, tables) = Self::extract_from_latex(&latex_str);
-        let document = if config.include_document_structure {
-            Some(Self::build_document_structure(&latex_str))
-        } else {
-            None
-        };
+    ) -> Result<InternalDocument> {
+        let _ = config;
+        let latex_str = String::from_utf8_lossy(content).into_owned();
+        let (_text, metadata, _tables) = Self::extract_from_latex(&latex_str);
+        let mut doc = Self::build_internal_document(&latex_str);
+        doc.mime_type = std::borrow::Cow::Owned(mime_type.to_string());
+        doc.metadata = metadata;
+        Ok(doc)
+    }
 
-        Ok(ExtractionResult {
-            content: text,
-            mime_type: mime_type.to_string().into(),
-            metadata,
-            tables,
-            detected_languages: None,
-            chunks: None,
-            images: None,
-            djot_content: None,
-            pages: None,
-            elements: None,
-            ocr_elements: None,
-            document,
-            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-            extracted_keywords: None,
-            quality_score: None,
-            processing_warnings: Vec::new(),
-            annotations: None,
-            children: None,
-        })
+    async fn extract_file(
+        &self,
+        path: &std::path::Path,
+        mime_type: &str,
+        config: &ExtractionConfig,
+    ) -> Result<InternalDocument> {
+        crate::core::path_resolver::extract_file_with_image_resolution(self, path, mime_type, config).await
     }
 
     fn supported_mime_types(&self) -> &[&str] {
@@ -627,23 +685,19 @@ impl DocumentExtractor for LatexExtractor {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::types::NodeContent;
 
     #[test]
     fn test_basic_title_extraction() {
         let latex = r#"\title{Hello World}"#;
         let (_, metadata, _) = LatexExtractor::extract_from_latex(latex);
-        assert_eq!(
-            metadata.additional.get("title").and_then(|v| v.as_str()),
-            Some("Hello World")
-        );
+        assert_eq!(metadata.title.as_deref(), Some("Hello World"));
     }
 
     #[test]
     fn test_author_extraction() {
         let latex = r#"\author{John Doe}"#;
         let (_, metadata, _) = LatexExtractor::extract_from_latex(latex);
-        assert!(metadata.additional.contains_key("author"));
+        assert!(metadata.created_by.is_some());
     }
 
     #[test]
@@ -734,87 +788,5 @@ mod tests {
         let (content, consumed) = LatexExtractor::read_braced_content("outer {inner} end}rest").unwrap();
         assert_eq!(content, "outer {inner} end");
         assert_eq!(&"outer {inner} end}rest"[consumed..], "rest");
-    }
-
-    #[test]
-    fn test_build_document_structure_with_metadata() {
-        let latex = r"\title{Test}
-\author{Author}
-\date{2024}
-\begin{document}
-Hello.
-\end{document}";
-        let doc = LatexExtractor::build_document_structure(latex);
-        assert!(doc.validate().is_ok());
-        let meta = doc.nodes.iter().find(|n| {
-            matches!(&n.content, NodeContent::MetadataBlock { entries } if entries.iter().any(|(k, _)| k == "title"))
-        });
-        assert!(meta.is_some(), "should have metadata block");
-    }
-
-    #[test]
-    fn test_build_document_structure_with_footnote() {
-        let latex = r"\begin{document}
-Text with\footnote{A note} more.
-\end{document}";
-        let doc = LatexExtractor::build_document_structure(latex);
-        assert!(doc.validate().is_ok());
-        let has_footnote = doc
-            .nodes
-            .iter()
-            .any(|n| matches!(&n.content, NodeContent::Footnote { text } if text.contains("A note")));
-        assert!(has_footnote);
-    }
-
-    #[test]
-    fn test_build_document_structure_with_figure() {
-        let latex = r"\begin{document}
-\begin{figure}
-\includegraphics{img.png}
-\caption{My caption}
-\end{figure}
-\end{document}";
-        let doc = LatexExtractor::build_document_structure(latex);
-        assert!(doc.validate().is_ok());
-        let img = doc
-            .nodes
-            .iter()
-            .find(|n| matches!(&n.content, NodeContent::Image { .. }));
-        assert!(img.is_some(), "should have image node");
-        let img = img.unwrap();
-        match &img.content {
-            NodeContent::Image { description, .. } => {
-                assert_eq!(description.as_deref(), Some("img.png"));
-            }
-            _ => unreachable!(),
-        }
-        assert_eq!(
-            img.attributes
-                .as_ref()
-                .and_then(|a| a.get("caption"))
-                .map(|s| s.as_str()),
-            Some("My caption")
-        );
-    }
-
-    #[test]
-    fn test_build_document_structure_inline_annotations() {
-        let latex = r"\begin{document}
-This is \textbf{bold} and \emph{italic}.
-\end{document}";
-        let doc = LatexExtractor::build_document_structure(latex);
-        assert!(doc.validate().is_ok());
-        let para = doc
-            .nodes
-            .iter()
-            .find(|n| matches!(&n.content, NodeContent::Paragraph { text } if text.contains("bold")))
-            .expect("should have paragraph");
-        assert!(!para.annotations.is_empty(), "should have annotations");
-        assert!(para.annotations.iter().any(|a| matches!(a.kind, AnnotationKind::Bold)));
-        assert!(
-            para.annotations
-                .iter()
-                .any(|a| matches!(a.kind, AnnotationKind::Italic))
-        );
     }
 }

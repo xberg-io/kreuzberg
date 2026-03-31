@@ -142,6 +142,8 @@ mod tests {
 	            processing_warnings: Vec::new(),
 	            annotations: None,
 	            children: None,
+	            uris: None,
+            formatted_content: None,
 	        };
 
         processor.process(&mut result, &config).await.unwrap();
@@ -175,6 +177,8 @@ mod tests {
             processing_warnings: Vec::new(),
             annotations: None,
             children: None,
+            uris: None,
+            formatted_content: None,
         };
 
         processor.process(&mut result, &config).await.unwrap();
@@ -220,6 +224,8 @@ mod tests {
             processing_warnings: Vec::new(),
             annotations: None,
             children: None,
+            uris: None,
+            formatted_content: None,
         };
 
         let config_with_chunking = ExtractionConfig {
@@ -261,6 +267,8 @@ mod tests {
             processing_warnings: Vec::new(),
             annotations: None,
             children: None,
+            uris: None,
+            formatted_content: None,
         };
 
         let long_result = ExtractionResult {
@@ -282,6 +290,8 @@ mod tests {
             processing_warnings: Vec::new(),
             annotations: None,
             children: None,
+            uris: None,
+            formatted_content: None,
         };
 
         let short_duration = processor.estimated_duration_ms(&short_result);
@@ -332,6 +342,8 @@ mod tests {
             processing_warnings: Vec::new(),
             annotations: None,
             children: None,
+            uris: None,
+            formatted_content: None,
         };
 
         processor.process(&mut result, &config).await.unwrap();
@@ -374,6 +386,8 @@ mod tests {
             processing_warnings: Vec::new(),
             annotations: None,
             children: None,
+            uris: None,
+            formatted_content: None,
         };
 
         processor.process(&mut result, &config).await.unwrap();
@@ -416,6 +430,8 @@ mod tests {
             processing_warnings: Vec::new(),
             annotations: None,
             children: None,
+            uris: None,
+            formatted_content: None,
         };
 
         processor.process(&mut result, &config).await.unwrap();
@@ -458,6 +474,8 @@ mod tests {
             processing_warnings: Vec::new(),
             annotations: None,
             children: None,
+            uris: None,
+            formatted_content: None,
         };
 
         processor.process(&mut result, &config).await.unwrap();

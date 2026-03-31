@@ -12,6 +12,9 @@ documentation = "https://docs.kreuzberg.dev"
 keywords = ["document", "extraction", "cli", "tool", "parser"]
 categories = ["command-line-utilities", "text-processing"]
 
+[package.metadata.cargo-machete]
+ignored = ["serde_toon_format"]
+
 [[bin]]
 name = "kreuzberg"
 path = "src/main.rs"
@@ -49,6 +52,7 @@ clap = { workspace = true }
 clap_complete = "4.6"
 kreuzberg = { workspace = true, features = ["formats", "tokio-runtime", "simd-utf8"] }
 serde_json = { workspace = true }
+serde_toon_format = { workspace = true }
 tokio = { workspace = true }
 tracing = { workspace = true }
 tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }

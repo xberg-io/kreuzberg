@@ -3,8 +3,26 @@
 use super::*;
 use crate::core::config::OutputFormat;
 use crate::types::Metadata;
+use crate::types::internal::{ElementKind, InternalDocument, InternalElement};
 use serial_test::serial;
 use std::borrow::Cow;
+
+/// Build an `InternalDocument` with a single paragraph element for pipeline tests.
+fn make_doc(content: &str, mime: &str) -> InternalDocument {
+    let mut doc = InternalDocument::new("plain");
+    doc.mime_type = Cow::Owned(mime.to_string());
+    if !content.is_empty() {
+        doc.push_element(InternalElement::text(ElementKind::Paragraph, content, 0));
+    }
+    doc
+}
+
+/// Build an `InternalDocument` with content, mime, and custom metadata.
+fn make_doc_with_metadata(content: &str, mime: &str, metadata: Metadata) -> InternalDocument {
+    let mut doc = make_doc(content, mime);
+    doc.metadata = metadata;
+    doc
+}
 
 const VALIDATION_MARKER_KEY: &str = "registry_validation_marker";
 #[cfg(feature = "quality")]
@@ -27,27 +45,8 @@ fn ensure_quality_processor() {
 #[tokio::test]
 #[serial]
 async fn test_run_pipeline_basic() {
-    let mut result = ExtractionResult {
-        content: "test".to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        djot_content: None,
-        pages: None,
-        elements: None,
-        ocr_elements: None,
-        document: None,
-        #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-        extracted_keywords: None,
-        quality_score: None,
-        processing_warnings: Vec::new(),
-        annotations: None,
-        children: None,
-    };
-    result.metadata.additional.insert(
+    let mut doc = make_doc("test", "text/plain");
+    doc.metadata.additional.insert(
         Cow::Borrowed(VALIDATION_MARKER_KEY),
         serde_json::json!(ORDER_VALIDATION_MARKER),
     );
@@ -59,7 +58,7 @@ async fn test_run_pipeline_basic() {
         ..Default::default()
     };
 
-    let processed = run_pipeline(result, &config).await.unwrap();
+    let processed = run_pipeline(doc, &config).await.unwrap();
     assert_eq!(processed.content, "test");
 }
 
@@ -68,58 +67,20 @@ async fn test_run_pipeline_basic() {
 #[cfg(feature = "quality")]
 async fn test_pipeline_with_quality_processing() {
     ensure_quality_processor();
-    let result = ExtractionResult {
-        content: "This is a test document with some meaningful content.".to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        djot_content: None,
-        pages: None,
-        elements: None,
-        ocr_elements: None,
-        document: None,
-        #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-        extracted_keywords: None,
-        quality_score: None,
-        processing_warnings: Vec::new(),
-        annotations: None,
-        children: None,
-    };
+    let doc = make_doc("This is a test document with some meaningful content.", "text/plain");
     let config = ExtractionConfig {
         enable_quality_processing: true,
         ..Default::default()
     };
 
-    let processed = run_pipeline(result, &config).await.unwrap();
-    assert!(processed.metadata.additional.contains_key("quality_score"));
+    let processed = run_pipeline(doc, &config).await.unwrap();
+    assert!(processed.quality_score.is_some());
 }
 
 #[tokio::test]
 #[serial]
 async fn test_pipeline_without_quality_processing() {
-    let result = ExtractionResult {
-        content: "test".to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        djot_content: None,
-        pages: None,
-        elements: None,
-        ocr_elements: None,
-        document: None,
-        #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-        extracted_keywords: None,
-        quality_score: None,
-        processing_warnings: Vec::new(),
-        annotations: None,
-        children: None,
-    };
+    let doc = make_doc("test", "text/plain");
     let config = ExtractionConfig {
         enable_quality_processing: false,
         postprocessor: Some(crate::core::config::PostProcessorConfig {
@@ -129,34 +90,18 @@ async fn test_pipeline_without_quality_processing() {
         ..Default::default()
     };
 
-    let processed = run_pipeline(result, &config).await.unwrap();
-    assert!(!processed.metadata.additional.contains_key("quality_score"));
+    let processed = run_pipeline(doc, &config).await.unwrap();
+    assert!(processed.quality_score.is_none());
 }
 
 #[tokio::test]
 #[serial]
 #[cfg(feature = "chunking")]
 async fn test_pipeline_with_chunking() {
-    let result = ExtractionResult {
-        content: "This is a long text that should be chunked. ".repeat(100),
-        mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        djot_content: None,
-        pages: None,
-        elements: None,
-        ocr_elements: None,
-        document: None,
-        #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-        extracted_keywords: None,
-        quality_score: None,
-        processing_warnings: Vec::new(),
-        annotations: None,
-        children: None,
-    };
+    let doc = make_doc(
+        &"This is a long text that should be chunked. ".repeat(100),
+        "text/plain",
+    );
     let config = ExtractionConfig {
         chunking: Some(crate::ChunkingConfig {
             max_characters: 500,
@@ -168,35 +113,15 @@ async fn test_pipeline_with_chunking() {
         ..Default::default()
     };
 
-    let processed = run_pipeline(result, &config).await.unwrap();
-    assert!(processed.metadata.additional.contains_key("chunk_count"));
-    let chunk_count = processed.metadata.additional.get("chunk_count").unwrap();
-    assert!(chunk_count.as_u64().unwrap() > 1);
+    let processed = run_pipeline(doc, &config).await.unwrap();
+    let chunks = processed.chunks.as_ref().expect("chunks should be present");
+    assert!(chunks.len() > 1);
 }
 
 #[tokio::test]
 #[serial]
 async fn test_pipeline_without_chunking() {
-    let result = ExtractionResult {
-        content: "test".to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        djot_content: None,
-        pages: None,
-        elements: None,
-        ocr_elements: None,
-        document: None,
-        #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-        extracted_keywords: None,
-        quality_score: None,
-        processing_warnings: Vec::new(),
-        annotations: None,
-        children: None,
-    };
+    let doc = make_doc("test", "text/plain");
     let config = ExtractionConfig {
         chunking: None,
         postprocessor: Some(crate::core::config::PostProcessorConfig {
@@ -206,8 +131,8 @@ async fn test_pipeline_without_chunking() {
         ..Default::default()
     };
 
-    let processed = run_pipeline(result, &config).await.unwrap();
-    assert!(!processed.metadata.additional.contains_key("chunk_count"));
+    let processed = run_pipeline(doc, &config).await.unwrap();
+    assert!(processed.chunks.is_none());
 }
 
 #[tokio::test]
@@ -218,29 +143,14 @@ async fn test_pipeline_preserves_metadata() {
     additional.insert(Cow::Borrowed("source"), serde_json::json!("test"));
     additional.insert(Cow::Borrowed("page"), serde_json::json!(1));
 
-    let result = ExtractionResult {
-        content: "test".to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata {
+    let doc = make_doc_with_metadata(
+        "test",
+        "text/plain",
+        Metadata {
             additional,
             ..Default::default()
         },
-        pages: None,
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        djot_content: None,
-        elements: None,
-        ocr_elements: None,
-        document: None,
-        #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-        extracted_keywords: None,
-        quality_score: None,
-        processing_warnings: Vec::new(),
-        annotations: None,
-        children: None,
-    };
+    );
     let config = ExtractionConfig {
         postprocessor: Some(crate::core::config::PostProcessorConfig {
             enabled: false,
@@ -249,7 +159,7 @@ async fn test_pipeline_preserves_metadata() {
         ..Default::default()
     };
 
-    let processed = run_pipeline(result, &config).await.unwrap();
+    let processed = run_pipeline(doc, &config).await.unwrap();
     assert_eq!(
         processed.metadata.additional.get("source").unwrap(),
         &serde_json::json!("test")
@@ -272,26 +182,8 @@ async fn test_pipeline_preserves_tables() {
         bounding_box: None,
     };
 
-    let result = ExtractionResult {
-        content: "test".to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![table],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        djot_content: None,
-        pages: None,
-        elements: None,
-        ocr_elements: None,
-        document: None,
-        #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-        extracted_keywords: None,
-        quality_score: None,
-        processing_warnings: Vec::new(),
-        annotations: None,
-        children: None,
-    };
+    let mut doc = make_doc("test", "text/plain");
+    doc.tables.push(table);
     let config = ExtractionConfig {
         postprocessor: Some(crate::core::config::PostProcessorConfig {
             enabled: false,
@@ -300,7 +192,7 @@ async fn test_pipeline_preserves_tables() {
         ..Default::default()
     };
 
-    let processed = run_pipeline(result, &config).await.unwrap();
+    let processed = run_pipeline(doc, &config).await.unwrap();
     assert_eq!(processed.tables.len(), 1);
     assert_eq!(processed.tables[0].cells.len(), 1);
 }
@@ -317,29 +209,10 @@ async fn test_pipeline_empty_content() {
         registry.write().shutdown_all().unwrap();
     }
 
-    let result = ExtractionResult {
-        content: String::new(),
-        mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        djot_content: None,
-        pages: None,
-        elements: None,
-        ocr_elements: None,
-        document: None,
-        #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-        extracted_keywords: None,
-        quality_score: None,
-        processing_warnings: Vec::new(),
-        annotations: None,
-        children: None,
-    };
+    let doc = make_doc("", "text/plain");
     let config = ExtractionConfig::default();
 
-    let processed = run_pipeline(result, &config).await.unwrap();
+    let processed = run_pipeline(doc, &config).await.unwrap();
     assert_eq!(processed.content, "");
 }
 
@@ -349,26 +222,7 @@ async fn test_pipeline_empty_content() {
 async fn test_pipeline_with_all_features() {
     #[cfg(feature = "quality")]
     ensure_quality_processor();
-    let result = ExtractionResult {
-        content: "This is a comprehensive test document. ".repeat(50),
-        mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        djot_content: None,
-        pages: None,
-        elements: None,
-        ocr_elements: None,
-        document: None,
-        #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-        extracted_keywords: None,
-        quality_score: None,
-        processing_warnings: Vec::new(),
-        annotations: None,
-        children: None,
-    };
+    let doc = make_doc(&"This is a comprehensive test document. ".repeat(50), "text/plain");
     let config = ExtractionConfig {
         enable_quality_processing: true,
         chunking: Some(crate::ChunkingConfig {
@@ -381,10 +235,10 @@ async fn test_pipeline_with_all_features() {
         ..Default::default()
     };
 
-    let processed = run_pipeline(result, &config).await.unwrap();
+    let processed = run_pipeline(doc, &config).await.unwrap();
     #[cfg(feature = "quality")]
-    assert!(processed.metadata.additional.contains_key("quality_score"));
-    assert!(processed.metadata.additional.contains_key("chunk_count"));
+    assert!(processed.quality_score.is_some());
+    assert!(processed.chunks.is_some());
 }
 
 #[tokio::test]
@@ -404,33 +258,15 @@ async fn test_pipeline_with_keyword_extraction() {
     let _ = crate::keywords::register_keyword_processor();
     clear_processor_cache().unwrap();
 
-    let result = ExtractionResult {
-        content: r#"
+    let doc = make_doc(
+        r#"
 Machine learning is a branch of artificial intelligence that focuses on
 building systems that can learn from data. Deep learning is a subset of
 machine learning that uses neural networks with multiple layers.
 Natural language processing enables computers to understand human language.
-            "#
-        .to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        djot_content: None,
-        pages: None,
-        elements: None,
-        ocr_elements: None,
-        document: None,
-        #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-        extracted_keywords: None,
-        quality_score: None,
-        processing_warnings: Vec::new(),
-        annotations: None,
-        children: None,
-    };
-
+            "#,
+        "text/plain",
+    );
     #[cfg(feature = "keywords-yake")]
     let keyword_config = crate::keywords::KeywordConfig::yake();
 
@@ -442,7 +278,7 @@ Natural language processing enables computers to understand human language.
         ..Default::default()
     };
 
-    let processed = run_pipeline(result, &config).await.unwrap();
+    let processed = run_pipeline(doc, &config).await.unwrap();
 
     assert!(processed.metadata.additional.contains_key("keywords"));
 
@@ -463,33 +299,14 @@ Natural language processing enables computers to understand human language.
 #[serial]
 #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
 async fn test_pipeline_without_keyword_config() {
-    let result = ExtractionResult {
-        content: "Machine learning and artificial intelligence.".to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        djot_content: None,
-        pages: None,
-        elements: None,
-        ocr_elements: None,
-        document: None,
-        #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-        extracted_keywords: None,
-        quality_score: None,
-        processing_warnings: Vec::new(),
-        annotations: None,
-        children: None,
-    };
+    let doc = make_doc("Machine learning and artificial intelligence.", "text/plain");
 
     let config = ExtractionConfig {
         keywords: None,
         ..Default::default()
     };
 
-    let processed = run_pipeline(result, &config).await.unwrap();
+    let processed = run_pipeline(doc, &config).await.unwrap();
 
     assert!(!processed.metadata.additional.contains_key("keywords"));
 }
@@ -507,26 +324,7 @@ async fn test_pipeline_keyword_extraction_short_content() {
         .shutdown_all()
         .unwrap();
 
-    let result = ExtractionResult {
-        content: "Short text".to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        djot_content: None,
-        pages: None,
-        elements: None,
-        ocr_elements: None,
-        document: None,
-        #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-        extracted_keywords: None,
-        quality_score: None,
-        processing_warnings: Vec::new(),
-        annotations: None,
-        children: None,
-    };
+    let doc = make_doc("Short text", "text/plain");
 
     #[cfg(feature = "keywords-yake")]
     let keyword_config = crate::keywords::KeywordConfig::yake();
@@ -539,7 +337,7 @@ async fn test_pipeline_keyword_extraction_short_content() {
         ..Default::default()
     };
 
-    let processed = run_pipeline(result, &config).await.unwrap();
+    let processed = run_pipeline(doc, &config).await.unwrap();
 
     assert!(!processed.metadata.additional.contains_key("keywords"));
 }
@@ -649,27 +447,8 @@ async fn test_postprocessor_runs_before_validator() {
 
     clear_processor_cache().unwrap();
 
-    let mut result = ExtractionResult {
-        content: "test".to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        djot_content: None,
-        pages: None,
-        elements: None,
-        ocr_elements: None,
-        document: None,
-        #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-        extracted_keywords: None,
-        quality_score: None,
-        processing_warnings: Vec::new(),
-        annotations: None,
-        children: None,
-    };
-    result.metadata.additional.insert(
+    let mut doc = make_doc("test", "text/plain");
+    doc.metadata.additional.insert(
         Cow::Borrowed(VALIDATION_MARKER_KEY),
         serde_json::json!(POSTPROCESSOR_VALIDATION_MARKER),
     );
@@ -685,7 +464,7 @@ async fn test_postprocessor_runs_before_validator() {
         ..Default::default()
     };
 
-    let processed = run_pipeline(result, &config).await;
+    let processed = run_pipeline(doc, &config).await;
 
     pp_registry.write().shutdown_all().unwrap();
     val_registry.write().shutdown_all().unwrap();
@@ -738,7 +517,7 @@ async fn test_quality_processing_runs_before_validator() {
                 return Ok(());
             }
 
-            if !result.metadata.additional.contains_key("quality_score") {
+            if result.quality_score.is_none() {
                 return Err(crate::KreuzbergError::Validation {
                     message: "Quality processing did not run before validator".to_string(),
                     source: None,
@@ -754,27 +533,8 @@ async fn test_quality_processing_runs_before_validator() {
         registry.register(Arc::new(QualityValidator)).unwrap();
     }
 
-    let mut result = ExtractionResult {
-        content: "This is meaningful test content for quality scoring.".to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        djot_content: None,
-        pages: None,
-        elements: None,
-        ocr_elements: None,
-        document: None,
-        #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-        extracted_keywords: None,
-        quality_score: None,
-        processing_warnings: Vec::new(),
-        annotations: None,
-        children: None,
-    };
-    result.metadata.additional.insert(
+    let mut doc = make_doc("This is meaningful test content for quality scoring.", "text/plain");
+    doc.metadata.additional.insert(
         Cow::Borrowed(VALIDATION_MARKER_KEY),
         serde_json::json!(QUALITY_VALIDATION_MARKER),
     );
@@ -784,7 +544,7 @@ async fn test_quality_processing_runs_before_validator() {
         ..Default::default()
     };
 
-    let processed = run_pipeline(result, &config).await;
+    let processed = run_pipeline(doc, &config).await;
 
     {
         let mut registry = val_registry.write();
@@ -958,30 +718,11 @@ async fn test_multiple_postprocessors_run_before_validator() {
     // Clear the cache after registering new processors so it rebuilds with the test processors
     clear_processor_cache().unwrap();
 
-    let result = ExtractionResult {
-        content: "test".to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        metadata: Metadata::default(),
-        tables: vec![],
-        detected_languages: None,
-        chunks: None,
-        images: None,
-        djot_content: None,
-        pages: None,
-        elements: None,
-        ocr_elements: None,
-        document: None,
-        #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-        extracted_keywords: None,
-        quality_score: None,
-        processing_warnings: Vec::new(),
-        annotations: None,
-        children: None,
-    };
+    let doc = make_doc("test", "text/plain");
 
     let config = ExtractionConfig::default();
 
-    let processed = run_pipeline(result, &config).await;
+    let processed = run_pipeline(doc, &config).await;
 
     pp_registry.write().shutdown_all().unwrap();
     val_registry.write().shutdown_all().unwrap();
@@ -993,18 +734,14 @@ async fn test_multiple_postprocessors_run_before_validator() {
 #[tokio::test]
 #[serial]
 async fn test_run_pipeline_with_output_format_plain() {
-    let result = ExtractionResult {
-        content: "test content".to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        ..Default::default()
-    };
+    let doc = make_doc("test content", "text/plain");
 
     let config = crate::core::config::ExtractionConfig {
         output_format: OutputFormat::Plain,
         ..Default::default()
     };
 
-    let processed = run_pipeline(result, &config).await.unwrap();
+    let processed = run_pipeline(doc, &config).await.unwrap();
     assert_eq!(processed.content, "test content");
     assert_eq!(processed.metadata.output_format, Some("plain".to_string()));
 }
@@ -1012,43 +749,14 @@ async fn test_run_pipeline_with_output_format_plain() {
 #[tokio::test]
 #[serial]
 async fn test_run_pipeline_with_output_format_djot() {
-    use crate::types::{BlockType, DjotContent, FormattedBlock, InlineElement, InlineType};
-
-    let result = ExtractionResult {
-        content: "test content".to_string(),
-        mime_type: Cow::Borrowed("text/djot"),
-        djot_content: Some(DjotContent {
-            plain_text: "test content".to_string(),
-            blocks: vec![FormattedBlock {
-                block_type: BlockType::Paragraph,
-                level: None,
-                inline_content: vec![InlineElement {
-                    element_type: InlineType::Text,
-                    content: "test content".to_string(),
-                    attributes: None,
-                    metadata: None,
-                }],
-                attributes: None,
-                language: None,
-                code: None,
-                children: vec![],
-            }],
-            metadata: Metadata::default(),
-            tables: vec![],
-            images: vec![],
-            links: vec![],
-            footnotes: vec![],
-            attributes: Vec::new(),
-        }),
-        ..Default::default()
-    };
+    let doc = make_doc("test content", "text/djot");
 
     let config = crate::core::config::ExtractionConfig {
         output_format: OutputFormat::Djot,
         ..Default::default()
     };
 
-    let processed = run_pipeline(result, &config).await.unwrap();
+    let processed = run_pipeline(doc, &config).await.unwrap();
     // The content should still be present
     assert!(!processed.content.is_empty());
     assert_eq!(processed.metadata.output_format, Some("djot".to_string()));
@@ -1057,22 +765,16 @@ async fn test_run_pipeline_with_output_format_djot() {
 #[tokio::test]
 #[serial]
 async fn test_run_pipeline_with_output_format_html() {
-    let result = ExtractionResult {
-        content: "test content".to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        ..Default::default()
-    };
+    let doc = make_doc("test content", "text/plain");
 
     let config = crate::core::config::ExtractionConfig {
         output_format: OutputFormat::Html,
         ..Default::default()
     };
 
-    let processed = run_pipeline(result, &config).await.unwrap();
-    // For non-djot documents, HTML wraps content in <pre> tags
-    assert!(processed.content.contains("<pre>"));
+    let processed = run_pipeline(doc, &config).await.unwrap();
+    // HTML renderer produces semantic tags from InternalDocument
     assert!(processed.content.contains("test content"));
-    assert!(processed.content.contains("</pre>"));
     assert_eq!(processed.metadata.output_format, Some("html".to_string()));
 }
 
@@ -1082,11 +784,7 @@ async fn test_run_pipeline_with_output_format_html() {
 async fn test_nfc_normalization_decomposes_to_composed() {
     // NFC normalization should convert decomposed characters to composed form.
     // "e\u{0301}" (e + combining acute accent) → "\u{00e9}" (é precomposed)
-    let result = ExtractionResult {
-        content: "caf\u{0065}\u{0301}".to_string(), // "café" with decomposed é
-        mime_type: Cow::Borrowed("text/plain"),
-        ..Default::default()
-    };
+    let doc = make_doc("caf\u{0065}\u{0301}", "text/plain"); // "café" with decomposed é
     let config = ExtractionConfig {
         postprocessor: Some(crate::core::config::PostProcessorConfig {
             enabled: false,
@@ -1095,7 +793,7 @@ async fn test_nfc_normalization_decomposes_to_composed() {
         ..Default::default()
     };
 
-    let processed = run_pipeline(result, &config).await.unwrap();
+    let processed = run_pipeline(doc, &config).await.unwrap();
     assert_eq!(processed.content, "caf\u{00e9}"); // composed é
     assert!(!processed.content.contains('\u{0301}')); // no combining accent
 }
@@ -1105,11 +803,7 @@ async fn test_nfc_normalization_decomposes_to_composed() {
 #[cfg(feature = "quality")]
 async fn test_nfc_normalization_idempotent_on_ascii() {
     // NFC on already-normalized/ASCII text should be a no-op.
-    let result = ExtractionResult {
-        content: "Hello, world! 123".to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        ..Default::default()
-    };
+    let doc = make_doc("Hello, world! 123", "text/plain");
     let config = ExtractionConfig {
         postprocessor: Some(crate::core::config::PostProcessorConfig {
             enabled: false,
@@ -1118,7 +812,7 @@ async fn test_nfc_normalization_idempotent_on_ascii() {
         ..Default::default()
     };
 
-    let processed = run_pipeline(result, &config).await.unwrap();
+    let processed = run_pipeline(doc, &config).await.unwrap();
     assert_eq!(processed.content, "Hello, world! 123");
 }
 
@@ -1126,21 +820,10 @@ async fn test_nfc_normalization_idempotent_on_ascii() {
 #[serial]
 #[cfg(feature = "quality")]
 async fn test_nfc_normalization_applies_to_page_content() {
-    use crate::types::PageContent;
-
-    let result = ExtractionResult {
-        content: "caf\u{0065}\u{0301}".to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        pages: Some(vec![PageContent {
-            page_number: 1,
-            content: "re\u{0301}sume\u{0301}".to_string(), // "résumé" decomposed
-            tables: vec![],
-            images: vec![],
-            hierarchy: None,
-            is_blank: None,
-        }]),
-        ..Default::default()
-    };
+    // Create a doc with a page-1 element containing decomposed characters
+    let mut doc = InternalDocument::new("plain");
+    doc.mime_type = Cow::Borrowed("text/plain");
+    doc.push_element(InternalElement::text(ElementKind::Paragraph, "re\u{0301}sume\u{0301}", 0).with_page(1));
     let config = ExtractionConfig {
         postprocessor: Some(crate::core::config::PostProcessorConfig {
             enabled: false,
@@ -1149,8 +832,9 @@ async fn test_nfc_normalization_applies_to_page_content() {
         ..Default::default()
     };
 
-    let processed = run_pipeline(result, &config).await.unwrap();
-    assert_eq!(processed.content, "caf\u{00e9}");
+    let processed = run_pipeline(doc, &config).await.unwrap();
+    // Content derived from page element
+    assert!(processed.content.contains("r\u{00e9}sum\u{00e9}"));
     let pages = processed.pages.unwrap();
     assert_eq!(pages[0].content, "r\u{00e9}sum\u{00e9}");
 }
@@ -1159,23 +843,7 @@ async fn test_nfc_normalization_applies_to_page_content() {
 #[serial]
 async fn test_run_pipeline_applies_output_format_last() {
     // This test verifies that output format is applied after all other processing
-    use crate::types::DjotContent;
-
-    let result = ExtractionResult {
-        content: "test".to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        djot_content: Some(DjotContent {
-            plain_text: "test".to_string(),
-            blocks: vec![],
-            metadata: Metadata::default(),
-            tables: vec![],
-            images: vec![],
-            links: vec![],
-            footnotes: vec![],
-            attributes: Vec::new(),
-        }),
-        ..Default::default()
-    };
+    let doc = make_doc("test", "text/plain");
 
     let config = crate::core::config::ExtractionConfig {
         output_format: OutputFormat::Djot,
@@ -1184,8 +852,7 @@ async fn test_run_pipeline_applies_output_format_last() {
         ..Default::default()
     };
 
-    let processed = run_pipeline(result, &config).await.unwrap();
+    let processed = run_pipeline(doc, &config).await.unwrap();
     // The result should have gone through the pipeline successfully
-    assert!(processed.djot_content.is_some());
     assert_eq!(processed.metadata.output_format, Some("djot".to_string()));
 }

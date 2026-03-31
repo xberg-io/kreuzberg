@@ -7,11 +7,13 @@
 mod extractor;
 mod ocr;
 mod processor;
+mod renderer;
 mod validator;
 
 pub use extractor::DocumentExtractorRegistry;
 pub use ocr::OcrBackendRegistry;
 pub use processor::PostProcessorRegistry;
+pub use renderer::RendererRegistry;
 pub use validator::ValidatorRegistry;
 
 use crate::{KreuzbergError, Result};
@@ -64,6 +66,10 @@ pub static POST_PROCESSOR_REGISTRY: Lazy<Arc<RwLock<PostProcessorRegistry>>> =
 pub static VALIDATOR_REGISTRY: Lazy<Arc<RwLock<ValidatorRegistry>>> =
     Lazy::new(|| Arc::new(RwLock::new(ValidatorRegistry::new())));
 
+/// Global renderer registry singleton.
+pub static RENDERER_REGISTRY: Lazy<Arc<RwLock<RendererRegistry>>> =
+    Lazy::new(|| Arc::new(RwLock::new(RendererRegistry::new())));
+
 /// Get the global OCR backend registry.
 pub fn get_ocr_backend_registry() -> Arc<RwLock<OcrBackendRegistry>> {
     OCR_BACKEND_REGISTRY.clone()
@@ -84,6 +90,11 @@ pub fn get_validator_registry() -> Arc<RwLock<ValidatorRegistry>> {
     VALIDATOR_REGISTRY.clone()
 }
 
+/// Get the global renderer registry.
+pub fn get_renderer_registry() -> Arc<RwLock<RendererRegistry>> {
+    RENDERER_REGISTRY.clone()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -101,5 +112,8 @@ mod tests {
 
         let validator_registry = get_validator_registry();
         let _ = validator_registry.read().list();
+
+        let renderer_registry = get_renderer_registry();
+        let _ = renderer_registry.read().list();
     }
 }

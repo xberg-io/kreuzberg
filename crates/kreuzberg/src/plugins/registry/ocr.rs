@@ -2,7 +2,7 @@
 
 use crate::plugins::OcrBackend;
 use crate::{KreuzbergError, Result};
-use std::collections::HashMap;
+use ahash::AHashMap;
 use std::sync::Arc;
 
 /// Registry for OCR backend plugins.
@@ -24,7 +24,7 @@ use std::sync::Arc;
 /// // registry.register(Arc::new(TesseractBackend::new()));
 /// ```
 pub struct OcrBackendRegistry {
-    pub(super) backends: HashMap<String, Arc<dyn OcrBackend>>,
+    pub(super) backends: AHashMap<String, Arc<dyn OcrBackend>>,
 }
 
 impl OcrBackendRegistry {
@@ -36,12 +36,12 @@ impl OcrBackendRegistry {
     pub fn new() -> Self {
         #[cfg(any(feature = "ocr", feature = "paddle-ocr"))]
         let mut registry = Self {
-            backends: HashMap::new(),
+            backends: AHashMap::new(),
         };
 
         #[cfg(not(any(feature = "ocr", feature = "paddle-ocr")))]
         let registry = Self {
-            backends: HashMap::new(),
+            backends: AHashMap::new(),
         };
 
         #[cfg(feature = "ocr")]
@@ -103,7 +103,7 @@ impl OcrBackendRegistry {
     /// This is useful for testing or when you want full control over backend registration.
     pub fn new_empty() -> Self {
         Self {
-            backends: HashMap::new(),
+            backends: AHashMap::new(),
         }
     }
 
@@ -277,6 +277,8 @@ mod tests {
                 processing_warnings: Vec::new(),
                 annotations: None,
                 children: None,
+                uris: None,
+                formatted_content: None,
             })
         }
 
@@ -412,6 +414,8 @@ mod tests {
                 processing_warnings: Vec::new(),
                 annotations: None,
                 children: None,
+                uris: None,
+                formatted_content: None,
             })
         }
 

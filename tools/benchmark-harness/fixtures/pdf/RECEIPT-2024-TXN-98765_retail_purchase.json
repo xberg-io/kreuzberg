@@ -1,28 +1,28 @@
 {
-	"document": "../../../../test_documents/vendored/markitdown/pdf/RECEIPT-2024-TXN-98765_retail_purchase.pdf",
-	"file_type": "pdf",
-	"file_size": 8459,
-	"expected_frameworks": [
-		"kreuzberg",
-		"docling",
-		"markitdown",
-		"mineru",
-		"pdfminer",
-		"pdfplumber",
-		"pdftotext",
-		"pymupdf4llm",
-		"pypdf",
-		"tika",
-		"unstructured"
-	],
-	"metadata": {
-		"description": "Document from markitdown test suite",
-		"source": "markitdown",
-		"size_category": "small"
-	},
-	"ground_truth": {
-		"text_file": "../../../../test_documents/ground_truth/pdf/RECEIPT-2024-TXN-98765_retail_purchase.txt",
-		"source": "vision",
-		"markdown_file": "../../../../test_documents/ground_truth/pdf/RECEIPT-2024-TXN-98765_retail_purchase.md"
-	}
+  "document": "../../../../test_documents/vendored/markitdown/pdf/RECEIPT-2024-TXN-98765_retail_purchase.pdf",
+  "file_type": "pdf",
+  "file_size": 8459,
+  "expected_frameworks": [
+    "kreuzberg",
+    "docling",
+    "markitdown",
+    "mineru",
+    "pdfminer",
+    "pdfplumber",
+    "pdftotext",
+    "pymupdf4llm",
+    "pypdf",
+    "tika",
+    "unstructured"
+  ],
+  "metadata": {
+    "description": "Document from markitdown test suite",
+    "source": "markitdown",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/pdf/RECEIPT-2024-TXN-98765_retail_purchase.txt",
+    "source": "pandoc",
+    "markdown_file": "../../../../test_documents/ground_truth/pdf/RECEIPT-2024-TXN-98765_retail_purchase.md"
+  }
 }

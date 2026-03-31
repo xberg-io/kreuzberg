@@ -16,7 +16,7 @@ ORGANISATION
 
 Website
 
-www.myer.com.au
+<https://www.myer.com.au>
 
 ## DASHBOARD
 
@@ -131,7 +131,7 @@ There are two types of criteria within the Framework:
 - Core criteria are mandatory and must be answered by all Members when completing the Annual Reporting Tool.
 - Recommended criteria are not mandatory, but Members are encouraged to complete as many recommended criteria as possible.
 
-Each criteria is divided into five levels of performance ranging from 'getting started' to 'beyond best practice'. The diagram ab ove illustrates the key differences between performance levels. Please see www.packagingcovenant.org.au for more informa tion.
+Each criteria is divided into five levels of performance ranging from 'getting started' to 'beyond best practice'. The diagram ab ove illustrates the key differences between performance levels. Please see <https://www.packagingcovenant.org.au> for more informa tion.
 
 ## ABOUT APCO
 
@@ -281,7 +281,7 @@ SIGN OFF
 
 The copyright owners of this report are The Australian Packaging Covenant Organisation (APCO) and the University of Technology Sydney (UTS). The data contained within this report is owned exclusively by APCO. This report (including all text, images and attachments) has been prepared for the exclusive use and benefit of the copyright holders and each addressee(s) only. The copyright owners give their consent and grant a limited licence to each addressee(s) for the use of this report, in its entirety, to be reproduced, distributed and communicated to third parties or made public at the discretion of the addressee(s). All other rights are strictly reserved. The addressee(s) is not permitted to reproduce, distribute or communicate separate subsections, images or individual pages of this report. The report can only be reproduced, distributed or communicated in full. The information contained in this report does not constitute investment or business advice and addressee(s) should not rely on the information for such purposes. All addressee(s) should obtain their own independent advice before making any financial decisions based on the information included in this report. 2017­2021 ©.
 
-Suite 1102, Level 11, 55 Clarence Street, Sydney, NSW, 2000 ☎ (02) 8381 3700 ✉ apco@packagingcovenant.org.au
+Suite 1102, Level 11, 55 Clarence Street, Sydney, NSW, 2000 ☎ (02) 8381 3700 ✉ <apco@packagingcovenant.org.au>
 
 <!-- image -->
 

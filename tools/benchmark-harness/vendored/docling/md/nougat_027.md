@@ -135,7 +135,7 @@ The main objective of the session was for the AESO to present its recommendation
 
 ## V. Session highlights
 
-Captured below are the highlights of the questions and discussion on a topic-by-topic basis. For a detailed review of the session, please refer to the session recording, posted at www.aeso.ca.
+Captured below are the highlights of the questions and discussion on a topic-by-topic basis. For a detailed review of the session, please refer to the session recording, posted at <https://www.aeso.ca>.
 
 Topic 1: DOS 101 - how the current DOS rate works today
 

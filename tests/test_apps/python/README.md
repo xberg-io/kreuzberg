@@ -75,7 +75,7 @@ All other 82 public APIs working correctly.
 
 ## Project Structure
 
-```
+```text
 test_apps/python/
 ├── main.py                     # 108-test comprehensive suite
 ├── pyproject.toml              # Package metadata (isolated)
@@ -92,32 +92,39 @@ test_apps/python/
 ## API Categories Tested
 
 ### Core Extraction (100% ✓)
+
 - `extract_file_sync`, `extract_bytes_sync`
 - `extract_file`, `extract_bytes`
 - `batch_extract_files`, `batch_extract_bytes` (sync & async)
 
 ### Configuration (100% ✓)
+
 - 14 configuration classes tested
 - All parameters validated
 
 ### Results (100% ✓)
+
 - `ExtractionResult` structure validation
 - Pages, metadata, tables extraction
 
 ### Validation (100% ✓)
+
 - 21 validation functions
 - All validator types (mime, ocr, language, DPI, confidence, etc.)
 
 ### Plugin System (70% ⚠️)
+
 - List functions: 100% working
 - Registration: Broken for custom backends/processors/validators
 - Unregistration: Working
 
 ### Error Handling (100% ✓)
+
 - Error codes, details, classification
 - Panic context retrieval
 
 ### Utilities (100% ✓)
+
 - MIME detection: 100%
 - Config serialization: 100%
 - Config merge: Broken (returns None)
@@ -144,6 +151,7 @@ python main.py
 ```
 
 Exit codes:
+
 - `0` = All tests passed
 - `1` = Some tests failed (but package is still functional)
 
@@ -170,6 +178,7 @@ runner.test("Description", test_feature)
 `test_<function>_<scenario>_<outcome>`
 
 Examples:
+
 - `test_extract_file_sync_with_pdf_returns_result`
 - `test_invalid_chunking_params_should_be_detected`
 - `test_register_ocr_backend_with_mock_backend`
@@ -187,6 +196,7 @@ Examples:
 ```
 
 Expected:
+
 - Test suite runs in ~30-60 seconds
 - 103+ tests pass
 - Exit code 0 (or 1 if issues expected)
@@ -200,6 +210,7 @@ Expected:
 ## Standards
 
 Follows Kreuzberg conventions:
+
 - Type hints on all functions
 - Function-based tests only (no classes)
 - Proper async/await patterns
@@ -214,6 +225,6 @@ Follows Kreuzberg conventions:
 
 ## See Also
 
-- Main Kreuzberg repository: https://github.com/kreuzberg-dev/kreuzberg
-- Python package: https://pypi.org/project/kreuzberg/
-- Documentation: https://kreuzberg-dev.github.io/kreuzberg/
+- Main Kreuzberg repository: <https://github.com/kreuzberg-dev/kreuzberg>
+- Python package: <https://pypi.org/project/kreuzberg/>
+- Documentation: <https://kreuzberg-dev.github.io/kreuzberg/>

@@ -186,24 +186,15 @@ create_toml_config() {
   local file_path="$1"
   local port="${2:-8000}"
 
-  # Always use port 8000 inside container (mapped from host port via -p flag)
+  # Config must be valid ExtractionConfig (deny_unknown_fields).
+  # Server settings use defaults; ports are mapped via docker -p flag.
   cat >"$file_path" <<EOF
-[server]
-host = "0.0.0.0"
-port = 8000
-max_upload_mb = 100
-request_timeout_secs = 30
+use_cache = true
+enable_quality_processing = true
 
 [ocr]
 backend = "tesseract"
 language = "eng"
-enabled = true
-
-[extraction]
-enabled = true
-
-[logging]
-level = "info"
 EOF
 
   log_debug "Created TOML config: $file_path"
@@ -213,24 +204,15 @@ create_yaml_config() {
   local file_path="$1"
   local port="${2:-8000}"
 
-  # Always use port 8000 inside container (mapped from host port via -p flag)
+  # Config must be valid ExtractionConfig (deny_unknown_fields).
+  # Server settings use defaults; ports are mapped via docker -p flag.
   cat >"$file_path" <<EOF
-server:
-  host: "0.0.0.0"
-  port: 8000
-  max_upload_mb: 100
-  request_timeout_secs: 30
+use_cache: true
+enable_quality_processing: true
 
 ocr:
   backend: "tesseract"
   language: "eng"
-  enabled: true
-
-extraction:
-  enabled: true
-
-logging:
-  level: "info"
 EOF
 
   log_debug "Created YAML config: $file_path"
@@ -240,25 +222,15 @@ create_json_config() {
   local file_path="$1"
   local port="${2:-8000}"
 
-  # Always use port 8000 inside container (mapped from host port via -p flag)
+  # Config must be valid ExtractionConfig (deny_unknown_fields).
+  # Server settings use defaults; ports are mapped via docker -p flag.
   cat >"$file_path" <<EOF
 {
-  "server": {
-    "host": "0.0.0.0",
-    "port": 8000,
-    "max_upload_mb": 100,
-    "request_timeout_secs": 30
-  },
+  "use_cache": true,
+  "enable_quality_processing": true,
   "ocr": {
     "backend": "tesseract",
-    "language": "eng",
-    "enabled": true
-  },
-  "extraction": {
-    "enabled": true
-  },
-  "logging": {
-    "level": "info"
+    "language": "eng"
   }
 }
 EOF
@@ -468,7 +440,7 @@ test_custom_path_with_flag() {
   if ! run_container "$container_name" "$image" "$port" \
     --volume "$config_file:$container_path:ro" \
     --entrypoint "/usr/local/bin/kreuzberg" \
-    -- "serve" "--config" "$container_path"; then
+    -- "serve" "--config" "$container_path" "--host" "0.0.0.0"; then
     fail_test "Failed to start container with custom --config flag"
     log_error "  Container logs:\n$(get_container_logs "$container_name" 2>/dev/null || echo 'N/A')"
     return 1

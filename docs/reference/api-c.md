@@ -1403,7 +1403,6 @@ const char *kreuzberg_preprocessing_preset_to_string(int32_t preset);
 const char *kreuzberg_whitespace_mode_to_string(int32_t mode);
 ```
 
-
 ```text
 
 Access via:

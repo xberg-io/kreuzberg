@@ -2,11 +2,24 @@
 
 use crate::extractors::rtf::encoding::{decode_windows_1252, parse_hex_byte, parse_rtf_control_word};
 use crate::extractors::rtf::formatting::normalize_whitespace;
-use crate::extractors::rtf::images::extract_image_metadata;
+use crate::extractors::rtf::images::{RtfImage, extract_pict_image};
 use crate::extractors::rtf::tables::TableState;
 use crate::types::Table;
 use crate::types::TextAnnotation;
 use crate::types::document_structure::AnnotationKind;
+
+/// Metadata for a single paragraph extracted from RTF.
+#[derive(Debug, Clone, Default)]
+pub struct ParagraphMeta {
+    /// Heading level (1-based): 1 = H1, 2 = H2, etc. 0 = not a heading.
+    pub heading_level: u8,
+    /// List nesting level (0-based). `None` means not a list item.
+    pub list_level: Option<u8>,
+    /// List override ID (\lsN). Used to detect list boundaries.
+    pub list_id: Option<u16>,
+    /// Whether this paragraph is a table placeholder (text is in tables vec).
+    pub is_table: bool,
+}
 
 /// A formatting span tracked during RTF parsing.
 #[derive(Debug, Clone)]
@@ -613,11 +626,24 @@ const SKIP_DESTINATIONS: &[&str] = &[
 /// 5. Extracting text while skipping formatting groups
 /// 6. Detecting and extracting image metadata (\pict sections)
 /// 7. Normalizing whitespace
-pub fn extract_text_from_rtf(content: &str, plain: bool) -> (String, Vec<Table>) {
+pub fn extract_text_from_rtf(content: &str, plain: bool) -> (String, Vec<Table>, Vec<RtfImage>, Vec<ParagraphMeta>) {
     let mut result = String::new();
     let mut chars = content.chars().peekable();
     let mut tables: Vec<Table> = Vec::new();
+    let mut images: Vec<RtfImage> = Vec::new();
     let mut table_state: Option<TableState> = None;
+
+    // Per-paragraph metadata: one entry per paragraph separated by \n\n.
+    let mut para_metas: Vec<ParagraphMeta> = Vec::new();
+    // Current paragraph's metadata (accumulated between \pard and \par).
+    let mut cur_heading_level: u8 = 0;
+    let mut cur_list_level: Option<u8> = None;
+    let mut cur_list_id: Option<u16> = None;
+    // Track \listtext destination to skip bullet/number prefix text
+    let mut in_listtext = false;
+    let mut listtext_depth: i32 = 0;
+    // Flag to prevent double-emitting metadata when \par and \pard both occur
+    let mut para_meta_emitted = false;
 
     // Group state stack: each entry tracks whether the group should be skipped.
     // When skip_depth > 0, all content is suppressed until we return to the
@@ -629,6 +655,11 @@ pub fn extract_text_from_rtf(content: &str, plain: bool) -> (String, Vec<Table>)
     let mut ignorable_pending = false;
     // Track whether we just entered a new group and the first control word decides skip
     let mut expect_destination = false;
+
+    // Track whether each group produced text output. Used to avoid inserting
+    // spurious spaces at `}` when the group only contained font directives
+    // (e.g. `\loch`, `\hich`, `\dbch`).
+    let mut group_has_text: Vec<bool> = Vec::new();
 
     let ensure_table = |table_state: &mut Option<TableState>| {
         if table_state.is_none() {
@@ -649,6 +680,7 @@ pub fn extract_text_from_rtf(content: &str, plain: bool) -> (String, Vec<Table>)
             '{' => {
                 group_depth += 1;
                 expect_destination = true;
+                group_has_text.push(false);
                 // If we're already skipping, just track depth
             }
             '}' => {
@@ -659,21 +691,71 @@ pub fn extract_text_from_rtf(content: &str, plain: bool) -> (String, Vec<Table>)
                 if skip_depth > 0 && group_depth < skip_depth {
                     skip_depth = 0;
                 }
-                // Add space at group boundary (only when not skipping)
-                if skip_depth == 0 && !result.is_empty() && !result.ends_with(' ') && !result.ends_with('\n') {
+                // Exit listtext destination
+                if in_listtext && group_depth < listtext_depth {
+                    in_listtext = false;
+                }
+                // Add space at group boundary, but only if this group actually
+                // produced text output. Font-encoding groups (containing only
+                // \loch, \hich, \dbch, \af, \f etc.) should not cause a space
+                // to be inserted mid-word.
+                let produced_text = group_has_text.pop().unwrap_or(false);
+                if produced_text
+                    && skip_depth == 0
+                    && !result.is_empty()
+                    && !result.ends_with(' ')
+                    && !result.ends_with('\n')
+                {
                     result.push(' ');
                 }
             }
             '\\' => {
                 if let Some(&next_ch) = chars.peek() {
                     match next_ch {
+                        // \<newline> is equivalent to \par in RTF
+                        '\n' | '\r' => {
+                            chars.next();
+                            // Also consume \r\n pair
+                            if next_ch == '\r'
+                                && let Some(&'\n') = chars.peek()
+                            {
+                                chars.next();
+                            }
+                            expect_destination = false;
+                            if skip_depth > 0 {
+                                continue;
+                            }
+                            // Treat as \par: emit paragraph break
+                            handle_control_word(
+                                "par",
+                                None,
+                                &mut chars,
+                                &mut result,
+                                &mut table_state,
+                                &mut tables,
+                                &mut images,
+                                &ensure_table,
+                                &finalize_table,
+                                plain,
+                                &mut group_has_text,
+                                &mut cur_heading_level,
+                                &mut cur_list_level,
+                                &mut cur_list_id,
+                                &mut para_metas,
+                                &mut para_meta_emitted,
+                            );
+                        }
                         '\\' | '{' | '}' => {
                             chars.next();
                             expect_destination = false;
                             if skip_depth > 0 {
                                 continue;
                             }
+                            para_meta_emitted = false;
                             result.push(next_ch);
+                            if let Some(flag) = group_has_text.last_mut() {
+                                *flag = true;
+                            }
                         }
                         '\'' => {
                             chars.next();
@@ -687,11 +769,16 @@ pub fn extract_text_from_rtf(content: &str, plain: bool) -> (String, Vec<Table>)
                                 && let Some(byte) = parse_hex_byte(h1, h2)
                             {
                                 let decoded = decode_windows_1252(byte);
-                                result.push(decoded);
                                 if let Some(state) = table_state.as_mut()
                                     && state.in_row
                                 {
                                     state.current_cell.push(decoded);
+                                } else {
+                                    para_meta_emitted = false;
+                                    result.push(decoded);
+                                    if let Some(flag) = group_has_text.last_mut() {
+                                        *flag = true;
+                                    }
                                 }
                             }
                         }
@@ -711,6 +798,19 @@ pub fn extract_text_from_rtf(content: &str, plain: bool) -> (String, Vec<Table>)
                                 if ignorable_pending {
                                     // \* destination: skip entire group unless we specifically handle it
                                     ignorable_pending = false;
+                                    // Allow \shppict through — it contains \pict groups with image data
+                                    if control_word != "shppict" {
+                                        if skip_depth == 0 {
+                                            skip_depth = group_depth;
+                                        }
+                                        continue;
+                                    }
+                                }
+
+                                // Skip \listtext destination (bullet/number prefix text)
+                                if control_word == "listtext" {
+                                    in_listtext = true;
+                                    listtext_depth = group_depth;
                                     if skip_depth == 0 {
                                         skip_depth = group_depth;
                                     }
@@ -736,9 +836,16 @@ pub fn extract_text_from_rtf(content: &str, plain: bool) -> (String, Vec<Table>)
                                 &mut result,
                                 &mut table_state,
                                 &mut tables,
+                                &mut images,
                                 &ensure_table,
                                 &finalize_table,
                                 plain,
+                                &mut group_has_text,
+                                &mut cur_heading_level,
+                                &mut cur_list_level,
+                                &mut cur_list_id,
+                                &mut para_metas,
+                                &mut para_meta_emitted,
                             );
                         }
                     }
@@ -751,14 +858,17 @@ pub fn extract_text_from_rtf(content: &str, plain: bool) -> (String, Vec<Table>)
                 if skip_depth > 0 {
                     continue;
                 }
-                if !result.is_empty() && !result.ends_with(' ') && !result.ends_with('\n') {
-                    result.push(' ');
-                }
                 if let Some(state) = table_state.as_mut()
                     && state.in_row
-                    && !state.current_cell.ends_with(' ')
                 {
-                    state.current_cell.push(' ');
+                    if !state.current_cell.ends_with(' ') {
+                        state.current_cell.push(' ');
+                    }
+                } else if !result.is_empty() && !result.ends_with(' ') && !result.ends_with('\n') {
+                    result.push(' ');
+                    if let Some(flag) = group_has_text.last_mut() {
+                        *flag = true;
+                    }
                 }
             }
             _ => {
@@ -772,11 +882,16 @@ pub fn extract_text_from_rtf(content: &str, plain: bool) -> (String, Vec<Table>)
                 {
                     finalize_table(&mut table_state, &mut tables);
                 }
-                result.push(ch);
                 if let Some(state) = table_state.as_mut()
                     && state.in_row
                 {
                     state.current_cell.push(ch);
+                } else {
+                    para_meta_emitted = false;
+                    result.push(ch);
+                    if let Some(flag) = group_has_text.last_mut() {
+                        *flag = true;
+                    }
                 }
             }
         }
@@ -786,7 +901,25 @@ pub fn extract_text_from_rtf(content: &str, plain: bool) -> (String, Vec<Table>)
         finalize_table(&mut table_state, &mut tables);
     }
 
-    (normalize_whitespace(&result), tables)
+    // Finalize the last paragraph's metadata if there's text after the last \par
+    let final_text = result.trim_end();
+    if !final_text.is_empty() {
+        // Count how many paragraphs we have (split by \n\n)
+        let para_count = normalize_whitespace(&result)
+            .split("\n\n")
+            .filter(|p| !p.trim().is_empty())
+            .count();
+        while para_metas.len() < para_count {
+            para_metas.push(ParagraphMeta {
+                heading_level: cur_heading_level,
+                list_level: cur_list_level,
+                list_id: cur_list_id,
+                is_table: false,
+            });
+        }
+    }
+
+    (normalize_whitespace(&result), tables, images, para_metas)
 }
 
 /// Handle an RTF control word during parsing.
@@ -798,11 +931,61 @@ fn handle_control_word(
     result: &mut String,
     table_state: &mut Option<TableState>,
     tables: &mut Vec<Table>,
+    images: &mut Vec<RtfImage>,
     ensure_table: &dyn Fn(&mut Option<TableState>),
     finalize_table: &dyn Fn(&mut Option<TableState>, &mut Vec<Table>),
     plain: bool,
+    group_has_text: &mut [bool],
+    cur_heading_level: &mut u8,
+    cur_list_level: &mut Option<u8>,
+    cur_list_id: &mut Option<u16>,
+    para_metas: &mut Vec<ParagraphMeta>,
+    para_meta_emitted: &mut bool,
 ) {
     match control_word {
+        // Paragraph reset — start tracking new paragraph properties.
+        // \pard starts a new paragraph definition. If there's already text,
+        // emit a paragraph break and record metadata for the previous paragraph.
+        "pard" => {
+            // Inside a table row, \pard is just a cell-level formatting reset —
+            // do NOT emit paragraph breaks or metadata.
+            let in_table_row = table_state.as_ref().is_some_and(|s| s.in_row);
+            if !in_table_row {
+                // If there's content and we haven't already emitted metadata (from \par),
+                // close the current paragraph.
+                if !result.is_empty() && !result.ends_with('\n') && !*para_meta_emitted {
+                    para_metas.push(ParagraphMeta {
+                        heading_level: *cur_heading_level,
+                        list_level: *cur_list_level,
+                        list_id: *cur_list_id,
+                        is_table: false,
+                    });
+                    result.push('\n');
+                    result.push('\n');
+                    if let Some(flag) = group_has_text.last_mut() {
+                        *flag = true;
+                    }
+                }
+            }
+            *para_meta_emitted = false;
+            *cur_heading_level = 0;
+            *cur_list_level = None;
+            *cur_list_id = None;
+        }
+        // Outline level: \outlinelevel0 = H1, \outlinelevel1 = H2, etc.
+        "outlinelevel" => {
+            if let Some(level) = param {
+                *cur_heading_level = (level as u8) + 1;
+            }
+        }
+        // List nesting level: \ilvl0 = top level, \ilvl1 = nested, etc.
+        "ilvl" => {
+            *cur_list_level = Some(param.unwrap_or(0) as u8);
+        }
+        // List override ID: \lsN identifies which list
+        "ls" => {
+            *cur_list_id = Some(param.unwrap_or(0) as u16);
+        }
         // Unicode escape: \u1234 (signed integer)
         "u" => {
             if let Some(code_num) = param {
@@ -812,11 +995,15 @@ fn handle_control_word(
                     code_num as u32
                 };
                 if let Some(c) = char::from_u32(code_u) {
-                    result.push(c);
                     if let Some(state) = table_state.as_mut()
                         && state.in_row
                     {
                         state.current_cell.push(c);
+                    } else {
+                        result.push(c);
+                        if let Some(flag) = group_has_text.last_mut() {
+                            *flag = true;
+                        }
                     }
                 }
                 // Skip the replacement character (usually `?` or next byte)
@@ -830,79 +1017,117 @@ fn handle_control_word(
             }
         }
         "pict" => {
-            let image_metadata = extract_image_metadata(chars);
+            let (image_metadata, rtf_image) = extract_pict_image(chars);
+            if let Some(img) = rtf_image {
+                images.push(img);
+            }
             if !image_metadata.is_empty() && !plain {
-                result.push('!');
-                result.push('[');
-                result.push_str("image");
-                result.push(']');
-                result.push('(');
-                result.push_str(&image_metadata);
-                result.push(')');
-                result.push(' ');
+                let img_md = format!("![image]({image_metadata}) ");
                 if let Some(state) = table_state.as_mut()
                     && state.in_row
                 {
-                    state.current_cell.push('!');
-                    state.current_cell.push('[');
-                    state.current_cell.push_str("image");
-                    state.current_cell.push(']');
-                    state.current_cell.push('(');
-                    state.current_cell.push_str(&image_metadata);
-                    state.current_cell.push(')');
-                    state.current_cell.push(' ');
+                    state.current_cell.push_str(&img_md);
+                } else {
+                    if let Some(flag) = group_has_text.last_mut() {
+                        *flag = true;
+                    }
+                    result.push_str(&img_md);
                 }
             }
         }
         "par" | "line" => {
-            if table_state.is_some() {
-                finalize_table(table_state, tables);
-            }
-            if !result.is_empty() && !result.ends_with('\n') {
-                result.push('\n');
-                result.push('\n');
+            let in_table_row = table_state.as_ref().is_some_and(|s| s.in_row);
+            if in_table_row {
+                // Inside a table row, \par is just a line break within a cell —
+                // add a space to the cell content instead of a paragraph break.
+                if let Some(state) = table_state.as_mut()
+                    && !state.current_cell.is_empty()
+                    && !state.current_cell.ends_with(' ')
+                {
+                    state.current_cell.push(' ');
+                }
+            } else {
+                if table_state.is_some() {
+                    finalize_table(table_state, tables);
+                }
+                // Record metadata for this paragraph before emitting the break.
+                // Only push meta + line breaks when there's actual content to close.
+                if !result.is_empty() && !result.ends_with('\n') {
+                    if !*para_meta_emitted {
+                        para_metas.push(ParagraphMeta {
+                            heading_level: *cur_heading_level,
+                            list_level: *cur_list_level,
+                            list_id: *cur_list_id,
+                            is_table: false,
+                        });
+                        *para_meta_emitted = true;
+                    }
+                    result.push('\n');
+                    result.push('\n');
+                }
+                if let Some(flag) = group_has_text.last_mut() {
+                    *flag = true;
+                }
             }
         }
         "tab" => {
-            result.push('\t');
             if let Some(state) = table_state.as_mut()
                 && state.in_row
             {
                 state.current_cell.push('\t');
+            } else {
+                result.push('\t');
+                if let Some(flag) = group_has_text.last_mut() {
+                    *flag = true;
+                }
             }
         }
         "bullet" => {
             result.push('\u{2022}');
+            if let Some(flag) = group_has_text.last_mut() {
+                *flag = true;
+            }
         }
         "lquote" => {
             result.push('\u{2018}');
+            if let Some(flag) = group_has_text.last_mut() {
+                *flag = true;
+            }
         }
         "rquote" => {
             result.push('\u{2019}');
+            if let Some(flag) = group_has_text.last_mut() {
+                *flag = true;
+            }
         }
         "ldblquote" => {
             result.push('\u{201C}');
+            if let Some(flag) = group_has_text.last_mut() {
+                *flag = true;
+            }
         }
         "rdblquote" => {
             result.push('\u{201D}');
+            if let Some(flag) = group_has_text.last_mut() {
+                *flag = true;
+            }
         }
         "endash" => {
             result.push('\u{2013}');
+            if let Some(flag) = group_has_text.last_mut() {
+                *flag = true;
+            }
         }
         "emdash" => {
             result.push('\u{2014}');
+            if let Some(flag) = group_has_text.last_mut() {
+                *flag = true;
+            }
         }
         "trowd" => {
             ensure_table(table_state);
             if let Some(state) = table_state.as_mut() {
                 state.start_row();
-            }
-            if !result.is_empty() && !result.ends_with('\n') {
-                result.push('\n');
-            }
-            if !plain && !result.ends_with('|') {
-                result.push('|');
-                result.push(' ');
             }
         }
         "cell" => {
@@ -910,22 +1135,6 @@ fn handle_control_word(
                 && state.in_row
             {
                 state.push_cell();
-            }
-            if plain {
-                // In plain mode, separate cells with pipes in the result string
-                if !result.ends_with('|') && !result.ends_with('\n') && !result.is_empty() {
-                    result.push('|');
-                }
-            } else {
-                if !result.ends_with('|') {
-                    if !result.ends_with(' ') && !result.is_empty() {
-                        result.push(' ');
-                    }
-                    result.push('|');
-                }
-                if !result.ends_with(' ') {
-                    result.push(' ');
-                }
             }
         }
         "row" => {
@@ -935,12 +1144,24 @@ fn handle_control_word(
             {
                 state.push_row();
             }
-            if !plain && !result.ends_with('|') {
-                result.push('|');
-            }
-            if !result.ends_with('\n') {
+            // Write a placeholder paragraph for this table row so that
+            // para_metas stays aligned with the paragraphs in `result`.
+            if !result.is_empty() && !result.ends_with('\n') {
+                result.push('\n');
                 result.push('\n');
             }
+            result.push_str("[TABLE_ROW]");
+            result.push('\n');
+            result.push('\n');
+            if let Some(flag) = group_has_text.last_mut() {
+                *flag = true;
+            }
+            // Mark this as a table row in para metadata
+            *para_meta_emitted = true;
+            para_metas.push(ParagraphMeta {
+                is_table: true,
+                ..Default::default()
+            });
         }
         _ => {}
     }

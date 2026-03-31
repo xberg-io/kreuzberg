@@ -1,16 +1,18 @@
 {
-	"document": "../../../../test_documents/pdf/pdfa_045.pdf",
-	"file_type": "pdf",
-	"file_size": 19551,
-	"expected_frameworks": ["kreuzberg"],
-	"metadata": {
-		"description": "PDF/A benchmark document",
-		"source": "pdfa",
-		"size_category": "small"
-	},
-	"ground_truth": {
-		"text_file": "../../../../test_documents/ground_truth/pdf/pdfa_045.txt",
-		"source": "pdf_text_layer",
-		"markdown_file": "../../../../test_documents/ground_truth/pdf/pdfa_045.md"
-	}
+  "document": "../../../../test_documents/pdf/pdfa_045.pdf",
+  "file_type": "pdf",
+  "file_size": 19551,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "PDF/A benchmark document",
+    "source": "pdfa",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/pdf/pdfa_045.txt",
+    "source": "pandoc",
+    "markdown_file": "../../../../test_documents/ground_truth/pdf/pdfa_045.md"
+  }
 }

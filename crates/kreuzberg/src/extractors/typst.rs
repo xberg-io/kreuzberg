@@ -24,15 +24,30 @@ use crate::core::config::ExtractionConfig;
 #[cfg(feature = "office")]
 use crate::plugins::{DocumentExtractor, Plugin};
 #[cfg(feature = "office")]
-use crate::types::builder::{self, DocumentStructureBuilder};
+use crate::types::Metadata;
 #[cfg(feature = "office")]
-use crate::types::document_structure::{DocumentStructure, TextAnnotation};
+use crate::types::builder;
 #[cfg(feature = "office")]
-use crate::types::{ExtractionResult, Metadata};
+use crate::types::document_structure::TextAnnotation;
+#[cfg(feature = "office")]
+use crate::types::internal::InternalDocument;
+#[cfg(feature = "office")]
+use crate::types::internal_builder::InternalDocumentBuilder;
+#[cfg(feature = "office")]
+use crate::types::uri::Uri;
 #[cfg(feature = "office")]
 use async_trait::async_trait;
 #[cfg(feature = "office")]
 use regex::Regex;
+#[cfg(feature = "office")]
+use std::sync::LazyLock;
+
+#[cfg(feature = "office")]
+static IMAGE_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r#"#image\("([^"]*)""#).unwrap());
+#[cfg(feature = "office")]
+static COLUMNS_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"columns:\s*(\d+)").unwrap());
+#[cfg(feature = "office")]
+static LINK_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r#"^#link\("([^"]*)"\)\[([^\]]*)\]"#).unwrap());
 
 /// Typst document extractor
 #[cfg(feature = "office")]
@@ -54,9 +69,12 @@ impl TypstExtractor {
         (text, metadata)
     }
 
-    /// Build a `DocumentStructure` from Typst source text.
-    fn build_document_structure(content: &str) -> DocumentStructure {
-        let mut builder = DocumentStructureBuilder::new().source_format("typst");
+    /// Build an `InternalDocument` from Typst source text.
+    ///
+    /// Extracts headings, code blocks, tables, footnotes, images, and paragraphs
+    /// with inline annotations.
+    fn build_internal_document(content: &str) -> InternalDocument {
+        let mut builder = InternalDocumentBuilder::new("typst");
         let mut in_code_block = false;
         let mut code_text = String::new();
         let mut code_lang: Option<String> = None;
@@ -68,13 +86,12 @@ impl TypstExtractor {
         let mut table_buf = String::new();
         let mut table_paren_depth: i32 = 0;
         let mut table_bracket_depth: i32 = 0;
-        // Track active list: (node_index, is_ordered) — read across loop iterations
-        #[allow(unused_assignments)]
-        let mut active_list: Option<(crate::types::document_structure::NodeIndex, bool)> = None;
+        let mut footnote_counter: u32 = 0;
+        // Track active list state: Some(is_ordered) when inside a list
+        let mut active_list: Option<bool> = None;
 
         let lines: Vec<&str> = content.lines().collect();
         let mut line_idx = 0;
-        let image_re = Regex::new(r#"#image\("([^"]*)""#).ok();
 
         while line_idx < lines.len() {
             let trimmed = lines[line_idx].trim();
@@ -95,7 +112,7 @@ impl TypstExtractor {
                 }
                 if table_paren_depth <= 0 && table_bracket_depth <= 0 {
                     in_table = false;
-                    Self::emit_table(&table_buf, &mut builder);
+                    Self::emit_table_internal(&table_buf, &mut builder);
                     table_buf.clear();
                 }
                 continue;
@@ -124,14 +141,14 @@ impl TypstExtractor {
                         in_code_block = false;
                         let text = code_text.trim_end().to_string();
                         if !text.is_empty() {
-                            builder.push_code(&text, code_lang.as_deref(), None);
+                            builder.push_code(&text, code_lang.as_deref(), None, None);
                         }
                         code_text.clear();
                         code_lang = None;
                         continue;
                     }
                 } else {
-                    Self::flush_paragraph(&mut paragraph_buf, &mut builder);
+                    Self::flush_paragraph_internal(&mut paragraph_buf, &mut builder);
                     in_code_block = true;
                     code_text.clear();
                     code_lang = trimmed.strip_prefix("```").and_then(|l| {
@@ -150,7 +167,7 @@ impl TypstExtractor {
 
             // Skip #set document(...)
             if trimmed.starts_with("#set document(") {
-                Self::flush_paragraph(&mut paragraph_buf, &mut builder);
+                Self::flush_paragraph_internal(&mut paragraph_buf, &mut builder);
                 paren_depth = 0;
                 for ch in trimmed.chars() {
                     match ch {
@@ -178,60 +195,65 @@ impl TypstExtractor {
                 continue;
             }
 
-            // List items — check before headings so `= ...` isn't mistaken for list
+            // List items
             if (trimmed.starts_with('+') || trimmed.starts_with('-'))
                 && trimmed.len() > 1
                 && trimmed.chars().nth(1).is_some_and(|c| !c.is_alphanumeric())
             {
-                Self::flush_paragraph(&mut paragraph_buf, &mut builder);
+                Self::flush_paragraph_internal(&mut paragraph_buf, &mut builder);
                 let ordered = trimmed.starts_with('+');
-
-                // Reuse active list if it matches the same type, otherwise start a new one
-                let list_idx = match active_list {
-                    Some((idx, prev_ordered)) if prev_ordered == ordered => idx,
+                // Open a new list if none is active, or if the type changed
+                match active_list {
+                    Some(prev_ordered) if prev_ordered == ordered => {}
                     _ => {
-                        let idx = builder.push_list(ordered, None);
-                        active_list = Some((idx, ordered));
-                        idx
+                        // Close previous list if type changed
+                        if active_list.is_some() {
+                            builder.end_list();
+                        }
+                        builder.push_list(ordered);
+                        active_list = Some(ordered);
                     }
-                };
-                builder.push_list_item(list_idx, trimmed[1..].trim(), None);
+                }
+                builder.push_list_item(trimmed[1..].trim(), ordered, vec![], None, None);
                 continue;
             }
 
             // Any non-list line ends the active list
-            active_list = None;
+            if active_list.is_some() {
+                builder.end_list();
+                active_list = None;
+            }
 
             // Headings
             if trimmed.starts_with('=') {
                 let heading_level = trimmed.chars().take_while(|&c| c == '=').count();
                 let heading_text = trimmed[heading_level..].trim();
                 if !heading_text.is_empty() {
-                    Self::flush_paragraph(&mut paragraph_buf, &mut builder);
+                    Self::flush_paragraph_internal(&mut paragraph_buf, &mut builder);
                     builder.push_heading(heading_level as u8, heading_text, None, None);
                 }
                 continue;
             }
 
-            // Math blocks (display math: $ ... $)
+            // Math blocks
             if trimmed.starts_with('$') && trimmed.ends_with('$') && trimmed.len() > 1 {
-                Self::flush_paragraph(&mut paragraph_buf, &mut builder);
+                Self::flush_paragraph_internal(&mut paragraph_buf, &mut builder);
                 let math = trimmed.trim_matches('$').trim();
                 if !math.is_empty() {
-                    builder.push_formula(math, None);
+                    builder.push_formula(math, None, None);
                 }
                 continue;
             }
 
             // Empty lines flush paragraph
             if trimmed.is_empty() {
-                Self::flush_paragraph(&mut paragraph_buf, &mut builder);
+                Self::flush_paragraph_internal(&mut paragraph_buf, &mut builder);
                 continue;
             }
 
             // #table() — start accumulation (may span multiple lines)
             if trimmed.starts_with("#table(") {
-                Self::flush_paragraph(&mut paragraph_buf, &mut builder);
+                Self::flush_paragraph_internal(&mut paragraph_buf, &mut builder);
                 table_buf.clear();
                 table_buf.push_str(trimmed);
                 table_paren_depth = 0;
@@ -248,7 +270,7 @@ impl TypstExtractor {
                 if table_paren_depth > 0 || table_bracket_depth > 0 {
                     in_table = true;
                 } else {
-                    Self::emit_table(&table_buf, &mut builder);
+                    Self::emit_table_internal(&table_buf, &mut builder);
                     table_buf.clear();
                 }
                 continue;
@@ -256,37 +278,101 @@ impl TypstExtractor {
 
             // #footnote[text] — extract footnote
             if trimmed.starts_with("#footnote[") {
-                Self::flush_paragraph(&mut paragraph_buf, &mut builder);
+                Self::flush_paragraph_internal(&mut paragraph_buf, &mut builder);
                 if let Some(text) = Self::extract_bracket_content(trimmed, "#footnote[") {
-                    builder.push_footnote(&text, None);
+                    footnote_counter += 1;
+                    let key = format!("fn-{}", footnote_counter);
+                    builder.push_footnote_definition(&text, &key, None);
                 }
                 continue;
             }
 
-            // #image("path") — extract image
+            // #image("path") — extract image description
             if trimmed.starts_with("#image(") {
-                Self::flush_paragraph(&mut paragraph_buf, &mut builder);
-                // Extract path from #image("path") or #image("path", ...)
-                let description = image_re
-                    .as_ref()
-                    .and_then(|r| r.captures(trimmed))
-                    .and_then(|c| c.get(1))
-                    .map(|m| m.as_str());
-                builder.push_image(description, None, None, None);
+                Self::flush_paragraph_internal(&mut paragraph_buf, &mut builder);
+                let image_path = IMAGE_RE.captures(trimmed).and_then(|c| c.get(1)).map(|m| m.as_str());
+                if let Some(path) = image_path {
+                    builder.push_uri(Uri::image(path, None));
+                }
+                let description = image_path.map(|p| format!("[Image: {}]", p));
+                let desc_text = description.unwrap_or_else(|| "[Image]".to_string());
+                builder.push_paragraph(&desc_text, vec![], None, None);
                 continue;
             }
 
-            // Regular text: accumulate into paragraph
+            // Regular text accumulation
             if !paragraph_buf.is_empty() {
                 paragraph_buf.push(' ');
             }
             paragraph_buf.push_str(trimmed);
         }
 
-        // Flush any remaining paragraph
-        Self::flush_paragraph(&mut paragraph_buf, &mut builder);
-
+        // Close any open list at end of processing
+        if active_list.is_some() {
+            builder.end_list();
+        }
+        Self::flush_paragraph_internal(&mut paragraph_buf, &mut builder);
         builder.build()
+    }
+
+    /// Flush accumulated paragraph text into the internal builder,
+    /// parsing inline annotations (bold, italic, code, links).
+    fn flush_paragraph_internal(buf: &mut String, builder: &mut InternalDocumentBuilder) {
+        if !buf.is_empty() {
+            let (text, annotations) = Self::parse_inline_annotations(buf.trim());
+            // Extract URIs from link annotations
+            for ann in &annotations {
+                if let crate::types::document_structure::AnnotationKind::Link { url, .. } = &ann.kind
+                    && !url.is_empty()
+                {
+                    let label = text.get(ann.start as usize..ann.end as usize).map(|s| s.to_string());
+                    builder.push_uri(Uri::hyperlink(url, label));
+                }
+            }
+            builder.push_paragraph(&text, annotations, None, None);
+            buf.clear();
+        }
+    }
+
+    /// Parse a `#table(...)` block and emit it as a table element in the internal builder.
+    fn emit_table_internal(table_str: &str, builder: &mut InternalDocumentBuilder) {
+        // Extract column count from `columns: N`
+        let num_cols = COLUMNS_RE
+            .captures(table_str)
+            .and_then(|caps| caps.get(1))
+            .and_then(|m| m.as_str().parse::<usize>().ok())
+            .unwrap_or(0);
+
+        // Collect all cell texts from [content] brackets
+        let mut cells: Vec<String> = Vec::new();
+        let mut in_bracket = false;
+        let mut cell = String::new();
+        for ch in table_str.chars() {
+            match ch {
+                '[' => {
+                    in_bracket = true;
+                    cell.clear();
+                }
+                ']' if in_bracket => {
+                    cells.push(cell.trim().to_string());
+                    in_bracket = false;
+                    cell.clear();
+                }
+                _ if in_bracket => {
+                    cell.push(ch);
+                }
+                _ => {}
+            }
+        }
+
+        if cells.is_empty() {
+            return;
+        }
+
+        // Arrange cells into rows
+        let effective_cols = if num_cols > 0 { num_cols } else { cells.len() };
+        let rows: Vec<Vec<String>> = cells.chunks(effective_cols).map(|chunk| chunk.to_vec()).collect();
+        builder.push_table_from_cells(&rows, None, None);
     }
 
     /// Parse inline formatting markers in paragraph text, producing stripped text
@@ -385,22 +471,11 @@ impl TypstExtractor {
     /// Parse a `#link("url")[text]` pattern at the beginning of a string slice.
     /// Returns `(url, display_text, byte_count_consumed)` on success.
     fn parse_link_at(s: &str) -> Option<(String, String, usize)> {
-        let re = Regex::new(r#"^#link\("([^"]*)"\)\[([^\]]*)\]"#).ok()?;
-        let caps = re.captures(s)?;
+        let caps = LINK_RE.captures(s)?;
         let url = caps.get(1)?.as_str().to_string();
         let display = caps.get(2)?.as_str().to_string();
         let consumed = caps.get(0)?.end();
         Some((url, display, consumed))
-    }
-
-    /// Flush accumulated paragraph text, parsing inline formatting into annotations.
-    fn flush_paragraph(buf: &mut String, b: &mut DocumentStructureBuilder) {
-        let raw = buf.trim().to_string();
-        if !raw.is_empty() {
-            let (text, annotations) = Self::parse_inline_annotations(&raw);
-            b.push_paragraph(&text, annotations, None, None);
-        }
-        buf.clear();
     }
 
     /// Extract content between the first `[` after the prefix and the matching `]`.
@@ -408,48 +483,6 @@ impl TypstExtractor {
         let after = s.strip_prefix(prefix)?;
         let end = after.find(']')?;
         Some(after[..end].to_string())
-    }
-
-    /// Parse a `#table(...)` block and emit it as a table node.
-    fn emit_table(table_str: &str, builder: &mut DocumentStructureBuilder) {
-        // Extract column count from `columns: N`
-        let num_cols = Regex::new(r"columns:\s*(\d+)")
-            .ok()
-            .and_then(|re| re.captures(table_str))
-            .and_then(|caps| caps.get(1))
-            .and_then(|m| m.as_str().parse::<usize>().ok())
-            .unwrap_or(0);
-
-        // Collect all cell texts from [content] brackets
-        let mut cells: Vec<String> = Vec::new();
-        let mut in_bracket = false;
-        let mut cell = String::new();
-        for ch in table_str.chars() {
-            match ch {
-                '[' => {
-                    in_bracket = true;
-                    cell.clear();
-                }
-                ']' if in_bracket => {
-                    cells.push(cell.trim().to_string());
-                    in_bracket = false;
-                    cell.clear();
-                }
-                _ if in_bracket => {
-                    cell.push(ch);
-                }
-                _ => {}
-            }
-        }
-
-        if cells.is_empty() {
-            return;
-        }
-
-        // Arrange cells into rows
-        let effective_cols = if num_cols > 0 { num_cols } else { cells.len() };
-        let rows: Vec<Vec<String>> = cells.chunks(effective_cols).map(|chunk| chunk.to_vec()).collect();
-        builder.push_table_from_cells(&rows, None);
     }
 }
 
@@ -496,36 +529,25 @@ impl DocumentExtractor for TypstExtractor {
         content: &[u8],
         mime_type: &str,
         config: &ExtractionConfig,
-    ) -> Result<ExtractionResult> {
-        let typst_str = String::from_utf8_lossy(content).to_string();
-        let (text, metadata) = Self::extract_from_typst(&typst_str);
+    ) -> Result<InternalDocument> {
+        let _ = config;
+        let typst_str = String::from_utf8_lossy(content).into_owned();
+        let (_text, metadata) = Self::extract_from_typst(&typst_str);
 
-        let document = if config.include_document_structure {
-            Some(Self::build_document_structure(&typst_str))
-        } else {
-            None
-        };
+        let mut doc = Self::build_internal_document(&typst_str);
+        doc.mime_type = std::borrow::Cow::Owned(mime_type.to_string());
+        doc.metadata = metadata;
 
-        Ok(ExtractionResult {
-            content: text,
-            mime_type: mime_type.to_string().into(),
-            metadata,
-            tables: Vec::new(),
-            detected_languages: None,
-            chunks: None,
-            images: None,
-            djot_content: None,
-            pages: None,
-            elements: None,
-            ocr_elements: None,
-            document,
-            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-            extracted_keywords: None,
-            quality_score: None,
-            processing_warnings: Vec::new(),
-            annotations: None,
-            children: None,
-        })
+        Ok(doc)
+    }
+
+    async fn extract_file(
+        &self,
+        path: &std::path::Path,
+        mime_type: &str,
+        config: &ExtractionConfig,
+    ) -> Result<InternalDocument> {
+        crate::core::path_resolver::extract_file_with_image_resolution(self, path, mime_type, config).await
     }
 
     fn supported_mime_types(&self) -> &[&str] {
@@ -818,14 +840,11 @@ impl TypstParser {
         }
 
         // Extract column count from `columns: N`
-        let num_cols = {
-            let col_re = Regex::new(r"columns:\s*(\d+)").ok();
-            col_re
-                .and_then(|re| re.captures(&content))
-                .and_then(|caps| caps.get(1))
-                .and_then(|m| m.as_str().parse::<usize>().ok())
-                .unwrap_or(0)
-        };
+        let num_cols = COLUMNS_RE
+            .captures(&content)
+            .and_then(|caps| caps.get(1))
+            .and_then(|m| m.as_str().parse::<usize>().ok())
+            .unwrap_or(0);
 
         // Collect all cell texts
         let mut cells: Vec<String> = Vec::new();

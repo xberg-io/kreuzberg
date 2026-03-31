@@ -256,7 +256,7 @@ jobs:
           package-tarball: crates/kreuzberg-node
 
   test-typescript:
-    name: TypeScript Tests (${{ matrix.os }})
+    name: TypeScript Tests (${{ matrix.os }}, ${{ matrix.runtime }})
     if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     needs: build-and-smoke-node
     timeout-minutes: ${{ matrix.os == 'windows-latest' && 360 || (matrix.os == 'ubuntu-24.04-arm' && 240 || 180) }}
@@ -264,17 +264,35 @@ jobs:
       fail-fast: true
       matrix:
         include:
+          # Node.js runtime
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
+            runtime: node
             coverage: true
           - os: ubuntu-24.04-arm
             target: aarch64-unknown-linux-gnu
+            runtime: node
             coverage: false
           - os: macos-latest
             target: aarch64-apple-darwin
+            runtime: node
             coverage: false
           # Windows TypeScript tests temporarily disabled due to E2E test hangs
           # TODO: Investigate and re-enable - see https://github.com/kreuzberg-dev/kreuzberg/actions/runs/21255391010
+
+          # Bun runtime (same NAPI binaries, different JS runtime)
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            runtime: bun
+            coverage: false
+          - os: ubuntu-24.04-arm
+            target: aarch64-unknown-linux-gnu
+            runtime: bun
+            coverage: false
+          - os: macos-latest
+            target: aarch64-apple-darwin
+            runtime: bun
+            coverage: false
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v6
@@ -312,11 +330,20 @@ jobs:
       - name: Setup Node
         uses: kreuzberg-dev/actions/setup-node-workspace@v1
 
+      - name: Setup Bun
+        if: matrix.runtime == 'bun'
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
       - name: Report runtime versions
         shell: bash
         run: |
-          echo "=== Runtime: node ==="
+          echo "=== Runtime: ${{ matrix.runtime }} ==="
           node --version
+          if [ "${{ matrix.runtime }}" = "bun" ]; then
+            bun --version
+          fi
 
       - name: Cache PDFium
         uses: ./.github/actions/cache-pdfium
@@ -381,7 +408,8 @@ jobs:
             du -sh packages/typescript/node_modules 2>/dev/null || echo "node_modules size: N/A"
           fi
 
-      - name: Run TypeScript tests
+      - name: Run TypeScript tests (Node.js)
+        if: matrix.runtime == 'node'
         shell: bash
         env:
           VERBOSE: "1"
@@ -391,7 +419,21 @@ jobs:
           time task node:test:ci
           set +x
 
+      - name: Run TypeScript tests (Bun)
+        if: matrix.runtime == 'bun'
+        shell: bash
+        working-directory: crates/kreuzberg-node
+        env:
+          VERBOSE: "1"
+          DEBUG: "kreuzberg*"
+        run: |
+          set -x
+          time bunx vitest run tests/smoke/
+          time bunx vitest run tests/binding/
+          set +x
+
       - name: Run E2E tests
+        if: matrix.runtime == 'node'
         shell: bash
         env:
           VERBOSE: "1"

@@ -1,15 +1,23 @@
 {
-	"document": "../../../../test_documents/vendored/docling/docx/unit_test_headers_numbered.docx",
-	"file_type": "docx",
-	"file_size": 16880,
-	"expected_frameworks": ["kreuzberg", "docling", "markitdown", "pandoc", "tika", "unstructured"],
-	"metadata": {
-		"description": "Document from docling test suite",
-		"source": "docling",
-		"size_category": "small"
-	},
-	"ground_truth": {
-		"text_file": "../../../../test_documents/ground_truth/docx/unit_test_headers_numbered.txt",
-		"source": "vision"
-	}
+  "document": "../../../../test_documents/vendored/docling/docx/unit_test_headers_numbered.docx",
+  "file_type": "docx",
+  "file_size": 16880,
+  "expected_frameworks": [
+    "kreuzberg",
+    "docling",
+    "markitdown",
+    "pandoc",
+    "tika",
+    "unstructured"
+  ],
+  "metadata": {
+    "description": "Document from docling test suite",
+    "source": "docling",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/docx/unit_test_headers_numbered.txt",
+    "source": "pandoc",
+    "markdown_file": "../../../../test_documents/ground_truth/docx/unit_test_headers_numbered.md"
+  }
 }

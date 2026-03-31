@@ -145,6 +145,7 @@ struct DefListContext {
 #[derive(Debug)]
 struct FigureContext {
     img_alt: Option<String>,
+    img_src: Option<String>,
     img_width: Option<String>,
     img_height: Option<String>,
     caption: Option<String>,
@@ -431,17 +432,19 @@ impl<'a, 'b> HtmlWalker<'a, 'b> {
             }
             "img" => {
                 let alt = extract_attr(attrs_str, "alt");
+                let src = extract_attr(attrs_str, "src").map(|s| s.to_string());
                 let width = extract_attr(attrs_str, "width").map(|s| s.to_string());
                 let height = extract_attr(attrs_str, "height").map(|s| s.to_string());
 
                 // If inside a <figure>, accumulate rather than emitting immediately
                 if let Some(ref mut fig) = self.figure {
                     fig.img_alt = alt.map(|s| s.to_string());
+                    fig.img_src = src;
                     fig.img_width = width;
                     fig.img_height = height;
                 } else {
                     self.flush_paragraph();
-                    let idx = self.builder.push_image(alt, None, None, None);
+                    let idx = self.builder.push_image_with_src(alt, src.as_deref(), None, None, None);
                     if width.is_some() || height.is_some() {
                         let mut attrs = AHashMap::new();
                         if let Some(w) = width {
@@ -458,6 +461,7 @@ impl<'a, 'b> HtmlWalker<'a, 'b> {
                 self.flush_paragraph();
                 self.figure = Some(FigureContext {
                     img_alt: None,
+                    img_src: None,
                     img_width: None,
                     img_height: None,
                     caption: None,
@@ -632,7 +636,9 @@ impl<'a, 'b> HtmlWalker<'a, 'b> {
                         .map(|s| s.trim())
                         .filter(|s| !s.is_empty())
                         .or(fig.img_alt.as_deref());
-                    let idx = self.builder.push_image(desc, None, None, None);
+                    let idx = self
+                        .builder
+                        .push_image_with_src(desc, fig.img_src.as_deref(), None, None, None);
                     let has_dims = fig.img_width.is_some() || fig.img_height.is_some();
                     if has_dims {
                         let mut attrs = AHashMap::new();

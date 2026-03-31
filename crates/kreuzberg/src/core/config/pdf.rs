@@ -8,7 +8,6 @@ use serde::{Deserialize, Serialize};
 /// PDF-specific configuration.
 #[cfg(feature = "pdf")]
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
 pub struct PdfConfig {
     /// Extract images from PDF
     #[serde(default)]
@@ -58,7 +57,6 @@ pub struct PdfConfig {
 /// clustering and semantic analysis. When enabled, hierarchical blocks are
 /// included in page content.
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
 pub struct HierarchyConfig {
     /// Enable hierarchy extraction
     #[serde(default = "default_true")]

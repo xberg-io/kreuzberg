@@ -26,7 +26,7 @@ default-members = ["crates/kreuzberg", "crates/kreuzberg-cli"]
 resolver = "2"
 
 [workspace.package]
-version = "4.6.3"
+version = "4.7.0"
 edition = "2024"
 rust-version = "1.91"
 authors = ["Na'aman Hirschfeld <naaman@kreuzberg.dev>"]
@@ -44,18 +44,19 @@ bytes = { version = "1", features = ["serde"] }
 cfb = "0.14"
 chrono = "0.4"
 clap = { version = "4.6", features = ["derive", "color", "suggestions"] }
+comrak = { version = "0.51", default-features = false }
 console_error_panic_hook = "0.1"
 criterion = { version = "0.8", features = ["html_reports"] }
-ctor = "0.6"
+ctor = "0.8"
 dbase = "0.7"
 getrandom = { version = "0.4.2", features = ["wasm_js"] }
 hex = "0.4.3"
-html-to-markdown-rs = { version = "2.29.0", default-features = false }
+html-to-markdown-rs = { version = "3.0.0", default-features = false }
 image = { version = "0.25.10", default-features = false }
 itertools = "0.14"
 js-sys = "0.3"
-kreuzberg = { path = "./crates/kreuzberg", version = "4.6.3", default-features = false }
-kreuzberg-ffi = { path = "./crates/kreuzberg-ffi", version = "4.6.3" }
+kreuzberg = { path = "./crates/kreuzberg", version = "4.7.0", default-features = false }
+kreuzberg-ffi = { path = "./crates/kreuzberg-ffi", version = "4.7.0" }
 lazy_static = "1.5.0"
 libc = "0.2.183"
 log = "0.4"
@@ -73,6 +74,7 @@ reqwest = { version = "0.13.2", default-features = false }
 
 serde = { version = "1.0.228", features = ["derive"] }
 serde_json = { version = "1.0.149" }
+serde_toon_format = "0.1"
 tempfile = "3.27.0"
 thiserror = "2.0.18"
 tokio = { version = "1.50.0", features = [
@@ -87,6 +89,7 @@ tokio = { version = "1.50.0", features = [
 ] }
 toml = "1.1.0"
 tracing = "0.1"
+tree-sitter-language-pack = { version = "1.4", default-features = false, features = ["serde"] }
 wasm-bindgen = { version = "0.2", features = ["enable-interning"] }
 wasm-bindgen-futures = "0.4"
 web-sys = { version = "0.3", features = [

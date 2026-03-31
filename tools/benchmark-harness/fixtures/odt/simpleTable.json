@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/odt/simpleTable.odt",
+  "file_type": "odt",
+  "file_size": 10705,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "ODT test document: simpleTable",
+    "source": "pandoc-generated",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "markdown_file": "../../../../test_documents/ground_truth/odt/simpleTable.md",
+    "source": "pandoc",
+    "text_file": "../../../../test_documents/ground_truth/odt/simpleTable.txt"
+  }
+}

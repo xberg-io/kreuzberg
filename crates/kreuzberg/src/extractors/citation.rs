@@ -6,11 +6,13 @@
 use crate::Result;
 use crate::core::config::ExtractionConfig;
 use crate::plugins::{DocumentExtractor, Plugin};
-use crate::types::{ExtractionResult, Metadata};
-use ahash::AHashMap;
+use crate::types::internal::InternalDocument;
+use crate::types::internal_builder::InternalDocumentBuilder;
+use crate::types::metadata::{CitationMetadata, FormatMetadata, Metadata, YearRange};
+use crate::types::uri::Uri;
+use ahash::AHashSet;
 use async_trait::async_trait;
 use std::borrow::Cow;
-use std::collections::HashSet;
 
 #[cfg(feature = "office")]
 use biblib::{CitationParser, EndNoteXmlParser, PubMedParser, RisParser};
@@ -64,19 +66,26 @@ impl Plugin for CitationExtractor {
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
 impl DocumentExtractor for CitationExtractor {
+    #[cfg_attr(feature = "otel", tracing::instrument(
+        skip(self, content, _config),
+        fields(
+            extractor.name = self.name(),
+            content.size_bytes = content.len(),
+        )
+    ))]
     async fn extract_bytes(
         &self,
         content: &[u8],
         mime_type: &str,
-        config: &ExtractionConfig,
-    ) -> Result<ExtractionResult> {
+        _config: &ExtractionConfig,
+    ) -> Result<InternalDocument> {
         let citation_str = String::from_utf8_lossy(content);
 
         let mut citations_vec = Vec::new();
-        let mut authors_set = HashSet::new();
-        let mut years_set = HashSet::new();
+        let mut authors_set = AHashSet::new();
+        let mut years_set = AHashSet::new();
         let mut dois_vec = Vec::new();
-        let mut keywords_set = HashSet::new();
+        let mut keywords_set = AHashSet::new();
         let mut formatted_content = String::new();
 
         // Parse based on MIME type
@@ -85,36 +94,24 @@ impl DocumentExtractor for CitationExtractor {
             "application/x-pubmed" => (PubMedParser::new().parse(&citation_str), "PubMed"),
             "application/x-endnote+xml" => (EndNoteXmlParser::new().parse(&citation_str), "EndNote XML"),
             _ => {
-                // Fallback: return raw content if MIME type is unexpected
-                let mut additional: AHashMap<Cow<'static, str>, serde_json::Value> = AHashMap::new();
-                additional.insert(Cow::Borrowed("citation_count"), serde_json::json!(0));
-                additional.insert(Cow::Borrowed("format"), serde_json::json!("Unknown"));
+                // Fallback: return empty document if MIME type is unexpected
+                let citation_metadata = CitationMetadata {
+                    citation_count: 0,
+                    format: Some("Unknown".to_string()),
+                    ..Default::default()
+                };
 
-                return Ok(ExtractionResult {
-                    content: citation_str.to_string(),
-                    mime_type: mime_type.to_string().into(),
-                    metadata: Metadata {
-                        additional,
-                        ..Default::default()
-                    },
-                    pages: None,
-                    tables: vec![],
-                    detected_languages: None,
-                    chunks: None,
-                    images: None,
-                    djot_content: None,
-                    elements: None,
-                    ocr_elements: None,
-                    document: None,
-                    #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-                    extracted_keywords: None,
-                    quality_score: None,
-                    processing_warnings: Vec::new(),
-                    annotations: None,
-                    children: None,
-                });
+                let mut doc = InternalDocument::new("citation");
+                doc.metadata = Metadata {
+                    format: Some(FormatMetadata::Citation(citation_metadata)),
+                    ..Default::default()
+                };
+                return Ok(doc);
             }
         };
+
+        // Build InternalDocument with citation elements
+        let mut builder = InternalDocumentBuilder::new("citation");
 
         match parse_result {
             Ok(citations) => {
@@ -140,11 +137,15 @@ impl DocumentExtractor for CitationExtractor {
                         years_set.insert(date.year as u32);
                     }
 
-                    // Collect DOIs
+                    // Collect DOIs and add as URI
                     if let Some(doi) = &citation.doi
                         && !doi.is_empty()
                     {
                         dois_vec.push(doi.clone());
+                        builder.push_uri(Uri::citation(
+                            format!("https://doi.org/{}", doi),
+                            Some(citation.title.clone()),
+                        ));
                     }
 
                     // Collect keywords
@@ -213,91 +214,75 @@ impl DocumentExtractor for CitationExtractor {
 
                     formatted_content.push_str("---\n");
                 }
+
+                // Push citation elements
+                for (i, title) in citations_vec.iter().enumerate() {
+                    let key = if title.is_empty() {
+                        format!("citation_{}", i + 1)
+                    } else {
+                        title.clone()
+                    };
+                    builder.push_citation(title, &key, None);
+                }
             }
             Err(_err) => {
                 #[cfg(feature = "otel")]
                 tracing::warn!("Citation parsing failed, returning raw content: {}", _err);
                 formatted_content = citation_str.to_string();
+                // Push as a single code block when parsing fails
+                builder.push_code(&formatted_content, None, None, None);
             }
         }
-
-        let mut additional: AHashMap<Cow<'static, str>, serde_json::Value> = AHashMap::new();
-
-        additional.insert(Cow::Borrowed("citation_count"), serde_json::json!(citations_vec.len()));
 
         let mut authors_list: Vec<String> = authors_set.into_iter().collect();
         authors_list.sort();
-        additional.insert(Cow::Borrowed("authors"), serde_json::json!(authors_list));
+        let meta_authors = if authors_list.is_empty() {
+            None
+        } else {
+            Some(authors_list.clone())
+        };
 
-        if !years_set.is_empty() {
-            let min_year = years_set.iter().min().copied().unwrap_or(0);
-            let max_year = years_set.iter().max().copied().unwrap_or(0);
+        let year_range = if !years_set.is_empty() {
+            let min_year = years_set.iter().min().copied();
+            let max_year = years_set.iter().max().copied();
             let mut years_sorted: Vec<u32> = years_set.into_iter().collect();
             years_sorted.sort_unstable();
-            additional.insert(
-                Cow::Borrowed("year_range"),
-                serde_json::json!({
-                    "min": min_year,
-                    "max": max_year,
-                    "years": years_sorted
-                }),
-            );
-        }
-
-        if !dois_vec.is_empty() {
-            additional.insert(Cow::Borrowed("dois"), serde_json::json!(dois_vec));
-        }
-
-        let mut keywords_list: Vec<String> = keywords_set.into_iter().collect();
-        keywords_list.sort();
-        if !keywords_list.is_empty() {
-            additional.insert(Cow::Borrowed("keywords"), serde_json::json!(keywords_list));
-        }
-
-        additional.insert(Cow::Borrowed("format"), serde_json::json!(format_string));
-
-        let document = if config.include_document_structure && !citations_vec.is_empty() {
-            use crate::types::builder::DocumentStructureBuilder;
-
-            let mut builder = DocumentStructureBuilder::new().source_format("citation");
-            for (i, title) in citations_vec.iter().enumerate() {
-                let key = if title.is_empty() {
-                    format!("citation_{}", i + 1)
-                } else {
-                    title.clone()
-                };
-                // Build a formatted text for this citation from the formatted_content
-                // Use the title as the citation key and title as text
-                builder.push_citation(&key, title, None);
-            }
-            Some(builder.build())
+            Some(YearRange {
+                min: min_year,
+                max: max_year,
+                years: years_sorted,
+            })
         } else {
             None
         };
 
-        Ok(ExtractionResult {
-            content: formatted_content,
-            mime_type: mime_type.to_string().into(),
-            metadata: Metadata {
-                additional,
-                ..Default::default()
-            },
-            pages: None,
-            tables: vec![],
-            detected_languages: None,
-            chunks: None,
-            images: None,
-            djot_content: None,
-            elements: None,
-            ocr_elements: None,
-            document,
-            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-            extracted_keywords: None,
-            quality_score: None,
-            processing_warnings: Vec::new(),
-            annotations: None,
-            children: None,
-        })
+        let mut keywords_list: Vec<String> = keywords_set.into_iter().collect();
+        keywords_list.sort();
+        let meta_keywords = if keywords_list.is_empty() {
+            None
+        } else {
+            Some(keywords_list.clone())
+        };
+
+        let citation_metadata = CitationMetadata {
+            citation_count: citations_vec.len(),
+            format: Some(format_string.to_string()),
+            authors: authors_list,
+            year_range,
+            dois: dois_vec,
+            keywords: keywords_list,
+        };
+
+        let mut doc = builder.build();
+        doc.mime_type = Cow::Owned(mime_type.to_string());
+        doc.metadata = Metadata {
+            authors: meta_authors,
+            keywords: meta_keywords,
+            format: Some(FormatMetadata::Citation(citation_metadata)),
+            ..Default::default()
+        };
+
+        Ok(doc)
     }
 
     fn supported_mime_types(&self) -> &[&str] {
@@ -345,18 +330,13 @@ ER  -"#;
         assert!(result.is_ok());
         let result = result.expect("Should extract valid RIS entry");
 
-        assert!(result.content.contains("Sample Title"));
-        assert!(result.content.contains("Smith"));
-
         let metadata = &result.metadata;
-        assert_eq!(
-            metadata.additional.get(&Cow::Borrowed("citation_count")),
-            Some(&serde_json::json!(1))
-        );
-        assert_eq!(
-            metadata.additional.get(&Cow::Borrowed("format")),
-            Some(&serde_json::json!("RIS"))
-        );
+        if let Some(FormatMetadata::Citation(cit)) = &metadata.format {
+            assert_eq!(cit.citation_count, 1);
+            assert_eq!(cit.format.as_deref(), Some("RIS"));
+        } else {
+            panic!("Expected FormatMetadata::Citation");
+        }
     }
 
     #[tokio::test]
@@ -384,14 +364,14 @@ ER  -"#;
 
         let metadata = &result.metadata;
 
-        assert_eq!(
-            metadata.additional.get(&Cow::Borrowed("citation_count")),
-            Some(&serde_json::json!(2))
-        );
-
-        if let Some(year_range) = metadata.additional.get("year_range") {
-            assert_eq!(year_range.get("min"), Some(&serde_json::json!(2020)));
-            assert_eq!(year_range.get("max"), Some(&serde_json::json!(2021)));
+        if let Some(FormatMetadata::Citation(cit)) = &metadata.format {
+            assert_eq!(cit.citation_count, 2);
+            if let Some(yr) = &cit.year_range {
+                assert_eq!(yr.min, Some(2020));
+                assert_eq!(yr.max, Some(2021));
+            }
+        } else {
+            panic!("Expected FormatMetadata::Citation");
         }
     }
 
@@ -414,8 +394,10 @@ ER  -"#;
         let result = result.expect("Should extract RIS with DOI");
 
         let metadata = &result.metadata;
-        if let Some(dois) = metadata.additional.get("dois") {
-            assert!(!dois.as_array().unwrap().is_empty());
+        if let Some(FormatMetadata::Citation(cit)) = &metadata.format {
+            assert!(!cit.dois.is_empty());
+        } else {
+            panic!("Expected FormatMetadata::Citation");
         }
     }
 
@@ -433,11 +415,11 @@ ER  -"#;
         let result = result.expect("Should handle empty citation file");
 
         let metadata = &result.metadata;
-
-        assert_eq!(
-            metadata.additional.get(&Cow::Borrowed("citation_count")),
-            Some(&serde_json::json!(0))
-        );
+        if let Some(FormatMetadata::Citation(cit)) = &metadata.format {
+            assert_eq!(cit.citation_count, 0);
+        } else {
+            panic!("Expected FormatMetadata::Citation");
+        }
     }
 
     #[tokio::test]
@@ -456,10 +438,11 @@ ER  -"#;
         // When RIS parser encounters unparseable content, it may return empty results
         // Verify we get a result either way
         let metadata = &result.metadata;
-        assert_eq!(
-            metadata.additional.get(&Cow::Borrowed("citation_count")),
-            Some(&serde_json::json!(0))
-        );
+        if let Some(FormatMetadata::Citation(cit)) = &metadata.format {
+            assert_eq!(cit.citation_count, 0);
+        } else {
+            panic!("Expected FormatMetadata::Citation");
+        }
     }
 
     #[tokio::test]
@@ -505,8 +488,8 @@ ER  -"#;
         let result = result.expect("Should extract RIS with keywords");
 
         let metadata = &result.metadata;
-        if let Some(keywords) = metadata.additional.get("keywords") {
-            assert!(!keywords.as_array().unwrap().is_empty());
+        if let Some(keywords) = &metadata.keywords {
+            assert!(!keywords.is_empty());
         }
     }
 
@@ -530,8 +513,8 @@ ER  -"#;
         let result = result.expect("Should extract multiple authors");
 
         let metadata = &result.metadata;
-        if let Some(authors) = metadata.additional.get("authors") {
-            assert!(!authors.as_array().unwrap().is_empty());
+        if let Some(authors) = &metadata.authors {
+            assert!(!authors.is_empty());
         }
     }
 
@@ -552,10 +535,11 @@ DP  - 2023"#;
         let result = result.expect("Should extract PubMed format");
 
         let metadata = &result.metadata;
-        assert_eq!(
-            metadata.additional.get(&Cow::Borrowed("format")),
-            Some(&serde_json::json!("PubMed"))
-        );
+        if let Some(FormatMetadata::Citation(cit)) = &metadata.format {
+            assert_eq!(cit.format.as_deref(), Some("PubMed"));
+        } else {
+            panic!("Expected FormatMetadata::Citation");
+        }
     }
 
     #[tokio::test]
@@ -584,9 +568,10 @@ DP  - 2023"#;
         let result = result.expect("Should extract EndNote XML format");
 
         let metadata = &result.metadata;
-        assert_eq!(
-            metadata.additional.get(&Cow::Borrowed("format")),
-            Some(&serde_json::json!("EndNote XML"))
-        );
+        if let Some(FormatMetadata::Citation(cit)) = &metadata.format {
+            assert_eq!(cit.format.as_deref(), Some("EndNote XML"));
+        } else {
+            panic!("Expected FormatMetadata::Citation");
+        }
     }
 }

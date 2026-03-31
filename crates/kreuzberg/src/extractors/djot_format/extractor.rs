@@ -2,13 +2,15 @@
 //!
 //! Implements the DocumentExtractor and Plugin traits for Djot markup files.
 
-use super::parsing::{extract_complete_djot_content, extract_tables_from_events};
+use super::super::annotation_utils::adjust_annotations_for_trim;
+use super::parsing::extract_tables_from_events;
 use crate::Result;
 use crate::core::config::ExtractionConfig;
 use crate::plugins::{DocumentExtractor, Plugin};
-use crate::types::builder::DocumentStructureBuilder;
-use crate::types::document_structure::DocumentStructure;
-use crate::types::{ExtractionResult, Metadata};
+use crate::types::Metadata;
+use crate::types::internal::InternalDocument;
+use crate::types::internal_builder::InternalDocumentBuilder;
+use crate::types::uri::{Uri, classify_uri};
 use async_trait::async_trait;
 use jotdown::{Container, Event, Parser};
 use std::borrow::Cow;
@@ -31,42 +33,49 @@ impl DjotExtractor {
 }
 
 impl DjotExtractor {
-    /// Build a `DocumentStructure` from jotdown events.
-    fn build_document_structure(events: &[Event]) -> DocumentStructure {
+    /// Build an `InternalDocument` from jotdown events.
+    pub fn build_internal_document(events: &[Event]) -> InternalDocument {
         use crate::types::builder;
         use crate::types::document_structure::TextAnnotation;
 
-        let mut b = DocumentStructureBuilder::new().source_format("djot");
+        let mut b = InternalDocumentBuilder::new("djot");
 
         let mut paragraph_text = String::new();
         let mut paragraph_annotations: Vec<TextAnnotation> = Vec::new();
         let mut in_paragraph = false;
         let mut heading_text = String::new();
+        let mut heading_annotations: Vec<TextAnnotation> = Vec::new();
         let mut heading_level: u8 = 0;
         let mut in_heading = false;
         let mut code_text = String::new();
         let mut code_lang: Option<String> = None;
         let mut in_code_block = false;
-        let mut blockquote_depth: u32 = 0;
         let mut in_math = false;
         let mut math_text = String::new();
-        let mut list_stack: Vec<(crate::types::document_structure::NodeIndex, bool)> = Vec::new();
+        let mut list_stack: Vec<bool> = Vec::new(); // ordered flag
         let mut list_item_text = String::new();
+        let mut list_item_annotations: Vec<TextAnnotation> = Vec::new();
         let mut in_list_item = false;
         let mut in_raw_block = false;
         let mut raw_format: Option<String> = None;
         let mut raw_text = String::new();
         let mut in_verbatim = false;
         let mut verbatim_start: u32 = 0;
+        let mut in_image = false;
+        let mut image_alt = String::new();
+        let mut in_footnote = false;
+        let mut footnote_label = String::new();
+        let mut footnote_text = String::new();
 
         // Annotation tracking: stack of (kind_tag, byte_start, optional link url).
-        // kind_tag: 0=bold/strong, 1=italic/emphasis, 2=delete/strikethrough, 4=link
         let mut annotation_starts: Vec<(u8, u32, Option<String>)> = Vec::new();
 
         for event in events {
             match event {
                 Event::Start(Container::Heading { level, .. }, _) => {
                     heading_text.clear();
+                    heading_annotations.clear();
+                    annotation_starts.clear();
                     heading_level = *level as u8;
                     in_heading = true;
                 }
@@ -74,9 +83,15 @@ impl DjotExtractor {
                     in_heading = false;
                     let text = heading_text.trim().to_string();
                     if !text.is_empty() {
-                        b.push_heading(heading_level, &text, None, None);
+                        let annotations =
+                            adjust_annotations_for_trim(std::mem::take(&mut heading_annotations), &heading_text, &text);
+                        let idx = b.push_heading(heading_level, &text, None, None);
+                        if !annotations.is_empty() {
+                            b.set_annotations(idx, annotations);
+                        }
                     }
                     heading_text.clear();
+                    heading_annotations.clear();
                 }
                 Event::Start(Container::Paragraph, _) => {
                     if !in_heading && !in_list_item {
@@ -90,24 +105,11 @@ impl DjotExtractor {
                         in_paragraph = false;
                         let text = paragraph_text.trim().to_string();
                         if !text.is_empty() {
-                            let trim_offset = paragraph_text.len() - paragraph_text.trim_start().len();
-                            let trimmed_len = text.len() as u32;
-                            let annotations = if trim_offset > 0 {
-                                paragraph_annotations
-                                    .drain(..)
-                                    .map(|mut a| {
-                                        a.start = a.start.saturating_sub(trim_offset as u32);
-                                        a.end = a.end.saturating_sub(trim_offset as u32);
-                                        a
-                                    })
-                                    .filter(|a| a.start < a.end && a.end <= trimmed_len)
-                                    .collect()
-                            } else {
-                                paragraph_annotations
-                                    .drain(..)
-                                    .filter(|a| a.start < a.end && a.end <= trimmed_len)
-                                    .collect()
-                            };
+                            let annotations = adjust_annotations_for_trim(
+                                std::mem::take(&mut paragraph_annotations),
+                                &paragraph_text,
+                                &text,
+                            );
                             b.push_paragraph(&text, annotations, None, None);
                         }
                         paragraph_text.clear();
@@ -120,42 +122,90 @@ impl DjotExtractor {
                 Event::Start(Container::Strong, _) => {
                     if in_paragraph {
                         annotation_starts.push((0, paragraph_text.len() as u32, None));
+                    } else if in_heading {
+                        annotation_starts.push((0, heading_text.len() as u32, None));
+                    } else if in_list_item {
+                        annotation_starts.push((0, list_item_text.len() as u32, None));
                     }
                 }
                 Event::End(Container::Strong) => {
-                    if in_paragraph && let Some(pos) = annotation_starts.iter().rposition(|(k, _, _)| *k == 0) {
+                    if let Some(pos) = annotation_starts.iter().rposition(|(k, _, _)| *k == 0) {
                         let (_, start, _) = annotation_starts.remove(pos);
-                        let end = paragraph_text.len() as u32;
-                        if start < end {
-                            paragraph_annotations.push(builder::bold(start, end));
+                        if in_paragraph {
+                            let end = paragraph_text.len() as u32;
+                            if start < end {
+                                paragraph_annotations.push(builder::bold(start, end));
+                            }
+                        } else if in_heading {
+                            let end = heading_text.len() as u32;
+                            if start < end {
+                                heading_annotations.push(builder::bold(start, end));
+                            }
+                        } else if in_list_item {
+                            let end = list_item_text.len() as u32;
+                            if start < end {
+                                list_item_annotations.push(builder::bold(start, end));
+                            }
                         }
                     }
                 }
                 Event::Start(Container::Emphasis, _) => {
                     if in_paragraph {
                         annotation_starts.push((1, paragraph_text.len() as u32, None));
+                    } else if in_heading {
+                        annotation_starts.push((1, heading_text.len() as u32, None));
+                    } else if in_list_item {
+                        annotation_starts.push((1, list_item_text.len() as u32, None));
                     }
                 }
                 Event::End(Container::Emphasis) => {
-                    if in_paragraph && let Some(pos) = annotation_starts.iter().rposition(|(k, _, _)| *k == 1) {
+                    if let Some(pos) = annotation_starts.iter().rposition(|(k, _, _)| *k == 1) {
                         let (_, start, _) = annotation_starts.remove(pos);
-                        let end = paragraph_text.len() as u32;
-                        if start < end {
-                            paragraph_annotations.push(builder::italic(start, end));
+                        if in_paragraph {
+                            let end = paragraph_text.len() as u32;
+                            if start < end {
+                                paragraph_annotations.push(builder::italic(start, end));
+                            }
+                        } else if in_heading {
+                            let end = heading_text.len() as u32;
+                            if start < end {
+                                heading_annotations.push(builder::italic(start, end));
+                            }
+                        } else if in_list_item {
+                            let end = list_item_text.len() as u32;
+                            if start < end {
+                                list_item_annotations.push(builder::italic(start, end));
+                            }
                         }
                     }
                 }
                 Event::Start(Container::Delete, _) => {
                     if in_paragraph {
                         annotation_starts.push((2, paragraph_text.len() as u32, None));
+                    } else if in_heading {
+                        annotation_starts.push((2, heading_text.len() as u32, None));
+                    } else if in_list_item {
+                        annotation_starts.push((2, list_item_text.len() as u32, None));
                     }
                 }
                 Event::End(Container::Delete) => {
-                    if in_paragraph && let Some(pos) = annotation_starts.iter().rposition(|(k, _, _)| *k == 2) {
+                    if let Some(pos) = annotation_starts.iter().rposition(|(k, _, _)| *k == 2) {
                         let (_, start, _) = annotation_starts.remove(pos);
-                        let end = paragraph_text.len() as u32;
-                        if start < end {
-                            paragraph_annotations.push(builder::strikethrough(start, end));
+                        if in_paragraph {
+                            let end = paragraph_text.len() as u32;
+                            if start < end {
+                                paragraph_annotations.push(builder::strikethrough(start, end));
+                            }
+                        } else if in_heading {
+                            let end = heading_text.len() as u32;
+                            if start < end {
+                                heading_annotations.push(builder::strikethrough(start, end));
+                            }
+                        } else if in_list_item {
+                            let end = list_item_text.len() as u32;
+                            if start < end {
+                                list_item_annotations.push(builder::strikethrough(start, end));
+                            }
                         }
                     }
                 }
@@ -163,30 +213,85 @@ impl DjotExtractor {
                     if in_paragraph {
                         in_verbatim = true;
                         verbatim_start = paragraph_text.len() as u32;
+                    } else if in_heading {
+                        in_verbatim = true;
+                        verbatim_start = heading_text.len() as u32;
+                    } else if in_list_item {
+                        in_verbatim = true;
+                        verbatim_start = list_item_text.len() as u32;
                     }
                 }
                 Event::End(Container::Verbatim) => {
-                    if in_paragraph && in_verbatim {
+                    if in_verbatim {
                         in_verbatim = false;
-                        let end = paragraph_text.len() as u32;
-                        if verbatim_start < end {
-                            paragraph_annotations.push(builder::code(verbatim_start, end));
+                        if in_paragraph {
+                            let end = paragraph_text.len() as u32;
+                            if verbatim_start < end {
+                                paragraph_annotations.push(builder::code(verbatim_start, end));
+                            }
+                        } else if in_heading {
+                            let end = heading_text.len() as u32;
+                            if verbatim_start < end {
+                                heading_annotations.push(builder::code(verbatim_start, end));
+                            }
+                        } else if in_list_item {
+                            let end = list_item_text.len() as u32;
+                            if verbatim_start < end {
+                                list_item_annotations.push(builder::code(verbatim_start, end));
+                            }
                         }
                     }
                 }
                 Event::Start(Container::Link(url, _), _) => {
                     if in_paragraph {
                         annotation_starts.push((4, paragraph_text.len() as u32, Some(url.to_string())));
+                    } else if in_heading {
+                        annotation_starts.push((4, heading_text.len() as u32, Some(url.to_string())));
+                    } else if in_list_item {
+                        annotation_starts.push((4, list_item_text.len() as u32, Some(url.to_string())));
                     }
                 }
                 Event::End(Container::Link(..)) => {
-                    if in_paragraph && let Some(pos) = annotation_starts.iter().rposition(|(k, _, _)| *k == 4) {
+                    if let Some(pos) = annotation_starts.iter().rposition(|(k, _, _)| *k == 4) {
                         let (_, start, url_opt) = annotation_starts.remove(pos);
-                        let end = paragraph_text.len() as u32;
-                        if start < end
-                            && let Some(url) = url_opt
-                        {
-                            paragraph_annotations.push(builder::link(start, end, &url, None));
+                        if let Some(url) = url_opt {
+                            let label_text = if in_paragraph {
+                                let end = paragraph_text.len() as u32;
+                                if start < end {
+                                    paragraph_annotations.push(builder::link(start, end, &url, None));
+                                    Some(paragraph_text[start as usize..end as usize].to_string())
+                                } else {
+                                    None
+                                }
+                            } else if in_heading {
+                                let end = heading_text.len() as u32;
+                                if start < end {
+                                    heading_annotations.push(builder::link(start, end, &url, None));
+                                    Some(heading_text[start as usize..end as usize].to_string())
+                                } else {
+                                    None
+                                }
+                            } else if in_list_item {
+                                let end = list_item_text.len() as u32;
+                                if start < end {
+                                    list_item_annotations.push(builder::link(start, end, &url, None));
+                                    Some(list_item_text[start as usize..end as usize].to_string())
+                                } else {
+                                    None
+                                }
+                            } else {
+                                None
+                            };
+                            // Collect URI (compute kind before moving url)
+                            if !url.is_empty() {
+                                let kind = classify_uri(&url);
+                                b.push_uri(Uri {
+                                    url,
+                                    label: label_text.filter(|s| !s.is_empty()),
+                                    page: None,
+                                    kind,
+                                });
+                            }
                         }
                     }
                 }
@@ -203,7 +308,7 @@ impl DjotExtractor {
                     in_code_block = false;
                     let text = code_text.trim_end().to_string();
                     if !text.is_empty() {
-                        b.push_code(&text, code_lang.as_deref(), None);
+                        b.push_code(&text, code_lang.as_deref(), None, None);
                     }
                     code_text.clear();
                     code_lang = None;
@@ -223,66 +328,123 @@ impl DjotExtractor {
                     raw_format = None;
                 }
                 Event::Start(Container::Blockquote, _) => {
-                    b.push_quote(None);
-                    blockquote_depth += 1;
+                    b.push_quote_start();
                 }
                 Event::End(Container::Blockquote) => {
-                    if blockquote_depth > 0 {
-                        b.exit_container();
-                        blockquote_depth -= 1;
-                    }
+                    b.push_quote_end();
                 }
                 Event::Start(Container::List { kind, .. }, _) => {
                     let ordered = matches!(kind, jotdown::ListKind::Ordered { .. });
-                    let list_idx = b.push_list(ordered, None);
-                    list_stack.push((list_idx, ordered));
+                    b.push_list(ordered);
+                    list_stack.push(ordered);
                 }
                 Event::End(Container::List { .. }) => {
-                    list_stack.pop();
+                    if list_stack.pop().is_some() {
+                        b.end_list();
+                    }
                 }
                 Event::Start(Container::ListItem | Container::TaskListItem { .. }, _) => {
                     list_item_text.clear();
+                    list_item_annotations.clear();
+                    annotation_starts.clear();
                     in_list_item = true;
                 }
                 Event::End(Container::ListItem | Container::TaskListItem { .. }) => {
                     in_list_item = false;
                     let text = list_item_text.trim().to_string();
-                    if let Some((list_idx, _)) = list_stack.last()
+                    if let Some(ordered) = list_stack.last().copied()
                         && !text.is_empty()
                     {
-                        b.push_list_item(*list_idx, &text, None);
+                        let annotations = adjust_annotations_for_trim(
+                            std::mem::take(&mut list_item_annotations),
+                            &list_item_text,
+                            &text,
+                        );
+                        b.push_list_item(&text, ordered, annotations, None, None);
                     }
                     list_item_text.clear();
+                    list_item_annotations.clear();
                 }
                 Event::Start(Container::Math { display }, _) => {
                     if *display {
                         in_math = true;
                         math_text.clear();
                     }
-                    // Inline math (display: false): text will be accumulated into
-                    // the surrounding context (paragraph, heading, list item) via Str events.
                 }
                 Event::End(Container::Math { display }) => {
                     if *display {
                         in_math = false;
                         let text = math_text.trim().to_string();
                         if !text.is_empty() {
-                            b.push_formula(&text, None);
+                            b.push_formula(&text, None, None);
                         }
                         math_text.clear();
                     }
                 }
                 Event::Start(Container::Image(..), _) => {
-                    // Images in djot — push an image node
+                    in_image = true;
+                    image_alt.clear();
                 }
-                Event::End(Container::Image(..)) => {
-                    b.push_image(None, None, None, None);
+                Event::End(Container::Image(src, ..)) => {
+                    in_image = false;
+                    use crate::types::document_structure::ContentLayer;
+                    use crate::types::internal::{ElementKind, InternalElement, InternalElementId};
+                    let alt = image_alt.trim().to_string();
+                    let kind = ElementKind::Image { image_index: u32::MAX };
+                    let id = InternalElementId::generate(kind.discriminant(), &alt, None, 0);
+                    b.push_element(InternalElement {
+                        id,
+                        kind,
+                        text: alt,
+                        depth: 0,
+                        page: None,
+                        bbox: None,
+                        layer: ContentLayer::Body,
+                        annotations: Vec::new(),
+                        attributes: None,
+                        anchor: None,
+                        ocr_geometry: None,
+                        ocr_confidence: None,
+                        ocr_rotation: None,
+                    });
+                    // Collect image URI with alt text as label
+                    let src_str = src.as_ref();
+                    if !src_str.is_empty() {
+                        let trimmed = image_alt.trim();
+                        let label = if trimmed.is_empty() {
+                            None
+                        } else {
+                            Some(trimmed.to_string())
+                        };
+                        b.push_uri(Uri::image(src_str, label));
+                    }
+                    image_alt.clear();
+                }
+                Event::Start(Container::Footnote { label }, _) => {
+                    in_footnote = true;
+                    footnote_label = label.to_string();
+                    footnote_text.clear();
+                }
+                Event::End(Container::Footnote { .. }) => {
+                    if in_footnote {
+                        in_footnote = false;
+                        let text = footnote_text.trim().to_string();
+                        if !text.is_empty() {
+                            b.push_footnote_definition(&text, &footnote_label, None);
+                        }
+                        footnote_text.clear();
+                        footnote_label.clear();
+                    }
                 }
                 Event::FootnoteReference(name) => {
-                    b.push_footnote(name, None);
+                    b.push_footnote_ref(name, name, None);
                 }
                 Event::Str(s) => {
-                    if in_code_block {
+                    if in_image {
+                        image_alt.push_str(s);
+                    } else if in_footnote {
+                        footnote_text.push_str(s);
+                    } else if in_code_block {
                         code_text.push_str(s);
                     } else if in_raw_block {
                         raw_text.push_str(s);
@@ -372,7 +534,8 @@ impl DocumentExtractor for DjotExtractor {
         content: &[u8],
         mime_type: &str,
         config: &ExtractionConfig,
-    ) -> Result<ExtractionResult> {
+    ) -> Result<InternalDocument> {
+        let _ = config;
         let text = String::from_utf8_lossy(content).into_owned();
 
         let (yaml, remaining_content) = crate::extractors::frontmatter_utils::extract_frontmatter(&text);
@@ -384,12 +547,9 @@ impl DocumentExtractor for DjotExtractor {
         };
 
         if metadata.title.is_none()
-            && !metadata.additional.contains_key("title")
             && let Some(title) = crate::extractors::frontmatter_utils::extract_title_from_content(&remaining_content)
         {
-            metadata.title = Some(title.clone());
-            // DEPRECATED: kept for backward compatibility; will be removed in next major version.
-            metadata.additional.insert(Cow::Borrowed("title"), title.into());
+            metadata.title = Some(title);
         }
 
         // Parse with jotdown and collect events once for extraction
@@ -398,38 +558,26 @@ impl DocumentExtractor for DjotExtractor {
 
         let tables = extract_tables_from_events(&events);
 
-        // Extract complete djot content with all features
-        let djot_content = extract_complete_djot_content(&events, metadata.clone(), tables.clone());
+        // Build InternalDocument from events
+        let mut doc = Self::build_internal_document(&events);
+        doc.mime_type = Cow::Owned(mime_type.to_string());
+        doc.metadata = metadata;
 
-        let document = if config.include_document_structure {
-            Some(Self::build_document_structure(&events))
-        } else {
-            None
-        };
+        // Add tables to InternalDocument
+        for table in tables {
+            doc.push_table(table);
+        }
 
-        // Use the raw source (after frontmatter stripping) as content to preserve
-        // table structures, formatting, and all original text verbatim.
-        // Structured extraction goes into djot_content.
-        Ok(ExtractionResult {
-            content: remaining_content.to_string(),
-            mime_type: mime_type.to_string().into(),
-            metadata,
-            tables,
-            detected_languages: None,
-            chunks: None,
-            images: None,
-            pages: None,
-            djot_content: Some(djot_content),
-            elements: None,
-            ocr_elements: None,
-            document,
-            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-            extracted_keywords: None,
-            quality_score: None,
-            processing_warnings: Vec::new(),
-            annotations: None,
-            children: None,
-        })
+        Ok(doc)
+    }
+
+    async fn extract_file(
+        &self,
+        path: &std::path::Path,
+        mime_type: &str,
+        config: &ExtractionConfig,
+    ) -> Result<InternalDocument> {
+        crate::core::path_resolver::extract_file_with_image_resolution(self, path, mime_type, config).await
     }
 
     fn supported_mime_types(&self) -> &[&str] {
@@ -479,6 +627,8 @@ mod tests {
         assert!(result.is_ok());
 
         let result = result.unwrap();
+        let result =
+            crate::extraction::derive::derive_extraction_result(result, true, crate::core::config::OutputFormat::Plain);
         assert!(result.content.contains("Header"));
         assert!(result.content.contains("This is a paragraph"));
         assert!(result.content.contains("bold"));
@@ -495,6 +645,8 @@ mod tests {
             .extract_bytes(djot, "text/djot", &config)
             .await
             .expect("Should handle emoji in trimmed djot paragraph");
+        let result =
+            crate::extraction::derive::derive_extraction_result(result, true, crate::core::config::OutputFormat::Plain);
 
         assert!(result.content.contains("bold"), "Bold text preserved");
         assert!(result.content.contains("\u{1F389}"), "Emoji preserved after trim");
@@ -510,6 +662,8 @@ mod tests {
             .extract_bytes(djot, "text/djot", &config)
             .await
             .expect("Should handle CJK with bold formatting");
+        let result =
+            crate::extraction::derive::derive_extraction_result(result, true, crate::core::config::OutputFormat::Plain);
 
         assert!(result.content.contains("太字"), "Bold CJK content present");
         assert!(result.content.contains("これは"), "Leading CJK preserved");

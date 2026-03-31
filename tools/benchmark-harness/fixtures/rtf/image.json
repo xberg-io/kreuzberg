@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/rtf/image.rtf",
+  "file_type": "rtf",
+  "file_size": 32795,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "rtf test: image",
+    "source": "pandoc-generated",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/rtf/image.txt",
+    "markdown_file": "../../../../test_documents/ground_truth/rtf/image.md",
+    "source": "pandoc"
+  }
+}

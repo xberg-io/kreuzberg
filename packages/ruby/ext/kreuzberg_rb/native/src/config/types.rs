@@ -602,10 +602,6 @@ pub fn parse_html_options(ruby: &Ruby, hash: RHash) -> Result<ConversionOptions,
         options.br_in_tables = bool::try_convert(val)?;
     }
 
-    if let Some(val) = get_kw(ruby, hash, "hocr_spatial_tables") {
-        options.hocr_spatial_tables = bool::try_convert(val)?;
-    }
-
     if let Some(val) = get_kw(ruby, hash, "highlight_style") {
         let style = symbol_to_string(val)?;
         options.highlight_style = match style.to_lowercase().as_str() {

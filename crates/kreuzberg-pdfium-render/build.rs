@@ -137,7 +137,7 @@ fn build_bindings_for_one_pdfium_release(release: &str) -> Result<(), BuildError
         // If no header files found, skip binding generation and keep pre-generated file.
         if included_header_files.is_empty() {
             eprintln!(
-                "cargo:warning=No header files found in include/{}/; skipping bindgen, using pre-generated bindings",
+                "No header files found in include/{}/; skipping bindgen, using pre-generated bindings",
                 release
             );
             return Ok(());

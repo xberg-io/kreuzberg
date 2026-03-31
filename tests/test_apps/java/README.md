@@ -7,7 +7,9 @@ This directory contains a comprehensive JUnit 5 test suite for Kreuzberg Java FF
 The test suite includes **45+ tests** organized into 9 test categories:
 
 ### 1. Type Verification Tests (10 tests)
+
 Verifies all exported types and classes are accessible:
+
 - ExtractionResult class
 - ExtractionConfig class and builder
 - All config sub-types (OcrConfig, ChunkingConfig, LanguageDetectionConfig, PdfConfig, ImageExtractionConfig)
@@ -17,7 +19,9 @@ Verifies all exported types and classes are accessible:
 - Main Kreuzberg API
 
 ### 2. Synchronous File Extraction Tests (8 tests)
+
 Tests synchronous file extraction for multiple formats:
+
 - PDF files (gmft/tiny.pdf)
 - DOCX files (documents/lorem_ipsum.docx)
 - XLSX files (spreadsheets/test_01.xlsx)
@@ -28,7 +32,9 @@ Tests synchronous file extraction for multiple formats:
 - String path extraction
 
 ### 3. Asynchronous File Extraction Tests (7 tests)
+
 Tests async/concurrent file extraction:
+
 - Async PDF extraction
 - Async DOCX extraction
 - Async XLSX extraction
@@ -38,7 +44,9 @@ Tests async/concurrent file extraction:
 - Multiple concurrent async operations
 
 ### 4. Byte Extraction Tests (7 tests)
+
 Tests in-memory byte array extraction:
+
 - Synchronous byte extraction (PDF, DOCX with config)
 - Asynchronous byte extraction
 - Image byte extraction
@@ -46,7 +54,9 @@ Tests in-memory byte array extraction:
 - MIME type validation
 
 ### 5. Batch Extraction Tests (8 tests)
+
 Tests batch extraction operations:
+
 - Batch extract multiple files (sync and async)
 - Batch extract with configuration
 - Batch extract bytes (sync and async)
@@ -54,7 +64,9 @@ Tests batch extraction operations:
 - List size validation
 
 ### 6. MIME Type Detection Tests (6 tests)
+
 Tests MIME type detection from various sources:
+
 - Detection from PDF bytes
 - Detection from DOCX bytes
 - Detection from XLSX bytes
@@ -63,7 +75,9 @@ Tests MIME type detection from various sources:
 - Multiple format detection
 
 ### 7. Configuration Handling Tests (9 tests)
+
 Tests configuration creation and usage:
+
 - Default extraction config
 - Config with cache disabled
 - Config with quality processing enabled
@@ -76,7 +90,9 @@ Tests configuration creation and usage:
 - Config toMap() method
 
 ### 8. Result Structure Validation Tests (9 tests)
+
 Verifies extraction results have expected fields:
+
 - Content field
 - MIME type field
 - Success flag
@@ -89,7 +105,9 @@ Verifies extraction results have expected fields:
 - String representation
 
 ### 9. Error Handling Tests (8 tests)
+
 Tests error conditions:
+
 - Non-existent file throws IOException
 - Null path handling
 - Invalid MIME types
@@ -100,7 +118,9 @@ Tests error conditions:
 - File type coverage validation
 
 ### 10. Concurrent Operation Tests (2 tests)
+
 Tests concurrent extraction behavior:
+
 - Multiple synchronous extractions
 - Batch operations with multiple files
 
@@ -216,6 +236,7 @@ The test suite verifies extraction for these document types:
 ## Test Execution Guarantees
 
 All tests:
+
 - Verify their inputs exist (test documents)
 - Assert on return values using fluent assertions
 - Handle both success and failure scenarios
@@ -245,7 +266,8 @@ The test suite validates configuration for:
 Test results are reported in standard JUnit format by Maven Surefire.
 
 Success output example:
-```
+
+```text
 [INFO] Tests run: 45, Failures: 0, Errors: 0, Skipped: 0
 ```
 

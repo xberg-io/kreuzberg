@@ -1,15 +1,23 @@
 {
-	"document": "../../../../test_documents/vendored/docling/pptx/powerpoint_bad_text.pptx",
-	"file_type": "pptx",
-	"file_size": 35632,
-	"expected_frameworks": ["kreuzberg", "docling", "markitdown", "pandoc", "tika", "unstructured"],
-	"metadata": {
-		"description": "Document from docling test suite",
-		"source": "docling",
-		"size_category": "small"
-	},
-	"ground_truth": {
-		"text_file": "../../../../test_documents/ground_truth/pptx/powerpoint_bad_text.txt",
-		"source": "vision"
-	}
+  "document": "../../../../test_documents/vendored/docling/pptx/powerpoint_bad_text.pptx",
+  "file_type": "pptx",
+  "file_size": 35632,
+  "expected_frameworks": [
+    "kreuzberg",
+    "docling",
+    "markitdown",
+    "pandoc",
+    "tika",
+    "unstructured"
+  ],
+  "metadata": {
+    "description": "Document from docling test suite",
+    "source": "docling",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/pptx/powerpoint_bad_text.txt",
+    "source": "pandoc",
+    "markdown_file": "../../../../test_documents/ground_truth/pptx/powerpoint_bad_text.md"
+  }
 }

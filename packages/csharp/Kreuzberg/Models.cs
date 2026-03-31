@@ -539,6 +539,13 @@ public sealed class ExtractionResult
     /// </summary>
     [JsonPropertyName("annotations")]
     public List<PdfAnnotation>? Annotations { get; set; }
+
+    /// <summary>
+    /// URIs/links discovered during document extraction.
+    /// Contains hyperlinks, image references, citations, email addresses, and other URI-like references.
+    /// </summary>
+    [JsonPropertyName("uris")]
+    public List<ExtractedUri>? Uris { get; set; }
 }
 
 /// <summary>
@@ -599,6 +606,37 @@ public sealed class PdfAnnotationBoundingBox
     /// </summary>
     [JsonPropertyName("y1")]
     public double Y1 { get; init; }
+}
+
+/// <summary>
+/// A URI extracted from a document.
+/// Represents any link, reference, or resource pointer found during extraction.
+/// </summary>
+public sealed class ExtractedUri
+{
+    /// <summary>
+    /// The URL or path string.
+    /// </summary>
+    [JsonPropertyName("url")]
+    public string Url { get; init; } = string.Empty;
+
+    /// <summary>
+    /// Optional display text / label for the link.
+    /// </summary>
+    [JsonPropertyName("label")]
+    public string? Label { get; init; }
+
+    /// <summary>
+    /// Optional page number where the URI was found (1-indexed).
+    /// </summary>
+    [JsonPropertyName("page")]
+    public uint? Page { get; init; }
+
+    /// <summary>
+    /// Semantic classification of the URI (hyperlink, image, anchor, citation, reference, email).
+    /// </summary>
+    [JsonPropertyName("kind")]
+    public string Kind { get; init; } = string.Empty;
 }
 
 /// <summary>
@@ -966,6 +1004,46 @@ public enum FormatType
     /// </summary>
     [JsonStringEnumMemberName("ocr")]
     Ocr,
+    /// <summary>
+    /// CSV/TSV document format.
+    /// </summary>
+    [JsonStringEnumMemberName("csv")]
+    Csv,
+    /// <summary>
+    /// BibTeX bibliography format.
+    /// </summary>
+    [JsonStringEnumMemberName("bibtex")]
+    Bibtex,
+    /// <summary>
+    /// Citation file format (RIS, PubMed, EndNote).
+    /// </summary>
+    [JsonStringEnumMemberName("citation")]
+    Citation,
+    /// <summary>
+    /// FictionBook (FB2) format.
+    /// </summary>
+    [JsonStringEnumMemberName("fiction_book")]
+    FictionBook,
+    /// <summary>
+    /// dBASE (DBF) format.
+    /// </summary>
+    [JsonStringEnumMemberName("dbf")]
+    Dbf,
+    /// <summary>
+    /// JATS (Journal Article Tag Suite) format.
+    /// </summary>
+    [JsonStringEnumMemberName("jats")]
+    Jats,
+    /// <summary>
+    /// EPUB format.
+    /// </summary>
+    [JsonStringEnumMemberName("epub")]
+    Epub,
+    /// <summary>
+    /// Outlook PST archive format.
+    /// </summary>
+    [JsonStringEnumMemberName("pst")]
+    Pst,
 }
 
 /// <summary>
@@ -1027,6 +1105,46 @@ public sealed class FormatMetadata
     /// OCR-specific metadata (if Type is Ocr).
     /// </summary>
     public OcrMetadata? Ocr { get; set; }
+
+    /// <summary>
+    /// CSV-specific metadata (if Type is Csv).
+    /// </summary>
+    public CsvMetadata? Csv { get; set; }
+
+    /// <summary>
+    /// BibTeX-specific metadata (if Type is Bibtex).
+    /// </summary>
+    public BibtexMetadata? Bibtex { get; set; }
+
+    /// <summary>
+    /// Citation-specific metadata (if Type is Citation).
+    /// </summary>
+    public CitationMetadata? Citation { get; set; }
+
+    /// <summary>
+    /// FictionBook-specific metadata (if Type is FictionBook).
+    /// </summary>
+    public FictionBookMetadata? FictionBook { get; set; }
+
+    /// <summary>
+    /// dBASE-specific metadata (if Type is Dbf).
+    /// </summary>
+    public DbfMetadata? Dbf { get; set; }
+
+    /// <summary>
+    /// JATS-specific metadata (if Type is Jats).
+    /// </summary>
+    public JatsMetadata? Jats { get; set; }
+
+    /// <summary>
+    /// EPUB-specific metadata (if Type is Epub).
+    /// </summary>
+    public EpubMetadata? Epub { get; set; }
+
+    /// <summary>
+    /// PST-specific metadata (if Type is Pst).
+    /// </summary>
+    public PstMetadata? Pst { get; set; }
 }
 
 /// <summary>
@@ -1828,6 +1946,18 @@ public sealed class PptxMetadata
     /// </summary>
     [JsonPropertyName("slide_names")]
     public List<string> SlideNames { get; set; } = new();
+
+    /// <summary>
+    /// Number of embedded images.
+    /// </summary>
+    [JsonPropertyName("image_count")]
+    public int? ImageCount { get; set; }
+
+    /// <summary>
+    /// Number of tables.
+    /// </summary>
+    [JsonPropertyName("table_count")]
+    public int? TableCount { get; set; }
 }
 
 /// <summary>
@@ -2054,6 +2184,90 @@ public sealed class AccelerationConfig
 }
 
 /// <summary>
+/// Configuration for tree-sitter code analysis processing options.
+/// </summary>
+public sealed class TreeSitterProcessConfig
+{
+    /// <summary>
+    /// Whether to extract code structure information.
+    /// </summary>
+    [JsonPropertyName("structure")]
+    public bool? Structure { get; init; }
+
+    /// <summary>
+    /// Whether to extract import statements.
+    /// </summary>
+    [JsonPropertyName("imports")]
+    public bool? Imports { get; init; }
+
+    /// <summary>
+    /// Whether to extract export statements.
+    /// </summary>
+    [JsonPropertyName("exports")]
+    public bool? Exports { get; init; }
+
+    /// <summary>
+    /// Whether to extract comments.
+    /// </summary>
+    [JsonPropertyName("comments")]
+    public bool? Comments { get; init; }
+
+    /// <summary>
+    /// Whether to extract docstrings.
+    /// </summary>
+    [JsonPropertyName("docstrings")]
+    public bool? Docstrings { get; init; }
+
+    /// <summary>
+    /// Whether to extract symbol definitions.
+    /// </summary>
+    [JsonPropertyName("symbols")]
+    public bool? Symbols { get; init; }
+
+    /// <summary>
+    /// Whether to extract diagnostics information.
+    /// </summary>
+    [JsonPropertyName("diagnostics")]
+    public bool? Diagnostics { get; init; }
+
+    /// <summary>
+    /// Maximum size of code chunks for processing.
+    /// </summary>
+    [JsonPropertyName("chunk_max_size")]
+    public int? ChunkMaxSize { get; init; }
+}
+
+/// <summary>
+/// Configuration for tree-sitter language pack integration.
+/// </summary>
+public sealed class TreeSitterConfig
+{
+    /// <summary>
+    /// Directory for caching tree-sitter language packs.
+    /// </summary>
+    [JsonPropertyName("cache_dir")]
+    public string? CacheDir { get; init; }
+
+    /// <summary>
+    /// List of specific languages to enable for tree-sitter parsing.
+    /// </summary>
+    [JsonPropertyName("languages")]
+    public string[]? Languages { get; init; }
+
+    /// <summary>
+    /// List of language groups to enable for tree-sitter parsing.
+    /// </summary>
+    [JsonPropertyName("groups")]
+    public string[]? Groups { get; init; }
+
+    /// <summary>
+    /// Processing options for tree-sitter code analysis.
+    /// </summary>
+    [JsonPropertyName("process")]
+    public TreeSitterProcessConfig? Process { get; init; }
+}
+
+/// <summary>
 /// Configuration for document extraction, controlling extraction behavior and features.
 /// </summary>
 public sealed class ExtractionConfig
@@ -2221,6 +2435,13 @@ public sealed class ExtractionConfig
     /// </summary>
     [JsonPropertyName("max_archive_depth")]
     public int? MaxArchiveDepth { get; init; }
+
+    /// <summary>
+    /// Tree-sitter language pack integration configuration.
+    /// If null, tree-sitter processing is disabled.
+    /// </summary>
+    [JsonPropertyName("tree_sitter")]
+    public TreeSitterConfig? TreeSitter { get; init; }
 
 }
 
@@ -3790,6 +4011,12 @@ public sealed class NodeContent
     public uint? ImageIndex { get; set; }
 
     /// <summary>
+    /// Source URL or path for images.
+    /// </summary>
+    [JsonPropertyName("src")]
+    public string? Src { get; set; }
+
+    /// <summary>
     /// Programming language for code blocks.
     /// </summary>
     [JsonPropertyName("language")]
@@ -3959,4 +4186,652 @@ public sealed class LayoutDetectionConfig
     /// </summary>
     [JsonPropertyName("table_model")]
     public string? TableModel { get; init; }
+}
+
+// ============================================================================
+// Tree-sitter ProcessResult types (serialized from Rust via serde)
+// ============================================================================
+
+/// <summary>
+/// Byte/line/column range in source code.
+/// </summary>
+public sealed class CodeSpan
+{
+    /// <summary>Start byte offset.</summary>
+    [JsonPropertyName("start_byte")]
+    public int StartByte { get; init; }
+
+    /// <summary>End byte offset.</summary>
+    [JsonPropertyName("end_byte")]
+    public int EndByte { get; init; }
+
+    /// <summary>Start line number (0-based).</summary>
+    [JsonPropertyName("start_line")]
+    public int StartLine { get; init; }
+
+    /// <summary>Start column number (0-based).</summary>
+    [JsonPropertyName("start_column")]
+    public int StartColumn { get; init; }
+
+    /// <summary>End line number (0-based).</summary>
+    [JsonPropertyName("end_line")]
+    public int EndLine { get; init; }
+
+    /// <summary>End column number (0-based).</summary>
+    [JsonPropertyName("end_column")]
+    public int EndColumn { get; init; }
+}
+
+/// <summary>
+/// Aggregate metrics for a parsed source file.
+/// </summary>
+public sealed class CodeFileMetrics
+{
+    /// <summary>Total number of lines.</summary>
+    [JsonPropertyName("total_lines")]
+    public int TotalLines { get; init; }
+
+    /// <summary>Number of lines containing code.</summary>
+    [JsonPropertyName("code_lines")]
+    public int CodeLines { get; init; }
+
+    /// <summary>Number of lines containing comments.</summary>
+    [JsonPropertyName("comment_lines")]
+    public int CommentLines { get; init; }
+
+    /// <summary>Number of blank lines.</summary>
+    [JsonPropertyName("blank_lines")]
+    public int BlankLines { get; init; }
+
+    /// <summary>Total byte size of the file.</summary>
+    [JsonPropertyName("total_bytes")]
+    public int TotalBytes { get; init; }
+
+    /// <summary>Number of AST nodes.</summary>
+    [JsonPropertyName("node_count")]
+    public int NodeCount { get; init; }
+
+    /// <summary>Number of parse errors.</summary>
+    [JsonPropertyName("error_count")]
+    public int ErrorCount { get; init; }
+
+    /// <summary>Maximum AST depth.</summary>
+    [JsonPropertyName("max_depth")]
+    public int MaxDepth { get; init; }
+}
+
+/// <summary>
+/// A structural element (function, class, etc.) in source code.
+/// </summary>
+public sealed class CodeStructureItem
+{
+    /// <summary>Kind of structure (e.g. "function", "class", "method").</summary>
+    [JsonPropertyName("kind")]
+    public string Kind { get; init; } = string.Empty;
+
+    /// <summary>Name of the item, if available.</summary>
+    [JsonPropertyName("name")]
+    public string? Name { get; init; }
+
+    /// <summary>Visibility modifier (e.g. "public", "private").</summary>
+    [JsonPropertyName("visibility")]
+    public string? Visibility { get; init; }
+
+    /// <summary>Source span of the item.</summary>
+    [JsonPropertyName("span")]
+    public CodeSpan Span { get; init; } = new();
+
+    /// <summary>Nested child structure items.</summary>
+    [JsonPropertyName("children")]
+    public CodeStructureItem[] Children { get; init; } = [];
+
+    /// <summary>Decorators/attributes applied to the item.</summary>
+    [JsonPropertyName("decorators")]
+    public string[] Decorators { get; init; } = [];
+
+    /// <summary>Associated documentation comment text.</summary>
+    [JsonPropertyName("doc_comment")]
+    public string? DocComment { get; init; }
+
+    /// <summary>Full signature of the item.</summary>
+    [JsonPropertyName("signature")]
+    public string? Signature { get; init; }
+
+    /// <summary>Source span of the item body, if applicable.</summary>
+    [JsonPropertyName("body_span")]
+    public CodeSpan? BodySpan { get; init; }
+}
+
+/// <summary>
+/// An import/include/require statement.
+/// </summary>
+public sealed class CodeImportInfo
+{
+    /// <summary>Module or path being imported.</summary>
+    [JsonPropertyName("source")]
+    public string Source { get; init; } = string.Empty;
+
+    /// <summary>Specific items imported from the source.</summary>
+    [JsonPropertyName("items")]
+    public string[] Items { get; init; } = [];
+
+    /// <summary>Alias for the import, if any.</summary>
+    [JsonPropertyName("alias")]
+    public string? Alias { get; init; }
+
+    /// <summary>Whether this is a wildcard import (e.g. import *).</summary>
+    [JsonPropertyName("is_wildcard")]
+    public bool IsWildcard { get; init; }
+
+    /// <summary>Source span of the import statement.</summary>
+    [JsonPropertyName("span")]
+    public CodeSpan Span { get; init; } = new();
+}
+
+/// <summary>
+/// An exported symbol from source code.
+/// </summary>
+public sealed class CodeExportInfo
+{
+    /// <summary>Name of the exported symbol.</summary>
+    [JsonPropertyName("name")]
+    public string Name { get; init; } = string.Empty;
+
+    /// <summary>Kind of export (e.g. "function", "class", "variable").</summary>
+    [JsonPropertyName("kind")]
+    public string Kind { get; init; } = string.Empty;
+
+    /// <summary>Source span of the export.</summary>
+    [JsonPropertyName("span")]
+    public CodeSpan Span { get; init; } = new();
+}
+
+/// <summary>
+/// A symbol (variable, constant, type alias, etc.) in source code.
+/// </summary>
+public sealed class CodeSymbolInfo
+{
+    /// <summary>Name of the symbol.</summary>
+    [JsonPropertyName("name")]
+    public string Name { get; init; } = string.Empty;
+
+    /// <summary>Kind of symbol (e.g. "variable", "constant", "type_alias").</summary>
+    [JsonPropertyName("kind")]
+    public string Kind { get; init; } = string.Empty;
+
+    /// <summary>Type annotation, if present.</summary>
+    [JsonPropertyName("type_annotation")]
+    public string? TypeAnnotation { get; init; }
+
+    /// <summary>Source span of the symbol.</summary>
+    [JsonPropertyName("span")]
+    public CodeSpan Span { get; init; } = new();
+}
+
+/// <summary>
+/// A comment in source code.
+/// </summary>
+public sealed class CodeCommentInfo
+{
+    /// <summary>Text content of the comment.</summary>
+    [JsonPropertyName("text")]
+    public string Text { get; init; } = string.Empty;
+
+    /// <summary>Kind of comment (e.g. "line", "block").</summary>
+    [JsonPropertyName("kind")]
+    public string Kind { get; init; } = string.Empty;
+
+    /// <summary>Source span of the comment.</summary>
+    [JsonPropertyName("span")]
+    public CodeSpan Span { get; init; } = new();
+}
+
+/// <summary>
+/// A section within a docstring (e.g. @param, @returns).
+/// </summary>
+public sealed class CodeDocSection
+{
+    /// <summary>Section kind (e.g. "param", "returns", "description").</summary>
+    [JsonPropertyName("kind")]
+    public string Kind { get; init; } = string.Empty;
+
+    /// <summary>Parameter or section name, if applicable.</summary>
+    [JsonPropertyName("name")]
+    public string? Name { get; init; }
+
+    /// <summary>Content of the section.</summary>
+    [JsonPropertyName("content")]
+    public string Content { get; init; } = string.Empty;
+}
+
+/// <summary>
+/// A documentation comment/docstring.
+/// </summary>
+public sealed class CodeDocstringInfo
+{
+    /// <summary>Full text of the docstring.</summary>
+    [JsonPropertyName("text")]
+    public string Text { get; init; } = string.Empty;
+
+    /// <summary>Docstring format (e.g. "javadoc", "restructuredtext", "google").</summary>
+    [JsonPropertyName("format")]
+    public string Format { get; init; } = string.Empty;
+
+    /// <summary>Name of the associated code item, if any.</summary>
+    [JsonPropertyName("associated_item")]
+    public string? AssociatedItem { get; init; }
+
+    /// <summary>Source span of the docstring.</summary>
+    [JsonPropertyName("span")]
+    public CodeSpan Span { get; init; } = new();
+
+    /// <summary>Parsed sections of the docstring.</summary>
+    [JsonPropertyName("sections")]
+    public CodeDocSection[] Sections { get; init; } = [];
+}
+
+/// <summary>
+/// A parse error or warning from tree-sitter.
+/// </summary>
+public sealed class CodeDiagnostic
+{
+    /// <summary>Diagnostic message.</summary>
+    [JsonPropertyName("message")]
+    public string Message { get; init; } = string.Empty;
+
+    /// <summary>Severity level (e.g. "error", "warning").</summary>
+    [JsonPropertyName("severity")]
+    public string Severity { get; init; } = string.Empty;
+
+    /// <summary>Source span of the diagnostic.</summary>
+    [JsonPropertyName("span")]
+    public CodeSpan Span { get; init; } = new();
+}
+
+/// <summary>
+/// Parent context for a code chunk.
+/// </summary>
+public sealed class CodeChunkContext
+{
+    /// <summary>Name of the parent structure item.</summary>
+    [JsonPropertyName("parent_name")]
+    public string? ParentName { get; init; }
+
+    /// <summary>Kind of the parent structure item.</summary>
+    [JsonPropertyName("parent_kind")]
+    public string? ParentKind { get; init; }
+}
+
+/// <summary>
+/// A chunk of source code with optional context.
+/// </summary>
+public sealed class CodeChunk
+{
+    /// <summary>Source code content of the chunk.</summary>
+    [JsonPropertyName("content")]
+    public string Content { get; init; } = string.Empty;
+
+    /// <summary>Programming language of the chunk.</summary>
+    [JsonPropertyName("language")]
+    public string Language { get; init; } = string.Empty;
+
+    /// <summary>Source span of the chunk.</summary>
+    [JsonPropertyName("span")]
+    public CodeSpan Span { get; init; } = new();
+
+    /// <summary>Optional parent context for the chunk.</summary>
+    [JsonPropertyName("context")]
+    public CodeChunkContext? Context { get; init; }
+}
+
+/// <summary>
+/// Complete result of tree-sitter code analysis.
+/// </summary>
+public sealed class CodeProcessResult
+{
+    /// <summary>Detected programming language.</summary>
+    [JsonPropertyName("language")]
+    public string Language { get; init; } = string.Empty;
+
+    /// <summary>File-level metrics.</summary>
+    [JsonPropertyName("metrics")]
+    public CodeFileMetrics Metrics { get; init; } = new();
+
+    /// <summary>Structural items (functions, classes, etc.).</summary>
+    [JsonPropertyName("structure")]
+    public CodeStructureItem[] Structure { get; init; } = [];
+
+    /// <summary>Import statements.</summary>
+    [JsonPropertyName("imports")]
+    public CodeImportInfo[] Imports { get; init; } = [];
+
+    /// <summary>Export declarations.</summary>
+    [JsonPropertyName("exports")]
+    public CodeExportInfo[] Exports { get; init; } = [];
+
+    /// <summary>Comments found in the source.</summary>
+    [JsonPropertyName("comments")]
+    public CodeCommentInfo[] Comments { get; init; } = [];
+
+    /// <summary>Docstrings found in the source.</summary>
+    [JsonPropertyName("docstrings")]
+    public CodeDocstringInfo[] Docstrings { get; init; } = [];
+
+    /// <summary>Symbols (variables, constants, etc.).</summary>
+    [JsonPropertyName("symbols")]
+    public CodeSymbolInfo[] Symbols { get; init; } = [];
+
+    /// <summary>Parse diagnostics (errors, warnings).</summary>
+    [JsonPropertyName("diagnostics")]
+    public CodeDiagnostic[] Diagnostics { get; init; } = [];
+
+    /// <summary>Code chunks for RAG/retrieval.</summary>
+    [JsonPropertyName("chunks")]
+    public CodeChunk[] Chunks { get; init; } = [];
+}
+
+/// <summary>
+/// CSV/TSV file metadata.
+/// </summary>
+public sealed class CsvMetadata
+{
+    /// <summary>
+    /// Number of rows.
+    /// </summary>
+    [JsonPropertyName("row_count")]
+    public int RowCount { get; set; }
+
+    /// <summary>
+    /// Number of columns.
+    /// </summary>
+    [JsonPropertyName("column_count")]
+    public int ColumnCount { get; set; }
+
+    /// <summary>
+    /// Detected delimiter character.
+    /// </summary>
+    [JsonPropertyName("delimiter")]
+    public string? Delimiter { get; set; }
+
+    /// <summary>
+    /// Whether the file has a header row.
+    /// </summary>
+    [JsonPropertyName("has_header")]
+    public bool HasHeader { get; set; }
+
+    /// <summary>
+    /// Detected column types.
+    /// </summary>
+    [JsonPropertyName("column_types")]
+    public List<string>? ColumnTypes { get; set; }
+}
+
+/// <summary>
+/// Year range for bibliographic metadata.
+/// </summary>
+public sealed class YearRange
+{
+    /// <summary>
+    /// Minimum year.
+    /// </summary>
+    [JsonPropertyName("min")]
+    public int? Min { get; set; }
+
+    /// <summary>
+    /// Maximum year.
+    /// </summary>
+    [JsonPropertyName("max")]
+    public int? Max { get; set; }
+
+    /// <summary>
+    /// All years present.
+    /// </summary>
+    [JsonPropertyName("years")]
+    public List<int> Years { get; set; } = new();
+}
+
+/// <summary>
+/// BibTeX bibliography metadata.
+/// </summary>
+public sealed class BibtexMetadata
+{
+    /// <summary>
+    /// Number of BibTeX entries.
+    /// </summary>
+    [JsonPropertyName("entry_count")]
+    public int EntryCount { get; set; }
+
+    /// <summary>
+    /// Citation keys.
+    /// </summary>
+    [JsonPropertyName("citation_keys")]
+    public List<string> CitationKeys { get; set; } = new();
+
+    /// <summary>
+    /// Authors.
+    /// </summary>
+    [JsonPropertyName("authors")]
+    public List<string> Authors { get; set; } = new();
+
+    /// <summary>
+    /// Year range of entries.
+    /// </summary>
+    [JsonPropertyName("year_range")]
+    public YearRange? YearRange { get; set; }
+
+    /// <summary>
+    /// Entry types with counts.
+    /// </summary>
+    [JsonPropertyName("entry_types")]
+    public Dictionary<string, int>? EntryTypes { get; set; }
+}
+
+/// <summary>
+/// Citation file metadata (RIS, PubMed, EndNote).
+/// </summary>
+public sealed class CitationMetadata
+{
+    /// <summary>
+    /// Number of citations.
+    /// </summary>
+    [JsonPropertyName("citation_count")]
+    public int CitationCount { get; set; }
+
+    /// <summary>
+    /// Citation format (e.g., "RIS", "PubMed").
+    /// </summary>
+    [JsonPropertyName("format")]
+    public string? Format { get; set; }
+
+    /// <summary>
+    /// Authors.
+    /// </summary>
+    [JsonPropertyName("authors")]
+    public List<string> Authors { get; set; } = new();
+
+    /// <summary>
+    /// Year range of citations.
+    /// </summary>
+    [JsonPropertyName("year_range")]
+    public YearRange? YearRange { get; set; }
+
+    /// <summary>
+    /// DOIs.
+    /// </summary>
+    [JsonPropertyName("dois")]
+    public List<string> Dois { get; set; } = new();
+
+    /// <summary>
+    /// Keywords.
+    /// </summary>
+    [JsonPropertyName("keywords")]
+    public List<string> Keywords { get; set; } = new();
+}
+
+/// <summary>
+/// FictionBook (FB2) metadata.
+/// </summary>
+public sealed class FictionBookMetadata
+{
+    /// <summary>
+    /// Genres.
+    /// </summary>
+    [JsonPropertyName("genres")]
+    public List<string> Genres { get; set; } = new();
+
+    /// <summary>
+    /// Sequences (series).
+    /// </summary>
+    [JsonPropertyName("sequences")]
+    public List<string> Sequences { get; set; } = new();
+
+    /// <summary>
+    /// Annotation/summary.
+    /// </summary>
+    [JsonPropertyName("annotation")]
+    public string? Annotation { get; set; }
+}
+
+/// <summary>
+/// dBASE field information.
+/// </summary>
+public sealed class DbfFieldInfo
+{
+    /// <summary>
+    /// Field name.
+    /// </summary>
+    [JsonPropertyName("name")]
+    public string Name { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Field type.
+    /// </summary>
+    [JsonPropertyName("field_type")]
+    public string FieldType { get; set; } = string.Empty;
+}
+
+/// <summary>
+/// dBASE (DBF) file metadata.
+/// </summary>
+public sealed class DbfMetadata
+{
+    /// <summary>
+    /// Number of records.
+    /// </summary>
+    [JsonPropertyName("record_count")]
+    public int RecordCount { get; set; }
+
+    /// <summary>
+    /// Number of fields.
+    /// </summary>
+    [JsonPropertyName("field_count")]
+    public int FieldCount { get; set; }
+
+    /// <summary>
+    /// Field definitions.
+    /// </summary>
+    [JsonPropertyName("fields")]
+    public List<DbfFieldInfo> Fields { get; set; } = new();
+}
+
+/// <summary>
+/// JATS contributor with role.
+/// </summary>
+public sealed class ContributorRole
+{
+    /// <summary>
+    /// Contributor name.
+    /// </summary>
+    [JsonPropertyName("name")]
+    public string Name { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Contributor role.
+    /// </summary>
+    [JsonPropertyName("role")]
+    public string? Role { get; set; }
+}
+
+/// <summary>
+/// JATS (Journal Article Tag Suite) metadata.
+/// </summary>
+public sealed class JatsMetadata
+{
+    /// <summary>
+    /// Copyright statement.
+    /// </summary>
+    [JsonPropertyName("copyright")]
+    public string? Copyright { get; set; }
+
+    /// <summary>
+    /// License information.
+    /// </summary>
+    [JsonPropertyName("license")]
+    public string? License { get; set; }
+
+    /// <summary>
+    /// History dates (e.g., received, accepted, published).
+    /// </summary>
+    [JsonPropertyName("history_dates")]
+    public Dictionary<string, string> HistoryDates { get; set; } = new();
+
+    /// <summary>
+    /// Contributors with roles.
+    /// </summary>
+    [JsonPropertyName("contributor_roles")]
+    public List<ContributorRole> ContributorRoles { get; set; } = new();
+}
+
+/// <summary>
+/// EPUB metadata (Dublin Core extensions).
+/// </summary>
+public sealed class EpubMetadata
+{
+    /// <summary>
+    /// Coverage.
+    /// </summary>
+    [JsonPropertyName("coverage")]
+    public string? Coverage { get; set; }
+
+    /// <summary>
+    /// Dublin Core format.
+    /// </summary>
+    [JsonPropertyName("dc_format")]
+    public string? DcFormat { get; set; }
+
+    /// <summary>
+    /// Relation.
+    /// </summary>
+    [JsonPropertyName("relation")]
+    public string? Relation { get; set; }
+
+    /// <summary>
+    /// Source.
+    /// </summary>
+    [JsonPropertyName("source")]
+    public string? Source { get; set; }
+
+    /// <summary>
+    /// Dublin Core type.
+    /// </summary>
+    [JsonPropertyName("dc_type")]
+    public string? DcType { get; set; }
+
+    /// <summary>
+    /// Cover image path.
+    /// </summary>
+    [JsonPropertyName("cover_image")]
+    public string? CoverImage { get; set; }
+}
+
+/// <summary>
+/// Outlook PST archive metadata.
+/// </summary>
+public sealed class PstMetadata
+{
+    /// <summary>
+    /// Number of messages in the archive.
+    /// </summary>
+    [JsonPropertyName("message_count")]
+    public int MessageCount { get; set; }
 }

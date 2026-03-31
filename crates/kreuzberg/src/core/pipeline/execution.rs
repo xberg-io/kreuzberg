@@ -65,13 +65,8 @@ pub(super) async fn execute_processors(
                         let error_msg = err.to_string();
                         result.processing_warnings.push(ProcessingWarning {
                             source: Cow::Owned(processor_name.to_string()),
-                            message: Cow::Owned(error_msg.clone()),
+                            message: Cow::Owned(error_msg),
                         });
-                        // DEPRECATED: kept for backward compatibility; will be removed in next major version.
-                        result.metadata.additional.insert(
-                            Cow::Owned(format!("processing_error_{processor_name}")),
-                            serde_json::Value::String(error_msg),
-                        );
                     }
                 }
             }

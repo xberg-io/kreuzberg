@@ -1,12 +1,12 @@
 <!-- image -->
 
-## COVID-19 CAN INCREASE THE ANXIETY AND LONELINESS PEOPLE FACE EVERY DAY.
+## COVID-19 CAN INCREASE THE ANXIETY AND LONELINESS PEOPLE FACE EVERY DAY
 
 You, or someone you love, may be triggered to pick up a drink to cope with these uncertain times. For those who drink alcohol on a daily basis, limited access to their regular supply can lead to withdrawal, which could be fatal. Alcohol and binge drinking can also weaken the immune system, putting people at greater risk for getting COVID-19. Protect yourself and loved ones by:
 
 ## RECOGNIZING ALCOHOL USE &amp; THE SIGNS OF WITHDRAWL
 
-## Symptoms of alcohol withdrawal include:
+## Symptoms of alcohol withdrawal include
 
 irritability, anxiety, agitation, being unable to sleep, upset stomach and vomiting.
 
@@ -24,11 +24,11 @@ Severe symptoms of alcohol withdrawal include: insomnia (being unable to sleep),
 
 <!-- image -->
 
-1.  Reach out to your family doctor or nursing station
+1. Reach out to your family doctor or nursing station
 
 if you experience any symptoms of alcohol withdrawal as listed above.
 
-2. Gradually decrease your alcohol use rather than stopping  your alcohol intake over the upcoming days and weeks.
+2. Gradually decrease your alcohol use rather than stopping your alcohol intake over the upcoming days and weeks.
 3. Seek treatment from your family doctor or addictions specialist to undergo monitored, medically-assisted alcohol detox.
 
 ## HOME BREW: KEEPING SAFE

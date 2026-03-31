@@ -1,15 +1,23 @@
 {
-	"document": "../../../../test_documents/vendored/docling/csv/csv-comma-in-cell.csv",
-	"file_type": "csv",
-	"file_size": 46,
-	"expected_frameworks": ["kreuzberg", "docling", "markitdown", "pandoc", "tika", "unstructured"],
-	"metadata": {
-		"description": "Document from docling test suite",
-		"source": "docling",
-		"size_category": "small"
-	},
-	"ground_truth": {
-		"text_file": "../../../../test_documents/ground_truth/csv/csv-comma-in-cell.txt",
-		"source": "vision"
-	}
+  "document": "../../../../test_documents/vendored/docling/csv/csv-comma-in-cell.csv",
+  "file_type": "csv",
+  "file_size": 46,
+  "expected_frameworks": [
+    "kreuzberg",
+    "docling",
+    "markitdown",
+    "pandoc",
+    "tika",
+    "unstructured"
+  ],
+  "metadata": {
+    "description": "Document from docling test suite",
+    "source": "docling",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/csv/csv-comma-in-cell.txt",
+    "source": "pandoc",
+    "markdown_file": "../../../../test_documents/ground_truth/csv/csv-comma-in-cell.md"
+  }
 }

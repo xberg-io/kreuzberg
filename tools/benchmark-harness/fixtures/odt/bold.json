@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/odt/bold.odt",
+  "file_type": "odt",
+  "file_size": 10377,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "odt test: bold",
+    "source": "pandoc-generated",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/odt/bold.txt",
+    "markdown_file": "../../../../test_documents/ground_truth/odt/bold.md",
+    "source": "pandoc"
+  }
+}

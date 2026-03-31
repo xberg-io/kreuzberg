@@ -48,7 +48,7 @@ mix test --exclude ocr
 
 ## Test Structure
 
-```
+```text
 test/
 ├── test_helper.exs          # Test configuration
 ├── support/
@@ -61,7 +61,7 @@ test/
 
 Test documents are symlinked from the main test_documents directory:
 
-```
+```text
 test_documents -> ../../kreuzberg/test_documents
 ```
 

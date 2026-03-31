@@ -1,16 +1,18 @@
 {
-	"document": "../../../../test_documents/pdf/nougat_002.pdf",
-	"file_type": "pdf",
-	"file_size": 126909,
-	"expected_frameworks": ["kreuzberg"],
-	"metadata": {
-		"description": "Nougat benchmark PDF document",
-		"source": "nougat",
-		"size_category": "medium"
-	},
-	"ground_truth": {
-		"text_file": "../../../../test_documents/ground_truth/pdf/nougat_002.txt",
-		"source": "pdf_text_layer",
-		"markdown_file": "../../../../test_documents/ground_truth/pdf/nougat_002.md"
-	}
+  "document": "../../../../test_documents/pdf/nougat_002.pdf",
+  "file_type": "pdf",
+  "file_size": 126909,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "Nougat benchmark PDF document",
+    "source": "nougat",
+    "size_category": "medium"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/pdf/nougat_002.txt",
+    "source": "pandoc",
+    "markdown_file": "../../../../test_documents/ground_truth/pdf/nougat_002.md"
+  }
 }

@@ -72,6 +72,7 @@ impl SortMetric {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PipelineDocResult {
     pub name: String,
+    pub file_type: String,
     pub file_size: u64,
     pub results: Vec<PipelineResult>,
 }
@@ -519,15 +520,7 @@ async fn extract_and_score(
 /// Run the pipeline benchmark.
 pub async fn run_pipeline_benchmark(config: &PipelineBenchmarkConfig) -> Result<Vec<PipelineDocResult>> {
     let filter = CorpusFilter {
-        file_types: Some(vec![
-            "pdf".to_string(),
-            "png".to_string(),
-            "jpg".to_string(),
-            "jpeg".to_string(),
-            "tiff".to_string(),
-            "bmp".to_string(),
-            "webp".to_string(),
-        ]),
+        file_types: None, // All formats with ground truth
         require_ground_truth: true,
         name_patterns: config.doc_filter.clone(),
         ..Default::default()
@@ -559,15 +552,26 @@ pub async fn run_pipeline_benchmark(config: &PipelineBenchmarkConfig) -> Result<
 
     for (idx, doc) in docs.iter().enumerate() {
         eprint!("\r[{}/{}] {} ...", idx + 1, total, doc.name);
-        let gt_text = doc
-            .ground_truth_text
-            .as_ref()
-            .and_then(|p| std::fs::read_to_string(p).ok())
-            .unwrap_or_default();
-        let gt_markdown = doc
-            .ground_truth_markdown
-            .as_ref()
-            .and_then(|p| std::fs::read_to_string(p).ok());
+        let gt_text = match doc.ground_truth_text.as_ref() {
+            Some(p) => match std::fs::read_to_string(p) {
+                Ok(s) => s,
+                Err(e) => {
+                    eprintln!("Warning: failed to read ground truth text {}: {}", p.display(), e);
+                    String::new()
+                }
+            },
+            None => String::new(),
+        };
+        let gt_markdown = match doc.ground_truth_markdown.as_ref() {
+            Some(p) => match std::fs::read_to_string(p) {
+                Ok(s) => Some(s),
+                Err(e) => {
+                    eprintln!("Warning: failed to read ground truth markdown {}: {}", p.display(), e);
+                    None
+                }
+            },
+            None => None,
+        };
 
         let mut pipeline_results = Vec::new();
 
@@ -615,6 +619,7 @@ pub async fn run_pipeline_benchmark(config: &PipelineBenchmarkConfig) -> Result<
 
         results.push(PipelineDocResult {
             name: doc.name.clone(),
+            file_type: doc.file_type.clone(),
             file_size: doc.file_size,
             results: pipeline_results,
         });
@@ -655,28 +660,40 @@ pub fn print_pipeline_table(results: &[PipelineDocResult], sort_by: SortMetric, 
     let pipelines: Vec<&str> = results[0].results.iter().map(|r| r.pipeline.name()).collect();
 
     // Header
-    eprint!("{:<30}", "Document");
+    eprint!("{:<30} {:>5}", "Document", "Type");
     for p in &pipelines {
         eprint!(" {:>8} {:>8} {:>7}", format!("{} SF1", p), "TF1", "ms");
     }
     eprintln!();
-    eprintln!("{}", "-".repeat(30 + pipelines.len() * 26));
+    eprintln!("{}", "-".repeat(36 + pipelines.len() * 26));
 
     for doc in &display_results {
         eprint!(
-            "{:<30}",
+            "{:<30} {:>5}",
             if doc.name.len() > 29 {
                 &doc.name[..29]
             } else {
                 &doc.name
-            }
+            },
+            &doc.file_type,
         );
         for pr in &doc.results {
-            if pr.time_ms.is_nan() {
-                eprint!(" {:>7.1}% {:>7.1}% {:>7}", pr.sf1 * 100.0, pr.tf1 * 100.0, "N/A");
+            let sf1_str = if pr.sf1.is_nan() {
+                "    —   ".to_string()
             } else {
-                eprint!(" {:>7.1}% {:>7.1}% {:>7.0}", pr.sf1 * 100.0, pr.tf1 * 100.0, pr.time_ms);
-            }
+                format!("{:>7.1}%", pr.sf1 * 100.0)
+            };
+            let tf1_str = if pr.tf1.is_nan() {
+                "    —   ".to_string()
+            } else {
+                format!("{:>7.1}%", pr.tf1 * 100.0)
+            };
+            let time_str = if pr.time_ms.is_nan() {
+                "    N/A".to_string()
+            } else {
+                format!("{:>7.0}", pr.time_ms)
+            };
+            eprint!(" {} {} {}", sf1_str, tf1_str, time_str);
         }
         eprintln!();
     }
@@ -684,8 +701,8 @@ pub fn print_pipeline_table(results: &[PipelineDocResult], sort_by: SortMetric, 
     // Averages (always over all results, not just displayed)
     let n = results.len() as f64;
     let total_docs = results.len();
-    eprintln!("{}", "-".repeat(30 + pipelines.len() * 26));
-    eprint!("{:<30}", "AVERAGE");
+    eprintln!("{}", "-".repeat(36 + pipelines.len() * 26));
+    eprint!("{:<30} {:>5}", "AVERAGE", "");
     for (i, _) in pipelines.iter().enumerate() {
         let sf1_vals: Vec<f64> = results
             .iter()
@@ -697,7 +714,16 @@ pub fn print_pipeline_table(results: &[PipelineDocResult], sort_by: SortMetric, 
         } else {
             0.0
         };
-        let tf1: f64 = results.iter().map(|r| r.results[i].tf1).sum::<f64>() / n;
+        let tf1_vals: Vec<f64> = results
+            .iter()
+            .map(|r| r.results[i].tf1)
+            .filter(|v| !v.is_nan())
+            .collect();
+        let tf1 = if !tf1_vals.is_empty() {
+            tf1_vals.iter().sum::<f64>() / tf1_vals.len() as f64
+        } else {
+            0.0
+        };
         let time_vals: Vec<f64> = results
             .iter()
             .map(|r| r.results[i].time_ms)

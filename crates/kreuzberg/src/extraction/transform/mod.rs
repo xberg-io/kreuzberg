@@ -331,6 +331,8 @@ mod tests {
             processing_warnings: Vec::new(),
             annotations: None,
             children: None,
+            uris: None,
+            formatted_content: None,
         };
 
         let elements = transform_extraction_result_to_elements(&result);
@@ -400,6 +402,7 @@ mod tests {
             description: None,
             ocr_result: None,
             bounding_box: None,
+            source_path: None,
         };
 
         let result = ExtractionResult {
@@ -428,6 +431,8 @@ mod tests {
             processing_warnings: Vec::new(),
             annotations: None,
             children: None,
+            uris: None,
+            formatted_content: None,
         };
 
         let elements = transform_extraction_result_to_elements(&result);
@@ -478,6 +483,8 @@ mod tests {
             processing_warnings: Vec::new(),
             annotations: None,
             children: None,
+            uris: None,
+            formatted_content: None,
         };
 
         let elements = transform_extraction_result_to_elements(&result);
@@ -603,6 +610,8 @@ mod tests {
             processing_warnings: Vec::new(),
             annotations: None,
             children: None,
+            uris: None,
+            formatted_content: None,
         };
 
         let elements = transform_extraction_result_to_elements(&result);
@@ -667,6 +676,8 @@ mod tests {
             processing_warnings: Vec::new(),
             annotations: None,
             children: None,
+            uris: None,
+            formatted_content: None,
         };
 
         let elements = transform_extraction_result_to_elements(&result);
@@ -743,6 +754,8 @@ mod tests {
             processing_warnings: Vec::new(),
             annotations: None,
             children: None,
+            uris: None,
+            formatted_content: None,
         };
 
         let elements = transform_extraction_result_to_elements(&result);

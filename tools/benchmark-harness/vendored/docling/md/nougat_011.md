@@ -26,7 +26,7 @@ None.
 
 ## #1: FDP-17-08, Riverview Subzone C STAFF PRESENTATION
 
-## Rebecca Bessey:
+## Rebecca Bessey
 
 This is a final development plan application for six duplexes on Riverview C lots, C1-C6. We reviewed this application under the old code as well as against the major amendment to the PUD that you all heard at your last meeting. If this is to be approved, it would be contingent upon approval of the second reading of that PUD amendment.
 
@@ -46,7 +46,7 @@ FINAL MINUTES Planning Commission Minutes June 7, 2018
 
 Scully introduced his team, including Bob Weiss, Ryan Spaustat and Lu Beaker.
 
-## Lu Beaker, Applicant Representative:
+## Lu Beaker, Applicant Representative
 
 We did have some good conversations with staff that helped guide us through the city codes and processes trying to find the right fit for this project that met both the PUD guidelines and requirements on a prescriptive basis but also met the qualitative standards within this very strategic site.
 
@@ -68,7 +68,7 @@ green fingers between the duplexes. It's important to me that the overall built 
 
 As part of the Duplex Standards, buildings should architecturally represent a single-family structure, and the dwellings shall not mirror each other. Mirroring was a big conversation we had. What strategies in architecture, both in materials and forms and detail, could we incorporate in the actual architecture to start to offset this idea that buildings should not be a mirror of each other. The criteria in the code talks about duplex garages must be set back, so the ground floor garages are set back from the upper floors by a minimum of five feet to create more car storage on the driveway but also create that offset. Each front entrance must include a porch and covered entry. It's not just an entry that comes through a garage door, but visitors could come up to your front door and ring the bell like a regular home. Each side of the duplex must differ in at least two of the six design elements. The first way of satisfying that was that there's actually two types of duplexes: a Riverview Model A, which is a little bit shallower and a little wider, and a Model B which is a little skinnier and deeper. Those came out of the site constraints and looking at the way the site flared and bowed with the river frontage.
 
-One of the criteria that allow the duplexes not to read as a mirror image is the silhouette of the roof lines. Each half of the duplex has a planned shift of 3.5 feet down the centerline of the buildings. That allows the shadow lines in the roof to pull forward, and then as the buildings get closer to the gap between the units, they start to step back. So what we're trying to do is not to create a smooth line of that silhouette but actually break that up to create more vertical proportion and architectural silhouetting at the top line. Secondarily, you'll see the step between the ground floor, step-back at the garage, the middle floor mass, and in Model A, a third-floor step-back   that erodes the corner to further articulate a secondary roof line and break that up as one moves along the loop road frontage.
+One of the criteria that allow the duplexes not to read as a mirror image is the silhouette of the roof lines. Each half of the duplex has a planned shift of 3.5 feet down the centerline of the buildings. That allows the shadow lines in the roof to pull forward, and then as the buildings get closer to the gap between the units, they start to step back. So what we're trying to do is not to create a smooth line of that silhouette but actually break that up to create more vertical proportion and architectural silhouetting at the top line. Secondarily, you'll see the step between the ground floor, step-back at the garage, the middle floor mass, and in Model A, a third-floor step-back that erodes the corner to further articulate a secondary roof line and break that up as one moves along the loop road frontage.
 
 Another criteria in the Duplex Design Criteria is massing and building projections. I found inspiration in a building that already exists downtown of that garage step-back and pulling lines forward to create both shadow and that idea of the loft or that projected bay. So one half of the duplex projects forward, and the second half is recessed back in Model B.
 
@@ -114,7 +114,7 @@ FINAL MINUTES Planning Commission Minutes June 7, 2018
 
 development plan; they can't come in later and ask for it. But there are no criteria, so it's really based on the applicant's reason for the request and if you feel that's appropriate.
 
-## Commissioner Kingston:
+## Commissioner Kingston
 
 What was the rationale behind the three years in the code?
 
@@ -132,7 +132,7 @@ Eck: Does staff feel that the condition regarding the 35% for that one lot is su
 
 Bessey: They're at 34 on that site. In speaking with the architects, they felt that there were some pretty minimal changes to the footprint of that building that they could make in order to bring that lot into compliance. Often times we see slight changes to a building when it comes through for building permit, because once they get their development plan approved they go to construction drawings, and sometimes things are tweaked. We have a review that we do when a building permit comes through, and we look at it to make sure that the permit meets our code. In addition to that, we look at what's proposed in the building permit application and compare it to what was approved in the development plan to make sure that it's in substantial conformance and that they don't come back with something drastically different and out of conformance with what Planning Commission and City Council approved. In talking with the applicant's team, we felt that with that condition we are making it clear that we expect that the lot will comply with the standards and fall within substantial conformance.
 
-## Commissioner Ptach:
+## Commissioner Ptach
 
 Does staff have a position on the ten-year vesting?
 
@@ -148,7 +148,7 @@ applicants can request extensions in the context of a recession or a change in t
 
 Bessey: I think that there have been projects that have been approved for longer periods of time up to ten years.
 
-## Commissioner Levy:
+## Commissioner Levy
 
 Any this small, though? I think they were all much larger, more complex projects to be honest.
 
@@ -162,7 +162,7 @@ Ptach: I think this is certainly what the market is looking for these days, but 
 
 Scully: Yes. But there's so many scenarios where ten years would be relevant to this piece of this puzzle, because it is a big puzzle. I could see the right half getting done first; God willing a hotel behind it coming second; and then the balance coming thereafter. It really is putting this whole thing together that will govern how these are built. That's why we asked for ten years.
 
-## Bob Weiss, Applicant Representative:
+## Bob Weiss, Applicant Representative
 
 I've been dealing with this issue for four decades. At one point the city's process was to allow one-year extensions indefinitely. There were projects I remember that I got 20 extensions. I can't recall that anyone ever built one, but it was used as a hammer. The applicant would come in and say: This was approved 20 years ago; nobody liked it; we've been getting these single-year extensions for 20 years. If you don't approve this, we're going to build this because we don't have any other choice.
 

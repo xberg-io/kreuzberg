@@ -8,7 +8,6 @@ use serde::{Deserialize, Serialize};
 /// When set on [`ExtractionConfig`](super::ExtractionConfig), layout detection
 /// is enabled for PDF extraction.
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
 pub struct LayoutDetectionConfig {
     /// Preset for model selection. Currently only `"accurate"` (RT-DETR) is supported.
     #[serde(default = "default_preset")]

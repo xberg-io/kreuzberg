@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/docx/issue_359_list_whitespace.docx",
+  "file_type": "docx",
+  "file_size": 9170,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "docx test: issue_359_list_whitespace",
+    "source": "pandoc-generated",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/docx/issue_359_list_whitespace.txt",
+    "markdown_file": "../../../../test_documents/ground_truth/docx/issue_359_list_whitespace.md",
+    "source": "pandoc"
+  }
+}

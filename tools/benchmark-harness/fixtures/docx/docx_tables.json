@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/docx/docx_tables.docx",
+  "file_type": "docx",
+  "file_size": 12725,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "docx test: docx_tables",
+    "source": "pandoc-generated",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/docx/docx_tables.txt",
+    "markdown_file": "../../../../test_documents/ground_truth/docx/docx_tables.md",
+    "source": "pandoc"
+  }
+}

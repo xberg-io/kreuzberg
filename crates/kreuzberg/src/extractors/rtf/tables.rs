@@ -31,10 +31,12 @@ impl TableState {
 
     /// Push the current row to the rows collection.
     pub fn push_row(&mut self) {
-        if self.in_row || !self.current_cell.is_empty() {
+        // Only push the current cell if it has content — avoid adding a
+        // trailing empty cell when \cell already pushed all cells.
+        if !self.current_cell.is_empty() {
             self.push_cell();
-            self.in_row = false;
         }
+        self.in_row = false;
         if !self.current_row.is_empty() {
             self.rows.push(self.current_row.clone());
             self.current_row.clear();

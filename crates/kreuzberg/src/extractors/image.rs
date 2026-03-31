@@ -4,7 +4,9 @@ use crate::Result;
 use crate::core::config::ExtractionConfig;
 use crate::extraction::image::extract_image_metadata;
 use crate::plugins::{DocumentExtractor, Plugin};
-use crate::types::{ExtractionResult, Metadata};
+use crate::types::internal::InternalDocument;
+use crate::types::internal_builder::InternalDocumentBuilder;
+use crate::types::metadata::Metadata;
 use async_trait::async_trait;
 
 /// Image extractor for various image formats.
@@ -29,7 +31,7 @@ impl ImageExtractor {
         content: &[u8],
         mime_type: &str,
         config: &ExtractionConfig,
-    ) -> Result<ExtractionResult> {
+    ) -> Result<InternalDocument> {
         use crate::plugins::registry::get_ocr_backend_registry;
 
         let ocr_config = config.ocr.as_ref().ok_or_else(|| crate::KreuzbergError::Parsing {
@@ -45,33 +47,33 @@ impl ImageExtractor {
 
         // Thread output_format from ExtractionConfig to OcrConfig
         let mut ocr_config_with_format = ocr_config.clone();
-        ocr_config_with_format.output_format = Some(config.output_format);
+        ocr_config_with_format.output_format = Some(config.output_format.clone());
 
         let ocr_result = backend.process_image(content, &ocr_config_with_format).await?;
 
         // Full OCR with TIFF multi-frame support (requires tiff crate)
         #[cfg(feature = "ocr")]
         {
-            let ocr_text = ocr_result.content.clone();
             let ocr_extraction_result = crate::extraction::image::extract_text_from_image_with_ocr(
                 content,
                 mime_type,
-                ocr_text,
+                ocr_result.content,
                 config.pages.as_ref(),
             )?;
 
-            let mut result = ocr_result;
-            result.content = ocr_extraction_result.content;
-            result.pages = ocr_extraction_result.page_contents;
-
-            Ok(result)
+            // Build InternalDocument from OCR text
+            let mut doc = build_image_internal_document(Some(&ocr_extraction_result.content), None);
+            doc.metadata = ocr_result.metadata;
+            Ok(doc)
         }
 
         // Simplified OCR path for WASM (no TIFF multi-frame support)
         #[cfg(not(feature = "ocr"))]
         {
             let _ = mime_type;
-            Ok(ocr_result)
+            let mut doc = build_image_internal_document(Some(&ocr_result.content), None);
+            doc.metadata = ocr_result.metadata;
+            Ok(doc)
         }
     }
 
@@ -81,9 +83,10 @@ impl ImageExtractor {
     /// code, formulas, etc.), then OCRs each region individually and
     /// assembles the results into structured markdown.
     #[cfg(all(feature = "layout-detection", any(feature = "ocr", feature = "ocr-wasm")))]
-    async fn extract_with_layout_ocr(&self, content: &[u8], config: &ExtractionConfig) -> Result<ExtractionResult> {
+    async fn extract_with_layout_ocr(&self, content: &[u8], config: &ExtractionConfig) -> Result<InternalDocument> {
         use crate::layout::LayoutClass;
         use crate::plugins::registry::get_ocr_backend_registry;
+        use crate::types::internal::{ElementKind, InternalElement};
         use image::ImageEncoder;
         use std::io::Cursor;
 
@@ -128,7 +131,7 @@ impl ImageExtractor {
         }
 
         // 3. Sort detections by reading order (top-to-bottom, left-to-right)
-        let mut detections = detection.detections.clone();
+        let mut detections = detection.detections;
         // Quantize y-centers into discrete rows to ensure transitive ordering.
         let row_threshold = (rgb.height() as f32 * 0.05).max(1.0);
         detections.sort_by(|a, b| {
@@ -154,8 +157,8 @@ impl ImageExtractor {
         let mut region_ocr_config = ocr_config.clone();
         region_ocr_config.output_format = Some(crate::core::config::OutputFormat::Plain);
 
-        // 5. Per-region OCR + formatting
-        let mut markdown_parts = Vec::new();
+        // 5. Per-region OCR + formatting into InternalDocument
+        let mut builder = InternalDocumentBuilder::new("image");
         let img_width = rgb.width();
         let img_height = rgb.height();
 
@@ -205,67 +208,89 @@ impl ImageExtractor {
                 "OCR result for layout region"
             );
 
-            // Format based on layout class
-            let formatted = match det.class {
-                LayoutClass::Title => format!("# {text}"),
-                LayoutClass::SectionHeader => format!("## {text}"),
-                LayoutClass::Code => format!("```\n{text}\n```"),
-                LayoutClass::Formula => format!("$$\n{text}\n$$"),
-                LayoutClass::ListItem => format!("- {text}"),
-                LayoutClass::Caption => format!("*{text}*"),
-                LayoutClass::Footnote => format!("[^]: {text}"),
-                LayoutClass::Table => text,
+            // Map layout class to InternalElement
+            match det.class {
+                LayoutClass::Title => {
+                    builder.push_heading(1, &text, None, None);
+                }
+                LayoutClass::SectionHeader => {
+                    builder.push_heading(2, &text, None, None);
+                }
+                LayoutClass::Code => {
+                    builder.push_code(&text, None, None, None);
+                }
+                LayoutClass::Formula => {
+                    let elem = InternalElement::text(ElementKind::Formula, &text, 0);
+                    builder.push_element(elem);
+                }
+                LayoutClass::ListItem | LayoutClass::CheckboxSelected | LayoutClass::CheckboxUnselected => {
+                    builder.push_list_item(&text, false, vec![], None, None);
+                }
+                LayoutClass::Caption | LayoutClass::Footnote => {
+                    builder.push_paragraph(&text, vec![], None, None);
+                }
+                LayoutClass::Table => {
+                    builder.push_paragraph(&text, vec![], None, None);
+                }
                 LayoutClass::PageHeader | LayoutClass::PageFooter => continue,
-                LayoutClass::CheckboxSelected => format!("- [x] {text}"),
-                LayoutClass::CheckboxUnselected => format!("- [ ] {text}"),
-                _ => text,
+                _ => {
+                    builder.push_paragraph(&text, vec![], None, None);
+                }
             };
-
-            markdown_parts.push(formatted);
         }
 
-        let content_text = markdown_parts.join("\n\n");
+        let mut doc = builder.build();
+        doc.metadata = Metadata {
+            output_format: Some("markdown".to_string()),
+            ..Default::default()
+        };
 
-        Ok(ExtractionResult {
-            content: content_text,
-            mime_type: "image/png".to_string().into(),
-            metadata: Metadata {
-                output_format: Some("markdown".to_string()),
-                ..Default::default()
-            },
-            pages: None,
-            tables: vec![],
-            detected_languages: None,
-            chunks: None,
-            images: None,
-            djot_content: None,
-            elements: None,
-            ocr_elements: None,
-            document: None,
-            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-            extracted_keywords: None,
-            quality_score: None,
-            processing_warnings: Vec::new(),
-            annotations: None,
-            children: None,
-        })
+        Ok(doc)
     }
 }
 
-/// Build a simple `DocumentStructure` for an image extraction result.
+/// Build a simple `InternalDocument` for an image extraction result.
 ///
 /// If OCR text is available, pushes it as a paragraph. Always pushes
-/// the image itself as an `Image` node.
-fn build_image_document_structure(ocr_text: Option<&str>) -> crate::types::document_structure::DocumentStructure {
-    use crate::types::builder::DocumentStructureBuilder;
-
-    let mut builder = DocumentStructureBuilder::new().source_format("image");
+/// the image itself as an `Image` node. When `image_data` is provided,
+/// the binary data is stored in `InternalDocument::images` and the
+/// element references it by index.
+fn build_image_internal_document(
+    ocr_text: Option<&str>,
+    image_data: Option<crate::types::ExtractedImage>,
+) -> InternalDocument {
+    let mut builder = InternalDocumentBuilder::new("image");
     if let Some(text) = ocr_text
         && !text.trim().is_empty()
     {
         builder.push_paragraph(text.trim(), vec![], None, None);
     }
-    builder.push_image(None, Some(0), None, None);
+    // Push image element — if we have actual image data, use push_image so
+    // it is stored in InternalDocument::images and referenced by index.
+    if let Some(img) = image_data {
+        builder.push_image(None, img, None, None);
+    } else {
+        use crate::types::document_structure::ContentLayer;
+        use crate::types::internal::{ElementKind, InternalElement, InternalElementId};
+
+        let kind = ElementKind::Image { image_index: 0 };
+        let id = InternalElementId::generate(kind.discriminant(), "", None, 0);
+        builder.push_element(InternalElement {
+            id,
+            kind,
+            text: String::new(),
+            depth: 0,
+            page: None,
+            bbox: None,
+            layer: ContentLayer::Body,
+            annotations: Vec::new(),
+            attributes: None,
+            anchor: None,
+            ocr_geometry: None,
+            ocr_confidence: None,
+            ocr_rotation: None,
+        });
+    }
     builder.build()
 }
 
@@ -309,14 +334,32 @@ impl DocumentExtractor for ImageExtractor {
         content: &[u8],
         mime_type: &str,
         config: &ExtractionConfig,
-    ) -> Result<ExtractionResult> {
+    ) -> Result<InternalDocument> {
         let extraction_metadata = extract_image_metadata(content)?;
 
+        let format_str = extraction_metadata.format;
         let image_metadata = crate::types::ImageMetadata {
             width: extraction_metadata.width,
             height: extraction_metadata.height,
-            format: extraction_metadata.format.clone(),
+            format: format_str.clone(),
             exif: extraction_metadata.exif_data,
+        };
+
+        // Build an ExtractedImage from the raw content so it is stored in doc.images
+        let extracted_image = crate::types::ExtractedImage {
+            data: bytes::Bytes::copy_from_slice(content),
+            format: std::borrow::Cow::Owned(format_str),
+            image_index: 0,
+            page_number: None,
+            width: Some(extraction_metadata.width),
+            height: Some(extraction_metadata.height),
+            colorspace: None,
+            bits_per_component: None,
+            is_mask: false,
+            description: None,
+            ocr_result: None,
+            bounding_box: None,
+            source_path: None,
         };
 
         if config.ocr.is_some() {
@@ -326,13 +369,10 @@ impl DocumentExtractor for ImageExtractor {
             #[cfg(all(feature = "layout-detection", any(feature = "ocr", feature = "ocr-wasm")))]
             if config.layout.is_some() {
                 match self.extract_with_layout_ocr(content, config).await {
-                    Ok(mut result) => {
-                        result.metadata.format = Some(crate::types::FormatMetadata::Image(image_metadata));
-                        result.mime_type = mime_type.to_string().into();
-                        if config.include_document_structure && result.document.is_none() {
-                            result.document = Some(build_image_document_structure(Some(&result.content)));
-                        }
-                        return Ok(result);
+                    Ok(mut doc) => {
+                        doc.metadata.format = Some(crate::types::FormatMetadata::Image(image_metadata));
+                        doc.mime_type = std::borrow::Cow::Owned(mime_type.to_string());
+                        return Ok(doc);
                     }
                     Err(e) => {
                         tracing::warn!("Layout-enhanced OCR failed, falling back to regular OCR: {e}");
@@ -343,88 +383,31 @@ impl DocumentExtractor for ImageExtractor {
 
             #[cfg(any(feature = "ocr", feature = "ocr-wasm"))]
             {
-                let mut ocr_result = self.extract_with_ocr(content, mime_type, config).await?;
-
-                ocr_result.metadata.format = Some(crate::types::FormatMetadata::Image(image_metadata));
-                ocr_result.mime_type = mime_type.to_string().into();
-
-                if config.include_document_structure && ocr_result.document.is_none() {
-                    ocr_result.document = Some(build_image_document_structure(Some(&ocr_result.content)));
-                }
-
-                return Ok(ocr_result);
+                let mut doc = self.extract_with_ocr(content, mime_type, config).await?;
+                doc.metadata.format = Some(crate::types::FormatMetadata::Image(image_metadata));
+                doc.mime_type = std::borrow::Cow::Owned(mime_type.to_string());
+                return Ok(doc);
             }
             #[cfg(not(any(feature = "ocr", feature = "ocr-wasm")))]
             {
-                let content_text = format!(
-                    "Image: {} {}x{}",
-                    extraction_metadata.format, extraction_metadata.width, extraction_metadata.height
-                );
-
-                let document = if config.include_document_structure {
-                    Some(build_image_document_structure(None))
-                } else {
-                    None
+                let mut doc = build_image_internal_document(None, Some(extracted_image));
+                doc.metadata = Metadata {
+                    format: Some(crate::types::FormatMetadata::Image(image_metadata)),
+                    ..Default::default()
                 };
-
-                return Ok(ExtractionResult {
-                    content: content_text,
-                    mime_type: mime_type.to_string().into(),
-                    metadata: Metadata {
-                        format: Some(crate::types::FormatMetadata::Image(image_metadata)),
-                        ..Default::default()
-                    },
-                    pages: None,
-                    tables: vec![],
-                    detected_languages: None,
-                    chunks: None,
-                    images: None,
-                    djot_content: None,
-                    elements: None,
-                    ocr_elements: None,
-                    document,
-                    #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-                    extracted_keywords: None,
-                    quality_score: None,
-                    processing_warnings: Vec::new(),
-                    annotations: None,
-                    children: None,
-                });
+                doc.mime_type = std::borrow::Cow::Owned(mime_type.to_string());
+                return Ok(doc);
             }
         }
 
-        let document = if config.include_document_structure {
-            Some(build_image_document_structure(None))
-        } else {
-            None
+        let mut doc = build_image_internal_document(None, Some(extracted_image));
+        doc.metadata = Metadata {
+            format: Some(crate::types::FormatMetadata::Image(image_metadata)),
+            ..Default::default()
         };
+        doc.mime_type = std::borrow::Cow::Owned(mime_type.to_string());
 
-        Ok(ExtractionResult {
-            content: format!(
-                "Image: {} {}x{}",
-                extraction_metadata.format, extraction_metadata.width, extraction_metadata.height
-            ),
-            mime_type: mime_type.to_string().into(),
-            metadata: Metadata {
-                format: Some(crate::types::FormatMetadata::Image(image_metadata)),
-                ..Default::default()
-            },
-            pages: None,
-            tables: vec![],
-            detected_languages: None,
-            chunks: None,
-            images: None,
-            djot_content: None,
-            elements: None,
-            ocr_elements: None,
-            document,
-            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-            extracted_keywords: None,
-            quality_score: None,
-            processing_warnings: Vec::new(),
-            annotations: None,
-            children: None,
-        })
+        Ok(doc)
     }
 
     fn supported_mime_types(&self) -> &[&str] {

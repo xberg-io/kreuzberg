@@ -38,11 +38,11 @@ APA reference page example In-text citations and references APA format citations
 
 APA Format for Academic Papers and Essays [Template] APA Essay Examples. Below are some APA essay examples: Example 1. My Essay Title in Bold, Centered, with Key Words Capitalized. Name. Department and School. Course. Instructor's Name. The Date. Abstract. The abstract starts here. It is a summary of up to 250 of what your paper is about. The abstract is optional, so check with your instructor whether to include it.
 
-## APA Essay Examples, Meaning and How to Write a Great APA ...
+## APA Essay Examples, Meaning and How to Write a Great APA
 
 CHECK THESE SAMPLES OF Scholarly Paper in APA Format Observation Paper on Stress at a Local High School Football Game...Observation Paper on STRESS at a Local High School Football Game Football is a high quality game which necessitates a lot of potentiality and management of various kinds of stress associated with the game.
 
-## Scholarly Paper in APA Format Research Example | Topics ...
+## Scholarly Paper in APA Format Research Example | Topics
 
 APA Style: Paper Templates &amp; Examples. Sample papers APA 7th edition sample papers. The SCC Library &amp; Academic Support Center teach students to follow 7th edition student formatting rules, unless the instructor states otherwise. Paper Template Student Paper Template, APA 7 (DOCX) ...
 
@@ -64,7 +64,7 @@ Example Of Apa Scholarly Paper
 
 Example: Brown, Dan. The DaVinci Code. New York: Scholastic, 2004. Magazine: Last Name, First Name. Article title. Magazine Title, Month Date, Year of publication. Example: Chan, Dan. The art of pandas. Panda Magazine, Nov 10, 1985. Newspaper: Last Name, First Name. 'Article Title.' Newspaper Name, Publication Date. Example: Smith, John. 'Steelers win Super Bowl XLIII.'
 
-## How to Cite a Research Paper: APA, MLA, and Chicago ...
+## How to Cite a Research Paper: APA, MLA, and Chicago
 
 APA format is the official style used by the American Psychological Association and is commonly used in psychology, education, and other social sciences. Check out this gallery of examples, tips, and guidelines for writing papers in APA format.
 
