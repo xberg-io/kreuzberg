@@ -39,8 +39,12 @@
 pub mod annotations;
 #[cfg(feature = "pdf")]
 pub(crate) mod bindings;
+#[cfg(feature = "pdf")]
+pub mod bookmarks;
 #[cfg(all(feature = "pdf", feature = "bundled-pdfium"))]
 pub mod bundled;
+#[cfg(all(feature = "pdf", feature = "tokio-runtime"))]
+pub mod embedded_files;
 #[cfg(feature = "pdf")]
 pub mod error;
 #[cfg(feature = "pdf")]
@@ -52,13 +56,13 @@ pub mod images;
 #[cfg(all(feature = "pdf", feature = "layout-detection"))]
 pub mod layout_runner;
 #[cfg(feature = "pdf")]
-pub mod markdown;
-#[cfg(feature = "pdf")]
 pub mod metadata;
 #[cfg(feature = "pdf-oxide")]
 pub(crate) mod oxide_text;
 #[cfg(feature = "pdf")]
 pub mod rendering;
+#[cfg(feature = "pdf")]
+pub mod structure;
 #[cfg(feature = "pdf")]
 pub mod table;
 #[cfg(feature = "pdf")]

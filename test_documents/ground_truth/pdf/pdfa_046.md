@@ -96,7 +96,4 @@ wrote: we shall remain,guard the shade of the figand olive trees,
 ferment rebellion in our childrenas yeast in the dough.
 
 Review first
-published in The Intecept June 2016 <a
-href="http://us2.campaign-archive1.com/?u=349f815120864d73f22786e0f&id=3359d6d9bc&e=
-243f87c329">http://us2.campaign-archive1.com/?u=349f815120864d73f22786e0f&id=3359d6d
-9bc&e=243f87c329</a>
+published in The Intecept June 2016 [http://us2.campaign-archive1.com/?u=349f815120864d73f22786e0f&id=3359d6d9bc&e=243f87c329](http://us2.campaign-archive1.com/?u=349f815120864d73f22786e0f&id=3359d6d9bc&e=243f87c329)

@@ -4,8 +4,9 @@ use crate::Result;
 use crate::core::config::ExtractionConfig;
 use crate::extractors::SyncExtractor;
 use crate::plugins::{DocumentExtractor, Plugin};
-use crate::types::{EmailMetadata, ExtractionResult, Metadata};
-use ahash::AHashMap;
+use crate::types::internal::{ElementKind, InternalDocument, InternalElement};
+use crate::types::metadata::PstMetadata;
+use crate::types::{FormatMetadata, Metadata};
 use async_trait::async_trait;
 use std::borrow::Cow;
 #[cfg(feature = "tokio-runtime")]
@@ -47,75 +48,43 @@ impl Plugin for PstExtractor {
 }
 
 impl SyncExtractor for PstExtractor {
-    fn extract_sync(&self, content: &[u8], mime_type: &str, _config: &ExtractionConfig) -> Result<ExtractionResult> {
-        let (messages, processing_warnings) = crate::extraction::pst::extract_pst_messages(content)?;
+    fn extract_sync(&self, content: &[u8], mime_type: &str, _config: &ExtractionConfig) -> Result<InternalDocument> {
+        let (messages, _processing_warnings) = crate::extraction::pst::extract_pst_messages(content)?;
 
-        let mut all_text_parts = Vec::with_capacity(messages.len());
+        let mut doc = InternalDocument::new("pst");
+        doc.mime_type = Cow::Owned(mime_type.to_string());
+
         for msg in &messages {
             let msg_text = crate::extraction::email::build_email_text_output(msg);
             if !msg_text.is_empty() {
-                all_text_parts.push(msg_text);
+                for paragraph in msg_text.split("\n\n") {
+                    let trimmed = paragraph.trim();
+                    if !trimmed.is_empty() {
+                        doc.push_element(InternalElement::text(ElementKind::Paragraph, trimmed, 0));
+                    }
+                }
             }
         }
 
-        let content_text = all_text_parts.join("\n\n---\n\n");
-
         // Use metadata from the first message if available (archive-level metadata)
-        let (subject, format_metadata, created_at) = if let Some(first) = messages.first() {
-            let attachment_names: Vec<String> = first
-                .attachments
-                .iter()
-                .filter_map(|a| a.filename.clone().or_else(|| a.name.clone()))
-                .collect();
-
-            let email_metadata = EmailMetadata {
-                from_email: first.from_email.clone(),
-                from_name: None,
-                to_emails: first.to_emails.clone(),
-                cc_emails: first.cc_emails.clone(),
-                bcc_emails: first.bcc_emails.clone(),
-                message_id: first.message_id.clone(),
-                attachments: attachment_names,
-            };
-
-            (
-                first.subject.clone(),
-                Some(crate::types::FormatMetadata::Email(email_metadata)),
-                first.date.clone(),
-            )
+        let (subject, created_at) = if let Some(first) = messages.first() {
+            (first.subject.clone(), first.date.clone())
         } else {
-            (None, None, None)
+            (None, None)
         };
 
-        let mut additional: AHashMap<Cow<'static, str>, serde_json::Value> = AHashMap::new();
-        additional.insert(Cow::Borrowed("message_count"), serde_json::json!(messages.len()));
+        let pst_metadata = PstMetadata {
+            message_count: messages.len(),
+        };
 
-        Ok(ExtractionResult {
-            content: content_text,
-            mime_type: mime_type.to_string().into(),
-            metadata: Metadata {
-                format: format_metadata,
-                subject,
-                created_at,
-                additional,
-                ..Default::default()
-            },
-            tables: vec![],
-            detected_languages: None,
-            chunks: None,
-            images: None,
-            pages: None,
-            djot_content: None,
-            elements: None,
-            ocr_elements: None,
-            document: None,
-            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-            extracted_keywords: None,
-            quality_score: None,
-            processing_warnings,
-            annotations: None,
-            children: None,
-        })
+        doc.metadata = Metadata {
+            format: Some(FormatMetadata::Pst(pst_metadata)),
+            subject,
+            created_at,
+            ..Default::default()
+        };
+
+        Ok(doc)
     }
 }
 
@@ -127,85 +96,80 @@ impl DocumentExtractor for PstExtractor {
         content: &[u8],
         mime_type: &str,
         config: &ExtractionConfig,
-    ) -> Result<ExtractionResult> {
-        self.extract_sync(content, mime_type, config)
+    ) -> Result<InternalDocument> {
+        let mut doc = self.extract_sync(content, mime_type, config)?;
+
+        // Recursively extract attachments from all messages when depth allows.
+        if config.max_archive_depth > 0
+            && let Ok((messages, _)) = crate::extraction::pst::extract_pst_messages(content)
+        {
+            let all_attachments: Vec<_> = messages.iter().flat_map(|m| m.attachments.iter()).cloned().collect();
+            let (children, warnings) =
+                crate::extractors::email::extract_attachment_children(&all_attachments, config).await;
+            if !children.is_empty() {
+                doc.children = Some(children);
+            }
+            doc.processing_warnings.extend(warnings);
+        }
+
+        Ok(doc)
     }
 
     #[cfg(feature = "tokio-runtime")]
-    async fn extract_file(&self, path: &Path, mime_type: &str, config: &ExtractionConfig) -> Result<ExtractionResult> {
+    #[cfg_attr(feature = "otel", tracing::instrument(
+        skip(self, path, config),
+        fields(
+            extractor.name = self.name(),
+        )
+    ))]
+    async fn extract_file(&self, path: &Path, mime_type: &str, config: &ExtractionConfig) -> Result<InternalDocument> {
         // Call extract_pst_from_path directly to avoid reading the whole file into memory
         // before writing it back out to a tempfile — PSTs can be multi-GB.
-        let _ = config;
-        let (messages, processing_warnings) = crate::extraction::pst::extract_pst_from_path(path)?;
+        let (messages, _processing_warnings) = crate::extraction::pst::extract_pst_from_path(path)?;
 
-        let mut all_text_parts = Vec::with_capacity(messages.len());
+        let mut doc = InternalDocument::new("pst");
+
         for msg in &messages {
             let msg_text = crate::extraction::email::build_email_text_output(msg);
             if !msg_text.is_empty() {
-                all_text_parts.push(msg_text);
+                for paragraph in msg_text.split("\n\n") {
+                    let trimmed = paragraph.trim();
+                    if !trimmed.is_empty() {
+                        doc.push_element(InternalElement::text(ElementKind::Paragraph, trimmed, 0));
+                    }
+                }
             }
         }
 
-        let content_text = all_text_parts.join("\n\n---\n\n");
-
-        let (subject, format_metadata, created_at) = if let Some(first) = messages.first() {
-            let attachment_names: Vec<String> = first
-                .attachments
-                .iter()
-                .filter_map(|a| a.filename.clone().or_else(|| a.name.clone()))
-                .collect();
-
-            let email_metadata = crate::types::EmailMetadata {
-                from_email: first.from_email.clone(),
-                from_name: None,
-                to_emails: first.to_emails.clone(),
-                cc_emails: first.cc_emails.clone(),
-                bcc_emails: first.bcc_emails.clone(),
-                message_id: first.message_id.clone(),
-                attachments: attachment_names,
-            };
-
-            (
-                first.subject.clone(),
-                Some(crate::types::FormatMetadata::Email(email_metadata)),
-                first.date.clone(),
-            )
+        let (subject, created_at) = if let Some(first) = messages.first() {
+            (first.subject.clone(), first.date.clone())
         } else {
-            (None, None, None)
+            (None, None)
         };
 
-        let mut additional: ahash::AHashMap<std::borrow::Cow<'static, str>, serde_json::Value> = ahash::AHashMap::new();
-        additional.insert(
-            std::borrow::Cow::Borrowed("message_count"),
-            serde_json::json!(messages.len()),
-        );
+        let pst_metadata = PstMetadata {
+            message_count: messages.len(),
+        };
 
-        Ok(ExtractionResult {
-            content: content_text,
-            mime_type: mime_type.to_string().into(),
-            metadata: crate::types::Metadata {
-                format: format_metadata,
-                subject,
-                created_at,
-                additional,
-                ..Default::default()
-            },
-            tables: vec![],
-            detected_languages: None,
-            chunks: None,
-            images: None,
-            pages: None,
-            djot_content: None,
-            elements: None,
-            ocr_elements: None,
-            document: None,
-            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-            extracted_keywords: None,
-            quality_score: None,
-            processing_warnings,
-            annotations: None,
-            children: None,
-        })
+        doc.metadata = crate::types::Metadata {
+            format: Some(FormatMetadata::Pst(pst_metadata)),
+            subject,
+            created_at,
+            ..Default::default()
+        };
+
+        // Recursively extract attachments from all messages when depth allows.
+        if config.max_archive_depth > 0 {
+            let all_attachments: Vec<_> = messages.iter().flat_map(|m| m.attachments.iter()).cloned().collect();
+            let (children, warnings) =
+                crate::extractors::email::extract_attachment_children(&all_attachments, config).await;
+            if !children.is_empty() {
+                doc.children = Some(children);
+            }
+            doc.processing_warnings.extend(warnings);
+        }
+
+        Ok(doc)
     }
 
     fn supported_mime_types(&self) -> &[&str] {

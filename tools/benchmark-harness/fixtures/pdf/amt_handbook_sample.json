@@ -1,28 +1,28 @@
 {
-	"document": "../../../../test_documents/vendored/docling/pdf/amt_handbook_sample.pdf",
-	"file_type": "pdf",
-	"file_size": 673416,
-	"expected_frameworks": [
-		"kreuzberg",
-		"docling",
-		"markitdown",
-		"mineru",
-		"pdfminer",
-		"pdfplumber",
-		"pdftotext",
-		"pymupdf4llm",
-		"pypdf",
-		"tika",
-		"unstructured"
-	],
-	"metadata": {
-		"description": "Document from docling test suite",
-		"source": "docling",
-		"size_category": "small"
-	},
-	"ground_truth": {
-		"text_file": "../../../../test_documents/ground_truth/pdf/amt_handbook_sample.txt",
-		"source": "vision",
-		"markdown_file": "../../../../test_documents/ground_truth/pdf/amt_handbook_sample.md"
-	}
+  "document": "../../../../test_documents/vendored/docling/pdf/amt_handbook_sample.pdf",
+  "file_type": "pdf",
+  "file_size": 673416,
+  "expected_frameworks": [
+    "kreuzberg",
+    "docling",
+    "markitdown",
+    "mineru",
+    "pdfminer",
+    "pdfplumber",
+    "pdftotext",
+    "pymupdf4llm",
+    "pypdf",
+    "tika",
+    "unstructured"
+  ],
+  "metadata": {
+    "description": "Document from docling test suite",
+    "source": "docling",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/pdf/amt_handbook_sample.txt",
+    "source": "pandoc",
+    "markdown_file": "../../../../test_documents/ground_truth/pdf/amt_handbook_sample.md"
+  }
 }

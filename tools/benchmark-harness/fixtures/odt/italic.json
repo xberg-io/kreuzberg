@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/odt/italic.odt",
+  "file_type": "odt",
+  "file_size": 10426,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "odt test: italic",
+    "source": "pandoc-generated",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/odt/italic.txt",
+    "markdown_file": "../../../../test_documents/ground_truth/odt/italic.md",
+    "source": "pandoc"
+  }
+}

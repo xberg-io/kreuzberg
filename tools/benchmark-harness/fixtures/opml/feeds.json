@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/opml/feeds.opml",
+  "file_type": "opml",
+  "file_size": 1634,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "opml test: feeds",
+    "source": "pandoc-generated",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "markdown_file": "../../../../test_documents/ground_truth/opml/feeds.md",
+    "source": "pandoc",
+    "text_file": "../../../../test_documents/ground_truth/opml/feeds.txt"
+  }
+}

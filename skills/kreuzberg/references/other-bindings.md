@@ -151,35 +151,6 @@ IO.puts(result.content)
 
 See the [Elixir binding documentation](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/elixir) for complete API reference.
 
-## R
-
-**Installation:**
-
-```r
-install.packages("kreuzberg", repos = "https://kreuzberg-dev.r-universe.dev")
-```
-
-**Basic Extraction:**
-
-```r
-library(kreuzberg)
-
-result <- extract_file_sync("document.pdf")
-cat(result$content)
-```
-
-**With Configuration:**
-
-```r
-config <- extraction_config(
-  force_ocr = TRUE,
-  output_format = "markdown"
-)
-result <- extract_file_sync("scanned.pdf", config = config)
-```
-
-See the [R binding documentation](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/r) for complete API reference.
-
 ## WebAssembly (WASM)
 
 **Installation:**

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+ <head>
+  <title></title>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+  <meta name='ocr-system' content='tesseract 5.5.1' />
+  <meta name='ocr-capabilities' content='ocr_page ocr_carea ocr_par ocr_line ocrx_word ocrp_dir ocrp_lang ocrp_wconf'/>
+ </head>
+ <body>
+  <div class='ocr_page' id='page_1' title='image "/var/folders/f8/_s_ks96d60x_6g__y7vft2wc0000gn/T/tmp80a1e_jo.png"; bbox 0 0 800 1000; ppageno 0; scan_res 70 70'>
+   <div class='ocr_carea' id='block_1_1' title="bbox 51 52 90 60">
+    <p class='ocr_par' id='par_1_1' lang='eng' title="bbox 51 52 90 60">
+     <span class='ocr_line' id='line_1_1' title="bbox 51 52 90 60; baseline 0 0; x_size 20; x_descenders 5; x_ascenders 5">
+      <span class='ocrx_word' id='word_1_1' title='bbox 51 52 90 60; x_wconf 49'>INVOICE</span>
+     </span>
+    </p>
+   </div>
+   <div class='ocr_carea' id='block_1_2' title="bbox 51 152 79 160">
+    <p class='ocr_par' id='par_1_2' lang='eng' title="bbox 51 152 79 160">
+     <span class='ocr_line' id='line_1_2' title="bbox 51 152 79 160; baseline 0 0; x_size 20; x_descenders 5; x_ascenders 5">
+      <span class='ocrx_word' id='word_1_2' title='bbox 51 152 79 160; x_wconf 26'>Billa</span>
+     </span>
+    </p>
+   </div>
+   <div class='ocr_carea' id='block_1_3' title="bbox 51 202 94 210">
+    <p class='ocr_par' id='par_1_3' lang='eng' title="bbox 51 202 94 210">
+     <span class='ocr_line' id='line_1_3' title="bbox 51 202 94 210; baseline 0 0; x_size 20; x_descenders 5; x_ascenders 5">
+      <span class='ocrx_word' id='word_1_3' title='bbox 51 202 73 210; x_wconf 30'>Jahn</span>
+      <span class='ocrx_word' id='word_1_4' title='bbox 79 191 99 219; x_wconf 66'>Doe</span>
+     </span>
+    </p>
+   </div>
+   <div class='ocr_carea' id='block_1_4' title="bbox 51 252 105 260">
+    <p class='ocr_par' id='par_1_4' lang='eng' title="bbox 51 252 105 260">
+     <span class='ocr_line' id='line_1_4' title="bbox 51 252 105 260; baseline 0 0; x_size 20; x_descenders 5; x_ascenders 5">
+      <span class='ocrx_word' id='word_1_5' title='bbox 51 252 67 260; x_wconf 88'>123</span>
+      <span class='ocrx_word' id='word_1_6' title='bbox 71 252 93 260; x_wconf 91'>Main</span>
+      <span class='ocrx_word' id='word_1_7' title='bbox 97 252 105 260; x_wconf 96'>st</span>
+     </span>
+    </p>
+   </div>
+   <div class='ocr_carea' id='block_1_5' title="bbox 50 302 145 312">
+    <p class='ocr_par' id='par_1_5' lang='eng' title="bbox 50 302 145 312">
+     <span class='ocr_line' id='line_1_5' title="bbox 50 302 145 312; baseline 0 -2; x_size 20; x_descenders 5; x_ascenders 5">
+      <span class='ocrx_word' id='word_1_8' title='bbox 50 302 92 312; x_wconf 71'>Anytown,</span>
+      <span class='ocrx_word' id='word_1_9' title='bbox 97 292 114 320; x_wconf 73'>USA</span>
+      <span class='ocrx_word' id='word_1_10' title='bbox 117 292 145 320; x_wconf 57'>12345</span>
+     </span>
+    </p>
+   </div>
+   <div class='ocr_carea' id='block_1_6' title="bbox 401 152 463 160">
+    <p class='ocr_par' id='par_1_6' lang='eng' title="bbox 401 152 463 160">
+     <span class='ocr_line' id='line_1_6' title="bbox 401 152 463 160; baseline 0 0; x_size 20; x_descenders 5; x_ascenders 5">
+      <span class='ocrx_word' id='word_1_11' title='bbox 401 152 433 160; x_wconf 93'>Invoice</span>
+      <span class='ocrx_word' id='word_1_12' title='bbox 439 152 441 160; x_wconf 76'>#</span>
+      <span class='ocrx_word' id='word_1_13' title='bbox 447 152 463 160; x_wconf 59'>123</span>
+     </span>
+    </p>
+   </div>
+   <div class='ocr_carea' id='block_1_7' title="bbox 401 202 478 210">
+    <p class='ocr_par' id='par_1_7' lang='eng' title="bbox 401 202 478 210">
+     <span class='ocr_line' id='line_1_7' title="bbox 401 202 478 210; baseline 0 0; x_size 20; x_descenders 5; x_ascenders 5">
+      <span class='ocrx_word' id='word_1_14' title='bbox 401 202 420 210; x_wconf 87'>Date:</span>
+      <span class='ocrx_word' id='word_1_15' title='bbox 426 202 478 210; x_wconf 87'>2025-07-10</span>
+     </span>
+    </p>
+   </div>
+  </div>
+ </body>
+</html>

@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/rtf/list_complex.rtf",
+  "file_type": "rtf",
+  "file_size": 63224,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "RTF test document: list_complex",
+    "source": "pandoc-generated",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "markdown_file": "../../../../test_documents/ground_truth/rtf/list_complex.md",
+    "source": "pandoc",
+    "text_file": "../../../../test_documents/ground_truth/rtf/list_complex.txt"
+  }
+}

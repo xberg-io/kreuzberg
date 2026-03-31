@@ -2,10 +2,14 @@
 //!
 //! Reads records from dBASE files and formats them as a markdown table.
 
+use std::borrow::Cow;
+
 use crate::Result;
 use crate::core::config::ExtractionConfig;
 use crate::plugins::{DocumentExtractor, Plugin};
-use crate::types::{ExtractionResult, Metadata};
+use crate::types::internal::InternalDocument;
+use crate::types::internal_builder::InternalDocumentBuilder;
+use crate::types::metadata::{DbfFieldInfo, DbfMetadata, FormatMetadata, Metadata};
 use async_trait::async_trait;
 use std::io::Cursor;
 
@@ -132,10 +136,8 @@ fn parse_dbf(content: &[u8]) -> Result<DbfParsed> {
     })
 }
 
-fn build_dbf_document_structure(parsed: &DbfParsed) -> crate::types::document_structure::DocumentStructure {
-    use crate::types::builder::DocumentStructureBuilder;
-
-    let mut builder = DocumentStructureBuilder::new().source_format("dbf");
+fn build_dbf_internal_document(parsed: &DbfParsed) -> InternalDocument {
+    let mut builder = InternalDocumentBuilder::new("dbf");
 
     if parsed.field_names.is_empty() {
         return builder.build();
@@ -145,41 +147,8 @@ fn build_dbf_document_structure(parsed: &DbfParsed) -> crate::types::document_st
     table_rows.push(parsed.field_names.clone());
     table_rows.extend(parsed.rows.iter().cloned());
 
-    builder.push_table_from_cells(&table_rows, None);
+    builder.push_table_from_cells(&table_rows, None, None);
     builder.build()
-}
-
-fn format_dbf_content(parsed: &DbfParsed) -> String {
-    if parsed.field_names.is_empty() {
-        return String::new();
-    }
-
-    let mut output = String::new();
-
-    // Header row
-    output.push('|');
-    for name in &parsed.field_names {
-        output.push_str(&format!(" {name} |"));
-    }
-    output.push('\n');
-
-    // Separator row
-    output.push('|');
-    for _ in &parsed.field_names {
-        output.push_str(" --- |");
-    }
-    output.push('\n');
-
-    // Data rows
-    for row in &parsed.rows {
-        output.push('|');
-        for s in row {
-            output.push_str(&format!(" {s} |"));
-        }
-        output.push('\n');
-    }
-
-    output
 }
 
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
@@ -189,58 +158,35 @@ impl DocumentExtractor for DbfExtractor {
         &self,
         content: &[u8],
         mime_type: &str,
-        config: &ExtractionConfig,
-    ) -> Result<ExtractionResult> {
+        _config: &ExtractionConfig,
+    ) -> Result<InternalDocument> {
         let parsed = parse_dbf(content)?;
-        let text = format_dbf_content(&parsed);
 
-        let document = if config.include_document_structure {
-            Some(build_dbf_document_structure(&parsed))
-        } else {
-            None
-        };
-
-        let mut additional = ahash::AHashMap::new();
-        additional.insert(
-            std::borrow::Cow::Borrowed("record_count"),
-            serde_json::json!(parsed.record_count),
-        );
-        additional.insert(
-            std::borrow::Cow::Borrowed("field_count"),
-            serde_json::json!(parsed.field_names.len()),
-        );
-        // Build field info with name and type
-        let field_info: Vec<serde_json::Value> = parsed
+        let fields: Vec<DbfFieldInfo> = parsed
             .field_names
             .iter()
             .zip(parsed.field_types.iter())
-            .map(|(name, ftype)| serde_json::json!({"name": name, "type": ftype}))
+            .map(|(name, ftype)| DbfFieldInfo {
+                name: name.clone(),
+                field_type: ftype.clone(),
+            })
             .collect();
-        additional.insert(std::borrow::Cow::Borrowed("fields"), serde_json::json!(field_info));
 
-        Ok(ExtractionResult {
-            content: text,
-            mime_type: mime_type.to_string().into(),
-            metadata: Metadata {
-                additional,
-                ..Default::default()
-            },
-            pages: None,
-            tables: vec![],
-            detected_languages: None,
-            chunks: None,
-            images: Some(vec![]),
-            djot_content: None,
-            elements: None,
-            ocr_elements: None,
-            document,
-            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-            extracted_keywords: None,
-            quality_score: None,
-            processing_warnings: Vec::new(),
-            annotations: None,
-            children: None,
-        })
+        let dbf_metadata = DbfMetadata {
+            record_count: parsed.record_count,
+            field_count: parsed.field_names.len(),
+            fields,
+        };
+
+        let mut doc = build_dbf_internal_document(&parsed);
+        doc.mime_type = Cow::Owned(mime_type.to_string());
+
+        doc.metadata = Metadata {
+            format: Some(FormatMetadata::Dbf(dbf_metadata)),
+            ..Default::default()
+        };
+
+        Ok(doc)
     }
 
     fn supported_mime_types(&self) -> &[&str] {

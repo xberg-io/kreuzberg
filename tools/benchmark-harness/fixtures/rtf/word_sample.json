@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/rtf/word_sample.rtf",
+  "file_type": "rtf",
+  "file_size": 163580,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "rtf test: word_sample",
+    "source": "pandoc-generated",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/rtf/word_sample.txt",
+    "markdown_file": "../../../../test_documents/ground_truth/rtf/word_sample.md",
+    "source": "pandoc"
+  }
+}

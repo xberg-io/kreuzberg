@@ -58,7 +58,7 @@ fn determine_link_strategy(target: &str) -> PdfiumLinkStrategy {
             println!("cargo:rustc-link-lib=static=pdfium");
             return PdfiumLinkStrategy::DownloadStatic;
         }
-        println!("cargo:warning=WASM build using bundled PDFium (set PDFIUM_WASM_LIB to link custom WASM PDFium)");
+        eprintln!("WASM build using bundled PDFium (set PDFIUM_WASM_LIB to link custom WASM PDFium)");
         return PdfiumLinkStrategy::Bundled;
     }
 
@@ -68,8 +68,8 @@ fn determine_link_strategy(target: &str) -> PdfiumLinkStrategy {
 
     let enabled_count = usize::from(system_pdfium) + usize::from(bundled_pdfium) + usize::from(static_pdfium);
     if enabled_count > 1 {
-        println!(
-            "cargo:warning=Multiple PDFium linking strategies enabled (static-pdfium={}, bundled-pdfium={}, system-pdfium={}); using bundled-pdfium for this build",
+        eprintln!(
+            "Multiple PDFium linking strategies enabled (static-pdfium={}, bundled-pdfium={}, system-pdfium={}); using bundled-pdfium for this build",
             static_pdfium, bundled_pdfium, system_pdfium
         );
     }
@@ -191,18 +191,14 @@ fn get_latest_version(repo: &str) -> String {
     }
 
     if repo.contains("paulocoutinhox") {
-        eprintln!(
-            "cargo:warning=Failed to fetch latest PDFium WASM version from GitHub API, using fallback version 7623"
-        );
+        eprintln!("Failed to fetch latest PDFium WASM version from GitHub API, using fallback version 7623");
         "7623".to_string()
     } else if repo.contains("bblanchon") {
-        eprintln!(
-            "cargo:warning=Failed to fetch latest PDFium binaries version from GitHub API, using fallback version 7568"
-        );
+        eprintln!("Failed to fetch latest PDFium binaries version from GitHub API, using fallback version 7568");
         "7568".to_string()
     } else {
         eprintln!(
-            "cargo:warning=Failed to fetch latest PDFium version from GitHub API (unknown repository: {})",
+            "Failed to fetch latest PDFium version from GitHub API (unknown repository: {})",
             repo
         );
         String::new()
@@ -361,8 +357,8 @@ fn download_and_extract_pdfium(url: &str, dest_dir: &Path) {
         let exponent = u32::min(attempt, 5);
         let multiplier = 1u64 << exponent;
         let delay_secs = base_delay.saturating_mul(multiplier).min(30);
-        println!(
-            "cargo:warning=Pdfium download failed (attempt {}/{}) - {}. Retrying in {}s",
+        eprintln!(
+            "Pdfium download failed (attempt {}/{}) - {}. Retrying in {}s",
             attempt, retries, last_error, delay_secs
         );
         thread::sleep(Duration::from_secs(delay_secs));
@@ -616,10 +612,10 @@ fn link_statically(pdfium_dir: &Path, target: &str) {
         Ok(path) => path.parent().unwrap_or(pdfium_dir).to_path_buf(),
         Err(_err) => {
             if target.contains("darwin") {
-                eprintln!("cargo:warning=Static PDFium library (libpdfium.a) not found for macOS.");
-                eprintln!("cargo:warning=bblanchon/pdfium-binaries only provides dynamic libraries.");
-                eprintln!("cargo:warning=Falling back to dynamic linking for local development.");
-                eprintln!("cargo:warning=Production Linux builds require PDFIUM_STATIC_LIB_PATH.");
+                eprintln!("Static PDFium library (libpdfium.a) not found for macOS.");
+                eprintln!("bblanchon/pdfium-binaries only provides dynamic libraries.");
+                eprintln!("Falling back to dynamic linking for local development.");
+                eprintln!("Production Linux builds require PDFIUM_STATIC_LIB_PATH.");
 
                 link_dynamically(pdfium_dir, target);
                 return;

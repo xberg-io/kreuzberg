@@ -1,15 +1,23 @@
 {
-	"document": "../../../../test_documents/vendored/markitdown/xlsx/test.xlsx",
-	"file_type": "xlsx",
-	"file_size": 11562,
-	"expected_frameworks": ["kreuzberg", "docling", "markitdown", "pandoc", "tika", "unstructured"],
-	"metadata": {
-		"description": "Document from markitdown test suite",
-		"source": "markitdown",
-		"size_category": "small"
-	},
-	"ground_truth": {
-		"text_file": "../../../../test_documents/ground_truth/xlsx/test.txt",
-		"source": "openpyxl"
-	}
+  "document": "../../../../test_documents/vendored/markitdown/xlsx/test.xlsx",
+  "file_type": "xlsx",
+  "file_size": 11562,
+  "expected_frameworks": [
+    "kreuzberg",
+    "docling",
+    "markitdown",
+    "pandoc",
+    "tika",
+    "unstructured"
+  ],
+  "metadata": {
+    "description": "Document from markitdown test suite",
+    "source": "markitdown",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/xlsx/test.txt",
+    "source": "pandoc",
+    "markdown_file": "../../../../test_documents/ground_truth/xlsx/test.md"
+  }
 }

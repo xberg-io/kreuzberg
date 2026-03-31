@@ -1,15 +1,21 @@
 {
-	"document": "../../../../test_documents/vendored/unstructured/rtf/fake-doc.rtf",
-	"file_type": "rtf",
-	"file_size": 408,
-	"expected_frameworks": ["kreuzberg", "pandoc", "tika", "unstructured"],
-	"metadata": {
-		"description": "Document from unstructured test suite",
-		"source": "unstructured",
-		"size_category": "small"
-	},
-	"ground_truth": {
-		"text_file": "../../../../test_documents/ground_truth/rtf/fake-doc.txt",
-		"source": "striprtf"
-	}
+  "document": "../../../../test_documents/vendored/unstructured/rtf/fake-doc.rtf",
+  "file_type": "rtf",
+  "file_size": 408,
+  "expected_frameworks": [
+    "kreuzberg",
+    "pandoc",
+    "tika",
+    "unstructured"
+  ],
+  "metadata": {
+    "description": "Document from unstructured test suite",
+    "source": "unstructured",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/rtf/fake-doc.txt",
+    "source": "pandoc",
+    "markdown_file": "../../../../test_documents/ground_truth/rtf/fake-doc.md"
+  }
 }

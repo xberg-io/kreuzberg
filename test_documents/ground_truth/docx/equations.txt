@@ -1,53 +1,9 @@
-This is a word document and this is an inline equation: A = πr2 .
-If instead, I want an equation by line, I can do this:
+For m = 1,
 
-$$\begin{array}{r}
-a^{2} + b^{2} = c^{2}\  \times \ 23
-\end{array}$$
+$$sin\theta = \frac{m\lambda}{a} = \frac{(1)\left( 550 \times 10^{- 6}\text{ }mm \right)}{2.5\text{ }mm} = 2.2 \times 10^{- 4}$$
 
-And that is an equation by itself. Cheers!
+The angle is θ = sin⁻¹(2.2 × 10⁻⁴) = 2.2 × 10⁻⁴rad.
 
-This is another equation:
+From Eq. 36.1.3,
 
-$$\begin{array}{r}
-f(x) = a_{0} + \sum_{n = 1}^{\infty}\left( a_{n}\cos\frac{n\pi x}{L} +
-b_{n}\sin\frac{n\pi x}{L} \right)
-\end{array}$$
-
-This is text. This is text. This is text. This is text. This is text.
-This is text. This is text. This is text. This is text. This is text.
-This is text. This is text. This is text. This is text. This is text.
-This is text. This is text. This is text. This is text. This is text.
-This is text. This is text. This is text. This is text. This is text.
-This is text. This is text. This is text. This is text. This is text.
-This is text.
-
-This is a word document and this is an inline equation: A = πr2 .
-If instead, I want an equation by line, I can do this:
-
-$$(x + a)^{n} = \sum_{k =
-0}^{n}{\binom{n}{k}x^{k}a^{n - k}}$$
-
-And that is an equation by itself. Cheers!
-
-This is another equation:
-
-$$(1 + x)^{n} = 1 + \frac{nx}{1!} +
-\frac{n(n - 1)x^{2}}{2!} + \ldots$$
-
-This is text. This is text. This is text. This is text. This is text.
-This is text. This is text. This is text. This is text. This is text.
-This is text. This is text. This is text. This is text. This is text.
-This is text. This is text. This is text. This is text. This is text.
-This is text. This is text. This is text. This is text. This is text.
-This is text. This is text. This is text. This is text. This is text.
-This is text.
-
-This is a word document and this is an inline equation: A = πr2 .
-If instead, I want an equation by line, I can do this:
-
-$$e^{x} = 1 + \frac{x}{1!} +
-\frac{x^{2}}{2!} + \frac{x^{3}}{3!} + \ldots,\ \  - \infty < x <
-\infty$$
-
-And that is an equation by itself. Cheers!
+$$\frac{a}{\lambda} = \frac{m}{sin\theta} = \frac{1}{sin{45.0}^{\circ}} = 1.41.$$

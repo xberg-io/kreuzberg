@@ -480,7 +480,7 @@ pub fn clear_ocr_backends() -> crate::Result<()> {
     let registry = get_ocr_backend_registry();
     let mut registry = registry.write();
 
-    registry.reset_to_defaults()
+    registry.shutdown_all()
 }
 
 #[cfg(test)]
@@ -532,6 +532,8 @@ mod tests {
                 processing_warnings: Vec::new(),
                 annotations: None,
                 children: None,
+                uris: None,
+                formatted_content: None,
             })
         }
 

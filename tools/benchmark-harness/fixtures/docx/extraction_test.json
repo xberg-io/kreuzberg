@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/docx/extraction_test.docx",
+  "file_type": "docx",
+  "file_size": 11296,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "docx test: extraction_test",
+    "source": "pandoc-generated",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/docx/extraction_test.txt",
+    "markdown_file": "../../../../test_documents/ground_truth/docx/extraction_test.md",
+    "source": "pandoc"
+  }
+}

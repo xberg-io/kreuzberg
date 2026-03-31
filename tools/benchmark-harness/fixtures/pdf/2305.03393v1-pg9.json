@@ -1,28 +1,28 @@
 {
-	"document": "../../../../test_documents/vendored/docling/pdf/2305.03393v1-pg9.pdf",
-	"file_type": "pdf",
-	"file_size": 162131,
-	"expected_frameworks": [
-		"kreuzberg",
-		"docling",
-		"markitdown",
-		"mineru",
-		"pdfminer",
-		"pdfplumber",
-		"pdftotext",
-		"pymupdf4llm",
-		"pypdf",
-		"tika",
-		"unstructured"
-	],
-	"metadata": {
-		"description": "Document from docling test suite",
-		"source": "docling",
-		"size_category": "small"
-	},
-	"ground_truth": {
-		"text_file": "../../../../test_documents/ground_truth/pdf/2305.03393v1-pg9.txt",
-		"source": "vision",
-		"markdown_file": "../../../../test_documents/ground_truth/pdf/2305.03393v1-pg9.md"
-	}
+  "document": "../../../../test_documents/vendored/docling/pdf/2305.03393v1-pg9.pdf",
+  "file_type": "pdf",
+  "file_size": 162131,
+  "expected_frameworks": [
+    "kreuzberg",
+    "docling",
+    "markitdown",
+    "mineru",
+    "pdfminer",
+    "pdfplumber",
+    "pdftotext",
+    "pymupdf4llm",
+    "pypdf",
+    "tika",
+    "unstructured"
+  ],
+  "metadata": {
+    "description": "Document from docling test suite",
+    "source": "docling",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/pdf/2305.03393v1-pg9.txt",
+    "source": "pandoc",
+    "markdown_file": "../../../../test_documents/ground_truth/pdf/2305.03393v1-pg9.md"
+  }
 }

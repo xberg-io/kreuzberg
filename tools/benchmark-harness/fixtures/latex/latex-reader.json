@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/latex/latex-reader.latex",
+  "file_type": "latex",
+  "file_size": 12572,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "latex test: latex-reader",
+    "source": "pandoc-generated",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "markdown_file": "../../../../test_documents/ground_truth/latex/latex-reader.md",
+    "source": "pandoc",
+    "text_file": "../../../../test_documents/ground_truth/latex/latex-reader.txt"
+  }
+}

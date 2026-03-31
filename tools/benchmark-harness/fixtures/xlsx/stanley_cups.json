@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/xlsx/stanley_cups.xlsx",
+  "file_type": "xlsx",
+  "file_size": 6339,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "xlsx test: stanley_cups",
+    "source": "pandoc-generated",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "markdown_file": "../../../../test_documents/ground_truth/xlsx/stanley_cups.md",
+    "source": "pandoc",
+    "text_file": "../../../../test_documents/ground_truth/xlsx/stanley_cups.txt"
+  }
+}

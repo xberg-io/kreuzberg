@@ -14,6 +14,7 @@ use kreuzberg::Result;
 use kreuzberg::core::config::{ExtractionConfig, PostProcessorConfig};
 use kreuzberg::core::extractor::{batch_extract_bytes, extract_bytes};
 use kreuzberg::core::pipeline::run_pipeline;
+use kreuzberg::internal::{ElementKind, InternalDocument, InternalElement};
 use kreuzberg::plugins::registry::{get_document_extractor_registry, get_post_processor_registry};
 use kreuzberg::plugins::{Plugin, PostProcessor, ProcessingStage};
 use kreuzberg::types::ExtractionResult;
@@ -374,13 +375,15 @@ async fn test_concurrent_pipeline_processing() {
         let config = config.clone();
 
         handles.push(tokio::spawn(async move {
-            let result = ExtractionResult {
-                content: format!("Content {}", i),
-                mime_type: Cow::Borrowed("text/plain"),
-                ..Default::default()
-            };
+            let mut doc = InternalDocument::new("text");
+            doc.mime_type = Cow::Borrowed("text/plain");
+            doc.elements.push(InternalElement::text(
+                ElementKind::Paragraph,
+                format!("Content {}", i),
+                0,
+            ));
 
-            run_pipeline(result, &config).await
+            run_pipeline(doc, &config).await
         }));
     }
 

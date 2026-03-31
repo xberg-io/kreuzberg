@@ -750,6 +750,7 @@ fn aggregate_quality_metrics(results: &[&BenchmarkResult]) -> Option<QualityMetr
         quality_score,
         missing_tokens: Vec::new(),
         extra_tokens: Vec::new(),
+        correct: quality_score >= 0.95,
     })
 }
 

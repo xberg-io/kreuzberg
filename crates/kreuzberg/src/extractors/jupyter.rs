@@ -16,9 +16,13 @@ use crate::core::config::ExtractionConfig;
 #[cfg(feature = "office")]
 use crate::plugins::{DocumentExtractor, Plugin};
 #[cfg(feature = "office")]
-use crate::types::builder::DocumentStructureBuilder;
+use crate::types::internal::InternalDocument;
 #[cfg(feature = "office")]
-use crate::types::{ExtractedImage, ExtractionResult, Metadata};
+use crate::types::internal_builder::InternalDocumentBuilder;
+#[cfg(feature = "office")]
+use crate::types::uri::Uri;
+#[cfg(feature = "office")]
+use crate::types::{ExtractedImage, Metadata};
 #[cfg(feature = "office")]
 use ahash::AHashMap;
 #[cfg(feature = "office")]
@@ -305,6 +309,7 @@ impl JupyterExtractor {
                             description: Some(format!("Notebook cell {} output", cell_idx)),
                             ocr_result: None,
                             bounding_box: None,
+                            source_path: None,
                         });
                         content.push_str(&format!("[Image: {}]\n", mime_type));
                     }
@@ -433,13 +438,76 @@ impl JupyterExtractor {
         bytes[start..].iter().position(|&b| b == delim).map(|p| start + p)
     }
 
-    /// Build a `DocumentStructure` from the already-parsed notebook JSON.
+    /// Extract markdown-style links from text and return as URIs.
+    ///
+    /// Uses pulldown-cmark for robust parsing instead of hand-rolled byte scanning.
+    /// Recognizes both `[text](url)` hyperlinks and `![alt](url)` image links.
+    fn extract_markdown_links(text: &str) -> Vec<Uri> {
+        use pulldown_cmark::{Event, Parser, Tag, TagEnd};
+
+        let parser = Parser::new(text);
+        let mut uris = Vec::new();
+        let mut current_text = String::new();
+        let mut current_url: Option<String> = None;
+        let mut in_link = false;
+        let mut in_image = false;
+
+        for event in parser {
+            match event {
+                Event::Start(Tag::Link { dest_url, .. }) => {
+                    in_link = true;
+                    current_text.clear();
+                    current_url = Some(dest_url.into_string());
+                }
+                Event::Start(Tag::Image { dest_url, .. }) => {
+                    in_image = true;
+                    current_text.clear();
+                    current_url = Some(dest_url.into_string());
+                }
+                Event::Text(text) if in_link || in_image => {
+                    current_text.push_str(&text);
+                }
+                Event::End(TagEnd::Link) => {
+                    if let Some(url) = current_url.take()
+                        && !url.is_empty()
+                    {
+                        let label_opt = if current_text.is_empty() {
+                            None
+                        } else {
+                            Some(current_text.clone())
+                        };
+                        uris.push(Uri::hyperlink(&url, label_opt));
+                    }
+                    in_link = false;
+                    current_text.clear();
+                }
+                Event::End(TagEnd::Image) => {
+                    if let Some(url) = current_url.take()
+                        && !url.is_empty()
+                    {
+                        let label_opt = if current_text.is_empty() {
+                            None
+                        } else {
+                            Some(current_text.clone())
+                        };
+                        uris.push(Uri::image(&url, label_opt));
+                    }
+                    in_image = false;
+                    current_text.clear();
+                }
+                _ => {}
+            }
+        }
+
+        uris
+    }
+
+    /// Build an `InternalDocument` from the already-parsed notebook JSON.
     ///
     /// Markdown cells become paragraphs, code cells become code blocks.
-    fn build_document_structure(notebook: &Value) -> Option<crate::types::document_structure::DocumentStructure> {
+    fn build_internal_document(notebook: &Value) -> Option<InternalDocument> {
         let cells = notebook.get("cells")?.as_array()?;
 
-        // Determine the kernel language for code cells
         let kernel_lang = notebook
             .get("metadata")
             .and_then(|m| m.get("kernelspec"))
@@ -453,7 +521,7 @@ impl JupyterExtractor {
                     .and_then(|n| n.as_str())
             });
 
-        let mut builder = DocumentStructureBuilder::new().source_format("jupyter");
+        let mut builder = InternalDocumentBuilder::new("jupyter");
 
         for cell in cells {
             let cell_type = cell.get("cell_type").and_then(|t| t.as_str()).unwrap_or("unknown");
@@ -465,12 +533,17 @@ impl JupyterExtractor {
 
             match cell_type {
                 "markdown" => {
+                    // Extract markdown links as URIs
+                    let link_uris = Self::extract_markdown_links(trimmed);
+                    for uri in link_uris {
+                        builder.push_uri(uri);
+                    }
                     let (stripped, annotations) = Self::scan_markdown_inline(trimmed);
                     builder.push_paragraph(&stripped, annotations, None, None);
                 }
                 "code" => {
-                    let node_idx = builder.push_code(trimmed, kernel_lang, None);
-                    // Store execution_count and tags as node attributes
+                    let idx = builder.push_code(trimmed, kernel_lang, None, None);
+                    // Store execution_count and tags as element attributes
                     let mut attrs = AHashMap::new();
                     if let Some(exec_count) = cell.get("execution_count") {
                         match exec_count {
@@ -493,7 +566,7 @@ impl JupyterExtractor {
                         attrs.insert("tags".to_string(), tag_strs.join(","));
                     }
                     if !attrs.is_empty() {
-                        builder.set_attributes(node_idx, attrs);
+                        builder.set_attributes(idx, attrs);
                     }
                 }
                 _ => {
@@ -579,65 +652,38 @@ impl DocumentExtractor for JupyterExtractor {
         content: &[u8],
         mime_type: &str,
         config: &ExtractionConfig,
-    ) -> Result<ExtractionResult> {
+    ) -> Result<InternalDocument> {
         let plain = matches!(
             config.output_format,
             crate::core::config::OutputFormat::Plain | crate::core::config::OutputFormat::Structured
         );
-        let (extracted_content, additional_metadata, extracted_images, notebook_json) =
+        let (_extracted_content, additional_metadata, extracted_images, notebook_json) =
             Self::extract_notebook(content, plain)?;
 
         let mut metadata_additional = AHashMap::new();
+        // Extract language name for the standard Metadata.language field
+        let meta_language = additional_metadata
+            .get(&Cow::Borrowed("language_name"))
+            .and_then(|v| v.as_str().map(|s| s.to_string()));
         for (key, value) in additional_metadata {
             metadata_additional.insert(key, json!(value));
         }
 
-        // Process images with OCR if configured and available
-        let images = if !extracted_images.is_empty() {
-            #[cfg(all(feature = "ocr", feature = "tokio-runtime"))]
-            {
-                let processed = crate::extraction::image_ocr::process_images_with_ocr(extracted_images, config).await?;
-                Some(processed)
-            }
-            #[cfg(not(all(feature = "ocr", feature = "tokio-runtime")))]
-            {
-                let _ = config; // suppress unused warning when OCR is disabled
-                Some(extracted_images)
-            }
-        } else {
-            None
-        };
+        let images = extracted_images;
 
-        // Build document structure from already-parsed notebook (no re-parse)
-        let document = if config.include_document_structure {
-            Self::build_document_structure(&notebook_json)
-        } else {
-            None
-        };
+        // Build InternalDocument from already-parsed notebook (no re-parse)
+        let mut doc = Self::build_internal_document(&notebook_json)
+            .unwrap_or_else(|| InternalDocumentBuilder::new("jupyter").build());
+        doc.mime_type = Cow::Owned(mime_type.to_string());
 
-        Ok(ExtractionResult {
-            content: extracted_content,
-            mime_type: mime_type.to_string().into(),
-            metadata: Metadata {
-                additional: metadata_additional,
-                ..Default::default()
-            },
-            pages: None,
-            tables: vec![],
-            detected_languages: None,
-            chunks: None,
-            images,
-            djot_content: None,
-            elements: None,
-            ocr_elements: None,
-            document,
-            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-            extracted_keywords: None,
-            quality_score: None,
-            processing_warnings: Vec::new(),
-            annotations: None,
-            children: None,
-        })
+        doc.metadata = Metadata {
+            language: meta_language,
+            additional: metadata_additional,
+            ..Default::default()
+        };
+        doc.images = images;
+
+        Ok(doc)
     }
 
     fn supported_mime_types(&self) -> &[&str] {

@@ -2,10 +2,10 @@
 
 use anyhow::{Context, Result};
 
-use crate::{OutputFormat, style};
+use crate::{WireFormat, style};
 
 /// Execute the embed command: generate embeddings for input texts.
-pub fn embed_command(texts: Vec<String>, preset: &str, format: OutputFormat) -> Result<()> {
+pub fn embed_command(texts: Vec<String>, preset: &str, format: WireFormat) -> Result<()> {
     use kreuzberg::types::{Chunk, ChunkMetadata};
 
     // Validate preset
@@ -70,7 +70,7 @@ pub fn embed_command(texts: Vec<String>, preset: &str, format: OutputFormat) -> 
     let dimensions = embeddings.first().map(|e| e.len()).unwrap_or(0);
 
     match format {
-        OutputFormat::Json => {
+        WireFormat::Json => {
             let output = serde_json::json!({
                 "embeddings": embeddings,
                 "model": preset,
@@ -82,7 +82,19 @@ pub fn embed_command(texts: Vec<String>, preset: &str, format: OutputFormat) -> 
                 serde_json::to_string_pretty(&output).context("Failed to serialize embeddings to JSON")?
             );
         }
-        OutputFormat::Text => {
+        WireFormat::Toon => {
+            let output = serde_json::json!({
+                "embeddings": embeddings,
+                "model": preset,
+                "dimensions": dimensions,
+                "count": embeddings.len(),
+            });
+            println!(
+                "{}",
+                serde_toon::to_string(&output).context("Failed to serialize embeddings to TOON")?
+            );
+        }
+        WireFormat::Text => {
             for (i, embedding) in embeddings.iter().enumerate() {
                 if texts.len() > 1 {
                     println!("{}", style::dim(&format!("# text {}", i + 1)));

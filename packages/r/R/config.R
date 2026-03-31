@@ -33,6 +33,7 @@
 #' @param extraction_timeout_secs Integer or NULL. Extraction timeout in seconds.
 #'   When set, limits the maximum time allowed for an extraction operation.
 #'   When NULL, the server default is used.
+#' @param tree_sitter Tree-sitter configuration created by \code{tree_sitter_config()}.
 #' @param ... Additional configuration options passed as named list elements.
 #' @return A named list representing the extraction configuration.
 #' @export
@@ -51,6 +52,7 @@ extraction_config <- function(force_ocr = FALSE, force_ocr_pages = NULL, ocr = N
                               email = NULL, concurrency = NULL,
                               cache_namespace = NULL, cache_ttl_secs = NULL,
                               extraction_timeout_secs = NULL,
+                              tree_sitter = NULL,
                               ...) {
   config <- list()
   if (isTRUE(force_ocr)) config$force_ocr <- TRUE
@@ -103,6 +105,7 @@ extraction_config <- function(force_ocr = FALSE, force_ocr_pages = NULL, ocr = N
   if (!is.null(extraction_timeout_secs)) {
     config$extraction_timeout_secs <- as.integer(extraction_timeout_secs)
   }
+  if (!is.null(tree_sitter)) config$tree_sitter <- tree_sitter
   extras <- list(...)
   if (length(extras) > 0) config <- c(config, extras)
   config
@@ -284,6 +287,58 @@ acceleration_config <- function(provider = "auto", device_id = 0L) {
   device_id <- as.integer(device_id)
   if (device_id < 0L) stop("device_id must be a non-negative integer", call. = FALSE)
   list(provider = provider, device_id = device_id)
+}
+
+#' Create a tree-sitter process configuration
+#'
+#' @param structure Logical. Extract structural items. Default TRUE.
+#' @param imports Logical. Extract import statements. Default TRUE.
+#' @param exports Logical. Extract export statements. Default TRUE.
+#' @param comments Logical. Extract comments. Default FALSE.
+#' @param docstrings Logical. Extract docstrings. Default FALSE.
+#' @param symbols Logical. Extract symbol definitions. Default FALSE.
+#' @param diagnostics Logical. Include parse diagnostics. Default FALSE.
+#' @param chunk_max_size Integer or NULL. Maximum chunk size in bytes. NULL disables chunking.
+#' @return A named list representing the tree-sitter process configuration.
+#' @export
+tree_sitter_process_config <- function(structure = TRUE, imports = TRUE, exports = TRUE,
+                                       comments = FALSE, docstrings = FALSE,
+                                       symbols = FALSE, diagnostics = FALSE,
+                                       chunk_max_size = NULL) {
+  config <- list(
+    structure = structure,
+    imports = imports,
+    exports = exports,
+    comments = comments,
+    docstrings = docstrings,
+    symbols = symbols,
+    diagnostics = diagnostics
+  )
+  if (!is.null(chunk_max_size)) {
+    config$chunk_max_size <- as.integer(chunk_max_size)
+  }
+  config
+}
+
+#' Create a tree-sitter configuration
+#'
+#' @param cache_dir Character or NULL. Custom cache directory for downloaded grammars.
+#' @param languages Character vector or NULL. Languages to pre-download on init.
+#' @param groups Character vector or NULL. Language groups to pre-download.
+#' @param process Tree-sitter process configuration created by \code{tree_sitter_process_config()}.
+#' @return A named list representing the tree-sitter configuration.
+#' @export
+tree_sitter_config <- function(cache_dir = NULL, languages = NULL, groups = NULL,
+                               process = NULL) {
+  config <- list()
+  if (!is.null(cache_dir)) {
+    stopifnot(is.character(cache_dir), length(cache_dir) == 1L)
+    config$cache_dir <- cache_dir
+  }
+  if (!is.null(languages)) config$languages <- as.character(languages)
+  if (!is.null(groups)) config$groups <- as.character(groups)
+  if (!is.null(process)) config$process <- process
+  config
 }
 
 #' Discover extraction configuration from kreuzberg.toml

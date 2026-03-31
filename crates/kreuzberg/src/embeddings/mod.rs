@@ -61,7 +61,7 @@
 
 pub mod engine;
 
-use std::collections::HashMap;
+use ahash::AHashMap;
 use std::sync::{Arc, RwLock};
 
 use once_cell::sync::Lazy;
@@ -70,7 +70,7 @@ use engine::EmbeddingEngine;
 
 type CachedEngine = Arc<EmbeddingEngine>;
 
-static ENGINE_CACHE: Lazy<RwLock<HashMap<String, CachedEngine>>> = Lazy::new(|| RwLock::new(HashMap::new()));
+static ENGINE_CACHE: Lazy<RwLock<AHashMap<String, CachedEngine>>> = Lazy::new(|| RwLock::new(AHashMap::new()));
 
 /// Preset configurations for common RAG use cases.
 ///

@@ -76,6 +76,8 @@ internal static partial class NativeMethods
         public IntPtr Subject;
         /// <summary>JSON array of extracted tables pointer.</summary>
         public IntPtr TablesJson;
+        /// <summary>JSON array of extracted URIs pointer.</summary>
+        public IntPtr UrisJson;
 
         /// <summary>Whether extraction succeeded.</summary>
         [MarshalAs(UnmanagedType.I1)]

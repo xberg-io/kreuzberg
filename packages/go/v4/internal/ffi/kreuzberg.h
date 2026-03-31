@@ -9,8 +9,8 @@
 
 #define KREUZBERG_VERSION_MAJOR 4
 #define KREUZBERG_VERSION_MINOR 6
-#define KREUZBERG_VERSION_PATCH 2
-#define KREUZBERG_VERSION "4.6.2"
+#define KREUZBERG_VERSION_PATCH 3
+#define KREUZBERG_VERSION "4.6.3"
 
 
 #include <stdarg.h>
@@ -339,6 +339,10 @@ typedef struct CExtractionResult {
    * Tables as JSON array (null-terminated string, or NULL if no tables, must be freed with kreuzberg_free_string)
    */
   char *tables_json;
+  /**
+   * JSON-serialized URIs/links array (null-terminated, or null pointer if none, must be freed with kreuzberg_free_string)
+   */
+  char *uris_json;
   /**
    * Whether extraction was successful
    */

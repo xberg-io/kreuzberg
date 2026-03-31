@@ -328,6 +328,17 @@ readonly class ExtractionConfig
          * @default null
          */
         public ?LayoutDetectionConfig $layout = null,
+
+        /**
+         * Tree-sitter configuration for code parsing.
+         *
+         * Configures tree-sitter grammar management and code extraction behavior,
+         * including cache directory, language selection, and process-level options.
+         *
+         * @var TreeSitterConfig|null
+         * @default null
+         */
+        public ?TreeSitterConfig $treeSitter = null,
     ) {
     }
 
@@ -544,6 +555,13 @@ readonly class ExtractionConfig
             $securityLimits = SecurityLimitsConfig::fromArray($securityLimitsData);
         }
 
+        $treeSitter = null;
+        if (isset($data['tree_sitter']) && is_array($data['tree_sitter'])) {
+            /** @var array<string, mixed> $treeSitterData */
+            $treeSitterData = $data['tree_sitter'];
+            $treeSitter = TreeSitterConfig::fromArray($treeSitterData);
+        }
+
         return new self(
             useCache: $useCache,
             enableQualityProcessing: $enableQualityProcessing,
@@ -572,6 +590,7 @@ readonly class ExtractionConfig
             extractionTimeoutSecs: $extractionTimeoutSecs,
             maxArchiveDepth: $maxArchiveDepth,
             layout: $layout,
+            treeSitter: $treeSitter,
         );
     }
 
@@ -743,6 +762,7 @@ readonly class ExtractionConfig
             'email' => $this->email?->toArray(),
             'concurrency' => $this->concurrency?->toArray(),
             'layout' => $this->layout?->toArray(),
+            'tree_sitter' => $this->treeSitter?->toArray(),
         ];
 
         // Add simple boolean/string fields only if explicitly set to non-default values

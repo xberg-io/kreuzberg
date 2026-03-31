@@ -43,6 +43,7 @@ pub const TOML_MIME_TYPE: &str = "application/toml";
 pub const XML_MIME_TYPE: &str = "application/xml";
 pub const XML_TEXT_MIME_TYPE: &str = "text/xml";
 pub const SVG_MIME_TYPE: &str = "image/svg+xml";
+pub const SOURCE_CODE_MIME_TYPE: &str = "text/x-source-code";
 
 pub const EXCEL_MIME_TYPE: &str = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 pub const EXCEL_BINARY_MIME_TYPE: &str = "application/vnd.ms-excel";
@@ -524,6 +525,14 @@ static FORMATS: &[FormatEntry] = &[
         mime_type: "application/x-iwork-keynote-sffkey",
         aliases: &[],
     },
+    // ── Source code (tree-sitter) ──────────────────────────────────────
+    // No file extension mapping — detection is dynamic via TSLP's
+    // detect_language_from_extension() as a fallback in detect_mime_type().
+    FormatEntry {
+        extensions: &[],
+        mime_type: "text/x-source-code",
+        aliases: &[],
+    },
 ];
 
 /// Extension to MIME type mapping, derived from [`FORMATS`].
@@ -588,6 +597,15 @@ pub fn detect_mime_type(path: impl AsRef<Path>, check_exists: bool) -> Result<St
     let guess = mime_guess::from_path(path).first();
     if let Some(mime) = guess {
         return Ok(mime.to_string());
+    }
+
+    // Tree-sitter fallback: if no extractor claimed this extension, check if
+    // TSLP recognises it as a programming language.
+    #[cfg(feature = "tree-sitter")]
+    if let Some(ext) = &extension
+        && tree_sitter_language_pack::detect_language_from_extension(ext).is_some()
+    {
+        return Ok(SOURCE_CODE_MIME_TYPE.to_string());
     }
 
     if let Some(ext) = extension {
@@ -716,6 +734,12 @@ pub fn detect_mime_type_from_bytes(content: &[u8]) -> Result<String> {
 
         if trimmed.starts_with("%PDF") {
             return Ok(PDF_MIME_TYPE.to_string());
+        }
+
+        // Tree-sitter fallback: detect language from shebang line.
+        #[cfg(feature = "tree-sitter")]
+        if tree_sitter_language_pack::detect_language_from_content(trimmed).is_some() {
+            return Ok(SOURCE_CODE_MIME_TYPE.to_string());
         }
 
         return Ok(PLAIN_TEXT_MIME_TYPE.to_string());

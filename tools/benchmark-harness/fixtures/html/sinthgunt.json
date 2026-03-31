@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/html/sinthgunt.html",
+  "file_type": "html",
+  "file_size": 125362,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "HTML test document: sinthgunt",
+    "source": "pandoc-generated",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "markdown_file": "../../../../test_documents/ground_truth/html/sinthgunt.md",
+    "source": "pandoc",
+    "text_file": "../../../../test_documents/ground_truth/html/sinthgunt.txt"
+  }
+}

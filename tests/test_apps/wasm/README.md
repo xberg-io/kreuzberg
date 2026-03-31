@@ -23,6 +23,7 @@ The WASM test suite provides comprehensive coverage of:
 ## Installation
 
 ### From Local Development Build (Current Setup)
+
 ```bash
 cd test_apps/wasm
 pnpm install
@@ -30,7 +31,9 @@ pnpm install
 ```
 
 ### From Published npm Package
+
 When using the published `@kreuzberg/wasm@4.3.6` from npm:
+
 ```bash
 cd test_apps/wasm
 # Update package.json to reference npm version:
@@ -60,7 +63,7 @@ npm run test:coverage
 
 Tests are organized by functionality:
 
-```
+```text
 tests/
 └── wasm-extraction.spec.ts    # Main test suite with 40+ tests
 ```
@@ -68,13 +71,17 @@ tests/
 ### Test Categories
 
 #### 1. Type Verification (8 tests)
+
 Validates that all TypeScript types are properly exported and accessible:
+
 - ExtractionConfig, ExtractionResult
 - OcrConfig, ChunkingConfig, ImageExtractionConfig
 - PdfConfig, Table, Metadata
 
 #### 2. File Extraction - Synchronous (7 tests)
+
 Tests synchronous extraction from various file types:
+
 - PDF files (`pdfs/fake_memo.pdf`)
 - DOCX documents (`documents/lorem_ipsum.docx`)
 - XLSX spreadsheets (`spreadsheets/test_01.xlsx`)
@@ -83,20 +90,26 @@ Tests synchronous extraction from various file types:
 - Markdown files
 
 #### 3. File Extraction - Asynchronous (7 tests)
+
 Tests asynchronous extraction with same file types:
+
 - Validates async/await pattern works correctly
 - Tests concurrent extraction capabilities
 - Verifies promise-based API
 
 #### 4. Byte Extraction (4 tests)
+
 Tests extraction from in-memory byte arrays:
+
 - PDF bytes sync and async
 - DOCX bytes consistency
 - Empty byte array handling
 - Large byte array support
 
 #### 5. Batch Operations (6 tests)
+
 Tests batch extraction APIs:
+
 - `batchExtractBytes()` - async batch from byte arrays
 - `batchExtractBytesSync()` - sync batch from byte arrays
 - `batchExtractFiles()` - async batch from File objects
@@ -105,12 +118,16 @@ Tests batch extraction APIs:
 - Configuration application to batches
 
 #### 6. MIME Type Detection (7 tests)
+
 Validates correct MIME type identification:
+
 - PDF, DOCX, XLSX, PNG, JPG, ODT
 - Custom MIME types
 
 #### 7. Configuration Handling (8 tests)
+
 Tests ExtractionConfig usage:
+
 - Null configuration handling
 - OCR configuration
 - Chunking configuration
@@ -120,7 +137,9 @@ Tests ExtractionConfig usage:
 - `configToJS()` utility
 
 #### 8. Result Structure (6 tests)
+
 Validates extraction result structure:
+
 - Required fields present
 - Metadata handling
 - Tables extraction
@@ -128,7 +147,9 @@ Validates extraction result structure:
 - Type consistency sync vs async
 
 #### 9. Error Handling (5 tests)
+
 Tests graceful error scenarios:
+
 - Invalid PDF handling
 - Corrupted data
 - Error wrapping with context
@@ -136,27 +157,35 @@ Tests graceful error scenarios:
 - Large file support
 
 #### 10. Adapter Functions (5 tests)
+
 Tests utility functions:
+
 - `fileToUint8Array()`
 - `configToJS()`
 - `isValidExtractionResult()`
 - `wrapWasmError()`
 
 #### 11. Concurrent Operations (3 tests)
+
 Tests concurrent extraction:
+
 - Parallel extractions with Promise.all()
 - Rapid sequential extractions
 - Mix of sync and async operations
 
 #### 12. Large Document Handling (4 tests)
+
 Tests complex documents:
+
 - Large PDF files (1MB+)
 - Multi-page PDFs
 - Complex DOCX with tables
 - Multi-sheet XLSX
 
 #### 13. Content Quality (5 tests)
+
 Validates extraction quality:
+
 - Meaningful content extraction
 - Structure preservation
 - Special character handling
@@ -168,6 +197,7 @@ Validates extraction quality:
 Tests use real documents from `test_documents/`:
 
 ### PDFs
+
 - `fake_memo.pdf` - Simple searchable PDF
 - `multi_page.pdf` - Multi-page document
 - `searchable.pdf` - Text-searchable PDF
@@ -177,18 +207,21 @@ Tests use real documents from `test_documents/`:
 - Special text PDFs (RTL, non-ASCII)
 
 ### Office Documents
+
 - `documents/lorem_ipsum.docx` - Standard DOCX
 - `documents/docx_tables.docx` - DOCX with tables
 - `documents/unit_test_*.docx` - Formatted documents
 - `spreadsheets/*.xlsx` - Excel files (single/multi-sheet)
 
 ### Images
+
 - `images/sample.png` - PNG image
 - `images/flower_no_text.jpg` - JPG without text
 - `images/ocr_image.jpg` - Image with text
 - Table images for layout detection
 
 ### Other Formats
+
 - `documents/simple.odt` - ODT document
 - `documents/markdown.md` - Markdown file
 - `text/*.md` - Various markdown files
@@ -196,6 +229,7 @@ Tests use real documents from `test_documents/`:
 ## Configuration Examples
 
 ### OCR Configuration
+
 ```typescript
 const config: ExtractionConfig = {
   ocr: {
@@ -207,6 +241,7 @@ const result = await extractBytes(bytes, 'application/pdf', config);
 ```
 
 ### Chunking Configuration
+
 ```typescript
 const config: ExtractionConfig = {
   chunking: {
@@ -218,6 +253,7 @@ const result = await extractBytes(bytes, 'application/pdf', config);
 ```
 
 ### Image Extraction
+
 ```typescript
 const config: ExtractionConfig = {
   images: {
@@ -229,6 +265,7 @@ const result = await extractBytes(bytes, 'application/pdf', config);
 ```
 
 ### Combined Configuration
+
 ```typescript
 const config: ExtractionConfig = {
   ocr: { backend: 'tesseract', language: 'eng' },
@@ -241,25 +278,30 @@ const result = await extractBytes(bytes, 'application/pdf', config);
 ## API Coverage
 
 ### Core Functions
+
 - `initWasm()` - Initialize WASM module
 - `isInitialized()` - Check initialization status
 - `getVersion()` - Get WASM module version
 
 ### Extraction Functions
+
 - `extractBytes()` - Async extraction from bytes
 - `extractBytesSync()` - Sync extraction from bytes
 - `extractFile()` - Async extraction from file path
 - `extractFromFile()` - Async from File/Blob objects
 
 ### Batch Operations
+
 - `batchExtractBytes()` - Async batch from byte arrays
 - `batchExtractBytesSync()` - Sync batch from byte arrays
 - `batchExtractFiles()` - Async batch from File objects
 
 ### OCR
+
 - `enableOcr()` - Enable OCR with tesseract-wasm
 
 ### Utilities
+
 - `fileToUint8Array()` - Convert File to Uint8Array
 - `configToJS()` - Convert config object
 - `isValidExtractionResult()` - Validate result structure
@@ -278,6 +320,7 @@ const result = await extractBytes(bytes, 'application/pdf', config);
 ## TypeScript Configuration
 
 Tests use strictest TypeScript settings:
+
 - `strict: true` - All strict type checks
 - `noUncheckedIndexedAccess: true` - Index safety
 - `exactOptionalPropertyTypes: true` - Exact optional properties
@@ -294,6 +337,7 @@ Tests use strictest TypeScript settings:
 ## Performance Characteristics
 
 Tests validate:
+
 - No memory leaks on repeated operations
 - Efficient batch processing
 - Concurrent operation support
@@ -317,22 +361,28 @@ vitest run --reporter=junit --outputFile=results.xml
 ## Troubleshooting
 
 ### WASM Module Not Loading
+
 Ensure `@kreuzberg/wasm` is properly installed:
+
 ```bash
 npm install @kreuzberg/wasm
 ```
 
 ### Test Timeouts
+
 Some large document tests may need extended timeouts. Vitest is configured with:
+
 - `testTimeout: 60000` - 60 second test timeout
 - `hookTimeout: 60000` - 60 second hook timeout
 
 ### Missing Test Documents
+
 Verify test_documents directory exists at `../../../../test_documents/` relative to test file.
 
 ## Test Metrics
 
 Total Tests: 79
+
 - Type Verification: 10
 - Synchronous Extraction: 7
 - Asynchronous Extraction: 7

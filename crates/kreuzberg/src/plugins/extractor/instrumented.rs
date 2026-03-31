@@ -7,7 +7,7 @@ use crate::Result;
 use crate::core::config::ExtractionConfig;
 use crate::plugins::Plugin;
 use crate::telemetry::conventions;
-use crate::types::ExtractionResult;
+use crate::types::internal::InternalDocument;
 use async_trait::async_trait;
 use std::path::Path;
 use std::sync::Arc;
@@ -76,7 +76,7 @@ impl DocumentExtractor for InstrumentedExtractor {
         content: &[u8],
         mime_type: &str,
         config: &ExtractionConfig,
-    ) -> Result<ExtractionResult> {
+    ) -> Result<InternalDocument> {
         let extractor_name = self.inner.name().to_owned();
         let size_bytes = content.len();
 
@@ -96,7 +96,7 @@ impl DocumentExtractor for InstrumentedExtractor {
         result
     }
 
-    async fn extract_file(&self, path: &Path, mime_type: &str, config: &ExtractionConfig) -> Result<ExtractionResult> {
+    async fn extract_file(&self, path: &Path, mime_type: &str, config: &ExtractionConfig) -> Result<InternalDocument> {
         let extractor_name = self.inner.name().to_owned();
         let size_bytes = path.metadata().map(|m| m.len() as usize).unwrap_or(0);
 
@@ -142,7 +142,7 @@ impl DocumentExtractor for InstrumentedExtractor {
 // Helpers
 // ---------------------------------------------------------------------------
 
-fn record_span_status(span: &tracing::Span, result: &Result<ExtractionResult>) {
+fn record_span_status(span: &tracing::Span, result: &Result<InternalDocument>) {
     let _entered = span.enter();
     match result {
         Ok(_) => crate::telemetry::spans::record_success_on_current_span(),
@@ -155,7 +155,7 @@ fn record_metrics(
     mime_type: &str,
     input_size: usize,
     elapsed_ms: f64,
-    result: &Result<ExtractionResult>,
+    result: &Result<InternalDocument>,
 ) {
     let metrics = crate::telemetry::metrics::get_metrics();
 
@@ -171,8 +171,7 @@ fn record_metrics(
     metrics.extraction_input_bytes.record(input_size as u64, &attrs[..1]);
 
     if let Ok(res) = result {
-        metrics
-            .extraction_output_bytes
-            .record(res.content.len() as u64, &attrs[..1]);
+        let output_bytes: usize = res.elements.iter().map(|e| e.text.len()).sum();
+        metrics.extraction_output_bytes.record(output_bytes as u64, &attrs[..1]);
     }
 }

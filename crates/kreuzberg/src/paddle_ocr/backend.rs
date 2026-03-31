@@ -10,7 +10,6 @@
 use ahash::AHashMap;
 use async_trait::async_trait;
 use std::borrow::Cow;
-use std::collections::HashMap;
 use std::panic::catch_unwind;
 use std::path::Path;
 use std::sync::{Arc, Mutex};
@@ -19,8 +18,8 @@ use crate::Result;
 use crate::core::config::OcrConfig;
 use crate::ocr::conversion::{elements_to_hocr_words, text_block_to_element};
 use crate::plugins::{OcrBackend, OcrBackendType, Plugin};
+use crate::table_core::{reconstruct_table, table_to_markdown};
 use crate::types::{ExtractionResult, FormatMetadata, Metadata, OcrElement, OcrMetadata, Table};
-use html_to_markdown_rs::hocr::{reconstruct_table, table_to_markdown};
 
 use super::config::PaddleOcrConfig;
 use super::model_manager::{ModelManager, SharedModelPaths};
@@ -46,7 +45,7 @@ pub struct PaddleOcrBackend {
     /// Per-model OCR engines, lazily initialized. Keyed by "{tier}/{model_key}".
     /// Multiple script families may share the same engine (e.g. chinese+japanese use unified_server).
     /// OcrLite inference methods take `&self`, enabling lock-free concurrent page OCR.
-    engine_pool: Mutex<HashMap<String, Arc<OcrLite>>>,
+    engine_pool: Mutex<AHashMap<String, Arc<OcrLite>>>,
     /// Document orientation detector, lazily initialized.
     doc_ori_detector: once_cell::sync::OnceCell<crate::doc_orientation::DocOrientationDetector>,
 }
@@ -64,7 +63,7 @@ impl PaddleOcrBackend {
             config: Arc::new(config),
             model_manager: ModelManager::new(cache_dir),
             shared_paths: Mutex::new(None),
-            engine_pool: Mutex::new(HashMap::new()),
+            engine_pool: Mutex::new(AHashMap::new()),
             doc_ori_detector: once_cell::sync::OnceCell::new(),
         })
     }
@@ -415,9 +414,6 @@ impl OcrBackend for PaddleOcrBackend {
             }
         }
 
-        let mut additional = AHashMap::new();
-        additional.insert(Cow::Borrowed("backend"), serde_json::json!("paddle-ocr"));
-
         let metadata = Metadata {
             format: Some(FormatMetadata::Ocr(OcrMetadata {
                 language: config.language.clone(),
@@ -427,7 +423,6 @@ impl OcrBackend for PaddleOcrBackend {
                 table_rows,
                 table_cols,
             })),
-            additional,
             ..Default::default()
         };
 
@@ -458,6 +453,8 @@ impl OcrBackend for PaddleOcrBackend {
             processing_warnings: Vec::new(),
             annotations: None,
             children: None,
+            uris: None,
+            formatted_content: None,
         })
     }
 

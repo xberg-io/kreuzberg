@@ -38,6 +38,7 @@ kreuzberg = { path = "../../crates/kreuzberg", features = ["full", "bundled-pdfi
 num_cpus = { workspace = true }
 
 pprof = { version = "0.15", features = ["flamegraph", "criterion"], optional = true }
+pulldown-cmark = "0.13"
 rayon = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }

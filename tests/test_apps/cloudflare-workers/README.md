@@ -2,7 +2,7 @@
 
 Tests `@kreuzberg/wasm` running inside a Cloudflare Workers environment using `@cloudflare/vitest-pool-workers`.
 
-Related issue: https://github.com/kreuzberg-dev/kreuzberg/issues/335
+Related issue: <https://github.com/kreuzberg-dev/kreuzberg/issues/335>
 
 ## Setup
 

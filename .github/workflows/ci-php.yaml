@@ -76,7 +76,7 @@ jobs:
         # TODO: Re-enable ubuntu-24.04-arm once cargo fingerprint issues on ARM64 are resolved
         # Windows excluded: ext-php-rs requires nightly Rust for abi_vectorcall feature
         os: [ubuntu-latest, macos-latest]
-        php-version: ["8.4"]
+        php-version: ["8.4", "8.5"]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v6
@@ -223,7 +223,7 @@ jobs:
         # TODO: Re-enable ubuntu-24.04-arm once cargo fingerprint issues on ARM64 are resolved
         # TODO: Re-enable windows-latest once Tesseract installation issues are resolved
         os: [ubuntu-latest, macos-latest]
-        php-version: ["8.4"]
+        php-version: ["8.4", "8.5"]
     runs-on: ${{ matrix.os }}
     env:
       RUSTC_WRAPPER: ""

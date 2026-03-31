@@ -106,6 +106,8 @@ impl OcrBackend for RubyOcrBackend {
                 processing_warnings: vec![],
                 annotations: None,
                 children: None,
+                formatted_content: None,
+                uris: None,
             })
         })
     }

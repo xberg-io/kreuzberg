@@ -3,7 +3,9 @@
 #![cfg(feature = "xml")]
 
 use kreuzberg::core::config::ExtractionConfig;
+use kreuzberg::extraction::derive::derive_extraction_result;
 use kreuzberg::plugins::{DocumentExtractor, Plugin};
+use kreuzberg::types::ExtractionResult;
 use std::path::PathBuf;
 
 /// Helper to get absolute path to test documents
@@ -20,29 +22,33 @@ fn test_file_path(filename: &str) -> PathBuf {
 }
 
 /// DocBook 4.x extractor test helper
-async fn extract_docbook4_file(filename: &str) -> kreuzberg::Result<kreuzberg::types::ExtractionResult> {
+async fn extract_docbook4_file(filename: &str) -> kreuzberg::Result<ExtractionResult> {
     let extractor = kreuzberg::extractors::DocbookExtractor::new();
     let path = test_file_path(filename);
     let config = ExtractionConfig::default();
-    extractor.extract_file(&path, "application/docbook+xml", &config).await
+    let doc = extractor
+        .extract_file(&path, "application/docbook+xml", &config)
+        .await?;
+    Ok(derive_extraction_result(doc, true, kreuzberg::OutputFormat::Plain))
 }
 
 /// DocBook 5.x extractor test helper
-async fn extract_docbook5_file(filename: &str) -> kreuzberg::Result<kreuzberg::types::ExtractionResult> {
+async fn extract_docbook5_file(filename: &str) -> kreuzberg::Result<ExtractionResult> {
     let extractor = kreuzberg::extractors::DocbookExtractor::new();
     let path = test_file_path(filename);
     let config = ExtractionConfig::default();
-    extractor.extract_file(&path, "application/docbook+xml", &config).await
+    let doc = extractor
+        .extract_file(&path, "application/docbook+xml", &config)
+        .await?;
+    Ok(derive_extraction_result(doc, true, kreuzberg::OutputFormat::Plain))
 }
 
 /// Helper to extract bytes directly
-async fn extract_docbook_bytes(
-    content: &[u8],
-    mime_type: &str,
-) -> kreuzberg::Result<kreuzberg::types::ExtractionResult> {
+async fn extract_docbook_bytes(content: &[u8], mime_type: &str) -> kreuzberg::Result<ExtractionResult> {
     let extractor = kreuzberg::extractors::DocbookExtractor::new();
     let config = ExtractionConfig::default();
-    extractor.extract_bytes(content, mime_type, &config).await
+    let doc = extractor.extract_bytes(content, mime_type, &config).await?;
+    Ok(derive_extraction_result(doc, true, kreuzberg::OutputFormat::Plain))
 }
 
 #[test]

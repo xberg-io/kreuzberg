@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/odt/unicode.odt",
+  "file_type": "odt",
+  "file_size": 11787,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "odt test: unicode",
+    "source": "pandoc-generated",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/odt/unicode.txt",
+    "markdown_file": "../../../../test_documents/ground_truth/odt/unicode.md",
+    "source": "pandoc"
+  }
+}

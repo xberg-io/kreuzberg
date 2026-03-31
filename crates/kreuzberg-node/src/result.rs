@@ -61,6 +61,7 @@ pub struct JsExtractedImage {
     #[napi(ts_type = "JsExtractionResult | undefined")]
     pub ocr_result: Option<serde_json::Value>,
     pub bounding_box: Option<JsBoundingBox>,
+    pub source_path: Option<String>,
 }
 
 #[napi(object)]
@@ -252,6 +253,7 @@ impl TryFrom<RustExtractionResult> for JsExtractionResult {
                         x1: bb.x1,
                         y1: bb.y1,
                     }),
+                    source_path: img.source_path,
                 });
             }
             Some(js_images)
@@ -315,6 +317,7 @@ impl TryFrom<RustExtractionResult> for JsExtractionResult {
                                 x1: bb.x1,
                                 y1: bb.y1,
                             }),
+                            source_path: img.source_path.clone(),
                         }
                     })
                     .collect();
@@ -653,6 +656,7 @@ impl TryFrom<JsExtractionResult> for RustExtractionResult {
                         x1: bb.x1,
                         y1: bb.y1,
                     }),
+                    source_path: img.source_path,
                 });
             }
             Some(rust_images)
@@ -819,6 +823,8 @@ impl TryFrom<JsExtractionResult> for RustExtractionResult {
                     .collect()
             }),
             children: None,
+            uris: None,
+            formatted_content: None,
         })
     }
 }

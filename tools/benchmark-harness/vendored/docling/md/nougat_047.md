@@ -113,13 +113,13 @@ The public sector has participated through the financial supports, and shared so
 
 Scottish Enterprise and the Renewable Energy Investment Fund (REIF) - provided funding - £1.9 million grant.
 
-In the autumn 2016, Nova Innovation received a Horizon 2020's SME Instrument grant of € 2.25 million to develop a commercial demonstrator of Nova's innovative direct drive tidal turbine technology (Phase 2 of Shetland Array) to  develop a commercial demonstrator of Nova's innovative direct drive tidal turbine technology.
+In the autumn 2016, Nova Innovation received a Horizon 2020's SME Instrument grant of € 2.25 million to develop a commercial demonstrator of Nova's innovative direct drive tidal turbine technology (Phase 2 of Shetland Array) to develop a commercial demonstrator of Nova's innovative direct drive tidal turbine technology.
 
 ## Drivers and barriers
 
 The main drivers for this technology are related to the resource and its place-based potential by building on the previous development projects and lessons learnt:
 
--  The Highlands and Islands is home to one of the most dynamic tidal areas in the world - the Pentland Firth and Orkney waters. This area of sea off the northern coast of mainland Scotland, and including the waters around the Orkney Islands, contains 50% of the UK's tidal resource and 25% of Europe's tidal resource.  Some studies suggest that one-third of the UK's total electricity needs could be met by tidal power alone.
+-  The Highlands and Islands is home to one of the most dynamic tidal areas in the world - the Pentland Firth and Orkney waters. This area of sea off the northern coast of mainland Scotland, and including the waters around the Orkney Islands, contains 50% of the UK's tidal resource and 25% of Europe's tidal resource. Some studies suggest that one-third of the UK's total electricity needs could be met by tidal power alone.
 -  Shetland is an island and as it is the case with many islands in the NPA region, the drivers for an energy project include power stability, reliability (security of supply) and lowering the costs of electricity.
 -  An acknowledged barrier associated with the technology is connected with tidal cycles and turbine efficiency. The load factor of a conventional tidal barrage is around 25%, which leads to high cost of energy.
 
@@ -142,10 +142,10 @@ There are also several identified barriers for the technology transfers, as foll
 -  Financial Risks (high upfront costs) - shortage of upfront capital investment for the technology development and pilot array demonstration, which is further amplified by the absence of longterm transparency on revenue supports.
 -  Ecological implications - Deficiency of data to effectively evaluate impacts on the marine environment, is a challenge for authorities to provide consent for development of tidal projects.
 -  Technology risk - reservations concerning survivability, dependability and cost saving potential, especially for those designed for offshore operations in harsh environments.
--  Grid risk (location and connectivity issues) -  Peripheral/remote/isolated positioning of many of the areas with good potential, means substantial chunks of investment are needed for grid reinforcement, to guarantee energy generated, feeds into them.
+-  Grid risk (location and connectivity issues) - Peripheral/remote/isolated positioning of many of the areas with good potential, means substantial chunks of investment are needed for grid reinforcement, to guarantee energy generated, feeds into them.
 -  Technical risks in design, construction, installation and operation, lead to high costs. Costs need to be brought down to at least 50%, in order to be equivalent to offshore-wind energy generation costs.
 
-From a market development perspective, The Nova M100 (10 kW tidal turbine) has  the following benefits:
+From a market development perspective, The Nova M100 (10 kW tidal turbine) has the following benefits:
 
 -  Safe and reliable deployment and maintenance.
 -  High reliability: use of robust, proven off-the-shelf parts.
@@ -186,11 +186,11 @@ Nova Innovation Ltd
 
 Clockhouse, Bonnington Mill, 60-72 Newhaven Road, Leith, Edinburgh, EH6 5QG
 
-Tel:      +44 (0)131 554 2242
+Tel: +44 (0)131 554 2242
 
-Email:   info@novainnovation.com
+Email: <info@novainnovation.com>
 
-Website: www.novainnovation.com
+Website: <https://www.novainnovation.com>
 
 <!-- image -->
 

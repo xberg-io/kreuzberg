@@ -211,7 +211,7 @@ fn test_config_with_all_output_formats() {
 
     for format in formats {
         let config = kreuzberg::core::config::ExtractionConfig {
-            output_format: format,
+            output_format: format.clone(),
             ..kreuzberg::core::config::ExtractionConfig::default()
         };
 

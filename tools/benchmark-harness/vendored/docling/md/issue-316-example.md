@@ -164,7 +164,7 @@ Items in the FW conflict scale were:
 
 ·
 
-- - - ·.-- Control
+- ·.-- Control
 
 ·-
 
@@ -368,7 +368,7 @@ The pressures of work and family are accelerating and families, who have traditi
 
 Dr Marie Wilson is Professor of Management at The University of Auckland Business School. Her research and teaching is focused on organizational and individual behaviour in the context of work, particularly on organizational citizenship and selection-attraction, as well as reactions to 'new' forms of work and career. In addition to her academic career, Dr Wilson has over 20 years
 
-experience in senior management roles, primarily in the IT industry. Dr Wilson is the corresponding author and can be contacted at: m.wilson@auckland.ac.nz
+experience in senior management roles, primarily in the IT industry. Dr Wilson is the corresponding author and can be contacted at: <m.wilson@auckland.ac.nz>
 
 Andrea Polzer-Debruyne is currently completing her PhD in Organisational Psychology at Massey University, Albany. She explores the limitations of the Theory of Planned Behaviour when explaining cyber-loafing at work. Andrea Polzer-Debruyne has lectured at Auckland University, Massey University and Auckland University of Technology in Human Resource Management and Organisational Psychology. She has an extensive working background in the areas of Human Resources and Training, and is co-author in several articles on work-life balance published in NZ practitioner journals.
 

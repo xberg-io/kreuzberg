@@ -7,7 +7,8 @@ use crate::core::config::ExtractionConfig;
 use crate::core::mime::LEGACY_WORD_MIME_TYPE;
 use crate::extraction::doc::extract_doc_text;
 use crate::plugins::{DocumentExtractor, Plugin};
-use crate::types::{ExtractionResult, Metadata};
+use crate::types::Metadata;
+use crate::types::internal::{ElementKind, InternalDocument, InternalElement};
 use ahash::AHashMap;
 use async_trait::async_trait;
 use std::borrow::Cow;
@@ -63,8 +64,8 @@ impl DocumentExtractor for DocExtractor {
         &self,
         content: &[u8],
         mime_type: &str,
-        config: &ExtractionConfig,
-    ) -> Result<ExtractionResult> {
+        _config: &ExtractionConfig,
+    ) -> Result<InternalDocument> {
         let result = {
             #[cfg(feature = "tokio-runtime")]
             if crate::core::batch_mode::is_batch_mode() {
@@ -84,24 +85,22 @@ impl DocumentExtractor for DocExtractor {
             extract_doc_text(content)
         }?;
 
+        let mut doc = InternalDocument::new("doc");
+        doc.mime_type = Cow::Owned(mime_type.to_string());
+
         let mut metadata_map = AHashMap::new();
 
-        if let Some(title) = result.metadata.title {
-            metadata_map.insert(Cow::Borrowed("title"), serde_json::Value::String(title));
-        }
-        if let Some(author) = result.metadata.author {
-            metadata_map.insert(
-                Cow::Borrowed("authors"),
-                serde_json::Value::Array(vec![serde_json::Value::String(author.clone())]),
-            );
-            metadata_map.insert(Cow::Borrowed("created_by"), serde_json::Value::String(author));
-        }
-        if let Some(subject) = result.metadata.subject {
-            metadata_map.insert(Cow::Borrowed("subject"), serde_json::Value::String(subject));
-        }
-        if let Some(last_author) = result.metadata.last_author {
-            metadata_map.insert(Cow::Borrowed("modified_by"), serde_json::Value::String(last_author));
-        }
+        let meta_title = result.metadata.title;
+        let meta_subject = result.metadata.subject;
+
+        let (meta_authors, meta_created_by) = if let Some(author) = result.metadata.author {
+            (Some(vec![author.clone()]), Some(author))
+        } else {
+            (None, None)
+        };
+
+        let meta_modified_by = result.metadata.last_author;
+
         if let Some(revision) = result.metadata.revision_number {
             metadata_map.insert(Cow::Borrowed("revision"), serde_json::Value::String(revision));
         }
@@ -111,63 +110,43 @@ impl DocumentExtractor for DocExtractor {
             serde_json::Value::String("native_ole".to_string()),
         );
 
-        let document = if config.include_document_structure {
-            use crate::types::builder::DocumentStructureBuilder;
-            let mut builder = DocumentStructureBuilder::new().source_format("doc");
-
-            let paragraphs: Vec<&str> = result.text.split("\n\n").collect();
-            for (i, paragraph) in paragraphs.iter().enumerate() {
-                let trimmed = paragraph.trim();
-                if trimmed.is_empty() {
-                    continue;
-                }
-
-                // Heuristic heading detection:
-                // A short paragraph (<=80 chars, single line, no trailing period)
-                // followed by a longer paragraph is likely a heading.
-                let is_single_line = !trimmed.contains('\n');
-                let is_short = trimmed.len() <= 80;
-                let no_trailing_punct = !trimmed.ends_with('.') && !trimmed.ends_with(':') && !trimmed.ends_with(';');
-                let next_is_longer = paragraphs.get(i + 1).is_some_and(|next| {
-                    let next_trimmed = next.trim();
-                    !next_trimmed.is_empty() && next_trimmed.len() > trimmed.len()
-                });
-
-                if is_single_line && is_short && no_trailing_punct && next_is_longer {
-                    // Heuristic: treat as heading level 2 (we can't know the real level)
-                    builder.push_heading(2, trimmed, None, None);
-                } else {
-                    builder.push_paragraph(trimmed, vec![], None, None);
-                }
-            }
-            Some(builder.build())
-        } else {
-            None
+        doc.metadata = Metadata {
+            title: meta_title,
+            subject: meta_subject,
+            authors: meta_authors,
+            created_by: meta_created_by,
+            modified_by: meta_modified_by,
+            additional: metadata_map,
+            ..Default::default()
         };
 
-        Ok(ExtractionResult {
-            content: result.text,
-            mime_type: mime_type.to_string().into(),
-            metadata: Metadata {
-                additional: metadata_map,
-                ..Default::default()
-            },
-            pages: None,
-            tables: vec![],
-            detected_languages: None,
-            chunks: None,
-            images: Some(vec![]),
-            djot_content: None,
-            elements: None,
-            ocr_elements: None,
-            document,
-            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-            extracted_keywords: None,
-            quality_score: None,
-            processing_warnings: Vec::new(),
-            annotations: None,
-            children: None,
-        })
+        // Build elements from the extracted text
+        let paragraphs: Vec<&str> = result.text.split("\n\n").collect();
+        for (i, paragraph) in paragraphs.iter().enumerate() {
+            let trimmed = paragraph.trim();
+            if trimmed.is_empty() {
+                continue;
+            }
+
+            // Heuristic heading detection:
+            // A short paragraph (<=80 chars, single line, no trailing period)
+            // followed by a longer paragraph is likely a heading.
+            let is_single_line = !trimmed.contains('\n');
+            let is_short = trimmed.len() <= 80;
+            let no_trailing_punct = !trimmed.ends_with('.') && !trimmed.ends_with(':') && !trimmed.ends_with(';');
+            let next_is_longer = paragraphs.get(i + 1).is_some_and(|next| {
+                let next_trimmed = next.trim();
+                !next_trimmed.is_empty() && next_trimmed.len() > trimmed.len()
+            });
+
+            if is_single_line && is_short && no_trailing_punct && next_is_longer {
+                doc.push_element(InternalElement::text(ElementKind::Heading { level: 2 }, trimmed, 0));
+            } else {
+                doc.push_element(InternalElement::text(ElementKind::Paragraph, trimmed, 0));
+            }
+        }
+
+        Ok(doc)
     }
 
     fn supported_mime_types(&self) -> &[&str] {
@@ -213,6 +192,8 @@ mod tests {
             .extract_bytes(&content, "application/msword", &config)
             .await
             .expect("DOC extraction failed");
+        let result =
+            crate::extraction::derive::derive_extraction_result(result, true, crate::core::config::OutputFormat::Plain);
         assert!(!result.content.is_empty(), "Should extract text from DOC");
         assert_eq!(&*result.mime_type, "application/msword");
     }
@@ -234,6 +215,8 @@ mod tests {
             .extract_bytes(&content, "application/msword", &config)
             .await
             .expect("DOC extraction failed");
+        let result =
+            crate::extraction::derive::derive_extraction_result(result, true, crate::core::config::OutputFormat::Plain);
         assert!(result.document.is_some(), "Should produce document structure for DOC");
         let doc = result.document.unwrap();
         assert!(!doc.nodes.is_empty(), "Document structure should have nodes");
@@ -257,6 +240,8 @@ mod tests {
             .extract_bytes(&content, "application/msword", &config)
             .await
             .expect("DOC extraction failed");
+        let result =
+            crate::extraction::derive::derive_extraction_result(result, true, crate::core::config::OutputFormat::Plain);
         assert!(result.document.is_some(), "Should produce document structure");
         let doc = result.document.unwrap();
         // Should have at least one paragraph node

@@ -18,14 +18,16 @@ pub use format::apply_output_format;
 use crate::Result;
 use crate::core::config::ExtractionConfig;
 use crate::types::ExtractionResult;
+use crate::types::internal::InternalDocument;
 
 use execution::{execute_processors, execute_validators};
 use features::{execute_chunking, execute_language_detection, execute_token_reduction};
 use initialization::{get_processors_from_cache, initialize_features, initialize_processor_cache};
 
-/// Run the post-processing pipeline on an extraction result.
+/// Run the post-processing pipeline on an `InternalDocument`.
 ///
-/// Executes post-processing in the following order:
+/// Derives `ExtractionResult` from `InternalDocument` via the derivation pipeline,
+/// then executes post-processing in the following order:
 /// 1. Post-Processors - Execute by stage (Early, Middle, Late) to modify/enhance the result
 /// 2. Quality Processing - Text cleaning and quality scoring
 /// 3. Chunking - Text splitting if enabled
@@ -33,7 +35,7 @@ use initialization::{get_processors_from_cache, initialize_features, initialize_
 ///
 /// # Arguments
 ///
-/// * `result` - The extraction result to process
+/// * `doc` - The internal document produced by the extractor
 /// * `config` - Extraction configuration
 ///
 /// # Returns
@@ -46,13 +48,66 @@ use initialization::{get_processors_from_cache, initialize_features, initialize_
 /// - Post-processor errors are caught and recorded in metadata
 /// - System errors (IO, RuntimeError equivalents) always bubble up
 #[cfg_attr(feature = "otel", tracing::instrument(
-    skip(result, config),
+    skip(doc, config),
     fields(
         pipeline.stage = "post_processing",
-        content.length = result.content.len(),
+        content.element_count = doc.elements.len(),
     )
 ))]
-pub async fn run_pipeline(mut result: ExtractionResult, config: &ExtractionConfig) -> Result<ExtractionResult> {
+pub async fn run_pipeline(doc: InternalDocument, config: &ExtractionConfig) -> Result<ExtractionResult> {
+    // Pre-render markdown for the chunker's heading context resolution when:
+    // - Markdown chunking is configured
+    // - Output format is not already Markdown (which would produce formatted_content anyway)
+    // Plain-text rendering strips heading markers, so the markdown chunker needs
+    // a separate markdown rendering to build the heading hierarchy for chunk metadata.
+    #[cfg(feature = "chunking")]
+    let chunker_heading_source = {
+        let needs_markdown = config.chunking.as_ref().is_some_and(|c| {
+            c.chunker_type == crate::core::config::ChunkerType::Markdown
+                || c.resolve_preset().chunker_type == crate::core::config::ChunkerType::Markdown
+        }) && config.output_format == crate::core::config::OutputFormat::Plain;
+        if needs_markdown {
+            Some(crate::rendering::render_markdown(&doc))
+        } else {
+            None
+        }
+    };
+
+    // 1. Derive ExtractionResult from InternalDocument
+    let include_structure = config.include_document_structure;
+    let mut result =
+        crate::extraction::derive::derive_extraction_result(doc, include_structure, config.output_format.clone());
+
+    // 1.5. Process extracted images with OCR if configured
+    #[cfg(all(feature = "ocr", feature = "tokio-runtime"))]
+    if config.ocr.is_some() && result.images.as_ref().is_some_and(|imgs| !imgs.is_empty()) {
+        let images_to_process = result.images.take().unwrap_or_default();
+        match crate::extraction::image_ocr::process_images_with_ocr(images_to_process, config).await {
+            Ok(processed) => {
+                result.images = if processed.is_empty() { None } else { Some(processed) };
+            }
+            Err(e) => {
+                result
+                    .processing_warnings
+                    .push(crate::types::extraction::ProcessingWarning {
+                        source: std::borrow::Cow::Borrowed("image_ocr"),
+                        message: std::borrow::Cow::Owned(format!("Image OCR failed: {e}")),
+                    });
+            }
+        }
+    }
+
+    // Temporarily store pre-rendered markdown for chunker heading context.
+    // Tracked separately so we can remove it after chunking — apply_output_format
+    // must not swap this into result.content when output_format is Plain.
+    #[cfg(feature = "chunking")]
+    let chunker_only_markdown = result.formatted_content.is_none();
+    #[cfg(feature = "chunking")]
+    if chunker_only_markdown && let Some(md) = chunker_heading_source {
+        result.formatted_content = Some(md);
+    }
+
+    // 2. Run post-processing pipeline
     let pp_config = config.postprocessor.as_ref();
     let postprocessing_enabled = pp_config.is_none_or(|c| c.enabled);
 
@@ -74,38 +129,23 @@ pub async fn run_pipeline(mut result: ExtractionResult, config: &ExtractionConfi
     }
 
     execute_chunking(&mut result, config)?;
+
+    // Clear temporary markdown if it was only stored for chunker heading context.
+    // This prevents apply_output_format from swapping it into result.content.
+    #[cfg(feature = "chunking")]
+    if chunker_only_markdown {
+        result.formatted_content = None;
+    }
+
     execute_language_detection(&mut result, config)?;
     execute_token_reduction(&mut result, config)?;
     execute_validators(&result, config).await?;
 
-    // Transform to element-based output if requested
-    if config.result_format == crate::types::OutputFormat::ElementBased {
-        result.elements = Some(crate::extraction::transform::transform_extraction_result_to_elements(
-            &result,
-        ));
-    }
-
-    // Transform to structured document tree if requested (only if not already populated by extractor)
-    if config.include_document_structure && result.document.is_none() {
-        result.document = Some(crate::extraction::transform::transform_to_document_structure(&result));
-    }
-
-    // Apply NFC unicode normalization to all text content.
-    // This ensures consistent representation of composed characters (e.g., é vs e+combining accent)
-    // across all extraction backends (PDF, OCR, DOCX, HTML, etc.).
-    #[cfg(feature = "quality")]
-    {
-        use unicode_normalization::UnicodeNormalization;
-        result.content = result.content.nfc().collect();
-        if let Some(pages) = result.pages.as_mut() {
-            for page in pages.iter_mut() {
-                page.content = page.content.nfc().collect();
-            }
-        }
-    }
+    apply_element_transform(&mut result, config);
+    normalize_nfc(&mut result);
 
     // Apply output format conversion as the final step
-    apply_output_format(&mut result, config.output_format);
+    apply_output_format(&mut result, config.output_format.clone());
 
     Ok(result)
 }
@@ -118,7 +158,7 @@ pub async fn run_pipeline(mut result: ExtractionResult, config: &ExtractionConfi
 ///
 /// # Arguments
 ///
-/// * `result` - The extraction result to process
+/// * `doc` - The internal document produced by the extractor
 /// * `config` - Extraction configuration
 ///
 /// # Returns
@@ -137,24 +177,69 @@ pub async fn run_pipeline(mut result: ExtractionResult, config: &ExtractionConfi
 /// - Async post-processors
 /// - Async validators
 #[cfg(not(feature = "tokio-runtime"))]
-pub fn run_pipeline_sync(mut result: ExtractionResult, config: &ExtractionConfig) -> Result<ExtractionResult> {
+pub fn run_pipeline_sync(doc: InternalDocument, config: &ExtractionConfig) -> Result<ExtractionResult> {
+    // Pre-render markdown for chunker heading context (same logic as async path).
+    #[cfg(feature = "chunking")]
+    let chunker_heading_source = {
+        let needs_markdown = config.chunking.as_ref().is_some_and(|c| {
+            c.chunker_type == crate::core::config::ChunkerType::Markdown
+                || c.resolve_preset().chunker_type == crate::core::config::ChunkerType::Markdown
+        }) && config.output_format == crate::core::config::OutputFormat::Plain;
+        if needs_markdown {
+            Some(crate::rendering::render_markdown(&doc))
+        } else {
+            None
+        }
+    };
+
+    // 1. Derive ExtractionResult from InternalDocument
+    let include_structure = config.include_document_structure;
+    let mut result =
+        crate::extraction::derive::derive_extraction_result(doc, include_structure, config.output_format.clone());
+
+    #[cfg(feature = "chunking")]
+    let chunker_only_markdown = result.formatted_content.is_none();
+    #[cfg(feature = "chunking")]
+    if chunker_only_markdown {
+        if let Some(md) = chunker_heading_source {
+            result.formatted_content = Some(md);
+        }
+    }
+
+    // 2. Run synchronous post-processing
     execute_chunking(&mut result, config)?;
+
+    #[cfg(feature = "chunking")]
+    if chunker_only_markdown {
+        result.formatted_content = None;
+    }
+
     execute_language_detection(&mut result, config)?;
     execute_token_reduction(&mut result, config)?;
 
-    // Transform to element-based output if requested
+    apply_element_transform(&mut result, config);
+    normalize_nfc(&mut result);
+
+    // Apply output format conversion as the final step
+    apply_output_format(&mut result, config.output_format.clone());
+
+    Ok(result)
+}
+
+/// Transform to element-based output if requested by the config.
+fn apply_element_transform(result: &mut ExtractionResult, config: &ExtractionConfig) {
     if config.result_format == crate::types::OutputFormat::ElementBased {
         result.elements = Some(crate::extraction::transform::transform_extraction_result_to_elements(
-            &result,
+            result,
         ));
     }
+}
 
-    // Transform to structured document tree if requested (only if not already populated by extractor)
-    if config.include_document_structure && result.document.is_none() {
-        result.document = Some(crate::extraction::transform::transform_to_document_structure(&result));
-    }
-
-    // Apply NFC unicode normalization to all text content.
+/// Apply NFC unicode normalization to all text content.
+///
+/// Ensures consistent representation of composed characters (e.g., é vs e+combining accent)
+/// across all extraction backends (PDF, OCR, DOCX, HTML, etc.).
+fn normalize_nfc(result: &mut ExtractionResult) {
     #[cfg(feature = "quality")]
     {
         use unicode_normalization::UnicodeNormalization;
@@ -165,9 +250,6 @@ pub fn run_pipeline_sync(mut result: ExtractionResult, config: &ExtractionConfig
             }
         }
     }
-
-    // Apply output format conversion as the final step
-    apply_output_format(&mut result, config.output_format);
-
-    Ok(result)
+    // Suppress unused variable warning when quality feature is disabled
+    let _ = result;
 }

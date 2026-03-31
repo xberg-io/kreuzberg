@@ -281,6 +281,115 @@ pub fn extract_text_from_iwa_files(content: &[u8], iwa_paths: &[&str]) -> Result
     Ok(all_text.join("\n"))
 }
 
+/// Extract metadata from an iWork ZIP archive.
+///
+/// Attempts to read `Metadata/Properties.plist` and
+/// `Metadata/BuildVersionHistory.plist` from the ZIP. These files are XML plists
+/// containing authorship and creation information. If the files cannot be read
+/// or parsed, an empty `Metadata` is returned.
+pub fn extract_metadata_from_zip(content: &[u8]) -> crate::types::metadata::Metadata {
+    let cursor = Cursor::new(content);
+    let Ok(mut archive) = zip::ZipArchive::new(cursor) else {
+        return crate::types::metadata::Metadata::default();
+    };
+
+    let mut metadata = crate::types::metadata::Metadata::default();
+
+    // Try to read Metadata/Properties.plist (XML plist with doc metadata)
+    if let Ok(mut file) = archive.by_name("Metadata/Properties.plist") {
+        let mut buf = Vec::new();
+        if file.read_to_end(&mut buf).is_ok()
+            && let Ok(text) = std::str::from_utf8(&buf)
+        {
+            parse_plist_metadata(text, &mut metadata);
+        }
+    }
+
+    // Try to read Metadata/DocumentIdentifier from the ZIP
+    // (some iWork files store the doc title here)
+    if let Ok(mut file) = archive.by_name("Metadata/DocumentIdentifier") {
+        let mut buf = Vec::new();
+        if file.read_to_end(&mut buf).is_ok()
+            && let Ok(text) = std::str::from_utf8(&buf)
+        {
+            let trimmed = text.trim();
+            if !trimmed.is_empty() && metadata.title.is_none() {
+                metadata.title = Some(trimmed.to_string());
+            }
+        }
+    }
+
+    metadata
+}
+
+/// Parse metadata fields from an XML plist string.
+///
+/// iWork plist metadata uses `<key>...</key><string>...</string>` pairs.
+/// We extract known keys: title, author, keywords, language.
+fn parse_plist_metadata(plist: &str, metadata: &mut crate::types::metadata::Metadata) {
+    // Simple key/value extraction from XML plist without a full XML parser.
+    // The format is: <key>NAME</key>\n<string>VALUE</string>
+    let lines: Vec<&str> = plist.lines().map(|l| l.trim()).collect();
+    let mut i = 0;
+    while i < lines.len() {
+        if let Some(key) = extract_plist_tag(lines[i], "key") {
+            // Look at the next non-empty line for the value
+            let mut j = i + 1;
+            while j < lines.len() && lines[j].is_empty() {
+                j += 1;
+            }
+            if j < lines.len()
+                && let Some(value) = extract_plist_tag(lines[j], "string")
+            {
+                match key.as_str() {
+                    "title" | "Title" => {
+                        if metadata.title.is_none() {
+                            metadata.title = Some(value);
+                        }
+                    }
+                    "author" | "Author" | "creator" | "Creator" => {
+                        let authors = metadata.authors.get_or_insert_with(Vec::new);
+                        if !authors.contains(&value) {
+                            authors.push(value);
+                        }
+                    }
+                    "keywords" | "Keywords" => {
+                        let kw = metadata.keywords.get_or_insert_with(Vec::new);
+                        for word in value.split(',') {
+                            let trimmed = word.trim().to_string();
+                            if !trimmed.is_empty() && !kw.contains(&trimmed) {
+                                kw.push(trimmed);
+                            }
+                        }
+                    }
+                    "language" | "Language" => {
+                        if metadata.language.is_none() {
+                            metadata.language = Some(value);
+                        }
+                    }
+                    _ => {}
+                }
+                i = j + 1;
+                continue;
+            }
+        }
+        i += 1;
+    }
+}
+
+/// Extract the text content of a simple XML tag, e.g. `<string>value</string>`.
+fn extract_plist_tag(line: &str, tag: &str) -> Option<String> {
+    let open = format!("<{tag}>");
+    let close = format!("</{tag}>");
+    if let Some(start) = line.find(&open)
+        && let Some(end) = line.find(&close)
+    {
+        let content = &line[start + open.len()..end];
+        return Some(content.to_string());
+    }
+    None
+}
+
 /// Deduplicate a list of text strings while preserving order.
 /// Adjacent duplicates and near-duplicates are removed.
 pub fn dedup_text(texts: Vec<String>) -> Vec<String> {

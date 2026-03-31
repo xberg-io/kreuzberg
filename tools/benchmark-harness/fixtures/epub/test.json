@@ -1,15 +1,23 @@
 {
-	"document": "../../../../test_documents/vendored/markitdown/epub/test.epub",
-	"file_type": "epub",
-	"file_size": 2677,
-	"expected_frameworks": ["kreuzberg", "markitdown", "pandoc", "pymupdf4llm", "tika", "unstructured"],
-	"metadata": {
-		"description": "Document from markitdown test suite",
-		"source": "markitdown",
-		"size_category": "small"
-	},
-	"ground_truth": {
-		"text_file": "../../../../test_documents/ground_truth/epub/test.txt",
-		"source": "vision"
-	}
+  "document": "../../../../test_documents/vendored/markitdown/epub/test.epub",
+  "file_type": "epub",
+  "file_size": 2677,
+  "expected_frameworks": [
+    "kreuzberg",
+    "markitdown",
+    "pandoc",
+    "pymupdf4llm",
+    "tika",
+    "unstructured"
+  ],
+  "metadata": {
+    "description": "Document from markitdown test suite",
+    "source": "markitdown",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/epub/test.txt",
+    "source": "pandoc",
+    "markdown_file": "../../../../test_documents/ground_truth/epub/test.md"
+  }
 }

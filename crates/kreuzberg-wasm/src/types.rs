@@ -7,6 +7,7 @@ use kreuzberg::{
     ExtractionConfig, ExtractionResult,
     utils::{camel_to_snake, snake_to_camel},
 };
+use serde_json;
 use wasm_bindgen::prelude::*;
 
 /// Parse extraction configuration from JsValue using serde-wasm-bindgen.

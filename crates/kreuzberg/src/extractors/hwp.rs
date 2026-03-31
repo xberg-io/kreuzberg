@@ -6,7 +6,8 @@
 use crate::Result;
 use crate::core::config::ExtractionConfig;
 use crate::plugins::{DocumentExtractor, Plugin};
-use crate::types::{ExtractionResult, Metadata};
+use crate::types::internal::InternalDocument;
+use crate::types::internal_builder::InternalDocumentBuilder;
 use async_trait::async_trait;
 
 /// Extractor for Hangul Word Processor (.hwp) files.
@@ -57,6 +58,20 @@ fn extract_hwp_content(content: &[u8]) -> Result<String> {
         .map_err(|e| crate::KreuzbergError::parsing(format!("Failed to read HWP file: {e}")))
 }
 
+/// Build an `InternalDocument` from HWP extracted text.
+///
+/// Splits on double-newlines into paragraphs.
+fn build_hwp_internal_document(text: &str) -> InternalDocument {
+    let mut builder = InternalDocumentBuilder::new("hwp");
+    for paragraph in text.split("\n\n") {
+        let trimmed = paragraph.trim();
+        if !trimmed.is_empty() {
+            builder.push_paragraph(trimmed, vec![], None, None);
+        }
+    }
+    builder.build()
+}
+
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
 impl DocumentExtractor for HwpExtractor {
@@ -64,44 +79,12 @@ impl DocumentExtractor for HwpExtractor {
         &self,
         content: &[u8],
         mime_type: &str,
-        config: &ExtractionConfig,
-    ) -> Result<ExtractionResult> {
+        _config: &ExtractionConfig,
+    ) -> Result<InternalDocument> {
         let text = extract_hwp_content(content)?;
-
-        let document = if config.include_document_structure {
-            use crate::types::builder::DocumentStructureBuilder;
-            let mut builder = DocumentStructureBuilder::new().source_format("hwp");
-            for paragraph in text.split("\n\n") {
-                let trimmed = paragraph.trim();
-                if !trimmed.is_empty() {
-                    builder.push_paragraph(trimmed, vec![], None, None);
-                }
-            }
-            Some(builder.build())
-        } else {
-            None
-        };
-
-        Ok(ExtractionResult {
-            content: text,
-            mime_type: mime_type.to_string().into(),
-            metadata: Metadata::default(),
-            pages: None,
-            tables: vec![],
-            detected_languages: None,
-            chunks: None,
-            images: Some(vec![]),
-            djot_content: None,
-            elements: None,
-            ocr_elements: None,
-            document,
-            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-            extracted_keywords: None,
-            quality_score: None,
-            processing_warnings: Vec::new(),
-            annotations: None,
-            children: None,
-        })
+        let mut doc = build_hwp_internal_document(&text);
+        doc.mime_type = std::borrow::Cow::Owned(mime_type.to_string());
+        Ok(doc)
     }
 
     fn supported_mime_types(&self) -> &[&str] {

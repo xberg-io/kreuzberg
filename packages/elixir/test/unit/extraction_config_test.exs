@@ -456,13 +456,13 @@ defmodule KreuzbergTest.Unit.ExtractionConfigTest do
     test "preserves nested maps in plain map" do
       input = %{
         "chunking" => %{"size" => 512},
-        ocr: %{"enabled" => true}
+        ocr: %{"backend" => "tesseract"}
       }
 
       result = ExtractionConfig.to_map(input)
 
       assert result["chunking"] == %{"size" => 512}
-      assert result["ocr"] == %{"enabled" => true}
+      assert result["ocr"] == %{"backend" => "tesseract"}
     end
 
     @tag :unit

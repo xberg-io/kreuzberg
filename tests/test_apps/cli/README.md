@@ -5,6 +5,7 @@ Tests the published `kreuzberg-cli` crate from crates.io via `cargo install`.
 ## Purpose
 
 Validates that users can install and use the Kreuzberg CLI tool from crates.io:
+
 - Installation via `cargo install kreuzberg-cli`
 - CLI extraction commands
 - HTTP API server
@@ -44,11 +45,13 @@ cd tests/test_apps/cli
 ## Test Coverage
 
 ### Installation (`tests/install.sh`)
+
 - Install via `cargo install kreuzberg-cli`
 - Verify binary is in PATH
 - Check version output
 
 ### Extraction (`tests/test-extract.sh`)
+
 - Extract text from PDF
 - Extract text from DOCX
 - Extract text from XLSX
@@ -58,12 +61,14 @@ cd tests/test_apps/cli
 - Error handling (invalid files, missing files)
 
 ### HTTP API Server (`tests/test-serve.sh`)
+
 - Start server on custom port
 - POST /extract endpoint
 - Health check endpoint
 - Graceful shutdown
 
 ### MCP Server (`tests/test-mcp.sh`)
+
 - Start MCP server
 - Tool discovery
 - Document extraction via MCP protocol

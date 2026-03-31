@@ -117,7 +117,6 @@ public final class KreuzbergFFI {
 	public static final MethodHandle KREUZBERG_PDF_PAGE_ITERATOR_PAGE_COUNT;
 	public static final MethodHandle KREUZBERG_PDF_PAGE_ITERATOR_FREE;
 	public static final MethodHandle KREUZBERG_PDF_PAGE_ITERATOR_FREE_RESULT;
-
 	public static final StructLayout C_EXTRACTION_RESULT_LAYOUT = MemoryLayout.structLayout(
 			ValueLayout.ADDRESS.withName("annotations_json"), ValueLayout.ADDRESS.withName("chunks_json"),
 			ValueLayout.ADDRESS.withName("content"), ValueLayout.ADDRESS.withName("date"),
@@ -129,8 +128,8 @@ public final class KreuzbergFFI {
 			ValueLayout.ADDRESS.withName("page_structure_json"), ValueLayout.ADDRESS.withName("pages_json"),
 			ValueLayout.ADDRESS.withName("processing_warnings_json"),
 			ValueLayout.ADDRESS.withName("quality_score_json"), ValueLayout.ADDRESS.withName("subject"),
-			ValueLayout.ADDRESS.withName("tables_json"), ValueLayout.JAVA_BOOLEAN.withName("success"),
-			MemoryLayout.paddingLayout(7));
+			ValueLayout.ADDRESS.withName("tables_json"), ValueLayout.ADDRESS.withName("uris_json"),
+			ValueLayout.JAVA_BOOLEAN.withName("success"), MemoryLayout.paddingLayout(7));
 
 	public static final long CONTENT_OFFSET = C_EXTRACTION_RESULT_LAYOUT
 			.byteOffset(MemoryLayout.PathElement.groupElement("content"));
@@ -172,6 +171,8 @@ public final class KreuzbergFFI {
 			.byteOffset(MemoryLayout.PathElement.groupElement("annotations_json"));
 	public static final long DJOT_CONTENT_JSON_OFFSET = C_EXTRACTION_RESULT_LAYOUT
 			.byteOffset(MemoryLayout.PathElement.groupElement("djot_content_json"));
+	public static final long URIS_JSON_OFFSET = C_EXTRACTION_RESULT_LAYOUT
+			.byteOffset(MemoryLayout.PathElement.groupElement("uris_json"));
 	public static final long SUCCESS_OFFSET = C_EXTRACTION_RESULT_LAYOUT
 			.byteOffset(MemoryLayout.PathElement.groupElement("success"));
 
@@ -434,6 +435,7 @@ public final class KreuzbergFFI {
 			KREUZBERG_PDF_PAGE_ITERATOR_FREE_RESULT = linkFunction(
 					"kreuzberg_pdf_page_iterator_free_result",
 					FunctionDescriptor.ofVoid(ValueLayout.ADDRESS));
+
 		} catch (Exception e) {
 			throw new ExceptionInInitializerError(e);
 		}

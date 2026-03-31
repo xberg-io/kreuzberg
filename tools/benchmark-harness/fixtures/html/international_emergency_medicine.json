@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/html/international_emergency_medicine.html",
+  "file_type": "html",
+  "file_size": 352033,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "html test: international_emergency_medicine",
+    "source": "pandoc-generated",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/html/international_emergency_medicine.txt",
+    "markdown_file": "../../../../test_documents/ground_truth/html/international_emergency_medicine.md",
+    "source": "pandoc"
+  }
+}

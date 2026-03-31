@@ -1,68 +1,68 @@
 ## A Brief Introduction to the Standard Annotation Language (SAL)
 
-18-May-2006 Michael Howard http://blogs.msdn.com/michael\_howard
+18-May-2006 Michael Howard <http://blogs.msdn.com/michael>\_howard
 
 ## Introduction
 
-Even though a prior blog I wrote 'Code  Scanni ng  Tool s  Do  N ot   m ake  Sof t w ar e  Secur e'  at http://blogs.msdn.com/michael\_howard/archive/2006/01/26/517975.aspx may have left some thinking I   don' t   l i ke  s t at i c  anal ys i s   t ool s ,   nothi ng  coul d  be  f arther from the truth. In fact, there is a code analysis technology designed by Microsoft Research which is included with Visual Studio 2005 that I simply love, and that is the Standard Annotation Language, or SAL. SAL is a meta-language that can help static analysis tools, such as the /analyze switch in Visual Studio 2005 Team System and Visual Studio 2005 Team Edition for Developers, find bugs- including security bugs- in your C or C++ code at compile time. Using SAL is relatively easy. You simply add annotations to your function prototypes that describe more contextual information about the function being annotated. This can include annotations to function arguments and to function return values. The initial focus of SAL is to annotate functions that manipulate read and write buffers. In Windows Vista we are annotating all appropriate functions before the product is released to customers to help us find bugs as early as possible. The main benefit of SAL is that you can find more bugs with just a little bit of upfront work.  We have found that the process of adding SAL annotations to existing code can also find bugs as the developer questions the assumptions previously made about how the function being annotated works. By this I mean that as a developer adds annotations to a function, she must think about how the function works in more detail than simply assuming it was written correctly. This process finds assumption flaws. Any bugs found in SAL annotated functions tend to be real bugs, not false positives, which has the benefit of speedier bug triage and code fixes. Finally, SAL is highly leveraged; when you annotate a function, any code that calls that function will get the benefit of the annotation. To this end, we have annotated the majority of C Runtime functions included with Visual Studio 2005 and the Windows SDK functions. Over time we will add more annotations to more functions to help find bugs in code written to use the functions. In short, this means you will get the benefit of the annotations added by Microsoft, and you might find bugs in your code!
+Even though a prior blog I wrote 'Code Scanni ng Tool s Do N ot m ake Sof t w ar e Secur e' at <http://blogs.msdn.com/michael>\_howard/archive/2006/01/26/517975.aspx may have left some thinking I don' t l i ke s t at i c anal ys i s t ool s , nothi ng coul d be f arther from the truth. In fact, there is a code analysis technology designed by Microsoft Research which is included with Visual Studio 2005 that I simply love, and that is the Standard Annotation Language, or SAL. SAL is a meta-language that can help static analysis tools, such as the /analyze switch in Visual Studio 2005 Team System and Visual Studio 2005 Team Edition for Developers, find bugs- including security bugs- in your C or C++ code at compile time. Using SAL is relatively easy. You simply add annotations to your function prototypes that describe more contextual information about the function being annotated. This can include annotations to function arguments and to function return values. The initial focus of SAL is to annotate functions that manipulate read and write buffers. In Windows Vista we are annotating all appropriate functions before the product is released to customers to help us find bugs as early as possible. The main benefit of SAL is that you can find more bugs with just a little bit of upfront work. We have found that the process of adding SAL annotations to existing code can also find bugs as the developer questions the assumptions previously made about how the function being annotated works. By this I mean that as a developer adds annotations to a function, she must think about how the function works in more detail than simply assuming it was written correctly. This process finds assumption flaws. Any bugs found in SAL annotated functions tend to be real bugs, not false positives, which has the benefit of speedier bug triage and code fixes. Finally, SAL is highly leveraged; when you annotate a function, any code that calls that function will get the benefit of the annotation. To this end, we have annotated the majority of C Runtime functions included with Visual Studio 2005 and the Windows SDK functions. Over time we will add more annotations to more functions to help find bugs in code written to use the functions. In short, this means you will get the benefit of the annotations added by Microsoft, and you might find bugs in your code!
 
 ## Digging Deeper
 
-Let   m e  gi ve  an  exam pl e  of   w hat   SAL  can  do.   Let ' s   s ay  you  have  a  C/C++ function like this:
+Let m e gi ve an exam pl e of w hat SAL can do. Let ' s s ay you have a C/C++ function like this:
 
-```
+```text
 void FillString( TCHAR* buf, size_t cchBuf,
 ```
 
-```
+```text
 char ch) { for (size_t i = 0; i < cchBuf; i++)   { buf[i] = ch; } }
 ```
 
-I   w on' t   i ns ul t   your  i nt el l i gence  by  expl ai ni ng  w hat   the function does, but what makes this code interesting is that two of the arguments, buf and cchBuf, are tied at the hip; buf should be at least cchBuf characters long. If buf is not as big as cchBuf claims it is, then FillString could overflow the buf buffer.
+I w on' t i ns ul t your i nt el l i gence by expl ai ni ng w hat the function does, but what makes this code interesting is that two of the arguments, buf and cchBuf, are tied at the hip; buf should be at least cchBuf characters long. If buf is not as big as cchBuf claims it is, then FillString could overflow the buf buffer.
 
 If you compile the code below with Visual Studio 2005, at warning level 4 (/W4) you will see no warnings and no errors, yet there is clearly a buffer overrun vulnerability in this code.
 
-```
+```text
 TCHAR *b = (TCHAR*)malloc(200*sizeof(TCHAR)); FillString(b,210,'x');
 ```
 
 What SAL does is allow a C or C++ developer to inform the compiler of the relationship between the two arguments, buf and cchBuf, using syntax such as this:
 
-```
+```text
 void FillString( __out_ecount(cchBuf) TCHAR* buf, size_t cchBuf, char ch) { for (size_t i = 0; i < cchBuf; i++)   { buf[i] = ch; } }
 ```
 
 When both code fragments are compiled with Visual C++ in Visual Studio 2005 Team System or Visual Studio 2005 Team Edition for Developers and the /analyze compile option, you will see the following warnings:
 
-```
+```text
 c:\code\saltest\saltest.cpp(54) : warning C6203: Buffer overrun for non-stack buffer 'b' in call to 'FillString': length '420' exceeds buffer size '400' c:\code\saltest\saltest.cpp(54) : warning C6386: Buffer overrun: accessing 'argument 1', the writable size is '200*2' bytes, but '420' bytes might be written: Lines: 53, 54 c:\code\saltest\saltest.cpp(54) : warning C6387: 'argument 1' might be '0': this does not adhere to the specification for the function 'FillString': Lines: 53, 54
 ```
 
 What just happened here? Note the use of \_\_out\_ecount(n) just before buf in the argument list. This is a macro that wraps some very low-level SAL constructs you should never have to worry about, but in essence \_\_out\_ecount(n) means:
 
-'buf   i s   an  out   par am et er ,   w hi ch  m eans   i t   w i l l   be  w r i t t en  t o  by  t he  f unct i on,   and  buf cannot be NULL. The l engt h  of   buf   i s  ' n'   el em ent s,   i n  t hi s  cas e  cchBuf   TCH ARS'
+'buf i s an out par am et er , w hi ch m eans i t w i l l be w r i t t en t o by t he f unct i on, and buf cannot be NULL. The l engt h of buf i s ' n' el em ent s, i n t hi s cas e cchBuf TCH ARS'
 
-That ' s it! And as you can see, recompiling the code found the bug in the code that calls FillString.  W hat ' s really cool, is any code that uses FillString will automatically  gain the benefit of the annotation.
+That ' s it! And as you can see, recompiling the code found the bug in the code that calls FillString. W hat ' s really cool, is any code that uses FillString will automatically gain the benefit of the annotation.
 
-IMPORTANT: I want to take a moment to explain something you should be aware of. SAL is in flux. More importantly, there are two  versions of SAL; the first is a \_\_declspec  syntax, and the second is an attribute syntax. Visual Studio 2005 supports both, and the C Runtime today is annotated with the \_\_declspec format. Over time, we expect to move to the attribute syntax. Both syntaxes will be supported for the near future, but innovation will occur in the attribute syntax.
+IMPORTANT: I want to take a moment to explain something you should be aware of. SAL is in flux. More importantly, there are two versions of SAL; the first is a \_\_declspec syntax, and the second is an attribute syntax. Visual Studio 2005 supports both, and the C Runtime today is annotated with the \_\_declspec format. Over time, we expect to move to the attribute syntax. Both syntaxes will be supported for the near future, but innovation will occur in the attribute syntax.
 
-The SAL macros define proper use of buffers, which are allocated regions of data represented as pointers in C/C++ code. A C/C++ pointer can be used to represent a single element buffer or a buffer of many elements. Sometimes the size is known at compile time and som et i m es  i t ' s  onl y  know   at   r unt i m e. Because C/C++ pointer types are overloaded you cannot rely on the type system to help you program w i t h  buf f er s   properl y!   That ' s   w hy  w e  have  SAL.   I t   m akes  expl i ci t   exact l y  how   bi g t he  buf f er   i s  t hat   a pointer points into.
+The SAL macros define proper use of buffers, which are allocated regions of data represented as pointers in C/C++ code. A C/C++ pointer can be used to represent a single element buffer or a buffer of many elements. Sometimes the size is known at compile time and som et i m es i t ' s onl y know at r unt i m e. Because C/C++ pointer types are overloaded you cannot rely on the type system to help you program w i t h buf f er s properl y! That ' s w hy w e have SAL. I t m akes expl i ci t exact l y how bi g t he buf f er i s t hat a pointer points into.
 
 There are many other SAL macros, including:
 
 ## \_\_in
 
-The function will only read from the single-element buffer, and the buffer must be initialized; as such \_\_in the exactly the same as  \_\_in\_ecount(1) and \_\_in is implied if the argument is a const. The following function prototype shows how you can use \_\_in.
+The function will only read from the single-element buffer, and the buffer must be initialized; as such \_\_in the exactly the same as \_\_in\_ecount(1) and \_\_in is implied if the argument is a const. The following function prototype shows how you can use \_\_in.
 
-```
+```text
 BOOL AddElement( __in ELEMENT *pElement) ;
 ```
 
 ## \_\_out
 
-The function  fills a valid buffer, and the buffer can be dereferenced by the calling code. The following function  prototype shows how you can use \_\_out.
+The function fills a valid buffer, and the buffer can be dereferenced by the calling code. The following function prototype shows how you can use \_\_out.
 
-```
+```text
 BOOL GetFileVersion( LPCWSTR lpsFile, __out FILE_VERSION *pVersion);
 ```
 
@@ -70,7 +70,7 @@ BOOL GetFileVersion( LPCWSTR lpsFile, __out FILE_VERSION *pVersion);
 
 The function expects an optional buffer, meaning the buffer can point to NULL. The following code shows how you could use \_\_in\_opt, in this example, if szMachineName is NULL, then the code will return operating system information about the local computer.
 
-```
+```text
 BOOL GetOsType( __in_opt char *szMachineName,
 ```
 
@@ -78,71 +78,71 @@ BOOL GetOsType( __in_opt char *szMachineName,
 
 The function expects a readable and writeable buffer, and the buffer must be initialized by the caller. Here is some sample code that shows how you might use \_\_inout.
 
-```
+```text
 size_t EncodeStream( __in HANDLE hStream, __inout STREAM *pStream);
 ```
 
 ## \_\_inout\_bcount\_full(n)
 
-The function expects a buffer that is n-bytes long that is fully initialized on entry and exit. Note the use of   bcount   r at her   t han  ecount .   ' b'   m eans  byt es,   and  ' e'   m eans  el em ent s,   f or   exam pl e  a  U ni code  s t r i ng  in Windows that is 12 characters (an element is SAL parlance) long is 24 bytes long. The following code example takes a BYTE * that points to a buffer to switch from big-endian format to little-endian format so it makes sense that the incoming buffer be fully initialized, and is a fully initialized buffer on function exi t .   You' l l   al s o  s ee  anot her   SAL  m acr o in the function prototype, \_\_out\_opt, which means the data will be written to by the function, but it can be NULL. In the case of a NULL exception point, the function will not return exception data to the caller.
+The function expects a buffer that is n-bytes long that is fully initialized on entry and exit. Note the use of bcount r at her t han ecount . ' b' m eans byt es, and ' e' m eans el em ent s, f or exam pl e a U ni code s t r i ng in Windows that is 12 characters (an element is SAL parlance) long is 24 bytes long. The following code example takes a BYTE * that points to a buffer to switch from big-endian format to little-endian format so it makes sense that the incoming buffer be fully initialized, and is a fully initialized buffer on function exi t . You' l l al s o s ee anot her SAL m acr o in the function prototype, \_\_out\_opt, which means the data will be written to by the function, but it can be NULL. In the case of a NULL exception point, the function will not return exception data to the caller.
 
-```
+```text
 void ConvertToLittleEndian( __inout_bcount_full(cbInteger) BYTE *pbInteger, DWORD cbInteger, __out_opt EXCEPTION *pException);
 ```
 
 ## \_\_deref\_\_out\_bcount(n)
 
-The  f unct i on  w hos e  der ef er ence  w i l l   be  s et t o  an  uni ni t i al i z ed  buf f er   of   ' n'   bytes, in other words, *p is initialized, but **p is not.
+The f unct i on w hos e der ef er ence w i l l be s et t o an uni ni t i al i z ed buf f er of ' n' bytes, in other words, *p is initialized, but **p is not.
 
-```
+```text
 HRESULT StringCbAlloc( size_t cb, __deref_out_bcount(cb) char **ppsz) { *ppsz = (char*)LocalAlloc(LPTR, cb); return *ppsz ? S_OK : E_OUTOFMEMORY; }
 ```
 
 And there are many more such annotations.
 
-SAL' s  us ef ul nes s   ext ends beyond function arguments. It can also be used to detect errors on function ret ur n.   I f you  l ook  cl os el y  at   t he  l i s t of   w ar ni ngs   ear l i er   i n  t hi s docum ent ,   you' l l   not i ce  a  t hi r d  w ar ni ng:
+SAL' s us ef ul nes s ext ends beyond function arguments. It can also be used to detect errors on function ret ur n. I f you l ook cl os el y at t he l i s t of w ar ni ngs ear l i er i n t hi s docum ent , you' l l not i ce a t hi r d w ar ni ng:
 
-```
+```text
 c:\code\saltest\saltest.cpp(54) : warning C6387: 'argument 1' might be '0': this does not adhere to the specification for the function 'FillString': Lines: 53, 54
 ```
 
-```
+```text
 __out MACHINE_INFO *pMachineInfo);
 ```
 
-This bug really has little to do with the function argument, rather it occurs because the code calls malloc() and does not check the return value is non-NULL. If you look at the function prototype for m al l oc( ) i n  m al l oc. h, you' l l see  t hi s :
+This bug really has little to do with the function argument, rather it occurs because the code calls malloc() and does not check the return value is non-NULL. If you look at the function prototype for m al l oc( ) i n m al l oc. h, you' l l see t hi s :
 
-```
+```text
 _checkReturn __bcount_opt(_Size) void *__cdecl malloc(__in size_t _Size);
 ```
 
-Because the return from malloc() could be NULL we use a \_\_bcount\_opt(n) macro (note the use of opt in the macro name.) If we change the code that calls malloc() to check the return is not NULL prior to cal l i ng  Fi l l St r i ng,   t he  w ar ni ng  goes   aw ay.   D on' t   conf use  an  opt i onal   N U LL  r et ur n  val ue  w i t h \_\_checkReturn, the latter means you ignored the result altogether, for example:
+Because the return from malloc() could be NULL we use a \_\_bcount\_opt(n) macro (note the use of opt in the macro name.) If we change the code that calls malloc() to check the return is not NULL prior to cal l i ng Fi l l St r i ng, t he w ar ni ng goes aw ay. D on' t conf use an opt i onal N U LL r et ur n val ue w i t h \_\_checkReturn, the latter means you ignored the result altogether, for example:
 
-```
+```text
 size_t cb = 10 * 12; malloc(cb);
 ```
 
 This code will yield this warning when compiled with /analyze:
 
-```
+```text
 c:\code\saltest\saltest.cpp(30) : warning C6031: Return value ignored: 'malloc'
 ```
 
 ## The Future of SAL
 
-This section is important for completeness and to set expectations about the future of SAL. I have already mentioned that \_\_inout and the like are actually macros that wrap low-level SAL constructs. Presently, there is one set of macros and two low-level SAL primitives; one is a \_\_declspec form, and the other is an attribute form. As I write this, the macros that ship with Visual Studio 2005 map to the \_\_declspec form. For example,  \_\_out\_ecount(n) maps to:
+This section is important for completeness and to set expectations about the future of SAL. I have already mentioned that \_\_inout and the like are actually macros that wrap low-level SAL constructs. Presently, there is one set of macros and two low-level SAL primitives; one is a \_\_declspec form, and the other is an attribute form. As I write this, the macros that ship with Visual Studio 2005 map to the \_\_declspec form. For example, \_\_out\_ecount(n) maps to:
 
-```
+```text
 __pre __notnull __elem_writableTo(n) __post __valid __deref __notreadonly
 ```
 
 The good news is that you do not, indeed you should not use these low-level SAL primitives unless you absolutely must do so. To be honest, I doubt you will need to use them. Stick with using the macros. As you can probably guess, \_\_pre, \_\_notnull and so forth are the declspec SAL annotations. But in the future we will move to an attribute syntax, which looks a little like this. This is the same declspec annotation about, but using attribute syntax.
 
-```
+```text
 [SA_Pre(WritableElements="n", Null=SA_No)] [SA_Post(Valid=SA_Yes, Deref=1, Access=SA_Write)]
 ```
 
-Now   her e' s   t he  bad  new s .   Today,   i f   you  w ant   t o  us e  at t r i bute-based SAL, you have to enter all these low-level attribute SAL annotations. Moving forward, however, we will wrap the most commonly used SAL constructs into macros. The plan is to provide these macros i n  Vi sual   St udi o  'O r cas ',   but   l i ke  al l   non- released products, this is subject to change! Presently, the headers in Visual Studio 2005 are annotated with the \_\_declspec macros, but we will update these to use attribute macros over time also.
+Now her e' s t he bad new s . Today, i f you w ant t o us e at t r i bute-based SAL, you have to enter all these low-level attribute SAL annotations. Moving forward, however, we will wrap the most commonly used SAL constructs into macros. The plan is to provide these macros i n Vi sual St udi o 'O r cas ', but l i ke al l non- released products, this is subject to change! Presently, the headers in Visual Studio 2005 are annotated with the \_\_declspec macros, but we will update these to use attribute macros over time also.
 
 ## Action Items
 
@@ -150,4 +150,4 @@ SAL is a powerful mechanism to help find real security bugs in your code, and yo
 
 ## Other Resources
 
-That was a brief tour of SAL. You can learn more by looking at the comments at the top of sal.h which includes  a summary of the current SAL constructs. The strsafe.h (a set of safer string handling functions) header file also offers a good smattering of sample SAL usage in real-life. Below are some links to other references you should look at to learn more about SAL. Header Annotations (http://msdn.microsoft.com/library/default.asp?url=/library/enus/winprog/winprog/header\_annotations.asp) SAL Annotations  (http://msdn2.microsoft.com/en-us/library/ms235402.aspx) Annotation Overview  (http://msdn2.microsoft.com/en-us/library/ms182033.aspx) Annotation Properties (http://msdn2.microsoft.com/en-us/library/ms182037.aspx) Walkthrough: Analyzing C/C++ Code for Defects  (http://msdn2.microsoft.com/enus/library/ms182028.aspx) Visual Studio 2005 Security Features and Tools (http://msdn.microsoft.com/security/vs2005security/default.aspx) Windows SDK ( http://windowssdk.msdn.microsoft.com/library/) A big thanks to the many people who are actively involved in the development of SAL and reviewed this document: Hunter Hudson and Daniel Wang from Windows , Hannes Ruescher from Office, Dave Lubash from Enterprise Developer Tools and Eric Bidstrup and Steve Lipner in my group, Security Engineering.
+That was a brief tour of SAL. You can learn more by looking at the comments at the top of sal.h which includes a summary of the current SAL constructs. The strsafe.h (a set of safer string handling functions) header file also offers a good smattering of sample SAL usage in real-life. Below are some links to other references you should look at to learn more about SAL. Header Annotations (<http://msdn.microsoft.com/library/default.asp?url=/library/enus/winprog/winprog/header>\_annotations.asp) SAL Annotations (<http://msdn2.microsoft.com/en-us/library/ms235402.aspx>) Annotation Overview (<http://msdn2.microsoft.com/en-us/library/ms182033.aspx>) Annotation Properties (<http://msdn2.microsoft.com/en-us/library/ms182037.aspx>) Walkthrough: Analyzing C/C++ Code for Defects (<http://msdn2.microsoft.com/enus/library/ms182028.aspx>) Visual Studio 2005 Security Features and Tools (<http://msdn.microsoft.com/security/vs2005security/default.aspx>) Windows SDK ( <http://windowssdk.msdn.microsoft.com/library/>) A big thanks to the many people who are actively involved in the development of SAL and reviewed this document: Hunter Hudson and Daniel Wang from Windows , Hannes Ruescher from Office, Dave Lubash from Enterprise Developer Tools and Eric Bidstrup and Steve Lipner in my group, Security Engineering.

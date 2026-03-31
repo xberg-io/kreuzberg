@@ -36,7 +36,7 @@ rustflags = ["-C", "target-feature=+bulk-memory", "--cfg", "getrandom_backend=\"
 # build-std = ["panic_abort", "std"]
 
 [net]
-git-fetch-with-cli = false
+git-fetch-with-cli = true
 
 [registries.crates-io]
 protocol = "sparse"

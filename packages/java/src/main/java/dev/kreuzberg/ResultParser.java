@@ -35,6 +35,8 @@ final class ResultParser {
 	};
 	private static final TypeReference<List<PdfAnnotation>> ANNOTATION_LIST = new TypeReference<>() {
 	};
+	private static final TypeReference<List<Uri>> URI_LIST = new TypeReference<>() {
+	};
 	private static final TypeReference<Map<String, Object>> METADATA_MAP = new TypeReference<>() {
 	};
 	private static final TypeReference<EmbeddingPreset> EMBEDDING_PRESET = new TypeReference<>() {
@@ -89,6 +91,17 @@ final class ResultParser {
 			String elementsJson, String ocrElementsJson, String djotContentJson, String language, String date,
 			String subject, String documentStructureJson, String extractedKeywordsJson, String qualityScoreStr,
 			String processingWarningsJson, String annotationsJson) throws KreuzbergException {
+		return parse(content, mimeType, tablesJson, detectedLanguagesJson, metadataJson, chunksJson, imagesJson,
+				pagesJson, pageStructureJson, elementsJson, ocrElementsJson, djotContentJson, language, date, subject,
+				documentStructureJson, extractedKeywordsJson, qualityScoreStr, processingWarningsJson, annotationsJson,
+				null);
+	}
+
+	static ExtractionResult parse(String content, String mimeType, String tablesJson, String detectedLanguagesJson,
+			String metadataJson, String chunksJson, String imagesJson, String pagesJson, String pageStructureJson,
+			String elementsJson, String ocrElementsJson, String djotContentJson, String language, String date,
+			String subject, String documentStructureJson, String extractedKeywordsJson, String qualityScoreStr,
+			String processingWarningsJson, String annotationsJson, String urisJson) throws KreuzbergException {
 		try {
 			Map<String, Object> metadata = decode(metadataJson, METADATA_MAP, Collections.emptyMap());
 			List<Table> tables = decode(tablesJson, TABLE_LIST, List.of());
@@ -107,13 +120,14 @@ final class ResultParser {
 					: null;
 			List<ProcessingWarning> processingWarnings = decode(processingWarningsJson, WARNING_LIST, null);
 			List<PdfAnnotation> annotations = decode(annotationsJson, ANNOTATION_LIST, null);
+			List<Uri> uris = decode(urisJson, URI_LIST, null);
 
 			// Build Metadata with FFI-provided language, date, and subject if available
 			Metadata metadataObj = buildMetadata(metadata, language, date, subject);
 
 			return new ExtractionResult(content != null ? content : "", mimeType != null ? mimeType : "", metadataObj,
 					tables, detectedLanguages, chunks, images, pages, pageStructure, elements, ocrElements, djotContent,
-					documentStructure, extractedKeywords, qualityScore, processingWarnings, annotations);
+					documentStructure, extractedKeywords, qualityScore, processingWarnings, annotations, uris);
 		} catch (Exception e) {
 			throw new KreuzbergException("Failed to parse extraction result", e);
 		}
@@ -251,7 +265,8 @@ final class ResultParser {
 					wire.pages != null ? wire.pages : List.of(), wire.pageStructure,
 					wire.elements != null ? wire.elements : List.of(),
 					wire.ocrElements != null ? wire.ocrElements : List.of(), wire.djotContent, wire.document,
-					wire.extractedKeywords, wire.qualityScore, wire.processingWarnings, wire.annotations);
+					wire.extractedKeywords, wire.qualityScore, wire.processingWarnings, wire.annotations,
+					wire.uris);
 		} catch (Exception e) {
 			throw new KreuzbergException("Failed to parse result JSON", e);
 		}
@@ -264,7 +279,7 @@ final class ResultParser {
 				result.getOcrElements(), result.getDjotContent().orElse(null),
 				result.getDocumentStructure().orElse(null), result.getExtractedKeywords().orElse(null),
 				result.getQualityScore().orElse(null), result.getProcessingWarnings().orElse(null),
-				result.getAnnotations().orElse(null));
+				result.getAnnotations().orElse(null), result.getUris().orElse(null));
 		return MAPPER.writeValueAsString(wire);
 	}
 
@@ -294,6 +309,7 @@ final class ResultParser {
 		private final Double qualityScore;
 		private final List<ProcessingWarning> processingWarnings;
 		private final List<PdfAnnotation> annotations;
+		private final List<Uri> uris;
 
 		WireExtractionResult(@JsonProperty("content") String content, @JsonProperty("mime_type") String mimeType,
 				@JsonProperty("metadata") Metadata metadata, @JsonProperty("tables") List<Table> tables,
@@ -308,7 +324,8 @@ final class ResultParser {
 				@JsonProperty("extracted_keywords") List<ExtractedKeyword> extractedKeywords,
 				@JsonProperty("quality_score") Double qualityScore,
 				@JsonProperty("processing_warnings") List<ProcessingWarning> processingWarnings,
-				@JsonProperty("annotations") List<PdfAnnotation> annotations) {
+				@JsonProperty("annotations") List<PdfAnnotation> annotations,
+				@JsonProperty("uris") List<Uri> uris) {
 			this.content = content;
 			this.mimeType = mimeType;
 			this.metadata = metadata;
@@ -326,6 +343,7 @@ final class ResultParser {
 			this.qualityScore = qualityScore;
 			this.processingWarnings = processingWarnings;
 			this.annotations = annotations;
+			this.uris = uris;
 		}
 	}
 }

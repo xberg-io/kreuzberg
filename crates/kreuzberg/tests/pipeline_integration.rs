@@ -8,6 +8,7 @@
 use async_trait::async_trait;
 use kreuzberg::core::config::{ExtractionConfig, PostProcessorConfig};
 use kreuzberg::core::pipeline::{clear_processor_cache, run_pipeline};
+use kreuzberg::internal::{ElementKind, InternalDocument, InternalElement};
 use kreuzberg::plugins::registry::get_post_processor_registry;
 use kreuzberg::plugins::{Plugin, PostProcessor, ProcessingStage};
 use kreuzberg::types::ExtractionResult;
@@ -15,6 +16,17 @@ use kreuzberg::{KreuzbergError, Result};
 use serial_test::serial;
 use std::borrow::Cow;
 use std::sync::Arc;
+
+/// Helper: build a minimal `InternalDocument` whose derived content equals `text`.
+fn mock_doc(text: &str) -> InternalDocument {
+    let mut doc = InternalDocument::new("text");
+    doc.mime_type = Cow::Borrowed("text/plain");
+    if !text.is_empty() {
+        doc.elements
+            .push(InternalElement::text(ElementKind::Paragraph, text, 0));
+    }
+    doc
+}
 
 struct OrderTrackingProcessor {
     name: String,
@@ -131,14 +143,10 @@ fn clear_processor_registry() {
 async fn test_pipeline_empty_no_processors() {
     clear_processor_registry();
 
-    let result = ExtractionResult {
-        content: "original content".to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        ..Default::default()
-    };
+    let doc = mock_doc("original content");
     let config = ExtractionConfig::default();
 
-    let processed = run_pipeline(result, &config).await.expect("Async operation failed");
+    let processed = run_pipeline(doc, &config).await.expect("Async operation failed");
     assert_eq!(processed.content, "original content");
 }
 
@@ -169,14 +177,10 @@ async fn test_pipeline_single_processor_per_stage() {
         reg.register(late, 50).expect("Operation failed");
     }
 
-    let result = ExtractionResult {
-        content: "start".to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        ..Default::default()
-    };
+    let doc = mock_doc("start");
     let config = ExtractionConfig::default();
 
-    let processed = run_pipeline(result, &config).await.expect("Async operation failed");
+    let processed = run_pipeline(doc, &config).await.expect("Async operation failed");
     assert_eq!(processed.content, "start[early][middle][late]");
 }
 
@@ -207,14 +211,10 @@ async fn test_pipeline_multiple_processors_per_stage() {
         reg.register(early_medium, 50).expect("Operation failed");
     }
 
-    let result = ExtractionResult {
-        content: "start".to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        ..Default::default()
-    };
+    let doc = mock_doc("start");
     let config = ExtractionConfig::default();
 
-    let processed = run_pipeline(result, &config).await.expect("Async operation failed");
+    let processed = run_pipeline(doc, &config).await.expect("Async operation failed");
     assert_eq!(processed.content, "start[early-high][early-medium][early-low]");
 }
 
@@ -236,14 +236,10 @@ async fn test_pipeline_all_stages_enabled() {
         }
     }
 
-    let result = ExtractionResult {
-        content: "start".to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        ..Default::default()
-    };
+    let doc = mock_doc("start");
     let config = ExtractionConfig::default();
 
-    let processed = run_pipeline(result, &config).await.expect("Async operation failed");
+    let processed = run_pipeline(doc, &config).await.expect("Async operation failed");
     assert_eq!(processed.content, "start[Early][Middle][Late]");
 }
 
@@ -263,11 +259,7 @@ async fn test_pipeline_postprocessing_disabled() {
         reg.register(processor, 50).expect("Operation failed");
     }
 
-    let result = ExtractionResult {
-        content: "start".to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        ..Default::default()
-    };
+    let doc = mock_doc("start");
     let config = ExtractionConfig {
         postprocessor: Some(PostProcessorConfig {
             enabled: false,
@@ -279,7 +271,7 @@ async fn test_pipeline_postprocessing_disabled() {
         ..Default::default()
     };
 
-    let processed = run_pipeline(result, &config).await.expect("Async operation failed");
+    let processed = run_pipeline(doc, &config).await.expect("Async operation failed");
     assert_eq!(processed.content, "start");
 }
 
@@ -305,14 +297,10 @@ async fn test_pipeline_early_stage_runs_first() {
         reg.register(early, 50).expect("Operation failed");
     }
 
-    let result = ExtractionResult {
-        content: "start".to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        ..Default::default()
-    };
+    let doc = mock_doc("start");
     let config = ExtractionConfig::default();
 
-    let processed = run_pipeline(result, &config).await.expect("Async operation failed");
+    let processed = run_pipeline(doc, &config).await.expect("Async operation failed");
     assert_eq!(processed.content, "start[early][late]");
 }
 
@@ -338,14 +326,10 @@ async fn test_pipeline_middle_stage_runs_second() {
         reg.register(early, 50).expect("Operation failed");
     }
 
-    let result = ExtractionResult {
-        content: "start".to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        ..Default::default()
-    };
+    let doc = mock_doc("start");
     let config = ExtractionConfig::default();
 
-    let processed = run_pipeline(result, &config).await.expect("Async operation failed");
+    let processed = run_pipeline(doc, &config).await.expect("Async operation failed");
     assert_eq!(processed.content, "start[early][middle]");
 }
 
@@ -367,14 +351,10 @@ async fn test_pipeline_late_stage_runs_last() {
         }
     }
 
-    let result = ExtractionResult {
-        content: "start".to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        ..Default::default()
-    };
+    let doc = mock_doc("start");
     let config = ExtractionConfig::default();
 
-    let processed = run_pipeline(result, &config).await.expect("Async operation failed");
+    let processed = run_pipeline(doc, &config).await.expect("Async operation failed");
     assert_eq!(processed.content, "start[Early][Middle][Late]");
 }
 
@@ -396,14 +376,10 @@ async fn test_pipeline_within_stage_priority_order() {
         }
     }
 
-    let result = ExtractionResult {
-        content: "start".to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        ..Default::default()
-    };
+    let doc = mock_doc("start");
     let config = ExtractionConfig::default();
 
-    let processed = run_pipeline(result, &config).await.expect("Async operation failed");
+    let processed = run_pipeline(doc, &config).await.expect("Async operation failed");
     assert_eq!(processed.content, "start[p1][p4][p3][p2]");
 }
 
@@ -457,14 +433,10 @@ async fn test_pipeline_cross_stage_data_flow() {
         reg.register(Arc::new(MiddleProcessor), 50).expect("Operation failed");
     }
 
-    let result = ExtractionResult {
-        content: "start".to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        ..Default::default()
-    };
+    let doc = mock_doc("start");
     let config = ExtractionConfig::default();
 
-    let processed = run_pipeline(result, &config).await.expect("Async operation failed");
+    let processed = run_pipeline(doc, &config).await.expect("Async operation failed");
     assert!(processed.content.contains("[saw:early]"));
 }
 
@@ -508,14 +480,10 @@ async fn test_pipeline_early_stage_error_recorded() {
             .expect("Operation failed");
     }
 
-    let result = ExtractionResult {
-        content: "content".to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        ..Default::default()
-    };
+    let doc = mock_doc("content");
     let config = ExtractionConfig::default();
 
-    let result = run_pipeline(result, &config).await;
+    let result = run_pipeline(doc, &config).await;
     assert!(result.is_err(), "Expected pipeline to return error");
     match result {
         Err(KreuzbergError::Plugin { message, plugin_name }) => {
@@ -543,14 +511,10 @@ async fn test_pipeline_middle_stage_error_propagation() {
         reg.register(failing, 50).expect("Operation failed");
     }
 
-    let result = ExtractionResult {
-        content: "content".to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        ..Default::default()
-    };
+    let doc = mock_doc("content");
     let config = ExtractionConfig::default();
 
-    let result = run_pipeline(result, &config).await;
+    let result = run_pipeline(doc, &config).await;
     assert!(result.is_err(), "Expected pipeline to return error");
     match result {
         Err(KreuzbergError::Plugin { message, plugin_name }) => {
@@ -608,14 +572,10 @@ async fn test_pipeline_late_stage_error_doesnt_affect_earlier_stages() {
         reg.register(late_failing, 50).expect("Operation failed");
     }
 
-    let result = ExtractionResult {
-        content: "start".to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        ..Default::default()
-    };
+    let doc = mock_doc("start");
     let config = ExtractionConfig::default();
 
-    let result = run_pipeline(result, &config).await;
+    let result = run_pipeline(doc, &config).await;
     assert!(result.is_err(), "Expected pipeline to return error");
     match result {
         Err(KreuzbergError::Plugin { message, plugin_name }) => {
@@ -689,14 +649,10 @@ async fn test_pipeline_processor_error_doesnt_stop_other_processors() {
         reg.register(p3, 50).expect("Operation failed");
     }
 
-    let result = ExtractionResult {
-        content: "start".to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        ..Default::default()
-    };
+    let doc = mock_doc("start");
     let config = ExtractionConfig::default();
 
-    let result = run_pipeline(result, &config).await;
+    let result = run_pipeline(doc, &config).await;
     assert!(result.is_err(), "Expected pipeline to return error");
     match result {
         Err(KreuzbergError::Plugin { message, plugin_name }) => {
@@ -760,14 +716,10 @@ async fn test_pipeline_multiple_processor_errors() {
         }
     }
 
-    let result = ExtractionResult {
-        content: "start".to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        ..Default::default()
-    };
+    let doc = mock_doc("start");
     let config = ExtractionConfig::default();
 
-    let result = run_pipeline(result, &config).await;
+    let result = run_pipeline(doc, &config).await;
     assert!(result.is_err(), "Expected pipeline to return error");
     match result {
         Err(KreuzbergError::Plugin { message, plugin_name }) => {
@@ -795,14 +747,10 @@ async fn test_pipeline_error_context_preservation() {
         reg.register(failing, 50).expect("Operation failed");
     }
 
-    let result = ExtractionResult {
-        content: "content".to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        ..Default::default()
-    };
+    let doc = mock_doc("content");
     let config = ExtractionConfig::default();
 
-    let result = run_pipeline(result, &config).await;
+    let result = run_pipeline(doc, &config).await;
     assert!(result.is_err(), "Expected pipeline to return error");
     match result {
         Err(KreuzbergError::Plugin { message, plugin_name }) => {
@@ -864,14 +812,10 @@ async fn test_pipeline_metadata_added_in_early_visible_in_middle() {
             .expect("Operation failed");
     }
 
-    let result = ExtractionResult {
-        content: "content".to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        ..Default::default()
-    };
+    let doc = mock_doc("content");
     let config = ExtractionConfig::default();
 
-    let processed = run_pipeline(result, &config).await.expect("Async operation failed");
+    let processed = run_pipeline(doc, &config).await.expect("Async operation failed");
     assert_eq!(
         processed
             .metadata
@@ -929,14 +873,10 @@ async fn test_pipeline_content_modified_in_middle_visible_in_late() {
             .expect("Operation failed");
     }
 
-    let result = ExtractionResult {
-        content: "start".to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        ..Default::default()
-    };
+    let doc = mock_doc("start");
     let config = ExtractionConfig::default();
 
-    let processed = run_pipeline(result, &config).await.expect("Async operation failed");
+    let processed = run_pipeline(doc, &config).await.expect("Async operation failed");
     assert!(processed.content.contains("[middle-content]"));
     assert!(processed.content.contains("[late-saw-middle]"));
 }
@@ -991,14 +931,10 @@ async fn test_pipeline_multiple_processors_modifying_same_metadata() {
         }
     }
 
-    let result = ExtractionResult {
-        content: "content".to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        ..Default::default()
-    };
+    let doc = mock_doc("content");
     let config = ExtractionConfig::default();
 
-    let processed = run_pipeline(result, &config).await.expect("Async operation failed");
+    let processed = run_pipeline(doc, &config).await.expect("Async operation failed");
     assert_eq!(
         processed
             .metadata
@@ -1072,14 +1008,10 @@ async fn test_pipeline_processors_reading_previous_output() {
         }
     }
 
-    let result = ExtractionResult {
-        content: "content".to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        ..Default::default()
-    };
+    let doc = mock_doc("content");
     let config = ExtractionConfig::default();
 
-    let processed = run_pipeline(result, &config).await.expect("Async operation failed");
+    let processed = run_pipeline(doc, &config).await.expect("Async operation failed");
     assert_eq!(
         processed
             .metadata
@@ -1130,14 +1062,10 @@ async fn test_pipeline_large_content_modification() {
             .expect("Operation failed");
     }
 
-    let result = ExtractionResult {
-        content: "start".to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        ..Default::default()
-    };
+    let doc = mock_doc("start");
     let config = ExtractionConfig::default();
 
-    let processed = run_pipeline(result, &config).await.expect("Async operation failed");
+    let processed = run_pipeline(doc, &config).await.expect("Async operation failed");
     assert!(processed.content.len() > 10000);
 }
 
@@ -1159,11 +1087,7 @@ async fn test_pipeline_enabled_processors_whitelist() {
         }
     }
 
-    let result = ExtractionResult {
-        content: "start".to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        ..Default::default()
-    };
+    let doc = mock_doc("start");
     let config = ExtractionConfig {
         postprocessor: Some(PostProcessorConfig {
             enabled: true,
@@ -1175,7 +1099,7 @@ async fn test_pipeline_enabled_processors_whitelist() {
         ..Default::default()
     };
 
-    let processed = run_pipeline(result, &config).await.expect("Async operation failed");
+    let processed = run_pipeline(doc, &config).await.expect("Async operation failed");
     assert!(processed.content.contains("[proc1]"));
     assert!(!processed.content.contains("[proc2]"));
     assert!(processed.content.contains("[proc3]"));
@@ -1199,11 +1123,7 @@ async fn test_pipeline_disabled_processors_blacklist() {
         }
     }
 
-    let result = ExtractionResult {
-        content: "start".to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        ..Default::default()
-    };
+    let doc = mock_doc("start");
     let config = ExtractionConfig {
         postprocessor: Some(PostProcessorConfig {
             enabled: true,
@@ -1215,7 +1135,7 @@ async fn test_pipeline_disabled_processors_blacklist() {
         ..Default::default()
     };
 
-    let processed = run_pipeline(result, &config).await.expect("Async operation failed");
+    let processed = run_pipeline(doc, &config).await.expect("Async operation failed");
     assert!(processed.content.contains("[proc1]"));
     assert!(!processed.content.contains("[proc2]"));
     assert!(processed.content.contains("[proc3]"));
@@ -1239,14 +1159,10 @@ async fn test_pipeline_no_filtering_runs_all() {
         }
     }
 
-    let result = ExtractionResult {
-        content: "start".to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        ..Default::default()
-    };
+    let doc = mock_doc("start");
     let config = ExtractionConfig::default();
 
-    let processed = run_pipeline(result, &config).await.expect("Async operation failed");
+    let processed = run_pipeline(doc, &config).await.expect("Async operation failed");
     assert!(processed.content.contains("[proc1]"));
     assert!(processed.content.contains("[proc2]"));
     assert!(processed.content.contains("[proc3]"));
@@ -1270,11 +1186,7 @@ async fn test_pipeline_empty_whitelist_runs_none() {
         }
     }
 
-    let result = ExtractionResult {
-        content: "start".to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        ..Default::default()
-    };
+    let doc = mock_doc("start");
     let config = ExtractionConfig {
         postprocessor: Some(PostProcessorConfig {
             enabled: true,
@@ -1286,6 +1198,6 @@ async fn test_pipeline_empty_whitelist_runs_none() {
         ..Default::default()
     };
 
-    let processed = run_pipeline(result, &config).await.expect("Async operation failed");
+    let processed = run_pipeline(doc, &config).await.expect("Async operation failed");
     assert_eq!(processed.content, "start");
 }

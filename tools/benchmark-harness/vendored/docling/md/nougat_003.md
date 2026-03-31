@@ -10,7 +10,7 @@ There is a sound I love to hear It's the sound of the Saviour's robe As He walks
 
 There is a sound I love to hear It's the sound of the Saviour's robe As He walks into the room where people pray Where we hear worship He hears faith
 
-Chorus:                                               Awake my soul and sing Sing His praise aloud sing His praise aloud Oh awake my soul and sing Sing His praise aloud sing His praise aloud
+Chorus: Awake my soul and sing Sing His praise aloud sing His praise aloud Oh awake my soul and sing Sing His praise aloud sing His praise aloud
 
 There is a sound that changes things The sound of His people on their knees Oh wake up you slumbering It's time to worship Him
 
@@ -88,9 +88,9 @@ Congregation:
 
 ## 1 John 3:1-7
 
-1  How great is the love the Father has lavished on us, that we should be called children of God! And that is what we are! The reason the world does not know us is that it did not know him.  2  Dear friends, now we are children of God, and what we will be has not yet been made known. But we know that when he appears, we shall be like him, for we shall see him as he is.  3  Everyone who has this hope in him purifies himself, just as he is pure.  4  Everyone who sins breaks the law; in fact, sin is lawlessness.  5  But you know that he appeared so that he might take away our sins. And in him is no sin.  6  No one who lives in him keeps on sinning. No one who continues to sin has either seen him or known him.  7  Dear children, do not let anyone lead you astray. He who does what is right is righteous, just as he is righteous. (NIV)
+1 How great is the love the Father has lavished on us, that we should be called children of God! And that is what we are! The reason the world does not know us is that it did not know him. 2 Dear friends, now we are children of God, and what we will be has not yet been made known. But we know that when he appears, we shall be like him, for we shall see him as he is. 3 Everyone who has this hope in him purifies himself, just as he is pure. 4 Everyone who sins breaks the law; in fact, sin is lawlessness. 5 But you know that he appeared so that he might take away our sins. And in him is no sin. 6 No one who lives in him keeps on sinning. No one who continues to sin has either seen him or known him. 7 Dear children, do not let anyone lead you astray. He who does what is right is righteous, just as he is righteous. (NIV)
 
-Most merciful God, we confess that we are by nature sinful and unclean. We have sinned against You in thought, word, and deed, by what we have done and by what we have left undone. We have not loved You with our whole heart; we  have  not  loved  our  neighbors  as  ourselves.  We  justly  deserve  Your present and eternal punishment. For the sake of Your Son, Jesus Christ, have mercy on us. Forgive us, renew us, and lead us, so that we may delight in Your will and walk in Your ways to the glory of Your holy name. Amen.
+Most merciful God, we confess that we are by nature sinful and unclean. We have sinned against You in thought, word, and deed, by what we have done and by what we have left undone. We have not loved You with our whole heart; we have not loved our neighbors as ourselves. We justly deserve Your present and eternal punishment. For the sake of Your Son, Jesus Christ, have mercy on us. Forgive us, renew us, and lead us, so that we may delight in Your will and walk in Your ways to the glory of Your holy name. Amen.
 
 In the mercy of almighty God, Jesus Christ was given to die for us, and for His sake God forgives us all our sins. To those who believe in Jesus Christ He gives the power to become the children of God and bestows on them the Holy Spirit. May the Lord, who has begun this good work in us, bring it to completion in the day of our Lord Jesus Christ.
 
@@ -100,7 +100,7 @@ Amen.
 
 ## Luke 24:36-49
 
-36  While they were still talking about this, Jesus himself stood among them and said to them, "Peace be with you."  37  They were startled and frightened, thinking they saw a ghost.  38  He said to them, "Why are you troubled, and why do doubts rise in your minds?  39  Look at my hands and my feet. It is I myself! Touch me and see; a ghost does not have flesh and bones, as you see I have."  40  When he had said this, he showed them his hands and feet.  41  And while they still did not believe it because of joy and amazement, he asked them, "Do you have anything here to eat?"  42  They gave him a piece of broiled fish,  43  and he took it and ate it in their presence.  44  He said to them, "This is what I told you while I was still with you: Everything must be fulfilled that is written about me in the Law of Moses, the Prophets and the Psalms."  45  Then he opened their minds so they could understand the Scriptures.  46 He told them, "This is what is written: The Christ will suffer and rise from the dead on the third day,  47 and repentance and forgiveness of sins will be preached in his name to all nations, beginning at Jerusalem.  48  You are witnesses of these things.  49  I am going to send you what my Father has promised; but stay in the city until you have been clothed with power from on high." (NIV)
+36 While they were still talking about this, Jesus himself stood among them and said to them, "Peace be with you." 37 They were startled and frightened, thinking they saw a ghost. 38 He said to them, "Why are you troubled, and why do doubts rise in your minds? 39 Look at my hands and my feet. It is I myself! Touch me and see; a ghost does not have flesh and bones, as you see I have." 40 When he had said this, he showed them his hands and feet. 41 And while they still did not believe it because of joy and amazement, he asked them, "Do you have anything here to eat?" 42 They gave him a piece of broiled fish, 43 and he took it and ate it in their presence. 44 He said to them, "This is what I told you while I was still with you: Everything must be fulfilled that is written about me in the Law of Moses, the Prophets and the Psalms." 45 Then he opened their minds so they could understand the Scriptures. 46 He told them, "This is what is written: The Christ will suffer and rise from the dead on the third day, 47 and repentance and forgiveness of sins will be preached in his name to all nations, beginning at Jerusalem. 48 You are witnesses of these things. 49 I am going to send you what my Father has promised; but stay in the city until you have been clothed with power from on high." (NIV)
 
 ## THE CHILDREN'S MESSAGE
 
@@ -116,7 +116,7 @@ And in Jesus Christ, his only Son, our Lord, who was conceived by the Holy Spiri
 
 From thence he will come to judge the living and the dead.
 
-## I believe in the Holy Spirit,
+## I believe in the Holy Spirit
 
 the holy Christian Church, the communion of saints, the forgiveness of sins, the resurrection of the body, and the life everlasting. Amen.
 
@@ -156,7 +156,7 @@ He is risen indeed! Alleluia!
 
 You unravel me with a melody You surround me with a song Of deliverance from my enemies Till all my fears are gone
 
-Chorus:                                           I'm no longer a slave to fear I am a child of God I'm no longer a slave to fear I am a child of God
+Chorus: I'm no longer a slave to fear I am a child of God I'm no longer a slave to fear I am a child of God
 
 From my Mother's womb You have chosen me Love has called my name I've been born again into Your family Your blood flows through my veins
 

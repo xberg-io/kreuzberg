@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/html/taylor_swift.html",
+  "file_type": "html",
+  "file_size": 4118693,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "html test: taylor_swift",
+    "source": "pandoc-generated",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/html/taylor_swift.txt",
+    "source": "pandoc",
+    "markdown_file": "../../../../test_documents/ground_truth/html/taylor_swift.md"
+  }
+}

@@ -37,6 +37,36 @@ pub use xml_utils::xml_tag_name;
 
 use std::borrow::Cow;
 
+/// Escape `&`, `<`, and `>` in text destined for markdown/HTML output.
+///
+/// Underscores are intentionally **not** escaped. In extracted PDF text they are
+/// literal content (e.g. identifiers like `CTC_ARP_01`), not markdown italic
+/// delimiters.
+///
+/// Uses a single-pass scan: if no special characters are found, returns a
+/// borrowed `Cow` with no allocation.
+#[inline]
+pub fn escape_html_entities(text: &str) -> Cow<'_, str> {
+    let needs_amp = text.contains('&');
+    let needs_lt = text.contains('<');
+    let needs_gt = text.contains('>');
+
+    if !needs_amp && !needs_lt && !needs_gt {
+        return Cow::Borrowed(text);
+    }
+
+    let mut result = String::with_capacity(text.len() + 16);
+    for ch in text.chars() {
+        match ch {
+            '&' => result.push_str("&amp;"),
+            '<' => result.push_str("&lt;"),
+            '>' => result.push_str("&gt;"),
+            _ => result.push(ch),
+        }
+    }
+    Cow::Owned(result)
+}
+
 /// Normalizes whitespace by collapsing multiple whitespace characters into single spaces.
 /// Returns Cow::Borrowed if no normalization needed.
 #[inline]

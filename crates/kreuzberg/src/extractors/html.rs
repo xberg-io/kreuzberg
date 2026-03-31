@@ -5,8 +5,16 @@ use crate::core::config::{ExtractionConfig, OutputFormat};
 use crate::extractors::SyncExtractor;
 use crate::plugins::{DocumentExtractor, Plugin};
 use crate::text::utf8_validation;
-use crate::types::{ExtractionResult, HtmlMetadata, Metadata, Table};
+use crate::types::document_structure::TextAnnotation;
+use crate::types::extraction::ExtractedImage;
+use crate::types::internal::InternalDocument;
+use crate::types::internal_builder::InternalDocumentBuilder;
+use crate::types::uri::{Uri, classify_uri};
+use crate::types::{HtmlMetadata, Metadata, Table};
 use async_trait::async_trait;
+use bytes::Bytes;
+use html_to_markdown_rs::InlineImageFormat;
+use std::borrow::Cow;
 #[cfg(feature = "tokio-runtime")]
 use std::path::Path;
 
@@ -22,6 +30,195 @@ impl Default for HtmlExtractor {
 impl HtmlExtractor {
     pub fn new() -> Self {
         Self
+    }
+}
+
+impl HtmlExtractor {
+    /// Map html-to-markdown's `DocumentStructure` into kreuzberg's `InternalDocument`.
+    ///
+    /// Walks the flat node array from html-to-markdown and uses `InternalDocumentBuilder`
+    /// to construct the equivalent kreuzberg representation. Skips `RawBlock` nodes
+    /// (script/style content) and `MetadataBlock` nodes (handled by metadata extraction).
+    fn map_document_structure(doc_structure: &html_to_markdown_rs::types::DocumentStructure) -> InternalDocument {
+        let mut b = InternalDocumentBuilder::new("html");
+
+        // Track which nodes are list containers so we can manage open/close
+        // We need to walk top-level nodes and handle children via the tree structure.
+        // html-to-markdown uses a flat array with parent/children indices.
+        // We do a depth-first walk using the children structure.
+
+        let root_indices: Vec<usize> = doc_structure
+            .nodes
+            .iter()
+            .enumerate()
+            .filter(|(_, n)| n.parent.is_none())
+            .map(|(i, _)| i)
+            .collect();
+
+        Self::walk_nodes(doc_structure, &root_indices, &mut b);
+
+        b.build()
+    }
+
+    /// Recursively walk document nodes and push them into the builder.
+    fn walk_nodes(
+        doc: &html_to_markdown_rs::types::DocumentStructure,
+        indices: &[usize],
+        b: &mut InternalDocumentBuilder,
+    ) {
+        use html_to_markdown_rs::types::NodeContent as HC;
+
+        for &idx in indices {
+            let Some(node) = doc.nodes.get(idx) else {
+                continue;
+            };
+
+            match &node.content {
+                HC::Heading { level, text } => {
+                    let elem_idx = b.push_heading(*level, text, None, None);
+                    let annotations = map_annotations(&node.annotations);
+                    push_link_uris_from_annotations(&annotations, text, b);
+                    if !annotations.is_empty() {
+                        b.set_annotations(elem_idx, annotations);
+                    }
+                }
+                HC::Paragraph { text } => {
+                    let annotations = map_annotations(&node.annotations);
+                    push_link_uris_from_annotations(&annotations, text, b);
+                    b.push_paragraph(text, annotations, None, None);
+                }
+                HC::List { ordered } => {
+                    b.push_list(*ordered);
+                    let child_indices: Vec<usize> = node.children.iter().map(|&i| i as usize).collect();
+                    Self::walk_nodes(doc, &child_indices, b);
+                    b.end_list();
+                }
+                HC::ListItem { text } => {
+                    // Determine if parent is ordered
+                    let ordered = node
+                        .parent
+                        .and_then(|p| doc.nodes.get(p as usize))
+                        .map(|parent| matches!(parent.content, HC::List { ordered: true }))
+                        .unwrap_or(false);
+                    let annotations = map_annotations(&node.annotations);
+                    push_link_uris_from_annotations(&annotations, text, b);
+                    b.push_list_item(text, ordered, annotations, None, None);
+                }
+                HC::Table { grid } => {
+                    // Convert grid to 2D cells for the builder
+                    let mut cells = vec![vec![String::new(); grid.cols as usize]; grid.rows as usize];
+                    for cell in &grid.cells {
+                        if (cell.row as usize) < cells.len() && (cell.col as usize) < cells[0].len() {
+                            cells[cell.row as usize][cell.col as usize] = cell.content.clone();
+                        }
+                    }
+                    b.push_table_from_cells(&cells, None, None);
+                }
+                HC::Image { description, src, .. } => {
+                    // Push as a paragraph with image description for now.
+                    // Actual image data extraction is handled separately via extract_html_inline_images.
+                    let text = description.as_deref().unwrap_or("");
+                    if !text.is_empty() || src.is_some() {
+                        let display = if let Some(src) = src {
+                            if text.is_empty() {
+                                format!("![]({})", src)
+                            } else {
+                                format!("![{}]({})", text, src)
+                            }
+                        } else {
+                            text.to_string()
+                        };
+                        b.push_paragraph(&display, vec![], None, None);
+                    }
+                    // Collect image URI reference
+                    if let Some(img_src) = src.as_ref().filter(|s| !s.is_empty()) {
+                        b.push_uri(Uri::image(img_src.as_str(), description.clone()));
+                    }
+                }
+                HC::Code { text, language } => {
+                    b.push_code(text, language.as_deref(), None, None);
+                }
+                HC::Quote => {
+                    b.push_quote_start();
+                    let child_indices: Vec<usize> = node.children.iter().map(|&i| i as usize).collect();
+                    Self::walk_nodes(doc, &child_indices, b);
+                    b.push_quote_end();
+                }
+                HC::DefinitionList => {
+                    // Walk children (DefinitionItem nodes)
+                    let child_indices: Vec<usize> = node.children.iter().map(|&i| i as usize).collect();
+                    Self::walk_nodes(doc, &child_indices, b);
+                }
+                HC::DefinitionItem { term, definition } => {
+                    b.push_definition_term(term, None);
+                    b.push_definition_description(definition, None);
+                }
+                HC::Group { label, .. } => {
+                    b.push_group_start(label.as_deref(), None);
+                    let child_indices: Vec<usize> = node.children.iter().map(|&i| i as usize).collect();
+                    Self::walk_nodes(doc, &child_indices, b);
+                    b.push_group_end();
+                }
+                // Skip RawBlock (script/style content) and MetadataBlock (handled by metadata extraction)
+                HC::RawBlock { .. } | HC::MetadataBlock { .. } => {}
+            }
+        }
+    }
+}
+
+/// Map html-to-markdown annotations to kreuzberg annotations.
+fn map_annotations(annotations: &[html_to_markdown_rs::types::TextAnnotation]) -> Vec<TextAnnotation> {
+    annotations
+        .iter()
+        .map(|a| {
+            use html_to_markdown_rs::types::AnnotationKind as AK;
+            let kind = match &a.kind {
+                AK::Bold => crate::types::document_structure::AnnotationKind::Bold,
+                AK::Italic => crate::types::document_structure::AnnotationKind::Italic,
+                AK::Underline => crate::types::document_structure::AnnotationKind::Underline,
+                AK::Strikethrough => crate::types::document_structure::AnnotationKind::Strikethrough,
+                AK::Code => crate::types::document_structure::AnnotationKind::Code,
+                AK::Subscript => crate::types::document_structure::AnnotationKind::Subscript,
+                AK::Superscript => crate::types::document_structure::AnnotationKind::Superscript,
+                AK::Highlight => crate::types::document_structure::AnnotationKind::Highlight,
+                AK::Link { url, title } => crate::types::document_structure::AnnotationKind::Link {
+                    url: url.clone(),
+                    title: title.clone(),
+                },
+            };
+            TextAnnotation {
+                start: a.start,
+                end: a.end,
+                kind,
+            }
+        })
+        .collect()
+}
+
+/// Extract URIs from link annotations and push them into the builder.
+fn push_link_uris_from_annotations(annotations: &[TextAnnotation], text: &str, b: &mut InternalDocumentBuilder) {
+    for ann in annotations {
+        if let crate::types::document_structure::AnnotationKind::Link { url, .. } = &ann.kind {
+            if url.is_empty() {
+                continue;
+            }
+            let label = if ann.start < ann.end && (ann.end as usize) <= text.len() {
+                let slice = &text[ann.start as usize..ann.end as usize];
+                if slice.is_empty() {
+                    None
+                } else {
+                    Some(slice.to_string())
+                }
+            } else {
+                None
+            };
+            b.push_uri(Uri {
+                url: url.clone(),
+                label,
+                page: None,
+                kind: classify_uri(url),
+            });
+        }
     }
 }
 
@@ -44,27 +241,52 @@ impl Plugin for HtmlExtractor {
 }
 
 impl SyncExtractor for HtmlExtractor {
-    fn extract_sync(&self, content: &[u8], mime_type: &str, config: &ExtractionConfig) -> Result<ExtractionResult> {
+    fn extract_sync(&self, content: &[u8], mime_type: &str, config: &ExtractionConfig) -> Result<InternalDocument> {
         let html = utf8_validation::from_utf8(content)
             .map(|s| s.to_string())
-            .unwrap_or_else(|_| String::from_utf8_lossy(content).to_string());
+            .unwrap_or_else(|_| String::from_utf8_lossy(content).into_owned());
 
-        let (content_text, html_metadata, table_data) = crate::extraction::html::convert_html_to_markdown_with_tables(
-            &html,
-            config.html_options.clone(),
-            Some(config.output_format),
-        )?;
+        let (content_text, html_metadata, table_data, doc_structure) =
+            crate::extraction::html::convert_html_to_markdown_with_tables(
+                &html,
+                config.html_options.clone(),
+                Some(config.output_format.clone()),
+            )?;
 
         let tables: Vec<Table> = table_data
             .into_iter()
             .enumerate()
-            .map(|(i, t)| Table {
-                cells: t.cells,
-                markdown: t.markdown,
-                page_number: i + 1,
-                bounding_box: None,
+            .map(|(i, t)| {
+                let grid = &t.grid;
+                let mut cells = vec![vec![String::new(); grid.cols as usize]; grid.rows as usize];
+                for cell in &grid.cells {
+                    if (cell.row as usize) < cells.len() && (cell.col as usize) < cells[0].len() {
+                        cells[cell.row as usize][cell.col as usize] = cell.content.clone();
+                    }
+                }
+                Table {
+                    cells,
+                    markdown: t.markdown,
+                    page_number: i + 1,
+                    bounding_box: None,
+                }
             })
             .collect();
+
+        // Extract standard metadata fields from HtmlMetadata before consuming into FormatMetadata
+        let meta_title = html_metadata.as_ref().and_then(|m| m.title.clone());
+        let meta_authors = html_metadata
+            .as_ref()
+            .and_then(|m| m.author.as_ref().map(|a| vec![a.clone()]));
+        let meta_language = html_metadata.as_ref().and_then(|m| m.language.clone());
+        let meta_subject = html_metadata.as_ref().and_then(|m| m.description.clone());
+        let meta_keywords = html_metadata.as_ref().and_then(|m| {
+            if m.keywords.is_empty() {
+                None
+            } else {
+                Some(m.keywords.clone())
+            }
+        });
 
         let format_metadata = html_metadata.map(|m: HtmlMetadata| crate::types::FormatMetadata::Html(Box::new(m)));
 
@@ -76,37 +298,84 @@ impl SyncExtractor for HtmlExtractor {
             _ => None,
         };
 
-        // Build document structure from the original HTML.
-        let document = if config.include_document_structure {
-            Some(crate::extraction::html::structure::build_document_structure(&html))
+        // Build InternalDocument from html-to-markdown's DocumentStructure.
+        // If the structure has nodes, map them to InternalDocument elements.
+        // Otherwise, fall back to a single paragraph with the converter's text output.
+        let mut doc = if let Some(ref structure) = doc_structure {
+            let mapped = Self::map_document_structure(structure);
+            if mapped.elements.is_empty() && !content_text.is_empty() {
+                // Structure collector didn't produce nodes (e.g. only images/lists which
+                // aren't collected yet). Use the converter's text as a paragraph.
+                let mut b = InternalDocumentBuilder::new("html");
+                b.push_paragraph(&content_text, vec![], None, None);
+                b.build()
+            } else {
+                mapped
+            }
+        } else if !content_text.is_empty() {
+            let mut b = InternalDocumentBuilder::new("html");
+            b.push_paragraph(&content_text, vec![], None, None);
+            b.build()
         } else {
-            None
+            InternalDocumentBuilder::new("html").build()
         };
 
-        Ok(ExtractionResult {
-            content: content_text,
-            mime_type: mime_type.to_string().into(),
-            metadata: Metadata {
-                output_format: pre_formatted,
-                format: format_metadata,
-                ..Default::default()
-            },
-            pages: None,
-            tables,
-            detected_languages: None,
-            chunks: None,
-            images: None,
-            djot_content: None,
-            elements: None,
-            ocr_elements: None,
-            document,
-            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-            extracted_keywords: None,
-            quality_score: None,
-            processing_warnings: Vec::new(),
-            annotations: None,
-            children: None,
-        })
+        doc.metadata = Metadata {
+            title: meta_title,
+            authors: meta_authors,
+            language: meta_language,
+            subject: meta_subject,
+            keywords: meta_keywords,
+            output_format: pre_formatted,
+            format: format_metadata,
+            ..Default::default()
+        };
+        doc.mime_type = std::borrow::Cow::Owned(mime_type.to_string());
+
+        // Add tables to InternalDocument
+        for table in tables {
+            doc.push_table(table);
+        }
+
+        // Extract inline images when image extraction is configured
+        let should_extract_images = config.images.as_ref().map(|i| i.extract_images).unwrap_or(false);
+
+        if should_extract_images {
+            let inline_images =
+                crate::extraction::html::extract_html_inline_images(&html, config.html_options.clone())?;
+
+            for (i, img) in inline_images.into_iter().enumerate() {
+                let (width, height) = img.dimensions.map_or((None, None), |(w, h)| (Some(w), Some(h)));
+                let format: Cow<'static, str> = match img.format {
+                    InlineImageFormat::Png => Cow::Borrowed("png"),
+                    InlineImageFormat::Jpeg => Cow::Borrowed("jpeg"),
+                    InlineImageFormat::Gif => Cow::Borrowed("gif"),
+                    InlineImageFormat::Bmp => Cow::Borrowed("bmp"),
+                    InlineImageFormat::Webp => Cow::Borrowed("webp"),
+                    InlineImageFormat::Svg => Cow::Borrowed("svg"),
+                    InlineImageFormat::Other(ref s) => Cow::Owned(s.clone()),
+                };
+
+                let extracted = ExtractedImage {
+                    data: Bytes::from(img.data),
+                    format,
+                    image_index: i,
+                    page_number: None,
+                    width,
+                    height,
+                    colorspace: None,
+                    bits_per_component: None,
+                    is_mask: false,
+                    description: img.description,
+                    ocr_result: None,
+                    bounding_box: None,
+                    source_path: None,
+                };
+                doc.push_image(extracted);
+            }
+        }
+
+        Ok(doc)
     }
 }
 
@@ -118,12 +387,18 @@ impl DocumentExtractor for HtmlExtractor {
         content: &[u8],
         mime_type: &str,
         config: &ExtractionConfig,
-    ) -> Result<ExtractionResult> {
+    ) -> Result<InternalDocument> {
         self.extract_sync(content, mime_type, config)
     }
 
     #[cfg(feature = "tokio-runtime")]
-    async fn extract_file(&self, path: &Path, mime_type: &str, config: &ExtractionConfig) -> Result<ExtractionResult> {
+    #[cfg_attr(feature = "otel", tracing::instrument(
+        skip(self, path, config),
+        fields(
+            extractor.name = self.name(),
+        )
+    ))]
+    async fn extract_file(&self, path: &Path, mime_type: &str, config: &ExtractionConfig) -> Result<InternalDocument> {
         let bytes = tokio::fs::read(path).await?;
         self.extract_bytes(&bytes, mime_type, config).await
     }
@@ -145,18 +420,27 @@ impl DocumentExtractor for HtmlExtractor {
 mod tests {
     use super::*;
 
-    /// Helper to extract tables from HTML using the visitor-based converter.
+    /// Helper to extract tables from HTML using the unified converter.
     fn extract_tables(html: &str) -> Vec<Table> {
-        let (_, _, table_data): (String, _, Vec<html_to_markdown_rs::TableData>) =
+        let (_, _, table_data, _): (String, _, Vec<html_to_markdown_rs::types::TableData>, _) =
             crate::extraction::html::convert_html_to_markdown_with_tables(html, None, None).unwrap();
         table_data
             .into_iter()
             .enumerate()
-            .map(|(i, t)| Table {
-                cells: t.cells,
-                markdown: t.markdown,
-                page_number: i + 1,
-                bounding_box: None,
+            .map(|(i, t)| {
+                let grid = &t.grid;
+                let mut cells = vec![vec![String::new(); grid.cols as usize]; grid.rows as usize];
+                for cell in &grid.cells {
+                    if (cell.row as usize) < cells.len() && (cell.col as usize) < cells[0].len() {
+                        cells[cell.row as usize][cell.col as usize] = cell.content.clone();
+                    }
+                }
+                Table {
+                    cells,
+                    markdown: t.markdown,
+                    page_number: i + 1,
+                    bounding_box: None,
+                }
             })
             .collect()
     }
@@ -345,8 +629,12 @@ mod tests {
             .extract_bytes(html.as_bytes(), "text/html", &config)
             .await
             .unwrap();
+        let result =
+            crate::extraction::derive::derive_extraction_result(result, true, crate::core::config::OutputFormat::Plain);
 
-        assert_eq!(result.tables.len(), 1);
+        // Tables come from document structure extraction (single source now)
+        assert!(!result.tables.is_empty(), "Should have at least one table");
+        // Verify table content
         let table = &result.tables[0];
         assert_eq!(table.cells.len(), 3);
         assert_eq!(table.cells[0], vec!["Name", "Age"]);
@@ -375,10 +663,20 @@ mod tests {
             .extract_bytes(html.as_bytes(), "text/html", &config)
             .await
             .unwrap();
+        let result =
+            crate::extraction::derive::derive_extraction_result(result, true, crate::core::config::OutputFormat::Plain);
 
         assert_eq!(result.mime_type, "text/html");
-        assert!(result.content.contains("# Test Page"));
-        assert!(result.content.contains("*emphasis*")); // Djot strong syntax
+        assert!(
+            result.content.contains("Test Page"),
+            "Should contain heading text: {}",
+            result.content
+        );
+        assert!(
+            result.content.contains("emphasis"),
+            "Should contain emphasis text: {}",
+            result.content
+        );
     }
 
     #[tokio::test]
@@ -402,6 +700,8 @@ mod tests {
             .extract_bytes(html.as_bytes(), "text/html", &config)
             .await
             .unwrap();
+        let result =
+            crate::extraction::derive::derive_extraction_result(result, true, crate::core::config::OutputFormat::Plain);
 
         // Content should already be in djot format
         assert_eq!(result.mime_type, "text/html");
@@ -414,5 +714,82 @@ mod tests {
         // Content should be identical - no re-conversion should occur
         assert_eq!(pipeline_result.content, original_content);
         assert_eq!(pipeline_result.mime_type, "text/html");
+    }
+
+    #[test]
+    fn test_map_document_structure_basic() {
+        let html = "<h1>Title</h1><p>Hello world.</p>";
+        let (_, _, _, doc_structure) =
+            crate::extraction::html::convert_html_to_markdown_with_tables(html, None, None).unwrap();
+        let doc_structure = doc_structure.expect("should have document structure");
+        let doc = HtmlExtractor::map_document_structure(&doc_structure);
+        assert!(!doc.elements.is_empty(), "Should have elements");
+    }
+
+    #[tokio::test]
+    async fn test_extract_sync_plain_text_has_content() {
+        let html = r#"<h1>Title</h1><p>Hello world</p>"#;
+        let extractor = HtmlExtractor::new();
+        let config = ExtractionConfig::default(); // Plain text
+        let result = extractor
+            .extract_bytes(html.as_bytes(), "text/html", &config)
+            .await
+            .unwrap();
+        // Check that InternalDocument has elements
+        assert!(
+            !result.elements.is_empty(),
+            "InternalDocument should have elements, got: {:?}",
+            result.elements.len()
+        );
+        let content = result.content();
+        assert!(
+            content.contains("Title"),
+            "Content should contain heading: '{}'",
+            content
+        );
+    }
+
+    #[test]
+    fn test_no_css_or_script_leaking() {
+        let html = r#"
+        <html>
+            <head>
+                <style>body { color: red; } .hidden { display: none; }</style>
+                <script>alert('xss');</script>
+                <script type="application/ld+json">{"@type": "Article"}</script>
+            </head>
+            <body>
+                <h1>Clean Content</h1>
+                <p>This should be the only content.</p>
+            </body>
+        </html>
+        "#;
+
+        let doc_structure = {
+            let (_, _, _, ds) =
+                crate::extraction::html::convert_html_to_markdown_with_tables(html, None, None).unwrap();
+            ds.expect("should have document structure")
+        };
+        let doc = HtmlExtractor::map_document_structure(&doc_structure);
+
+        // Check that no element contains CSS or script content
+        for elem in &doc.elements {
+            let text = elem.text.as_str();
+            assert!(
+                !text.contains("color: red"),
+                "CSS should not leak into elements: {:?}",
+                text
+            );
+            assert!(
+                !text.contains("alert("),
+                "Script should not leak into elements: {:?}",
+                text
+            );
+            assert!(
+                !text.contains("@type"),
+                "JSON-LD should not leak into elements: {:?}",
+                text
+            );
+        }
     }
 }

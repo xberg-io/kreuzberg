@@ -2,12 +2,12 @@
 
 [package]
 name = "kreuzberg-test-app-rust"
-version = "4.6.3"
+version = "4.7.0"
 edition = "2024"
 rust-version = "1.91"
 authors = ["Kreuzberg Contributors"]
 license = "MIT OR Apache-2.0"
-description = "Comprehensive API coverage test for Kreuzberg 4.6.3 Rust library"
+description = "Comprehensive API coverage test for Kreuzberg 4.7.0 Rust library"
 readme = "README.md"
 publish = false
 

@@ -7,14 +7,14 @@ use anyhow::{Context, Result};
 use kreuzberg::{ExtractionConfig, FileExtractionConfig, batch_extract_file_sync, extract_file_sync};
 use std::path::PathBuf;
 
-use crate::{OutputFormat, style};
+use crate::{WireFormat, style};
 
 /// Execute single document extraction command
 pub fn extract_command(
     path: PathBuf,
     config: ExtractionConfig,
     mime_type: Option<String>,
-    format: OutputFormat,
+    format: WireFormat,
 ) -> Result<()> {
     let path_str = path.to_string_lossy().to_string();
 
@@ -26,13 +26,19 @@ pub fn extract_command(
     })?;
 
     match format {
-        OutputFormat::Text => {
+        WireFormat::Text => {
             println!("{}", result.content);
         }
-        OutputFormat::Json => {
+        WireFormat::Json => {
             println!(
                 "{}",
                 serde_json::to_string_pretty(&result).context("Failed to serialize extraction result to JSON")?
+            );
+        }
+        WireFormat::Toon => {
+            println!(
+                "{}",
+                serde_toon::to_string(&result).context("Failed to serialize extraction result to TOON")?
             );
         }
     }
@@ -45,7 +51,7 @@ pub fn batch_command(
     paths: Vec<PathBuf>,
     file_configs_map: Option<std::collections::HashMap<String, serde_json::Value>>,
     config: ExtractionConfig,
-    format: OutputFormat,
+    format: WireFormat,
 ) -> Result<()> {
     let items: Vec<(PathBuf, Option<FileExtractionConfig>)> = if let Some(ref configs_map) = file_configs_map {
         paths
@@ -71,7 +77,7 @@ pub fn batch_command(
     )?;
 
     match format {
-        OutputFormat::Text => {
+        WireFormat::Text => {
             for (i, result) in results.iter().enumerate() {
                 println!("{}", style::header(&format!("=== Document {} ===", i + 1)));
                 println!("{} {}", style::label("MIME Type:"), style::success(&result.mime_type));
@@ -79,11 +85,17 @@ pub fn batch_command(
                 println!();
             }
         }
-        OutputFormat::Json => {
+        WireFormat::Json => {
             println!(
                 "{}",
                 serde_json::to_string_pretty(&results)
                     .context("Failed to serialize batch extraction results to JSON")?
+            );
+        }
+        WireFormat::Toon => {
+            println!(
+                "{}",
+                serde_toon::to_string(&results).context("Failed to serialize batch extraction results to TOON")?
             );
         }
     }

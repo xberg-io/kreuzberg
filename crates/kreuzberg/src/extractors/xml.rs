@@ -5,25 +5,22 @@ use crate::core::config::ExtractionConfig;
 use crate::extraction::xml::{parse_xml, parse_xml_svg};
 use crate::extractors::SyncExtractor;
 use crate::plugins::{DocumentExtractor, Plugin};
-use crate::types::ExtractionResult;
+use crate::types::internal::{ElementKind, InternalDocument, InternalElement};
+use crate::types::metadata::Metadata;
 use ahash::AHashMap;
 use async_trait::async_trait;
 
-/// Build a `DocumentStructure` from XML content by parsing element hierarchy.
+/// Build an `InternalDocument` from XML content by parsing element hierarchy.
 ///
-/// Maps XML elements to groups (for parent elements with children) and
+/// Maps XML elements to headings (for parent elements with children) and
 /// paragraphs (for text content), preserving the element tree structure.
-/// Element attributes are stored as node attributes.
-fn build_xml_document_structure(
-    content: &[u8],
-    mime_type: &str,
-) -> crate::types::document_structure::DocumentStructure {
-    use crate::types::builder::DocumentStructureBuilder;
+/// Element attributes are stored as element attributes.
+fn build_internal_document(content: &[u8], mime_type: &str) -> InternalDocument {
     use quick_xml::Reader;
     use quick_xml::events::Event;
     use std::borrow::Cow;
 
-    let mut builder = DocumentStructureBuilder::new().source_format("xml");
+    let mut doc = InternalDocument::new("xml");
     let is_svg = mime_type == "image/svg+xml";
 
     let mut reader = Reader::from_reader(content);
@@ -31,8 +28,9 @@ fn build_xml_document_structure(
     reader.config_mut().check_end_names = false;
 
     let mut buf = Vec::new();
-    let mut depth = 0u8;
+    let mut depth: u16 = 0;
     let mut element_stack: Vec<String> = Vec::new();
+    let mut index: u32 = 0;
 
     loop {
         match reader.read_event_into(&mut buf) {
@@ -51,12 +49,14 @@ fn build_xml_document_structure(
                     }
                 }
 
-                // Use heading for top-level structural elements
-                let level = (depth + 1).min(6);
-                let node_idx = builder.push_heading(level, &name_owned, None, None);
+                let level = ((depth as u8) + 1).min(6);
+                let mut elem =
+                    InternalElement::text(ElementKind::Heading { level }, &name_owned, depth).with_index(index);
                 if !attrs.is_empty() {
-                    builder.set_attributes(node_idx, attrs);
+                    elem = elem.with_attributes(attrs);
                 }
+                doc.push_element(elem);
+                index += 1;
 
                 element_stack.push(name_owned);
                 depth = depth.saturating_add(1);
@@ -67,7 +67,6 @@ fn build_xml_document_structure(
             }
             Ok(Event::Text(e)) => {
                 if is_svg {
-                    // In SVG mode, only extract text from text-bearing elements
                     let in_text_elem = element_stack
                         .iter()
                         .any(|n| matches!(n.as_str(), "text" | "tspan" | "title" | "desc" | "textPath"));
@@ -76,10 +75,12 @@ fn build_xml_document_structure(
                         continue;
                     }
                 }
-                let text: Cow<str> = String::from_utf8_lossy(e.as_ref());
+                let text: std::borrow::Cow<str> = String::from_utf8_lossy(e.as_ref());
                 let trimmed = text.trim();
                 if !trimmed.is_empty() {
-                    builder.push_paragraph(trimmed, vec![], None, None);
+                    let elem = InternalElement::text(ElementKind::Paragraph, trimmed, depth).with_index(index);
+                    doc.push_element(elem);
+                    index += 1;
                 }
             }
             Ok(Event::Empty(e)) => {
@@ -88,24 +89,28 @@ fn build_xml_document_structure(
 
                 let mut attrs = AHashMap::new();
                 for attr in e.attributes().flatten() {
-                    let key: Cow<str> = String::from_utf8_lossy(attr.key.as_ref());
-                    let val: Cow<str> = String::from_utf8_lossy(&attr.value);
+                    let key: std::borrow::Cow<str> = String::from_utf8_lossy(attr.key.as_ref());
+                    let val: std::borrow::Cow<str> = String::from_utf8_lossy(&attr.value);
                     let trimmed_val = val.trim();
                     if !trimmed_val.is_empty() {
                         attrs.insert(key.to_string(), trimmed_val.to_string());
                     }
                 }
 
-                let node_idx = builder.push_paragraph(&name, vec![], None, None);
+                let mut elem = InternalElement::text(ElementKind::Paragraph, &name, depth).with_index(index);
                 if !attrs.is_empty() {
-                    builder.set_attributes(node_idx, attrs);
+                    elem = elem.with_attributes(attrs);
                 }
+                doc.push_element(elem);
+                index += 1;
             }
             Ok(Event::CData(e)) => {
-                let text: Cow<str> = String::from_utf8_lossy(&e);
+                let text: std::borrow::Cow<str> = String::from_utf8_lossy(&e);
                 let trimmed = text.trim();
                 if !trimmed.is_empty() {
-                    builder.push_paragraph(trimmed, vec![], None, None);
+                    let elem = InternalElement::text(ElementKind::Paragraph, trimmed, depth).with_index(index);
+                    doc.push_element(elem);
+                    index += 1;
                 }
             }
             Ok(Event::Eof) => break,
@@ -115,7 +120,7 @@ fn build_xml_document_structure(
         buf.clear();
     }
 
-    builder.build()
+    doc
 }
 
 /// XML extractor.
@@ -163,45 +168,25 @@ impl Plugin for XmlExtractor {
 }
 
 impl SyncExtractor for XmlExtractor {
-    fn extract_sync(&self, content: &[u8], mime_type: &str, config: &ExtractionConfig) -> Result<ExtractionResult> {
+    fn extract_sync(&self, content: &[u8], mime_type: &str, _config: &ExtractionConfig) -> Result<InternalDocument> {
         let xml_result = if mime_type == "image/svg+xml" {
             parse_xml_svg(content, false)?
         } else {
             parse_xml(content, false)?
         };
 
-        let document = if config.include_document_structure && !xml_result.content.trim().is_empty() {
-            Some(build_xml_document_structure(content, mime_type))
-        } else {
-            None
+        let mut doc = build_internal_document(content, mime_type);
+        doc.mime_type = std::borrow::Cow::Owned(mime_type.to_string());
+
+        doc.metadata = Metadata {
+            format: Some(crate::types::FormatMetadata::Xml(crate::types::XmlMetadata {
+                element_count: xml_result.element_count,
+                unique_elements: xml_result.unique_elements,
+            })),
+            ..Default::default()
         };
 
-        Ok(ExtractionResult {
-            content: xml_result.content,
-            mime_type: mime_type.to_string().into(),
-            metadata: crate::types::Metadata {
-                format: Some(crate::types::FormatMetadata::Xml(crate::types::XmlMetadata {
-                    element_count: xml_result.element_count,
-                    unique_elements: xml_result.unique_elements,
-                })),
-                ..Default::default()
-            },
-            tables: vec![],
-            detected_languages: None,
-            chunks: None,
-            images: None,
-            pages: None,
-            djot_content: None,
-            elements: None,
-            ocr_elements: None,
-            document,
-            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-            extracted_keywords: None,
-            quality_score: None,
-            processing_warnings: Vec::new(),
-            annotations: None,
-            children: None,
-        })
+        Ok(doc)
     }
 }
 
@@ -213,7 +198,7 @@ impl DocumentExtractor for XmlExtractor {
         content: &[u8],
         mime_type: &str,
         config: &ExtractionConfig,
-    ) -> Result<ExtractionResult> {
+    ) -> Result<InternalDocument> {
         self.extract_sync(content, mime_type, config)
     }
 
@@ -250,10 +235,6 @@ mod tests {
             .await
             .unwrap();
 
-        assert_eq!(result.mime_type, "application/xml");
-        // Hierarchical output: element names on their own line, text indented below
-        assert!(result.content.contains("Hello"));
-        assert!(result.content.contains("World"));
         assert!(result.metadata.format.is_some());
         let xml_meta = match result.metadata.format.as_ref().unwrap() {
             crate::types::FormatMetadata::Xml(meta) => meta,

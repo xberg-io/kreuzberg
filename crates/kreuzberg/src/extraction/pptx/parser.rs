@@ -301,6 +301,7 @@ fn parse_paragraph(p_node: &Node, add_new_line: bool) -> Result<Vec<Run>> {
 fn parse_run(r_node: &Node) -> Result<Run> {
     let mut text = String::new();
     let mut formatting = Formatting::default();
+    let mut hyperlink_id = None;
 
     if let Some(r_pr_node) = r_node.children().find(|n| {
         n.is_element() && n.tag_name().name() == "rPr" && n.tag_name().namespace() == Some(DRAWINGML_NAMESPACE)
@@ -323,6 +324,18 @@ fn parse_run(r_node: &Node) -> Result<Run> {
         if let Some(lang_attr) = r_pr_node.attribute("lang") {
             formatting.lang = lang_attr.to_string();
         }
+
+        // Capture hyperlink reference: <a:hlinkClick r:id="rIdN"/>
+        if let Some(hlink_node) = r_pr_node.children().find(|n| {
+            n.is_element()
+                && n.tag_name().name() == "hlinkClick"
+                && n.tag_name().namespace() == Some(DRAWINGML_NAMESPACE)
+        }) {
+            hyperlink_id = hlink_node
+                .attribute((RELATIONSHIPS_NAMESPACE, "id"))
+                .or_else(|| hlink_node.attribute("r:id"))
+                .map(|s| s.to_string());
+        }
     }
 
     if let Some(t_node) = r_node
@@ -332,7 +345,11 @@ fn parse_run(r_node: &Node) -> Result<Run> {
     {
         text.push_str(t);
     }
-    Ok(Run { text, formatting })
+    Ok(Run {
+        text,
+        formatting,
+        hyperlink_id,
+    })
 }
 
 pub(super) fn extract_position(node: &Node) -> ElementPosition {
@@ -367,7 +384,13 @@ pub(super) fn extract_position(node: &Node) -> ElementPosition {
         .unwrap_or(default)
 }
 
-pub(super) fn parse_slide_rels(rels_data: &[u8]) -> Result<Vec<ImageReference>> {
+/// Parsed relationships from a slide rels file.
+pub(super) struct SlideRels {
+    pub(super) images: Vec<ImageReference>,
+    pub(super) hyperlinks: Vec<super::elements::HyperlinkReference>,
+}
+
+pub(super) fn parse_slide_rels(rels_data: &[u8]) -> Result<SlideRels> {
     let xml_str = utf8_validation::from_utf8(rels_data)
         .map_err(|e| KreuzbergError::parsing(format!("Invalid UTF-8 in rels XML: {}", e)))?;
 
@@ -375,22 +398,29 @@ pub(super) fn parse_slide_rels(rels_data: &[u8]) -> Result<Vec<ImageReference>> 
         Document::parse(xml_str).map_err(|e| KreuzbergError::parsing(format!("Failed to parse rels XML: {}", e)))?;
 
     let mut images = Vec::new();
+    let mut hyperlinks = Vec::new();
 
     for node in doc.descendants() {
         if node.has_tag_name("Relationship")
             && let Some(rel_type) = node.attribute("Type")
-            && rel_type.contains("image")
             && let (Some(id), Some(target)) = (node.attribute("Id"), node.attribute("Target"))
         {
-            images.push(ImageReference {
-                id: id.to_string(),
-                target: target.to_string(),
-                description: None,
-            });
+            if rel_type.contains("image") {
+                images.push(ImageReference {
+                    id: id.to_string(),
+                    target: target.to_string(),
+                    description: None,
+                });
+            } else if rel_type.contains("hyperlink") {
+                hyperlinks.push(super::elements::HyperlinkReference {
+                    id: id.to_string(),
+                    url: target.to_string(),
+                });
+            }
         }
     }
 
-    Ok(images)
+    Ok(SlideRels { images, hyperlinks })
 }
 
 pub(super) fn parse_presentation_rels(rels_data: &[u8]) -> Result<Vec<String>> {

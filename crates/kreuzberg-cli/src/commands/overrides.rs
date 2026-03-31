@@ -119,14 +119,14 @@ pub struct ExtractionOverrides {
     pub chunking_tokenizer: Option<String>,
 
     // ── Output ────────────────────────────────────────────────────────
-    /// Content output format (plain, markdown, djot, html).
-    /// Controls the format of extracted content, not the CLI display format.
+    /// Content rendering format (plain, markdown, djot, html).
+    /// Controls the format of extracted content.
     #[arg(long, value_enum)]
-    pub output_format: Option<ContentOutputFormatArg>,
-
-    /// Content output format (DEPRECATED: use --output-format instead).
-    #[arg(long, value_enum, hide = true)]
     pub content_format: Option<ContentOutputFormatArg>,
+
+    /// Content rendering format (DEPRECATED: use --content-format instead).
+    #[arg(long, value_enum, hide = true)]
+    pub output_format: Option<ContentOutputFormatArg>,
 
     /// Include hierarchical document structure in results.
     #[arg(long)]
@@ -453,14 +453,14 @@ impl ExtractionOverrides {
     }
 
     fn apply_output_format(&self, config: &mut ExtractionConfig) {
-        let final_output_format = self.output_format.or_else(|| {
-            if self.content_format.is_some() {
-                eprintln!("warning: '--content-format' is deprecated since 4.2.0, use '--output-format' instead");
+        let final_format = self.content_format.or_else(|| {
+            if self.output_format.is_some() {
+                eprintln!("warning: '--output-format' is deprecated, use '--content-format' instead");
             }
-            self.content_format
+            self.output_format
         });
 
-        if let Some(content_fmt) = final_output_format {
+        if let Some(content_fmt) = final_format {
             config.output_format = content_fmt.into();
         }
     }

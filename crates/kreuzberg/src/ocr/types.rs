@@ -46,7 +46,6 @@ impl PSMMode {
 /// This is the internal representation used by the OCR processor.
 /// Public API uses i32 for PyO3 compatibility, converted to u8 here for efficiency.
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
 pub struct TesseractConfig {
     pub language: String,
     pub psm: u8,

@@ -104,27 +104,33 @@ kreuzberg batch documents/*.pdf --format json
 
 # Extract single file as JSON
 kreuzberg extract document.pdf --format json
+
+# Output as TOON wire format (token-efficient alternative to JSON)
+kreuzberg extract document.pdf --format toon
 ```
 
 ### Content Output Format
 
-Control the formatting of extracted text content:
+Control the formatting of extracted text content with `--content-format` (the deprecated alias `--output-format` is still accepted):
 
 ```bash title="Terminal"
 # Extract as plain text (default)
-kreuzberg extract document.pdf --output-format plain
+kreuzberg extract document.pdf --content-format plain
 
 # Extract as Markdown
-kreuzberg extract document.pdf --output-format markdown
+kreuzberg extract document.pdf --content-format markdown
 
 # Extract as Djot markup
-kreuzberg extract document.pdf --output-format djot
+kreuzberg extract document.pdf --content-format djot
 
 # Extract as HTML
-kreuzberg extract document.pdf --output-format html
+kreuzberg extract document.pdf --content-format html
+
+# Combine content format with wire format
+kreuzberg extract document.pdf --content-format markdown --format toon
 ```
 
-The `--output-format` flag controls how the extracted text is formatted. This is different from `--format` which controls the output structure (text vs JSON).
+The `--content-format` flag controls how the extracted text is formatted (what goes inside `result.content`). This is different from `--format` which controls the wire format used to serialize the entire result (`text`, `json`, or `toon`).
 
 ## OCR Extraction
 
@@ -423,11 +429,11 @@ kreuzberg extract document.pdf --chunking-tokenizer "Xenova/gpt-4o"
 
 | Flag | Description |
 |------|-------------|
-| `--output-format <FORMAT>` | Content output format: `plain`, `markdown`, `djot`, or `html`. Controls how extracted text is formatted. |
+| `--content-format <FORMAT>` | Content output format: `plain`, `markdown`, `djot`, or `html`. Controls how extracted text is formatted. (Deprecated alias: `--output-format`) |
 | `--include-structure <true\|false>` | Include hierarchical document structure in results. |
 
 ```bash title="Terminal"
-kreuzberg extract document.pdf --output-format markdown --include-structure true
+kreuzberg extract document.pdf --content-format markdown --include-structure true
 ```
 
 ### Layout Detection Flags

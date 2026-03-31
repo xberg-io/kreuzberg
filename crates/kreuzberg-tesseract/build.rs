@@ -155,7 +155,7 @@ mod build_tesseract {
             let candidate = msys2_base.join(subsystem).join("bin").join(format!("{}.exe", name));
             if candidate.exists() {
                 let path = candidate.to_string_lossy().replace('\\', "/");
-                println!("cargo:warning=Resolved MinGW {} to {}", name, path);
+                eprintln!("Resolved MinGW {} to {}", name, path);
                 return path;
             }
         }
@@ -199,7 +199,7 @@ mod build_tesseract {
         let arch = target.split('-').next().unwrap_or("x86_64");
         let musl_include = format!("/usr/include/{arch}-linux-musl");
         if !Path::new(&musl_include).exists() {
-            println!("cargo:warning=musl include dir not found at {musl_include}, skipping wrapper");
+            eprintln!("musl include dir not found at {musl_include}, skipping wrapper");
             return None;
         }
 
@@ -223,7 +223,7 @@ mod build_tesseract {
         fs::write(&wrapper_path, &wrapper_content).ok()?;
         fs::set_permissions(&wrapper_path, fs::Permissions::from_mode(0o755)).ok()?;
 
-        println!("cargo:warning=Created musl g++ wrapper at {wrapper_path} (musl headers: {musl_include})");
+        eprintln!("Created musl g++ wrapper at {wrapper_path} (musl headers: {musl_include})");
         Some(wrapper_path)
     }
 
@@ -296,7 +296,7 @@ mod build_tesseract {
     fn find_wasi_toolchain(wasi_sdk_dir: &Path) -> PathBuf {
         let candidate = wasi_sdk_dir.join("share/cmake/wasi-sdk.cmake");
         if candidate.exists() {
-            println!("cargo:warning=Found WASI SDK toolchain: {}", candidate.display());
+            eprintln!("Found WASI SDK toolchain: {}", candidate.display());
             return candidate;
         }
         panic!(
@@ -353,7 +353,7 @@ mod build_tesseract {
         let msvc_target = is_msvc_target(&target);
         let mingw_target = is_mingw_target(&target);
 
-        println!("cargo:warning=custom_out_dir: {:?}", custom_out_dir);
+        eprintln!("custom_out_dir: {:?}", custom_out_dir);
 
         let cache_dir = custom_out_dir.join("cache");
 
@@ -368,7 +368,7 @@ mod build_tesseract {
         let third_party_dir = project_dir.join("third_party");
 
         let leptonica_dir = if third_party_dir.join("leptonica").exists() {
-            println!("cargo:warning=Using existing leptonica source");
+            eprintln!("Using existing leptonica source");
             third_party_dir.join("leptonica")
         } else {
             fs::create_dir_all(&third_party_dir).expect("Failed to create third_party directory");
@@ -376,7 +376,7 @@ mod build_tesseract {
         };
 
         let tesseract_dir = if third_party_dir.join("tesseract").exists() {
-            println!("cargo:warning=Using existing tesseract source");
+            eprintln!("Using existing tesseract source");
             third_party_dir.join("tesseract")
         } else {
             fs::create_dir_all(&third_party_dir).expect("Failed to create third_party directory");
@@ -516,7 +516,28 @@ mod build_tesseract {
                 let cmakelists_path = tesseract_dir.join("CMakeLists.txt");
                 let cmakelists = std::fs::read_to_string(&cmakelists_path)
                     .expect("Failed to read CMakeLists.txt")
-                    .replace("set(HAVE_TIFFIO_H ON)", "");
+                    .replace("set(HAVE_TIFFIO_H ON)", "")
+                    // Remove the tesseract CLI executable target — it uses try/catch which is
+                    // incompatible with -fno-exceptions. We only need the library (libtesseract).
+                    .replace(
+                        "add_executable(tesseract src/tesseract.cpp)\n\
+                         target_link_libraries(tesseract libtesseract)\n\
+                         if(HAVE_TIFFIO_H AND WIN32)\n\
+                         \x20 target_link_libraries(tesseract ${TIFF_LIBRARIES})\n\
+                         endif()\n\
+                         \n\
+                         if(OPENMP_BUILD AND UNIX)\n\
+                         \x20 target_link_libraries(tesseract pthread)\n\
+                         endif()",
+                        "",
+                    )
+                    .replace("install(TARGETS tesseract DESTINATION bin)", "")
+                    .replace(
+                        "if (MSVC)\n\
+                         \x20 install(FILES $<TARGET_PDB_FILE:${PROJECT_NAME}> DESTINATION bin OPTIONAL)\n\
+                         endif()",
+                        "",
+                    );
                 std::fs::write(&cmakelists_path, cmakelists).expect("Failed to write CMakeLists.txt");
 
                 let mut tesseract_config = Config::new(&tesseract_dir);
@@ -597,7 +618,7 @@ mod build_tesseract {
             );
         }
         println!("cargo:rustc-env=TESSDATA_PREFIX_BUNDLED={}", tessdata_prefix.display());
-        println!("cargo:warning=Bundled tessdata dir: {:?}", bundled_tessdata_dir);
+        eprintln!("Bundled tessdata dir: {:?}", bundled_tessdata_dir);
 
         println!("cargo:rerun-if-changed=build.rs");
         println!("cargo:rerun-if-changed={}", third_party_dir.display());
@@ -640,10 +661,10 @@ mod build_tesseract {
         // tesseract's C++ code needs symbols like operator new/delete from libstdc++.
         set_os_specific_link_flags();
 
-        println!("cargo:warning=Leptonica include dir: {:?}", leptonica_include_dir);
-        println!("cargo:warning=Leptonica lib dir: {:?}", leptonica_lib_dir);
-        println!("cargo:warning=Tesseract install dir: {:?}", tesseract_install_dir);
-        println!("cargo:warning=Tessdata dir: {:?}", tessdata_prefix);
+        eprintln!("Leptonica include dir: {:?}", leptonica_include_dir);
+        eprintln!("Leptonica lib dir: {:?}", leptonica_lib_dir);
+        eprintln!("Tesseract install dir: {:?}", tesseract_install_dir);
+        eprintln!("Tessdata dir: {:?}", tessdata_prefix);
     }
 
     fn get_os_specific_config() -> (String, Vec<(String, String)>) {
@@ -660,8 +681,10 @@ mod build_tesseract {
         if target_macos {
             cmake_cxx_flags.push_str("-stdlib=libc++ ");
             cmake_cxx_flags.push_str("-std=c++17 ");
+            cmake_cxx_flags.push_str("-fno-exceptions ");
         } else if target_linux {
             cmake_cxx_flags.push_str("-std=c++17 ");
+            cmake_cxx_flags.push_str("-fno-exceptions ");
             if target_musl {
                 // For musl: use g++ with musl-gcc specs (avoids libc++/musl locale
                 // incompatibilities). The wrapper redirects C headers to musl while
@@ -692,7 +715,7 @@ mod build_tesseract {
                 ));
                 additional_defines.push(("CMAKE_MSVC_RUNTIME_LIBRARY".to_string(), "MultiThreadedDLL".to_string()));
             } else if target_mingw {
-                cmake_cxx_flags.push_str("-std=c++17 -DTESSERACT_STATIC ");
+                cmake_cxx_flags.push_str("-std=c++17 -DTESSERACT_STATIC -fno-exceptions ");
                 additional_defines.push(("CMAKE_C_FLAGS_RELEASE".to_string(), "-O2 -DNDEBUG".to_string()));
                 additional_defines.push(("CMAKE_C_FLAGS_DEBUG".to_string(), "-O0 -g".to_string()));
                 // Use absolute paths for MinGW compilers to prevent cmake from
@@ -799,7 +822,7 @@ mod build_tesseract {
             .build()
             .expect("Failed to create HTTP client");
 
-        println!("cargo:warning=Downloading {} from {}", name, url);
+        eprintln!("Downloading {} from {}", name, url);
         let max_attempts = 5;
         let mut content = None;
 
@@ -838,7 +861,7 @@ mod build_tesseract {
 
         let content = content.expect("unreachable: download loop must either succeed or panic");
 
-        println!("cargo:warning=Downloaded {} bytes for {}", content.len(), name);
+        eprintln!("Downloaded {} bytes for {}", content.len(), name);
 
         let temp_file = target_dir.join(format!("{}.zip", name));
         fs::write(&temp_file, content).expect("Failed to write archive to file");
@@ -889,7 +912,7 @@ mod build_tesseract {
             .build()
             .expect("Failed to create HTTP client");
 
-        println!("cargo:warning=Downloading {} from {}", label, url);
+        eprintln!("Downloading {} from {}", label, url);
         let max_attempts = 3;
 
         for attempt in 1..=max_attempts {
@@ -899,7 +922,7 @@ mod build_tesseract {
                         match resp.bytes() {
                             Ok(bytes) => {
                                 fs::write(dest, &bytes).expect("Failed to write downloaded file");
-                                println!("cargo:warning=Downloaded {} ({} bytes)", label, bytes.len());
+                                eprintln!("Downloaded {} ({} bytes)", label, bytes.len());
                                 return;
                             }
                             Err(err) => format!("Failed to read response: {}", err),
@@ -942,7 +965,7 @@ mod build_tesseract {
             return;
         }
 
-        println!("cargo:warning=Applying tesseract WASM patch from {:?}", patch_file);
+        eprintln!("Applying tesseract WASM patch from {:?}", patch_file);
 
         // Normalize paths to forward slashes for cross-platform compatibility.
         // On Windows, backslash paths cause git apply and patch to fail.
@@ -958,11 +981,11 @@ mod build_tesseract {
 
         let patch_applied = match result {
             Ok(output) if output.status.success() => {
-                println!("cargo:warning=Successfully applied tesseract WASM patch via git apply");
+                eprintln!("Successfully applied tesseract WASM patch via git apply");
                 true
             }
             _ => {
-                println!("cargo:warning=git apply failed, trying patch command...");
+                eprintln!("git apply failed, trying patch command...");
                 // Try patch command
                 let result = std::process::Command::new("patch")
                     .args(["--force", "-p1", "-d"])
@@ -973,7 +996,7 @@ mod build_tesseract {
 
                 match result {
                     Ok(output) if output.status.success() => {
-                        println!("cargo:warning=Successfully applied tesseract WASM patch via patch command");
+                        eprintln!("Successfully applied tesseract WASM patch via patch command");
                         true
                     }
                     Ok(output) => {
@@ -1009,7 +1032,7 @@ mod build_tesseract {
         // are now defined in SourceLists.cmake. Fix them programmatically.
         let source_lists = tesseract_dir.join("cmake/SourceLists.cmake");
         if source_lists.exists() {
-            println!("cargo:warning=Patching cmake/SourceLists.cmake for WASM compatibility");
+            eprintln!("Patching cmake/SourceLists.cmake for WASM compatibility");
             let content = fs::read_to_string(&source_lists).expect("Failed to read cmake/SourceLists.cmake");
 
             let mut patched = content;
@@ -1027,7 +1050,7 @@ mod build_tesseract {
             }
 
             fs::write(&source_lists, patched).expect("Failed to write patched cmake/SourceLists.cmake");
-            println!("cargo:warning=Successfully patched cmake/SourceLists.cmake");
+            eprintln!("Successfully patched cmake/SourceLists.cmake");
         }
 
         // Remove the tesseract CLI binary target from CMakeLists.txt
@@ -1054,9 +1077,18 @@ mod build_tesseract {
                 "install(TARGETS tesseract DESTINATION bin)",
                 "# install(TARGETS tesseract DESTINATION bin)",
             );
+            patched = patched.replace(
+                "if (MSVC)\n\
+                 \x20 install(FILES $<TARGET_PDB_FILE:${PROJECT_NAME}> DESTINATION bin OPTIONAL)\n\
+                 endif()",
+                "# WASM: disabled MSVC PDB install\n\
+                 # if (MSVC)\n\
+                 #   install(FILES $<TARGET_PDB_FILE:${PROJECT_NAME}> DESTINATION bin OPTIONAL)\n\
+                 # endif()",
+            );
 
             fs::write(&cmakelists, patched).expect("Failed to write patched CMakeLists.txt");
-            println!("cargo:warning=Disabled tesseract binary build in CMakeLists.txt");
+            eprintln!("Disabled tesseract binary build in CMakeLists.txt");
         }
     }
 
@@ -1064,7 +1096,7 @@ mod build_tesseract {
     /// These are the same changes from patches/tesseract.diff applied via string replacement.
     /// All replacements are idempotent (no-op if already applied).
     fn apply_wasm_source_fixups(tesseract_dir: &Path) {
-        println!("cargo:warning=Applying programmatic C++ source fixups for WASM");
+        eprintln!("Applying programmatic C++ source fixups for WASM");
 
         // 1. simddetect.cpp: Guard CPUID detection with !defined(__wasm__)
         let simddetect = tesseract_dir.join("src/arch/simddetect.cpp");
@@ -1084,7 +1116,7 @@ mod build_tesseract {
                      #endif",
                 );
                 fs::write(&simddetect, patched).expect("Failed to write simddetect.cpp");
-                println!("cargo:warning=Patched simddetect.cpp: added __wasm__ guard for CPUID");
+                eprintln!("Patched simddetect.cpp: added __wasm__ guard for CPUID");
             }
         }
 
@@ -1096,7 +1128,7 @@ mod build_tesseract {
             {
                 let patched = content.replace("if (up_in_image.y() > 0.0F) {", "if (up_in_image.y() >= 0.0F) {");
                 fs::write(&pageiter, patched).expect("Failed to write pageiterator.cpp");
-                println!("cargo:warning=Patched pageiterator.cpp: fixed orientation null vector check");
+                eprintln!("Patched pageiterator.cpp: fixed orientation null vector check");
             }
         }
 
@@ -1107,7 +1139,7 @@ mod build_tesseract {
             if content.contains("DebugPixa pixa_debug_;") {
                 let patched = content.replace("DebugPixa pixa_debug_;", "std::unique_ptr<DebugPixa> pixa_debug_;");
                 fs::write(&tessclass_h, patched).expect("Failed to write tesseractclass.h");
-                println!("cargo:warning=Patched tesseractclass.h: pixa_debug_ -> unique_ptr");
+                eprintln!("Patched tesseractclass.h: pixa_debug_ -> unique_ptr");
             }
         }
 
@@ -1125,7 +1157,7 @@ mod build_tesseract {
                 // Split methods: &pixa_debug_ -> pixa_debug_.get()
                 patched = patched.replace("&pixa_debug_)", "pixa_debug_.get())");
                 fs::write(&tessclass_cpp, patched).expect("Failed to write tesseractclass.cpp");
-                println!("cargo:warning=Patched tesseractclass.cpp: updated pixa_debug_ for unique_ptr");
+                eprintln!("Patched tesseractclass.cpp: updated pixa_debug_ for unique_ptr");
             }
         }
 
@@ -1145,7 +1177,7 @@ mod build_tesseract {
                 // &pixa_debug_ -> pixa_debug_.get()
                 patched = patched.replace("&pixa_debug_", "pixa_debug_.get()");
                 fs::write(&pageseg, patched).expect("Failed to write pagesegmain.cpp");
-                println!("cargo:warning=Patched pagesegmain.cpp: updated pixa_debug_ for unique_ptr");
+                eprintln!("Patched pagesegmain.cpp: updated pixa_debug_ for unique_ptr");
             }
         }
 
@@ -1165,10 +1197,10 @@ mod build_tesseract {
             patched = patched.replace("    src/api/pdfrenderer.cpp\n", "");
             patched = patched.replace("    src/api/wordstrboxrenderer.cpp\n", "");
             fs::write(&cmakelists, &patched).expect("Failed to write CMakeLists.txt");
-            println!("cargo:warning=Patched CMakeLists.txt: removed unnecessary sources for WASM");
+            eprintln!("Patched CMakeLists.txt: removed unnecessary sources for WASM");
         }
 
-        println!("cargo:warning=Programmatic C++ source fixups complete");
+        eprintln!("Programmatic C++ source fixups complete");
     }
 
     /// Install a no-op mutex header for WASM builds.
@@ -1248,7 +1280,7 @@ namespace this_thread {
 #endif  // TESSERACT_WASM_NOOP_MUTEX_H_
 "#;
         fs::write(&noop_header, header_content).expect("Failed to write wasm_noop_mutex.h");
-        println!("cargo:warning=Wrote wasm_noop_mutex.h for WASM no-op threading stubs");
+        eprintln!("Wrote wasm_noop_mutex.h for WASM no-op threading stubs");
 
         // Patch source files to use the no-op header
         let files_to_patch = [
@@ -1262,7 +1294,7 @@ namespace this_thread {
         for rel_path in &files_to_patch {
             let file_path = tesseract_dir.join(rel_path);
             if !file_path.exists() {
-                println!("cargo:warning=Skipping {}: file not found", rel_path);
+                eprintln!("Skipping {}: file not found", rel_path);
                 continue;
             }
 
@@ -1285,7 +1317,7 @@ namespace this_thread {
 
             if patched != content {
                 fs::write(&file_path, patched).unwrap_or_else(|_| panic!("Failed to patch {}", rel_path));
-                println!("cargo:warning=Patched {} for WASM no-op threading", rel_path);
+                eprintln!("Patched {} for WASM no-op threading", rel_path);
             }
         }
     }
@@ -1351,7 +1383,7 @@ namespace this_thread {
     }
 
     fn build_wasm() {
-        println!("cargo:warning=Building for WASM target with WASI SDK");
+        eprintln!("Building for WASM target with WASI SDK");
 
         let custom_out_dir = prepare_out_dir();
         let cache_dir = custom_out_dir.join("cache");
@@ -1360,10 +1392,10 @@ namespace this_thread {
         let project_dir = custom_out_dir.clone();
         let third_party_dir = project_dir.join("third_party");
 
-        println!("cargo:warning=Looking for WASI SDK...");
+        eprintln!("Looking for WASI SDK...");
         let wasi_sdk_dir = match find_wasi_sdk() {
             Ok(path) => {
-                println!("cargo:warning=Found WASI SDK at: {}", path.display());
+                eprintln!("Found WASI SDK at: {}", path.display());
                 path
             }
             Err(err) => {
@@ -1380,7 +1412,7 @@ Installation instructions:
         };
 
         let leptonica_dir = if third_party_dir.join("leptonica").exists() {
-            println!("cargo:warning=Using existing leptonica source");
+            eprintln!("Using existing leptonica source");
             third_party_dir.join("leptonica")
         } else {
             fs::create_dir_all(&third_party_dir).expect("Failed to create third_party directory");
@@ -1388,7 +1420,7 @@ Installation instructions:
         };
 
         let tesseract_dir = if third_party_dir.join("tesseract").exists() {
-            println!("cargo:warning=Using existing tesseract source");
+            eprintln!("Using existing tesseract source");
             third_party_dir.join("tesseract")
         } else {
             fs::create_dir_all(&third_party_dir).expect("Failed to create third_party directory");
@@ -1404,7 +1436,7 @@ Installation instructions:
 
         let _leptonica_link_name =
             build_or_use_cached("leptonica", &leptonica_cache_dir, &leptonica_install_dir, || {
-                println!("cargo:warning=Building Leptonica for WASM...");
+                eprintln!("Building Leptonica for WASM...");
                 build_leptonica_wasm(&leptonica_dir, &leptonica_install_dir, &wasi_sdk_dir);
             });
 
@@ -1413,7 +1445,7 @@ Installation instructions:
 
         let _tesseract_link_name =
             build_or_use_cached("tesseract", &tesseract_cache_dir, &tesseract_install_dir, || {
-                println!("cargo:warning=Building Tesseract for WASM (SIMD enabled)...");
+                eprintln!("Building Tesseract for WASM (SIMD enabled)...");
                 build_tesseract_wasm(
                     &tesseract_dir,
                     &tesseract_install_dir,
@@ -1437,7 +1469,7 @@ Installation instructions:
         // Tesseract's mutex usage is handled by no-op stubs, so we don't need the
         // threaded libc++ (which generates memory.atomic.wait32 that deadlocks in WASM).
         let sysroot_lib = wasi_sdk_dir.join("share/wasi-sysroot/lib/wasm32-wasi");
-        println!("cargo:warning=Linking WASI SDK sysroot from: {}", sysroot_lib.display());
+        eprintln!("Linking WASI SDK sysroot from: {}", sysroot_lib.display());
 
         println!("cargo:rustc-link-search=native={}", sysroot_lib.display());
         // C++ libs from non-threaded sysroot (no atomic operations)
@@ -1450,16 +1482,16 @@ Installation instructions:
 
         // Link compiler-rt builtins
         if let Some(rt_dir) = find_wasi_compiler_rt(&wasi_sdk_dir) {
-            println!("cargo:warning=Linking compiler-rt from: {}", rt_dir.display());
+            eprintln!("Linking compiler-rt from: {}", rt_dir.display());
             println!("cargo:rustc-link-search=native={}", rt_dir.display());
             println!("cargo:rustc-link-lib=static=clang_rt.builtins-wasm32");
         } else {
-            println!("cargo:warning=compiler-rt builtins not found in WASI SDK, some symbols may be unresolved");
+            eprintln!("compiler-rt builtins not found in WASI SDK, some symbols may be unresolved");
         }
 
-        println!("cargo:warning=WASM build completed successfully!");
-        println!("cargo:warning=Leptonica install dir: {:?}", leptonica_install_dir);
-        println!("cargo:warning=Tesseract install dir: {:?}", tesseract_install_dir);
+        eprintln!("WASM build completed successfully!");
+        eprintln!("Leptonica install dir: {:?}", leptonica_install_dir);
+        eprintln!("Tesseract install dir: {:?}", tesseract_install_dir);
     }
 
     fn build_tesseract_wasm(
@@ -1692,9 +1724,9 @@ Installation instructions:
             };
 
         let link_name_to_use = if cache_valid {
-            println!("cargo:warning=Using cached {} library for {}", name, target_triple);
+            eprintln!("Using cached {} library for {}", name, target_triple);
             if let Err(e) = fs::copy(&cached_path, &out_path) {
-                println!("cargo:warning=Failed to copy cached library: {}", e);
+                eprintln!("Failed to copy cached library: {}", e);
                 build_fn();
             }
             name.to_string()
@@ -1707,7 +1739,7 @@ Installation instructions:
                 for dir in &candidate_lib_dirs {
                     let lib_path = dir.join(lib_name);
                     if lib_path.exists() {
-                        println!("cargo:warning=Found {} library at: {}", name, lib_path.display());
+                        eprintln!("Found {} library at: {}", name, lib_path.display());
                         let link_name = if lib_name.ends_with(".lib") {
                             lib_name.strip_suffix(".lib").unwrap_or(lib_name).to_string()
                         } else if lib_name.ends_with(".a") {
@@ -1732,14 +1764,14 @@ Installation instructions:
                         out_path.display()
                     );
                 } else if let Err(e) = fs::copy(&lib_path, &out_path) {
-                    println!("cargo:warning=Failed to copy library to standard location: {}", e);
+                    eprintln!("Failed to copy library to standard location: {}", e);
                 }
                 if let Err(e) = fs::copy(&lib_path, &cached_path) {
-                    println!("cargo:warning=Failed to cache library: {}", e);
+                    eprintln!("Failed to cache library: {}", e);
                 } else if let Err(e) = fs::write(&marker_path, &target_triple) {
-                    println!("cargo:warning=Failed to write cache marker: {}", e);
+                    eprintln!("Failed to write cache marker: {}", e);
                 } else {
-                    println!("cargo:warning=Cached {} library for {}", name, target_triple);
+                    eprintln!("Cached {} library for {}", name, target_triple);
                 }
                 link_name
             } else {
@@ -1748,14 +1780,14 @@ Installation instructions:
                     name, possible_lib_names
                 );
                 for dir in &candidate_lib_dirs {
-                    println!("cargo:warning=Checked directory: {}", dir.display());
+                    eprintln!("Checked directory: {}", dir.display());
                     if let Ok(entries) = fs::read_dir(dir) {
-                        println!("cargo:warning=Files in {}:", dir.display());
+                        eprintln!("Files in {}:", dir.display());
                         for entry in entries.flatten() {
-                            println!("cargo:warning=  - {}", entry.file_name().to_string_lossy());
+                            eprintln!("  - {}", entry.file_name().to_string_lossy());
                         }
                     } else {
-                        println!("cargo:warning=Directory not accessible: {}", dir.display());
+                        eprintln!("Directory not accessible: {}", dir.display());
                     }
                 }
                 name.to_string()
@@ -1780,7 +1812,7 @@ fn main() {
 
     #[cfg(all(feature = "dynamic-linking", not(feature = "build-tesseract")))]
     {
-        println!("cargo:warning=Using dynamic linking with system-installed Tesseract libraries");
+        eprintln!("Using dynamic linking with system-installed Tesseract libraries");
         println!("cargo:rustc-link-lib=dylib=tesseract");
         println!("cargo:rustc-link-lib=dylib=leptonica");
     }

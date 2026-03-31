@@ -1,7 +1,7 @@
 {
 	"name": "kreuzberg-wasm-cloudflare-workers",
 	"description": "Cloudflare Workers WASM example with Kreuzberg document intelligence",
-	"version": "4.6.3",
+	"version": "4.7.0",
 	"type": "module",
 	"private": true,
 	"scripts": {
@@ -16,10 +16,10 @@
 		"@kreuzberg/wasm": "workspace:*"
 	},
 	"devDependencies": {
-		"@cloudflare/workers-types": "^4.20260317.1",
+		"@cloudflare/workers-types": "^4.20260329.1",
 		"@types/node": "^25.5.0",
 		"prettier": "^3.8.1",
 		"typescript": "^6.0.2",
-		"wrangler": "^4.77.0"
+		"wrangler": "^4.78.0"
 	}
 }

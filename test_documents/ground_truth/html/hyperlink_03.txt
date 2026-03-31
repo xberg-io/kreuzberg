@@ -1,42 +1,9 @@
-My Section
+-  My Section
+  - Some page
+    - A sub page
 
-
-
-Some
-page
-
-
-
-A sub page
-
-
-
-
-
-This is my Homepage
-
-
-
-List item inner
-
-
-
-
-More text with some links and more text.
-
-
-
-
-
-
-Main navigation
-
-
-
-
-
-
-
-
-
-My organisation
+    - This is my Homepage
+      - List item inner
+      - More text with some links and more text.
+    - Main navigation
+-  My organisation

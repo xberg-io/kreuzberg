@@ -9,7 +9,6 @@ use serde::{Deserialize, Serialize};
 
 /// Image extraction configuration.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
 pub struct ImageExtractionConfig {
     /// Extract images from documents
     #[serde(default = "default_true")]
@@ -45,7 +44,6 @@ pub struct ImageExtractionConfig {
 
 /// Token reduction configuration.
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
 pub struct TokenReductionConfig {
     /// Reduction mode: "off", "light", "moderate", "aggressive", "maximum"
     #[serde(default = "default_reduction_mode")]
@@ -58,7 +56,6 @@ pub struct TokenReductionConfig {
 
 /// Language detection configuration.
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
 pub struct LanguageDetectionConfig {
     /// Enable language detection
     #[serde(default = "default_true")]

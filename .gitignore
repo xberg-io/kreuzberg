@@ -193,3 +193,4 @@ tests/test_apps/**/mix.lock
 
 # PHP Composer vendor directory
 vendor/
+tools/benchmark-harness/vendored/docling/md/iso_21111_10.md

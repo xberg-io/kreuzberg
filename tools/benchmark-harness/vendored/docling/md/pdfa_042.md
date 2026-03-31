@@ -32,17 +32,17 @@ Valero-CAMS, Baton Rouge, LA
 
 712-001
 
-SGS Job Number:   JD3794
+SGS Job Number: JD3794
 
 Sampling Date: 02/20/20
 
 Renort to.
 
-## Report to:
+## Report to
 
 Providence Engineering
 
-kevincalhoun@providenceeng.com
+<kevincalhoun@providenceeng.com>
 
 ATTN: Kevin Calhoun
 
@@ -64,7 +64,7 @@ Test results contained within this data package meet the requirements of the Nat
 
 Laura Degenhardt General Manager
 
-Client Service contact: Victoria Pushkova   732-329-0200
+Client Service contact: Victoria Pushkova 732-329-0200
 
 Certifications: NJ(12129), NY(10983), CA, CT, FL, IL, IN, KS, KY, LA, MA, MD, ME, MN, NC, OH VAP (CL0056), AK (UST-103), AZ (AZ0786), PA, RI, SC, TX, UT, VA, WV, DoD ELAP (ANAB L2248)
 
@@ -104,7 +104,7 @@ JD3794
 
 ## Providence Engineering
 
-Valero-CAMS, Baton Rouge, LA Project No:   712-001
+Valero-CAMS, Baton Rouge, LA Project No: 712-001
 
 | Sample                                                                                                                    | Collected                                                                                                                 | Collected                                                                                                                 | Matrix                                                                                                                    | Matrix                                                                                                                    | Client                                                                                                                    |
 |---------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|
@@ -154,7 +154,7 @@ Date Sampled:
 
 Matrix:
 
-AIR - Ambient Air Comp.   Summa ID:  A990
+AIR - Ambient Air Comp. Summa ID: A990
 
 Date Received:
 
@@ -256,7 +256,7 @@ Date Sampled:
 
 Matrix:
 
-AIR - Ambient Air Comp.   Summa ID:  A990
+AIR - Ambient Air Comp. Summa ID: A990
 
 Date Received:
 
@@ -368,7 +368,7 @@ Date Sampled:
 
 Matrix:
 
-AIR - Ambient Air Comp.   Summa ID:  A990
+AIR - Ambient Air Comp. Summa ID: A990
 
 Date Received:
 
@@ -418,7 +418,7 @@ SGS LabLink@1069213 13:40 30-Mar-2020
 
 ## Custody Documents and Other Forms
 
-## Includes the following where applicable:
+## Includes the following where applicable
 
 - Chain of Custody
 - Summa Canister and Flow Controller Log
@@ -473,7 +473,7 @@ Airbill #'s:
 
 1. Custody Seals Present:
 
-Y   or   N
+Y or N
 
 2. Custody Seals Intact:
 
@@ -485,19 +485,19 @@ Y   or   N
 
 ## Cooler Temperature
 
-Y   or   N
+Y or N
 
 1. Temp criteria achieved:
 
-3. Cooler media:
+2. Cooler media:
 
 N/A
 
 N/A
 
-## Quality Control  Preservation
+## Quality Control Preservation
 
-Y    or   N        N/A
+Y    or N        N/A
 
 1. Trip Blank present / cooler:
 
@@ -509,7 +509,7 @@ Y    or   N        N/A
 
 ## Sample Integrity - Documentation
 
-Y     or     N
+Y or N
 
 1. Sample labels present on bottles:
 
@@ -519,13 +519,13 @@ Y     or     N
 
 ## Sample Integrity - Condition
 
-Y     or     N
+Y or N
 
 1. Sample recvd within HT:
 
-3. Condition of sample:
+2. Condition of sample:
 
-2. All containers accounted for:
+3. All containers accounted for:
 
 ## Sample Integrity - Instructions
 
@@ -541,11 +541,11 @@ Y     or     N
 
 Intact
 
-Y   or   N
+Y or N
 
 Comments
 
-Y     or    N          N/A
+Y or    N N/A
 
 Cooler Temps (Raw Measured) °C:
 
@@ -561,7 +561,7 @@ pH 12+:
 
 208717
 
-Other:  (Specify)
+Other: (Specify)
 
 SM089-03
 
@@ -591,7 +591,7 @@ Received:
 
 <!-- image -->
 
-## SGS Bottle Order(s):
+## SGS Bottle Order(s)
 
 VP-012420-47
 

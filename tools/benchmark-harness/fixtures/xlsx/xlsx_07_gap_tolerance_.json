@@ -1,15 +1,23 @@
 {
-	"document": "../../../../test_documents/vendored/docling/xlsx/xlsx_07_gap_tolerance_.xlsx",
-	"file_type": "xlsx",
-	"file_size": 16217,
-	"expected_frameworks": ["kreuzberg", "docling", "markitdown", "pandoc", "tika", "unstructured"],
-	"metadata": {
-		"description": "Document from docling test suite",
-		"source": "docling",
-		"size_category": "small"
-	},
-	"ground_truth": {
-		"text_file": "../../../../test_documents/ground_truth/xlsx/xlsx_07_gap_tolerance_.txt",
-		"source": "openpyxl"
-	}
+  "document": "../../../../test_documents/vendored/docling/xlsx/xlsx_07_gap_tolerance_.xlsx",
+  "file_type": "xlsx",
+  "file_size": 16217,
+  "expected_frameworks": [
+    "kreuzberg",
+    "docling",
+    "markitdown",
+    "pandoc",
+    "tika",
+    "unstructured"
+  ],
+  "metadata": {
+    "description": "Document from docling test suite",
+    "source": "docling",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/xlsx/xlsx_07_gap_tolerance_.txt",
+    "source": "pandoc",
+    "markdown_file": "../../../../test_documents/ground_truth/xlsx/xlsx_07_gap_tolerance_.md"
+  }
 }

@@ -99,7 +99,7 @@ MUZZLELOADER
 
 HUNTING STAMP
 
-- 7
+* 7
 
 Collector's Edition
 
@@ -147,7 +147,7 @@ WILDLIFE DEPARTMENT
 
 TEXAS PARKS &amp;
 
-- 8
+* 8
 
 2000
 
@@ -557,7 +557,7 @@ Wilson, Greg, 25
 
 PaperQuest Press 3685 Pleasant Springs Drive Naples, FL 34119
 
-iwcotton@centurylink.net
+<iwcotton@centurylink.net>
 
 402-871-4015
 
@@ -919,7 +919,7 @@ Total remitted by check or money order
 
 $\_\_\_\_\_\_\_\_
 
-(Check/money order appreciated. Please visit www.PaperQuestPress.com to pay by credit card.)
+(Check/money order appreciated. Please visit <https://www.PaperQuestPress.com> to pay by credit card.)
 
 Please include name, address, email and telephone number with your order.
 

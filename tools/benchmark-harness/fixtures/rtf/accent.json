@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/rtf/accent.rtf",
+  "file_type": "rtf",
+  "file_size": 50,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "rtf test: accent",
+    "source": "pandoc-generated",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/rtf/accent.txt",
+    "markdown_file": "../../../../test_documents/ground_truth/rtf/accent.md",
+    "source": "pandoc"
+  }
+}

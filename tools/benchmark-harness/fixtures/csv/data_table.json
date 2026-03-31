@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/csv/data_table.csv",
+  "file_type": "csv",
+  "file_size": 476,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "csv test: data_table",
+    "source": "pandoc-generated",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/csv/data_table.txt",
+    "markdown_file": "../../../../test_documents/ground_truth/csv/data_table.md",
+    "source": "pandoc"
+  }
+}

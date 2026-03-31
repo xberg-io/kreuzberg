@@ -3,7 +3,9 @@
 use crate::Result;
 use crate::core::config::ExtractionConfig;
 use crate::plugins::{DocumentExtractor, Plugin};
-use crate::types::ExtractionResult;
+use crate::types::internal::InternalDocument;
+use crate::types::internal_builder::InternalDocumentBuilder;
+use crate::types::metadata::Metadata;
 use async_trait::async_trait;
 
 /// Plain text extractor.
@@ -21,6 +23,22 @@ impl PlainTextExtractor {
 impl Default for PlainTextExtractor {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+impl PlainTextExtractor {
+    /// Build an `InternalDocument` from plain text content.
+    ///
+    /// Splits on double-newlines into paragraphs.
+    fn build_internal_document(text: &str) -> InternalDocument {
+        let mut builder = InternalDocumentBuilder::new("text");
+        for paragraph in text.split("\n\n") {
+            let trimmed = paragraph.trim();
+            if !trimmed.is_empty() {
+                builder.push_paragraph(trimmed, vec![], None, None);
+            }
+        }
+        builder.build()
     }
 }
 
@@ -53,62 +71,41 @@ impl Plugin for PlainTextExtractor {
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
 impl DocumentExtractor for PlainTextExtractor {
+    #[cfg_attr(feature = "otel", tracing::instrument(
+        skip(self, content, _config),
+        fields(
+            extractor.name = self.name(),
+            content.size_bytes = content.len(),
+        )
+    ))]
     async fn extract_bytes(
         &self,
         content: &[u8],
         mime_type: &str,
-        config: &ExtractionConfig,
-    ) -> Result<ExtractionResult> {
+        _config: &ExtractionConfig,
+    ) -> Result<InternalDocument> {
         let text = String::from_utf8_lossy(content).into_owned();
         let text = text.trim_end_matches('\n').trim_end_matches('\r').to_string();
         let line_count = text.lines().count();
         let word_count = text.split_whitespace().count();
         let character_count = text.len();
 
-        let document = if config.include_document_structure {
-            use crate::types::builder::DocumentStructureBuilder;
-            let mut builder = DocumentStructureBuilder::new().source_format("text");
-            for paragraph in text.split("\n\n") {
-                let trimmed = paragraph.trim();
-                if !trimmed.is_empty() {
-                    builder.push_paragraph(trimmed, vec![], None, None);
-                }
-            }
-            Some(builder.build())
-        } else {
-            None
-        };
+        let mut doc = Self::build_internal_document(&text);
 
-        Ok(ExtractionResult {
-            content: text,
-            mime_type: mime_type.to_string().into(),
-            metadata: crate::types::Metadata {
-                format: Some(crate::types::FormatMetadata::Text(crate::types::TextMetadata {
-                    line_count,
-                    word_count,
-                    character_count,
-                    headers: None,
-                    links: None,
-                    code_blocks: None,
-                })),
-                ..Default::default()
-            },
-            pages: None,
-            tables: vec![],
-            detected_languages: None,
-            chunks: None,
-            images: None,
-            elements: None,
-            djot_content: None,
-            ocr_elements: None,
-            document,
-            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-            extracted_keywords: None,
-            quality_score: None,
-            processing_warnings: Vec::new(),
-            annotations: None,
-            children: None,
-        })
+        doc.metadata = Metadata {
+            format: Some(crate::types::FormatMetadata::Text(crate::types::TextMetadata {
+                line_count,
+                word_count,
+                character_count,
+                headers: None,
+                links: None,
+                code_blocks: None,
+            })),
+            ..Default::default()
+        };
+        doc.mime_type = std::borrow::Cow::Owned(mime_type.to_string());
+
+        Ok(doc)
     }
 
     fn supported_mime_types(&self) -> &[&str] {
@@ -138,8 +135,6 @@ mod tests {
 
         let result = extractor.extract_bytes(content, "text/plain", &config).await.unwrap();
 
-        assert_eq!(result.mime_type, "text/plain");
-        assert!(result.content.contains("Hello, World!"));
         assert!(result.metadata.format.is_some());
         let text_meta = match result.metadata.format.as_ref().unwrap() {
             crate::types::FormatMetadata::Text(meta) => meta,

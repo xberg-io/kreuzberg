@@ -165,5 +165,6 @@ pub(crate) fn decode_data_uri_image(uri: &str, index: usize) -> Option<Extracted
         description: None,
         ocr_result: None,
         bounding_box: None,
+        source_path: None,
     })
 }

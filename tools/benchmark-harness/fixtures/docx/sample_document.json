@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/docx/sample_document.docx",
+  "file_type": "docx",
+  "file_size": 16,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "docx test: sample_document",
+    "source": "pandoc-generated",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/docx/sample_document.txt",
+    "markdown_file": "../../../../test_documents/ground_truth/docx/sample_document.md",
+    "source": "pandoc"
+  }
+}

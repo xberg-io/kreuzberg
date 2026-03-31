@@ -199,11 +199,7 @@ pub fn parse_html_options(value: &serde_json::Value) -> FfiResult<ConversionOpti
             .ok_or_else(|| "br_in_tables must be a boolean".to_string())?;
     }
 
-    if let Some(val) = obj.get("hocr_spatial_tables") {
-        opts.hocr_spatial_tables = val
-            .as_bool()
-            .ok_or_else(|| "hocr_spatial_tables must be a boolean".to_string())?;
-    }
+    // hocr_spatial_tables removed in html-to-markdown v3
 
     if let Some(val) = obj.get("highlight_style") {
         opts.highlight_style = parse_enum(Some(val), parse_highlight_style)?.unwrap_or(opts.highlight_style);

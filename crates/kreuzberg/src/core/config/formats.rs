@@ -14,7 +14,7 @@ use std::str::FromStr;
 /// accordingly. `Plain` returns the raw extracted text.
 /// `Structured` returns JSON with full OCR element data including bounding
 /// boxes and confidence scores.
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum OutputFormat {
     /// Plain text content only (default)
@@ -22,23 +22,31 @@ pub enum OutputFormat {
     Plain,
     /// Markdown format
     Markdown,
-    /// Djot markup format (requires djot feature)
+    /// Djot markup format
     Djot,
     /// HTML format
     Html,
     /// Structured JSON format with full OCR element metadata.
-    ///
-    /// This format preserves all spatial and confidence information from
-    /// the OCR backend, including bounding boxes (rectangles or quadrilaterals),
-    /// detection and recognition confidence scores, rotation information,
-    /// and hierarchical element levels.
-    ///
-    /// Ideal for:
-    /// - Layout analysis and document understanding
-    /// - Searchable PDF generation
-    /// - Building custom document viewers
-    /// - Extracting maximum information from OCR results
     Structured,
+    /// Custom renderer registered via the RendererRegistry.
+    /// The string is the renderer name (e.g., "docx", "latex").
+    #[serde(untagged)]
+    Custom(String),
+}
+
+impl OutputFormat {
+    /// Get the renderer name for this format.
+    /// Returns `None` for formats that don't use the renderer registry
+    /// (Plain, Structured, Toon — these are handled differently).
+    pub fn renderer_name(&self) -> Option<&str> {
+        match self {
+            OutputFormat::Plain | OutputFormat::Structured => None,
+            OutputFormat::Markdown => Some("markdown"),
+            OutputFormat::Djot => Some("djot"),
+            OutputFormat::Html => Some("html"),
+            OutputFormat::Custom(name) => Some(name.as_str()),
+        }
+    }
 }
 
 impl std::fmt::Display for OutputFormat {
@@ -49,6 +57,7 @@ impl std::fmt::Display for OutputFormat {
             OutputFormat::Djot => write!(f, "djot"),
             OutputFormat::Html => write!(f, "html"),
             OutputFormat::Structured => write!(f, "structured"),
+            OutputFormat::Custom(name) => write!(f, "{}", name),
         }
     }
 }
@@ -63,10 +72,7 @@ impl FromStr for OutputFormat {
             "djot" => Ok(OutputFormat::Djot),
             "html" => Ok(OutputFormat::Html),
             "structured" | "json" => Ok(OutputFormat::Structured),
-            _ => Err(format!(
-                "Invalid output format: '{}'. Valid formats: plain, text, markdown, md, djot, html, structured, json",
-                s
-            )),
+            other => Ok(OutputFormat::Custom(other.to_string())),
         }
     }
 }
@@ -114,12 +120,9 @@ mod tests {
     }
 
     #[test]
-    fn test_output_format_from_str_invalid() {
-        let result = "invalid".parse::<OutputFormat>();
-        assert!(result.is_err());
-        let err = result.unwrap_err();
-        assert!(err.contains("Invalid output format"));
-        assert!(err.contains("invalid"));
+    fn test_output_format_from_str_custom() {
+        let result = "docx".parse::<OutputFormat>().unwrap();
+        assert_eq!(result, OutputFormat::Custom("docx".to_string()));
     }
 
     #[test]
@@ -129,6 +132,7 @@ mod tests {
         assert_eq!(OutputFormat::Djot.to_string(), "djot");
         assert_eq!(OutputFormat::Html.to_string(), "html");
         assert_eq!(OutputFormat::Structured.to_string(), "structured");
+        assert_eq!(OutputFormat::Custom("docx".to_string()).to_string(), "docx");
     }
 
     #[test]
@@ -162,5 +166,15 @@ mod tests {
             serde_json::to_string(&OutputFormat::Structured).unwrap(),
             "\"structured\""
         );
+    }
+
+    #[test]
+    fn test_output_format_renderer_name() {
+        assert_eq!(OutputFormat::Plain.renderer_name(), None);
+        assert_eq!(OutputFormat::Markdown.renderer_name(), Some("markdown"));
+        assert_eq!(OutputFormat::Html.renderer_name(), Some("html"));
+        assert_eq!(OutputFormat::Djot.renderer_name(), Some("djot"));
+        assert_eq!(OutputFormat::Structured.renderer_name(), None);
+        assert_eq!(OutputFormat::Custom("docx".to_string()).renderer_name(), Some("docx"));
     }
 }

@@ -1,6 +1,7 @@
 //! API request handlers.
 
-use axum::{Json, extract::State};
+use axum::http::HeaderMap;
+use axum::{Json, extract::State, response::IntoResponse};
 
 use tower::Service;
 
@@ -62,6 +63,28 @@ pub async fn info_handler() -> Json<InfoResponse> {
     })
 }
 
+/// Check whether TOON wire format was requested via the `Accept` header.
+fn wants_toon(headers: &HeaderMap) -> bool {
+    headers
+        .get(axum::http::header::ACCEPT)
+        .and_then(|v| v.to_str().ok())
+        .is_some_and(|v| v.contains("application/toon"))
+}
+
+/// Serialize extraction results as a TOON response.
+fn toon_response(results: &ExtractResponse) -> Result<axum::response::Response<axum::body::Body>, ApiError> {
+    let body = serde_toon::to_string(results).map_err(|e| {
+        ApiError::internal(crate::error::KreuzbergError::Other(format!(
+            "Failed to serialize response to TOON: {}",
+            e
+        )))
+    })?;
+    Ok(axum::response::Response::builder()
+        .header(axum::http::header::CONTENT_TYPE, "application/toon")
+        .body(axum::body::Body::from(body))
+        .expect("valid response"))
+}
+
 /// Extract endpoint handler.
 ///
 /// POST /extract
@@ -69,6 +92,8 @@ pub async fn info_handler() -> Json<InfoResponse> {
 /// Accepts multipart form data with:
 /// - `files`: One or more files to extract
 /// - `config` (optional): JSON extraction configuration (overrides server defaults)
+/// - `format` (optional): Wire format for the response (`json` or `toon`, default: `json`).
+///   Alternatively, set the `Accept: application/toon` header.
 ///
 /// Returns a list of extraction results, one per file.
 ///
@@ -100,14 +125,16 @@ pub async fn info_handler() -> Json<InfoResponse> {
     feature = "otel",
     tracing::instrument(
         name = "api.extract",
-        skip(state, multipart),
+        skip(state, headers, multipart),
         fields(files_count = tracing::field::Empty)
     )
 )]
 pub async fn extract_handler(
     State(state): State<ApiState>,
+    headers: HeaderMap,
     MultipartApi(mut multipart): MultipartApi,
-) -> Result<Json<ExtractResponse>, ApiError> {
+) -> Result<axum::response::Response<axum::body::Body>, ApiError> {
+    let mut use_toon = wants_toon(&headers);
     let mut files = Vec::new();
     let mut config: Option<crate::core::config::ExtractionConfig> = None;
 
@@ -182,6 +209,15 @@ pub async fn extract_handler(
                 let pdf_opts = cfg.pdf_options.get_or_insert_with(Default::default);
                 pdf_opts.passwords.get_or_insert_with(Vec::new).push(pwd);
             }
+            "format" => {
+                let format_str = field
+                    .text()
+                    .await
+                    .map_err(|e| ApiError::validation(crate::error::KreuzbergError::validation(e.to_string())))?;
+                if format_str.eq_ignore_ascii_case("toon") {
+                    use_toon = true;
+                }
+            }
             _ => {}
         }
     }
@@ -198,7 +234,7 @@ pub async fn extract_handler(
     // Use provided config or fall back to default from state
     let final_config = config.as_ref().unwrap_or(&state.default_config);
 
-    if files.len() == 1 {
+    let results = if files.len() == 1 {
         let (data, mime_type, _file_name) = files
             .into_iter()
             .next()
@@ -210,30 +246,35 @@ pub async fn extract_handler(
             .expect("extraction service lock poisoned")
             .clone();
         let result = svc.call(request).await?;
-        return Ok(Json(vec![result]));
-    }
+        vec![result]
+    } else {
+        let files_data: Vec<(Vec<u8>, String, Option<crate::FileExtractionConfig>)> = files
+            .into_iter()
+            .map(|(data, mime, _name)| (data, mime, None))
+            .collect();
 
-    let files_data: Vec<(Vec<u8>, String, Option<crate::FileExtractionConfig>)> = files
-        .into_iter()
-        .map(|(data, mime, _name)| (data, mime, None))
-        .collect();
+        #[cfg(feature = "otel")]
+        let batch_span = tracing::info_span!(
+            "kreuzberg.service",
+            { crate::telemetry::conventions::OPERATION } = crate::telemetry::conventions::operations::BATCH_EXTRACT,
+            { crate::telemetry::conventions::BATCH_SIZE } = files_data.len(),
+        );
+        #[cfg(not(feature = "otel"))]
+        let batch_span = tracing::Span::none();
 
-    #[cfg(feature = "otel")]
-    let batch_span = tracing::info_span!(
-        "kreuzberg.service",
-        { crate::telemetry::conventions::OPERATION } = crate::telemetry::conventions::operations::BATCH_EXTRACT,
-        { crate::telemetry::conventions::BATCH_SIZE } = files_data.len(),
-    );
-    #[cfg(not(feature = "otel"))]
-    let batch_span = tracing::Span::none();
-
-    let results = {
-        use tracing::Instrument;
-        batch_extract_bytes(files_data, final_config)
-            .instrument(batch_span)
-            .await?
+        {
+            use tracing::Instrument;
+            batch_extract_bytes(files_data, final_config)
+                .instrument(batch_span)
+                .await?
+        }
     };
-    Ok(Json(results))
+
+    if use_toon {
+        toon_response(&results)
+    } else {
+        Ok(Json(results).into_response())
+    }
 }
 
 /// Formats endpoint handler.

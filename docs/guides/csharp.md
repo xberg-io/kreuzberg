@@ -32,7 +32,6 @@ sudo apt-get install tesseract-ocr
 # Download from https://github.com/tesseract-ocr/tesseract/wiki/Downloads
 ```
 
-
 ## Quick Start
 
 ### Simple File Extraction

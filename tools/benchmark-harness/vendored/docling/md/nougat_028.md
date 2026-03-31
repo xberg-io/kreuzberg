@@ -14,7 +14,7 @@ Take Albion Riverside, for example.
 
 This development is much more than a residential complex. It is designed to be the heart of a vibrant new neighbourhood, expanding modern urban living options in the busy capital.
 
-The  widely  acclaimed  structure, famously dubbed 'The Glass Doughnut', was designed by the world renowned and award-winning architect Lord Norman Foster, whose other masterpieces include the passenger terminal at Chek Lap Kok Airport and the HSBC building in Hong Kong, the Bilbao Metro in Spain and more recently the Swiss
+The widely acclaimed structure, famously dubbed 'The Glass Doughnut', was designed by the world renowned and award-winning architect Lord Norman Foster, whose other masterpieces include the passenger terminal at Chek Lap Kok Airport and the HSBC building in Hong Kong, the Bilbao Metro in Spain and more recently the Swiss
 
 ## ALBION RIVERSIDE FACT FILE
 
@@ -58,7 +58,7 @@ discussions about the opening of a leading restaurant that could
 
 trol options. They can even be accessed via the Internet or a mobile phone when you are away from home. 'The control panel allows you to remotely control lighting and audio, as well as other types of functions within the flat, ' said Dr Ho.
 
-Inside, a massive entrance hall leads visitors to a majestic staircase that takes them up to a glazed cloister running the length of  the  building,  giving access to four lifts and a doubt It Will change not just the physi-
+Inside, a massive entrance hall leads visitors to a majestic staircase that takes them up to a glazed cloister running the length of the building, giving access to four lifts and a doubt It Will change not just the physi-
 
 cal landscape of historical neighbour- hoods but also challenge cultural per-
 
@@ -68,17 +68,17 @@ ceptions about them.
 
 The building has set a new standard for urban living private riverside garden. Residents can also make use of an impressive health and leisure centre, and a 20-metre indoor pool.
 
-Meanwhile,  the  retail  space  has attracted the likes of major art dealer Michael Hue-Williams and his spectacular Albion Gallery is a major attraction emphasising the cultural shift away from London's West End. On the more conventional retail front, elite kitchen and bathroom outfitters, Alternative Plans, have joined a leading personal training facility in the complex.
+Meanwhile, the retail space has attracted the likes of major art dealer Michael Hue-Williams and his spectacular Albion Gallery is a major attraction emphasising the cultural shift away from London's West End. On the more conventional retail front, elite kitchen and bathroom outfitters, Alternative Plans, have joined a leading personal training facility in the complex.
 
 <!-- image -->
 
-Other exciting retail opportunities are on the way, including discussions about the opening of a leading restaurant that could take up 6,500 square feet of floor afford such luxury will remain under the Lord Foster spell long after they have gone home and shut the front door. Everything, from the layout  of  each  apartment, bespoke bathrooms and kitchens down to even the lighting and the door handles, were designed by Lord Foster's team.
+Other exciting retail opportunities are on the way, including discussions about the opening of a leading restaurant that could take up 6,500 square feet of floor afford such luxury will remain under the Lord Foster spell long after they have gone home and shut the front door. Everything, from the layout of each apartment, bespoke bathrooms and kitchens down to even the lighting and the door handles, were designed by Lord Foster's team.
 
-The strong aesthetics aside, every home is also equipped with smart technology, which makes available a whole new world of cutting-edge remote con- he wants,' Dr Ho said. 'I hope  the  deal  will  be announced very soon.'
+The strong aesthetics aside, every home is also equipped with smart technology, which makes available a whole new world of cutting-edge remote con- he wants,' Dr Ho said. 'I hope the deal will be announced very soon.'
 
-It would be wrong to suggest that Albion Riverside is a compound created just for the wealthy. As part of a new planning commitment to the local community, the mixed-use development has two other buildings. A low-rise apartment building caters for professional key workers such as nurses and teachers, while Hutchison Whampoa has its European headquarters in another separate low-rise office building on the same site,  putting all its European operations including Ports, 3G, Properties and Watsons under one roof. SPHERE 31
+It would be wrong to suggest that Albion Riverside is a compound created just for the wealthy. As part of a new planning commitment to the local community, the mixed-use development has two other buildings. A low-rise apartment building caters for professional key workers such as nurses and teachers, while Hutchison Whampoa has its European headquarters in another separate low-rise office building on the same site, putting all its European operations including Ports, 3G, Properties and Watsons under one roof. SPHERE 31
 
-If  Hutchison continues to take up projects on such a scale and employs the same sense of adventure, there is no doubt it will change not just the physical  landscape of historical neighbourhoods but also challenge cultural perceptions about them.
+If Hutchison continues to take up projects on such a scale and employs the same sense of adventure, there is no doubt it will change not just the physical landscape of historical neighbourhoods but also challenge cultural perceptions about them.
 
 'While traditionally focusing on developing residential properties in prime
 

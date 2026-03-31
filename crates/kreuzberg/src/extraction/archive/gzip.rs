@@ -10,8 +10,8 @@
 use super::{ArchiveEntry, ArchiveMetadata};
 use crate::error::{KreuzbergError, Result};
 use crate::extractors::security::SecurityLimits;
+use ahash::AHashMap;
 use flate2::read::GzDecoder;
-use std::collections::HashMap;
 use std::io::Read;
 
 /// Check if data looks like a TAR archive (has "ustar" magic at offset 257).
@@ -52,7 +52,7 @@ pub fn decompress_gzip(bytes: &[u8], limits: &SecurityLimits) -> Result<Vec<u8>>
 /// metadata and text content are needed.
 ///
 /// If the decompressed data is a TAR archive, delegates to TAR extraction functions.
-pub fn extract_gzip(bytes: &[u8], limits: &SecurityLimits) -> Result<(ArchiveMetadata, HashMap<String, String>)> {
+pub fn extract_gzip(bytes: &[u8], limits: &SecurityLimits) -> Result<(ArchiveMetadata, AHashMap<String, String>)> {
     let decompressed = decompress_gzip_limited(bytes, limits.max_archive_size as u64)?;
 
     // Check if the decompressed data is a TAR archive
@@ -87,7 +87,7 @@ pub fn extract_gzip(bytes: &[u8], limits: &SecurityLimits) -> Result<(ArchiveMet
         total_size: size,
     };
 
-    let mut contents = HashMap::new();
+    let mut contents = AHashMap::new();
     if let Ok(text) = String::from_utf8(decompressed) {
         contents.insert(filename, text);
     }
@@ -140,7 +140,7 @@ pub fn extract_gzip_metadata(bytes: &[u8], limits: &SecurityLimits) -> Result<Ar
 /// Decompresses and attempts to read the result as UTF-8 text.
 ///
 /// If the decompressed data is a TAR archive, delegates to TAR extraction.
-pub fn extract_gzip_text_content(bytes: &[u8], limits: &SecurityLimits) -> Result<HashMap<String, String>> {
+pub fn extract_gzip_text_content(bytes: &[u8], limits: &SecurityLimits) -> Result<AHashMap<String, String>> {
     let decompressed = decompress_gzip_limited(bytes, limits.max_archive_size as u64)?;
 
     // Check if the decompressed data is a TAR archive
@@ -158,7 +158,7 @@ pub fn extract_gzip_text_content(bytes: &[u8], limits: &SecurityLimits) -> Resul
         .unwrap_or("compressed_content")
         .to_string();
 
-    let mut contents = HashMap::new();
+    let mut contents = AHashMap::new();
     if let Ok(text) = String::from_utf8(decompressed) {
         contents.insert(filename, text);
     }
@@ -167,7 +167,7 @@ pub fn extract_gzip_text_content(bytes: &[u8], limits: &SecurityLimits) -> Resul
 }
 
 /// Return type for `extract_gzip_with_bytes`: metadata, text content map, and raw file bytes map.
-type GzipWithBytesResult = (ArchiveMetadata, HashMap<String, String>, HashMap<String, Vec<u8>>);
+type GzipWithBytesResult = (ArchiveMetadata, AHashMap<String, String>, AHashMap<String, Vec<u8>>);
 
 /// Extract metadata, text content, and raw file bytes from gzip in a single pass.
 ///
@@ -209,10 +209,10 @@ pub fn extract_gzip_with_bytes(bytes: &[u8], limits: &SecurityLimits) -> Result<
         total_size: size,
     };
 
-    let mut file_bytes = HashMap::new();
+    let mut file_bytes = AHashMap::new();
     file_bytes.insert(filename.clone(), decompressed.clone());
 
-    let mut contents = HashMap::new();
+    let mut contents = AHashMap::new();
     if let Ok(text) = String::from_utf8(decompressed) {
         contents.insert(filename, text);
     }

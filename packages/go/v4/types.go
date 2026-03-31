@@ -44,6 +44,7 @@ type NodeContent struct {
 	Grid         *TableGrid `json:"grid,omitempty"`
 	Description  *string    `json:"description,omitempty"`
 	ImageIndex   *uint32    `json:"image_index,omitempty"`
+	Src          *string    `json:"src,omitempty"`
 	Language     *string    `json:"language,omitempty"`
 	Label        *string    `json:"label,omitempty"`
 	HeadingLevel *int       `json:"heading_level,omitempty"`
@@ -94,6 +95,19 @@ type ExtractedKeyword struct {
 type ProcessingWarning struct {
 	Source  string `json:"source"`
 	Message string `json:"message"`
+}
+
+// URI represents a URI extracted from a document.
+// Includes hyperlinks, image references, citations, email addresses, and other URI-like references.
+type URI struct {
+	// URL is the URL or path string.
+	URL string `json:"url"`
+	// Label is the optional display text / label for the link.
+	Label *string `json:"label,omitempty"`
+	// Page is the optional 1-indexed page number where the URI was found.
+	Page *uint32 `json:"page,omitempty"`
+	// Kind is the semantic classification (hyperlink, image, anchor, citation, reference, email).
+	Kind string `json:"kind"`
 }
 
 // PdfAnnotationType enumerates the types of PDF annotations.
@@ -155,6 +169,9 @@ type ExtractionResult struct {
 
 	// Annotations contains PDF annotations extracted from the document.
 	Annotations []PdfAnnotation `json:"annotations,omitempty"`
+
+	// Uris contains hyperlinks, image references, citations, and other URI-like references.
+	URIs []URI `json:"uris,omitempty"`
 }
 
 // Table represents a detected table in the source document.
@@ -503,12 +520,6 @@ type StructuredData struct {
 	DataType   StructuredDataType `json:"data_type"`
 	RawJSON    string             `json:"raw_json"`
 	SchemaType *string            `json:"schema_type,omitempty"`
-}
-
-// PptxMetadata summarizes slide decks.
-type PptxMetadata struct {
-	SlideCount uint64   `json:"slide_count"`
-	SlideNames []string `json:"slide_names"`
 }
 
 // OcrMetadata records OCR settings/results associated with an extraction.

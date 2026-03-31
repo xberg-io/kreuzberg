@@ -582,9 +582,20 @@ print(result.content)
 
 ```text
 
+```text
+
+```text
+
+```text
+
+```text
+
+```text
+
+```text
+
 Filter extracts the code block:
 ```
-
 
 ```python
 from kreuzberg import extract_file_sync
@@ -592,7 +603,6 @@ from kreuzberg import extract_file_sync
 result = extract_file_sync("document.pdf")
 print(result.content)
 ```
-
 
 ```text
 
@@ -613,7 +623,6 @@ from kreuzberg import extract_file_sync
 result = extract_file_sync("document.pdf")
 print(result.content)
 ```
-
 
 ```text
 
@@ -840,6 +849,21 @@ result = extract_file_sync("document.pdf")
 # Access the extracted content
 print(result.content)
 ```
+
+
+```text
+
+```text
+
+
+```text
+
+```text
+
+
+```text
+
+```text
 
 The `include_snippet` filter automatically extracts the code block.
 
@@ -1244,6 +1268,18 @@ Description here.
 print("hello")
 ```
 
+
+```text
+
+```text
+
+```text
+
+```text
+
+```text
+
+```text
 
 ```text
 

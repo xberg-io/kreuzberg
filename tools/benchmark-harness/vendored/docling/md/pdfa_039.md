@@ -1,6 +1,6 @@
-## Individual  Meet  Results
+## Individual Meet Results
 
-SWN 12&amp;U Junior Champs 2019  14-Dec-19 to 15-Dec-19 SC Meters
+SWN 12&amp;U Junior Champs 2019 14-Dec-19 to 15-Dec-19 SC Meters
 
 Location: WRAC
 
@@ -50,9 +50,9 @@ Location: WRAC
 | 1:52.98S               | # 30A F                | Male 9 &Under 100 Breast | RAUWN-WN               | 7                      | 4                      | -0.51                  |
 | 47.03S                 | # 32A F                | Male 9 &Under 50 Fly     | RAUWN-WN               | 5                      | 6                      | -2.04                  |
 
-## Individual  Meet  Results
+## Individual Meet Results
 
-SWN 12&amp;U Junior Champs 2019  14-Dec-19 to 15-Dec-19 SC Meters
+SWN 12&amp;U Junior Champs 2019 14-Dec-19 to 15-Dec-19 SC Meters
 
 Location: WRAC
 
@@ -103,9 +103,9 @@ Location: WRAC
 | 1:34.47S            | # 24B F              | Female 10-10 100 Back                     | 13 RAUWN-WN             | ---      | -0.88    |
 | 1:41.21S            | # 29B F              | Female 10-10 100 Breast                   | 4 RAUWN-WN              | 7        | -6.17    |
 
-## Individual  Meet  Results
+## Individual Meet Results
 
-SWN 12&amp;U Junior Champs 2019  14-Dec-19 to 15-Dec-19 SC Meters Location: WRAC
+SWN 12&amp;U Junior Champs 2019 14-Dec-19 to 15-Dec-19 SC Meters Location: WRAC
 
 | Time                   | F/P/S                  | Event                    |                        | Place                  | Points                 | Improv                 |
 |------------------------|------------------------|--------------------------|------------------------|------------------------|------------------------|------------------------|
@@ -157,9 +157,9 @@ SWN 12&amp;U Junior Champs 2019  14-Dec-19 to 15-Dec-19 SC Meters Location: WRAC
 | 1:33.34S               | # 24C F                | Female 11-11 100 Back    | RAUWN-WN               | 24                     | ---                    | -3.46                  |
 | 45.77S                 | # 31C F                | Female 11-11 50 Fly      | RAUWN-WN               | 21                     | ---                    | 1.76                   |
 
-## Individual  Meet  Results
+## Individual Meet Results
 
-SWN 12&amp;U Junior Champs 2019  14-Dec-19 to 15-Dec-19 SC Meters Location: WRAC
+SWN 12&amp;U Junior Champs 2019 14-Dec-19 to 15-Dec-19 SC Meters Location: WRAC
 
 | Time                 | F/P/S                | Event                |                      | Place                | Points               | Improv               |
 |----------------------|----------------------|----------------------|----------------------|----------------------|----------------------|----------------------|

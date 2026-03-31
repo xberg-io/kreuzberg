@@ -72,6 +72,14 @@ Extract text from uploaded files via multipart form data.
   - `files` (required, repeatable): Files to extract
   - `config` (optional): JSON configuration overrides
   - `output_format` (optional): Output format for extracted text - `plain`, `markdown`, `djot`, or `html` (default: `plain`)
+  - `format` (optional): Wire format for the response - `json` (default) or `toon`
+
+**Content Negotiation:**
+
+The response wire format can also be requested via the `Accept` header:
+
+- `Accept: application/json` (default)
+- `Accept: application/toon` (TOON wire format, ~30-50% fewer tokens than JSON)
 
 **Response:** JSON array of extraction results
 
@@ -93,6 +101,16 @@ curl -F "files=@scanned.pdf" \
 # Extract with markdown output format
 curl -F "files=@document.pdf" \
      -F "output_format=markdown" \
+  http://localhost:8000/extract
+
+# Extract with TOON wire format via multipart field
+curl -F "files=@document.pdf" \
+     -F "format=toon" \
+  http://localhost:8000/extract
+
+# Extract with TOON wire format via Accept header
+curl -F "files=@document.pdf" \
+     -H "Accept: application/toon" \
   http://localhost:8000/extract
 ```
 
@@ -363,7 +381,7 @@ curl http://localhost:8000/version
 
 ```json title="Response"
 {
-  "version": "4.6.3"
+  "version": "4.7.0"
 }
 ```
 
@@ -514,7 +532,7 @@ curl http://localhost:8000/health
 ```json title="Response"
 {
   "status": "healthy",
-  "version": "4.6.3"
+  "version": "4.7.0"
 }
 ```
 
@@ -525,7 +543,7 @@ The response may optionally include a `plugins` object containing information ab
 ```json title="Response with Plugins"
 {
   "status": "healthy",
-  "version": "4.6.3",
+  "version": "4.7.0",
   "plugins": {
     "ocr_backends_count": 2,
     "ocr_backends": ["tesseract"],
@@ -557,7 +575,7 @@ curl http://localhost:8000/info
 
 ```json title="Response"
 {
-  "version": "4.6.3",
+  "version": "4.7.0",
   "rust_backend": true
 }
 ```
@@ -820,10 +838,11 @@ Extract content from a file path.
 
 | Parameter      | Type   | Required | Description                                           |
 | -------------- | ------ | -------- | ----------------------------------------------------- |
-| `path`         | string | Yes      | File path to extract                                  |
-| `mime_type`    | string | No       | MIME type hint (auto-detected if not provided)        |
-| `config`       | object | No       | Extraction configuration (JSON object)                |
-| `pdf_password` | string | No       | Password for encrypted PDFs                           |
+| `path`            | string | Yes      | File path to extract                                  |
+| `mime_type`       | string | No       | MIME type hint (auto-detected if not provided)        |
+| `config`          | object | No       | Extraction configuration (JSON object)                |
+| `pdf_password`    | string | No       | Password for encrypted PDFs                           |
+| `response_format` | string | No       | Response wire format: `"json"` (default) or `"toon"` |
 
 **Example MCP Request:**
 
@@ -851,10 +870,11 @@ Extract content from base64-encoded file data.
 
 | Parameter      | Type   | Required | Description                                    |
 | -------------- | ------ | -------- | ---------------------------------------------- |
-| `data`         | string | Yes      | Base64-encoded file content                    |
-| `mime_type`    | string | No       | MIME type hint (auto-detected if not provided) |
-| `config`       | object | No       | Extraction configuration (JSON object)         |
-| `pdf_password` | string | No       | Password for encrypted PDFs                    |
+| `data`            | string | Yes      | Base64-encoded file content                    |
+| `mime_type`       | string | No       | MIME type hint (auto-detected if not provided) |
+| `config`          | object | No       | Extraction configuration (JSON object)         |
+| `pdf_password`    | string | No       | Password for encrypted PDFs                    |
+| `response_format` | string | No       | Response wire format: `"json"` (default) or `"toon"` |
 
 #### batch_extract_files
 
@@ -864,10 +884,11 @@ Extract multiple files in parallel.
 
 | Parameter      | Type                 | Required | Description                                                       |
 | -------------- | -------------------- | -------- | ----------------------------------------------------------------- |
-| `paths`        | array[string]        | Yes      | File paths to extract                                             |
-| `config`       | object               | No       | Extraction configuration (JSON object)                            |
-| `pdf_password` | string               | No       | Password for encrypted PDFs                                       |
-| `file_configs` | array[object \| null] | No      | Per-file configuration overrides (parallel array to `paths`)      |
+| `paths`           | array[string]        | Yes      | File paths to extract                                             |
+| `config`          | object               | No       | Extraction configuration (JSON object)                            |
+| `pdf_password`    | string               | No       | Password for encrypted PDFs                                       |
+| `file_configs`    | array[object \| null] | No      | Per-file configuration overrides (parallel array to `paths`)      |
+| `response_format` | string               | No       | Response wire format: `"json"` (default) or `"toon"`              |
 
 #### detect_mime_type
 
@@ -910,7 +931,7 @@ Get the current Kreuzberg library version.
 
 ```json title="Response"
 {
-  "version": "4.6.3"
+  "version": "4.7.0"
 }
 ```
 

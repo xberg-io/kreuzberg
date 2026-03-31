@@ -71,7 +71,7 @@ defmodule Kreuzberg.LegacyAPI do
       when is_binary(input) and is_binary(mime_type) do
     config =
       if enable_ocr do
-        %ExtractionConfig{ocr: %{"enabled" => true, "backend" => "tesseract"}}
+        %ExtractionConfig{ocr: %{"backend" => "tesseract"}}
       else
         nil
       end
@@ -279,7 +279,7 @@ defmodule Kreuzberg.LegacyAPI do
 
   @doc false
   defp convert_ocr_opts(nil), do: nil
-  defp convert_ocr_opts(true), do: %{"enabled" => true}
+  defp convert_ocr_opts(true), do: %{"backend" => "tesseract"}
   defp convert_ocr_opts(false), do: nil
   defp convert_ocr_opts(opts) when is_map(opts), do: opts
 

@@ -15,6 +15,7 @@
 use crate::plugins::{Plugin, PostProcessor, ProcessingStage};
 use crate::{ExtractionConfig, ExtractionResult, Result};
 use async_trait::async_trait;
+#[cfg(test)]
 use std::borrow::Cow;
 
 /// Post-processor that calculates quality score and cleans text.
@@ -66,13 +67,6 @@ impl PostProcessor for QualityProcessor {
         };
 
         result.quality_score = Some(quality_score);
-        // DEPRECATED: kept for backward compatibility; will be removed in next major version.
-        result.metadata.additional.insert(
-            Cow::Borrowed("quality_score"),
-            serde_json::Value::Number(
-                serde_json::Number::from_f64(quality_score).unwrap_or(serde_json::Number::from(0)),
-            ),
-        );
 
         Ok(())
     }
@@ -136,13 +130,15 @@ mod tests {
 	            processing_warnings: Vec::new(),
 	            annotations: None,
 	            children: None,
+	            uris: None,
+            formatted_content: None,
 	        };
 
         processor.process(&mut result, &config).await.unwrap();
 
-        assert!(result.metadata.additional.contains_key("quality_score"));
-        let score = result.metadata.additional.get("quality_score").unwrap();
-        assert!(score.is_number());
+        assert!(result.quality_score.is_some());
+        let score = result.quality_score.unwrap();
+        assert!((0.0..=1.0).contains(&score));
     }
 
     #[tokio::test]
@@ -172,6 +168,8 @@ mod tests {
             processing_warnings: Vec::new(),
             annotations: None,
             children: None,
+            uris: None,
+            formatted_content: None,
         };
 
         processor.process(&mut result, &config).await.unwrap();
@@ -215,6 +213,8 @@ mod tests {
             processing_warnings: Vec::new(),
             annotations: None,
             children: None,
+            uris: None,
+            formatted_content: None,
         };
 
         let config_with_quality = ExtractionConfig {
@@ -253,6 +253,8 @@ mod tests {
             processing_warnings: Vec::new(),
             annotations: None,
             children: None,
+            uris: None,
+            formatted_content: None,
         };
 
         let long_result = ExtractionResult {
@@ -274,6 +276,8 @@ mod tests {
             processing_warnings: Vec::new(),
             annotations: None,
             children: None,
+            uris: None,
+            formatted_content: None,
         };
 
         let short_duration = processor.estimated_duration_ms(&short_result);

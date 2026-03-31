@@ -14,7 +14,6 @@ use serde::{Deserialize, Serialize};
 /// when page boundaries are available and chunking is configured.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default)]
-#[serde(deny_unknown_fields)]
 pub struct PageConfig {
     /// Extract pages as separate array (ExtractionResult.pages)
     #[serde(default)]

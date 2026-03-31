@@ -18,12 +18,31 @@ __all__ = [
     "AccelerationConfig",
     "AnnotationType",
     "Attributes",
+    "BibtexMetadata",
     "BoundingBox",
     "Chunk",
     "ChunkMetadata",
     "ChunkingConfig",
+    "CitationMetadata",
+    "CodeChunk",
+    "CodeChunkContext",
+    "CodeCommentInfo",
+    "CodeDiagnostic",
+    "CodeDocSection",
+    "CodeDocstringInfo",
+    "CodeExportInfo",
+    "CodeFileMetrics",
+    "CodeImportInfo",
+    "CodeProcessResult",
+    "CodeSpan",
+    "CodeStructureItem",
+    "CodeSymbolInfo",
     "ConcurrencyConfig",
     "ContentLayer",
+    "ContributorRole",
+    "CsvMetadata",
+    "DbfFieldInfo",
+    "DbfMetadata",
     "DjotContent",
     "DjotImage",
     "DjotLink",
@@ -37,6 +56,7 @@ __all__ = [
     "EmbeddingConfig",
     "EmbeddingModelType",
     "EmbeddingPreset",
+    "EpubMetadata",
     "ErrorDetails",
     "ErrorMetadata",
     "ExtractedImage",
@@ -44,6 +64,7 @@ __all__ = [
     "ExtractedTable",
     "ExtractionConfig",
     "ExtractionResult",
+    "FictionBookMetadata",
     "FileExtractionConfig",
     "Footnote",
     "FormattedBlock",
@@ -58,6 +79,7 @@ __all__ = [
     "ImagePreprocessingConfig",
     "ImagePreprocessingMetadata",
     "InlineElement",
+    "JatsMetadata",
     "KeywordAlgorithm",
     "KeywordConfig",
     "LanguageDetectionConfig",
@@ -94,6 +116,7 @@ __all__ = [
     "PostProcessorConfig",
     "PostProcessorProtocol",
     "ProcessingWarning",
+    "PstMetadata",
     "RakeParams",
     "ResultFormat",
     "StructuredData",
@@ -101,11 +124,15 @@ __all__ = [
     "TesseractConfig",
     "TextAnnotation",
     "TokenReductionConfig",
+    "TreeSitterConfig",
+    "TreeSitterProcessConfig",
     "ValidationError",
     "ValidatorProtocol",
     "YakeParams",
+    "YearRange",
     "_discover_extraction_config_impl",
     "_load_extraction_config_from_file_impl",
+    "available_languages",
     "batch_extract_bytes",
     "batch_extract_bytes_sync",
     "batch_extract_files",
@@ -120,6 +147,8 @@ __all__ = [
     "config_to_json",
     "detect_mime_type_from_bytes",
     "detect_mime_type_from_path",
+    "download_languages",
+    "downloaded_languages",
     "error_code_name",
     "extract_bytes",
     "extract_bytes_sync",
@@ -134,6 +163,7 @@ __all__ = [
     "get_valid_language_codes",
     "get_valid_ocr_backends",
     "get_valid_token_reduction_levels",
+    "has_language",
     "init_async_runtime",
     "list_document_extractors",
     "list_embedding_presets",
@@ -456,6 +486,159 @@ class ConcurrencyConfig:
         max_threads: int | None = None,
     ) -> None: ...
 
+class TreeSitterProcessConfig:
+    """Processing options for tree-sitter code analysis.
+
+    Controls which analysis features are enabled when extracting code files.
+
+    Example:
+        Enable comments and docstrings extraction:
+            >>> from kreuzberg import TreeSitterProcessConfig
+            >>> config = TreeSitterProcessConfig(structure=True, comments=True, docstrings=True)
+    """
+
+    structure: bool
+    imports: bool
+    exports: bool
+    comments: bool
+    docstrings: bool
+    symbols: bool
+    diagnostics: bool
+    chunk_max_size: int | None
+
+    def __init__(
+        self,
+        *,
+        structure: bool | None = None,
+        imports: bool | None = None,
+        exports: bool | None = None,
+        comments: bool | None = None,
+        docstrings: bool | None = None,
+        symbols: bool | None = None,
+        diagnostics: bool | None = None,
+        chunk_max_size: int | None = None,
+    ) -> None: ...
+
+class TreeSitterConfig:
+    """Configuration for tree-sitter language pack integration.
+
+    Controls grammar download behavior and code analysis options.
+
+    Example:
+        Enable tree-sitter for Python and Rust:
+            >>> from kreuzberg import TreeSitterConfig, TreeSitterProcessConfig
+            >>> config = TreeSitterConfig(
+            ...     languages=["python", "rust"],
+            ...     groups=["web"],
+            ...     process=TreeSitterProcessConfig(comments=True),
+            ... )
+    """
+
+    cache_dir: str | None
+    languages: list[str] | None
+    groups: list[str] | None
+    process: TreeSitterProcessConfig
+
+    def __init__(
+        self,
+        *,
+        cache_dir: str | None = None,
+        languages: list[str] | None = None,
+        groups: list[str] | None = None,
+        process: TreeSitterProcessConfig | None = None,
+    ) -> None: ...
+
+class CodeSpan(TypedDict):
+    start_byte: int
+    end_byte: int
+    start_line: int
+    start_column: int
+    end_line: int
+    end_column: int
+
+class CodeFileMetrics(TypedDict):
+    total_lines: int
+    code_lines: int
+    comment_lines: int
+    blank_lines: int
+    total_bytes: int
+    node_count: int
+    error_count: int
+    max_depth: int
+
+class CodeStructureItem(TypedDict):
+    kind: str
+    name: str | None
+    visibility: str | None
+    span: CodeSpan
+    children: list[CodeStructureItem]
+    decorators: list[str]
+    doc_comment: str | None
+    signature: str | None
+    body_span: CodeSpan | None
+
+class CodeImportInfo(TypedDict):
+    source: str
+    items: list[str]
+    alias: str | None
+    is_wildcard: bool
+    span: CodeSpan
+
+class CodeExportInfo(TypedDict):
+    name: str
+    kind: str
+    span: CodeSpan
+
+class CodeSymbolInfo(TypedDict):
+    name: str
+    kind: str
+    type_annotation: str | None
+    span: CodeSpan
+
+class CodeCommentInfo(TypedDict):
+    text: str
+    kind: str
+    span: CodeSpan
+
+class CodeDocSection(TypedDict):
+    kind: str
+    name: str | None
+    content: str
+
+class CodeDocstringInfo(TypedDict):
+    text: str
+    format: str
+    associated_item: str | None
+    span: CodeSpan
+    sections: list[CodeDocSection]
+
+class CodeDiagnostic(TypedDict):
+    message: str
+    severity: str
+    span: CodeSpan
+
+class CodeChunkContext(TypedDict):
+    parent_name: str | None
+    parent_kind: str | None
+
+class CodeChunk(TypedDict):
+    content: str
+    language: str
+    span: CodeSpan
+    context: CodeChunkContext | None
+
+class CodeProcessResult(TypedDict):
+    language: str
+    metrics: CodeFileMetrics
+    structure: list[CodeStructureItem]
+    imports: list[CodeImportInfo]
+    exports: list[CodeExportInfo]
+    comments: list[CodeCommentInfo]
+    docstrings: list[CodeDocstringInfo]
+    symbols: list[CodeSymbolInfo]
+    diagnostics: list[CodeDiagnostic]
+    chunks: list[CodeChunk]
+
 class ExtractionConfig:
     """Main extraction configuration for document processing.
 
@@ -556,6 +739,7 @@ class ExtractionConfig:
     acceleration: AccelerationConfig | None
     email: EmailConfig | None
     concurrency: ConcurrencyConfig | None
+    tree_sitter: TreeSitterConfig | None
     cache_namespace: str | None
     cache_ttl_secs: int | None
     extraction_timeout_secs: int | None
@@ -587,6 +771,7 @@ class ExtractionConfig:
         acceleration: AccelerationConfig | None = None,
         email: EmailConfig | None = None,
         concurrency: ConcurrencyConfig | None = None,
+        tree_sitter: TreeSitterConfig | None = None,
         cache_namespace: str | None = ...,
         cache_ttl_secs: int | None = ...,
         extraction_timeout_secs: int | None = ...,
@@ -623,6 +808,7 @@ class FileExtractionConfig:
     include_document_structure: bool | None
     layout: LayoutDetectionConfig | None
     timeout_secs: int | None
+    tree_sitter: TreeSitterConfig | None
 
     def __init__(
         self,
@@ -645,6 +831,7 @@ class FileExtractionConfig:
         include_document_structure: bool | None = None,
         layout: LayoutDetectionConfig | None = None,
         timeout_secs: int | None = None,
+        tree_sitter: TreeSitterConfig | None = None,
     ) -> None: ...
 
 class OcrConfig:
@@ -1579,6 +1766,68 @@ class TextMetadata(TypedDict, total=False):
     links: list[tuple[str, str]] | None
     code_blocks: list[tuple[str, str]] | None
 
+class CsvMetadata(TypedDict, total=False):
+    row_count: int
+    column_count: int
+    delimiter: str | None
+    has_header: bool
+    column_types: list[str] | None
+
+class YearRange(TypedDict, total=False):
+    min: int | None
+    max: int | None
+    years: list[int]
+
+class BibtexMetadata(TypedDict, total=False):
+    entry_count: int
+    citation_keys: list[str]
+    authors: list[str]
+    year_range: YearRange | None
+    entry_types: dict[str, int] | None
+
+class CitationMetadata(TypedDict, total=False):
+    citation_count: int
+    format: str | None
+    authors: list[str]
+    year_range: YearRange | None
+    dois: list[str]
+    keywords: list[str]
+
+class FictionBookMetadata(TypedDict, total=False):
+    genres: list[str]
+    sequences: list[str]
+    annotation: str | None
+
+class DbfFieldInfo(TypedDict):
+    name: str
+    field_type: str
+
+class DbfMetadata(TypedDict, total=False):
+    record_count: int
+    field_count: int
+    fields: list[DbfFieldInfo]
+
+class ContributorRole(TypedDict):
+    name: str
+    role: str | None
+
+class JatsMetadata(TypedDict, total=False):
+    copyright: str | None
+    license: str | None
+    history_dates: dict[str, str]
+    contributor_roles: list[ContributorRole]
+
+class EpubMetadata(TypedDict, total=False):
+    coverage: str | None
+    dc_format: str | None
+    relation: str | None
+    source: str | None
+    dc_type: str | None
+    cover_image: str | None
+
+class PstMetadata(TypedDict, total=False):
+    message_count: int
+
 class HeaderMetadata(TypedDict):
     level: int
     text: str
@@ -2217,3 +2466,8 @@ class PdfPageIterator:
     def close(self) -> None: ...
     @property
     def page_count(self) -> int: ...
+
+def download_languages(names: list[str]) -> int: ...
+def available_languages() -> list[str]: ...
+def has_language(name: str) -> bool: ...
+def downloaded_languages() -> list[str]: ...

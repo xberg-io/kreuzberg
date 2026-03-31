@@ -146,7 +146,7 @@ pub unsafe extern "C" fn kreuzberg_clone_string(s: *const c_char) -> *mut c_char
 ///
 /// # Memory Layout
 ///
-/// This function frees all 19 string fields in CExtractionResult:
+/// This function frees all 21 string fields in CExtractionResult:
 /// 1. content
 /// 2. mime_type
 /// 3. language
@@ -237,6 +237,9 @@ pub unsafe extern "C" fn kreuzberg_free_result(result: *mut CExtractionResult) {
         if !result_box.annotations_json.is_null() {
             unsafe { drop(CString::from_raw(result_box.annotations_json)) };
         }
+        if !result_box.uris_json.is_null() {
+            unsafe { drop(CString::from_raw(result_box.uris_json)) };
+        }
     }
 }
 
@@ -268,6 +271,7 @@ mod tests {
             quality_score_json: CString::new("0.85").unwrap().into_raw(),
             processing_warnings_json: ptr::null_mut(),
             annotations_json: ptr::null_mut(),
+            uris_json: ptr::null_mut(),
             success: true,
             _padding1: [0u8; 7],
         }))
@@ -296,6 +300,7 @@ mod tests {
             quality_score_json: ptr::null_mut(),
             processing_warnings_json: ptr::null_mut(),
             annotations_json: ptr::null_mut(),
+            uris_json: ptr::null_mut(),
             success: true,
             _padding1: [0u8; 7],
         }))
@@ -395,6 +400,7 @@ mod tests {
             quality_score_json: ptr::null_mut(),
             processing_warnings_json: ptr::null_mut(),
             annotations_json: ptr::null_mut(),
+            uris_json: ptr::null_mut(),
             success: true,
             _padding1: [0u8; 7],
         }));
@@ -429,6 +435,7 @@ mod tests {
             quality_score_json: ptr::null_mut(),
             processing_warnings_json: ptr::null_mut(),
             annotations_json: ptr::null_mut(),
+            uris_json: ptr::null_mut(),
             success: true,
             _padding1: [0u8; 7],
         }));

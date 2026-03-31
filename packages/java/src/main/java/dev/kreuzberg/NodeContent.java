@@ -46,6 +46,7 @@ public final class NodeContent {
 	// Image variant
 	private final String imageDescription;
 	private final Integer imageIndex;
+	private final String imageSrc;
 
 	// Code variant
 	private final String codeText;
@@ -87,6 +88,8 @@ public final class NodeContent {
 	 *            image alt text (for Image nodes)
 	 * @param imageIndex
 	 *            image index (for Image nodes)
+	 * @param imageSrc
+	 *            source URL or path (for Image nodes)
 	 * @param codeLanguage
 	 *            programming language (for Code nodes)
 	 * @param groupLabel
@@ -100,7 +103,8 @@ public final class NodeContent {
 	public NodeContent(@JsonProperty("node_type") String nodeType, @JsonProperty("text") String text,
 			@JsonProperty("level") Integer headingLevel, @JsonProperty("ordered") Boolean ordered,
 			@JsonProperty("grid") TableGrid table, @JsonProperty("description") String imageDescription,
-			@JsonProperty("image_index") Integer imageIndex, @JsonProperty("language") String codeLanguage,
+			@JsonProperty("image_index") Integer imageIndex, @JsonProperty("src") String imageSrc,
+			@JsonProperty("language") String codeLanguage,
 			@JsonProperty("label") String groupLabel, @JsonProperty("heading_level") Integer groupHeadingLevel,
 			@JsonProperty("heading_text") String groupHeadingText) {
 		this.nodeType = Objects.requireNonNull(nodeType, "nodeType must not be null");
@@ -113,6 +117,7 @@ public final class NodeContent {
 		this.table = table;
 		this.imageDescription = imageDescription;
 		this.imageIndex = imageIndex;
+		this.imageSrc = imageSrc;
 		this.codeText = "code".equals(nodeType) ? text : null;
 		this.codeLanguage = codeLanguage;
 		this.formulaText = "formula".equals(nodeType) ? text : null;
@@ -220,6 +225,15 @@ public final class NodeContent {
 	}
 
 	/**
+	 * Get the image source URL or path if this is an Image node.
+	 *
+	 * @return image src, or empty if not an Image node
+	 */
+	public Optional<String> getImageSrc() {
+		return "image".equals(nodeType) ? Optional.ofNullable(imageSrc) : Optional.empty();
+	}
+
+	/**
 	 * Get the code text if this is a Code node.
 	 *
 	 * @return code content, or empty if not a Code node
@@ -296,7 +310,8 @@ public final class NodeContent {
 				&& Objects.equals(paragraphText, other.paragraphText) && Objects.equals(ordered, other.ordered)
 				&& Objects.equals(listItemText, other.listItemText) && Objects.equals(table, other.table)
 				&& Objects.equals(imageDescription, other.imageDescription)
-				&& Objects.equals(imageIndex, other.imageIndex) && Objects.equals(codeText, other.codeText)
+				&& Objects.equals(imageIndex, other.imageIndex) && Objects.equals(imageSrc, other.imageSrc)
+				&& Objects.equals(codeText, other.codeText)
 				&& Objects.equals(codeLanguage, other.codeLanguage) && Objects.equals(formulaText, other.formulaText)
 				&& Objects.equals(footnoteText, other.footnoteText) && Objects.equals(groupLabel, other.groupLabel)
 				&& Objects.equals(groupHeadingLevel, other.groupHeadingLevel)
@@ -306,7 +321,7 @@ public final class NodeContent {
 	@Override
 	public int hashCode() {
 		return Objects.hash(nodeType, title, headingLevel, headingText, paragraphText, ordered, listItemText, table,
-				imageDescription, imageIndex, codeText, codeLanguage, formulaText, footnoteText, groupLabel,
+				imageDescription, imageIndex, imageSrc, codeText, codeLanguage, formulaText, footnoteText, groupLabel,
 				groupHeadingLevel, groupHeadingText);
 	}
 

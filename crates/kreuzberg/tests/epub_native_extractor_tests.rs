@@ -9,6 +9,7 @@
 #![cfg(feature = "office")]
 
 use kreuzberg::core::config::ExtractionConfig;
+use kreuzberg::extraction::derive::derive_extraction_result;
 use kreuzberg::extractors::EpubExtractor;
 use kreuzberg::plugins::DocumentExtractor;
 use std::path::PathBuf;
@@ -42,10 +43,11 @@ async fn test_native_epub_wasteland_extraction() {
     let extractor = EpubExtractor::new();
     let config = ExtractionConfig::default();
 
-    let result = extractor
+    let doc = extractor
         .extract_bytes(&bytes, "application/epub+zip", &config)
         .await
         .expect("Should extract wasteland.epub successfully");
+    let result = derive_extraction_result(doc, false, kreuzberg::OutputFormat::Plain);
 
     assert!(
         result.content.len() > 2000,
@@ -88,10 +90,11 @@ async fn test_native_epub_images_extraction() {
     let extractor = EpubExtractor::new();
     let config = ExtractionConfig::default();
 
-    let result = extractor
+    let doc = extractor
         .extract_bytes(&bytes, "application/epub+zip", &config)
         .await
         .expect("Should extract img.epub successfully");
+    let result = derive_extraction_result(doc, false, kreuzberg::OutputFormat::Plain);
 
     assert!(
         result.content.len() > 50,
@@ -122,10 +125,11 @@ async fn test_native_epub_features_extraction() {
     let extractor = EpubExtractor::new();
     let config = ExtractionConfig::default();
 
-    let result = extractor
+    let doc = extractor
         .extract_bytes(&bytes, "application/epub+zip", &config)
         .await
         .expect("Should extract features.epub successfully");
+    let result = derive_extraction_result(doc, false, kreuzberg::OutputFormat::Plain);
 
     assert!(
         result.content.len() > 1000,
@@ -158,10 +162,11 @@ async fn test_native_epub2_cover_extraction() {
     let extractor = EpubExtractor::new();
     let config = ExtractionConfig::default();
 
-    let result = extractor
+    let doc = extractor
         .extract_bytes(&bytes, "application/epub+zip", &config)
         .await
         .expect("Should extract epub2_cover.epub successfully");
+    let result = derive_extraction_result(doc, false, kreuzberg::OutputFormat::Plain);
 
     assert!(
         result.content.len() > 10,
@@ -195,15 +200,17 @@ async fn test_native_epub_deterministic_extraction() {
     let extractor = EpubExtractor::new();
     let config = ExtractionConfig::default();
 
-    let result1 = extractor
+    let doc_result1 = extractor
         .extract_bytes(&bytes, "application/epub+zip", &config)
         .await
         .expect("First extraction should succeed");
+    let result1 = derive_extraction_result(doc_result1, false, kreuzberg::OutputFormat::Plain);
 
-    let result2 = extractor
+    let doc_result2 = extractor
         .extract_bytes(&bytes, "application/epub+zip", &config)
         .await
         .expect("Second extraction should succeed");
+    let result2 = derive_extraction_result(doc_result2, false, kreuzberg::OutputFormat::Plain);
 
     assert_eq!(
         result1.content, result2.content,
@@ -247,10 +254,11 @@ async fn test_native_epub_no_content_loss() {
 
         let bytes = std::fs::read(&test_file).unwrap_or_else(|_| panic!("Failed to read {}", epub_file));
 
-        let result = extractor
+        let doc = extractor
             .extract_bytes(&bytes, "application/epub+zip", &config)
             .await
             .unwrap_or_else(|_| panic!("Should extract {}", epub_file));
+        let result = derive_extraction_result(doc, false, kreuzberg::OutputFormat::Plain);
 
         assert!(
             result.content.len() >= min_bytes,

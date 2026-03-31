@@ -18,19 +18,23 @@ mod parsing;
 use crate::Result;
 use crate::core::config::{ExtractionConfig, OutputFormat};
 use crate::plugins::{DocumentExtractor, Plugin};
-use crate::types::ExtractionResult;
 use crate::types::Metadata;
 use crate::types::ProcessingWarning;
-use ahash::AHashMap;
+use crate::types::internal::InternalDocument;
+use crate::types::internal_builder::InternalDocumentBuilder;
+use crate::types::metadata::{EpubMetadata, FormatMetadata};
+use crate::types::uri::{Uri, UriKind, classify_uri};
+use ahash::{AHashMap, AHashSet};
 use async_trait::async_trait;
 use std::borrow::Cow;
-use std::io::Cursor;
+use std::io::{Cursor, Read};
 use zip::ZipArchive;
 
-use content::extract_text_from_xhtml;
-use content::read_body_documents;
+use content::{
+    extract_text_from_xhtml, looks_like_navigation_document, strip_document_head, strip_specialized_navigation_sections,
+};
 use metadata::{build_additional_metadata, parse_opf};
-use parsing::{parse_container_xml, read_file_from_zip};
+use parsing::{parse_container_xml, read_file_from_zip, resolve_path};
 
 /// EPUB format extractor using permissive-licensed dependencies.
 ///
@@ -52,6 +56,7 @@ impl Default for EpubExtractor {
 }
 
 #[cfg(feature = "office")]
+#[allow(dead_code)]
 struct RenderedSpineDocument {
     content_fragment: String,
     content_fully_converted: bool,
@@ -60,11 +65,13 @@ struct RenderedSpineDocument {
 }
 
 #[cfg(feature = "office")]
+#[allow(dead_code)]
 fn trim_trailing_newlines(s: &str) -> &str {
     s.trim_end_matches(['\n', '\r'])
 }
 
 #[cfg(feature = "office")]
+#[allow(dead_code)]
 impl EpubExtractor {
     fn build_fallback_document_structure(
         document: &content::EpubSpineDocument,
@@ -101,7 +108,7 @@ impl EpubExtractor {
             match crate::extraction::html::convert_html_to_markdown_with_metadata(
                 &document.xhtml,
                 config.html_options.clone(),
-                Some(config.output_format),
+                Some(config.output_format.clone()),
             ) {
                 Ok((converted, _)) => (trim_trailing_newlines(&converted).to_string(), true),
                 Err(err) => {
@@ -172,6 +179,240 @@ impl EpubExtractor {
         }
 
         if has_nodes { Some(builder.build()) } else { None }
+    }
+
+    /// Build an `InternalDocument` from the EPUB spine.
+    ///
+    /// Walks each chapter's XHTML content using the HTML structure walker,
+    /// emitting elements via `InternalDocumentBuilder`. Captures TOC-to-chapter
+    /// relationships where possible by linking chapter headings.
+    fn build_internal_document(
+        archive: &mut ZipArchive<Cursor<Vec<u8>>>,
+        spine_hrefs: &[String],
+        manifest_dir: &str,
+        nav_hrefs: &AHashSet<String>,
+    ) -> Option<InternalDocument> {
+        use crate::types::internal::{ElementKind, InternalElement};
+
+        let mut builder = InternalDocumentBuilder::new("epub");
+
+        for (index, href) in spine_hrefs.iter().enumerate() {
+            let file_path = match resolve_path(manifest_dir, href) {
+                Ok(canonical) => canonical.path,
+                Err(_) => continue,
+            };
+
+            // Skip EPUB3 navigation documents (TOC, landmarks, page-list)
+            if nav_hrefs.contains(&file_path) {
+                continue;
+            }
+
+            let xhtml_content = match read_file_from_zip(archive, &file_path) {
+                Ok(content) => content,
+                Err(_) => continue,
+            };
+
+            let normalized = content::normalize_xhtml(&xhtml_content);
+            let sanitized = strip_specialized_navigation_sections(&strip_document_head(&normalized));
+
+            // Skip navigation documents (TOC pages, etc.)
+            if looks_like_navigation_document(&sanitized) {
+                continue;
+            }
+
+            // Skip empty chapters
+            if extract_text_from_xhtml(&sanitized).is_empty() {
+                continue;
+            }
+
+            let chapter_structure = crate::extraction::html::structure::build_document_structure(&sanitized);
+
+            if chapter_structure.nodes.is_empty() {
+                // Fallback: extract plain text
+                let chapter_title =
+                    extract_title_from_xhtml(&xhtml_content).unwrap_or_else(|| format!("Chapter {}", index + 1));
+                builder.push_heading(1, &chapter_title, None, None);
+
+                let text = extract_text_from_xhtml(&xhtml_content);
+                for paragraph in text.split("\n\n") {
+                    let trimmed = paragraph.trim();
+                    if !trimmed.is_empty() {
+                        builder.push_paragraph(trimmed, vec![], None, None);
+                    }
+                }
+            } else {
+                // Convert DocumentStructure nodes to InternalDocument elements
+                let mut first_heading_idx: Option<u32> = None;
+                let mut in_list = false;
+                for node in &chapter_structure.nodes {
+                    use crate::types::document_structure::NodeContent;
+
+                    // Close an open list if the current node is not a ListItem
+                    if in_list && !matches!(&node.content, NodeContent::ListItem { .. }) {
+                        builder.end_list();
+                        in_list = false;
+                    }
+
+                    match &node.content {
+                        NodeContent::Heading { level, text } => {
+                            let idx = builder.push_heading(*level, text, None, None);
+                            if first_heading_idx.is_none() {
+                                first_heading_idx = Some(idx);
+                            }
+                            collect_annotation_uris(&node.annotations, text, &mut builder);
+                        }
+                        NodeContent::Paragraph { text } => {
+                            builder.push_paragraph(text, node.annotations.clone(), None, None);
+                            collect_annotation_uris(&node.annotations, text, &mut builder);
+                        }
+                        NodeContent::ListItem { text } => {
+                            if !in_list {
+                                builder.push_list(false);
+                                in_list = true;
+                            }
+                            builder.push_list_item(text.as_str(), false, vec![], None, None);
+                        }
+                        NodeContent::Table { grid } => {
+                            let cells: Vec<Vec<String>> = (0..grid.rows)
+                                .map(|r| {
+                                    grid.cells
+                                        .iter()
+                                        .filter(|c| c.row == r)
+                                        .map(|c| c.content.clone())
+                                        .collect()
+                                })
+                                .collect();
+                            if !cells.is_empty() {
+                                builder.push_table_from_cells(&cells, None, None);
+                            }
+                        }
+                        NodeContent::Code { text, language } => {
+                            builder.push_code(text, language.as_deref(), None, None);
+                        }
+                        NodeContent::Image { description, src, .. } => {
+                            // Collect image URI
+                            if let Some(img_src) = src
+                                && !img_src.is_empty()
+                            {
+                                builder.push_uri(Uri {
+                                    url: img_src.clone(),
+                                    label: description.clone(),
+                                    page: Some((index + 1) as u32),
+                                    kind: UriKind::Image,
+                                });
+                            }
+                            // Try to extract image binary from the EPUB ZIP.
+                            // Image src is relative to the XHTML file, not the manifest dir.
+                            let xhtml_dir = file_path.rsplit_once('/').map(|(d, _)| d).unwrap_or("");
+                            let image_data = src.as_ref().and_then(|img_src| {
+                                let resolved = resolve_path(xhtml_dir, img_src).ok()?;
+                                let mut buf = Vec::new();
+                                archive.by_name(&resolved.path).ok()?.read_to_end(&mut buf).ok()?;
+                                if buf.is_empty() {
+                                    return None;
+                                }
+                                let fmt = img_src
+                                    .rsplit('.')
+                                    .next()
+                                    .map(|ext| match ext.to_lowercase().as_str() {
+                                        "jpg" | "jpeg" => "jpeg",
+                                        "png" => "png",
+                                        "gif" => "gif",
+                                        "webp" => "webp",
+                                        "svg" => "svg",
+                                        "bmp" => "bmp",
+                                        _ => "png",
+                                    })
+                                    .unwrap_or("png");
+                                Some((buf, fmt.to_string()))
+                            });
+
+                            if let Some((data, format)) = image_data {
+                                let image = crate::types::ExtractedImage {
+                                    data: bytes::Bytes::from(data),
+                                    format: Cow::Owned(format),
+                                    image_index: 0,
+                                    page_number: Some(index + 1),
+                                    width: None,
+                                    height: None,
+                                    colorspace: None,
+                                    bits_per_component: None,
+                                    is_mask: false,
+                                    description: description.clone(),
+                                    ocr_result: None,
+                                    bounding_box: None,
+                                    source_path: None,
+                                };
+                                builder.push_image(description.as_deref(), image, None, None);
+                            } else {
+                                // No image data — emit placeholder
+                                let text_val = description.as_deref().unwrap_or("");
+                                let elem =
+                                    InternalElement::text(ElementKind::Image { image_index: u32::MAX }, text_val, 0);
+                                builder.push_element(elem);
+                            }
+                        }
+                        NodeContent::Group {
+                            heading_text: Some(_), ..
+                        } => {
+                            // Skip: the heading text is already emitted by the
+                            // Heading node that follows this Group wrapper.
+                        }
+                        _ => {
+                            // Other node types: skip or handle generically
+                        }
+                    }
+                }
+
+                // Close any trailing open list
+                if in_list {
+                    builder.end_list();
+                }
+
+                // Chapter headings get automatic slug-based anchors from push_heading,
+                // enabling TOC entry resolution in the derivation step.
+                let _ = first_heading_idx;
+            }
+        }
+
+        // TOC→chapter relationships: each chapter heading is a TOC target.
+        // These anchors are set automatically by push_heading (slug-based),
+        // so the derivation step can resolve TOC entries to headings by key.
+
+        Some(builder.build())
+    }
+}
+
+/// Extract URIs from document structure annotations (link annotations).
+#[cfg(feature = "office")]
+fn collect_annotation_uris(
+    annotations: &[crate::types::document_structure::TextAnnotation],
+    text: &str,
+    builder: &mut InternalDocumentBuilder,
+) {
+    use crate::types::document_structure::AnnotationKind;
+
+    for ann in annotations {
+        if let AnnotationKind::Link { url, .. } = &ann.kind
+            && !url.is_empty()
+        {
+            let label = if ann.start < ann.end && (ann.end as usize) <= text.len() {
+                let slice = &text[ann.start as usize..ann.end as usize];
+                if slice.is_empty() {
+                    None
+                } else {
+                    Some(slice.to_string())
+                }
+            } else {
+                None
+            };
+            builder.push_uri(Uri {
+                url: url.clone(),
+                label,
+                page: None,
+                kind: classify_uri(url),
+            });
+        }
     }
 }
 
@@ -246,7 +487,8 @@ impl DocumentExtractor for EpubExtractor {
         content: &[u8],
         mime_type: &str,
         config: &ExtractionConfig,
-    ) -> Result<ExtractionResult> {
+    ) -> Result<InternalDocument> {
+        let _ = config; // conditionally used by ocr feature
         let cursor = Cursor::new(content.to_vec());
 
         let mut archive = ZipArchive::new(cursor).map_err(|e| crate::KreuzbergError::Parsing {
@@ -264,83 +506,58 @@ impl DocumentExtractor for EpubExtractor {
         };
 
         let opf_xml = read_file_from_zip(&mut archive, &opf_path)?;
-        let (package, mut processing_warnings) = parse_opf(&opf_xml, &manifest_dir)?;
+        let (package, _processing_warnings) = parse_opf(&opf_xml, &manifest_dir)?;
         let additional_metadata = build_additional_metadata(&package.metadata);
-        let (documents, content_warnings) = read_body_documents(&mut archive, &package)?;
-        processing_warnings.extend(content_warnings);
-        let mut rendered_documents = Vec::with_capacity(documents.len());
-        for (index, document) in documents.iter().enumerate() {
-            let mut rendered = Self::render_spine_document(document, index, config);
-            processing_warnings.append(&mut rendered.warnings);
-            rendered_documents.push(rendered);
-        }
-        let mut extracted_content = String::new();
-        for rendered in &rendered_documents {
-            if !rendered.content_fragment.is_empty() {
-                if !extracted_content.is_empty() && !extracted_content.ends_with('\n') {
-                    extracted_content.push('\n');
-                }
-                extracted_content.push_str(&rendered.content_fragment);
-                extracted_content.push('\n');
-            }
-        }
-        let extracted_content = trim_trailing_newlines(&extracted_content).to_string();
-        let fully_converted = matches!(config.output_format, OutputFormat::Markdown | OutputFormat::Djot)
-            && rendered_documents
-                .iter()
-                .all(|rendered| rendered.content_fully_converted);
+        let epub_format_metadata = FormatMetadata::Epub(EpubMetadata {
+            coverage: package.metadata.coverage.clone(),
+            dc_format: package.metadata.format.clone(),
+            relation: package.metadata.relation.clone(),
+            source: package.metadata.source.clone(),
+            dc_type: package.metadata.dc_type.clone(),
+            cover_image: package.metadata.cover_image_href.clone(),
+        });
+
+        // Collect nav document hrefs so we can skip them in content extraction
+        let nav_hrefs: AHashSet<String> = package
+            .manifest
+            .values()
+            .filter(|item| item.is_nav())
+            .filter_map(|item| item.path.clone())
+            .collect();
+
+        // Extract spine hrefs for internal document building
+        let spine_hrefs: Vec<String> = package
+            .spine_items
+            .iter()
+            .filter_map(|spine_item| {
+                package
+                    .manifest
+                    .get(&spine_item.idref)
+                    .map(|item| item.raw_href.clone())
+            })
+            .collect();
+
         let metadata_map: AHashMap<Cow<'static, str>, serde_json::Value> = additional_metadata
             .into_iter()
             .map(|(k, v)| (Cow::Owned(k), v))
             .collect();
 
-        // Signal that the extractor already formatted the output so the pipeline
-        // does not double-convert (mirrors HtmlExtractor behavior).
-        let pre_formatted = if fully_converted {
-            match config.output_format {
-                crate::core::config::OutputFormat::Markdown => Some("markdown".to_string()),
-                crate::core::config::OutputFormat::Djot => Some("djot".to_string()),
-                _ => None,
-            }
-        } else {
-            None
+        // Build InternalDocument from spine chapters
+        let mut doc = Self::build_internal_document(&mut archive, &spine_hrefs, &manifest_dir, &nav_hrefs)
+            .unwrap_or_else(|| InternalDocumentBuilder::new("epub").build());
+        doc.mime_type = Cow::Owned(mime_type.to_string());
+
+        doc.metadata = Metadata {
+            title: package.metadata.title,
+            authors: package.metadata.creator.map(|c| vec![c]),
+            language: package.metadata.language,
+            created_at: package.metadata.date,
+            format: Some(epub_format_metadata),
+            additional: metadata_map,
+            ..Default::default()
         };
 
-        // Build document structure from spine chapters (only when requested)
-        let document = if config.include_document_structure {
-            Self::build_document_structure(&rendered_documents)
-        } else {
-            None
-        };
-
-        Ok(ExtractionResult {
-            content: extracted_content,
-            mime_type: mime_type.to_string().into(),
-            metadata: Metadata {
-                title: package.metadata.title,
-                authors: package.metadata.creator.map(|c| vec![c]),
-                language: package.metadata.language,
-                created_at: package.metadata.date,
-                additional: metadata_map,
-                output_format: pre_formatted,
-                ..Default::default()
-            },
-            pages: None,
-            tables: vec![],
-            detected_languages: None,
-            chunks: None,
-            images: None,
-            djot_content: None,
-            elements: None,
-            ocr_elements: None,
-            document,
-            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-            extracted_keywords: None,
-            quality_score: None,
-            processing_warnings,
-            annotations: None,
-            children: None,
-        })
+        Ok(doc)
     }
 
     fn supported_mime_types(&self) -> &[&str] {
@@ -419,8 +636,7 @@ mod tests {
 </package>"#;
 
         let (package, _warnings) = metadata::parse_opf(opf, "").expect("Metadata parse failed");
-        let epub_meta = package.metadata;
-        let additional = metadata::build_additional_metadata(&epub_meta);
+        let epub_meta = &package.metadata;
         assert_eq!(epub_meta.title, Some("Test Book".to_string()));
         assert_eq!(epub_meta.coverage, Some("Worldwide".to_string()));
         assert_eq!(epub_meta.format, Some("application/epub+zip".to_string()));
@@ -429,11 +645,38 @@ mod tests {
         assert_eq!(epub_meta.dc_type, Some("Text".to_string()));
         assert_eq!(epub_meta.cover_image_href, Some("images/cover.jpg".to_string()));
 
-        assert!(additional.contains_key("coverage"));
-        assert!(additional.contains_key("format"));
-        assert!(additional.contains_key("relation"));
-        assert!(additional.contains_key("source"));
-        assert!(additional.contains_key("type"));
-        assert!(additional.contains_key("cover_image"));
+        // Verify Dublin Core extension fields go into FormatMetadata::Epub
+        let format_meta = FormatMetadata::Epub(EpubMetadata {
+            coverage: epub_meta.coverage.clone(),
+            dc_format: epub_meta.format.clone(),
+            relation: epub_meta.relation.clone(),
+            source: epub_meta.source.clone(),
+            dc_type: epub_meta.dc_type.clone(),
+            cover_image: epub_meta.cover_image_href.clone(),
+        });
+        match &format_meta {
+            FormatMetadata::Epub(em) => {
+                assert_eq!(em.coverage.as_deref(), Some("Worldwide"));
+                assert_eq!(em.dc_format.as_deref(), Some("application/epub+zip"));
+                assert_eq!(em.relation.as_deref(), Some("http://example.com/related"));
+                assert_eq!(em.source.as_deref(), Some("Original Manuscript"));
+                assert_eq!(em.dc_type.as_deref(), Some("Text"));
+                assert_eq!(em.cover_image.as_deref(), Some("images/cover.jpg"));
+            }
+            _ => panic!("Expected FormatMetadata::Epub variant"),
+        }
+
+        // Standard Dublin Core fields still go into additional
+        let additional = metadata::build_additional_metadata(epub_meta);
+        assert!(additional.contains_key("publisher"));
+        assert!(additional.contains_key("description"));
+        assert!(additional.contains_key("rights"));
+        // These should NOT be in additional anymore
+        assert!(!additional.contains_key("coverage"));
+        assert!(!additional.contains_key("format"));
+        assert!(!additional.contains_key("relation"));
+        assert!(!additional.contains_key("source"));
+        assert!(!additional.contains_key("type"));
+        assert!(!additional.contains_key("cover_image"));
     }
 }

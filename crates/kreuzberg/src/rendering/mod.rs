@@ -1,11 +1,19 @@
-//! Unified rendering of `DocumentStructure` to output formats.
+//! Unified rendering of document content to output formats.
 //!
-//! Provides format-specific renderers that walk a document tree and produce
-//! markdown, plain text, or HTML output. This replaces per-extractor ad-hoc
-//! text generation with a single, consistent rendering pipeline.
+//! - [`render_markdown`] — GFM Markdown (via comrak)
+//! - [`render_html`] — HTML5 (via comrak)
+//! - [`render_djot`] — Djot markup
+//! - [`render_plain`] — Plain text (no formatting)
 
+pub(crate) mod common;
+mod comrak_bridge;
+mod djot;
+mod html;
 mod markdown;
 mod plain;
 
-pub use markdown::render_to_markdown;
-pub use plain::render_to_plain;
+pub use comrak_bridge::build_comrak_ast;
+pub use djot::render_djot;
+pub use html::render_html;
+pub use markdown::render_markdown;
+pub use plain::render_plain;

@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/pptx/simple.pptx",
+  "file_type": "pptx",
+  "file_size": 34865,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "PPTX test document: simple",
+    "source": "pandoc-generated",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "markdown_file": "../../../../test_documents/ground_truth/pptx/simple.md",
+    "source": "pandoc",
+    "text_file": "../../../../test_documents/ground_truth/pptx/simple.txt"
+  }
+}

@@ -112,5 +112,13 @@ pub fn parse_rtf_control_word(chars: &mut std::iter::Peekable<std::str::Chars>) 
         None
     };
 
+    // Per RTF spec, a space following a control word (with or without a
+    // numeric parameter) is a delimiter and must be consumed. Without this,
+    // font-encoding directives like `\loch\f31502 H` would emit a spurious
+    // space before the text character.
+    if let Some(&' ') = chars.peek() {
+        chars.next();
+    }
+
     (word, num_value)
 }

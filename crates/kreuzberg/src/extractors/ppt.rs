@@ -7,7 +7,9 @@ use crate::core::config::ExtractionConfig;
 use crate::core::mime::LEGACY_POWERPOINT_MIME_TYPE;
 use crate::extraction::ppt::extract_ppt_text;
 use crate::plugins::{DocumentExtractor, Plugin};
-use crate::types::{ExtractionResult, Metadata, PageInfo, PageStructure, PageUnitType};
+use crate::types::internal::InternalDocument;
+use crate::types::internal_builder::InternalDocumentBuilder;
+use crate::types::{Metadata, PageInfo, PageStructure, PageUnitType};
 use ahash::AHashMap;
 use async_trait::async_trait;
 use std::borrow::Cow;
@@ -27,6 +29,52 @@ impl PptExtractor {
 impl Default for PptExtractor {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+impl PptExtractor {
+    /// Build an `InternalDocument` from PPT extracted text and speaker notes.
+    ///
+    /// Splits text by double-newlines; each block corresponds to a slide.
+    fn build_internal_document(text: &str, speaker_notes: &[String]) -> InternalDocument {
+        let mut builder = InternalDocumentBuilder::new("ppt");
+
+        let slide_blocks: Vec<&str> = text.split("\n\n").collect();
+        for (i, block) in slide_blocks.iter().enumerate() {
+            let trimmed = block.trim();
+            if !trimmed.is_empty() {
+                let slide_num = (i + 1) as u32;
+                let mut lines = trimmed.lines();
+                let first_line = lines.next().unwrap_or("");
+                let title = if first_line.len() <= 80 && lines.clone().next().is_some() {
+                    Some(first_line)
+                } else {
+                    None
+                };
+                builder.push_slide(slide_num, title, None);
+
+                if title.is_some() {
+                    for line in lines {
+                        let lt = line.trim();
+                        if !lt.is_empty() {
+                            builder.push_paragraph(lt, vec![], None, None);
+                        }
+                    }
+                } else {
+                    builder.push_paragraph(trimmed, vec![], None, None);
+                }
+
+                // Add speaker notes as footnote definitions
+                if let Some(notes) = speaker_notes.get(i)
+                    && !notes.is_empty()
+                {
+                    let key = format!("slide-{}-notes", slide_num);
+                    builder.push_footnote_definition(notes, &key, None);
+                }
+            }
+        }
+
+        builder.build()
     }
 }
 
@@ -63,8 +111,8 @@ impl DocumentExtractor for PptExtractor {
         &self,
         content: &[u8],
         mime_type: &str,
-        config: &ExtractionConfig,
-    ) -> Result<ExtractionResult> {
+        _config: &ExtractionConfig,
+    ) -> Result<InternalDocument> {
         let result = {
             #[cfg(feature = "tokio-runtime")]
             if crate::core::batch_mode::is_batch_mode() {
@@ -86,22 +134,16 @@ impl DocumentExtractor for PptExtractor {
 
         let mut metadata_map = AHashMap::new();
 
-        if let Some(title) = result.metadata.title {
-            metadata_map.insert(Cow::Borrowed("title"), serde_json::Value::String(title));
-        }
-        if let Some(author) = result.metadata.author {
-            metadata_map.insert(
-                Cow::Borrowed("authors"),
-                serde_json::Value::Array(vec![serde_json::Value::String(author.clone())]),
-            );
-            metadata_map.insert(Cow::Borrowed("created_by"), serde_json::Value::String(author));
-        }
-        if let Some(subject) = result.metadata.subject {
-            metadata_map.insert(Cow::Borrowed("subject"), serde_json::Value::String(subject));
-        }
-        if let Some(last_author) = result.metadata.last_author {
-            metadata_map.insert(Cow::Borrowed("modified_by"), serde_json::Value::String(last_author));
-        }
+        let meta_title = result.metadata.title;
+        let meta_subject = result.metadata.subject;
+
+        let (meta_authors, meta_created_by) = if let Some(author) = result.metadata.author {
+            (Some(vec![author.clone()]), Some(author))
+        } else {
+            (None, None)
+        };
+
+        let meta_modified_by = result.metadata.last_author;
 
         metadata_map.insert(
             Cow::Borrowed("slide_count"),
@@ -149,76 +191,20 @@ impl DocumentExtractor for PptExtractor {
             None
         };
 
-        let document = if config.include_document_structure {
-            use crate::types::builder::DocumentStructureBuilder;
-            let mut builder = DocumentStructureBuilder::new().source_format("ppt");
-
-            // Split text by double-newlines; each block corresponds to a slide.
-            let slide_blocks: Vec<&str> = result.text.split("\n\n").collect();
-            for (i, block) in slide_blocks.iter().enumerate() {
-                let trimmed = block.trim();
-                if !trimmed.is_empty() {
-                    let slide_num = (i + 1) as u32;
-                    // Use first line as slide title if it's short
-                    let mut lines = trimmed.lines();
-                    let first_line = lines.next().unwrap_or("");
-                    let title = if first_line.len() <= 80 && lines.clone().next().is_some() {
-                        Some(first_line)
-                    } else {
-                        None
-                    };
-                    builder.push_slide(slide_num, title);
-
-                    // Push remaining lines as paragraphs
-                    if title.is_some() {
-                        for line in lines {
-                            let lt = line.trim();
-                            if !lt.is_empty() {
-                                builder.push_paragraph(lt, vec![], None, None);
-                            }
-                        }
-                    } else {
-                        // Push whole block as paragraph
-                        builder.push_paragraph(trimmed, vec![], None, None);
-                    }
-
-                    // Add speaker notes as footnotes if available for this slide
-                    if let Some(notes) = result.speaker_notes.get(i) {
-                        builder.push_footnote(notes, None);
-                    }
-
-                    builder.exit_container();
-                }
-            }
-            Some(builder.build())
-        } else {
-            None
+        let mut doc = Self::build_internal_document(&result.text, &result.speaker_notes);
+        doc.mime_type = Cow::Owned(mime_type.to_string());
+        doc.metadata = Metadata {
+            title: meta_title,
+            subject: meta_subject,
+            authors: meta_authors,
+            created_by: meta_created_by,
+            modified_by: meta_modified_by,
+            pages: page_structure,
+            additional: metadata_map,
+            ..Default::default()
         };
 
-        Ok(ExtractionResult {
-            content: result.text,
-            mime_type: mime_type.to_string().into(),
-            metadata: Metadata {
-                pages: page_structure,
-                additional: metadata_map,
-                ..Default::default()
-            },
-            pages: None,
-            tables: vec![],
-            detected_languages: None,
-            chunks: None,
-            images: Some(vec![]),
-            djot_content: None,
-            elements: None,
-            ocr_elements: None,
-            document,
-            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-            extracted_keywords: None,
-            quality_score: None,
-            processing_warnings: Vec::new(),
-            annotations: None,
-            children: None,
-        })
+        Ok(doc)
     }
 
     fn supported_mime_types(&self) -> &[&str] {
@@ -263,6 +249,8 @@ mod tests {
             .extract_bytes(&content, "application/vnd.ms-powerpoint", &config)
             .await
             .expect("PPT extraction failed");
+        let result =
+            crate::extraction::derive::derive_extraction_result(result, true, crate::core::config::OutputFormat::Plain);
         assert!(!result.content.is_empty(), "Should extract text from PPT");
         assert_eq!(&*result.mime_type, "application/vnd.ms-powerpoint");
     }
@@ -283,6 +271,8 @@ mod tests {
             .extract_bytes(&content, "application/vnd.ms-powerpoint", &config)
             .await
             .expect("PPT extraction failed");
+        let result =
+            crate::extraction::derive::derive_extraction_result(result, true, crate::core::config::OutputFormat::Plain);
         assert!(result.document.is_some(), "Should produce document structure for PPT");
         let doc = result.document.unwrap();
         // Should contain Slide nodes
@@ -306,6 +296,8 @@ mod tests {
             .extract_bytes(&content, "application/vnd.ms-powerpoint", &config)
             .await
             .expect("PPT extraction failed");
+        let result =
+            crate::extraction::derive::derive_extraction_result(result, true, crate::core::config::OutputFormat::Plain);
         assert!(
             result.metadata.additional.contains_key("slide_count"),
             "Should have slide_count metadata"

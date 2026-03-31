@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/xlsx/excel_multi_sheet.xlsx",
+  "file_type": "xlsx",
+  "file_size": 6166,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "xlsx test: excel_multi_sheet",
+    "source": "pandoc-generated",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "markdown_file": "../../../../test_documents/ground_truth/xlsx/excel_multi_sheet.md",
+    "source": "pandoc",
+    "text_file": "../../../../test_documents/ground_truth/xlsx/excel_multi_sheet.txt"
+  }
+}

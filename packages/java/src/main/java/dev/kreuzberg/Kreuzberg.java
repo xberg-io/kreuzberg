@@ -1287,10 +1287,13 @@ public final class Kreuzberg {
 				.readCString(result.get(ValueLayout.ADDRESS, KreuzbergFFI.PROCESSING_WARNINGS_OFFSET));
 		String annotationsJson = KreuzbergFFI
 				.readCString(result.get(ValueLayout.ADDRESS, KreuzbergFFI.ANNOTATIONS_JSON_OFFSET));
+		String urisJson = KreuzbergFFI
+				.readCString(result.get(ValueLayout.ADDRESS, KreuzbergFFI.URIS_JSON_OFFSET));
 
 		return ResultParser.parse(content, mimeType, tablesJson, detectedLanguagesJson, metadataJson, chunksJson,
 				imagesJson, pagesJson, pageStructureJson, elementsJson, ocrElementsJson, null, language, date, subject,
-				documentJson, extractedKeywordsJson, qualityScoreJson, processingWarningsJson, annotationsJson);
+				documentJson, extractedKeywordsJson, qualityScoreJson, processingWarningsJson, annotationsJson,
+				urisJson);
 	}
 
 	/**
@@ -1321,7 +1324,8 @@ public final class Kreuzberg {
 				MemorySegment ptr = array.getAtIndex(ValueLayout.ADDRESS, i);
 				if (ptr == null || ptr.address() == 0) {
 					results.add(new ExtractionResult("", "", Metadata.empty(), List.of(), List.of(), List.of(),
-							List.of(), List.of(), null, List.of(), List.of(), null, null, null, null, null, null));
+							List.of(), List.of(), null, List.of(), List.of(), null, null, null, null, null, null,
+							null));
 				} else {
 					// Use parseResult (not parseAndFreeResult) to avoid double-free.
 					// Memory is freed collectively by KREUZBERG_FREE_BATCH_RESULT in the finally
@@ -1480,6 +1484,7 @@ public final class Kreuzberg {
 	 * }
 	 * }</pre>
 	 */
+
 	public static final class PdfPageIterator implements Iterator<PageResult>, AutoCloseable {
 		private MemorySegment handle;
 		private PageResult prefetched;

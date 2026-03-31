@@ -20,9 +20,7 @@ mod tests {
     use crate::Result;
     use crate::core::config::ExtractionConfig;
     use crate::plugins::Plugin;
-    use crate::types::ExtractionResult;
     use async_trait::async_trait;
-    use std::borrow::Cow;
 
     struct MockExtractor {
         mime_types: Vec<&'static str>,
@@ -54,27 +52,18 @@ mod tests {
             content: &[u8],
             mime_type: &str,
             _config: &ExtractionConfig,
-        ) -> Result<ExtractionResult> {
-            Ok(ExtractionResult {
-                content: String::from_utf8_lossy(content).to_string(),
-                mime_type: mime_type.to_string().into(),
-                metadata: crate::types::Metadata::default(),
-                tables: vec![],
-                detected_languages: None,
-                chunks: None,
-                images: None,
-                djot_content: None,
-                pages: None,
-                elements: None,
-                ocr_elements: None,
-                document: None,
-                #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-                extracted_keywords: None,
-                quality_score: None,
-                processing_warnings: Vec::new(),
-                annotations: None,
-                children: None,
-            })
+        ) -> Result<crate::types::internal::InternalDocument> {
+            let mut doc = crate::types::internal::InternalDocument::new("mock");
+            doc.mime_type = std::borrow::Cow::Owned(mime_type.to_string());
+            let text = String::from_utf8_lossy(content).to_string();
+            if !text.is_empty() {
+                doc.push_element(crate::types::internal::InternalElement::text(
+                    crate::types::internal::ElementKind::Paragraph,
+                    text,
+                    0,
+                ));
+            }
+            Ok(doc)
         }
 
         fn supported_mime_types(&self) -> &[&str] {
@@ -94,10 +83,12 @@ mod tests {
         };
 
         let config = ExtractionConfig::default();
-        let result = extractor
+        let doc = extractor
             .extract_bytes(b"test content", "text/plain", &config)
             .await
             .unwrap();
+        let result =
+            crate::extraction::derive::derive_extraction_result(doc, true, crate::core::config::OutputFormat::Plain);
 
         assert_eq!(result.content, "test content");
         assert_eq!(result.mime_type, "text/plain");
@@ -161,7 +152,9 @@ mod tests {
         let path = temp_file.path();
 
         let config = ExtractionConfig::default();
-        let result = extractor.extract_file(path, "text/plain", &config).await.unwrap();
+        let doc = extractor.extract_file(path, "text/plain", &config).await.unwrap();
+        let result =
+            crate::extraction::derive::derive_extraction_result(doc, true, crate::core::config::OutputFormat::Plain);
 
         assert_eq!(result.content, "file content");
         assert_eq!(result.mime_type, "text/plain");
@@ -175,7 +168,9 @@ mod tests {
         };
 
         let config = ExtractionConfig::default();
-        let result = extractor.extract_bytes(b"", "text/plain", &config).await.unwrap();
+        let doc = extractor.extract_bytes(b"", "text/plain", &config).await.unwrap();
+        let result =
+            crate::extraction::derive::derive_extraction_result(doc, true, crate::core::config::OutputFormat::Plain);
 
         assert_eq!(result.content, "");
         assert_eq!(result.mime_type, "text/plain");
@@ -190,10 +185,12 @@ mod tests {
 
         let invalid_utf8 = vec![0xFF, 0xFE, 0xFD];
         let config = ExtractionConfig::default();
-        let result = extractor
+        let doc = extractor
             .extract_bytes(&invalid_utf8, "text/plain", &config)
             .await
             .unwrap();
+        let result =
+            crate::extraction::derive::derive_extraction_result(doc, true, crate::core::config::OutputFormat::Plain);
 
         assert!(!result.content.is_empty());
     }
@@ -237,27 +234,8 @@ mod tests {
                 _content: &[u8],
                 _mime_type: &str,
                 _config: &ExtractionConfig,
-            ) -> Result<ExtractionResult> {
-                Ok(ExtractionResult {
-                    content: String::new(),
-                    mime_type: Cow::Borrowed(""),
-                    metadata: crate::types::Metadata::default(),
-                    tables: vec![],
-                    detected_languages: None,
-                    chunks: None,
-                    images: None,
-                    djot_content: None,
-                    pages: None,
-                    elements: None,
-                    ocr_elements: None,
-                    document: None,
-                    #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-                    extracted_keywords: None,
-                    quality_score: None,
-                    processing_warnings: Vec::new(),
-                    annotations: None,
-                    children: None,
-                })
+            ) -> Result<crate::types::internal::InternalDocument> {
+                Ok(crate::types::internal::InternalDocument::new("mock"))
             }
 
             fn supported_mime_types(&self) -> &[&str] {

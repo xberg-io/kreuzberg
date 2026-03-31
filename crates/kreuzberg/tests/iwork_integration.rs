@@ -6,6 +6,7 @@
 #[cfg(feature = "iwork")]
 mod iwork_tests {
     use kreuzberg::core::config::ExtractionConfig;
+    use kreuzberg::extraction::derive::derive_extraction_result;
     use kreuzberg::extractors::iwork::{keynote::KeynoteExtractor, numbers::NumbersExtractor, pages::PagesExtractor};
     use kreuzberg::plugins::DocumentExtractor;
     use std::path::PathBuf;
@@ -153,10 +154,11 @@ mod iwork_tests {
         let extractor = NumbersExtractor::new();
         let config = ExtractionConfig::default();
 
-        let result = extractor
+        let doc = extractor
             .extract_bytes(&content, "application/x-iwork-numbers-sffnumbers", &config)
             .await
             .expect("NumbersExtractor should not fail on valid file");
+        let result = derive_extraction_result(doc, false, kreuzberg::OutputFormat::Plain);
 
         // A valid Numbers file should produce some text output
         assert!(
@@ -181,10 +183,11 @@ mod iwork_tests {
 
         // Extraction should not panic — it may produce empty content if the
         // fixture is a stub (non-Snappy compressed IWA), but should not error.
-        let result = extractor
+        let doc = extractor
             .extract_bytes(&content, "application/x-iwork-pages-sffpages", &config)
             .await
             .expect("PagesExtractor should not fail on valid ZIP file");
+        let result = derive_extraction_result(doc, false, kreuzberg::OutputFormat::Plain);
 
         // For any valid .pages file, extraction should succeed (even if empty)
         assert!(

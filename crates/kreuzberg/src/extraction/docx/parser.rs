@@ -10,7 +10,6 @@
 //! - Added markdown rendering and formatting support (fixes #376)
 
 use ahash::AHashMap;
-use std::collections::HashMap;
 use std::io::{Cursor, Read, Seek};
 
 use quick_xml::Reader;
@@ -34,7 +33,7 @@ pub struct Document {
     pub footers: Vec<HeaderFooter>,
     pub footnotes: Vec<Note>,
     pub endnotes: Vec<Note>,
-    pub numbering_defs: HashMap<(i64, i64), ListType>,
+    pub numbering_defs: AHashMap<(i64, i64), ListType>,
     /// Document elements in their original order.
     pub elements: Vec<DocumentElement>,
     /// Parsed style catalog from `word/styles.xml`, if available.
@@ -277,7 +276,7 @@ impl Document {
         use std::fmt::Write;
 
         let mut output = String::new();
-        let mut list_counters: HashMap<(i64, i64), usize> = HashMap::new();
+        let mut list_counters: AHashMap<(i64, i64), usize> = AHashMap::new();
         let mut prev_was_list = false;
 
         // Use elements ordering if populated, otherwise fall back to paragraphs-only
@@ -307,6 +306,10 @@ impl Document {
                         let Some(drawing) = self.drawings.get(*idx) else {
                             continue;
                         };
+                        // Skip drawings without an image reference (e.g. textbox shapes)
+                        if drawing.image_ref.is_none() {
+                            continue;
+                        }
                         let alt = drawing
                             .doc_properties
                             .as_ref()
@@ -472,7 +475,7 @@ impl Document {
         &self,
         paragraph: &Paragraph,
         output: &mut String,
-        list_counters: &mut HashMap<(i64, i64), usize>,
+        list_counters: &mut AHashMap<(i64, i64), usize>,
         prev_was_list: &mut bool,
     ) {
         let is_list = paragraph.numbering_id.is_some();
@@ -494,11 +497,21 @@ impl Document {
             return;
         }
 
+        // Check if this paragraph has a quote/blockquote style
+        let is_quote = paragraph.style.as_deref().is_some_and(|s| {
+            let lower = s.to_ascii_lowercase();
+            lower == "quote" || lower == "blockquote" || lower.contains("quote")
+        });
+
         if is_list {
             // List items separated by single newline
             if *prev_was_list {
                 output.push('\n');
             }
+            output.push_str(&md);
+        } else if is_quote {
+            Self::ensure_blank_line(output);
+            output.push_str("> ");
             output.push_str(&md);
         } else {
             // Non-list paragraphs separated by blank lines
@@ -534,10 +547,107 @@ impl Paragraph {
     }
 
     /// Render inline runs as markdown (no paragraph-level wrapping).
+    ///
+    /// Uses a two-level grouping strategy to avoid spurious marker sequences like `****`:
+    /// 1. Groups consecutive runs that share the same bold/italic/hyperlink properties.
+    /// 2. Within each group, opens bold/italic once and toggles underline/strikethrough per run.
     pub fn runs_to_markdown(&self) -> String {
         let mut text = String::new();
-        for run in &self.runs {
-            text.push_str(&run.to_markdown());
+        let mut i = 0;
+        while i < self.runs.len() {
+            let run = &self.runs[i];
+
+            // For math runs or empty runs, emit individually.
+            if run.math_latex.is_some() || run.text.is_empty() {
+                text.push_str(&run.to_markdown());
+                i += 1;
+                continue;
+            }
+
+            // Collect a group of consecutive runs sharing the same bold/italic/hyperlink.
+            // Inner formatting (underline, strikethrough) may differ within the group.
+            let group_start = i;
+            let mut j = i + 1;
+            while j < self.runs.len() {
+                let next = &self.runs[j];
+                if next.math_latex.is_some()
+                    || next.text.is_empty()
+                    || next.bold != run.bold
+                    || next.italic != run.italic
+                    || next.hyperlink_url != run.hyperlink_url
+                {
+                    break;
+                }
+                j += 1;
+            }
+            let group_end = j;
+
+            // If the group is a single run with uniform formatting, use simple merge.
+            // Also check if all runs in group have identical inner formatting — merge text.
+            let all_same_inner = self.runs[group_start..group_end]
+                .iter()
+                .all(|r| r.underline == run.underline && r.strikethrough == run.strikethrough);
+
+            if all_same_inner {
+                // Merge all text and emit as one run.
+                let mut merged_text = String::new();
+                for r in &self.runs[group_start..group_end] {
+                    merged_text.push_str(&r.text);
+                }
+                let merged_run = Run {
+                    text: merged_text,
+                    bold: run.bold,
+                    italic: run.italic,
+                    underline: run.underline,
+                    strikethrough: run.strikethrough,
+                    hyperlink_url: run.hyperlink_url.clone(),
+                    ..Default::default()
+                };
+                text.push_str(&merged_run.to_markdown());
+            } else {
+                // Group has mixed inner formatting.  Open bold/italic once, toggle inner per run.
+                if run.hyperlink_url.is_some() {
+                    text.push('[');
+                }
+                if run.bold && run.italic {
+                    text.push_str("***");
+                } else if run.bold {
+                    text.push_str("**");
+                } else if run.italic {
+                    text.push('*');
+                }
+
+                for r in &self.runs[group_start..group_end] {
+                    if r.underline {
+                        text.push_str("<u>");
+                    }
+                    if r.strikethrough {
+                        text.push_str("~~");
+                    }
+                    text.push_str(&r.text);
+                    if r.strikethrough {
+                        text.push_str("~~");
+                    }
+                    if r.underline {
+                        text.push_str("</u>");
+                    }
+                }
+
+                if run.bold && run.italic {
+                    text.push_str("***");
+                } else if run.bold {
+                    text.push_str("**");
+                } else if run.italic {
+                    text.push('*');
+                }
+                if let Some(ref url) = run.hyperlink_url {
+                    text.push_str("](");
+                    text.push_str(url);
+                    text.push(')');
+                }
+            }
+
+            i = group_end;
         }
         text
     }
@@ -548,8 +658,8 @@ impl Paragraph {
     /// it takes precedence over style name matching.
     pub fn to_markdown(
         &self,
-        numbering_defs: &HashMap<(i64, i64), ListType>,
-        list_counters: &mut HashMap<(i64, i64), usize>,
+        numbering_defs: &AHashMap<(i64, i64), ListType>,
+        list_counters: &mut AHashMap<(i64, i64), usize>,
         heading_level: Option<u8>,
     ) -> String {
         let inline = self.runs_to_markdown();
@@ -986,7 +1096,7 @@ fn validate_archive_security(archive: &mut zip::ZipArchive<impl Read + Seek>) ->
 #[derive(Debug)]
 struct DocxParser<R: Read + Seek> {
     archive: zip::ZipArchive<R>,
-    relationships: HashMap<String, String>,
+    relationships: AHashMap<String, String>,
     styles: Option<super::styles::StyleCatalog>,
     theme: Option<super::theme::Theme>,
 }
@@ -1030,7 +1140,7 @@ impl<R: Read + Seek> DocxParser<R> {
 
         Ok(Self {
             archive,
-            relationships: HashMap::new(),
+            relationships: AHashMap::new(),
             styles,
             theme,
         })
@@ -1079,8 +1189,8 @@ impl<R: Read + Seek> DocxParser<R> {
     }
 
     /// Parse relationship file to get rId → target mappings for hyperlinks and images.
-    fn parse_relationships_xml(xml: &str) -> HashMap<String, String> {
-        let mut rels = HashMap::new();
+    fn parse_relationships_xml(xml: &str) -> AHashMap<String, String> {
+        let mut rels = AHashMap::new();
         let mut reader = Reader::from_str(xml);
         reader.config_mut().trim_text(true);
         let mut buf = Vec::new();
@@ -1462,8 +1572,8 @@ impl<R: Read + Seek> DocxParser<R> {
         Ok(())
     }
 
-    fn parse_numbering(&self, xml: &str) -> Result<HashMap<(i64, i64), ListType>, DocxParseError> {
-        let mut numbering_defs: HashMap<(i64, i64), ListType> = HashMap::new();
+    fn parse_numbering(&self, xml: &str) -> Result<AHashMap<(i64, i64), ListType>, DocxParseError> {
+        let mut numbering_defs: AHashMap<(i64, i64), ListType> = AHashMap::new();
         let mut abstract_num_formats: AHashMap<i64, AHashMap<i64, ListType>> = AHashMap::new();
         let mut num_to_abstract: AHashMap<i64, i64> = AHashMap::new();
 
@@ -1917,13 +2027,63 @@ mod tests {
         assert_eq!(run.to_markdown(), "");
     }
 
+    /// Adjacent bold runs must be merged to avoid spurious `****` sequences.
+    #[test]
+    fn test_adjacent_bold_runs_merged() {
+        let mut para = Paragraph::new();
+        let mut r1 = Run::new("Shuishang".to_string());
+        r1.bold = true;
+        let mut r2 = Run::new(" Township".to_string());
+        r2.bold = true;
+        para.add_run(r1);
+        para.add_run(r2);
+        assert_eq!(para.runs_to_markdown(), "**Shuishang Township**");
+    }
+
+    /// Adjacent italic runs must be merged to avoid spurious `**` sequences.
+    #[test]
+    fn test_adjacent_italic_runs_merged() {
+        let mut para = Paragraph::new();
+        let mut r1 = Run::new("he".to_string());
+        r1.italic = true;
+        let mut r2 = Run::new("llo".to_string());
+        r2.italic = true;
+        para.add_run(r1);
+        para.add_run(r2);
+        assert_eq!(para.runs_to_markdown(), "*hello*");
+    }
+
+    /// Runs with different formatting must NOT be merged.
+    #[test]
+    fn test_different_formatting_runs_not_merged() {
+        let mut para = Paragraph::new();
+        let mut r1 = Run::new("bold".to_string());
+        r1.bold = true;
+        let r2 = Run::new(" normal".to_string());
+        para.add_run(r1);
+        para.add_run(r2);
+        assert_eq!(para.runs_to_markdown(), "**bold** normal");
+    }
+
+    /// Three adjacent bold runs produce a single merged bold span.
+    #[test]
+    fn test_three_adjacent_bold_runs_merged() {
+        let mut para = Paragraph::new();
+        for text in &["i", "l", "l"] {
+            let mut r = Run::new(text.to_string());
+            r.bold = true;
+            para.add_run(r);
+        }
+        assert_eq!(para.runs_to_markdown(), "**ill**");
+    }
+
     #[test]
     fn test_paragraph_heading_to_markdown() {
         let mut para = Paragraph::new();
         para.style = Some("Title".to_string());
         para.add_run(Run::new("My Title".to_string()));
-        let defs = HashMap::new();
-        let mut counters = HashMap::new();
+        let defs = AHashMap::new();
+        let mut counters = AHashMap::new();
         assert_eq!(para.to_markdown(&defs, &mut counters, Some(1)), "# My Title");
     }
 
@@ -1932,8 +2092,8 @@ mod tests {
         let mut para = Paragraph::new();
         para.style = Some("Heading1".to_string());
         para.add_run(Run::new("Section".to_string()));
-        let defs = HashMap::new();
-        let mut counters = HashMap::new();
+        let defs = AHashMap::new();
+        let mut counters = AHashMap::new();
         assert_eq!(para.to_markdown(&defs, &mut counters, Some(2)), "## Section");
     }
 
@@ -1942,8 +2102,8 @@ mod tests {
         let mut para = Paragraph::new();
         para.style = Some("Heading2".to_string());
         para.add_run(Run::new("Subsection".to_string()));
-        let defs = HashMap::new();
-        let mut counters = HashMap::new();
+        let defs = AHashMap::new();
+        let mut counters = AHashMap::new();
         assert_eq!(para.to_markdown(&defs, &mut counters, Some(3)), "### Subsection");
     }
 
@@ -1953,9 +2113,9 @@ mod tests {
         para.numbering_id = Some(1);
         para.numbering_level = Some(0);
         para.add_run(Run::new("Item".to_string()));
-        let mut defs = HashMap::new();
+        let mut defs = AHashMap::new();
         defs.insert((1, 0), ListType::Bullet);
-        let mut counters = HashMap::new();
+        let mut counters = AHashMap::new();
         assert_eq!(para.to_markdown(&defs, &mut counters, None), "- Item");
     }
 
@@ -1965,9 +2125,9 @@ mod tests {
         para.numbering_id = Some(2);
         para.numbering_level = Some(0);
         para.add_run(Run::new("Item".to_string()));
-        let mut defs = HashMap::new();
+        let mut defs = AHashMap::new();
         defs.insert((2, 0), ListType::Numbered);
-        let mut counters = HashMap::new();
+        let mut counters = AHashMap::new();
         assert_eq!(para.to_markdown(&defs, &mut counters, None), "1. Item");
     }
 
@@ -1977,9 +2137,9 @@ mod tests {
         para.numbering_id = Some(1);
         para.numbering_level = Some(1);
         para.add_run(Run::new("Nested".to_string()));
-        let mut defs = HashMap::new();
+        let mut defs = AHashMap::new();
         defs.insert((1, 1), ListType::Bullet);
-        let mut counters = HashMap::new();
+        let mut counters = AHashMap::new();
         assert_eq!(para.to_markdown(&defs, &mut counters, None), "  - Nested");
     }
 
@@ -2154,7 +2314,7 @@ mod tests {
 
         let parser_struct = DocxParser {
             archive: zip::ZipArchive::new(std::io::Cursor::new(create_minimal_zip())).unwrap(),
-            relationships: HashMap::new(),
+            relationships: AHashMap::new(),
             styles: None,
             theme: None,
         };
@@ -2188,7 +2348,7 @@ mod tests {
 
         let parser_struct = DocxParser {
             archive: zip::ZipArchive::new(std::io::Cursor::new(create_minimal_zip())).unwrap(),
-            relationships: HashMap::new(),
+            relationships: AHashMap::new(),
             styles: None,
             theme: None,
         };
@@ -2692,7 +2852,7 @@ mod tests {
     fn parse_xml(xml: &str) -> Document {
         let parser_struct = DocxParser {
             archive: zip::ZipArchive::new(std::io::Cursor::new(create_minimal_zip())).unwrap(),
-            relationships: HashMap::new(),
+            relationships: AHashMap::new(),
             styles: None,
             theme: None,
         };
@@ -2702,7 +2862,7 @@ mod tests {
     }
 
     /// Helper: parse document XML with custom relationships.
-    fn parse_xml_with_rels(xml: &str, rels: HashMap<String, String>) -> Document {
+    fn parse_xml_with_rels(xml: &str, rels: AHashMap<String, String>) -> Document {
         let parser_struct = DocxParser {
             archive: zip::ZipArchive::new(std::io::Cursor::new(create_minimal_zip())).unwrap(),
             relationships: rels,
@@ -2853,7 +3013,7 @@ mod tests {
 
     #[test]
     fn test_external_hyperlink() {
-        let mut rels = HashMap::new();
+        let mut rels = AHashMap::new();
         rels.insert("rId1".to_string(), "https://example.com".to_string());
 
         let xml = wrap_body(r#"<w:p><w:hyperlink r:id="rId1"><w:r><w:t>Click here</w:t></w:r></w:hyperlink></w:p>"#);
@@ -2879,7 +3039,7 @@ mod tests {
 
     #[test]
     fn test_multiple_hyperlinks() {
-        let mut rels = HashMap::new();
+        let mut rels = AHashMap::new();
         rels.insert("rId1".to_string(), "https://one.com".to_string());
         rels.insert("rId2".to_string(), "https://two.com".to_string());
 
@@ -3401,6 +3561,21 @@ mod tests {
             assert!(!text.is_empty());
             // After Fix 3: SEQ field results should not leak
             // The word_sample.docx has SEQ Figure fields that produced "2"
+        }
+    }
+
+    /// Regression: adjacent bold runs in textbox.docx must not produce `****`.
+    #[test]
+    fn test_textbox_no_spurious_bold_markers() {
+        let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../test_documents/docx/textbox.docx");
+        if let Ok(bytes) = std::fs::read(&path) {
+            let doc = super::parse_document(&bytes).unwrap();
+            let md = doc.to_markdown();
+            assert!(
+                !md.contains("****"),
+                "Markdown output should not contain spurious '****' sequences. Got:\n{}",
+                md
+            );
         }
     }
 

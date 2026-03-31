@@ -16,6 +16,7 @@ use super::metadata::{EpubPackageDocument, ManifestItem};
 use super::parsing::read_file_from_zip;
 
 #[derive(Debug, Clone)]
+#[allow(dead_code)]
 /// A resolved XHTML spine document prepared for EPUB extraction.
 ///
 /// The stored XHTML is sanitized so all downstream extraction paths see the
@@ -26,6 +27,7 @@ pub(super) struct EpubSpineDocument {
     pub(super) xhtml: String,
 }
 
+#[allow(dead_code)]
 /// Read all body documents from the EPUB archive and downgrade per-item I/O
 /// failures into processing warnings.
 pub(super) fn read_body_documents(
@@ -114,6 +116,7 @@ pub(super) fn read_body_documents(
     Ok((documents, warnings))
 }
 
+#[allow(dead_code)]
 fn resolve_renderable_manifest_item<'a>(
     package: &'a EpubPackageDocument,
     start_idref: &str,
@@ -183,11 +186,11 @@ where
     stripped
 }
 
-fn strip_document_head(xhtml: &str) -> String {
+pub(super) fn strip_document_head(xhtml: &str) -> String {
     strip_xml_elements(xhtml, |node| node.tag_name().name().eq_ignore_ascii_case("head"))
 }
 
-fn strip_specialized_navigation_sections(xhtml: &str) -> String {
+pub(super) fn strip_specialized_navigation_sections(xhtml: &str) -> String {
     strip_xml_elements(xhtml, |node| {
         node.tag_name().name().eq_ignore_ascii_case("nav") && is_specialized_navigation_node(node)
     })
@@ -203,7 +206,7 @@ fn is_specialized_navigation_node(node: roxmltree::Node<'_, '_>) -> bool {
     })
 }
 
-fn looks_like_navigation_document(xhtml: &str) -> bool {
+pub(super) fn looks_like_navigation_document(xhtml: &str) -> bool {
     let Ok(doc) = roxmltree::Document::parse(xhtml) else {
         return false;
     };

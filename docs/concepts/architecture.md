@@ -101,13 +101,35 @@ flowchart LR
 | Module | Responsibility |
 |--------|---------------|
 | **core/** | Main entry points (`extract_file`, `extract_bytes`), MIME detection, config loading, pipeline orchestration |
-| **plugins/** | Plugin trait definitions (`DocumentExtractor`, `OcrBackend`, `PostProcessor`, `Validator`) and the registry system |
+| **plugins/** | Plugin trait definitions (`DocumentExtractor`, `OcrBackend`, `PostProcessor`, `Validator`, `Renderer`) and the registry system (ExtractorRegistry, OcrRegistry, ValidatorRegistry, ProcessorRegistry, RendererRegistry) |
 | **extractors/** | Maps MIME types to the correct extractor implementation and registers them with the plugin system |
 | **extraction/** | Format-specific extraction logic - PDF via pdfium, Excel via calamine, email parsing, etc. |
 | **ocr/** | OCR orchestration - Tesseract bindings, HOCR parsing, table detection |
 | **text/** | Text processing utilities - token reduction, quality scoring, string manipulation |
 | **types/** | Shared data structures: `ExtractionResult`, `Metadata`, `Chunk`, and friends |
 | **error/** | Centralized error handling with the `KreuzbergError` enum |
+
+---
+
+## Rendering Pipeline
+
+After extraction, the raw internal document representation is passed through the **RendererRegistry** to produce the final output in the requested content format. Kreuzberg uses a comrak-based AST bridge for GFM Markdown and HTML5 rendering, ensuring high-fidelity output with full table, heading, and list support.
+
+```mermaid
+flowchart LR
+    Extractor["Extractor"] --> ID["InternalDocument"]
+    ID --> RR["RendererRegistry"]
+    RR --> GFM["GFM Markdown"]
+    RR --> HTML["HTML5"]
+    RR --> Djot["Djot"]
+    RR --> Plain["Plain Text"]
+    RR --> Custom["Custom Renderer"]
+
+    style RR fill:#c8e6c9,stroke:#2e7d32
+    style ID fill:#bbdefb,stroke:#1565c0
+```
+
+The RendererRegistry selects the appropriate renderer based on the requested content format (`--content-format`). Built-in renderers cover Markdown (GFM via comrak), HTML5 (also via comrak), Djot, and plain text. Custom renderers can be registered through the plugin system to support additional output formats.
 
 ---
 

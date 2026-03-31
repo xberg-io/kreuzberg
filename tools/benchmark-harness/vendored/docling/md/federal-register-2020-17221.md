@@ -31,24 +31,24 @@ ADDRESSES: You may send comments, using the procedures found in 14 CFR 11.43 and
 VerDate Sep&lt;11&gt;2014
 
 - Fax: 202-493-2251.
-- Federal eRulemaking Portal: Go to https://www.regulations.gov. Follow the instructions for submitting comments.
+- Federal eRulemaking Portal: Go to <https://www.regulations.gov>. Follow the instructions for submitting comments.
 - Mail: U.S. Department of
 
 Transportation, Docket Operations, M30, West Building Ground Floor, Room W12-140, 1200 New Jersey Avenue SE, Washington, DC 20590.
 
 - Hand Delivery: Deliver to Mail address above between 9 a.m. and 5 p.m., Monday through Friday, except Federal holidays.
 
-For Boeing service information identified in this NPRM, contact Boeing Commercial Airplanes, Attention: Contractual &amp; Data Services (C&amp;DS), 2600 Westminster Blvd., MC 110-SK57, Seal Beach, CA 90740-5600; telephone 562-797-1717; internet https:// www.myboeingfleet.com. You may view this referenced service information at the FAA, Airworthiness Products Section, Operational Safety Branch, 2200 South 216th St., Des Moines, WA. For information on the availability of this material at the FAA, call 206-2313195. It is also available in the Docket for this rulemaking, which may be found on the internet at https:// www.regulations.gov by searching for and locating Docket No. FAA-20200686.
+For Boeing service information identified in this NPRM, contact Boeing Commercial Airplanes, Attention: Contractual &amp; Data Services (C&amp;DS), 2600 Westminster Blvd., MC 110-SK57, Seal Beach, CA 90740-5600; telephone 562-797-1717; internet https:// <https://www.myboeingfleet.com>. You may view this referenced service information at the FAA, Airworthiness Products Section, Operational Safety Branch, 2200 South 216th St., Des Moines, WA. For information on the availability of this material at the FAA, call 206-2313195. It is also available in the Docket for this rulemaking, which may be found on the internet at https:// <https://www.regulations.gov> by searching for and locating Docket No. FAA-20200686.
 
 ## Examining the AD Docket
 
 You may examine the AD docket on the internet at https://
 
-www.regulations.gov by searching for and locating Docket No. FAA-20200686; or in person at Docket Operations between 9 a.m. and 5 p.m., Monday through Friday, except Federal holidays. The AD docket contains this NPRM, any comments received, and other information. The street address for Docket Operations is listed above. Comments will be available in the AD docket shortly after receipt.
+<https://www.regulations.gov> by searching for and locating Docket No. FAA-20200686; or in person at Docket Operations between 9 a.m. and 5 p.m., Monday through Friday, except Federal holidays. The AD docket contains this NPRM, any comments received, and other information. The street address for Docket Operations is listed above. Comments will be available in the AD docket shortly after receipt.
 
 FOR FURTHER INFORMATION CONTACT: Ian Won, Manager, Seattle ACO Branch, FAA, 2200 South 216th St., Des Moines, WA 98198; phone and fax: 206-2313500; email: 9-FAA-SACO-AD-Inquiry@ faa.gov.
 
-## SUPPLEMENTARY INFORMATION:
+## SUPPLEMENTARY INFORMATION
 
 ## Comments Invited
 
@@ -62,9 +62,9 @@ Frm 00001
 
 ## Federal Register
 
-Vol.  85,  No.  152
+Vol. 85, No. 152
 
-Thursday,  August  6,  2020
+Thursday, August 6, 2020
 
 proposal, explain the reason for any recommended change, and include supporting data. To ensure the docket does not contain duplicate comments, commenters should submit only one copy of the comments. Send your comments to an address listed under the ADDRESSES section. Include ''Docket No. FAA-2020-0686; Product Identifier 2019-NM-035-AD'' at the beginning of your comments.
 
@@ -94,7 +94,7 @@ jbell on DSKJLSW7X2PROD with PROPOSALS
 
 Hatta International Airport in Jakarta, Indonesia, resulting in 189 fatalities. Investigation of the accident has been completed by the Indonesian authorities (Komite Nasional Keselamatan Transportasi (KNKT)) with assistance from the National Transportation Safety Board (NTSB) and the FAA of the United States, the manufacturer, and the operator. Reports 1 from the accident investigation indicate that the airplane's flight control system 2 generated repeated airplane nose-down horizontal stabilizer trim 3 commands contributing to the accident.
 
-Following the Lion Air Flight 610 accident on October 29, 2018, data from the flight data recorder, which is contained in the Indonesian accident report ( http://knkt.dephub.go.id/knkt/ ntsc \_ aviation/baru/2018%20%20035%20-%20PK-
+Following the Lion Air Flight 610 accident on October 29, 2018, data from the flight data recorder, which is contained in the Indonesian accident report ( <http://knkt.dephub.go.id/knkt/> ntsc \_ aviation/baru/2018%20%20035%20-%20PK-
 
 LQP%20Final%20Report.pdf ), indicated that a single erroneously high angle of attack (AOA) sensor 4 input to the flight control system while the flaps are retracted can cause repeated airplane nose-down trim of the horizontal stabilizer and multiple flightdeck effects.
 
@@ -305,7 +305,7 @@ This proposed AD would require the following actions:
 - Installing new FCC OPS software and doing a software installation verification.
 - Requiring, for operators who wish to allow dispatch of an airplane with certain inoperative systems, incorporating certain provisions into the operator's existing FAA-approved MEL.
 
-This proposed AD would also require the following actions. For information on those procedures, see this service information at https:// www.regulations.gov by searching for and locating Docket No. FAA-20200686.
+This proposed AD would also require the following actions. For information on those procedures, see this service information at https:// <https://www.regulations.gov> by searching for and locating Docket No. FAA-20200686.
 
 - Installing revised MDS software, doing a software installation verification, and removing INOP
 - Changing the horizontal stabilizer trim wire routing installation, by accomplishing the actions identified as ''RC'' (required for compliance) in the Accomplishment Instructions of Boeing Special Attention Service Bulletin 73727-1318, Revision 1, dated June 24, 2020.
@@ -346,7 +346,7 @@ E:\FR\FM\06AUP1.SGM
 
 06AUP1
 
-Board Report at https://www.faa.gov/ aircraft/draft \_ docs/fsb/ for public comment. You may subscribe to this page to receive notification when the FAA posts the draft report.
+Board Report at <https://www.faa.gov/> aircraft/draft \_ docs/fsb/ for public comment. You may subscribe to this page to receive notification when the FAA posts the draft report.
 
 Additionally, during the operational evaluation, the FAA will evaluate the operating procedures (checklists) proposed in this AD. If the FAA determines that the operational evaluation results necessitate additional changes to the checklists proposed in this AD, the FAA will post these changes as an addendum to the draft Boeing 737 Flight Standardization Board Report for public comment. If an addendum is posted, the FAA will announce the availability of it in the Federal Register . The FAA will consider the report and the comments submitted in finalizing the AD.
 
@@ -498,7 +498,7 @@ EP06AU20.010&lt;/GPH&gt;
 
 Figure 2 to paragraph (h)(3) - AFM revision: Airspeed Unreliable
 
-## Airspeed or Mach indications are suspected to be unreliable:
+## Airspeed or Mach indications are suspected to be unreliable
 
 Recall:
 
@@ -681,7 +681,7 @@ Figure 4 to paragraph (h)(5) - AFM revision: Stabilizer Trim Inoperative
 
 Figure 5 to paragraph (h)(6) - AFM revision: Speed Trim Fail
 
-## Loss of electric trim through the main electric stabilizer trim switches, or when The Speed Trim function and MCAS function are inoperative.
+## Loss of electric trim through the main electric stabilizer trim switches, or when The Speed Trim function and MCAS function are inoperative
 
 directed by the Stabilizer Out of Trim procedure.
 
@@ -868,7 +868,7 @@ jbell on DSKJLSW7X2PROD with PROPOSALS
 
 Figure 10 to paragraph (i): MEL provisions
 
-## The autopilot disengage aural warning system must be operative for dispatch.
+## The autopilot disengage aural warning system must be operative for dispatch
 
 - The STAB OUT OF TRIM light must be operative for dispatch.
 - The speed trim function must be operative for dispatch.
@@ -882,7 +882,9 @@ and B) inoperative.
 inoperative.
 
 - (8) Dispatch is not permitted with both autopilot (A/P) disengage lights inoperative.
+
 2. Dispatch may be made with one A/P disengage light inoperative provided the autopilot disengage aural warning system operates normally.
+
 - (9) Dispatch is not permitted with both Control Wheel Autopilot Disengage Switches inoperative. Dispatch may be made with one control wheel autopilot disengage switch inoperative provided the following conditions are met.
 - a) Mode Control Panel autopilot DISENGAGE bar operates normally, b) Autopilot is not used below 1,500 feet AGL, and c) Approach minimums do not require use of autopilot.
 
@@ -890,7 +892,7 @@ inoperative.
 
 ## Note 2 to paragraph (i): The MEL
 
-provisions specified in figure 10 to paragraph (i) of this AD correspond to Master Minimum Equipment List (MMEL) items 22-10-01B, 22-10-02, 22-10-03, 22-11-01, 22-11-02, 22-11-05-02B, 22-11-06-2B, 22-11-0801A, 22-11-08-01B, 22-11-10A, 22-11-10B, and 27-41-01, in the existing FAA-approved Boeing 737 MAX B-737-8/-9 MMEL, Revision 2, dated April 10, 2020, which can be found on the Flight Standards Information Management System (FSIMS) website, https://fsims.faa.gov/PICResults.aspx?mode= Publication&amp;doctype=MMELByModel.
+provisions specified in figure 10 to paragraph (i) of this AD correspond to Master Minimum Equipment List (MMEL) items 22-10-01B, 22-10-02, 22-10-03, 22-11-01, 22-11-02, 22-11-05-02B, 22-11-06-2B, 22-11-0801A, 22-11-08-01B, 22-11-10A, 22-11-10B, and 27-41-01, in the existing FAA-approved Boeing 737 MAX B-737-8/-9 MMEL, Revision 2, dated April 10, 2020, which can be found on the Flight Standards Information Management System (FSIMS) website, <https://fsims.faa.gov/PICResults.aspx?mode=> Publication&amp;doctype=MMELByModel.
 
 ## (j) Installation/Verification of MAX Display System (MDS) Software, Removal of INOP Markers
 
@@ -948,11 +950,12 @@ EP06AU20.020&lt;/GPH&gt;
 
 jbell on DSKJLSW7X2PROD with PROPOSALS
 
-this AD. Information may be emailed to: 9ANM-Seattle-ACO-AMOC-Requests@faa.gov.
+this AD. Information may be emailed to: <9ANM-Seattle-ACO-AMOC-Requests@faa.gov>.
 
 - (2) Before using any approved AMOC, notify your appropriate principal inspector, or lacking a principal inspector, the manager of the responsible Flight Standards Office.
 - (3) AMOCs approved previously for AD 2018-23-51 are not approved as AMOCs for this AD.
 - (4) For service information that contains steps that are labeled as Required for Compliance (RC), the provisions of paragraphs (p)(4)(i) and (ii) of this AD apply.
+
 4. (i) The steps labeled as RC, including substeps under an RC step and any figures identified in an RC step, must be done to comply with the AD. If a step or substep is labeled ''RC Exempt,'' then the RC requirement is removed from that step or substep. An AMOC is required for any deviations to RC steps, including substeps and identified figures.
 
 (ii) Steps not labeled as RC may be deviated from using accepted methods in accordance with the operator's maintenance or inspection program without obtaining approval of an AMOC, provided the RC steps, including substeps and identified figures, can still be done as specified, and the airplane can be put back in an airworthy condition.
@@ -961,11 +964,11 @@ this AD. Information may be emailed to: 9ANM-Seattle-ACO-AMOC-Requests@faa.gov.
 
 (1) For more information about this AD, contact Ian Won, Manager, Seattle ACO Branch, FAA, 2200 South 216th St., Des Moines, WA 98198; phone and fax: 206-2313500; email: 9-FAA-SACO-AD-Inquiry@ faa.gov.
 
-(2) For service information identified in this AD, contact Boeing Commercial Airplanes, Attention: Contractual &amp; Data Services (C&amp;DS), 2600 Westminster Blvd., MC 110-SK57, Seal Beach, CA 90740-5600; telephone 562-797-1717; internet https:// www.myboeingfleet.com. You may view this referenced service information at the FAA, Airworthiness Products Section, Operational Safety Branch, 2200 South 216th St., Des Moines, WA. For information on the availability of this material at the FAA, call 206-231-3195.
+(2) For service information identified in this AD, contact Boeing Commercial Airplanes, Attention: Contractual &amp; Data Services (C&amp;DS), 2600 Westminster Blvd., MC 110-SK57, Seal Beach, CA 90740-5600; telephone 562-797-1717; internet https:// <https://www.myboeingfleet.com>. You may view this referenced service information at the FAA, Airworthiness Products Section, Operational Safety Branch, 2200 South 216th St., Des Moines, WA. For information on the availability of this material at the FAA, call 206-231-3195.
 
 Issued on August 3, 2020.
 
-## Lance T. Gant,
+## Lance T. Gant
 
 Director, Compliance &amp; Airworthiness Division, Aircraft Certification Service.
 
@@ -998,18 +1001,18 @@ DATES: The FAA must receive comments on this proposed AD by September 21, 2020.
 ADDRESSES: You may send comments by any of the following methods:
 
 - Fax: (202) 493-2251.
-- Federal eRulemaking Portal: Go to https://www.regulations.gov. Follow the instructions for submitting comments.
+- Federal eRulemaking Portal: Go to <https://www.regulations.gov>. Follow the instructions for submitting comments.
 - Mail: U.S. Department of
 
 Transportation, Docket Operations, M30, West Building Ground Floor, Room W12-140, 1200 New Jersey Avenue SE, Washington, DC 20590.
 
 - Hand Delivery: U.S. Department of Transportation, Docket Operations, M30, West Building Ground Floor, Room W12-140, 1200 New Jersey Avenue SE, Washington, DC 20590, between 9 a.m. and 5 p.m., Monday through Friday, except Federal holidays.
 
-For service information identified in this proposed AD, contact Pilatus Aircraft Ltd., Customer Technical Support (MCC), P.O. Box 992, CH-6371 Stans, Switzerland; telephone: +41 (0)41 619 67 74; fax: +41 (0)41 619 67 73; email: Techsupport@pilatusaircraft.com; internet: https:// www.pilatus-aircraft.com/en. You may review this referenced service information at the FAA, Airworthiness Products Section, Operational Safety Branch, 901 Locust, Kansas City, Missouri 64106. For information on the availability of this material at the FAA, call (816) 329-4148.
+For service information identified in this proposed AD, contact Pilatus Aircraft Ltd., Customer Technical Support (MCC), P.O. Box 992, CH-6371 Stans, Switzerland; telephone: +41 (0)41 619 67 74; fax: +41 (0)41 619 67 73; email: <Techsupport@pilatusaircraft.com>; internet: https:// <https://www.pilatus-aircraft.com/en>. You may review this referenced service information at the FAA, Airworthiness Products Section, Operational Safety Branch, 901 Locust, Kansas City, Missouri 64106. For information on the availability of this material at the FAA, call (816) 329-4148.
 
 ## Examining the AD Docket
 
-You may examine the AD docket on the internet at https:// www.regulations.gov by searching for and locating Docket No. FAA-20200746; or in person at Docket Operations between 9 a.m. and 5 p.m., Monday through Friday, except Federal holidays. The AD docket contains this proposed AD, the regulatory evaluation, any comments received, and other information. The street address for Docket Operations is listed above.
+You may examine the AD docket on the internet at https:// <https://www.regulations.gov> by searching for and locating Docket No. FAA-20200746; or in person at Docket Operations between 9 a.m. and 5 p.m., Monday through Friday, except Federal holidays. The AD docket contains this proposed AD, the regulatory evaluation, any comments received, and other information. The street address for Docket Operations is listed above.
 
 16:21 Aug 05, 2020
 
@@ -1019,11 +1022,11 @@ Frm 00015
 
 Comments will be available in the AD docket shortly after receipt.
 
-## FOR FURTHER INFORMATION CONTACT:
+## FOR FURTHER INFORMATION CONTACT
 
-Doug Rudolph, Aerospace Engineer, FAA, General Aviation &amp; Rotorcraft Section, International Validation Branch, 901 Locust, Room 301, Kansas City, Missouri 64106; telephone: (816) 329-4059; fax: (816) 329-4090; email: doug.rudolph@faa.gov.
+Doug Rudolph, Aerospace Engineer, FAA, General Aviation &amp; Rotorcraft Section, International Validation Branch, 901 Locust, Room 301, Kansas City, Missouri 64106; telephone: (816) 329-4059; fax: (816) 329-4090; email: <doug.rudolph@faa.gov>.
 
-## SUPPLEMENTARY INFORMATION:
+## SUPPLEMENTARY INFORMATION
 
 ## Comments Invited
 

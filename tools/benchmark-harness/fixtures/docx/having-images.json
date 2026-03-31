@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/vendored/python-docx/having-images.docx",
+  "file_type": "docx",
+  "file_size": 132875,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "docx test: having-images",
+    "source": "pandoc-generated",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/docx/having-images.txt",
+    "markdown_file": "../../../../test_documents/ground_truth/docx/having-images.md",
+    "source": "pandoc"
+  }
+}

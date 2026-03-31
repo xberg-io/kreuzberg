@@ -22,7 +22,6 @@ use serde::{Deserialize, Serialize};
 /// };
 /// ```
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct AccelerationConfig {
     /// Execution provider to use for ONNX inference.
     #[serde(default)]

@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/rtf/lorem_ipsum.rtf",
+  "file_type": "rtf",
+  "file_size": 3956,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "rtf test: lorem_ipsum",
+    "source": "pandoc-generated",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/rtf/lorem_ipsum.txt",
+    "markdown_file": "../../../../test_documents/ground_truth/rtf/lorem_ipsum.md",
+    "source": "pandoc"
+  }
+}

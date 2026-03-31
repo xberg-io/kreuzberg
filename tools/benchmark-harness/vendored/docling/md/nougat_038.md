@@ -90,19 +90,19 @@ SatelitteTV
 
 Dishwasher Washing Machine Oven Kettle Toaster Freezer Microwave Coffee Machine Stovetop Electric Cooker Iron / Iron board Fitted Kitchen Stove Cooker
 
-## Country:
+## Country
 
 Portugal
 
-## Region:
+## Region
 
 Madeira
 
-## City:
+## City
 
 Caniço
 
-## Coordinates:
+## Coordinates
 
 Latitude 32.641931617298546 Longitude -16.834424044936895
 

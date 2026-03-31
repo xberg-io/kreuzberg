@@ -18,9 +18,9 @@ pub(crate) type PdfExtractionPhaseResult = (
     Vec<Table>,
     Option<Vec<PageContent>>,
     Option<Vec<PageBoundary>>,
-    Option<String>,             // pre-rendered markdown (when output_format == Markdown)
-    bool,                       // has_font_encoding_issues (unicode map errors detected)
-    Option<Vec<PdfAnnotation>>, // extracted annotations (when extract_annotations is enabled)
+    Option<crate::types::internal::InternalDocument>, // pre-rendered structured doc (when output_format == Markdown/Djot/Html)
+    bool,                                             // has_font_encoding_issues (unicode map errors detected)
+    Option<Vec<PdfAnnotation>>,                       // extracted annotations (when extract_annotations is enabled)
 );
 
 /// Extract text, metadata, and tables from a PDF document using a single shared instance.
@@ -46,17 +46,29 @@ pub(crate) type PdfExtractionPhaseResult = (
 /// - Extracted tables (if OCR feature enabled)
 /// - Per-page content (if page extraction configured)
 /// - Page boundaries for per-page OCR evaluation
-/// - Pre-rendered markdown (if output_format == Markdown, None otherwise)
+/// - Pre-rendered structured document (if output_format requires structure, None otherwise)
 #[cfg(feature = "pdf")]
 pub(crate) fn extract_all_from_document(
     document: &PdfDocument,
     config: &ExtractionConfig,
-    layout_hints: Option<&[Vec<crate::pdf::markdown::types::LayoutHint>]>,
+    layout_hints: Option<&[Vec<crate::pdf::structure::types::LayoutHint>]>,
     #[cfg(feature = "layout-detection")] layout_images: Option<&[image::DynamicImage]>,
     #[cfg(not(feature = "layout-detection"))] _layout_images: Option<()>,
     #[cfg(feature = "layout-detection")] layout_results: Option<&[crate::pdf::layout_runner::PageLayoutResult]>,
     #[cfg(not(feature = "layout-detection"))] _layout_results: Option<()>,
 ) -> Result<PdfExtractionPhaseResult> {
+    #[cfg(feature = "layout-detection")]
+    let has_layout = config.layout.is_some();
+    #[cfg(not(feature = "layout-detection"))]
+    let has_layout = false;
+
+    tracing::debug!(
+        output_format = ?config.output_format,
+        force_ocr = config.force_ocr,
+        has_layout,
+        "PDF extraction starting"
+    );
+
     let (native_text, boundaries, page_contents, pdf_metadata) =
         crate::pdf::text::extract_text_and_metadata_from_pdf_document(document, Some(config))?;
 
@@ -68,9 +80,8 @@ pub(crate) fn extract_all_from_document(
 
     let mut has_font_encoding_issues = false;
 
-    // If markdown output is requested, render it while we have the document loaded.
-    // Skip when force_ocr is set since OCR results produce their own markdown via hOCR.
-    // Pre-render structured markdown for all output formats that benefit from it.
+    // Pre-render a structured InternalDocument for output formats that benefit from it.
+    // Skip when force_ocr is set since OCR results produce their own structure via hOCR.
     // Markdown, Djot, and HTML all gain headings, tables, bold/italic, dehyphenation.
     let needs_structured = matches!(
         config.output_format,
@@ -80,9 +91,9 @@ pub(crate) fn extract_all_from_document(
         output_format = ?config.output_format,
         needs_structured,
         force_ocr = config.force_ocr,
-        "PDF markdown path: evaluating whether to render structured markdown"
+        "PDF structure path: evaluating whether to render structured document"
     );
-    let pre_rendered_markdown = if needs_structured && !config.force_ocr {
+    let pre_rendered_doc = if needs_structured && !config.force_ocr {
         let k = config
             .pdf_options
             .as_ref()
@@ -96,23 +107,13 @@ pub(crate) fn extract_all_from_document(
             .map(|opts| (opts.top_margin_fraction, opts.bottom_margin_fraction))
             .unwrap_or((None, None));
 
-        let page_marker_format = config
-            .pages
-            .as_ref()
-            .filter(|p| p.insert_page_markers)
-            .map(|p| p.marker_format.as_str());
-
-        tracing::debug!(
-            k_clusters = k,
-            "PDF markdown path: calling render_document_as_markdown_with_tables"
-        );
-        match crate::pdf::markdown::render_document_as_markdown_with_tables(
+        tracing::debug!(k_clusters = k, "PDF structure path: calling extract_document_structure");
+        match crate::pdf::structure::extract_document_structure(
             document,
             k,
             &tables,
             top_margin,
             bottom_margin,
-            page_marker_format,
             layout_hints,
             #[cfg(feature = "layout-detection")]
             layout_images,
@@ -128,29 +129,37 @@ pub(crate) fn extract_all_from_document(
             #[cfg(not(feature = "layout-detection"))]
             None,
         ) {
-            Ok((md, has_encoding_issues)) if !md.trim().is_empty() => {
+            Ok((doc, has_encoding_issues)) if !doc.elements.is_empty() => {
                 tracing::debug!(
-                    md_len = md.len(),
-                    has_headings = md.contains("# "),
-                    has_bold = md.contains("**"),
-                    "PDF markdown path: render succeeded with content"
+                    element_count = doc.elements.len(),
+                    has_headings = doc
+                        .elements
+                        .iter()
+                        .any(|e| matches!(e.kind, crate::types::internal::ElementKind::Heading { .. })),
+                    "PDF structure path: render succeeded with content"
                 );
                 has_font_encoding_issues = has_encoding_issues;
-                Some(md)
+                Some(doc)
             }
             Ok((_, has_encoding_issues)) => {
-                tracing::warn!("Markdown rendering produced empty output, will fall back to plain text");
+                tracing::warn!("Structure rendering produced empty output, will fall back to plain text");
                 has_font_encoding_issues = has_encoding_issues;
                 None
             }
             Err(e) => {
-                tracing::warn!("Markdown rendering failed: {:?}, will fall back to plain text", e);
+                tracing::warn!("Structure rendering failed: {:?}, will fall back to plain text", e);
                 None
             }
         }
     } else {
         None
     };
+
+    tracing::debug!(
+        has_pre_rendered = pre_rendered_doc.is_some(),
+        elements = pre_rendered_doc.as_ref().map(|d| d.elements.len()).unwrap_or(0),
+        "structure extraction complete"
+    );
 
     // Extract annotations when configured.
     let annotations = if config.pdf_options.as_ref().is_some_and(|opts| opts.extract_annotations) {
@@ -166,7 +175,7 @@ pub(crate) fn extract_all_from_document(
         tables,
         page_contents,
         boundaries,
-        pre_rendered_markdown,
+        pre_rendered_doc,
         has_font_encoding_issues,
         annotations,
     ))
@@ -179,9 +188,9 @@ pub(crate) fn extract_all_from_document(
 #[cfg(all(feature = "pdf", feature = "layout-detection"))]
 pub(crate) fn convert_results_to_hints(
     results: &[crate::pdf::layout_runner::PageLayoutResult],
-) -> Vec<Vec<crate::pdf::markdown::types::LayoutHint>> {
+) -> Vec<Vec<crate::pdf::structure::types::LayoutHint>> {
     use crate::layout::LayoutClass;
-    use crate::pdf::markdown::types::{LayoutHint, LayoutHintClass};
+    use crate::pdf::structure::types::{LayoutHint, LayoutHintClass};
 
     results
         .iter()

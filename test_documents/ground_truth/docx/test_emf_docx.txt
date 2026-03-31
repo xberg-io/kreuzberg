@@ -2,10 +2,12 @@ Test with three images in unusual formats
 
 Raster in emf:
 
+[]
+
 Vector in emf:
+
+[]
 
 Raster in webp:
 
-A cartoon duck holding a paper
-
-Description automatically generated
+[A cartoon duck holding a paper Description automatically generated]

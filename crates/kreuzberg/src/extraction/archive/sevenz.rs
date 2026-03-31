@@ -5,8 +5,8 @@
 use super::{ArchiveEntry, ArchiveMetadata, TEXT_EXTENSIONS};
 use crate::error::{KreuzbergError, Result};
 use crate::extractors::security::SecurityLimits;
+use ahash::AHashMap;
 use sevenz_rust2::{ArchiveReader, Password};
-use std::collections::HashMap;
 use std::io::Cursor;
 
 /// Extract metadata from a 7z archive.
@@ -90,7 +90,7 @@ pub fn extract_7z_metadata(bytes: &[u8], limits: &SecurityLimits) -> Result<Arch
 /// # Errors
 ///
 /// Returns an error if the 7z archive cannot be read or parsed.
-pub fn extract_7z_text_content(bytes: &[u8], limits: &SecurityLimits) -> Result<HashMap<String, String>> {
+pub fn extract_7z_text_content(bytes: &[u8], limits: &SecurityLimits) -> Result<AHashMap<String, String>> {
     let cursor = Cursor::new(bytes);
     let mut archive = ArchiveReader::new(cursor, Password::empty())
         .map_err(|e| KreuzbergError::parsing(format!("Failed to read 7z archive: {}", e)))?;
@@ -103,7 +103,7 @@ pub fn extract_7z_text_content(bytes: &[u8], limits: &SecurityLimits) -> Result<
         )));
     }
 
-    let mut contents = HashMap::new();
+    let mut contents = AHashMap::new();
     let max_content_size = limits.max_content_size;
     let mut total_content_size = 0usize;
 
@@ -150,7 +150,7 @@ pub fn extract_7z_text_content(bytes: &[u8], limits: &SecurityLimits) -> Result<
 /// # Errors
 ///
 /// Returns an error if the 7z archive cannot be read or if security limits are exceeded.
-pub fn extract_7z_file_bytes(bytes: &[u8], limits: &SecurityLimits) -> Result<HashMap<String, Vec<u8>>> {
+pub fn extract_7z_file_bytes(bytes: &[u8], limits: &SecurityLimits) -> Result<AHashMap<String, Vec<u8>>> {
     let cursor = Cursor::new(bytes);
     let mut archive = ArchiveReader::new(cursor, Password::empty())
         .map_err(|e| KreuzbergError::parsing(format!("Failed to read 7z archive: {}", e)))?;
@@ -163,7 +163,7 @@ pub fn extract_7z_file_bytes(bytes: &[u8], limits: &SecurityLimits) -> Result<Ha
         )));
     }
 
-    let mut file_bytes = HashMap::new();
+    let mut file_bytes = AHashMap::new();
     let max_size = limits.max_archive_size;
     let mut total_size = 0usize;
 

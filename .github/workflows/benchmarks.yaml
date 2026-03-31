@@ -451,7 +451,7 @@ jobs:
     # WASM runs on x86 — Node.js V8 WASM runtime has initialization issues on ARM64 Linux
     # that cause extractions to hang indefinitely. Works fine on x86 and macOS ARM.
     runs-on: ubuntu-24.04
-    timeout-minutes: 120
+    timeout-minutes: 180
     permissions:
       contents: read
     strategy:
@@ -502,6 +502,11 @@ jobs:
       - name: Install WASI SDK
         uses: kreuzberg-dev/actions/install-wasi-sdk@v1
 
+      - name: Build or cache benchmark harness
+        uses: ./.github/actions/cache-benchmark-harness
+        with:
+          build-profile: release
+
       - name: Build WASM bindings
         env:
           RUSTUP_TOOLCHAIN: stable
@@ -512,7 +517,7 @@ jobs:
           FRAMEWORK: kreuzberg-wasm
           MODE: ${{ matrix.mode }}
           ITERATIONS: "1"
-          TIMEOUT: "120"
+          TIMEOUT: "300"
           READY_TIMEOUT: "120"
         run: scripts/benchmarks/run-benchmark.sh
 

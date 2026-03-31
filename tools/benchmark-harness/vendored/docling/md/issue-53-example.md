@@ -27,7 +27,7 @@ RPK = revenue passenger kilometers
 
 ASK = available seat kilometers
 
-L/F  = load factor = RPK÷ASK
+L/F = load factor = RPK÷ASK
 
 ## 1.2 Monthly International Passenger Route Traffic Data
 
@@ -49,7 +49,7 @@ RPK = revenue passenger kilometers
 
 ASK = available seat kilometers
 
-L/F  = load factor = RPK÷ASK
+L/F = load factor = RPK÷ASK
 
 ## 2. JAL Group Total Domestic Pax Traffic
 
@@ -82,7 +82,7 @@ RPK = revenue passenger kilometers
 
 ASK = available seat kilometers
 
-L/F  = load factor = RPK÷ASK
+L/F = load factor = RPK÷ASK
 
 ## 3. JAL Group Cargo Traffic Data
 

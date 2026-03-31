@@ -122,6 +122,46 @@ pub struct DocumentStructure {
     /// the document tree to output formats.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub source_format: Option<String>,
+
+    /// Resolved relationships between nodes (footnote refs, citations, anchor links, etc.).
+    ///
+    /// Populated during derivation from the internal document representation.
+    /// Empty when no relationships are detected.
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub relationships: Vec<DocumentRelationship>,
+}
+
+/// A resolved relationship between two nodes in the document tree.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
+pub struct DocumentRelationship {
+    /// Source node index (the referencing node).
+    pub source: NodeIndex,
+    /// Target node index (the referenced node).
+    pub target: NodeIndex,
+    /// Semantic kind of the relationship.
+    pub kind: RelationshipKind,
+}
+
+/// Semantic kind of a relationship between document elements.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
+#[serde(rename_all = "snake_case")]
+pub enum RelationshipKind {
+    /// Footnote marker -> footnote definition.
+    FootnoteReference,
+    /// Citation marker -> bibliography entry.
+    CitationReference,
+    /// Internal anchor link (`#id`) -> target heading/element.
+    InternalLink,
+    /// Caption paragraph -> figure/table it describes.
+    Caption,
+    /// Label -> labeled element (HTML `<label for>`, LaTeX `\label{}`).
+    Label,
+    /// TOC entry -> target section.
+    TocEntry,
+    /// Cross-reference (LaTeX `\ref{}`, DOCX cross-reference field).
+    CrossReference,
 }
 
 /// A single node in the document tree.
@@ -240,6 +280,9 @@ pub enum NodeContent {
         description: Option<String>,
         #[serde(skip_serializing_if = "Option::is_none")]
         image_index: Option<u32>,
+        /// Source URL or path of the image (from `<img src="...">` or `![](src)`).
+        #[serde(skip_serializing_if = "Option::is_none")]
+        src: Option<String>,
     },
 
     /// Code block.
@@ -508,6 +551,7 @@ impl DocumentStructure {
         Self {
             nodes: Vec::new(),
             source_format: None,
+            relationships: Vec::new(),
         }
     }
 
@@ -516,6 +560,7 @@ impl DocumentStructure {
         Self {
             nodes: Vec::with_capacity(capacity),
             source_format: None,
+            relationships: Vec::new(),
         }
     }
 

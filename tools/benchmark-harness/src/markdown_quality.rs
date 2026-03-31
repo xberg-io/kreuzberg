@@ -122,229 +122,288 @@ pub struct StructuralQuality {
 // Block parsing (unchanged)
 // ---------------------------------------------------------------------------
 
-/// Parse a markdown string into a sequence of typed blocks.
+/// Parse a markdown string into a sequence of typed blocks using pulldown-cmark.
+///
+/// This uses a proper CommonMark parser, so it correctly handles all markdown
+/// variants: fenced and indented code blocks, ATX and setext headings, different
+/// list markers (-, *, +, 1.), tables with any separator style, etc.
 pub fn parse_markdown_blocks(md: &str) -> Vec<MdBlock> {
+    use pulldown_cmark::{Event, Options, Parser, Tag, TagEnd};
+
+    let mut opts = Options::empty();
+    opts.insert(Options::ENABLE_TABLES);
+    opts.insert(Options::ENABLE_STRIKETHROUGH);
+    opts.insert(Options::ENABLE_MATH);
+
+    let parser = Parser::new_ext(md, opts);
     let mut blocks: Vec<MdBlock> = Vec::new();
-    let lines: Vec<&str> = md.lines().collect();
-    let mut i = 0;
     let mut index = 0;
+    let mut current_text = String::new();
+    let mut in_heading: Option<u8> = None;
+    let mut in_code_block = false;
+    let mut in_table = false;
+    let mut in_list_item = false;
+    let mut in_image = false;
+    let mut table_content = String::new();
+    let mut table_cell_idx = 0;
+    let mut table_in_header = false;
 
-    while i < lines.len() {
-        let line = lines[i];
-        let trimmed = line.trim();
-
-        // Skip blank lines
-        if trimmed.is_empty() {
-            i += 1;
-            continue;
-        }
-
-        // Code block (fenced)
-        if trimmed.starts_with("```") {
-            let mut content = String::new();
-            i += 1; // skip opening fence
-            while i < lines.len() && !lines[i].trim().starts_with("```") {
-                if !content.is_empty() {
-                    content.push('\n');
-                }
-                content.push_str(lines[i]);
-                i += 1;
+    for event in parser {
+        match event {
+            Event::Start(Tag::Heading { level, .. }) => {
+                flush_text(&mut current_text, &mut blocks, &mut index, MdBlockType::Paragraph);
+                in_heading = Some(level as u8);
             }
-            if i < lines.len() {
-                i += 1; // skip closing fence
-            }
-            blocks.push(MdBlock {
-                block_type: MdBlockType::CodeBlock,
-                content,
-                index,
-            });
-            index += 1;
-            continue;
-        }
-
-        // Formula block ($$...$$)
-        if trimmed.starts_with("$$") && !trimmed[2..].contains("$$") {
-            let mut content = String::new();
-            i += 1;
-            while i < lines.len() && !lines[i].trim().starts_with("$$") {
-                if !content.is_empty() {
-                    content.push('\n');
-                }
-                content.push_str(lines[i].trim());
-                i += 1;
-            }
-            if i < lines.len() {
-                i += 1; // skip closing $$
-            }
-            blocks.push(MdBlock {
-                block_type: MdBlockType::Formula,
-                content,
-                index,
-            });
-            index += 1;
-            continue;
-        }
-
-        // Headings
-        if let Some(heading) = parse_heading(trimmed) {
-            blocks.push(MdBlock {
-                block_type: heading.0,
-                content: heading.1.to_string(),
-                index,
-            });
-            index += 1;
-            i += 1;
-            continue;
-        }
-
-        // Table (consecutive lines starting with |)
-        if trimmed.starts_with('|') {
-            let mut content = String::new();
-            while i < lines.len() && lines[i].trim().starts_with('|') {
-                let table_line = lines[i].trim();
-                // Skip separator lines (|---|---| or |:--|--:|)
-                // A separator cell contains only dashes with optional leading/trailing colons.
-                if !is_table_separator(table_line) {
-                    if !content.is_empty() {
-                        content.push('\n');
+            Event::End(TagEnd::Heading(_)) => {
+                if let Some(level) = in_heading.take() {
+                    let block_type = match level {
+                        1 => MdBlockType::Heading1,
+                        2 => MdBlockType::Heading2,
+                        3 => MdBlockType::Heading3,
+                        4 => MdBlockType::Heading4,
+                        5 => MdBlockType::Heading5,
+                        _ => MdBlockType::Heading6,
+                    };
+                    let content = std::mem::take(&mut current_text);
+                    if !content.trim().is_empty() {
+                        blocks.push(MdBlock {
+                            block_type,
+                            content: content.trim().to_string(),
+                            index,
+                        });
+                        index += 1;
                     }
-                    content.push_str(table_line);
                 }
-                i += 1;
             }
-            if !content.is_empty() {
-                blocks.push(MdBlock {
-                    block_type: MdBlockType::Table,
-                    content,
-                    index,
-                });
-                index += 1;
+            Event::Start(Tag::CodeBlock(_)) => {
+                flush_text(&mut current_text, &mut blocks, &mut index, MdBlockType::Paragraph);
+                in_code_block = true;
             }
-            continue;
-        }
-
-        // Image
-        if trimmed.starts_with("![") {
-            blocks.push(MdBlock {
-                block_type: MdBlockType::Image,
-                content: trimmed.to_string(),
-                index,
-            });
-            index += 1;
-            i += 1;
-            continue;
-        }
-
-        // List item
-        if is_list_item(trimmed) {
-            let content = strip_list_prefix(trimmed);
-            blocks.push(MdBlock {
-                block_type: MdBlockType::ListItem,
-                content,
-                index,
-            });
-            index += 1;
-            i += 1;
-            continue;
-        }
-
-        // Paragraph (group consecutive non-blank, non-special lines)
-        let mut content = String::new();
-        while i < lines.len() {
-            let line = lines[i].trim();
-            if line.is_empty()
-                || line.starts_with('#')
-                || line.starts_with("```")
-                || line.starts_with("$$")
-                || line.starts_with('|')
-                || line.starts_with("![")
-                || is_list_item(line)
-            {
-                break;
+            Event::End(TagEnd::CodeBlock) => {
+                in_code_block = false;
+                let content = std::mem::take(&mut current_text);
+                if !content.trim().is_empty() {
+                    // Check if it's a math/formula block
+                    let block_type = if content.trim().starts_with("\\")
+                        || content.contains("\\frac")
+                        || content.contains("\\sum")
+                        || content.contains("\\int")
+                    {
+                        MdBlockType::Formula
+                    } else {
+                        MdBlockType::CodeBlock
+                    };
+                    blocks.push(MdBlock {
+                        block_type,
+                        content: content.trim_end().to_string(),
+                        index,
+                    });
+                    index += 1;
+                }
             }
-            if !content.is_empty() {
-                content.push(' ');
+            Event::Start(Tag::Table(_)) => {
+                flush_text(&mut current_text, &mut blocks, &mut index, MdBlockType::Paragraph);
+                in_table = true;
+                table_content.clear();
+                table_cell_idx = 0;
             }
-            content.push_str(line);
-            i += 1;
-        }
-        if !content.is_empty() {
-            blocks.push(MdBlock {
-                block_type: MdBlockType::Paragraph,
-                content,
-                index,
-            });
-            index += 1;
-        } else {
-            // Line was unrecognized (e.g. "#1: ..." which isn't a valid heading).
-            // Skip it to avoid an infinite loop.
-            i += 1;
+            Event::End(TagEnd::Table) => {
+                in_table = false;
+                let content = std::mem::take(&mut table_content);
+                if !content.trim().is_empty() {
+                    blocks.push(MdBlock {
+                        block_type: MdBlockType::Table,
+                        content: content.trim().to_string(),
+                        index,
+                    });
+                    index += 1;
+                }
+            }
+            Event::Start(Tag::TableHead) => {
+                table_in_header = true;
+            }
+            Event::End(TagEnd::TableHead) => {
+                table_in_header = false;
+            }
+            Event::Start(Tag::TableRow) => {
+                if !table_content.is_empty() {
+                    table_content.push('\n');
+                }
+                table_content.push('|');
+                table_cell_idx = 0;
+            }
+            Event::End(TagEnd::TableRow) => {
+                // Row already ended with last cell's |
+            }
+            Event::Start(Tag::TableCell) => {
+                if table_cell_idx > 0 {
+                    // Cell separator already added by previous cell end
+                }
+                table_cell_idx += 1;
+            }
+            Event::End(TagEnd::TableCell) => {
+                let cell_text = std::mem::take(&mut current_text);
+                table_content.push(' ');
+                table_content.push_str(cell_text.trim());
+                table_content.push_str(" |");
+            }
+            Event::Start(Tag::List(_)) => {
+                flush_text(&mut current_text, &mut blocks, &mut index, MdBlockType::Paragraph);
+            }
+            Event::End(TagEnd::List(_)) => {}
+            Event::Start(Tag::Item) => {
+                flush_text(&mut current_text, &mut blocks, &mut index, MdBlockType::Paragraph);
+                in_list_item = true;
+            }
+            Event::End(TagEnd::Item) => {
+                in_list_item = false;
+                let content = std::mem::take(&mut current_text);
+                if !content.trim().is_empty() {
+                    blocks.push(MdBlock {
+                        block_type: MdBlockType::ListItem,
+                        content: content.trim().to_string(),
+                        index,
+                    });
+                    index += 1;
+                }
+            }
+            Event::Start(Tag::Image { dest_url, title: _, .. }) => {
+                flush_text(&mut current_text, &mut blocks, &mut index, MdBlockType::Paragraph);
+                in_image = true;
+                // Store URL temporarily
+                current_text.push_str(&format!("!["));
+                let _ = dest_url; // alt text comes as Text events
+            }
+            Event::End(TagEnd::Image) => {
+                in_image = false;
+                // current_text has "![alt text" — close it
+                if current_text.starts_with("![") {
+                    current_text.push(']');
+                    blocks.push(MdBlock {
+                        block_type: MdBlockType::Image,
+                        content: std::mem::take(&mut current_text),
+                        index,
+                    });
+                    index += 1;
+                }
+            }
+            Event::Start(Tag::Paragraph) => {
+                if !in_list_item && !in_table {
+                    flush_text(&mut current_text, &mut blocks, &mut index, MdBlockType::Paragraph);
+                }
+            }
+            Event::End(TagEnd::Paragraph) => {
+                if !in_list_item && !in_table {
+                    flush_text(&mut current_text, &mut blocks, &mut index, MdBlockType::Paragraph);
+                }
+            }
+            Event::Text(text) | Event::Code(text) => {
+                if in_table {
+                    current_text.push_str(&text);
+                } else {
+                    if !current_text.is_empty() && !current_text.ends_with(' ') && !current_text.ends_with('\n') {
+                        current_text.push(' ');
+                    }
+                    current_text.push_str(&text);
+                }
+            }
+            Event::SoftBreak => {
+                if in_code_block {
+                    current_text.push('\n');
+                } else {
+                    current_text.push(' ');
+                }
+            }
+            Event::HardBreak => {
+                current_text.push('\n');
+            }
+            Event::InlineMath(text) => {
+                current_text.push_str(&text);
+            }
+            Event::DisplayMath(text) => {
+                // Display math ($$...$$) is a formula block
+                flush_text(&mut current_text, &mut blocks, &mut index, MdBlockType::Paragraph);
+                let trimmed = text.trim();
+                if !trimmed.is_empty() {
+                    blocks.push(MdBlock {
+                        block_type: MdBlockType::Formula,
+                        content: trimmed.to_string(),
+                        index,
+                    });
+                    index += 1;
+                }
+            }
+            Event::Html(html) => {
+                // Extract text content from HTML blocks instead of skipping them.
+                // This handles cases where GT or extraction contains <b>, <table>,
+                // <p>, etc. instead of markdown equivalents.
+                let text = strip_html_tags(&html);
+                let trimmed = text.trim();
+                if !trimmed.is_empty() {
+                    flush_text(&mut current_text, &mut blocks, &mut index, MdBlockType::Paragraph);
+                    blocks.push(MdBlock {
+                        block_type: MdBlockType::Paragraph,
+                        content: trimmed.to_string(),
+                        index,
+                    });
+                    index += 1;
+                }
+            }
+            Event::InlineHtml(html) => {
+                // Strip HTML tags but keep text content for inline HTML.
+                // e.g., <b>bold</b> → "bold", <br> → ""
+                let text = strip_html_tags(&html);
+                if !text.is_empty() {
+                    current_text.push_str(&text);
+                }
+            }
+            _ => {}
         }
     }
+
+    // Flush any remaining text
+    flush_text(&mut current_text, &mut blocks, &mut index, MdBlockType::Paragraph);
 
     blocks
 }
 
-fn parse_heading(line: &str) -> Option<(MdBlockType, &str)> {
-    if let Some(rest) = line.strip_prefix("######") {
-        Some((MdBlockType::Heading6, rest.trim_start()))
-    } else if let Some(rest) = line.strip_prefix("#####") {
-        Some((MdBlockType::Heading5, rest.trim_start()))
-    } else if let Some(rest) = line.strip_prefix("####") {
-        Some((MdBlockType::Heading4, rest.trim_start()))
-    } else if let Some(rest) = line.strip_prefix("###") {
-        Some((MdBlockType::Heading3, rest.trim_start()))
-    } else if let Some(rest) = line.strip_prefix("##") {
-        // Must have space after ## to be a heading
-        if rest.starts_with(' ') || rest.is_empty() {
-            Some((MdBlockType::Heading2, rest.trim_start()))
+/// Flush accumulated text into a block if non-empty.
+fn flush_text(text: &mut String, blocks: &mut Vec<MdBlock>, index: &mut usize, block_type: MdBlockType) {
+    let content = std::mem::take(text);
+    let trimmed = content.trim();
+    if !trimmed.is_empty() {
+        // If the block is a paragraph but looks like a math formula, classify as Formula.
+        let actual_type = if block_type == MdBlockType::Paragraph && looks_like_formula(trimmed) {
+            MdBlockType::Formula
         } else {
-            None
-        }
-    } else if let Some(rest) = line.strip_prefix('#') {
-        if rest.starts_with(' ') || rest.is_empty() {
-            Some((MdBlockType::Heading1, rest.trim_start()))
-        } else {
-            None
-        }
-    } else {
-        None
+            block_type
+        };
+        blocks.push(MdBlock {
+            block_type: actual_type,
+            content: trimmed.to_string(),
+            index: *index,
+        });
+        *index += 1;
     }
 }
 
-/// Check if a table line is a separator (e.g., `|---|:--:|--:|`).
-/// Each cell between pipes must contain at least one dash and only dashes, colons, and spaces.
-fn is_table_separator(line: &str) -> bool {
-    let trimmed = line.trim().trim_start_matches('|').trim_end_matches('|');
-    if trimmed.is_empty() {
-        return false;
-    }
-    trimmed.split('|').all(|cell| {
-        let c = cell.trim();
-        !c.is_empty() && c.contains('-') && c.chars().all(|ch| ch == '-' || ch == ':' || ch == ' ')
-    })
+/// Check if content looks like a math/LaTeX formula.
+fn looks_like_formula(content: &str) -> bool {
+    content.contains("\\frac")
+        || content.contains("\\sum")
+        || content.contains("\\int")
+        || content.contains("\\begin{")
+        || content.contains("\\end{")
+        || content.contains("\\left")
+        || content.contains("\\right")
+        || content.contains("\\sqrt")
+        || content.contains("\\mathbb")
+        || content.contains("\\mathcal")
+        || (content.starts_with("\\") && content.len() > 2)
+        || (content.contains("^{") && content.contains("}"))
 }
 
-fn is_list_item(line: &str) -> bool {
-    line.starts_with("- ")
-        || line.starts_with("* ")
-        || line.starts_with("+ ")
-        || (line.len() >= 3 && line.chars().next().is_some_and(|c| c.is_ascii_digit()) && line.contains(". "))
-}
-
-fn strip_list_prefix(line: &str) -> String {
-    if line.starts_with("- ") || line.starts_with("* ") || line.starts_with("+ ") {
-        line[2..].to_string()
-    } else if let Some(dot_pos) = line.find(". ") {
-        if line[..dot_pos].chars().all(|c| c.is_ascii_digit()) {
-            line[dot_pos + 2..].to_string()
-        } else {
-            line.to_string()
-        }
-    } else {
-        line.to_string()
-    }
-}
+// Old manual parsing helpers removed — pulldown-cmark handles everything.
 
 // ---------------------------------------------------------------------------
 // Type compatibility matrix
@@ -412,8 +471,51 @@ fn type_compat(ext_block: &MdBlock, gt_block: &MdBlock) -> f64 {
         return 0.25;
     }
 
+    // Image ↔ Paragraph: image references sometimes rendered as paragraph text
+    if (ext == MdBlockType::Image && gt == MdBlockType::Paragraph)
+        || (ext == MdBlockType::Paragraph && gt == MdBlockType::Image)
+    {
+        return 0.5;
+    }
+
+    // Table ↔ ListItem: table content sometimes extracted as list items
+    if (ext == MdBlockType::Table && gt == MdBlockType::ListItem)
+        || (ext == MdBlockType::ListItem && gt == MdBlockType::Table)
+    {
+        return 0.3;
+    }
+
     // Everything else cross-category: incompatible
     0.0
+}
+
+/// Strip HTML tags from a string, preserving text content.
+///
+/// Handles common HTML formatting tags that appear in pandoc output or
+/// ground truth. Converts `<br>` and `<br/>` to spaces.
+fn strip_html_tags(html: &str) -> String {
+    let mut result = String::with_capacity(html.len());
+    let mut in_tag = false;
+    let mut tag_name = String::new();
+
+    for ch in html.chars() {
+        if ch == '<' {
+            in_tag = true;
+            tag_name.clear();
+        } else if ch == '>' && in_tag {
+            in_tag = false;
+            // Convert <br> / <br/> to space
+            let lower = tag_name.to_lowercase();
+            if lower == "br" || lower == "br/" || lower == "/br" {
+                result.push(' ');
+            }
+        } else if in_tag {
+            tag_name.push(ch);
+        } else {
+            result.push(ch);
+        }
+    }
+    result
 }
 
 /// Check if content is bold-wrapped (e.g., `**Title**` or `__Title__`).

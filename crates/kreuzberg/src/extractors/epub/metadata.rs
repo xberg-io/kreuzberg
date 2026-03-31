@@ -38,6 +38,7 @@ pub(super) struct EpubPackageDocument {
     guide_toc_paths: BTreeSet<String>,
 }
 
+#[allow(dead_code)]
 impl EpubPackageDocument {
     pub(super) fn is_guide_toc_candidate_path(&self, path: &str) -> bool {
         self.guide_toc_paths.contains(path)
@@ -56,16 +57,27 @@ pub(super) struct ManifestItem {
     pub(super) raw_href: String,
     pub(super) path: Option<String>,
     path_resolution_error: Option<String>,
+    #[allow(dead_code)]
     pub(super) media_type: Option<String>,
+    #[allow(dead_code)]
     pub(super) fallback: Option<String>,
+    pub(super) properties: Option<String>,
 }
 
+#[allow(dead_code)]
 impl ManifestItem {
     pub(super) fn is_renderable_body_document(&self) -> bool {
         matches!(
             self.media_type.as_deref(),
             Some("application/xhtml+xml") | Some("application/x-dtbook+xml")
         ) || self.media_type.is_none() && has_renderable_extension(&self.raw_href)
+    }
+
+    /// Returns true if this manifest item has the EPUB3 `nav` property.
+    pub(super) fn is_nav(&self) -> bool {
+        self.properties
+            .as_deref()
+            .is_some_and(|p| p.split_ascii_whitespace().any(|v| v.eq_ignore_ascii_case("nav")))
     }
 
     pub(super) fn resolved_path(&self) -> std::result::Result<&str, String> {
@@ -77,6 +89,7 @@ impl ManifestItem {
     }
 }
 
+#[allow(dead_code)]
 fn has_renderable_extension(href: &str) -> bool {
     let href = href
         .split_once('#')
@@ -199,6 +212,7 @@ pub(super) fn parse_opf(xml: &str, opf_dir: &str) -> Result<(EpubPackageDocument
                                     path_resolution_error,
                                     media_type: node.attribute("media-type").map(ToString::to_string),
                                     fallback: node.attribute("fallback").map(ToString::to_string),
+                                    properties: node.attribute("properties").map(ToString::to_string),
                                 },
                             );
                         }
@@ -290,30 +304,6 @@ pub(super) fn build_additional_metadata(epub_metadata: &OepbMetadata) -> BTreeMa
 
     if let Some(ref rights) = epub_metadata.rights {
         additional_metadata.insert("rights".to_string(), serde_json::json!(rights.clone()));
-    }
-
-    if let Some(ref coverage) = epub_metadata.coverage {
-        additional_metadata.insert("coverage".to_string(), serde_json::json!(coverage.clone()));
-    }
-
-    if let Some(ref format) = epub_metadata.format {
-        additional_metadata.insert("format".to_string(), serde_json::json!(format.clone()));
-    }
-
-    if let Some(ref relation) = epub_metadata.relation {
-        additional_metadata.insert("relation".to_string(), serde_json::json!(relation.clone()));
-    }
-
-    if let Some(ref source) = epub_metadata.source {
-        additional_metadata.insert("source".to_string(), serde_json::json!(source.clone()));
-    }
-
-    if let Some(ref dc_type) = epub_metadata.dc_type {
-        additional_metadata.insert("type".to_string(), serde_json::json!(dc_type.clone()));
-    }
-
-    if let Some(ref cover_href) = epub_metadata.cover_image_href {
-        additional_metadata.insert("cover_image".to_string(), serde_json::json!(cover_href.clone()));
     }
 
     additional_metadata

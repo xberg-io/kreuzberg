@@ -1,15 +1,23 @@
 {
-	"document": "../../../../test_documents/vendored/markitdown/csv/test_mskanji.csv",
-	"file_type": "csv",
-	"file_size": 70,
-	"expected_frameworks": ["kreuzberg", "docling", "markitdown", "pandoc", "tika", "unstructured"],
-	"metadata": {
-		"description": "Document from markitdown test suite",
-		"source": "markitdown",
-		"size_category": "small"
-	},
-	"ground_truth": {
-		"text_file": "../../../../test_documents/ground_truth/csv/test_mskanji.txt",
-		"source": "vision"
-	}
+  "document": "../../../../test_documents/vendored/markitdown/csv/test_mskanji.csv",
+  "file_type": "csv",
+  "file_size": 70,
+  "expected_frameworks": [
+    "kreuzberg",
+    "docling",
+    "markitdown",
+    "pandoc",
+    "tika",
+    "unstructured"
+  ],
+  "metadata": {
+    "description": "Document from markitdown test suite",
+    "source": "markitdown",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/csv/test_mskanji.txt",
+    "source": "pandoc",
+    "markdown_file": "../../../../test_documents/ground_truth/csv/test_mskanji.md"
+  }
 }

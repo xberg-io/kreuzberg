@@ -156,7 +156,7 @@ function determineOcrUsedFromPath(filePath: string, ocrEnabled: boolean): boolea
 function createConfig(ocrEnabled: boolean, forceOcr?: boolean): ExtractionConfig {
 	return {
 		useCache: false,
-		...(ocrEnabled && { ocr: { enabled: true } }),
+		...(ocrEnabled && { ocr: { backend: "tesseract" } }),
 		...(forceOcr && { forceOcr: true }),
 	};
 }

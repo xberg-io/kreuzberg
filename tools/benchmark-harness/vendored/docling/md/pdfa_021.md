@@ -38,7 +38,7 @@ Date Tested isT
 
 TESTING LABORATORY IS ACCREDITED BY:
 
-Report  No.
+Report No.
 
 ： HS1908140115A-3
 
@@ -78,7 +78,7 @@ NOTE :
 
 1. This report will be invalid if reproduced in part or altered in any way.
 
-## TESTING LABORATORY IS ACCREDITED BY:
+## TESTING LABORATORY IS ACCREDITED BY
 
 IECQ ISO/IEC 17025 certificate of independent test laboratory approval
 
@@ -86,9 +86,9 @@ IECQ-L DEKRA 16.0002
 
 Certificate No. ：
 
-## WE HEREBY CERTIFY THAT:
+## WE HEREBY CERTIFY THAT
 
-The  test(s)  shown  in  the  attachment  were  conducted  according  to  the  indicating procedures. We assume full  responsibility  for  the  accuracy  and  completeness  of  these tests and vouch for the qualifications of all personnel performing them.
+The test(s) shown in the attachment were conducted according to the indicating procedures. We assume full responsibility for the accuracy and completeness of these tests and vouch for the qualifications of all personnel performing them.
 
 Manager
 
@@ -111,11 +111,11 @@ IST
 
 <!-- image -->
 
-## Integrated Service Technology Inc.
+## Integrated Service Technology Inc
 
 Sustainable Development Business Unit 1F, No.19, Pu-ding Rd., Hsin - chu City,Taiwan, R.O.C. Tel: 886-3-579-9909    Fax: 886-3-563-4868
 
-http://www.istgroup.com
+<http://www.istgroup.com>
 
 ## 1. GENERAL INFORMATION
 

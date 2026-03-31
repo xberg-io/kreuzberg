@@ -1,0 +1,17 @@
+{
+  "document": "../../../../test_documents/doc/unit_test_lists.doc",
+  "file_type": "doc",
+  "file_size": 16384,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "doc test: unit_test_lists",
+    "source": "pandoc-generated",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "markdown_file": "../../../../test_documents/ground_truth/doc/unit_test_lists.md",
+    "source": "pandoc"
+  }
+}

@@ -20,7 +20,10 @@ use crate::core::config::ExtractionConfig;
 use crate::extraction::{cells_to_markdown, cells_to_text};
 use crate::plugins::{DocumentExtractor, Plugin};
 use crate::text::utf8_validation;
-use crate::types::{ExtractionResult, Metadata, Table};
+use crate::types::internal::InternalDocument;
+use crate::types::internal_builder::InternalDocumentBuilder;
+use crate::types::uri::Uri;
+use crate::types::{Metadata, Table};
 use async_trait::async_trait;
 use quick_xml::Reader;
 use quick_xml::events::Event;
@@ -80,12 +83,10 @@ type DocBookParseResult = (
     Option<String>,
 );
 
-/// Build a `DocumentStructure` from DocBook XML content.
-fn build_docbook_document_structure(content: &str) -> Result<crate::types::document_structure::DocumentStructure> {
-    use crate::types::builder::DocumentStructureBuilder;
-
+/// Build an `InternalDocument` from DocBook XML content.
+fn build_docbook_internal_document(content: &str) -> Result<InternalDocument> {
     let mut reader = Reader::from_str(content);
-    let mut builder = DocumentStructureBuilder::new().source_format("docbook");
+    let mut builder = InternalDocumentBuilder::new("docbook");
 
     let mut title_extracted = false;
     let mut in_info = false;
@@ -97,6 +98,9 @@ fn build_docbook_document_structure(content: &str) -> Result<crate::types::docum
     let mut current_table: Vec<Vec<String>> = Vec::new();
     let mut current_row: Vec<String> = Vec::new();
     let mut section_depth: u8 = 0;
+    let mut footnote_counter: u32 = 0;
+    let mut in_list = false;
+    let mut list_ordered = false;
 
     loop {
         match reader.read_event() {
@@ -136,35 +140,46 @@ fn build_docbook_document_structure(content: &str) -> Result<crate::types::docum
                     "para" => {
                         let (text, annotations) = extract_para_with_annotations(&mut reader)?;
                         if !text.is_empty() {
+                            // Extract URIs from link annotations
+                            for ann in &annotations {
+                                if let crate::types::document_structure::AnnotationKind::Link { url, .. } = &ann.kind
+                                    && !url.is_empty()
+                                {
+                                    let label = text.get(ann.start as usize..ann.end as usize).map(|s| s.to_string());
+                                    builder.push_uri(Uri::hyperlink(url, label));
+                                }
+                            }
                             builder.push_paragraph(&text, annotations, None, None);
                         }
                     }
                     "programlisting" | "screen" => {
                         let text = extract_element_text(&mut reader)?;
                         if !text.is_empty() {
-                            builder.push_code(&text, None, None);
+                            builder.push_code(&text, None, None, None);
                         }
                     }
                     "itemizedlist" => {
-                        // handled via listitem children
+                        in_list = true;
+                        list_ordered = false;
+                        builder.push_list(false);
                     }
                     "orderedlist" => {
-                        // handled via listitem children
+                        in_list = true;
+                        list_ordered = true;
+                        builder.push_list(true);
                     }
-                    "listitem" => {
-                        // We need to peek at the parent to know ordered/unordered.
-                        // For simplicity, extract text and push as list item.
+                    "listitem" if in_list => {
                         let text = extract_element_text(&mut reader)?;
                         if !text.is_empty() {
-                            builder.push_paragraph(&text, vec![], None, None);
+                            builder.push_list_item(&text, list_ordered, vec![], None, None);
                         }
                     }
                     "blockquote" => {
                         let text = extract_element_text(&mut reader)?;
                         if !text.is_empty() {
-                            builder.push_quote(None);
+                            builder.push_quote_start();
                             builder.push_paragraph(&text, vec![], None, None);
-                            builder.exit_container();
+                            builder.push_quote_end();
                         }
                     }
                     "note" | "warning" | "tip" | "caution" | "important" => {
@@ -172,22 +187,22 @@ fn build_docbook_document_structure(content: &str) -> Result<crate::types::docum
                         if !admonition_text.is_empty() {
                             builder.push_admonition(tag, None, None);
                             builder.push_paragraph(&admonition_text, vec![], None, None);
-                            builder.exit_container();
                         }
                     }
                     "figure" => {
                         let caption = extract_figure_with_caption(&mut reader)?;
-                        let desc = if caption.is_empty() {
-                            None
+                        if !caption.is_empty() {
+                            builder.push_paragraph(&format!("[Figure: {}]", caption), vec![], None, None);
                         } else {
-                            Some(caption.as_str())
-                        };
-                        builder.push_image(desc, None, None, None);
+                            builder.push_paragraph("[Figure]", vec![], None, None);
+                        }
                     }
                     "footnote" => {
                         let text = extract_element_text(&mut reader)?;
                         if !text.is_empty() {
-                            builder.push_footnote(&text, None);
+                            footnote_counter += 1;
+                            let key = format!("fn-{}", footnote_counter);
+                            builder.push_footnote_definition(&text, &key, None);
                         }
                     }
                     "table" | "informaltable" => {
@@ -226,9 +241,15 @@ fn build_docbook_document_structure(content: &str) -> Result<crate::types::docum
                     "chapter" | "sect1" | "sect2" | "sect3" | "sect4" | "sect5" | "section" => {
                         section_depth = section_depth.saturating_sub(1);
                     }
+                    "itemizedlist" | "orderedlist" => {
+                        if in_list {
+                            builder.end_list();
+                            in_list = false;
+                        }
+                    }
                     "table" | "informaltable" if in_table => {
                         if !current_table.is_empty() {
-                            builder.push_table_from_cells(&current_table, None);
+                            builder.push_table_from_cells(&current_table, None, None);
                             current_table.clear();
                         }
                         in_table = false;
@@ -921,7 +942,7 @@ impl DocumentExtractor for DocbookExtractor {
     #[cfg_attr(
         feature = "otel",
         tracing::instrument(
-            skip(self, content, config),
+            skip(self, content, _config),
             fields(
                 extractor.name = self.name(),
                 content.size_bytes = content.len(),
@@ -932,18 +953,15 @@ impl DocumentExtractor for DocbookExtractor {
         &self,
         content: &[u8],
         mime_type: &str,
-        config: &ExtractionConfig,
-    ) -> Result<ExtractionResult> {
-        let plain = matches!(
-            config.output_format,
-            crate::core::config::OutputFormat::Plain | crate::core::config::OutputFormat::Structured
-        );
+        _config: &ExtractionConfig,
+    ) -> Result<InternalDocument> {
         let docbook_content = utf8_validation::from_utf8(content)
             .map(|s| s.to_string())
-            .unwrap_or_else(|_| String::from_utf8_lossy(content).to_string());
+            .unwrap_or_else(|_| String::from_utf8_lossy(content).into_owned());
 
-        let (extracted_content, title, author, date, tables, publisher, copyright) =
-            parse_docbook_single_pass(&docbook_content, plain)?;
+        // Extract metadata via single pass for the metadata fields
+        let (_extracted_content, title, author, date, _tables, publisher, copyright) =
+            parse_docbook_single_pass(&docbook_content, true)?;
 
         let mut metadata = Metadata::default();
         let mut subject_parts = Vec::new();
@@ -977,32 +995,11 @@ impl DocumentExtractor for DocbookExtractor {
                 .insert(std::borrow::Cow::Borrowed("copyright"), serde_json::json!(cr_val));
         }
 
-        let document = if config.include_document_structure {
-            Some(build_docbook_document_structure(&docbook_content)?)
-        } else {
-            None
-        };
+        let mut doc = build_docbook_internal_document(&docbook_content)?;
+        doc.mime_type = std::borrow::Cow::Owned(mime_type.to_string());
+        doc.metadata = metadata;
 
-        Ok(ExtractionResult {
-            content: extracted_content,
-            mime_type: mime_type.to_string().into(),
-            metadata,
-            tables,
-            detected_languages: None,
-            chunks: None,
-            images: None,
-            pages: None,
-            djot_content: None,
-            elements: None,
-            ocr_elements: None,
-            document,
-            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-            extracted_keywords: None,
-            quality_score: None,
-            processing_warnings: Vec::new(),
-            annotations: None,
-            children: None,
-        })
+        Ok(doc)
     }
 
     #[cfg(feature = "tokio-runtime")]
@@ -1015,9 +1012,8 @@ impl DocumentExtractor for DocbookExtractor {
             )
         )
     )]
-    async fn extract_file(&self, path: &Path, mime_type: &str, config: &ExtractionConfig) -> Result<ExtractionResult> {
-        let content = tokio::fs::read(path).await?;
-        self.extract_bytes(&content, mime_type, config).await
+    async fn extract_file(&self, path: &Path, mime_type: &str, config: &ExtractionConfig) -> Result<InternalDocument> {
+        crate::core::path_resolver::extract_file_with_image_resolution(self, path, mime_type, config).await
     }
 
     fn supported_mime_types(&self) -> &[&str] {

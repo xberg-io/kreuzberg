@@ -18,7 +18,7 @@ A
 
 Telephone (217) 585-2370· (888) 547-8473·Fax (217) 585-2372
 
-e-mail: suaa @ suaa.org · website: www.suaa.org
+e-mail: suaa @ suaa.org · website: <https://www.suaa.org>
 
 EXECUDVE DIAECTOR
 
@@ -72,7 +72,7 @@ To address these challenges to both active and retired SURS members, SUAA in 200
 
 established SUAACTION. SUAACTION will serve as the political advocacy am of SUAA.
 
-dhilquis@oaklon.edu
+<dhilquis@oaklon.edu>
 
 Treasurer:
 
@@ -116,7 +116,7 @@ Macomb, IL. 61455
 
 The SUAACTION political advocacy program will be expensive, and dues cannot be used
 
-13jose22@msn.com
+<13jose22@msn.com>
 
 recommended that its activities be financed by voluntary contributions. Will you volunteer?
 
@@ -156,7 +156,7 @@ Florissant, MO 63033
 
 (314) 921-7364
 
-rthomas257@aol.com
+<rthomas257@aol.com>
 
 Springfield, IL 62703
 

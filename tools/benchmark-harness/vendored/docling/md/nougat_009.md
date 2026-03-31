@@ -54,7 +54,7 @@ Laura Tyrholm
 
 Global Head of Alternatives Marketing
 
-## How it worked:
+## How it worked
 
 BlackRock turned to LinkedIn knowing their institutional investor audience was active and engaged on the platform. According to Investing in the Digital Age research, LinkedIn is considered the best place for in-depth learning among the institutional investor audience.1
 
@@ -81,7 +81,7 @@ Jackie Teller
 
 Global Head of Social Media at BlackRock
 
-## Campaign results:
+## Campaign results
 
 ## Sponsored Content significantly outperformed benchmarks across all key media metrics
 
@@ -99,7 +99,7 @@ Lead form completion rate
 
 <!-- image -->
 
-## Nielsen brand study results:
+## Nielsen brand study results
 
 <!-- image -->
 
@@ -121,15 +121,15 @@ Start planning your next Sponsored Content campaign here. Discover more marketin
 
 <!-- image -->
 
-## Know where your audience is:
+## Know where your audience is
 
 BlackRock clearly defined its audience upfront, allowing them to leverage a combination of advanced targeting tactics to successfully reach institutional investors.
 
-## Plan your journey:
+## Plan your journey
 
 BlackRock planned a full-funnel multi-format content strategy that not only raised awareness of its alternative investing platform but provided real value to its audiences.
 
-## Monitor and adapt:
+## Monitor and adapt
 
 Testing a variety of audiences, creatives, and ad types enabled BlackRock to learn about top-performing tactics in real-time and make strategic optimizations throughout the campaign.
 

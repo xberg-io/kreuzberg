@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/rst/rst-reader.rst",
+  "file_type": "rst",
+  "file_size": 9893,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "rst test: rst-reader",
+    "source": "pandoc-generated",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "markdown_file": "../../../../test_documents/ground_truth/rst/rst-reader.md",
+    "source": "pandoc",
+    "text_file": "../../../../test_documents/ground_truth/rst/rst-reader.txt"
+  }
+}

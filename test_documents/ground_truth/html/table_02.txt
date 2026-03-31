@@ -1,26 +1,13 @@
 Header
 
-
 This is the first paragraph.
 
+  ----------------------------------- -----------------------------------
+  A                                   B
 
-
-
-
-A
-
-B
-
-
-
-
-
-First Paragraph
-Second Paragraph
-Third Paragraph
-
-2...
-
-
+  First Paragraph                     2...
+  Second Paragraph                    
+  Third Paragraph                     
+  ----------------------------------- -----------------------------------
 
 After table

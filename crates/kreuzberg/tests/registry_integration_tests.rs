@@ -11,6 +11,7 @@ use kreuzberg::core::config::ExtractionConfig;
 use kreuzberg::plugins::registry::{DocumentExtractorRegistry, ValidatorRegistry};
 use kreuzberg::plugins::{DocumentExtractor, Plugin, Validator};
 use kreuzberg::types::ExtractionResult;
+use kreuzberg::types::internal::{ElementKind, InternalDocument, InternalElement};
 use kreuzberg::{KreuzbergError, Result};
 use std::borrow::Cow;
 use std::path::Path;
@@ -117,15 +118,18 @@ impl DocumentExtractor for MockExtractor {
         content: &[u8],
         mime_type: &str,
         _config: &ExtractionConfig,
-    ) -> Result<ExtractionResult> {
-        Ok(ExtractionResult {
-            content: format!("Extracted by {}: {}", self.name, String::from_utf8_lossy(content)),
-            mime_type: Cow::Owned(mime_type.to_string()),
-            ..Default::default()
-        })
+    ) -> Result<InternalDocument> {
+        let mut doc = InternalDocument::new("mock");
+        doc.mime_type = Cow::Owned(mime_type.to_string());
+        doc.push_element(InternalElement::text(
+            ElementKind::Paragraph,
+            format!("Extracted by {}: {}", self.name, String::from_utf8_lossy(content)),
+            0,
+        ));
+        Ok(doc)
     }
 
-    async fn extract_file(&self, path: &Path, mime_type: &str, config: &ExtractionConfig) -> Result<ExtractionResult> {
+    async fn extract_file(&self, path: &Path, mime_type: &str, config: &ExtractionConfig) -> Result<InternalDocument> {
         let content = std::fs::read(path)?;
         self.extract_bytes(&content, mime_type, config).await
     }

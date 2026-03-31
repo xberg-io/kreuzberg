@@ -1,8 +1,8 @@
 ## Michael's Guide to Using Computers Properly and Effectively
 
-By Michael LoneWolf, www.MKRD.info Rev A 19Jun11
+By Michael LoneWolf, <https://www.MKRD.info> Rev A 19Jun11
 
-© 2011 Michael LoneWolf, www.MKRD.info. No distribution allowed.
+© 2011 Michael LoneWolf, <https://www.MKRD.info>. No distribution allowed.
 
 ## Scope and Target Audience
 
@@ -70,7 +70,7 @@ If you do not have a virus scanner program, obtain and install the free version 
 
 Go to Start&gt;All Programs&gt;Windows Update. Unless it says that 'Windows is up to date', then you need to install all the updates listed. Restart your computer after updates are finished installing and recheck Windows Update again every time. This may have to be done multiple times to install all of the updates. If you get an error message that updates cannot be installed, or similar, then your computer is likely infected.
 
-## Running Avast!
+## Running Avast
 
 Avast! will be your most useful program. It can repair some but not all computer infections. Install the program, and register it. Then click on the taskbar icon, click Scan Computer, Scan Now, check 'Turn on' next to 'Scan PUP'. And click Start across 'Quick Scan'. This will take some time. If the scan finishes, and a number other than zero is displayed across 'Infected Files' then your computer is infected. On the new window that appears, select to move to chest, click Apply. After that action is completed, you can close the window. I recommend restarting after viruses were found and disinfected to get rid of the infection.
 
@@ -115,12 +115,12 @@ Additionally, it is not necessary for you to drive your computer to a tech, or f
 
 ## Additional articles from my website
 
-I have several more articles at my disinfection web page at http://mkrd.info/articles/how-todisinfect-computer-infection.html
+I have several more articles at my disinfection web page at <http://mkrd.info/articles/how-todisinfect-computer-infection.html>
 
 ## About the Author
 
-Michael LoneWolf is the administrator, designer, and writer for the www.MKRD.info information website, commenting on many different areas, and doing his best to document experience and knowledge he comes across.
+Michael LoneWolf is the administrator, designer, and writer for the <https://www.MKRD.info> information website, commenting on many different areas, and doing his best to document experience and knowledge he comes across.
 
 Professionally, Michael works in electronics engineering, and website services areas. He specializes in providing services for websites - converting old static HTML websites to a modern design, rescuing hacked websites, and website administration services.
 
-He can be reached thru the online contact form at http://mkrd.info/contact1.html.
+He can be reached thru the online contact form at <http://mkrd.info/contact1.html>.

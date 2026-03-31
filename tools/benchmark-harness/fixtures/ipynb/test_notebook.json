@@ -1,15 +1,21 @@
 {
-	"document": "../../../../test_documents/vendored/markitdown/ipynb/test_notebook.ipynb",
-	"file_type": "ipynb",
-	"file_size": 1408,
-	"expected_frameworks": ["kreuzberg", "markitdown", "pandoc", "tika"],
-	"metadata": {
-		"description": "Document from markitdown test suite",
-		"source": "markitdown",
-		"size_category": "small"
-	},
-	"ground_truth": {
-		"text_file": "../../../../test_documents/ground_truth/ipynb/test_notebook.txt",
-		"source": "vision"
-	}
+  "document": "../../../../test_documents/vendored/markitdown/ipynb/test_notebook.ipynb",
+  "file_type": "ipynb",
+  "file_size": 1408,
+  "expected_frameworks": [
+    "kreuzberg",
+    "markitdown",
+    "pandoc",
+    "tika"
+  ],
+  "metadata": {
+    "description": "Document from markitdown test suite",
+    "source": "markitdown",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/ipynb/test_notebook.txt",
+    "source": "pandoc",
+    "markdown_file": "../../../../test_documents/ground_truth/ipynb/test_notebook.md"
+  }
 }

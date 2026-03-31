@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/rtf/footnote.rtf",
+  "file_type": "rtf",
+  "file_size": 563,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "rtf test: footnote",
+    "source": "pandoc-generated",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/rtf/footnote.txt",
+    "markdown_file": "../../../../test_documents/ground_truth/rtf/footnote.md",
+    "source": "pandoc"
+  }
+}

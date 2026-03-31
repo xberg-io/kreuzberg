@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/odt/unorderedList.odt",
+  "file_type": "odt",
+  "file_size": 9505,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "odt test: unorderedList",
+    "source": "pandoc-generated",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/odt/unorderedList.txt",
+    "markdown_file": "../../../../test_documents/ground_truth/odt/unorderedList.md",
+    "source": "pandoc"
+  }
+}

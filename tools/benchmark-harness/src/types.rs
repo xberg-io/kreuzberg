@@ -162,6 +162,10 @@ pub struct QualityMetrics {
     /// Each entry is (token, surplus_count). Sorted by count descending.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub extra_tokens: Vec<(String, usize)>,
+
+    /// Whether the extraction is considered correct (quality_score >= 0.95).
+    #[serde(default)]
+    pub correct: bool,
 }
 
 /// Framework capability metadata

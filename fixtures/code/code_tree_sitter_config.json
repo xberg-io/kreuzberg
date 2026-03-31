@@ -1,0 +1,31 @@
+{
+	"id": "code_tree_sitter_config",
+	"category": "code",
+	"tags": ["code", "config", "tree-sitter"],
+	"description": "Test tree-sitter config with structure, comments, and docstrings enabled",
+	"document": {
+		"path": "code/hello.py",
+		"media_type": "text/x-source-code"
+	},
+	"extraction": {
+		"config": {
+			"tree_sitter": {
+				"process": {
+					"structure": true,
+					"imports": true,
+					"exports": true,
+					"comments": true,
+					"docstrings": true
+				}
+			}
+		}
+	},
+	"assertions": {
+		"expected_mime": "text/x-source-code",
+		"min_content_length": 10,
+		"content_contains_all": ["def greet", "class Greeter"]
+	},
+	"skip": {
+		"requires_feature": ["tree-sitter"]
+	}
+}

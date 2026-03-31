@@ -10,6 +10,7 @@ use kreuzberg::plugins::registry::{
 };
 use kreuzberg::plugins::{DocumentExtractor, Plugin, PostProcessor, ProcessingStage, Validator};
 use kreuzberg::types::ExtractionResult;
+use kreuzberg::types::internal::{ElementKind, InternalDocument, InternalElement};
 use kreuzberg::{KreuzbergError, Result};
 use std::borrow::Cow;
 use std::sync::Arc;
@@ -44,18 +45,17 @@ impl Plugin for FailingExtractor {
 
 #[async_trait]
 impl DocumentExtractor for FailingExtractor {
-    async fn extract_bytes(&self, _: &[u8], _: &str, _: &ExtractionConfig) -> Result<ExtractionResult> {
+    async fn extract_bytes(&self, _: &[u8], _: &str, _: &ExtractionConfig) -> Result<InternalDocument> {
         if self.should_fail_extract {
             Err(KreuzbergError::Parsing {
                 message: "Extraction failed".to_string(),
                 source: None,
             })
         } else {
-            Ok(ExtractionResult {
-                content: "success".to_string(),
-                mime_type: Cow::Borrowed("text/plain"),
-                ..Default::default()
-            })
+            let mut doc = InternalDocument::new("text");
+            doc.mime_type = Cow::Borrowed("text/plain");
+            doc.push_element(InternalElement::text(ElementKind::Paragraph, "success", 0));
+            Ok(doc)
         }
     }
 
@@ -290,12 +290,11 @@ fn test_extractor_priority_ordering_complex() {
 
     #[async_trait]
     impl DocumentExtractor for PriorityExtractor {
-        async fn extract_bytes(&self, _: &[u8], _: &str, _: &ExtractionConfig) -> Result<ExtractionResult> {
-            Ok(ExtractionResult {
-                content: "test".to_string(),
-                mime_type: Cow::Borrowed("text/plain"),
-                ..Default::default()
-            })
+        async fn extract_bytes(&self, _: &[u8], _: &str, _: &ExtractionConfig) -> Result<InternalDocument> {
+            let mut doc = InternalDocument::new("text");
+            doc.mime_type = Cow::Borrowed("text/plain");
+            doc.push_element(InternalElement::text(ElementKind::Paragraph, "test", 0));
+            Ok(doc)
         }
         fn supported_mime_types(&self) -> &[&str] {
             &["text/plain"]
@@ -346,7 +345,7 @@ fn test_extractor_wildcard_vs_exact_priority() {
 
     #[async_trait]
     impl DocumentExtractor for WildcardExtractor {
-        async fn extract_bytes(&self, c: &[u8], m: &str, cfg: &ExtractionConfig) -> Result<ExtractionResult> {
+        async fn extract_bytes(&self, c: &[u8], m: &str, cfg: &ExtractionConfig) -> Result<InternalDocument> {
             self.0.extract_bytes(c, m, cfg).await
         }
         fn supported_mime_types(&self) -> &[&str] {

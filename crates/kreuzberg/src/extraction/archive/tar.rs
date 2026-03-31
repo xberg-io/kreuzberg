@@ -6,7 +6,7 @@
 use super::{ArchiveEntry, ArchiveMetadata, TEXT_EXTENSIONS};
 use crate::error::{KreuzbergError, Result};
 use crate::extractors::security::SecurityLimits;
-use std::collections::HashMap;
+use ahash::AHashMap;
 use std::io::{Cursor, Read};
 use tar::Archive as TarArchive;
 
@@ -101,12 +101,12 @@ pub fn extract_tar_metadata(bytes: &[u8], limits: &SecurityLimits) -> Result<Arc
 /// # Errors
 ///
 /// Returns an error if the TAR archive cannot be read or parsed.
-pub fn extract_tar_text_content(bytes: &[u8], limits: &SecurityLimits) -> Result<HashMap<String, String>> {
+pub fn extract_tar_text_content(bytes: &[u8], limits: &SecurityLimits) -> Result<AHashMap<String, String>> {
     let cursor = Cursor::new(bytes);
     let mut archive = TarArchive::new(cursor);
 
     let estimated_text_files = bytes.len().saturating_div(1024 * 10).min(100);
-    let mut contents = HashMap::with_capacity(estimated_text_files.max(2));
+    let mut contents = AHashMap::with_capacity(estimated_text_files.max(2));
     let mut file_count = 0usize;
     let mut total_content_size = 0usize;
 
@@ -165,11 +165,11 @@ pub fn extract_tar_text_content(bytes: &[u8], limits: &SecurityLimits) -> Result
 /// # Errors
 ///
 /// Returns an error if the TAR archive cannot be read or if security limits are exceeded.
-pub fn extract_tar_file_bytes(bytes: &[u8], limits: &SecurityLimits) -> Result<HashMap<String, Vec<u8>>> {
+pub fn extract_tar_file_bytes(bytes: &[u8], limits: &SecurityLimits) -> Result<AHashMap<String, Vec<u8>>> {
     let cursor = Cursor::new(bytes);
     let mut archive = TarArchive::new(cursor);
 
-    let mut file_bytes = HashMap::new();
+    let mut file_bytes = AHashMap::new();
     let mut file_count = 0usize;
     let mut total_size = 0usize;
 

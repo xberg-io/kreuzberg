@@ -100,7 +100,9 @@ pub fn to_c_extraction_result(result: ExtractionResult) -> std::result::Result<*
         quality_score,
         processing_warnings,
         annotations,
+        formatted_content: _,
         children: _,
+        uris,
     } = result;
 
     let sanitized_content = if content.contains('\0') {
@@ -300,6 +302,16 @@ pub fn to_c_extraction_result(result: ExtractionResult) -> std::result::Result<*
         _ => None,
     };
 
+    let uris_json_guard = match uris {
+        Some(u) if !u.is_empty() => {
+            let json = serde_json::to_string(&u).map_err(|e| format!("Failed to serialize uris to JSON: {}", e))?;
+            Some(CStringGuard::new(CString::new(json).map_err(|e| {
+                format!("Failed to convert uris JSON to C string: {}", e)
+            })?))
+        }
+        _ => None,
+    };
+
     Ok(Box::into_raw(Box::new(CExtractionResult {
         annotations_json: annotations_json_guard.map_or(ptr::null_mut(), |g| g.into_raw()),
         chunks_json: chunks_json_guard.map_or(ptr::null_mut(), |g| g.into_raw()),
@@ -321,6 +333,7 @@ pub fn to_c_extraction_result(result: ExtractionResult) -> std::result::Result<*
         quality_score_json: quality_score_json_guard.map_or(ptr::null_mut(), |g| g.into_raw()),
         subject: subject_guard.map_or(ptr::null_mut(), |g| g.into_raw()),
         tables_json: tables_json_guard.map_or(ptr::null_mut(), |g| g.into_raw()),
+        uris_json: uris_json_guard.map_or(ptr::null_mut(), |g| g.into_raw()),
         success: true,
         _padding1: [0u8; 7],
     })))
@@ -486,6 +499,8 @@ mod tests {
             processing_warnings: vec![],
             annotations: None,
             children: None,
+            uris: None,
+            formatted_content: None,
         };
 
         let c_result = to_c_extraction_result(result);
@@ -532,6 +547,8 @@ mod tests {
             processing_warnings: vec![],
             annotations: None,
             children: None,
+            uris: None,
+            formatted_content: None,
         };
 
         let c_result = to_c_extraction_result(result);
@@ -588,6 +605,8 @@ mod tests {
             processing_warnings: vec![],
             annotations: None,
             children: None,
+            uris: None,
+            formatted_content: None,
         };
 
         let c_result = to_c_extraction_result(result);
@@ -679,6 +698,8 @@ mod tests {
             processing_warnings: vec![],
             annotations: None,
             children: None,
+            uris: None,
+            formatted_content: None,
         };
 
         let c_result = to_c_extraction_result(result);

@@ -2,10 +2,30 @@
 //!
 //! Provides a shared function for processing extracted images with OCR,
 //! used by DOCX, PPTX, Jupyter, Markdown, and other extractors.
+//!
+//! # Recursion Prevention
+//!
+//! The OCR results produced here set `images: None` to prevent any
+//! downstream consumer from triggering further image extraction on
+//! OCR output. This breaks the potential cycle:
+//! document → extract images → OCR images → (no further image extraction).
+//!
+//! # Concurrency
+//!
+//! Image OCR tasks are processed with a bounded concurrency limit
+//! (default 8) to prevent resource exhaustion when documents contain
+//! many embedded images.
 
 #[cfg(all(feature = "ocr", feature = "tokio-runtime"))]
 use crate::ocr::OcrProcessor;
 use crate::types::{ExtractedImage, ExtractionResult, Metadata};
+
+/// Maximum number of concurrent OCR tasks for image processing.
+///
+/// Limits parallelism to prevent thread pool and memory exhaustion
+/// when processing documents with many embedded images.
+#[cfg(all(feature = "ocr", feature = "tokio-runtime"))]
+const MAX_CONCURRENT_OCR_TASKS: usize = 8;
 
 /// Process extracted images with OCR if configured.
 ///
@@ -15,20 +35,36 @@ use crate::types::{ExtractedImage, ExtractionResult, Metadata};
 ///
 /// This function is the single shared implementation used by all
 /// document extractors (DOCX, PPTX, Jupyter, Markdown, etc.).
+///
+/// # Recursion Safety
+///
+/// The produced `ExtractionResult` for each image explicitly sets
+/// `images: None`, preventing further image extraction cycles when
+/// OCR results are consumed by archive or recursive extraction paths.
+///
+/// # Concurrency
+///
+/// At most [`MAX_CONCURRENT_OCR_TASKS`] images are OCR'd concurrently
+/// using a semaphore to bound resource usage.
 #[cfg(all(feature = "ocr", feature = "tokio-runtime"))]
 pub async fn process_images_with_ocr(
     mut images: Vec<ExtractedImage>,
     config: &crate::core::config::ExtractionConfig,
 ) -> crate::Result<Vec<ExtractedImage>> {
-    if config.ocr.is_none() {
+    if images.is_empty() || config.ocr.is_none() {
         return Ok(images);
     }
 
     let ocr_config = config.ocr.as_ref().unwrap();
     let tess_config = ocr_config.tesseract_config.as_ref().cloned().unwrap_or_default();
-    let output_format = config.output_format;
+    let output_format = config.output_format.clone();
 
+    use std::sync::Arc;
+    use tokio::sync::Semaphore;
     use tokio::task::JoinSet;
+
+    // Bound concurrency to prevent resource exhaustion with many images.
+    let semaphore = Arc::new(Semaphore::new(MAX_CONCURRENT_OCR_TASKS));
 
     // Each spawned task returns `(image_index, spawn_blocking_result)`.
     // `spawn_blocking` itself may fail if the thread panics; we carry that
@@ -44,8 +80,15 @@ pub async fn process_images_with_ocr(
         let image_data = image.data.clone();
         let tess_config_clone = tess_config.clone();
         let span = tracing::Span::current();
+        let permit = Arc::clone(&semaphore);
+        let output_format = output_format.clone();
 
         join_set.spawn(async move {
+            // Acquire a semaphore permit before starting OCR work.
+            // The permit is held for the duration of the blocking task,
+            // ensuring at most MAX_CONCURRENT_OCR_TASKS run simultaneously.
+            let _permit = permit.acquire().await.expect("semaphore should not be closed");
+
             let blocking_result = tokio::task::spawn_blocking(move || {
                 let _guard = span.entered();
                 let cache_dir = std::env::var("KREUZBERG_CACHE_DIR").ok().map(std::path::PathBuf::from);
@@ -75,6 +118,11 @@ pub async fn process_images_with_ocr(
 
         match ocr_result {
             Ok(ocr_extraction) => {
+                // Recursion prevention: the child ExtractionResult explicitly
+                // disables image extraction (`images: None`) and omits all
+                // expensive post-processing fields (chunking, language detection,
+                // keywords, etc.) to prevent further extraction cycles and
+                // minimize overhead.
                 let extraction_result = ExtractionResult {
                     content: ocr_extraction.content,
                     mime_type: ocr_extraction.mime_type.into(),
@@ -94,6 +142,8 @@ pub async fn process_images_with_ocr(
                     processing_warnings: Vec::new(),
                     annotations: None,
                     children: None,
+                    uris: None,
+                    formatted_content: None,
                 };
                 images[idx].ocr_result = Some(Box::new(extraction_result));
             }

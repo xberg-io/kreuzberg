@@ -441,7 +441,7 @@ pub fn extraction_result_to_ruby(ruby: &Ruby, result: RustExtractionResult) -> R
                     grid_hash.aset("cells", cells_array)?;
                     content_hash.aset("grid", grid_hash)?;
                 }
-                NodeContent::Image { description, image_index } => {
+                NodeContent::Image { description, image_index, src } => {
                     content_hash.aset("node_type", "image")?;
                     if let Some(desc) = description {
                         content_hash.aset("description", desc)?;
@@ -452,6 +452,11 @@ pub fn extraction_result_to_ruby(ruby: &Ruby, result: RustExtractionResult) -> R
                         content_hash.aset("image_index", idx as i64)?;
                     } else {
                         content_hash.aset("image_index", ruby.qnil().as_value())?;
+                    }
+                    if let Some(s) = src {
+                        content_hash.aset("src", s)?;
+                    } else {
+                        content_hash.aset("src", ruby.qnil().as_value())?;
                     }
                 }
                 NodeContent::Code { text, language } => {

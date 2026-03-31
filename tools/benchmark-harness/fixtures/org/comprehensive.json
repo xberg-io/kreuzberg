@@ -1,0 +1,17 @@
+{
+  "document": "../../../../test_documents/org/comprehensive.org",
+  "file_type": "org",
+  "file_size": 1424,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "org test: comprehensive",
+    "source": "pandoc-generated",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "markdown_file": "../../../../test_documents/ground_truth/org/comprehensive.md",
+    "source": "pandoc"
+  }
+}

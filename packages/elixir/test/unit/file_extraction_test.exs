@@ -315,7 +315,7 @@ defmodule KreuzbergTest.Unit.FileExtractionTest do
       try do
         {:ok, result} =
           Kreuzberg.extract_file(path, "text/plain", %{
-            "pdf_config" => %{
+            "pdf_options" => %{
               "extract_text" => true,
               "preserve_formatting" => true
             }

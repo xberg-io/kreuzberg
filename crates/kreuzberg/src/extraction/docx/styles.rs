@@ -3,7 +3,7 @@
 //! Parses the styles XML and resolves style inheritance chains to produce
 //! fully-flattened run and paragraph properties for any given style ID.
 
-use std::collections::HashMap;
+use ahash::AHashMap;
 
 use crate::error::{KreuzbergError, Result};
 use crate::extraction::ooxml_constants::WORDPROCESSINGML_NAMESPACE;
@@ -153,7 +153,7 @@ pub struct ResolvedStyle {
 /// Catalog of all styles parsed from `word/styles.xml`, plus document defaults.
 #[derive(Debug, Clone, Default)]
 pub struct StyleCatalog {
-    pub styles: HashMap<String, StyleDefinition>,
+    pub styles: AHashMap<String, StyleDefinition>,
     pub default_paragraph_properties: ParagraphProperties,
     pub default_run_properties: RunProperties,
 }

@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/odt/imageWithCaption.odt",
+  "file_type": "odt",
+  "file_size": 33811,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "odt test: imageWithCaption",
+    "source": "pandoc-generated",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/odt/imageWithCaption.txt",
+    "markdown_file": "../../../../test_documents/ground_truth/odt/imageWithCaption.md",
+    "source": "pandoc"
+  }
+}

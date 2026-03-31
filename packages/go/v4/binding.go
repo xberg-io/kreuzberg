@@ -712,6 +712,10 @@ func convertCResult(cRes *C.CExtractionResult) (*ExtractionResult, error) {
 		return nil, newSerializationErrorWithContext("failed to decode annotations", err, ErrorCodeValidation, nil)
 	}
 
+	if err := decodeJSONCString(cRes.uris_json, &result.URIs); err != nil {
+		return nil, newSerializationErrorWithContext("failed to decode uris", err, ErrorCodeValidation, nil)
+	}
+
 	return result, nil
 }
 

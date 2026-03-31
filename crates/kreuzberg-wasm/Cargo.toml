@@ -1,10 +1,10 @@
 [package]
 name = "kreuzberg-wasm"
-version.workspace = true
-edition.workspace = true
-rust-version.workspace = true
-authors.workspace = true
-license.workspace = true
+version = "4.6.3"
+edition = "2024"
+rust-version = "1.91"
+authors = ["Na'aman Hirschfeld <naaman@kreuzberg.dev>"]
+license = "MIT"
 repository.workspace = true
 description = "Kreuzberg document intelligence - WebAssembly bindings"
 keywords = ["wasm", "webassembly", "document", "extraction", "bindings"]

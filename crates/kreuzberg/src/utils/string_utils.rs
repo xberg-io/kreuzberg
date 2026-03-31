@@ -182,9 +182,9 @@ pub fn safe_decode(byte_data: &[u8], encoding: Option<&str>) -> String {
         }
     }
 
-    let mut detector = EncodingDetector::new();
+    let mut detector = EncodingDetector::new(chardetng::Iso2022JpDetection::Allow);
     detector.feed(byte_data, true);
-    let encoding = detector.guess(None, true);
+    let encoding = detector.guess(None, chardetng::Utf8Detection::Allow);
 
     // OSError/RuntimeError must bubble up - system errors need user reports ~keep
     match ENCODING_CACHE.write() {

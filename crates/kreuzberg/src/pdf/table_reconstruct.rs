@@ -2,12 +2,12 @@
 //!
 //! This module provides table reconstruction utilities that work with any
 //! source of word-level text data (PDF native text, OCR output, etc.).
-//! It re-exports core types from `html-to-markdown-rs` and adds PDF-specific
+//! It re-exports core types from `table_core` and adds PDF-specific
 //! conversion helpers.
 
 use super::hierarchy::SegmentData;
 
-pub use html_to_markdown_rs::hocr::{HocrWord, reconstruct_table, table_to_markdown};
+pub use crate::table_core::{HocrWord, reconstruct_table, table_to_markdown};
 
 /// Convert a PDF `SegmentData` to an `HocrWord` for table reconstruction.
 ///

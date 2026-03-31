@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/rtf/extraction_test.rtf",
+  "file_type": "rtf",
+  "file_size": 4262,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "rtf test: extraction_test",
+    "source": "pandoc-generated",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/rtf/extraction_test.txt",
+    "markdown_file": "../../../../test_documents/ground_truth/rtf/extraction_test.md",
+    "source": "pandoc"
+  }
+}

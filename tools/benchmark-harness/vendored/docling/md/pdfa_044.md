@@ -1,4 +1,4 @@
-Hong Kong Exchanges and Clearing Limited and The Stock Exchange of Hong Kong Limited take no responsibility for the contents  of  this  announcement,  make  no  representation  as to  its  accuracy  or  completeness  and  expressly  disclaims  any liability whatsoever for any loss howsoever arising from or in reliance upon the whole or any part of the contents of this announcement.
+Hong Kong Exchanges and Clearing Limited and The Stock Exchange of Hong Kong Limited take no responsibility for the contents of this announcement, make no representation as to its accuracy or completeness and expressly disclaims any liability whatsoever for any loss howsoever arising from or in reliance upon the whole or any part of the contents of this announcement.
 
 <!-- image -->
 
@@ -14,11 +14,11 @@ Hong Kong Exchanges and Clearing Limited and The Stock Exchange of Hong Kong Lim
 
 The Board is pleased to announce that all the resolutions proposed at the AGM as set out in the Notice of AGM were duly passed by the Shareholders by way of poll at the AGM.
 
-The  board  (the  'Board')  of  directors  ('Directors')  of  Kaisun  Holdings  Limited  (the  'Company')  is pleased to announce the poll results of the annual general meeting of the Company held on 30 June 2021 (the 'AGM').
+The board (the 'Board') of directors ('Directors') of Kaisun Holdings Limited (the 'Company') is pleased to announce the poll results of the annual general meeting of the Company held on 30 June 2021 (the 'AGM').
 
 As at the date of the AGM, the total number of issued shares of the Company was 576,566,055 shares, which was the total number of shares entitling the holders to attend and vote for or against any of the resolutions proposed at the AGM. There were no restrictions on any shareholders to cast votes on any of the proposed resolutions at the AGM.
 
-Computershare  Hong  Kong  Investor  Services  Limited,  the  share  registrar  of  the  Company  in  Hong Kong, was appointed as scrutineer for the purpose of vote-taking at the AGM. The poll results were as follows:
+Computershare Hong Kong Investor Services Limited, the share registrar of the Company in Hong Kong, was appointed as scrutineer for the purpose of vote-taking at the AGM. The poll results were as follows:
 
 |          |                                                                                                                                                                | Number of votes (%)    | Number of votes (%)   |
 |----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------|-----------------------|

@@ -1,17 +1,14 @@
-Chapter 1
+# Chapter 1: Test Content
 
-Chapter 1: Test Content
-
-This is atestparagraph with some formatting.
+This is a **test** paragraph with some formatting.
 
 It includes:
 
-A bullet pointAnother point
+- A bullet point
+- Another point
 
-Chapter 2
+# Chapter 2: More Content
 
-Chapter 2: More Content
+Here's a second chapter with a *different* style.
 
-Here's a second chapter with adifferentstyle.
-
-This is a blockquote for testing.
+> This is a blockquote for testing.

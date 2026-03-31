@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/rtf/table_error_codes.rtf",
+  "file_type": "rtf",
+  "file_size": 5300,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "RTF test document: table_error_codes",
+    "source": "pandoc-generated",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "markdown_file": "../../../../test_documents/ground_truth/rtf/table_error_codes.md",
+    "source": "pandoc",
+    "text_file": "../../../../test_documents/ground_truth/rtf/table_error_codes.txt"
+  }
+}

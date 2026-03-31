@@ -28,6 +28,8 @@ pub(super) struct Formatting {
 pub(super) struct Run {
     pub(super) text: String,
     pub(super) formatting: Formatting,
+    /// Relationship ID for a hyperlink attached to this run (`a:hlinkClick r:id`).
+    pub(super) hyperlink_id: Option<String>,
 }
 
 impl Run {
@@ -95,6 +97,13 @@ pub(super) struct ImageReference {
     pub(super) description: Option<String>,
 }
 
+/// A hyperlink relationship resolved from a slide rels file.
+#[derive(Debug, Clone)]
+pub(super) struct HyperlinkReference {
+    pub(super) id: String,
+    pub(super) url: String,
+}
+
 #[derive(Debug, Clone)]
 pub(super) enum SlideElement {
     Text(TextElement, ElementPosition),
@@ -121,6 +130,8 @@ pub(super) struct Slide {
     pub(super) slide_number: u32,
     pub(super) elements: Vec<SlideElement>,
     pub(super) images: Vec<ImageReference>,
+    /// Hyperlink relationships resolved from the slide rels file.
+    pub(super) hyperlinks: Vec<HyperlinkReference>,
 }
 
 #[derive(Debug, Clone)]

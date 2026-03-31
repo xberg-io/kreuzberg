@@ -73,6 +73,12 @@ type HTMLConversionOption func(*HTMLConversionOptions)
 // ConcurrencyOption is a functional option for configuring ConcurrencyConfig.
 type ConcurrencyOption func(*ConcurrencyConfig)
 
+// TreeSitterProcessConfigOption is a functional option for configuring TreeSitterProcessConfig.
+type TreeSitterProcessConfigOption func(*TreeSitterProcessConfig)
+
+// TreeSitterConfigOption is a functional option for configuring TreeSitterConfig.
+type TreeSitterConfigOption func(*TreeSitterConfig)
+
 // PageOption is a functional option for configuring PageConfig.
 type PageOption func(*PageConfig)
 
@@ -107,6 +113,7 @@ type ExtractionConfig struct {
 	CacheTTLSecs             *uint64                  `json:"cache_ttl_secs,omitempty"`
 	ExtractionTimeoutSecs    *uint64                  `json:"extraction_timeout_secs,omitempty"`
 	MaxArchiveDepth          *int                     `json:"max_archive_depth,omitempty"`
+	TreeSitter               *TreeSitterConfig        `json:"tree_sitter,omitempty"`
 }
 
 // SecurityLimitsConfig controls security thresholds for archive extraction.
@@ -382,6 +389,26 @@ type EmailConfig struct {
 	MsgFallbackCodepage *uint32 `json:"msg_fallback_codepage,omitempty"`
 }
 
+// TreeSitterProcessConfig configures tree-sitter code analysis processing options.
+type TreeSitterProcessConfig struct {
+	Structure    *bool `json:"structure,omitempty"`
+	Imports      *bool `json:"imports,omitempty"`
+	Exports      *bool `json:"exports,omitempty"`
+	Comments     *bool `json:"comments,omitempty"`
+	Docstrings   *bool `json:"docstrings,omitempty"`
+	Symbols      *bool `json:"symbols,omitempty"`
+	Diagnostics  *bool `json:"diagnostics,omitempty"`
+	ChunkMaxSize *int  `json:"chunk_max_size,omitempty"`
+}
+
+// TreeSitterConfig configures tree-sitter language pack integration.
+type TreeSitterConfig struct {
+	CacheDir  *string                  `json:"cache_dir,omitempty"`
+	Languages []string                 `json:"languages,omitempty"`
+	Groups    []string                 `json:"groups,omitempty"`
+	Process   *TreeSitterProcessConfig `json:"process,omitempty"`
+}
+
 // ConcurrencyConfig controls thread and concurrency limits for constrained environments.
 type ConcurrencyConfig struct {
 	// MaxThreads sets the maximum number of threads for all internal thread pools.
@@ -454,4 +481,221 @@ type BytesItem struct {
 	Data     []byte
 	MimeType string
 	Config   *FileExtractionConfig
+}
+
+// ---------------------------------------------------------------------------
+// Tree-sitter ProcessResult types (serialized from Rust via serde)
+// ---------------------------------------------------------------------------
+
+// CodeSpan represents a byte/line/column range in source code.
+type CodeSpan struct {
+	StartByte   int `json:"start_byte"`
+	EndByte     int `json:"end_byte"`
+	StartLine   int `json:"start_line"`
+	StartColumn int `json:"start_column"`
+	EndLine     int `json:"end_line"`
+	EndColumn   int `json:"end_column"`
+}
+
+// CodeFileMetrics holds aggregate metrics for a parsed source file.
+type CodeFileMetrics struct {
+	TotalLines   int `json:"total_lines"`
+	CodeLines    int `json:"code_lines"`
+	CommentLines int `json:"comment_lines"`
+	BlankLines   int `json:"blank_lines"`
+	TotalBytes   int `json:"total_bytes"`
+	NodeCount    int `json:"node_count"`
+	ErrorCount   int `json:"error_count"`
+	MaxDepth     int `json:"max_depth"`
+}
+
+// CodeStructureItem represents a structural element (function, class, etc.) in source code.
+type CodeStructureItem struct {
+	Kind       string              `json:"kind"`
+	Name       *string             `json:"name,omitempty"`
+	Visibility *string             `json:"visibility,omitempty"`
+	Span       CodeSpan            `json:"span"`
+	Children   []CodeStructureItem `json:"children"`
+	Decorators []string            `json:"decorators"`
+	DocComment *string             `json:"doc_comment,omitempty"`
+	Signature  *string             `json:"signature,omitempty"`
+	BodySpan   *CodeSpan           `json:"body_span,omitempty"`
+}
+
+// CodeImportInfo describes a single import/include/require statement.
+type CodeImportInfo struct {
+	Source     string   `json:"source"`
+	Items      []string `json:"items"`
+	Alias      *string  `json:"alias,omitempty"`
+	IsWildcard bool     `json:"is_wildcard"`
+	Span       CodeSpan `json:"span"`
+}
+
+// CodeExportInfo describes a single exported symbol.
+type CodeExportInfo struct {
+	Name string   `json:"name"`
+	Kind string   `json:"kind"`
+	Span CodeSpan `json:"span"`
+}
+
+// CodeSymbolInfo describes a symbol (variable, constant, type alias, etc.).
+type CodeSymbolInfo struct {
+	Name           string   `json:"name"`
+	Kind           string   `json:"kind"`
+	TypeAnnotation *string  `json:"type_annotation,omitempty"`
+	Span           CodeSpan `json:"span"`
+}
+
+// CodeCommentInfo describes a single comment in source code.
+type CodeCommentInfo struct {
+	Text string   `json:"text"`
+	Kind string   `json:"kind"`
+	Span CodeSpan `json:"span"`
+}
+
+// CodeDocSection represents a section within a docstring (e.g., @param, @returns).
+type CodeDocSection struct {
+	Kind    string  `json:"kind"`
+	Name    *string `json:"name,omitempty"`
+	Content string  `json:"content"`
+}
+
+// CodeDocstringInfo describes a documentation comment/docstring.
+type CodeDocstringInfo struct {
+	Text           string           `json:"text"`
+	Format         string           `json:"format"`
+	AssociatedItem *string          `json:"associated_item,omitempty"`
+	Span           CodeSpan         `json:"span"`
+	Sections       []CodeDocSection `json:"sections"`
+}
+
+// CodeDiagnostic represents a parse error or warning from tree-sitter.
+type CodeDiagnostic struct {
+	Message  string   `json:"message"`
+	Severity string   `json:"severity"`
+	Span     CodeSpan `json:"span"`
+}
+
+// CodeChunkContext provides parent context for a code chunk.
+type CodeChunkContext struct {
+	ParentName *string `json:"parent_name,omitempty"`
+	ParentKind *string `json:"parent_kind,omitempty"`
+}
+
+// CodeChunk represents a chunk of source code with optional context.
+type CodeChunk struct {
+	Content  string            `json:"content"`
+	Language string            `json:"language"`
+	Span     CodeSpan          `json:"span"`
+	Context  *CodeChunkContext `json:"context,omitempty"`
+}
+
+// CodeProcessResult is the complete result of tree-sitter code analysis.
+type CodeProcessResult struct {
+	Language    string              `json:"language"`
+	Metrics     CodeFileMetrics     `json:"metrics"`
+	Structure   []CodeStructureItem `json:"structure"`
+	Imports     []CodeImportInfo    `json:"imports"`
+	Exports     []CodeExportInfo    `json:"exports"`
+	Comments    []CodeCommentInfo   `json:"comments"`
+	Docstrings  []CodeDocstringInfo `json:"docstrings"`
+	Symbols     []CodeSymbolInfo    `json:"symbols"`
+	Diagnostics []CodeDiagnostic    `json:"diagnostics"`
+	Chunks      []CodeChunk         `json:"chunks"`
+}
+
+// ---------------------------------------------------------------------------
+// Format-specific metadata types (deserialized from FormatMetadata variants)
+// ---------------------------------------------------------------------------
+
+// CsvMetadata holds CSV/TSV file metadata.
+type CsvMetadata struct {
+	RowCount    int      `json:"row_count"`
+	ColumnCount int      `json:"column_count"`
+	Delimiter   *string  `json:"delimiter,omitempty"`
+	HasHeader   bool     `json:"has_header"`
+	ColumnTypes []string `json:"column_types,omitempty"`
+}
+
+// YearRange represents a year range for bibliographic metadata.
+type YearRange struct {
+	Min   *int  `json:"min,omitempty"`
+	Max   *int  `json:"max,omitempty"`
+	Years []int `json:"years,omitempty"`
+}
+
+// BibtexMetadata holds BibTeX bibliography metadata.
+type BibtexMetadata struct {
+	EntryCount   int            `json:"entry_count"`
+	CitationKeys []string       `json:"citation_keys,omitempty"`
+	Authors      []string       `json:"authors,omitempty"`
+	YearRange    *YearRange     `json:"year_range,omitempty"`
+	EntryTypes   map[string]int `json:"entry_types,omitempty"`
+}
+
+// CitationMetadata holds citation file metadata (RIS, PubMed, EndNote).
+type CitationMetadata struct {
+	CitationCount int        `json:"citation_count"`
+	Format        *string    `json:"format,omitempty"`
+	Authors       []string   `json:"authors,omitempty"`
+	YearRange     *YearRange `json:"year_range,omitempty"`
+	Dois          []string   `json:"dois,omitempty"`
+	Keywords      []string   `json:"keywords,omitempty"`
+}
+
+// FictionBookMetadata holds FictionBook (FB2) metadata.
+type FictionBookMetadata struct {
+	Genres     []string `json:"genres,omitempty"`
+	Sequences  []string `json:"sequences,omitempty"`
+	Annotation *string  `json:"annotation,omitempty"`
+}
+
+// DbfFieldInfo describes a dBASE field.
+type DbfFieldInfo struct {
+	Name      string `json:"name"`
+	FieldType string `json:"field_type"`
+}
+
+// DbfMetadata holds dBASE (DBF) file metadata.
+type DbfMetadata struct {
+	RecordCount int            `json:"record_count"`
+	FieldCount  int            `json:"field_count"`
+	Fields      []DbfFieldInfo `json:"fields,omitempty"`
+}
+
+// ContributorRole represents a JATS contributor with role.
+type ContributorRole struct {
+	Name string  `json:"name"`
+	Role *string `json:"role,omitempty"`
+}
+
+// JatsMetadata holds JATS (Journal Article Tag Suite) metadata.
+type JatsMetadata struct {
+	Copyright        *string           `json:"copyright,omitempty"`
+	License          *string           `json:"license,omitempty"`
+	HistoryDates     map[string]string `json:"history_dates,omitempty"`
+	ContributorRoles []ContributorRole `json:"contributor_roles,omitempty"`
+}
+
+// EpubMetadata holds EPUB metadata (Dublin Core extensions).
+type EpubMetadata struct {
+	Coverage   *string `json:"coverage,omitempty"`
+	DcFormat   *string `json:"dc_format,omitempty"`
+	Relation   *string `json:"relation,omitempty"`
+	Source     *string `json:"source,omitempty"`
+	DcType     *string `json:"dc_type,omitempty"`
+	CoverImage *string `json:"cover_image,omitempty"`
+}
+
+// PstMetadata holds Outlook PST archive metadata.
+type PstMetadata struct {
+	MessageCount int `json:"message_count"`
+}
+
+// PptxMetadata holds PowerPoint presentation metadata.
+type PptxMetadata struct {
+	SlideCount int      `json:"slide_count"`
+	SlideNames []string `json:"slide_names"`
+	ImageCount *int     `json:"image_count,omitempty"`
+	TableCount *int     `json:"table_count,omitempty"`
 }

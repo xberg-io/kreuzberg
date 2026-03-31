@@ -1,28 +1,28 @@
 {
-	"document": "../../../../test_documents/pdf/docling.pdf",
-	"file_type": "pdf",
-	"file_size": 5566575,
-	"expected_frameworks": [
-		"kreuzberg",
-		"docling",
-		"markitdown",
-		"mineru",
-		"pdfminer",
-		"pdfplumber",
-		"pdftotext",
-		"pymupdf4llm",
-		"pypdf",
-		"tika",
-		"unstructured"
-	],
-	"metadata": {
-		"description": "Docling technical paper PDF",
-		"source": "kreuzberg",
-		"size_category": "large"
-	},
-	"ground_truth": {
-		"text_file": "../../../../test_documents/ground_truth/pdf/docling.txt",
-		"markdown_file": "../../../../test_documents/ground_truth/pdf/docling.md",
-		"source": "vision"
-	}
+  "document": "../../../../test_documents/pdf/docling.pdf",
+  "file_type": "pdf",
+  "file_size": 5566575,
+  "expected_frameworks": [
+    "kreuzberg",
+    "docling",
+    "markitdown",
+    "mineru",
+    "pdfminer",
+    "pdfplumber",
+    "pdftotext",
+    "pymupdf4llm",
+    "pypdf",
+    "tika",
+    "unstructured"
+  ],
+  "metadata": {
+    "description": "Docling technical paper PDF",
+    "source": "kreuzberg",
+    "size_category": "large"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/pdf/docling.txt",
+    "markdown_file": "../../../../test_documents/ground_truth/pdf/docling.md",
+    "source": "pandoc"
+  }
 }

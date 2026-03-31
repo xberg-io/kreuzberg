@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/html/complex_table.html",
+  "file_type": "html",
+  "file_size": 2697,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "HTML test document: complex_table",
+    "source": "pandoc-generated",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "markdown_file": "../../../../test_documents/ground_truth/html/complex_table.md",
+    "source": "pandoc",
+    "text_file": "../../../../test_documents/ground_truth/html/complex_table.txt"
+  }
+}

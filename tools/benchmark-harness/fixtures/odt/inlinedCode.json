@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/odt/inlinedCode.odt",
+  "file_type": "odt",
+  "file_size": 10141,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "odt test: inlinedCode",
+    "source": "pandoc-generated",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/odt/inlinedCode.txt",
+    "markdown_file": "../../../../test_documents/ground_truth/odt/inlinedCode.md",
+    "source": "pandoc"
+  }
+}

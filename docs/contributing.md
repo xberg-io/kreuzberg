@@ -30,21 +30,27 @@ You only need the toolchains for the areas you plan to work on.
 
 **Required for all contributions:**
 
-- [Git](https://git-scm.com/) -
+- [Git](https://git-scm.com/)
 - [Task](https://taskfile.dev/installation/) — our task runner for all build and test workflows
-- Rust stable (via `rustup`) — required for core and all bindings
+- [Rust](https://rustup.rs/) stable (via `rustup`) — required for core and all bindings. The `wasm32-unknown-unknown` target is configured automatically via `rust-toolchain.toml`
+
+**Required for WASM builds:**
+
+- [WASI SDK](https://github.com/WebAssembly/wasi-sdk/releases) — provides a wasm-capable C/C++ compiler needed by tree-sitter, tesseract, and pdfium. Install to `$HOME/wasi-sdk` or set the `WASI_SDK_PATH` environment variable to your install location
 
 **Language-specific toolchains** (only install what you need):
 
 | Language | Version | Tool |
 |----------|---------|------|
-| Python | 3.10+ | `uv` |
-| Node.js | 20+ | `pnpm` |
+| Python | 3.10+ | [`uv`](https://docs.astral.sh/uv/) |
+| Node.js | 20+ | [`pnpm`](https://pnpm.io/) |
 | Ruby | 3.2+ | `rbenv` or `rvm` |
-| Go | 1.26+ | Official installer |
-| Java | 25+ | JDK |
+| Go | 1.26+ | [Official installer](https://go.dev/dl/) |
+| Java | 25+ | JDK (via [sdkman](https://sdkman.io/)) |
 | .NET | 10+ | `dotnet` |
 | PHP | 8.1+ | `composer` |
+| Elixir | 1.14+ | `mix` (OTP 25+) |
+| R | 4.1+ | [CRAN](https://cran.r-project.org/) |
 
 For platform-specific build dependencies (compilers, OpenSSL, etc.), see the [Installation guide](getting-started/installation.md).
 

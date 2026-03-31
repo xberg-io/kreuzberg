@@ -285,8 +285,8 @@ async fn test_metadata_extraction() {
         );
     }
 
-    if let Some(keywords) = extraction.metadata.additional.get("keywords") {
-        assert!(!keywords.to_string().is_empty(), "Keywords should be present");
+    if let Some(keywords) = &extraction.metadata.keywords {
+        assert!(!keywords.is_empty(), "Keywords should be present");
     }
 
     assert!(!extraction.content.is_empty(), "Document should extract content");

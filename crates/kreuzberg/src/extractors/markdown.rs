@@ -11,15 +11,15 @@
 //! - Code block and link extraction
 //! - Data URI image extraction
 //!
-use super::frontmatter_utils::{
-    cells_to_markdown, extract_frontmatter, extract_metadata_from_yaml, extract_title_from_content,
-};
+use super::annotation_utils::adjust_annotations_for_trim;
+use super::frontmatter_utils::{extract_frontmatter, extract_metadata_from_yaml, extract_title_from_content};
 use crate::Result;
 use crate::core::config::ExtractionConfig;
 use crate::plugins::{DocumentExtractor, Plugin};
-use crate::types::builder::DocumentStructureBuilder;
-use crate::types::document_structure::DocumentStructure;
-use crate::types::{ExtractionResult, Metadata, Table};
+use crate::types::internal::InternalDocument;
+use crate::types::internal_builder::InternalDocumentBuilder;
+use crate::types::uri::{Uri, UriKind, classify_uri};
+use crate::types::{Metadata, Table};
 use async_trait::async_trait;
 use pulldown_cmark::{Event, Options, Parser, Tag, TagEnd};
 use std::borrow::Cow;
@@ -48,81 +48,13 @@ impl MarkdownExtractor {
     // Frontmatter utilities moved to shared frontmatter_utils module
     // Text extraction and data URI decoding moved to shared markdown_utils module
 
-    /// Extract tables from markdown AST.
-    fn extract_tables_from_events(events: &[Event]) -> Vec<Table> {
-        let mut tables = Vec::new();
-        let mut current_table: Option<(Vec<Vec<String>>, usize)> = None;
-        let mut current_row: Vec<String> = Vec::new();
-        let mut current_cell = String::new();
-        let mut in_table_cell = false;
-        let mut table_index = 0;
-
-        for event in events {
-            match event {
-                Event::Start(Tag::Table(_)) => {
-                    current_table = Some((Vec::new(), table_index));
-                }
-                Event::Start(Tag::TableHead) => {}
-                Event::Start(Tag::TableRow) => {
-                    current_row = Vec::new();
-                }
-                Event::Start(Tag::TableCell) => {
-                    current_cell = String::new();
-                    in_table_cell = true;
-                }
-                Event::Text(s) if in_table_cell => {
-                    current_cell.push_str(s);
-                }
-                Event::Code(s) if in_table_cell => {
-                    current_cell.push_str(s);
-                }
-                Event::End(TagEnd::TableCell) if in_table_cell => {
-                    current_row.push(current_cell.trim().to_string());
-                    current_cell = String::new();
-                    in_table_cell = false;
-                }
-                Event::End(TagEnd::TableHead) => {
-                    if !current_row.is_empty()
-                        && let Some((ref mut rows, _)) = current_table
-                    {
-                        rows.push(std::mem::take(&mut current_row));
-                    }
-                    current_row = Vec::new();
-                }
-                Event::End(TagEnd::TableRow) => {
-                    if !current_row.is_empty()
-                        && let Some((ref mut rows, _)) = current_table
-                    {
-                        rows.push(std::mem::take(&mut current_row));
-                    }
-                    current_row = Vec::new();
-                }
-                Event::End(TagEnd::Table) => {
-                    if let Some((cells, idx)) = current_table.take()
-                        && !cells.is_empty()
-                    {
-                        let markdown = cells_to_markdown(&cells);
-                        tables.push(Table {
-                            cells,
-                            markdown,
-                            page_number: idx + 1,
-                            bounding_box: None,
-                        });
-                        table_index += 1;
-                    }
-                }
-                _ => {}
-            }
-        }
-
-        tables
-    }
-
     // cells_to_markdown and extract_title_from_content moved to shared frontmatter_utils module
 
-    /// Build a `DocumentStructure` from pulldown-cmark events and optional YAML frontmatter.
-    fn build_document_structure(events: &[Event], yaml: &Option<serde_yaml_ng::Value>) -> DocumentStructure {
-        let mut builder = DocumentStructureBuilder::new().source_format("markdown");
+    /// Build an `InternalDocument` from pulldown-cmark events and optional YAML frontmatter.
+    pub fn build_internal_document(events: &[Event], yaml: &Option<serde_yaml_ng::Value>) -> InternalDocument {
+        use crate::types::builder;
+        use crate::types::document_structure::TextAnnotation;
+        let mut b = InternalDocumentBuilder::new("markdown");
 
         // Emit frontmatter as a metadata block
         if let Some(serde_yaml_ng::Value::Mapping(map)) = yaml {
@@ -138,53 +70,47 @@ impl MarkdownExtractor {
                 })
                 .collect();
             if !entries.is_empty() {
-                builder.push_metadata_block(entries, None);
+                b.push_metadata_block(&entries, None);
             }
         }
-
-        Self::walk_events_into_builder(events, &mut builder);
-        builder.build()
-    }
-
-    /// Walk pulldown-cmark events and push nodes into the builder.
-    fn walk_events_into_builder(events: &[Event], builder: &mut DocumentStructureBuilder) {
-        use crate::types::builder;
-        use crate::types::document_structure::TextAnnotation;
 
         let mut paragraph_text = String::new();
         let mut paragraph_annotations: Vec<TextAnnotation> = Vec::new();
         let mut in_paragraph = false;
         let mut heading_text = String::new();
+        let mut heading_annotations: Vec<TextAnnotation> = Vec::new();
         let mut heading_level: u8 = 0;
         let mut in_heading = false;
         let mut code_text = String::new();
         let mut code_lang: Option<String> = None;
         let mut in_code_block = false;
-        let mut blockquote_depth: u32 = 0;
         let mut table_rows: Vec<Vec<String>> = Vec::new();
         let mut current_row: Vec<String> = Vec::new();
         let mut current_cell = String::new();
         let mut in_table_cell = false;
-        let mut list_stack: Vec<(crate::types::document_structure::NodeIndex, bool)> = Vec::new();
+        let mut list_stack: Vec<bool> = Vec::new(); // ordered flag
         let mut list_item_text = String::new();
+        let mut list_item_annotations: Vec<TextAnnotation> = Vec::new();
         let mut in_list_item = false;
         let mut in_image = false;
         let mut image_alt = String::new();
+        let mut image_url: Option<String> = None;
+        let mut footnote_def_label: Option<String> = None;
+        let mut footnote_def_text = String::new();
 
-        // Annotation tracking: stack of (annotation_kind_tag, byte_start) for the
-        // active text buffer (paragraph_text when in_paragraph).
-        // kind_tag: 0=bold, 1=italic, 2=strikethrough, 3=code, 4=link
         let mut annotation_starts: Vec<AnnotationEntry> = Vec::new();
 
         /// Get the current length of the active text buffer as u32.
-        fn text_offset(paragraph_text: &str, in_paragraph: bool) -> u32 {
-            if in_paragraph { paragraph_text.len() as u32 } else { 0 }
+        fn active_text_offset(buf: &str) -> u32 {
+            buf.len() as u32
         }
 
         for event in events {
             match event {
                 Event::Start(Tag::Heading { level, .. }) => {
                     heading_text.clear();
+                    heading_annotations.clear();
+                    annotation_starts.clear();
                     heading_level = match *level {
                         pulldown_cmark::HeadingLevel::H1 => 1,
                         pulldown_cmark::HeadingLevel::H2 => 2,
@@ -199,12 +125,21 @@ impl MarkdownExtractor {
                     in_heading = false;
                     let trimmed = heading_text.trim();
                     if !trimmed.is_empty() {
-                        builder.push_heading(heading_level, trimmed, None, None);
+                        let annotations = adjust_annotations_for_trim(
+                            std::mem::take(&mut heading_annotations),
+                            &heading_text,
+                            trimmed,
+                        );
+                        let idx = b.push_heading(heading_level, trimmed, None, None);
+                        if !annotations.is_empty() {
+                            b.set_annotations(idx, annotations);
+                        }
                     }
                     heading_text.clear();
+                    heading_annotations.clear();
                 }
                 Event::Start(Tag::Paragraph) => {
-                    if !in_heading && !in_list_item {
+                    if !in_heading && !in_list_item && footnote_def_label.is_none() {
                         paragraph_text.clear();
                         paragraph_annotations.clear();
                         in_paragraph = true;
@@ -215,107 +150,166 @@ impl MarkdownExtractor {
                         in_paragraph = false;
                         let trimmed = paragraph_text.trim();
                         if !trimmed.is_empty() {
-                            // Adjust annotations for leading whitespace trim
-                            let trim_offset = paragraph_text.len() - paragraph_text.trim_start().len();
-                            let trimmed_len = trimmed.len() as u32;
-                            let annotations = if trim_offset > 0 {
-                                paragraph_annotations
-                                    .drain(..)
-                                    .map(|mut a| {
-                                        a.start = a.start.saturating_sub(trim_offset as u32);
-                                        a.end = a.end.saturating_sub(trim_offset as u32);
-                                        a
-                                    })
-                                    .filter(|a| a.start < a.end && a.end <= trimmed_len)
-                                    .collect()
-                            } else {
-                                paragraph_annotations
-                                    .drain(..)
-                                    .filter(|a| a.start < a.end && a.end <= trimmed_len)
-                                    .collect()
-                            };
-                            builder.push_paragraph(trimmed, annotations, None, None);
+                            let annotations = adjust_annotations_for_trim(
+                                std::mem::take(&mut paragraph_annotations),
+                                &paragraph_text,
+                                trimmed,
+                            );
+                            b.push_paragraph(trimmed, annotations, None, None);
                         }
                         paragraph_text.clear();
                         paragraph_annotations.clear();
                     }
                 }
                 // Inline formatting — annotation tracking
+                // Annotations are tracked for paragraphs, headings, and list items.
                 Event::Start(Tag::Strong) => {
                     if in_paragraph {
-                        annotation_starts.push((0, text_offset(&paragraph_text, in_paragraph), None));
+                        annotation_starts.push((0, active_text_offset(&paragraph_text), None));
+                    } else if in_heading {
+                        annotation_starts.push((0, active_text_offset(&heading_text), None));
+                    } else if in_list_item {
+                        annotation_starts.push((0, active_text_offset(&list_item_text), None));
                     }
                 }
                 Event::End(TagEnd::Strong) => {
-                    if in_paragraph
-                        && let Some((0, start, _)) = annotation_starts
-                            .iter()
-                            .rposition(|(k, _, _)| *k == 0)
-                            .map(|i| annotation_starts.remove(i))
-                    {
-                        let end = text_offset(&paragraph_text, in_paragraph);
-                        if start < end {
-                            paragraph_annotations.push(builder::bold(start, end));
+                    if let Some(i) = annotation_starts.iter().rposition(|(k, _, _)| *k == 0) {
+                        let (_, start, _) = annotation_starts.remove(i);
+                        if in_paragraph {
+                            let end = active_text_offset(&paragraph_text);
+                            if start < end {
+                                paragraph_annotations.push(builder::bold(start, end));
+                            }
+                        } else if in_heading {
+                            let end = active_text_offset(&heading_text);
+                            if start < end {
+                                heading_annotations.push(builder::bold(start, end));
+                            }
+                        } else if in_list_item {
+                            let end = active_text_offset(&list_item_text);
+                            if start < end {
+                                list_item_annotations.push(builder::bold(start, end));
+                            }
                         }
                     }
                 }
                 Event::Start(Tag::Emphasis) => {
                     if in_paragraph {
-                        annotation_starts.push((1, text_offset(&paragraph_text, in_paragraph), None));
+                        annotation_starts.push((1, active_text_offset(&paragraph_text), None));
+                    } else if in_heading {
+                        annotation_starts.push((1, active_text_offset(&heading_text), None));
+                    } else if in_list_item {
+                        annotation_starts.push((1, active_text_offset(&list_item_text), None));
                     }
                 }
                 Event::End(TagEnd::Emphasis) => {
-                    if in_paragraph
-                        && let Some((1, start, _)) = annotation_starts
-                            .iter()
-                            .rposition(|(k, _, _)| *k == 1)
-                            .map(|i| annotation_starts.remove(i))
-                    {
-                        let end = text_offset(&paragraph_text, in_paragraph);
-                        if start < end {
-                            paragraph_annotations.push(builder::italic(start, end));
+                    if let Some(i) = annotation_starts.iter().rposition(|(k, _, _)| *k == 1) {
+                        let (_, start, _) = annotation_starts.remove(i);
+                        if in_paragraph {
+                            let end = active_text_offset(&paragraph_text);
+                            if start < end {
+                                paragraph_annotations.push(builder::italic(start, end));
+                            }
+                        } else if in_heading {
+                            let end = active_text_offset(&heading_text);
+                            if start < end {
+                                heading_annotations.push(builder::italic(start, end));
+                            }
+                        } else if in_list_item {
+                            let end = active_text_offset(&list_item_text);
+                            if start < end {
+                                list_item_annotations.push(builder::italic(start, end));
+                            }
                         }
                     }
                 }
                 Event::Start(Tag::Strikethrough) => {
                     if in_paragraph {
-                        annotation_starts.push((2, text_offset(&paragraph_text, in_paragraph), None));
+                        annotation_starts.push((2, active_text_offset(&paragraph_text), None));
+                    } else if in_heading {
+                        annotation_starts.push((2, active_text_offset(&heading_text), None));
+                    } else if in_list_item {
+                        annotation_starts.push((2, active_text_offset(&list_item_text), None));
                     }
                 }
                 Event::End(TagEnd::Strikethrough) => {
-                    if in_paragraph
-                        && let Some((2, start, _)) = annotation_starts
-                            .iter()
-                            .rposition(|(k, _, _)| *k == 2)
-                            .map(|i| annotation_starts.remove(i))
-                    {
-                        let end = text_offset(&paragraph_text, in_paragraph);
-                        if start < end {
-                            paragraph_annotations.push(builder::strikethrough(start, end));
+                    if let Some(i) = annotation_starts.iter().rposition(|(k, _, _)| *k == 2) {
+                        let (_, start, _) = annotation_starts.remove(i);
+                        if in_paragraph {
+                            let end = active_text_offset(&paragraph_text);
+                            if start < end {
+                                paragraph_annotations.push(builder::strikethrough(start, end));
+                            }
+                        } else if in_heading {
+                            let end = active_text_offset(&heading_text);
+                            if start < end {
+                                heading_annotations.push(builder::strikethrough(start, end));
+                            }
+                        } else if in_list_item {
+                            let end = active_text_offset(&list_item_text);
+                            if start < end {
+                                list_item_annotations.push(builder::strikethrough(start, end));
+                            }
                         }
                     }
                 }
                 Event::Start(Tag::Link { dest_url, title, .. }) => {
+                    let url = dest_url.to_string();
+                    let title_opt = if title.is_empty() {
+                        None
+                    } else {
+                        Some(title.to_string())
+                    };
                     if in_paragraph {
-                        let url = dest_url.to_string();
-                        let title_opt = if title.is_empty() {
-                            None
-                        } else {
-                            Some(title.to_string())
-                        };
-                        annotation_starts.push((4, text_offset(&paragraph_text, in_paragraph), Some((url, title_opt))));
+                        annotation_starts.push((4, active_text_offset(&paragraph_text), Some((url, title_opt))));
+                    } else if in_heading {
+                        annotation_starts.push((4, active_text_offset(&heading_text), Some((url, title_opt))));
+                    } else if in_list_item {
+                        annotation_starts.push((4, active_text_offset(&list_item_text), Some((url, title_opt))));
                     }
                 }
                 Event::End(TagEnd::Link) => {
-                    if in_paragraph
-                        && let Some((4, start, Some((url, title)))) = annotation_starts
-                            .iter()
-                            .rposition(|(k, _, _)| *k == 4)
-                            .map(|i| annotation_starts.remove(i))
-                    {
-                        let end = text_offset(&paragraph_text, in_paragraph);
-                        if start < end {
-                            paragraph_annotations.push(builder::link(start, end, &url, title.as_deref()));
+                    if let Some(i) = annotation_starts.iter().rposition(|(k, _, _)| *k == 4) {
+                        let (_, start, link_data) = annotation_starts.remove(i);
+                        if let Some((url, title)) = link_data {
+                            // Collect the link label text from the active buffer
+                            let label_text = if in_paragraph {
+                                let end = active_text_offset(&paragraph_text);
+                                if start < end {
+                                    paragraph_annotations.push(builder::link(start, end, &url, title.as_deref()));
+                                    Some(paragraph_text[start as usize..end as usize].to_string())
+                                } else {
+                                    None
+                                }
+                            } else if in_heading {
+                                let end = active_text_offset(&heading_text);
+                                if start < end {
+                                    heading_annotations.push(builder::link(start, end, &url, title.as_deref()));
+                                    Some(heading_text[start as usize..end as usize].to_string())
+                                } else {
+                                    None
+                                }
+                            } else if in_list_item {
+                                let end = active_text_offset(&list_item_text);
+                                if start < end {
+                                    list_item_annotations.push(builder::link(start, end, &url, title.as_deref()));
+                                    Some(list_item_text[start as usize..end as usize].to_string())
+                                } else {
+                                    None
+                                }
+                            } else {
+                                None
+                            };
+                            // Push URI (compute kind before moving url)
+                            if !url.is_empty() {
+                                let kind = classify_uri(&url);
+                                b.push_uri(Uri {
+                                    url,
+                                    label: label_text.filter(|s| !s.is_empty()),
+                                    page: None,
+                                    kind,
+                                });
+                            }
                         }
                     }
                 }
@@ -333,49 +327,62 @@ impl MarkdownExtractor {
                     in_code_block = false;
                     let trimmed = code_text.trim_end();
                     if !trimmed.is_empty() {
-                        builder.push_code(trimmed, code_lang.as_deref(), None);
+                        b.push_code(trimmed, code_lang.as_deref(), None, None);
                     }
                     code_text.clear();
                     code_lang = None;
                 }
                 Event::Start(Tag::BlockQuote(_)) => {
-                    builder.push_quote(None);
-                    blockquote_depth += 1;
+                    b.push_quote_start();
                 }
                 Event::End(TagEnd::BlockQuote(_)) => {
-                    if blockquote_depth > 0 {
-                        builder.exit_container();
-                        blockquote_depth -= 1;
-                    }
+                    b.push_quote_end();
                 }
                 Event::Start(Tag::List(start)) => {
                     let ordered = start.is_some();
-                    let list_idx = builder.push_list(ordered, None);
-                    list_stack.push((list_idx, ordered));
+                    b.push_list(ordered);
+                    list_stack.push(ordered);
                 }
                 Event::End(TagEnd::List(_)) => {
-                    list_stack.pop();
+                    if list_stack.pop().is_some() {
+                        b.end_list();
+                    }
                 }
                 Event::Start(Tag::Item) => {
                     list_item_text.clear();
+                    list_item_annotations.clear();
+                    annotation_starts.clear();
                     in_list_item = true;
                 }
                 Event::End(TagEnd::Item) => {
                     in_list_item = false;
                     let trimmed = list_item_text.trim();
-                    if let Some((list_idx, _)) = list_stack.last()
+                    if let Some(ordered) = list_stack.last().copied()
                         && !trimmed.is_empty()
                     {
-                        builder.push_list_item(*list_idx, trimmed, None);
+                        let annotations = adjust_annotations_for_trim(
+                            std::mem::take(&mut list_item_annotations),
+                            &list_item_text,
+                            trimmed,
+                        );
+                        b.push_list_item(trimmed, ordered, annotations, None, None);
                     }
                     list_item_text.clear();
+                    list_item_annotations.clear();
                 }
                 Event::Start(Tag::Table(_)) => {
                     table_rows.clear();
                 }
                 Event::End(TagEnd::Table) => {
                     if !table_rows.is_empty() {
-                        builder.push_table_from_cells(&table_rows, None);
+                        let markdown = super::frontmatter_utils::cells_to_markdown(&table_rows);
+                        let table = Table {
+                            cells: std::mem::take(&mut table_rows),
+                            markdown,
+                            page_number: 1,
+                            bounding_box: None,
+                        };
+                        b.push_table(table, None, None);
                     }
                     table_rows.clear();
                 }
@@ -396,30 +403,86 @@ impl MarkdownExtractor {
                     current_row.push(current_cell.trim().to_string());
                     current_cell.clear();
                 }
-                Event::Start(Tag::Image { .. }) => {
+                Event::Start(Tag::Image { dest_url, .. }) => {
                     in_image = true;
                     image_alt.clear();
+                    // Store image URL for URI collection on End
+                    image_url = Some(dest_url.to_string());
                 }
                 Event::End(TagEnd::Image) => {
                     in_image = false;
+                    // Push a proper image element (no ExtractedImage data, use sentinel index)
                     let trimmed = image_alt.trim();
-                    let desc = if trimmed.is_empty() { None } else { Some(trimmed) };
-                    builder.push_image(desc, None, None, None);
+                    let desc = if trimmed.is_empty() { "" } else { trimmed };
+                    {
+                        use crate::types::document_structure::ContentLayer;
+                        use crate::types::internal::{ElementKind, InternalElement, InternalElementId};
+                        let kind = ElementKind::Image { image_index: u32::MAX };
+                        let id = InternalElementId::generate(kind.discriminant(), desc, None, 0);
+                        b.push_element(InternalElement {
+                            id,
+                            kind,
+                            text: desc.to_string(),
+                            depth: 0,
+                            page: None,
+                            bbox: None,
+                            layer: ContentLayer::Body,
+                            annotations: Vec::new(),
+                            attributes: None,
+                            anchor: None,
+                            ocr_geometry: None,
+                            ocr_confidence: None,
+                            ocr_rotation: None,
+                        });
+                    }
+                    // Collect image URI
+                    if let Some(url) = image_url.take().filter(|u| !u.is_empty()) {
+                        b.push_uri(Uri {
+                            url,
+                            label: if desc.is_empty() { None } else { Some(desc.to_string()) },
+                            page: None,
+                            kind: UriKind::Image,
+                        });
+                    }
                     image_alt.clear();
+                }
+                Event::Start(Tag::FootnoteDefinition(label)) => {
+                    footnote_def_label = Some(label.to_string());
+                    footnote_def_text.clear();
+                }
+                Event::End(TagEnd::FootnoteDefinition) => {
+                    if let Some(label) = footnote_def_label.take() {
+                        let text = footnote_def_text.trim().to_string();
+                        if !text.is_empty() {
+                            b.push_footnote_definition(&text, &label, None);
+                        }
+                    }
+                    footnote_def_text.clear();
                 }
                 Event::Code(s) => {
                     if in_code_block {
                         code_text.push_str(s);
                     } else if in_heading {
+                        let start = heading_text.len() as u32;
                         heading_text.push_str(s);
+                        let end = heading_text.len() as u32;
+                        if start < end {
+                            heading_annotations.push(builder::code(start, end));
+                        }
                     } else if in_image {
                         image_alt.push_str(s);
                     } else if in_table_cell {
                         current_cell.push_str(s);
                     } else if in_list_item {
+                        let start = list_item_text.len() as u32;
                         list_item_text.push_str(s);
+                        let end = list_item_text.len() as u32;
+                        if start < end {
+                            list_item_annotations.push(builder::code(start, end));
+                        }
+                    } else if footnote_def_label.is_some() {
+                        footnote_def_text.push_str(s);
                     } else if in_paragraph {
-                        // Inline code: record annotation
                         let start = paragraph_text.len() as u32;
                         paragraph_text.push_str(s);
                         let end = paragraph_text.len() as u32;
@@ -439,6 +502,8 @@ impl MarkdownExtractor {
                         current_cell.push_str(s);
                     } else if in_list_item {
                         list_item_text.push_str(s);
+                    } else if footnote_def_label.is_some() {
+                        footnote_def_text.push_str(s);
                     } else if in_paragraph {
                         paragraph_text.push_str(s);
                     }
@@ -450,15 +515,19 @@ impl MarkdownExtractor {
                         heading_text.push(' ');
                     } else if in_list_item {
                         list_item_text.push(' ');
+                    } else if footnote_def_label.is_some() {
+                        footnote_def_text.push(' ');
                     } else if in_paragraph {
                         paragraph_text.push(' ');
                     }
                 }
                 Event::FootnoteReference(name) => {
-                    builder.push_footnote(name, None);
+                    b.push_footnote_ref(name, name, None);
                 }
                 Event::Html(s) => {
-                    if in_paragraph {
+                    if footnote_def_label.is_some() {
+                        footnote_def_text.push_str(s);
+                    } else if in_paragraph {
                         paragraph_text.push_str(s);
                     }
                 }
@@ -470,6 +539,8 @@ impl MarkdownExtractor {
                 _ => {}
             }
         }
+
+        b.build()
     }
 }
 
@@ -513,7 +584,8 @@ impl DocumentExtractor for MarkdownExtractor {
         content: &[u8],
         mime_type: &str,
         config: &ExtractionConfig,
-    ) -> Result<ExtractionResult> {
+    ) -> Result<InternalDocument> {
+        let _ = config; // config is used by the pipeline for image OCR
         let text = String::from_utf8_lossy(content).into_owned();
 
         let (yaml, remaining_content) = extract_frontmatter(&text);
@@ -525,67 +597,45 @@ impl DocumentExtractor for MarkdownExtractor {
         };
 
         if metadata.title.is_none()
-            && !metadata.additional.contains_key("title")
             && let Some(title) = extract_title_from_content(&remaining_content)
         {
-            metadata.title = Some(title.clone());
-            // DEPRECATED: kept for backward compatibility; will be removed in next major version.
-            metadata.additional.insert(Cow::Borrowed("title"), title.into());
+            metadata.title = Some(title);
         }
 
         let mut options = Options::ENABLE_TABLES;
-        if config.include_document_structure {
-            options |= Options::ENABLE_STRIKETHROUGH | Options::ENABLE_FOOTNOTES;
-        }
+        options |= Options::ENABLE_STRIKETHROUGH | Options::ENABLE_FOOTNOTES;
         let parser = Parser::new_ext(&remaining_content, options);
         let events: Vec<Event> = parser.collect();
 
         let mut extracted_images = Vec::new();
-        // Walk the AST only for images (data URI extraction); use raw text for content
+        // Walk the AST only for images (data URI extraction)
         let _ = crate::extractors::markdown_utils::extract_text_from_events(&events, &mut extracted_images);
 
-        let tables = Self::extract_tables_from_events(&events);
+        // Build InternalDocument from events and frontmatter
+        let mut doc = Self::build_internal_document(&events, &yaml);
+        doc.metadata = metadata;
+        doc.mime_type = Cow::Owned(mime_type.to_string());
 
-        let document = if config.include_document_structure {
-            Some(Self::build_document_structure(&events, &yaml))
-        } else {
-            None
-        };
+        // Tables are already pushed by `build_internal_document` via the builder,
+        // so we do NOT push them again here (that would create duplicates).
 
-        let images = if !extracted_images.is_empty() {
-            #[cfg(all(feature = "ocr", feature = "tokio-runtime"))]
-            {
-                let processed = crate::extraction::image_ocr::process_images_with_ocr(extracted_images, config).await?;
-                Some(processed)
+        // Add extracted images to InternalDocument
+        if !extracted_images.is_empty() {
+            for image in extracted_images {
+                doc.push_image(image);
             }
-            #[cfg(not(all(feature = "ocr", feature = "tokio-runtime")))]
-            {
-                Some(extracted_images)
-            }
-        } else {
-            None
-        };
+        }
 
-        Ok(ExtractionResult {
-            content: remaining_content.to_string(),
-            mime_type: mime_type.to_string().into(),
-            metadata,
-            tables,
-            detected_languages: None,
-            chunks: None,
-            images,
-            djot_content: None,
-            pages: None,
-            elements: None,
-            ocr_elements: None,
-            document,
-            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-            extracted_keywords: None,
-            quality_score: None,
-            processing_warnings: Vec::new(),
-            annotations: None,
-            children: None,
-        })
+        Ok(doc)
+    }
+
+    async fn extract_file(
+        &self,
+        path: &std::path::Path,
+        mime_type: &str,
+        config: &ExtractionConfig,
+    ) -> Result<InternalDocument> {
+        crate::core::path_resolver::extract_file_with_image_resolution(self, path, mime_type, config).await
     }
 
     fn supported_mime_types(&self) -> &[&str] {
@@ -656,20 +706,8 @@ mod tests {
         let yaml = yaml_opt.expect("Should extract YAML frontmatter");
         let metadata = extract_metadata_from_yaml(&yaml);
 
-        assert_eq!(
-            metadata
-                .additional
-                .get("title")
-                .and_then(|v: &serde_json::Value| v.as_str()),
-            Some("My Document")
-        );
-        assert_eq!(
-            metadata
-                .additional
-                .get("author")
-                .and_then(|v: &serde_json::Value| v.as_str()),
-            Some("John Doe")
-        );
+        assert_eq!(metadata.title.as_deref(), Some("My Document"));
+        assert_eq!(metadata.created_by.as_deref(), Some("John Doe"));
         assert_eq!(metadata.created_at, Some("2024-01-15".to_string()));
         assert!(metadata.subject.is_some());
         assert!(
@@ -693,13 +731,11 @@ mod tests {
         let metadata = extract_metadata_from_yaml(&yaml);
 
         let keywords = metadata
-            .additional
-            .get("keywords")
-            .and_then(|v: &serde_json::Value| v.as_str());
-        assert!(keywords.is_some());
-        let keywords_str = keywords.expect("Should extract keywords from metadata");
-        assert!(keywords_str.contains("rust"));
-        assert!(keywords_str.contains("markdown"));
+            .keywords
+            .as_ref()
+            .expect("Should extract keywords from metadata");
+        assert!(keywords.iter().any(|k| k == "rust"));
+        assert!(keywords.iter().any(|k| k == "markdown"));
     }
 
     #[tokio::test]
@@ -711,6 +747,8 @@ mod tests {
             .extract_bytes(content, "text/markdown", &ExtractionConfig::default())
             .await
             .expect("Should extract markdown with tables");
+        let result =
+            crate::extraction::derive::derive_extraction_result(result, true, crate::core::config::OutputFormat::Plain);
 
         assert!(!result.tables.is_empty());
         let table = &result.tables[0];
@@ -788,17 +826,13 @@ mod tests {
             .extract_bytes(content, "text/x-markdown", &ExtractionConfig::default())
             .await
             .expect("Should extract markdown with frontmatter and tables");
+        let result =
+            crate::extraction::derive::derive_extraction_result(result, true, crate::core::config::OutputFormat::Plain);
 
         assert_eq!(result.mime_type, "text/x-markdown");
         assert!(result.content.contains("Introduction text"));
-        assert_eq!(
-            result.metadata.additional.get("title").and_then(|v| v.as_str()),
-            Some("Complete Document")
-        );
-        assert_eq!(
-            result.metadata.additional.get("author").and_then(|v| v.as_str()),
-            Some("Test Author")
-        );
+        assert_eq!(result.metadata.title.as_deref(), Some("Complete Document"));
+        assert_eq!(result.metadata.created_by.as_deref(), Some("Test Author"));
         assert!(!result.tables.is_empty());
     }
 
@@ -892,50 +926,28 @@ nested:
         let metadata = extract_metadata_from_yaml(&yaml);
 
         assert_eq!(metadata.created_at, Some("2024-01-15".to_string()));
-        assert_eq!(
-            metadata.additional.get("title").and_then(|v| v.as_str()),
-            Some("Test Document")
-        );
-        assert_eq!(
-            metadata.additional.get("author").and_then(|v| v.as_str()),
-            Some("Test Author")
-        );
+        assert_eq!(metadata.title.as_deref(), Some("Test Document"));
+        assert_eq!(metadata.created_by.as_deref(), Some("Test Author"));
 
-        assert!(metadata.additional.contains_key("keywords"));
-        let keywords = metadata
-            .additional
-            .get("keywords")
-            .and_then(|v| v.as_str())
-            .unwrap_or("");
-        assert!(keywords.contains("rust"));
-        assert!(keywords.contains("markdown"));
+        let keywords = metadata.keywords.as_ref().expect("Should have keywords");
+        assert!(keywords.iter().any(|k| k == "rust"));
+        assert!(keywords.iter().any(|k| k == "markdown"));
 
         assert_eq!(metadata.subject, Some("Test subject".to_string()));
 
-        assert_eq!(
-            metadata.additional.get("abstract").and_then(|v| v.as_str()),
-            Some("Test abstract")
-        );
+        assert_eq!(metadata.abstract_text.as_deref(), Some("Test abstract"));
 
-        assert_eq!(
-            metadata.additional.get("category").and_then(|v| v.as_str()),
-            Some("Documentation")
-        );
+        assert_eq!(metadata.category.as_deref(), Some("Documentation"));
 
-        assert!(metadata.additional.contains_key("tags"));
-        let tags = metadata.additional.get("tags").and_then(|v| v.as_str()).unwrap_or("");
-        assert!(tags.contains("tag1"));
-        assert!(tags.contains("tag2"));
+        let tags = metadata.tags.as_ref().expect("Should have tags");
+        assert!(tags.iter().any(|t| t == "tag1"));
+        assert!(tags.iter().any(|t| t == "tag2"));
 
-        assert_eq!(metadata.additional.get("language").and_then(|v| v.as_str()), Some("en"));
+        assert_eq!(metadata.language.as_deref(), Some("en"));
 
-        assert_eq!(
-            metadata.additional.get("version").and_then(|v| v.as_str()),
-            Some("1.2.3")
-        );
+        assert_eq!(metadata.document_version.as_deref(), Some("1.2.3"));
 
-        assert_eq!(metadata.additional.len(), 8, "Should extract all standard fields");
-        println!("\nSuccessfully extracted all 8 additional metadata fields");
+        println!("\nSuccessfully extracted all typed metadata fields");
     }
 
     #[test]
@@ -1033,6 +1045,8 @@ nested:
             .extract_bytes(md.as_bytes(), "text/markdown", &ExtractionConfig::default())
             .await
             .expect("Should extract markdown with data URI image");
+        let result =
+            crate::extraction::derive::derive_extraction_result(result, true, crate::core::config::OutputFormat::Plain);
 
         assert!(result.images.is_some());
         let imgs = result.images.unwrap();
@@ -1049,6 +1063,8 @@ nested:
             .extract_bytes(md, "text/markdown", &ExtractionConfig::default())
             .await
             .expect("Should extract markdown without images");
+        let result =
+            crate::extraction::derive::derive_extraction_result(result, true, crate::core::config::OutputFormat::Plain);
 
         assert!(result.images.is_none());
     }
@@ -1064,6 +1080,8 @@ nested:
             .extract_bytes(md, "text/markdown", &ExtractionConfig::default())
             .await
             .expect("Should handle emoji in trimmed paragraph");
+        let result =
+            crate::extraction::derive::derive_extraction_result(result, true, crate::core::config::OutputFormat::Plain);
 
         assert!(result.content.contains("bold"), "Bold text preserved");
         assert!(result.content.contains("\u{1F389}"), "Emoji preserved after trim");
@@ -1078,6 +1096,8 @@ nested:
             .extract_bytes(md, "text/markdown", &ExtractionConfig::default())
             .await
             .expect("Should handle CJK with bold formatting");
+        let result =
+            crate::extraction::derive::derive_extraction_result(result, true, crate::core::config::OutputFormat::Plain);
 
         assert!(result.content.contains("太字"), "Bold CJK content present");
         assert!(result.content.contains("これは"), "Leading CJK preserved");

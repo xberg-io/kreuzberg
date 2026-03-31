@@ -59,9 +59,9 @@ pub(super) fn extract_bytes_sync_impl(
         ))
     })?;
 
-    let mut result = sync_extractor.extract_sync(content, &validated_mime, &cfg)?;
+    let doc = sync_extractor.extract_sync(content, &validated_mime, &cfg)?;
 
-    result = crate::core::pipeline::run_pipeline_sync(result, &cfg)?;
+    let result = crate::core::pipeline::run_pipeline_sync(doc, &cfg)?;
 
     Ok(result)
 }

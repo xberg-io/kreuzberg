@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/vendored/docling/pdf/right_to_left_01.pdf",
+  "file_type": "pdf",
+  "file_size": 102852,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "pdf test: right_to_left_01",
+    "source": "pandoc-generated",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "markdown_file": "../../../../test_documents/ground_truth/pdf/right_to_left_01.md",
+    "source": "pandoc",
+    "text_file": "../../../../test_documents/ground_truth/pdf/right_to_left_01.txt"
+  }
+}

@@ -227,6 +227,7 @@ pub(crate) mod extractor;
 mod ocr;
 mod processor;
 pub mod registry;
+mod renderer;
 pub mod startup_validation;
 mod traits;
 mod validator;
@@ -236,12 +237,14 @@ pub use ocr::{
     OcrBackend, OcrBackendType, clear_ocr_backends, list_ocr_backends, register_ocr_backend, unregister_ocr_backend,
 };
 pub use processor::{PostProcessor, ProcessingStage, list_post_processors};
+pub use renderer::{Renderer, clear_renderers, list_renderers, register_renderer, unregister_renderer};
 pub use traits::Plugin;
 pub use validator::{Validator, clear_validators, list_validators, register_validator, unregister_validator};
 
 // Re-export registry items for backward compatibility
 pub use registry::{
     DOCUMENT_EXTRACTOR_REGISTRY, DocumentExtractorRegistry, OCR_BACKEND_REGISTRY, OcrBackendRegistry,
-    POST_PROCESSOR_REGISTRY, PostProcessorRegistry, VALIDATOR_REGISTRY, ValidatorRegistry,
-    get_document_extractor_registry, get_ocr_backend_registry, get_post_processor_registry, get_validator_registry,
+    POST_PROCESSOR_REGISTRY, PostProcessorRegistry, RENDERER_REGISTRY, RendererRegistry, VALIDATOR_REGISTRY,
+    ValidatorRegistry, get_document_extractor_registry, get_ocr_backend_registry, get_post_processor_registry,
+    get_renderer_registry, get_validator_registry,
 };

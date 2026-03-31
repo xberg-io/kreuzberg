@@ -1,4 +1,5 @@
 pub mod blank_detection;
+pub mod derive;
 pub mod structured;
 pub mod text;
 pub mod transform;
@@ -42,6 +43,9 @@ pub mod office_metadata;
 
 #[cfg(feature = "office")]
 pub mod ooxml_constants;
+
+#[cfg(feature = "office")]
+pub mod ooxml_embedded;
 
 #[cfg(feature = "office")]
 pub mod image_format;

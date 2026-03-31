@@ -386,7 +386,7 @@ pub(crate) async fn extract_mixed_ocr_native(
 
     let ocr_config_owned = ocr_config.clone();
     let total = page_images.len();
-    let mut ocr_results: std::collections::HashMap<usize, String> = std::collections::HashMap::with_capacity(total);
+    let mut ocr_results: ahash::AHashMap<usize, String> = ahash::AHashMap::with_capacity(total);
 
     // Process in batches to bound peak memory (PNG buffers freed between batches)
     for batch_start in (0..total).step_by(batch_size) {
@@ -481,6 +481,7 @@ pub(crate) async fn extract_with_ocr(
     Option<f64>,
     Vec<crate::types::Table>,
     Vec<crate::types::OcrElement>,
+    Option<crate::types::internal::InternalDocument>,
 )> {
     use crate::plugins::registry::get_ocr_backend_registry;
     use image::ImageEncoder;
@@ -537,7 +538,7 @@ pub(crate) async fn extract_with_ocr(
             .and_then(|v| v.as_f64())
             .map(|v| v / 100.0);
         let ocr_elements = result.ocr_elements.unwrap_or_default();
-        return Ok((result.content, mean_conf, Vec::new(), ocr_elements));
+        return Ok((result.content, mean_conf, Vec::new(), ocr_elements, None));
     }
     let mut lazy_pdf_page_count = 0;
 
@@ -599,6 +600,10 @@ pub(crate) async fn extract_with_ocr(
     };
 
     let mut page_texts = vec![String::new(); total_pages];
+    // Collect per-page paragraphs when layout detection produces structured data.
+    // Used to build an InternalDocument instead of flat text.
+    #[cfg(feature = "layout-detection")]
+    let mut all_page_paragraphs: Vec<Option<Vec<crate::pdf::structure::types::PdfParagraph>>> = vec![None; total_pages];
     #[allow(unused_mut)]
     let mut collected_tables: Vec<crate::types::Table> = Vec::new();
     let mut all_ocr_elements: Vec<crate::types::OcrElement> = Vec::new();
@@ -823,13 +828,13 @@ pub(crate) async fn extract_with_ocr(
                     }
                 }
 
-                let mut page_content = crate::pdf::markdown::adapters::from_ocr_elements(elements, height as f32);
-                crate::pdf::markdown::reorder_elements_reading_order(&mut page_content.elements);
-                let mut paragraphs = crate::pdf::markdown::content_to_paragraphs(&page_content);
+                let mut page_content = crate::pdf::structure::adapters::from_ocr_elements(elements, height as f32);
+                crate::pdf::structure::reorder_elements_reading_order(&mut page_content.elements);
+                let mut paragraphs = crate::pdf::structure::content_to_paragraphs(&page_content);
 
                 if let Some(ref scaled_det) = scaled_detection {
                     let hints = detection_to_layout_hints(scaled_det, height as f32);
-                    crate::pdf::markdown::layout_classify::apply_layout_overrides(
+                    crate::pdf::structure::layout_classify::apply_layout_overrides(
                         &mut paragraphs,
                         &hints,
                         0.5,
@@ -840,48 +845,26 @@ pub(crate) async fn extract_with_ocr(
 
                 let paragraphs: Vec<_> = paragraphs.into_iter().filter(|p| !p.is_page_furniture).collect();
 
-                let page_md = {
-                    struct Block {
-                        y_pos: f32,
-                        text: String,
-                    }
+                // Build a plain text fallback for the page (used when not assembling InternalDocument).
+                let page_text: String = paragraphs
+                    .iter()
+                    .filter_map(|p| {
+                        let text: String = p
+                            .lines
+                            .iter()
+                            .flat_map(|l| l.segments.iter())
+                            .map(|s| s.text.as_str())
+                            .collect::<Vec<_>>()
+                            .join(" ");
+                        let trimmed = text.trim().to_string();
+                        if trimmed.is_empty() { None } else { Some(trimmed) }
+                    })
+                    .collect::<Vec<_>>()
+                    .join("\n\n");
+                page_texts[page_idx] = page_text;
 
-                    let mut blocks: Vec<Block> = paragraphs
-                        .iter()
-                        .filter_map(|p| {
-                            let text = crate::pdf::markdown::render_paragraphs_to_string(std::slice::from_ref(p));
-                            if text.trim().is_empty() {
-                                return None;
-                            }
-                            let y_pos = p.lines.first().map(|l| l.baseline_y).unwrap_or(0.0);
-                            Some(Block { y_pos, text })
-                        })
-                        .collect();
-
-                    for rt in &recognized_tables {
-                        if rt.markdown.is_empty() {
-                            continue;
-                        }
-                        let y_pos = height as f32 - rt.detection_bbox.y1;
-                        blocks.push(Block {
-                            y_pos,
-                            text: rt.markdown.clone(),
-                        });
-                    }
-
-                    blocks.sort_by(|a, b| b.y_pos.total_cmp(&a.y_pos));
-
-                    let mut output = String::new();
-                    for block in &blocks {
-                        if !output.is_empty() {
-                            output.push_str("\n\n");
-                        }
-                        output.push_str(block.text.trim());
-                    }
-                    output
-                };
-
-                page_texts[page_idx] = page_md;
+                // Store structured paragraphs for InternalDocument assembly.
+                all_page_paragraphs[page_idx] = Some(paragraphs);
                 continue;
             }
 
@@ -912,7 +895,30 @@ pub(crate) async fn extract_with_ocr(
         }
         result.push_str(text);
     }
-    Ok((result, mean_text_conf, collected_tables, all_ocr_elements))
+
+    // Build an InternalDocument from structured paragraphs when layout detection
+    // produced per-page paragraph data.
+    #[cfg(feature = "layout-detection")]
+    let ocr_doc = {
+        let has_structured = all_page_paragraphs.iter().any(|p| p.is_some());
+        if has_structured {
+            let pages: Vec<Vec<crate::pdf::structure::types::PdfParagraph>> = all_page_paragraphs
+                .into_iter()
+                .map(|opt| opt.unwrap_or_default())
+                .collect();
+            Some(crate::pdf::structure::assemble_internal_document(
+                pages,
+                &collected_tables,
+                &[], // no image positions from OCR path
+            ))
+        } else {
+            None
+        }
+    };
+    #[cfg(not(feature = "layout-detection"))]
+    let ocr_doc: Option<crate::types::internal::InternalDocument> = None;
+
+    Ok((result, mean_text_conf, collected_tables, all_ocr_elements, ocr_doc))
 }
 
 /// Adapt batch size to available system memory.
@@ -1082,7 +1088,7 @@ pub(crate) async fn run_ocr_pipeline(
         .await;
 
         match result {
-            Ok((text, mean_conf, stage_tables, stage_ocr_elements)) => {
+            Ok((text, mean_conf, stage_tables, stage_ocr_elements, _stage_doc)) => {
                 let text_score = compute_quality_score(&text, &pipeline.quality_thresholds);
 
                 let score = match mean_conf {
@@ -1179,9 +1185,9 @@ fn ensure_elements_enabled(config: &crate::core::config::ocr::OcrConfig) -> crat
 fn detection_to_layout_hints(
     detection: &crate::layout::DetectionResult,
     page_height: f32,
-) -> Vec<crate::pdf::markdown::types::LayoutHint> {
+) -> Vec<crate::pdf::structure::types::LayoutHint> {
     use crate::layout::LayoutClass;
-    use crate::pdf::markdown::types::{LayoutHint, LayoutHintClass};
+    use crate::pdf::structure::types::{LayoutHint, LayoutHintClass};
 
     detection
         .detections

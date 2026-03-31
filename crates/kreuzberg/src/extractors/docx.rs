@@ -7,9 +7,10 @@ use crate::core::config::ExtractionConfig;
 use crate::extraction::{cells_to_markdown, office_metadata};
 use crate::plugins::{DocumentExtractor, Plugin};
 use crate::types::ExtractedImage;
+use crate::types::internal::InternalDocument;
+use crate::types::internal_builder::InternalDocumentBuilder;
 use crate::types::{
-    DocxMetadata, ExtractionResult, FormatMetadata, Metadata, PageBoundary, PageContent, PageInfo, PageStructure,
-    PageUnitType, Table,
+    DocxMetadata, FormatMetadata, Metadata, PageBoundary, PageContent, PageInfo, PageStructure, PageUnitType, Table,
 };
 use ahash::AHashMap;
 use async_trait::async_trait;
@@ -118,7 +119,7 @@ fn build_document_structure(doc: &crate::extraction::docx::parser::Document) -> 
                 let heading_level = paragraph.style.as_deref().and_then(|s| doc.resolve_heading_level(s));
 
                 if let Some(level) = heading_level {
-                    // For headings, use plain text (annotations are less relevant)
+                    // For headings, use plain text (annotations are less relevant for DocumentStructure)
                     let heading_text = if text.is_empty() {
                         paragraph.runs_to_markdown()
                     } else {
@@ -212,6 +213,12 @@ fn build_document_structure(doc: &crate::extraction::docx::parser::Document) -> 
             }
             crate::extraction::docx::parser::DocumentElement::Drawing(idx) => {
                 let drawing = &doc.drawings[*idx];
+
+                // Skip drawings without an image reference (e.g. textbox shapes)
+                if drawing.image_ref.is_none() {
+                    continue;
+                }
+
                 let description = drawing.doc_properties.as_ref().and_then(|dp| dp.description.clone());
 
                 // Build bounding box from anchor position + extent
@@ -278,6 +285,326 @@ fn build_document_structure(doc: &crate::extraction::docx::parser::Document) -> 
     }
 
     b.build()
+}
+
+/// Build an `InternalDocument` from parsed DOCX data.
+///
+/// Creates a flat element list with headings, paragraphs, lists, tables, images,
+/// footnotes/endnotes (with relationships), and hyperlinks (as InternalLink relationships).
+/// Mirrors `build_document_structure` but outputs the flat `InternalDocument` representation.
+fn build_internal_document(doc: &crate::extraction::docx::parser::Document) -> InternalDocument {
+    use crate::types::document_structure::ContentLayer;
+    use crate::types::extraction::BoundingBox;
+    use crate::types::internal::{ElementKind, InternalElement, RelationshipKind, RelationshipTarget};
+    use crate::types::uri::Uri;
+
+    let mut builder = InternalDocumentBuilder::new("docx");
+
+    // Track current list state for grouping consecutive list items
+    let mut current_list_numbering_id: Option<i64> = None;
+    let mut current_list_ordered: bool = false;
+
+    // Process body elements in document order
+    for element in &doc.elements {
+        match element {
+            crate::extraction::docx::parser::DocumentElement::Paragraph(idx) => {
+                let paragraph = &doc.paragraphs[*idx];
+
+                // Collect plain text and annotations from runs, separating math runs
+                let (text, annotations, math_formulas) = collect_run_annotations(&paragraph.runs);
+
+                if text.is_empty() && math_formulas.is_empty() {
+                    // Close any open list if we hit an empty paragraph
+                    if current_list_numbering_id.is_some() {
+                        builder.end_list();
+                        current_list_numbering_id = None;
+                    }
+                    continue;
+                }
+
+                // Check if this paragraph is a heading
+                let heading_level = paragraph.style.as_deref().and_then(|s| doc.resolve_heading_level(s));
+
+                // Check if this paragraph has a quote/blockquote style
+                let is_quote_style = paragraph.style.as_deref().is_some_and(|s| {
+                    let lower = s.to_ascii_lowercase();
+                    lower == "quote"
+                        || lower == "blockquote"
+                        || lower == "intenseq"
+                        || lower == "intensequote"
+                        || lower.contains("quote")
+                });
+
+                // Track the element index from whichever branch pushes the element,
+                // so we can scan for hyperlink URIs unconditionally afterward.
+                let element_idx: Option<u32> = if let Some(level) = heading_level {
+                    // Close any open list before a heading
+                    if current_list_numbering_id.is_some() {
+                        builder.end_list();
+                        current_list_numbering_id = None;
+                    }
+                    let heading_text = if text.is_empty() {
+                        paragraph.runs_to_markdown()
+                    } else {
+                        text.clone()
+                    };
+                    let idx = builder.push_heading(level, &heading_text, None, None);
+                    if !annotations.is_empty() {
+                        builder.set_annotations(idx, annotations.clone());
+                    }
+                    Some(idx)
+                } else if is_quote_style {
+                    // Close any open list before a blockquote
+                    if current_list_numbering_id.is_some() {
+                        builder.end_list();
+                        current_list_numbering_id = None;
+                    }
+                    builder.push_quote_start();
+                    let para_idx = builder.push_paragraph(&text, annotations.clone(), None, None);
+                    builder.push_quote_end();
+                    Some(para_idx)
+                } else if let Some(nid) = paragraph.numbering_id {
+                    // Push any preceding math formulas as standalone nodes
+                    for formula in &math_formulas {
+                        builder.push_formula(formula, None, None);
+                    }
+                    if !text.is_empty() {
+                        let is_ordered = paragraph
+                            .numbering_id
+                            .zip(paragraph.numbering_level)
+                            .and_then(|(nid, nlvl)| doc.numbering_defs.get(&(nid, nlvl)))
+                            .is_some_and(|lt| *lt == crate::extraction::docx::parser::ListType::Numbered);
+                        // Check if we need to start a new list or continue the current one
+                        if current_list_numbering_id != Some(nid) {
+                            // Close previous list if open
+                            if current_list_numbering_id.is_some() {
+                                builder.end_list();
+                            }
+                            builder.push_list(is_ordered);
+                            current_list_numbering_id = Some(nid);
+                            current_list_ordered = is_ordered;
+                        }
+                        let li_idx =
+                            builder.push_list_item(&text, current_list_ordered, annotations.clone(), None, None);
+                        Some(li_idx)
+                    } else {
+                        None
+                    }
+                } else {
+                    // Close any open list before a non-list paragraph
+                    if current_list_numbering_id.is_some() {
+                        builder.end_list();
+                        current_list_numbering_id = None;
+                    }
+                    // Push any math formulas as standalone Formula nodes
+                    for formula in &math_formulas {
+                        builder.push_formula(formula, None, None);
+                    }
+                    if !text.is_empty() {
+                        let para_idx = builder.push_paragraph(&text, annotations.clone(), None, None);
+                        Some(para_idx)
+                    } else {
+                        None
+                    }
+                };
+
+                // Scan runs for hyperlink URLs to create InternalLink relationships and extract URIs.
+                // This runs for ALL paragraph types: headings, quotes, list items, and plain paragraphs.
+                if let Some(elem_idx) = element_idx {
+                    for run in &paragraph.runs {
+                        if run.math_latex.is_some() || run.text.is_empty() {
+                            continue;
+                        }
+                        if let Some(ref url) = run.hyperlink_url {
+                            if url.starts_with('#') {
+                                let anchor_key = url.trim_start_matches('#').to_string();
+                                builder.push_relationship(
+                                    elem_idx,
+                                    RelationshipTarget::Key(anchor_key),
+                                    RelationshipKind::InternalLink,
+                                );
+                            }
+                            builder.push_uri(Uri::hyperlink(url.as_str(), Some(run.text.clone())));
+                        }
+                    }
+
+                    // Scan for inline footnote/endnote references ([^N]) in text
+                    let mut search_start = 0;
+                    while let Some(start) = text[search_start..].find("[^") {
+                        let abs_start = search_start + start;
+                        if let Some(end) = text[abs_start..].find(']') {
+                            let ref_id = &text[abs_start + 2..abs_start + end];
+                            if !ref_id.is_empty() && ref_id.chars().all(|c| c.is_ascii_digit()) {
+                                let key = format!("fn{}", ref_id);
+                                builder.push_footnote_ref(ref_id, &key, None);
+                                // Relationship is auto-created by push_footnote_ref
+                            }
+                            search_start = abs_start + end + 1;
+                        } else {
+                            break;
+                        }
+                    }
+                }
+            }
+            crate::extraction::docx::parser::DocumentElement::Table(idx) => {
+                // Close any open list before a table
+                if current_list_numbering_id.is_some() {
+                    builder.end_list();
+                    current_list_numbering_id = None;
+                }
+                let table = &doc.tables[*idx];
+                // Emit table caption as a paragraph before the table
+                if let Some(ref props) = table.properties
+                    && let Some(ref caption) = props.caption
+                    && !caption.is_empty()
+                {
+                    builder.push_paragraph(caption, vec![], None, None);
+                }
+                let mut cells: Vec<Vec<String>> = Vec::new();
+                for row in &table.rows {
+                    let mut row_cells = Vec::new();
+                    for cell in &row.cells {
+                        let text = cell
+                            .paragraphs
+                            .iter()
+                            .map(|p| p.runs_to_markdown())
+                            .collect::<Vec<_>>()
+                            .join(" ")
+                            .trim()
+                            .to_string();
+                        let span = cell.properties.as_ref().and_then(|p| p.grid_span).unwrap_or(1);
+                        for _ in 0..span {
+                            row_cells.push(text.clone());
+                        }
+                    }
+                    cells.push(row_cells);
+                }
+                // Fill vertically merged cells
+                for row_idx in 1..table.rows.len() {
+                    let mut col = 0usize;
+                    for cell in &table.rows[row_idx].cells {
+                        let span = cell.properties.as_ref().and_then(|p| p.grid_span).unwrap_or(1) as usize;
+                        let is_vmerge_continue = cell.properties.as_ref().is_some_and(|p| {
+                            matches!(p.v_merge, Some(crate::extraction::docx::table::VerticalMerge::Continue))
+                        });
+                        if is_vmerge_continue {
+                            for c in col..col + span {
+                                if c < cells[row_idx].len() && c < cells[row_idx - 1].len() {
+                                    cells[row_idx][c] = cells[row_idx - 1][c].clone();
+                                }
+                            }
+                        }
+                        col += span;
+                    }
+                }
+                if !cells.is_empty() {
+                    builder.push_table_from_cells(&cells, None, None);
+                }
+            }
+            crate::extraction::docx::parser::DocumentElement::Drawing(idx) => {
+                let drawing = &doc.drawings[*idx];
+
+                // Skip drawings without an image reference (e.g. textbox shapes)
+                if drawing.image_ref.is_none() {
+                    continue;
+                }
+
+                // Close any open list before a drawing
+                if current_list_numbering_id.is_some() {
+                    builder.end_list();
+                    current_list_numbering_id = None;
+                }
+                let description = drawing.doc_properties.as_ref().and_then(|dp| dp.description.clone());
+
+                // Build bounding box from anchor position + extent
+                let bbox = match &drawing.drawing_type {
+                    crate::extraction::docx::drawing::DrawingType::Anchored(anchor) => {
+                        let x = anchor.position_h.as_ref().and_then(|p| p.offset).unwrap_or(0);
+                        let y = anchor.position_v.as_ref().and_then(|p| p.offset).unwrap_or(0);
+                        let (cx, cy) = drawing.extent.as_ref().map(|e| (e.cx, e.cy)).unwrap_or((0, 0));
+                        if x != 0 || y != 0 || cx != 0 || cy != 0 {
+                            const EMU_PER_PT: f64 = 914_400.0 / 72.0;
+                            Some(BoundingBox {
+                                x0: x as f64 / EMU_PER_PT,
+                                y0: y as f64 / EMU_PER_PT,
+                                x1: (x + cx) as f64 / EMU_PER_PT,
+                                y1: (y + cy) as f64 / EMU_PER_PT,
+                            })
+                        } else {
+                            None
+                        }
+                    }
+                    _ => None,
+                };
+
+                // Push image element directly (no ExtractedImage data at this point)
+                let kind = ElementKind::Image {
+                    image_index: *idx as u32,
+                };
+                let text_val = description.as_deref().unwrap_or("");
+                let elem = InternalElement::text(kind, text_val, 0);
+                let elem = if let Some(b) = bbox { elem.with_bbox(b) } else { elem };
+                let img_elem_idx = builder.push_element(elem);
+
+                // Store the resolved image path as an attribute on the image element
+                if let Some(ref rid) = drawing.image_ref
+                    && let Some(path) = doc.image_relationships.get(rid)
+                {
+                    let mut attrs = AHashMap::new();
+                    attrs.insert("image_uri".to_string(), path.clone());
+                    builder.set_attributes(img_elem_idx, attrs);
+                }
+            }
+        }
+    }
+
+    // Close any remaining open list
+    if current_list_numbering_id.is_some() {
+        builder.end_list();
+    }
+
+    // Add headers and footers with appropriate content layers
+    for hf in &doc.headers {
+        let text: String = hf
+            .paragraphs
+            .iter()
+            .map(|p| p.runs_to_markdown())
+            .collect::<Vec<_>>()
+            .join("\n");
+        if !text.is_empty() {
+            let idx = builder.push_paragraph(&text, vec![], None, None);
+            builder.set_layer(idx, ContentLayer::Header);
+        }
+    }
+    for hf in &doc.footers {
+        let text: String = hf
+            .paragraphs
+            .iter()
+            .map(|p| p.runs_to_markdown())
+            .collect::<Vec<_>>()
+            .join("\n");
+        if !text.is_empty() {
+            let idx = builder.push_paragraph(&text, vec![], None, None);
+            builder.set_layer(idx, ContentLayer::Footer);
+        }
+    }
+
+    // Add footnotes and endnotes as FootnoteDefinition elements with anchors
+    for note in doc.footnotes.iter().chain(doc.endnotes.iter()) {
+        let text: String = note
+            .paragraphs
+            .iter()
+            .map(|p| p.runs_to_markdown())
+            .collect::<Vec<_>>()
+            .join(" ");
+        if !text.is_empty() {
+            let key = format!("fn{}", note.id);
+            let idx = builder.push_footnote_definition(&text, &key, None);
+            builder.set_layer(idx, ContentLayer::Footnote);
+        }
+    }
+
+    builder.build()
 }
 
 /// Collect plain text, annotations, and math formulas from a slice of Runs.
@@ -351,7 +678,107 @@ fn collect_run_annotations(
         }
     }
 
+    // Merge adjacent annotations of the same kind to avoid spurious marker sequences (e.g. `****`).
+    // Sort by (kind discriminant, start) then merge touching/overlapping ranges.
+    merge_adjacent_annotations(&mut annotations);
+
     (text, annotations, math_formulas)
+}
+
+/// Merge adjacent or overlapping annotations of the same kind.
+///
+/// When consecutive DOCX runs have the same formatting (e.g. bold), each run produces
+/// its own annotation. Without merging, the markdown renderer would close and immediately
+/// reopen markers, producing `**text1****text2**` instead of `**text1text2**`.
+fn merge_adjacent_annotations(annotations: &mut Vec<crate::types::TextAnnotation>) {
+    use crate::types::document_structure::AnnotationKind;
+
+    if annotations.len() < 2 {
+        return;
+    }
+
+    /// Check if two annotation kinds are the same for merging purposes.
+    /// Simple kinds match by discriminant; Link kinds match if they have the same URL.
+    fn same_kind_for_merge(a: &AnnotationKind, b: &AnnotationKind) -> bool {
+        match (a, b) {
+            (AnnotationKind::Bold, AnnotationKind::Bold)
+            | (AnnotationKind::Italic, AnnotationKind::Italic)
+            | (AnnotationKind::Underline, AnnotationKind::Underline)
+            | (AnnotationKind::Strikethrough, AnnotationKind::Strikethrough)
+            | (AnnotationKind::Subscript, AnnotationKind::Subscript)
+            | (AnnotationKind::Superscript, AnnotationKind::Superscript)
+            | (AnnotationKind::Highlight, AnnotationKind::Highlight)
+            | (AnnotationKind::Code, AnnotationKind::Code) => true,
+            (
+                AnnotationKind::Link {
+                    url: url_a,
+                    title: title_a,
+                },
+                AnnotationKind::Link {
+                    url: url_b,
+                    title: title_b,
+                },
+            ) => url_a == url_b && title_a == title_b,
+            _ => false,
+        }
+    }
+
+    fn is_mergeable(kind: &AnnotationKind) -> bool {
+        matches!(
+            kind,
+            AnnotationKind::Bold
+                | AnnotationKind::Italic
+                | AnnotationKind::Underline
+                | AnnotationKind::Strikethrough
+                | AnnotationKind::Subscript
+                | AnnotationKind::Superscript
+                | AnnotationKind::Highlight
+                | AnnotationKind::Code
+                | AnnotationKind::Link { .. }
+        )
+    }
+
+    let kind_key = |kind: &AnnotationKind| -> u8 {
+        match kind {
+            AnnotationKind::Bold => 0,
+            AnnotationKind::Italic => 1,
+            AnnotationKind::Underline => 2,
+            AnnotationKind::Strikethrough => 3,
+            AnnotationKind::Subscript => 4,
+            AnnotationKind::Superscript => 5,
+            AnnotationKind::Highlight => 6,
+            AnnotationKind::Code => 7,
+            AnnotationKind::Link { .. } => 8,
+            _ => 255,
+        }
+    };
+
+    // Sort annotations by (kind_key, start)
+    annotations.sort_by(|a, b| kind_key(&a.kind).cmp(&kind_key(&b.kind)).then(a.start.cmp(&b.start)));
+
+    let mut merged = Vec::with_capacity(annotations.len());
+    let mut i = 0;
+    while i < annotations.len() {
+        let mut ann = annotations[i].clone();
+        if is_mergeable(&ann.kind) {
+            // Merge consecutive annotations of the same kind
+            let mut j = i + 1;
+            while j < annotations.len()
+                && same_kind_for_merge(&annotations[j].kind, &ann.kind)
+                && annotations[j].start <= ann.end
+            {
+                ann.end = ann.end.max(annotations[j].end);
+                j += 1;
+            }
+            merged.push(ann);
+            i = j;
+        } else {
+            merged.push(ann);
+            i += 1;
+        }
+    }
+
+    *annotations = merged;
 }
 
 type DocxParseResult = (
@@ -361,9 +788,10 @@ type DocxParseResult = (
     Vec<crate::extraction::docx::drawing::Drawing>,
     AHashMap<String, String>,
     Option<crate::types::DocumentStructure>,
+    InternalDocument,
 );
 
-/// Parse DOCX document content and extract text, tables, page boundaries, drawings, image relationships, and optional document structure.
+/// Parse DOCX document content and extract text, tables, page boundaries, drawings, image relationships, optional document structure, and InternalDocument.
 fn parse_docx_core(
     content: &[u8],
     include_doc_structure: bool,
@@ -390,7 +818,16 @@ fn parse_docx_core(
     } else {
         None
     };
-    Ok((text, tables, page_boundaries, drawings, image_rels, doc_structure))
+    let internal_doc = build_internal_document(&doc);
+    Ok((
+        text,
+        tables,
+        page_boundaries,
+        drawings,
+        image_rels,
+        doc_structure,
+        internal_doc,
+    ))
 }
 
 impl Plugin for DocxExtractor {
@@ -428,31 +865,45 @@ impl Plugin for DocxExtractor {
 /// # Returns
 /// * `Table` - Converted table with cells and markdown representation
 fn convert_docx_table_to_table(docx_table: &crate::extraction::docx::parser::Table, table_index: usize) -> Table {
-    let cells: Vec<Vec<String>> = docx_table
-        .rows
-        .iter()
-        .map(|row| {
-            row.cells
+    // Build grid with merged cell content repeated across spans.
+    let mut cells: Vec<Vec<String>> = Vec::new();
+    for row in &docx_table.rows {
+        let mut row_cells = Vec::new();
+        for cell in &row.cells {
+            let cell_text = cell
+                .paragraphs
                 .iter()
-                .map(|cell| {
-                    let is_vmerge_continue = cell.properties.as_ref().is_some_and(|p| {
-                        matches!(p.v_merge, Some(crate::extraction::docx::table::VerticalMerge::Continue))
-                    });
-                    if is_vmerge_continue {
-                        String::new()
-                    } else {
-                        cell.paragraphs
-                            .iter()
-                            .map(|para| para.runs_to_markdown())
-                            .collect::<Vec<_>>()
-                            .join(" ")
-                            .trim()
-                            .to_string()
+                .map(|para| para.runs_to_markdown())
+                .collect::<Vec<_>>()
+                .join(" ")
+                .trim()
+                .to_string();
+            let span = cell.properties.as_ref().and_then(|p| p.grid_span).unwrap_or(1);
+            for _ in 0..span {
+                row_cells.push(cell_text.clone());
+            }
+        }
+        cells.push(row_cells);
+    }
+    // Fill vertically merged cells by copying from the row above.
+    for row_idx in 1..docx_table.rows.len() {
+        let mut col = 0usize;
+        for cell in &docx_table.rows[row_idx].cells {
+            let span = cell.properties.as_ref().and_then(|p| p.grid_span).unwrap_or(1) as usize;
+            let is_vmerge_continue = cell
+                .properties
+                .as_ref()
+                .is_some_and(|p| matches!(p.v_merge, Some(crate::extraction::docx::table::VerticalMerge::Continue)));
+            if is_vmerge_continue {
+                for c in col..col + span {
+                    if c < cells[row_idx].len() && c < cells[row_idx - 1].len() {
+                        cells[row_idx][c] = cells[row_idx - 1][c].clone();
                     }
-                })
-                .collect()
-        })
-        .collect();
+                }
+            }
+            col += span;
+        }
+    }
 
     let markdown = cells_to_markdown(&cells);
 
@@ -472,17 +923,17 @@ impl DocumentExtractor for DocxExtractor {
         content: &[u8],
         mime_type: &str,
         config: &ExtractionConfig,
-    ) -> Result<ExtractionResult> {
-        let include_doc_structure = config.include_document_structure;
+    ) -> Result<InternalDocument> {
         // When image extraction is enabled, force Markdown output so that
         // image placeholders (![](image)) are included in the text.
         let output_format = if config.images.as_ref().is_some_and(|i| i.extract_images) {
             crate::core::config::OutputFormat::Markdown
         } else {
-            config.output_format
+            config.output_format.clone()
         };
 
-        let (text, tables, page_boundaries, drawings, image_rels, doc_structure) = {
+        let include_doc_structure = config.include_document_structure;
+        let (text, tables, page_boundaries, drawings, image_rels, _doc_structure, mut internal_doc) = {
             #[cfg(feature = "tokio-runtime")]
             if crate::core::batch_mode::is_batch_mode() {
                 let content_owned = content.to_vec();
@@ -674,97 +1125,108 @@ impl DocumentExtractor for DocxExtractor {
             None
         };
 
-        // Extract images from drawings if configured
-        let extracted_images = if config.images.as_ref().is_some_and(|i| i.extract_images) {
-            let mut images = Vec::new();
-            for (idx, drawing) in drawings.iter().enumerate() {
-                if let Some(ref rid) = drawing.image_ref
-                    && let Some(target) = image_rels.get(rid)
-                {
-                    // Reject path traversal attempts within the archive
-                    if target.contains("..") {
-                        continue;
-                    }
+        // Build image entries for ALL drawings so that image_index (= drawing index)
+        // always resolves in doc.images. When image extraction is enabled, populate
+        // actual binary data; otherwise create placeholder entries with description
+        // and source_path so the renderer can produce meaningful markdown references.
+        let extract_image_data = config.images.as_ref().is_some_and(|i| i.extract_images);
+        let mut extracted_images = Vec::with_capacity(drawings.len());
+        for (idx, drawing) in drawings.iter().enumerate() {
+            let description = drawing.doc_properties.as_ref().and_then(|dp| dp.description.clone());
+            let source_path = drawing.image_ref.as_ref().and_then(|rid| image_rels.get(rid)).cloned();
+
+            // Try to extract actual image data from the archive
+            let mut image_data = None;
+            if extract_image_data
+                && let Some(ref rid) = drawing.image_ref
+                && let Some(target) = image_rels.get(rid)
+            {
+                // Reject path traversal attempts within the archive
+                if !target.contains("..") {
                     let zip_path = if let Some(stripped) = target.strip_prefix('/') {
                         stripped.to_string()
                     } else {
                         format!("word/{}", target)
                     };
-                    if let Ok(mut file) = archive.by_name(&zip_path) {
-                        if file.size() > crate::extraction::docx::MAX_IMAGE_FILE_SIZE {
-                            continue;
-                        }
+                    if let Ok(mut file) = archive.by_name(&zip_path)
+                        && file.size() <= crate::extraction::docx::MAX_IMAGE_FILE_SIZE
+                    {
                         let mut data = Vec::with_capacity(file.size() as usize);
                         if std::io::Read::read_to_end(&mut file, &mut data).is_ok() {
-                            let format = crate::extraction::image_format::detect_image_format(&data);
-                            let emus_per_px = crate::extraction::docx::EMUS_PER_PIXEL_96DPI;
-                            let (width, height) = drawing
-                                .extent
-                                .as_ref()
-                                .map(|e| {
-                                    (
-                                        Some(u32::try_from(e.cx.max(0) / emus_per_px).unwrap_or(0)),
-                                        Some(u32::try_from(e.cy.max(0) / emus_per_px).unwrap_or(0)),
-                                    )
-                                })
-                                .unwrap_or((None, None));
-                            let description = drawing.doc_properties.as_ref().and_then(|dp| dp.description.clone());
-                            // Determine page number from image placeholder position in text
-                            let page_number = {
-                                let placeholder = format!("![](image_{})", idx);
-                                // Also try with description
-                                let placeholder_with_desc =
-                                    description.as_ref().map(|d| format!("![{}](image_{})", d, idx));
-
-                                let byte_pos = text
-                                    .find(&placeholder)
-                                    .or_else(|| placeholder_with_desc.as_deref().and_then(|p| text.find(p)));
-
-                                if let Some(pos) = byte_pos {
-                                    if let Some(ref ps) = page_structure
-                                        && let Some(ref boundaries) = ps.boundaries
-                                    {
-                                        boundaries
-                                            .iter()
-                                            .find(|b| pos >= b.byte_start && pos < b.byte_end)
-                                            .map(|b| b.page_number)
-                                    } else {
-                                        Some(1)
-                                    }
-                                } else {
-                                    Some(1) // Default to page 1 if placeholder not found
-                                }
-                            };
-
-                            images.push(ExtractedImage {
-                                data: Bytes::from(data),
-                                format,
-                                image_index: idx,
-                                page_number,
-                                width,
-                                height,
-                                colorspace: None,
-                                bits_per_component: None,
-                                is_mask: false,
-                                description,
-                                ocr_result: None,
-                                bounding_box: None,
-                            });
+                            image_data = Some(data);
                         }
                     }
                 }
             }
-            images
-        } else {
-            Vec::new()
-        };
 
-        // Run OCR on extracted images if configured
-        #[cfg(all(feature = "ocr", feature = "tokio-runtime"))]
-        let extracted_images = crate::extraction::image_ocr::process_images_with_ocr(extracted_images, config).await?;
+            let (data, format, width, height) = if let Some(data) = image_data {
+                let format = crate::extraction::image_format::detect_image_format(&data);
+                let emus_per_px = crate::extraction::docx::EMUS_PER_PIXEL_96DPI;
+                let (w, h) = drawing
+                    .extent
+                    .as_ref()
+                    .map(|e| {
+                        (
+                            Some(u32::try_from(e.cx.max(0) / emus_per_px).unwrap_or(0)),
+                            Some(u32::try_from(e.cy.max(0) / emus_per_px).unwrap_or(0)),
+                        )
+                    })
+                    .unwrap_or((None, None));
+                (Bytes::from(data), format, w, h)
+            } else {
+                // Derive format from source path extension
+                let format = source_path
+                    .as_ref()
+                    .and_then(|p| p.rsplit('.').next())
+                    .map(|ext| Cow::Owned(ext.to_lowercase()))
+                    .unwrap_or(Cow::Borrowed("png"));
+                (Bytes::new(), format, None, None)
+            };
+
+            // Determine page number from image placeholder position in text
+            let page_number = {
+                let placeholder = format!("![](image_{})", idx);
+                let placeholder_with_desc = description.as_ref().map(|d| format!("![{}](image_{})", d, idx));
+
+                let byte_pos = text
+                    .find(&placeholder)
+                    .or_else(|| placeholder_with_desc.as_deref().and_then(|p| text.find(p)));
+
+                if let Some(pos) = byte_pos {
+                    if let Some(ref ps) = page_structure
+                        && let Some(ref boundaries) = ps.boundaries
+                    {
+                        boundaries
+                            .iter()
+                            .find(|b| pos >= b.byte_start && pos < b.byte_end)
+                            .map(|b| b.page_number)
+                    } else {
+                        Some(1)
+                    }
+                } else {
+                    Some(1) // Default to page 1 if placeholder not found
+                }
+            };
+
+            extracted_images.push(ExtractedImage {
+                data,
+                format,
+                image_index: idx,
+                page_number,
+                width,
+                height,
+                colorspace: None,
+                bits_per_component: None,
+                is_mask: false,
+                description,
+                ocr_result: None,
+                bounding_box: None,
+                source_path,
+            });
+        }
 
         // Build PageContent from page boundaries
-        let page_contents = {
+        let _page_contents = {
             let arc_tables: Vec<Arc<Table>> = tables.iter().map(|t| Arc::new(t.clone())).collect();
             let arc_images: Vec<Arc<ExtractedImage>> = extracted_images.iter().map(|i| Arc::new(i.clone())).collect();
 
@@ -832,13 +1294,13 @@ impl DocumentExtractor for DocxExtractor {
         };
 
         // Extract typed metadata fields and remove them from additional map to avoid duplication
-        let meta_title = metadata_map
+        let meta_title: Option<String> = metadata_map
             .remove(&Cow::Borrowed("title"))
             .and_then(|v| v.as_str().map(|s| s.to_string()));
-        let meta_subject = metadata_map
+        let meta_subject: Option<String> = metadata_map
             .remove(&Cow::Borrowed("subject"))
             .and_then(|v| v.as_str().map(|s| s.to_string()));
-        let meta_authors = metadata_map.remove(&Cow::Borrowed("authors")).and_then(|v| {
+        let meta_authors: Option<Vec<String>> = metadata_map.remove(&Cow::Borrowed("authors")).and_then(|v| {
             v.as_array()
                 .map(|arr| arr.iter().filter_map(|v| v.as_str().map(|s| s.to_string())).collect())
         });
@@ -858,48 +1320,46 @@ impl DocumentExtractor for DocxExtractor {
             .remove(&Cow::Borrowed("language"))
             .and_then(|v| v.as_str().map(|s| s.to_string()));
 
-        Ok(ExtractionResult {
-            content: text,
-            mime_type: mime_type.to_string().into(),
-            metadata: Metadata {
-                title: meta_title,
-                subject: meta_subject,
-                authors: meta_authors,
-                keywords: parsed_keywords,
-                language: meta_language,
-                created_at: meta_created_at,
-                modified_at: meta_modified_at,
-                created_by: meta_created_by,
-                modified_by: meta_modified_by,
-                pages: page_structure,
-                format: Some(FormatMetadata::Docx(Box::new(DocxMetadata {
-                    core_properties: docx_core_properties,
-                    app_properties: docx_app_properties,
-                    custom_properties: docx_custom_properties,
-                }))),
-                additional: metadata_map,
-                ..Default::default()
-            },
-            pages: page_contents,
-            tables,
-            detected_languages: None,
-            chunks: None,
-            images: if extracted_images.is_empty() {
-                None
-            } else {
-                Some(extracted_images)
-            },
-            djot_content: None,
-            elements: None,
-            ocr_elements: None,
-            document: doc_structure,
-            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-            extracted_keywords: None,
-            quality_score: None,
-            processing_warnings: Vec::new(),
-            annotations: None,
-            children: None,
-        })
+        internal_doc.metadata = Metadata {
+            title: meta_title,
+            subject: meta_subject,
+            authors: meta_authors,
+            keywords: parsed_keywords,
+            language: meta_language,
+            created_at: meta_created_at,
+            modified_at: meta_modified_at,
+            created_by: meta_created_by,
+            modified_by: meta_modified_by,
+            pages: page_structure,
+            format: Some(FormatMetadata::Docx(Box::new(DocxMetadata {
+                core_properties: docx_core_properties,
+                app_properties: docx_app_properties,
+                custom_properties: docx_custom_properties,
+            }))),
+            additional: metadata_map,
+            ..Default::default()
+        };
+
+        // Transfer images to InternalDocument
+        internal_doc.images = extracted_images;
+        internal_doc.mime_type = std::borrow::Cow::Owned(mime_type.to_string());
+
+        // Recursively extract embedded objects from word/embeddings/
+        if config.max_archive_depth > 0 {
+            let (children, embed_warnings) = crate::extraction::ooxml_embedded::extract_ooxml_embedded_objects(
+                content,
+                "word/embeddings/",
+                "docx",
+                config,
+            )
+            .await;
+            if !children.is_empty() {
+                internal_doc.children = Some(children);
+            }
+            internal_doc.processing_warnings.extend(embed_warnings);
+        }
+
+        Ok(internal_doc)
     }
 
     fn supported_mime_types(&self) -> &[&str] {
@@ -1091,25 +1551,35 @@ mod tests {
             )
             .await
             .unwrap();
+        let result =
+            crate::extraction::derive::derive_extraction_result(result, true, crate::core::config::OutputFormat::Plain);
 
-        // Verify markdown content
+        // The derive pipeline produces plain text content; heading markers are in DocumentStructure
         assert!(
-            result.content.contains("# Document Title"),
-            "Title should be h1: {}",
+            result.content.contains("Document Title"),
+            "Title should be present: {}",
             result.content
         );
         assert!(
-            result.content.contains("## Section One"),
-            "Heading1 should be h2: {}",
+            result.content.contains("Section One"),
+            "Heading1 should be present: {}",
             result.content
         );
         assert!(result.content.contains("First paragraph content."));
         assert!(result.content.contains("Section one body text."));
 
-        // Verify pages are populated
-        assert!(result.pages.is_some(), "Pages should be populated");
-        let pages = result.pages.unwrap();
-        assert!(!pages.is_empty(), "Should have at least one page");
+        // Verify headings are in DocumentStructure
+        let doc = result.document.as_ref().expect("DocumentStructure should be present");
+        use crate::types::NodeContent;
+        let headings: Vec<_> = doc
+            .nodes
+            .iter()
+            .filter(|n| matches!(n.content, NodeContent::Heading { .. }))
+            .collect();
+        assert!(!headings.is_empty(), "Should have heading nodes in DocumentStructure");
+
+        // Pages are not populated for DOCX elements without explicit page numbers
+        // (the derive pipeline only creates pages when elements have page info)
     }
 
     #[tokio::test]
@@ -1141,13 +1611,38 @@ mod tests {
             )
             .await
             .unwrap();
+        let result =
+            crate::extraction::derive::derive_extraction_result(result, true, crate::core::config::OutputFormat::Plain);
 
-        assert!(result.content.contains("**Bold text**"), "Bold: {}", result.content);
-        assert!(result.content.contains("*italic text*"), "Italic: {}", result.content);
+        // The derive pipeline produces plain text content; formatting is in annotations/DocumentStructure
+        assert!(result.content.contains("Bold text"), "Bold: {}", result.content);
+        assert!(result.content.contains("italic text"), "Italic: {}", result.content);
         assert!(
-            result.content.contains("<u>underlined text</u>"),
+            result.content.contains("underlined text"),
             "Underline: {}",
             result.content
+        );
+
+        // Verify formatting is preserved in DocumentStructure annotations
+        let doc = result.document.as_ref().expect("DocumentStructure should be present");
+        let all_annotations: Vec<_> = doc.nodes.iter().flat_map(|n| &n.annotations).collect();
+        assert!(
+            all_annotations
+                .iter()
+                .any(|a| a.kind == crate::types::document_structure::AnnotationKind::Bold),
+            "Should have bold annotation"
+        );
+        assert!(
+            all_annotations
+                .iter()
+                .any(|a| a.kind == crate::types::document_structure::AnnotationKind::Italic),
+            "Should have italic annotation"
+        );
+        assert!(
+            all_annotations
+                .iter()
+                .any(|a| a.kind == crate::types::document_structure::AnnotationKind::Underline),
+            "Should have underline annotation"
         );
     }
 
@@ -1184,23 +1679,32 @@ mod tests {
             )
             .await
             .unwrap();
+        let result =
+            crate::extraction::derive::derive_extraction_result(result, true, crate::core::config::OutputFormat::Plain);
 
-        // Headers/footers should NOT appear in text output
-        assert!(
-            !result.content.contains("Page Header"),
-            "Header should not be in output: {}",
-            result.content
-        );
+        // The derive pipeline includes all element text in content (including headers/footers).
+        // Headers/footers are distinguished via content_layer in DocumentStructure.
         assert!(
             result.content.contains("Body content here."),
             "Body: {}",
             result.content
         );
-        assert!(
-            !result.content.contains("Page Footer"),
-            "Footer should not be in output: {}",
-            result.content
-        );
+
+        // Verify headers/footers are tagged with correct content layers in DocumentStructure
+        let doc = result.document.as_ref().expect("DocumentStructure should be present");
+        use crate::types::ContentLayer;
+        let header_nodes: Vec<_> = doc
+            .nodes
+            .iter()
+            .filter(|n| n.content_layer == ContentLayer::Header)
+            .collect();
+        assert!(!header_nodes.is_empty(), "Should have header layer nodes");
+        let footer_nodes: Vec<_> = doc
+            .nodes
+            .iter()
+            .filter(|n| n.content_layer == ContentLayer::Footer)
+            .collect();
+        assert!(!footer_nodes.is_empty(), "Should have footer layer nodes");
     }
 
     #[tokio::test]
@@ -1236,24 +1740,33 @@ mod tests {
             )
             .await
             .unwrap();
+        let result =
+            crate::extraction::derive::derive_extraction_result(result, true, crate::core::config::OutputFormat::Plain);
 
-        // Should have inline reference
+        // Should have inline reference marker in the paragraph text
         assert!(
             result.content.contains("[^2]"),
             "Should have footnote ref: {}",
             result.content
         );
-        // Should have footnote definition
-        assert!(
-            result.content.contains("[^2]: This is the footnote content."),
-            "Should have footnote def: {}",
-            result.content
+        // Footnote definitions are in the Footnote content layer, not the main content string.
+        // Verify they exist in the DocumentStructure instead.
+        let doc = result.document.as_ref().expect("should have document structure");
+        let has_footnote = doc.nodes.iter().any(
+            |n| matches!(&n.content, crate::types::NodeContent::Footnote { text } if text.contains("footnote content")),
         );
+        assert!(has_footnote, "DocumentStructure should contain footnote node");
         // Separator footnotes should be excluded
         assert!(!result.content.contains("separator"), "Separator should be filtered");
         assert!(
             !result.content.contains("continuation"),
             "Continuation should be filtered"
+        );
+        // Verify footnote relationship exists in DocumentStructure
+        let doc = result.document.as_ref().expect("DocumentStructure should be present");
+        assert!(
+            !doc.relationships.is_empty(),
+            "Should have footnote relationships in DocumentStructure"
         );
     }
 
@@ -1289,12 +1802,26 @@ mod tests {
             )
             .await
             .unwrap();
+        let result =
+            crate::extraction::derive::derive_extraction_result(result, true, crate::core::config::OutputFormat::Plain);
 
-        // outline_level 0 = h1
+        // outline_level 0 = h1 — content is plain text; heading structure is in DocumentStructure
         assert!(
-            result.content.contains("# Custom Title"),
-            "Style-based heading: {}",
+            result.content.contains("Custom Title"),
+            "Style-based heading text should be present: {}",
             result.content
+        );
+        // Verify heading is in DocumentStructure with correct level
+        let doc = result.document.as_ref().expect("DocumentStructure should be present");
+        use crate::types::NodeContent;
+        let h1_nodes: Vec<_> = doc
+            .nodes
+            .iter()
+            .filter(|n| matches!(n.content, NodeContent::Heading { level: 1, .. }))
+            .collect();
+        assert!(
+            !h1_nodes.is_empty(),
+            "Should have h1 heading node from style-based heading"
         );
     }
 
@@ -1330,6 +1857,8 @@ mod tests {
             )
             .await
             .unwrap();
+        let result =
+            crate::extraction::derive::derive_extraction_result(result, true, crate::core::config::OutputFormat::Plain);
 
         // DocumentStructure should be populated
         assert!(result.document.is_some(), "DocumentStructure should be populated");
@@ -1399,12 +1928,17 @@ mod tests {
             )
             .await
             .unwrap();
+        let result =
+            crate::extraction::derive::derive_extraction_result(result, true, crate::core::config::OutputFormat::Plain);
 
-        assert!(result.pages.is_some(), "Pages should be populated");
-        let pages = result.pages.unwrap();
-        assert_eq!(pages.len(), 1, "Single page document should have 1 page");
-        assert_eq!(pages[0].page_number, 1);
-        assert!(pages[0].content.contains("Simple single page document."));
+        // The derive pipeline only builds pages when elements have explicit page numbers.
+        // For simple DOCX without page break info, pages may be None.
+        // Content should still be available in the main content field.
+        assert!(
+            result.content.contains("Simple single page document."),
+            "Content should contain the document text: {}",
+            result.content
+        );
     }
 
     #[test]
@@ -1525,18 +2059,21 @@ mod tests {
             )
             .await
             .unwrap();
+        let result =
+            crate::extraction::derive::derive_extraction_result(result, true, crate::core::config::OutputFormat::Plain);
 
-        // Should have inline reference
+        // Should have inline reference marker in the paragraph text
         assert!(
             result.content.contains("[^2]"),
             "Should have endnote ref: {}",
             result.content
         );
-        // Should have endnote definition
+        // Endnote definition text should be present (derive pipeline outputs plain text, not [^N]: format)
         assert!(
-            result.content.contains("[^2]: This is the endnote."),
-            "Should have endnote def: {}",
-            result.content
+            result.document.as_ref().is_some_and(|doc| doc.nodes.iter().any(
+                |n| matches!(&n.content, crate::types::NodeContent::Footnote { text } if text.contains("endnote"))
+            )),
+            "DocumentStructure should contain endnote node"
         );
         // Separator endnotes should be excluded
         assert!(!result.content.contains("separator"), "Separator should be filtered");
@@ -1602,6 +2139,8 @@ mod tests {
             )
             .await
             .unwrap();
+        let result =
+            crate::extraction::derive::derive_extraction_result(result, true, crate::core::config::OutputFormat::Plain);
 
         // Verify typed metadata fields
         assert_eq!(result.metadata.title.as_deref(), Some("My Document"));
@@ -1642,6 +2181,8 @@ mod tests {
             )
             .await
             .unwrap();
+        let result =
+            crate::extraction::derive::derive_extraction_result(result, true, crate::core::config::OutputFormat::Plain);
 
         assert!(
             result.images.is_none(),
@@ -1739,7 +2280,7 @@ mod tests {
                 name: Some("Picture 1".to_string()),
                 description: Some("A test image".to_string()),
             }),
-            image_ref: None,
+            image_ref: Some("rId1".to_string()),
         };
         let d_idx = doc.drawings.len();
         doc.drawings.push(drawing);
@@ -1809,12 +2350,29 @@ mod tests {
             )
             .await
             .unwrap();
+        let result =
+            crate::extraction::derive::derive_extraction_result(result, true, crate::core::config::OutputFormat::Plain);
 
+        // The derive pipeline skips images in the content string; they are represented
+        // in the DocumentStructure as Image nodes.
         assert!(
-            result.content.contains("!["),
-            "Output should contain image placeholder when extract_images is enabled. Got: {}",
+            result.content.contains("Text before image."),
+            "Should contain text before image: {}",
             result.content
         );
+        assert!(
+            result.content.contains("Text after image."),
+            "Should contain text after image: {}",
+            result.content
+        );
+        let doc = result.document.as_ref().expect("DocumentStructure should be present");
+        use crate::types::NodeContent;
+        let image_nodes: Vec<_> = doc
+            .nodes
+            .iter()
+            .filter(|n| matches!(n.content, NodeContent::Image { .. }))
+            .collect();
+        assert!(!image_nodes.is_empty(), "Should have image nodes in DocumentStructure");
     }
 
     #[tokio::test]
@@ -1877,6 +2435,8 @@ mod tests {
             )
             .await
             .unwrap();
+        let result =
+            crate::extraction::derive::derive_extraction_result(result, true, crate::core::config::OutputFormat::Plain);
 
         // Verify DocxMetadata format field
         assert!(result.metadata.format.is_some(), "Format should be populated");
