@@ -201,14 +201,180 @@ fn pre_extract_images(archive: &mut zip::ZipArchive<Cursor<Vec<u8>>>) -> AHashMa
     images
 }
 
+/// Pre-extract embedded formula objects (MathML) from the ODT archive.
+///
+/// ODT stores formulas in subdirectories like `Object 1/content.xml` containing
+/// MathML markup. This function scans for those and converts them to text.
+fn pre_extract_formulas(archive: &mut zip::ZipArchive<Cursor<Vec<u8>>>) -> AHashMap<String, String> {
+    use std::io::Read;
+
+    let mut formulas = AHashMap::new();
+    let names: Vec<String> = (0..archive.len())
+        .filter_map(|i| archive.by_index(i).ok().map(|f| f.name().to_string()))
+        .collect();
+
+    for name in &names {
+        // Formula objects live in e.g. "Object 1/content.xml"
+        if !name.ends_with("/content.xml") || name == "content.xml" {
+            continue;
+        }
+        if let Ok(mut file) = archive.by_name(name) {
+            let mut xml = String::new();
+            if file.read_to_string(&mut xml).is_ok() && xml.contains("math") {
+                let text = extract_mathml_text(&xml);
+                if !text.is_empty() {
+                    // Key is the object directory path without trailing /content.xml
+                    let dir = name.trim_end_matches("/content.xml");
+                    // Also store with trailing slash variant for flexible lookup
+                    formulas.insert(dir.to_string(), text.clone());
+                    formulas.insert(format!("{}/", dir), text);
+                }
+            }
+        }
+    }
+
+    formulas
+}
+
+/// Convert MathML XML content to a plain-text representation.
+fn extract_mathml_text(xml: &str) -> String {
+    let Ok(doc) = Document::parse(xml) else {
+        return String::new();
+    };
+
+    let root = doc.root_element();
+    let mut tokens = Vec::new();
+    collect_mathml_tokens(root, &mut tokens);
+    tokens.join(" ")
+}
+
+/// Recursively collect text tokens from MathML elements.
+fn collect_mathml_tokens(node: roxmltree::Node, tokens: &mut Vec<String>) {
+    let tag = node.tag_name().name();
+    match tag {
+        // Token elements that contain displayable text
+        "mi" | "mn" | "mo" | "ms" | "mtext" => {
+            if let Some(t) = node.text() {
+                let trimmed = t.trim();
+                if !trimmed.is_empty() {
+                    tokens.push(trimmed.to_string());
+                }
+            }
+        }
+        // Fraction: a/b
+        "mfrac" => {
+            let children: Vec<_> = node.children().filter(|c| c.is_element()).collect();
+            if children.len() == 2 {
+                let mut num = Vec::new();
+                collect_mathml_tokens(children[0], &mut num);
+                let mut den = Vec::new();
+                collect_mathml_tokens(children[1], &mut den);
+                if !num.is_empty() || !den.is_empty() {
+                    tokens.push(format!("({})/({})", num.join(" "), den.join(" ")));
+                    return;
+                }
+            }
+            for child in node.children() {
+                collect_mathml_tokens(child, tokens);
+            }
+        }
+        // Superscript: base^exp
+        "msup" => {
+            let children: Vec<_> = node.children().filter(|c| c.is_element()).collect();
+            if children.len() == 2 {
+                let mut base = Vec::new();
+                collect_mathml_tokens(children[0], &mut base);
+                let mut exp = Vec::new();
+                collect_mathml_tokens(children[1], &mut exp);
+                tokens.push(format!("{}^{}", base.join(" "), exp.join(" ")));
+                return;
+            }
+            for child in node.children() {
+                collect_mathml_tokens(child, tokens);
+            }
+        }
+        // Subscript: base_sub
+        "msub" => {
+            let children: Vec<_> = node.children().filter(|c| c.is_element()).collect();
+            if children.len() == 2 {
+                let mut base = Vec::new();
+                collect_mathml_tokens(children[0], &mut base);
+                let mut sub = Vec::new();
+                collect_mathml_tokens(children[1], &mut sub);
+                tokens.push(format!("{}_{}", base.join(" "), sub.join(" ")));
+                return;
+            }
+            for child in node.children() {
+                collect_mathml_tokens(child, tokens);
+            }
+        }
+        // Square root
+        "msqrt" => {
+            let mut inner = Vec::new();
+            for child in node.children() {
+                collect_mathml_tokens(child, &mut inner);
+            }
+            tokens.push(format!("sqrt({})", inner.join(" ")));
+        }
+        // All other elements: recurse
+        _ => {
+            for child in node.children() {
+                collect_mathml_tokens(child, tokens);
+            }
+        }
+    }
+}
+
+/// Extract description text from a `draw:frame` element by looking at
+/// `svg:title`, `svg:desc`, and `text:p` children of the frame.
+fn extract_frame_description(frame: roxmltree::Node) -> Option<String> {
+    // Try svg:title first
+    for child in frame.children() {
+        let name = child.tag_name().name();
+        if name == "title"
+            && let Some(text) = child.text()
+        {
+            let trimmed = text.trim();
+            if !trimmed.is_empty() {
+                return Some(trimmed.to_string());
+            }
+        }
+    }
+    // Try svg:desc
+    for child in frame.children() {
+        let name = child.tag_name().name();
+        if name == "desc"
+            && let Some(text) = child.text()
+        {
+            let trimmed = text.trim();
+            if !trimmed.is_empty() {
+                return Some(trimmed.to_string());
+            }
+        }
+    }
+    // Try text:p children (used for captions inside the frame)
+    for child in frame.children() {
+        if child.tag_name().name() == "p"
+            && let Some(text) = extract_node_text(child)
+        {
+            let trimmed = text.trim();
+            if !trimmed.is_empty() {
+                return Some(trimmed.to_string());
+            }
+        }
+    }
+    None
+}
+
 /// Build an `InternalDocument` from ODT content.xml.
 ///
 /// Walks the XML tree and emits flat elements through `InternalDocumentBuilder`.
-/// Captures headings, paragraphs, lists, tables, images, footnotes (with anchors),
-/// and headers/footers with appropriate content layers.
+/// Captures headings, paragraphs, lists, tables, images, formulas, footnotes
+/// (with inline markers), and headers/footers with appropriate content layers.
 fn build_internal_document(archive: &mut zip::ZipArchive<Cursor<Vec<u8>>>) -> crate::error::Result<InternalDocument> {
     // Pre-extract images so we don't need the archive borrow during XML walking
     let image_data = pre_extract_images(archive);
+    let formula_data = pre_extract_formulas(archive);
 
     let mut xml_content = String::new();
 
@@ -234,7 +400,7 @@ fn build_internal_document(archive: &mut zip::ZipArchive<Cursor<Vec<u8>>>) -> cr
         if body_child.tag_name().name() == "body" {
             for text_elem in body_child.children() {
                 if text_elem.tag_name().name() == "text" {
-                    build_internal_elements(text_elem, &mut builder, &style_map, &image_data);
+                    build_internal_elements(text_elem, &mut builder, &style_map, &image_data, &formula_data);
                 }
             }
         }
@@ -252,6 +418,7 @@ fn build_internal_elements(
     builder: &mut InternalDocumentBuilder,
     style_map: &AHashMap<String, OdtStyleProps>,
     image_data: &AHashMap<String, (Vec<u8>, String)>,
+    formula_data: &AHashMap<String, String>,
 ) {
     use crate::types::document_structure::ContentLayer;
     use crate::types::internal::{ElementKind, InternalElement};
@@ -275,62 +442,93 @@ fn build_internal_elements(
                 }
             }
             "p" => {
-                // Check for draw:frame images inside paragraphs
+                // Collect footnote markers for inline injection
+                let mut footnote_markers: Vec<(String, String)> = Vec::new();
+
+                // Check for draw:frame children — may contain images or embedded formulas
                 for desc in node.descendants() {
-                    if desc.tag_name().name() == "image" {
-                        let href = desc
-                            .attribute(("http://www.w3.org/1999/xlink", "href"))
-                            .or_else(|| desc.attribute("xlink:href"));
-                        let description = desc
-                            .parent()
-                            .filter(|p| p.tag_name().name() == "frame")
-                            .and_then(|frame| {
-                                frame
-                                    .attribute(("urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0", "title"))
-                                    .or_else(|| frame.attribute("svg:title"))
-                            });
-
-                        // Try to extract actual image binary from the pre-extracted map
-                        let extracted =
-                            href.and_then(|h| image_data.get(h).map(|(data, format)| (data.clone(), format.clone())));
-
-                        if let Some((data, format)) = extracted {
-                            let image = ExtractedImage {
-                                data: Bytes::from(data),
-                                format: Cow::Owned(format),
-                                image_index: 0,
-                                page_number: None,
-                                width: None,
-                                height: None,
-                                colorspace: None,
-                                bits_per_component: None,
-                                is_mask: false,
-                                description: description.map(|s| s.to_string()),
-                                ocr_result: None,
-                                bounding_box: None,
-                                source_path: None,
-                            };
-                            let idx = builder.push_image(description, image, None, None);
-                            if let Some(h) = href {
-                                let mut attrs = AHashMap::with_capacity(1);
-                                attrs.insert("src".to_string(), h.to_string());
-                                builder.set_attributes(idx, attrs);
+                    if desc.tag_name().name() == "frame" {
+                        // Check if this frame contains a draw:object referencing a formula
+                        let mut is_formula = false;
+                        for frame_child in desc.children() {
+                            if frame_child.tag_name().name() == "object" {
+                                let obj_href = frame_child
+                                    .attribute(("http://www.w3.org/1999/xlink", "href"))
+                                    .or_else(|| frame_child.attribute("xlink:href"));
+                                if let Some(href) = obj_href {
+                                    // Normalize: remove leading "./" if present
+                                    let normalized = href.trim_start_matches("./");
+                                    if let Some(formula_text) = formula_data.get(normalized) {
+                                        builder.push_formula(formula_text, None, None);
+                                        is_formula = true;
+                                        break;
+                                    }
+                                }
                             }
-                        } else {
-                            // No image data available — emit placeholder
-                            let text_val = description.or(href).unwrap_or("");
-                            let elem = InternalElement::text(ElementKind::Image { image_index: 0 }, text_val, 0);
-                            let idx = builder.push_element(elem);
-                            if let Some(h) = href {
-                                let mut attrs = AHashMap::with_capacity(1);
-                                attrs.insert("src".to_string(), h.to_string());
-                                builder.set_attributes(idx, attrs);
+                        }
+
+                        if !is_formula {
+                            // Look for image inside this frame
+                            for frame_child in desc.descendants() {
+                                if frame_child.tag_name().name() == "image" {
+                                    let href = frame_child
+                                        .attribute(("http://www.w3.org/1999/xlink", "href"))
+                                        .or_else(|| frame_child.attribute("xlink:href"));
+
+                                    // Use extract_frame_description for richer alt text
+                                    let description = extract_frame_description(desc).or_else(|| {
+                                        desc.attribute((
+                                            "urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0",
+                                            "title",
+                                        ))
+                                        .or_else(|| desc.attribute("svg:title"))
+                                        .map(|s| s.to_string())
+                                    });
+
+                                    let extracted = href.and_then(|h| {
+                                        image_data.get(h).map(|(data, format)| (data.clone(), format.clone()))
+                                    });
+
+                                    if let Some((data, format)) = extracted {
+                                        let image = ExtractedImage {
+                                            data: Bytes::from(data),
+                                            format: Cow::Owned(format),
+                                            image_index: 0,
+                                            page_number: None,
+                                            width: None,
+                                            height: None,
+                                            colorspace: None,
+                                            bits_per_component: None,
+                                            is_mask: false,
+                                            description: description.clone(),
+                                            ocr_result: None,
+                                            bounding_box: None,
+                                            source_path: None,
+                                        };
+                                        let idx = builder.push_image(description.as_deref(), image, None, None);
+                                        if let Some(h) = href {
+                                            let mut attrs = AHashMap::with_capacity(1);
+                                            attrs.insert("src".to_string(), h.to_string());
+                                            builder.set_attributes(idx, attrs);
+                                        }
+                                    } else {
+                                        let text_val = description.as_deref().or(href).unwrap_or("");
+                                        let elem =
+                                            InternalElement::text(ElementKind::Image { image_index: 0 }, text_val, 0);
+                                        let idx = builder.push_element(elem);
+                                        if let Some(h) = href {
+                                            let mut attrs = AHashMap::with_capacity(1);
+                                            attrs.insert("src".to_string(), h.to_string());
+                                            builder.set_attributes(idx, attrs);
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
                 }
 
-                // Extract footnotes from this paragraph
+                // Extract footnotes from this paragraph and collect markers for inline injection
                 for child in node.descendants() {
                     if child.tag_name().name() == "note" {
                         let _note_class = child
@@ -350,6 +548,7 @@ fn build_internal_elements(
                                     let key = note_id
                                         .map(|id| id.to_string())
                                         .unwrap_or_else(|| format!("fn{}", footnote_counter));
+                                    footnote_markers.push((citation_trimmed.to_string(), key.clone()));
                                     builder.push_footnote_ref(citation_trimmed, &key, None);
                                 }
                             }
@@ -358,8 +557,6 @@ fn build_internal_elements(
                             {
                                 let trimmed = note_text.trim();
                                 if !trimmed.is_empty() {
-                                    // Use the same counter/key logic - note-citation
-                                    // may have already incremented, so reuse the key
                                     let key = note_id.map(|id| id.to_string()).unwrap_or_else(|| {
                                         if footnote_counter == 0 {
                                             footnote_counter += 1;
@@ -374,10 +571,20 @@ fn build_internal_elements(
                     }
                 }
 
-                let (text, annotations, uris) = collect_odt_annotations(node, style_map);
+                let (mut text, annotations, uris) = collect_odt_annotations(node, style_map);
                 for uri in uris {
                     builder.push_uri(uri);
                 }
+
+                // Inject inline footnote markers [^N] into the paragraph text
+                for (citation, _key) in &footnote_markers {
+                    let marker = format!("[^{}]", citation);
+                    // Append marker if not already present in text
+                    if !text.contains(&marker) {
+                        text.push_str(&marker);
+                    }
+                }
+
                 let trimmed = text.trim();
                 if !trimmed.is_empty() {
                     builder.push_paragraph(trimmed, annotations, None, None);
@@ -393,7 +600,7 @@ fn build_internal_elements(
                 build_internal_list(node, builder);
             }
             "section" => {
-                build_internal_elements(node, builder, style_map, image_data);
+                build_internal_elements(node, builder, style_map, image_data, formula_data);
             }
             _ => {}
         }

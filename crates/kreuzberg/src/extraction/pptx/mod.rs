@@ -374,17 +374,33 @@ fn build_slide_structure(
         (pos.y, pos.x)
     });
 
-    // Find the first text element to use as title
-    let slide_title = sorted_indices.iter().find_map(|&idx| {
-        if let SlideElement::Text(text, _) = &slide.elements[idx] {
-            let plain = join_runs_with_spacing(&text.runs, Run::extract);
-            let normalized = plain.replace('\n', " ");
-            if normalized.len() < 100 && !normalized.trim().is_empty() {
-                return Some(normalized.trim().to_string());
+    // Find the slide title: prefer explicit title placeholder, fall back to
+    // first short text element.
+    let slide_title = sorted_indices
+        .iter()
+        .find_map(|&idx| {
+            if let SlideElement::Text(text, _) = &slide.elements[idx]
+                && text.is_title
+            {
+                let plain = join_runs_with_spacing(&text.runs, Run::extract);
+                if !plain.trim().is_empty() {
+                    return Some(plain.trim().to_string());
+                }
             }
-        }
-        None
-    });
+            None
+        })
+        .or_else(|| {
+            sorted_indices.iter().find_map(|&idx| {
+                if let SlideElement::Text(text, _) = &slide.elements[idx] {
+                    let plain = join_runs_with_spacing(&text.runs, Run::extract);
+                    let normalized = plain.replace('\n', " ");
+                    if normalized.len() < 100 && !normalized.trim().is_empty() {
+                        return Some(normalized.trim().to_string());
+                    }
+                }
+                None
+            })
+        });
 
     doc_builder.push_slide(slide.slide_number, slide_title.as_deref());
 
@@ -399,9 +415,9 @@ fn build_slide_structure(
             SlideElement::Text(text, _) => {
                 let (plain_text, annotations) = runs_to_text_and_annotations(&text.runs);
                 let normalized = plain_text.replace('\n', " ");
-                let is_title = normalized.len() < 100 && !normalized.trim().is_empty();
+                let is_title_elem = text.is_title || (normalized.len() < 100 && !normalized.trim().is_empty());
 
-                if is_title && !first_title_seen {
+                if is_title_elem && !first_title_seen {
                     first_title_seen = true;
                     doc_builder.push_heading(1, normalized.trim(), None, bbox);
                 } else if !plain_text.trim().is_empty() {
@@ -536,18 +552,35 @@ impl elements::Slide {
             (pos.y, pos.x)
         });
 
-        // Find the slide title: first short text element in y-sorted order.
-        // We emit it first, then skip it in the main loop.
-        let title_idx = element_indices.iter().find_map(|&idx| {
-            if let SlideElement::Text(text, _) = &self.elements[idx] {
-                let plain = join_runs_with_spacing(&text.runs, Run::extract);
-                let normalized = plain.replace('\n', " ");
-                if normalized.len() < 100 && !normalized.trim().is_empty() {
-                    return Some(idx);
+        // Find the slide title: prefer a shape with an explicit title placeholder
+        // type (type="title" or type="ctrTitle"). Fall back to the first short text
+        // element in y-sorted order when no placeholder is marked.
+        let title_idx = element_indices
+            .iter()
+            .find_map(|&idx| {
+                if let SlideElement::Text(text, _) = &self.elements[idx]
+                    && text.is_title
+                {
+                    let plain = join_runs_with_spacing(&text.runs, Run::extract);
+                    if !plain.trim().is_empty() {
+                        return Some(idx);
+                    }
                 }
-            }
-            None
-        });
+                None
+            })
+            .or_else(|| {
+                // Fallback: first short text element
+                element_indices.iter().find_map(|&idx| {
+                    if let SlideElement::Text(text, _) = &self.elements[idx] {
+                        let plain = join_runs_with_spacing(&text.runs, Run::extract);
+                        let normalized = plain.replace('\n', " ");
+                        if normalized.len() < 100 && !normalized.trim().is_empty() {
+                            return Some(idx);
+                        }
+                    }
+                    None
+                })
+            });
 
         // Emit title first as a heading
         if let Some(tidx) = title_idx

@@ -37,9 +37,8 @@ impl ExcelExtractor {
 
     /// Build an `InternalDocument` from the workbook.
     ///
-    /// Each sheet becomes a table. Sheet headings are omitted to match
-    /// the canonical libreoffice+pandoc ground truth format (which renders
-    /// only data tables with no sheet-name headings).
+    /// Each sheet becomes a table preceded by an H2 heading with the
+    /// sheet name (when non-empty).
     fn build_internal_document(workbook: &crate::types::ExcelWorkbook) -> InternalDocument {
         let mut builder = InternalDocumentBuilder::new("excel");
 
@@ -47,6 +46,9 @@ impl ExcelExtractor {
             if let Some(ref cells) = sheet.table_cells
                 && !cells.is_empty()
             {
+                if !sheet.name.is_empty() {
+                    builder.push_heading(2, &sheet.name, None, None);
+                }
                 builder.push_table_from_cells(cells, Some((sheet_index + 1) as u32), None);
             }
         }

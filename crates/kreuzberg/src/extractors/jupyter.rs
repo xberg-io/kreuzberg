@@ -502,9 +502,55 @@ impl JupyterExtractor {
         uris
     }
 
+    /// Detect an ATX heading line (`# …`, `## …`, etc.) and return level + text.
+    fn parse_heading_line(line: &str) -> Option<(u8, &str)> {
+        let trimmed = line.trim_start();
+        let hashes = trimmed.bytes().take_while(|&b| b == b'#').count();
+        if hashes == 0 || hashes > 6 {
+            return None;
+        }
+        let rest = &trimmed[hashes..];
+        // ATX heading requires a space (or end-of-line) after the hashes
+        if !rest.is_empty() && !rest.starts_with(' ') {
+            return None;
+        }
+        Some((hashes as u8, rest.trim()))
+    }
+
+    /// Collect `text/plain` content from a single notebook output object.
+    fn collect_output_text(output: &Value) -> String {
+        let mut text = String::new();
+
+        let output_type = output.get("output_type").and_then(|t| t.as_str()).unwrap_or("");
+
+        match output_type {
+            "stream" => {
+                if let Some(t) = output.get("text") {
+                    text.push_str(&Self::extract_source(t));
+                }
+            }
+            "execute_result" | "display_data" => {
+                if let Some(data) = output.get("data").and_then(|d| d.as_object())
+                    && let Some(plain) = data.get("text/plain")
+                {
+                    text.push_str(&Self::extract_source(plain));
+                }
+            }
+            "error" => {
+                let ename = output.get("ename").and_then(|e| e.as_str()).unwrap_or("Unknown");
+                let evalue = output.get("evalue").and_then(|e| e.as_str()).unwrap_or("");
+                text.push_str(&format!("Error ({}): {}", ename, evalue));
+            }
+            _ => {}
+        }
+
+        text
+    }
+
     /// Build an `InternalDocument` from the already-parsed notebook JSON.
     ///
-    /// Markdown cells become paragraphs, code cells become code blocks.
+    /// Markdown cells are split into headings and paragraphs. Code cells
+    /// become code blocks followed by any output paragraphs.
     fn build_internal_document(notebook: &Value) -> Option<InternalDocument> {
         let cells = notebook.get("cells")?.as_array()?;
 
@@ -538,8 +584,36 @@ impl JupyterExtractor {
                     for uri in link_uris {
                         builder.push_uri(uri);
                     }
-                    let (stripped, annotations) = Self::scan_markdown_inline(trimmed);
-                    builder.push_paragraph(&stripped, annotations, None, None);
+
+                    // Parse line-by-line: headings become push_heading, other
+                    // lines are accumulated and flushed as paragraphs.
+                    let mut para_buf = String::new();
+                    for line in trimmed.lines() {
+                        if let Some((level, heading_text)) = Self::parse_heading_line(line) {
+                            // Flush accumulated paragraph text first
+                            let flushed = para_buf.trim();
+                            if !flushed.is_empty() {
+                                let (stripped, annotations) = Self::scan_markdown_inline(flushed);
+                                builder.push_paragraph(&stripped, annotations, None, None);
+                            }
+                            para_buf.clear();
+
+                            if !heading_text.is_empty() {
+                                builder.push_heading(level, heading_text, None, None);
+                            }
+                        } else {
+                            if !para_buf.is_empty() {
+                                para_buf.push('\n');
+                            }
+                            para_buf.push_str(line);
+                        }
+                    }
+                    // Flush remaining paragraph text
+                    let flushed = para_buf.trim();
+                    if !flushed.is_empty() {
+                        let (stripped, annotations) = Self::scan_markdown_inline(flushed);
+                        builder.push_paragraph(&stripped, annotations, None, None);
+                    }
                 }
                 "code" => {
                     let idx = builder.push_code(trimmed, kernel_lang, None, None);
@@ -567,6 +641,17 @@ impl JupyterExtractor {
                     }
                     if !attrs.is_empty() {
                         builder.set_attributes(idx, attrs);
+                    }
+
+                    // Emit cell outputs as paragraphs
+                    if let Some(outputs) = cell.get("outputs").and_then(|o| o.as_array()) {
+                        for output in outputs {
+                            let output_text = Self::collect_output_text(output);
+                            let output_trimmed = output_text.trim();
+                            if !output_trimmed.is_empty() {
+                                builder.push_paragraph(output_trimmed, vec![], None, None);
+                            }
+                        }
                     }
                 }
                 _ => {

@@ -396,6 +396,11 @@ impl OrgModeExtractor {
         while i < lines.len() {
             let trimmed = lines[i].trim();
             if let Some(rest) = trimmed.strip_prefix("#+") {
+                // Block delimiters (BEGIN/END) are not metadata — stop preamble
+                let rest_upper = rest.to_ascii_uppercase();
+                if rest_upper.starts_with("BEGIN") || rest_upper.starts_with("END") {
+                    break;
+                }
                 if let Some((key, val)) = rest.split_once(':') {
                     let key_upper = key.trim().to_uppercase();
                     let value = val.trim().to_string();
@@ -418,8 +423,13 @@ impl OrgModeExtractor {
         while i < lines.len() {
             let trimmed = lines[i].trim();
 
-            // Skip metadata directives in body
-            if trimmed.starts_with("#+") && !trimmed.starts_with("#+BEGIN") && !trimmed.starts_with("#+END") {
+            // Skip metadata directives in body (but not block delimiters)
+            if trimmed.starts_with("#+")
+                && !trimmed.starts_with("#+BEGIN")
+                && !trimmed.starts_with("#+begin")
+                && !trimmed.starts_with("#+END")
+                && !trimmed.starts_with("#+end")
+            {
                 i += 1;
                 continue;
             }
@@ -528,6 +538,26 @@ impl OrgModeExtractor {
                     i += 1;
                 }
                 b.push_quote_end();
+                continue;
+            }
+
+            // Example blocks -> code blocks without language annotation
+            if trimmed.starts_with("#+BEGIN_EXAMPLE") || trimmed.starts_with("#+begin_example") {
+                i += 1;
+                let mut block_content = String::new();
+                while i < lines.len() {
+                    let t = lines[i].trim();
+                    if t.starts_with("#+END_EXAMPLE") || t.starts_with("#+end_example") {
+                        i += 1;
+                        break;
+                    }
+                    if !block_content.is_empty() {
+                        block_content.push('\n');
+                    }
+                    block_content.push_str(lines[i]);
+                    i += 1;
+                }
+                b.push_code(block_content.trim_end(), None, None, None);
                 continue;
             }
 
@@ -1174,5 +1204,97 @@ mod tests {
         let content = OrgModeExtractor::extract_content(&org);
         assert!(content.contains("見出し"), "CJK heading preserved");
         assert!(content.contains("太字"), "Bold CJK text present");
+    }
+
+    #[test]
+    fn test_src_block_lowercase_produces_code_element() {
+        use crate::types::internal::ElementKind;
+
+        let org_text = "#+begin_src python\ndef hello():\n    print(\"Hello, World!\")\n#+end_src\n";
+        let doc = OrgModeExtractor::build_internal_document(org_text);
+
+        let code_elements: Vec<_> = doc
+            .elements
+            .iter()
+            .filter(|e| matches!(e.kind, ElementKind::Code))
+            .collect();
+        assert!(
+            !code_elements.is_empty(),
+            "Should produce Code element for lowercase #+begin_src block"
+        );
+        let code = &code_elements[0];
+        assert!(
+            code.text.contains("def hello():"),
+            "Code element should contain the function definition"
+        );
+        // Check language attribute
+        let lang = code
+            .attributes
+            .as_ref()
+            .and_then(|a| a.get("language"))
+            .map(|s| s.as_str());
+        assert_eq!(lang, Some("python"), "Language should be python");
+    }
+
+    #[test]
+    fn test_src_block_uppercase_produces_code_element() {
+        use crate::types::internal::ElementKind;
+
+        let org_text = "#+BEGIN_SRC bash\necho \"hello\"\n#+END_SRC\n";
+        let doc = OrgModeExtractor::build_internal_document(org_text);
+
+        let code_elements: Vec<_> = doc
+            .elements
+            .iter()
+            .filter(|e| matches!(e.kind, ElementKind::Code))
+            .collect();
+        assert!(
+            !code_elements.is_empty(),
+            "Should produce Code element for uppercase #+BEGIN_SRC block"
+        );
+        assert!(code_elements[0].text.contains("echo"));
+    }
+
+    #[test]
+    fn test_example_block_produces_code_element() {
+        use crate::types::internal::ElementKind;
+
+        let org_text = "#+BEGIN_EXAMPLE\nSome example text\nSecond line\n#+END_EXAMPLE\n";
+        let doc = OrgModeExtractor::build_internal_document(org_text);
+
+        let code_elements: Vec<_> = doc
+            .elements
+            .iter()
+            .filter(|e| matches!(e.kind, ElementKind::Code))
+            .collect();
+        assert!(
+            !code_elements.is_empty(),
+            "Should produce Code element for #+BEGIN_EXAMPLE block"
+        );
+        assert!(
+            code_elements[0].text.contains("Some example text"),
+            "Code element should contain example content"
+        );
+        // EXAMPLE blocks should have no language attribute
+        let lang = code_elements[0].attributes.as_ref().and_then(|a| a.get("language"));
+        assert!(lang.is_none(), "EXAMPLE blocks should not have a language attribute");
+    }
+
+    #[test]
+    fn test_lowercase_example_block_produces_code_element() {
+        use crate::types::internal::ElementKind;
+
+        let org_text = "#+begin_example\nExample content\n#+end_example\n";
+        let doc = OrgModeExtractor::build_internal_document(org_text);
+
+        let code_elements: Vec<_> = doc
+            .elements
+            .iter()
+            .filter(|e| matches!(e.kind, ElementKind::Code))
+            .collect();
+        assert!(
+            !code_elements.is_empty(),
+            "Should produce Code element for lowercase #+begin_example block"
+        );
     }
 }

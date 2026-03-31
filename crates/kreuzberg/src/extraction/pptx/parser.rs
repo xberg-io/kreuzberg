@@ -86,6 +86,32 @@ fn parse_group(node: &Node) -> Result<Vec<SlideElement>> {
     Ok(elements)
 }
 
+/// Check whether a shape node contains a title placeholder.
+///
+/// OOXML placeholder types for titles:
+/// - `type="title"` (general title, idx 0 in most slide layouts)
+/// - `type="ctrTitle"` (centered title, used on title slides)
+fn is_title_placeholder(sp_node: &Node) -> bool {
+    // Path: p:sp / p:nvSpPr / p:nvPr / p:ph[@type]
+    let nv_sp_pr = sp_node
+        .children()
+        .find(|n| n.tag_name().name() == "nvSpPr" && n.tag_name().namespace() == Some(PRESENTATIONML_NAMESPACE));
+    if let Some(nv_sp_pr) = nv_sp_pr {
+        let nv_pr = nv_sp_pr
+            .children()
+            .find(|n| n.tag_name().name() == "nvPr" && n.tag_name().namespace() == Some(PRESENTATIONML_NAMESPACE));
+        if let Some(nv_pr) = nv_pr {
+            let ph = nv_pr
+                .children()
+                .find(|n| n.tag_name().name() == "ph" && n.tag_name().namespace() == Some(PRESENTATIONML_NAMESPACE));
+            if let Some(ph) = ph {
+                return matches!(ph.attribute("type"), Some("title") | Some("ctrTitle"));
+            }
+        }
+    }
+    false
+}
+
 fn parse_sp(sp_node: &Node) -> Result<Option<ParsedContent>> {
     // Some shapes like image placeholders (<p:ph type="pic"/>) don't have txBody.
     // These should be skipped gracefully - they contain no text to extract.
@@ -98,21 +124,28 @@ fn parse_sp(sp_node: &Node) -> Result<Option<ParsedContent>> {
         None => return Ok(None), // Skip shapes without txBody
     };
 
-    let is_list = tx_body_node.descendants().any(|n| {
-        n.is_element()
-            && n.tag_name().name() == "pPr"
-            && n.tag_name().namespace() == Some(DRAWINGML_NAMESPACE)
-            && (n.attribute("lvl").is_some()
-                || n.children().any(|child| {
-                    child.is_element()
-                        && (child.tag_name().name() == "buAutoNum" || child.tag_name().name() == "buChar")
-                }))
-    });
+    let is_title = is_title_placeholder(sp_node);
+
+    // Title placeholders should not be treated as lists even if they have
+    // paragraph-level properties that look like bullet markers.
+    let is_list = !is_title
+        && tx_body_node.descendants().any(|n| {
+            n.is_element()
+                && n.tag_name().name() == "pPr"
+                && n.tag_name().namespace() == Some(DRAWINGML_NAMESPACE)
+                && (n.attribute("lvl").is_some()
+                    || n.children().any(|child| {
+                        child.is_element()
+                            && (child.tag_name().name() == "buAutoNum" || child.tag_name().name() == "buChar")
+                    }))
+        });
 
     if is_list {
         Ok(Some(ParsedContent::List(parse_list(&tx_body_node)?)))
     } else {
-        Ok(Some(ParsedContent::Text(parse_text(&tx_body_node)?)))
+        let mut text_el = parse_text(&tx_body_node)?;
+        text_el.is_title = is_title;
+        Ok(Some(ParsedContent::Text(text_el)))
     }
 }
 
@@ -126,7 +159,7 @@ pub(super) fn parse_text(tx_body_node: &Node) -> Result<TextElement> {
         runs.append(&mut paragraph_runs);
     }
 
-    Ok(TextElement { runs })
+    Ok(TextElement { runs, is_title: false })
 }
 
 fn parse_graphic_frame(node: &Node) -> Result<Option<TableElement>> {

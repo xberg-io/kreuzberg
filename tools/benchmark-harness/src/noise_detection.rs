@@ -311,6 +311,7 @@ fn is_horizontal_rule(trimmed: &str) -> bool {
 const MARKDOWN_STRUCTURAL_PUNCT: &[char] = &[
     '-', '|', '*', '_', '=', '~', ':', '#', '>', // block-level
     '.', '/', '!', '[', ']', '(', ')', '\\', // inline syntax
+    '{', '}', // LaTeX equations, e.g. \sum_{k=0}^{n}
     '&', ';', // HTML entities
     '\'', '"', // quotes (RST underlines, attribute values)
     '+', // list markers, diff markers
@@ -346,6 +347,28 @@ fn is_known_script_char(c: char) -> bool {
         0x10A0..=0x10FF |
         // Korean Hangul Jamo
         0x1100..=0x11FF |
+        // General punctuation (em dash, en dash, bullets, etc.)
+        0x2000..=0x206F |
+        // Superscripts and subscripts
+        0x2070..=0x209F |
+        // Currency symbols
+        0x20A0..=0x20CF |
+        // Letterlike symbols
+        0x2100..=0x214F |
+        // Number forms (fractions)
+        0x2150..=0x218F |
+        // Arrows
+        0x2190..=0x21FF |
+        // Mathematical operators
+        0x2200..=0x22FF |
+        // Enclosed alphanumerics
+        0x2460..=0x24FF |
+        // Geometric shapes
+        0x25A0..=0x25FF |
+        // Miscellaneous symbols
+        0x2600..=0x26FF |
+        // Dingbats
+        0x2700..=0x27BF |
         // CJK Unified Ideographs (+ extension A + compatibility)
         0x2E80..=0x9FFF |
         // Korean Hangul Syllables
@@ -570,7 +593,9 @@ fn detect_orphaned_list_markers(lines: &[&str], code_ranges: &[CodeRange]) -> Ve
 
 /// Detects standalone small numbers that look like page number artifacts.
 ///
-/// Only flags when at least 3 such lines exist with sequential or near-sequential values.
+/// Only flags when at least 5 sequential or near-sequential standalone numbers
+/// exist AND the sequential numbers span at least 20 lines apart (page-like
+/// spacing). Clustered numbers (like table cells) are not flagged.
 fn detect_page_number_artifacts(lines: &[&str], code_ranges: &[CodeRange]) -> Vec<NoiseIssue> {
     // Collect candidate lines: standalone numbers 1-9999
     let mut candidates: Vec<(usize, u32)> = Vec::new();
@@ -588,22 +613,34 @@ fn detect_page_number_artifacts(lines: &[&str], code_ranges: &[CodeRange]) -> Ve
         }
     }
 
-    if candidates.len() < 3 {
+    if candidates.len() < 5 {
         return Vec::new();
     }
 
-    // Check for sequential/near-sequential values
+    // Check for sequential/near-sequential values and track their line span
     let values: Vec<u32> = candidates.iter().map(|(_, v)| *v).collect();
+    let line_indices: Vec<usize> = candidates.iter().map(|(i, _)| *i).collect();
     let mut sequential_count = 0;
-    for window in values.windows(2) {
+    let mut sequential_min_line = usize::MAX;
+    let mut sequential_max_line = 0usize;
+    for (idx, window) in values.windows(2).enumerate() {
         let diff = window[1].saturating_sub(window[0]);
         if (1..=3).contains(&diff) {
             sequential_count += 1;
+            sequential_min_line = sequential_min_line.min(line_indices[idx]);
+            sequential_max_line = sequential_max_line.max(line_indices[idx + 1]);
         }
     }
 
-    // Need at least 2 sequential pairs (3 sequential numbers)
-    if sequential_count < 2 {
+    // Need at least 4 sequential pairs (5 sequential numbers)
+    if sequential_count < 4 {
+        return Vec::new();
+    }
+
+    // Require the sequential numbers to span at least 20 lines (page-like spacing).
+    // Clustered numbers (e.g., table cells on adjacent lines) won't pass this check.
+    let span = sequential_max_line.saturating_sub(sequential_min_line);
+    if span < 20 {
         return Vec::new();
     }
 
@@ -643,6 +680,14 @@ fn is_markdown_image(trimmed: &str) -> bool {
         return true;
     }
     false
+}
+
+/// Returns true if the line looks like an RST grid table border.
+///
+/// RST grid table borders start with `+` and contain only `+`, `-`, `=`, `|`,
+/// and spaces. Examples: `+---+---+---+`, `+===+===+`.
+fn is_rst_grid_table_border(trimmed: &str) -> bool {
+    trimmed.starts_with('+') && trimmed.chars().all(|c| matches!(c, '+' | '-' | '=' | '|' | ' '))
 }
 
 /// Detects lines that repeat 10+ times in the document (header/footer repetition).
@@ -688,6 +733,11 @@ fn detect_header_footer_repetition(lines: &[&str], code_ranges: &[CodeRange]) ->
 
         // Skip image placeholders
         if is_image_placeholder(trimmed) {
+            continue;
+        }
+
+        // Skip RST grid table borders (lines of +, -, =, |, spaces)
+        if is_rst_grid_table_border(trimmed) {
             continue;
         }
 
@@ -828,7 +878,7 @@ fn detect_dangling_references(lines: &[&str], code_ranges: &[CodeRange]) -> Vec<
         .collect()
 }
 
-/// Detects excessive heading density (more headings than paragraphs when heading count > 5).
+/// Detects excessive heading density (more than 2x headings vs paragraphs when heading count > 10).
 fn detect_excessive_heading_density(lines: &[&str], code_ranges: &[CodeRange]) -> Vec<NoiseIssue> {
     let mut heading_count = 0usize;
     let mut paragraph_count = 0usize;
@@ -863,7 +913,7 @@ fn detect_excessive_heading_density(lines: &[&str], code_ranges: &[CodeRange]) -
         paragraph_count += 1;
     }
 
-    if heading_count > paragraph_count && heading_count > 5 {
+    if heading_count > 2 * paragraph_count && heading_count > 10 {
         vec![NoiseIssue {
             kind: NoiseKind::ExcessiveHeadingDensity,
             line: 1,
@@ -1140,24 +1190,19 @@ Normal text here.
 
     #[test]
     fn test_page_numbers() {
-        let md = "\
-# Title
-
-Some text.
-
-1
-
-More text.
-
-2
-
-Even more text.
-
-3
-
-Final text.
-";
-        let report = detect_noise(md);
+        // Need 5+ sequential numbers spanning 20+ lines to trigger detection
+        let mut lines = vec!["# Title".to_string(), String::new()];
+        for page in 1..=6 {
+            lines.push(format!("Page {page} content with enough text to fill the space."));
+            lines.push(String::new());
+            lines.push(String::new());
+            lines.push(String::new());
+            lines.push(page.to_string());
+            lines.push(String::new());
+        }
+        lines.push("Final text.".to_string());
+        let md = lines.join("\n");
+        let report = detect_noise(&md);
         let page_issues: Vec<_> = report
             .issues
             .iter()
@@ -1167,7 +1212,36 @@ Final text.
             !page_issues.is_empty(),
             "Expected page number artifact detection for sequential standalone numbers"
         );
-        assert_eq!(page_issues.len(), 3);
+        assert_eq!(page_issues.len(), 6);
+    }
+
+    #[test]
+    fn test_clustered_numbers_not_flagged_as_page_numbers() {
+        // Numbers on adjacent lines (table-like data) should NOT be flagged
+        let md = "\
+# Table Data
+
+1
+2
+3
+4
+5
+6
+7
+
+Some text after.
+";
+        let report = detect_noise(&md);
+        let page_issues: Vec<_> = report
+            .issues
+            .iter()
+            .filter(|i| i.kind == NoiseKind::PageNumberArtifact)
+            .collect();
+        assert!(
+            page_issues.is_empty(),
+            "Clustered sequential numbers (table data) should not be flagged as page numbers, got: {:?}",
+            page_issues
+        );
     }
 
     #[test]
@@ -1971,6 +2045,104 @@ Normal paragraph after.
             garbled.is_empty(),
             "Pure Cyrillic text should not be flagged as garbled, got: {:?}",
             garbled
+        );
+    }
+
+    #[test]
+    fn test_math_operators_not_flagged_as_garbled() {
+        // Mathematical operators like ∑, ∏, √, ∞, ≤, ≥ are legitimate
+        let md = "\
+# Math
+
+\u{2211}\u{2208}\u{2209}\u{221A}\u{221E}\u{2264}\u{2265}\u{2260}\u{2261}\u{2248}\u{2202}\u{222B}\u{220F}\u{2200}\u{2203}\u{2207}\u{2211}\u{2208}\u{2209}\u{221A}
+";
+        let report = detect_noise(md);
+        let garbled: Vec<_> = report
+            .issues
+            .iter()
+            .filter(|i| i.kind == NoiseKind::GarbledText)
+            .collect();
+        assert!(
+            garbled.is_empty(),
+            "Mathematical operators should not be flagged as garbled, got: {:?}",
+            garbled
+        );
+    }
+
+    #[test]
+    fn test_latex_braces_not_flagged_as_garbled() {
+        // LaTeX equations like \sum_{k=0}^{n} use { and } which should not trigger garbled
+        let md = "\
+# Equation
+
+The formula is \\sum_{k=0}^{n} C{k}{n} x^{k}.
+";
+        let report = detect_noise(md);
+        let garbled: Vec<_> = report
+            .issues
+            .iter()
+            .filter(|i| i.kind == NoiseKind::GarbledText)
+            .collect();
+        assert!(
+            garbled.is_empty(),
+            "LaTeX brace patterns should not be flagged as garbled, got: {:?}",
+            garbled
+        );
+    }
+
+    #[test]
+    fn test_rst_grid_table_borders_not_flagged_as_header_footer() {
+        // RST grid table borders like +---+---+ should not be flagged
+        let mut lines = Vec::new();
+        for i in 0..15 {
+            lines.push("+-----+-----+-----+".to_string());
+            lines.push(format!("| a{i}  | b{i}  | c{i}  |"));
+        }
+        lines.push("+-----+-----+-----+".to_string());
+        let md = lines.join("\n");
+        let report = detect_noise(&md);
+        let rep_issues: Vec<_> = report
+            .issues
+            .iter()
+            .filter(|i| i.kind == NoiseKind::HeaderFooterRepetition)
+            .collect();
+        assert!(
+            rep_issues.is_empty(),
+            "RST grid table borders should not be flagged as header/footer repetition, got: {:?}",
+            rep_issues
+        );
+    }
+
+    #[test]
+    fn test_excessive_heading_density_raised_threshold() {
+        // 8 headings vs 3 paragraphs used to be flagged (>5, > paragraphs)
+        // but with new threshold (>10, > 2*paragraphs) this should NOT be flagged
+        let md = "\
+# Heading 1
+## Heading 2
+### Heading 3
+#### Heading 4
+##### Heading 5
+###### Heading 6
+# Heading 7
+## Heading 8
+
+Paragraph one.
+
+Paragraph two.
+
+Paragraph three.
+";
+        let report = detect_noise(md);
+        let density_issues: Vec<_> = report
+            .issues
+            .iter()
+            .filter(|i| i.kind == NoiseKind::ExcessiveHeadingDensity)
+            .collect();
+        assert!(
+            density_issues.is_empty(),
+            "8 headings vs 3 paragraphs should not be flagged with raised threshold, got: {:?}",
+            density_issues
         );
     }
 }

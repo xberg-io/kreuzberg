@@ -53,6 +53,27 @@ impl PptxExtractor {
         }
     }
 
+    /// Try to strip an ordered-list prefix like `1. `, `2. `, `10. ` from a line.
+    /// Returns the remaining text after the prefix, or `None` if the line does not
+    /// start with a `<digits>. ` pattern.
+    fn strip_ordered_prefix(line: &str) -> Option<&str> {
+        let bytes = line.as_bytes();
+        let mut i = 0;
+        // Consume digits
+        while i < bytes.len() && bytes[i].is_ascii_digit() {
+            i += 1;
+        }
+        // Need at least one digit followed by ". "
+        if i == 0 || i + 2 > bytes.len() {
+            return None;
+        }
+        if bytes[i] == b'.' && bytes[i + 1] == b' ' {
+            Some(&line[i + 2..])
+        } else {
+            None
+        }
+    }
+
     fn build_internal_document(content: &str, slide_count: u32) -> InternalDocument {
         let mut builder = InternalDocumentBuilder::new("pptx");
         let mut slide_num: u32 = 0;
@@ -100,24 +121,59 @@ impl PptxExtractor {
                 continue;
             }
 
-            // Process remaining lines: lists and paragraphs
+            // Process remaining lines: lists and paragraphs.
+            // We track whether we are inside an unordered or ordered list so
+            // that we can emit proper ListStart / ListEnd wrappers.
+            let mut in_list: Option<bool> = None; // Some(ordered)
+
             for line in trimmed.lines() {
                 let lt = line.trim();
                 if lt.is_empty() {
+                    // Close any open list on blank line
+                    if in_list.is_some() {
+                        builder.end_list();
+                        in_list = None;
+                    }
                     continue;
                 }
-                // Unordered list item
-                if let Some(item_text) = lt.strip_prefix("- ") {
-                    builder.push_paragraph(item_text, vec![], None, None);
-                }
-                // Ordered list item
-                else if let Some(item_text) = lt.strip_prefix("1. ") {
-                    builder.push_paragraph(item_text, vec![], None, None);
-                }
-                // Image or regular paragraph
-                else {
+
+                // Detect list item type from the trimmed line.
+                // Unordered: "- text"
+                // Ordered:   "1. text", "2. text", etc.
+                let list_match = if let Some(item_text) = lt.strip_prefix("- ") {
+                    Some((false, item_text))
+                } else {
+                    Self::strip_ordered_prefix(lt).map(|item_text| (true, item_text))
+                };
+
+                if let Some((ordered, item_text)) = list_match {
+                    // Start a new list or switch list type if needed
+                    match in_list {
+                        Some(prev_ordered) if prev_ordered != ordered => {
+                            builder.end_list();
+                            builder.push_list(ordered);
+                            in_list = Some(ordered);
+                        }
+                        None => {
+                            builder.push_list(ordered);
+                            in_list = Some(ordered);
+                        }
+                        _ => {}
+                    }
+                    builder.push_list_item(item_text, ordered, vec![], Some(slide_num), None);
+                } else {
+                    // Close any open list before emitting a paragraph
+                    if in_list.is_some() {
+                        builder.end_list();
+                        in_list = None;
+                    }
                     builder.push_paragraph(lt, vec![], None, None);
                 }
+            }
+
+            // Close any trailing open list at end of block
+            if in_list.is_some() {
+                builder.end_list();
             }
         }
 

@@ -60,6 +60,8 @@ impl Run {
 #[derive(Debug, Clone)]
 pub(super) struct TextElement {
     pub(super) runs: Vec<Run>,
+    /// Whether this text element comes from a title placeholder shape.
+    pub(super) is_title: bool,
 }
 
 #[derive(Debug, Clone)]

@@ -178,6 +178,37 @@ fn extract_outline_attributes(node: Node) -> AHashMap<String, String> {
     attrs
 }
 
+/// Convert inline HTML tags in OPML text attributes to Markdown equivalents.
+///
+/// Handles:
+/// - `<strong>text</strong>` / `<b>text</b>` -> `**text**`
+/// - `<em>text</em>` / `<i>text</i>` -> `*text*`
+/// - `<a href="url">text</a>` -> `[text](url)`
+/// - Unescapes `\<` and `\>`
+#[cfg(feature = "office")]
+fn convert_inline_html(text: &str) -> String {
+    use regex::Regex;
+
+    let mut result = text.to_string();
+
+    // Convert <strong>text</strong> and <b>text</b> to **text**
+    let strong_re = Regex::new(r"<(?:strong|b)>(.*?)</(?:strong|b)>").expect("valid regex");
+    result = strong_re.replace_all(&result, "**$1**").into_owned();
+
+    // Convert <em>text</em> and <i>text</i> to *text*
+    let em_re = Regex::new(r"<(?:em|i)>(.*?)</(?:em|i)>").expect("valid regex");
+    result = em_re.replace_all(&result, "*$1*").into_owned();
+
+    // Convert <a href="url">text</a> to [text](url)
+    let link_re = Regex::new(r#"<a\s+href="([^"]*)"[^>]*>(.*?)</a>"#).expect("valid regex");
+    result = link_re.replace_all(&result, "[$2]($1)").into_owned();
+
+    // Unescape \< and \>
+    result = result.replace(r"\<", "<").replace(r"\>", ">");
+
+    result
+}
+
 /// Build an `InternalDocument` from OPML content.
 ///
 /// Maps the outline hierarchy to headings and paragraphs, mirroring
@@ -240,20 +271,14 @@ fn build_outline_internal(
         }
     }
 
-    if child_outlines.is_empty() {
-        let idx = builder.push_paragraph(text, vec![], None, None);
-        if !attrs.is_empty() {
-            builder.set_attributes(idx, attrs);
-        }
-    } else {
-        let level = depth.min(6);
-        let idx = builder.push_heading(level, text, None, None);
-        if !attrs.is_empty() {
-            builder.set_attributes(idx, attrs);
-        }
-        for child in child_outlines {
-            build_outline_internal(child, depth + 1, builder);
-        }
+    let level = depth.min(6);
+    let converted_text = convert_inline_html(text);
+    let idx = builder.push_heading(level, &converted_text, None, None);
+    if !attrs.is_empty() {
+        builder.set_attributes(idx, attrs);
+    }
+    for child in child_outlines {
+        build_outline_internal(child, depth + 1, builder);
     }
 }
 
