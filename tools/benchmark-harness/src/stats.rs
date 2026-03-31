@@ -43,6 +43,40 @@ pub(crate) fn percentile_r7(sorted_values: &[f64], p: f64) -> f64 {
     }
 }
 
+/// Sanitize an f64 value, replacing NaN or infinity with 0.0
+///
+/// This is used to ensure JSON-serializable output from statistical calculations.
+pub(crate) fn sanitize_f64(v: f64) -> f64 {
+    if v.is_finite() { v } else { 0.0 }
+}
+
+/// Calculate mean, sample variance (Bessel-corrected), and standard deviation
+///
+/// Filters out NaN and infinite values before calculation.
+/// Returns `(mean, variance, std_dev)`. For empty or single-element input,
+/// variance and std_dev are 0.0.
+///
+/// # Arguments
+/// * `values` - Slice of f64 values (NaN/Inf values are filtered out)
+///
+/// # Returns
+/// Tuple of (mean, sample_variance, standard_deviation)
+#[allow(dead_code)]
+pub(crate) fn calculate_variance(values: &[f64]) -> (f64, f64, f64) {
+    let filtered: Vec<f64> = values
+        .iter()
+        .copied()
+        .filter(|v| !v.is_nan() && v.is_finite())
+        .collect();
+    if filtered.len() <= 1 {
+        return (filtered.first().copied().unwrap_or(0.0), 0.0, 0.0);
+    }
+    let mean = filtered.iter().sum::<f64>() / filtered.len() as f64;
+    let variance = filtered.iter().map(|v| (v - mean).powi(2)).sum::<f64>() / (filtered.len() - 1) as f64;
+    let std_dev = variance.sqrt();
+    (mean, variance, std_dev)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -303,5 +337,78 @@ mod tests {
         // index = 0.001 * (5-1) = 0.004, interpolates between values[0]=1 and values[1]=2
         // result = 1 * 0.996 + 2 * 0.004 = 0.996 + 0.008 = 1.004
         assert!((p001 - 1.004).abs() < 0.0001);
+    }
+
+    // ---- sanitize_f64 tests ----
+
+    #[test]
+    fn test_sanitize_f64_finite() {
+        assert_eq!(sanitize_f64(42.0), 42.0);
+        assert_eq!(sanitize_f64(-1.5), -1.5);
+        assert_eq!(sanitize_f64(0.0), 0.0);
+    }
+
+    #[test]
+    fn test_sanitize_f64_nan() {
+        assert_eq!(sanitize_f64(f64::NAN), 0.0);
+    }
+
+    #[test]
+    fn test_sanitize_f64_infinity() {
+        assert_eq!(sanitize_f64(f64::INFINITY), 0.0);
+        assert_eq!(sanitize_f64(f64::NEG_INFINITY), 0.0);
+    }
+
+    // ---- calculate_variance tests ----
+
+    #[test]
+    fn test_calculate_variance_empty() {
+        let (mean, variance, std_dev) = calculate_variance(&[]);
+        assert_eq!(mean, 0.0);
+        assert_eq!(variance, 0.0);
+        assert_eq!(std_dev, 0.0);
+    }
+
+    #[test]
+    fn test_calculate_variance_single() {
+        let (mean, variance, std_dev) = calculate_variance(&[5.0]);
+        assert!((mean - 5.0).abs() < 0.001);
+        assert_eq!(variance, 0.0);
+        assert_eq!(std_dev, 0.0);
+    }
+
+    #[test]
+    fn test_calculate_variance_bessel_correction() {
+        // [1, 2, 3]: mean=2, sample variance = ((1-2)^2 + (2-2)^2 + (3-2)^2) / (3-1) = 1.0
+        let (mean, variance, std_dev) = calculate_variance(&[1.0, 2.0, 3.0]);
+        assert!((mean - 2.0).abs() < 0.001);
+        assert!((variance - 1.0).abs() < 0.001);
+        assert!((std_dev - 1.0).abs() < 0.001);
+    }
+
+    #[test]
+    fn test_calculate_variance_filters_nan_and_inf() {
+        let values = [f64::NAN, 1.0, f64::INFINITY, 2.0, f64::NEG_INFINITY, 3.0];
+        let (mean, variance, std_dev) = calculate_variance(&values);
+        // After filtering: [1.0, 2.0, 3.0]
+        assert!((mean - 2.0).abs() < 0.001);
+        assert!((variance - 1.0).abs() < 0.001);
+        assert!((std_dev - 1.0).abs() < 0.001);
+    }
+
+    #[test]
+    fn test_calculate_variance_all_nan() {
+        let (mean, variance, std_dev) = calculate_variance(&[f64::NAN, f64::NAN]);
+        assert_eq!(mean, 0.0);
+        assert_eq!(variance, 0.0);
+        assert_eq!(std_dev, 0.0);
+    }
+
+    #[test]
+    fn test_calculate_variance_identical_values() {
+        let (mean, variance, std_dev) = calculate_variance(&[5.0, 5.0, 5.0]);
+        assert!((mean - 5.0).abs() < 0.001);
+        assert!(variance.abs() < 0.001);
+        assert!(std_dev.abs() < 0.001);
     }
 }

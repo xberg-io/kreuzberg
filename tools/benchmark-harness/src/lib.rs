@@ -30,6 +30,7 @@ pub mod sizes;
 pub mod stats;
 pub mod survey;
 pub mod types;
+pub mod validate_gt;
 
 pub use adapter::FrameworkAdapter;
 pub use adapters::{NativeAdapter, NodeAdapter, PythonAdapter, RubyAdapter};
@@ -39,11 +40,7 @@ pub use aggregate::{
     RankedFramework, aggregate_new_format,
 };
 pub use config::{BenchmarkConfig, BenchmarkMode, ProfilingConfig, load_framework_sizes};
-pub use consolidate::{
-    ConsolidatedResults, CrossFrameworkComparison, FrameworkAggregation, FrameworkQuality, QualityAnalysis,
-    aggregate_by_framework, analyze_quality, compare_frameworks, consolidate_runs, load_run_results,
-    write_consolidated_json,
-};
+pub use consolidate::load_run_results;
 pub use error::{Error, Result};
 pub use fixture::{Fixture, FixtureManager};
 pub use monitoring::{ResourceMonitor, ResourceSample, ResourceStats};

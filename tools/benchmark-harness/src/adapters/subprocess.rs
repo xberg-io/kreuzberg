@@ -516,6 +516,66 @@ impl SubprocessAdapter {
         Ok((line, duration))
     }
 
+    /// Build a failure `BenchmarkResult` for error paths in `extract()`.
+    ///
+    /// Centralises the repeated pattern of constructing an error result with
+    /// resource statistics, throughput, and framework capabilities.
+    fn build_failure_result(
+        &self,
+        file_path: &Path,
+        file_size: u64,
+        duration: Duration,
+        resource_stats: &crate::monitoring::ResourceStats,
+        error: &Error,
+    ) -> BenchmarkResult {
+        let throughput = if duration.as_secs_f64() > 0.0 {
+            file_size as f64 / duration.as_secs_f64()
+        } else {
+            0.0
+        };
+
+        let framework_capabilities = FrameworkCapabilities {
+            ocr_support: Self::framework_supports_ocr(&self.name),
+            batch_support: self.supports_batch,
+            ..Default::default()
+        };
+
+        let error_kind = error_to_error_kind(error);
+
+        BenchmarkResult {
+            framework: self.name.clone(),
+            file_path: file_path.to_path_buf(),
+            file_size,
+            success: false,
+            error_message: Some(error.to_string()),
+            error_kind,
+            duration,
+            extraction_duration: None,
+            subprocess_overhead: None,
+            metrics: PerformanceMetrics {
+                peak_memory_bytes: resource_stats.peak_memory_bytes,
+                avg_cpu_percent: resource_stats.avg_cpu_percent,
+                throughput_bytes_per_sec: throughput,
+                p50_memory_bytes: resource_stats.p50_memory_bytes,
+                p95_memory_bytes: resource_stats.p95_memory_bytes,
+                p99_memory_bytes: resource_stats.p99_memory_bytes,
+            },
+            quality: None,
+            iterations: vec![],
+            statistics: None,
+            cold_start_duration: None,
+            file_extension: file_path
+                .extension()
+                .and_then(|e| e.to_str())
+                .unwrap_or("unknown")
+                .to_lowercase(),
+            framework_capabilities,
+            pdf_metadata: None,
+            ocr_status: OcrStatus::Unknown,
+            extracted_text: None,
+        }
+    }
+
     /// Parse extraction result from subprocess output
     ///
     /// Expected subprocess output format:
@@ -638,52 +698,7 @@ impl FrameworkAdapter for SubprocessAdapter {
                     let baseline = monitor.baseline_memory().await;
                     let resource_stats = ResourceMonitor::calculate_stats(&samples, &snapshots, baseline);
                     let actual_duration = start_time.elapsed();
-
-                    let throughput = if actual_duration.as_secs_f64() > 0.0 {
-                        file_size as f64 / actual_duration.as_secs_f64()
-                    } else {
-                        0.0
-                    };
-
-                    let framework_capabilities = FrameworkCapabilities {
-                        ocr_support: Self::framework_supports_ocr(&self.name),
-                        batch_support: self.supports_batch,
-                        ..Default::default()
-                    };
-
-                    let error_kind = error_to_error_kind(&e);
-                    return Ok(BenchmarkResult {
-                        framework: self.name.clone(),
-                        file_path: file_path.to_path_buf(),
-                        file_size,
-                        success: false,
-                        error_message: Some(e.to_string()),
-                        error_kind,
-                        duration: actual_duration,
-                        extraction_duration: None,
-                        subprocess_overhead: None,
-                        metrics: PerformanceMetrics {
-                            peak_memory_bytes: resource_stats.peak_memory_bytes,
-                            avg_cpu_percent: resource_stats.avg_cpu_percent,
-                            throughput_bytes_per_sec: throughput,
-                            p50_memory_bytes: resource_stats.p50_memory_bytes,
-                            p95_memory_bytes: resource_stats.p95_memory_bytes,
-                            p99_memory_bytes: resource_stats.p99_memory_bytes,
-                        },
-                        quality: None,
-                        iterations: vec![],
-                        statistics: None,
-                        cold_start_duration: None,
-                        file_extension: file_path
-                            .extension()
-                            .and_then(|e| e.to_str())
-                            .unwrap_or("unknown")
-                            .to_lowercase(),
-                        framework_capabilities,
-                        pdf_metadata: None,
-                        ocr_status: OcrStatus::Unknown,
-                        extracted_text: None,
-                    });
+                    return Ok(self.build_failure_result(file_path, file_size, actual_duration, &resource_stats, &e));
                 }
             }
         } else {
@@ -695,52 +710,7 @@ impl FrameworkAdapter for SubprocessAdapter {
                     let baseline = monitor.baseline_memory().await;
                     let resource_stats = ResourceMonitor::calculate_stats(&samples, &snapshots, baseline);
                     let actual_duration = start_time.elapsed();
-
-                    let throughput = if actual_duration.as_secs_f64() > 0.0 {
-                        file_size as f64 / actual_duration.as_secs_f64()
-                    } else {
-                        0.0
-                    };
-
-                    let framework_capabilities = FrameworkCapabilities {
-                        ocr_support: Self::framework_supports_ocr(&self.name),
-                        batch_support: self.supports_batch,
-                        ..Default::default()
-                    };
-
-                    let error_kind = error_to_error_kind(&e);
-                    return Ok(BenchmarkResult {
-                        framework: self.name.clone(),
-                        file_path: file_path.to_path_buf(),
-                        file_size,
-                        success: false,
-                        error_message: Some(e.to_string()),
-                        error_kind,
-                        duration: actual_duration,
-                        extraction_duration: None,
-                        subprocess_overhead: None,
-                        metrics: PerformanceMetrics {
-                            peak_memory_bytes: resource_stats.peak_memory_bytes,
-                            avg_cpu_percent: resource_stats.avg_cpu_percent,
-                            throughput_bytes_per_sec: throughput,
-                            p50_memory_bytes: resource_stats.p50_memory_bytes,
-                            p95_memory_bytes: resource_stats.p95_memory_bytes,
-                            p99_memory_bytes: resource_stats.p99_memory_bytes,
-                        },
-                        quality: None,
-                        iterations: vec![],
-                        statistics: None,
-                        cold_start_duration: None,
-                        file_extension: file_path
-                            .extension()
-                            .and_then(|e| e.to_str())
-                            .unwrap_or("unknown")
-                            .to_lowercase(),
-                        framework_capabilities,
-                        pdf_metadata: None,
-                        ocr_status: OcrStatus::Unknown,
-                        extracted_text: None,
-                    });
+                    return Ok(self.build_failure_result(file_path, file_size, actual_duration, &resource_stats, &e));
                 }
             }
         };
@@ -760,52 +730,7 @@ impl FrameworkAdapter for SubprocessAdapter {
         let parsed = match self.parse_output(&stdout) {
             Ok(value) => value,
             Err(e) => {
-                let throughput = if duration.as_secs_f64() > 0.0 {
-                    file_size as f64 / duration.as_secs_f64()
-                } else {
-                    0.0
-                };
-
-                let framework_capabilities = FrameworkCapabilities {
-                    ocr_support: Self::framework_supports_ocr(&self.name),
-                    batch_support: self.supports_batch,
-                    ..Default::default()
-                };
-
-                let error_kind = error_to_error_kind(&e);
-
-                return Ok(BenchmarkResult {
-                    framework: self.name.clone(),
-                    file_path: file_path.to_path_buf(),
-                    file_size,
-                    success: false,
-                    error_message: Some(e.to_string()),
-                    error_kind,
-                    duration,
-                    extraction_duration: None,
-                    subprocess_overhead: None,
-                    metrics: PerformanceMetrics {
-                        peak_memory_bytes: resource_stats.peak_memory_bytes,
-                        avg_cpu_percent: resource_stats.avg_cpu_percent,
-                        throughput_bytes_per_sec: throughput,
-                        p50_memory_bytes: resource_stats.p50_memory_bytes,
-                        p95_memory_bytes: resource_stats.p95_memory_bytes,
-                        p99_memory_bytes: resource_stats.p99_memory_bytes,
-                    },
-                    quality: None,
-                    iterations: vec![],
-                    statistics: None,
-                    cold_start_duration: None,
-                    file_extension: file_path
-                        .extension()
-                        .and_then(|e| e.to_str())
-                        .unwrap_or("unknown")
-                        .to_lowercase(),
-                    framework_capabilities,
-                    pdf_metadata: None,
-                    ocr_status: OcrStatus::Unknown,
-                    extracted_text: None,
-                });
+                return Ok(self.build_failure_result(file_path, file_size, duration, &resource_stats, &e));
             }
         };
 

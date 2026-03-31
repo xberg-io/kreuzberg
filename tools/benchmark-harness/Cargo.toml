@@ -40,6 +40,7 @@ num_cpus = { workspace = true }
 pprof = { version = "0.15", features = ["flamegraph", "criterion"], optional = true }
 pulldown-cmark = "0.13"
 rayon = { workspace = true }
+regex = "1"
 serde = { workspace = true }
 serde_json = { workspace = true }
 shellexpand = "3"

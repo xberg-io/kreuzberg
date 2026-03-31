@@ -1,5 +1,5 @@
 //! 6-path pipeline benchmark: exhaustive quality + timing comparison across
-//! all extraction configurations on the full PDF corpus.
+//! all extraction configurations on the full document corpus.
 //!
 //! | ID | Name              | Config                                           |
 //! |----|-------------------|--------------------------------------------------|
@@ -16,11 +16,9 @@ use crate::Result;
 use crate::comparison::{Pipeline, PipelineResult};
 use crate::corpus::{self, CorpusDocument, CorpusFilter};
 use crate::markdown_quality::{MdBlockType, parse_markdown_blocks, score_structural_quality_normalized};
-use crate::quality::{compute_f1, tokenize};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
-use std::time::Instant;
 
 /// Which pipeline paths to include.
 pub struct PipelineBenchmarkConfig {
@@ -113,321 +111,6 @@ pub fn default_paths() -> Vec<Pipeline> {
     ]
 }
 
-/// Build extraction config for a pipeline.
-fn build_config(pipeline: Pipeline) -> kreuzberg::ExtractionConfig {
-    use kreuzberg::core::config::{OcrConfig, OutputFormat, layout::LayoutDetectionConfig};
-
-    let base = kreuzberg::ExtractionConfig {
-        output_format: OutputFormat::Markdown,
-        ..Default::default()
-    };
-
-    match pipeline {
-        Pipeline::Baseline => base,
-        Pipeline::Layout => kreuzberg::ExtractionConfig {
-            layout: Some(LayoutDetectionConfig {
-                preset: "accurate".to_string(),
-                ..Default::default()
-            }),
-            // Include OCR config for automatic fallback on image-only/scanned PDFs.
-            // Not force_ocr — native text is preferred when quality is sufficient.
-            ocr: Some(OcrConfig {
-                backend: "tesseract".to_string(),
-                language: "eng".to_string(),
-                ..Default::default()
-            }),
-            ..base
-        },
-        Pipeline::Tesseract => kreuzberg::ExtractionConfig {
-            force_ocr: true,
-            ocr: Some(OcrConfig {
-                backend: "tesseract".to_string(),
-                language: "eng".to_string(),
-                ..Default::default()
-            }),
-            ..base
-        },
-        Pipeline::TesseractLayout => kreuzberg::ExtractionConfig {
-            force_ocr: true,
-            ocr: Some(OcrConfig {
-                backend: "tesseract".to_string(),
-                language: "eng".to_string(),
-                ..Default::default()
-            }),
-            layout: Some(LayoutDetectionConfig {
-                preset: "accurate".to_string(),
-                ..Default::default()
-            }),
-            ..base
-        },
-        Pipeline::Paddle => kreuzberg::ExtractionConfig {
-            force_ocr: true,
-            ocr: Some(OcrConfig {
-                backend: "paddleocr".to_string(),
-                language: "eng".to_string(),
-                auto_rotate: true,
-                ..Default::default()
-            }),
-            ..base
-        },
-        Pipeline::PaddleLayout => kreuzberg::ExtractionConfig {
-            force_ocr: true,
-            ocr: Some(OcrConfig {
-                backend: "paddleocr".to_string(),
-                language: "eng".to_string(),
-                auto_rotate: true,
-                ..Default::default()
-            }),
-            layout: Some(LayoutDetectionConfig {
-                preset: "accurate".to_string(),
-                ..Default::default()
-            }),
-            ..base
-        },
-        Pipeline::PaddleServer => kreuzberg::ExtractionConfig {
-            force_ocr: true,
-            ocr: Some(OcrConfig {
-                backend: "paddleocr".to_string(),
-                language: "eng".to_string(),
-                auto_rotate: true,
-                paddle_ocr_config: Some(serde_json::json!({"model_tier": "server"})),
-                ..Default::default()
-            }),
-            ..base
-        },
-        Pipeline::PaddleServerLayout => kreuzberg::ExtractionConfig {
-            force_ocr: true,
-            ocr: Some(OcrConfig {
-                backend: "paddleocr".to_string(),
-                language: "eng".to_string(),
-                auto_rotate: true,
-                paddle_ocr_config: Some(serde_json::json!({"model_tier": "server"})),
-                ..Default::default()
-            }),
-            layout: Some(LayoutDetectionConfig {
-                preset: "accurate".to_string(),
-                ..Default::default()
-            }),
-            ..base
-        },
-        Pipeline::TesseractAutoRotate => kreuzberg::ExtractionConfig {
-            force_ocr: true,
-            ocr: Some(OcrConfig {
-                backend: "tesseract".to_string(),
-                language: "eng".to_string(),
-                auto_rotate: true,
-                ..Default::default()
-            }),
-            ..base
-        },
-        Pipeline::PaddleNoRotate => kreuzberg::ExtractionConfig {
-            force_ocr: true,
-            ocr: Some(OcrConfig {
-                backend: "paddleocr".to_string(),
-                language: "eng".to_string(),
-                auto_rotate: false,
-                ..Default::default()
-            }),
-            ..base
-        },
-        Pipeline::Docling | Pipeline::PaddleOcrPython | Pipeline::RapidOcr => base, // Vendored pipelines read from file, not used here
-        Pipeline::LayoutSlanetWired => kreuzberg::ExtractionConfig {
-            layout: Some(LayoutDetectionConfig {
-                preset: "accurate".to_string(),
-                table_model: Some("slanet_wired".to_string()),
-                ..Default::default()
-            }),
-            ocr: Some(OcrConfig {
-                backend: "tesseract".to_string(),
-                language: "eng".to_string(),
-                ..Default::default()
-            }),
-            ..base
-        },
-        Pipeline::LayoutSlanetWireless => kreuzberg::ExtractionConfig {
-            layout: Some(LayoutDetectionConfig {
-                preset: "accurate".to_string(),
-                table_model: Some("slanet_wireless".to_string()),
-                ..Default::default()
-            }),
-            ocr: Some(OcrConfig {
-                backend: "tesseract".to_string(),
-                language: "eng".to_string(),
-                ..Default::default()
-            }),
-            ..base
-        },
-        Pipeline::LayoutSlanetPlus => kreuzberg::ExtractionConfig {
-            layout: Some(LayoutDetectionConfig {
-                preset: "accurate".to_string(),
-                table_model: Some("slanet_plus".to_string()),
-                ..Default::default()
-            }),
-            ocr: Some(OcrConfig {
-                backend: "tesseract".to_string(),
-                language: "eng".to_string(),
-                ..Default::default()
-            }),
-            ..base
-        },
-        Pipeline::LayoutSlanetAuto => kreuzberg::ExtractionConfig {
-            layout: Some(LayoutDetectionConfig {
-                preset: "accurate".to_string(),
-                table_model: Some("slanet_auto".to_string()),
-                ..Default::default()
-            }),
-            ocr: Some(OcrConfig {
-                backend: "tesseract".to_string(),
-                language: "eng".to_string(),
-                ..Default::default()
-            }),
-            ..base
-        },
-    }
-}
-
-/// Per-doc extraction timeout (seconds).
-const DOC_TIMEOUT_SECS: u64 = 60;
-
-/// Read vendored markdown + cached timing for a single document.
-/// Returns (content, time_ms) where time_ms is NaN if no cached timing exists.
-fn read_vendored_cached(doc_name: &str, fixtures_dir: &Path, vendored_name: &str) -> (String, f64) {
-    let vendored_dir = fixtures_dir
-        .parent()
-        .unwrap_or(fixtures_dir)
-        .join("vendored")
-        .join(vendored_name);
-    let vendored_md_path = vendored_dir.join("md").join(format!("{}.md", doc_name));
-    let timing_path = vendored_dir.join("timing").join(format!("{}.ms", doc_name));
-
-    let md = std::fs::read_to_string(&vendored_md_path).unwrap_or_default();
-    let cached_ms = std::fs::read_to_string(&timing_path)
-        .ok()
-        .and_then(|s| s.trim().parse::<f64>().ok())
-        .unwrap_or(f64::NAN);
-
-    (md, cached_ms)
-}
-
-/// Python script that batch-processes PDFs with docling, writing per-doc timing.
-/// Loads docling models once, then processes each PDF individually with timing.
-const DOCLING_BATCH_SCRIPT: &str = r#"
-import sys, os, time, json
-
-# Ensure docling is importable
-try:
-    from docling.document_converter import DocumentConverter
-except ImportError:
-    print(json.dumps({"error": "docling not installed"}))
-    sys.exit(1)
-
-input_data = json.loads(sys.stdin.read())
-pdf_paths = input_data["pdfs"]  # list of {"name": str, "path": str}
-output_dir = input_data["output_dir"]
-timing_dir = input_data["timing_dir"]
-
-os.makedirs(output_dir, exist_ok=True)
-os.makedirs(timing_dir, exist_ok=True)
-
-# Load converter once (includes model loading)
-converter = DocumentConverter()
-results = []
-
-for item in pdf_paths:
-    name = item["name"]
-    path = item["path"]
-    try:
-        t0 = time.monotonic()
-        result = converter.convert(path)
-        elapsed_ms = (time.monotonic() - t0) * 1000.0
-        md = result.document.export_to_markdown()
-
-        # Write outputs
-        md_path = os.path.join(output_dir, f"{name}.md")
-        with open(md_path, "w") as f:
-            f.write(md)
-
-        timing_path = os.path.join(timing_dir, f"{name}.ms")
-        with open(timing_path, "w") as f:
-            f.write(f"{elapsed_ms:.1f}")
-
-        results.append({"name": name, "time_ms": elapsed_ms, "ok": True})
-        print(f"  {name}: {elapsed_ms:.0f}ms", file=sys.stderr)
-    except Exception as e:
-        results.append({"name": name, "time_ms": 0, "ok": False, "error": str(e)})
-        print(f"  {name}: ERROR {e}", file=sys.stderr)
-
-print(json.dumps({"results": results}))
-"#;
-
-/// Run docling batch extraction for all documents that don't have cached timing.
-/// This loads docling models once and processes all uncached PDFs.
-pub fn run_docling_batch(docs: &[CorpusDocument], fixtures_dir: &Path) {
-    let python = "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3";
-    let vendored_dir = fixtures_dir.parent().unwrap_or(fixtures_dir).join("vendored/docling");
-
-    // Find docs that need docling extraction (no cached timing)
-    let uncached: Vec<_> = docs
-        .iter()
-        .filter(|doc| {
-            let timing_path = vendored_dir.join("timing").join(format!("{}.ms", doc.name));
-            !timing_path.exists()
-        })
-        .collect();
-
-    if uncached.is_empty() {
-        eprintln!("Docling: all {} documents have cached timing", docs.len());
-        return;
-    }
-
-    eprintln!(
-        "Docling: running live extraction for {}/{} uncached documents...",
-        uncached.len(),
-        docs.len()
-    );
-
-    let input = serde_json::json!({
-        "pdfs": uncached.iter().map(|doc| serde_json::json!({
-            "name": doc.name,
-            "path": doc.document_path.to_str().unwrap(),
-        })).collect::<Vec<_>>(),
-        "output_dir": vendored_dir.join("md").to_str().unwrap(),
-        "timing_dir": vendored_dir.join("timing").to_str().unwrap(),
-    });
-
-    let mut child = match std::process::Command::new(python)
-        .args(["-c", DOCLING_BATCH_SCRIPT])
-        .stdin(std::process::Stdio::piped())
-        .stdout(std::process::Stdio::piped())
-        .stderr(std::process::Stdio::inherit())
-        .spawn()
-    {
-        Ok(c) => c,
-        Err(e) => {
-            eprintln!("Docling: failed to start Python: {}", e);
-            return;
-        }
-    };
-
-    if let Some(ref mut stdin) = child.stdin {
-        let _ = serde_json::to_writer(stdin, &input);
-    }
-    // Close stdin so docling starts processing
-    child.stdin.take();
-
-    match child.wait() {
-        Ok(status) if status.success() => {
-            eprintln!("Docling: batch extraction complete");
-        }
-        Ok(status) => {
-            eprintln!("Docling: batch extraction failed with exit code {}", status);
-        }
-        Err(e) => {
-            eprintln!("Docling: failed to wait for Python process: {}", e);
-        }
-    }
-}
-
 async fn extract_and_score(
     pipeline: Pipeline,
     doc: &CorpusDocument,
@@ -435,45 +118,12 @@ async fn extract_and_score(
     gt_markdown: Option<&str>,
     fixtures_dir: &Path,
 ) -> PipelineResult {
-    let vendored_name = match pipeline {
-        Pipeline::Docling => Some("docling"),
-        Pipeline::PaddleOcrPython => Some("paddleocr-python"),
-        Pipeline::RapidOcr => Some("rapidocr"),
-        _ => None,
-    };
-    let (content, time_ms) = if let Some(name) = vendored_name {
-        // Vendored results are pre-computed. Read cached markdown + timing.
-        read_vendored_cached(&doc.name, fixtures_dir, name)
-    } else {
-        let t = Instant::now();
-        let config = build_config(pipeline);
-        let doc_path = doc.document_path.clone();
-        // Use extract_file_sync on a blocking thread so the timeout can work.
-        let handle = tokio::task::spawn_blocking(move || kreuzberg::extract_file_sync(&doc_path, None, &config));
-        let result = match tokio::time::timeout(std::time::Duration::from_secs(DOC_TIMEOUT_SECS), handle).await {
-            Ok(Ok(Ok(r))) => r.content,
-            Ok(Ok(Err(e))) => {
-                eprintln!("  ERROR {}/{}: {}", doc.name, pipeline.name(), e);
-                String::new()
-            }
-            Ok(Err(e)) => {
-                eprintln!("  TASK ERROR {}/{}: {}", doc.name, pipeline.name(), e);
-                String::new()
-            }
-            Err(_) => {
-                eprintln!(
-                    "  TIMEOUT {}/{}: exceeded {}s",
-                    doc.name,
-                    pipeline.name(),
-                    DOC_TIMEOUT_SECS
-                );
-                String::new()
-            }
-        };
-        (result, t.elapsed().as_secs_f64() * 1000.0)
-    };
+    let (content, time_ms) = crate::comparison::extract_pipeline(pipeline, doc, fixtures_dir).await;
+    let (tf1, _basic_sf1, _basic_order, _basic_per_type) =
+        crate::comparison::score_document(&content, gt_text, gt_markdown);
 
-    let tf1 = compute_f1(&tokenize(&content), &tokenize(gt_text));
+    // Use the pipeline benchmark's enhanced scoring: heading-level-normalized,
+    // with structure detection and content capping.
     let (sf1, order_score, per_type_sf1) = match gt_markdown {
         Some(md) => {
             // Skip SF1 for documents without structural ground truth
@@ -532,12 +182,6 @@ pub async fn run_pipeline_benchmark(config: &PipelineBenchmarkConfig) -> Result<
         docs.len(),
         config.paths.len()
     );
-
-    // If docling is in the pipeline list, run batch extraction upfront
-    // (loads models once, processes all uncached docs)
-    if config.paths.contains(&Pipeline::Docling) {
-        run_docling_batch(&docs, &config.fixtures_dir);
-    }
 
     let dump_dir = if config.dump_outputs {
         let dir = PathBuf::from("/tmp/kreuzberg_pipeline");
@@ -699,7 +343,6 @@ pub fn print_pipeline_table(results: &[PipelineDocResult], sort_by: SortMetric, 
     }
 
     // Averages (always over all results, not just displayed)
-    let n = results.len() as f64;
     let total_docs = results.len();
     eprintln!("{}", "-".repeat(36 + pipelines.len() * 26));
     eprint!("{:<30} {:>5}", "AVERAGE", "");

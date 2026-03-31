@@ -179,14 +179,9 @@ fn find_ruby() -> Result<(PathBuf, Vec<String>)> {
     }
 }
 
-/// Helper to find R interpreter (Rscript)
-fn find_r() -> Result<PathBuf> {
-    which::which("Rscript").map_err(|_| crate::Error::Config("Rscript not found".to_string()))
-}
-
-/// Helper to find Elixir interpreter
-fn find_elixir() -> Result<PathBuf> {
-    which::which("elixir").map_err(|_| crate::Error::Config("Elixir not found".to_string()))
+/// Find a tool by name in PATH, returning a descriptive error if not found.
+fn find_tool(name: &str) -> Result<std::path::PathBuf> {
+    which::which(name).map_err(|_| crate::Error::Benchmark(format!("{} not found in PATH", name)))
 }
 
 /// Helper to find PHP interpreter
@@ -237,16 +232,6 @@ fn get_ruby_gem_lib_path() -> Result<PathBuf> {
     ))
 }
 
-/// Helper to find Go toolchain
-fn find_go() -> Result<PathBuf> {
-    which::which("go").map_err(|_| crate::Error::Config("Go toolchain not found".to_string()))
-}
-
-/// Helper to find Java runtime
-fn find_java() -> Result<PathBuf> {
-    which::which("java").map_err(|_| crate::Error::Config("Java runtime not found".to_string()))
-}
-
 /// Build Java classpath including compiled classes and dependency JARs.
 ///
 /// Returns a colon-separated (Unix) or semicolon-separated (Windows) classpath string
@@ -277,10 +262,6 @@ fn build_java_classpath() -> Result<String> {
     }
 
     Ok(parts.join(sep))
-}
-
-fn find_dotnet() -> Result<PathBuf> {
-    which::which("dotnet").map_err(|_| crate::Error::Config("dotnet CLI not found".to_string()))
 }
 
 fn workspace_root() -> Result<PathBuf> {
@@ -693,7 +674,7 @@ pub fn create_ruby_batch_adapter(ocr_enabled: bool) -> Result<SubprocessAdapter>
 /// Create R adapter (persistent server mode)
 pub fn create_r_adapter(ocr_enabled: bool) -> Result<SubprocessAdapter> {
     let script_path = get_script_path("kreuzberg_extract.R")?;
-    let command = find_r()?;
+    let command = find_tool("Rscript")?;
 
     let mut args = vec![script_path.to_string_lossy().to_string()];
     args.push(ocr_flag(ocr_enabled));
@@ -713,7 +694,7 @@ pub fn create_r_adapter(ocr_enabled: bool) -> Result<SubprocessAdapter> {
 /// Create R batch adapter (batch_extract_files_sync)
 pub fn create_r_batch_adapter(ocr_enabled: bool) -> Result<SubprocessAdapter> {
     let script_path = get_script_path("kreuzberg_extract.R")?;
-    let command = find_r()?;
+    let command = find_tool("Rscript")?;
 
     let mut args = vec![script_path.to_string_lossy().to_string()];
     args.push(ocr_flag(ocr_enabled));
@@ -737,7 +718,7 @@ pub fn create_go_adapter(ocr_enabled: bool) -> Result<SubprocessAdapter> {
         .parent()
         .ok_or_else(|| crate::Error::Config("Unable to determine scripts directory".to_string()))?
         .to_path_buf();
-    let command = find_go()?;
+    let command = find_tool("go")?;
     let args = vec![
         "run".to_string(),
         "-tags".to_string(),
@@ -763,7 +744,7 @@ pub fn create_go_batch_adapter(ocr_enabled: bool) -> Result<SubprocessAdapter> {
         .parent()
         .ok_or_else(|| crate::Error::Config("Unable to determine scripts directory".to_string()))?
         .to_path_buf();
-    let command = find_go()?;
+    let command = find_tool("go")?;
     let args = vec![
         "run".to_string(),
         "-tags".to_string(),
@@ -787,7 +768,7 @@ pub fn create_go_batch_adapter(ocr_enabled: bool) -> Result<SubprocessAdapter> {
 /// Uses persistent mode to keep the JVM alive, avoiding per-file JVM startup overhead.
 pub fn create_java_adapter(ocr_enabled: bool) -> Result<SubprocessAdapter> {
     let _script_path = get_script_path("KreuzbergExtractJava.java")?;
-    let command = find_java()?;
+    let command = find_tool("java")?;
     let classpath = build_java_classpath()?;
     let lib_dir = native_library_dir()?;
     let lib_dir_str = lib_dir.to_string_lossy().to_string();
@@ -815,7 +796,7 @@ pub fn create_java_adapter(ocr_enabled: bool) -> Result<SubprocessAdapter> {
 /// Create Java batch adapter
 pub fn create_java_batch_adapter(ocr_enabled: bool) -> Result<SubprocessAdapter> {
     let _script_path = get_script_path("KreuzbergExtractJava.java")?;
-    let command = find_java()?;
+    let command = find_tool("java")?;
     let classpath = build_java_classpath()?;
     let lib_dir = native_library_dir()?;
     let lib_dir_str = lib_dir.to_string_lossy().to_string();
@@ -842,7 +823,7 @@ pub fn create_java_batch_adapter(ocr_enabled: bool) -> Result<SubprocessAdapter>
 
 /// Create C# adapter (persistent server mode)
 pub fn create_csharp_adapter(ocr_enabled: bool) -> Result<SubprocessAdapter> {
-    let command = find_dotnet()?;
+    let command = find_tool("dotnet")?;
     let project = workspace_root()?.join("packages/csharp/Benchmark/Benchmark.csproj");
     if !project.exists() {
         return Err(crate::Error::Config(format!(
@@ -873,7 +854,7 @@ pub fn create_csharp_adapter(ocr_enabled: bool) -> Result<SubprocessAdapter> {
 
 /// Create C# batch adapter
 pub fn create_csharp_batch_adapter(ocr_enabled: bool) -> Result<SubprocessAdapter> {
-    let command = find_dotnet()?;
+    let command = find_tool("dotnet")?;
     let project = workspace_root()?.join("packages/csharp/Benchmark/Benchmark.csproj");
     if !project.exists() {
         return Err(crate::Error::Config(format!(
@@ -945,7 +926,7 @@ pub fn create_php_batch_adapter(ocr_enabled: bool) -> Result<SubprocessAdapter> 
 /// Create Elixir adapter (persistent server mode)
 pub fn create_elixir_adapter(ocr_enabled: bool) -> Result<SubprocessAdapter> {
     let script_path = get_script_path("kreuzberg_extract.exs")?;
-    let command = find_elixir()?;
+    let command = find_tool("elixir")?;
 
     let args = vec![
         script_path.to_string_lossy().to_string(),
@@ -998,7 +979,7 @@ pub fn create_elixir_adapter(ocr_enabled: bool) -> Result<SubprocessAdapter> {
 /// Create Elixir batch adapter (batch_extract_files)
 pub fn create_elixir_batch_adapter(ocr_enabled: bool) -> Result<SubprocessAdapter> {
     let script_path = get_script_path("kreuzberg_extract.exs")?;
-    let command = find_elixir()?;
+    let command = find_tool("elixir")?;
 
     let args = vec![
         script_path.to_string_lossy().to_string(),
@@ -1203,5 +1184,11 @@ mod tests {
             assert!(which::which("ts-node").is_err());
             assert!(which::which("pnpm").is_err());
         }
+    }
+
+    #[test]
+    fn test_find_tool_nonexistent() {
+        let result = find_tool("definitely_not_a_real_tool_12345");
+        assert!(result.is_err());
     }
 }

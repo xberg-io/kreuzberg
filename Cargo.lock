@@ -480,6 +480,7 @@ dependencies = [
  "pprof",
  "pulldown-cmark 0.13.3",
  "rayon",
+ "regex",
  "serde",
  "serde_json",
  "shellexpand",

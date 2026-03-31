@@ -258,43 +258,6 @@ pub struct PdfMetadata {
     pub text_quality_score: Option<f64>,
 }
 
-/// Summary statistics for all extractions
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct BenchmarkSummary {
-    /// Framework name
-    pub framework: String,
-
-    /// Total number of files processed
-    pub total_files: usize,
-
-    /// Number of successful extractions
-    pub successful: usize,
-
-    /// Number of failed extractions
-    pub failed: usize,
-
-    /// Success rate (0.0-1.0)
-    pub success_rate: f64,
-
-    /// Average extraction duration
-    pub avg_duration: Duration,
-
-    /// Average throughput in bytes per second
-    pub avg_throughput: f64,
-
-    /// Average peak memory usage in bytes
-    pub avg_peak_memory: u64,
-
-    /// 95th percentile duration
-    pub p95_duration: Duration,
-
-    /// 99th percentile duration
-    pub p99_duration: Duration,
-
-    /// Average quality metrics (if available)
-    pub avg_quality: Option<QualityMetrics>,
-}
-
 /// Result from a single benchmark iteration
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct IterationResult {

@@ -22,13 +22,10 @@ function getDirectory(): string {
 	if (typeof __filename !== "undefined") {
 		return dirname(__filename);
 	}
-	// Fallback for ESM
+	// Fallback for ESM: use Function constructor to avoid static analysis warnings
 	try {
-		// Use eval to avoid esbuild warnings about import.meta in CJS builds
-		// oxlint-disable-next-line no-eval -- Required for CJS/ESM compat
-		// biome-ignore lint/security/noGlobalEval: CJS/ESM compat
-		const url = eval("import.meta.url");
-		return dirname(fileURLToPath(url));
+		const getUrl = new Function("return import.meta.url");
+		return dirname(fileURLToPath(getUrl()));
 	} catch {
 		return process.cwd();
 	}

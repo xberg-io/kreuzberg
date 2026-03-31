@@ -143,10 +143,8 @@ pub fn parse_markdown_blocks(md: &str) -> Vec<MdBlock> {
     let mut in_code_block = false;
     let mut in_table = false;
     let mut in_list_item = false;
-    let mut in_image = false;
     let mut table_content = String::new();
     let mut table_cell_idx = 0;
-    let mut table_in_header = false;
 
     for event in parser {
         match event {
@@ -219,12 +217,8 @@ pub fn parse_markdown_blocks(md: &str) -> Vec<MdBlock> {
                     index += 1;
                 }
             }
-            Event::Start(Tag::TableHead) => {
-                table_in_header = true;
-            }
-            Event::End(TagEnd::TableHead) => {
-                table_in_header = false;
-            }
+            Event::Start(Tag::TableHead) => {}
+            Event::End(TagEnd::TableHead) => {}
             Event::Start(Tag::TableRow) => {
                 if !table_content.is_empty() {
                     table_content.push('\n');
@@ -269,13 +263,11 @@ pub fn parse_markdown_blocks(md: &str) -> Vec<MdBlock> {
             }
             Event::Start(Tag::Image { dest_url, title: _, .. }) => {
                 flush_text(&mut current_text, &mut blocks, &mut index, MdBlockType::Paragraph);
-                in_image = true;
                 // Store URL temporarily
-                current_text.push_str(&format!("!["));
+                current_text.push_str("![");
                 let _ = dest_url; // alt text comes as Text events
             }
             Event::End(TagEnd::Image) => {
-                in_image = false;
                 // current_text has "![alt text" — close it
                 if current_text.starts_with("![") {
                     current_text.push(']');

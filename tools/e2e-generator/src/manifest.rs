@@ -44,6 +44,7 @@ const OPTIONAL_FIELDS: &[(&str, &str)] = &[
     ("ExtractionResult", "annotations"),
     ("ExtractionResult", "children"),
     ("ExtractionResult", "uris"),
+    ("ExtractionResult", "processing_warnings"), // Vec with skip_serializing_if = "Vec::is_empty"
     // ExtractionConfig
     ("ExtractionConfig", "ocr"),
     ("ExtractionConfig", "force_ocr_pages"),
@@ -848,7 +849,7 @@ pub fn generate_manifest_value() -> Value {
     reflect_nested_struct(
         &mut types,
         "BoundingBox",
-        &serde_json::to_value(&kreuzberg::types::extraction::BoundingBox {
+        &serde_json::to_value(kreuzberg::types::extraction::BoundingBox {
             x0: 0.0,
             y0: 0.0,
             x1: 100.0,

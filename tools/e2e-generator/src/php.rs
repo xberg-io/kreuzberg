@@ -2069,10 +2069,10 @@ pub fn generate_parity(manifest: &ParityManifest, output_root: &Utf8Path) -> Res
     // Collect all struct types that have fields for this language
     let mut struct_types: Vec<(&String, std::collections::BTreeMap<String, parity::FieldDef>)> = Vec::new();
     for (type_name, type_def) in &manifest.types {
-        if let TypeDef::Struct { .. } = type_def {
-            if let Some(fields) = parity::fields_for_type_and_lang(manifest, type_name, lang) {
-                struct_types.push((type_name, fields));
-            }
+        if let TypeDef::Struct { .. } = type_def
+            && let Some(fields) = parity::fields_for_type_and_lang(manifest, type_name, lang)
+        {
+            struct_types.push((type_name, fields));
         }
     }
 

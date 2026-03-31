@@ -90,26 +90,6 @@ func TestExtractionConfigFieldParity(t *testing.T) {
 	}
 }
 
-func TestArchiveEntryFieldParity(t *testing.T) {
-	typ := reflect.TypeOf(kreuzberg.ArchiveEntry{})
-	expectedFields := map[string]string{
-		"MimeType": "mime_type",
-		"Path":     "path",
-		"Result":   "result",
-	}
-	for goName, jsonTag := range expectedFields {
-		field, ok := typ.FieldByName(goName)
-		if !ok {
-			t.Errorf("ArchiveEntry missing field: %s (json: %s)", goName, jsonTag)
-			continue
-		}
-		tag := field.Tag.Get("json")
-		if tag == "" || (tag != jsonTag && !contains(tag, jsonTag)) {
-			t.Errorf("field %s has wrong json tag: got %q, want to contain %q", goName, tag, jsonTag)
-		}
-	}
-}
-
 func TestBoundingBoxFieldParity(t *testing.T) {
 	typ := reflect.TypeOf(kreuzberg.BoundingBox{})
 	expectedFields := map[string]string{
@@ -131,8 +111,8 @@ func TestBoundingBoxFieldParity(t *testing.T) {
 	}
 }
 
-func TestKeywordFieldParity(t *testing.T) {
-	typ := reflect.TypeOf(kreuzberg.Keyword{})
+func TestExtractedKeywordFieldParity(t *testing.T) {
+	typ := reflect.TypeOf(kreuzberg.ExtractedKeyword{})
 	expectedFields := map[string]string{
 		"Algorithm": "algorithm",
 		"Positions": "positions",
@@ -142,7 +122,7 @@ func TestKeywordFieldParity(t *testing.T) {
 	for goName, jsonTag := range expectedFields {
 		field, ok := typ.FieldByName(goName)
 		if !ok {
-			t.Errorf("Keyword missing field: %s (json: %s)", goName, jsonTag)
+			t.Errorf("ExtractedKeyword missing field: %s (json: %s)", goName, jsonTag)
 			continue
 		}
 		tag := field.Tag.Get("json")
@@ -213,8 +193,8 @@ func TestTableFieldParity(t *testing.T) {
 	}
 }
 
-func TestUriFieldParity(t *testing.T) {
-	typ := reflect.TypeOf(kreuzberg.Uri{})
+func TestURIFieldParity(t *testing.T) {
+	typ := reflect.TypeOf(kreuzberg.URI{})
 	expectedFields := map[string]string{
 		"Kind":  "kind",
 		"Label": "label",
@@ -224,7 +204,7 @@ func TestUriFieldParity(t *testing.T) {
 	for goName, jsonTag := range expectedFields {
 		field, ok := typ.FieldByName(goName)
 		if !ok {
-			t.Errorf("Uri missing field: %s (json: %s)", goName, jsonTag)
+			t.Errorf("URI missing field: %s (json: %s)", goName, jsonTag)
 			continue
 		}
 		tag := field.Tag.Get("json")

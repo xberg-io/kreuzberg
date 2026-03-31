@@ -314,7 +314,7 @@
 				},
 				"processing_warnings": {
 					"json_type": "array",
-					"required": true
+					"required": false
 				},
 				"quality_score": {
 					"json_type": "number",

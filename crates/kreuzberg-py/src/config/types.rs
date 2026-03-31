@@ -2307,6 +2307,7 @@ impl TreeSitterProcessConfig {
         diagnostics=None,
         chunk_max_size=None
     ))]
+    #[allow(clippy::too_many_arguments)]
     fn new(
         structure: Option<bool>,
         imports: Option<bool>,

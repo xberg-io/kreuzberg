@@ -127,7 +127,7 @@ enum Commands {
         output: PathBuf,
     },
 
-    /// Compare extraction pipelines on PDF corpus with quality scoring
+    /// Compare extraction pipelines on document corpus with quality scoring
     Compare {
         /// Directory containing fixture JSON files
         #[arg(short, long)]
@@ -150,7 +150,7 @@ enum Commands {
         filter: Option<String>,
     },
 
-    /// Run 6-path pipeline benchmark across the PDF corpus
+    /// Run 6-path pipeline benchmark across the document corpus
     PipelineBenchmark {
         /// Directory containing fixture JSON files
         #[arg(short, long)]
@@ -221,6 +221,17 @@ enum Commands {
 
     /// Embedding throughput and batch-size benchmark across all presets
     EmbedBenchmark,
+
+    /// Validate ground truth files and optionally fix HTML artifacts
+    ValidateGt {
+        /// Directory containing fixture JSON files
+        #[arg(short, long)]
+        fixtures: PathBuf,
+
+        /// Auto-fix HTML tags in markdown ground truth files
+        #[arg(long)]
+        fix: bool,
+    },
 }
 
 #[tokio::main]
@@ -824,6 +835,54 @@ async fn main() -> Result<()> {
 
         Commands::EmbedBenchmark => {
             benchmark_harness::embed_benchmark::run_embed_benchmark();
+            Ok(())
+        }
+
+        Commands::ValidateGt { fixtures, fix } => {
+            use benchmark_harness::validate_gt::{ValidateGtConfig, validate_ground_truth};
+
+            let config = ValidateGtConfig {
+                fixtures_dir: fixtures,
+                fix,
+            };
+
+            let report = validate_ground_truth(&config)?;
+
+            println!("=== Ground Truth Validation Report ===\n");
+            println!("Total fixtures:       {}", report.total_fixtures);
+            println!("With text GT:         {}", report.with_text_gt);
+            println!("With markdown GT:     {}", report.with_markdown_gt);
+            println!("Missing text GT:      {}", report.missing_text_gt);
+            println!("Missing markdown GT:  {}", report.missing_markdown_gt);
+
+            if !report.small_gt_files.is_empty() {
+                println!("\nSmall GT files (<10 bytes):");
+                for (path, size) in &report.small_gt_files {
+                    println!("  {} ({} bytes)", path, size);
+                }
+            }
+
+            if !report.html_issues.is_empty() {
+                println!("\nHTML issues in markdown GT ({} file(s)):", report.html_issues.len());
+                for (path, tags) in &report.html_issues {
+                    let preview: Vec<&str> = tags.iter().take(3).map(|s| s.as_str()).collect();
+                    let suffix = if tags.len() > 3 {
+                        format!(" (and {} more)", tags.len() - 3)
+                    } else {
+                        String::new()
+                    };
+                    println!("  {} - {} tag(s): {}{}", path, tags.len(), preview.join(", "), suffix);
+                }
+            }
+
+            if fix && report.fixes_applied > 0 {
+                println!("\nFixes applied: {}", report.fixes_applied);
+            }
+
+            if report.html_issues.is_empty() && report.small_gt_files.is_empty() {
+                println!("\nAll ground truth files are valid.");
+            }
+
             Ok(())
         }
 

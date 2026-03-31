@@ -2608,7 +2608,7 @@ pub fn generate_parity(manifest: &ParityManifest, output_root: &Utf8Path) -> Res
             .filter(|(_, f)| f.required)
             .map(|(name, _)| (name, to_java_getter(name)))
             .collect();
-        let all_fields: Vec<(&String, String)> = fields.iter().map(|(name, _)| (name, to_java_getter(name))).collect();
+        let all_fields: Vec<(&String, String)> = fields.keys().map(|name| (name, to_java_getter(name))).collect();
 
         writeln!(buffer)?;
         writeln!(buffer, "    @Test")?;
@@ -2660,7 +2660,7 @@ pub fn generate_parity(manifest: &ParityManifest, output_root: &Utf8Path) -> Res
 
     // ExtractionConfig parity
     if let Some(fields) = parity::fields_for_type_and_lang(manifest, "ExtractionConfig", lang) {
-        let all_fields: Vec<(&String, String)> = fields.iter().map(|(name, _)| (name, to_java_getter(name))).collect();
+        let all_fields: Vec<(&String, String)> = fields.keys().map(|name| (name, to_java_getter(name))).collect();
 
         writeln!(buffer)?;
         writeln!(buffer, "    @Test")?;
@@ -2695,7 +2695,7 @@ pub fn generate_parity(manifest: &ParityManifest, output_root: &Utf8Path) -> Res
             continue;
         }
 
-        let all_fields: Vec<(&String, String)> = fields.iter().map(|(name, _)| (name, to_java_getter(name))).collect();
+        let all_fields: Vec<(&String, String)> = fields.keys().map(|name| (name, to_java_getter(name))).collect();
 
         let method_name = format!("test{}AllGetters", type_name);
 

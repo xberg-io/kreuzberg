@@ -902,12 +902,10 @@ fn render_test(fixture: &Fixture) -> Result<String> {
 
     // Render file_configs if present in fixture
     let has_file_configs = extraction.has_file_configs();
-    if has_file_configs {
-        if let Some(ref file_configs) = extraction.file_configs {
-            let fc_literal = render_file_configs_literal(file_configs);
-            writeln!(code, "    file_configs = {fc_literal}")?;
-            writeln!(code)?;
-        }
+    if has_file_configs && let Some(ref file_configs) = extraction.file_configs {
+        let fc_literal = render_file_configs_literal(file_configs);
+        writeln!(code, "    file_configs = {fc_literal}")?;
+        writeln!(code)?;
     }
     let fc_arg = if has_file_configs {
         ", file_configs=file_configs"
@@ -1811,10 +1809,10 @@ pub fn generate_parity(manifest: &ParityManifest, output_root: &Utf8Path) -> Res
     // Collect all struct types with fields for this language
     let mut struct_types: Vec<(&String, std::collections::BTreeMap<String, parity::FieldDef>)> = Vec::new();
     for (type_name, type_def) in &manifest.types {
-        if let TypeDef::Struct { .. } = type_def {
-            if let Some(fields) = parity::fields_for_type_and_lang(manifest, type_name, lang) {
-                struct_types.push((type_name, fields));
-            }
+        if let TypeDef::Struct { .. } = type_def
+            && let Some(fields) = parity::fields_for_type_and_lang(manifest, type_name, lang)
+        {
+            struct_types.push((type_name, fields));
         }
     }
 

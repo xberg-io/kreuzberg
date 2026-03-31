@@ -152,7 +152,7 @@ pub struct DocResult {
 }
 
 /// Build a kreuzberg ExtractionConfig for the given pipeline.
-fn build_extraction_config(pipeline: Pipeline) -> kreuzberg::ExtractionConfig {
+pub fn build_extraction_config(pipeline: Pipeline) -> kreuzberg::ExtractionConfig {
     use kreuzberg::core::config::{OutputFormat, layout::LayoutDetectionConfig};
 
     let base = kreuzberg::ExtractionConfig {
@@ -167,7 +167,7 @@ fn build_extraction_config(pipeline: Pipeline) -> kreuzberg::ExtractionConfig {
                 preset: "accurate".to_string(),
                 ..Default::default()
             }),
-            // Enable OCR fallback for pages with no native text (image-only PDFs).
+            // Enable OCR fallback for pages with no native text (image-only pages).
             // With force_ocr=false (default), kreuzberg auto-detects empty pages
             // and falls back to tesseract OCR only when needed.
             ocr: Some(kreuzberg::core::config::OcrConfig {
@@ -325,37 +325,61 @@ fn build_extraction_config(pipeline: Pipeline) -> kreuzberg::ExtractionConfig {
     }
 }
 
-/// Run a single pipeline on a single document and score it.
-async fn run_pipeline(
-    pipeline: Pipeline,
-    doc: &CorpusDocument,
+/// Score extracted content against ground truth, returning (tf1, sf1, order_score, per_type_sf1).
+pub fn score_document(
+    content: &str,
     gt_text: &str,
     gt_markdown: Option<&str>,
+) -> (f64, f64, f64, HashMap<String, f64>) {
+    let tf1 = {
+        let ext_tokens = tokenize(content);
+        let gt_tokens = tokenize(gt_text);
+        compute_f1(&ext_tokens, &gt_tokens)
+    };
+    let (sf1, order_score, per_type_sf1) = match gt_markdown {
+        Some(md) => {
+            let sq = score_structural_quality(content, md);
+            let per_type: HashMap<String, f64> = sq.per_type.iter().map(|(k, v)| (k.to_string(), v.f1)).collect();
+            (sq.structural_f1, sq.order_score, per_type)
+        }
+        None => (0.0, 0.0, HashMap::new()),
+    };
+    (tf1, sf1, order_score, per_type_sf1)
+}
+
+/// Read vendored markdown + cached timing for a single document.
+/// Returns (content, time_ms) where time_ms is NaN if no cached timing exists.
+pub fn read_vendored_cached(doc_name: &str, fixtures_dir: &std::path::Path, vendored_name: &str) -> (String, f64) {
+    let vendored_dir = fixtures_dir
+        .parent()
+        .unwrap_or(fixtures_dir)
+        .join("vendored")
+        .join(vendored_name);
+    let md_path = vendored_dir.join("md").join(format!("{}.md", doc_name));
+    let timing_path = vendored_dir.join("timing").join(format!("{}.ms", doc_name));
+    let md = std::fs::read_to_string(&md_path).unwrap_or_default();
+    let cached_ms = std::fs::read_to_string(&timing_path)
+        .ok()
+        .and_then(|s| s.trim().parse::<f64>().ok())
+        .unwrap_or(f64::NAN);
+    (md, cached_ms)
+}
+
+/// Extract content from a document using the given pipeline.
+/// Returns (content, time_ms).
+pub async fn extract_pipeline(
+    pipeline: Pipeline,
+    doc: &crate::corpus::CorpusDocument,
     fixtures_dir: &std::path::Path,
-) -> PipelineResult {
-    let (content, time_ms) = match pipeline {
+) -> (String, f64) {
+    match pipeline {
         Pipeline::Docling | Pipeline::PaddleOcrPython | Pipeline::RapidOcr => {
-            // Vendored pipelines: read output + cached timing from files.
-            // Vendored data lives at tools/benchmark-harness/vendored/{name}/
-            // (sibling of fixtures_dir).
             let vendored_name = match pipeline {
                 Pipeline::PaddleOcrPython => "paddleocr-python",
                 Pipeline::RapidOcr => "rapidocr",
                 _ => "docling",
             };
-            let vendored_dir = fixtures_dir
-                .parent()
-                .unwrap_or(fixtures_dir)
-                .join("vendored")
-                .join(vendored_name);
-            let md_path = vendored_dir.join("md").join(format!("{}.md", doc.name));
-            let timing_path = vendored_dir.join("timing").join(format!("{}.ms", doc.name));
-            let md = std::fs::read_to_string(&md_path).unwrap_or_default();
-            let cached_ms = std::fs::read_to_string(&timing_path)
-                .ok()
-                .and_then(|s| s.trim().parse::<f64>().ok())
-                .unwrap_or(f64::NAN);
-            (md, cached_ms)
+            read_vendored_cached(&doc.name, fixtures_dir, vendored_name)
         }
         _ => {
             let t = Instant::now();
@@ -382,23 +406,19 @@ async fn run_pipeline(
             };
             (result, t.elapsed().as_secs_f64() * 1000.0)
         }
-    };
+    }
+}
 
-    // Score
-    let tf1 = {
-        let ext_tokens = tokenize(&content);
-        let gt_tokens = tokenize(gt_text);
-        compute_f1(&ext_tokens, &gt_tokens)
-    };
-
-    let (sf1, order_score, per_type_sf1) = match gt_markdown {
-        Some(md) => {
-            let sq = score_structural_quality(&content, md);
-            let per_type: HashMap<String, f64> = sq.per_type.iter().map(|(k, v)| (k.to_string(), v.f1)).collect();
-            (sq.structural_f1, sq.order_score, per_type)
-        }
-        None => (0.0, 0.0, HashMap::new()),
-    };
+/// Run a single pipeline on a single document and score it.
+async fn run_pipeline(
+    pipeline: Pipeline,
+    doc: &CorpusDocument,
+    gt_text: &str,
+    gt_markdown: Option<&str>,
+    fixtures_dir: &std::path::Path,
+) -> PipelineResult {
+    let (content, time_ms) = extract_pipeline(pipeline, doc, fixtures_dir).await;
+    let (tf1, sf1, order_score, per_type_sf1) = score_document(&content, gt_text, gt_markdown);
 
     PipelineResult {
         pipeline,
@@ -855,4 +875,134 @@ pub async fn run_with_guardrails(config: &ComparisonConfig) -> Result<i32> {
     }
 
     Ok(0)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_score_document_identical() {
+        let text = "Hello world this is a test document";
+        let (tf1, sf1, order_score, per_type) = score_document(text, text, None);
+        assert!(
+            (tf1 - 1.0).abs() < f64::EPSILON,
+            "TF1 should be 1.0 for identical text, got {tf1}"
+        );
+        assert!(
+            (sf1 - 0.0).abs() < f64::EPSILON,
+            "SF1 should be 0.0 when no markdown GT"
+        );
+        assert!(
+            (order_score - 0.0).abs() < f64::EPSILON,
+            "order_score should be 0.0 when no markdown GT"
+        );
+        assert!(per_type.is_empty(), "per_type should be empty when no markdown GT");
+    }
+
+    #[test]
+    fn test_score_document_no_markdown_gt() {
+        let content = "Some extracted content here";
+        let gt_text = "Some ground truth content here";
+        let (tf1, sf1, order_score, per_type) = score_document(content, gt_text, None);
+        assert!(
+            tf1 > 0.0 && tf1 < 1.0,
+            "TF1 should be between 0 and 1 for partially matching text, got {tf1}"
+        );
+        assert!(
+            (sf1 - 0.0).abs() < f64::EPSILON,
+            "SF1 should be 0.0 when no markdown GT"
+        );
+        assert!((order_score - 0.0).abs() < f64::EPSILON);
+        assert!(per_type.is_empty());
+    }
+
+    #[test]
+    fn test_score_document_empty() {
+        let (tf1, sf1, order_score, per_type) = score_document("", "", None);
+        // F1 of two empty token sets: compute_f1 returns 1.0 when both are empty
+        // (or 0.0 depending on implementation). Just check it doesn't panic.
+        let _ = tf1;
+        assert!((sf1 - 0.0).abs() < f64::EPSILON);
+        assert!((order_score - 0.0).abs() < f64::EPSILON);
+        assert!(per_type.is_empty());
+    }
+
+    #[test]
+    fn test_score_document_completely_different() {
+        let content = "alpha bravo charlie";
+        let gt_text = "delta echo foxtrot";
+        let (tf1, _sf1, _order_score, _per_type) = score_document(content, gt_text, None);
+        assert!(
+            (tf1 - 0.0).abs() < f64::EPSILON,
+            "TF1 should be 0.0 for completely different text, got {tf1}"
+        );
+    }
+
+    #[test]
+    fn test_score_document_with_structure() {
+        let content = "# Heading\n\nSome paragraph text.\n";
+        let gt_markdown = "# Heading\n\nSome paragraph text.\n";
+        let gt_text = "Heading Some paragraph text.";
+        let (tf1, sf1, _order_score, per_type) = score_document(content, gt_text, Some(gt_markdown));
+        assert!(tf1 > 0.0, "TF1 should be positive, got {tf1}");
+        assert!(
+            sf1 > 0.0,
+            "SF1 should be positive when structural GT is provided, got {sf1}"
+        );
+        // per_type may or may not have entries depending on scoring internals
+        let _ = per_type;
+    }
+
+    #[test]
+    fn test_pipeline_config_deterministic() {
+        for pipeline in Pipeline::all_kreuzberg() {
+            let config = build_extraction_config(pipeline);
+            // Verify the config is valid (doesn't panic) and has markdown output
+            assert_eq!(
+                format!("{:?}", config.output_format),
+                format!("{:?}", kreuzberg::core::config::OutputFormat::Markdown),
+                "Pipeline {:?} should produce Markdown config",
+                pipeline
+            );
+        }
+    }
+
+    #[test]
+    fn test_read_vendored_cached_missing() {
+        let tmp = std::env::temp_dir().join("benchmark_harness_test_nonexistent");
+        let (content, time_ms) = read_vendored_cached("no_such_doc", &tmp, "no_such_vendor");
+        assert!(content.is_empty(), "Content should be empty for missing vendored file");
+        assert!(time_ms.is_nan(), "time_ms should be NaN for missing timing file");
+    }
+
+    #[test]
+    fn test_pipeline_parse_roundtrip() {
+        let all_names = [
+            "baseline",
+            "layout",
+            "tesseract",
+            "tesseract+layout",
+            "paddle",
+            "paddle+layout",
+            "paddle-server",
+            "paddle-server+layout",
+            "tesseract-autorotate",
+            "paddle-norotate",
+            "docling",
+            "paddleocr-python",
+            "rapidocr",
+            "layout+slanet-wired",
+            "layout+slanet-wireless",
+            "layout+slanet-plus",
+            "layout+slanet-auto",
+        ];
+        for name in all_names {
+            let pipeline = Pipeline::parse(name).unwrap_or_else(|| panic!("Failed to parse pipeline '{name}'"));
+            let roundtrip = pipeline.name();
+            let reparsed =
+                Pipeline::parse(roundtrip).unwrap_or_else(|| panic!("Failed to reparse pipeline '{roundtrip}'"));
+            assert_eq!(pipeline, reparsed, "Roundtrip failed for '{name}' -> '{roundtrip}'");
+        }
+    }
 }

@@ -1916,6 +1916,34 @@ fn render_render_assertions_go(assertions: &RenderAssertions, var: &str, code: &
     Ok(())
 }
 
+/// Map manifest type names to their Go binding type names.
+///
+/// Returns `None` if the type does not exist in the Go binding package.
+fn go_type_name(manifest_name: &str) -> Option<&'static str> {
+    match manifest_name {
+        "ArchiveEntry" => None, // Not present in Go binding
+        "Keyword" => Some("ExtractedKeyword"),
+        "Uri" => Some("URI"),
+        _ => None, // Use the manifest name as-is (handled by caller)
+    }
+}
+
+/// Resolve the Go type name for a manifest type, returning the mapped name
+/// or the original name if no mapping exists.  Returns `None` when the type
+/// should be skipped entirely.
+fn resolve_go_type_name(manifest_name: &str) -> Option<String> {
+    match go_type_name(manifest_name) {
+        Some(mapped) => Some(mapped.to_string()),
+        None => {
+            // Check if the type is explicitly skipped (returned None from mapping)
+            if matches!(manifest_name, "ArchiveEntry") {
+                return None;
+            }
+            Some(manifest_name.to_string())
+        }
+    }
+}
+
 /// Generate parity tests for the Go binding.
 ///
 /// Produces `e2e/go/parity_test.go` that verifies all manifest struct types
@@ -1953,7 +1981,7 @@ pub fn generate_parity(manifest: &ParityManifest, output_root: &Utf8Path) -> Res
         writeln!(buffer, "func TestExtractionResultFieldParity(t *testing.T) {{")?;
         writeln!(buffer, "\ttyp := reflect.TypeOf(kreuzberg.ExtractionResult{{}})")?;
         writeln!(buffer, "\texpectedFields := map[string]string{{")?;
-        for (field_name, _) in &fields {
+        for field_name in fields.keys() {
             let go_name = parity::to_pascal_case(field_name);
             writeln!(buffer, "\t\t\"{go_name}\": \"{field_name}\",")?;
         }
@@ -1987,7 +2015,7 @@ pub fn generate_parity(manifest: &ParityManifest, output_root: &Utf8Path) -> Res
         writeln!(buffer, "func TestExtractionConfigFieldParity(t *testing.T) {{")?;
         writeln!(buffer, "\ttyp := reflect.TypeOf(kreuzberg.ExtractionConfig{{}})")?;
         writeln!(buffer, "\texpectedFields := map[string]string{{")?;
-        for (field_name, _) in &fields {
+        for field_name in fields.keys() {
             let go_name = parity::to_pascal_case(field_name);
             writeln!(buffer, "\t\t\"{go_name}\": \"{field_name}\",")?;
         }
@@ -2021,6 +2049,10 @@ pub fn generate_parity(manifest: &ParityManifest, output_root: &Utf8Path) -> Res
         if type_name == "ExtractionResult" || type_name == "ExtractionConfig" {
             continue;
         }
+        let go_name = match resolve_go_type_name(type_name) {
+            Some(name) => name,
+            None => continue, // Type does not exist in Go binding
+        };
         let fields = match type_def {
             TypeDef::Struct { fields } => parity::filter_fields_for_profile(fields, &enabled_features),
             _ => continue,
@@ -2029,10 +2061,10 @@ pub fn generate_parity(manifest: &ParityManifest, output_root: &Utf8Path) -> Res
             continue;
         }
 
-        writeln!(buffer, "func Test{type_name}FieldParity(t *testing.T) {{")?;
-        writeln!(buffer, "\ttyp := reflect.TypeOf(kreuzberg.{type_name}{{}})")?;
+        writeln!(buffer, "func Test{go_name}FieldParity(t *testing.T) {{")?;
+        writeln!(buffer, "\ttyp := reflect.TypeOf(kreuzberg.{go_name}{{}})")?;
         writeln!(buffer, "\texpectedFields := map[string]string{{")?;
-        for (field_name, _) in &fields {
+        for field_name in fields.keys() {
             let go_name = parity::to_pascal_case(field_name);
             writeln!(buffer, "\t\t\"{go_name}\": \"{field_name}\",")?;
         }
@@ -2042,7 +2074,7 @@ pub fn generate_parity(manifest: &ParityManifest, output_root: &Utf8Path) -> Res
         writeln!(buffer, "\t\tif !ok {{")?;
         writeln!(
             buffer,
-            "\t\t\tt.Errorf(\"{type_name} missing field: %s (json: %s)\", goName, jsonTag)"
+            "\t\t\tt.Errorf(\"{go_name} missing field: %s (json: %s)\", goName, jsonTag)"
         )?;
         writeln!(buffer, "\t\t\tcontinue")?;
         writeln!(buffer, "\t\t}}")?;

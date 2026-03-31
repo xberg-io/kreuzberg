@@ -5,6 +5,7 @@
 #
 # Tests for contract fixtures.
 
+# rubocop:disable Layout/LineLength
 require_relative 'spec_helper'
 
 RSpec.describe 'contract fixtures' do
@@ -357,8 +358,7 @@ RSpec.describe 'contract fixtures' do
       skip_if_missing: true
     ) do |result|
       E2ERuby::Assertions.assert_min_content_length(result, 10)
-      E2ERuby::Assertions.assert_chunks(result, min_count: 2, each_has_content: true, each_has_heading_context: true,
-                                                content_starts_with_heading: true)
+      E2ERuby::Assertions.assert_chunks(result, min_count: 2, each_has_content: true, each_has_heading_context: true, content_starts_with_heading: true)
     end
   end
 
@@ -445,8 +445,7 @@ RSpec.describe 'contract fixtures' do
         result,
         ['application/pdf']
       )
-      E2ERuby::Assertions.assert_document(result, has_document: true, min_node_count: 1,
-                                                  node_types_include: %w[paragraph])
+      E2ERuby::Assertions.assert_document(result, has_document: true, min_node_count: 1, node_types_include: %w[paragraph])
     end
   end
 
@@ -499,8 +498,7 @@ RSpec.describe 'contract fixtures' do
         result,
         ['application/vnd.openxmlformats-officedocument.wordprocessingml.document']
       )
-      E2ERuby::Assertions.assert_document(result, has_document: true, min_node_count: 1,
-                                                  node_types_include: %w[heading paragraph])
+      E2ERuby::Assertions.assert_document(result, has_document: true, min_node_count: 1, node_types_include: %w[heading paragraph])
     end
   end
 
@@ -1013,8 +1011,7 @@ RSpec.describe 'contract fixtures' do
     E2ERuby.run_fixture(
       'config_tree_sitter',
       'code/hello.py',
-      { tree_sitter: { languages: %w[python rust], groups: ['web'],
-                       process: { structure: true, imports: true, exports: true, comments: false, docstrings: false, symbols: false, diagnostics: false } } },
+      { tree_sitter: { languages: %w[python rust], groups: ['web'], process: { structure: true, imports: true, exports: true, comments: false, docstrings: false, symbols: false, diagnostics: false } } },
       requirements: %w[tree-sitter],
       notes: nil,
       skip_if_missing: true
@@ -1032,8 +1029,7 @@ RSpec.describe 'contract fixtures' do
     E2ERuby.run_fixture(
       'config_tree_sitter_process',
       'code/hello.py',
-      { tree_sitter: { process: { structure: true, imports: true, exports: true, comments: true, docstrings: true,
-                                  symbols: true, diagnostics: true, chunk_max_size: 2_000 } } },
+      { tree_sitter: { process: { structure: true, imports: true, exports: true, comments: true, docstrings: true, symbols: true, diagnostics: true, chunk_max_size: 2_000 } } },
       requirements: %w[tree-sitter],
       notes: nil,
       skip_if_missing: true
@@ -1184,3 +1180,4 @@ RSpec.describe 'contract fixtures' do
     end
   end
 end
+# rubocop:enable Layout/LineLength

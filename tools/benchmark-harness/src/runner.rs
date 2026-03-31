@@ -237,13 +237,6 @@ impl BenchmarkRunner {
         Ok(())
     }
 
-    /// Filter fixtures by file type (to be implemented when needed)
-    ///
-    /// For now, filtering is done during execution based on adapter support
-    pub fn filter_fixtures(&mut self, _file_types: &[String]) {
-        // TODO: Implement fixture filtering if needed
-    }
-
     /// Retain only fixtures for the given shard (1-based index, total shards)
     pub fn apply_shard(&mut self, index: usize, total: usize) {
         self.fixtures.retain_shard(index, total);

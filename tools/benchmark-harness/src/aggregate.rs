@@ -7,6 +7,7 @@
 //!
 //! Calculates percentile-based statistics for better understanding of performance distributions.
 
+use crate::stats::{percentile_r7, sanitize_f64};
 use crate::types::{BenchmarkResult, DiskSizeInfo, ErrorKind};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -403,28 +404,28 @@ fn calculate_percentiles(results: &[&BenchmarkResult]) -> PerformancePercentiles
 
     // Build percentiles with NaN/Inf validation
     let duration = Percentiles {
-        p50: sanitize_f64(calculate_percentile_value(&durations, 0.50)),
-        p95: sanitize_f64(calculate_percentile_value(&durations, 0.95)),
-        p99: sanitize_f64(calculate_percentile_value(&durations, 0.99)),
+        p50: sanitize_f64(percentile_r7(&durations, 0.50)),
+        p95: sanitize_f64(percentile_r7(&durations, 0.95)),
+        p99: sanitize_f64(percentile_r7(&durations, 0.99)),
     };
 
     let throughput = Percentiles {
-        p50: sanitize_f64(calculate_percentile_value(&throughputs, 0.50)),
-        p95: sanitize_f64(calculate_percentile_value(&throughputs, 0.95)),
-        p99: sanitize_f64(calculate_percentile_value(&throughputs, 0.99)),
+        p50: sanitize_f64(percentile_r7(&throughputs, 0.50)),
+        p95: sanitize_f64(percentile_r7(&throughputs, 0.95)),
+        p99: sanitize_f64(percentile_r7(&throughputs, 0.99)),
     };
 
     let memory = Percentiles {
-        p50: sanitize_f64(calculate_percentile_value(&memories, 0.50)),
-        p95: sanitize_f64(calculate_percentile_value(&memories, 0.95)),
-        p99: sanitize_f64(calculate_percentile_value(&memories, 0.99)),
+        p50: sanitize_f64(percentile_r7(&memories, 0.50)),
+        p95: sanitize_f64(percentile_r7(&memories, 0.95)),
+        p99: sanitize_f64(percentile_r7(&memories, 0.99)),
     };
 
     let extraction_duration = if !extraction_durations.is_empty() {
         Some(Percentiles {
-            p50: sanitize_f64(calculate_percentile_value(&extraction_durations, 0.50)),
-            p95: sanitize_f64(calculate_percentile_value(&extraction_durations, 0.95)),
-            p99: sanitize_f64(calculate_percentile_value(&extraction_durations, 0.99)),
+            p50: sanitize_f64(percentile_r7(&extraction_durations, 0.50)),
+            p95: sanitize_f64(percentile_r7(&extraction_durations, 0.95)),
+            p99: sanitize_f64(percentile_r7(&extraction_durations, 0.99)),
         })
     } else {
         None
@@ -432,9 +433,9 @@ fn calculate_percentiles(results: &[&BenchmarkResult]) -> PerformancePercentiles
 
     let cpu = if !cpus.is_empty() {
         Some(Percentiles {
-            p50: sanitize_f64(calculate_percentile_value(&cpus, 0.50)),
-            p95: sanitize_f64(calculate_percentile_value(&cpus, 0.95)),
-            p99: sanitize_f64(calculate_percentile_value(&cpus, 0.99)),
+            p50: sanitize_f64(percentile_r7(&cpus, 0.50)),
+            p95: sanitize_f64(percentile_r7(&cpus, 0.95)),
+            p99: sanitize_f64(percentile_r7(&cpus, 0.99)),
         })
     } else {
         None
@@ -497,10 +498,10 @@ fn calculate_percentiles(results: &[&BenchmarkResult]) -> PerformancePercentiles
             quality_scores.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
 
             Some(QualityPercentiles {
-                f1_text_p50: sanitize_f64(calculate_percentile_value(&f1_texts, 0.50)),
-                f1_numeric_p50: sanitize_f64(calculate_percentile_value(&f1_numerics, 0.50)),
-                f1_layout_p50: sanitize_f64(calculate_percentile_value(&f1_layouts, 0.50)),
-                quality_score_p50: sanitize_f64(calculate_percentile_value(&quality_scores, 0.50)),
+                f1_text_p50: sanitize_f64(percentile_r7(&f1_texts, 0.50)),
+                f1_numeric_p50: sanitize_f64(percentile_r7(&f1_numerics, 0.50)),
+                f1_layout_p50: sanitize_f64(percentile_r7(&f1_layouts, 0.50)),
+                quality_score_p50: sanitize_f64(percentile_r7(&quality_scores, 0.50)),
             })
         } else {
             None
@@ -544,9 +545,9 @@ fn aggregate_cold_starts(results: &[&BenchmarkResult]) -> Option<DurationPercent
 
     Some(DurationPercentiles {
         sample_count: cold_starts.len(),
-        p50_ms: sanitize_f64(calculate_percentile_value(&sorted, 0.50)),
-        p95_ms: sanitize_f64(calculate_percentile_value(&sorted, 0.95)),
-        p99_ms: sanitize_f64(calculate_percentile_value(&sorted, 0.99)),
+        p50_ms: sanitize_f64(percentile_r7(&sorted, 0.50)),
+        p95_ms: sanitize_f64(percentile_r7(&sorted, 0.95)),
+        p99_ms: sanitize_f64(percentile_r7(&sorted, 0.99)),
     })
 }
 
@@ -841,41 +842,6 @@ fn build_comparison(by_framework_mode: &HashMap<String, FrameworkModeAggregation
     }
 }
 
-/// Sanitize f64 value, replacing NaN or infinity with 0.0
-fn sanitize_f64(v: f64) -> f64 {
-    if v.is_finite() { v } else { 0.0 }
-}
-
-/// Calculate a specific percentile from sorted values using linear interpolation
-///
-/// Uses R-7 method (NumPy default) for accurate percentile calculation.
-/// Returns 0.0 for empty arrays.
-fn calculate_percentile_value(sorted_values: &[f64], percentile: f64) -> f64 {
-    if sorted_values.is_empty() {
-        return 0.0;
-    }
-
-    let n = sorted_values.len();
-    if n == 1 {
-        return sorted_values[0];
-    }
-
-    // Linear interpolation (R-7 method, used by NumPy) - CRITICAL FIX
-    let index = percentile * (n as f64 - 1.0);
-    let lower = index.floor() as usize;
-    let mut upper = index.ceil() as usize;
-
-    // Bounds check: upper never exceeds array length
-    upper = upper.min(sorted_values.len() - 1);
-
-    if lower == upper {
-        sorted_values[lower]
-    } else {
-        let weight = index - lower as f64;
-        sorted_values[lower] * (1.0 - weight) + sorted_values[upper] * weight
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -939,12 +905,12 @@ mod tests {
     }
 
     #[test]
-    fn test_calculate_percentile_value() {
+    fn test_percentile_r7() {
         let values = vec![1.0, 2.0, 3.0, 4.0, 5.0];
-        assert_eq!(calculate_percentile_value(&values, 0.0), 1.0);
-        assert_eq!(calculate_percentile_value(&values, 0.5), 3.0);
-        assert_eq!(calculate_percentile_value(&values, 1.0), 5.0);
-        assert_eq!(calculate_percentile_value(&[], 0.5), 0.0);
+        assert_eq!(percentile_r7(&values, 0.0), 1.0);
+        assert_eq!(percentile_r7(&values, 0.5), 3.0);
+        assert_eq!(percentile_r7(&values, 1.0), 5.0);
+        assert_eq!(percentile_r7(&[], 0.5), 0.0);
     }
 
     #[test]
@@ -1155,7 +1121,7 @@ mod tests {
     fn test_percentile_interpolation() {
         // Test that p95 with [1,2,3,4,5] uses interpolation
         let sorted = vec![1.0, 2.0, 3.0, 4.0, 5.0];
-        let p95 = calculate_percentile_value(&sorted, 0.95);
+        let p95 = percentile_r7(&sorted, 0.95);
 
         // With linear interpolation: index = 0.95 * 4 = 3.8
         // Result = values[3] * 0.2 + values[4] * 0.8 = 4.0 * 0.2 + 5.0 * 0.8 = 4.8

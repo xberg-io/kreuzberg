@@ -5,6 +5,7 @@
 #
 # Tests for office fixtures.
 
+# rubocop:disable Layout/LineLength
 require_relative 'spec_helper'
 
 RSpec.describe 'office fixtures' do
@@ -229,9 +230,7 @@ RSpec.describe 'office fixtures' do
         ['application/vnd.openxmlformats-officedocument.wordprocessingml.document']
       )
       E2ERuby::Assertions.assert_min_content_length(result, 50)
-      E2ERuby::Assertions.assert_content_contains_all(result,
-                                                      ['Simple uniform table', 'Nested Table', 'merged cells',
-                                                       'Header Col'])
+      E2ERuby::Assertions.assert_content_contains_all(result, ['Simple uniform table', 'Nested Table', 'merged cells', 'Header Col'])
       E2ERuby::Assertions.assert_table_count(result, 1, nil)
     end
   end
@@ -677,8 +676,7 @@ RSpec.describe 'office fixtures' do
     ) do |result|
       E2ERuby::Assertions.assert_expected_mime(
         result,
-        ['application/vnd.ms-powerpoint.presentation.macroEnabled.12',
-         'application/vnd.openxmlformats-officedocument.presentationml.presentation']
+        ['application/vnd.ms-powerpoint.presentation.macroEnabled.12', 'application/vnd.openxmlformats-officedocument.presentationml.presentation']
       )
       E2ERuby::Assertions.assert_content_not_empty(result)
     end
@@ -814,8 +812,7 @@ RSpec.describe 'office fixtures' do
     ) do |result|
       E2ERuby::Assertions.assert_expected_mime(
         result,
-        ['application/vnd.ms-excel.sheet.binary.macroEnabled.12',
-         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']
+        ['application/vnd.ms-excel.sheet.binary.macroEnabled.12', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']
       )
       E2ERuby::Assertions.assert_content_not_empty(result)
     end
@@ -832,8 +829,7 @@ RSpec.describe 'office fixtures' do
     ) do |result|
       E2ERuby::Assertions.assert_expected_mime(
         result,
-        ['application/vnd.ms-excel.sheet.macroEnabled.12',
-         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']
+        ['application/vnd.ms-excel.sheet.macroEnabled.12', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']
       )
       E2ERuby::Assertions.assert_content_not_empty(result)
     end
@@ -895,3 +891,4 @@ RSpec.describe 'office fixtures' do
     end
   end
 end
+# rubocop:enable Layout/LineLength

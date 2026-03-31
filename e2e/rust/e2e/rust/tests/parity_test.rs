@@ -5,7 +5,11 @@
 fn test_archive_entry_field_parity() {
     // Compile-time check that ArchiveEntry exists and has the expected fields.
     // If a field is added/removed in the Rust type, this will fail to compile.
-    let expected_fields: &[&str] = &["mime_type", "path", "result"];
+    let expected_fields: &[&str] = &[
+        "mime_type",
+        "path",
+        "result",
+    ];
     // Verify the type is constructible (fields exist at compile time)
     fn _assert_fields_exist(v: &kreuzberg::ArchiveEntry) {
         let _ = &v.mime_type;
@@ -19,7 +23,12 @@ fn test_archive_entry_field_parity() {
 fn test_bounding_box_field_parity() {
     // Compile-time check that BoundingBox exists and has the expected fields.
     // If a field is added/removed in the Rust type, this will fail to compile.
-    let expected_fields: &[&str] = &["x0", "x1", "y0", "y1"];
+    let expected_fields: &[&str] = &[
+        "x0",
+        "x1",
+        "y0",
+        "y1",
+    ];
     // Verify the type is constructible (fields exist at compile time)
     fn _assert_fields_exist(v: &kreuzberg::BoundingBox) {
         let _ = &v.x0;
@@ -73,30 +82,29 @@ fn test_extraction_config_field_parity() {
         "use_cache",
     ];
 
-    let json = serde_json::to_value(kreuzberg::ExtractionConfig::default()).unwrap();
+    let json = serde_json::to_value(&kreuzberg::ExtractionConfig::default()).unwrap();
     let obj = json.as_object().unwrap();
 
     // All required fields must be present in the serialized default
     for field in required_fields {
-        assert!(
-            obj.contains_key(*field),
-            "ExtractionConfig missing required field: {field}"
-        );
+        assert!(obj.contains_key(*field), "ExtractionConfig missing required field: {field}");
     }
 
     // No unexpected fields should appear in the serialized output
     for key in obj.keys() {
-        assert!(
-            all_known_fields.contains(&key.as_str()),
-            "ExtractionConfig has unexpected field: {key}"
-        );
+        assert!(all_known_fields.contains(&key.as_str()), "ExtractionConfig has unexpected field: {key}");
     }
 }
 
 #[test]
 fn test_extraction_result_field_parity() {
     // Verify ExtractionResult has the expected fields via serde serialization
-    let required_fields: &[&str] = &["content", "metadata", "mime_type", "processing_warnings", "tables"];
+    let required_fields: &[&str] = &[
+        "content",
+        "metadata",
+        "mime_type",
+        "tables",
+    ];
     let all_known_fields: &[&str] = &[
         "annotations",
         "children",
@@ -118,23 +126,17 @@ fn test_extraction_result_field_parity() {
         "uris",
     ];
 
-    let json = serde_json::to_value(kreuzberg::ExtractionResult::default()).unwrap();
+    let json = serde_json::to_value(&kreuzberg::ExtractionResult::default()).unwrap();
     let obj = json.as_object().unwrap();
 
     // All required fields must be present in the serialized default
     for field in required_fields {
-        assert!(
-            obj.contains_key(*field),
-            "ExtractionResult missing required field: {field}"
-        );
+        assert!(obj.contains_key(*field), "ExtractionResult missing required field: {field}");
     }
 
     // No unexpected fields should appear in the serialized output
     for key in obj.keys() {
-        assert!(
-            all_known_fields.contains(&key.as_str()),
-            "ExtractionResult has unexpected field: {key}"
-        );
+        assert!(all_known_fields.contains(&key.as_str()), "ExtractionResult has unexpected field: {key}");
     }
 }
 
@@ -142,7 +144,12 @@ fn test_extraction_result_field_parity() {
 fn test_keyword_field_parity() {
     // Compile-time check that Keyword exists and has the expected fields.
     // If a field is added/removed in the Rust type, this will fail to compile.
-    let expected_fields: &[&str] = &["algorithm", "positions", "score", "text"];
+    let expected_fields: &[&str] = &[
+        "algorithm",
+        "positions",
+        "score",
+        "text",
+    ];
     // Verify the type is constructible (fields exist at compile time)
     fn _assert_fields_exist(v: &kreuzberg::keywords::Keyword) {
         let _ = &v.algorithm;
@@ -157,7 +164,12 @@ fn test_keyword_field_parity() {
 fn test_pdf_annotation_field_parity() {
     // Compile-time check that PdfAnnotation exists and has the expected fields.
     // If a field is added/removed in the Rust type, this will fail to compile.
-    let expected_fields: &[&str] = &["annotation_type", "bounding_box", "content", "page_number"];
+    let expected_fields: &[&str] = &[
+        "annotation_type",
+        "bounding_box",
+        "content",
+        "page_number",
+    ];
     // Verify the type is constructible (fields exist at compile time)
     fn _assert_fields_exist(v: &kreuzberg::PdfAnnotation) {
         let _ = &v.annotation_type;
@@ -172,7 +184,10 @@ fn test_pdf_annotation_field_parity() {
 fn test_processing_warning_field_parity() {
     // Compile-time check that ProcessingWarning exists and has the expected fields.
     // If a field is added/removed in the Rust type, this will fail to compile.
-    let expected_fields: &[&str] = &["message", "source"];
+    let expected_fields: &[&str] = &[
+        "message",
+        "source",
+    ];
     // Verify the type is constructible (fields exist at compile time)
     fn _assert_fields_exist(v: &kreuzberg::ProcessingWarning) {
         let _ = &v.message;
@@ -185,7 +200,12 @@ fn test_processing_warning_field_parity() {
 fn test_table_field_parity() {
     // Compile-time check that Table exists and has the expected fields.
     // If a field is added/removed in the Rust type, this will fail to compile.
-    let expected_fields: &[&str] = &["bounding_box", "cells", "markdown", "page_number"];
+    let expected_fields: &[&str] = &[
+        "bounding_box",
+        "cells",
+        "markdown",
+        "page_number",
+    ];
     // Verify the type is constructible (fields exist at compile time)
     fn _assert_fields_exist(v: &kreuzberg::Table) {
         let _ = &v.bounding_box;
@@ -200,7 +220,12 @@ fn test_table_field_parity() {
 fn test_uri_field_parity() {
     // Compile-time check that Uri exists and has the expected fields.
     // If a field is added/removed in the Rust type, this will fail to compile.
-    let expected_fields: &[&str] = &["kind", "label", "page", "url"];
+    let expected_fields: &[&str] = &[
+        "kind",
+        "label",
+        "page",
+        "url",
+    ];
     // Verify the type is constructible (fields exist at compile time)
     fn _assert_fields_exist(v: &kreuzberg::Uri) {
         let _ = &v.kind;
