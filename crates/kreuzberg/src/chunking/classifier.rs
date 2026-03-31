@@ -50,7 +50,9 @@ pub fn classify_chunk(content: &str, heading_context: Option<&HeadingContext>) -
     }
 
     // ── 2. Code block ───────────────────────────────────────────────────────
-    if is_code_block(trimmed) {
+    // Use original content (not trimmed) so leading-indented blocks retain
+    // their 4-space prefix on every line.
+    if is_code_block(content) {
         return ChunkType::CodeBlock;
     }
 
@@ -94,7 +96,7 @@ pub fn classify_chunk(content: &str, heading_context: Option<&HeadingContext>) -
 
 // ─── Rule implementations ───────────────────────────────────────────────────
 
-fn is_heading(content: &str, ctx: Option<&HeadingContext>) -> bool {
+fn is_heading(content: &str, _ctx: Option<&HeadingContext>) -> bool {
     // Markdown ATX heading
     if content.starts_with('#') {
         return true;
@@ -104,12 +106,6 @@ fn is_heading(content: &str, ctx: Option<&HeadingContext>) -> bool {
     if let (Some(_title), Some(underline)) = (lines.next(), lines.next()) {
         let u = underline.trim();
         if !u.is_empty() && (u.chars().all(|c| c == '=') || u.chars().all(|c| c == '-')) {
-            return true;
-        }
-    }
-    // Single top-level heading context with very short content (≤ 120 chars)
-    if let Some(ctx) = ctx {
-        if ctx.headings.len() == 1 && content.len() <= 120 {
             return true;
         }
     }
