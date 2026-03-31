@@ -240,7 +240,7 @@ impl RtfExtractor {
                 colorspace: None,
                 bits_per_component: None,
                 is_mask: false,
-                description: None,
+                description: Some("image".to_string()),
                 ocr_result: None,
                 bounding_box: None,
                 source_path: None,

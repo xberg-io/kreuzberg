@@ -2,50 +2,50 @@
 
 Duck
 
-![image](c7cd9e833f4c7d4250698813fa94e9278acd45d2.png)
+![image](image_0.png)
 
 Figure 1: This is a cute duckling
 
-# Let’ swim!
+# Let's swim!
 
 To get started with swimming, first lay down in a water and try not to drown:
 
-• You can relax and look around
+- You can relax and look around
 
-• Paddle about
+- Paddle about
 
-• Enjoy summer warmth
+- Enjoy summer warmth
 
-Also, don’ forget:
+Also, don't forget:
 
-1\. Wear sunglasses
+1. Wear sunglasses
 
-2\. Don’ forget to drink water
+2. Don't forget to drink water
 
-3\. Use sun cream
+3. Use sun cream
 
-Hmm, what else…
+Hmm, what else...?
 
-## Let’ eat
+## Let's eat
 
-After we had a good day of swimming in the lake, it’ important to eat something nice
+After we had a good day of swimming in the lake, it's important to eat something nice
 
 I like to eat leaves
 
 Here are some interesting things a respectful duck could eat:
 
-|         | Food                             | Calories per portion |
-|---------|----------------------------------|----------------------|
-| Leaves  | Ash, Elm, Maple                  | 50                   |
-| Berries | Blueberry, Strawberry, Cranberry | 150                  |
-| Grain   | Corn, Buckwheat, Barley          | 200                  |
+|  | Food | Calories per portion |
+|---|---|---|
+| Leaves | Ash, Elm, Maple | 50 |
+| Berries | Blueberry, Strawberry, Cranberry | 150 |
+| Grain | Corn, Buckwheat, Barley | 200 |
 
 Content table
 
-And let’ add another list in the end:
+And let's add another list in the end:
 
-1\. Leaves
+1. Leaves
 
-2\. Berries
+2. Berries
 
-3\. Grain
+3. Grain

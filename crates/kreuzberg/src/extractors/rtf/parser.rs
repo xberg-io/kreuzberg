@@ -34,6 +34,8 @@ pub struct RtfFormattingSpan {
     pub italic: bool,
     /// Whether underline was active.
     pub underline: bool,
+    /// Whether strikethrough was active.
+    pub strikethrough: bool,
     /// Color index into the color table (0 = default/auto).
     pub color_index: u16,
 }
@@ -126,6 +128,7 @@ pub fn extract_rtf_formatting(content: &str) -> RtfFormattingData {
     let mut bold = false;
     let mut italic = false;
     let mut underline = false;
+    let mut strikethrough = false;
     let mut color_idx: u16 = 0;
     let mut text_offset: usize = 0;
     let mut span_start: usize = 0;
@@ -209,6 +212,14 @@ pub fn extract_rtf_formatting(content: &str) -> RtfFormattingData {
                     let trimmed = fldinst_content.trim();
                     if let Some(rest) = trimmed.strip_prefix("HYPERLINK") {
                         let url = rest.trim().trim_matches('"').trim().to_string();
+                        // Handle bookmark-style links: HYPERLINK \l "bookmark_name"
+                        let url = if let Some(bookmark) = url.strip_prefix("\\l ") {
+                            format!("#{}", bookmark.trim().trim_matches('"'))
+                        } else if let Some(bookmark) = url.strip_prefix("\\l\"") {
+                            format!("#{}", bookmark.trim_matches('"'))
+                        } else {
+                            url
+                        };
                         if !url.is_empty() {
                             pending_hyperlink_url = Some(url);
                         }
@@ -328,6 +339,7 @@ pub fn extract_rtf_formatting(content: &str) -> RtfFormattingData {
                                                 bold,
                                                 italic,
                                                 underline,
+                                                strikethrough,
                                                 color_index: color_idx,
                                             });
                                         }
@@ -345,6 +357,7 @@ pub fn extract_rtf_formatting(content: &str) -> RtfFormattingData {
                                                 bold,
                                                 italic,
                                                 underline,
+                                                strikethrough,
                                                 color_index: color_idx,
                                             });
                                         }
@@ -362,6 +375,7 @@ pub fn extract_rtf_formatting(content: &str) -> RtfFormattingData {
                                                 bold,
                                                 italic,
                                                 underline,
+                                                strikethrough,
                                                 color_index: color_idx,
                                             });
                                         }
@@ -378,11 +392,30 @@ pub fn extract_rtf_formatting(content: &str) -> RtfFormattingData {
                                                 bold,
                                                 italic,
                                                 underline,
+                                                strikethrough,
                                                 color_index: color_idx,
                                             });
                                         }
                                         span_start = text_offset;
                                         underline = false;
+                                    }
+                                }
+                                "strike" => {
+                                    let new_strike = param.unwrap_or(1) != 0;
+                                    if new_strike != strikethrough {
+                                        if text_offset > span_start {
+                                            spans.push(RtfFormattingSpan {
+                                                start: span_start,
+                                                end: text_offset,
+                                                bold,
+                                                italic,
+                                                underline,
+                                                strikethrough,
+                                                color_index: color_idx,
+                                            });
+                                        }
+                                        span_start = text_offset;
+                                        strikethrough = new_strike;
                                     }
                                 }
                                 "cf" => {
@@ -395,6 +428,7 @@ pub fn extract_rtf_formatting(content: &str) -> RtfFormattingData {
                                                 bold,
                                                 italic,
                                                 underline,
+                                                strikethrough,
                                                 color_index: color_idx,
                                             });
                                         }
@@ -404,7 +438,7 @@ pub fn extract_rtf_formatting(content: &str) -> RtfFormattingData {
                                 }
                                 "plain" => {
                                     // Reset formatting
-                                    if bold || italic || underline || color_idx != 0 {
+                                    if bold || italic || underline || strikethrough || color_idx != 0 {
                                         if text_offset > span_start {
                                             spans.push(RtfFormattingSpan {
                                                 start: span_start,
@@ -412,6 +446,7 @@ pub fn extract_rtf_formatting(content: &str) -> RtfFormattingData {
                                                 bold,
                                                 italic,
                                                 underline,
+                                                strikethrough,
                                                 color_index: color_idx,
                                             });
                                         }
@@ -419,6 +454,7 @@ pub fn extract_rtf_formatting(content: &str) -> RtfFormattingData {
                                         bold = false;
                                         italic = false;
                                         underline = false;
+                                        strikethrough = false;
                                         color_idx = 0;
                                     }
                                 }
@@ -494,13 +530,14 @@ pub fn extract_rtf_formatting(content: &str) -> RtfFormattingData {
     }
 
     // Close final span
-    if text_offset > span_start && (bold || italic || underline || color_idx != 0) {
+    if text_offset > span_start && (bold || italic || underline || strikethrough || color_idx != 0) {
         spans.push(RtfFormattingSpan {
             start: span_start,
             end: text_offset,
             bold,
             italic,
             underline,
+            strikethrough,
             color_index: color_idx,
         });
     }
@@ -562,6 +599,13 @@ pub fn spans_to_annotations(para_start: usize, para_end: usize, formatting: &Rtf
                 start: s,
                 end: e,
                 kind: AnnotationKind::Underline,
+            });
+        }
+        if span.strikethrough {
+            annotations.push(TextAnnotation {
+                start: s,
+                end: e,
+                kind: AnnotationKind::Strikethrough,
             });
         }
         if span.color_index > 0
@@ -881,10 +925,10 @@ pub fn extract_text_from_rtf(content: &str, plain: bool) -> (String, Vec<Table>,
                             // Capture hex-encoded chars in footnote buffer even when skipping
                             if in_footnote
                                 && let (Some(h1), Some(h2)) = (hex1, hex2)
-                                    && let Some(byte) = parse_hex_byte(h1, h2)
-                                {
-                                    footnote_buf.push(decode_windows_1252(byte));
-                                }
+                                && let Some(byte) = parse_hex_byte(h1, h2)
+                            {
+                                footnote_buf.push(decode_windows_1252(byte));
+                            }
                             if skip_depth > 0 {
                                 continue;
                             }
@@ -1003,32 +1047,35 @@ pub fn extract_text_from_rtf(content: &str, plain: bool) -> (String, Vec<Table>,
                                 // Even when skipping, handle \uc inside footnotes
                                 if control_word == "uc"
                                     && let Some(val) = _param
-                                        && let Some(uc) = uc_stack.last_mut() {
-                                            *uc = val.max(0) as u8;
-                                        }
+                                    && let Some(uc) = uc_stack.last_mut()
+                                {
+                                    *uc = val.max(0) as u8;
+                                }
                                 // Capture unicode chars inside footnote buffers
-                                if in_footnote && control_word == "u"
-                                    && let Some(code_num) = _param {
-                                        let code_u = if code_num < 0 {
-                                            (code_num + 65536) as u32
-                                        } else {
-                                            code_num as u32
-                                        };
-                                        if let Some(c) = char::from_u32(code_u) {
-                                            footnote_buf.push(c);
-                                        }
-                                        // Skip replacement chars per uc count
-                                        let uc_count = uc_stack.last().copied().unwrap_or(1);
-                                        for _ in 0..uc_count {
-                                            if let Some(&next) = chars.peek()
-                                                && next != '\\'
-                                                && next != '{'
-                                                && next != '}'
-                                            {
-                                                chars.next();
-                                            }
+                                if in_footnote
+                                    && control_word == "u"
+                                    && let Some(code_num) = _param
+                                {
+                                    let code_u = if code_num < 0 {
+                                        (code_num + 65536) as u32
+                                    } else {
+                                        code_num as u32
+                                    };
+                                    if let Some(c) = char::from_u32(code_u) {
+                                        footnote_buf.push(c);
+                                    }
+                                    // Skip replacement chars per uc count
+                                    let uc_count = uc_stack.last().copied().unwrap_or(1);
+                                    for _ in 0..uc_count {
+                                        if let Some(&next) = chars.peek()
+                                            && next != '\\'
+                                            && next != '{'
+                                            && next != '}'
+                                        {
+                                            chars.next();
                                         }
                                     }
+                                }
                                 // Handle \par inside footnotes
                                 if in_footnote && (control_word == "par" || control_word == "line") {
                                     footnote_buf.push(' ');
@@ -1122,10 +1169,7 @@ pub fn extract_text_from_rtf(content: &str, plain: bool) -> (String, Vec<Table>,
                     state.current_cell.push(ch);
                 } else {
                     // Flush deferred boundary space before pushing text
-                    if pending_boundary_space
-                        && !result.is_empty()
-                        && !result.ends_with(' ')
-                        && !result.ends_with('\n')
+                    if pending_boundary_space && !result.is_empty() && !result.ends_with(' ') && !result.ends_with('\n')
                     {
                         result.push(' ');
                     }
@@ -1258,9 +1302,10 @@ fn handle_control_word(
         // Unicode skip count: \ucN sets how many replacement bytes follow \uN
         "uc" => {
             if let Some(val) = param
-                && let Some(uc) = uc_stack.last_mut() {
-                    *uc = val.max(0) as u8;
-                }
+                && let Some(uc) = uc_stack.last_mut()
+            {
+                *uc = val.max(0) as u8;
+            }
         }
         // Unicode escape: \u1234 (signed integer)
         "u" => {
