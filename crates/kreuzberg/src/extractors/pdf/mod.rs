@@ -657,12 +657,53 @@ impl PdfExtractor {
                     #[cfg(not(feature = "pdf"))]
                     let fallback_count = 0u32;
 
-                    let warning = if fallback_count > 0 {
+                    // Drop images that are still raw-format with data too small to be
+                    // valid pixels — these are still-compressed PDF streams that neither
+                    // our decoder nor pdfium could decode. Returning them would give callers
+                    // data they cannot use (see #615).
+                    let dropped_count = pdf_images
+                        .iter()
+                        .filter(|img| {
+                            if img.decoded_format != "raw" {
+                                return false;
+                            }
+                            let channels: u64 = match img.color_space.as_deref() {
+                                Some(cs) if cs.contains("CMYK") => 4,
+                                Some(cs) if cs.contains("Gray") || cs.contains("grey") => 1,
+                                _ => 3,
+                            };
+                            let expected = (img.width as u64) * (img.height as u64) * channels;
+                            expected > 0 && (img.data.len() as u64) < expected
+                        })
+                        .count();
+                    if dropped_count > 0 {
+                        pdf_images.retain(|img| {
+                            if img.decoded_format != "raw" {
+                                return true;
+                            }
+                            let channels: u64 = match img.color_space.as_deref() {
+                                Some(cs) if cs.contains("CMYK") => 4,
+                                Some(cs) if cs.contains("Gray") || cs.contains("grey") => 1,
+                                _ => 3,
+                            };
+                            let expected = (img.width as u64) * (img.height as u64) * channels;
+                            expected == 0 || (img.data.len() as u64) >= expected
+                        });
+                    }
+
+                    let warning = if fallback_count > 0 || dropped_count > 0 {
+                        let mut parts = Vec::new();
+                        if fallback_count > 0 {
+                            parts.push(format!("{fallback_count} image(s) re-extracted via pdfium bitmap fallback"));
+                        }
+                        if dropped_count > 0 {
+                            parts.push(format!(
+                                "{dropped_count} image(s) dropped: FlateDecode stream could not be decoded to usable pixels"
+                            ));
+                        }
                         Some(crate::types::ProcessingWarning {
                             source: std::borrow::Cow::Borrowed("image_extraction"),
-                            message: std::borrow::Cow::Owned(format!(
-                                "{fallback_count} image(s) re-extracted via pdfium bitmap fallback"
-                            )),
+                            message: std::borrow::Cow::Owned(parts.join("; ")),
                         })
                     } else {
                         None

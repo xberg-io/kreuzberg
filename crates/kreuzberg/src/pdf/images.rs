@@ -133,14 +133,18 @@ fn decode_flate_to_png(
     palette: Option<&[u8]>,
     palette_base_channels: u32,
 ) -> std::result::Result<Vec<u8>, Box<dyn std::error::Error + Send + Sync>> {
-    use flate2::read::ZlibDecoder;
+    use flate2::read::{DeflateDecoder, ZlibDecoder};
     use image::ImageEncoder;
     use std::io::Read;
 
-    // Decompress from zlib stream.
-    let mut decoder = ZlibDecoder::new(raw);
+    // Decompress from zlib stream. Many PDFs use raw deflate (no zlib header/footer),
+    // so fall back to DeflateDecoder if ZlibDecoder fails.
     let mut decompressed = Vec::new();
-    decoder.read_to_end(&mut decompressed)?;
+    let zlib_result = ZlibDecoder::new(raw).read_to_end(&mut decompressed);
+    if zlib_result.is_err() {
+        decompressed.clear();
+        DeflateDecoder::new(raw).read_to_end(&mut decompressed)?;
+    }
 
     let is_indexed = color_space.map(|cs| cs.contains("Indexed")).unwrap_or(false);
 
@@ -624,6 +628,32 @@ mod tests {
     #[test]
     fn test_detect_image_format_unknown() {
         assert_eq!(detect_image_format(b"\x00\x01\x02\x03"), "raw");
+    }
+
+    #[cfg(feature = "pdf")]
+    #[test]
+    fn test_decode_flate_raw_deflate_fallback() {
+        // Regression test for #615: some PDFs use FlateDecode with raw deflate
+        // (no zlib header/footer). ZlibDecoder fails; DeflateDecoder must succeed.
+        use flate2::write::DeflateEncoder;
+        use flate2::Compression;
+        use std::io::Write;
+
+        let raw_pixels: Vec<u8> = vec![
+            255, 0, 0, // red
+            0, 255, 0, // green
+            0, 0, 255, // blue
+            255, 255, 0, // yellow
+        ];
+        // No predictor bytes — simple 2x2 RGB
+        let mut enc = DeflateEncoder::new(Vec::new(), Compression::default());
+        enc.write_all(&raw_pixels).unwrap();
+        let compressed = enc.finish().unwrap();
+
+        let filters = vec!["FlateDecode".to_string()];
+        let (data, format) = decode_image_data(&compressed, &filters, Some("DeviceRGB"), 2, 2, Some(8), None, 0);
+        assert_eq!(format, "png", "raw-deflate FlateDecode should produce PNG, not raw");
+        assert!(data.starts_with(b"\x89PNG\r\n\x1a\n"), "output should be a valid PNG");
     }
 
     #[cfg(feature = "pdf")]
