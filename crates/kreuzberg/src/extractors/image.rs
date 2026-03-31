@@ -351,7 +351,7 @@ impl DocumentExtractor for ImageExtractor {
         };
 
         // Build an ExtractedImage from the raw content so it is stored in doc.images
-        let _extracted_image = crate::types::ExtractedImage {
+        let extracted_image = crate::types::ExtractedImage {
             data: bytes::Bytes::copy_from_slice(content),
             format: std::borrow::Cow::Owned(format_str),
             image_index: 0,
@@ -366,6 +366,18 @@ impl DocumentExtractor for ImageExtractor {
             bounding_box: None,
             source_path: None,
         };
+
+        // When disable_ocr is set, skip OCR and return metadata only
+        if config.disable_ocr {
+            let mut doc = build_image_internal_document(None, Some(extracted_image));
+            doc.metadata = Metadata {
+                format: Some(crate::types::FormatMetadata::Image(image_metadata)),
+                ..Default::default()
+            };
+            doc.mime_type = std::borrow::Cow::Owned(mime_type.to_string());
+            tracing::debug!(format = "image", "OCR disabled via disable_ocr, returning metadata only");
+            return Ok(doc);
+        }
 
         // Images are OCR'd by default when an OCR backend is available.
         // OCR is skipped only when the feature is not compiled in.
