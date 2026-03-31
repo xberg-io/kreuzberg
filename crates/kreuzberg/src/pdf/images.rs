@@ -517,6 +517,75 @@ pub fn extract_images_from_pdf_with_password(pdf_bytes: &[u8], password: &str) -
     extractor.extract_images()
 }
 
+/// Re-extract images that have unusable formats (`"raw"`, `"ccitt"`, `"jbig2"`) by
+/// rendering them through pdfium's bitmap pipeline, which handles all PDF filter
+/// chains internally.
+///
+/// Returns the number of images successfully re-extracted.
+#[cfg(feature = "pdf")]
+pub fn reextract_raw_images_via_pdfium(pdf_bytes: &[u8], images: &mut [PdfImage]) -> Result<u32> {
+    use image::ImageEncoder;
+    use pdfium_render::prelude::*;
+
+    let needs_fallback = images
+        .iter()
+        .any(|img| matches!(img.decoded_format.as_str(), "raw" | "ccitt" | "jbig2"));
+
+    if !needs_fallback {
+        return Ok(0);
+    }
+
+    let pdfium = super::bindings::bind_pdfium(PdfError::RenderingFailed, "image fallback rendering")?;
+    let document = pdfium
+        .load_pdf_from_byte_slice(pdf_bytes, None)
+        .map_err(|e| PdfError::InvalidPdf(super::error::format_pdfium_error(e)))?;
+
+    let mut reextracted = 0u32;
+
+    for img in images.iter_mut() {
+        if !matches!(img.decoded_format.as_str(), "raw" | "ccitt" | "jbig2") {
+            continue;
+        }
+
+        // page_number is 1-indexed in PdfImage, pdfium pages are 0-indexed
+        let page_idx: i32 = img.page_number.saturating_sub(1) as i32;
+        let Ok(page) = document.pages().get(page_idx) else {
+            continue;
+        };
+
+        // Find the nth image object on this page (image_index is 1-indexed)
+        let target_index = img.image_index;
+        let mut current_image = 0usize;
+
+        for obj in page.objects().iter() {
+            if let Some(image_obj) = obj.as_image_object() {
+                current_image += 1;
+                if current_image == target_index {
+                    if let Ok(dynamic_image) = image_obj.get_processed_image(&document) {
+                        let w = dynamic_image.width();
+                        let h = dynamic_image.height();
+                        let rgba = dynamic_image.to_rgba8();
+                        let mut png_buf: Vec<u8> = Vec::new();
+                        if image::codecs::png::PngEncoder::new(&mut png_buf)
+                            .write_image(rgba.as_raw(), w, h, image::ExtendedColorType::Rgba8)
+                            .is_ok()
+                        {
+                            img.data = Bytes::from(png_buf);
+                            img.decoded_format = "png".to_string();
+                            img.width = w as i64;
+                            img.height = h as i64;
+                            reextracted += 1;
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    Ok(reextracted)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

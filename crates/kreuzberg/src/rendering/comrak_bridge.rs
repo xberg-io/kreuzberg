@@ -510,6 +510,21 @@ pub fn build_comrak_ast<'a>(doc: &InternalDocument, arena: &'a comrak::Arena<'a>
 
         let parent = current_parent(&root, &container_stack);
 
+        // In comrak, List nodes can only contain Item/TaskItem children.
+        // If the current parent is a List and we're about to add a non-Item
+        // block node, redirect it to the last Item child of that List.
+        let parent = if matches!(parent.data.borrow().value, NodeValue::List(..))
+            && !matches!(elem_kind, ElementKind::ListItem { .. } | ElementKind::ListEnd)
+        {
+            parent
+                .children()
+                .filter(|c| matches!(c.data.borrow().value, NodeValue::Item(..) | NodeValue::TaskItem(..)))
+                .last()
+                .unwrap_or(parent)
+        } else {
+            parent
+        };
+
         match elem_kind {
             ElementKind::Title => {
                 let heading = mk(
@@ -838,7 +853,30 @@ pub fn build_comrak_ast<'a>(doc: &InternalDocument, arena: &'a comrak::Arena<'a>
                     ..Default::default()
                 };
                 let list_node = mk(arena, NodeValue::List(list_meta));
-                parent.append(list_node);
+
+                // In CommonMark, nested lists must be children of an Item node,
+                // not direct children of a List. If parent is a List, append
+                // to its last Item child (sublists belong to the preceding item).
+                let target = if matches!(parent.data.borrow().value, NodeValue::List(..)) {
+                    // Find last Item child, or create one if none exists
+                    let last_item = parent
+                        .children()
+                        .filter(|c| matches!(c.data.borrow().value, NodeValue::Item(..) | NodeValue::TaskItem(..)))
+                        .last();
+                    match last_item {
+                        Some(item) => item,
+                        None => {
+                            // Create an implicit empty Item to host the sublist
+                            let item = mk(arena, NodeValue::Item(list_meta));
+                            parent.append(item);
+                            item
+                        }
+                    }
+                } else {
+                    parent
+                };
+                target.append(list_node);
+
                 container_stack.push(ContainerEntry {
                     node: list_node,
                     kind: ContainerKind::List,

@@ -645,16 +645,31 @@ impl PdfExtractor {
             }
         }
 
-        let images = if config.images.as_ref().map(|c| c.extract_images).unwrap_or(false) {
-            // Image extraction is enabled, extract images if present
+        let (images, image_fallback_warning) = if config.images.as_ref().map(|c| c.extract_images).unwrap_or(false) {
             match crate::pdf::images::extract_images_from_pdf(content) {
-                Ok(pdf_images) => Some(
-                    pdf_images
+                Ok(mut pdf_images) => {
+                    // Fallback: re-extract unusable images via pdfium bitmap rendering
+                    #[cfg(feature = "pdf")]
+                    let fallback_count =
+                        crate::pdf::images::reextract_raw_images_via_pdfium(content, &mut pdf_images).unwrap_or(0);
+                    #[cfg(not(feature = "pdf"))]
+                    let fallback_count = 0u32;
+
+                    let warning = if fallback_count > 0 {
+                        Some(crate::types::ProcessingWarning {
+                            source: std::borrow::Cow::Borrowed("image_extraction"),
+                            message: std::borrow::Cow::Owned(format!(
+                                "{fallback_count} image(s) re-extracted via pdfium bitmap fallback"
+                            )),
+                        })
+                    } else {
+                        None
+                    };
+
+                    let extracted = pdf_images
                         .into_iter()
                         .enumerate()
                         .map(|(idx, img)| {
-                            // Use the decoded format (e.g. "jpeg", "png") rather than the
-                            // PDF filter name (e.g. "DCTDecode", "FlateDecode").
                             let format = std::borrow::Cow::Owned(img.decoded_format.clone());
                             crate::types::ExtractedImage {
                                 data: img.data,
@@ -672,14 +687,13 @@ impl PdfExtractor {
                                 source_path: None,
                             }
                         })
-                        .collect(),
-                ),
-                // If extraction fails, return empty vector instead of None
-                Err(_) => Some(vec![]),
+                        .collect();
+                    (Some(extracted), warning)
+                }
+                Err(_) => (Some(vec![]), None),
             }
         } else {
-            // Image extraction is not enabled
-            None
+            (None, None)
         };
 
         // Finalize: apply pre-rendered structured document if available.
@@ -796,6 +810,9 @@ impl PdfExtractor {
                 if let Some(imgs) = images {
                     pre_doc.images = imgs;
                 }
+                if let Some(warning) = image_fallback_warning.clone() {
+                    pre_doc.processing_warnings.push(warning);
+                }
                 pre_doc.annotations = pdf_annotations;
                 pre_doc
             } else {
@@ -811,6 +828,9 @@ impl PdfExtractor {
                 doc.tables = tables;
                 if let Some(imgs) = images {
                     doc.images = imgs;
+                }
+                if let Some(warning) = image_fallback_warning.clone() {
+                    doc.processing_warnings.push(warning);
                 }
                 doc.annotations = pdf_annotations;
                 doc
@@ -861,6 +881,9 @@ impl PdfExtractor {
             doc.tables = tables;
             if let Some(imgs) = images {
                 doc.images = imgs;
+            }
+            if let Some(warning) = image_fallback_warning {
+                doc.processing_warnings.push(warning);
             }
             doc.annotations = pdf_annotations;
             doc

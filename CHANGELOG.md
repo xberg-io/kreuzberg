@@ -60,6 +60,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **PDF image FlateDecode fallback**: When `decode_flate_to_png()` fails for FlateDecode, CCITT, or JBIG2 streams, images are now re-extracted via pdfium's bitmap rendering pipeline, producing valid PNG output instead of unusable raw bytes (#615).
 - **Metadata standardization**: Metadata from PPTX, Excel, ODT, RST, OrgMode, Typst, RTF, JATS, DOC, PPT, HTML, Email, BibTeX, and Citation extractors now mapped to standard `Metadata` struct fields (title, authors, dates, keywords, language) instead of only `additional` map.
 - **MDX link parity with Markdown**: Links and annotations in headings and list items now extracted (was silently dropped).
 - **RST hyperlink extraction**: Inline hyperlinks (`` `text <url>`_ ``) and reference targets now extracted.
