@@ -177,7 +177,6 @@ fn consolidate_paragraphs(elements: &[InternalElement]) -> Vec<ConsolidatedEleme
                 result.push(ConsolidatedElement::Merged {
                     text: merged_text,
                     annotations: vec![ann],
-                    depth: elem.depth,
                 });
                 i = j;
                 continue;
@@ -197,8 +196,6 @@ enum ConsolidatedElement {
     Merged {
         text: String,
         annotations: Vec<TextAnnotation>,
-        #[allow(dead_code)]
-        depth: u16,
     },
 }
 

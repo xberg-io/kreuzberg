@@ -150,12 +150,6 @@ impl StringBufferPool {
         }
     }
 
-    /// Get the current pool size across all buckets.
-    #[allow(dead_code)]
-    pub fn size(&self) -> usize {
-        self.pool.iter().map(|entry| entry.value().len()).sum()
-    }
-
     /// Get buffer reuse metrics (only available with `pool-metrics` feature).
     #[cfg(feature = "pool-metrics")]
     pub fn metrics(&self) -> StringBufferPoolMetrics {
@@ -277,22 +271,6 @@ mod tests {
         let buffer2 = pool.clone().acquire();
         assert_eq!(buffer2.capacity(), capacity);
         assert!(buffer2.is_empty());
-    }
-
-    #[test]
-    fn test_buffer_pool_size() {
-        let config = PoolConfig::default();
-        let pool = Arc::new(StringBufferPool::new(config));
-
-        assert_eq!(pool.size(), 0);
-
-        let buffer1 = pool.clone().acquire();
-        drop(buffer1);
-        assert_eq!(pool.size(), 1);
-
-        let buffer2 = pool.clone().acquire();
-        drop(buffer2);
-        assert_eq!(pool.size(), 1);
     }
 
     #[test]

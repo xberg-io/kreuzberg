@@ -32,16 +32,6 @@ impl ProcessorCache {
             late: Arc::new(registry.get_for_stage(ProcessingStage::Late)),
         })
     }
-
-    /// Get processors for a specific stage from cache.
-    #[allow(dead_code)]
-    pub(super) fn get_for_stage(&self, stage: ProcessingStage) -> Arc<Vec<Arc<dyn PostProcessor>>> {
-        match stage {
-            ProcessingStage::Early => Arc::clone(&self.early),
-            ProcessingStage::Middle => Arc::clone(&self.middle),
-            ProcessingStage::Late => Arc::clone(&self.late),
-        }
-    }
 }
 
 /// Lazy processor cache - initialized on first use, then cached.

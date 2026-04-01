@@ -18,16 +18,8 @@ const SUCCESS: Style = Style::new().fg_color(Some(anstyle::Color::Ansi(AnsiColor
 /// Dim for metadata, separators, secondary info.
 const DIM: Style = Style::new().effects(Effects::DIMMED);
 
-/// Bold red for errors.
-const ERROR: Style = Style::new()
-    .fg_color(Some(anstyle::Color::Ansi(AnsiColor::Red)))
-    .effects(Effects::BOLD);
-
 /// Bold for labels in key-value pairs.
 const LABEL: Style = Style::new().effects(Effects::BOLD);
-
-/// Yellow for warnings.
-const WARNING: Style = Style::new().fg_color(Some(anstyle::Color::Ansi(AnsiColor::Yellow)));
 
 /// Check whether color output is enabled.
 ///
@@ -69,18 +61,6 @@ pub fn label(text: &str) -> String {
     styled(text, LABEL)
 }
 
-/// Style text as an error (bold red).
-#[allow(dead_code)]
-pub fn error_style(text: &str) -> String {
-    styled(text, ERROR)
-}
-
-/// Style text as a warning (yellow).
-#[allow(dead_code)]
-pub fn warning(text: &str) -> String {
-    styled(text, WARNING)
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -111,8 +91,6 @@ mod tests {
         assert!(!success("s").is_empty());
         assert!(!dim("d").is_empty());
         assert!(!label("l").is_empty());
-        assert!(!error_style("e").is_empty());
-        assert!(!warning("w").is_empty());
     }
 
     #[test]

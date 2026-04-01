@@ -52,8 +52,6 @@ type DocumentExtractorCallback = unsafe extern "C" fn(
 struct FfiDocumentExtractor {
     name: String,
     callback: DocumentExtractorCallback,
-    #[allow(dead_code)]
-    supported_types: Vec<String>,
     supported_types_static: Vec<&'static str>,
     priority: i32,
 }
@@ -71,7 +69,6 @@ impl FfiDocumentExtractor {
         Self {
             name,
             callback,
-            supported_types,
             supported_types_static,
             priority,
         }

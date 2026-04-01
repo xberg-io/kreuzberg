@@ -37,22 +37,6 @@ impl PptxExtractor {
     ///
     /// Note: For richer structure, the builder should be integrated into
     /// `crate::extraction::pptx` alongside the existing `DocumentStructure` building.
-    /// Strip leading markdown heading markers (`# `, `## `, etc.) from a line.
-    #[allow(dead_code)]
-    fn strip_heading_prefix(line: &str) -> &str {
-        let trimmed = line.trim_start();
-        if trimmed.starts_with('#') {
-            let after_hashes = trimmed.trim_start_matches('#');
-            if after_hashes.starts_with(' ') {
-                after_hashes.trim_start()
-            } else {
-                line
-            }
-        } else {
-            line
-        }
-    }
-
     /// Try to strip an ordered-list prefix like `1. `, `2. `, `10. ` from a line.
     /// Returns the remaining text after the prefix, or `None` if the line does not
     /// start with a `<digits>. ` pattern.

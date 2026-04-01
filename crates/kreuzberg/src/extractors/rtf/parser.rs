@@ -1323,7 +1323,7 @@ pub fn extract_text_from_rtf(content: &str, plain: bool) -> (String, Vec<Table>,
 }
 
 /// Handle an RTF control word during parsing.
-#[allow(clippy::too_many_arguments)]
+#[allow(clippy::too_many_arguments, clippy::ptr_arg)]
 fn handle_control_word(
     control_word: &str,
     param: Option<i32>,

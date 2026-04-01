@@ -358,29 +358,6 @@ impl ModelManager {
         self.model_path(model_type).join("model.onnx")
     }
 
-    /// Download a shared model (det or cls) from HuggingFace Hub.
-    #[allow(dead_code)]
-    fn download_shared_model(&self, model: &SharedModelDefinition) -> Result<(), KreuzbergError> {
-        let model_dir = self.model_path(model.model_type);
-        let model_file = model_dir.join(model.local_filename);
-
-        fs::create_dir_all(&model_dir)?;
-
-        let cached_path = self.hf_download(model.remote_filename)?;
-
-        if !model.sha256_checksum.is_empty() {
-            Self::verify_checksum(&cached_path, model.sha256_checksum, model.model_type)?;
-        }
-
-        fs::copy(&cached_path, &model_file).map_err(|e| KreuzbergError::Plugin {
-            message: format!("Failed to copy model to {}: {}", model_file.display(), e),
-            plugin_name: "paddle-ocr".to_string(),
-        })?;
-
-        tracing::info!(path = ?model_file, model_type = model.model_type, "Shared model saved");
-        Ok(())
-    }
-
     /// Download a recognition model + dict for a script family.
     fn download_rec_model(&self, definition: &RecModelDefinition, rec_dir: &Path) -> Result<(), KreuzbergError> {
         let family = definition.script_family;

@@ -3,8 +3,7 @@
 //! Handles the complex nested structure of HTML conversion options.
 
 use html_to_markdown_rs::options::{
-    CodeBlockStyle, ConversionOptions, HeadingStyle, HighlightStyle, ListIndentType, NewlineStyle, PreprocessingPreset,
-    WhitespaceMode,
+    CodeBlockStyle, ConversionOptions, HeadingStyle, HighlightStyle, ListIndentType, NewlineStyle, WhitespaceMode,
 };
 
 type FfiResult<T> = std::result::Result<T, String>;
@@ -94,20 +93,6 @@ fn parse_code_block_style(value: &str) -> FfiResult<CodeBlockStyle> {
         "tildes" => Ok(CodeBlockStyle::Tildes),
         other => Err(format!(
             "Invalid code_block_style '{}'. Expected 'indented', 'backticks', or 'tildes'",
-            other
-        )),
-    }
-}
-
-/// Parse PreprocessingPreset from string
-#[allow(dead_code)]
-fn parse_preprocessing_preset(value: &str) -> FfiResult<PreprocessingPreset> {
-    match value.to_lowercase().as_str() {
-        "minimal" => Ok(PreprocessingPreset::Minimal),
-        "standard" => Ok(PreprocessingPreset::Standard),
-        "aggressive" => Ok(PreprocessingPreset::Aggressive),
-        other => Err(format!(
-            "Invalid preprocessing.preset '{}'. Expected one of: minimal, standard, aggressive",
             other
         )),
     }

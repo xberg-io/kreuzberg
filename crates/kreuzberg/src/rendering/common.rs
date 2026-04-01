@@ -94,12 +94,6 @@ impl RenderState {
         }
         1
     }
-
-    /// Check if we are inside a blockquote.
-    #[allow(dead_code)]
-    pub(crate) fn in_blockquote(&self) -> bool {
-        self.blockquote_depth() > 0
-    }
 }
 
 // ============================================================================
@@ -163,11 +157,9 @@ fn render_annotated_text_with_plain(
 // Footnote Collector
 // ============================================================================
 
-/// Collected footnote data: anchor key, definition text, assigned number.
+/// Collected footnote data: definition text and assigned number.
 #[derive(Debug)]
 pub(crate) struct FootnoteEntry {
-    #[allow(dead_code)]
-    pub(crate) anchor: String,
     pub(crate) text: String,
     pub(crate) number: u32,
 }
@@ -245,11 +237,7 @@ impl FootnoteCollector {
                         next_number += 1;
                         // Find definition text
                         let text = def_by_anchor.get(anchor).map(|(_, t)| t.clone()).unwrap_or_default();
-                        definitions.push(FootnoteEntry {
-                            anchor: anchor.clone(),
-                            text,
-                            number: n,
-                        });
+                        definitions.push(FootnoteEntry { text, number: n });
                         n
                     });
                     ref_numbers.insert(idx, number);

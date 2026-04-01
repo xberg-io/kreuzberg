@@ -6,10 +6,6 @@ struct ScoredToken {
     token: String,
     position: usize,
     importance_score: f32,
-    #[allow(dead_code)]
-    context_boost: f32,
-    #[allow(dead_code)]
-    frequency_score: f32,
 }
 
 impl PartialEq for ScoredToken {
@@ -87,8 +83,6 @@ impl SemanticAnalyzer {
                 token: word.to_string(),
                 position,
                 importance_score: total_score,
-                context_boost,
-                frequency_score,
             });
         }
 
@@ -486,7 +480,8 @@ mod tests {
         let test_token = tokens.iter().find(|t| t.token == "test").unwrap();
         let other_token = tokens.iter().find(|t| t.token == "other").unwrap();
 
-        assert!(test_token.frequency_score > other_token.frequency_score);
+        // "test" appears 3 times so its total importance score should be higher
+        assert!(test_token.importance_score > other_token.importance_score);
     }
 
     #[test]
@@ -495,16 +490,12 @@ mod tests {
             token: "a".to_string(),
             position: 0,
             importance_score: 0.5,
-            context_boost: 0.0,
-            frequency_score: 0.0,
         };
 
         let token2 = ScoredToken {
             token: "b".to_string(),
             position: 1,
             importance_score: 0.7,
-            context_boost: 0.0,
-            frequency_score: 0.0,
         };
 
         assert!(token2 > token1);
@@ -519,15 +510,11 @@ mod tests {
                 token: "Hello".to_string(),
                 position: 0,
                 importance_score: 0.5,
-                context_boost: 0.0,
-                frequency_score: 0.0,
             },
             ScoredToken {
                 token: "world".to_string(),
                 position: 1,
                 importance_score: 0.5,
-                context_boost: 0.0,
-                frequency_score: 0.0,
             },
         ];
 
@@ -543,22 +530,16 @@ mod tests {
                 token: "car".to_string(),
                 position: 0,
                 importance_score: 0.3,
-                context_boost: 0.0,
-                frequency_score: 0.0,
             },
             ScoredToken {
                 token: "dog".to_string(),
                 position: 1,
                 importance_score: 0.3,
-                context_boost: 0.0,
-                frequency_score: 0.0,
             },
             ScoredToken {
                 token: "test".to_string(),
                 position: 2,
                 importance_score: 0.8,
-                context_boost: 0.0,
-                frequency_score: 0.0,
             },
         ];
 
