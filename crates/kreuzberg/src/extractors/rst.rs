@@ -870,13 +870,33 @@ impl RstExtractor {
             if trimmed.starts_with(".. math::") {
                 let inline_math = trimmed.strip_prefix(".. math::").unwrap_or("").trim();
                 i += 1;
+                // Skip option lines (:label:, :nowrap:, etc.)
+                while i < lines.len() {
+                    let l = lines[i].trim();
+                    if l.starts_with(':') && l.ends_with(':') || (l.starts_with(':') && l.contains(": ")) {
+                        // Check if it looks like a directive option
+                        if lines[i].starts_with("   ") || lines[i].starts_with("\t") {
+                            i += 1;
+                            continue;
+                        }
+                    }
+                    break;
+                }
                 let mut math_content = if inline_math.is_empty() {
                     String::new()
                 } else {
                     inline_math.to_string()
                 };
+                // Collect math content. Blank lines within separate into
+                // multiple formula elements.
                 while i < lines.len() && (lines[i].starts_with("   ") || lines[i].is_empty()) {
-                    if !lines[i].is_empty() {
+                    if lines[i].is_empty() {
+                        // Blank line: emit current formula and start a new one
+                        if !math_content.is_empty() {
+                            b.push_formula(&math_content, None, None);
+                            math_content = String::new();
+                        }
+                    } else {
                         if !math_content.is_empty() {
                             math_content.push('\n');
                         }
@@ -1083,23 +1103,40 @@ impl RstExtractor {
                 while i < lines.len() && lines[i].trim().is_empty() {
                     i += 1;
                 }
-                // Collect indented content (spaces or tabs)
+                // Collect indented content (spaces or tabs).
+                // Detect indent level from the first non-blank content line.
+                let indent = {
+                    let mut indent_len = 3usize; // default
+                    let mut j = i;
+                    while j < lines.len() {
+                        let l = lines[j];
+                        if !l.trim().is_empty() {
+                            indent_len = l.len() - l.trim_start().len();
+                            if indent_len == 0 {
+                                indent_len = 3;
+                            }
+                            break;
+                        }
+                        j += 1;
+                    }
+                    indent_len
+                };
                 let mut code_content = String::new();
-                while i < lines.len()
-                    && (lines[i].starts_with("   ")
-                        || lines[i].starts_with("\t")
-                        || lines[i].starts_with("    ")
-                        || lines[i].is_empty())
-                {
+                while i < lines.len() {
+                    let l = lines[i];
+                    // An indented line (by at least `indent` spaces or a tab)
+                    let is_indented = l.starts_with("\t")
+                        || (l.len() >= indent && l.as_bytes().iter().take(indent).all(|&b| b == b' '));
+                    if !is_indented && !l.is_empty() {
+                        break;
+                    }
                     if !code_content.is_empty() {
                         code_content.push('\n');
                     }
-                    if lines[i].starts_with("\t") {
-                        code_content.push_str(&lines[i][1..]);
-                    } else if lines[i].starts_with("    ") {
-                        code_content.push_str(&lines[i][4..]);
-                    } else if lines[i].starts_with("   ") {
-                        code_content.push_str(&lines[i][3..]);
+                    if l.starts_with("\t") {
+                        code_content.push_str(&l[1..]);
+                    } else if is_indented && !l.is_empty() {
+                        code_content.push_str(&l[indent..]);
                     }
                     i += 1;
                 }

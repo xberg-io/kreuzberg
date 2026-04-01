@@ -630,7 +630,13 @@ impl elements::Slide {
                     let extract_fn: fn(&Run) -> String = if config.plain { Run::extract } else { Run::render_as_md };
                     for item in &list.items {
                         let item_text = join_runs_with_spacing(&item.runs, extract_fn);
-                        builder.add_list_item(item.level, item.is_ordered, &item_text);
+                        if item.has_bullet {
+                            builder.add_list_item(item.level, item.is_ordered, &item_text);
+                        } else {
+                            // Non-bulleted preamble paragraph within a list shape.
+                            // Render as plain text, not a list item.
+                            builder.add_text(&item_text);
+                        }
                     }
                 }
                 SlideElement::Image(img_ref, _) => {

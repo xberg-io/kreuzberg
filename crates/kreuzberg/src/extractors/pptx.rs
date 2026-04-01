@@ -91,9 +91,13 @@ impl PptxExtractor {
                 continue;
             }
 
-            // If we're inside a notes section, skip until next slide
+            // If we're inside a notes section, skip content that looks like
+            // continuation notes (not a slide heading or other content).
+            // However, any non-notes, non-heading block means we've moved past
+            // the notes into the next slide's body content. Reset in_notes so
+            // untitled slides (slides with no `# Title` heading) are not lost.
             if in_notes {
-                continue;
+                in_notes = false;
             }
 
             // Table block: starts with |

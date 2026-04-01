@@ -25,14 +25,13 @@ Bar
 
 And baz things
 
-## Slide 3
+1. List item4
+2. List item5
+3. List item6
 
-List item4
-
-List item5
-
-List item6
-
+- l1
+- l2
+- l3
 - I 1
 - I2
 - I3
@@ -45,12 +44,6 @@ S ome info:
 
 M aybe a list?
 
-List1
-
-List2
-
-List3
-
-- l1
-- l2
-- l3
+1. List1
+2. List2
+3. List3

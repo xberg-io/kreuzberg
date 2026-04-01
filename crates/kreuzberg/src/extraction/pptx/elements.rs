@@ -69,6 +69,9 @@ pub(super) struct ListItem {
     pub(super) level: u32,
     pub(super) is_ordered: bool,
     pub(super) runs: Vec<Run>,
+    /// Whether this paragraph has an explicit bullet marker (`buAutoNum` or `buChar`).
+    /// When false, the paragraph is a plain text preamble within a list shape.
+    pub(super) has_bullet: bool,
 }
 
 #[derive(Debug, Clone)]

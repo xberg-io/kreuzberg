@@ -273,7 +273,7 @@ fn parse_list(tx_body_node: &Node) -> Result<ListElement> {
     for p_node in tx_body_node.children().filter(|n| {
         n.is_element() && n.tag_name().name() == "p" && n.tag_name().namespace() == Some(DRAWINGML_NAMESPACE)
     }) {
-        let (level, is_ordered) = parse_list_properties(&p_node)?;
+        let (level, is_ordered, has_bullet) = parse_list_properties(&p_node)?;
 
         let runs = parse_paragraph(&p_node, true)?;
 
@@ -281,15 +281,18 @@ fn parse_list(tx_body_node: &Node) -> Result<ListElement> {
             level,
             is_ordered,
             runs,
+            has_bullet,
         });
     }
 
     Ok(ListElement { items })
 }
 
-fn parse_list_properties(p_node: &Node) -> Result<(u32, bool)> {
+/// Returns (level, is_ordered, has_bullet).
+fn parse_list_properties(p_node: &Node) -> Result<(u32, bool, bool)> {
     let mut level = 1;
     let mut is_ordered = false;
+    let mut has_bullet = false;
 
     if let Some(p_pr_node) = p_node.children().find(|n| {
         n.is_element() && n.tag_name().name() == "pPr" && n.tag_name().namespace() == Some(DRAWINGML_NAMESPACE)
@@ -303,9 +306,25 @@ fn parse_list_properties(p_node: &Node) -> Result<(u32, bool)> {
                 && n.tag_name().namespace() == Some(DRAWINGML_NAMESPACE)
                 && n.tag_name().name() == "buAutoNum"
         });
+
+        // Check for any bullet marker: buAutoNum, buChar, or lvl attribute
+        // (but NOT buNone which explicitly disables bullets)
+        let has_bu_none = p_pr_node.children().any(|n| {
+            n.is_element()
+                && n.tag_name().namespace() == Some(DRAWINGML_NAMESPACE)
+                && n.tag_name().name() == "buNone"
+        });
+        has_bullet = !has_bu_none
+            && (is_ordered
+                || p_pr_node.children().any(|n| {
+                    n.is_element()
+                        && n.tag_name().namespace() == Some(DRAWINGML_NAMESPACE)
+                        && n.tag_name().name() == "buChar"
+                })
+                || p_pr_node.attribute("lvl").is_some());
     }
 
-    Ok((level, is_ordered))
+    Ok((level, is_ordered, has_bullet))
 }
 
 fn parse_paragraph(p_node: &Node, add_new_line: bool) -> Result<Vec<Run>> {

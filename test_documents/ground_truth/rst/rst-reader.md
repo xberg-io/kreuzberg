@@ -460,30 +460,18 @@ Not in note.
 
 Some inline math $`E=mc^2`$. Now some display math:
 
-``` math
-E=mc^2
-```
+$$E=mc^2$$
 
-``` math
-E = mc^2
-```
+$$E = mc^2$$
 
-``` math
-E = mc^2
-```
-``` math
-\alpha = \beta
-```
+$$E = mc^2$$
 
-``` math
-\begin{aligned}
-E &= mc^2\\
-F &= \pi E
-\end{aligned}
-```
-``` math
-F &= \gamma \alpha^2
-```
+$$\alpha = \beta$$
+
+$$E &= mc^2\\
+F &= \pi E$$
+
+$$F &= \gamma \alpha^2$$
 
 All done.
 
@@ -495,12 +483,9 @@ Try changing the default role to a few different things.
 
 Inline math: $`E=mc^2`$ or $`E=mc^2`$ or $`E=mc^2`$. Other roles: ^super^, ~sub~.
 
-``` math
-\alpha = beta
-```
-``` math
-E = mc^2
-```
+$$\alpha = beta$$
+
+$$E = mc^2$$
 
 Some ^of^ these ^words^ are in ^superscript^.
 
