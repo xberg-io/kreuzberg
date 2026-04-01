@@ -1,8 +1,8 @@
 # Element-Based Output <span class="version-badge">v4.1.0</span>
 
-Element-based output segments a document into a flat array of typed elements — titles, paragraphs, tables, list items, code blocks, images, and more. Each element carries its own metadata including page number and bounding box coordinates.
+Segments a document into a flat array of typed elements — titles, paragraphs, tables, list items, code blocks, images, and more. Each element carries page number and bounding box coordinates.
 
-Use element-based output for RAG chunking, semantic search, or Unstructured.io-compatible pipelines. For hierarchical tree structure with parent-child relationships, use [document structure](document-structure.md). For plain text with metadata, use the default unified output.
+Use element-based output for RAG chunking, semantic search, or Unstructured.io-compatible pipelines. For hierarchical tree structure, use [document structure](document-structure.md). For plain text, use the default unified output.
 
 ## Enable
 
@@ -18,13 +18,13 @@ Use element-based output for RAG chunking, semantic search, or Unstructured.io-c
 
     --8<-- "snippets/rust/config/element_based_output.md"
 
-=== "Ruby"
-
-    --8<-- "snippets/ruby/config/element_based_output.md"
-
 === "Go"
 
     --8<-- "snippets/go/config/element_based_output.md"
+
+=== "Ruby"
+
+    --8<-- "snippets/ruby/config/element_based_output.md"
 
 === "R"
 
@@ -42,9 +42,9 @@ Elements are in `result.elements`. Each element has `element_id`, `element_type`
 |----------------|-------------|------------------------|
 | `title` | Main title or top-level heading | `level` (h1–h6), `font_size`, `font_name` |
 | `heading` | Section/subsection heading | `level` (h1–h6) |
-| `narrative_text` | Body paragraph or prose | — |
-| `list_item` | Bullet, numbered, or indented list item | `list_type`, `list_marker`, `indent_level` |
-| `table` | Tabular data (Markdown or tab-separated text) | `row_count`, `column_count`, `format` |
+| `narrative_text` | Body paragraph | — |
+| `list_item` | Bullet, numbered, or indented item | `list_type`, `list_marker`, `indent_level` |
+| `table` | Tabular data | `row_count`, `column_count`, `format` |
 | `image` | Embedded image | `format`, `width`, `height`, `alt_text` |
 | `code_block` | Code snippet | `language`, `line_count` |
 | `block_quote` | Quoted text | — |
@@ -52,19 +52,19 @@ Elements are in `result.elements`. Each element has `element_id`, `element_type`
 | `footer` | Recurring page footer | `position` |
 | `page_break` | Page boundary marker | `next_page` |
 
-## Metadata Structure
+## Metadata
 
 Every element's `metadata` contains:
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `page_number` | `int \| None` | Page number (1-indexed). Present for PDF, DOCX, PPTX. |
+| `page_number` | `int \| None` | 1-indexed page number (PDF, DOCX, PPTX) |
 | `filename` | `str \| None` | Source filename |
-| `coordinates` | `BoundingBox \| None` | `x0`, `y0`, `x1`, `y1` in PDF points. Present for PDF and OCR results. |
+| `coordinates` | `BoundingBox \| None` | `x0`, `y0`, `x1`, `y1` in PDF points (PDF and OCR) |
 | `element_index` | `int` | Zero-based position in the elements array |
 | `additional` | `dict[str, str]` | Element-type-specific fields (see table above) |
 
-PDF coordinates use bottom-left origin in points (1/72 inch). `x0`/`y0` = bottom-left, `x1`/`y1` = top-right.
+PDF coordinates use bottom-left origin in points (1/72 inch).
 
 ## Example Output
 
@@ -85,34 +85,24 @@ PDF coordinates use bottom-left origin in points (1/72 inch). `x0`/`y0` = bottom
 ## Filtering Elements
 
 ```python
-from kreuzberg import extract_file_sync, ExtractionConfig
-
 config = ExtractionConfig(result_format="element_based")
 result = extract_file_sync("document.pdf", config=config)
 
-# Filter by type
 titles = [e for e in result.elements if e.element_type == "title"]
 tables = [e for e in result.elements if e.element_type == "table"]
-list_items = [e for e in result.elements if e.element_type == "list_item"]
 
-# Access type-specific metadata
 for title in titles:
     level = title.metadata.additional.get("level", "h1")
     print(f"[{level}] {title.text}")
-
-for table in tables:
-    rows = table.metadata.additional.get("row_count")
-    cols = table.metadata.additional.get("column_count")
-    print(f"Table {rows}×{cols}: {table.text[:60]}")
 ```
 
 ## Unstructured.io Compatibility
 
-Element-based output follows Unstructured.io's element array structure. Differences to note when migrating:
+Element-based output follows Unstructured.io's element array structure. Key differences when migrating:
 
 | Aspect | Unstructured.io | Kreuzberg |
 |--------|----------------|-----------|
-| Element type names | PascalCase (`Title`, `NarrativeText`) | snake_case (`title`, `narrative_text`) |
+| Type names | PascalCase (`Title`, `NarrativeText`) | snake_case (`title`, `narrative_text`) |
 | Element IDs | Not always present | Always present (deterministic hash) |
 | Metadata | Basic (`page_number`, `filename`) | Extended (coordinates, `additional` fields) |
 | Config key | — | `result_format="element_based"` |

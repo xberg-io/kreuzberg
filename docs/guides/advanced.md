@@ -2,13 +2,21 @@
 
 ## Text Chunking
 
-Split extracted text into chunks for RAG systems, vector databases, or LLM context windows. Two chunking strategies are available: **Text** (generic splitting on whitespace/punctuation boundaries) and **Markdown** (structure-aware splitting that preserves headings, lists, and code blocks).
+Split extracted text into chunks for RAG systems, vector databases, or LLM context windows. Two strategies: **Text** (splits on whitespace/punctuation boundaries) and **Markdown** (structure-aware, preserves headings, lists, code blocks).
 
 ### Configuration
 
-=== "C#"
+=== "Python"
 
-    --8<-- "snippets/csharp/advanced/chunking_config.md"
+    --8<-- "snippets/python/config/chunking_config.md"
+
+=== "TypeScript"
+
+    --8<-- "snippets/typescript/config/chunking_config.md"
+
+=== "Rust"
+
+    --8<-- "snippets/rust/advanced/chunking_config.md"
 
 === "Go"
 
@@ -18,9 +26,9 @@ Split extracted text into chunks for RAG systems, vector databases, or LLM conte
 
     --8<-- "snippets/java/config/chunking_config.md"
 
-=== "Python"
+=== "C#"
 
-    --8<-- "snippets/python/config/chunking_config.md"
+    --8<-- "snippets/csharp/advanced/chunking_config.md"
 
 === "Ruby"
 
@@ -30,36 +38,38 @@ Split extracted text into chunks for RAG systems, vector databases, or LLM conte
 
     --8<-- "snippets/r/config/chunking_config.md"
 
-=== "Rust"
-
-    --8<-- "snippets/rust/advanced/chunking_config.md"
-
-=== "TypeScript"
-
-    --8<-- "snippets/typescript/config/chunking_config.md"
-
 === "WASM"
 
     --8<-- "snippets/wasm/config/chunking_config.md"
 
 ### Chunk Output
 
-Each chunk in `result.chunks` has:
+Each chunk in `result.chunks` contains:
 
-- `content`: Chunk text
-- `metadata.byte_start` / `byte_end`: Byte offsets in the original text
-- `metadata.chunk_index` / `total_chunks`: Position in the chunk sequence
-- `metadata.token_count`: Token count (when embeddings are enabled)
-- `metadata.heading_context`: Active heading hierarchy (Markdown chunker only) — useful for carrying section context into retrieval
-- `embedding`: Embedding vector (when configured)
+| Field | Description |
+|-------|-------------|
+| `content` | Chunk text |
+| `metadata.byte_start` / `byte_end` | Byte offsets in the original text |
+| `metadata.chunk_index` / `total_chunks` | Position in sequence |
+| `metadata.token_count` | Token count (when embeddings enabled) |
+| `metadata.heading_context` | Active heading hierarchy (Markdown chunker only) |
+| `embedding` | Embedding vector (when configured) |
 
-Chunks can be sized by token count instead of characters. Enable the `chunking-tokenizers` feature and set `sizing` to `token` in `ChunkingConfig`.
+Chunks can be sized by token count instead of characters — enable the `chunking-tokenizers` feature and set `sizing` to `token`.
 
-### Example: RAG Pipeline
+### RAG Pipeline Example
 
-=== "C#"
+=== "Python"
 
-    --8<-- "snippets/csharp/advanced/chunking_rag.md"
+    --8<-- "snippets/python/utils/chunking_rag.md"
+
+=== "TypeScript"
+
+    --8<-- "snippets/typescript/utils/chunking_rag.md"
+
+=== "Rust"
+
+    --8<-- "snippets/rust/advanced/chunking_rag.md"
 
 === "Go"
 
@@ -69,9 +79,9 @@ Chunks can be sized by token count instead of characters. Enable the `chunking-t
 
     --8<-- "snippets/java/advanced/chunking_rag.md"
 
-=== "Python"
+=== "C#"
 
-    --8<-- "snippets/python/utils/chunking_rag.md"
+    --8<-- "snippets/csharp/advanced/chunking_rag.md"
 
 === "Ruby"
 
@@ -81,25 +91,23 @@ Chunks can be sized by token count instead of characters. Enable the `chunking-t
 
     --8<-- "snippets/r/advanced/chunking_rag.md"
 
-=== "Rust"
-
-    --8<-- "snippets/rust/advanced/chunking_rag.md"
-
-=== "TypeScript"
-
-    --8<-- "snippets/typescript/utils/chunking_rag.md"
-
 ## Language Detection
 
-Detect languages in extracted text using [`whatlang`](https://crates.io/crates/whatlang). Supports 60+ languages with ISO 639-3 codes (`eng`, `spa`, `fra`, `deu`, `cmn`, `jpn`, `ara`, `rus`, ...).
-
-Set `detect_multiple: true` to detect all languages in a document (the library chunks text into 200-character segments and returns languages sorted by frequency). The default single-language mode returns the dominant language only.
+Detect languages using [`whatlang`](https://crates.io/crates/whatlang). Supports 60+ languages with ISO 639-3 codes. Set `detect_multiple: true` to detect all languages in a document (chunks text into 200-char segments, returns languages sorted by frequency).
 
 ### Configuration
 
-=== "C#"
+=== "Python"
 
-    --8<-- "snippets/csharp/advanced/language_detection_config.md"
+    --8<-- "snippets/python/config/language_detection_config.md"
+
+=== "TypeScript"
+
+    --8<-- "snippets/typescript/config/language_detection_config.md"
+
+=== "Rust"
+
+    --8<-- "snippets/rust/advanced/language_detection_config.md"
 
 === "Go"
 
@@ -109,9 +117,9 @@ Set `detect_multiple: true` to detect all languages in a document (the library c
 
     --8<-- "snippets/java/config/language_detection_config.md"
 
-=== "Python"
+=== "C#"
 
-    --8<-- "snippets/python/config/language_detection_config.md"
+    --8<-- "snippets/csharp/advanced/language_detection_config.md"
 
 === "Ruby"
 
@@ -121,19 +129,19 @@ Set `detect_multiple: true` to detect all languages in a document (the library c
 
     --8<-- "snippets/r/config/language_detection_config.md"
 
-=== "Rust"
+### Multilingual Example
 
-    --8<-- "snippets/rust/advanced/language_detection_config.md"
+=== "Python"
+
+    --8<-- "snippets/python/utils/language_detection_multilingual.md"
 
 === "TypeScript"
 
-    --8<-- "snippets/typescript/config/language_detection_config.md"
+    --8<-- "snippets/typescript/metadata/language_detection_multilingual.md"
 
-### Example
+=== "Rust"
 
-=== "C#"
-
-    --8<-- "snippets/csharp/advanced/language_detection_multilingual.md"
+    --8<-- "snippets/rust/advanced/language_detection_multilingual.md"
 
 === "Go"
 
@@ -143,9 +151,9 @@ Set `detect_multiple: true` to detect all languages in a document (the library c
 
     --8<-- "snippets/java/advanced/language_detection_multilingual.md"
 
-=== "Python"
+=== "C#"
 
-    --8<-- "snippets/python/utils/language_detection_multilingual.md"
+    --8<-- "snippets/csharp/advanced/language_detection_multilingual.md"
 
 === "Ruby"
 
@@ -154,14 +162,6 @@ Set `detect_multiple: true` to detect all languages in a document (the library c
 === "R"
 
     --8<-- "snippets/r/advanced/language_detection_multilingual.md"
-
-=== "Rust"
-
-    --8<-- "snippets/rust/advanced/language_detection_multilingual.md"
-
-=== "TypeScript"
-
-    --8<-- "snippets/typescript/metadata/language_detection_multilingual.md"
 
 ## Embedding Generation
 
@@ -176,9 +176,17 @@ Generate embeddings for semantic search and RAG using ONNX models. Requires the 
 
 ### Configuration
 
-=== "C#"
+=== "Python"
 
-    --8<-- "snippets/csharp/advanced/embedding_with_chunking.md"
+    --8<-- "snippets/python/utils/embedding_with_chunking.md"
+
+=== "TypeScript"
+
+    --8<-- "snippets/typescript/utils/embedding_with_chunking.md"
+
+=== "Rust"
+
+    --8<-- "snippets/rust/advanced/embedding_with_chunking.md"
 
 === "Go"
 
@@ -188,9 +196,9 @@ Generate embeddings for semantic search and RAG using ONNX models. Requires the 
 
     --8<-- "snippets/java/advanced/embedding_with_chunking.md"
 
-=== "Python"
+=== "C#"
 
-    --8<-- "snippets/python/utils/embedding_with_chunking.md"
+    --8<-- "snippets/csharp/advanced/embedding_with_chunking.md"
 
 === "Ruby"
 
@@ -200,19 +208,19 @@ Generate embeddings for semantic search and RAG using ONNX models. Requires the 
 
     --8<-- "snippets/r/advanced/embedding_with_chunking.md"
 
-=== "Rust"
+### Vector Database Integration
 
-    --8<-- "snippets/rust/advanced/embedding_with_chunking.md"
+=== "Python"
+
+    --8<-- "snippets/python/utils/vector_database_integration.md"
 
 === "TypeScript"
 
-    --8<-- "snippets/typescript/utils/embedding_with_chunking.md"
+    --8<-- "snippets/typescript/utils/vector_database_integration.md"
 
-### Example: Vector Database Integration
+=== "Rust"
 
-=== "C#"
-
-    --8<-- "snippets/csharp/advanced/vector_database_integration.md"
+    --8<-- "snippets/rust/advanced/vector_database_integration.md"
 
 === "Go"
 
@@ -222,9 +230,9 @@ Generate embeddings for semantic search and RAG using ONNX models. Requires the 
 
     --8<-- "snippets/java/advanced/vector_database_integration.md"
 
-=== "Python"
+=== "C#"
 
-    --8<-- "snippets/python/utils/vector_database_integration.md"
+    --8<-- "snippets/csharp/advanced/vector_database_integration.md"
 
 === "Ruby"
 
@@ -234,29 +242,29 @@ Generate embeddings for semantic search and RAG using ONNX models. Requires the 
 
     --8<-- "snippets/r/advanced/vector_database_integration.md"
 
-=== "Rust"
-
-    --8<-- "snippets/rust/advanced/vector_database_integration.md"
-
-=== "TypeScript"
-
-    --8<-- "snippets/typescript/utils/vector_database_integration.md"
-
 ## Token Reduction
 
-Reduce token count while preserving meaning. Removes stopwords, redundancy, and applies semantic compression.
+Reduce token count while preserving meaning for LLM pipelines.
 
-| Level | Reduction | What it does |
-|-------|-----------|--------------|
+| Level | Reduction | Effect |
+|-------|-----------|--------|
 | `off` | 0% | Pass-through |
 | `moderate` | 15–25% | Stopwords + redundancy removal |
 | `aggressive` | 30–50% | Semantic clustering + importance scoring |
 
 ### Configuration
 
-=== "C#"
+=== "Python"
 
-    --8<-- "snippets/csharp/advanced/token_reduction_config.md"
+    --8<-- "snippets/python/config/token_reduction_config.md"
+
+=== "TypeScript"
+
+    --8<-- "snippets/typescript/config/token_reduction_config.md"
+
+=== "Rust"
+
+    --8<-- "snippets/rust/advanced/token_reduction_config.md"
 
 === "Go"
 
@@ -266,9 +274,9 @@ Reduce token count while preserving meaning. Removes stopwords, redundancy, and 
 
     --8<-- "snippets/java/config/token_reduction_config.md"
 
-=== "Python"
+=== "C#"
 
-    --8<-- "snippets/python/config/token_reduction_config.md"
+    --8<-- "snippets/csharp/advanced/token_reduction_config.md"
 
 === "Ruby"
 
@@ -278,19 +286,19 @@ Reduce token count while preserving meaning. Removes stopwords, redundancy, and 
 
     --8<-- "snippets/r/config/token_reduction_config.md"
 
-=== "Rust"
+### Example
 
-    --8<-- "snippets/rust/advanced/token_reduction_config.md"
+=== "Python"
+
+    --8<-- "snippets/python/utils/token_reduction_example.md"
 
 === "TypeScript"
 
-    --8<-- "snippets/typescript/config/token_reduction_config.md"
+    --8<-- "snippets/typescript/utils/token_reduction_example.md"
 
-### Example
+=== "Rust"
 
-=== "C#"
-
-    --8<-- "snippets/csharp/advanced/token_reduction_example.md"
+    --8<-- "snippets/rust/advanced/token_reduction_example.md"
 
 === "Go"
 
@@ -300,9 +308,9 @@ Reduce token count while preserving meaning. Removes stopwords, redundancy, and 
 
     --8<-- "snippets/java/advanced/token_reduction_example.md"
 
-=== "Python"
+=== "C#"
 
-    --8<-- "snippets/python/utils/token_reduction_example.md"
+    --8<-- "snippets/csharp/advanced/token_reduction_example.md"
 
 === "Ruby"
 
@@ -312,25 +320,23 @@ Reduce token count while preserving meaning. Removes stopwords, redundancy, and 
 
     --8<-- "snippets/r/advanced/token_reduction_example.md"
 
-=== "Rust"
-
-    --8<-- "snippets/rust/advanced/token_reduction_example.md"
-
-=== "TypeScript"
-
-    --8<-- "snippets/typescript/utils/token_reduction_example.md"
-
 ## Keyword Extraction
 
-Extract important keywords and phrases using YAKE or RAKE algorithms. Requires the `keywords` feature flag.
-
-See [Keyword Extraction](keywords.md) for algorithm details, score interpretation, and parameter reference.
+Extract keywords using YAKE or RAKE algorithms. Requires the `keywords` feature flag. See [Keyword Extraction](keywords.md) for algorithm details and parameter reference.
 
 ### Configuration
 
-=== "C#"
+=== "Python"
 
-    --8<-- "snippets/csharp/advanced/keyword_extraction_config.md"
+    --8<-- "snippets/python/config/keyword_extraction_config.md"
+
+=== "TypeScript"
+
+    --8<-- "snippets/typescript/config/keyword_extraction_config.md"
+
+=== "Rust"
+
+    --8<-- "snippets/rust/advanced/keyword_extraction_config.md"
 
 === "Go"
 
@@ -340,9 +346,9 @@ See [Keyword Extraction](keywords.md) for algorithm details, score interpretatio
 
     --8<-- "snippets/java/config/keyword_extraction_config.md"
 
-=== "Python"
+=== "C#"
 
-    --8<-- "snippets/python/config/keyword_extraction_config.md"
+    --8<-- "snippets/csharp/advanced/keyword_extraction_config.md"
 
 === "Ruby"
 
@@ -352,19 +358,19 @@ See [Keyword Extraction](keywords.md) for algorithm details, score interpretatio
 
     --8<-- "snippets/r/config/keyword_extraction_config.md"
 
-=== "Rust"
+### Example
 
-    --8<-- "snippets/rust/advanced/keyword_extraction_config.md"
+=== "Python"
+
+    --8<-- "snippets/python/utils/keyword_extraction_example.md"
 
 === "TypeScript"
 
-    --8<-- "snippets/typescript/config/keyword_extraction_config.md"
+    --8<-- "snippets/typescript/utils/keyword_extraction_example.md"
 
-### Example
+=== "Rust"
 
-=== "C#"
-
-    --8<-- "snippets/csharp/advanced/keyword_extraction_example.md"
+    --8<-- "snippets/rust/advanced/keyword_extraction_example.md"
 
 === "Go"
 
@@ -374,9 +380,9 @@ See [Keyword Extraction](keywords.md) for algorithm details, score interpretatio
 
     --8<-- "snippets/java/advanced/keyword_extraction_example.md"
 
-=== "Python"
+=== "C#"
 
-    --8<-- "snippets/python/utils/keyword_extraction_example.md"
+    --8<-- "snippets/csharp/advanced/keyword_extraction_example.md"
 
 === "Ruby"
 
@@ -386,17 +392,9 @@ See [Keyword Extraction](keywords.md) for algorithm details, score interpretatio
 
     --8<-- "snippets/r/advanced/keyword_extraction_example.md"
 
-=== "Rust"
-
-    --8<-- "snippets/rust/advanced/keyword_extraction_example.md"
-
-=== "TypeScript"
-
-    --8<-- "snippets/typescript/utils/keyword_extraction_example.md"
-
 ## Quality Processing
 
-Score extracted text for quality issues: OCR artifacts, script content, navigation elements, and document structure. The quality score is in `result.quality_score` (0.0–1.0, where 1.0 is highest quality).
+Score extracted text for quality issues (0.0–1.0, where 1.0 is highest quality). Detects OCR artifacts, script content, navigation elements, and structural issues.
 
 | Factor | Weight | Detects |
 |--------|--------|---------|
@@ -410,9 +408,17 @@ Score ranges: `0.0–0.3` very low, `0.3–0.6` low, `0.6–0.8` moderate, `0.8�
 
 ### Configuration
 
-=== "C#"
+=== "Python"
 
-    --8<-- "snippets/csharp/advanced/quality_processing_config.md"
+    --8<-- "snippets/python/config/quality_processing_config.md"
+
+=== "TypeScript"
+
+    --8<-- "snippets/typescript/config/quality_processing_config.md"
+
+=== "Rust"
+
+    --8<-- "snippets/rust/advanced/quality_processing_config.md"
 
 === "Go"
 
@@ -422,9 +428,9 @@ Score ranges: `0.0–0.3` very low, `0.3–0.6` low, `0.6–0.8` moderate, `0.8�
 
     --8<-- "snippets/java/config/quality_processing_config.md"
 
-=== "Python"
+=== "C#"
 
-    --8<-- "snippets/python/config/quality_processing_config.md"
+    --8<-- "snippets/csharp/advanced/quality_processing_config.md"
 
 === "Ruby"
 
@@ -434,19 +440,19 @@ Score ranges: `0.0–0.3` very low, `0.3–0.6` low, `0.6–0.8` moderate, `0.8�
 
     --8<-- "snippets/r/config/quality_processing_config.md"
 
-=== "Rust"
+### Example
 
-    --8<-- "snippets/rust/advanced/quality_processing_config.md"
+=== "Python"
+
+    --8<-- "snippets/python/utils/quality_processing_example.md"
 
 === "TypeScript"
 
-    --8<-- "snippets/typescript/config/quality_processing_config.md"
+    --8<-- "snippets/typescript/utils/quality_processing_example.md"
 
-### Example
+=== "Rust"
 
-=== "C#"
-
-    --8<-- "snippets/csharp/advanced/quality_processing_example.md"
+    --8<-- "snippets/rust/advanced/quality_processing_example.md"
 
 === "Go"
 
@@ -456,9 +462,9 @@ Score ranges: `0.0–0.3` very low, `0.3–0.6` low, `0.6–0.8` moderate, `0.8�
 
     --8<-- "snippets/java/advanced/quality_processing_example.md"
 
-=== "Python"
+=== "C#"
 
-    --8<-- "snippets/python/utils/quality_processing_example.md"
+    --8<-- "snippets/csharp/advanced/quality_processing_example.md"
 
 === "Ruby"
 
@@ -468,19 +474,19 @@ Score ranges: `0.0–0.3` very low, `0.3–0.6` low, `0.6–0.8` moderate, `0.8�
 
     --8<-- "snippets/r/advanced/quality_processing_example.md"
 
-=== "Rust"
+## Combining Features
 
-    --8<-- "snippets/rust/advanced/quality_processing_example.md"
+=== "Python"
+
+    --8<-- "snippets/python/advanced/combining_all_features.md"
 
 === "TypeScript"
 
-    --8<-- "snippets/typescript/utils/quality_processing_example.md"
+    --8<-- "snippets/typescript/getting-started/combining_all_features.md"
 
-## Combining Features
+=== "Rust"
 
-=== "C#"
-
-    --8<-- "snippets/csharp/advanced/combining_all_features.md"
+    --8<-- "snippets/rust/api/combining_all_features.md"
 
 === "Go"
 
@@ -490,9 +496,9 @@ Score ranges: `0.0–0.3` very low, `0.3–0.6` low, `0.6–0.8` moderate, `0.8�
 
     --8<-- "snippets/java/api/combining_all_features.md"
 
-=== "Python"
+=== "C#"
 
-    --8<-- "snippets/python/advanced/combining_all_features.md"
+    --8<-- "snippets/csharp/advanced/combining_all_features.md"
 
 === "Ruby"
 
@@ -501,11 +507,3 @@ Score ranges: `0.0–0.3` very low, `0.3–0.6` low, `0.6–0.8` moderate, `0.8�
 === "R"
 
     --8<-- "snippets/r/api/combining_all_features.md"
-
-=== "Rust"
-
-    --8<-- "snippets/rust/api/combining_all_features.md"
-
-=== "TypeScript"
-
-    --8<-- "snippets/typescript/getting-started/combining_all_features.md"

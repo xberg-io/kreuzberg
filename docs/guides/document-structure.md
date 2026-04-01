@@ -1,8 +1,8 @@
 # Document Structure
 
-Document structure output represents a document as a flat list of nodes with explicit parent-child index references, giving you a traversable tree with heading levels, content layers, inline annotations, and structured table grids.
+Represents a document as a flat list of nodes with explicit parent-child index references — a traversable tree with heading levels, content layers, inline annotations, and structured table grids.
 
-Use document structure when you need hierarchical relationships between sections. For a flat list of semantic elements, use [element-based output](element-based-output.md). For plain text with metadata, use the default unified output.
+Use document structure when you need hierarchical relationships between sections. For a flat list of semantic elements, use [element-based output](element-based-output.md). For plain text, use the default unified output.
 
 ## Comparison
 
@@ -29,10 +29,6 @@ Use document structure when you need hierarchical relationships between sections
 
     --8<-- "snippets/rust/config/document_structure_config.md"
 
-=== "Ruby"
-
-    --8<-- "snippets/ruby/config/document_structure_config.md"
-
 === "Go"
 
     --8<-- "snippets/go/config/document_structure_config.md"
@@ -45,22 +41,22 @@ Use document structure when you need hierarchical relationships between sections
 
     --8<-- "snippets/csharp/config/document_structure_config.md"
 
+=== "Ruby"
+
+    --8<-- "snippets/ruby/config/document_structure_config.md"
+
 === "R"
 
     --8<-- "snippets/r/config/document_structure_config.md"
 
-## Output Structure
+## Node Shape
 
-Each node in `result.document.nodes` has this shape:
+Each node in `result.document.nodes`:
 
 ```json
 {
   "id": "node-a3f2b1c4",
-  "content": {
-    "node_type": "heading",
-    "level": 2,
-    "text": "Supervised Learning"
-  },
+  "content": { "node_type": "heading", "level": 2, "text": "Supervised Learning" },
   "parent": 0,
   "children": [4, 5, 6],
   "content_layer": "body",
@@ -73,12 +69,12 @@ Each node in `result.document.nodes` has this shape:
 
 - `parent` and `children` are integer indices into the `nodes` array (`null` if absent)
 - `bbox` is present when bounding box data is available
-- `annotations` contains inline formatting spans (see [Text Annotations](#text-annotations))
+- `annotations` contains inline formatting spans
 
 ## Node Types
 
-| `node_type` | Key content fields | Notes |
-|-------------|-------------------|-------|
+| `node_type` | Key fields | Notes |
+|-------------|-----------|-------|
 | `title` | `text` | Document title |
 | `heading` | `level` (1–6), `text` | Section heading |
 | `paragraph` | `text` | Body paragraph; may have `annotations` |
@@ -91,16 +87,16 @@ Each node in `result.document.nodes` has this shape:
 | `formula` | `text` | Math formula (plain text, LaTeX, or MathML) |
 | `footnote` | `text` | Usually `content_layer: "footnote"` |
 | `group` | `label`, `heading_level`, `heading_text` | Section grouping container |
-| `page_break` | _(marker)_ | Page boundary; `page` and `page_end` indicate transition |
+| `page_break` | _(marker)_ | Page boundary |
 
 ## Content Layers
 
-| Layer | Description | Example nodes |
-|-------|-------------|---------------|
-| `body` | Main document content | Headings, paragraphs, lists |
-| `header` | Page header area | Repeated chapter titles |
-| `footer` | Page footer area | Page numbers, copyright |
-| `footnote` | Footnotes and endnotes | Reference text |
+| Layer | Description |
+|-------|-------------|
+| `body` | Main document content |
+| `header` | Page header area (repeated chapter titles) |
+| `footer` | Page footer area (page numbers, copyright) |
+| `footnote` | Footnotes and endnotes |
 
 ```python
 for node in result.document["nodes"]:
@@ -110,25 +106,16 @@ for node in result.document["nodes"]:
 
 ## Text Annotations
 
-Paragraphs (and other text nodes) carry a list of `annotations`. Each annotation marks a character span:
+Paragraphs carry a list of `annotations` marking character spans:
 
 ```json
-{
-  "start": 0,
-  "end": 16,
-  "kind": { "annotation_type": "bold" }
-}
+{ "start": 0, "end": 16, "kind": { "annotation_type": "bold" } }
 ```
 
 | `annotation_type` | Extra fields |
 |-------------------|-------------|
-| `bold` | — |
-| `italic` | — |
-| `underline` | — |
-| `strikethrough` | — |
-| `code` | — |
-| `subscript` | — |
-| `superscript` | — |
+| `bold`, `italic`, `underline`, `strikethrough` | — |
+| `code`, `subscript`, `superscript` | — |
 | `link` | `url`, `title` (optional) |
 
 ```python
@@ -145,12 +132,11 @@ for node in result.document["nodes"]:
 
 ## Table Grid
 
-Table nodes contain a `grid` object:
+Table nodes contain a `grid` with cell-level data:
 
 ```json
 {
-  "rows": 3,
-  "cols": 3,
+  "rows": 3, "cols": 3,
   "cells": [
     { "content": "Algorithm", "row": 0, "col": 0, "row_span": 1, "col_span": 1, "is_header": true },
     { "content": "Decision Tree", "row": 1, "col": 0, "row_span": 1, "col_span": 1, "is_header": false }

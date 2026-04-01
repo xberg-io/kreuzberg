@@ -45,7 +45,6 @@ Extract text from uploaded files via multipart form data.
 | `files` | Yes (repeatable) | Files to extract |
 | `config` | No | JSON config overrides |
 | `output_format` | No | `plain` (default), `markdown`, `djot`, or `html` |
-| `format` | No | Response wire format: `json` (default) or `toon` |
 
 ```bash title="Terminal"
 # Single file
@@ -55,12 +54,23 @@ curl -F "files=@document.pdf" http://localhost:8000/extract
 curl -F "files=@doc1.pdf" -F "files=@doc2.docx" http://localhost:8000/extract
 
 # With config overrides
-curl -F "files=@scanned.pdf"      -F 'config={"ocr":{"language":"eng"},"force_ocr":true}'      http://localhost:8000/extract
+curl -F "files=@scanned.pdf" \
+     -F 'config={"ocr":{"language":"eng"},"force_ocr":true}' \
+     http://localhost:8000/extract
+```
 
-# Request TOON wire format
-curl -F "files=@document.pdf" -F "format=toon" http://localhost:8000/extract
-# or
-curl -F "files=@document.pdf" -H "Accept: application/toon" http://localhost:8000/extract
+```json title="Response"
+[
+  {
+    "content": "Extracted text...",
+    "mime_type": "application/pdf",
+    "metadata": { "page_count": 10, "author": "John Doe" },
+    "tables": [],
+    "detected_languages": ["eng"],
+    "chunks": null,
+    "images": null
+  }
+]
 ```
 
 #### POST /embed
@@ -72,6 +82,19 @@ Generate vector embeddings. Requires the `embeddings` feature.
 | `texts` | Yes | Array of strings |
 | `config` | No | Embedding config overrides |
 
+```bash title="Terminal"
+curl -X POST http://localhost:8000/embed \
+  -H "Content-Type: application/json" \
+  -d '{"texts":["Hello world","Second text"]}'
+```
+
+| Preset | Dimensions | Model |
+|--------|-----------|-------|
+| `fast` | 384 | AllMiniLML6V2Q |
+| `balanced` (default) | 768 | BGEBaseENV15 |
+| `quality` | 1024 | BGELargeENV15 |
+| `multilingual` | 768 | MultilingualE5Base |
+
 #### POST /chunk
 
 Chunk text for RAG pipelines.
@@ -82,6 +105,12 @@ Chunk text for RAG pipelines.
 | `chunker_type` | No | `"text"` (default) or `"markdown"` |
 | `config.max_characters` | No | Max chars per chunk (default: 2000) |
 | `config.overlap` | No | Overlap between chunks (default: 100) |
+
+```bash title="Terminal"
+curl -X POST http://localhost:8000/chunk \
+  -H "Content-Type: application/json" \
+  -d '{"text":"Long text...","chunker_type":"text","config":{"max_characters":1000,"overlap":50}}'
+```
 
 === "Python"
 
@@ -115,14 +144,14 @@ Chunk text for RAG pipelines.
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/health` | GET | Health status and version |
-| `/version` | GET | Library version <span class="version-badge">v4.5.2</span> |
-| `/detect` | POST | MIME detection for uploaded file <span class="version-badge">v4.5.2</span> |
-| `/cache/stats` | GET | Cache stats |
+| `/health` | GET | `{"status":"healthy","version":"4.6.3"}` |
+| `/version` | GET | `{"version":"4.6.3"}` <span class="version-badge">v4.5.2</span> |
+| `/detect` | POST | MIME type detection (multipart) <span class="version-badge">v4.5.2</span> |
+| `/cache/stats` | GET | Cache statistics |
 | `/cache/warm` | POST | Pre-download models <span class="version-badge">v4.5.2</span> |
-| `/cache/manifest` | GET | Model manifest/checksums <span class="version-badge">v4.5.2</span> |
-| `/cache/clear` | DELETE | Clear cached files |
-| `/info` | GET | Version + backend info |
+| `/cache/manifest` | GET | Model manifest with checksums <span class="version-badge">v4.5.2</span> |
+| `/cache/clear` | DELETE | Clear all cached files |
+| `/info` | GET | `{"version":"...","rust_backend":true}` |
 | `/openapi.json` | GET | OpenAPI 3.0 schema |
 
 ### Client Examples
@@ -156,6 +185,14 @@ Chunk text for RAG pipelines.
     --8<-- "snippets/ruby/api/client_extract_single_file.md"
 
 ### Error Handling
+
+```json title="Error response"
+{
+  "error_type": "ValidationError",
+  "message": "Invalid file format",
+  "status_code": 400
+}
+```
 
 | Status | Error type | Meaning |
 |--------|-----------|---------|
@@ -193,18 +230,17 @@ Chunk text for RAG pipelines.
 
 ### Configuration
 
-The server searches the current and parent directories for `kreuzberg.toml`. Use `--config` for YAML/JSON or explicit paths.
+The server discovers `kreuzberg.toml` in the current and parent directories. Pass `--config path/to/file` to use a different file.
 
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `KREUZBERG_MAX_UPLOAD_SIZE_MB` | `100` | Max upload size in MB |
-| `KREUZBERG_MAX_MULTIPART_FIELD_BYTES` | `104857600` | Max multipart field size in bytes |
 | `KREUZBERG_CORS_ORIGINS` | `*` | Comma-separated allowed origins |
 
 !!! warning
     Default CORS allows all origins. Set `KREUZBERG_CORS_ORIGINS` explicitly in production.
 
-See [Configuration Guide](configuration.md) and [File Size Limits](../reference/file-size-limits.md).
+See [Configuration Guide](configuration.md) for all options.
 
 ---
 
@@ -262,7 +298,7 @@ kreuzberg mcp --config kreuzberg.toml
 | `embed_text` | `texts` | Generate embeddings <span class="version-badge">v4.5.2</span> |
 | `chunk_text` | `text` | Split text <span class="version-badge">v4.5.2</span> |
 
-All tools accept optional `config` overrides. `extract_file` and `extract_bytes` also support `pdf_password`.
+All tools accept an optional `config` object. `extract_file` and `extract_bytes` also accept `pdf_password`.
 
 ### AI Agent Integration
 
