@@ -47,7 +47,7 @@ def process_document(doc):
     """Process an RST document."""
     metadata = extract_metadata(doc)
     content = parse_content(doc)
-    return
+    return {"metadata": metadata, "content": content}
 ```
 
 ### Shell Example

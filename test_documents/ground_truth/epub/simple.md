@@ -2,11 +2,6 @@
 
 # a shared culture
 
-## guide
-
-1.  Table of Contents
-2.  Begin Reading
-
 # creative commons
 
 ## a shared culture
