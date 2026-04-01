@@ -58,6 +58,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Migrated deprecated `metadata.additional` writes to typed fields across all extractors
 - Strong types for all new metadata variants across all 11 language bindings
 
+### Extraction Quality
+
+- **LaTeX extraction overhaul**: Convert `\href`, `\emph`, `\textbf`, `\textgreater`, `\verb`, `\sout`, blockquotes, lists, special characters, and typographic ligatures to markdown. SF1 improved from 0% to 100%.
+- **XLSX/XLS sheet name headings**: Emit `## SheetName` heading before each sheet's table, matching pandoc convention.
+- **OPML outline headings**: All outline nodes now emit headings at appropriate depth, not just parent outlines. Inline HTML in text attributes converted to markdown.
+- **IPYNB heading detection**: Markdown cells now detect ATX headings and emit proper heading elements. Code cell outputs (stdout, execute_result) included in extraction.
+- **JATS abstract and references**: Abstract section with sub-headings now included. References rendered as numbered list with structured citation formatting.
+- **ODT formula extraction**: Embedded MathML formula objects extracted as formula content instead of empty image placeholders. Image alt text and captions now extracted from `draw:frame` elements.
+- **PPTX slide titles**: Title placeholders detected via OOXML placeholder type and emitted as H2 headings. Bulleted/numbered lists in slides extracted with proper ListStart/ListEnd wrapping.
+- **ORG source blocks**: `#+BEGIN_SRC` blocks converted to fenced code blocks with language annotation. `#+BEGIN_EXAMPLE` blocks converted to unfenced code blocks. Inline code `~text~` converted to backtick spans. Paragraph line wrapping joined. Multi-line list item continuation preserved.
+- **RST heading levels**: Overline+underline document titles assigned H1. Code block language hints preserved from `.. highlight::` and `.. code::` directives. `::` literal block shorthand handled.
+- **RTF formatting state**: Bold/italic/strikethrough state properly scoped to RTF group boundaries. Hidden text (`\v`) suppressed. Hyperlink field parsing fixed for `\*\fldinst HYPERLINK`. Image alt text populated. Strikethrough annotation support added.
+- **HTML preprocessing enabled**: Navigation elements, forms, and sidebars now stripped by default via html-to-markdown preprocessing. Previously disabled, causing Wikipedia page chrome to appear in extraction output.
+- **PDF prose-as-tables fix**: Added heuristic to reject false table detections where >70% of cells contain single-word fragments (e.g., justified prose text incorrectly classified as multi-column table).
+- **Comrak AST correctness**: Math/Formula nodes wrapped in Paragraph (inline nodes cannot be Document children). Nested lists routed through last Item child. Empty Code nodes skipped. Empty AST guard prevents formatter panic. Debug-mode AST validation.
+- **HTML entity elimination**: Newlines and control characters in text nodes normalized before comrak rendering, preventing `&#10;` and `&#2;` entities in output.
+
 ### Fixed
 
 - **PDF image FlateDecode fallback**: When `decode_flate_to_png()` fails for FlateDecode, CCITT, or JBIG2 streams, images are now re-extracted via pdfium's bitmap rendering pipeline, producing valid PNG output instead of unusable raw bytes (#615).
