@@ -5,14 +5,11 @@ Section 00 00 43
 Instructions to Respondents
 Page 1 of 8
 
-1.
-.1
-.2
-INTENT
-The intent of this Request for Proposal (RFP) is to solicit submissions, in the format
-detailed in this document, from qualified Construction Managers for the following project:
+1. INTENT
+
+1. The intent of this Request for Proposal (RFP) is to solicit submissions, in the format detailed in this document, from qualified Construction Managers for the following project:
 
 KEN SARGENT HOUSE
 GRANDE PRAIRIE, ALBERTA
-Available information relative to the project is included in Section 00 00 45 – Description
-of Project.
+
+2. Available information relative to the project is included in Section 00 00 45 – Description of Project.

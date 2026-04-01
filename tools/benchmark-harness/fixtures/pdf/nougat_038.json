@@ -12,7 +12,6 @@
   },
   "ground_truth": {
     "text_file": "../../../../test_documents/ground_truth/pdf/nougat_038.txt",
-    "source": "pandoc",
-    "markdown_file": "../../../../test_documents/ground_truth/pdf/nougat_038.md"
+    "source": "pandoc"
   }
 }

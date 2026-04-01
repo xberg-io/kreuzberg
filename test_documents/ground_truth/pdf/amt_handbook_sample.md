@@ -1,5 +1,3 @@
-# Self-Locking Nuts
-
 pulleys, provided the inner race of the bearing is clamped to the supporting structure by the nut and bolt. Plates must be attached to the structure in a positive manner to eliminate rotation or misalignment when tightening the bolts or screws.
 
 The two general types of self-locking nuts currently in use are the all-metal type and the fiber lock type. For the sake of simplicity, only three typical kinds of self-locking nuts are considered in this handbook: the Boots self-locking and the stainless steel self-locking nuts, representing the all-metal types; and the elastic stop nut, representing the fiber insert type.
@@ -12,11 +10,12 @@ The spring keeps the locking and load-carrying sections such a distance apart th
 
 The spring, through the medium of the locking section, exerts a constant locking force on the bolt in the same direction as a force that would tighten the nut. In this nut, the load-carrying section has the thread strength of a standard nut of comparable size, while the locking section presses against the threads of the bolt and locks the nut firmly in position. Only a wrench applied to the nut loosens it. The nut can be removed and reused without impairing its efficiency.
 
-Boots self-locking nuts are made with three different spring styles and in various shapes and sizes. The wing type that is the most common ranges in size for No. 6 up to 1/4 inch, the Rol-top ranges from 1/4 inch to 1/2 inch, and the bellows type ranges in size from No. 8 up to 1 inch. Wing-type nuts are made of anodized aluminum alloy, cadmium-plated carbon steel, or stainless steel. The Rol-top nut is cadmium-plated steel, and the bellows type is made of aluminum alloy only.
+Boots self-locking nuts are made with three different spring styles and in various shapes and sizes. The wing type that is
 
+![img-0.jpeg](img-0.jpeg)
 Figure 7-26. Self-locking nuts.
 
-<!-- image -->
+the most common ranges in size for No. 6 up to $\frac{1}{4}$ inch, the Rol-top ranges from $\frac{1}{4}$ inch to $\frac{1}{8}$ inch, and the bellows type ranges in size from No. 8 up to $\frac{3}{8}$ inch. Wing-type nuts are made of anodized aluminum alloy, cadmium-plated carbon steel, or stainless steel. The Rol-top nut is cadmium-plated steel, and the bellows type is made of aluminum alloy only.
 
 ## Stainless Steel Self-Locking Nut
 
@@ -24,8 +23,7 @@ The stainless steel self-locking nut may be spun on and off by hand as its locki
 
 ## Elastic Stop Nut
 
-The elastic stop nut is a standard nut with the height increased to accommodate a fiber locking collar.
+The elastic stop nut is a standard nut with the height increased to accommodate a fiber locking collar. This
 
+![img-1.jpeg](img-1.jpeg)
 Figure 7-27. Stainless steel self-locking nut.
-
-<!-- image -->
