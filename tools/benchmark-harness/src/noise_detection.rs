@@ -856,7 +856,8 @@ fn detect_dangling_references(lines: &[&str], code_ranges: &[CodeRange]) -> Vec<
                 let after_close = &after[close + 1..];
                 if after_close.starts_with(':') {
                     definitions.insert(label);
-                } else {
+                } else if !label.is_empty() && !after_close.starts_with('(') {
+                    // Skip empty labels and [^](url) which are regular links, not footnotes
                     references.push((i, label));
                 }
                 start = abs_pos + 2 + close + 1;

@@ -30,17 +30,17 @@ The figures \[Fulla\](/wiki/Fulla "Fulla") (\*Uolla\*) and \[Frigg\](/wiki/Frigg
 
 ## Notes
 
-1. \*\*\[^\](\#cite_ref-ORCHARD112_1-0)\*\* Orchard (1997:112).
-2. \*\*\[^\](\#cite_ref-2)\*\* \[Sophus Bugge\](/wiki/Sophus_Bugge "Sophus Bugge"). \*Studien über die Entstehung der nordischen Götter- und Heldensagen\*. München 1889, p. 298. Cf. \[Rudolf Simek\](/wiki/Rudolf_Simek "Rudolf Simek"). \*Lexikon der germanischen Mythologie\*. Stuttgart: Kröner, 1984, p. 374; trans. Angela Hall, \*Dictionary of Northern Mythology\*. Cambridge: Brewer, 1993, pp. 285–86.
-3. \*\*\[^\](\#cite_ref-3)\*\* Simek, pp. 392, 397.
-4. \*\*\[^\](\#cite_ref-4)\*\* Stefan Schaffner. "Die Götternamen des Zweiten Merseburger Zauberspruchs". \*Die Sprache\* 41.2 (1999) p. 169.
-5. \*\*\[^\](\#cite_ref-5)\*\* Schaffner, pp. 169–70.
-6. \*\*\[^\](\#cite_ref-SIMEK285-286_6-0)\*\* Simek (2007:285-286).
-7. \*\*\[^\](\#cite_ref-BOSTOCK29_7-0)\*\* Bostock (1976:29).
-8. \*\*\[^\](\#cite_ref-8)\*\* \[Wolfgang Beck\](/w/index.php?title=Wolfgang_Beck\&action=edit\&redlink=1 "Wolfgang Beck (page does not exist)"). \*Die Merseburger Zaubersprüche. Eine Einführung\*. Pertersberg, 2010, pp. 163–171, here p. 171.
-9. \*\*\[^\](\#cite_ref-9)\*\* \[Friedrich Kauffmann\](/wiki/Friedrich_Kauffmann "Friedrich Kauffmann"). "Der Zweite Merseburger Zauberspruch". \*\[Beiträge zur Geschichte der deutschen Sprache und Literatur\](/wiki/Beitr%C3%A4ge_zur_Geschichte_der_deutschen_Sprache_und_Literatur "Beiträge zur Geschichte der deutschen Sprache und Literatur")\* 15 (1891), pp. 207–210; Friedrich Kauffmann. "Noch einmal der zweite Merseburger Spruch". \*Zeitschrift für deutsche Philologie\* 26 (1894), pp. 454–462.
-10. \*\*\[^\](\#cite_ref-10)\*\* Gunter Müller. "Zur Heilkraft der Walküren. Sondersprachliches der Magie in kontinentalen und skandinavischen Zeugnissen". \*Frühmittelalterliche Studien\* 10 (1976), pp. 358 ff.
-11. \*\*\[^\](\#cite_ref-11)\*\* \[Karl Helm\](/wiki/Karl_Helm "Karl Helm"). \*Altgermanische Religionsgeschichte\*, Vol. 2.2, Heidelberg: Winter, 1953, pp. 219, 227.
+1. \*\*\[↑\](\#cite_ref-ORCHARD112_1-0)\*\* Orchard (1997:112).
+2. \*\*\[↑\](\#cite_ref-2)\*\* \[Sophus Bugge\](/wiki/Sophus_Bugge "Sophus Bugge"). \*Studien über die Entstehung der nordischen Götter- und Heldensagen\*. München 1889, p. 298. Cf. \[Rudolf Simek\](/wiki/Rudolf_Simek "Rudolf Simek"). \*Lexikon der germanischen Mythologie\*. Stuttgart: Kröner, 1984, p. 374; trans. Angela Hall, \*Dictionary of Northern Mythology\*. Cambridge: Brewer, 1993, pp. 285–86.
+3. \*\*\[↑\](\#cite_ref-3)\*\* Simek, pp. 392, 397.
+4. \*\*\[↑\](\#cite_ref-4)\*\* Stefan Schaffner. "Die Götternamen des Zweiten Merseburger Zauberspruchs". \*Die Sprache\* 41.2 (1999) p. 169.
+5. \*\*\[↑\](\#cite_ref-5)\*\* Schaffner, pp. 169–70.
+6. \*\*\[↑\](\#cite_ref-SIMEK285-286_6-0)\*\* Simek (2007:285-286).
+7. \*\*\[↑\](\#cite_ref-BOSTOCK29_7-0)\*\* Bostock (1976:29).
+8. \*\*\[↑\](\#cite_ref-8)\*\* \[Wolfgang Beck\](/w/index.php?title=Wolfgang_Beck\&action=edit\&redlink=1 "Wolfgang Beck (page does not exist)"). \*Die Merseburger Zaubersprüche. Eine Einführung\*. Pertersberg, 2010, pp. 163–171, here p. 171.
+9. \*\*\[↑\](\#cite_ref-9)\*\* \[Friedrich Kauffmann\](/wiki/Friedrich_Kauffmann "Friedrich Kauffmann"). "Der Zweite Merseburger Zauberspruch". \*\[Beiträge zur Geschichte der deutschen Sprache und Literatur\](/wiki/Beitr%C3%A4ge_zur_Geschichte_der_deutschen_Sprache_und_Literatur "Beiträge zur Geschichte der deutschen Sprache und Literatur")\* 15 (1891), pp. 207–210; Friedrich Kauffmann. "Noch einmal der zweite Merseburger Spruch". \*Zeitschrift für deutsche Philologie\* 26 (1894), pp. 454–462.
+10. \*\*\[↑\](\#cite_ref-10)\*\* Gunter Müller. "Zur Heilkraft der Walküren. Sondersprachliches der Magie in kontinentalen und skandinavischen Zeugnissen". \*Frühmittelalterliche Studien\* 10 (1976), pp. 358 ff.
+11. \*\*\[↑\](\#cite_ref-11)\*\* \[Karl Helm\](/wiki/Karl_Helm "Karl Helm"). \*Altgermanische Religionsgeschichte\*, Vol. 2.2, Heidelberg: Winter, 1953, pp. 219, 227.
 
 ## References
 
