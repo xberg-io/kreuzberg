@@ -7,11 +7,7 @@ Small Caps
 *italics*
 
 **bold *and italics***
-
 underlined
-
 ~~strikeout~~
-
 xsuperscript
-
 xsubscript

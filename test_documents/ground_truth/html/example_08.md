@@ -22,7 +22,6 @@
 | May | $280 | $120 |  |  |
 
 ## Equivalent pivot table
-
 | Year | Quarter | Month | Revenue | Cost |
 | --- | --- | --- | --- | --- |
 | 2025 | Q1 |  |  |  |

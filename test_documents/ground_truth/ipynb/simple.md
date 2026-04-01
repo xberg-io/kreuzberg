@@ -6,9 +6,7 @@
 
 ``` python
 ```
-
 ## Pyout
-
 ``` python
 from IPython.display import HTML
 
@@ -19,13 +17,8 @@ console.log("hello");
 <b>HTML</b>
 """)
 ```
-
 console.log("hello");
-
 **HTML**
 hello
-
 ## Image
-
 This image ![the moon](uid6-lalune.jpg) will be included as a cell attachment.
-

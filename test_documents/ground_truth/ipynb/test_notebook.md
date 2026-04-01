@@ -8,7 +8,5 @@ markitdown
 
     # comment in code
     print(42)
-
 42
-
 End ---

@@ -12,7 +12,6 @@ Nested Table
 | j | k | l |
 
 Table with merged cells
-
 | a | b | b |
 | --- | --- | --- |
 | a | c | d |

@@ -8,7 +8,5 @@ It includes:
 - Another point
 
 # Chapter 2: More Content
-
 Here's a second chapter with a *different* style.
-
 > This is a blockquote for testing.
