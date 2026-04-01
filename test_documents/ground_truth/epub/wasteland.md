@@ -92,7 +92,7 @@ Living nor dead, and I knew nothing,40
 
 Looking into the heart of light, the silence.
 
-*Od' und leer das Meer*.[\*](#note-4)
+Od' und *leer das Meer.\**[](#note-4)
 
 Madame Sosostris, famous clairvoyante,
 
@@ -104,7 +104,7 @@ With a wicked pack of cards. Here, said she,[\*](#note-5)
 
 Is your card, the drowned Phoenician Sailor,
 
-(Those are pearls that were his eyes. Look!)
+(Those are pearls that were his eyes. Look\!)
 
 Here is Belladonna, the Lady of the Rocks,
 
@@ -146,9 +146,9 @@ To where Saint Mary Woolnoth kept the hours
 
 With a dead sound on the final stroke of nine.[\*](#note-9)
 
-There I saw one I knew, and stopped him, crying "Stetson!
+There I saw one I knew, and stopped him, crying "Stetson\!
 
-"You who were with me in the ships at Mylae!70
+"You who were with me in the ships at Mylae\!70
 
 "That corpse you planted last year in your garden,
 
@@ -158,9 +158,9 @@ There I saw one I knew, and stopped him, crying "Stetson!
 
 "Oh keep the Dog far hence, that's friend to men,[\*](#note-10)
 
-"Or with his nails he'll dig it up again!
+"Or with his nails he'll dig it up again\!
 
-"You! hypocrite lecteur! - mon semblable, - mon frere !"[\*](#note-11)
+"You\! hypocrite lecteur\! - mon semblable, - mon frere \!"\*[](#note-11)
 
 ## II. A GAME OF CHESS
 
@@ -364,60 +364,54 @@ Indeed, so deeply am I indebted, Miss Weston's book will elucidate the difficult
 
 ### I. THE BURIAL OF THE DEAD
 
+[Line 20.](#ln20) Cf. Ezekiel 2:1.
+
+[23.](#ln23) Cf. Ecclesiastes 12:5.
+
+[31.](#ln31) V. Tristan und Isolde, i, verses 5-8.
+
+[42.](#ln42) Id. iii, verse 24.
+
+[46.](#ln46) I am not familiar with the exact constitution of the Tarot pack of cards, from which I have obviously departed to suit my own convenience. The Hanged Man, a member of the traditional pack, fits my purpose in two ways: because he is associated in my mind with the Hanged God of Frazer, and because I associate him with the hooded figure in the passage of the disciples to Emmaus in Part V. The Phoenician Sailor and the Merchant appear later; also the "crowds of people," and Death by Water is executed in Part IV. The Man with Three Staves (an authentic member of the Tarot pack) I associate, quite arbitrarily, with the Fisher King himself.
+
+[60.](#ln60) Cf. Baudelaire:
+
+"Fourmillante cite;, cite; pleine de reves, Ou le spectre en plein jour raccroche le passant."
+
+[63.](#ln63) Cf. Inferno, iii. 55-7.
+
+"si lunga tratta di gente, ch'io non avrei mai creduto che morte tanta n'avesse disfatta."
+
+[64.](#ln64) Cf. Inferno, iv. 25-7:
+
+"Quivi, secondo che per ascoltahre, "non avea pianto, ma' che di sospiri, "che l'aura eterna facevan tremare."
+
+[68.](#ln68) A phenomenon which I have often noticed.
+
+[74.](#ln74) Cf. the Dirge in Webster's White Devil .
+
+[76.](#ln76) V. Baudelaire, Preface to Fleurs du Mal.
+
 ### II. A GAME OF CHESS
 
-[\*](#note-1): [Line 20.](#wasteland-content.xhtml_ln20) Cf. Ezekiel 2:1.
+[77.](#ln77) Cf. Antony and Cleopatra, II. ii., l. 190.
 
-[\*](#note-2): [23.](#wasteland-content.xhtml_ln23) Cf. Ecclesiastes 12:5.
+[92.](#ln92) Laquearia. V. Aeneid, I. 726:
 
-[\*](#note-3): [31.](#wasteland-content.xhtml_ln31) V. Tristan und Isolde, i, verses 5-8.
+dependent lychni laquearibus aureis incensi, et noctem flammis funalia vincunt.
 
-[\*](#note-4): [42.](#wasteland-content.xhtml_ln42) Id. iii, verse 24.
+[98.](#ln98) Sylvan scene. V. Milton, Paradise Lost, iv. 140.
 
-[\*](#note-5): [46.](#wasteland-content.xhtml_ln46) I am not familiar with the exact constitution of the Tarot pack of cards, from which I have obviously departed to suit my own convenience. The Hanged Man, a member of the traditional pack, fits my purpose in two ways: because he is associated in my mind with the Hanged God of Frazer, and because I associate him with the hooded figure in the passage of the disciples to Emmaus in Part V. The Phoenician Sailor and the Merchant appear later; also the "crowds of people," and Death by Water is executed in Part IV. The Man with Three Staves (an authentic member of the Tarot pack) I associate, quite arbitrarily, with the Fisher King himself.
+[99.](#ln99) V. Ovid, Metamorphoses, vi, Philomela.
 
-[\*](#note-6): [60.](#wasteland-content.xhtml_ln60) Cf. Baudelaire:
+[100.](#ln100) Cf. Part III, l. 204.
 
-    > "Fourmillante cite;, cite; pleine de reves,\
-    > Ou le spectre en plein jour raccroche le passant."
+[115.](#ln115) Cf. Part III, l. 195.
 
-[\*](#note-7): [63.](#wasteland-content.xhtml_ln63) Cf. Inferno, iii. 55-7.
+[118.](#ln118) Cf. Webster:
 
-    > "si lunga tratta\
-    > di gente, ch'io non avrei mai creduto\
-    > che morte tanta n'avesse disfatta."
+"Is the wind in that door still?"
 
-[\*](#note-8): [64.](#wasteland-content.xhtml_ln64) Cf. Inferno, iv. 25-7:
+[126.](#ln126) Cf. Part I, l. 37, 48.
 
-    > "Quivi, secondo che per ascoltahre,\
-    > "non avea pianto, ma' che di sospiri,\
-    > "che l'aura eterna facevan tremare."
-
-[\*](#note-9): [68.](#wasteland-content.xhtml_ln68) A phenomenon which I have often noticed.
-
-[\*](#note-10): [74.](#wasteland-content.xhtml_ln74) Cf. the Dirge in Webster's White Devil .
-
-[\*](#note-11): [76.](#wasteland-content.xhtml_ln76) V. Baudelaire, Preface to Fleurs du Mal.
-
-[\*](#note-12): [77.](#wasteland-content.xhtml_ln77) Cf. Antony and Cleopatra, II. ii., l. 190.
-
-[\*](#note-13): [92.](#wasteland-content.xhtml_ln92) Laquearia. V. Aeneid, I. 726:
-
-    > dependent lychni laquearibus aureis incensi, et noctem flammis\
-    > funalia vincunt.
-
-[\*](#note-14): [98.](#wasteland-content.xhtml_ln98) Sylvan scene. V. Milton, Paradise Lost, iv. 140.
-
-[\*](#note-15): [99.](#wasteland-content.xhtml_ln99) V. Ovid, Metamorphoses, vi, Philomela.
-
-[\*](#note-16): [100.](#wasteland-content.xhtml_ln100) Cf. Part III, l. 204.
-
-[\*](#note-17): [115.](#wasteland-content.xhtml_ln115) Cf. Part III, l. 195.
-
-[\*](#note-18): [118.](#wasteland-content.xhtml_ln118) Cf. Webster:
-
-    > "Is the wind in that door still?"
-
-[\*](#note-19): [126.](#wasteland-content.xhtml_ln126) Cf. Part I, l. 37, 48.
-
-[\*](#note-20): [138.](#wasteland-content.xhtml_ln138) Cf. the game of chess in Middleton's Women beware Women.
+[138.](#ln138) Cf. the game of chess in Middleton's Women beware Women.

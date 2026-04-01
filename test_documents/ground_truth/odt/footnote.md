@@ -1,3 +1,6 @@
-Some text[^1] with a footnote.
+[^1]
 
-[^1]: Footnote text
+Some text with a footnote.\[^1\]
+
+[^1]:
+    Footnote text
