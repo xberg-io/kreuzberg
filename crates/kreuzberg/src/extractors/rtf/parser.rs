@@ -717,7 +717,7 @@ pub fn extract_text_from_rtf(content: &str, plain: bool) -> (String, Vec<Table>,
     let mut fldinst_content = String::new();
     let mut in_fldrslt = false;
     let mut fldrslt_depth: i32 = 0;
-    let mut pending_hyperlink_url: Option<String> = None;
+    let mut _pending_hyperlink_url: Option<String> = None;
 
     // Footnote tracking
     let mut in_footnote = false;
@@ -814,7 +814,7 @@ pub fn extract_text_from_rtf(content: &str, plain: bool) -> (String, Vec<Table>,
                             url
                         };
                         if !url.is_empty() {
-                            pending_hyperlink_url = Some(url);
+                            _pending_hyperlink_url = Some(url);
                         }
                     }
                     fldinst_content.clear();
@@ -822,7 +822,7 @@ pub fn extract_text_from_rtf(content: &str, plain: bool) -> (String, Vec<Table>,
                 // Handle \fldrslt group closing
                 if in_fldrslt && group_depth < fldrslt_depth {
                     in_fldrslt = false;
-                    pending_hyperlink_url = None;
+                    _pending_hyperlink_url = None;
                 }
                 // Handle \footnote group closing — store footnote text
                 if in_footnote && group_depth < footnote_depth {

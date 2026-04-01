@@ -379,11 +379,14 @@ impl RstExtractor {
             }
 
             // Grid table (+-----+-----+)
-            if trimmed.starts_with('+') && trimmed.ends_with('+') && trimmed.contains('-')
-                && let Some(table) = Self::parse_grid_table(&lines, &mut i) {
-                    tables.push(table);
-                    continue;
-                }
+            if trimmed.starts_with('+')
+                && trimmed.ends_with('+')
+                && trimmed.contains('-')
+                && let Some(table) = Self::parse_grid_table(&lines, &mut i)
+            {
+                tables.push(table);
+                continue;
+            }
 
             i += 1;
         }

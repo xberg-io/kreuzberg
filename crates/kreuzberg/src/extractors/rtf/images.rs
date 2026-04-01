@@ -27,7 +27,7 @@ pub fn extract_pict_image(chars: &mut std::iter::Peekable<std::str::Chars>) -> (
     let mut height_goal: Option<i32> = None;
     let mut depth = 0;
     let mut hex_chars = String::new();
-    let mut has_bin = false;
+    let mut _has_bin = false;
 
     while let Some(&ch) = chars.peek() {
         match ch {
@@ -72,7 +72,7 @@ pub fn extract_pict_image(chars: &mut std::iter::Peekable<std::str::Chars>) -> (
                             for _ in 0..count {
                                 chars.next();
                             }
-                            has_bin = true;
+                            _has_bin = true;
                         }
                         // Without a count parameter, \bin is non-standard.
                         // Continue parsing — hex data that follows will be
