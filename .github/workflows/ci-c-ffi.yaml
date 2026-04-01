@@ -47,7 +47,11 @@ env:
   ORT_VERSION: "1.24.1"
 
 jobs:
+  validate:
+    uses: ./.github/workflows/ci-validate.yaml
+
   c-ffi-tests:
+    needs: [validate]
     name: C FFI Tests (${{ matrix.os }})
     if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     runs-on: ${{ matrix.os }}
@@ -141,6 +145,7 @@ jobs:
         uses: kreuzberg-dev/actions/cleanup-rust-cache@v1
 
   c-ffi-tests-windows:
+    needs: [validate]
     name: C FFI Tests (windows-latest)
     if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     runs-on: windows-latest

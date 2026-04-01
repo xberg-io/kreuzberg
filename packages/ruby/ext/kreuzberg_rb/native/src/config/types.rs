@@ -85,6 +85,8 @@ pub fn parse_ocr_config(ruby: &Ruby, hash: RHash) -> Result<OcrConfig, Error> {
             "markdown" | "Markdown" => OutputFormat::Markdown,
             "djot" | "Djot" => OutputFormat::Djot,
             "html" | "Html" => OutputFormat::Html,
+            "json" | "Json" => OutputFormat::Json,
+            "structured" | "Structured" => OutputFormat::Structured,
             other => return Err(runtime_error(format!("Invalid ocr output_format: '{}'", other))),
         };
         config.output_format = Some(format);

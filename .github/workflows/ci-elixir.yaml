@@ -66,7 +66,11 @@ env:
   KREUZBERG_BUILD: "1"
 
 jobs:
+  validate:
+    uses: ./.github/workflows/ci-validate.yaml
+
   build-and-test:
+    needs: [validate]
     name: Elixir Build and Test (${{ matrix.os }})
     if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     timeout-minutes: 240

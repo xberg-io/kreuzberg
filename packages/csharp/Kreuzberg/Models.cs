@@ -4939,6 +4939,12 @@ public enum OutputFormat
     Html,
 
     /// <summary>
+    /// JSON tree format with heading-driven sections.
+    /// </summary>
+    [JsonStringEnumMemberName("json")]
+    Json,
+
+    /// <summary>
     /// Structured output with semantic elements.
     /// </summary>
     [JsonStringEnumMemberName("structured")]

@@ -76,6 +76,7 @@ fn output_format_to_str(fmt: &kreuzberg::core::config::formats::OutputFormat) ->
         kreuzberg::core::config::formats::OutputFormat::Markdown => "markdown".to_string(),
         kreuzberg::core::config::formats::OutputFormat::Djot => "djot".to_string(),
         kreuzberg::core::config::formats::OutputFormat::Html => "html".to_string(),
+        kreuzberg::core::config::formats::OutputFormat::Json => "json".to_string(),
         kreuzberg::core::config::formats::OutputFormat::Structured => "structured".to_string(),
         kreuzberg::core::config::formats::OutputFormat::Custom(name) => name.clone(),
     }

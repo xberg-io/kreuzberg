@@ -68,7 +68,11 @@ env:
   IS_CI: "true"
 
 jobs:
+  validate:
+    uses: ./.github/workflows/ci-validate.yaml
+
   build-go:
+    needs: [validate]
     name: Go Bindings (${{ matrix.os }})
     if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     timeout-minutes: 240

@@ -66,7 +66,11 @@ env:
   BUILD_PROFILE: "ci"
 
 jobs:
+  validate:
+    uses: ./.github/workflows/ci-validate.yaml
+
   build-php-extension:
+    needs: [validate]
     name: PHP Build (${{ matrix.os }}, PHP ${{ matrix.php-version }})
     if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     timeout-minutes: 240

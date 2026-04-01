@@ -684,8 +684,10 @@ export interface ExtractionConfig {
 	 * - "markdown": Markdown formatted output
 	 * - "djot": Djot markup format
 	 * - "html": HTML formatted output
+	 * - "json": JSON tree format with heading-driven sections
+	 * - "structured": Structured JSON format with full OCR element metadata
 	 */
-	outputFormat?: "plain" | "markdown" | "djot" | "html";
+	outputFormat?: "plain" | "markdown" | "djot" | "html" | "json" | "structured";
 
 	/**
 	 * Result structure format. Default: "unified".

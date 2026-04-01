@@ -55,7 +55,11 @@ env:
   ORT_VERSION: "1.24.1"
 
 jobs:
+  validate:
+    uses: ./.github/workflows/ci-validate.yaml
+
   test-docker:
+    needs: [validate]
     name: Build and Test Docker Image (${{ matrix.variant }})
     if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
@@ -168,6 +172,7 @@ jobs:
         run: scripts/ci/docker/summary.sh "${{ matrix.variant }}" /tmp/kreuzberg-docker-test-results.json
 
   test-docker-cli:
+    needs: [validate]
     name: Build and Test Docker CLI Image
     if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest

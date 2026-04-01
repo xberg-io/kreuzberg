@@ -65,7 +65,11 @@ env:
   BUILD_PROFILE: "ci"
 
 jobs:
+  validate:
+    uses: ./.github/workflows/ci-validate.yaml
+
   build-java:
+    needs: [validate]
     name: Java Bindings (${{ matrix.os }})
     if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     timeout-minutes: 240

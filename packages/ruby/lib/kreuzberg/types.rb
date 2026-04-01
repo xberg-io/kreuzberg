@@ -549,10 +549,11 @@ module Kreuzberg
     MARKDOWN = 'markdown'
     DJOT = 'djot'
     HTML = 'html'
+    JSON = 'json'
     STRUCTURED = 'structured'
 
     def self.values
-      [PLAIN, MARKDOWN, DJOT, HTML, STRUCTURED]
+      [PLAIN, MARKDOWN, DJOT, HTML, JSON, STRUCTURED]
     end
   end
 

@@ -139,10 +139,11 @@ impl ExtractionConfig {
                         "markdown" | "md" => kreuzberg::core::config::formats::OutputFormat::Markdown,
                         "djot" => kreuzberg::core::config::formats::OutputFormat::Djot,
                         "html" => kreuzberg::core::config::formats::OutputFormat::Html,
-                        "structured" | "json" => kreuzberg::core::config::formats::OutputFormat::Structured,
+                        "json" => kreuzberg::core::config::formats::OutputFormat::Json,
+                        "structured" => kreuzberg::core::config::formats::OutputFormat::Structured,
                         other => {
                             return Err(PyErr::new::<pyo3::exceptions::PyValueError, _>(format!(
-                                "Invalid output_format: {}. Must be 'plain', 'markdown', 'djot', 'html', or 'structured'",
+                                "Invalid output_format: {}. Must be 'plain', 'markdown', 'djot', 'html', 'json', or 'structured'",
                                 other
                             )));
                         }
@@ -362,6 +363,7 @@ impl ExtractionConfig {
             kreuzberg::core::config::formats::OutputFormat::Markdown => "markdown".to_string(),
             kreuzberg::core::config::formats::OutputFormat::Djot => "djot".to_string(),
             kreuzberg::core::config::formats::OutputFormat::Html => "html".to_string(),
+            kreuzberg::core::config::formats::OutputFormat::Json => "json".to_string(),
             kreuzberg::core::config::formats::OutputFormat::Structured => "structured".to_string(),
             kreuzberg::core::config::formats::OutputFormat::Custom(ref name) => name.clone(),
         }
@@ -374,7 +376,8 @@ impl ExtractionConfig {
             "markdown" => kreuzberg::core::config::formats::OutputFormat::Markdown,
             "djot" => kreuzberg::core::config::formats::OutputFormat::Djot,
             "html" => kreuzberg::core::config::formats::OutputFormat::Html,
-            "structured" | "json" => kreuzberg::core::config::formats::OutputFormat::Structured,
+            "json" => kreuzberg::core::config::formats::OutputFormat::Json,
+            "structured" => kreuzberg::core::config::formats::OutputFormat::Structured,
             _ => kreuzberg::core::config::formats::OutputFormat::Plain, // Default on invalid
         };
     }
@@ -2648,10 +2651,11 @@ impl FileExtractionConfig {
                         "markdown" | "md" => kreuzberg::core::config::formats::OutputFormat::Markdown,
                         "djot" => kreuzberg::core::config::formats::OutputFormat::Djot,
                         "html" => kreuzberg::core::config::formats::OutputFormat::Html,
-                        "structured" | "json" => kreuzberg::core::config::formats::OutputFormat::Structured,
+                        "json" => kreuzberg::core::config::formats::OutputFormat::Json,
+                        "structured" => kreuzberg::core::config::formats::OutputFormat::Structured,
                         other => {
                             return Err(PyErr::new::<pyo3::exceptions::PyValueError, _>(format!(
-                                "Invalid output_format: {}. Must be 'plain', 'markdown', 'djot', 'html', or 'structured'",
+                                "Invalid output_format: {}. Must be 'plain', 'markdown', 'djot', 'html', 'json', or 'structured'",
                                 other
                             )));
                         }
@@ -2845,6 +2849,7 @@ impl FileExtractionConfig {
             kreuzberg::core::config::formats::OutputFormat::Markdown => "markdown".to_string(),
             kreuzberg::core::config::formats::OutputFormat::Djot => "djot".to_string(),
             kreuzberg::core::config::formats::OutputFormat::Html => "html".to_string(),
+            kreuzberg::core::config::formats::OutputFormat::Json => "json".to_string(),
             kreuzberg::core::config::formats::OutputFormat::Structured => "structured".to_string(),
             kreuzberg::core::config::formats::OutputFormat::Custom(name) => name.clone(),
         })
@@ -2858,10 +2863,11 @@ impl FileExtractionConfig {
                 "markdown" | "md" => kreuzberg::core::config::formats::OutputFormat::Markdown,
                 "djot" => kreuzberg::core::config::formats::OutputFormat::Djot,
                 "html" => kreuzberg::core::config::formats::OutputFormat::Html,
-                "structured" | "json" => kreuzberg::core::config::formats::OutputFormat::Structured,
+                "json" => kreuzberg::core::config::formats::OutputFormat::Json,
+                "structured" => kreuzberg::core::config::formats::OutputFormat::Structured,
                 other => {
                     return Err(PyErr::new::<pyo3::exceptions::PyValueError, _>(format!(
-                        "Invalid output_format: {}. Must be 'plain', 'markdown', 'djot', 'html', or 'structured'",
+                        "Invalid output_format: {}. Must be 'plain', 'markdown', 'djot', 'html', 'json', or 'structured'",
                         other
                     )));
                 }

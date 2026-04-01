@@ -64,7 +64,11 @@ env:
   MACOSX_DEPLOYMENT_TARGET: '14.0'
 
 jobs:
+  validate:
+    uses: ./.github/workflows/ci-validate.yaml
+
   build-csharp:
+    needs: [validate]
     name: C# Build + Smoke (${{ matrix.os }})
     if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     timeout-minutes: 240

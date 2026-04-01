@@ -424,17 +424,19 @@ type PageConfig struct {
 }
 
 // OutputFormat controls the format of extracted content.
-// Options: "plain", "text", "markdown", "md", "djot", "html"
+// Options: "plain", "text", "markdown", "md", "djot", "html", "json", "structured"
 // Default: "plain" (via Rust)
 type OutputFormat string
 
 const (
-	OutputFormatPlain    OutputFormat = "plain"
-	OutputFormatText     OutputFormat = "text" // Alias for plain
-	OutputFormatMarkdown OutputFormat = "markdown"
-	OutputFormatMd       OutputFormat = "md" // Alias for markdown
-	OutputFormatDjot     OutputFormat = "djot"
-	OutputFormatHTML     OutputFormat = "html"
+	OutputFormatPlain      OutputFormat = "plain"
+	OutputFormatText       OutputFormat = "text" // Alias for plain
+	OutputFormatMarkdown   OutputFormat = "markdown"
+	OutputFormatMd         OutputFormat = "md" // Alias for markdown
+	OutputFormatDjot       OutputFormat = "djot"
+	OutputFormatHTML       OutputFormat = "html"
+	OutputFormatJSON       OutputFormat = "json"
+	OutputFormatStructured OutputFormat = "structured"
 )
 
 // ResultFormat controls the result structure.

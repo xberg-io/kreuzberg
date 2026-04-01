@@ -76,8 +76,11 @@ env:
   BUILD_PROFILE: "ci"
 
 jobs:
+  validate:
+    uses: ./.github/workflows/ci-validate.yaml
 
   unit-tests:
+    needs: [validate]
     name: Unit Tests (${{ matrix.os }})
     if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     runs-on: ${{ matrix.os }}
@@ -160,6 +163,7 @@ jobs:
 
 
   build-wasm-targets:
+    needs: [validate]
     name: Build WASM (${{ matrix.os }})
     if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     runs-on: ${{ matrix.os }}
@@ -261,6 +265,7 @@ jobs:
 
 
   type-definitions:
+    needs: [validate]
     name: Type Definitions Check
     if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest

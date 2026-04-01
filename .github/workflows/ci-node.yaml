@@ -70,7 +70,11 @@ env:
   BUILD_PROFILE: "ci"
 
 jobs:
+  validate:
+    uses: ./.github/workflows/ci-validate.yaml
+
   build-and-smoke-node:
+    needs: [validate]
     name: Node Build + Smoke (${{ matrix.target }})
     if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     timeout-minutes: ${{ matrix.os == 'windows-latest' && 360 || (matrix.os == 'ubuntu-24.04-arm' && 240 || 180) }}

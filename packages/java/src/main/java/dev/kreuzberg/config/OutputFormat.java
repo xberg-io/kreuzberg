@@ -22,7 +22,11 @@ public enum OutputFormat {
 	/** Djot markup format. */
 	DJOT("djot"),
 	/** HTML format. */
-	HTML("html");
+	HTML("html"),
+	/** JSON tree format with heading-driven sections. */
+	JSON("json"),
+	/** Structured JSON format with full OCR element metadata. */
+	STRUCTURED("structured");
 
 	private final String value;
 
@@ -60,8 +64,10 @@ public enum OutputFormat {
 			case "markdown", "md" -> MARKDOWN;
 			case "djot" -> DJOT;
 			case "html" -> HTML;
+			case "json" -> JSON;
+			case "structured", "structured-ocr" -> STRUCTURED;
 			default -> throw new IllegalArgumentException(
-					"Invalid output format: '" + value + "'. Valid formats: plain, text, markdown, md, djot, html");
+					"Invalid output format: '" + value + "'. Valid formats: plain, text, markdown, md, djot, html, json, structured");
 		};
 	}
 

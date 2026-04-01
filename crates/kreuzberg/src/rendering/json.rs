@@ -351,7 +351,7 @@ fn close_sections_to_level(section_stack: &mut Vec<OpenSection>, root_body: &mut
 fn flush_list(
     open_list: &mut Option<OpenList>,
     root_body: &mut Vec<JsonNode>,
-    section_stack: &mut Vec<OpenSection>,
+    section_stack: &mut [OpenSection],
     open_blockquote: &mut Option<Vec<JsonNode>>,
 ) {
     if let Some(list) = open_list.take() {

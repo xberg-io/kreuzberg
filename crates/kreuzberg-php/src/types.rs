@@ -89,6 +89,8 @@ pub enum OutputFormat {
     Djot,
     #[php(name = "html")]
     Html,
+    #[php(name = "json")]
+    Json,
     #[php(name = "structured")]
     Structured,
 }

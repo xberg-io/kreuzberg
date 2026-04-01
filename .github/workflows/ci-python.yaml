@@ -67,7 +67,11 @@ env:
   BUILD_PROFILE: "ci"
 
 jobs:
+  validate:
+    uses: ./.github/workflows/ci-validate.yaml
+
   build-and-smoke-python:
+    needs: [validate]
     name: Python Build + Smoke (${{ matrix.target }})
     if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     timeout-minutes: 180
@@ -217,6 +221,7 @@ jobs:
         run: scripts/ci/python/smoke-test-wheel.sh
 
   build-python-sdist:
+    needs: [validate]
     name: Python Sdist
     if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     timeout-minutes: 180

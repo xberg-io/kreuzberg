@@ -918,9 +918,15 @@ defmodule Kreuzberg.ExtractionConfig do
       "html" ->
         :ok
 
+      "json" ->
+        :ok
+
+      "structured" ->
+        :ok
+
       _invalid ->
         {:error,
-         "Field 'output_format' must be one of: plain, text, markdown, md, djot, html, got: #{value}"}
+         "Field 'output_format' must be one of: plain, text, markdown, md, djot, html, json, structured, got: #{value}"}
     end
   end
 
