@@ -55,19 +55,27 @@ impl ImageExtractor {
 
         let ocr_result = backend.process_image(content, &ocr_config_with_format).await?;
 
+        // Destructure to avoid partial-move issues when propagating OCR elements.
+        let ocr_content = ocr_result.content;
+        let ocr_metadata = ocr_result.metadata;
+        let ocr_elements = ocr_result.ocr_elements;
+
         // Full OCR with TIFF multi-frame support (requires tiff crate)
         #[cfg(feature = "ocr")]
         {
             let ocr_extraction_result = crate::extraction::image::extract_text_from_image_with_ocr(
                 content,
                 mime_type,
-                ocr_result.content,
+                ocr_content,
                 config.pages.as_ref(),
             )?;
 
             // Build InternalDocument from OCR text
             let mut doc = build_image_internal_document(Some(&ocr_extraction_result.content), None);
-            doc.metadata = ocr_result.metadata;
+            doc.metadata = ocr_metadata;
+            // Propagate OCR elements from the backend result into the InternalDocument
+            // so that derive_extraction_result can populate ExtractionResult::ocr_elements.
+            inject_ocr_elements_from_vec(&mut doc, ocr_elements);
             Ok(doc)
         }
 
@@ -75,8 +83,9 @@ impl ImageExtractor {
         #[cfg(not(feature = "ocr"))]
         {
             let _ = mime_type;
-            let mut doc = build_image_internal_document(Some(&ocr_result.content), None);
-            doc.metadata = ocr_result.metadata;
+            let mut doc = build_image_internal_document(Some(&ocr_content), None);
+            doc.metadata = ocr_metadata;
+            inject_ocr_elements_from_vec(&mut doc, ocr_elements);
             Ok(doc)
         }
     }
@@ -250,6 +259,37 @@ impl ImageExtractor {
         };
 
         Ok(doc)
+    }
+}
+
+/// Inject OCR elements into an `InternalDocument`.
+///
+/// Converts each `OcrElement` into an `InternalElement` with `ElementKind::OcrText`
+/// so that the derive pipeline can reconstruct them into `ExtractionResult::ocr_elements`.
+fn inject_ocr_elements_from_vec(doc: &mut InternalDocument, ocr_elements: Option<Vec<crate::types::OcrElement>>) {
+    use crate::types::document_structure::ContentLayer;
+    use crate::types::internal::{ElementKind, InternalElement, InternalElementId};
+
+    if let Some(ocr_elements) = ocr_elements {
+        for (i, elem) in ocr_elements.iter().enumerate() {
+            let kind = ElementKind::OcrText { level: elem.level };
+            let id = InternalElementId::generate("ocr_text", &elem.text, Some(elem.page_number as u32), i as u32);
+            doc.elements.push(InternalElement {
+                id,
+                kind,
+                text: elem.text.clone(),
+                depth: 0,
+                page: Some(elem.page_number as u32),
+                bbox: None,
+                layer: ContentLayer::Body,
+                annotations: Vec::new(),
+                attributes: None,
+                anchor: None,
+                ocr_geometry: Some(elem.geometry.clone()),
+                ocr_confidence: Some(elem.confidence.clone()),
+                ocr_rotation: elem.rotation.clone(),
+            });
+        }
     }
 }
 

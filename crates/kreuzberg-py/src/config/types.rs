@@ -472,6 +472,67 @@ impl ExtractionConfig {
         self.inner.max_archive_depth = value;
     }
 
+    /// Get the security limits for archive extraction.
+    ///
+    /// Returns:
+    ///     Optional dict with keys: max_archive_size, max_compression_ratio,
+    ///     max_files_in_archive, max_nesting_depth, max_entity_length,
+    ///     max_content_size, max_iterations
+    #[getter]
+    fn security_limits(&self, py: Python<'_>) -> PyResult<Option<Py<PyDict>>> {
+        match &self.inner.security_limits {
+            Some(limits) => {
+                let dict = PyDict::new(py);
+                dict.set_item("max_archive_size", limits.max_archive_size)?;
+                dict.set_item("max_compression_ratio", limits.max_compression_ratio)?;
+                dict.set_item("max_files_in_archive", limits.max_files_in_archive)?;
+                dict.set_item("max_nesting_depth", limits.max_nesting_depth)?;
+                dict.set_item("max_entity_length", limits.max_entity_length)?;
+                dict.set_item("max_content_size", limits.max_content_size)?;
+                dict.set_item("max_iterations", limits.max_iterations)?;
+                Ok(Some(dict.unbind()))
+            }
+            None => Ok(None),
+        }
+    }
+
+    /// Set the security limits for archive extraction.
+    ///
+    /// Args:
+    ///     value: Optional dict with security limit keys, or None to use defaults.
+    #[setter]
+    fn set_security_limits(&mut self, value: Option<Bound<'_, PyDict>>) -> PyResult<()> {
+        self.inner.security_limits = match value {
+            Some(dict) => {
+                let mut limits = kreuzberg::extractors::security::SecurityLimits::default();
+                if let Some(v) = dict.get_item("max_archive_size")? {
+                    limits.max_archive_size = v.extract()?;
+                }
+                if let Some(v) = dict.get_item("max_compression_ratio")? {
+                    limits.max_compression_ratio = v.extract()?;
+                }
+                if let Some(v) = dict.get_item("max_files_in_archive")? {
+                    limits.max_files_in_archive = v.extract()?;
+                }
+                if let Some(v) = dict.get_item("max_nesting_depth")? {
+                    limits.max_nesting_depth = v.extract()?;
+                }
+                if let Some(v) = dict.get_item("max_entity_length")? {
+                    limits.max_entity_length = v.extract()?;
+                }
+                if let Some(v) = dict.get_item("max_content_size")? {
+                    limits.max_content_size = v.extract()?;
+                }
+                if let Some(v) = dict.get_item("max_iterations")? {
+                    limits.max_iterations = v.extract()?;
+                }
+                Some(limits)
+            }
+            None => None,
+        };
+        Ok(())
+    }
+
     fn __repr__(&self) -> String {
         format!(
             "ExtractionConfig(use_cache={}, enable_quality_processing={}, ocr={}, force_ocr={}, extraction_timeout_secs={:?}, force_ocr_pages={:?})",
