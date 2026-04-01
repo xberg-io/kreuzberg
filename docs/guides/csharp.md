@@ -105,12 +105,12 @@ Reduce token count for LLM pipelines while preserving meaning:
 **Exception hierarchy:**
 
 - `KreuzbergException` — base exception for all Kreuzberg errors
-    - `KreuzbergValidationException` — invalid configuration or input
-    - `KreuzbergParsingException` — document parsing failure
-    - `KreuzbergOcrException` — OCR processing failure
-    - `KreuzbergIOException` — file I/O failure
-    - `KreuzbergMissingDependencyException` — missing optional dependency (e.g., Tesseract)
-    - `KreuzbergSerializationException` — JSON serialization failure
+  - `KreuzbergValidationException` — invalid configuration or input
+  - `KreuzbergParsingException` — document parsing failure
+  - `KreuzbergOcrException` — OCR processing failure
+  - `KreuzbergIOException` — file I/O failure
+  - `KreuzbergMissingDependencyException` — missing optional dependency (e.g., Tesseract)
+  - `KreuzbergSerializationException` — JSON serialization failure
 
 ## Thread Safety
 
