@@ -322,16 +322,25 @@ impl RstExtractor {
     /// Check if a line is a list item.
     fn is_list_item(line: &str) -> bool {
         let trimmed = line.trim_start();
-        if trimmed.starts_with("* ") || trimmed.starts_with("+ ") || trimmed.starts_with("- ") {
+        // Bullet list markers: *, +, - followed by space or tab
+        if trimmed.starts_with("* ")
+            || trimmed.starts_with("+ ")
+            || trimmed.starts_with("- ")
+            || trimmed.starts_with("*\t")
+            || trimmed.starts_with("+\t")
+            || trimmed.starts_with("-\t")
+        {
             return true;
         }
-        // Auto-numbered list: #. item
-        if trimmed.starts_with("#. ") {
+        // Auto-numbered list: #. item (space or tab)
+        if trimmed.starts_with("#. ") || trimmed.starts_with("#.\t") {
             return true;
         }
-        if let Some(space_pos) = trimmed.find(' ')
+        // Find the first whitespace (space or tab) after the marker
+        let sep_pos = trimmed.find(|c: char| c == ' ' || c == '\t');
+        if let Some(space_pos) = sep_pos
             && space_pos > 0
-            && space_pos < 4
+            && space_pos < 5
         {
             let prefix = &trimmed[..space_pos];
             if prefix.ends_with('.') || prefix.ends_with(')') {
@@ -949,9 +958,9 @@ impl RstExtractor {
                 let is_ordered = {
                     let t = trimmed.trim_start();
                     // Auto-numbered lists (#.) are ordered
-                    if t.starts_with("#. ") {
+                    if t.starts_with("#. ") || t.starts_with("#.\t") {
                         true
-                    } else if let Some(space_pos) = t.find(' ') {
+                    } else if let Some(space_pos) = t.find(|c: char| c == ' ' || c == '\t') {
                         let prefix = &t[..space_pos];
                         prefix.ends_with('.') || prefix.ends_with(')')
                     } else {
@@ -963,12 +972,16 @@ impl RstExtractor {
                     let item_trimmed = lines[i].trim();
                     let text = if let Some(rest) = item_trimmed
                         .strip_prefix("* ")
+                        .or_else(|| item_trimmed.strip_prefix("*\t"))
                         .or_else(|| item_trimmed.strip_prefix("+ "))
+                        .or_else(|| item_trimmed.strip_prefix("+\t"))
                         .or_else(|| item_trimmed.strip_prefix("- "))
+                        .or_else(|| item_trimmed.strip_prefix("-\t"))
                         .or_else(|| item_trimmed.strip_prefix("#. "))
+                        .or_else(|| item_trimmed.strip_prefix("#.\t"))
                     {
                         rest
-                    } else if let Some(space_pos) = item_trimmed.find(' ') {
+                    } else if let Some(space_pos) = item_trimmed.find(|c: char| c == ' ' || c == '\t') {
                         &item_trimmed[space_pos + 1..]
                     } else {
                         item_trimmed
@@ -996,13 +1009,22 @@ impl RstExtractor {
                 while i < lines.len() && lines[i].trim().is_empty() {
                     i += 1;
                 }
-                // Collect indented content
+                // Collect indented content (spaces or tabs)
                 let mut code_content = String::new();
-                while i < lines.len() && (lines[i].starts_with("   ") || lines[i].is_empty()) {
+                while i < lines.len()
+                    && (lines[i].starts_with("   ")
+                        || lines[i].starts_with("\t")
+                        || lines[i].starts_with("    ")
+                        || lines[i].is_empty())
+                {
                     if !code_content.is_empty() {
                         code_content.push('\n');
                     }
-                    if lines[i].starts_with("   ") {
+                    if lines[i].starts_with("\t") {
+                        code_content.push_str(&lines[i][1..]);
+                    } else if lines[i].starts_with("    ") {
+                        code_content.push_str(&lines[i][4..]);
+                    } else if lines[i].starts_with("   ") {
                         code_content.push_str(&lines[i][3..]);
                     }
                     i += 1;
