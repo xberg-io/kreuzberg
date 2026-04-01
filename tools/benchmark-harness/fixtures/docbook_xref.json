@@ -1,0 +1,15 @@
+{
+	"document": "../../../test_documents/docbook/docbook-xref.docbook",
+	"file_type": "docbook",
+	"file_size": 3129,
+	"expected_frameworks": ["kreuzberg"],
+	"metadata": {
+		"description": "DocBook cross-reference examples with XRef, links, figures, and tables",
+		"category": "documentation"
+	},
+	"ground_truth": {
+		"text_file": "../../../test_documents/ground_truth/docbook/docbook-xref.txt",
+		"markdown_file": "../../../test_documents/ground_truth/docbook/docbook-xref.md",
+		"source": "pandoc"
+	}
+}

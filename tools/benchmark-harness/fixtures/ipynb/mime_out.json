@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/jupyter/mime.out.ipynb",
+  "file_type": "ipynb",
+  "file_size": 3764,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "Jupyter notebook with executed MIME type outputs including text, HTML, markdown, and LaTeX representations",
+    "source": "pandoc-test-suite",
+    "size_category": "tiny"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/ipynb/mime.out.txt",
+    "markdown_file": "../../../../test_documents/ground_truth/ipynb/mime.out.md",
+    "source": "pandoc"
+  }
+}

@@ -1,0 +1,15 @@
+{
+	"document": "../../../test_documents/fictionbook/emphasis.fb2",
+	"file_type": "fb2",
+	"file_size": 675,
+	"expected_frameworks": ["kreuzberg"],
+	"metadata": {
+		"description": "FictionBook document with emphasis, strong, strikethrough, subscript, superscript, and code formatting",
+		"category": "literature"
+	},
+	"ground_truth": {
+		"text_file": "../../../test_documents/ground_truth/fb2/emphasis.txt",
+		"markdown_file": "../../../test_documents/ground_truth/fb2/emphasis.md",
+		"source": "pandoc"
+	}
+}

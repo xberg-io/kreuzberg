@@ -1,0 +1,15 @@
+{
+	"document": "../../../test_documents/fictionbook/meta.fb2",
+	"file_type": "fb2",
+	"file_size": 472,
+	"expected_frameworks": ["kreuzberg"],
+	"metadata": {
+		"description": "FictionBook document with book title and abstract annotation metadata",
+		"category": "literature"
+	},
+	"ground_truth": {
+		"text_file": "../../../test_documents/ground_truth/fb2/meta.txt",
+		"markdown_file": "../../../test_documents/ground_truth/fb2/meta.md",
+		"source": "pandoc"
+	}
+}

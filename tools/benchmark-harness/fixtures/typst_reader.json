@@ -1,0 +1,15 @@
+{
+	"document": "../../../test_documents/typst/typst-reader.typ",
+	"file_type": "typ",
+	"file_size": 600,
+	"expected_frameworks": ["kreuzberg"],
+	"metadata": {
+		"description": "Typst reader document with Fibonacci sequence, math notation, and computed table",
+		"category": "academic"
+	},
+	"ground_truth": {
+		"text_file": "../../../test_documents/ground_truth/typ/typst-reader.txt",
+		"markdown_file": "../../../test_documents/ground_truth/typ/typst-reader.md",
+		"source": "pandoc"
+	}
+}

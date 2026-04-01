@@ -1,0 +1,15 @@
+{
+	"document": "../../../test_documents/fictionbook/tables.fb2",
+	"file_type": "fb2",
+	"file_size": 3949,
+	"expected_frameworks": ["kreuzberg"],
+	"metadata": {
+		"description": "FictionBook document with multiple table examples including simple, multiline, and headerless tables",
+		"category": "literature"
+	},
+	"ground_truth": {
+		"text_file": "../../../test_documents/ground_truth/fb2/tables.txt",
+		"markdown_file": "../../../test_documents/ground_truth/fb2/tables.md",
+		"source": "pandoc"
+	}
+}

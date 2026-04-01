@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/jupyter/rank.ipynb",
+  "file_type": "ipynb",
+  "file_size": 1556,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "Jupyter notebook with matplotlib plot output and image rendering",
+    "source": "pandoc-test-suite",
+    "size_category": "tiny"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/ipynb/rank.txt",
+    "markdown_file": "../../../../test_documents/ground_truth/ipynb/rank.md",
+    "source": "pandoc"
+  }
+}

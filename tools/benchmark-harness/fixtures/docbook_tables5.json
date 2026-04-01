@@ -1,0 +1,15 @@
+{
+	"document": "../../../test_documents/docbook/tables.docbook5",
+	"file_type": "docbook",
+	"file_size": 7502,
+	"expected_frameworks": ["kreuzberg"],
+	"metadata": {
+		"description": "DocBook 5 table examples with simple, multiline, and headerless tables",
+		"category": "documentation"
+	},
+	"ground_truth": {
+		"text_file": "../../../test_documents/ground_truth/docbook/tables.txt",
+		"markdown_file": "../../../test_documents/ground_truth/docbook/tables.md",
+		"source": "pandoc"
+	}
+}

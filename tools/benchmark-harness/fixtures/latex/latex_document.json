@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/latex/latex_document.tex",
+  "file_type": "latex",
+  "file_size": 1475,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "Comprehensive LaTeX document with abstract, math equations, lists, tables, and bibliography reference",
+    "source": "handcrafted",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/latex/latex_document.txt",
+    "markdown_file": "../../../../test_documents/ground_truth/latex/latex_document.md",
+    "source": "pandoc"
+  }
+}

@@ -8,7 +8,8 @@
 		"category": "academic"
 	},
 	"ground_truth": {
-		"text_file": "../../../test_documents/ground_truth/typ/typst_metadata.txt",
-		"source": "vision"
+		"text_file": "../../../test_documents/ground_truth/typ/metadata.txt",
+		"markdown_file": "../../../test_documents/ground_truth/typ/metadata.md",
+		"source": "pandoc"
 	}
 }

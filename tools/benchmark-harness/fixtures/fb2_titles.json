@@ -1,0 +1,15 @@
+{
+	"document": "../../../test_documents/fictionbook/titles.fb2",
+	"file_type": "fb2",
+	"file_size": 620,
+	"expected_frameworks": ["kreuzberg"],
+	"metadata": {
+		"description": "FictionBook document testing title rendering with simple and emphasized/strong titles",
+		"category": "literature"
+	},
+	"ground_truth": {
+		"text_file": "../../../test_documents/ground_truth/fb2/titles.txt",
+		"markdown_file": "../../../test_documents/ground_truth/fb2/titles.md",
+		"source": "pandoc"
+	}
+}

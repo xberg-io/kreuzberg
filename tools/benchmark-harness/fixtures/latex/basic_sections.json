@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/latex/basic_sections.tex",
+  "file_type": "latex",
+  "file_size": 474,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "LaTeX document with sections, subsections, and subsubsections including title/author/date metadata",
+    "source": "handcrafted",
+    "size_category": "tiny"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/latex/basic_sections.txt",
+    "markdown_file": "../../../../test_documents/ground_truth/latex/basic_sections.md",
+    "source": "pandoc"
+  }
+}

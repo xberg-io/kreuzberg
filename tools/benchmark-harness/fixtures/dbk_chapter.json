@@ -9,7 +9,8 @@
 		"size_class": "small"
 	},
 	"ground_truth": {
-		"text_file": "../../../test_documents/ground_truth/dbk/dbk_chapter.txt",
-		"source": "vision"
+		"text_file": "../../../test_documents/ground_truth/docbook/docbook-chapter.txt",
+		"markdown_file": "../../../test_documents/ground_truth/docbook/docbook-chapter.md",
+		"source": "pandoc"
 	}
 }

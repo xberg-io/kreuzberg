@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/jupyter/mime.ipynb",
+  "file_type": "ipynb",
+  "file_size": 4144,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "Jupyter notebook demonstrating MIME type display formatters and custom repr_mimebundle",
+    "source": "pandoc-test-suite",
+    "size_category": "tiny"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/ipynb/mime.txt",
+    "markdown_file": "../../../../test_documents/ground_truth/ipynb/mime.md",
+    "source": "pandoc"
+  }
+}

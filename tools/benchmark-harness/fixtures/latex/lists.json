@@ -1,0 +1,18 @@
+{
+  "document": "../../../../test_documents/latex/lists.tex",
+  "file_type": "latex",
+  "file_size": 566,
+  "expected_frameworks": [
+    "kreuzberg"
+  ],
+  "metadata": {
+    "description": "LaTeX document with itemize, enumerate, nested lists, and description lists",
+    "source": "handcrafted",
+    "size_category": "tiny"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/latex/lists.txt",
+    "markdown_file": "../../../../test_documents/ground_truth/latex/lists.md",
+    "source": "pandoc"
+  }
+}
