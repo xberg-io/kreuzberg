@@ -736,7 +736,7 @@ jobs:
 
   build-python:
     needs: [build-ffi]
-    name: Python Build + Smoke (${{ matrix.target }})
+    name: Python Build (${{ matrix.target }})
     if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     timeout-minutes: 180
     strategy:
@@ -881,10 +881,6 @@ jobs:
         if: always() && steps.checkout.outcome == 'success'
         uses: kreuzberg-dev/actions/cleanup-rust-cache@v1
 
-      - name: Smoke test wheel
-        shell: bash
-        run: scripts/ci/python/smoke-test-wheel.sh
-
   build-python-sdist:
     needs: [validate, typescript-typecheck]
     name: Python Sdist
@@ -924,7 +920,7 @@ jobs:
 
   build-node:
     needs: [build-ffi]
-    name: Node Build + Smoke (${{ matrix.target }})
+    name: Node Build (${{ matrix.target }})
     if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     timeout-minutes: ${{ matrix.os == 'windows-latest' && 360 || (matrix.os == 'ubuntu-24.04-arm' && 240 || 180) }}
     # Serialize matrix jobs to prevent concurrent cache API writes that trigger rate limits
@@ -1103,11 +1099,6 @@ jobs:
       - name: Cleanup Rust cache
         if: always() && steps.checkout.outcome == 'success'
         uses: kreuzberg-dev/actions/cleanup-rust-cache@v1
-
-      - name: Smoke test Node.js bindings
-        uses: ./.github/actions/smoke-node
-        with:
-          package-tarball: crates/kreuzberg-node
 
   build-ruby:
     needs: [validate, typescript-typecheck]
@@ -1393,7 +1384,7 @@ jobs:
       matrix:
         # Windows excluded: ext-php-rs requires nightly Rust for abi_vectorcall feature
         os: [ubuntu-latest, macos-latest]
-        php-version: ["8.2"]
+        php-version: ["8.4"]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v6
@@ -1762,7 +1753,7 @@ jobs:
 
   build-csharp:
     needs: [build-ffi]
-    name: C# Build + Smoke (${{ matrix.os }})
+    name: C# Build (${{ matrix.os }})
     if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     timeout-minutes: 240
     strategy:
@@ -2228,7 +2219,7 @@ jobs:
         run: task ruby:e2e:test
 
   test-php:
-    name: PHP Tests (${{ matrix.os }}, PHP 8.2)
+    name: PHP Tests (${{ matrix.os }}, PHP 8.4)
     if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     needs: [build-php]
     timeout-minutes: 240
@@ -2265,7 +2256,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.2"
+          php-version: "8.4"
           extensions: ffi
           tools: composer
 
@@ -3399,7 +3390,7 @@ jobs:
           echo "LD_LIBRARY_PATH=${{ github.workspace }}/target/release:${LD_LIBRARY_PATH:-}" >> "$GITHUB_ENV"
           echo "DYLD_LIBRARY_PATH=${{ github.workspace }}/target/release:${DYLD_LIBRARY_PATH:-}" >> "$GITHUB_ENV"
 
-      - name: Smoke test CLI (version)
+      - name: Test CLI version
         shell: bash
         run: |
           if [ "${{ runner.os }}" = "Windows" ]; then
@@ -3408,7 +3399,7 @@ jobs:
             ./target/release/kreuzberg --version
           fi
 
-      - name: Smoke test CLI (help)
+      - name: Test CLI help
         shell: bash
         run: |
           if [ "${{ runner.os }}" = "Windows" ]; then

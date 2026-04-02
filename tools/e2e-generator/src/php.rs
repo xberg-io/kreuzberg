@@ -4,7 +4,6 @@ use crate::fixtures::{
 use crate::parity::{self, ParityManifest, TypeDef};
 use anyhow::{Context, Result};
 use camino::Utf8Path;
-use itertools::Itertools;
 use serde_json::{Map, Value};
 use std::collections::BTreeMap;
 use std::fmt::Write as _;

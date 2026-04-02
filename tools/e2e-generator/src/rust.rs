@@ -12,10 +12,13 @@ pub fn generate(fixtures: &[Fixture], output_root: &Utf8Path) -> Result<()> {
     let rust_root = output_root.join("rust");
     let tests_dir = rust_root.join("tests");
     let fixtures_dir = tests_dir.join("fixtures");
+    let src_dir = rust_root.join("src");
 
     fs::create_dir_all(&fixtures_dir).context("Failed to create Rust tests fixtures directory")?;
+    fs::create_dir_all(&src_dir).context("Failed to create Rust src directory")?;
 
     write_cargo_toml(&rust_root)?;
+    write_lib_rs(&src_dir)?;
     clean_rs_files(&tests_dir)?;
     clean_rs_files(&fixtures_dir)?;
 
@@ -95,6 +98,13 @@ tempfile = "3"
 fn write_cargo_toml(rust_root: &Utf8Path) -> Result<()> {
     let cargo_toml_path = rust_root.join("Cargo.toml");
     fs::write(&cargo_toml_path, CARGO_TOML_TEMPLATE).context("Failed to write Cargo.toml")?;
+    Ok(())
+}
+
+fn write_lib_rs(src_dir: &Utf8Path) -> Result<()> {
+    let lib_rs_path = src_dir.join("lib.rs");
+    let content = include_str!("../templates/rust_lib.rs");
+    fs::write(&lib_rs_path, content).context("Failed to write lib.rs")?;
     Ok(())
 }
 
