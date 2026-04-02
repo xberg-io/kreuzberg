@@ -202,6 +202,10 @@ After extraction, Kreuzberg can run a chain of processing steps. Each is optiona
 
 **Metadata Extraction** -- Pull document properties (title, author, creation date), page/word/character counts, and format-specific metadata (Excel sheet names, PDF annotations).
 
+### For Code
+
+**Code Intelligence** -- Extract functions, classes, imports, exports, symbols, docstrings, and diagnostics from 248 programming languages via tree-sitter. Results are available in `ExtractionResult.code_intelligence` as a `ProcessResult`. Code files produce semantic chunks (function/class-aware) that bypass the text-splitter entirely. Configure content mode with `CodeContentMode`: `chunks` (default, semantic TSLP chunks), `raw` (source as-is), or `structure` (headings + docstrings only).
+
 ### For Data Quality
 
 **Quality Processing** -- Unicode normalization (NFC/NFD/NFKC/NFKD), whitespace and line break standardization, encoding detection, and mojibake correction.

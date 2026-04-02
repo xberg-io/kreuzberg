@@ -72,24 +72,27 @@ repos:
     hooks:
       - id: cargo-fmt
         args: ["--all"]
+        types: [rust]
+      # Clippy: split by compilation unit so only changed code recompiles
       - id: cargo-clippy
-        args:
-          [
-            "--fix",
-            "--allow-dirty",
-            "--allow-staged",
-            "--workspace",
-            "--exclude=kreuzberg-php",
-            "--exclude=kreuzberg-wasm",
-            "--all-features",
-            "--all-targets",
-            "--",
-            "-D",
-            "warnings",
-          ]
-      # NOTE: cargo-doc and cargo-fix removed from pre-commit — they each trigger
-      # a full workspace compilation and are redundant with clippy --fix.
-      # Doc warnings are caught in CI (ci-validate).
+        name: clippy (workspace — core, cli, ffi, bindings)
+        args: ["--fix", "--allow-dirty", "--allow-staged", "--workspace",
+               "--exclude=kreuzberg-php", "--exclude=kreuzberg-wasm",
+               "--all-features", "--all-targets", "--", "-D", "warnings"]
+        files: ^(crates/|tools/|e2e/rust/|Cargo\.(toml|lock))
+        types_or: [rust, toml]
+      - id: cargo-clippy
+        name: clippy (kreuzberg-php)
+        args: ["--fix", "--allow-dirty", "--allow-staged",
+               "-p", "kreuzberg-php", "--all-targets", "--", "-D", "warnings"]
+        files: ^crates/kreuzberg-php/
+        types: [rust]
+      - id: cargo-clippy
+        name: clippy (kreuzberg-wasm)
+        args: ["--fix", "--allow-dirty", "--allow-staged",
+               "-p", "kreuzberg-wasm", "--all-targets", "--", "-D", "warnings"]
+        files: ^crates/kreuzberg-wasm/
+        types: [rust]
 
   - repo: https://github.com/bnjbvr/cargo-machete
     rev: v0.9.1

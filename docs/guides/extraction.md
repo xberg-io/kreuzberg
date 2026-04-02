@@ -402,6 +402,25 @@ Page markers like `<!-- PAGE 1 -->` are inserted at boundaries in the `content` 
 
 See [PageConfig Reference](../reference/configuration.md#pageconfig) for all options and [Advanced Page Tracking](./advanced.md#page-tracking-patterns) for chunk-to-page mapping examples.
 
+## Code File Extraction
+
+When extracting source code files (`.py`, `.rs`, `.ts`, `.go`, etc.), Kreuzberg uses tree-sitter to produce structured code intelligence. The result is available in `ExtractionResult.code_intelligence` as a `ProcessResult` containing:
+
+- **Structure** -- Functions, classes, methods, interfaces, and their nesting hierarchy
+- **Imports/Exports** -- Module dependencies and re-exports
+- **Symbols** -- Variables, constants, type aliases
+- **Docstrings** -- Parsed documentation in 10+ formats (Google, NumPy, JSDoc, RustDoc, etc.)
+- **Diagnostics** -- Parse errors with line/column positions
+- **Chunks** -- Semantic code chunks split at function/class boundaries
+
+Code files bypass the text-splitter chunking pipeline entirely. Instead, TSLP's `CodeChunks` (function/class-aware) map directly to kreuzberg `Chunk`s with semantic `chunk_type` and heading context.
+
+Control the content mode with `TreeSitterProcessConfig.content_mode`:
+
+- `chunks` (default) -- Semantic TSLP chunks as the content output
+- `raw` -- Source code as-is, no transformation
+- `structure` -- Headings and docstrings only
+
 ## Error Handling
 
 All extraction functions raise typed exceptions on failure. Catch specific exceptions to handle different failure modes:

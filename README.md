@@ -70,7 +70,7 @@ Extract text, metadata, and code intelligence from 91+ file formats and 248 prog
 
 ## Key Features
 
-- **Code intelligence** – Extract functions, classes, imports, symbols, and docstrings from [248 programming languages](https://docs.tree-sitter-language-pack.kreuzberg.dev) via tree-sitter
+- **Code intelligence** – Extract functions, classes, imports, symbols, and docstrings from [248 programming languages](https://docs.tree-sitter-language-pack.kreuzberg.dev) via tree-sitter. Results in `ExtractionResult.code_intelligence` with semantic chunking
 - **Extensible architecture** – Plugin system for custom OCR backends, validators, post-processors, document extractors, and renderers
 - **Polyglot** – Native bindings for Rust, Python, TypeScript/Node.js, Ruby, Go, Java, C#, PHP, Elixir, R, and C
 - **91+ file formats** – PDF, Office documents, images, HTML, XML, emails, archives, academic formats across 8 categories
@@ -78,6 +78,8 @@ Extract text, metadata, and code intelligence from 91+ file formats and 248 prog
 - **High performance** – Rust core with native PDFium, SIMD optimizations and full parallelism
 - **Flexible deployment** – Use as library, CLI tool, REST API server, or MCP server
 - **TOON wire format** – Token-efficient serialization for LLM/RAG pipelines, ~30-50% fewer tokens than JSON
+- **GFM-quality output** – Comrak-based rendering with proper fenced code blocks, table nodes, bracket escaping, and cross-format parity (Markdown, HTML, Djot, Plain)
+- **HTML passthrough** – HTML-to-Markdown conversion uses html-to-markdown output directly, bypassing lossy intermediate round-trips
 - **Memory efficient** – Streaming parsers for multi-GB files
 
 **[Complete Documentation](https://kreuzberg.dev/)** | **[Live Demo](https://docs.kreuzberg.dev/demo.html)** | **[Installation Guides](#installation)**

@@ -43,6 +43,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Unified image OCR pipeline stage**: Image OCR moved from per-extractor calls to a single pipeline stage after derivation. All extracted images (including path-resolved markup images) are now OCR'd uniformly when OCR is configured. Concurrency limited to 8 concurrent tasks.
 - **FictionBook image and link extraction**: Base64-encoded `<binary>` images and `<a>` hyperlinks now extracted from FB2 documents.
 - **Apple iWork extractor improvements**: Numbers outputs tables instead of paragraphs, Keynote has improved slide structure, Pages has heading detection. All three extract metadata from ZIP plist.
+- **`code_intelligence` field on ExtractionResult**: Top-level access to tree-sitter `ProcessResult` with full structure, imports, exports, chunks, symbols, diagnostics, and docstrings. Previously only available inside `FormatMetadata::Code` metadata.
+- **`CodeContentMode` config**: Control code extraction content mode -- `chunks` (semantic TSLP chunks, default), `raw` (source as-is), `structure` (headings + docstrings only). Configured via `TreeSitterProcessConfig.content_mode`.
+- **TSLP semantic chunking for code**: Code files bypass the text-splitter entirely. TSLP's `CodeChunks` (function/class-aware) map directly to kreuzberg `Chunk`s with semantic types and heading context.
+- **Cross-format output parity tests**: 36 tests verifying Markdown, HTML, Djot, and Plain produce equivalent text content. GFM lint validation, bracket escaping checks, structural block comparison.
+- **HTML input markdown passthrough**: HTML files extracted as Markdown now use html-to-markdown output directly via `pre_rendered_content`, bypassing the lossy InternalDocument to comrak round-trip.
 
 ### Code Intelligence
 
@@ -67,9 +72,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Layout detection preset removed**: The `preset` field on `LayoutDetectionConfig` has been removed across all bindings. Layout detection now uses the RT-DETR v2 model unconditionally — no "fast" vs "accurate" distinction. The `--layout-preset` CLI flag is removed. Old configs with `"preset": "..."` are silently ignored for backward compatibility.
 - **Table model config typed**: `table_model` on `LayoutDetectionConfig` changed from `Option<String>` to a `TableModel` enum (`tatr`, `slanet_wired`, `slanet_wireless`, `slanet_plus`, `slanet_auto`, `disabled`). Defaults to `tatr`. String values still accepted in JSON/TOML configs.
+- **`code_intelligence` field added to ExtractionResult**: All bindings updated. Field is `Option<ProcessResult>`, populated for source code files.
 
 ### Fixed
 
+- **PDF table rendering**: Populate `Table.cells` from TATR/SLANeXT grid so comrak renders proper Table nodes instead of wrapping markdown in a Paragraph. Table SF1 improved from 15.5% to 53.7%.
+- **Markdown GFM quality**: Enable `prefer_fenced` for code blocks, un-escape brackets/parens (`\[` to `[`), fix code block language spacing in djot.
+- **Semantic HTML output**: Enable `github_pre_lang` and `full_info_string` for code blocks with `class="language-X"`.
+- **Djot text normalization**: Shared `normalize_inline_text()` for consistent whitespace handling. MD-to-Djot TF1 now 1.0000.
 - **PDF structural extraction quality**: Improved heading detection (font-size-ratio H2/H3 differentiation, section numbering patterns, ALL-CAPS detection, paragraph-to-heading rescue pass), table discrimination (reject multi-column prose misclassified as tables via flow-through detection, row-count/column-count ratio, and table quality validation), list detection (multi-token prefix patterns), image scoring (normalize image block matching), and formula detection (math character density heuristic). Layout SF1 improved from 40.7% to 43.7% across 157 verified PDF fixtures.
 - **PDF ground truth verified**: All 157 PDF benchmark fixtures verified using vision (rendered page images vs GT markdown). 7 broken Mistral OCR GTs with hallucinated content replaced with vision-verified markdown.
 - **LaTeX extraction**: Convert `\href`, `\emph`, `\textbf`, `\textgreater`, `\verb`, `\sout`, blockquotes, lists, special characters, and typographic ligatures to markdown.

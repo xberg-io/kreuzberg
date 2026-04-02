@@ -50,6 +50,12 @@ Kreuzberg is a document intelligence platform with a high‑performance Rust cor
 
     Native bindings for Python, TypeScript, Rust, Go, Java, C#, Ruby, PHP, Elixir, R, C, and WebAssembly.
 
+- :material-code-tags:{ .lg .middle } **Code Intelligence**
+
+---
+
+    Extract functions, classes, imports, symbols, and docstrings from 248 programming languages. Results in `code_intelligence` field with semantic chunking.
+
 - :material-puzzle:{ .lg .middle } **Plugin System**
 
 ---
