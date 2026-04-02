@@ -217,8 +217,11 @@ export {
 // Embeddings
 // ============================================================================
 
+export type { EmbeddingConfig, EmbeddingModelType } from "./types.js";
 export type { EmbeddingPreset } from "./embeddings/presets.js";
 export {
+	embed,
+	embedSync,
 	getEmbeddingPreset,
 	listEmbeddingPresets,
 } from "./embeddings/presets.js";

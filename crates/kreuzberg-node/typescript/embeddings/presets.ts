@@ -1,4 +1,5 @@
 import { getBinding } from "../core/binding.js";
+import type { EmbeddingConfig } from "../types.js";
 
 /**
  * Embedding preset configuration.
@@ -85,4 +86,56 @@ export function getEmbeddingPreset(name: string): EmbeddingPreset | null {
  */
 export function setEmbeddingPreset(_name: string, _preset: EmbeddingPreset): void {
 	throw new Error("setEmbeddingPreset is not available. Embedding presets must be configured at the Rust level.");
+}
+
+/**
+ * Generate vector embeddings for a list of texts (synchronous).
+ *
+ * Requires the `embeddings` feature to be enabled (ONNX Runtime must be available).
+ * Returns one float32 array per input text. An empty input returns an empty array.
+ *
+ * @param texts - Array of strings to embed
+ * @param config - Optional embedding configuration (model preset, batch size, normalization)
+ * @returns Array of float32 arrays (one embedding vector per input text)
+ *
+ * @throws {Error} If ONNX Runtime is not available or the model cannot be loaded
+ *
+ * @example
+ * ```typescript
+ * import { embedSync } from '@kreuzberg/node';
+ *
+ * const embeddings = embedSync(['Hello, world!'], { model: { type: 'preset', name: 'balanced' } });
+ * console.log(embeddings.length); // 1
+ * console.log(embeddings[0].length); // 768
+ * ```
+ */
+export function embedSync(texts: string[], config?: EmbeddingConfig): number[][] {
+	const binding = getBinding();
+	return binding.embedSync(texts, config ?? null);
+}
+
+/**
+ * Generate vector embeddings for a list of texts (asynchronous).
+ *
+ * Requires the `embeddings` feature to be enabled (ONNX Runtime must be available).
+ * Returns one float32 array per input text. An empty input returns an empty array.
+ *
+ * @param texts - Array of strings to embed
+ * @param config - Optional embedding configuration (model preset, batch size, normalization)
+ * @returns Promise resolving to an array of float32 arrays (one embedding vector per input text)
+ *
+ * @throws {Error} If ONNX Runtime is not available or the model cannot be loaded
+ *
+ * @example
+ * ```typescript
+ * import { embed } from '@kreuzberg/node';
+ *
+ * const embeddings = await embed(['Hello, world!'], { model: { type: 'preset', name: 'balanced' } });
+ * console.log(embeddings.length); // 1
+ * console.log(embeddings[0].length); // 768
+ * ```
+ */
+export async function embed(texts: string[], config?: EmbeddingConfig): Promise<number[][]> {
+	const binding = getBinding();
+	return binding.embed(texts, config ?? null);
 }

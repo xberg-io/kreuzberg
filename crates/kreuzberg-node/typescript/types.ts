@@ -220,6 +220,40 @@ export interface OcrConfig {
  * Breaks large documents into smaller, manageable chunks while preserving context.
  * Useful for RAG (Retrieval Augmented Generation) and vector database indexing.
  */
+
+/**
+ * Embedding model type selector.
+ *
+ * Use `type: "preset"` with a named preset (recommended), or `type: "custom"` with
+ * a HuggingFace model ID and the expected vector dimensions.
+ */
+export interface EmbeddingModelType {
+	/** Selector: `"preset"` or `"custom"` */
+	type: "preset" | "custom";
+	/** Preset name (e.g., "fast", "balanced", "quality", "multilingual") — for `type: "preset"` */
+	name?: string;
+	/** HuggingFace model ID — for `type: "custom"` */
+	modelId?: string;
+	/** Expected embedding dimensions — required for `type: "custom"` */
+	dimensions?: number;
+}
+
+/**
+ * Configuration for the standalone embedding API and for chunk-level embeddings.
+ */
+export interface EmbeddingConfig {
+	/** Embedding model selection (defaults to the "balanced" preset). */
+	model?: EmbeddingModelType;
+	/** Normalize embedding vectors to unit length (recommended for cosine similarity). Default: true. */
+	normalize?: boolean;
+	/** Number of texts processed per inference batch. Default: 32. */
+	batchSize?: number;
+	/** Show download progress when the model is downloaded for the first time. Default: false. */
+	showDownloadProgress?: boolean;
+	/** Custom directory for caching downloaded model files. */
+	cacheDir?: string;
+}
+
 export interface ChunkingConfig {
 	/** Maximum characters per chunk. Default: 4096. */
 	maxChars?: number;
@@ -246,7 +280,7 @@ export interface ChunkingConfig {
 	preset?: string;
 
 	/** Embedding configuration for generating vector embeddings for each chunk. */
-	embedding?: Record<string, unknown>;
+	embedding?: EmbeddingConfig;
 
 	/** Enable or disable chunking. Default: true when chunking config is provided. */
 	enabled?: boolean;
