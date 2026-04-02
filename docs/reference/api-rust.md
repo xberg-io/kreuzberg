@@ -1405,6 +1405,53 @@ fn main() -> kreuzberg::Result<()> {
 
 ---
 
+## Embeddings
+
+### embed_texts()
+
+Generate embeddings for a list of texts.
+
+**Signature:**
+
+```rust
+pub fn embed_texts<T: AsRef<str>>(
+    texts: &[T],
+    config: &EmbeddingConfig,
+) -> Result<Vec<Vec<f32>>>
+```
+
+**Parameters:**
+
+- `texts`: Slice of strings to embed.
+- `config`: Embedding configuration.
+
+**Returns:** `Vec<Vec<f32>>` — one embedding vector per input text.
+
+Requires the `embeddings` feature.
+
+**Example:**
+
+--8<-- "snippets/rust/utils/standalone_embed.md"
+
+---
+
+### embed_texts_async()
+
+Async variant of `embed_texts()`. Requires both the `embeddings` and `tokio-runtime` features.
+
+**Signature:**
+
+```rust
+pub async fn embed_texts_async(
+    texts: Vec<String>,
+    config: &EmbeddingConfig,
+) -> Result<Vec<Vec<f32>>>
+```
+
+Same return type as `embed_texts()`.
+
+---
+
 ## PDF Rendering
 
 !!! info "Added in v4.6.2"

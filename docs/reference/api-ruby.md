@@ -577,6 +577,45 @@ end
 
 ---
 
+## Embeddings
+
+### embed_sync()
+
+Generate embeddings for a list of texts.
+
+**Signature:**
+
+```ruby
+Kreuzberg.embed_sync(texts:, config: nil) -> Array<Array<Float>>
+```
+
+**Parameters:**
+
+- `texts:` (`Array<String>`): List of strings to embed.
+- `config:` (`Hash`, optional): Embedding configuration hash with `:model` and `:normalize` keys.
+
+**Returns:** `Array<Array<Float>>` — one embedding vector per input text.
+
+**Example:**
+
+--8<-- "snippets/ruby/utils/standalone_embed.md"
+
+---
+
+### embed()
+
+Blocking async variant of `embed_sync()`. Uses the same call path; provided for API symmetry.
+
+**Signature:**
+
+```ruby
+Kreuzberg.embed(texts:, config: nil) -> Array<Array<Float>>
+```
+
+Same parameters and return type as `embed_sync()`.
+
+---
+
 ## PDF Rendering
 
 !!! info "Added in v4.6.2"

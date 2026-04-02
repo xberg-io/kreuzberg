@@ -1340,6 +1340,45 @@ for imgIdx, img := range result.Images {
 
 ---
 
+## Embeddings
+
+### EmbedTexts()
+
+Generate embeddings for a list of texts synchronously.
+
+**Signature:**
+
+```go
+func EmbedTexts(texts []string, config *EmbeddingConfig) ([][]float32, error)
+```
+
+**Parameters:**
+
+- `texts` (`[]string`): List of strings to embed.
+- `config` (`*EmbeddingConfig`): Embedding configuration. Pass `nil` for defaults.
+
+**Returns:** `[][]float32` — one embedding vector per input text.
+
+**Example:**
+
+--8<-- "snippets/go/utils/standalone_embed.md"
+
+---
+
+### EmbedTextsAsync()
+
+Context-aware async variant of `EmbedTexts()`. Runs the embedding in a goroutine and respects context cancellation.
+
+**Signature:**
+
+```go
+func EmbedTextsAsync(ctx context.Context, texts []string, config *EmbeddingConfig) ([][]float32, error)
+```
+
+Same parameters as `EmbedTexts()`, plus a `context.Context` as the first argument.
+
+---
+
 ## PDF Rendering
 
 !!! info "Added in v4.7.4"

@@ -1074,6 +1074,43 @@ if (preset != null)
 
 ---
 
+### EmbedSync()
+
+Generate embeddings for a list of texts synchronously.
+
+**Signature:**
+
+```csharp
+public IEnumerable<float[]> EmbedSync(IEnumerable<string> texts, EmbeddingConfig? config = null)
+```
+
+**Parameters:**
+
+- `texts` (`IEnumerable<string>`): List of strings to embed.
+- `config` (`EmbeddingConfig?`, optional): Embedding configuration.
+
+**Returns:** `IEnumerable<float[]>` — one embedding vector per input text.
+
+**Example:**
+
+--8<-- "snippets/csharp/utils/standalone_embed.md"
+
+---
+
+### EmbedAsync()
+
+Async variant of `EmbedSync()`.
+
+**Signature:**
+
+```csharp
+public Task<IEnumerable<float[]>> EmbedAsync(IEnumerable<string> texts, EmbeddingConfig? config = null)
+```
+
+Same parameters as `EmbedSync()`, returns a `Task`.
+
+---
+
 ## Type Reference
 
 ### ExtractionResult

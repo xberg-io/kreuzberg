@@ -1311,6 +1311,45 @@ console.log(result.content);
 
 ---
 
+## Embeddings
+
+### embedSync()
+
+Generate embeddings for a list of texts synchronously.
+
+**Signature:**
+
+```typescript
+function embedSync(texts: string[], config?: EmbeddingConfig): number[][]
+```
+
+**Parameters:**
+
+- `texts` (`string[]`): List of strings to embed.
+- `config` (`EmbeddingConfig`, optional): Embedding configuration.
+
+**Returns:** `number[][]` — one embedding vector per input text.
+
+**Example:**
+
+--8<-- "snippets/typescript/utils/standalone_embed.md"
+
+---
+
+### embed()
+
+Async variant of `embedSync()`.
+
+**Signature:**
+
+```typescript
+function embed(texts: string[], config?: EmbeddingConfig): Promise<number[][]>
+```
+
+Same parameters and return type as `embedSync()`.
+
+---
+
 ## PDF Rendering
 
 !!! info "Added in v4.6.2"

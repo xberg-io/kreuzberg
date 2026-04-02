@@ -1217,6 +1217,53 @@ with open("first_page.png", "wb") as f:
 
 ---
 
+## Embeddings
+
+### embed_sync()
+
+Generate embeddings for a list of texts synchronously.
+
+**Signature:**
+
+```python
+def embed_sync(
+    texts: list[str],
+    config: EmbeddingConfig = EmbeddingConfig(),
+) -> list[list[float]]
+```
+
+**Parameters:**
+
+- `texts` (list[str]): List of strings to embed.
+- `config` (EmbeddingConfig): Embedding configuration. Defaults to the "balanced" preset.
+
+**Returns:** `list[list[float]]` — one embedding vector per input text.
+
+**Raises:** `MissingDependencyError` if the `embeddings` feature is not enabled.
+
+**Example:**
+
+--8<-- "snippets/python/utils/standalone_embed.md"
+
+---
+
+### embed()
+
+Async variant of `embed_sync()`.
+
+**Signature:**
+
+```python
+async def embed(
+    texts: list[str],
+    config: EmbeddingConfig = EmbeddingConfig(),
+) -> list[list[float]]
+```
+
+Same parameters and return type as `embed_sync()`.
+
+---
+
 ## Utilities
 
 - **`detect_mime_type(data: bytes | bytearray)`** → str: Detect MIME type from file bytes (e.g. for `extract_bytes_sync`).
