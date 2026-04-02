@@ -22,20 +22,21 @@ pub(super) fn merge_continuation_paragraphs(paragraphs: &mut Vec<PdfParagraph>) 
     let mut current = iter.next().unwrap();
 
     for next in iter {
-        let should_merge =
-            // Both must be body text (no heading, list, code, or formula)
-            current.heading_level.is_none()
-                && next.heading_level.is_none()
-                && !current.is_list_item
-                && !next.is_list_item
-                && !current.is_code_block
-                && !next.is_code_block
-                && !current.is_formula
-                && !next.is_formula
-                // Font sizes close enough
-                && (current.dominant_font_size - next.dominant_font_size).abs() < 2.0
-                // Current paragraph doesn't end with sentence-ending punctuation
-                && !ends_with_sentence_terminator(&current);
+        // Both must be body text (no heading, list, code, or formula)
+        let both_body = current.heading_level.is_none()
+            && next.heading_level.is_none()
+            && !current.is_list_item
+            && !next.is_list_item
+            && !current.is_code_block
+            && !next.is_code_block
+            && !current.is_formula
+            && !next.is_formula;
+        // Font sizes close enough
+        let fonts_compatible = (current.dominant_font_size - next.dominant_font_size).abs() < 2.0;
+        // Merge when current doesn't end with terminator, or when next
+        // starts with a lowercase letter (sentence continuation).
+        let continuation_signal = !ends_with_sentence_terminator(&current) || starts_with_lowercase_continuation(&next);
+        let should_merge = both_body && fonts_compatible && continuation_signal;
 
         if should_merge {
             current.lines.extend(next.lines);
@@ -46,6 +47,18 @@ pub(super) fn merge_continuation_paragraphs(paragraphs: &mut Vec<PdfParagraph>) 
     }
 
     paragraphs.push(current);
+}
+
+/// Check if a paragraph starts with a lowercase letter, indicating it's a
+/// continuation of a previous sentence split across paragraph boundaries.
+fn starts_with_lowercase_continuation(para: &PdfParagraph) -> bool {
+    let first_text = para
+        .lines
+        .first()
+        .and_then(|l| l.segments.first())
+        .map(|s| s.text.trim_start())
+        .unwrap_or("");
+    first_text.chars().next().is_some_and(|c| c.is_lowercase())
 }
 
 /// Check if a paragraph's last line ends with sentence-terminating punctuation.
@@ -373,5 +386,102 @@ mod tests {
         // Leading whitespace should be trimmed, then tokens checked
         assert!(is_list_prefix_multi_token("   1. indented item"));
         assert!(is_list_prefix_multi_token("\t(a) tabbed item"));
+    }
+
+    // -- merge_continuation_paragraphs tests --
+
+    fn make_body_paragraph(text: &str, font_size: f32) -> PdfParagraph {
+        use crate::pdf::hierarchy::SegmentData;
+
+        let segments = vec![SegmentData {
+            text: text.to_string(),
+            x: 0.0,
+            y: 700.0,
+            width: 200.0,
+            height: font_size,
+            font_size,
+            is_bold: false,
+            is_italic: false,
+            is_monospace: false,
+            baseline_y: 700.0,
+        }];
+
+        PdfParagraph {
+            text: String::new(),
+            lines: vec![super::super::types::PdfLine {
+                segments,
+                baseline_y: 700.0,
+                dominant_font_size: font_size,
+                is_bold: false,
+                is_monospace: false,
+            }],
+            dominant_font_size: font_size,
+            heading_level: None,
+            is_bold: false,
+            is_list_item: false,
+            is_code_block: false,
+            is_formula: false,
+            is_page_furniture: false,
+            layout_class: None,
+            caption_for: None,
+            block_bbox: None,
+        }
+    }
+
+    #[test]
+    fn test_merge_lowercase_continuation() {
+        // Second paragraph starts with lowercase → merge even if first ends with period
+        let mut paragraphs = vec![
+            make_body_paragraph("The regulation requires.", 12.0),
+            make_body_paragraph("and all operators must comply", 12.0),
+        ];
+        merge_continuation_paragraphs(&mut paragraphs);
+        assert_eq!(paragraphs.len(), 1, "lowercase continuation should be merged");
+    }
+
+    #[test]
+    fn test_no_merge_different_font_sizes() {
+        // Different font sizes (>2pt) should prevent merging
+        let mut paragraphs = vec![
+            make_body_paragraph("First paragraph", 12.0),
+            make_body_paragraph("second paragraph", 16.0),
+        ];
+        merge_continuation_paragraphs(&mut paragraphs);
+        assert_eq!(paragraphs.len(), 2, "different font sizes should prevent merge");
+    }
+
+    #[test]
+    fn test_merge_no_terminator() {
+        // First ends without terminator → merge
+        let mut paragraphs = vec![
+            make_body_paragraph("The regulation requires", 12.0),
+            make_body_paragraph("All operators must comply", 12.0),
+        ];
+        merge_continuation_paragraphs(&mut paragraphs);
+        assert_eq!(paragraphs.len(), 1, "unterminated paragraph should merge with next");
+    }
+
+    #[test]
+    fn test_no_merge_terminated_uppercase() {
+        // First ends with period, second starts with uppercase → don't merge
+        let mut paragraphs = vec![
+            make_body_paragraph("The regulation requires compliance.", 12.0),
+            make_body_paragraph("All operators must comply", 12.0),
+        ];
+        merge_continuation_paragraphs(&mut paragraphs);
+        assert_eq!(
+            paragraphs.len(),
+            2,
+            "terminated paragraph + uppercase start should not merge"
+        );
+    }
+
+    #[test]
+    fn test_starts_with_lowercase_continuation_fn() {
+        let para_lower = make_body_paragraph("and furthermore", 12.0);
+        assert!(starts_with_lowercase_continuation(&para_lower));
+
+        let para_upper = make_body_paragraph("Furthermore", 12.0);
+        assert!(!starts_with_lowercase_continuation(&para_upper));
     }
 }

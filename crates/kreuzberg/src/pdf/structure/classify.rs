@@ -104,10 +104,12 @@ pub(super) fn classify_paragraphs(paragraphs: &mut [PdfParagraph], heading_map: 
             let too_short_at_body =
                 word_count <= 2 && body_font_size > 0.0 && para.dominant_font_size <= body_font_size + 0.5;
             let period_ok = !t.ends_with('.') || is_section_pattern(t);
+            // Allow colon-ending for ALL-CAPS label-headings like "AGENCY:" or "ACTION:"
+            let colon_ok = !t.ends_with(':') || is_all_caps_text(t);
             if italic_ok
                 && !too_short_at_body
                 && period_ok
-                && !t.ends_with(':')
+                && colon_ok
                 && !looks_like_figure_label(t)
                 && !super::layout_classify::is_separator_text(t)
             {
@@ -182,11 +184,13 @@ pub(super) fn classify_paragraphs(paragraphs: &mut [PdfParagraph], heading_map: 
         {
             let rescue_text = para_text.trim();
             let rescue_wc = rescue_text.split_whitespace().count();
+            let rescue_colon_ok = !rescue_text.ends_with(':') || is_all_caps_text(rescue_text);
             if (1..=8).contains(&rescue_wc)
                 && !rescue_text.ends_with('.')
-                && !rescue_text.ends_with(':')
+                && rescue_colon_ok
                 && !looks_like_figure_label(rescue_text)
                 && !super::layout_classify::is_separator_text(rescue_text)
+                && !starts_with_lowercase_or_continuation(rescue_text)
             {
                 let ratio = para.dominant_font_size / body_font_size;
                 let rescue_level = if ratio > 1.4 {
@@ -198,6 +202,178 @@ pub(super) fn classify_paragraphs(paragraphs: &mut [PdfParagraph], heading_map: 
                 };
                 para.heading_level = Some(rescue_level);
             }
+        }
+    }
+
+    // Pass 5: demote rescued headings that follow non-terminated paragraphs.
+    // If the previous paragraph ends without sentence-ending punctuation, the
+    // current paragraph is likely a continuation fragment (e.g., from a column
+    // break), not a real heading.
+    demote_continuation_headings(paragraphs);
+
+    // Pass 6: ALL-CAPS heading detection.
+    // Short ALL-CAPS paragraphs (<=15 words, >80% uppercase letters) are often
+    // headings in government/legal documents (e.g., "DEPARTMENT OF TRANSPORTATION",
+    // "AGENCY:", "SUMMARY:"). Promote if not already a heading/list/code.
+    for para in paragraphs.iter_mut() {
+        if para.heading_level.is_some()
+            || para.is_list_item
+            || para.is_code_block
+            || para.is_formula
+            || para.is_page_furniture
+        {
+            continue;
+        }
+
+        let text: String = if !para.text.is_empty() {
+            para.text.clone()
+        } else {
+            para.lines
+                .iter()
+                .flat_map(|l| l.segments.iter())
+                .map(|s| s.text.as_str())
+                .collect::<Vec<_>>()
+                .join(" ")
+        };
+        let t = text.trim();
+        let wc = t.split_whitespace().count();
+        if wc == 0 || wc > 15 {
+            continue;
+        }
+
+        // Skip single words that are just abbreviations (e.g., "USA")
+        // unless they end with colon (label-heading like "AGENCY:")
+        if wc == 1 && !t.ends_with(':') {
+            continue;
+        }
+
+        if !is_all_caps_text(t) {
+            continue;
+        }
+
+        // Skip if it looks like a figure label or separator
+        if looks_like_figure_label(t) || super::layout_classify::is_separator_text(t) {
+            continue;
+        }
+
+        // Determine heading level from font-size ratio to body
+        let level = if body_font_size > 0.0 {
+            let ratio = para.dominant_font_size / body_font_size;
+            if ratio > 1.4 {
+                1
+            } else if ratio > 1.2 {
+                2
+            } else if wc <= 5 {
+                2 // Short ALL-CAPS title → H2
+            } else {
+                3 // Longer ALL-CAPS label → H3
+            }
+        } else if wc <= 5 {
+            2
+        } else {
+            3
+        };
+        para.heading_level = Some(level);
+    }
+}
+
+/// Check if text starts with a lowercase letter or a common sentence-continuation word.
+///
+/// Mid-sentence fragments from column breaks often start with lowercase words or
+/// common continuation words. Real headings typically start with uppercase letters,
+/// numbers, or section markers.
+fn starts_with_lowercase_or_continuation(text: &str) -> bool {
+    let first_char = text.chars().next();
+    // If the first character is a lowercase letter, it's likely a sentence continuation.
+    if first_char.is_some_and(|c| c.is_lowercase()) {
+        return true;
+    }
+
+    // Check for common continuation words that indicate a sentence fragment.
+    let first_word = text.split_whitespace().next().unwrap_or("");
+    let lower = first_word.to_lowercase();
+    matches!(
+        lower.as_str(),
+        "is" | "are"
+            | "was"
+            | "were"
+            | "to"
+            | "of"
+            | "in"
+            | "on"
+            | "for"
+            | "and"
+            | "or"
+            | "but"
+            | "the"
+            | "a"
+            | "an"
+            | "that"
+            | "which"
+            | "with"
+    )
+}
+
+/// Check if text is ALL-CAPS (>80% of alphabetic characters are uppercase).
+///
+/// Used to identify label-headings like "AGENCY:", "DEPARTMENT OF TRANSPORTATION",
+/// "SUMMARY:" that are common in government and legal documents.
+fn is_all_caps_text(text: &str) -> bool {
+    let alpha_chars: Vec<char> = text.chars().filter(|c| c.is_alphabetic()).collect();
+    if alpha_chars.len() < 2 {
+        return false;
+    }
+    let upper_count = alpha_chars.iter().filter(|c| c.is_uppercase()).count();
+    (upper_count as f64 / alpha_chars.len() as f64) > 0.8
+}
+
+/// Demote headings that follow paragraphs ending without sentence-terminating punctuation.
+///
+/// When a paragraph doesn't end with `.`, `?`, `!`, `:`, or `;`, the next paragraph
+/// is likely a continuation (e.g., from a multi-column layout split). Headings
+/// promoted by the rescue pass in this position are demoted back to body text.
+///
+/// Only demotes headings that were NOT confirmed by font-size clustering (i.e.,
+/// headings at levels that could have come from the rescue pass).
+fn demote_continuation_headings(paragraphs: &mut [PdfParagraph]) {
+    if paragraphs.len() < 2 {
+        return;
+    }
+
+    for i in 1..paragraphs.len() {
+        // Only consider paragraphs that have a heading level
+        if paragraphs[i].heading_level.is_none() {
+            continue;
+        }
+
+        // Skip if the previous paragraph is a heading, list item, code, or formula
+        // (those are structurally distinct and don't indicate continuation).
+        let prev = &paragraphs[i - 1];
+        if prev.heading_level.is_some()
+            || prev.is_list_item
+            || prev.is_code_block
+            || prev.is_formula
+            || prev.is_page_furniture
+        {
+            continue;
+        }
+
+        // Check if the previous paragraph ends without sentence-ending punctuation.
+        let prev_text = if !prev.text.is_empty() {
+            prev.text.clone()
+        } else {
+            prev.lines
+                .iter()
+                .flat_map(|l| l.segments.iter())
+                .map(|s| s.text.as_str())
+                .collect::<Vec<_>>()
+                .join(" ")
+        };
+        let prev_trimmed = prev_text.trim_end();
+        let ends_with_terminator = matches!(prev_trimmed.chars().last(), Some('.' | '?' | '!' | ':' | ';'));
+
+        if !ends_with_terminator && !prev_trimmed.is_empty() {
+            paragraphs[i].heading_level = None;
         }
     }
 }
@@ -1506,6 +1682,125 @@ mod tests {
         assert_eq!(paragraphs[0].heading_level, None);
     }
 
+    // ── Pass 4 fragment guards ──
+
+    #[test]
+    fn test_rescue_pass_skips_lowercase_start() {
+        // Fragment starting with lowercase letter should NOT be promoted
+        let heading_map = vec![(12.0, None)];
+        let mut paragraphs = vec![make_text_paragraph(15.0, "is necessary to address", false)];
+        classify_paragraphs(&mut paragraphs, &heading_map);
+        assert_eq!(
+            paragraphs[0].heading_level, None,
+            "lowercase-starting fragment should not be promoted"
+        );
+    }
+
+    #[test]
+    fn test_rescue_pass_skips_continuation_word_the() {
+        // Fragment starting with "The" (continuation word, even uppercase) should NOT be promoted
+        let heading_map = vec![(12.0, None)];
+        let mut paragraphs = vec![make_text_paragraph(15.0, "The unsafe condition", false)];
+        classify_paragraphs(&mut paragraphs, &heading_map);
+        assert_eq!(
+            paragraphs[0].heading_level, None,
+            "continuation word 'The' should not be promoted"
+        );
+    }
+
+    #[test]
+    fn test_rescue_pass_skips_continuation_word_and() {
+        let heading_map = vec![(12.0, None)];
+        let mut paragraphs = vec![make_text_paragraph(15.0, "And furthermore", false)];
+        classify_paragraphs(&mut paragraphs, &heading_map);
+        assert_eq!(
+            paragraphs[0].heading_level, None,
+            "continuation word 'And' should not be promoted"
+        );
+    }
+
+    #[test]
+    fn test_rescue_pass_allows_proper_heading() {
+        // Proper heading starting with uppercase non-continuation word
+        let heading_map = vec![(12.0, None)];
+        let mut paragraphs = vec![make_text_paragraph(15.0, "Results and Discussion", false)];
+        classify_paragraphs(&mut paragraphs, &heading_map);
+        assert_eq!(
+            paragraphs[0].heading_level,
+            Some(2),
+            "proper heading should still be promoted"
+        );
+    }
+
+    #[test]
+    fn test_demote_continuation_heading_after_unterminated_paragraph() {
+        // A heading following a paragraph without sentence-ending punctuation
+        // should be demoted (it's likely a column-break fragment).
+        let heading_map = vec![(12.0, None)];
+        let mut paragraphs = vec![
+            make_text_paragraph(12.0, "the regulation requires that all operators", false),
+            make_text_paragraph(15.0, "Safety Procedures", false),
+        ];
+        classify_paragraphs(&mut paragraphs, &heading_map);
+        assert_eq!(
+            paragraphs[1].heading_level, None,
+            "heading after unterminated paragraph should be demoted"
+        );
+    }
+
+    #[test]
+    fn test_keep_heading_after_terminated_paragraph() {
+        // A heading following a properly terminated paragraph should stay.
+        let heading_map = vec![(12.0, None)];
+        let mut paragraphs = vec![
+            make_text_paragraph(12.0, "The previous section covered the basics.", false),
+            make_text_paragraph(15.0, "Safety Procedures", false),
+        ];
+        classify_paragraphs(&mut paragraphs, &heading_map);
+        assert_eq!(
+            paragraphs[1].heading_level,
+            Some(2),
+            "heading after terminated paragraph should stay"
+        );
+    }
+
+    #[test]
+    fn test_keep_heading_after_another_heading() {
+        // Heading after another heading should not be demoted by continuation check.
+        // Use a single body cluster so the second paragraph gets promoted via rescue pass.
+        let heading_map = vec![(12.0, None)];
+        let mut paragraphs = vec![
+            make_text_paragraph(15.0, "Chapter One", false),
+            make_text_paragraph(14.0, "Introduction", false),
+        ];
+        classify_paragraphs(&mut paragraphs, &heading_map);
+        // Both should be promoted by rescue pass: 15/12=1.25→H2, 14/12=1.17→H3
+        assert!(
+            paragraphs[0].heading_level.is_some(),
+            "first heading should be promoted"
+        );
+        assert!(
+            paragraphs[1].heading_level.is_some(),
+            "heading after heading should not be demoted by continuation check"
+        );
+    }
+
+    #[test]
+    fn test_starts_with_lowercase_or_continuation() {
+        // Lowercase start
+        assert!(starts_with_lowercase_or_continuation("is necessary"));
+        assert!(starts_with_lowercase_or_continuation("the quick fox"));
+        // Continuation words (capitalized)
+        assert!(starts_with_lowercase_or_continuation("The quick fox"));
+        assert!(starts_with_lowercase_or_continuation("And furthermore"));
+        assert!(starts_with_lowercase_or_continuation("But however"));
+        assert!(starts_with_lowercase_or_continuation("Which means"));
+        // Not continuation
+        assert!(!starts_with_lowercase_or_continuation("Results"));
+        assert!(!starts_with_lowercase_or_continuation("Safety Procedures"));
+        assert!(!starts_with_lowercase_or_continuation("3 Methods"));
+    }
+
     // ── refine_heading_hierarchy: enhanced title promotion tests ──
 
     #[test]
@@ -1518,5 +1813,145 @@ mod tests {
         // No headings at all initially -- refine should promote the first paragraph
         refine_heading_hierarchy(&mut pages);
         assert_eq!(pages[0][0].heading_level, Some(1));
+    }
+
+    // ── is_all_caps_text tests ──
+
+    #[test]
+    fn test_is_all_caps_text_positive() {
+        assert!(is_all_caps_text("DEPARTMENT OF TRANSPORTATION"));
+        assert!(is_all_caps_text("AGENCY:"));
+        assert!(is_all_caps_text("SUMMARY:"));
+        assert!(is_all_caps_text("ACTION:"));
+    }
+
+    #[test]
+    fn test_is_all_caps_text_negative() {
+        assert!(!is_all_caps_text("Department of Transportation"));
+        assert!(!is_all_caps_text("Some regular text here"));
+        assert!(!is_all_caps_text("a")); // too short (< 2 alpha chars)
+    }
+
+    // ── Pass 6: ALL-CAPS heading detection tests ──
+
+    #[test]
+    fn test_all_caps_short_promoted_to_h2() {
+        // Short ALL-CAPS text (2+ words) at body font size → H2
+        let heading_map = vec![(12.0, None)];
+        let mut paragraphs = vec![make_text_paragraph(12.0, "EXECUTIVE SUMMARY", false)];
+        classify_paragraphs(&mut paragraphs, &heading_map);
+        assert_eq!(
+            paragraphs[0].heading_level,
+            Some(2),
+            "short ALL-CAPS should be promoted to H2"
+        );
+    }
+
+    #[test]
+    fn test_all_caps_longer_promoted_to_h3() {
+        // Longer ALL-CAPS text (6-15 words) at body font size → H3
+        let heading_map = vec![(12.0, None)];
+        let mut paragraphs = vec![make_text_paragraph(
+            12.0,
+            "DEPARTMENT OF TRANSPORTATION FEDERAL AVIATION ADMINISTRATION",
+            false,
+        )];
+        classify_paragraphs(&mut paragraphs, &heading_map);
+        assert_eq!(
+            paragraphs[0].heading_level,
+            Some(3),
+            "longer ALL-CAPS should be promoted to H3"
+        );
+    }
+
+    #[test]
+    fn test_all_caps_with_colon_promoted() {
+        // ALL-CAPS label ending with colon → heading
+        let heading_map = vec![(12.0, None)];
+        let mut paragraphs = vec![make_text_paragraph(12.0, "AGENCY:", false)];
+        classify_paragraphs(&mut paragraphs, &heading_map);
+        assert_eq!(
+            paragraphs[0].heading_level,
+            Some(2),
+            "ALL-CAPS colon-ending label should be promoted"
+        );
+    }
+
+    #[test]
+    fn test_all_caps_single_word_no_colon_not_promoted() {
+        // Single ALL-CAPS word without colon → abbreviation, skip
+        let heading_map = vec![(12.0, None)];
+        let mut paragraphs = vec![make_text_paragraph(12.0, "USA", false)];
+        classify_paragraphs(&mut paragraphs, &heading_map);
+        assert_eq!(
+            paragraphs[0].heading_level, None,
+            "single-word abbreviation should not be promoted"
+        );
+    }
+
+    #[test]
+    fn test_all_caps_too_long_not_promoted() {
+        // ALL-CAPS text with >15 words → not promoted
+        let heading_map = vec![(12.0, None)];
+        let text = "THIS IS A VERY LONG ALL CAPS TEXT THAT HAS WAY TOO MANY WORDS TO BE A HEADING IN ANY DOCUMENT";
+        let mut paragraphs = vec![make_text_paragraph(12.0, text, false)];
+        classify_paragraphs(&mut paragraphs, &heading_map);
+        assert_eq!(
+            paragraphs[0].heading_level, None,
+            "ALL-CAPS text >15 words should not be promoted"
+        );
+    }
+
+    #[test]
+    fn test_all_caps_list_item_not_promoted() {
+        // ALL-CAPS list items should not be promoted
+        let heading_map = vec![(12.0, None)];
+        let mut para = make_text_paragraph(12.0, "ITEM ONE", false);
+        para.is_list_item = true;
+        let mut paragraphs = vec![para];
+        classify_paragraphs(&mut paragraphs, &heading_map);
+        assert_eq!(
+            paragraphs[0].heading_level, None,
+            "ALL-CAPS list item should not be promoted"
+        );
+    }
+
+    #[test]
+    fn test_all_caps_larger_font_gets_higher_level() {
+        // ALL-CAPS at larger font size → higher heading level
+        let heading_map = vec![(12.0, None)];
+        let mut paragraphs = vec![make_text_paragraph(18.0, "TITLE", false)];
+        classify_paragraphs(&mut paragraphs, &heading_map);
+        // 18/12 = 1.5 > 1.4 → H1 (from rescue pass, actually)
+        assert!(
+            paragraphs[0].heading_level.is_some(),
+            "large ALL-CAPS should be promoted"
+        );
+    }
+
+    // ── Bold colon-ending ALL-CAPS tests ──
+
+    #[test]
+    fn test_bold_all_caps_colon_promoted() {
+        // Bold ALL-CAPS text ending with colon should be promoted (colon guard relaxed)
+        let heading_map = vec![(12.0, None)];
+        let mut paragraphs = vec![make_text_paragraph(12.0, "ACTION:", true)];
+        classify_paragraphs(&mut paragraphs, &heading_map);
+        assert!(
+            paragraphs[0].heading_level.is_some(),
+            "bold ALL-CAPS with colon should be promoted"
+        );
+    }
+
+    #[test]
+    fn test_bold_mixed_case_colon_not_promoted() {
+        // Bold mixed-case text ending with colon should NOT be promoted (colon blocks)
+        let heading_map = vec![(12.0, None)];
+        let mut paragraphs = vec![make_text_paragraph(12.0, "Agency:", true)];
+        classify_paragraphs(&mut paragraphs, &heading_map);
+        assert_eq!(
+            paragraphs[0].heading_level, None,
+            "bold mixed-case with colon should not be promoted"
+        );
     }
 }
