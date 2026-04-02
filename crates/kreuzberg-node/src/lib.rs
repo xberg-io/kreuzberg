@@ -56,7 +56,7 @@ pub use metadata::{
     unregister_document_extractor,
 };
 
-pub use embedding_presets::{EmbeddingPreset, get_embedding_preset, list_embedding_presets};
+pub use embedding_presets::{EmbeddingPreset, embed, embed_sync, get_embedding_preset, list_embedding_presets};
 
 pub use plugins::{
     clear_ocr_backends, clear_post_processors, clear_validators, list_ocr_backends, list_post_processors,

@@ -1,5 +1,7 @@
 use napi_derive::napi;
 
+use crate::config::JsEmbeddingConfig;
+
 #[napi(object)]
 pub struct EmbeddingPreset {
     /// Name of the preset (e.g., "fast", "balanced", "quality", "multilingual")
@@ -85,4 +87,56 @@ pub fn get_embedding_preset(name: String) -> Option<EmbeddingPreset> {
         dimensions: preset.dimensions as u32,
         description: preset.description.to_string(),
     })
+}
+
+/// Generate embeddings from a list of text strings (synchronous).
+///
+/// # Arguments
+///
+/// * `texts` - List of strings to embed
+/// * `config` - Optional embedding configuration (model, batch size, normalization)
+///
+/// # Returns
+///
+/// `number[][]` — one embedding vector per input text
+///
+/// # Example
+///
+/// ```typescript
+/// import { embedSync } from '@kreuzberg/node';
+///
+/// const embeddings = embedSync(['Hello, world!'], { model: { type: 'preset', name: 'balanced' } });
+/// console.log(embeddings.length); // 1
+/// ```
+#[napi(js_name = "embedSync")]
+pub fn embed_sync(texts: Vec<String>, config: Option<JsEmbeddingConfig>) -> napi::Result<Vec<Vec<f32>>> {
+    let rust_config: kreuzberg::EmbeddingConfig = config.map(|c| c.into()).unwrap_or_default();
+    kreuzberg::embed_texts(&texts, &rust_config).map_err(|e| napi::Error::from_reason(e.to_string()))
+}
+
+/// Generate embeddings from a list of text strings (asynchronous).
+///
+/// # Arguments
+///
+/// * `texts` - List of strings to embed
+/// * `config` - Optional embedding configuration (model, batch size, normalization)
+///
+/// # Returns
+///
+/// `Promise<number[][]>` — one embedding vector per input text
+///
+/// # Example
+///
+/// ```typescript
+/// import { embed } from '@kreuzberg/node';
+///
+/// const embeddings = await embed(['Hello, world!'], { model: { type: 'preset', name: 'balanced' } });
+/// console.log(embeddings.length); // 1
+/// ```
+#[napi(js_name = "embed")]
+pub async fn embed(texts: Vec<String>, config: Option<JsEmbeddingConfig>) -> napi::Result<Vec<Vec<f32>>> {
+    let rust_config: kreuzberg::EmbeddingConfig = config.map(|c| c.into()).unwrap_or_default();
+    kreuzberg::embed_texts_async(texts, &rust_config)
+        .await
+        .map_err(|e| napi::Error::from_reason(e.to_string()))
 }
