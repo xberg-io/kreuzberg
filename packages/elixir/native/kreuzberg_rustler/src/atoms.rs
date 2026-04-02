@@ -14,6 +14,7 @@ rustler::atoms! {
     invalid_format,
     invalid_config,
     ocr_error,
+    embedding_error,
     unknown_error,
     not_found,
     done,

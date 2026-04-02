@@ -45,6 +45,7 @@ defmodule Kreuzberg.Error do
           | :ocr_error
           | :extraction_error
           | :io_error
+          | :embedding_error
           | :nif_error
           | :unknown_error
 

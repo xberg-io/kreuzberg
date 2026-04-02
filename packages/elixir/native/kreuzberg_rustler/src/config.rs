@@ -261,3 +261,22 @@ fn validate_extraction_config(config: &kreuzberg::core::config::ExtractionConfig
 
     Ok(())
 }
+
+/// Parse an Elixir term (nil or map) into an `EmbeddingConfig`.
+///
+/// - `nil` → uses defaults
+/// - map  → convert to JSON via `term_to_json`, then deserialize
+pub fn parse_embedding_config(_env: Env, term: Term) -> Result<kreuzberg::EmbeddingConfig, String> {
+    // Handle nil case
+    if let Ok(atom_str) = term.atom_to_string()
+        && atom_str == "nil"
+    {
+        return Ok(kreuzberg::EmbeddingConfig::default());
+    }
+
+    let json_value = term_to_json(term).map_err(|e| format!("Invalid embedding config: failed to parse - {}", e))?;
+
+    let config: kreuzberg::EmbeddingConfig =
+        serde_json::from_value(json_value).map_err(|e| format!("Invalid embedding config: {}", e))?;
+    Ok(config)
+}

@@ -53,6 +53,7 @@ defmodule Kreuzberg.UtilityAPI do
   @invalid_config_regex ~r/(config|configuration|option|parameter)/i
   @ocr_error_regex ~r/(ocr|optical\s+character|recognition)/i
   @extraction_error_regex ~r/(extract|extraction)/i
+  @embedding_error_regex ~r/(embed|embedding|vector|inference|model)/i
 
   @doc """
   Detect the MIME type of binary data using content inspection.
@@ -324,6 +325,9 @@ defmodule Kreuzberg.UtilityAPI do
       Regex.match?(@extraction_error_regex, reason_lower) ->
         :extraction_error
 
+      Regex.match?(@embedding_error_regex, reason_lower) ->
+        :embedding_error
+
       true ->
         :unknown_error
     end
@@ -382,6 +386,11 @@ defmodule Kreuzberg.UtilityAPI do
          "name" => "Extraction Error",
          "description" => "General extraction and processing failures",
          "examples" => ["Extraction failed", "Processing error"]
+       },
+       embedding_error: %{
+         "name" => "Embedding Error",
+         "description" => "Errors during text embedding generation and vector processing",
+         "examples" => ["Embedding failed", "Inference error", "Model load error"]
        },
        unknown_error: %{
          "name" => "Unknown Error",

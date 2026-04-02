@@ -15,7 +15,7 @@ defmodule Kreuzberg do
       result = Kreuzberg.extract!(pdf_binary, "application/pdf")
   """
 
-  alias Kreuzberg.{Error, ExtractionConfig, ExtractionResult, Helpers, Native}
+  alias Kreuzberg.{EmbeddingConfig, Error, ExtractionConfig, ExtractionResult, Helpers, Native}
 
   # Delegate batch operations to BatchAPI
   defdelegate batch_extract_files(paths, mime_type \\ nil, config \\ nil), to: Kreuzberg.BatchAPI
@@ -42,6 +42,8 @@ defmodule Kreuzberg do
   defdelegate get_embedding_preset(name), to: Kreuzberg.UtilityAPI
   defdelegate classify_error(reason), to: Kreuzberg.UtilityAPI
   defdelegate get_error_details(), to: Kreuzberg.UtilityAPI
+  defdelegate embed(texts, config \\ nil), to: __MODULE__, as: :do_embed
+  defdelegate embed!(texts, config \\ nil), to: __MODULE__, as: :do_embed!
 
   # Delegate cache operations to CacheAPI
   defdelegate cache_stats(), to: Kreuzberg.CacheAPI
@@ -512,5 +514,42 @@ defmodule Kreuzberg do
 
   defp into_result(map) when is_map(map) do
     Helpers.into_result(map)
+  end
+
+  @doc """
+  Generate text embeddings for a list of strings.
+
+  ## Parameters
+
+    * `texts` - List of strings to embed
+    * `config` - EmbeddingConfig struct or nil
+
+  ## Returns
+
+    * `{:ok, [[float()]]}` - List of embedding vectors
+    * `{:error, reason}` - Embedding failed
+  """
+    case config do
+      nil -> Native.embed(texts, %{})
+      %EmbeddingConfig{} = c -> Native.embed(texts, EmbeddingConfig.to_map(c))
+      map when is_map(map) -> Native.embed(texts, map)
+    end
+    |> case do
+      {:ok, result} -> {:ok, result}
+      {:error, reason} -> {:error, reason}
+      {:embedding_error, reason} -> {:error, reason}
+      other -> other
+    end
+  end
+
+  @doc "Generate text embeddings, raising on error."
+  def do_embed!(texts, config \\ nil) do
+    case do_embed(texts, config) do
+      {:ok, result} ->
+        result
+
+      {:error, reason} ->
+        raise Error, message: reason, reason: Kreuzberg.UtilityAPI.classify_error(reason)
+    end
   end
 end
