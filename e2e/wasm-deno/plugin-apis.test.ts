@@ -6,7 +6,6 @@
  * To regenerate: cargo run -p kreuzberg-e2e-generator -- generate --lang wasm-deno
  */
 
-import { assertEquals } from "@std/assert";
 // @deno-types="../../crates/kreuzberg-wasm/dist/index.d.ts"
 import {
 	clearOcrBackends,
@@ -20,6 +19,7 @@ import {
 	listValidators,
 	unregisterOcrBackend,
 } from "npm:@kreuzberg/wasm@^4.0.0";
+import { assertEquals } from "@std/assert";
 
 await initWasm();
 

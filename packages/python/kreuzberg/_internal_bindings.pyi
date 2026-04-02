@@ -2087,6 +2087,7 @@ class ChunkMetadata(TypedDict, total=False):
 
 class Chunk:
     content: str
+    chunk_type: str
     embedding: list[float] | None
     metadata: ChunkMetadata
 

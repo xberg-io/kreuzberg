@@ -2131,6 +2131,7 @@ Text chunk for RAG and vector search applications, containing content segment, o
 ```rust title="chunk.rs"
 pub struct Chunk {
     pub content: String,
+    pub chunk_type: ChunkType,
     pub embedding: Option<Vec<f32>>,
     pub metadata: ChunkMetadata,
 }
@@ -2162,6 +2163,7 @@ class ChunkMetadata(TypedDict):
 
 class Chunk(TypedDict, total=False):
     content: str
+    chunk_type: str
     embedding: list[float] | None
     metadata: ChunkMetadata
 ```
@@ -2182,6 +2184,7 @@ export interface ChunkMetadata {
 
 export interface Chunk {
   content: string;
+  chunkType?: string | null;
   embedding?: number[] | null;
   metadata: ChunkMetadata;
 }
@@ -2191,7 +2194,7 @@ export interface Chunk {
 
 ```ruby title="chunk.rb"
 Kreuzberg::Result::Chunk = Struct.new(
-    :content, :byte_start, :byte_end, :token_count,
+    :content, :chunk_type, :byte_start, :byte_end, :token_count,
     :chunk_index, :total_chunks, :first_page, :last_page, :embedding,
     :heading_context,
     keyword_init: true
@@ -2214,6 +2217,7 @@ public record ChunkMetadata(
 
 public record Chunk(
     String content,
+    String chunkType,
     Optional<List<Float>> embedding,
     ChunkMetadata metadata
 ) {}
@@ -2235,6 +2239,7 @@ type ChunkMetadata struct {
 
 type Chunk struct {
     Content   string        `json:"content"`
+    ChunkType string        `json:"chunk_type,omitempty"`
     Embedding []float32     `json:"embedding,omitempty"`
     Metadata  ChunkMetadata `json:"metadata"`
 }

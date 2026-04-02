@@ -1144,6 +1144,7 @@ module Kreuzberg
     # Text chunk (Struct from result.rb)
     class Chunk
       attr_reader content: String
+      attr_reader chunk_type: String
       attr_reader byte_start: Integer
       attr_reader byte_end: Integer
       attr_reader token_count: Integer?
@@ -1156,6 +1157,7 @@ module Kreuzberg
 
       def initialize: (
         content: String,
+        chunk_type: String,
         byte_start: Integer,
         byte_end: Integer,
         token_count: Integer?,

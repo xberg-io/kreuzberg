@@ -3,10 +3,10 @@
 
 // Tests for image fixtures. Cloudflare Workers with Vitest + Miniflare
 
-import { describe, it } from "vitest";
-import { extractBytes } from "@kreuzberg/wasm";
-import { assertions, buildConfig, getFixture, shouldSkipFixture } from "./helpers.js";
 import type { ExtractionResult } from "@kreuzberg/wasm";
+import { extractBytes } from "@kreuzberg/wasm";
+import { describe, it } from "vitest";
+import { assertions, buildConfig, getFixture, shouldSkipFixture } from "./helpers.js";
 
 describe("image", () => {
 	it("image_bmp_basic", async () => {

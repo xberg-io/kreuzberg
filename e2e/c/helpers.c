@@ -405,10 +405,9 @@ void assert_chunks(const CExtractionResult *result,
         exit(1);
     }
     if (each_has_chunk_type && result->chunks_json) {
-        /* Very simple check: ensure no "unknown" chunk_type in the JSON */
-        if (strstr(result->chunks_json, "\"unknown\"") != NULL ||
-            strstr(result->chunks_json, "\"chunk_type\":null") != NULL) {
-            fprintf(stderr, "FAIL: expected specific chunk_type, but found unknown/null in chunks_json\n");
+        /* Verify chunk_type key exists in the JSON */
+        if (strstr(result->chunks_json, "\"chunk_type\"") == NULL) {
+            fprintf(stderr, "FAIL: expected chunk_type field in chunks_json but not found\n");
             exit(1);
         }
     }

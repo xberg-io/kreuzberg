@@ -203,73 +203,49 @@ class Helpers
     }
 
     public static function assertChunks(
-        ExtractionResult $result,
-        ?int $minCount,
-        ?int $maxCount,
-        ?bool $eachHasContent,
-        ?bool $eachHasEmbedding,
+        $result,
+        ?int $minCount = null,
+        ?int $maxCount = null,
+        ?bool $eachHasContent = null,
+        ?bool $eachHasEmbedding = null,
         ?bool $eachHasHeadingContext = null,
         ?bool $eachHasChunkType = null,
         ?bool $contentStartsWithHeading = null
     ): void {
-        $chunks = $result->chunks ?? [];
+        $chunks = $result->chunks ?? null;
+        if ($chunks === null) {
+            throw new \Exception("Expected chunks but field is null");
+        }
+
         $count = count($chunks);
-
-        if ($minCount !== null) {
-            Assert::assertGreaterThanOrEqual(
-                $minCount,
-                $count,
-                sprintf("Expected at least %d chunks, found %d", $minCount, $count)
-            );
+        if ($minCount !== null && $count < $minCount) {
+            throw new \Exception("Expected at least $minCount chunks, found $count");
+        }
+        if ($maxCount !== null && $count > $maxCount) {
+            throw new \Exception("Expected at most $maxCount chunks, found $count");
         }
 
-        if ($maxCount !== null) {
-            Assert::assertLessThanOrEqual(
-                $maxCount,
-                $count,
-                sprintf("Expected at most %d chunks, found %d", $maxCount, $count)
-            );
-        }
-
-        if ($eachHasContent === true) {
-            foreach ($chunks as $i => $chunk) {
-                Assert::assertNotEmpty(
-                    $chunk->content ?? '',
-                    sprintf("Chunk %d should have content", $i)
-                );
+        foreach ($chunks as $i => $chunk) {
+            if ($eachHasContent && empty($chunk->content)) {
+                throw new \Exception("Chunk $i has no content");
             }
-        }
-
-        if ($eachHasEmbedding === true) {
-            foreach ($chunks as $i => $chunk) {
-                Assert::assertNotNull(
-                    $chunk->embedding ?? null,
-                    sprintf("Chunk %d should have embedding", $i)
-                );
+            if ($eachHasEmbedding && (empty($chunk->embedding))) {
+                throw new \Exception("Chunk $i has no embedding");
             }
-        }
-
-        if ($eachHasHeadingContext === true) {
-            foreach ($chunks as $i => $chunk) {
-                Assert::assertNotNull(
-                    $chunk->metadata->heading_context ?? null,
-                    sprintf("Chunk %d should have heading_context", $i)
-                );
+            if ($eachHasHeadingContext !== null) {
+                $hc = $chunk->metadata->headingContext ?? null;
+                if ($eachHasHeadingContext && $hc === null) {
+                    throw new \Exception("Chunk $i has no headingContext");
+                }
+                if (!$eachHasHeadingContext && $hc !== null) {
+                    throw new \Exception("Chunk $i should have no headingContext");
+                }
             }
-        }
-        if ($eachHasHeadingContext === false) {
-            foreach ($chunks as $i => $chunk) {
-                Assert::assertNull(
-                    $chunk->metadata->heading_context ?? null,
-                    sprintf("Chunk %d should have no heading_context", $i)
-                );
-            }
-        }
-        if ($eachHasChunkType === true) {
-            foreach ($chunks as $i => $chunk) {
-                $type = $chunk->chunk_type ?? null;
-                Assert::assertNotNull($type, sprintf("Chunk %d should have chunk_type", $i));
-                Assert::assertNotSame('unknown', $type, sprintf("Chunk %d should have specific chunk_type, got 'unknown'", $i));
+            if ($eachHasChunkType === true) {
+                $type = $chunk->chunkType ?? $chunk->chunk_type ?? null;
+                if ($type === null || $type === "unknown") {
+                    throw new \Exception("Chunk $i has no specific chunkType, got " . var_export($type, true));
+                }
             }
         }
         if ($contentStartsWithHeading === true) {

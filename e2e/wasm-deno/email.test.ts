@@ -3,6 +3,7 @@
 
 // Tests for email fixtures. Run with: deno test --allow-read
 
+import type { ExtractionResult } from "./helpers.ts";
 import {
 	assertions,
 	buildConfig,
@@ -12,7 +13,6 @@ import {
 	resolveDocument,
 	shouldSkipFixture,
 } from "./helpers.ts";
-import type { ExtractionResult } from "./helpers.ts";
 
 // Initialize WASM module and enable OCR once at module load time
 await initWasm();

@@ -977,6 +977,9 @@ export interface Chunk {
 	/** Text content of this chunk */
 	content: string;
 
+	/** Semantic type classification of this chunk (e.g. 'heading', 'code_block', 'table_like', 'unknown') */
+	chunkType?: string | null;
+
 	/** Vector embedding for this chunk (if embedding model was used) */
 	embedding?: number[] | null;
 

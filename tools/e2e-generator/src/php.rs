@@ -845,19 +845,14 @@ class Helpers
         Assert::assertGreaterThanOrEqual($minLength, strlen($data),
             sprintf('Expected at least %d bytes, got %d', $minLength, strlen($data)));
     }
-
-    }
 }
 "#;
 
 pub fn generate(fixtures: &[Fixture], output_dir: &Utf8Path) -> Result<()> {
-    let tests_dir = output_dir.join("e2e").join("php").join("tests");
+    let tests_dir = output_dir.join("php").join("tests");
     fs::create_dir_all(&tests_dir).context("Failed to create PHP tests directory")?;
     clean_tests(&tests_dir)?;
     write_helpers(&tests_dir)?;
-
-    let tests_pkg_dir = tests_dir.join("E2EPhp").join("Tests");
-    fs::create_dir_all(&tests_pkg_dir).context("Failed to create PHP test package directory")?;
 
     let mut categories = BTreeMap::new();
     for fixture in fixtures {
@@ -872,13 +867,13 @@ pub fn generate(fixtures: &[Fixture], output_dir: &Utf8Path) -> Result<()> {
     for (category, fixtures) in &categories {
         let filename = format!("{}Test.php", capitalize(category));
         let content = render_category(category, fixtures)?;
-        fs::write(tests_pkg_dir.join(&filename), content)
+        fs::write(tests_dir.join(&filename), content)
             .with_context(|| format!("Failed to write PHP test file {filename}"))?;
     }
 
     let api_fixtures: Vec<_> = fixtures.iter().filter(|f| f.is_plugin_api()).collect();
     if !api_fixtures.is_empty() {
-        generate_plugin_api_tests(&api_fixtures, &tests_pkg_dir)?;
+        generate_plugin_api_tests(&api_fixtures, &tests_dir)?;
     }
 
     let render_fixtures: Vec<_> = fixtures.iter().filter(|f| f.is_render()).collect();
@@ -886,7 +881,7 @@ pub fn generate(fixtures: &[Fixture], output_dir: &Utf8Path) -> Result<()> {
         let mut sorted: Vec<_> = render_fixtures.clone();
         sorted.sort_by(|a, b| a.id.cmp(&b.id));
         let content = render_render_category_php(&sorted)?;
-        fs::write(tests_pkg_dir.join("RenderTest.php"), content).context("Failed to write PHP render test file")?;
+        fs::write(tests_dir.join("RenderTest.php"), content).context("Failed to write PHP render test file")?;
     }
 
     Ok(())

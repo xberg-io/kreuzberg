@@ -385,7 +385,8 @@ public final class E2EHelpers {
       if (chunks != null && eachHasChunkType != null && eachHasChunkType) {
         for (var chunk : chunks) {
           String type = chunk.getChunkType();
-          assertTrue(type != null && !"unknown".equals(type),
+          assertTrue(
+              type != null && !"unknown".equals(type),
               "Expected each chunk to have a specific chunk_type");
         }
       }

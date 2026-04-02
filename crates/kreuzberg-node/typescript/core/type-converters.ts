@@ -70,6 +70,7 @@ function convertChunk(rawChunk: unknown): Chunk {
 	if (!rawChunk || typeof rawChunk !== "object") {
 		return {
 			content: "",
+			chunkType: null,
 			metadata: {
 				byteStart: 0,
 				byteEnd: 0,
@@ -85,6 +86,7 @@ function convertChunk(rawChunk: unknown): Chunk {
 	const metadata = (chunk["metadata"] as Record<string, unknown>) ?? {};
 	return {
 		content: (chunk["content"] as string) ?? "",
+		chunkType: ((chunk["chunk_type"] ?? chunk["chunkType"]) as string | null) ?? null,
 		embedding: (chunk["embedding"] as number[] | null) ?? null,
 		metadata: {
 			byteStart: ((metadata["byte_start"] ?? metadata["charStart"]) as number) ?? 0,

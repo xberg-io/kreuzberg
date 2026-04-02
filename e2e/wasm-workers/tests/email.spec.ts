@@ -3,10 +3,10 @@
 
 // Tests for email fixtures. Cloudflare Workers with Vitest + Miniflare
 
-import { describe, it } from "vitest";
-import { extractBytes } from "@kreuzberg/wasm";
-import { assertions, buildConfig, getFixture, shouldSkipFixture } from "./helpers.js";
 import type { ExtractionResult } from "@kreuzberg/wasm";
+import { extractBytes } from "@kreuzberg/wasm";
+import { describe, it } from "vitest";
+import { assertions, buildConfig, getFixture, shouldSkipFixture } from "./helpers.js";
 
 describe("email", () => {
 	it("email_eml_html_body", async () => {
