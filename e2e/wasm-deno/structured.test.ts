@@ -210,4 +210,3 @@ Deno.test("structured_yaml_simple", { permissions: { read: true, net: true } }, 
     assertions.assertExpectedMime(result, ["application/x-yaml"]);
     assertions.assertMinContentLength(result, 10);
 });
-

@@ -89,4 +89,3 @@ Deno.test("archive_zip_basic", { permissions: { read: true, net: true } }, async
     assertions.assertExpectedMime(result, ["application/zip", "application/x-zip-compressed"]);
     assertions.assertMinContentLength(result, 10);
 });
-

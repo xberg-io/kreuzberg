@@ -19,7 +19,10 @@ defmodule Kreuzberg.Chunk do
           chunk_type: String.t()
         }
 
-  defstruct content: "", embedding: nil, metadata: %Kreuzberg.ChunkMetadata{}, chunk_type: "unknown"
+  defstruct content: "",
+            embedding: nil,
+            metadata: %Kreuzberg.ChunkMetadata{},
+            chunk_type: "unknown"
 
   @doc """
   Creates a new Chunk struct.

@@ -29,4 +29,3 @@ Deno.test("xml_plant_catalog", { permissions: { read: true, net: true } }, async
     assertions.assertExpectedMime(result, ["application/xml"]);
     assertions.assertMinContentLength(result, 100);
 });
-

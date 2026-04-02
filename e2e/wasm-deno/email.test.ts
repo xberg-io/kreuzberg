@@ -129,4 +129,3 @@ Deno.test("email_sample_eml", { permissions: { read: true, net: true } }, async 
     assertions.assertExpectedMime(result, ["message/rfc822"]);
     assertions.assertMinContentLength(result, 20);
 });
-

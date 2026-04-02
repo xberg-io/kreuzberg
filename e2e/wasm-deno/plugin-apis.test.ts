@@ -85,4 +85,3 @@ Deno.test("List all registered validators", () => {
     assertEquals(Array.isArray(result), true);
     assertEquals(result.every((item: unknown) => typeof item === "string"), true);
 });
-

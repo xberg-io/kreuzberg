@@ -244,4 +244,3 @@ describe("structured fixtures", () => {
   }, TEST_TIMEOUT_MS);
 
 });
-

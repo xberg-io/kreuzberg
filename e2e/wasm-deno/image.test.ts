@@ -209,4 +209,3 @@ Deno.test("image_webp_basic", { permissions: { read: true, net: true } }, async 
     assertions.assertExpectedMime(result, ["image/webp"]);
     assertions.assertContentNotEmpty(result);
 });
-

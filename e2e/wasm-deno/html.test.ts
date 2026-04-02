@@ -30,4 +30,3 @@ Deno.test("html_simple_table", { permissions: { read: true, net: true } }, async
     assertions.assertMinContentLength(result, 100);
     assertions.assertContentContainsAll(result, ["Product", "Category", "Price", "Stock", "Laptop", "Electronics", "Sample Data Table"]);
 });
-

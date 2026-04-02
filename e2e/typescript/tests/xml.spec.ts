@@ -36,4 +36,3 @@ describe("xml fixtures", () => {
   }, TEST_TIMEOUT_MS);
 
 });
-

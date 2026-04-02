@@ -60,4 +60,3 @@ describe("html fixtures", () => {
   }, TEST_TIMEOUT_MS);
 
 });
-

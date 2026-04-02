@@ -243,4 +243,3 @@ describe("image fixtures", () => {
   }, TEST_TIMEOUT_MS);
 
 });
-

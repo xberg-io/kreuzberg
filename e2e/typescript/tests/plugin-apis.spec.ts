@@ -26,7 +26,7 @@ describe("Configuration", () => {
             process.chdir(subDir);
 
             const config = kreuzberg.ExtractionConfig.discover();
-            
+
             expect(config.chunking).toBeDefined();
             expect(config.chunking?.maxChars).toBe(50);
         } finally {
@@ -142,4 +142,3 @@ describe("Validator Management", () => {
     });
 
 });
-
