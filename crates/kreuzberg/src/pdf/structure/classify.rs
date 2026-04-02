@@ -111,7 +111,40 @@ pub(super) fn classify_paragraphs(paragraphs: &mut [PdfParagraph], heading_map: 
                 && !looks_like_figure_label(t)
                 && !super::layout_classify::is_separator_text(t)
             {
-                para.heading_level = Some(2);
+                // Use font-size ratio to body to differentiate H2 vs H3:
+                // - font > 1.2× body → H2 (clearly larger sub-heading)
+                // - font > body (bold at body size) → H3 (same-size bold sub-heading)
+                // - section numbering also influences level via infer_section_level
+                let level = infer_bold_heading_level(para.dominant_font_size, body_font_size, t);
+                para.heading_level = Some(level);
+            }
+        }
+
+        // Pass 2.5: section numbering pattern detection.
+        // Short paragraphs starting with section numbers (1., 2.1, I., A.) are
+        // likely headings even if not bold — common in academic papers.
+        if para.heading_level.is_none()
+            && !para.is_list_item
+            && !para.is_code_block
+            && (2..=MAX_HEADING_WORD_COUNT).contains(&word_count)
+        {
+            let t = para_text.trim();
+            if starts_with_section_number(t)
+                && !t.ends_with(':')
+                && !looks_like_figure_label(t)
+                && !super::layout_classify::is_separator_text(t)
+            {
+                // Only promote if font size is at or above body size (avoid promoting
+                // footnotes or captions that happen to start with numbers).
+                let at_or_above_body = body_font_size <= 0.0 || para.dominant_font_size >= body_font_size - 0.5;
+                // Guard against layout model saying this is body text
+                let layout_ok = !layout_says_text
+                    || (body_font_size > 0.0 && para.dominant_font_size > body_font_size + 0.5)
+                    || para.is_bold;
+                if at_or_above_body && layout_ok {
+                    let level = infer_section_level(t);
+                    para.heading_level = Some(level);
+                }
             }
         }
 
@@ -248,6 +281,87 @@ pub(super) fn refine_heading_hierarchy(all_pages: &mut [Vec<PdfParagraph>]) {
                 }
             }
         }
+    }
+}
+
+/// Determine heading level for a bold/italic paragraph based on font-size ratio to body.
+///
+/// - Font size > 1.2× body → H2 (clearly larger sub-heading)
+/// - Font size at body size but bold → H3 (same-size bold sub-heading)
+/// - Section numbering overrides: uses dot count for depth (e.g., "3.2" → H3)
+fn infer_bold_heading_level(font_size: f32, body_font_size: f32, text: &str) -> u8 {
+    // If text starts with a section number, use numbering depth
+    if starts_with_section_number(text) {
+        return infer_section_level(text);
+    }
+
+    // Use font-size ratio to differentiate H2 vs H3
+    if body_font_size > 0.0 {
+        let ratio = font_size / body_font_size;
+        if ratio > 1.2 {
+            return 2; // Clearly larger than body → H2
+        }
+        // Bold at roughly body size → H3 (sub-section heading)
+        return 3;
+    }
+
+    // No body font size info, default to H2
+    2
+}
+
+/// Infer heading level from section numbering in text.
+///
+/// Determines depth from the numbering pattern:
+/// - "1 Introduction" or "I. INTRO" or "A. Proofs" → H2 (top-level section)
+/// - "1.1 Details" or "A.1 Sub" → H3 (sub-section)
+/// - "1.1.1 Deep" → H4 (sub-sub-section)
+fn infer_section_level(text: &str) -> u8 {
+    let trimmed = text.trim();
+
+    // Check for alphabetic prefix: "A.", "B.1"
+    let first_char = trimmed.chars().next().unwrap_or(' ');
+    let is_alpha_prefix = first_char.is_ascii_alphabetic()
+        && trimmed.len() >= 2
+        && matches!(trimmed.as_bytes().get(1), Some(b'.' | b')' | b' '));
+
+    let numbering_end = if is_alpha_prefix {
+        let after_letter = &trimmed[1..];
+        let rest_end = after_letter
+            .find(|c: char| !c.is_ascii_digit() && c != '.')
+            .unwrap_or(0);
+        1 + rest_end
+    } else {
+        // Check for roman numerals
+        let roman_chars: &[u8] = b"IVXLCDM";
+        let bytes = trimmed.as_bytes();
+        let roman_end = bytes.iter().position(|b| !roman_chars.contains(b)).unwrap_or(0);
+        if roman_end > 0 && roman_end <= 5 && roman_end < bytes.len() {
+            let next = bytes[roman_end];
+            if (next == b'.' || next == b' ' || next == b')') && is_valid_roman(&trimmed[..roman_end]) {
+                // Roman numeral → top-level (H2), no sub-numbering
+                return 2;
+            }
+        }
+        // Numeric prefix: "3.2.1"
+        trimmed.find(|c: char| !c.is_ascii_digit() && c != '.').unwrap_or(0)
+    };
+
+    if numbering_end == 0 {
+        return 2; // No numbering, default H2
+    }
+
+    let numbering = &trimmed[..numbering_end];
+    let dot_count = numbering.chars().filter(|&c| c == '.').count();
+    let effective_dots = if numbering.ends_with('.') {
+        dot_count.saturating_sub(1)
+    } else {
+        dot_count
+    };
+
+    match effective_dots {
+        0 => 2, // "1 Introduction" → H2
+        1 => 3, // "3.2 AI models" → H3
+        _ => 4, // "3.2.1 Details" → H4
     }
 }
 
@@ -742,7 +856,8 @@ mod tests {
         para.lines[0].is_bold = true;
         let mut paragraphs = vec![para];
         classify_paragraphs(&mut paragraphs, &heading_map);
-        assert_eq!(paragraphs[0].heading_level, Some(2));
+        // Bold at body font size → H3 (sub-section heading)
+        assert_eq!(paragraphs[0].heading_level, Some(3));
     }
 
     #[test]
@@ -968,13 +1083,156 @@ mod tests {
 
     #[test]
     fn test_layout_text_bold_larger_font_promoted_pass2() {
-        // Layout says Text, bold + font distinctly larger than body → Pass 2 promotes to H2
+        // Layout says Text, bold + font distinctly larger than body → Pass 2 promotes
+        // 14pt / 12pt body = 1.167 ratio (< 1.2) → H3 (sub-section bold heading)
         let heading_map = vec![(12.0, None)]; // no heading clusters
         let mut para = make_paragraph(14.0, 3);
         para.is_bold = true;
         para.layout_class = Some(super::super::types::LayoutHintClass::Text);
         let mut paragraphs = vec![para];
         classify_paragraphs(&mut paragraphs, &heading_map);
+        assert_eq!(paragraphs[0].heading_level, Some(3));
+    }
+
+    #[test]
+    fn test_layout_text_bold_much_larger_font_promoted_h2() {
+        // Layout says Text, bold + font much larger than body → H2
+        // 15pt / 12pt body = 1.25 ratio (> 1.2) → H2
+        let heading_map = vec![(12.0, None)]; // no heading clusters
+        let mut para = make_paragraph(15.0, 3);
+        para.is_bold = true;
+        para.layout_class = Some(super::super::types::LayoutHintClass::Text);
+        let mut paragraphs = vec![para];
+        classify_paragraphs(&mut paragraphs, &heading_map);
         assert_eq!(paragraphs[0].heading_level, Some(2));
+    }
+
+    #[test]
+    fn test_infer_bold_heading_level_large_ratio_h2() {
+        // 15pt / 12pt = 1.25 → H2
+        assert_eq!(infer_bold_heading_level(15.0, 12.0, "Methods"), 2);
+    }
+
+    #[test]
+    fn test_infer_bold_heading_level_body_size_h3() {
+        // 12pt / 12pt = 1.0 → H3
+        assert_eq!(infer_bold_heading_level(12.0, 12.0, "Methods"), 3);
+    }
+
+    #[test]
+    fn test_infer_bold_heading_level_numbered_section() {
+        // Bold numbered section uses numbering depth
+        assert_eq!(infer_bold_heading_level(12.0, 12.0, "3 Processing pipeline"), 2);
+        assert_eq!(infer_bold_heading_level(12.0, 12.0, "3.2 AI models"), 3);
+        assert_eq!(infer_bold_heading_level(12.0, 12.0, "3.2.1 Details"), 4);
+    }
+
+    #[test]
+    fn test_infer_section_level_numeric() {
+        assert_eq!(infer_section_level("1 Introduction"), 2);
+        assert_eq!(infer_section_level("3.2 AI models"), 3);
+        assert_eq!(infer_section_level("3.2.1 Details"), 4);
+    }
+
+    #[test]
+    fn test_infer_section_level_roman() {
+        assert_eq!(infer_section_level("I. INTRODUCTION"), 2);
+        assert_eq!(infer_section_level("IV RESULTS"), 2);
+    }
+
+    #[test]
+    fn test_infer_section_level_alpha() {
+        assert_eq!(infer_section_level("A. Proofs"), 2);
+        assert_eq!(infer_section_level("A.1 Sub-section"), 3);
+    }
+
+    #[test]
+    fn test_infer_section_level_no_number() {
+        assert_eq!(infer_section_level("Layout Analysis Model"), 2);
+    }
+
+    /// Helper to create a paragraph with specific text.
+    fn make_text_paragraph(font_size: f32, text: &str, is_bold: bool) -> PdfParagraph {
+        let segments = vec![SegmentData {
+            text: text.to_string(),
+            x: 0.0,
+            y: 700.0,
+            width: 200.0,
+            height: font_size,
+            font_size,
+            is_bold,
+            is_italic: false,
+            is_monospace: false,
+            baseline_y: 700.0,
+        }];
+        PdfParagraph {
+            text: String::new(),
+            lines: vec![super::super::types::PdfLine {
+                segments,
+                baseline_y: 700.0,
+                dominant_font_size: font_size,
+                is_bold,
+                is_monospace: false,
+            }],
+            dominant_font_size: font_size,
+            heading_level: None,
+            is_bold,
+            is_list_item: false,
+            is_code_block: false,
+            is_formula: false,
+            is_page_furniture: false,
+            layout_class: None,
+            caption_for: None,
+            block_bbox: None,
+        }
+    }
+
+    #[test]
+    fn test_section_numbering_promotes_non_bold_heading() {
+        // Non-bold paragraph starting with section number at body font size
+        // gets promoted via Pass 2.5 (no layout class = no blocking)
+        let heading_map = vec![(12.0, None)]; // only body cluster
+        let mut paragraphs = vec![make_text_paragraph(12.0, "3 Processing pipeline", false)];
+        classify_paragraphs(&mut paragraphs, &heading_map);
+        assert_eq!(paragraphs[0].heading_level, Some(2));
+    }
+
+    #[test]
+    fn test_section_numbering_blocked_by_layout_text() {
+        // Layout model says Text + non-bold + body font size → Pass 2.5 blocks promotion
+        let heading_map = vec![(12.0, None)];
+        let mut para = make_text_paragraph(12.0, "3 Processing pipeline", false);
+        para.layout_class = Some(super::super::types::LayoutHintClass::Text);
+        let mut paragraphs = vec![para];
+        classify_paragraphs(&mut paragraphs, &heading_map);
+        assert_eq!(paragraphs[0].heading_level, None);
+    }
+
+    #[test]
+    fn test_section_numbering_promotes_bold_at_body_size() {
+        // Bold paragraph with section number at body font size
+        let heading_map = vec![(12.0, None)];
+        let mut paragraphs = vec![make_text_paragraph(12.0, "3 Processing pipeline", true)];
+        classify_paragraphs(&mut paragraphs, &heading_map);
+        // Bold + numbered → promoted via Pass 2 with infer_bold_heading_level
+        assert_eq!(paragraphs[0].heading_level, Some(2));
+    }
+
+    #[test]
+    fn test_section_numbering_subsection_bold() {
+        // Bold paragraph with sub-section number
+        let heading_map = vec![(12.0, None)];
+        let mut paragraphs = vec![make_text_paragraph(12.0, "3.2 AI models", true)];
+        classify_paragraphs(&mut paragraphs, &heading_map);
+        assert_eq!(paragraphs[0].heading_level, Some(3));
+    }
+
+    #[test]
+    fn test_bold_heading_with_heading_cluster_keeps_cluster_level() {
+        // When font-size clustering assigns H1, bold text should keep it
+        let heading_map = vec![(18.0, Some(1)), (12.0, None)];
+        let mut paragraphs = vec![make_text_paragraph(18.0, "Title", true)];
+        classify_paragraphs(&mut paragraphs, &heading_map);
+        assert_eq!(paragraphs[0].heading_level, Some(1));
     }
 }

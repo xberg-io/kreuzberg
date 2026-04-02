@@ -124,6 +124,15 @@ public record Table(@JsonProperty("cells") List<List<String>> cells, @JsonProper
 		return Collections.unmodifiableList(cells.get(row));
 	}
 
+	/**
+	 * Returns the bounding box of the table.
+	 *
+	 * @return the bounding box, or null if not available
+	 */
+	public BoundingBox getBoundingBox() {
+		return boundingBox;
+	}
+
 	@Override
 	public String toString() {
 		return "Table{" + "rows=" + getRowCount() + ", cols=" + getColumnCount() + ", page=" + pageNumber

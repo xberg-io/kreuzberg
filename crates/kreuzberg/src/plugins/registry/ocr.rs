@@ -30,9 +30,15 @@ pub struct OcrBackendRegistry {
 impl OcrBackendRegistry {
     /// Create a new OCR backend registry with default backends.
     ///
-    /// Registers the Tesseract backend by default if the "ocr" feature is enabled.
-    /// Logs warnings if backend initialization fails (common in containerized environments
-    /// with missing dependencies or permission issues).
+    /// Registers the Tesseract backend by default if the "ocr" feature is enabled,
+    /// and PaddleOCR if the "paddle-ocr" feature is enabled.
+    ///
+    /// # Panics
+    ///
+    /// Panics if a compiled-in OCR backend fails to initialize or register.
+    /// This is intentional — a feature-enabled backend that cannot initialize
+    /// indicates a broken build or environment that must be fixed, not silently ignored.
+    #[tracing::instrument(name = "ocr_backend_registry_init")]
     pub fn new() -> Self {
         #[cfg(any(feature = "ocr", feature = "paddle-ocr"))]
         let mut registry = Self {
@@ -47,52 +53,39 @@ impl OcrBackendRegistry {
         #[cfg(feature = "ocr")]
         {
             use crate::ocr::tesseract_backend::TesseractBackend;
-            match TesseractBackend::new() {
-                Ok(backend) => {
-                    if let Err(e) = registry.register(Arc::new(backend)) {
-                        tracing::error!(
-                            "Failed to register Tesseract OCR backend: {}. \
-                             OCR functionality will be unavailable. \
-                             Check TESSDATA_PREFIX environment variable and tessdata file permissions.",
-                            e
-                        );
-                    }
-                }
-                Err(e) => {
-                    tracing::warn!(
-                        "Tesseract OCR backend initialization failed: {}. \
-                         OCR functionality will be unavailable. \
-                         Common causes: missing TESSDATA_PREFIX env var, \
-                         tessdata files not found, or permission issues in containerized environments. \
-                         See https://docs.kreuzberg.dev/guides/docker/ for Kubernetes troubleshooting.",
-                        e
-                    );
-                }
-            }
+            tracing::info!("Initializing Tesseract OCR backend");
+            let backend = TesseractBackend::new().unwrap_or_else(|e| {
+                panic!(
+                    "Tesseract OCR backend initialization failed: {e}. \
+                     The 'ocr' feature is enabled but the backend cannot start. \
+                     Check TESSDATA_PREFIX environment variable, tessdata file permissions, \
+                     and cache directory writability."
+                );
+            });
+            registry.register(Arc::new(backend)).unwrap_or_else(|e| {
+                panic!(
+                    "Failed to register Tesseract OCR backend: {e}. \
+                     Check TESSDATA_PREFIX environment variable and tessdata file permissions."
+                );
+            });
+            tracing::info!("Tesseract OCR backend registered successfully");
         }
 
         #[cfg(feature = "paddle-ocr")]
         {
             use crate::paddle_ocr::PaddleOcrBackend;
-            match PaddleOcrBackend::new() {
-                Ok(backend) => {
-                    if let Err(e) = registry.register(Arc::new(backend)) {
-                        tracing::error!(
-                            "Failed to register PaddleOCR backend: {}. \
-                             PaddleOCR functionality will be unavailable.",
-                            e
-                        );
-                    }
-                }
-                Err(e) => {
-                    tracing::warn!(
-                        "PaddleOCR backend initialization failed: {}. \
-                         PaddleOCR functionality will be unavailable. \
-                         Common causes: ONNX Runtime not installed, model files missing.",
-                        e
-                    );
-                }
-            }
+            tracing::info!("Initializing PaddleOCR backend");
+            let backend = PaddleOcrBackend::new().unwrap_or_else(|e| {
+                panic!(
+                    "PaddleOCR backend initialization failed: {e}. \
+                     The 'paddle-ocr' feature is enabled but the backend cannot start. \
+                     Check ONNX Runtime availability and model files."
+                );
+            });
+            registry.register(Arc::new(backend)).unwrap_or_else(|e| {
+                panic!("Failed to register PaddleOCR backend: {e}.");
+            });
+            tracing::info!("PaddleOCR backend registered successfully");
         }
 
         registry
@@ -128,13 +121,16 @@ impl OcrBackendRegistry {
     /// // registry.register(backend)?;
     /// # Ok::<(), kreuzberg::KreuzbergError>(())
     /// ```
+    #[tracing::instrument(skip(self, backend), fields(backend_name))]
     pub fn register(&mut self, backend: Arc<dyn OcrBackend>) -> Result<()> {
         let name = backend.name().to_string();
+        tracing::Span::current().record("backend_name", name.as_str());
 
         super::validate_plugin_name(&name)?;
 
         backend.initialize()?;
 
+        tracing::info!(backend = %name, "OCR backend registered");
         self.backends.insert(name, backend);
         Ok(())
     }
@@ -148,19 +144,28 @@ impl OcrBackendRegistry {
     /// # Returns
     ///
     /// The backend if found, or an error if not registered.
+    #[tracing::instrument(skip(self), fields(registered_backends = ?self.backends.keys().collect::<Vec<_>>()))]
     pub fn get(&self, name: &str) -> Result<Arc<dyn OcrBackend>> {
         // Normalize common aliases: "paddleocr" → "paddle-ocr"
         let canonical = match name {
             "paddleocr" => "paddle-ocr",
             _ => name,
         };
-        self.backends
-            .get(canonical)
-            .cloned()
-            .ok_or_else(|| KreuzbergError::Plugin {
-                message: format!("OCR backend '{}' not registered", name),
+        self.backends.get(canonical).cloned().ok_or_else(|| {
+            tracing::error!(
+                backend = name,
+                available = ?self.backends.keys().collect::<Vec<_>>(),
+                "OCR backend not found in registry"
+            );
+            KreuzbergError::Plugin {
+                message: format!(
+                    "OCR backend '{}' not registered. Available backends: {:?}",
+                    name,
+                    self.backends.keys().collect::<Vec<_>>()
+                ),
                 plugin_name: name.to_string(),
-            })
+            }
+        })
     }
 
     /// Get an OCR backend that supports a specific language.

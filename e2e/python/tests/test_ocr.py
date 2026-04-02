@@ -210,6 +210,11 @@ def test_ocr_paddle_table_detection() -> None:
     if not document_path.exists():
         pytest.skip(f"Skipping ocr_paddle_table_detection: missing document at {document_path}")
 
+    import platform as _platform
+
+    if _platform.machine() == "aarch64" and _platform.system() == "Linux":
+        pytest.skip("Skipping ocr_paddle_table_detection: not supported on this platform")
+
     config = helpers.build_config(
         {
             "ocr": {"backend": "paddle-ocr", "language": "en", "paddle_ocr_config": {"enable_table_detection": True}},

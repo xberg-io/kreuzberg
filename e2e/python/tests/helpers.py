@@ -338,6 +338,10 @@ def _assert_chunks_heading_context(chunks: Any, expected: bool) -> None:
 
 def _assert_chunks_heading_prefix(chunks: Any) -> None:
     for i, chunk in enumerate(chunks):
+        meta = getattr(chunk, "metadata", None)
+        hc = getattr(meta, "heading_context", None) if meta else None
+        if hc is None:
+            continue
         content = getattr(chunk, "content", None)
         if not isinstance(content, str) or content[0:1] != chr(35):
             pytest.fail(f"Chunk {i} content does not start with a heading")

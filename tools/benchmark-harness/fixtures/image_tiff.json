@@ -10,6 +10,6 @@
 	},
 	"ground_truth": {
 		"text_file": "../../../test_documents/ground_truth/tiff/image_tiff.md",
-		"source": "vision"
+		"source": "mistral-pixtral"
 	}
 }

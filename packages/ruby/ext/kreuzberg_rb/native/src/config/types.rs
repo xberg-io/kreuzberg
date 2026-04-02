@@ -873,6 +873,10 @@ pub fn parse_extraction_config(ruby: &Ruby, opts: Option<RHash>) -> Result<Extra
             config.force_ocr = bool::try_convert(val)?;
         }
 
+        if let Some(val) = get_kw(ruby, hash, "disable_ocr") {
+            config.disable_ocr = bool::try_convert(val)?;
+        }
+
         if let Some(val) = get_kw(ruby, hash, "force_ocr_pages")
             && val.equal(ruby.qnil()).ok() != Some(true)
         {

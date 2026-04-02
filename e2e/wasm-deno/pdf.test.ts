@@ -92,7 +92,14 @@ Deno.test("pdf_bounding_boxes", { permissions: { read: true, net: true } }, asyn
 		// Sync file extraction - WASM uses extractBytes with pre-read bytes
 		result = await extractBytes(documentBytes, "application/octet-stream", config);
 	} catch (error) {
-		if (shouldSkipFixture(error, "pdf_bounding_boxes", ["pdf"], undefined)) {
+		if (
+			shouldSkipFixture(
+				error,
+				"pdf_bounding_boxes",
+				["pdf"],
+				"ONNX Runtime model loading unstable on ARM Linux; table detection returns 0 tables",
+			)
+		) {
 			return;
 		}
 		throw error;
@@ -351,7 +358,14 @@ Deno.test("pdf_tables_small", { permissions: { read: true, net: true } }, async 
 		// Sync file extraction - WASM uses extractBytes with pre-read bytes
 		result = await extractBytes(documentBytes, "application/pdf", config);
 	} catch (error) {
-		if (shouldSkipFixture(error, "pdf_tables_small", ["ocr"], "PDF table extraction requires OCR feature")) {
+		if (
+			shouldSkipFixture(
+				error,
+				"pdf_tables_small",
+				["ocr"],
+				"PDF table extraction requires OCR feature. ONNX Runtime model loading unstable on ARM Linux.",
+			)
+		) {
 			return;
 		}
 		throw error;

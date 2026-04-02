@@ -85,7 +85,7 @@ defmodule E2E.PdfTest do
              "pdf/tiny.pdf",
              %{images: %{extract_images: true}},
              requirements: ["pdf"],
-             notes: nil,
+             notes: "ONNX Runtime model loading unstable on ARM Linux; table detection returns 0 tables",
              skip_if_missing: true
            ) do
         {:ok, result} ->
@@ -385,7 +385,7 @@ defmodule E2E.PdfTest do
              "pdf/tiny.pdf",
              nil,
              requirements: ["ocr"],
-             notes: "PDF table extraction requires OCR feature",
+             notes: "PDF table extraction requires OCR feature. ONNX Runtime model loading unstable on ARM Linux.",
              skip_if_missing: true
            ) do
         {:ok, result} ->

@@ -213,11 +213,11 @@ pub struct JsExtractionResult {
     pub pages: Vec<JsPageContent>,
     pub elements: Vec<JsElement>,
     #[napi(ts_type = "DocumentStructure | null")]
-    pub document: Option<serde_json::Value>,
+    pub document: serde_json::Value,
     #[napi(ts_type = "DjotContent | null", js_name = "djotContent")]
-    pub djot_content: Option<serde_json::Value>,
+    pub djot_content: serde_json::Value,
     #[napi(ts_type = "OcrElement[] | null")]
-    pub ocr_elements: Option<serde_json::Value>,
+    pub ocr_elements: serde_json::Value,
     #[napi(js_name = "extractedKeywords")]
     pub extracted_keywords: Vec<JsExtractedKeyword>,
     #[napi(js_name = "qualityScore")]
@@ -413,40 +413,35 @@ impl TryFrom<RustExtractionResult> for JsExtractionResult {
             })
             .unwrap_or_default();
 
-        let document = val
-            .document
-            .as_ref()
-            .map(serde_json::to_value)
-            .transpose()
-            .map_err(|e| {
+        let document = match val.document.as_ref() {
+            Some(doc) => serde_json::to_value(doc).map_err(|e| {
                 Error::new(
                     Status::GenericFailure,
                     format!("Failed to serialize document structure: {}", e),
                 )
-            })?;
+            })?,
+            None => serde_json::Value::Null,
+        };
 
-        let djot_content = val
-            .djot_content
-            .as_ref()
-            .map(serde_json::to_value)
-            .transpose()
-            .map_err(|e| {
+        let djot_content = match val.djot_content.as_ref() {
+            Some(dc) => serde_json::to_value(dc).map_err(|e| {
                 Error::new(
                     Status::GenericFailure,
                     format!("Failed to serialize djot_content: {}", e),
                 )
-            })?;
+            })?,
+            None => serde_json::Value::Null,
+        };
 
-        let ocr_elements = val
-            .ocr_elements
-            .map(|elems| serde_json::to_value(&elems))
-            .transpose()
-            .map_err(|e| {
+        let ocr_elements = match val.ocr_elements {
+            Some(ref elems) => serde_json::to_value(elems).map_err(|e| {
                 Error::new(
                     Status::GenericFailure,
                     format!("Failed to serialize ocr_elements: {}", e),
                 )
-            })?;
+            })?,
+            None => serde_json::Value::Null,
+        };
 
         let extracted_keywords = val
             .extracted_keywords
@@ -789,7 +784,11 @@ impl TryFrom<JsExtractionResult> for RustExtractionResult {
             Some(rust_chunks)
         };
 
-        let document = val.document.and_then(|v| serde_json::from_value(v).ok());
+        let document = if val.document.is_null() {
+            None
+        } else {
+            serde_json::from_value(val.document).ok()
+        };
 
         Ok(RustExtractionResult {
             content: val.content,
@@ -855,8 +854,16 @@ impl TryFrom<JsExtractionResult> for RustExtractionResult {
                 )
             },
             document,
-            djot_content: val.djot_content.and_then(|v| serde_json::from_value(v).ok()),
-            ocr_elements: val.ocr_elements.and_then(|v| serde_json::from_value(v).ok()),
+            djot_content: if val.djot_content.is_null() {
+                None
+            } else {
+                serde_json::from_value(val.djot_content).ok()
+            },
+            ocr_elements: if val.ocr_elements.is_null() {
+                None
+            } else {
+                serde_json::from_value(val.ocr_elements).ok()
+            },
             extracted_keywords: if val.extracted_keywords.is_empty() {
                 None
             } else {

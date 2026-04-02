@@ -28,6 +28,7 @@
 	},
 	"skip": {
 		"requires_feature": ["paddle-ocr"],
-		"notes": "Tests table detection capability with PaddleOCR"
+		"skip_on_platform": ["aarch64-unknown-linux-gnu"],
+		"notes": "Tests table detection capability with PaddleOCR. ONNX Runtime model loading unstable on ARM Linux."
 	}
 }

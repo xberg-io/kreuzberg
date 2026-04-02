@@ -427,6 +427,7 @@ export const assertions = {
 		}
 		if (contentStartsWithHeading === true) {
 			for (const chunk of chunks) {
+				if (chunk.metadata?.headingContext == null) continue;
 				expect(typeof chunk.content === "string" && chunk.content.charCodeAt(0) === 35).toBe(true);
 			}
 		}

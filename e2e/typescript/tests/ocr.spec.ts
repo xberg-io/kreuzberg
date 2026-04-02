@@ -387,7 +387,13 @@ describe("ocr fixtures", () => {
 			const documentPath = resolveDocument("images/simple_table.png");
 			if (!existsSync(documentPath)) {
 				console.warn("Skipping ocr_paddle_table_detection: missing document at", documentPath);
-				console.warn("Notes: Tests table detection capability with PaddleOCR");
+				console.warn(
+					"Notes: Tests table detection capability with PaddleOCR. ONNX Runtime model loading unstable on ARM Linux.",
+				);
+				return;
+			}
+			if (process.arch === "arm64" && process.platform === "linux") {
+				console.warn("Skipping ocr_paddle_table_detection: not supported on this platform");
 				return;
 			}
 			const config = buildConfig({
@@ -403,7 +409,7 @@ describe("ocr fixtures", () => {
 						error,
 						"ocr_paddle_table_detection",
 						["onnxruntime", "paddle-ocr"],
-						"Tests table detection capability with PaddleOCR",
+						"Tests table detection capability with PaddleOCR. ONNX Runtime model loading unstable on ARM Linux.",
 					)
 				) {
 					return;

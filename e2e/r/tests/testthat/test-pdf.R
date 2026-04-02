@@ -54,7 +54,7 @@ test_that("pdf_bounding_boxes", {
     "pdf/tiny.pdf",
     list(images = list(extract_images = TRUE)),
     requirements = c("pdf"),
-    notes = NULL,
+    notes = "ONNX Runtime model loading unstable on ARM Linux; table detection returns 0 tables",
     skip_if_missing = TRUE
   )
   assert_expected_mime(result, c("application/pdf"))
@@ -239,7 +239,7 @@ test_that("pdf_tables_small", {
     "pdf/tiny.pdf",
     NULL,
     requirements = c("ocr"),
-    notes = "PDF table extraction requires OCR feature",
+    notes = "PDF table extraction requires OCR feature. ONNX Runtime model loading unstable on ARM Linux.",
     skip_if_missing = TRUE
   )
   assert_expected_mime(result, c("application/pdf"))

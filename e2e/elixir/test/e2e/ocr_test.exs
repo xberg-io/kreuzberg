@@ -276,7 +276,8 @@ defmodule E2E.OcrTest do
                force_ocr: true
              },
              requirements: ["paddle-ocr", "paddle-ocr", "onnxruntime"],
-             notes: "Tests table detection capability with PaddleOCR",
+             notes:
+               "Tests table detection capability with PaddleOCR. ONNX Runtime model loading unstable on ARM Linux.",
              skip_if_missing: true
            ) do
         {:ok, result} ->

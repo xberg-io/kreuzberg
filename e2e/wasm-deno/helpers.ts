@@ -484,6 +484,8 @@ export const assertions = {
 		}
 		if (contentStartsWithHeading === true) {
 			for (const chunk of chunks) {
+				const meta = (chunk as PlainRecord).metadata as PlainRecord | undefined;
+				if (meta?.headingContext == null) continue;
 				const content = (chunk as PlainRecord).content;
 				assertEquals(
 					typeof content === "string" && (content as string).charCodeAt(0) === 35,

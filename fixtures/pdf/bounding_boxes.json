@@ -23,6 +23,8 @@
 		}
 	},
 	"skip": {
-		"requires_feature": ["pdf"]
+		"requires_feature": ["pdf"],
+		"skip_on_platform": ["aarch64-unknown-linux-gnu"],
+		"notes": "ONNX Runtime model loading unstable on ARM Linux; table detection returns 0 tables"
 	}
 }

@@ -74,6 +74,11 @@ def test_pdf_bounding_boxes() -> None:
     if not document_path.exists():
         pytest.skip(f"Skipping pdf_bounding_boxes: missing document at {document_path}")
 
+    import platform as _platform
+
+    if _platform.machine() == "aarch64" and _platform.system() == "Linux":
+        pytest.skip("Skipping pdf_bounding_boxes: not supported on this platform")
+
     config = helpers.build_config({"images": {"extract_images": True}})
 
     result = extract_file_sync(document_path, None, config)
@@ -284,6 +289,11 @@ def test_pdf_tables_small() -> None:
     document_path = helpers.resolve_document("pdf/tiny.pdf")
     if not document_path.exists():
         pytest.skip(f"Skipping pdf_tables_small: missing document at {document_path}")
+
+    import platform as _platform
+
+    if _platform.machine() == "aarch64" and _platform.system() == "Linux":
+        pytest.skip("Skipping pdf_tables_small: not supported on this platform")
 
     config = helpers.build_config(None)
 

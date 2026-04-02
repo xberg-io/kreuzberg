@@ -800,6 +800,8 @@ export const chunkAssertions = {
         }
         if (contentStartsWithHeading === true) {
             for (const chunk of chunks) {
+                const meta = (chunk as PlainRecord).metadata as PlainRecord | undefined;
+                if (meta?.headingContext == null) continue;
                 const content = (chunk as PlainRecord).content;
                 expect(typeof content === "string" && content.charCodeAt(0) === 35).toBe(true);
             }

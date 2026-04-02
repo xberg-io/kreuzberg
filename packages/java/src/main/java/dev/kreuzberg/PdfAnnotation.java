@@ -83,6 +83,24 @@ public record PdfAnnotation(@JsonProperty("annotation_type") String annotationTy
 		}
 	}
 
+	/**
+	 * Returns the annotation type.
+	 *
+	 * @return the annotation type string
+	 */
+	public String getAnnotationType() {
+		return annotationType;
+	}
+
+	/**
+	 * Returns the bounding box of the annotation.
+	 *
+	 * @return the bounding box, or null if not available
+	 */
+	public PdfAnnotationBoundingBox getBoundingBox() {
+		return boundingBox;
+	}
+
 	@Override
 	public String toString() {
 		return "PdfAnnotation{" + "annotationType='" + annotationType + '\'' + ", content='" + content + '\''

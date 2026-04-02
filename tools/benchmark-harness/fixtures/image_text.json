@@ -13,6 +13,6 @@
 	},
 	"ground_truth": {
 		"text_file": "../../../test_documents/ground_truth/jpeg/image_text.md",
-		"source": "vision"
+		"source": "mistral-pixtral"
 	}
 }

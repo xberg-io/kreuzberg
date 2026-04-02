@@ -85,12 +85,18 @@ public class PdfTest {
   public void pdfBoundingBoxes() throws Exception {
     JsonNode config = MAPPER.readTree("{\"images\":{\"extract_images\":true}}");
     E2EHelpers.skipIfFeatureUnavailable("pdf");
+    if ((System.getProperty("os.arch").equals("aarch64")
+        && System.getProperty("os.name").startsWith("Linux"))) {
+      org.junit.jupiter.api.Assumptions.assumeTrue(
+          false, "Skipping pdf_bounding_boxes: not supported on this platform");
+      return;
+    }
     E2EHelpers.runFixture(
         "pdf_bounding_boxes",
         "pdf/tiny.pdf",
         config,
         Arrays.asList("pdf"),
-        null,
+        "ONNX Runtime model loading unstable on ARM Linux; table detection returns 0 tables",
         true,
         result -> {
           E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("application/pdf"));
@@ -320,12 +326,19 @@ public class PdfTest {
   public void pdfTablesSmall() throws Exception {
     JsonNode config = null;
     E2EHelpers.skipIfFeatureUnavailable("ocr");
+    if ((System.getProperty("os.arch").equals("aarch64")
+        && System.getProperty("os.name").startsWith("Linux"))) {
+      org.junit.jupiter.api.Assumptions.assumeTrue(
+          false, "Skipping pdf_tables_small: not supported on this platform");
+      return;
+    }
     E2EHelpers.runFixture(
         "pdf_tables_small",
         "pdf/tiny.pdf",
         config,
         Arrays.asList("ocr"),
-        "PDF table extraction requires OCR feature",
+        "PDF table extraction requires OCR feature. ONNX Runtime model loading unstable on ARM"
+            + " Linux.",
         true,
         result -> {
           E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("application/pdf"));

@@ -167,7 +167,7 @@ test_that("ocr_paddle_table_detection", {
     "images/simple_table.png",
     list(ocr = list(backend = "paddle-ocr", language = "en", paddle_ocr_config = list(enable_table_detection = TRUE)), force_ocr = TRUE),
     requirements = c("paddle-ocr", "paddle-ocr", "onnxruntime"),
-    notes = "Tests table detection capability with PaddleOCR",
+    notes = "Tests table detection capability with PaddleOCR. ONNX Runtime model loading unstable on ARM Linux.",
     skip_if_missing = TRUE
   )
   assert_expected_mime(result, c("image/png"))

@@ -26,6 +26,7 @@
 	},
 	"skip": {
 		"requires_feature": ["ocr"],
-		"notes": "PDF table extraction requires OCR feature"
+		"skip_on_platform": ["aarch64-unknown-linux-gnu"],
+		"notes": "PDF table extraction requires OCR feature. ONNX Runtime model loading unstable on ARM Linux."
 	}
 }

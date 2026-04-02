@@ -115,6 +115,11 @@ describe("pdf fixtures", () => {
 			const documentPath = resolveDocument("pdf/tiny.pdf");
 			if (!existsSync(documentPath)) {
 				console.warn("Skipping pdf_bounding_boxes: missing document at", documentPath);
+				console.warn("Notes: ONNX Runtime model loading unstable on ARM Linux; table detection returns 0 tables");
+				return;
+			}
+			if (process.arch === "arm64" && process.platform === "linux") {
+				console.warn("Skipping pdf_bounding_boxes: not supported on this platform");
 				return;
 			}
 			const config = buildConfig({ images: { extract_images: true } });
@@ -122,7 +127,14 @@ describe("pdf fixtures", () => {
 			try {
 				result = extractFileSync(documentPath, null, config);
 			} catch (error) {
-				if (shouldSkipFixture(error, "pdf_bounding_boxes", ["pdf"], undefined)) {
+				if (
+					shouldSkipFixture(
+						error,
+						"pdf_bounding_boxes",
+						["pdf"],
+						"ONNX Runtime model loading unstable on ARM Linux; table detection returns 0 tables",
+					)
+				) {
 					return;
 				}
 				throw error;
@@ -488,7 +500,13 @@ describe("pdf fixtures", () => {
 			const documentPath = resolveDocument("pdf/tiny.pdf");
 			if (!existsSync(documentPath)) {
 				console.warn("Skipping pdf_tables_small: missing document at", documentPath);
-				console.warn("Notes: PDF table extraction requires OCR feature");
+				console.warn(
+					"Notes: PDF table extraction requires OCR feature. ONNX Runtime model loading unstable on ARM Linux.",
+				);
+				return;
+			}
+			if (process.arch === "arm64" && process.platform === "linux") {
+				console.warn("Skipping pdf_tables_small: not supported on this platform");
 				return;
 			}
 			const config = buildConfig(undefined);
@@ -496,7 +514,14 @@ describe("pdf fixtures", () => {
 			try {
 				result = extractFileSync(documentPath, null, config);
 			} catch (error) {
-				if (shouldSkipFixture(error, "pdf_tables_small", ["ocr"], "PDF table extraction requires OCR feature")) {
+				if (
+					shouldSkipFixture(
+						error,
+						"pdf_tables_small",
+						["ocr"],
+						"PDF table extraction requires OCR feature. ONNX Runtime model loading unstable on ARM Linux.",
+					)
+				) {
 					return;
 				}
 				throw error;

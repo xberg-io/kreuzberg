@@ -10,6 +10,6 @@
 	},
 	"ground_truth": {
 		"text_file": "../../../test_documents/ground_truth/jp2/image_jp2.md",
-		"source": "vision"
+		"source": "mistral-pixtral"
 	}
 }

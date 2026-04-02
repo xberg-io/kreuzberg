@@ -98,8 +98,9 @@ pub fn segments_to_words(segments: &[SegmentData], page_height: f32) -> Vec<Hocr
 /// When `layout_guided` is true, the layout model already confirmed this is
 /// a table, so validation thresholds are relaxed:
 /// - Minimum columns: 3 → 2
-/// - Column sparsity: 75% → 90%
-/// - Overall density: 40% → 25%
+/// - Column sparsity: 75% → 95%
+/// - Overall density: 40% → 15%
+/// - Prose detection (long cell / avg length checks): skipped
 /// - Content asymmetry check: skipped
 pub fn post_process_table(
     table: Vec<Vec<String>>,
@@ -146,7 +147,10 @@ fn post_process_table_inner(
         }
     }
 
-    if non_empty > 0 {
+    // Skip prose detection for layout-guided tables — the model already
+    // confirmed this is a table region, so long cells are acceptable
+    // (e.g., description columns in specification tables).
+    if non_empty > 0 && !layout_guided {
         if long_cells * 2 > non_empty {
             return None;
         }
@@ -248,7 +252,9 @@ fn post_process_table_inner(
     }
 
     // Column sparsity check: reject if any column is too sparse.
-    // Threshold: >75% empty (unsupervised) or >90% empty (layout-guided).
+    // Threshold: >75% empty (unsupervised) or >95% empty (layout-guided).
+    // Layout-guided uses a very permissive threshold because layout models
+    // can confidently detect tables with optional/sparse columns.
     let data_row_count = processed.len() - 1;
     if data_row_count > 0 {
         for c in 0..processed[0].len() {
@@ -257,7 +263,7 @@ fn post_process_table_inner(
                 .filter(|row| row.get(c).is_none_or(|cell| cell.trim().is_empty()))
                 .count();
             let too_sparse = if layout_guided {
-                empty_count * 10 > data_row_count * 9 // >90%
+                empty_count * 20 > data_row_count * 19 // >95%
             } else {
                 empty_count * 4 > data_row_count * 3 // >75%
             };
@@ -268,7 +274,10 @@ fn post_process_table_inner(
     }
 
     // Overall density check: reject if too few data cells are filled.
-    // Threshold: <40% filled (unsupervised) or <25% filled (layout-guided).
+    // Threshold: <40% filled (unsupervised) or <15% filled (layout-guided).
+    // Layout-guided uses a lower threshold because the model already confirmed
+    // this is a table — sparse tables (e.g., with merged cells or optional
+    // fields) are legitimate.
     {
         let total_data_cells = data_row_count * processed[0].len();
         if total_data_cells > 0 {
@@ -278,7 +287,7 @@ fn post_process_table_inner(
                 .filter(|cell| !cell.trim().is_empty())
                 .count();
             let too_sparse = if layout_guided {
-                filled * 4 < total_data_cells // <25%
+                filled * 20 < total_data_cells * 3 // <15%
             } else {
                 filled * 5 < total_data_cells * 2 // <40%
             };

@@ -10,7 +10,7 @@
 	},
 	"ground_truth": {
 		"text_file": "../../../../test_documents/ground_truth/pdf/iso_21111_10_2021.txt",
-		"source": "vision",
+		"source": "mistral-pixtral",
 		"markdown_file": "../../../../test_documents/ground_truth/pdf/iso_21111_10_2021.md"
 	}
 }

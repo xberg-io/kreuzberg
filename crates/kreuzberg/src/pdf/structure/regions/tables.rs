@@ -57,17 +57,12 @@ pub(in crate::pdf::structure) fn extract_tables_from_layout_hints(
             continue;
         }
 
-        // Adaptive column gap threshold: scale with table width.
-        // Narrow tables (< 300pt) use a tight threshold (15), while wide
-        // tables (> 600pt) use a looser threshold (30) to avoid over-splitting.
+        // Adaptive column gap threshold based on word spacing statistics
+        // within the table region. Use the median inter-word gap on the same
+        // line as a baseline, then require a gap > 2x median to split columns.
+        // Falls back to width-based scaling when not enough data.
         let table_width = hint.right - hint.left;
-        let col_gap = if table_width < 300.0 {
-            15
-        } else if table_width < 600.0 {
-            20
-        } else {
-            30
-        };
+        let col_gap = compute_adaptive_column_gap(&table_words, table_width);
         let table_cells = reconstruct_table(&table_words, col_gap, 0.5);
 
         if table_cells.is_empty() || table_cells[0].is_empty() {
@@ -119,13 +114,15 @@ pub(in crate::pdf::structure) fn extract_tables_from_layout_hints(
         // tables where most cells are empty because the content is not truly
         // tabular. Skip these to avoid polluting output with markdown table
         // formatting characters that hurt TF1.
+        // Use 55% threshold: real tables often have sparse optional columns
+        // (e.g., footnote markers, units), especially in scientific/financial docs.
         let total_cells: usize = table_cells.iter().map(|row| row.len()).sum();
         let empty_cells: usize = table_cells
             .iter()
             .flat_map(|row| row.iter())
             .filter(|cell| cell.trim().is_empty())
             .count();
-        if total_cells > 0 && empty_cells as f64 / total_cells as f64 > 0.4 {
+        if total_cells > 0 && empty_cells as f64 / total_cells as f64 > 0.55 {
             tracing::trace!(
                 page = page_index,
                 total_cells,
@@ -143,7 +140,7 @@ pub(in crate::pdf::structure) fn extract_tables_from_layout_hints(
             .flat_map(|row| row.iter())
             .map(|cell| cell.trim().len())
             .sum();
-        if total_cells > 4 && total_text_len < total_cells * 2 {
+        if total_cells > 6 && total_text_len < total_cells {
             tracing::trace!(
                 page = page_index,
                 total_cells,
@@ -202,6 +199,78 @@ pub(in crate::pdf::structure) fn extract_tables_from_layout_hints(
     }
 
     tables
+}
+
+/// Compute an adaptive column gap threshold based on word spacing within the
+/// table region.
+///
+/// Sorts words into approximate rows (by y-center), then measures gaps between
+/// consecutive words on each row. The median gap represents typical word spacing;
+/// we use 2x that as the column threshold (columns have wider gaps than words).
+///
+/// Falls back to width-based scaling when there aren't enough same-row word
+/// pairs to compute meaningful statistics.
+fn compute_adaptive_column_gap(words: &[crate::pdf::table_reconstruct::HocrWord], table_width: f32) -> u32 {
+    // Collect inter-word gaps on approximate rows
+    let mut gaps: Vec<u32> = Vec::new();
+
+    if words.len() >= 4 {
+        // Group words by approximate y-center (within median height / 2)
+        let mut heights: Vec<u32> = words.iter().map(|w| w.height).collect();
+        heights.sort_unstable();
+        let median_h = heights[heights.len() / 2];
+        let row_tolerance = (median_h / 2).max(3);
+
+        // Sort words by y-center then x
+        let mut sorted: Vec<(u32, u32, u32)> = words
+            .iter()
+            .map(|w| {
+                let yc = w.top + w.height / 2;
+                (yc, w.left, w.left + w.width)
+            })
+            .collect();
+        sorted.sort_by_key(|&(yc, x, _)| (yc, x));
+
+        // Walk sorted words, group by approximate row
+        let mut row_start = 0;
+        while row_start < sorted.len() {
+            let row_yc = sorted[row_start].0;
+            let mut row_end = row_start + 1;
+            while row_end < sorted.len() && sorted[row_end].0.abs_diff(row_yc) <= row_tolerance {
+                row_end += 1;
+            }
+
+            // Measure gaps between consecutive words on this row
+            for i in row_start + 1..row_end {
+                let prev_right = sorted[i - 1].2;
+                let curr_left = sorted[i].1;
+                if curr_left > prev_right {
+                    gaps.push(curr_left - prev_right);
+                }
+            }
+
+            row_start = row_end;
+        }
+    }
+
+    if gaps.len() >= 3 {
+        gaps.sort_unstable();
+        let median_gap = gaps[gaps.len() / 2];
+        // Column gap = 2x median word gap, clamped to [8, 40]
+        let threshold = (median_gap * 2).clamp(8, 40);
+        return threshold;
+    }
+
+    // Fallback: width-based scaling with tighter defaults for narrow tables
+    if table_width < 200.0 {
+        10
+    } else if table_width < 400.0 {
+        15
+    } else if table_width < 600.0 {
+        20
+    } else {
+        30
+    }
 }
 
 #[cfg(test)]

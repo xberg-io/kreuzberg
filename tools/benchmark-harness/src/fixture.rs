@@ -136,6 +136,7 @@ impl Fixture {
                     | "pyxlsb"
                     | "olefile"
                     | "omnidocbench"
+                    | "mistral-pixtral"
             ) {
                 return Err(Error::InvalidFixture {
                     path: fixture_path.to_path_buf(),

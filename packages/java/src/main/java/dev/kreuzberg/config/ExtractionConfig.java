@@ -290,6 +290,15 @@ public final class ExtractionConfig {
 	}
 
 	/**
+	 * Get security limits for archive and document processing.
+	 *
+	 * @return the security limits configuration, or null if not set
+	 */
+	public SecurityLimitsConfig getSecurityLimits() {
+		return securityLimits;
+	}
+
+	/**
 	 * Get the tree-sitter language pack integration configuration.
 	 *
 	 * @return the tree-sitter configuration, or null if not set

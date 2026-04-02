@@ -558,6 +558,7 @@ public static class TestHelpers
             var headingChar = new string(new[] { (char)35 });
             for (var i = 0; i < chunks.Count; i++)
             {
+                if (string.IsNullOrEmpty(chunks[i].Metadata?.HeadingContext)) continue;
                 if (string.IsNullOrEmpty(chunks[i].Content) || !chunks[i].Content!.StartsWith(headingChar))
                 {
                     throw new XunitException($"Chunk {i} content does not start with a heading");

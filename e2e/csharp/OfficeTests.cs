@@ -7,8 +7,7 @@ using Kreuzberg;
 using Xunit;
 using Kreuzberg.E2E;
 
-namespace Kreuzberg.E2E.Office
-{
+namespace Kreuzberg.E2E.Office {
     public class OfficeTests
     {
         [SkippableFact]

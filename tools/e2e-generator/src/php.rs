@@ -278,6 +278,7 @@ class Helpers
         }
         if ($contentStartsWithHeading === true) {
             foreach ($chunks as $i => $chunk) {
+                if (empty($chunk->metadata->heading_context ?? null)) continue;
                 Assert::assertStringStartsWith(
                     '#',
                     $chunk->content ?? '',

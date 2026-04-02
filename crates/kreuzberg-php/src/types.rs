@@ -468,36 +468,30 @@ pub struct ExtractionResult {
     pub quality_score: Option<f64>,
 
     /// Structured Djot content (when output_format='djot')
-    #[php(prop)]
-    #[php(name = "djotContent")]
+    /// Deserialized via __get magic method
     djot_content_json: Option<String>,
 
     /// Semantic elements (when output_format='element_based')
-    #[php(prop)]
-    #[php(name = "elements")]
+    /// Deserialized via __get magic method
     elements_json: Option<String>,
 
     /// Document structure (when include_document_structure=true)
-    #[php(prop)]
-    #[php(name = "document")]
+    /// Deserialized via __get magic method
     document_json: Option<String>,
 
     /// OCR elements with spatial/confidence metadata
-    #[php(prop)]
-    #[php(name = "ocrElements")]
+    /// Deserialized via __get magic method
     ocr_elements_json: Option<String>,
 
     /// PDF annotations (accessed via getter property)
     pub annotations: Option<Vec<PdfAnnotation>>,
 
     /// Nested extraction results from archive contents
-    #[php(prop)]
-    #[php(name = "children")]
+    /// Deserialized via __get magic method
     children_json: Option<String>,
 
     /// URIs/links discovered during extraction
-    #[php(prop)]
-    #[php(name = "uris")]
+    /// Deserialized via __get magic method
     uris_json: Option<String>,
 
     /// Processing warnings (accessed via getter property)

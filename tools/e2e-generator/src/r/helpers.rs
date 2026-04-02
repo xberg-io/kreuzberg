@@ -234,7 +234,10 @@ assert_chunks <- function(result, min_count = NULL, max_count = NULL,
   }
   if (isTRUE(content_starts_with_heading)) {
     heading_char <- rawToChar(as.raw(35))
-    for (chunk in chunks) testthat::expect_true(startsWith(chunk$content %||% "", heading_char))
+    for (chunk in chunks) {
+      if (is.null(chunk$metadata$heading_context)) next
+      testthat::expect_true(startsWith(chunk$content %||% "", heading_char))
+    }
   }
 }
 

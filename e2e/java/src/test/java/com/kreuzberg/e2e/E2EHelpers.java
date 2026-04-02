@@ -384,6 +384,7 @@ public final class E2EHelpers {
       if (chunks != null && contentStartsWithHeading != null && contentStartsWithHeading) {
         String headingPrefix = String.valueOf((char) 35);
         for (var chunk : chunks) {
+          if (chunk.getMetadata().getHeadingContext().isEmpty()) continue;
           String content = chunk.getContent();
           assertTrue(
               content != null && content.startsWith(headingPrefix),

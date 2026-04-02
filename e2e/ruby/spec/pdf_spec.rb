@@ -71,7 +71,7 @@ RSpec.describe 'pdf fixtures' do
       'pdf/tiny.pdf',
       { images: { extract_images: true } },
       requirements: %w[pdf],
-      notes: nil,
+      notes: 'ONNX Runtime model loading unstable on ARM Linux; table detection returns 0 tables',
       skip_if_missing: true
     ) do |result|
       E2ERuby::Assertions.assert_expected_mime(
@@ -308,7 +308,7 @@ RSpec.describe 'pdf fixtures' do
       'pdf/tiny.pdf',
       nil,
       requirements: %w[ocr],
-      notes: 'PDF table extraction requires OCR feature',
+      notes: 'PDF table extraction requires OCR feature. ONNX Runtime model loading unstable on ARM Linux.',
       skip_if_missing: true
     ) do |result|
       E2ERuby::Assertions.assert_expected_mime(

@@ -233,12 +233,19 @@ public class OcrTest {
             "{\"ocr\":{\"backend\":\"paddle-ocr\",\"language\":\"en\",\"paddle_ocr_config\":{\"enable_table_detection\":true}},\"force_ocr\":true}");
     E2EHelpers.skipIfFeatureUnavailable("paddle-ocr");
     E2EHelpers.skipIfFeatureUnavailable("paddle-ocr");
+    if ((System.getProperty("os.arch").equals("aarch64")
+        && System.getProperty("os.name").startsWith("Linux"))) {
+      org.junit.jupiter.api.Assumptions.assumeTrue(
+          false, "Skipping ocr_paddle_table_detection: not supported on this platform");
+      return;
+    }
     E2EHelpers.runFixture(
         "ocr_paddle_table_detection",
         "images/simple_table.png",
         config,
         Arrays.asList("paddle-ocr", "paddle-ocr", "onnxruntime"),
-        "Tests table detection capability with PaddleOCR",
+        "Tests table detection capability with PaddleOCR. ONNX Runtime model loading unstable on"
+            + " ARM Linux.",
         true,
         result -> {
           E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("image/png"));
