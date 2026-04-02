@@ -590,9 +590,6 @@ fn resolve_cache_base() -> std::path::PathBuf {
 /// Embed text implementation when embeddings feature is enabled.
 #[cfg(feature = "embeddings")]
 fn embed_text_impl(params: super::params::EmbedTextParams) -> Result<CallToolResult, rmcp::ErrorData> {
-    use crate::embeddings::generate_embeddings_for_chunks;
-    use crate::types::{Chunk, ChunkMetadata};
-
     if params.texts.is_empty() {
         return Err(rmcp::ErrorData::invalid_params(
             "No texts provided for embedding generation",
@@ -628,37 +625,8 @@ fn embed_text_impl(params: super::params::EmbedTextParams) -> Result<CallToolRes
         ..Default::default()
     };
 
-    let mut chunks: Vec<Chunk> = params
-        .texts
-        .iter()
-        .enumerate()
-        .map(|(idx, text)| Chunk {
-            content: text.clone(),
-            chunk_type: Default::default(),
-            embedding: None,
-            metadata: ChunkMetadata {
-                byte_start: 0,
-                byte_end: text.len(),
-                token_count: None,
-                chunk_index: idx,
-                total_chunks: params.texts.len(),
-                first_page: None,
-                last_page: None,
-                heading_context: None,
-            },
-        })
-        .collect();
-
-    generate_embeddings_for_chunks(&mut chunks, &config).map_err(super::errors::map_kreuzberg_error_to_mcp)?;
-
-    let embeddings: Vec<Vec<f32>> = chunks
-        .into_iter()
-        .map(|chunk| {
-            chunk.embedding.ok_or_else(|| {
-                rmcp::ErrorData::internal_error("Failed to generate embedding for text".to_string(), None)
-            })
-        })
-        .collect::<Result<Vec<_>, _>>()?;
+    let embeddings = crate::embed_texts(&params.texts, &config)
+        .map_err(super::errors::map_kreuzberg_error_to_mcp)?;
 
     let dimensions = embeddings.first().map(|e| e.len()).unwrap_or(0);
 
