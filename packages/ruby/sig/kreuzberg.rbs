@@ -1572,6 +1572,10 @@ module Kreuzberg
     ?file_configs: Array[file_config_input]?
   ) -> Array[Result]
 
+  # Standalone embedding
+  def self.embed_sync: (texts: Array[String], ?config: Hash[Symbol, untyped]?) -> Array[Array[Float]]
+  def self.embed: (texts: Array[String], ?config: Hash[Symbol, untyped]?) -> Array[Array[Float]]
+
   # Cache API
   def self.clear_cache: () -> void
   def self.cache_stats: () -> Hash[Symbol | String, Integer]
