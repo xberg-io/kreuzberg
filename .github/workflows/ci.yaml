@@ -1110,7 +1110,7 @@ jobs:
           package-tarball: crates/kreuzberg-node
 
   build-ruby:
-    needs: [build-ffi]
+    needs: [validate, typescript-typecheck]
     name: Ruby Gem (${{ matrix.os }})
     if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     timeout-minutes: 180
@@ -1121,6 +1121,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     # Note: BUNDLE_GEMFILE is set per-step to avoid Windows path issues.
     # On Windows, github.workspace paths like D:/a/... get mangled to D:/d/a/... in bash shells.
+    # Note: kreuzberg-rb has a Rust dependency on kreuzberg-ffi (Cargo.toml path dep), so it must
+    # compile kreuzberg-ffi as a crate dependency via `cargo build`. It cannot use the pre-built
+    # FFI artifact from build-ffi, so build-ruby does NOT depend on build-ffi.
     steps:
       - uses: actions/checkout@v6
         id: checkout
@@ -3122,9 +3125,9 @@ jobs:
         shell: bash
         run: |
           PC_DIR="$(pwd)/target/release"
-          PC_FILE=$(find "$PC_DIR" -name 'kreuzberg.pc' 2>/dev/null | head -1)
+          PC_FILE=$(find "$PC_DIR" -name 'kreuzberg-ffi.pc' 2>/dev/null | head -1)
           if [ -z "$PC_FILE" ]; then
-            echo "Warning: kreuzberg.pc not found in release artifacts"
+            echo "Warning: kreuzberg-ffi.pc not found in release artifacts"
           else
             echo "Found pkg-config file: $PC_FILE"
             cat "$PC_FILE"
