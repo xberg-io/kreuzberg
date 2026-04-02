@@ -36,8 +36,7 @@ pub fn embed_command(texts: Vec<String>, preset: &str, format: WireFormat) -> Re
     };
 
     // Generate embeddings directly — no dummy Chunks needed
-    let embeddings = kreuzberg::embed_texts(&texts, &config)
-        .context("Failed to generate embeddings")?;
+    let embeddings = kreuzberg::embed_texts(&texts, &config).context("Failed to generate embeddings")?;
 
     let dimensions = embeddings.first().map(|e| e.len()).unwrap_or(0);
 
@@ -79,4 +78,3 @@ pub fn embed_command(texts: Vec<String>, preset: &str, format: WireFormat) -> Re
 
     Ok(())
 }
-

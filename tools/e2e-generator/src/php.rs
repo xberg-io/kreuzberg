@@ -2324,8 +2324,14 @@ fn render_embed_test_php(fixture: &Fixture) -> Result<String> {
     writeln!(code, "    {{")?;
 
     if !fixture.id.contains("disabled") {
-        writeln!(code, "        if (PHP_OS_FAMILY === 'Windows' && php_uname('m') === 'x86_64') {{")?;
-        writeln!(code, "            $this->markTestSkipped('Skip embeddings on Windows X64 until ONNX is implemented');")?;
+        writeln!(
+            code,
+            "        if (PHP_OS_FAMILY === 'Windows' && php_uname('m') === 'x86_64') {{"
+        )?;
+        writeln!(
+            code,
+            "            $this->markTestSkipped('Skip embeddings on Windows X64 until ONNX is implemented');"
+        )?;
         writeln!(code, "        }}")?;
     }
 
@@ -2339,9 +2345,15 @@ fn render_embed_test_php(fixture: &Fixture) -> Result<String> {
     let func = if embed.async_variant { "embedAsync" } else { "embed" };
 
     writeln!(code, "        try {{")?;
-    writeln!(code, "            $results = Kreuzberg::{func}({texts_arr}, {config_expr});")?;
+    writeln!(
+        code,
+        "            $results = Kreuzberg::{func}({texts_arr}, {config_expr});"
+    )?;
     writeln!(code, "        }} catch (\\Exception $e) {{")?;
-    writeln!(code, "            $this->markTestSkipped('Embeddings not supported or requirements missing: ' . $e->getMessage());")?;
+    writeln!(
+        code,
+        "            $this->markTestSkipped('Embeddings not supported or requirements missing: ' . $e->getMessage());"
+    )?;
     writeln!(code, "            return;")?;
     writeln!(code, "        }}")?;
 

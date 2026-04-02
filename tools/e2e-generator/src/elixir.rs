@@ -881,7 +881,6 @@ const ELIXIR_FORMATTER_TEMPLATE: &str = r#"[
 ]
 "#;
 
-
 fn generate_embed_tests(fixtures: &[Fixture], output_dir: &Utf8Path) -> Result<()> {
     let embed_fixtures: Vec<_> = fixtures.iter().filter(|f| f.is_embed()).collect();
     if embed_fixtures.is_empty() {
@@ -923,11 +922,21 @@ fn render_embed_test_elixir(fixture: &Fixture) -> Result<String> {
     let fixture_assertions = fixture.assertions();
     let assertions = fixture_assertions.embed.as_ref().expect("embed assertions required");
 
-    writeln!(code, "  test \"{}\" do", render_elixir_string_content(&fixture.description))?;
+    writeln!(
+        code,
+        "  test \"{}\" do",
+        render_elixir_string_content(&fixture.description)
+    )?;
 
     if !fixture.id.contains("disabled") {
-        writeln!(code, "    if :os.type() == {{:win32, :nt}} and :erlang.system_info(:wordsize) == 8 do")?;
-        writeln!(code, "      flunk(\"Skip embeddings on Windows X64 until ONNX is implemented\")")?;
+        writeln!(
+            code,
+            "    if :os.type() == {{:win32, :nt}} and :erlang.system_info(:wordsize) == 8 do"
+        )?;
+        writeln!(
+            code,
+            "      flunk(\"Skip embeddings on Windows X64 until ONNX is implemented\")"
+        )?;
         writeln!(code, "    end")?;
     }
 
@@ -988,7 +997,10 @@ fn render_embed_config_elixir(config: &Map<String, Value>) -> Result<String> {
 }
 
 fn render_elixir_string_list(items: &[String]) -> String {
-    let parts: Vec<String> = items.iter().map(|s| format!("\"{}\"", render_elixir_string_content(s))).collect();
+    let parts: Vec<String> = items
+        .iter()
+        .map(|s| format!("\"{}\"", render_elixir_string_content(s)))
+        .collect();
     format!("[{}]", parts.join(", "))
 }
 

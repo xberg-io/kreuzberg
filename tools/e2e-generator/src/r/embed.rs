@@ -41,8 +41,14 @@ fn render_embed_test(fixture: &Fixture) -> Result<String> {
     writeln!(buffer, "test_that({}, {{", render_r_string(&fixture.id))?;
 
     if !fixture.id.contains("disabled") {
-        writeln!(buffer, "  if (.Platform$OS.type == \"windows\" && .Platform$r_arch == \"x64\") {{")?;
-        writeln!(buffer, "    testthat::skip(\"Skip embeddings on Windows X64 until ONNX is implemented\")")?;
+        writeln!(
+            buffer,
+            "  if (.Platform$OS.type == \"windows\" && .Platform$r_arch == \"x64\") {{"
+        )?;
+        writeln!(
+            buffer,
+            "    testthat::skip(\"Skip embeddings on Windows X64 until ONNX is implemented\")"
+        )?;
         writeln!(buffer, "  }}")?;
     }
 
@@ -60,11 +66,7 @@ fn render_embed_test(fixture: &Fixture) -> Result<String> {
     };
 
     writeln!(buffer, "  results <- tryCatch(")?;
-    writeln!(
-        buffer,
-        "    {}({}, config = {}),",
-        func, texts_vector, config_expr
-    )?;
+    writeln!(buffer, "    {}({}, config = {}),", func, texts_vector, config_expr)?;
     writeln!(buffer, "    error = function(e) {{")?;
     writeln!(
         buffer,

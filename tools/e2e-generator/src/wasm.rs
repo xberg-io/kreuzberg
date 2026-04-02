@@ -1888,9 +1888,7 @@ pub fn generate_parity(manifest: &ParityManifest, output_root: &Utf8Path, _mode:
 fn generate_embed_tests(fixtures: &[Fixture], output_dir: &Utf8Path) -> Result<()> {
     let embed_fixtures: Vec<_> = fixtures
         .iter()
-        .filter(|f| {
-            f.is_embed() && crate::fixtures::should_include_for_wasm(f, WasmTarget::Deno)
-        })
+        .filter(|f| f.is_embed() && crate::fixtures::should_include_for_wasm(f, WasmTarget::Deno))
         .collect();
 
     if embed_fixtures.is_empty() {
@@ -1904,7 +1902,10 @@ fn generate_embed_tests(fixtures: &[Fixture], output_dir: &Utf8Path) -> Result<(
         "// To regenerate: cargo run -p kreuzberg-e2e-generator -- generate --lang wasm-deno"
     )?;
     writeln!(buffer)?;
-    writeln!(buffer, "import {{ assertions, buildConfig, embedTexts, initWasm }} from \"./helpers.ts\";")?;
+    writeln!(
+        buffer,
+        "import {{ assertions, buildConfig, embedTexts, initWasm }} from \"./helpers.ts\";"
+    )?;
     writeln!(buffer)?;
 
     for fixture in embed_fixtures {

@@ -162,9 +162,7 @@ impl Fixture {
 
     /// Get embed spec. Panics if not an embed fixture.
     pub fn embed_spec(&self) -> &EmbedSpec {
-        self.embed
-            .as_ref()
-            .expect("embed field required for embed fixtures")
+        self.embed.as_ref().expect("embed field required for embed fixtures")
     }
 
     /// Get embed assertions from the assertions field.
@@ -720,7 +718,8 @@ pub fn load_fixtures(fixtures_dir: &Utf8Path) -> Result<Vec<Fixture>> {
         let contents = std::fs::read_to_string(&path).with_context(|| format!("Failed to read fixture {}", path))?;
         let mut fixture: Fixture = serde_json::from_str(&contents).with_context(|| format!("Parsing {path}"))?;
 
-        if !fixture.is_document_extraction() && !fixture.is_plugin_api() && !fixture.is_render() && !fixture.is_embed() {
+        if !fixture.is_document_extraction() && !fixture.is_plugin_api() && !fixture.is_render() && !fixture.is_embed()
+        {
             bail!(
                 "Fixture {} must have either 'document' (document extraction), 'api_category' (plugin API), 'document'+'render' (PDF rendering), or 'embed' (standalone embed) field",
                 path

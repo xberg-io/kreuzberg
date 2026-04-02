@@ -617,11 +617,7 @@ pub fn batch_extract_bytes<'py>(
 ///     1
 #[pyfunction]
 #[pyo3(signature = (texts, config=crate::config::EmbeddingConfig::default()))]
-pub fn embed_sync(
-    py: Python,
-    texts: Vec<String>,
-    config: crate::config::EmbeddingConfig,
-) -> PyResult<Vec<Vec<f32>>> {
+pub fn embed_sync(py: Python, texts: Vec<String>, config: crate::config::EmbeddingConfig) -> PyResult<Vec<Vec<f32>>> {
     let rust_config = config.inner;
     Python::detach(py, || {
         kreuzberg::embed_texts(&texts, &rust_config).map_err(crate::error::to_py_err)

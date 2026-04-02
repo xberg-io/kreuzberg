@@ -2320,9 +2320,15 @@ fn render_embed_test_csharp(fixture: &Fixture) -> Result<String> {
     writeln!(body, "    {{")?;
 
     if !fixture.id.contains("disabled") {
-        writeln!(body, "        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && RuntimeInformation.ProcessArchitecture == Architecture.X64)")?;
+        writeln!(
+            body,
+            "        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && RuntimeInformation.ProcessArchitecture == Architecture.X64)"
+        )?;
         writeln!(body, "        {{")?;
-        writeln!(body, "            // Skip embeddings on Windows X64 until ONNX is implemented")?;
+        writeln!(
+            body,
+            "            // Skip embeddings on Windows X64 until ONNX is implemented"
+        )?;
         writeln!(body, "            return;")?;
         writeln!(body, "        }}")?;
     }
@@ -2340,11 +2346,17 @@ fn render_embed_test_csharp(fixture: &Fixture) -> Result<String> {
     writeln!(body, "        IEnumerable<float[]> results;")?;
     writeln!(body, "        try")?;
     writeln!(body, "        {{")?;
-    writeln!(body, "            results = {await_prefix}KreuzbergClient.{func}({texts_expr}, {config_expr});")?;
+    writeln!(
+        body,
+        "            results = {await_prefix}KreuzbergClient.{func}({texts_expr}, {config_expr});"
+    )?;
     writeln!(body, "        }}")?;
     writeln!(body, "        catch (Exception)")?;
     writeln!(body, "        {{")?;
-    writeln!(body, "            // Skip if embeddings are not supported or requirements missing")?;
+    writeln!(
+        body,
+        "            // Skip if embeddings are not supported or requirements missing"
+    )?;
     writeln!(body, "            return;")?;
     writeln!(body, "        }}")?;
 
@@ -2389,7 +2401,10 @@ fn render_embed_config_csharp(config: &Map<String, Value>) -> Result<String> {
 }
 
 fn render_csharp_string_list(items: &[String]) -> String {
-    let parts: Vec<String> = items.iter().map(|s| format!("\"{}\"", s.replace('"', "\\\""))).collect();
+    let parts: Vec<String> = items
+        .iter()
+        .map(|s| format!("\"{}\"", s.replace('"', "\\\"")))
+        .collect();
     format!("new[] {{ {} }}", parts.join(", "))
 }
 

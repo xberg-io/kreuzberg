@@ -2884,7 +2884,8 @@ fn generate_embed_tests(fixtures: &[Fixture], src_test: &Utf8Path) -> Result<()>
     }
 
     let content = render_embed_category(&embed_fixtures)?;
-    fs::write(src_test.join("EmbedStandaloneTest.java"), content).context("Failed to write EmbedStandaloneTest.java")?;
+    fs::write(src_test.join("EmbedStandaloneTest.java"), content)
+        .context("Failed to write EmbedStandaloneTest.java")?;
     Ok(())
 }
 
@@ -2932,10 +2933,17 @@ fn render_embed_test_java(fixture: &Fixture) -> Result<String> {
     writeln!(body, "    public void {method_name}() throws Exception {{")?;
 
     if !fixture.id.contains("disabled") {
-         writeln!(body, "        if ((System.getProperty(\"os.arch\").equals(\"amd64\") && System.getProperty(\"os.name\").startsWith(\"Windows\"))) {{")?;
-         writeln!(body, "            assumeTrue(false, \"Skipping {}: embeddings not supported on Windows x64 via ONNX yet\");", fixture.id)?;
-         writeln!(body, "            return;")?;
-         writeln!(body, "        }}")?;
+        writeln!(
+            body,
+            "        if ((System.getProperty(\"os.arch\").equals(\"amd64\") && System.getProperty(\"os.name\").startsWith(\"Windows\"))) {{"
+        )?;
+        writeln!(
+            body,
+            "            assumeTrue(false, \"Skipping {}: embeddings not supported on Windows x64 via ONNX yet\");",
+            fixture.id
+        )?;
+        writeln!(body, "            return;")?;
+        writeln!(body, "        }}")?;
     }
 
     let texts_expr = render_string_list(&embed.texts);
@@ -2947,9 +2955,16 @@ fn render_embed_test_java(fixture: &Fixture) -> Result<String> {
 
     writeln!(body, "        List<float[]> results;")?;
     writeln!(body, "        try {{")?;
-    writeln!(body, "            results = Kreuzberg.embed({texts_expr}, {config_expr});")?;
+    writeln!(
+        body,
+        "            results = Kreuzberg.embed({texts_expr}, {config_expr});"
+    )?;
     writeln!(body, "        }} catch (Exception e) {{")?;
-    writeln!(body, "            String skipReason = E2EHelpers.skipReasonFor(e, {}, Arrays.asList(\"embeddings\"), null);", render_java_string(&fixture.id))?;
+    writeln!(
+        body,
+        "            String skipReason = E2EHelpers.skipReasonFor(e, {}, Arrays.asList(\"embeddings\"), null);",
+        render_java_string(&fixture.id)
+    )?;
     writeln!(body, "            if (skipReason != null) {{")?;
     writeln!(body, "                assumeTrue(false, skipReason);")?;
     writeln!(body, "                return;")?;
@@ -2963,11 +2978,7 @@ fn render_embed_test_java(fixture: &Fixture) -> Result<String> {
     writeln!(
         body,
         "        E2EHelpers.Assertions.assertEmbedResult(results, {}, {}, {}, {}, {});",
-        count,
-        dimensions,
-        assertions.no_nan,
-        assertions.no_inf,
-        assertions.non_zero
+        count, dimensions, assertions.no_nan, assertions.no_inf, assertions.non_zero
     )?;
 
     writeln!(body, "    }}")?;
