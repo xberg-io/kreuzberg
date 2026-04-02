@@ -667,7 +667,8 @@ async def embed(
 
     Raises:
         MissingDependencyError: If ONNX Runtime is not installed
-        ParsingError: If the preset name is unknown or model download fails
+        EmbeddingError: If the preset name is unknown or model download fails
+        ValidationError: If input texts are invalid (e.g., empty list or contains non-strings)
 
     Example:
         >>> import asyncio
@@ -678,6 +679,15 @@ async def embed(
         ...     print(len(result))  # 1
         >>> asyncio.run(main())  # doctest: +SKIP
     """
+    if not texts:
+        raise ValidationError("No texts provided for embedding generation")
+
+    if not all(isinstance(t, str) for t in texts):
+        raise ValidationError("All text entries must be strings")
+
+    if any(not t.strip() for t in texts):
+        raise ValidationError("All text entries must be non-empty strings")
+
     if config is None:
         config = EmbeddingConfig()
     return await _embed_impl(texts, config)
@@ -698,7 +708,8 @@ def embed_sync(
 
     Raises:
         MissingDependencyError: If ONNX Runtime is not installed
-        ParsingError: If the preset name is unknown or model download fails
+        EmbeddingError: If the preset name is unknown or model download fails
+        ValidationError: If input texts are invalid (e.g., empty list or contains non-strings)
 
     Example:
         >>> from kreuzberg import embed_sync, EmbeddingConfig, EmbeddingModelType
@@ -706,6 +717,15 @@ def embed_sync(
         >>> result = embed_sync(["Hello, world!"], config=config)  # doctest: +SKIP
         >>> len(result)  # 1  # doctest: +SKIP
     """
+    if not texts:
+        raise ValidationError("No texts provided for embedding generation")
+
+    if not all(isinstance(t, str) for t in texts):
+        raise ValidationError("All text entries must be strings")
+
+    if any(not t.strip() for t in texts):
+        raise ValidationError("All text entries must be non-empty strings")
+
     if config is None:
         config = EmbeddingConfig()
     return _embed_sync_impl(texts, config)

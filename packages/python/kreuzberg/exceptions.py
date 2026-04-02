@@ -46,6 +46,7 @@ class ErrorCode(IntEnum):
     PARSING_ERROR = 5
     OCR_ERROR = 6
     MISSING_DEPENDENCY = 7
+    EMBEDDING = 8
 
 
 @dataclass(frozen=True, slots=True)
