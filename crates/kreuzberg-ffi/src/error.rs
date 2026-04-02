@@ -108,6 +108,8 @@ pub enum ErrorCode {
     UnsupportedFormat = 6,
     /// Internal library error (indicates a bug, should rarely occur)
     Internal = 7,
+    /// Embedding generation error (model initialization, inference failures)
+    Embedding = 8,
 }
 
 impl ErrorCode {
@@ -133,6 +135,7 @@ impl ErrorCode {
             ErrorCode::Plugin => "plugin",
             ErrorCode::UnsupportedFormat => "unsupported_format",
             ErrorCode::Internal => "internal",
+            ErrorCode::Embedding => "embedding",
         }
     }
 
@@ -150,6 +153,7 @@ impl ErrorCode {
             ErrorCode::Plugin => "Plugin error",
             ErrorCode::UnsupportedFormat => "Unsupported format",
             ErrorCode::Internal => "Internal library error",
+            ErrorCode::Embedding => "Embedding generation error",
         }
     }
 
@@ -175,6 +179,7 @@ impl ErrorCode {
             5 => Some(ErrorCode::Plugin),
             6 => Some(ErrorCode::UnsupportedFormat),
             7 => Some(ErrorCode::Internal),
+            8 => Some(ErrorCode::Embedding),
             _ => None,
         }
     }
@@ -190,7 +195,7 @@ impl ErrorCode {
     /// ```
     #[inline]
     pub fn is_valid(code: u32) -> bool {
-        code <= 7
+        code <= 8
     }
 }
 
@@ -290,9 +295,21 @@ pub extern "C" fn kreuzberg_error_code_internal() -> u32 {
     ErrorCode::Internal as u32
 }
 
+/// Returns the embedding error code (8).
+///
+/// # C Signature
+///
+/// ```c
+/// uint32_t kreuzberg_error_code_embedding(void);
+/// ```
+#[unsafe(no_mangle)]
+pub extern "C" fn kreuzberg_error_code_embedding() -> u32 {
+    ErrorCode::Embedding as u32
+}
+
 /// Returns the total count of valid error codes.
 ///
-/// Currently 8 error codes (0-7). This helps bindings validate error codes.
+/// Currently 9 error codes (0-8). This helps bindings validate error codes.
 ///
 /// # C Signature
 ///
@@ -301,7 +318,7 @@ pub extern "C" fn kreuzberg_error_code_internal() -> u32 {
 /// ```
 #[unsafe(no_mangle)]
 pub extern "C" fn kreuzberg_error_code_count() -> u32 {
-    8
+    9
 }
 
 /// Returns the name of an error code as a C string.
@@ -341,6 +358,7 @@ pub extern "C" fn kreuzberg_error_code_name(code: u32) -> *const c_char {
             ErrorCode::Plugin => c"plugin".as_ptr(),
             ErrorCode::UnsupportedFormat => c"unsupported_format".as_ptr(),
             ErrorCode::Internal => c"internal".as_ptr(),
+            ErrorCode::Embedding => c"embedding".as_ptr(),
         },
         None => c"unknown".as_ptr(),
     }
@@ -376,6 +394,7 @@ pub extern "C" fn kreuzberg_error_code_description(code: u32) -> *const c_char {
             ErrorCode::Plugin => c"Plugin error".as_ptr(),
             ErrorCode::UnsupportedFormat => c"Unsupported format".as_ptr(),
             ErrorCode::Internal => c"Internal library error".as_ptr(),
+            ErrorCode::Embedding => c"Embedding generation error".as_ptr(),
         },
         None => c"Unknown error code".as_ptr(),
     }
@@ -478,6 +497,7 @@ pub extern "C" fn kreuzberg_get_error_details() -> CErrorDetails {
         panic_shield::ErrorCode::ParsingError => "parsing_error".to_string(),
         panic_shield::ErrorCode::OcrError => "ocr_error".to_string(),
         panic_shield::ErrorCode::MissingDependency => "missing_dependency".to_string(),
+        panic_shield::ErrorCode::EmbeddingError => "embedding_error".to_string(),
     };
 
     let (source_file, source_function, source_line) = if let Some(ctx) = panic_shield::get_last_panic_context() {
@@ -712,6 +732,10 @@ pub unsafe extern "C" fn kreuzberg_classify_error(error_message: *const c_char) 
 
     if lower.contains("unsupported") || lower.contains("unknown format") || lower.contains("mime type") {
         return ErrorCode::UnsupportedFormat as u32;
+    }
+
+    if lower.contains("embedding") || lower.contains("vector") || lower.contains("inference") {
+        return ErrorCode::Embedding as u32;
     }
 
     ErrorCode::Internal as u32

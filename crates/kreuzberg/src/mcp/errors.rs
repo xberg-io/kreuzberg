@@ -82,6 +82,14 @@ pub fn map_kreuzberg_error_to_mcp(error: KreuzbergError) -> McpError {
             McpError::internal_error(error_message, None)
         }
 
+        KreuzbergError::Embedding { message, source } => {
+            let mut error_message = format!("Embedding error: {}", message);
+            if let Some(src) = source {
+                let _ = write!(error_message, " (caused by: {})", src);
+            }
+            McpError::internal_error(error_message, None)
+        }
+
         KreuzbergError::Plugin { message, plugin_name } => {
             McpError::internal_error(format!("Plugin '{}' error: {}", plugin_name, message), None)
         }
@@ -215,6 +223,16 @@ mod tests {
         assert_eq!(mcp_error.code.0, -32603);
         assert!(mcp_error.message.contains("Serialization error"));
         assert!(mcp_error.message.contains("JSON encode failed"));
+    }
+
+    #[test]
+    fn test_map_embedding_error_to_internal_error() {
+        let error = KreuzbergError::embedding("Model failed to load");
+        let mcp_error = map_kreuzberg_error_to_mcp(error);
+
+        assert_eq!(mcp_error.code.0, -32603);
+        assert!(mcp_error.message.contains("Embedding error"));
+        assert!(mcp_error.message.contains("Model failed to load"));
     }
 
     #[test]

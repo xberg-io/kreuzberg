@@ -115,6 +115,7 @@ impl ApiError {
             KreuzbergError::Plugin { .. } => "PluginError",
             KreuzbergError::LockPoisoned(_) => "LockPoisonedError",
             KreuzbergError::UnsupportedFormat(_) => "UnsupportedFormatError",
+            KreuzbergError::Embedding { .. } => "EmbeddingError",
             KreuzbergError::Timeout { .. } => "TimeoutError",
             KreuzbergError::Other(_) => "Error",
         };
