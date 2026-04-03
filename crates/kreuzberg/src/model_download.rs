@@ -13,7 +13,7 @@ use sha2::{Digest, Sha256};
 pub fn hf_download(repo_id: &str, remote_filename: &str) -> Result<PathBuf, String> {
     tracing::info!(repo = repo_id, filename = remote_filename, "Downloading via hf-hub");
 
-    let api = hf_hub::api::sync::ApiBuilder::new()
+    let api = hf_hub::api::sync::ApiBuilder::from_env()
         .with_progress(true)
         .build()
         .map_err(|e| format!("Failed to initialize HuggingFace Hub API: {e}"))?;

@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - **Chunking page boundary regression** (#636): Page boundaries were computed against raw extractor text but `result.content` uses rendered text with different byte lengths. Chunks now recompute boundaries from per-page content, fixing `first_page`/`last_page` being null and the "Page boundary byte_end exceeds text length" validation warning.
+- **HF Hub environment variables** (#634): Use `ApiBuilder::from_env()` instead of `ApiBuilder::new()` for Hugging Face model downloads, respecting `HF_HOME` and `HF_ENDPOINT` environment variables. Fixes permission errors on Kubernetes when running as non-root.
+- **PDF bridge tracing panic on multibyte characters** (#635): Use `.chars().take()` instead of byte indexing for `text_preview` in PDF structure bridge tracing, preventing panics on multibyte UTF-8 characters (e.g., `•`).
 
 ---
 

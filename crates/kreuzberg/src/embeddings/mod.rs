@@ -309,7 +309,7 @@ fn download_model_files(
     std::path::PathBuf,
     std::path::PathBuf,
 )> {
-    let api = hf_hub::api::sync::ApiBuilder::new()
+    let api = hf_hub::api::sync::ApiBuilder::from_env()
         .with_cache_dir(cache_directory.to_path_buf())
         .with_progress(true)
         .build()
@@ -513,7 +513,7 @@ pub fn download_model(
 
     tracing::info!(repo = %repo_name, "Downloading embedding model files (no ONNX init)");
 
-    let api = hf_hub::api::sync::ApiBuilder::new()
+    let api = hf_hub::api::sync::ApiBuilder::from_env()
         .with_cache_dir(cache_directory)
         .with_progress(true)
         .build()
