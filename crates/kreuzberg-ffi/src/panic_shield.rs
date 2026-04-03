@@ -32,6 +32,8 @@ pub enum ErrorCode {
     OcrError = 6,
     /// Missing dependency
     MissingDependency = 7,
+    /// Embedding error
+    EmbeddingError = 8,
 }
 
 impl StructuredError {

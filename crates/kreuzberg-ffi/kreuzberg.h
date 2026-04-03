@@ -1394,9 +1394,20 @@ KREUZBERG_EXPORT uint32_t kreuzberg_error_code_unsupported_format(void);
 KREUZBERG_EXPORT uint32_t kreuzberg_error_code_internal(void);
 
 /**
+ * Returns the embedding error code (8).
+ *
+ * # C Signature
+ *
+ * ```c
+ * uint32_t kreuzberg_error_code_embedding(void);
+ * ```
+ */
+KREUZBERG_EXPORT uint32_t kreuzberg_error_code_embedding(void);
+
+/**
  * Returns the total count of valid error codes.
  *
- * Currently 8 error codes (0-7). This helps bindings validate error codes.
+ * Currently 9 error codes (0-8). This helps bindings validate error codes.
  *
  * # C Signature
  *

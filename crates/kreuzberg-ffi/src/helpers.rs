@@ -32,6 +32,16 @@ pub fn set_last_error(err: String) {
     set_structured_error(structured_err);
 }
 
+/// Set the last error message as an embedding error
+pub fn set_embedding_error(err: String) {
+    if let Ok(c_str) = CString::new(err.clone()) {
+        LAST_ERROR_C_STRING.with(|last| *last.borrow_mut() = Some(c_str));
+    }
+
+    let structured_err = StructuredError::from_message(err, ErrorCode::EmbeddingError);
+    set_structured_error(structured_err);
+}
+
 /// Clear the last error message
 pub fn clear_last_error() {
     LAST_ERROR_C_STRING.with(|last| *last.borrow_mut() = None);

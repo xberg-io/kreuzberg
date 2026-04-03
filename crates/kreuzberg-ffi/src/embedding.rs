@@ -1,7 +1,7 @@
 //! Standalone embedding FFI functions.
 
 use crate::ffi_panic_guard;
-use crate::helpers::{clear_last_error, set_last_error, string_to_c_string};
+use crate::helpers::{clear_last_error, set_embedding_error, set_last_error, string_to_c_string};
 use std::ffi::{CStr, c_char};
 use std::ptr;
 
@@ -86,7 +86,7 @@ pub unsafe extern "C" fn kreuzberg_embed(texts_json: *const c_char, config_json:
                 }
             },
             Err(e) => {
-                set_last_error(e.to_string());
+                set_embedding_error(e.to_string());
                 ptr::null_mut()
             }
         }
