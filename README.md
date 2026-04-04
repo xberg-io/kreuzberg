@@ -90,27 +90,27 @@ Each language binding provides comprehensive documentation with examples and bes
 
 **Scripting Languages:**
 
-- **[Python](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/python)** – PyPI package, async/sync APIs, OCR backends (Tesseract, PaddleOCR, EasyOCR)
-- **[Ruby](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/ruby)** – RubyGems package, idiomatic Ruby API, native bindings
-- **[PHP](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/php)** – Composer package, modern PHP 8.4+ support, type-safe API, async extraction
-- **[Elixir](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/elixir)** – Hex package, OTP integration, concurrent processing
-- **[R](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/r)** – r-universe package, idiomatic R API, extendr bindings
+- **[Python](https://github.com/kreuzberg-dev/kreuzberg/tree/main/kreuzberg/packages/python)** – PyPI package, async/sync APIs, OCR backends (Tesseract, PaddleOCR, EasyOCR)
+- **[Ruby](https://github.com/kreuzberg-dev/kreuzberg/tree/main/kreuzberg/packages/ruby)** – RubyGems package, idiomatic Ruby API, native bindings
+- **[PHP](https://github.com/kreuzberg-dev/kreuzberg/tree/main/kreuzberg/packages/php)** – Composer package, modern PHP 8.4+ support, type-safe API, async extraction
+- **[Elixir](https://github.com/kreuzberg-dev/kreuzberg/tree/main/kreuzberg/packages/elixir)** – Hex package, OTP integration, concurrent processing
+- **[R](https://github.com/kreuzberg-dev/kreuzberg/tree/main/kreuzberg/packages/r)** – r-universe package, idiomatic R API, extendr bindings
 
 **JavaScript/TypeScript:**
 
-- **[@kreuzberg/node](https://github.com/kreuzberg-dev/kreuzberg/tree/main/crates/kreuzberg-node)** – Native NAPI-RS bindings for Node.js/Bun, fastest performance
-- **[@kreuzberg/wasm](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/typescript)** – WebAssembly for browsers/Deno/Cloudflare Workers, full feature parity (PDF, Excel, OCR, archives)
+- **[@kreuzberg/node](https://github.com/kreuzberg-dev/kreuzberg/tree/main/kreuzberg/crates/kreuzberg-node)** – Native NAPI-RS bindings for Node.js/Bun, fastest performance
+- **[@kreuzberg/wasm](https://github.com/kreuzberg-dev/kreuzberg/tree/main/kreuzberg/packages/typescript)** – WebAssembly for browsers/Deno/Cloudflare Workers, full feature parity (PDF, Excel, OCR, archives)
 
 **Compiled Languages:**
 
-- **[Go](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/go)** – Go module with FFI bindings, context-aware async
-- **[Java](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/java)** – Maven Central, Foreign Function & Memory API
-- **[C#](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/csharp)** – NuGet package, .NET 6.0+, full async/await support
+- **[Go](https://github.com/kreuzberg-dev/kreuzberg/tree/main/kreuzberg/packages/go)** – Go module with FFI bindings, context-aware async
+- **[Java](https://github.com/kreuzberg-dev/kreuzberg/tree/main/kreuzberg/packages/java)** – Maven Central, Foreign Function & Memory API
+- **[C#](https://github.com/kreuzberg-dev/kreuzberg/tree/main/kreuzberg/packages/csharp)** – NuGet package, .NET 6.0+, full async/await support
 
 **Native:**
 
-- **[Rust](https://github.com/kreuzberg-dev/kreuzberg/tree/main/crates/kreuzberg)** – Core library, flexible feature flags, zero-copy APIs
-- **[C (FFI)](https://github.com/kreuzberg-dev/kreuzberg/tree/main/crates/kreuzberg-ffi)** – C header + shared library, pkg-config/CMake support, cross-platform
+- **[Rust](https://github.com/kreuzberg-dev/kreuzberg/tree/main/kreuzberg/crates/kreuzberg)** – Core library, flexible feature flags, zero-copy APIs
+- **[C (FFI)](https://github.com/kreuzberg-dev/kreuzberg/tree/main/kreuzberg/crates/kreuzberg-ffi)** – C header + shared library, pkg-config/CMake support, cross-platform
 
 **Containers:**
 
@@ -278,7 +278,7 @@ Install the skill into any project using the [Vercel Skills CLI](https://github.
 npx skills add kreuzberg-dev/kreuzberg
 ```
 
-The skill is located at [`skills/kreuzberg/SKILL.md`](skills/kreuzberg/SKILL.md) and is automatically discovered by supported AI coding tools once installed.
+The skill is located at [`kreuzberg/skills/kreuzberg/SKILL.md`](kreuzberg/skills/kreuzberg/SKILL.md) and is automatically discovered by supported AI coding tools once installed.
 
 ## Documentation
 
@@ -290,10 +290,20 @@ The skill is located at [`skills/kreuzberg/SKILL.md`](skills/kreuzberg/SKILL.md)
 - **[CLI Guide](https://docs.kreuzberg.dev/cli/usage/)** – Command-line usage
 - **[Migration Guide](https://docs.kreuzberg.dev/migration/v3-to-v4/)** – Upgrading from v3
 
+## Repository Structure
+
+This is a monorepo. Kreuzberg source code lives under `kreuzberg/`:
+
+```
+kreuzberg/          # Kreuzberg library — crates, language bindings, e2e tests, scripts
+test_documents/     # Shared test corpus (91+ file formats)
+docs/               # Documentation site (docs.kreuzberg.dev)
+```
+
 ## Contributing
 
 Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) for details. You can use Kreuzberg freely in both commercial and closed-source products with no obligations, no viral effects, and no licensing restrictions.
+MIT License - see [kreuzberg/LICENSE](kreuzberg/LICENSE) for details. You can use Kreuzberg freely in both commercial and closed-source products with no obligations, no viral effects, and no licensing restrictions.
