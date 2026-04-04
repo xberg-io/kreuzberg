@@ -421,11 +421,12 @@ mod tests {
 
     #[test]
     fn test_render_djot_page_break() {
+        // PageBreak is structural metadata — not rendered as thematic break.
         let mut b = InternalDocumentBuilder::new("test");
         b.push_page_break();
         let doc = b.build();
         let out = render_djot(&doc);
-        assert!(out.contains("---"), "got: {}", out);
+        assert!(!out.contains("---"), "PageBreak should not render as ---, got: {}", out);
     }
 
     #[test]

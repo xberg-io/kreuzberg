@@ -17,6 +17,10 @@ path = "src/lib.rs"
 name = "benchmark-harness"
 path = "src/main.rs"
 
+[[bin]]
+name = "kreuzberg-extract"
+path = "src/bin/kreuzberg_extract.rs"
+
 [features]
 default = []
 profiling = ["pprof"]

@@ -39,6 +39,51 @@ pub fn render_markdown(doc: &InternalDocument) -> String {
             .join("\n");
     }
 
+    // Strip escaped HTML tags from PDFs that embed raw HTML in their text layer.
+    // comrak escapes `<tag>` as `\<tag\>` to prevent interpretation. We strip these
+    // entirely since our output should be clean markdown, not HTML artifacts.
+    // Handles: \<p\>, \</p\>, \<br /\>, \<a href="..."\>, etc.
+    if output.contains("\\<") {
+        // Remove escaped HTML tags: \<....\> patterns
+        let mut cleaned = String::with_capacity(output.len());
+        let mut chars = output.chars().peekable();
+        while let Some(ch) = chars.next() {
+            if ch == '\\' && chars.peek() == Some(&'<') {
+                // Skip the \< ... \> sequence
+                chars.next(); // consume '<'
+                let mut found_close = false;
+                while let Some(inner) = chars.next() {
+                    if inner == '\\' && chars.peek() == Some(&'>') {
+                        chars.next(); // consume '>'
+                        found_close = true;
+                        break;
+                    }
+                    if inner == '\n' {
+                        // Tag spans newline — not a real HTML tag, put content back
+                        cleaned.push('\\');
+                        cleaned.push('<');
+                        cleaned.push(inner);
+                        break;
+                    }
+                }
+                if !found_close {
+                    // Reached end without closing — not a tag
+                }
+                // Add a space if we removed a block-level tag (prevents word merging)
+                if found_close && !cleaned.ends_with(' ') && !cleaned.ends_with('\n') {
+                    cleaned.push(' ');
+                }
+            } else {
+                cleaned.push(ch);
+            }
+        }
+        output = cleaned;
+        // Clean up multiple spaces left by tag removal
+        while output.contains("  ") {
+            output = output.replace("  ", " ");
+        }
+    }
+
     // Safety net: decode any HTML entities that slipped through from other code paths.
     // `&#10;` (newline) → space, `&#2;` (STX control char) → removed.
     if output.contains("&#") {

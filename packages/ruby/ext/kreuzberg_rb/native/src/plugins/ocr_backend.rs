@@ -109,6 +109,7 @@ impl OcrBackend for RubyOcrBackend {
                 code_intelligence: None,
                 formatted_content: None,
                 uris: None,
+                ocr_internal_document: None,
             })
         })
     }
