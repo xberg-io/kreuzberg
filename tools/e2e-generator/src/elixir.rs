@@ -1017,8 +1017,8 @@ pub fn generate(fixtures: &[Fixture], output_root: &Utf8Path, mode: &GenerationM
     write_formatter_file(&elixir_root)?;
     write_helpers(&support_dir)?;
     write_test_helper(&test_dir)?;
-    generate_embed_tests(fixtures, &test_dir)?;
     clean_test_files(&e2e_dir)?;
+    generate_embed_tests(fixtures, &test_dir)?;
 
     let doc_fixtures: Vec<_> = fixtures.iter().filter(|f| f.is_document_extraction()).collect();
     let plugin_fixtures: Vec<_> = fixtures.iter().filter(|f| f.is_plugin_api()).collect();

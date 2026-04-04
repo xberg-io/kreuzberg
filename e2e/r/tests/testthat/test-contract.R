@@ -342,8 +342,8 @@ test_that("config_disable_ocr", {
     notes = NULL,
     skip_if_missing = TRUE
   )
-  assert_expected_mime(result, c("image/png"))
-  assert_max_content_length(result, 5L)
+      assert_expected_mime(result, c("image/png"))
+      assert_max_content_length(result, 5L)
 })
 
 test_that("config_djot_content", {
@@ -816,8 +816,8 @@ test_that("config_tree_sitter", {
     notes = NULL,
     skip_if_missing = TRUE
   )
-  assert_expected_mime(result, c("text/x-source-code"))
-  assert_min_content_length(result, 5L)
+      assert_expected_mime(result, c("text/x-source-code"))
+      assert_min_content_length(result, 5L)
 })
 
 test_that("config_tree_sitter_process", {
@@ -830,8 +830,8 @@ test_that("config_tree_sitter_process", {
     notes = NULL,
     skip_if_missing = TRUE
   )
-  assert_expected_mime(result, c("text/x-source-code"))
-  assert_min_content_length(result, 5L)
+      assert_expected_mime(result, c("text/x-source-code"))
+      assert_min_content_length(result, 5L)
 })
 
 test_that("config_use_cache_false", {

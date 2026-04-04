@@ -879,8 +879,8 @@ pub fn generate(fixtures: &[Fixture], output_root: &Utf8Path, mode: &GenerationM
     write_helpers(&src_test)?;
     write_package_info(&src_test)?;
     write_pom(&java_root, mode)?;
-    generate_embed_tests(fixtures, &src_test)?;
     clean_test_files(&src_test)?;
+    generate_embed_tests(fixtures, &src_test)?;
 
     let doc_fixtures: Vec<_> = fixtures.iter().filter(|f| f.is_document_extraction()).collect();
 

@@ -731,4 +731,42 @@ pub mod assertions {
             _ => lhs == rhs,
         }
     }
+
+    pub fn assert_embed_result(
+        result: &[Vec<f32>],
+        count: Option<usize>,
+        dimensions: Option<usize>,
+        no_nan: bool,
+        no_inf: bool,
+        non_zero: bool,
+        normalized: bool,
+    ) {
+        if let Some(c) = count {
+            assert_eq!(result.len(), c, "Expected {c} embeddings, got {}", result.len());
+        }
+        for (i, vec) in result.iter().enumerate() {
+            if let Some(d) = dimensions {
+                assert_eq!(vec.len(), d, "Embedding {i}: expected {d} dims, got {}", vec.len());
+            }
+            if no_nan {
+                assert!(!vec.iter().any(|v| v.is_nan()), "Embedding {i} contains NaN values");
+            }
+            if no_inf {
+                assert!(
+                    !vec.iter().any(|v| v.is_infinite()),
+                    "Embedding {i} contains Inf values"
+                );
+            }
+            if non_zero {
+                assert!(vec.iter().any(|&v| v != 0.0), "Embedding {i} is all zeros");
+            }
+            if normalized {
+                let norm = vec.iter().map(|v| v * v).sum::<f32>().sqrt();
+                assert!(
+                    (norm - 1.0).abs() < 1e-4,
+                    "Embedding {i} L2 norm {norm:.6} != 1.0 (not normalized)"
+                );
+            }
+        }
+    }
 }

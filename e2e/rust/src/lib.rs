@@ -732,7 +732,6 @@ pub mod assertions {
         }
     }
 
-    /// Assert properties of a standalone embed result.
     pub fn assert_embed_result(
         result: &[Vec<f32>],
         count: Option<usize>,

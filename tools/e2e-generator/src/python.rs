@@ -1677,7 +1677,7 @@ fn render_embed_test(fixture: &Fixture) -> Result<String> {
     let test_name = format!("test_{}", sanitize_identifier(&fixture.id));
 
     // Skip guards
-    let requires_feature = &fixture.skip().requires_feature;
+    let _requires_feature = &fixture.skip().requires_feature;
     let skip_platforms = &fixture.skip().skip_on_platform;
 
     if is_async {

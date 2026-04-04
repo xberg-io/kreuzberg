@@ -98,6 +98,7 @@ pub fn init_thread_pool(_num_threads: usize) -> js_sys::Promise {
 }
 
 pub mod config;
+#[cfg(feature = "embeddings")]
 pub mod embeddings;
 pub mod errors;
 pub mod extraction;
@@ -114,6 +115,7 @@ pub use plugins::{
 };
 
 pub use config::*;
+#[cfg(feature = "embeddings")]
 pub use embeddings::*;
 pub use errors::*;
 pub use extraction::*;

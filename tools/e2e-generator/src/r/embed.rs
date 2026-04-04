@@ -1,4 +1,4 @@
-use super::render::{render_numeric_literal, render_r_string, render_string_vector};
+use super::render::{render_r_string, render_string_vector};
 use crate::fixtures::Fixture;
 use anyhow::{Context, Result};
 use camino::Utf8Path;
@@ -26,7 +26,7 @@ pub fn generate_embed_tests(fixtures: &[Fixture], test_dir: &Utf8Path) -> Result
     }
 
     writeln!(buffer, "# nolint end")?;
-    let path = test_dir.join("test-embeddings.R");
+    let path = test_dir.join("test-embed-standalone.R");
     fs::write(&path, buffer).with_context(|| format!("Writing {}", path))?;
 
     Ok(())

@@ -2276,7 +2276,7 @@ fn generate_embed_tests(fixtures: &[Fixture], output_dir: &Utf8Path) -> Result<(
     }
 
     let content = render_embed_category_php(&embed_fixtures)?;
-    let test_file = output_dir.join("EmbeddingsTest.php");
+    let test_file = output_dir.join("EmbedStandaloneTest.php");
     fs::write(&test_file, content).with_context(|| format!("Failed to write {test_file}"))?;
     Ok(())
 }
@@ -2301,7 +2301,7 @@ fn render_embed_category_php(fixtures: &[&Fixture]) -> Result<String> {
     writeln!(buffer, "use Kreuzberg\\Kreuzberg;")?;
     writeln!(buffer, "use PHPUnit\\Framework\\TestCase;")?;
     writeln!(buffer)?;
-    writeln!(buffer, "class EmbeddingsTest extends TestCase")?;
+    writeln!(buffer, "class EmbedStandaloneTest extends TestCase")?;
     writeln!(buffer, "{{")?;
 
     for fixture in fixtures {
