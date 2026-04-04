@@ -43,7 +43,7 @@ startxref
 }
 
 // generateTestPDFBytes generates minimal valid PDF bytes for testing.
-func generateTestPDFBytes(t *testing.T) []byte {
+func generateTestPDFBytes(_ *testing.T) []byte {
 	pdfContent := `%PDF-1.4
 1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj
 2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj

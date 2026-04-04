@@ -242,7 +242,7 @@ func TestFontConfigNilCustomDirs(t *testing.T) {
 }
 
 // TestFontConfigNilPointer verifies nil FontConfig pointer behavior
-func TestFontConfigNilPointer(t *testing.T) {
+func TestFontConfigNilPointer(_ *testing.T) {
 	var config *FontConfig
 	_ = config
 }

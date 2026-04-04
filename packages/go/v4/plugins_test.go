@@ -197,7 +197,7 @@ func TestListOCRBackends(t *testing.T) {
 	}
 }
 
-func TestUnregisterOCRBackend(t *testing.T) {
+func TestUnregisterOCRBackend(_ *testing.T) {
 	err := UnregisterOCRBackend("nonexistent-backend")
 	_ = err
 }

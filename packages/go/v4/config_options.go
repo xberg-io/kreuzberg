@@ -137,9 +137,9 @@ func WithPages(opts ...PageOption) ExtractionOption {
 }
 
 // WithMaxConcurrentExtractions sets the maximum concurrent extractions.
-func WithMaxConcurrentExtractions(max int) ExtractionOption {
+func WithMaxConcurrentExtractions(limit int) ExtractionOption {
 	return func(c *ExtractionConfig) {
-		c.MaxConcurrentExtractions = &max
+		c.MaxConcurrentExtractions = &limit
 	}
 }
 
@@ -461,9 +461,9 @@ func NewChunkingConfig(opts ...ChunkingOption) *ChunkingConfig {
 }
 
 // WithMaxChars sets the maximum number of characters per chunk.
-func WithMaxChars(max int) ChunkingOption {
+func WithMaxChars(limit int) ChunkingOption {
 	return func(c *ChunkingConfig) {
-		c.MaxChars = &max
+		c.MaxChars = &limit
 	}
 }
 
@@ -551,9 +551,9 @@ func WithImageTargetDPI(dpi int) ImageExtractionOption {
 }
 
 // WithMaxImageDimension sets the maximum image dimension.
-func WithMaxImageDimension(max int) ImageExtractionOption {
+func WithMaxImageDimension(dim int) ImageExtractionOption {
 	return func(c *ImageExtractionConfig) {
-		c.MaxImageDimension = &max
+		c.MaxImageDimension = &dim
 	}
 }
 
@@ -951,9 +951,9 @@ func WithKeywordAlgorithm(algorithm string) KeywordOption {
 }
 
 // WithMaxKeywords sets the maximum number of keywords to extract.
-func WithMaxKeywords(max int) KeywordOption {
+func WithMaxKeywords(limit int) KeywordOption {
 	return func(c *KeywordConfig) {
-		c.MaxKeywords = &max
+		c.MaxKeywords = &limit
 	}
 }
 
@@ -965,9 +965,9 @@ func WithKeywordMinScore(score float64) KeywordOption {
 }
 
 // WithNgramRange sets the n-gram range for keyword extraction.
-func WithNgramRange(min, max int) KeywordOption {
+func WithNgramRange(minVal, maxVal int) KeywordOption {
 	return func(c *KeywordConfig) {
-		c.NgramRange = &[2]int{min, max}
+		c.NgramRange = &[2]int{minVal, maxVal}
 	}
 }
 
@@ -1033,9 +1033,9 @@ func WithRakeMinWordLength(length int) RakeParamsOption {
 }
 
 // WithRakeMaxWordsPerPhrase sets the maximum words per phrase for RAKE.
-func WithRakeMaxWordsPerPhrase(max int) RakeParamsOption {
+func WithRakeMaxWordsPerPhrase(maxWords int) RakeParamsOption {
 	return func(c *RakeParams) {
-		c.MaxWordsPerPhrase = &max
+		c.MaxWordsPerPhrase = &maxWords
 	}
 }
 

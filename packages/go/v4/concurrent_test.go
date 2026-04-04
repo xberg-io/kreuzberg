@@ -23,7 +23,7 @@ func TestConcurrentExtractFileSync(t *testing.T) {
 
 	wg.Add(numGoroutines)
 	for i := 0; i < numGoroutines; i++ {
-		go func(index int) {
+		go func(_ int) {
 			defer wg.Done()
 			result, err := kreuzberg.ExtractFileSync(testPDF, nil)
 			if err != nil {
@@ -59,7 +59,7 @@ func TestConcurrentExtractBytesSync(t *testing.T) {
 
 	wg.Add(numGoroutines)
 	for i := 0; i < numGoroutines; i++ {
-		go func(index int) {
+		go func(_ int) {
 			defer wg.Done()
 			result, err := kreuzberg.ExtractBytesSync(pdfBytes, "application/pdf", nil)
 			if err != nil {
@@ -99,7 +99,7 @@ func TestConcurrentExtractWithContext(t *testing.T) {
 
 	wg.Add(numGoroutines)
 	for i := 0; i < numGoroutines; i++ {
-		go func(index int) {
+		go func(_ int) {
 			defer wg.Done()
 			result, err := kreuzberg.ExtractFileWithContext(ctx, testPDF, nil)
 			if err != nil && !errors.Is(err, context.Canceled) {
@@ -175,7 +175,7 @@ func TestBatchConcurrentExtraction(t *testing.T) {
 
 	wg.Add(numGoroutines)
 	for i := 0; i < numGoroutines; i++ {
-		go func(index int) {
+		go func(_ int) {
 			defer wg.Done()
 			results, err := kreuzberg.BatchExtractFilesSync(paths, nil)
 			if err != nil {
@@ -227,7 +227,7 @@ func TestConcurrentErrorHandling(t *testing.T) {
 
 	wg.Add(numGoroutines)
 	for i := 0; i < numGoroutines; i++ {
-		go func(index int) {
+		go func(_ int) {
 			defer wg.Done()
 			_, err := kreuzberg.ExtractFileSync("/nonexistent/file.pdf", nil)
 			if err == nil {
@@ -261,7 +261,7 @@ func TestConcurrentFileExtractionLoad(t *testing.T) {
 
 	wg.Add(numGoroutines)
 	for i := 0; i < numGoroutines; i++ {
-		go func(index int) {
+		go func(_ int) {
 			defer wg.Done()
 			_, err := kreuzberg.ExtractFileSync(testPDF, nil)
 			if err == nil {
@@ -294,7 +294,7 @@ func TestChannelSynchronizationPattern(t *testing.T) {
 
 	wg.Add(numGoroutines)
 	for i := 0; i < numGoroutines; i++ {
-		go func(index int) {
+		go func(_ int) {
 			defer wg.Done()
 			result, err := kreuzberg.ExtractFileSync(testPDF, nil)
 			if err != nil {
@@ -365,7 +365,7 @@ func TestCacheAccessPattern(t *testing.T) {
 	// Writers - extract and cache results
 	wg.Add(numWriters)
 	for i := 0; i < numWriters; i++ {
-		go func(index int) {
+		go func(_ int) {
 			defer wg.Done()
 			result, err := kreuzberg.ExtractFileSync(testPDF, nil)
 			if err != nil {
@@ -381,7 +381,7 @@ func TestCacheAccessPattern(t *testing.T) {
 	// Readers - read cache concurrently
 	wg.Add(numReaders)
 	for i := 0; i < numReaders; i++ {
-		go func(index int) {
+		go func(_ int) {
 			defer wg.Done()
 
 			cache.RLock()
@@ -536,7 +536,7 @@ func TestAtomicOperationValidation(t *testing.T) {
 
 	wg.Add(numGoroutines)
 	for i := 0; i < numGoroutines; i++ {
-		go func(index int) {
+		go func(_ int) {
 			defer wg.Done()
 
 			// Each goroutine processes operations atomically
@@ -587,7 +587,7 @@ func TestConcurrentBytesExtraction(t *testing.T) {
 
 	wg.Add(numGoroutines)
 	for i := 0; i < numGoroutines; i++ {
-		go func(index int) {
+		go func(_ int) {
 			defer wg.Done()
 			result, err := kreuzberg.ExtractBytesSync(pdfBytes, "application/pdf", nil)
 			if err != nil {
@@ -703,7 +703,7 @@ func TestContextTimeoutDetection(t *testing.T) {
 
 	wg.Add(numGoroutines)
 	for i := 0; i < numGoroutines; i++ {
-		go func(index int) {
+		go func(_ int) {
 			defer wg.Done()
 
 			// Create context with immediate cancellation to guarantee timeout detection
@@ -752,7 +752,7 @@ func TestConcurrentConfigUsage(t *testing.T) {
 
 	wg.Add(numGoroutines)
 	for i := 0; i < numGoroutines; i++ {
-		go func(index int) {
+		go func(_ int) {
 			defer wg.Done()
 			result, err := kreuzberg.ExtractFileSync(testPDF, config)
 			if err == nil && result != nil {

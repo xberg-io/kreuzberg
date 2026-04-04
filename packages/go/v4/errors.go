@@ -85,8 +85,8 @@ func (pc *PanicContext) String() string {
 	return fmt.Sprintf("%s:%d in %s: %s", pc.File, pc.Line, pc.Function, pc.Message)
 }
 
-// KreuzbergError is implemented by all custom error types returned by the Go binding.
-type KreuzbergError interface {
+// Error is implemented by all custom error types returned by the Go binding.
+type Error interface {
 	error
 	Kind() ErrorKind
 	Code() ErrorCode
@@ -272,7 +272,7 @@ func formatErrorMessage(message string) string {
 	return "kreuzberg: " + trimmed
 }
 
-// classifyNativeError converts a native error message and code into a typed Kreuzberg error.
+// classifyNativeError converts a native error message and code into a typed Error.
 // Uses the FFI-provided error code to classify errors instead of string matching.
 func classifyNativeError(message string, code ErrorCode, panicCtx *PanicContext) error {
 	trimmed := strings.TrimSpace(message)

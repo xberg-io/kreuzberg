@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-func TestRenderingFunctionsExist(t *testing.T) {
+func TestRenderingFunctionsExist(_ *testing.T) {
 	// Compilation itself proves the functions exist
 	_ = RenderPdfPage
 	_ = NewPdfPageIterator

@@ -766,6 +766,40 @@ export const assertions = {
 			}
 		}
 	},
+
+	assertEmbedResult(
+		results: number[][],
+		count: number,
+		dimensions: number,
+		noNan: boolean,
+		noInf: boolean,
+		nonZero: boolean,
+	): void {
+		expect(results).toBeDefined();
+		if (count >= 0) {
+			expect(results.length).toBe(count);
+		}
+
+		if (results.length > 0) {
+			for (let i = 0; i < results.length; i++) {
+				const vector = results[i];
+				expect(vector).toBeDefined();
+				if (dimensions > 0) {
+					expect(vector.length).toBe(dimensions);
+				}
+
+				if (noNan) {
+					expect(vector.every((v) => !Number.isNaN(v))).toBe(true);
+				}
+				if (noInf) {
+					expect(vector.every((v) => Number.isFinite(v))).toBe(true);
+				}
+				if (nonZero) {
+					expect(vector.some((v) => v !== 0)).toBe(true);
+				}
+			}
+		}
+	},
 };
 
 function lookupMetadataPath(metadata: PlainRecord, path: string): unknown {

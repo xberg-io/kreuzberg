@@ -1,3 +1,4 @@
+// cppcheck-suppress normalCheckLevelMaxBranches
 /**
  * Kreuzberg C extraction wrapper for benchmark harness.
  *
@@ -481,3 +482,4 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 }
+

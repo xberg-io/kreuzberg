@@ -8,7 +8,7 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/kreuzberg-dev/kreuzberg/packages/go/v4"
+	kreuzberg "github.com/kreuzberg-dev/kreuzberg/packages/go/v4"
 )
 
 // Tests for standalone embed() fixtures.
@@ -19,10 +19,10 @@ func TestEmbed_embed_async(t *testing.T) {
 	}
 	config := &kreuzberg.EmbeddingConfig{
 		Model: &kreuzberg.EmbeddingModelType{
-			Type_:  "preset",
-			Preset: kreuzberg.String("balanced"),
+			Type: "preset",
+			Name: "balanced",
 		},
-		Normalize: kreuzberg.Bool(true),
+		Normalize: kreuzberg.BoolPtr(true),
 	}
 
 	texts := []string{"Async embedding test"}
@@ -30,7 +30,7 @@ func TestEmbed_embed_async(t *testing.T) {
 	if err != nil {
 		t.Fatalf("EmbedTexts failed: %v", err)
 	}
-	assertEmbedResult(t, result, kreuzberg.Int(1), kreuzberg.Int(768), true, true, true, false)
+	assertEmbedResult(t, result, kreuzberg.IntPtr(1), kreuzberg.IntPtr(768), true, true, true, false)
 }
 
 func TestEmbed_embed_batch_texts(t *testing.T) {
@@ -40,11 +40,11 @@ func TestEmbed_embed_batch_texts(t *testing.T) {
 	}
 	config := &kreuzberg.EmbeddingConfig{
 		Model: &kreuzberg.EmbeddingModelType{
-			Type_:  "preset",
-			Preset: kreuzberg.String("fast"),
+			Type: "preset",
+			Name: "fast",
 		},
-		Normalize: kreuzberg.Bool(true),
-		BatchSize: kreuzberg.Int(32),
+		Normalize: kreuzberg.BoolPtr(true),
+		BatchSize: kreuzberg.IntPtr(32),
 	}
 
 	texts := []string{"Text one", "Text two", "Text three"}
@@ -52,7 +52,7 @@ func TestEmbed_embed_batch_texts(t *testing.T) {
 	if err != nil {
 		t.Fatalf("EmbedTexts failed: %v", err)
 	}
-	assertEmbedResult(t, result, kreuzberg.Int(3), kreuzberg.Int(384), true, true, true, true)
+	assertEmbedResult(t, result, kreuzberg.IntPtr(3), kreuzberg.IntPtr(384), true, true, true, true)
 }
 
 func TestEmbed_embed_empty_input(t *testing.T) {
@@ -62,8 +62,8 @@ func TestEmbed_embed_empty_input(t *testing.T) {
 	}
 	config := &kreuzberg.EmbeddingConfig{
 		Model: &kreuzberg.EmbeddingModelType{
-			Type_:  "preset",
-			Preset: kreuzberg.String("balanced"),
+			Type: "preset",
+			Name: "balanced",
 		},
 	}
 
@@ -72,7 +72,7 @@ func TestEmbed_embed_empty_input(t *testing.T) {
 	if err != nil {
 		t.Fatalf("EmbedTexts failed: %v", err)
 	}
-	assertEmbedResult(t, result, kreuzberg.Int(0), nil, true, true, false, false)
+	assertEmbedResult(t, result, kreuzberg.IntPtr(0), nil, true, true, false, false)
 }
 
 func TestEmbed_embed_multilingual(t *testing.T) {
@@ -82,10 +82,10 @@ func TestEmbed_embed_multilingual(t *testing.T) {
 	}
 	config := &kreuzberg.EmbeddingConfig{
 		Model: &kreuzberg.EmbeddingModelType{
-			Type_:  "preset",
-			Preset: kreuzberg.String("multilingual"),
+			Type: "preset",
+			Name: "multilingual",
 		},
-		Normalize: kreuzberg.Bool(true),
+		Normalize: kreuzberg.BoolPtr(true),
 	}
 
 	texts := []string{"Bonjour le monde", "Hallo Welt", "¡Hola Mundo!"}
@@ -93,7 +93,7 @@ func TestEmbed_embed_multilingual(t *testing.T) {
 	if err != nil {
 		t.Fatalf("EmbedTexts failed: %v", err)
 	}
-	assertEmbedResult(t, result, kreuzberg.Int(3), kreuzberg.Int(768), true, true, true, false)
+	assertEmbedResult(t, result, kreuzberg.IntPtr(3), kreuzberg.IntPtr(768), true, true, true, false)
 }
 
 func TestEmbed_embed_single_text(t *testing.T) {
@@ -103,10 +103,10 @@ func TestEmbed_embed_single_text(t *testing.T) {
 	}
 	config := &kreuzberg.EmbeddingConfig{
 		Model: &kreuzberg.EmbeddingModelType{
-			Type_:  "preset",
-			Preset: kreuzberg.String("balanced"),
+			Type: "preset",
+			Name: "balanced",
 		},
-		Normalize: kreuzberg.Bool(true),
+		Normalize: kreuzberg.BoolPtr(true),
 	}
 
 	texts := []string{"Hello, Kreuzberg!"}
@@ -114,5 +114,5 @@ func TestEmbed_embed_single_text(t *testing.T) {
 	if err != nil {
 		t.Fatalf("EmbedTexts failed: %v", err)
 	}
-	assertEmbedResult(t, result, kreuzberg.Int(1), kreuzberg.Int(768), true, true, true, true)
+	assertEmbedResult(t, result, kreuzberg.IntPtr(1), kreuzberg.IntPtr(768), true, true, true, true)
 }

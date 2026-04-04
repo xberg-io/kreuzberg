@@ -76,7 +76,7 @@ func TestExtractionConfig_JSON_Marshaling(t *testing.T) {
 	}
 }
 
-func TestExtractionConfig_NilPointerHandling(t *testing.T) {
+func TestExtractionConfig_NilPointerHandling(_ *testing.T) {
 	var config *kreuzberg.ExtractionConfig
 	// Test that nil pointer doesn't panic
 	_ = config
@@ -195,7 +195,7 @@ func TestOCRConfig_WithTesseract(t *testing.T) {
 	}
 }
 
-func TestOCRConfig_NilPointerHandling(t *testing.T) {
+func TestOCRConfig_NilPointerHandling(_ *testing.T) {
 	var config *kreuzberg.OCRConfig
 	_ = config
 }
@@ -298,7 +298,7 @@ func TestTesseractConfig_CharWhitelist(t *testing.T) {
 	}
 }
 
-func TestTesseractConfig_NilPointerHandling(t *testing.T) {
+func TestTesseractConfig_NilPointerHandling(_ *testing.T) {
 	var config *kreuzberg.TesseractConfig
 	_ = config
 }
@@ -400,7 +400,7 @@ func TestImagePreprocessingConfig_AllOptions(t *testing.T) {
 	}
 }
 
-func TestImagePreprocessingConfig_NilPointerHandling(t *testing.T) {
+func TestImagePreprocessingConfig_NilPointerHandling(_ *testing.T) {
 	var config *kreuzberg.ImagePreprocessingConfig
 	_ = config
 }
@@ -498,7 +498,7 @@ func TestChunkingConfig_WithEmbedding(t *testing.T) {
 	}
 }
 
-func TestChunkingConfig_NilPointerHandling(t *testing.T) {
+func TestChunkingConfig_NilPointerHandling(_ *testing.T) {
 	var config *kreuzberg.ChunkingConfig
 	_ = config
 }
@@ -632,7 +632,7 @@ func TestImageExtractionConfig_DPIRange(t *testing.T) {
 	}
 }
 
-func TestImageExtractionConfig_NilPointerHandling(t *testing.T) {
+func TestImageExtractionConfig_NilPointerHandling(_ *testing.T) {
 	var config *kreuzberg.ImageExtractionConfig
 	_ = config
 }
@@ -737,7 +737,7 @@ func TestPdfConfig_WithHierarchy(t *testing.T) {
 	}
 }
 
-func TestPdfConfig_NilPointerHandling(t *testing.T) {
+func TestPdfConfig_NilPointerHandling(_ *testing.T) {
 	var config *kreuzberg.PdfConfig
 	_ = config
 }
@@ -817,7 +817,7 @@ func TestHierarchyConfig_JSON_Marshaling(t *testing.T) {
 	}
 }
 
-func TestHierarchyConfig_NilPointerHandling(t *testing.T) {
+func TestHierarchyConfig_NilPointerHandling(_ *testing.T) {
 	var config *kreuzberg.HierarchyConfig
 	_ = config
 }
@@ -943,7 +943,7 @@ func TestKeywordConfig_WithRakeParams(t *testing.T) {
 	}
 }
 
-func TestKeywordConfig_NilPointerHandling(t *testing.T) {
+func TestKeywordConfig_NilPointerHandling(_ *testing.T) {
 	var config *kreuzberg.KeywordConfig
 	_ = config
 }
@@ -1013,7 +1013,7 @@ func TestTokenReductionConfig_JSON_Marshaling(t *testing.T) {
 	}
 }
 
-func TestTokenReductionConfig_NilPointerHandling(t *testing.T) {
+func TestTokenReductionConfig_NilPointerHandling(_ *testing.T) {
 	var config *kreuzberg.TokenReductionConfig
 	_ = config
 }
@@ -1089,7 +1089,7 @@ func TestLanguageDetectionConfig_JSON_Marshaling(t *testing.T) {
 	}
 }
 
-func TestLanguageDetectionConfig_NilPointerHandling(t *testing.T) {
+func TestLanguageDetectionConfig_NilPointerHandling(_ *testing.T) {
 	var config *kreuzberg.LanguageDetectionConfig
 	_ = config
 }
@@ -1164,7 +1164,7 @@ func TestPostProcessorConfig_JSON_Marshaling(t *testing.T) {
 	}
 }
 
-func TestPostProcessorConfig_NilPointerHandling(t *testing.T) {
+func TestPostProcessorConfig_NilPointerHandling(_ *testing.T) {
 	var config *kreuzberg.PostProcessorConfig
 	_ = config
 }
@@ -1265,7 +1265,7 @@ func TestEmbeddingConfig_WithCacheDir(t *testing.T) {
 	}
 }
 
-func TestEmbeddingConfig_NilPointerHandling(t *testing.T) {
+func TestEmbeddingConfig_NilPointerHandling(_ *testing.T) {
 	var config *kreuzberg.EmbeddingConfig
 	_ = config
 }
@@ -1336,7 +1336,7 @@ func TestPageConfig_JSON_Marshaling(t *testing.T) {
 	}
 }
 
-func TestPageConfig_NilPointerHandling(t *testing.T) {
+func TestPageConfig_NilPointerHandling(_ *testing.T) {
 	var config *kreuzberg.PageConfig
 	_ = config
 }

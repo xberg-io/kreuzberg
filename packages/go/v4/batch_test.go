@@ -287,7 +287,7 @@ func TestBatchOrderPreservation(t *testing.T) {
 
 // TestBatchMemoryManagement tests that batch operations manage memory properly.
 func TestBatchMemoryManagement(t *testing.T) {
-	t.Run("file batch memory", func(t *testing.T) {
+	t.Run("file batch memory", func(_ *testing.T) {
 		dir := t.TempDir()
 		var paths []string
 
@@ -303,7 +303,7 @@ func TestBatchMemoryManagement(t *testing.T) {
 		_ = err
 	})
 
-	t.Run("bytes batch memory", func(t *testing.T) {
+	t.Run("bytes batch memory", func(_ *testing.T) {
 		pdfData, _ := getValidPDFBytes()
 		var items []BytesWithMime
 		for i := 0; i < 100; i++ {
@@ -439,7 +439,7 @@ func TestBatchWithDifferentMimeTypes(t *testing.T) {
 
 // TestBatchErrorPropagation tests error propagation in batch operations.
 func TestBatchErrorPropagation(t *testing.T) {
-	t.Run("invalid MIME type in batch", func(t *testing.T) {
+	t.Run("invalid MIME type in batch", func(_ *testing.T) {
 		items := []BytesWithMime{
 			{Data: []byte("test"), MimeType: "invalid/mime"},
 		}
@@ -448,7 +448,7 @@ func TestBatchErrorPropagation(t *testing.T) {
 		_ = err
 	})
 
-	t.Run("mixed valid and invalid", func(t *testing.T) {
+	t.Run("mixed valid and invalid", func(_ *testing.T) {
 		pdfData, _ := getValidPDFBytes()
 		items := []BytesWithMime{
 			{Data: pdfData, MimeType: "application/pdf"},
@@ -511,19 +511,19 @@ func TestBatchWithConfigurationVariants(t *testing.T) {
 		t.Fatalf("failed to write test file: %v", err)
 	}
 
-	t.Run("with cache disabled", func(t *testing.T) {
+	t.Run("with cache disabled", func(_ *testing.T) {
 		config := &ExtractionConfig{UseCache: BoolPtr(false)}
 		_, err := BatchExtractFilesSync([]string{path}, config)
 		_ = err
 	})
 
-	t.Run("with quality processing", func(t *testing.T) {
+	t.Run("with quality processing", func(_ *testing.T) {
 		config := &ExtractionConfig{EnableQualityProcessing: BoolPtr(true)}
 		_, err := BatchExtractFilesSync([]string{path}, config)
 		_ = err
 	})
 
-	t.Run("with chunking enabled", func(t *testing.T) {
+	t.Run("with chunking enabled", func(_ *testing.T) {
 		config := &ExtractionConfig{
 			Chunking: &ChunkingConfig{
 				Enabled: BoolPtr(true),
@@ -583,7 +583,7 @@ func TestBatchParallelFileAccess(t *testing.T) {
 
 // TestBatchBytesSizeVariation tests batch extraction with various data sizes.
 func TestBatchBytesSizeVariation(t *testing.T) {
-	t.Run("tiny batch items", func(t *testing.T) {
+	t.Run("tiny batch items", func(_ *testing.T) {
 		items := []BytesWithMime{
 			{Data: []byte("%PDF"), MimeType: "application/pdf"},
 		}
@@ -591,7 +591,7 @@ func TestBatchBytesSizeVariation(t *testing.T) {
 		_ = err
 	})
 
-	t.Run("normal size batch items", func(t *testing.T) {
+	t.Run("normal size batch items", func(_ *testing.T) {
 		pdfData, _ := getValidPDFBytes()
 		items := []BytesWithMime{
 			{Data: pdfData, MimeType: "application/pdf"},

@@ -11,10 +11,10 @@ import (
 // This method provides efficient access to page count metadata without JSON parsing.
 func (r *ExtractionResult) GetPageCount() (int, error) {
 	if r.Metadata.Pages != nil {
-		if r.Metadata.Pages.TotalCount > math.MaxInt {
+		if r.Metadata.Pages.TotalCount > uint64(math.MaxInt) {
 			return -1, fmt.Errorf("page count %d exceeds max int", r.Metadata.Pages.TotalCount)
 		}
-		return int(r.Metadata.Pages.TotalCount), nil
+		return int(r.Metadata.Pages.TotalCount), nil // #nosec G115
 	}
 	return 0, nil
 }

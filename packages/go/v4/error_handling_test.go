@@ -423,7 +423,7 @@ func TestReadOnlyFilePermissionError(t *testing.T) {
 }
 
 // TestNilConfigHandling validates that nil config is handled gracefully.
-func TestNilConfigHandling(t *testing.T) {
+func TestNilConfigHandling(_ *testing.T) {
 	// nil config should use defaults, not panic
 	_, err := kreuzberg.ExtractBytesSync(
 		[]byte("test content"),

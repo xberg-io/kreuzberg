@@ -802,10 +802,10 @@ export const assertions = {
                     assertEquals(vector.every((v) => !Number.isNaN(v)), true, `Vector ${i} contains NaN`);
                 }
                 if (noInf) {
-                    assertEquals(vector.every((v) => Number.isFinite(v)), true, `Vector ${i} contains infinite value`);
+                    expect(vector.every((v) => Number.isFinite(v))).toBe(true);
                 }
                 if (nonZero) {
-                    assertEquals(vector.some((v) => v !== 0), true, `Vector ${i} is all zeros`);
+                    expect(vector.some((v) => v !== 0)).toBe(true);
                 }
             }
         }

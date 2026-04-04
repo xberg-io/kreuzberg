@@ -148,14 +148,14 @@ func assertContentContainsAll(t *testing.T, result *kreuzberg.ExtractionResult, 
 	}
 }
 
-func assertTableCount(t *testing.T, result *kreuzberg.ExtractionResult, min, max *int) {
+func assertTableCount(t *testing.T, result *kreuzberg.ExtractionResult, minVal, maxVal *int) {
 	t.Helper()
 	count := len(result.Tables)
-	if min != nil && count < *min {
-		t.Fatalf("expected at least %d tables, found %d", *min, count)
+	if minVal != nil && count < *minVal {
+		t.Fatalf("expected at least %d tables, found %d", *minVal, count)
 	}
-	if max != nil && count > *max {
-		t.Fatalf("expected at most %d tables, found %d", *max, count)
+	if maxVal != nil && count > *maxVal {
+		t.Fatalf("expected at most %d tables, found %d", *maxVal, count)
 	}
 }
 
@@ -718,7 +718,7 @@ func assertEmbedResult(t *testing.T, result [][]float32, count *int, dims *int, 
 			}
 		}
 		if normalized {
-			var sqSum float64 = 0
+			var sqSum float64
 			for _, v := range vec {
 				sqSum += float64(v * v)
 			}
