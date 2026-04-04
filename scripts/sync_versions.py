@@ -237,98 +237,6 @@ def normalize_rubygems_version(version: str) -> str:
     return f"{base}.pre.{prerelease.replace('-', '.')}"
 
 
-def normalize_python_version(version: str) -> str:
-    """Convert semver version to Python package version format (replace - with no separator)."""
-    return version.replace("-", "")
-
-
-def update_pom_xml(file_path: Path, version: str) -> Tuple[bool, str, str]:
-    """
-    Update kreuzberg dependency version in pom.xml.
-
-    Returns: (changed, old_version, new_version)
-    """
-    content = file_path.read_text()
-
-    pattern = r'(<artifactId>kreuzberg</artifactId>\s*<version>)([^<]+)(</version>)'
-    match = re.search(pattern, content, re.DOTALL)
-    old_version = match.group(2) if match else "NOT FOUND"
-
-    if old_version == version:
-        return False, old_version, version
-
-    new_content = re.sub(
-        pattern,
-        rf"\g<1>{version}\g<3>",
-        content,
-        flags=re.DOTALL
-    )
-
-    if new_content != content:
-        file_path.write_text(new_content)
-        return True, old_version, version
-
-    return False, old_version, version
-
-
-def update_csproj(file_path: Path, version: str) -> Tuple[bool, str, str]:
-    """
-    Update Kreuzberg package version in .csproj file.
-
-    Returns: (changed, old_version, new_version)
-    """
-    content = file_path.read_text()
-
-    pattern = r'(<PackageReference Include="Kreuzberg" Version=")([^"]+)(" />)'
-    match = re.search(pattern, content)
-    old_version = match.group(2) if match else "NOT FOUND"
-
-    if old_version == version:
-        return False, old_version, version
-
-    new_content = re.sub(
-        pattern,
-        rf"\g<1>{version}\g<3>",
-        content
-    )
-
-    if new_content != content:
-        file_path.write_text(new_content)
-        return True, old_version, version
-
-    return False, old_version, version
-
-
-def update_gemfile(file_path: Path, version: str) -> Tuple[bool, str, str]:
-    """
-    Update kreuzberg gem version in Gemfile.
-
-    Returns: (changed, old_version, new_version)
-    """
-    content = file_path.read_text()
-
-    pattern = r"(gem\s+['\"]kreuzberg['\"]\s*,\s*['\"])([^'\"]+)(['\"])"
-    match = re.search(pattern, content)
-    old_version = match.group(2) if match else "NOT FOUND"
-
-    ruby_version = normalize_rubygems_version(version)
-
-    if old_version == ruby_version:
-        return False, old_version, ruby_version
-
-    new_content = re.sub(
-        pattern,
-        rf"\g<1>{ruby_version}\g<3>",
-        content
-    )
-
-    if new_content != content:
-        file_path.write_text(new_content)
-        return True, old_version, ruby_version
-
-    return False, old_version, ruby_version
-
-
 def update_composer_json(file_path: Path, version: str) -> Tuple[bool, str, str]:
     """
     Update a composer.json file.
@@ -370,39 +278,6 @@ def update_mix_exs(file_path: Path, version: str) -> Tuple[bool, str, str]:
 
     if new_content != content:
         file_path.write_text(new_content)
-        return True, old_version, version
-
-    return False, old_version, version
-
-
-def update_mix_exs_testapp(file_path: Path, version: str) -> Tuple[bool, str, str]:
-    """
-    Update Elixir test app mix.exs file (version + dependency).
-
-    Returns: (changed, old_version, new_version)
-    """
-    content = file_path.read_text()
-    original_content = content
-
-    # Update version field
-    version_match = re.search(r'version:\s+"([^"]+)"', content)
-    old_version = version_match.group(1) if version_match else "NOT FOUND"
-
-    content = re.sub(
-        r'(version:\s+)"[^"]+"',
-        rf'\1"{version}"',
-        content
-    )
-
-    # Update kreuzberg dependency
-    content = re.sub(
-        r'(\{:kreuzberg,\s+"~>\s+)[^"]+("})',
-        rf'\g<1>{version}\g<2>',
-        content
-    )
-
-    if content != original_content:
-        file_path.write_text(content)
         return True, old_version, version
 
     return False, old_version, version
@@ -713,17 +588,6 @@ def main():
             r'\d+\.\d+\.\d+(?:-[a-zA-Z0-9.]+)?',
             version,
         ),
-        # Test app descriptions
-        (
-            repo_root / "tests/test_apps/rust/Cargo.toml",
-            r'(description = "Comprehensive API coverage test for Kreuzberg )[\d\.\-rcRC]+( Rust library")',
-            rf"\g<1>{version}\g<2>",
-        ),
-        (
-            repo_root / "tests/test_apps/python/pyproject.toml",
-            r'(description = "Comprehensive API coverage test for Kreuzberg )[\d\.\-rcRC]+( Python bindings")',
-            rf"\g<1>{version}\g<2>",
-        ),
         # Doc comments with version examples
         (
             repo_root / "crates/kreuzberg-php/src/lib.rs",
@@ -805,12 +669,6 @@ def main():
             r'(> \*\*🚀 Version )\d+\.\d+\.\d+[^*]*(\*\*)',
             rf'\g<1>{version} Release\g<2>',
         ),
-        # Docker compose images
-        (
-            repo_root / "tests/test_apps/docker/docker-compose.yml",
-            r'(image: kreuzberg-dev/kreuzberg:)\d+\.\d+\.\d+(?:-[a-zA-Z0-9.]+)?(-core)?',
-            rf'\g<1>{version}\g<2>',
-        ),
         # Docs: Installation guide Java Maven/Gradle versions
         (
             repo_root / "docs/getting-started/installation.md",
@@ -838,22 +696,6 @@ def main():
         (
             repo_root / "docs/guides/api-server.md",
             r'("version": ")\d+\.\d+\.\d+(?:-[a-zA-Z0-9.]+)?(")',
-            rf'\g<1>{version}\g<2>',
-        ),
-        # Test app source code version references
-        (
-            repo_root / "tests/test_apps/rust/src/main.rs",
-            r'(//! Comprehensive test suite for Kreuzberg )\d+\.\d+\.\d+(?:-[a-zA-Z0-9.]+)?( Rust library)',
-            rf'\g<1>{version}\g<2>',
-        ),
-        (
-            repo_root / "tests/test_apps/rust/src/main.rs",
-            r'(println!\("\\nVersion: kreuzberg )\d+\.\d+\.\d+(?:-[a-zA-Z0-9.]+)?("\);)',
-            rf'\g<1>{version}\g<2>',
-        ),
-        (
-            repo_root / "tests/test_apps/python/main.py",
-            r'("""Comprehensive test suite for Kreuzberg Python bindings v)\d+\.\d+\.\d+(?:-[a-zA-Z0-9.]+)?(\.)$',
             rf'\g<1>{version}\g<2>',
         ),
     ]
@@ -907,22 +749,6 @@ def main():
         elif old_ver != "NOT FOUND":
             unchanged_files.append(str(rel_path))
 
-    # Sync Docker compose test app image versions
-    docker_compose = repo_root / "tests/test_apps/docker/docker-compose.yml"
-    if docker_compose.exists():
-        content = docker_compose.read_text()
-        new_content = re.sub(
-            r'(ghcr\.io/kreuzberg-dev/kreuzberg:)\d+\.\d+\.\d+',
-            rf'\g<1>{version}',
-            content,
-        )
-        if new_content != content:
-            docker_compose.write_text(new_content)
-            print(f"✓ {docker_compose.relative_to(repo_root)}: updated image tags to {version}")
-            updated_files.append(str(docker_compose.relative_to(repo_root)))
-        else:
-            unchanged_files.append(str(docker_compose.relative_to(repo_root)))
-
     # Sync vendored C headers from generated FFI header
     generated_header = repo_root / "crates/kreuzberg-ffi/kreuzberg.h"
     vendored_headers = [
@@ -955,63 +781,6 @@ def main():
             updated_files.append(str(go_install_main.relative_to(repo_root)))
         elif old_pattern:
             unchanged_files.append(str(go_install_main.relative_to(repo_root)))
-
-    print()
-    test_apps_manifests = [
-        (
-            repo_root / "tests/test_apps/python/pyproject.toml",
-            lambda p, v: update_pyproject_toml(p, normalize_python_version(v))
-        ),
-        (
-            repo_root / "tests/test_apps/node/package.json",
-            lambda p, v: update_package_json(p, v)
-        ),
-        (
-            repo_root / "tests/test_apps/wasm/package.json",
-            lambda p, v: update_package_json(p, v)
-        ),
-        (
-            repo_root / "tests/test_apps/ruby/Gemfile",
-            lambda p, v: update_gemfile(p, v)
-        ),
-        (
-            repo_root / "tests/test_apps/go/go.mod",
-            lambda p, v: update_go_mod(p, v)
-        ),
-        (
-            repo_root / "tests/test_apps/java/pom.xml",
-            lambda p, v: update_pom_xml(p, v)
-        ),
-        (
-            repo_root / "tests/test_apps/csharp/KreuzbergSmokeTest.csproj",
-            lambda p, v: update_csproj(p, v)
-        ),
-        (
-            repo_root / "tests/test_apps/rust/Cargo.toml",
-            lambda p, v: update_cargo_toml(p, v)
-        ),
-        (
-            repo_root / "tests/test_apps/elixir/mix.exs",
-            lambda p, v: update_mix_exs_testapp(p, v)
-        ),
-        (
-            repo_root / "tests/test_apps/minimal-test/minimal.csproj",
-            lambda p, v: update_csproj(p, v)
-        ),
-    ]
-
-    for manifest_path, update_func in test_apps_manifests:
-        if not manifest_path.exists():
-            continue
-
-        changed, old_ver, new_ver = update_func(manifest_path, version)
-        rel_path = manifest_path.relative_to(repo_root)
-
-        if changed:
-            print(f"✓ {rel_path}: {old_ver} → {new_ver}")
-            updated_files.append(str(rel_path))
-        else:
-            unchanged_files.append(str(rel_path))
 
     print(f"\n📊 Summary:")
     print(f"   Updated: {len(updated_files)} files")

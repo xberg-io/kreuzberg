@@ -56,8 +56,8 @@ html-to-markdown-rs = { version = "3.1.0", default-features = false }
 image = { version = "0.25.10", default-features = false }
 itertools = "0.14"
 js-sys = "0.3"
-kreuzberg = { path = "./crates/kreuzberg", version = "4.7.1", default-features = false }
-kreuzberg-ffi = { path = "./crates/kreuzberg-ffi", version = "4.7.1" }
+kreuzberg = { path = "./crates/kreuzberg", version = "4.7.2", default-features = false }
+kreuzberg-ffi = { path = "./crates/kreuzberg-ffi", version = "4.7.2" }
 lazy_static = "1.5.0"
 libc = "0.2.184"
 log = "0.4"

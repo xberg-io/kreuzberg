@@ -41,24 +41,7 @@ if [ -d "$pkg_dir" ] && has_ruby_files "$pkg_dir"; then
   fi
 fi
 
-# ── 2. tests/test_apps/ruby ──────────────────────────────────────────
-test_dir="$root/tests/test_apps/ruby"
-if [ -d "$test_dir" ] && has_ruby_files "$test_dir"; then
-  echo "==> Linting tests/test_apps/ruby"
-  # This directory has no rubocop in its Gemfile, so we use the packages/ruby
-  # Gemfile (which pulls in rubocop + plugins) and the packages/ruby config.
-  config="$root/packages/ruby/.rubocop.yml"
-  case "$mode" in
-  fix)
-    (cd "$test_dir" && BUNDLE_GEMFILE="$root/packages/ruby/Gemfile" bundle exec rubocop --config "$config" --autocorrect-all .) || failed=1
-    ;;
-  check)
-    (cd "$test_dir" && BUNDLE_GEMFILE="$root/packages/ruby/Gemfile" bundle exec rubocop --config "$config" .) || failed=1
-    ;;
-  esac
-fi
-
-# ── 3. e2e/ruby ──────────────────────────────────────────────────────
+# ── 2. e2e/ruby ──────────────────────────────────────────────────────
 e2e_dir="$root/e2e/ruby"
 if [ -d "$e2e_dir" ] && has_ruby_files "$e2e_dir"; then
   echo "==> Linting e2e/ruby"

@@ -103,7 +103,7 @@ members = [
     "crates/kreuzberg-ffi",
     "crates/kreuzberg-tesseract",
 ]
-exclude = ["tests/test_apps/rust"]
+exclude = ["test_apps/rust"]
 resolver = "2"
 
 [patch.crates-io]

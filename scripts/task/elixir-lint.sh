@@ -6,7 +6,6 @@ root="$(git rev-parse --show-toplevel)"
 
 elixir_dirs=(
   packages/elixir
-  tests/test_apps/elixir
   e2e/elixir
 )
 

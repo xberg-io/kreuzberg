@@ -16,7 +16,6 @@ fi
 
 java_dirs=(
   packages/java
-  tests/test_apps/java
   e2e/java
 )
 
