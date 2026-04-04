@@ -62,7 +62,7 @@ public class EmbedStandaloneTest
         IEnumerable<float[]> results;
         try
         {
-            results = KreuzbergClient.EmbedSync(new[] {  }, new EmbeddingConfig { Model = EmbeddingModelType.FromPreset("balanced") });
+            results = KreuzbergClient.EmbedSync(new[] { }, new EmbeddingConfig { Model = EmbeddingModelType.FromPreset("balanced") });
         }
         catch (Exception)
         {
