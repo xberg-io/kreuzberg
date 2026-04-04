@@ -37,20 +37,20 @@ doc = [
 ]
 
 [tool.uv]
-workspace.members = [ "e2e/python", "packages/python" ]
+workspace.members = [ "kreuzberg/e2e/python", "kreuzberg/packages/python" ]
 cache-keys = [
   { file = "pyproject.toml" },
   { file = "Cargo.toml" },
   { file = "Cargo.lock" },
-  { file = "crates/**/*.rs" },
-  { file = "crates/**/Cargo.toml" },
+  { file = "kreuzberg/crates/**/*.rs" },
+  { file = "kreuzberg/crates/**/Cargo.toml" },
 ]
 
 [tool.ruff]
 target-version = "py310"
 line-length = 120
-src = [ "packages/python/*" ]
-extend-exclude = [ "benchmarks", "crates", "docs/snippets", "scripts", "test_documents" ]
+src = [ "kreuzberg/packages/python/*" ]
+extend-exclude = [ "benchmarks", "kreuzberg/crates", "docs/snippets", "kreuzberg/scripts", "test_documents" ]
 format.docstring-code-line-length = 120
 format.docstring-code-format = true
 lint.select = [ "ALL" ]
@@ -121,14 +121,14 @@ lint.per-file-ignores."**/tests/**/*.*" = [
   "SIM117",
   "SLF001",
 ]
-lint.per-file-ignores."e2e/python/conftest.py" = [
+lint.per-file-ignores."kreuzberg/e2e/python/conftest.py" = [
   "ANN001",
   "ANN201",
   "ARG001",
 ]
-lint.per-file-ignores."packages/python/build.py" = [ "INP001" ]
-lint.per-file-ignores."packages/python/tests/e2e/*_test.py" = [ "T201" ]
-lint.per-file-ignores."scripts/**/*.py" = [
+lint.per-file-ignores."kreuzberg/packages/python/build.py" = [ "INP001" ]
+lint.per-file-ignores."kreuzberg/packages/python/tests/e2e/*_test.py" = [ "T201" ]
+lint.per-file-ignores."kreuzberg/scripts/**/*.py" = [
   "C901",
   "D101",
   "D102",
@@ -148,7 +148,7 @@ lint.per-file-ignores."test_documents/cross_language_serialization_test.py" = [
   "PLW1510",
   "SIM108",
 ]
-lint.per-file-ignores."tools/benchmark-harness/scripts/*.py" = [ "BLE001", "D103", "T201" ]
+lint.per-file-ignores."kreuzberg/tools/benchmark-harness/scripts/*.py" = [ "BLE001", "D103", "T201" ]
 lint.isort.known-first-party = [ "kreuzberg" ]
 lint.mccabe.max-complexity = 15
 lint.pydocstyle.convention = "google"
@@ -162,7 +162,7 @@ max_supported_python = "3.14"
 
 [tool.mypy]
 packages = [ "kreuzberg" ]
-exclude = [ "examples", "benchmarks", "crates", "e2e/smoke", "test_apps" ]
+exclude = [ "examples", "benchmarks", "kreuzberg/crates", "kreuzberg/e2e/smoke", "test_apps" ]
 python_version = "3.10"
 disable_error_code = [ "import-untyped", "untyped-decorator" ]
 implicit_reexport = false
@@ -201,7 +201,7 @@ follow_imports = "skip"
 
 [tool.pytest]
 ini_options.timeout = 300
-ini_options.testpaths = [ "packages/python/tests" ]
+ini_options.testpaths = [ "kreuzberg/packages/python/tests" ]
 ini_options.norecursedirs = [ "dist", "build", "*.egg" ]
 ini_options.markers = [
   "slow: marks tests as slow (deselect with '-m \"not slow\"')",
@@ -219,9 +219,9 @@ ini_options.filterwarnings = [
 
 [tool.coverage]
 run.branch = true
-run.omit = [ "benchmarks/*", "packages/python/tests/*", "scripts/*" ]
+run.omit = [ "benchmarks/*", "kreuzberg/packages/python/tests/*", "kreuzberg/scripts/*" ]
 run.plugins = [ "covdefaults" ]
-run.source = [ "packages/python/kreuzberg" ]
+run.source = [ "kreuzberg/packages/python/kreuzberg" ]
 report.exclude_lines = [
   "@(abc\\.)?abstractmethod",
   "class .*\\bProtocol\\):",
@@ -234,4 +234,4 @@ report.exclude_lines = [
   "raise NotImplementedError",
 ]
 report.fail_under = 90
-report.omit = [ "packages/python/kreuzberg/ocr/easyocr.py" ]
+report.omit = [ "kreuzberg/packages/python/kreuzberg/ocr/easyocr.py" ]

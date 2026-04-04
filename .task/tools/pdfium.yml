@@ -9,7 +9,7 @@ tasks:
   download:
     desc: Download PDFium runtime
     cmds:
-      - bash scripts/download_pdfium_runtime.sh
+      - bash kreuzberg/scripts/download_pdfium_runtime.sh
 
   install:macos:
     desc: Install system PDFium on macOS
@@ -21,4 +21,4 @@ tasks:
     desc: Install PDFium on Linux (downloads prebuilt)
     platforms: [linux]
     cmds:
-      - bash scripts/download_pdfium_runtime.sh
+      - bash kreuzberg/scripts/download_pdfium_runtime.sh

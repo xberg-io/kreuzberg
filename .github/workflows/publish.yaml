@@ -126,7 +126,7 @@ jobs:
           EVENT_DISPATCH_DRY_RUN: ${{ github.event.client_payload.dry_run }}
           EVENT_DISPATCH_REF: ${{ github.event.client_payload.ref }}
           EVENT_DISPATCH_TARGETS: ${{ github.event.client_payload.targets }}
-        run: scripts/publish/prepare-release-metadata.sh
+        run: kreuzberg/scripts/publish/prepare-release-metadata.sh
 
       - name: Re-checkout at target ref
         uses: actions/checkout@v6
@@ -158,7 +158,7 @@ jobs:
         shell: bash
         env:
           EXPECTED_VERSION: ${{ needs.prepare.outputs.version }}
-        run: scripts/publish/validate-version-consistency.sh
+        run: kreuzberg/scripts/publish/validate-version-consistency.sh
 
 
   check-pypi:
@@ -302,7 +302,7 @@ jobs:
             kreuzberg-cli-x86_64-unknown-linux-musl.tar.gz
             kreuzberg-cli-x86_64-pc-windows-msvc.zip
           SUMMARY_LABEL: CLI
-        run: scripts/publish/check-release-assets.sh
+        run: kreuzberg/scripts/publish/check-release-assets.sh
 
   check-go:
     name: Check if Go FFI assets already published
@@ -331,7 +331,7 @@ jobs:
             go-ffi-macos-arm64.tar.gz
             go-ffi-windows-x86_64.tar.gz
           SUMMARY_LABEL: Go FFI
-        run: scripts/publish/check-release-assets.sh
+        run: kreuzberg/scripts/publish/check-release-assets.sh
 
   check-c-ffi:
     name: Check if C FFI assets already published
@@ -360,7 +360,7 @@ jobs:
             c-ffi-macos-arm64.tar.gz
             c-ffi-windows-x86_64.tar.gz
           SUMMARY_LABEL: C FFI
-        run: scripts/publish/check-release-assets.sh
+        run: kreuzberg/scripts/publish/check-release-assets.sh
 
   check-elixir-release:
     name: Check if Elixir release assets already published
@@ -542,7 +542,7 @@ jobs:
 
       - name: Free up disk space for wheel build
         if: matrix.os == 'ubuntu-latest'
-        run: scripts/publish/ubuntu/free-disk-space.sh
+        run: kreuzberg/scripts/publish/ubuntu/free-disk-space.sh
 
       - name: Prepare wheel staging directory
         shell: bash
@@ -565,7 +565,7 @@ jobs:
 
       - name: Clean previous wheel artifacts
         shell: bash
-        run: rm -rf target/wheels target/maturin && rm -f packages/python/kreuzberg/_internal_bindings.*
+        run: rm -rf target/wheels target/maturin && rm -f kreuzberg/packages/python/kreuzberg/_internal_bindings.*
 
       - name: Build CLI binary (native)
         if: runner.os != 'Linux'
@@ -573,11 +573,11 @@ jobs:
         run: |
           echo "=== Building CLI Binary ==="
           cargo build --release --package kreuzberg-cli --features all
-          mkdir -p packages/python/kreuzberg
+          mkdir -p kreuzberg/packages/python/kreuzberg
           if [ "${{ runner.os }}" = "Windows" ]; then
-            cp target/release/kreuzberg.exe packages/python/kreuzberg/kreuzberg-cli.exe
+            cp target/release/kreuzberg.exe kreuzberg/packages/python/kreuzberg/kreuzberg-cli.exe
           else
-            cp target/release/kreuzberg packages/python/kreuzberg/kreuzberg-cli
+            cp target/release/kreuzberg kreuzberg/packages/python/kreuzberg/kreuzberg-cli
           fi
 
       - name: Build Linux wheels
@@ -588,7 +588,7 @@ jobs:
           args: --release -i python${{ matrix.python }} --out ../../target/wheels ${{ matrix.extra_args }}
           target: ${{ matrix.rust_target }}
           manylinux: ${{ matrix.manylinux }}
-          working-directory: packages/python
+          working-directory: kreuzberg/packages/python
           sccache: false
           docker-options: ${{ steps.tesseract-cache.outputs.docker-options }}
           before-script-linux: |
@@ -630,7 +630,7 @@ jobs:
             export ORT_LIB_LOCATION="${ORT_DIR}/lib"
             export ORT_PREFER_DYNAMIC_LINK=1
             # Build CLI binary inside container
-            # Note: before-script-linux CWD is the working-directory (packages/python),
+            # Note: before-script-linux CWD is the working-directory (kreuzberg/packages/python),
             # but cargo outputs to the workspace root's target/ dir
             echo "=== Building CLI Binary (Linux) ==="
             cargo build --release --package kreuzberg-cli --features all
@@ -644,7 +644,7 @@ jobs:
           command: build
           args: --release -i python${{ matrix.python }} --out ../../target/wheels ${{ matrix.extra_args }}
           target: ${{ matrix.rust_target }}
-          working-directory: packages/python
+          working-directory: kreuzberg/packages/python
           sccache: true
 
       - name: Setup Python (macOS)
@@ -662,7 +662,7 @@ jobs:
         shell: bash
         env:
           MACOS_CODESIGN_IDENTITY: ${{ secrets.MACOS_CODESIGN_IDENTITY }}
-        run: python3 scripts/sign_macos_wheels.py --wheel-dir target/wheels
+        run: python3 kreuzberg/scripts/sign_macos_wheels.py --wheel-dir target/wheels
 
       - name: List built wheels
         shell: bash
@@ -675,11 +675,11 @@ jobs:
 
       - name: Smoke test wheel
         shell: bash
-        run: scripts/ci/python/smoke-test-wheel.sh
+        run: kreuzberg/scripts/ci/python/smoke-test-wheel.sh
 
       - name: Clean up Docker resources (Ubuntu)
         if: matrix.os == 'ubuntu-latest' && always()
-        run: scripts/publish/ubuntu/docker-prune.sh
+        run: kreuzberg/scripts/publish/ubuntu/docker-prune.sh
 
       - name: Upload wheel artifact
         uses: actions/upload-artifact@v7
@@ -712,7 +712,7 @@ jobs:
         run: git checkout --progress --force ${{ needs.prepare.outputs.target_sha }}
 
       - name: Free up disk space
-        run: scripts/publish/ubuntu/free-disk-space.sh
+        run: kreuzberg/scripts/publish/ubuntu/free-disk-space.sh
 
       - name: Setup Python environment
         uses: kreuzberg-dev/actions/setup-python-env@v1
@@ -790,7 +790,7 @@ jobs:
 
       - name: Free up disk space (Linux)
         if: runner.os == 'Linux'
-        run: scripts/publish/ubuntu/free-disk-space.sh
+        run: kreuzberg/scripts/publish/ubuntu/free-disk-space.sh
 
       - name: Install pnpm
         uses: pnpm/action-setup@v5
@@ -825,16 +825,16 @@ jobs:
 
       - name: Install Node dependencies
         shell: bash
-        run: scripts/publish/node/install-deps.sh
+        run: kreuzberg/scripts/publish/node/install-deps.sh
 
       - name: Clean npm directory
         if: runner.os != 'Windows'
-        run: rm -rf crates/kreuzberg-node/npm
+        run: rm -rf kreuzberg/crates/kreuzberg-node/npm
 
       - name: Clean npm directory (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
-        run: Remove-Item -Recurse -Force crates/kreuzberg-node\npm -ErrorAction SilentlyContinue
+        run: Remove-Item -Recurse -Force kreuzberg/crates/kreuzberg-node\npm -ErrorAction SilentlyContinue
 
       - name: Create npm package structure
         run: pnpm --filter @kreuzberg/node exec napi create-npm-dirs
@@ -846,7 +846,7 @@ jobs:
           USE_CROSS: ${{ matrix.settings.use_cross }}
           USE_NAPI_CROSS: ${{ matrix.settings.use_napi_cross }}
         shell: bash
-        run: scripts/publish/node/build-native-module.sh
+        run: kreuzberg/scripts/publish/node/build-native-module.sh
 
       - name: Build native module (Windows)
         if: runner.os == 'Windows'
@@ -855,29 +855,29 @@ jobs:
           TARGET: ${{ matrix.settings.target }}
           USE_CROSS: ${{ matrix.settings.use_cross }}
           USE_NAPI_CROSS: ${{ matrix.settings.use_napi_cross }}
-        run: ./scripts/publish/node/build-native-module.ps1
+        run: ./kreuzberg/scripts/publish/node/build-native-module.ps1
 
       - name: Build TypeScript wrapper
         shell: bash
-        run: pnpm -C crates/kreuzberg-node build:ts
+        run: pnpm -C kreuzberg/crates/kreuzberg-node build:ts
 
       - name: Package artifacts
         if: runner.os != 'Windows'
         env:
           TARGET: ${{ matrix.settings.target }}
         shell: bash
-        run: scripts/publish/node/package-artifacts.sh
+        run: kreuzberg/scripts/publish/node/package-artifacts.sh
 
       - name: Package artifacts (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
         env:
           TARGET: ${{ matrix.settings.target }}
-        run: ./scripts/publish/node/package-artifacts.ps1
+        run: ./kreuzberg/scripts/publish/node/package-artifacts.ps1
 
       - name: Generate and upload TypeScript definitions
         if: matrix.settings.target == 'x86_64-unknown-linux-gnu'
-        run: scripts/publish/node/generate-typescript-defs.sh
+        run: kreuzberg/scripts/publish/node/generate-typescript-defs.sh
 
       - name: Upload TypeScript definitions
         if: matrix.settings.target == 'x86_64-unknown-linux-gnu'
@@ -936,7 +936,7 @@ jobs:
 
       - name: Free up disk space (Linux)
         if: runner.os == 'Linux'
-        run: scripts/publish/ubuntu/free-disk-space.sh
+        run: kreuzberg/scripts/publish/ubuntu/free-disk-space.sh
 
       - name: Setup Rust toolchain
         uses: kreuzberg-dev/actions/setup-rust@v1
@@ -951,26 +951,26 @@ jobs:
         if: runner.os == 'Linux'
         env:
           CLI_TARGET: ${{ matrix.target }}
-        run: scripts/publish/cli/install-build-deps.sh
+        run: kreuzberg/scripts/publish/cli/install-build-deps.sh
 
       - name: Configure cross linker
         if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
-        run: scripts/publish/cli/configure-cross-linker.sh
+        run: kreuzberg/scripts/publish/cli/configure-cross-linker.sh
 
       - name: Build CLI
         shell: bash
-        run: scripts/build_cli_binary.sh ${{ matrix.target }}
+        run: kreuzberg/scripts/build_cli_binary.sh ${{ matrix.target }}
 
       - name: Package CLI artifact
         if: runner.os != 'Windows'
-        run: scripts/package_cli_artifact.sh ${{ matrix.target }}
+        run: kreuzberg/scripts/package_cli_artifact.sh ${{ matrix.target }}
 
       - name: Package CLI artifact (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
         env:
           CLI_TARGET: ${{ matrix.target }}
-        run: ./scripts/publish/cli/package-cli-windows.ps1
+        run: ./kreuzberg/scripts/publish/cli/package-cli-windows.ps1
 
       - name: Upload CLI artifact
         if: runner.os != 'Windows'
@@ -1021,11 +1021,11 @@ jobs:
         run: git checkout --progress --force ${{ needs.prepare.outputs.target_sha }}
 
       - name: Free up disk space
-        run: scripts/publish/ubuntu/free-disk-space.sh
+        run: kreuzberg/scripts/publish/ubuntu/free-disk-space.sh
 
       - name: Build CLI binary via Docker
         run: |
-          docker build -f docker/Dockerfile.musl-build \
+          docker build -f kreuzberg/docker/Dockerfile.musl-build \
             --output type=local,dest=./dist .
 
       - name: Verify CLI binary
@@ -1169,7 +1169,7 @@ jobs:
       - name: Ensure GitHub release exists
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: scripts/publish/ensure-github-release-exists.sh "${{ needs.prepare.outputs.tag }}"
+        run: kreuzberg/scripts/publish/ensure-github-release-exists.sh "${{ needs.prepare.outputs.tag }}"
 
       - name: Download bottle artifacts
         uses: actions/download-artifact@v8
@@ -1181,7 +1181,7 @@ jobs:
       - name: Upload bottles (idempotent)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: scripts/publish/upload-homebrew-bottles.sh "${{ needs.prepare.outputs.tag }}" dist/homebrew
+        run: kreuzberg/scripts/publish/upload-homebrew-bottles.sh "${{ needs.prepare.outputs.tag }}" dist/homebrew
 
   ruby-gem:
     name: Build Ruby gem (${{ matrix.label }})
@@ -1224,7 +1224,7 @@ jobs:
 
       - name: Free up disk space (Linux)
         if: runner.os == 'Linux'
-        run: scripts/publish/ubuntu/free-disk-space.sh
+        run: kreuzberg/scripts/publish/ubuntu/free-disk-space.sh
 
       - name: Install system dependencies
         uses: ./.github/actions/install-system-deps
@@ -1269,10 +1269,10 @@ jobs:
       - name: Stage PDFium runtime artifacts
         uses: ./.github/actions/stage-pdfium-runtime
         with:
-          destination: packages/ruby/ext/kreuzberg_rb/native
+          destination: kreuzberg/packages/ruby/ext/kreuzberg_rb/native
           additional-destinations: |
-            packages/ruby
-            packages/ruby/lib
+            kreuzberg/packages/ruby
+            kreuzberg/packages/ruby/lib
 
       - name: Setup ONNX Runtime
         uses: ./.github/actions/setup-onnx-runtime
@@ -1285,7 +1285,7 @@ jobs:
         uses: ./.github/actions/setup-layout-models
 
       - name: Install Ruby dependencies
-        run: scripts/ci/ruby/install-ruby-deps.sh packages/ruby
+        run: kreuzberg/scripts/ci/ruby/install-ruby-deps.sh kreuzberg/packages/ruby
 
       - name: Install Task
         uses: kreuzberg-dev/actions/install-task@v1
@@ -1295,18 +1295,18 @@ jobs:
 
       - name: Vendor kreuzberg core crate
         shell: bash
-        run: python3 scripts/ci/ruby/vendor-kreuzberg-core.py
+        run: python3 kreuzberg/scripts/ci/ruby/vendor-kreuzberg-core.py
 
       - name: Ensure Ruby bundle config
         shell: bash
-        working-directory: packages/ruby
+        working-directory: kreuzberg/packages/ruby
         run: |
           bundle config set --local path vendor/bundle
           bundle check || bundle install
 
       - name: Compile native extension
         shell: bash
-        working-directory: packages/ruby
+        working-directory: kreuzberg/packages/ruby
         timeout-minutes: 60
         run: |
           echo "Compiling native extension..."
@@ -1320,12 +1320,12 @@ jobs:
 
       - name: Build platform gem
         shell: bash
-        working-directory: packages/ruby
-        run: ruby ../../scripts/publish/ruby/build-native-gem.rb "${{ matrix.ruby_platform }}"
+        working-directory: kreuzberg/packages/ruby
+        run: ruby ../../kreuzberg/scripts/publish/ruby/build-native-gem.rb "${{ matrix.ruby_platform }}"
 
       - name: Verify platform gem was built
         shell: bash
-        working-directory: packages/ruby
+        working-directory: kreuzberg/packages/ruby
         run: |
           if [ ! -d pkg ]; then
             echo "ERROR: pkg directory does not exist" >&2
@@ -1345,15 +1345,15 @@ jobs:
         run: |
           echo "=== Disk space after gem build ==="
           df -h /
-          if [ -d packages/ruby/pkg ]; then
-            du -sh packages/ruby/pkg/
-            ls -lah packages/ruby/pkg/
+          if [ -d kreuzberg/packages/ruby/pkg ]; then
+            du -sh kreuzberg/packages/ruby/pkg/
+            ls -lah kreuzberg/packages/ruby/pkg/
           fi
 
       - name: Verify gem integrity
         shell: bash
         run: |
-          cd packages/ruby/pkg
+          cd kreuzberg/packages/ruby/pkg
           echo "=== Gem Files in pkg directory ==="
           ls -lah
           echo ""
@@ -1388,7 +1388,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: rubygems-${{ matrix.label }}
-          path: packages/ruby/pkg/*.gem
+          path: kreuzberg/packages/ruby/pkg/*.gem
           retention-days: 14
           compression-level: 0
 
@@ -1434,12 +1434,12 @@ jobs:
 
       - name: Free up disk space (Linux)
         if: runner.os == 'Linux'
-        run: scripts/publish/ubuntu/free-disk-space.sh
+        run: kreuzberg/scripts/publish/ubuntu/free-disk-space.sh
 
       - name: Configure Windows GNU toolchain
         if: matrix.settings.os == 'windows-latest'
         shell: bash
-        run: scripts/publish/go/configure-windows-gnu-toolchain.sh
+        run: kreuzberg/scripts/publish/go/configure-windows-gnu-toolchain.sh
 
       - name: Install system dependencies
         uses: ./.github/actions/install-system-deps
@@ -1498,7 +1498,7 @@ jobs:
       - name: Verify MSYS2 toolchain and add to PATH (Windows)
         if: matrix.settings.os == 'windows-latest'
         shell: pwsh
-        run: scripts/ci/go/setup-msys2-windows.ps1
+        run: kreuzberg/scripts/ci/go/setup-msys2-windows.ps1
 
       - name: Install Task
         uses: kreuzberg-dev/actions/install-task@v1
@@ -1515,21 +1515,21 @@ jobs:
 
       - name: Create artifact staging directory
         shell: bash
-        run: scripts/publish/go/create-artifact-staging-dir.sh
+        run: kreuzberg/scripts/publish/go/create-artifact-staging-dir.sh
 
       - name: Stage FFI artifacts (Unix)
         if: matrix.settings.os != 'windows-latest'
         shell: bash
-        run: scripts/ci/go/stage-ffi-artifacts.sh artifact-staging/kreuzberg-ffi "${{ matrix.settings.build_features }}"
+        run: kreuzberg/scripts/ci/go/stage-ffi-artifacts.sh artifact-staging/kreuzberg-ffi "${{ matrix.settings.build_features }}"
 
       - name: Stage FFI artifacts (Windows)
         if: matrix.settings.os == 'windows-latest'
         shell: pwsh
-        run: scripts/ci/go/stage-ffi-artifacts-windows.ps1 "artifact-staging\kreuzberg-ffi"
+        run: kreuzberg/scripts/ci/go/stage-ffi-artifacts-windows.ps1 "artifact-staging\kreuzberg-ffi"
 
       - name: Generate installation README
         shell: bash
-        run: scripts/ci/go/generate-install-readme.sh artifact-staging/kreuzberg-ffi/README.md
+        run: kreuzberg/scripts/ci/go/generate-install-readme.sh artifact-staging/kreuzberg-ffi/README.md
 
       - name: Package FFI library
         shell: bash
@@ -1537,7 +1537,7 @@ jobs:
 
       - name: Verify artifact completeness
         shell: bash
-        run: scripts/ci/go/verify-ffi-artifact.sh "go-ffi-${{ matrix.settings.label }}.tar.gz"
+        run: kreuzberg/scripts/ci/go/verify-ffi-artifact.sh "go-ffi-${{ matrix.settings.label }}.tar.gz"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v7
@@ -1635,11 +1635,11 @@ jobs:
 
       - name: Fix macOS dylib references
         shell: bash
-        run: scripts/ci/java/fix-macos-dylib-references.sh
+        run: kreuzberg/scripts/ci/java/fix-macos-dylib-references.sh
 
       - name: Collect native artifacts
         shell: bash
-        run: scripts/ci/java/collect-native-artifacts.sh "${{ matrix.settings.rid }}" "java-natives/${{ matrix.settings.rid }}"
+        run: kreuzberg/scripts/ci/java/collect-native-artifacts.sh "${{ matrix.settings.rid }}" "java-natives/${{ matrix.settings.rid }}"
 
       - name: Upload native artifact
         uses: actions/upload-artifact@v7
@@ -1679,11 +1679,11 @@ jobs:
         run: git checkout --progress --force ${{ needs.prepare.outputs.target_sha }}
 
       - name: Free up disk space
-        run: scripts/publish/ubuntu/free-disk-space.sh
+        run: kreuzberg/scripts/publish/ubuntu/free-disk-space.sh
 
       - name: Build FFI library via Docker (musl)
         run: |
-          docker build -f docker/Dockerfile.musl-ffi \
+          docker build -f kreuzberg/docker/Dockerfile.musl-ffi \
             --output type=local,dest=./dist .
 
       - name: Verify musl library
@@ -1729,7 +1729,7 @@ jobs:
         run: git checkout --progress --force ${{ needs.prepare.outputs.target_sha }}
 
       - name: Free up disk space
-        run: scripts/publish/ubuntu/free-disk-space.sh
+        run: kreuzberg/scripts/publish/ubuntu/free-disk-space.sh
 
       - name: Install system dependencies
         uses: ./.github/actions/install-system-deps
@@ -1789,28 +1789,28 @@ jobs:
 
       - name: Stage Java native resources
         shell: bash
-        run: scripts/ci/java/stage-native-resources.sh "artifacts/java-natives" "packages/java/src/main/resources/natives"
+        run: kreuzberg/scripts/ci/java/stage-native-resources.sh "artifacts/java-natives" "kreuzberg/packages/java/src/main/resources/natives"
 
       - name: Verify bundled native resources
         shell: bash
         run: |
           set -euo pipefail
-          test -f packages/java/src/main/resources/natives/linux-x86_64/libkreuzberg_ffi.so
-          test -f packages/java/src/main/resources/natives/linux-arm64/libkreuzberg_ffi.so
-          test -f packages/java/src/main/resources/natives/macos-arm64/libkreuzberg_ffi.dylib
-          test -f packages/java/src/main/resources/natives/windows-x86_64/kreuzberg_ffi.dll
-          test -f packages/java/src/main/resources/natives/linux-musl-x86_64/libkreuzberg_ffi.so
-          test -f packages/java/src/main/resources/natives/linux-musl-arm64/libkreuzberg_ffi.so
+          test -f kreuzberg/packages/java/src/main/resources/natives/linux-x86_64/libkreuzberg_ffi.so
+          test -f kreuzberg/packages/java/src/main/resources/natives/linux-arm64/libkreuzberg_ffi.so
+          test -f kreuzberg/packages/java/src/main/resources/natives/macos-arm64/libkreuzberg_ffi.dylib
+          test -f kreuzberg/packages/java/src/main/resources/natives/windows-x86_64/kreuzberg_ffi.dll
+          test -f kreuzberg/packages/java/src/main/resources/natives/linux-musl-x86_64/libkreuzberg_ffi.so
+          test -f kreuzberg/packages/java/src/main/resources/natives/linux-musl-arm64/libkreuzberg_ffi.so
 
       - name: Build and package
-        working-directory: packages/java
+        working-directory: kreuzberg/packages/java
         run: task java:build:release
 
       - name: Upload JAR artifact
         uses: actions/upload-artifact@v7
         with:
           name: maven-packages
-          path: packages/java/target/*.jar
+          path: kreuzberg/packages/java/target/*.jar
           retention-days: 14
 
   php-package:
@@ -1852,7 +1852,7 @@ jobs:
 
       - name: Free up disk space (Linux)
         if: runner.os == 'Linux'
-        run: scripts/publish/ubuntu/free-disk-space.sh
+        run: kreuzberg/scripts/publish/ubuntu/free-disk-space.sh
 
       - name: Install system dependencies
         uses: ./.github/actions/install-system-deps
@@ -1926,7 +1926,7 @@ jobs:
         shell: bash
         env:
           VERSION: ${{ needs.prepare.outputs.version }}
-        run: scripts/publish/php/build-pie-package.sh "${{ matrix.settings.platform }}" "dist/php"
+        run: kreuzberg/scripts/publish/php/build-pie-package.sh "${{ matrix.settings.platform }}" "dist/php"
 
       - name: Upload PHP PIE package artifact
         uses: actions/upload-artifact@v7
@@ -1959,7 +1959,7 @@ jobs:
         run: git checkout --progress --force ${{ needs.prepare.outputs.target_sha }}
 
       - name: Free up disk space
-        run: scripts/publish/ubuntu/free-disk-space.sh
+        run: kreuzberg/scripts/publish/ubuntu/free-disk-space.sh
 
       - name: Install system dependencies
         uses: ./.github/actions/install-system-deps
@@ -1978,7 +1978,7 @@ jobs:
           dotnet-version: "10.0.x"
 
       - name: Ensure dotnet is available
-        run: scripts/publish/csharp/ensure-dotnet.sh
+        run: kreuzberg/scripts/publish/csharp/ensure-dotnet.sh
 
       - name: Install Task
         uses: kreuzberg-dev/actions/install-task@v1
@@ -1987,18 +1987,18 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           pattern: csharp-native-assets-*
-          path: packages/csharp/Kreuzberg/runtimes
+          path: kreuzberg/packages/csharp/Kreuzberg/runtimes
           merge-multiple: true
 
       - name: Verify native assets were downloaded
         shell: bash
         run: |
           echo "=== Downloaded native assets ===" >&2
-          find packages/csharp/Kreuzberg -type f \( -name '*.so' -o -name '*.dylib' -o -name '*.dll' \) 2>/dev/null | head -20 || true
-          if [ -z "$(find packages/csharp/Kreuzberg -type f \( -name '*.so' -o -name '*.dylib' -o -name '*.dll' \) 2>/dev/null)" ]; then
+          find kreuzberg/packages/csharp/Kreuzberg -type f \( -name '*.so' -o -name '*.dylib' -o -name '*.dll' \) 2>/dev/null | head -20 || true
+          if [ -z "$(find kreuzberg/packages/csharp/Kreuzberg -type f \( -name '*.so' -o -name '*.dylib' -o -name '*.dll' \) 2>/dev/null)" ]; then
             echo "ERROR: No native assets downloaded!" >&2
-            echo "Directory structure of packages/csharp/Kreuzberg:" >&2
-            find packages/csharp/Kreuzberg -type f | head -30 || echo "  (empty)"
+            echo "Directory structure of kreuzberg/packages/csharp/Kreuzberg:" >&2
+            find kreuzberg/packages/csharp/Kreuzberg -type f | head -30 || echo "  (empty)"
             exit 1
           fi
 
@@ -2010,13 +2010,13 @@ jobs:
 
       - name: Verify package contains native assets
         shell: bash
-        run: scripts/publish/csharp/verify-nuget-native-assets.sh
+        run: kreuzberg/scripts/publish/csharp/verify-nuget-native-assets.sh
 
       - name: Upload NuGet artifact
         uses: actions/upload-artifact@v7
         with:
           name: csharp-nuget
-          path: packages/csharp/artifacts/csharp/*.nupkg
+          path: kreuzberg/packages/csharp/artifacts/csharp/*.nupkg
           retention-days: 14
           if-no-files-found: error
 
@@ -2118,13 +2118,13 @@ jobs:
           RID: ${{ matrix.rid }}
           RUST_TARGET: ${{ matrix.rust_target }}
           FFI_NAME: ${{ matrix.ffi_name }}
-        run: scripts/publish/csharp/assemble-native-assets.sh
+        run: kreuzberg/scripts/publish/csharp/assemble-native-assets.sh
 
       - name: Verify native assets exist
         shell: bash
         env:
           RID: ${{ matrix.rid }}
-        run: scripts/publish/csharp/verify-native-assets-dir.sh
+        run: kreuzberg/scripts/publish/csharp/verify-native-assets-dir.sh
 
       - name: Upload native assets artifact
         uses: actions/upload-artifact@v7
@@ -2164,11 +2164,11 @@ jobs:
         run: git checkout --progress --force ${{ needs.prepare.outputs.target_sha }}
 
       - name: Free up disk space
-        run: scripts/publish/ubuntu/free-disk-space.sh
+        run: kreuzberg/scripts/publish/ubuntu/free-disk-space.sh
 
       - name: Build FFI library via Docker (musl)
         run: |
-          docker build -f docker/Dockerfile.musl-ffi \
+          docker build -f kreuzberg/docker/Dockerfile.musl-ffi \
             --output type=local,dest=./dist .
 
       - name: Verify musl library
@@ -2211,7 +2211,7 @@ jobs:
       - name: Ensure GitHub release exists
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: scripts/publish/ensure-github-release-exists.sh "${{ needs.prepare.outputs.tag }}"
+        run: kreuzberg/scripts/publish/ensure-github-release-exists.sh "${{ needs.prepare.outputs.tag }}"
 
       - name: Download CLI artifacts
         uses: actions/download-artifact@v8
@@ -2223,7 +2223,7 @@ jobs:
       - name: Upload CLI binaries (idempotent)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: scripts/publish/upload-cli-binaries.sh "${{ needs.prepare.outputs.tag }}" dist/cli
+        run: kreuzberg/scripts/publish/upload-cli-binaries.sh "${{ needs.prepare.outputs.tag }}" dist/cli
 
   upload-go-release:
     name: Upload Go FFI libraries to GitHub Release
@@ -2247,7 +2247,7 @@ jobs:
       - name: Ensure GitHub release exists
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: scripts/publish/ensure-github-release-exists.sh "${{ needs.prepare.outputs.tag }}"
+        run: kreuzberg/scripts/publish/ensure-github-release-exists.sh "${{ needs.prepare.outputs.tag }}"
 
       - name: Download Go FFI artifacts
         uses: actions/download-artifact@v8
@@ -2259,7 +2259,7 @@ jobs:
       - name: Upload Go FFI libraries
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: scripts/publish/upload-go-libraries.sh "${{ needs.prepare.outputs.tag }}" dist/go
+        run: kreuzberg/scripts/publish/upload-go-libraries.sh "${{ needs.prepare.outputs.tag }}" dist/go
 
   c-ffi-libraries:
     name: Build C FFI libraries (${{ matrix.settings.label }})
@@ -2305,12 +2305,12 @@ jobs:
       - name: Free up disk space (Linux)
         if: runner.os == 'Linux'
         shell: bash
-        run: scripts/publish/ubuntu/free-disk-space.sh
+        run: kreuzberg/scripts/publish/ubuntu/free-disk-space.sh
 
       - name: Configure Windows GNU toolchain
         if: matrix.settings.os == 'windows-latest'
         shell: bash
-        run: scripts/publish/go/configure-windows-gnu-toolchain.sh
+        run: kreuzberg/scripts/publish/go/configure-windows-gnu-toolchain.sh
 
       - name: Install system dependencies
         uses: ./.github/actions/install-system-deps
@@ -2369,13 +2369,13 @@ jobs:
       - name: Verify MSYS2 toolchain and add to PATH (Windows)
         if: matrix.settings.os == 'windows-latest'
         shell: pwsh
-        run: scripts/ci/go/setup-msys2-windows.ps1
+        run: kreuzberg/scripts/ci/go/setup-msys2-windows.ps1
 
       - name: Package C FFI distribution
         shell: bash
         env:
           BUILD_FEATURES: ${{ matrix.settings.build_features }}
-        run: scripts/publish/c-ffi/package-c-ffi.sh "${{ matrix.settings.label }}" "${{ needs.prepare.outputs.version }}" dist
+        run: kreuzberg/scripts/publish/c-ffi/package-c-ffi.sh "${{ matrix.settings.label }}" "${{ needs.prepare.outputs.version }}" dist
 
       - name: Upload artifact
         uses: actions/upload-artifact@v7
@@ -2407,7 +2407,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
-        run: scripts/publish/ensure-github-release-exists.sh "${{ needs.prepare.outputs.tag }}"
+        run: kreuzberg/scripts/publish/ensure-github-release-exists.sh "${{ needs.prepare.outputs.tag }}"
 
       - name: Download C FFI artifacts
         uses: actions/download-artifact@v8
@@ -2420,7 +2420,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
-        run: scripts/publish/upload-c-ffi-artifacts.sh "${{ needs.prepare.outputs.tag }}" dist/c-ffi
+        run: kreuzberg/scripts/publish/upload-c-ffi-artifacts.sh "${{ needs.prepare.outputs.tag }}" dist/c-ffi
 
   publish-crates:
     name: Publish crates.io packages
@@ -2452,59 +2452,59 @@ jobs:
         uses: rust-lang/crates-io-auth-action@v1
 
       - name: Verify Cargo.toml version matches tag
-        run: scripts/publish/verify-cargo-version.sh "${{ needs.prepare.outputs.version }}"
+        run: kreuzberg/scripts/publish/verify-cargo-version.sh "${{ needs.prepare.outputs.version }}"
 
       - name: Check crates.io for existing release
         id: crate_check
         env:
           VERSION: ${{ needs.prepare.outputs.version }}
-        run: scripts/publish/check_cratesio.sh "${VERSION}" >> "$GITHUB_OUTPUT"
+        run: kreuzberg/scripts/publish/check_cratesio.sh "${VERSION}" >> "$GITHUB_OUTPUT"
 
       - name: Publish kreuzberg-pdfium-render
         if: ${{ steps.crate_check.outputs.pdfium_exists != 'true' && needs.prepare.outputs.dry_run != 'true' }}
         env:
           CARGO_REGISTRY_TOKEN: ${{ steps.oidc.outputs.token }}
-        run: scripts/publish/publish-cargo-crate.sh kreuzberg-pdfium-render
+        run: kreuzberg/scripts/publish/publish-cargo-crate.sh kreuzberg-pdfium-render
 
       - name: Wait for pdfium-render indexing
         if: ${{ steps.crate_check.outputs.pdfium_exists != 'true' && needs.prepare.outputs.dry_run != 'true' }}
-        run: scripts/publish/wait-for-package.sh cratesio "kreuzberg-pdfium-render" "${{ needs.prepare.outputs.version }}" 10
+        run: kreuzberg/scripts/publish/wait-for-package.sh cratesio "kreuzberg-pdfium-render" "${{ needs.prepare.outputs.version }}" 10
 
       - name: Publish kreuzberg-tesseract
         if: ${{ steps.crate_check.outputs.tesseract_exists != 'true' && needs.prepare.outputs.dry_run != 'true' }}
         env:
           CARGO_REGISTRY_TOKEN: ${{ steps.oidc.outputs.token }}
-        run: scripts/publish/publish-cargo-crate.sh kreuzberg-tesseract
+        run: kreuzberg/scripts/publish/publish-cargo-crate.sh kreuzberg-tesseract
 
       - name: Wait for tesseract indexing
         if: ${{ steps.crate_check.outputs.tesseract_exists != 'true' && needs.prepare.outputs.dry_run != 'true' }}
-        run: scripts/publish/wait-for-package.sh cratesio "kreuzberg-tesseract" "${{ needs.prepare.outputs.version }}" 10
+        run: kreuzberg/scripts/publish/wait-for-package.sh cratesio "kreuzberg-tesseract" "${{ needs.prepare.outputs.version }}" 10
 
       - name: Publish kreuzberg-paddle-ocr
         if: ${{ steps.crate_check.outputs.paddle_exists != 'true' && needs.prepare.outputs.dry_run != 'true' }}
         env:
           CARGO_REGISTRY_TOKEN: ${{ steps.oidc.outputs.token }}
-        run: scripts/publish/publish-cargo-crate.sh kreuzberg-paddle-ocr
+        run: kreuzberg/scripts/publish/publish-cargo-crate.sh kreuzberg-paddle-ocr
 
       - name: Wait for paddle-ocr indexing
         if: ${{ steps.crate_check.outputs.paddle_exists != 'true' && needs.prepare.outputs.dry_run != 'true' }}
-        run: scripts/publish/wait-for-package.sh cratesio "kreuzberg-paddle-ocr" "${{ needs.prepare.outputs.version }}" 10
+        run: kreuzberg/scripts/publish/wait-for-package.sh cratesio "kreuzberg-paddle-ocr" "${{ needs.prepare.outputs.version }}" 10
 
       - name: Publish kreuzberg
         if: ${{ steps.crate_check.outputs.core_exists != 'true' && needs.prepare.outputs.dry_run != 'true' }}
         env:
           CARGO_REGISTRY_TOKEN: ${{ steps.oidc.outputs.token }}
-        run: scripts/publish/publish-cargo-crate.sh kreuzberg
+        run: kreuzberg/scripts/publish/publish-cargo-crate.sh kreuzberg
 
       - name: Wait for indexing
         if: ${{ steps.crate_check.outputs.core_exists != 'true' && needs.prepare.outputs.dry_run != 'true' }}
-        run: scripts/publish/wait-for-package.sh cratesio "kreuzberg" "${{ needs.prepare.outputs.version }}" 10
+        run: kreuzberg/scripts/publish/wait-for-package.sh cratesio "kreuzberg" "${{ needs.prepare.outputs.version }}" 10
 
       - name: Publish kreuzberg-cli
         if: ${{ steps.crate_check.outputs.cli_exists != 'true' && needs.prepare.outputs.dry_run != 'true' }}
         env:
           CARGO_REGISTRY_TOKEN: ${{ steps.oidc.outputs.token }}
-        run: scripts/publish/publish-cargo-crate.sh kreuzberg-cli
+        run: kreuzberg/scripts/publish/publish-cargo-crate.sh kreuzberg-cli
 
       - name: Crates dry-run summary
         if: ${{ needs.prepare.outputs.dry_run == 'true' }}
@@ -2552,12 +2552,12 @@ jobs:
 
       - name: Free up disk space (Linux)
         if: runner.os == 'Linux'
-        run: scripts/publish/ubuntu/free-disk-space.sh
+        run: kreuzberg/scripts/publish/ubuntu/free-disk-space.sh
 
       - name: Configure Windows GNU toolchain
         if: matrix.settings.os == 'windows-latest'
         shell: bash
-        run: scripts/publish/go/configure-windows-gnu-toolchain.sh
+        run: kreuzberg/scripts/publish/go/configure-windows-gnu-toolchain.sh
 
       - name: Install system dependencies
         uses: ./.github/actions/install-system-deps
@@ -2592,7 +2592,7 @@ jobs:
       - name: Verify MSYS2 toolchain and add to PATH (Windows)
         if: matrix.settings.os == 'windows-latest'
         shell: pwsh
-        run: scripts/ci/go/setup-msys2-windows.ps1
+        run: kreuzberg/scripts/ci/go/setup-msys2-windows.ps1
 
       - name: Cache PDFium
         uses: ./.github/actions/cache-pdfium
@@ -2632,7 +2632,7 @@ jobs:
           prefix: elixir
 
       - name: Build Elixir native library
-        working-directory: packages/elixir/native/kreuzberg_rustler
+        working-directory: kreuzberg/packages/elixir/native/kreuzberg_rustler
         env:
           CARGO_BUILD_TARGET: ${{ matrix.settings.target }}
         run: cargo build --release --target ${{ matrix.settings.target }}
@@ -2784,11 +2784,11 @@ jobs:
         run: git checkout --progress --force ${{ needs.prepare.outputs.target_sha }}
 
       - name: Free up disk space
-        run: scripts/publish/ubuntu/free-disk-space.sh
+        run: kreuzberg/scripts/publish/ubuntu/free-disk-space.sh
 
       - name: Build Rustler NIF via Docker (musl)
         run: |
-          docker build -f docker/Dockerfile.musl-rustler \
+          docker build -f kreuzberg/docker/Dockerfile.musl-rustler \
             --output type=local,dest=./dist .
 
       - name: Verify musl library
@@ -2857,7 +2857,7 @@ jobs:
       - name: Ensure GitHub release exists
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: scripts/publish/ensure-github-release-exists.sh "${{ needs.prepare.outputs.tag }}"
+        run: kreuzberg/scripts/publish/ensure-github-release-exists.sh "${{ needs.prepare.outputs.tag }}"
 
       - name: Download Elixir artifacts
         uses: actions/download-artifact@v8
@@ -2902,14 +2902,14 @@ jobs:
       # module compilation. The checksum file must be populated before mix compile.
       - name: Generate checksums from GitHub release
         run: |
-          ./scripts/publish/generate_elixir_checksums.sh "${{ needs.prepare.outputs.version }}"
+          ./kreuzberg/scripts/publish/generate_elixir_checksums.sh "${{ needs.prepare.outputs.version }}"
 
       - name: Commit updated checksum file to main
         if: ${{ needs.prepare.outputs.dry_run != 'true' }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add packages/elixir/checksum-Elixir.Kreuzberg.Native.exs
+          git add kreuzberg/packages/elixir/checksum-Elixir.Kreuzberg.Native.exs
           if git diff --cached --quiet; then
             echo "No checksum changes to commit"
           else
@@ -2924,15 +2924,15 @@ jobs:
           otp-version: "26"
 
       - name: Install Elixir dependencies
-        working-directory: packages/elixir
+        working-directory: kreuzberg/packages/elixir
         run: mix deps.get
 
       - name: Compile project
-        working-directory: packages/elixir
+        working-directory: kreuzberg/packages/elixir
         run: mix compile
 
       - name: Build documentation
-        working-directory: packages/elixir
+        working-directory: kreuzberg/packages/elixir
         run: mix docs
 
       - name: Re-check Hex.pm before publish
@@ -2947,7 +2947,7 @@ jobs:
         if: ${{ needs.prepare.outputs.dry_run != 'true' && steps.recheck.outputs.exists != 'true' }}
         uses: kreuzberg-dev/actions/publish-hex@v1
         with:
-          package-dir: packages/elixir
+          package-dir: kreuzberg/packages/elixir
           dry-run: ${{ needs.prepare.outputs.dry_run }}
         env:
           HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
@@ -3053,15 +3053,15 @@ jobs:
 
       - name: Install Ruby dependencies
         shell: bash
-        run: scripts/ci/ruby/install-ruby-deps.sh packages/ruby
+        run: kreuzberg/scripts/ci/ruby/install-ruby-deps.sh kreuzberg/packages/ruby
 
       - name: Vendor kreuzberg core crate
         shell: bash
-        run: python3 scripts/ci/ruby/vendor-kreuzberg-core.py
+        run: python3 kreuzberg/scripts/ci/ruby/vendor-kreuzberg-core.py
 
       - name: Build source gem (fallback for unsupported platforms)
         shell: bash
-        working-directory: packages/ruby
+        working-directory: kreuzberg/packages/ruby
         run: |
           bundle config set --local path vendor/bundle
           bundle check || bundle install
@@ -3071,7 +3071,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p dist
-          cp packages/ruby/pkg/*.gem dist/
+          cp kreuzberg/packages/ruby/pkg/*.gem dist/
 
       - name: List all gems for publishing
         shell: bash
@@ -3164,7 +3164,7 @@ jobs:
         shell: bash
 
       - name: Prepare artifact directory
-        run: scripts/publish/prepare-node-artifacts.sh node-artifacts typescript-defs crates/kreuzberg-node
+        run: kreuzberg/scripts/publish/prepare-node-artifacts.sh node-artifacts typescript-defs kreuzberg/crates/kreuzberg-node
 
       - name: Node artifacts summary
         if: ${{ needs.prepare.outputs.dry_run == 'true' }}
@@ -3172,14 +3172,14 @@ jobs:
 
       - name: Install workspace dependencies
         if: ${{ needs.prepare.outputs.dry_run != 'true' }}
-        run: pnpm install -C crates/kreuzberg-node
+        run: pnpm install -C kreuzberg/crates/kreuzberg-node
 
       - name: Build TypeScript bundle
         if: ${{ needs.prepare.outputs.dry_run != 'true' }}
-        run: pnpm -C crates/kreuzberg-node build:ts
+        run: pnpm -C kreuzberg/crates/kreuzberg-node build:ts
 
       - name: Pack platform packages
-        run: scripts/publish/pack-node-platform-packages.sh crates/kreuzberg-node/npm
+        run: kreuzberg/scripts/publish/pack-node-platform-packages.sh kreuzberg/crates/kreuzberg-node/npm
 
       - name: Re-check npm before publish
         id: recheck
@@ -3193,7 +3193,7 @@ jobs:
         if: ${{ needs.prepare.outputs.dry_run != 'true' && steps.recheck.outputs.exists != 'true' }}
         uses: kreuzberg-dev/actions/publish-npm@v1
         with:
-          packages-dir: crates/kreuzberg-node/npm
+          packages-dir: kreuzberg/crates/kreuzberg-node/npm
           npm-tag: ${{ needs.prepare.outputs.npm_tag }}
           dry-run: ${{ needs.prepare.outputs.dry_run }}
         env:
@@ -3219,13 +3219,13 @@ jobs:
 
       - name: Prepare main Node package metadata
         if: ${{ needs.prepare.outputs.dry_run != 'true' && steps.recheck.outputs.exists != 'true' }}
-        run: scripts/publish/node/prepublish-main-package.sh crates/kreuzberg-node
+        run: kreuzberg/scripts/publish/node/prepublish-main-package.sh kreuzberg/crates/kreuzberg-node
 
       - name: Publish main Node package
         if: ${{ needs.prepare.outputs.dry_run != 'true' && steps.recheck.outputs.exists != 'true' }}
         uses: kreuzberg-dev/actions/publish-npm@v1
         with:
-          package-dir: crates/kreuzberg-node
+          package-dir: kreuzberg/crates/kreuzberg-node
           npm-tag: ${{ needs.prepare.outputs.npm_tag }}
           dry-run: ${{ needs.prepare.outputs.dry_run }}
         env:
@@ -3288,7 +3288,7 @@ jobs:
           target: wasm32-unknown-unknown
 
       - name: Install wasm-pack
-        run: scripts/ci/wasm/install-wasm-pack.sh
+        run: kreuzberg/scripts/ci/wasm/install-wasm-pack.sh
 
       - name: Install pnpm dependencies
         run: pnpm install --frozen-lockfile
@@ -3301,19 +3301,19 @@ jobs:
 
       - name: Extract version from package.json
         id: version
-        run: echo "version=$(jq -r '.version' crates/kreuzberg-wasm/package.json)" >> "$GITHUB_OUTPUT"
+        run: echo "version=$(jq -r '.version' kreuzberg/crates/kreuzberg-wasm/package.json)" >> "$GITHUB_OUTPUT"
 
       - name: Check if version already published to npm
         id: npm_check
         env:
           VERSION: ${{ steps.version.outputs.version }}
-        run: scripts/publish/check-npm-version.sh "$VERSION" "@kreuzberg/wasm" >> "$GITHUB_OUTPUT"
+        run: kreuzberg/scripts/publish/check-npm-version.sh "$VERSION" "@kreuzberg/wasm" >> "$GITHUB_OUTPUT"
 
       - name: Publish to npm
         if: ${{ steps.npm_check.outputs.exists != 'true' }}
         uses: kreuzberg-dev/actions/publish-npm@v1
         with:
-          package-dir: crates/kreuzberg-wasm
+          package-dir: kreuzberg/crates/kreuzberg-wasm
           npm-tag: ${{ needs.prepare.outputs.npm_tag }}
           provenance: "true"
         env:
@@ -3332,7 +3332,7 @@ jobs:
         env:
           WASM_ALREADY_PUBLISHED: ${{ steps.npm_check.outputs.exists }}
           WASM_VERSION: ${{ steps.version.outputs.version }}
-        run: scripts/publish/wasm/write-summary.sh
+        run: kreuzberg/scripts/publish/wasm/write-summary.sh
 
   publish-maven:
     name: Publish Maven packages
@@ -3380,7 +3380,7 @@ jobs:
 
       - name: Patch legacy Maven GPG arguments
         if: ${{ needs.prepare.outputs.dry_run != 'true' && steps.maven_check.outputs.exists != 'true' }}
-        run: scripts/publish/patch-maven-gpg-args.sh packages/java/pom.xml
+        run: kreuzberg/scripts/publish/patch-maven-gpg-args.sh kreuzberg/packages/java/pom.xml
 
       - name: Setup Java
         if: ${{ needs.prepare.outputs.dry_run != 'true' && steps.maven_check.outputs.exists != 'true' }}
@@ -3443,29 +3443,29 @@ jobs:
       - name: Stage Java native resources
         if: ${{ needs.prepare.outputs.dry_run != 'true' && steps.maven_check.outputs.exists != 'true' }}
         shell: bash
-        run: scripts/ci/java/stage-native-resources.sh "artifacts/java-natives" "packages/java/src/main/resources/natives"
+        run: kreuzberg/scripts/ci/java/stage-native-resources.sh "artifacts/java-natives" "kreuzberg/packages/java/src/main/resources/natives"
 
       - name: Verify bundled native resources
         if: ${{ needs.prepare.outputs.dry_run != 'true' && steps.maven_check.outputs.exists != 'true' }}
         shell: bash
         run: |
           set -euo pipefail
-          test -f packages/java/src/main/resources/natives/linux-x86_64/libkreuzberg_ffi.so
-          test -f packages/java/src/main/resources/natives/linux-arm64/libkreuzberg_ffi.so
-          test -f packages/java/src/main/resources/natives/macos-arm64/libkreuzberg_ffi.dylib
-          test -f packages/java/src/main/resources/natives/windows-x86_64/kreuzberg_ffi.dll
-          test -f packages/java/src/main/resources/natives/linux-musl-x86_64/libkreuzberg_ffi.so
-          test -f packages/java/src/main/resources/natives/linux-musl-arm64/libkreuzberg_ffi.so
+          test -f kreuzberg/packages/java/src/main/resources/natives/linux-x86_64/libkreuzberg_ffi.so
+          test -f kreuzberg/packages/java/src/main/resources/natives/linux-arm64/libkreuzberg_ffi.so
+          test -f kreuzberg/packages/java/src/main/resources/natives/macos-arm64/libkreuzberg_ffi.dylib
+          test -f kreuzberg/packages/java/src/main/resources/natives/windows-x86_64/kreuzberg_ffi.dll
+          test -f kreuzberg/packages/java/src/main/resources/natives/linux-musl-x86_64/libkreuzberg_ffi.so
+          test -f kreuzberg/packages/java/src/main/resources/natives/linux-musl-arm64/libkreuzberg_ffi.so
 
       - name: Prefer gpg2 binary
         if: ${{ needs.prepare.outputs.dry_run != 'true' && steps.maven_check.outputs.exists != 'true' }}
-        run: scripts/publish/prefer-gpg2-binary.sh
+        run: kreuzberg/scripts/publish/prefer-gpg2-binary.sh
 
       - name: Release Maven package
         if: ${{ needs.prepare.outputs.dry_run != 'true' && steps.maven_check.outputs.exists != 'true' }}
         uses: kreuzberg-dev/actions/publish-maven@v1
         with:
-          pom-file: packages/java/pom.xml
+          pom-file: kreuzberg/packages/java/pom.xml
           maven-profile: publish
           extra-args: -DskipTests
           dry-run: ${{ needs.prepare.outputs.dry_run }}
@@ -3574,7 +3574,7 @@ jobs:
         if: ${{ steps.recheck.outputs.exists != 'true' }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: scripts/publish/ensure-github-release-exists.sh "${{ needs.prepare.outputs.tag }}"
+        run: kreuzberg/scripts/publish/ensure-github-release-exists.sh "${{ needs.prepare.outputs.tag }}"
 
       - name: Upload PIE packages to GitHub release
         if: ${{ steps.recheck.outputs.exists != 'true' }}
@@ -3599,7 +3599,7 @@ jobs:
             echo ""
             echo "- **Package**: kreuzberg/kreuzberg"
             echo "- **Version**: ${{ needs.prepare.outputs.version }}"
-            echo "- **Packagist**: https://packagist.org/packages/kreuzberg/kreuzberg#${{ needs.prepare.outputs.version }}"
+            echo "- **Packagist**: https://packagist.org/kreuzberg/packages/kreuzberg/kreuzberg#${{ needs.prepare.outputs.version }}"
             echo "- **GitHub Release**: https://github.com/${{ github.repository }}/releases/tag/${{ needs.prepare.outputs.tag }}"
             echo ""
             echo "### PIE Packages (Platform-Specific Extensions)"
@@ -3753,12 +3753,12 @@ jobs:
 
       - name: Create Go module tag
         if: ${{ needs.prepare.outputs.release_go == 'true' }}
-        run: scripts/publish/go/tag-and-push-go-module.sh "${{ needs.prepare.outputs.tag }}"
+        run: kreuzberg/scripts/publish/go/tag-and-push-go-module.sh "${{ needs.prepare.outputs.tag }}"
 
       - name: Publish release from draft state
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: scripts/publish/finalize-release.sh "${{ needs.prepare.outputs.tag }}"
+        run: kreuzberg/scripts/publish/finalize-release.sh "${{ needs.prepare.outputs.tag }}"
 
       - name: Aggregate release status
         id: status
@@ -3785,4 +3785,4 @@ jobs:
           RESULT_UPLOAD_CLI_RELEASE: ${{ needs.upload-cli-release.result }}
           RESULT_UPLOAD_GO_RELEASE: ${{ needs.upload-go-release.result }}
           RESULT_UPLOAD_C_FFI_RELEASE: ${{ needs.upload-c-ffi-release.result }}
-        run: python3 scripts/publish/aggregate-release-status.py
+        run: python3 kreuzberg/scripts/publish/aggregate-release-status.py

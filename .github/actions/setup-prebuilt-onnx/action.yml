@@ -9,4 +9,4 @@ runs:
   steps:
     - name: Prepare ONNX Runtime archive
       shell: bash
-      run: scripts/ci/actions/setup-prebuilt-onnx/prepare.sh "${{ inputs.target }}"
+      run: kreuzberg/scripts/ci/actions/setup-prebuilt-onnx/prepare.sh "${{ inputs.target }}"

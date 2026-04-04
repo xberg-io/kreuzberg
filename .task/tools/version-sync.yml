@@ -9,4 +9,4 @@ tasks:
   sync:
     desc: Sync version from Cargo.toml to all package manifests
     cmds:
-      - uv run --no-project python scripts/sync_versions.py
+      - uv run --no-project python kreuzberg/scripts/sync_versions.py

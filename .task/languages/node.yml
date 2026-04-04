@@ -11,7 +11,7 @@ includes:
 tasks:
   install:
     desc: Install Node/TypeScript dependencies
-    dir: crates/kreuzberg-node
+    dir: kreuzberg/crates/kreuzberg-node
     cmds:
       - corepack enable
       - pnpm install -r
@@ -23,19 +23,19 @@ tasks:
 
   build:
     desc: Build Node/TypeScript native bindings (uses {{.BUILD_PROFILE}})
-    dir: crates/kreuzberg-node
+    dir: kreuzberg/crates/kreuzberg-node
     cmds:
       - task: build:{{.BUILD_PROFILE | default "release"}}
 
   build:dev:
     desc: Build Node/TypeScript native bindings in debug mode
-    dir: crates/kreuzberg-node
+    dir: kreuzberg/crates/kreuzberg-node
     cmds:
       - pnpm exec napi build --platform
 
   build:release:
     desc: Build Node/TypeScript native bindings in release mode (optimized)
-    dir: crates/kreuzberg-node
+    dir: kreuzberg/crates/kreuzberg-node
     cmds:
       - pnpm exec napi build --platform --release --strip
 
@@ -43,20 +43,20 @@ tasks:
     desc: Build Node/TypeScript native bindings in CI mode (with debug info)
     cmds:
       - cmd: |
-          cd crates/kreuzberg-node
+          cd kreuzberg/crates/kreuzberg-node
           corepack enable
           pnpm install -r
           pnpm exec napi build --platform --release
-      - cmd: pnpm -r --filter="./packages/typescript/**" run build
+      - cmd: pnpm -r --filter="./kreuzberg/packages/typescript/**" run build
 
   build:bindings:
     desc: Build Node bindings for benchmarking
     cmds:
-      - bash scripts/benchmarks/build-node-bindings.sh
+      - bash kreuzberg/scripts/benchmarks/build-node-bindings.sh
 
   test:
     desc: Run Node/TypeScript tests
-    dir: crates/kreuzberg-node
+    dir: kreuzberg/crates/kreuzberg-node
     env:
       ORT_DYLIB_PATH: /opt/homebrew/lib/libonnxruntime.dylib
     cmds:
@@ -64,7 +64,7 @@ tasks:
 
   test:ci:
     desc: Run Node/TypeScript tests in CI mode
-    dir: crates/kreuzberg-node
+    dir: kreuzberg/crates/kreuzberg-node
     env:
       ORT_DYLIB_PATH: /opt/homebrew/lib/libonnxruntime.dylib
     cmds:
@@ -77,33 +77,33 @@ tasks:
 
   lint:
     desc: Auto-fix Node/TypeScript code linting (biome + oxlint)
-    dir: crates/kreuzberg-node
+    dir: kreuzberg/crates/kreuzberg-node
     cmds:
       - pnpm lint:fix
       - pnpm exec oxlint --fix typescript
 
   lint:check:
     desc: Check Node/TypeScript code linting without modifications (biome + oxlint)
-    dir: crates/kreuzberg-node
+    dir: kreuzberg/crates/kreuzberg-node
     cmds:
       - pnpm lint
       - pnpm exec oxlint typescript
 
   format:
     desc: Format Node/TypeScript code with modifications (biome)
-    dir: crates/kreuzberg-node
+    dir: kreuzberg/crates/kreuzberg-node
     cmds:
       - pnpm format
 
   format:check:
     desc: Check Node/TypeScript code formatting without modifications (biome)
-    dir: crates/kreuzberg-node
+    dir: kreuzberg/crates/kreuzberg-node
     cmds:
       - pnpm exec biome format typescript
 
   clean:
     desc: Clean Node/TypeScript build artifacts
-    dir: crates/kreuzberg-node
+    dir: kreuzberg/crates/kreuzberg-node
     cmds:
       - python -c "import shutil; [shutil.rmtree(d, ignore_errors=True) for d in ['dist', 'build', 'node_modules']]"
       - python -c "import shutil, os; [shutil.rmtree(os.path.join(r, d), ignore_errors=True) for r, dirs, _ in os.walk('.') for d in dirs if d == '.turbo']"
@@ -119,7 +119,7 @@ tasks:
   e2e:generate:
     desc: Generate and format TypeScript E2E tests
     cmds:
-      - cmd: bash scripts/task/e2e-typescript-generate.sh
+      - cmd: bash kreuzberg/scripts/task/e2e-typescript-generate.sh
         platforms: [linux, darwin]
       - cmd: echo "E2E generation not yet supported on Windows - use WSL or CI"
         platforms: [windows]
@@ -127,14 +127,14 @@ tasks:
 
   e2e:lint:
     desc: Lint TypeScript E2E code
-    dir: e2e/typescript
+    dir: kreuzberg/e2e/typescript
     cmds:
       - pnpm exec biome check .
       - pnpm exec oxlint --fix typescript
 
   e2e:test:
     desc: Run TypeScript E2E tests
-    dir: e2e/typescript
+    dir: kreuzberg/e2e/typescript
     cmds:
       - pnpm test
 

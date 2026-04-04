@@ -14,7 +14,7 @@ vars:
 tasks:
   install:
     desc: Install Java dependencies
-    dir: packages/java
+    dir: kreuzberg/packages/java
     cmds:
       - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.2-tem && sdk use maven 3.9.11; fi && mvn clean install -DskipTests'
         platforms: [linux, darwin]
@@ -23,21 +23,21 @@ tasks:
 
   setup:
     desc: Setup Java environment (alias for install)
-    dir: packages/java
+    dir: kreuzberg/packages/java
     cmds:
       - task: java:install
 
   build:
     desc: Build Java package (depends on Rust FFI)
     cmds:
-      - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.2-tem && sdk use maven 3.9.11; fi && mvn -f packages/java/pom.xml clean package -DskipTests'
+      - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.2-tem && sdk use maven 3.9.11; fi && mvn -f kreuzberg/packages/java/pom.xml clean package -DskipTests'
         platforms: [linux, darwin]
-      - cmd: mvn -f packages/java/pom.xml clean package -DskipTests
+      - cmd: mvn -f kreuzberg/packages/java/pom.xml clean package -DskipTests
         platforms: [windows]
 
   build:dev:
     desc: Build Java package in debug mode
-    dir: packages/java
+    dir: kreuzberg/packages/java
     cmds:
       - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.2-tem && sdk use maven 3.9.11; fi && mvn clean package -DskipTests -DdebugMode=true'
         platforms: [linux, darwin]
@@ -47,27 +47,27 @@ tasks:
   build:release:
     desc: Build Java package in release mode (optimized)
     cmds:
-      - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.2-tem && sdk use maven 3.9.11; fi && mvn -f packages/java/pom.xml clean package -DskipTests -Pproduction'
+      - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.2-tem && sdk use maven 3.9.11; fi && mvn -f kreuzberg/packages/java/pom.xml clean package -DskipTests -Pproduction'
         platforms: [linux, darwin]
-      - cmd: mvn -f packages/java/pom.xml clean package -DskipTests -Pproduction
+      - cmd: mvn -f kreuzberg/packages/java/pom.xml clean package -DskipTests -Pproduction
         platforms: [windows]
 
   build:ci:
     desc: Build Java package in CI mode
     cmds:
-      - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.2-tem && sdk use maven 3.9.11; fi && mvn -f packages/java/pom.xml clean package -DskipTests'
+      - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.2-tem && sdk use maven 3.9.11; fi && mvn -f kreuzberg/packages/java/pom.xml clean package -DskipTests'
         platforms: [linux, darwin]
-      - cmd: mvn -f packages/java/pom.xml clean package -DskipTests
+      - cmd: mvn -f kreuzberg/packages/java/pom.xml clean package -DskipTests
         platforms: [windows]
 
   build:bindings:
     desc: Build Java bindings for benchmarking
     cmds:
-      - bash scripts/benchmarks/build-java-package.sh
+      - bash kreuzberg/scripts/benchmarks/build-java-package.sh
 
   test:
     desc: Run Java tests (parallel execution for 4x speed)
-    dir: packages/java
+    dir: kreuzberg/packages/java
     cmds:
       - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.2-tem && sdk use maven 3.9.11; fi && mvn test -q'
         platforms: [linux, darwin]
@@ -78,7 +78,7 @@ tasks:
     desc: Run Java tests in CI mode (parallel execution)
     env:
       MAVEN_OPTS: "-Xmx1024m"
-    dir: packages/java
+    dir: kreuzberg/packages/java
     cmds:
       - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.2-tem && sdk use maven 3.9.11; fi && mvn test -B -q'
         platforms: [linux, darwin]
@@ -87,7 +87,7 @@ tasks:
 
   test:verbose:
     desc: Run Java tests with verbose output
-    dir: packages/java
+    dir: kreuzberg/packages/java
     cmds:
       - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.2-tem && sdk use maven 3.9.11; fi && mvn test -X'
         platforms: [linux, darwin]
@@ -97,30 +97,30 @@ tasks:
   lint:
     desc: Lint all Java code with auto-fix (spotless + checkstyle + PMD)
     cmds:
-      - cmd: bash scripts/task/java-lint.sh fix
+      - cmd: bash kreuzberg/scripts/task/java-lint.sh fix
         platforms: [linux, darwin]
 
   lint:check:
     desc: Check all Java code linting without modifications
     cmds:
-      - cmd: bash scripts/task/java-lint.sh check
+      - cmd: bash kreuzberg/scripts/task/java-lint.sh check
         platforms: [linux, darwin]
 
   format:
     desc: Format all Java code (spotless)
     cmds:
-      - cmd: bash scripts/task/java-lint.sh fix
+      - cmd: bash kreuzberg/scripts/task/java-lint.sh fix
         platforms: [linux, darwin]
 
   format:check:
     desc: Check all Java code formatting (spotless)
     cmds:
-      - cmd: bash scripts/task/java-lint.sh check
+      - cmd: bash kreuzberg/scripts/task/java-lint.sh check
         platforms: [linux, darwin]
 
   clean:
     desc: Clean Java build artifacts
-    dir: packages/java
+    dir: kreuzberg/packages/java
     cmds:
       - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.2-tem && sdk use maven 3.9.11; fi && mvn clean'
         platforms: [linux, darwin]
@@ -129,7 +129,7 @@ tasks:
 
   update:
     desc: Update Java dependencies and plugins (including linters)
-    dir: packages/java
+    dir: kreuzberg/packages/java
     cmds:
       - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.2-tem && sdk use maven 3.9.11; fi && echo "Updating Java dependencies and plugins..." && mvn -DallowSnapshots=false versions:use-latest-releases -DprocessDependencies=true -DprocessParent=false && echo "Updating plugin versions in properties..." && mvn -DallowSnapshots=false versions:update-properties && echo "Displaying final dependency updates..." && mvn -DallowSnapshots=false versions:display-dependency-updates && echo "Displaying final plugin updates..." && mvn -DallowSnapshots=false versions:display-plugin-updates'
         platforms: [linux, darwin]
@@ -147,7 +147,7 @@ tasks:
   e2e:generate:
     desc: Generate and format Java E2E tests from fixtures
     cmds:
-      - cmd: bash scripts/task/e2e-generate.sh java
+      - cmd: bash kreuzberg/scripts/task/e2e-generate.sh java
         platforms: [linux, darwin]
       - cmd: echo "E2E generation not yet supported on Windows - use WSL or CI"
         platforms: [windows]
@@ -155,14 +155,14 @@ tasks:
 
   e2e:format:
     desc: Format Java E2E code
-    dir: e2e/java
+    dir: kreuzberg/e2e/java
     cmds:
       - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.2-tem && sdk use maven 3.9.11; fi && if grep -q spotless-maven-plugin pom.xml; then mvn -q spotless:apply; fi'
         platforms: [linux, darwin]
 
   e2e:lint:
     desc: Lint Java E2E code
-    dir: e2e/java
+    dir: kreuzberg/e2e/java
     cmds:
       - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.2-tem && sdk use maven 3.9.11; fi && mvn checkstyle:check && mvn pmd:check pmd:cpd-check'
         platforms: [linux, darwin]
@@ -173,7 +173,7 @@ tasks:
 
   e2e:test:
     desc: Run Java E2E tests
-    dir: e2e/java
+    dir: kreuzberg/e2e/java
     cmds:
       - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.2-tem && sdk use maven 3.9.11; fi && mvn -B -DtrimStackTrace=false -Dsurefire.useFile=false test'
         platforms: [linux, darwin]

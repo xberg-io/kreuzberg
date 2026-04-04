@@ -1,7 +1,7 @@
 go 1.26
 
 use (
-	./e2e/go
-	./packages/go/v4
-./tools/benchmark-harness/scripts
+	./kreuzberg/e2e/go
+	./kreuzberg/packages/go/v4
+	./kreuzberg/tools/benchmark-harness/scripts
 )

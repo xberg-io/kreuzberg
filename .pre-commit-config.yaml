@@ -1,7 +1,7 @@
 default_install_hook_types:
   - pre-commit
   - commit-msg
-exclude: ^docs/snippets/|vendor/|node_modules/|target/|invalid*|dist/|artifacts/|test_documents/|test_apps/|scripts/ci/|packages/.*/tools/vendor-
+exclude: ^docs/snippets/|vendor/|node_modules/|target/|invalid*|dist/|artifacts/|test_documents/|test_apps/|kreuzberg/scripts/ci/|kreuzberg/packages/.*/tools/vendor-
 
 repos:
   # Commit message linting
@@ -26,7 +26,7 @@ repos:
       - id: end-of-file-fixer
       - id: check-merge-conflict
       - id: check-added-large-files
-        exclude: uv.lock|docs/benchmarks/app/|crates/kreuzberg-pdfium-render/
+        exclude: uv.lock|docs/benchmarks/app/|kreuzberg/crates/kreuzberg-pdfium-render/
       - id: detect-private-key
       - id: check-json
       - id: check-yaml
@@ -64,7 +64,7 @@ repos:
     rev: v1.20.0
     hooks:
       - id: mypy
-        exclude: "e2e/|scripts/|test_apps/|benchmarks/"
+        exclude: "kreuzberg/e2e/|kreuzberg/scripts/|test_apps/|benchmarks/"
 
   # Rust: formatting, linting, and license checking
   - repo: https://github.com/AndrejOrsula/pre-commit-cargo
@@ -79,19 +79,19 @@ repos:
         args: ["--fix", "--allow-dirty", "--allow-staged", "--workspace",
                "--exclude=kreuzberg-php", "--exclude=kreuzberg-wasm",
                "--all-features", "--all-targets", "--", "-D", "warnings"]
-        files: ^(crates/|tools/|e2e/rust/|Cargo\.(toml|lock))
+        files: ^(kreuzberg/crates/|kreuzberg/tools/|kreuzberg/e2e/rust/|Cargo\.(toml|lock))
         types_or: [rust, toml]
       - id: cargo-clippy
         name: clippy (kreuzberg-php)
         args: ["--fix", "--allow-dirty", "--allow-staged",
                "-p", "kreuzberg-php", "--all-targets", "--", "-D", "warnings"]
-        files: ^crates/kreuzberg-php/
+        files: ^kreuzberg/crates/kreuzberg-php/
         types: [rust]
       - id: cargo-clippy
         name: clippy (kreuzberg-wasm)
         args: ["--fix", "--allow-dirty", "--allow-staged",
                "-p", "kreuzberg-wasm", "--all-targets", "--", "-D", "warnings"]
-        files: ^crates/kreuzberg-wasm/
+        files: ^kreuzberg/crates/kreuzberg-wasm/
         types: [rust]
 
   - repo: https://github.com/bnjbvr/cargo-machete
@@ -110,7 +110,7 @@ repos:
     rev: v2.4.10
     hooks:
       - id: biome-format
-        exclude: ^tools/benchmark-harness/fixtures/
+        exclude: ^kreuzberg/tools/benchmark-harness/fixtures/
       - id: biome-lint
 
   - repo: https://github.com/oxc-project/mirrors-oxlint
@@ -118,7 +118,7 @@ repos:
     hooks:
       - id: oxlint
         args: ["--fix"]
-        exclude: ^(tools/benchmark-harness/fixtures/|docs/snippets/)
+        exclude: ^(kreuzberg/tools/benchmark-harness/fixtures/|docs/snippets/)
 
   # C/C++: formatting and linting
   - repo: https://github.com/pocc/pre-commit-hooks
@@ -126,7 +126,7 @@ repos:
     hooks:
       - id: clang-format
         args: [--style=file]
-        files: (^crates/kreuzberg-ffi/tests/c/|^tools/benchmark-harness/scripts/.*\.c$)
+        files: (^kreuzberg/crates/kreuzberg-ffi/tests/c/|^kreuzberg/tools/benchmark-harness/scripts/.*\.c$)
       - id: cppcheck
         args:
           [
@@ -135,7 +135,7 @@ repos:
             "--suppress=missingIncludeSystem",
             "--suppress=unusedStructMember",
           ]
-        files: (^crates/kreuzberg-ffi/tests/c/|^tools/benchmark-harness/scripts/.*\.c$)
+        files: (^kreuzberg/crates/kreuzberg-ffi/tests/c/|^kreuzberg/tools/benchmark-harness/scripts/.*\.c$)
 
   - repo: https://github.com/checkmake/checkmake
     rev: v0.3.2
@@ -164,14 +164,14 @@ repos:
     hooks:
       - id: shellcheck
         args: ['-x']
-        exclude: ^test_apps/docker/tests/
+        exclude: ^test_apps/docker/tests/|^kreuzberg/scripts/ci/
 
   # Markdown: linting
   - repo: https://github.com/rvben/rumdl-pre-commit
     rev: "v0.1.66"
     hooks:
       - id: rumdl-fmt
-        exclude: '^(test_apps/|tools/benchmark-harness/vendored/)'
+        exclude: '^(test_apps/|kreuzberg/tools/benchmark-harness/vendored/)'
 
   # GitHub Actions: linting
   - repo: https://github.com/rhysd/actionlint
@@ -184,16 +184,16 @@ repos:
     rev: v0.6.37
     hooks:
       - id: cpd
-        exclude: ^(\.mvn/wrapper/|e2e/|test_apps/|tools/e2e-generator/e2e/|crates/kreuzberg-wasm/e2e/)
+        exclude: ^(\.mvn/wrapper/|kreuzberg/e2e/|test_apps/|kreuzberg/tools/e2e-generator/e2e/|kreuzberg/crates/kreuzberg-wasm/e2e/)
       - id: checkstyle
         args:
           [
             "-c",
-            "packages/java/checkstyle.xml",
+            "kreuzberg/packages/java/checkstyle.xml",
             "-p",
-            "packages/java/checkstyle.properties",
+            "kreuzberg/packages/java/checkstyle.properties",
           ]
-        exclude: ^(\.mvn/wrapper/|e2e/|test_apps/|tools/e2e-generator/e2e/|crates/kreuzberg-wasm/e2e/)
+        exclude: ^(\.mvn/wrapper/|kreuzberg/e2e/|test_apps/|kreuzberg/tools/e2e-generator/e2e/|kreuzberg/crates/kreuzberg-wasm/e2e/)
 
   # Local hooks for unsupported languages (Ruby, Java, C#, PHP, Elixir, R) and custom configurations
   - repo: local
@@ -220,9 +220,9 @@ repos:
       # Java (maven verify — cpd/checkstyle handled by pre-commit-java above)
       - id: java-verify
         name: maven verify (java)
-        entry: bash -lc 'if [ -f "$HOME/.sdkman/bin/sdkman-init.sh" ]; then source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk env; fi; MAVEN_OPTS="${MAVEN_OPTS:-} --enable-native-access=ALL-UNNAMED -Dsun.misc.unsafe.memory.access=allow" mvn -f packages/java/pom.xml -B -DskipTests -Dgpg.skip=true -Dskip.rust.ffi=true verify'
+        entry: bash -lc 'if [ -f "$HOME/.sdkman/bin/sdkman-init.sh" ]; then source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk env; fi; MAVEN_OPTS="${MAVEN_OPTS:-} --enable-native-access=ALL-UNNAMED -Dsun.misc.unsafe.memory.access=allow" mvn -f kreuzberg/packages/java/pom.xml -B -DskipTests -Dgpg.skip=true -Dskip.rust.ffi=true verify'
         language: system
-        files: ^packages/java/
+        files: ^kreuzberg/packages/java/
         pass_filenames: false
 
       # C#
@@ -266,16 +266,16 @@ repos:
       # Elixir
       - id: mix-credo
         name: mix credo
-        entry: bash -c 'cd packages/elixir && MIX_ENV=dev mix credo --strict'
+        entry: bash -c 'cd kreuzberg/packages/elixir && MIX_ENV=dev mix credo --strict'
         language: system
-        files: ^packages/elixir/
+        files: ^kreuzberg/packages/elixir/
         pass_filenames: false
 
       - id: mix-format
         name: mix format
-        entry: bash -c 'cd packages/elixir && MIX_ENV=dev mix format --check-formatted'
+        entry: bash -c 'cd kreuzberg/packages/elixir && MIX_ENV=dev mix format --check-formatted'
         language: system
-        files: ^packages/elixir/
+        files: ^kreuzberg/packages/elixir/
         pass_filenames: false
 
       # R

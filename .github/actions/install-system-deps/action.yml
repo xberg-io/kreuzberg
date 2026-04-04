@@ -18,7 +18,7 @@ runs:
       if: runner.os == 'macOS'
       id: detect-tesseract-macos
       shell: bash
-      run: scripts/ci/install-system-deps/detect-tesseract-macos.sh
+      run: kreuzberg/scripts/ci/install-system-deps/detect-tesseract-macos.sh
 
     - name: Cache Tesseract & tessdata (macOS)
       if: runner.os == 'macOS'
@@ -38,14 +38,14 @@ runs:
     - name: Install dependencies (macOS)
       if: runner.os == 'macOS'
       shell: bash
-      run: scripts/ci/install-system-deps/install-macos.sh
+      run: kreuzberg/scripts/ci/install-system-deps/install-macos.sh
 
 
     - name: Detect Tesseract version (Linux)
       if: runner.os == 'Linux'
       id: detect-tesseract-linux
       shell: bash
-      run: scripts/ci/install-system-deps/detect-tesseract-linux.sh
+      run: kreuzberg/scripts/ci/install-system-deps/detect-tesseract-linux.sh
 
     - name: Cache Tesseract data (Linux)
       if: runner.os == 'Linux'
@@ -63,7 +63,7 @@ runs:
     - name: Install dependencies (Linux)
       if: runner.os == 'Linux'
       shell: bash
-      run: scripts/ci/install-system-deps/install-linux.sh
+      run: kreuzberg/scripts/ci/install-system-deps/install-linux.sh
 
 
     - name: Cache Tesseract (Windows)
@@ -105,4 +105,4 @@ runs:
         TESSERACT_CACHE_HIT: ${{ steps.cache-tesseract-windows.outputs.cache-hit }}
         LLVM_CACHE_HIT: ${{ steps.cache-llvm-windows.outputs.cache-hit }}
         CMAKE_CACHE_HIT: ${{ steps.cache-cmake-windows.outputs.cache-hit }}
-      run: pwsh -File scripts/ci/install-system-deps/install-windows.ps1
+      run: pwsh -File kreuzberg/scripts/ci/install-system-deps/install-windows.ps1

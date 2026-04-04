@@ -9,9 +9,9 @@ includes:
     internal: true
 
 vars:
-  FFI_CRATE_DIR: "crates/kreuzberg-ffi"
-  FFI_TEST_DIR: "crates/kreuzberg-ffi/tests/c"
-  E2E_DIR: "e2e/c"
+  FFI_CRATE_DIR: "kreuzberg/crates/kreuzberg-ffi"
+  FFI_TEST_DIR: "kreuzberg/crates/kreuzberg-ffi/tests/c"
+  E2E_DIR: "kreuzberg/e2e/c"
   LIB_DIR: "target/debug"
   LIB_DIR_RELEASE: "target/release"
 
@@ -143,7 +143,7 @@ tasks:
   e2e:generate:
     desc: Generate C E2E tests from fixtures
     cmds:
-      - cmd: bash scripts/task/e2e-generate.sh c
+      - cmd: bash kreuzberg/scripts/task/e2e-generate.sh c
         platforms: [linux, darwin]
       - cmd: echo "E2E generation not yet supported on Windows - use WSL or CI"
         platforms: [windows]

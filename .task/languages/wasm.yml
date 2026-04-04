@@ -9,7 +9,7 @@ includes:
     internal: true
 
 vars:
-  WASM_DIR: "{{.ROOT}}/crates/kreuzberg-wasm"
+  WASM_DIR: "{{.ROOT}}/kreuzberg/crates/kreuzberg-wasm"
   WASI_SDK:
     sh: echo "${WASI_SDK_PATH:-$HOME/wasi-sdk}"
   WASI_CC:
@@ -20,19 +20,19 @@ vars:
 tasks:
   install:
     desc: Install WASM dependencies (pnpm)
-    dir: crates/kreuzberg-wasm
+    dir: kreuzberg/crates/kreuzberg-wasm
     cmds:
       - pnpm install
 
   setup:
     desc: Setup WASM environment (alias for install)
-    dir: crates/kreuzberg-wasm
+    dir: kreuzberg/crates/kreuzberg-wasm
     cmds:
       - pnpm install
 
   build:
     desc: Build WASM bindings for Node.js target (uses {{.BUILD_PROFILE}})
-    dir: crates/kreuzberg-wasm
+    dir: kreuzberg/crates/kreuzberg-wasm
     env:
       RUSTFLAGS:
       CC_wasm32_unknown_unknown: "{{.WASI_CC}}"
@@ -42,7 +42,7 @@ tasks:
 
   build:dev:
     desc: Build WASM bindings in debug mode
-    dir: crates/kreuzberg-wasm
+    dir: kreuzberg/crates/kreuzberg-wasm
     env:
       RUSTFLAGS:
       CC_wasm32_unknown_unknown: "{{.WASI_CC}}"
@@ -52,7 +52,7 @@ tasks:
 
   build:release:
     desc: Build WASM bindings in release mode (optimized)
-    dir: crates/kreuzberg-wasm
+    dir: kreuzberg/crates/kreuzberg-wasm
     env:
       NODE_ENV: production
       RUSTFLAGS:
@@ -63,7 +63,7 @@ tasks:
 
   build:ci:
     desc: Build WASM bindings in CI mode
-    dir: crates/kreuzberg-wasm
+    dir: kreuzberg/crates/kreuzberg-wasm
     env:
       NODE_ENV: production
       RUSTFLAGS:
@@ -74,7 +74,7 @@ tasks:
 
   build:web:
     desc: Build WASM for web browsers
-    dir: crates/kreuzberg-wasm
+    dir: kreuzberg/crates/kreuzberg-wasm
     env:
       RUSTFLAGS:
       CC_wasm32_unknown_unknown: "{{.WASI_CC}}"
@@ -84,7 +84,7 @@ tasks:
 
   build:bundler:
     desc: Build WASM for bundlers (webpack, rollup, etc)
-    dir: crates/kreuzberg-wasm
+    dir: kreuzberg/crates/kreuzberg-wasm
     env:
       RUSTFLAGS:
       CC_wasm32_unknown_unknown: "{{.WASI_CC}}"
@@ -94,7 +94,7 @@ tasks:
 
   build:nodejs:
     desc: Build WASM for Node.js
-    dir: crates/kreuzberg-wasm
+    dir: kreuzberg/crates/kreuzberg-wasm
     env:
       RUSTFLAGS:
       CC_wasm32_unknown_unknown: "{{.WASI_CC}}"
@@ -104,7 +104,7 @@ tasks:
 
   build:deno:
     desc: Build WASM for Deno
-    dir: crates/kreuzberg-wasm
+    dir: kreuzberg/crates/kreuzberg-wasm
     env:
       RUSTFLAGS:
       CC_wasm32_unknown_unknown: "{{.WASI_CC}}"
@@ -114,7 +114,7 @@ tasks:
 
   build:all:
     desc: Build WASM for all targets (web, bundler, nodejs, deno)
-    dir: crates/kreuzberg-wasm
+    dir: kreuzberg/crates/kreuzberg-wasm
     env:
       RUSTFLAGS:
       CC_wasm32_unknown_unknown: "{{.WASI_CC}}"
@@ -127,42 +127,42 @@ tasks:
     env:
       RUSTFLAGS:
     cmds:
-      - bash scripts/benchmarks/build-wasm-bindings.sh
+      - bash kreuzberg/scripts/benchmarks/build-wasm-bindings.sh
 
   test:
     desc: Run WASM unit tests with Vitest
-    dir: crates/kreuzberg-wasm
+    dir: kreuzberg/crates/kreuzberg-wasm
     cmds:
       - pnpm test
 
   test:ci:
     desc: Run WASM unit tests in CI mode
-    dir: crates/kreuzberg-wasm
+    dir: kreuzberg/crates/kreuzberg-wasm
     cmds:
       - pnpm run build:ci
       - pnpm test
 
   test:watch:
     desc: Run WASM tests in watch mode
-    dir: crates/kreuzberg-wasm
+    dir: kreuzberg/crates/kreuzberg-wasm
     cmds:
       - pnpm test:watch
 
   test:coverage:
     desc: Run WASM tests with coverage report
-    dir: crates/kreuzberg-wasm
+    dir: kreuzberg/crates/kreuzberg-wasm
     cmds:
       - pnpm test:coverage
 
   test:deno:
     desc: Run Deno WASM E2E tests
-    dir: e2e/wasm-deno
+    dir: kreuzberg/e2e/wasm-deno
     cmds:
       - deno task test
 
   test:workers:
     desc: Run Cloudflare Workers WASM E2E tests with Miniflare
-    dir: e2e/wasm-workers
+    dir: kreuzberg/e2e/wasm-workers
     cmds:
       - pnpm test
 
@@ -176,42 +176,42 @@ tasks:
 
   lint:
     desc: Lint WASM TypeScript code with auto-fix (biome + oxlint)
-    dir: crates/kreuzberg-wasm
+    dir: kreuzberg/crates/kreuzberg-wasm
     cmds:
       - pnpm run lint:fix
 
   lint:check:
     desc: Check WASM TypeScript linting without modifications
-    dir: crates/kreuzberg-wasm
+    dir: kreuzberg/crates/kreuzberg-wasm
     cmds:
       - pnpm run lint
 
   format:
     desc: Format WASM TypeScript code with modifications (biome)
-    dir: crates/kreuzberg-wasm
+    dir: kreuzberg/crates/kreuzberg-wasm
     cmds:
       - pnpm run format
 
   format:check:
     desc: Check WASM TypeScript formatting without modifications
-    dir: crates/kreuzberg-wasm
+    dir: kreuzberg/crates/kreuzberg-wasm
     cmds:
       - pnpm exec biome format typescript --check
 
   typecheck:
     desc: Type-check WASM TypeScript code
-    dir: crates/kreuzberg-wasm
+    dir: kreuzberg/crates/kreuzberg-wasm
     cmds:
       - pnpm run typecheck
 
   clean:
     desc: Clean WASM build artifacts
     cmds:
-      - cmd: bash -c "rm -rf crates/kreuzberg-wasm/dist crates/kreuzberg-wasm/pkg crates/kreuzberg-wasm/node_modules crates/kreuzberg-wasm/.wasm-pack"
+      - cmd: bash -c "rm -rf kreuzberg/crates/kreuzberg-wasm/dist kreuzberg/crates/kreuzberg-wasm/pkg kreuzberg/crates/kreuzberg-wasm/node_modules kreuzberg/crates/kreuzberg-wasm/.wasm-pack"
         platforms: [linux, darwin]
-      - cmd: powershell -Command "Remove-Item -Path @('crates/kreuzberg-wasm/dist', 'crates/kreuzberg-wasm/pkg', 'crates/kreuzberg-wasm/node_modules', 'crates/kreuzberg-wasm/.wasm-pack') -Recurse -ErrorAction SilentlyContinue; exit 0"
+      - cmd: powershell -Command "Remove-Item -Path @('kreuzberg/crates/kreuzberg-wasm/dist', 'kreuzberg/crates/kreuzberg-wasm/pkg', 'kreuzberg/crates/kreuzberg-wasm/node_modules', 'kreuzberg/crates/kreuzberg-wasm/.wasm-pack') -Recurse -ErrorAction SilentlyContinue; exit 0"
         platforms: [windows]
-      - cmd: cd crates/kreuzberg-wasm && pnpm run clean
+      - cmd: cd kreuzberg/crates/kreuzberg-wasm && pnpm run clean
         ignore_error: true
 
   update:
@@ -222,7 +222,7 @@ tasks:
   e2e:deno:generate:
     desc: Generate and format Deno WASM E2E tests from fixtures
     cmds:
-      - cmd: bash scripts/task/e2e-generate.sh wasm-deno
+      - cmd: bash kreuzberg/scripts/task/e2e-generate.sh wasm-deno
         platforms: [linux, darwin]
       - cmd: echo "E2E generation not yet supported on Windows - use WSL or CI"
         platforms: [windows]
@@ -230,13 +230,13 @@ tasks:
 
   e2e:deno:lint:
     desc: Lint Deno WASM E2E code
-    dir: e2e/wasm-deno
+    dir: kreuzberg/e2e/wasm-deno
     cmds:
       - deno lint
 
   e2e:deno:test:
     desc: Run Deno WASM E2E tests
-    dir: e2e/wasm-deno
+    dir: kreuzberg/e2e/wasm-deno
     cmds:
       - deno task test
 
@@ -250,7 +250,7 @@ tasks:
   e2e:workers:generate:
     desc: Generate and format Cloudflare Workers WASM E2E tests from fixtures
     cmds:
-      - cmd: bash scripts/task/e2e-generate.sh wasm-workers
+      - cmd: bash kreuzberg/scripts/task/e2e-generate.sh wasm-workers
         platforms: [linux, darwin]
       - cmd: echo "E2E generation not yet supported on Windows - use WSL or CI"
         platforms: [windows]
@@ -258,13 +258,13 @@ tasks:
 
   e2e:workers:lint:
     desc: Lint Cloudflare Workers WASM E2E code
-    dir: e2e/wasm-workers
+    dir: kreuzberg/e2e/wasm-workers
     cmds:
       - pnpm lint
 
   e2e:workers:test:
     desc: Run Cloudflare Workers WASM E2E tests with Miniflare
-    dir: e2e/wasm-workers
+    dir: kreuzberg/e2e/wasm-workers
     cmds:
       - pnpm test
 

@@ -31,12 +31,12 @@ runs:
     - name: Clean cache directories (cache disabled)
       if: inputs.enable-cache != 'true'
       shell: bash
-      run: scripts/ci/actions/setup-tesseract-cache/clean-dirs.sh "${{ inputs.label }}"
+      run: kreuzberg/scripts/ci/actions/setup-tesseract-cache/clean-dirs.sh "${{ inputs.label }}"
 
     - name: Setup cache directories
       if: inputs.enable-cache == 'true'
       shell: bash
-      run: scripts/ci/actions/setup-tesseract-cache/setup-dirs.sh "${{ inputs.label }}"
+      run: kreuzberg/scripts/ci/actions/setup-tesseract-cache/setup-dirs.sh "${{ inputs.label }}"
 
     - name: Cache kreuzberg-tesseract build cache
       if: inputs.enable-cache == 'true'
@@ -45,16 +45,16 @@ runs:
         path: |
           .tesseract-cache/${{ inputs.label }}
           .xdg-cache/${{ inputs.label }}
-        key: kreuzberg-tesseract-cache-v2-${{ runner.os }}-${{ inputs.label }}-${{ hashFiles('crates/kreuzberg-tesseract/Cargo.toml', 'crates/kreuzberg-tesseract/build.rs') }}
+        key: kreuzberg-tesseract-cache-v2-${{ runner.os }}-${{ inputs.label }}-${{ hashFiles('kreuzberg/crates/kreuzberg-tesseract/Cargo.toml', 'kreuzberg/crates/kreuzberg-tesseract/build.rs') }}
         restore-keys: |
           kreuzberg-tesseract-cache-v2-${{ runner.os }}-${{ inputs.label }}-
 
     - name: Clean per-target Tesseract cache
       if: inputs.rust-target != ''
       shell: bash
-      run: scripts/ci/actions/setup-tesseract-cache/clean-target-cache.sh "${{ inputs.rust-target }}"
+      run: kreuzberg/scripts/ci/actions/setup-tesseract-cache/clean-target-cache.sh "${{ inputs.rust-target }}"
 
     - name: Set outputs and environment
       id: set-outputs
       shell: bash
-      run: scripts/ci/actions/setup-tesseract-cache/set-outputs.sh "${{ inputs.label }}" "${{ inputs.enable-cache }}"
+      run: kreuzberg/scripts/ci/actions/setup-tesseract-cache/set-outputs.sh "${{ inputs.label }}" "${{ inputs.enable-cache }}"

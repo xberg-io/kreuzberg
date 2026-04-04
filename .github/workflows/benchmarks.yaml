@@ -57,10 +57,10 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        run: kreuzberg/scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Ensure benchmark harness exists
-        run: scripts/benchmarks/ensure-benchmark-harness-exists.sh
+        run: kreuzberg/scripts/benchmarks/ensure-benchmark-harness-exists.sh
 
       - name: Install system dependencies
         uses: ./.github/actions/install-system-deps
@@ -81,7 +81,7 @@ jobs:
           pdfium-version: ${{ env.PDFIUM_VERSION }}
 
       - name: Download PDFium runtime
-        run: scripts/download_pdfium_runtime.sh
+        run: kreuzberg/scripts/download_pdfium_runtime.sh
 
       - name: Setup ONNX Runtime
         uses: ./.github/actions/setup-onnx-runtime
@@ -109,10 +109,10 @@ jobs:
         run: cargo build --release -p benchmark-harness --bin kreuzberg-extract
 
       - name: Validate ground truth
-        run: cargo run --release -p benchmark-harness -- validate-gt --fixtures tools/benchmark-harness/fixtures/
+        run: cargo run --release -p benchmark-harness -- validate-gt --fixtures kreuzberg/tools/benchmark-harness/fixtures/
 
       - name: Log disk space before artifact upload
-        run: scripts/ci/validate/show-disk-space.sh "Disk space before artifact upload"
+        run: kreuzberg/scripts/ci/validate/show-disk-space.sh "Disk space before artifact upload"
 
       - name: Upload build artifacts (harness binary + FFI shared lib)
         uses: actions/upload-artifact@v7
@@ -137,7 +137,7 @@ jobs:
           retention-days: 7
 
       - name: Log disk space after artifact upload
-        run: scripts/ci/validate/show-disk-space.sh "Disk space after artifact upload"
+        run: kreuzberg/scripts/ci/validate/show-disk-space.sh "Disk space after artifact upload"
 
   bench-native:
     name: kreuzberg-rust (${{ matrix.mode }})
@@ -156,7 +156,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        run: kreuzberg/scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Install system dependencies
         uses: ./.github/actions/install-system-deps
@@ -178,7 +178,7 @@ jobs:
           path: target/release
 
       - name: Restore benchmark binary permissions
-        run: scripts/benchmarks/restore-binary-permissions.sh
+        run: kreuzberg/scripts/benchmarks/restore-binary-permissions.sh
 
       - name: Setup ONNX Runtime
         uses: ./.github/actions/setup-onnx-runtime
@@ -194,7 +194,7 @@ jobs:
           MODE: ${{ matrix.mode }}
           ITERATIONS: ${{ env.ITERATIONS }}
           TIMEOUT: ${{ github.event.inputs.timeout }}
-        run: scripts/benchmarks/run-benchmark.sh
+        run: kreuzberg/scripts/benchmarks/run-benchmark.sh
 
       - name: Upload artifacts
         if: always()
@@ -221,7 +221,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        run: kreuzberg/scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Install system dependencies
         uses: ./.github/actions/install-system-deps
@@ -243,7 +243,7 @@ jobs:
           path: target/release
 
       - name: Restore benchmark binary permissions
-        run: scripts/benchmarks/restore-binary-permissions.sh
+        run: kreuzberg/scripts/benchmarks/restore-binary-permissions.sh
 
       - name: Setup ONNX Runtime
         uses: ./.github/actions/setup-onnx-runtime
@@ -262,7 +262,7 @@ jobs:
           MODE: ${{ matrix.mode }}
           ITERATIONS: ${{ env.ITERATIONS }}
           TIMEOUT: ${{ github.event.inputs.timeout }}
-        run: scripts/benchmarks/run-benchmark.sh
+        run: kreuzberg/scripts/benchmarks/run-benchmark.sh
 
       - name: Upload artifacts
         if: always()
@@ -291,7 +291,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        run: kreuzberg/scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Install system dependencies
         uses: ./.github/actions/install-system-deps
@@ -313,7 +313,7 @@ jobs:
           path: target/release
 
       - name: Restore benchmark binary permissions
-        run: scripts/benchmarks/restore-binary-permissions.sh
+        run: kreuzberg/scripts/benchmarks/restore-binary-permissions.sh
 
       - name: Setup Python
         uses: kreuzberg-dev/actions/setup-python-env@v1
@@ -343,7 +343,7 @@ jobs:
           MODE: ${{ matrix.mode }}
           ITERATIONS: ${{ env.ITERATIONS }}
           TIMEOUT: ${{ github.event.inputs.timeout }}
-        run: scripts/benchmarks/run-benchmark.sh
+        run: kreuzberg/scripts/benchmarks/run-benchmark.sh
 
       - name: Upload artifacts
         if: always()
@@ -370,7 +370,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        run: kreuzberg/scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Install system dependencies
         uses: ./.github/actions/install-system-deps
@@ -392,13 +392,13 @@ jobs:
           path: target/release
 
       - name: Restore benchmark binary permissions
-        run: scripts/benchmarks/restore-binary-permissions.sh
+        run: kreuzberg/scripts/benchmarks/restore-binary-permissions.sh
 
       - name: Setup Node
         uses: kreuzberg-dev/actions/setup-node-workspace@v1
 
       - name: Verify Node setup
-        run: scripts/ci/benchmarks/verify-node-setup.sh "Node setup (async)"
+        run: kreuzberg/scripts/ci/benchmarks/verify-node-setup.sh "Node setup (async)"
 
       - name: Setup ONNX Runtime
         uses: ./.github/actions/setup-onnx-runtime
@@ -423,7 +423,7 @@ jobs:
           MODE: ${{ matrix.mode }}
           ITERATIONS: ${{ env.ITERATIONS }}
           TIMEOUT: ${{ github.event.inputs.timeout }}
-        run: scripts/benchmarks/run-benchmark.sh
+        run: kreuzberg/scripts/benchmarks/run-benchmark.sh
 
       - name: Upload artifacts
         if: always()
@@ -452,7 +452,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        run: kreuzberg/scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Install system dependencies
         uses: ./.github/actions/install-system-deps
@@ -474,7 +474,7 @@ jobs:
           path: target/release
 
       - name: Restore benchmark binary permissions
-        run: scripts/benchmarks/restore-binary-permissions.sh
+        run: kreuzberg/scripts/benchmarks/restore-binary-permissions.sh
 
       - name: Setup ONNX Runtime
         uses: ./.github/actions/setup-onnx-runtime
@@ -507,7 +507,7 @@ jobs:
           ITERATIONS: "1"
           TIMEOUT: "300"
           READY_TIMEOUT: "120"
-        run: scripts/benchmarks/run-benchmark.sh
+        run: kreuzberg/scripts/benchmarks/run-benchmark.sh
 
       - name: Upload artifacts
         if: always()
@@ -534,7 +534,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        run: kreuzberg/scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Install system dependencies
         uses: ./.github/actions/install-system-deps
@@ -556,7 +556,7 @@ jobs:
           path: target/release
 
       - name: Restore benchmark binary permissions
-        run: scripts/benchmarks/restore-binary-permissions.sh
+        run: kreuzberg/scripts/benchmarks/restore-binary-permissions.sh
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
@@ -580,16 +580,16 @@ jobs:
         run: |
           echo "=== Building FFI Library ==="
           echo "Building kreuzberg-ffi from source (with sccache fallback)"
-          scripts/ci/actions/setup-rust/build-with-sccache-fallback.sh cargo build --release --package kreuzberg-ffi
+          kreuzberg/scripts/ci/actions/setup-rust/build-with-sccache-fallback.sh cargo build --release --package kreuzberg-ffi
 
       - name: Set library paths for FFI
         shell: bash
         run: |
-          echo "PKG_CONFIG_PATH=${{ github.workspace }}/crates/kreuzberg-ffi:$PKG_CONFIG_PATH" >> "$GITHUB_ENV"
+          echo "PKG_CONFIG_PATH=${{ github.workspace }}/kreuzberg/crates/kreuzberg-ffi:$PKG_CONFIG_PATH" >> "$GITHUB_ENV"
           echo "LD_LIBRARY_PATH=${{ github.workspace }}/target/release:$LD_LIBRARY_PATH" >> "$GITHUB_ENV"
 
       - name: Vendor kreuzberg core for Ruby
-        run: python3 scripts/ci/ruby/vendor-kreuzberg-core.py
+        run: python3 kreuzberg/scripts/ci/ruby/vendor-kreuzberg-core.py
 
       - name: Build Ruby native gem
         env:
@@ -603,7 +603,7 @@ jobs:
           MODE: ${{ matrix.mode }}
           ITERATIONS: ${{ env.ITERATIONS }}
           TIMEOUT: ${{ github.event.inputs.timeout }}
-        run: scripts/benchmarks/run-benchmark.sh
+        run: kreuzberg/scripts/benchmarks/run-benchmark.sh
 
       - name: Upload artifacts
         if: always()
@@ -630,7 +630,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        run: kreuzberg/scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Install system dependencies
         uses: ./.github/actions/install-system-deps
@@ -652,7 +652,7 @@ jobs:
           path: target/release
 
       - name: Restore benchmark binary permissions
-        run: scripts/benchmarks/restore-binary-permissions.sh
+        run: kreuzberg/scripts/benchmarks/restore-binary-permissions.sh
 
       - name: Setup R
         uses: r-lib/actions/setup-r@v2
@@ -676,7 +676,7 @@ jobs:
         uses: kreuzberg-dev/actions/install-task@v1
 
       - name: Vendor kreuzberg core for R
-        run: python3 scripts/ci/r/vendor-kreuzberg-core.py
+        run: python3 kreuzberg/scripts/ci/r/vendor-kreuzberg-core.py
 
       - name: Build R native package
         env:
@@ -689,7 +689,7 @@ jobs:
           MODE: ${{ matrix.mode }}
           ITERATIONS: ${{ env.ITERATIONS }}
           TIMEOUT: ${{ github.event.inputs.timeout }}
-        run: scripts/benchmarks/run-benchmark.sh
+        run: kreuzberg/scripts/benchmarks/run-benchmark.sh
 
       - name: Upload artifacts
         if: always()
@@ -716,7 +716,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        run: kreuzberg/scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Install system dependencies
         uses: ./.github/actions/install-system-deps
@@ -738,13 +738,13 @@ jobs:
           path: target/release
 
       - name: Restore benchmark binary permissions
-        run: scripts/benchmarks/restore-binary-permissions.sh
+        run: kreuzberg/scripts/benchmarks/restore-binary-permissions.sh
 
       - name: Setup Go
         uses: actions/setup-go@v6
         with:
           go-version: "1.26.x"
-          cache-dependency-path: packages/go/v4/go.sum
+          cache-dependency-path: kreuzberg/packages/go/v4/go.sum
 
       - name: Setup ONNX Runtime
         uses: ./.github/actions/setup-onnx-runtime
@@ -763,20 +763,20 @@ jobs:
         run: |
           echo "=== Building FFI Library ==="
           echo "Building kreuzberg-ffi from source (with sccache fallback)"
-          scripts/ci/actions/setup-rust/build-with-sccache-fallback.sh cargo build --release --package kreuzberg-ffi
+          kreuzberg/scripts/ci/actions/setup-rust/build-with-sccache-fallback.sh cargo build --release --package kreuzberg-ffi
 
       - name: Set library paths for FFI
         shell: bash
         run: |
-          echo "PKG_CONFIG_PATH=${{ github.workspace }}/crates/kreuzberg-ffi:$PKG_CONFIG_PATH" >> "$GITHUB_ENV"
+          echo "PKG_CONFIG_PATH=${{ github.workspace }}/kreuzberg/crates/kreuzberg-ffi:$PKG_CONFIG_PATH" >> "$GITHUB_ENV"
           echo "LD_LIBRARY_PATH=${{ github.workspace }}/target/release:$LD_LIBRARY_PATH" >> "$GITHUB_ENV"
 
       - name: Prime Go modules
-        working-directory: packages/go/v4
+        working-directory: kreuzberg/packages/go/v4
         run: go mod download
 
       - name: Prime benchmark Go modules
-        working-directory: tools/benchmark-harness/scripts
+        working-directory: kreuzberg/tools/benchmark-harness/scripts
         run: go mod download
 
       - name: Build Go bindings
@@ -791,7 +791,7 @@ jobs:
           ITERATIONS: ${{ env.ITERATIONS }}
           KREUZBERG_BENCHMARK_DEBUG: "true"
           TIMEOUT: ${{ github.event.inputs.timeout }}
-        run: scripts/benchmarks/run-benchmark.sh
+        run: kreuzberg/scripts/benchmarks/run-benchmark.sh
 
       - name: Upload artifacts
         if: always()
@@ -818,7 +818,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        run: kreuzberg/scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Install system dependencies
         uses: ./.github/actions/install-system-deps
@@ -840,7 +840,7 @@ jobs:
           path: target/release
 
       - name: Restore benchmark binary permissions
-        run: scripts/benchmarks/restore-binary-permissions.sh
+        run: kreuzberg/scripts/benchmarks/restore-binary-permissions.sh
 
       - name: Setup Java
         uses: actions/setup-java@v5
@@ -869,12 +869,12 @@ jobs:
         run: |
           echo "=== Building FFI Library ==="
           echo "Building kreuzberg-ffi from source (with sccache fallback)"
-          scripts/ci/actions/setup-rust/build-with-sccache-fallback.sh cargo build --release --package kreuzberg-ffi
+          kreuzberg/scripts/ci/actions/setup-rust/build-with-sccache-fallback.sh cargo build --release --package kreuzberg-ffi
 
       - name: Set library paths for FFI
         shell: bash
         run: |
-          echo "PKG_CONFIG_PATH=${{ github.workspace }}/crates/kreuzberg-ffi:$PKG_CONFIG_PATH" >> "$GITHUB_ENV"
+          echo "PKG_CONFIG_PATH=${{ github.workspace }}/kreuzberg/crates/kreuzberg-ffi:$PKG_CONFIG_PATH" >> "$GITHUB_ENV"
           echo "LD_LIBRARY_PATH=${{ github.workspace }}/target/release:$LD_LIBRARY_PATH" >> "$GITHUB_ENV"
 
       - name: Build Java bindings
@@ -888,7 +888,7 @@ jobs:
           MODE: ${{ matrix.mode }}
           ITERATIONS: ${{ env.ITERATIONS }}
           TIMEOUT: ${{ github.event.inputs.timeout }}
-        run: scripts/benchmarks/run-benchmark.sh
+        run: kreuzberg/scripts/benchmarks/run-benchmark.sh
 
       - name: Upload artifacts
         if: always()
@@ -915,7 +915,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        run: kreuzberg/scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Install system dependencies
         uses: ./.github/actions/install-system-deps
@@ -937,7 +937,7 @@ jobs:
           path: target/release
 
       - name: Restore benchmark binary permissions
-        run: scripts/benchmarks/restore-binary-permissions.sh
+        run: kreuzberg/scripts/benchmarks/restore-binary-permissions.sh
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
@@ -961,12 +961,12 @@ jobs:
         run: |
           echo "=== Building FFI Library ==="
           echo "Building kreuzberg-ffi from source (with sccache fallback)"
-          scripts/ci/actions/setup-rust/build-with-sccache-fallback.sh cargo build --release --package kreuzberg-ffi
+          kreuzberg/scripts/ci/actions/setup-rust/build-with-sccache-fallback.sh cargo build --release --package kreuzberg-ffi
 
       - name: Set library paths for FFI
         shell: bash
         run: |
-          echo "PKG_CONFIG_PATH=${{ github.workspace }}/crates/kreuzberg-ffi:$PKG_CONFIG_PATH" >> "$GITHUB_ENV"
+          echo "PKG_CONFIG_PATH=${{ github.workspace }}/kreuzberg/crates/kreuzberg-ffi:$PKG_CONFIG_PATH" >> "$GITHUB_ENV"
           echo "LD_LIBRARY_PATH=${{ github.workspace }}/target/release:$LD_LIBRARY_PATH" >> "$GITHUB_ENV"
 
       - name: Build C# bindings
@@ -980,7 +980,7 @@ jobs:
           MODE: ${{ matrix.mode }}
           ITERATIONS: ${{ env.ITERATIONS }}
           TIMEOUT: ${{ github.event.inputs.timeout }}
-        run: scripts/benchmarks/run-benchmark.sh
+        run: kreuzberg/scripts/benchmarks/run-benchmark.sh
 
       - name: Upload artifacts
         if: always()
@@ -1007,7 +1007,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        run: kreuzberg/scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Install system dependencies
         uses: ./.github/actions/install-system-deps
@@ -1029,7 +1029,7 @@ jobs:
           path: target/release
 
       - name: Restore benchmark binary permissions
-        run: scripts/benchmarks/restore-binary-permissions.sh
+        run: kreuzberg/scripts/benchmarks/restore-binary-permissions.sh
 
       - name: Setup Elixir
         uses: erlef/setup-beam@v1
@@ -1061,7 +1061,7 @@ jobs:
           ITERATIONS: ${{ env.ITERATIONS }}
           TIMEOUT: ${{ github.event.inputs.timeout }}
           KREUZBERG_BUILD: "1"
-        run: scripts/benchmarks/run-benchmark.sh
+        run: kreuzberg/scripts/benchmarks/run-benchmark.sh
 
       - name: Upload artifacts
         if: always()
@@ -1088,7 +1088,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        run: kreuzberg/scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Install system dependencies
         uses: ./.github/actions/install-system-deps
@@ -1110,7 +1110,7 @@ jobs:
           path: target/release
 
       - name: Restore benchmark binary permissions
-        run: scripts/benchmarks/restore-binary-permissions.sh
+        run: kreuzberg/scripts/benchmarks/restore-binary-permissions.sh
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -1135,19 +1135,19 @@ jobs:
         run: |
           echo "=== Building FFI Library ==="
           echo "Building kreuzberg-ffi from source (with sccache fallback)"
-          scripts/ci/actions/setup-rust/build-with-sccache-fallback.sh cargo build --release --package kreuzberg-ffi
+          kreuzberg/scripts/ci/actions/setup-rust/build-with-sccache-fallback.sh cargo build --release --package kreuzberg-ffi
 
       - name: Set library paths for FFI
         shell: bash
         run: |
-          echo "PKG_CONFIG_PATH=${{ github.workspace }}/crates/kreuzberg-ffi:$PKG_CONFIG_PATH" >> "$GITHUB_ENV"
+          echo "PKG_CONFIG_PATH=${{ github.workspace }}/kreuzberg/crates/kreuzberg-ffi:$PKG_CONFIG_PATH" >> "$GITHUB_ENV"
           echo "LD_LIBRARY_PATH=${{ github.workspace }}/target/release:$LD_LIBRARY_PATH" >> "$GITHUB_ENV"
 
       - name: Build PHP bindings
         run: task php:build:ci
 
       - name: Install Composer dependencies
-        working-directory: packages/php
+        working-directory: kreuzberg/packages/php
         run: composer install --no-progress --prefer-dist
 
       - name: Run benchmark
@@ -1156,7 +1156,7 @@ jobs:
           MODE: ${{ matrix.mode }}
           ITERATIONS: ${{ env.ITERATIONS }}
           TIMEOUT: ${{ github.event.inputs.timeout }}
-        run: scripts/benchmarks/run-benchmark.sh
+        run: kreuzberg/scripts/benchmarks/run-benchmark.sh
 
       - name: Upload artifacts
         if: always()
@@ -1183,7 +1183,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        run: kreuzberg/scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Install system dependencies
         uses: ./.github/actions/install-system-deps
@@ -1205,7 +1205,7 @@ jobs:
           path: target/release
 
       - name: Restore benchmark binary permissions
-        run: scripts/benchmarks/restore-binary-permissions.sh
+        run: kreuzberg/scripts/benchmarks/restore-binary-permissions.sh
 
       - name: Setup ONNX Runtime
         uses: ./.github/actions/setup-onnx-runtime
@@ -1221,7 +1221,7 @@ jobs:
           MODE: ${{ matrix.mode }}
           ITERATIONS: ${{ env.ITERATIONS }}
           TIMEOUT: ${{ github.event.inputs.timeout }}
-        run: scripts/benchmarks/run-benchmark.sh
+        run: kreuzberg/scripts/benchmarks/run-benchmark.sh
 
       - name: Upload artifacts
         if: always()
@@ -1257,7 +1257,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        run: kreuzberg/scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download benchmark harness binary
         uses: actions/download-artifact@v8
@@ -1266,7 +1266,7 @@ jobs:
           path: target/release
 
       - name: Restore benchmark binary permissions
-        run: scripts/benchmarks/restore-binary-permissions.sh
+        run: kreuzberg/scripts/benchmarks/restore-binary-permissions.sh
 
       - name: Setup ONNX Runtime
         uses: ./.github/actions/setup-onnx-runtime
@@ -1293,7 +1293,7 @@ jobs:
           TIMEOUT: ${{ github.event.inputs.timeout }}
           SHARD: ${{ matrix.shard }}/3
           UV_NO_SYNC: "1"
-        run: scripts/benchmarks/run-benchmark.sh
+        run: kreuzberg/scripts/benchmarks/run-benchmark.sh
 
       - name: Upload artifacts
         if: always()
@@ -1321,7 +1321,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        run: kreuzberg/scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download benchmark harness binary
         uses: actions/download-artifact@v8
@@ -1330,7 +1330,7 @@ jobs:
           path: target/release
 
       - name: Restore benchmark binary permissions
-        run: scripts/benchmarks/restore-binary-permissions.sh
+        run: kreuzberg/scripts/benchmarks/restore-binary-permissions.sh
 
       - name: Setup ONNX Runtime
         uses: ./.github/actions/setup-onnx-runtime
@@ -1353,7 +1353,7 @@ jobs:
           OCR_ENABLED: "false"
           SHARD: ${{ matrix.shard }}/3
           UV_NO_SYNC: "1"
-        run: scripts/benchmarks/run-benchmark.sh
+        run: kreuzberg/scripts/benchmarks/run-benchmark.sh
 
       - name: Upload artifacts
         if: always()
@@ -1380,7 +1380,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        run: kreuzberg/scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download benchmark harness binary
         uses: actions/download-artifact@v8
@@ -1389,7 +1389,7 @@ jobs:
           path: target/release
 
       - name: Restore benchmark binary permissions
-        run: scripts/benchmarks/restore-binary-permissions.sh
+        run: kreuzberg/scripts/benchmarks/restore-binary-permissions.sh
 
       - name: Setup ONNX Runtime
         uses: ./.github/actions/setup-onnx-runtime
@@ -1417,7 +1417,7 @@ jobs:
           TIMEOUT: ${{ github.event.inputs.timeout }}
           OCR_ENABLED: "false"
           UV_NO_SYNC: "1"
-        run: scripts/benchmarks/run-benchmark.sh
+        run: kreuzberg/scripts/benchmarks/run-benchmark.sh
 
       - name: Upload artifacts
         if: always()
@@ -1445,7 +1445,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        run: kreuzberg/scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download benchmark harness binary
         uses: actions/download-artifact@v8
@@ -1454,7 +1454,7 @@ jobs:
           path: target/release
 
       - name: Restore benchmark binary permissions
-        run: scripts/benchmarks/restore-binary-permissions.sh
+        run: kreuzberg/scripts/benchmarks/restore-binary-permissions.sh
 
       - name: Setup ONNX Runtime
         uses: ./.github/actions/setup-onnx-runtime
@@ -1481,7 +1481,7 @@ jobs:
           TIMEOUT: ${{ github.event.inputs.timeout }}
           SHARD: ${{ matrix.shard }}/4
           UV_NO_SYNC: "1"
-        run: scripts/benchmarks/run-benchmark.sh
+        run: kreuzberg/scripts/benchmarks/run-benchmark.sh
 
       - name: Upload artifacts
         if: always()
@@ -1509,7 +1509,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        run: kreuzberg/scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download benchmark harness binary
         uses: actions/download-artifact@v8
@@ -1518,7 +1518,7 @@ jobs:
           path: target/release
 
       - name: Restore benchmark binary permissions
-        run: scripts/benchmarks/restore-binary-permissions.sh
+        run: kreuzberg/scripts/benchmarks/restore-binary-permissions.sh
 
       - name: Setup ONNX Runtime
         uses: ./.github/actions/setup-onnx-runtime
@@ -1534,8 +1534,8 @@ jobs:
 
       - name: Download Apache Tika
         run: |
-          mkdir -p tools/benchmark-harness/libs
-          curl -fsSL --retry 5 --retry-delay 5 -o "tools/benchmark-harness/libs/tika-app-${{ env.TIKA_VERSION }}.jar" \
+          mkdir -p kreuzberg/tools/benchmark-harness/libs
+          curl -fsSL --retry 5 --retry-delay 5 -o "kreuzberg/tools/benchmark-harness/libs/tika-app-${{ env.TIKA_VERSION }}.jar" \
             "https://repo1.maven.org/maven2/org/apache/tika/tika-app/${{ env.TIKA_VERSION }}/tika-app-${{ env.TIKA_VERSION }}.jar"
 
       - name: Run benchmark
@@ -1545,7 +1545,7 @@ jobs:
           ITERATIONS: ${{ env.ITERATIONS }}
           TIMEOUT: ${{ github.event.inputs.timeout }}
           SHARD: ${{ matrix.shard }}/3
-        run: scripts/benchmarks/run-benchmark.sh
+        run: kreuzberg/scripts/benchmarks/run-benchmark.sh
 
       - name: Upload artifacts
         if: always()
@@ -1573,7 +1573,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        run: kreuzberg/scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download benchmark harness binary
         uses: actions/download-artifact@v8
@@ -1582,7 +1582,7 @@ jobs:
           path: target/release
 
       - name: Restore benchmark binary permissions
-        run: scripts/benchmarks/restore-binary-permissions.sh
+        run: kreuzberg/scripts/benchmarks/restore-binary-permissions.sh
 
       - name: Setup ONNX Runtime
         uses: ./.github/actions/setup-onnx-runtime
@@ -1610,7 +1610,7 @@ jobs:
           TESSDATA_PREFIX: /usr/share/tesseract-ocr/5/tessdata
           SHARD: ${{ matrix.shard }}/3
           UV_NO_SYNC: "1"
-        run: scripts/benchmarks/run-benchmark.sh
+        run: kreuzberg/scripts/benchmarks/run-benchmark.sh
 
       - name: Upload artifacts
         if: always()
@@ -1637,7 +1637,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        run: kreuzberg/scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download benchmark harness binary
         uses: actions/download-artifact@v8
@@ -1646,7 +1646,7 @@ jobs:
           path: target/release
 
       - name: Restore benchmark binary permissions
-        run: scripts/benchmarks/restore-binary-permissions.sh
+        run: kreuzberg/scripts/benchmarks/restore-binary-permissions.sh
 
       - name: Setup ONNX Runtime
         uses: ./.github/actions/setup-onnx-runtime
@@ -1668,7 +1668,7 @@ jobs:
           TIMEOUT: ${{ github.event.inputs.timeout }}
           OCR_ENABLED: "false"
           UV_NO_SYNC: "1"
-        run: scripts/benchmarks/run-benchmark.sh
+        run: kreuzberg/scripts/benchmarks/run-benchmark.sh
 
       - name: Upload artifacts
         if: always()
@@ -1696,7 +1696,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        run: kreuzberg/scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download benchmark harness binary
         uses: actions/download-artifact@v8
@@ -1705,7 +1705,7 @@ jobs:
           path: target/release
 
       - name: Restore benchmark binary permissions
-        run: scripts/benchmarks/restore-binary-permissions.sh
+        run: kreuzberg/scripts/benchmarks/restore-binary-permissions.sh
 
       - name: Setup ONNX Runtime
         uses: ./.github/actions/setup-onnx-runtime
@@ -1732,7 +1732,7 @@ jobs:
           TIMEOUT: ${{ github.event.inputs.timeout }}
           SHARD: ${{ matrix.shard }}/3
           UV_NO_SYNC: "1"
-        run: scripts/benchmarks/run-benchmark.sh
+        run: kreuzberg/scripts/benchmarks/run-benchmark.sh
 
       - name: Upload artifacts
         if: always()
@@ -1759,7 +1759,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        run: kreuzberg/scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download benchmark harness binary
         uses: actions/download-artifact@v8
@@ -1768,7 +1768,7 @@ jobs:
           path: target/release
 
       - name: Restore benchmark binary permissions
-        run: scripts/benchmarks/restore-binary-permissions.sh
+        run: kreuzberg/scripts/benchmarks/restore-binary-permissions.sh
 
       - name: Setup ONNX Runtime
         uses: ./.github/actions/setup-onnx-runtime
@@ -1790,7 +1790,7 @@ jobs:
           TIMEOUT: ${{ github.event.inputs.timeout }}
           OCR_ENABLED: "false"
           UV_NO_SYNC: "1"
-        run: scripts/benchmarks/run-benchmark.sh
+        run: kreuzberg/scripts/benchmarks/run-benchmark.sh
 
       - name: Upload artifacts
         if: always()
@@ -1817,7 +1817,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        run: kreuzberg/scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download benchmark harness binary
         uses: actions/download-artifact@v8
@@ -1826,7 +1826,7 @@ jobs:
           path: target/release
 
       - name: Restore benchmark binary permissions
-        run: scripts/benchmarks/restore-binary-permissions.sh
+        run: kreuzberg/scripts/benchmarks/restore-binary-permissions.sh
 
       - name: Setup ONNX Runtime
         uses: ./.github/actions/setup-onnx-runtime
@@ -1848,7 +1848,7 @@ jobs:
           TIMEOUT: ${{ github.event.inputs.timeout }}
           OCR_ENABLED: "false"
           UV_NO_SYNC: "1"
-        run: scripts/benchmarks/run-benchmark.sh
+        run: kreuzberg/scripts/benchmarks/run-benchmark.sh
 
       - name: Upload artifacts
         if: always()
@@ -1875,7 +1875,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        run: kreuzberg/scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download benchmark harness binary
         uses: actions/download-artifact@v8
@@ -1884,7 +1884,7 @@ jobs:
           path: target/release
 
       - name: Restore benchmark binary permissions
-        run: scripts/benchmarks/restore-binary-permissions.sh
+        run: kreuzberg/scripts/benchmarks/restore-binary-permissions.sh
 
       - name: Setup ONNX Runtime
         uses: ./.github/actions/setup-onnx-runtime
@@ -1911,7 +1911,7 @@ jobs:
           TIMEOUT: ${{ github.event.inputs.timeout }}
           OCR_ENABLED: "false"
           UV_NO_SYNC: "1"
-        run: scripts/benchmarks/run-benchmark.sh
+        run: kreuzberg/scripts/benchmarks/run-benchmark.sh
 
       - name: Upload artifacts
         if: always()
@@ -1938,7 +1938,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        run: kreuzberg/scripts/ci/benchmarks/free-disk-space.sh
 
       - name: Download benchmark harness binary
         uses: actions/download-artifact@v8
@@ -1947,7 +1947,7 @@ jobs:
           path: target/release
 
       - name: Restore benchmark binary permissions
-        run: scripts/benchmarks/restore-binary-permissions.sh
+        run: kreuzberg/scripts/benchmarks/restore-binary-permissions.sh
 
       - name: Setup ONNX Runtime
         uses: ./.github/actions/setup-onnx-runtime
@@ -1969,7 +1969,7 @@ jobs:
           TIMEOUT: ${{ github.event.inputs.timeout }}
           OCR_ENABLED: "false"
           UV_NO_SYNC: "1"
-        run: scripts/benchmarks/run-benchmark.sh
+        run: kreuzberg/scripts/benchmarks/run-benchmark.sh
 
       - name: Upload artifacts
         if: always()

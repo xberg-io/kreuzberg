@@ -14,31 +14,31 @@ vars:
 tasks:
   install:
     desc: Install Ruby dependencies
-    dir: packages/ruby
+    dir: kreuzberg/packages/ruby
     cmds:
       - "{{.BUNDLE}} install"
 
   setup:
     desc: Alias for install
-    dir: packages/ruby
+    dir: kreuzberg/packages/ruby
     cmds:
       - task: ruby:install
 
   build:
     desc: Build Ruby native extension (uses {{.BUILD_PROFILE}})
-    dir: packages/ruby
+    dir: kreuzberg/packages/ruby
     cmds:
       - "{{.BUNDLE}} exec rake compile"
 
   build:dev:
     desc: Build Ruby native extension in debug mode
-    dir: packages/ruby
+    dir: kreuzberg/packages/ruby
     cmds:
       - "{{.BUNDLE}} exec rake compile"
 
   build:release:
     desc: Build Ruby native extension in release mode (optimized)
-    dir: packages/ruby
+    dir: kreuzberg/packages/ruby
     env:
       CFLAGS: "-O3"
       LDFLAGS: "-s"
@@ -47,7 +47,7 @@ tasks:
 
   build:ci:
     desc: Build Ruby native extension and gem package in CI mode
-    dir: packages/ruby
+    dir: kreuzberg/packages/ruby
     env:
       CFLAGS: "-O3 -g"
     cmds:
@@ -60,11 +60,11 @@ tasks:
   build:bindings:
     desc: Build Ruby gem for benchmarking
     cmds:
-      - bash scripts/benchmarks/build-ruby-gem.sh
+      - bash kreuzberg/scripts/benchmarks/build-ruby-gem.sh
 
   test:
     desc: Run Ruby tests
-    dir: packages/ruby
+    dir: kreuzberg/packages/ruby
     env:
       ORT_DYLIB_PATH: /opt/homebrew/lib/libonnxruntime.dylib
     cmds:
@@ -72,7 +72,7 @@ tasks:
 
   test:ci:
     desc: Run Ruby tests in CI mode with env setup
-    dir: packages/ruby
+    dir: kreuzberg/packages/ruby
     env:
       ORT_DYLIB_PATH: /opt/homebrew/lib/libonnxruntime.dylib
     cmds:
@@ -80,7 +80,7 @@ tasks:
 
   test:verbose:
     desc: Run Ruby tests with detailed output
-    dir: packages/ruby
+    dir: kreuzberg/packages/ruby
     env:
       ORT_DYLIB_PATH: /opt/homebrew/lib/libonnxruntime.dylib
     cmds:
@@ -89,49 +89,49 @@ tasks:
   lint:
     desc: Lint all Ruby code with auto-fix (rubocop + steep across all directories)
     cmds:
-      - cmd: bash scripts/task/ruby-lint.sh fix
+      - cmd: bash kreuzberg/scripts/task/ruby-lint.sh fix
         platforms: [linux, darwin]
 
   lint:check:
     desc: Check all Ruby code linting without modifications (rubocop + steep)
     cmds:
-      - cmd: bash scripts/task/ruby-lint.sh check
+      - cmd: bash kreuzberg/scripts/task/ruby-lint.sh check
         platforms: [linux, darwin]
 
   format:
     desc: Format all Ruby code with modifications (rubocop across all directories)
     cmds:
-      - cmd: bash scripts/task/ruby-lint.sh fix
+      - cmd: bash kreuzberg/scripts/task/ruby-lint.sh fix
         platforms: [linux, darwin]
 
   format:check:
     desc: Check all Ruby code formatting without modifications (rubocop)
     cmds:
-      - cmd: bash scripts/task/ruby-lint.sh check
+      - cmd: bash kreuzberg/scripts/task/ruby-lint.sh check
         platforms: [linux, darwin]
 
   typecheck:
     desc: Run steep type checking
-    dir: packages/ruby
+    dir: kreuzberg/packages/ruby
     cmds:
       - "{{.BUNDLE}} exec steep check"
 
   console:
     desc: Open Ruby console with Kreuzberg loaded
-    dir: packages/ruby
+    dir: kreuzberg/packages/ruby
     cmds:
       - "{{.BUNDLE}} exec pry -r ./lib/kreuzberg"
 
   clean:
     desc: Clean Ruby build artifacts
-    dir: packages/ruby
+    dir: kreuzberg/packages/ruby
     cmds:
       - python -c "import shutil, glob, os; shutil.rmtree('tmp', ignore_errors=True); [os.remove(f) for f in glob.glob('ext/kreuzberg/*.o') + glob.glob('ext/kreuzberg/*.so')]"
       - python -c "import shutil, os; [shutil.rmtree(os.path.join(r, d), ignore_errors=True) for r, dirs, _ in os.walk('.') for d in dirs if d == '.steep']"
 
   update:
     desc: Update Ruby dependencies to latest versions (including major versions)
-    dir: packages/ruby
+    dir: kreuzberg/packages/ruby
     cmds:
       - echo "Updating Ruby dependencies to latest versions..."
       - "{{.BUNDLE}} update --all --conservative=false"
@@ -141,7 +141,7 @@ tasks:
   e2e:generate:
     desc: Generate and auto-fix Ruby E2E tests from fixtures
     cmds:
-      - cmd: bash scripts/task/e2e-generate.sh ruby
+      - cmd: bash kreuzberg/scripts/task/e2e-generate.sh ruby
         platforms: [linux, darwin]
       - cmd: echo "E2E generation not yet supported on Windows - use WSL or CI"
         platforms: [windows]
@@ -149,19 +149,19 @@ tasks:
 
   e2e:test:
     desc: Run Ruby E2E tests
-    dir: e2e/ruby
+    dir: kreuzberg/e2e/ruby
     cmds:
-      - BUNDLE_GEMFILE="../../packages/ruby/Gemfile" {{.BUNDLE}} exec rspec
+      - BUNDLE_GEMFILE="../../kreuzberg/packages/ruby/Gemfile" {{.BUNDLE}} exec rspec
 
   e2e:lint:
     desc: Lint Ruby E2E code (check only)
-    dir: e2e/ruby
+    dir: kreuzberg/e2e/ruby
     cmds:
       - "{{.BUNDLE}} exec rubocop --config .rubocop.yaml"
 
   e2e:format:
     desc: Auto-fix Ruby E2E code formatting
-    dir: e2e/ruby
+    dir: kreuzberg/e2e/ruby
     cmds:
       - "{{.BUNDLE}} exec rubocop --config .rubocop.yaml --autocorrect-all"
 

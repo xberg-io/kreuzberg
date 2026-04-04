@@ -22,7 +22,7 @@ runs:
     - name: Detect Windows platform (PowerShell)
       if: runner.os == 'Windows'
       shell: powershell
-      run: scripts/ci/actions/download-pdfium/detect-windows.ps1
+      run: kreuzberg/scripts/ci/actions/download-pdfium/detect-windows.ps1
 
     - name: Download Pdfium runtime
       id: download
@@ -31,9 +31,9 @@ runs:
         PLATFORM_ID: ${{ inputs.platform-id }}
         ARCH_ID: ${{ inputs.arch-id }}
         PDFIUM_VERSION: ${{ inputs.pdfium-version }}
-      run: scripts/ci/actions/download-pdfium/download.sh
+      run: kreuzberg/scripts/ci/actions/download-pdfium/download.sh
 
     - name: Export Pdfium path
       id: set-env
       shell: bash
-      run: scripts/ci/actions/download-pdfium/export-path.sh "${{ steps.download.outputs.pdfium_path }}"
+      run: kreuzberg/scripts/ci/actions/download-pdfium/export-path.sh "${{ steps.download.outputs.pdfium_path }}"

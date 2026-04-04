@@ -1,8 +1,8 @@
 packages:
   - "."
-  - "crates/*"
-  - "packages/*"
-  - "packages/**/*"
-  - "e2e/**/*"
-  - "e2e/*"
+  - "kreuzberg/crates/*"
+  - "kreuzberg/packages/*"
+  - "kreuzberg/packages/**/*"
+  - "kreuzberg/e2e/**/*"
+  - "kreuzberg/e2e/*"
   - "test_apps/*"

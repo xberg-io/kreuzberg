@@ -19,15 +19,15 @@ tasks:
   generate-readme:
     desc: Generate and format language package READMEs from templates
     cmds:
-      - python3 scripts/generate_readme.py
-      - rumdl fmt packages/python/README.md packages/go/v4/README.md packages/java/README.md packages/php/README.md packages/ruby/README.md packages/csharp/README.md packages/elixir/README.md crates/kreuzberg-node/README.md crates/kreuzberg-wasm/README.md
+      - python3 kreuzberg/scripts/generate_readme.py
+      - rumdl fmt kreuzberg/packages/python/README.md kreuzberg/packages/go/v4/README.md kreuzberg/packages/java/README.md kreuzberg/packages/php/README.md kreuzberg/packages/ruby/README.md kreuzberg/packages/csharp/README.md kreuzberg/packages/elixir/README.md kreuzberg/crates/kreuzberg-node/README.md kreuzberg/crates/kreuzberg-wasm/README.md
 
   generate-readme:check:
     desc: Validate READMEs match templates (CI mode)
     cmds:
-      - python3 scripts/generate_readme.py --validate
+      - python3 kreuzberg/scripts/generate_readme.py --validate
 
   generate-readme:dry-run:
     desc: Preview README generation without writing files
     cmds:
-      - python3 scripts/generate_readme.py --dry-run
+      - python3 kreuzberg/scripts/generate_readme.py --dry-run

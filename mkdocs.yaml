@@ -108,7 +108,7 @@ plugins:
       default_handler: python
       handlers:
         python:
-          paths: [packages/python]
+          paths: [kreuzberg/packages/python]
           options:
             show_source: true
             show_root_heading: true

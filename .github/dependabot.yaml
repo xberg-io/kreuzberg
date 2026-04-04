@@ -27,47 +27,47 @@ updates:
   - package-ecosystem: "pip"
     directories:
       - "/"
-      - "/packages/python"
+      - "/kreuzberg/packages/python"
     schedule:
       interval: "weekly"
 
   - package-ecosystem: "npm"
     directories:
       - "/"
-      - "/crates/kreuzberg-node"
-      - "/crates/kreuzberg-wasm"
-      - "/packages/typescript/core"
+      - "/kreuzberg/crates/kreuzberg-node"
+      - "/kreuzberg/crates/kreuzberg-wasm"
+      - "/kreuzberg/packages/typescript/core"
     schedule:
       interval: "weekly"
 
   - package-ecosystem: "bundler"
-    directory: "/packages/ruby"
+    directory: "/kreuzberg/packages/ruby"
     schedule:
       interval: "weekly"
 
   - package-ecosystem: "composer"
     directories:
       - "/"
-      - "/packages/php"
+      - "/kreuzberg/packages/php"
     schedule:
       interval: "weekly"
 
   - package-ecosystem: "gomod"
-    directory: "/packages/go/v4"
+    directory: "/kreuzberg/packages/go/v4"
     schedule:
       interval: "weekly"
 
   - package-ecosystem: "maven"
-    directory: "/packages/java"
+    directory: "/kreuzberg/packages/java"
     schedule:
       interval: "weekly"
 
   - package-ecosystem: "nuget"
-    directory: "/packages/csharp"
+    directory: "/kreuzberg/packages/csharp"
     schedule:
       interval: "weekly"
 
   - package-ecosystem: "mix"
-    directory: "/packages/elixir"
+    directory: "/kreuzberg/packages/elixir"
     schedule:
       interval: "weekly"

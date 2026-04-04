@@ -76,7 +76,7 @@ jobs:
           EVENT_DISPATCH_DRY_RUN: ${{ github.event.client_payload.dry_run }}
           EVENT_DISPATCH_REF: ${{ github.event.client_payload.ref }}
           EVENT_DISPATCH_TARGETS: ${{ github.event.client_payload.targets }}
-        run: scripts/publish/prepare-release-metadata.sh
+        run: kreuzberg/scripts/publish/prepare-release-metadata.sh
 
       - name: Re-checkout at target ref
         if: ${{ steps.meta.outputs.checkout_ref != '' }}
@@ -141,21 +141,21 @@ jobs:
         env:
           DOCKER_TAG: ghcr.io/kreuzberg-dev/kreuzberg:${{ needs.prepare.outputs.version }}-core
           SUMMARY_LABEL: core
-        run: scripts/publish/check-docker-tag.sh
+        run: kreuzberg/scripts/publish/check-docker-tag.sh
 
       - name: Check full image tag
         id: full
         env:
           DOCKER_TAG: ghcr.io/kreuzberg-dev/kreuzberg:${{ needs.prepare.outputs.version }}
           SUMMARY_LABEL: full
-        run: scripts/publish/check-docker-tag.sh
+        run: kreuzberg/scripts/publish/check-docker-tag.sh
 
       - name: Check CLI image tag
         id: cli
         env:
           DOCKER_TAG: ghcr.io/kreuzberg-dev/kreuzberg-cli:${{ needs.prepare.outputs.version }}
           SUMMARY_LABEL: cli
-        run: scripts/publish/check-docker-tag.sh
+        run: kreuzberg/scripts/publish/check-docker-tag.sh
 
   publish-docker:
     name: Publish Docker image (${{ matrix.variant }})
@@ -172,17 +172,17 @@ jobs:
       matrix:
         include:
           - variant: core
-            dockerfile: docker/Dockerfile.core
+            dockerfile: kreuzberg/docker/Dockerfile.core
             image: ghcr.io/kreuzberg-dev/kreuzberg
             tag_suffix: "-core"
             extra_tag: "core"
           - variant: full
-            dockerfile: docker/Dockerfile.full
+            dockerfile: kreuzberg/docker/Dockerfile.full
             image: ghcr.io/kreuzberg-dev/kreuzberg
             tag_suffix: ""
             extra_tag: "latest"
           - variant: cli
-            dockerfile: docker/Dockerfile.cli
+            dockerfile: kreuzberg/docker/Dockerfile.cli
             image: ghcr.io/kreuzberg-dev/kreuzberg-cli
             tag_suffix: ""
             extra_tag: "latest"
@@ -196,7 +196,7 @@ jobs:
           submodules: recursive
 
       - name: Free up disk space
-        run: scripts/publish/ubuntu/free-disk-space.sh
+        run: kreuzberg/scripts/publish/ubuntu/free-disk-space.sh
 
       - name: Ensure target commit
         if: ${{ needs.prepare.outputs.target_sha != '' }}
@@ -218,7 +218,7 @@ jobs:
 
       - name: Run Docker tests
         if: ${{ needs.prepare.outputs.force_republish == 'true' || (matrix.variant == 'core' && needs.check-docker.outputs.core_exists != 'true') || (matrix.variant == 'full' && needs.check-docker.outputs.full_exists != 'true') || (matrix.variant == 'cli' && needs.check-docker.outputs.cli_exists != 'true') }}
-        run: python3 scripts/ci/docker/test_docker.py --image kreuzberg-publish:${{ matrix.variant }}-test --variant ${{ matrix.variant }} --verbose
+        run: python3 kreuzberg/scripts/ci/docker/test_docker.py --image kreuzberg-publish:${{ matrix.variant }}-test --variant ${{ matrix.variant }} --verbose
 
       - name: Log in to GitHub Container Registry
         if: ${{ needs.prepare.outputs.dry_run != 'true' && (needs.prepare.outputs.force_republish == 'true' || (matrix.variant == 'core' && needs.check-docker.outputs.core_exists != 'true') || (matrix.variant == 'full' && needs.check-docker.outputs.full_exists != 'true') || (matrix.variant == 'cli' && needs.check-docker.outputs.cli_exists != 'true')) }}
@@ -264,7 +264,7 @@ jobs:
           IMAGE: ${{ matrix.image }}
           VERSION: ${{ needs.prepare.outputs.version }}
           TAG_SUFFIX: ${{ matrix.tag_suffix }}
-        run: scripts/publish/docker/dry-run-summary.sh
+        run: kreuzberg/scripts/publish/docker/dry-run-summary.sh
 
       - name: Clean up local Docker images
         if: ${{ always() }}

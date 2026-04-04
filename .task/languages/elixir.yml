@@ -3,7 +3,7 @@ version: '3'
 tasks:
   install:
     desc: Install Elixir dependencies
-    dir: packages/elixir
+    dir: kreuzberg/packages/elixir
     cmds:
       - mix deps.get
 
@@ -14,19 +14,19 @@ tasks:
 
   build:
     desc: Build Elixir package
-    dir: packages/elixir
+    dir: kreuzberg/packages/elixir
     cmds:
       - mix compile
 
   build:dev:
     desc: Build Elixir package (dev mode)
-    dir: packages/elixir
+    dir: kreuzberg/packages/elixir
     cmds:
       - mix compile
 
   build:release:
     desc: Build Elixir package (release mode)
-    dir: packages/elixir
+    dir: kreuzberg/packages/elixir
     env:
       MIX_ENV: prod
     cmds:
@@ -34,7 +34,7 @@ tasks:
 
   build:ci:
     desc: Build Elixir package (CI mode)
-    dir: packages/elixir
+    dir: kreuzberg/packages/elixir
     env:
       MIX_ENV: test
     cmds:
@@ -42,48 +42,48 @@ tasks:
 
   test:
     desc: Run Elixir tests
-    dir: packages/elixir
+    dir: kreuzberg/packages/elixir
     cmds:
       - mix test
 
   test:ci:
     desc: Run Elixir tests (CI mode)
-    dir: packages/elixir
+    dir: kreuzberg/packages/elixir
     cmds:
       - mix test --warnings-as-errors
 
   lint:
     desc: Lint all Elixir code with auto-fix (format + credo)
     cmds:
-      - cmd: bash scripts/task/elixir-lint.sh fix
+      - cmd: bash kreuzberg/scripts/task/elixir-lint.sh fix
         platforms: [linux, darwin]
 
   lint:check:
     desc: Check all Elixir code linting without modifications
     cmds:
-      - cmd: bash scripts/task/elixir-lint.sh check
+      - cmd: bash kreuzberg/scripts/task/elixir-lint.sh check
         platforms: [linux, darwin]
 
   format:
     desc: Format Elixir code
-    dir: packages/elixir
+    dir: kreuzberg/packages/elixir
     cmds:
       - mix format
 
   format:check:
     desc: Check Elixir code formatting
-    dir: packages/elixir
+    dir: kreuzberg/packages/elixir
     cmds:
       - mix format --check-formatted
 
   build:bindings:
     desc: Build Elixir bindings for benchmarking
     cmds:
-      - bash scripts/benchmarks/build-elixir-bindings.sh
+      - bash kreuzberg/scripts/benchmarks/build-elixir-bindings.sh
 
   clean:
     desc: Clean Elixir build artifacts
-    dir: packages/elixir
+    dir: kreuzberg/packages/elixir
     cmds:
       - mix clean
       - rm -rf _build
@@ -91,7 +91,7 @@ tasks:
 
   update:
     desc: Update Elixir dependencies to latest versions (including major versions)
-    dir: packages/elixir
+    dir: kreuzberg/packages/elixir
     cmds:
       - echo "Updating Elixir dependencies to latest versions..."
       - cmd: echo "Note - Elixir requires manual mix.exs edits for major version updates"
@@ -102,14 +102,14 @@ tasks:
 
   docs:
     desc: Generate Elixir documentation
-    dir: packages/elixir
+    dir: kreuzberg/packages/elixir
     cmds:
       - mix docs
 
   e2e:generate:
     desc: Generate and format Elixir E2E tests from fixtures
     cmds:
-      - cmd: bash scripts/task/e2e-generate.sh elixir
+      - cmd: bash kreuzberg/scripts/task/e2e-generate.sh elixir
         platforms: [linux, darwin]
       - cmd: echo "E2E generation not yet supported on Windows - use WSL or CI"
         platforms: [windows]
@@ -117,20 +117,20 @@ tasks:
 
   e2e:format:
     desc: Format Elixir E2E code
-    dir: e2e/elixir
+    dir: kreuzberg/e2e/elixir
     cmds:
       - mix deps.get --quiet
       - mix format
 
   e2e:test:
     desc: Run generated Elixir E2E tests
-    dir: e2e/elixir
+    dir: kreuzberg/e2e/elixir
     cmds:
       - mix deps.get
       - mix test
 
   e2e:lint:
     desc: Lint generated Elixir E2E tests
-    dir: e2e/elixir
+    dir: kreuzberg/e2e/elixir
     cmds:
       - mix format --check-formatted

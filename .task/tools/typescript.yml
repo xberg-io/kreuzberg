@@ -28,7 +28,7 @@ tasks:
 
   _wasm_build:
     desc: Build WASM package (internal task)
-    dir: crates/kreuzberg-wasm
+    dir: kreuzberg/crates/kreuzberg-wasm
     env:
       CC_wasm32_unknown_unknown: "{{.WASI_CC}}"
       AR_wasm32_unknown_unknown: "{{.WASI_AR}}"
@@ -38,7 +38,7 @@ tasks:
 
   _node_build:
     desc: Build Node package (internal task)
-    dir: crates/kreuzberg-node
+    dir: kreuzberg/crates/kreuzberg-node
     cmds:
       - pnpm exec napi build --platform --release
       - pnpm exec tsup

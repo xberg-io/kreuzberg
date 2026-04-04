@@ -233,7 +233,7 @@ tasks:
   check:publish:
     desc: Check all registries and GitHub release assets for a given version
     cmds:
-      - python3 scripts/publish/check_all_registries.py {{.CLI_ARGS}}
+      - python3 kreuzberg/scripts/publish/check_all_registries.py {{.CLI_ARGS}}
 
   generate:manifest:
     desc: Regenerate parity manifest from Rust types

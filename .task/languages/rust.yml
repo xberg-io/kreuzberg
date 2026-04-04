@@ -119,7 +119,7 @@ tasks:
       RUSTFLAGS: '-g'
     cmds:
       - cargo build --workspace --release --features full,profiling,api,mcp,otel --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm
-      - cargo build --manifest-path tools/benchmark-harness/Cargo.toml --release --features profiling
+      - cargo build --manifest-path kreuzberg/tools/benchmark-harness/Cargo.toml --release --features profiling
 
   cli:build:
     desc: Build CLI binary
@@ -143,7 +143,7 @@ tasks:
       PATH: '{{.CARGO_PATH_PREFIX}}{{.PATH}}'
       CMAKE: '{{.CMAKE_PATH}}'
     cmds:
-      - cargo install --path crates/kreuzberg-cli
+      - cargo install --path kreuzberg/crates/kreuzberg-cli
 
   ffi:build:
     desc: Build FFI library for language bindings
@@ -173,7 +173,7 @@ tasks:
   test:
     desc: Run all Rust tests
     cmds:
-      - cmd: bash scripts/ci/rust/run-unit-tests.sh
+      - cmd: bash kreuzberg/scripts/ci/rust/run-unit-tests.sh
         platforms: [linux, darwin]
 
   test:ci:
@@ -182,7 +182,7 @@ tasks:
       RUST_BACKTRACE: '1'
       CARGO_TERM_COLOR: 'always'
     cmds:
-      - cmd: bash scripts/ci/rust/run-unit-tests.sh
+      - cmd: bash kreuzberg/scripts/ci/rust/run-unit-tests.sh
         platforms: [linux, darwin]
 
   test:quick:
@@ -277,13 +277,13 @@ tasks:
       - cargo upgrade --incompatible
       - cargo update
       - echo "Updating Rust dependencies (Ruby native crate)..."
-      - cargo upgrade --incompatible --manifest-path packages/ruby/ext/kreuzberg_rb/native/Cargo.toml
-      - cargo update --manifest-path packages/ruby/ext/kreuzberg_rb/native/Cargo.toml
+      - cargo upgrade --incompatible --manifest-path kreuzberg/packages/ruby/ext/kreuzberg_rb/native/Cargo.toml
+      - cargo update --manifest-path kreuzberg/packages/ruby/ext/kreuzberg_rb/native/Cargo.toml
 
   e2e:generate:
     desc: Generate and format Rust E2E tests from fixtures
     cmds:
-      - cmd: bash scripts/task/e2e-generate.sh rust
+      - cmd: bash kreuzberg/scripts/task/e2e-generate.sh rust
         platforms: [linux, darwin]
       - cmd: echo "E2E generation not yet supported on Windows - use WSL or CI"
         platforms: [windows]
@@ -295,7 +295,7 @@ tasks:
     env:
       PATH: '{{.CARGO_PATH_PREFIX}}{{.PATH}}'
     cmds:
-      - cargo fmt --manifest-path e2e/rust/Cargo.toml
+      - cargo fmt --manifest-path kreuzberg/e2e/rust/Cargo.toml
 
   e2e:lint:
     desc: Lint Rust E2E crate with clippy

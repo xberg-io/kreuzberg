@@ -9,23 +9,23 @@ tasks:
   toml:format:
     desc: Format TOML files with taplo
     cmds:
-      - cmd: scripts/toml_format.sh
+      - cmd: kreuzberg/scripts/toml_format.sh
         platforms: [linux, darwin]
-      - cmd: bash scripts/toml_format.sh
+      - cmd: bash kreuzberg/scripts/toml_format.sh
         platforms: [windows]
 
   toml:format:check:
     desc: Check TOML formatting without modifications
     cmds:
-      - cmd: scripts/toml_format.sh --check
+      - cmd: kreuzberg/scripts/toml_format.sh --check
         platforms: [linux, darwin]
-      - cmd: bash scripts/toml_format.sh --check
+      - cmd: bash kreuzberg/scripts/toml_format.sh --check
         platforms: [windows]
 
   shell:lint:
     desc: Lint shell scripts with auto-fix (shfmt + shellcheck)
     cmds:
-      - cmd: bash scripts/task/shell-lint.sh fix
+      - cmd: bash kreuzberg/scripts/task/shell-lint.sh fix
         platforms: [linux, darwin]
       - cmd: echo "Shell linting not available on Windows - shell scripts are Unix-specific"
         platforms: [windows]
@@ -33,7 +33,7 @@ tasks:
   shell:lint:check:
     desc: Lint shell scripts in check-only mode (shfmt + shellcheck)
     cmds:
-      - cmd: bash scripts/task/shell-lint.sh check
+      - cmd: bash kreuzberg/scripts/task/shell-lint.sh check
         platforms: [linux, darwin]
       - cmd: echo "Shell linting not available on Windows - shell scripts are Unix-specific"
         platforms: [windows]

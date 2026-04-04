@@ -1,28 +1,28 @@
 [workspace]
 members = [
-    "crates/kreuzberg",
-    "crates/kreuzberg-cli",
-    "crates/kreuzberg-ffi",
-    "crates/kreuzberg-node",
-    "crates/kreuzberg-paddle-ocr",
-    "crates/kreuzberg-pdfium-render",
-    "crates/kreuzberg-php",
-    "crates/kreuzberg-py",
-    "crates/kreuzberg-tesseract",
-    "crates/kreuzberg-wasm",
-    "e2e/rust",
-    "packages/elixir/native/kreuzberg_rustler",
-    "tools/benchmark-harness",
-    "tools/e2e-generator",
-    "tools/snippet-runner",
+    "kreuzberg/crates/kreuzberg",
+    "kreuzberg/crates/kreuzberg-cli",
+    "kreuzberg/crates/kreuzberg-ffi",
+    "kreuzberg/crates/kreuzberg-node",
+    "kreuzberg/crates/kreuzberg-paddle-ocr",
+    "kreuzberg/crates/kreuzberg-pdfium-render",
+    "kreuzberg/crates/kreuzberg-php",
+    "kreuzberg/crates/kreuzberg-py",
+    "kreuzberg/crates/kreuzberg-tesseract",
+    "kreuzberg/crates/kreuzberg-wasm",
+    "kreuzberg/e2e/rust",
+    "kreuzberg/packages/elixir/native/kreuzberg_rustler",
+    "kreuzberg/tools/benchmark-harness",
+    "kreuzberg/tools/e2e-generator",
+    "kreuzberg/tools/snippet-runner",
 ]
 exclude = [
-    "packages/r/src/rust",
-    "packages/ruby/ext/kreuzberg_rb/native",
+    "kreuzberg/packages/r/src/rust",
+    "kreuzberg/packages/ruby/ext/kreuzberg_rb/native",
     "test_apps/elixir",
     "test_apps/rust",
 ]
-default-members = ["crates/kreuzberg", "crates/kreuzberg-cli"]
+default-members = ["kreuzberg/crates/kreuzberg", "kreuzberg/crates/kreuzberg-cli"]
 resolver = "2"
 
 [workspace.package]
@@ -56,8 +56,8 @@ html-to-markdown-rs = { version = "3.1.0", default-features = false }
 image = { version = "0.25.10", default-features = false }
 itertools = "0.14"
 js-sys = "0.3"
-kreuzberg = { path = "./crates/kreuzberg", version = "4.7.2", default-features = false }
-kreuzberg-ffi = { path = "./crates/kreuzberg-ffi", version = "4.7.2" }
+kreuzberg = { path = "./kreuzberg/crates/kreuzberg", version = "4.7.2", default-features = false }
+kreuzberg-ffi = { path = "./kreuzberg/crates/kreuzberg-ffi", version = "4.7.2" }
 lazy_static = "1.5.0"
 libc = "0.2.184"
 log = "0.4"
@@ -69,7 +69,7 @@ once_cell = "1.21.4"
 ort = { version = "2.0.0-rc.12", default-features = false, features = ["std", "api-18"] }
 parking_lot = "0.12.5"
 pdf_oxide = { version = "0.3.19", default-features = false }
-pdfium-render = { package = "kreuzberg-pdfium-render", path = "crates/kreuzberg-pdfium-render", version = "4.3" }
+pdfium-render = { package = "kreuzberg-pdfium-render", path = "kreuzberg/crates/kreuzberg-pdfium-render", version = "4.3" }
 rayon = "1.11.0"
 reqwest = { version = "0.13.2", default-features = false }
 
@@ -105,10 +105,10 @@ web-sys = { version = "0.3", features = [
 ] }
 
 [patch.crates-io]
-kreuzberg = { path = "crates/kreuzberg" }
-kreuzberg-tesseract = { path = "crates/kreuzberg-tesseract" }
-kreuzberg-paddle-ocr = { path = "crates/kreuzberg-paddle-ocr" }
-kreuzberg-pdfium-render = { path = "crates/kreuzberg-pdfium-render" }
+kreuzberg = { path = "kreuzberg/crates/kreuzberg" }
+kreuzberg-tesseract = { path = "kreuzberg/crates/kreuzberg-tesseract" }
+kreuzberg-paddle-ocr = { path = "kreuzberg/crates/kreuzberg-paddle-ocr" }
+kreuzberg-pdfium-render = { path = "kreuzberg/crates/kreuzberg-pdfium-render" }
 
 [profile.release]
 lto = "thin"

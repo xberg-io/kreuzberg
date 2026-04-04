@@ -11,4 +11,4 @@ runs:
   steps:
     - name: Smoke Node install
       shell: bash
-      run: scripts/ci/actions/smoke-node/run.sh "${{ inputs.package-tarball }}"
+      run: kreuzberg/scripts/ci/actions/smoke-node/run.sh "${{ inputs.package-tarball }}"

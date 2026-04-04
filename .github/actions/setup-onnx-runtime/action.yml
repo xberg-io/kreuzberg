@@ -7,7 +7,7 @@ inputs:
   dest-dir:
     description: Directory (relative to workspace) where libraries should be copied
     required: false
-    default: crates/kreuzberg-node
+    default: kreuzberg/crates/kreuzberg-node
   arch-id:
     description: Override architecture (x64|arm64). Defaults to runner architecture.
     required: false
@@ -33,14 +33,14 @@ runs:
     - name: Prepare ONNX Runtime (Linux)
       if: runner.os == 'Linux'
       shell: bash
-      run: scripts/ci/actions/setup-onnx-runtime/linux.sh "${{ inputs.ort-version }}" "${{ inputs.dest-dir }}" "${{ inputs.arch-id }}" "${{ inputs.strategy }}"
+      run: kreuzberg/scripts/ci/actions/setup-onnx-runtime/linux.sh "${{ inputs.ort-version }}" "${{ inputs.dest-dir }}" "${{ inputs.arch-id }}" "${{ inputs.strategy }}"
 
     - name: Prepare ONNX Runtime (macOS)
       if: runner.os == 'macOS'
       shell: bash
-      run: scripts/ci/actions/setup-onnx-runtime/macos.sh "${{ inputs.ort-version }}" "${{ inputs.dest-dir }}" "${{ inputs.arch-id }}" "${{ inputs.strategy }}"
+      run: kreuzberg/scripts/ci/actions/setup-onnx-runtime/macos.sh "${{ inputs.ort-version }}" "${{ inputs.dest-dir }}" "${{ inputs.arch-id }}" "${{ inputs.strategy }}"
 
     - name: Prepare ONNX Runtime (Windows)
       if: runner.os == 'Windows'
       shell: pwsh
-      run: scripts/ci/actions/setup-onnx-runtime/windows.ps1 "${{ inputs.ort-version }}" "${{ inputs.dest-dir }}" "${{ inputs.arch-id }}" "${{ inputs.strategy }}"
+      run: kreuzberg/scripts/ci/actions/setup-onnx-runtime/windows.ps1 "${{ inputs.ort-version }}" "${{ inputs.dest-dir }}" "${{ inputs.arch-id }}" "${{ inputs.strategy }}"

@@ -7,14 +7,14 @@ on:
   push:
     branches: [main]
     paths:
-      - "crates/**"
-      - "packages/**"
-      - "e2e/**"
-      - "tools/**"
-      - "scripts/**"
+      - "kreuzberg/crates/**"
+      - "kreuzberg/packages/**"
+      - "kreuzberg/e2e/**"
+      - "kreuzberg/tools/**"
+      - "kreuzberg/scripts/**"
       - "docs/**"
-      - "docker/**"
-      - "fixtures/**"
+      - "kreuzberg/docker/**"
+      - "kreuzberg/fixtures/**"
       - "test_documents/**"
       - ".github/**"
       - ".cargo/config.toml"
@@ -32,14 +32,14 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - "crates/**"
-      - "packages/**"
-      - "e2e/**"
-      - "tools/**"
-      - "scripts/**"
+      - "kreuzberg/crates/**"
+      - "kreuzberg/packages/**"
+      - "kreuzberg/e2e/**"
+      - "kreuzberg/tools/**"
+      - "kreuzberg/scripts/**"
       - "docs/**"
-      - "docker/**"
-      - "fixtures/**"
+      - "kreuzberg/docker/**"
+      - "kreuzberg/fixtures/**"
       - "test_documents/**"
       - ".github/**"
       - ".cargo/config.toml"
@@ -99,11 +99,11 @@ jobs:
       - name: Validate vendored C headers match canonical
         shell: bash
         run: |
-          CANONICAL="crates/kreuzberg-ffi/kreuzberg.h"
+          CANONICAL="kreuzberg/crates/kreuzberg-ffi/kreuzberg.h"
           FAIL=0
-          for VENDORED in packages/go/v4/internal/ffi/kreuzberg.h packages/ruby/vendor/kreuzberg-ffi/kreuzberg.h; do
+          for VENDORED in kreuzberg/packages/go/v4/internal/ffi/kreuzberg.h kreuzberg/packages/ruby/vendor/kreuzberg-ffi/kreuzberg.h; do
             if [ -f "$VENDORED" ] && ! diff -q "$CANONICAL" "$VENDORED" > /dev/null 2>&1; then
-              echo "::error::$VENDORED is out of sync with $CANONICAL — run 'python scripts/sync_versions.py'"
+              echo "::error::$VENDORED is out of sync with $CANONICAL — run 'python kreuzberg/scripts/sync_versions.py'"
               diff "$CANONICAL" "$VENDORED" | head -20
               FAIL=1
             fi
@@ -150,12 +150,12 @@ jobs:
 
       - name: Check final disk space
         if: always()
-        run: scripts/ci/validate/show-disk-space.sh "Final disk space"
+        run: kreuzberg/scripts/ci/validate/show-disk-space.sh "Final disk space"
         shell: bash
 
       - name: Cleanup build artifacts after lint
         if: always()
-        run: scripts/ci/validate/cleanup-after-lint.sh
+        run: kreuzberg/scripts/ci/validate/cleanup-after-lint.sh
         shell: bash
 
   validate:
@@ -180,12 +180,12 @@ jobs:
         with:
           ruby-version: "3.3"
           bundler-cache: true
-          working-directory: packages/ruby
+          working-directory: kreuzberg/packages/ruby
         env:
           BUNDLE_LOCKFILE_CHECKSUMS: "false"
 
       - name: Install E2E Ruby dependencies
-        run: cd e2e/ruby && bundle install
+        run: cd kreuzberg/e2e/ruby && bundle install
         shell: bash
 
       - name: Setup Java
@@ -207,7 +207,7 @@ jobs:
 
       - name: Install PHP dependencies
         run: |
-          cd packages/php
+          cd kreuzberg/packages/php
           composer install
         shell: bash
 
@@ -220,7 +220,7 @@ jobs:
 
       - name: Install Elixir dependencies
         run: |
-          cd packages/elixir
+          cd kreuzberg/packages/elixir
           mix deps.get
         shell: bash
 
@@ -267,58 +267,58 @@ jobs:
         with:
           filters: |
             core:
-              - 'crates/kreuzberg/**'
-              - 'crates/kreuzberg-tesseract/**'
+              - 'kreuzberg/crates/kreuzberg/**'
+              - 'kreuzberg/crates/kreuzberg-tesseract/**'
               - 'Cargo.toml'
               - 'Cargo.lock'
               - 'rust-toolchain.toml'
               - '.cargo/config.toml'
             rust:
-              - 'crates/kreuzberg/**'
-              - 'crates/kreuzberg-cli/**'
-              - 'crates/kreuzberg-tesseract/**'
-              - 'e2e/rust/**'
+              - 'kreuzberg/crates/kreuzberg/**'
+              - 'kreuzberg/crates/kreuzberg-cli/**'
+              - 'kreuzberg/crates/kreuzberg-tesseract/**'
+              - 'kreuzberg/e2e/rust/**'
               - 'Cargo.toml'
               - 'Cargo.lock'
             ffi:
-              - 'crates/kreuzberg-ffi/**'
+              - 'kreuzberg/crates/kreuzberg-ffi/**'
             python:
-              - 'crates/kreuzberg-py/**'
-              - 'packages/python/**'
-              - 'e2e/python/**'
+              - 'kreuzberg/crates/kreuzberg-py/**'
+              - 'kreuzberg/packages/python/**'
+              - 'kreuzberg/e2e/python/**'
             typescript:
-              - 'crates/kreuzberg-node/**'
-              - 'packages/typescript/**'
-              - 'e2e/typescript/**'
+              - 'kreuzberg/crates/kreuzberg-node/**'
+              - 'kreuzberg/packages/typescript/**'
+              - 'kreuzberg/e2e/typescript/**'
             ruby:
-              - 'packages/ruby/**'
-              - 'e2e/ruby/**'
+              - 'kreuzberg/packages/ruby/**'
+              - 'kreuzberg/e2e/ruby/**'
             php:
-              - 'crates/kreuzberg-php/**'
-              - 'packages/php/**'
-              - 'e2e/php/**'
+              - 'kreuzberg/crates/kreuzberg-php/**'
+              - 'kreuzberg/packages/php/**'
+              - 'kreuzberg/e2e/php/**'
             go:
-              - 'packages/go/**'
-              - 'e2e/go/**'
+              - 'kreuzberg/packages/go/**'
+              - 'kreuzberg/e2e/go/**'
             java:
-              - 'packages/java/**'
-              - 'e2e/java/**'
+              - 'kreuzberg/packages/java/**'
+              - 'kreuzberg/e2e/java/**'
             csharp:
-              - 'packages/csharp/**'
-              - 'e2e/csharp/**'
+              - 'kreuzberg/packages/csharp/**'
+              - 'kreuzberg/e2e/csharp/**'
             elixir:
-              - 'packages/elixir/**'
-              - 'e2e/elixir/**'
+              - 'kreuzberg/packages/elixir/**'
+              - 'kreuzberg/e2e/elixir/**'
             r:
-              - 'packages/r/**'
-              - 'e2e/r/**'
+              - 'kreuzberg/packages/r/**'
+              - 'kreuzberg/e2e/r/**'
             wasm:
-              - 'crates/kreuzberg-wasm/**'
-              - 'e2e/wasm-deno/**'
-              - 'e2e/wasm-workers/**'
+              - 'kreuzberg/crates/kreuzberg-wasm/**'
+              - 'kreuzberg/e2e/wasm-deno/**'
+              - 'kreuzberg/e2e/wasm-workers/**'
             docker:
               - 'Dockerfile*'
-              - 'docker/**'
+              - 'kreuzberg/docker/**'
               - '.dockerignore'
 
 # --- Stage 2: Build FFI + Rust Tests + Docker ---
@@ -383,7 +383,7 @@ jobs:
       - name: Configure bindgen compatibility headers (Windows)
         if: matrix.os == 'windows-latest'
         shell: pwsh
-        run: scripts/ci/rust/configure-bindgen-windows.ps1
+        run: kreuzberg/scripts/ci/rust/configure-bindgen-windows.ps1
 
       - name: Setup ONNX Runtime
         uses: ./.github/actions/setup-onnx-runtime
@@ -395,7 +395,7 @@ jobs:
 
       - name: Pre-build diagnostics
         shell: bash
-        run: scripts/ci/rust/pre-build-diagnostics.sh
+        run: kreuzberg/scripts/ci/rust/pre-build-diagnostics.sh
 
       - name: Build kreuzberg-ffi (release)
         run: cargo build --release -p kreuzberg-ffi
@@ -412,9 +412,9 @@ jobs:
           path: |
             target/release/libkreuzberg_ffi.*
             target/release/kreuzberg_ffi.*
-            crates/kreuzberg-ffi/kreuzberg.h
-            crates/kreuzberg-ffi/kreuzberg-ffi.pc
-            crates/kreuzberg-ffi/cmake/
+            kreuzberg/crates/kreuzberg-ffi/kreuzberg.h
+            kreuzberg/crates/kreuzberg-ffi/kreuzberg-ffi.pc
+            kreuzberg/crates/kreuzberg-ffi/cmake/
             target/release/kreuzberg
             target/release/kreuzberg.exe
           retention-days: 7
@@ -492,7 +492,7 @@ jobs:
       - name: Configure bindgen compatibility headers (Windows)
         if: matrix.os == 'windows-latest'
         shell: pwsh
-        run: scripts/ci/rust/configure-bindgen-windows.ps1
+        run: kreuzberg/scripts/ci/rust/configure-bindgen-windows.ps1
 
       - name: Setup ONNX Runtime
         uses: ./.github/actions/setup-onnx-runtime
@@ -504,11 +504,11 @@ jobs:
 
       - name: Configure Tesseract data path
         shell: bash
-        run: scripts/ci/rust/setup-tessdata-env.sh
+        run: kreuzberg/scripts/ci/rust/setup-tessdata-env.sh
 
       - name: Pre-build diagnostics
         shell: bash
-        run: scripts/ci/rust/pre-build-diagnostics.sh
+        run: kreuzberg/scripts/ci/rust/pre-build-diagnostics.sh
 
       - name: Install Task
         uses: kreuzberg-dev/actions/install-task@v1
@@ -560,7 +560,7 @@ jobs:
 
       - name: Free up disk space
         shell: bash
-        run: scripts/ci/docker/free-disk-space.sh
+        run: kreuzberg/scripts/ci/docker/free-disk-space.sh
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
@@ -570,7 +570,7 @@ jobs:
         uses: docker/build-push-action@v7
         with:
           context: .
-          file: docker/Dockerfile.${{ matrix.variant }}
+          file: kreuzberg/docker/Dockerfile.${{ matrix.variant }}
           push: false
           load: true
           tags: kreuzberg:${{ matrix.variant }}
@@ -584,7 +584,7 @@ jobs:
         uses: docker/build-push-action@v7
         with:
           context: .
-          file: docker/Dockerfile.cli
+          file: kreuzberg/docker/Dockerfile.cli
           push: false
           load: true
           tags: kreuzberg:cli
@@ -594,7 +594,7 @@ jobs:
       - name: Save Docker image as artifact (core/full)
         if: matrix.variant != 'cli'
         shell: bash
-        run: scripts/ci/docker/save-image.sh "${{ matrix.variant }}" /tmp
+        run: kreuzberg/scripts/ci/docker/save-image.sh "${{ matrix.variant }}" /tmp
 
       - name: Save Docker image as artifact (cli)
         if: matrix.variant == 'cli'
@@ -633,7 +633,7 @@ jobs:
 
       - name: Free up disk space
         shell: bash
-        run: scripts/ci/docker/free-disk-space.sh
+        run: kreuzberg/scripts/ci/docker/free-disk-space.sh
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
@@ -651,7 +651,7 @@ jobs:
       - name: Test Docker image size (core/full)
         if: matrix.variant != 'cli'
         shell: bash
-        run: scripts/ci/docker/check-image-size.sh "${{ matrix.variant }}"
+        run: kreuzberg/scripts/ci/docker/check-image-size.sh "${{ matrix.variant }}"
 
       - name: Test Docker image size (cli)
         if: matrix.variant == 'cli'
@@ -665,11 +665,11 @@ jobs:
 
       - name: Run comprehensive feature tests (core/full)
         if: matrix.variant != 'cli'
-        run: scripts/ci/docker/run-feature-tests.sh "${{ matrix.variant }}"
+        run: kreuzberg/scripts/ci/docker/run-feature-tests.sh "${{ matrix.variant }}"
 
       - name: Run configuration tests (core/full)
         if: matrix.variant != 'cli'
-        run: scripts/ci/docker/run-config-tests.sh "${{ matrix.variant }}"
+        run: kreuzberg/scripts/ci/docker/run-config-tests.sh "${{ matrix.variant }}"
 
       - name: Run API contract tests with schemathesis (core/full)
         if: matrix.variant != 'cli'
@@ -687,7 +687,7 @@ jobs:
 
       - name: Run CLI feature tests
         if: matrix.variant == 'cli'
-        run: scripts/ci/docker/run-cli-tests.sh
+        run: kreuzberg/scripts/ci/docker/run-cli-tests.sh
 
       - name: Upload test results
         if: always() && matrix.variant != 'cli' && hashFiles('/tmp/kreuzberg-docker-test-results.json') != ''
@@ -708,7 +708,7 @@ jobs:
       - name: Collect Docker logs on failure
         if: failure()
         shell: bash
-        run: scripts/ci/docker/collect-logs.sh /tmp/docker-logs
+        run: kreuzberg/scripts/ci/docker/collect-logs.sh /tmp/docker-logs
 
       - name: Upload Docker logs
         if: failure()
@@ -721,7 +721,7 @@ jobs:
       - name: Clean up Docker resources (core/full)
         if: always() && matrix.variant != 'cli'
         shell: bash
-        run: scripts/ci/docker/cleanup.sh "${{ matrix.variant }}"
+        run: kreuzberg/scripts/ci/docker/cleanup.sh "${{ matrix.variant }}"
 
       - name: Clean up Docker resources (cli)
         if: always() && matrix.variant == 'cli'
@@ -734,7 +734,7 @@ jobs:
       - name: Summary (core/full)
         if: success() && matrix.variant != 'cli'
         shell: bash
-        run: scripts/ci/docker/summary.sh "${{ matrix.variant }}" /tmp/kreuzberg-docker-test-results.json
+        run: kreuzberg/scripts/ci/docker/summary.sh "${{ matrix.variant }}" /tmp/kreuzberg-docker-test-results.json
 
       - name: Summary (cli)
         if: success() && matrix.variant == 'cli'
@@ -835,7 +835,7 @@ jobs:
 
       - name: Clean previous wheel artifacts
         shell: bash
-        run: scripts/ci/python/clean-artifacts.sh
+        run: kreuzberg/scripts/ci/python/clean-artifacts.sh
 
       - name: Install Task
         uses: kreuzberg-dev/actions/install-task@v1
@@ -845,12 +845,12 @@ jobs:
         run: |
           echo "=== Building CLI Binary with Features ==="
           cargo build --release --package kreuzberg-cli --features all
-          mkdir -p packages/python/kreuzberg
+          mkdir -p kreuzberg/packages/python/kreuzberg
           # Copy with correct name (kreuzberg-cli) to match pyproject.toml include paths
           if [ "${{ runner.os }}" = "Windows" ]; then
-            cp target/release/kreuzberg.exe packages/python/kreuzberg/kreuzberg-cli.exe
+            cp target/release/kreuzberg.exe kreuzberg/packages/python/kreuzberg/kreuzberg-cli.exe
           else
-            cp target/release/kreuzberg packages/python/kreuzberg/kreuzberg-cli
+            cp target/release/kreuzberg kreuzberg/packages/python/kreuzberg/kreuzberg-cli
           fi
 
       - name: Build FFI library
@@ -859,7 +859,7 @@ jobs:
         run: |
           echo "=== Building FFI Library ==="
           echo "Building kreuzberg-py from source (with sccache fallback)"
-          scripts/ci/actions/setup-rust/build-with-sccache-fallback.sh cargo build --release --package kreuzberg-py
+          kreuzberg/scripts/ci/actions/setup-rust/build-with-sccache-fallback.sh cargo build --release --package kreuzberg-py
 
       - name: Build Python wheels
         id: wheels
@@ -881,10 +881,10 @@ jobs:
             du -sh target/wheels || echo "target/wheels: empty"
             find target/wheels -maxdepth 1 -name "*.whl" -exec ls -lh {} \; 2>/dev/null | awk '{print $9, $5}' || echo "No wheel files found"
           fi
-          if [ -d "packages/python/dist" ]; then
+          if [ -d "kreuzberg/packages/python/dist" ]; then
             echo "Python dist artifacts:"
-            du -sh packages/python/dist || echo "packages/python/dist: empty"
-            find packages/python/dist -maxdepth 1 -name "*.whl" -exec ls -lh {} \; 2>/dev/null | awk '{print $9, $5}' || echo "No dist wheel files found"
+            du -sh kreuzberg/packages/python/dist || echo "kreuzberg/packages/python/dist: empty"
+            find kreuzberg/packages/python/dist -maxdepth 1 -name "*.whl" -exec ls -lh {} \; 2>/dev/null | awk '{print $9, $5}' || echo "No dist wheel files found"
           fi
 
       - name: Upload wheels
@@ -1055,30 +1055,30 @@ jobs:
           platform: ${{ matrix.platform }}
           build-command: task node:build:ci
           cache-paths: |
-            crates/kreuzberg-node/
+            kreuzberg/crates/kreuzberg-node/
           cache-version: v4
           rust-hash: "n/a"
           binding-files: |
-            crates/kreuzberg-node/**
-            crates/kreuzberg/src/**
+            kreuzberg/crates/kreuzberg-node/**
+            kreuzberg/crates/kreuzberg/src/**
           dep-files: |
             Cargo.lock
-            crates/kreuzberg-node/package.json
-            crates/kreuzberg-node/pnpm-lock.yaml
+            kreuzberg/crates/kreuzberg-node/package.json
+            kreuzberg/crates/kreuzberg-node/pnpm-lock.yaml
 
       - name: Report Node binding artifacts size
         shell: bash
         run: |
           echo "=== Node Binding Artifacts ==="
-          if [ -d "crates/kreuzberg-node" ]; then
-            du -sh crates/kreuzberg-node
-            find crates/kreuzberg-node -maxdepth 1 \( -name "*.node" -o -name "*.tgz" -o -name "index.js" \) -exec ls -lh {} \;
+          if [ -d "kreuzberg/crates/kreuzberg-node" ]; then
+            du -sh kreuzberg/crates/kreuzberg-node
+            find kreuzberg/crates/kreuzberg-node -maxdepth 1 \( -name "*.node" -o -name "*.tgz" -o -name "index.js" \) -exec ls -lh {} \;
           fi
 
       - name: Pack Node package
         shell: bash
         run: |
-          cd crates/kreuzberg-node
+          cd kreuzberg/crates/kreuzberg-node
           npm pack --ignore-scripts
 
       - name: Build TypeScript wrapper
@@ -1092,18 +1092,18 @@ jobs:
 
       - name: Verify TypeScript build artifacts
         shell: bash
-        run: scripts/ci/node/verify-ts-artifacts.sh
+        run: kreuzberg/scripts/ci/node/verify-ts-artifacts.sh
 
       - name: Upload Node bindings
         uses: actions/upload-artifact@v7
         with:
           name: napi-${{ matrix.target }}
           path: |
-            crates/kreuzberg-node/*.node
-            crates/kreuzberg-node/index.js
-            crates/kreuzberg-node/*.tgz
-            crates/kreuzberg-node/artifacts/**
-            crates/kreuzberg-node/dist/**
+            kreuzberg/crates/kreuzberg-node/*.node
+            kreuzberg/crates/kreuzberg-node/index.js
+            kreuzberg/crates/kreuzberg-node/*.tgz
+            kreuzberg/crates/kreuzberg-node/artifacts/**
+            kreuzberg/crates/kreuzberg-node/dist/**
           retention-days: 7
 
       - name: Cleanup Rust cache
@@ -1178,10 +1178,10 @@ jobs:
             echo "Cleaning stale build artifacts to prevent fingerprint errors"
             cargo clean --release -p kreuzberg-ffi 2>/dev/null || true
             cargo clean --release -p kreuzberg 2>/dev/null || true
-            # Clean rb_sys build directory to prevent stale fingerprints in packages/ruby/tmp
-            if [ -d "packages/ruby/tmp" ]; then
-              echo "Cleaning rb_sys build directory: packages/ruby/tmp"
-              rm -rf packages/ruby/tmp
+            # Clean rb_sys build directory to prevent stale fingerprints in kreuzberg/packages/ruby/tmp
+            if [ -d "kreuzberg/packages/ruby/tmp" ]; then
+              echo "Cleaning rb_sys build directory: kreuzberg/packages/ruby/tmp"
+              rm -rf kreuzberg/packages/ruby/tmp
             fi
           else
             echo "No target directory found, skipping cache cleanup"
@@ -1192,16 +1192,16 @@ jobs:
         with:
           ruby-version: "3.2"
           bundler-cache: true
-          working-directory: packages/ruby
+          working-directory: kreuzberg/packages/ruby
 
       - name: Set BUNDLE_GEMFILE (Unix)
         if: runner.os != 'Windows'
         shell: bash
-        run: echo "BUNDLE_GEMFILE=${{ github.workspace }}/packages/ruby/Gemfile" >> "$GITHUB_ENV"
+        run: echo "BUNDLE_GEMFILE=${{ github.workspace }}/kreuzberg/packages/ruby/Gemfile" >> "$GITHUB_ENV"
 
       - name: Install Ruby dependencies
         shell: bash
-        working-directory: packages/ruby
+        working-directory: kreuzberg/packages/ruby
         run: |
           bundle install
 
@@ -1247,7 +1247,7 @@ jobs:
 
       - name: Vendor kreuzberg core crate
         shell: bash
-        run: python3 scripts/ci/ruby/vendor-kreuzberg-core.py
+        run: python3 kreuzberg/scripts/ci/ruby/vendor-kreuzberg-core.py
 
       - name: Print Bundler and Ruby deps info
         shell: bash
@@ -1293,7 +1293,7 @@ jobs:
         shell: bash
         run: |
           echo "=== Cleaning stale Ruby build artifacts ==="
-          cd packages/ruby
+          cd kreuzberg/packages/ruby
 
           # Remove the tmp directory which contains stale cargo fingerprints
           if [ -d "tmp" ]; then
@@ -1306,7 +1306,7 @@ jobs:
 
       - name: Build Ruby gem
         shell: bash
-        working-directory: packages/ruby
+        working-directory: kreuzberg/packages/ruby
         run: |
           echo "=== Building Ruby Gem ==="
           echo "Platform: ${{ runner.os }}"
@@ -1337,7 +1337,7 @@ jobs:
         shell: bash
         run: |
           echo "=== Gem build artifacts ==="
-          cd packages/ruby
+          cd kreuzberg/packages/ruby
           if [ -d "pkg" ]; then
             echo "Gems built:"
             ls -lh pkg/*.gem 2>/dev/null || echo "No gem files found"
@@ -1352,7 +1352,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: gem-${{ matrix.os }}
-          path: packages/ruby/pkg/*.gem
+          path: kreuzberg/packages/ruby/pkg/*.gem
           retention-days: 7
 
       - name: Verify FFI build artifacts
@@ -1367,7 +1367,7 @@ jobs:
           echo "  target/release/:"
           ls -lh target/release/libkreuzberg_ffi* 2>/dev/null || echo "    (none found)"
           echo "  pkg-config file:"
-          ls -lh crates/kreuzberg-ffi/kreuzberg-ffi.pc 2>/dev/null || echo "    (not found)"
+          ls -lh kreuzberg/crates/kreuzberg-ffi/kreuzberg-ffi.pc 2>/dev/null || echo "    (not found)"
 
       - name: Upload build logs (on failure)
         if: failure()
@@ -1377,8 +1377,8 @@ jobs:
           path: |
             /tmp/cargo-build.log
             /tmp/gem-build.log
-            packages/ruby/**/mkmf.log
-            packages/ruby/tmp/**/*.log
+            kreuzberg/packages/ruby/**/mkmf.log
+            kreuzberg/packages/ruby/tmp/**/*.log
           retention-days: 7
           if-no-files-found: ignore
 
@@ -1435,7 +1435,7 @@ jobs:
           echo "Preparing clean Rust build environment..."
 
           # Run comprehensive fingerprint cleanup
-          scripts/ci/actions/setup-rust/cleanup-fingerprints.sh
+          kreuzberg/scripts/ci/actions/setup-rust/cleanup-fingerprints.sh
 
           # Also perform full clean for critical packages to ensure consistency
           cargo clean --release -p kreuzberg-ffi 2>/dev/null || true
@@ -1474,7 +1474,7 @@ jobs:
 
       - name: Install Composer dependencies
         shell: bash
-        working-directory: packages/php
+        working-directory: kreuzberg/packages/php
         run: composer install --no-progress --prefer-dist
 
       - name: Cache PDFium
@@ -1528,7 +1528,7 @@ jobs:
           task php:build:ci
 
           # Create PHP ini file for loading the extension
-          bash scripts/ci/php/create-ci-php-ini.sh
+          bash kreuzberg/scripts/ci/php/create-ci-php-ini.sh
 
       - name: Cleanup Rust cache
         if: always() && steps.checkout.outcome == 'success'
@@ -1588,7 +1588,7 @@ jobs:
 
       - name: Install wasm-pack
         shell: bash
-        run: scripts/ci/wasm/install-wasm-pack.sh
+        run: kreuzberg/scripts/ci/wasm/install-wasm-pack.sh
 
       - name: Install Task
         uses: kreuzberg-dev/actions/install-task@v1
@@ -1601,24 +1601,24 @@ jobs:
           platform: ${{ matrix.os }}
           build-command: task wasm:build:ci
           cache-paths: |
-            crates/kreuzberg-wasm/pkg/
+            kreuzberg/crates/kreuzberg-wasm/pkg/
           cache-version: v1
           rust-hash: "n/a"
           binding-files: |
-            crates/kreuzberg-wasm/**
+            kreuzberg/crates/kreuzberg-wasm/**
           dep-files: |
             Cargo.lock
-            crates/kreuzberg-wasm/Cargo.toml
+            kreuzberg/crates/kreuzberg-wasm/Cargo.toml
 
       - name: Upload WASM artifacts
         uses: actions/upload-artifact@v7
         with:
           name: wasm-${{ matrix.target }}
           path: |
-            crates/kreuzberg-wasm/pkg/*.wasm
-            crates/kreuzberg-wasm/pkg/*.js
-            crates/kreuzberg-wasm/pkg/*.ts
-            crates/kreuzberg-wasm/pkg/package.json
+            kreuzberg/crates/kreuzberg-wasm/pkg/*.wasm
+            kreuzberg/crates/kreuzberg-wasm/pkg/*.js
+            kreuzberg/crates/kreuzberg-wasm/pkg/*.ts
+            kreuzberg/crates/kreuzberg-wasm/pkg/package.json
           retention-days: 7
 
       - name: Cleanup Rust cache
@@ -1739,7 +1739,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: java-jar-${{ matrix.os }}
-          path: packages/java/target/*.jar
+          path: kreuzberg/packages/java/target/*.jar
           retention-days: 7
 
       - name: Upload build JVM logs
@@ -1748,7 +1748,7 @@ jobs:
         with:
           name: java-build-logs-${{ matrix.os }}
           path: |
-            packages/java/maven-jvm.log
+            kreuzberg/packages/java/maven-jvm.log
           if-no-files-found: ignore
           retention-days: 7
 
@@ -1901,7 +1901,7 @@ jobs:
         uses: kreuzberg-dev/actions/install-task@v1
 
       - name: Install wasm-pack
-        run: scripts/ci/wasm/install-wasm-pack.sh
+        run: kreuzberg/scripts/ci/wasm/install-wasm-pack.sh
         shell: bash
 
       - name: Install WASI SDK
@@ -1911,12 +1911,12 @@ jobs:
         uses: actions/cache@v5
         with:
           path: |
-            crates/kreuzberg-wasm/pkg/
-            crates/kreuzberg-node/*.node
-            crates/kreuzberg-node/dist/
-            packages/typescript/core/dist/
-            packages/wasm/dist/
-          key: ts-typecheck-v1-${{ runner.os }}-${{ hashFiles('Cargo.lock', 'crates/kreuzberg-wasm/src/**', 'crates/kreuzberg-node/src/**', 'crates/kreuzberg-node/typescript/**', 'packages/typescript/core/typescript/**') }}
+            kreuzberg/crates/kreuzberg-wasm/pkg/
+            kreuzberg/crates/kreuzberg-node/*.node
+            kreuzberg/crates/kreuzberg-node/dist/
+            kreuzberg/packages/typescript/core/dist/
+            kreuzberg/packages/wasm/dist/
+          key: ts-typecheck-v1-${{ runner.os }}-${{ hashFiles('Cargo.lock', 'kreuzberg/crates/kreuzberg-wasm/src/**', 'kreuzberg/crates/kreuzberg-node/src/**', 'kreuzberg/crates/kreuzberg-node/typescript/**', 'kreuzberg/packages/typescript/core/typescript/**') }}
           restore-keys: |
             ts-typecheck-v1-${{ runner.os }}-
 
@@ -1955,7 +1955,7 @@ jobs:
       - name: Free disk space before tests (Linux)
         if: startsWith(matrix.os, 'ubuntu')
         shell: bash
-        run: scripts/ci/python/free-disk-space.sh
+        run: kreuzberg/scripts/ci/python/free-disk-space.sh
 
       - name: Setup Python
         uses: kreuzberg-dev/actions/setup-python-env@v1
@@ -1974,11 +1974,11 @@ jobs:
 
       - name: Install wheel
         shell: bash
-        run: scripts/ci/python/install-wheel.sh
+        run: kreuzberg/scripts/ci/python/install-wheel.sh
 
       - name: Install SpaCy model (Linux only)
         if: startsWith(matrix.os, 'ubuntu')
-        run: scripts/ci/python/install-spacy-model.sh
+        run: kreuzberg/scripts/ci/python/install-spacy-model.sh
 
       - name: Download PDFium
         uses: ./.github/actions/download-pdfium
@@ -2078,7 +2078,7 @@ jobs:
       - name: Stage PDFium runtime
         uses: ./.github/actions/stage-pdfium-runtime
         with:
-          destination: packages/typescript
+          destination: kreuzberg/packages/typescript
 
       - name: Setup ONNX Runtime
         uses: ./.github/actions/setup-onnx-runtime
@@ -2098,13 +2098,13 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: napi-${{ matrix.target }}
-          path: crates/kreuzberg-node/
+          path: kreuzberg/crates/kreuzberg-node/
 
       - name: Unpack and install Node bindings
         shell: bash
         run: |
           set -x
-          time scripts/ci/node/unpack-bindings.sh
+          time kreuzberg/scripts/ci/node/unpack-bindings.sh
           set +x
 
       - name: Install Task
@@ -2169,9 +2169,9 @@ jobs:
             echo "Cleaning stale build artifacts to prevent fingerprint errors"
             cargo clean --release -p kreuzberg-ffi 2>/dev/null || true
             cargo clean --release -p kreuzberg 2>/dev/null || true
-            if [ -d "packages/ruby/tmp" ]; then
-              echo "Cleaning rb_sys build directory: packages/ruby/tmp"
-              rm -rf packages/ruby/tmp
+            if [ -d "kreuzberg/packages/ruby/tmp" ]; then
+              echo "Cleaning rb_sys build directory: kreuzberg/packages/ruby/tmp"
+              rm -rf kreuzberg/packages/ruby/tmp
             fi
           else
             echo "No target directory found, skipping cache cleanup"
@@ -2182,16 +2182,16 @@ jobs:
         with:
           ruby-version: "3.2"
           bundler-cache: true
-          working-directory: packages/ruby
+          working-directory: kreuzberg/packages/ruby
 
       - name: Set BUNDLE_GEMFILE (Unix)
         if: runner.os != 'Windows'
         shell: bash
-        run: echo "BUNDLE_GEMFILE=${{ github.workspace }}/packages/ruby/Gemfile" >> "$GITHUB_ENV"
+        run: echo "BUNDLE_GEMFILE=${{ github.workspace }}/kreuzberg/packages/ruby/Gemfile" >> "$GITHUB_ENV"
 
       - name: Install Ruby dependencies
         shell: bash
-        working-directory: packages/ruby
+        working-directory: kreuzberg/packages/ruby
         run: bundle install
 
       - name: Install rb_sys build helper
@@ -2202,7 +2202,7 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: gem-${{ matrix.os }}
-          path: packages/ruby/pkg/
+          path: kreuzberg/packages/ruby/pkg/
 
       - name: Download PDFium
         uses: ./.github/actions/download-pdfium
@@ -2227,15 +2227,15 @@ jobs:
 
       - name: Install gem
         shell: bash
-        run: scripts/ci/ruby/install-gem.sh
+        run: kreuzberg/scripts/ci/ruby/install-gem.sh
 
       - name: Vendor kreuzberg core for native extension
         shell: bash
-        run: python3 scripts/ci/ruby/vendor-kreuzberg-core.py
+        run: python3 kreuzberg/scripts/ci/ruby/vendor-kreuzberg-core.py
 
       - name: Build local native extension
         shell: bash
-        run: scripts/ci/ruby/compile-extension.sh
+        run: kreuzberg/scripts/ci/ruby/compile-extension.sh
 
       - name: Build kreuzberg CLI binary
         shell: bash
@@ -2248,7 +2248,7 @@ jobs:
       - name: Set library paths for E2E tests
         shell: bash
         run: |
-          source scripts/lib/library-paths.sh
+          source kreuzberg/scripts/lib/library-paths.sh
           setup_onnx_paths
           {
             echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-}"
@@ -2295,7 +2295,7 @@ jobs:
         shell: bash
         run: |
           echo "Preparing clean Rust build environment..."
-          scripts/ci/actions/setup-rust/cleanup-fingerprints.sh
+          kreuzberg/scripts/ci/actions/setup-rust/cleanup-fingerprints.sh
           cargo clean --release -p kreuzberg-ffi 2>/dev/null || true
           cargo clean --release -p kreuzberg 2>/dev/null || true
 
@@ -2308,7 +2308,7 @@ jobs:
 
       - name: Install Composer dependencies
         shell: bash
-        working-directory: packages/php
+        working-directory: kreuzberg/packages/php
         run: composer install --no-progress --prefer-dist
 
       - name: Download PDFium
@@ -2396,7 +2396,7 @@ jobs:
       - name: Debug build environment
         if: always()
         shell: bash
-        run: scripts/ci/go/debug-build-environment.sh
+        run: kreuzberg/scripts/ci/go/debug-build-environment.sh
 
       - name: Setup OpenSSL
         uses: kreuzberg-dev/actions/setup-openssl@v1
@@ -2442,15 +2442,15 @@ jobs:
 
       - name: Move FFI library to correct location
         shell: bash
-        run: scripts/ci/go/move-downloaded-ffi-library.sh
+        run: kreuzberg/scripts/ci/go/move-downloaded-ffi-library.sh
 
       - name: Verify FFI library location and permissions
         shell: bash
-        run: scripts/ci/go/verify-ffi-library.sh
+        run: kreuzberg/scripts/ci/go/verify-ffi-library.sh
 
       - name: Make FFI library executable (Unix)
         if: runner.os != 'Windows'
-        run: scripts/ci/go/make-ffi-executable-unix.sh
+        run: kreuzberg/scripts/ci/go/make-ffi-executable-unix.sh
 
       - name: Setup Tesseract Cache
         uses: ./.github/actions/setup-tesseract-cache
@@ -2466,11 +2466,11 @@ jobs:
 
       - name: Set library paths for test execution
         shell: bash
-        run: scripts/ci/go/export-library-paths-for-tests.sh
+        run: kreuzberg/scripts/ci/go/export-library-paths-for-tests.sh
 
       - name: Verify CGO configuration
         shell: bash
-        run: scripts/ci/go/verify-cgo-config.sh
+        run: kreuzberg/scripts/ci/go/verify-cgo-config.sh
 
       - name: Install Task
         uses: kreuzberg-dev/actions/install-task@v1
@@ -2665,7 +2665,7 @@ jobs:
 
       - name: Prepare JVM crash logs
         shell: bash
-        run: mkdir -p packages/java/target/jvm-crash
+        run: mkdir -p kreuzberg/packages/java/target/jvm-crash
 
       - name: Set library paths for JNI
         shell: bash
@@ -2680,12 +2680,12 @@ jobs:
       - name: Run Java tests
         env:
           JAVA_TOOL_OPTIONS: >-
-            -XX:ErrorFile=${{ github.workspace }}/packages/java/target/jvm-crash/hs_err_pid%p.log
+            -XX:ErrorFile=${{ github.workspace }}/kreuzberg/packages/java/target/jvm-crash/hs_err_pid%p.log
             -XX:+UnlockDiagnosticVMOptions
             -XX:+LogVMOutput
-            -XX:LogFile=${{ github.workspace }}/packages/java/target/jvm-crash/jvm.log
+            -XX:LogFile=${{ github.workspace }}/kreuzberg/packages/java/target/jvm-crash/jvm.log
             -XX:+HeapDumpOnOutOfMemoryError
-            -XX:HeapDumpPath=${{ github.workspace }}/packages/java/target/jvm-crash/heapdump.hprof
+            -XX:HeapDumpPath=${{ github.workspace }}/kreuzberg/packages/java/target/jvm-crash/heapdump.hprof
             -Xlog:os=info
           RUST_BACKTRACE: full
         run: task java:test:ci
@@ -2713,7 +2713,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: java-unit-reports-${{ matrix.os }}
-          path: packages/java/target/surefire-reports
+          path: kreuzberg/packages/java/target/surefire-reports
           if-no-files-found: ignore
           retention-days: 7
 
@@ -2722,7 +2722,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: java-crash-logs-${{ matrix.os }}
-          path: packages/java/target/jvm-crash
+          path: kreuzberg/packages/java/target/jvm-crash
           if-no-files-found: ignore
           retention-days: 7
 
@@ -2731,7 +2731,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: java-e2e-reports-${{ matrix.os }}
-          path: e2e/java/target/surefire-reports
+          path: kreuzberg/e2e/java/target/surefire-reports
           if-no-files-found: ignore
           retention-days: 7
 
@@ -2810,7 +2810,7 @@ jobs:
 
       - name: Setup Tesseract environment
         shell: bash
-        run: scripts/ci/csharp/setup-tessdata-env.sh
+        run: kreuzberg/scripts/ci/csharp/setup-tessdata-env.sh
 
       - name: Download FFI library
         uses: actions/download-artifact@v8
@@ -2820,7 +2820,7 @@ jobs:
 
       - name: Prepare crash dumps
         shell: bash
-        run: mkdir -p packages/csharp/target/crash-dumps
+        run: mkdir -p kreuzberg/packages/csharp/target/crash-dumps
 
       - name: Install Task
         uses: kreuzberg-dev/actions/install-task@v1
@@ -2830,10 +2830,10 @@ jobs:
           KREUZBERG_FFI_DIR: ${{ github.workspace }}/target/release
           COMPlus_DbgEnableMiniDump: "1"
           COMPlus_DbgMiniDumpType: "4"
-          COMPlus_DbgMiniDumpName: ${{ github.workspace }}/packages/csharp/target/crash-dumps/kreuzberg.%p.dmp
+          COMPlus_DbgMiniDumpName: ${{ github.workspace }}/kreuzberg/packages/csharp/target/crash-dumps/kreuzberg.%p.dmp
           DOTNET_DbgEnableMiniDump: "1"
           DOTNET_DbgMiniDumpType: "4"
-          DOTNET_DbgMiniDumpName: ${{ github.workspace }}/packages/csharp/target/crash-dumps/kreuzberg.%p.dmp
+          DOTNET_DbgMiniDumpName: ${{ github.workspace }}/kreuzberg/packages/csharp/target/crash-dumps/kreuzberg.%p.dmp
           DOTNET_EnableDiagnostics: "1"
           RUST_BACKTRACE: full
         run: task csharp:test:ci
@@ -2855,7 +2855,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: csharp-crash-dumps-${{ matrix.os }}
-          path: packages/csharp/target/crash-dumps
+          path: kreuzberg/packages/csharp/target/crash-dumps
           if-no-files-found: ignore
           retention-days: 7
 
@@ -2973,7 +2973,7 @@ jobs:
         run: |
           ORT_DLL="${ORT_DYLIB_PATH}"
           if [ -f "$ORT_DLL" ]; then
-            for dir in target/release packages/elixir/priv/native; do
+            for dir in target/release kreuzberg/packages/elixir/priv/native; do
               mkdir -p "$dir"
               cp "$ORT_DLL" "$dir/"
               echo "Staged onnxruntime.dll to $dir/"
@@ -2989,20 +2989,20 @@ jobs:
         uses: actions/cache@v5
         with:
           path: |
-            packages/elixir/deps
-            packages/elixir/_build
-          key: elixir-deps-${{ runner.os }}-${{ hashFiles('packages/elixir/mix.lock') }}
+            kreuzberg/packages/elixir/deps
+            kreuzberg/packages/elixir/_build
+          key: elixir-deps-${{ runner.os }}-${{ hashFiles('kreuzberg/packages/elixir/mix.lock') }}
           restore-keys: |
             elixir-deps-${{ runner.os }}-
 
       - name: Install Elixir dependencies
         shell: bash
-        working-directory: packages/elixir
+        working-directory: kreuzberg/packages/elixir
         run: mix deps.get
 
       - name: Compile Elixir (warnings as errors in CI)
         shell: bash
-        working-directory: packages/elixir
+        working-directory: kreuzberg/packages/elixir
         env:
           MIX_ENV: test
           KREUZBERG_BUILD: "1"
@@ -3010,7 +3010,7 @@ jobs:
 
       - name: Run Elixir tests
         shell: bash
-        working-directory: packages/elixir
+        working-directory: kreuzberg/packages/elixir
         env:
           KREUZBERG_BUILD: "1"
         run: mix test
@@ -3096,7 +3096,7 @@ jobs:
 
       - name: Vendor kreuzberg core crate
         shell: bash
-        run: python3 scripts/ci/r/vendor-kreuzberg-core.py
+        run: python3 kreuzberg/scripts/ci/r/vendor-kreuzberg-core.py
 
       - name: Build and install R package
         shell: bash
@@ -3159,7 +3159,7 @@ jobs:
       - name: Compile C tests
         if: runner.os != 'Windows'
         shell: bash
-        run: make -C crates/kreuzberg-ffi/tests/c LIBDIR="$(pwd)/target/release" clean all
+        run: make -C kreuzberg/crates/kreuzberg-ffi/tests/c LIBDIR="$(pwd)/target/release" clean all
 
       - name: Run C tests
         if: runner.os != 'Windows'
@@ -3169,7 +3169,7 @@ jobs:
           DYLD_LIBRARY_PATH: ${{ github.workspace }}/target/release
         run: |
           FAILED=0
-          for test in crates/kreuzberg-ffi/tests/c/test_*; do
+          for test in kreuzberg/crates/kreuzberg-ffi/tests/c/test_*; do
             [ -x "$test" ] || continue
             name=$(basename "$test")
             if "$test"; then
@@ -3198,7 +3198,7 @@ jobs:
         if: runner.os != 'Windows'
         shell: bash
         run: |
-          HEADER="crates/kreuzberg-ffi/kreuzberg.h"
+          HEADER="kreuzberg/crates/kreuzberg-ffi/kreuzberg.h"
           echo "Checking version constants in $HEADER..."
           grep 'KREUZBERG_VERSION_MAJOR' "$HEADER"
           grep 'KREUZBERG_VERSION_MINOR' "$HEADER"
@@ -3210,16 +3210,16 @@ jobs:
         if: runner.os != 'Windows'
         shell: bash
         run: |
-          test -f crates/kreuzberg-ffi/cmake/kreuzberg-ffi-config.cmake
-          test -f crates/kreuzberg-ffi/cmake/kreuzberg-ffi-config-version.cmake
+          test -f kreuzberg/crates/kreuzberg-ffi/cmake/kreuzberg-ffi-config.cmake
+          test -f kreuzberg/crates/kreuzberg-ffi/cmake/kreuzberg-ffi-config-version.cmake
           echo "CMake config files verified."
 
       - name: Verify header generated (Windows)
         if: runner.os == 'Windows'
         shell: bash
         run: |
-          test -f crates/kreuzberg-ffi/kreuzberg.h
-          grep 'KREUZBERG_VERSION_MAJOR' crates/kreuzberg-ffi/kreuzberg.h
+          test -f kreuzberg/crates/kreuzberg-ffi/kreuzberg.h
+          grep 'KREUZBERG_VERSION_MAJOR' kreuzberg/crates/kreuzberg-ffi/kreuzberg.h
           echo "Header verified on Windows."
 
   test-wasm:
@@ -3269,18 +3269,18 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: wasm-${{ matrix.target }}
-          path: crates/kreuzberg-wasm/pkg/
+          path: kreuzberg/crates/kreuzberg-wasm/pkg/
 
       - name: Install wasm-pack
         shell: bash
-        run: scripts/ci/wasm/install-wasm-pack.sh
+        run: kreuzberg/scripts/ci/wasm/install-wasm-pack.sh
 
       - name: Install Task
         uses: kreuzberg-dev/actions/install-task@v1
 
       - name: Run WASM tests
         shell: bash
-        working-directory: crates/kreuzberg-wasm
+        working-directory: kreuzberg/crates/kreuzberg-wasm
         run: pnpm run build --minify && pnpm test
         env:
           RUST_BACKTRACE: 1

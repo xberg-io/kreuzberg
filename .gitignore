@@ -38,7 +38,7 @@ __pycache__/
 htmlcov/
 share/python-wheels/
 prompt_template.egg-info/
-packages/python/kreuzberg/kreuzberg-cli
+kreuzberg/packages/python/kreuzberg/kreuzberg-cli
 
 # Node.js / WASM
 node_modules/
@@ -47,16 +47,16 @@ npm-debug.log*
 pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-crates/kreuzberg-node/index.d.ts
-crates/kreuzberg-node/index.js
+kreuzberg/crates/kreuzberg-node/index.d.ts
+kreuzberg/crates/kreuzberg-node/index.js
 libpdfium.a
 .wrangler/
 .pnpm-store/
 
 # Ruby
-packages/ruby/.bundle/
-packages/ruby/vendor/
-!packages/ruby/vendor/rb-sys/
+kreuzberg/packages/ruby/.bundle/
+kreuzberg/packages/ruby/vendor/
+!kreuzberg/packages/ruby/vendor/rb-sys/
 !vendor/rb-sys/build/
 !vendor/rb-sys/build/**
 *.Cache
@@ -64,8 +64,8 @@ packages/ruby/vendor/
 # PHP
 vendor/
 php-kreuzberg.ini
-packages/php/php-kreuzberg.ini
-packages/php/tests.xml
+kreuzberg/packages/php/php-kreuzberg.ini
+kreuzberg/packages/php/tests.xml
 
 # Java / C# / .NET
 *.suo
@@ -78,7 +78,7 @@ TestResults/
 test_apps/
 
 # R
-packages/r/src/.cargo/
+kreuzberg/packages/r/src/.cargo/
 .Rhistory
 .RData
 
@@ -86,14 +86,14 @@ packages/r/src/.cargo/
 .nox/
 
 # C FFI
-crates/kreuzberg-ffi/tests/c/test_*
-!crates/kreuzberg-ffi/tests/c/test_*.c
-crates/kreuzberg-ffi/tests/c/*.o
-crates/kreuzberg-ffi/tests/c/*.dSYM/
-e2e/c/test_*
-!e2e/c/test_*.c
-e2e/c/*.o
-e2e/c/*.dSYM/
+kreuzberg/crates/kreuzberg-ffi/tests/c/test_*
+!kreuzberg/crates/kreuzberg-ffi/tests/c/test_*.c
+kreuzberg/crates/kreuzberg-ffi/tests/c/*.o
+kreuzberg/crates/kreuzberg-ffi/tests/c/*.dSYM/
+kreuzberg/e2e/c/test_*
+!kreuzberg/e2e/c/test_*.c
+kreuzberg/e2e/c/*.o
+kreuzberg/e2e/c/*.dSYM/
 
 # Generated pkg-config
 *.pc
@@ -105,12 +105,12 @@ coverage.json
 coverage.lcov
 coverage.out
 coverage.xml
-packages/*/.coverage
-packages/*/coverage.json
-packages/*/coverage.out
-packages/*/htmlcov/
-packages/*/test-results/
-packages/*/TestResults/
+kreuzberg/packages/*/.coverage
+kreuzberg/packages/*/coverage.json
+kreuzberg/packages/*/coverage.out
+kreuzberg/packages/*/htmlcov/
+kreuzberg/packages/*/test-results/
+kreuzberg/packages/*/TestResults/
 
 # IDE / Editor
 .idea/
@@ -155,13 +155,13 @@ test_report.json
 tests/e2e/logs/
 tests/e2e/test_report.json
 temp-test-*
-packages/csharp/test_html_debug.cs
+kreuzberg/packages/csharp/test_html_debug.cs
 
 # WASM build artifacts
 libpdfium.a
 
 # Pdfium test artifacts
-crates/kreuzberg-pdfium-render/*.jpg
+kreuzberg/crates/kreuzberg-pdfium-render/*.jpg
 
 # AI / MCP / Agent config
 .claude/
@@ -189,6 +189,6 @@ examples.txt
 requirements.txt
 docker-compose.yaml
 /tmp/kreuzberg-docker-test-results.json
-tools/benchmark-harness/datasets/
-tools/benchmark-harness/vendored/docling/md/iso_21111_10.md
+kreuzberg/tools/benchmark-harness/datasets/
+kreuzberg/tools/benchmark-harness/vendored/docling/md/iso_21111_10.md
 visualizations/

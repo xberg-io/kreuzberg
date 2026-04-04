@@ -18,9 +18,9 @@ vars:
   GOLANGCI_LINT_VERSION: "latest"
 
   ROOT: "{{.ROOT}}"
-  CRATES_DIR: "{{.ROOT}}/crates"
-  PACKAGES_DIR: "{{.ROOT}}/packages"
-  E2E_DIR: "{{.ROOT}}/e2e"
+  CRATES_DIR: "{{.ROOT}}/kreuzberg/crates"
+  PACKAGES_DIR: "{{.ROOT}}/kreuzberg/packages"
+  E2E_DIR: "{{.ROOT}}/kreuzberg/e2e"
   DIST_DIR: "{{.ROOT}}/dist"
   TARGET_DIR: "{{.ROOT}}/target"
 

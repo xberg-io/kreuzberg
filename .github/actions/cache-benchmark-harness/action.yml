@@ -61,9 +61,9 @@ runs:
         echo "=== Computing Benchmark Harness Source Hash ==="
 
         # Compute hash for harness source files and Cargo.toml
-        HARNESS_HASH=$(scripts/ci/cache/compute-hash.sh \
-          "tools/benchmark-harness/src/**" \
-          "tools/benchmark-harness/Cargo.toml" \
+        HARNESS_HASH=$(kreuzberg/scripts/ci/cache/compute-hash.sh \
+          "kreuzberg/tools/benchmark-harness/src/**" \
+          "kreuzberg/tools/benchmark-harness/Cargo.toml" \
           2>&1 | grep "^[a-f0-9]*$")
 
         if [[ -z "$HARNESS_HASH" ]]; then
@@ -84,8 +84,8 @@ runs:
         echo "=== Computing Kreuzberg Dependency Hash ==="
 
         # Compute hash for kreuzberg crate (dependency)
-        KREUZBERG_HASH=$(scripts/ci/cache/compute-hash.sh --dirs \
-          "crates/kreuzberg" \
+        KREUZBERG_HASH=$(kreuzberg/scripts/ci/cache/compute-hash.sh --dirs \
+          "kreuzberg/crates/kreuzberg" \
           2>&1 | grep "^[a-f0-9]*$")
 
         if [[ -z "$KREUZBERG_HASH" ]]; then
@@ -106,7 +106,7 @@ runs:
         echo "=== Computing Cargo Files Hash ==="
 
         # Compute hash for Cargo.lock
-        CARGO_HASH=$(scripts/ci/cache/compute-hash.sh --files Cargo.lock 2>&1 | grep "^[a-f0-9]*$")
+        CARGO_HASH=$(kreuzberg/scripts/ci/cache/compute-hash.sh --files Cargo.lock 2>&1 | grep "^[a-f0-9]*$")
 
         if [[ -z "$CARGO_HASH" ]]; then
           echo "❌ Failed to compute Cargo files hash"
@@ -236,8 +236,8 @@ runs:
         esac
 
         # Build benchmark-harness
-        echo "Running: cargo build --manifest-path tools/benchmark-harness/Cargo.toml $BUILD_ARG"
-        if ! cargo build --manifest-path tools/benchmark-harness/Cargo.toml $BUILD_ARG; then
+        echo "Running: cargo build --manifest-path kreuzberg/tools/benchmark-harness/Cargo.toml $BUILD_ARG"
+        if ! cargo build --manifest-path kreuzberg/tools/benchmark-harness/Cargo.toml $BUILD_ARG; then
           echo "❌ Build failed for benchmark-harness"
           exit 1
         fi

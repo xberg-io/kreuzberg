@@ -11,7 +11,7 @@ includes:
 tasks:
   install:
     desc: Install Python dependencies
-    dir: packages/python
+    dir: kreuzberg/packages/python
     cmds:
       - uv sync --all-extras --no-install-workspace --no-install-project
 
@@ -22,25 +22,25 @@ tasks:
 
   build:
     desc: Build Python extension (uses {{.BUILD_PROFILE}})
-    dir: packages/python
+    dir: kreuzberg/packages/python
     cmds:
       - task: build:{{.BUILD_PROFILE | default "release"}}
 
   build:dev:
     desc: Build Python extension in debug mode
-    dir: packages/python
+    dir: kreuzberg/packages/python
     cmds:
       - uv run maturin develop
 
   build:release:
     desc: Build Python extension in release mode (optimized)
-    dir: packages/python
+    dir: kreuzberg/packages/python
     cmds:
       - uv run maturin build --release --strip
 
   build:ci:
     desc: Build Python extension in CI mode (with debug info)
-    dir: packages/python
+    dir: kreuzberg/packages/python
     env:
       RUSTFLAGS: '{{.RUSTFLAGS | default ""}} -C debuginfo=2'
     cmds:
@@ -48,14 +48,14 @@ tasks:
 
   build:sdist:
     desc: Build Python source distribution (sdist)
-    dir: packages/python
+    dir: kreuzberg/packages/python
     cmds:
       - cmd: uv run maturin sdist --manifest-path ../../crates/kreuzberg-py/Cargo.toml --out ../../target/wheels
         ignore_error: true
 
   build:bindings:
     desc: Build Python bindings for benchmarking
-    dir: packages/python
+    dir: kreuzberg/packages/python
     cmds:
       - bash ../../scripts/benchmarks/build-python-bindings.sh
 
@@ -63,11 +63,11 @@ tasks:
     desc: Build Python source distribution (sdist) for publishing to specified output directory
     cmds:
       - mkdir -p ./{{.DIST_DIR | default "dist"}}
-      - cd packages/python && uv build --sdist --out-dir ../../{{.DIST_DIR | default "dist"}}
+      - cd kreuzberg/packages/python && uv build --sdist --out-dir ../../../{{.DIST_DIR | default "dist"}}
 
   test:
     desc: Run Python tests
-    dir: packages/python
+    dir: kreuzberg/packages/python
     env:
       ORT_DYLIB_PATH: /opt/homebrew/lib/libonnxruntime.dylib
     cmds:
@@ -75,7 +75,7 @@ tasks:
 
   test:ci:
     desc: Run Python tests in CI mode with coverage
-    dir: packages/python
+    dir: kreuzberg/packages/python
     env:
       RUST_BACKTRACE: '1'
       ORT_DYLIB_PATH: /opt/homebrew/lib/libonnxruntime.dylib
@@ -84,7 +84,7 @@ tasks:
 
   test:coverage:
     desc: Run Python tests with coverage report
-    dir: packages/python
+    dir: kreuzberg/packages/python
     env:
       ORT_DYLIB_PATH: /opt/homebrew/lib/libonnxruntime.dylib
     cmds:
@@ -97,14 +97,14 @@ tasks:
 
   lint:
     desc: Auto-fix Python code linting (ruff check + format)
-    dir: packages/python
+    dir: kreuzberg/packages/python
     cmds:
       - uv run ruff check --fix
       - uv run ruff format
 
   lint:check:
     desc: Check Python code linting without modifications (ruff + mypy)
-    dir: packages/python
+    dir: kreuzberg/packages/python
     cmds:
       - uv run ruff check
       - uv run ruff format --check
@@ -112,31 +112,31 @@ tasks:
 
   format:
     desc: Format Python code with modifications (ruff format)
-    dir: packages/python
+    dir: kreuzberg/packages/python
     cmds:
       - uv run ruff format
 
   format:check:
     desc: Check Python code formatting without modifications
-    dir: packages/python
+    dir: kreuzberg/packages/python
     cmds:
       - uv run ruff format --check
 
   pyproject:format:
     desc: Format pyproject.toml (pyproject-fmt)
-    dir: packages/python
+    dir: kreuzberg/packages/python
     cmds:
       - uv run pyproject-fmt pyproject.toml
 
   pyproject:validate:
     desc: Validate pyproject.toml (validate-pyproject)
-    dir: packages/python
+    dir: kreuzberg/packages/python
     cmds:
       - uv run validate-pyproject pyproject.toml
 
   clean:
     desc: Clean Python build artifacts
-    dir: packages/python
+    dir: kreuzberg/packages/python
     cmds:
       - python -c "import shutil, os, glob; [shutil.rmtree(d, ignore_errors=True) for d in glob.glob('*.egg-info')] or shutil.rmtree('build', ignore_errors=True) or shutil.rmtree('dist', ignore_errors=True)"
       - python -c "import shutil, os; [shutil.rmtree(os.path.join(r, d), ignore_errors=True) for r, dirs, _ in os.walk('.') for d in dirs if d == '__pycache__']"
@@ -144,7 +144,7 @@ tasks:
 
   update:
     desc: Update Python dependencies to latest versions (including major versions)
-    dir: packages/python
+    dir: kreuzberg/packages/python
     cmds:
       - echo "Updating Python dependencies to latest versions..."
       - uv sync --all-packages --all-extras --upgrade --no-install-workspace --no-install-project
@@ -154,7 +154,7 @@ tasks:
   e2e:generate:
     desc: Generate and format Python E2E tests from fixtures
     cmds:
-      - cmd: bash scripts/task/e2e-generate.sh python
+      - cmd: bash kreuzberg/scripts/task/e2e-generate.sh python
         platforms: [linux, darwin]
       - cmd: echo "E2E generation not yet supported on Windows - use WSL or CI"
         platforms: [windows]
@@ -162,14 +162,14 @@ tasks:
 
   e2e:lint:
     desc: Lint Python E2E test code
-    dir: e2e/python
+    dir: kreuzberg/e2e/python
     cmds:
       - uv run ruff check --fix
       - uv run ruff format
 
   e2e:test:
     desc: Run Python E2E tests
-    dir: e2e/python
+    dir: kreuzberg/e2e/python
     cmds:
       - uv run pytest
 
