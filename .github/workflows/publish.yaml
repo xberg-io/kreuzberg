@@ -1321,7 +1321,7 @@ jobs:
       - name: Build platform gem
         shell: bash
         working-directory: kreuzberg/packages/ruby
-        run: ruby ../../kreuzberg/scripts/publish/ruby/build-native-gem.rb "${{ matrix.ruby_platform }}"
+        run: ruby ../../scripts/publish/ruby/build-native-gem.rb "${{ matrix.ruby_platform }}"
 
       - name: Verify platform gem was built
         shell: bash

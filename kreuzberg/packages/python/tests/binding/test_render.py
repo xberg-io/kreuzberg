@@ -11,7 +11,7 @@ import pytest
 
 from kreuzberg import PdfPageIterator, render_pdf_page
 
-REPO_ROOT = Path(__file__).parent.parent.parent.parent.parent
+REPO_ROOT = Path(__file__).parent.parent.parent.parent.parent.parent
 TEST_PDF = REPO_ROOT / "test_documents" / "pdf" / "tiny.pdf"
 
 

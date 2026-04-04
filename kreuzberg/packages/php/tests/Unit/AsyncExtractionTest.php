@@ -31,7 +31,7 @@ final class AsyncExtractionTest extends TestCase
             $this->markTestSkipped('Kreuzberg extension is not loaded');
         }
 
-        $this->testDocumentsPath = dirname(__DIR__, 4) . DIRECTORY_SEPARATOR . 'test_documents';
+        $this->testDocumentsPath = dirname(__DIR__, 5) . DIRECTORY_SEPARATOR . 'test_documents';
     }
 
     #[Test]

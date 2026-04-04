@@ -28,7 +28,7 @@ RSpec.configure do |config|
     end
 
     def test_document_path(relative_path)
-      File.expand_path(File.join(__dir__, '..', '..', '..', 'test_documents', relative_path))
+      File.expand_path(File.join(__dir__, '..', '..', '..', '..', 'test_documents', relative_path))
     end
 
     def create_test_file(content, filename: 'test.txt')

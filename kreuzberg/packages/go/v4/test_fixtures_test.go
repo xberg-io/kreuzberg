@@ -15,7 +15,7 @@ func getValidPDFBytes() ([]byte, error) {
 		return nil, fmt.Errorf("failed to get working directory: %w", err)
 	}
 
-	repoRoot := filepath.Join(wd, "..", "..", "..")
+	repoRoot := filepath.Join(wd, "..", "..", "..", "..")
 	testPDF := filepath.Join(repoRoot, "test_documents", "pdf", "tiny.pdf")
 
 	// #nosec G304 -- testPDF is a controlled test fixture path

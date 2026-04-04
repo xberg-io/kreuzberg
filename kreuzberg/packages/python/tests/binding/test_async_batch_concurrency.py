@@ -31,7 +31,7 @@ def test_single_file_async_equals_sync() -> None:
     verifies that async extraction works with a simple text file.
     """
     # Use a simple text file to avoid PDFium initialization issues with async
-    fixture = Path(__file__).parent.parent.parent.parent.parent / "test_documents" / "text" / "fake_text.txt"
+    fixture = Path(__file__).parent.parent.parent.parent.parent.parent / "test_documents" / "text" / "fake_text.txt"
 
     if not fixture.exists():
         pytest.skip("Test document not found")
@@ -51,7 +51,7 @@ def test_batch_api_concurrent_processing() -> None:
     Timing verification is not reliable due to PDFium initialization constraints.
     """
     fixtures = [
-        Path(__file__).parent.parent.parent.parent.parent / "test_documents" / "pdf" / f
+        Path(__file__).parent.parent.parent.parent.parent.parent / "test_documents" / "pdf" / f
         for f in [
             "a_brief_introduction_to_the_standard_annotation_language_sal_2006.pdf",
             "5_level_paging_and_5_level_ept_intel_revision_1_1_may_2017.pdf",
@@ -79,7 +79,7 @@ def test_async_gather_concurrent_extraction() -> None:
     extraction of multiple files.
     """
     fixtures = [
-        Path(__file__).parent.parent.parent.parent.parent / "test_documents" / "pdf" / f
+        Path(__file__).parent.parent.parent.parent.parent.parent / "test_documents" / "pdf" / f
         for f in [
             "a_brief_introduction_to_the_standard_annotation_language_sal_2006.pdf",
             "5_level_paging_and_5_level_ept_intel_revision_1_1_may_2017.pdf",
@@ -106,7 +106,7 @@ def test_batch_versus_sequential_async() -> None:
     sequential operations to avoid PDFium reinitialization errors.
     """
     fixtures = [
-        Path(__file__).parent.parent.parent.parent.parent / "test_documents" / "pdf" / f
+        Path(__file__).parent.parent.parent.parent.parent.parent / "test_documents" / "pdf" / f
         for f in [
             "a_brief_introduction_to_the_standard_annotation_language_sal_2006.pdf",
             "5_level_paging_and_5_level_ept_intel_revision_1_1_may_2017.pdf",

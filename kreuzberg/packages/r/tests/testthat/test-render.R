@@ -15,7 +15,7 @@ test_that("render_pdf_page errors on nonexistent file", {
 })
 
 test_that("render_pdf_page errors on out-of-bounds page index", {
-  repo_root <- normalizePath(file.path(getwd(), "..", "..", "..", ".."), mustWork = FALSE)
+  repo_root <- normalizePath(file.path(getwd(), "..", "..", "..", "..", ".."), mustWork = FALSE)
   pdf_path <- file.path(repo_root, "test_documents", "pdf", "tiny.pdf")
 
   if (!file.exists(pdf_path)) {
@@ -26,7 +26,7 @@ test_that("render_pdf_page errors on out-of-bounds page index", {
 })
 
 test_that("render_pdf_page errors on negative page index", {
-  repo_root <- normalizePath(file.path(getwd(), "..", "..", "..", ".."), mustWork = FALSE)
+  repo_root <- normalizePath(file.path(getwd(), "..", "..", "..", "..", ".."), mustWork = FALSE)
   pdf_path <- file.path(repo_root, "test_documents", "pdf", "tiny.pdf")
 
   if (!file.exists(pdf_path)) {
@@ -48,7 +48,7 @@ test_that("render_pdf_page errors on empty path", {
 })
 
 test_that("render_pdf_pages_iter handles cleanup without consuming", {
-  repo_root <- normalizePath(file.path(getwd(), "..", "..", "..", ".."), mustWork = FALSE)
+  repo_root <- normalizePath(file.path(getwd(), "..", "..", "..", "..", ".."), mustWork = FALSE)
   pdf_path <- file.path(repo_root, "test_documents", "pdf", "tiny.pdf")
 
   if (!file.exists(pdf_path)) {
@@ -65,7 +65,7 @@ test_that("render_pdf_pages_iter handles cleanup without consuming", {
 })
 
 test_that("render_pdf_pages_iter supports early termination with valid PNG", {
-  repo_root <- normalizePath(file.path(getwd(), "..", "..", "..", ".."), mustWork = FALSE)
+  repo_root <- normalizePath(file.path(getwd(), "..", "..", "..", "..", ".."), mustWork = FALSE)
   pdf_path <- file.path(repo_root, "test_documents", "pdf", "tiny.pdf")
 
   if (!file.exists(pdf_path)) {

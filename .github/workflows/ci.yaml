@@ -17,7 +17,7 @@ on:
       - "kreuzberg/fixtures/**"
       - "test_documents/**"
       - ".github/**"
-      - ".cargo/config.toml"
+      - "kreuzberg/.cargo/config.toml"
       - ".pre-commit-config.yaml"
       - ".golangci.yml"
       - ".dockerignore"
@@ -42,7 +42,7 @@ on:
       - "kreuzberg/fixtures/**"
       - "test_documents/**"
       - ".github/**"
-      - ".cargo/config.toml"
+      - "kreuzberg/.cargo/config.toml"
       - ".pre-commit-config.yaml"
       - ".golangci.yml"
       - ".dockerignore"
@@ -272,7 +272,7 @@ jobs:
               - 'Cargo.toml'
               - 'Cargo.lock'
               - 'rust-toolchain.toml'
-              - '.cargo/config.toml'
+              - 'kreuzberg/.cargo/config.toml'
             rust:
               - 'kreuzberg/crates/kreuzberg/**'
               - 'kreuzberg/crates/kreuzberg-cli/**'
@@ -317,7 +317,6 @@ jobs:
               - 'kreuzberg/e2e/wasm-deno/**'
               - 'kreuzberg/e2e/wasm-workers/**'
             docker:
-              - 'Dockerfile*'
               - 'kreuzberg/docker/**'
               - '.dockerignore'
 

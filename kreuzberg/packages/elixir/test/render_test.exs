@@ -21,7 +21,7 @@ defmodule KreuzbergTest.RenderTest do
 
   defp get_repo_root do
     cwd = File.cwd!()
-    Path.join([cwd, "..", ".."])
+    Path.join([cwd, "..", "..", ".."])
   end
 
   defp skip_unless_test_pdf! do

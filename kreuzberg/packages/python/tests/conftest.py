@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 @pytest.fixture
 def docx_document() -> Path:
     """Path to DOCX test file used across binding-specific suites."""
-    path = Path(__file__).parent.parent.parent.parent / "test_documents" / "docx" / "lorem_ipsum.docx"
+    path = Path(__file__).parent.parent.parent.parent.parent / "test_documents" / "docx" / "lorem_ipsum.docx"
     if not path.exists():
         pytest.skip(f"Test file not found: {path}")
     return path
@@ -25,7 +25,7 @@ def docx_document() -> Path:
 @pytest.fixture(scope="session")
 def test_documents() -> Path:
     """Path to test_documents directory containing PDF and other test files."""
-    path = Path(__file__).parent.parent.parent.parent / "test_documents"
+    path = Path(__file__).parent.parent.parent.parent.parent / "test_documents"
     if not path.exists():
         pytest.skip(f"Test documents directory not found: {path}")
     return path
