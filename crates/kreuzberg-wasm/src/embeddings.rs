@@ -5,13 +5,13 @@
 //! different use cases (fast, balanced, quality, multilingual).
 
 #[cfg(feature = "embeddings")]
+use crate::errors::convert_error;
+#[cfg(feature = "embeddings")]
 use js_sys::Array;
 #[cfg(feature = "embeddings")]
 use kreuzberg::{EmbeddingConfig, embed_texts, embed_texts_async, utils::camel_to_snake};
 #[cfg(feature = "embeddings")]
 use wasm_bindgen::prelude::*;
-#[cfg(feature = "embeddings")]
-use crate::errors::convert_error;
 
 #[cfg(feature = "embeddings")]
 fn parse_embedding_config(config: Option<JsValue>) -> Result<EmbeddingConfig, JsValue> {
