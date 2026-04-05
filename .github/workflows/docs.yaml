@@ -9,6 +9,7 @@ on:
       - 'pyproject.toml'
       - 'mkdocs.yaml'
       - '.github/workflows/docs.yaml'
+      - 'scripts/ci/docs/build.sh'
   workflow_dispatch:
 
 permissions:
@@ -40,9 +41,7 @@ jobs:
           enable-cache: true
 
       - name: Install dependencies and build docs
-        run: |
-          uv sync --group doc --no-editable --no-install-workspace --no-install-project
-          uv run --no-sync zensical build --clean
+        run: scripts/ci/docs/build.sh
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4

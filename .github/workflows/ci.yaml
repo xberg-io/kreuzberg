@@ -278,11 +278,7 @@ jobs:
 
       - name: Build documentation (strict mode)
         shell: bash
-        run: |
-          set -o pipefail
-          : > /tmp/build-log.txt
-          uv sync --group doc --no-editable --no-install-workspace --no-install-project 2>&1 | tee -a /tmp/build-log.txt
-          uv run --no-sync zensical build --clean --strict 2>&1 | tee -a /tmp/build-log.txt
+        run: scripts/ci/docs/build.sh --strict --log-file /tmp/build-log.txt
 
       - name: Check build log for warnings
         if: always()
@@ -407,8 +403,9 @@ jobs:
               - 'mkdocs.yaml'
               - 'pyproject.toml'
               - '.github/workflows/docs*'
-              - '_typos.toml'
+              - '.typos.toml'
               - '.lychee.toml'
+              - 'scripts/ci/docs/**'
 
 # --- Stage 2: Build FFI + Rust Tests + Docker ---
 
