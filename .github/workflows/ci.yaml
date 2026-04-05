@@ -260,11 +260,15 @@ jobs:
 
       - name: Check spelling with typos
         uses: crate-ci/typos@v1
+        with:
+          # Spell-check published docs only (not the rest of the repo).
+          files: docs
 
       - name: Lint markdown with rumdl
         uses: j178/prek-action@v2
         with:
-          extra-args: rumdl-fmt --all-files
+          # Lint docs/ only (same scope as typos in this job).
+          extra-args: rumdl-fmt docs
 
       - name: Setup Python
         uses: actions/setup-python@v6

@@ -9,7 +9,7 @@ func main() {
     config := &kreuzberg.ExtractionConfig{
         Chunking: &kreuzberg.ChunkingConfig{
             ChunkSize: 500,
-            Overlap:   50,
+            Overlap: 50,
         },
         Pages: &kreuzberg.PageConfig{
             ExtractPages: true,
