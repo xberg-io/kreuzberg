@@ -14,19 +14,20 @@ on:
 
 permissions:
   contents: read
-  actions: write
+  pull-requests: write
 
 concurrency:
   group: docs-preview-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 jobs:
-  # Build on a runner that never sees Netlify credentials (PR code may be untrusted).
-  build:
-    name: Build documentation
+  preview:
+    name: Docs preview
     if: github.actor != 'dependabot[bot]' && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # Optional: required reviewers / env-only secrets in Settings → Environments → docs-preview
+    environment: docs-preview
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -48,31 +49,7 @@ jobs:
           uv sync --group doc --no-editable --no-install-workspace --no-install-project
           uv run --no-sync zensical build --clean
 
-      - name: Upload site artifact
-        uses: actions/upload-artifact@v7
-        with:
-          name: docs-site
-          path: site
-          if-no-files-found: error
-
-  deploy:
-    name: Deploy Preview
-    needs: build
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    permissions:
-      contents: read
-      actions: read
-      pull-requests: write
-    # Optional: add required reviewers or restrict secrets to this environment in repo Settings → Environments.
-    environment: docs-preview
-    steps:
-      - name: Download site artifact
-        uses: actions/download-artifact@v8
-        with:
-          name: docs-site
-          path: site
-
+      # NETLIFY_* only on this step — not job-level env — so build steps never receive those values.
       - name: Deploy to Netlify
         id: netlify
         uses: nwtgck/actions-netlify@v3
