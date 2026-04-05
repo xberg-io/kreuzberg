@@ -280,9 +280,9 @@ jobs:
         with:
           enable-cache: true
 
-      - name: Build documentation (strict mode)
+      - name: Build documentation
         shell: bash
-        run: scripts/ci/docs/build.sh --strict --log-file /tmp/build-log.txt
+        run: scripts/ci/docs/build.sh --log-file /tmp/build-log.txt
 
       - name: Check build log for warnings
         if: always()

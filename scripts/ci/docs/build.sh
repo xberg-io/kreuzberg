@@ -3,7 +3,10 @@
 #
 # Usage:
 #   scripts/ci/docs/build.sh
-#   scripts/ci/docs/build.sh --strict --log-file /tmp/build-log.txt
+#   scripts/ci/docs/build.sh --log-file /tmp/build-log.txt
+#
+# Note: MkDocs strict mode belongs in mkdocs.yaml (`strict: true`). Zensical's
+# `build --strict` is unsupported and only prints a warning that fails CI log checks.
 #
 # Caching: use astral-sh/setup-uv with enable-cache in CI; this script only runs uv.
 
@@ -13,15 +16,10 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 cd "$REPO_ROOT"
 
-strict=false
 log_file=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --strict)
-      strict=true
-      shift
-      ;;
     --log-file)
       if [[ $# -lt 2 ]]; then
         echo "error: --log-file requires a path" >&2
@@ -31,7 +29,7 @@ while [[ $# -gt 0 ]]; do
       shift 2
       ;;
     *)
-      echo "usage: $0 [--strict] [--log-file PATH]" >&2
+      echo "usage: $0 [--log-file PATH]" >&2
       exit 2
       ;;
   esac
@@ -42,11 +40,7 @@ uv_sync() {
 }
 
 zensical_build() {
-  if [[ "$strict" == true ]]; then
-    uv run --no-sync zensical build --clean --strict
-  else
-    uv run --no-sync zensical build --clean
-  fi
+  uv run --no-sync zensical build --clean
 }
 
 if [[ -n "$log_file" ]]; then
