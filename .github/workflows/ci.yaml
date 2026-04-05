@@ -2466,6 +2466,7 @@ jobs:
     name: "Test: Go (${{ matrix.os }})"
     if: |
       always() && !cancelled() &&
+      needs.build-ffi.result == 'success' &&
       github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]' &&
       (github.event_name == 'workflow_dispatch' || needs.changes.outputs.go == 'true' || needs.changes.outputs.core == 'true' || needs.changes.outputs.ffi == 'true')
     needs: [build-ffi, changes]
@@ -2952,6 +2953,7 @@ jobs:
     name: "Test: Elixir (${{ matrix.os }})"
     if: |
       always() && !cancelled() &&
+      needs.build-ffi.result == 'success' &&
       github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]' &&
       (github.event_name == 'workflow_dispatch' || needs.changes.outputs.elixir == 'true' || needs.changes.outputs.core == 'true' || needs.changes.outputs.ffi == 'true')
     needs: [build-ffi, changes]
@@ -3104,6 +3106,17 @@ jobs:
           KREUZBERG_BUILD: "1"
         run: mix test
 
+      - name: Set library paths for E2E tests
+        shell: bash
+        run: |
+          source scripts/lib/library-paths.sh
+          setup_onnx_paths
+          {
+            echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-}"
+            echo "DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH:-}"
+            echo "DYLD_FALLBACK_LIBRARY_PATH=${DYLD_FALLBACK_LIBRARY_PATH:-}"
+          } >> "$GITHUB_ENV"
+
       - name: Run E2E tests
         shell: bash
         env:
@@ -3118,6 +3131,7 @@ jobs:
     name: "Test: R (${{ matrix.os }})"
     if: |
       always() && !cancelled() &&
+      needs.build-ffi.result == 'success' &&
       github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]' &&
       (github.event_name == 'workflow_dispatch' || needs.changes.outputs.r == 'true' || needs.changes.outputs.core == 'true' || needs.changes.outputs.ffi == 'true')
     needs: [build-ffi, changes]
@@ -3207,6 +3221,7 @@ jobs:
     name: "Test: C FFI (${{ matrix.os }})"
     if: |
       always() && !cancelled() &&
+      needs.build-ffi.result == 'success' &&
       github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]' &&
       (github.event_name == 'workflow_dispatch' || needs.changes.outputs.core == 'true' || needs.changes.outputs.ffi == 'true')
     needs: [build-ffi, changes]
@@ -3382,6 +3397,7 @@ jobs:
     name: "Test: CLI (${{ matrix.os }})"
     if: |
       always() && !cancelled() &&
+      needs.build-ffi.result == 'success' &&
       github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]' &&
       (github.event_name == 'workflow_dispatch' || needs.changes.outputs.core == 'true' || needs.changes.outputs.ffi == 'true' || needs.changes.outputs.rust == 'true')
     needs: [build-ffi, changes]
