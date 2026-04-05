@@ -51,6 +51,7 @@ zensical_build() {
 
 if [[ -n "$log_file" ]]; then
   set -o pipefail
+  mkdir -p "$(dirname "$log_file")"
   : >"$log_file"
   uv_sync 2>&1 | tee -a "$log_file"
   zensical_build 2>&1 | tee -a "$log_file"

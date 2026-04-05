@@ -2,7 +2,8 @@
 # scripts/ci/docs/check-build-log.sh
 #
 # Scan a Zensical / MkDocs build log for warnings and errors.
-# Usage: ./check-build-log.sh <build-log-file>
+# Usage: ./check-build-log.sh [build-log-file]
+#        Default log path: /tmp/build-log.txt
 #
 # Exit codes:
 #   0 — no issues found
