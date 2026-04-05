@@ -1,0 +1,51 @@
+# Configuration for the lychee link checker.
+# https://github.com/lycheeverse/lychee
+
+# Exclude common patterns that produce false positives
+exclude = [
+  # Localhost / loopback addresses
+  "localhost",
+  "127\\.0\\.0\\.1",
+  "0\\.0\\.0\\.0",
+
+  # Placeholder / example domains
+  "example\\.com",
+  "example\\.org",
+
+  # Template variables (e.g. ${var}, {{ var }})
+  "\\$\\{",
+  "\\{\\{",
+
+  # GitHub edit links (require auth)
+  "github\\.com/.*/edit/",
+
+  # PyPI project pages (rate-limited)
+  "pypi\\.org/project/",
+
+  # crates.io (rate-limited)
+  "crates\\.io/crates/",
+
+  # npm (rate-limited)
+  "npmjs\\.com/package/",
+]
+
+# Accept these HTTP status codes as valid
+accept = [200, 204, 301, 302, 429]
+
+# Connection timeout in seconds
+timeout = 30
+
+# Max retries per link
+max_retries = 3
+
+# Max concurrent requests
+max_concurrency = 10
+
+# Do not check email addresses
+include_mail = false
+
+# Do not require HTTPS
+require_https = false
+
+# Cache results to speed up repeated runs
+cache = true

@@ -245,6 +245,55 @@ jobs:
       - name: Build and run snippet validation
         run: cargo run --release -p snippet-runner -- validate --snippets docs/snippets --reference docs/reference --level syntax --timeout 120
 
+  validate-docs:
+    name: "Validate: Documentation"
+    if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Check spelling with typos
+        uses: crate-ci/typos@v1
+
+      - name: Lint markdown with rumdl
+        uses: j178/prek-action@v2
+        with:
+          extra-args: rumdl-fmt --all-files
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
+      - name: Build documentation (strict mode)
+        run: |
+          uv sync --group doc --no-editable --no-install-workspace --no-install-project
+          uv run --no-sync zensical build --clean --strict 2>&1 | tee /tmp/build-log.txt
+
+      - name: Check build log for warnings
+        if: always()
+        run: scripts/ci/docs/check-build-log.sh /tmp/build-log.txt
+        shell: bash
+
+      - name: Check links with lychee
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --no-progress
+            --exclude-mail
+            --timeout 30
+            --max-retries 3
+            './site/**/*.html'
+          fail: true
+
   changes:
     name: Detect Changes
     runs-on: ubuntu-24.04-arm

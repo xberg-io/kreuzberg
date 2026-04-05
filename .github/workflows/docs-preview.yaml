@@ -1,0 +1,62 @@
+name: Docs Preview
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - 'mkdocs.yaml'
+      - 'pyproject.toml'
+      - '.github/workflows/docs-preview.yaml'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: docs-preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    name: "Deploy Preview"
+    if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
+      - name: Build documentation
+        run: |
+          uv sync --group doc --no-editable --no-install-workspace --no-install-project
+          uv run --no-sync zensical build --clean
+
+      - name: Deploy to Netlify
+        id: netlify
+        uses: nwtgck/actions-netlify@v3
+        with:
+          publish-dir: './site'
+          production-deploy: false
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          deploy-message: "docs: PR #${{ github.event.pull_request.number }} — ${{ github.event.pull_request.title }}"
+          alias: pr-${{ github.event.pull_request.number }}
+          enable-pull-request-comment: true
+          enable-commit-comment: false
+          overwrites-pull-request-comment: true
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        timeout-minutes: 5

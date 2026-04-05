@@ -173,6 +173,13 @@ repos:
       - id: rumdl-fmt
         exclude: '^(test_apps/|tools/benchmark-harness/vendored/)'
 
+  # Spelling: fast Rust-based spell checker
+  - repo: https://github.com/crate-ci/typos
+    rev: v1.31.1
+    hooks:
+      - id: typos
+        args: [--force-exclude]
+
   # GitHub Actions: linting
   - repo: https://github.com/rhysd/actionlint
     rev: v1.7.12
