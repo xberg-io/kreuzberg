@@ -14,7 +14,7 @@ on:
 
 permissions:
   contents: read
-  pull-requests: write
+  actions: write
 
 concurrency:
   group: docs-preview-${{ github.event.pull_request.number }}
@@ -60,6 +60,10 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: read
+      pull-requests: write
     # Optional: add required reviewers or restrict secrets to this environment in repo Settings → Environments.
     environment: docs-preview
     steps:
