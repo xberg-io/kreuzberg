@@ -171,7 +171,7 @@ repos:
     rev: "v0.1.67"
     hooks:
       - id: rumdl-fmt
-        exclude: '^(test_apps/|tools/benchmark-harness/vendored/)'
+        exclude: '^(test_apps/|tools/benchmark-harness/vendored/|docs/index\.md|docs/getting-started/installation\.md)'
 
   # Spelling: fast Rust-based spell checker
   - repo: https://github.com/crate-ci/typos
