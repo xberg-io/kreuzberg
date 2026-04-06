@@ -147,8 +147,9 @@ pub struct ExtractionOverrides {
 
     // ── Layout detection ─────────────────────────────────────────────
     /// Enable layout detection with default model settings (RT-DETR v2).
+    /// Use `--layout` to enable or `--layout false` to explicitly disable.
     #[cfg(feature = "layout-detection")]
-    #[arg(long)]
+    #[arg(long, default_missing_value = "true", num_args = 0..=1)]
     pub layout: Option<bool>,
 
     /// Layout detection confidence threshold (0.0 - 1.0).

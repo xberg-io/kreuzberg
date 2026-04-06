@@ -127,6 +127,34 @@
 //!     Ok(())
 //! }
 //! ```
+/// Declare FFI functions with `extern "C-unwind"` on native targets (to catch
+/// C++ exceptions from Tesseract/Leptonica) and `extern "C"` on WASM (where
+/// the LLVM backend does not support `cleanupret` / C++ unwinding).
+macro_rules! ffi_extern {
+    (
+        $(
+            $(#[$meta:meta])*
+            $vis:vis fn $name:ident($($arg:ident : $ty:ty),* $(,)?) $(-> $ret:ty)?;
+        )*
+    ) => {
+        #[cfg(not(target_arch = "wasm32"))]
+        unsafe extern "C-unwind" {
+            $(
+                $(#[$meta])*
+                $vis fn $name($($arg : $ty),*) $(-> $ret)?;
+            )*
+        }
+
+        #[cfg(target_arch = "wasm32")]
+        unsafe extern "C" {
+            $(
+                $(#[$meta])*
+                $vis fn $name($($arg : $ty),*) $(-> $ret)?;
+            )*
+        }
+    };
+}
+
 pub use error::{Result, TesseractError};
 mod error;
 

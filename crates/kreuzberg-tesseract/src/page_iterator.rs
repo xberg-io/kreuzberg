@@ -380,7 +380,7 @@ impl Drop for PageIterator {
     }
 }
 
-unsafe extern "C-unwind" {
+ffi_extern! {
     pub fn TessPageIteratorDelete(handle: *mut c_void);
     pub fn TessPageIteratorBegin(handle: *mut c_void);
     pub fn TessPageIteratorNext(handle: *mut c_void, level: c_int) -> c_int;
