@@ -96,8 +96,8 @@ class KreuzbergException extends Exception
     /**
      * Create exception for embedding errors.
      */
-    public static function embedding(string $message): self
+    public static function embedding(string $message): EmbeddingException
     {
-        return new self("Embedding error: {$message}", 8);
+        return new EmbeddingException("Embedding error: {$message}", 8);
     }
 }

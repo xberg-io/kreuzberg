@@ -447,7 +447,8 @@ pub async fn embed_handler(JsonApi(request): JsonApi<EmbedRequest>) -> Result<Js
     }
 
     // Generate embeddings directly
-    let embeddings = crate::embed_texts_async(request.texts.clone(), &config)
+    let text_count = request.texts.len();
+    let embeddings = crate::embed_texts_async(request.texts, &config)
         .await
         .map_err(ApiError::internal)?;
 
@@ -466,7 +467,7 @@ pub async fn embed_handler(JsonApi(request): JsonApi<EmbedRequest>) -> Result<Js
         embeddings,
         model: model_name,
         dimensions,
-        count: request.texts.len(),
+        count: text_count,
     }))
 }
 

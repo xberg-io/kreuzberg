@@ -85,10 +85,7 @@ function convertToKreuzbergException(\Exception $e): KreuzbergException
     }
 
     // Check for embedding errors
-    if (str_contains($message, 'embedding') ||
-        str_contains($message, 'vector') ||
-        str_contains($message, 'inference') ||
-        str_contains($message, 'model')) {
+    if (str_contains($message, '[Embedding]')) {
         return KreuzbergException::embedding($message);
     }
 

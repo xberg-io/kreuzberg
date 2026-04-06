@@ -184,10 +184,6 @@ fn onnx_runtime_install_message() -> String {
     }
 }
 
-/// Create a `KreuzbergError::Embedding` for embeddings failures.
-fn embedding_error(message: String) -> crate::KreuzbergError {
-    crate::KreuzbergError::Embedding { message, source: None }
-}
 
 /// Resolve the cache directory for embedding models.
 fn resolve_cache_dir(cache_dir: Option<std::path::PathBuf>) -> std::path::PathBuf {
@@ -201,7 +197,7 @@ fn resolve_model_info(
     match model_type {
         crate::core::config::EmbeddingModelType::Preset { name } => {
             let preset =
-                get_preset(name).ok_or_else(|| embedding_error(format!("Unknown embedding preset: {name}")))?;
+                get_preset(name).ok_or_else(|| crate::KreuzbergError::embedding(format!("Unknown embedding preset: {name}")))?;
             let pooling = match preset.pooling {
                 "cls" => engine::Pooling::Cls,
                 _ => engine::Pooling::Mean,
@@ -229,18 +225,18 @@ fn load_tokenizer(
     use tokenizers::{AddedToken, PaddingParams, PaddingStrategy, TruncationParams};
 
     let config: serde_json::Value = serde_json::from_slice(
-        &std::fs::read(config_path).map_err(|e| embedding_error(format!("Failed to read config.json: {e}")))?,
+        &std::fs::read(config_path).map_err(|e| crate::KreuzbergError::embedding(format!("Failed to read config.json: {e}")))?,
     )
-    .map_err(|e| embedding_error(format!("Failed to parse config.json: {e}")))?;
+    .map_err(|e| crate::KreuzbergError::embedding(format!("Failed to parse config.json: {e}")))?;
 
     let tokenizer_config: serde_json::Value = serde_json::from_slice(
         &std::fs::read(tokenizer_config_path)
-            .map_err(|e| embedding_error(format!("Failed to read tokenizer_config.json: {e}")))?,
+            .map_err(|e| crate::KreuzbergError::embedding(format!("Failed to read tokenizer_config.json: {e}")))?,
     )
-    .map_err(|e| embedding_error(format!("Failed to parse tokenizer_config.json: {e}")))?;
+    .map_err(|e| crate::KreuzbergError::embedding(format!("Failed to parse tokenizer_config.json: {e}")))?;
 
     let mut tokenizer = tokenizers::Tokenizer::from_file(tokenizer_path)
-        .map_err(|e| embedding_error(format!("Failed to load tokenizer: {e}")))?;
+        .map_err(|e| crate::KreuzbergError::embedding(format!("Failed to load tokenizer: {e}")))?;
 
     let model_max_length = tokenizer_config["model_max_length"].as_f64().unwrap_or(512.0) as usize;
     let max_length = max_length.min(model_max_length);
@@ -258,7 +254,7 @@ fn load_tokenizer(
             max_length,
             ..Default::default()
         }))
-        .map_err(|e| embedding_error(format!("Failed to configure tokenizer: {e}")))?;
+        .map_err(|e| crate::KreuzbergError::embedding(format!("Failed to configure tokenizer: {e}")))?;
 
     // Add special tokens from special_tokens_map.json
     if let Ok(special_tokens_data) = std::fs::read(special_tokens_path)
@@ -313,21 +309,21 @@ fn download_model_files(
         .with_cache_dir(cache_directory.to_path_buf())
         .with_progress(true)
         .build()
-        .map_err(|e| embedding_error(format!("Failed to create HF API client: {e}")))?;
+        .map_err(|e| crate::KreuzbergError::embedding(format!("Failed to create HF API client: {e}")))?;
 
     let repo = api.model(repo_name.to_string());
 
     let model_path = repo
         .get(model_file)
-        .map_err(|e| embedding_error(format!("Failed to download {model_file}: {e}")))?;
+        .map_err(|e| crate::KreuzbergError::embedding(format!("Failed to download {model_file}: {e}")))?;
 
     let tokenizer_path = repo
         .get("tokenizer.json")
-        .map_err(|e| embedding_error(format!("Failed to download tokenizer.json: {e}")))?;
+        .map_err(|e| crate::KreuzbergError::embedding(format!("Failed to download tokenizer.json: {e}")))?;
 
     let config_path = repo
         .get("config.json")
-        .map_err(|e| embedding_error(format!("Failed to download config.json: {e}")))?;
+        .map_err(|e| crate::KreuzbergError::embedding(format!("Failed to download config.json: {e}")))?;
 
     // These are optional — fall back to empty paths that load_tokenizer handles gracefully
     let special_tokens_path = repo
@@ -407,7 +403,7 @@ fn get_or_init_engine(
                         onnx_runtime_install_message()
                     ))
                 } else {
-                    embedding_error(format!("Model download panicked: {panic_msg}"))
+                    crate::KreuzbergError::embedding(format!("Model download panicked: {panic_msg}"))
                 }
             })??;
 
@@ -440,7 +436,7 @@ fn get_or_init_engine(
             if looks_like_ort_error(&panic_msg) {
                 crate::KreuzbergError::MissingDependency(format!("ONNX Runtime - {}", onnx_runtime_install_message()))
             } else {
-                embedding_error(format!("ONNX Runtime initialization panicked: {panic_msg}"))
+                crate::KreuzbergError::embedding(format!("ONNX Runtime initialization panicked: {panic_msg}"))
             }
         })?
         .map_err(|e| {
@@ -448,7 +444,7 @@ fn get_or_init_engine(
             if looks_like_ort_error(&error_msg) {
                 crate::KreuzbergError::MissingDependency(format!("ONNX Runtime - {}", onnx_runtime_install_message()))
             } else {
-                embedding_error(format!("Failed to create ONNX session: {e}"))
+                crate::KreuzbergError::embedding(format!("Failed to create ONNX session: {e}"))
             }
         })?;
 
@@ -528,7 +524,7 @@ pub fn download_model(
         .with_cache_dir(cache_directory)
         .with_progress(true)
         .build()
-        .map_err(|e| embedding_error(format!("Failed to create HF API client: {e}")))?;
+        .map_err(|e| crate::KreuzbergError::embedding(format!("Failed to create HF API client: {e}")))?;
 
     let repo = api.model(repo_name.to_string());
 
@@ -538,7 +534,7 @@ pub fn download_model(
             Err(e) => {
                 // Model and tokenizer are required; others are optional
                 if *file == model_file || *file == "tokenizer.json" {
-                    return Err(embedding_error(format!("Failed to download {file}: {e}")));
+                    return Err(crate::KreuzbergError::embedding(format!("Failed to download {file}: {e}")));
                 }
                 tracing::debug!(file = %file, error = %e, "Optional file not found, skipping");
             }
@@ -649,7 +645,7 @@ pub fn embed_texts<T: AsRef<str>>(
     // meaningless embeddings and can cause tokenizer edge-cases.
     for (i, t) in texts.iter().enumerate() {
         if t.as_ref().is_empty() {
-            return Err(embedding_error(format!(
+            return Err(crate::KreuzbergError::embedding(format!(
                 "Text at position {pos} is empty. All texts must be non-empty.",
                 pos = i + 1
             )));
@@ -662,7 +658,7 @@ pub fn embed_texts<T: AsRef<str>>(
 
     let text_refs: Vec<&str> = texts.iter().map(|t| t.as_ref()).collect();
     let mut embeddings = engine.embed(&text_refs, config.batch_size).map_err(|e| {
-        embedding_error(format!(
+        crate::KreuzbergError::embedding(format!(
             "Failed to generate embeddings for {chunk_count} texts (model={:?}, batch_size={}): {e}",
             config.model, config.batch_size
         ))
@@ -718,14 +714,14 @@ pub async fn embed_texts_async<T: AsRef<str> + Send + 'static>(
     let _permit = EMBED_SEMAPHORE
         .acquire()
         .await
-        .map_err(|_| embedding_error("Embedding semaphore closed".to_string()))?;
+        .map_err(|_| crate::KreuzbergError::embedding("Embedding semaphore closed".to_string()))?;
 
     // Wrap config in Arc to avoid cloning the entire struct (strings, PathBuf)
     // into the blocking closure.
     let config = Arc::new(config.clone());
     tokio::task::spawn_blocking(move || embed_texts(&texts, &config))
         .await
-        .map_err(|e| embedding_error(format!("Embedding task panicked: {e}")))?
+        .map_err(|e| crate::KreuzbergError::embedding(format!("Embedding task panicked: {e}")))?
 }
 
 #[cfg(test)]
