@@ -640,6 +640,7 @@ pub struct OcrConfig {
 impl OcrConfig {
     #[new]
     #[pyo3(signature = (backend=None, language=None, tesseract_config=None, paddle_ocr_config=None, element_config=None, vlm_config=None, vlm_prompt=None))]
+    #[allow(clippy::too_many_arguments)]
     fn new(
         py: Python<'_>,
         backend: Option<String>,
