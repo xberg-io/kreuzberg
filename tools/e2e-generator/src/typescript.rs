@@ -1125,10 +1125,10 @@ fn write_package_json(ts_root: &Utf8Path, mode: &GenerationMode) -> Result<()> {
   }},
   "devDependencies": {{
     "@types/node": "^25.5.2",
-    "@vitest/ui": "^4.1.2",
-    "oxlint": "^1.58.0",
+    "@vitest/ui": "^4.1.3",
+    "oxlint": "^1.59.0",
     "typescript": "^6.0.2",
-    "vitest": "^4.1.2"
+    "vitest": "^4.1.3"
   }}
 }}
 "#
