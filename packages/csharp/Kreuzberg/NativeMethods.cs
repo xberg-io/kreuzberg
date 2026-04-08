@@ -80,6 +80,10 @@ internal static partial class NativeMethods
         public IntPtr TablesJson;
         /// <summary>JSON array of extracted URIs pointer.</summary>
         public IntPtr UrisJson;
+        /// <summary>JSON code intelligence results pointer.</summary>
+        public IntPtr CodeIntelligenceJson;
+        /// <summary>JSON structured extraction output pointer.</summary>
+        public IntPtr StructuredOutputJson;
 
         /// <summary>Whether extraction succeeded.</summary>
         [MarshalAs(UnmanagedType.I1)]
