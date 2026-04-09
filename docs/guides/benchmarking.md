@@ -11,7 +11,7 @@ Build the harness, then run a benchmark:
 ```bash title="Terminal"
 cargo build -p benchmark-harness --release
 
-task bench:run FRAMEWORK=kreuzberg MODE=single-file
+task benchmark:run FRAMEWORK=kreuzberg MODE=single-file
 ```
 
 That extracts every fixture file one at a time and reports wall time, throughput, and memory usage.
@@ -23,9 +23,9 @@ That extracts every fixture file one at a time and reports wall time, throughput
 ### Via Task
 
 ```bash title="Terminal"
-task bench:run FRAMEWORK=kreuzberg MODE=single-file
-task bench:run FRAMEWORK=kreuzberg MODE=batch
-task bench:run FRAMEWORK=kreuzberg MODE=single-file ITERATIONS=5 TIMEOUT=600
+task benchmark:run FRAMEWORK=kreuzberg MODE=single-file
+task benchmark:run FRAMEWORK=kreuzberg MODE=batch
+task benchmark:run FRAMEWORK=kreuzberg MODE=single-file ITERATIONS=5 TIMEOUT=600
 ```
 
 ### Direct Harness
@@ -56,7 +56,7 @@ For more control, call the binary directly:
 To see how Kreuzberg stacks up against Tika, Docling, and others:
 
 ```bash title="Terminal"
-task bench:compare
+task benchmark:compare
 ```
 
 This runs the same fixtures through each framework and produces a side-by-side report.
@@ -69,9 +69,8 @@ Benchmark fixtures live in `tools/benchmark-harness/fixtures/`. Each fixture is 
 
 | Fixture | Tests |
 |---------|-------|
-| `pdf_small`, `pdf_medium` | PDF parsing and text extraction |
+| `pdf_medium` | PDF parsing and text extraction |
 | `docx_simple` | Office document handling |
-| `html_simple` | HTML to text conversion |
 | `image_table` | OCR + table detection |
 | `markdown_technical` | Markdown passthrough |
 
@@ -84,7 +83,7 @@ Add your own fixtures to this directory if you need to benchmark specific docume
 When you need to know *where* time is spent, not just *how much*:
 
 ```bash title="Terminal"
-task bench:profile FRAMEWORK=kreuzberg MODE=single-file
+task benchmark:profile FRAMEWORK=kreuzberg MODE=single-file
 ```
 
 This enables profiling and generates flamegraph SVGs in the `flamegraphs/` directory. Open them in a browser — the interactive SVGs let you zoom into hot call stacks.
@@ -121,18 +120,6 @@ Benchmark output is JSON, written to the `--output` directory. Each run includes
 - **Per-fixture breakdown** so you can spot which document types are slow
 
 The JSON format makes it straightforward to feed results into dashboards, regression detectors, or comparison scripts.
-
----
-
-## Rust Microbenchmarks
-
-For lower-level function benchmarks (parsing a specific format, chunking algorithm performance, etc.):
-
-```bash title="Terminal"
-cargo bench -p kreuzberg
-```
-
-This runs Criterion.rs benchmarks with statistical analysis — means, medians, confidence intervals, and change detection against previous runs.
 
 ---
 

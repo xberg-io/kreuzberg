@@ -113,9 +113,9 @@ End-to-end tests exist to guarantee that every language binding produces identic
 When you add a feature that changes extraction behavior, regenerate the affected E2E suites:
 
 ```bash title="Terminal"
-task e2e:python:generate
-task e2e:node:generate
-task e2e:<lang>:generate
+task python:e2e:generate
+task node:e2e:generate
+task <lang>:e2e:generate
 ```
 
 ---
@@ -129,9 +129,9 @@ task check              # Full lint + format check (same as CI validate stage)
 Language-specific:
 
 ```bash title="Terminal"
-task lint:rust          # clippy + rustfmt
-task lint:python        # ruff + mypy
-task lint:node          # eslint + typecheck
+task rust:lint          # clippy + rustfmt
+task python:lint        # ruff + mypy
+task node:lint          # eslint + typecheck
 ```
 
 The repo uses pre-commit hooks that enforce conventional commit messages, code formatting, and lint rules. If a commit is rejected, the hook output tells you exactly what to fix.
@@ -152,7 +152,7 @@ zensical serve
 
 Code examples in the docs aren't inline — they're pulled from `docs/snippets/` via the `--8<--` include directive. This keeps examples testable and reusable across pages.
 
-```
+```text
 docs/snippets/
 ├── python/           # Python examples
 │   ├── api/          #   extract_file, batch_extract, etc.

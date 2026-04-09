@@ -1084,9 +1084,9 @@ backend = EasyOCRBackend(
 
 | Parameter | Type | Default | Notes |
 |-----------|------|---------|-------|
-| `languages` | `list[str] \| None` | `["en"]` | EasyOCR language codes |
-| `use_gpu` | `bool \| None` | auto-detect | `None` checks for CUDA availability |
-| `model_storage_directory` | `str \| None` | EasyOCR default | Custom model cache path |
+| `languages` | `list[str] \| None` | `None` | EasyOCR language codes; defaults to `["en"]` internally when `None` |
+| `use_gpu` | `bool \| None` | `None` | `None` auto-detects CUDA availability |
+| `model_storage_directory` | `str \| None` | `None` | Custom model cache path; uses EasyOCR's default when `None` |
 | `beam_width` | `int` | `5` | Higher = slower but more accurate |
 
 You usually don't need to instantiate this directly. When you set `backend="easyocr"` in `OcrConfig`, Kreuzberg auto-registers it:
@@ -1231,12 +1231,18 @@ register_validator(MinLengthValidator())
 
 ### Document Extractors
 
-Add support for new file formats or override built-in extractors. Extractors are registered per-MIME type with a priority system — 0–100, with built-ins at 50. Register a higher priority to override, lower to use as fallback.
+Document extractors are registered per-MIME type with a priority system — 0–100, with built-ins at 50. A higher priority wins; lower is used as fallback.
 
-**Managing extractors:** `list_document_extractors()`, `unregister_document_extractor(name)`, `clear_document_extractors()`.
+!!! Note "Rust-only registration"
+    `register_document_extractor()` is not exposed to Python. Extractor *implementation and registration* must be done in Rust. See the [Creating Plugins Guide](../guides/plugins.md#document-extractors) for the Rust API.
 
-!!! Note
-    Extractor *implementation and registration* are covered in the [Creating Plugins Guide](../guides/plugins.md#document-extractors).
+The Python API covers the management side only — listing, removing, and clearing extractors that were registered from Rust:
+
+**`list_document_extractors() -> list[str]`** — names of all currently registered extractors.
+
+**`unregister_document_extractor(name: str) -> None`** — remove a registered extractor by name.
+
+**`clear_document_extractors() -> None`** — remove all custom extractors.
 
 ---
 
@@ -1357,6 +1363,9 @@ print(f"Category: {error_code_name(code)}")  # "io"
 
 Categories: 0 = Validation, 1 = Parsing, 2 = OCR, 3 = Missing dependency, 4 = I/O, 5 = Plugin, 6 = Unsupported format, 7 = Internal.
 
+!!! Warning "Different integer space from `ErrorCode`"
+    The integers returned by `classify_error()` are **not** the same as `ErrorCode` values — do not compare them directly or substitute one for the other. `ErrorCode` represents FFI-layer panic shield codes (e.g. `PANIC = 2`, `OCR_ERROR = 6`); `classify_error` returns message-based category codes with a completely different mapping (e.g. `2 = OCR`, `4 = I/O`). Use `error_code_name(code)` to get the string label rather than comparing raw integers.
+
 ---
 
 #### error_code_name()
@@ -1387,12 +1396,18 @@ ErrorCode.EMBEDDING         # 8
 
 When the Rust core panics, `get_last_panic_context()` returns a JSON string you can parse into a `PanicContext` dataclass. This gives you the exact source file, line number, and function where the panic happened — invaluable for bug reports.
 
+```python title="Python"
+def get_last_panic_context() -> str | None
+```
+
+Returns `None` when no panic has occurred in the current thread. Always guard against `None` before parsing:
+
 ```python title="panic_debugging.py"
 from kreuzberg.exceptions import PanicContext
 from kreuzberg import get_last_panic_context
 
 context_json = get_last_panic_context()
-if context_json:
+if context_json is not None:
     ctx = PanicContext.from_json(context_json)
     print(f"Panic at {ctx.file}:{ctx.line} in {ctx.function}")
     print(f"Message: {ctx.message}")

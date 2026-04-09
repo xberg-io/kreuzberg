@@ -68,7 +68,7 @@ Every tool is discoverable at runtime via `list_tools`. Here's the full surface:
 | `cache_manifest` | — | Model checksums <span class="version-badge">v4.5.2</span> |
 | `cache_warm` | — | Pre-download models <span class="version-badge">v4.5.2</span> |
 
-All extraction tools accept an optional `config` object — the same `ExtractionConfig` shape used in the Python API. `extract_file` and `extract_bytes` also accept `pdf_password` for encrypted PDFs.
+All extraction tools accept an optional `config` object — the same `ExtractionConfig` shape used in the Python API.
 
 ---
 
