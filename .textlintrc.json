@@ -1,33 +1,33 @@
 {
-  "filters": {
-    "comments": true,
-    "node-types": {
-      "nodeTypes": ["CodeBlock", "Code"]
-    }
-  },
-  "rules": {
-    "no-todo": true,
-    "no-start-duplicated-conjunction": true,
-    "no-empty-section": true,
-    "terminology": {
-      "defaultTerms": false,
-      "terms": ["Kreuzberg", "Zensical"]
-    },
-    "no-zero-width-spaces": true,
-    "@textlint-rule/no-invalid-control-character": true,
-    "no-surrogate-pair": true,
-    "@textlint-rule/no-unmatched-pair": true,
-    "alex": true,
-    "write-good": {
-      "passive": false,
-      "severity": "warning"
-    },
-    "common-misspellings": true,
-    "stop-words": {
-      "severity": "warning"
-    },
-    "en-capitalization": {
-      "severity": "warning"
-    }
-  }
+	"filters": {
+		"comments": true,
+		"node-types": {
+			"nodeTypes": ["CodeBlock", "Code"]
+		}
+	},
+	"rules": {
+		"no-todo": true,
+		"no-start-duplicated-conjunction": true,
+		"no-empty-section": true,
+		"terminology": {
+			"defaultTerms": false,
+			"terms": ["Kreuzberg", "Zensical"]
+		},
+		"no-zero-width-spaces": true,
+		"@textlint-rule/no-invalid-control-character": true,
+		"no-surrogate-pair": true,
+		"@textlint-rule/no-unmatched-pair": true,
+		"alex": true,
+		"write-good": {
+			"passive": false,
+			"severity": "warning"
+		},
+		"common-misspellings": true,
+		"stop-words": {
+			"severity": "warning"
+		},
+		"en-capitalization": {
+			"severity": "warning"
+		}
+	}
 }
