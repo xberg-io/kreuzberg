@@ -2168,18 +2168,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "htmlize"
-version = "1.0.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d347c0de239be20ba0982e4822de3124404281e119ae3e11f5d7425a414e1935"
-dependencies = [
- "matchgen",
- "memchr",
- "pastey 0.1.1",
- "serde_json",
-]
-
-[[package]]
 name = "http"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2792,7 +2780,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg"
-version = "4.8.0"
+version = "4.8.1"
 dependencies = [
  "ahash",
  "async-trait",
@@ -2880,14 +2868,14 @@ dependencies = [
  "ureq 3.3.0",
  "urlencoding",
  "utoipa",
+ "v_htmlescape",
  "whatlang",
- "yake-rust",
  "zip 8.5.1",
 ]
 
 [[package]]
 name = "kreuzberg-ffi"
-version = "4.8.0"
+version = "4.8.1"
 dependencies = [
  "ahash",
  "async-trait",
@@ -2903,7 +2891,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-paddle-ocr"
-version = "4.8.0"
+version = "4.8.1"
 dependencies = [
  "geo-clipper",
  "geo-types",
@@ -2917,7 +2905,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-pdfium-render"
-version = "4.8.0"
+version = "4.8.1"
 dependencies = [
  "bitflags",
  "bytemuck",
@@ -2940,7 +2928,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-rb"
-version = "4.8.0"
+version = "4.8.1"
 dependencies = [
  "async-trait",
  "html-to-markdown-rs",
@@ -2957,7 +2945,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-tesseract"
-version = "4.8.0"
+version = "4.8.1"
 dependencies = [
  "cc",
  "cmake",
@@ -2983,12 +2971,6 @@ name = "lebe"
 version = "0.5.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7a79a3332a6609480d7d0c9eab957bca6b455b91bb84e66d19f5ff66294b85b8"
-
-[[package]]
-name = "levenshtein"
-version = "1.0.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "db13adb97ab515a3691f56e4dbab09283d0b86cb45abd991d8634a9d6f501760"
 
 [[package]]
 name = "libbz2-rs-sys"
@@ -3228,12 +3210,6 @@ dependencies = [
  "tendril",
  "web_atoms",
 ]
-
-[[package]]
-name = "matchgen"
-version = "0.3.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e3c6ed90dceac899d670024e99486140739a14a1bda2bd05604689b8979a2894"
 
 [[package]]
 name = "matchit"
@@ -4755,18 +4731,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "segtok"
-version = "0.1.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "80ee4d89b4a3f29cd09fc8dd79c26531298035276cdfd0673ec7e543fff32e51"
-dependencies = [
- "either",
- "fancy-regex",
- "htmlize",
- "itertools 0.14.0",
-]
-
-[[package]]
 name = "semver"
 version = "1.0.28"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5096,15 +5060,6 @@ name = "streaming-iterator"
 version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2b2231b7c3057d5e4ad0156fb3dc807d900806020c5ffa3ee6ff2c8c76fb8520"
-
-[[package]]
-name = "streaming-stats"
-version = "0.2.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b0d670ce4e348a2081843569e0f79b21c99c91bb9028b3b3ecb0f050306de547"
-dependencies = [
- "num-traits",
-]
 
 [[package]]
 name = "string_cache"
@@ -6008,6 +5963,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "v_htmlescape"
+version = "0.15.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4e8257fbc510f0a46eb602c10215901938b5c2a7d5e70fc11483b1d3c9b5b18c"
+
+[[package]]
 name = "valuable"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6714,21 +6675,6 @@ name = "y4m"
 version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7a5a4b21e1a62b67a2970e6831bc091d7b87e119e7f9791aef9702e3bef04448"
-
-[[package]]
-name = "yake-rust"
-version = "1.0.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9ce4fc48712dfe1427747a6b1f2bb1ca7b9abb7168fbc086774f890b6e4e097f"
-dependencies = [
- "hashbrown 0.15.5",
- "indexmap",
- "itertools 0.14.0",
- "levenshtein",
- "regex",
- "segtok",
- "streaming-stats",
-]
 
 [[package]]
 name = "yansi"

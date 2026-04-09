@@ -431,7 +431,34 @@ def main():
         else:
             unchanged_files.append(str(rel_path))
 
+    # Parse version components for C header defines
+    version_parts = version.split(".")
+    v_major = version_parts[0] if len(version_parts) > 0 else "0"
+    v_minor = version_parts[1] if len(version_parts) > 1 else "0"
+    v_patch = version_parts[2].split("-")[0] if len(version_parts) > 2 else "0"
+
     text_targets = [
+        # C FFI header version defines
+        (
+            repo_root / "crates/kreuzberg-ffi/kreuzberg.h",
+            r'(#define KREUZBERG_VERSION_MAJOR )\d+',
+            rf'\g<1>{v_major}',
+        ),
+        (
+            repo_root / "crates/kreuzberg-ffi/kreuzberg.h",
+            r'(#define KREUZBERG_VERSION_MINOR )\d+',
+            rf'\g<1>{v_minor}',
+        ),
+        (
+            repo_root / "crates/kreuzberg-ffi/kreuzberg.h",
+            r'(#define KREUZBERG_VERSION_PATCH )\d+',
+            rf'\g<1>{v_patch}',
+        ),
+        (
+            repo_root / "crates/kreuzberg-ffi/kreuzberg.h",
+            r'(#define KREUZBERG_VERSION ")[^"]+(")',
+            rf'\g<1>{version}\g<2>',
+        ),
         (
             repo_root / "crates/kreuzberg-node/typescript/index.ts",
             r'__version__ = "([^"]+)"',

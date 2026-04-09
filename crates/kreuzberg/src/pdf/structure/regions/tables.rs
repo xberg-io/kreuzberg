@@ -109,6 +109,24 @@ pub(in crate::pdf::structure) fn extract_tables_from_layout_hints(
             continue;
         }
 
+        // Reject tables with very few rows whose bbox covers most of the page.
+        // This catches body text that the layout model misclassifies as a Table:
+        // the table reconstructor splits prose into columns producing a wide,
+        // page-spanning "table" with only 2–3 rows. Real tables with few rows
+        // are compact and don't cover >50% of the page height.
+        let hint_height = (hint.top - hint.bottom).abs();
+        if table_cells.len() <= 3 && page_height > 0.0 && hint_height / page_height > 0.5 {
+            tracing::trace!(
+                page = page_index,
+                rows = table_cells.len(),
+                hint_height,
+                page_height,
+                ratio = hint_height / page_height,
+                "table with <=3 rows spans >50% of page height — skipping likely false-positive"
+            );
+            continue;
+        }
+
         // Reject degenerate tables with too many empty cells.
         // False-positive Table hints (e.g. in RTL documents) often produce
         // tables where most cells are empty because the content is not truly

@@ -20,9 +20,6 @@ use std::path::Path;
 
 /// Helper: extract a file synchronously and return the content string.
 fn extract_md(path: &Path, config: ExtractionConfig) -> String {
-    if !path.exists() {
-        return String::new();
-    }
     extract_file_sync(path, None, &config)
         .expect("extraction must succeed")
         .content
@@ -36,11 +33,8 @@ fn extract_md(path: &Path, config: ExtractionConfig) -> String {
 /// across all pages — the class of PDF that triggered issue #670.
 #[test]
 fn test_include_headers_produces_at_least_as_many_words_as_default() {
-    let path = Path::new("test_documents/pdf/multipage_marketing.pdf");
-    if !path.exists() {
-        eprintln!("Skipping: test fixture not found at {}", path.display());
-        return;
-    }
+    let path = helpers::get_test_file_path("pdf/multipage_marketing.pdf");
+    assert!(path.exists(), "Test fixture not found: {}", path.display());
 
     let default_config = ExtractionConfig {
         output_format: OutputFormat::Markdown,
@@ -59,8 +53,8 @@ fn test_include_headers_produces_at_least_as_many_words_as_default() {
         ..Default::default()
     };
 
-    let default_out = extract_md(path, default_config);
-    let permissive_out = extract_md(path, permissive_config);
+    let default_out = extract_md(&path, default_config);
+    let permissive_out = extract_md(&path, permissive_config);
 
     let default_words: Vec<&str> = default_out.split_whitespace().collect();
     let permissive_words: Vec<&str> = permissive_out.split_whitespace().collect();
@@ -83,11 +77,8 @@ fn test_include_headers_produces_at_least_as_many_words_as_default() {
 /// output OR that include_headers recovers text the default config stripped.
 #[test]
 fn test_strip_repeating_text_flag_is_not_a_noop() {
-    let path = Path::new("test_documents/pdf/multipage_marketing.pdf");
-    if !path.exists() {
-        eprintln!("Skipping: test fixture not found at {}", path.display());
-        return;
-    }
+    let path = helpers::get_test_file_path("pdf/multipage_marketing.pdf");
+    assert!(path.exists(), "Test fixture not found: {}", path.display());
 
     let default_config = ExtractionConfig {
         output_format: OutputFormat::Markdown,
@@ -106,8 +97,8 @@ fn test_strip_repeating_text_flag_is_not_a_noop() {
         ..Default::default()
     };
 
-    let default_out = extract_md(path, default_config);
-    let no_strip_out = extract_md(path, no_strip_config);
+    let default_out = extract_md(&path, default_config);
+    let no_strip_out = extract_md(&path, no_strip_config);
 
     // The permissive config should produce at least as much content.
     // If it produces more, the flag is working. If identical, that is acceptable
@@ -128,11 +119,8 @@ fn test_strip_repeating_text_flag_is_not_a_noop() {
 /// was stripping it.
 #[test]
 fn test_plain_text_not_fewer_words_than_markdown() {
-    let path = Path::new("test_documents/pdf/multipage_marketing.pdf");
-    if !path.exists() {
-        eprintln!("Skipping: test fixture not found at {}", path.display());
-        return;
-    }
+    let path = helpers::get_test_file_path("pdf/multipage_marketing.pdf");
+    assert!(path.exists(), "Test fixture not found: {}", path.display());
 
     let plain_config = ExtractionConfig {
         output_format: OutputFormat::Plain,
@@ -145,8 +133,8 @@ fn test_plain_text_not_fewer_words_than_markdown() {
         ..Default::default()
     };
 
-    let plain_out = extract_md(path, plain_config);
-    let md_out = extract_md(path, md_config);
+    let plain_out = extract_md(&path, plain_config);
+    let md_out = extract_md(&path, md_config);
 
     let plain_words = plain_out.split_whitespace().count();
     let md_words = md_out.split_whitespace().count();

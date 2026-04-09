@@ -855,7 +855,7 @@ async fn test_run_pipeline_applies_output_format_last() {
 
 #[tokio::test]
 #[serial]
-#[cfg(feature = "pdf")]
+#[cfg(all(feature = "pdf", feature = "chunking"))]
 async fn test_chunking_populates_page_numbers_for_pdf() {
     use crate::core::config::ChunkingConfig;
 

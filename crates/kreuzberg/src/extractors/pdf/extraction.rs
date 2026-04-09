@@ -342,11 +342,6 @@ fn extract_tables_from_document(
         let markdown = table_to_markdown(&table_cells);
 
         // Compute table bounding box from word positions.
-        // Note: The table detector (reconstruct_table) treats ALL words on the page as
-        // potential table content, so the bbox covers all page words. This is correct:
-        // if the page passes the 2x2 validation, the entire page IS the table.
-        // For pages with mixed content (table + body text), the detector would either
-        // reject the page (not 2x2) or include everything (the full page is tabular).
         let page_height = page.height().value as f64;
 
         // HocrWord coordinates are in image space (y=0 at top, from table.rs:finalize_word).
@@ -372,6 +367,26 @@ fn extract_tables_from_document(
         } else {
             None
         };
+
+        // Reject tables with very few rows whose bbox covers most of the page.
+        // The heuristic table detector treats all words on a page as potential
+        // table content, so when it produces a 2–3 row "table" spanning the
+        // full page, it's almost certainly body text with column-like gaps
+        // (e.g., PowerPoint-exported marketing slides). The bbox would suppress
+        // all text segments for this page in the structured pipeline.
+        if let Some(ref bb) = bounding_box {
+            let bbox_height = (bb.y1 - bb.y0).abs();
+            if table_cells.len() <= 3 && page_height > 0.0 && bbox_height / page_height > 0.5 {
+                tracing::trace!(
+                    page = page_index,
+                    rows = table_cells.len(),
+                    bbox_height,
+                    page_height,
+                    "heuristic table with <=3 rows spans >50% of page — skipping false positive"
+                );
+                continue;
+            }
+        }
 
         all_tables.push(Table {
             cells: table_cells,

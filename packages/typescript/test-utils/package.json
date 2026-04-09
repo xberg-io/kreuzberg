@@ -1,6 +1,6 @@
 {
 	"name": "@kreuzberg/test-utils",
-	"version": "4.8.0",
+	"version": "4.8.1",
 	"description": "Shared test utilities for Kreuzberg e2e and integration tests",
 	"author": {
 		"name": "Na'aman Hirschfeld",
@@ -72,6 +72,6 @@
 		"@types/node": "^25.5.2",
 		"tsup": "^8.5.1",
 		"typescript": "^6.0.2",
-		"vitest": "^4.1.3"
+		"vitest": "^4.1.4"
 	}
 }

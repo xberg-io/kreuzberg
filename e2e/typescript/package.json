@@ -1,6 +1,6 @@
 {
 	"name": "@kreuzberg/e2e-tests",
-	"version": "4.8.0",
+	"version": "4.8.1",
 	"type": "module",
 	"description": "End-to-end tests for Kreuzberg TypeScript bindings",
 	"scripts": {
@@ -13,9 +13,9 @@
 	},
 	"devDependencies": {
 		"@types/node": "^25.5.2",
-		"@vitest/ui": "^4.1.3",
+		"@vitest/ui": "^4.1.4",
 		"oxlint": "^1.59.0",
 		"typescript": "^6.0.2",
-		"vitest": "^4.1.3"
+		"vitest": "^4.1.4"
 	}
 }

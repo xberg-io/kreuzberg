@@ -11,7 +11,7 @@
 		"@emnapi/runtime": "1.9.2",
 		"@textlint-rule/textlint-rule-no-invalid-control-character": "^3.0.0",
 		"@textlint-rule/textlint-rule-no-unmatched-pair": "^2.0.4",
-		"@vitest/coverage-v8": "^4.1.3",
+		"@vitest/coverage-v8": "^4.1.4",
 		"oxlint": "^1.59.0",
 		"textlint": "^15.5.4",
 		"textlint-filter-rule-comments": "^1.3.0",
@@ -31,12 +31,12 @@
 		"textlint-rule-write-good": "^2.0.0",
 		"tsx": "^4.21.0",
 		"typescript": "^6.0.2",
-		"vitest": "^4.1.3"
+		"vitest": "^4.1.4"
 	},
 	"pnpm": {
 		"overrides": {
 			"glob": "10.5.0"
 		}
 	},
-	"version": "4.8.0"
+	"version": "4.8.1"
 }
