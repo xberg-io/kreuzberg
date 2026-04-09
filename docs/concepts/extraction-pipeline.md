@@ -54,7 +54,7 @@ Cache keys are content-based, not path-based. If you rename a file but the bytes
 Before Kreuzberg can extract anything, it needs to know what format the file is. It resolves the MIME type through one of two paths:
 
 - **Explicit:** You pass `mime_type="application/pdf"` and Kreuzberg validates it against the list of supported types.
-- **Auto-detection:** Kreuzberg reads the file extension (e.g., `.pdf` → `application/pdf`) from an internal mapping table.
+- **Auto-detection:** Kreuzberg reads the file extension (for example, `.pdf` → `application/pdf`) from an internal mapping table.
 
 If the resolved MIME type isn't in the supported list, the pipeline stops immediately with an `UnsupportedFormat` error. No compute is wasted on files Kreuzberg can't handle.
 
@@ -66,7 +66,7 @@ For the full details on how extension mapping, normalization, and validation wor
 
 With the MIME type resolved, Kreuzberg queries the extractor registry to find the `DocumentExtractor` that handles this format. The registry is a map from MIME types to extractor implementations, managed by the [plugin system](plugin-system.md).
 
-If multiple extractors are registered for the same MIME type (e.g., you registered a custom PDF extractor alongside the built-in one), the one with the higher `priority()` value is selected. All built-in extractors have a priority of 0, so any custom extractor with a priority above 0 takes precedence.
+If multiple extractors are registered for the same MIME type (for example, you registered a custom PDF extractor alongside the built-in one), the one with the higher `priority()` value is selected. All built-in extractors have a priority of 0, so any custom extractor with a priority above 0 takes precedence.
 
 ```rust title="registry_lookup.rs"
 let registry = get_document_extractor_registry();

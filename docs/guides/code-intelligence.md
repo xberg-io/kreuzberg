@@ -203,7 +203,7 @@ The `ProcessResult` (accessed via `FormatMetadata::Code` in Rust, or `metadata.f
 
 ### `language`
 
-The detected programming language name (e.g., `"python"`, `"rust"`, `"typescript"`).
+The detected programming language name (for example, `"python"`, `"rust"`, `"typescript"`).
 
 ### `metrics`
 
@@ -228,7 +228,7 @@ A tree of structural items (functions, classes, methods, modules, etc.). Each `S
 - `name` -- the identifier name (if available)
 - `visibility` -- visibility modifier (`public`, `private`, `protected`, etc.)
 - `span` -- source location (start/end line, column, byte offset)
-- `children` -- nested structural items (e.g., methods inside a class)
+- `children` -- nested structural items (for example, methods inside a class)
 - `decorators` -- decorator/attribute names
 - `doc_comment` -- associated documentation comment text
 - `signature` -- function/method signature string
@@ -239,8 +239,8 @@ A tree of structural items (functions, classes, methods, modules, etc.). Each `S
 Import/include/require statements. Each `ImportInfo` has:
 
 - `source` -- the module path or file being imported
-- `items` -- specific items imported (e.g., `["foo", "bar"]`)
-- `alias` -- import alias (e.g., `import numpy as np` yields alias `"np"`)
+- `items` -- specific items imported (for example, `["foo", "bar"]`)
+- `alias` -- import alias (for example, `import numpy as np` yields alias `"np"`)
 - `is_wildcard` -- whether this is a wildcard import (`import *`)
 - `span` -- source location
 
@@ -301,7 +301,7 @@ if fmt and fmt.get("format_type") == "code":
 Kreuzberg detects the programming language in two ways:
 
 1. **File extension** (fast path) -- when using `extract_file`, the extension is matched against 248 known language extensions
-2. **Shebang line** (fallback) -- when using `extract_bytes` or when the extension is ambiguous, the first line is checked for `#!/usr/bin/env python`, `#!/bin/bash`, etc.
+2. **Shebang line** (fallback) -- when using `extract_bytes` or when the extension is ambiguous, the first line is checked for `#!/usr/bin/env python`, `#!/bin/bash`, and so on.
 
 If neither method identifies the language, extraction returns an `UnsupportedFormat` error.
 

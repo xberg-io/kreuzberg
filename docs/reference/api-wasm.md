@@ -68,7 +68,7 @@ import { extractBytes, initWasm } from "npm:@kreuzberg/wasm@^4.2.7";
 
 ## Module Initialization
 
-### initWasm()
+### InitWasm()
 
 Initialize the WASM module. This must be called once before using any extraction functions.
 
@@ -120,7 +120,7 @@ initializeKreuzberg().catch(console.error);
 
 ---
 
-### isInitialized()
+### IsInitialized()
 
 Check if the WASM module is initialized.
 
@@ -146,7 +146,7 @@ if (!isInitialized()) {
 
 ---
 
-### getVersion()
+### GetVersion()
 
 Get the WASM module version.
 
@@ -176,7 +176,7 @@ console.log(`Using Kreuzberg ${version}`);
 
 ---
 
-### getInitializationError()
+### GetInitializationError()
 
 Get the initialization error if module failed to load. Used for debugging initialization issues.
 
@@ -194,7 +194,7 @@ function getInitializationError(): Error | null
 
 ## Core Extraction Functions
 
-### extractBytes()
+### ExtractBytes()
 
 Extract content from document bytes asynchronously.
 
@@ -211,7 +211,7 @@ async function extractBytes(
 **Parameters:**
 
 - `data` (Uint8Array): The document bytes to extract from
-- `mimeType` (string): MIME type of the document (e.g., 'application/pdf', 'image/jpeg'). Required.
+- `mimeType` (string): MIME type of the document (for example, 'application/pdf', 'image/jpeg'). Required.
 - `config` (ExtractionConfig | null): Optional extraction configuration. Uses defaults if not provided.
 
 **Returns:**
@@ -273,7 +273,7 @@ console.log(result.content);
 
 ---
 
-### extractFile()
+### ExtractFile()
 
 Extract content from a file on the file system (Node.js, Deno, Bun only).
 
@@ -333,7 +333,7 @@ const result = await extractFile('./report.xlsx', null, {
 
 ---
 
-### extractFromFile()
+### ExtractFromFile()
 
 Extract content from a File or Blob (browser-friendly wrapper).
 
@@ -393,7 +393,7 @@ const result = await extractFromFile(file, file.type, {
 
 ---
 
-### batchExtractBytes()
+### BatchExtractBytes()
 
 Extract content from multiple byte arrays in parallel.
 
@@ -442,7 +442,7 @@ for (const result of results) {
 
 ---
 
-### batchExtractFiles()
+### BatchExtractFiles()
 
 Extract content from multiple browser File objects in parallel.
 
@@ -491,7 +491,7 @@ for (const result of results) {
 
 ## Synchronous Extraction Functions
 
-### extractBytesSync()
+### ExtractBytesSync()
 
 Extract content from document bytes synchronously.
 
@@ -534,7 +534,7 @@ console.log(result.content);
 
 ---
 
-### batchExtractBytesSync()
+### BatchExtractBytesSync()
 
 Extract content from multiple byte arrays synchronously.
 
@@ -566,7 +566,7 @@ function batchExtractBytesSync(
 
 ## OCR Functions
 
-### enableOcr()
+### EnableOcr()
 
 Enable OCR functionality with automatic backend selection.
 
@@ -647,13 +647,13 @@ const germanResult = await extractBytes(deImageBytes, 'image/png', {
 
 **Supported Languages (43):**
 
-eng, deu, fra, spa, ita, por, nld, rus, jpn, kor, chi_sim, chi_tra, pol, tur, swe, dan, fin, nor, ces, slk, ron, hun, hrv, srp, bul, ukr, ell, ara, heb, hin, tha, vie, mkd, ben, tam, tel, kan, mal, mya, khm, lao, sin
+Eng, deu, fra, spa, ita, por, nld, rus, jpn, kor, chi_sim, chi_tra, pol, tur, swe, dan, fin, nor, ces, slk, ron, hun, hrv, srp, bul, ukr, ell, ara, heb, hin, tha, vie, mkd, ben, tam, tel, kan, mal, mya, khm, lao, sin
 
 ---
 
 ## OCR Backend Management
 
-### registerOcrBackend()
+### RegisterOcrBackend()
 
 Register a custom OCR backend.
 
@@ -684,7 +684,7 @@ registerOcrBackend(backend);
 
 ---
 
-### getOcrBackend()
+### GetOcrBackend()
 
 Get a registered OCR backend by name.
 
@@ -715,7 +715,7 @@ if (backend) {
 
 ---
 
-### listOcrBackends()
+### ListOcrBackends()
 
 List all registered OCR backends.
 
@@ -727,7 +727,7 @@ function listOcrBackends(): string[]
 
 **Returns:**
 
-- string array type: Array of registered backend names
+- String array type: Array of registered backend names
 
 **Example:**
 
@@ -740,7 +740,7 @@ console.log('Available OCR backends:', backends);
 
 ---
 
-### unregisterOcrBackend()
+### UnregisterOcrBackend()
 
 Unregister an OCR backend.
 
@@ -768,7 +768,7 @@ await unregisterOcrBackend('tesseract-wasm');
 
 ---
 
-### clearOcrBackends()
+### ClearOcrBackends()
 
 Clear all registered OCR backends and call their shutdown methods.
 
@@ -791,7 +791,7 @@ await clearOcrBackends();
 
 ## MIME Type Utilities
 
-### detectMimeFromBytes()
+### DetectMimeFromBytes()
 
 Auto-detect MIME type from file bytes.
 
@@ -807,7 +807,7 @@ function detectMimeFromBytes(data: Uint8Array): string
 
 **Returns:**
 
-- `string`: Detected MIME type (e.g., 'application/pdf', 'image/jpeg')
+- `string`: Detected MIME type (for example, 'application/pdf', 'image/jpeg')
 
 **Example:**
 
@@ -821,7 +821,7 @@ console.log(`Detected MIME type: ${mimeType}`);
 
 ---
 
-### getMimeFromExtension()
+### GetMimeFromExtension()
 
 Get MIME type from file extension.
 
@@ -850,7 +850,7 @@ const mimeType2 = getMimeFromExtension('.docx'); // 'application/vnd.openxmlform
 
 ---
 
-### getExtensionsForMime()
+### GetExtensionsForMime()
 
 Get file extensions for a MIME type.
 
@@ -866,7 +866,7 @@ function getExtensionsForMime(mimeType: string): string[]
 
 **Returns:**
 
-- string array type: Array of file extensions (without leading dots)
+- String array type: Array of file extensions (without leading dots)
 
 **Example:**
 
@@ -879,7 +879,7 @@ const extensions2 = getExtensionsForMime('image/jpeg');      // ['jpg', 'jpeg']
 
 ---
 
-### normalizeMimeType()
+### NormalizeMimeType()
 
 Normalize MIME type to canonical form.
 
@@ -910,7 +910,7 @@ const normalized2 = normalizeMimeType('text/plain');      // 'text/plain'
 
 ## Configuration Loading
 
-!!! warning "Deprecated API"
+!!! Warning "Deprecated API"
     The `enable_ocr` parameter has been deprecated in favor of the new `ocr` configuration object.
 
     **Old pattern (no longer supported):**
@@ -930,7 +930,7 @@ const normalized2 = normalizeMimeType('text/plain');      // 'text/plain'
 
     The new approach provides more granular control over OCR behavior through the OCR configuration object.
 
-### loadConfigFromString()
+### LoadConfigFromString()
 
 Load extraction configuration from a string in YAML, JSON, or TOML format.
 
@@ -1001,7 +1001,7 @@ const config = loadConfigFromString(tomlConfig, 'toml');
 
 ## Runtime Detection
 
-### detectRuntime()
+### DetectRuntime()
 
 Detect the current JavaScript runtime environment.
 
@@ -1039,7 +1039,7 @@ switch (runtime) {
 
 ---
 
-### getWasmCapabilities()
+### GetWasmCapabilities()
 
 Get WebAssembly capabilities available in the current runtime.
 
@@ -1082,7 +1082,7 @@ if (caps.hasSharedArrayBuffer) {
 
 ---
 
-### isBrowser(), isNode(), isDeno(), isBun()
+### IsBrowser(), isNode(), isDeno(), isBun()
 
 Check if code is running in a specific runtime.
 
@@ -1115,7 +1115,7 @@ if (isNode()) {
 
 ---
 
-### hasWorkers(), hasSharedArrayBuffer()
+### HasWorkers(), hasSharedArrayBuffer()
 
 Check for specific WASM capabilities.
 
@@ -1148,7 +1148,7 @@ if (!hasWorkers()) {
 
 ## Type Adapter Utilities
 
-### fileToUint8Array()
+### FileToUint8Array()
 
 Convert a File or Blob to Uint8Array.
 
@@ -1184,7 +1184,7 @@ const result = await extractBytes(bytes, file.type);
 
 ---
 
-### configToJS()
+### ConfigToJS()
 
 Normalize ExtractionConfig for WASM processing.
 
@@ -1218,7 +1218,7 @@ const wasmConfig = configToJS(config);
 
 ---
 
-### jsToExtractionResult()
+### JsToExtractionResult()
 
 Parse WASM extraction result and convert to TypeScript type.
 
@@ -1244,7 +1244,7 @@ function jsToExtractionResult(jsValue: unknown): ExtractionResult
 
 ---
 
-### isValidExtractionResult()
+### IsValidExtractionResult()
 
 Validate that a value conforms to ExtractionResult structure.
 
@@ -1361,8 +1361,8 @@ Configuration for OCR extraction.
 
 **Fields:**
 
-- `backend` (string): OCR backend name (e.g., 'tesseract-wasm')
-- `language` (string): Language code for OCR (e.g., 'eng', 'deu', 'fra')
+- `backend` (string): OCR backend name (for example, 'tesseract-wasm')
+- `language` (string): Language code for OCR (for example, 'eng', 'deu', 'fra')
 - `languages` (string[]): Multiple languages for OCR
 - `dpi` (number): DPI for OCR processing
 - `preprocessing` (OcrPreprocessing): Image preprocessing settings
@@ -1441,7 +1441,7 @@ Configuration for text chunking.
 - `embedding` (EmbeddingConfig | undefined): Optional embedding configuration
 - `preset` (string | undefined): Chunking preset name
 - `sizingType` ("characters" | "tokenizer" | undefined): How chunk size is measured. Use `"tokenizer"` to measure by token count using a HuggingFace tokenizer. Default: undefined (characters)
-- `sizingModel` (string | undefined): HuggingFace model ID for tokenizer-based sizing (e.g. `"bert-base-uncased"`). Required when `sizingType` is `"tokenizer"`. Default: undefined
+- `sizingModel` (string | undefined): HuggingFace model ID for tokenizer-based sizing (for example `"bert-base-uncased"`). Required when `sizingType` is `"tokenizer"`. Default: undefined
 - `sizingCacheDir` (string | undefined): Optional directory to cache downloaded tokenizer files. Default: undefined
 - `chunkerType` (string | undefined): Type of chunker to use. Options: `"text"` (default), `"markdown"`, `"yaml"`. Default: undefined (text)
 - `prependHeadingContext` (boolean | undefined): When true, prepends heading hierarchy path to each chunk's content. Most useful with `chunkerType: "markdown"`. Default: undefined (false)
@@ -1467,7 +1467,7 @@ Configuration for keyword extraction.
 **Fields:**
 
 - `maxKeywords` (number): Maximum number of keywords to extract
-- `method` (string): Keyword extraction method (e.g., 'yake')
+- `method` (string): Keyword extraction method (for example, 'yake')
 
 ---
 
@@ -1490,12 +1490,12 @@ Image extracted from document.
 **Fields:**
 
 - `data` (Uint8Array): Image bytes
-- `format` (string): Image format (e.g., 'png', 'jpeg')
+- `format` (string): Image format (for example, 'png', 'jpeg')
 - `imageIndex` (number): Index within document
 - `pageNumber` (number | null): Page number (if applicable)
 - `width` (number | null): Image width in pixels
 - `height` (number | null): Image height in pixels
-- `colorspace` (string | null): Color space (e.g., 'RGB', 'CMYK')
+- `colorspace` (string | null): Color space (for example, 'RGB', 'CMYK')
 - `bitsPerComponent` (number | null): Bits per color component
 - `isMask` (boolean): Whether this is a mask image
 - `description` (string | null): Image description if available
@@ -1924,9 +1924,9 @@ Common MIME types supported by Kreuzberg WASM:
 
 ## PDF Rendering
 
-!!! info "Added in v4.6.2"
+!!! Info "Added in v4.6.2"
 
-### renderPdfPageSync()
+### RenderPdfPageSync()
 
 Render a single page of a PDF as a PNG image (synchronous).
 
@@ -2179,7 +2179,7 @@ const result = await extractBytes(pdfBytes, 'application/pdf');
 
 ## LLM Integration
 
-!!! warning "Not Available in WASM"
+!!! Warning "Not Available in WASM"
 
     LLM integration features (`StructuredExtractionConfig`, VLM OCR, LLM embeddings) are **not available** in the WASM binding. The `liter-llm` crate requires native HTTP networking which is unavailable in WebAssembly environments.
 

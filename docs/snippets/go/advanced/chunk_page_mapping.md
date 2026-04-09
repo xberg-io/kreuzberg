@@ -1,11 +1,11 @@
-package main
+Package main
 
-import (
+Import (
     "fmt"
-    "kreuzberg"
+    "Kreuzberg"
 )
 
-func main() {
+Func main() {
     config := &kreuzberg.ExtractionConfig{
         Chunking: &kreuzberg.ChunkingConfig{
             ChunkSize: 500,

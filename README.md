@@ -144,7 +144,7 @@ Complete architecture coverage across all language bindings:
 | CLI | ✅ | ✅ | ✅ | ✅ |
 | Docker | ✅ | ✅ | ✅ | - |
 
-**Note**: ✅ = Precompiled binaries available with instant installation. WASM runs in any environment with WebAssembly support (browsers, Deno, Bun, Cloudflare Workers). All platforms are tested in CI. macOS support is Apple Silicon only.
+**Note**: ✅ = Precompiled binaries available with instant installation. WASM runs in any environment with WebAssembly support (browsers, Deno, Bun, Cloudflare Workers). All platforms are tested in CI. MacOS support is Apple Silicon only.
 
 ### Embeddings Support (Optional)
 
@@ -152,7 +152,7 @@ To use embeddings functionality:
 
 1. **Install ONNX Runtime 1.24+**:
    - Linux: Download from [ONNX Runtime releases](https://github.com/microsoft/onnxruntime/releases) (Debian packages may have older versions)
-   - macOS: `brew install onnxruntime`
+   - MacOS: `brew install onnxruntime`
    - Windows: Download from [ONNX Runtime releases](https://github.com/microsoft/onnxruntime/releases)
 
 2. Use embeddings in your code - see [Embeddings Guide](https://docs.kreuzberg.dev/features/#embeddings)

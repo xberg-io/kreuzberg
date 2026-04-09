@@ -21,7 +21,7 @@ dotnet add package Kreuzberg
 **Requirements:**
 
 - .NET 10.0 or later
-- libkreuzberg_ffi native library (auto-loaded from NuGet)
+- Libkreuzberg_ffi native library (auto-loaded from NuGet)
 - Optional: Tesseract or EasyOCR/PaddleOCR for OCR functionality
 
 ## Using the API
@@ -282,7 +282,7 @@ public static string DetectMimeType(ReadOnlySpan<byte> data)
 
 **Returns:**
 
-- `string`: MIME type string (e.g., "application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+- `string`: MIME type string (for example, "application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
 
 **Throws:**
 
@@ -315,7 +315,7 @@ public static string DetectMimeTypeFromPath(string path)
 
 **Returns:**
 
-- `string`: MIME type string (e.g., "application/pdf")
+- `string`: MIME type string (for example, "application/pdf")
 
 **Throws:**
 
@@ -420,7 +420,7 @@ public static ExtractionResult ExtractBytesSync(
 **Parameters:**
 
 - `data` (ReadOnlySpan<byte>): Document bytes to extract from. Must not be empty.
-- `mimeType` (string): MIME type of the document (e.g., "application/pdf"). Must not be empty.
+- `mimeType` (string): MIME type of the document (for example, "application/pdf"). Must not be empty.
 - `config` (ExtractionConfig?): Optional extraction configuration. Uses defaults if null.
 
 **Returns:**
@@ -546,11 +546,11 @@ public static IReadOnlyList<string> GetExtensionsForMime(string mimeType)
 
 **Parameters:**
 
-- `mimeType` (string): MIME type string (e.g., "application/pdf"). Must not be empty.
+- `mimeType` (string): MIME type string (for example, "application/pdf"). Must not be empty.
 
 **Returns:**
 
-- `IReadOnlyList<string>`: List of file extensions (e.g., [".pdf"])
+- `IReadOnlyList<string>`: List of file extensions (for example, [".pdf"])
 
 **Throws:**
 
@@ -1022,7 +1022,7 @@ public static List<string> ListEmbeddingPresets()
 
 **Returns:**
 
-- `List<string>`: List of embedding preset names (e.g., ["default", "openai", "sentence-transformers"])
+- `List<string>`: List of embedding preset names (for example, ["default", "openai", "sentence-transformers"])
 
 **Throws:**
 
@@ -1049,7 +1049,7 @@ public static EmbeddingPreset? GetEmbeddingPreset(string name)
 
 **Parameters:**
 
-- `name` (string): The name of the embedding preset (e.g., "default", "openai"). Must not be empty.
+- `name` (string): The name of the embedding preset (for example, "default", "openai"). Must not be empty.
 
 **Returns:**
 
@@ -1127,7 +1127,7 @@ The main result of document extraction containing extracted content, metadata, a
 - `ExtractedKeywords` (List<ExtractedKeyword>?): Extracted keywords when keyword extraction is enabled.
 - `Images` (List<ExtractedImage>?): Images extracted from the document, if image extraction was enabled.
 - `Metadata` (Metadata): Document metadata including language, format-specific info, and other attributes.
-- `MimeType` (string): The detected MIME type of the document (e.g., "application/pdf").
+- `MimeType` (string): The detected MIME type of the document (for example, "application/pdf").
 - `OcrElements` (List<OcrElement>?): OCR elements extracted from documents.
 - `Pages` (List<PageContent>?): Per-page extracted content when page extraction is enabled.
 - `ProcessingWarnings` (List<ProcessingWarning>?): Non-fatal warnings collected during processing.
@@ -1142,7 +1142,7 @@ Configuration for document extraction, controlling extraction behavior and featu
 
 **Properties:**
 
-- `Chunking` (ChunkingConfig?): Text chunking configuration for splitting long documents. Includes `Sizing` property (ChunkSizingConfig?) to control how chunk size is measured -- by character count (default) or by token count using a HuggingFace tokenizer. ChunkSizingConfig has properties: `SizingType` (string: `"characters"` or `"tokenizer"`), `Model` (string: HuggingFace model ID, e.g. `"bert-base-uncased"`), and `CacheDir` (string?: optional tokenizer cache directory).
+- `Chunking` (ChunkingConfig?): Text chunking configuration for splitting long documents. Includes `Sizing` property (ChunkSizingConfig?) to control how chunk size is measured -- by character count (default) or by token count using a HuggingFace tokenizer. ChunkSizingConfig has properties: `SizingType` (string: `"characters"` or `"tokenizer"`), `Model` (string: HuggingFace model ID, for example `"bert-base-uncased"`), and `CacheDir` (string?: optional tokenizer cache directory).
 - `EnableQualityProcessing` (bool?): Whether to enable quality processing to improve extraction quality.
 - `ForceOcr` (bool?): Whether to force OCR processing even for documents with text.
 - `HtmlOptions` (HtmlConversionOptions?): HTML conversion options for HTML documents.
@@ -1167,8 +1167,8 @@ Configuration for OCR processing.
 
 **Properties:**
 
-- `Backend` (string?): The OCR backend to use (e.g., "tesseract").
-- `Language` (string?): The language to recognize (e.g., "eng", "deu").
+- `Backend` (string?): The OCR backend to use (for example, "tesseract").
+- `Language` (string?): The language to recognize (for example, "eng", "deu").
 - `TesseractConfig` (TesseractConfig?): Tesseract-specific configuration options.
 
 ---
@@ -1195,7 +1195,7 @@ Represents a document as bytes with its MIME type, used for batch extraction fro
 **Properties:**
 
 - `Data` (byte[]): The document bytes.
-- `MimeType` (string): The MIME type of the document (e.g., "application/pdf").
+- `MimeType` (string): The MIME type of the document (for example, "application/pdf").
 
 **Constructor:**
 
@@ -1315,8 +1315,8 @@ Represents an embedding preset with configuration for text embedding generation.
 - `ChunkSize` (int): The recommended chunk size (in tokens or characters) for this embedding model.
 - `Description` (string): Human-readable description of this embedding preset.
 - `Dimensions` (int): The output dimensionality of the embedding vectors from this model.
-- `ModelName` (string): The name of the embedding model (e.g., "text-embedding-ada-002").
-- `Name` (string): The name/identifier of this embedding preset (e.g., "default", "openai").
+- `ModelName` (string): The name of the embedding model (for example, "text-embedding-ada-002").
+- `Name` (string): The name/identifier of this embedding preset (for example, "default", "openai").
 - `Overlap` (int): The recommended overlap between chunks when chunking text for this model.
 
 ---
@@ -1338,9 +1338,9 @@ Represents an image extracted from a document with metadata and optional OCR res
 
 **Properties:**
 
-- `Colorspace` (string?): Color space representation (e.g., "RGB", "CMYK", "DeviceGray").
+- `Colorspace` (string?): Color space representation (for example, "RGB", "CMYK", "DeviceGray").
 - `Data` (byte[]): Raw image data as bytes (PNG, JPEG, etc.).
-- `Format` (string): Image format (e.g., "PNG", "JPEG", "TIFF").
+- `Format` (string): Image format (for example, "PNG", "JPEG", "TIFF").
 - `Height` (uint?): Image height in pixels.
 - `ImageIndex` (int): Zero-based index of this image among all extracted images.
 - `PageNumber` (int?): Page number (1-indexed) where this image appears.
@@ -1354,7 +1354,7 @@ Represents an extracted keyword from keyword extraction algorithms (YAKE, RAKE).
 
 **Properties:**
 
-- `Algorithm` (string): Algorithm that extracted this keyword (e.g., "yake", "rake").
+- `Algorithm` (string): Algorithm that extracted this keyword (for example, "yake", "rake").
 - `Positions` (List<int>?): Optional positions where keyword appears in text (character offsets).
 - `Score` (float): Relevance score (higher is better, algorithm-specific range).
 - `Text` (string): The keyword text.
@@ -1390,10 +1390,10 @@ Metadata about image preprocessing operations applied during extraction.
 - `NewDimensions` (int[]?): New image dimensions [width, height] after preprocessing.
 - `OriginalDimensions` (int[]?): Original image dimensions [width, height] in pixels.
 - `OriginalDpi` (double[]?): Original image DPI [horizontal, vertical].
-- `ResampleMethod` (string?): Resampling method used for resizing (e.g., "lanczos", "bilinear").
+- `ResampleMethod` (string?): Resampling method used for resizing (for example, "lanczos", "bilinear").
 - `ResizeError` (string?): Error message if resizing failed, if any.
 - `ScaleFactor` (double): Scale factor applied to the image.
-- `SkippedResize` (bool): Whether resizing was skipped (e.g., image already at target size).
+- `SkippedResize` (bool): Whether resizing was skipped (for example, image already at target size).
 - `TargetDpi` (int): Target DPI used for preprocessing.
 
 ---
@@ -1404,7 +1404,7 @@ Interface for custom OCR backends for document extraction.
 
 **Properties:**
 
-- `Name` (string): The unique name of this OCR backend (e.g., "tesseract", "custom_ocr").
+- `Name` (string): The unique name of this OCR backend (for example, "tesseract", "custom_ocr").
 
 **Methods:**
 
@@ -1460,7 +1460,7 @@ Document-level metadata extracted during processing.
 - `ImagePreprocessing` (ImagePreprocessingMetadata?): Image preprocessing information if OCR was used.
 - `JsonSchema` (JsonNode?): JSON schema if document is structured as JSON.
 - `Keywords` (List<string>?): Keywords/tags from document metadata.
-- `Language` (string?): Detected or specified language of the document (e.g., "en", "de").
+- `Language` (string?): Detected or specified language of the document (for example, "en", "de").
 - `ModifiedAt` (string?): Last modification timestamp (ISO 8601 format).
 - `ModifiedBy` (string?): User who last modified the document.
 - `OutputFormat` (string?): Output format identifier.
@@ -1477,9 +1477,9 @@ Configuration for OCR processing.
 
 **Properties:**
 
-- `Backend` (string?): The OCR backend to use (e.g., "tesseract", "paddle").
+- `Backend` (string?): The OCR backend to use (for example, "tesseract", "paddle").
 - `ElementConfig` (OcrElementConfig?): Configuration for OCR element extraction.
-- `Language` (string?): The language to recognize (e.g., "eng", "deu").
+- `Language` (string?): The language to recognize (for example, "eng", "deu").
 - `PaddleOcrConfig` (PaddleOcrConfig?): PaddleOCR-specific configuration options (see below).
 - `TesseractConfig` (TesseractConfig?): Tesseract-specific configuration options.
 
@@ -1516,7 +1516,7 @@ Metadata specific to archive files (ZIP, TAR, etc.).
 - `CompressedSize` (long?): Total compressed size in bytes.
 - `FileCount` (int): Number of files in the archive.
 - `FileList` (List<string>): List of file paths within the archive.
-- `Format` (string): Archive format name (e.g., "zip", "tar", "gz").
+- `Format` (string): Archive format name (for example, "zip", "tar", "gz").
 - `TotalSize` (long): Total uncompressed size in bytes.
 
 ---
@@ -1566,7 +1566,7 @@ Metadata specific to HTML documents.
 - `MetaTags` (Dictionary<string, string>): Additional meta tag key-value pairs.
 - `OpenGraph` (Dictionary<string, string>): Open Graph metadata key-value pairs.
 - `StructuredData` (List<StructuredData>): Structured data (JSON-LD, etc.) found in the HTML document.
-- `TextDirection` (string?): Text direction (e.g., "ltr", "rtl").
+- `TextDirection` (string?): Text direction (for example, "ltr", "rtl").
 - `Title` (string?): Document title from the HTML title element.
 - `TwitterCard` (Dictionary<string, string>): Twitter Card metadata key-value pairs.
 
@@ -1579,7 +1579,7 @@ Metadata specific to image files.
 **Properties:**
 
 - `Exif` (Dictionary<string, string>): EXIF metadata key-value pairs, if available.
-- `Format` (string): Image format name (e.g., "PNG", "JPEG", "TIFF").
+- `Format` (string): Image format name (for example, "PNG", "JPEG", "TIFF").
 - `Height` (uint): Image height in pixels.
 - `Width` (uint): Image width in pixels.
 
@@ -1634,7 +1634,7 @@ Detailed metadata for an individual page in the document.
 **Properties:**
 
 - `Dimensions` (double[]?): Page dimensions [width, height] in points (PDF) or pixels (images).
-- `Hidden` (bool?): Whether this page is marked as hidden (e.g., in presentations).
+- `Hidden` (bool?): Whether this page is marked as hidden (for example, in presentations).
 - `ImageCount` (int?): Number of images found on this page.
 - `IsBlank` (bool?): Whether this page contains no meaningful content.
 - `Number` (int): The page number (1-indexed).
@@ -1652,7 +1652,7 @@ Information about the global page structure of a document.
 - `Boundaries` (List<PageBoundary>?): Character offset boundaries for each page.
 - `Pages` (List<PageInfo>?): Detailed per-page metadata.
 - `TotalCount` (int): Total number of pages, slides, or sheets in the document.
-- `UnitType` (string): The unit type of the pagination (e.g., "page", "slide", "sheet").
+- `UnitType` (string): The unit type of the pagination (for example, "page", "slide", "sheet").
 
 ---
 
@@ -1662,7 +1662,7 @@ Represents an annotation (comment, highlight, etc.) extracted from a PDF documen
 
 **Properties:**
 
-- `AnnotationType` (string): The type of annotation (e.g., "text", "highlight", "link").
+- `AnnotationType` (string): The type of annotation (for example, "text", "highlight", "link").
 - `BoundingBox` (PdfAnnotationBoundingBox?): The bounding box coordinates of the annotation.
 - `Content` (string?): The text content of the annotation.
 - `PageNumber` (int): The page number (1-indexed) where the annotation appears.
@@ -1751,7 +1751,7 @@ Metadata specific to XML documents.
 
 ## PDF Rendering
 
-!!! info "Added in v4.6.2"
+!!! Info "Added in v4.6.2"
 
 ### KreuzbergClient.RenderPdfPage()
 
@@ -1784,7 +1784,7 @@ File.WriteAllBytes("first_page.png", png);
 
 ### PdfPageIterator
 
-A more memory-efficient alternative to rendering all pages at once when memory is a concern or when pages should be processed as they are rendered (e.g., sending each page to a vision model for OCR). Renders one page at a time, so only one raw image is in memory at a time.
+A more memory-efficient alternative to rendering all pages at once when memory is a concern or when pages should be processed as they are rendered (for example, sending each page to a vision model for OCR). Renders one page at a time, so only one raw image is in memory at a time.
 
 **Signature:**
 

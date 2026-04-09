@@ -2,7 +2,7 @@
 
 Complete reference for the Kreuzberg **native TypeScript/Node.js** API (`@kreuzberg/node`).
 
-!!! info "WASM Alternative"
+!!! Info "WASM Alternative"
 
     This reference covers **native bindings** (`@kreuzberg/node`) for Node.js, Bun, and Deno.
 
@@ -26,7 +26,7 @@ pnpm add @kreuzberg/node
 
 ## Core Functions
 
-### batchExtractBytes()
+### BatchExtractBytes()
 
 Extract content from multiple byte arrays in parallel (asynchronous).
 
@@ -50,7 +50,7 @@ Same as [`batchExtractBytesSync()`](#batchextractbytessync).
 
 ---
 
-### batchExtractBytesSync()
+### BatchExtractBytesSync()
 
 Extract content from multiple byte arrays in parallel (synchronous).
 
@@ -76,7 +76,7 @@ function batchExtractBytesSync(
 
 ---
 
-### batchExtractFiles()
+### BatchExtractFiles()
 
 Extract content from multiple files in parallel (asynchronous).
 
@@ -112,7 +112,7 @@ for (const result of results) {
 
 ---
 
-### batchExtractFilesSync()
+### BatchExtractFilesSync()
 
 Extract content from multiple files in parallel (synchronous).
 
@@ -149,7 +149,7 @@ results.forEach((result, i) => {
 
 ---
 
-### batchExtractFilesWithConfigs() <span class="version-badge">v4.5.0</span>
+### BatchExtractFilesWithConfigs() <span class="version-badge">v4.5.0</span>
 
 Extract content from multiple files in parallel, with per-file configuration overrides (asynchronous).
 
@@ -175,7 +175,7 @@ async function batchExtractFilesWithConfigs(
 
 ---
 
-### batchExtractFilesWithConfigsSync() <span class="version-badge">v4.5.0</span>
+### BatchExtractFilesWithConfigsSync() <span class="version-badge">v4.5.0</span>
 
 Synchronous variant of [`batchExtractFilesWithConfigs()`](#batchextractfileswithconfigs).
 
@@ -206,7 +206,7 @@ const results = batchExtractFilesWithConfigsSync(
 
 ---
 
-### batchExtractBytesWithConfigs() <span class="version-badge">v4.5.0</span>
+### BatchExtractBytesWithConfigs() <span class="version-badge">v4.5.0</span>
 
 Extract content from multiple byte arrays in parallel, with per-file configuration overrides (asynchronous).
 
@@ -223,7 +223,7 @@ async function batchExtractBytesWithConfigs(
 
 ---
 
-### batchExtractBytesWithConfigsSync() <span class="version-badge">v4.5.0</span>
+### BatchExtractBytesWithConfigsSync() <span class="version-badge">v4.5.0</span>
 
 Synchronous variant of [`batchExtractBytesWithConfigs()`](#batchextractbyteswithconfigs).
 
@@ -240,7 +240,7 @@ function batchExtractBytesWithConfigsSync(
 
 ---
 
-### extractBytes()
+### ExtractBytes()
 
 Extract content from bytes (asynchronous).
 
@@ -264,7 +264,7 @@ Same as [`extractBytesSync()`](#extractbytessync).
 
 ---
 
-### extractBytesSync()
+### ExtractBytesSync()
 
 Extract content from bytes (synchronous).
 
@@ -301,7 +301,7 @@ console.log(result.content);
 
 ---
 
-### extractFile()
+### ExtractFile()
 
 Extract content from a file (asynchronous).
 
@@ -338,7 +338,7 @@ main();
 
 ---
 
-### extractFileSync()
+### ExtractFileSync()
 
 Extract content from a file (synchronous).
 
@@ -646,7 +646,7 @@ interface TesseractConfig {
 - `psm` (number): Page segmentation mode (0-13). Default: 3 (auto)
 - `oem` (number): OCR engine mode (0-3). Default: 3 (LSTM only)
 - `enableTableDetection` (boolean): Enable table detection and extraction. Default: false
-- `tesseditCharWhitelist` (string | null): Character whitelist (e.g., "0123456789" for digits only). Default: null
+- `tesseditCharWhitelist` (string | null): Character whitelist (for example, "0123456789" for digits only). Default: null
 - `tesseditCharBlacklist` (string | null): Character blacklist. Default: null
 
 **Example:**
@@ -794,7 +794,7 @@ interface ChunkingConfig {
 - `embedding` (EmbeddingConfig | null): Embedding configuration for generating embeddings. Default: null
 - `preset` (string | null): Chunking preset to use. Default: null
 - `sizingType` ("characters" | "tokenizer" | null): How chunk size is measured. Use `"tokenizer"` to measure by token count using a HuggingFace tokenizer. Default: null (characters)
-- `sizingModel` (string | null): HuggingFace model ID for tokenizer-based sizing (e.g. `"bert-base-uncased"`). Required when `sizingType` is `"tokenizer"`. Default: null
+- `sizingModel` (string | null): HuggingFace model ID for tokenizer-based sizing (for example `"bert-base-uncased"`). Required when `sizingType` is `"tokenizer"`. Default: null
 - `sizingCacheDir` (string | null): Optional directory to cache downloaded tokenizer files. Default: null
 - `chunkerType` (string | null): Type of chunker to use. Options: `"text"` (default), `"markdown"`, `"yaml"`. Default: null (text)
 - `prependHeadingContext` (boolean | null): When true, prepends heading hierarchy path to each chunk's content. Most useful with `chunkerType: "markdown"`. Default: null (false)
@@ -949,7 +949,7 @@ if (result.detectedLanguages) {
 }
 ```
 
-#### pages
+#### Pages
 
 **Type**: `PageContent[] | undefined`
 
@@ -1313,7 +1313,7 @@ console.log(result.content);
 
 ## Embeddings
 
-### embedSync()
+### EmbedSync()
 
 Generate embeddings for a list of texts synchronously.
 
@@ -1336,7 +1336,7 @@ function embedSync(texts: string[], config?: EmbeddingConfig): number[][]
 
 ---
 
-### embed()
+### Embed()
 
 Async variant of `embedSync()`.
 
@@ -1352,9 +1352,9 @@ Same parameters and return type as `embedSync()`.
 
 ## PDF Rendering
 
-!!! info "Added in v4.6.2"
+!!! Info "Added in v4.6.2"
 
-### renderPdfPageSync()
+### RenderPdfPageSync()
 
 Render a single page of a PDF as a PNG image (synchronous).
 
@@ -1387,7 +1387,7 @@ writeFileSync("first_page.png", png);
 
 ### PdfPageIterator (class)
 
-A more memory-efficient alternative to `iteratePdfPagesSync`/`iteratePdfPages` when memory is a concern or when pages should be processed as they are rendered (e.g., sending each page to a vision model for OCR). Renders one page at a time via the `.next()` method.
+A more memory-efficient alternative to `iteratePdfPagesSync`/`iteratePdfPages` when memory is a concern or when pages should be processed as they are rendered (for example, sending each page to a vision model for OCR). Renders one page at a time via the `.next()` method.
 
 **Signature:**
 
@@ -1498,7 +1498,7 @@ for (const file of files) {
 
 - Parallel processing in Rust
 - Better memory management
-- Optimal resource utilization
+- Optimal resource usage
 
 ### Sync vs Async
 
@@ -1606,5 +1606,5 @@ For configuration details, see the [Code Intelligence Guide](../guides/code-inte
 **Platforms:**
 
 - Linux (x64, arm64)
-- macOS (x64, arm64)
+- MacOS (x64, arm64)
 - Windows (x64)

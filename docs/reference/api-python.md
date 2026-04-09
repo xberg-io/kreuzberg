@@ -28,7 +28,7 @@ pip install "kreuzberg[all]"
 
 ## Core Functions
 
-### batch_extract_bytes()
+### Batch_extract_bytes()
 
 Extract content from multiple byte arrays in parallel (asynchronous).
 
@@ -54,7 +54,7 @@ Same as [`batch_extract_bytes_sync()`](#batch_extract_bytes_sync).
 
 ---
 
-### batch_extract_bytes_sync()
+### Batch_extract_bytes_sync()
 
 Extract content from multiple byte arrays in parallel (synchronous).
 
@@ -83,7 +83,7 @@ def batch_extract_bytes_sync(
 
 ---
 
-### batch_extract_files()
+### Batch_extract_files()
 
 Extract content from multiple files in parallel (asynchronous).
 
@@ -108,7 +108,7 @@ Same as [`batch_extract_files_sync()`](#batch_extract_files_sync).
 
 ---
 
-### batch_extract_files_sync()
+### Batch_extract_files_sync()
 
 Extract content from multiple files in parallel (synchronous).
 
@@ -147,7 +147,7 @@ for path, result in zip(paths, results):
 
 ---
 
-### extract_bytes()
+### Extract_bytes()
 
 Extract content from bytes (asynchronous).
 
@@ -173,7 +173,7 @@ Same as [`extract_bytes_sync()`](#extract_bytes_sync).
 
 ---
 
-### extract_bytes_sync()
+### Extract_bytes_sync()
 
 Extract content from bytes (synchronous).
 
@@ -214,7 +214,7 @@ print(result.content)
 
 ---
 
-### extract_file()
+### Extract_file()
 
 Extract content from a file (asynchronous).
 
@@ -257,7 +257,7 @@ asyncio.run(main())
 
 ---
 
-### extract_file_sync()
+### Extract_file_sync()
 
 Extract content from a file (synchronous).
 
@@ -334,7 +334,7 @@ result = extract_file_sync(
 
 ### ExtractionConfig
 
-!!! warning "Deprecated API"
+!!! Warning "Deprecated API"
 The `force_ocr` parameter has been deprecated in favor of the new `ocr` configuration object.
 
     **Old pattern (no longer supported):**
@@ -480,7 +480,7 @@ Tesseract OCR backend configuration.
 - `psm` (int): Page segmentation mode (0-13). Default: 3 (auto)
 - `oem` (int): OCR engine mode (0-3). Default: 3 (Auto - Tesseract chooses based on build)
 - `enable_table_detection` (bool): Enable table detection and extraction. Default: True
-- `tessedit_char_whitelist` (str): Character whitelist (e.g., "0123456789" for digits only). Empty string = all characters. Default: ""
+- `tessedit_char_whitelist` (str): Character whitelist (for example, "0123456789" for digits only). Empty string = all characters. Default: ""
 - `tessedit_char_blacklist` (str): Character blacklist. Empty string = none. Default: ""
 - `language` (str): OCR language (ISO 639-3). Default: "eng"
 - `min_confidence` (float): Minimum confidence (0.0-1.0) for accepting OCR results. Default: 0.0
@@ -611,9 +611,9 @@ Text chunking configuration for splitting long documents.
 - `max_chars` (int): Maximum characters per chunk. Default: 1000
 - `max_overlap` (int): Overlap between chunks in characters. Default: 200
 - `embedding` (EmbeddingConfig | None): Embedding configuration for generating embeddings. Default: None
-- `preset` (str | None): Chunking preset to use (e.g. from `list_embedding_presets()`). Default: None
+- `preset` (str | None): Chunking preset to use (for example from `list_embedding_presets()`). Default: None
 - `sizing_type` (str | None): How chunk size is measured. Options: `"characters"` (default) or `"tokenizer"` (use a HuggingFace tokenizer). Default: None (characters)
-- `sizing_model` (str | None): HuggingFace model ID for tokenizer-based sizing (e.g. `"bert-base-uncased"`). Required when `sizing_type="tokenizer"`. Default: None
+- `sizing_model` (str | None): HuggingFace model ID for tokenizer-based sizing (for example `"bert-base-uncased"`). Required when `sizing_type="tokenizer"`. Default: None
 - `sizing_cache_dir` (str | None): Optional directory to cache downloaded tokenizer files. Default: None
 - `chunker_type` (str | None): Type of chunker to use. Options: `"text"` (default), `"markdown"`, `"yaml"`. Default: None (text)
 - `prepend_heading_context` (bool | None): When True, prepends heading hierarchy path to each chunk's content. Most useful with `chunker_type="markdown"`. Default: None (False)
@@ -665,7 +665,7 @@ Keyword extraction configuration (used with `ExtractionConfig.keywords`).
 - `min_score` (float): Minimum score threshold. Default: 0.0
 - `ngram_range` (tuple[int, int]): N-gram range (min, max). Default: (1, 3)
 - `language` (str | None): Optional language hint. Default: "en"
-- `yake_params` (YakeParams | None): YAKE-specific tuning (e.g. `window_size`). Default: None
+- `yake_params` (YakeParams | None): YAKE-specific tuning (for example `window_size`). Default: None
 - `rake_params` (RakeParams | None): RAKE-specific tuning (`min_word_length`, `max_words_per_phrase`). Default: None
 
 ---
@@ -724,8 +724,8 @@ Image preprocessing configuration for OCR (used with `TesseractConfig.preprocess
 - `deskew` (bool): Correct skewed images. Default: True
 - `denoise` (bool): Apply denoising filter. Default: False
 - `contrast_enhance` (bool): Enhance contrast. Default: False
-- `binarization_method` (str): Binarization method (e.g., "otsu"). Default: "otsu"
-- `invert_colors` (bool): Invert colors (e.g., white text on black). Default: False
+- `binarization_method` (str): Binarization method (for example, "otsu"). Default: "otsu"
+- `invert_colors` (bool): Invert colors (for example, white text on black). Default: False
 
 ---
 
@@ -807,7 +807,7 @@ if result.detected_languages:
     print(f"Languages: {', '.join(result.detected_languages)}")
 ```
 
-#### pages
+#### Pages
 
 **Type**: `list[PageContent] | None`
 
@@ -887,7 +887,7 @@ Strongly-typed metadata dictionary. Fields vary by document format.
 - `created_by` (str): User/agent who created the document
 - `custom` (dict[str, Any]): Custom metadata fields (replaces the deprecated `additional`)
 - `date` (str): Document date string
-- `format_type` (str): Document format type (e.g., "pdf", "docx")
+- `format_type` (str): Document format type (for example, "pdf", "docx")
 - `keywords` (list[str]): Document keywords
 - `language` (str): Primary document language (ISO 639-1 code)
 - `modified_at` (str): Last modification timestamp
@@ -1178,9 +1178,9 @@ See [Error Handling Reference](errors.md) for detailed error documentation and b
 
 ## PDF Rendering
 
-!!! info "Added in v4.6.2"
+!!! Info "Added in v4.6.2"
 
-### render_pdf_page()
+### Render_pdf_page()
 
 Render a single PDF page as a PNG image.
 
@@ -1219,7 +1219,7 @@ with open("first_page.png", "wb") as f:
 
 ## Embeddings
 
-### embed_sync()
+### Embed_sync()
 
 Generate embeddings for a list of texts synchronously.
 
@@ -1247,7 +1247,7 @@ def embed_sync(
 
 ---
 
-### embed()
+### Embed()
 
 Async variant of `embed_sync()`.
 
@@ -1266,7 +1266,7 @@ Same parameters and return type as `embed_sync()`.
 
 ## Utilities
 
-- **`detect_mime_type(data: bytes | bytearray)`** → str: Detect MIME type from file bytes (e.g. for `extract_bytes_sync`).
+- **`detect_mime_type(data: bytes | bytearray)`** → str: Detect MIME type from file bytes (for example for `extract_bytes_sync`).
 - **`detect_mime_type_from_path(path: str | Path)`** → str: Detect MIME type from file path (reads file).
 - **`get_extensions_for_mime(mime_type: str)`** → list[str]: Return file extensions associated with a MIME type.
 

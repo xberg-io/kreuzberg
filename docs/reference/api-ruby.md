@@ -284,7 +284,7 @@ result = Kreuzberg.extract_file_sync("document.pdf", config: config)
 
 ### Kreuzberg::Config::Extraction
 
-!!! warning "Deprecated API"
+!!! Warning "Deprecated API"
     The `force_ocr` parameter has been deprecated in favor of the new `ocr` configuration object.
 
     **Old pattern (no longer supported):**
@@ -367,7 +367,7 @@ Result object returned by all extraction functions.
 - `detected_languages` (Array<String>, nil): Array of detected language codes
 - `djot_content` (String, nil): Extracted content in Djot format
 - `document` (Hash, nil): Hierarchical document structure
-- `elements` (Array<Hash>, nil): Semantic elements (e.g., headings, paragraphs)
+- `elements` (Array<Hash>, nil): Semantic elements (for example, headings, paragraphs)
 - `extracted_keywords` (Array<String>, nil): Keywords extracted from the text
 - `images` (Array<Hash>, nil): Extracted images
 - `metadata` (Hash): Document metadata (format-specific fields)
@@ -394,7 +394,7 @@ if result.detected_languages
 end
 ```
 
-#### pages
+#### Pages
 
 **Type**: `Array<Hash> | nil`
 
@@ -479,7 +479,7 @@ Document metadata with cross-platform standardized fields.
 - `created_by` (String, nil): Application that created the document.
 - `custom` (Hash): Custom/extended metadata fields.
 - `date` (String, nil): Primary document date.
-- `format_type` (String): Format discriminator (e.g., "pdf", "docx").
+- `format_type` (String): Format discriminator (for example, "pdf", "docx").
 - `keywords` (Array<String>): Document keywords/tags.
 - `language` (String, nil): Primary document language code.
 - `modified_at` (String, nil): Last modification timestamp.
@@ -579,7 +579,7 @@ end
 
 ## Embeddings
 
-### embed_sync()
+### Embed_sync()
 
 Generate embeddings for a list of texts.
 
@@ -602,7 +602,7 @@ Kreuzberg.embed_sync(texts:, config: nil) -> Array<Array<Float>>
 
 ---
 
-### embed()
+### Embed()
 
 Blocking async variant of `embed_sync()`. Uses the same call path; provided for API symmetry.
 
@@ -618,7 +618,7 @@ Same parameters and return type as `embed_sync()`.
 
 ## PDF Rendering
 
-!!! info "Added in v4.6.2"
+!!! Info "Added in v4.6.2"
 
 ### Kreuzberg.render_pdf_page
 
@@ -806,7 +806,7 @@ mcp.start
 **Platforms:**
 
 - Linux (x64, arm64)
-- macOS (x64, arm64)
+- MacOS (x64, arm64)
 - Windows (x64)
 
 ---

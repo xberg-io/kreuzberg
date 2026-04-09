@@ -18,7 +18,7 @@ Kreuzberg uses a comprehensive error system based on the `KreuzbergError` enum. 
 - `Cache` - Cache read/write failures (struct: `{ message, source }`)
 - `ImageProcessing` - Image manipulation failures (struct: `{ message, source }`)
 - `Serialization` - JSON/MessagePack serialization errors (struct: `{ message, source }`)
-- `MissingDependency` - Missing optional system dependencies (e.g. Tesseract)
+- `MissingDependency` - Missing optional system dependencies (for example Tesseract)
 - `Plugin` - Plugin-specific errors (struct: `{ message, plugin_name }`)
 - `LockPoisoned` - Mutex/RwLock poisoning (internal)
 - `UnsupportedFormat` - Unsupported MIME type or format

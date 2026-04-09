@@ -10,7 +10,7 @@ Kreuzberg v4 represents a complete architectural rewrite with a Rust-first desig
 
 ### Overview
 
-v4 replaces the `ort-download-binaries` dependency with `ort-load-dynamic` for ONNX Runtime. This change:
+V4 replaces the `ort-download-binaries` dependency with `ort-load-dynamic` for ONNX Runtime. This change:
 
 - **Reduces package sizes** by 150-200MB per platform
 - **Enables Windows MSVC support** for embeddings (previously unavailable)
@@ -25,7 +25,7 @@ v4 replaces the `ort-download-binaries` dependency with `ort-load-dynamic` for O
 
 Install ONNX Runtime for your platform:
 
-#### macOS
+#### MacOS
 
 ```bash title="Terminal"
 brew install onnxruntime
@@ -48,7 +48,7 @@ scoop install onnxruntime
 **Option 2: Manual download**
 
 1. Download from [ONNX Runtime releases](https://github.com/microsoft/onnxruntime/releases)
-2. Extract to a directory (e.g., `C:\onnxruntime`)
+2. Extract to a directory (for example, `C:\onnxruntime`)
 3. Add the `lib` directory to your `PATH` environment variable
 4. Or set `ORT_DYLIB_PATH` to point to `onnxruntime.dll`
 
@@ -219,7 +219,7 @@ Report issues at [GitHub Issues](https://github.com/kreuzberg-dev/kreuzberg/issu
 
 ## Overview of Changes
 
-v4 introduces several major changes:
+V4 introduces several major changes:
 
 - **Rust Core**: Complete rewrite of core extraction logic in Rust for significant performance improvements
 - **Multi-Language Support**: Native support for Python, TypeScript, and Rust
@@ -367,7 +367,7 @@ config = ExtractionConfig(
 
 #### Complete Configuration (v4)
 
-v4 provides extensive configuration options across all features:
+V4 provides extensive configuration options across all features:
 
 ```python title="Python"
 from kreuzberg import (
@@ -484,7 +484,7 @@ fn main() -> kreuzberg::Result<()> {
 
 ### Custom Extractors
 
-v3 had limited support for custom extractors. v4 introduces a comprehensive plugin system.
+V3 had limited support for custom extractors. V4 introduces a comprehensive plugin system.
 
 #### Python
 
@@ -668,7 +668,7 @@ for table in result.tables:
 
 ## Performance Improvements
 
-v4 delivers significant performance improvements over v3 through its Rust-first architecture:
+V4 delivers significant performance improvements over v3 through its Rust-first architecture:
 
 **Key Performance Enhancements:**
 
@@ -694,7 +694,7 @@ Four plugin types:
 
 ### Multi-Language Support
 
-v4 provides native APIs for:
+V4 provides native APIs for:
 
 - **Python** - PyO3 bindings
 - **TypeScript/Node.js** - NAPI-RS bindings
@@ -913,7 +913,7 @@ The format-specific fields preserve the original metadata from the document, whi
 
 ### Page Tracking and Byte Offsets
 
-v4 introduces a complete redesign of page tracking and text positioning with several critical breaking changes:
+V4 introduces a complete redesign of page tracking and text positioning with several critical breaking changes:
 
 #### Field Renames: Character to Byte Offsets
 
@@ -943,7 +943,7 @@ class ChunkMetadata:
 
 #### New Page Tracking Types
 
-v4 introduces structured page representation:
+V4 introduces structured page representation:
 
 ```python title="Python"
 # PageStructure - Overall page metadata
@@ -1333,12 +1333,12 @@ foreach (var page in result.Pages)
 - [ ] Update code that accesses chunk position metadata
 - [ ] Test text extraction with multi-byte UTF-8 characters (emoji, CJK, etc.)
 - [ ] Enable page tracking if needed via `PageConfig`
-- [ ] Update any code that relies on absolute character positions (e.g., for embeddings)
+- [ ] Update any code that relies on absolute character positions (for example, for embeddings)
 - [ ] Review performance implications (byte offsets are faster)
 
 ### Configuration Structure
 
-v3 used flat configuration. v4 uses nested dataclasses:
+V3 used flat configuration. V4 uses nested dataclasses:
 
 ```python title="Python"
 # v3 flat configuration
@@ -1362,7 +1362,7 @@ config = ExtractionConfig(
 
 ### Metadata Structure
 
-v3 used dictionaries. v4 uses typed dataclasses:
+V3 used dictionaries. V4 uses typed dataclasses:
 
 ```python title="Python"
 # v3 dictionary-based metadata
@@ -1400,7 +1400,7 @@ KreuzbergError (base)
 
 #### GMFT (Give Me Formatted Tables)
 
-v3's vision-based table extraction using TATR models. Replaced with Tesseract OCR table detection:
+V3's vision-based table extraction using TATR models. Replaced with Tesseract OCR table detection:
 
 ```python title="Python"
 # v4 Tesseract table detection
@@ -1418,7 +1418,7 @@ Removed. Use external libraries (spaCy, KeyBERT, etc.) with postprocessors if ne
 
 #### HTMLToMarkdownConfig Replaced with html_options
 
-v3 provided `HTMLToMarkdownConfig` for customizing HTML-to-Markdown conversion.
+V3 provided `HTMLToMarkdownConfig` for customizing HTML-to-Markdown conversion.
 
 **v4 replaces this with `html_options`**, which provides comprehensive configuration for HTML-to-Markdown conversion using the `html-to-markdown-rs` library. The new configuration offers more options and better control than v3.
 
@@ -1655,7 +1655,7 @@ The hierarchy detection system provides:
 - **K-means Clustering**: Groups blocks into semantic levels (typically 3-5 levels) representing document hierarchy
 - **Confidence Scoring**: Each block assigned a confidence score reflecting hierarchy assignment quality
 - **Parent-Child Relationships**: Links blocks in hierarchical relationships for tree-like document representation
-- **Block Type Classification**: Labels blocks as title, heading, subheading, paragraph, etc. based on semantic level
+- **Block Type Classification**: Labels blocks as title, heading, subheading, paragraph, and so on. Based on semantic level
 - **Per-Page Hierarchies**: Separate hierarchy detected for each page in multi-page documents
 
 ### Default Behavior
@@ -1916,7 +1916,7 @@ def enrich_chunks_with_hierarchy(result):
 - **GPU Acceleration**: Optional CUDA support for large documents (100+ pages)
 - **Caching**: Results cached based on PDF content hash - subsequent extractions are instant
 
-### Frequently Asked Questions
+### Often Asked Questions
 
 **Q: Does hierarchy detection work with all PDFs?**
 A: Yes, it analyzes content structure automatically. Quality improves with well-formatted documents that have consistent styling conventions.

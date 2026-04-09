@@ -122,7 +122,7 @@ Three backends ship out of the box:
 | **PaddleOCR** | ONNX Runtime | Best accuracy for CJK (Chinese, Japanese, Korean) scripts. No Python dependency. |
 | **EasyOCR** | Python + PyTorch | Supports 80+ languages including Arabic, Hindi, and Thai. Only available through Python bindings. |
 
-You can register your own OCR backend (e.g., a cloud-based API, a custom model) using the same trait.
+You can register your own OCR backend (for example, a cloud-based API, a custom model) using the same trait.
 
 ---
 
@@ -268,7 +268,7 @@ The registration pattern is the same in every language. Get the registry, call r
 
 === "Python"
     ```python
-    from kreuzberg import get_document_extractor_registry
+    from Kreuzberg import get_document_extractor_registry
 
     registry = get_document_extractor_registry()
     registry.register(MyPDFExtractor())

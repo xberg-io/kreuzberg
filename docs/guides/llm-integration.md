@@ -2,7 +2,7 @@
 
 Kreuzberg integrates with 146 LLM providers (including local inference engines) via [liter-llm](https://github.com/kreuzberg-dev/liter-llm) for three capabilities: VLM OCR, structured extraction, and provider-hosted embeddings.
 
-!!! note "Feature gate"
+!!! Note "Feature gate"
     Requires the `llm` Cargo feature. Not included in the default feature set.
 
 ## VLM OCR
@@ -296,7 +296,7 @@ Kreuzberg supports local LLM inference engines via [liter-llm](https://github.co
 
 === "Python"
     ```python
-    from kreuzberg import extract_file, ExtractionConfig, StructuredExtractionConfig, LlmConfig
+    from Kreuzberg import extract_file, ExtractionConfig, StructuredExtractionConfig, LlmConfig
 
     config = ExtractionConfig(
         structured_extraction=StructuredExtractionConfig(
@@ -315,7 +315,7 @@ Kreuzberg supports local LLM inference engines via [liter-llm](https://github.co
     # No api_key needed for local providers
     ```
 
-!!! tip "Custom Base URL"
+!!! Tip "Custom Base URL"
     If your local server runs on a non-default port, use `base_url`:
     ```python
     LlmConfig(model="ollama/llama3.2", base_url="http://localhost:11435/v1")```
@@ -328,8 +328,8 @@ API keys can be set via (in order of precedence):
 2. Provider standard env vars (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GOOGLE_API_KEY`, etc.)
 3. Kreuzberg-specific env var (`KREUZBERG_LLM_API_KEY`) — used as fallback for any provider
 
-!!! note "Local providers skip API key lookup"
-    Local inference engines (Ollama, LM Studio, vLLM, llama.cpp, LocalAI, llamafile) do not require an API key. If you use a local provider prefix (e.g., `ollama/`), the API key fields are ignored.
+!!! Note "Local providers skip API key lookup"
+    Local inference engines (Ollama, LM Studio, vLLM, llama.cpp, LocalAI, llamafile) do not require an API key. If you use a local provider prefix (for example, `ollama/`), the API key fields are ignored.
 
 ```python title="Python"
 from kreuzberg import LlmConfig
@@ -348,7 +348,7 @@ config = LlmConfig(
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `model` | `str` | *required* | Provider/model in liter-llm format (e.g., `"openai/gpt-4o"`) |
+| `model` | `str` | *required* | Provider/model in liter-llm format (for example, `"openai/gpt-4o"`) |
 | `api_key` | `str \| None` | `None` | API key (falls back to env vars) |
 | `base_url` | `str \| None` | `None` | Custom endpoint URL |
 | `timeout_secs` | `int \| None` | `60` | Request timeout in seconds |

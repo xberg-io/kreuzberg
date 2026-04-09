@@ -35,10 +35,10 @@ These focus on PDF extraction only. They're not direct competitors to Kreuzberg'
 
 ---
 
-!!! warning "License matters"
+!!! Warning "License matters"
 
     Libraries marked **AGPL-3.0** (PyMuPDF, MinerU) require that any application using them also be released under AGPL, unless you purchase a commercial license. **GPL-2.0** tools (Pandoc, pdftotext/poppler) have similar copyleft requirements. If you're building a commercial product, check the license before integrating.
 
-!!! info "Benchmarks"
+!!! Info "Benchmarks"
 
     Kreuzberg benchmarks against all of the libraries listed above. For extraction speed, quality scores, and format-by-format comparisons, see the [live benchmark dashboard](https://kreuzberg.dev/benchmarks).

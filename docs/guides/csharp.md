@@ -109,7 +109,7 @@ Reduce token count for LLM pipelines while preserving meaning:
   - `KreuzbergParsingException` — document parsing failure
   - `KreuzbergOcrException` — OCR processing failure
   - `KreuzbergIOException` — file I/O failure
-  - `KreuzbergMissingDependencyException` — missing optional dependency (e.g., Tesseract)
+  - `KreuzbergMissingDependencyException` — missing optional dependency (for example, Tesseract)
   - `KreuzbergSerializationException` — JSON serialization failure
 
 ## Thread Safety
@@ -118,7 +118,7 @@ Reduce token count for LLM pipelines while preserving meaning:
 
 ## Troubleshooting
 
-??? question "DLL not found"
+??? Question "DLL not found"
 
     Ensure the native library is in your runtime directory at `runtimes/{rid}/native/`.
 
@@ -127,11 +127,11 @@ Reduce token count for LLM pipelines while preserving meaning:
     echo $DYLD_LIBRARY_PATH   # macOS
     ```
 
-??? question "P/Invoke errors"
+??? Question "P/Invoke errors"
 
     Verify: (1) native library is installed, (2) architecture matches (x64/arm64), (3) Tesseract is available if using OCR.
 
-??? question "OCR not working"
+??? Question "OCR not working"
 
     ```bash title="Terminal"
     tesseract --version

@@ -94,7 +94,7 @@ Precompiled binaries for Linux (x86_64 & aarch64), macOS (Apple Silicon), and Wi
 | **CLI** | `brew install kreuzberg-dev/tap/kreuzberg` | [CLI Guide](cli/usage.md) |
 | **Docker** | `ghcr.io/kreuzberg-dev/kreuzberg` | [Docker Guide](guides/docker.md) |
 
-!!! tip "Choosing Between TypeScript Packages"
+!!! Tip "Choosing Between TypeScript Packages"
 
     **`@kreuzberg/node`** — Use for Node.js servers and CLI tools. Native performance (100% speed).
 

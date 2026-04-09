@@ -33,7 +33,7 @@ ServerConfig is used to customize the Kreuzberg API server behavior when running
 
 | Field                       | Type            | Default       | Description                                                                                              |
 | --------------------------- | --------------- | ------------- | -------------------------------------------------------------------------------------------------------- |
-| `host`                      | `String`        | `"127.0.0.1"` | Server host address (e.g., "127.0.0.1", "0.0.0.0")                                                       |
+| `host`                      | `String`        | `"127.0.0.1"` | Server host address (for example, "127.0.0.1", "0.0.0.0")                                                       |
 | `port`                      | `u16`           | `8000`        | Server port number (1-65535)                                                                             |
 | `cors_origins`              | `Vec<String>`   | empty         | CORS allowed origins. Empty list allows all origins.                                                     |
 | `max_request_body_bytes`    | `usize`         | `104857600`   | Maximum request body size in bytes (100 MB default)                                                      |
@@ -468,7 +468,7 @@ Configuration for OCR (Optical Character Recognition) processing on images and s
 | Field              | Type               | Default       | Description                                                           |
 | ------------------ | ------------------ | ------------- | --------------------------------------------------------------------- |
 | `backend`          | `str`              | `"tesseract"` | OCR backend to use: `"tesseract"`, `"easyocr"`, `"paddleocr"`         |
-| `language`         | `str`              | `"eng"`       | Language code(s) for OCR, e.g., `"eng"`, `"eng+fra"`, `"eng+deu+fra"` |
+| `language`         | `str`              | `"eng"`       | Language code(s) for OCR, for example, `"eng"`, `"eng+fra"`, `"eng+deu+fra"` |
 | `tesseract_config` | `TesseractConfig?` | `None`        | Tesseract-specific configuration options                              |
 | `paddle_ocr_config` | `PaddleOcrConfig?` | `None`       | PaddleOCR-specific configuration options                              |
 | `vlm_config`       | `LlmConfig?`       | `None`        | Vision Language Model configuration for VLM-based OCR. When set, enables using a VLM as an OCR backend. Requires the `llm` feature. |
@@ -527,7 +527,7 @@ Tesseract OCR engine configuration with fine-grained control over recognition pa
 
 | Field                                | Type                        | Default      | Description                                              |
 | ------------------------------------ | --------------------------- | ------------ | -------------------------------------------------------- |
-| `language`                           | `str`                       | `"eng"`      | Language code(s), e.g., `"eng"`, `"eng+fra"`             |
+| `language`                           | `str`                       | `"eng"`      | Language code(s), for example, `"eng"`, `"eng+fra"`             |
 | `psm`                                | `int`                       | `3`          | Page Segmentation Mode (0-13, see below)                 |
 | `output_format`                      | `str`                       | `"markdown"` | Output format: `"text"`, `"markdown"`, `"hocr"`          |
 | `oem`                                | `int`                       | `3`          | OCR Engine Mode (0-3, see below)                         |
@@ -625,7 +625,7 @@ Configuration for splitting extracted text into overlapping chunks, useful for v
 
 **Note:** `max_chars` and `max_overlap` are accepted as aliases for `max_characters` and `overlap` respectively for backwards compatibility.
 
-When `chunker_type` is set to `"markdown"`, the chunker populates `heading_context` on each chunk's metadata with the heading hierarchy (e.g., `# Title > ## Section`) that the chunk falls under. This is useful for preserving semantic context in RAG pipelines.
+When `chunker_type` is set to `"markdown"`, the chunker populates `heading_context` on each chunk's metadata with the heading hierarchy (for example, `# Title > ## Section`) that the chunk falls under. This is useful for preserving semantic context in RAG pipelines.
 
 ### Example
 
@@ -748,7 +748,7 @@ model = { type = "llm", model = "openai/text-embedding-3-small" }
 batch_size = 32
 ```
 
-**Note**: When `api_key` is not set in `LlmConfig`, liter-llm falls back to provider-standard environment variables (e.g., `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`). Requires the `llm` feature.
+**Note**: When `api_key` is not set in `LlmConfig`, liter-llm falls back to provider-standard environment variables (for example, `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`). Requires the `llm` feature.
 
 ### Cache Directory
 
@@ -922,7 +922,7 @@ type = "tokenizer"
 model = "Xenova/gpt-4o"
 ```
 
-!!! note
+!!! Note
     Token-based sizing requires the `chunking-tokenizers` feature to be enabled.
 
 #### YAML Format
@@ -968,8 +968,8 @@ Configuration for LLM provider connections used by structured extraction, VLM-ba
 
 | Field      | Type      | Default | Description                                                                                                                                     |
 | ---------- | --------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| `model`    | `String`  | —       | Model identifier in `provider/model-name` format (e.g., `"openai/gpt-4o-mini"`, `"anthropic/claude-sonnet-4-20250514"`)                                |
-| `api_key`  | `String?` | `None`  | API key for the provider. When `None`, falls back to provider-standard env vars (e.g., `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`)                   |
+| `model`    | `String`  | —       | Model identifier in `provider/model-name` format (for example, `"openai/gpt-4o-mini"`, `"anthropic/claude-sonnet-4-20250514"`)                                |
+| `api_key`  | `String?` | `None`  | API key for the provider. When `None`, falls back to provider-standard env vars (for example, `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`)                   |
 | `base_url` | `String?` | `None`  | Custom base URL for the provider API. When `None`, uses the provider's default endpoint. Useful for proxies or self-hosted API-compatible servers |
 
 ### Configuration Examples
@@ -1217,7 +1217,7 @@ Many older email messages — particularly those created by Microsoft Outlook on
 
 | Code Page | Encoding                       | Region / Language              |
 | --------- | ------------------------------ | ------------------------------ |
-| `1250`    | Windows Central European       | Polish, Czech, Hungarian, etc. |
+| `1250`    | Windows Central European       | Polish, Czech, Hungarian, and so on. |
 | `1251`    | Windows Cyrillic               | Russian, Ukrainian, Bulgarian  |
 | `1252`    | Windows Western European       | English, German, French (default) |
 | `1253`    | Windows Greek                  | Greek                          |
@@ -1344,7 +1344,7 @@ Both algorithms analyze text independently and require no external training data
 | `max_keywords` | `usize`              | `10`                  | Maximum number of keywords to extract                                                    |
 | `min_score`    | `f32`                | `0.0`                 | Minimum score threshold (0.0-1.0) for keyword filtering                                  |
 | `ngram_range`  | `(usize, usize)`     | `(1, 3)`              | N-gram range: (min, max) words per keyword phrase                                        |
-| `language`     | `Option<String>`     | `Some("en")`          | Language code for stopword filtering (e.g., "en", "de", "fr"), `None` disables filtering |
+| `language`     | `Option<String>`     | `Some("en")`          | Language code for stopword filtering (for example, "en", "de", "fr"), `None` disables filtering |
 | `yake_params`  | `Option<YakeParams>` | `None`                | YAKE-specific tuning parameters                                                          |
 | `rake_params`  | `Option<RakeParams>` | `None`                | RAKE-specific tuning parameters                                                          |
 
@@ -1606,7 +1606,7 @@ Both algorithms analyze text independently and require no external training data
 | `max_keywords` | `usize`              | `10`                  | Maximum number of keywords to extract                                                    |
 | `min_score`    | `f32`                | `0.0`                 | Minimum score threshold (0.0-1.0) for keyword filtering                                  |
 | `ngram_range`  | `(usize, usize)`     | `(1, 3)`              | N-gram range: (min, max) words per keyword phrase                                        |
-| `language`     | `Option<String>`     | `Some("en")`          | Language code for stopword filtering (e.g., "en", "de", "fr"), `None` disables filtering |
+| `language`     | `Option<String>`     | `Some("en")`          | Language code for stopword filtering (for example, "en", "de", "fr"), `None` disables filtering |
 | `yake_params`  | `Option<YakeParams>` | `None`                | YAKE-specific tuning parameters                                                          |
 | `rake_params`  | `Option<RakeParams>` | `None`                | RAKE-specific tuning parameters                                                          |
 
@@ -1857,7 +1857,7 @@ PDF-specific extraction configuration.
 | `hierarchy`                | `HierarchyConfig?` | `None`  | Hierarchy extraction configuration (None = hierarchy extraction disabled) |
 | `allow_single_column_tables` <span class="version-badge">v4.5.0</span> | `bool`             | `false` | Relax min column count from 2-3 to 1, allowing single-column table extraction |
 
-!!! note "Bounding boxes require explicit opt-in"
+!!! Note "Bounding boxes require explicit opt-in"
     Element bounding box coordinates are **not** extracted by default. To enable them, set `pdf_options=PdfConfig(hierarchy=HierarchyConfig(enabled=True, include_bbox=True))`. Coordinates are currently only available for **text elements** (headings and body blocks) — table and image regions do not carry per-element bbox data from this path.
 
 ### Example
@@ -2434,7 +2434,7 @@ The `ocr_coverage_threshold` parameter enables smart OCR triggering:
 
 ````
 
-if (text_block_coverage < ocr_coverage_threshold) {
+If (text_block_coverage < ocr_coverage_threshold) {
 run_ocr() // Trigger OCR on pages with insufficient text coverage
 }
 
@@ -3130,7 +3130,7 @@ The `ocr_coverage_threshold` parameter enables smart OCR triggering:
 
 ````
 
-if (text_block_coverage < ocr_coverage_threshold) {
+If (text_block_coverage < ocr_coverage_threshold) {
 run_ocr() // Trigger OCR on pages with insufficient text coverage
 }
 
@@ -3417,7 +3417,7 @@ Configuration for extracting and processing images from documents.
 | `extract_images`        | `bool` | `true`  | Extract images from documents                            |
 | `target_dpi`            | `int`  | `300`   | Target DPI for extracted/normalized images               |
 | `max_image_dimension`   | `int`  | `4096`  | Maximum image dimension (width or height) in pixels      |
-| `inject_placeholders`   | `bool` | `true`  | Inject image reference placeholders (e.g. `![Image](embedded:p1_i0)`) into markdown output. Set to `false` to extract images as data without modifying the text content. |
+| `inject_placeholders`   | `bool` | `true`  | Inject image reference placeholders (for example `![Image](embedded:p1_i0)`) into markdown output. Set to `false` to extract images as data without modifying the text content. |
 | `auto_adjust_dpi`       | `bool` | `true`  | Automatically adjust DPI based on image size and content |
 | `min_dpi`               | `int`  | `72`    | Minimum DPI when auto-adjusting                          |
 | `max_dpi`               | `int`  | `600`   | Maximum DPI when auto-adjusting                          |
@@ -3620,7 +3620,7 @@ Configuration for ONNX-based document layout detection. Analyzes PDF pages to id
 
 **Feature Gate**: Requires the `layout-detection` Cargo feature. Layout detection is only available when this feature is enabled.
 
-!!! warning "`preset` removed"
+!!! Warning "`preset` removed"
     The `preset` field was removed. If present in a config file it is silently ignored. The RT-DETR v2 model is now the only layout detection model.
 
 ### Fields
@@ -3631,7 +3631,7 @@ Configuration for ONNX-based document layout detection. Analyzes PDF pages to id
 | `apply_heuristics`     | `bool`     | `true`   | Apply postprocessing heuristics (containment filtering, deduplication)                         |
 | `table_model`          | `str?`     | `None` (uses `"tatr"`) | Table structure recognition model. Options: `"tatr"` (30MB, default), `"slanet_wired"` (365MB, bordered tables), `"slanet_wireless"` (365MB, borderless tables), `"slanet_plus"` (7.78MB, lightweight), `"slanet_auto"` (~737MB, classifier-routed). See [Table Structure Models](../guides/layout-detection.md#table-structure-models). |
 
-!!! note "Table detection requires layout detection"
+!!! Note "Table detection requires layout detection"
     Table extraction only runs when `layout` is set in `ExtractionConfig`. Setting only `table_model` has no effect without an enclosing `LayoutDetectionConfig`.
 
 ### Configuration Examples
@@ -3882,8 +3882,8 @@ Configuration for tree-sitter language pack integration. Controls grammar cachin
 | ----------- | -------------------------- | ------- | ------------------------------------------------------------------------------------------------ |
 | `enabled`   | `bool`                     | `true`  | Enable code intelligence processing. When `false`, tree-sitter analysis is skipped even if config is present |
 | `cache_dir` | `PathBuf?`                 | `None`  | Custom cache directory for downloaded grammars. Default: `~/.cache/tree-sitter-language-pack/v{version}/libs/` |
-| `languages` | `Vec<String>?`             | `None`  | Languages to pre-download on init (e.g., `["python", "rust"]`)                                   |
-| `groups`    | `Vec<String>?`             | `None`  | Language groups to pre-download (e.g., `["web", "systems", "scripting"]`)                        |
+| `languages` | `Vec<String>?`             | `None`  | Languages to pre-download on init (for example, `["python", "rust"]`)                                   |
+| `groups`    | `Vec<String>?`             | `None`  | Language groups to pre-download (for example, `["web", "systems", "scripting"]`)                        |
 | `process`   | `TreeSitterProcessConfig`  | default | Processing options for code analysis                                                             |
 
 ### TreeSitterProcessConfig
@@ -4191,12 +4191,12 @@ For complete working examples, see the [examples directory](https://github.com/k
 
 - Keep `use_cache=true` for repeated processing of the same files
 - Cache is automatically invalidated when files change
-- Cache location: platform-specific global cache (e.g., `~/.cache/kreuzberg/` on Linux, `~/Library/Caches/kreuzberg/` on macOS), configurable via `KREUZBERG_CACHE_DIR` env var or `cache_dir` option
+- Cache location: platform-specific global cache (for example, `~/.cache/kreuzberg/` on Linux, `~/Library/Caches/kreuzberg/` on macOS), configurable via `KREUZBERG_CACHE_DIR` env var or `cache_dir` option
 
 **OCR Settings:**
 
-- Lower `target_dpi` (e.g., 150-200) for faster processing of low-quality scans
-- Higher `target_dpi` (e.g., 400-600) for small text or high-quality documents
+- Lower `target_dpi` (for example, 150-200) for faster processing of low-quality scans
+- Higher `target_dpi` (for example, 400-600) for small text or high-quality documents
 - Disable `enable_table_detection` if tables aren't needed (10-20% speedup)
 - Use `psm=6` for clean single-column documents (faster than `psm=3`)
 

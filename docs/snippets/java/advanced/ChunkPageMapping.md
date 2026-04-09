@@ -1,4 +1,4 @@
-import dev.kreuzberg.*;
+Import dev.kreuzberg.*;
 
 var config = ExtractionConfig.builder()
     .chunking(ChunkingConfig.builder()
@@ -12,7 +12,7 @@ var config = ExtractionConfig.builder()
 
 var result = Kreuzberg.extractFileSync("document.pdf", config);
 
-if (result.chunks() != null) {
+If (result.chunks() != null) {
     for (var chunk : result.chunks()) {
         if (chunk.metadata().firstPage() != null) {
             var pageRange = chunk.metadata().firstPage().equals(chunk.metadata().lastPage())

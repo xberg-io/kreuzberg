@@ -1,8 +1,8 @@
-import { extractFileSync } from '@kreuzberg/node';
+Import { extractFileSync } from '@kreuzberg/node';
 
-const result = extractFileSync('document.pdf', null, { pages: { extractPages: true } });
+Const result = extractFileSync('document.pdf', null, { pages: { extractPages: true } });
 
-if (result.pages) {
+If (result.pages) {
   for (const page of result.pages) {
     console.log(`Page ${page.pageNumber}:`);
     console.log(`  Content: ${page.content.length} chars`);

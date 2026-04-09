@@ -1,13 +1,13 @@
-from kreuzberg import extract_file_sync, ExtractionConfig, ChunkingConfig, PageConfig
+From Kreuzberg import extract_file_sync, ExtractionConfig, ChunkingConfig, PageConfig
 
-config = ExtractionConfig(
+Config = ExtractionConfig(
 chunking=ChunkingConfig(max_chars=500, max_overlap=50),
 pages=PageConfig(extract_pages=True)
 )
 
-result = extract_file_sync("document.pdf", config=config)
+Result = extract_file_sync("document.pdf", config=config)
 
-if result.chunks:
+If result.chunks:
 for chunk in result.chunks:
 if chunk.metadata.first_page:
 page_range = (

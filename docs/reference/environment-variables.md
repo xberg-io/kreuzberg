@@ -500,7 +500,7 @@ export KREUZBERG_LLM_MODEL=ollama/llama3
 **Type**: `String`
 **Default**: None
 
-API key for the structured extraction LLM provider. When not set, liter-llm falls back to provider-standard environment variables (e.g., `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`).
+API key for the structured extraction LLM provider. When not set, liter-llm falls back to provider-standard environment variables (for example, `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`).
 
 ```bash title="LLM API Key Configuration"
 export KREUZBERG_LLM_API_KEY=sk-...
@@ -553,7 +553,7 @@ export KREUZBERG_VLM_EMBEDDING_MODEL=openai/text-embedding-3-small
 export KREUZBERG_VLM_EMBEDDING_MODEL=cohere/embed-english-v3.0
 ```
 
-**Note**: When `api_key` is not set in config, liter-llm falls back to provider-standard environment variables (e.g., `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`).
+**Note**: When `api_key` is not set in config, liter-llm falls back to provider-standard environment variables (for example, `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`).
 
 | Variable | Description | Example |
 |----------|-------------|---------|

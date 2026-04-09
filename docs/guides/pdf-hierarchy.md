@@ -68,7 +68,7 @@ Hierarchy data is in `result.pages[n].hierarchy`. Each page has a `blocks` list:
 | 6 (default) | H1–H6 | Most documents |
 | 7–8 | H1–H6+ | Books, specs with deep nesting |
 
-### ocr_coverage_threshold
+### Ocr_coverage_threshold
 
 | Threshold | Behavior |
 |-----------|----------|

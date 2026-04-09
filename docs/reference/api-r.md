@@ -26,7 +26,7 @@ remotes::install_github("kreuzberg-dev/kreuzberg", subdir = "packages/r")
 
 ## Core Functions
 
-### batch_extract_bytes()
+### Batch_extract_bytes()
 
 Extract content from multiple raw byte arrays (asynchronous via Tokio runtime).
 
@@ -46,7 +46,7 @@ Same as [`batch_extract_bytes_sync()`](#batch_extract_bytes_sync).
 
 ---
 
-### batch_extract_bytes_sync()
+### Batch_extract_bytes_sync()
 
 Extract content from multiple raw byte arrays (synchronous).
 
@@ -88,7 +88,7 @@ for (i in seq_along(results)) {
 
 ---
 
-### batch_extract_files()
+### Batch_extract_files()
 
 Extract content from multiple files in parallel (asynchronous via Tokio runtime).
 
@@ -108,7 +108,7 @@ Same as [`batch_extract_files_sync()`](#batch_extract_files_sync).
 
 ---
 
-### batch_extract_files_sync()
+### Batch_extract_files_sync()
 
 Extract content from multiple files in parallel (synchronous).
 
@@ -144,7 +144,7 @@ for (i in seq_along(results)) {
 
 ---
 
-### extract_bytes()
+### Extract_bytes()
 
 Extract content from raw bytes (asynchronous via Tokio runtime).
 
@@ -164,7 +164,7 @@ Same as [`extract_bytes_sync()`](#extract_bytes_sync).
 
 ---
 
-### extract_bytes_sync()
+### Extract_bytes_sync()
 
 Extract content from raw bytes (synchronous).
 
@@ -198,7 +198,7 @@ cat(result$content)
 
 ---
 
-### extract_file()
+### Extract_file()
 
 Extract content from a file (asynchronous via Tokio runtime).
 
@@ -230,7 +230,7 @@ cat(result$content)
 
 ---
 
-### extract_file_sync()
+### Extract_file_sync()
 
 Extract content from a file (synchronous).
 
@@ -293,7 +293,7 @@ result <- extract_file_sync("document.pdf", mime_type = "application/pdf")
 
 ## Configuration
 
-### chunking_config()
+### Chunking_config()
 
 Create text chunking configuration.
 
@@ -325,7 +325,7 @@ config <- extraction_config(
 
 ---
 
-### discover()
+### Discover()
 
 Search for `kreuzberg.toml` configuration file in current and parent directories.
 
@@ -350,7 +350,7 @@ if (!is.null(config)) {
 
 ---
 
-### extraction_config()
+### Extraction_config()
 
 Create an extraction configuration object.
 
@@ -424,7 +424,7 @@ result <- extract_file_sync("document.pdf", config = config)
 
 ---
 
-### from_file()
+### From_file()
 
 Load configuration from a TOML, YAML, or JSON file.
 
@@ -453,7 +453,7 @@ result <- extract_file_sync("document.pdf", config = config)
 
 ---
 
-### layout_detection_config()
+### Layout_detection_config()
 
 Create a layout detection configuration.
 
@@ -486,7 +486,7 @@ config <- extraction_config(
 
 ---
 
-### ocr_config()
+### Ocr_config()
 
 Create OCR configuration.
 
@@ -523,7 +523,7 @@ config <- extraction_config(
 
 ## Results & Types
 
-### kreuzberg_result
+### Kreuzberg_result
 
 Result object returned by all extraction functions. Inherits from list with named fields.
 
@@ -564,7 +564,7 @@ cat("Language:", detected_language(result), "\n")
 
 ### S3 Methods for kreuzberg_result
 
-#### chunk_count()
+#### Chunk_count()
 
 Get the number of text chunks.
 
@@ -581,7 +581,7 @@ chunks <- chunk_count(result)
 
 ---
 
-#### content()
+#### Content()
 
 Extract the text content.
 
@@ -598,7 +598,7 @@ text <- content(result)
 
 ---
 
-#### detected_language()
+#### Detected_language()
 
 Get the detected language code.
 
@@ -618,7 +618,7 @@ if (!is.null(lang)) {
 
 ---
 
-#### format()
+#### Format()
 
 Format the result as a string.
 
@@ -628,7 +628,7 @@ format(x)
 
 ---
 
-#### metadata_field()
+#### Metadata_field()
 
 Extract a specific metadata field by name.
 
@@ -657,7 +657,7 @@ author <- metadata_field(result, "author")
 
 ---
 
-#### mime_type()
+#### Mime_type()
 
 Get the MIME type of the document.
 
@@ -674,7 +674,7 @@ type <- mime_type(result)
 
 ---
 
-#### page_count()
+#### Page_count()
 
 Get the number of pages in the document.
 
@@ -691,7 +691,7 @@ pages <- page_count(result)
 
 ---
 
-#### print()
+#### Print()
 
 Print a brief summary of the result.
 
@@ -708,7 +708,7 @@ print(result)  # Displays summary
 
 ---
 
-#### summary()
+#### Summary()
 
 Summarize the extraction result.
 
@@ -764,9 +764,9 @@ if (metadata$format_type == "pdf") {
 
 ## PDF Rendering
 
-!!! info "Added in v4.6.2"
+!!! Info "Added in v4.6.2"
 
-### render_pdf_page()
+### Render_pdf_page()
 
 Render a single page of a PDF as a PNG image.
 
@@ -849,7 +849,7 @@ tryCatch(
 
 ## Cache Management
 
-### cache_stats()
+### Cache_stats()
 
 Get cache statistics.
 
@@ -877,7 +877,7 @@ cat("Cache size:", stats$total_size_bytes, "bytes\n")
 
 ---
 
-### clear_cache()
+### Clear_cache()
 
 Clear the extraction cache.
 
@@ -899,7 +899,7 @@ clear_cache()
 
 ## Validation
 
-### validate_language_code()
+### Validate_language_code()
 
 Validate language code.
 
@@ -929,7 +929,7 @@ is_valid <- validate_language_code("eng")
 
 ---
 
-### validate_mime_type()
+### Validate_mime_type()
 
 Validate MIME type.
 
@@ -959,7 +959,7 @@ is_valid <- validate_mime_type("application/pdf")
 
 ---
 
-### validate_ocr_backend_name()
+### Validate_ocr_backend_name()
 
 Validate OCR backend name.
 
@@ -992,7 +992,7 @@ if (!is_valid) {
 
 ---
 
-### validate_output_format()
+### Validate_output_format()
 
 Validate output format.
 
@@ -1016,7 +1016,7 @@ validate_output_format(format) -> logical
 
 ## Metadata Detection
 
-### detect_mime_type()
+### Detect_mime_type()
 
 Detect MIME type from raw bytes.
 
@@ -1048,7 +1048,7 @@ cat("Detected MIME type:", mime_type, "\n")
 
 ---
 
-### detect_mime_type_from_path()
+### Detect_mime_type_from_path()
 
 Detect MIME type from file path.
 
@@ -1079,7 +1079,7 @@ cat("MIME type:", mime_type, "\n")
 
 ---
 
-### get_extensions_for_mime()
+### Get_extensions_for_mime()
 
 Get file extensions for a MIME type.
 
@@ -1114,7 +1114,7 @@ cat("PDF extensions:", paste(extensions, collapse = ", "), "\n")
 
 ### OCR Backends
 
-#### clear_ocr_backends()
+#### Clear_ocr_backends()
 
 Clear all registered OCR backends.
 
@@ -1126,7 +1126,7 @@ clear_ocr_backends() -> invisible(NULL)
 
 ---
 
-#### list_ocr_backends()
+#### List_ocr_backends()
 
 List all registered OCR backends.
 
@@ -1151,7 +1151,7 @@ cat("Available OCR backends:", paste(backends, collapse = ", "), "\n")
 
 ---
 
-#### register_ocr_backend()
+#### Register_ocr_backend()
 
 Register a custom OCR backend.
 
@@ -1170,7 +1170,7 @@ register_ocr_backend(name, callback) -> invisible(NULL)
 
 ---
 
-#### unregister_ocr_backend()
+#### Unregister_ocr_backend()
 
 Unregister an OCR backend.
 
@@ -1184,7 +1184,7 @@ unregister_ocr_backend(name) -> invisible(NULL)
 
 ### Post-Processors
 
-#### clear_post_processors()
+#### Clear_post_processors()
 
 Clear all registered post-processors.
 
@@ -1196,7 +1196,7 @@ clear_post_processors() -> invisible(NULL)
 
 ---
 
-#### list_post_processors()
+#### List_post_processors()
 
 List all registered post-processors.
 
@@ -1212,7 +1212,7 @@ list_post_processors() -> character
 
 ---
 
-#### register_post_processor()
+#### Register_post_processor()
 
 Register a custom post-processor.
 
@@ -1231,7 +1231,7 @@ register_post_processor(name, callback) -> invisible(NULL)
 
 ---
 
-#### unregister_post_processor()
+#### Unregister_post_processor()
 
 Unregister a post-processor.
 
@@ -1245,7 +1245,7 @@ unregister_post_processor(name) -> invisible(NULL)
 
 ### Validators
 
-#### clear_validators()
+#### Clear_validators()
 
 Clear all registered validators.
 
@@ -1257,7 +1257,7 @@ clear_validators() -> invisible(NULL)
 
 ---
 
-#### list_validators()
+#### List_validators()
 
 List all registered validators.
 
@@ -1273,7 +1273,7 @@ list_validators() -> character
 
 ---
 
-#### register_validator()
+#### Register_validator()
 
 Register a custom validator.
 
@@ -1292,7 +1292,7 @@ register_validator(name, callback) -> invisible(NULL)
 
 ---
 
-#### unregister_validator()
+#### Unregister_validator()
 
 Unregister a validator.
 
@@ -1306,7 +1306,7 @@ unregister_validator(name) -> invisible(NULL)
 
 ### Document Extractors
 
-#### clear_document_extractors()
+#### Clear_document_extractors()
 
 Clear all document extractors.
 
@@ -1318,7 +1318,7 @@ clear_document_extractors() -> invisible(NULL)
 
 ---
 
-#### list_document_extractors()
+#### List_document_extractors()
 
 List all available document extractors.
 
@@ -1334,7 +1334,7 @@ list_document_extractors() -> character
 
 ---
 
-#### unregister_document_extractor()
+#### Unregister_document_extractor()
 
 Unregister a document extractor.
 

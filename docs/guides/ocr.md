@@ -90,7 +90,7 @@ tesseract --list-langs
 pip install "kreuzberg[easyocr]"
 ```
 
-!!! warning "Python 3.14"
+!!! Warning "Python 3.14"
     EasyOCR is not supported on Python 3.14 due to upstream PyTorch compatibility. Use Python 3.10–3.13.
 
 ## Configuration
@@ -225,7 +225,7 @@ Process PDFs with OCR even when they have a text layer:
 
 ### Disable OCR
 
-!!! info "Added in v4.7.0"
+!!! Info "Added in v4.7.0"
 
 Skip OCR entirely, even for image files that would normally require it. When `disable_ocr` is set, image files return empty content instead of raising a `MissingDependencyError`:
 
@@ -313,7 +313,7 @@ Skip OCR entirely, even for image files that would normally require it. When `di
 
 ### Using VLM OCR <span class="version-badge">v4.8.0</span>
 
-Use a vision-language model (e.g., GPT-4o, Claude) as the OCR backend. Each page is rendered as an image and sent to the VLM for text extraction. Cloud providers require an API key; local engines like Ollama do not — just start the server and use the `ollama/` prefix (e.g., `ollama/llama3.2-vision`). See [Local LLM Support](llm-integration.md#local-llm-support) for setup details.
+Use a vision-language model (for example, GPT-4o, Claude) as the OCR backend. Each page is rendered as an image and sent to the VLM for text extraction. Cloud providers require an API key; local engines like Ollama do not — just start the server and use the `ollama/` prefix (for example, `ollama/llama3.2-vision`). See [Local LLM Support](llm-integration.md#local-llm-support) for setup details.
 
 === "Python"
 
@@ -363,7 +363,7 @@ Use a vision-language model (e.g., GPT-4o, Claude) as the OCR backend. Each page
 
 For more on VLM OCR, including custom prompts, supported providers, and API key configuration, see [LLM Integration](llm-integration.md#vlm-ocr).
 
-!!! tip "GPU Acceleration"
+!!! Tip "GPU Acceleration"
     EasyOCR and PaddleOCR support GPU acceleration. Set `use_gpu=True` in your OCR config. PaddleOCR's `model_tier="server"` gives the best accuracy with GPU.
 
 ## DPI Configuration
@@ -412,9 +412,9 @@ PaddleOCR supports 80+ languages across 11 script families (PP-OCRv5). Recogniti
 |--------|-----------|
 | **English** | English, numbers, punctuation |
 | **Chinese** | Simplified/Traditional Chinese, Japanese |
-| **Latin** | French, German, Spanish, Portuguese, Italian, Polish, Dutch, Turkish, Vietnamese, etc. |
+| **Latin** | French, German, Spanish, Portuguese, Italian, Polish, Dutch, Turkish, Vietnamese, and so on. |
 | **Korean** | Korean (Hangul) |
-| **Slavic** | Russian, Ukrainian, Belarusian, Bulgarian, Serbian, etc. |
+| **Slavic** | Russian, Ukrainian, Belarusian, Bulgarian, Serbian, and so on. |
 | **Thai** | Thai script |
 | **Greek** | Greek script |
 | **Arabic** | Arabic, Persian, Urdu |
@@ -452,11 +452,11 @@ kreuzberg extract scanned.pdf --config kreuzberg.toml --ocr true
 | `--ocr-language <code>` | Language code (`eng`, `deu`, `fra`, `ch`, `ja`, `ru`, etc.) |
 | `--ocr-backend <backend>` | Engine: `tesseract`, `paddle-ocr`, `easyocr`, or `vlm` |
 | `--force-ocr true` | OCR all pages regardless of text layer |
-| `--vlm-model <model>` | VLM model for OCR (e.g., `openai/gpt-4o-mini`). Implies `--ocr-backend vlm` |
+| `--vlm-model <model>` | VLM model for OCR (for example, `openai/gpt-4o-mini`). Implies `--ocr-backend vlm` |
 
 ## Troubleshooting
 
-??? question "Tesseract not found"
+??? Question "Tesseract not found"
 
     Install Tesseract and verify it's on your PATH:
 
@@ -471,7 +471,7 @@ kreuzberg extract scanned.pdf --config kreuzberg.toml --ocr true
     tesseract --version
     ```
 
-??? question "Language not found"
+??? Question "Language not found"
 
     Install the language data pack:
 
@@ -486,7 +486,7 @@ kreuzberg extract scanned.pdf --config kreuzberg.toml --ocr true
     tesseract --list-langs
     ```
 
-??? question "Poor accuracy"
+??? Question "Poor accuracy"
 
     - Increase DPI to 600 for better quality
     - Try a different backend — PaddleOCR and EasyOCR often outperform Tesseract on complex layouts
@@ -494,13 +494,13 @@ kreuzberg extract scanned.pdf --config kreuzberg.toml --ocr true
     - Use `force_ocr=True` if a PDF's embedded text layer is low quality
     - For handwritten text or very poor scans, try the VLM backend with a vision-capable model (see [LLM Integration](llm-integration.md#vlm-ocr))
 
-??? question "Slow processing"
+??? Question "Slow processing"
 
     - Reduce DPI to 150 for faster throughput
     - Enable GPU acceleration with EasyOCR or PaddleOCR (`use_gpu=True`)
     - Use batch extraction to process multiple files concurrently
 
-??? question "Out of memory on large PDFs"
+??? Question "Out of memory on large PDFs"
 
     - Reduce DPI — lower resolution uses significantly less memory
     - Process pages in smaller batches

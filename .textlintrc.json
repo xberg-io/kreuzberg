@@ -10,17 +10,17 @@
     "no-start-duplicated-conjunction": true,
     "no-empty-section": true,
     "terminology": {
-      "defaultTerms": true,
+      "defaultTerms": false,
       "terms": ["Kreuzberg", "Zensical"]
     },
     "no-zero-width-spaces": true,
-    "doubled-spaces": true,
+    "@textlint-rule/no-invalid-control-character": true,
+    "no-surrogate-pair": true,
+    "@textlint-rule/no-unmatched-pair": true,
+    "alex": true,
     "write-good": {
       "passive": false,
       "severity": "warning"
-    },
-    "en-max-word-count": {
-      "max": 60
     },
     "common-misspellings": true,
     "stop-words": {

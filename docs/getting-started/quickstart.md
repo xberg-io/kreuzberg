@@ -4,7 +4,7 @@ This guide walks you through Kreuzberg's core API — extracting text, handling 
 running OCR, and working with metadata. Install your binding first if you haven't:
 [Installation](installation.md).
 
-!!! info "Node.js or Browser?"
+!!! Info "Node.js or Browser?"
 
     Kreuzberg provides **two TypeScript packages** for different runtimes:
 

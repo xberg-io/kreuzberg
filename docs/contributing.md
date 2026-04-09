@@ -17,7 +17,7 @@ Welcome! Here's how to get started:
 
 Congratulations — that's really all it takes to start contributing! Fork, fix, and open a PR. We keep the process simple so you can focus on what matters: the code.
 
-!!! tip
+!!! Tip
     Start small. A focused contribution you understand well is more valuable than an ambitious one that stalls.
 
 Want to propose a larger change or new feature? [Open an issue](https://github.com/kreuzberg-dev/kreuzberg/issues) to discuss it with maintainers first.
@@ -145,7 +145,7 @@ Include: what you expected, what happened (with error output), steps to reproduc
 
 Search for existing issues first. Describe the use case and keep scope focused — break large ideas into smaller, actionable issues.
 
-!!! tip "Filing great issues"
+!!! Tip "Filing great issues"
     Be specific: "PDF tables lose column alignment" is better than "PDF parsing is broken." Explain impact and link related issues with `#123`.
 
 ---
@@ -156,16 +156,18 @@ Search for existing issues first. Describe the use case and keep scope focused �
 
 Before opening a PR, verify locally:
 
+<!-- textlint-disable no-todo -->
 - [ ] `task check` passes
 - [ ] Targeted tests pass
 - [ ] Docs updated (if applicable)
 - [ ] Commits follow Conventional Commits
+<!-- textlint-enable no-todo -->
 
 ### Writing a good PR description
 
 Include **what** changed, **why**, and **how** you tested it. Use `Fixes #123` to auto-close related issues.
 
-!!! tip
+!!! Tip
     Set your PR to **Draft** while it's in progress. Maintainers may leave early comments but won't do a full review until you mark it ready.
 
 ### Review and merge
@@ -177,7 +179,7 @@ Include **what** changed, **why**, and **how** you tested it. Use `Fixes #123` t
 
 **Merge requirements:** all CI checks pass, at least one maintainer approval, no unresolved conversations, branch up to date with `main`.
 
-!!! info
+!!! Info
     Don't worry about failing CI on your first PR. Maintainers will help you resolve issues.
 
 ---

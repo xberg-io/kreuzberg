@@ -1799,7 +1799,7 @@ public record StructuredData
 
 - `data_type`: Type of structured data (JSON-LD, Microdata, RDFa)
 - `raw_json`: Raw JSON string representation
-- `schema_type`: Schema type if detectable (e.g., "Article", "Event", "Product")
+- `schema_type`: Schema type if detectable (for example, "Article", "Event", "Product")
 
 ## StructuredDataType
 
@@ -2067,7 +2067,7 @@ type OcrMetadata struct {
 
 ### Code Metadata (ProcessResult)
 
-Complete code analysis result from [tree-sitter-language-pack](https://docs.tree-sitter-language-pack.kreuzberg.dev). Available when `format_type == "code"` (i.e., when extracting source code files). Contains structural analysis, imports, exports, comments, docstrings, symbols, diagnostics, and semantic code chunks.
+Complete code analysis result from [tree-sitter-language-pack](https://docs.tree-sitter-language-pack.kreuzberg.dev). Available when `format_type == "code"` (that is, when extracting source code files). Contains structural analysis, imports, exports, comments, docstrings, symbols, diagnostics, and semantic code chunks.
 
 #### Rust
 
@@ -2557,7 +2557,7 @@ pub struct ExtractedImage {
 **Field notes:**
 
 - `data`: Uses `Bytes` for cheap cloning of large image buffers
-- `format`: Uses `Cow<'static, str>` to avoid allocation for static format literals (e.g., "jpeg", "png"). In serialized JSON, appears as a regular string.
+- `format`: Uses `Cow<'static, str>` to avoid allocation for static format literals (for example, "jpeg", "png"). In serialized JSON, appears as a regular string.
 - All other fields serialize as expected for their types
 
 ### Python
@@ -4445,7 +4445,7 @@ public sealed class ConcurrencyConfig
 
 - `max_threads`: Cap thread pool size for Rayon, ONNX Runtime intra-op parallelism, and batch extraction concurrency (Default: `null` — no limit)
   - When `null`, allows libraries to use all available cores
-  - When set to positive integer (e.g., 4), limits all concurrent operations to that thread count
+  - When set to positive integer (for example, 4), limits all concurrent operations to that thread count
   - Useful for constrained hardware (VMs, containers, embedded systems)
 
 ## PageHierarchy
@@ -5647,7 +5647,7 @@ export type OutputFormat = "unified" | "element_based" | "elements";
 
 - `unified` (default): Returns complete document text in `content` field with metadata, tables, images, and optional pages
 - `element_based` or `elements`: Returns array of semantic elements in `elements` field (Unstructured.io compatible)
-- Both formats can coexist: enabling `element_based` populates `elements` while maintaining `content`, `tables`, etc.
+- Both formats can coexist: enabling `element_based` populates `elements` while maintaining `content`, `tables`, and so on.
 
 ## ContentFormat (Output Format)
 

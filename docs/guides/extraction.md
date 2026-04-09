@@ -7,7 +7,7 @@ Kreuzberg provides 8 core extraction functions organized by input type (file pat
 | **File path** | `extract_file_sync` | `extract_file` | `batch_extract_files_sync` | `batch_extract_files` |
 | **Bytes** | `extract_bytes_sync` | `extract_bytes` | `batch_extract_bytes_sync` | `batch_extract_bytes` |
 
-!!! tip "Sync vs Async"
+!!! Tip "Sync vs Async"
     Use async variants when you're already in an async context or processing multiple files concurrently. For scripts and simple pipelines, sync variants are simpler and just as fast for single files.
 
 ## Extract from Files
@@ -100,7 +100,7 @@ Pass a file path. Kreuzberg detects the MIME type from the extension and selects
 
 ## Extract from Bytes
 
-When the file is already loaded in memory (e.g., from an upload or network response), pass the byte array with its MIME type. Unlike file extraction, the MIME type is required since there's no file extension to infer it from.
+When the file is already loaded in memory (for example, from an upload or network response), pass the byte array with its MIME type. Unlike file extraction, the MIME type is required since there's no file extension to infer it from.
 
 ### Synchronous
 
@@ -276,7 +276,7 @@ Batch functions accept an array of file paths (or byte arrays) and process them 
 
 ### Per-File Configuration <span class="version-badge">v4.5.0</span>
 
-When a batch contains a mix of document types that need different settings (e.g., scanned images needing OCR alongside text-based PDFs), use `FileExtractionConfig` to override options per file while sharing a common batch config.
+When a batch contains a mix of document types that need different settings (for example, scanned images needing OCR alongside text-based PDFs), use `FileExtractionConfig` to override options per file while sharing a common batch config.
 
 === "Python"
 
@@ -413,7 +413,7 @@ When extracting source code files (`.py`, `.rs`, `.ts`, `.go`, etc.), Kreuzberg 
 - **Diagnostics** -- Parse errors with line/column positions
 - **Chunks** -- Semantic code chunks split at function/class boundaries
 
-Code files bypass the text-splitter chunking pipeline entirely. Instead, TSLP's `CodeChunks` (function/class-aware) map directly to kreuzberg `Chunk`s with semantic `chunk_type` and heading context.
+Code files bypass the text-splitter chunking pipeline entirely. Instead, TSLP's `CodeChunks` (function/class-aware) map directly to Kreuzberg `Chunk`s with semantic `chunk_type` and heading context.
 
 Control the content mode with `TreeSitterProcessConfig.content_mode`:
 
@@ -465,7 +465,7 @@ All extraction functions raise typed exceptions on failure. Catch specific excep
 
     --8<-- "snippets/wasm/api/error_handling_wasm.md"
 
-!!! warning "System Errors"
+!!! Warning "System Errors"
     `OSError` (Python), `IOException` (Rust), and system-level errors always propagate through. These indicate real system problems (permissions, disk space, etc.) that your application should handle.
 
 ## Next Steps

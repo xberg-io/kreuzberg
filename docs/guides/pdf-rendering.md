@@ -1,6 +1,6 @@
 # PDF Page Rendering
 
-!!! info "Added in v4.6.2"
+!!! Info "Added in v4.6.2"
 
 Render individual PDF pages as PNG images. Unlike the extraction pipeline (which parses text, tables, metadata), this API produces raw pixel data for thumbnails, vision model input, or custom OCR pipelines.
 
@@ -89,7 +89,7 @@ Renders one page at a time, releasing each page's memory before advancing. Peak 
 
     --8<-- "snippets/c/api/render_pdf_page_iterator.md"
 
-!!! note "Iterator availability"
+!!! Note "Iterator availability"
     `PdfPageIterator` is available in Python, TypeScript, Rust, Go, Java, C#, and C. Ruby, PHP, R, and Elixir provide `render_pdf_page` only — iterate pages with a loop over page indices.
 
 ## DPI Configuration
@@ -100,7 +100,7 @@ Renders one page at a time, releasing each page's memory before advancing. Peak 
 | 150 (default) | 1275 x 1650 | General-purpose, screen display |
 | 300 | 2550 x 3300 | OCR input, print quality |
 
-!!! tip "DPI for OCR"
+!!! Tip "DPI for OCR"
     Use 300 DPI when rendering pages for OCR or vision models. The default 150 DPI may reduce recognition accuracy on small text.
 
 ## Examples

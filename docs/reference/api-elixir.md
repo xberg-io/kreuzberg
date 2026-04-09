@@ -43,7 +43,7 @@ Extract content from binary document data.
 **Parameters:**
 
 - `input` (binary): Binary document data to extract from
-- `mime_type` (String): MIME type of the document (e.g., "application/pdf", "text/plain")
+- `mime_type` (String): MIME type of the document (for example, "application/pdf", "text/plain")
 - `config` (ExtractionConfig | map | keyword | nil): Extraction configuration. Uses defaults if nil
 
 **Returns:**
@@ -837,7 +837,7 @@ IO.inspect(atom)
 
 ## Configuration
 
-!!! warning "Deprecated API"
+!!! Warning "Deprecated API"
     The `force_ocr` parameter has been deprecated in favor of the new `ocr` configuration object.
 
     **Old pattern (no longer supported):**
@@ -1470,7 +1470,7 @@ Validate an ISO 639 language code.
 
 **Parameters:**
 
-- `code` (String): Language code string (e.g., "en", "eng", "de", "deu")
+- `code` (String): Language code string (for example, "en", "eng", "de", "deu")
 
 **Returns:**
 
@@ -1574,7 +1574,7 @@ Validate an OCR backend name.
 
 ## PDF Rendering
 
-!!! info "Added in v4.6.2"
+!!! Info "Added in v4.6.2"
 
 ### Kreuzberg.render_pdf_page/3
 
@@ -1903,7 +1903,7 @@ Semantic element (Unstructured compatibility).
 **Fields:**
 
 - `element_id` (String): Deterministic unique ID.
-- `element_type` (atom): Semantic type (e.g., `:narrative_text`).
+- `element_type` (atom): Semantic type (for example, `:narrative_text`).
 - `metadata` (Kreuzberg.ElementMetadata): Positioning and source metadata.
 - `text` (String): Text content.
 
@@ -1917,7 +1917,7 @@ Extracted image with metadata.
 
 - `bits_per_component` (non_neg_integer | nil): Bit depth.
 - `bounding_box` (map | nil): Box coordinates.
-- `colorspace` (String | nil): Color space (e.g., "RGB").
+- `colorspace` (String | nil): Color space (for example, "RGB").
 - `data` (binary): Raw image data.
 - `description` (String | nil): Alt text or description.
 - `format` (String): Format ("png", "jpeg", etc.).
@@ -2048,7 +2048,7 @@ Warning from the extraction pipeline.
 **Platforms:**
 
 - Linux (x64, arm64)
-- macOS (x64, arm64)
+- MacOS (x64, arm64)
 - Windows (x64)
 
 ---

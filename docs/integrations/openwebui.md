@@ -61,10 +61,10 @@ docker compose up -d
 
 Open `http://localhost:3000`, create an account, and upload a document. The extracted text will appear in the chat context.
 
-!!! note "Cache volume"
+!!! Note "Cache volume"
     The `kreuzberg-cache` volume persists OCR models and embedding weights across restarts. Without it, models re-download on every container restart (~90 MB–1.2 GB depending on configuration).
 
-!!! info "Already running Open WebUI?"
+!!! Info "Already running Open WebUI?"
     Start Kreuzberg separately, then point Open WebUI to that Kreuzberg URL.
 
 === "Docker"
@@ -120,7 +120,7 @@ Kreuzberg exposes two Open WebUI–compatible APIs. Both return the same extract
 
     Or via the Admin UI: **Settings → Documents → Content Extraction Engine** → select **External** → set URL to `http://kreuzberg:8000`.
 
-!!! tip
+!!! Tip
     If Kreuzberg runs on a different host or port, replace `http://kreuzberg:8000` with the actual address. Inside Docker Compose, use the service name (`kreuzberg`). Outside Docker, use the host IP or `localhost`.
 
 ## Verify it works

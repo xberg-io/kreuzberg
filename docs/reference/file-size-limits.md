@@ -31,7 +31,7 @@ These defaults are suitable for typical document processing workloads including:
 
 ### When to Increase
 
-Increase limits if you need to process:
+Increase limits to process:
 
 - **Large scanned document archives** (200+ MB)
 - **High-resolution images** (50+ MB each)

@@ -32,7 +32,7 @@ try {
 
 **Performance Benefits:**
 - **Parallel Processing**: Multiple documents extracted simultaneously
-- **CPU Utilization**: Maximizes multi-core CPU usage for large batches
+- **CPU Usage**: Maximizes multi-core CPU usage for large batches
 - **Queue Management**: Automatically distributes work across available workers
 - **Resource Control**: Prevents thread exhaustion with configurable pool size
 

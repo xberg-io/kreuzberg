@@ -171,7 +171,7 @@ Three utility functions for working with MIME types programmatically:
 
 === "Python"
     ```python
-    from kreuzberg import detect_mime_type, validate_mime_type
+    from Kreuzberg import detect_mime_type, validate_mime_type
 
     # Detect from file extension
     mime = detect_mime_type("report.pdf")     # → "application/pdf"

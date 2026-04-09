@@ -27,8 +27,8 @@ cp -r path/to/kreuzberg/skills/kreuzberg .claude/skills/kreuzberg
 When your AI coding assistant discovers the skill, it knows:
 
 - All extraction functions and their correct signatures across languages
-- Configuration field names (e.g., `max_chars` not `max_characters` in Python)
-- Rust feature gates (e.g., `tokio-runtime` for sync functions)
+- Configuration field names (for example, `max_chars` not `max_characters` in Python)
+- Rust feature gates (for example, `tokio-runtime` for sync functions)
 - Language-specific conventions (snake_case in Python/Rust, camelCase in Node.js)
 - Error handling patterns for each language
 

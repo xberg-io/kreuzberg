@@ -1,6 +1,6 @@
-use kreuzberg::{extract_file_sync, ExtractionConfig, ChunkingConfig, PageConfig};
+Use Kreuzberg::{extract_file_sync, ExtractionConfig, ChunkingConfig, PageConfig};
 
-let config = ExtractionConfig {
+Let config = ExtractionConfig {
 chunking: Some(ChunkingConfig {
 max_characters: 500,
 overlap: 50,
@@ -13,9 +13,9 @@ extract_pages: true,
 ..Default::default()
 };
 
-let result = extract_file_sync("document.pdf", None, &config)?;
+Let result = extract_file_sync("document.pdf", None, &config)?;
 
-if let Some(chunks) = result.chunks {
+If let Some(chunks) = result.chunks {
 for chunk in chunks {
 if let (Some(first), Some(last)) = (chunk.metadata.first_page, chunk.metadata.last_page) {
 let page_range = if first == last {

@@ -24,7 +24,7 @@ The Kreuzberg CLI provides command-line access to all extraction features. This 
 
     --8<-- "snippets/cli/install_go_sdk.md"
 
-!!! info "Feature Availability"
+!!! Info "Feature Availability"
 **Homebrew Installation:**
 
     - ✅ Text extraction (PDF, Office, images, 91+ formats)
@@ -162,7 +162,7 @@ Set the OCR language using the `--ocr-language` flag. This flag is backend-agnos
 - **Tesseract**: Uses ISO 639-3 codes (three-letter codes)
   - Examples: `eng` (English), `fra` (French), `deu` (German), `spa` (Spanish), `jpn` (Japanese)
 - **PaddleOCR**: Accepts flexible language codes and full language names
-  - Examples: `en`, `ch`, `french`, `korean`, `thai`, `greek`, `cyrillic`, etc.
+  - Examples: `en`, `ch`, `french`, `korean`, `thai`, `greek`, `cyrillic`, and so on.
 - **EasyOCR**: Similar flexible format to PaddleOCR
 
 When used with `--ocr true`, the language flag overrides the default language. When used without `--ocr`, it overrides the language specified in your config file.
@@ -419,7 +419,7 @@ kreuzberg extract document.pdf --force-ocr true --ocr-auto-rotate true
 | `--chunk <true\|false>` | Enable or disable text chunking. |
 | `--chunk-size <N>` | Maximum chunk size in characters (default: 1000). |
 | `--chunk-overlap <N>` | Overlap between consecutive chunks in characters (default: 200). |
-| `--chunking-tokenizer <MODEL>` | Tokenizer model for token-based chunk sizing (e.g. `Xenova/gpt-4o`). Implicitly enables chunking. Requires the `chunking-tokenizers` feature. |
+| `--chunking-tokenizer <MODEL>` | Tokenizer model for token-based chunk sizing (for example `Xenova/gpt-4o`). Implicitly enables chunking. Requires the `chunking-tokenizers` feature. |
 
 ```bash title="Terminal"
 kreuzberg extract document.pdf --chunk true --chunk-size 512 --chunk-overlap 50
@@ -836,7 +836,7 @@ kreuzberg embed --text "hello" --preset balanced --format text
 
 Available presets: `fast`, `balanced` (default), `quality`, `multilingual`.
 
-!!! info "Feature Availability"
+!!! Info "Feature Availability"
     The `embed` command requires the `embeddings` feature. It is available in Docker images but not in Homebrew installations.
 
 ## Chunking Command <span class="version-badge">v4.5.2</span>
@@ -901,7 +901,7 @@ kreuzberg api schema
 kreuzberg api schema > openapi.json
 ```
 
-!!! info "Feature Availability"
+!!! Info "Feature Availability"
     The `api` subcommand requires the `api` feature.
 
 ## List Supported Formats <span class="version-badge">v4.5.2</span>

@@ -192,7 +192,7 @@ The best way to evaluate performance for your workload is to measure it with you
 === "Python"
     ```python
     import time
-    from kreuzberg import extract_file, batch_extract_files
+    from Kreuzberg import extract_file, batch_extract_files
 
     start = time.time()
     result = extract_file("large_document.pdf")
@@ -220,7 +220,7 @@ The best way to evaluate performance for your workload is to measure it with you
 
 === "Rust"
     ```rust title="benchmark.rs"
-    use kreuzberg::{extract_file_sync, batch_extract_file_sync, ExtractionConfig};
+    use Kreuzberg::{extract_file_sync, batch_extract_file_sync, ExtractionConfig};
     use std::time::Instant;
 
     let config = ExtractionConfig::default();

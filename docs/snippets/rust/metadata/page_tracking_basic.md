@@ -1,6 +1,6 @@
-use kreuzberg::{extract_file_sync, ExtractionConfig, PageConfig};
+Use Kreuzberg::{extract_file_sync, ExtractionConfig, PageConfig};
 
-let config = ExtractionConfig {
+Let config = ExtractionConfig {
     pages: Some(PageConfig {
         extract_pages: true,
         ..Default::default()
@@ -8,9 +8,9 @@ let config = ExtractionConfig {
     ..Default::default()
 };
 
-let result = extract_file_sync("document.pdf", &config)?;
+Let result = extract_file_sync("document.pdf", &config)?;
 
-if let Some(pages) = result.pages {
+If let Some(pages) = result.pages {
     for page in pages {
         println!("Page {}:", page.page_number);
         println!("  Content: {} chars", page.content.len());

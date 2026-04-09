@@ -149,7 +149,7 @@ Kreuzberg supports three OCR backends. You can use one backend, or chain multipl
 
 ### Multi-Backend Pipeline
 
-!!! info "Added in v4.5.0"
+!!! Info "Added in v4.5.0"
 
 When the `paddle-ocr` feature is enabled, Kreuzberg automatically constructs a fallback pipeline: Tesseract runs first, and if the output falls below configurable quality thresholds (16 tunable parameters), PaddleOCR takes over. You can also define a custom ordering across all three backends.
 
@@ -168,7 +168,7 @@ flowchart TD
 
 ### Document-Level Optimization
 
-!!! info "Added in v4.5.3"
+!!! Info "Added in v4.5.3"
 
 Some OCR backends (including EasyOCR) now support **document-level processing**. When a file path is provided, the extractor can bypass the expensive page-by-page rendering stage and delegate the entire document to the OCR engine. This significantly reduces memory overhead and improves throughput for large PDFs and multi-page images.
 
@@ -192,11 +192,11 @@ After extraction, Kreuzberg can run a chain of processing steps. Each is optiona
 
 **PDF Page Rendering** -- Render individual PDF pages as PNG images for thumbnails, vision model input, or custom processing pipelines. Memory-efficient iterator renders one page at a time. Configurable DPI (default 150). Available across all language bindings. See [PDF Rendering Guide](guides/pdf-rendering.md).
 
-!!! info "Added in v4.6.2"
+!!! Info "Added in v4.6.2"
 
 ### LLM-Powered Intelligence
 
-!!! info "Added in v4.8.0"
+!!! Info "Added in v4.8.0"
 
 Kreuzberg integrates with 146 LLM providers including local inference (Ollama, LM Studio, vLLM, llama.cpp) via [liter-llm](https://github.com/kreuzberg-dev/liter-llm) to unlock three new capabilities that complement the local extraction pipeline.
 
@@ -237,7 +237,7 @@ Provide a JSON schema and an optional Jinja2 prompt template; the LLM returns co
 <details>
 <summary><strong>VLM Embeddings</strong> -- Provider-hosted embedding models</summary>
 
-Use provider-hosted embedding models (e.g., `openai/text-embedding-3-small`, `mistral/mistral-embed`) as an alternative to local ONNX models. Works through the existing `/embed` API endpoint, `embed_text` MCP tool, and `embed` CLI command with `--provider llm`.
+Use provider-hosted embedding models (for example, `openai/text-embedding-3-small`, `mistral/mistral-embed`) as an alternative to local ONNX models. Works through the existing `/embed` API endpoint, `embed_text` MCP tool, and `embed` CLI command with `--provider llm`.
 
 </details>
 
@@ -274,7 +274,7 @@ Customize the prompts sent to LLMs with Minijinja templates. Available variables
 
 ## Layout Detection
 
-!!! info "Added in v4.5.0"
+!!! Info "Added in v4.5.0"
 
 Detect and classify document regions using ONNX-based deep learning models. Layout detection identifies tables, figures, headers, text blocks, code sections, forms, and more, then feeds that structure into extraction for better accuracy.
 
@@ -343,7 +343,7 @@ Kreuzberg's Rust core is exposed through native bindings for 12 languages. All b
 
 **Subset or constrained environment** -- TypeScript/WASM (browser/edge, no filesystem or server modes), PHP, Elixir, R, C (FFI)
 
-!!! note "TypeScript: Native vs WASM"
+!!! Note "TypeScript: Native vs WASM"
     **Native** (`@kreuzberg/node`) runs at full speed with complete feature parity including servers, plugins, and config file discovery. **WASM** (`@kreuzberg/wasm`) runs in browsers and edge runtimes at 60-80% of native speed with no native dependencies, but lacks filesystem access, server modes, file-based configuration, layout detection (requires ONNX Runtime), hardware acceleration config, concurrency config, and email config. Choose Native for server-side Node.js; choose WASM for browser or edge deployments.
 
 ### Rust Feature Flags
@@ -411,7 +411,7 @@ For the full configuration schema and examples, see the [Configuration Guide](gu
 
 ## AI Coding Assistants
 
-!!! info "Added in v4.2.15"
+!!! Info "Added in v4.2.15"
 
 Kreuzberg ships with an [Agent Skill](https://agentskills.io) that teaches AI coding assistants the complete API across Python, TypeScript, Rust, and CLI. Install it with:
 

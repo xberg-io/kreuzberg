@@ -384,7 +384,7 @@ func ExtractBytesSync(data []byte, mimeType string, config *ExtractionConfig) (*
 **Parameters:**
 
 - `data` ([]byte): Document bytes
-- `mimeType` (string): MIME type (e.g., "application/pdf", "text/plain")
+- `mimeType` (string): MIME type (for example, "application/pdf", "text/plain")
 - `config` (*ExtractionConfig): Optional configuration
 
 **Returns:**
@@ -526,7 +526,7 @@ func LibraryVersion() string
 
 **Returns:**
 
-- `string`: Version string (e.g., "4.8.0")
+- `string`: Version string (for example, "4.8.0")
 
 **Example:**
 
@@ -687,7 +687,7 @@ type ChunkSizingConfig struct {
 
 **Note:** The Go binding maintains both `MaxChars`/`MaxOverlap` (recommended) and `ChunkSize`/`ChunkOverlap` (deprecated) for backward compatibility. New code should use `MaxChars` and `MaxOverlap`.
 
-The `Sizing` field controls how chunk size is measured. By default, `MaxChars` counts characters. Set `SizingType` to `"tokenizer"` with a HuggingFace `Model` ID (e.g. `"bert-base-uncased"`) to measure by token count instead.
+The `Sizing` field controls how chunk size is measured. By default, `MaxChars` counts characters. Set `SizingType` to `"tokenizer"` with a HuggingFace `Model` ID (for example `"bert-base-uncased"`) to measure by token count instead.
 
 ---
 
@@ -1381,7 +1381,7 @@ Same parameters as `EmbedTexts()`, plus a `context.Context` as the first argumen
 
 ## PDF Rendering
 
-!!! info "Added in v4.8.0"
+!!! Info "Added in v4.8.0"
 
 ### RenderPdfPage
 
@@ -1397,7 +1397,7 @@ func RenderPdfPage(path string, pageIndex int, dpi int) ([]byte, error)
 
 - `path` (string): Path to the PDF file
 - `pageIndex` (int): Zero-based page index to render
-- `dpi` (int): Resolution for rendering (e.g. 150)
+- `dpi` (int): Resolution for rendering (for example 150)
 
 **Returns:**
 
@@ -1418,7 +1418,7 @@ os.WriteFile("first_page.png", png, 0644)
 
 ### PdfPageIterator
 
-A more memory-efficient alternative to rendering all pages at once when memory is a concern or when pages should be processed as they are rendered (e.g., sending each page to a vision model for OCR). Renders one page at a time, so only one raw image is in memory at a time.
+A more memory-efficient alternative to rendering all pages at once when memory is a concern or when pages should be processed as they are rendered (for example, sending each page to a vision model for OCR). Renders one page at a time, so only one raw image is in memory at a time.
 
 **Type:**
 
@@ -1833,7 +1833,7 @@ if err := kreuzberg.UnregisterValidator("my-validator"); err != nil {
 
 1. **Batch Processing**: Use `BatchExtractFilesSync()` for multiple files to leverage internal optimizations
 2. **Context Timeouts**: Set realistic timeouts; OCR can be slow on large documents
-3. **Caching**: Enable `UseCache: boolPtr(true)` to cache frequently extracted documents
+3. **Caching**: Enable `UseCache: boolPtr(true)` to cache often extracted documents
 4. **Static Linking**: Binaries are self-contained after build; no runtime library paths needed
 5. **Configuration Reuse**: Create and reuse ExtractionConfig objects across multiple calls
 6. **Goroutines**: Use `ExtractFile()` / `ExtractBytes()` variants in goroutines for concurrency

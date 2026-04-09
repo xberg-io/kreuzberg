@@ -2,7 +2,7 @@
 
 MinerU is an open-source tool from OpenDataLab designed for high-quality PDF extraction, especially for scientific and academic documents. Kreuzberg is a Rust-based general-purpose extraction library covering 91+ formats. They overlap on PDF extraction but differ significantly in scope, licensing, and architecture.
 
-!!! warning "License"
+!!! Warning "License"
 
     MinerU is licensed under **AGPL-3.0**. This means any application that uses MinerU must also be released under AGPL, or you need a commercial license. Kreuzberg is **Apache-2.0** -- no copyleft restrictions.
 
@@ -80,6 +80,6 @@ Downstream pipeline support.
 
 ---
 
-!!! info "Benchmarks"
+!!! Info "Benchmarks"
 
     For extraction speed and quality comparisons between Kreuzberg and MinerU, see the [live benchmark dashboard](https://kreuzberg.dev/benchmarks).

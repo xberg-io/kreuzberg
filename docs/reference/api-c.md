@@ -120,7 +120,7 @@ int main(void) {
 
 ## Core Extraction Functions
 
-### kreuzberg_batch_extract_bytes_sync
+### Kreuzberg_batch_extract_bytes_sync
 
 Batch extract text from multiple in-memory documents.
 
@@ -147,7 +147,7 @@ CBatchResult *kreuzberg_batch_extract_bytes_sync(
 
 ---
 
-### kreuzberg_batch_extract_files_sync
+### Kreuzberg_batch_extract_files_sync
 
 Batch extract text from multiple files in a single call.
 
@@ -170,11 +170,11 @@ CBatchResult *kreuzberg_batch_extract_files_sync(
 **Returns:**
 
 - `CBatchResult*`: Batch result containing an array of individual results; free with `kreuzberg_free_batch_result`
-- `NULL` on error (e.g., invalid arguments)
+- `NULL` on error (for example, invalid arguments)
 
 ---
 
-### kreuzberg_extract_batch_parallel
+### Kreuzberg_extract_batch_parallel
 
 Parallel variant of streaming batch extraction using a thread pool.
 
@@ -208,7 +208,7 @@ int kreuzberg_extract_batch_parallel(
 
 ---
 
-### kreuzberg_extract_batch_streaming
+### Kreuzberg_extract_batch_streaming
 
 Stream-process multiple files with a callback for each result, avoiding memory accumulation.
 
@@ -240,7 +240,7 @@ int kreuzberg_extract_batch_streaming(
 
 ---
 
-### kreuzberg_extract_bytes_sync
+### Kreuzberg_extract_bytes_sync
 
 Extract text from an in-memory byte buffer with a specified MIME type.
 
@@ -258,7 +258,7 @@ CExtractionResult *kreuzberg_extract_bytes_sync(
 
 - `data` (const uint8_t*): Pointer to the document bytes
 - `data_len` (uintptr_t): Length of the byte buffer
-- `mime_type` (const char*): Null-terminated MIME type string (e.g., `"application/pdf"`)
+- `mime_type` (const char*): Null-terminated MIME type string (for example, `"application/pdf"`)
 
 **Returns:**
 
@@ -267,7 +267,7 @@ CExtractionResult *kreuzberg_extract_bytes_sync(
 
 ---
 
-### kreuzberg_extract_bytes_sync_with_config
+### Kreuzberg_extract_bytes_sync_with_config
 
 Extract text from bytes with a JSON configuration string.
 
@@ -296,7 +296,7 @@ CExtractionResult *kreuzberg_extract_bytes_sync_with_config(
 
 ---
 
-### kreuzberg_extract_file_sync
+### Kreuzberg_extract_file_sync
 
 Extract text and metadata from a file.
 
@@ -317,7 +317,7 @@ CExtractionResult *kreuzberg_extract_file_sync(const char *file_path);
 
 ---
 
-### kreuzberg_extract_file_sync_with_config
+### Kreuzberg_extract_file_sync_with_config
 
 Extract text and metadata from a file with custom JSON configuration.
 
@@ -383,7 +383,7 @@ ExtractionConfig *config = kreuzberg_config_builder_build(builder);
 kreuzberg_config_free(config);
 ```
 
-**Important:** After calling `kreuzberg_config_builder_build`, the builder is consumed. Do not call `kreuzberg_config_builder_free` on a consumed builder. If you need to discard a builder without building, call `kreuzberg_config_builder_free` instead.
+**Important:** After calling `kreuzberg_config_builder_build`, the builder is consumed. Do not call `kreuzberg_config_builder_free` on a consumed builder. To discard a builder without building, call `kreuzberg_config_builder_free` instead.
 
 ---
 
@@ -441,9 +441,9 @@ char *kreuzberg_load_extraction_config_from_file(const char *file_path);
 
 ## PDF Rendering
 
-!!! info "Added in v4.6.2"
+!!! Info "Added in v4.6.2"
 
-### kreuzberg_render_pdf_page
+### Kreuzberg_render_pdf_page
 
 Render a single page of a PDF as a PNG image.
 
@@ -457,7 +457,7 @@ CRenderPageResult* kreuzberg_render_pdf_page(const char* file_path, size_t page_
 
 - `file_path` (const char*): Path to the PDF file (UTF-8 encoded)
 - `page_index` (size_t): Zero-based page index to render
-- `dpi` (int): Resolution for rendering (e.g. 150)
+- `dpi` (int): Resolution for rendering (for example 150)
 
 **Returns:**
 
@@ -465,7 +465,7 @@ CRenderPageResult* kreuzberg_render_pdf_page(const char* file_path, size_t page_
 
 ---
 
-### kreuzberg_free_render_page_result
+### Kreuzberg_free_render_page_result
 
 Free a single page result returned by `kreuzberg_render_pdf_page`.
 
@@ -477,7 +477,7 @@ void kreuzberg_free_render_page_result(CRenderPageResult* page);
 
 ## Error Handling
 
-### kreuzberg_last_error
+### Kreuzberg_last_error
 
 Get the last error message for the current thread.
 
@@ -494,7 +494,7 @@ const char *kreuzberg_last_error(void);
 
 ---
 
-### kreuzberg_last_error_code
+### Kreuzberg_last_error_code
 
 Get the numeric error code for the last error.
 
@@ -510,7 +510,7 @@ int32_t kreuzberg_last_error_code(void);
 
 ---
 
-### kreuzberg_last_panic_context
+### Kreuzberg_last_panic_context
 
 Get the panic context if the last error was a caught panic.
 
@@ -526,7 +526,7 @@ const char *kreuzberg_last_panic_context(void);
 
 ---
 
-### kreuzberg_get_error_details
+### Kreuzberg_get_error_details
 
 Retrieve structured error information from thread-local storage.
 
@@ -625,7 +625,7 @@ if (code == kreuzberg_error_code_io()) {
 
 ## Memory Management
 
-Correct memory management is critical when using the C API. Every allocation has a specific free function. Mixing allocators (e.g., calling `free()` on a Kreuzberg-allocated string) causes undefined behavior.
+Correct memory management is critical when using the C API. Every allocation has a specific free function. Mixing allocators (for example, calling `free()` on a Kreuzberg-allocated string) causes undefined behavior.
 
 ### Rules
 
@@ -652,7 +652,7 @@ void kreuzberg_free_string(char *s);
 
 All free functions accept NULL (no-op).
 
-### kreuzberg_clone_string
+### Kreuzberg_clone_string
 
 Duplicate a null-terminated string using the Kreuzberg allocator.
 
@@ -690,7 +690,7 @@ if (result != NULL && result->success) {
 
 ## MIME Type Utilities
 
-### kreuzberg_detect_mime_type
+### Kreuzberg_detect_mime_type
 
 Detect MIME type from a file path, optionally checking that the file exists.
 
@@ -712,7 +712,7 @@ char *kreuzberg_detect_mime_type(const char *file_path, bool check_exists);
 
 ---
 
-### kreuzberg_detect_mime_type_from_bytes
+### Kreuzberg_detect_mime_type_from_bytes
 
 Detect MIME type from raw byte content.
 
@@ -736,7 +736,7 @@ if (mime != NULL) {
 
 ---
 
-### kreuzberg_detect_mime_type_from_path
+### Kreuzberg_detect_mime_type_from_path
 
 Detect MIME type by reading both the file extension and file content.
 
@@ -748,7 +748,7 @@ char *kreuzberg_detect_mime_type_from_path(const char *file_path);
 
 ---
 
-### kreuzberg_get_extensions_for_mime
+### Kreuzberg_get_extensions_for_mime
 
 Get file extensions for a given MIME type.
 
@@ -765,7 +765,7 @@ char *kreuzberg_get_extensions_for_mime(const char *mime_type);
 
 ---
 
-### kreuzberg_validate_mime_type
+### Kreuzberg_validate_mime_type
 
 Validate that a MIME type is supported by Kreuzberg.
 
@@ -782,7 +782,7 @@ char *kreuzberg_validate_mime_type(const char *mime_type);
 
 **Returns:**
 
-- `char*`: JSON array of extensions (e.g., `["pdf"]`); free with `kreuzberg_free_string`
+- `char*`: JSON array of extensions (for example, `["pdf"]`); free with `kreuzberg_free_string`
 - `NULL` on error
 
 **Example:**
@@ -1020,7 +1020,7 @@ CResultPoolStats kreuzberg_result_pool_stats(ResultPool *pool);
 
 ## Utility Functions
 
-### kreuzberg_version
+### Kreuzberg_version
 
 Get the library version string.
 
@@ -1032,7 +1032,7 @@ const char *kreuzberg_version(void);
 
 **Returns:**
 
-- Pointer to a static null-terminated string (e.g., `"4.3.8"`). Do NOT free this pointer.
+- Pointer to a static null-terminated string (for example, `"4.3.8"`). Do NOT free this pointer.
 
 **Example:**
 
@@ -1236,7 +1236,7 @@ uintptr_t kreuzberg_result_get_chunk_count(const CExtractionResult *result);
 
 ---
 
-### kreuzberg_result_get_detected_language
+### Kreuzberg_result_get_detected_language
 
 Get a detected language at a specific index.
 
@@ -1248,7 +1248,7 @@ char *kreuzberg_result_get_detected_language(const CExtractionResult *result, ui
 
 ---
 
-### kreuzberg_result_get_metadata_field
+### Kreuzberg_result_get_metadata_field
 
 Get a specific metadata field by name.
 
@@ -1260,7 +1260,7 @@ CMetadataField kreuzberg_result_get_metadata_field(const CExtractionResult *resu
 
 ---
 
-### kreuzberg_result_get_page_count
+### Kreuzberg_result_get_page_count
 
 Get the number of pages in the result.
 
@@ -1319,85 +1319,85 @@ CStringInternStats kreuzberg_string_intern_stats(void);
 
 Utilities for parsing and serializing configuration enums.
 
-### kreuzberg_code_block_style_to_string
+### Kreuzberg_code_block_style_to_string
 
 ```c
 const char *kreuzberg_code_block_style_to_string(int32_t style);
 ```
 
-### kreuzberg_heading_style_to_string
+### Kreuzberg_heading_style_to_string
 
 ```c
 const char *kreuzberg_heading_style_to_string(int32_t style);
 ```
 
-### kreuzberg_highlight_style_to_string
+### Kreuzberg_highlight_style_to_string
 
 ```c
 const char *kreuzberg_highlight_style_to_string(int32_t style);
 ```
 
-### kreuzberg_list_indent_type_to_string
+### Kreuzberg_list_indent_type_to_string
 
 ```c
 const char *kreuzberg_list_indent_type_to_string(int32_t type);
 ```
 
-### kreuzberg_newline_style_to_string
+### Kreuzberg_newline_style_to_string
 
 ```c
 const char *kreuzberg_newline_style_to_string(int32_t style);
 ```
 
-### kreuzberg_parse_code_block_style
+### Kreuzberg_parse_code_block_style
 
 ```c
 int32_t kreuzberg_parse_code_block_style(const char *s);
 ```
 
-### kreuzberg_parse_heading_style
+### Kreuzberg_parse_heading_style
 
 ```c
 int32_t kreuzberg_parse_heading_style(const char *s);
 ```
 
-### kreuzberg_parse_highlight_style
+### Kreuzberg_parse_highlight_style
 
 ```c
 int32_t kreuzberg_parse_highlight_style(const char *s);
 ```
 
-### kreuzberg_parse_list_indent_type
+### Kreuzberg_parse_list_indent_type
 
 ```c
 int32_t kreuzberg_parse_list_indent_type(const char *s);
 ```
 
-### kreuzberg_parse_newline_style
+### Kreuzberg_parse_newline_style
 
 ```c
 int32_t kreuzberg_parse_newline_style(const char *s);
 ```
 
-### kreuzberg_parse_preprocessing_preset
+### Kreuzberg_parse_preprocessing_preset
 
 ```c
 int32_t kreuzberg_parse_preprocessing_preset(const char *s);
 ```
 
-### kreuzberg_parse_whitespace_mode
+### Kreuzberg_parse_whitespace_mode
 
 ```c
 int32_t kreuzberg_parse_whitespace_mode(const char *s);
 ```
 
-### kreuzberg_preprocessing_preset_to_string
+### Kreuzberg_preprocessing_preset_to_string
 
 ```c
 const char *kreuzberg_preprocessing_preset_to_string(int32_t preset);
 ```
 
-### kreuzberg_whitespace_mode_to_string
+### Kreuzberg_whitespace_mode_to_string
 
 ```c
 const char *kreuzberg_whitespace_mode_to_string(int32_t mode);

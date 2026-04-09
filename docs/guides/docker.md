@@ -131,8 +131,8 @@ docker run -v $(pwd)/documents:/data:ro \
   extract /data/document.pdf
 ```
 
-!!! note "Model Downloads"
-    Embedding models download on first use (~90 MB – 1.2 GB depending on preset). Use a persistent volume for `/app/.kreuzberg` in production to avoid re-downloading on container restart. Outside Docker, models are cached in the platform-specific global cache directory (e.g., `~/.cache/kreuzberg/` on Linux, `~/Library/Caches/kreuzberg/` on macOS).
+!!! Note "Model Downloads"
+    Embedding models download on first use (~90 MB – 1.2 GB depending on preset). Use a persistent volume for `/app/.kreuzberg` in production to avoid re-downloading on container restart. Outside Docker, models are cached in the platform-specific global cache directory (for example, `~/.cache/kreuzberg/` on Linux, `~/Library/Caches/kreuzberg/` on macOS).
 
 ## Docker Compose
 
@@ -218,15 +218,15 @@ CMD ["serve", "--config", "/app/kreuzberg.toml"]
 
 ## Troubleshooting
 
-??? question "Container won't start"
+??? Question "Container won't start"
 
     Check logs with `docker logs <container-id>`. Common causes: port conflict (change `-p` mapping), insufficient memory (increase `--memory`), volume permission errors.
 
-??? question "Permission errors on mounted volumes"
+??? Question "Permission errors on mounted volumes"
 
     Images run as UID 1000. Fix with: `chown -R 1000:1000 /path/to/mounted/directory`
 
-??? question "Large file processing fails"
+??? Question "Large file processing fails"
 
     Increase memory limit (`--memory=4g`) and upload size (`-e KREUZBERG_MAX_UPLOAD_SIZE_MB=1000`).
 

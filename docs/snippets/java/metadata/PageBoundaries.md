@@ -1,9 +1,9 @@
-import dev.kreuzberg.*;
+Import dev.kreuzberg.*;
 import java.nio.charset.StandardCharsets;
 
 var result = Kreuzberg.extractFileSync("document.pdf");
 
-if (result.metadata().pages() != null &&
+If (result.metadata().pages() != null &&
     result.metadata().pages().boundaries() != null) {
 
     var contentBytes = result.content().getBytes(StandardCharsets.UTF_8);

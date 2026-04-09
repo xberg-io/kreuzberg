@@ -191,7 +191,7 @@ final class CustomKreuzberg extends BaseKreuzberg
 
 The plugin system is planned for a future PHP bindings release (tentatively v4.1.0 or v4.2.0), pending:
 
-1. ext-php-rs improvements for complex callbacks
+1. Ext-php-rs improvements for complex callbacks
 2. Comprehensive testing of callback performance and safety
 3. Documentation of plugin interfaces
 

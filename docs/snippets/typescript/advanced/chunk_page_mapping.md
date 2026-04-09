@@ -1,8 +1,8 @@
-import { extractFileSync } from '@kreuzberg/node';
+Import { extractFileSync } from '@kreuzberg/node';
 
-const result = extractFileSync('document.pdf', null, { chunking: { maxChars: 500, maxOverlap: 50 }, pages: { extractPages: true } });
+Const result = extractFileSync('document.pdf', null, { chunking: { maxChars: 500, maxOverlap: 50 }, pages: { extractPages: true } });
 
-if (result.chunks) {
+If (result.chunks) {
   for (const chunk of result.chunks) {
     if (chunk.metadata.firstPage) {
       const pageRange = chunk.metadata.firstPage === chunk.metadata.lastPage

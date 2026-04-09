@@ -347,7 +347,7 @@ $results = $kreuzberg->batchExtractBytes($dataList, $mimeTypes);
 
 ## Procedural Functions
 
-### extract_file()
+### Extract_file()
 
 Extract content from a file (procedural API).
 
@@ -387,7 +387,7 @@ $result = extract_file('document.pdf', config: $config);
 
 ---
 
-### extract_bytes()
+### Extract_bytes()
 
 Extract content from bytes (procedural API).
 
@@ -411,7 +411,7 @@ Same as [`Kreuzberg::extractBytes()`](#kreuzbergextractbytes).
 
 ---
 
-### batch_extract_files()
+### Batch_extract_files()
 
 Extract content from multiple files in parallel (procedural API).
 
@@ -449,7 +449,7 @@ foreach ($results as $result) {
 
 ---
 
-### batch_extract_bytes()
+### Batch_extract_bytes()
 
 Extract content from multiple byte arrays in parallel (procedural API).
 
@@ -500,7 +500,7 @@ Batch-level fields (`$maxConcurrentExtractions`, `$useCache`, `$securityLimits`)
 
 ---
 
-### detect_mime_type()
+### Detect_mime_type()
 
 Detect MIME type from file bytes.
 
@@ -516,7 +516,7 @@ function detect_mime_type(string $data): string
 
 **Returns:**
 
-- `string`: Detected MIME type (e.g., "application/pdf", "image/png")
+- `string`: Detected MIME type (for example, "application/pdf", "image/png")
 
 **Examples:**
 
@@ -532,7 +532,7 @@ echo $mimeType; // "application/pdf"
 
 ---
 
-### detect_mime_type_from_path()
+### Detect_mime_type_from_path()
 
 Detect MIME type from file path.
 
@@ -548,7 +548,7 @@ function detect_mime_type_from_path(string $path): string
 
 **Returns:**
 
-- `string`: Detected MIME type (e.g., "application/pdf", "text/plain")
+- `string`: Detected MIME type (for example, "application/pdf", "text/plain")
 
 **Examples:**
 
@@ -565,7 +565,7 @@ echo $mimeType; // "application/pdf"
 
 ## Configuration
 
-!!! warning "Deprecated API"
+!!! Warning "Deprecated API"
     The `$outputFormat` property has been deprecated in favor of the new configuration object approach.
 
     **Old pattern (no longer supported):**
@@ -793,7 +793,7 @@ readonly class TesseractConfig
 - `$psm` (int): Page segmentation mode (0-13). Default: 3 (auto)
 - `$oem` (int): OCR engine mode (0-3). Default: 3 (LSTM only)
 - `$enableTableDetection` (bool): Enable table detection and extraction. Default: false
-- `$tesseditCharWhitelist` (string|null): Character whitelist (e.g., "0123456789" for digits only). Default: null
+- `$tesseditCharWhitelist` (string|null): Character whitelist (for example, "0123456789" for digits only). Default: null
 - `$tesseditCharBlacklist` (string|null): Character blacklist. Default: null
 
 **Examples:**
@@ -901,7 +901,7 @@ readonly class ChunkingConfig
 - `$respectSentences` (bool): Try to split at sentence boundaries. Default: true
 - `$respectParagraphs` (bool): Try to split at paragraph boundaries. Default: false
 - `$sizingType` (string|null): How chunk size is measured. Options: `"characters"` (default) or `"tokenizer"` (use a HuggingFace tokenizer). Default: null (characters)
-- `$sizingModel` (string|null): HuggingFace model ID for tokenizer-based sizing (e.g. `"bert-base-uncased"`). Required when `$sizingType` is `"tokenizer"`. Default: null
+- `$sizingModel` (string|null): HuggingFace model ID for tokenizer-based sizing (for example `"bert-base-uncased"`). Required when `$sizingType` is `"tokenizer"`. Default: null
 - `$sizingCacheDir` (string|null): Optional directory to cache downloaded tokenizer files. Default: null
 - `$chunkerType` (string): Type of chunker to use. Options: `"text"` (default), `"markdown"`, `"yaml"`. Default: `"text"`
 - `$prependHeadingContext` (bool): When true, prepends heading hierarchy path to each chunk's content. Most useful with `chunkerType: "markdown"`. Default: false
@@ -1474,7 +1474,7 @@ readonly class ExtractedImage
 - `$colorspace` (string|null): Image colorspace
 - `$data` (string): Image data (base64 encoded or raw bytes)
 - `$description` (string|null): Image description/alt text
-- `$format` (string): Image format (e.g., "png", "jpeg")
+- `$format` (string): Image format (for example, "png", "jpeg")
 - `$height` (int|null): Image height in pixels
 - `$imageIndex` (int): Image index within document
 - `$isMask` (bool): Whether image is a mask
@@ -1539,7 +1539,7 @@ if ($result->pages !== null) {
 
 ## Embeddings
 
-### embed()
+### Embed()
 
 Generate embeddings for a list of texts.
 
@@ -1566,9 +1566,9 @@ public function embed(array $texts, ?EmbeddingConfig $config = null): array
 
 ## PDF Rendering
 
-!!! info "Added in v4.6.2"
+!!! Info "Added in v4.6.2"
 
-### render_pdf_page()
+### Render_pdf_page()
 
 Render a single page of a PDF as a PNG image.
 
@@ -2393,14 +2393,14 @@ The Kreuzberg native extension must be compiled and installed for your PHP versi
 **Native Dependencies:**
 
 - **Tesseract OCR** (for OCR support):
-  - macOS: `brew install tesseract`
+  - MacOS: `brew install tesseract`
   - Ubuntu: `apt-get install tesseract-ocr`
   - Windows: Download from [GitHub releases](https://github.com/tesseract-ocr/tesseract)
 
 **Platforms:**
 
 - Linux (x64, arm64)
-- macOS (x64, arm64)
+- MacOS (x64, arm64)
 - Windows (x64)
 
 ---

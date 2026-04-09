@@ -2,7 +2,7 @@
 
 Detect document layout regions (tables, figures, headers, text blocks, etc.) in PDFs using ONNX-based deep learning models. Enables table extraction, figure isolation, reading-order reconstruction, and selective OCR.
 
-!!! note "Feature gate"
+!!! Note "Feature gate"
     Requires the `layout-detection` Cargo feature. Not included in the default feature set.
 
 ## Model
@@ -24,7 +24,7 @@ Layout detection uses the **RT-DETR v2** model (17 layout classes), an ONNX-base
 
 *171-document PDF corpus, CPU only. GPU acceleration significantly reduces the time penalty.*
 
-!!! warning "`preset` removed"
+!!! Warning "`preset` removed"
     The `preset` field (`"fast"` / `"accurate"`) was removed from `LayoutDetectionConfig`. If it appears in a config file it is silently ignored. Only the RT-DETR v2 model is used for layout detection.
 
 ## Configuration
@@ -108,7 +108,7 @@ When layout detection identifies a table region, a table structure model analyze
 | SLANeXT Auto | `"slanet_auto"` | ~737 MB | Slower | Mixed documents (auto-classifies per page) |
 | SLANet-plus | `"slanet_plus"` | 7.78 MB | Fastest | Resource-constrained environments |
 
-!!! note "Model Download"
+!!! Note "Model Download"
     SLANeXT models are not downloaded by default. Use `cache warm --all-table-models` to pre-download, or they download automatically on first use.
 
 ## GPU Acceleration

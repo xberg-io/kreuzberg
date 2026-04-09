@@ -2,7 +2,7 @@
 
 Extend Kreuzberg with custom extractors, post-processors, OCR backends, and validators. Plugins can be written in Rust or Python, and are registered globally for use across all extraction calls.
 
-!!! note "WASM"
+!!! Note "WASM"
     Custom plugins are not supported in WASM environments. Use Python, Rust, or other native bindings.
 
 ## Plugin Types
@@ -148,7 +148,7 @@ Integrate cloud OCR services or custom engines:
 
 Enforce quality requirements on extraction results.
 
-!!! warning
+!!! Warning
     Validation errors cause extraction to fail. Use validators for critical quality checks only.
 
 === "Rust"

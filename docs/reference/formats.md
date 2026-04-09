@@ -80,7 +80,7 @@ All image formats support OCR when configured with `ocr` parameter in `Extractio
 | GIF | `.gif` | `image/gif` | Native Rust (image-rs) | Yes | Animation frame extraction |
 | JPEG 2000 | `.jp2`, `.jpx`, `.jpm`, `.mj2` | `image/jp2`, `image/jpx`, `image/jpm`, `image/mj2` | Native Rust (hayro-jpeg2000) | Yes | OCR: Pure Rust, memory-safe decoder for JP2 container and J2K codestream formats, table detection, format-specific metadata |
 | JBIG2 | `.jbig2`, `.jb2` | `image/x-jbig2` | Native Rust (hayro-jbig2) | Yes | OCR: Pure Rust bi-level decoder, commonly found in scanned PDFs |
-| PNM Family | `.pnm`, `.pbm`, `.pgm`, `.ppm` | `image/x-portable-anymap`, etc. | Native Rust (image-rs) | Yes | NetPBM formats |
+| PNM Family | `.pnm`, `.pbm`, `.pgm`, `.ppm` | `image/x-portable-anymap`, and so on. | Native Rust (image-rs) | Yes | NetPBM formats |
 
 ### Archives
 
@@ -158,7 +158,7 @@ Content formats control how extracted text is **rendered** inside the `content` 
 
 Wire format and content format are orthogonal. You can combine them freely, for example `--content-format markdown --format toon` produces a TOON-serialized result where the `content` field contains Markdown-formatted text.
 
-!!! note
+!!! Note
     The `--output-format` flag is a deprecated alias for `--content-format` and will be removed in a future release.
 
 ## Architecture Diagram

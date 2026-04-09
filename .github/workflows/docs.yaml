@@ -96,9 +96,11 @@ jobs:
             textlint-rule-no-empty-section \
             textlint-rule-terminology \
             textlint-rule-no-zero-width-spaces \
-            textlint-rule-doubled-spaces \
+            @textlint-rule/textlint-rule-no-invalid-control-character \
+            textlint-rule-no-surrogate-pair \
+            @textlint-rule/textlint-rule-no-unmatched-pair \
+            textlint-rule-alex \
             textlint-rule-write-good \
-            textlint-rule-en-max-word-count \
             textlint-rule-common-misspellings \
             textlint-rule-stop-words \
             textlint-rule-en-capitalization \

@@ -50,7 +50,7 @@ kreuzberg = { version = "4.0", features = ["pdf", "ocr", "chunking", "api"] }
 
 ## Core Functions
 
-### extract_file_sync()
+### Extract_file_sync()
 
 Extract content from a file (synchronous, blocking). **Requires the `tokio-runtime` feature.**
 
@@ -121,7 +121,7 @@ fn main() -> kreuzberg::Result<()> {
 
 ---
 
-### extract_file()
+### Extract_file()
 
 Extract content from a file (asynchronous). **Requires the `tokio-runtime` feature.**
 
@@ -161,7 +161,7 @@ async fn main() -> kreuzberg::Result<()> {
 
 ---
 
-### extract_bytes_sync()
+### Extract_bytes_sync()
 
 Extract content from bytes (synchronous, blocking).
 
@@ -204,7 +204,7 @@ fn main() -> kreuzberg::Result<()> {
 
 ---
 
-### extract_bytes()
+### Extract_bytes()
 
 Extract content from bytes (asynchronous). **Requires the `tokio-runtime` feature.**
 
@@ -228,7 +228,7 @@ Same as [`extract_bytes_sync()`](#extract_bytes_sync).
 
 ---
 
-### batch_extract_file_sync()
+### Batch_extract_file_sync()
 
 Extract content from multiple files in parallel (synchronous, blocking). **Requires the `tokio-runtime` feature.**
 
@@ -274,7 +274,7 @@ fn main() -> kreuzberg::Result<()> {
 
 ---
 
-### batch_extract_file()
+### Batch_extract_file()
 
 Extract content from multiple files in parallel (asynchronous). **Requires the `tokio-runtime` feature.**
 
@@ -319,7 +319,7 @@ async fn main() -> kreuzberg::Result<()> {
 
 ---
 
-### batch_extract_bytes_sync()
+### Batch_extract_bytes_sync()
 
 Extract content from multiple byte arrays in parallel (synchronous, blocking).
 
@@ -345,7 +345,7 @@ pub fn batch_extract_bytes_sync(
 
 ---
 
-### batch_extract_bytes()
+### Batch_extract_bytes()
 
 Extract content from multiple byte arrays in parallel (asynchronous). **Requires the `tokio-runtime` feature.**
 
@@ -502,7 +502,7 @@ pub struct OcrConfig {
 **Fields:**
 
 - `backend` (String): OCR backend. Options: "tesseract", "easyocr", "paddleocr". Default: "tesseract"
-- `language` (String): Language code for OCR (ISO 639-3) (e.g. "eng", "deu"). Default: "eng"
+- `language` (String): Language code for OCR (ISO 639-3) (for example "eng", "deu"). Default: "eng"
 - `tesseract_config` (Option<TesseractConfig>): Tesseract-specific configuration. Default: None
 - `output_format` (Option<OutputFormat>): Output format for OCR results. Default: None
 - `paddle_ocr_config` (Option<serde_json::Value>): PaddleOCR-specific options (when backend is "paddleocr"). Supports `model_tier` <span class="version-badge">v4.5.0</span> ("mobile" default, or "server" for max accuracy) and `padding` <span class="version-badge">v4.5.0</span> (0-100, default 10). Default: None
@@ -556,7 +556,7 @@ pub struct TesseractConfig {
 
 **Fields (summary):**
 
-- `language` (String): Language code (e.g. "eng", "deu"). Default: "eng"
+- `language` (String): Language code (for example "eng", "deu"). Default: "eng"
 - `psm` (i32): Page segmentation mode (0-13). Default: 3
 - `output_format` (String): "text" or "markdown". Default: "markdown"
 - `oem` (i32): OCR engine mode (0-3). Default: 3
@@ -830,7 +830,7 @@ pub struct SecurityLimits {
 **Fields:**
 
 - `max_archive_size` (usize): Maximum uncompressed archive size in bytes. Default: 500 MB
-- `max_compression_ratio` (usize): Max compression ratio before flagging (e.g. 100:1). Default: 100
+- `max_compression_ratio` (usize): Max compression ratio before flagging (for example 100:1). Default: 100
 - `max_files_in_archive` (usize): Max files in archive. Default: 10,000
 - `max_nesting_depth` (usize): Max nesting depth. Default: 100
 - `max_entity_length` (usize): Max entity/string length. Default: 32
@@ -960,7 +960,7 @@ pub struct PageConfig {
 
 - `extract_pages` (bool): Populate `ExtractionResult.pages` with per-page content. Default: false
 - `insert_page_markers` (bool): Insert page markers into the main content string. Default: false
-- `marker_format` (String): Format string for markers (e.g. `"\n\n<!-- PAGE {page_num} -->\n\n"`). Default: `"\n\n<!-- PAGE {page_num} -->\n\n"`
+- `marker_format` (String): Format string for markers (for example `"\n\n<!-- PAGE {page_num} -->\n\n"`). Default: `"\n\n<!-- PAGE {page_num} -->\n\n"`
 
 ---
 
@@ -1085,17 +1085,17 @@ pub struct ExtractedImage {
 **Fields:**
 
 - `data` (Bytes): Raw image bytes (PNG, JPEG, WebP, etc.)
-- `format` (Cow<'static, str>): Image format (e.g. "jpeg", "png")
+- `format` (Cow<'static, str>): Image format (for example "jpeg", "png")
 - `image_index` (usize): Zero-based position in document
 - `page_number` (Option<usize>): Page/slide number (1-indexed)
 - `width` / `height` (Option<u32>): Dimensions in pixels
-- `colorspace` (Option<String>): e.g. "RGB", "CMYK", "Gray"
-- `bits_per_component` (Option<u32>): e.g. 8, 16
+- `colorspace` (Option<String>): for example "RGB", "CMYK", "Gray"
+- `bits_per_component` (Option<u32>): for example 8, 16
 - `is_mask` (bool): Whether this image is a mask. Default: false
 - `description` (Option<String>): Optional description
 - `ocr_result` (Option<Box<ExtractionResult>>): Nested OCR result if image was OCRed
 
-#### pages
+#### Pages
 
 **Type**: `Option<Vec<PageContent>>`
 
@@ -1407,7 +1407,7 @@ fn main() -> kreuzberg::Result<()> {
 
 ## Embeddings
 
-### embed_texts()
+### Embed_texts()
 
 Generate embeddings for a list of texts.
 
@@ -1435,7 +1435,7 @@ Requires the `embeddings` feature.
 
 ---
 
-### embed_texts_async()
+### Embed_texts_async()
 
 Async variant of `embed_texts()`. Requires both the `embeddings` and `tokio-runtime` features.
 
@@ -1454,9 +1454,9 @@ Same return type as `embed_texts()`.
 
 ## PDF Rendering
 
-!!! info "Added in v4.6.2"
+!!! Info "Added in v4.6.2"
 
-### render_pdf_page_to_png()
+### Render_pdf_page_to_png()
 
 Render a single page of a PDF as a PNG image.
 
@@ -1494,7 +1494,7 @@ std::fs::write("first_page.png", &png)?;
 
 ---
 
-### render_pdf_file_to_png_pages()
+### Render_pdf_file_to_png_pages()
 
 Render each page of a PDF as a PNG image.
 
@@ -1534,7 +1534,7 @@ for (i, png) in pages.iter().enumerate() {
 
 ### PdfPageIterator
 
-A more memory-efficient alternative to `render_pdf_file_to_png_pages` when memory is a concern or when pages should be processed as they are rendered (e.g., sending each page to a vision model for OCR). Renders one page at a time, releasing memory for each page before rendering the next.
+A more memory-efficient alternative to `render_pdf_file_to_png_pages` when memory is a concern or when pages should be processed as they are rendered (for example, sending each page to a vision model for OCR). Renders one page at a time, releasing memory for each page before rendering the next.
 
 **Signature:**
 
@@ -1703,7 +1703,7 @@ Or: `kreuzberg::plugins::register_extractor(Arc::new(MyCustomExtractor))?`. The 
 
 ## MIME Type Detection
 
-### detect_mime_type()
+### Detect_mime_type()
 
 Detect MIME type from file path (by extension).
 
@@ -1740,7 +1740,7 @@ let mime_type = detect_mime_type("document.pdf", false)?;
 
 ---
 
-### validate_mime_type()
+### Validate_mime_type()
 
 Validate that a MIME type is supported. Returns the validated (possibly normalized) MIME type string, or an error if unsupported.
 
@@ -1765,7 +1765,7 @@ println!("PDF is supported: {}", mime);
 
 ---
 
-### detect_mime_type_from_bytes()
+### Detect_mime_type_from_bytes()
 
 Detect MIME type from raw bytes (magic numbers / content sniffing).
 
@@ -1786,7 +1786,7 @@ let mime = detect_mime_type_from_bytes(&data)?;
 
 ---
 
-### detect_or_validate()
+### Detect_or_validate()
 
 Get MIME type from path or validate a provided MIME type. Returns the MIME type if path is given (from extension) or if the provided MIME is valid.
 
@@ -1798,7 +1798,7 @@ pub fn detect_or_validate(path: Option<&Path>, mime_type: Option<&str>) -> Resul
 
 ---
 
-### get_extensions_for_mime()
+### Get_extensions_for_mime()
 
 Return file extensions associated with a MIME type.
 
@@ -1936,4 +1936,4 @@ For complete Rust API documentation with all types, traits, and functions:
 cargo doc --open --no-deps
 ```
 
-Or visit [docs.rs/kreuzberg](https://docs.rs/kreuzberg)
+Or visit [docs.rs/Kreuzberg](https://docs.rs/kreuzberg)

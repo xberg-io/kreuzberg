@@ -1,12 +1,12 @@
-from kreuzberg import extract_file_sync, ExtractionConfig, PageConfig
+From Kreuzberg import extract_file_sync, ExtractionConfig, PageConfig
 
-config = ExtractionConfig(
+Config = ExtractionConfig(
     pages=PageConfig(extract_pages=True)
 )
 
-result = extract_file_sync("document.pdf", config=config)
+Result = extract_file_sync("document.pdf", config=config)
 
-if result.pages:
+If result.pages:
     for page in result.pages:
         print(f"Page {page.page_number}:")
         print(f"  Content: {len(page.content)} chars")
