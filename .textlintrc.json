@@ -1,0 +1,33 @@
+{
+  "filters": {
+    "comments": true,
+    "node-types": {
+      "nodeTypes": ["CodeBlock", "Code"]
+    }
+  },
+  "rules": {
+    "no-todo": true,
+    "no-start-duplicated-conjunction": true,
+    "no-empty-section": true,
+    "terminology": {
+      "defaultTerms": true,
+      "terms": ["Kreuzberg", "Zensical"]
+    },
+    "no-zero-width-spaces": true,
+    "doubled-spaces": true,
+    "write-good": {
+      "passive": false,
+      "severity": "warning"
+    },
+    "en-max-word-count": {
+      "max": 60
+    },
+    "common-misspellings": true,
+    "stop-words": {
+      "severity": "warning"
+    },
+    "en-capitalization": {
+      "severity": "warning"
+    }
+  }
+}

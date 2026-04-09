@@ -10,6 +10,7 @@ on:
       - 'zensical.toml'
       - '.typos.toml'
       - '.lychee.toml'
+      - '.textlintrc.json'
       - '.github/workflows/docs.yaml'
       - 'scripts/ci/docs/**'
   pull_request:
@@ -21,6 +22,7 @@ on:
       - 'zensical.toml'
       - '.typos.toml'
       - '.lychee.toml'
+      - '.textlintrc.json'
       - '.github/workflows/docs.yaml'
       - 'scripts/ci/docs/**'
   workflow_dispatch:
@@ -72,9 +74,44 @@ jobs:
       - name: Build and run snippet validation
         run: cargo run --release -p snippet-runner -- validate --snippets docs/snippets --reference docs/reference --level syntax --timeout 120
 
+  lint-prose:
+    name: "Validate: Prose (textlint)"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install textlint and rules
+        run: |
+          npm install --no-save \
+            textlint \
+            textlint-rule-no-todo \
+            textlint-rule-no-start-duplicated-conjunction \
+            textlint-rule-no-empty-section \
+            textlint-rule-terminology \
+            textlint-rule-no-zero-width-spaces \
+            textlint-rule-doubled-spaces \
+            textlint-rule-write-good \
+            textlint-rule-en-max-word-count \
+            textlint-rule-common-misspellings \
+            textlint-rule-stop-words \
+            textlint-rule-en-capitalization \
+            textlint-filter-rule-comments \
+            textlint-filter-rule-node-types
+
+      - name: Run textlint
+        run: scripts/ci/docs/textlint.sh
+        continue-on-error: true
+
   deploy:
     name: "Deploy to GitHub Pages"
-    needs: [validate, validate-snippets]
+    needs: [validate, validate-snippets, lint-prose]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     permissions:
       contents: read
