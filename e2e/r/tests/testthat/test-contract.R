@@ -593,6 +593,63 @@ test_that("config_language_multi", {
   assert_detected_languages(result, c("eng"), NULL)
 })
 
+test_that("config_llm_embeddings", {
+  skip_if_feature_unavailable("liter-llm")
+  result <- run_fixture(
+    "config_llm_embeddings",
+    "pdf/fake_memo.pdf",
+    list(chunking = list(max_chars = 500L, max_overlap = 50L, embedding = list(model = list(type = "llm", llm = list(model = "openai/text-embedding-3-small")), normalize = TRUE))),
+    requirements = c("liter-llm"),
+    notes = "Requires liter-llm feature and KREUZBERG_LLM_API_KEY env var",
+    skip_if_missing = TRUE
+  )
+  assert_expected_mime(result, c("application/pdf"))
+  assert_min_content_length(result, 10L)
+  assert_chunks(result, min_count = 1L, each_has_content = TRUE, each_has_embedding = TRUE)
+})
+
+test_that("config_llm_structured_extraction", {
+  skip_if_feature_unavailable("liter-llm")
+  result <- run_fixture(
+    "config_llm_structured_extraction",
+    "pdf/fake_memo.pdf",
+    list(structured_extraction = list(schema = list(type = "object", properties = list(title = list(type = "string"), date = list(type = "string"), summary = list(type = "string")), required = c("title")), schema_name = "memo_data", llm = list(model = "openai/gpt-4o"))),
+    requirements = c("liter-llm"),
+    notes = "Requires liter-llm feature and KREUZBERG_LLM_API_KEY env var",
+    skip_if_missing = TRUE
+  )
+  assert_expected_mime(result, c("application/pdf"))
+  assert_min_content_length(result, 10L)
+})
+
+test_that("config_llm_structured_extraction_with_prompt", {
+  skip_if_feature_unavailable("liter-llm")
+  result <- run_fixture(
+    "config_llm_structured_extraction_with_prompt",
+    "pdf/fake_memo.pdf",
+    list(structured_extraction = list(schema = list(type = "object", properties = list(sender = list(type = "string"), recipient = list(type = "string"), subject = list(type = "string")), required = c("sender", "recipient")), schema_name = "memo_parties", prompt = "Extract the sender and recipient from this memo document. If not found, use 'unknown'.", llm = list(model = "openai/gpt-4o"))),
+    requirements = c("liter-llm"),
+    notes = "Requires liter-llm feature and KREUZBERG_LLM_API_KEY env var",
+    skip_if_missing = TRUE
+  )
+  assert_expected_mime(result, c("application/pdf"))
+  assert_min_content_length(result, 10L)
+})
+
+test_that("config_llm_vlm_ocr", {
+  skip_if_feature_unavailable("liter-llm")
+  result <- run_fixture(
+    "config_llm_vlm_ocr",
+    "images/test_hello_world.png",
+    list(ocr = list(backend = "vlm", language = "eng", vlm_config = list(model = "openai/gpt-4o"))),
+    requirements = c("liter-llm"),
+    notes = "Requires liter-llm feature and KREUZBERG_LLM_API_KEY env var",
+    skip_if_missing = TRUE
+  )
+  assert_min_content_length(result, 5L)
+  assert_content_not_empty(result)
+})
+
 test_that("config_pages", {
   skip_if_feature_unavailable("pdf")
   result <- run_fixture(

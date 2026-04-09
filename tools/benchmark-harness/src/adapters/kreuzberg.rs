@@ -390,6 +390,8 @@ struct AdapterSpec {
     pre_script_args: Option<fn() -> Result<Vec<String>>>,
     /// Override max timeout (e.g. WASM needs longer).
     max_timeout: Option<Duration>,
+    /// Files to skip for this adapter (matched against file name, not full path).
+    skip_files: Option<&'static [&'static str]>,
 }
 
 /// Create a `SubprocessAdapter` from a spec, for either server or batch mode.
@@ -427,6 +429,10 @@ fn create_from_spec(spec: &AdapterSpec, ocr_enabled: bool, batch: bool) -> Resul
         adapter = adapter.with_max_timeout(timeout);
     }
 
+    if let Some(files) = spec.skip_files {
+        adapter = adapter.with_skip_files(files.iter().map(|s| (*s).to_string()).collect());
+    }
+
     if let Some(setup_fn) = spec.extra_setup {
         setup_fn(&mut adapter)?;
     }
@@ -448,6 +454,7 @@ fn python_spec() -> AdapterSpec {
         supported_formats: None,
         pre_script_args: None,
         max_timeout: None,
+        skip_files: None,
     }
 }
 
@@ -461,8 +468,13 @@ fn node_spec() -> AdapterSpec {
         supported_formats: None,
         pre_script_args: None,
         max_timeout: None,
+        skip_files: None,
     }
 }
+
+/// Files that consistently timeout in WASM due to heavy OCR workloads.
+/// These cause repeated 300s restart loops that exhaust the CI budget.
+const WASM_SKIP_FILES: &[&str] = &["layout_parser_paper_with_table.jpg", "nougat_014.pdf", "nougat_048.pdf"];
 
 fn wasm_spec() -> AdapterSpec {
     AdapterSpec {
@@ -476,6 +488,7 @@ fn wasm_spec() -> AdapterSpec {
         // WASM execution is significantly slower than native — use a higher timeout
         // to avoid restart loops that waste the entire CI budget
         max_timeout: Some(Duration::from_secs(600)),
+        skip_files: Some(WASM_SKIP_FILES),
     }
 }
 
@@ -489,6 +502,7 @@ fn ruby_spec() -> AdapterSpec {
         supported_formats: None,
         pre_script_args: Some(ruby_pre_script_args),
         max_timeout: None,
+        skip_files: None,
     }
 }
 
@@ -510,6 +524,7 @@ fn r_spec() -> AdapterSpec {
         supported_formats: None,
         pre_script_args: None,
         max_timeout: None,
+        skip_files: None,
     }
 }
 
@@ -527,6 +542,7 @@ fn php_spec() -> AdapterSpec {
         supported_formats: None,
         pre_script_args: None,
         max_timeout: None,
+        skip_files: None,
     }
 }
 
@@ -540,6 +556,7 @@ fn elixir_spec() -> AdapterSpec {
         supported_formats: None,
         pre_script_args: None,
         max_timeout: None,
+        skip_files: None,
     }
 }
 

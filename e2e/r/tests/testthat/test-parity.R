@@ -39,6 +39,7 @@ test_that("ExtractionConfig has all expected fields", {
     "cache_ttl_secs",
     "chunking",
     "concurrency",
+    "content_filter",
     "disable_ocr",
     "email",
     "enable_quality_processing",
@@ -84,6 +85,16 @@ test_that("BoundingBox has all expected fields", {
     "y1"
   )
   expect_true(length(expected_fields) > 0, info = "BoundingBox should have at least one field")
+})
+
+test_that("ContentFilterConfig has all expected fields", {
+  expected_fields <- c(
+    "include_footers",
+    "include_headers",
+    "include_watermarks",
+    "strip_repeating_text"
+  )
+  expect_true(length(expected_fields) > 0, info = "ContentFilterConfig should have at least one field")
 })
 
 test_that("Keyword has all expected fields", {

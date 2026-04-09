@@ -771,6 +771,11 @@ impl BenchmarkRunner {
                     if !adapter.supports_format(&fixture.file_type) {
                         continue;
                     }
+                    if let Some(name) = fixture.document.file_name().and_then(|n| n.to_str())
+                        && adapter.should_skip_file(name)
+                    {
+                        continue;
+                    }
 
                     let fixture_dir = fixture_path.parent().unwrap_or_else(|| std::path::Path::new("."));
                     let document_path = fixture.resolve_document_path(fixture_dir);
@@ -863,6 +868,11 @@ impl BenchmarkRunner {
                 let force_ocr = fixture.requires_ocr();
                 for adapter in &frameworks {
                     if !adapter.supports_format(&fixture.file_type) {
+                        continue;
+                    }
+                    if let Some(name) = fixture.document.file_name().and_then(|n| n.to_str())
+                        && adapter.should_skip_file(name)
+                    {
                         continue;
                     }
 

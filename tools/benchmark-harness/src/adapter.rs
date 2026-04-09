@@ -24,6 +24,17 @@ pub trait FrameworkAdapter: Send + Sync {
     /// * `file_type` - File extension without dot (e.g., "pdf", "docx")
     fn supports_format(&self, file_type: &str) -> bool;
 
+    /// Check if this adapter should skip a specific file
+    ///
+    /// Some adapters need to skip specific files that are known to cause
+    /// issues (e.g., timeouts in WASM for very large OCR-heavy documents).
+    ///
+    /// # Arguments
+    /// * `file_name` - The file name (not full path) to check
+    fn should_skip_file(&self, _file_name: &str) -> bool {
+        false
+    }
+
     /// Extract content from a document
     ///
     /// # Arguments

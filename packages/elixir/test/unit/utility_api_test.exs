@@ -817,9 +817,9 @@ defmodule KreuzbergTest.Unit.UtilityAPITest do
     end
 
     @tag :unit
-    test "all error categories have 6 entries" do
+    test "all error categories have 7 entries" do
       {:ok, details} = UtilityAPI.get_error_details()
-      assert map_size(details) == 6
+      assert map_size(details) == 7
     end
 
     @tag :unit

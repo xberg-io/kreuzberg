@@ -78,6 +78,7 @@ pub struct SubprocessAdapter {
     supported_formats: Vec<String>,
     persistent: bool,
     max_timeout: Option<Duration>,
+    skip_files: Vec<String>,
     process: Arc<tokio::sync::Mutex<Option<PersistentProcess>>>,
 }
 
@@ -154,6 +155,7 @@ impl SubprocessAdapter {
             supported_formats,
             persistent: false,
             max_timeout: None,
+            skip_files: vec![],
             process: Arc::new(tokio::sync::Mutex::new(None)),
         }
     }
@@ -186,6 +188,7 @@ impl SubprocessAdapter {
             supported_formats,
             persistent: false,
             max_timeout: None,
+            skip_files: vec![],
             process: Arc::new(tokio::sync::Mutex::new(None)),
         }
     }
@@ -219,6 +222,7 @@ impl SubprocessAdapter {
             supported_formats,
             persistent: true,
             max_timeout: None,
+            skip_files: vec![],
             process: Arc::new(tokio::sync::Mutex::new(None)),
         }
     }
@@ -227,6 +231,12 @@ impl SubprocessAdapter {
     /// if the adapter's max is lower.
     pub fn with_max_timeout(mut self, timeout: Duration) -> Self {
         self.max_timeout = Some(timeout);
+        self
+    }
+
+    /// Set files to skip for this adapter.
+    pub fn with_skip_files(mut self, files: Vec<String>) -> Self {
+        self.skip_files = files;
         self
     }
 
@@ -680,6 +690,10 @@ impl FrameworkAdapter for SubprocessAdapter {
         self.supported_formats
             .iter()
             .any(|fmt| fmt.to_lowercase() == file_type_lower)
+    }
+
+    fn should_skip_file(&self, file_name: &str) -> bool {
+        self.skip_files.iter().any(|f| f == file_name)
     }
 
     async fn extract(&self, file_path: &Path, timeout: Duration, force_ocr: bool) -> Result<BenchmarkResult> {

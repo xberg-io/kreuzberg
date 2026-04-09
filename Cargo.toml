@@ -80,7 +80,7 @@ serde_json = { version = "1.0.149" }
 serde_toon_format = "0.1"
 tempfile = "3.27.0"
 thiserror = "2.0.18"
-tokio = { version = "1.51.0", features = [
+tokio = { version = "1.51.1", features = [
     "rt",
     "rt-multi-thread",
     "macros",
@@ -92,7 +92,7 @@ tokio = { version = "1.51.0", features = [
 ] }
 toml = "1.1.2"
 tracing = "0.1"
-tree-sitter-language-pack = { version = "1.4.1", default-features = false, features = ["serde"] }
+tree-sitter-language-pack = { version = "1.4.2", default-features = false, features = ["serde"] }
 wasm-bindgen = { version = "0.2", features = ["enable-interning"] }
 wasm-bindgen-futures = "0.4"
 web-sys = { version = "0.3", features = [

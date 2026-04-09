@@ -7,7 +7,7 @@ test_that("embed_async", {
     testthat::skip("Skip embeddings on Windows X64 until ONNX is implemented")
   }
   results <- tryCatch(
-    embed_texts(c("Async embedding test"), config = list(model = list(name = "balanced"), normalize = TRUE)),
+    embed(c("Async embedding test"), config = list(model = list(name = "balanced"), normalize = TRUE)),
     error = function(e) {
       testthat::fail(paste0("Embedding failed: ", conditionMessage(e)))
     }
@@ -20,7 +20,7 @@ test_that("embed_batch_texts", {
     testthat::skip("Skip embeddings on Windows X64 until ONNX is implemented")
   }
   results <- tryCatch(
-    embed_texts_sync(c("Text one", "Text two", "Text three"), config = list(model = list(name = "fast"), normalize = TRUE, batch_size = 32L)),
+    embed(c("Text one", "Text two", "Text three"), config = list(model = list(name = "fast"), normalize = TRUE, batch_size = 32L)),
     error = function(e) {
       testthat::fail(paste0("Embedding failed: ", conditionMessage(e)))
     }
@@ -33,7 +33,7 @@ test_that("embed_empty_input", {
     testthat::skip("Skip embeddings on Windows X64 until ONNX is implemented")
   }
   results <- tryCatch(
-    embed_texts_sync(character(0), config = list(model = list(name = "balanced"))),
+    embed(character(0), config = list(model = list(name = "balanced"))),
     error = function(e) {
       testthat::fail(paste0("Embedding failed: ", conditionMessage(e)))
     }
@@ -46,7 +46,7 @@ test_that("embed_multilingual", {
     testthat::skip("Skip embeddings on Windows X64 until ONNX is implemented")
   }
   results <- tryCatch(
-    embed_texts_sync(c("Bonjour le monde", "Hallo Welt", "¡Hola Mundo!"), config = list(model = list(name = "multilingual"), normalize = TRUE)),
+    embed(c("Bonjour le monde", "Hallo Welt", "¡Hola Mundo!"), config = list(model = list(name = "multilingual"), normalize = TRUE)),
     error = function(e) {
       testthat::fail(paste0("Embedding failed: ", conditionMessage(e)))
     }
@@ -59,7 +59,7 @@ test_that("embed_single_text", {
     testthat::skip("Skip embeddings on Windows X64 until ONNX is implemented")
   }
   results <- tryCatch(
-    embed_texts_sync(c("Hello, Kreuzberg!"), config = list(model = list(name = "balanced"), normalize = TRUE)),
+    embed(c("Hello, Kreuzberg!"), config = list(model = list(name = "balanced"), normalize = TRUE)),
     error = function(e) {
       testthat::fail(paste0("Embedding failed: ", conditionMessage(e)))
     }

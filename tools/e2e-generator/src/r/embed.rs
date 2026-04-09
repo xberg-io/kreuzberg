@@ -59,11 +59,8 @@ fn render_embed_test(fixture: &Fixture) -> Result<String> {
         "NULL".to_string()
     };
 
-    let func = if embed.async_variant {
-        "embed_texts"
-    } else {
-        "embed_texts_sync"
-    };
+    // R exports a single `embed()` function (no async/sync variants)
+    let func = "embed";
 
     writeln!(buffer, "  results <- tryCatch(")?;
     writeln!(buffer, "    {}({}, config = {}),", func, texts_vector, config_expr)?;
