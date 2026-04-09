@@ -2229,21 +2229,30 @@ mod tests {
     fn test_include_headers_clears_page_header_furniture() {
         let mut paras = vec![furniture_para_with_class(LayoutHintClass::PageHeader)];
         un_mark_layout_furniture_per_config(&mut paras, true, false);
-        assert!(!paras[0].is_page_furniture, "PageHeader furniture must be cleared when include_headers=true");
+        assert!(
+            !paras[0].is_page_furniture,
+            "PageHeader furniture must be cleared when include_headers=true"
+        );
     }
 
     #[test]
     fn test_include_footers_clears_page_footer_furniture() {
         let mut paras = vec![furniture_para_with_class(LayoutHintClass::PageFooter)];
         un_mark_layout_furniture_per_config(&mut paras, false, true);
-        assert!(!paras[0].is_page_furniture, "PageFooter furniture must be cleared when include_footers=true");
+        assert!(
+            !paras[0].is_page_furniture,
+            "PageFooter furniture must be cleared when include_footers=true"
+        );
     }
 
     #[test]
     fn test_include_headers_false_preserves_page_header_furniture() {
         let mut paras = vec![furniture_para_with_class(LayoutHintClass::PageHeader)];
         un_mark_layout_furniture_per_config(&mut paras, false, false);
-        assert!(paras[0].is_page_furniture, "PageHeader furniture must remain when include_headers=false");
+        assert!(
+            paras[0].is_page_furniture,
+            "PageHeader furniture must remain when include_headers=false"
+        );
     }
 
     #[test]
@@ -2251,7 +2260,10 @@ mod tests {
         // include_headers=true must not affect PageFooter paragraphs
         let mut paras = vec![furniture_para_with_class(LayoutHintClass::PageFooter)];
         un_mark_layout_furniture_per_config(&mut paras, true, false);
-        assert!(paras[0].is_page_furniture, "PageFooter furniture must remain when only include_headers=true");
+        assert!(
+            paras[0].is_page_furniture,
+            "PageFooter furniture must remain when only include_headers=true"
+        );
     }
 
     #[test]
@@ -2263,7 +2275,10 @@ mod tests {
         para.layout_class = None;
         let mut paras = vec![para];
         un_mark_layout_furniture_per_config(&mut paras, true, true);
-        assert!(paras[0].is_page_furniture, "Heuristic furniture (no layout_class) must not be cleared");
+        assert!(
+            paras[0].is_page_furniture,
+            "Heuristic furniture (no layout_class) must not be cleared"
+        );
     }
 
     #[test]
