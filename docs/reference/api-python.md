@@ -1664,7 +1664,8 @@ with open("first_page.png", "wb") as f:
 For rendering every page of a PDF without loading them all into memory at once. Yields `(page_index, png_bytes)` tuples — zero-based index paired with the PNG-encoded image bytes.
 
 ```python title="Python"
-PdfPageIterator(path: str, dpi: int | None = None)
+# Constructor signature:
+# PdfPageIterator(path: str, dpi: int | None = None)
 ```
 
 Works as a context manager, supports `len()`, and has a `page_count` property:
