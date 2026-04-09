@@ -357,6 +357,12 @@ struct PageInput {
     needs_classify: bool,
     /// Y-coordinates of paragraph gaps detected from pdfium segment boundaries.
     paragraph_gap_ys: Vec<f32>,
+    /// When true, paragraphs classified as `PageHeader` by the layout model are
+    /// preserved rather than marked as furniture. Mirrors `ContentFilterConfig::include_headers`.
+    include_headers: bool,
+    /// When true, paragraphs classified as `PageFooter` by the layout model are
+    /// preserved rather than marked as furniture. Mirrors `ContentFilterConfig::include_footers`.
+    include_footers: bool,
 }
 
 /// Process a single page's data through Stage 3: classification, text repair,
@@ -378,6 +384,8 @@ fn process_single_page(
         hint_validations: _,
         needs_classify,
         paragraph_gap_ys: _,
+        include_headers,
+        include_footers,
     } = input;
 
     if let Some(mut paragraphs) = struct_paragraphs {
@@ -402,6 +410,10 @@ fn process_single_page(
         // Apply layout detection overrides when available.
         if let Some(ref hints) = page_hints {
             super::layout_classify::apply_layout_overrides(&mut paragraphs, hints, 0.5, 0.2, doc_body_font_size);
+            // Honour include_headers / include_footers: clear any furniture flag that the
+            // layout model set on PageHeader / PageFooter paragraphs so they survive
+            // retain_page_furniture_safely (which physically removes furniture paragraphs).
+            un_mark_layout_furniture_per_config(&mut paragraphs, include_headers, include_footers);
             tracing::debug!(
                 page = i,
                 headings = paragraphs.iter().filter(|p| p.heading_level.is_some()).count(),
@@ -432,6 +444,10 @@ fn process_single_page(
         );
         if let Some(ref hints) = page_hints {
             super::layout_classify::apply_layout_overrides(&mut paragraphs, hints, 0.5, 0.2, doc_body_font_size);
+            // Honour include_headers / include_footers: clear any furniture flag that the
+            // layout model set on PageHeader / PageFooter paragraphs so they survive
+            // retain_page_furniture_safely (which physically removes furniture paragraphs).
+            un_mark_layout_furniture_per_config(&mut paragraphs, include_headers, include_footers);
             tracing::debug!(
                 page = i,
                 headings = paragraphs.iter().filter(|p| p.heading_level.is_some()).count(),
@@ -1186,6 +1202,8 @@ pub fn extract_document_structure(
             hint_validations: validations_by_page.get(&i).cloned().unwrap_or_default(),
             needs_classify: struct_tree_needs_classify.contains(&i),
             paragraph_gap_ys: std::mem::take(&mut all_page_gap_ys[i]),
+            include_headers,
+            include_footers,
         })
         .collect();
 
@@ -1400,6 +1418,33 @@ fn deduplicate_overlapping_tables(tables: &mut Vec<crate::types::Table>) {
         idx += 1;
         keep
     });
+}
+
+/// Clear `is_page_furniture` on paragraphs whose `layout_class` was set to
+/// `PageHeader` or `PageFooter` by the layout model, when the caller has opted
+/// in to keeping those regions via `include_headers` / `include_footers`.
+///
+/// This must run **before** `retain_page_furniture_safely`, which physically
+/// removes furniture paragraphs via `.retain()`. Un-marking here ensures that
+/// user-opted-in header/footer paragraphs survive that pass.
+fn un_mark_layout_furniture_per_config(paragraphs: &mut [PdfParagraph], include_headers: bool, include_footers: bool) {
+    if !include_headers && !include_footers {
+        return;
+    }
+    for para in paragraphs.iter_mut() {
+        if !para.is_page_furniture {
+            continue;
+        }
+        match para.layout_class {
+            Some(super::types::LayoutHintClass::PageHeader) if include_headers => {
+                para.is_page_furniture = false;
+            }
+            Some(super::types::LayoutHintClass::PageFooter) if include_footers => {
+                para.is_page_furniture = false;
+            }
+            _ => {}
+        }
+    }
 }
 
 /// Filter page furniture paragraphs with a safety valve.
@@ -2157,5 +2202,93 @@ mod tests {
     fn test_has_font_size_variation_zero_sizes_ignored() {
         let paragraphs = vec![para_with_font_size(0.0), para_with_font_size(0.0)];
         assert!(!has_font_size_variation(&paragraphs));
+    }
+
+    // ── un_mark_layout_furniture_per_config tests (issue #670) ──
+
+    use crate::pdf::structure::types::LayoutHintClass;
+
+    fn furniture_para_with_class(class: LayoutHintClass) -> PdfParagraph {
+        PdfParagraph {
+            text: String::new(),
+            lines: vec![line(vec![seg("ACME", 0.0, 50.0)])],
+            dominant_font_size: 10.0,
+            heading_level: None,
+            is_bold: false,
+            is_list_item: false,
+            is_code_block: false,
+            is_formula: false,
+            is_page_furniture: true,
+            layout_class: Some(class),
+            caption_for: None,
+            block_bbox: None,
+        }
+    }
+
+    #[test]
+    fn test_include_headers_clears_page_header_furniture() {
+        let mut paras = vec![furniture_para_with_class(LayoutHintClass::PageHeader)];
+        un_mark_layout_furniture_per_config(&mut paras, true, false);
+        assert!(
+            !paras[0].is_page_furniture,
+            "PageHeader furniture must be cleared when include_headers=true"
+        );
+    }
+
+    #[test]
+    fn test_include_footers_clears_page_footer_furniture() {
+        let mut paras = vec![furniture_para_with_class(LayoutHintClass::PageFooter)];
+        un_mark_layout_furniture_per_config(&mut paras, false, true);
+        assert!(
+            !paras[0].is_page_furniture,
+            "PageFooter furniture must be cleared when include_footers=true"
+        );
+    }
+
+    #[test]
+    fn test_include_headers_false_preserves_page_header_furniture() {
+        let mut paras = vec![furniture_para_with_class(LayoutHintClass::PageHeader)];
+        un_mark_layout_furniture_per_config(&mut paras, false, false);
+        assert!(
+            paras[0].is_page_furniture,
+            "PageHeader furniture must remain when include_headers=false"
+        );
+    }
+
+    #[test]
+    fn test_include_headers_does_not_clear_page_footer_furniture() {
+        // include_headers=true must not affect PageFooter paragraphs
+        let mut paras = vec![furniture_para_with_class(LayoutHintClass::PageFooter)];
+        un_mark_layout_furniture_per_config(&mut paras, true, false);
+        assert!(
+            paras[0].is_page_furniture,
+            "PageFooter furniture must remain when only include_headers=true"
+        );
+    }
+
+    #[test]
+    fn test_include_headers_does_not_clear_non_layout_furniture() {
+        // Furniture without a layout_class (set by heuristic cross-page detector)
+        // must not be cleared even when include_headers=true.
+        let mut para = para(vec![line(vec![seg("repeating", 0.0, 80.0)])]);
+        para.is_page_furniture = true;
+        para.layout_class = None;
+        let mut paras = vec![para];
+        un_mark_layout_furniture_per_config(&mut paras, true, true);
+        assert!(
+            paras[0].is_page_furniture,
+            "Heuristic furniture (no layout_class) must not be cleared"
+        );
+    }
+
+    #[test]
+    fn test_un_mark_is_noop_when_both_flags_false() {
+        let mut paras = vec![
+            furniture_para_with_class(LayoutHintClass::PageHeader),
+            furniture_para_with_class(LayoutHintClass::PageFooter),
+        ];
+        un_mark_layout_furniture_per_config(&mut paras, false, false);
+        assert!(paras[0].is_page_furniture);
+        assert!(paras[1].is_page_furniture);
     }
 }
