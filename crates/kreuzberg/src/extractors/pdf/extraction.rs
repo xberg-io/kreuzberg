@@ -430,12 +430,8 @@ pub(crate) fn extract_all_from_oxide_document(
         })?;
 
     // --- Tables (native pdf_oxide detection) ---
-    let tables = crate::pdf::oxide::table::extract_tables_native(&mut doc).map_err(|e| {
-        crate::error::KreuzbergError::Parsing {
-            message: format!("pdf_oxide table extraction failed: {e}"),
-            source: None,
-        }
-    })?;
+    // Use unwrap_or_default so table detection failures don't block extraction.
+    let tables = crate::pdf::oxide::table::extract_tables_native(&mut doc).unwrap_or_default();
 
     // --- Annotations ---
     let annotations = if config.pdf_options.as_ref().is_some_and(|opts| opts.extract_annotations) {

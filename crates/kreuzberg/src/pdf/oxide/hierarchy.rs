@@ -145,13 +145,20 @@ fn extract_segments_with_structure_tree(doc: &mut OxideDocument) -> Result<(Vec<
     // Traverse the tree once for all pages
     let all_page_content = pdf_oxide::structure::traverse_structure_tree_all_pages(&struct_tree);
 
-    // Check if the tree has any heading information at all
-    let has_headings = all_page_content
+    // Count heading elements across all pages — require meaningful coverage
+    // to avoid trusting a tree that only has 1-2 tagged headings but misses
+    // most section headers (common in partially-tagged PDFs).
+    let heading_count: usize = all_page_content
         .values()
-        .any(|contents| contents.iter().any(|c| c.parsed_type.heading_level().is_some()));
+        .flat_map(|contents| contents.iter())
+        .filter(|c| c.parsed_type.heading_level().is_some())
+        .count();
 
-    if !has_headings {
-        tracing::debug!("pdf_oxide: structure tree has no heading elements, falling back to font-size clustering");
+    if heading_count < 3 {
+        tracing::debug!(
+            heading_count,
+            "pdf_oxide: structure tree has too few heading elements (< 3), falling back to font-size clustering"
+        );
         return Ok((Vec::new(), false));
     }
 
