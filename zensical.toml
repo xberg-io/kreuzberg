@@ -44,6 +44,7 @@ nav = [
         { "AI Coding Assistants" = "guides/agent-skills.md" },
         { "C# Bindings" = "guides/csharp.md" },
         { "Development Workflow" = "guides/development.md" },
+        { "Examples" = "guides/examples.md" },
     ] },
     { "Integrations" = [
         { "Overview" = "integrations/index.md" },

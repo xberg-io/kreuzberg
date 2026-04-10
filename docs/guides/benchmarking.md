@@ -74,7 +74,7 @@ Benchmark fixtures live in `tools/benchmark-harness/fixtures/`. Each fixture is 
 | `image_table` | OCR + table detection |
 | `markdown_technical` | Markdown passthrough |
 
-Add your own fixtures to this directory if you need to benchmark specific document types or edge cases.
+Add your own fixtures to this directory to benchmark specific document types or edge cases.
 
 ---
 

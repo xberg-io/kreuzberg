@@ -93,6 +93,32 @@ kreuzberg batch documents/*.pdf
 kreuzberg batch documents/**/*.pdf
 ```
 
+### Extract Structured Data <span class="version-badge">v4.8.0</span>
+
+Use the `extract-structured` subcommand to pull typed JSON out of a document via an LLM. The CLI extracts the document's text, hands it to the configured model with a JSON schema constraint, and prints the structured output.
+
+```bash title="Terminal"
+# Extract invoice fields into JSON matching invoice_schema.json
+kreuzberg extract-structured invoice.pdf \
+  --schema invoice_schema.json \
+  --model openai/gpt-4o \
+  --strict
+```
+
+| Flag                  | Description                                                                                       |
+| --------------------- | ------------------------------------------------------------------------------------------------- |
+| `<PATH>` (positional) | Document file path. Required.                                                                     |
+| `--schema <PATH>`     | Path to a JSON schema file describing the desired output. Required.                               |
+| `--model <MODEL>`     | LLM model identifier, for example `openai/gpt-4o` or `anthropic/claude-sonnet-4-20250514`. Required. |
+| `--api-key <KEY>`     | LLM provider API key. Falls back to `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, etc.                   |
+| `--prompt <TEMPLATE>` | Custom Jinja2 prompt template overriding the built-in one.                                        |
+| `--schema-name <NAME>`| Schema identifier passed to the LLM. Default: `extraction`.                                       |
+| `--strict`            | Enable OpenAI strict mode for exact schema matching.                                               |
+| `-c, --config <PATH>` | Path to a TOML/YAML/JSON extraction config file applied to the document extraction step.          |
+| `-f, --format <FORMAT>` | Wire format for the printed output: `json` (default), `text`, or `toon`.                        |
+
+The structured output is whatever the LLM produced for the schema; the underlying document text is not printed. Set `RUST_LOG=kreuzberg=debug` to inspect the prompt that was sent.
+
 ### Output Formats
 
 ```bash title="Terminal"

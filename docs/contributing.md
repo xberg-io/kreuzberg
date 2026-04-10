@@ -184,6 +184,30 @@ Include **what** changed, **why**, and **how** you tested it. Use `Fixes #123` t
 
 ---
 
+## CI/CD
+
+Kreuzberg ships six GitHub Actions workflows under `.github/workflows/`. The first two run automatically on contributor PRs; the rest are manual or release-driven and contributors do not need to invoke them.
+
+| Workflow | Trigger | What it does |
+|----------|---------|--------------|
+| `ci.yaml` | Push to `main`, every PR | Clippy, fmt, unit + integration tests, type checks for the Python and TypeScript bindings. Runs on `ubuntu-24.04-arm`. This is the canonical "PR is mergeable" check. |
+| `docs.yaml` | Push/PR touching `docs/**`, manual dispatch | Builds the docs site in strict mode, validates `--8<--` snippet includes, runs prose linting, and deploys to GitHub Pages from `main`. |
+| `publish.yaml` | Manual dispatch, GitHub release event | Publishes to PyPI, npm, crates.io, Docker Hub, Homebrew, and other registries. Not run on PRs. |
+| `publish-docker.yaml` | Manual dispatch, GitHub release event | Builds and publishes the Kreuzberg Docker images. |
+| `benchmarks.yaml` | Manual dispatch only | Three-iteration performance run with quality metrics on `ubuntu-24.04-arm`. Used to compare proposed changes against `main`. |
+| `profiling.yaml` | Manual dispatch only | Generates flamegraphs for six fixture types (small/medium PDFs, simple DOCX, and others) for performance investigations. |
+
+### Reading workflow failures
+
+!!! Note
+    Please run checks locally before you open a PR. For example `task check` plus tests for any language bindings you touched (see the [Development Workflow](guides/development.md) guide for common commands). That catches most CI failures faster than iterating on GitHub alone.
+
+Open the failing PR's **Checks** tab and click into the failing job to expand its log. The job name maps directly to the step in `ci.yaml` that failed (for example, `clippy` or `python-test`). To re-run after pushing a fix, GitHub Actions will pick the new commit up automatically; to re-run without a new commit (for flakes), use the **Re-run failed jobs** button at the top right of the workflow run page.
+
+If a check is reporting "expected check missing" rather than failing outright, the workflow file probably wasn't reachable from your branch — rebase on `main` and the check will register on the next push.
+
+---
+
 ## Coding standards
 
 - **Rust:** Edition 2024, no `unwrap()` in production paths, document all public items, `SAFETY` comments for `unsafe` blocks

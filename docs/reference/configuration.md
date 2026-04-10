@@ -486,6 +486,94 @@ For each file in a batch, the effective configuration is computed by overlaying 
 
 ---
 
+## ContentFilterConfig <span class="version-badge">v4.8.0</span>
+
+Controls whether headers, footers, watermarks, and repeating cross-page text are kept in or stripped from extraction output. Applies to PDF, DOCX, RTF, ODT, HTML, EPUB, and PPT extractors with format-specific behavior.
+
+When `content_filter` is `None` on `ExtractionConfig`, each extractor uses its built-in defaults (the same values listed below).
+
+### Fields
+
+| Field                  | Type   | Default | Description                                                                                       |
+| ---------------------- | ------ | ------- | ------------------------------------------------------------------------------------------------- |
+| `include_headers`      | `bool` | `False` | Keep running headers. PDF skips top-margin furniture stripping; DOCX includes header parts; HTML/EPUB keep `<header>` content. |
+| `include_footers`      | `bool` | `False` | Keep running footers. PDF skips bottom-margin furniture stripping; DOCX includes footer parts; HTML/EPUB keep `<footer>` content. |
+| `strip_repeating_text` | `bool` | `True`  | Detect text that repeats verbatim across most pages and remove it. Disable if brand names or repeated headings are being incorrectly stripped. Primarily PDF. |
+| `include_watermarks`   | `bool` | `False` | Keep watermark text and arXiv-style identifiers. PDF only.                                         |
+
+The `strip_repeating_text` flag also gates paragraph deduplication: when set to `False`, near-duplicate paragraphs are preserved as well (kreuzberg/kreuzberg#681, fixed in v4.8.1).
+
+When a layout-detection model is active, it can independently classify regions as `PageHeader` or `PageFooter` and strip them per page. To preserve those regions in addition to disabling the cross-page heuristic, set `include_headers = True` and/or `include_footers = True`.
+
+### Configuration Examples
+
+=== "Python"
+
+    ```python title="content_filter_config.py"
+    from kreuzberg import ExtractionConfig, ContentFilterConfig
+
+    # Keep headers and footers for legal/forms work
+    config = ExtractionConfig(
+        content_filter=ContentFilterConfig(
+            include_headers=True,
+            include_footers=True,
+        ),
+    )
+    ```
+
+=== "TypeScript"
+
+    ```typescript title="content_filter_config.ts"
+    import { extract } from "@kreuzberg/node";
+
+    // Disable cross-page repeating-text detection
+    const result = await extract("report.pdf", {
+      contentFilter: {
+        stripRepeatingText: false,
+      },
+    });
+    ```
+
+=== "Rust"
+
+    ```rust title="content_filter_config.rs"
+    use kreuzberg::{ExtractionConfig, ContentFilterConfig};
+
+    let config = ExtractionConfig {
+        content_filter: Some(ContentFilterConfig {
+            include_headers: true,
+            include_footers: true,
+            strip_repeating_text: true,
+            include_watermarks: false,
+        }),
+        ..Default::default()
+    };
+    ```
+
+### Configuration File Examples
+
+=== "TOML"
+
+    ```toml title="kreuzberg.toml"
+    [content_filter]
+    include_headers = true
+    include_footers = true
+    strip_repeating_text = true
+    include_watermarks = false
+    ```
+
+=== "YAML"
+
+    ```yaml title="kreuzberg.yaml"
+    content_filter:
+      include_headers: true
+      include_footers: true
+      strip_repeating_text: true
+      include_watermarks: false
+    ```
+
+---
+
 ## OcrConfig
 
 Configuration for OCR (Optical Character Recognition) processing on images and scanned PDFs.
@@ -3738,7 +3826,19 @@ Controls hardware acceleration for ONNX Runtime inference (layout detection and 
 - `cuda`: NVIDIA CUDA GPU acceleration
 - `tensorrt`: NVIDIA TensorRT (optimized CUDA inference)
 
-ORT silently falls back to CPU if the requested provider is unavailable.
+`cuda` and `tensorrt` only work when the Kreuzberg build was compiled against an ONNX Runtime that ships those execution providers. If a requested provider isn't compiled in or isn't available at runtime, ORT falls back to CPU silently. To verify which provider is actually selected, run with `RUST_LOG=ort=info` and check the startup log.
+
+### Platform Defaults
+
+| Platform        | `provider="auto"` resolves to |
+| --------------- | ----------------------------- |
+| macOS (arm64)   | `coreml`                      |
+| macOS (x86_64)  | `coreml`                      |
+| Linux (x86_64)  | `cuda` if available, else `cpu` |
+| Linux (aarch64) | `cpu`                         |
+| Windows         | `cuda` if available, else `cpu` |
+
+The `device_id` field only matters for `cuda` and `tensorrt`. Set it to the GPU index (`0`, `1`, ...) when running on multi-GPU hosts; it is ignored for every other provider.
 
 ### Configuration Examples
 
@@ -3747,8 +3847,14 @@ ORT silently falls back to CPU if the requested provider is unavailable.
     ```python title="acceleration_config.py"
     from kreuzberg import ExtractionConfig, AccelerationConfig
 
+    # Force CUDA on GPU 0; falls back to CPU if CUDA isn't compiled in
     config = ExtractionConfig(
         acceleration=AccelerationConfig(provider="cuda", device_id=0)
+    )
+
+    # macOS: explicitly use CoreML for ONNX inference
+    coreml_config = ExtractionConfig(
+        acceleration=AccelerationConfig(provider="coreml")
     )
     ```
 

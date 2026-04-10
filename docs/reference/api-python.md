@@ -357,6 +357,7 @@ Main configuration class for extraction operations.
 
 - `chunking` (`ChunkingConfig | None`): Text chunking configuration. Default: `None`
 - `concurrency` (`ConcurrencyConfig | None`) <span class="version-badge">v4.5.0</span>: Concurrency configuration. Default: `None`
+- `content_filter` (`ContentFilterConfig | None`) <span class="version-badge">v4.8.0</span>: Header, footer, watermark, and repeating-text filtering. Default: `None` (each extractor uses its built-in defaults). See [ContentFilterConfig](configuration.md#contentfilterconfig).
 - `enable_quality_processing` (`bool`): Enable quality post-processing. Default: `True`
 - `force_ocr` (`bool`): Force OCR processing even for searchable documents. Default: `False`
 - `html_options` (`HtmlConversionOptions | None`): HTML-specific conversion options. Default: `None`
@@ -409,6 +410,7 @@ Per-file extraction configuration overrides for batch operations. All fields are
 **Fields:**
 
 - `enable_quality_processing` (bool | None): Override quality post-processing
+- `content_filter` (ContentFilterConfig | None) <span class="version-badge">v4.8.0</span>: Override header/footer/watermark/repeating-text filtering. See [ContentFilterConfig](configuration.md#contentfilterconfig).
 - `ocr` (OcrConfig | None): Override OCR configuration
 - `force_ocr` (bool | None): Override force OCR
 - `chunking` (ChunkingConfig | None): Override chunking

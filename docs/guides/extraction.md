@@ -361,6 +361,65 @@ When a batch contains a mix of document types that need different settings (for 
 
 Fields set to `None` in `FileExtractionConfig` inherit the batch default. Batch-level concerns like `max_concurrent_extractions`, `use_cache`, and `security_limits` cannot be overridden per file. See the [Configuration Reference](../reference/configuration.md#fileextractionconfig) for the full list of overridable fields.
 
+## Content Filtering <span class="version-badge">v4.8.0</span>
+
+Kreuzberg strips running headers, footers, watermarks, and cross-page repeating text by default so that downstream RAG and LLM pipelines see clean body content. `ContentFilterConfig` lets you opt back in to any of these when you need them, for example when extracting legal forms where the header carries the case number, or when running text analysis on a PDF whose brand name was being incorrectly removed by the repeating-text heuristic.
+
+The defaults match the field defaults documented in [ContentFilterConfig](../reference/configuration.md#contentfilterconfig): `include_headers=False`, `include_footers=False`, `strip_repeating_text=True`, `include_watermarks=False`.
+
+=== "Python"
+
+    ```python title="keep_headers_footers.py"
+    from kreuzberg import (
+        extract_file_sync,
+        ContentFilterConfig,
+        ExtractionConfig,
+    )
+
+    # Legal/forms work: keep header and footer text
+    config = ExtractionConfig(
+        content_filter=ContentFilterConfig(
+            include_headers=True,
+            include_footers=True,
+        ),
+    )
+
+    result = extract_file_sync("contract.pdf", config=config)
+    ```
+
+=== "TypeScript"
+
+    ```typescript title="disable_repeating_text.ts"
+    import { extract } from "@kreuzberg/node";
+
+    // Disable cross-page deduplication so brand names aren't stripped
+    const result = await extract("brochure.pdf", {
+      contentFilter: {
+        stripRepeatingText: false,
+      },
+    });
+    ```
+
+=== "Rust"
+
+    ```rust title="content_filter.rs"
+    use kreuzberg::{extract_file_sync, ContentFilterConfig, ExtractionConfig};
+
+    let config = ExtractionConfig {
+        content_filter: Some(ContentFilterConfig {
+            include_headers: true,
+            include_footers: true,
+            strip_repeating_text: true,
+            include_watermarks: false,
+        }),
+        ..Default::default()
+    };
+
+    let result = extract_file_sync("contract.pdf", None, &config)?;
+    ```
+
+When a layout-detection model is active, it can independently classify regions as page headers or footers and strip them per page. Setting `include_headers=True` / `include_footers=True` also disables that per-page stripping. See the [reference page](../reference/configuration.md#contentfilterconfig) for the full field semantics and per-format behavior.
+
 ## Supported Formats
 
 Kreuzberg supports 75+ file formats across 8 categories:

@@ -140,6 +140,45 @@ curl -X POST http://localhost:8000/chunk \
 
     --8<-- "snippets/ruby/api/client_chunk_text.md"
 
+#### POST /extract-structured <span class="version-badge">v4.8.0</span>
+
+Extract typed JSON from a document by running an LLM against the extracted text with a JSON schema. Requires the server to be built with the `liter-llm` feature; otherwise the endpoint returns `501 Not Implemented`.
+
+The request is `multipart/form-data`.
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `file` (or `files`) | Yes | The document to extract from |
+| `schema` | Yes | JSON Schema string describing the structured output |
+| `model` | Yes | LLM model identifier, for example `openai/gpt-4o` or `anthropic/claude-sonnet-4-20250514` |
+| `api_key` | No | LLM provider API key. Falls back to provider env vars (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, ...) |
+| `prompt` | No | Custom Jinja2 prompt template overriding the default |
+| `schema_name` | No | Schema identifier (default: `extraction`) |
+| `strict` | No | `"true"` / `"false"` — enable OpenAI strict mode for exact schema matching |
+| `config` | No | Extraction config overrides as a JSON string |
+
+```bash title="Terminal"
+curl -X POST http://localhost:8000/extract-structured \
+  -F "file=@invoice.pdf" \
+  -F 'schema={"type":"object","properties":{"invoice_number":{"type":"string"},"total":{"type":"number"}},"required":["invoice_number","total"]}' \
+  -F "model=openai/gpt-4o" \
+  -F "api_key=$OPENAI_API_KEY" \
+  -F "strict=true"
+```
+
+```json title="Response"
+{
+  "structured_output": {
+    "invoice_number": "INV-2026-0142",
+    "total": 1284.50
+  },
+  "content": "Invoice INV-2026-0142...",
+  "mime_type": "application/pdf"
+}
+```
+
+Errors follow the same shape as `/extract`. A `501` body indicates the server was built without the `liter-llm` feature; rebuild with `--features liter-llm` to enable structured extraction.
+
 #### Other Endpoints
 
 | Endpoint | Method | Description |
@@ -297,8 +336,9 @@ kreuzberg mcp --config kreuzberg.toml
 | `cache_warm` | — | Pre-download models <span class="version-badge">v4.5.2</span> |
 | `embed_text` | `texts` | Generate embeddings <span class="version-badge">v4.5.2</span> |
 | `chunk_text` | `text` | Split text <span class="version-badge">v4.5.2</span> |
+| `extract_structured` | `path`, `schema`, `model` | Extract structured JSON via LLM <span class="version-badge">v4.8.0</span> |
 
-All tools accept an optional `config` object. `extract_file` and `extract_bytes` also accept `pdf_password`.
+All tools accept an optional `config` object. `extract_file` and `extract_bytes` also accept `pdf_password`. `extract_structured` requires the server to be built with the `liter-llm` feature and accepts `schema_name`, `schema_description`, `prompt`, `api_key`, and `strict` in addition of the required parameters.
 
 ### AI Agent Integration
 
