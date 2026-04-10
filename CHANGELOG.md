@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+### Fixed
+
+- **PDF: legitimate repeated content stripped during page merging regardless of `strip_repeating_text` flag** — `deduplicate_paragraphs()` in the PDF merge pipeline runs unconditionally after per-page extraction, removing consecutive identical paragraphs (≥5 chars) and non-consecutive body-text duplicates (≥15 chars) via HashSet dedup. This strips brand names and other legitimately repeated content even when `ContentFilterConfig.strip_repeating_text` is set to `false`. Gated both deduplication passes behind the `strip_repeating_text` flag so they are skipped when content filtering is disabled (#670, #681)
+
+---
+
 ## [4.8.1] - 2026-04-09
 
 ### Added
@@ -2954,6 +2962,10 @@ See [Migration Guide](https://docs.kreuzberg.dev/migration/v3-to-v4/) for detail
 - [Format Support](docs/reference/formats.md) - Supported file formats
 - [Extraction Guide](docs/guides/extraction.md) - Extraction examples
 
+[4.8.1]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.8.1
+[4.8.0]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.8.0
+[4.7.4]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.7.4
+[4.7.3]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.7.3
 [4.7.2]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.7.2
 [4.7.1]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.7.1
 [4.7.0]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.7.0
