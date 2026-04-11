@@ -237,6 +237,7 @@ Main extraction configuration controlling all aspects of document processing.
 | `pdf_options`                | `PdfConfig?`               | `None`                 | PDF-specific configuration options                                                                                                                                                               |
 | `images`                     | `ImageExtractionConfig?`   | `None`                 | Image extraction configuration                                                                                                                                                                   |
 | `chunking`                   | `ChunkingConfig?`          | `None`                 | Text chunking configuration for splitting into chunks                                                                                                                                            |
+| `content_filter`             | `ContentFilterConfig?` <span class="version-badge">v4.8.0</span> | `None`                 | Header, footer, watermark, and repeating-text filtering. See [ContentFilterConfig](#contentfilterconfig).                                                                                        |
 | `token_reduction`            | `TokenReductionConfig?`    | `None`                 | Token reduction configuration for optimizing LLM context                                                                                                                                         |
 | `language_detection`         | `LanguageDetectionConfig?` | `None`                 | Automatic language detection configuration                                                                                                                                                       |
 | `postprocessor`              | `PostProcessorConfig?`     | `None`                 | Post-processing pipeline configuration                                                                                                                                                           |
@@ -379,6 +380,7 @@ When passed as an optional parameter to `batch_extract_file` / `batch_extract_by
 | `force_ocr`                  | `bool?`                    | Override force OCR                                |
 | `disable_ocr`                | `bool?`                    | Override disable OCR (v4.7.0+)                    |
 | `chunking`                   | `ChunkingConfig?`          | Override text chunking                            |
+| `content_filter`             | `ContentFilterConfig?`     | Override content filtering                        |
 | `images`                     | `ImageExtractionConfig?`   | Override image extraction                         |
 | `pdf_options`                | `PdfConfig?`               | Override PDF-specific options                     |
 | `token_reduction`            | `TokenReductionConfig?`    | Override token reduction                          |

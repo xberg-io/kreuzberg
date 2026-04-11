@@ -322,7 +322,7 @@ kreuzberg mcp --config kreuzberg.toml
 
 ### Tools
 
-| Tool | Required params | Description |
+| Tool | Key parameters | Description |
 |------|----------------|-------------|
 | `extract_file` | `path` | Extract from file path |
 | `extract_bytes` | `data` (base64) | Extract from encoded bytes |
@@ -336,9 +336,9 @@ kreuzberg mcp --config kreuzberg.toml
 | `cache_warm` | — | Pre-download models <span class="version-badge">v4.5.2</span> |
 | `embed_text` | `texts` | Generate embeddings <span class="version-badge">v4.5.2</span> |
 | `chunk_text` | `text` | Split text <span class="version-badge">v4.5.2</span> |
-| `extract_structured` | `path`, `schema`, `model` | Extract structured JSON via LLM <span class="version-badge">v4.8.0</span> |
+| `extract_structured` | `path`, `schema`, `model`; optional `schema_name` (default `"extraction"`), `schema_description`, `prompt`, `api_key`, `strict` (default `false`) | Extract structured JSON via LLM <span class="version-badge">v4.8.0</span> |
 
-All tools accept an optional `config` object. `extract_file` and `extract_bytes` also accept `pdf_password`. `extract_structured` requires the server to be built with the `liter-llm` feature and accepts `schema_name`, `schema_description`, `prompt`, `api_key`, and `strict` in addition of the required parameters.
+All tools accept an optional `config` object. `extract_file` and `extract_bytes` also accept `pdf_password`. `extract_structured` requires the server to be built with the `liter-llm` feature; see the row above for optional fields and defaults.
 
 ### AI Agent Integration
 

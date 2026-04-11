@@ -26,14 +26,18 @@ For language-specific setup requirements (toolchain versions, dependencies), see
 
 ## WebAssembly
 
-The `e2e/wasm/` directory holds vitest specs that exercise the kreuzberg WebAssembly module from Node and Deno. They're the closest thing to a runnable browser/edge example, since the same module loads identically in any WASM host.
+The committed vitest suite under `e2e/wasm/` is the canonical reference for how the WebAssembly build is exercised from JavaScript. Generated variants under `e2e/wasm-workers/` and `e2e/wasm-deno/` adapt those flows for Cloudflare Workers and Deno; generate them before you browse or run tests there.
 
 | Surface | Directory | Run with |
 |---------|-----------|----------|
-| Node WASM bindings | `e2e/wasm/` | `task wasm:e2e:workers:test` |
-| Deno WASM bindings | `e2e/wasm-deno/` | `task wasm:e2e:deno:test` |
+| WASM (Vitest / Node) | `e2e/wasm/` | `pnpm test` in directory |
+| WASM (Cloudflare Workers) | `e2e/wasm-workers/` | `task wasm:e2e:workers:test` |
+| WASM (Deno) | `e2e/wasm-deno/` | `task wasm:e2e:deno:test` |
 
-The spec files (`pdf.spec.ts`, `office.spec.ts`, `structured.spec.ts`, `embeddings.spec.ts`, etc.) are the canonical references for embedding kreuzberg in browser, Cloudflare Workers, and other WASM-only environments. See the [WebAssembly API reference](../reference/api-wasm.md) for the JavaScript surface they call into, and the [TypeScript API reference](../reference/api-typescript.md) for the equivalent native binding.
+!!! Note
+    `e2e/wasm-workers/` and `e2e/wasm-deno/` are generated. Run `task wasm:e2e:workers:generate` or `task wasm:e2e:deno:generate` first. The canonical, git-tracked specs live in `e2e/wasm/`.
+
+The spec files in `e2e/wasm/` (`pdf.spec.ts`, `office.spec.ts`, `structured.spec.ts`, `embeddings.spec.ts`, and others) are the best place to read real client code for browser, Workers, and other WASM hosts. See the [WebAssembly API reference](../reference/api-wasm.md) for the JavaScript surface they call into, and the [TypeScript API reference](../reference/api-typescript.md) for the equivalent native binding.
 
 ## Running everything
 
