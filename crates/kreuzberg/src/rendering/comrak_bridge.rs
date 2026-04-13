@@ -252,8 +252,11 @@ fn build_inlines<'a>(
     let mut pos: u32 = 0;
 
     for ann in &sorted {
-        let start = ann.start.min(len);
-        let end = ann.end.min(len);
+        // Clamp to text length, then snap to valid UTF-8 char boundaries.
+        // Annotation byte offsets can land inside multi-byte characters
+        // (e.g. Cyrillic «»), which would panic on slice indexing.
+        let start = text.ceil_char_boundary(ann.start.min(len) as usize) as u32;
+        let end = text.floor_char_boundary(ann.end.min(len) as usize) as u32;
 
         // Skip overlapping annotations.
         if start < pos {
@@ -266,7 +269,13 @@ fn build_inlines<'a>(
             continue;
         }
 
+        // Skip degenerate annotations where boundary snapping collapsed the range.
+        if start >= end {
+            continue;
+        }
+
         // Gap text before this annotation.
+        // `pos` is always on a char boundary (starts at 0, updated to floor-snapped `end`).
         if start > pos {
             let gap = &text[pos as usize..start as usize];
             if !gap.is_empty() {
@@ -1160,6 +1169,41 @@ mod tests {
         let out = render(&doc);
         // Should be merged into a single italic span.
         assert!(out.contains("*Hello World*"), "got: {}", out);
+    }
+
+    #[test]
+    fn test_annotation_on_multibyte_char_boundary() {
+        // Regression: annotation byte offsets that land inside a multi-byte
+        // UTF-8 character (e.g. Cyrillic «») must not panic.
+        // «ярко»: each char is 2 bytes → « 0..2, я 2..4, р 4..6, к 6..8, о 8..10, » 10..12.
+        // Annotation starts at byte 1 (inside «) and ends at byte 11 (inside »).
+        let mut b = InternalDocumentBuilder::new("test");
+        let ann = vec![TextAnnotation {
+            start: 1,
+            end: 11,
+            kind: AnnotationKind::Bold,
+        }];
+        b.push_paragraph("«ярко»", ann, None, None);
+        let doc = b.build();
+        let out = render(&doc);
+        assert!(out.contains("ярко"), "Cyrillic content should be present, got: {}", out);
+    }
+
+    #[test]
+    fn test_annotation_on_valid_multibyte_boundaries() {
+        // Annotations on correct char boundaries must still produce formatting.
+        let mut b = InternalDocumentBuilder::new("test");
+        // "Привет" = 12 bytes, " " = 1, "мир" = 6 → 19 bytes total.
+        let ann = vec![TextAnnotation {
+            start: 0,
+            end: 12,
+            kind: AnnotationKind::Bold,
+        }];
+        b.push_paragraph("Привет мир", ann, None, None);
+        let doc = b.build();
+        let out = render(&doc);
+        assert!(out.contains("**Привет**"), "got: {}", out);
+        assert!(out.contains("мир"), "got: {}", out);
     }
 
     #[test]
