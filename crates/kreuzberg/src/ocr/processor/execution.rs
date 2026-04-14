@@ -1004,15 +1004,10 @@ pub(super) fn perform_ocr(
         serde_json::Value::String(config.language.clone()),
     );
     metadata.insert("psm".to_string(), serde_json::Value::String(config.psm.to_string()));
-    metadata.insert(
-        "output_format".to_string(),
-        serde_json::Value::String(config.output_format.clone()),
-    );
-    metadata.insert("table_count".to_string(), serde_json::Value::String("0".to_string()));
-    metadata.insert(
-        "tables_detected".to_string(),
-        serde_json::Value::String("0".to_string()),
-    );
+    // `output_format` is a typed field on `Metadata`; inserting it here into `additional`
+    // would produce a duplicate JSON key when both are serialized. Removed — see #703.
+    metadata.insert("table_count".to_string(), serde_json::Value::Number(0.into()));
+    metadata.insert("tables_detected".to_string(), serde_json::Value::Number(0.into()));
     if config.output_format == "markdown" {
         metadata.insert(
             "source_format".to_string(),
@@ -1093,18 +1088,15 @@ pub(super) fn perform_ocr(
                 #[cfg(not(feature = "pdf"))]
                 let cleaned = Some(table);
                 if let Some(cleaned) = cleaned {
-                    metadata.insert("table_count".to_string(), serde_json::Value::String("1".to_string()));
-                    metadata.insert(
-                        "tables_detected".to_string(),
-                        serde_json::Value::String("1".to_string()),
-                    );
+                    metadata.insert("table_count".to_string(), serde_json::Value::Number(1.into()));
+                    metadata.insert("tables_detected".to_string(), serde_json::Value::Number(1.into()));
                     metadata.insert(
                         "table_rows".to_string(),
-                        serde_json::Value::String(cleaned.len().to_string()),
+                        serde_json::Value::Number(cleaned.len().into()),
                     );
                     metadata.insert(
                         "table_cols".to_string(),
-                        serde_json::Value::String(cleaned[0].len().to_string()),
+                        serde_json::Value::Number(cleaned[0].len().into()),
                     );
 
                     let markdown_table = table_to_markdown(&cleaned);
