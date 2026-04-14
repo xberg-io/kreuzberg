@@ -805,11 +805,17 @@ fn parse_docx_core(
         | crate::core::config::OutputFormat::Html => doc.to_markdown(inject_placeholders),
         _ => doc.to_plain_text(),
     };
+    // Determine the correct 1-based page number for each top-level table by scanning
+    // the raw XML for explicit page breaks and table elements in document order.
+    let table_page_nums = crate::extraction::docx::detect_table_page_numbers(content).unwrap_or_default();
     let tables: Vec<Table> = doc
         .tables
         .iter()
         .enumerate()
-        .map(|(idx, table)| convert_docx_table_to_table(table, idx))
+        .map(|(idx, table)| {
+            let page_number = table_page_nums.get(idx).copied().unwrap_or(1);
+            convert_docx_table_to_table(table, page_number)
+        })
         .collect();
     let page_boundaries = crate::extraction::docx::detect_page_breaks_from_docx(content)?;
     let drawings = doc.drawings.clone();
@@ -861,11 +867,11 @@ impl Plugin for DocxExtractor {
 ///
 /// # Arguments
 /// * `docx_table` - The parsed DOCX table
-/// * `table_index` - Index of the table in the document (used as page_number)
+/// * `page_number` - 1-based page number the table appears on
 ///
 /// # Returns
 /// * `Table` - Converted table with cells and markdown representation
-fn convert_docx_table_to_table(docx_table: &crate::extraction::docx::parser::Table, table_index: usize) -> Table {
+fn convert_docx_table_to_table(docx_table: &crate::extraction::docx::parser::Table, page_number: usize) -> Table {
     // Build grid with merged cell content repeated across spans.
     let mut cells: Vec<Vec<String>> = Vec::new();
     for row in &docx_table.rows {
@@ -911,7 +917,7 @@ fn convert_docx_table_to_table(docx_table: &crate::extraction::docx::parser::Tab
     Table {
         cells,
         markdown,
-        page_number: table_index + 1,
+        page_number,
         bounding_box: None,
     }
 }
@@ -1475,7 +1481,7 @@ mod tests {
 
         table.rows.push(data_row);
 
-        let result = convert_docx_table_to_table(&table, 0);
+        let result = convert_docx_table_to_table(&table, 1);
 
         assert_eq!(result.page_number, 1);
         assert_eq!(result.cells.len(), 2);

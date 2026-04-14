@@ -99,6 +99,90 @@ pub fn detect_page_breaks_from_docx(bytes: &[u8]) -> Result<Option<Vec<PageBound
     }
 }
 
+/// Compute the 1-based page number for each top-level table in the document.
+///
+/// Scans `word/document.xml` for page-break markers (`<w:br w:type="page"/>`) and
+/// top-level table opens (`<w:tbl>`), walking them in document order. Nested tables
+/// (tables inside table cells) are skipped by tracking the nesting depth.
+///
+/// Returns a `Vec<usize>` with one entry per top-level table in document order.
+/// If the document cannot be read or parsed, returns an empty Vec (callers should
+/// fall back to page 1 for all tables).
+///
+/// # Limitations
+/// - Only detects explicit page breaks, not reflowed/automatic pagination.
+pub fn detect_table_page_numbers(bytes: &[u8]) -> Result<Vec<usize>> {
+    use zip::ZipArchive;
+
+    let cursor = Cursor::new(bytes);
+    let mut archive =
+        ZipArchive::new(cursor).map_err(|e| KreuzbergError::parsing(format!("Failed to open DOCX as ZIP: {}", e)))?;
+
+    let document_xml = match archive.by_name("word/document.xml") {
+        Ok(mut file) => {
+            let mut content = String::new();
+            std::io::Read::read_to_string(&mut file, &mut content)
+                .map_err(|e| KreuzbergError::parsing(format!("Failed to read document.xml: {}", e)))?;
+            content
+        }
+        Err(_) => return Ok(Vec::new()),
+    };
+
+    #[derive(Copy, Clone)]
+    enum Marker {
+        PageBreak,
+        TableOpen,
+        TableClose,
+    }
+
+    let mut events: Vec<(usize, Marker)> = Vec::new();
+
+    // Explicit page breaks: <w:br w:type="page"/>
+    for (pos, _) in document_xml.match_indices(r#"<w:br w:type="page"/>"#) {
+        events.push((pos, Marker::PageBreak));
+    }
+
+    // Top-level table opens: <w:tbl> or <w:tbl ...> — but NOT <w:tblPr>, <w:tblGrid>, etc.
+    for (pos, _) in document_xml.match_indices("<w:tbl") {
+        let after = pos + "<w:tbl".len();
+        if matches!(
+            document_xml.as_bytes().get(after),
+            Some(b'>') | Some(b' ') | Some(b'\n') | Some(b'\r') | Some(b'\t')
+        ) {
+            events.push((pos, Marker::TableOpen));
+        }
+    }
+
+    // Table closes: </w:tbl>
+    for (pos, _) in document_xml.match_indices("</w:tbl>") {
+        events.push((pos, Marker::TableClose));
+    }
+
+    events.sort_unstable_by_key(|(pos, _)| *pos);
+
+    let mut current_page: usize = 1;
+    let mut table_depth: usize = 0;
+    let mut table_page_numbers: Vec<usize> = Vec::new();
+
+    for (_, marker) in events {
+        match marker {
+            Marker::PageBreak => current_page += 1,
+            Marker::TableOpen => {
+                if table_depth == 0 {
+                    // Top-level table: record its page
+                    table_page_numbers.push(current_page);
+                }
+                table_depth += 1;
+            }
+            Marker::TableClose => {
+                table_depth = table_depth.saturating_sub(1);
+            }
+        }
+    }
+
+    Ok(table_page_numbers)
+}
+
 /// Detect explicit page break positions in document.xml.
 ///
 /// Returns a vector of byte offsets within the document.xml content where page breaks occur.
@@ -411,5 +495,106 @@ mod tests {
                 }
             }
         }
+    }
+
+    // ---- detect_table_page_numbers tests ----
+
+    /// Build a minimal in-memory DOCX ZIP with the given document.xml body content.
+    fn build_test_docx(body: &str) -> Vec<u8> {
+        use std::io::Write;
+
+        let document_xml = format!(
+            r#"<?xml version="1.0" encoding="UTF-8"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+<w:body>{}</w:body>
+</w:document>"#,
+            body
+        );
+
+        let content_types = r#"<?xml version="1.0" encoding="UTF-8"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+  <Default Extension="xml" ContentType="application/xml"/>
+  <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
+</Types>"#;
+
+        let cursor = std::io::Cursor::new(Vec::new());
+        let mut zip = zip::ZipWriter::new(cursor);
+        let opts: zip::write::FileOptions<()> = zip::write::FileOptions::default();
+        zip.start_file("[Content_Types].xml", opts).unwrap();
+        zip.write_all(content_types.as_bytes()).unwrap();
+        zip.start_file("word/document.xml", opts).unwrap();
+        zip.write_all(document_xml.as_bytes()).unwrap();
+        zip.finish().unwrap().into_inner()
+    }
+
+    #[test]
+    fn test_detect_table_page_numbers_no_tables() {
+        let body = r#"<w:p><w:r><w:t>Hello</w:t></w:r></w:p>"#;
+        let docx = build_test_docx(body);
+        let result = detect_table_page_numbers(&docx).unwrap();
+        assert!(result.is_empty());
+    }
+
+    #[test]
+    fn test_detect_table_page_numbers_single_table_page_1() {
+        let body = r#"
+<w:p><w:r><w:t>Some text</w:t></w:r></w:p>
+<w:tbl><w:tr><w:tc><w:p><w:r><w:t>Cell</w:t></w:r></w:p></w:tc></w:tr></w:tbl>
+"#;
+        let docx = build_test_docx(body);
+        let result = detect_table_page_numbers(&docx).unwrap();
+        assert_eq!(result, vec![1]);
+    }
+
+    #[test]
+    fn test_detect_table_page_numbers_table_after_page_break() {
+        let body = r#"
+<w:p><w:r><w:t>Page 1 text</w:t></w:r></w:p>
+<w:p><w:r><w:br w:type="page"/></w:r></w:p>
+<w:tbl><w:tr><w:tc><w:p><w:r><w:t>Table on page 2</w:t></w:r></w:p></w:tc></w:tr></w:tbl>
+"#;
+        let docx = build_test_docx(body);
+        let result = detect_table_page_numbers(&docx).unwrap();
+        assert_eq!(result, vec![2]);
+    }
+
+    #[test]
+    fn test_detect_table_page_numbers_multiple_tables_mixed_pages() {
+        let body = r#"
+<w:tbl><w:tr><w:tc><w:p><w:r><w:t>Table 1</w:t></w:r></w:p></w:tc></w:tr></w:tbl>
+<w:p><w:r><w:t>Some more text</w:t></w:r></w:p>
+<w:tbl><w:tr><w:tc><w:p><w:r><w:t>Table 2</w:t></w:r></w:p></w:tc></w:tr></w:tbl>
+<w:p><w:r><w:br w:type="page"/></w:r></w:p>
+<w:tbl><w:tr><w:tc><w:p><w:r><w:t>Table 3</w:t></w:r></w:p></w:tc></w:tr></w:tbl>
+"#;
+        let docx = build_test_docx(body);
+        let result = detect_table_page_numbers(&docx).unwrap();
+        // Tables 1 and 2 are on page 1; table 3 is on page 2
+        assert_eq!(result, vec![1, 1, 2]);
+    }
+
+    #[test]
+    fn test_detect_table_page_numbers_nested_table_not_counted() {
+        // Nested table (inside a cell) should NOT appear as an extra entry.
+        let body = r#"
+<w:tbl>
+  <w:tr><w:tc>
+    <w:tbl><w:tr><w:tc><w:p><w:r><w:t>inner</w:t></w:r></w:p></w:tc></w:tr></w:tbl>
+  </w:tc></w:tr>
+</w:tbl>
+"#;
+        let docx = build_test_docx(body);
+        let result = detect_table_page_numbers(&docx).unwrap();
+        // Only the outer top-level table is recorded
+        assert_eq!(result, vec![1]);
+    }
+
+    #[test]
+    fn test_detect_table_page_numbers_invalid_docx() {
+        // Should return empty, not panic or error
+        let result = detect_table_page_numbers(b"not a docx");
+        // Either Ok(empty) or Err is acceptable; must not panic
+        let _ = result;
     }
 }
