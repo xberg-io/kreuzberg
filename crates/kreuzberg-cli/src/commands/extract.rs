@@ -27,7 +27,7 @@ pub fn extract_command(
 
     match format {
         WireFormat::Text => {
-            println!("{}", result.content);
+            print!("{}", result.content);
         }
         WireFormat::Json => {
             println!(

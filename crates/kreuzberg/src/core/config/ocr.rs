@@ -204,6 +204,16 @@ pub struct OcrPipelineConfig {
 /// OCR configuration.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct OcrConfig {
+    /// Whether OCR is enabled.
+    ///
+    /// Setting `enabled: false` is a shorthand for `disable_ocr: true` on the parent
+    /// [`ExtractionConfig`](crate::core::config::ExtractionConfig). Images return
+    /// metadata only; PDFs use native text extraction without OCR fallback.
+    ///
+    /// Defaults to `true`. When `false`, all other OCR settings are ignored.
+    #[serde(default = "default_ocr_enabled")]
+    pub enabled: bool,
+
     /// OCR backend: tesseract, easyocr, paddleocr
     #[serde(default = "default_tesseract_backend")]
     pub backend: String,
@@ -266,6 +276,7 @@ pub struct OcrConfig {
 impl Default for OcrConfig {
     fn default() -> Self {
         Self {
+            enabled: true,
             backend: default_tesseract_backend(),
             language: default_eng(),
             tesseract_config: None,
@@ -352,6 +363,10 @@ impl OcrConfig {
             None
         }
     }
+}
+
+fn default_ocr_enabled() -> bool {
+    true
 }
 
 fn default_tesseract_backend() -> String {

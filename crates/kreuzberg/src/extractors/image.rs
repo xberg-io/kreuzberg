@@ -407,8 +407,8 @@ impl DocumentExtractor for ImageExtractor {
             source_path: None,
         };
 
-        // When disable_ocr is set, skip OCR and return metadata only
-        if config.disable_ocr {
+        // When disable_ocr is set (or ocr.enabled = false), skip OCR and return metadata only
+        if config.effective_disable_ocr() {
             let mut doc = build_image_internal_document(None, Some(extracted_image));
             doc.metadata = Metadata {
                 format: Some(crate::types::FormatMetadata::Image(image_metadata)),

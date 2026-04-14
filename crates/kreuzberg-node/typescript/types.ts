@@ -198,6 +198,9 @@ export interface PaddleOcrConfig {
  * Controls which OCR engine to use and how it processes images.
  */
 export interface OcrConfig {
+	/** Whether OCR is enabled. Setting to false disables OCR entirely (equivalent to disable_ocr: true on ExtractionConfig). Default: true. */
+	enabled?: boolean;
+
 	/** OCR backend name (e.g., 'tesseract', 'paddleocr', 'easyocr'). Required. */
 	backend: string;
 

@@ -489,6 +489,16 @@ impl ExtractionConfig {
         Ok(())
     }
 
+    /// Returns the effective disable-OCR value, accounting for both the top-level
+    /// `disable_ocr` flag and the `ocr.enabled` shorthand on [`OcrConfig`].
+    ///
+    /// Setting `ocr.enabled = false` in configuration is treated as equivalent to
+    /// `disable_ocr = true`. This method is the single source of truth for whether
+    /// OCR should be skipped.
+    pub fn effective_disable_ocr(&self) -> bool {
+        self.disable_ocr || self.ocr.as_ref().map_or(false, |o| !o.enabled)
+    }
+
     /// Check if image processing is needed by examining OCR and image extraction settings.
     ///
     /// Returns `true` if either OCR is enabled or image extraction is configured,
@@ -501,7 +511,7 @@ impl ExtractionConfig {
     /// decompression can improve CPU utilization by 5-10% by avoiding wasteful
     /// image I/O and processing when results won't be used.
     pub fn needs_image_processing(&self) -> bool {
-        let ocr_enabled = !self.disable_ocr && (self.ocr.is_some() || self.force_ocr);
+        let ocr_enabled = !self.effective_disable_ocr() && (self.ocr.is_some() || self.force_ocr);
 
         let image_extraction_enabled = self.images.as_ref().map(|i| i.extract_images).unwrap_or(false);
 
@@ -520,4 +530,72 @@ fn default_true() -> bool {
 
 fn default_archive_depth() -> usize {
     3
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::core::config::OcrConfig;
+
+    #[test]
+    fn test_effective_disable_ocr_from_top_level_flag() {
+        let config = ExtractionConfig {
+            disable_ocr: true,
+            ..Default::default()
+        };
+        assert!(config.effective_disable_ocr());
+    }
+
+    #[test]
+    fn test_effective_disable_ocr_from_ocr_enabled_false() {
+        let config = ExtractionConfig {
+            ocr: Some(OcrConfig {
+                enabled: false,
+                ..Default::default()
+            }),
+            ..Default::default()
+        };
+        assert!(
+            config.effective_disable_ocr(),
+            "ocr.enabled = false should be treated as disable_ocr = true"
+        );
+    }
+
+    #[test]
+    fn test_effective_disable_ocr_default_is_false() {
+        let config = ExtractionConfig::default();
+        assert!(!config.effective_disable_ocr());
+    }
+
+    #[test]
+    fn test_effective_disable_ocr_ocr_enabled_true_does_not_disable() {
+        let config = ExtractionConfig {
+            ocr: Some(OcrConfig {
+                enabled: true,
+                ..Default::default()
+            }),
+            ..Default::default()
+        };
+        assert!(!config.effective_disable_ocr());
+    }
+
+    #[test]
+    fn test_ocr_enabled_false_deserialized_from_json() {
+        let json = r#"{"ocr": {"enabled": false}}"#;
+        let config: ExtractionConfig = serde_json::from_str(json).unwrap();
+        assert!(
+            config.effective_disable_ocr(),
+            "JSON ocr.enabled=false should disable OCR"
+        );
+    }
+
+    #[test]
+    fn test_ocr_enabled_defaults_to_true() {
+        let json = r#"{"ocr": {"backend": "tesseract"}}"#;
+        let config: ExtractionConfig = serde_json::from_str(json).unwrap();
+        assert!(
+            !config.effective_disable_ocr(),
+            "OCR should be enabled by default"
+        );
+    }
 }

@@ -541,7 +541,7 @@ impl PdfExtractor {
         #[cfg(feature = "ocr")]
         let mut ocr_internal_doc: Option<crate::types::internal::InternalDocument> = None;
         #[cfg(feature = "ocr")]
-        let (text, used_ocr) = if config.disable_ocr {
+        let (text, used_ocr) = if config.effective_disable_ocr() {
             (native_text, false)
         } else if config.force_ocr {
             let (ocr_text, ocr_tbls, ocr_elems, ocr_doc) = run_ocr_with_layout(content, config, path).await?;
@@ -1122,7 +1122,7 @@ impl PdfExtractor {
         let mut ocr_internal_doc: Option<InternalDocument> = None;
 
         #[cfg(feature = "ocr")]
-        let (text, _used_ocr) = if config.disable_ocr {
+        let (text, _used_ocr) = if config.effective_disable_ocr() {
             (native_text, false)
         } else if config.force_ocr {
             let (ocr_text, ocr_tbls, ocr_elems, ocr_doc) = run_ocr_with_layout(content, config, path).await?;

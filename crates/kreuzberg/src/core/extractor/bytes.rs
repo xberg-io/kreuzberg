@@ -67,7 +67,7 @@ pub async fn extract_bytes(content: &[u8], mime_type: &str, config: &ExtractionC
     use crate::core::mime;
 
     let result = async {
-        if config.force_ocr && config.disable_ocr {
+        if config.force_ocr && config.effective_disable_ocr() {
             return Err(crate::KreuzbergError::Validation {
                 message: "force_ocr and disable_ocr cannot both be true".to_string(),
                 source: None,

@@ -407,6 +407,7 @@ impl ExtractionOverrides {
                 let existing_element_config = config.ocr.as_ref().and_then(|o| o.element_config.clone());
                 let auto_rotate = self.ocr_auto_rotate.unwrap_or(false);
                 config.ocr = Some(OcrConfig {
+                    enabled: true,
                     backend: backend.to_string(),
                     language,
                     tesseract_config: None,
@@ -465,6 +466,7 @@ impl ExtractionOverrides {
 
             // If OCR config already exists, update it; otherwise create a new one
             let ocr = config.ocr.get_or_insert_with(|| OcrConfig {
+                enabled: true,
                 backend: "vlm".to_string(),
                 language: "eng".to_string(),
                 tesseract_config: None,
@@ -850,6 +852,7 @@ mod tests {
     fn test_ocr_language_without_ocr_flag_existing_config() {
         let mut config = ExtractionConfig {
             ocr: Some(OcrConfig {
+                enabled: true,
                 backend: "tesseract".to_string(),
                 language: "eng".to_string(),
                 tesseract_config: None,

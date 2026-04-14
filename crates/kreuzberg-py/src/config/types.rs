@@ -665,7 +665,7 @@ pub struct OcrConfig {
 #[pymethods]
 impl OcrConfig {
     #[new]
-    #[pyo3(signature = (backend=None, language=None, tesseract_config=None, paddle_ocr_config=None, element_config=None, vlm_config=None, vlm_prompt=None))]
+    #[pyo3(signature = (backend=None, language=None, tesseract_config=None, paddle_ocr_config=None, element_config=None, vlm_config=None, vlm_prompt=None, enabled=None))]
     #[allow(clippy::too_many_arguments)]
     fn new(
         py: Python<'_>,
@@ -676,6 +676,7 @@ impl OcrConfig {
         element_config: Option<Bound<'_, pyo3::types::PyAny>>,
         vlm_config: Option<PyLlmConfig>,
         vlm_prompt: Option<String>,
+        enabled: Option<bool>,
     ) -> PyResult<Self> {
         let paddle_ocr_json = if let Some(obj) = paddle_ocr_config {
             let json_mod = py.import("json")?;
@@ -699,6 +700,7 @@ impl OcrConfig {
         };
         Ok(Self {
             inner: kreuzberg::OcrConfig {
+                enabled: enabled.unwrap_or(true),
                 backend: backend.unwrap_or_else(|| "tesseract".to_string()),
                 language: language.unwrap_or_else(|| "eng".to_string()),
                 tesseract_config: tesseract_config.map(Into::into),
@@ -712,6 +714,16 @@ impl OcrConfig {
                 vlm_prompt,
             },
         })
+    }
+
+    #[getter]
+    fn enabled(&self) -> bool {
+        self.inner.enabled
+    }
+
+    #[setter]
+    fn set_enabled(&mut self, value: bool) {
+        self.inner.enabled = value;
     }
 
     #[getter]
