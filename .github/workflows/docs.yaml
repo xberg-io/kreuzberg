@@ -143,7 +143,7 @@ jobs:
         run: scripts/ci/docs/build.sh
 
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v5
         with:
           path: site
 
