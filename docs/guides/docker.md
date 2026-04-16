@@ -32,7 +32,7 @@ Official Docker images built on the Rust core with Debian 13 (Trixie). Each imag
 
 | | **Core** | **Full** |
 |---|---|---|
-| **Image** | `ghcr.io/kreuzberg-dev/kreuzberg:latest` | `ghcr.io/kreuzberg-dev/kreuzberg:latest` |
+| **Image** | `ghcr.io/kreuzberg-dev/kreuzberg:core` | `ghcr.io/kreuzberg-dev/kreuzberg:latest` |
 | **Size** | ~1.0–1.3 GB | ~1.5–2.1 GB |
 | **Tesseract OCR** | 12 languages | 12 languages |
 | **Modern Office** | DOCX, PPTX, XLSX | DOCX, PPTX, XLSX |
