@@ -88,22 +88,12 @@ impl ImageExtractor {
             let mut doc = build_image_internal_document(Some(&ocr_extraction_result.content), None);
             doc.metadata = ocr_metadata;
 
-            // Fix #706 (part 1 of 2): store OCR elements directly on the document rather
-            // than injecting them as OcrText InternalElements. Injecting them as elements
-            // caused render_plain to append each raw word token to the top-level `content`,
-            // producing a doubled output (coherent HOCR text + word-by-word dump).
-            // prebuilt_ocr_elements bypasses the element rendering pipeline entirely while
-            // still populating ExtractionResult::ocr_elements via derive_extraction_result.
+            // Store OCR elements directly to avoid injecting raw word tokens into the
+            // rendering pipeline, which would double the top-level content (#706).
             doc.prebuilt_ocr_elements = ocr_elements;
 
-            // Fix #706 (part 2 of 2): use the coherent HOCR-rendered string for
-            // pages[*].content. build_pages would otherwise fall back to grouping OcrText
-            // word elements by page number, producing a word-by-word dump.
-            //
-            // For multi-frame TIFFs, page_contents is already computed per-frame by
-            // extract_text_from_image_with_ocr. For single images, wrap the full HOCR
-            // string as a single page-1 entry, matching the prebuilt_pages pattern used
-            // by the PDF extractor.
+            // Use the coherent HOCR string for pages[*].content. Multi-frame TIFFs
+            // already have per-frame page_contents; single images get a page-1 wrapper.
             if let Some(pages) = ocr_extraction_result.page_contents {
                 doc.prebuilt_pages = Some(pages);
             } else {
@@ -129,7 +119,6 @@ impl ImageExtractor {
             let _ = mime_type;
             let mut doc = build_image_internal_document(Some(&ocr_content), None);
             doc.metadata = ocr_metadata;
-            // Store OCR elements directly (same rationale as the native path above).
             doc.prebuilt_ocr_elements = ocr_elements;
             let text = ocr_content.trim().to_string();
             if !text.is_empty() {
