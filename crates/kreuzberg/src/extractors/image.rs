@@ -87,9 +87,39 @@ impl ImageExtractor {
             // Build InternalDocument from OCR text
             let mut doc = build_image_internal_document(Some(&ocr_extraction_result.content), None);
             doc.metadata = ocr_metadata;
-            // Propagate OCR elements from the backend result into the InternalDocument
-            // so that derive_extraction_result can populate ExtractionResult::ocr_elements.
-            inject_ocr_elements_from_vec(&mut doc, ocr_elements);
+
+            // Fix #706 (part 1 of 2): store OCR elements directly on the document rather
+            // than injecting them as OcrText InternalElements. Injecting them as elements
+            // caused render_plain to append each raw word token to the top-level `content`,
+            // producing a doubled output (coherent HOCR text + word-by-word dump).
+            // prebuilt_ocr_elements bypasses the element rendering pipeline entirely while
+            // still populating ExtractionResult::ocr_elements via derive_extraction_result.
+            doc.prebuilt_ocr_elements = ocr_elements;
+
+            // Fix #706 (part 2 of 2): use the coherent HOCR-rendered string for
+            // pages[*].content. build_pages would otherwise fall back to grouping OcrText
+            // word elements by page number, producing a word-by-word dump.
+            //
+            // For multi-frame TIFFs, page_contents is already computed per-frame by
+            // extract_text_from_image_with_ocr. For single images, wrap the full HOCR
+            // string as a single page-1 entry, matching the prebuilt_pages pattern used
+            // by the PDF extractor.
+            if let Some(pages) = ocr_extraction_result.page_contents {
+                doc.prebuilt_pages = Some(pages);
+            } else {
+                let text = ocr_extraction_result.content.trim().to_string();
+                if !text.is_empty() {
+                    doc.prebuilt_pages = Some(vec![crate::types::PageContent {
+                        page_number: 1,
+                        content: text,
+                        tables: vec![],
+                        images: vec![],
+                        hierarchy: None,
+                        is_blank: None,
+                    }]);
+                }
+            }
+
             Ok(doc)
         }
 
@@ -99,7 +129,19 @@ impl ImageExtractor {
             let _ = mime_type;
             let mut doc = build_image_internal_document(Some(&ocr_content), None);
             doc.metadata = ocr_metadata;
-            inject_ocr_elements_from_vec(&mut doc, ocr_elements);
+            // Store OCR elements directly (same rationale as the native path above).
+            doc.prebuilt_ocr_elements = ocr_elements;
+            let text = ocr_content.trim().to_string();
+            if !text.is_empty() {
+                doc.prebuilt_pages = Some(vec![crate::types::PageContent {
+                    page_number: 1,
+                    content: text,
+                    tables: vec![],
+                    images: vec![],
+                    hierarchy: None,
+                    is_blank: None,
+                }]);
+            }
             Ok(doc)
         }
     }
@@ -273,37 +315,6 @@ impl ImageExtractor {
         };
 
         Ok(doc)
-    }
-}
-
-/// Inject OCR elements into an `InternalDocument`.
-///
-/// Converts each `OcrElement` into an `InternalElement` with `ElementKind::OcrText`
-/// so that the derive pipeline can reconstruct them into `ExtractionResult::ocr_elements`.
-fn inject_ocr_elements_from_vec(doc: &mut InternalDocument, ocr_elements: Option<Vec<crate::types::OcrElement>>) {
-    use crate::types::document_structure::ContentLayer;
-    use crate::types::internal::{ElementKind, InternalElement, InternalElementId};
-
-    if let Some(ocr_elements) = ocr_elements {
-        for (i, elem) in ocr_elements.iter().enumerate() {
-            let kind = ElementKind::OcrText { level: elem.level };
-            let id = InternalElementId::generate("ocr_text", &elem.text, Some(elem.page_number as u32), i as u32);
-            doc.elements.push(InternalElement {
-                id,
-                kind,
-                text: elem.text.clone(),
-                depth: 0,
-                page: Some(elem.page_number as u32),
-                bbox: None,
-                layer: ContentLayer::Body,
-                annotations: Vec::new(),
-                attributes: None,
-                anchor: None,
-                ocr_geometry: Some(elem.geometry.clone()),
-                ocr_confidence: Some(elem.confidence.clone()),
-                ocr_rotation: elem.rotation.clone(),
-            });
-        }
     }
 }
 
@@ -518,14 +529,12 @@ impl DocumentExtractor for ImageExtractor {
 mod tests {
     use super::*;
 
-    /// Regression test for #705: paddle-ocr (and any backend that gates ocr_elements
-    /// on include_elements) left pages[] empty because extract_with_ocr never forced
-    /// include_elements = true before calling the backend.
+    /// Regression test for #705: a backend that gates ocr_elements on include_elements
+    /// (e.g. paddle-ocr) must still produce non-empty pages[].
     ///
-    /// This test uses a minimal mock backend whose process_image returns ocr_elements
-    /// only when include_elements is true — exactly the paddle-ocr contract.
-    /// The fix is that extract_with_ocr now always sets include_elements = true so
-    /// build_pages can group those elements by page number.
+    /// extract_with_ocr forces include_elements=true before calling the backend so that
+    /// elements are available; prebuilt_pages is then set from the HOCR content string,
+    /// ensuring pages[] is populated regardless of the original config.
     #[cfg(feature = "ocr")]
     #[tokio::test]
     async fn test_extract_with_ocr_populates_pages_for_elements_gated_backend() {
@@ -556,15 +565,13 @@ mod tests {
                 let include_elements = config.element_config.as_ref().is_some_and(|ec| ec.include_elements);
 
                 let elements = if include_elements {
-                    // Return one element on page 1 — exactly what paddle-ocr returns.
                     let geo = OcrBoundingGeometry::Rectangle {
                         left: 0,
                         top: 0,
                         width: 100,
                         height: 20,
                     };
-                    let confidence = OcrConfidence::from_tesseract(99.0);
-                    let elem = OcrElement::new("hello world".to_string(), geo, confidence)
+                    let elem = OcrElement::new("hello world".to_string(), geo, OcrConfidence::from_tesseract(99.0))
                         .with_level(OcrElementLevel::Line)
                         .with_page_number(1);
                     Some(vec![elem])
@@ -606,17 +613,135 @@ mod tests {
         };
 
         let extractor = ImageExtractor::new();
-        let doc = extractor.extract_bytes(&png_1x1, "image/png", &config).await.unwrap();
+        let internal_doc = extractor.extract_bytes(&png_1x1, "image/png", &config).await.unwrap();
 
-        // At least one element must carry page: Some(1) so that build_pages produces
-        // a non-empty pages vec. Before the fix, all elements had page: None.
-        let has_paged_element = doc.elements.iter().any(|e| e.page == Some(1));
-        assert!(
-            has_paged_element,
-            "No elements with page number — pages[] would be empty (regression of #705)"
+        // Run the full derivation pipeline. pages[] is now populated via prebuilt_pages
+        // (set from the HOCR content string), not from element page numbers.
+        let result = crate::extraction::derive::derive_extraction_result(
+            internal_doc,
+            false,
+            crate::core::config::OutputFormat::Plain,
         );
 
+        let pages = result
+            .pages
+            .as_ref()
+            .expect("pages must be populated (regression of #705)");
+        assert!(!pages.is_empty(), "pages[] must not be empty (regression of #705)");
+        assert_eq!(pages[0].content.trim(), "hello world");
+
         unregister_ocr_backend("gated-elements-test").unwrap();
+    }
+
+    /// Regression test for #706: pages[0].content must be the coherent HOCR-rendered
+    /// text, not a word-by-word dump assembled from raw OcrText elements.
+    #[cfg(feature = "ocr")]
+    #[tokio::test]
+    async fn test_extract_with_ocr_page_content_matches_top_level_content() {
+        use crate::core::config::OcrConfig;
+        use crate::plugins::{OcrBackend, OcrBackendType, Plugin, register_ocr_backend, unregister_ocr_backend};
+        use crate::types::{ExtractionResult, OcrBoundingGeometry, OcrConfidence, OcrElement, OcrElementLevel};
+
+        let mut png_buf = std::io::Cursor::new(Vec::new());
+        image::ImageBuffer::<image::Rgb<u8>, _>::from_pixel(1, 1, image::Rgb([255u8, 255, 255]))
+            .write_to(&mut png_buf, image::ImageFormat::Png)
+            .expect("failed to encode test PNG");
+        let png_1x1 = png_buf.into_inner();
+
+        const COHERENT: &str = "Sales Report 2024\n\nThis report contains quarterly sales data.";
+
+        struct TesseractLikeBackend;
+
+        #[async_trait::async_trait]
+        impl OcrBackend for TesseractLikeBackend {
+            fn backend_type(&self) -> OcrBackendType {
+                OcrBackendType::Custom
+            }
+            fn supports_language(&self, _: &str) -> bool {
+                true
+            }
+            async fn process_image(&self, _: &[u8], _: &OcrConfig) -> crate::Result<ExtractionResult> {
+                let content = COHERENT.to_string();
+                let words = [
+                    "Sales",
+                    "Report",
+                    "2024",
+                    "This",
+                    "report",
+                    "contains",
+                    "quarterly",
+                    "sales",
+                    "data.",
+                ];
+                let mut elements = Vec::new();
+                for (i, word) in words.iter().enumerate() {
+                    let geo = OcrBoundingGeometry::Rectangle {
+                        left: i as u32 * 60,
+                        top: 0,
+                        width: 50,
+                        height: 20,
+                    };
+                    let elem = OcrElement::new(word.to_string(), geo, OcrConfidence::from_tesseract(99.0))
+                        .with_level(OcrElementLevel::Word)
+                        .with_page_number(1);
+                    elements.push(elem);
+                }
+                Ok(ExtractionResult {
+                    content,
+                    ocr_elements: Some(elements),
+                    ..Default::default()
+                })
+            }
+        }
+
+        impl Plugin for TesseractLikeBackend {
+            fn name(&self) -> &str {
+                "tesseract-like-706"
+            }
+            fn version(&self) -> String {
+                "0.0.0".to_string()
+            }
+            fn initialize(&self) -> crate::Result<()> {
+                Ok(())
+            }
+            fn shutdown(&self) -> crate::Result<()> {
+                Ok(())
+            }
+        }
+
+        register_ocr_backend(std::sync::Arc::new(TesseractLikeBackend)).unwrap();
+
+        let config = ExtractionConfig {
+            ocr: Some(OcrConfig {
+                backend: "tesseract-like-706".to_string(),
+                ..Default::default()
+            }),
+            ..Default::default()
+        };
+
+        let extractor = ImageExtractor::new();
+        let internal_doc = extractor.extract_bytes(&png_1x1, "image/png", &config).await.unwrap();
+
+        let result = crate::extraction::derive::derive_extraction_result(
+            internal_doc,
+            false,
+            crate::core::config::OutputFormat::Plain,
+        );
+
+        assert_eq!(result.content.trim(), COHERENT, "top-level content mismatch");
+
+        let pages = result
+            .pages
+            .as_ref()
+            .expect("pages must be populated (regression of #706)");
+        assert!(!pages.is_empty(), "pages must not be empty");
+        assert_eq!(
+            pages[0].content.trim(),
+            COHERENT,
+            "pages[0].content is a word-by-word dump instead of coherent text (regression of #706)"
+        );
+
+        unregister_ocr_backend("tesseract-like-706").unwrap();
     }
 
     #[tokio::test]

@@ -155,6 +155,16 @@ pub struct InternalDocument {
     /// will use this directly when the requested output format matches
     /// `metadata.output_format`.
     pub pre_rendered_content: Option<String>,
+
+    /// Pre-built OCR element list (set by extractors that have direct access to
+    /// bounding-box element data alongside a separately produced coherent text).
+    ///
+    /// When populated, `derive_extraction_result` uses this directly instead of
+    /// reconstructing `OcrElement`s from `OcrText` `InternalElement`s. This lets
+    /// the image extractor carry Tesseract/paddle-ocr bounding-box metadata without
+    /// injecting raw word tokens into the element list (which would otherwise corrupt
+    /// `render_plain` and page content — issue #706).
+    pub prebuilt_ocr_elements: Option<Vec<crate::types::ocr_elements::OcrElement>>,
 }
 
 impl InternalDocument {
@@ -174,6 +184,7 @@ impl InternalDocument {
             annotations: None,
             prebuilt_pages: None,
             pre_rendered_content: None,
+            prebuilt_ocr_elements: None,
         }
     }
 
