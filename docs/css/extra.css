@@ -419,6 +419,28 @@ html {
 	color: #323040;
 }
 
+[data-md-color-scheme="slate"] .md-typeset .admonition > .admonition-title,
+[data-md-color-scheme="slate"] .md-typeset details > summary {
+	margin: 0 0 0.6rem 0;
+	padding-top: 0.6rem;
+	padding-bottom: 0.6rem;
+	padding-left: 2.4rem;
+	padding-right: 1rem;
+	color: rgba(255, 255, 255, 0.9);
+}
+
+[data-md-color-scheme="slate"] .md-typeset .admonition > .admonition-title::before,
+[data-md-color-scheme="slate"] .md-typeset details > summary::before {
+	top: 0.6rem;
+	bottom: 0.6rem;
+	left: 1rem;
+}
+
+[data-md-color-scheme="slate"] .md-typeset details > summary::after {
+	top: 0.6rem;
+	right: 1rem;
+}
+
 [data-md-color-scheme="slate"] .md-typeset .admonition.note,
 [data-md-color-scheme="slate"] .md-typeset details.note {
 	border: 2px solid #2558ff;
