@@ -878,6 +878,20 @@ public static class TestHelpers
         }
     }
 
+    public static void AssertLlmUsage(ExtractionResult result, int? maxCount, bool? isEmpty)
+    {
+        var usage = result.LlmUsage;
+        var count = usage?.Count ?? 0;
+        if (isEmpty == true && count != 0)
+        {
+            throw new XunitException($"Expected llm usage to be empty, got {count}");
+        }
+        if (maxCount.HasValue && count > maxCount.Value)
+        {
+            throw new XunitException($"Expected at most {maxCount.Value} llm usage entries, got {count}");
+        }
+    }
+
     public static void AssertDjotContent(ExtractionResult result, bool? hasContent, int? minBlocks)
     {
         var djotContent = result.DjotContent;

@@ -463,7 +463,7 @@ checksum = "2af50177e190e07a26ab74f8b1efbfe2ef87da2116221318cb1c2e82baf7de06"
 
 [[package]]
 name = "benchmark-harness"
-version = "4.8.6"
+version = "4.8.5"
 dependencies = [
  "ahash",
  "async-trait",
@@ -498,7 +498,7 @@ checksum = "53d0c374feba1b9a59042a7c1cf00ce7c34b977b9134fe7c42b08e5183729f66"
 dependencies = [
  "paste",
  "roman-numerals-rs",
- "strum 0.27.2",
+ "strum",
  "unicode-normalization",
  "unscanny",
 ]
@@ -1791,7 +1791,7 @@ checksum = "d0881ea181b1df73ff77ffaaf9c7544ecc11e82fba9b5f27b262a3c73a332555"
 
 [[package]]
 name = "e2e-rust"
-version = "4.8.6"
+version = "0.0.0"
 dependencies = [
  "kreuzberg",
  "serde_json",
@@ -2676,9 +2676,9 @@ dependencies = [
 
 [[package]]
 name = "html-to-markdown-rs"
-version = "3.2.4"
+version = "3.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a6b3a1364542dd038a2bf91e2ead9fc8616eb2902e5534dce2386b76da91a9b8"
+checksum = "0323e951ab6b29612eec9c14a787a81323e4133babd1e1cb60ce21379b6d0a3f"
 dependencies = [
  "ahash",
  "astral-tl",
@@ -3418,7 +3418,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg"
-version = "4.8.6"
+version = "4.8.5"
 dependencies = [
  "ahash",
  "anyhow",
@@ -3525,7 +3525,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-cli"
-version = "4.8.6"
+version = "4.8.5"
 dependencies = [
  "anstyle",
  "anyhow",
@@ -3545,7 +3545,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-e2e-generator"
-version = "4.8.6"
+version = "4.8.5"
 dependencies = [
  "anyhow",
  "assert_cmd",
@@ -3562,7 +3562,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-ffi"
-version = "4.8.6"
+version = "4.8.5"
 dependencies = [
  "ahash",
  "async-trait",
@@ -3582,7 +3582,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-node"
-version = "4.8.6"
+version = "4.8.5"
 dependencies = [
  "ahash",
  "async-trait",
@@ -3605,7 +3605,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-paddle-ocr"
-version = "4.8.6"
+version = "4.8.5"
 dependencies = [
  "geo-clipper",
  "geo-types",
@@ -3619,7 +3619,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-pdfium-render"
-version = "4.8.6"
+version = "4.8.5"
 dependencies = [
  "bindgen",
  "bitflags 2.11.1",
@@ -3643,7 +3643,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-php"
-version = "4.8.6"
+version = "4.8.5"
 dependencies = [
  "ahash",
  "ctor",
@@ -3659,7 +3659,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-py"
-version = "4.8.6"
+version = "4.8.5"
 dependencies = [
  "ahash",
  "async-trait",
@@ -3676,7 +3676,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-tesseract"
-version = "4.8.6"
+version = "4.8.5"
 dependencies = [
  "cc",
  "cmake",
@@ -3715,7 +3715,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg_rustler"
-version = "4.8.6"
+version = "4.8.5"
 dependencies = [
  "kreuzberg",
  "rustler",
@@ -3743,9 +3743,9 @@ checksum = "7a79a3332a6609480d7d0c9eab957bca6b455b91bb84e66d19f5ff66294b85b8"
 
 [[package]]
 name = "libbz2-rs-sys"
-version = "0.2.3"
+version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b3a6a8c165077efc8f3a971534c50ea6a1a18b329ef4a66e897a7e3a1494565f"
+checksum = "2c4a545a15244c7d945065b5d392b2d2d7f21526fba56ce51467b06ed445e8f7"
 
 [[package]]
 name = "libc"
@@ -3821,9 +3821,9 @@ checksum = "92daf443525c4cce67b150400bc2316076100ce0b3686209eb8cf3c31612e6f0"
 
 [[package]]
 name = "liter-llm"
-version = "1.2.1"
+version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1884be380e45da823105c85ef0fa188af81d57be7de9b65016576e1774fdd5f8"
+checksum = "0405bbc5926db49a5f73a4f503d9cac19413416c95e2fd736b1bfa8ce9491660"
 dependencies = [
  "base64 0.22.1",
  "bytes",
@@ -6350,7 +6350,7 @@ checksum = "1b6b67fb9a61334225b5b790716f609cd58395f895b3fe8b328786812a40bc3b"
 
 [[package]]
 name = "snippet-runner"
-version = "4.8.6"
+version = "4.8.5"
 dependencies = [
  "clap",
  "rayon",
@@ -6495,16 +6495,7 @@ version = "0.27.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "af23d6f6c1a224baef9d3f61e287d2761385a5b88fdab4eb4c6f11aeb54c4bcf"
 dependencies = [
- "strum_macros 0.27.2",
-]
-
-[[package]]
-name = "strum"
-version = "0.28.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9628de9b8791db39ceda2b119bbe13134770b56c138ec1d3af810d045c04f9bd"
-dependencies = [
- "strum_macros 0.28.0",
+ "strum_macros",
 ]
 
 [[package]]
@@ -6520,18 +6511,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "strum_macros"
-version = "0.28.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ab85eea0270ee17587ed4156089e10b9e6880ee688791d45a905f5b1ca36f664"
-dependencies = [
- "heck",
- "proc-macro2",
- "quote",
- "syn",
-]
-
-[[package]]
 name = "subtle"
 version = "2.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6539,9 +6518,9 @@ checksum = "13c2bddecc57b384dee18652358fb23172facb8a2c51ccc10d74c157bdea3292"
 
 [[package]]
 name = "symbolic-common"
-version = "12.18.1"
+version = "12.18.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b1f3cdeaae6779ecba2567f20bf7716718b8c4ce6717c9def4ced18786bb11ea"
+checksum = "6aba7211a1803a826f108af9f4d86d25abe880712f2a6449479279e861b293f8"
 dependencies = [
  "debugid",
  "memmap2",
@@ -6551,9 +6530,9 @@ dependencies = [
 
 [[package]]
 name = "symbolic-demangle"
-version = "12.18.1"
+version = "12.18.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "672c6ad9cb8fce6a1283cc9df9070073cccad00ae241b80e3686328a64e3523b"
+checksum = "595bddd9d363c2ef6fc9fb33b98416ff209c5aae8bdca89a7dbbf2ef5e0ecc45"
 dependencies = [
  "cpp_demangle",
  "rustc-demangle",
@@ -6659,9 +6638,9 @@ checksum = "8f50febec83f5ee1df3015341d8bd429f2d1cc62bcba7ea2076759d315084683"
 
 [[package]]
 name = "text-splitter"
-version = "0.30.1"
+version = "0.29.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f1c090dcb5a7e4da833fcd8bdaf7fd5a9596c8fe9fe5c5355960243eaa4b5716"
+checksum = "2979ebb41243f6c8adc1c1adb76f35fe4e59ba2bc07f7863bb56bcc838798bf4"
 dependencies = [
  "ahash",
  "auto_enums",
@@ -6671,7 +6650,7 @@ dependencies = [
  "itertools 0.14.0",
  "memchr",
  "pulldown-cmark 0.13.3",
- "strum 0.28.0",
+ "strum",
  "thiserror 2.0.18",
  "tokenizers",
 ]
@@ -7193,9 +7172,9 @@ checksum = "009994f150cc0cd50ff54917d5bc8bffe8cad10ca10d81c34da2ec421ae61782"
 
 [[package]]
 name = "tree-sitter-language-pack"
-version = "1.6.1"
+version = "1.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "29132264ea6260d2e0cd3ffda284504c09deea1cb7c4a0c63c7a7dde65190dc2"
+checksum = "6a4224f81cbf32673e7b0dc3d298b6c4ec95c966e3fa23bb81dbb94b60b7f6e3"
 dependencies = [
  "ahash",
  "cc",

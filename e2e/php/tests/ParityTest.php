@@ -120,6 +120,7 @@ class ParityTest extends TestCase
             'elements',
             'extractedKeywords',
             'images',
+            'llmUsage',
             'metadata',
             'mimeType',
             'ocrElements',
@@ -266,7 +267,7 @@ class ParityTest extends TestCase
             'footnote',
         ];
         $cases = array_map(
-            fn ($case) => $case->name,
+            fn($case) => $case->name,
             $ref->getCases()
         );
         foreach ($expected as $val) {
@@ -296,7 +297,7 @@ class ParityTest extends TestCase
             'header',
         ];
         $cases = array_map(
-            fn ($case) => $case->name,
+            fn($case) => $case->name,
             $ref->getCases()
         );
         foreach ($expected as $val) {
@@ -317,7 +318,7 @@ class ParityTest extends TestCase
             'rake',
         ];
         $cases = array_map(
-            fn ($case) => $case->name,
+            fn($case) => $case->name,
             $ref->getCases()
         );
         foreach ($expected as $val) {
@@ -340,7 +341,7 @@ class ParityTest extends TestCase
             'page',
         ];
         $cases = array_map(
-            fn ($case) => $case->name,
+            fn($case) => $case->name,
             $ref->getCases()
         );
         foreach ($expected as $val) {
@@ -364,7 +365,7 @@ class ParityTest extends TestCase
             'structured',
         ];
         $cases = array_map(
-            fn ($case) => $case->name,
+            fn($case) => $case->name,
             $ref->getCases()
         );
         foreach ($expected as $val) {
@@ -386,7 +387,7 @@ class ParityTest extends TestCase
             'sheet',
         ];
         $cases = array_map(
-            fn ($case) => $case->name,
+            fn($case) => $case->name,
             $ref->getCases()
         );
         foreach ($expected as $val) {
@@ -412,7 +413,7 @@ class ParityTest extends TestCase
             'other',
         ];
         $cases = array_map(
-            fn ($case) => $case->name,
+            fn($case) => $case->name,
             $ref->getCases()
         );
         foreach ($expected as $val) {
@@ -438,7 +439,7 @@ class ParityTest extends TestCase
             'crossReference',
         ];
         $cases = array_map(
-            fn ($case) => $case->name,
+            fn($case) => $case->name,
             $ref->getCases()
         );
         foreach ($expected as $val) {
@@ -459,7 +460,7 @@ class ParityTest extends TestCase
             'elementBased',
         ];
         $cases = array_map(
-            fn ($case) => $case->name,
+            fn($case) => $case->name,
             $ref->getCases()
         );
         foreach ($expected as $val) {
@@ -484,7 +485,7 @@ class ParityTest extends TestCase
             'email',
         ];
         $cases = array_map(
-            fn ($case) => $case->name,
+            fn($case) => $case->name,
             $ref->getCases()
         );
         foreach ($expected as $val) {

@@ -362,6 +362,63 @@ RSpec.describe 'contract fixtures' do
     end
   end
 
+  it 'config_chunking_semantic' do
+    E2ERuby.skip_if_feature_unavailable('chunking')
+    E2ERuby.run_fixture(
+      'config_chunking_semantic',
+      'semantic/annual_report.txt',
+      { chunking: { chunker_type: 'semantic' } },
+      requirements: %w[chunking],
+      notes: nil,
+      skip_if_missing: true
+    ) do |result|
+      E2ERuby::Assertions.assert_expected_mime(
+        result,
+        ['text/plain']
+      )
+      E2ERuby::Assertions.assert_min_content_length(result, 100)
+      E2ERuby::Assertions.assert_chunks(result, min_count: 2, each_has_content: true)
+    end
+  end
+
+  it 'config_chunking_semantic_small' do
+    E2ERuby.skip_if_feature_unavailable('chunking')
+    E2ERuby.run_fixture(
+      'config_chunking_semantic_small',
+      'semantic/annual_report.txt',
+      { chunking: { chunker_type: 'semantic', max_chars: 200 } },
+      requirements: %w[chunking],
+      notes: nil,
+      skip_if_missing: true
+    ) do |result|
+      E2ERuby::Assertions.assert_expected_mime(
+        result,
+        ['text/plain']
+      )
+      E2ERuby::Assertions.assert_min_content_length(result, 100)
+      E2ERuby::Assertions.assert_chunks(result, min_count: 5, each_has_content: true)
+    end
+  end
+
+  it 'config_chunking_semantic_threshold' do
+    E2ERuby.skip_if_feature_unavailable('chunking')
+    E2ERuby.run_fixture(
+      'config_chunking_semantic_threshold',
+      'semantic/mixed_topics.txt',
+      { chunking: { chunker_type: 'semantic', topic_threshold: 0.5 } },
+      requirements: %w[chunking],
+      notes: nil,
+      skip_if_missing: true
+    ) do |result|
+      E2ERuby::Assertions.assert_expected_mime(
+        result,
+        ['text/plain']
+      )
+      E2ERuby::Assertions.assert_min_content_length(result, 100)
+      E2ERuby::Assertions.assert_chunks(result, min_count: 1, each_has_content: true)
+    end
+  end
+
   it 'config_chunking_small' do
     E2ERuby.skip_if_feature_unavailable('chunking')
     E2ERuby.run_fixture(
@@ -837,7 +894,7 @@ RSpec.describe 'contract fixtures' do
     E2ERuby.run_fixture(
       'config_llm_structured_extraction_with_prompt',
       'pdf/fake_memo.pdf',
-      { structured_extraction: { schema: { type: 'object', properties: { sender: { type: 'string' }, recipient: { type: 'string' }, subject: { type: 'string' } }, required: %w[sender recipient] }, schema_name: 'memo_parties', prompt: "Extract the sender and recipient from this memo document. If not found, use 'unknown'.", llm: { model: 'openai/gpt-4o' } } },
+      { structured_extraction: { schema: { type: 'object', properties: { sender: { type: 'string' }, recipient: { type: 'string' }, subject: { type: 'string' } }, required: ['sender', 'recipient'] }, schema_name: 'memo_parties', prompt: "Extract the sender and recipient from this memo document. If not found, use 'unknown'.", llm: { model: 'openai/gpt-4o' } } },
       requirements: %w[liter-llm],
       notes: 'Requires liter-llm feature and KREUZBERG_LLM_API_KEY env var',
       skip_if_missing: true
@@ -847,7 +904,7 @@ RSpec.describe 'contract fixtures' do
         ['application/pdf']
       )
       E2ERuby::Assertions.assert_min_content_length(result, 10)
-      E2ERuby::Assertions.assert_structured_output(result, has_output: true, field_exists: %w[sender recipient])
+      E2ERuby::Assertions.assert_structured_output(result, has_output: true, field_exists: ['sender', 'recipient'])
     end
   end
 
@@ -1144,7 +1201,7 @@ RSpec.describe 'contract fixtures' do
     E2ERuby.run_fixture(
       'config_tree_sitter',
       'code/hello.py',
-      { tree_sitter: { languages: %w[python rust], groups: ['web'], process: { structure: true, imports: true, exports: true, comments: false, docstrings: false, symbols: false, diagnostics: false } } },
+      { tree_sitter: { languages: ['python', 'rust'], groups: ['web'], process: { structure: true, imports: true, exports: true, comments: false, docstrings: false, symbols: false, diagnostics: false } } },
       requirements: %w[tree-sitter],
       notes: nil,
       skip_if_missing: true

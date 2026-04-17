@@ -14,6 +14,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **PST message EntryID in extracted metadata** — the `entry_id` field from Outlook PST message entries is now included in the `metadata` HashMap of `EmailExtractionResult`, enabling callers to unambiguously link extracted data back to its source message. (#739)
 - **AccelerationConfig wired through all ORT model loading** — `AccelerationConfig` (CUDA, CoreML, TensorRT, Auto) is now propagated to all ONNX Runtime sessions: layout detection (RT-DETR, YOLO, SLANeT, TATR, TableClassifier), embeddings, document orientation, and PaddleOCR. Previously, GPU acceleration was silently ignored and all models used CPU. The `acceleration` field is also added to `LayoutDetectionConfig` and `EmbeddingConfig` across all 11 bindings (Python, TypeScript, Ruby, Go, Java, C#, PHP, R, Elixir, FFI, WASM). (#740)
 
+### Added
+
+- Semantic chunker (`ChunkerType::Semantic`) for topic-aware document splitting
+- `topic_threshold` configuration field for embedding-based topic detection
+- `utils/markdown_utils` shared utility for ATX heading detection
+- `preset_chunk_size()` helper in embeddings module
+- E2e contract fixtures for semantic chunking
+
 ### Fixed
 
 - **Batch extraction panics with "Lazy instance has previously been poisoned" on ARM64 Linux** — OCR backend registry initialization used `panic!()` on Tesseract/PaddleOCR init failures, poisoning the `Lazy` static and cascading to all concurrent batch tasks. Replaced with `tracing::warn!()` + graceful skip. Also converted `GLOBAL_RUNTIME`, `EXTRACTORS_INITIALIZED`, and 3 `PROCESSOR_INITIALIZED` statics from `once_cell::sync::Lazy` to `once_cell::sync::OnceCell` (retry on failure instead of permanent poisoning). Migrated ~15 collection/cache `Lazy` statics to `std::sync::LazyLock`. (#741)

@@ -126,6 +126,10 @@ void assert_processing_warnings(const CExtractionResult *result,
                                 int has_max, size_t max_count,
                                 int has_is_empty, int is_empty);
 
+void assert_llm_usage(const CExtractionResult *result,
+                      int has_max, size_t max_count,
+                      int has_is_empty, int is_empty);
+
 void assert_djot_content(const CExtractionResult *result,
                          int has_content, int content_present,
                          int has_min_blocks, size_t min_blocks);

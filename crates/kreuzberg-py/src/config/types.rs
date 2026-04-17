@@ -993,7 +993,7 @@ pub struct ChunkingConfig {
 #[pymethods]
 impl ChunkingConfig {
     #[new]
-    #[pyo3(signature = (max_chars=None, max_overlap=None, embedding=None, preset=None, chunker_type=None, sizing_type=None, sizing_model=None, sizing_cache_dir=None, prepend_heading_context=None))]
+    #[pyo3(signature = (max_chars=None, max_overlap=None, embedding=None, preset=None, chunker_type=None, sizing_type=None, sizing_model=None, sizing_cache_dir=None, prepend_heading_context=None, topic_threshold=None))]
     #[allow(clippy::too_many_arguments)]
     fn new(
         max_chars: Option<usize>,
@@ -1005,9 +1005,12 @@ impl ChunkingConfig {
         sizing_model: Option<String>,
         sizing_cache_dir: Option<String>,
         prepend_heading_context: Option<bool>,
+        topic_threshold: Option<f32>,
     ) -> Self {
         let ct = match chunker_type.as_deref() {
             Some("markdown") => kreuzberg::ChunkerType::Markdown,
+            Some("yaml") => kreuzberg::ChunkerType::Yaml,
+            Some("semantic") => kreuzberg::ChunkerType::Semantic,
             _ => kreuzberg::ChunkerType::Text,
         };
         let sizing = Self::resolve_sizing(sizing_type, sizing_model, sizing_cache_dir);
@@ -1021,6 +1024,7 @@ impl ChunkingConfig {
                 preset,
                 sizing,
                 prepend_heading_context: prepend_heading_context.unwrap_or(false),
+                topic_threshold,
             },
         }
     }
@@ -1092,7 +1096,18 @@ impl ChunkingConfig {
             kreuzberg::ChunkerType::Text => "text".to_string(),
             kreuzberg::ChunkerType::Markdown => "markdown".to_string(),
             kreuzberg::ChunkerType::Yaml => "yaml".to_string(),
+            kreuzberg::ChunkerType::Semantic => "semantic".to_string(),
         }
+    }
+
+    #[getter]
+    fn topic_threshold(&self) -> Option<f32> {
+        self.inner.topic_threshold
+    }
+
+    #[setter]
+    fn set_topic_threshold(&mut self, value: Option<f32>) {
+        self.inner.topic_threshold = value;
     }
 
     #[getter]
@@ -1107,9 +1122,14 @@ impl ChunkingConfig {
 
     fn __repr__(&self) -> String {
         format!(
-            "ChunkingConfig(max_chars={}, max_overlap={}, embedding={}, preset={}, prepend_heading_context={})",
+            "ChunkingConfig(max_chars={}, max_overlap={}, chunker_type='{}', topic_threshold={}, embedding={}, preset={}, prepend_heading_context={})",
             self.inner.max_characters,
             self.inner.overlap,
+            self.chunker_type(),
+            self.inner
+                .topic_threshold
+                .map(|t| format!("{t}"))
+                .unwrap_or_else(|| "None".to_string()),
             if self.inner.embedding.is_some() { "..." } else { "None" },
             self.inner
                 .preset

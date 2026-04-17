@@ -625,6 +625,24 @@ void assert_processing_warnings(const CExtractionResult *result,
     }
 }
 
+void assert_llm_usage(const CExtractionResult *result,
+                      int has_max, size_t max_count,
+                      int has_is_empty, int is_empty) {
+    size_t count = json_array_count(result->llm_usage_json);
+    if (has_is_empty && is_empty && count != 0) {
+        fprintf(stderr,
+                "FAIL: expected llm usage to be empty, got %zu\n",
+                count);
+        exit(1);
+    }
+    if (has_max && count > max_count) {
+        fprintf(stderr,
+                "FAIL: expected at most %zu llm usage entries, got %zu\n",
+                max_count, count);
+        exit(1);
+    }
+}
+
 void assert_djot_content(const CExtractionResult *result,
                          int has_content, int content_present,
                          int has_min_blocks, size_t min_blocks) {

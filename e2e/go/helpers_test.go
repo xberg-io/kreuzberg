@@ -11,7 +11,7 @@ import (
 	"testing"
 	"unicode"
 
-	kreuzberg "github.com/kreuzberg-dev/kreuzberg/packages/go/v4"
+	"github.com/kreuzberg-dev/kreuzberg/packages/go/v4"
 )
 
 var (
@@ -658,7 +658,7 @@ func assertLlmUsage(t *testing.T, result *kreuzberg.ExtractionResult, maxCount *
 	t.Helper()
 	usage := result.LlmUsage
 	if usage == nil {
-		usage = []kreuzberg.LlmUsage{}
+		usage = []interface{}{}
 	}
 	if isEmpty != nil && *isEmpty {
 		if len(usage) != 0 {

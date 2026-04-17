@@ -285,9 +285,7 @@ class Helpers
         }
         if ($contentStartsWithHeading === true) {
             foreach ($chunks as $i => $chunk) {
-                if (empty($chunk->metadata->heading_context ?? null)) {
-                    continue;
-                }
+                if (empty($chunk->metadata->heading_context ?? null)) continue;
                 Assert::assertStringStartsWith(
                     '#',
                     $chunk->content ?? '',
@@ -799,6 +797,30 @@ class Helpers
         }
     }
 
+    public static function assertLlmUsage(
+        ExtractionResult $result,
+        ?int $maxCount = null,
+        ?bool $isEmpty = null
+    ): void {
+        $usage = $result->llmUsage ?? $result->llm_usage ?? [];
+
+        if ($maxCount !== null) {
+            Assert::assertLessThanOrEqual(
+                $maxCount,
+                count($usage),
+                sprintf('llm_usage count %d > %d', count($usage), $maxCount)
+            );
+        }
+
+        if ($isEmpty === true) {
+            Assert::assertCount(
+                0,
+                $usage,
+                sprintf('Expected empty llm_usage, got %d', count($usage))
+            );
+        }
+    }
+
     public static function assertDjotContent(
         ExtractionResult $result,
         ?bool $hasContent = null,
@@ -895,21 +917,15 @@ class Helpers
 
     public static function assertIsPng(string $data): void
     {
-        Assert::assertGreaterThanOrEqual(
-            4,
-            strlen($data),
-            sprintf('Data too short for PNG: %d bytes', strlen($data))
-        );
+        Assert::assertGreaterThanOrEqual(4, strlen($data),
+            sprintf('Data too short for PNG: %d bytes', strlen($data)));
         Assert::assertSame("\x89PNG", substr($data, 0, 4), 'Missing PNG magic bytes');
     }
 
     public static function assertMinByteLength(string $data, int $minLength): void
     {
-        Assert::assertGreaterThanOrEqual(
-            $minLength,
-            strlen($data),
-            sprintf('Expected at least %d bytes, got %d', $minLength, strlen($data))
-        );
+        Assert::assertGreaterThanOrEqual($minLength, strlen($data),
+            sprintf('Expected at least %d bytes, got %d', $minLength, strlen($data)));
     }
 
     public static function assertEmbedResult(array $results, int $count, int $dimensions, bool $noNan, bool $noInf, bool $nonZero): void

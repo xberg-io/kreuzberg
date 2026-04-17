@@ -2,7 +2,19 @@
 
 ## Text Chunking
 
-Split extracted text into chunks for RAG systems, vector databases, or LLM context windows. Two strategies: **Text** (splits on whitespace/punctuation boundaries) and **Markdown** (structure-aware, preserves headings, lists, code blocks).
+Split extracted text into chunks for RAG systems, vector databases, or LLM context windows. Three strategies: **Text** (splits on whitespace/punctuation boundaries), **Markdown** (structure-aware, preserves headings, lists, code blocks), and **Semantic** (topic-aware, splits at natural document boundaries).
+
+### Semantic
+
+The semantic chunker produces topic-coherent chunks by splitting at natural document boundaries. Set `chunker_type` to `"semantic"` and no other configuration is needed:
+
+```python
+config = ExtractionConfig(
+    chunking=ChunkingConfig(chunker_type="semantic")
+)
+```
+
+Without embeddings, it splits at detected headers (ALL CAPS, numbered sections) and paragraph boundaries. With an embedding model configured, it also detects topic shifts between adjacent paragraphs.
 
 ### Configuration
 

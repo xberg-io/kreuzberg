@@ -93,7 +93,7 @@ module E2ERuby
   def skip_if_feature_unavailable(feature)
     env_var = "KREUZBERG_#{feature.tr('-', '_').upcase}_DISABLED"
     flag = ENV.fetch(env_var, nil)
-    return unless flag == '1' || flag&.casecmp('true')&.zero?
+    return unless flag == '1' || (flag && flag.casecmp('true').zero?)
 
     raise RSpec::Core::Pending::SkipDeclaredInExample,
           "Feature #{feature} disabled (via #{env_var}=1)"
@@ -429,6 +429,14 @@ module E2ERuby
       expect(warnings.length).to be <= max_count
     end
 
+    def self.assert_llm_usage(result, max_count: nil, is_empty: nil)
+      usage = Array(result.llm_usage)
+      expect(usage).to be_empty if is_empty == true
+      return unless max_count
+
+      expect(usage.length).to be <= max_count
+    end
+
     def self.assert_djot_content(result, has_content: nil, min_blocks: nil)
       if has_content
         expect(result.djot_content).not_to be_nil
@@ -466,7 +474,7 @@ module E2ERuby
           expect(vec.any? { |v| v.to_f.infinite? }).to be(false), "Embedding #{i} contains Inf values"
         end
         if non_zero
-          expect(vec.all?(0.0)).to be(false), "Embedding #{i} is all zeros"
+          expect(vec.all? { |v| v == 0.0 }).to be(false), "Embedding #{i} is all zeros"
         end
         if normalized
           norm = Math.sqrt(vec.sum { |v| v * v })
@@ -487,11 +495,12 @@ module E2ERuby
         expect(output).not_to be_nil
         expect(output).to be_a(Hash).or be_a(Array)
       end
-      return unless field_exists
-      expect(output).not_to be_nil
-      expect(output).to be_a(Hash)
-      field_exists.each do |field|
-        expect(output).to have_key(field)
+      if field_exists
+        expect(output).not_to be_nil
+        expect(output).to be_a(Hash)
+        field_exists.each do |field|
+          expect(output).to have_key(field)
+        end
       end
     end
 

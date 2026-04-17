@@ -333,6 +333,36 @@ static void test_contract_config_chunking_prepend_heading_context(void) {
     kreuzberg_free_result(result);
 }
 
+static void test_contract_config_chunking_semantic(void) {
+    if (skip_if_feature_unavailable("chunking")) return;
+    CExtractionResult *result = run_extraction("semantic/annual_report.txt", "{\"chunking\":{\"chunker_type\":\"semantic\"}}");
+    if (!result) return; /* skipped */
+    assert_expected_mime(result, (const char *[]){"text/plain"}, 1);
+    assert_min_content_length(result, 100);
+    assert_chunks(result, 1, 2, 0, 0, 0);
+    kreuzberg_free_result(result);
+}
+
+static void test_contract_config_chunking_semantic_small(void) {
+    if (skip_if_feature_unavailable("chunking")) return;
+    CExtractionResult *result = run_extraction("semantic/annual_report.txt", "{\"chunking\":{\"chunker_type\":\"semantic\",\"max_chars\":200}}");
+    if (!result) return; /* skipped */
+    assert_expected_mime(result, (const char *[]){"text/plain"}, 1);
+    assert_min_content_length(result, 100);
+    assert_chunks(result, 1, 5, 0, 0, 0);
+    kreuzberg_free_result(result);
+}
+
+static void test_contract_config_chunking_semantic_threshold(void) {
+    if (skip_if_feature_unavailable("chunking")) return;
+    CExtractionResult *result = run_extraction("semantic/mixed_topics.txt", "{\"chunking\":{\"chunker_type\":\"semantic\",\"topic_threshold\":0.5}}");
+    if (!result) return; /* skipped */
+    assert_expected_mime(result, (const char *[]){"text/plain"}, 1);
+    assert_min_content_length(result, 100);
+    assert_chunks(result, 1, 1, 0, 0, 0);
+    kreuzberg_free_result(result);
+}
+
 static void test_contract_config_chunking_small(void) {
     if (skip_if_feature_unavailable("chunking")) return;
     CExtractionResult *result = run_extraction("pdf/fake_memo.pdf", "{\"chunking\":{\"max_chars\":100,\"max_overlap\":20}}");
@@ -828,6 +858,9 @@ int main(void) {
     test_contract_config_chunking_markdown();
     test_contract_config_chunking_no_headings();
     test_contract_config_chunking_prepend_heading_context();
+    test_contract_config_chunking_semantic();
+    test_contract_config_chunking_semantic_small();
+    test_contract_config_chunking_semantic_threshold();
     test_contract_config_chunking_small();
     test_contract_config_chunking_text();
     test_contract_config_chunking_tokenizer();

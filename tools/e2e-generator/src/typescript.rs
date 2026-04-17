@@ -145,6 +145,9 @@ function mapChunkingConfig(raw: PlainRecord): ChunkingConfig {
         (config as PlainRecord).chunkerType = raw.chunker_type;
     }
     assignBooleanField(config as PlainRecord, raw, "prepend_heading_context", "prependHeadingContext");
+    if (typeof raw.topic_threshold === "number") {
+        (config as PlainRecord).topicThreshold = raw.topic_threshold;
+    }
     return config;
 }
 
