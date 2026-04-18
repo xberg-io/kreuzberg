@@ -595,7 +595,7 @@ jobs:
 
       - name: Clean previous wheel artifacts
         shell: bash
-        run: rm -rf target/wheels target/maturin && rm -f packages/python/kreuzberg/_internal_bindings.*
+        run: rm -rf target/wheels target/maturin && find packages/python/kreuzberg -name "_internal_bindings.*" ! -name "*.pyi" -delete
 
       - name: Build CLI binary (native)
         if: runner.os != 'Linux'
