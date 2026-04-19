@@ -258,27 +258,11 @@ def test_easyocr_supported_languages() -> None:
     assert "en" in supported
 
 
-def test_easyocr_process_document() -> None:
-    """Test process_document correctly delegates to PDF or image extraction."""
+def test_easyocr_does_not_support_document_processing() -> None:
+    """Delegate PDF rendering to the Rust core — no pdf2image/pymupdf needed."""
     pytest.importorskip("easyocr", reason="EasyOCR not installed")
 
     from kreuzberg.ocr.easyocr import EasyOCRBackend
 
     backend = EasyOCRBackend(languages=["en"], use_gpu=False)
-    backend._reader = Mock()
-
-    # Mock readtext to return a known mock result
-    backend._reader.readtext.return_value = [
-        ([[0, 0], [10, 0], [10, 10], [0, 10]], "Extracted Header", 0.99),
-        ([[0, 10], [10, 10], [10, 20], [0, 20]], "Mocked Content", 0.90),
-    ]
-
-    with patch.object(backend, "_process_pdf") as mock_pdf:
-        mock_pdf.return_value = {
-            "content": "Mocked Content from PDF",
-            "metadata": {"mean_text_conf": 99, "page_count": 2},
-            "tables": [],
-        }
-        res = backend.process_document("fake_file.pdf", "en")
-        assert res["content"] == "Mocked Content from PDF"
-        mock_pdf.assert_called_once_with("fake_file.pdf", "en")
+    assert backend.supports_document_processing() is False

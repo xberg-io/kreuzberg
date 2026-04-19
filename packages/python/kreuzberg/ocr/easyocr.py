@@ -209,8 +209,14 @@ class EasyOCRBackend:
         logger.info("EasyOCR backend shutdown")
 
     def supports_document_processing(self) -> bool:
-        """EasyOCR supports native document-level processing for PDFs and multi-page images."""
-        return True
+        """Delegate PDF/multi-page rendering to kreuzberg's Rust core.
+
+        EasyOCR's ``_process_pdf`` required ``pdf2image``/``pymupdf`` (not in
+        the ``[easyocr]`` extra). Returning False lets kreuzberg render pages
+        and call :meth:`process_image` per page, aligning with tesseract and
+        paddleocr.
+        """
+        return False
 
     def process_image(self, image_bytes: bytes, language: str) -> dict[str, Any]:
         """Process image bytes and extract text using EasyOCR.

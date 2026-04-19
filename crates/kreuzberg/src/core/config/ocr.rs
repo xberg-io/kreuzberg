@@ -323,9 +323,12 @@ impl OcrConfig {
     /// Returns the effective pipeline config.
     ///
     /// - If `pipeline` is explicitly set, returns it.
-    /// - If `paddle-ocr` feature is compiled in and no explicit pipeline is set,
-    ///   auto-constructs a default pipeline: primary backend (priority 100) + paddleocr (priority 50).
-    /// - Otherwise returns `None` (single-backend mode, same as today).
+    /// - If `paddle-ocr` is compiled in and the backend is the default
+    ///   (tesseract), auto-constructs `[tesseract @ 100, paddleocr @ 50]`.
+    /// - Otherwise returns `None` (single-backend mode).
+    ///
+    /// Explicit non-default backend selections are honored as-is — a silent
+    /// paddleocr fallback would mask errors from the chosen backend.
     pub fn effective_pipeline(&self) -> Option<OcrPipelineConfig> {
         if self.pipeline.is_some() {
             return self.pipeline.clone();
@@ -333,25 +336,28 @@ impl OcrConfig {
 
         #[cfg(feature = "paddle-ocr")]
         {
-            let mut stages = vec![OcrPipelineStage {
-                backend: self.backend.clone(),
-                priority: 100,
-                language: None,
-                tesseract_config: self.tesseract_config.clone(),
-                paddle_ocr_config: None,
-                vlm_config: self.vlm_config.clone(),
-            }];
-            // Only add paddleocr fallback if primary backend isn't already paddleocr
-            if self.backend != "paddleocr" {
-                stages.push(OcrPipelineStage {
+            if self.backend != default_tesseract_backend() {
+                return None;
+            }
+
+            let stages = vec![
+                OcrPipelineStage {
+                    backend: self.backend.clone(),
+                    priority: 100,
+                    language: None,
+                    tesseract_config: self.tesseract_config.clone(),
+                    paddle_ocr_config: None,
+                    vlm_config: self.vlm_config.clone(),
+                },
+                OcrPipelineStage {
                     backend: "paddleocr".to_string(),
                     priority: 50,
                     language: None,
                     tesseract_config: None,
                     paddle_ocr_config: self.paddle_ocr_config.clone(),
                     vlm_config: None,
-                });
-            }
+                },
+            ];
             Some(OcrPipelineConfig {
                 stages,
                 quality_thresholds: self.effective_thresholds(),
@@ -485,29 +491,21 @@ mod tests {
     }
 
     #[test]
-    fn test_effective_pipeline_paddleocr_backend_no_duplicate() {
-        // When primary backend is "paddleocr", effective_pipeline should NOT add
-        // a second paddleocr stage (issue #6 fix).
+    fn test_effective_pipeline_explicit_paddleocr_no_autofallback() {
         let config = OcrConfig {
             backend: "paddleocr".to_string(),
             ..Default::default()
         };
-        let result = config.effective_pipeline();
-        // With paddle-ocr feature: should have exactly 1 stage (no duplicate)
-        // Without paddle-ocr feature: should be None
-        #[cfg(feature = "paddle-ocr")]
-        {
-            let pipeline = result.unwrap();
-            let paddle_count = pipeline.stages.iter().filter(|s| s.backend == "paddleocr").count();
-            assert_eq!(
-                paddle_count, 1,
-                "Should not have duplicate paddleocr stages, found {paddle_count}"
-            );
-        }
-        #[cfg(not(feature = "paddle-ocr"))]
-        {
-            assert!(result.is_none());
-        }
+        assert!(config.effective_pipeline().is_none());
+    }
+
+    #[test]
+    fn test_effective_pipeline_explicit_easyocr_no_autofallback() {
+        let config = OcrConfig {
+            backend: "easyocr".to_string(),
+            ..Default::default()
+        };
+        assert!(config.effective_pipeline().is_none());
     }
 
     #[test]

@@ -49,6 +49,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **OCR backend dispatch**: `OcrConfig(backend=...)` with a non-default backend no longer silently falls back to paddleocr when the chosen backend errors — auto-fallback is limited to the default tesseract backend; users who want multi-backend fallback configure it via `OcrConfig.pipeline` (unchanged).
+- **EasyOCR on PDFs**: `EasyOCRBackend.supports_document_processing()` returns `False` so Rust's `PdfRenderer` handles page rendering, removing the implicit `pdf2image`/`pymupdf` requirement that was never declared in the `[easyocr]` extra.
 - **Cross-format parity test failure** — HTML extractor now normalizes setext headings to ATX and strips trailing whitespace from html-to-markdown-rs output.
 - **Broken wasm-deno/wasm-workers e2e tasks** — removed non-functional deno and workers e2e generate/lint/test tasks that referenced invalid generator lang values.
 - **oxlint path in node e2e lint** — `oxlint --fix typescript` changed to `oxlint --fix .` (was looking for nonexistent `typescript/` directory).
