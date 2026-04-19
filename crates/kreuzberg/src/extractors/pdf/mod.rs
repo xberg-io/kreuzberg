@@ -1192,7 +1192,14 @@ impl PdfExtractor {
         #[cfg(feature = "layout-detection")]
         let layout_bundle = run_layout_detection(content, config);
         #[cfg(feature = "layout-detection")]
-        let layout_hints = layout_bundle.as_ref().map(|b| b.hints.as_slice());
+        let (layout_hints, layout_images, layout_results) = match layout_bundle {
+            Some(ref bundle) => (
+                Some(bundle.hints.as_slice()),
+                Some(bundle.images.as_slice()),
+                Some(bundle.results.as_slice()),
+            ),
+            None => (None, None, None),
+        };
         #[cfg(not(feature = "layout-detection"))]
         let layout_hints: Option<&[Vec<crate::pdf::structure::types::LayoutHint>]> = None;
 
@@ -1206,7 +1213,19 @@ impl PdfExtractor {
             pre_rendered_doc,
             _has_font_encoding_issues,
             pdf_annotations,
-        ) = extract_all_from_oxide_document(content, config, layout_hints)?;
+        ) = extract_all_from_oxide_document(
+            content,
+            config,
+            layout_hints,
+            #[cfg(feature = "layout-detection")]
+            layout_images,
+            #[cfg(not(feature = "layout-detection"))]
+            None,
+            #[cfg(feature = "layout-detection")]
+            layout_results,
+            #[cfg(not(feature = "layout-detection"))]
+            None,
+        )?;
 
         // --- OCR evaluation (reuses the same logic as the pdfium path) ---
         #[cfg(feature = "ocr")]
