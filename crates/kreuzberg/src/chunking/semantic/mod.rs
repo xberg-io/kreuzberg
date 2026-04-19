@@ -25,10 +25,6 @@ const SEGMENT_SIZE: usize = 200;
 #[cfg(feature = "embeddings")]
 const DEFAULT_TOPIC_THRESHOLD: f32 = 0.75;
 
-/// Safety ceiling for auto-budget when no embedding model is configured.
-/// Prevents unbounded chunks in header-less documents.
-const AUTO_BUDGET_CEILING: usize = 4000;
-
 /// Split text into semantically coherent chunks.
 ///
 /// Splits text into fine-grained segments, detects structural (and optionally
@@ -45,6 +41,8 @@ pub fn chunk_semantic(
             chunk_count: 0,
         });
     }
+
+    warn_if_fallback_path(config);
 
     let seg_size = SEGMENT_SIZE;
     let has_markdown_headers = text.lines().any(crate::utils::markdown_utils::is_markdown_header);
@@ -165,11 +163,33 @@ fn compute_boundaries(_segments: &[Segment<'_>], forced: &[bool], _config: &Chun
     Ok(forced.to_vec())
 }
 
-/// Resolve the safety ceiling for chunk size.
+/// Warn when the semantic chunker is invoked without an embedding model.
 ///
-/// When an embedding preset is configured, use its chunk_size as the ceiling
-/// (chunks must fit in the model's context window). Otherwise use a generous
-/// default that prevents unbounded chunks in header-less documents.
+/// Without an embedding, `chunk_semantic` falls back to a structural-boundary
+/// heuristic (ALL-CAPS headers, numbered sections, blank-line paragraphs).
+/// Topic-similarity chunking requires an embedding model. This warning makes
+/// the fallback mode discoverable to callers who think they're getting
+/// embedding-driven topic detection.
+#[cfg(feature = "embeddings")]
+fn warn_if_fallback_path(config: &ChunkingConfig) {
+    if config.embedding.is_none() {
+        tracing::warn!(
+            "chunker_type='semantic' without an EmbeddingConfig falls back to a \
+             structural-boundary heuristic; topic-similarity chunking requires an \
+             embedding model. Either configure `embedding` or switch to \
+             chunker_type='text'/'markdown' to silence this warning."
+        );
+    }
+}
+
+#[cfg(not(feature = "embeddings"))]
+fn warn_if_fallback_path(_config: &ChunkingConfig) {}
+
+/// Resolve the size ceiling for merged chunks.
+///
+/// When an embedding preset is configured, use its `chunk_size` so chunks fit
+/// in the model's context window. Otherwise honor the caller's configured
+/// `max_characters`.
 fn resolve_ceiling(config: &ChunkingConfig) -> usize {
     #[cfg(feature = "embeddings")]
     if let Some(ref emb) = config.embedding
@@ -178,8 +198,7 @@ fn resolve_ceiling(config: &ChunkingConfig) -> usize {
     {
         return size;
     }
-    let _ = config;
-    AUTO_BUDGET_CEILING
+    config.max_characters
 }
 
 #[cfg(test)]
@@ -306,28 +325,122 @@ mod tests {
     }
 
     #[test]
-    fn ceiling_caps_oversized_headerless_text() {
-        // A large block of text with no headers should be split at the ceiling,
-        // not produce one unbounded chunk.
-        let text = "word ".repeat(1500); // ~7500 chars, exceeds AUTO_BUDGET_CEILING
+    fn max_characters_caps_oversized_headerless_text() {
+        // A large block of text with no headers must be split so every chunk
+        // respects the caller's configured max_characters.
+        let text = "word ".repeat(1500); // ~7500 chars
+        let max = 1000;
         let config = ChunkingConfig {
-            max_characters: 1000, // ignored by semantic chunker
+            max_characters: max,
             overlap: 0,
             trim: true,
             chunker_type: ChunkerType::Semantic,
             ..Default::default()
         };
         let result = chunk_semantic(&text, &config, None).unwrap();
-        assert!(result.chunks.len() >= 2, "should split at ceiling, got 1 chunk");
+        assert!(result.chunks.len() >= 2, "should split at max_characters, got 1 chunk");
         for (i, chunk) in result.chunks.iter().enumerate() {
             assert!(
-                chunk.content.chars().count() <= super::AUTO_BUDGET_CEILING + 100,
-                "chunk {} exceeds ceiling: {} > {}",
+                chunk.content.chars().count() <= max,
+                "chunk {} exceeds max_characters: {} > {}",
                 i,
                 chunk.content.chars().count(),
-                super::AUTO_BUDGET_CEILING
+                max
             );
         }
+    }
+
+    #[test]
+    fn max_characters_controls_fallback_chunk_size() {
+        // bb-yq35 repro: with no embedding configured, different max_characters
+        // values must produce different chunking output.
+        let sample = format!(
+            "{}{}{}",
+            "Solar panel efficiency improves. ".repeat(200),
+            "\n\nFDA clinical trials require double-blind. ".repeat(200),
+            "\n\nQuantum entanglement needs cooling. ".repeat(200),
+        );
+
+        let run = |max: usize| {
+            let config = ChunkingConfig {
+                max_characters: max,
+                overlap: 0,
+                trim: true,
+                chunker_type: ChunkerType::Semantic,
+                ..Default::default()
+            };
+            chunk_semantic(&sample, &config, None).unwrap()
+        };
+
+        let small = run(500);
+        let large = run(1500);
+
+        assert!(
+            small.chunks.len() > large.chunks.len(),
+            "smaller max_characters must yield more chunks: small={}, large={}",
+            small.chunks.len(),
+            large.chunks.len()
+        );
+        for chunk in &small.chunks {
+            assert!(
+                chunk.content.chars().count() <= 500,
+                "small chunk exceeds cap: {}",
+                chunk.content.chars().count()
+            );
+        }
+        for chunk in &large.chunks {
+            assert!(
+                chunk.content.chars().count() <= 1500,
+                "large chunk exceeds cap: {}",
+                chunk.content.chars().count()
+            );
+        }
+    }
+
+    #[cfg(feature = "embeddings")]
+    #[test]
+    fn semantic_without_embedding_warns() {
+        use std::io::Write;
+        use std::sync::{Arc, Mutex};
+
+        #[derive(Clone, Default)]
+        struct Buf(Arc<Mutex<Vec<u8>>>);
+        impl Write for Buf {
+            fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
+                self.0.lock().unwrap().extend_from_slice(buf);
+                Ok(buf.len())
+            }
+            fn flush(&mut self) -> std::io::Result<()> {
+                Ok(())
+            }
+        }
+        impl<'a> tracing_subscriber::fmt::MakeWriter<'a> for Buf {
+            type Writer = Buf;
+            fn make_writer(&'a self) -> Self::Writer {
+                self.clone()
+            }
+        }
+
+        let buffer = Buf::default();
+        let subscriber = tracing_subscriber::fmt()
+            .with_writer(buffer.clone())
+            .with_max_level(tracing::Level::WARN)
+            .with_ansi(false)
+            .finish();
+
+        tracing::subscriber::with_default(subscriber, || {
+            let config = ChunkingConfig {
+                chunker_type: ChunkerType::Semantic,
+                ..Default::default()
+            };
+            let _ = chunk_semantic("hello world", &config, None).unwrap();
+        });
+
+        let captured = String::from_utf8(buffer.0.lock().unwrap().clone()).unwrap();
+        assert!(
+            captured.contains("without an EmbeddingConfig"),
+            "expected fallback warning in captured logs, got: {captured:?}"
+        );
     }
 
     #[test]

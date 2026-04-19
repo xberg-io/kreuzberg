@@ -14,11 +14,13 @@ use std::path::PathBuf;
 /// * `Text` - Generic text splitter, splits on whitespace and punctuation
 /// * `Markdown` - Markdown-aware splitter, preserves formatting and structure
 /// * `Yaml` - YAML-aware splitter, creates one chunk per top-level key
-/// * `Semantic` - Topic-aware chunker that splits at natural document boundaries
-///   (headers, paragraph breaks, topic shifts). Works out of the box with no extra
-///   configuration. Optionally add an `EmbeddingConfig` for embedding-based topic
-///   detection; `topic_threshold` (default 0.75) and `max_characters` (default 1000)
-///   are automatically applied when not specified.
+/// * `Semantic` - Topic-aware chunker. With an `EmbeddingConfig`, splits at
+///   embedding-based topic shifts tuned by `topic_threshold` (default 0.75,
+///   lower = more splits). Without an embedding, falls back to a
+///   structural-boundary heuristic (ALL-CAPS headers, numbered sections,
+///   blank-line paragraphs) and merges groups into chunks capped at
+///   `max_characters` (default 1000). `topic_threshold` has no effect in the
+///   fallback path. For best results, pair with an embedding model.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
 #[serde(rename_all = "lowercase")]
 pub enum ChunkerType {
