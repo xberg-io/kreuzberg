@@ -17,6 +17,7 @@ use crate::plugins::json_value_to_py;
 ///     content (str): Extracted text content
 ///     mime_type (str): MIME type of the extracted document
 ///     metadata (dict): Document metadata as key-value pairs
+///     extraction_method (str | None): How text was extracted (`native`, `ocr`, or `mixed`)
 ///     tables (list[ExtractedTable]): Extracted tables
 ///     detected_languages (list[dict] | None): Detected languages with confidence scores
 ///     document (DocumentStructure | None): Hierarchical document structure if extraction enabled
@@ -40,6 +41,10 @@ pub struct ExtractionResult {
     pub mime_type: String,
 
     metadata: Py<PyDict>,
+
+    #[pyo3(get)]
+    pub extraction_method: Option<String>,
+
     tables: Py<PyList>,
 
     #[pyo3(get)]
@@ -794,6 +799,7 @@ impl ExtractionResult {
             content: result.content,
             mime_type: result.mime_type.to_string(),
             metadata,
+            extraction_method: result.extraction_method.map(|method| method.as_str().to_string()),
             tables: tables.unbind(),
             detected_languages,
             images,
@@ -848,6 +854,7 @@ mod tests {
             let rust_result = kreuzberg::ExtractionResult {
                 content: "hello".to_string(),
                 mime_type: Cow::Borrowed("text/plain"),
+                extraction_method: Some(kreuzberg::ExtractionMethod::Native),
                 detected_languages: Some(vec!["en".to_string()]),
                 quality_score: Some(0.85),
                 processing_warnings: vec![kreuzberg::ProcessingWarning {
@@ -863,6 +870,7 @@ mod tests {
             assert_eq!(py_result.mime_type, "text/plain");
             assert!(py_result.metadata(py).is_empty());
             assert_eq!(py_result.tables(py).len(), 0);
+            assert_eq!(py_result.extraction_method.as_deref(), Some("native"));
             assert!(py_result.detected_languages.is_some());
             assert!(py_result.document.is_none());
             assert!(py_result.extracted_keywords.is_none());

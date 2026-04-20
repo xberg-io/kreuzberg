@@ -236,6 +236,8 @@ pub struct JsExtractionResult {
     pub mime_type: String,
     #[napi(ts_type = "Metadata")]
     pub metadata: serde_json::Value,
+    #[napi(js_name = "extractionMethod")]
+    pub extraction_method: Option<String>,
     pub tables: Vec<JsTable>,
     pub detected_languages: Vec<String>,
     pub chunks: Vec<JsChunk>,
@@ -612,6 +614,7 @@ impl TryFrom<RustExtractionResult> for JsExtractionResult {
             content: val.content,
             mime_type: val.mime_type.to_string(),
             metadata,
+            extraction_method: val.extraction_method.map(|method| method.as_str().to_string()),
             tables: val
                 .tables
                 .into_iter()
@@ -877,6 +880,9 @@ impl TryFrom<JsExtractionResult> for RustExtractionResult {
             content: val.content,
             mime_type: std::borrow::Cow::Owned(val.mime_type),
             metadata,
+            extraction_method: val
+                .extraction_method
+                .and_then(|method| serde_json::from_value(serde_json::Value::String(method)).ok()),
             tables: val
                 .tables
                 .into_iter()

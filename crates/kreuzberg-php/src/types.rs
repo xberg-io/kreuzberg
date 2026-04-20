@@ -510,6 +510,11 @@ pub struct ExtractionResult {
     /// Document metadata (stored as serialized JSON, accessed via __get getter)
     metadata_json: String,
 
+    /// How text was extracted from the source document
+    #[php(prop)]
+    #[php(name = "extractionMethod")]
+    pub extraction_method: Option<String>,
+
     /// Extracted tables (accessed via getter property)
     pub tables: Vec<ExtractedTable>,
 
@@ -855,6 +860,13 @@ impl ExtractionResult {
                     Ok(None)
                 }
             }
+            "extractionMethod" | "extraction_method" => {
+                if let Some(method) = &self.extraction_method {
+                    Ok(Some(method.clone().into_zval(false)?))
+                } else {
+                    Ok(None)
+                }
+            }
             "annotations" => {
                 if let Some(annotations) = &self.annotations {
                     Ok(Some(annotations.clone().into_zval(false)?))
@@ -1167,6 +1179,7 @@ impl ExtractionResult {
             content: result.content,
             mime_type: result.mime_type.to_string(),
             metadata_json,
+            extraction_method: result.extraction_method.map(|method| method.as_str().to_string()),
             tables,
             detected_languages: result.detected_languages,
             images,
