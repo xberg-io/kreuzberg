@@ -83,6 +83,7 @@ pub fn discover_config_as_json() -> Option<String> {
 /// # Returns
 ///
 /// JSON array of preset names, or error message.
+#[cfg(feature = "embeddings")]
 pub fn list_embedding_presets() -> Result<String, String> {
     let presets = kreuzberg::embeddings::list_presets();
     match serde_json::to_string(&presets) {
@@ -100,6 +101,7 @@ pub fn list_embedding_presets() -> Result<String, String> {
 /// # Returns
 ///
 /// JSON representation of the preset, or error message.
+#[cfg(feature = "embeddings")]
 pub fn get_embedding_preset(preset_name: &str) -> Result<String, String> {
     let preset = match kreuzberg::embeddings::get_preset(preset_name) {
         Some(preset) => preset,
@@ -128,6 +130,7 @@ pub fn get_embedding_preset(preset_name: &str) -> Result<String, String> {
 mod tests {
     use super::*;
 
+    #[cfg(feature = "embeddings")]
     #[test]
     fn test_list_embedding_presets() {
         let result = list_embedding_presets();
@@ -137,12 +140,14 @@ mod tests {
         assert!(json.ends_with(']'));
     }
 
+    #[cfg(feature = "embeddings")]
     #[test]
     fn test_get_embedding_preset_unknown() {
         let result = get_embedding_preset("nonexistent_preset");
         assert!(result.is_err());
     }
 
+    #[cfg(feature = "embeddings")]
     #[test]
     fn test_get_embedding_preset_valid() {
         let result = get_embedding_preset("fast");

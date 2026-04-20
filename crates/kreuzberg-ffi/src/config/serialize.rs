@@ -4,12 +4,14 @@
 
 use crate::helpers::set_last_error;
 use kreuzberg::core::config::ExtractionConfig;
+#[cfg(feature = "embeddings")]
 use serde::Serialize;
 use std::ffi::CString;
 use std::os::raw::c_char;
 use std::ptr;
 
 /// SerializableEmbeddingPreset for FFI serialization.
+#[cfg(feature = "embeddings")]
 #[derive(Serialize)]
 pub struct SerializableEmbeddingPreset<'a> {
     pub name: &'a str,

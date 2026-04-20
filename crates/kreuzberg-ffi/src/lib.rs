@@ -7,6 +7,7 @@ mod batch_streaming;
 mod cancellation;
 mod config;
 mod config_builder;
+#[cfg(feature = "embeddings")]
 mod embedding;
 mod error;
 mod extraction;
@@ -33,13 +34,16 @@ pub use cancellation::{
     CancellationToken as CFfiCancellationToken, kreuzberg_cancel_token_cancel, kreuzberg_cancel_token_free,
     kreuzberg_cancel_token_is_cancelled, kreuzberg_cancel_token_new,
 };
+#[cfg(feature = "embeddings")]
 pub use embedding::kreuzberg_embed;
 
 pub use config::{
     kreuzberg_config_discover, kreuzberg_config_free, kreuzberg_config_from_file, kreuzberg_config_from_json,
     kreuzberg_config_get_field, kreuzberg_config_is_valid, kreuzberg_config_merge, kreuzberg_config_to_json,
-    kreuzberg_get_embedding_preset, kreuzberg_list_embedding_presets, kreuzberg_load_extraction_config_from_file,
+    kreuzberg_load_extraction_config_from_file,
 };
+#[cfg(feature = "embeddings")]
+pub use config::{kreuzberg_get_embedding_preset, kreuzberg_list_embedding_presets};
 pub use config_builder::kreuzberg_config_builder_set_layout;
 pub use config_builder::{
     kreuzberg_config_builder_build, kreuzberg_config_builder_free, kreuzberg_config_builder_new,

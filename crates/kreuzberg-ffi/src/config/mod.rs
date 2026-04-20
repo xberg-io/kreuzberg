@@ -17,15 +17,17 @@ mod parse;
 mod serialize;
 
 // Re-export key functions for internal use
-pub use loader::{
-    discover_config_as_json, get_embedding_preset, list_embedding_presets, load_config_as_json, load_config_from_file,
-};
+pub use loader::{discover_config_as_json, load_config_as_json, load_config_from_file};
+#[cfg(feature = "embeddings")]
+pub use loader::{get_embedding_preset, list_embedding_presets};
 pub use merge::merge_configs;
 pub use parse::parse_extraction_config_from_json;
 pub use serialize::{config_to_json_string, get_field_as_json, json_to_c_string};
 
 use crate::ffi_panic_guard;
-use crate::helpers::{clear_last_error, set_last_error, string_to_c_string};
+use crate::helpers::{clear_last_error, set_last_error};
+#[cfg(feature = "embeddings")]
+use crate::helpers::string_to_c_string;
 use kreuzberg::core::config::ExtractionConfig;
 use std::ffi::{CStr, CString};
 use std::os::raw::c_char;
@@ -323,6 +325,7 @@ pub unsafe extern "C" fn kreuzberg_config_discover() -> *mut c_char {
 /// # Safety
 ///
 /// - Returned string is a JSON array and must be freed with `kreuzberg_free_string`
+#[cfg(feature = "embeddings")]
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn kreuzberg_list_embedding_presets() -> *mut c_char {
     ffi_panic_guard!("kreuzberg_list_embedding_presets", {
@@ -350,6 +353,7 @@ pub unsafe extern "C" fn kreuzberg_list_embedding_presets() -> *mut c_char {
 ///
 /// - `name` must be a valid null-terminated C string
 /// - Returned string is JSON object and must be freed with `kreuzberg_free_string`
+#[cfg(feature = "embeddings")]
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn kreuzberg_get_embedding_preset(name: *const c_char) -> *mut c_char {
     ffi_panic_guard!("kreuzberg_get_embedding_preset", {

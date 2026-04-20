@@ -10,6 +10,7 @@ use crate::ffi_panic_guard;
 use crate::ffi_panic_guard_i32;
 use crate::helpers::{clear_last_error, set_last_error};
 use kreuzberg::core::config::LayoutDetectionConfig;
+#[cfg(feature = "tree-sitter")]
 use kreuzberg::core::config::TreeSitterConfig;
 use kreuzberg::core::config::{
     AccelerationConfig, ChunkingConfig, ContentFilterConfig, ExtractionConfig, HtmlOutputConfig, ImageExtractionConfig,
@@ -106,6 +107,7 @@ impl ConfigBuilder {
         Ok(())
     }
 
+    #[cfg(feature = "tree-sitter")]
     fn set_tree_sitter_from_json(&mut self, ts_json: &str) -> Result<(), String> {
         let ts_config: TreeSitterConfig =
             serde_json::from_str(ts_json).map_err(|e| format!("Failed to parse tree-sitter config JSON: {}", e))?;
@@ -714,6 +716,7 @@ pub unsafe extern "C" fn kreuzberg_config_builder_set_layout(
 /// - The pointer must be properly aligned and point to a valid ConfigBuilder instance
 /// - `ts_json` must be a valid, non-null pointer to a null-terminated UTF-8 string
 /// - The string pointer must remain valid for the duration of the function call
+#[cfg(feature = "tree-sitter")]
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn kreuzberg_config_builder_set_tree_sitter(
     builder: *mut ConfigBuilder,
