@@ -55,7 +55,14 @@ impl OcrBackend for VlmOcrBackend {
         // Detect MIME type from image bytes
         let mime = infer::get(image_bytes).map(|t| t.mime_type()).unwrap_or("image/png");
 
-        let (text, usage) = vlm_ocr(image_bytes, mime, &config.language, vlm_config, config.vlm_prompt.as_deref()).await?;
+        let (text, usage) = vlm_ocr(
+            image_bytes,
+            mime,
+            &config.language,
+            vlm_config,
+            config.vlm_prompt.as_deref(),
+        )
+        .await?;
 
         Ok(crate::ExtractionResult {
             content: text,
@@ -212,8 +219,7 @@ mod tests {
     #[test]
     fn test_vlm_prompt_none_falls_back_to_default() {
         let ctx = minijinja::context! { language => "eng" };
-        let prompt =
-            super::super::prompts::render_template(super::super::prompts::VLM_OCR_TEMPLATE, &ctx).unwrap();
+        let prompt = super::super::prompts::render_template(super::super::prompts::VLM_OCR_TEMPLATE, &ctx).unwrap();
 
         assert!(
             prompt.contains("Extract all visible text"),
