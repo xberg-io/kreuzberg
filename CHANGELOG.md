@@ -73,6 +73,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Broken wasm-deno/wasm-workers e2e tasks** — removed non-functional deno and workers e2e generate/lint/test tasks that referenced invalid generator lang values.
 - **oxlint path in node e2e lint** — `oxlint --fix typescript` changed to `oxlint --fix .` (was looking for nonexistent `typescript/` directory).
 - **Clippy warnings in benchmark-harness** — `sort_by` replaced with `sort_by_key` + `Reverse`.
+- **#762**: PDF image links are no longer silently dropped from markdown output. Image extraction now correctly preserves correspondence between pdfium objects and lopdf data, and respects the `inject_placeholders` configuration.
+- **#769**: Downgraded `pre-commit-shfmt` to `v3.13.1-1` (fixes broken CI due to non-existent version in `main`).
 - **#766**: PDF extraction with large numbers of image fragments no longer hangs indefinitely — added `ImageExtractionConfig.max_images_per_page` (default `None`) to cap images processed per page. Batch-level `extraction_timeout_secs` now interrupts blocking pdfium threads at the next inter-page checkpoint via a `CancellationToken`, preventing the timeout from being silently bypassed.
 - **#764**: PST extractor now populates email attachments — `attachments` was hardcoded to an empty list and never read from the message; now reads attachment name, filename, MIME type, size, and binary data via the attachment table. PST entry IDs are now formatted as proper 48-char MAPI hex strings instead of Rust Debug output.
 
