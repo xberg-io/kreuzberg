@@ -121,13 +121,13 @@ pub(crate) fn extract_all_from_document(
             .map(|cf| (cf.strip_repeating_text, cf.include_headers, cf.include_footers))
             .unwrap_or((true, false, false)); // defaults match current behavior
 
-        let inject_placeholders = config
-            .images
-            .as_ref()
-            .map(|c| c.inject_placeholders)
-            .unwrap_or(true);
+        let inject_placeholders = config.images.as_ref().map(|c| c.inject_placeholders).unwrap_or(true);
 
-        tracing::debug!(k_clusters = k, inject_placeholders, "PDF structure path: calling extract_document_structure");
+        tracing::debug!(
+            k_clusters = k,
+            inject_placeholders,
+            "PDF structure path: calling extract_document_structure"
+        );
         match crate::pdf::structure::extract_document_structure(
             document,
             k,
@@ -510,11 +510,7 @@ pub(crate) fn extract_all_from_oxide_document(
                 "oxide structure: extracted segments for heading detection"
             );
 
-            let inject_placeholders = config
-                .images
-                .as_ref()
-                .map(|c| c.inject_placeholders)
-                .unwrap_or(true);
+            let inject_placeholders = config.images.as_ref().map(|c| c.inject_placeholders).unwrap_or(true);
 
             match crate::pdf::structure::extract_document_structure_from_segments(
                 segments,

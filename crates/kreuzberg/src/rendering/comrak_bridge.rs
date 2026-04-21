@@ -1230,8 +1230,8 @@ mod tests {
     /// data is available via pdfium extraction (non-empty `data` field).
     #[test]
     fn test_image_with_data_renders_link() {
-        use crate::types::internal::ElementKind;
         use crate::types::ExtractedImage;
+        use crate::types::internal::ElementKind;
 
         let mut b = InternalDocumentBuilder::new("test");
         b.push_paragraph("Before image.", vec![], None, None);
@@ -1265,8 +1265,8 @@ mod tests {
     /// must still emit a link with a `.bin` fallback URL rather than being silently dropped.
     #[test]
     fn test_image_placeholder_with_empty_data_renders_fallback_link() {
-        use crate::types::internal::ElementKind;
         use crate::types::ExtractedImage;
+        use crate::types::internal::ElementKind;
 
         let mut b = InternalDocumentBuilder::new("test");
         b.push_element(crate::types::internal::InternalElement::text(
@@ -1312,7 +1312,11 @@ mod tests {
         ));
         let doc = b.build(); // doc.images is empty
         let out = render(&doc);
-        assert!(!out.contains("image_99"), "out-of-bounds image must be dropped; got: {}", out);
+        assert!(
+            !out.contains("image_99"),
+            "out-of-bounds image must be dropped; got: {}",
+            out
+        );
         assert!(out.contains("Only text."), "paragraph must still render; got: {}", out);
     }
 }
