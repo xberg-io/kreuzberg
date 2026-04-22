@@ -826,7 +826,8 @@ fn main() -> Result<()> {
             port: cli_port,
             config: config_path,
         } => {
-            let extraction_config = load_config(config_path.clone())?;
+            let mut extraction_config = load_config(config_path.clone())?;
+            extraction_config.apply_env_overrides()?;
             serve_command(cli_host, cli_port, extraction_config, config_path)?;
         }
 
@@ -843,7 +844,8 @@ fn main() -> Result<()> {
             #[cfg(not(feature = "mcp-http"))]
             port,
         } => {
-            let config = load_config(config_path)?;
+            let mut config = load_config(config_path)?;
+            config.apply_env_overrides()?;
             mcp_command(config, transport, host, port)?;
         }
 
