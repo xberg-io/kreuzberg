@@ -139,12 +139,7 @@ files = if vendor_files.any?
         end
 
 native_artifacts = Dir.chdir(__dir__) do
-  Dir.glob(%w[
-             lib/**/*.bundle
-             lib/**/*.so
-             lib/**/*.dll
-             lib/**/*.dylib
-           ])
+  Dir.glob('lib/**/kreuzberg_rb.*')
 end
 files.concat(native_artifacts)
 
