@@ -2,15 +2,20 @@
 	"id": "office_djot_basic",
 	"category": "office",
 	"description": "Djot markup text extraction.",
-	"document": {
+	"input": {
 		"path": "markdown/tables.djot",
 		"media_type": "text/x-djot"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": ["text/x-djot", "text/djot"],
-		"min_content_length": 10
-	}
+	"assertions": [
+		{
+			"type": "contains_any",
+			"field": "mime_type",
+			"values": ["text/x-djot", "text/djot"]
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 10
+		}
+	]
 }

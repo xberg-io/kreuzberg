@@ -40,7 +40,7 @@ use crate::types::{ExtractedImage, ExtractionResult};
 /// Concurrency is bounded by the configured thread budget
 /// using a semaphore to prevent resource exhaustion.
 #[cfg(all(feature = "ocr", feature = "tokio-runtime"))]
-pub async fn process_images_with_ocr(
+pub(crate) async fn process_images_with_ocr(
     mut images: Vec<ExtractedImage>,
     config: &crate::core::config::ExtractionConfig,
     warnings: &mut Vec<crate::types::ProcessingWarning>,

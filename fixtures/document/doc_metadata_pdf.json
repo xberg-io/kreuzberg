@@ -1,0 +1,19 @@
+{
+	"id": "doc_metadata_pdf",
+	"category": "document",
+	"description": "Extract PDF metadata",
+	"tags": ["metadata", "pdf"],
+	"call": "extract_file_sync",
+	"input": {
+		"path": "pdf/fake_memo.pdf"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "not_empty",
+			"field": "metadata"
+		}
+	]
+}

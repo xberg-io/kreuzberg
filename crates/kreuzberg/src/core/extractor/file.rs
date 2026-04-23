@@ -92,7 +92,7 @@ pub async fn extract_file(
             });
         }
 
-        let detected_mime = mime::detect_or_validate(Some(path), mime_type)?;
+        let detected_mime = mime::detect_or_validate(path.to_str(), mime_type)?;
 
         // Native DOC/PPT extractors are registered in the plugin registry.
         // When the office feature is disabled, these MIME types are unsupported.

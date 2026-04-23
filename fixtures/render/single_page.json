@@ -1,21 +1,24 @@
 {
 	"id": "render_single_page",
 	"category": "render",
-	"tags": ["render", "pdf", "single_page"],
 	"description": "Render a single PDF page to PNG",
-	"document": {
+	"tags": ["render", "pdf", "single_page"],
+	"call": "render_page",
+	"input": {
 		"path": "pdf/tiny.pdf",
-		"media_type": "application/pdf"
-	},
-	"render": {
-		"mode": "single_page",
 		"page_index": 0,
-		"dpi": 150
+		"dpi": 150,
+		"mode": "single_page"
 	},
-	"assertions": {
-		"render": {
-			"is_png": true,
-			"min_byte_length": 100
+	"assertions": [
+		{
+			"type": "is_true",
+			"field": "is_png"
+		},
+		{
+			"type": "greater_than_or_equal",
+			"field": "byte_length",
+			"value": 100
 		}
-	}
+	]
 }

@@ -1,0 +1,1 @@
+{"id":"validate_ocr_backend_invalid","category":"validate","description":"Invalid OCR backend","tags":["validation","error"],"call":"validate_ocr_backend","input":{"backend":"nonexistent"},"assertions":[{"type":"error"}]}

@@ -2,24 +2,38 @@
 	"id": "office_mdx_troubleshooting",
 	"category": "office",
 	"description": "Real-world MDX extraction from mdx-js/mdx troubleshooting-mdx.mdx with error documentation, code blocks, and JSX comments.",
-	"document": {
+	"input": {
 		"path": "markdown/mdx_troubleshooting.mdx",
 		"media_type": "text/mdx"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": ["text/mdx", "text/x-mdx"],
-		"min_content_length": 2000,
-		"content_contains": [
-			"Troubleshooting MDX",
-			"Problems integrating MDX",
-			"ESM",
-			"Problems using MDX",
-			"Problems writing MDX"
-		],
-		"content_not_contains": ["import {Note}", "export const info"],
-		"requires_feature": ["mdx"]
+	"assertions": [
+		{
+			"type": "contains_any",
+			"field": "mime_type",
+			"values": ["text/mdx", "text/x-mdx"]
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 2000
+		},
+		{
+			"type": "contains_all",
+			"field": "content",
+			"values": ["Troubleshooting MDX", "Problems integrating MDX", "ESM", "Problems using MDX", "Problems writing MDX"]
+		},
+		{
+			"type": "not_contains",
+			"field": "content",
+			"values": ["import {Note}"]
+		},
+		{
+			"type": "not_contains",
+			"field": "content",
+			"values": ["export const info"]
+		}
+	],
+	"skip": {
+		"reason": "Requires features: mdx"
 	}
 }

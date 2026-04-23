@@ -1,0 +1,16 @@
+{
+	"id": "error_unsupported_mime",
+	"category": "error",
+	"description": "Error when extracting with unsupported MIME type",
+	"tags": ["error", "input", "mime"],
+	"call": "extract_bytes_sync",
+	"input": {
+		"data": "text/plain.txt",
+		"mime_type": "application/x-nonexistent"
+	},
+	"assertions": [
+		{
+			"type": "error"
+		}
+	]
+}

@@ -1,0 +1,19 @@
+{
+	"id": "chunk_text_large",
+	"category": "chunking",
+	"description": "Text chunking with large chunk size to test handling of long content",
+	"tags": ["chunking", "text", "large"],
+	"call": "chunk_text",
+	"input": {
+		"text": "The quick brown fox jumps over the lazy dog. This is a long paragraph that should be split into multiple chunks when the chunk size is small enough. Each chunk should contain coherent text.",
+		"config": {
+			"max_characters": 1000,
+			"max_overlap": 10
+		}
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	]
+}

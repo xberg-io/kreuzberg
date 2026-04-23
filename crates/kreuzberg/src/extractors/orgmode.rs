@@ -53,7 +53,7 @@ pub struct OrgModeExtractor;
 #[cfg(feature = "office")]
 impl OrgModeExtractor {
     /// Create a new Org Mode extractor.
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self
     }
 
@@ -402,7 +402,7 @@ impl OrgModeExtractor {
     ///
     /// Handles headings, paragraphs, lists, code blocks, tables, inline links,
     /// and footnote references.
-    pub fn build_internal_document(org_text: &str) -> InternalDocument {
+    pub(crate) fn build_internal_document(org_text: &str) -> InternalDocument {
         let mut b = InternalDocumentBuilder::new("orgmode");
         let lines: Vec<&str> = org_text.lines().collect();
         let mut i = 0;

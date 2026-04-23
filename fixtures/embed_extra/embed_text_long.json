@@ -1,0 +1,18 @@
+{
+	"id": "embed_text_long",
+	"category": "embed_extra",
+	"description": "Embedding of longer text content",
+	"tags": ["embedding", "text", "long"],
+	"call": "embed_text",
+	"input": {
+		"text": "This is a longer sentence to test embedding generation with more content that might produce different vector representations."
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	],
+	"skip": {
+		"reason": "Requires features: embeddings"
+	}
+}

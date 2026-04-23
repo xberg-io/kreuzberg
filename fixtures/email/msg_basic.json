@@ -2,15 +2,20 @@
 	"id": "email_msg_basic",
 	"category": "email",
 	"description": "Outlook MSG file extraction.",
-	"document": {
+	"input": {
 		"path": "email/fake_email.msg",
 		"media_type": "application/vnd.ms-outlook"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": "application/vnd.ms-outlook",
-		"min_content_length": 10
-	}
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "application/vnd.ms-outlook"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 10
+		}
+	]
 }

@@ -130,7 +130,7 @@ fn is_extracted_library_valid(lib_path: &Path, embedded_size: usize) -> bool {
 /// - Linux: `libpdfium.so`
 /// - macOS: `libpdfium.dylib`
 /// - Windows: `pdfium.dll`
-pub fn extract_bundled_pdfium() -> io::Result<PathBuf> {
+pub(crate) fn extract_bundled_pdfium() -> io::Result<PathBuf> {
     #[cfg(target_arch = "wasm32")]
     {
         return Err(io::Error::new(

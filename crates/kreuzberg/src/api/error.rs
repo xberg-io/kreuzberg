@@ -102,7 +102,7 @@ pub struct ApiError {
 
 impl ApiError {
     /// Create a new API error.
-    pub fn new(status: StatusCode, error: KreuzbergError) -> Self {
+    pub(crate) fn new(status: StatusCode, error: KreuzbergError) -> Self {
         let error_type = match &error {
             KreuzbergError::Validation { .. } => "ValidationError",
             KreuzbergError::Parsing { .. } => "ParsingError",
@@ -133,24 +133,24 @@ impl ApiError {
     }
 
     /// Create a validation error (400).
-    pub fn validation(error: KreuzbergError) -> Self {
+    pub(crate) fn validation(error: KreuzbergError) -> Self {
         Self::new(StatusCode::BAD_REQUEST, error)
     }
 
     /// Create an unprocessable entity error (422).
-    pub fn unprocessable(error: KreuzbergError) -> Self {
+    pub(crate) fn unprocessable(error: KreuzbergError) -> Self {
         Self::new(StatusCode::UNPROCESSABLE_ENTITY, error)
     }
 
     /// Create an internal server error (500).
-    pub fn internal(error: KreuzbergError) -> Self {
+    pub(crate) fn internal(error: KreuzbergError) -> Self {
         Self::new(StatusCode::INTERNAL_SERVER_ERROR, error)
     }
 
     /// Create a bad gateway error (502).
     ///
     /// Use when an upstream service (e.g., model download from HuggingFace) fails.
-    pub fn bad_gateway(error: KreuzbergError) -> Self {
+    pub(crate) fn bad_gateway(error: KreuzbergError) -> Self {
         Self::new(StatusCode::BAD_GATEWAY, error)
     }
 }

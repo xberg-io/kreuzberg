@@ -1,0 +1,9 @@
+{
+	"id": "blake3_file_not_found",
+	"category": "hash",
+	"description": "blake3_hash_file nonexistent file",
+	"tags": ["hash", "error"],
+	"call": "blake3_hash_file",
+	"input": { "path": "nonexistent/file.pdf" },
+	"assertions": [{ "type": "error" }]
+}

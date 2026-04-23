@@ -1,0 +1,20 @@
+{
+	"id": "mime_detect_image",
+	"category": "mime_utilities",
+	"description": "Detect MIME type from PNG image bytes",
+	"tags": ["mime", "detection", "image", "bytes"],
+	"call": "detect_mime_type",
+	"input": {
+		"setup": {
+			"test_data": "\u0089PNG\r\n\u001a\n"
+		},
+		"args": ["${test_data_bytes}"]
+	},
+	"assertions": [
+		{
+			"type": "contains",
+			"field": "result",
+			"value": "png"
+		}
+	]
+}

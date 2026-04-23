@@ -1,0 +1,21 @@
+{
+	"id": "keywords_with_config",
+	"category": "keyword_extra",
+	"description": "Keyword extraction with custom configuration for max keywords",
+	"tags": ["keywords", "extraction", "config"],
+	"call": "extract_keywords",
+	"input": {
+		"text": "The United States of America is a large country. Machine learning is used for natural language processing and computer vision tasks.",
+		"config": {
+			"max_keywords": 5
+		}
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	],
+	"skip": {
+		"reason": "Requires features: keywords-rake"
+	}
+}

@@ -42,7 +42,7 @@ fn decompress_gzip_limited(bytes: &[u8], max_size: u64) -> Result<Vec<u8>> {
 }
 
 /// Decompress gzip bytes, returning the raw decompressed data.
-pub fn decompress_gzip(bytes: &[u8], limits: &SecurityLimits) -> Result<Vec<u8>> {
+pub(crate) fn decompress_gzip(bytes: &[u8], limits: &SecurityLimits) -> Result<Vec<u8>> {
     decompress_gzip_limited(bytes, limits.max_archive_size as u64)
 }
 
@@ -52,7 +52,10 @@ pub fn decompress_gzip(bytes: &[u8], limits: &SecurityLimits) -> Result<Vec<u8>>
 /// metadata and text content are needed.
 ///
 /// If the decompressed data is a TAR archive, delegates to TAR extraction functions.
-pub fn extract_gzip(bytes: &[u8], limits: &SecurityLimits) -> Result<(ArchiveMetadata, AHashMap<String, String>)> {
+pub(crate) fn extract_gzip(
+    bytes: &[u8],
+    limits: &SecurityLimits,
+) -> Result<(ArchiveMetadata, AHashMap<String, String>)> {
     let decompressed = decompress_gzip_limited(bytes, limits.max_archive_size as u64)?;
 
     // Check if the decompressed data is a TAR archive
@@ -101,7 +104,7 @@ pub fn extract_gzip(bytes: &[u8], limits: &SecurityLimits) -> Result<(ArchiveMet
 /// with the original filename (from gzip header) and decompressed size.
 ///
 /// If the decompressed data is a TAR archive, delegates to TAR extraction.
-pub fn extract_gzip_metadata(bytes: &[u8], limits: &SecurityLimits) -> Result<ArchiveMetadata> {
+pub(crate) fn extract_gzip_metadata(bytes: &[u8], limits: &SecurityLimits) -> Result<ArchiveMetadata> {
     let decompressed = decompress_gzip_limited(bytes, limits.max_archive_size as u64)?;
 
     // Check if the decompressed data is a TAR archive
@@ -140,7 +143,7 @@ pub fn extract_gzip_metadata(bytes: &[u8], limits: &SecurityLimits) -> Result<Ar
 /// Decompresses and attempts to read the result as UTF-8 text.
 ///
 /// If the decompressed data is a TAR archive, delegates to TAR extraction.
-pub fn extract_gzip_text_content(bytes: &[u8], limits: &SecurityLimits) -> Result<AHashMap<String, String>> {
+pub(crate) fn extract_gzip_text_content(bytes: &[u8], limits: &SecurityLimits) -> Result<AHashMap<String, String>> {
     let decompressed = decompress_gzip_limited(bytes, limits.max_archive_size as u64)?;
 
     // Check if the decompressed data is a TAR archive
@@ -173,7 +176,7 @@ type GzipWithBytesResult = (ArchiveMetadata, AHashMap<String, String>, AHashMap<
 ///
 /// Similar to `extract_gzip` but also returns the raw file bytes for recursive extraction.
 /// For TAR-within-GZIP, delegates to TAR file bytes extraction.
-pub fn extract_gzip_with_bytes(bytes: &[u8], limits: &SecurityLimits) -> Result<GzipWithBytesResult> {
+pub(crate) fn extract_gzip_with_bytes(bytes: &[u8], limits: &SecurityLimits) -> Result<GzipWithBytesResult> {
     let decompressed = decompress_gzip_limited(bytes, limits.max_archive_size as u64)?;
 
     // Check if the decompressed data is a TAR archive

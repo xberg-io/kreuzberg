@@ -15,9 +15,8 @@
       <sourceFolder url="file://$MODULE_DIR$/crates/kreuzberg/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/e2e/rust/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/e2e/rust/tests" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/packages/ruby/ext/kreuzberg_rb/native/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/packages/ruby/ext/kreuzberg_rb/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/tools/benchmark-harness/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/tools/e2e-generator/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/crates/kreuzberg-ffi/tests" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>

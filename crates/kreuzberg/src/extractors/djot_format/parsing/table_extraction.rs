@@ -9,7 +9,7 @@ use jotdown::{Container, Event};
 ///
 /// Parses table events and extracts table data as a Vec<Vec<String>>,
 /// converting each table to markdown representation for storage.
-pub fn extract_tables_from_events(events: &[Event]) -> Vec<Table> {
+pub(crate) fn extract_tables_from_events(events: &[Event]) -> Vec<Table> {
     let mut tables = Vec::new();
     let mut current_table: Option<(Vec<Vec<String>>, usize)> = None;
     let mut current_row: Vec<String> = Vec::new();

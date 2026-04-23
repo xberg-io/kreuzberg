@@ -9,7 +9,6 @@ mod r#trait;
 pub use r#trait::Validator;
 
 // Re-export registry functions for backward compatibility
-pub use registry::{clear_validators, list_validators, register_validator, unregister_validator};
 
 #[cfg(test)]
 mod tests {

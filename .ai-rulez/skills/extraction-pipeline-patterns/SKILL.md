@@ -1,5 +1,5 @@
 ---
-description: "extraction pipeline patterns"
+description: "Document extraction pipeline architecture and patterns"
 name: extraction-pipeline-patterns
 priority: critical
 ---

@@ -1,0 +1,18 @@
+{
+	"id": "keywords_short",
+	"category": "keyword_extra",
+	"description": "Keyword extraction from shorter text",
+	"tags": ["keywords", "extraction", "short"],
+	"call": "extract_keywords",
+	"input": {
+		"text": "Python programming language features."
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	],
+	"skip": {
+		"reason": "Requires features: keywords-rake"
+	}
+}

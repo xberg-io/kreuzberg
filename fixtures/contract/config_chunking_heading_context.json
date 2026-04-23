@@ -2,12 +2,9 @@
 	"id": "config_chunking_heading_context",
 	"description": "Tests markdown chunker populates heading context on chunks",
 	"tags": ["contract", "config", "chunking", "heading-context"],
-	"document": {
-		"path": "markdown/extraction_test.md"
-	},
-	"extraction": {
-		"method": "sync",
-		"input_type": "file",
+	"call": "extract_file_sync",
+	"input": {
+		"path": "markdown/extraction_test.md",
 		"config": {
 			"chunking": {
 				"chunker_type": "markdown",
@@ -16,15 +13,27 @@
 			}
 		}
 	},
-	"assertions": {
-		"min_content_length": 10,
-		"chunks": {
-			"min_count": 2,
-			"each_has_content": true,
-			"each_has_heading_context": true
+	"assertions": [
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 10
+		},
+		{
+			"type": "count_min",
+			"field": "chunks",
+			"value": 2
+		},
+		{
+			"type": "is_true",
+			"field": "chunks_have_content"
+		},
+		{
+			"type": "is_true",
+			"field": "chunks_have_heading_context"
 		}
-	},
+	],
 	"skip": {
-		"requires_feature": ["chunking"]
+		"reason": "Requires features: chunking"
 	}
 }

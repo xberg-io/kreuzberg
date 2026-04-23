@@ -39,7 +39,7 @@ static CODE_BLOCK_DELIMITER: Lazy<Regex> = Lazy::new(|| {
     Regex::new(r"^```(\w*)[\r]?$").expect("Code block delimiter regex pattern is valid and should compile")
 });
 
-pub fn parse_text(text_bytes: &[u8], is_markdown: bool) -> Result<TextExtractionResult> {
+pub(crate) fn parse_text(text_bytes: &[u8], is_markdown: bool) -> Result<TextExtractionResult> {
     let text: std::borrow::Cow<'_, str> = match utf8_validation::from_utf8(text_bytes) {
         Ok(s) => std::borrow::Cow::Borrowed(s),
         Err(_) => std::borrow::Cow::Owned(String::from_utf8_lossy(text_bytes).into_owned()),

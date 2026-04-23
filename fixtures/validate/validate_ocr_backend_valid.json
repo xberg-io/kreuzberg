@@ -1,0 +1,9 @@
+{
+	"id": "validate_ocr_backend_valid",
+	"category": "validate",
+	"description": "Valid OCR backend",
+	"tags": ["validation"],
+	"call": "validate_ocr_backend",
+	"input": { "backend": "tesseract" },
+	"assertions": [{ "type": "not_error" }]
+}

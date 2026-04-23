@@ -1,25 +1,28 @@
 {
 	"id": "smoke_image_png",
 	"category": "smoke",
-	"tags": ["smoke", "image", "png"],
 	"description": "Smoke test: PNG image (without OCR, metadata only)",
-	"document": {
+	"tags": ["smoke", "image", "png"],
+	"input": {
 		"path": "images/sample.png",
-		"media_type": "image/png"
-	},
-	"extraction": {
+		"media_type": "image/png",
 		"config": {
 			"disable_ocr": true
 		}
 	},
-	"assertions": {
-		"expected_mime": "image/png",
-		"metadata": {
-			"format": "PNG"
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "image/png"
+		},
+		{
+			"type": "equals",
+			"field": "metadata.format",
+			"value": "PNG"
 		}
-	},
+	],
 	"skip": {
-		"if_document_missing": true,
-		"notes": "Image extraction requires image processing dependencies"
+		"reason": "Skip if document missing; Image extraction requires image processing dependencies"
 	}
 }

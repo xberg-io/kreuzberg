@@ -2,15 +2,20 @@
 	"id": "office_pages_basic",
 	"category": "office",
 	"description": "Pages document extraction baseline.",
-	"document": {
+	"input": {
 		"path": "iwork/test.pages",
 		"media_type": "application/x-iwork-pages-sffpages"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": "application/x-iwork-pages-sffpages",
-		"min_content_length": 5
-	}
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "application/x-iwork-pages-sffpages"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 5
+		}
+	]
 }

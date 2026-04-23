@@ -7,121 +7,39 @@ includes:
 
   rust:
     taskfile: .task/languages/rust.yml
-  python:
-    taskfile: .task/languages/python.yml
-  node:
-    taskfile: .task/languages/node.yml
-  wasm:
-    taskfile: .task/languages/wasm.yml
-  ruby:
-    taskfile: .task/languages/ruby.yml
-  go:
-    taskfile: .task/languages/go.yml
-  java:
-    taskfile: .task/languages/java.yml
-  csharp:
-    taskfile: .task/languages/csharp.yml
-  php:
-    taskfile: .task/languages/php.yml
-  elixir:
-    taskfile: .task/languages/elixir.yml
-  r:
-    taskfile: .task/languages/r.yml
-  c:
-    taskfile: .task/languages/c.yml
 
-  _build_wf:
-    taskfile: .task/workflows/build.yml
-    internal: true
-  _test_wf:
-    taskfile: .task/workflows/test.yml
-    internal: true
-  _lint_wf:
-    taskfile: .task/workflows/lint.yml
-    internal: true
   benchmark:
     taskfile: .task/workflows/benchmark.yml
-  snippets:
-    taskfile: .task/workflows/snippets.yml
 
-  version:
-    taskfile: .task/tools/version-sync.yml
   pdfium:
     taskfile: .task/tools/pdfium.yml
   docs:
     taskfile: .task/tools/docs.yml
-  typescript:
-    taskfile: .task/tools/typescript.yml
   _tools:
     taskfile: .task/tools/general.yml
     flatten: true
 
 vars:
   RUST_LOG: info
+  ALEF: cargo run --manifest-path {{.ROOT_DIR}}/../alef/Cargo.toml --release -p alef-cli --
 
 tasks:
   setup:
-    desc: "Install all dependencies and initialize project. Idempotent - safe to re-run anytime."
+    desc: "Install all dependencies and initialize project."
     cmds:
-      - cmd: >-
-          bash -c '
-          echo "Setting up sdkman...";
-          if [ ! -d "$HOME/.sdkman" ]; then
-            echo "Installing sdkman...";
-            curl -s "https://get.sdkman.io" | bash;
-          else
-            echo "sdkman is already installed";
-          fi;
-          echo "Loading sdkman and installing tools from .sdkmanrc...";
-          source "$HOME/.sdkman/bin/sdkman-init.sh";
-          sdk env install;
-          '
-        platforms: [linux, darwin]
-      - cmd: echo "Setting up sdkman (skipped on Windows - use scoop or manual installation)..."
-        platforms: [windows]
-      - echo "Installing language tools..."
+      - echo "Installing Rust tools..."
       - task: rust:install
-      - task: python:install
-      - task: node:install
-      - task: ruby:install
-      - task: java:install
-      - task: go:install
-      - task: elixir:install
-      - task: csharp:install
-      - task: php:install
-      - task: r:install
-      - task: c:install
-      - echo "Setup complete - safe to re-run anytime"
+      - echo "Setup complete"
 
   build:
-    desc: Build core libraries and language bindings
+    desc: Build core Rust libraries
     cmds:
       - task: rust:build
-      - task: python:build
-      - task: ruby:build
-      - task: node:build
-      - task: java:build
-      - task: csharp:build
-      - task: php:build
-      - task: elixir:build
-      - task: r:build
-      - task: c:build
 
   test:
-    desc: Run test suites for all languages (in parallel)
-    deps:
+    desc: Run Rust test suite
+    cmds:
       - task: rust:test
-      - task: python:test
-      - task: ruby:test
-      - task: node:test
-      - task: java:test
-      - task: go:test
-      - task: csharp:test
-      - task: php:test
-      - task: elixir:test
-      - task: r:test
-      - task: wasm:test
-      - task: c:test
 
   check:
     desc: Run all linting and formatting checks via prek
@@ -133,28 +51,6 @@ tasks:
     cmds:
       - echo "Updating Rust dependencies..."
       - task: rust:update
-      - echo "Updating Python dependencies..."
-      - task: python:update
-      - echo "Updating TypeScript dependencies..."
-      - task: node:update
-      - echo "Updating WASM dependencies..."
-      - task: wasm:update
-      - echo "Updating Ruby dependencies..."
-      - task: ruby:update
-      - echo "Updating Java dependencies..."
-      - task: java:update
-      - echo "Updating Go dependencies..."
-      - task: go:update
-      - echo "Updating C# dependencies..."
-      - task: csharp:update
-      - echo "Updating PHP dependencies..."
-      - task: php:update
-      - echo "Updating Elixir dependencies..."
-      - task: elixir:update
-      - echo "Updating R dependencies..."
-      - task: r:update
-      - echo "Updating C dependencies..."
-      - task: c:update
       - echo "Updating prek dependencies..."
       - prek autoupdate
       - echo "All dependencies updated"
@@ -163,124 +59,44 @@ tasks:
     desc: Clean all build artifacts
     cmds:
       - task: rust:clean
-      - task: python:clean
-      - task: ruby:clean
-      - task: node:clean
-      - task: java:clean
-      - task: go:clean
-      - task: csharp:clean
-      - task: php:clean
-      - task: elixir:clean
-      - task: r:clean
-      - task: wasm:clean
-      - task: c:clean
-
-  build:all:
-    desc: Build all bindings across all languages
-    cmds:
-      - task: rust:build
-      - task: rust:ffi:build
-      - task: python:build
-      - task: node:build
-      - task: go:build
-      - task: java:build
-      - task: csharp:build
-      - task: wasm:build
-      - task: ruby:build
-      - task: php:build
-      - task: elixir:build
-      - task: r:build
-      - task: c:build
-
-  build:all:dev:
-    desc: Build all bindings in debug mode
-    cmds:
-      - task: _build_wf:all:dev
-
-  build:all:release:
-    desc: Build all bindings in release mode (optimized)
-    cmds:
-      - task: _build_wf:all:release
-
-  build:all:ci:
-    desc: Build all bindings in CI mode
-    cmds:
-      - task: _build_wf:all:ci
-
-  test:all:
-    desc: Run all tests across all languages
-    cmds:
-      - task: _test_wf:all
-
-  test:all:parallel:
-    desc: Run all tests in parallel (using deps)
-    cmds:
-      - task: _test_wf:all:parallel
-
-  test:all:ci:
-    desc: Run all tests in CI mode (with extra diagnostics)
-    cmds:
-      - task: _test_wf:all:ci
 
   lint:
     desc: Run all linters and formatters via prek (pre-commit framework)
     cmds:
       - prek run --all-files
 
-  check:publish:
-    desc: Check all registries and GitHub release assets for a given version
+  # Alef binding generation tasks
+  alef:generate:
+    desc: Generate all bindings, stubs, scaffolding, and README via alef
     cmds:
-      - python3 scripts/publish/check_all_registries.py {{.CLI_ARGS}}
+      - "{{.ALEF}} all --clean"
 
-  generate:manifest:
-    desc: Regenerate parity manifest from Rust types
+  alef:verify:
+    desc: Verify all generated bindings are up to date (CI mode)
     cmds:
-      - cargo run -p kreuzberg-e2e-generator -- manifest
+      - "{{.ALEF}} verify --exit-code"
 
-  e2e:generate:all:
-    desc: Generate all E2E tests from fixtures across all supported languages
-    deps:
-      - generate:manifest
+  alef:build:
+    desc: Build all language bindings
     cmds:
-      - task: rust:e2e:generate
-      - task: python:e2e:generate
-      - task: node:e2e:generate
-      - task: go:e2e:generate
-      - task: java:e2e:generate
-      - task: csharp:e2e:generate
-      - task: wasm:e2e:generate
-      - task: ruby:e2e:generate
-      - task: php:e2e:generate
-      - task: elixir:e2e:generate
-      - task: r:e2e:generate
-      - task: c:e2e:generate
+      - "{{.ALEF}} build"
 
-  e2e:test:all:
-    desc: Run all E2E tests across all supported languages
+  alef:e2e:generate:
+    desc: Generate e2e tests from fixtures
     cmds:
-      - task: rust:e2e:test
-      - task: python:e2e:test
-      - task: node:e2e:test
-      - task: go:e2e:test
-      - task: java:e2e:test
-      - task: csharp:e2e:test
-      - task: wasm:e2e:test
-      - task: ruby:e2e:test
-      - task: php:e2e:test
-      - task: r:e2e:test
-      - task: c:e2e:test
+      - "{{.ALEF}} e2e generate"
 
-  e2e:lint:all:
-    desc: Lint all generated E2E test code
+  alef:e2e:test:
+    desc: Run e2e tests for all languages
     cmds:
-      - task: rust:e2e:lint
-      - task: python:e2e:lint
-      - task: node:e2e:lint
-      - task: go:e2e:lint
-      - task: java:e2e:lint
-      - task: csharp:e2e:lint
-      - task: wasm:e2e:lint
-      - task: ruby:e2e:lint
-      - task: php:e2e:lint
-      - task: r:e2e:lint
-      - task: c:e2e:lint
+      - "{{.ALEF}} test --e2e"
+
+  alef:sync:
+    desc: Sync version from Cargo.toml to all package manifests
+    cmds:
+      - "{{.ALEF}} sync-versions"
+
+  alef:docs:
+    desc: Generate API reference documentation
+    cmds:
+      - "{{.ALEF}} docs --output docs/reference/"

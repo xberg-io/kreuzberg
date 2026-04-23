@@ -69,7 +69,7 @@ pub const SUPPORTED_LANGUAGES: &[&str] = &[
 ];
 
 /// Check if a language code is supported by PaddleOCR.
-pub fn is_language_supported(lang: &str) -> bool {
+pub(crate) fn is_language_supported(lang: &str) -> bool {
     SUPPORTED_LANGUAGES.contains(&lang)
 }
 
@@ -94,7 +94,7 @@ pub fn is_language_supported(lang: &str) -> bool {
 /// | `devanagari` | Hindi, Marathi, Sanskrit, Nepali |
 /// | `tamil` | Tamil |
 /// | `telugu` | Telugu |
-pub fn language_to_script_family(paddle_lang: &str) -> &'static str {
+pub(crate) fn language_to_script_family(paddle_lang: &str) -> &'static str {
     match paddle_lang {
         "en" => "english",
         "ch" | "japan" | "chinese_cht" => "chinese",
@@ -112,7 +112,7 @@ pub fn language_to_script_family(paddle_lang: &str) -> &'static str {
 }
 
 /// Map Kreuzberg language codes to PaddleOCR language codes.
-pub fn map_language_code(kreuzberg_code: &str) -> Option<&'static str> {
+pub(crate) fn map_language_code(kreuzberg_code: &str) -> Option<&'static str> {
     match kreuzberg_code {
         // Direct mappings
         "ch" | "chi_sim" | "zho" | "zh" | "chinese" => Some("ch"),

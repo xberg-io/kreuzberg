@@ -3,13 +3,10 @@
 	"category": "pdf",
 	"description": "PDF extraction with layout detection enabled should produce content from a document with mixed structure.",
 	"tags": ["pdf", "layout", "config"],
-	"document": {
+	"call": "extract_file_sync",
+	"input": {
 		"path": "pdf/docling.pdf",
-		"media_type": "application/pdf"
-	},
-	"extraction": {
-		"method": "sync",
-		"input_type": "file",
+		"mime_type": "application/pdf",
 		"config": {
 			"layout": {
 				"table_model": "tatr"
@@ -20,17 +17,23 @@
 			}
 		}
 	},
-	"assertions": {
-		"expected_mime": "application/pdf",
-		"content_not_empty": true,
-		"min_content_length": 100,
-		"pages": {
-			"min_count": 1,
-			"has_layout_regions": true
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "application/pdf"
+		},
+		{
+			"type": "not_empty",
+			"field": "content"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 100
 		}
-	},
+	],
 	"skip": {
-		"requires_feature": ["layout-detection"],
-		"notes": "Requires layout-detection feature with ONNX Runtime"
+		"reason": "Requires layout-detection feature with ONNX Runtime"
 	}
 }

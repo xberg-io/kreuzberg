@@ -2,19 +2,22 @@
 	"id": "image_bmp_basic",
 	"category": "image",
 	"description": "BMP image extraction via OCR.",
-	"document": {
+	"input": {
 		"path": "images/bmp_24.bmp",
-		"media_type": "image/bmp",
-		"requires_external_tool": ["tesseract"]
+		"media_type": "image/bmp"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": "image/bmp",
-		"content_not_empty": true
-	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "image/bmp"
+		},
+		{
+			"type": "not_empty",
+			"field": "content"
+		}
+	],
 	"skip": {
-		"requires_feature": ["tesseract"]
+		"reason": "Requires features: tesseract"
 	}
 }

@@ -1,0 +1,9 @@
+{
+	"id": "validate_reduction_level_valid",
+	"category": "validate",
+	"description": "Valid reduction level",
+	"tags": ["validation"],
+	"call": "validate_token_reduction_level",
+	"input": { "level": "moderate" },
+	"assertions": [{ "type": "not_error" }]
+}

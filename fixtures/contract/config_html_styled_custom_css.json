@@ -2,12 +2,9 @@
 	"id": "config_html_styled_custom_css",
 	"description": "HTML output with inline user CSS string is embedded verbatim in the style block",
 	"tags": ["contract", "output_format", "html_styled"],
-	"document": {
-		"path": "pdf/fake_memo.pdf"
-	},
-	"extraction": {
-		"method": "sync",
-		"input_type": "file",
+	"call": "extract_file_sync",
+	"input": {
+		"path": "pdf/fake_memo.pdf",
 		"config": {
 			"output_format": "html",
 			"html_output": {
@@ -17,9 +14,16 @@
 			}
 		}
 	},
-	"assertions": {
-		"output_format_is": "html",
-		"content_contains_all": [".kb-p { color: red; }", "kb-doc"]
-	},
-	"skip": {}
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "output_format",
+			"value": "html"
+		},
+		{
+			"type": "contains_all",
+			"field": "content",
+			"values": [".kb-p { color: red; }", "kb-doc"]
+		}
+	]
 }

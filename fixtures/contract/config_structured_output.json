@@ -2,22 +2,31 @@
 	"id": "config_structured_output",
 	"description": "Tests structured (JSON) output format config",
 	"tags": ["contract", "config", "output_format"],
-	"document": {
-		"path": "pdf/fake_memo.pdf"
-	},
-	"extraction": {
-		"method": "sync",
-		"input_type": "file",
+	"call": "extract_file_sync",
+	"input": {
+		"path": "pdf/fake_memo.pdf",
 		"config": {
 			"output_format": "structured"
 		}
 	},
-	"assertions": {
-		"expected_mime": "application/pdf",
-		"min_content_length": 10,
-		"output_format_is": "structured"
-	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "application/pdf"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 10
+		},
+		{
+			"type": "equals",
+			"field": "output_format",
+			"value": "structured"
+		}
+	],
 	"skip": {
-		"requires_feature": ["pdf"]
+		"reason": "Requires features: pdf"
 	}
 }

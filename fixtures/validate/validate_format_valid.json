@@ -1,0 +1,15 @@
+{
+	"id": "validate_format_valid",
+	"category": "validation",
+	"description": "Accept valid output format",
+	"tags": ["validation", "output_format"],
+	"call": "validate_output_format_fn",
+	"input": {
+		"format": "markdown"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	]
+}

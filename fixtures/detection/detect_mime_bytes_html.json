@@ -1,0 +1,11 @@
+{
+	"id": "detect_mime_bytes_html",
+	"category": "detection",
+	"description": "Detect HTML MIME from bytes",
+	"tags": ["mime_detection", "bytes"],
+	"call": "detect_mime_type_from_bytes",
+	"input": {
+		"data": "<!DOCTYPE html><html><body>Hello</body></html>"
+	},
+	"assertions": [{ "type": "not_error" }]
+}

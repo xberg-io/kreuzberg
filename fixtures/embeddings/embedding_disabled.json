@@ -2,12 +2,9 @@
 	"id": "embedding_disabled",
 	"description": "Tests chunking without embeddings - chunks should not have embedding vectors",
 	"tags": ["embeddings", "chunking"],
-	"document": {
-		"path": "pdf/fake_memo.pdf"
-	},
-	"extraction": {
-		"method": "sync",
-		"input_type": "file",
+	"call": "extract_file_sync",
+	"input": {
+		"path": "pdf/fake_memo.pdf",
 		"config": {
 			"chunking": {
 				"max_chars": 500,
@@ -15,13 +12,25 @@
 			}
 		}
 	},
-	"assertions": {
-		"expected_mime": "application/pdf",
-		"min_content_length": 10,
-		"chunks": {
-			"min_count": 1,
-			"each_has_content": true,
-			"each_has_embedding": false
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "application/pdf"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 10
+		},
+		{
+			"type": "count_min",
+			"field": "chunks",
+			"value": 1
+		},
+		{
+			"type": "is_true",
+			"field": "chunks_have_content"
 		}
-	}
+	]
 }

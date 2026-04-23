@@ -1,0 +1,20 @@
+{
+	"id": "clean_text_whitespace",
+	"category": "text_utils",
+	"description": "Normalize whitespace in extracted text",
+	"tags": ["text_utils", "cleaning"],
+	"call": "clean_extracted_text",
+	"input": {
+		"text": "  lots   of   spaces  "
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "min_length",
+			"field": "result",
+			"value": 1
+		}
+	]
+}

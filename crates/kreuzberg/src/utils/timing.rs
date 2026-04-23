@@ -18,7 +18,7 @@ pub struct Instant {
 impl Instant {
     /// Capture the current instant.
     #[inline]
-    pub fn now() -> Self {
+    pub(crate) fn now() -> Self {
         Self {
             #[cfg(not(target_arch = "wasm32"))]
             inner: std::time::Instant::now(),
@@ -27,7 +27,7 @@ impl Instant {
 
     /// Seconds elapsed since this instant was captured (as `f64`).
     #[inline]
-    pub fn elapsed_secs_f64(&self) -> f64 {
+    pub(crate) fn elapsed_secs_f64(&self) -> f64 {
         #[cfg(not(target_arch = "wasm32"))]
         {
             self.inner.elapsed().as_secs_f64()
@@ -40,13 +40,13 @@ impl Instant {
 
     /// Milliseconds elapsed since this instant was captured (as `f64`).
     #[inline]
-    pub fn elapsed_ms(&self) -> f64 {
+    pub(crate) fn elapsed_ms(&self) -> f64 {
         self.elapsed_secs_f64() * 1000.0
     }
 
     /// Milliseconds elapsed as `u128` (mirrors `Duration::as_millis`).
     #[inline]
-    pub fn elapsed_millis(&self) -> u128 {
+    pub(crate) fn elapsed_millis(&self) -> u128 {
         #[cfg(not(target_arch = "wasm32"))]
         {
             self.inner.elapsed().as_millis()

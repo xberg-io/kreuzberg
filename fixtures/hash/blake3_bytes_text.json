@@ -1,0 +1,19 @@
+{
+	"id": "blake3_bytes_text",
+	"category": "hash",
+	"description": "Hash text file bytes using BLAKE3",
+	"tags": ["hashing", "blake3", "text"],
+	"call": "blake3_hash_bytes",
+	"input": {
+		"data": "text/plain.txt"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "min_length",
+			"value": 64
+		}
+	]
+}

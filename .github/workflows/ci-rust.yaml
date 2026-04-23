@@ -1,0 +1,112 @@
+name: CI Rust
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'crates/**'
+      - 'Cargo.toml'
+      - 'Cargo.lock'
+      - 'rust-toolchain.toml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'crates/**'
+      - 'Cargo.toml'
+      - 'Cargo.lock'
+      - 'rust-toolchain.toml'
+
+concurrency:
+  group: ci-rust-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: 0
+  CARGO_PROFILE_DEV_DEBUG: 0
+  RUST_BACKTRACE: short
+  RUST_MIN_STACK: 16777216
+  PDFIUM_VERSION: "7678"
+  PDFIUM_STATIC_VERSION: "7678"
+  ORT_VERSION: "1.24.2"
+  MACOSX_DEPLOYMENT_TARGET: "14.0"
+  BUILD_PROFILE: "ci"
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+permissions:
+  contents: read
+
+jobs:
+  rust:
+    name: Rust (${{ matrix.os }})
+    if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04-arm
+          - os: macos-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Free disk space
+        if: runner.os == 'Linux'
+        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
+        with:
+          show-initial: "false"
+          show-final: "true"
+
+      - name: Setup Rust
+        uses: kreuzberg-dev/actions/setup-rust@v1
+        with:
+          cache-key-prefix: rust-${{ matrix.os }}
+          use-sccache: "true"
+
+      - name: Install system dependencies
+        uses: ./.github/actions/install-system-deps
+
+      - name: Setup OpenSSL
+        uses: kreuzberg-dev/actions/setup-openssl@v1
+
+      - name: Cache PDFium
+        uses: ./.github/actions/cache-pdfium
+        with:
+          pdfium-version: ${{ env.PDFIUM_VERSION }}
+
+      - name: Download PDFium
+        uses: ./.github/actions/download-pdfium
+        with:
+          pdfium-version: ${{ env.PDFIUM_VERSION }}
+
+      - name: Stage PDFium runtime
+        uses: ./.github/actions/stage-pdfium-runtime
+        with:
+          destination: target/release
+
+      - name: Setup ONNX Runtime
+        uses: ./.github/actions/setup-onnx-runtime
+        with:
+          ort-version: ${{ env.ORT_VERSION }}
+
+      - name: Setup Tesseract cache
+        uses: ./.github/actions/setup-tesseract-cache
+        with:
+          label: ${{ matrix.os }}
+
+      - name: Install Task
+        uses: kreuzberg-dev/actions/install-task@v1
+
+      - name: Run clippy
+        run: cargo clippy --workspace --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm -- -D warnings
+        shell: bash
+
+      - name: Run tests
+        run: task rust:test:ci
+        shell: bash
+        env:
+          LD_LIBRARY_PATH: ${{ env.LD_LIBRARY_PATH || '' }}
+          DYLD_LIBRARY_PATH: ${{ env.DYLD_LIBRARY_PATH || '' }}
+          DYLD_FALLBACK_LIBRARY_PATH: ${{ env.DYLD_FALLBACK_LIBRARY_PATH || '' }}

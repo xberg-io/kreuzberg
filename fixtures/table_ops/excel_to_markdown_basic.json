@@ -1,0 +1,9 @@
+{
+	"id": "excel_to_markdown_basic",
+	"category": "table_ops",
+	"description": "Excel bytes to markdown (empty error)",
+	"tags": ["excel", "error"],
+	"call": "excel_to_markdown",
+	"input": { "data": "" },
+	"assertions": [{ "type": "error" }]
+}

@@ -1,2 +1,0 @@
-#!/usr/bin/env sh
-rm -f src/Makevars

@@ -1,0 +1,15 @@
+{
+	"id": "validate_port_invalid",
+	"category": "validation",
+	"description": "Reject invalid port number (zero)",
+	"tags": ["validation", "port", "error"],
+	"call": "validate_port",
+	"input": {
+		"port": 0
+	},
+	"assertions": [
+		{
+			"type": "error"
+		}
+	]
+}

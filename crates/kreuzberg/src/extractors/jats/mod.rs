@@ -419,7 +419,7 @@ impl Default for JatsExtractor {
 }
 
 impl JatsExtractor {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self
     }
 }

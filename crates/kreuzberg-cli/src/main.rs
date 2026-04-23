@@ -627,7 +627,8 @@ fn merge_json_into_config(
     base_config: &kreuzberg::ExtractionConfig,
     json_value: serde_json::Value,
 ) -> Result<kreuzberg::ExtractionConfig> {
-    kreuzberg::core::config::merge::merge_config_json(base_config, json_value).map_err(|e| anyhow::anyhow!("{}", e))
+    let json_str = serde_json::to_string(&json_value).map_err(|e| anyhow::anyhow!("{}", e))?;
+    kreuzberg::core::config::merge::merge_config_json(base_config, &json_str).map_err(|e| anyhow::anyhow!("{}", e))
 }
 
 fn main() -> Result<()> {

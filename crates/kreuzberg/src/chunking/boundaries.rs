@@ -22,7 +22,7 @@ use crate::types::PageBoundary;
 ///
 /// Returns `Ok(())` if all boundaries are valid.
 /// Returns `KreuzbergError::Validation` if any boundary is invalid.
-pub fn validate_page_boundaries(boundaries: &[PageBoundary]) -> Result<()> {
+pub(crate) fn validate_page_boundaries(boundaries: &[PageBoundary]) -> Result<()> {
     if boundaries.is_empty() {
         return Ok(());
     }
@@ -97,7 +97,7 @@ pub fn validate_page_boundaries(boundaries: &[PageBoundary]) -> Result<()> {
 /// assert_eq!(last, Some(2));
 /// # Ok::<(), kreuzberg::Result<()>>(())
 /// ```
-pub fn calculate_page_range(
+pub(crate) fn calculate_page_range(
     byte_start: usize,
     byte_end: usize,
     boundaries: &[PageBoundary],

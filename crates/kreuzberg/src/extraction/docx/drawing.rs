@@ -9,7 +9,7 @@ use quick_xml::events::{BytesStart, Event};
 use serde::{Deserialize, Serialize};
 
 /// A drawing object extracted from `<w:drawing>`.
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq)]
 pub struct Drawing {
     pub drawing_type: DrawingType,
     pub extent: Option<Extent>,
@@ -18,8 +18,9 @@ pub struct Drawing {
 }
 
 /// Whether the drawing is inline or anchored.
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq)]
 pub enum DrawingType {
+    #[default]
     Inline,
     Anchored(AnchorProperties),
 }
@@ -33,12 +34,12 @@ pub struct Extent {
 
 impl Extent {
     /// Convert width to inches.
-    pub fn width_inches(&self) -> f64 {
+    pub(crate) fn width_inches(&self) -> f64 {
         self.cx as f64 / super::EMUS_PER_INCH as f64
     }
 
     /// Convert height to inches.
-    pub fn height_inches(&self) -> f64 {
+    pub(crate) fn height_inches(&self) -> f64 {
         self.cy as f64 / super::EMUS_PER_INCH as f64
     }
 }
@@ -63,7 +64,7 @@ pub struct AnchorProperties {
 }
 
 /// Horizontal or vertical position.
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq)]
 pub struct Position {
     pub relative_from: String, // "page", "margin", "column", "paragraph", "character"
     pub offset: Option<i64>,   // EMUs
@@ -84,7 +85,7 @@ pub enum WrapType {
 ///
 /// This function reads events until it encounters the closing `</w:drawing>` tag,
 /// parsing the drawing type (inline or anchored), extent, properties, and image references.
-pub fn parse_drawing(reader: &mut Reader<&[u8]>) -> Drawing {
+pub(crate) fn parse_drawing(reader: &mut Reader<&[u8]>) -> Drawing {
     let mut drawing = Drawing {
         drawing_type: DrawingType::Inline,
         extent: None,

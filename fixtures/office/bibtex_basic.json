@@ -2,15 +2,20 @@
 	"id": "office_bibtex_basic",
 	"category": "office",
 	"description": "BibTeX bibliography extraction.",
-	"document": {
+	"input": {
 		"path": "bibtex/comprehensive.bib",
 		"media_type": "application/x-bibtex"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": ["application/x-bibtex", "text/x-bibtex"],
-		"min_content_length": 10
-	}
+	"assertions": [
+		{
+			"type": "contains_any",
+			"field": "mime_type",
+			"values": ["application/x-bibtex", "text/x-bibtex"]
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 10
+		}
+	]
 }

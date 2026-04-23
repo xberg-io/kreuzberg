@@ -2,18 +2,24 @@
 	"id": "image_metadata_only",
 	"category": "image",
 	"description": "JPEG image to validate metadata extraction without OCR.",
-	"document": {
+	"input": {
 		"path": "images/example.jpg",
-		"media_type": "image/jpeg"
-	},
-	"extraction": {
+		"media_type": "image/jpeg",
 		"config": {
 			"ocr": null,
 			"disable_ocr": true
 		}
 	},
-	"assertions": {
-		"expected_mime": "image/jpeg",
-		"max_content_length": 200
-	}
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "image/jpeg"
+		},
+		{
+			"type": "max_length",
+			"field": "content",
+			"value": 200
+		}
+	]
 }

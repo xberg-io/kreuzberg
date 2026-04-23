@@ -103,7 +103,7 @@ impl OcrBackend for VlmOcrBackend {
 ///
 /// - `KreuzbergError::Ocr` if the VLM returns no content or the API call fails
 /// - `KreuzbergError::MissingDependency` if the liter-llm client cannot be created
-pub async fn vlm_ocr(
+pub(crate) async fn vlm_ocr(
     image_bytes: &[u8],
     image_mime_type: &str,
     language: &str,

@@ -1,0 +1,20 @@
+{
+	"id": "text_normalize_whitespace",
+	"category": "text_processing",
+	"description": "Extract text with whitespace normalization (no consecutive spaces)",
+	"tags": ["text_processing", "whitespace"],
+	"call": "extract_file_sync",
+	"input": {
+		"path": "pdf/fake_memo.pdf"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "not_contains",
+			"field": "content",
+			"value": "  "
+		}
+	]
+}

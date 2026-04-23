@@ -33,7 +33,7 @@ impl Default for CodeExtractor {
 }
 
 impl CodeExtractor {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self
     }
 

@@ -1,0 +1,15 @@
+{
+	"id": "detect_mime_html",
+	"category": "detection",
+	"description": "Detect HTML MIME type from extension",
+	"tags": ["mime_detection", "html"],
+	"call": "detect_mime_type_standalone",
+	"input": {
+		"path": "page.html"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	]
+}

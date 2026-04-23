@@ -49,7 +49,7 @@ use super::{
 /// let router = create_router(config);
 /// # }
 /// ```
-pub fn create_router(config: ExtractionConfig) -> Router {
+pub(crate) fn create_router(config: ExtractionConfig) -> Router {
     create_router_with_limits(config, ApiSizeLimits::default())
 }
 
@@ -88,7 +88,7 @@ pub fn create_router(config: ExtractionConfig) -> Router {
 /// let router = create_router_with_limits(config, limits);
 /// # }
 /// ```
-pub fn create_router_with_limits(config: ExtractionConfig, limits: ApiSizeLimits) -> Router {
+pub(crate) fn create_router_with_limits(config: ExtractionConfig, limits: ApiSizeLimits) -> Router {
     create_router_with_limits_and_server_config(config, limits, ServerConfig::default())
 }
 
@@ -120,7 +120,7 @@ pub fn create_router_with_limits(config: ExtractionConfig, limits: ApiSizeLimits
 /// # Ok(())
 /// # }
 /// ```
-pub fn create_router_with_limits_and_server_config(
+pub(crate) fn create_router_with_limits_and_server_config(
     config: ExtractionConfig,
     limits: ApiSizeLimits,
     server_config: ServerConfig,

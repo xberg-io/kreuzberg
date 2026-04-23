@@ -1,0 +1,20 @@
+{
+	"id": "extract_doc_basic",
+	"category": "extraction",
+	"description": "Extract text from a DOC file containing unit test lists",
+	"tags": ["doc", "text_extraction", "ms-word"],
+	"call": "extract_doc_text",
+	"input": {
+		"data": "doc/unit_test_lists.doc"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 10
+		}
+	]
+}

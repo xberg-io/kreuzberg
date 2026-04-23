@@ -101,10 +101,7 @@ mod router;
 mod startup;
 mod types;
 
-pub use config::load_server_config;
 pub use error::ApiError;
-pub use router::{create_router, create_router_with_limits, create_router_with_limits_and_server_config};
-pub use startup::{serve, serve_default, serve_with_config, serve_with_config_and_limits, serve_with_server_config};
 pub use types::{
     ApiSizeLimits, ApiState, CacheClearResponse, CacheStatsResponse, ChunkRequest, ChunkResponse, DetectResponse,
     DoclingCompatDocument, DoclingCompatResponse, EmbedRequest, EmbedResponse, ErrorResponse, ExtractResponse,

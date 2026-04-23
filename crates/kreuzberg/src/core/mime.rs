@@ -680,11 +680,11 @@ pub fn validate_mime_type(mime_type: &str) -> Result<String> {
 /// # Returns
 ///
 /// The validated MIME type string.
-pub fn detect_or_validate(path: Option<&Path>, mime_type: Option<&str>) -> Result<String> {
+pub fn detect_or_validate(path: Option<&str>, mime_type: Option<&str>) -> Result<String> {
     if let Some(mime) = mime_type {
         tracing::debug!(mime_type = %mime, "validating caller-provided MIME type");
         validate_mime_type(mime)
-    } else if let Some(p) = path {
+    } else if let Some(p) = path.map(Path::new) {
         let detected = detect_mime_type(p, true)?;
         tracing::debug!(path = %p.display(), detected = %detected, "detected MIME, now validating");
         validate_mime_type(&detected)
@@ -1078,7 +1078,7 @@ mod tests {
         let file_path = dir.path().join("test.pdf");
         File::create(&file_path).unwrap();
 
-        let result = detect_or_validate(Some(&file_path), None);
+        let result = detect_or_validate(file_path.to_str(), None);
         assert!(result.is_ok());
         assert_eq!(result.unwrap(), "application/pdf");
     }

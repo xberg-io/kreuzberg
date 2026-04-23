@@ -1,0 +1,11 @@
+{
+	"id": "detect_or_validate_path",
+	"category": "detection",
+	"description": "Detect MIME from path",
+	"tags": ["mime_detection"],
+	"call": "detect_or_validate",
+	"input": {
+		"path": "document.pdf"
+	},
+	"assertions": [{ "type": "not_error" }]
+}

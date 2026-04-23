@@ -2,15 +2,20 @@
 	"id": "email_sample_eml",
 	"category": "email",
 	"description": "Sample EML email file to verify email parsing.",
-	"document": {
+	"input": {
 		"path": "email/sample_email.eml",
 		"media_type": "message/rfc822"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": "message/rfc822",
-		"min_content_length": 20
-	}
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "message/rfc822"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 20
+		}
+	]
 }

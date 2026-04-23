@@ -1,0 +1,9 @@
+{
+	"id": "validate_port_zero",
+	"category": "validate",
+	"description": "Port 0 rejected",
+	"tags": ["validation", "error"],
+	"call": "validate_port",
+	"input": { "port": 0 },
+	"assertions": [{ "type": "error" }]
+}

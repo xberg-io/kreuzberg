@@ -283,12 +283,12 @@ pub struct ModelManager {
 
 impl ModelManager {
     /// Creates a new model manager with the specified cache directory.
-    pub fn new(cache_dir: PathBuf) -> Self {
+    pub(crate) fn new(cache_dir: PathBuf) -> Self {
         ModelManager { cache_dir }
     }
 
     /// Gets the cache directory path.
-    pub fn cache_dir(&self) -> &PathBuf {
+    pub(crate) fn cache_dir(&self) -> &PathBuf {
         &self.cache_dir
     }
 
@@ -299,7 +299,7 @@ impl ModelManager {
     /// # Arguments
     ///
     /// * `family` - Script family name (e.g., "english", "chinese", "latin")
-    pub fn ensure_rec_model(&self, family: &str) -> Result<RecModelPaths, KreuzbergError> {
+    pub(crate) fn ensure_rec_model(&self, family: &str) -> Result<RecModelPaths, KreuzbergError> {
         let definition = Self::find_rec_definition(family).ok_or_else(|| KreuzbergError::Plugin {
             message: format!("Unsupported script family: {family}"),
             plugin_name: "paddle-ocr".to_string(),
@@ -324,7 +324,7 @@ impl ModelManager {
     }
 
     /// Backward-compatible method that ensures all models for English exist.
-    pub fn ensure_models_exist(&self) -> Result<ModelPaths, KreuzbergError> {
+    pub(crate) fn ensure_models_exist(&self) -> Result<ModelPaths, KreuzbergError> {
         let shared = self.ensure_shared_models("server")?;
         let rec = self.resolve_rec_model("english", "server")?;
 
@@ -344,7 +344,7 @@ impl ModelManager {
     }
 
     /// Returns the path for a model type directory (det, cls).
-    pub fn model_path(&self, model_type: &str) -> PathBuf {
+    pub(crate) fn model_path(&self, model_type: &str) -> PathBuf {
         self.cache_dir.join(model_type)
     }
 
@@ -403,7 +403,7 @@ impl ModelManager {
     }
 
     /// Checks if shared models (det + cls) are cached locally.
-    pub fn are_shared_models_cached(&self) -> bool {
+    pub(crate) fn are_shared_models_cached(&self) -> bool {
         SHARED_MODELS.iter().all(|model| {
             let f = self.model_file_path(model.model_type);
             f.exists() && f.is_file()
@@ -411,13 +411,13 @@ impl ModelManager {
     }
 
     /// Checks if a recognition model for the given family is cached.
-    pub fn is_rec_model_cached(&self, family: &str) -> bool {
+    pub(crate) fn is_rec_model_cached(&self, family: &str) -> bool {
         let rec_dir = self.rec_family_path(family);
         rec_dir.join("model.onnx").exists() && rec_dir.join("dict.txt").exists()
     }
 
     /// Checks if all required models are cached (shared + English v2 rec).
-    pub fn are_models_cached(&self) -> bool {
+    pub(crate) fn are_models_cached(&self) -> bool {
         let v2_rec_dir = self.cache_dir.join("v2").join("rec").join("unified_server");
         self.are_shared_models_cached()
             && v2_rec_dir.join("model.onnx").exists()
@@ -425,7 +425,7 @@ impl ModelManager {
     }
 
     /// Clears all cached models from the cache directory.
-    pub fn clear_cache(&self) -> Result<(), KreuzbergError> {
+    pub(crate) fn clear_cache(&self) -> Result<(), KreuzbergError> {
         if self.cache_dir.exists() {
             fs::remove_dir_all(&self.cache_dir)?;
             tracing::info!(?self.cache_dir, "Cache directory cleared");
@@ -434,7 +434,7 @@ impl ModelManager {
     }
 
     /// Returns statistics about the current cache.
-    pub fn cache_stats(&self) -> Result<CacheStats, KreuzbergError> {
+    pub(crate) fn cache_stats(&self) -> Result<CacheStats, KreuzbergError> {
         let mut total_size = 0u64;
         let mut model_count = 0usize;
 
@@ -464,7 +464,7 @@ impl ModelManager {
     ///
     /// This includes shared models (det, cls) and all 9 per-script recognition model families.
     /// Paths are relative to the cache root (prefixed with "paddle-ocr/").
-    pub fn manifest() -> Vec<ModelManifestEntry> {
+    pub(crate) fn manifest() -> Vec<ModelManifestEntry> {
         let mut entries = Vec::new();
 
         for model in SHARED_MODELS {
@@ -512,7 +512,7 @@ impl ModelManager {
     /// - Document orientation model (PP-LCNet doc_ori)
     /// - All v2 unified rec models (server, mobile, en_mobile)
     /// - All per-script rec models for uncovered scripts
-    pub fn ensure_all_models(&self) -> Result<(), KreuzbergError> {
+    pub(crate) fn ensure_all_models(&self) -> Result<(), KreuzbergError> {
         // V2 shared models (both tiers)
         self.ensure_shared_models("server")?;
         self.ensure_v2_det_model("mobile")?; // cls is same for both tiers
@@ -546,7 +546,7 @@ impl ModelManager {
     ///
     /// Downloads from HuggingFace if not cached. Returns the path to the
     /// directory containing the ONNX model file.
-    pub fn ensure_v2_det_model(&self, tier: &str) -> Result<PathBuf, KreuzbergError> {
+    pub(crate) fn ensure_v2_det_model(&self, tier: &str) -> Result<PathBuf, KreuzbergError> {
         let definition = V2_DET_MODELS
             .iter()
             .find(|d| d.tier == tier)
@@ -576,7 +576,7 @@ impl ModelManager {
     /// Ensures the v2 classification model is cached locally.
     ///
     /// The cls model is the same for both tiers.
-    pub fn ensure_v2_cls_model(&self) -> Result<PathBuf, KreuzbergError> {
+    pub(crate) fn ensure_v2_cls_model(&self) -> Result<PathBuf, KreuzbergError> {
         let cls_dir = self.cache_dir.join("v2").join("cls");
         let model_file = cls_dir.join("model.onnx");
 
@@ -598,7 +598,7 @@ impl ModelManager {
     /// Ensures the v2 document orientation model is cached locally.
     ///
     /// Used for page-level auto_rotate when PaddleOCR backend is active.
-    pub fn ensure_doc_ori_model(&self) -> Result<PathBuf, KreuzbergError> {
+    pub(crate) fn ensure_doc_ori_model(&self) -> Result<PathBuf, KreuzbergError> {
         let ori_dir = self.cache_dir.join("v2").join("doc_ori");
         let model_file = ori_dir.join("model.onnx");
 
@@ -618,7 +618,7 @@ impl ModelManager {
     }
 
     /// Ensures shared models (det + cls) are cached for the given tier.
-    pub fn ensure_shared_models(&self, tier: &str) -> Result<SharedModelPaths, KreuzbergError> {
+    pub(crate) fn ensure_shared_models(&self, tier: &str) -> Result<SharedModelPaths, KreuzbergError> {
         let det_model = self.ensure_v2_det_model(tier)?;
         let cls_model = self.ensure_v2_cls_model()?;
         Ok(SharedModelPaths { det_model, cls_model })
@@ -637,7 +637,7 @@ impl ModelManager {
     /// | english | v2 unified_server (84MB) | v2 unified_mobile (16.5MB) |
     /// | chinese (ch, jpn, chinese_cht) | v2 unified_server (84MB) | v2 unified_mobile (16.5MB) |
     /// | all others | per-script (unchanged) | per-script (unchanged) |
-    pub fn resolve_rec_model(&self, family: &str, tier: &str) -> Result<ResolvedRecModel, KreuzbergError> {
+    pub(crate) fn resolve_rec_model(&self, family: &str, tier: &str) -> Result<ResolvedRecModel, KreuzbergError> {
         match (family, tier) {
             // English + Chinese families use v2 unified models
             ("english", "server") | ("chinese", "server") => self.ensure_v2_rec_model("unified_server"),

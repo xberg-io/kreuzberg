@@ -1,0 +1,20 @@
+{
+	"id": "cache_key_basic",
+	"category": "cache_operations",
+	"description": "Generate cache key from file path, MIME type, and version",
+	"tags": ["cache", "key", "generation"],
+	"call": "generate_cache_key",
+	"input": {
+		"parts": "[\"file.pdf\",\"application/pdf\",\"v1\"]"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "min_length",
+			"field": "result",
+			"value": 10
+		}
+	]
+}

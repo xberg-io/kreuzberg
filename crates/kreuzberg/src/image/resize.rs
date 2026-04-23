@@ -3,7 +3,12 @@ use fast_image_resize::{FilterType, PixelType, ResizeAlg, ResizeOptions, Resizer
 use image::{DynamicImage, ImageBuffer, Rgb};
 
 /// Resize an image using fast_image_resize with appropriate algorithm based on scale factor
-pub fn resize_image(image: &DynamicImage, new_width: u32, new_height: u32, scale_factor: f64) -> Result<DynamicImage> {
+pub(crate) fn resize_image(
+    image: &DynamicImage,
+    new_width: u32,
+    new_height: u32,
+    scale_factor: f64,
+) -> Result<DynamicImage> {
     let rgb_image = image.to_rgb8();
     let (width, height) = rgb_image.dimensions();
 

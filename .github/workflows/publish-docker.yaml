@@ -36,6 +36,7 @@ env:
   PDFIUM_STATIC_VERSION: "7678"
   ORT_VERSION: "1.24.2"
   MACOSX_DEPLOYMENT_TARGET: "14.0"
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 permissions:
   contents: read
@@ -196,7 +197,7 @@ jobs:
           submodules: recursive
 
       - name: Free up disk space
-        run: scripts/publish/ubuntu/free-disk-space.sh
+        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
       - name: Ensure target commit
         if: ${{ needs.prepare.outputs.target_sha != '' }}

@@ -23,7 +23,11 @@ fn class_threshold(class: LayoutClass) -> f32 {
 /// 2. Full-page picture removal (>90% page area)
 /// 3. Overlap resolution (IoU > 0.8 or containment > 0.8)
 /// 4. Cross-type overlap handling (KVR vs Table)
-pub fn apply_heuristics(detections: &mut Vec<LayoutDetection>, page_width: f32, page_height: f32) {
+pub(crate) fn apply_heuristics(
+    mut detections: Vec<LayoutDetection>,
+    page_width: f32,
+    page_height: f32,
+) -> Vec<LayoutDetection> {
     // 1. Apply per-class confidence thresholds.
     detections.retain(|d| d.confidence >= class_threshold(d.class));
 
@@ -51,14 +55,15 @@ pub fn apply_heuristics(detections: &mut Vec<LayoutDetection>, page_width: f32, 
     // 3. Overlap resolution — iterative (up to 3 passes).
     for _ in 0..3 {
         let prev_len = detections.len();
-        resolve_overlaps(detections);
+        resolve_overlaps(&mut detections);
         if detections.len() == prev_len {
             break;
         }
     }
 
     // 4. Cross-type overlap: remove KVR if 90%+ overlapping with Table and conf_diff < 0.1.
-    resolve_kvr_table_overlap(detections);
+    resolve_kvr_table_overlap(&mut detections);
+    detections
 }
 
 /// Resolve overlapping detections.

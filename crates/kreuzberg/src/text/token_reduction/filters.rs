@@ -11,10 +11,10 @@ mod html;
 mod markdown;
 
 // Re-export all filter functions for backward compatibility
-pub use crate::utils::markdown_utils::is_markdown_header;
-pub use general::{normalize_newlines, normalize_spaces, remove_stopwords};
-pub use html::remove_html_comments;
-pub use markdown::{
+pub(crate) use crate::utils::markdown_utils::is_markdown_header;
+pub(crate) use general::{normalize_newlines, normalize_spaces, remove_stopwords};
+pub(crate) use html::remove_html_comments;
+pub(crate) use markdown::{
     extract_and_preserve_code, is_markdown_list, is_markdown_table, preserve_markdown_structure,
     restore_preserved_blocks,
 };
@@ -44,7 +44,7 @@ impl FilterPipeline {
     ///
     /// # Errors
     /// Returns a `KreuzbergError::Validation` if any preserve patterns are invalid regex
-    pub fn new(config: &Arc<TokenReductionConfig>, language: &str) -> Result<Self> {
+    pub(crate) fn new(config: &Arc<TokenReductionConfig>, language: &str) -> Result<Self> {
         let mut stopwords = STOPWORDS.get(language).cloned().unwrap_or_else(|| {
             STOPWORDS
                 .get("en")
@@ -91,7 +91,7 @@ impl FilterPipeline {
     ///
     /// # Returns
     /// A new `String` with light filters applied
-    pub fn apply_light_filters(&self, text: &str) -> String {
+    pub(crate) fn apply_light_filters(&self, text: &str) -> String {
         use std::borrow::Cow;
 
         let mut result = Cow::Borrowed(text);
@@ -137,7 +137,7 @@ impl FilterPipeline {
     ///
     /// # Returns
     /// A new `String` with moderate filters applied
-    pub fn apply_moderate_filters(&self, text: &str) -> String {
+    pub(crate) fn apply_moderate_filters(&self, text: &str) -> String {
         let mut result = self.apply_light_filters(text);
 
         // Preserve code blocks during stopword removal if configured
@@ -209,7 +209,7 @@ impl FilterPipeline {
     ///
     /// Primarily useful for testing and debugging to verify language configuration.
     #[cfg_attr(not(test), allow(dead_code))]
-    pub fn language(&self) -> &str {
+    pub(crate) fn language(&self) -> &str {
         &self.language
     }
 }

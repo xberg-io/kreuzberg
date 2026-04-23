@@ -1,0 +1,22 @@
+{
+	"id": "table_xlsx_markdown",
+	"description": "XLSX extraction produces markdown table format",
+	"tags": ["table", "xlsx", "markdown"],
+	"call": "extract_file_sync",
+	"input": {
+		"path": "xlsx/stanley_cups.xlsx",
+		"config": {
+			"output_format": "markdown"
+		}
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "contains_any",
+			"field": "content",
+			"values": ["|", "---"]
+		}
+	]
+}

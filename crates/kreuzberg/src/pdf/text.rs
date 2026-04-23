@@ -87,18 +87,18 @@ pub struct PdfTextExtractor<'a> {
 }
 
 impl PdfTextExtractor<'static> {
-    pub fn new() -> Result<Self> {
+    pub(crate) fn new() -> Result<Self> {
         let pdfium = bind_pdfium(PdfError::TextExtractionFailed, "text extraction", None)?;
         Ok(PdfTextExtractor { pdfium })
     }
 }
 
 impl PdfTextExtractor<'_> {
-    pub fn extract_text(&self, pdf_bytes: &[u8]) -> Result<String> {
+    pub(crate) fn extract_text(&self, pdf_bytes: &[u8]) -> Result<String> {
         self.extract_text_with_password(pdf_bytes, None)
     }
 
-    pub fn extract_text_with_password(&self, pdf_bytes: &[u8], password: Option<&str>) -> Result<String> {
+    pub(crate) fn extract_text_with_password(&self, pdf_bytes: &[u8], password: Option<&str>) -> Result<String> {
         let document = self.pdfium.load_pdf_from_byte_slice(pdf_bytes, password).map_err(|e| {
             let err_msg = super::error::format_pdfium_error(e);
             if (err_msg.contains("password") || err_msg.contains("Password")) && password.is_some() {
@@ -114,7 +114,7 @@ impl PdfTextExtractor<'_> {
         Ok(content)
     }
 
-    pub fn extract_text_with_passwords(&self, pdf_bytes: &[u8], passwords: &[&str]) -> Result<String> {
+    pub(crate) fn extract_text_with_passwords(&self, pdf_bytes: &[u8], passwords: &[&str]) -> Result<String> {
         let mut last_error = None;
 
         for password in passwords {
@@ -134,7 +134,7 @@ impl PdfTextExtractor<'_> {
         self.extract_text(pdf_bytes)
     }
 
-    pub fn get_page_count(&self, pdf_bytes: &[u8]) -> Result<usize> {
+    pub(crate) fn get_page_count(&self, pdf_bytes: &[u8]) -> Result<usize> {
         let document = self.pdfium.load_pdf_from_byte_slice(pdf_bytes, None).map_err(|e| {
             let err_msg = super::error::format_pdfium_error(e);
             if err_msg.contains("password") || err_msg.contains("Password") {
@@ -153,14 +153,15 @@ pub fn extract_text_from_pdf(pdf_bytes: &[u8]) -> Result<String> {
     extractor.extract_text(pdf_bytes)
 }
 
-pub fn extract_text_from_pdf_with_password(pdf_bytes: &[u8], password: &str) -> Result<String> {
+pub(crate) fn extract_text_from_pdf_with_password(pdf_bytes: &[u8], password: &str) -> Result<String> {
     let extractor = PdfTextExtractor::new()?;
     extractor.extract_text_with_password(pdf_bytes, Some(password))
 }
 
-pub fn extract_text_from_pdf_with_passwords(pdf_bytes: &[u8], passwords: &[&str]) -> Result<String> {
+pub(crate) fn extract_text_from_pdf_with_passwords(pdf_bytes: &[u8], passwords: &[String]) -> Result<String> {
     let extractor = PdfTextExtractor::new()?;
-    extractor.extract_text_with_passwords(pdf_bytes, passwords)
+    let pw_refs: Vec<&str> = passwords.iter().map(|s| s.as_str()).collect();
+    extractor.extract_text_with_passwords(pdf_bytes, &pw_refs)
 }
 
 /// Result type for unified PDF text and metadata extraction.
@@ -198,7 +199,7 @@ pub type PdfUnifiedExtractionResult = (
 /// This function is optimized for single-pass extraction. It performs all document
 /// scanning in one iteration, avoiding redundant pdfium operations compared to
 /// calling text and metadata extraction separately.
-pub fn extract_text_and_metadata_from_pdf_document(
+pub(crate) fn extract_text_and_metadata_from_pdf_document(
     document: &PdfDocument<'_>,
     extraction_config: Option<&crate::core::config::ExtractionConfig>,
 ) -> Result<PdfUnifiedExtractionResult> {
@@ -234,7 +235,7 @@ pub fn extract_text_and_metadata_from_pdf_document(
 ///
 /// When page_config is None, uses fast path with minimal overhead.
 /// When page_config is Some, tracks byte offsets using .len() for O(1) performance (UTF-8 valid boundaries).
-pub fn extract_text_from_pdf_document(
+pub(crate) fn extract_text_from_pdf_document(
     document: &PdfDocument<'_>,
     page_config: Option<&PageConfig>,
     extraction_config: Option<&crate::core::config::ExtractionConfig>,

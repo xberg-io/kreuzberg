@@ -1,0 +1,20 @@
+{
+	"id": "render_json_basic",
+	"category": "rendering",
+	"description": "Render HTML document to JSON format",
+	"tags": ["json", "rendering", "structured"],
+	"call": "render_json",
+	"input": {
+		"doc": "<h1>Structured Data</h1><p>Content for JSON rendering.</p>"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 5
+		}
+	]
+}

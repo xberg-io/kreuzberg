@@ -10,6 +10,7 @@ use crate::core::config::ExtractionConfig;
 #[cfg(feature = "ocr")]
 use crate::core::config::OcrQualityThresholds;
 
+#[derive(Debug, Default)]
 #[cfg(feature = "ocr")]
 pub struct NativeTextStats {
     pub non_whitespace: usize,
@@ -40,7 +41,7 @@ pub struct OcrFallbackDecision {
 
 #[cfg(feature = "ocr")]
 impl NativeTextStats {
-    pub fn compute(text: &str, thresholds: &OcrQualityThresholds) -> Self {
+    pub(crate) fn compute(text: &str, thresholds: &OcrQualityThresholds) -> Self {
         let mut non_whitespace = 0usize;
         let mut alnum = 0usize;
         let mut garbage_char_count = 0usize;
@@ -114,7 +115,7 @@ impl NativeTextStats {
     }
 
     /// Convenience method using default thresholds.
-    pub fn from(text: &str) -> Self {
+    pub(crate) fn from(text: &str) -> Self {
         Self::compute(text, &OcrQualityThresholds::default())
     }
 }
@@ -123,7 +124,7 @@ impl NativeTextStats {
 ///
 /// Uses the provided quality thresholds (or defaults) to make the decision.
 #[cfg(feature = "ocr")]
-pub fn evaluate_native_text_for_ocr(
+pub(crate) fn evaluate_native_text_for_ocr(
     native_text: &str,
     page_count: Option<usize>,
     thresholds: &OcrQualityThresholds,
@@ -196,7 +197,7 @@ pub fn evaluate_native_text_for_ocr(
 /// Used by the pipeline to decide whether to accept a result or try the next backend.
 /// Higher is better. Combines multiple signal dimensions into a single score.
 #[cfg(feature = "ocr")]
-pub fn compute_quality_score(text: &str, thresholds: &OcrQualityThresholds) -> f64 {
+pub(crate) fn compute_quality_score(text: &str, thresholds: &OcrQualityThresholds) -> f64 {
     let trimmed = text.trim();
     if trimmed.is_empty() {
         return 0.0;
@@ -237,7 +238,7 @@ pub fn compute_quality_score(text: &str, thresholds: &OcrQualityThresholds) -> f
 }
 
 #[cfg(feature = "ocr")]
-pub fn evaluate_per_page_ocr(
+pub(crate) fn evaluate_per_page_ocr(
     native_text: &str,
     boundaries: Option<&[crate::types::PageBoundary]>,
     page_count: Option<usize>,

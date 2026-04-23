@@ -406,7 +406,7 @@ impl<'a> Yake<'a> {
 // ─── Public API ──────────────────────────────────────────────────────────────
 
 /// Extract keywords using YAKE algorithm, integrated with kreuzberg's stopwords.
-pub fn extract_keywords_yake(text: &str, config: &KeywordConfig) -> Result<Vec<Keyword>> {
+pub(crate) fn extract_keywords_yake(text: &str, config: &KeywordConfig) -> Result<Vec<Keyword>> {
     let params = config.yake_params.as_ref().cloned().unwrap_or_default();
 
     // Use kreuzberg's unified stopwords (64 languages, 22K+ words)

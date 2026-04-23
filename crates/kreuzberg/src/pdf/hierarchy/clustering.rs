@@ -63,7 +63,7 @@ pub struct FontSizeCluster {
 /// assert_eq!(clusters[0].centroid, 24.0); // Largest is first
 /// # }
 /// ```
-pub fn cluster_font_sizes(blocks: &[TextBlock], k: usize) -> Result<Vec<FontSizeCluster>> {
+pub(crate) fn cluster_font_sizes(blocks: &[TextBlock], k: usize) -> Result<Vec<FontSizeCluster>> {
     if blocks.is_empty() {
         return Ok(Vec::new());
     }
@@ -205,7 +205,7 @@ pub fn cluster_font_sizes(blocks: &[TextBlock], k: usize) -> Result<Vec<FontSize
 ///
 /// Vector of tuples `(centroid, heading_level)` where `None` means body text
 /// and `Some(1..=6)` means H1-H6. Sorted by centroid descending.
-pub fn assign_heading_levels_smart(
+pub(crate) fn assign_heading_levels_smart(
     clusters: &[FontSizeCluster],
     min_heading_ratio: f32,
     min_heading_gap: f32,

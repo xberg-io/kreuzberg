@@ -1,0 +1,20 @@
+{
+	"id": "validate_chunking_overlap_exceeds",
+	"description": "Reject chunking config where overlap exceeds max_characters",
+	"tags": ["validation", "chunking"],
+	"call": "extract_file_sync",
+	"input": {
+		"path": "pdf/fake_memo.pdf",
+		"config": {
+			"chunking": {
+				"max_characters": 10,
+				"max_overlap": 100
+			}
+		}
+	},
+	"assertions": [
+		{
+			"type": "error"
+		}
+	]
+}

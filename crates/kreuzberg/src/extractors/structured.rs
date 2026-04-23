@@ -113,7 +113,7 @@ impl Default for StructuredExtractor {
 }
 
 impl StructuredExtractor {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self
     }
 }

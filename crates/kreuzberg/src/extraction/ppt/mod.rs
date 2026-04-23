@@ -43,7 +43,7 @@ const RT_NOTES: u16 = 0x03F0; // Notes container
 ///
 /// When `include_master_slides` is `true`, master slide content (placeholder text
 /// like "Click to edit Master title style") is included instead of being skipped.
-pub fn extract_ppt_text(content: &[u8]) -> Result<PptExtractionResult> {
+pub(crate) fn extract_ppt_text(content: &[u8]) -> Result<PptExtractionResult> {
     extract_ppt_text_with_options(content, false)
 }
 
@@ -51,7 +51,10 @@ pub fn extract_ppt_text(content: &[u8]) -> Result<PptExtractionResult> {
 ///
 /// When `include_master_slides` is `true`, `RT_MAIN_MASTER` containers are not
 /// skipped, so master slide placeholder text is included in the output.
-pub fn extract_ppt_text_with_options(content: &[u8], include_master_slides: bool) -> Result<PptExtractionResult> {
+pub(crate) fn extract_ppt_text_with_options(
+    content: &[u8],
+    include_master_slides: bool,
+) -> Result<PptExtractionResult> {
     let cursor = Cursor::new(content);
     let mut comp = cfb::CompoundFile::open(cursor)
         .map_err(|e| KreuzbergError::parsing(format!("Failed to open PPT as OLE container: {e}")))?;

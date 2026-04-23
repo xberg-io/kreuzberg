@@ -22,7 +22,7 @@
     <img src="https://img.shields.io/maven-central/v/dev.kreuzberg/kreuzberg?label=Java&color=007ec6" alt="Java">
   </a>
   <a href="https://github.com/kreuzberg-dev/kreuzberg/releases">
-    <img src="https://img.shields.io/github/v/tag/kreuzberg-dev/kreuzberg?label=Go&color=007ec6&filter=v4.9.5" alt="Go">
+    <img src="https://img.shields.io/github/v/tag/kreuzberg-dev/kreuzberg?label=Go&color=007ec6&filter=v4.0.0" alt="Go">
   </a>
   <a href="https://www.nuget.org/packages/Kreuzberg/">
     <img src="https://img.shields.io/nuget/v/Kreuzberg?label=C%23&color=007ec6" alt="C#">
@@ -66,9 +66,7 @@
   </a>
 </div>
 
-
 Extract text, tables, images, and metadata from 91+ file formats and 248 programming languages including PDF, Office documents, and images. PHP bindings with modern PHP 8.2+ support and type-safe API.
-
 
 ## Installation
 
@@ -93,13 +91,13 @@ composer require kreuzberg/kreuzberg
 - Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
 
 
-
 ## Quick Start
 
 ### Basic Extraction
 
 Extract text, metadata, and structure from any supported document format:
 
+```php
 ```php title="basic_extraction_oop.php"
 <?php
 
@@ -139,7 +137,7 @@ if (count($result->tables) > 0) {
     }
 }
 ```
-
+```
 
 ### Common Use Cases
 
@@ -150,6 +148,7 @@ Most use cases benefit from configuration to control extraction behavior:
 
 **With OCR (for scanned documents):**
 
+```php
 ```php title="basic_ocr.php"
 <?php
 
@@ -184,7 +183,7 @@ echo $result->content . "\n\n";
 $multilingualConfig = new ExtractionConfig(
     ocr: new OcrConfig(
         backend: 'tesseract',
-        language: 'eng+fra+deu'
+        language: 'eng+fra+deu'  
     )
 );
 
@@ -277,7 +276,7 @@ if ($avgCharsPerPage < 100) {
     echo "Pass: Moderate - Text extracted successfully\n";
 }
 ```
-
+```
 
 
 
@@ -291,6 +290,7 @@ See [Table Extraction Guide](https://kreuzberg.dev/features/table-extraction/) f
 #### Processing Multiple Files
 
 
+```php
 ```php title="batch_processing.php"
 <?php
 
@@ -340,7 +340,7 @@ if (!empty($files)) {
 
 $config = new ExtractionConfig(
     extractTables: true,
-    extractImages: false
+    extractImages: false  
 );
 
 $kreuzberg = new Kreuzberg($config);
@@ -445,7 +445,7 @@ foreach ($batches as $index => $batch) {
 
 echo "\n\nCompleted! Processed $totalProcessed files.\n";
 ```
-
+```
 
 
 
@@ -565,13 +565,16 @@ Powered by [tree-sitter-language-pack](https://github.com/kreuzberg-dev/tree-sit
 Kreuzberg supports multiple OCR backends for extracting text from scanned documents and images:
 
 
+
 - **Tesseract**
+
 
 - **Paddleocr**
 
 
 ### OCR Configuration Example
 
+```php
 ```php title="basic_ocr.php"
 <?php
 
@@ -606,7 +609,7 @@ echo $result->content . "\n\n";
 $multilingualConfig = new ExtractionConfig(
     ocr: new OcrConfig(
         backend: 'tesseract',
-        language: 'eng+fra+deu'
+        language: 'eng+fra+deu'  
     )
 );
 
@@ -699,6 +702,7 @@ if ($avgCharsPerPage < 100) {
     echo "Pass: Moderate - Text extracted successfully\n";
 }
 ```
+```
 
 
 
@@ -713,6 +717,7 @@ For detailed plugin documentation, visit [Plugin System Guide](https://kreuzberg
 
 
 
+
 ## Embeddings Support
 
 Generate vector embeddings for extracted text using the built-in ONNX Runtime support. Requires ONNX Runtime installation.
@@ -721,10 +726,12 @@ Generate vector embeddings for extracted text using the built-in ONNX Runtime su
 
 
 
+
 ## Batch Processing
 
 Process multiple documents efficiently:
 
+```php
 ```php title="batch_processing.php"
 <?php
 
@@ -774,7 +781,7 @@ if (!empty($files)) {
 
 $config = new ExtractionConfig(
     extractTables: true,
-    extractImages: false
+    extractImages: false  
 );
 
 $kreuzberg = new Kreuzberg($config);
@@ -879,7 +886,7 @@ foreach ($batches as $index => $batch) {
 
 echo "\n\nCompleted! Processed $totalProcessed files.\n";
 ```
-
+```
 
 
 

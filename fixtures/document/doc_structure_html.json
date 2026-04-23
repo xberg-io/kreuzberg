@@ -1,0 +1,22 @@
+{
+	"id": "doc_structure_html",
+	"category": "document",
+	"description": "Extract HTML document structure with include_document_structure config",
+	"tags": ["document_structure", "html"],
+	"call": "extract_file_sync",
+	"input": {
+		"path": "html/html.html",
+		"config": {
+			"include_document_structure": true
+		}
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "not_empty",
+			"field": "document_structure"
+		}
+	]
+}

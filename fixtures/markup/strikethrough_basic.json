@@ -1,0 +1,20 @@
+{
+	"id": "strikethrough_basic",
+	"category": "markup",
+	"description": "Create strikethrough formatting",
+	"tags": ["markup", "formatting"],
+	"call": "strikethrough",
+	"input": {
+		"text": "deleted"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "contains",
+			"field": "result",
+			"value": "deleted"
+		}
+	]
+}

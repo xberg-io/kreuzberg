@@ -1,0 +1,15 @@
+{
+	"id": "validate_oem_valid",
+	"category": "validation",
+	"description": "Accept valid Tesseract OEM mode",
+	"tags": ["validation", "tesseract", "oem"],
+	"call": "validate_tesseract_oem",
+	"input": {
+		"oem": 1
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	]
+}

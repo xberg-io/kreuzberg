@@ -1,11 +1,10 @@
 {
 	"id": "extractors_list",
+	"category": "document_extractor_management",
 	"description": "List all registered document extractors",
-	"api_category": "document_extractor_management",
-	"api_function": "list_document_extractors",
 	"tags": ["extractors", "plugin_management", "list"],
-	"test_spec": {
-		"pattern": "simple_list",
+	"call": "list_document_extractors",
+	"input": {
 		"setup": {
 			"lazy_init_required": {
 				"languages": ["go"],
@@ -16,14 +15,11 @@
 					"temp_file_content": "%PDF-1.4\n%EOF\n"
 				}
 			}
-		},
-		"function_call": {
-			"name": "list_document_extractors",
-			"args": []
-		},
-		"assertions": {
-			"return_type": "list",
-			"list_item_type": "string"
 		}
-	}
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	]
 }

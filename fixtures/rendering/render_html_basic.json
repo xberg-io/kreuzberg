@@ -1,0 +1,20 @@
+{
+	"id": "render_html_basic",
+	"category": "rendering",
+	"description": "Render a simple HTML document to formatted output",
+	"tags": ["html", "rendering", "basic"],
+	"call": "render_html",
+	"input": {
+		"doc": "<h1>Test Document</h1><p>This is a paragraph with some test content.</p>"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 5
+		}
+	]
+}

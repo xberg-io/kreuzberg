@@ -19,7 +19,7 @@ static MULTIPLE_SPACES_REGEX: Lazy<Regex> =
 ///
 /// # Returns
 /// A new `String` with multiple spaces collapsed to single spaces
-pub fn normalize_spaces(text: &str) -> Cow<'_, str> {
+pub(crate) fn normalize_spaces(text: &str) -> Cow<'_, str> {
     if MULTIPLE_SPACES_REGEX.is_match(text) {
         Cow::Owned(MULTIPLE_SPACES_REGEX.replace_all(text, " ").into_owned())
     } else {
@@ -34,7 +34,7 @@ pub fn normalize_spaces(text: &str) -> Cow<'_, str> {
 ///
 /// # Returns
 /// A new `String` with excessive newlines normalized to at most 2 consecutive newlines
-pub fn normalize_newlines(text: &str) -> Cow<'_, str> {
+pub(crate) fn normalize_newlines(text: &str) -> Cow<'_, str> {
     if EXCESSIVE_NEWLINES_REGEX.is_match(text) {
         Cow::Owned(EXCESSIVE_NEWLINES_REGEX.replace_all(text, "\n\n").into_owned())
     } else {
@@ -58,7 +58,7 @@ pub fn normalize_newlines(text: &str) -> Cow<'_, str> {
 ///
 /// # Returns
 /// A new `String` with stopwords removed
-pub fn remove_stopwords(text: &str, stopwords: &AHashSet<String>, preserve_patterns: &[Regex]) -> String {
+pub(crate) fn remove_stopwords(text: &str, stopwords: &AHashSet<String>, preserve_patterns: &[Regex]) -> String {
     let words: Vec<&str> = text.split_whitespace().collect();
     let mut filtered_words = Vec::with_capacity((words.len() as f32 * 0.7).ceil() as usize);
 
@@ -135,7 +135,7 @@ pub fn remove_stopwords(text: &str, stopwords: &AHashSet<String>, preserve_patte
 /// # Returns
 /// `true` if the word matches any preserve pattern, `false` otherwise
 #[inline]
-pub fn should_preserve_word(word: &str, preserve_patterns: &[Regex]) -> bool {
+pub(crate) fn should_preserve_word(word: &str, preserve_patterns: &[Regex]) -> bool {
     preserve_patterns.iter().any(|pattern| pattern.is_match(word))
 }
 

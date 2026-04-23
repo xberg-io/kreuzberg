@@ -1,0 +1,26 @@
+{
+	"id": "link_basic",
+	"category": "markup",
+	"description": "Create markdown link with text and URL",
+	"tags": ["markup", "formatting", "links"],
+	"call": "link",
+	"input": {
+		"text": "Click here",
+		"url": "https://example.com"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "contains",
+			"field": "result",
+			"value": "Click here"
+		},
+		{
+			"type": "contains",
+			"field": "result",
+			"value": "example.com"
+		}
+	]
+}

@@ -1,58 +1,48 @@
 [package]
 name = "kreuzberg-wasm"
-version = "4.6.3"
+version = "4.9.5"
 edition = "2024"
-rust-version = "1.91"
-authors = ["Na'aman Hirschfeld <naaman@kreuzberg.dev>"]
 license = "Elastic-2.0"
-repository.workspace = true
-description = "Kreuzberg document intelligence - WebAssembly bindings"
-keywords = ["wasm", "webassembly", "document", "extraction", "bindings"]
-categories = ["api-bindings", "text-processing"]
-readme = "README.md"
+description = "High-performance document intelligence library"
+repository = "https://github.com/kreuzberg-dev/kreuzberg"
 
 [package.metadata.wasm-pack.profile.release]
 wasm-opt = false
 
 [package.metadata.cargo-machete]
-ignored = ["getrandom", "getrandom_compat", "image", "serde", "uuid"]
+ignored = ["wasm-bindgen-futures"]
 
 [lib]
-crate-type = ["cdylib", "rlib"]
-
-[features]
-default = []
-embeddings = ["kreuzberg/embeddings"]
-ocr-wasm = ["dep:kreuzberg-tesseract", "dep:image", "kreuzberg/ocr-wasm"]
-threads = ["dep:wasm-bindgen-rayon"]
-console_error_panic_hook = ["dep:console_error_panic_hook"]
+crate-type = ["cdylib"]
 
 [dependencies]
 async-trait = "0.1"
-base64 = { workspace = true }
-console_error_panic_hook = { workspace = true, optional = true }
-# Use getrandom with wasm_js feature for WASM compatibility
-getrandom = { version = "0.4", features = ["wasm_js"] }
-# Also need to explicitly depend on 0.3.4 to enable wasm_js for transitive deps
-getrandom_compat = { package = "getrandom", version = "=0.3.4", features = ["wasm_js"] }
-image = { workspace = true, features = ["png", "jpeg", "gif", "bmp", "tiff"], optional = true }
-js-sys = { workspace = true }
-kreuzberg = { workspace = true, default-features = false, features = ["wasm-target"] }
-kreuzberg-tesseract = { path = "../kreuzberg-tesseract", version = "4.3", default-features = false, features = [
-    "build-tesseract-wasm",
-], optional = true }
-parking_lot = { workspace = true }
-serde = { workspace = true }
+js-sys = "0.3"
+kreuzberg = { path = "../kreuzberg", features = [
+    "pdf",
+    "excel-wasm",
+    "office",
+    "hwp",
+    "iwork",
+    "email",
+    "html",
+    "xml",
+    "archives",
+    "embeddings",
+    "language-detection",
+    "chunking",
+    "quality",
+    "keywords",
+    "mdx",
+    "ocr-wasm",
+    "tree-sitter-wasm",
+    "liter-llm",
+    "stopwords",
+    "api",
+    "mcp",
+] }
+serde = { version = "1", features = ["derive"] }
 serde-wasm-bindgen = "0.6"
-serde_json = { workspace = true }
-serde_yaml = "0.9"
-toml = { workspace = true }
-uuid = { version = "1.23", features = ["js"] }
-
-wasm-bindgen = { workspace = true }
-wasm-bindgen-futures = { workspace = true }
-wasm-bindgen-rayon = { version = "1.3", optional = true }
-web-sys = { workspace = true }
-
-[dev-dependencies]
-wasm-bindgen-test = "0.3"
+serde_json = "1"
+wasm-bindgen = "0.2"
+wasm-bindgen-futures = "0.4"

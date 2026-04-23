@@ -1,0 +1,9 @@
+{
+	"id": "link_special_url",
+	"category": "markup",
+	"description": "Link with query params",
+	"tags": ["markup"],
+	"call": "link",
+	"input": { "text": "click", "url": "https://example.com?q=1&b=2" },
+	"assertions": [{ "type": "not_error" }]
+}

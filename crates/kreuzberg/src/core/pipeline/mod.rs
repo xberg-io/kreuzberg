@@ -209,7 +209,7 @@ pub async fn run_pipeline(mut doc: InternalDocument, config: &ExtractionConfig) 
     }
 
     // Apply output format conversion as the final step
-    apply_output_format(&mut result, config.output_format.clone());
+    result = apply_output_format(result, config.output_format.clone());
 
     Ok(result)
 }
@@ -314,7 +314,7 @@ pub fn run_pipeline_sync(doc: InternalDocument, config: &ExtractionConfig) -> Re
     normalize_nfc(&mut result);
 
     // Apply output format conversion as the final step
-    apply_output_format(&mut result, config.output_format.clone());
+    result = apply_output_format(result, config.output_format.clone());
 
     Ok(result)
 }

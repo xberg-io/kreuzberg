@@ -1,0 +1,14 @@
+{
+	"id": "error_file_not_found_async",
+	"category": "error",
+	"description": "Error when file does not exist (async)",
+	"tags": ["error", "input", "file", "async"],
+	"input": {
+		"path": "nonexistent/file.pdf"
+	},
+	"assertions": [
+		{
+			"type": "error"
+		}
+	]
+}

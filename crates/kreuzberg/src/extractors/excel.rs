@@ -31,7 +31,7 @@ impl Default for ExcelExtractor {
 }
 
 impl ExcelExtractor {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self
     }
 

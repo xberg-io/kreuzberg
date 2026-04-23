@@ -1,0 +1,9 @@
+{
+	"id": "italic_special_chars",
+	"category": "markup",
+	"description": "Italic special chars",
+	"tags": ["markup"],
+	"call": "italic",
+	"input": { "text": "emphasized *text*" },
+	"assertions": [{ "type": "not_error" }]
+}

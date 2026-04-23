@@ -2,20 +2,25 @@
 	"id": "pdf_right_to_left",
 	"category": "pdf",
 	"description": "Right-to-left language PDF to verify RTL extraction.",
-	"document": {
+	"input": {
 		"path": "pdf/right_to_left_01.pdf",
 		"media_type": "application/pdf"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": "application/pdf",
-		"min_content_length": 50,
-		"metadata": {
-			"format_type": {
-				"eq": "pdf"
-			}
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "application/pdf"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 50
+		},
+		{
+			"type": "equals",
+			"field": "metadata.format_type",
+			"value": "pdf"
 		}
-	}
+	]
 }

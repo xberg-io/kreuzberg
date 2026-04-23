@@ -1,0 +1,11 @@
+{
+	"id": "detect_mime_unknown_ext",
+	"category": "detection",
+	"description": "detect_mime_type unknown extension",
+	"tags": ["mime_detection", "error"],
+	"call": "detect_mime_type_standalone",
+	"input": {
+		"path": "file.zzz_unknown"
+	},
+	"assertions": [{ "type": "error" }]
+}

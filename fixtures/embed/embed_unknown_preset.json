@@ -1,0 +1,10 @@
+{
+	"id": "embed_unknown_preset",
+	"category": "embed",
+	"description": "embed_texts unknown preset",
+	"tags": ["embedding", "error"],
+	"call": "embed",
+	"input": { "texts": ["Hello"], "config": { "model": "nonexistent-model" } },
+	"assertions": [{ "type": "error" }],
+	"skip": { "reason": "Requires features: embeddings" }
+}

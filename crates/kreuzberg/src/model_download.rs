@@ -10,7 +10,7 @@ use sha2::{Digest, Sha256};
 /// Download a file from a HuggingFace Hub repository.
 ///
 /// Uses `hf-hub`'s built-in caching so repeated calls for the same file are fast.
-pub fn hf_download(repo_id: &str, remote_filename: &str) -> Result<PathBuf, String> {
+pub(crate) fn hf_download(repo_id: &str, remote_filename: &str) -> Result<PathBuf, String> {
     tracing::info!(repo = repo_id, filename = remote_filename, "Downloading via hf-hub");
 
     let api = hf_hub::api::sync::ApiBuilder::from_env()
@@ -30,7 +30,7 @@ pub fn hf_download(repo_id: &str, remote_filename: &str) -> Result<PathBuf, Stri
 ///
 /// Streams the file in 64 KiB chunks to avoid loading large model files (100MB+) entirely
 /// into memory. Returns `Ok(())` if the checksum matches or is empty (skip verification).
-pub fn verify_sha256(path: &Path, expected: &str, label: &str) -> Result<(), String> {
+pub(crate) fn verify_sha256(path: &Path, expected: &str, label: &str) -> Result<(), String> {
     if expected.is_empty() {
         return Ok(());
     }
@@ -67,6 +67,6 @@ pub fn verify_sha256(path: &Path, expected: &str, label: &str) -> Result<(), Str
 /// Delegates to [`crate::cache_dir::resolve_cache_dir`] for centralized,
 /// platform-aware cache directory resolution.
 #[cfg(feature = "layout-detection")]
-pub fn resolve_cache_dir(module: &str) -> PathBuf {
+pub(crate) fn resolve_cache_dir(module: &str) -> PathBuf {
     crate::cache_dir::resolve_cache_dir(module)
 }

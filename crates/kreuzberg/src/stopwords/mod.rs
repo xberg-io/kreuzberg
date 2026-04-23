@@ -208,7 +208,7 @@ fn apply_stopword_whitelist(map: &mut AHashMap<String, AHashSet<String>>) {
 /// 2. HashMap lookup in STOPWORDS - O(1) average case
 ///
 /// Total overhead is negligible (~10-50ns on modern CPUs).
-pub fn get_stopwords(lang: &str) -> Option<&'static AHashSet<String>> {
+pub(crate) fn get_stopwords(lang: &str) -> Option<&'static AHashSet<String>> {
     let normalized = lang.to_lowercase();
 
     let lang_code = if let Some(pos) = normalized.find(&['-', '_'][..]) {
@@ -295,7 +295,7 @@ pub fn get_stopwords(lang: &str) -> Option<&'static AHashSet<String>> {
 /// 2. If None, try fallback language (O(1) average case)
 ///
 /// Total overhead is negligible (~10-100ns on modern CPUs).
-pub fn get_stopwords_with_fallback(language: &str, fallback: &str) -> Option<&'static AHashSet<String>> {
+pub(crate) fn get_stopwords_with_fallback(language: &str, fallback: &str) -> Option<&'static AHashSet<String>> {
     get_stopwords(language).or_else(|| get_stopwords(fallback))
 }
 

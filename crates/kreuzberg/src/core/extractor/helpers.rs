@@ -86,6 +86,6 @@ pub(crate) fn error_extraction_result(e: &KreuzbergError, elapsed_ms: Option<u64
 }
 
 #[inline]
-pub fn get_pool_sizing_hint(file_size: u64, mime_type: &str) -> PoolSizeHint {
+pub(crate) fn get_pool_sizing_hint(file_size: u64, mime_type: &str) -> PoolSizeHint {
     estimate_pool_size(file_size, mime_type)
 }

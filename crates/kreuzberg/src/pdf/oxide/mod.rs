@@ -24,7 +24,7 @@ pub(crate) struct OxideDocument {
 impl OxideDocument {
     /// Open a PDF from a file path.
     #[allow(dead_code)]
-    pub fn open_file(path: &Path) -> Result<Self> {
+    pub(crate) fn open_file(path: &Path) -> Result<Self> {
         let doc = pdf_oxide::PdfDocument::open(path).map_err(|e| KreuzbergError::Parsing {
             message: format!("pdf_oxide: failed to open file: {e}"),
             source: None,
@@ -33,7 +33,7 @@ impl OxideDocument {
     }
 
     /// Open a PDF from in-memory bytes.
-    pub fn open_bytes(bytes: &[u8]) -> Result<Self> {
+    pub(crate) fn open_bytes(bytes: &[u8]) -> Result<Self> {
         let doc = pdf_oxide::PdfDocument::from_bytes(bytes.to_vec()).map_err(|e| KreuzbergError::Parsing {
             message: format!("pdf_oxide: failed to load bytes: {e}"),
             source: None,

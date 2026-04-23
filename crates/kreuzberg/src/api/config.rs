@@ -31,19 +31,18 @@ use crate::{Result, core::ServerConfig};
 ///
 /// ```no_run
 /// use kreuzberg::api::load_server_config;
-/// use std::path::Path;
 ///
 /// # fn example() -> kreuzberg::Result<()> {
 /// // Load from file with env overrides
-/// let config = load_server_config(Some(Path::new("server.toml")))?;
+/// let config = load_server_config(Some("server.toml"))?;
 ///
 /// // Or use defaults with env overrides
 /// let config = load_server_config(None)?;
 /// # Ok(())
 /// # }
 /// ```
-pub fn load_server_config(config_path: Option<&std::path::Path>) -> Result<ServerConfig> {
-    let mut config = if let Some(path) = config_path {
+pub(crate) fn load_server_config(config_path: Option<&str>) -> Result<ServerConfig> {
+    let mut config = if let Some(path) = config_path.map(std::path::Path::new) {
         ServerConfig::from_file(path)?
     } else {
         ServerConfig::default()

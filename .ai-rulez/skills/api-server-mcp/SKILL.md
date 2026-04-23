@@ -1,5 +1,5 @@
 ---
-description: "api server mcp"
+description: "REST API server and MCP protocol integration"
 name: api-server-mcp
 priority: critical
 ---

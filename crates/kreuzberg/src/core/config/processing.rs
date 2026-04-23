@@ -87,7 +87,7 @@ impl PostProcessorConfig {
     ///
     /// This method converts the enabled/disabled processor Vec to HashSet
     /// for constant-time lookups in the pipeline.
-    pub fn build_lookup_sets(&mut self) {
+    pub(crate) fn build_lookup_sets(&mut self) {
         if let Some(ref enabled) = self.enabled_processors {
             self.enabled_set = Some(enabled.iter().cloned().collect());
         }
@@ -191,7 +191,7 @@ impl ChunkingConfig {
     /// Create a new `ChunkingConfig` with the given max characters, overlap, and trim settings.
     ///
     /// Other fields are set to their defaults. Use the setter methods to customize further.
-    pub fn new(max_characters: usize, overlap: usize, trim: bool) -> Self {
+    pub(crate) fn new(max_characters: usize, overlap: usize, trim: bool) -> Self {
         Self {
             max_characters,
             overlap,
@@ -206,19 +206,19 @@ impl ChunkingConfig {
     }
 
     /// Set the chunker type.
-    pub fn with_chunker_type(mut self, chunker_type: ChunkerType) -> Self {
+    pub(crate) fn with_chunker_type(mut self, chunker_type: ChunkerType) -> Self {
         self.chunker_type = chunker_type;
         self
     }
 
     /// Set the sizing strategy.
-    pub fn with_sizing(mut self, sizing: ChunkSizing) -> Self {
+    pub(crate) fn with_sizing(mut self, sizing: ChunkSizing) -> Self {
         self.sizing = sizing;
         self
     }
 
     /// Enable or disable prepending heading context to chunk content.
-    pub fn with_prepend_heading_context(mut self, prepend: bool) -> Self {
+    pub(crate) fn with_prepend_heading_context(mut self, prepend: bool) -> Self {
         self.prepend_heading_context = prepend;
         self
     }
@@ -228,7 +228,7 @@ impl ChunkingConfig {
     /// # Panics
     ///
     /// Panics if `threshold` is outside `[0.0, 1.0]`.
-    pub fn with_topic_threshold(mut self, threshold: f32) -> Self {
+    pub(crate) fn with_topic_threshold(mut self, threshold: f32) -> Self {
         assert!(
             (0.0..=1.0).contains(&threshold),
             "topic_threshold must be in [0.0, 1.0], got {threshold}"
@@ -249,7 +249,7 @@ impl ChunkingConfig {
     /// Requires the `embeddings` feature. Without it, this is a no-op that returns
     /// the config unchanged.
     #[cfg(feature = "embeddings")]
-    pub fn resolve_preset(&self) -> Self {
+    pub(crate) fn resolve_preset(&self) -> Self {
         let preset_name = match &self.preset {
             Some(name) => name,
             None => return self.clone(),
@@ -293,7 +293,7 @@ impl ChunkingConfig {
 
     /// Resolve a preset name (no-op without the `embeddings` feature).
     #[cfg(not(feature = "embeddings"))]
-    pub fn resolve_preset(&self) -> Self {
+    pub(crate) fn resolve_preset(&self) -> Self {
         if self.preset.is_some() {
             tracing::warn!("Chunking presets require the 'embeddings' feature");
         }
@@ -384,6 +384,12 @@ pub enum EmbeddingModelType {
     /// Uses the model specified in the nested `LlmConfig` (e.g.,
     /// `"openai/text-embedding-3-small"`).
     Llm { llm: super::llm::LlmConfig },
+}
+
+impl Default for EmbeddingModelType {
+    fn default() -> Self {
+        Self::Preset { name: String::new() }
+    }
 }
 
 fn default_true() -> bool {

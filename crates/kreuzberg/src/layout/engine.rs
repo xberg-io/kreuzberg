@@ -90,7 +90,7 @@ pub struct LayoutEngine {
 
 impl LayoutEngine {
     /// Create a layout engine from a full config.
-    pub fn from_config(config: LayoutEngineConfig) -> Result<Self, LayoutError> {
+    pub(crate) fn from_config(config: LayoutEngineConfig) -> Result<Self, LayoutError> {
         crate::ort_discovery::ensure_ort_available();
 
         let model: Box<dyn LayoutModel> = match &config.backend {
@@ -150,7 +150,7 @@ impl LayoutEngine {
     ///
     /// Returns a [`DetectionResult`] with bounding boxes, classes, and confidence scores.
     /// If `apply_heuristics` is enabled in config, postprocessing is applied automatically.
-    pub fn detect(&mut self, img: &RgbImage) -> Result<DetectionResult, LayoutError> {
+    pub(crate) fn detect(&mut self, img: &RgbImage) -> Result<DetectionResult, LayoutError> {
         let (result, _timings) = self.detect_timed(img)?;
         for detection in &result.detections {
             tracing::trace!(class = ?detection.class, confidence = detection.confidence, "Layout detection result");
@@ -162,7 +162,7 @@ impl LayoutEngine {
     ///
     /// Identical to [`detect`] but also returns a [`DetectTimings`] breakdown.
     /// Use this when you need per-step profiling (preprocess / onnx / postprocess).
-    pub fn detect_timed(&mut self, img: &RgbImage) -> Result<(DetectionResult, DetectTimings), LayoutError> {
+    pub(crate) fn detect_timed(&mut self, img: &RgbImage) -> Result<(DetectionResult, DetectTimings), LayoutError> {
         // Model inference (includes preprocessing + ONNX run internally).
         let model_start = Instant::now();
         let mut detections = if let Some(threshold) = self.config.confidence_threshold {
@@ -182,7 +182,7 @@ impl LayoutEngine {
         // Postprocessing heuristics (confidence filtering, overlap resolution).
         let postprocess_start = Instant::now();
         if self.config.apply_heuristics {
-            heuristics::apply_heuristics(&mut detections, page_width as f32, page_height as f32);
+            detections = heuristics::apply_heuristics(detections, page_width as f32, page_height as f32);
         }
         let postprocess_ms = postprocess_start.elapsed().as_secs_f64() * 1000.0;
 
@@ -213,7 +213,10 @@ impl LayoutEngine {
     /// Timing note: `preprocess_ms` and `onnx_ms` in each `DetectTimings` are the
     /// amortized per-image share of the batch operation (total / N), not independent
     /// per-image measurements.
-    pub fn detect_batch(&mut self, images: &[&RgbImage]) -> Result<Vec<(DetectionResult, DetectTimings)>, LayoutError> {
+    pub(crate) fn detect_batch(
+        &mut self,
+        images: &[&RgbImage],
+    ) -> Result<Vec<(DetectionResult, DetectTimings)>, LayoutError> {
         if images.is_empty() {
             return Ok(Vec::new());
         }
@@ -233,7 +236,7 @@ impl LayoutEngine {
             let page_height = img.height();
 
             if self.config.apply_heuristics {
-                heuristics::apply_heuristics(&mut detections, page_width as f32, page_height as f32);
+                detections = heuristics::apply_heuristics(detections, page_width as f32, page_height as f32);
             }
 
             results.push((
@@ -268,7 +271,7 @@ impl LayoutEngine {
     }
 
     /// Get the model name.
-    pub fn model_name(&self) -> &str {
+    pub(crate) fn model_name(&self) -> &str {
         self.model.name()
     }
 
@@ -276,7 +279,7 @@ impl LayoutEngine {
     ///
     /// Used by callers (e.g. parallel layout runners) that need to create
     /// additional engines with identical settings.
-    pub fn config(&self) -> &LayoutEngineConfig {
+    pub(crate) fn config(&self) -> &LayoutEngineConfig {
         &self.config
     }
 }

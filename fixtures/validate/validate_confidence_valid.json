@@ -1,0 +1,19 @@
+{
+	"id": "validate_confidence_valid",
+	"description": "Accept valid confidence threshold",
+	"tags": ["validation", "ocr", "confidence"],
+	"call": "extract_file_sync",
+	"input": {
+		"path": "pdf/fake_memo.pdf",
+		"config": {
+			"ocr": {
+				"confidence_threshold": 0.8
+			}
+		}
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	]
+}

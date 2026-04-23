@@ -28,7 +28,7 @@ use super::{
     )
 )]
 #[cfg_attr(feature = "otel", tracing::instrument(name = "api.health"))]
-pub async fn health_handler() -> Json<HealthResponse> {
+pub(crate) async fn health_handler() -> Json<HealthResponse> {
     // Get plugin status
     let plugin_status = crate::plugins::startup_validation::PluginHealthStatus::check();
 
@@ -56,7 +56,7 @@ pub async fn health_handler() -> Json<HealthResponse> {
     )
 )]
 #[cfg_attr(feature = "otel", tracing::instrument(name = "api.info"))]
-pub async fn info_handler() -> Json<InfoResponse> {
+pub(crate) async fn info_handler() -> Json<InfoResponse> {
     Json(InfoResponse {
         version: env!("CARGO_PKG_VERSION").to_string(),
         rust_backend: true,
@@ -129,7 +129,7 @@ fn toon_response(results: &ExtractResponse) -> Result<axum::response::Response<a
         fields(files_count = tracing::field::Empty)
     )
 )]
-pub async fn extract_handler(
+pub(crate) async fn extract_handler(
     State(state): State<ApiState>,
     headers: HeaderMap,
     MultipartApi(mut multipart): MultipartApi,
@@ -291,7 +291,7 @@ pub async fn extract_handler(
     )
 )]
 #[cfg_attr(feature = "otel", tracing::instrument(name = "api.formats"))]
-pub async fn formats_handler() -> Json<Vec<crate::SupportedFormat>> {
+pub(crate) async fn formats_handler() -> Json<Vec<crate::SupportedFormat>> {
     Json(crate::list_supported_formats())
 }
 
@@ -315,7 +315,7 @@ pub async fn formats_handler() -> Json<Vec<crate::SupportedFormat>> {
     )
 )]
 #[cfg_attr(feature = "otel", tracing::instrument(name = "api.cache_stats"))]
-pub async fn cache_stats_handler() -> Result<Json<CacheStatsResponse>, ApiError> {
+pub(crate) async fn cache_stats_handler() -> Result<Json<CacheStatsResponse>, ApiError> {
     let cache_dir = crate::cache_dir::resolve_cache_base();
 
     let cache_dir_str = cache_dir.to_str().ok_or_else(|| {
@@ -357,7 +357,7 @@ pub async fn cache_stats_handler() -> Result<Json<CacheStatsResponse>, ApiError>
     )
 )]
 #[cfg_attr(feature = "otel", tracing::instrument(name = "api.cache_clear"))]
-pub async fn cache_clear_handler() -> Result<Json<CacheClearResponse>, ApiError> {
+pub(crate) async fn cache_clear_handler() -> Result<Json<CacheClearResponse>, ApiError> {
     let cache_dir = crate::cache_dir::resolve_cache_base();
 
     let cache_dir_str = cache_dir.to_str().ok_or_else(|| {
@@ -417,7 +417,7 @@ pub async fn cache_clear_handler() -> Result<Json<CacheClearResponse>, ApiError>
         )
     )
 )]
-pub async fn embed_handler(JsonApi(request): JsonApi<EmbedRequest>) -> Result<Json<EmbedResponse>, ApiError> {
+pub(crate) async fn embed_handler(JsonApi(request): JsonApi<EmbedRequest>) -> Result<Json<EmbedResponse>, ApiError> {
     if request.texts.is_empty() {
         return Err(ApiError::validation(crate::error::KreuzbergError::validation(
             "No texts provided for embedding generation",
@@ -488,7 +488,7 @@ pub async fn embed_handler(JsonApi(request): JsonApi<EmbedRequest>) -> Result<Js
     )
 )]
 #[cfg(not(feature = "embeddings"))]
-pub async fn embed_handler(JsonApi(_request): JsonApi<EmbedRequest>) -> Result<Json<EmbedResponse>, ApiError> {
+pub(crate) async fn embed_handler(JsonApi(_request): JsonApi<EmbedRequest>) -> Result<Json<EmbedResponse>, ApiError> {
     Err(ApiError::internal(crate::error::KreuzbergError::MissingDependency(
         "Embeddings feature is not enabled. Rebuild with --features embeddings".to_string(),
     )))
@@ -528,7 +528,7 @@ pub async fn embed_handler(JsonApi(_request): JsonApi<EmbedRequest>) -> Result<J
     feature = "otel",
     tracing::instrument(name = "api.extract_structured", skip(state, multipart),)
 )]
-pub async fn extract_structured_handler(
+pub(crate) async fn extract_structured_handler(
     State(state): State<ApiState>,
     MultipartApi(mut multipart): MultipartApi,
 ) -> Result<Json<super::types::StructuredExtractionResponse>, ApiError> {
@@ -705,7 +705,7 @@ pub async fn extract_structured_handler(
     )
 )]
 #[cfg(not(feature = "liter-llm"))]
-pub async fn extract_structured_handler(
+pub(crate) async fn extract_structured_handler(
     State(_state): State<ApiState>,
     MultipartApi(_multipart): MultipartApi,
 ) -> Result<Json<super::types::StructuredExtractionResponse>, ApiError> {
@@ -744,7 +744,7 @@ pub async fn extract_structured_handler(
         fields(text_length = request.text.len(), chunker_type = request.chunker_type.as_str())
     )
 )]
-pub async fn chunk_handler(JsonApi(request): JsonApi<ChunkRequest>) -> Result<Json<ChunkResponse>, ApiError> {
+pub(crate) async fn chunk_handler(JsonApi(request): JsonApi<ChunkRequest>) -> Result<Json<ChunkResponse>, ApiError> {
     use super::types::{ChunkItem, ChunkingConfigResponse};
     use crate::chunking::{ChunkerType, ChunkingConfig, chunk_text};
 
@@ -857,7 +857,7 @@ pub async fn chunk_handler(JsonApi(request): JsonApi<ChunkRequest>) -> Result<Js
     )
 )]
 #[cfg_attr(feature = "otel", tracing::instrument(name = "api.version"))]
-pub async fn version_handler() -> Json<VersionResponse> {
+pub(crate) async fn version_handler() -> Json<VersionResponse> {
     Json(VersionResponse {
         version: env!("CARGO_PKG_VERSION").to_string(),
     })
@@ -885,7 +885,9 @@ pub async fn version_handler() -> Json<VersionResponse> {
     )
 )]
 #[cfg_attr(feature = "otel", tracing::instrument(name = "api.detect", skip(multipart)))]
-pub async fn detect_handler(MultipartApi(mut multipart): MultipartApi) -> Result<Json<DetectResponse>, ApiError> {
+pub(crate) async fn detect_handler(
+    MultipartApi(mut multipart): MultipartApi,
+) -> Result<Json<DetectResponse>, ApiError> {
     let mut file_data: Option<(Vec<u8>, Option<String>)> = None;
 
     while let Some(field) = multipart
@@ -943,7 +945,7 @@ pub async fn detect_handler(MultipartApi(mut multipart): MultipartApi) -> Result
     )
 )]
 #[cfg_attr(feature = "otel", tracing::instrument(name = "api.cache_manifest"))]
-pub async fn cache_manifest_handler() -> Json<ManifestResponse> {
+pub(crate) async fn cache_manifest_handler() -> Json<ManifestResponse> {
     #[allow(unused_mut)]
     let mut models: Vec<ManifestEntryResponse> = Vec::new();
 
@@ -1011,7 +1013,7 @@ pub async fn cache_manifest_handler() -> Json<ManifestResponse> {
     )
 )]
 #[cfg_attr(feature = "otel", tracing::instrument(name = "api.cache_warm", skip(request)))]
-pub async fn cache_warm_handler(JsonApi(request): JsonApi<WarmRequest>) -> Result<Json<WarmResponse>, ApiError> {
+pub(crate) async fn cache_warm_handler(JsonApi(request): JsonApi<WarmRequest>) -> Result<Json<WarmResponse>, ApiError> {
     // Validate embedding_model is not an empty string
     if let Some(ref name) = request.embedding_model
         && name.trim().is_empty()

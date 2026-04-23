@@ -1,0 +1,9 @@
+{
+	"id": "chunk_text_overlap_exceeds",
+	"category": "chunking",
+	"description": "chunk_text overlap >= max",
+	"tags": ["chunking", "error"],
+	"call": "chunk_text",
+	"input": { "text": "Some text.", "config": { "max_characters": 50, "overlap": 60 } },
+	"assertions": [{ "type": "error" }]
+}

@@ -38,7 +38,7 @@ pub struct EmbeddingEngine {
 
 impl EmbeddingEngine {
     /// Create a new embedding engine from a pre-built session and tokenizer.
-    pub fn new(tokenizer: Tokenizer, session: Session, pooling: Pooling) -> Self {
+    pub(crate) fn new(tokenizer: Tokenizer, session: Session, pooling: Pooling) -> Self {
         let need_token_type_ids = session.inputs().iter().any(|input| input.name() == "token_type_ids");
 
         Self {
@@ -60,7 +60,7 @@ impl EmbeddingEngine {
     /// `&mut self` despite performing no mutation (its `run_inner()` takes
     /// `&self`). The ONNX Runtime C API is documented as thread-safe for
     /// concurrent `Run()` calls on the same session.
-    pub fn embed<S: AsRef<str>>(&self, texts: &[S], batch_size: usize) -> Result<Vec<Vec<f32>>, EmbedError> {
+    pub(crate) fn embed<S: AsRef<str>>(&self, texts: &[S], batch_size: usize) -> Result<Vec<Vec<f32>>, EmbedError> {
         if texts.is_empty() {
             return Ok(Vec::new());
         }

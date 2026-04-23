@@ -1,0 +1,20 @@
+{
+	"id": "render_djot_basic",
+	"category": "rendering",
+	"description": "Render HTML document to Djot format",
+	"tags": ["djot", "rendering", "conversion"],
+	"call": "render_djot",
+	"input": {
+		"doc": "<h1>Test Title</h1><p>This is a test document in Djot format.</p><ul><li>Item 1</li><li>Item 2</li></ul>"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 5
+		}
+	]
+}

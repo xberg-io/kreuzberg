@@ -2,15 +2,20 @@
 	"id": "office_epub_basic",
 	"category": "office",
 	"description": "EPUB book extraction with text content.",
-	"document": {
+	"input": {
 		"path": "epub/features.epub",
 		"media_type": "application/epub+zip"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": "application/epub+zip",
-		"min_content_length": 50
-	}
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "application/epub+zip"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 50
+		}
+	]
 }

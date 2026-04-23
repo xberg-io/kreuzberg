@@ -27,7 +27,7 @@ pub use concurrency::ConcurrencyConfig;
 pub use content_filter::ContentFilterConfig;
 pub use email::EmailConfig;
 pub use extraction::{
-    ExtractionConfig, FileExtractionConfig, ImageExtractionConfig, LanguageDetectionConfig, TokenReductionConfig,
+    ExtractionConfig, FileExtractionConfig, ImageExtractionConfig, LanguageDetectionConfig, TokenReductionOptions,
 };
 pub use formats::OutputFormat;
 #[cfg(feature = "html")]

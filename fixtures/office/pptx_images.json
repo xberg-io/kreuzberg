@@ -2,15 +2,20 @@
 	"id": "office_pptx_images",
 	"category": "office",
 	"description": "PPTX presentation containing images to ensure metadata extraction.",
-	"document": {
+	"input": {
 		"path": "pptx/powerpoint_with_image.pptx",
 		"media_type": "application/vnd.openxmlformats-officedocument.presentationml.presentation"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-		"min_content_length": 15
-	}
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 15
+		}
+	]
 }

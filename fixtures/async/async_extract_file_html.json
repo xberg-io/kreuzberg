@@ -1,0 +1,20 @@
+{
+	"id": "async_extract_file_html",
+	"category": "async",
+	"description": "Async extract_file call on HTML document",
+	"tags": ["async", "api", "extract_file", "html"],
+	"input": {
+		"path": "html/simple_table.html",
+		"mime_type": "text/html"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 10
+		}
+	]
+}

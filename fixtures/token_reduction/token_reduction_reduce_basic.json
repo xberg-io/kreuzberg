@@ -1,0 +1,21 @@
+{
+	"id": "token_reduction_reduce_basic",
+	"category": "token_reduction",
+	"description": "Reduce tokens with light compression level",
+	"tags": ["token_reduction", "compression"],
+	"call": "reduce_tokens",
+	"input": {
+		"text": "The quick brown fox jumps over the lazy dog. This is a test sentence.",
+		"level": "light"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "contains",
+			"field": "result",
+			"value": "quick"
+		}
+	]
+}

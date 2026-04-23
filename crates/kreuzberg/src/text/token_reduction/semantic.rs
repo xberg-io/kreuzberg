@@ -35,7 +35,7 @@ pub struct SemanticAnalyzer {
 }
 
 impl SemanticAnalyzer {
-    pub fn new(_language: &str) -> Self {
+    pub(crate) fn new(_language: &str) -> Self {
         let mut analyzer = Self {
             importance_weights: AHashMap::new(),
             hypernyms: AHashMap::new(),
@@ -49,13 +49,13 @@ impl SemanticAnalyzer {
         analyzer
     }
 
-    pub fn apply_semantic_filtering(&self, text: &str, threshold: f32) -> String {
+    pub(crate) fn apply_semantic_filtering(&self, text: &str, threshold: f32) -> String {
         let tokens = self.tokenize_and_score(text);
         let filtered_tokens = self.filter_by_importance(tokens, threshold);
         self.reconstruct_text(filtered_tokens)
     }
 
-    pub fn apply_hypernym_compression(&self, text: &str, target_reduction: Option<f32>) -> String {
+    pub(crate) fn apply_hypernym_compression(&self, text: &str, target_reduction: Option<f32>) -> String {
         let tokens = self.tokenize_and_score(text);
         let compressed_tokens = self.compress_with_hypernyms(tokens, target_reduction);
         self.reconstruct_text(compressed_tokens)

@@ -44,7 +44,7 @@ use crate::types::ocr_elements::{OcrBoundingGeometry, OcrConfidence, OcrElementL
 /// | `ocrx_word`   | word text, bbox, `x_wconf` → `OcrConfidence` |
 ///
 /// Page numbers come from the `ppageno` title property (converted to 1-indexed).
-pub fn parse_hocr_to_internal_document(hocr_html: &str) -> InternalDocument {
+pub(crate) fn parse_hocr_to_internal_document(hocr_html: &str) -> InternalDocument {
     let mut doc = InternalDocument::new("ocr");
     doc.mime_type = std::borrow::Cow::Borrowed("application/x-hocr");
 

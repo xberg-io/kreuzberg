@@ -42,7 +42,7 @@ pub mod serde_vec_arc {
     ///
     /// Each element is unwrapped from its Arc and serialized independently.
     /// No sharing metadata is included in the serialized output.
-    pub fn serialize<S, T>(vec: &[Arc<T>], serializer: S) -> Result<S::Ok, S::Error>
+    pub(crate) fn serialize<S, T>(vec: &[Arc<T>], serializer: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
         T: serde::Serialize,
@@ -59,7 +59,7 @@ pub mod serde_vec_arc {
     ///
     /// Each element is independently wrapped in a new Arc.
     /// Sharing relationships from before serialization are lost.
-    pub fn deserialize<'de, D, T>(deserializer: D) -> Result<Vec<Arc<T>>, D::Error>
+    pub(crate) fn deserialize<'de, D, T>(deserializer: D) -> Result<Vec<Arc<T>>, D::Error>
     where
         D: Deserializer<'de>,
         T: Deserialize<'de>,

@@ -69,7 +69,7 @@
 /// assert_eq!(docx_cap, 450_000);
 /// ```
 #[inline]
-pub fn estimate_content_capacity(file_size: u64, format: &str) -> usize {
+pub(crate) fn estimate_content_capacity(file_size: u64, format: &str) -> usize {
     let ratio = match format.to_lowercase().as_str() {
         "txt" | "text" => 0.95,
         "md" | "markdown" => 0.95,
@@ -97,7 +97,7 @@ pub fn estimate_content_capacity(file_size: u64, format: &str) -> usize {
 ///
 /// An estimated capacity for the Markdown output
 #[inline]
-pub fn estimate_html_markdown_capacity(html_size: u64) -> usize {
+pub(crate) fn estimate_html_markdown_capacity(html_size: u64) -> usize {
     let estimated = (html_size as f64 * 0.65).ceil() as usize;
     estimated.max(64)
 }
@@ -115,7 +115,7 @@ pub fn estimate_html_markdown_capacity(html_size: u64) -> usize {
 ///
 /// An estimated capacity for cell value accumulation
 #[inline]
-pub fn estimate_spreadsheet_capacity(file_size: u64) -> usize {
+pub(crate) fn estimate_spreadsheet_capacity(file_size: u64) -> usize {
     let estimated = (file_size as f64 * 0.40).ceil() as usize;
     estimated.max(64)
 }
@@ -133,7 +133,7 @@ pub fn estimate_spreadsheet_capacity(file_size: u64) -> usize {
 ///
 /// An estimated capacity for slide content accumulation
 #[inline]
-pub fn estimate_presentation_capacity(file_size: u64) -> usize {
+pub(crate) fn estimate_presentation_capacity(file_size: u64) -> usize {
     let estimated = (file_size as f64 * 0.35).ceil() as usize;
     estimated.max(64)
 }
@@ -152,7 +152,7 @@ pub fn estimate_presentation_capacity(file_size: u64) -> usize {
 ///
 /// An estimated capacity for the markdown table output
 #[inline]
-pub fn estimate_table_markdown_capacity(row_count: usize, col_count: usize) -> usize {
+pub(crate) fn estimate_table_markdown_capacity(row_count: usize, col_count: usize) -> usize {
     let base = 50 + (col_count * 5);
     let cell_estimate = row_count.saturating_mul(col_count).saturating_mul(12);
     base.saturating_add(cell_estimate).max(64)

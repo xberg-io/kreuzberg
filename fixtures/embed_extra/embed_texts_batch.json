@@ -1,0 +1,15 @@
+{
+	"id": "embed_texts_batch",
+	"category": "embed_extra",
+	"description": "Batch embed texts",
+	"tags": ["embedding", "batch"],
+	"call": "embed_texts",
+	"input": {
+		"texts": ["Hello", "World"],
+		"config": {}
+	},
+	"assertions": [{ "type": "not_error" }],
+	"skip": {
+		"reason": "Requires features: embeddings"
+	}
+}

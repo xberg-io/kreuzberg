@@ -24,7 +24,7 @@ pub struct TokenReducer {
 }
 
 impl TokenReducer {
-    pub fn new(config: &TokenReductionConfig, language_hint: Option<&str>) -> Result<Self> {
+    pub(crate) fn new(config: &TokenReductionConfig, language_hint: Option<&str>) -> Result<Self> {
         let config = Arc::new(config.clone());
         let language = language_hint
             .or(config.language_hint.as_deref())
@@ -51,11 +51,11 @@ impl TokenReducer {
     }
 
     /// Get the language code being used for stopwords and semantic analysis.
-    pub fn language(&self) -> &str {
+    pub(crate) fn language(&self) -> &str {
         &self.language
     }
 
-    pub fn reduce(&self, text: &str) -> String {
+    pub(crate) fn reduce(&self, text: &str) -> String {
         if text.is_empty() || matches!(self.config.level, ReductionLevel::Off) {
             return text.to_string();
         }
@@ -77,14 +77,14 @@ impl TokenReducer {
         }
     }
 
-    pub fn batch_reduce(&self, texts: &[&str]) -> Vec<String> {
+    pub(crate) fn batch_reduce(&self, texts: &[String]) -> Vec<String> {
         if !self.config.enable_parallel || texts.len() < 2 {
             return texts.iter().map(|text| self.reduce(text)).collect();
         }
 
         #[cfg(not(target_arch = "wasm32"))]
         {
-            texts.par_iter().map(|text| self.reduce(text)).collect()
+            texts.par_iter().map(|text| self.reduce(text.as_str())).collect()
         }
         #[cfg(target_arch = "wasm32")]
         {
@@ -210,7 +210,11 @@ mod tests {
         };
 
         let reducer = TokenReducer::new(&config, None).unwrap();
-        let inputs = vec!["Hello  world!", "How   are you?", "Fine,  thanks!"];
+        let inputs: Vec<String> = vec![
+            "Hello  world!".to_string(),
+            "How   are you?".to_string(),
+            "Fine,  thanks!".to_string(),
+        ];
         let results = reducer.batch_reduce(&inputs);
 
         assert_eq!(results.len(), inputs.len());
@@ -286,10 +290,10 @@ mod tests {
         };
 
         let reducer = TokenReducer::new(&config, None).unwrap();
-        let inputs = vec![
-            "First text  with spaces",
-            "Second  text with  spaces",
-            "Third   text  with spaces",
+        let inputs: Vec<String> = vec![
+            "First text  with spaces".to_string(),
+            "Second  text with  spaces".to_string(),
+            "Third   text  with spaces".to_string(),
         ];
         let results = reducer.batch_reduce(&inputs);
 
@@ -367,7 +371,7 @@ mod tests {
         let text = "The quick brown fox jumps over the lazy dog";
 
         let single_result = reducer.reduce(text);
-        let batch_results = reducer.batch_reduce(&[text]);
+        let batch_results = reducer.batch_reduce(&[text.to_string()]);
 
         assert_eq!(single_result, batch_results[0]);
     }

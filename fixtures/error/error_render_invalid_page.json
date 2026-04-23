@@ -1,0 +1,16 @@
+{
+	"id": "error_render_invalid_page",
+	"category": "error",
+	"description": "Error when rendering page number exceeds document page count",
+	"tags": ["error", "render", "pages"],
+	"call": "render_page",
+	"input": {
+		"path": "pdf/fake_memo.pdf",
+		"page": 999
+	},
+	"assertions": [
+		{
+			"type": "error"
+		}
+	]
+}

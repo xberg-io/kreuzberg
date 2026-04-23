@@ -19,7 +19,7 @@ pub struct RtfImage {
 /// Parses the image type (`\jpegblip`, `\pngblip`, etc.), dimensions, and
 /// collects the hex-encoded image data that follows the control words.
 /// Returns the parsed image and a metadata string for text representation.
-pub fn extract_pict_image(chars: &mut std::iter::Peekable<std::str::Chars>) -> (String, Option<RtfImage>) {
+pub(crate) fn extract_pict_image(chars: &mut std::iter::Peekable<std::str::Chars>) -> (String, Option<RtfImage>) {
     let mut metadata = String::new();
     let mut image_type: Option<&str> = None;
     let mut format: &str = "jpeg"; // default
@@ -137,7 +137,7 @@ pub fn extract_pict_image(chars: &mut std::iter::Peekable<std::str::Chars>) -> (
 /// Extract image metadata from within a `\pict` group (legacy API).
 ///
 /// Looks for image type (jpegblip, pngblip, etc.) and dimensions.
-pub fn extract_image_metadata(chars: &mut std::iter::Peekable<std::str::Chars>) -> String {
+pub(crate) fn extract_image_metadata(chars: &mut std::iter::Peekable<std::str::Chars>) -> String {
     let (metadata, _) = extract_pict_image(chars);
     metadata
 }

@@ -1,0 +1,11 @@
+{
+	"id": "classify_uri_email",
+	"category": "uri",
+	"description": "Classify mailto URI",
+	"tags": ["uri", "email"],
+	"call": "classify_uri",
+	"input": {
+		"url": "mailto:user@example.com"
+	},
+	"assertions": [{ "type": "not_error" }]
+}

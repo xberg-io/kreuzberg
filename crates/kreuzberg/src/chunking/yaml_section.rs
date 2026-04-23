@@ -23,7 +23,7 @@ use super::config::{ChunkingConfig, ChunkingResult};
 ///
 /// Falls back to plain text chunking if the input cannot be parsed
 /// or has no extractable mapping keys.
-pub fn chunk_yaml_by_sections(text: &str, config: &ChunkingConfig) -> Result<ChunkingResult> {
+pub(crate) fn chunk_yaml_by_sections(text: &str, config: &ChunkingConfig) -> Result<ChunkingResult> {
     if text.is_empty() {
         return Ok(ChunkingResult {
             chunks: vec![],

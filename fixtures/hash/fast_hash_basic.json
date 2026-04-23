@@ -1,0 +1,15 @@
+{
+	"id": "fast_hash_basic",
+	"category": "hash",
+	"description": "Hash PDF file using fast hash",
+	"tags": ["hashing", "fast_hash", "pdf"],
+	"call": "fast_hash",
+	"input": {
+		"data": "pdf/fake_memo.pdf"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	]
+}

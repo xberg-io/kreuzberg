@@ -1,0 +1,9 @@
+{
+	"id": "fix_mojibake_clean",
+	"category": "text_utils",
+	"description": "Clean text passes through",
+	"tags": ["text", "encoding"],
+	"call": "fix_mojibake",
+	"input": { "text": "Normal ASCII text" },
+	"assertions": [{ "type": "not_error" }, { "type": "contains", "field": "result", "value": "Normal ASCII text" }]
+}

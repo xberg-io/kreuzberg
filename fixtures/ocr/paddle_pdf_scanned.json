@@ -2,12 +2,9 @@
 	"id": "ocr_paddle_pdf_scanned",
 	"category": "ocr",
 	"description": "Scanned PDF requires PaddleOCR to extract text.",
-	"document": {
+	"input": {
 		"path": "pdf/ocr_test.pdf",
 		"media_type": "application/pdf",
-		"requires_external_tool": ["paddle-ocr", "onnxruntime"]
-	},
-	"extraction": {
 		"config": {
 			"ocr": {
 				"backend": "paddle-ocr",
@@ -16,13 +13,24 @@
 			"force_ocr": true
 		}
 	},
-	"assertions": {
-		"expected_mime": "application/pdf",
-		"min_content_length": 20,
-		"content_contains_any": ["Docling", "Markdown", "JSON"]
-	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "application/pdf"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 20
+		},
+		{
+			"type": "contains_any",
+			"field": "content",
+			"values": ["Docling", "Markdown", "JSON"]
+		}
+	],
 	"skip": {
-		"requires_feature": ["paddle-ocr"],
-		"notes": "Requires PaddleOCR with ONNX Runtime"
+		"reason": "Requires features: paddle-ocr; Requires PaddleOCR with ONNX Runtime"
 	}
 }

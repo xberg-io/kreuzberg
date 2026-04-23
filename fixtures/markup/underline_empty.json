@@ -1,0 +1,9 @@
+{
+	"id": "underline_empty",
+	"category": "markup",
+	"description": "Underline empty",
+	"tags": ["markup", "edge_case"],
+	"call": "underline",
+	"input": { "text": "" },
+	"assertions": [{ "type": "not_error" }]
+}

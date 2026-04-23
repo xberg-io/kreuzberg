@@ -1,0 +1,11 @@
+{
+	"id": "is_valid_format_field_true",
+	"category": "detection",
+	"description": "Valid format field",
+	"tags": ["validation"],
+	"call": "is_valid_format_field",
+	"input": {
+		"field": "content"
+	},
+	"assertions": [{ "type": "not_error" }]
+}

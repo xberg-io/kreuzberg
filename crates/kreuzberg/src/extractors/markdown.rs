@@ -51,7 +51,7 @@ impl MarkdownExtractor {
     // cells_to_markdown and extract_title_from_content moved to shared frontmatter_utils module
 
     /// Build an `InternalDocument` from pulldown-cmark events and optional YAML frontmatter.
-    pub fn build_internal_document(events: &[Event], yaml: &Option<serde_yaml_ng::Value>) -> InternalDocument {
+    pub(crate) fn build_internal_document(events: &[Event], yaml: &Option<serde_yaml_ng::Value>) -> InternalDocument {
         use crate::types::builder;
         use crate::types::document_structure::TextAnnotation;
         let mut b = InternalDocumentBuilder::new("markdown");

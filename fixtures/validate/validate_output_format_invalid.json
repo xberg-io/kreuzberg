@@ -1,0 +1,17 @@
+{
+	"id": "validate_output_format_invalid",
+	"description": "Reject invalid output format",
+	"tags": ["validation", "output_format"],
+	"call": "extract_file_sync",
+	"input": {
+		"path": "pdf/fake_memo.pdf",
+		"config": {
+			"output_format": "nonexistent_format"
+		}
+	},
+	"assertions": [
+		{
+			"type": "error"
+		}
+	]
+}

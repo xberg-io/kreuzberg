@@ -22,7 +22,7 @@
     <img src="https://img.shields.io/maven-central/v/dev.kreuzberg/kreuzberg?label=Java&color=007ec6" alt="Java">
   </a>
   <a href="https://github.com/kreuzberg-dev/kreuzberg/releases">
-    <img src="https://img.shields.io/github/v/tag/kreuzberg-dev/kreuzberg?label=Go&color=007ec6&filter=v4.9.5" alt="Go">
+    <img src="https://img.shields.io/github/v/tag/kreuzberg-dev/kreuzberg?label=Go&color=007ec6&filter=v4.0.0" alt="Go">
   </a>
   <a href="https://www.nuget.org/packages/Kreuzberg/">
     <img src="https://img.shields.io/nuget/v/Kreuzberg?label=C%23&color=007ec6" alt="C#">
@@ -66,9 +66,7 @@
   </a>
 </div>
 
-
 Extract text, tables, images, and metadata from 91+ file formats and 248 programming languages including PDF, Office documents, and images. Native NAPI-RS bindings for Node.js with superior performance, async/await support, and TypeScript type definitions.
-
 
 ## Installation
 
@@ -80,7 +78,6 @@ Install via one of the supported package managers:
 
 
 **npm:**
-
 ```bash
 npm install @kreuzberg/node
 ```
@@ -89,7 +86,6 @@ npm install @kreuzberg/node
 
 
 **pnpm:**
-
 ```bash
 pnpm add @kreuzberg/node
 ```
@@ -98,7 +94,6 @@ pnpm add @kreuzberg/node
 
 
 **yarn:**
-
 ```bash
 yarn add @kreuzberg/node
 ```
@@ -116,11 +111,9 @@ yarn add @kreuzberg/node
 ### Platform Support
 
 Pre-built binaries available for:
-
 - macOS (arm64, x64)
 - Linux (x64)
 - Windows (x64)
-
 
 
 
@@ -130,7 +123,7 @@ Pre-built binaries available for:
 
 Extract text, metadata, and structure from any supported document format:
 
-```typescript
+```typescript title="TypeScript"
 import { extractFileSync } from '@kreuzberg/node';
 
 const config = {
@@ -144,7 +137,6 @@ console.log(result.content);
 console.log(`MIME Type: ${result.mimeType}`);
 ```
 
-
 ### Common Use Cases
 
 #### Extract with Custom Configuration
@@ -154,7 +146,7 @@ Most use cases benefit from configuration to control extraction behavior:
 
 **With OCR (for scanned documents):**
 
-```typescript
+```typescript title="TypeScript"
 import { extractFile } from '@kreuzberg/node';
 
 const config = {
@@ -173,11 +165,10 @@ console.log(result.content);
 
 
 
-
 #### Table Extraction
 
 
-```typescript
+```typescript title="TypeScript"
 import { extractFileSync } from '@kreuzberg/node';
 
 const result = extractFileSync('document.pdf');
@@ -191,11 +182,10 @@ for (const table of result.tables) {
 
 
 
-
 #### Processing Multiple Files
 
 
-```typescript
+```typescript title="TypeScript"
 import { batchExtractFilesSync } from '@kreuzberg/node';
 
 const files = ['doc1.pdf', 'doc2.docx', 'doc3.pptx'];
@@ -209,12 +199,11 @@ results.forEach((result, i) => {
 
 
 
-
 #### Async Processing
 
 For non-blocking document processing:
 
-```typescript
+```typescript title="TypeScript"
 import { extractFile } from '@kreuzberg/node';
 
 const result = await extractFile('document.pdf');
@@ -224,10 +213,9 @@ console.log(result.content);
 
 
 
-
 #### Configuration Discovery
 
-```typescript
+```typescript title="config_discovery.ts"
 import { ExtractionConfig, extractFile } from '@kreuzberg/node';
 
 const config = ExtractionConfig.discover();
@@ -245,10 +233,9 @@ if (config) {
 
 
 
-
 #### Worker Thread Pool
 
-```typescript
+```typescript title="worker_pool.ts"
 import { createWorkerPool, extractFileInWorker, batchExtractFilesInWorker, closeWorkerPool } from '@kreuzberg/node';
 
 // Create a pool with 4 worker threads
@@ -276,16 +263,13 @@ try {
 }
 ```
 
-
 **Performance Benefits:**
-
 - **Parallel Processing**: Multiple documents extracted simultaneously
 - **CPU Utilization**: Maximizes multi-core CPU usage for large batches
 - **Queue Management**: Automatically distributes work across available workers
 - **Resource Control**: Prevents thread exhaustion with configurable pool size
 
 **Best Practices:**
-
 - Use worker pools for batches of 10+ documents
 - Set pool size to number of CPU cores (default behavior)
 - Always close pools with `closeWorkerPool()` to prevent resource leaks
@@ -299,7 +283,6 @@ try {
 - **[API Documentation](https://kreuzberg.dev/api/)** - Complete API reference
 - **[Examples & Guides](https://kreuzberg.dev/guides/)** - Full code examples and usage guides
 - **[Configuration Guide](https://kreuzberg.dev/guides/configuration/)** - Advanced configuration options
-
 
 
 ## NAPI-RS Implementation Details
@@ -434,14 +417,16 @@ Powered by [tree-sitter-language-pack](https://github.com/kreuzberg-dev/tree-sit
 Kreuzberg supports multiple OCR backends for extracting text from scanned documents and images:
 
 
+
 - **Tesseract**
+
 
 - **Paddleocr**
 
 
 ### OCR Configuration Example
 
-```typescript
+```typescript title="TypeScript"
 import { extractFile } from '@kreuzberg/node';
 
 const config = {
@@ -465,7 +450,7 @@ console.log(result.content);
 
 This binding provides full async/await support for non-blocking document processing:
 
-```typescript
+```typescript title="TypeScript"
 import { extractFile } from '@kreuzberg/node';
 
 const result = await extractFile('document.pdf');
@@ -484,6 +469,7 @@ For detailed plugin documentation, visit [Plugin System Guide](https://kreuzberg
 
 
 
+
 ## Embeddings Support
 
 Generate vector embeddings for extracted text using the built-in ONNX Runtime support. Requires ONNX Runtime installation.
@@ -492,11 +478,12 @@ Generate vector embeddings for extracted text using the built-in ONNX Runtime su
 
 
 
+
 ## Batch Processing
 
 Process multiple documents efficiently:
 
-```typescript
+```typescript title="TypeScript"
 import { batchExtractFilesSync } from '@kreuzberg/node';
 
 const files = ['doc1.pdf', 'doc2.docx', 'doc3.pptx'];
@@ -506,7 +493,6 @@ results.forEach((result, i) => {
 	console.log(`File ${i + 1}: ${result.content.length} characters`);
 });
 ```
-
 
 
 

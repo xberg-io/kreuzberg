@@ -1,4 +1,4 @@
-# C
+# C#
 
 <div align="center" style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 20px 0;">
   <!-- Language Bindings -->
@@ -22,7 +22,7 @@
     <img src="https://img.shields.io/maven-central/v/dev.kreuzberg/kreuzberg?label=Java&color=007ec6" alt="Java">
   </a>
   <a href="https://github.com/kreuzberg-dev/kreuzberg/releases">
-    <img src="https://img.shields.io/github/v/tag/kreuzberg-dev/kreuzberg?label=Go&color=007ec6&filter=v4.9.5" alt="Go">
+    <img src="https://img.shields.io/github/v/tag/kreuzberg-dev/kreuzberg?label=Go&color=007ec6&filter=v4.0.0" alt="Go">
   </a>
   <a href="https://www.nuget.org/packages/Kreuzberg/">
     <img src="https://img.shields.io/nuget/v/Kreuzberg?label=C%23&color=007ec6" alt="C#">
@@ -66,9 +66,7 @@
   </a>
 </div>
 
-
 Extract text, tables, images, and metadata from 91+ file formats and 248 programming languages including PDF, Office documents, and images. .NET bindings with full type safety, async/await support, and .NET 10.0+ compatibility.
-
 
 ## Installation
 
@@ -85,7 +83,7 @@ dotnet add package Kreuzberg
 
 Or via NuGet Package Manager:
 
-```text
+```
 Install-Package Kreuzberg
 ```
 
@@ -97,7 +95,6 @@ Install-Package Kreuzberg
 - **.NET 10.0+** required
 - Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.22.x for embeddings support
 - Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
-
 
 
 ## Quick Start
@@ -120,7 +117,6 @@ var result = KreuzbergClient.ExtractFileSync("document.pdf", config);
 Console.WriteLine(result.Content);
 Console.WriteLine($"MIME Type: {result.MimeType}");
 ```
-
 
 ### Common Use Cases
 
@@ -150,7 +146,6 @@ var config = new ExtractionConfig
 var result = KreuzbergClient.ExtractFileSync("document.pdf", config);
 Console.WriteLine(result.Content);
 ```
-
 
 
 
@@ -216,7 +211,6 @@ class Program
 
 
 
-
 #### Async Processing
 
 For non-blocking document processing:
@@ -256,7 +250,6 @@ class Program
     }
 }
 ```
-
 
 
 
@@ -376,7 +369,9 @@ Powered by [tree-sitter-language-pack](https://github.com/kreuzberg-dev/tree-sit
 Kreuzberg supports multiple OCR backends for extracting text from scanned documents and images:
 
 
+
 - **Tesseract**
+
 
 - **Paddleocr**
 
@@ -458,11 +453,13 @@ For detailed plugin documentation, visit [Plugin System Guide](https://kreuzberg
 
 
 
+
 ## Embeddings Support
 
 Generate vector embeddings for extracted text using the built-in ONNX Runtime support. Requires ONNX Runtime installation.
 
 **[Embeddings Guide](https://kreuzberg.dev/features/#embeddings)**
+
 
 
 
@@ -518,7 +515,6 @@ class Program
     }
 }
 ```
-
 
 
 

@@ -66,7 +66,7 @@ pub struct StringBufferPool {
 
 impl StringBufferPool {
     /// Create a new string buffer pool with given configuration.
-    pub fn new(config: PoolConfig) -> Self {
+    pub(crate) fn new(config: PoolConfig) -> Self {
         StringBufferPool {
             pool: dashmap::DashMap::new(),
             config,
@@ -131,7 +131,7 @@ impl StringBufferPool {
     }
 
     /// Return a buffer to the pool for reuse.
-    pub fn release(&self, mut buffer: String) {
+    pub(crate) fn release(&self, mut buffer: String) {
         if buffer.capacity() > self.config.max_capacity_before_discard {
             return;
         }
@@ -152,7 +152,7 @@ impl StringBufferPool {
 
     /// Get buffer reuse metrics (only available with `pool-metrics` feature).
     #[cfg(feature = "pool-metrics")]
-    pub fn metrics(&self) -> StringBufferPoolMetrics {
+    pub(crate) fn metrics(&self) -> StringBufferPoolMetrics {
         let acquire = self.acquire_count.load(Ordering::Relaxed);
         let reuse = self.reuse_count.load(Ordering::Relaxed);
         let hit_rate = if acquire == 0 {
@@ -191,12 +191,12 @@ pub struct PooledString {
 
 impl PooledString {
     /// Get mutable access to the underlying string buffer.
-    pub fn buffer_mut(&mut self) -> &mut String {
+    pub(crate) fn buffer_mut(&mut self) -> &mut String {
         &mut self.buffer
     }
 
     /// Get immutable access to the underlying string buffer.
-    pub fn as_str(&self) -> &str {
+    pub(crate) fn as_str(&self) -> &str {
         self.buffer.as_str()
     }
 }

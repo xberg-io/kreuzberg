@@ -1,0 +1,9 @@
+{
+	"id": "embed_normalize_zero",
+	"category": "embed_extra",
+	"description": "Normalize zero vector",
+	"tags": ["embedding", "edge_case"],
+	"call": "normalize_vec",
+	"input": { "data": [0.0, 0.0, 0.0] },
+	"assertions": [{ "type": "not_error" }]
+}

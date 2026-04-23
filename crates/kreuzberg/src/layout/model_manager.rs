@@ -95,13 +95,13 @@ impl LayoutModelManager {
     /// If `cache_dir` is None, uses the default cache directory:
     /// 1. `KREUZBERG_CACHE_DIR` env var + `/layout`
     /// 2. `.kreuzberg/layout/` in current directory
-    pub fn new(cache_dir: Option<PathBuf>) -> Self {
+    pub(crate) fn new(cache_dir: Option<PathBuf>) -> Self {
         let cache_dir = cache_dir.unwrap_or_else(|| model_download::resolve_cache_dir("layout"));
         Self { cache_dir }
     }
 
     /// Ensure the RT-DETR model (Docling Heron) exists locally, downloading if needed.
-    pub fn ensure_rtdetr_model(&self) -> Result<PathBuf, LayoutError> {
+    pub(crate) fn ensure_rtdetr_model(&self) -> Result<PathBuf, LayoutError> {
         self.ensure_model("rtdetr")
     }
 
@@ -143,41 +143,41 @@ impl LayoutModelManager {
     }
 
     /// Check if the RT-DETR model is cached.
-    pub fn is_rtdetr_cached(&self) -> bool {
+    pub(crate) fn is_rtdetr_cached(&self) -> bool {
         self.cache_dir.join("rtdetr").join("model.onnx").exists()
     }
 
     /// Ensure the TATR table structure recognition model exists locally, downloading if needed.
-    pub fn ensure_tatr_model(&self) -> Result<PathBuf, LayoutError> {
+    pub(crate) fn ensure_tatr_model(&self) -> Result<PathBuf, LayoutError> {
         self.ensure_model("tatr")
     }
 
     /// Check if the TATR model is cached.
-    pub fn is_tatr_cached(&self) -> bool {
+    pub(crate) fn is_tatr_cached(&self) -> bool {
         self.cache_dir.join("tatr").join("tatr.onnx").exists()
     }
 
     /// Ensure a SLANeXT table structure model exists locally, downloading if needed.
     ///
     /// `variant` must be one of: `"slanet_wired"`, `"slanet_wireless"`, `"slanet_plus"`.
-    pub fn ensure_slanet_model(&self, variant: &str) -> Result<PathBuf, LayoutError> {
+    pub(crate) fn ensure_slanet_model(&self, variant: &str) -> Result<PathBuf, LayoutError> {
         self.ensure_model(variant)
     }
 
     /// Ensure the table classifier model exists locally, downloading if needed.
-    pub fn ensure_table_classifier(&self) -> Result<PathBuf, LayoutError> {
+    pub(crate) fn ensure_table_classifier(&self) -> Result<PathBuf, LayoutError> {
         self.ensure_model("table_classifier")
     }
 
     /// Get the cache directory path.
-    pub fn cache_dir(&self) -> &Path {
+    pub(crate) fn cache_dir(&self) -> &Path {
         &self.cache_dir
     }
 
     /// Returns the manifest of all layout model files with checksums and sizes.
     ///
     /// Paths are relative to the cache root (prefixed with "layout/").
-    pub fn manifest() -> Vec<ModelManifestEntry> {
+    pub(crate) fn manifest() -> Vec<ModelManifestEntry> {
         MODELS
             .iter()
             .map(|model| ModelManifestEntry {
@@ -197,7 +197,7 @@ impl LayoutModelManager {
     /// This downloads only the core models needed for basic layout detection and table
     /// structure recognition. Use [`ensure_all_models`] to also download the larger
     /// SLANeXT variants (~730MB).
-    pub fn ensure_default_models(&self) -> Result<(), LayoutError> {
+    pub(crate) fn ensure_default_models(&self) -> Result<(), LayoutError> {
         self.ensure_model("rtdetr")?;
         self.ensure_model("tatr")?;
         tracing::info!("Default layout models (rtdetr, tatr) ready");
@@ -208,7 +208,7 @@ impl LayoutModelManager {
     ///
     /// Downloads RT-DETR, TATR, and all SLANeXT table structure variants (~730MB).
     /// For a lighter download that omits SLANeXT, use [`ensure_default_models`].
-    pub fn ensure_all_models(&self) -> Result<(), LayoutError> {
+    pub(crate) fn ensure_all_models(&self) -> Result<(), LayoutError> {
         for model in MODELS {
             self.ensure_model(model.model_type)?;
         }

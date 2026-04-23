@@ -2,18 +2,20 @@
 	"id": "config_tables_content",
 	"description": "Tests table extraction with content_contains_any assertion on DOCX with tables",
 	"tags": ["contract", "config", "tables"],
-	"document": {
+	"call": "extract_file_sync",
+	"input": {
 		"path": "docx/docx_tables.docx"
 	},
-	"extraction": {
-		"method": "sync",
-		"input_type": "file",
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-		"tables": {
-			"min": 1
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+		},
+		{
+			"type": "count_min",
+			"field": "tables",
+			"value": 1
 		}
-	}
+	]
 }

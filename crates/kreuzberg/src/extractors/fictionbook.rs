@@ -71,7 +71,7 @@ impl Default for FictionBookExtractor {
 }
 
 impl FictionBookExtractor {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self
     }
 

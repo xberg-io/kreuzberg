@@ -2,15 +2,20 @@
 	"id": "office_pptx_basic",
 	"category": "office",
 	"description": "PPTX deck should extract slides content.",
-	"document": {
+	"input": {
 		"path": "pptx/simple.pptx",
 		"media_type": "application/vnd.openxmlformats-officedocument.presentationml.presentation"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-		"min_content_length": 50
-	}
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 50
+		}
+	]
 }

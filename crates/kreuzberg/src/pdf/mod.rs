@@ -87,26 +87,9 @@ pub(crate) mod oxide_text {
 
 #[cfg(feature = "pdf")]
 pub use crate::core::config::HierarchyConfig;
-#[cfg(feature = "pdf")]
-pub use annotations::extract_annotations_from_document;
 #[cfg(all(feature = "pdf", feature = "bundled-pdfium"))]
-pub use bundled::extract_bundled_pdfium;
+pub(crate) use bundled::extract_bundled_pdfium;
 #[cfg(feature = "pdf")]
 pub use error::PdfError;
-#[cfg(feature = "pdf")]
-pub use fonts::{cached_font_count, get_font_descriptors, initialize_font_cache};
-#[cfg(feature = "pdf")]
-pub use hierarchy::{
-    BoundingBox, CharData, FontSizeCluster, HierarchyLevel, TextBlock, assign_hierarchy_levels,
-    assign_hierarchy_levels_from_clusters, cluster_font_sizes, extract_chars_with_fonts, should_trigger_ocr,
-};
-#[cfg(feature = "pdf")]
-pub use images::{PdfImage, PdfImageExtractor, extract_images_from_pdf};
-#[cfg(feature = "pdf")]
-pub use metadata::extract_metadata;
-#[cfg(feature = "pdf")]
-pub use rendering::{PageRenderOptions, PdfPageIterator, render_page_to_image, render_pdf_page_to_png};
-#[cfg(feature = "pdf")]
-pub use table::extract_words_from_page;
 #[cfg(feature = "pdf")]
 pub use text::extract_text_from_pdf;

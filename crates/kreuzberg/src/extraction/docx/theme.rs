@@ -91,7 +91,7 @@ pub struct Theme {
 /// # Returns
 /// * `Ok(Theme)` - The parsed theme
 /// * `Err(KreuzbergError)` - If parsing fails
-pub fn parse_theme_xml(xml: &str) -> Result<Theme> {
+pub(crate) fn parse_theme_xml(xml: &str) -> Result<Theme> {
     let doc = roxmltree::Document::parse(xml)
         .map_err(|e| KreuzbergError::parsing(format!("Failed to parse theme.xml: {}", e)))?;
 
@@ -302,7 +302,7 @@ fn parse_font_family(elem: roxmltree::Node, scheme: &mut FontScheme, is_major: b
 /// # Returns
 /// * `Some(&str)` - The RGB hex color (without '#')
 /// * `None` - If the color reference is not found
-pub fn resolve_theme_color<'a>(theme: &'a Theme, color_ref: &str) -> Option<&'a str> {
+pub(crate) fn resolve_theme_color<'a>(theme: &'a Theme, color_ref: &str) -> Option<&'a str> {
     if let Some(color_scheme) = &theme.color_scheme {
         let color = match color_ref {
             "dk1" => &color_scheme.dk1,

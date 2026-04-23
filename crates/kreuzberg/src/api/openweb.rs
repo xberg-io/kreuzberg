@@ -38,7 +38,7 @@ use super::{
     feature = "otel",
     tracing::instrument(name = "api.openweb_process", skip(state, headers, body))
 )]
-pub async fn openweb_external_handler(
+pub(crate) async fn openweb_external_handler(
     State(state): State<ApiState>,
     headers: HeaderMap,
     body: Bytes,
@@ -112,7 +112,7 @@ pub async fn openweb_external_handler(
     feature = "otel",
     tracing::instrument(name = "api.openweb_docling", skip(state, multipart))
 )]
-pub async fn openweb_docling_handler(
+pub(crate) async fn openweb_docling_handler(
     State(state): State<ApiState>,
     MultipartApi(mut multipart): MultipartApi,
 ) -> Result<Json<DoclingCompatResponse>, ApiError> {

@@ -26,7 +26,8 @@ use std::borrow::Cow;
 ///
 /// * `result` - The extraction result to modify
 /// * `output_format` - The desired output format
-pub fn apply_output_format(result: &mut ExtractionResult, output_format: OutputFormat) {
+pub fn apply_output_format(result: ExtractionResult, output_format: OutputFormat) -> ExtractionResult {
+    let mut result = result;
     let format_name = match output_format {
         OutputFormat::Plain => "plain",
         OutputFormat::Markdown => "markdown",
@@ -42,6 +43,7 @@ pub fn apply_output_format(result: &mut ExtractionResult, output_format: OutputF
     if let Some(formatted) = result.formatted_content.take() {
         result.content = formatted;
     }
+    result
 }
 
 #[cfg(test)]
@@ -51,13 +53,13 @@ mod tests {
 
     #[test]
     fn test_apply_output_format_plain() {
-        let mut result = ExtractionResult {
+        let result = ExtractionResult {
             content: "Hello World".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
         };
 
-        apply_output_format(&mut result, OutputFormat::Plain);
+        let result = apply_output_format(result, OutputFormat::Plain);
 
         assert_eq!(result.content, "Hello World");
         assert_eq!(result.metadata.output_format, Some("plain".to_string()));
@@ -65,13 +67,13 @@ mod tests {
 
     #[test]
     fn test_apply_output_format_markdown_no_prerender() {
-        let mut result = ExtractionResult {
+        let result = ExtractionResult {
             content: "Hello World".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
         };
 
-        apply_output_format(&mut result, OutputFormat::Markdown);
+        let result = apply_output_format(result, OutputFormat::Markdown);
 
         // Without pre-rendered content, content stays as-is
         assert_eq!(result.content, "Hello World");
@@ -80,14 +82,14 @@ mod tests {
 
     #[test]
     fn test_apply_output_format_swaps_formatted_content() {
-        let mut result = ExtractionResult {
+        let result = ExtractionResult {
             content: "plain text".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             formatted_content: Some("# Heading\n\nFormatted markdown".to_string()),
             ..Default::default()
         };
 
-        apply_output_format(&mut result, OutputFormat::Markdown);
+        let result = apply_output_format(result, OutputFormat::Markdown);
 
         assert_eq!(result.content, "# Heading\n\nFormatted markdown");
         assert!(result.formatted_content.is_none(), "formatted_content should be taken");
@@ -96,14 +98,14 @@ mod tests {
 
     #[test]
     fn test_apply_output_format_html_with_prerender() {
-        let mut result = ExtractionResult {
+        let result = ExtractionResult {
             content: "plain text".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             formatted_content: Some("<p>Hello World</p>".to_string()),
             ..Default::default()
         };
 
-        apply_output_format(&mut result, OutputFormat::Html);
+        let result = apply_output_format(result, OutputFormat::Html);
 
         assert_eq!(result.content, "<p>Hello World</p>");
         assert_eq!(result.metadata.output_format, Some("html".to_string()));
@@ -111,14 +113,14 @@ mod tests {
 
     #[test]
     fn test_apply_output_format_djot_with_prerender() {
-        let mut result = ExtractionResult {
+        let result = ExtractionResult {
             content: "plain text".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             formatted_content: Some("# Djot heading".to_string()),
             ..Default::default()
         };
 
-        apply_output_format(&mut result, OutputFormat::Djot);
+        let result = apply_output_format(result, OutputFormat::Djot);
 
         assert_eq!(result.content, "# Djot heading");
         assert_eq!(result.metadata.output_format, Some("djot".to_string()));
@@ -126,13 +128,13 @@ mod tests {
 
     #[test]
     fn test_apply_output_format_structured() {
-        let mut result = ExtractionResult {
+        let result = ExtractionResult {
             content: "Hello World".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
         };
 
-        apply_output_format(&mut result, OutputFormat::Structured);
+        let result = apply_output_format(result, OutputFormat::Structured);
 
         assert_eq!(result.content, "Hello World");
         assert_eq!(result.metadata.output_format, Some("structured".to_string()));
@@ -149,14 +151,14 @@ mod tests {
             ..Default::default()
         };
 
-        let mut result = ExtractionResult {
+        let result = ExtractionResult {
             content: "Hello World".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             metadata,
             ..Default::default()
         };
 
-        apply_output_format(&mut result, OutputFormat::Markdown);
+        let result = apply_output_format(result, OutputFormat::Markdown);
 
         assert_eq!(result.metadata.title, Some("Test Title".to_string()));
         assert_eq!(
@@ -176,14 +178,14 @@ mod tests {
             bounding_box: None,
         };
 
-        let mut result = ExtractionResult {
+        let result = ExtractionResult {
             content: "Hello World".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             tables: vec![table],
             ..Default::default()
         };
 
-        apply_output_format(&mut result, OutputFormat::Html);
+        let result = apply_output_format(result, OutputFormat::Html);
 
         assert_eq!(result.tables.len(), 1);
         assert_eq!(result.tables[0].cells[0][0], "A");
@@ -191,13 +193,13 @@ mod tests {
 
     #[test]
     fn test_apply_output_format_sets_typed_field() {
-        let mut result = ExtractionResult {
+        let result = ExtractionResult {
             content: "test".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
         };
 
-        apply_output_format(&mut result, OutputFormat::Djot);
+        let result = apply_output_format(result, OutputFormat::Djot);
 
         assert_eq!(result.metadata.output_format, Some("djot".to_string()));
     }

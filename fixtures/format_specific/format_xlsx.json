@@ -1,0 +1,16 @@
+{
+	"id": "format_xlsx",
+	"category": "format_specific",
+	"description": "XLSX spreadsheet extraction using extract_bytes_sync",
+	"tags": ["format_specific", "xlsx", "text_extraction"],
+	"call": "extract_bytes_sync",
+	"input": {
+		"path": "xlsx/stanley_cups.xlsx",
+		"mime_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	]
+}

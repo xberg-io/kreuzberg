@@ -153,7 +153,7 @@ impl OcrBackendRegistry {
     ///
     /// The backend if found, or an error if not registered.
     #[tracing::instrument(skip(self), fields(registered_backends = ?self.backends.keys().collect::<Vec<_>>()))]
-    pub fn get(&self, name: &str) -> Result<Arc<dyn OcrBackend>> {
+    pub(crate) fn get(&self, name: &str) -> Result<Arc<dyn OcrBackend>> {
         // Normalize common aliases: "paddleocr" → "paddle-ocr"
         let canonical = match name {
             "paddleocr" => "paddle-ocr",
@@ -187,7 +187,7 @@ impl OcrBackendRegistry {
     /// # Returns
     ///
     /// The first backend supporting the language, or an error if none found.
-    pub fn get_for_language(&self, language: &str) -> Result<Arc<dyn OcrBackend>> {
+    pub(crate) fn get_for_language(&self, language: &str) -> Result<Arc<dyn OcrBackend>> {
         self.backends
             .values()
             .find(|backend| backend.supports_language(language))
@@ -223,7 +223,7 @@ impl OcrBackendRegistry {
     }
 
     /// Shutdown all backends and re-register the built-in defaults.
-    pub fn reset_to_defaults(&mut self) -> Result<()> {
+    pub(crate) fn reset_to_defaults(&mut self) -> Result<()> {
         self.shutdown_all()?;
         let fresh = Self::new();
         for (_name, backend) in fresh.backends {

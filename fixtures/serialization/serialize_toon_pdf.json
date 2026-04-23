@@ -1,0 +1,12 @@
+{
+	"id": "serialize_toon_pdf",
+	"category": "serialization",
+	"description": "Serialize PDF extraction to TOON",
+	"tags": ["serialization", "toon", "pdf"],
+	"call": "serialize_to_toon",
+	"input": {
+		"path": "test_documents/pdf/sample.pdf",
+		"config": {}
+	},
+	"assertions": [{ "type": "not_error" }, { "type": "min_length", "field": "content", "value": 10 }]
+}

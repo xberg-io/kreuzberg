@@ -29,7 +29,7 @@ use jotdown::{Container, Event};
 /// - Captions
 /// - Smart punctuation
 /// - All other djot features
-pub fn extract_complete_djot_content(
+pub(crate) fn extract_complete_djot_content(
     events: &[Event],
     metadata: crate::types::Metadata,
     tables: Vec<crate::types::Table>,

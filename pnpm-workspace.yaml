@@ -5,3 +5,4 @@ packages:
   - "packages/**/*"
   - "e2e/**/*"
   - "e2e/*"
+  - "!e2e/wasm"  # excluded: depends on wasm-pack build output (crates/kreuzberg-wasm/pkg)

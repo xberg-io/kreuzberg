@@ -24,7 +24,7 @@ pub const HTML_CONVERSION_STACK_SIZE_BYTES: usize = 16 * 1024 * 1024;
 /// WASM builds have a fixed stack size that cannot be increased, so we enforce
 /// a 2MB limit to prevent stack overflow during HTML conversion.
 #[cfg(target_arch = "wasm32")]
-pub fn check_wasm_size_limit(html: &str) -> Result<()> {
+pub(crate) fn check_wasm_size_limit(html: &str) -> Result<()> {
     if html.len() > MAX_HTML_SIZE_BYTES {
         return Err(KreuzbergError::validation(format!(
             "HTML file size ({} bytes) exceeds WASM limit of {} bytes (2MB). \
@@ -41,7 +41,7 @@ pub fn check_wasm_size_limit(html: &str) -> Result<()> {
 ///
 /// No-op on non-WASM platforms.
 #[cfg(not(target_arch = "wasm32"))]
-pub fn check_wasm_size_limit(_html: &str) -> Result<()> {
+pub(crate) fn check_wasm_size_limit(_html: &str) -> Result<()> {
     Ok(())
 }
 
@@ -50,7 +50,7 @@ pub fn check_wasm_size_limit(_html: &str) -> Result<()> {
 /// On native platforms, HTML larger than the threshold will be processed
 /// on a dedicated thread with a larger stack to prevent overflow.
 #[cfg(not(target_arch = "wasm32"))]
-pub fn html_requires_large_stack(len: usize) -> bool {
+pub(crate) fn html_requires_large_stack(len: usize) -> bool {
     len >= LARGE_HTML_STACK_THRESHOLD_BYTES
 }
 
@@ -67,7 +67,7 @@ pub fn html_requires_large_stack(len: usize) -> bool {
 ///
 /// The result of the job execution, or an error if the thread panics
 #[cfg(not(target_arch = "wasm32"))]
-pub fn run_on_dedicated_stack<T, F>(job: F) -> Result<T>
+pub(crate) fn run_on_dedicated_stack<T, F>(job: F) -> Result<T>
 where
     T: Send + 'static,
     F: FnOnce() -> Result<T> + Send + 'static,

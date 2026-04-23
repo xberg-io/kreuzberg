@@ -42,7 +42,7 @@ The document is in language: {{ language }}\
 {% endif %}";
 
 /// Render a Jinja2 template with the given context variables.
-pub fn render_template(template: &str, context: &minijinja::value::Value) -> crate::Result<String> {
+pub(crate) fn render_template(template: &str, context: &minijinja::value::Value) -> crate::Result<String> {
     let env = minijinja::Environment::new();
     let tmpl = env
         .template_from_str(template)

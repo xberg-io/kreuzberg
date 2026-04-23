@@ -1,0 +1,20 @@
+{
+	"id": "error_security_content_too_large",
+	"category": "error",
+	"description": "Error when content exceeds security limit for max size",
+	"tags": ["error", "security", "limits"],
+	"call": "extract_file_sync",
+	"input": {
+		"path": "pdf/fake_memo.pdf",
+		"config": {
+			"security_limits": {
+				"max_content_size": 10
+			}
+		}
+	},
+	"assertions": [
+		{
+			"type": "error"
+		}
+	]
+}

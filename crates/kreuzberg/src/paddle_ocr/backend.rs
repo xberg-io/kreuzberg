@@ -70,12 +70,12 @@ pub struct PaddleOcrBackend {
 
 impl PaddleOcrBackend {
     /// Create a new PaddleOCR backend with default configuration.
-    pub fn new() -> Result<Self> {
+    pub(crate) fn new() -> Result<Self> {
         Self::with_config(PaddleOcrConfig::default())
     }
 
     /// Create a new PaddleOCR backend with custom configuration.
-    pub fn with_config(config: PaddleOcrConfig) -> Result<Self> {
+    pub(crate) fn with_config(config: PaddleOcrConfig) -> Result<Self> {
         let cache_dir = config.resolve_cache_dir();
         Ok(Self {
             config: Arc::new(config),

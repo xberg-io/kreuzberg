@@ -1,51 +1,6 @@
 # frozen_string_literal: true
 
-# Steep configuration for Kreuzberg Ruby package
-
 target :lib do
-  signature 'sig'
-
-  check 'lib'
-
-  # Core library
-  library 'pathname'
-  library 'json'
-  library 'fileutils'
-  library 'open3'
-
-  # Strategic ignores for steep limitations (not fixable, safe to ignore):
-
-  # 1. Sorbet type annotations - Steep doesn't recognize Sorbet's T::Struct and T::Sig
-  #    This file uses Sorbet exclusively for type definitions
-  ignore 'lib/kreuzberg/types.rb'
-
-  # 2. Struct.new with keyword_init - steep cannot understand implicit attr_readers
-  #    defined by Struct.new in blocks (Table and Chunk classes)
-  ignore 'lib/kreuzberg/result.rb'
-
-  # 3. Generic type parameters in normalize_config - steep has difficulty with
-  #    methods that take Class as parameter and return instances
-  ignore 'lib/kreuzberg/config.rb'
-
-  # 4. Interface types - steep doesn't recognize that all Ruby objects have nil? and is_a?
-  #    even for interface types like _ToH
-  ignore 'lib/kreuzberg/extraction_api.rb'
-
-  # 5. Open3 methods - steep's built-in Open3 RBS signatures incomplete
-  #    (capture2, capture3, popen3 are standard library methods)
-  ignore 'lib/kreuzberg/setup_lib_path.rb'
-  ignore 'lib/kreuzberg/cli_proxy.rb'
-  ignore 'lib/kreuzberg/mcp_proxy.rb'
-
-  # Ignore Rust extension methods (defined in native code)
-  ignore 'ext'
-
-  # Ignore vendored code
-  ignore 'vendor'
-
-  # Ignore test files
-  ignore 'spec'
-
-  # Ignore examples
-  ignore 'examples'
+  signature "sig"
+  check "lib"
 end

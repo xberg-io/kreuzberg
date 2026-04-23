@@ -43,7 +43,7 @@ pub enum TableType {
 }
 
 impl TableType {
-    pub fn name(&self) -> &'static str {
+    pub(crate) fn name(&self) -> &'static str {
         match self {
             Self::Wired => "wired",
             Self::Wireless => "wireless",
@@ -63,7 +63,7 @@ pub struct TableClassifier {
 
 impl TableClassifier {
     /// Load the table classifier ONNX model from a file path.
-    pub fn from_file(
+    pub(crate) fn from_file(
         path: &str,
         accel: Option<&crate::core::config::acceleration::AccelerationConfig>,
     ) -> Result<Self, LayoutError> {
@@ -92,7 +92,7 @@ impl TableClassifier {
     }
 
     /// Classify a cropped table image as wired or wireless.
-    pub fn classify(&mut self, table_img: &RgbImage) -> Result<TableType, LayoutError> {
+    pub(crate) fn classify(&mut self, table_img: &RgbImage) -> Result<TableType, LayoutError> {
         tracing::trace!(
             input_width = table_img.width(),
             input_height = table_img.height(),

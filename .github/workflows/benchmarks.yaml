@@ -29,6 +29,7 @@ env:
   MEASURE_QUALITY: "true"
   OCR_ENABLED: "true"
   RUN_OCR_BENCHMARKS: "true"
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
   GROUND_TRUTH_DIR: "test_documents/ground_truth"
 
 concurrency:
@@ -57,7 +58,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
       - name: Ensure benchmark harness exists
         run: scripts/benchmarks/ensure-benchmark-harness-exists.sh
@@ -156,7 +157,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
       - name: Install system dependencies
         uses: ./.github/actions/install-system-deps
@@ -221,7 +222,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
       - name: Install system dependencies
         uses: ./.github/actions/install-system-deps
@@ -291,7 +292,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
       - name: Install system dependencies
         uses: ./.github/actions/install-system-deps
@@ -370,7 +371,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
       - name: Install system dependencies
         uses: ./.github/actions/install-system-deps
@@ -452,7 +453,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
       - name: Install system dependencies
         uses: ./.github/actions/install-system-deps
@@ -534,7 +535,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
       - name: Install system dependencies
         uses: ./.github/actions/install-system-deps
@@ -630,7 +631,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
       - name: Install system dependencies
         uses: ./.github/actions/install-system-deps
@@ -716,7 +717,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
       - name: Install system dependencies
         uses: ./.github/actions/install-system-deps
@@ -818,7 +819,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
       - name: Install system dependencies
         uses: ./.github/actions/install-system-deps
@@ -916,7 +917,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
       - name: Install system dependencies
         uses: ./.github/actions/install-system-deps
@@ -1008,7 +1009,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
       - name: Install system dependencies
         uses: ./.github/actions/install-system-deps
@@ -1089,7 +1090,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
       - name: Install system dependencies
         uses: ./.github/actions/install-system-deps
@@ -1184,7 +1185,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
       - name: Install system dependencies
         uses: ./.github/actions/install-system-deps
@@ -1259,7 +1260,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
       - name: Download benchmark harness binary
         uses: actions/download-artifact@v8
@@ -1324,7 +1325,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
       - name: Download benchmark harness binary
         uses: actions/download-artifact@v8
@@ -1384,7 +1385,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
       - name: Download benchmark harness binary
         uses: actions/download-artifact@v8
@@ -1450,7 +1451,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
       - name: Download benchmark harness binary
         uses: actions/download-artifact@v8
@@ -1515,7 +1516,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
       - name: Download benchmark harness binary
         uses: actions/download-artifact@v8
@@ -1580,7 +1581,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
       - name: Download benchmark harness binary
         uses: actions/download-artifact@v8
@@ -1645,7 +1646,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
       - name: Download benchmark harness binary
         uses: actions/download-artifact@v8
@@ -1705,7 +1706,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
       - name: Download benchmark harness binary
         uses: actions/download-artifact@v8
@@ -1769,7 +1770,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
       - name: Download benchmark harness binary
         uses: actions/download-artifact@v8
@@ -1828,7 +1829,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
       - name: Download benchmark harness binary
         uses: actions/download-artifact@v8
@@ -1887,7 +1888,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
       - name: Download benchmark harness binary
         uses: actions/download-artifact@v8
@@ -1951,7 +1952,7 @@ jobs:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
-        run: scripts/ci/benchmarks/free-disk-space.sh
+        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
       - name: Download benchmark harness binary
         uses: actions/download-artifact@v8

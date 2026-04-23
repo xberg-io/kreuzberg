@@ -10,7 +10,7 @@ use crate::types::Table;
 /// Processes a list environment (itemize, enumerate, or description).
 ///
 /// Converts LaTeX lists into markdown-style lists with proper nesting.
-pub fn process_list(content: &str, list_type: &str, output: &mut String) {
+pub(crate) fn process_list(content: &str, list_type: &str, output: &mut String) {
     let lines: Vec<&str> = content.lines().collect();
     let mut item_num = 1;
     let mut i = 0;
@@ -82,7 +82,7 @@ pub fn process_list(content: &str, list_type: &str, output: &mut String) {
 /// Processes a tabular environment.
 ///
 /// Converts LaTeX tables into markdown tables and creates Table structures.
-pub fn process_table(content: &str, output: &mut String, tables: &mut Vec<Table>) {
+pub(crate) fn process_table(content: &str, output: &mut String, tables: &mut Vec<Table>) {
     let lines: Vec<&str> = content.lines().collect();
     let mut rows: Vec<Vec<String>> = Vec::new();
 
@@ -142,7 +142,7 @@ pub fn process_table(content: &str, output: &mut String, tables: &mut Vec<Table>
 /// Processes a table environment with caption.
 ///
 /// Extracts the caption and processes the embedded tabular environment.
-pub fn process_table_with_caption(content: &str, output: &mut String, tables: &mut Vec<Table>) {
+pub(crate) fn process_table_with_caption(content: &str, output: &mut String, tables: &mut Vec<Table>) {
     // Extract and add caption if present
     if content.contains("\\caption{")
         && let Some(caption) = extract_braced(content, "caption")

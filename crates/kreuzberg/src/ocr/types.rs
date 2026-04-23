@@ -19,7 +19,7 @@ pub enum PSMMode {
 }
 
 impl PSMMode {
-    pub fn from_u8(value: u8) -> Result<Self, String> {
+    pub(crate) fn from_u8(value: u8) -> Result<Self, String> {
         match value {
             0 => Ok(PSMMode::OsdOnly),
             1 => Ok(PSMMode::AutoOsd),
@@ -36,7 +36,7 @@ impl PSMMode {
         }
     }
 
-    pub fn as_u8(&self) -> u8 {
+    pub(crate) fn as_u8(&self) -> u8 {
         *self as u8
     }
 }
@@ -112,7 +112,7 @@ impl Default for TesseractConfig {
 }
 
 impl TesseractConfig {
-    pub fn validate(&self) -> Result<(), String> {
+    pub(crate) fn validate(&self) -> Result<(), String> {
         match self.output_format.as_str() {
             "text" | "markdown" | "hocr" | "tsv" => Ok(()),
             _ => Err(format!(

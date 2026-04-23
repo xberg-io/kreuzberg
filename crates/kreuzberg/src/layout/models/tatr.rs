@@ -114,7 +114,7 @@ impl TatrClass {
     }
 
     /// Human-readable label.
-    pub fn name(&self) -> &'static str {
+    pub(crate) fn name(&self) -> &'static str {
         match self {
             Self::Table => "table",
             Self::Column => "column",
@@ -177,7 +177,7 @@ impl TatrModel {
     ///
     /// Uses the default execution provider selection from `build_session`
     /// with a CPU-only fallback if the platform EP fails.
-    pub fn from_file(
+    pub(crate) fn from_file(
         path: &str,
         accel: Option<&crate::core::config::acceleration::AccelerationConfig>,
     ) -> Result<Self, LayoutError> {
@@ -217,7 +217,7 @@ impl TatrModel {
     ///
     /// Returns a [`TatrResult`] with detected rows, columns, headers, and
     /// spanning cells in the input image's pixel coordinate space.
-    pub fn recognize(&mut self, table_img: &RgbImage) -> Result<TatrResult, LayoutError> {
+    pub(crate) fn recognize(&mut self, table_img: &RgbImage) -> Result<TatrResult, LayoutError> {
         let img_w = table_img.width() as f32;
         let img_h = table_img.height() as f32;
 
@@ -502,7 +502,7 @@ fn iob(a: [f32; 4], b: [f32; 4]) -> f32 {
 /// 3. For each (row, column) pair, compute the intersection rectangle
 ///
 /// If `table_bbox` is provided, it is used to clip the row widening bounds.
-pub fn build_cell_grid(result: &TatrResult, table_bbox: Option<[f32; 4]>) -> Vec<Vec<CellBBox>> {
+pub(crate) fn build_cell_grid(result: &TatrResult, table_bbox: Option<[f32; 4]>) -> Vec<Vec<CellBBox>> {
     if result.rows.is_empty() || result.columns.is_empty() {
         return Vec::new();
     }

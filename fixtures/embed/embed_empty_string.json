@@ -1,0 +1,10 @@
+{
+	"id": "embed_empty_string",
+	"category": "embed",
+	"description": "embed_texts empty string error",
+	"tags": ["embedding", "error"],
+	"call": "embed",
+	"input": { "texts": [""], "config": {} },
+	"assertions": [{ "type": "error" }],
+	"skip": { "reason": "Requires features: embeddings" }
+}

@@ -12,7 +12,7 @@ static MARKDOWN_HEADER_RE: Lazy<Regex> = Lazy::new(|| Regex::new(r"^#{1,6}\s+").
 
 /// Check whether a line is a markdown ATX header (`# ...` through `###### ...`).
 #[inline]
-pub fn is_markdown_header(line: &str) -> bool {
+pub(crate) fn is_markdown_header(line: &str) -> bool {
     MARKDOWN_HEADER_RE.is_match(line)
 }
 

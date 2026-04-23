@@ -22,20 +22,20 @@ pub(crate) struct Contexts<'s> {
 impl<'s> Contexts<'s> {
     /// Record a co-occurrence: `left` appears before `right`.
     #[inline]
-    pub fn track(&mut self, left: &'s str, right: &'s str) {
+    pub(crate) fn track(&mut self, left: &'s str, right: &'s str) {
         self.map.entry(right).or_default().follows.inc(left);
         self.map.entry(left).or_default().followed_by.inc(right);
     }
 
     /// The total number of cases where `term` is followed by `by`: `term...by`.
     #[inline]
-    pub fn cases_term_is_followed(&self, term: &str, by: &str) -> usize {
+    pub(crate) fn cases_term_is_followed(&self, term: &str, by: &str) -> usize {
         self.map.get(term).map_or(0, |freq| freq.followed_by.get(&by))
     }
 
     /// Dispersion of the term's context (left, right).
     /// `0` = fixed expression, `1` = dispersive.
-    pub fn dispersion_of(&self, term: &str) -> (f64, f64) {
+    pub(crate) fn dispersion_of(&self, term: &str) -> (f64, f64) {
         match self.map.get(term) {
             None => (0.0, 0.0),
             Some(PairwiseFreq { follows, followed_by }) => (

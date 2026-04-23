@@ -31,6 +31,7 @@ struct OcrRegion<'a> {
 }
 
 /// Pre-computed table markdown for a table detection region.
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct RecognizedTable {
     /// Detection bbox that this table corresponds to (for matching).
     pub detection_bbox: BBox,
@@ -48,7 +49,7 @@ pub struct RecognizedTable {
 /// `recognized_tables` provides pre-computed markdown for Table regions
 /// (from TATR or other table structure recognizer). When empty, Table
 /// regions fall back to heuristic grid reconstruction from OCR elements.
-pub fn assemble_ocr_markdown(
+pub(crate) fn assemble_ocr_markdown(
     elements: &[OcrElement],
     detection: Option<&DetectionResult>,
     img_width: u32,
@@ -125,7 +126,7 @@ pub fn assemble_ocr_markdown(
 ///
 /// For each Table detection, crops the page image, runs TATR inference,
 /// matches OCR elements to cells, and produces markdown tables.
-pub fn recognize_page_tables(
+pub(crate) fn recognize_page_tables(
     page_image: &image::RgbImage,
     detection: &DetectionResult,
     elements: &[OcrElement],

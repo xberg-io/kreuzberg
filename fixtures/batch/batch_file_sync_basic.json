@@ -1,0 +1,15 @@
+{
+	"id": "batch_file_sync_basic",
+	"category": "batch",
+	"description": "Extract text from multiple files synchronously",
+	"tags": ["batch", "sync", "multiple_files"],
+	"call": "batch_extract_file_sync",
+	"input": {
+		"paths": ["pdf/fake_memo.pdf", "text/fake_text.txt"]
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	]
+}

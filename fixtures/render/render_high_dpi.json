@@ -1,0 +1,19 @@
+{
+	"id": "render_high_dpi",
+	"category": "render",
+	"description": "Render PDF page with high DPI setting (300 DPI)",
+	"tags": ["render", "pdf", "dpi"],
+	"call": "render_page",
+	"input": {
+		"path": "pdf/fake_memo.pdf",
+		"page": 0,
+		"config": {
+			"dpi": 300
+		}
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	]
+}

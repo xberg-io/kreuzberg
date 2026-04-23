@@ -1,0 +1,9 @@
+{
+	"id": "italic_empty",
+	"category": "markup",
+	"description": "Italic empty string",
+	"tags": ["markup", "edge_case"],
+	"call": "italic",
+	"input": { "text": "" },
+	"assertions": [{ "type": "not_error" }]
+}

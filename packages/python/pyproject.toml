@@ -1,98 +1,40 @@
 [build-system]
+requires = ["maturin>=1.0,<2.0"]
 build-backend = "maturin"
-requires = [ "maturin>=1,<2" ]
 
 [project]
 name = "kreuzberg"
 version = "4.9.5"
-description = """\
-  High-performance document intelligence library for Python. Extract text, metadata, and structured data from PDFs, \
-  Office documents, images, and 88+ formats. Powered by Rust core for 10-50x speed improvements.\
-  """
-readme = "README.md"
-keywords = [
-  "document-extraction",
-  "document-intelligence",
-  "document-parsing",
-  "document-processing",
-  "docx",
-  "easyocr",
-  "email-parsing",
-  "html",
-  "markdown",
-  "metadata-extraction",
-  "ocr",
-  "office-documents",
-  "pdf",
-  "pdf-extraction",
-  "performance",
-  "pptx",
-  "rust",
-  "table-extraction",
-  "tesseract",
-  "text-extraction",
-  "xlsx",
-  "xml",
-]
-license = { text = "Elastic-2.0" }
-maintainers = [ { name = "Na'aman Hirschfeld", email = "naaman@kreuzberg.dev" } ]
-authors = [ { name = "Na'aman Hirschfeld", email = "naaman@kreuzberg.dev" } ]
+description = "High-performance document intelligence library"
+license = "Elastic-2.0"
 requires-python = ">=3.10"
 classifiers = [
-  "Development Status :: 4 - Beta",
-  "Intended Audience :: Developers",
-  "Intended Audience :: Information Technology",
-  "Intended Audience :: Science/Research",
-  "License :: Other/Proprietary License",
-  "Operating System :: OS Independent",
   "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
-  "Programming Language :: Python :: Implementation :: CPython",
-  "Programming Language :: Rust",
-  "Topic :: Office/Business",
-  "Topic :: Scientific/Engineering :: Information Analysis",
-  "Topic :: Software Development :: Libraries :: Python Modules",
-  "Topic :: Text Processing",
-  "Topic :: Text Processing :: Filters",
-  "Topic :: Text Processing :: General",
-  "Typing :: Typed",
 ]
-dependencies = []
-optional-dependencies.all = [ "kreuzberg[easyocr]", "kreuzberg[tesseract]" ]
-optional-dependencies.easyocr = [
-  "easyocr>=1.7.2",
-  "torch>=2.9.1",
+authors = [
+    { name = "Na'aman Hirschfeld <naaman@kreuzberg.dev>" }
 ]
-optional-dependencies.tesseract = []
-urls.Changelog = "https://kreuzberg.dev/CHANGELOG/"
-urls.Documentation = "https://kreuzberg.dev"
-urls.Homepage = "https://kreuzberg.dev"
-urls.Issues = "https://github.com/kreuzberg-dev/kreuzberg/issues"
-urls.Repository = "https://github.com/kreuzberg-dev/kreuzberg"
-urls.Source = "https://github.com/kreuzberg-dev/kreuzberg"
-scripts.kreuzberg = "kreuzberg.__main__:main"
+keywords = ["document", "extraction", "pdf", "ocr", "text"]
+homepage = "https://kreuzberg.dev"
+
+[project.optional-dependencies]
+easyocr = ["easyocr>=1.7.2", "torch>=2.9.1"]
+
+[project.urls]
+repository = "https://github.com/kreuzberg-dev/kreuzberg"
 
 [tool.maturin]
-module-name = "kreuzberg._internal_bindings"
+module-name = "kreuzberg._kreuzberg"
 manifest-path = "../../crates/kreuzberg-py/Cargo.toml"
-include = [
-  { path = "kreuzberg/_internal_bindings.pyi", format = [ "wheel", "sdist" ] },
-  { path = "kreuzberg/py.typed", format = [ "wheel", "sdist" ] },
-]
+features = ["pyo3/extension-module"]
+python-packages = ["kreuzberg"]
 
-[tool.pytest]
-ini_options.asyncio_mode = "auto"
-ini_options.timeout = 60
-ini_options.timeout_method = "thread"
-ini_options.markers = [
-  "slow: marks tests as slow (deselect with '-m \"not slow\"')",
-  "windows_slow: marks tests as too slow on Windows CI (deselect with '-m \"not windows_slow\"')",
-  "integration: marks tests as integration tests (requires running services)",
-  "cli_features: marks tests that require CLI binary built with --features all (deselect with '-m \"not cli_features\"')",
-]
-ini_options.timeout_func_only = true
-ini_options.addopts = "--doctest-modules"
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_functions = "test_*"

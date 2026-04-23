@@ -41,9 +41,9 @@ mod types;
 
 // Public API re-exports
 pub use converter::convert_html_to_markdown;
-pub use converter::convert_html_to_markdown_with_metadata;
-pub use converter::convert_html_to_markdown_with_tables;
-pub use converter::extract_html_inline_images;
+pub(crate) use converter::convert_html_to_markdown_with_metadata;
+pub(crate) use converter::convert_html_to_markdown_with_tables;
+pub(crate) use converter::extract_html_inline_images;
 pub use types::{
     CodeBlockStyle, HeadingStyle, HighlightStyle, ListIndentType, NewlineStyle, PreprocessingOptions,
     PreprocessingPreset, WhitespaceMode,

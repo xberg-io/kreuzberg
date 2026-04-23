@@ -83,14 +83,14 @@ pub struct PdfExtractionMetadata {
 /// Extract PDF-specific metadata from raw bytes.
 ///
 /// Returns only PDF-specific metadata (version, producer, encryption status, dimensions).
-pub fn extract_metadata(pdf_bytes: &[u8]) -> Result<PdfMetadata> {
+pub(crate) fn extract_metadata(pdf_bytes: &[u8]) -> Result<PdfMetadata> {
     extract_metadata_with_password(pdf_bytes, None)
 }
 
 /// Extract PDF-specific metadata from raw bytes with optional password.
 ///
 /// Returns only PDF-specific metadata (version, producer, encryption status, dimensions).
-pub fn extract_metadata_with_password(pdf_bytes: &[u8], password: Option<&str>) -> Result<PdfMetadata> {
+pub(crate) fn extract_metadata_with_password(pdf_bytes: &[u8], password: Option<&str>) -> Result<PdfMetadata> {
     let pdfium = bind_pdfium(PdfError::MetadataExtractionFailed, "metadata extraction", None)?;
 
     let document = pdfium.load_pdf_from_byte_slice(pdf_bytes, password).map_err(|e| {
@@ -107,7 +107,7 @@ pub fn extract_metadata_with_password(pdf_bytes: &[u8], password: Option<&str>) 
     extract_pdf_specific_metadata(&document)
 }
 
-pub fn extract_metadata_with_passwords(pdf_bytes: &[u8], passwords: &[&str]) -> Result<PdfMetadata> {
+pub(crate) fn extract_metadata_with_passwords(pdf_bytes: &[u8], passwords: &[&str]) -> Result<PdfMetadata> {
     let mut last_error = None;
 
     for password in passwords {
@@ -145,7 +145,7 @@ pub fn extract_metadata_with_passwords(pdf_bytes: &[u8], passwords: &[&str]) -> 
 ///
 /// Returns a `PdfExtractionMetadata` struct containing all extracted metadata,
 /// including page structure if boundaries were provided.
-pub fn extract_metadata_from_document(
+pub(crate) fn extract_metadata_from_document(
     document: &PdfDocument<'_>,
     page_boundaries: Option<&[PageBoundary]>,
     content: Option<&str>,
@@ -293,7 +293,7 @@ fn build_page_structure(
 /// This function uses batch fetching with caching to optimize metadata extraction
 /// by reducing repeated dictionary lookups. All metadata tags are fetched once and
 /// cached in a single pass.
-pub fn extract_common_metadata_from_document(document: &PdfDocument<'_>) -> Result<CommonPdfMetadata> {
+pub(crate) fn extract_common_metadata_from_document(document: &PdfDocument<'_>) -> Result<CommonPdfMetadata> {
     let pdf_metadata = document.metadata();
 
     let tag_types = [

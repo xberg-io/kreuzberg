@@ -1,0 +1,99 @@
+name: CI Docker
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'docker/**'
+      - 'Dockerfile*'
+      - 'charts/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'docker/**'
+      - 'Dockerfile*'
+
+concurrency:
+  group: ci-docker-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  ORT_VERSION: "1.24.2"
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+permissions:
+  contents: read
+
+jobs:
+  docker:
+    name: Docker (${{ matrix.variant }})
+    if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        variant: [core, full, cli]
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Free disk space
+        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: docker/Dockerfile.${{ matrix.variant }}
+          push: false
+          load: true
+          tags: kreuzberg:${{ matrix.variant }}
+          build-args: ONNXRUNTIME_VERSION=${{ env.ORT_VERSION }}
+          cache-from: type=gha,scope=ci-docker-${{ matrix.variant }}
+          cache-to: type=gha,mode=max,scope=ci-docker-${{ matrix.variant }}
+
+      - name: Save Docker image
+        shell: bash
+        run: |
+          mkdir -p /tmp
+          docker save kreuzberg:${{ matrix.variant }} | gzip > /tmp/kreuzberg-${{ matrix.variant }}.tar.gz
+          ls -lh /tmp/kreuzberg-${{ matrix.variant }}.tar.gz
+
+      - name: Check image size
+        shell: bash
+        run: |
+          size_mb=$(docker inspect kreuzberg:${{ matrix.variant }} --format='{{.Size}}' | awk '{print int($1/1024/1024)}')
+          echo "Image size: ${size_mb}MB"
+          if [ "${{ matrix.variant }}" = "cli" ] && [ "$size_mb" -gt 200 ]; then
+            echo "::warning::CLI image is larger than 200MB (${size_mb}MB)"
+          fi
+
+      - name: Run feature tests
+        if: matrix.variant != 'cli'
+        run: scripts/ci/docker/run-feature-tests.sh "${{ matrix.variant }}"
+
+      - name: Run configuration tests
+        if: matrix.variant != 'cli'
+        run: scripts/ci/docker/run-config-tests.sh "${{ matrix.variant }}"
+
+      - name: Run API contract tests with schemathesis
+        if: matrix.variant != 'cli'
+        run: |
+          pip3 install schemathesis
+          container_id=$(docker run -d -p 8000:8000 kreuzberg:${{ matrix.variant }})
+          sleep 5
+          FAILED=0
+          schemathesis run http://localhost:8000/openapi.json \
+            --max-examples=10 \
+            --request-timeout=30000 \
+            --checks not_a_server_error,status_code_conformance,content_type_conformance,response_schema_conformance,negative_data_rejection || FAILED=1
+          docker stop "$container_id"
+          exit "$FAILED"
+
+      - name: Run CLI tests
+        if: matrix.variant == 'cli'
+        run: scripts/ci/docker/run-cli-tests.sh

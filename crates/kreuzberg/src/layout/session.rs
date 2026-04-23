@@ -15,7 +15,7 @@ use crate::layout::error::LayoutError;
 /// - Others: CPU only
 ///
 /// ORT silently falls back to CPU if the requested EP is unavailable.
-pub fn build_session(
+pub(crate) fn build_session(
     path: &str,
     accel: Option<&AccelerationConfig>,
     thread_budget: usize,

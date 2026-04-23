@@ -1,0 +1,20 @@
+{
+	"id": "error_security_archive_files",
+	"category": "error",
+	"description": "Error when archive file count exceeds security limit",
+	"tags": ["error", "security", "archive"],
+	"call": "extract_file_sync",
+	"input": {
+		"path": "archives/documents.zip",
+		"config": {
+			"security_limits": {
+				"max_files_in_archive": 0
+			}
+		}
+	},
+	"assertions": [
+		{
+			"type": "error"
+		}
+	]
+}

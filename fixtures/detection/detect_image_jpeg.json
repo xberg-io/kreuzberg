@@ -1,0 +1,11 @@
+{
+	"id": "detect_image_jpeg",
+	"category": "detection",
+	"description": "Detect JPEG from bytes",
+	"tags": ["image", "detection"],
+	"call": "detect_image_format",
+	"input": {
+		"data": "/9j/4AAQ"
+	},
+	"assertions": [{ "type": "not_error" }]
+}

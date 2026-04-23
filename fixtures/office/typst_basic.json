@@ -2,15 +2,20 @@
 	"id": "office_typst_basic",
 	"category": "office",
 	"description": "Typst document text extraction.",
-	"document": {
+	"input": {
 		"path": "typst/headings.typ",
 		"media_type": "application/x-typst"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": ["application/x-typst", "text/x-typst"],
-		"min_content_length": 10
-	}
+	"assertions": [
+		{
+			"type": "contains_any",
+			"field": "mime_type",
+			"values": ["application/x-typst", "text/x-typst"]
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 10
+		}
+	]
 }

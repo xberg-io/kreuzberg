@@ -277,18 +277,8 @@ tasks:
       - cargo upgrade --incompatible
       - cargo update
       - echo "Updating Rust dependencies (Ruby native crate)..."
-      - cargo upgrade --incompatible --manifest-path packages/ruby/ext/kreuzberg_rb/native/Cargo.toml
-      - cargo update --manifest-path packages/ruby/ext/kreuzberg_rb/native/Cargo.toml
-
-  e2e:generate:
-    desc: Generate and format Rust E2E tests from fixtures
-    cmds:
-      - cmd: bash scripts/task/e2e-generate.sh rust
-        platforms: [linux, darwin]
-      - cmd: echo "E2E generation not yet supported on Windows - use WSL or CI"
-        platforms: [windows]
-      - task: e2e:format
-      - task: e2e:lint
+      - cargo upgrade --incompatible --manifest-path packages/ruby/ext/kreuzberg_rb/Cargo.toml
+      - cargo update --manifest-path packages/ruby/ext/kreuzberg_rb/Cargo.toml
 
   e2e:format:
     desc: Format generated Rust E2E sources
@@ -311,11 +301,3 @@ tasks:
       RUST_TEST_THREADS: "1"
     cmds:
       - cargo test -p e2e-rust --release
-
-  e2e:verify:
-    desc: Regenerate and validate Rust E2E suite (generate + format + lint + test)
-    cmds:
-      - task: e2e:generate
-      - task: e2e:format
-      - task: e2e:lint
-      - task: e2e:test

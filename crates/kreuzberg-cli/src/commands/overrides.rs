@@ -686,7 +686,7 @@ impl ExtractionOverrides {
 
     fn apply_token_reduction(&self, config: &mut ExtractionConfig) {
         if let Some(level) = self.token_reduction {
-            config.token_reduction = Some(kreuzberg::TokenReductionConfig {
+            config.token_reduction = Some(kreuzberg::TokenReductionOptions {
                 mode: level.as_mode_str().to_string(),
                 preserve_important_words: true,
             });

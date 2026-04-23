@@ -1,0 +1,20 @@
+{
+	"id": "camel_to_snake_single",
+	"category": "string_utils",
+	"description": "Convert single word (no camelCase) remains unchanged",
+	"tags": ["string_utils", "conversion"],
+	"call": "camel_to_snake",
+	"input": {
+		"text": "hello"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "equals",
+			"field": "result",
+			"value": "hello"
+		}
+	]
+}

@@ -1,0 +1,15 @@
+{
+	"id": "cache_key_single",
+	"category": "cache_operations",
+	"description": "Generate cache key from single part",
+	"tags": ["cache", "key", "single"],
+	"call": "generate_cache_key",
+	"input": {
+		"parts": "[\"test\"]"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	]
+}

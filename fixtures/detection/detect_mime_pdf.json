@@ -1,0 +1,15 @@
+{
+	"id": "detect_mime_pdf",
+	"category": "detection",
+	"description": "Detect PDF MIME type from extension",
+	"tags": ["mime_detection", "pdf"],
+	"call": "detect_mime_type_standalone",
+	"input": {
+		"path": "test.pdf"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	]
+}

@@ -1,0 +1,20 @@
+{
+	"id": "dedup_basic",
+	"category": "text_utils",
+	"description": "Deduplicate repeated lines",
+	"tags": ["text_utils", "deduplication"],
+	"call": "dedup_text",
+	"input": {
+		"text": "line1\nline1\nline2\nline2\nline3"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "contains",
+			"field": "result",
+			"value": "line1"
+		}
+	]
+}

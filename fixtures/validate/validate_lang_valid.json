@@ -1,0 +1,15 @@
+{
+	"id": "validate_lang_valid",
+	"category": "validation",
+	"description": "Accept valid language code",
+	"tags": ["validation", "language"],
+	"call": "validate_language_code",
+	"input": {
+		"code": "eng"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	]
+}

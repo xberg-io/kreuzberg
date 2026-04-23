@@ -1,0 +1,21 @@
+{
+	"id": "error_invalid_ocr_language",
+	"category": "error",
+	"description": "Error when OCR language pack is not available",
+	"tags": ["error", "config", "ocr"],
+	"call": "extract_file_sync",
+	"input": {
+		"path": "images/balance_sheet_1.png",
+		"config": {
+			"ocr": {
+				"language": "zzz_nonexistent",
+				"force_ocr": true
+			}
+		}
+	},
+	"assertions": [
+		{
+			"type": "error"
+		}
+	]
+}

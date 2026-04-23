@@ -44,7 +44,7 @@ static CACHED_TATR: ModelCache<models::tatr::TatrModel> = ModelCache::new();
 static TATR_TRIED: OnceLock<bool> = OnceLock::new();
 
 /// Convert a [`LayoutDetectionConfig`] into a [`LayoutEngineConfig`].
-pub fn config_from_extraction(layout_config: &LayoutDetectionConfig) -> LayoutEngineConfig {
+pub(crate) fn config_from_extraction(layout_config: &LayoutDetectionConfig) -> LayoutEngineConfig {
     LayoutEngineConfig {
         backend: ModelBackend::RtDetr,
         confidence_threshold: layout_config.confidence_threshold,
@@ -57,7 +57,7 @@ pub fn config_from_extraction(layout_config: &LayoutDetectionConfig) -> LayoutEn
 /// Create a [`LayoutEngine`] from a [`LayoutDetectionConfig`].
 ///
 /// Ensures ORT is available, then creates the engine with model download.
-pub fn create_engine(layout_config: &LayoutDetectionConfig) -> Result<LayoutEngine, LayoutError> {
+pub(crate) fn create_engine(layout_config: &LayoutDetectionConfig) -> Result<LayoutEngine, LayoutError> {
     crate::ort_discovery::ensure_ort_available();
     let config = config_from_extraction(layout_config);
     LayoutEngine::from_config(config)
@@ -68,12 +68,12 @@ pub fn create_engine(layout_config: &LayoutDetectionConfig) -> Result<LayoutEngi
 /// The caller owns the engine for the duration of its work and should
 /// return it via [`return_engine`] when done. This avoids holding the
 /// global mutex during inference.
-pub fn take_or_create_engine(layout_config: &LayoutDetectionConfig) -> Result<LayoutEngine, LayoutError> {
+pub(crate) fn take_or_create_engine(layout_config: &LayoutDetectionConfig) -> Result<LayoutEngine, LayoutError> {
     CACHED_ENGINE.take_or_create(|| create_engine(layout_config))
 }
 
 /// Return a layout engine to the global cache for reuse by future extractions.
-pub fn return_engine(engine: LayoutEngine) {
+pub(crate) fn return_engine(engine: LayoutEngine) {
     CACHED_ENGINE.put(engine);
 }
 
@@ -82,7 +82,7 @@ pub fn return_engine(engine: LayoutEngine) {
 /// Returns `None` if the model cannot be loaded. Once a load attempt fails,
 /// subsequent calls return `None` immediately without retrying, avoiding
 /// repeated download attempts and redundant warning logs.
-pub fn take_or_create_tatr(
+pub(crate) fn take_or_create_tatr(
     accel: Option<&crate::core::config::acceleration::AccelerationConfig>,
 ) -> Option<models::tatr::TatrModel> {
     // Fast path: if we already know TATR is unavailable, skip immediately.
@@ -116,7 +116,7 @@ pub fn take_or_create_tatr(
 }
 
 /// Return a TATR model to the global cache for reuse.
-pub fn return_tatr(model: models::tatr::TatrModel) {
+pub(crate) fn return_tatr(model: models::tatr::TatrModel) {
     CACHED_TATR.put(model);
 }
 
@@ -143,7 +143,7 @@ static SLANET_PLUS_TRIED: OnceLock<bool> = OnceLock::new();
 static TABLE_CLASSIFIER_TRIED: OnceLock<bool> = OnceLock::new();
 
 /// Take a cached SLANeXT model for the given variant, or create a new one.
-pub fn take_or_create_slanet(
+pub(crate) fn take_or_create_slanet(
     variant: &str,
     accel: Option<&crate::core::config::acceleration::AccelerationConfig>,
 ) -> Option<models::slanet::SlanetModel> {
@@ -182,7 +182,7 @@ pub fn take_or_create_slanet(
 }
 
 /// Return a SLANeXT model to the global cache for reuse.
-pub fn return_slanet(variant: &str, model: models::slanet::SlanetModel) {
+pub(crate) fn return_slanet(variant: &str, model: models::slanet::SlanetModel) {
     match variant {
         "slanet_wired" => CACHED_SLANET_WIRED.put(model),
         "slanet_wireless" => CACHED_SLANET_WIRELESS.put(model),
@@ -192,7 +192,7 @@ pub fn return_slanet(variant: &str, model: models::slanet::SlanetModel) {
 }
 
 /// Take a cached table classifier, or create a new one.
-pub fn take_or_create_table_classifier(
+pub(crate) fn take_or_create_table_classifier(
     accel: Option<&crate::core::config::acceleration::AccelerationConfig>,
 ) -> Option<models::table_classifier::TableClassifier> {
     if let Some(&false) = TABLE_CLASSIFIER_TRIED.get() {
@@ -223,6 +223,6 @@ pub fn take_or_create_table_classifier(
 }
 
 /// Return a table classifier to the global cache for reuse.
-pub fn return_table_classifier(model: models::table_classifier::TableClassifier) {
+pub(crate) fn return_table_classifier(model: models::table_classifier::TableClassifier) {
     CACHED_TABLE_CLASSIFIER.put(model);
 }

@@ -1,0 +1,20 @@
+{
+	"id": "cells_text_basic",
+	"category": "table_operations",
+	"description": "Convert basic 2D cell array to space-separated text",
+	"tags": ["table", "text", "cells"],
+	"call": "cells_to_text",
+	"input": {
+		"cells": "[[\"Name\",\"Age\"],[\"Alice\",\"30\"],[\"Bob\",\"25\"]]"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "contains",
+			"field": "result",
+			"value": "Alice"
+		}
+	]
+}

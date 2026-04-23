@@ -1,0 +1,24 @@
+{
+	"id": "utility_blake3_hash",
+	"category": "utility",
+	"description": "BLAKE3 hash of known bytes produces deterministic output",
+	"tags": ["utility", "hash", "blake3"],
+	"call": "blake3_hash_bytes",
+	"input": {
+		"args": ["hello world"]
+	},
+	"skip": {
+		"languages": [],
+		"reason": "Requires blake3_hash_bytes call config in alef.toml"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "min_length",
+			"field": "result",
+			"value": 64
+		}
+	]
+}

@@ -51,7 +51,7 @@ const MIN_WORD_LENGTH: usize = 1;
 /// # }
 /// # }
 /// ```
-pub fn extract_words_from_page(page: &PdfPage, min_confidence: f64) -> Result<Vec<HocrWord>> {
+pub(crate) fn extract_words_from_page(page: &PdfPage, min_confidence: f64) -> Result<Vec<HocrWord>> {
     let page_width = page.width().value as i32;
     let page_height = page.height().value as i32;
 

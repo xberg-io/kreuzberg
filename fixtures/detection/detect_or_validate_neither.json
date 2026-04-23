@@ -1,0 +1,9 @@
+{
+	"id": "detect_or_validate_neither",
+	"category": "detection",
+	"description": "detect_or_validate errors with no args",
+	"tags": ["mime_detection", "error"],
+	"call": "detect_or_validate",
+	"input": {},
+	"assertions": [{ "type": "error" }]
+}

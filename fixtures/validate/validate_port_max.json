@@ -1,0 +1,9 @@
+{
+	"id": "validate_port_max",
+	"category": "validate",
+	"description": "Port 65535 accepted",
+	"tags": ["validation", "boundary"],
+	"call": "validate_port",
+	"input": { "port": 65535 },
+	"assertions": [{ "type": "not_error" }]
+}

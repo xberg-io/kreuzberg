@@ -1,0 +1,35 @@
+{
+  "name": "kreuzberg",
+  "version": "4.9.5",
+  "description": "High-performance document intelligence library",
+  "license": "Elastic-2.0",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "repository": "https://github.com/kreuzberg-dev/kreuzberg",
+  "homepage": "https://kreuzberg.dev",
+  "author": "Na'aman Hirschfeld <naaman@kreuzberg.dev>",
+  "keywords": ["document", "extraction", "pdf", "ocr", "text"],
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "**/*.node"
+  ],
+  "scripts": {
+    "build": "napi build --release",
+    "build:debug": "napi build",
+    "build:ts": "echo 'No TypeScript wrapper to build'",
+    "test": "node -e \"console.log('Add test command')\""
+  },
+  "napi": {
+    "name": "kreuzberg",
+    "triples": [
+      "x86_64-unknown-linux-gnu",
+      "x86_64-apple-darwin",
+      "aarch64-apple-darwin",
+      "x86_64-pc-windows-msvc"
+    ]
+  },
+  "devDependencies": {
+    "@napi-rs/cli": "^3.0.0"
+  }
+}

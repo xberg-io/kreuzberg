@@ -1,0 +1,19 @@
+{
+	"id": "chunk_batch_basic",
+	"category": "chunking",
+	"description": "Batch chunking of multiple texts in a single call",
+	"tags": ["chunking", "batch", "multiple"],
+	"call": "chunk_texts_batch",
+	"input": {
+		"texts": ["Hello world. This is text one.", "Goodbye world. This is text two."],
+		"config": {
+			"max_characters": 100,
+			"max_overlap": 10
+		}
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	]
+}

@@ -1,0 +1,15 @@
+{
+	"id": "async_extract_file_image",
+	"category": "async",
+	"description": "Async extract_file call on image document",
+	"tags": ["async", "api", "extract_file", "image"],
+	"input": {
+		"path": "images/test_hello_world.png",
+		"mime_type": "image/png"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	]
+}

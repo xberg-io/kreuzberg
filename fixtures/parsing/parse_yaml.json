@@ -1,0 +1,20 @@
+{
+	"id": "parse_yaml",
+	"category": "parsing",
+	"description": "Parse YAML document format",
+	"tags": ["parsing", "yaml"],
+	"call": "extract_file_sync",
+	"input": {
+		"path": "test_fixtures/config.yaml"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 5
+		}
+	]
+}

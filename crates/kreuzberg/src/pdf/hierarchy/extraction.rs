@@ -4,6 +4,8 @@
 //! merging characters into text blocks, and assigning hierarchy levels based on
 //! font size analysis.
 
+use serde::{Deserialize, Serialize};
+
 use super::bounding_box::BoundingBox;
 use super::clustering::FontSizeCluster;
 use crate::core::config::ExtractionConfig;
@@ -61,7 +63,8 @@ pub struct KMeansResult {
 }
 
 /// Hierarchy level assignment result.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum HierarchyLevel {
     /// H1 - Top-level heading
     H1 = 1,
@@ -76,6 +79,7 @@ pub enum HierarchyLevel {
     /// H6 - Senary heading
     H6 = 6,
     /// Body text
+    #[default]
     Body = 0,
 }
 
@@ -94,7 +98,7 @@ pub struct HierarchyBlock {
 
 impl HierarchyLevel {
     /// Convert a numeric level to HierarchyLevel.
-    pub fn from_level(level: usize) -> Self {
+    pub(crate) fn from_level(level: usize) -> Self {
         match level {
             1 => HierarchyLevel::H1,
             2 => HierarchyLevel::H2,
@@ -156,7 +160,7 @@ impl HierarchyLevel {
 /// assert_eq!(results[1].hierarchy_level, HierarchyLevel::Body);
 /// # }
 /// ```
-pub fn assign_hierarchy_levels(blocks: &[TextBlock], kmeans_result: &KMeansResult) -> Vec<HierarchyBlock> {
+pub(crate) fn assign_hierarchy_levels(blocks: &[TextBlock], kmeans_result: &KMeansResult) -> Vec<HierarchyBlock> {
     if blocks.is_empty() || kmeans_result.labels.is_empty() {
         return Vec::new();
     }
@@ -200,7 +204,7 @@ pub fn assign_hierarchy_levels(blocks: &[TextBlock], kmeans_result: &KMeansResul
 /// Vector of tuples containing (TextBlock, HierarchyLevel).
 /// If blocks is empty or clusters is empty, returns empty vector.
 /// All blocks get Body level if only one cluster exists.
-pub fn assign_hierarchy_levels_from_clusters(
+pub(crate) fn assign_hierarchy_levels_from_clusters(
     blocks: &[TextBlock],
     clusters: &[FontSizeCluster],
 ) -> Vec<(TextBlock, HierarchyLevel)> {
@@ -276,7 +280,7 @@ pub fn assign_hierarchy_levels_from_clusters(
 /// # }
 /// # }
 /// ```
-pub fn extract_chars_with_fonts(page: &PdfPage) -> Result<Vec<CharData>> {
+pub(crate) fn extract_chars_with_fonts(page: &PdfPage) -> Result<Vec<CharData>> {
     let page_text = page
         .text()
         .map_err(|e| PdfError::TextExtractionFailed(format!("Failed to get page text: {}", e)))?;
@@ -402,7 +406,7 @@ pub struct SegmentData {
 ///
 /// Typically 10-50x fewer items than character-level extraction, with far fewer FFI calls
 /// per item (one segment.text() + one segment.chars() sample vs N chars with 4+ FFI calls each).
-pub fn extract_segments_from_page(page: &PdfPage) -> Result<Vec<SegmentData>> {
+pub(crate) fn extract_segments_from_page(page: &PdfPage) -> Result<Vec<SegmentData>> {
     let page_text = page
         .text()
         .map_err(|e| PdfError::TextExtractionFailed(format!("Failed to get page text: {}", e)))?;
@@ -552,7 +556,7 @@ fn is_monospace_font(name_lower: &str) -> bool {
 /// 3. Use intersection_ratio to detect overlapping or very close characters
 /// 4. Merge characters into blocks based on proximity thresholds
 /// 5. Return sorted blocks by position (top to bottom, left to right)
-pub fn merge_chars_into_blocks(chars: Vec<CharData>) -> Vec<TextBlock> {
+pub(crate) fn merge_chars_into_blocks(chars: Vec<CharData>) -> Vec<TextBlock> {
     if chars.is_empty() {
         return Vec::new();
     }
@@ -688,7 +692,7 @@ pub fn merge_chars_into_blocks(chars: Vec<CharData>) -> Vec<TextBlock> {
 /// # Returns
 ///
 /// `true` if OCR should be triggered (coverage below threshold), `false` otherwise.
-pub fn should_trigger_ocr(page: &PdfPage, blocks: &[TextBlock], config: &ExtractionConfig) -> bool {
+pub(crate) fn should_trigger_ocr(page: &PdfPage, blocks: &[TextBlock], config: &ExtractionConfig) -> bool {
     // Get page dimensions using width() and height() methods
     let page_width = page.width().value;
     let page_height = page.height().value;

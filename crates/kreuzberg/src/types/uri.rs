@@ -61,7 +61,7 @@ pub fn classify_uri(url: &str) -> UriKind {
 
 impl Uri {
     /// Create a new hyperlink URI, auto-classifying `mailto:` as Email and `#` as Anchor.
-    pub fn hyperlink(url: impl Into<String>, label: Option<String>) -> Self {
+    pub(crate) fn hyperlink(url: impl Into<String>, label: Option<String>) -> Self {
         let url = url.into();
         let kind = classify_uri(&url);
         Self {
@@ -73,7 +73,7 @@ impl Uri {
     }
 
     /// Create a new image URI.
-    pub fn image(url: impl Into<String>, label: Option<String>) -> Self {
+    pub(crate) fn image(url: impl Into<String>, label: Option<String>) -> Self {
         Self {
             url: url.into(),
             label,
@@ -83,7 +83,7 @@ impl Uri {
     }
 
     /// Create a new citation URI (for DOIs, academic references).
-    pub fn citation(url: impl Into<String>, label: Option<String>) -> Self {
+    pub(crate) fn citation(url: impl Into<String>, label: Option<String>) -> Self {
         Self {
             url: url.into(),
             label,
@@ -93,7 +93,7 @@ impl Uri {
     }
 
     /// Create a new anchor/cross-reference URI.
-    pub fn anchor(url: impl Into<String>, label: Option<String>) -> Self {
+    pub(crate) fn anchor(url: impl Into<String>, label: Option<String>) -> Self {
         Self {
             url: url.into(),
             label,
@@ -103,7 +103,7 @@ impl Uri {
     }
 
     /// Create a new email URI.
-    pub fn email(url: impl Into<String>, label: Option<String>) -> Self {
+    pub(crate) fn email(url: impl Into<String>, label: Option<String>) -> Self {
         Self {
             url: url.into(),
             label,
@@ -113,7 +113,7 @@ impl Uri {
     }
 
     /// Create a new reference URI.
-    pub fn reference(url: impl Into<String>, label: Option<String>) -> Self {
+    pub(crate) fn reference(url: impl Into<String>, label: Option<String>) -> Self {
         Self {
             url: url.into(),
             label,
@@ -124,7 +124,7 @@ impl Uri {
 
     /// Set the page number.
     #[must_use]
-    pub fn with_page(mut self, page: u32) -> Self {
+    pub(crate) fn with_page(mut self, page: u32) -> Self {
         self.page = Some(page);
         self
     }

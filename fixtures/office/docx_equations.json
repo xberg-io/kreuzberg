@@ -2,15 +2,20 @@
 	"id": "office_docx_equations",
 	"category": "office",
 	"description": "DOCX file containing equations to validate math extraction.",
-	"document": {
+	"input": {
 		"path": "docx/equations.docx",
 		"media_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-		"min_content_length": 20
-	}
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 20
+		}
+	]
 }

@@ -13,9 +13,6 @@ pub mod token_reduction;
 pub mod quality_processor;
 
 #[cfg(feature = "quality")]
-pub use quality::{calculate_quality_score, clean_extracted_text, normalize_spaces};
-
-#[cfg(feature = "quality")]
 pub use quality_processor::QualityProcessor;
 
 #[cfg(feature = "quality")]

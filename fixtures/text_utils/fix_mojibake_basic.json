@@ -1,0 +1,20 @@
+{
+	"id": "fix_mojibake_basic",
+	"category": "text_utils",
+	"description": "Fix mojibake encoding issues",
+	"tags": ["text_utils", "encoding"],
+	"call": "fix_mojibake",
+	"input": {
+		"text": "cafÃ©"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "min_length",
+			"field": "result",
+			"value": 1
+		}
+	]
+}

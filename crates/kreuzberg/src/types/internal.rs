@@ -42,7 +42,7 @@ impl InternalElementId {
     ///
     /// Hashes the element kind discriminant, text content, page number, and
     /// positional index using blake3. Takes 48 bits (6 bytes) of the hash.
-    pub fn generate(kind_discriminant: &str, text: &str, page: Option<u32>, index: u32) -> Self {
+    pub(crate) fn generate(kind_discriminant: &str, text: &str, page: Option<u32>, index: u32) -> Self {
         let mut hasher = blake3::Hasher::new();
         hasher.update(kind_discriminant.as_bytes());
         hasher.update(text.as_bytes());
@@ -63,7 +63,7 @@ impl InternalElementId {
     /// The input must be exactly 15 bytes in `"ie-{12 hex}"` format.
     /// Panics if the input length is not 15.
     #[allow(dead_code)]
-    pub(crate) fn new(id: &str) -> Self {
+    pub fn new(id: &str) -> Self {
         assert!(
             id.len() == 15,
             "InternalElementId must be exactly 15 bytes, got {}",
@@ -75,7 +75,7 @@ impl InternalElementId {
     }
 
     /// Get the ID as a string slice.
-    pub fn as_str(&self) -> &str {
+    pub(crate) fn as_str(&self) -> &str {
         std::str::from_utf8(&self.0).unwrap()
     }
 }
@@ -239,7 +239,7 @@ impl InternalDocument {
     }
 
     /// Concatenate all element text into a single string, separated by newlines.
-    pub fn content(&self) -> String {
+    pub(crate) fn content(&self) -> String {
         self.elements
             .iter()
             .map(|e| e.text.as_str())
@@ -331,43 +331,43 @@ impl InternalElement {
     }
 
     /// Set the page number.
-    pub fn with_page(mut self, page: u32) -> Self {
+    pub(crate) fn with_page(mut self, page: u32) -> Self {
         self.page = Some(page);
         self
     }
 
     /// Set the bounding box.
-    pub fn with_bbox(mut self, bbox: BoundingBox) -> Self {
+    pub(crate) fn with_bbox(mut self, bbox: BoundingBox) -> Self {
         self.bbox = Some(bbox);
         self
     }
 
     /// Set the content layer.
-    pub fn with_layer(mut self, layer: ContentLayer) -> Self {
+    pub(crate) fn with_layer(mut self, layer: ContentLayer) -> Self {
         self.layer = layer;
         self
     }
 
     /// Set the anchor key.
-    pub fn with_anchor(mut self, anchor: impl Into<String>) -> Self {
+    pub(crate) fn with_anchor(mut self, anchor: impl Into<String>) -> Self {
         self.anchor = Some(anchor.into());
         self
     }
 
     /// Set annotations.
-    pub fn with_annotations(mut self, annotations: Vec<TextAnnotation>) -> Self {
+    pub(crate) fn with_annotations(mut self, annotations: Vec<TextAnnotation>) -> Self {
         self.annotations = annotations;
         self
     }
 
     /// Set attributes.
-    pub fn with_attributes(mut self, attributes: AHashMap<String, String>) -> Self {
+    pub(crate) fn with_attributes(mut self, attributes: AHashMap<String, String>) -> Self {
         self.attributes = Some(attributes);
         self
     }
 
     /// Regenerate the ID with the correct index (call after pushing to the document).
-    pub fn with_index(mut self, index: u32) -> Self {
+    pub(crate) fn with_index(mut self, index: u32) -> Self {
         self.id = InternalElementId::generate(self.kind.discriminant(), &self.text, self.page, index);
         self
     }
@@ -444,7 +444,7 @@ pub enum ElementKind {
 
 impl ElementKind {
     /// Get a stable string discriminant for ID generation.
-    pub fn discriminant(&self) -> &'static str {
+    pub(crate) fn discriminant(&self) -> &'static str {
         match self {
             Self::Title => "title",
             Self::Heading { .. } => "heading",
@@ -475,17 +475,17 @@ impl ElementKind {
     }
 
     /// Returns true if this is a container start marker.
-    pub fn is_container_start(&self) -> bool {
+    pub(crate) fn is_container_start(&self) -> bool {
         matches!(self, Self::ListStart { .. } | Self::QuoteStart | Self::GroupStart)
     }
 
     /// Returns true if this is a container end marker.
-    pub fn is_container_end(&self) -> bool {
+    pub(crate) fn is_container_end(&self) -> bool {
         matches!(self, Self::ListEnd | Self::QuoteEnd | Self::GroupEnd)
     }
 
     /// Returns the matching end marker for a container start, if applicable.
-    pub fn matching_end(&self) -> Option<ElementKind> {
+    pub(crate) fn matching_end(&self) -> Option<ElementKind> {
         match self {
             Self::ListStart { .. } => Some(Self::ListEnd),
             Self::QuoteStart => Some(Self::QuoteEnd),

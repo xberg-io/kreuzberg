@@ -1,0 +1,20 @@
+{
+	"id": "italic_basic",
+	"category": "markup",
+	"description": "Create italic markdown formatting",
+	"tags": ["markup", "formatting"],
+	"call": "italic",
+	"input": {
+		"text": "emphasis"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "contains",
+			"field": "result",
+			"value": "emphasis"
+		}
+	]
+}

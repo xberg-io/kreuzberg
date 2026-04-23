@@ -1,3 +1,0 @@
-use_cache = "not_a_boolean"
-[ocr
-backend = "tesseract"

@@ -17,7 +17,7 @@ use async_trait::async_trait;
 pub struct KeynoteExtractor;
 
 impl KeynoteExtractor {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self
     }
 }

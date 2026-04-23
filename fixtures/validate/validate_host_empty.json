@@ -1,0 +1,9 @@
+{
+	"id": "validate_host_empty",
+	"category": "validate",
+	"description": "Empty host rejected",
+	"tags": ["validation", "error"],
+	"call": "validate_host",
+	"input": { "host": "" },
+	"assertions": [{ "type": "error" }]
+}

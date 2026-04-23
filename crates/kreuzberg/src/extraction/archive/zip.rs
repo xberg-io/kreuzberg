@@ -28,7 +28,7 @@ use zip::ZipArchive;
 ///
 /// Returns an error if the ZIP archive cannot be read or parsed,
 /// or if security limits are exceeded.
-pub fn extract_zip_metadata(bytes: &[u8], limits: &SecurityLimits) -> Result<ArchiveMetadata> {
+pub(crate) fn extract_zip_metadata(bytes: &[u8], limits: &SecurityLimits) -> Result<ArchiveMetadata> {
     let cursor = Cursor::new(bytes);
     let mut archive =
         ZipArchive::new(cursor).map_err(|e| KreuzbergError::parsing(format!("Failed to read ZIP archive: {}", e)))?;
@@ -91,7 +91,7 @@ pub fn extract_zip_metadata(bytes: &[u8], limits: &SecurityLimits) -> Result<Arc
 /// # Errors
 ///
 /// Returns an error if the ZIP archive cannot be read or parsed.
-pub fn extract_zip_text_content(bytes: &[u8], limits: &SecurityLimits) -> Result<AHashMap<String, String>> {
+pub(crate) fn extract_zip_text_content(bytes: &[u8], limits: &SecurityLimits) -> Result<AHashMap<String, String>> {
     let cursor = Cursor::new(bytes);
     let mut archive =
         ZipArchive::new(cursor).map_err(|e| KreuzbergError::parsing(format!("Failed to read ZIP archive: {}", e)))?;
@@ -147,7 +147,7 @@ pub fn extract_zip_text_content(bytes: &[u8], limits: &SecurityLimits) -> Result
 /// # Errors
 ///
 /// Returns an error if the ZIP archive cannot be read or if security limits are exceeded.
-pub fn extract_zip_file_bytes(bytes: &[u8], limits: &SecurityLimits) -> Result<AHashMap<String, Vec<u8>>> {
+pub(crate) fn extract_zip_file_bytes(bytes: &[u8], limits: &SecurityLimits) -> Result<AHashMap<String, Vec<u8>>> {
     let cursor = Cursor::new(bytes);
     let mut archive =
         ZipArchive::new(cursor).map_err(|e| KreuzbergError::parsing(format!("Failed to read ZIP archive: {}", e)))?;

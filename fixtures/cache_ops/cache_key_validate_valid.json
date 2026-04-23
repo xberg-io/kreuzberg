@@ -1,0 +1,15 @@
+{
+	"id": "cache_key_validate_valid",
+	"category": "cache_operations",
+	"description": "Validate a valid cache key format",
+	"tags": ["cache", "validation", "valid"],
+	"call": "validate_cache_key",
+	"input": {
+		"key": "abc123def456"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	]
+}

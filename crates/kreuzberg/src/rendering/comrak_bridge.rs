@@ -466,7 +466,7 @@ enum ContainerKind {
 /// The returned node is a `Document` root whose children mirror the document
 /// body content.  Footnotes are appended after body elements.  Non-body
 /// elements (headers, footers) are excluded.
-pub fn build_comrak_ast<'a>(doc: &InternalDocument, arena: &'a comrak::Arena<'a>) -> &'a AstNode<'a> {
+pub(crate) fn build_comrak_ast<'a>(doc: &InternalDocument, arena: &'a comrak::Arena<'a>) -> &'a AstNode<'a> {
     let root = mk(arena, NodeValue::Document);
     let footnotes = FootnoteCollector::new(doc);
     let mut state = RenderState::default();

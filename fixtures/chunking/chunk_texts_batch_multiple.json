@@ -1,0 +1,9 @@
+{
+	"id": "chunk_texts_batch_multiple",
+	"category": "chunking",
+	"description": "Batch chunk multiple texts",
+	"tags": ["chunking", "batch"],
+	"call": "chunk_texts_batch",
+	"input": { "texts": ["First doc text.", "Second doc text."], "config": { "max_characters": 100 } },
+	"assertions": [{ "type": "not_error" }]
+}

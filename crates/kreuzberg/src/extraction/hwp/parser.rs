@@ -22,7 +22,7 @@ pub struct FileHeader {
 }
 
 impl FileHeader {
-    pub fn parse(data: Vec<u8>) -> Result<Self> {
+    pub(crate) fn parse(data: Vec<u8>) -> Result<Self> {
         if data.len() < 256 {
             return Err(HwpError::InvalidFormat(
                 "FileHeader must be at least 256 bytes".to_string(),
@@ -42,17 +42,17 @@ impl FileHeader {
     }
 
     /// Whether section streams are zlib/deflate-compressed.
-    pub fn is_compressed(&self) -> bool {
+    pub(crate) fn is_compressed(&self) -> bool {
         (self.flags & 0x01) != 0
     }
 
     /// Whether the document is password-encrypted.
-    pub fn is_encrypted(&self) -> bool {
+    pub(crate) fn is_encrypted(&self) -> bool {
         (self.flags & 0x02) != 0
     }
 
     /// Whether the document is a distribution document (text in ViewText/).
-    pub fn is_distribute(&self) -> bool {
+    pub(crate) fn is_distribute(&self) -> bool {
         (self.flags & 0x04) != 0
     }
 }
@@ -68,7 +68,7 @@ pub struct Record {
 }
 
 impl Record {
-    pub fn parse(reader: &mut StreamReader) -> Result<Self> {
+    pub(crate) fn parse(reader: &mut StreamReader) -> Result<Self> {
         if reader.remaining() < 4 {
             return Err(HwpError::ParseError("Not enough data for record header".to_string()));
         }
@@ -98,7 +98,7 @@ impl Record {
     }
 
     /// Return a fresh `StreamReader` over this record's data bytes.
-    pub fn data_reader(&self) -> StreamReader {
+    pub(crate) fn data_reader(&self) -> StreamReader {
         StreamReader::new(self.data.clone())
     }
 }
@@ -131,7 +131,7 @@ const TAG_PARA_TEXT: u16 = HWPTAG_BEGIN + 65; // 0x51
 ///
 /// Returns the list of sections found. Each section contains zero or more
 /// paragraphs that carry the plain-text content.
-pub fn parse_body_text(data: Vec<u8>, is_compressed: bool) -> Result<Vec<Section>> {
+pub(crate) fn parse_body_text(data: Vec<u8>, is_compressed: bool) -> Result<Vec<Section>> {
     let data = if is_compressed { decompress_stream(&data)? } else { data };
 
     let mut reader = StreamReader::new(data);

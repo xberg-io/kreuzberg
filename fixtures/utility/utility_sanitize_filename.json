@@ -1,0 +1,24 @@
+{
+	"id": "utility_sanitize_filename",
+	"category": "utility",
+	"description": "Sanitize filename removes invalid characters",
+	"tags": ["utility", "filename", "sanitization"],
+	"call": "sanitize_filename",
+	"input": {
+		"args": ["file<>:name*.txt"]
+	},
+	"skip": {
+		"languages": [],
+		"reason": "Requires sanitize_filename call config in alef.toml"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "min_length",
+			"field": "result",
+			"value": 1
+		}
+	]
+}

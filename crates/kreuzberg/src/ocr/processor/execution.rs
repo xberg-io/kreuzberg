@@ -571,7 +571,7 @@ pub(super) fn perform_ocr(
     let dpi_config = config
         .preprocessing
         .as_ref()
-        .map(|p| crate::types::ExtractionConfig {
+        .map(|p| crate::types::ImageDpiConfig {
             target_dpi: p.target_dpi,
             ..Default::default()
         })

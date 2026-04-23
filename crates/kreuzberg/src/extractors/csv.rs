@@ -27,7 +27,7 @@ static DATE_RE_EU: LazyLock<regex::Regex> = LazyLock::new(|| regex::Regex::new(r
 pub struct CsvExtractor;
 
 impl CsvExtractor {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self
     }
 }

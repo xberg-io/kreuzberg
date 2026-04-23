@@ -25,8 +25,8 @@ exclude = [
     # GitHub raw links for new/renamed files (404 until pushed)
     "github\\.com/.*/raw/",
 
-    # Docs site self-references (404 until deployed)
-    "docs\\.kreuzberg\\.dev",
+    # Docs site self-references (404 until deployed, or unreachable from CI)
+    "kreuzberg\\.dev",
 
     # PyPI project pages (rate-limited)
     "pypi\\.org/project/",

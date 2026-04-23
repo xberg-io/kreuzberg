@@ -1,0 +1,19 @@
+{
+	"id": "blake3_file_pdf",
+	"category": "hash",
+	"description": "Hash PDF file using BLAKE3",
+	"tags": ["hashing", "blake3", "pdf", "file"],
+	"call": "blake3_hash_file",
+	"input": {
+		"path": "pdf/fake_memo.pdf"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "min_length",
+			"value": 64
+		}
+	]
+}

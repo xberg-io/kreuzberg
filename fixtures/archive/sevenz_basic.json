@@ -2,15 +2,20 @@
 	"id": "archive_sevenz_basic",
 	"category": "archive",
 	"description": "7-Zip archive extraction.",
-	"document": {
+	"input": {
 		"path": "archives/documents.7z",
 		"media_type": "application/x-7z-compressed"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": "application/x-7z-compressed",
-		"min_content_length": 10
-	}
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "application/x-7z-compressed"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 10
+		}
+	]
 }

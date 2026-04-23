@@ -3,7 +3,6 @@
 source 'https://rubygems.org'
 
 gem 'kreuzberg', path: '../../packages/ruby'
-gem 'rspec', '~> 3.12'
-gem 'rubocop', '~> 1.66'
-gem 'rubocop-performance', '~> 1.21'
-gem 'rubocop-rspec', '~> 3.0'
+gem 'rspec', '~> 3.13'
+gem 'rubocop', '~> 1.86'
+gem 'rubocop-rspec', '~> 3.9'

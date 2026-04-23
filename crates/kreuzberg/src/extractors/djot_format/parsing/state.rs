@@ -24,7 +24,7 @@ pub(super) struct ExtractionState {
 
 impl ExtractionState {
     /// Create a new extraction state.
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self {
             block_stack: Vec::new(),
             inline_type_stack: Vec::new(),
@@ -44,7 +44,7 @@ impl ExtractionState {
     }
 
     /// Flush current text to inline elements if any text is pending.
-    pub fn flush_text(&mut self) {
+    pub(crate) fn flush_text(&mut self) {
         if !self.current_text.is_empty() {
             self.current_inline_elements.push(InlineElement {
                 element_type: InlineType::Text,

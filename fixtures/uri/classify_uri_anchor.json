@@ -1,0 +1,11 @@
+{
+	"id": "classify_uri_anchor",
+	"category": "uri",
+	"description": "Classify fragment URI",
+	"tags": ["uri"],
+	"call": "classify_uri",
+	"input": {
+		"url": "#section-header"
+	},
+	"assertions": [{ "type": "not_error" }]
+}

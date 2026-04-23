@@ -1,0 +1,25 @@
+{
+	"id": "validate_chunking_valid",
+	"description": "Accept valid chunking config",
+	"tags": ["validation", "chunking"],
+	"call": "extract_file_sync",
+	"input": {
+		"path": "pdf/fake_memo.pdf",
+		"config": {
+			"chunking": {
+				"max_characters": 1000,
+				"max_overlap": 200
+			}
+		}
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 10
+		}
+	]
+}

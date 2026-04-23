@@ -1,0 +1,9 @@
+{
+	"id": "bold_special_chars",
+	"category": "markup",
+	"description": "Bold special chars",
+	"tags": ["markup"],
+	"call": "bold",
+	"input": { "text": "hello **world** & <tag>" },
+	"assertions": [{ "type": "not_error" }, { "type": "contains", "field": "result", "value": "hello" }]
+}

@@ -124,7 +124,10 @@ where
     }
 }
 
-pub fn calculate_quality_score(text: &str, metadata: Option<&AHashMap<Cow<'static, str>, serde_json::Value>>) -> f64 {
+pub(crate) fn calculate_quality_score(
+    text: &str,
+    metadata: Option<&AHashMap<Cow<'static, str>, serde_json::Value>>,
+) -> f64 {
     if text.is_empty() || text.trim().is_empty() {
         return 0.0;
     }
@@ -399,7 +402,7 @@ fn clean_navigation_elements_cow<'a>(text: Cow<'a, str>) -> Cow<'a, str> {
     chain_replacements(text, &nav_replacements)
 }
 
-pub fn normalize_spaces(text: &str) -> String {
+pub(crate) fn normalize_spaces(text: &str) -> String {
     if text.is_empty() || text.trim().is_empty() {
         return String::new();
     }

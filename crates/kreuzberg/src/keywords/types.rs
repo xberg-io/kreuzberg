@@ -49,7 +49,7 @@ pub struct Keyword {
 
 impl Keyword {
     /// Create a new keyword.
-    pub fn new(text: String, score: f32, algorithm: KeywordAlgorithm) -> Self {
+    pub(crate) fn new(text: String, score: f32, algorithm: KeywordAlgorithm) -> Self {
         Self {
             text,
             score,
@@ -59,7 +59,7 @@ impl Keyword {
     }
 
     /// Create a new keyword with positions.
-    pub fn with_positions(text: String, score: f32, algorithm: KeywordAlgorithm, positions: Vec<usize>) -> Self {
+    pub(crate) fn with_positions(text: String, score: f32, algorithm: KeywordAlgorithm, positions: Vec<usize>) -> Self {
         Self {
             text,
             score,

@@ -25,7 +25,7 @@ use super::classifier::classify_chunk;
 /// # Errors
 ///
 /// Returns `KreuzbergError::Validation` if configuration is invalid.
-pub fn build_chunk_config(max_characters: usize, overlap: usize, trim: bool) -> Result<ChunkConfig<Characters>> {
+pub(crate) fn build_chunk_config(max_characters: usize, overlap: usize, trim: bool) -> Result<ChunkConfig<Characters>> {
     ChunkConfig::new(ChunkCapacity::new(max_characters))
         .with_overlap(overlap)
         .map(|config| config.with_trim(trim))
@@ -54,7 +54,7 @@ pub fn build_chunk_config(max_characters: usize, overlap: usize, trim: bool) -> 
 /// # Errors
 ///
 /// Returns an error if page boundary calculation fails.
-pub fn build_chunks<'a, I>(
+pub(crate) fn build_chunks<'a, I>(
     source_text: &'a str,
     text_chunks: I,
     page_boundaries: Option<&[PageBoundary]>,

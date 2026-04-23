@@ -1,0 +1,15 @@
+{
+	"id": "detect_lang_mixed",
+	"category": "detection",
+	"description": "Detect mixed languages in text",
+	"tags": ["language_detection", "mixed"],
+	"call": "detect_languages",
+	"input": {
+		"text": "Hello world. Bonjour le monde. Hallo Welt."
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	]
+}

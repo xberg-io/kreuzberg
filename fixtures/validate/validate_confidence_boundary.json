@@ -1,0 +1,9 @@
+{
+	"id": "validate_confidence_boundary",
+	"category": "validate",
+	"description": "Confidence at 1.0",
+	"tags": ["validation", "boundary"],
+	"call": "validate_confidence_fn",
+	"input": { "confidence": 1.0 },
+	"assertions": [{ "type": "not_error" }]
+}

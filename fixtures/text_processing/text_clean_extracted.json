@@ -1,0 +1,20 @@
+{
+	"id": "text_clean_extracted",
+	"category": "text_processing",
+	"description": "Extract and clean text content from document",
+	"tags": ["text_processing", "clean"],
+	"call": "extract_file_sync",
+	"input": {
+		"path": "json/simple.json"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 5
+		}
+	]
+}

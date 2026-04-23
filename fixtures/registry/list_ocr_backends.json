@@ -1,0 +1,9 @@
+{
+	"id": "list_ocr_backends",
+	"category": "registry",
+	"description": "List OCR backends",
+	"tags": ["registry"],
+	"call": "list_ocr_backends",
+	"input": {},
+	"assertions": [{ "type": "not_error" }]
+}

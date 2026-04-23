@@ -21,7 +21,7 @@ use std::io::{Cursor, Read};
 /// identified.
 ///
 /// Returns `(children, warnings)` suitable for attaching to `InternalDocument`.
-pub async fn extract_ooxml_embedded_objects(
+pub(crate) async fn extract_ooxml_embedded_objects(
     zip_bytes: &[u8],
     embeddings_prefix: &str,
     source_label: &str,

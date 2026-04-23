@@ -34,7 +34,7 @@ pub struct RtDetrModel {
 
 impl RtDetrModel {
     /// Load a Docling RT-DETR ONNX model from a file.
-    pub fn from_file(
+    pub(crate) fn from_file(
         path: &str,
         accel: Option<&crate::core::config::acceleration::AccelerationConfig>,
     ) -> Result<Self, LayoutError> {
@@ -155,7 +155,7 @@ impl RtDetrModel {
             detections.push(LayoutDetection::new(class, score, BBox::new(x1, y1, x2, y2)));
         }
 
-        LayoutDetection::sort_by_confidence_desc(&mut detections);
+        detections = LayoutDetection::sort_by_confidence_desc(detections);
 
         // Publish granular timings via the thread-local side-channel so that
         // LayoutEngine::detect_timed() can populate PageTiming without changing
@@ -320,7 +320,7 @@ impl RtDetrModel {
                 detections.push(LayoutDetection::new(class, score, BBox::new(x1, y1, x2, y2)));
             }
 
-            LayoutDetection::sort_by_confidence_desc(&mut detections);
+            detections = LayoutDetection::sort_by_confidence_desc(detections);
 
             tracing::debug!(
                 batch_index = b,

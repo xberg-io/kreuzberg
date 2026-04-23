@@ -1,0 +1,24 @@
+{
+	"id": "utility_is_valid_utf8",
+	"category": "utility",
+	"description": "Check if bytes are valid UTF-8",
+	"tags": ["utility", "encoding", "validation"],
+	"call": "is_valid_utf8",
+	"input": {
+		"args": ["valid text"]
+	},
+	"skip": {
+		"languages": [],
+		"reason": "Requires is_valid_utf8 call config in alef.toml"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "equals",
+			"field": "result",
+			"value": true
+		}
+	]
+}

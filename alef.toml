@@ -1,0 +1,2118 @@
+languages = ["python", "node", "ruby", "php", "ffi", "go", "java", "csharp", "elixir", "wasm", "r"]
+
+# ---------------------------------------------------------------------------
+# Crate configuration
+# ---------------------------------------------------------------------------
+
+[crate]
+name = "kreuzberg"
+core_import = "kreuzberg"
+error_type = "KreuzbergError"
+error_constructor = "kreuzberg::KreuzbergError::Other({msg})"
+version_from = "Cargo.toml"
+workspace_root = "."
+sources = [
+    # Public API surface — only files with types/functions re-exported from lib.rs
+    "crates/kreuzberg/src/lib.rs",
+    "crates/kreuzberg/src/error.rs",
+    # Public types (re-exported via `pub use types::*`)
+    "crates/kreuzberg/src/types/extraction.rs",
+    "crates/kreuzberg/src/types/metadata.rs",
+    "crates/kreuzberg/src/types/page.rs",
+    "crates/kreuzberg/src/types/tables.rs",
+    "crates/kreuzberg/src/types/annotations.rs",
+    "crates/kreuzberg/src/types/document_structure.rs",
+    "crates/kreuzberg/src/types/ocr_elements.rs",
+    "crates/kreuzberg/src/types/formats.rs",
+    "crates/kreuzberg/src/types/uri.rs",
+    "crates/kreuzberg/src/types/djot.rs",
+    # Config types (re-exported via `pub use core::config::*`)
+    "crates/kreuzberg/src/core/config/mod.rs",
+    "crates/kreuzberg/src/core/config/extraction/types.rs",
+    "crates/kreuzberg/src/core/config/extraction/core.rs",
+    "crates/kreuzberg/src/core/config/extraction/file_config.rs",
+    "crates/kreuzberg/src/core/config/ocr.rs",
+    "crates/kreuzberg/src/core/config/page.rs",
+    "crates/kreuzberg/src/core/config/pdf.rs",
+    "crates/kreuzberg/src/core/config/html_output.rs",
+    "crates/kreuzberg/src/core/config/layout.rs",
+    "crates/kreuzberg/src/core/config/acceleration.rs",
+    "crates/kreuzberg/src/core/config/llm.rs",
+    "crates/kreuzberg/src/core/config/content_filter.rs",
+    "crates/kreuzberg/src/core/config/tree_sitter.rs",
+    "crates/kreuzberg/src/core/config/email.rs",
+    "crates/kreuzberg/src/core/config/formats.rs",
+    # Public MIME/format detection functions
+    "crates/kreuzberg/src/core/mime.rs",
+    "crates/kreuzberg/src/core/formats.rs",
+    # Plugin trait (for trait bridges)
+    "crates/kreuzberg/src/plugins/traits.rs",
+    "crates/kreuzberg/src/plugins/registry/mod.rs",
+    # Public module APIs
+    "crates/kreuzberg/src/rendering/mod.rs",
+    "crates/kreuzberg/src/keywords/mod.rs",
+    "crates/kreuzberg/src/chunking/mod.rs",
+    "crates/kreuzberg/src/embeddings/mod.rs",
+    "crates/kreuzberg/src/language_detection/mod.rs",
+    # OCR/PaddleOCR types (re-exported from lib.rs)
+    "crates/kreuzberg/src/ocr/types.rs",
+    "crates/kreuzberg/src/paddle_ocr/mod.rs",
+]
+features = [
+    "full",
+    "pdf",
+    "ocr",
+    "paddle-ocr",
+    "layout-detection",
+    "embeddings",
+    "chunking",
+    "keywords-yake",
+    "keywords-rake",
+    "language-detection",
+    "html",
+    "tree-sitter",
+    "office",
+    "email",
+    "archives",
+    "stopwords",
+    "auto-rotate",
+    "tokio-runtime",
+    "api",
+    "mcp",
+    "liter-llm",
+]
+
+# ---------------------------------------------------------------------------
+# Include / Exclude filters
+# ---------------------------------------------------------------------------
+
+# No [include] — include everything extracted from sources
+
+[exclude]
+types = [
+    # Internal types — not part of public API
+    "DocumentStructureBuilder",
+    "InternalDocument",
+    "InternalDocumentBuilder",
+    "InternalElement",
+    "InternalElementId",
+    "ModelManifestEntry",
+    "RecModelPaths",
+    "ResolvedRecModel",
+    "SharedModelPaths",
+    "LayoutEngine",
+    "LayoutEngineConfig",
+    "LayoutModelManager",
+    "LayoutError",
+    "RtDetrModel",
+    "SlanetModel",
+    "SlanetResult",
+    "SlanetCell",
+    "CellBBox",
+    "TatrModel",
+    "TatrResult",
+    "TatrDetection",
+    "TatrClass",
+    "YoloModel",
+    "YoloVariant",
+    "CustomModelVariant",
+    "ModelBackend",
+    "TableClassifier",
+    "TableType",
+    "DetectTimings",
+    "BatchItemResult",
+    "NormalizeResult",
+    "EmbeddingEngine",
+    "EmbedError",
+    "Pooling",
+    "LanguageDetector",
+    "KeywordExtractor",
+    "DocOrientationDetector",
+    "ConcurrencyConfig",
+    "JsonDocument",
+    "JsonNode",
+    "PaddleOcrBackend",
+    "ModelManager",
+    "SecurityLimits",
+    "PluginHealthStatus",
+    "Run",
+    "Paragraph",
+    "DocxAppProperties",
+    "CoreProperties",
+    "CellBorders",
+    "CellMargins",
+    "CellProperties",
+    "CellShading",
+    "BorderStyle",
+    "TableWidth",
+    "VerticalMerge",
+    "Relationship",
+    "RelationshipTarget",
+    "ElementKind",
+    "ParagraphProperties",
+    "ParagraphMeta",
+    "StyledHtmlRenderer",
+    "EmbeddingPreset",
+    "CacheStats",
+    "ImageDpiConfig",
+
+    # Internal extractor implementations (not public API — users use extract_file/extract_bytes)
+    "BibtexExtractor",
+    "CitationExtractor",
+    "CodeExtractor",
+    "CsvExtractor",
+    "DbfExtractor",
+    "DjotExtractor",
+    "DocbookExtractor",
+    "DocExtractor",
+    "DocxExtractor",
+    "EmailExtractor",
+    "EpubExtractor",
+    "ExcelExtractor",
+    "FictionBookExtractor",
+    "GzipExtractor",
+    "HtmlExtractor",
+    "HwpExtractor",
+    "ImageExtractor",
+    "JatsExtractor",
+    "JupyterExtractor",
+    "KeynoteExtractor",
+    "LatexExtractor",
+    "MarkdownExtractor",
+    "MdxExtractor",
+    "NumbersExtractor",
+    "OdtExtractor",
+    "OpmlExtractor",
+    "OrgModeExtractor",
+    "PagesExtractor",
+    "PdfExtractor",
+    "PdfImageExtractor",
+    "PdfTextExtractor",
+    "PlainTextExtractor",
+    "PptExtractor",
+    "PptxExtractor",
+    "PstExtractor",
+    "RstExtractor",
+    "RtfExtractor",
+    "SevenZExtractor",
+    "StructuredExtractor",
+    "TarExtractor",
+    "TypstExtractor",
+    "XmlExtractor",
+    "ZipExtractor",
+
+    # Internal registries and engines
+    "DocumentExtractorRegistry",
+    "OcrBackendRegistry",
+    "PostProcessorRegistry",
+    "RendererRegistry",
+    "ValidatorRegistry",
+    "LanguageRegistry",
+    "OcrCache",
+    "OcrProcessor",
+    "TokenReducer",
+    "GenericCache",
+
+    # Internal service/server types
+    "ExtractionService",
+    "ExtractionServiceBuilder",
+    "ExtractionSource",
+    "ExtractionRequest",
+    "KreuzbergMcp",
+    "ApiSizeLimits",
+    "ErrorResponse",
+
+    # Internal document model types (not user-facing)
+    "Document",
+    "HwpDocument",
+    "ParaText",
+    "FileHeader",
+    "Record",
+    "CfbReader",
+    "DocMetadata",
+    "DocProperties",
+    "PptMetadata",
+    "PdfMetadata",
+    "PdfRenderer",
+    "PdfPageIterator",
+    "PdfLayoutBBox",
+
+    # Internal layout/pool/OCR types
+    "LayoutTimingReport",
+    "LayoutModel",
+    "NativeTextStats",
+    "PoolMetrics",
+    "PoolMetricsSnapshot",
+    "PoolConfig",
+    "PoolSizeHint",
+    "StringBufferPoolMetrics",
+    "KMeansResult",
+    "HocrWord",
+    "TesseractBackend",
+    "PanicContext",
+    "Instant",
+
+    # Internal docx/pptx model types
+    "SectionProperties",
+    "RowProperties",
+    "RunProperties",
+    "TableBorders",
+    "TableLook",
+    "StyleCatalog",
+    "StyleType",
+    "Theme",
+    "ThemeColor",
+    "FontScheme",
+    "ColorScheme",
+    "DrawingType",
+    "Extent",
+    "Position",
+    "WrapType",
+    "ColumnLayout",
+    "ListType",
+    "HeaderFooterType",
+    "NoteType",
+    "HierarchyLevel",
+    "TextBlock",
+    "TsvRow",
+    "SegmentData",
+    "Orientation",
+    "PageMargins",
+    "PageRenderOptions",
+    "OpenWebDocumentMetadata",
+    "DoclingCompatDocument",
+    "PptxExtractionOptions",
+    "BatchProcessor",
+    "BatchProcessorConfig",
+    "JsonExtractionConfig",
+
+    # WASM JS-specific wrapper types
+    "JsEmbeddingConfig",
+    "JsImagePreprocessingMetadata",
+    "JsLanguageDetectionConfig",
+    "JsLayoutDetectionConfig",
+    "JsLlmConfig",
+    "JsOcrElementConfig",
+    "JsOcrPipelineConfig",
+    "JsOcrQualityThresholds",
+    "JsTesseractConfig",
+    "JsCoreProperties",
+    "JsDocxAppProperties",
+    "JsExtractionResult",
+    "JsKeywordConfig",
+    "JsNodeId",
+    "JsOutputFormat",
+    "JsTableGrid",
+    "JsExtractionConfig",
+
+    # Generic types (cannot be monomorphized for bindings)
+    "ModelCache",
+    "Pool",
+
+    # Internal post-processors (plugin impls, not public API)
+    "QualityProcessor",
+    "ChunkingProcessor",
+
+    # Internal error/data types missing required derives (Serialize/Deserialize/Clone)
+    "HwpError",
+    "MathNode",
+    "SecurityError",
+    "OcrError",
+    "PdfError",
+
+    # Internal I/O and structure types
+    "FileBytes",
+    "InternedString",
+
+    # Internal extraction result types missing Clone
+    "PptExtractionResult",
+    "DocExtractionResult",
+
+    # Types with non-Clone/non-Default fields (Mutex, OpenTelemetry metrics)
+    "TelemetryMetrics",
+    "ExtractionMetrics",
+    "MetricsLayer",
+
+    # Internal layout/detection types missing serde
+    "PageLayoutRegion",
+    "ListItemMetadata",
+
+    # Plugin traits — Renderer excluded (no Plugin super-trait, sync-only)
+    # OcrBackend, Plugin, PostProcessor, Validator are kept for trait bridge generation
+    "Renderer",
+
+    # Internal docx/hwp parser types — missing Serialize/Deserialize derives
+    "Table",     # kreuzberg::extraction::docx::parser::Table
+    "TableCell", # kreuzberg::extraction::docx::parser::TableCell
+    "TableRow",  # kreuzberg::extraction::docx::parser::TableRow
+    "Section",   # kreuzberg::extraction::hwp::model::Section
+
+    # Duplicate types with internal-only versions — use public types instead
+    "BoundingBox",   # kreuzberg::pdf::hierarchy::bounding_box::BoundingBox (internal; use kreuzberg::types::BoundingBox)
+    "ImageMetadata", # kreuzberg::extraction::image::ImageMetadata (internal; use kreuzberg::types::ImageMetadata)
+    "Attributes",    # kreuzberg::extractors::djot_format::attributes::Attributes (internal type with lifetime issues)
+
+    # Content format OutputFormat (from core::config::formats) — exclude globally to avoid naming collision with types::OutputFormat
+    # The semantic element OutputFormat (types::OutputFormat) is exposed via result_format in ExtractionConfig
+    # When excluded, output_format field falls back to String type but that causes codegen issues
+    # TODO: Alef should handle this better by qualifying the type names
+    "OutputFormat", # kreuzberg::core::config::formats::OutputFormat (content format; conflicts with kreuzberg::types::OutputFormat)
+
+    # Internal IDs and newtype wrappers lacking required derives/conversions
+    "NodeId",    # String newtype without Serialize/From for FFI
+    "ElementId", # String newtype without Serialize/From for FFI
+
+    # Internal types from docx parser
+    "DocumentElement", # kreuzberg::extraction::docx::parser::DocumentElement (internal; missing Default)
+
+    # Thread-safety/cancellation types not meaningful across FFI
+    "CancellationToken", # Arc<AtomicBool> wrapper — not meaningful across FFI boundaries
+
+    # Dependency-owned types that cannot be converted for cross-language bindings
+    "LayoutEngine",    # tch-rs Session wrapper — can't serialize
+    "NormalizeResult", # ort output type — internal, can't serialize
+
+    # Internal stats/response types
+    "NativeTextStats",       # missing Debug
+    "ErrorResponse",         # API-only error response
+    "ApiSizeLimits",         # internal API config
+    "PdfDocument",           # pdfium_render type — can't cross FFI
+    "PdfExtractionMetadata", # internal PDF metadata
+
+    "VlmOcrBackend",
+    "ApiError",
+    "TableGrid",
+]
+functions = [
+    # Internal functions not part of public API
+    "resolve_cache_dir",
+    "detect_and_rotate",
+    "ensure_initialized",
+    "register_keyword_processor",
+    "register_chunking_processor",
+    "extract_bundled_pdfium",      # PDF binary extraction — internal utility, not user-facing
+
+    # Plugin registration — requires trait objects that can't be bound
+    "register_ocr_backend",
+    "register_renderer",
+
+    # Functions taking pdfium_render::PdfDocument — can't be passed from bindings
+    "extract_text_and_metadata_from_pdf_document",
+    "extract_text_from_pdf_document",
+
+    # Internal utility
+    "clear_font_cache",
+
+    "with_rotation_opt",
+    "derive_document_structure",
+    "derive_extraction_result",
+    "parse_drawing",
+    "parse_table_properties",
+    "parse_table_grid",
+    "tsv_row_to_element",
+    "extract_complete_djot_content",
+    "extract_metadata_from_yaml",
+    "calculate_page_range",
+
+    # Functions returning opaque dependency types that can't cross FFI
+    "create_layout_engine",
+    "normalize_image",
+    "build_layout_engine",
+
+    # Functions taking opaque/internal types as params
+    "run_pipeline",
+    "serve_with_config_and_limits",
+    "normalize_image_dpi",
+    "extract_metadata_from_document",
+
+    # Returns DefaultClient — opaque dependency type, can't convert to String
+    "create_client",
+
+    # Returns tuple (Value, Option<LlmUsage>) — can't map to String
+    "vlm_ocr",
+    "vlm_ocr_with_prompt",
+
+    # Returns opaque dependency types
+    "build_session",
+    "create_engine",
+    "take_or_create_engine",
+    "return_engine",
+    "extract_structured",
+
+    # Functions with signature issues across FFI boundaries
+    "detect_topic_boundaries",        # expects &[&str], not Vec<String>
+    "generate_embeddings_for_chunks", # requires &mut [T], not Vec<T>
+    "cosine_similarity",              # returns f64, not i64
+    "preset_chunk_size",              # returns usize, not i64
+
+    # Internal implementation functions — not part of the public API.
+    # These are pub in submodules for intra-crate use but not re-exported from lib.rs.
+    "cleanup_cache",
+    "clear_cache_directory",
+    "smart_cleanup_cache",
+    "get_cache_metadata",
+    "convert_html_to_markdown",
+    "convert_html_to_markdown_with_metadata",
+    "convert_html_to_markdown_with_tables",
+    "decompress_gzip",
+    "detect_layout_for_document",
+    "detect_mime_type",
+    "extract_7z_file_bytes",
+    "extract_7z_metadata",
+    "extract_7z_text_content",
+    "extract_and_process_embedded_files",
+    "extract_chars_with_fonts",
+    "extract_common_metadata_from_document",
+    "extract_doc_text",
+    "extract_gzip",
+    "extract_gzip_metadata",
+    "extract_gzip_text_content",
+    "extract_gzip_with_bytes",
+    "extract_html_inline_images",
+    "extract_image_metadata",
+    "extract_metadata",
+    "extract_metadata_with_password",
+    "extract_ooxml_embedded_objects",
+    "extract_ppt_text",
+    "extract_ppt_text_with_options",
+    "extract_pptx_from_bytes",
+    "extract_pptx_from_path",
+    "extract_pst_messages",
+    "extract_segments_from_page",
+    "extract_tar_file_bytes",
+    "extract_tar_metadata",
+    "extract_tar_text_content",
+    "extract_text_with_page_breaks",
+    "extract_words_from_page",
+    "extract_words_from_tsv",
+    "extract_zip_file_bytes",
+    "extract_zip_metadata",
+    "extract_zip_text_content",
+    "find_files_by_extension",
+    "get_font_descriptors",
+    "load_image_for_ocr",
+    "open_file_bytes",
+    "parse_body_text",
+    "parse_document",
+    "parse_json",
+    "parse_jsonl",
+    "parse_styles_xml",
+    "parse_theme_xml",
+    "read_file_async",
+    "read_file_sync",
+    "register_extractor",
+    "register_validator",
+    "render_page_to_image",
+    "render_template",
+    "resize_image",
+    "serve",
+    "text_block_to_element",
+    "validate_file_exists",
+    "validate_plugins_at_startup",
+    "validate_structured_extraction_schema",
+
+    # Additional internal functions found across all bindings
+    "assign_hierarchy_levels",
+    "build_config_from_json",
+    "collect_and_convert_omath",
+    "collect_and_convert_omath_para",
+    "detect_columns",
+    "detect_list_items",
+    "detect_rows",
+    "estimate_pool_size",
+    "extract_annotations_from_document",
+    "extract_bookmarks",
+    "extract_embedded_files",
+    "extract_frontmatter",
+    "extract_panic_message",
+    "extract_pict_image",
+    "extract_rtf_formatting",
+    "extract_rtf_metadata",
+    "extract_tables_from_events",
+    "extract_text_from_events",
+    "extract_text_from_rtf",
+    "extraction_result_to_djot",
+    "extractor_span",
+    "file_exists",
+    "generate_element_id",
+    "get_metrics",
+    "get_pool_sizing_hint",
+    "get_reduction_statistics",
+    "get_stopwords",
+    "get_stopwords_with_fallback",
+    "intern_language_code",
+    "intern_mime_type",
+    "iterator_word_to_element",
+    "map_kreuzberg_error_to_mcp",
+    "merge_config_json",
+    "model_inference_span",
+    "ocr_span",
+    "parse_cell_properties",
+    "parse_hocr_to_internal_document",
+    "parse_row_properties",
+    "parse_rtf_control_word",
+    "parse_section_properties",
+    "parse_section_properties_streaming",
+    "pipeline_processor_span",
+    "pipeline_stage_span",
+    "precompute_utf8_boundaries",
+    "preprocess_imagenet",
+    "preprocess_imagenet_letterbox",
+    "preprocess_letterbox",
+    "preprocess_rescale",
+    "render_attributes",
+    "resolve_relationships",
+    "resolve_thread_budget",
+    "return_slanet",
+    "return_table_classifier",
+    "return_tatr",
+    "segment_to_hocr_word",
+    "segments_to_words",
+    "serve_with_config",
+    "start_mcp_server_http",
+    "start_mcp_server_http_with_config",
+    "start_mcp_server",
+    "start_mcp_server_with_config",
+    "run_pipeline_sync",
+    "spans_to_annotations",
+    "split_segment_to_words",
+    "xml_tag_name",
+
+    # Internal functions that leaked through pub mod re-exports
+    "apply_output_format",
+    "apply_execution_providers",
+    "assign_heading_levels_smart",
+    "assign_hierarchy_levels_from_clusters",
+    "assemble_ocr_markdown",
+    "batch_cleanup_caches",
+    "build_cell_grid",
+    "build_email_text_output",
+    "calculate_quality_score",
+    "cluster_font_sizes",
+    "config_from_extraction",
+    "create_router",
+    "create_router_with_limits",
+    "create_router_with_limits_and_server_config",
+    "detect_layout_for_images",
+    "djot_content_to_djot",
+    "element_to_hocr_word",
+    "elements_to_hocr_words",
+    "extract_metadata_with_passwords",
+    "extract_text_from_image_with_ocr",
+    "extract_text_from_iwa_files",
+    "extract_text_from_pdf_with_passwords",
+    "merge_chars_into_blocks",
+    "merge_segments",
+    "parse_jotdown_attributes",
+    "process_images_with_ocr",
+    "recognize_page_tables",
+    "reconstruct_table",
+    "record_error_on_current_span",
+    "render_block_to_djot",
+    "render_list_item",
+    "should_trigger_ocr",
+    "sort_cache_by_access_time",
+    "take_or_create_slanet",
+    "take_or_create_table_classifier",
+    "take_or_create_tatr",
+    "validate_vlm_backend_config",
+
+    # fmt trait impls — not callable functions
+    "fmt",
+
+    # Internal utilities not in official public API (docs.kreuzberg.dev)
+    "camel_to_snake",
+    "snake_to_camel",
+    "escape_html_entities",
+    "fix_mojibake",
+    "detect_image_format",
+    "generate_cache_key",
+    "excel_to_text",
+    "excel_to_markdown",
+    "render_html",
+    "render_markdown",
+    "render_djot",
+    "render_json",
+    "render_plain",
+    "get_document_extractor_registry",
+    "get_ocr_backend_registry",
+    "get_post_processor_registry",
+    "get_renderer_registry",
+    "get_validator_registry",
+]
+methods = [
+    "OcrElement.with_rotation_opt",
+    "VlmOcrBackend.backend_type",
+    "ApiError.validation",
+    "ApiError.unprocessable",
+    "ApiError.internal",
+    "ApiError.bad_gateway",
+    "ApiError.from",
+
+    # Returns PathBuf — can't convert to String across FFI
+    "PaddleOcrConfig.resolve_cache_dir",
+
+    # Internal struct methods — not public API
+    "ServerConfig.from_file",
+    "ServerConfig.from_json_file",
+    "ServerConfig.from_toml_file",
+    "ServerConfig.from_yaml_file",
+    "ServerConfig.apply_env_overrides",
+    "DocumentStructure.body_roots",
+    "DocumentStructure.furniture_roots",
+    "BBox.center",
+    "PooledString.deref",
+    "PooledString.deref_mut",
+    "PooledString.buffer_mut",
+    "TessdataManager.manifest",
+    "TracingLayer.layer",
+    "StreamReader.read_bytes",
+    "StreamReader.read_u8",
+    "StreamReader.read_u16",
+    "StreamReader.read_u32",
+    "StreamReader.push",
+    "StringGrowthValidator.check_append",
+    "IterationValidator.check_iteration",
+    "DepthValidator.push",
+    "TableValidator.add_cells",
+
+    # fmt trait impls — not callable from bindings
+    "BBox.fmt",
+    "LayoutDetection.fmt",
+    "PooledString.fmt",
+]
+
+# ---------------------------------------------------------------------------
+# Output directories
+# ---------------------------------------------------------------------------
+
+[output]
+python = "crates/kreuzberg-py/src/"
+node = "crates/kreuzberg-node/src/"
+ruby = "packages/ruby/ext/kreuzberg_rb/src/"
+php = "crates/kreuzberg-php/src/"
+ffi = "crates/kreuzberg-ffi/src/"
+go = "packages/go/"
+elixir = "packages/elixir/native/kreuzberg_nif/src/"
+wasm = "crates/kreuzberg-wasm/src/"
+java = "packages/java/src/main/java/dev/kreuzberg/"
+csharp = "packages/csharp/src/"
+r = "packages/r/src/rust/src/"
+
+# ---------------------------------------------------------------------------
+# Language-specific configuration
+# ---------------------------------------------------------------------------
+
+[python]
+module_name = "_kreuzberg"
+exclude_functions = [
+    # Python-specific codegen issues (type conversion, cfg-gating)
+    "run_pipeline_sync",
+    "start_mcp_server_http_with_config",
+    "acquire_string_buffer",
+    "batch_cleanup_caches",
+    "validate_vlm_backend_config",
+    "extract_text_from_image_with_ocr",
+    "extract_text_from_iwa_files",
+    "apply_execution_providers",
+    "cluster_font_sizes",
+    "reextract_raw_images_via_pdfium",
+    "detect_layout_for_images",
+    "extract_metadata_with_passwords",
+    "extract_text_from_pdf_with_passwords",
+    "process_images_with_ocr",
+]
+exclude_types = [
+    # Arc<Mutex<T>> opaque types — codegen doesn't generate .lock() for methods
+    "PooledString",
+]
+
+[python.stubs]
+output = "packages/python/kreuzberg/"
+
+[node]
+package_name = "kreuzberg"
+exclude_functions = [
+    # cfg-gated behind #[cfg(not(feature = "tokio-runtime"))] — node always enables tokio-runtime
+    "run_pipeline_sync",
+    # MCP server with config not available in node feature set
+    "start_mcp_server_http_with_config",
+    # Returns excluded type PooledString
+    "acquire_string_buffer",
+    # Returns Vec<CacheMetadata> — codegen maps to Vec<String> incorrectly
+    "batch_cleanup_caches",
+    # Option<&LlmConfig> vs Option<LlmConfig> ref mismatch
+    "validate_vlm_backend_config",
+    # Type conversion mismatches (Vec<&str> vs &[String], ref mismatches)
+    "extract_text_from_image_with_ocr",
+    "extract_text_from_iwa_files",
+    "apply_execution_providers",
+    "cluster_font_sizes",
+    "reextract_raw_images_via_pdfium",
+    "detect_layout_for_images",
+    "extract_metadata_with_passwords",
+    "extract_text_from_pdf_with_passwords",
+]
+exclude_types = [
+    # Opaque Arc<Mutex<T>> types — codegen doesn't generate .lock() calls for methods
+    "StreamReader",
+    "StringGrowthValidator",
+    "IterationValidator",
+    "DepthValidator",
+    "TableValidator",
+    "PooledString",
+]
+
+[ffi]
+prefix = "kreuzberg"
+header_name = "kreuzberg.h"
+lib_name = "kreuzberg_ffi"
+visitor_callbacks = false
+exclude_functions = [
+    # Missing types: InlineElement, PageBoundary, OcrElement, RecognizedTable, PdfImage
+    "render_inline_content",
+    "evaluate_per_page_ocr",
+    "validate_page_boundaries",
+    "validate_utf8_boundaries",
+    "assemble_ocr_markdown",
+    "reextract_raw_images_via_pdfium",
+    # Mismatched types: codegen emits &Vec<&str> but API expects &[String]
+    "extract_text_from_iwa_files",
+    "classify_chunk",
+    "extract_text_from_pdf_with_passwords",
+    # Option<&LlmConfig> ref mismatch / complex param type mismatches
+    "validate_vlm_backend_config",
+    "extract_text_from_image_with_ocr",
+]
+
+[go]
+module = "github.com/kreuzberg-dev/kreuzberg/v4"
+package_name = "kreuzberg"
+
+[java]
+package = "dev.kreuzberg"
+ffi_style = "panama"
+
+[csharp]
+namespace = "Kreuzberg"
+
+[ruby]
+gem_name = "kreuzberg"
+exclude_functions = [
+    # Functions that depend on OutputFormat type collision workaround
+    "apply_output_format",
+]
+
+[elixir]
+app_name = "kreuzberg"
+exclude_functions = [
+    # Functions returning non-FFI-compatible types (cannot convert to string)
+    "sort_cache_by_access_time",
+    "create_router_with_limits",
+    "create_router_with_limits_and_server_config",
+    "create_router",
+    # Functions with struct reference parameters that can't be converted properly
+    "validate_vlm_backend_config",
+    "validate_backend_config",
+    "apply_output_format",
+    "render_inline_content",
+    "string_from_utf8",
+    "calculate_quality_score",
+    # Functions with Vec<T> parameters that can't be marshalled through NIF boundary
+    "validate_page_boundaries",
+    "validate_utf8_boundaries",
+    "assemble_ocr_markdown",
+    "apply_heuristics",
+    "greedy_nms",
+    "sort_by_confidence_desc",
+    "elements_to_hocr_words",
+    "assign_hierarchy_levels_from_clusters",
+    "merge_chars_into_blocks",
+    "merge_segments",
+    # Functions with problematic type conversions
+    "should_trigger_ocr",
+    "take_or_create_engine",
+    "return_engine",
+    "take_or_create_tatr",
+    "take_or_create_table_classifier",
+    "take_or_create_slanet",
+    "list_presets",
+    "map_language_code",
+    "is_language_supported",
+    # Functions with Cow/reference return types or complex conversions
+    "classify_chunk",
+    "config_from_extraction",
+    "detect_page_breaks_from_docx",
+    "element_to_hocr_word",
+    "extract_and_process_embedded_files",
+    "extract_ooxml_embedded_objects",
+    "transform_extraction_result_to_elements",
+    "transform_to_document_structure",
+    # Methods with type conversion issues (Cow, &str, reference returns)
+    "normalized",
+    "effective_pipeline",
+    "fmt",
+    "get",
+    "from",
+    # Uri static constructors — take &str params but NIF passes owned String
+    "hyperlink",
+    "image",
+    "citation",
+    "anchor",
+    "email",
+    "reference",
+    # cfg-gated / unavailable functions
+    "run_pipeline_sync",
+    "start_mcp_server_http_with_config",
+    # Tuple params / type conversion mismatches
+    "extract_text_from_image_with_ocr",
+    "process_images_with_ocr",
+    "evaluate_native_text_for_ocr",
+    "evaluate_per_page_ocr",
+    "apply_execution_providers",
+    "reextract_raw_images_via_pdfium",
+]
+exclude_types = [
+    # Trait types cannot be FFI-bound
+    "SyncExtractor",
+    "Recyclable",
+]
+
+[php]
+extension_name = "kreuzberg"
+exclude_functions = [
+    # Functions taking Vec<NonOpaqueType> which ext-php-rs can't convert from PHP arrays
+    "validate_page_boundaries",
+    "validate_utf8_boundaries",
+    "greedy_nms",
+    "sort_by_confidence_desc",
+    "detect_layout_for_images",
+    "recognize_page_tables",
+    "render_inline_content",
+    "generate_embeddings_for_chunks",
+    "elements_to_hocr_words",
+    "assign_hierarchy_levels_from_clusters",
+    "merge_chars_into_blocks",
+    "assemble_ocr_markdown",
+    "apply_heuristics",
+    "assign_heading_levels_smart",
+    # Enum conversion functions (take enums excluded from PHP)
+    "chunk_text_with_type",
+    # Takes OutputFormat enum as a parameter (excluded type, no From<String>)
+    "apply_output_format",
+    # Returns PooledString which is excluded from PHP bindings
+    "acquire_string_buffer",
+    # PageBoundary params — Vec<PageBoundary> can't be converted from PHP arrays
+    "chunk_text",
+    "chunk_text_with_heading_source",
+    "chunk_semantic",
+    # Non-Result return type with stub body
+    "get_preset",
+]
+exclude_types = [
+    # Enum types that don't have From<String> implementation for PHP
+    "ChunkerType",
+    "OutputFormat",
+    "EmbeddingModelType",
+    "UriKind",
+    "ChunkType",
+    # PooledString has methods incompatible with ext-php-rs (buffer_mut, deref_mut, fmt(f))
+    # that trigger E0716/E0596/E0507 in the #[php_impl] macro expansion.
+    "PooledString",
+]
+
+[r]
+package_name = "kreuzberg"
+
+[wasm]
+# Only exclude ort-dependent types/functions (paddle-ocr, layout-detection, embeddings, auto-rotate).
+exclude_types = [
+    # paddle-ocr / layout-detection / embeddings (ort-dependent)
+    "PaddleOcrConfig",
+    "PaddleLanguage",
+    "LayoutClass",
+    "LayoutDetectionConfig",
+    "LayoutDetection",
+    "DetectionResult",
+    "PSMMode",
+    "BBox",
+    "TableModel",
+    "EmbeddingConfig",
+    "EmbeddingResult",
+    "DocOrientationResult",
+    "OrientationResult",
+    "OcrFallbackDecision",
+    "ModelPaths",
+    "OcrProcessor",
+    "TesseractConfig",
+    "OcrCacheStats",
+    "TessdataManager",
+    "PageLayoutResult",
+    "PageTiming",
+    "ProcessingWarning",
+    "RecognizedTable",
+    # Feature-gated types (not available in WASM feature set)
+    "ChunkSizing",
+    # MCP parameter types not compatible with wasm-bindgen (Option<JsValue> fields)
+    "BatchExtractFilesParams",
+]
+exclude_functions = [
+    # paddle-ocr / layout-detection / embeddings / auto-rotate
+    "embed_texts",
+    "embed_text",
+    "detect_layout",
+    "detect_orientation",
+    "run_ocr_pipeline",
+    "process_ocr_element",
+    "layout_runner",
+    "record_success_on_current_span",
+    "record_error_on_current_span",
+    # ocr module (requires full ocr, not ocr-wasm)
+    "compute_hash",
+    "assemble_ocr_markdown",
+    "validate_tesseract_version",
+    # paddle_ocr module
+    "is_language_supported",
+    "language_to_script_family",
+    "map_language_code",
+    # embeddings module
+    "normalize",
+    "list_presets",
+    # image module (ort-dependent preprocessing)
+    "calculate_optimal_dpi",
+    "calculate_smart_dpi",
+    # ort_discovery
+    "ensure_ort_available",
+    # pdf layout_runner
+    "run_layout_for_page",
+    "run_layout_for_pdf",
+    # telemetry internals
+    "sanitize_path",
+    # layout detection
+    "config_from_extraction",
+    "detect_layout_for_images",
+    # Uses excluded types WasmDetectionResult/WasmRecognizedTable
+    "recognize_page_tables",
+    # Functions using excluded types/modules
+    "generate_embeddings_for_chunks",
+    "apply_heuristics",
+    "greedy_nms",
+    # docx extraction functions (internal, not public API)
+    "detect_page_breaks_from_docx",
+    "detect_table_page_numbers",
+    # ooxml embedded object extraction (internal, returns complex types)
+    "extract_ooxml_embedded_objects",
+    "extract_and_process_embedded_files",
+    # markdown utility functions (internal)
+    "cells_to_text",
+    "cells_to_markdown",
+    # Table processing stubs (internal, incomplete implementations)
+    "calculate_quality_score",
+    "reconstruct_table",
+    "table_to_markdown",
+    "build_cell_grid",
+    "post_process_table",
+    "is_well_formed_table",
+    "parse_jotdown_attributes",
+    "parse_jotdown_inline",
+    # Vec<bool> params not supported by wasm-bindgen
+    "merge_segments",
+    # image_ocr module not available in WASM feature set
+    "process_images_with_ocr",
+    # MCP server functions (not available in WASM)
+    "start_mcp_server_http",
+    "start_mcp_server_http_with_config",
+    # Vec<&mut PdfImage> mutability mismatch
+    "reextract_raw_images_via_pdfium",
+]
+# Everything except ort-dependent features (paddle-ocr, layout-detection, embeddings, auto-rotate)
+features = [
+    "pdf",
+    "excel-wasm",
+    "office",
+    "hwp",
+    "iwork",
+    "email",
+    "html",
+    "xml",
+    "archives",
+    "language-detection",
+    "chunking",
+    "quality",
+    "keywords",
+    "mdx",
+    "ocr-wasm",
+    "tree-sitter-wasm",
+    "liter-llm",
+    "stopwords",
+]
+
+# ---------------------------------------------------------------------------
+# DTO styles
+# ---------------------------------------------------------------------------
+
+[dto]
+python = "dataclass"
+python_output = "typed-dict"
+node = "interface"
+ruby = "struct"
+php = "readonly-class"
+elixir = "struct"
+go = "struct"
+java = "record"
+csharp = "record"
+r = "list"
+
+# ---------------------------------------------------------------------------
+# Scaffold metadata
+# ---------------------------------------------------------------------------
+
+[scaffold]
+description = "High-performance document intelligence library"
+license = "Elastic-2.0"
+repository = "https://github.com/kreuzberg-dev/kreuzberg"
+homepage = "https://kreuzberg.dev"
+authors = ["Na'aman Hirschfeld <naaman@kreuzberg.dev>"]
+keywords = ["document", "extraction", "pdf", "ocr", "text"]
+
+# ---------------------------------------------------------------------------
+# Trait bridges — generate FFI bridge code for plugin traits
+# ---------------------------------------------------------------------------
+
+[[trait_bridges]]
+trait_name = "OcrBackend"
+super_trait = "kreuzberg::plugins::Plugin"
+registry_getter = "kreuzberg::plugins::registry::get_ocr_backend_registry"
+register_fn = "register_ocr_backend"
+
+# TODO: add PostProcessor and Validator bridges once OcrBackend is proven
+# [[trait_bridges]]
+# trait_name = "PostProcessor"
+# super_trait = "kreuzberg::plugins::Plugin"
+# registry_getter = "kreuzberg::plugins::registry::get_post_processor_registry"
+# register_fn = "register_post_processor"
+#
+# [[trait_bridges]]
+# trait_name = "Validator"
+# super_trait = "kreuzberg::plugins::Plugin"
+# registry_getter = "kreuzberg::plugins::registry::get_validator_registry"
+# register_fn = "register_validator"
+
+# ---------------------------------------------------------------------------
+# Generation control
+# ---------------------------------------------------------------------------
+
+[generate]
+bindings = true
+errors = true
+configs = true
+async_wrappers = true
+type_conversions = true
+package_metadata = true
+public_api = true
+
+[generate_overrides.wasm]
+async_wrappers = false
+
+# ---------------------------------------------------------------------------
+# README generation
+# ---------------------------------------------------------------------------
+
+[readme]
+template_dir = "templates/readme"
+snippets_dir = "docs/snippets"
+output_pattern = "packages/{language}/README.md"
+discord_url = "https://discord.gg/xt9WY3GnKR"
+banner_url = "https://github.com/user-attachments/assets/419fc06c-8313-4324-b159-4b4d3cfce5c0"
+
+[readme.languages.python]
+template = "python.md"
+name = "Python"
+package_name = "kreuzberg"
+badge_url = "https://img.shields.io/pypi/v/kreuzberg?label=Python&color=007ec6"
+docs_url = "https://kreuzberg.dev/"
+description = "Extract text, tables, images, and metadata from 91+ file formats and 248 programming languages including PDF, Office documents, and images. Native Python bindings with async/await support, multiple OCR backends (Tesseract, EasyOCR, PaddleOCR), and extensible plugin system."
+package_manager = ["pip"]
+features = { ocr = true, async = true, plugin_system = true, embeddings = true, code_intelligence = true }
+ocr_backends = ["tesseract", "easyocr", "paddleocr"]
+optional_sections = ["async_vs_sync_performance", "ocr_backends", "system_requirements"]
+snippets = { basic_extraction = "getting-started/basic_usage.md", async_extraction = "getting-started/extract_file.md", batch_processing = "getting-started/extract_with_ocr.md", ocr_configuration = "getting-started/hello_world.md", table_extraction = "getting-started/read_content.md" }
+
+[readme.languages.typescript]
+template = "language_package.md"
+output_path = "crates/kreuzberg-node/README.md"
+name = "TypeScript (Node.js)"
+package_name = "@kreuzberg/node"
+badge_url = "https://img.shields.io/npm/v/@kreuzberg/node?label=TypeScript&color=007ec6"
+docs_url = "https://kreuzberg.dev/"
+description = "Extract text, tables, images, and metadata from 91+ file formats and 248 programming languages including PDF, Office documents, and images. Native NAPI-RS bindings for Node.js with superior performance, async/await support, and TypeScript type definitions."
+package_manager = ["npm", "pnpm", "yarn"]
+features = { ocr = true, async = true, plugin_system = true, embeddings = true, worker_pools = true, config_discovery = true, code_intelligence = true }
+ocr_backends = ["tesseract", "paddleocr"]
+optional_sections = [
+    "native_vs_wasm_comparison",
+    "ocr_support",
+    "performance",
+    "napi_implementation",
+]
+snippets = { basic_extraction = "getting-started/basic_usage.md", async_extraction = "getting-started/extract_file_async.md", batch_processing = "getting-started/batch_extract_files_sync.md", ocr_configuration = "config/config_ocr.md", table_extraction = "api/tables.md", config_discovery = "config/config_discovery.md", worker_pool = "advanced/worker_pool.md" }
+
+[readme.languages.go]
+template = "go.md"
+output_path = "packages/go/v4/README.md"
+name = "Go"
+package_name = "github.com/kreuzberg-dev/kreuzberg/packages/go/v4"
+badge_url = "https://img.shields.io/github/v/tag/kreuzberg-dev/kreuzberg?label=Go&color=007ec6"
+docs_url = "https://kreuzberg.dev/"
+description = "Extract text, tables, images, and metadata from 91+ file formats and 248 programming languages including PDF, Office documents, and images. Go bindings with context-aware async support, idiomatic Go API, and CGO-based native performance."
+package_manager = ["go get"]
+features = { ocr = true, async = true, plugin_system = true, embeddings = false, code_intelligence = true }
+ocr_backends = ["tesseract", "paddleocr"]
+optional_sections = ["system_requirements", "ffi_build_instructions"]
+snippets = { basic_extraction = "getting-started/basic_usage.md", async_extraction = "getting-started/extract_file.md", batch_processing = "getting-started/extract_with_ocr.md", ocr_configuration = "getting-started/hello_world.md" }
+
+[readme.languages.java]
+template = "language_package.md"
+name = "Java"
+package_name = "dev.kreuzberg:kreuzberg"
+badge_url = "https://img.shields.io/maven-central/v/dev.kreuzberg/kreuzberg?label=Java&color=007ec6"
+docs_url = "https://kreuzberg.dev/"
+description = "Extract text, tables, images, and metadata from 91+ file formats and 248 programming languages including PDF, Office documents, and images. Java bindings with type-safe API, Foreign Function & Memory API integration, and native performance."
+package_manager = ["maven", "gradle"]
+features = { ocr = true, async = true, plugin_system = true, embeddings = true, code_intelligence = true }
+ocr_backends = ["tesseract", "paddleocr"]
+optional_sections = ["maven_gradle_setup", "system_requirements"]
+snippets = { basic_extraction = "getting-started/basic_usage.md", async_extraction = "api/extract_file_async.md", batch_processing = "api/batch_extract_files_sync.md", ocr_configuration = "ocr/ocr_extraction.md", configuration = "config/config_basic.md" }
+
+[readme.languages.php]
+template = "language_package.md"
+name = "PHP"
+package_name = "kreuzberg/kreuzberg"
+badge_url = "https://img.shields.io/packagist/v/kreuzberg/kreuzberg?label=PHP&color=007ec6"
+docs_url = "https://kreuzberg.dev/"
+description = "Extract text, tables, images, and metadata from 91+ file formats and 248 programming languages including PDF, Office documents, and images. PHP bindings with modern PHP 8.2+ support and type-safe API."
+package_manager = ["composer"]
+features = { ocr = true, async = false, plugin_system = true, embeddings = true, code_intelligence = true }
+ocr_backends = ["tesseract", "paddleocr"]
+optional_sections = ["composer_installation", "system_requirements"]
+snippets = { basic_extraction = "quickstart/basic_extraction_oop.php", batch_processing = "extraction/batch_processing.php", ocr_configuration = "ocr/basic_ocr.php" }
+
+[readme.languages.ruby]
+template = "ruby.md"
+name = "Ruby"
+package_name = "kreuzberg"
+badge_url = "https://img.shields.io/gem/v/kreuzberg?label=Ruby&color=007ec6"
+docs_url = "https://kreuzberg.dev/"
+description = "Extract text, tables, images, and metadata from 91+ file formats and 248 programming languages including PDF, Office documents, and images. Ruby bindings with idiomatic Ruby API and native performance."
+package_manager = ["rubygems", "bundler"]
+features = { ocr = true, async = true, plugin_system = true, embeddings = true, code_intelligence = true }
+ocr_backends = ["tesseract", "paddleocr"]
+optional_sections = ["system_requirements", "development_setup"]
+snippets = { basic_extraction = "getting-started/basic_usage.md", async_extraction = "getting-started/extract_file.md", batch_processing = "getting-started/install_verify.md", ocr_configuration = "getting-started/extract_with_ocr.md" }
+
+[readme.languages.csharp]
+template = "language_package.md"
+name = "C#"
+package_name = "Kreuzberg"
+badge_url = "https://img.shields.io/nuget/v/Kreuzberg?label=C%23&color=007ec6"
+docs_url = "https://kreuzberg.dev/"
+description = "Extract text, tables, images, and metadata from 91+ file formats and 248 programming languages including PDF, Office documents, and images. .NET bindings with full type safety, async/await support, and .NET 10.0+ compatibility."
+package_manager = ["nuget"]
+features = { ocr = true, async = true, plugin_system = true, embeddings = true, code_intelligence = true }
+ocr_backends = ["tesseract", "paddleocr"]
+optional_sections = ["dotnet_installation", "system_requirements"]
+snippets = { basic_extraction = "getting-started/basic_usage.cs", async_extraction = "advanced/async_extraction.cs", batch_processing = "advanced/batch_processing.cs", ocr_configuration = "ocr/tesseract_backend.cs" }
+
+[readme.languages.elixir]
+template = "language_package.md"
+name = "Elixir"
+package_name = "kreuzberg"
+badge_url = "https://img.shields.io/hexpm/v/kreuzberg?label=Elixir&color=007ec6"
+docs_url = "https://kreuzberg.dev/"
+description = "Extract text, tables, images, and metadata from 91+ file formats and 248 programming languages including PDF, Office documents, and images. Elixir bindings with native BEAM concurrency, OTP integration, and idiomatic Elixir API."
+package_manager = ["mix"]
+features = { ocr = true, async = true, plugin_system = true, embeddings = true, code_intelligence = true }
+ocr_backends = ["tesseract", "paddleocr"]
+optional_sections = ["mix_installation", "async_with_tasks", "plugin_system"]
+snippets = { basic_extraction = "getting-started/basic_usage.exs", async_extraction = "getting-started/extract_file.exs", batch_processing = "core/batch_extract_files_sync.exs", ocr_configuration = "ocr/tesseract_basic.exs", plugin_system = "plugins/word_count_processor.exs" }
+
+[readme.languages.wasm]
+template = "language_package.md"
+output_path = "crates/kreuzberg-wasm/README.md"
+name = "WebAssembly"
+package_name = "@kreuzberg/wasm"
+badge_url = "https://img.shields.io/npm/v/@kreuzberg/wasm?label=WASM&color=007ec6"
+docs_url = "https://kreuzberg.dev/"
+description = "Extract text, tables, images, and metadata from 91+ file formats and 248 programming languages including PDF, Office documents, and images. WebAssembly bindings for browsers, Deno, and Cloudflare Workers with portable deployment and multi-threading support."
+package_manager = ["npm", "pnpm", "yarn"]
+features = { ocr = true, async = true, plugin_system = true, embeddings = false, code_intelligence = true }
+ocr_backends = ["tesseract-wasm"]
+optional_sections = [
+    "pdfium_initialization",
+    "multi_threading",
+    "ocr_support",
+    "performance_comparison",
+]
+snippets = { basic_extraction = "getting-started/basic-extract.ts", browser_extraction = "getting-started/browser-file-input.ts", node_extraction = "getting-started/basic-extract.ts", async_extraction = "getting-started/async-extraction.ts", cloudflare_workers = "getting-started/runtime-detection.ts", batch_processing = "getting-started/batch-processing.ts", ocr_configuration = "ocr/enable-ocr.ts" }
+
+[readme.languages.r]
+template = "language_package.md"
+name = "R"
+package_name = "kreuzberg"
+badge_url = "https://img.shields.io/badge/R-kreuzberg-007ec6"
+docs_url = "https://kreuzberg.dev/"
+description = "Extract text, tables, images, and metadata from 91+ file formats and 248 programming languages including PDF, Office documents, and images. R bindings with native R API, data frame integration, and high-performance document extraction."
+package_manager = ["install.packages"]
+features = { ocr = true, async = false, plugin_system = true, embeddings = true, code_intelligence = true }
+ocr_backends = ["tesseract", "paddleocr"]
+optional_sections = ["system_requirements"]
+snippets = { basic_extraction = "getting-started/basic_extraction.md", async_extraction = "getting-started/extract_file.md", batch_processing = "getting-started/extract_with_ocr.md", ocr_configuration = "ocr/ocr_extraction.md" }
+
+[readme.languages.ffi]
+template = "language_package.md"
+output_path = "crates/kreuzberg-ffi/README.md"
+name = "FFI (C/C++)"
+package_name = "kreuzberg-ffi"
+badge_url = "https://img.shields.io/badge/C%2FC%2B%2B-kreuzberg--ffi-007ec6"
+docs_url = "https://kreuzberg.dev/"
+description = "Extract text, tables, images, and metadata from 91+ file formats and 248 programming languages including PDF, Office documents, and images. C/C++ FFI bindings providing a stable ABI for native integration, shared library distribution, and cross-language interop."
+package_manager = ["cargo"]
+features = { ocr = true, async = true, plugin_system = true, embeddings = true, code_intelligence = true }
+ocr_backends = ["tesseract", "paddleocr"]
+optional_sections = ["system_requirements"]
+snippets = { basic_extraction = "api/extract_file_sync.md", async_extraction = "api/extract_file_async.md", batch_processing = "api/batch_extract_files_sync.md", ocr_configuration = "ocr/ocr_extraction.md" }
+
+# ---------------------------------------------------------------------------
+# Version synchronization
+# ---------------------------------------------------------------------------
+
+[sync]
+extra_paths = [
+    "packages/python/kreuzberg/__init__.py",
+    "packages/ruby/lib/kreuzberg/version.rb",
+    "crates/kreuzberg-node/package.json",
+    "crates/kreuzberg-node/npm/*/package.json",
+    "packages/go/go.mod",
+]
+
+# ---------------------------------------------------------------------------
+# Adapters — all currently excluded (reference excluded types)
+# ---------------------------------------------------------------------------
+# Adapters will be re-added as types are brought back into include list.
+
+# ---------------------------------------------------------------------------
+# Test commands
+# ---------------------------------------------------------------------------
+
+[test.python]
+command = "task python:test"
+e2e = "cd e2e/python && python3 -m pytest tests/ -q"
+
+[test.node]
+command = "npx vitest run --config packages/typescript/vitest.config.ts"
+e2e = "cd e2e/typescript && npx vitest run"
+
+[test.go]
+command = "task go:test"
+e2e = "cd e2e/go && go test ./... -count=1"
+
+[test.ruby]
+command = "task ruby:test"
+
+[test.php]
+command = "task php:test"
+
+[test.java]
+command = "task java:test"
+
+[test.csharp]
+command = "task csharp:test"
+
+[test.elixir]
+command = "task elixir:test"
+e2e = "cd e2e/elixir && mix test"
+
+[test.r]
+command = "task r:test"
+e2e = "cd e2e/r && Rscript -e \"devtools::load_all('../../packages/r'); testthat::set_max_fails(Inf); testthat::test_dir('tests')\""
+
+[test.wasm]
+e2e = "cd e2e/wasm && npm test"
+
+[test.rust]
+e2e = "cd e2e/rust && cargo test"
+
+# ---------------------------------------------------------------------------
+# Lint commands
+# ---------------------------------------------------------------------------
+
+[lint.python]
+format = "ruff format packages/python/"
+check = "ruff check packages/python/"
+typecheck = "mypy packages/python/"
+
+[lint.node]
+format = "npx biome format --write packages/typescript/"
+check = "npx biome check packages/typescript/"
+
+[lint.ruby]
+format = "bundle exec rubocop -a packages/ruby/"
+check = "bundle exec rubocop packages/ruby/"
+
+[lint.php]
+format = "phpcbf packages/php/"
+check = "phpstan analyse packages/php/"
+
+[lint.go]
+check = "cd packages/go && golangci-lint run"
+
+# ---------------------------------------------------------------------------
+# E2E test generation
+# ---------------------------------------------------------------------------
+
+[e2e]
+fixtures = "fixtures"
+output = "e2e"
+languages = ["python", "rust", "node", "go", "ruby", "elixir", "wasm", "java", "csharp", "php", "r"]
+fields_optional = ["content", "metadata.format"]
+
+[e2e.call]
+function = "extract_file"
+module = "kreuzberg"
+result_var = "result"
+async = true
+args = [
+    { name = "path", field = "input.path", type = "string" },
+    { name = "mime_type", field = "input.mime_type", type = "string", optional = true },
+    { name = "config", field = "input.config", type = "json_object", optional = true },
+]
+
+[e2e.call.overrides.rust]
+crate_name = "kreuzberg"
+function = "extract_file"
+
+[e2e.call.overrides.python]
+module = "kreuzberg"
+function = "extract_file"
+options_type = "ExtractionConfig"
+
+[e2e.call.overrides.node]
+module = "kreuzberg"
+function = "extractFile"
+options_type = "ExtractionConfig"
+
+[e2e.call.overrides.go]
+module = "github.com/kreuzberg-dev/kreuzberg/v4"
+function = "ExtractFile"
+alias = "kreuzberg"
+options_type = "ExtractionConfig"
+
+[e2e.call.overrides.java]
+class = "dev.kreuzberg.Kreuzberg"
+function = "extractFile"
+options_type = "ExtractionConfig"
+
+[e2e.call.overrides.csharp]
+class = "Kreuzberg"
+function = "ExtractFile"
+options_type = "ExtractionConfig"
+
+[e2e.call.overrides.ruby]
+options_type = "Kreuzberg::ExtractionConfig"
+
+[e2e.call.overrides.elixir]
+options_type = "ExtractionConfig"
+handle_struct_type = "ExtractionConfig"
+
+[e2e.call.overrides.wasm]
+options_type = "JsExtractionConfig"
+
+[e2e.call.overrides.php]
+class = "Kreuzberg\\Kreuzberg"
+function = "extractFile"
+options_type = "ExtractionConfig"
+
+[e2e.call.overrides.r]
+function = "extract_file"
+options_type = "ExtractionConfig"
+
+# Named call configs for multi-function testing
+
+[e2e.calls.extract_bytes]
+function = "extract_bytes"
+module = "kreuzberg"
+async = true
+args = [
+    { name = "data", field = "input.data", type = "bytes" },
+    { name = "mime_type", field = "input.mime_type", type = "string" },
+    { name = "config", field = "input.config", type = "json_object", optional = true },
+]
+
+[e2e.calls.extract_file_sync]
+function = "extract_file_sync"
+module = "kreuzberg"
+async = false
+args = [
+    { name = "path", field = "input.path", type = "string" },
+    { name = "mime_type", field = "input.mime_type", type = "string", optional = true },
+    { name = "config", field = "input.config", type = "json_object", optional = true },
+]
+
+[e2e.calls.extract_bytes_sync]
+function = "extract_bytes_sync"
+module = "kreuzberg"
+async = false
+args = [
+    { name = "data", field = "input.data", type = "bytes" },
+    { name = "mime_type", field = "input.mime_type", type = "string" },
+    { name = "config", field = "input.config", type = "json_object", optional = true },
+]
+
+[e2e.calls.embed]
+function = "embed_texts"
+module = "kreuzberg"
+async = false
+args = [
+    { name = "texts", field = "input.texts", type = "json_object" },
+    { name = "config", field = "input.config", type = "json_object", optional = true },
+]
+
+[e2e.calls.render_page]
+function = "render_page"
+module = "kreuzberg"
+async = false
+args = [
+    { name = "path", field = "input.path", type = "string" },
+    { name = "page", field = "input.page", type = "int" },
+    { name = "config", field = "input.config", type = "json_object", optional = true },
+]
+
+# --- Text extraction standalone ---
+
+[e2e.calls.extract_text_from_pdf]
+function = "extract_text_from_pdf"
+module = "kreuzberg"
+async = false
+args = [{ name = "pdf_bytes", field = "input.data", type = "bytes" }]
+
+[e2e.calls.extract_doc_text]
+function = "extract_doc_text"
+module = "kreuzberg"
+async = false
+args = [{ name = "content", field = "input.data", type = "bytes" }]
+
+[e2e.calls.extract_email_content]
+function = "extract_email_content"
+module = "kreuzberg"
+async = false
+args = [{ name = "bytes", field = "input.data", type = "bytes" }]
+
+[e2e.calls.extract_pptx_from_bytes]
+function = "extract_pptx_from_bytes"
+module = "kreuzberg"
+async = false
+args = [{ name = "bytes", field = "input.data", type = "bytes" }]
+
+# --- Rendering standalone ---
+
+[e2e.calls.render_html]
+function = "render_html"
+module = "kreuzberg"
+async = false
+args = [{ name = "doc", field = "input.doc", type = "string" }]
+
+[e2e.calls.render_markdown]
+function = "render_markdown"
+module = "kreuzberg"
+async = false
+args = [{ name = "doc", field = "input.doc", type = "string" }]
+
+[e2e.calls.render_djot]
+function = "render_djot"
+module = "kreuzberg"
+async = false
+args = [{ name = "doc", field = "input.doc", type = "string" }]
+
+[e2e.calls.render_json]
+function = "render_json"
+module = "kreuzberg"
+async = false
+args = [{ name = "doc", field = "input.doc", type = "string" }]
+
+[e2e.calls.render_plain]
+function = "render_plain"
+module = "kreuzberg"
+async = false
+args = [{ name = "doc", field = "input.doc", type = "string" }]
+
+[e2e.calls.convert_html_to_markdown]
+function = "convert_html_to_markdown"
+module = "kreuzberg"
+async = false
+args = [{ name = "html", field = "input.html", type = "string" }]
+
+[e2e.calls.djot_to_html]
+function = "djot_to_html"
+module = "kreuzberg"
+async = false
+args = [{ name = "djot", field = "input.djot", type = "string" }]
+
+# --- Chunking ---
+
+[e2e.calls.chunk_text]
+function = "chunk_text"
+module = "kreuzberg"
+async = false
+args = [
+    { name = "text", field = "input.text", type = "string" },
+    { name = "config", field = "input.config", type = "json_object" },
+]
+
+[e2e.calls.chunk_semantic]
+function = "chunk_semantic"
+module = "kreuzberg"
+async = false
+args = [
+    { name = "text", field = "input.text", type = "string" },
+    { name = "config", field = "input.config", type = "json_object" },
+]
+
+[e2e.calls.chunk_texts_batch]
+function = "chunk_texts_batch"
+module = "kreuzberg"
+async = false
+args = [
+    { name = "texts", field = "input.texts", type = "json_object" },
+    { name = "config", field = "input.config", type = "json_object" },
+]
+
+# --- Detection ---
+
+[e2e.calls.detect_languages]
+function = "detect_languages"
+module = "kreuzberg"
+async = false
+args = [
+    { name = "text", field = "input.text", type = "string" },
+    { name = "config", field = "input.config", type = "json_object", optional = true },
+]
+
+[e2e.calls.detect_mime_type_standalone]
+function = "detect_mime_type"
+module = "kreuzberg"
+async = false
+args = [
+    { name = "path", field = "input.path", type = "string" },
+    { name = "check_exists", field = "input.check_exists", type = "bool", optional = true },
+]
+
+[e2e.calls.detect_mime_type_from_bytes]
+function = "detect_mime_type_from_bytes"
+module = "kreuzberg"
+async = false
+args = [{ name = "content", field = "input.data", type = "bytes" }]
+
+[e2e.calls.detect_image_format]
+function = "detect_image_format"
+module = "kreuzberg"
+async = false
+args = [{ name = "data", field = "input.data", type = "bytes" }]
+
+# --- Hashing ---
+
+[e2e.calls.blake3_hash_bytes]
+function = "blake3_hash_bytes"
+module = "kreuzberg"
+async = false
+args = [{ name = "data", field = "input.data", type = "bytes" }]
+
+[e2e.calls.blake3_hash_file]
+function = "blake3_hash_file"
+module = "kreuzberg"
+async = false
+args = [{ name = "path", field = "input.path", type = "string" }]
+
+[e2e.calls.fast_hash]
+function = "fast_hash"
+module = "kreuzberg"
+async = false
+args = [{ name = "data", field = "input.data", type = "bytes" }]
+
+[e2e.calls.compute_hash]
+function = "compute_hash"
+module = "kreuzberg"
+async = false
+args = [{ name = "data", field = "input.data", type = "bytes" }]
+
+# --- Validation ---
+
+[e2e.calls.validate_port]
+function = "validate_port"
+module = "kreuzberg"
+async = false
+args = [{ name = "port", field = "input.port", type = "int" }]
+
+[e2e.calls.validate_host]
+function = "validate_host"
+module = "kreuzberg"
+async = false
+args = [{ name = "host", field = "input.host", type = "string" }]
+
+[e2e.calls.validate_mime_type]
+function = "validate_mime_type"
+module = "kreuzberg"
+async = false
+args = [{ name = "mime_type", field = "input.mime_type", type = "string" }]
+
+[e2e.calls.validate_language_code]
+function = "validate_language_code"
+module = "kreuzberg"
+async = false
+args = [{ name = "code", field = "input.code", type = "string" }]
+
+[e2e.calls.validate_tesseract_psm]
+function = "validate_tesseract_psm"
+module = "kreuzberg"
+async = false
+args = [{ name = "psm", field = "input.psm", type = "int" }]
+
+[e2e.calls.validate_tesseract_oem]
+function = "validate_tesseract_oem"
+module = "kreuzberg"
+async = false
+args = [{ name = "oem", field = "input.oem", type = "int" }]
+
+[e2e.calls.validate_output_format_fn]
+function = "validate_output_format"
+module = "kreuzberg"
+async = false
+args = [{ name = "format", field = "input.format", type = "string" }]
+
+[e2e.calls.validate_confidence_fn]
+function = "validate_confidence"
+module = "kreuzberg"
+async = false
+args = [{ name = "confidence", field = "input.confidence", type = "float" }]
+
+[e2e.calls.validate_ocr_backend]
+function = "validate_ocr_backend"
+module = "kreuzberg"
+async = false
+args = [{ name = "backend", field = "input.backend", type = "string" }]
+
+[e2e.calls.validate_binarization_method]
+function = "validate_binarization_method"
+module = "kreuzberg"
+async = false
+args = [{ name = "method", field = "input.method", type = "string" }]
+
+[e2e.calls.validate_token_reduction_level]
+function = "validate_token_reduction_level"
+module = "kreuzberg"
+async = false
+args = [{ name = "level", field = "input.level", type = "string" }]
+
+[e2e.calls.validate_chunking_params]
+function = "validate_chunking_params"
+module = "kreuzberg"
+async = false
+args = [
+    { name = "max_characters", field = "input.max_characters", type = "int" },
+    { name = "overlap", field = "input.overlap", type = "int" },
+]
+
+# --- Text processing ---
+
+[e2e.calls.normalize_whitespace]
+function = "normalize_whitespace"
+module = "kreuzberg"
+async = false
+args = [{ name = "text", field = "input.text", type = "string" }]
+
+[e2e.calls.clean_extracted_text]
+function = "clean_extracted_text"
+module = "kreuzberg"
+async = false
+args = [{ name = "text", field = "input.text", type = "string" }]
+
+[e2e.calls.fix_mojibake]
+function = "fix_mojibake"
+module = "kreuzberg"
+async = false
+args = [{ name = "text", field = "input.text", type = "string" }]
+
+[e2e.calls.escape_html_entities]
+function = "escape_html_entities"
+module = "kreuzberg"
+async = false
+args = [{ name = "text", field = "input.text", type = "string" }]
+
+[e2e.calls.dedup_text]
+function = "dedup_text"
+module = "kreuzberg"
+async = false
+args = [{ name = "text", field = "input.text", type = "string" }]
+
+[e2e.calls.is_valid_utf8]
+function = "is_valid_utf8"
+module = "kreuzberg"
+async = false
+args = [{ name = "bytes", field = "input.data", type = "bytes" }]
+
+# --- String utilities ---
+
+[e2e.calls.camel_to_snake]
+function = "camel_to_snake"
+module = "kreuzberg"
+async = false
+args = [{ name = "text", field = "input.text", type = "string" }]
+
+[e2e.calls.snake_to_camel]
+function = "snake_to_camel"
+module = "kreuzberg"
+async = false
+args = [{ name = "text", field = "input.text", type = "string" }]
+
+[e2e.calls.sanitize_filename]
+function = "sanitize_filename"
+module = "kreuzberg"
+async = false
+args = [{ name = "filename", field = "input.filename", type = "string" }]
+
+[e2e.calls.sanitize_path]
+function = "sanitize_path"
+module = "kreuzberg"
+async = false
+args = [{ name = "path", field = "input.path", type = "string" }]
+
+# --- Markup formatting ---
+
+[e2e.calls.bold]
+function = "bold"
+module = "kreuzberg"
+async = false
+args = [{ name = "text", field = "input.text", type = "string" }]
+
+[e2e.calls.italic]
+function = "italic"
+module = "kreuzberg"
+async = false
+args = [{ name = "text", field = "input.text", type = "string" }]
+
+[e2e.calls.code_markup]
+function = "code"
+module = "kreuzberg"
+async = false
+args = [{ name = "text", field = "input.text", type = "string" }]
+
+[e2e.calls.strikethrough]
+function = "strikethrough"
+module = "kreuzberg"
+async = false
+args = [{ name = "text", field = "input.text", type = "string" }]
+
+[e2e.calls.underline]
+function = "underline"
+module = "kreuzberg"
+async = false
+args = [{ name = "text", field = "input.text", type = "string" }]
+
+[e2e.calls.link]
+function = "link"
+module = "kreuzberg"
+async = false
+args = [
+    { name = "text", field = "input.text", type = "string" },
+    { name = "url", field = "input.url", type = "string" },
+]
+
+# --- Table processing ---
+
+[e2e.calls.cells_to_markdown]
+function = "cells_to_markdown"
+module = "kreuzberg"
+async = false
+args = [{ name = "cells", field = "input.cells", type = "json_object" }]
+
+[e2e.calls.cells_to_text]
+function = "cells_to_text"
+module = "kreuzberg"
+async = false
+args = [{ name = "cells", field = "input.cells", type = "json_object" }]
+
+[e2e.calls.excel_to_text]
+function = "excel_to_text"
+module = "kreuzberg"
+async = false
+args = [{ name = "bytes", field = "input.data", type = "bytes" }]
+
+[e2e.calls.excel_to_markdown]
+function = "excel_to_markdown"
+module = "kreuzberg"
+async = false
+args = [{ name = "bytes", field = "input.data", type = "bytes" }]
+
+# --- Cache management ---
+
+[e2e.calls.generate_cache_key]
+function = "generate_cache_key"
+module = "kreuzberg"
+async = false
+args = [{ name = "parts", field = "input.parts", type = "json_object" }]
+
+[e2e.calls.validate_cache_key]
+function = "validate_cache_key"
+module = "kreuzberg"
+async = false
+args = [{ name = "key", field = "input.key", type = "string" }]
+
+# --- Embedding extras ---
+
+[e2e.calls.embed_text]
+function = "embed_text"
+module = "kreuzberg"
+async = false
+args = [
+    { name = "text", field = "input.text", type = "string" },
+    { name = "config", field = "input.config", type = "json_object", optional = true },
+]
+
+[e2e.calls.list_presets]
+function = "list_presets"
+module = "kreuzberg"
+async = false
+args = []
+
+[e2e.calls.normalize_vec]
+function = "normalize"
+module = "kreuzberg"
+async = false
+args = [{ name = "data", field = "input.data", type = "json_object" }]
+
+# --- Registry & list ---
+
+[e2e.calls.list_supported_formats]
+function = "list_supported_formats"
+module = "kreuzberg"
+async = false
+args = []
+
+[e2e.calls.get_extensions_for_mime]
+function = "get_extensions_for_mime"
+module = "kreuzberg"
+async = false
+args = [{ name = "mime_type", field = "input.mime_type", type = "string" }]
+
+# --- Batch extraction ---
+
+[e2e.calls.batch_extract_file]
+function = "batch_extract_file"
+module = "kreuzberg"
+async = true
+args = [
+    { name = "paths", field = "input.paths", type = "json_object" },
+    { name = "config", field = "input.config", type = "json_object", optional = true },
+]
+
+[e2e.calls.batch_extract_file_sync]
+function = "batch_extract_file_sync"
+module = "kreuzberg"
+async = false
+args = [
+    { name = "paths", field = "input.paths", type = "json_object" },
+    { name = "config", field = "input.config", type = "json_object", optional = true },
+]
+
+# --- Image processing ---
+
+[e2e.calls.calculate_optimal_dpi]
+function = "calculate_optimal_dpi"
+module = "kreuzberg"
+async = false
+args = [
+    { name = "width", field = "input.width", type = "int" },
+    { name = "height", field = "input.height", type = "int" },
+    { name = "target_size_mb", field = "input.target_size_mb", type = "float" },
+]
+
+# --- Keyword extraction ---
+
+[e2e.calls.extract_keywords]
+function = "extract_keywords"
+module = "kreuzberg"
+async = false
+args = [
+    { name = "text", field = "input.text", type = "string" },
+    { name = "config", field = "input.config", type = "json_object", optional = true },
+]
+
+# --- Token reduction ---
+
+[e2e.calls.reduce_tokens]
+function = "reduce_tokens"
+module = "kreuzberg"
+async = false
+args = [
+    { name = "text", field = "input.text", type = "string" },
+    { name = "level", field = "input.level", type = "string" },
+    { name = "config", field = "input.config", type = "json_object", optional = true },
+]
+
+# --- Serialization ---
+
+[e2e.calls.serialize_to_toon]
+function = "serialize_to_toon"
+module = "kreuzberg"
+async = false
+args = [
+    { name = "path", field = "input.path", type = "string" },
+    { name = "config", field = "input.config", type = "json_object", optional = true },
+]
+
+[e2e.calls.serialize_to_json]
+function = "serialize_to_json"
+module = "kreuzberg"
+async = false
+args = [
+    { name = "path", field = "input.path", type = "string" },
+    { name = "config", field = "input.config", type = "json_object", optional = true },
+]
+
+# --- MIME detection extras ---
+
+[e2e.calls.detect_or_validate]
+function = "detect_or_validate"
+module = "kreuzberg"
+async = false
+args = [
+    { name = "path", field = "input.path", type = "string", optional = true },
+    { name = "mime_type", field = "input.mime_type", type = "string", optional = true },
+]
+
+[e2e.calls.is_valid_format_field]
+function = "is_valid_format_field"
+module = "kreuzberg"
+async = false
+args = [{ name = "field", field = "input.field", type = "string" }]
+
+# --- URI ---
+
+[e2e.calls.classify_uri]
+function = "classify_uri"
+module = "kreuzberg"
+async = false
+args = [{ name = "url", field = "input.url", type = "string" }]
+
+# --- Embedding management ---
+
+[e2e.calls.embed_texts]
+function = "embed_texts"
+module = "kreuzberg"
+async = false
+args = [
+    { name = "texts", field = "input.texts", type = "json_object" },
+    { name = "config", field = "input.config", type = "json_object", optional = true },
+]
+
+[e2e.calls.get_preset]
+function = "get_preset"
+module = "kreuzberg"
+async = false
+args = [{ name = "name", field = "input.name", type = "string" }]
+
+# --- Batch bytes ---
+
+[e2e.calls.batch_extract_bytes]
+function = "batch_extract_bytes"
+module = "kreuzberg"
+async = true
+args = [
+    { name = "items", field = "input.items", type = "json_object" },
+    { name = "config", field = "input.config", type = "json_object", optional = true },
+]
+
+[e2e.calls.batch_extract_bytes_sync]
+function = "batch_extract_bytes_sync"
+module = "kreuzberg"
+async = false
+args = [
+    { name = "items", field = "input.items", type = "json_object" },
+    { name = "config", field = "input.config", type = "json_object", optional = true },
+]
+
+# --- Registry operations ---
+
+[e2e.calls.list_document_extractors]
+function = "list_document_extractors"
+module = "kreuzberg"
+async = false
+args = []
+
+[e2e.calls.list_ocr_backends]
+function = "list_ocr_backends"
+module = "kreuzberg"
+async = false
+args = []
+
+[e2e.calls.list_post_processors]
+function = "list_post_processors"
+module = "kreuzberg"
+async = false
+args = []
+
+[e2e.calls.list_validators]
+function = "list_validators"
+module = "kreuzberg"
+async = false
+args = []
+
+# Package references for e2e tests
+
+[e2e.packages.rust]
+path = "../../crates/kreuzberg"
+
+[e2e.packages.python]
+name = "kreuzberg"
+path = "../../packages/python"
+
+[e2e.packages.node]
+name = "kreuzberg"
+path = "../../crates/kreuzberg-node"
+
+[e2e.packages.go]
+module = "github.com/kreuzberg-dev/kreuzberg/v4"
+path = "../../packages/go"
+[e2e.packages.csharp]
+name = "Kreuzberg"
+path = "../../packages/csharp/Kreuzberg.csproj"
+
+[e2e.packages.java]
+module = "dev.kreuzberg"
+path = "../../packages/java"
+
+[e2e.packages.ruby]
+name = "kreuzberg"
+path = "../../packages/ruby"
+
+[e2e.packages.elixir]
+module = "Kreuzberg"
+path = "../../packages/elixir"
+
+[e2e.packages.php]
+name = "Kreuzberg"
+path = "../../packages/php"
+
+[e2e.packages.r]
+module = "kreuzberg"
+path = "../../packages/r"
+
+[e2e.format]
+python = "ruff check --fix {dir} && ruff format {dir}"
+go = "gofmt -w {dir}"
+rust = "cargo fmt --manifest-path {dir}/Cargo.toml"
+
+[e2e.fields]
+"metadata.title" = "metadata.format"
+
+[e2e.fields_c_types]
+"extraction_result.metadata" = "Metadata"

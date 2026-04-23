@@ -51,7 +51,7 @@ pub struct RstExtractor;
 #[cfg(feature = "office")]
 impl RstExtractor {
     /// Create a new RST extractor.
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self
     }
 
@@ -715,7 +715,7 @@ impl RstExtractor {
     ///
     /// Handles sections, paragraphs, code blocks, tables, footnotes, citations,
     /// and cross-references.
-    pub fn build_internal_document(content: &str, inject_placeholders: bool) -> InternalDocument {
+    pub(crate) fn build_internal_document(content: &str, inject_placeholders: bool) -> InternalDocument {
         let mut b = InternalDocumentBuilder::new("rst");
         let lines: Vec<&str> = content.lines().collect();
         let mut heading_char_order: Vec<char> = Vec::new();

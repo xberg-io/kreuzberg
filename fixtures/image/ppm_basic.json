@@ -2,19 +2,22 @@
 	"id": "image_ppm_basic",
 	"category": "image",
 	"description": "PPM (portable pixmap) image extraction via OCR.",
-	"document": {
+	"input": {
 		"path": "images_extra/ocr_image.ppm",
-		"media_type": "image/x-portable-pixmap",
-		"requires_external_tool": ["tesseract"]
+		"media_type": "image/x-portable-pixmap"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": ["image/x-portable-pixmap", "image/x-ppm"],
-		"content_not_empty": true
-	},
+	"assertions": [
+		{
+			"type": "contains_any",
+			"field": "mime_type",
+			"values": ["image/x-portable-pixmap", "image/x-ppm"]
+		},
+		{
+			"type": "not_empty",
+			"field": "content"
+		}
+	],
 	"skip": {
-		"requires_feature": ["tesseract"]
+		"reason": "Requires features: tesseract"
 	}
 }

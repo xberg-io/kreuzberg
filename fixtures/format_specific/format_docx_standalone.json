@@ -1,0 +1,21 @@
+{
+	"id": "format_docx_standalone",
+	"category": "format_specific",
+	"description": "Standalone DOCX extraction using extract_bytes_sync",
+	"tags": ["format_specific", "docx", "text_extraction"],
+	"call": "extract_bytes_sync",
+	"input": {
+		"path": "docx/fake.docx",
+		"mime_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 20
+		}
+	]
+}

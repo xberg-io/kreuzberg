@@ -6,20 +6,20 @@
 ///
 /// Returns None if the character is not a valid hex digit.
 #[inline]
-pub fn hex_digit_to_u8(c: char) -> Option<u8> {
+pub(crate) fn hex_digit_to_u8(c: u8) -> Option<u8> {
     match c {
-        '0'..='9' => Some((c as u8) - b'0'),
-        'a'..='f' => Some((c as u8) - b'a' + 10),
-        'A'..='F' => Some((c as u8) - b'A' + 10),
+        b'0'..=b'9' => Some(c - b'0'),
+        b'a'..=b'f' => Some(c - b'a' + 10),
+        b'A'..=b'F' => Some(c - b'A' + 10),
         _ => None,
     }
 }
 
-/// Parse a hex-encoded byte from two characters.
+/// Parse a hex-encoded byte from two bytes.
 ///
-/// Returns the decoded byte if both characters are valid hex digits.
+/// Returns the decoded byte if both bytes are valid hex digits.
 #[inline]
-pub fn parse_hex_byte(h1: char, h2: char) -> Option<u8> {
+pub(crate) fn parse_hex_byte(h1: u8, h2: u8) -> Option<u8> {
     let high = hex_digit_to_u8(h1)?;
     let low = hex_digit_to_u8(h2)?;
     Some((high << 4) | low)
@@ -31,7 +31,7 @@ pub fn parse_hex_byte(h1: char, h2: char) -> Option<u8> {
 /// corresponding Unicode characters. For other values, it returns the byte
 /// as a character directly.
 #[inline]
-pub fn decode_windows_1252(byte: u8) -> char {
+pub(crate) fn decode_windows_1252(byte: u8) -> char {
     match byte {
         0x80 => '\u{20AC}', // Euro sign
         0x81 => '?',
@@ -72,7 +72,7 @@ pub fn decode_windows_1252(byte: u8) -> char {
 /// Parse an RTF control word and extract its value.
 ///
 /// Returns a tuple of (control_word, optional_numeric_value).
-pub fn parse_rtf_control_word(chars: &mut std::iter::Peekable<std::str::Chars>) -> (String, Option<i32>) {
+pub(crate) fn parse_rtf_control_word(chars: &mut std::iter::Peekable<std::str::Chars>) -> (String, Option<i32>) {
     let mut word = String::new();
     let mut num_str = String::new();
     let mut is_negative = false;

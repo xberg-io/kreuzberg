@@ -21,7 +21,7 @@ use pdfium_render::prelude::*;
 /// # Returns
 ///
 /// A `Vec<PdfAnnotation>` containing all successfully extracted annotations.
-pub fn extract_annotations_from_document(document: &PdfDocument<'_>) -> Vec<PdfAnnotation> {
+pub(crate) fn extract_annotations_from_document(document: &PdfDocument<'_>) -> Vec<PdfAnnotation> {
     let mut annotations = Vec::new();
 
     for (page_index, page) in document.pages().iter().enumerate() {

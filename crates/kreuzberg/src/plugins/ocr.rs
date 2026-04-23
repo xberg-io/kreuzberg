@@ -14,9 +14,10 @@ use std::sync::Arc;
 use crate::KreuzbergError;
 
 /// OCR backend types.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, serde::Deserialize, serde::Serialize)]
 pub enum OcrBackendType {
     /// Tesseract OCR (native Rust binding)
+    #[default]
     Tesseract,
     /// EasyOCR (Python-based, via FFI)
     EasyOCR,
@@ -339,7 +340,7 @@ pub trait OcrBackend: Plugin {
 /// # Ok::<(), kreuzberg::KreuzbergError>(())
 /// # });
 /// ```
-pub fn register_ocr_backend(backend: Arc<dyn OcrBackend>) -> crate::Result<()> {
+pub(crate) fn register_ocr_backend(backend: Arc<dyn OcrBackend>) -> crate::Result<()> {
     use crate::plugins::registry::get_ocr_backend_registry;
 
     let registry = get_ocr_backend_registry();

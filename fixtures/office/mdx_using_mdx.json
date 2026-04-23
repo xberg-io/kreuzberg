@@ -2,18 +2,43 @@
 	"id": "office_mdx_using_mdx",
 	"category": "office",
 	"description": "Real-world MDX extraction from mdx-js/mdx using-mdx.mdx with complex JSX examples, component passing, and MDX provider patterns.",
-	"document": {
+	"input": {
 		"path": "markdown/mdx_using_mdx.mdx",
 		"media_type": "text/mdx"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": ["text/mdx", "text/x-mdx"],
-		"min_content_length": 2000,
-		"content_contains": ["Using MDX", "How MDX works", "MDX content", "Props", "Components", "Layout", "MDX provider"],
-		"content_not_contains": ["import {Note}", "export const info", "export const navSortSelf"],
-		"requires_feature": ["mdx"]
+	"assertions": [
+		{
+			"type": "contains_any",
+			"field": "mime_type",
+			"values": ["text/mdx", "text/x-mdx"]
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 2000
+		},
+		{
+			"type": "contains_all",
+			"field": "content",
+			"values": ["Using MDX", "How MDX works", "MDX content", "Props", "Components", "Layout", "MDX provider"]
+		},
+		{
+			"type": "not_contains",
+			"field": "content",
+			"values": ["import {Note}"]
+		},
+		{
+			"type": "not_contains",
+			"field": "content",
+			"values": ["export const info"]
+		},
+		{
+			"type": "not_contains",
+			"field": "content",
+			"values": ["export const navSortSelf"]
+		}
+	],
+	"skip": {
+		"reason": "Requires features: mdx"
 	}
 }

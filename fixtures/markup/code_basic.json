@@ -1,0 +1,20 @@
+{
+	"id": "code_basic",
+	"category": "markup",
+	"description": "Create inline code formatting",
+	"tags": ["markup", "formatting"],
+	"call": "code_markup",
+	"input": {
+		"text": "variable"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "contains",
+			"field": "result",
+			"value": "variable"
+		}
+	]
+}

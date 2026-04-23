@@ -23,7 +23,7 @@ use super::types::ListType;
 /// - Body/furniture content layer classification
 ///
 /// The resulting structure is validated before returning.
-pub fn transform_to_document_structure(result: &ExtractionResult) -> DocumentStructure {
+pub(crate) fn transform_to_document_structure(result: &ExtractionResult) -> DocumentStructure {
     let mut doc = DocumentStructure::with_capacity(estimate_node_count(result));
     let mut section_stack: Vec<(u8, NodeIndex)> = Vec::new();
 

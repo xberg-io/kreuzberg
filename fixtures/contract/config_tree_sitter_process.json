@@ -2,12 +2,9 @@
 	"id": "config_tree_sitter_process",
 	"description": "Tests tree-sitter process config with all options enabled",
 	"tags": ["contract", "config", "tree-sitter"],
-	"document": {
-		"path": "code/hello.py"
-	},
-	"extraction": {
-		"method": "sync",
-		"input_type": "file",
+	"call": "extract_file_sync",
+	"input": {
+		"path": "code/hello.py",
 		"config": {
 			"tree_sitter": {
 				"process": {
@@ -23,11 +20,19 @@
 			}
 		}
 	},
-	"assertions": {
-		"expected_mime": "text/x-source-code",
-		"min_content_length": 5
-	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "text/x-source-code"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 5
+		}
+	],
 	"skip": {
-		"requires_feature": ["tree-sitter"]
+		"reason": "Requires features: tree-sitter"
 	}
 }

@@ -1,0 +1,20 @@
+{
+	"id": "optimal_dpi_small",
+	"category": "image_operations",
+	"description": "Calculate optimal DPI for small image (800x600 pixels, 1MB target)",
+	"tags": ["image", "dpi", "small"],
+	"call": "calculate_optimal_dpi",
+	"input": {
+		"page_width": 8.0,
+		"page_height": 6.0,
+		"target_dpi": 150,
+		"max_dimension": 2048,
+		"min_dpi": 72,
+		"max_dpi": 300
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	]
+}

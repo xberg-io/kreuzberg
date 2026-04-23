@@ -1,0 +1,280 @@
+name: CI E2E
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'crates/**'
+      - 'packages/**'
+      - 'e2e/**'
+      - 'fixtures/**'
+      - 'alef.toml'
+      - 'templates/**'
+      - 'Cargo.toml'
+      - 'Cargo.lock'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'crates/**'
+      - 'packages/**'
+      - 'e2e/**'
+      - 'fixtures/**'
+      - 'alef.toml'
+      - 'templates/**'
+      - 'Cargo.toml'
+      - 'Cargo.lock'
+
+concurrency:
+  group: ci-e2e-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: 0
+  CARGO_PROFILE_DEV_DEBUG: 0
+  RUST_BACKTRACE: short
+  RUST_MIN_STACK: 16777216
+  PDFIUM_VERSION: "7678"
+  PDFIUM_STATIC_VERSION: "7678"
+  ORT_VERSION: "1.24.2"
+  MACOSX_DEPLOYMENT_TARGET: "14.0"
+  BUILD_PROFILE: "ci"
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+permissions:
+  contents: read
+
+jobs:
+  build-ffi:
+    name: Build FFI (${{ matrix.target }})
+    if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: ${{ matrix.os == 'windows-latest' && 120 || 60 }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04-arm
+            target: aarch64-unknown-linux-gnu
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+          - os: macos-latest
+            target: aarch64-apple-darwin
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Rust
+        uses: kreuzberg-dev/actions/setup-rust@v1
+        with:
+          cache-key-prefix: build-ffi-${{ matrix.target }}
+          target: ${{ matrix.target }}
+
+      - name: Install system dependencies
+        uses: ./.github/actions/install-system-deps
+
+      - name: Setup OpenSSL
+        uses: kreuzberg-dev/actions/setup-openssl@v1
+
+      - name: Build FFI library
+        uses: kreuzberg-dev/actions/build-rust-ffi@v1
+        with:
+          crate-name: kreuzberg-ffi
+
+      - name: Build CLI
+        uses: kreuzberg-dev/actions/build-rust-cli@v1
+        with:
+          package-name: kreuzberg-cli
+          binary-name: kreuzberg
+          extra-cargo-args: --features all
+
+      - name: Upload FFI artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: ffi-${{ matrix.target }}
+          path: |
+            target/release/libkreuzberg_ffi.*
+            target/release/kreuzberg_ffi.*
+            crates/kreuzberg-ffi/include/kreuzberg.h
+            crates/kreuzberg-ffi/kreuzberg-ffi.pc
+            crates/kreuzberg-ffi/cmake/
+            target/release/kreuzberg
+            target/release/kreuzberg.exe
+          retention-days: 7
+          if-no-files-found: error
+
+  e2e-tests:
+    name: E2E (${{ matrix.lang }})
+    if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
+    needs: [build-ffi]
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - lang: python
+            python-version: '3.13'
+            test-cmd: 'pip install maturin && cd packages/python && maturin develop --release && python3 -m pytest tests/ -q && cd ../../e2e/python && python3 -m pytest tests/ -q'
+          - lang: node
+            node-version: '22'
+            test-cmd: 'cd e2e/node && npx vitest run'
+          - lang: go
+            go-version: '1.24'
+            test-cmd: 'cd e2e/go && go test ./... -count=1 -v'
+          - lang: ruby
+            ruby-version: '3.3'
+            test-cmd: 'cd e2e/ruby && bundle exec rspec'
+          - lang: java
+            java-version: '25'
+            test-cmd: 'cd e2e/java && mvn test -q'
+          - lang: csharp
+            dotnet-version: '10.0.x'
+            test-cmd: 'cd e2e/csharp && dotnet test'
+          - lang: php
+            php-version: '8.4'
+            test-cmd: 'cd e2e/php && composer install -q && vendor/bin/phpunit'
+          - lang: elixir
+            elixir-version: '1.17'
+            otp-version: '27'
+            test-cmd: 'cd e2e/elixir && mix deps.get && mix test'
+          - lang: wasm
+            node-version: '22'
+            test-cmd: 'cd e2e/wasm && npm install && npm test'
+          - lang: rust
+            test-cmd: 'cd e2e/rust && cargo test'
+          - lang: r
+            r-version: '4.3'
+            test-cmd: 'cd e2e/r && Rscript run_tests.R'
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Rust
+        uses: kreuzberg-dev/actions/setup-rust@v1
+        with:
+          cache-key-prefix: e2e-${{ matrix.lang }}
+
+      - name: Download FFI artifacts
+        uses: actions/download-artifact@v7
+        with:
+          name: ffi-aarch64-unknown-linux-gnu
+          path: ffi-artifacts
+
+      - name: Stage FFI artifacts
+        shell: bash
+        run: |
+          mkdir -p target/release
+          cp ffi-artifacts/libkreuzberg_ffi.* target/release/ 2>/dev/null || true
+          cp ffi-artifacts/kreuzberg_ffi.* target/release/ 2>/dev/null || true
+          chmod +x target/release/libkreuzberg_ffi.so 2>/dev/null || true
+
+      - name: Install system dependencies
+        uses: ./.github/actions/install-system-deps
+
+      - name: Setup OpenSSL
+        uses: kreuzberg-dev/actions/setup-openssl@v1
+
+      - name: Setup PDFium
+        uses: ./.github/actions/download-pdfium
+        with:
+          pdfium-version: ${{ env.PDFIUM_VERSION }}
+
+      - name: Stage PDFium runtime
+        uses: ./.github/actions/stage-pdfium-runtime
+        with:
+          destination: target/release
+
+      - name: Setup ONNX Runtime
+        uses: ./.github/actions/setup-onnx-runtime
+        with:
+          ort-version: ${{ env.ORT_VERSION }}
+
+      - name: Setup Tesseract cache
+        uses: ./.github/actions/setup-tesseract-cache
+        with:
+          label: e2e-${{ matrix.lang }}
+
+      - name: Setup Python
+        if: matrix.python-version
+        uses: kreuzberg-dev/actions/setup-python-env@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache-prefix: e2e-py-${{ matrix.python-version }}
+
+      - name: Setup Node
+        if: matrix.node-version
+        uses: kreuzberg-dev/actions/setup-node-workspace@v1
+
+      - name: Setup Go
+        if: matrix.go-version
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Setup Ruby
+        if: matrix.ruby-version
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby-version }}
+          bundler-cache: true
+          working-directory: e2e/ruby
+
+      - name: Setup Java
+        if: matrix.java-version
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java-version }}
+
+      - name: Setup .NET
+        if: matrix.dotnet-version
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: ${{ matrix.dotnet-version }}
+
+      - name: Setup PHP
+        if: matrix.php-version
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          tools: composer
+
+      - name: Setup Elixir
+        if: matrix.elixir-version
+        uses: erlef/setup-elixir@v1
+        with:
+          elixir-version: ${{ matrix.elixir-version }}
+          otp-version: ${{ matrix.otp-version }}
+          version-type: strict
+
+      - name: Setup R
+        if: matrix.r-version
+        uses: kreuzberg-dev/actions/setup-r@v1
+        with:
+          r-version: ${{ matrix.r-version }}
+
+      - name: Setup library paths for FFI bindings
+        if: |
+          matrix.lang == 'go' || matrix.lang == 'java' ||
+          matrix.lang == 'csharp' || matrix.lang == 'elixir' ||
+          matrix.lang == 'r'
+        shell: bash
+        run: |
+          export PKG_CONFIG_PATH="${PWD}/crates/kreuzberg-ffi:${PKG_CONFIG_PATH}"
+          export LD_LIBRARY_PATH="${PWD}/target/release:${LD_LIBRARY_PATH}"
+          echo "PKG_CONFIG_PATH=${PKG_CONFIG_PATH}" >> "$GITHUB_ENV"
+          echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}" >> "$GITHUB_ENV"
+
+      - name: Install Task
+        uses: kreuzberg-dev/actions/install-task@v1
+
+      - name: Run tests
+        run: ${{ matrix.test-cmd }}
+        shell: bash
+        env:
+          PKG_CONFIG_PATH: ${{ env.PKG_CONFIG_PATH }}
+          LD_LIBRARY_PATH: ${{ env.LD_LIBRARY_PATH }}
+          DYLD_LIBRARY_PATH: ${{ env.DYLD_LIBRARY_PATH || '' }}
+          TESSDATA_PREFIX: "/usr/share/tesseract-ocr/5/tessdata"

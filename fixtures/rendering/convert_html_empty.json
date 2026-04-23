@@ -1,0 +1,9 @@
+{
+	"id": "convert_html_empty",
+	"category": "rendering",
+	"description": "Convert empty HTML to markdown",
+	"tags": ["rendering", "edge_case"],
+	"call": "convert_html_to_markdown",
+	"input": { "html": "" },
+	"assertions": [{ "type": "not_error" }]
+}

@@ -11,7 +11,7 @@ use jotdown::Event;
 /// - Line breaks (soft, hard, blank)
 /// - Smart punctuation (quotes, dashes, ellipsis)
 /// - Special symbols and footnote references
-pub fn extract_text_from_events(events: &[Event]) -> String {
+pub(crate) fn extract_text_from_events(events: &[Event]) -> String {
     let mut text = String::new();
 
     for event in events {

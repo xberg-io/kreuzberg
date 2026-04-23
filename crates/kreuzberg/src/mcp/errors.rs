@@ -18,7 +18,7 @@ use std::fmt::Write;
 ///
 /// The error message and source chain are preserved to aid debugging.
 #[doc(hidden)]
-pub fn map_kreuzberg_error_to_mcp(error: KreuzbergError) -> McpError {
+pub(crate) fn map_kreuzberg_error_to_mcp(error: KreuzbergError) -> McpError {
     match error {
         KreuzbergError::Validation { message, source } => {
             let mut error_message = format!("Validation error: {}", message);

@@ -2,15 +2,20 @@
 	"id": "office_commonmark_basic",
 	"category": "office",
 	"description": "CommonMark (.commonmark) text extraction.",
-	"document": {
+	"input": {
 		"path": "markdown/sample.commonmark",
 		"media_type": "text/markdown"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": ["text/markdown", "text/plain", "text/x-commonmark"],
-		"min_content_length": 5
-	}
+	"assertions": [
+		{
+			"type": "contains_any",
+			"field": "mime_type",
+			"values": ["text/markdown", "text/plain", "text/x-commonmark"]
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 5
+		}
+	]
 }

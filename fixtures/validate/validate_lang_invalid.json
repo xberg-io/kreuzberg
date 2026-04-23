@@ -1,0 +1,15 @@
+{
+	"id": "validate_lang_invalid",
+	"category": "validation",
+	"description": "Reject invalid language code",
+	"tags": ["validation", "language", "error"],
+	"call": "validate_language_code",
+	"input": {
+		"code": "zzz_nonexistent_9999"
+	},
+	"assertions": [
+		{
+			"type": "error"
+		}
+	]
+}

@@ -1,0 +1,20 @@
+{
+	"id": "djot_to_html_basic",
+	"category": "rendering",
+	"description": "Convert Djot format to HTML",
+	"tags": ["djot_to_html", "conversion", "markup"],
+	"call": "djot_to_html",
+	"input": {
+		"djot": "# Title\n\nParagraph text with **bold** and *italic*.\n\n- Item 1\n- Item 2"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 10
+		}
+	]
+}

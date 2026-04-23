@@ -1,0 +1,17 @@
+{
+	"id": "validate_output_format_valid",
+	"description": "Accept valid output format",
+	"tags": ["validation", "output_format"],
+	"call": "extract_file_sync",
+	"input": {
+		"path": "pdf/fake_memo.pdf",
+		"config": {
+			"output_format": "markdown"
+		}
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	]
+}

@@ -1,13 +1,14 @@
 """Python OCR backend implementations.
 
-These backends can be imported and manually registered, or they will be
-auto-registered when kreuzberg is imported (if their dependencies are installed).
+Register backends explicitly:
 
-Each backend has a separate optional dependency group:
-- EasyOCR: pip install "kreuzberg[easyocr]"
+    from kreuzberg import register_ocr_backend
+    from kreuzberg.ocr import EasyOCRBackend
 
-Note: PaddleOCR is now a native Rust backend available in all non-WASM bindings
-via the 'paddle-ocr' feature flag. No Python dependency is required.
+    register_ocr_backend(EasyOCRBackend(use_gpu=True, languages=["en"]))
+
+Install optional backends:
+    pip install "kreuzberg[easyocr]"
 """
 
 from __future__ import annotations

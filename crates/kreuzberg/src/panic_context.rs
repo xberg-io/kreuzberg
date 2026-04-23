@@ -28,7 +28,7 @@ impl PanicContext {
     /// * `line` - Line number
     /// * `function` - Function name
     /// * `panic_info` - The panic payload to extract message from
-    pub fn new(file: &'static str, line: u32, function: &'static str, panic_info: &dyn Any) -> Self {
+    pub(crate) fn new(file: &'static str, line: u32, function: &'static str, panic_info: &dyn Any) -> Self {
         let timestamp = std::panic::catch_unwind(SystemTime::now).unwrap_or(UNIX_EPOCH);
 
         Self {
@@ -41,7 +41,7 @@ impl PanicContext {
     }
 
     /// Formats the panic context as a human-readable string.
-    pub fn format(&self) -> String {
+    pub(crate) fn format(&self) -> String {
         format!(
             "Panic at {}:{}:{} - {}",
             self.file, self.line, self.function, self.message
@@ -66,7 +66,7 @@ const MAX_PANIC_MESSAGE_LEN: usize = 4096;
 /// # Returns
 ///
 /// A string representation of the panic message (truncated if necessary)
-pub fn extract_panic_message(panic_info: &dyn Any) -> String {
+pub(crate) fn extract_panic_message(panic_info: &dyn Any) -> String {
     let msg = if let Some(s) = panic_info.downcast_ref::<String>() {
         s.clone()
     } else if let Some(s) = panic_info.downcast_ref::<&str>() {

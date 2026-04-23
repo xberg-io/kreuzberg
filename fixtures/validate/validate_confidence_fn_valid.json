@@ -1,0 +1,15 @@
+{
+	"id": "validate_confidence_fn_valid",
+	"category": "validation",
+	"description": "Accept valid confidence threshold",
+	"tags": ["validation", "confidence"],
+	"call": "validate_confidence_fn",
+	"input": {
+		"confidence": 0.95
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	]
+}

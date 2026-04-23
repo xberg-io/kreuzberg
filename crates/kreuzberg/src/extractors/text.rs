@@ -15,7 +15,7 @@ pub struct PlainTextExtractor;
 
 impl PlainTextExtractor {
     /// Create a new plain text extractor.
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self
     }
 }

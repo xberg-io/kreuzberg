@@ -10,6 +10,7 @@
 //! - Added markdown rendering and formatting support (fixes #376)
 
 use ahash::AHashMap;
+use serde::{Deserialize, Serialize};
 use std::io::{Cursor, Read, Seek};
 
 use quick_xml::Reader;
@@ -18,7 +19,7 @@ use quick_xml::events::{BytesStart, Event};
 // --- Types ---
 
 /// Tracks document element ordering (paragraphs, tables, and drawings interleaved).
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum DocumentElement {
     Paragraph(usize), // index into Document::paragraphs
     Table(usize),     // index into Document::tables
@@ -191,7 +192,7 @@ fn heading_level_from_style_name(style: &str) -> Option<u8> {
 // --- Impls ---
 
 impl Document {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self::default()
     }
 
@@ -261,7 +262,7 @@ impl Document {
     /// Walks the style inheritance chain to find `outline_level`.
     /// Falls back to string-matching on style name/ID if no StyleCatalog is available.
     /// Returns 1-6 (markdown heading levels).
-    pub fn resolve_heading_level(&self, style_id: &str) -> Option<u8> {
+    pub(crate) fn resolve_heading_level(&self, style_id: &str) -> Option<u8> {
         if let Some(ref catalog) = self.style_catalog {
             // Walk inheritance chain looking for outline_level
             let mut current_id = Some(style_id);
@@ -292,7 +293,7 @@ impl Document {
         heading_level_from_style_name(style_id)
     }
 
-    pub fn extract_text(&self) -> String {
+    pub(crate) fn extract_text(&self) -> String {
         let mut text = String::new();
 
         for paragraph in &self.paragraphs {
@@ -327,7 +328,7 @@ impl Document {
     /// When `inject_placeholders` is `true`, drawings that reference an image
     /// emit `![alt](image)` placeholders. When `false` they are silently
     /// skipped, which is useful when the caller only wants text.
-    pub fn to_markdown(&self, inject_placeholders: bool) -> String {
+    pub(crate) fn to_markdown(&self, inject_placeholders: bool) -> String {
         use std::fmt::Write;
 
         let mut output = String::new();
@@ -435,7 +436,7 @@ impl Document {
     }
 
     /// Render the document as plain text (no markdown formatting).
-    pub fn to_plain_text(&self) -> String {
+    pub(crate) fn to_plain_text(&self) -> String {
         let mut output = String::new();
 
         // Use elements ordering if populated, otherwise fall back to paragraphs-only
@@ -591,7 +592,7 @@ impl Document {
 }
 
 impl Paragraph {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self::default()
     }
 
@@ -601,7 +602,7 @@ impl Paragraph {
     /// (e.g. `<w:t>Hello </w:t><w:t>World</w:t>`), so runs are joined
     /// directly without adding extra separators. The parser must use
     /// `trim_text(false)` to preserve this whitespace.
-    pub fn to_text(&self) -> String {
+    pub(crate) fn to_text(&self) -> String {
         let mut text = String::new();
         for run in &self.runs {
             if let Some((ref latex, _)) = run.math_latex {
@@ -618,7 +619,7 @@ impl Paragraph {
     /// Uses a two-level grouping strategy to avoid spurious marker sequences like `****`:
     /// 1. Groups consecutive runs that share the same bold/italic/hyperlink properties.
     /// 2. Within each group, opens bold/italic once and toggles underline/strikethrough per run.
-    pub fn runs_to_markdown(&self) -> String {
+    pub(crate) fn runs_to_markdown(&self) -> String {
         let mut text = String::new();
         let mut i = 0;
         while i < self.runs.len() {
@@ -723,7 +724,7 @@ impl Paragraph {
     ///
     /// If `heading_level` is provided (resolved via `Document::resolve_heading_level`),
     /// it takes precedence over style name matching.
-    pub fn to_markdown(
+    pub(crate) fn to_markdown(
         &self,
         numbering_defs: &AHashMap<(i64, i64), ListType>,
         list_counters: &mut AHashMap<(i64, i64), usize>,
@@ -759,13 +760,13 @@ impl Paragraph {
         inline
     }
 
-    pub fn add_run(&mut self, run: Run) {
+    pub(crate) fn add_run(&mut self, run: Run) {
         self.runs.push(run);
     }
 }
 
 impl Run {
-    pub fn new(text: String) -> Self {
+    pub(crate) fn new(text: String) -> Self {
         Self {
             text,
             ..Default::default()
@@ -773,7 +774,7 @@ impl Run {
     }
 
     /// Render this run as markdown with formatting markers.
-    pub fn to_markdown(&self) -> String {
+    pub(crate) fn to_markdown(&self) -> String {
         // Math runs: wrap LaTeX in $ or $$
         if let Some((ref latex, is_display)) = self.math_latex {
             if latex.is_empty() {
@@ -844,7 +845,7 @@ impl Run {
 }
 
 impl Table {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self::default()
     }
 
@@ -855,7 +856,7 @@ impl Table {
     /// - Handles `CellProperties.grid_span` to account for merged cells
     ///
     /// If no explicit header row is marked, treats the first row as the header.
-    pub fn to_markdown(&self) -> String {
+    pub(crate) fn to_markdown(&self) -> String {
         if self.rows.is_empty() {
             return String::new();
         }
@@ -950,7 +951,7 @@ impl Table {
     }
 
     /// Render this table as plain text with tab-separated cells.
-    pub fn to_plain_text(&self) -> String {
+    pub(crate) fn to_plain_text(&self) -> String {
         if self.rows.is_empty() {
             return String::new();
         }
@@ -1986,7 +1987,7 @@ impl From<quick_xml::encoding::EncodingError> for DocxParseError {
 // --- Public API ---
 
 /// Parse a DOCX document from bytes and return the structured document.
-pub fn parse_document(bytes: &[u8]) -> crate::error::Result<Document> {
+pub(crate) fn parse_document(bytes: &[u8]) -> crate::error::Result<Document> {
     let cursor = Cursor::new(bytes);
     let parser = DocxParser::new(cursor)
         .map_err(|e| crate::error::KreuzbergError::parsing(format!("DOCX parsing failed: {}", e)))?;
@@ -1996,7 +1997,7 @@ pub fn parse_document(bytes: &[u8]) -> crate::error::Result<Document> {
 }
 
 /// Extract text from DOCX bytes.
-pub fn extract_text_from_bytes(bytes: &[u8]) -> crate::error::Result<String> {
+pub(crate) fn extract_text_from_bytes(bytes: &[u8]) -> crate::error::Result<String> {
     let doc = parse_document(bytes)?;
     Ok(doc.extract_text())
 }

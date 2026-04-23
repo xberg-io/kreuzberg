@@ -20,7 +20,7 @@ pub struct ImageExtractor;
 
 impl ImageExtractor {
     /// Create a new image extractor.
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self
     }
 

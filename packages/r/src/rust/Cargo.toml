@@ -1,76 +1,18 @@
-[workspace]
-
-[workspace.dependencies]
-bytes = { version = "1", features = ["serde"] }
-serde = { version = "1.0.228", features = ["derive"] }
-serde_json = { version = "1.0.149" }
-tokio = { version = "1.49.0", features = [
-    "rt",
-    "rt-multi-thread",
-    "macros",
-    "sync",
-    "process",
-    "fs",
-    "time",
-    "io-util",
-] }
-thiserror = "2.0.18"
-anyhow = "1.0"
-
 [package]
 name = "kreuzberg-r"
 version = "4.9.5"
 edition = "2024"
-rust-version = "1.91"
-authors = ["Na'aman Hirschfeld <naaman@kreuzberg.dev>"]
 license = "Elastic-2.0"
-repository = "https://github.com/kreuzberg-dev/kreuzberg"
-homepage = "https://kreuzberg.dev"
-description = "R bindings (extendr) for Kreuzberg - high-performance document intelligence framework"
+description = "High-performance document intelligence library"
+readme = "README.md"
+keywords = ["document", "extraction", "pdf", "ocr", "text"]
+categories = ["text-processing"]
 
 [lib]
-name = "kreuzberg_r"
-crate-type = ["staticlib", "lib"]
-
-[features]
-default = []
+crate-type = ["cdylib"]
 
 [dependencies]
-kreuzberg = { path = "../../vendor/kreuzberg", default-features = false, features = [
-    "pdf",
-    "office",
-    "iwork",
-    "mdx",
-    "email",
-    "html",
-    "xml",
-    "archives",
-    "language-detection",
-    "chunking",
-    "quality",
-    "keywords",
-] }
-extendr-api = { version = "0.8", features = ["result_condition"] }
-serde_json = { workspace = true }
-
-# Non-wasm: full features including tokio runtime, OCR, embeddings, API server
-[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-kreuzberg = { path = "../../vendor/kreuzberg", features = [
-    "excel",
-    "ocr",
-    "paddle-ocr",
-    "embeddings",
-    "api",
-    "mcp",
-    "otel",
-    "bundled-pdfium",
-    "tokio-runtime",
-] }
-tokio = { workspace = true }
-
-# Wasm: lightweight excel without tokio dependency
-[target.'cfg(target_arch = "wasm32")'.dependencies]
-kreuzberg = { path = "../../vendor/kreuzberg", default-features = false, features = ["excel-wasm"] }
-
-[dev-dependencies]
-pretty_assertions = "1.4"
+kreuzberg = { path = "../kreuzberg", features = ["full", "pdf", "ocr", "paddle-ocr", "layout-detection", "embeddings", "chunking", "keywords-yake", "keywords-rake", "language-detection", "html", "tree-sitter", "office", "email", "archives", "stopwords", "auto-rotate", "tokio-runtime", "api", "mcp", "liter-llm"] }
+extendr-api = { version = "0.7", features = ["use-precompiled-bindings"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"

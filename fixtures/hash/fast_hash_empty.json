@@ -1,0 +1,9 @@
+{
+	"id": "fast_hash_empty",
+	"category": "hash",
+	"description": "Hash empty bytes",
+	"tags": ["hash", "edge_case"],
+	"call": "fast_hash",
+	"input": { "data": "" },
+	"assertions": [{ "type": "not_error" }]
+}

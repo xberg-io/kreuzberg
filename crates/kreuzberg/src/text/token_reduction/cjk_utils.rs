@@ -26,7 +26,7 @@ pub struct CjkTokenizer {
 }
 
 impl CjkTokenizer {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self {
             cjk_range: 0x4E00..=0x9FFF,
         }
@@ -37,21 +37,21 @@ impl CjkTokenizer {
     /// Returns true for Chinese characters and Japanese Kanji, false for
     /// Hiragana, Katakana, Hangul, and non-CJK characters.
     #[inline]
-    pub fn is_cjk_char(&self, c: char) -> bool {
+    pub(crate) fn is_cjk_char(&self, c: char) -> bool {
         self.cjk_range.contains(&(c as u32))
     }
 
     #[inline]
-    pub fn has_cjk(&self, text: &str) -> bool {
+    pub(crate) fn has_cjk(&self, text: &str) -> bool {
         text.chars().any(|c| self.is_cjk_char(c))
     }
 
-    pub fn tokenize_cjk_string(&self, text: &str) -> Vec<String> {
+    pub(crate) fn tokenize_cjk_string(&self, text: &str) -> Vec<String> {
         let chars: Vec<char> = text.chars().collect();
         self.tokenize_cjk_chars(&chars)
     }
 
-    pub fn tokenize_cjk_chars(&self, chars: &[char]) -> Vec<String> {
+    pub(crate) fn tokenize_cjk_chars(&self, chars: &[char]) -> Vec<String> {
         chars
             .chunks(2)
             .map(|chunk| {
@@ -64,7 +64,7 @@ impl CjkTokenizer {
             .collect()
     }
 
-    pub fn tokenize_mixed_text(&self, text: &str) -> Vec<String> {
+    pub(crate) fn tokenize_mixed_text(&self, text: &str) -> Vec<String> {
         let whitespace_tokens: Vec<&str> = text.split_whitespace().collect();
 
         if whitespace_tokens.is_empty() {

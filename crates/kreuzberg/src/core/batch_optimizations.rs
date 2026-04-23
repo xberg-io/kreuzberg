@@ -226,7 +226,7 @@ impl BatchProcessor {
     ///
     /// Returns `KreuzbergError` if any file operation fails.
     #[cfg(feature = "tokio-runtime")]
-    pub async fn process_image_files(
+    pub(crate) async fn process_image_files(
         &self,
         paths: Vec<impl AsRef<Path>>,
         extraction_config: &ExtractionConfig,
@@ -258,7 +258,7 @@ impl BatchProcessor {
     ///
     /// Returns `KreuzbergError` if extraction fails.
     #[cfg(feature = "tokio-runtime")]
-    pub async fn process_bytes(
+    pub(crate) async fn process_bytes(
         &self,
         contents: Vec<(&[u8], &str)>,
         extraction_config: &ExtractionConfig,

@@ -1,0 +1,13 @@
+{
+	"id": "detect_or_validate_invalid_mime",
+	"category": "detection",
+	"description": "detect_or_validate unsupported MIME",
+	"tags": ["mime_detection", "error"],
+	"call": "detect_or_validate",
+	"input": {
+		"mime_type": "application/x-nonexistent"
+	},
+	"assertions": [
+		{"type": "error"}
+	]
+}

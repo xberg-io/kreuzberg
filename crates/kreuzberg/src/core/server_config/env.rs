@@ -21,7 +21,7 @@ use crate::{KreuzbergError, Result};
 /// - `KREUZBERG_PORT` cannot be parsed as u16
 /// - `KREUZBERG_MAX_REQUEST_BODY_BYTES` cannot be parsed as usize
 /// - `KREUZBERG_MAX_MULTIPART_FIELD_BYTES` cannot be parsed as usize
-pub fn apply_env_overrides(
+pub(crate) fn apply_env_overrides(
     host: &mut String,
     port: &mut u16,
     cors_origins: &mut Vec<String>,

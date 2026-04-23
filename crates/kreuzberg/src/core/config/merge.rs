@@ -29,19 +29,19 @@ use super::ExtractionConfig;
 /// let mut base = ExtractionConfig::default();
 /// base.use_cache = true;
 ///
-/// let overrides = json!({"force_ocr": true});
+/// let overrides = r#"{"force_ocr": true}"#;
 /// let merged = kreuzberg::core::config::merge::merge_config_json(&base, overrides).unwrap();
 /// assert!(merged.use_cache);   // preserved from base
 /// assert!(merged.force_ocr);   // applied from override
 /// ```
-pub fn merge_config_json(
-    base: &ExtractionConfig,
-    override_json: serde_json::Value,
-) -> Result<ExtractionConfig, String> {
+pub(crate) fn merge_config_json(base: &ExtractionConfig, override_json: &str) -> Result<ExtractionConfig, String> {
+    let override_value: serde_json::Value =
+        serde_json::from_str(override_json).map_err(|e| format!("Failed to parse override JSON: {e}"))?;
+
     let mut config_json =
         serde_json::to_value(base).map_err(|e| format!("Failed to serialize base config to JSON: {e}"))?;
 
-    if let serde_json::Value::Object(json_obj) = override_json
+    if let serde_json::Value::Object(json_obj) = override_value
         && let Some(config_obj) = config_json.as_object_mut()
     {
         for (key, value) in json_obj {
@@ -56,9 +56,9 @@ pub fn merge_config_json(
 ///
 /// If `override_json` is `None`, returns a clone of `base`. Otherwise delegates
 /// to [`merge_config_json`].
-pub fn build_config_from_json(
+pub(crate) fn build_config_from_json(
     base: &ExtractionConfig,
-    override_json: Option<serde_json::Value>,
+    override_json: Option<&str>,
 ) -> Result<ExtractionConfig, String> {
     match override_json {
         Some(json) => merge_config_json(base, json),
@@ -69,7 +69,6 @@ pub fn build_config_from_json(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use serde_json::json;
 
     #[test]
     fn test_merge_preserves_unspecified_fields() {
@@ -80,7 +79,7 @@ mod tests {
             ..Default::default()
         };
 
-        let merged = merge_config_json(&base, json!({"force_ocr": true})).unwrap();
+        let merged = merge_config_json(&base, r#"{"force_ocr": true}"#).unwrap();
 
         assert!(!merged.use_cache, "use_cache should be preserved from base");
         assert!(
@@ -97,7 +96,7 @@ mod tests {
             ..Default::default()
         };
 
-        let merged = merge_config_json(&base, json!({"use_cache": true})).unwrap();
+        let merged = merge_config_json(&base, r#"{"use_cache": true}"#).unwrap();
         assert!(
             merged.use_cache,
             "Should use explicit override even if it matches the struct default"
@@ -112,7 +111,7 @@ mod tests {
             ..Default::default()
         };
 
-        let merged = merge_config_json(&base, json!({"use_cache": false, "output_format": "markdown"})).unwrap();
+        let merged = merge_config_json(&base, r#"{"use_cache": false, "output_format": "markdown"}"#).unwrap();
 
         assert!(!merged.use_cache);
         assert!(merged.force_ocr, "force_ocr should be preserved");
@@ -125,7 +124,7 @@ mod tests {
     #[test]
     fn test_merge_invalid_field_type_returns_error() {
         let base = ExtractionConfig::default();
-        let result = merge_config_json(&base, json!({"use_cache": "not_a_boolean"}));
+        let result = merge_config_json(&base, r#"{"use_cache": "not_a_boolean"}"#);
         assert!(result.is_err());
         assert!(result.unwrap_err().contains("Failed to deserialize"));
     }
@@ -143,7 +142,7 @@ mod tests {
     #[test]
     fn test_build_config_from_json_some_merges() {
         let base = ExtractionConfig::default();
-        let result = build_config_from_json(&base, Some(json!({"force_ocr": true}))).unwrap();
+        let result = build_config_from_json(&base, Some(r#"{"force_ocr": true}"#)).unwrap();
         assert!(result.force_ocr);
     }
 }

@@ -12,7 +12,6 @@ pub(crate) mod instrumented;
 pub use r#trait::DocumentExtractor;
 
 // Re-export registry functions for backward compatibility
-pub use registry::{clear_extractors, list_extractors, register_extractor, unregister_extractor};
 
 #[cfg(test)]
 mod tests {

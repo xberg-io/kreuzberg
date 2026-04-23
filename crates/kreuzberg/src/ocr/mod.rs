@@ -54,16 +54,10 @@ pub mod utils;
 pub mod validation;
 
 pub use cache::{OcrCache, OcrCacheStats};
-#[cfg(feature = "paddle-ocr")]
-pub use conversion::text_block_to_element;
-pub use conversion::{TsvRow, element_to_hocr_word, elements_to_hocr_words, tsv_row_to_element};
 pub use error::OcrError;
-pub use hocr_parser::parse_hocr_to_internal_document;
 pub use language_registry::LanguageRegistry;
 pub use processor::OcrProcessor;
-pub use table::{HocrWord, extract_words_from_tsv, reconstruct_table, table_to_markdown};
 pub use tessdata_manager::TessdataManager;
 pub use tesseract_backend::TesseractBackend;
 pub use types::{BatchItemResult, ExtractionResult, PSMMode, Table, TesseractConfig};
 pub use utils::compute_hash;
-pub use validation::{validate_language_code, validate_tesseract_version};

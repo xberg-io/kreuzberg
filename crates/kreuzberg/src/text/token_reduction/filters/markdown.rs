@@ -28,7 +28,7 @@ static MARKDOWN_LISTS_REGEX: Lazy<Regex> =
 ///
 /// # Returns
 /// A new `String` with code blocks replaced by placeholders
-pub fn extract_and_preserve_code(text: &str, preserved: &mut AHashMap<String, String>) -> String {
+pub(crate) fn extract_and_preserve_code(text: &str, preserved: &mut AHashMap<String, String>) -> String {
     let mut result = text.to_string();
     let mut code_block_id = 0;
     let mut inline_code_id = 0;
@@ -66,7 +66,7 @@ pub fn extract_and_preserve_code(text: &str, preserved: &mut AHashMap<String, St
 ///
 /// # Returns
 /// A new `String` with placeholders replaced by their original content
-pub fn restore_preserved_blocks(text: &str, preserved: &AHashMap<String, String>) -> String {
+pub(crate) fn restore_preserved_blocks(text: &str, preserved: &AHashMap<String, String>) -> String {
     if preserved.is_empty() {
         return text.to_string();
     }
@@ -90,7 +90,7 @@ pub fn restore_preserved_blocks(text: &str, preserved: &AHashMap<String, String>
 ///
 /// # Returns
 /// A new `String` with Markdown structure preserved
-pub fn preserve_markdown_structure(text: &str) -> String {
+pub(crate) fn preserve_markdown_structure(text: &str) -> String {
     let mut processed_lines: Vec<&str> = Vec::new();
 
     for line in text.lines() {
@@ -120,7 +120,7 @@ pub fn preserve_markdown_structure(text: &str) -> String {
 /// # Returns
 /// `true` if the line is a Markdown list item, `false` otherwise
 #[inline]
-pub fn is_markdown_list(line: &str) -> bool {
+pub(crate) fn is_markdown_list(line: &str) -> bool {
     MARKDOWN_LISTS_REGEX.is_match(line)
 }
 
@@ -132,7 +132,7 @@ pub fn is_markdown_list(line: &str) -> bool {
 /// # Returns
 /// `true` if the line appears to be a Markdown table row, `false` otherwise
 #[inline]
-pub fn is_markdown_table(line: &str) -> bool {
+pub(crate) fn is_markdown_table(line: &str) -> bool {
     let trimmed = line.trim();
     trimmed.starts_with('|') && trimmed.ends_with('|')
 }

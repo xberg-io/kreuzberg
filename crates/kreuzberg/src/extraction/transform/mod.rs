@@ -15,8 +15,6 @@ mod elements;
 mod types;
 
 // Re-export public API
-pub use document_tree::transform_to_document_structure;
-pub use elements::{detect_list_items, generate_element_id};
 pub use types::{ListItemMetadata, ListType};
 
 use crate::types::{Element, ExtractionResult};
@@ -150,6 +148,7 @@ pub fn transform_extraction_result_to_elements(result: &ExtractionResult) -> Vec
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::extraction::transform::elements::{detect_list_items, generate_element_id};
     use bytes::Bytes;
 
     #[test]

@@ -1,0 +1,15 @@
+{
+	"id": "validate_mime_valid",
+	"category": "validation",
+	"description": "Accept valid MIME type",
+	"tags": ["validation", "mime"],
+	"call": "validate_mime_type",
+	"input": {
+		"mime_type": "application/pdf"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	]
+}

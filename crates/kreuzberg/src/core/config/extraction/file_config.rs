@@ -13,7 +13,7 @@ use super::super::formats::OutputFormat;
 use super::super::ocr::OcrConfig;
 use super::super::page::PageConfig;
 use super::super::processing::{ChunkingConfig, PostProcessorConfig};
-use super::types::{ImageExtractionConfig, LanguageDetectionConfig, TokenReductionConfig};
+use super::types::{ImageExtractionConfig, LanguageDetectionConfig, TokenReductionOptions};
 
 /// Per-file extraction configuration overrides for batch processing.
 ///
@@ -84,7 +84,7 @@ pub struct FileExtractionConfig {
 
     /// Override token reduction for this file.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub token_reduction: Option<TokenReductionConfig>,
+    pub token_reduction: Option<TokenReductionOptions>,
 
     /// Override language detection for this file.
     #[serde(skip_serializing_if = "Option::is_none")]

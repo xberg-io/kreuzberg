@@ -19,14 +19,14 @@ task_local! {
 /// Check if we're currently in batch processing mode.
 ///
 /// Returns `false` if the task-local is not set (single-file mode).
-pub fn is_batch_mode() -> bool {
+pub(crate) fn is_batch_mode() -> bool {
     BATCH_MODE.try_with(|cell| cell.get()).unwrap_or(false)
 }
 
 /// Run a future with batch mode enabled.
 ///
 /// This sets the task-local BATCH_MODE flag for the duration of the future.
-pub async fn with_batch_mode<F, T>(future: F) -> T
+pub(crate) async fn with_batch_mode<F, T>(future: F) -> T
 where
     F: std::future::Future<Output = T>,
 {

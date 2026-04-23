@@ -1,0 +1,20 @@
+{
+	"id": "normalize_whitespace_tabs",
+	"category": "text_utils",
+	"description": "Normalize tabs to spaces",
+	"tags": ["text_utils", "whitespace"],
+	"call": "normalize_whitespace",
+	"input": {
+		"text": "col1\t\tcol2\t\tcol3"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "contains",
+			"field": "result",
+			"value": "col1"
+		}
+	]
+}

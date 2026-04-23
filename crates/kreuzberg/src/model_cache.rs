@@ -47,7 +47,7 @@ impl<T: Send> ModelCache<T> {
     ///
     /// The caller owns the returned model and should call [`put`] when
     /// done to return it for reuse.
-    pub fn take_or_create<E>(&self, create_fn: impl FnOnce() -> Result<T, E>) -> Result<T, E> {
+    pub(crate) fn take_or_create<E>(&self, create_fn: impl FnOnce() -> Result<T, E>) -> Result<T, E> {
         if let Ok(mut guard) = self.slot.lock()
             && let Some(model) = guard.take()
         {
@@ -63,14 +63,14 @@ impl<T: Send> ModelCache<T> {
     ///
     /// If the cache already holds a model (e.g. from a concurrent caller),
     /// the returned model is silently dropped.
-    pub fn put(&self, model: T) {
+    pub(crate) fn put(&self, model: T) {
         if let Ok(mut guard) = self.slot.lock() {
             *guard = Some(model);
         }
     }
 
     /// Take the cached model if one exists, without creating a new one.
-    pub fn take(&self) -> Option<T> {
+    pub(crate) fn take(&self) -> Option<T> {
         self.slot.lock().ok().and_then(|mut guard| guard.take())
     }
 }

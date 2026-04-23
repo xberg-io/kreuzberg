@@ -2,15 +2,20 @@
 	"id": "office_jats_basic",
 	"category": "office",
 	"description": "JATS scientific article extraction.",
-	"document": {
+	"input": {
 		"path": "jats/sample_article.jats",
 		"media_type": "application/x-jats+xml"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": ["application/x-jats+xml", "text/jats"],
-		"min_content_length": 10
-	}
+	"assertions": [
+		{
+			"type": "contains_any",
+			"field": "mime_type",
+			"values": ["application/x-jats+xml", "text/jats"]
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 10
+		}
+	]
 }

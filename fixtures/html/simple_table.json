@@ -2,16 +2,25 @@
 	"id": "html_simple_table",
 	"category": "html",
 	"description": "HTML table converted to markdown should retain structure.",
-	"document": {
+	"input": {
 		"path": "html/simple_table.html",
 		"media_type": "text/html"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": "text/html",
-		"min_content_length": 100,
-		"content_contains_all": ["Product", "Category", "Price", "Stock", "Laptop", "Electronics", "Sample Data Table"]
-	}
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "text/html"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 100
+		},
+		{
+			"type": "contains_all",
+			"field": "content",
+			"values": ["Product", "Category", "Price", "Stock", "Laptop", "Electronics", "Sample Data Table"]
+		}
+	]
 }

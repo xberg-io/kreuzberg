@@ -1,0 +1,15 @@
+{
+	"id": "extract_pptx_basic",
+	"category": "extraction",
+	"description": "Extract text from a PowerPoint presentation file",
+	"tags": ["pptx", "presentation", "text_extraction"],
+	"call": "extract_pptx_from_bytes",
+	"input": {
+		"data": "pptx/powerpoint_sample.pptx"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	]
+}

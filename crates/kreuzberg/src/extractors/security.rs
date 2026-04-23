@@ -149,7 +149,7 @@ pub struct ZipBombValidator {
 #[cfg(feature = "archives")]
 impl ZipBombValidator {
     /// Create a new ZIP bomb validator.
-    pub fn new(limits: SecurityLimits) -> Self {
+    pub(crate) fn new(limits: SecurityLimits) -> Self {
         Self { limits }
     }
 
@@ -161,7 +161,7 @@ impl ZipBombValidator {
     /// # Returns
     /// * `Ok(())` if archive is safe
     /// * `Err(SecurityError)` if security limit violated
-    pub fn validate<R: Read + Seek>(&self, archive: &mut zip::ZipArchive<R>) -> Result<(), SecurityError> {
+    pub(crate) fn validate<R: Read + Seek>(&self, archive: &mut zip::ZipArchive<R>) -> Result<(), SecurityError> {
         let file_count = archive.len();
 
         if file_count > self.limits.max_files_in_archive {
@@ -225,7 +225,7 @@ pub struct StringGrowthValidator {
 
 impl StringGrowthValidator {
     /// Create a new string growth validator.
-    pub fn new(max_size: usize) -> Self {
+    pub(crate) fn new(max_size: usize) -> Self {
         Self {
             max_size,
             current_size: 0,
@@ -237,7 +237,7 @@ impl StringGrowthValidator {
     /// # Returns
     /// * `Ok(())` if size is within limits
     /// * `Err(SecurityError)` if size exceeds limit
-    pub fn check_append(&mut self, len: usize) -> Result<(), SecurityError> {
+    pub(crate) fn check_append(&mut self, len: usize) -> Result<(), SecurityError> {
         self.current_size = self.current_size.saturating_add(len);
         if self.current_size > self.max_size {
             Err(SecurityError::ContentTooLarge {
@@ -250,7 +250,7 @@ impl StringGrowthValidator {
     }
 
     /// Get current size.
-    pub fn current_size(&self) -> usize {
+    pub(crate) fn current_size(&self) -> usize {
         self.current_size
     }
 }
@@ -263,7 +263,7 @@ pub struct IterationValidator {
 
 impl IterationValidator {
     /// Create a new iteration validator.
-    pub fn new(max_iterations: usize) -> Self {
+    pub(crate) fn new(max_iterations: usize) -> Self {
         Self {
             max_iterations,
             current_count: 0,
@@ -275,7 +275,7 @@ impl IterationValidator {
     /// # Returns
     /// * `Ok(())` if count is within limits
     /// * `Err(SecurityError)` if count exceeds limit
-    pub fn check_iteration(&mut self) -> Result<(), SecurityError> {
+    pub(crate) fn check_iteration(&mut self) -> Result<(), SecurityError> {
         self.current_count += 1;
         if self.current_count > self.max_iterations {
             Err(SecurityError::TooManyIterations {
@@ -288,7 +288,7 @@ impl IterationValidator {
     }
 
     /// Get current iteration count.
-    pub fn current_count(&self) -> usize {
+    pub(crate) fn current_count(&self) -> usize {
         self.current_count
     }
 }
@@ -301,7 +301,7 @@ pub struct DepthValidator {
 
 impl DepthValidator {
     /// Create a new depth validator.
-    pub fn new(max_depth: usize) -> Self {
+    pub(crate) fn new(max_depth: usize) -> Self {
         Self {
             max_depth,
             current_depth: 0,
@@ -313,7 +313,7 @@ impl DepthValidator {
     /// # Returns
     /// * `Ok(())` if depth is within limits
     /// * `Err(SecurityError)` if depth exceeds limit
-    pub fn push(&mut self) -> Result<(), SecurityError> {
+    pub(crate) fn push(&mut self) -> Result<(), SecurityError> {
         self.current_depth += 1;
         if self.current_depth > self.max_depth {
             Err(SecurityError::NestingTooDeep {
@@ -326,14 +326,14 @@ impl DepthValidator {
     }
 
     /// Pop a level (decrease depth).
-    pub fn pop(&mut self) {
+    pub(crate) fn pop(&mut self) {
         if self.current_depth > 0 {
             self.current_depth -= 1;
         }
     }
 
     /// Get current depth.
-    pub fn current_depth(&self) -> usize {
+    pub(crate) fn current_depth(&self) -> usize {
         self.current_depth
     }
 }
@@ -345,7 +345,7 @@ pub struct EntityValidator {
 
 impl EntityValidator {
     /// Create a new entity validator.
-    pub fn new(max_length: usize) -> Self {
+    pub(crate) fn new(max_length: usize) -> Self {
         Self { max_length }
     }
 
@@ -354,7 +354,7 @@ impl EntityValidator {
     /// # Returns
     /// * `Ok(())` if length is within limits
     /// * `Err(SecurityError)` if length exceeds limit
-    pub fn validate(&self, content: &str) -> Result<(), SecurityError> {
+    pub(crate) fn validate(&self, content: &str) -> Result<(), SecurityError> {
         if content.len() > self.max_length {
             Err(SecurityError::EntityTooLong {
                 length: content.len(),
@@ -374,7 +374,7 @@ pub struct TableValidator {
 
 impl TableValidator {
     /// Create a new table validator.
-    pub fn new(max_cells: usize) -> Self {
+    pub(crate) fn new(max_cells: usize) -> Self {
         Self {
             max_cells,
             current_cells: 0,
@@ -386,7 +386,7 @@ impl TableValidator {
     /// # Returns
     /// * `Ok(())` if cell count is within limits
     /// * `Err(SecurityError)` if cell count exceeds limit
-    pub fn add_cells(&mut self, count: usize) -> Result<(), SecurityError> {
+    pub(crate) fn add_cells(&mut self, count: usize) -> Result<(), SecurityError> {
         self.current_cells = self.current_cells.saturating_add(count);
         if self.current_cells > self.max_cells {
             Err(SecurityError::TooManyCells {
@@ -399,7 +399,7 @@ impl TableValidator {
     }
 
     /// Get current cell count.
-    pub fn current_cells(&self) -> usize {
+    pub(crate) fn current_cells(&self) -> usize {
         self.current_cells
     }
 }

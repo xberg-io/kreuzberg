@@ -1,0 +1,15 @@
+{
+	"id": "error_pdf_corrupt",
+	"category": "error",
+	"description": "Error when PDF is truncated/corrupt",
+	"tags": ["error", "pdf", "corrupt"],
+	"call": "extract_file_sync",
+	"input": {
+		"path": "pdf/corrupt_truncated.pdf"
+	},
+	"assertions": [
+		{
+			"type": "error"
+		}
+	]
+}

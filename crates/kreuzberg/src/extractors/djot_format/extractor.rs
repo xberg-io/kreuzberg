@@ -27,14 +27,14 @@ pub struct DjotExtractor;
 
 impl DjotExtractor {
     /// Create a new Djot extractor.
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self
     }
 }
 
 impl DjotExtractor {
     /// Build an `InternalDocument` from jotdown events.
-    pub fn build_internal_document(events: &[Event]) -> InternalDocument {
+    pub(crate) fn build_internal_document(events: &[Event]) -> InternalDocument {
         use crate::types::builder;
         use crate::types::document_structure::TextAnnotation;
 

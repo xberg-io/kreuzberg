@@ -4,18 +4,9 @@
     "https://checkstyle.org/dtds/suppressions_1_2.dtd">
 
 <suppressions>
-    <!-- FFI code patterns that require non-standard naming -->
-    <suppress checks="ConstantName" files="KreuzbergFFI\.java"/>
-    <suppress checks="MagicNumber" files="KreuzbergFFI\.java"/>
+    <!-- Allow star imports in test files -->
+    <suppress checks="AvoidStarImport" files=".*Test\.java"/>
 
-    <!-- Test files can have more relaxed rules -->
+    <!-- Allow magic numbers in tests -->
     <suppress checks="MagicNumber" files=".*Test\.java"/>
-    <suppress checks="MethodLength" files=".*Test\.java"/>
-
-    <!-- Generated E2E tests are validated by compilation/runtime and may exceed style limits -->
-    <suppress checks="LineLength" files="e2e/java/src/test/java/.*Test\.java"/>
-    <suppress checks="UnusedImports" files="e2e/java/src/test/java/.*Test\.java"/>
-
-    <!-- Benchmark harness scripts live outside the Java package structure -->
-    <suppress checks="JavadocPackage" files="tools/benchmark-harness/scripts/.*"/>
 </suppressions>

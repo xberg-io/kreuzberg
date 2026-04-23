@@ -32,7 +32,7 @@ pub struct PdfRenderer<'a> {
 }
 
 impl PdfRenderer<'static> {
-    pub fn new() -> Result<Self> {
+    pub(crate) fn new() -> Result<Self> {
         let pdfium = bind_pdfium(PdfError::RenderingFailed, "page rendering", None)?;
         Ok(Self { pdfium })
     }
@@ -40,7 +40,7 @@ impl PdfRenderer<'static> {
 
 impl PdfRenderer<'_> {
     /// Return the number of pages in the given PDF without rendering.
-    pub fn page_count(&self, pdf_bytes: &[u8]) -> Result<usize> {
+    pub(crate) fn page_count(&self, pdf_bytes: &[u8]) -> Result<usize> {
         let document = self
             .pdfium
             .load_pdf_from_byte_slice(pdf_bytes, None)
@@ -48,7 +48,7 @@ impl PdfRenderer<'_> {
         Ok(document.pages().len() as usize)
     }
 
-    pub fn render_page_to_image(
+    pub(crate) fn render_page_to_image(
         &self,
         pdf_bytes: &[u8],
         page_index: usize,
@@ -57,7 +57,7 @@ impl PdfRenderer<'_> {
         self.render_page_to_image_with_password(pdf_bytes, page_index, options, None)
     }
 
-    pub fn render_page_to_image_with_password(
+    pub(crate) fn render_page_to_image_with_password(
         &self,
         pdf_bytes: &[u8],
         page_index: usize,
@@ -119,11 +119,11 @@ impl PdfRenderer<'_> {
         Ok(DynamicImage::ImageRgb8(image))
     }
 
-    pub fn render_all_pages(&self, pdf_bytes: &[u8], options: &PageRenderOptions) -> Result<Vec<DynamicImage>> {
+    pub(crate) fn render_all_pages(&self, pdf_bytes: &[u8], options: &PageRenderOptions) -> Result<Vec<DynamicImage>> {
         self.render_all_pages_with_password(pdf_bytes, options, None)
     }
 
-    pub fn render_all_pages_with_password(
+    pub(crate) fn render_all_pages_with_password(
         &self,
         pdf_bytes: &[u8],
         options: &PageRenderOptions,
@@ -146,7 +146,11 @@ impl PdfRenderer<'_> {
     }
 }
 
-pub fn render_page_to_image(pdf_bytes: &[u8], page_index: usize, options: &PageRenderOptions) -> Result<DynamicImage> {
+pub(crate) fn render_page_to_image(
+    pdf_bytes: &[u8],
+    page_index: usize,
+    options: &PageRenderOptions,
+) -> Result<DynamicImage> {
     let renderer = PdfRenderer::new()?;
     renderer.render_page_to_image(pdf_bytes, page_index, options)
 }
@@ -236,7 +240,7 @@ impl PdfPageIterator {
     ///
     /// Returns an error if the PDF is invalid or password-protected without
     /// the correct password.
-    pub fn new(pdf_bytes: Vec<u8>, dpi: Option<i32>, password: Option<String>) -> Result<Self> {
+    pub(crate) fn new(pdf_bytes: Vec<u8>, dpi: Option<i32>, password: Option<String>) -> Result<Self> {
         // Validate PDF and get page count (acquires + releases mutex)
         let renderer = PdfRenderer::new()?;
         let pw = password.as_deref();
@@ -267,14 +271,18 @@ impl PdfPageIterator {
     /// # Errors
     ///
     /// Returns an error if the file cannot be read or the PDF is invalid.
-    pub fn from_file(path: impl AsRef<std::path::Path>, dpi: Option<i32>, password: Option<String>) -> Result<Self> {
+    pub(crate) fn from_file(
+        path: impl AsRef<std::path::Path>,
+        dpi: Option<i32>,
+        password: Option<String>,
+    ) -> Result<Self> {
         let pdf_bytes =
             std::fs::read(path.as_ref()).map_err(|e| PdfError::IOError(format!("Failed to read file: {}", e)))?;
         Self::new(pdf_bytes, dpi, password)
     }
 
     /// Number of pages in the PDF.
-    pub fn page_count(&self) -> usize {
+    pub(crate) fn page_count(&self) -> usize {
         self.page_count
     }
 

@@ -12,7 +12,7 @@ use super::super::ocr::OcrConfig;
 use super::super::page::PageConfig;
 use super::super::processing::{ChunkingConfig, PostProcessorConfig};
 use super::file_config::FileExtractionConfig;
-use super::types::{ImageExtractionConfig, LanguageDetectionConfig, TokenReductionConfig};
+use super::types::{ImageExtractionConfig, LanguageDetectionConfig, TokenReductionOptions};
 
 /// Main extraction configuration.
 ///
@@ -94,7 +94,7 @@ pub struct ExtractionConfig {
 
     /// Token reduction configuration (None = no token reduction)
     #[serde(default)]
-    pub token_reduction: Option<TokenReductionConfig>,
+    pub token_reduction: Option<TokenReductionOptions>,
 
     /// Language detection configuration (None = no language detection)
     #[serde(default)]
@@ -342,7 +342,7 @@ impl ExtractionConfig {
     /// let resolved = base.with_file_overrides(&override_config);
     /// assert!(resolved.force_ocr);
     /// ```
-    pub fn with_file_overrides(&self, overrides: &FileExtractionConfig) -> Self {
+    pub(crate) fn with_file_overrides(&self, overrides: &FileExtractionConfig) -> Self {
         // Destructure to ensure compile-time exhaustiveness: adding a field to
         // FileExtractionConfig without handling it here will produce a compile error.
         let FileExtractionConfig {
@@ -460,7 +460,7 @@ impl ExtractionConfig {
     ///   Without this, all elements would incorrectly get `page_number=1`.
     /// - Auto-enabling `extract_pages` when chunking is configured, because the chunker
     ///   needs page boundaries to assign correct page numbers to chunks.
-    pub fn normalized(&self) -> std::borrow::Cow<'_, Self> {
+    pub(crate) fn normalized(&self) -> std::borrow::Cow<'_, Self> {
         let needs_pages = |cfg: &Self| -> bool {
             match &cfg.pages {
                 Some(page_config) => !page_config.extract_pages,
@@ -488,7 +488,7 @@ impl ExtractionConfig {
     /// - VLM backend config is present when backend is "vlm"
     /// - Pipeline stage backends and VLM configs are valid
     /// - Structured extraction schema and LLM model are non-empty
-    pub fn validate(&self) -> Result<(), crate::error::KreuzbergError> {
+    pub(crate) fn validate(&self) -> Result<(), crate::error::KreuzbergError> {
         // Validate OCR config if present
         if let Some(ref ocr) = self.ocr {
             ocr.validate()?;
@@ -508,7 +508,7 @@ impl ExtractionConfig {
     /// Setting `ocr.enabled = false` in configuration is treated as equivalent to
     /// `disable_ocr = true`. This method is the single source of truth for whether
     /// OCR should be skipped.
-    pub fn effective_disable_ocr(&self) -> bool {
+    pub(crate) fn effective_disable_ocr(&self) -> bool {
         self.disable_ocr || self.ocr.as_ref().is_some_and(|o| !o.enabled)
     }
 

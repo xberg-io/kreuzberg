@@ -2,7 +2,7 @@ use crate::types::document_structure::TextAnnotation;
 
 /// Adjust annotation byte offsets after trimming leading whitespace from text.
 /// Filters out annotations that fall outside the trimmed text bounds.
-pub fn adjust_annotations_for_trim(
+pub(crate) fn adjust_annotations_for_trim(
     mut annotations: Vec<TextAnnotation>,
     raw_text: &str,
     trimmed_text: &str,

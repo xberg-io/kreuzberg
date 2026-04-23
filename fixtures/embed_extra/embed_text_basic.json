@@ -1,0 +1,18 @@
+{
+	"id": "embed_text_basic",
+	"category": "embed_extra",
+	"description": "Basic text embedding with default configuration",
+	"tags": ["embedding", "text", "basic"],
+	"call": "embed_text",
+	"input": {
+		"text": "Hello world"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	],
+	"skip": {
+		"reason": "Requires features: embeddings"
+	}
+}

@@ -25,7 +25,7 @@ pub struct CitationExtractor;
 
 impl CitationExtractor {
     /// Create a new citation extractor.
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self
     }
 }

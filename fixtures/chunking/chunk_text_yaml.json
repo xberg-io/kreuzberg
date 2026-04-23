@@ -1,0 +1,12 @@
+{
+	"id": "chunk_text_yaml",
+	"category": "chunking",
+	"description": "Chunk with YAML chunker",
+	"tags": ["chunking", "yaml"],
+	"call": "chunk_text",
+	"input": {
+		"text": "key1: value1\nkey2: value2\n---\nkey3: value3",
+		"config": { "max_characters": 50, "chunker_type": "yaml" }
+	},
+	"assertions": [{ "type": "not_error" }]
+}

@@ -1,0 +1,20 @@
+{
+	"id": "snake_to_camel_single",
+	"category": "string_utils",
+	"description": "Convert single word remains unchanged",
+	"tags": ["string_utils", "conversion"],
+	"call": "snake_to_camel",
+	"input": {
+		"text": "hello"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "equals",
+			"field": "result",
+			"value": "hello"
+		}
+	]
+}

@@ -1,0 +1,28 @@
+{
+	"id": "render_output_html",
+	"category": "render",
+	"description": "Extract PDF with HTML output format",
+	"tags": ["render", "output_format", "html"],
+	"call": "extract_file_sync",
+	"input": {
+		"path": "pdf/fake_memo.pdf",
+		"config": {
+			"output_format": "html"
+		}
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "equals",
+			"field": "output_format",
+			"value": "html"
+		},
+		{
+			"type": "contains_any",
+			"field": "content",
+			"values": ["<", ">", "</"]
+		}
+	]
+}

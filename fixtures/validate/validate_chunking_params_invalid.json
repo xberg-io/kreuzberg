@@ -1,0 +1,1 @@
+{"id":"validate_chunking_params_invalid","category":"validate","description":"Chunking overlap >= max","tags":["validation","error"],"call":"validate_chunking_params","input":{"max_characters":50,"overlap":60},"assertions":[{"type":"error"}]}

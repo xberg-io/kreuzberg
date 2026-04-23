@@ -8,7 +8,7 @@ use kreuzberg::core::config::ChunkingConfig;
 use kreuzberg::core::config::ExtractionConfig;
 #[cfg(feature = "language-detection")]
 use kreuzberg::core::config::LanguageDetectionConfig;
-use kreuzberg::core::config::TokenReductionConfig;
+use kreuzberg::core::config::TokenReductionOptions;
 use kreuzberg::core::extractor::extract_bytes;
 
 mod helpers;
@@ -329,7 +329,7 @@ async fn test_cache_disabled() {
 #[tokio::test]
 async fn test_token_reduction_aggressive() {
     let config = ExtractionConfig {
-        token_reduction: Some(TokenReductionConfig {
+        token_reduction: Some(TokenReductionOptions {
             mode: "aggressive".to_string(),
             preserve_important_words: true,
         }),
@@ -350,7 +350,7 @@ async fn test_token_reduction_aggressive() {
 #[tokio::test]
 async fn test_token_reduction_conservative() {
     let config = ExtractionConfig {
-        token_reduction: Some(TokenReductionConfig {
+        token_reduction: Some(TokenReductionOptions {
             mode: "light".to_string(),
             preserve_important_words: true,
         }),
@@ -371,7 +371,7 @@ async fn test_token_reduction_conservative() {
 #[tokio::test]
 async fn test_token_reduction_disabled() {
     let config = ExtractionConfig {
-        token_reduction: Some(TokenReductionConfig {
+        token_reduction: Some(TokenReductionOptions {
             mode: "off".to_string(),
             preserve_important_words: false,
         }),

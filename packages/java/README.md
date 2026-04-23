@@ -22,7 +22,7 @@
     <img src="https://img.shields.io/maven-central/v/dev.kreuzberg/kreuzberg?label=Java&color=007ec6" alt="Java">
   </a>
   <a href="https://github.com/kreuzberg-dev/kreuzberg/releases">
-    <img src="https://img.shields.io/github/v/tag/kreuzberg-dev/kreuzberg?label=Go&color=007ec6&filter=v4.9.5" alt="Go">
+    <img src="https://img.shields.io/github/v/tag/kreuzberg-dev/kreuzberg?label=Go&color=007ec6&filter=v4.0.0" alt="Go">
   </a>
   <a href="https://www.nuget.org/packages/Kreuzberg/">
     <img src="https://img.shields.io/nuget/v/Kreuzberg?label=C%23&color=007ec6" alt="C#">
@@ -66,9 +66,7 @@
   </a>
 </div>
 
-
 Extract text, tables, images, and metadata from 91+ file formats and 248 programming languages including PDF, Office documents, and images. Java bindings with type-safe API, Foreign Function & Memory API integration, and native performance.
-
 
 ## Installation
 
@@ -80,12 +78,11 @@ Install via one of the supported package managers:
 
 
 **Maven:**
-
 ```xml
 <dependency>
     <groupId>dev.kreuzberg</groupId>
     <artifactId>kreuzberg</artifactId>
-    <version>4.9.5</version>
+    <version>4.0.0</version>
 </dependency>
 ```
 
@@ -93,9 +90,8 @@ Install via one of the supported package managers:
 
 
 **Gradle:**
-
 ```gradle
-implementation 'dev.kreuzberg:kreuzberg:4.9.5'
+implementation 'dev.kreuzberg:kreuzberg:4.0.0'
 ```
 
 
@@ -109,14 +105,13 @@ implementation 'dev.kreuzberg:kreuzberg:4.9.5'
 - Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
 
 
-
 ## Quick Start
 
 ### Basic Extraction
 
 Extract text, metadata, and structure from any supported document format:
 
-```java
+```java title="Java"
 import dev.kreuzberg.Kreuzberg;
 import dev.kreuzberg.ExtractionResult;
 import java.io.IOException;
@@ -142,7 +137,6 @@ public class BasicUsage {
 }
 ```
 
-
 ### Common Use Cases
 
 #### Extract with Custom Configuration
@@ -152,7 +146,7 @@ Most use cases benefit from configuration to control extraction behavior:
 
 **With OCR (for scanned documents):**
 
-```java
+```java title="Java"
 import dev.kreuzberg.Kreuzberg;
 import dev.kreuzberg.ExtractionResult;
 import dev.kreuzberg.KreuzbergException;
@@ -181,7 +175,6 @@ public class Main {
 
 
 
-
 #### Table Extraction
 
 
@@ -192,7 +185,7 @@ See [Table Extraction Guide](https://kreuzberg.dev/features/table-extraction/) f
 #### Processing Multiple Files
 
 
-```java
+```java title="Java"
 import dev.kreuzberg.Kreuzberg;
 import dev.kreuzberg.ExtractionResult;
 import dev.kreuzberg.KreuzbergException;
@@ -217,12 +210,11 @@ try {
 
 
 
-
 #### Async Processing
 
 For non-blocking document processing:
 
-```java
+```java title="Java"
 import dev.kreuzberg.Kreuzberg;
 import dev.kreuzberg.ExtractionResult;
 import java.nio.file.Path;
@@ -240,7 +232,6 @@ public class Example {
     }
 }
 ```
-
 
 
 
@@ -360,14 +351,16 @@ Powered by [tree-sitter-language-pack](https://github.com/kreuzberg-dev/tree-sit
 Kreuzberg supports multiple OCR backends for extracting text from scanned documents and images:
 
 
+
 - **Tesseract**
+
 
 - **Paddleocr**
 
 
 ### OCR Configuration Example
 
-```java
+```java title="Java"
 import dev.kreuzberg.Kreuzberg;
 import dev.kreuzberg.ExtractionResult;
 import dev.kreuzberg.KreuzbergException;
@@ -401,7 +394,7 @@ public class Main {
 
 This binding provides full async/await support for non-blocking document processing:
 
-```java
+```java title="Java"
 import dev.kreuzberg.Kreuzberg;
 import dev.kreuzberg.ExtractionResult;
 import java.nio.file.Path;
@@ -432,6 +425,7 @@ For detailed plugin documentation, visit [Plugin System Guide](https://kreuzberg
 
 
 
+
 ## Embeddings Support
 
 Generate vector embeddings for extracted text using the built-in ONNX Runtime support. Requires ONNX Runtime installation.
@@ -440,11 +434,12 @@ Generate vector embeddings for extracted text using the built-in ONNX Runtime su
 
 
 
+
 ## Batch Processing
 
 Process multiple documents efficiently:
 
-```java
+```java title="Java"
 import dev.kreuzberg.Kreuzberg;
 import dev.kreuzberg.ExtractionResult;
 import dev.kreuzberg.KreuzbergException;
@@ -465,7 +460,6 @@ try {
     e.printStackTrace();
 }
 ```
-
 
 
 

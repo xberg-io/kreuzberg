@@ -2,15 +2,20 @@
 	"id": "archive_zip_basic",
 	"category": "archive",
 	"description": "ZIP archive extraction.",
-	"document": {
+	"input": {
 		"path": "archives/documents.zip",
 		"media_type": "application/zip"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": ["application/zip", "application/x-zip-compressed"],
-		"min_content_length": 10
-	}
+	"assertions": [
+		{
+			"type": "contains_any",
+			"field": "mime_type",
+			"values": ["application/zip", "application/x-zip-compressed"]
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 10
+		}
+	]
 }

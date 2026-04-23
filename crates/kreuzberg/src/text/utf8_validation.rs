@@ -38,7 +38,7 @@
 /// This function is safe and does not use any unsafe code directly. The underlying
 /// SIMD validation (when enabled) is contained within the simdutf8 crate and is safe.
 #[inline]
-pub fn from_utf8(bytes: &[u8]) -> Result<&str, std::str::Utf8Error> {
+pub(crate) fn from_utf8(bytes: &[u8]) -> Result<&str, std::str::Utf8Error> {
     #[cfg(feature = "simd-utf8")]
     {
         simdutf8::basic::from_utf8(bytes).map_err(|_| {
@@ -72,7 +72,7 @@ pub fn from_utf8(bytes: &[u8]) -> Result<&str, std::str::Utf8Error> {
 /// When enabled, SIMD validation significantly reduces the time spent on validation,
 /// especially for large text documents.
 #[inline]
-pub fn string_from_utf8(bytes: Vec<u8>) -> Result<String, std::string::FromUtf8Error> {
+pub(crate) fn string_from_utf8(bytes: Vec<u8>) -> Result<String, std::string::FromUtf8Error> {
     #[cfg(feature = "simd-utf8")]
     {
         #[allow(clippy::collapsible_if)]

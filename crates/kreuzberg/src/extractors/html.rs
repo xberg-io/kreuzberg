@@ -28,7 +28,7 @@ impl Default for HtmlExtractor {
 }
 
 impl HtmlExtractor {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self
     }
 }
@@ -852,8 +852,7 @@ mod tests {
         let original_content = result.content.clone();
 
         // Simulate pipeline format application
-        let mut pipeline_result = result.clone();
-        crate::core::pipeline::apply_output_format(&mut pipeline_result, OutputFormat::Djot);
+        let pipeline_result = crate::core::pipeline::apply_output_format(result.clone(), OutputFormat::Djot);
 
         // Content should be identical - no re-conversion should occur
         assert_eq!(pipeline_result.content, original_content);

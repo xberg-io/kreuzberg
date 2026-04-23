@@ -192,7 +192,7 @@ fn lang_to_iso639_3(lang: Lang) -> String {
 ///
 /// **Note:** This is called automatically on first use.
 /// Explicit calling is optional.
-pub fn register_language_detection_processor() -> Result<()> {
+pub(crate) fn register_language_detection_processor() -> Result<()> {
     let registry = crate::plugins::registry::get_post_processor_registry();
     let mut registry = registry.write();
 
@@ -211,7 +211,7 @@ static PROCESSOR_INITIALIZED: OnceCell<()> = OnceCell::new();
 ///
 /// This function is called automatically when needed.
 /// It's safe to call multiple times - registration only happens once.
-pub fn ensure_initialized() -> Result<()> {
+pub(crate) fn ensure_initialized() -> Result<()> {
     PROCESSOR_INITIALIZED
         .get_or_try_init(register_language_detection_processor)
         .map(|_| ())

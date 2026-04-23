@@ -69,12 +69,9 @@ pub mod validation;
 mod yaml_section;
 
 // Re-export submodule types and functions
-pub use boundaries::{calculate_page_range, validate_page_boundaries};
-pub use classifier::classify_chunk;
 pub use config::{ChunkSizing, ChunkerType, ChunkingConfig, ChunkingResult}; // ChunkingConfig re-exported from core::config::processing
-pub use core::{chunk_text, chunk_text_with_heading_source, chunk_text_with_type, chunk_texts_batch};
+pub(crate) use core::{chunk_text, chunk_text_with_heading_source};
 pub use processor::ChunkingProcessor;
-pub use validation::{ADAPTIVE_VALIDATION_THRESHOLD, precompute_utf8_boundaries, validate_utf8_boundaries};
 
 use crate::error::Result;
 
@@ -88,7 +85,7 @@ static PROCESSOR_INITIALIZED: OnceCell<()> = OnceCell::new();
 ///
 /// This function is called automatically when needed.
 /// It's safe to call multiple times - registration only happens once.
-pub fn ensure_initialized() -> Result<()> {
+pub(crate) fn ensure_initialized() -> Result<()> {
     PROCESSOR_INITIALIZED
         .get_or_try_init(register_chunking_processor)
         .map(|_| ())
@@ -101,7 +98,7 @@ pub fn ensure_initialized() -> Result<()> {
 ///
 /// **Note:** This is called automatically on first use.
 /// Explicit calling is optional.
-pub fn register_chunking_processor() -> Result<()> {
+pub(crate) fn register_chunking_processor() -> Result<()> {
     let registry = crate::plugins::registry::get_post_processor_registry();
     let mut registry = registry.write();
 

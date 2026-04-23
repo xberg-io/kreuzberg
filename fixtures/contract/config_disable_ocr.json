@@ -2,19 +2,24 @@
 	"id": "config_disable_ocr",
 	"description": "Tests disable_ocr configuration option - OCR is skipped for images",
 	"tags": ["contract", "config", "ocr"],
-	"document": {
+	"call": "extract_file_sync",
+	"input": {
 		"path": "images/test_hello_world.png",
-		"media_type": "image/png"
-	},
-	"extraction": {
-		"method": "sync",
-		"input_type": "file",
+		"media_type": "image/png",
 		"config": {
 			"disable_ocr": true
 		}
 	},
-	"assertions": {
-		"expected_mime": "image/png",
-		"max_content_length": 5
-	}
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "image/png"
+		},
+		{
+			"type": "max_length",
+			"field": "content",
+			"value": 5
+		}
+	]
 }

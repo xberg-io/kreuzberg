@@ -1,0 +1,12 @@
+{
+	"id": "serialize_toon_basic",
+	"category": "serialization",
+	"description": "Serialize extraction result to TOON format",
+	"tags": ["serialization", "toon"],
+	"call": "serialize_to_toon",
+	"input": {
+		"path": "test_documents/text/plain.txt",
+		"config": {}
+	},
+	"assertions": [{ "type": "not_error" }, { "type": "min_length", "field": "content", "value": 1 }]
+}

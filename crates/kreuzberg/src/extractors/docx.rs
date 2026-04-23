@@ -28,7 +28,7 @@ pub struct DocxExtractor;
 
 impl DocxExtractor {
     /// Create a new DOCX extractor.
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self
     }
 }

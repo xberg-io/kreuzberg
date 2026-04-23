@@ -20,7 +20,7 @@ pub struct OpmlExtractor;
 
 impl OpmlExtractor {
     /// Create a new OPML extractor.
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self
     }
 }

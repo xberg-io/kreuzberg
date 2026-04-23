@@ -1,0 +1,16 @@
+{
+	"id": "error_invalid_mime_format",
+	"category": "error",
+	"description": "Error when extracting with invalid MIME type format",
+	"tags": ["error", "input", "mime"],
+	"call": "extract_bytes_sync",
+	"input": {
+		"data": "text/plain.txt",
+		"mime_type": "not-a-mime"
+	},
+	"assertions": [
+		{
+			"type": "error"
+		}
+	]
+}

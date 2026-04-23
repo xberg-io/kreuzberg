@@ -1,7 +1,7 @@
 default_install_hook_types:
   - pre-commit
   - commit-msg
-exclude: ^docs/snippets/|vendor/|node_modules/|target/|invalid*|dist/|artifacts/|test_documents/|test_apps/|scripts/ci/|packages/.*/tools/vendor-
+exclude: ^docs/snippets/|vendor/|node_modules/|target/|invalid*|dist/|artifacts/|test_documents/|scripts/ci/|^e2e/|^packages/|^crates/kreuzberg-(py|node|ffi|php|wasm)/|^docs/reference/api-
 
 repos:
   # Commit message linting
@@ -65,7 +65,7 @@ repos:
     rev: v1.20.2
     hooks:
       - id: mypy
-        exclude: "e2e/|scripts/|test_apps/|benchmarks/"
+        exclude: "scripts/|benchmarks/"
 
   # Rust: formatting, linting, and license checking
   - repo: https://github.com/AndrejOrsula/pre-commit-cargo
@@ -74,26 +74,12 @@ repos:
       - id: cargo-fmt
         args: ["--all"]
         types: [rust]
-      # Clippy: split by compilation unit so only changed code recompiles
       - id: cargo-clippy
-        name: clippy (workspace — core, cli, ffi, bindings)
+        name: clippy (workspace)
         args: ["--fix", "--allow-dirty", "--allow-staged", "--workspace",
-               "--exclude=kreuzberg-php", "--exclude=kreuzberg-wasm",
                "--all-features", "--all-targets", "--", "-D", "warnings"]
-        files: ^(crates/|tools/|e2e/rust/|Cargo\.(toml|lock))
+        files: ^(crates/|tools/|Cargo\.(toml|lock))
         types_or: [rust, toml]
-      - id: cargo-clippy
-        name: clippy (kreuzberg-php)
-        args: ["--fix", "--allow-dirty", "--allow-staged",
-               "-p", "kreuzberg-php", "--all-targets", "--", "-D", "warnings"]
-        files: ^crates/kreuzberg-php/
-        types: [rust]
-      - id: cargo-clippy
-        name: clippy (kreuzberg-wasm)
-        args: ["--fix", "--allow-dirty", "--allow-staged",
-               "-p", "kreuzberg-wasm", "--all-targets", "--", "-D", "warnings"]
-        files: ^crates/kreuzberg-wasm/
-        types: [rust]
 
   - repo: https://github.com/bnjbvr/cargo-machete
     rev: v0.9.2
@@ -119,40 +105,7 @@ repos:
     hooks:
       - id: oxlint
         args: ["--fix"]
-        exclude: ^(tools/benchmark-harness/fixtures/|docs/snippets/)
-
-  # C/C++: formatting and linting
-  - repo: https://github.com/pocc/pre-commit-hooks
-    rev: v1.3.5
-    hooks:
-      - id: clang-format
-        args: [--style=file]
-        files: (^crates/kreuzberg-ffi/tests/c/|^tools/benchmark-harness/scripts/.*\.c$)
-      - id: cppcheck
-        args:
-          [
-            "--std=c11",
-            "--enable=warning,style,performance",
-            "--suppress=missingIncludeSystem",
-            "--suppress=unusedStructMember",
-            "--suppress=normalCheckLevelMaxBranches",
-          ]
-        files: (^crates/kreuzberg-ffi/tests/c/|^tools/benchmark-harness/scripts/.*\.c$)
-
-  - repo: https://github.com/checkmake/checkmake
-    rev: v0.3.2
-    hooks:
-      - id: checkmake
-
-  # Go: formatting and linting (runs per Go module via Taskfile)
-  - repo: local
-    hooks:
-      - id: golangci-lint-full
-        name: golangci-lint (all Go modules)
-        entry: task go:lint
-        language: system
-        files: \.go$
-        pass_filenames: false
+        exclude: ^tools/benchmark-harness/fixtures/
 
   # Shell scripts: formatting and linting
   - repo: https://github.com/scop/pre-commit-shfmt
@@ -166,14 +119,13 @@ repos:
     hooks:
       - id: shellcheck
         args: ['-x']
-        exclude: ^test_apps/docker/tests/
 
   # Markdown: linting
   - repo: https://github.com/rvben/rumdl-pre-commit
     rev: "v0.1.80"
     hooks:
       - id: rumdl-fmt
-        exclude: '^(test_apps/|tools/benchmark-harness/vendored/|docs/index\.md|docs/getting-started/installation\.md)'
+        exclude: '^(tools/benchmark-harness/vendored/|docs/reference/(api-|configuration\.md|errors\.md|types\.md)|templates/readme/)'
 
   # Markdown prose linting: textlint
   - repo: local
@@ -183,6 +135,7 @@ repos:
         entry: npx textlint
         language: node
         files: ^docs/.*\.md$
+        exclude: ^docs/reference/(api-|configuration\.md|errors\.md|types\.md)
         pass_filenames: true
 
   # Spelling: fast Rust-based spell checker
@@ -198,135 +151,16 @@ repos:
     hooks:
       - id: actionlint
 
-  # Java: copy-paste detection and style checking
-  - repo: https://github.com/gherynos/pre-commit-java
-    rev: v0.6.37
+  # Alef: verify bindings are up to date
+  - repo: https://github.com/kreuzberg-dev/alef
+    rev: v0.6.0
     hooks:
-      - id: cpd
-        exclude: ^(\.mvn/wrapper/|e2e/|test_apps/|tools/e2e-generator/e2e/|crates/kreuzberg-wasm/e2e/)
-      - id: checkstyle
-        args:
-          [
-            "-c",
-            "packages/java/checkstyle.xml",
-            "-p",
-            "packages/java/checkstyle.properties",
-          ]
-        exclude: ^(\.mvn/wrapper/|e2e/|test_apps/|tools/e2e-generator/e2e/|crates/kreuzberg-wasm/e2e/)
+      - id: alef-verify
+      - id: alef-sync-versions
 
-  # Version sync: keep vendored headers and package versions in sync
+  # Helm
   - repo: local
     hooks:
-      - id: sync-versions
-        name: Sync versions and vendored C headers
-        entry: uv run --no-project python scripts/sync_versions.py
-        language: system
-        files: (Cargo\.toml|crates/kreuzberg-ffi/kreuzberg\.h)
-        pass_filenames: false
-
-  # Local hooks for unsupported languages (Ruby, Java, C#, PHP, Elixir, R) and custom configurations
-  - repo: local
-    hooks:
-      # Ruby
-      - id: ruby-format
-        name: Ruby formatting (rubocop)
-        entry: task ruby:format
-        language: system
-        files: \.rb$
-        pass_filenames: false
-        require_serial: true
-        stages: [commit]
-
-      - id: ruby-lint
-        name: Ruby linting (rubocop + steep)
-        entry: task ruby:lint
-        language: system
-        files: \.(rb|rbs)$
-        pass_filenames: false
-        require_serial: true
-        stages: [commit]
-
-      # Java (maven verify — cpd/checkstyle handled by pre-commit-java above)
-      - id: java-verify
-        name: maven verify (java)
-        entry: bash -lc 'if [ -f "$HOME/.sdkman/bin/sdkman-init.sh" ]; then source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk env; fi; MAVEN_OPTS="${MAVEN_OPTS:-} --enable-native-access=ALL-UNNAMED -Dsun.misc.unsafe.memory.access=allow" mvn -f packages/java/pom.xml -B -DskipTests -Dgpg.skip=true -Dskip.rust.ffi=true verify'
-        language: system
-        files: ^packages/java/
-        pass_filenames: false
-
-      # C#
-      - id: csharp-format
-        name: C# formatting (dotnet format)
-        entry: task csharp:format
-        language: system
-        files: \.cs$
-        pass_filenames: false
-        require_serial: true
-        stages: [commit]
-
-      - id: csharp-lint
-        name: C# linting (dotnet format)
-        entry: task csharp:lint
-        language: system
-        files: \.cs$
-        pass_filenames: false
-        require_serial: true
-        stages: [commit]
-
-      # PHP
-      - id: php-format
-        name: PHP formatting (php-cs-fixer)
-        entry: task php:format
-        language: system
-        files: \.php$
-        pass_filenames: false
-        require_serial: true
-        stages: [commit]
-
-      - id: php-lint
-        name: PHP linting (phpstan + php-cs-fixer)
-        entry: task php:lint
-        language: system
-        files: \.php$
-        pass_filenames: false
-        require_serial: true
-        stages: [commit]
-
-      # Elixir
-      - id: mix-credo
-        name: mix credo
-        entry: bash -c 'cd packages/elixir && MIX_ENV=dev mix credo --strict'
-        language: system
-        files: ^packages/elixir/
-        pass_filenames: false
-
-      - id: mix-format
-        name: mix format
-        entry: bash -c 'cd packages/elixir && MIX_ENV=dev mix format --check-formatted'
-        language: system
-        files: ^packages/elixir/
-        pass_filenames: false
-
-      # R
-      - id: r-format
-        name: R formatting (styler)
-        entry: task r:format
-        language: system
-        files: \.R$
-        pass_filenames: false
-        require_serial: true
-        stages: [commit]
-
-      - id: r-lint
-        name: R linting (lintr)
-        entry: task r:lint
-        language: system
-        files: \.R$
-        pass_filenames: false
-        require_serial: true
-        stages: [commit]
-
-      # Helm
       - id: helm-lint
         name: Helm lint (strict)
         entry: bash -c 'for chart in charts/*/; do helm lint --strict "$chart" || exit 1; done'

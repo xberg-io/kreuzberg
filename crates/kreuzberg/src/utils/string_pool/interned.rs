@@ -14,7 +14,7 @@ pub struct InternedString(pub(super) Arc<String>);
 
 impl InternedString {
     /// Get the string content.
-    pub fn as_str(&self) -> &str {
+    pub(crate) fn as_str(&self) -> &str {
         self.0.as_str()
     }
 }

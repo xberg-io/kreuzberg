@@ -1,0 +1,11 @@
+{
+	"id": "convert_html_complex",
+	"category": "rendering",
+	"description": "Convert complex HTML to markdown",
+	"tags": ["rendering"],
+	"call": "convert_html_to_markdown",
+	"input": {
+		"html": "<h1>Title</h1><p>Text with <strong>bold</strong> and <a href=\"https://example.com\">link</a>.</p>"
+	},
+	"assertions": [{ "type": "not_error" }, { "type": "min_length", "field": "content", "value": 20 }]
+}

@@ -153,7 +153,7 @@ pub struct SlanetModel {
 
 impl SlanetModel {
     /// Load a SLANeXT ONNX model from a file path.
-    pub fn from_file(
+    pub(crate) fn from_file(
         path: &str,
         accel: Option<&crate::core::config::acceleration::AccelerationConfig>,
     ) -> Result<Self, LayoutError> {
@@ -192,7 +192,7 @@ impl SlanetModel {
     ///
     /// Returns a [`SlanetResult`] with detected cells, grid dimensions,
     /// and structure tokens.
-    pub fn recognize(&mut self, table_img: &RgbImage) -> Result<SlanetResult, LayoutError> {
+    pub(crate) fn recognize(&mut self, table_img: &RgbImage) -> Result<SlanetResult, LayoutError> {
         let orig_w = table_img.width() as f32;
         let orig_h = table_img.height() as f32;
 

@@ -1,7 +1,8 @@
+use serde::{Deserialize, Serialize};
 use std::fmt;
 
 /// Bounding box in original image coordinates (x1, y1) top-left, (x2, y2) bottom-right.
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
 pub struct BBox {
     pub x1: f32,
     pub y1: f32,
@@ -10,28 +11,28 @@ pub struct BBox {
 }
 
 impl BBox {
-    pub fn new(x1: f32, y1: f32, x2: f32, y2: f32) -> Self {
+    pub(crate) fn new(x1: f32, y1: f32, x2: f32, y2: f32) -> Self {
         Self { x1, y1, x2, y2 }
     }
 
-    pub fn width(&self) -> f32 {
+    pub(crate) fn width(&self) -> f32 {
         (self.x2 - self.x1).max(0.0)
     }
 
-    pub fn height(&self) -> f32 {
+    pub(crate) fn height(&self) -> f32 {
         (self.y2 - self.y1).max(0.0)
     }
 
-    pub fn area(&self) -> f32 {
+    pub(crate) fn area(&self) -> f32 {
         self.width() * self.height()
     }
 
-    pub fn center(&self) -> (f32, f32) {
+    pub(crate) fn center(&self) -> (f32, f32) {
         ((self.x1 + self.x2) / 2.0, (self.y1 + self.y2) / 2.0)
     }
 
     /// Area of intersection with another bounding box.
-    pub fn intersection_area(&self, other: &BBox) -> f32 {
+    pub(crate) fn intersection_area(&self, other: &BBox) -> f32 {
         let x1 = self.x1.max(other.x1);
         let y1 = self.y1.max(other.y1);
         let x2 = self.x2.min(other.x2);
@@ -40,7 +41,7 @@ impl BBox {
     }
 
     /// Intersection over Union with another bounding box.
-    pub fn iou(&self, other: &BBox) -> f32 {
+    pub(crate) fn iou(&self, other: &BBox) -> f32 {
         let inter = self.intersection_area(other);
         let union = self.area() + other.area() - inter;
         if union <= 0.0 { 0.0 } else { inter / union }
@@ -48,7 +49,7 @@ impl BBox {
 
     /// Fraction of `other` that is contained within `self`.
     /// Returns 0.0..=1.0 where 1.0 means `other` is fully inside `self`.
-    pub fn containment_of(&self, other: &BBox) -> f32 {
+    pub(crate) fn containment_of(&self, other: &BBox) -> f32 {
         let other_area = other.area();
         if other_area <= 0.0 {
             return 0.0;
@@ -57,7 +58,7 @@ impl BBox {
     }
 
     /// Fraction of page area this bbox covers.
-    pub fn page_coverage(&self, page_width: f32, page_height: f32) -> f32 {
+    pub(crate) fn page_coverage(&self, page_width: f32, page_height: f32) -> f32 {
         let page_area = page_width * page_height;
         if page_area <= 0.0 {
             return 0.0;
@@ -77,7 +78,7 @@ impl fmt::Display for BBox {
 /// All model backends (RT-DETR, YOLO, etc.) map their native class IDs
 /// to this shared set. Models with fewer classes (DocLayNet: 11, PubLayNet: 5)
 /// map to the closest equivalent.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum LayoutClass {
     Caption,
     Footnote,
@@ -100,7 +101,7 @@ pub enum LayoutClass {
 
 impl LayoutClass {
     /// Map from Docling RT-DETR model label ID (0-16) to LayoutClass.
-    pub fn from_docling_id(id: i64) -> Option<Self> {
+    pub(crate) fn from_docling_id(id: i64) -> Option<Self> {
         match id {
             0 => Some(Self::Caption),
             1 => Some(Self::Footnote),
@@ -127,7 +128,7 @@ impl LayoutClass {
     ///
     /// DocLayNet classes: Caption, Footnote, Formula, List-item, Page-footer,
     /// Page-header, Picture, Section-header, Table, Text, Title.
-    pub fn from_doclaynet_id(id: i64) -> Option<Self> {
+    pub(crate) fn from_doclaynet_id(id: i64) -> Option<Self> {
         match id {
             0 => Some(Self::Caption),
             1 => Some(Self::Footnote),
@@ -148,7 +149,7 @@ impl LayoutClass {
     ///
     /// DocStructBench classes: Title, Plain Text, Abandoned Text, Figure,
     /// Figure Caption, Table, Table Caption, Table Footnote, Isolated Formula, Formula Caption.
-    pub fn from_docstructbench_id(id: i64) -> Option<Self> {
+    pub(crate) fn from_docstructbench_id(id: i64) -> Option<Self> {
         match id {
             0 => Some(Self::Title),
             1 => Some(Self::Text),
@@ -167,7 +168,7 @@ impl LayoutClass {
     /// Map from PubLayNet class ID (0-4) to LayoutClass.
     ///
     /// PubLayNet classes: Text, Title, List, Table, Figure.
-    pub fn from_publaynet_id(id: i64) -> Option<Self> {
+    pub(crate) fn from_publaynet_id(id: i64) -> Option<Self> {
         match id {
             0 => Some(Self::Text),
             1 => Some(Self::Title),
@@ -178,7 +179,7 @@ impl LayoutClass {
         }
     }
 
-    pub fn name(&self) -> &'static str {
+    pub(crate) fn name(&self) -> &'static str {
         match self {
             Self::Caption => "caption",
             Self::Footnote => "footnote",
@@ -201,7 +202,7 @@ impl LayoutClass {
     }
 
     /// Whether this class is a "wrapper" type that can contain child elements.
-    pub fn is_wrapper(&self) -> bool {
+    pub(crate) fn is_wrapper(&self) -> bool {
         matches!(
             self,
             Self::Form | Self::KeyValueRegion | Self::Table | Self::DocumentIndex
@@ -216,7 +217,7 @@ impl fmt::Display for LayoutClass {
 }
 
 /// A single layout detection result.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct LayoutDetection {
     pub class: LayoutClass,
     pub confidence: f32,
@@ -225,11 +226,12 @@ pub struct LayoutDetection {
 
 impl LayoutDetection {
     /// Sort detections by confidence in descending order.
-    pub fn sort_by_confidence_desc(detections: &mut [LayoutDetection]) {
+    pub(crate) fn sort_by_confidence_desc(mut detections: Vec<LayoutDetection>) -> Vec<LayoutDetection> {
         detections.sort_by(|a, b| b.confidence.total_cmp(&a.confidence));
+        detections
     }
 
-    pub fn new(class: LayoutClass, confidence: f32, bbox: BBox) -> Self {
+    pub(crate) fn new(class: LayoutClass, confidence: f32, bbox: BBox) -> Self {
         Self {
             class,
             confidence,
@@ -251,7 +253,7 @@ impl fmt::Display for LayoutDetection {
 }
 
 /// Page-level detection result containing all detections and page metadata.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DetectionResult {
     pub page_width: u32,
     pub page_height: u32,
@@ -259,7 +261,7 @@ pub struct DetectionResult {
 }
 
 impl DetectionResult {
-    pub fn new(page_width: u32, page_height: u32, detections: Vec<LayoutDetection>) -> Self {
+    pub(crate) fn new(page_width: u32, page_height: u32, detections: Vec<LayoutDetection>) -> Self {
         Self {
             page_width,
             page_height,

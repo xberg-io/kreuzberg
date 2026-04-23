@@ -147,7 +147,7 @@ pub fn validate_language_code(lang_code: &str) -> Result<(), OcrError> {
     Ok(())
 }
 
-pub fn validate_tesseract_version(version: u32) -> Result<(), OcrError> {
+pub(crate) fn validate_tesseract_version(version: u32) -> Result<(), OcrError> {
     if version < MINIMAL_SUPPORTED_TESSERACT_VERSION {
         return Err(OcrError::UnsupportedVersion(format!(
             "Tesseract version {} is not supported. Minimum required version is {}",

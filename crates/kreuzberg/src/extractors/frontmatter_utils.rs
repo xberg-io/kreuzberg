@@ -28,7 +28,7 @@ use serde_yaml_ng::Value as YamlValue;
 /// assert!(yaml.is_some());
 /// assert!(remaining.contains("# Content"));
 /// ```
-pub fn extract_frontmatter(content: &str) -> (Option<YamlValue>, String) {
+pub(crate) fn extract_frontmatter(content: &str) -> (Option<YamlValue>, String) {
     // Frontmatter must start at the beginning of the document
     if !content.starts_with("---") {
         return (None, content.to_string());
@@ -121,7 +121,7 @@ pub fn extract_frontmatter(content: &str) -> (Option<YamlValue>, String) {
 /// let metadata = extract_metadata_from_yaml(&yaml);
 /// assert_eq!(metadata.title.as_deref(), Some("Test"));
 /// ```
-pub fn extract_metadata_from_yaml(yaml: &YamlValue) -> Metadata {
+pub(crate) fn extract_metadata_from_yaml(yaml: &YamlValue) -> Metadata {
     let mut metadata = Metadata::default();
 
     // Title
@@ -227,7 +227,7 @@ pub fn extract_metadata_from_yaml(yaml: &YamlValue) -> Metadata {
 /// let content = "# My Document\n\nContent here";
 /// assert_eq!(extract_title_from_content(content), Some("My Document".to_string()));
 /// ```
-pub fn extract_title_from_content(content: &str) -> Option<String> {
+pub(crate) fn extract_title_from_content(content: &str) -> Option<String> {
     for line in content.lines() {
         if let Some(heading) = line.strip_prefix("# ") {
             return Some(heading.trim().to_string());

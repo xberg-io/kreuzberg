@@ -10,7 +10,7 @@ use crate::types::Metadata;
 ///
 /// Looks for \title{}, \author{}, and \date{} commands and populates
 /// the provided Metadata structure.
-pub fn extract_metadata_from_line(line: &str, metadata: &mut Metadata) {
+pub(crate) fn extract_metadata_from_line(line: &str, metadata: &mut Metadata) {
     if line.starts_with("\\title{") {
         if let Some(title) = extract_braced(line, "title")
             && metadata.title.is_none()

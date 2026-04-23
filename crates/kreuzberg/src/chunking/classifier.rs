@@ -39,7 +39,7 @@ use crate::types::{ChunkType, HeadingContext};
 /// );
 /// assert_eq!(classify_chunk("Some unrecognized text.", None), ChunkType::Unknown);
 /// ```
-pub fn classify_chunk(content: &str, heading_context: Option<&HeadingContext>) -> ChunkType {
+pub(crate) fn classify_chunk(content: &str, heading_context: Option<&HeadingContext>) -> ChunkType {
     let trimmed = content.trim();
 
     // ── 1. Heading ──────────────────────────────────────────────────────────

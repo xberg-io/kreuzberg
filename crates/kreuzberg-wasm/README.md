@@ -22,7 +22,7 @@
     <img src="https://img.shields.io/maven-central/v/dev.kreuzberg/kreuzberg?label=Java&color=007ec6" alt="Java">
   </a>
   <a href="https://github.com/kreuzberg-dev/kreuzberg/releases">
-    <img src="https://img.shields.io/github/v/tag/kreuzberg-dev/kreuzberg?label=Go&color=007ec6&filter=v4.9.5" alt="Go">
+    <img src="https://img.shields.io/github/v/tag/kreuzberg-dev/kreuzberg?label=Go&color=007ec6&filter=v4.0.0" alt="Go">
   </a>
   <a href="https://www.nuget.org/packages/Kreuzberg/">
     <img src="https://img.shields.io/nuget/v/Kreuzberg?label=C%23&color=007ec6" alt="C#">
@@ -66,9 +66,7 @@
   </a>
 </div>
 
-
 Extract text, tables, images, and metadata from 91+ file formats and 248 programming languages including PDF, Office documents, and images. WebAssembly bindings for browsers, Deno, and Cloudflare Workers with portable deployment and multi-threading support.
-
 
 ## Installation
 
@@ -80,7 +78,6 @@ Install via one of the supported package managers:
 
 
 **npm:**
-
 ```bash
 npm install @kreuzberg/wasm
 ```
@@ -89,7 +86,6 @@ npm install @kreuzberg/wasm
 
 
 **pnpm:**
-
 ```bash
 pnpm add @kreuzberg/wasm
 ```
@@ -98,7 +94,6 @@ pnpm add @kreuzberg/wasm
 
 
 **yarn:**
-
 ```bash
 yarn add @kreuzberg/wasm
 ```
@@ -111,7 +106,6 @@ yarn add @kreuzberg/wasm
 
 - Modern browser with WebAssembly support, or Deno 1.0+, or Cloudflare Workers
 - Optional: [Tesseract WASM](https://github.com/naptha/tesseract.js) for OCR functionality
-
 
 
 ## Quick Start
@@ -139,7 +133,6 @@ async function main() {
 
 main().catch(console.error);
 ```
-
 
 ### Common Use Cases
 
@@ -179,7 +172,6 @@ async function extractWithOcr() {
 
 extractWithOcr().catch(console.error);
 ```
-
 
 
 
@@ -232,7 +224,6 @@ async function _processBatch(documents: DocumentJob[], concurrency: number = 3) 
 
 
 
-
 #### Async Processing
 
 For non-blocking document processing:
@@ -263,7 +254,6 @@ extractDocuments(fileBytes, mimes)
 	.then((results) => console.log(results))
 	.catch(console.error);
 ```
-
 
 
 
@@ -381,6 +371,7 @@ Powered by [tree-sitter-language-pack](https://github.com/kreuzberg-dev/tree-sit
 Kreuzberg supports multiple OCR backends for extracting text from scanned documents and images:
 
 
+
 - **Tesseract-Wasm**
 
 
@@ -464,6 +455,7 @@ For detailed plugin documentation, visit [Plugin System Guide](https://kreuzberg
 
 
 
+
 ## Batch Processing
 
 Process multiple documents efficiently:
@@ -503,7 +495,6 @@ async function _processBatch(documents: DocumentJob[], concurrency: number = 3) 
 	return results;
 }
 ```
-
 
 
 

@@ -2,21 +2,30 @@
 	"id": "pdf_large_ciml",
 	"category": "pdf",
 	"description": "Large machine learning textbook PDF to stress extraction length.",
-	"document": {
+	"input": {
 		"path": "pdf/a_course_in_machine_learning_ciml_v0_9_all.pdf",
 		"media_type": "application/pdf"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": "application/pdf",
-		"min_content_length": 10000,
-		"content_contains_any": ["machine learning", "algorithm", "training"],
-		"metadata": {
-			"format_type": {
-				"eq": "pdf"
-			}
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "application/pdf"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 10000
+		},
+		{
+			"type": "contains_any",
+			"field": "content",
+			"values": ["machine learning", "algorithm", "training"]
+		},
+		{
+			"type": "equals",
+			"field": "metadata.format_type",
+			"value": "pdf"
 		}
-	}
+	]
 }

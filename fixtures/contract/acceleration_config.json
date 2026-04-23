@@ -1,15 +1,12 @@
 {
 	"id": "config_acceleration_cpu_provider",
 	"category": "contract",
-	"tags": ["contract", "config", "acceleration"],
 	"description": "Tests explicit CPU acceleration provider configuration",
-	"document": {
+	"tags": ["contract", "config", "acceleration"],
+	"call": "extract_file_sync",
+	"input": {
 		"path": "pdf/fake_memo.pdf",
-		"media_type": "application/pdf"
-	},
-	"extraction": {
-		"method": "sync",
-		"input_type": "file",
+		"media_type": "application/pdf",
 		"config": {
 			"acceleration": {
 				"provider": "cpu",
@@ -17,9 +14,21 @@
 			}
 		}
 	},
-	"assertions": {
-		"expected_mime": "application/pdf",
-		"min_content_length": 50,
-		"content_contains_any": ["May 5, 2023", "To Whom it May Concern"]
-	}
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "application/pdf"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 50
+		},
+		{
+			"type": "contains_any",
+			"field": "content",
+			"values": ["May 5, 2023", "To Whom it May Concern"]
+		}
+	]
 }

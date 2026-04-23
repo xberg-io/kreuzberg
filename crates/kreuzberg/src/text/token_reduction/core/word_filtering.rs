@@ -9,14 +9,14 @@ pub struct WordFilter {
 }
 
 impl WordFilter {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self {
             cjk_tokenizer: CjkTokenizer::new(),
         }
     }
 
     /// Removes additional common words based on frequency and characteristics.
-    pub fn remove_additional_common_words(&self, text: &str) -> String {
+    pub(crate) fn remove_additional_common_words(&self, text: &str) -> String {
         let words = self.universal_tokenize(text);
 
         if words.len() < 4 {
@@ -108,7 +108,7 @@ impl WordFilter {
     }
 
     /// Smart joins tokens based on language type (CJK vs. other).
-    pub fn smart_join(&self, tokens: &[String], has_cjk_content: bool) -> String {
+    pub(crate) fn smart_join(&self, tokens: &[String], has_cjk_content: bool) -> String {
         if has_cjk_content {
             tokens.join("")
         } else {
@@ -117,7 +117,7 @@ impl WordFilter {
     }
 
     /// Universal tokenizer that handles both CJK and non-CJK text.
-    pub fn universal_tokenize(&self, text: &str) -> Vec<String> {
+    pub(crate) fn universal_tokenize(&self, text: &str) -> Vec<String> {
         self.cjk_tokenizer.tokenize_mixed_text(text)
     }
 }

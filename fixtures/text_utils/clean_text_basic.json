@@ -1,0 +1,20 @@
+{
+	"id": "clean_text_basic",
+	"category": "text_utils",
+	"description": "Remove null characters from text",
+	"tags": ["text_utils", "cleaning"],
+	"call": "clean_extracted_text",
+	"input": {
+		"text": "Hello World\u0000with\u0000nulls"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "contains",
+			"field": "result",
+			"value": "Hello"
+		}
+	]
+}

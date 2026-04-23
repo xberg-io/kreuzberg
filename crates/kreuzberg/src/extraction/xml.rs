@@ -41,11 +41,11 @@ const SVG_TEXT_ELEMENTS: &[&str] = &["text", "tspan", "title", "desc", "textPath
 /// In SVG mode, only text from SVG text-bearing elements (`<text>`, `<tspan>`,
 /// `<title>`, `<desc>`, `<textPath>`) is extracted, without element name prefixes.
 /// Attribute values are also omitted in SVG mode.
-pub fn parse_xml_svg(xml_bytes: &[u8], preserve_whitespace: bool) -> Result<XmlExtractionResult> {
+pub(crate) fn parse_xml_svg(xml_bytes: &[u8], preserve_whitespace: bool) -> Result<XmlExtractionResult> {
     parse_xml_inner(xml_bytes, preserve_whitespace, true)
 }
 
-pub fn parse_xml(xml_bytes: &[u8], preserve_whitespace: bool) -> Result<XmlExtractionResult> {
+pub(crate) fn parse_xml(xml_bytes: &[u8], preserve_whitespace: bool) -> Result<XmlExtractionResult> {
     parse_xml_inner(xml_bytes, preserve_whitespace, false)
 }
 

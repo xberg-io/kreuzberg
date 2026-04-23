@@ -1,0 +1,10 @@
+{
+	"id": "reduce_tokens_off",
+	"category": "token_reduction",
+	"description": "Reduce tokens off",
+	"tags": ["token_reduction"],
+	"call": "reduce_tokens",
+	"input": { "text": "Passthrough text.", "level": "off" },
+	"assertions": [{ "type": "not_error" }, { "type": "contains", "field": "result", "value": "Passthrough text." }],
+	"skip": { "reason": "Requires features: quality" }
+}

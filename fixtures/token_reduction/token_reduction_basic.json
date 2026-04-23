@@ -2,22 +2,34 @@
 	"id": "token_reduction_basic",
 	"description": "Tests basic token reduction on PDF document",
 	"tags": ["token_reduction"],
-	"document": {
-		"path": "pdf/fake_memo.pdf"
-	},
-	"extraction": {
-		"method": "sync",
-		"input_type": "file",
+	"call": "extract_file_sync",
+	"input": {
+		"path": "pdf/fake_memo.pdf",
 		"config": {
 			"token_reduction": {
 				"mode": "moderate"
 			}
 		}
 	},
-	"assertions": {
-		"expected_mime": "application/pdf",
-		"min_content_length": 5,
-		"max_content_length": 200,
-		"content_not_empty": true
-	}
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "application/pdf"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 5
+		},
+		{
+			"type": "max_length",
+			"field": "content",
+			"value": 200
+		},
+		{
+			"type": "not_empty",
+			"field": "content"
+		}
+	]
 }

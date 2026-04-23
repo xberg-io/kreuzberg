@@ -2,15 +2,20 @@
 	"id": "office_numbers_basic",
 	"category": "office",
 	"description": "Numbers document extraction baseline.",
-	"document": {
+	"input": {
 		"path": "iwork/test.numbers",
 		"media_type": "application/x-iwork-numbers-sffnumbers"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": "application/x-iwork-numbers-sffnumbers",
-		"min_content_length": 10
-	}
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "application/x-iwork-numbers-sffnumbers"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 10
+		}
+	]
 }

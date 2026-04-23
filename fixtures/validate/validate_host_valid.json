@@ -1,0 +1,15 @@
+{
+	"id": "validate_host_valid",
+	"category": "validation",
+	"description": "Accept valid host address",
+	"tags": ["validation", "host"],
+	"call": "validate_host",
+	"input": {
+		"host": "127.0.0.1"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	]
+}

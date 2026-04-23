@@ -1,0 +1,27 @@
+{
+	"id": "async_extract_file_with_config",
+	"category": "async",
+	"description": "Async extract_file call with output format and chunking config",
+	"tags": ["async", "api", "extract_file", "config"],
+	"input": {
+		"path": "pdf/fake_memo.pdf",
+		"mime_type": "application/pdf",
+		"config": {
+			"output_format": "markdown",
+			"chunking": {
+				"max_characters": 500,
+				"max_overlap": 50
+			}
+		}
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 10
+		}
+	]
+}

@@ -122,6 +122,11 @@ lint.per-file-ignores."**/tests/**/*.*" = [
   "SIM117",
   "SLF001",
 ]
+lint.per-file-ignores."e2e/python/**/*.py" = [
+  "A001",
+  "B017",
+  "PT011",
+]
 lint.per-file-ignores."e2e/python/conftest.py" = [
   "ANN001",
   "ANN201",

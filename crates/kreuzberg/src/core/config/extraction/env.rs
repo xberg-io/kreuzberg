@@ -8,7 +8,7 @@ use crate::{KreuzbergError, Result};
 use super::super::ocr::OcrConfig;
 use super::super::processing::ChunkingConfig;
 use super::core::ExtractionConfig;
-use super::types::TokenReductionConfig;
+use super::types::TokenReductionOptions;
 
 impl ExtractionConfig {
     /// Apply environment variable overrides to configuration.
@@ -56,7 +56,7 @@ impl ExtractionConfig {
     /// - An environment variable contains an invalid value
     /// - A number cannot be parsed as the expected type
     /// - A boolean is not "true" or "false"
-    pub fn apply_env_overrides(&mut self) -> Result<()> {
+    pub(crate) fn apply_env_overrides(&mut self) -> Result<()> {
         use crate::core::config_validation::{
             validate_chunking_params, validate_language_code, validate_ocr_backend, validate_token_reduction_level,
         };
@@ -154,7 +154,7 @@ impl ExtractionConfig {
         if let Ok(mode) = std::env::var("KREUZBERG_TOKEN_REDUCTION_MODE") {
             validate_token_reduction_level(&mode)?;
             if self.token_reduction.is_none() {
-                self.token_reduction = Some(TokenReductionConfig {
+                self.token_reduction = Some(TokenReductionOptions {
                     mode: "off".to_string(),
                     preserve_important_words: true,
                 });

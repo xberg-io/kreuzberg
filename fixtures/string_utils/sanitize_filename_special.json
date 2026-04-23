@@ -1,0 +1,20 @@
+{
+	"id": "sanitize_filename_special",
+	"category": "string_utils",
+	"description": "Sanitize special characters in filename",
+	"tags": ["string_utils", "sanitization"],
+	"call": "sanitize_filename",
+	"input": {
+		"filename": "file<>name|test.pdf"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "min_length",
+			"field": "result",
+			"value": 1
+		}
+	]
+}

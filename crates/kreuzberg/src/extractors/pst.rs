@@ -24,7 +24,7 @@ impl Default for PstExtractor {
 }
 
 impl PstExtractor {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self
     }
 }

@@ -1,0 +1,15 @@
+{
+	"id": "validate_format_invalid",
+	"category": "validation",
+	"description": "Reject invalid output format",
+	"tags": ["validation", "output_format", "error"],
+	"call": "validate_output_format_fn",
+	"input": {
+		"format": "nonexistent"
+	},
+	"assertions": [
+		{
+			"type": "error"
+		}
+	]
+}

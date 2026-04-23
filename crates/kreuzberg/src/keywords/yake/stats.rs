@@ -11,7 +11,7 @@ pub(crate) struct OnlineStats {
 
 impl OnlineStats {
     #[inline]
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self {
             n: 0,
             mean: 0.0,
@@ -20,7 +20,7 @@ impl OnlineStats {
     }
 
     #[inline]
-    pub fn add(&mut self, x: f64) {
+    pub(crate) fn add(&mut self, x: f64) {
         self.n += 1;
         let delta = x - self.mean;
         self.mean += delta / self.n as f64;
@@ -29,12 +29,12 @@ impl OnlineStats {
     }
 
     #[inline]
-    pub fn mean(&self) -> f64 {
+    pub(crate) fn mean(&self) -> f64 {
         self.mean
     }
 
     #[inline]
-    pub fn stddev(&self) -> f64 {
+    pub(crate) fn stddev(&self) -> f64 {
         self.variance().sqrt()
     }
 

@@ -6,7 +6,7 @@ use crate::table_core::HocrWord;
 ///
 /// This parses Tesseract's TSV format (level, page_num, block_num, ...) and
 /// converts it to the HocrWord format used for table reconstruction.
-pub fn extract_words_from_tsv(tsv_data: &str, min_confidence: f64) -> Result<Vec<HocrWord>, OcrError> {
+pub(crate) fn extract_words_from_tsv(tsv_data: &str, min_confidence: f64) -> Result<Vec<HocrWord>, OcrError> {
     let mut words = Vec::new();
 
     for (line_num, line) in tsv_data.lines().enumerate() {

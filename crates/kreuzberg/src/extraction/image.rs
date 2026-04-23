@@ -336,7 +336,7 @@ pub(crate) fn decode_jbig2_to_gray(bytes: &[u8]) -> Result<image::GrayImage> {
 /// / `hayro-jbig2` for decoding, falling back to the standard `image` crate
 /// for all other formats.
 #[cfg(any(feature = "ocr", feature = "ocr-wasm"))]
-pub fn load_image_for_ocr(image_bytes: &[u8]) -> Result<image::DynamicImage> {
+pub(crate) fn load_image_for_ocr(image_bytes: &[u8]) -> Result<image::DynamicImage> {
     if is_jp2(image_bytes) || is_j2k(image_bytes) {
         decode_jp2_to_rgb(image_bytes).map(image::DynamicImage::ImageRgb8)
     } else if is_jbig2(image_bytes) {
@@ -352,7 +352,7 @@ pub fn load_image_for_ocr(image_bytes: &[u8]) -> Result<image::DynamicImage> {
 /// Extracts dimensions, format, and EXIF data from the image.
 /// Attempts to decode using the standard image crate first, then falls back to
 /// pure Rust JP2 box parsing for JPEG 2000 formats if the standard decoder fails.
-pub fn extract_image_metadata(bytes: &[u8]) -> Result<ImageMetadata> {
+pub(crate) fn extract_image_metadata(bytes: &[u8]) -> Result<ImageMetadata> {
     // Check for JP2/J2K before attempting standard format detection
     if is_jp2(bytes) || (bytes.len() >= 2 && bytes[0] == 0xFF && bytes[1] == 0x4F) {
         // Try the fallback JP2 parser first for JPEG 2000 files
@@ -494,7 +494,7 @@ fn detect_tiff_frame_count(bytes: &[u8]) -> Result<usize> {
 /// # Returns
 /// ImageOcrResult with content and optional boundaries for pagination
 #[cfg(feature = "ocr")]
-pub fn extract_text_from_image_with_ocr(
+pub(crate) fn extract_text_from_image_with_ocr(
     bytes: &[u8],
     mime_type: &str,
     ocr_result: String,

@@ -164,7 +164,7 @@ pub struct StyleCatalog {
 ///
 /// Uses `roxmltree` for tree-based XML parsing, consistent with the
 /// office metadata parsing approach used elsewhere in the codebase.
-pub fn parse_styles_xml(xml: &str) -> Result<StyleCatalog> {
+pub(crate) fn parse_styles_xml(xml: &str) -> Result<StyleCatalog> {
     let doc = roxmltree::Document::parse(xml)
         .map_err(|e| KreuzbergError::parsing(format!("Failed to parse styles.xml: {}", e)))?;
 
@@ -444,7 +444,7 @@ impl StyleCatalog {
     /// `Some(false)` explicitly disables the property.
     ///
     /// The chain depth is limited to 20 to prevent infinite loops from circular references.
-    pub fn resolve_style(&self, style_id: &str) -> ResolvedStyle {
+    pub(crate) fn resolve_style(&self, style_id: &str) -> ResolvedStyle {
         // Start with document defaults
         let mut resolved = ResolvedStyle {
             paragraph_properties: self.default_paragraph_properties.clone(),

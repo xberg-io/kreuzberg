@@ -2,20 +2,18 @@
 	"id": "office_hwp_styled",
 	"category": "office",
 	"description": "Hangul Word Processor (.hwp) styled document extraction.",
-	"document": {
+	"input": {
 		"path": "hwp/styled_document.hwp",
 		"media_type": "application/x-hwp"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": "application/x-hwp"
-	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "application/x-hwp"
+		}
+	],
 	"skip": {
-		"if_document_missing": true,
-		"requires_feature": ["hwp"],
-		"skip_on_platform": ["aarch64-unknown-linux-gnu"],
-		"notes": "HWP styled doc yields no extractable plain text with current parser. Extraction returns empty content on ARM Linux."
+		"reason": "Requires features: hwp; Skip on platforms: aarch64-unknown-linux-gnu; Skip if document missing; HWP styled doc yields no extractable plain text with current parser. Extraction returns empty content on ARM Linux."
 	}
 }

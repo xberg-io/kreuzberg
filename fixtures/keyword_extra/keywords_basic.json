@@ -1,0 +1,18 @@
+{
+	"id": "keywords_basic",
+	"category": "keyword_extra",
+	"description": "Basic keyword extraction from longer text",
+	"tags": ["keywords", "extraction"],
+	"call": "extract_keywords",
+	"input": {
+		"text": "Machine learning and artificial intelligence are transforming how we process natural language. Deep learning models can extract meaningful keywords from text documents."
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	],
+	"skip": {
+		"reason": "Requires features: keywords-rake"
+	}
+}

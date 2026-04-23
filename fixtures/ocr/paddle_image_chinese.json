@@ -2,12 +2,9 @@
 	"id": "ocr_paddle_image_chinese",
 	"category": "ocr",
 	"description": "Chinese OCR with PaddleOCR - its core strength.",
-	"document": {
+	"input": {
 		"path": "images/chi_sim_image.jpeg",
 		"media_type": "image/jpeg",
-		"requires_external_tool": ["paddle-ocr", "onnxruntime"]
-	},
-	"extraction": {
 		"config": {
 			"ocr": {
 				"backend": "paddle-ocr",
@@ -16,12 +13,19 @@
 			"force_ocr": true
 		}
 	},
-	"assertions": {
-		"expected_mime": "image/jpeg",
-		"min_content_length": 1
-	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "image/jpeg"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 1
+		}
+	],
 	"skip": {
-		"requires_feature": ["paddle-ocr"],
-		"notes": "Requires PaddleOCR with Chinese models"
+		"reason": "Requires features: paddle-ocr; Requires PaddleOCR with Chinese models"
 	}
 }

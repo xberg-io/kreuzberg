@@ -2,15 +2,20 @@
 	"id": "pdf_tables_large",
 	"category": "pdf",
 	"description": "Large PDF with extensive tables to stress table extraction.",
-	"document": {
+	"input": {
 		"path": "pdf/large.pdf",
 		"media_type": "application/pdf"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": "application/pdf",
-		"min_content_length": 500
-	}
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "application/pdf"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 500
+		}
+	]
 }

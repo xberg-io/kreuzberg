@@ -22,7 +22,7 @@ use crate::telemetry::conventions;
 pub struct MetricsLayer;
 
 impl MetricsLayer {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self
     }
 }

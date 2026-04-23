@@ -2,15 +2,20 @@
 	"id": "office_fictionbook_basic",
 	"category": "office",
 	"description": "FictionBook (.fb2) text extraction.",
-	"document": {
+	"input": {
 		"path": "fictionbook/basic.fb2",
 		"media_type": "application/x-fictionbook+xml"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": ["application/x-fictionbook+xml", "application/x-fictionbook"],
-		"min_content_length": 10
-	}
+	"assertions": [
+		{
+			"type": "contains_any",
+			"field": "mime_type",
+			"values": ["application/x-fictionbook+xml", "application/x-fictionbook"]
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 10
+		}
+	]
 }

@@ -1,0 +1,9 @@
+{
+	"id": "sanitize_path_traversal",
+	"category": "string_utils",
+	"description": "Sanitize path traversal",
+	"tags": ["sanitization", "security"],
+	"call": "sanitize_path",
+	"input": { "path": "../../../etc/passwd" },
+	"assertions": [{ "type": "not_error" }]
+}

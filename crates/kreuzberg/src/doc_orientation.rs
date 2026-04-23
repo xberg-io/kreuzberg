@@ -36,7 +36,7 @@ const ORIENTATION_LABELS: [u32; 4] = [0, 90, 180, 270];
 pub const MIN_CONFIDENCE: f32 = 0.35;
 
 /// Document orientation detection result.
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, serde::Serialize, serde::Deserialize)]
 pub struct OrientationResult {
     /// Detected orientation in degrees (0, 90, 180, or 270).
     pub degrees: u32,
@@ -57,7 +57,7 @@ pub struct DocOrientationDetector {
 impl DocOrientationDetector {
     /// Creates a new detector with the given cache directory.
     /// The model is loaded lazily on first use.
-    pub fn new(cache_dir: PathBuf) -> Self {
+    pub(crate) fn new(cache_dir: PathBuf) -> Self {
         Self {
             session: once_cell::sync::OnceCell::new(),
             cache_dir,
@@ -66,7 +66,7 @@ impl DocOrientationDetector {
     }
 
     /// Creates a new detector with the given cache directory and acceleration config.
-    pub fn with_acceleration(
+    pub(crate) fn with_acceleration(
         cache_dir: PathBuf,
         accel: Option<crate::core::config::acceleration::AccelerationConfig>,
     ) -> Self {
@@ -81,7 +81,7 @@ impl DocOrientationDetector {
     ///
     /// Returns the detected orientation (0°, 90°, 180°, 270°) and confidence.
     /// Thread-safe: can be called concurrently from multiple pages.
-    pub fn detect(&self, image: &RgbImage) -> Result<OrientationResult> {
+    pub(crate) fn detect(&self, image: &RgbImage) -> Result<OrientationResult> {
         let session = self.get_or_init_session()?;
 
         // Preprocess: resize short side to 256, center crop 224×224
@@ -220,7 +220,7 @@ impl DocOrientationDetector {
 }
 
 /// Resolve the cache directory for the auto-rotate model.
-pub fn resolve_cache_dir() -> PathBuf {
+pub(crate) fn resolve_cache_dir() -> PathBuf {
     crate::cache_dir::resolve_cache_dir("auto-rotate")
 }
 
@@ -228,7 +228,7 @@ pub fn resolve_cache_dir() -> PathBuf {
 ///
 /// Returns `Ok(Some(rotated_bytes))` if rotation was applied,
 /// `Ok(None)` if no rotation needed (0° or low confidence).
-pub fn detect_and_rotate(detector: &DocOrientationDetector, image_bytes: &[u8]) -> Result<Option<Vec<u8>>> {
+pub(crate) fn detect_and_rotate(detector: &DocOrientationDetector, image_bytes: &[u8]) -> Result<Option<Vec<u8>>> {
     let img = image::load_from_memory(image_bytes)
         .map_err(|e| KreuzbergError::Ocr {
             message: format!("Failed to load image for orientation detection: {e}"),

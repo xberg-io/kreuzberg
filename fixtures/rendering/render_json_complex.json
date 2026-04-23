@@ -1,0 +1,9 @@
+{
+	"id": "render_json_complex",
+	"category": "rendering",
+	"description": "Render HTML to JSON",
+	"tags": ["rendering"],
+	"call": "render_json",
+	"input": { "doc": "<h1>Title</h1><p>Text.</p>" },
+	"assertions": [{ "type": "not_error" }, { "type": "min_length", "field": "content", "value": 5 }]
+}

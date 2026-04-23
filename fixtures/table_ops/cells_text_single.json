@@ -1,0 +1,15 @@
+{
+	"id": "cells_text_single",
+	"category": "table_operations",
+	"description": "Convert simple 2x2 cell array to text",
+	"tags": ["table", "text", "cells", "simple"],
+	"call": "cells_to_text",
+	"input": {
+		"cells": "[[\"A\",\"B\"],[\"1\",\"2\"]]"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	]
+}

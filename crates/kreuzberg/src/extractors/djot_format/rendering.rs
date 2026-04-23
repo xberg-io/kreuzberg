@@ -6,7 +6,8 @@ use super::attributes::render_attributes;
 use crate::types::{BlockType, FormattedBlock, InlineElement, InlineType};
 
 /// Render a single block to djot markup.
-pub fn render_block_to_djot(output: &mut String, block: &FormattedBlock, indent_level: usize) {
+pub(crate) fn render_block_to_djot(block: &FormattedBlock, indent_level: usize) -> String {
+    let mut output = String::new();
     let indent = "  ".repeat(indent_level);
 
     // Render attributes if present
@@ -19,7 +20,7 @@ pub fn render_block_to_djot(output: &mut String, block: &FormattedBlock, indent_
             output.push_str(&indent);
             output.push_str(&hashes);
             output.push(' ');
-            render_inline_content(output, &block.inline_content);
+            output.push_str(&render_inline_content(&block.inline_content));
             if !attrs_str.is_empty() {
                 output.push(' ');
                 output.push_str(&attrs_str);
@@ -29,7 +30,7 @@ pub fn render_block_to_djot(output: &mut String, block: &FormattedBlock, indent_
         }
         BlockType::Paragraph => {
             output.push_str(&indent);
-            render_inline_content(output, &block.inline_content);
+            output.push_str(&render_inline_content(&block.inline_content));
             if !attrs_str.is_empty() {
                 output.push(' ');
                 output.push_str(&attrs_str);
@@ -76,15 +77,11 @@ pub fn render_block_to_djot(output: &mut String, block: &FormattedBlock, indent_
             // Render inline content as quoted
             output.push_str(&indent);
             output.push_str("> ");
-            render_inline_content(output, &block.inline_content);
+            output.push_str(&render_inline_content(&block.inline_content));
             output.push('\n');
             // Render children (nested content)
             for child in &block.children {
-                let child_output = {
-                    let mut s = String::new();
-                    render_block_to_djot(&mut s, child, 0);
-                    s
-                };
+                let child_output = render_block_to_djot(child, 0);
                 for line in child_output.lines() {
                     output.push_str(&indent);
                     output.push_str("> ");
@@ -101,7 +98,7 @@ pub fn render_block_to_djot(output: &mut String, block: &FormattedBlock, indent_
                 output.push('\n');
             }
             for child in &block.children {
-                render_list_item(output, child, &indent, "- ");
+                output.push_str(&render_list_item(child, &indent, "- "));
             }
             output.push('\n');
         }
@@ -113,7 +110,7 @@ pub fn render_block_to_djot(output: &mut String, block: &FormattedBlock, indent_
             }
             for (i, child) in block.children.iter().enumerate() {
                 let marker = format!("{}. ", i + 1);
-                render_list_item(output, child, &indent, &marker);
+                output.push_str(&render_list_item(child, &indent, &marker));
             }
             output.push('\n');
         }
@@ -125,17 +122,17 @@ pub fn render_block_to_djot(output: &mut String, block: &FormattedBlock, indent_
             }
             for child in &block.children {
                 // Task list items use [ ] or [x] syntax
-                render_list_item(output, child, &indent, "- [ ] ");
+                output.push_str(&render_list_item(child, &indent, "- [ ] "));
             }
             output.push('\n');
         }
         BlockType::ListItem => {
             // List items are typically rendered by their parent list
             output.push_str(&indent);
-            render_inline_content(output, &block.inline_content);
+            output.push_str(&render_inline_content(&block.inline_content));
             output.push('\n');
             for child in &block.children {
-                render_block_to_djot(output, child, indent_level + 1);
+                output.push_str(&render_block_to_djot(child, indent_level + 1));
             }
         }
         BlockType::DefinitionList => {
@@ -145,19 +142,19 @@ pub fn render_block_to_djot(output: &mut String, block: &FormattedBlock, indent_
                 output.push('\n');
             }
             for child in &block.children {
-                render_block_to_djot(output, child, indent_level);
+                output.push_str(&render_block_to_djot(child, indent_level));
             }
             output.push('\n');
         }
         BlockType::DefinitionTerm => {
             output.push_str(&indent);
-            render_inline_content(output, &block.inline_content);
+            output.push_str(&render_inline_content(&block.inline_content));
             output.push('\n');
         }
         BlockType::DefinitionDescription => {
             output.push_str(&indent);
             output.push_str(": ");
-            render_inline_content(output, &block.inline_content);
+            output.push_str(&render_inline_content(&block.inline_content));
             output.push('\n');
         }
         BlockType::Div => {
@@ -169,7 +166,7 @@ pub fn render_block_to_djot(output: &mut String, block: &FormattedBlock, indent_
             }
             output.push('\n');
             for child in &block.children {
-                render_block_to_djot(output, child, indent_level);
+                output.push_str(&render_block_to_djot(child, indent_level));
             }
             output.push_str(&indent);
             output.push_str(":::\n\n");
@@ -182,7 +179,7 @@ pub fn render_block_to_djot(output: &mut String, block: &FormattedBlock, indent_
                 output.push('\n');
             }
             for child in &block.children {
-                render_block_to_djot(output, child, indent_level);
+                output.push_str(&render_block_to_djot(child, indent_level));
             }
         }
         BlockType::ThematicBreak => {
@@ -218,21 +215,25 @@ pub fn render_block_to_djot(output: &mut String, block: &FormattedBlock, indent_
             output.push_str("$$\n\n");
         }
     }
+    output
 }
 
 /// Render a list item with the given marker.
-pub fn render_list_item(output: &mut String, item: &FormattedBlock, indent: &str, marker: &str) {
+pub(crate) fn render_list_item(item: &FormattedBlock, indent: &str, marker: &str) -> String {
+    let mut output = String::new();
     output.push_str(indent);
     output.push_str(marker);
-    render_inline_content(output, &item.inline_content);
+    output.push_str(&render_inline_content(&item.inline_content));
     output.push('\n');
     for child in &item.children {
-        render_block_to_djot(output, child, 1);
+        output.push_str(&render_block_to_djot(child, 1));
     }
+    output
 }
 
 /// Render inline content to djot markup.
-pub fn render_inline_content(output: &mut String, elements: &[InlineElement]) {
+pub(crate) fn render_inline_content(elements: &[InlineElement]) -> String {
+    let mut output = String::new();
     for elem in elements {
         let attrs_str = elem.attributes.as_ref().map(render_attributes).unwrap_or_default();
 
@@ -375,6 +376,7 @@ pub fn render_inline_content(output: &mut String, elements: &[InlineElement]) {
             }
         }
     }
+    output
 }
 
 #[cfg(test)]
@@ -410,7 +412,7 @@ mod tests {
 
         let mut output = String::new();
         for block in &content.blocks {
-            render_block_to_djot(&mut output, block, 0);
+            output.push_str(&render_block_to_djot(block, 0));
         }
 
         assert!(output.contains("# Test Heading"));
@@ -444,7 +446,7 @@ mod tests {
 
         let mut output = String::new();
         for block in &content.blocks {
-            render_block_to_djot(&mut output, block, 0);
+            output.push_str(&render_block_to_djot(block, 0));
         }
 
         assert!(output.contains("Test paragraph"));

@@ -9,7 +9,7 @@ pub struct OcrCache {
 }
 
 impl OcrCache {
-    pub fn new(cache_dir: Option<PathBuf>) -> Result<Self, OcrError> {
+    pub(crate) fn new(cache_dir: Option<PathBuf>) -> Result<Self, OcrError> {
         let cache_dir = cache_dir.unwrap_or_else(|| crate::cache_dir::resolve_cache_dir("ocr"));
 
         fs::create_dir_all(&cache_dir)
@@ -22,7 +22,7 @@ impl OcrCache {
         self.cache_dir.join(format!("{}.msgpack", cache_key))
     }
 
-    pub fn get_cached_result(
+    pub(crate) fn get_cached_result(
         &self,
         image_hash: &str,
         backend: &str,
@@ -48,7 +48,7 @@ impl OcrCache {
         }
     }
 
-    pub fn set_cached_result(
+    pub(crate) fn set_cached_result(
         &self,
         image_hash: &str,
         backend: &str,
@@ -90,7 +90,7 @@ impl OcrCache {
         compute_hash(&cache_string)
     }
 
-    pub fn clear(&self) -> Result<(), OcrError> {
+    pub(crate) fn clear(&self) -> Result<(), OcrError> {
         if !self.cache_dir.exists() {
             return Ok(());
         }
@@ -109,7 +109,7 @@ impl OcrCache {
         Ok(())
     }
 
-    pub fn get_stats(&self) -> Result<OcrCacheStats, OcrError> {
+    pub(crate) fn get_stats(&self) -> Result<OcrCacheStats, OcrError> {
         if !self.cache_dir.exists() {
             return Ok(OcrCacheStats::default());
         }

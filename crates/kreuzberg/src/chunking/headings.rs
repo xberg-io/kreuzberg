@@ -12,7 +12,7 @@ type HeadingEntry = (usize, u8, String);
 /// Build a heading map from markdown text.
 ///
 /// Returns a sorted Vec of `(byte_offset, level, heading_text)` for each heading found.
-pub fn build_heading_map(markdown: &str) -> Vec<HeadingEntry> {
+pub(crate) fn build_heading_map(markdown: &str) -> Vec<HeadingEntry> {
     let parser = Parser::new_ext(markdown, Options::all());
     let mut headings = Vec::new();
     let mut current_heading: Option<(usize, u8)> = None;
@@ -45,7 +45,7 @@ pub fn build_heading_map(markdown: &str) -> Vec<HeadingEntry> {
 ///
 /// Walks the heading map to find all headings that precede `byte_start`,
 /// building a proper hierarchy stack (h1 > h2 > h3, etc.).
-pub fn resolve_heading_context(byte_start: usize, heading_map: &[HeadingEntry]) -> Option<HeadingContext> {
+pub(crate) fn resolve_heading_context(byte_start: usize, heading_map: &[HeadingEntry]) -> Option<HeadingContext> {
     let mut stack: Vec<HeadingLevel> = Vec::new();
 
     for &(offset, level, ref text) in heading_map {

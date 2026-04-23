@@ -22,7 +22,7 @@
     <img src="https://img.shields.io/maven-central/v/dev.kreuzberg/kreuzberg?label=Java&color=007ec6" alt="Java">
   </a>
   <a href="https://github.com/kreuzberg-dev/kreuzberg/releases">
-    <img src="https://img.shields.io/github/v/tag/kreuzberg-dev/kreuzberg?label=Go&color=007ec6&filter=v4.9.5" alt="Go">
+    <img src="https://img.shields.io/github/v/tag/kreuzberg-dev/kreuzberg?label=Go&color=007ec6&filter=v4.0.0" alt="Go">
   </a>
   <a href="https://www.nuget.org/packages/Kreuzberg/">
     <img src="https://img.shields.io/nuget/v/Kreuzberg?label=C%23&color=007ec6" alt="C#">
@@ -66,10 +66,9 @@
   </a>
 </div>
 
-
 High-performance document intelligence for Go backed by the Rust core that powers every Kreuzberg binding.
 
-> **Version 4.8.4**
+> **Version 4.9.5**
 > Report issues at [github.com/kreuzberg-dev/kreuzberg](https://github.com/kreuzberg-dev/kreuzberg/issues).
 
 ## Install
@@ -104,7 +103,7 @@ To use this package via `go get`:
 go get github.com/kreuzberg-dev/kreuzberg/packages/go/v4@latest
 
 # Or a specific version
-go get github.com/kreuzberg-dev/kreuzberg/packages/go/v4@v4.8.4
+go get github.com/kreuzberg-dev/kreuzberg/packages/go/v4@v4.9.5
 ```
 
 You'll need to provide the static library at build time. See [Building with Static Libraries](#building-with-static-libraries) below.
@@ -119,7 +118,7 @@ Download the static library for your platform from [GitHub Releases](https://git
 
 ```bash
 # Example: Linux x86_64
-curl -LO https://github.com/kreuzberg-dev/kreuzberg/releases/download/v4.8.4/go-ffi-linux-x86_64.tar.gz
+curl -LO https://github.com/kreuzberg-dev/kreuzberg/releases/download/v4.9.5/go-ffi-linux-x86_64.tar.gz
 tar -xzf go-ffi-linux-x86_64.tar.gz
 
 # Copy to a permanent location

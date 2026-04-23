@@ -24,7 +24,7 @@ impl Default for PptxExtractor {
 }
 
 impl PptxExtractor {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self
     }
 }

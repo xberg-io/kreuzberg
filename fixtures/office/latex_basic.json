@@ -2,15 +2,20 @@
 	"id": "office_latex_basic",
 	"category": "office",
 	"description": "LaTeX document text extraction.",
-	"document": {
+	"input": {
 		"path": "latex/basic_sections.tex",
 		"media_type": "application/x-latex"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": ["application/x-latex", "text/x-latex"],
-		"min_content_length": 20
-	}
+	"assertions": [
+		{
+			"type": "contains_any",
+			"field": "mime_type",
+			"values": ["application/x-latex", "text/x-latex"]
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 20
+		}
+	]
 }

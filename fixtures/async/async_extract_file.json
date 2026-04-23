@@ -1,0 +1,25 @@
+{
+	"id": "async_extract_file",
+	"category": "async",
+	"description": "Async extract_file call on PDF document",
+	"tags": ["async", "api", "extract_file"],
+	"input": {
+		"path": "pdf/fake_memo.pdf",
+		"mime_type": "application/pdf"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "application/pdf"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 50
+		}
+	]
+}

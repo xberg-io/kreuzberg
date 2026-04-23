@@ -26,7 +26,7 @@ use std::collections::HashSet;
 /// # Errors
 ///
 /// Returns an error if keyword extraction fails.
-pub fn extract_keywords_rake(text: &str, config: &KeywordConfig) -> Result<Vec<Keyword>> {
+pub(crate) fn extract_keywords_rake(text: &str, config: &KeywordConfig) -> Result<Vec<Keyword>> {
     let params = config.rake_params.as_ref().cloned().unwrap_or_default();
     let lang = config.language.as_deref().unwrap_or("en");
     let normalized_lang = normalize_language_code(lang);

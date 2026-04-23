@@ -1,0 +1,9 @@
+{
+	"id": "code_multiline",
+	"category": "markup",
+	"description": "Code multiline",
+	"tags": ["markup"],
+	"call": "code_markup",
+	"input": { "text": "line1\nline2" },
+	"assertions": [{ "type": "not_error" }]
+}

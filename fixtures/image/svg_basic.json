@@ -2,15 +2,20 @@
 	"id": "image_svg_basic",
 	"category": "image",
 	"description": "SVG image extraction.",
-	"document": {
+	"input": {
 		"path": "xml/simple_svg.svg",
 		"media_type": "image/svg+xml"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": "image/svg+xml",
-		"min_content_length": 5
-	}
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "image/svg+xml"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 5
+		}
+	]
 }

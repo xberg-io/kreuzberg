@@ -1,0 +1,9 @@
+{
+	"id": "calculate_dpi_large",
+	"category": "image_ops",
+	"description": "DPI for large image",
+	"tags": ["image", "dpi"],
+	"call": "calculate_optimal_dpi",
+	"input": { "width": 10000, "height": 10000, "target_size_mb": 0.5 },
+	"assertions": [{ "type": "not_error" }]
+}

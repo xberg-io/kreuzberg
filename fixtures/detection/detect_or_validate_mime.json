@@ -1,0 +1,11 @@
+{
+	"id": "detect_or_validate_mime",
+	"category": "detection",
+	"description": "Validate known MIME",
+	"tags": ["mime_detection"],
+	"call": "detect_or_validate",
+	"input": {
+		"mime_type": "application/pdf"
+	},
+	"assertions": [{ "type": "not_error" }]
+}

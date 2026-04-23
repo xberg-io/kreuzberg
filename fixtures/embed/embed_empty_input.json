@@ -2,21 +2,32 @@
 	"id": "embed_empty_input",
 	"description": "Standalone embedding with empty text list returns empty result without error",
 	"tags": ["embed"],
-	"embed": {
+	"call": "embed",
+	"input": {
 		"texts": [],
 		"config": {
-			"model": { "type": "preset", "name": "balanced" }
+			"model": {
+				"type": "preset",
+				"name": "balanced"
+			}
 		}
 	},
-	"assertions": {
-		"embed": {
-			"count": 0,
-			"no_nan": true,
-			"no_inf": true
+	"assertions": [
+		{
+			"type": "count_equals",
+			"field": "embeddings",
+			"value": 0
+		},
+		{
+			"type": "is_true",
+			"field": "embeddings_valid"
+		},
+		{
+			"type": "is_true",
+			"field": "embeddings_finite"
 		}
-	},
+	],
 	"skip": {
-		"requires_feature": ["embeddings"],
-		"skip_on_platform": ["x86_64-pc-windows-msvc"]
+		"reason": "Requires features: embeddings; Skip on platforms: x86_64-pc-windows-msvc"
 	}
 }

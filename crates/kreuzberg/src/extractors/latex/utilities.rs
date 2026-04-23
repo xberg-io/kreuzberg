@@ -6,7 +6,7 @@
 /// Extracts content from within braces for a given command.
 ///
 /// Example: `\title{Hello World}` with command "title" returns "Hello World"
-pub fn extract_braced(text: &str, command: &str) -> Option<String> {
+pub(crate) fn extract_braced(text: &str, command: &str) -> Option<String> {
     let pattern = format!("\\{}{{", command);
     if let Some(start) = text.find(&pattern) {
         let after = &text[start + pattern.len()..];
@@ -36,7 +36,7 @@ pub fn extract_braced(text: &str, command: &str) -> Option<String> {
 /// Reads braced content from a character iterator.
 ///
 /// Handles nested braces correctly and maintains proper depth tracking.
-pub fn read_braced_from_chars(chars: &mut std::iter::Peekable<std::str::Chars>) -> Option<String> {
+pub(crate) fn read_braced_from_chars(chars: &mut std::iter::Peekable<std::str::Chars>) -> Option<String> {
     // Skip whitespace before opening brace
     while let Some(&c) = chars.peek() {
         if c.is_whitespace() {
@@ -79,7 +79,7 @@ pub fn read_braced_from_chars(chars: &mut std::iter::Peekable<std::str::Chars>) 
 ///
 /// Example: `\begin{itemize}` returns "itemize"
 /// Also handles `\begin {itemize}` (with space).
-pub fn extract_env_name(line: &str) -> Option<String> {
+pub(crate) fn extract_env_name(line: &str) -> Option<String> {
     // Try without space first, then with space
     let start = line.find("\\begin{").or_else(|| line.find("\\begin {"))?;
     let brace_pos = line[start..].find('{')?;
@@ -91,7 +91,7 @@ pub fn extract_env_name(line: &str) -> Option<String> {
 /// Cleans LaTeX text by removing escape sequences.
 ///
 /// Handles common LaTeX escape sequences like \\&, \\#, \\\_, etc.
-pub fn clean_text(text: &str) -> String {
+pub(crate) fn clean_text(text: &str) -> String {
     text.to_string()
         .replace("\\\\", "\n")
         .replace("\\&", "&")
@@ -108,7 +108,7 @@ pub fn clean_text(text: &str) -> String {
 ///
 /// Returns the content and the index of the line after \end{environment}.
 /// Handles nested environments of the same type and single-line environments.
-pub fn collect_environment(lines: &[&str], start_idx: usize, env_name: &str) -> (String, usize) {
+pub(crate) fn collect_environment(lines: &[&str], start_idx: usize, env_name: &str) -> (String, usize) {
     let end_marker = format!("\\end{{{}}}", env_name);
     let begin_marker = format!("\\begin{{{}}}", env_name);
 
@@ -154,7 +154,7 @@ pub fn collect_environment(lines: &[&str], start_idx: usize, env_name: &str) -> 
 /// Extracts a section/heading title, handling optional `[short]` arguments.
 ///
 /// Supports `\section{title}`, `\section[short]{title}`, `\section*{title}`, etc.
-pub fn extract_heading_title(line: &str, command: &str) -> Option<String> {
+pub(crate) fn extract_heading_title(line: &str, command: &str) -> Option<String> {
     let prefix = format!("\\{}", command);
     let start = line.find(&prefix)?;
     let after = &line[start + prefix.len()..];

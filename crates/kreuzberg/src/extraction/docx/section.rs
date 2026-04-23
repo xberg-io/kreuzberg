@@ -81,7 +81,7 @@ impl PageMargins {
     /// Convert all margins from twips to points.
     ///
     /// Conversion factor: 1 twip = 1/20 point, or equivalently divide by 20.
-    pub fn to_points(&self) -> PageMarginsPoints {
+    pub(crate) fn to_points(&self) -> PageMarginsPoints {
         PageMarginsPoints {
             top: self.top.map(|v| v as f64 / 20.0),
             right: self.right.map(|v| v as f64 / 20.0),
@@ -96,12 +96,12 @@ impl PageMargins {
 
 impl SectionProperties {
     /// Convert page width from twips to points.
-    pub fn page_width_points(&self) -> Option<f64> {
+    pub(crate) fn page_width_points(&self) -> Option<f64> {
         self.page_width_twips.map(|v| v as f64 / 20.0)
     }
 
     /// Convert page height from twips to points.
-    pub fn page_height_points(&self) -> Option<f64> {
+    pub(crate) fn page_height_points(&self) -> Option<f64> {
         self.page_height_twips.map(|v| v as f64 / 20.0)
     }
 }
@@ -154,7 +154,7 @@ fn roxmltree_get_i32_attr(node: &roxmltree::Node, local_name: &str) -> Option<i3
 // --- Parsing with roxmltree ---
 
 /// Parse a `w:sectPr` XML element (roxmltree node) into `SectionProperties`.
-pub fn parse_section_properties(node: &roxmltree::Node) -> SectionProperties {
+pub(crate) fn parse_section_properties(node: &roxmltree::Node) -> SectionProperties {
     let mut props = SectionProperties::default();
 
     for child in node.children() {
@@ -209,7 +209,7 @@ pub fn parse_section_properties(node: &roxmltree::Node) -> SectionProperties {
 ///
 /// **Important:** This function advances the reader past the closing `</w:sectPr>` tag.
 /// The caller must not attempt to process the `w:sectPr` end event again.
-pub fn parse_section_properties_streaming(reader: &mut Reader<&[u8]>) -> SectionProperties {
+pub(crate) fn parse_section_properties_streaming(reader: &mut Reader<&[u8]>) -> SectionProperties {
     let mut props = SectionProperties::default();
     let mut buf = Vec::new();
 

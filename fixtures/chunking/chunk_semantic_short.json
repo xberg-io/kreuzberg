@@ -1,0 +1,10 @@
+{
+	"id": "chunk_semantic_short",
+	"category": "chunking",
+	"description": "Semantic chunk short text",
+	"tags": ["chunking"],
+	"call": "chunk_semantic",
+	"input": { "text": "Short.", "config": { "max_characters": 1000 } },
+	"assertions": [{ "type": "not_error" }],
+	"skip": { "reason": "Requires features: embeddings" }
+}

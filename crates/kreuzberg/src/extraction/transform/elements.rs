@@ -26,7 +26,7 @@ use super::types::{ListItemMetadata, ListType};
 /// # Returns
 ///
 /// A vector of ListItemMetadata structs describing detected list items
-pub fn detect_list_items(text: &str) -> Vec<ListItemMetadata> {
+pub(crate) fn detect_list_items(text: &str) -> Vec<ListItemMetadata> {
     let mut items = Vec::new();
     let lines: Vec<&str> = text.lines().collect();
 
@@ -166,7 +166,7 @@ pub fn detect_list_items(text: &str) -> Vec<ListItemMetadata> {
 /// # Returns
 ///
 /// An ElementId suitable for referencing this semantic element
-pub fn generate_element_id(text: &str, element_type: ElementType, page_number: Option<usize>) -> ElementId {
+pub(crate) fn generate_element_id(text: &str, element_type: ElementType, page_number: Option<usize>) -> ElementId {
     // Simple deterministic hash using wrapping multiplication
     let type_hash = format!("{:?}", element_type)
         .bytes()

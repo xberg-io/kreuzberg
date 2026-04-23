@@ -2,25 +2,42 @@
 	"id": "embed_multilingual",
 	"description": "Standalone embedding with multilingual preset for non-English text",
 	"tags": ["embed"],
-	"embed": {
+	"call": "embed",
+	"input": {
 		"texts": ["Bonjour le monde", "Hallo Welt", "¡Hola Mundo!"],
 		"config": {
-			"model": { "type": "preset", "name": "multilingual" },
+			"model": {
+				"type": "preset",
+				"name": "multilingual"
+			},
 			"normalize": true
 		}
 	},
-	"assertions": {
-		"embed": {
-			"count": 3,
-			"dimensions": 768,
-			"no_nan": true,
-			"no_inf": true,
-			"non_zero": true
+	"assertions": [
+		{
+			"type": "count_equals",
+			"field": "embeddings",
+			"value": 3
+		},
+		{
+			"type": "equals",
+			"field": "embedding_dimensions",
+			"value": 768
+		},
+		{
+			"type": "is_true",
+			"field": "embeddings_valid"
+		},
+		{
+			"type": "is_true",
+			"field": "embeddings_finite"
+		},
+		{
+			"type": "is_true",
+			"field": "embeddings_non_zero"
 		}
-	},
+	],
 	"skip": {
-		"requires_feature": ["embeddings"],
-		"skip_on_platform": ["x86_64-pc-windows-msvc"],
-		"notes": "Embeddings not supported on Windows MSVC"
+		"reason": "Requires features: embeddings; Skip on platforms: x86_64-pc-windows-msvc; Embeddings not supported on Windows MSVC"
 	}
 }

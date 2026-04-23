@@ -2,15 +2,20 @@
 	"id": "archive_tar_basic",
 	"category": "archive",
 	"description": "TAR archive extraction.",
-	"document": {
+	"input": {
 		"path": "archives/documents.tar",
 		"media_type": "application/x-tar"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": ["application/x-tar", "application/tar"],
-		"min_content_length": 10
-	}
+	"assertions": [
+		{
+			"type": "contains_any",
+			"field": "mime_type",
+			"values": ["application/x-tar", "application/tar"]
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 10
+		}
+	]
 }

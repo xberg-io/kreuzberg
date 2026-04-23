@@ -1,21 +1,30 @@
 {
 	"id": "code_javascript_basic",
 	"category": "code",
-	"tags": ["code", "javascript", "tree-sitter"],
 	"description": "Smoke test: JavaScript source code file extraction",
-	"document": {
+	"tags": ["code", "javascript", "tree-sitter"],
+	"input": {
 		"path": "code/app.js",
 		"media_type": "text/x-source-code"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": "text/x-source-code",
-		"min_content_length": 10,
-		"content_contains_all": ["class Application", "export function", "import"]
-	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "text/x-source-code"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 10
+		},
+		{
+			"type": "contains_all",
+			"field": "content",
+			"values": ["class Application", "export function", "import"]
+		}
+	],
 	"skip": {
-		"requires_feature": ["tree-sitter"]
+		"reason": "Requires features: tree-sitter"
 	}
 }

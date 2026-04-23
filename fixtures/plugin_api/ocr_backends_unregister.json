@@ -1,17 +1,15 @@
 {
 	"id": "ocr_backends_unregister",
+	"category": "ocr_backend_management",
 	"description": "Unregister nonexistent OCR backend gracefully",
-	"api_category": "ocr_backend_management",
-	"api_function": "unregister_ocr_backend",
 	"tags": ["ocr", "plugin_management", "unregister"],
-	"test_spec": {
-		"pattern": "graceful_unregister",
-		"function_call": {
-			"name": "unregister_ocr_backend",
-			"args": ["nonexistent-backend-xyz"]
-		},
-		"assertions": {
-			"does_not_throw": true
+	"call": "unregister_ocr_backend",
+	"input": {
+		"args": ["nonexistent-backend-xyz"]
+	},
+	"assertions": [
+		{
+			"type": "not_error"
 		}
-	}
+	]
 }

@@ -59,7 +59,7 @@ fn strip_additional_properties(schema: &Value) -> Value {
 /// - The LLM client cannot be created (invalid provider/credentials).
 /// - The LLM request fails (network, rate-limit, etc.).
 /// - The LLM response cannot be parsed as valid JSON.
-pub async fn extract_structured(
+pub(crate) async fn extract_structured(
     content: &str,
     config: &StructuredExtractionConfig,
 ) -> crate::Result<(serde_json::Value, Option<crate::types::LlmUsage>)> {

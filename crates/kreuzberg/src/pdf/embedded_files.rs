@@ -22,7 +22,7 @@ pub struct EmbeddedFile {
 ///
 /// Walks the `/Names` → `/EmbeddedFiles` name tree in the catalog.
 /// Returns an empty `Vec` if the document has no embedded files.
-pub fn extract_embedded_files(document: &Document) -> Vec<EmbeddedFile> {
+pub(crate) fn extract_embedded_files(document: &Document) -> Vec<EmbeddedFile> {
     let mut files = Vec::new();
 
     let catalog = match document.catalog() {
@@ -170,7 +170,7 @@ fn resolve_object<'a>(document: &'a Document, obj: &'a Object) -> Option<Object>
 ///
 /// Returns `(children, warnings)`. The children are `ArchiveEntry` values
 /// suitable for attaching to `InternalDocument.children`.
-pub async fn extract_and_process_embedded_files(
+pub(crate) async fn extract_and_process_embedded_files(
     pdf_bytes: &[u8],
     config: &crate::core::config::ExtractionConfig,
 ) -> (Vec<ArchiveEntry>, Vec<ProcessingWarning>) {

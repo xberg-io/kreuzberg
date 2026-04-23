@@ -32,7 +32,7 @@ use crate::types::tables::Table;
 /// each key-based relationship target. Unresolvable keys are logged and skipped
 /// (the relationship is left as `Key` — it will be excluded from the final
 /// `DocumentStructure` relationships).
-pub fn resolve_relationships(doc: &mut InternalDocument) {
+pub(crate) fn resolve_relationships(doc: &mut InternalDocument) {
     // Build anchor → element index map (first element with a given anchor wins).
     // Skip FootnoteRef elements so that refs resolve to definitions, not to themselves.
     let mut anchor_map: AHashMap<&str, u32> = AHashMap::new();
@@ -77,7 +77,7 @@ pub fn resolve_relationships(doc: &mut InternalDocument) {
 ///    with a `Heading` child and push the group.
 /// 4. All other elements are parented under the current stack top.
 /// 5. Resolved relationships are mapped from element indices to node indices.
-pub fn derive_document_structure(doc: &mut InternalDocument) -> DocumentStructure {
+pub(crate) fn derive_document_structure(doc: &mut InternalDocument) -> DocumentStructure {
     resolve_relationships(doc);
     derive_document_structure_inner(doc)
 }

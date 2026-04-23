@@ -6,8 +6,8 @@ use crate::layout::types::LayoutDetection;
 /// detections that have IoU > `iou_threshold` with any higher-confidence detection.
 ///
 /// This is required for YOLO models. RT-DETR is NMS-free.
-pub fn greedy_nms(detections: &mut Vec<LayoutDetection>, iou_threshold: f32) {
-    LayoutDetection::sort_by_confidence_desc(detections);
+pub(crate) fn greedy_nms(mut detections: Vec<LayoutDetection>, iou_threshold: f32) -> Vec<LayoutDetection> {
+    detections = LayoutDetection::sort_by_confidence_desc(detections);
 
     let n = detections.len();
     let mut keep = vec![true; n];
@@ -32,4 +32,6 @@ pub fn greedy_nms(detections: &mut Vec<LayoutDetection>, iou_threshold: f32) {
         idx += 1;
         k
     });
+
+    detections
 }

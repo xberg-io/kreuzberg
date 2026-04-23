@@ -66,7 +66,7 @@ impl AsRef<[u8]> for FileBytes {
 ///
 /// Returns `KreuzbergError::Io` for any I/O failure.
 #[allow(unsafe_code)]
-pub fn open_file_bytes(path: &Path) -> Result<FileBytes> {
+pub(crate) fn open_file_bytes(path: &Path) -> Result<FileBytes> {
     #[cfg(not(target_arch = "wasm32"))]
     {
         let metadata = std::fs::metadata(path).map_err(KreuzbergError::Io)?;
@@ -106,7 +106,7 @@ pub fn open_file_bytes(path: &Path) -> Result<FileBytes> {
 ///
 /// Returns `KreuzbergError::Io` for I/O errors (these always bubble up).
 #[cfg(feature = "tokio-runtime")]
-pub async fn read_file_async(path: impl AsRef<Path>) -> Result<Vec<u8>> {
+pub(crate) async fn read_file_async(path: impl AsRef<Path>) -> Result<Vec<u8>> {
     tokio::fs::read(path.as_ref()).await.map_err(KreuzbergError::Io)
 }
 
@@ -123,7 +123,7 @@ pub async fn read_file_async(path: impl AsRef<Path>) -> Result<Vec<u8>> {
 /// # Errors
 ///
 /// Returns `KreuzbergError::Io` for I/O errors (these always bubble up).
-pub fn read_file_sync(path: impl AsRef<Path>) -> Result<Vec<u8>> {
+pub(crate) fn read_file_sync(path: impl AsRef<Path>) -> Result<Vec<u8>> {
     std::fs::read(path.as_ref()).map_err(KreuzbergError::Io)
 }
 
@@ -136,7 +136,7 @@ pub fn read_file_sync(path: impl AsRef<Path>) -> Result<Vec<u8>> {
 /// # Returns
 ///
 /// `true` if the file exists, `false` otherwise.
-pub fn file_exists(path: impl AsRef<Path>) -> bool {
+pub(crate) fn file_exists(path: impl AsRef<Path>) -> bool {
     path.as_ref().exists()
 }
 
@@ -149,7 +149,7 @@ pub fn file_exists(path: impl AsRef<Path>) -> bool {
 /// # Errors
 ///
 /// Returns `KreuzbergError::Io` if file doesn't exist.
-pub fn validate_file_exists(path: impl AsRef<Path>) -> Result<()> {
+pub(crate) fn validate_file_exists(path: impl AsRef<Path>) -> Result<()> {
     if !file_exists(&path) {
         return Err(KreuzbergError::from(std::io::Error::new(
             std::io::ErrorKind::NotFound,
@@ -174,7 +174,7 @@ pub fn validate_file_exists(path: impl AsRef<Path>) -> Result<()> {
 /// # Errors
 ///
 /// Returns `KreuzbergError::Io` for I/O errors.
-pub fn traverse_directory<F>(
+pub(crate) fn traverse_directory<F>(
     dir: impl AsRef<Path>,
     recursive: bool,
     filter: Option<F>,
@@ -243,7 +243,7 @@ where
 /// # Errors
 ///
 /// Returns `KreuzbergError::Io` for I/O errors.
-pub fn find_files_by_extension(
+pub(crate) fn find_files_by_extension(
     dir: impl AsRef<Path>,
     extension: &str,
     recursive: bool,

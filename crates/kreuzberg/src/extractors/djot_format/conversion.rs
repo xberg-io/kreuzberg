@@ -37,7 +37,7 @@ pub fn djot_content_to_djot(content: &crate::types::DjotContent) -> String {
     let mut output = String::new();
 
     for block in &content.blocks {
-        render_block_to_djot(&mut output, block, 0);
+        output.push_str(&render_block_to_djot(block, 0));
     }
 
     output

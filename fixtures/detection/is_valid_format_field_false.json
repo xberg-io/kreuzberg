@@ -1,0 +1,11 @@
+{
+	"id": "is_valid_format_field_false",
+	"category": "detection",
+	"description": "Invalid format field",
+	"tags": ["validation"],
+	"call": "is_valid_format_field",
+	"input": {
+		"field": "nonexistent_field_xyz"
+	},
+	"assertions": [{ "type": "not_error" }]
+}

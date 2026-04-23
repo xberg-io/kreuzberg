@@ -1,0 +1,20 @@
+{
+	"id": "error_invalid_dpi",
+	"category": "error",
+	"description": "Error when OCR DPI is invalid (negative)",
+	"tags": ["error", "config", "ocr"],
+	"call": "extract_file_sync",
+	"input": {
+		"path": "pdf/fake_memo.pdf",
+		"config": {
+			"ocr": {
+				"dpi": -1
+			}
+		}
+	},
+	"assertions": [
+		{
+			"type": "error"
+		}
+	]
+}

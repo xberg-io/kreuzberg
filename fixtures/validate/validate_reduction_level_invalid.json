@@ -1,0 +1,1 @@
+{"id":"validate_reduction_level_invalid","category":"validate","description":"Invalid reduction level","tags":["validation","error"],"call":"validate_token_reduction_level","input":{"level":"nonexistent"},"assertions":[{"type":"error"}]}

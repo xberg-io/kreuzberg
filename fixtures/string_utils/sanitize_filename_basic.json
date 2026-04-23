@@ -1,0 +1,20 @@
+{
+	"id": "sanitize_filename_basic",
+	"category": "string_utils",
+	"description": "Sanitize path traversal attempts in filename",
+	"tags": ["string_utils", "sanitization", "security"],
+	"call": "sanitize_filename",
+	"input": {
+		"filename": "../../etc/passwd"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "min_length",
+			"field": "result",
+			"value": 1
+		}
+	]
+}

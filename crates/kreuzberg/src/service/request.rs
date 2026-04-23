@@ -26,7 +26,7 @@ pub struct ExtractionRequest {
 
 impl ExtractionRequest {
     /// Create a file-based extraction request.
-    pub fn file(path: impl Into<PathBuf>, config: ExtractionConfig) -> Self {
+    pub(crate) fn file(path: impl Into<PathBuf>, config: ExtractionConfig) -> Self {
         Self {
             source: ExtractionSource::File {
                 path: path.into(),
@@ -38,7 +38,11 @@ impl ExtractionRequest {
     }
 
     /// Create a file-based extraction request with a MIME type hint.
-    pub fn file_with_mime(path: impl Into<PathBuf>, mime_hint: impl Into<String>, config: ExtractionConfig) -> Self {
+    pub(crate) fn file_with_mime(
+        path: impl Into<PathBuf>,
+        mime_hint: impl Into<String>,
+        config: ExtractionConfig,
+    ) -> Self {
         Self {
             source: ExtractionSource::File {
                 path: path.into(),
@@ -50,7 +54,7 @@ impl ExtractionRequest {
     }
 
     /// Create a bytes-based extraction request.
-    pub fn bytes(data: impl Into<Bytes>, mime_type: impl Into<String>, config: ExtractionConfig) -> Self {
+    pub(crate) fn bytes(data: impl Into<Bytes>, mime_type: impl Into<String>, config: ExtractionConfig) -> Self {
         Self {
             source: ExtractionSource::Bytes {
                 data: data.into(),
@@ -62,7 +66,7 @@ impl ExtractionRequest {
     }
 
     /// Set per-file overrides on this request.
-    pub fn with_overrides(mut self, overrides: FileExtractionConfig) -> Self {
+    pub(crate) fn with_overrides(mut self, overrides: FileExtractionConfig) -> Self {
         self.file_overrides = Some(overrides);
         self
     }

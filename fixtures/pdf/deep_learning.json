@@ -2,21 +2,30 @@
 	"id": "pdf_deep_learning",
 	"category": "pdf",
 	"description": "Deep learning textbook PDF to ensure long-form extraction quality.",
-	"document": {
+	"input": {
 		"path": "pdf/fundamentals_of_deep_learning_2014.pdf",
 		"media_type": "application/pdf"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": "application/pdf",
-		"min_content_length": 1000,
-		"content_contains_any": ["neural", "network", "deep learning"],
-		"metadata": {
-			"format_type": {
-				"eq": "pdf"
-			}
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "application/pdf"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 1000
+		},
+		{
+			"type": "contains_any",
+			"field": "content",
+			"values": ["neural", "network", "deep learning"]
+		},
+		{
+			"type": "equals",
+			"field": "metadata.format_type",
+			"value": "pdf"
 		}
-	}
+	]
 }

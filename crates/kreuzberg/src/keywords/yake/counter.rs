@@ -17,26 +17,26 @@ impl<K> Default for Counter<K> {
 
 impl<K: Eq + Hash> Counter<K> {
     #[inline]
-    pub fn inc(&mut self, key: K) {
+    pub(crate) fn inc(&mut self, key: K) {
         self.list.push(key);
     }
 
     #[inline]
-    pub fn is_empty(&self) -> bool {
+    pub(crate) fn is_empty(&self) -> bool {
         self.list.is_empty()
     }
 
     /// The number of unique keys.
-    pub fn distinct(&self) -> usize {
+    pub(crate) fn distinct(&self) -> usize {
         self.list.iter().collect::<AHashSet<&K>>().len()
     }
 
-    pub fn get(&self, key: &K) -> usize {
+    pub(crate) fn get(&self, key: &K) -> usize {
         self.list.iter().filter(|&k| k == key).count()
     }
 
     #[inline]
-    pub fn total(&self) -> usize {
+    pub(crate) fn total(&self) -> usize {
         self.list.len()
     }
 }

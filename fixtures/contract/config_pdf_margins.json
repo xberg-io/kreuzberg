@@ -2,12 +2,9 @@
 	"id": "config_pdf_margins",
 	"description": "Tests PDF margin exclusion configuration",
 	"tags": ["contract", "config", "pdf"],
-	"document": {
-		"path": "pdf/fake_memo.pdf"
-	},
-	"extraction": {
-		"method": "sync",
-		"input_type": "file",
+	"call": "extract_file_sync",
+	"input": {
+		"path": "pdf/fake_memo.pdf",
 		"config": {
 			"pdf_options": {
 				"top_margin_fraction": 0.1,
@@ -15,11 +12,19 @@
 			}
 		}
 	},
-	"assertions": {
-		"expected_mime": "application/pdf",
-		"min_content_length": 5
-	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "application/pdf"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 5
+		}
+	],
 	"skip": {
-		"requires_feature": ["pdf"]
+		"reason": "Requires features: pdf"
 	}
 }

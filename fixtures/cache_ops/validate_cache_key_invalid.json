@@ -1,0 +1,1 @@
+{"id":"validate_cache_key_invalid","category":"cache_ops","description":"Invalid cache key","tags":["cache","error"],"call":"validate_cache_key","input":{"key":""},"assertions":[{"type":"error"}]}

@@ -1,0 +1,9 @@
+{
+	"id": "render_djot_formatted",
+	"category": "rendering",
+	"description": "Render HTML to djot",
+	"tags": ["rendering"],
+	"call": "render_djot",
+	"input": { "doc": "<h2>Section</h2><p>Text with <code>code</code>.</p>" },
+	"assertions": [{ "type": "not_error" }]
+}

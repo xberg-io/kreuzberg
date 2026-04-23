@@ -1,0 +1,12 @@
+{
+	"id": "serialize_json_basic",
+	"category": "serialization",
+	"description": "Serialize extraction result to JSON",
+	"tags": ["serialization", "json"],
+	"call": "serialize_to_json",
+	"input": {
+		"path": "test_documents/text/plain.txt",
+		"config": {}
+	},
+	"assertions": [{ "type": "not_error" }, { "type": "min_length", "field": "content", "value": 1 }]
+}

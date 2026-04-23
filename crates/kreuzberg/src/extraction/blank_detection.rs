@@ -21,7 +21,7 @@ const MIN_NON_WHITESPACE_CHARS: usize = 3;
 /// # Returns
 ///
 /// `true` if the page is considered blank, `false` otherwise
-pub fn is_page_text_blank(text: &str) -> bool {
+pub(crate) fn is_page_text_blank(text: &str) -> bool {
     let non_whitespace_count = text.chars().filter(|c| !c.is_whitespace()).count();
     non_whitespace_count < MIN_NON_WHITESPACE_CHARS
 }

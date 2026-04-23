@@ -66,7 +66,7 @@ use std::sync::Arc;
 /// # Ok::<(), kreuzberg::KreuzbergError>(())
 /// # });
 /// ```
-pub fn register_extractor(extractor: Arc<dyn DocumentExtractor>) -> crate::Result<()> {
+pub(crate) fn register_extractor(extractor: Arc<dyn DocumentExtractor>) -> crate::Result<()> {
     use crate::plugins::registry::get_document_extractor_registry;
 
     let registry = get_document_extractor_registry();

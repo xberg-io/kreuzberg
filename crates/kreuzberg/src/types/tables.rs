@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 ///
 /// Represents a table detected and extracted from a document (PDF, image, etc.).
 /// Tables are converted to both structured cell data and Markdown format.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
 pub struct Table {
     /// Table cells as a 2D vector (rows × columns)
@@ -26,7 +26,7 @@ pub struct Table {
 /// Individual table cell with content and optional styling.
 ///
 /// Future extension point for rich table support with cell-level metadata.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
 pub struct TableCell {
     /// Cell content as text

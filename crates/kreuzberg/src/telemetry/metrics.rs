@@ -45,7 +45,7 @@ static METRICS: OnceLock<ExtractionMetrics> = OnceLock::new();
 /// Get the global extraction metrics, initialising on first call.
 ///
 /// Uses the global [`opentelemetry::global::meter`] to create instruments.
-pub fn get_metrics() -> &'static ExtractionMetrics {
+pub(crate) fn get_metrics() -> &'static ExtractionMetrics {
     METRICS.get_or_init(|| {
         let meter = opentelemetry::global::meter("kreuzberg");
         ExtractionMetrics::new(&meter)

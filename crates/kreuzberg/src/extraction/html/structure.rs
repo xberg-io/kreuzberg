@@ -11,7 +11,7 @@ use crate::types::builder::{self, DocumentStructureBuilder};
 use crate::types::document_structure::{DocumentStructure, NodeIndex, TextAnnotation};
 
 /// Build a `DocumentStructure` from raw HTML.
-pub fn build_document_structure(html: &str) -> DocumentStructure {
+pub(crate) fn build_document_structure(html: &str) -> DocumentStructure {
     let mut builder = DocumentStructureBuilder::new().source_format("html");
     let mut walker = HtmlWalker::new(html, &mut builder);
     walker.walk();

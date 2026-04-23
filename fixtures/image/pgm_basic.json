@@ -2,19 +2,22 @@
 	"id": "image_pgm_basic",
 	"category": "image",
 	"description": "PGM (portable graymap) image extraction via OCR.",
-	"document": {
+	"input": {
 		"path": "images_extra/ocr_image.pgm",
-		"media_type": "image/x-portable-graymap",
-		"requires_external_tool": ["tesseract"]
+		"media_type": "image/x-portable-graymap"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": ["image/x-portable-graymap", "image/x-pgm"],
-		"content_not_empty": true
-	},
+	"assertions": [
+		{
+			"type": "contains_any",
+			"field": "mime_type",
+			"values": ["image/x-portable-graymap", "image/x-pgm"]
+		},
+		{
+			"type": "not_empty",
+			"field": "content"
+		}
+	],
 	"skip": {
-		"requires_feature": ["tesseract"]
+		"reason": "Requires features: tesseract"
 	}
 }

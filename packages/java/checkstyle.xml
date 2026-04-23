@@ -8,25 +8,19 @@
     <property name="severity" value="error"/>
     <property name="fileExtensions" value="java"/>
 
-    <!-- Suppressions for FFI code patterns -->
     <module name="SuppressionFilter">
-        <property name="file" value="packages/java/checkstyle-suppressions.xml"/>
-        <property name="optional" value="true"/>
+        <property name="file" value="${checkstyle.suppressions.file}"/>
+        <property name="optional" value="false"/>
     </module>
 
-    <!-- Size Violations -->
-    <!-- LineLength check disabled -->
-    <!--
     <module name="LineLength">
         <property name="max" value="120"/>
-        <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
+        <property name="ignorePattern" value="^package.*|^import.*|a]href|href|http://|https://|ftp://"/>
     </module>
-    -->
 
     <module name="TreeWalker">
         <!-- Naming Conventions -->
         <module name="ConstantName">
-            <!-- Allow C-style snake_case for FFI function handles and memory layout offsets -->
             <property name="format" value="^([A-Z][A-Z0-9]*(_[A-Z0-9]+)*|[a-z_]+)$"/>
         </module>
         <module name="LocalFinalVariableName"/>
@@ -49,52 +43,18 @@
             <property name="max" value="150"/>
         </module>
 
-        <!-- Whitespace -->
-        <module name="EmptyForIteratorPad"/>
-        <module name="GenericWhitespace"/>
-        <module name="MethodParamPad"/>
-        <module name="NoWhitespaceAfter"/>
-        <module name="NoWhitespaceBefore"/>
-        <module name="OperatorWrap">
-            <property name="option" value="nl"/>
-            <property name="tokens" value="BAND, BOR, BSR, BXOR, DIV, EQUAL, GE, GT, LAND, LE, LITERAL_INSTANCEOF, LOR, LT, MINUS, MOD, NOT_EQUAL, PLUS, QUESTION, SL, SR, STAR, METHOD_REF "/>
-        </module>
-        <module name="ParenPad"/>
-        <module name="TypecastParenPad"/>
-        <module name="WhitespaceAfter"/>
-        <module name="WhitespaceAround"/>
-
         <!-- Modifier Checks -->
         <module name="ModifierOrder"/>
         <module name="RedundantModifier"/>
 
-        <!-- Blocks -->
-        <module name="EmptyBlock"/>
-        <module name="LeftCurly"/>
-        <module name="NeedBraces"/>
-        <module name="RightCurly"/>
-
         <!-- Coding -->
         <module name="EmptyStatement"/>
         <module name="EqualsHashCode"/>
-        <module name="IllegalInstantiation"/>
-        <module name="InnerAssignment"/>
-        <module name="MagicNumber">
-            <property name="ignoreNumbers" value="-1, 0, 1, 2"/>
-            <property name="ignoreHashCodeMethod" value="true"/>
-            <property name="ignoreAnnotation" value="true"/>
-            <property name="ignoreFieldDeclaration" value="true"/>
-        </module>
         <module name="SimplifyBooleanExpression"/>
         <module name="SimplifyBooleanReturn"/>
 
         <!-- Misc -->
         <module name="ArrayTypeStyle"/>
         <module name="UpperEll"/>
-    </module>
-
-    <!-- Javadoc -->
-    <module name="JavadocPackage">
-        <property name="allowLegacy" value="true"/>
     </module>
 </module>

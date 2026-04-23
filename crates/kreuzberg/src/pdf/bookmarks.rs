@@ -25,7 +25,7 @@ fn decode_pdf_string(bytes: &[u8]) -> String {
 ///
 /// Walks the `/Outlines` tree in the document catalog, collecting each bookmark's
 /// title and destination. Returns an empty `Vec` if the document has no outlines.
-pub fn extract_bookmarks(document: &Document) -> Vec<Uri> {
+pub(crate) fn extract_bookmarks(document: &Document) -> Vec<Uri> {
     let mut uris = Vec::new();
 
     let catalog_id = match document.catalog() {

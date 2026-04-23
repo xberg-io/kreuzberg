@@ -46,7 +46,7 @@ static POOL_INIT: Once = Once::new();
 /// assert_eq!(resolve_thread_budget(Some(&config)), 4);
 /// assert!(resolve_thread_budget(None) >= 1);
 /// ```
-pub fn resolve_thread_budget(config: Option<&ConcurrencyConfig>) -> usize {
+pub(crate) fn resolve_thread_budget(config: Option<&ConcurrencyConfig>) -> usize {
     if let Some(n) = config.and_then(|c| c.max_threads) {
         return n.max(1);
     }
@@ -66,7 +66,7 @@ pub fn resolve_thread_budget(config: Option<&ConcurrencyConfig>) -> usize {
 /// init_thread_pools(4);
 /// init_thread_pools(2); // no-op: pool already initialized
 /// ```
-pub fn init_thread_pools(budget: usize) {
+pub(crate) fn init_thread_pools(budget: usize) {
     POOL_INIT.call_once(|| {
         #[cfg(not(target_arch = "wasm32"))]
         rayon::ThreadPoolBuilder::new().num_threads(budget).build_global().ok();

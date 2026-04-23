@@ -101,7 +101,7 @@ fn maybe_transcode_utf16(data: &[u8]) -> Option<Vec<u8>> {
 }
 
 /// Parse .eml file content (RFC822 format)
-pub fn parse_eml_content(data: &[u8]) -> Result<EmailExtractionResult> {
+pub(crate) fn parse_eml_content(data: &[u8]) -> Result<EmailExtractionResult> {
     // Transcode UTF-16 to UTF-8 if a BOM is detected
     let data = if let Some(transcoded) = maybe_transcode_utf16(data) {
         std::borrow::Cow::Owned(transcoded)
@@ -423,7 +423,7 @@ fn collect_nested_message_html(message: &mail_parser::Message<'_>, out: &mut Vec
 /// the FAT and retry – the real streams are still within the original
 /// data range and parse correctly.
 ///
-pub fn parse_msg_content(data: &[u8], fallback_codepage: Option<u32>) -> Result<EmailExtractionResult> {
+pub(crate) fn parse_msg_content(data: &[u8], fallback_codepage: Option<u32>) -> Result<EmailExtractionResult> {
     use std::borrow::Cow;
     use std::io::Cursor;
 
@@ -1270,7 +1270,7 @@ pub fn extract_email_content(
 }
 
 /// Build text output from email extraction result
-pub fn build_email_text_output(result: &EmailExtractionResult) -> String {
+pub(crate) fn build_email_text_output(result: &EmailExtractionResult) -> String {
     let mut text_parts = Vec::with_capacity(10);
 
     if let Some(ref subject) = result.subject {

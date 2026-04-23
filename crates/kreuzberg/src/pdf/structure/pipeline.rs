@@ -528,7 +528,7 @@ fn process_single_page(
 ///
 /// Returns (InternalDocument, has_font_encoding_issues).
 #[allow(clippy::too_many_arguments)]
-pub fn extract_document_structure(
+pub(crate) fn extract_document_structure(
     document: &PdfDocument,
     k_clusters: usize,
     tables: &[crate::types::Table],

@@ -3,7 +3,7 @@ const PDF_POINTS_PER_INCH: f64 = 72.0;
 
 /// Calculate smart DPI based on page dimensions, memory constraints, and target DPI
 #[allow(clippy::cast_possible_truncation)]
-pub fn calculate_smart_dpi(
+pub(crate) fn calculate_smart_dpi(
     page_width: f64,
     page_height: f64,
     target_dpi: i32,

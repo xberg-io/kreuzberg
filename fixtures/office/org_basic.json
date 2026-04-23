@@ -2,15 +2,20 @@
 	"id": "office_org_basic",
 	"category": "office",
 	"description": "Org-mode document text extraction.",
-	"document": {
+	"input": {
 		"path": "org/comprehensive.org",
 		"media_type": "text/x-org"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": ["text/x-org", "text/org"],
-		"min_content_length": 20
-	}
+	"assertions": [
+		{
+			"type": "contains_any",
+			"field": "mime_type",
+			"values": ["text/x-org", "text/org"]
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 20
+		}
+	]
 }

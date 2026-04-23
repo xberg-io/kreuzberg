@@ -130,7 +130,7 @@ pub struct XmlExtractor;
 
 impl XmlExtractor {
     /// Create a new XML extractor.
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self
     }
 }

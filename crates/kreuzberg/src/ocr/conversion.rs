@@ -53,7 +53,7 @@ use super::table::HocrWord;
 ///
 /// Returns `Ok(None)` if the detection is filtered out due to low `box_score`.
 #[cfg(feature = "paddle-ocr")]
-pub fn text_block_to_element(block: &TextBlock, page_number: usize) -> Result<Option<OcrElement>> {
+pub(crate) fn text_block_to_element(block: &TextBlock, page_number: usize) -> Result<Option<OcrElement>> {
     // Filter ghost detections: box_score below 0.3 indicates unreliable detection
     if block.box_score < 0.3 {
         return Ok(None);
@@ -146,7 +146,7 @@ pub struct TsvRow {
 /// # Returns
 ///
 /// An `OcrElement` with rectangle geometry and Tesseract metadata.
-pub fn tsv_row_to_element(row: &TsvRow) -> OcrElement {
+pub(crate) fn tsv_row_to_element(row: &TsvRow) -> OcrElement {
     let geometry = OcrBoundingGeometry::Rectangle {
         left: row.left,
         top: row.top,
@@ -205,7 +205,7 @@ pub fn tsv_row_to_element(row: &TsvRow) -> OcrElement {
 ///
 /// An `OcrElement` at `Word` level with all available font and layout metadata.
 #[cfg(feature = "ocr")]
-pub fn iterator_word_to_element(
+pub(crate) fn iterator_word_to_element(
     word: &kreuzberg_tesseract::WordData,
     block_type: Option<kreuzberg_tesseract::TessPolyBlockType>,
     para_info: Option<&kreuzberg_tesseract::ParaInfo>,
@@ -294,7 +294,7 @@ pub fn iterator_word_to_element(
 /// # Returns
 ///
 /// An `HocrWord` suitable for table reconstruction algorithms.
-pub fn element_to_hocr_word(element: &OcrElement) -> HocrWord {
+pub(crate) fn element_to_hocr_word(element: &OcrElement) -> HocrWord {
     let (left, top, width, height) = element.geometry.to_aabb();
 
     HocrWord {
@@ -321,7 +321,7 @@ pub fn element_to_hocr_word(element: &OcrElement) -> HocrWord {
 /// # Returns
 ///
 /// A vector of HocrWords filtered by confidence and element level.
-pub fn elements_to_hocr_words(elements: &[OcrElement], min_confidence: f64) -> Vec<HocrWord> {
+pub(crate) fn elements_to_hocr_words(elements: &[OcrElement], min_confidence: f64) -> Vec<HocrWord> {
     elements
         .iter()
         .filter(|e| e.confidence.recognition >= min_confidence)

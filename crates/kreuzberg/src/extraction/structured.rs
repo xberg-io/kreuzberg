@@ -110,7 +110,7 @@ const TEXT_FIELD_KEYWORDS: &[&str] = &[
     "license",
 ];
 
-pub fn parse_json(data: &[u8], config: Option<JsonExtractionConfig>) -> Result<StructuredDataResult> {
+pub(crate) fn parse_json(data: &[u8], config: Option<JsonExtractionConfig>) -> Result<StructuredDataResult> {
     let config = config.unwrap_or_default();
 
     let value: serde_json::Value =
@@ -324,7 +324,7 @@ fn is_text_field(key: &str, custom_patterns: &[String]) -> bool {
 /// # Ok(())
 /// # }
 /// ```
-pub fn parse_jsonl(data: &[u8], config: Option<JsonExtractionConfig>) -> Result<StructuredDataResult> {
+pub(crate) fn parse_jsonl(data: &[u8], config: Option<JsonExtractionConfig>) -> Result<StructuredDataResult> {
     let text = utf8_validation::from_utf8(data)
         .map_err(|e| KreuzbergError::parsing(format!("Invalid UTF-8 in JSONL: {}", e)))?;
 
@@ -361,7 +361,7 @@ pub fn parse_jsonl(data: &[u8], config: Option<JsonExtractionConfig>) -> Result<
     })
 }
 
-pub fn parse_yaml(data: &[u8]) -> Result<StructuredDataResult> {
+pub(crate) fn parse_yaml(data: &[u8]) -> Result<StructuredDataResult> {
     let yaml_str = utf8_validation::from_utf8(data)
         .map_err(|e| KreuzbergError::parsing(format!("Invalid UTF-8 in YAML: {}", e)))?;
 
@@ -442,7 +442,7 @@ fn extract_from_value(
     }
 }
 
-pub fn parse_toml(data: &[u8]) -> Result<StructuredDataResult> {
+pub(crate) fn parse_toml(data: &[u8]) -> Result<StructuredDataResult> {
     let toml_str = utf8_validation::from_utf8(data)
         .map_err(|e| KreuzbergError::parsing(format!("Invalid UTF-8 in TOML: {}", e)))?;
 

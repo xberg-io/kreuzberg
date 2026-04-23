@@ -310,7 +310,7 @@ impl OcrConfig {
     ///
     /// Typos in backend names are caught at configuration validation time, not at runtime.
     /// Also validates pipeline stage backends when a pipeline is configured.
-    pub fn validate(&self) -> Result<(), KreuzbergError> {
+    pub(crate) fn validate(&self) -> Result<(), KreuzbergError> {
         validate_ocr_backend(&self.backend)?;
         // When backend is "vlm", vlm_config must be present.
         crate::core::config_validation::validate_vlm_backend_config(&self.backend, self.vlm_config.as_ref())?;
@@ -324,7 +324,7 @@ impl OcrConfig {
     }
 
     /// Returns the effective quality thresholds, using configured values or defaults.
-    pub fn effective_thresholds(&self) -> OcrQualityThresholds {
+    pub(crate) fn effective_thresholds(&self) -> OcrQualityThresholds {
         self.quality_thresholds.clone().unwrap_or_default()
     }
 
@@ -337,7 +337,7 @@ impl OcrConfig {
     ///
     /// Explicit non-default backend selections are honored as-is — a silent
     /// paddleocr fallback would mask errors from the chosen backend.
-    pub fn effective_pipeline(&self) -> Option<OcrPipelineConfig> {
+    pub(crate) fn effective_pipeline(&self) -> Option<OcrPipelineConfig> {
         if self.pipeline.is_some() {
             return self.pipeline.clone();
         }

@@ -62,7 +62,7 @@ impl Default for ExtractionServiceBuilder {
 
 impl ExtractionServiceBuilder {
     /// Create a new builder with no layers configured.
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self {
             timeout: None,
             concurrency_limit: None,
@@ -73,19 +73,19 @@ impl ExtractionServiceBuilder {
     }
 
     /// Add a per-request timeout.
-    pub fn with_timeout(mut self, duration: Duration) -> Self {
+    pub(crate) fn with_timeout(mut self, duration: Duration) -> Self {
         self.timeout = Some(duration);
         self
     }
 
     /// Limit concurrent in-flight extractions.
-    pub fn with_concurrency_limit(mut self, max: usize) -> Self {
+    pub(crate) fn with_concurrency_limit(mut self, max: usize) -> Self {
         self.concurrency_limit = Some(max);
         self
     }
 
     /// Add a tracing span to each extraction request.
-    pub fn with_tracing(mut self) -> Self {
+    pub(crate) fn with_tracing(mut self) -> Self {
         self.tracing = true;
         self
     }
@@ -94,7 +94,7 @@ impl ExtractionServiceBuilder {
     ///
     /// Requires the `otel` feature. This is a no-op when `otel` is not enabled.
     #[allow(unused_mut)]
-    pub fn with_metrics(mut self) -> Self {
+    pub(crate) fn with_metrics(mut self) -> Self {
         #[cfg(feature = "otel")]
         {
             self.metrics = true;
@@ -106,7 +106,7 @@ impl ExtractionServiceBuilder {
     ///
     /// Layer order (outermost to innermost):
     /// `Tracing → Metrics → Timeout → ConcurrencyLimit → ExtractionService`
-    pub fn build(self) -> BoxCloneService<ExtractionRequest, ExtractionResult, KreuzbergError> {
+    pub(crate) fn build(self) -> BoxCloneService<ExtractionRequest, ExtractionResult, KreuzbergError> {
         let svc = ExtractionService::new();
 
         // Apply concurrency limit (innermost optional layer).

@@ -16,7 +16,7 @@ use async_trait::async_trait;
 pub struct HwpExtractor;
 
 impl HwpExtractor {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self
     }
 }

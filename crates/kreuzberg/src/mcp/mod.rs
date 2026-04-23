@@ -36,15 +36,8 @@ mod params;
 mod server;
 
 // Re-export public API for backward compatibility
-pub use server::{KreuzbergMcp, start_mcp_server, start_mcp_server_with_config};
-
-#[cfg(feature = "mcp-http")]
-pub use server::{start_mcp_server_http, start_mcp_server_http_with_config};
 
 pub use params::{
     BatchExtractFilesParams, CacheWarmParams, ChunkTextParams, DetectMimeTypeParams, EmbedTextParams,
     ExtractBytesParams, ExtractFileParams, ExtractStructuredParams,
 };
-
-#[doc(hidden)]
-pub use errors::map_kreuzberg_error_to_mcp;

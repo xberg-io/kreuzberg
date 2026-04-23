@@ -1,0 +1,20 @@
+{
+	"id": "render_plain_basic",
+	"category": "rendering",
+	"description": "Render HTML document to plain text format",
+	"tags": ["plain_text", "rendering", "text"],
+	"call": "render_plain",
+	"input": {
+		"doc": "<h1>Title</h1><p>Plain text rendering removes HTML tags.</p>"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 5
+		}
+	]
+}

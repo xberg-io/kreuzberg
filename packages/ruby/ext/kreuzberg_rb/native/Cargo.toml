@@ -2,73 +2,23 @@
 name = "kreuzberg-rb"
 version = "4.9.5"
 edition = "2024"
-rust-version = "1.91"
-authors = ["Na'aman Hirschfeld <naaman@kreuzberg.dev>"]
 license = "Elastic-2.0"
-repository = "https://github.com/kreuzberg-dev/kreuzberg"
-homepage = "https://kreuzberg.dev"
-documentation = "https://docs.rs/kreuzberg"
-readme = "README.md"
-description = "Ruby bindings (Magnus) for Kreuzberg - high-performance document intelligence framework"
-keywords = ["ruby", "magnus", "document", "extraction", "bindings"]
-categories = ["api-bindings", "text-processing"]
+description = "High-performance document intelligence library"
+readme = false
+keywords = ["document", "extraction", "pdf", "ocr", "text"]
+categories = ["text-processing"]
 
 [lib]
 name = "kreuzberg_rb"
-crate-type = ["cdylib", "rlib"]
-
-[features]
-default = ["embeddings"]
-embeddings = ["kreuzberg/embeddings"]
+path = "../../../../../crates/kreuzberg-rb/src/lib.rs"
+crate-type = ["cdylib"]
 
 [dependencies]
-async-trait = "0.1.89"
-kreuzberg = { path = "../../../vendor/kreuzberg", default-features = false, features = [
-    "pdf",
-    "excel",
-    "office",
-    "email",
-    "html",
-    "xml",
-    "archives",
-    "ocr",
-    "language-detection",
-    "chunking",
-    "chunking-tokenizers",
-    "embeddings",
-    "ort-bundled",
-    "quality",
-    "keywords",
-    "api",
-    "mcp",
-    "otel",
-    "bundled-pdfium",
-    "tokio-runtime",
-] }
-kreuzberg-ffi = { path = "../../../vendor/kreuzberg-ffi" }
-magnus = { git = "https://github.com/matsadler/magnus", rev = "f6db11769efb517427bf7f121f9c32e18b059b38", features = [
-    "rb-sys",
-] }
-rb-sys = { version = "0.9.126", default-features = false, features = [
-    "stable-api-compiled-fallback",
-] }
-serde_json = "1.0.149"
-toml = "1.1.2"
-serde_yaml_ng = "0.10"
-tokio = { version = "1.52.1", features = [
-    "rt",
-    "rt-multi-thread",
-    "macros",
-    "sync",
-    "process",
-    "fs",
-    "time",
-    "io-util",
-] }
-html-to-markdown-rs = { version = "3.3.1", default-features = false }
+kreuzberg = { path = "../../../../../crates/kreuzberg", features = ["full", "pdf", "ocr", "paddle-ocr", "layout-detection", "embeddings", "chunking", "keywords-yake", "keywords-rake", "language-detection", "html", "tree-sitter", "office", "email", "archives", "stopwords", "auto-rotate", "tokio-runtime", "api", "mcp", "liter-llm"] }
+magnus = "0.8"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["rt-multi-thread"] }
 
-[dev-dependencies]
-pretty_assertions = "1.4"
-
-[package.metadata.cargo-machete]
-ignored = ["rb-sys"]
+[lints]
+workspace = true

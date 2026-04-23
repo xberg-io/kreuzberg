@@ -2,15 +2,20 @@
 	"id": "office_xlsx_office_example",
 	"category": "office",
 	"description": "Simple XLSX spreadsheet shipped alongside office integration tests.",
-	"document": {
+	"input": {
 		"path": "xlsx/test_01.xlsx",
 		"media_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-		"min_content_length": 10
-	}
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 10
+		}
+	]
 }

@@ -1,0 +1,21 @@
+{
+	"id": "token_reduction_reduce_aggressive",
+	"category": "token_reduction",
+	"description": "Reduce tokens with aggressive compression level",
+	"tags": ["token_reduction", "compression"],
+	"call": "reduce_tokens",
+	"input": {
+		"text": "The quick brown fox jumps over the lazy dog.",
+		"level": "aggressive"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "min_length",
+			"field": "result",
+			"value": 1
+		}
+	]
+}

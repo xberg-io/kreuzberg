@@ -13,7 +13,11 @@ pub(super) fn build_config(
     default_config: &ExtractionConfig,
     config_json: Option<serde_json::Value>,
 ) -> Result<ExtractionConfig, String> {
-    build_config_from_json(default_config, config_json)
+    let json_string = config_json
+        .map(|v| serde_json::to_string(&v))
+        .transpose()
+        .map_err(|e| format!("Failed to serialize config JSON: {e}"))?;
+    build_config_from_json(default_config, json_string.as_deref())
 }
 
 /// Format extraction result as JSON string.

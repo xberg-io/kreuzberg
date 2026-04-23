@@ -1,0 +1,9 @@
+{
+	"id": "djot_to_html_complex",
+	"category": "rendering",
+	"description": "Complex djot to HTML",
+	"tags": ["rendering"],
+	"call": "djot_to_html",
+	"input": { "djot": "# Heading\n\nParagraph.\n\n- Item one\n- Item two" },
+	"assertions": [{ "type": "not_error" }, { "type": "min_length", "field": "content", "value": 10 }]
+}

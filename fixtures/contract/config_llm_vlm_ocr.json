@@ -2,12 +2,9 @@
 	"id": "config_llm_vlm_ocr",
 	"description": "Tests VLM OCR backend via liter-llm vision model",
 	"tags": ["contract", "config", "liter-llm", "ocr"],
-	"document": {
-		"path": "images/test_hello_world.png"
-	},
-	"extraction": {
-		"method": "sync",
-		"input_type": "file",
+	"call": "extract_file_sync",
+	"input": {
+		"path": "images/test_hello_world.png",
 		"config": {
 			"ocr": {
 				"backend": "vlm",
@@ -18,12 +15,18 @@
 			}
 		}
 	},
-	"assertions": {
-		"content_not_empty": true,
-		"min_content_length": 5
-	},
+	"assertions": [
+		{
+			"type": "not_empty",
+			"field": "content"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 5
+		}
+	],
 	"skip": {
-		"requires_feature": ["liter-llm"],
-		"notes": "Requires liter-llm feature and KREUZBERG_LLM_API_KEY env var"
+		"reason": "Requires features: liter-llm; Requires liter-llm feature and KREUZBERG_LLM_API_KEY env var"
 	}
 }

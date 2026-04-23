@@ -67,7 +67,7 @@ impl Default for DocbookExtractor {
 }
 
 impl DocbookExtractor {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self
     }
 }

@@ -1,0 +1,21 @@
+{
+	"id": "render_multi_page",
+	"category": "render",
+	"description": "Render a page from a multi-page PDF document",
+	"tags": ["render", "pdf", "multi_page"],
+	"call": "render_page",
+	"input": {
+		"path": "pdf/a_brief_introduction_to_neural_networks_neuronalenetze_en_zeta2_2col_dkrieselcom.pdf",
+		"page": 0
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "min_length",
+			"field": "result",
+			"value": 1000
+		}
+	]
+}

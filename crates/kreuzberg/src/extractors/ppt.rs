@@ -20,7 +20,7 @@ use std::borrow::Cow;
 pub struct PptExtractor;
 
 impl PptExtractor {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self
     }
 }

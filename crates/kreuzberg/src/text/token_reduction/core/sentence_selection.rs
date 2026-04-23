@@ -5,7 +5,7 @@ pub struct SentenceSelector;
 
 impl SentenceSelector {
     /// Applies sentence selection to keep only the most important sentences.
-    pub fn apply_sentence_selection(text: &str) -> String {
+    pub(crate) fn apply_sentence_selection(text: &str) -> String {
         let sentences: Vec<&str> = text
             .split(['.', '!', '?'])
             .map(|s| s.trim())

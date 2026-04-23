@@ -2,15 +2,20 @@
 	"id": "pdf_code_and_formula",
 	"category": "pdf",
 	"description": "PDF containing code snippets and formulas should retain substantial content.",
-	"document": {
+	"input": {
 		"path": "pdf/code_and_formula.pdf",
 		"media_type": "application/pdf"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": "application/pdf",
-		"min_content_length": 100
-	}
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "application/pdf"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 100
+		}
+	]
 }

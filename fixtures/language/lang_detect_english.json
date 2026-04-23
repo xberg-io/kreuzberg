@@ -1,0 +1,19 @@
+{
+	"id": "lang_detect_english",
+	"description": "Language detection works on English text",
+	"tags": ["language_detection", "text"],
+	"call": "extract_file_sync",
+	"input": {
+		"path": "semantic/mixed_topics.txt",
+		"config": {
+			"language_detection": {
+				"enabled": true
+			}
+		}
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	]
+}

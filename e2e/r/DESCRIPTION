@@ -1,11 +1,6 @@
-Package: kreuzberg.e2e
-Title: Kreuzberg E2E Tests
-Version: 0.0.1
-Description: Auto-generated E2E tests for kreuzberg R package.
-License: MIT
-Suggests:
-    testthat (>= 3.0.0),
-    withr,
-    kreuzberg
+Package: e2e.r
+Title: E2E Tests for kreuzberg
+Version: 0.1.0
+Description: End-to-end test suite.
+Suggests: testthat (>= 3.0.0)
 Config/testthat/edition: 3
-Encoding: UTF-8

@@ -2,16 +2,25 @@
 	"id": "office_odt_list",
 	"category": "office",
 	"description": "ODT document containing unordered lists with nesting.",
-	"document": {
+	"input": {
 		"path": "odt/unorderedList.odt",
 		"media_type": "application/vnd.oasis.opendocument.text"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": "application/vnd.oasis.opendocument.text",
-		"min_content_length": 30,
-		"content_contains_any": ["list item", "New level", "Pushed us"]
-	}
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "application/vnd.oasis.opendocument.text"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 30
+		},
+		{
+			"type": "contains_any",
+			"field": "content",
+			"values": ["list item", "New level", "Pushed us"]
+		}
+	]
 }

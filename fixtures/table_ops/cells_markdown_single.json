@@ -1,0 +1,15 @@
+{
+	"id": "cells_markdown_single",
+	"category": "table_operations",
+	"description": "Convert single-column cell array to markdown table",
+	"tags": ["table", "markdown", "cells", "single-column"],
+	"call": "cells_to_markdown",
+	"input": {
+		"cells": "[[\"Header\"],[\"Value\"]]"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	]
+}

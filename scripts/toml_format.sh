@@ -17,7 +17,7 @@ files=(
   crates/*/Cargo.toml
   tools/*/Cargo.toml
   e2e/rust/Cargo.toml
-  packages/ruby/ext/kreuzberg_rb/native/Cargo.toml
+  packages/ruby/ext/kreuzberg_rb/Cargo.toml
   crates/*/cbindgen.toml
   examples/*.toml
 )

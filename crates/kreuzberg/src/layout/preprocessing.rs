@@ -10,7 +10,7 @@ const IMAGENET_STD: [f32; 3] = [0.229, 0.224, 0.225];
 /// Pipeline: resize to target_size x target_size (bilinear) -> rescale /255 -> ImageNet normalize -> NCHW f32.
 ///
 /// Uses a single vectorized pass over contiguous pixel data for maximum throughput.
-pub fn preprocess_imagenet(img: &RgbImage, target_size: u32) -> Array4<f32> {
+pub(crate) fn preprocess_imagenet(img: &RgbImage, target_size: u32) -> Array4<f32> {
     let resized = image::imageops::resize(img, target_size, target_size, image::imageops::FilterType::Triangle);
     let pixels = resized.as_raw();
     let hw = (target_size * target_size) as usize;
@@ -49,7 +49,7 @@ pub fn preprocess_imagenet(img: &RgbImage, target_size: u32) -> Array4<f32> {
 /// Returns `(tensor, scale, pad_x, pad_y)`:
 /// - `scale`: resize factor applied (for mapping detections back)
 /// - `pad_x`, `pad_y`: top-left offset of the resized image within the padded square
-pub fn preprocess_imagenet_letterbox(img: &RgbImage, target_size: u32) -> (Array4<f32>, f32, u32, u32) {
+pub(crate) fn preprocess_imagenet_letterbox(img: &RgbImage, target_size: u32) -> (Array4<f32>, f32, u32, u32) {
     let (orig_w, orig_h) = (img.width() as f32, img.height() as f32);
     let scale = (target_size as f32 / orig_w).min(target_size as f32 / orig_h);
     let new_w = (orig_w * scale).round() as u32;
@@ -112,7 +112,7 @@ pub fn preprocess_imagenet_letterbox(img: &RgbImage, target_size: u32) -> (Array
 /// Preprocess with rescale only (no ImageNet normalization).
 ///
 /// Pipeline: resize to target_size x target_size -> rescale /255 -> NCHW f32.
-pub fn preprocess_rescale(img: &RgbImage, target_size: u32) -> Array4<f32> {
+pub(crate) fn preprocess_rescale(img: &RgbImage, target_size: u32) -> Array4<f32> {
     let resized = image::imageops::resize(img, target_size, target_size, image::imageops::FilterType::Triangle);
     let pixels = resized.as_raw();
     let hw = (target_size * target_size) as usize;
@@ -135,7 +135,7 @@ pub fn preprocess_rescale(img: &RgbImage, target_size: u32) -> Array4<f32> {
 /// No normalization — values are 0-255 as YOLOX expects.
 ///
 /// Returns the NCHW tensor and the scale ratio (for rescaling detections back).
-pub fn preprocess_letterbox(img: &RgbImage, target_width: u32, target_height: u32) -> (Array4<f32>, f32) {
+pub(crate) fn preprocess_letterbox(img: &RgbImage, target_width: u32, target_height: u32) -> (Array4<f32>, f32) {
     let (orig_w, orig_h) = (img.width() as f32, img.height() as f32);
     let scale = (target_height as f32 / orig_h).min(target_width as f32 / orig_w);
     let new_w = (orig_w * scale) as u32;

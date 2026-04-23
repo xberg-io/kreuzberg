@@ -1,0 +1,16 @@
+{
+	"id": "embed_list_presets",
+	"category": "embed_extra",
+	"description": "Lists available embedding model presets",
+	"tags": ["embedding", "presets"],
+	"call": "list_presets",
+	"input": {},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	],
+	"skip": {
+		"reason": "Requires features: embeddings"
+	}
+}

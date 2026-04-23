@@ -1,0 +1,15 @@
+{
+	"id": "detect_lang_french",
+	"category": "detection",
+	"description": "Detect French language in text",
+	"tags": ["language_detection", "french"],
+	"call": "detect_languages",
+	"input": {
+		"text": "Bonjour le monde, comment allez-vous aujourd'hui?"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	]
+}

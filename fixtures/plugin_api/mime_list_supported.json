@@ -1,0 +1,12 @@
+{
+	"id": "mime_list_supported",
+	"category": "mime_utilities",
+	"description": "List all supported MIME types and file extensions",
+	"tags": ["mime", "detection", "list"],
+	"call": "list_supported_formats",
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	]
+}

@@ -6,7 +6,7 @@
 ///
 /// Converts jotdown's internal attribute representation to Kreuzberg's
 /// standardized Attributes struct, handling IDs, classes, and key-value pairs.
-pub fn parse_jotdown_attributes(attrs: &jotdown::Attributes) -> crate::types::Attributes {
+pub(crate) fn parse_jotdown_attributes(attrs: &jotdown::Attributes) -> crate::types::Attributes {
     use crate::types::Attributes;
     use jotdown::AttributeKind;
 
@@ -43,7 +43,7 @@ pub fn parse_jotdown_attributes(attrs: &jotdown::Attributes) -> crate::types::At
 ///
 /// Converts Kreuzberg's Attributes struct back to djot attribute syntax:
 /// {.class #id key="value"}
-pub fn render_attributes(attrs: &crate::types::Attributes) -> String {
+pub(crate) fn render_attributes(attrs: &crate::types::Attributes) -> String {
     let mut parts = Vec::new();
 
     if let Some(ref id) = attrs.id {

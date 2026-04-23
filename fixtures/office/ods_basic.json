@@ -2,15 +2,20 @@
 	"id": "office_ods_basic",
 	"category": "office",
 	"description": "Basic ODS spreadsheet extraction.",
-	"document": {
+	"input": {
 		"path": "data_formats/test_01.ods",
 		"media_type": "application/vnd.oasis.opendocument.spreadsheet"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": "application/vnd.oasis.opendocument.spreadsheet",
-		"min_content_length": 10
-	}
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "application/vnd.oasis.opendocument.spreadsheet"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 10
+		}
+	]
 }

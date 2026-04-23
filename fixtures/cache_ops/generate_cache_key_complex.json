@@ -1,0 +1,9 @@
+{
+	"id": "generate_cache_key_complex",
+	"category": "cache_ops",
+	"description": "Complex cache key",
+	"tags": ["cache"],
+	"call": "generate_cache_key",
+	"input": { "parts": ["hash_abc", "config_v2", "markdown"] },
+	"assertions": [{ "type": "not_error" }, { "type": "min_length", "field": "result", "value": 5 }]
+}

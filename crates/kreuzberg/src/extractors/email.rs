@@ -26,7 +26,7 @@ impl Default for EmailExtractor {
 }
 
 impl EmailExtractor {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self
     }
 }

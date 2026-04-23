@@ -1,0 +1,9 @@
+{
+	"id": "validate_chunking_params_valid",
+	"category": "validate",
+	"description": "Valid chunking params",
+	"tags": ["validation"],
+	"call": "validate_chunking_params",
+	"input": { "max_characters": 500, "overlap": 50 },
+	"assertions": [{ "type": "not_error" }]
+}

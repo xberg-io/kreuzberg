@@ -1,4557 +1,1245 @@
-# Configuration Reference <span class="version-badge">v4.0.0</span>
-
-This page provides complete documentation for all Kreuzberg configuration types and fields. For quick-start examples and common use cases, see the [Configuration Guide](../guides/configuration.md).
-
-## Getting Started
-
-New users should start with the [Configuration Guide](../guides/configuration.md) which covers:
-
-- Configuration discovery mechanism
-- Quick-start examples in all languages
-- Common use cases (OCR setup, chunking for RAG)
-- Configuration file formats (TOML, YAML, JSON)
-
-This reference page is the comprehensive source for:
-
-- All configuration field details
-- Default values and constraints
-- Technical specifications for each config type
-
+---
+title: "Configuration Reference"
 ---
 
-## ServerConfig
+## Configuration Reference
 
-**NEW in v4.2.7**: The ServerConfig controls API server and network settings.
+This page documents all configuration types and their defaults across all languages.
 
-API server configuration for the Kreuzberg HTTP server, including host/port settings, CORS configuration, and upload size limits. All settings can be overridden via environment variables.
+### AccelerationConfig
 
-### Overview
+Hardware acceleration configuration for ONNX Runtime models.
 
-ServerConfig is used to customize the Kreuzberg API server behavior when running `kreuzberg serve` or embedding a Kreuzberg API server in your application. It controls network binding, cross-origin resource sharing (CORS), and file upload size constraints.
-
-### Fields
-
-| Field                       | Type            | Default       | Description                                                                                              |
-| --------------------------- | --------------- | ------------- | -------------------------------------------------------------------------------------------------------- |
-| `host`                      | `String`        | `"127.0.0.1"` | Server host address (for example, "127.0.0.1", "0.0.0.0")                                                       |
-| `port`                      | `u16`           | `8000`        | Server port number (1-65535)                                                                             |
-| `cors_origins`              | `Vec<String>`   | empty         | CORS allowed origins. Empty list allows all origins.                                                     |
-| `max_request_body_bytes`    | `usize`         | `104857600`   | Maximum request body size in bytes (100 MB default)                                                      |
-| `max_multipart_field_bytes` | `usize`         | `104857600`   | Maximum multipart field size in bytes (100 MB default)                                                   |
-
-### Configuration Precedence
-
-Settings are applied in this order (highest priority first):
-
-1. **Environment Variables** - `KREUZBERG_*` variables override everything
-2. **Configuration File** - TOML, YAML, or JSON values
-3. **Programmatic Defaults** - Hard-coded defaults
-
-### CORS Security Warning
-
-The default configuration (empty `cors_origins` list) **allows requests from any origin**. This is suitable for development and internal APIs, but you should explicitly configure `cors_origins` for production deployments to prevent unauthorized cross-origin requests.
-
-**Recommended for production:**
-
-```toml title="Production CORS Configuration"
-cors_origins = ["https://yourdomain.com", "https://app.yourdomain.com"]
-```
-
-### Configuration Examples
-
-=== "Rust"
-
-    ```rust title="basic_server_config.rs"
-    use kreuzberg::core::ServerConfig;
-
-    // Basic configuration with defaults
-    let config = ServerConfig::default();
-    assert_eq!(config.host, "127.0.0.1");
-    assert_eq!(config.port, 8000);
-
-    // Custom configuration
-    let mut config = ServerConfig::default();
-    config.host = "0.0.0.0".to_string();
-    config.port = 3000;
-
-    // Listen address helper
-    println!("Server listening on: {}", config.listen_addr());
-    ```
-
-=== "Rust - CORS Configuration"
-
-    ```rust title="cors_server_config.rs"
-    use kreuzberg::core::ServerConfig;
-
-    // Allow specific origins only (secure)
-    let mut config = ServerConfig::default();
-    config.cors_origins = vec![
-        "https://app.example.com".to_string(),
-        "https://admin.example.com".to_string(),
-    ];
-
-    // Check if origin is allowed
-    assert!(config.is_origin_allowed("https://app.example.com"));
-    assert!(!config.is_origin_allowed("https://evil.com"));
-
-    // Check if allowing all origins
-    assert!(!config.cors_allows_all());
-    ```
-
-=== "Rust - Upload Size Configuration"
-
-    ```rust title="size_limits_config.rs"
-    use kreuzberg::core::ServerConfig;
-
-    // Custom size limits (200 MB)
-    let mut config = ServerConfig::default();
-    config.max_request_body_bytes = 200 * 1_048_576;  // 200 MB
-    config.max_multipart_field_bytes = 200 * 1_048_576;  // 200 MB
-
-    // Get sizes in MB
-    println!("Max request body: {} MB", config.max_request_body_mb());
-    println!("Max file upload: {} MB", config.max_multipart_field_mb());
-    ```
-
-=== "Rust - Load from File"
-
-    ```rust title="load_server_config.rs"
-    use kreuzberg::core::ServerConfig;
-
-    // Auto-detect format from extension (.toml, .yaml, .json)
-    let mut config = ServerConfig::from_file("server.toml")?;
-
-    // Or use specific loaders
-    let config = ServerConfig::from_toml_file("server.toml")?;
-    let config = ServerConfig::from_yaml_file("server.yaml")?;
-    let config = ServerConfig::from_json_file("server.json")?;
-
-    // Apply environment variable overrides
-    config.apply_env_overrides()?;
-    ```
-
-### Environment Variable Overrides
-
-All settings can be overridden via environment variables with `KREUZBERG_` prefix:
-
-```bash title="Terminal"
-# Network settings
-export KREUZBERG_HOST="0.0.0.0"
-export KREUZBERG_PORT="3000"
-
-# CORS configuration (comma-separated)
-export KREUZBERG_CORS_ORIGINS="https://app1.com, https://app2.com"
-
-# Size limits (in bytes)
-export KREUZBERG_MAX_REQUEST_BODY_BYTES="209715200"      # 200 MB
-export KREUZBERG_MAX_MULTIPART_FIELD_BYTES="209715200"   # 200 MB
-
-kreuzberg serve
-```
-
-### Configuration File Examples
-
-#### TOML Format
-
-```toml title="server.toml"
-# Basic server configuration
-host = "0.0.0.0"          # Listen on all interfaces
-port = 8000               # API port
-
-# CORS configuration (empty = allow all)
-cors_origins = [
-    "https://app.example.com",
-    "https://admin.example.com"
-]
-
-# Upload size limits (default: 100 MB)
-max_request_body_bytes = 104857600      # 100 MB
-max_multipart_field_bytes = 104857600   # 100 MB
-```
-
-#### YAML Format
-
-```yaml title="server.yaml"
-host: 0.0.0.0
-port: 8000
-
-cors_origins:
-  - https://app.example.com
-  - https://admin.example.com
-
-max_request_body_bytes: 104857600
-max_multipart_field_bytes: 104857600
-```
-
-#### JSON Format
-
-```json title="server.json"
-{
-  "host": "0.0.0.0",
-  "port": 8000,
-  "cors_origins": ["https://app.example.com", "https://admin.example.com"],
-  "max_request_body_bytes": 104857600,
-  "max_multipart_field_bytes": 104857600
-}
-```
-
-### Docker Integration
-
-When deploying Kreuzberg in Docker, use environment variables to configure the server:
-
-```dockerfile title="Dockerfile"
-FROM kreuzberg:latest
-
-ENV KREUZBERG_HOST="0.0.0.0"
-ENV KREUZBERG_PORT="8000"
-ENV KREUZBERG_CORS_ORIGINS="https://yourdomain.com"
-ENV KREUZBERG_MAX_MULTIPART_FIELD_BYTES="524288000"
-
-EXPOSE 8000
-
-CMD ["kreuzberg", "serve"]
-```
-
-```bash title="Terminal - Run with Docker"
-docker run -it \
-  -e KREUZBERG_HOST="0.0.0.0" \
-  -e KREUZBERG_PORT="3000" \
-  -e KREUZBERG_CORS_ORIGINS="https://api.example.com" \
-  -p 3000:3000 \
-  kreuzberg:latest kreuzberg serve
-```
-
----
-
-## ExtractionConfig
-
-Main extraction configuration controlling all aspects of document processing.
-
-| Field                        | Type                       | Default                | Description                                                                                                                                                                                      |
-| ---------------------------- | -------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `use_cache`                  | `bool`                     | `true`                 | Enable caching of extraction results for faster re-processing                                                                                                                                    |
-| `enable_quality_processing`  | `bool`                     | `true`                 | Enable quality post-processing (deduplication, mojibake fixing, etc.)                                                                                                                            |
-| `force_ocr`                  | `bool`                     | `false`                | Force OCR even for searchable PDFs with text layers                                                                                                                                              |
-| `disable_ocr`                | `bool`                     | `false`                | Disable OCR entirely — image files return empty content instead of raising errors (v4.7.0+)                                                                                                      |
-| `ocr`                        | `OcrConfig?`               | `None`                 | OCR configuration (if None, OCR disabled)                                                                                                                                                        |
-| `pdf_options`                | `PdfConfig?`               | `None`                 | PDF-specific configuration options                                                                                                                                                               |
-| `images`                     | `ImageExtractionConfig?`   | `None`                 | Image extraction configuration                                                                                                                                                                   |
-| `chunking`                   | `ChunkingConfig?`          | `None`                 | Text chunking configuration for splitting into chunks                                                                                                                                            |
-| `content_filter`             | `ContentFilterConfig?` <span class="version-badge">v4.8.0</span> | `None`                 | Header, footer, watermark, and repeating-text filtering. See [ContentFilterConfig](#contentfilterconfig).                                                                                        |
-| `token_reduction`            | `TokenReductionConfig?`    | `None`                 | Token reduction configuration for optimizing LLM context                                                                                                                                         |
-| `language_detection`         | `LanguageDetectionConfig?` | `None`                 | Automatic language detection configuration                                                                                                                                                       |
-| `postprocessor`              | `PostProcessorConfig?`     | `None`                 | Post-processing pipeline configuration                                                                                                                                                           |
-| `pages`                      | `PageConfig?`              | `None`                 | Page extraction and tracking configuration                                                                                                                                                       |
-| `max_concurrent_extractions` | `int?`                     | `None`                 | Maximum concurrent batch extractions (defaults to num_cpus \* 2)                                                                                                                                 |
-| `concurrency`                | `ConcurrencyConfig?` <span class="version-badge">v4.5.0</span> | `None`                 | Concurrency configuration for threading (max_threads caps Rayon, ONNX intra-op threads, and batch semaphore)                                                                                    |
-| `result_format`              | `OutputFormat`             | `Unified`              | Result structure format: `Unified` (content in single field) or `ElementBased` (semantic elements array)                                                                                         |
-| `output_format`              | `OutputFormat`             | `Plain`                | Output format for extracted text content (Plain, Markdown, Djot, Html, Structured)                                                                                                               |
-| `html_options`               | `ConversionOptions`        | `None`                 | HTML to Markdown conversion options (heading styles, list formatting, code block styles). Only available with `html` feature.                                                                    |
-| `html_output`                | `HtmlOutputConfig?` <span class="version-badge">v4.8.1</span>         | `None`                 | Styled HTML output configuration: theme selection, custom CSS, class prefix. When set alongside `output_format = Html`, activates the styled renderer with `kb-*` class hooks. Only available with `html` feature. |
-| `security_limits`            | `SecurityLimits?`          | `None` (uses defaults) | Archive security thresholds: max archive size (500MB), compression ratio (100:1), file count (10K), nesting depth, content size, XML depth, table cells. Only available with `archives` feature. |
-| `layout`                     | `LayoutDetectionConfig?`   | `None`                 | Layout detection configuration for document structure analysis. Only available with `layout-detection` feature.                                                                                   |
-| `acceleration`               | `AccelerationConfig?`      | `None`                 | Hardware acceleration configuration for ONNX Runtime inference (layout detection and embeddings). See [AccelerationConfig](#accelerationconfig).                                                 |
-| `include_document_structure` | `bool`                     | `false`                | Enable structured document model output. When true, the `document` field on ExtractionResult is populated with a tree-based representation of document content.                                  |
-| `tree_sitter`                | `TreeSitterConfig?`        | `None`                 | Tree-sitter code intelligence configuration. Controls code analysis features when extracting source code files. Only available with `tree-sitter` feature.                                       |
-| `structured_extraction`      | `StructuredExtractionConfig?` | `None`              | Structured extraction configuration for LLM-powered schema-based extraction. When set, extraction results include a `structured_output` field with data conforming to the provided JSON schema. Only available with `liter-llm` feature. |
-
-### Result Format vs Output Format
-
-**Important distinction:** These two fields control different aspects of extraction results:
-
-- **`result_format`** - Controls the **structure** of the result:
-  - `Unified` (default): All content returned in the `content` field as a single string
-  - `ElementBased`: Content returned as semantic elements in the `elements` array (Unstructured-compatible format)
-
-- **`output_format`** - Controls the **text format** within the content:
-  - `Plain` (default): Raw extracted text
-  - `Markdown`: Markdown formatted output
-  - `Djot`: Djot markup format
-  - `Html`: HTML formatted output
-
-### OutputFormat (result_format field)
-
-Controls the structure of extraction results:
-
-| Value           | Description                                                   |
-| --------------- | ------------------------------------------------------------- |
-| `unified`       | All content in single `content` field (default)               |
-| `element_based` | Semantic elements with type classification, IDs, and metadata |
-
-When `result_format` is set to `ElementBased`, the `elements` field contains an array of semantic elements with unique identifiers, element types (title, heading, narrative_text, etc.), and metadata for Unstructured-compatible processing.
-
-### OutputFormat (output_format field)
-
-Output format for extraction content. Controls how extracted text is formatted in the result.
-
-| Value        | Description                                                             |
-| ------------ | ----------------------------------------------------------------------- |
-| `plain`      | Plain text content only (default)                                       |
-| `markdown`   | Markdown formatted output                                               |
-| `djot`       | Djot markup format                                                      |
-| `html`       | HTML formatted output                                                   |
-| `structured` | Structured JSON with full OCR element data (bounding boxes, confidence) |
-
-**Environment Variable:** `KREUZBERG_OUTPUT_FORMAT` - Set output format via environment (plain, markdown, djot, html, structured)
-
-### HtmlOutputConfig
-
-Configuration for the styled HTML renderer. When set on `ExtractionConfig.html_output` alongside `output_format = Html`, the pipeline produces HTML with semantic `kb-*` class hooks instead of plain HTML.
+Controls which execution provider (CPU, CoreML, CUDA, TensorRT) is used
+for inference in layout detection and embedding generation.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `theme` | `HtmlTheme` | `Unstyled` | Built-in colour/typography theme |
-| `css` | `string?` | `None` | Inline CSS string appended after theme stylesheet |
-| `css_file` | `path?` | `None` | CSS file loaded at render time (max 1 MiB) |
-| `class_prefix` | `string` | `"kb-"` | CSS class prefix (alphanumeric + hyphens + underscores only) |
-| `embed_css` | `bool` | `true` | Embed CSS in `<style>` block. Set `false` for external stylesheets |
-
-### HtmlTheme
-
-Built-in theme selection for styled HTML output.
-
-| Value | Description |
-|-------|-------------|
-| `Unstyled` (default) | No built-in stylesheet. CSS custom properties defined on `:root` for user stylesheets |
-| `Default` | System font stack, neutral colours, readable line measure |
-| `GitHub` | GitHub Markdown-inspired palette and spacing |
-| `Dark` | Dark background, light text |
-| `Light` | Minimal light theme with generous whitespace |
-
-### Example
-
-=== "C#"
-
-    ```csharp
-    using Kreuzberg;
-
-    var config = new ExtractionConfig
-    {
-        UseCache = true,
-        EnableQualityProcessing = true,
-        ForceOcr = false,
-    };
-
-    var result = KreuzbergClient.ExtractFileSync("document.pdf", config);
-    ```
-
-=== "Go"
-
-    --8<-- "snippets/go/config/config_basic.md"
-
-=== "Java"
-
-    --8<-- "snippets/java/config/config_basic.md"
-
-=== "Python"
-
-    --8<-- "snippets/python/config/config_basic.md"
-
-=== "Ruby"
-
-    --8<-- "snippets/ruby/config/config_basic.md"
-
-=== "R"
-
-    --8<-- "snippets/r/config/config_basic.md"
-
-=== "Rust"
-
-    --8<-- "snippets/rust/config/config_basic.md"
-
-=== "TypeScript"
-
-    --8<-- "snippets/typescript/config/config_basic.md"
+| `provider` | `ExecutionProviderType` | `ExecutionProviderType.AUTO` | Execution provider to use for ONNX inference. |
+| `device_id` | `int` | — | GPU device ID (for CUDA/TensorRT). Ignored for CPU/CoreML/Auto. |
 
 ---
 
-## FileExtractionConfig <span class="version-badge">v4.5.0</span>
+### ContentFilterConfig
 
-Per-file extraction configuration overrides for batch operations. All fields are optional — `None` means "use the batch-level default from `ExtractionConfig`."
+Cross-extractor content filtering configuration.
 
-When passed as an optional parameter to `batch_extract_file` / `batch_extract_bytes` (or their sync variants), each file in the batch can specify its own overrides that are merged with the shared batch-level `ExtractionConfig`.
+Controls whether "furniture" content (headers, footers, page numbers,
+watermarks, repeating text) is included in or stripped from extraction
+results. Applies across all extractors (PDF, DOCX, RTF, ODT, HTML, etc.)
+with format-specific implementation.
 
-### Overridable Fields
+When `None` on `ExtractionConfig`, each extractor uses its current
+default behavior unchanged.
 
-| Field                        | Type                       | Description                                      |
-| ---------------------------- | -------------------------- | ------------------------------------------------ |
-| `enable_quality_processing`  | `bool?`                    | Override quality post-processing for this file    |
-| `ocr`                        | `OcrConfig?`               | Override OCR configuration                        |
-| `force_ocr`                  | `bool?`                    | Override force OCR                                |
-| `disable_ocr`                | `bool?`                    | Override disable OCR (v4.7.0+)                    |
-| `chunking`                   | `ChunkingConfig?`          | Override text chunking                            |
-| `content_filter`             | `ContentFilterConfig?`     | Override content filtering                        |
-| `images`                     | `ImageExtractionConfig?`   | Override image extraction                         |
-| `pdf_options`                | `PdfConfig?`               | Override PDF-specific options                     |
-| `token_reduction`            | `TokenReductionConfig?`    | Override token reduction                          |
-| `language_detection`         | `LanguageDetectionConfig?` | Override language detection                       |
-| `pages`                      | `PageConfig?`              | Override page extraction                          |
-| `keywords`                   | `KeywordConfig?`           | Override keyword extraction                       |
-| `postprocessor`              | `PostProcessorConfig?`     | Override post-processing                          |
-| `html_options`               | `ConversionOptions?`       | Override HTML conversion options                  |
-| `result_format`              | `OutputFormat?`            | Override result structure format                  |
-| `output_format`              | `OutputFormat?`            | Override output content format                    |
-| `include_document_structure` | `bool?`                    | Override document structure output                |
-| `layout`                     | `LayoutDetectionConfig?`   | Override layout detection                         |
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `include_headers` | `bool` | `False` | Include running headers in extraction output. - PDF: Disables top-margin furniture stripping and prevents the layout model from treating `PageHeader`-classified regions as furniture. - DOCX: Includes document headers in text output. - RTF/ODT: Headers already included; this is a no-op when true. - HTML/EPUB: Keeps `<header>` element content. Default: `False` (headers are stripped or excluded). |
+| `include_footers` | `bool` | `False` | Include running footers in extraction output. - PDF: Disables bottom-margin furniture stripping and prevents the layout model from treating `PageFooter`-classified regions as furniture. - DOCX: Includes document footers in text output. - RTF/ODT: Footers already included; this is a no-op when true. - HTML/EPUB: Keeps `<footer>` element content. Default: `False` (footers are stripped or excluded). |
+| `strip_repeating_text` | `bool` | `True` | Enable the heuristic cross-page repeating text detector. When `True` (default), text that repeats verbatim across a supermajority of pages is classified as furniture and stripped.  Disable this if brand names or repeated headings are being incorrectly removed by the heuristic. Note: when a layout-detection model is active, the model may independently classify page-header / page-footer regions as furniture on a per-page basis. To preserve those regions, set `include_headers = true` and/or `include_footers = true` in addition to disabling this flag. Primarily affects PDF extraction. Default: `True`. |
+| `include_watermarks` | `bool` | `False` | Include watermark text in extraction output. - PDF: Keeps watermark artifacts and arXiv identifiers. - Other formats: No effect currently. Default: `False` (watermarks are stripped). |
 
-### Batch-Level Only Fields (Not Overridable)
+---
 
-These `ExtractionConfig` fields cannot be overridden per file:
+### EmailConfig
 
+Configuration for email extraction.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `msg_fallback_codepage` | `int | None` | `None` | Windows codepage number to use when an MSG file contains no codepage property. Defaults to `None`, which falls back to windows-1252. If an unrecognized or invalid codepage number is supplied (including 0), the behavior silently falls back to windows-1252 — the same as when the MSG file itself contains an unrecognized codepage. No error or warning is emitted. Users should verify output when supplying unusual values. Common values: - 1250: Central European (Polish, Czech, Hungarian, etc.) - 1251: Cyrillic (Russian, Ukrainian, Bulgarian, etc.) - 1252: Western European (default) - 1253: Greek - 1254: Turkish - 1255: Hebrew - 1256: Arabic - 932:  Japanese (Shift-JIS) - 936:  Simplified Chinese (GBK) |
+
+---
+
+### ExtractionConfig
+
+Main extraction configuration.
+
+This struct contains all configuration options for the extraction process.
+It can be loaded from TOML, YAML, or JSON files, or created programmatically.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `use_cache` | `bool` | `True` | Enable caching of extraction results |
+| `enable_quality_processing` | `bool` | `True` | Enable quality post-processing |
+| `ocr` | `OcrConfig | None` | `None` | OCR configuration (None = OCR disabled) |
+| `force_ocr` | `bool` | `False` | Force OCR even for searchable PDFs |
+| `force_ocr_pages` | `list[int] | None` | `None` | Force OCR on specific pages only (1-indexed page numbers, must be >= 1). When set, only the listed pages are OCR'd regardless of text layer quality. Unlisted pages use native text extraction. Ignored when `force_ocr` is `True`. Only applies to PDF documents. Duplicates are automatically deduplicated. An `ocr` config is recommended for backend/language selection; defaults are used if absent. |
+| `disable_ocr` | `bool` | `False` | Disable OCR entirely, even for images. When `True`, OCR is skipped for all document types. Images return metadata only (dimensions, format, EXIF) without text extraction. PDFs use only native text extraction without OCR fallback. Cannot be `True` simultaneously with `force_ocr`. *Added in v4.7.0.* |
+| `chunking` | `ChunkingConfig | None` | `None` | Text chunking configuration (None = chunking disabled) |
+| `content_filter` | `ContentFilterConfig | None` | `None` | Content filtering configuration (None = use extractor defaults). Controls whether document "furniture" (headers, footers, watermarks, repeating text) is included in or stripped from extraction results. See `ContentFilterConfig` for per-field documentation. |
+| `images` | `ImageExtractionConfig | None` | `None` | Image extraction configuration (None = no image extraction) |
+| `pdf_options` | `PdfConfig | None` | `None` | PDF-specific options (None = use defaults) |
+| `token_reduction` | `TokenReductionOptions | None` | `None` | Token reduction configuration (None = no token reduction) |
+| `language_detection` | `LanguageDetectionConfig | None` | `None` | Language detection configuration (None = no language detection) |
+| `pages` | `PageConfig | None` | `None` | Page extraction configuration (None = no page tracking) |
+| `postprocessor` | `PostProcessorConfig | None` | `None` | Post-processor configuration (None = use defaults) |
+| `html_options` | `str | None` | `None` | HTML to Markdown conversion options (None = use defaults) Configure how HTML documents are converted to Markdown, including heading styles, list formatting, code block styles, and preprocessing options. |
+| `html_output` | `HtmlOutputConfig | None` | `None` | Styled HTML output configuration. When set alongside `output_format = OutputFormat.Html`, the extraction pipeline uses `StyledHtmlRenderer` which emits stable `kb-*` CSS class hooks on every structural element and optionally embeds theme CSS or user-supplied CSS in a `<style>` block. When `None`, the existing plain comrak-based HTML renderer is used. |
+| `extraction_timeout_secs` | `int | None` | `None` | Default per-file timeout in seconds for batch extraction. When set, each file in a batch will be canceled after this duration unless overridden by `FileExtractionConfig.timeout_secs`. `None` means no timeout (unbounded extraction time). |
+| `max_concurrent_extractions` | `int | None` | `None` | Maximum concurrent extractions in batch operations (None = (num_cpus × 1.5).ceil()). Limits parallelism to prevent resource exhaustion when processing large batches. Defaults to (num_cpus × 1.5).ceil() when not set. |
+| `result_format` | `str` | — | Result structure format Controls whether results are returned in unified format (default) with all content in the `content` field, or element-based format with semantic elements (for Unstructured-compatible output). |
+| `security_limits` | `str | None` | `None` | Security limits for archive extraction. Controls maximum archive size, compression ratio, file count, and other security thresholds to prevent decompression bomb attacks. When `None`, default limits are used (500MB archive, 100:1 ratio, 10K files). |
+| `output_format` | `str` | `Plain` | Content text format (default: Plain). Controls the format of the extracted content: - `Plain`: Raw extracted text (default) - `Markdown`: Markdown formatted output - `Djot`: Djot markup format (requires djot feature) - `Html`: HTML formatted output When set to a structured format, extraction results will include formatted output. The `formatted_content` field may be populated when format conversion is applied. |
+| `layout` | `LayoutDetectionConfig | None` | `None` | Layout detection configuration (None = layout detection disabled). When set, PDF pages and images are analyzed for document structure (headings, code, formulas, tables, figures, etc.) using RT-DETR models via ONNX Runtime. For PDFs, layout hints override paragraph classification in the markdown pipeline. For images, per-region OCR is performed with markdown formatting based on detected layout classes. Requires the `layout-detection` feature. |
+| `include_document_structure` | `bool` | `False` | Enable structured document tree output. When true, populates the `document` field on `ExtractionResult` with a hierarchical `DocumentStructure` containing heading-driven section nesting, table grids, content layer classification, and inline annotations. Independent of `result_format` — can be combined with Unified or ElementBased. |
+| `acceleration` | `AccelerationConfig | None` | `None` | Hardware acceleration configuration for ONNX Runtime models. Controls execution provider selection for layout detection and embedding models. When `None`, uses platform defaults (CoreML on macOS, CUDA on Linux, CPU on Windows). |
+| `cache_namespace` | `str | None` | `None` | Cache namespace for tenant isolation. When set, cache entries are stored under `{cache_dir}/{namespace}/`. Must be alphanumeric, hyphens, or underscores only (max 64 chars). Different namespaces have isolated cache spaces on the same filesystem. |
+| `cache_ttl_secs` | `int | None` | `None` | Per-request cache TTL in seconds. Overrides the global `max_age_days` for this specific extraction. When `0`, caching is completely skipped (no read or write). When `None`, the global TTL applies. |
+| `email` | `EmailConfig | None` | `None` | Email extraction configuration (None = use defaults). Currently supports configuring the fallback codepage for MSG files that do not specify one. See `crate.core.config.EmailConfig` for details. |
+| `concurrency` | `str | None` | `None` | Concurrency limits for constrained environments (None = use defaults). Controls Rayon thread pool size, ONNX Runtime intra-op threads, and (when `max_concurrent_extractions` is unset) the batch concurrency semaphore. See `crate.core.config.ConcurrencyConfig` for details. |
+| `max_archive_depth` | `int` | — | Maximum recursion depth for archive extraction (default: 3). Set to 0 to disable recursive extraction (legacy behavior). |
+| `tree_sitter` | `TreeSitterConfig | None` | `None` | Tree-sitter language pack configuration (None = tree-sitter disabled). When set, enables code file extraction using tree-sitter parsers. Controls grammar download behavior and code analysis options. |
+| `structured_extraction` | `StructuredExtractionConfig | None` | `None` | Structured extraction via LLM (None = disabled). When set, the extracted document content is sent to an LLM with the provided JSON schema. The structured response is stored in `ExtractionResult.structured_output`. |
+| `cancel_token` | `str | None` | `None` | Cancellation token for this extraction (None = no external cancellation). Pass a `CancellationToken` clone here and call `CancellationToken.cancel` from another thread / task to abort the extraction in progress. The extractor checks the token at safe checkpoints (before lock acquisition, between pages, between batch items) and returns `KreuzbergError.Cancelled` when set. The field is excluded from serialization because `CancellationToken` is a runtime handle, not a configuration value. |
+
+---
+
+### FileExtractionConfig
+
+Per-file extraction configuration overrides for batch processing.
+
+All fields are `Option<T>` — `None` means "use the batch-level default."
+This type is used with `crate.batch_extract_file` and
+`crate.batch_extract_bytes` to allow heterogeneous
+extraction settings within a single batch.
+
+# Excluded Fields
+
+The following `super.ExtractionConfig` fields are batch-level only and
+cannot be overridden per file:
 - `max_concurrent_extractions` — controls batch parallelism
 - `use_cache` — global caching policy
 - `acceleration` — shared ONNX execution provider
 - `security_limits` — global archive security policy
 
-### Merge Semantics
-
-For each file in a batch, the effective configuration is computed by overlaying the per-file `FileExtractionConfig` onto the batch-level `ExtractionConfig`. A field set to `None` in `FileExtractionConfig` falls through to the batch default. A field set to `Some(value)` replaces the batch default entirely for that file.
-
-### Example
-
-=== "Rust"
-
-    ```rust title="per_file_config.rs"
-    use kreuzberg::{
-        batch_extract_file, ExtractionConfig, FileExtractionConfig, OcrConfig,
-    };
-    use std::path::PathBuf;
-
-    #[tokio::main]
-    async fn main() -> kreuzberg::Result<()> {
-        let batch_config = ExtractionConfig::default();
-
-        let paths = vec![
-            PathBuf::from("report.pdf"),
-            PathBuf::from("scanned.pdf"),
-        ];
-
-        let file_configs = vec![
-            None, // Use batch defaults for this PDF
-            Some(FileExtractionConfig { // Force OCR for this scanned document
-                force_ocr: Some(true),
-                ocr: Some(OcrConfig {
-                    backend: "tesseract".to_string(),
-                    language: "deu".to_string(),
-                    ..Default::default()
-                }),
-                ..Default::default()
-            }),
-        ];
-
-        let results = batch_extract_file(paths, &batch_config, Some(&file_configs)).await?;
-        Ok(())
-    }
-    ```
-
-=== "Python"
-
-    ```python title="per_file_config.py"
-    from kreuzberg import (
-        batch_extract_files_sync,
-        ExtractionConfig,
-        FileExtractionConfig,
-        OcrConfig,
-    )
-
-    config = ExtractionConfig()
-
-    paths = ["report.pdf", "scanned.pdf"]
-    file_configs = [
-        None,  # use batch defaults
-        FileExtractionConfig(
-            force_ocr=True,
-            ocr=OcrConfig(backend="tesseract", language="deu"),
-        ),
-    ]
-
-    results = batch_extract_files_sync(paths, config, file_configs=file_configs)
-    ```
-
-=== "TypeScript"
-
-    ```typescript title="per_file_config.ts"
-    import { batchExtractFilesSync } from '@kreuzberg/node';
-
-    const results = batchExtractFilesSync(
-      ['report.pdf', 'scanned.pdf'],
-      undefined, // use default config
-      [
-        null,  // use batch defaults
-        {      // per-file overrides
-          forceOcr: true,
-          ocr: { backend: 'tesseract', language: 'deu' },
-        },
-      ],
-    );
-    ```
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `enable_quality_processing` | `bool | None` | `None` | Override quality post-processing for this file. |
+| `ocr` | `OcrConfig | None` | `None` | Override OCR configuration for this file (None in the Option = use batch default). |
+| `force_ocr` | `bool | None` | `None` | Override force OCR for this file. |
+| `force_ocr_pages` | `list[int] | None` | `[]` | Override force OCR pages for this file (1-indexed page numbers). |
+| `disable_ocr` | `bool | None` | `None` | Override disable OCR for this file. |
+| `chunking` | `ChunkingConfig | None` | `None` | Override chunking configuration for this file. |
+| `content_filter` | `ContentFilterConfig | None` | `None` | Override content filtering configuration for this file. |
+| `images` | `ImageExtractionConfig | None` | `None` | Override image extraction configuration for this file. |
+| `pdf_options` | `PdfConfig | None` | `None` | Override PDF options for this file. |
+| `token_reduction` | `TokenReductionOptions | None` | `None` | Override token reduction for this file. |
+| `language_detection` | `LanguageDetectionConfig | None` | `None` | Override language detection for this file. |
+| `pages` | `PageConfig | None` | `None` | Override page extraction for this file. |
+| `postprocessor` | `PostProcessorConfig | None` | `None` | Override post-processor for this file. |
+| `html_options` | `str | None` | `None` | Override HTML conversion options for this file. |
+| `result_format` | `str | None` | `None` | Override result format for this file. |
+| `output_format` | `str | None` | `None` | Override output content format for this file. |
+| `include_document_structure` | `bool | None` | `None` | Override document structure output for this file. |
+| `layout` | `LayoutDetectionConfig | None` | `None` | Override layout detection for this file. |
+| `timeout_secs` | `int | None` | `None` | Override per-file extraction timeout in seconds. When set, the extraction for this file will be canceled after the specified duration. A timed-out file produces an error result without affecting other files in the batch. |
+| `tree_sitter` | `TreeSitterConfig | None` | `None` | Override tree-sitter configuration for this file. |
+| `structured_extraction` | `StructuredExtractionConfig | None` | `None` | Override structured extraction configuration for this file. When set, enables LLM-based structured extraction with a JSON schema for this specific file. The extracted content is sent to a VLM/LLM and the response is parsed according to the provided schema. |
 
 ---
 
-## ContentFilterConfig <span class="version-badge">v4.8.0</span>
+### ImageExtractionConfig
 
-Controls whether headers, footers, watermarks, and repeating cross-page text are kept in or stripped from extraction output. Applies to PDF, DOCX, RTF, ODT, HTML, EPUB, and PPT extractors with format-specific behavior.
+Image extraction configuration.
 
-When `content_filter` is `None` on `ExtractionConfig`, each extractor uses its built-in defaults (the same values listed below).
-
-### Fields
-
-| Field                  | Type   | Default | Description                                                                                       |
-| ---------------------- | ------ | ------- | ------------------------------------------------------------------------------------------------- |
-| `include_headers`      | `bool` | `False` | Keep running headers. PDF skips top-margin furniture stripping; DOCX includes header parts; HTML/EPUB keep `<header>` content. |
-| `include_footers`      | `bool` | `False` | Keep running footers. PDF skips bottom-margin furniture stripping; DOCX includes footer parts; HTML/EPUB keep `<footer>` content. |
-| `strip_repeating_text` | `bool` | `True`  | Detect text that repeats verbatim across most pages and remove it. Disable if brand names or repeated headings are being incorrectly stripped. Primarily PDF. |
-| `include_watermarks`   | `bool` | `False` | Keep watermark text and arXiv-style identifiers. PDF only.                                         |
-
-The `strip_repeating_text` flag also gates paragraph deduplication: when set to `False`, near-duplicate paragraphs are preserved as well (kreuzberg/kreuzberg#681, fixed in v4.8.1).
-
-When a layout-detection model is active, it can independently classify regions as `PageHeader` or `PageFooter` and strip them per page. To preserve those regions in addition to disabling the cross-page heuristic, set `include_headers = True` and/or `include_footers = True`.
-
-### Configuration Examples
-
-=== "Python"
-
-    ```python title="content_filter_config.py"
-    from kreuzberg import ExtractionConfig, ContentFilterConfig
-
-    # Keep headers and footers for legal/forms work
-    config = ExtractionConfig(
-        content_filter=ContentFilterConfig(
-            include_headers=True,
-            include_footers=True,
-        ),
-    )
-    ```
-
-=== "TypeScript"
-
-    ```typescript title="content_filter_config.ts"
-    import { extract } from "@kreuzberg/node";
-
-    // Disable cross-page repeating-text detection
-    const result = await extract("report.pdf", {
-      contentFilter: {
-        stripRepeatingText: false,
-      },
-    });
-    ```
-
-=== "Rust"
-
-    ```rust title="content_filter_config.rs"
-    use kreuzberg::{ExtractionConfig, ContentFilterConfig};
-
-    let config = ExtractionConfig {
-        content_filter: Some(ContentFilterConfig {
-            include_headers: true,
-            include_footers: true,
-            strip_repeating_text: true,
-            include_watermarks: false,
-        }),
-        ..Default::default()
-    };
-    ```
-
-### Configuration File Examples
-
-=== "TOML"
-
-    ```toml title="kreuzberg.toml"
-    [content_filter]
-    include_headers = true
-    include_footers = true
-    strip_repeating_text = true
-    include_watermarks = false
-    ```
-
-=== "YAML"
-
-    ```yaml title="kreuzberg.yaml"
-    content_filter:
-      include_headers: true
-      include_footers: true
-      strip_repeating_text: true
-      include_watermarks: false
-    ```
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `extract_images` | `bool` | — | Extract images from documents |
+| `target_dpi` | `int` | — | Target DPI for image normalization |
+| `max_image_dimension` | `int` | — | Maximum dimension for images (width or height) |
+| `inject_placeholders` | `bool` | — | Whether to inject image reference placeholders into markdown output. When `True` (default), image references like `![Image 1](embedded:p1_i0)` are appended to the markdown. Set to `False` to extract images as data without polluting the markdown output. |
+| `auto_adjust_dpi` | `bool` | — | Automatically adjust DPI based on image content |
+| `min_dpi` | `int` | — | Minimum DPI threshold |
+| `max_dpi` | `int` | — | Maximum DPI threshold |
 
 ---
 
-## OcrConfig
+### TokenReductionOptions
 
-Configuration for OCR (Optical Character Recognition) processing on images and scanned PDFs.
+Token reduction configuration.
 
-| Field              | Type               | Default       | Description                                                           |
-| ------------------ | ------------------ | ------------- | --------------------------------------------------------------------- |
-| `backend`          | `str`              | `"tesseract"` | OCR backend to use: `"tesseract"`, `"easyocr"`, `"paddleocr"`         |
-| `language`         | `str`              | `"eng"`       | Language code(s) for OCR, for example, `"eng"`, `"eng+fra"`, `"eng+deu+fra"` |
-| `tesseract_config` | `TesseractConfig?` | `None`        | Tesseract-specific configuration options                              |
-| `paddle_ocr_config` | `PaddleOcrConfig?` | `None`       | PaddleOCR-specific configuration options                              |
-| `vlm_config`       | `LlmConfig?`       | `None`        | Vision Language Model configuration for VLM-based OCR. When set, enables using a VLM as an OCR backend. Requires the `liter-llm` feature. |
-| `vlm_prompt`       | `String?`           | `None`        | Custom prompt for VLM-based OCR. Overrides the default OCR prompt sent to the vision model. Useful for domain-specific extraction instructions. |
-
-### Example
-
-=== "C#"
-
-    --8<-- "snippets/csharp/config_ocr.md"
-
-=== "Go"
-
-    --8<-- "snippets/go/config/config_ocr.md"
-
-=== "Java"
-
-    --8<-- "snippets/java/config/config_ocr.md"
-
-=== "Python"
-
-    --8<-- "snippets/python/config/config_ocr.md"
-
-=== "Ruby"
-
-    --8<-- "snippets/ruby/config/config_ocr.md"
-
-=== "R"
-
-    --8<-- "snippets/r/config/config_ocr.md"
-
-=== "Rust"
-
-    --8<-- "snippets/rust/ocr/ocr_multi_language.md"
-
-=== "TypeScript"
-
-    --8<-- "snippets/typescript/config/config_ocr.md"
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `mode` | `str` | — | Reduction mode: "off", "light", "moderate", "aggressive", "maximum" |
+| `preserve_important_words` | `bool` | — | Preserve important words (capitalized, technical terms) |
 
 ---
 
-## PaddleOcrConfig <span class="version-badge">v4.5.0</span>
+### LanguageDetectionConfig
 
-PaddleOCR-specific configuration for model selection and detection tuning.
+Language detection configuration.
 
-| Field              | Type   | Default      | Description                                                                                                                        |
-| ------------------ | ------ | ------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `model_tier` <span class="version-badge">v4.5.0</span> | `str`  | `"mobile"`   | Model tier: `"mobile"` (lightweight, ~21MB total, fast) or `"server"` (high accuracy, ~172MB, best with GPU) |
-| `padding` <span class="version-badge">v4.5.0</span>    | `int`  | `10`         | Padding in pixels (0-100) added around the image before detection                                     |
-
----
-
-## TesseractConfig
-
-Tesseract OCR engine configuration with fine-grained control over recognition parameters.
-
-| Field                                | Type                        | Default      | Description                                              |
-| ------------------------------------ | --------------------------- | ------------ | -------------------------------------------------------- |
-| `language`                           | `str`                       | `"eng"`      | Language code(s), for example, `"eng"`, `"eng+fra"`             |
-| `psm`                                | `int`                       | `3`          | Page Segmentation Mode (0-13, see below)                 |
-| `output_format`                      | `str`                       | `"markdown"` | Output format: `"text"`, `"markdown"`, `"hocr"`          |
-| `oem`                                | `int`                       | `3`          | OCR Engine Mode (0-3, see below)                         |
-| `min_confidence`                     | `float`                     | `0.0`        | Minimum confidence threshold (0.0-100.0)                 |
-| `preprocessing`                      | `ImagePreprocessingConfig?` | `None`       | Image preprocessing configuration                        |
-| `enable_table_detection`             | `bool`                      | `true`       | Enable automatic table detection and reconstruction      |
-| `table_min_confidence`               | `float`                     | `0.0`        | Minimum confidence for table cell recognition (0.0-1.0)  |
-| `table_column_threshold`             | `int`                       | `50`         | Pixel threshold for detecting table columns              |
-| `table_row_threshold_ratio`          | `float`                     | `0.5`        | Row threshold ratio for table detection (0.0-1.0)        |
-| `use_cache`                          | `bool`                      | `true`       | Enable OCR result caching for faster re-processing       |
-| `classify_use_pre_adapted_templates` | `bool`                      | `true`       | Use pre-adapted templates for character classification   |
-| `language_model_ngram_on`            | `bool`                      | `false`      | Enable N-gram language model for better word recognition |
-| `tessedit_dont_blkrej_good_wds`      | `bool`                      | `true`       | Don't reject good words during block-level processing    |
-| `tessedit_dont_rowrej_good_wds`      | `bool`                      | `true`       | Don't reject good words during row-level processing      |
-| `tessedit_enable_dict_correction`    | `bool`                      | `true`       | Enable dictionary-based word correction                  |
-| `tessedit_char_whitelist`            | `str`                       | `""`         | Allowed characters (empty = all allowed)                 |
-| `tessedit_char_blacklist`            | `str`                       | `""`         | Forbidden characters (empty = none forbidden)            |
-| `tessedit_use_primary_params_model`  | `bool`                      | `true`       | Use primary language params model                        |
-| `textord_space_size_is_variable`     | `bool`                      | `true`       | Enable variable-width space detection                    |
-| `thresholding_method`                | `bool`                      | `false`      | Use adaptive thresholding method                         |
-
-### Page Segmentation Modes (PSM)
-
-- `0`: Orientation and script detection only (no OCR)
-- `1`: Automatic page segmentation with OSD (Orientation and Script Detection)
-- `2`: Automatic page segmentation (no OSD, no OCR)
-- `3`: Fully automatic page segmentation (default, best for most documents)
-- `4`: Single column of text of variable sizes
-- `5`: Single uniform block of vertically aligned text
-- `6`: Single uniform block of text (best for clean documents)
-- `7`: Single text line
-- `8`: Single word
-- `9`: Single word in a circle
-- `10`: Single character
-- `11`: Sparse text with no particular order (best for forms, invoices)
-- `12`: Sparse text with OSD
-- `13`: Raw line (bypass Tesseract's layout analysis)
-
-### OCR Engine Modes (OEM)
-
-- `0`: Legacy Tesseract engine only (pre-2016)
-- `1`: Neural nets LSTM engine only (recommended for best quality)
-- `2`: Legacy + LSTM engines combined
-- `3`: Default based on what's available (recommended for compatibility)
-
-### Example
-
-=== "C#"
-
-    --8<-- "snippets/csharp/tesseract_config.md"
-
-=== "Go"
-
-    --8<-- "snippets/go/config/tesseract_config.md"
-
-=== "Java"
-
-    --8<-- "snippets/java/config/tesseract_config.md"
-
-=== "Python"
-
-    --8<-- "snippets/python/config/tesseract_config.md"
-
-=== "Ruby"
-
-    --8<-- "snippets/ruby/config/tesseract_config.md"
-
-=== "R"
-
-    --8<-- "snippets/r/config/tesseract_config.md"
-
-=== "Rust"
-
-    --8<-- "snippets/rust/ocr/tesseract_config.md"
-
-=== "TypeScript"
-
-    --8<-- "snippets/typescript/config/tesseract_config.md"
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `enabled` | `bool` | — | Enable language detection |
+| `min_confidence` | `float` | — | Minimum confidence threshold (0.0-1.0) |
+| `detect_multiple` | `bool` | — | Detect multiple languages in the document |
 
 ---
 
-## ChunkingConfig
+### HtmlOutputConfig
 
-Configuration for splitting extracted text into overlapping chunks, useful for vector databases and LLM processing.
+Configuration for styled HTML output.
 
-| Field            | Type               | Default | Description                                                                       |
-| ---------------- | ------------------ | ------- | --------------------------------------------------------------------------------- |
-| `max_characters` | `int`              | `1000`  | Maximum characters per chunk                                                      |
-| `overlap`        | `int`              | `200`   | Overlap between consecutive chunks in characters                                  |
-| `embedding`      | `EmbeddingConfig?` | `None`  | Optional embedding generation for each chunk                                      |
-| `preset`         | `str?`             | `None`  | Chunking preset: `"small"` (500/100), `"medium"` (1000/200), `"large"` (2000/400) |
-| `trim`           | `bool`             | `true`  | Whether to trim whitespace from chunk boundaries                                  |
-| `chunker_type`   | `ChunkerType`      | `Text`  | Type of chunker: `Text`, `Markdown`, `Yaml`, or `Semantic`. Set to `"semantic"` for topic-aware chunking that works out of the box with no extra configuration needed. |
-| `topic_threshold` | `float` / `None`  | `0.75`  | Optional. Cosine similarity threshold for topic boundary detection (0.0-1.0). Only used with `chunker_type="semantic"` and an embedding config. Rarely needs tuning. |
-| `sizing` <span class="version-badge">v4.5.0</span> | `ChunkSizing`      | `Characters` | Controls how chunk size is measured. `Characters` counts characters (default). `Tokenizer` counts tokens using a HuggingFace tokenizer model. Requires the `chunking-tokenizers` feature |
+When set on `ExtractionConfig.html_output` alongside
+`output_format = OutputFormat.Html`, the pipeline builds a
+`StyledHtmlRenderer` instead of
+the plain comrak-based renderer.
 
-**Note:** `max_chars` and `max_overlap` are accepted as aliases for `max_characters` and `overlap` respectively for backwards compatibility.
-
-When `chunker_type` is set to `"markdown"`, the chunker populates `heading_context` on each chunk's metadata with the heading hierarchy (for example, `# Title > ## Section`) that the chunk falls under. This is useful for preserving semantic context in RAG pipelines.
-
-When `chunker_type` is set to `"semantic"`, the chunker groups paragraphs by topic similarity. It works out of the box with no extra configuration -- just set `chunker_type="semantic"` and all defaults (max_characters=1000, overlap=200, topic_threshold=0.75) are tuned for typical RAG use cases. If an `embedding` config is provided, adjacent segments are compared and split at topic boundaries where cosine similarity falls below `topic_threshold`. Without embeddings, structural-only splitting is performed.
-
-### Example
-
-=== "C#"
-
-    --8<-- "snippets/csharp/advanced/chunking_config.cs"
-
-=== "Go"
-
-    --8<-- "snippets/go/config/chunking_config.md"
-
-=== "Java"
-
-    --8<-- "snippets/java/config/chunking_config.md"
-
-=== "Python"
-
-    --8<-- "snippets/python/config/chunking_config.md"
-
-=== "Ruby"
-
-    --8<-- "snippets/ruby/config/chunking_config.md"
-
-=== "R"
-
-    --8<-- "snippets/r/config/chunking_config.md"
-
-=== "Rust"
-
-    --8<-- "snippets/rust/advanced/chunking_config.md"
-
-=== "TypeScript"
-
-    --8<-- "snippets/typescript/config/chunking_config.md"
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `css` | `str | None` | `None` | Inline CSS string injected into the output after the theme stylesheet. Concatenated after `css_file` content when both are set. |
+| `css_file` | `str | None` | `None` | Path to a CSS file loaded once at renderer construction time. Concatenated before `css` when both are set. |
+| `theme` | `HtmlTheme` | `HtmlTheme.UNSTYLED` | Built-in colour/typography theme. Default: `HtmlTheme.Unstyled`. |
+| `class_prefix` | `str` | — | CSS class prefix applied to every emitted class name. Default: `"kb-"`. Change this if your host application already uses classes that start with `kb-`. |
+| `embed_css` | `bool` | `True` | When `True` (default), write the resolved CSS into a `<style>` block immediately after the opening `<div class="{prefix}doc">`. Set to `False` to emit only the structural markup and wire up your own stylesheet targeting the `kb-*` class names. |
 
 ---
 
-## EmbeddingConfig
+### LayoutDetectionConfig
 
-Configuration for generating vector embeddings for text chunks. Enables semantic search and similarity matching by converting text into high-dimensional vector representations.
+Layout detection configuration.
 
-### Overview
+Controls layout detection behavior in the extraction pipeline.
+When set on `ExtractionConfig`, layout detection
+is enabled for PDF extraction.
 
-EmbeddingConfig is used to control embedding generation when chunking documents. It allows you to choose from pre-optimized models or specify custom models from HuggingFace. Embeddings can be generated for each chunk to enable vector database integration and semantic search capabilities.
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `confidence_threshold` | `float | None` | `None` | Confidence threshold override (None = use model default). |
+| `apply_heuristics` | `bool` | `True` | Whether to apply postprocessing heuristics (default: true). |
+| `table_model` | `TableModel` | `TableModel.TATR` | Table structure recognition model. Controls which model is used for table cell detection within layout-detected table regions. Defaults to `TableModel.Tatr`. |
+| `acceleration` | `AccelerationConfig | None` | `None` | Hardware acceleration for ONNX models (layout detection + table structure). When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for inference. Defaults to `None` (auto-select per platform). |
 
-### Fields
+---
 
-| Field                    | Type                 | Default                          | Description                                                                    |
-| ------------------------ | -------------------- | -------------------------------- | ------------------------------------------------------------------------------ |
-| `model`                  | `EmbeddingModelType` | `Preset { name: "balanced" }`    | Embedding model selection (preset or custom)                                   |
-| `batch_size`             | `usize`              | `32`                             | Number of texts to process in each batch (higher = faster but more memory)     |
-| `normalize`              | `bool`               | `true`                           | Normalize embedding vectors to unit length (recommended for cosine similarity) |
-| `show_download_progress` | `bool`               | `false`                          | Show progress when downloading model files                                     |
-| `cache_dir`              | `String?`            | `~/.cache/kreuzberg/embeddings/` | Custom cache directory for downloaded models                                   |
+### LlmConfig
 
-### Model Types
+Configuration for an LLM provider/model via liter-llm.
 
-#### Preset Models (Recommended)
+Each feature (VLM OCR, VLM embeddings, structured extraction) carries
+its own `LlmConfig`, allowing different providers per feature.
 
-Preset models are pre-optimized configurations for common use cases. They automatically download and cache the necessary model files.
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `model` | `str` | — | Provider/model string using liter-llm routing format. Examples: `"openai/gpt-4o"`, `"anthropic/claude-sonnet-4-20250514"`, `"groq/llama-3.1-70b-versatile"`. |
+| `api_key` | `str | None` | `None` | API key for the provider. When `None`, liter-llm falls back to the provider's standard environment variable (e.g., `OPENAI_API_KEY`). |
+| `base_url` | `str | None` | `None` | Custom base URL override for the provider endpoint. |
+| `timeout_secs` | `int | None` | `None` | Request timeout in seconds (default: 60). |
+| `max_retries` | `int | None` | `None` | Maximum retry attempts (default: 3). |
+| `temperature` | `float | None` | `None` | Sampling temperature for generation tasks. |
+| `max_tokens` | `int | None` | `None` | Maximum tokens to generate. |
 
-| Preset         | Model              | Dims | Speed     | Quality     | Use Case                                                                    |
-| -------------- | ------------------ | ---- | --------- | ----------- | --------------------------------------------------------------------------- |
-| `fast`         | AllMiniLML6V2Q     | 384  | Very Fast | Good        | Development, prototyping, resource-constrained environments                 |
-| `balanced`     | BGEBaseENV15       | 768  | Fast      | Excellent   | **Default**: General-purpose RAG, production deployments, English documents |
-| `quality`      | BGELargeENV15      | 1024 | Moderate  | Outstanding | Complex documents, maximum accuracy, sufficient compute resources           |
-| `multilingual` | MultilingualE5Base | 768  | Fast      | Excellent   | International documents, 100+ languages, mixed-language content             |
+---
 
-Preset models require the `embeddings` feature to be enabled in Kreuzberg.
+### StructuredExtractionConfig
 
-**Model Characteristics:**
+Configuration for LLM-based structured data extraction.
 
-- **Fast**: ~22M parameters, 384-dimensional vectors. Best for quick prototyping and development where speed is prioritized over quality.
-- **Balanced**: ~109M parameters, 768-dimensional vectors. Excellent general-purpose model with strong semantic understanding for most use cases.
-- **Quality**: ~335M parameters, 1024-dimensional vectors. Large model for maximum semantic accuracy when compute resources are available.
-- **Multilingual**: ~109M parameters, 768-dimensional vectors. Trained on multilingual data, effective for 100+ languages including rare languages.
+Sends extracted document content to a VLM with a JSON schema,
+returning structured data that conforms to the schema.
 
-#### FastEmbed Models
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `schema` | `dict[str, Any]` | — | JSON Schema defining the desired output structure. |
+| `schema_name` | `str` | — | Schema name passed to the LLM's structured output mode. |
+| `schema_description` | `str | None` | `None` | Optional schema description for the LLM. |
+| `strict` | `bool` | — | Enable strict mode — output must exactly match the schema. |
+| `prompt` | `str | None` | `None` | Custom Jinja2 extraction prompt template. When `None`, a default template is used. Available template variables: - `{{ content }}` — The extracted document text. - `{{ schema }}` — The JSON schema as a formatted string. - `{{ schema_name }}` — The schema name. - `{{ schema_description }}` — The schema description (may be empty). |
+| `llm` | `LlmConfig` | — | LLM configuration for the extraction. |
 
-FastEmbed is a library for fast embedding generation. You can specify any supported FastEmbed model by name.
+---
 
-**Common FastEmbed models:**
+### OcrQualityThresholds
 
-- `AllMiniLML6V2Q` - 384 dims, fast, quantized (same as `fast` preset)
-- `BGEBaseENV15` - 768 dims, balanced (same as `balanced` preset)
-- `BGELargeENV15` - 1024 dims, high quality (same as `quality` preset)
-- `MultilingualE5Base` - 768 dims, multilingual (same as `multilingual` preset)
+Quality thresholds for OCR fallback decisions and pipeline quality gating.
 
-Requires the `embeddings` feature and explicit dimensions specification.
+All fields default to the values that match the previous hardcoded behavior,
+so `OcrQualityThresholds.default()` preserves existing semantics exactly.
 
-#### Custom Models
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `min_total_non_whitespace` | `int` | `64` | Minimum total non-whitespace characters to consider text substantive. |
+| `min_non_whitespace_per_page` | `float` | `32` | Minimum non-whitespace characters per page on average. |
+| `min_meaningful_word_len` | `int` | `4` | Minimum character count for a word to be "meaningful". |
+| `min_meaningful_words` | `int` | `3` | Minimum count of meaningful words before text is accepted. |
+| `min_alnum_ratio` | `float` | `0.3` | Minimum alphanumeric ratio (non-whitespace chars that are alphanumeric). |
+| `min_garbage_chars` | `int` | `5` | Minimum Unicode replacement characters (U+FFFD) to trigger OCR fallback. |
+| `max_fragmented_word_ratio` | `float` | `0.6` | Maximum fraction of short (1-2 char) words before text is considered fragmented. |
+| `critical_fragmented_word_ratio` | `float` | `0.8` | Critical fragmentation threshold — triggers OCR regardless of meaningful words. Normal English text has ~20-30% short words. 80%+ is definitive garbage. |
+| `min_avg_word_length` | `float` | `2` | Minimum average word length. Below this with enough words indicates garbled extraction. |
+| `min_words_for_avg_length_check` | `int` | `50` | Minimum word count before average word length check applies. |
+| `min_consecutive_repeat_ratio` | `float` | `0.08` | Minimum consecutive word repetition ratio to detect column scrambling. |
+| `min_words_for_repeat_check` | `int` | `50` | Minimum word count before consecutive repetition check is applied. |
+| `substantive_min_chars` | `int` | `100` | Minimum character count for "substantive markdown" OCR skip gate. |
+| `non_text_min_chars` | `int` | `20` | Minimum character count for "non-text content" OCR skip gate. |
+| `alnum_ws_ratio_threshold` | `float` | `0.4` | Alphanumeric+whitespace ratio threshold for skip decisions. |
+| `pipeline_min_quality` | `float` | `0.5` | Minimum quality score (0.0-1.0) for a pipeline stage result to be accepted. If the result from a backend scores below this, try the next backend. |
 
-Custom ONNX models from HuggingFace can be specified for specialized use cases. Provide the HuggingFace model ID and vector dimensions.
+---
 
-**Note**: Custom model support for full embedding generation is planned for future releases. Currently, custom models can be loaded and used via the Rust API.
+### OcrPipelineConfig
 
-#### LLM Provider-Hosted Embeddings
+Multi-backend OCR pipeline with quality-based fallback.
 
-Instead of running local ONNX models, you can delegate embedding generation to a cloud provider's embedding API via liter-llm. This is useful when you want to use the same embedding model as your vector database provider or when local model hosting is impractical.
+Backends are tried in priority order (highest first). After each backend
+produces output, quality is evaluated. If it meets `quality_thresholds.pipeline_min_quality`,
+the result is accepted. Otherwise the next backend is tried.
 
-```rust title="llm_embedding.rs"
-use kreuzberg::core::{EmbeddingConfig, EmbeddingModelType, LlmConfig};
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `stages` | `list[OcrPipelineStage]` | — | Ordered list of backends to try. Sorted by priority (descending) at runtime. |
+| `quality_thresholds` | `OcrQualityThresholds` | — | Quality thresholds for deciding whether to accept a result or try the next backend. |
 
-let config = EmbeddingConfig {
-    model: EmbeddingModelType::Llm {
-        llm: LlmConfig {
-            model: "openai/text-embedding-3-small".to_string(),
-            api_key: None, // Falls back to OPENAI_API_KEY env var
-            base_url: None,
-        },
-    },
-    batch_size: 32,
-    ..Default::default()
-};
+---
+
+### OcrConfig
+
+OCR configuration.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `enabled` | `bool` | `True` | Whether OCR is enabled. Setting `enabled: false` is a shorthand for `disable_ocr: true` on the parent `ExtractionConfig`. Images return metadata only; PDFs use native text extraction without OCR fallback. Defaults to `True`. When `False`, all other OCR settings are ignored. |
+| `backend` | `str` | — | OCR backend: tesseract, easyocr, paddleocr |
+| `language` | `str` | — | Language code (e.g., "eng", "deu") |
+| `tesseract_config` | `TesseractConfig | None` | `None` | Tesseract-specific configuration (optional) |
+| `output_format` | `str | None` | `None` | Output format for OCR results (optional, for format conversion) |
+| `paddle_ocr_config` | `dict[str, Any] | None` | `None` | PaddleOCR-specific configuration (optional, JSON passthrough) |
+| `element_config` | `OcrElementConfig | None` | `None` | OCR element extraction configuration |
+| `quality_thresholds` | `OcrQualityThresholds | None` | `None` | Quality thresholds for the native-text-to-OCR fallback decision. When None, uses compiled defaults (matching previous hardcoded behavior). |
+| `pipeline` | `OcrPipelineConfig | None` | `None` | Multi-backend OCR pipeline configuration. When set, enables weighted fallback across multiple OCR backends based on output quality. When None, uses the single `backend` field (same as today). |
+| `auto_rotate` | `bool` | `False` | Enable automatic page rotation based on orientation detection. When enabled, uses Tesseract's `DetectOrientationScript()` to detect page orientation (0/90/180/270 degrees) before OCR. If the page is rotated with high confidence, the image is corrected before recognition. This is critical for handling rotated scanned documents. |
+| `vlm_config` | `LlmConfig | None` | `None` | VLM (Vision Language Model) OCR configuration. Required when `backend` is `"vlm"`. Uses liter-llm to send page images to a vision model for text extraction. |
+| `vlm_prompt` | `str | None` | `None` | Custom Jinja2 prompt template for VLM OCR. When `None`, uses the default template. Available variables: - `{{ language }}` — The document language code (e.g., "eng", "deu"). |
+
+---
+
+### PageConfig
+
+Page extraction and tracking configuration.
+
+Controls how pages are extracted, tracked, and represented in the extraction results.
+When `None`, page tracking is disabled.
+
+Page range tracking in chunk metadata (first_page/last_page) is automatically enabled
+when page boundaries are available and chunking is configured.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `extract_pages` | `bool` | `False` | Extract pages as separate array (ExtractionResult.pages) |
+| `insert_page_markers` | `bool` | `False` | Insert page markers in main content string |
+| `marker_format` | `str` | `"
+
+<!-- PAGE {page_num} -->
+
+"` | Page marker format (use {page_num} placeholder) Default: "\n\n<!-- PAGE {page_num} -->\n\n" |
+
+---
+
+### PdfConfig
+
+PDF-specific configuration.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `backend` | `PdfBackend` | `PdfBackend.PDFIUM` | PDF extraction backend. Default: `Pdfium`. |
+| `extract_images` | `bool` | `False` | Extract images from PDF |
+| `passwords` | `list[str] | None` | `None` | List of passwords to try when opening encrypted PDFs |
+| `extract_metadata` | `bool` | `True` | Extract PDF metadata |
+| `hierarchy` | `HierarchyConfig | None` | `None` | Hierarchy extraction configuration (None = hierarchy extraction disabled) |
+| `extract_annotations` | `bool` | `False` | Extract PDF annotations (text notes, highlights, links, stamps). Default: false |
+| `top_margin_fraction` | `float | None` | `None` | Top margin fraction (0.0–1.0) of page height to exclude headers/running heads. Default: 0.06 (6%) |
+| `bottom_margin_fraction` | `float | None` | `None` | Bottom margin fraction (0.0–1.0) of page height to exclude footers/page numbers. Default: 0.05 (5%) |
+| `allow_single_column_tables` | `bool` | `False` | Allow single-column pseudo tables in extraction results. By default, tables with fewer than 2 columns (layout-guided) or 3 columns (heuristic) are rejected. When `True`, the minimum column count is relaxed to 1, allowing single-column structured data (glossaries, itemized lists) to be emitted as tables. Other quality filters (density, sparsity, prose detection) still apply. |
+
+---
+
+### HierarchyConfig
+
+Hierarchy extraction configuration for PDF text structure analysis.
+
+Enables extraction of document hierarchy levels (H1-H6) based on font size
+clustering and semantic analysis. When enabled, hierarchical blocks are
+included in page content.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `enabled` | `bool` | `True` | Enable hierarchy extraction |
+| `k_clusters` | `int` | `3` | Number of font size clusters to use for hierarchy levels (1-7) Default: 6, which provides H1-H6 heading levels with body text. Larger values create more fine-grained hierarchy levels. |
+| `include_bbox` | `bool` | `True` | Include bounding box information in hierarchy blocks |
+| `ocr_coverage_threshold` | `float | None` | `None` | OCR coverage threshold for smart OCR triggering (0.0-1.0) Determines when OCR should be triggered based on text block coverage. OCR is triggered when text blocks cover less than this fraction of the page. Default: 0.5 (trigger OCR if less than 50% of page has text) |
+
+---
+
+### PostProcessorConfig
+
+Post-processor configuration.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `enabled` | `bool` | `True` | Enable post-processors |
+| `enabled_processors` | `list[str] | None` | `None` | Whitelist of processor names to run (None = all enabled) |
+| `disabled_processors` | `list[str] | None` | `None` | Blacklist of processor names to skip (None = none disabled) |
+| `enabled_set` | `str | None` | `None` | Pre-computed AHashSet for O(1) enabled processor lookup |
+| `disabled_set` | `str | None` | `None` | Pre-computed AHashSet for O(1) disabled processor lookup |
+
+---
+
+### ChunkingConfig
+
+Chunking configuration.
+
+Configures text chunking for document content, including chunk size,
+overlap, trimming behavior, and optional embeddings.
+
+Use `..the default constructor` when constructing to allow for future field additions:
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `max_characters` | `int` | `1000` | Maximum size per chunk (in units determined by `sizing`). When `sizing` is `Characters` (default), this is the max character count. When using token-based sizing, this is the max token count. Default: 1000 |
+| `overlap` | `int` | `200` | Overlap between chunks (in units determined by `sizing`). Default: 200 |
+| `trim` | `bool` | `True` | Whether to trim whitespace from chunk boundaries. Default: true |
+| `chunker_type` | `ChunkerType` | `ChunkerType.TEXT` | Type of chunker to use (Text or Markdown). Default: Text |
+| `embedding` | `EmbeddingConfig | None` | `None` | Optional embedding configuration for chunk embeddings. |
+| `preset` | `str | None` | `None` | Use a preset configuration (overrides individual settings if provided). |
+| `sizing` | `ChunkSizing` | `ChunkSizing.CHARACTERS` | How to measure chunk size. Default: `Characters` (Unicode character count). Enable `chunking-tiktoken` or `chunking-tokenizers` features for token-based sizing. |
+| `prepend_heading_context` | `bool` | `False` | When `True` and `chunker_type` is `Markdown`, prepend the heading hierarchy path (e.g. `"# Title > ## Section\n\n"`) to each chunk's content string. This is useful for RAG pipelines where each chunk needs self-contained context about its position in the document structure. Default: `False` |
+| `topic_threshold` | `float | None` | `None` | Optional cosine similarity threshold for semantic topic boundary detection. Only used when `chunker_type` is `Semantic` and an `EmbeddingConfig` is provided. You almost never need to set this. When omitted, defaults to `0.75` which works well for most documents. Lower values detect more topic boundaries (more, smaller chunks); higher values detect fewer. Range: `0.0..=1.0`. |
+
+---
+
+### EmbeddingConfig
+
+Embedding configuration for text chunks.
+
+Configures embedding generation using ONNX models via the vendored embedding engine.
+Requires the `embeddings` feature to be enabled.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `model` | `EmbeddingModelType` | `EmbeddingModelType.PRESET` | The embedding model to use (defaults to "balanced" preset if not specified) |
+| `normalize` | `bool` | `True` | Whether to normalize embedding vectors (recommended for cosine similarity) |
+| `batch_size` | `int` | `32` | Batch size for embedding generation |
+| `show_download_progress` | `bool` | `False` | Show model download progress |
+| `cache_dir` | `str | None` | `None` | Custom cache directory for model files Defaults to `~/.cache/kreuzberg/embeddings/` if not specified. Allows full customization of model download location. |
+| `acceleration` | `AccelerationConfig | None` | `None` | Hardware acceleration for the embedding ONNX model. When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for inference. Defaults to `None` (auto-select per platform). |
+
+---
+
+### TreeSitterConfig
+
+Configuration for tree-sitter language pack integration.
+
+Controls grammar download behavior and code analysis options.
+
+# Example (TOML)
+
+```toml
+[tree_sitter]
+languages = ["python", "rust"]
+groups = ["web"]
+
+[tree_sitter.process]
+structure = true
+comments = true
+docstrings = true
 ```
 
-```toml title="kreuzberg.toml"
-[chunking.embedding]
-model = { type = "llm", model = "openai/text-embedding-3-small" }
-batch_size = 32
-```
-
-**Note**: When `api_key` is not set in `LlmConfig`, liter-llm falls back to provider-standard environment variables (for example, `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`). Requires the `liter-llm` feature.
-
-### Cache Directory
-
-Model files are cached locally to avoid re-downloading on subsequent runs.
-
-**Default cache location:**
-
-```text
-~/.cache/kreuzberg/embeddings/
-```
-
-**Features:**
-
-- Tilde (`~`) expansion: Home directory automatically resolved
-- Automatic creation: Cache directory created if it doesn't exist
-- Persistent across runs: Models cached indefinitely until manually removed
-- Multi-process safe: Thread-safe concurrent access
-
-**Custom cache directory:**
-
-```toml title="Custom Embedding Cache Directory"
-[chunking.embedding]
-model = { type = "preset", name = "balanced" }
-cache_dir = "/custom/cache/path"
-```
-
-### Performance Considerations
-
-#### Batch Size Tuning
-
-- **Default**: 32 texts per batch
-- **Small values** (8-16): Lower memory usage, slower processing
-- **Large values** (64-128): Faster processing, higher memory usage
-- Adjust based on available GPU/CPU memory and document sizes
-
-#### Normalization
-
-- **Enabled (default)**: Vectors normalized to unit length, suitable for cosine similarity
-- **Disabled**: Raw vectors suitable for other distance metrics (Euclidean, dot product)
-
-#### Model Size Trade-offs
-
-| Model        | Size   | Speed    | Quality     | Memory | Network |
-| ------------ | ------ | -------- | ----------- | ------ | ------- |
-| Fast         | 20 MB  | Fastest  | Good        | 200 MB | 100 MB  |
-| Balanced     | 250 MB | Fast     | Excellent   | 500 MB | 250 MB  |
-| Quality      | 800 MB | Moderate | Outstanding | 1.5 GB | 800 MB  |
-| Multilingual | 250 MB | Fast     | Excellent   | 500 MB | 250 MB  |
-
-### Configuration Examples
-
-=== "Rust"
-
-    ```rust title="embedding_basic.rs"
-    use kreuzberg::core::{ExtractionConfig, ChunkingConfig, EmbeddingConfig, EmbeddingModelType};
-
-    // Basic embedding with default balanced preset
-    let config = ExtractionConfig {
-        chunking: Some(ChunkingConfig {
-            max_characters: 1000,
-            overlap: 200,
-            embedding: Some(EmbeddingConfig::default()),
-            preset: None,
-        }),
-        ..Default::default()
-    };
-    ```
-
-=== "Rust - Custom Preset"
-
-    ```rust title="embedding_preset.rs"
-    use kreuzberg::core::{EmbeddingConfig, EmbeddingModelType};
-
-    // Use fast preset for quick processing
-    let config = EmbeddingConfig {
-        model: EmbeddingModelType::Preset {
-            name: "fast".to_string(),
-        },
-        normalize: true,
-        batch_size: 16,
-        show_download_progress: true,
-        cache_dir: None,
-    };
-
-    // Use quality preset for best accuracy
-    let config = EmbeddingConfig {
-        model: EmbeddingModelType::Preset {
-            name: "quality".to_string(),
-        },
-        batch_size: 32,
-        ..Default::default()
-    };
-
-    // Use multilingual for international content
-    let config = EmbeddingConfig {
-        model: EmbeddingModelType::Preset {
-            name: "multilingual".to_string(),
-        },
-        ..Default::default()
-    };
-    ```
-
-=== "Rust - Custom ONNX Model"
-
-    ```rust title="embedding_custom_onnx.rs"
-    use kreuzberg::core::{EmbeddingConfig, EmbeddingModelType};
-
-    // Explicit ONNX model specification
-    let config = EmbeddingConfig {
-        model: EmbeddingModelType::FastEmbed {
-            model: "BGEBaseENV15".to_string(),
-            dimensions: 768,
-        },
-        batch_size: 32,
-        ..Default::default()
-    };
-    ```
-
-=== "Rust - Custom Cache Directory"
-
-    ```rust title="embedding_cache.rs"
-    use kreuzberg::core::{EmbeddingConfig, EmbeddingModelType};
-    use std::path::PathBuf;
-
-    let config = EmbeddingConfig {
-        model: EmbeddingModelType::Preset {
-            name: "balanced".to_string(),
-        },
-        cache_dir: Some(PathBuf::from("/custom/models/cache")),
-        show_download_progress: true,
-        ..Default::default()
-    };
-    ```
-
-### Configuration File Examples
-
-#### TOML Format
-
-```toml title="kreuzberg.toml"
-[chunking]
-max_characters = 1000
-overlap = 200
-
-# Use balanced preset (default)
-[chunking.embedding]
-model = { type = "preset", name = "balanced" }
-batch_size = 32
-normalize = true
-
-# Or use fast preset
-# [chunking.embedding]
-# model = { type = "preset", name = "fast" }
-# batch_size = 16
-
-# Or use custom cache directory
-# [chunking.embedding]
-# model = { type = "preset", name = "quality" }
-# cache_dir = "/data/models"
-# show_download_progress = true
-```
-
-#### Token-Based Sizing (TOML)
-
-```toml title="kreuzberg.toml"
-[chunking]
-max_chars = 512
-max_overlap = 50
-
-[chunking.sizing]
-type = "tokenizer"
-model = "Xenova/gpt-4o"
-```
-
-!!! Note
-    Token-based sizing requires the `chunking-tokenizers` feature to be enabled.
-
-#### YAML Format
-
-```yaml title="kreuzberg.yaml"
-chunking:
-  max_characters: 1000
-  overlap: 200
-  embedding:
-    model:
-      type: preset
-      name: balanced
-    batch_size: 32
-    normalize: true
-```
-
-#### JSON Format
-
-```json title="kreuzberg.json"
-{
-  "chunking": {
-    "max_characters": 1000,
-    "overlap": 200,
-    "embedding": {
-      "model": {
-        "type": "preset",
-        "name": "balanced"
-      },
-      "batch_size": 32,
-      "normalize": true
-    }
-  }
-}
-```
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `enabled` | `bool` | `True` | Enable code intelligence processing (default: true). When `False`, tree-sitter analysis is completely skipped even if the config section is present. |
+| `cache_dir` | `str | None` | `None` | Custom cache directory for downloaded grammars. When `None`, uses the default: `~/.cache/tree-sitter-language-pack/v{version}/libs/`. |
+| `languages` | `list[str] | None` | `None` | Languages to pre-download on init (e.g., `["python", "rust"]`). |
+| `groups` | `list[str] | None` | `None` | Language groups to pre-download (e.g., `["web", "systems", "scripting"]`). |
+| `process` | `TreeSitterProcessConfig` | — | Processing options for code analysis. |
 
 ---
-
-## LlmConfig
-
-Configuration for LLM provider connections used by structured extraction, VLM-based OCR, and provider-hosted embeddings. Uses [liter-llm](https://github.com/kreuzberg-dev/liter-llm) for provider-agnostic model access.
-
-### Fields
-
-| Field      | Type      | Default | Description                                                                                                                                     |
-| ---------- | --------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| `model`    | `String`  | —       | Model identifier in `provider/model-name` format (for example, `"openai/gpt-4o-mini"`, `"anthropic/claude-sonnet-4-20250514"`)                                |
-| `api_key`  | `String?` | `None`  | API key for the provider. When `None`, falls back to provider-standard env vars (for example, `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`)                   |
-| `base_url` | `String?` | `None`  | Custom base URL for the provider API. When `None`, uses the provider's default endpoint. Useful for proxies or self-hosted API-compatible servers |
-
-### Configuration Examples
-
-=== "Rust"
-
-    ```rust title="llm_config.rs"
-    use kreuzberg::core::LlmConfig;
-
-    // Minimal config (uses provider env var for API key)
-    let config = LlmConfig {
-        model: "openai/gpt-4o-mini".to_string(),
-        api_key: None,
-        base_url: None,
-    };
-
-    // Explicit API key and custom endpoint
-    let config = LlmConfig {
-        model: "openai/gpt-4o".to_string(),
-        api_key: Some("sk-...".to_string()),
-        base_url: Some("https://api.example.com".to_string()),
-    };
-    ```
-
-=== "Python"
-
-    ```python title="llm_config.py"
-    config = {
-        "model": "openai/gpt-4o-mini",
-        "api_key": None,       # Falls back to OPENAI_API_KEY
-        "base_url": None,
-    }
-    ```
-
-=== "TypeScript"
-
-    ```typescript title="llm_config.ts"
-    const config: LlmConfig = {
-      model: "openai/gpt-4o-mini",
-      apiKey: undefined,     // Falls back to OPENAI_API_KEY
-      baseUrl: undefined,
-    };
-    ```
-
-=== "Go"
-
-    ```go title="llm_config.go"
-    config := kreuzberg.LlmConfig{
-        Model:   "openai/gpt-4o-mini",
-        ApiKey:  nil,  // Falls back to OPENAI_API_KEY
-        BaseUrl: nil,
-    }
-    ```
-
-### Configuration File Examples
-
-```toml title="kreuzberg.toml"
-[llm]
-model = "openai/gpt-4o-mini"
-# api_key = "sk-..."       # Optional: falls back to OPENAI_API_KEY
-# base_url = "https://..."  # Optional: uses provider default
-```
-
-```yaml title="kreuzberg.yaml"
-llm:
-  model: openai/gpt-4o-mini
-  # api_key: sk-...
-  # base_url: https://...
-```
-
----
-
-## StructuredExtractionConfig
-
-Configuration for LLM-powered structured data extraction. Enables extracting structured data from documents by providing a JSON schema that defines the expected output format. The LLM processes the document content and returns data conforming to the schema.
-
-### Fields
-
-| Field             | Type         | Default | Description                                                                                                                                                    |
-| ----------------- | ------------ | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `llm`             | `LlmConfig`  | —       | LLM provider configuration for the structured extraction model                                                                                                |
-| `schema`          | `JsonValue`  | —       | JSON Schema defining the expected output structure. Must be a valid JSON Schema object.                                                                        |
-| `prompt`          | `String?`    | `None`  | Custom system prompt for structured extraction. Overrides the default prompt. Useful for domain-specific instructions.                                         |
-| `max_tokens`      | `usize?`     | `None`  | Maximum tokens for LLM response. When `None`, uses the provider's default limit.                                                                               |
-| `temperature`     | `f64?`       | `None`  | Sampling temperature (0.0-2.0). Lower values produce more deterministic output. When `None`, defaults to `0.0` for maximum consistency.                        |
-
-### Configuration Examples
-
-=== "Rust"
-
-    ```rust title="structured_extraction.rs"
-    use kreuzberg::core::{ExtractionConfig, StructuredExtractionConfig, LlmConfig};
-    use serde_json::json;
-
-    let config = ExtractionConfig {
-        structured_extraction: Some(StructuredExtractionConfig {
-            llm: LlmConfig {
-                model: "openai/gpt-4o-mini".to_string(),
-                api_key: None,
-                base_url: None,
-            },
-            schema: json!({
-                "type": "object",
-                "properties": {
-                    "invoice_number": { "type": "string" },
-                    "total_amount": { "type": "number" },
-                    "line_items": {
-                        "type": "array",
-                        "items": {
-                            "type": "object",
-                            "properties": {
-                                "description": { "type": "string" },
-                                "amount": { "type": "number" }
-                            }
-                        }
-                    }
-                },
-                "required": ["invoice_number", "total_amount"]
-            }),
-            prompt: None,
-            max_tokens: None,
-            temperature: Some(0.0),
-        }),
-        ..Default::default()
-    };
-    ```
-
-=== "Python"
-
-    ```python title="structured_extraction.py"
-    config = {
-        "structured_extraction": {
-            "llm": {
-                "model": "openai/gpt-4o-mini",
-            },
-            "schema": {
-                "type": "object",
-                "properties": {
-                    "invoice_number": {"type": "string"},
-                    "total_amount": {"type": "number"},
-                    "line_items": {
-                        "type": "array",
-                        "items": {
-                            "type": "object",
-                            "properties": {
-                                "description": {"type": "string"},
-                                "amount": {"type": "number"},
-                            },
-                        },
-                    },
-                },
-                "required": ["invoice_number", "total_amount"],
-            },
-            "temperature": 0.0,
-        },
-    }
-    ```
-
-=== "TypeScript"
-
-    ```typescript title="structured_extraction.ts"
-    const config: ExtractionConfig = {
-      structuredExtraction: {
-        llm: {
-          model: "openai/gpt-4o-mini",
-        },
-        schema: {
-          type: "object",
-          properties: {
-            invoice_number: { type: "string" },
-            total_amount: { type: "number" },
-            line_items: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  description: { type: "string" },
-                  amount: { type: "number" },
-                },
-              },
-            },
-          },
-          required: ["invoice_number", "total_amount"],
-        },
-        temperature: 0.0,
-      },
-    };
-    ```
-
-### Configuration File Examples
-
-```toml title="kreuzberg.toml"
-[structured_extraction]
-prompt = "Extract invoice data from the document."
-max_tokens = 4096
-temperature = 0.0
-
-[structured_extraction.llm]
-model = "openai/gpt-4o-mini"
-
-[structured_extraction.schema]
-type = "object"
-
-[structured_extraction.schema.properties.invoice_number]
-type = "string"
-
-[structured_extraction.schema.properties.total_amount]
-type = "number"
-```
-
-```yaml title="kreuzberg.yaml"
-structured_extraction:
-  llm:
-    model: openai/gpt-4o-mini
-  schema:
-    type: object
-    properties:
-      invoice_number:
-        type: string
-      total_amount:
-        type: number
-    required:
-      - invoice_number
-      - total_amount
-  temperature: 0.0
-```
-
----
-
-## EmailConfig
-
-Configuration for `.msg` (Outlook/MAPI) and `.eml` email file extraction. Controls how legacy Windows codepage encodings are handled when reading email headers and bodies that lack explicit character set declarations.
-
-### Overview
-
-Many older email messages — particularly those created by Microsoft Outlook on Windows — encode text using a Windows code page rather than UTF-8. When no charset is declared in the message headers, Kreuzberg defaults to Windows-1252 (Western European). Use `msg_fallback_codepage` to override this default for mailboxes that predominantly contain messages in a different encoding.
-
-### Fields
-
-| Field                  | Type      | Default                | Description                                                                                      |
-| ---------------------- | --------- | ---------------------- | ------------------------------------------------------------------------------------------------ |
-| `msg_fallback_codepage` | `int?`   | `None` (Windows-1252) | Windows code page number used when no charset is declared in the message. `None` = use 1252.    |
-
-### Common Codepage Values
-
-| Code Page | Encoding                       | Region / Language              |
-| --------- | ------------------------------ | ------------------------------ |
-| `1250`    | Windows Central European       | Polish, Czech, Hungarian, and so on. |
-| `1251`    | Windows Cyrillic               | Russian, Ukrainian, Bulgarian  |
-| `1252`    | Windows Western European       | English, German, French (default) |
-| `1253`    | Windows Greek                  | Greek                          |
-| `1254`    | Windows Turkish                | Turkish                        |
-| `1255`    | Windows Hebrew                 | Hebrew                         |
-| `1256`    | Windows Arabic                 | Arabic                         |
-| `932`     | Shift-JIS                      | Japanese                       |
-| `936`     | GBK (Simplified Chinese)       | Simplified Chinese             |
-
-### Configuration Examples
-
-=== "Python"
-
-    ```python title="email_config.py"
-    from kreuzberg import ExtractionConfig, PdfConfig
-    from kreuzberg.email import EmailConfig
-
-    # Extract a Russian Outlook .msg file with Cyrillic encoding
-    config = ExtractionConfig(
-        pdf_options=PdfConfig(
-            email=EmailConfig(msg_fallback_codepage=1251)
-        )
-    )
-    ```
-
-=== "TypeScript"
-
-    ```typescript title="email_config.ts"
-    import { extract } from "kreuzberg";
-
-    // Extract a Japanese .msg file encoded in Shift-JIS
-    const result = await extract("message.msg", {
-      pdfOptions: {
-        email: { msgFallbackCodepage: 932 },
-      },
-    });
-    ```
-
-=== "Rust"
-
-    ```rust title="email_config.rs"
-    use kreuzberg::core::{ExtractionConfig, PdfConfig, EmailConfig};
-
-    // Extract a Central European .msg file
-    let config = ExtractionConfig {
-        pdf_options: Some(PdfConfig {
-            email: Some(EmailConfig {
-                msg_fallback_codepage: Some(1250),
-            }),
-            ..Default::default()
-        }),
-        ..Default::default()
-    };
-    ```
-
----
-
-## LanguageDetectionConfig
-
-Configuration for automatic language detection in extracted text.
-
-| Field             | Type    | Default | Description                                                             |
-| ----------------- | ------- | ------- | ----------------------------------------------------------------------- |
-| `enabled`         | `bool`  | `true`  | Enable language detection                                               |
-| `min_confidence`  | `float` | `0.8`   | Minimum confidence threshold (0.0-1.0) for reporting detected languages |
-| `detect_multiple` | `bool`  | `false` | Detect multiple languages (vs. dominant language only)                  |
-
-### Example
-
-=== "C#"
-
-    --8<-- "snippets/csharp/language_detection.md"
-
-=== "Go"
-
-    --8<-- "snippets/go/config/language_detection_config.md"
-
-=== "Java"
-
-    --8<-- "snippets/java/config/language_detection_config.md"
-
-=== "Python"
-
-    --8<-- "snippets/python/config/language_detection_config.md"
-
-=== "Ruby"
-
-    --8<-- "snippets/ruby/config/language_detection_config.md"
-
-=== "R"
-
-    --8<-- "snippets/r/config/language_detection_config.md"
-
-=== "Rust"
-
-    --8<-- "snippets/rust/advanced/language_detection_config.md"
-
-=== "TypeScript"
-
-    --8<-- "snippets/typescript/config/language_detection_config.md"
-
----
-
-## KeywordConfig
-
-Configuration for automatic keyword extraction from document text using YAKE or RAKE algorithms.
-
-**Feature Gate**: Requires either `keywords-yake` or `keywords-rake` Cargo feature. Keyword extraction is only available when at least one of these features is enabled.
-
-### Overview
-
-Keyword extraction automatically identifies important terms and phrases in extracted text without manual labeling. Two algorithms are available:
-
-- **YAKE**: Statistical approach based on term frequency and co-occurrence analysis
-- **RAKE**: Rapid Automatic Keyword Extraction using word co-occurrence and frequency
-
-Both algorithms analyze text independently and require no external training data, making them suitable for documents in any domain.
-
-### Configuration Fields
-
-| Field          | Type                 | Default               | Description                                                                              |
-| -------------- | -------------------- | --------------------- | ---------------------------------------------------------------------------------------- |
-| `algorithm`    | `KeywordAlgorithm`   | `Yake` (if available) | Algorithm to use: `yake` or `rake`                                                       |
-| `max_keywords` | `usize`              | `10`                  | Maximum number of keywords to extract                                                    |
-| `min_score`    | `f32`                | `0.0`                 | Minimum score threshold (0.0-1.0) for keyword filtering                                  |
-| `ngram_range`  | `(usize, usize)`     | `(1, 3)`              | N-gram range: (min, max) words per keyword phrase                                        |
-| `language`     | `Option<String>`     | `Some("en")`          | Language code for stopword filtering (for example, "en", "de", "fr"), `None` disables filtering |
-| `yake_params`  | `Option<YakeParams>` | `None`                | YAKE-specific tuning parameters                                                          |
-| `rake_params`  | `Option<RakeParams>` | `None`                | RAKE-specific tuning parameters                                                          |
-
-### Algorithm Comparison
-
-#### YAKE (Yet Another Keyword Extractor)
-
-**Approach**: Statistical scoring based on term statistics and co-occurrence patterns.
-
-| Aspect          | Details                                                             |
-| --------------- | ------------------------------------------------------------------- |
-| **Best For**    | General-purpose documents, balanced keyword distribution            |
-| **Strengths**   | No training required, handles rare terms well, language-independent |
-| **Limitations** | May extract very common terms, single-word focus                    |
-| **Score Range** | 0.0-1.0 (lower scores = more relevant)                              |
-| **Tuning**      | `window_size` (default: 2) - context window for co-occurrence       |
-| **Use Cases**   | Research papers, news articles, general text                        |
-
-**Characteristic**: YAKE assigns lower scores to more relevant keywords, so use higher `min_score` to be more selective.
-
-#### RAKE (Rapid Automatic Keyword Extraction)
-
-**Approach**: Co-occurrence graph analysis separating keywords by frequent stop words.
-
-| Aspect          | Details                                                                 |
-| --------------- | ----------------------------------------------------------------------- |
-| **Best For**    | Multi-word phrases, domain-specific terminology                         |
-| **Strengths**   | Excellent for extracting multi-word phrases, fast, domain-aware         |
-| **Limitations** | Requires good stopword list, less effective with poorly structured text |
-| **Score Range** | 0.0+ (higher scores = more relevant, unbounded)                         |
-| **Tuning**      | `min_word_length`, `max_words_per_phrase`                               |
-| **Use Cases**   | Technical documentation, scientific papers, product descriptions        |
-
-**Characteristic**: RAKE assigns higher scores to more relevant keywords, so use lower `min_score` thresholds.
-
-### N-gram Range Explanation
-
-The `ngram_range` parameter controls the size of keyword phrases:
-
-```text
-ngram_range: (1, 1)  → Single words only: "python", "machine", "learning"
-ngram_range: (1, 2)  → 1-2 word phrases: "python", "machine learning", "deep learning"
-ngram_range: (1, 3)  → 1-3 word phrases: "python", "machine learning", "deep neural networks"
-ngram_range: (2, 3)  → 2-3 word phrases only: "machine learning", "neural networks"
-```
-
-**Recommendations**:
-
-- Use `(1, 1)` for single-word indexing (tagging, classification)
-- Use `(1, 2)` for balanced coverage of terms and phrases
-- Use `(1, 3)` for comprehensive phrase extraction (default)
-- Use `(2, 3)` if you only want multi-word phrases
-
-### Keyword Output Format
-
-Keywords are returned as a list of `Keyword` structures in the extraction result:
-
-```json title="Keyword Output Structure"
-{
-  "text": "machine learning",
-  "score": 0.85,
-  "algorithm": "yake",
-  "positions": [42, 156, 203]
-}
-```
-
-**Fields**:
-
-- `text`: The keyword or phrase text
-- `score`: Relevance score (algorithm-specific range and meaning)
-- `algorithm`: Which algorithm extracted this keyword
-- `positions`: Optional character offsets where the keyword appears in text
-
-### Example: YAKE Configuration
-
-=== "C#"
-
-    ```csharp
-    using Kreuzberg;
-
-    var config = new ExtractionConfig
-    {
-        Keywords = new KeywordConfig
-        {
-            Algorithm = KeywordAlgorithm.Yake,
-            MaxKeywords = 10,
-            MinScore = 0.3,
-            NgramRange = (1, 3),
-            Language = "en"
-        }
-    };
-
-    var result = KreuzbergClient.ExtractFileSync("document.pdf", config);
-    ```
-
-=== "Go"
-
-    ```go
-    config := &ExtractionConfig{
-        Keywords: &KeywordConfig{
-            Algorithm:   KeywordAlgorithm.Yake,
-            MaxKeywords: 10,
-            MinScore:    0.3,
-            NgramRange:  [2]uint32{1, 3},
-            Language:    "en",
-        },
-    }
-    ```
-
-=== "Java"
-
-    ```java
-    var config = ExtractionConfig.builder()
-        .keywords(KeywordConfig.builder()
-            .algorithm(KeywordAlgorithm.YAKE)
-            .maxKeywords(10)
-            .minScore(0.3f)
-            .ngramRange(1, 3)
-            .language("en")
-            .build())
-        .build();
-    ```
-
-=== "Python"
-
-    ```python
-    from kreuzberg import ExtractionConfig, KeywordConfig, KeywordAlgorithm
-
-    config = ExtractionConfig(
-        keywords=KeywordConfig(
-            algorithm=KeywordAlgorithm.YAKE,
-            max_keywords=10,
-            min_score=0.3,
-            ngram_range=(1, 3),
-            language="en"
-        )
-    )
-    ```
-
-=== "Ruby"
-
-    ```ruby
-    require 'kreuzberg'
-
-    config = Kreuzberg::ExtractionConfig.new(
-      keywords: Kreuzberg::KeywordConfig.new(
-        algorithm: :yake,
-        max_keywords: 10,
-        min_score: 0.3,
-        ngram_range: [1, 3],
-        language: "en"
-      )
-    )
-    ```
-
-=== "Rust"
-
-    --8<-- "snippets/rust/advanced/keyword_extraction_config.md"
-
-=== "TypeScript"
-
-    ```typescript
-    import { ExtractionConfig, KeywordConfig, KeywordAlgorithm } from 'kreuzberg';
-
-    const config: ExtractionConfig = {
-      keywords: {
-        algorithm: KeywordAlgorithm.Yake,
-        maxKeywords: 10,
-        minScore: 0.3,
-        ngramRange: [1, 3],
-        language: "en"
-      }
-    };
-    ```
-
-### Example: RAKE Configuration with Multi-word Phrases
-
-=== "Python"
-
-    ```python
-    from kreuzberg import ExtractionConfig, KeywordConfig, KeywordAlgorithm, RakeParams
-
-    config = ExtractionConfig(
-        keywords=KeywordConfig(
-            algorithm=KeywordAlgorithm.RAKE,
-            max_keywords=15,
-            min_score=0.1,
-            ngram_range=(1, 4),
-            language="en",
-            rake_params=RakeParams(
-                min_word_length=2,
-                max_words_per_phrase=4
-            )
-        )
-    )
-    ```
-
-=== "Rust"
-
-    ```rust
-    use kreuzberg::{ExtractionConfig, KeywordConfig, KeywordAlgorithm, RakeParams};
-
-    let config = ExtractionConfig {
-        keywords: Some(KeywordConfig {
-            algorithm: KeywordAlgorithm::Rake,
-            max_keywords: 15,
-            min_score: 0.1,
-            ngram_range: (1, 4),
-            language: Some("en".to_string()),
-            rake_params: Some(RakeParams {
-                min_word_length: 2,
-                max_words_per_phrase: 4,
-            }),
-            ..Default::default()
-        }),
-        ..Default::default()
-    };
-    ```
-
-### Language Support
-
-Stopword filtering is applied when a language is specified. Common supported languages:
-
-- `en` - English
-- `es` - Spanish
-- `fr` - French
-- `de` - German
-- `pt` - Portuguese
-- `it` - Italian
-- `ru` - Russian
-- `ja` - Japanese
-- `zh` - Chinese
-- `ar` - Arabic
-
-Set `language: None` to disable stopword filtering and extract keywords in any language without filtering.
-
----
-
-## KeywordConfig
-
-Configuration for automatic keyword extraction from document text using YAKE or RAKE algorithms.
-
-**Feature Gate**: Requires either `keywords-yake` or `keywords-rake` Cargo feature. Keyword extraction is only available when at least one of these features is enabled.
-
-### Overview
-
-Keyword extraction automatically identifies important terms and phrases in extracted text without manual labeling. Two algorithms are available:
-
-- **YAKE**: Statistical approach based on term frequency and co-occurrence analysis
-- **RAKE**: Rapid Automatic Keyword Extraction using word co-occurrence and frequency
-
-Both algorithms analyze text independently and require no external training data, making them suitable for documents in any domain.
-
-### Configuration Fields
-
-| Field          | Type                 | Default               | Description                                                                              |
-| -------------- | -------------------- | --------------------- | ---------------------------------------------------------------------------------------- |
-| `algorithm`    | `KeywordAlgorithm`   | `Yake` (if available) | Algorithm to use: `yake` or `rake`                                                       |
-| `max_keywords` | `usize`              | `10`                  | Maximum number of keywords to extract                                                    |
-| `min_score`    | `f32`                | `0.0`                 | Minimum score threshold (0.0-1.0) for keyword filtering                                  |
-| `ngram_range`  | `(usize, usize)`     | `(1, 3)`              | N-gram range: (min, max) words per keyword phrase                                        |
-| `language`     | `Option<String>`     | `Some("en")`          | Language code for stopword filtering (for example, "en", "de", "fr"), `None` disables filtering |
-| `yake_params`  | `Option<YakeParams>` | `None`                | YAKE-specific tuning parameters                                                          |
-| `rake_params`  | `Option<RakeParams>` | `None`                | RAKE-specific tuning parameters                                                          |
-
-### Algorithm Comparison
-
-#### YAKE (Yet Another Keyword Extractor)
-
-**Approach**: Statistical scoring based on term statistics and co-occurrence patterns.
-
-| Aspect          | Details                                                             |
-| --------------- | ------------------------------------------------------------------- |
-| **Best For**    | General-purpose documents, balanced keyword distribution            |
-| **Strengths**   | No training required, handles rare terms well, language-independent |
-| **Limitations** | May extract very common terms, single-word focus                    |
-| **Score Range** | 0.0-1.0 (lower scores = more relevant)                              |
-| **Tuning**      | `window_size` (default: 2) - context window for co-occurrence       |
-| **Use Cases**   | Research papers, news articles, general text                        |
-
-**Characteristic**: YAKE assigns lower scores to more relevant keywords, so use higher `min_score` to be more selective.
-
-#### RAKE (Rapid Automatic Keyword Extraction)
-
-**Approach**: Co-occurrence graph analysis separating keywords by frequent stop words.
-
-| Aspect          | Details                                                                 |
-| --------------- | ----------------------------------------------------------------------- |
-| **Best For**    | Multi-word phrases, domain-specific terminology                         |
-| **Strengths**   | Excellent for extracting multi-word phrases, fast, domain-aware         |
-| **Limitations** | Requires good stopword list, less effective with poorly structured text |
-| **Score Range** | 0.0+ (higher scores = more relevant, unbounded)                         |
-| **Tuning**      | `min_word_length`, `max_words_per_phrase`                               |
-| **Use Cases**   | Technical documentation, scientific papers, product descriptions        |
-
-**Characteristic**: RAKE assigns higher scores to more relevant keywords, so use lower `min_score` thresholds.
-
-### N-gram Range Explanation
-
-The `ngram_range` parameter controls the size of keyword phrases:
-
-```text
-ngram_range: (1, 1)  → Single words only: "python", "machine", "learning"
-ngram_range: (1, 2)  → 1-2 word phrases: "python", "machine learning", "deep learning"
-ngram_range: (1, 3)  → 1-3 word phrases: "python", "machine learning", "deep neural networks"
-ngram_range: (2, 3)  → 2-3 word phrases only: "machine learning", "neural networks"
-```
-
-**Recommendations**:
-
-- Use `(1, 1)` for single-word indexing (tagging, classification)
-- Use `(1, 2)` for balanced coverage of terms and phrases
-- Use `(1, 3)` for comprehensive phrase extraction (default)
-- Use `(2, 3)` if you only want multi-word phrases
-
-### Keyword Output Format
-
-Keywords are returned as a list of `Keyword` structures in the extraction result:
-
-```json title="Keyword Output Structure"
-{
-  "text": "machine learning",
-  "score": 0.85,
-  "algorithm": "yake",
-  "positions": [42, 156, 203]
-}
-```
-
-**Fields**:
-
-- `text`: The keyword or phrase text
-- `score`: Relevance score (algorithm-specific range and meaning)
-- `algorithm`: Which algorithm extracted this keyword
-- `positions`: Optional character offsets where the keyword appears in text
-
-### Example: YAKE Configuration
-
-=== "C#"
-
-    ```csharp
-    using Kreuzberg;
-
-    var config = new ExtractionConfig
-    {
-        Keywords = new KeywordConfig
-        {
-            Algorithm = KeywordAlgorithm.Yake,
-            MaxKeywords = 10,
-            MinScore = 0.3,
-            NgramRange = (1, 3),
-            Language = "en"
-        }
-    };
-
-    var result = KreuzbergClient.ExtractFileSync("document.pdf", config);
-    ```
-
-=== "Go"
-
-    ```go
-    config := &ExtractionConfig{
-        Keywords: &KeywordConfig{
-            Algorithm:   KeywordAlgorithm.Yake,
-            MaxKeywords: 10,
-            MinScore:    0.3,
-            NgramRange:  [2]uint32{1, 3},
-            Language:    "en",
-        },
-    }
-    ```
-
-=== "Java"
-
-    ```java
-    var config = ExtractionConfig.builder()
-        .keywords(KeywordConfig.builder()
-            .algorithm(KeywordAlgorithm.YAKE)
-            .maxKeywords(10)
-            .minScore(0.3f)
-            .ngramRange(1, 3)
-            .language("en")
-            .build())
-        .build();
-    ```
-
-=== "Python"
-
-    ```python
-    from kreuzberg import ExtractionConfig, KeywordConfig, KeywordAlgorithm
-
-    config = ExtractionConfig(
-        keywords=KeywordConfig(
-            algorithm=KeywordAlgorithm.YAKE,
-            max_keywords=10,
-            min_score=0.3,
-            ngram_range=(1, 3),
-            language="en"
-        )
-    )
-    ```
-
-=== "Ruby"
-
-    ```ruby
-    require 'kreuzberg'
-
-    config = Kreuzberg::ExtractionConfig.new(
-      keywords: Kreuzberg::KeywordConfig.new(
-        algorithm: :yake,
-        max_keywords: 10,
-        min_score: 0.3,
-        ngram_range: [1, 3],
-        language: "en"
-      )
-    )
-    ```
-
-=== "Rust"
-
-    --8<-- "snippets/rust/advanced/keyword_extraction_config.md"
-
-=== "TypeScript"
-
-    ```typescript
-    import { ExtractionConfig, KeywordConfig, KeywordAlgorithm } from 'kreuzberg';
-
-    const config: ExtractionConfig = {
-      keywords: {
-        algorithm: KeywordAlgorithm.Yake,
-        maxKeywords: 10,
-        minScore: 0.3,
-        ngramRange: [1, 3],
-        language: "en"
-      }
-    };
-    ```
-
-### Example: RAKE Configuration with Multi-word Phrases
-
-=== "Python"
-
-    ```python
-    from kreuzberg import ExtractionConfig, KeywordConfig, KeywordAlgorithm, RakeParams
-
-    config = ExtractionConfig(
-        keywords=KeywordConfig(
-            algorithm=KeywordAlgorithm.RAKE,
-            max_keywords=15,
-            min_score=0.1,
-            ngram_range=(1, 4),
-            language="en",
-            rake_params=RakeParams(
-                min_word_length=2,
-                max_words_per_phrase=4
-            )
-        )
-    )
-    ```
-
-=== "Rust"
-
-    ```rust
-    use kreuzberg::{ExtractionConfig, KeywordConfig, KeywordAlgorithm, RakeParams};
-
-    let config = ExtractionConfig {
-        keywords: Some(KeywordConfig {
-            algorithm: KeywordAlgorithm::Rake,
-            max_keywords: 15,
-            min_score: 0.1,
-            ngram_range: (1, 4),
-            language: Some("en".to_string()),
-            rake_params: Some(RakeParams {
-                min_word_length: 2,
-                max_words_per_phrase: 4,
-            }),
-            ..Default::default()
-        }),
-        ..Default::default()
-    };
-    ```
-
-### Language Support
-
-Stopword filtering is applied when a language is specified. Common supported languages:
-
-- `en` - English
-- `es` - Spanish
-- `fr` - French
-- `de` - German
-- `pt` - Portuguese
-- `it` - Italian
-- `ru` - Russian
-- `ja` - Japanese
-- `zh` - Chinese
-- `ar` - Arabic
-
-Set `language: None` to disable stopword filtering and extract keywords in any language without filtering.
-
----
-
-## PdfConfig
-
-PDF-specific extraction configuration.
-
-| Field                      | Type               | Default | Description                                                               |
-| -------------------------- | ------------------ | ------- | ------------------------------------------------------------------------- |
-| `extract_images`           | `bool`             | `false` | Extract embedded images from PDF pages                                    |
-| `extract_metadata`         | `bool`             | `true`  | Extract PDF metadata (title, author, creation date, etc.)                 |
-| `passwords`                | `list[str]?`       | `None`  | List of passwords to try for encrypted PDFs (tries in order)              |
-| `hierarchy`                | `HierarchyConfig?` | `None`  | Hierarchy extraction configuration (None = hierarchy extraction disabled) |
-| `allow_single_column_tables` <span class="version-badge">v4.5.0</span> | `bool`             | `false` | Relax min column count from 2-3 to 1, allowing single-column table extraction |
-
-!!! Note "Bounding boxes require explicit opt-in"
-    Element bounding box coordinates are **not** extracted by default. To enable them, set `pdf_options=PdfConfig(hierarchy=HierarchyConfig(enabled=True, include_bbox=True))`. Coordinates are currently only available for **text elements** (headings and body blocks) — table and image regions do not carry per-element bbox data from this path.
-
-### Example
-
-=== "C#"
-
-    --8<-- "snippets/csharp/pdf_config.md"
-
-=== "Go"
-
-    --8<-- "snippets/go/config/pdf_config.md"
-
-=== "Java"
-
-    --8<-- "snippets/java/config/pdf_config.md"
-
-=== "Python"
-
-    --8<-- "snippets/python/config/pdf_config.md"
-
-=== "Ruby"
-
-    --8<-- "snippets/ruby/config/pdf_config.md"
-
-=== "R"
-
-    --8<-- "snippets/r/config/pdf_config.md"
-
-=== "Rust"
-
-    --8<-- "snippets/rust/ocr/pdf_config.md"
-
-=== "TypeScript"
-
-    --8<-- "snippets/typescript/config/pdf_config.md"
-
----
-
-## HierarchyConfig
-
-PDF document hierarchy extraction configuration for semantic text structure analysis.
-
-### Overview
-
-HierarchyConfig enables automatic extraction of document hierarchy levels (H1-H6) from PDF text by analyzing font size patterns. This is particularly useful for:
-
-- Building semantic document representations for RAG (Retrieval Augmented Generation) systems
-- Automatic table of contents extraction
-- Document structure understanding and analysis
-- Content organization and outlining
-
-The hierarchy detection works by:
-
-1. Extracting text blocks with font size metadata from the PDF
-2. Performing K-means clustering on font sizes to identify distinct size groups
-3. Mapping clusters to heading levels (h1-h6) and body text
-4. Merging adjacent blocks with the same hierarchy level
-5. Optionally including bounding box information for spatial awareness
-
-### Fields
-
-| Field                    | Type          | Default | Description                                                                                                 |
-| ------------------------ | ------------- | ------- | ----------------------------------------------------------------------------------------------------------- |
-| `enabled`                | `bool`        | `true`  | Enable hierarchy extraction                                                                                 |
-| `k_clusters`             | `usize`       | `6`     | Number of font size clusters (1-7). Default 6 provides H1-H6 with body text                                 |
-| `include_bbox`           | `bool`        | `true`  | Include bounding box coordinates in output                                                                  |
-| `ocr_coverage_threshold` | `Option<f32>` | `None`  | Smart OCR triggering threshold (0.0-1.0). Triggers OCR if text blocks cover less than this fraction of page |
-
-### How It Works
-
-#### Font Size Extraction
-
-Text blocks are extracted from PDFs with their precise font sizes. This metadata is preserved for analysis.
-
-#### K-means Clustering
-
-The font sizes are clustered using K-means algorithm with the specified number of clusters. Each cluster represents a distinct text hierarchy level, from largest fonts (headings) to smallest (body text).
-
-**Cluster-to-Level Mapping:**
-
-- For `k_clusters=6` (recommended): Creates 6 clusters → h1 (largest), h2, h3, h4, h5, body (smallest)
-- For `k_clusters=3`: Fast mode with just h1, h3, body (minimal detail)
-- For `k_clusters=7`: Maximum detail separating h1-h6 with distinct body text
-
-#### Block Merging
-
-Adjacent blocks with the same hierarchy level are merged to create logical content units. This merge process considers:
-
-- Spatial proximity (vertical and horizontal distance)
-- Bounding box overlap ratio
-- Text flow direction
-
-#### Output Structure
-
-Each extracted block contains:
-
-- Text content
-- Font size (in points)
-- Hierarchy level (h1-h6 or body)
-- Optional bounding box (left, top, right, bottom in PDF units)
-
-### Use Cases
-
-#### Semantic Document Understanding
-
-Extract hierarchical structure for understanding document semantics and building knowledge graphs:
-
-```text
-H1: Document Title
-  H2: Section 1
-    H3: Subsection 1.1
-      Body text...
-    H3: Subsection 1.2
-      Body text...
-  H2: Section 2
-    H3: Subsection 2.1
-```
-
-#### Automatic Table of Contents Generation
-
-Build dynamic table of contents from extracted hierarchy levels (h1-h3) for document navigation.
-
-#### RAG System Optimization
-
-Use hierarchy information to improve context retrieval by chunking at appropriate heading boundaries rather than arbitrary character counts. This preserves semantic relationships.
-
-#### Document Analysis
-
-Extract and analyze document structure programmatically for compliance checking, content validation, or metadata extraction.
-
-### Configuration Examples
-
-#### Basic Hierarchy Extraction
-
-=== "C#"
-
-    ```csharp title="basic_hierarchy.cs"
-    using Kreuzberg;
-
-    var config = new ExtractionConfig
-    {
-        PdfOptions = new PdfConfig
-        {
-            Hierarchy = new HierarchyConfig
-            {
-                Enabled = true
-            }
-        }
-    };
-
-    var result = KreuzbergClient.ExtractFileSync("document.pdf", config);
-
-    // Access hierarchy from pages
-    if (result.Pages != null)
-    {
-        foreach (var page in result.Pages)
-        {
-            if (page.Hierarchy != null)
-            {
-                Console.WriteLine($"Page {page.PageNumber}: {page.Hierarchy.BlockCount} blocks");
-                foreach (var block in page.Hierarchy.Blocks)
-                {
-                    Console.WriteLine($"  [{block.Level}] {block.Text.Substring(0, 50)}...");
-                }
-            }
-        }
-    }
-    ```
-
-=== "Go"
-
-    ```go title="basic_hierarchy.go"
-    package main
-
-    import (
-        "fmt"
-        "kreuzberg"
-    )
-
-    func main() {
-        config := &kreuzberg.ExtractionConfig{
-            PdfOptions: &kreuzberg.PdfConfig{
-                Hierarchy: &kreuzberg.HierarchyConfig{
-                    Enabled: true,
-                },
-            },
-        }
-
-        result, err := kreuzberg.ExtractFileSync("document.pdf", config)
-        if err != nil {
-            panic(err)
-        }
-
-        if result.Pages != nil {
-            for _, page := range result.Pages {
-                if page.Hierarchy != nil {
-                    fmt.Printf("Page %d: %d blocks\n", page.PageNumber, page.Hierarchy.BlockCount)
-                    for _, block := range page.Hierarchy.Blocks {
-                        fmt.Printf("  [%s] %s...\n", block.Level, block.Text[:50])
-                    }
-                }
-            }
-        }
-    }
-    ```
-
-=== "Java"
-
-    ```java title="BasicHierarchy.java"
-    import com.kreuzberg.*;
-
-    public class BasicHierarchy {
-        public static void main(String[] args) throws Exception {
-            ExtractionConfig config = ExtractionConfig.builder()
-                .pdfOptions(PdfConfig.builder()
-                    .hierarchy(HierarchyConfig.builder()
-                        .enabled(true)
-                        .build())
-                    .build())
-                .build();
-
-            ExtractionResult result = KreuzbergClient.extractFileSync("document.pdf", config);
-
-            if (result.getPages() != null) {
-                for (PageContent page : result.getPages()) {
-                    if (page.getHierarchy() != null) {
-                        System.out.println("Page " + page.getPageNumber() + ": " +
-                            page.getHierarchy().getBlockCount() + " blocks");
-                        for (HierarchicalBlock block : page.getHierarchy().getBlocks()) {
-                            System.out.println("  [" + block.getLevel() + "] " +
-                                block.getText().substring(0, 50) + "...");
-                        }
-                    }
-                }
-            }
-        }
-    }
-    ```
-
-=== "Python"
-
-    --8<-- "snippets/python/config/pdf_hierarchy_config.md"
-
-=== "Ruby"
-
-    ```ruby title="basic_hierarchy.rb"
-    require 'kreuzberg'
-
-    config = Kreuzberg::ExtractionConfig.new(
-      pdf_options: Kreuzberg::PdfConfig.new(
-        hierarchy: Kreuzberg::HierarchyConfig.new(
-          enabled: true
-        )
-      )
-    )
-
-    result = Kreuzberg.extract_file_sync("document.pdf", config: config)
-
-    if result.pages
-      result.pages.each do |page|
-        if page.hierarchy
-          puts "Page #{page.page_number}: #{page.hierarchy.block_count} blocks"
-          page.hierarchy.blocks.each do |block|
-            puts "  [#{block.level}] #{block.text[0..49]}..."
-          end
-        end
-      end
-    end
-    ```
-
-=== "Rust"
-
-    --8<-- "snippets/rust/config/pdf_hierarchy_config.md"
-
-=== "TypeScript"
-
-    ```typescript title="basic_hierarchy.ts"
-    import { extractFileSync, ExtractionConfig, PdfConfig, HierarchyConfig } from 'kreuzberg';
-
-    const config: ExtractionConfig = {
-        pdfOptions: {
-            hierarchy: {
-                enabled: true
-            }
-        }
-    };
-
-    const result = extractFileSync("document.pdf", config);
-
-    if (result.pages) {
-        for (const page of result.pages) {
-            if (page.hierarchy) {
-                console.log(`Page ${page.pageNumber}: ${page.hierarchy.blockCount} blocks`);
-                for (const block of page.hierarchy.blocks) {
-                    console.log(`  [${block.level}] ${block.text.substring(0, 50)}...`);
-                }
-            }
-        }
-    }
-    ```
-
-#### Custom K-Clusters Configuration
-
-Configure clustering granularity for different hierarchy detail levels:
-
-=== "C#"
-
-    ```csharp title="custom_k_clusters.cs"
-    using Kreuzberg;
-
-    // Fast mode: 3 clusters (h1, h3, body) - minimal detail
-    var fastConfig = new ExtractionConfig
-    {
-        PdfOptions = new PdfConfig
-        {
-            Hierarchy = new HierarchyConfig
-            {
-                Enabled = true,
-                KClusters = 3  // Fast, identifies main structure only
-            }
-        }
-    };
-
-    // Balanced mode: 6 clusters (h1-h6) - default, recommended
-    var balancedConfig = new ExtractionConfig
-    {
-        PdfOptions = new PdfConfig
-        {
-            Hierarchy = new HierarchyConfig
-            {
-                Enabled = true,
-                KClusters = 6  // Balanced detail
-            }
-        }
-    };
-
-    // Detailed mode: 7 clusters (h1-h6 + distinct body) - maximum detail
-    var detailedConfig = new ExtractionConfig
-    {
-        PdfOptions = new PdfConfig
-        {
-            Hierarchy = new HierarchyConfig
-            {
-                Enabled = true,
-                KClusters = 7  // Maximum detail with body text separation
-            }
-        }
-    };
-    ```
-
-=== "Python"
-
-    ```python title="custom_k_clusters.py"
-    from kreuzberg import extract_file_sync, ExtractionConfig, PdfConfig, HierarchyConfig
-
-    # Fast mode: 3 clusters
-    fast_config = ExtractionConfig(
-        pdf_options=PdfConfig(
-            hierarchy=HierarchyConfig(
-                enabled=True,
-                k_clusters=3  # Fast, identifies main structure only
-            )
-        )
-    )
-
-    # Balanced mode: 6 clusters (recommended)
-    balanced_config = ExtractionConfig(
-        pdf_options=PdfConfig(
-            hierarchy=HierarchyConfig(
-                enabled=True,
-                k_clusters=6  # Balanced detail
-            )
-        )
-    )
-
-    # Detailed mode: 7 clusters
-    detailed_config = ExtractionConfig(
-        pdf_options=PdfConfig(
-            hierarchy=HierarchyConfig(
-                enabled=True,
-                k_clusters=7  # Maximum detail with body text separation
-            )
-        )
-    )
-
-    result = extract_file_sync("document.pdf", config=balanced_config)
-    ```
-
-=== "Rust"
-
-    ```rust title="custom_k_clusters.rs"
-    use kreuzberg::{extract_file_sync, ExtractionConfig, PdfConfig, HierarchyConfig};
-
-    fn main() -> kreuzberg::Result<()> {
-        // Fast mode: 3 clusters
-        let fast_config = ExtractionConfig {
-            pdf_options: Some(PdfConfig {
-                hierarchy: Some(HierarchyConfig {
-                    k_clusters: 3,
-                    ..Default::default()
-                }),
-                ..Default::default()
-            }),
-            ..Default::default()
-        };
-
-        // Balanced mode: 6 clusters (recommended)
-        let balanced_config = ExtractionConfig {
-            pdf_options: Some(PdfConfig {
-                hierarchy: Some(HierarchyConfig {
-                    k_clusters: 6,
-                    ..Default::default()
-                }),
-                ..Default::default()
-            }),
-            ..Default::default()
-        };
-
-        // Detailed mode: 7 clusters
-        let detailed_config = ExtractionConfig {
-            pdf_options: Some(PdfConfig {
-                hierarchy: Some(HierarchyConfig {
-                    k_clusters: 7,
-                    ..Default::default()
-                }),
-                ..Default::default()
-            }),
-            ..Default::default()
-        };
-
-        let result = extract_file_sync("document.pdf", None::<&str>, &balanced_config)?;
-        Ok(())
-    }
-    ```
-
-#### OCR Coverage Threshold
-
-Smart OCR triggering based on text coverage:
-
-=== "C#"
-
-    ```csharp title="ocr_coverage_threshold.cs"
-    using Kreuzberg;
-
-    var config = new ExtractionConfig
-    {
-        PdfOptions = new PdfConfig
-        {
-            Hierarchy = new HierarchyConfig
-            {
-                Enabled = true,
-                OcrCoverageThreshold = 0.5f  // Trigger OCR if <50% of page has text
-            }
-        }
-    };
-
-    var result = KreuzbergClient.ExtractFileSync("document.pdf", config);
-    ```
-
-=== "Python"
-
-    ```python title="ocr_coverage_threshold.py"
-    from kreuzberg import extract_file_sync, ExtractionConfig, PdfConfig, HierarchyConfig
-
-    config = ExtractionConfig(
-        pdf_options=PdfConfig(
-            hierarchy=HierarchyConfig(
-                enabled=True,
-                ocr_coverage_threshold=0.5  # Trigger OCR if <50% of page has text
-            )
-        )
-    )
-
-    result = extract_file_sync("document.pdf", config=config)
-    ```
-
-=== "Rust"
-
-    ```rust title="ocr_coverage_threshold.rs"
-    use kreuzberg::{extract_file_sync, ExtractionConfig, PdfConfig, HierarchyConfig};
-
-    fn main() -> kreuzberg::Result<()> {
-        let config = ExtractionConfig {
-            pdf_options: Some(PdfConfig {
-                hierarchy: Some(HierarchyConfig {
-                    ocr_coverage_threshold: Some(0.5),
-                    ..Default::default()
-                }),
-                ..Default::default()
-            }),
-            ..Default::default()
-        };
-
-        let result = extract_file_sync("document.pdf", None::<&str>, &config)?;
-        Ok(())
-    }
-    ```
-
-#### Disabling Bounding Boxes
-
-Reduce output size by excluding spatial information:
-
-=== "C#"
-
-    ```csharp title="no_bbox.cs"
-    using Kreuzberg;
-
-    var config = new ExtractionConfig
-    {
-        PdfOptions = new PdfConfig
-        {
-            Hierarchy = new HierarchyConfig
-            {
-                Enabled = true,
-                IncludeBbox = false  // Exclude bounding boxes
-            }
-        }
-    };
-
-    var result = KreuzbergClient.ExtractFileSync("document.pdf", config);
-    ```
-
-=== "Python"
-
-    ```python title="no_bbox.py"
-    from kreuzberg import extract_file_sync, ExtractionConfig, PdfConfig, HierarchyConfig
-
-    config = ExtractionConfig(
-        pdf_options=PdfConfig(
-            hierarchy=HierarchyConfig(
-                enabled=True,
-                include_bbox=False  // Exclude bounding boxes
-            )
-        )
-    )
-
-    result = extract_file_sync("document.pdf", config=config)
-    ```
-
-### Performance Tuning
-
-#### K-clusters Selection
-
-Choose k_clusters based on your performance vs. detail requirements:
-
-| Setting        | Speed     | Detail                         | Best For                                                      |
-| -------------- | --------- | ------------------------------ | ------------------------------------------------------------- |
-| `k_clusters=3` | Very Fast | Minimal (h1, h3, body)         | Quick document structure identification, real-time processing |
-| `k_clusters=6` | Balanced  | Standard (h1-h6, body)         | General purpose, RAG systems, recommended default             |
-| `k_clusters=7` | Moderate  | Detailed (h1-h6 separate body) | Fine-grained content analysis, content organization           |
-
-#### Bounding Box Optimization
-
-**Include bounding boxes** (`include_bbox=true`, default) when:
-
-- Building visually-aware document processors
-- Need to correlate text with document position
-- Processing layout-sensitive documents (brochures, forms)
-
-**Exclude bounding boxes** (`include_bbox=false`) when:
-
-- Minimizing output size for network transmission
-- Bandwidth is constrained
-- Spatial information is not needed
-- Typical output reduction: 10-15% smaller
-
-#### OCR Integration
-
-The `ocr_coverage_threshold` parameter enables smart OCR triggering:
-
-````text
-
-If (text_block_coverage < ocr_coverage_threshold) {
-run_ocr() // Trigger OCR on pages with insufficient text coverage
-}
-
-````text
-
-**Common Scenarios:**
-
-- `ocr_coverage_threshold=0.5`: Trigger OCR on scanned pages (<50% text coverage)
-- `ocr_coverage_threshold=0.8`: Only OCR pages with very low text (>80% images)
-- `ocr_coverage_threshold=None`: Disable smart OCR triggering, rely on `force_ocr` flag
-
-### Output Format
-
-#### PageHierarchy Structure
-
-The extracted hierarchy is returned in `PageContent.hierarchy` when pages are extracted:
-
-```json title="PageHierarchy Output Structure"
-{
-  "block_count": 12,
-  "blocks": [
-    {
-      "text": "Document Title",
-      "font_size": 24.0,
-      "level": "h1",
-      "bbox": [50.0, 100.0, 500.0, 130.0]
-    },
-    {
-      "text": "Introduction",
-      "font_size": 18.0,
-      "level": "h2",
-      "bbox": [50.0, 150.0, 300.0, 175.0]
-    },
-    {
-      "text": "This is the introductory paragraph with standard body text content.",
-      "font_size": 12.0,
-      "level": "body",
-      "bbox": [50.0, 200.0, 500.0, 250.0]
-    },
-    {
-      "text": "Key Findings",
-      "font_size": 18.0,
-      "level": "h2",
-      "bbox": [50.0, 280.0, 300.0, 305.0]
-    }
-  ]
-}
-````
-
-#### Field Meanings
-
-- **block_count**: Total number of hierarchical blocks on the page
-- **blocks**: Array of hierarchical blocks
-  - **text**: The text content of the block
-  - **font_size**: Font size in points (useful for verification and styling)
-  - **level**: Hierarchy level - "h1" through "h6" for headings, "body" for body text
-  - **bbox**: Optional bounding box as `[left, top, right, bottom]` in PDF units (points). Only present when `include_bbox=true`
-
-#### Accessing Hierarchy in Code
-
-=== "Python"
-
-    ```python
-    result = extract_file_sync("document.pdf", config=config)
-
-    for page in result.pages or []:
-        if page.hierarchy:
-            # Get all h1 headings
-            h1_blocks = [b for b in page.hierarchy.blocks if b.level == "h1"]
-
-            # Get all heading levels (h1-h6)
-            headings = [b for b in page.hierarchy.blocks if b.level.startswith("h")]
-
-            # Build outline with hierarchy
-            for block in page.hierarchy.blocks:
-                indent = int(block.level[1]) if block.level.startswith("h") else 0
-                print("  " * indent + block.text)
-    ```
-
-=== "Rust"
-
-    ```rust
-    for page in result.pages.iter().flat_map(|p| p.iter()) {
-        if let Some(hierarchy) = &page.hierarchy {
-            // Get all h1 headings
-            let h1_blocks: Vec<_> = hierarchy.blocks
-                .iter()
-                .filter(|b| b.level == "h1")
-                .collect();
-
-            // Build outline
-            for block in &hierarchy.blocks {
-                let level = if block.level.starts_with('h') {
-                    block.level[1..].parse::<usize>().unwrap_or(0)
-                } else {
-                    0
-                };
-                println!("{}{}", "  ".repeat(level), block.text);
-            }
-        }
-    }
-    ```
-
-### Best Practices
-
-1. **Always enable page extraction** when using hierarchy:
-
-   ```text
-   pages = PageConfig(extract_pages=True)
-   ```
-
-   Hierarchy data is only populated when pages are extracted.
-
-2. **Use k_clusters=6 by default** (recommended). It provides good balance between detail and performance for most documents.
-
-3. **Include bounding boxes for RAG systems** that need spatial awareness for relevance ranking.
-
-4. **Test ocr_coverage_threshold** with your document set to find optimal OCR triggering point.
-
-5. **Process hierarchy at chunk boundaries** in RAG systems to preserve semantic relationships in context windows.
-
-### Example: Building a Table of Contents
-
-=== "Python"
-
-    ```python
-    from kreuzberg import extract_file_sync, ExtractionConfig, PdfConfig, HierarchyConfig, PageConfig
-
-    config = ExtractionConfig(
-        pdf_options=PdfConfig(
-            hierarchy=HierarchyConfig(enabled=True, k_clusters=6)
-        ),
-        pages=PageConfig(extract_pages=True)
-    )
-
-    result = extract_file_sync("document.pdf", config=config)
-
-    toc = []
-    for page in result.pages or []:
-        if page.hierarchy:
-            for block in page.hierarchy.blocks:
-                if block.level.startswith("h"):
-                    level = int(block.level[1])
-                    toc.append({
-                        "level": level,
-                        "text": block.text,
-                        "page": page.page_number
-                    })
-
-    # Print hierarchical TOC
-    for entry in toc:
-        indent = "  " * (entry["level"] - 1)
-        print(f"{indent}{entry['text']} (p. {entry['page']})")
-    ```
-
----
-
-## HierarchyConfig
-
-PDF document hierarchy extraction configuration for semantic text structure analysis.
-
-### Overview
-
-HierarchyConfig enables automatic extraction of document hierarchy levels (H1-H6) from PDF text by analyzing font size patterns. This is particularly useful for:
-
-- Building semantic document representations for RAG (Retrieval Augmented Generation) systems
-- Automatic table of contents extraction
-- Document structure understanding and analysis
-- Content organization and outlining
-
-The hierarchy detection works by:
-
-1. Extracting text blocks with font size metadata from the PDF
-2. Performing K-means clustering on font sizes to identify distinct size groups
-3. Mapping clusters to heading levels (h1-h6) and body text
-4. Merging adjacent blocks with the same hierarchy level
-5. Optionally including bounding box information for spatial awareness
-
-### Fields
-
-| Field                    | Type          | Default | Description                                                                                                 |
-| ------------------------ | ------------- | ------- | ----------------------------------------------------------------------------------------------------------- |
-| `enabled`                | `bool`        | `true`  | Enable hierarchy extraction                                                                                 |
-| `k_clusters`             | `usize`       | `6`     | Number of font size clusters (1-7). Default 6 provides H1-H6 with body text                                 |
-| `include_bbox`           | `bool`        | `true`  | Include bounding box coordinates in output                                                                  |
-| `ocr_coverage_threshold` | `Option<f32>` | `None`  | Smart OCR triggering threshold (0.0-1.0). Triggers OCR if text blocks cover less than this fraction of page |
-
-### How It Works
-
-#### Font Size Extraction
-
-Text blocks are extracted from PDFs with their precise font sizes. This metadata is preserved for analysis.
-
-#### K-means Clustering
-
-The font sizes are clustered using K-means algorithm with the specified number of clusters. Each cluster represents a distinct text hierarchy level, from largest fonts (headings) to smallest (body text).
-
-**Cluster-to-Level Mapping:**
-
-- For `k_clusters=6` (recommended): Creates 6 clusters → h1 (largest), h2, h3, h4, h5, body (smallest)
-- For `k_clusters=3`: Fast mode with just h1, h3, body (minimal detail)
-- For `k_clusters=7`: Maximum detail separating h1-h6 with distinct body text
-
-#### Block Merging
-
-Adjacent blocks with the same hierarchy level are merged to create logical content units. This merge process considers:
-
-- Spatial proximity (vertical and horizontal distance)
-- Bounding box overlap ratio
-- Text flow direction
-
-#### Output Structure
-
-Each extracted block contains:
-
-- Text content
-- Font size (in points)
-- Hierarchy level (h1-h6 or body)
-- Optional bounding box (left, top, right, bottom in PDF units)
-
-### Use Cases
-
-#### Semantic Document Understanding
-
-Extract hierarchical structure for understanding document semantics and building knowledge graphs:
-
-```text
-H1: Document Title
-  H2: Section 1
-    H3: Subsection 1.1
-      Body text...
-    H3: Subsection 1.2
-      Body text...
-  H2: Section 2
-    H3: Subsection 2.1
-```
-
-#### Automatic Table of Contents Generation
-
-Build dynamic table of contents from extracted hierarchy levels (h1-h3) for document navigation.
-
-#### RAG System Optimization
-
-Use hierarchy information to improve context retrieval by chunking at appropriate heading boundaries rather than arbitrary character counts. This preserves semantic relationships.
-
-#### Document Analysis
-
-Extract and analyze document structure programmatically for compliance checking, content validation, or metadata extraction.
-
-### Configuration Examples
-
-#### Basic Hierarchy Extraction
-
-=== "C#"
-
-    ```csharp title="basic_hierarchy.cs"
-    using Kreuzberg;
-
-    var config = new ExtractionConfig
-    {
-        PdfOptions = new PdfConfig
-        {
-            Hierarchy = new HierarchyConfig
-            {
-                Enabled = true
-            }
-        }
-    };
-
-    var result = KreuzbergClient.ExtractFileSync("document.pdf", config);
-
-    // Access hierarchy from pages
-    if (result.Pages != null)
-    {
-        foreach (var page in result.Pages)
-        {
-            if (page.Hierarchy != null)
-            {
-                Console.WriteLine($"Page {page.PageNumber}: {page.Hierarchy.BlockCount} blocks");
-                foreach (var block in page.Hierarchy.Blocks)
-                {
-                    Console.WriteLine($"  [{block.Level}] {block.Text.Substring(0, 50)}...");
-                }
-            }
-        }
-    }
-    ```
-
-=== "Go"
-
-    ```go title="basic_hierarchy.go"
-    package main
-
-    import (
-        "fmt"
-        "kreuzberg"
-    )
-
-    func main() {
-        config := &kreuzberg.ExtractionConfig{
-            PdfOptions: &kreuzberg.PdfConfig{
-                Hierarchy: &kreuzberg.HierarchyConfig{
-                    Enabled: true,
-                },
-            },
-        }
-
-        result, err := kreuzberg.ExtractFileSync("document.pdf", config)
-        if err != nil {
-            panic(err)
-        }
-
-        if result.Pages != nil {
-            for _, page := range result.Pages {
-                if page.Hierarchy != nil {
-                    fmt.Printf("Page %d: %d blocks\n", page.PageNumber, page.Hierarchy.BlockCount)
-                    for _, block := range page.Hierarchy.Blocks {
-                        fmt.Printf("  [%s] %s...\n", block.Level, block.Text[:50])
-                    }
-                }
-            }
-        }
-    }
-    ```
-
-=== "Java"
-
-    ```java title="BasicHierarchy.java"
-    import com.kreuzberg.*;
-
-    public class BasicHierarchy {
-        public static void main(String[] args) throws Exception {
-            ExtractionConfig config = ExtractionConfig.builder()
-                .pdfOptions(PdfConfig.builder()
-                    .hierarchy(HierarchyConfig.builder()
-                        .enabled(true)
-                        .build())
-                    .build())
-                .build();
-
-            ExtractionResult result = KreuzbergClient.extractFileSync("document.pdf", config);
-
-            if (result.getPages() != null) {
-                for (PageContent page : result.getPages()) {
-                    if (page.getHierarchy() != null) {
-                        System.out.println("Page " + page.getPageNumber() + ": " +
-                            page.getHierarchy().getBlockCount() + " blocks");
-                        for (HierarchicalBlock block : page.getHierarchy().getBlocks()) {
-                            System.out.println("  [" + block.getLevel() + "] " +
-                                block.getText().substring(0, 50) + "...");
-                        }
-                    }
-                }
-            }
-        }
-    }
-    ```
-
-=== "Python"
-
-    --8<-- "snippets/python/config/pdf_hierarchy_config.md"
-
-=== "Ruby"
-
-    ```ruby title="basic_hierarchy.rb"
-    require 'kreuzberg'
-
-    config = Kreuzberg::ExtractionConfig.new(
-      pdf_options: Kreuzberg::PdfConfig.new(
-        hierarchy: Kreuzberg::HierarchyConfig.new(
-          enabled: true
-        )
-      )
-    )
-
-    result = Kreuzberg.extract_file_sync("document.pdf", config: config)
-
-    if result.pages
-      result.pages.each do |page|
-        if page.hierarchy
-          puts "Page #{page.page_number}: #{page.hierarchy.block_count} blocks"
-          page.hierarchy.blocks.each do |block|
-            puts "  [#{block.level}] #{block.text[0..49]}..."
-          end
-        end
-      end
-    end
-    ```
-
-=== "Rust"
-
-    --8<-- "snippets/rust/config/pdf_hierarchy_config.md"
-
-=== "TypeScript"
-
-    ```typescript title="basic_hierarchy.ts"
-    import { extractFileSync, ExtractionConfig, PdfConfig, HierarchyConfig } from 'kreuzberg';
-
-    const config: ExtractionConfig = {
-        pdfOptions: {
-            hierarchy: {
-                enabled: true
-            }
-        }
-    };
-
-    const result = extractFileSync("document.pdf", config);
-
-    if (result.pages) {
-        for (const page of result.pages) {
-            if (page.hierarchy) {
-                console.log(`Page ${page.pageNumber}: ${page.hierarchy.blockCount} blocks`);
-                for (const block of page.hierarchy.blocks) {
-                    console.log(`  [${block.level}] ${block.text.substring(0, 50)}...`);
-                }
-            }
-        }
-    }
-    ```
-
-#### Custom K-Clusters Configuration
-
-Configure clustering granularity for different hierarchy detail levels:
-
-=== "C#"
-
-    ```csharp title="custom_k_clusters.cs"
-    using Kreuzberg;
-
-    // Fast mode: 3 clusters (h1, h3, body) - minimal detail
-    var fastConfig = new ExtractionConfig
-    {
-        PdfOptions = new PdfConfig
-        {
-            Hierarchy = new HierarchyConfig
-            {
-                Enabled = true,
-                KClusters = 3  // Fast, identifies main structure only
-            }
-        }
-    };
-
-    // Balanced mode: 6 clusters (h1-h6) - default, recommended
-    var balancedConfig = new ExtractionConfig
-    {
-        PdfOptions = new PdfConfig
-        {
-            Hierarchy = new HierarchyConfig
-            {
-                Enabled = true,
-                KClusters = 6  // Balanced detail
-            }
-        }
-    };
-
-    // Detailed mode: 7 clusters (h1-h6 + distinct body) - maximum detail
-    var detailedConfig = new ExtractionConfig
-    {
-        PdfOptions = new PdfConfig
-        {
-            Hierarchy = new HierarchyConfig
-            {
-                Enabled = true,
-                KClusters = 7  // Maximum detail with body text separation
-            }
-        }
-    };
-    ```
-
-=== "Python"
-
-    ```python title="custom_k_clusters.py"
-    from kreuzberg import extract_file_sync, ExtractionConfig, PdfConfig, HierarchyConfig
-
-    # Fast mode: 3 clusters
-    fast_config = ExtractionConfig(
-        pdf_options=PdfConfig(
-            hierarchy=HierarchyConfig(
-                enabled=True,
-                k_clusters=3  # Fast, identifies main structure only
-            )
-        )
-    )
-
-    # Balanced mode: 6 clusters (recommended)
-    balanced_config = ExtractionConfig(
-        pdf_options=PdfConfig(
-            hierarchy=HierarchyConfig(
-                enabled=True,
-                k_clusters=6  # Balanced detail
-            )
-        )
-    )
-
-    # Detailed mode: 7 clusters
-    detailed_config = ExtractionConfig(
-        pdf_options=PdfConfig(
-            hierarchy=HierarchyConfig(
-                enabled=True,
-                k_clusters=7  # Maximum detail with body text separation
-            )
-        )
-    )
-
-    result = extract_file_sync("document.pdf", config=balanced_config)
-    ```
-
-=== "Rust"
-
-    ```rust title="custom_k_clusters.rs"
-    use kreuzberg::{extract_file_sync, ExtractionConfig, PdfConfig, HierarchyConfig};
-
-    fn main() -> kreuzberg::Result<()> {
-        // Fast mode: 3 clusters
-        let fast_config = ExtractionConfig {
-            pdf_options: Some(PdfConfig {
-                hierarchy: Some(HierarchyConfig {
-                    k_clusters: 3,
-                    ..Default::default()
-                }),
-                ..Default::default()
-            }),
-            ..Default::default()
-        };
-
-        // Balanced mode: 6 clusters (recommended)
-        let balanced_config = ExtractionConfig {
-            pdf_options: Some(PdfConfig {
-                hierarchy: Some(HierarchyConfig {
-                    k_clusters: 6,
-                    ..Default::default()
-                }),
-                ..Default::default()
-            }),
-            ..Default::default()
-        };
-
-        // Detailed mode: 7 clusters
-        let detailed_config = ExtractionConfig {
-            pdf_options: Some(PdfConfig {
-                hierarchy: Some(HierarchyConfig {
-                    k_clusters: 7,
-                    ..Default::default()
-                }),
-                ..Default::default()
-            }),
-            ..Default::default()
-        };
-
-        let result = extract_file_sync("document.pdf", None::<&str>, &balanced_config)?;
-        Ok(())
-    }
-    ```
-
-#### OCR Coverage Threshold
-
-Smart OCR triggering based on text coverage:
-
-=== "C#"
-
-    ```csharp title="ocr_coverage_threshold.cs"
-    using Kreuzberg;
-
-    var config = new ExtractionConfig
-    {
-        PdfOptions = new PdfConfig
-        {
-            Hierarchy = new HierarchyConfig
-            {
-                Enabled = true,
-                OcrCoverageThreshold = 0.5f  // Trigger OCR if <50% of page has text
-            }
-        }
-    };
-
-    var result = KreuzbergClient.ExtractFileSync("document.pdf", config);
-    ```
-
-=== "Python"
-
-    ```python title="ocr_coverage_threshold.py"
-    from kreuzberg import extract_file_sync, ExtractionConfig, PdfConfig, HierarchyConfig
-
-    config = ExtractionConfig(
-        pdf_options=PdfConfig(
-            hierarchy=HierarchyConfig(
-                enabled=True,
-                ocr_coverage_threshold=0.5  # Trigger OCR if <50% of page has text
-            )
-        )
-    )
-
-    result = extract_file_sync("document.pdf", config=config)
-    ```
-
-=== "Rust"
-
-    ```rust title="ocr_coverage_threshold.rs"
-    use kreuzberg::{extract_file_sync, ExtractionConfig, PdfConfig, HierarchyConfig};
-
-    fn main() -> kreuzberg::Result<()> {
-        let config = ExtractionConfig {
-            pdf_options: Some(PdfConfig {
-                hierarchy: Some(HierarchyConfig {
-                    ocr_coverage_threshold: Some(0.5),
-                    ..Default::default()
-                }),
-                ..Default::default()
-            }),
-            ..Default::default()
-        };
-
-        let result = extract_file_sync("document.pdf", None::<&str>, &config)?;
-        Ok(())
-    }
-    ```
-
-#### Disabling Bounding Boxes
-
-Reduce output size by excluding spatial information:
-
-=== "C#"
-
-    ```csharp title="no_bbox.cs"
-    using Kreuzberg;
-
-    var config = new ExtractionConfig
-    {
-        PdfOptions = new PdfConfig
-        {
-            Hierarchy = new HierarchyConfig
-            {
-                Enabled = true,
-                IncludeBbox = false  // Exclude bounding boxes
-            }
-        }
-    };
-
-    var result = KreuzbergClient.ExtractFileSync("document.pdf", config);
-    ```
-
-=== "Python"
-
-    ```python title="no_bbox.py"
-    from kreuzberg import extract_file_sync, ExtractionConfig, PdfConfig, HierarchyConfig
-
-    config = ExtractionConfig(
-        pdf_options=PdfConfig(
-            hierarchy=HierarchyConfig(
-                enabled=True,
-                include_bbox=False  // Exclude bounding boxes
-            )
-        )
-    )
-
-    result = extract_file_sync("document.pdf", config=config)
-    ```
-
-### Performance Tuning
-
-#### K-clusters Selection
-
-Choose k_clusters based on your performance vs. detail requirements:
-
-| Setting        | Speed     | Detail                         | Best For                                                      |
-| -------------- | --------- | ------------------------------ | ------------------------------------------------------------- |
-| `k_clusters=3` | Very Fast | Minimal (h1, h3, body)         | Quick document structure identification, real-time processing |
-| `k_clusters=6` | Balanced  | Standard (h1-h6, body)         | General purpose, RAG systems, recommended default             |
-| `k_clusters=7` | Moderate  | Detailed (h1-h6 separate body) | Fine-grained content analysis, content organization           |
-
-#### Bounding Box Optimization
-
-**Include bounding boxes** (`include_bbox=true`, default) when:
-
-- Building visually-aware document processors
-- Need to correlate text with document position
-- Processing layout-sensitive documents (brochures, forms)
-
-**Exclude bounding boxes** (`include_bbox=false`) when:
-
-- Minimizing output size for network transmission
-- Bandwidth is constrained
-- Spatial information is not needed
-- Typical output reduction: 10-15% smaller
-
-#### OCR Integration
-
-The `ocr_coverage_threshold` parameter enables smart OCR triggering:
-
-````text
-
-If (text_block_coverage < ocr_coverage_threshold) {
-run_ocr() // Trigger OCR on pages with insufficient text coverage
-}
-
-````text
-
-**Common Scenarios:**
-
-- `ocr_coverage_threshold=0.5`: Trigger OCR on scanned pages (<50% text coverage)
-- `ocr_coverage_threshold=0.8`: Only OCR pages with very low text (>80% images)
-- `ocr_coverage_threshold=None`: Disable smart OCR triggering, rely on `force_ocr` flag
-
-### Output Format
-
-#### PageHierarchy Structure
-
-The extracted hierarchy is returned in `PageContent.hierarchy` when pages are extracted:
-
-```json title="PageHierarchy Output Structure"
-{
-  "block_count": 12,
-  "blocks": [
-    {
-      "text": "Document Title",
-      "font_size": 24.0,
-      "level": "h1",
-      "bbox": [50.0, 100.0, 500.0, 130.0]
-    },
-    {
-      "text": "Introduction",
-      "font_size": 18.0,
-      "level": "h2",
-      "bbox": [50.0, 150.0, 300.0, 175.0]
-    },
-    {
-      "text": "This is the introductory paragraph with standard body text content.",
-      "font_size": 12.0,
-      "level": "body",
-      "bbox": [50.0, 200.0, 500.0, 250.0]
-    },
-    {
-      "text": "Key Findings",
-      "font_size": 18.0,
-      "level": "h2",
-      "bbox": [50.0, 280.0, 300.0, 305.0]
-    }
-  ]
-}
-````
-
-#### Field Meanings
-
-- **block_count**: Total number of hierarchical blocks on the page
-- **blocks**: Array of hierarchical blocks
-  - **text**: The text content of the block
-  - **font_size**: Font size in points (useful for verification and styling)
-  - **level**: Hierarchy level - "h1" through "h6" for headings, "body" for body text
-  - **bbox**: Optional bounding box as `[left, top, right, bottom]` in PDF units (points). Only present when `include_bbox=true`
-
-#### Accessing Hierarchy in Code
-
-=== "Python"
-
-    ```python
-    result = extract_file_sync("document.pdf", config=config)
-
-    for page in result.pages or []:
-        if page.hierarchy:
-            # Get all h1 headings
-            h1_blocks = [b for b in page.hierarchy.blocks if b.level == "h1"]
-
-            # Get all heading levels (h1-h6)
-            headings = [b for b in page.hierarchy.blocks if b.level.startswith("h")]
-
-            # Build outline with hierarchy
-            for block in page.hierarchy.blocks:
-                indent = int(block.level[1]) if block.level.startswith("h") else 0
-                print("  " * indent + block.text)
-    ```
-
-=== "Rust"
-
-    ```rust
-    for page in result.pages.iter().flat_map(|p| p.iter()) {
-        if let Some(hierarchy) = &page.hierarchy {
-            // Get all h1 headings
-            let h1_blocks: Vec<_> = hierarchy.blocks
-                .iter()
-                .filter(|b| b.level == "h1")
-                .collect();
-
-            // Build outline
-            for block in &hierarchy.blocks {
-                let level = if block.level.starts_with('h') {
-                    block.level[1..].parse::<usize>().unwrap_or(0)
-                } else {
-                    0
-                };
-                println!("{}{}", "  ".repeat(level), block.text);
-            }
-        }
-    }
-    ```
-
-### Best Practices
-
-1. **Always enable page extraction** when using hierarchy:
-
-   ```text
-   pages = PageConfig(extract_pages=True)
-   ```
-
-   Hierarchy data is only populated when pages are extracted.
-
-2. **Use k_clusters=6 by default** (recommended). It provides good balance between detail and performance for most documents.
-
-3. **Include bounding boxes for RAG systems** that need spatial awareness for relevance ranking.
-
-4. **Test ocr_coverage_threshold** with your document set to find optimal OCR triggering point.
-
-5. **Process hierarchy at chunk boundaries** in RAG systems to preserve semantic relationships in context windows.
-
-### Example: Building a Table of Contents
-
-=== "Python"
-
-    ```python
-    from kreuzberg import extract_file_sync, ExtractionConfig, PdfConfig, HierarchyConfig, PageConfig
-
-    config = ExtractionConfig(
-        pdf_options=PdfConfig(
-            hierarchy=HierarchyConfig(enabled=True, k_clusters=6)
-        ),
-        pages=PageConfig(extract_pages=True)
-    )
-
-    result = extract_file_sync("document.pdf", config=config)
-
-    toc = []
-    for page in result.pages or []:
-        if page.hierarchy:
-            for block in page.hierarchy.blocks:
-                if block.level.startswith("h"):
-                    level = int(block.level[1])
-                    toc.append({
-                        "level": level,
-                        "text": block.text,
-                        "page": page.page_number
-                    })
-
-    # Print hierarchical TOC
-    for entry in toc:
-        indent = "  " * (entry["level"] - 1)
-        print(f"{indent}{entry['text']} (p. {entry['page']})")
-    ```
-
----
-
-## PageConfig
-
-Configuration for page extraction and tracking.
-
-Controls whether to extract per-page content and how to mark page boundaries in the combined text output.
-
-### Configuration
-
-| Field                 | Type     | Default                              | Description                                              |
-| --------------------- | -------- | ------------------------------------ | -------------------------------------------------------- |
-| `extract_pages`       | `bool`   | `false`                              | Extract pages as separate array in results               |
-| `insert_page_markers` | `bool`   | `false`                              | Insert page markers in combined content string           |
-| `marker_format`       | `String` | `"\n\n<!-- PAGE {page_num} -->\n\n"` | Template for page markers (use `{page_num}` placeholder) |
-
-### Example
-
-=== "C#"
-
-    ```csharp title="page_config.cs"
-    var config = new ExtractionConfig
-    {
-        Pages = new PageConfig
-        {
-            ExtractPages = true,
-            InsertPageMarkers = true,
-            MarkerFormat = "\n\n--- Page {page_num} ---\n\n"
-        }
-    };
-    ```
-
-=== "Go"
-
-    ```go title="page_config.go"
-    config := &ExtractionConfig{
-        Pages: &PageConfig{
-            ExtractPages:      true,
-            InsertPageMarkers: true,
-            MarkerFormat:      "\n\n--- Page {page_num} ---\n\n",
-        },
-    }
-    ```
-
-=== "Java"
-
-    ```java title="PageConfig.java"
-    var config = ExtractionConfig.builder()
-        .pages(PageConfig.builder()
-            .extractPages(true)
-            .insertPageMarkers(true)
-            .markerFormat("\n\n--- Page {page_num} ---\n\n")
-            .build())
-        .build();
-    ```
-
-=== "Python"
-
-    ```python title="page_config.py"
-    config = ExtractionConfig(
-        pages=PageConfig(
-            extract_pages=True,
-            insert_page_markers=True,
-            marker_format="\n\n--- Page {page_num} ---\n\n"
-        )
-    )
-    ```
-
-=== "Ruby"
-
-    ```ruby title="page_config.rb"
-    config = ExtractionConfig.new(
-      pages: PageConfig.new(
-        extract_pages: true,
-        insert_page_markers: true,
-        marker_format: "\n\n--- Page {page_num} ---\n\n"
-      )
-    )
-    ```
-
-=== "Rust"
-
-    ```rust title="page_config.rs"
-    let config = ExtractionConfig {
-        pages: Some(PageConfig {
-            extract_pages: true,
-            insert_page_markers: true,
-            marker_format: "\n\n--- Page {page_num} ---\n\n".to_string(),
-        }),
-        ..Default::default()
-    };
-    ```
-
-=== "TypeScript"
-
-    ```typescript title="page_config.ts"
-    const config: ExtractionConfig = {
-      pages: {
-        extractPages: true,
-        insertPageMarkers: true,
-        markerFormat: "\n\n--- Page {page_num} ---\n\n"
-      }
-    };
-    ```
-
-### Field Details
-
-**extract_pages**: When `true`, populates `ExtractionResult.pages` with per-page content. Each page contains its text, tables, and images separately.
-
-**insert_page_markers**: When `true`, inserts page markers into the combined `content` string at page boundaries. Useful for LLMs to understand document structure.
-
-**marker_format**: Template string for page markers. Use `{page_num}` placeholder for the page number. Default HTML comment format is LLM-friendly.
-
-### Format Support
-
-- **PDF**: Full byte-accurate page tracking with O(1) lookup performance
-- **PPTX**: Slide boundary tracking with per-slide content
-- **DOCX**: Best-effort page break detection using explicit page breaks
-- **Other formats**: Page tracking not available (returns `None`/`null`)
-
----
-
-## ImageExtractionConfig
-
-Configuration for extracting and processing images from documents.
-
-| Field                 | Type   | Default | Description                                              |
-| --------------------- | ------ | ------- | -------------------------------------------------------- |
-| `extract_images`        | `bool` | `true`  | Extract images from documents                            |
-| `target_dpi`            | `int`  | `300`   | Target DPI for extracted/normalized images               |
-| `max_image_dimension`   | `int`  | `4096`  | Maximum image dimension (width or height) in pixels      |
-| `inject_placeholders`   | `bool` | `true`  | Inject image reference placeholders (for example `![Image](embedded:p1_i0)`) into markdown output. Set to `false` to extract images as data without modifying the text content. |
-| `auto_adjust_dpi`       | `bool` | `true`  | Automatically adjust DPI based on image size and content |
-| `min_dpi`               | `int`  | `72`    | Minimum DPI when auto-adjusting                          |
-| `max_dpi`               | `int`  | `600`   | Maximum DPI when auto-adjusting                          |
-
-### Example
-
-=== "C#"
-
-    --8<-- "snippets/csharp/image_extraction.md"
-
-=== "Go"
-
-    --8<-- "snippets/go/ocr/image_extraction.md"
-
-=== "Java"
-
-    --8<-- "snippets/java/ocr/image_extraction.md"
-
-=== "Python"
-
-    --8<-- "snippets/python/utils/image_extraction.md"
-
-=== "Ruby"
-
-    --8<-- "snippets/ruby/ocr/image_extraction.md"
-
-=== "R"
-
-    --8<-- "snippets/r/ocr/image_extraction.md"
-
-=== "Rust"
-
-    --8<-- "snippets/rust/metadata/image_extraction.md"
-
-=== "TypeScript"
-
-    --8<-- "snippets/typescript/api/image_extraction.md"
-
----
-
-## ImagePreprocessingConfig
-
-Image preprocessing configuration for improving OCR quality on scanned documents.
-
-| Field                 | Type   | Default  | Description                                                        |
-| --------------------- | ------ | -------- | ------------------------------------------------------------------ |
-| `target_dpi`          | `int`  | `300`    | Target DPI for OCR processing (300 standard, 600 for small text)   |
-| `auto_rotate`         | `bool` | `true`   | Auto-detect and correct image rotation                             |
-| `deskew`              | `bool` | `true`   | Correct skew (tilted images)                                       |
-| `denoise`             | `bool` | `false`  | Apply noise reduction filter                                       |
-| `contrast_enhance`    | `bool` | `false`  | Enhance image contrast for better text visibility                  |
-| `binarization_method` | `str`  | `"otsu"` | Binarization method: `"otsu"`, `"sauvola"`, `"adaptive"`, `"none"` |
-| `invert_colors`       | `bool` | `false`  | Invert colors (useful for white text on black background)          |
-
-### Example
-
-=== "C#"
-
-    --8<-- "snippets/csharp/image_preprocessing.md"
-
-=== "Go"
-
-    --8<-- "snippets/go/ocr/image_preprocessing.md"
-
-=== "Java"
-
-    --8<-- "snippets/java/ocr/image_preprocessing.md"
-
-=== "Python"
-
-    --8<-- "snippets/python/utils/image_preprocessing.md"
-
-=== "Ruby"
-
-    --8<-- "snippets/ruby/ocr/image_preprocessing.md"
-
-=== "R"
-
-    --8<-- "snippets/r/ocr/image_preprocessing.md"
-
-=== "Rust"
-
-    --8<-- "snippets/rust/metadata/image_preprocessing.md"
-
-=== "TypeScript"
-
-    --8<-- "snippets/typescript/api/image_preprocessing.md"
-
----
-
-## PostProcessorConfig
-
-Configuration for the post-processing pipeline that runs after extraction.
-
-| Field                 | Type         | Default | Description                                                               |
-| --------------------- | ------------ | ------- | ------------------------------------------------------------------------- |
-| `enabled`             | `bool`       | `true`  | Enable post-processing pipeline                                           |
-| `enabled_processors`  | `list[str]?` | `None`  | Specific processors to enable (if None, all enabled by default)           |
-| `disabled_processors` | `list[str]?` | `None`  | Specific processors to disable (takes precedence over enabled_processors) |
-
-Built-in post-processors include:
-
-- `deduplication` - Remove duplicate text blocks
-- `whitespace_normalization` - Normalize whitespace and line breaks
-- `mojibake_fix` - Fix mojibake (encoding corruption)
-- `quality_scoring` - Score and filter low-quality text
-
-### Example
-
-=== "C#"
-
-    --8<-- "snippets/csharp/postprocessor_config.md"
-
-=== "Go"
-
-    --8<-- "snippets/go/config/postprocessor_config.md"
-
-=== "Java"
-
-    --8<-- "snippets/java/config/postprocessor_config.md"
-
-=== "Python"
-
-    --8<-- "snippets/python/config/postprocessor_config.md"
-
-=== "Ruby"
-
-    --8<-- "snippets/ruby/config/postprocessor_config.md"
-
-=== "R"
-
-    --8<-- "snippets/r/config/postprocessor_config.md"
-
-=== "Rust"
-
-    --8<-- "snippets/rust/advanced/postprocessor_config.md"
-
-=== "TypeScript"
-
-    --8<-- "snippets/typescript/config/postprocessor_config.md"
-
----
-
-## TokenReductionConfig
-
-Configuration for reducing token count in extracted text, useful for optimizing LLM context windows.
-
-| Field                      | Type   | Default | Description                                                                   |
-| -------------------------- | ------ | ------- | ----------------------------------------------------------------------------- |
-| `mode`                     | `str`  | `"off"` | Reduction mode: `"off"`, `"light"`, `"moderate"`, `"aggressive"`, `"maximum"` |
-| `preserve_important_words` | `bool` | `true`  | Preserve important words (capitalized, technical terms) during reduction      |
-
-### Reduction Modes
-
-- `off`: No token reduction
-- `light`: Remove redundant whitespace and line breaks (~5-10% reduction)
-- `moderate`: Light + remove stopwords in low-information contexts (~15-25% reduction)
-- `aggressive`: Moderate + abbreviate common phrases (~30-40% reduction)
-- `maximum`: Aggressive + remove all stopwords (~50-60% reduction, may impact quality)
-
-### Example
-
-=== "C#"
-
-    --8<-- "snippets/csharp/token_reduction.md"
-
-=== "Go"
-
-    --8<-- "snippets/go/config/token_reduction_config.md"
-
-=== "Java"
-
-    --8<-- "snippets/java/config/token_reduction_config.md"
-
-=== "Python"
-
-    --8<-- "snippets/python/config/token_reduction_config.md"
-
-=== "Ruby"
-
-    --8<-- "snippets/ruby/config/token_reduction_config.md"
-
-=== "R"
-
-    --8<-- "snippets/r/config/token_reduction_config.md"
-
-=== "Rust"
-
-    --8<-- "snippets/rust/advanced/token_reduction_config.md"
-
-=== "TypeScript"
-
-    --8<-- "snippets/typescript/config/token_reduction_config.md"
-
----
-
-## LayoutDetectionConfig <span class="version-badge">v4.5.0</span>
-
-Configuration for ONNX-based document layout detection. Analyzes PDF pages to identify structural regions such as tables, figures, headers, and text blocks.
-
-**Feature Gate**: Requires the `layout-detection` Cargo feature. Layout detection is only available when this feature is enabled.
-
-!!! Warning "`preset` removed"
-    The `preset` field was removed. If present in a config file it is silently ignored. The RT-DETR v2 model is now the only layout detection model.
-
-### Fields
-
-| Field                  | Type       | Default  | Description                                                                                   |
-| ---------------------- | ---------- | -------- | --------------------------------------------------------------------------------------------- |
-| `confidence_threshold` | `float?`   | `None`   | Confidence threshold override (0.0-1.0). If None, uses the model's built-in default threshold |
-| `apply_heuristics`     | `bool`     | `true`   | Apply postprocessing heuristics (containment filtering, deduplication)                         |
-| `table_model`          | `str?`     | `None` (uses `"tatr"`) | Table structure recognition model. Options: `"tatr"` (30MB, default), `"slanet_wired"` (365MB, bordered tables), `"slanet_wireless"` (365MB, borderless tables), `"slanet_plus"` (7.78MB, lightweight), `"slanet_auto"` (~737MB, classifier-routed). See [Table Structure Models](../guides/layout-detection.md#table-structure-models). |
-
-!!! Note "Table detection requires layout detection"
-    Table extraction only runs when `layout` is set in `ExtractionConfig`. Setting only `table_model` has no effect without an enclosing `LayoutDetectionConfig`.
-
-### Configuration Examples
-
-=== "Python"
-
-    ```python title="layout_detection_config.py"
-    from kreuzberg import ExtractionConfig, LayoutDetectionConfig
-
-    config = ExtractionConfig(
-        layout=LayoutDetectionConfig(
-            confidence_threshold=0.5,
-            apply_heuristics=True,
-            table_model="slanet_auto",  # or "tatr", "slanet_wired", "slanet_wireless", "slanet_plus"
-        )
-    )
-    ```
-
-=== "TypeScript"
-
-    ```typescript title="layout_detection_config.ts"
-    import { extract } from "kreuzberg";
-
-    const result = await extract("document.pdf", {
-      layout: {
-        confidenceThreshold: 0.5,
-        applyHeuristics: true,
-        tableModel: "slanet_auto", // or "tatr", "slanet_wired", "slanet_wireless", "slanet_plus"
-      },
-    });
-    ```
-
-=== "Rust"
-
-    ```rust title="layout_detection_config.rs"
-    use kreuzberg::core::{ExtractionConfig, LayoutDetectionConfig};
-
-    let config = ExtractionConfig {
-        layout: Some(LayoutDetectionConfig {
-            confidence_threshold: Some(0.5),
-            apply_heuristics: true,
-            table_model: Some("slanet_auto".to_string()),
-            ..Default::default()
-        }),
-        ..Default::default()
-    };
-    ```
-
-### Configuration File Examples
-
-=== "TOML"
-
-    ```toml title="kreuzberg.toml"
-    [layout]
-    confidence_threshold = 0.5
-    apply_heuristics = true
-    # table_model = "slanet_auto"
-    ```
-
-=== "YAML"
-
-    ```yaml title="kreuzberg.yaml"
-    layout:
-      confidence_threshold: 0.5
-      apply_heuristics: true
-      # table_model: slanet_auto
-    ```
-
----
-
-## AccelerationConfig <span class="version-badge">v4.5.0</span>
-
-Controls hardware acceleration for ONNX Runtime inference (layout detection and embeddings).
-
-### Fields
-
-| Field       | Type      | Default  | Description                                                            |
-| ----------- | --------- | -------- | ---------------------------------------------------------------------- |
-| `provider`  | `str`     | `"auto"` | Execution provider: `"auto"`, `"cpu"`, `"coreml"`, `"cuda"`, `"tensorrt"` |
-| `device_id` | `int`     | `0`      | GPU device ID (for CUDA/TensorRT)                                      |
-
-### Provider Behavior
-
-- `auto`: CoreML on macOS, CUDA on Linux, CPU elsewhere
-- `cpu`: CPU-only inference (always available)
-- `coreml`: Apple CoreML (macOS Neural Engine / GPU)
-- `cuda`: NVIDIA CUDA GPU acceleration
-- `tensorrt`: NVIDIA TensorRT (optimized CUDA inference)
-
-Kreuzberg bundles a CPU-only ONNX Runtime by default. When a GPU provider (`cuda`, `tensorrt`, `coreml`) is **explicitly requested** and the corresponding execution provider is not available, Kreuzberg returns an error with instructions to install a GPU-enabled ONNX Runtime and set `ORT_DYLIB_PATH`. When `auto` is used, unavailable GPU providers fall back to CPU gracefully with an info-level log. To verify which provider is active, run with `RUST_LOG=kreuzberg=info`.
-
-### Platform Defaults
-
-| Platform        | `provider="auto"` resolves to |
-| --------------- | ----------------------------- |
-| macOS (arm64)   | `coreml`                      |
-| macOS (x86_64)  | `coreml`                      |
-| Linux (x86_64)  | `cuda` if available, else `cpu` |
-| Linux (aarch64) | `cpu`                         |
-| Windows         | `cuda` if available, else `cpu` |
-
-The `device_id` field only matters for `cuda` and `tensorrt`. Set it to the GPU index (`0`, `1`, ...) when running on multi-GPU hosts; it is ignored for every other provider.
-
-### Configuration Examples
-
-=== "Python"
-
-    ```python title="acceleration_config.py"
-    from kreuzberg import ExtractionConfig, AccelerationConfig
-
-    # Force CUDA on GPU 0; falls back to CPU if CUDA isn't compiled in
-    config = ExtractionConfig(
-        acceleration=AccelerationConfig(provider="cuda", device_id=0)
-    )
-
-    # macOS: explicitly use CoreML for ONNX inference
-    coreml_config = ExtractionConfig(
-        acceleration=AccelerationConfig(provider="coreml")
-    )
-    ```
-
-=== "TypeScript"
-
-    ```typescript title="acceleration_config.ts"
-    import { extract } from "kreuzberg";
-
-    const result = await extract("document.pdf", {
-      acceleration: { provider: 'cuda', deviceId: 0 },
-    });
-    ```
-
-=== "Rust"
-
-    ```rust title="acceleration_config.rs"
-    use kreuzberg::core::{ExtractionConfig, AccelerationConfig};
-
-    let config = ExtractionConfig {
-        acceleration: Some(AccelerationConfig {
-            provider: "cuda".to_string(),
-            device_id: 0,
-        }),
-        ..Default::default()
-    };
-    ```
-
-### Configuration File Examples
-
-=== "TOML"
-
-    ```toml title="kreuzberg.toml"
-    [acceleration]
-    provider = "cpu"
-    device_id = 0
-    ```
-
-=== "YAML"
-
-    ```yaml title="kreuzberg.yaml"
-    acceleration:
-      provider: cpu
-      device_id: 0
-    ```
-
----
-
-## ConcurrencyConfig <span class="version-badge">v4.5.0</span>
-
-Controls thread pool and concurrency limits for Rayon parallelism, ONNX Runtime intra-op threading, and batch extraction semaphore.
-
-### Fields
-
-| Field        | Type    | Default | Description                                                                   |
-| ------------ | ------- | ------- | ----------------------------------------------------------------------------- |
-| `max_threads` | `int?` | `None`  | Maximum number of threads for Rayon thread pool, ONNX intra-op, batch concurrency |
-
-### Overview
-
-Use `ConcurrencyConfig` to constrain resource usage on systems with limited hardware. When set, `max_threads` caps:
-
-- **Rayon thread pool size** for text extraction and parsing parallelism
-- **ONNX Runtime intra-op parallelism** for layout detection and embeddings inference
-- **Batch extraction semaphore** for limiting concurrent file extractions
-
-Setting `max_threads: None` disables concurrency limits and allows libraries to use all available cores (default behavior).
-
-### Configuration Examples
-
-=== "Python"
-
-    ```python title="concurrency_config.py"
-    from kreuzberg import ExtractionConfig, ConcurrencyConfig
-
-    # Limit to 4 threads for constrained hardware
-    config = ExtractionConfig(
-        concurrency=ConcurrencyConfig(max_threads=4)
-    )
-    ```
-
-=== "TypeScript"
-
-    ```typescript title="concurrency_config.ts"
-    import { extract } from "kreuzberg";
-
-    const result = await extract("document.pdf", {
-      concurrency: { maxThreads: 4 },
-    });
-    ```
-
-=== "Rust"
-
-    ```rust title="concurrency_config.rs"
-    use kreuzberg::core::{ExtractionConfig, ConcurrencyConfig};
-
-    let config = ExtractionConfig {
-        concurrency: Some(ConcurrencyConfig {
-            max_threads: Some(4),
-        }),
-        ..Default::default()
-    };
-    ```
-
-=== "Go"
-
-    ```go title="concurrency_config.go"
-    package main
-
-    import "kreuzberg"
-
-    config := &kreuzberg.ExtractionConfig{
-        Concurrency: &kreuzberg.ConcurrencyConfig{
-            MaxThreads: intPtr(4),
-        },
-    }
-    ```
-
-=== "Java"
-
-    ```java title="ConcurrencyConfig.java"
-    ConcurrencyConfig concurrency = new ConcurrencyConfig(4);
-    ExtractionConfig config = new ExtractionConfig(
-        /* ... other fields ... */
-        Optional.of(concurrency)
-    );
-    ```
-
-=== "C#"
-
-    ```csharp title="concurrency_config.cs"
-    using Kreuzberg;
-
-    var config = new ExtractionConfig
-    {
-        Concurrency = new ConcurrencyConfig { MaxThreads = 4 }
-    };
-    ```
-
----
-
-## TreeSitterConfig
-
-Configuration for tree-sitter language pack integration. Controls grammar caching and code analysis options when extracting source code files. Requires the `tree-sitter` feature flag.
-
-### Fields
-
-| Field       | Type                       | Default | Description                                                                                      |
-| ----------- | -------------------------- | ------- | ------------------------------------------------------------------------------------------------ |
-| `enabled`   | `bool`                     | `true`  | Enable code intelligence processing. When `false`, tree-sitter analysis is skipped even if config is present |
-| `cache_dir` | `PathBuf?`                 | `None`  | Custom cache directory for downloaded grammars. Default: `~/.cache/tree-sitter-language-pack/v{version}/libs/` |
-| `languages` | `Vec<String>?`             | `None`  | Languages to pre-download on init (for example, `["python", "rust"]`)                                   |
-| `groups`    | `Vec<String>?`             | `None`  | Language groups to pre-download (for example, `["web", "systems", "scripting"]`)                        |
-| `process`   | `TreeSitterProcessConfig`  | default | Processing options for code analysis                                                             |
 
 ### TreeSitterProcessConfig
 
+Processing options for tree-sitter code analysis.
+
 Controls which analysis features are enabled when extracting code files.
 
-| Field            | Type      | Default | Description                                                         |
-| ---------------- | --------- | ------- | ------------------------------------------------------------------- |
-| `structure`      | `bool`    | `true`  | Extract structural items (functions, classes, structs, etc.)        |
-| `imports`        | `bool`    | `true`  | Extract import statements                                           |
-| `exports`        | `bool`    | `true`  | Extract export statements                                           |
-| `comments`       | `bool`    | `false` | Extract comments                                                    |
-| `docstrings`     | `bool`    | `false` | Extract docstrings                                                  |
-| `symbols`        | `bool`    | `false` | Extract symbol definitions (variables, constants, type aliases)     |
-| `diagnostics`    | `bool`    | `false` | Include parse diagnostics (errors and warnings from tree-sitter)    |
-| `chunk_max_size` | `usize?`  | `None`  | Maximum chunk size in bytes. `None` uses the default chunking size  |
-| `content_mode`   | `CodeContentMode` | `chunks` | Controls how code content is rendered in the `content` field: `chunks` (semantic chunks, default), `raw` (raw source code), or `structure` (function/class headings + docstrings, no code bodies) |
-
-### Configuration Examples
-
-=== "TOML"
-
-    ```toml title="kreuzberg.toml"
-    [tree_sitter]
-    languages = ["python", "rust", "typescript"]
-    groups = ["web"]
-
-    [tree_sitter.process]
-    structure = true
-    imports = true
-    exports = true
-    comments = true
-    docstrings = true
-    symbols = false
-    diagnostics = false
-    ```
-
-=== "Rust"
-
-    ```rust title="tree_sitter_config.rs"
-    use kreuzberg::{ExtractionConfig, TreeSitterConfig, TreeSitterProcessConfig};
-
-    let config = ExtractionConfig {
-        tree_sitter: Some(TreeSitterConfig {
-            process: TreeSitterProcessConfig {
-                structure: true,
-                imports: true,
-                exports: true,
-                comments: true,
-                docstrings: true,
-                ..Default::default()
-            },
-            ..Default::default()
-        }),
-        ..Default::default()
-    };
-    ```
-
-=== "Python"
-
-    ```python title="tree_sitter_config.py"
-    import kreuzberg
-
-    config = kreuzberg.ExtractionConfig(
-        tree_sitter={
-            "process": {
-                "structure": True,
-                "imports": True,
-                "exports": True,
-                "comments": True,
-                "docstrings": True,
-            }
-        }
-    )
-    ```
-
-=== "TypeScript"
-
-    ```typescript title="tree_sitter_config.ts"
-    import { ExtractionConfig } from "@kreuzberg/node";
-
-    const config: ExtractionConfig = {
-      treeSitter: {
-        process: {
-          structure: true,
-          imports: true,
-          exports: true,
-          comments: true,
-          docstrings: true,
-        },
-      },
-    };
-    ```
-
-=== "Go"
-
-    ```go title="tree_sitter_config.go"
-    config := &kreuzberg.ExtractionConfig{
-        TreeSitter: &kreuzberg.TreeSitterConfig{
-            Process: &kreuzberg.TreeSitterProcessConfig{
-                Structure:  boolPtr(true),
-                Imports:    boolPtr(true),
-                Exports:    boolPtr(true),
-                Comments:   boolPtr(true),
-                Docstrings: boolPtr(true),
-            },
-        },
-    }
-    ```
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `structure` | `bool` | `True` | Extract structural items (functions, classes, structs, etc.). Default: true. |
+| `imports` | `bool` | `True` | Extract import statements. Default: true. |
+| `exports` | `bool` | `True` | Extract export statements. Default: true. |
+| `comments` | `bool` | `False` | Extract comments. Default: false. |
+| `docstrings` | `bool` | `False` | Extract docstrings. Default: false. |
+| `symbols` | `bool` | `False` | Extract symbol definitions. Default: false. |
+| `diagnostics` | `bool` | `False` | Include parse diagnostics. Default: false. |
+| `chunk_max_size` | `int | None` | `None` | Maximum chunk size in bytes. `None` disables chunking. |
+| `content_mode` | `CodeContentMode` | `CodeContentMode.CHUNKS` | Content rendering mode for code extraction. |
 
 ---
 
-## Configuration File Examples
+### ServerConfig
 
-### TOML Format
+API server configuration.
 
-```toml title="kreuzberg.toml"
-use_cache = true
-enable_quality_processing = true
-force_ocr = false
+This struct holds all configuration options for the Kreuzberg API server,
+including host/port settings, CORS configuration, and upload limits.
 
-[ocr]
-backend = "tesseract"
-language = "eng+fra"
+# Defaults
 
-[ocr.tesseract_config]
-psm = 6
-oem = 1
-min_confidence = 0.8
-enable_table_detection = true
+- `host`: "127.0.0.1" (localhost only)
+- `port`: 8000
+- `cors_origins`: empty vector (allows all origins)
+- `max_request_body_bytes`: 104_857_600 (100 MB)
+- `max_multipart_field_bytes`: 104_857_600 (100 MB)
 
-[ocr.tesseract_config.preprocessing]
-target_dpi = 300
-denoise = true
-deskew = true
-contrast_enhance = true
-binarization_method = "otsu"
-
-[pdf_options]
-extract_images = true
-extract_metadata = true
-passwords = ["password1", "password2"]
-
-[images]
-extract_images = true
-target_dpi = 200
-max_image_dimension = 4096
-
-[chunking]
-max_characters = 1000
-overlap = 200
-
-[language_detection]
-enabled = true
-min_confidence = 0.8
-detect_multiple = false
-
-[token_reduction]
-mode = "moderate"
-preserve_important_words = true
-
-[layout]
-preset = "fast"
-
-[postprocessor]
-enabled = true
-```
-
-### YAML Format
-
-```yaml title="kreuzberg.yaml"
-# kreuzberg.yaml
-use_cache: true
-enable_quality_processing: true
-force_ocr: false
-
-ocr:
-  backend: tesseract
-  language: eng+fra
-  tesseract_config:
-    psm: 6
-    oem: 1
-    min_confidence: 0.8
-    enable_table_detection: true
-    preprocessing:
-      target_dpi: 300
-      denoise: true
-      deskew: true
-      contrast_enhance: true
-      binarization_method: otsu
-
-pdf_options:
-  extract_images: true
-  extract_metadata: true
-  passwords:
-    - password1
-    - password2
-
-images:
-  extract_images: true
-  target_dpi: 200
-  max_image_dimension: 4096
-
-chunking:
-  max_characters: 1000
-  overlap: 200
-
-language_detection:
-  enabled: true
-  min_confidence: 0.8
-  detect_multiple: false
-
-token_reduction:
-  mode: moderate
-  preserve_important_words: true
-
-layout:
-  preset: fast
-
-postprocessor:
-  enabled: true
-```
-
-### JSON Format
-
-```json title="kreuzberg.json"
-{
-  "use_cache": true,
-  "enable_quality_processing": true,
-  "force_ocr": false,
-  "ocr": {
-    "backend": "tesseract",
-    "language": "eng+fra",
-    "tesseract_config": {
-      "psm": 6,
-      "oem": 1,
-      "min_confidence": 0.8,
-      "enable_table_detection": true,
-      "preprocessing": {
-        "target_dpi": 300,
-        "denoise": true,
-        "deskew": true,
-        "contrast_enhance": true,
-        "binarization_method": "otsu"
-      }
-    }
-  },
-  "pdf_options": {
-    "extract_images": true,
-    "extract_metadata": true,
-    "passwords": ["password1", "password2"]
-  },
-  "images": {
-    "extract_images": true,
-    "target_dpi": 200,
-    "max_image_dimension": 4096
-  },
-  "chunking": {
-    "max_characters": 1000,
-    "overlap": 200
-  },
-  "language_detection": {
-    "enabled": true,
-    "min_confidence": 0.8,
-    "detect_multiple": false
-  },
-  "token_reduction": {
-    "mode": "moderate",
-    "preserve_important_words": true
-  },
-  "layout": {
-    "preset": "fast"
-  },
-  "postprocessor": {
-    "enabled": true
-  }
-}
-```
-
-For complete working examples, see the [e2e test suites](https://github.com/kreuzberg-dev/kreuzberg/tree/main/e2e).
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `host` | `str` | — | Server host address (e.g., "127.0.0.1", "0.0.0.0") |
+| `port` | `int` | — | Server port number |
+| `cors_origins` | `list[str]` | `[]` | CORS allowed origins. Empty vector means allow all origins. If this is an empty vector, the server will accept requests from any origin. If populated with specific origins (e.g., ["<https://example.com">]), only those origins will be allowed. |
+| `max_request_body_bytes` | `int` | — | Maximum size of request body in bytes (default: 100 MB) |
+| `max_multipart_field_bytes` | `int` | — | Maximum size of multipart fields in bytes (default: 100 MB) |
 
 ---
 
-## Best Practices
+### Drawing
 
-### When to Use Config Files vs Programmatic Config
+A drawing object extracted from `<w:drawing>`.
 
-**Use config files when:**
-
-- Settings are shared across multiple scripts/applications
-- Configuration needs to be version controlled
-- Non-developers need to modify settings
-- Deploying to multiple environments (dev/staging/prod)
-
-**Use programmatic config when:**
-
-- Settings vary per execution or are computed dynamically
-- Configuration depends on runtime conditions
-- Building SDKs or libraries that wrap Kreuzberg
-- Rapid prototyping and experimentation
-
-### Performance Considerations
-
-**Caching:**
-
-- Keep `use_cache=true` for repeated processing of the same files
-- Cache is automatically invalidated when files change
-- Cache location: platform-specific global cache (for example, `~/.cache/kreuzberg/` on Linux, `~/Library/Caches/kreuzberg/` on macOS), configurable via `KREUZBERG_CACHE_DIR` env var or `cache_dir` option
-
-**OCR Settings:**
-
-- Lower `target_dpi` (for example, 150-200) for faster processing of low-quality scans
-- Higher `target_dpi` (for example, 400-600) for small text or high-quality documents
-- Disable `enable_table_detection` if tables aren't needed (10-20% speedup)
-- Use `psm=6` for clean single-column documents (faster than `psm=3`)
-
-**Batch Processing:**
-
-- Set `max_concurrent_extractions` to balance speed and memory usage
-- Default (num_cpus \* 2) works well for most systems
-- Reduce for memory-constrained environments
-- Increase for I/O-bound workloads on systems with fast storage
-
-**Token Reduction:**
-
-- Use `"light"` or `"moderate"` modes for minimal quality impact
-- `"aggressive"` and `"maximum"` modes may affect semantic meaning
-- Benchmark with your specific LLM to measure quality vs. cost tradeoff
-
-### Security Considerations
-
-**API Keys and Secrets:**
-
-- Never commit config files containing API keys or passwords to version control
-- Use environment variables for sensitive data:
-
-  ```bash title="Terminal"
-  export KREUZBERG_OCR_API_KEY="your-key-here"
-  ```
-
-- Add `kreuzberg.toml` to `.gitignore` if it contains secrets
-- Use separate config files for development vs. production
-
-**PDF Passwords:**
-
-- `passwords` field attempts passwords in order until one succeeds
-- Passwords are not logged or cached
-- Use environment variables for sensitive passwords:
-
-  ```python title="secure_config.py"
-  import os
-  config = PdfConfig(passwords=[os.getenv("PDF_PASSWORD")])
-  ```
-
-**File System Access:**
-
-- Kreuzberg only reads files you explicitly pass to extraction functions
-- Cache directory permissions should be restricted to the running user
-- Temporary files are automatically cleaned up after extraction
-
-**Data Privacy:**
-
-- Extraction results are never sent to external services (except explicit OCR backends)
-- Tesseract OCR runs locally with no network access
-- EasyOCR and PaddleOCR may download models on first run (cached locally)
-- Consider disabling cache for sensitive documents requiring ephemeral processing
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `drawing_type` | `str` | — | Drawing type |
+| `extent` | `str | None` | `None` | Extent |
+| `doc_properties` | `str | None` | `None` | Doc properties |
+| `image_ref` | `str | None` | `None` | Image ref |
 
 ---
 
-## ApiSizeLimits
+### AnchorProperties
 
-Configuration for API server request and file upload size limits.
+Properties for anchored drawings.
 
-| Field                       | Type  | Default     | Description                                                                   |
-| --------------------------- | ----- | ----------- | ----------------------------------------------------------------------------- |
-| `max_request_body_bytes`    | `int` | `104857600` | Maximum size of entire request body in bytes (100 MB default)                 |
-| `max_multipart_field_bytes` | `int` | `104857600` | Maximum size of individual file in multipart upload in bytes (100 MB default) |
-
-### About Size Limits
-
-Size limits protect your server from resource exhaustion and memory spikes. Both limits default to 100 MB, suitable for typical document processing workloads. Users can configure higher limits via environment variables for processing larger files.
-
-**Default Configuration:**
-
-- Total request body: 100 MB (104,857,600 bytes)
-- Individual file: 100 MB (104,857,600 bytes)
-
-**Environment Variable Configuration:**
-
-```bash title="Terminal"
-# Set multipart field limit to 200 MB via environment variable
-export KREUZBERG_MAX_MULTIPART_FIELD_BYTES=209715200
-kreuzberg serve -H 0.0.0.0 -p 8000
-```
-
-### Example
-
-=== "C#"
-
-    ```csharp
-    using Kreuzberg;
-    using Kreuzberg.Api;
-
-    // Default limits: 100 MB for both request body and individual files
-    var limits = new ApiSizeLimits();
-
-    // Custom limits: 200 MB for both request body and individual files
-    var customLimits = ApiSizeLimits.FromMB(200, 200);
-
-    // Or specify byte values directly
-    var customLimits2 = new ApiSizeLimits
-    {
-        MaxRequestBodyBytes = 200 * 1024 * 1024,
-        MaxMultipartFieldBytes = 200 * 1024 * 1024
-    };
-    ```
-
-=== "Go"
-
-    ```go
-    import "kreuzberg"
-
-    // Default limits: 100 MB for both request body and individual files
-    limits := kreuzberg.NewApiSizeLimits(
-        100 * 1024 * 1024,
-        100 * 1024 * 1024,
-    )
-
-    // Or use convenience method for custom limits
-    limits := kreuzberg.ApiSizeLimitsFromMB(200, 200)
-    ```
-
-=== "Java"
-
-    ```java
-    import com.kreuzberg.api.ApiSizeLimits;
-
-    // Default limits: 100 MB for both request body and individual files
-    ApiSizeLimits limits = new ApiSizeLimits();
-
-    // Custom limits via convenience method
-    ApiSizeLimits limits = ApiSizeLimits.fromMB(200, 200);
-
-    // Or specify byte values
-    ApiSizeLimits limits = new ApiSizeLimits(
-        200 * 1024 * 1024,
-        200 * 1024 * 1024
-    );
-    ```
-
-=== "Python"
-
-    ```python
-    from kreuzberg.api import ApiSizeLimits
-
-    # Default limits: 100 MB for both request body and individual files
-    limits = ApiSizeLimits()
-
-    # Custom limits via convenience method
-    limits = ApiSizeLimits.from_mb(200, 200)
-
-    # Or specify byte values
-    limits = ApiSizeLimits(
-        max_request_body_bytes=200 * 1024 * 1024,
-        max_multipart_field_bytes=200 * 1024 * 1024
-    )
-    ```
-
-=== "Ruby"
-
-    ```ruby
-    require 'kreuzberg'
-
-    # Default limits: 100 MB for both request body and individual files
-    limits = Kreuzberg::Api::ApiSizeLimits.new
-
-    # Custom limits via convenience method
-    limits = Kreuzberg::Api::ApiSizeLimits.from_mb(200, 200)
-
-    # Or specify byte values
-    limits = Kreuzberg::Api::ApiSizeLimits.new(
-      max_request_body_bytes: 200 * 1024 * 1024,
-      max_multipart_field_bytes: 200 * 1024 * 1024
-    )
-    ```
-
-=== "Rust"
-
-    ```rust
-    use kreuzberg::api::ApiSizeLimits;
-
-    // Default limits: 100 MB for both request body and individual files
-    let limits = ApiSizeLimits::default();
-
-    // Custom limits via convenience method
-    let limits = ApiSizeLimits::from_mb(200, 200);
-
-    // Or specify byte values
-    let limits = ApiSizeLimits::new(
-        200 * 1024 * 1024,  // max_request_body_bytes
-        200 * 1024 * 1024,  // max_multipart_field_bytes
-    );
-    ```
-
-=== "TypeScript"
-
-    ```typescript
-    import { ApiSizeLimits } from 'kreuzberg';
-
-    // Default limits: 100 MB for both request body and individual files
-    const limits = new ApiSizeLimits();
-
-    // Custom limits via convenience method
-    const limits = ApiSizeLimits.fromMb(200, 200);
-
-    // Or specify byte values
-    const limits = new ApiSizeLimits({
-        maxRequestBodyBytes: 200 * 1024 * 1024,
-        maxMultipartFieldBytes: 200 * 1024 * 1024
-    });
-    ```
-
-### Configuration Scenarios
-
-| Use Case                                      | Recommended Limit | Rationale                                            |
-| --------------------------------------------- | ----------------- | ---------------------------------------------------- |
-| Small documents (standard PDFs, Office files) | 100 MB (default)  | Optimal for typical business documents               |
-| Medium documents (large scans, batches)       | 200 MB            | Good balance for batching without excessive memory   |
-| Large documents (archives, high-res scans)    | 500-1000 MB       | Suitable for specialized workflows with adequate RAM |
-| Development/testing                           | 50 MB             | Conservative limit to catch issues early             |
-| Memory-constrained environments               | 50 MB             | Prevents out-of-memory errors on limited systems     |
-
-For comprehensive documentation including memory impact calculations, reverse proxy configuration, and troubleshooting, see the [File Size Limits Reference](./file-size-limits.md).
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `behind_doc` | `bool` | — | Behind doc |
+| `layout_in_cell` | `bool` | — | Layout in cell |
+| `relative_height` | `int | None` | `None` | Relative height |
+| `position_h` | `str | None` | `None` | Position h |
+| `position_v` | `str | None` | `None` | Position v |
+| `wrap_type` | `str` | — | Wrap type |
 
 ---
 
-## Related Documentation
+### HeaderFooter
 
-- [Configuration Guide](../guides/configuration.md) - Usage guide with examples
-- [API Server Guide](../guides/api-server.md) - HTTP API server setup and deployment
-- [File Size Limits Reference](./file-size-limits.md) - Complete size limits documentation with performance tuning
-- [OCR Guide](../guides/ocr.md) - OCR-specific configuration and troubleshooting
-- [E2E Test Suites](https://github.com/kreuzberg-dev/kreuzberg/tree/main/e2e) - Complete working examples
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `paragraphs` | `list[str]` | `[]` | Paragraphs |
+| `tables` | `list[str]` | `[]` | Tables extracted from the document |
+| `header_type` | `str` | — | Header type |
+
+---
+
+### PageMarginsPoints
+
+Page margins converted to points (1/72 inch).
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `top` | `float | None` | `None` | Top |
+| `right` | `float | None` | `None` | Right |
+| `bottom` | `float | None` | `None` | Bottom |
+| `left` | `float | None` | `None` | Left |
+| `header` | `float | None` | `None` | Header |
+| `footer` | `float | None` | `None` | Footer |
+| `gutter` | `float | None` | `None` | Gutter |
+
+---
+
+### ResolvedStyle
+
+Fully resolved (flattened) style after walking the inheritance chain.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `paragraph_properties` | `str` | — | Paragraph properties |
+| `run_properties` | `str` | — | Run properties |
+
+---
+
+### TableProperties
+
+Table-level properties from `<w:tblPr>`.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `style_id` | `str | None` | `None` | Style id |
+| `width` | `str | None` | `None` | Width |
+| `alignment` | `str | None` | `None` | Alignment |
+| `layout` | `str | None` | `None` | Layout |
+| `look` | `str | None` | `None` | Look |
+| `borders` | `str | None` | `None` | Borders |
+| `cell_margins` | `str | None` | `None` | Cell margins |
+| `indent` | `str | None` | `None` | Indent |
+| `caption` | `str | None` | `None` | Caption |
+
+---
+
+### XlsxAppProperties
+
+Application properties from docProps/app.xml for XLSX
+
+Contains Excel-specific document metadata.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `application` | `str | None` | `None` | Application name (e.g., "Microsoft Excel") |
+| `app_version` | `str | None` | `None` | Application version |
+| `doc_security` | `int | None` | `None` | Document security level |
+| `scale_crop` | `bool | None` | `None` | Scale crop flag |
+| `links_up_to_date` | `bool | None` | `None` | Links up to date flag |
+| `shared_doc` | `bool | None` | `None` | Shared document flag |
+| `hyperlinks_changed` | `bool | None` | `None` | Hyperlinks changed flag |
+| `company` | `str | None` | `None` | Company name |
+| `worksheet_names` | `list[str]` | `[]` | Worksheet names |
+
+---
+
+### PptxAppProperties
+
+Application properties from docProps/app.xml for PPTX
+
+Contains PowerPoint-specific document metadata.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `application` | `str | None` | `None` | Application name (e.g., "Microsoft Office PowerPoint") |
+| `app_version` | `str | None` | `None` | Application version |
+| `total_time` | `int | None` | `None` | Total editing time in minutes |
+| `company` | `str | None` | `None` | Company name |
+| `doc_security` | `int | None` | `None` | Document security level |
+| `scale_crop` | `bool | None` | `None` | Scale crop flag |
+| `links_up_to_date` | `bool | None` | `None` | Links up to date flag |
+| `shared_doc` | `bool | None` | `None` | Shared document flag |
+| `hyperlinks_changed` | `bool | None` | `None` | Hyperlinks changed flag |
+| `slides` | `int | None` | `None` | Number of slides |
+| `notes` | `int | None` | `None` | Number of notes |
+| `hidden_slides` | `int | None` | `None` | Number of hidden slides |
+| `multimedia_clips` | `int | None` | `None` | Number of multimedia clips |
+| `presentation_format` | `str | None` | `None` | Presentation format (e.g., "Widescreen", "Standard") |
+| `slide_titles` | `list[str]` | `[]` | Slide titles |
+
+---
+
+### OdtProperties
+
+OpenDocument metadata from meta.xml
+
+Contains metadata fields defined by the OASIS OpenDocument Format standard.
+Uses Dublin Core elements (dc:) and OpenDocument meta elements (meta:).
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `title` | `str | None` | `None` | Document title (dc:title) |
+| `subject` | `str | None` | `None` | Document subject/topic (dc:subject) |
+| `creator` | `str | None` | `None` | Current document creator/author (dc:creator) |
+| `initial_creator` | `str | None` | `None` | Initial creator of the document (meta:initial-creator) |
+| `keywords` | `str | None` | `None` | Keywords or tags (meta:keyword) |
+| `description` | `str | None` | `None` | Document description (dc:description) |
+| `date` | `str | None` | `None` | Current modification date (dc:date) |
+| `creation_date` | `str | None` | `None` | Initial creation date (meta:creation-date) |
+| `language` | `str | None` | `None` | Document language (dc:language) |
+| `generator` | `str | None` | `None` | Generator/application that created the document (meta:generator) |
+| `editing_duration` | `str | None` | `None` | Editing duration in ISO 8601 format (meta:editing-duration) |
+| `editing_cycles` | `str | None` | `None` | Number of edits/revisions (meta:editing-cycles) |
+| `page_count` | `int | None` | `None` | Document statistics - page count (meta:page-count) |
+| `word_count` | `int | None` | `None` | Document statistics - word count (meta:word-count) |
+| `character_count` | `int | None` | `None` | Document statistics - character count (meta:character-count) |
+| `paragraph_count` | `int | None` | `None` | Document statistics - paragraph count (meta:paragraph-count) |
+| `table_count` | `int | None` | `None` | Document statistics - table count (meta:table-count) |
+| `image_count` | `int | None` | `None` | Document statistics - image count (meta:image-count) |
+
+---
+
+### TokenReductionConfig
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `level` | `ReductionLevel` | `ReductionLevel.MODERATE` | Level (reduction level) |
+| `language_hint` | `str | None` | `None` | Language hint |
+| `preserve_markdown` | `bool` | `False` | Preserve markdown |
+| `preserve_code` | `bool` | `True` | Preserve code |
+| `semantic_threshold` | `float` | `0.3` | Semantic threshold |
+| `enable_parallel` | `bool` | `True` | Enable parallel |
+| `use_simd` | `bool` | `True` | Use simd |
+| `custom_stopwords` | `dict[str, list[str]] | None` | `None` | Custom stopwords |
+| `preserve_patterns` | `list[str]` | `[]` | Preserve patterns |
+| `target_reduction` | `float | None` | `None` | Target reduction |
+| `enable_semantic_clustering` | `bool` | `False` | Enable semantic clustering |
+
+---
+
+### DocumentStructure
+
+Top-level structured document representation.
+
+A flat array of nodes with index-based parent/child references forming a tree.
+Root-level nodes have `parent: None`. Use `body_roots()` and `furniture_roots()`
+to iterate over top-level content by layer.
+
+# Validation
+
+Call `validate()` after construction to verify all node indices are in bounds
+and parent-child relationships are bidirectionally consistent.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `nodes` | `list[DocumentNode]` | `[]` | All nodes in document/reading order. |
+| `source_format` | `str | None` | `None` | Origin format identifier (e.g. "docx", "pptx", "html", "pdf"). Allows renderers to apply format-aware heuristics when converting the document tree to output formats. |
+| `relationships` | `list[DocumentRelationship]` | `[]` | Resolved relationships between nodes (footnote refs, citations, anchor links, etc.). Populated during derivation from the internal document representation. Empty when no relationships are detected. |
+
+---
+
+### ExtractionResult
+
+General extraction result used by the core extraction API.
+
+This is the main result type returned by all extraction functions.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `content` | `str` | — | The extracted text content |
+| `mime_type` | `str` | — | The detected MIME type |
+| `metadata` | `Metadata` | — | Document metadata |
+| `tables` | `list[str]` | `[]` | Tables extracted from the document |
+| `detected_languages` | `list[str] | None` | `[]` | Detected languages |
+| `chunks` | `list[Chunk] | None` | `[]` | Text chunks when chunking is enabled. When chunking configuration is provided, the content is split into overlapping chunks for efficient processing. Each chunk contains the text, optional embeddings (if enabled), and metadata about its position. |
+| `images` | `list[ExtractedImage] | None` | `[]` | Extracted images from the document. When image extraction is enabled via `ImageExtractionConfig`, this field contains all images found in the document with their raw data and metadata. Each image may optionally contain a nested `ocr_result` if OCR was performed. |
+| `pages` | `list[PageContent] | None` | `[]` | Per-page content when page extraction is enabled. When page extraction is configured, the document is split into per-page content with tables and images mapped to their respective pages. |
+| `elements` | `list[Element] | None` | `[]` | Semantic elements when element-based result format is enabled. When result_format is set to ElementBased, this field contains semantic elements with type classification, unique identifiers, and metadata for Unstructured-compatible element-based processing. |
+| `djot_content` | `DjotContent | None` | `None` | Rich Djot content structure (when extracting Djot documents). When extracting Djot documents with structured extraction enabled, this field contains the full semantic structure including: - Block-level elements with nesting - Inline formatting with attributes - Links, images, footnotes - Math expressions - Complete attribute information The `content` field still contains plain text for backward compatibility. Always `None` for non-Djot documents. |
+| `ocr_elements` | `list[OcrElement] | None` | `[]` | OCR elements with full spatial and confidence metadata. When OCR is performed with element extraction enabled, this field contains the structured representation of detected text including: - Bounding geometry (rectangles or quadrilaterals) - Confidence scores (detection and recognition) - Rotation information - Hierarchical relationships (Tesseract only) This field preserves all metadata that would otherwise be lost when converting to plain text or markdown output formats. Only populated when `OcrElementConfig.include_elements` is true. |
+| `document` | `DocumentStructure | None` | `None` | Structured document tree (when document structure extraction is enabled). When `include_document_structure` is true in `ExtractionConfig`, this field contains the full hierarchical representation of the document including: - Heading-driven section nesting - Table grids with cell-level metadata - Content layer classification (body, header, footer, footnote) - Inline text annotations (formatting, links) - Bounding boxes and page numbers Independent of `result_format` — can be combined with Unified or ElementBased. |
+| `quality_score` | `float | None` | `None` | Document quality score from quality analysis. A value between 0.0 and 1.0 indicating the overall text quality. Previously stored in `metadata.additional["quality_score"]`. |
+| `processing_warnings` | `list[ProcessingWarning]` | `[]` | Non-fatal warnings collected during processing pipeline stages. Captures errors from optional pipeline features (embedding, chunking, language detection, output formatting) that don't prevent extraction but may indicate degraded results. Previously stored as individual keys in `metadata.additional`. |
+| `annotations` | `list[PdfAnnotation] | None` | `[]` | PDF annotations extracted from the document. When annotation extraction is enabled via `PdfConfig.extract_annotations`, this field contains text notes, highlights, links, stamps, and other annotations found in PDF documents. |
+| `children` | `list[ArchiveEntry] | None` | `[]` | Nested extraction results from archive contents. When extracting archives, each processable file inside produces its own full extraction result. Set to `None` for non-archive formats. Use `max_archive_depth` in config to control recursion depth. |
+| `uris` | `list[Uri] | None` | `[]` | URIs/links discovered during document extraction. Contains hyperlinks, image references, citations, email addresses, and other URI-like references found in the document. Always extracted when present in the source document. |
+| `structured_output` | `dict[str, Any] | None` | `None` | Structured extraction output from LLM-based JSON schema extraction. When `structured_extraction` is configured in `ExtractionConfig`, the extracted document content is sent to a VLM with the provided JSON schema. The response is parsed and stored here as a JSON value matching the schema. |
+| `code_intelligence` | `str | None` | `None` | Code intelligence results from tree-sitter analysis. Populated when extracting source code files with the `tree-sitter` feature. Contains metrics, structural analysis, imports/exports, comments, docstrings, symbols, diagnostics, and optionally chunked code segments. |
+| `llm_usage` | `list[LlmUsage] | None` | `[]` | LLM token usage and cost data for all LLM calls made during this extraction. Contains one entry per LLM call. Multiple entries are produced when VLM OCR, structured extraction, and/or LLM embeddings all run during the same extraction. `None` when no LLM was used. |
+| `formatted_content` | `str | None` | `None` | Pre-rendered content in the requested output format. Populated during `derive_extraction_result` before tree derivation consumes element data. `apply_output_format` swaps this into `content` at the end of the pipeline, after post-processors have operated on plain text. |
+| `ocr_internal_document` | `str | None` | `None` | Structured hOCR document for the OCR+layout pipeline. When tesseract produces hOCR output, the parsed `InternalDocument` carries paragraph structure with bounding boxes and confidence scores. The layout classification step enriches these elements before final rendering. |
+
+---
+
+### LlmUsage
+
+Token usage and cost data for a single LLM call made during extraction.
+
+Populated when VLM OCR, structured extraction, or LLM-based embeddings
+are used. Multiple entries may be present when multiple LLM calls occur
+within one extraction (e.g. VLM OCR + structured extraction).
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `model` | `str` | — | The LLM model identifier (e.g. "openai/gpt-4o", "anthropic/claude-sonnet-4-20250514"). |
+| `source` | `str` | — | The pipeline stage that triggered this LLM call (e.g. "vlm_ocr", "structured_extraction", "embeddings"). |
+| `input_tokens` | `int | None` | `None` | Number of input/prompt tokens consumed. |
+| `output_tokens` | `int | None` | `None` | Number of output/completion tokens generated. |
+| `total_tokens` | `int | None` | `None` | Total tokens (input + output). |
+| `estimated_cost` | `float | None` | `None` | Estimated cost in USD based on the provider's published pricing. |
+| `finish_reason` | `str | None` | `None` | Why the model stopped generating (e.g. "stop", "length", "content_filter"). |
+
+---
+
+### ImagePreprocessingConfig
+
+Image preprocessing configuration for OCR.
+
+These settings control how images are preprocessed before OCR to improve
+text recognition quality. Different preprocessing strategies work better
+for different document types.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `target_dpi` | `int` | `300` | Target DPI for the image (300 is standard, 600 for small text). |
+| `auto_rotate` | `bool` | `True` | Auto-detect and correct image rotation. |
+| `deskew` | `bool` | `True` | Correct skew (tilted images). |
+| `denoise` | `bool` | `False` | Remove noise from the image. |
+| `contrast_enhance` | `bool` | `False` | Enhance contrast for better text visibility. |
+| `binarization_method` | `str` | `"otsu"` | Binarization method: "otsu", "sauvola", "adaptive". |
+| `invert_colors` | `bool` | `False` | Invert colors (white text on black → black on white). |
+
+---
+
+### TesseractConfig
+
+Tesseract OCR configuration.
+
+Provides fine-grained control over Tesseract OCR engine parameters.
+Most users can use the defaults, but these settings allow optimization
+for specific document types (invoices, handwriting, etc.).
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `language` | `str` | `"eng"` | Language code (e.g., "eng", "deu", "fra") |
+| `psm` | `int` | `3` | Page Segmentation Mode (0-13). Common values: - 3: Fully automatic page segmentation (default) - 6: Assume a single uniform block of text - 11: Sparse text with no particular order |
+| `output_format` | `str` | `"markdown"` | Output format ("text" or "markdown") |
+| `oem` | `int` | `3` | OCR Engine Mode (0-3). - 0: Legacy engine only - 1: Neural nets (LSTM) only (usually best) - 2: Legacy + LSTM - 3: Default (based on what's available) |
+| `min_confidence` | `float` | `0` | Minimum confidence threshold (0.0-100.0). Words with confidence below this threshold may be rejected or flagged. |
+| `preprocessing` | `ImagePreprocessingConfig | None` | `None` | Image preprocessing configuration. Controls how images are preprocessed before OCR. Can significantly improve quality for scanned documents or low-quality images. |
+| `enable_table_detection` | `bool` | `True` | Enable automatic table detection and reconstruction |
+| `table_min_confidence` | `float` | `0` | Minimum confidence threshold for table detection (0.0-1.0) |
+| `table_column_threshold` | `int` | `50` | Column threshold for table detection (pixels) |
+| `table_row_threshold_ratio` | `float` | `0.5` | Row threshold ratio for table detection (0.0-1.0) |
+| `use_cache` | `bool` | `True` | Enable OCR result caching |
+| `classify_use_pre_adapted_templates` | `bool` | `True` | Use pre-adapted templates for character classification |
+| `language_model_ngram_on` | `bool` | `False` | Enable N-gram language model |
+| `tessedit_dont_blkrej_good_wds` | `bool` | `True` | Don't reject good words during block-level processing |
+| `tessedit_dont_rowrej_good_wds` | `bool` | `True` | Don't reject good words during row-level processing |
+| `tessedit_enable_dict_correction` | `bool` | `True` | Enable dictionary correction |
+| `tessedit_char_whitelist` | `str` | `""` | Whitelist of allowed characters (empty = all allowed) |
+| `tessedit_char_blacklist` | `str` | `""` | Blacklist of forbidden characters (empty = none forbidden) |
+| `tessedit_use_primary_params_model` | `bool` | `True` | Use primary language params model |
+| `textord_space_size_is_variable` | `bool` | `True` | Variable-width space detection |
+| `thresholding_method` | `bool` | `False` | Use adaptive thresholding method |
+
+---
+
+### Metadata
+
+Extraction result metadata.
+
+Contains common fields applicable to all formats, format-specific metadata
+via a discriminated union, and additional custom fields from postprocessors.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `title` | `str | None` | `None` | Document title |
+| `subject` | `str | None` | `None` | Document subject or description |
+| `authors` | `list[str] | None` | `[]` | Primary author(s) - always Vec for consistency |
+| `keywords` | `list[str] | None` | `[]` | Keywords/tags - always Vec for consistency |
+| `language` | `str | None` | `None` | Primary language (ISO 639 code) |
+| `created_at` | `str | None` | `None` | Creation timestamp (ISO 8601 format) |
+| `modified_at` | `str | None` | `None` | Last modification timestamp (ISO 8601 format) |
+| `created_by` | `str | None` | `None` | User who created the document |
+| `modified_by` | `str | None` | `None` | User who last modified the document |
+| `pages` | `PageStructure | None` | `None` | Page/slide/sheet structure with boundaries |
+| `format` | `FormatMetadata | None` | `None` | Format-specific metadata (discriminated union) Contains detailed metadata specific to the document format. Serializes with a `format_type` discriminator field. |
+| `image_preprocessing` | `ImagePreprocessingMetadata | None` | `None` | Image preprocessing metadata (when OCR preprocessing was applied) |
+| `json_schema` | `dict[str, Any] | None` | `None` | JSON schema (for structured data extraction) |
+| `error` | `ErrorMetadata | None` | `None` | Error metadata (for batch operations) |
+| `extraction_duration_ms` | `int | None` | `None` | Extraction duration in milliseconds (for benchmarking). This field is populated by batch extraction to provide per-file timing information. It's `None` for single-file extraction (which uses external timing). |
+| `category` | `str | None` | `None` | Document category (from frontmatter or classification). |
+| `tags` | `list[str] | None` | `[]` | Document tags (from frontmatter). |
+| `document_version` | `str | None` | `None` | Document version string (from frontmatter). |
+| `abstract_text` | `str | None` | `None` | Abstract or summary text (from frontmatter). |
+| `output_format` | `str | None` | `None` | Output format identifier (e.g., "markdown", "html", "text"). Set by the output format pipeline stage when format conversion is applied. Previously stored in `metadata.additional["output_format"]`. |
+| `additional` | `str` | — | Additional custom fields from postprocessors. **Deprecated**: Prefer using typed fields on `ExtractionResult` and `Metadata` instead of inserting into this map. Typed fields provide better cross-language compatibility and type safety. This field will be removed in a future major version. This flattened map allows Python/TypeScript postprocessors to add arbitrary fields (entity extraction, keyword extraction, etc.). Fields are merged at the root level during serialization. Uses `Cow<'static, str>` keys so static string keys avoid allocation. |
+
+---
+
+### ExcelMetadata
+
+Excel/spreadsheet metadata.
+
+Contains information about sheets in Excel, OpenDocument Calc, and other
+spreadsheet formats (.xlsx, .xls, .ods, etc.).
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `sheet_count` | `int` | — | Total number of sheets in the workbook |
+| `sheet_names` | `list[str]` | `[]` | Names of all sheets in order |
+
+---
+
+### EmailMetadata
+
+Email metadata extracted from .eml and .msg files.
+
+Includes sender/recipient information, message ID, and attachment list.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `from_email` | `str | None` | `None` | Sender's email address |
+| `from_name` | `str | None` | `None` | Sender's display name |
+| `to_emails` | `list[str]` | `[]` | Primary recipients |
+| `cc_emails` | `list[str]` | `[]` | CC recipients |
+| `bcc_emails` | `list[str]` | `[]` | BCC recipients |
+| `message_id` | `str | None` | `None` | Message-ID header value |
+| `attachments` | `list[str]` | `[]` | List of attachment filenames |
+
+---
+
+### ArchiveMetadata
+
+Archive (ZIP/TAR/7Z) metadata.
+
+Extracted from compressed archive files containing file lists and size information.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `format` | `str` | — | Archive format ("ZIP", "TAR", "7Z", etc.) |
+| `file_count` | `int` | — | Total number of files in the archive |
+| `file_list` | `list[str]` | `[]` | List of file paths within the archive |
+| `total_size` | `int` | — | Total uncompressed size in bytes |
+| `compressed_size` | `int | None` | `None` | Compressed size in bytes (if available) |
+
+---
+
+### XmlMetadata
+
+XML metadata extracted during XML parsing.
+
+Provides statistics about XML document structure.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `element_count` | `int` | — | Total number of XML elements processed |
+| `unique_elements` | `list[str]` | `[]` | List of unique element tag names (sorted) |
+
+---
+
+### TextMetadata
+
+Text/Markdown metadata.
+
+Extracted from plain text and Markdown files. Includes word counts and,
+for Markdown, structural elements like headers and links.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `line_count` | `int` | — | Number of lines in the document |
+| `word_count` | `int` | — | Number of words |
+| `character_count` | `int` | — | Number of characters |
+| `headers` | `list[str] | None` | `[]` | Markdown headers (headings text only, for Markdown files) |
+| `links` | `list[str] | None` | `[]` | Markdown links as (text, url) tuples (for Markdown files) |
+| `code_blocks` | `list[str] | None` | `[]` | Code blocks as (language, code) tuples (for Markdown files) |
+
+---
+
+### HtmlMetadata
+
+HTML metadata extracted from HTML documents.
+
+Includes document-level metadata, Open Graph data, Twitter Card metadata,
+and extracted structural elements (headers, links, images, structured data).
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `title` | `str | None` | `None` | Document title from `<title>` tag |
+| `description` | `str | None` | `None` | Document description from `<meta name="description">` tag |
+| `keywords` | `list[str]` | `[]` | Document keywords from `<meta name="keywords">` tag, split on commas |
+| `author` | `str | None` | `None` | Document author from `<meta name="author">` tag |
+| `canonical_url` | `str | None` | `None` | Canonical URL from `<link rel="canonical">` tag |
+| `base_href` | `str | None` | `None` | Base URL from `<base href="">` tag for resolving relative URLs |
+| `language` | `str | None` | `None` | Document language from `lang` attribute |
+| `text_direction` | `TextDirection | None` | `None` | Document text direction from `dir` attribute |
+| `open_graph` | `dict[str, str]` | `{}` | Open Graph metadata (og:* properties) for social media Keys like "title", "description", "image", "url", etc. |
+| `twitter_card` | `dict[str, str]` | `{}` | Twitter Card metadata (twitter:* properties) Keys like "card", "site", "creator", "title", "description", "image", etc. |
+| `meta_tags` | `dict[str, str]` | `{}` | Additional meta tags not covered by specific fields Keys are meta name/property attributes, values are content |
+| `headers` | `list[HeaderMetadata]` | `[]` | Extracted header elements with hierarchy |
+| `links` | `list[LinkMetadata]` | `[]` | Extracted hyperlinks with type classification |
+| `images` | `list[ImageMetadataType]` | `[]` | Extracted images with source and dimensions |
+| `structured_data` | `list[StructuredData]` | `[]` | Extracted structured data blocks |
+
+---
+
+### OcrMetadata
+
+OCR processing metadata.
+
+Captures information about OCR processing configuration and results.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `language` | `str` | — | OCR language code(s) used |
+| `psm` | `int` | — | Tesseract Page Segmentation Mode (PSM) |
+| `output_format` | `str` | — | Output format (e.g., "text", "hocr") |
+| `table_count` | `int` | — | Number of tables detected |
+| `table_rows` | `int | None` | `None` | Table rows |
+| `table_cols` | `int | None` | `None` | Table cols |
+
+---
+
+### PptxMetadata
+
+PowerPoint presentation metadata.
+
+Extracted from PPTX files containing slide counts and presentation details.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `slide_count` | `int` | — | Total number of slides in the presentation |
+| `slide_names` | `list[str]` | `[]` | Names of slides (if available) |
+| `image_count` | `int | None` | `None` | Number of embedded images |
+| `table_count` | `int | None` | `None` | Number of tables |
+
+---
+
+### DocxMetadata
+
+Word document metadata.
+
+Extracted from DOCX files using shared Office Open XML metadata extraction.
+Integrates with `office_metadata` module for core/app/custom properties.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `core_properties` | `str | None` | `None` | Core properties from docProps/core.xml (Dublin Core metadata) Contains title, creator, subject, keywords, dates, etc. Shared format across DOCX/PPTX/XLSX documents. |
+| `app_properties` | `str | None` | `None` | Application properties from docProps/app.xml (Word-specific statistics) Contains word count, page count, paragraph count, editing time, etc. DOCX-specific variant of Office application properties. |
+| `custom_properties` | `dict[str, dict[str, Any]] | None` | `{}` | Custom properties from docProps/custom.xml (user-defined properties) Contains key-value pairs defined by users or applications. Values can be strings, numbers, booleans, or dates. |
+
+---
+
+### CsvMetadata
+
+CSV/TSV file metadata.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `row_count` | `int` | — | Number of rows |
+| `column_count` | `int` | — | Number of columns |
+| `delimiter` | `str | None` | `None` | Delimiter |
+| `has_header` | `bool` | — | Whether header |
+| `column_types` | `list[str] | None` | `[]` | Column types |
+
+---
+
+### BibtexMetadata
+
+BibTeX bibliography metadata.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `entry_count` | `int` | — | Number of entrys |
+| `citation_keys` | `list[str]` | `[]` | Citation keys |
+| `authors` | `list[str]` | `[]` | Authors |
+| `year_range` | `YearRange | None` | `None` | Year range (year range) |
+| `entry_types` | `dict[str, int] | None` | `{}` | Entry types |
+
+---
+
+### CitationMetadata
+
+Citation file metadata (RIS, PubMed, EndNote).
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `citation_count` | `int` | — | Number of citations |
+| `format` | `str | None` | `None` | Format |
+| `authors` | `list[str]` | `[]` | Authors |
+| `year_range` | `YearRange | None` | `None` | Year range (year range) |
+| `dois` | `list[str]` | `[]` | Dois |
+| `keywords` | `list[str]` | `[]` | Keywords |
+
+---
+
+### FictionBookMetadata
+
+FictionBook (FB2) metadata.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `genres` | `list[str]` | `[]` | Genres |
+| `sequences` | `list[str]` | `[]` | Sequences |
+| `annotation` | `str | None` | `None` | Annotation |
+
+---
+
+### DbfMetadata
+
+dBASE (DBF) file metadata.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `record_count` | `int` | — | Number of records |
+| `field_count` | `int` | — | Number of fields |
+| `fields` | `list[DbfFieldInfo]` | `[]` | Fields |
+
+---
+
+### JatsMetadata
+
+JATS (Journal Article Tag Suite) metadata.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `copyright` | `str | None` | `None` | Copyright |
+| `license` | `str | None` | `None` | License |
+| `history_dates` | `dict[str, str]` | `{}` | History dates |
+| `contributor_roles` | `list[ContributorRole]` | `[]` | Contributor roles |
+
+---
+
+### EpubMetadata
+
+EPUB metadata (Dublin Core extensions).
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `coverage` | `str | None` | `None` | Coverage |
+| `dc_format` | `str | None` | `None` | Dc format |
+| `relation` | `str | None` | `None` | Relation |
+| `source` | `str | None` | `None` | Source |
+| `dc_type` | `str | None` | `None` | Dc type |
+| `cover_image` | `str | None` | `None` | Cover image |
+
+---
+
+### PstMetadata
+
+Outlook PST archive metadata.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `message_count` | `int` | — | Number of messages |
+
+---
+
+### OcrConfidence
+
+Confidence scores for an OCR element.
+
+Separates detection confidence (how confident that text exists at this location)
+from recognition confidence (how confident about the actual text content).
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `detection` | `float | None` | `None` | Detection confidence: how confident the OCR engine is that text exists here. PaddleOCR provides this as `box_score`, Tesseract doesn't have a direct equivalent. Range: 0.0 to 1.0 (or None if not available). |
+| `recognition` | `float` | — | Recognition confidence: how confident about the text content. Range: 0.0 to 1.0. |
+
+---
+
+### OcrElement
+
+A unified OCR element representing detected text with full metadata.
+
+This is the primary type for structured OCR output, preserving all information
+from both Tesseract and PaddleOCR backends.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `text` | `str` | — | The recognized text content. |
+| `geometry` | `OcrBoundingGeometry` | `OcrBoundingGeometry.RECTANGLE` | Bounding geometry (rectangle or quadrilateral). |
+| `confidence` | `OcrConfidence` | — | Confidence scores for detection and recognition. |
+| `level` | `OcrElementLevel` | `OcrElementLevel.LINE` | Hierarchical level (word, line, block, page). |
+| `rotation` | `OcrRotation | None` | `None` | Rotation information (if detected). |
+| `page_number` | `int` | — | Page number (1-indexed). |
+| `parent_id` | `str | None` | `None` | Parent element ID for hierarchical relationships. Only used for Tesseract output which has word -> line -> block hierarchy. |
+| `backend_metadata` | `dict[str, dict[str, Any]]` | `{}` | Backend-specific metadata that doesn't fit the unified schema. |
+
+---
+
+### OcrElementConfig
+
+Configuration for OCR element extraction.
+
+Controls how OCR elements are extracted and filtered.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `include_elements` | `bool` | — | Whether to include OCR elements in the extraction result. When true, the `ocr_elements` field in `ExtractionResult` will be populated. |
+| `min_level` | `OcrElementLevel` | `OcrElementLevel.LINE` | Minimum hierarchical level to include. Elements below this level (e.g., words when min_level is Line) will be excluded. |
+| `min_confidence` | `float` | — | Minimum recognition confidence threshold (0.0-1.0). Elements with confidence below this threshold will be filtered out. |
+| `build_hierarchy` | `bool` | — | Whether to build hierarchical relationships between elements. When true, `parent_id` fields will be populated based on spatial containment. Only meaningful for Tesseract output. |
+
+---
+
+### LayoutRegion
+
+A detected layout region on a page.
+
+When layout detection is enabled, each page may have layout regions
+identifying different content types (text, pictures, tables, etc.)
+with confidence scores and spatial positions.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `class` | `str` | — | Layout class name (e.g. "picture", "table", "text", "section_header"). |
+| `confidence` | `float` | — | Confidence score from the layout detection model (0.0 to 1.0). |
+| `bounding_box` | `str` | — | Bounding box in document coordinate space. |
+| `area_fraction` | `float` | — | Fraction of the page area covered by this region (0.0 to 1.0). |
+
+---
+
+### WarmRequest
+
+Cache warm request.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `all_embeddings` | `bool` | — | Download all embedding model presets |
+| `embedding_model` | `str | None` | `None` | Specific embedding model preset to download |
+
+---
+
+### YakeParams
+
+YAKE-specific parameters.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `window_size` | `int` | `2` | Window size for co-occurrence analysis (default: 2). Controls the context window for computing co-occurrence statistics. |
+
+---
+
+### RakeParams
+
+RAKE-specific parameters.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `min_word_length` | `int` | `1` | Minimum word length to consider (default: 1). |
+| `max_words_per_phrase` | `int` | `3` | Maximum words in a keyword phrase (default: 3). |
+
+---
+
+### KeywordConfig
+
+Keyword extraction configuration.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `algorithm` | `KeywordAlgorithm` | `KeywordAlgorithm.YAKE` | Algorithm to use for extraction. |
+| `max_keywords` | `int` | `10` | Maximum number of keywords to extract (default: 10). |
+| `min_score` | `float` | `0` | Minimum score threshold (0.0-1.0, default: 0.0). Keywords with scores below this threshold are filtered out. Note: Score ranges differ between algorithms. |
+| `ngram_range` | `str` | — | N-gram range for keyword extraction (min, max). (1, 1) = unigrams only (1, 2) = unigrams and bigrams (1, 3) = unigrams, bigrams, and trigrams (default) |
+| `language` | `str | None` | `None` | Language code for stopword filtering (e.g., "en", "de", "fr"). If None, no stopword filtering is applied. |
+| `yake_params` | `YakeParams | None` | `None` | YAKE-specific tuning parameters. |
+| `rake_params` | `RakeParams | None` | `None` | RAKE-specific tuning parameters. |
+
+---
+
+### OcrCacheStats
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `total_files` | `int` | — | Total files |
+| `total_size_mb` | `float` | — | Total size mb |
+
+---
+
+### PaddleOcrConfig
+
+Configuration for PaddleOCR backend.
+
+Configures PaddleOCR text detection and recognition with multi-language support.
+Uses a builder pattern for convenient configuration.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `language` | `str` | — | Language code (e.g., "en", "ch", "jpn", "kor", "deu", "fra") |
+| `cache_dir` | `str | None` | `None` | Optional custom cache directory for model files |
+| `use_angle_cls` | `bool` | — | Enable angle classification for rotated text (default: false). Can misfire on short text regions, rotating crops incorrectly before recognition. |
+| `enable_table_detection` | `bool` | — | Enable table structure detection (default: false) |
+| `det_db_thresh` | `float` | — | Database threshold for text detection (default: 0.3) Range: 0.0-1.0, higher values require more confident detections |
+| `det_db_box_thresh` | `float` | — | Box threshold for text bounding box refinement (default: 0.5) Range: 0.0-1.0 |
+| `det_db_unclip_ratio` | `float` | — | Unclip ratio for expanding text bounding boxes (default: 1.6) Controls the expansion of detected text regions |
+| `det_limit_side_len` | `int` | — | Maximum side length for detection image (default: 960) Larger images may be resized to this limit for faster inference |
+| `rec_batch_num` | `int` | — | Batch size for recognition inference (default: 6) Number of text regions to process simultaneously |
+| `padding` | `int` | — | Padding in pixels added around the image before detection (default: 10). Large values can include surrounding content like table gridlines. |
+| `drop_score` | `float` | — | Minimum recognition confidence score for text lines (default: 0.5). Text regions with recognition confidence below this threshold are discarded. Matches PaddleOCR Python's `drop_score` parameter. Range: 0.0-1.0 |
+| `model_tier` | `str` | — | Model tier controlling detection/recognition model size and accuracy trade-off. - `"mobile"` (default): Lightweight models (~4.5MB detection, ~16.5MB recognition), fast download and inference - `"server"`: Large, high-accuracy models (~88MB detection, ~84MB recognition), best for GPU or complex documents |
+
+---

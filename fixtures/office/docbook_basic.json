@@ -2,15 +2,20 @@
 	"id": "office_docbook_basic",
 	"category": "office",
 	"description": "DocBook XML document extraction.",
-	"document": {
+	"input": {
 		"path": "docbook/docbook-reader.docbook",
 		"media_type": "application/docbook+xml"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": ["application/docbook+xml", "text/docbook"],
-		"min_content_length": 10
-	}
+	"assertions": [
+		{
+			"type": "contains_any",
+			"field": "mime_type",
+			"values": ["application/docbook+xml", "text/docbook"]
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 10
+		}
+	]
 }

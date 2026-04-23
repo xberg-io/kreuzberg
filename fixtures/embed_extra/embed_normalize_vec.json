@@ -1,0 +1,18 @@
+{
+	"id": "embed_normalize_vec",
+	"category": "embed_extra",
+	"description": "Normalizes a vector of embedding values",
+	"tags": ["embedding", "normalize"],
+	"call": "normalize_vec",
+	"input": {
+		"data": [1.0, 2.0, 3.0, 4.0]
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	],
+	"skip": {
+		"reason": "Requires features: embeddings"
+	}
+}

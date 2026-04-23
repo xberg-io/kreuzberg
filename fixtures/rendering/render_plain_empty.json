@@ -1,0 +1,9 @@
+{
+	"id": "render_plain_empty",
+	"category": "rendering",
+	"description": "Render empty HTML",
+	"tags": ["rendering", "edge_case"],
+	"call": "render_plain",
+	"input": { "doc": "" },
+	"assertions": [{ "type": "not_error" }]
+}

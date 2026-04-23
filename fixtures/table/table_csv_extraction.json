@@ -1,0 +1,19 @@
+{
+	"id": "table_csv_extraction",
+	"description": "CSV file extraction produces content",
+	"tags": ["table", "csv"],
+	"call": "extract_file_sync",
+	"input": {
+		"path": "csv/stanley_cups.csv"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 10
+		}
+	]
+}

@@ -57,7 +57,7 @@ use std::rc::Rc;
 /// Returns an error if the PST data cannot be written to a temporary file,
 /// or if the PST format is invalid.
 #[cfg(feature = "email")]
-pub fn extract_pst_messages(pst_data: &[u8]) -> Result<(Vec<EmailExtractionResult>, Vec<ProcessingWarning>)> {
+pub(crate) fn extract_pst_messages(pst_data: &[u8]) -> Result<(Vec<EmailExtractionResult>, Vec<ProcessingWarning>)> {
     use std::io::Write;
 
     // open_store requires a file path, so we write to a uniquely-named temp file
@@ -380,7 +380,7 @@ fn windows_filetime_to_string(filetime: i64) -> String {
 }
 
 #[cfg(not(feature = "email"))]
-pub fn extract_pst_messages(_pst_data: &[u8]) -> Result<(Vec<EmailExtractionResult>, Vec<ProcessingWarning>)> {
+pub(crate) fn extract_pst_messages(_pst_data: &[u8]) -> Result<(Vec<EmailExtractionResult>, Vec<ProcessingWarning>)> {
     Err(KreuzbergError::FeatureNotEnabled {
         feature: "email".to_string(),
         context: Some("PST extraction requires the 'email' feature to be enabled".to_string()),

@@ -2,19 +2,27 @@
 	"id": "config_quality_disabled",
 	"description": "Tests extraction with quality processing explicitly disabled",
 	"tags": ["contract", "config"],
-	"document": {
-		"path": "pdf/fake_memo.pdf"
-	},
-	"extraction": {
-		"method": "sync",
-		"input_type": "file",
+	"call": "extract_file_sync",
+	"input": {
+		"path": "pdf/fake_memo.pdf",
 		"config": {
 			"enable_quality_processing": false
 		}
 	},
-	"assertions": {
-		"expected_mime": "application/pdf",
-		"min_content_length": 10,
-		"content_not_empty": true
-	}
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "application/pdf"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 10
+		},
+		{
+			"type": "not_empty",
+			"field": "content"
+		}
+	]
 }

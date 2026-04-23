@@ -20,7 +20,7 @@ use std::io::Cursor;
 pub struct DbfExtractor;
 
 impl DbfExtractor {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self
     }
 }

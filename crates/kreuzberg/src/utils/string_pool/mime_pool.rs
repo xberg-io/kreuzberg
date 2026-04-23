@@ -168,7 +168,7 @@ pub(super) static MIME_POOL: LazyLock<MimeStringPool> = LazyLock::new(MimeString
 /// let pdf2 = intern_mime_type("application/pdf");
 /// assert_eq!(pdf1, pdf2); // Same pointer
 /// ```
-pub fn intern_mime_type(mime_type: &str) -> InternedString {
+pub(crate) fn intern_mime_type(mime_type: &str) -> InternedString {
     InternedString(MIME_POOL.get_or_intern(mime_type))
 }
 

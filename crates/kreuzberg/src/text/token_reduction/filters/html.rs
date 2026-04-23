@@ -15,7 +15,7 @@ static HTML_COMMENT_REGEX: Lazy<Regex> =
 ///
 /// # Returns
 /// A new `String` with all HTML comments removed
-pub fn remove_html_comments(text: &str) -> String {
+pub(crate) fn remove_html_comments(text: &str) -> String {
     if HTML_COMMENT_REGEX.is_match(text) {
         HTML_COMMENT_REGEX.replace_all(text, "").into_owned()
     } else {

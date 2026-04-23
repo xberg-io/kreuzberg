@@ -42,7 +42,7 @@ pub const ADAPTIVE_VALIDATION_THRESHOLD: usize = 10;
 /// assert!(!boundaries[7]);     // Middle of emoji (first byte of 4-byte sequence)
 /// assert!(boundaries[10]);     // After emoji (valid boundary)
 /// ```
-pub fn precompute_utf8_boundaries(text: &str) -> BitVec {
+pub(crate) fn precompute_utf8_boundaries(text: &str) -> BitVec {
     let text_len = text.len();
     let mut boundaries = bitvec![0; text_len + 1];
 
@@ -96,7 +96,7 @@ pub fn precompute_utf8_boundaries(text: &str) -> BitVec {
 /// This function checks that all byte_start and byte_end values are at character boundaries
 /// using an adaptive strategy: direct calls for small boundary sets, or precomputed BitVec
 /// for large sets.
-pub fn validate_utf8_boundaries(text: &str, boundaries: &[PageBoundary]) -> Result<()> {
+pub(crate) fn validate_utf8_boundaries(text: &str, boundaries: &[PageBoundary]) -> Result<()> {
     if boundaries.is_empty() {
         return Ok(());
     }

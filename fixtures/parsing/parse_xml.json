@@ -1,0 +1,20 @@
+{
+	"id": "parse_xml",
+	"category": "parsing",
+	"description": "Parse XML document format",
+	"tags": ["parsing", "xml"],
+	"call": "extract_file_sync",
+	"input": {
+		"path": "xml/simple_note.xml"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 5
+		}
+	]
+}

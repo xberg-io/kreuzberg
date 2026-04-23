@@ -1,0 +1,20 @@
+{
+	"id": "error_invalid_confidence",
+	"category": "error",
+	"description": "Error when OCR confidence threshold is out of range",
+	"tags": ["error", "config", "ocr"],
+	"call": "extract_file_sync",
+	"input": {
+		"path": "pdf/fake_memo.pdf",
+		"config": {
+			"ocr": {
+				"confidence_threshold": 2.0
+			}
+		}
+	},
+	"assertions": [
+		{
+			"type": "error"
+		}
+	]
+}

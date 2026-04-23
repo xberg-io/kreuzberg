@@ -2,15 +2,20 @@
 	"id": "office_rst_basic",
 	"category": "office",
 	"description": "reStructuredText document extraction.",
-	"document": {
+	"input": {
 		"path": "rst/restructured_text.rst",
 		"media_type": "text/x-rst"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": ["text/x-rst", "text/prs.fallenstein.rst"],
-		"min_content_length": 20
-	}
+	"assertions": [
+		{
+			"type": "contains_any",
+			"field": "mime_type",
+			"values": ["text/x-rst", "text/prs.fallenstein.rst"]
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 20
+		}
+	]
 }

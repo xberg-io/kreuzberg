@@ -1,0 +1,16 @@
+{
+	"id": "error_empty_mime",
+	"category": "error",
+	"description": "Error when extracting with empty MIME type",
+	"tags": ["error", "input", "mime"],
+	"call": "extract_bytes_sync",
+	"input": {
+		"data": "text/plain.txt",
+		"mime_type": ""
+	},
+	"assertions": [
+		{
+			"type": "error"
+		}
+	]
+}

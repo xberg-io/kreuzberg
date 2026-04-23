@@ -1,0 +1,9 @@
+{
+	"id": "sanitize_path_spaces",
+	"category": "string_utils",
+	"description": "Sanitize path with spaces",
+	"tags": ["sanitization"],
+	"call": "sanitize_path",
+	"input": { "path": "my folder/file.txt" },
+	"assertions": [{ "type": "not_error" }]
+}

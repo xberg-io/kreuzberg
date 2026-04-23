@@ -1,5 +1,5 @@
 ---
-description: "chunking emueddings"
+description: "Chunking, embeddings, and RAG pipeline integration"
 name: chunking-embeddings
 priority: critical
 ---

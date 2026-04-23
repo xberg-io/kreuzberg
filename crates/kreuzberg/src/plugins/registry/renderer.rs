@@ -156,7 +156,7 @@ impl RendererRegistry {
     /// # Returns
     ///
     /// The renderer if found, or an error if not registered.
-    pub fn get(&self, name: &str) -> Result<Arc<dyn Renderer>> {
+    pub(crate) fn get(&self, name: &str) -> Result<Arc<dyn Renderer>> {
         self.renderers.get(name).cloned().ok_or_else(|| KreuzbergError::Plugin {
             message: format!("Renderer '{}' not registered", name),
             plugin_name: name.to_string(),
@@ -175,7 +175,7 @@ impl RendererRegistry {
     /// # Returns
     ///
     /// The rendered output string, or an error if the renderer is not found or rendering fails.
-    pub fn render(&self, name: &str, doc: &InternalDocument) -> Result<String> {
+    pub(crate) fn render(&self, name: &str, doc: &InternalDocument) -> Result<String> {
         let renderer = self.get(name)?;
         renderer.render(doc)
     }
@@ -191,7 +191,7 @@ impl RendererRegistry {
     }
 
     /// Clear all renderers and re-register the built-in defaults.
-    pub fn reset_to_defaults(&mut self) -> Result<()> {
+    pub(crate) fn reset_to_defaults(&mut self) -> Result<()> {
         self.renderers.clear();
         self.register_builtins();
         Ok(())

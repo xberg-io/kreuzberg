@@ -1,9 +1,8 @@
 ---
-description: "format specific extraction"
+name: format-specific-extraction
+description: "Format-specific document extraction workflows"
 priority: high
 ---
-
-## priority: high
 
 # Format-Specific Extraction Workflows
 

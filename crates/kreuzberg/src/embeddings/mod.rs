@@ -152,7 +152,7 @@ pub fn get_preset(name: &str) -> Option<&'static EmbeddingPreset> {
 }
 
 /// Get the chunk_size for a preset by name.
-pub fn preset_chunk_size(name: &str) -> Option<usize> {
+pub(crate) fn preset_chunk_size(name: &str) -> Option<usize> {
     get_preset(name).map(|p| p.chunk_size)
 }
 
@@ -686,7 +686,7 @@ fn normalize_embeddings(embeddings: &mut [Vec<f32>]) {
 ///
 /// Returns `Ok(())` if embeddings were generated successfully, or an error if
 /// model initialization or embedding generation fails.
-pub fn generate_embeddings_for_chunks(
+pub(crate) fn generate_embeddings_for_chunks(
     chunks: &mut [crate::types::Chunk],
     config: &crate::core::config::EmbeddingConfig,
 ) -> crate::Result<()> {

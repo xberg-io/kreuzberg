@@ -1,0 +1,26 @@
+{
+	"id": "format_pdf_text",
+	"category": "format_specific",
+	"description": "Standalone PDF text extraction using extract_bytes_sync",
+	"tags": ["format_specific", "pdf", "text_extraction"],
+	"call": "extract_bytes_sync",
+	"input": {
+		"path": "pdf/fake_memo.pdf",
+		"mime_type": "application/pdf"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 50
+		},
+		{
+			"type": "contains_any",
+			"field": "content",
+			"values": ["Mallori", "May"]
+		}
+	]
+}

@@ -224,7 +224,7 @@ fn test_extraction_config_result_format_valid_values() {
     let json_unified = json!({"result_format": "unified"});
     let config_unified: ExtractionConfig =
         serde_json::from_value(json_unified).expect("Failed to parse unified result_format");
-    // result_format uses types::OutputFormat, not core::config::OutputFormat
+    // result_format uses types::ExtractionMode, not core::config::OutputFormat
     let _ = config_unified.result_format;
 }
 

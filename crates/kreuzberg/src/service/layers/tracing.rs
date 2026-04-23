@@ -22,7 +22,7 @@ use crate::service::request::{ExtractionRequest, ExtractionSource};
 pub struct TracingLayer;
 
 impl TracingLayer {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self
     }
 }

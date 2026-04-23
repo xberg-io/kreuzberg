@@ -1,0 +1,9 @@
+{
+	"id": "strikethrough_empty",
+	"category": "markup",
+	"description": "Strikethrough empty",
+	"tags": ["markup", "edge_case"],
+	"call": "strikethrough",
+	"input": { "text": "" },
+	"assertions": [{ "type": "not_error" }]
+}

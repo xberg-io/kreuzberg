@@ -8,7 +8,7 @@ use super::utilities::read_braced_from_chars;
 /// Processes a line of LaTeX, handling commands and inline math.
 ///
 /// Recursively processes nested commands and preserves math mode content.
-pub fn process_line(line: &str) -> String {
+pub(crate) fn process_line(line: &str) -> String {
     let mut result = String::new();
     let mut chars = line.chars().peekable();
 

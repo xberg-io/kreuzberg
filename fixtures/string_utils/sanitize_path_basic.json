@@ -1,0 +1,20 @@
+{
+	"id": "sanitize_path_basic",
+	"category": "string_utils",
+	"description": "Sanitize path traversal in file path",
+	"tags": ["string_utils", "sanitization", "security"],
+	"call": "sanitize_path",
+	"input": {
+		"path": "../../../secret/file.txt"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "min_length",
+			"field": "result",
+			"value": 1
+		}
+	]
+}

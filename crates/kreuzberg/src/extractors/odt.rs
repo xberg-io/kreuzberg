@@ -30,7 +30,7 @@ pub struct OdtExtractor;
 
 impl OdtExtractor {
     /// Create a new ODT extractor.
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self
     }
 }

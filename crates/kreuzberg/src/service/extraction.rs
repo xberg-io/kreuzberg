@@ -36,7 +36,7 @@ pub struct ExtractionService {
 
 impl ExtractionService {
     /// Create a new extraction service.
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self { _private: () }
     }
 }

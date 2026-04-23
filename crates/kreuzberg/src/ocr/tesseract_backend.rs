@@ -31,7 +31,7 @@ pub struct TesseractBackend {
 
 impl TesseractBackend {
     /// Create a new Tesseract backend with default cache directory.
-    pub fn new() -> Result<Self> {
+    pub(crate) fn new() -> Result<Self> {
         let processor = OcrProcessor::new(None).map_err(|e| crate::KreuzbergError::Ocr {
             message: format!("Failed to create Tesseract processor: {}", e),
             source: Some(Box::new(e)),
@@ -43,7 +43,7 @@ impl TesseractBackend {
     }
 
     /// Create a new Tesseract backend with custom cache directory.
-    pub fn with_cache_dir(cache_dir: std::path::PathBuf) -> Result<Self> {
+    pub(crate) fn with_cache_dir(cache_dir: std::path::PathBuf) -> Result<Self> {
         let processor = OcrProcessor::new(Some(cache_dir)).map_err(|e| crate::KreuzbergError::Ocr {
             message: format!("Failed to create Tesseract processor: {}", e),
             source: Some(Box::new(e)),

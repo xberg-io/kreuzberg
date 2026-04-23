@@ -1,0 +1,15 @@
+{
+	"id": "detect_lang_english",
+	"category": "detection",
+	"description": "Detect English language in text",
+	"tags": ["language_detection", "english"],
+	"call": "detect_languages",
+	"input": {
+		"text": "The quick brown fox jumps over the lazy dog."
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	]
+}

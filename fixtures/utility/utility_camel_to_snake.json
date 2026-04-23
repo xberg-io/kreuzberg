@@ -1,0 +1,24 @@
+{
+	"id": "utility_camel_to_snake",
+	"category": "utility",
+	"description": "Convert camelCase to snake_case",
+	"tags": ["utility", "string", "conversion"],
+	"call": "camel_to_snake",
+	"input": {
+		"args": ["myVariableName"]
+	},
+	"skip": {
+		"languages": [],
+		"reason": "Requires camel_to_snake call config in alef.toml"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "equals",
+			"field": "result",
+			"value": "my_variable_name"
+		}
+	]
+}

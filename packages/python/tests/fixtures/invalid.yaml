@@ -1,4 +1,0 @@
-use_cache: true
-  bad_indent: value
-ocr:
-backend: "tesseract"

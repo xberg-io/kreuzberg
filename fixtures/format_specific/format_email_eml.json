@@ -1,0 +1,20 @@
+{
+	"id": "format_email_eml",
+	"category": "format_specific",
+	"description": "Email EML file extraction using extract_file_sync",
+	"tags": ["format_specific", "email", "eml"],
+	"call": "extract_file_sync",
+	"input": {
+		"path": "email/html_email_multipart.eml"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 10
+		}
+	]
+}

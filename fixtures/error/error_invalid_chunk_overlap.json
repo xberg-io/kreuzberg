@@ -1,0 +1,21 @@
+{
+	"id": "error_invalid_chunk_overlap",
+	"category": "error",
+	"description": "Error when chunk overlap exceeds max_characters",
+	"tags": ["error", "config", "chunking"],
+	"call": "extract_file_sync",
+	"input": {
+		"path": "pdf/fake_memo.pdf",
+		"config": {
+			"chunking": {
+				"max_characters": 10,
+				"overlap_characters": 100
+			}
+		}
+	},
+	"assertions": [
+		{
+			"type": "error"
+		}
+	]
+}

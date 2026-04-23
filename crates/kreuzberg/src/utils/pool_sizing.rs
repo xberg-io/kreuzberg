@@ -57,7 +57,7 @@ impl PoolSizeHint {
     ///
     /// This is the total estimated memory for all string buffers.
     #[inline]
-    pub fn estimated_string_pool_memory(&self) -> usize {
+    pub(crate) fn estimated_string_pool_memory(&self) -> usize {
         self.string_buffer_count * self.string_buffer_capacity
     }
 
@@ -65,7 +65,7 @@ impl PoolSizeHint {
     ///
     /// This is the total estimated memory for all byte buffers.
     #[inline]
-    pub fn estimated_byte_pool_memory(&self) -> usize {
+    pub(crate) fn estimated_byte_pool_memory(&self) -> usize {
         self.byte_buffer_count * self.byte_buffer_capacity
     }
 
@@ -73,7 +73,7 @@ impl PoolSizeHint {
     ///
     /// This includes both string and byte buffer pools.
     #[inline]
-    pub fn total_pool_memory(&self) -> usize {
+    pub(crate) fn total_pool_memory(&self) -> usize {
         self.estimated_string_pool_memory() + self.estimated_byte_pool_memory()
     }
 }
@@ -246,7 +246,7 @@ fn estimate_buffer_capacity(file_size: u64) -> usize {
 /// // of 65KB each (for 1-10MB files)
 /// ```
 #[inline]
-pub fn estimate_pool_size(file_size: u64, mime_type: &str) -> PoolSizeHint {
+pub(crate) fn estimate_pool_size(file_size: u64, mime_type: &str) -> PoolSizeHint {
     let format_ratio = get_format_ratio(mime_type);
     let (base_count, _base_capacity) = get_format_base_config(mime_type);
 

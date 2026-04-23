@@ -2,15 +2,20 @@
 	"id": "structured_toml_basic",
 	"category": "structured",
 	"description": "TOML configuration file extraction.",
-	"document": {
+	"input": {
 		"path": "data_formats/cargo.toml",
 		"media_type": "application/toml"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": ["application/toml", "text/toml"],
-		"min_content_length": 10
-	}
+	"assertions": [
+		{
+			"type": "contains_any",
+			"field": "mime_type",
+			"values": ["application/toml", "text/toml"]
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 10
+		}
+	]
 }

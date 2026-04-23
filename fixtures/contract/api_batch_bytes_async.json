@@ -2,17 +2,25 @@
 	"id": "api_batch_bytes_async",
 	"description": "Tests async batch bytes extraction API (batch_extract_bytes)",
 	"tags": ["contract", "api", "batch"],
-	"document": {
+	"call": "batch_extract_bytes",
+	"input": {
 		"path": "pdf/fake_memo.pdf"
 	},
-	"extraction": {
-		"method": "batch_async",
-		"input_type": "bytes",
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": "application/pdf",
-		"min_content_length": 10,
-		"content_contains_any": ["May 5, 2023", "Mallori"]
-	}
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "application/pdf"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 10
+		},
+		{
+			"type": "contains_any",
+			"field": "content",
+			"values": ["May 5, 2023", "Mallori"]
+		}
+	]
 }

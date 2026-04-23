@@ -7,13 +7,13 @@
 
 use super::hierarchy::SegmentData;
 
-pub use crate::table_core::{HocrWord, reconstruct_table, table_to_markdown};
+pub(crate) use crate::table_core::{HocrWord, reconstruct_table, table_to_markdown};
 
 /// Convert a PDF `SegmentData` to an `HocrWord` for table reconstruction.
 ///
 /// `SegmentData` uses PDF coordinates (y=0 at bottom, increases upward).
 /// `HocrWord` uses image coordinates (y=0 at top, increases downward).
-pub fn segment_to_hocr_word(seg: &SegmentData, page_height: f32) -> HocrWord {
+pub(crate) fn segment_to_hocr_word(seg: &SegmentData, page_height: f32) -> HocrWord {
     let top_image = (page_height - (seg.y + seg.height)).round().max(0.0) as u32;
     HocrWord {
         text: seg.text.clone(),
@@ -34,7 +34,7 @@ pub fn segment_to_hocr_word(seg: &SegmentData, page_height: f32) -> HocrWord {
 /// Single-word segments use `segment_to_hocr_word` directly (fast path).
 /// Multi-word segments get proportional bbox estimation per word based on
 /// byte offset within the segment text.
-pub fn split_segment_to_words(seg: &SegmentData, page_height: f32) -> Vec<HocrWord> {
+pub(crate) fn split_segment_to_words(seg: &SegmentData, page_height: f32) -> Vec<HocrWord> {
     let trimmed = seg.text.trim();
     if trimmed.is_empty() {
         return Vec::new();
@@ -84,7 +84,7 @@ pub fn split_segment_to_words(seg: &SegmentData, page_height: f32) -> Vec<HocrWo
 ///
 /// Splits multi-word segments into individual words with proportional bounding
 /// boxes, ensuring each word can be independently matched to table cells.
-pub fn segments_to_words(segments: &[SegmentData], page_height: f32) -> Vec<HocrWord> {
+pub(crate) fn segments_to_words(segments: &[SegmentData], page_height: f32) -> Vec<HocrWord> {
     segments
         .iter()
         .flat_map(|seg| split_segment_to_words(seg, page_height))
@@ -105,7 +105,7 @@ pub fn segments_to_words(segments: &[SegmentData], page_height: f32) -> Vec<Hocr
 /// - Single-word cell: reject if >85% single-word (vs >70%)
 /// - Content asymmetry: reject if one col >92% of text (vs >85%)
 /// - Column-text-flow: applied equally (reject if >60% rows flow through)
-pub fn post_process_table(
+pub(crate) fn post_process_table(
     table: Vec<Vec<String>>,
     layout_guided: bool,
     allow_single_column: bool,
@@ -562,7 +562,7 @@ fn post_process_table_inner(
 /// - Multi-column prose split into a grid (detected via row coherence and column uniformity)
 /// - Repeated page elements (headers/footers detected as tables on every page)
 /// - Low-vocabulary repetitive content (same few words in every row)
-pub fn is_well_formed_table(grid: &[Vec<String>]) -> bool {
+pub(crate) fn is_well_formed_table(grid: &[Vec<String>]) -> bool {
     if grid.len() < 2 {
         return false;
     }

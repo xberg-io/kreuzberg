@@ -1,0 +1,20 @@
+{
+	"id": "optimal_dpi_tiny",
+	"category": "image_operations",
+	"description": "Calculate optimal DPI for tiny image (100x100 pixels, 0.1MB target)",
+	"tags": ["image", "dpi", "tiny"],
+	"call": "calculate_optimal_dpi",
+	"input": {
+		"page_width": 1.0,
+		"page_height": 1.0,
+		"target_dpi": 100,
+		"max_dimension": 2048,
+		"min_dpi": 72,
+		"max_dpi": 300
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	]
+}

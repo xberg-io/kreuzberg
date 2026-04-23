@@ -2,19 +2,23 @@
 	"id": "office_ppt_legacy",
 	"category": "office",
 	"description": "Legacy PowerPoint .ppt extraction via native OLE/CFB parsing.",
-	"document": {
+	"input": {
 		"path": "ppt/simple.ppt",
 		"media_type": "application/vnd.ms-powerpoint"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": "application/vnd.ms-powerpoint",
-		"min_content_length": 10
-	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "application/vnd.ms-powerpoint"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 10
+		}
+	],
 	"skip": {
-		"requires_feature": ["office"],
-		"notes": "Requires the office feature."
+		"reason": "Requires features: office; Requires the office feature."
 	}
 }

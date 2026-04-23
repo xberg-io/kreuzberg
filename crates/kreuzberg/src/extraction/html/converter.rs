@@ -32,7 +32,7 @@ pub(crate) fn map_output_format(format: KreuzbergOutputFormat) -> LibOutputForma
 /// - `preprocessing.enabled = false` (disable HTML preprocessing)
 ///
 /// Sets output format based on the provided format parameter.
-pub fn resolve_conversion_options(
+pub(crate) fn resolve_conversion_options(
     options: Option<ConversionOptions>,
     output_format: KreuzbergOutputFormat,
 ) -> ConversionOptions {
@@ -105,7 +105,7 @@ pub fn convert_html_to_markdown(
 /// # Returns
 ///
 /// A tuple of (markdown/djot content, optional metadata), or an error if conversion fails
-pub fn convert_html_to_markdown_with_metadata(
+pub(crate) fn convert_html_to_markdown_with_metadata(
     html: &str,
     options: Option<ConversionOptions>,
     output_format: Option<KreuzbergOutputFormat>,
@@ -122,7 +122,7 @@ pub fn convert_html_to_markdown_with_metadata(
 ///
 /// Returns `(content, optional_metadata, tables, optional_document_structure)`.
 #[allow(clippy::type_complexity)]
-pub fn convert_html_to_markdown_with_tables(
+pub(crate) fn convert_html_to_markdown_with_tables(
     html: &str,
     options: Option<ConversionOptions>,
     output_format: Option<KreuzbergOutputFormat>,
@@ -234,7 +234,7 @@ fn cells_to_markdown(cells: &[Vec<String>]) -> String {
 /// inline images embedded in the HTML document. Uses plain text output format
 /// for minimal conversion overhead since only images are needed.
 /// Returns an empty vector when no images are found.
-pub fn extract_html_inline_images(html: &str, options: Option<ConversionOptions>) -> Result<Vec<InlineImage>> {
+pub(crate) fn extract_html_inline_images(html: &str, options: Option<ConversionOptions>) -> Result<Vec<InlineImage>> {
     check_wasm_size_limit(html)?;
 
     let mut opts = options.unwrap_or_default();

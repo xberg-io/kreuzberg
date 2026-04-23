@@ -146,7 +146,7 @@ pub(crate) fn calculate_metadata_bonus(metadata: &AHashMap<String, String>) -> f
 /// let score = calculate_quality_score(text, None);
 /// assert!(score > 0.7);
 /// ```
-pub fn calculate_quality_score(text: &str, metadata: Option<&AHashMap<String, String>>) -> f64 {
+pub(crate) fn calculate_quality_score(text: &str, metadata: Option<&AHashMap<String, String>>) -> f64 {
     if text.is_empty() || text.trim().is_empty() {
         return 0.0;
     }

@@ -2,21 +2,28 @@
 	"id": "office_dbf_basic",
 	"category": "office",
 	"description": "dBASE (.dbf) table extraction as markdown.",
-	"document": {
+	"input": {
 		"path": "dbf/stations.dbf",
 		"media_type": "application/x-dbf"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": "application/x-dbf",
-		"min_content_length": 10,
-		"content_contains_any": ["|"]
-	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "application/x-dbf"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 10
+		},
+		{
+			"type": "contains_any",
+			"field": "content",
+			"values": ["|"]
+		}
+	],
 	"skip": {
-		"if_document_missing": true,
-		"requires_feature": ["office"],
-		"notes": "Requires the office feature."
+		"reason": "Requires features: office; Skip if document missing; Requires the office feature."
 	}
 }

@@ -1,0 +1,20 @@
+{
+	"id": "async_extract_file_docx",
+	"category": "async",
+	"description": "Async extract_file call on DOCX document",
+	"tags": ["async", "api", "extract_file", "docx"],
+	"input": {
+		"path": "docx/fake.docx",
+		"mime_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 20
+		}
+	]
+}

@@ -17,7 +17,7 @@ pub struct TableState {
 
 impl TableState {
     /// Create a new empty table state.
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self {
             rows: Vec::new(),
             current_row: Vec::new(),
@@ -28,14 +28,14 @@ impl TableState {
     }
 
     /// Push the current cell content to the current row.
-    pub fn push_cell(&mut self) {
+    pub(crate) fn push_cell(&mut self) {
         let cell = self.current_cell.trim().to_string();
         self.current_row.push(cell);
         self.current_cell.clear();
     }
 
     /// Push the current row to the rows collection.
-    pub fn push_row(&mut self) {
+    pub(crate) fn push_row(&mut self) {
         // Only push the current cell if it has content — avoid adding a
         // trailing empty cell when \cell already pushed all cells.
         if !self.current_cell.is_empty() {
@@ -50,7 +50,7 @@ impl TableState {
     }
 
     /// Start a new table row.
-    pub fn start_row(&mut self) {
+    pub(crate) fn start_row(&mut self) {
         if self.in_row {
             self.push_row();
         }
@@ -62,7 +62,7 @@ impl TableState {
 
     /// Finalize the table with format control. If `plain` is true, the table
     /// text representation uses tab-separated format instead of markdown pipes.
-    pub fn finalize_with_format(mut self, plain: bool) -> Option<Table> {
+    pub(crate) fn finalize_with_format(mut self, plain: bool) -> Option<Table> {
         if self.in_row || !self.current_cell.is_empty() || !self.current_row.is_empty() {
             self.push_row();
         }

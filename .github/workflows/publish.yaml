@@ -45,6 +45,7 @@ env:
   PDFIUM_STATIC_VERSION: "7678"
   ORT_VERSION: "1.24.2"
   MACOSX_DEPLOYMENT_TARGET: "14.0"
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 permissions:
   contents: read
@@ -572,7 +573,7 @@ jobs:
 
       - name: Free up disk space for wheel build
         if: matrix.os == 'ubuntu-latest'
-        run: scripts/publish/ubuntu/free-disk-space.sh
+        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
       - name: Prepare wheel staging directory
         shell: bash
@@ -777,7 +778,7 @@ jobs:
         run: git checkout --progress --force ${{ needs.prepare.outputs.target_sha }}
 
       - name: Free up disk space
-        run: scripts/publish/ubuntu/free-disk-space.sh
+        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
       - name: Setup Python environment
         uses: kreuzberg-dev/actions/setup-python-env@v1
@@ -855,7 +856,7 @@ jobs:
 
       - name: Free up disk space (Linux)
         if: runner.os == 'Linux'
-        run: scripts/publish/ubuntu/free-disk-space.sh
+        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
       - name: Install pnpm
         uses: pnpm/action-setup@v6
@@ -1001,7 +1002,7 @@ jobs:
 
       - name: Free up disk space (Linux)
         if: runner.os == 'Linux'
-        run: scripts/publish/ubuntu/free-disk-space.sh
+        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
       - name: Setup Rust toolchain
         uses: kreuzberg-dev/actions/setup-rust@v1
@@ -1086,7 +1087,7 @@ jobs:
         run: git checkout --progress --force ${{ needs.prepare.outputs.target_sha }}
 
       - name: Free up disk space
-        run: scripts/publish/ubuntu/free-disk-space.sh
+        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
       - name: Build CLI binary via Docker
         run: |
@@ -1289,7 +1290,7 @@ jobs:
 
       - name: Free up disk space (Linux)
         if: runner.os == 'Linux'
-        run: scripts/publish/ubuntu/free-disk-space.sh
+        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
       - name: Install system dependencies
         uses: ./.github/actions/install-system-deps
@@ -1334,7 +1335,7 @@ jobs:
       - name: Stage PDFium runtime artifacts
         uses: ./.github/actions/stage-pdfium-runtime
         with:
-          destination: packages/ruby/ext/kreuzberg_rb/native
+          destination: packages/ruby/ext/kreuzberg_rb
           additional-destinations: |
             packages/ruby
             packages/ruby/lib
@@ -1499,7 +1500,7 @@ jobs:
 
       - name: Free up disk space (Linux)
         if: runner.os == 'Linux'
-        run: scripts/publish/ubuntu/free-disk-space.sh
+        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
       - name: Configure Windows GNU toolchain
         if: matrix.settings.os == 'windows-latest'
@@ -1744,7 +1745,7 @@ jobs:
         run: git checkout --progress --force ${{ needs.prepare.outputs.target_sha }}
 
       - name: Free up disk space
-        run: scripts/publish/ubuntu/free-disk-space.sh
+        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
       - name: Build FFI library via Docker (musl)
         run: |
@@ -1794,7 +1795,7 @@ jobs:
         run: git checkout --progress --force ${{ needs.prepare.outputs.target_sha }}
 
       - name: Free up disk space
-        run: scripts/publish/ubuntu/free-disk-space.sh
+        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
       - name: Install system dependencies
         uses: ./.github/actions/install-system-deps
@@ -1917,7 +1918,7 @@ jobs:
 
       - name: Free up disk space (Linux)
         if: runner.os == 'Linux'
-        run: scripts/publish/ubuntu/free-disk-space.sh
+        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
       - name: Install system dependencies
         uses: ./.github/actions/install-system-deps
@@ -2024,7 +2025,7 @@ jobs:
         run: git checkout --progress --force ${{ needs.prepare.outputs.target_sha }}
 
       - name: Free up disk space
-        run: scripts/publish/ubuntu/free-disk-space.sh
+        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
       - name: Install system dependencies
         uses: ./.github/actions/install-system-deps
@@ -2229,7 +2230,7 @@ jobs:
         run: git checkout --progress --force ${{ needs.prepare.outputs.target_sha }}
 
       - name: Free up disk space
-        run: scripts/publish/ubuntu/free-disk-space.sh
+        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
       - name: Build FFI library via Docker (musl)
         run: |
@@ -2369,8 +2370,7 @@ jobs:
 
       - name: Free up disk space (Linux)
         if: runner.os == 'Linux'
-        shell: bash
-        run: scripts/publish/ubuntu/free-disk-space.sh
+        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
       - name: Configure Windows GNU toolchain
         if: matrix.settings.os == 'windows-latest'
@@ -2617,7 +2617,7 @@ jobs:
 
       - name: Free up disk space (Linux)
         if: runner.os == 'Linux'
-        run: scripts/publish/ubuntu/free-disk-space.sh
+        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
       - name: Configure Windows GNU toolchain
         if: matrix.settings.os == 'windows-latest'
@@ -2849,7 +2849,7 @@ jobs:
         run: git checkout --progress --force ${{ needs.prepare.outputs.target_sha }}
 
       - name: Free up disk space
-        run: scripts/publish/ubuntu/free-disk-space.sh
+        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
       - name: Build Rustler NIF via Docker (musl)
         run: |

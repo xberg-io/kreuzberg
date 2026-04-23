@@ -2,12 +2,9 @@
 	"id": "config_force_ocr_pages",
 	"description": "Tests that force_ocr_pages config field is accepted for selective page OCR",
 	"tags": ["contract", "config", "ocr"],
-	"document": {
-		"path": "pdf/fake_memo.pdf"
-	},
-	"extraction": {
-		"method": "sync",
-		"input_type": "file",
+	"call": "extract_file_sync",
+	"input": {
+		"path": "pdf/fake_memo.pdf",
 		"config": {
 			"force_ocr_pages": [1],
 			"ocr": {
@@ -16,11 +13,19 @@
 			}
 		}
 	},
-	"assertions": {
-		"expected_mime": "application/pdf",
-		"min_content_length": 1
-	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "application/pdf"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 1
+		}
+	],
 	"skip": {
-		"requires_feature": ["ocr"]
+		"reason": "Requires features: ocr"
 	}
 }

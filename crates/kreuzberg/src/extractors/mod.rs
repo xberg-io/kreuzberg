@@ -282,7 +282,7 @@ static EXTRACTORS_INITIALIZED: OnceCell<()> = OnceCell::new();
 /// This function is called automatically on first extraction operation.
 /// It's safe to call multiple times - registration only happens once,
 /// unless the registry was cleared, in which case extractors are re-registered.
-pub fn ensure_initialized() -> Result<()> {
+pub(crate) fn ensure_initialized() -> Result<()> {
     EXTRACTORS_INITIALIZED.get_or_try_init(register_default_extractors)?;
 
     let registry = get_document_extractor_registry();

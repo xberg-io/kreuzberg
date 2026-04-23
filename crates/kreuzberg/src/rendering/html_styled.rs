@@ -160,7 +160,7 @@ impl StyledHtmlRenderer {
     /// Maximum size in bytes for a CSS file loaded via `css_file`.
     const MAX_CSS_FILE_SIZE: u64 = 1_048_576; // 1 MiB
 
-    pub fn new(config: HtmlOutputConfig) -> Result<Self> {
+    pub(crate) fn new(config: HtmlOutputConfig) -> Result<Self> {
         // Validate class_prefix: only allow alphanumerics, hyphens, and underscores
         // to prevent HTML attribute injection.
         if !config

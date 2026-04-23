@@ -2,15 +2,20 @@
 	"id": "office_odt_bold",
 	"category": "office",
 	"description": "ODT document with bold formatting.",
-	"document": {
+	"input": {
 		"path": "odt/bold.odt",
 		"media_type": "application/vnd.oasis.opendocument.text"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": "application/vnd.oasis.opendocument.text",
-		"min_content_length": 10
-	}
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "application/vnd.oasis.opendocument.text"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 10
+		}
+	]
 }

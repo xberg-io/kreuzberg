@@ -184,7 +184,7 @@ pub struct ZipExtractor;
 
 impl ZipExtractor {
     /// Create a new ZIP extractor.
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self
     }
 }
@@ -298,7 +298,7 @@ pub struct TarExtractor;
 
 impl TarExtractor {
     /// Create a new TAR extractor.
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self
     }
 }
@@ -399,7 +399,7 @@ pub struct SevenZExtractor;
 
 impl SevenZExtractor {
     /// Create a new 7z extractor.
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self
     }
 }
@@ -495,7 +495,7 @@ pub struct GzipExtractor;
 
 impl GzipExtractor {
     /// Create a new gzip extractor.
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self
     }
 }

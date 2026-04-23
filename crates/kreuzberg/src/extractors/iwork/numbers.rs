@@ -18,7 +18,7 @@ use async_trait::async_trait;
 pub struct NumbersExtractor;
 
 impl NumbersExtractor {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self
     }
 }

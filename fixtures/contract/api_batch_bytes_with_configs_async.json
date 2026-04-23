@@ -2,18 +2,25 @@
 	"id": "api_batch_bytes_with_configs_async",
 	"description": "Tests async batch bytes extraction with per-file configs (batch_extract_bytes with file_configs parameter)",
 	"tags": ["contract", "api", "batch", "file_config"],
-	"document": {
+	"call": "batch_extract_bytes",
+	"input": {
 		"path": "pdf/fake_memo.pdf"
 	},
-	"extraction": {
-		"method": "batch_async",
-		"input_type": "bytes",
-		"config": {},
-		"file_configs": [{ "output_format": "markdown" }]
-	},
-	"assertions": {
-		"expected_mime": "application/pdf",
-		"min_content_length": 10,
-		"output_format_is": "markdown"
-	}
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "application/pdf"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 10
+		},
+		{
+			"type": "equals",
+			"field": "output_format",
+			"value": "markdown"
+		}
+	]
 }

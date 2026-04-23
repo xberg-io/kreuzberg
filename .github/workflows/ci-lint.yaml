@@ -1,0 +1,108 @@
+name: CI Lint
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'crates/**'
+      - 'packages/**'
+      - 'e2e/**'
+      - 'fixtures/**'
+      - 'scripts/**'
+      - 'tools/**'
+      - 'Cargo.toml'
+      - 'Cargo.lock'
+      - 'alef.toml'
+      - 'templates/**'
+      - '.github/**'
+      - 'Taskfile.yml'
+      - '.pre-commit-config.yaml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'crates/**'
+      - 'packages/**'
+      - 'e2e/**'
+      - 'fixtures/**'
+      - 'scripts/**'
+      - 'tools/**'
+      - 'Cargo.toml'
+      - 'Cargo.lock'
+      - 'alef.toml'
+      - 'templates/**'
+      - '.github/**'
+      - 'Taskfile.yml'
+      - '.pre-commit-config.yaml'
+
+concurrency:
+  group: ci-lint-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint
+    if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 15
+    env:
+      CARGO_TERM_COLOR: always
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Rust
+        uses: kreuzberg-dev/actions/setup-rust@v1
+        with:
+          cache-key-prefix: lint
+
+      - name: Setup Python
+        uses: kreuzberg-dev/actions/setup-python-env@v1
+        with:
+          python-version: "3.13"
+          cache-prefix: lint-py
+          install-command: "uv sync --group dev --no-install-project --no-install-workspace --frozen"
+
+      - name: Setup Node
+        uses: kreuzberg-dev/actions/setup-node-workspace@v1
+
+      - name: Install Task
+        uses: kreuzberg-dev/actions/install-task@v1
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v5
+
+      - name: Setup kubeconform
+        uses: bmuschko/setup-kubeconform@v1
+
+      - name: Install alef CLI
+        shell: bash
+        run: |
+          curl -fsSL "https://github.com/kreuzberg-dev/alef/releases/download/v0.6.0/alef-aarch64-unknown-linux-gnu.tar.gz" \
+            | tar xz -C /usr/local/bin alef
+          alef --help > /dev/null
+
+      - name: Run universal prek hooks
+        uses: j178/prek-action@v2
+        with:
+          cache: false
+          extra-args: trailing-whitespace end-of-file-fixer check-merge-conflict check-added-large-files detect-private-key check-json check-yaml check-toml check-case-conflict pyproject-fmt cargo-sort shfmt shellcheck actionlint ai-rulez-generate alef-verify alef-sync-versions --all-files
+
+      - name: Run code lint hooks
+        uses: j178/prek-action@v2
+        with:
+          cache: false
+          extra-args: ruff ruff-format biome-format biome-lint oxlint cargo-fmt taplo-format typos rumdl-fmt textlint helm-lint kubeconform --all-files
+
+      - name: Validate C header
+        shell: bash
+        run: |
+          HEADER="crates/kreuzberg-ffi/include/kreuzberg.h"
+          if [ ! -f "$HEADER" ]; then
+            echo "::error::C header not found at $HEADER — run 'task alef:generate'"
+            exit 1
+          fi
+          echo "C header verified at $HEADER"

@@ -43,7 +43,7 @@ impl YoloModel {
     ///
     /// For square-input models (YOLOv10, DocLayout-YOLO), pass the same value for both dimensions.
     /// For YOLOX (unstructuredio), use width=768, height=1024.
-    pub fn from_file(
+    pub(crate) fn from_file(
         path: &str,
         variant: YoloVariant,
         input_width: u32,
@@ -186,10 +186,10 @@ impl YoloModel {
                 detections.push(LayoutDetection::new(class, best_score, BBox::new(x1, y1, x2, y2)));
             }
             // Raw format needs NMS.
-            nms::greedy_nms(&mut detections, NMS_IOU_THRESHOLD);
+            detections = nms::greedy_nms(detections, NMS_IOU_THRESHOLD);
         }
 
-        LayoutDetection::sort_by_confidence_desc(&mut detections);
+        detections = LayoutDetection::sort_by_confidence_desc(detections);
 
         Ok(detections)
     }
@@ -314,9 +314,9 @@ impl YoloModel {
             detections.push(LayoutDetection::new(class, confidence, BBox::new(x1, y1, x2, y2)));
         }
 
-        nms::greedy_nms(&mut detections, NMS_IOU_THRESHOLD);
+        detections = nms::greedy_nms(detections, NMS_IOU_THRESHOLD);
 
-        LayoutDetection::sort_by_confidence_desc(&mut detections);
+        detections = LayoutDetection::sort_by_confidence_desc(detections);
 
         Ok(detections)
     }

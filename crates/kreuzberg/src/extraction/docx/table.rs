@@ -125,7 +125,7 @@ pub struct TableGrid {
 ///
 /// Expects the reader to be positioned just after the `<w:tblPr>` start tag.
 /// Reads all child elements until the matching `</w:tblPr>` end tag.
-pub fn parse_table_properties(reader: &mut Reader<&[u8]>) -> TableProperties {
+pub(crate) fn parse_table_properties(reader: &mut Reader<&[u8]>) -> TableProperties {
     let mut props = TableProperties::default();
     let mut buf = Vec::new();
 
@@ -218,7 +218,7 @@ pub fn parse_table_properties(reader: &mut Reader<&[u8]>) -> TableProperties {
 /// Parse row-level properties from streaming XML reader.
 ///
 /// Expects the reader to be positioned just after the `<w:trPr>` start tag.
-pub fn parse_row_properties(reader: &mut Reader<&[u8]>) -> RowProperties {
+pub(crate) fn parse_row_properties(reader: &mut Reader<&[u8]>) -> RowProperties {
     let mut props = RowProperties::default();
     let mut buf = Vec::new();
 
@@ -277,7 +277,7 @@ pub fn parse_row_properties(reader: &mut Reader<&[u8]>) -> RowProperties {
 /// Parse cell-level properties from streaming XML reader.
 ///
 /// Expects the reader to be positioned just after the `<w:tcPr>` start tag.
-pub fn parse_cell_properties(reader: &mut Reader<&[u8]>) -> CellProperties {
+pub(crate) fn parse_cell_properties(reader: &mut Reader<&[u8]>) -> CellProperties {
     let mut props = CellProperties::default();
     let mut buf = Vec::new();
 
@@ -370,7 +370,7 @@ pub fn parse_cell_properties(reader: &mut Reader<&[u8]>) -> CellProperties {
 /// Parse table grid (column widths) from streaming XML reader.
 ///
 /// Expects the reader to be positioned just after the `<w:tblGrid>` start tag.
-pub fn parse_table_grid(reader: &mut Reader<&[u8]>) -> TableGrid {
+pub(crate) fn parse_table_grid(reader: &mut Reader<&[u8]>) -> TableGrid {
     let mut grid = TableGrid::default();
     let mut buf = Vec::new();
 

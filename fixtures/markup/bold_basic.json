@@ -1,0 +1,20 @@
+{
+	"id": "bold_basic",
+	"category": "markup",
+	"description": "Create bold markdown formatting",
+	"tags": ["markup", "formatting"],
+	"call": "bold",
+	"input": {
+		"text": "important"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "contains",
+			"field": "result",
+			"value": "important"
+		}
+	]
+}

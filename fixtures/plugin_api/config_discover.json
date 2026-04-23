@@ -1,11 +1,10 @@
 {
 	"id": "config_discover",
+	"category": "configuration",
 	"description": "Discover configuration from current or parent directories",
-	"api_category": "configuration",
-	"api_function": "discover",
 	"tags": ["configuration", "toml", "discovery"],
-	"test_spec": {
-		"pattern": "config_discover",
+	"call": "discover",
+	"input": {
 		"setup": {
 			"create_temp_dir": true,
 			"create_temp_file": true,
@@ -15,28 +14,21 @@
 			"subdirectory_name": "subdir",
 			"change_directory": true
 		},
-		"function_call": {
-			"name": "discover",
-			"is_method": true,
-			"class_name": "ExtractionConfig",
-			"args": []
-		},
-		"assertions": {
-			"return_type": "object",
-			"object_properties": [
-				{
-					"path": "chunking",
-					"exists": true
-				},
-				{
-					"path": "chunking.max_chars",
-					"value": 50,
-					"type": "number"
-				}
-			]
-		},
+		"is_method": true,
+		"class_name": "ExtractionConfig",
 		"teardown": {
 			"restore_directory": true
 		}
-	}
+	},
+	"assertions": [
+		{
+			"type": "not_empty",
+			"field": "result.chunking"
+		},
+		{
+			"type": "equals",
+			"field": "result.chunking.max_chars",
+			"value": 50
+		}
+	]
 }

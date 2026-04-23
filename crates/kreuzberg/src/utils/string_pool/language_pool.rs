@@ -88,7 +88,7 @@ pub(super) static LANGUAGE_POOL: LazyLock<LanguageStringPool> = LazyLock::new(La
 /// let en2 = intern_language_code("en");
 /// assert_eq!(en1, en2); // Same pointer
 /// ```
-pub fn intern_language_code(lang_code: &str) -> InternedString {
+pub(crate) fn intern_language_code(lang_code: &str) -> InternedString {
     InternedString(LANGUAGE_POOL.get_or_intern(lang_code))
 }
 

@@ -2,12 +2,9 @@
 	"id": "ocr_paddle_table_detection",
 	"category": "ocr",
 	"description": "Table detection and extraction with PaddleOCR.",
-	"document": {
+	"input": {
 		"path": "images/simple_table.png",
 		"media_type": "image/png",
-		"requires_external_tool": ["paddle-ocr", "onnxruntime"]
-	},
-	"extraction": {
 		"config": {
 			"output_format": "markdown",
 			"ocr": {
@@ -20,14 +17,24 @@
 			"force_ocr": true
 		}
 	},
-	"assertions": {
-		"expected_mime": "image/png",
-		"min_content_length": 10,
-		"content_contains_any": ["Product", "Apple", "Banana", "Orange"]
-	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "image/png"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 10
+		},
+		{
+			"type": "contains_any",
+			"field": "content",
+			"values": ["Product", "Apple", "Banana", "Orange"]
+		}
+	],
 	"skip": {
-		"requires_feature": ["paddle-ocr"],
-		"skip_on_platform": ["aarch64-unknown-linux-gnu"],
-		"notes": "Tests table detection capability with PaddleOCR. ONNX Runtime model loading unstable on ARM Linux."
+		"reason": "Requires features: paddle-ocr; Skip on platforms: aarch64-unknown-linux-gnu; Tests table detection capability with PaddleOCR. ONNX Runtime model loading unstable on ARM Linux."
 	}
 }

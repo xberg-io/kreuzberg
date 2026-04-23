@@ -2,15 +2,20 @@
 	"id": "office_opml_basic",
 	"category": "office",
 	"description": "OPML outline document extraction.",
-	"document": {
+	"input": {
 		"path": "opml/outline.opml",
 		"media_type": "application/xml+opml"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": ["application/xml+opml", "text/x-opml", "application/x-opml+xml"],
-		"min_content_length": 10
-	}
+	"assertions": [
+		{
+			"type": "contains_any",
+			"field": "mime_type",
+			"values": ["application/xml+opml", "text/x-opml", "application/x-opml+xml"]
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 10
+		}
+	]
 }

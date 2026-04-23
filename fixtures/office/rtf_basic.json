@@ -2,15 +2,20 @@
 	"id": "office_rtf_basic",
 	"category": "office",
 	"description": "RTF document text extraction.",
-	"document": {
+	"input": {
 		"path": "rtf/extraction_test.rtf",
 		"media_type": "application/rtf"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": ["application/rtf", "text/rtf"],
-		"min_content_length": 10
-	}
+	"assertions": [
+		{
+			"type": "contains_any",
+			"field": "mime_type",
+			"values": ["application/rtf", "text/rtf"]
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 10
+		}
+	]
 }

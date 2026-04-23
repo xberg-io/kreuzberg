@@ -23,7 +23,6 @@ mod batch;
 // Re-export public API
 pub use bytes::extract_bytes;
 pub use file::extract_file;
-pub use helpers::get_pool_sizing_hint;
 pub use sync::{batch_extract_bytes_sync, extract_bytes_sync};
 
 #[cfg(feature = "tokio-runtime")]

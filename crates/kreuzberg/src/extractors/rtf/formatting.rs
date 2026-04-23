@@ -5,7 +5,7 @@
 /// `(old_offset, new_offset)` pairs that covers every byte boundary in the
 /// input. Callers can use [`map_offset`] to translate an arbitrary input byte
 /// offset to the corresponding output byte offset.
-pub fn normalize_whitespace_with_mapping(s: &str) -> (String, Vec<(usize, usize)>) {
+pub(crate) fn normalize_whitespace_with_mapping(s: &str) -> (String, Vec<(usize, usize)>) {
     // Phase 1: split into lines, trim each, collapse blank runs — same as
     // normalize_whitespace but we also record a mapping from the position in `s`
     // to the position in the rebuilt string.
@@ -188,7 +188,7 @@ fn apply_mapping(mapping: &[(usize, usize)], offset: usize) -> usize {
 }
 
 /// Map a byte offset from the pre-normalized string to the post-normalized string.
-pub fn map_offset(mapping: &[(usize, usize)], offset: usize) -> usize {
+pub(crate) fn map_offset(mapping: &[(usize, usize)], offset: usize) -> usize {
     apply_mapping(mapping, offset)
 }
 

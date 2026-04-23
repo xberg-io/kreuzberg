@@ -2,6 +2,6 @@ go 1.26
 
 use (
 	./e2e/go
-	./packages/go/v4
+	./packages/go
 ./tools/benchmark-harness/scripts
 )

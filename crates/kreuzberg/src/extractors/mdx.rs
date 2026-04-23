@@ -47,7 +47,7 @@ pub struct MdxExtractor;
 
 impl MdxExtractor {
     /// Create a new MDX extractor.
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self
     }
 

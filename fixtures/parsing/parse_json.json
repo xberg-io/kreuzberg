@@ -1,0 +1,20 @@
+{
+	"id": "parse_json",
+	"category": "parsing",
+	"description": "Parse JSON document format",
+	"tags": ["parsing", "json"],
+	"call": "extract_file_sync",
+	"input": {
+		"path": "json/simple.json"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 5
+		}
+	]
+}

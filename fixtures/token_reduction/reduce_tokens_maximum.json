@@ -1,0 +1,10 @@
+{
+	"id": "reduce_tokens_maximum",
+	"category": "token_reduction",
+	"description": "Reduce tokens maximum",
+	"tags": ["token_reduction"],
+	"call": "reduce_tokens",
+	"input": { "text": "The quick brown fox.", "level": "maximum" },
+	"assertions": [{ "type": "not_error" }],
+	"skip": { "reason": "Requires features: quality" }
+}

@@ -1,3 +1,6 @@
+includes:
+    - phpstan-baseline.neon
+
 parameters:
     level: max
     paths:
@@ -5,20 +8,5 @@ parameters:
     scanFiles:
         - stubs/kreuzberg_extension.php
     treatPhpDocTypesAsCertain: false
-    ignoreErrors:
-        - message: '#Cannot cast mixed to#'
-          path: 'src/Types/Metadata/HtmlMetadata.php'
-        - message: '#expects.*mixed#'
-          path: 'src/Types/Metadata/HtmlMetadata.php'
-        # AmpBridge uses optional amphp/amp dependency
-        - identifier: class.notFound
-          path: 'src/Async/AmpBridge.php'
-        - identifier: function.notFound
-          path: 'src/Async/AmpBridge.php'
-        - identifier: return.type
-          path: 'src/Async/AmpBridge.php'
-        # ReactBridge uses optional react/promise dependency
-        - identifier: missingType.generics
-          path: 'src/Async/ReactBridge.php'
-        - identifier: return.type
-          path: 'src/Async/ReactBridge.php'
+    reportUnmatchedIgnoredErrors: false
+    tmpDir: var/cache/phpstan

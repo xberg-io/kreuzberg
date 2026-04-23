@@ -1,0 +1,12 @@
+{
+	"id": "detect_mime_not_found",
+	"category": "detection",
+	"description": "detect_mime_type file not found",
+	"tags": ["mime_detection", "error"],
+	"call": "detect_mime_type_standalone",
+	"input": {
+		"path": "/nonexistent/path/file.pdf",
+		"check_exists": true
+	},
+	"assertions": [{ "type": "error" }]
+}

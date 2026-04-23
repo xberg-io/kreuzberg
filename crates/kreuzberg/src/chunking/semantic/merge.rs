@@ -71,7 +71,7 @@ fn prepend_overlap(group_text: &str, prev_tail: &str, overlap: usize, ceiling: u
 /// # Panics (debug)
 ///
 /// Debug-asserts that `segments.len() == boundaries.len()`.
-pub fn merge_segments(
+pub(crate) fn merge_segments(
     source_text: &str,
     segments: &[Segment<'_>],
     boundaries: &[bool],

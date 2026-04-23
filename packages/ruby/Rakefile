@@ -6,13 +6,6 @@ require 'rspec/core/rake_task'
 
 GEMSPEC = Gem::Specification.load(File.expand_path('kreuzberg.gemspec', __dir__))
 
-# Vendor kreuzberg core crates before compilation
-task :vendor do
-  vendor_script = File.expand_path('../../scripts/ci/ruby/vendor-kreuzberg-core.py', __dir__)
-  puts 'Vendoring kreuzberg core crates...'
-  sh "python3 #{vendor_script}"
-end
-
 Rake::ExtensionTask.new('kreuzberg_rb', GEMSPEC) do |ext|
   ext.lib_dir = 'lib'
   ext.ext_dir = 'ext/kreuzberg_rb'
@@ -29,6 +22,5 @@ end
 
 RSpec::Core::RakeTask.new(:spec)
 
-task compile: :vendor
 task spec: :compile
 task default: :spec

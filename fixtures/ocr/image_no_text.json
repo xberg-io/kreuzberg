@@ -2,12 +2,9 @@
 	"id": "ocr_image_no_text",
 	"category": "ocr",
 	"description": "Image with no text to ensure OCR handles empty results gracefully.",
-	"document": {
+	"input": {
 		"path": "images/flower_no_text.jpg",
 		"media_type": "image/jpeg",
-		"requires_external_tool": ["tesseract"]
-	},
-	"extraction": {
 		"config": {
 			"ocr": {
 				"backend": "tesseract",
@@ -16,12 +13,19 @@
 			"force_ocr": true
 		}
 	},
-	"assertions": {
-		"expected_mime": "image/jpeg",
-		"max_content_length": 300
-	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "image/jpeg"
+		},
+		{
+			"type": "max_length",
+			"field": "content",
+			"value": 300
+		}
+	],
 	"skip": {
-		"requires_feature": ["tesseract"],
-		"notes": "Skip when Tesseract is unavailable."
+		"reason": "Requires features: tesseract; Skip when Tesseract is unavailable."
 	}
 }

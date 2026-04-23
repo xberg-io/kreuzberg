@@ -1,0 +1,20 @@
+{
+	"id": "cells_markdown_basic",
+	"category": "table_operations",
+	"description": "Convert basic 2D cell array to markdown table format",
+	"tags": ["table", "markdown", "cells"],
+	"call": "cells_to_markdown",
+	"input": {
+		"cells": "[[\"Name\",\"Age\"],[\"Alice\",\"30\"],[\"Bob\",\"25\"]]"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "contains",
+			"field": "result",
+			"value": "|"
+		}
+	]
+}

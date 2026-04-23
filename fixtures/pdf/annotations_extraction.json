@@ -2,26 +2,32 @@
 	"id": "pdf_annotations",
 	"category": "pdf",
 	"description": "PDF with annotations should extract annotation data when enabled.",
-	"document": {
+	"input": {
 		"path": "pdf/test_article.pdf",
-		"media_type": "application/pdf"
-	},
-	"extraction": {
+		"media_type": "application/pdf",
 		"config": {
 			"pdf_options": {
 				"extract_annotations": true
 			}
 		}
 	},
-	"skip": {
-		"skip_on_platform": ["aarch64-unknown-linux-gnu"],
-		"notes": "PDFium ARM Linux binary does not support annotation extraction"
-	},
-	"assertions": {
-		"expected_mime": "application/pdf",
-		"annotations": {
-			"has_annotations": true,
-			"min_count": 1
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "application/pdf"
+		},
+		{
+			"type": "not_empty",
+			"field": "annotations"
+		},
+		{
+			"type": "count_min",
+			"field": "annotations",
+			"value": 1
 		}
+	],
+	"skip": {
+		"reason": "Skip on platforms: aarch64-unknown-linux-gnu; PDFium ARM Linux binary does not support annotation extraction"
 	}
 }

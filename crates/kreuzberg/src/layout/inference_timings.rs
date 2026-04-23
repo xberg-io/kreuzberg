@@ -17,7 +17,7 @@ thread_local! {
 /// Record granular timings from the current inference call.
 ///
 /// Called by model implementations immediately before returning results.
-pub fn set(preprocess_ms: f64, onnx_ms: f64) {
+pub(crate) fn set(preprocess_ms: f64, onnx_ms: f64) {
     PREPROCESS_MS.with(|c| c.set(preprocess_ms));
     ONNX_MS.with(|c| c.set(onnx_ms));
 }
@@ -25,7 +25,7 @@ pub fn set(preprocess_ms: f64, onnx_ms: f64) {
 /// Retrieve and reset the timings recorded by the most recent [`set`] call.
 ///
 /// Returns `(preprocess_ms, onnx_ms)`. Resets both values to 0 after reading.
-pub fn take() -> (f64, f64) {
+pub(crate) fn take() -> (f64, f64) {
     let pre = PREPROCESS_MS.with(|c| {
         let v = c.get();
         c.set(0.0);

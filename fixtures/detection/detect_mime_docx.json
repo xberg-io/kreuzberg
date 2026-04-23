@@ -1,0 +1,15 @@
+{
+	"id": "detect_mime_docx",
+	"category": "detection",
+	"description": "Detect DOCX MIME type from extension",
+	"tags": ["mime_detection", "docx"],
+	"call": "detect_mime_type_standalone",
+	"input": {
+		"path": "document.docx"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	]
+}

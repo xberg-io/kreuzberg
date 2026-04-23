@@ -1,0 +1,20 @@
+{
+	"id": "is_utf8_valid",
+	"category": "text_utils",
+	"description": "Validate UTF-8 encoding",
+	"tags": ["text_utils", "encoding", "validation"],
+	"call": "is_valid_utf8",
+	"input": {
+		"data": "text/plain.txt"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "equals",
+			"field": "result",
+			"value": true
+		}
+	]
+}

@@ -21,12 +21,16 @@ pub struct OcrProcessor {
 }
 
 impl OcrProcessor {
-    pub fn new(cache_dir: Option<std::path::PathBuf>) -> Result<Self, OcrError> {
+    pub(crate) fn new(cache_dir: Option<std::path::PathBuf>) -> Result<Self, OcrError> {
         let cache = OcrCache::new(cache_dir)?;
         Ok(Self { cache })
     }
 
-    pub fn process_image(&self, image_bytes: &[u8], config: &TesseractConfig) -> Result<OcrExtractionResult, OcrError> {
+    pub(crate) fn process_image(
+        &self,
+        image_bytes: &[u8],
+        config: &TesseractConfig,
+    ) -> Result<OcrExtractionResult, OcrError> {
         #[cfg(feature = "otel")]
         let span = crate::telemetry::spans::ocr_span("tesseract", &config.language);
         #[cfg(feature = "otel")]
@@ -55,7 +59,7 @@ impl OcrProcessor {
     ///
     /// This variant allows specifying an output format (Plain, Markdown, Djot) which
     /// affects how the OCR result's mime_type is set when markdown output is requested.
-    pub fn process_image_with_format(
+    pub(crate) fn process_image_with_format(
         &self,
         image_bytes: &[u8],
         config: &TesseractConfig,
@@ -85,15 +89,15 @@ impl OcrProcessor {
         result
     }
 
-    pub fn clear_cache(&self) -> Result<(), OcrError> {
+    pub(crate) fn clear_cache(&self) -> Result<(), OcrError> {
         self.cache.clear()
     }
 
-    pub fn get_cache_stats(&self) -> Result<super::cache::OcrCacheStats, OcrError> {
+    pub(crate) fn get_cache_stats(&self) -> Result<super::cache::OcrCacheStats, OcrError> {
         self.cache.get_stats()
     }
 
-    pub fn process_image_file(
+    pub(crate) fn process_image_file(
         &self,
         file_path: &str,
         config: &TesseractConfig,
@@ -105,7 +109,7 @@ impl OcrProcessor {
     ///
     /// This variant allows specifying an output format (Plain, Markdown, Djot) which
     /// affects how the OCR result's mime_type is set when markdown output is requested.
-    pub fn process_image_file_with_format(
+    pub(crate) fn process_image_file_with_format(
         &self,
         file_path: &str,
         config: &TesseractConfig,
@@ -118,7 +122,11 @@ impl OcrProcessor {
     ///
     /// This method processes OCR operations in parallel across CPU cores for improved throughput.
     /// Results are returned in the same order as the input file paths.
-    pub fn process_image_files_batch(&self, file_paths: Vec<String>, config: &TesseractConfig) -> Vec<BatchItemResult> {
+    pub(crate) fn process_image_files_batch(
+        &self,
+        file_paths: Vec<String>,
+        config: &TesseractConfig,
+    ) -> Vec<BatchItemResult> {
         execution::process_image_files_batch(file_paths, config, &self.cache)
     }
 }

@@ -22,7 +22,7 @@
     <img src="https://img.shields.io/maven-central/v/dev.kreuzberg/kreuzberg?label=Java&color=007ec6" alt="Java">
   </a>
   <a href="https://github.com/kreuzberg-dev/kreuzberg/releases">
-    <img src="https://img.shields.io/github/v/tag/kreuzberg-dev/kreuzberg?label=Go&color=007ec6&filter=v4.9.5" alt="Go">
+    <img src="https://img.shields.io/github/v/tag/kreuzberg-dev/kreuzberg?label=Go&color=007ec6&filter=v4.0.0" alt="Go">
   </a>
   <a href="https://www.nuget.org/packages/Kreuzberg/">
     <img src="https://img.shields.io/nuget/v/Kreuzberg?label=C%23&color=007ec6" alt="C#">
@@ -66,9 +66,7 @@
   </a>
 </div>
 
-
 Extract text, tables, images, and metadata from 91+ file formats and 248 programming languages including PDF, Office documents, and images. Elixir bindings with native BEAM concurrency, OTP integration, and idiomatic Elixir API.
-
 
 ## Installation
 
@@ -82,7 +80,7 @@ Add to your `mix.exs` dependencies:
 ```elixir
 def deps do
   [
-    kreuzberg: "~> 4.9"
+    kreuzberg: "~> 4.0"
   ]
 end
 ```
@@ -103,13 +101,13 @@ mix deps.get
 - Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
 
 
-
 ## Quick Start
 
 ### Basic Extraction
 
 Extract text, metadata, and structure from any supported document format:
 
+```exs
 ```elixir title="Elixir"
 # Basic document extraction workflow
 # Load file -> extract -> access results
@@ -123,7 +121,7 @@ IO.puts("\nMetadata:")
 IO.puts("Format: #{inspect(result.metadata.format_type)}")
 IO.puts("Tables found: #{length(result.tables)}")
 ```
-
+```
 
 ### Common Use Cases
 
@@ -134,6 +132,7 @@ Most use cases benefit from configuration to control extraction behavior:
 
 **With OCR (for scanned documents):**
 
+```exs
 ```elixir title="Elixir"
 alias Kreuzberg.ExtractionConfig
 
@@ -148,7 +147,7 @@ IO.puts("OCR Extracted content:")
 IO.puts(content)
 IO.puts("Metadata: #{inspect(result.metadata)}")
 ```
-
+```
 
 
 
@@ -162,6 +161,7 @@ See [Table Extraction Guide](https://kreuzberg.dev/features/table-extraction/) f
 #### Processing Multiple Files
 
 
+```exs
 ```elixir title="Elixir"
 file_paths = ["document1.pdf", "document2.pdf", "document3.pdf"]
 
@@ -176,7 +176,7 @@ end)
 
 IO.puts("Total files processed: #{length(results)}")
 ```
-
+```
 
 
 
@@ -185,6 +185,7 @@ IO.puts("Total files processed: #{length(results)}")
 
 For non-blocking document processing:
 
+```exs
 ```elixir title="Elixir"
 # Extract from different file types (PDF, DOCX, etc.)
 
@@ -198,7 +199,7 @@ case Kreuzberg.extract_file("document.pdf") do
     IO.puts("Extraction failed: #{inspect(reason)}")
 end
 ```
-
+```
 
 
 
@@ -318,13 +319,16 @@ Powered by [tree-sitter-language-pack](https://github.com/kreuzberg-dev/tree-sit
 Kreuzberg supports multiple OCR backends for extracting text from scanned documents and images:
 
 
+
 - **Tesseract**
+
 
 - **Paddleocr**
 
 
 ### OCR Configuration Example
 
+```exs
 ```elixir title="Elixir"
 alias Kreuzberg.ExtractionConfig
 
@@ -339,6 +343,7 @@ IO.puts("OCR Extracted content:")
 IO.puts(content)
 IO.puts("Metadata: #{inspect(result.metadata)}")
 ```
+```
 
 
 
@@ -347,6 +352,7 @@ IO.puts("Metadata: #{inspect(result.metadata)}")
 
 This binding provides full async/await support for non-blocking document processing:
 
+```exs
 ```elixir title="Elixir"
 # Extract from different file types (PDF, DOCX, etc.)
 
@@ -360,6 +366,7 @@ case Kreuzberg.extract_file("document.pdf") do
     IO.puts("Extraction failed: #{inspect(reason)}")
 end
 ```
+```
 
 
 
@@ -371,8 +378,10 @@ Kreuzberg supports extensible post-processing plugins for custom text transforma
 For detailed plugin documentation, visit [Plugin System Guide](https://kreuzberg.dev/guides/plugins/).
 
 
+
 ### Plugin Example
 
+```exs
 ```elixir title="Elixir"
 alias Kreuzberg.Plugin
 
@@ -450,6 +459,7 @@ end
 {:ok, processors} = Plugin.list_post_processors()
 IO.inspect(processors, label: "Registered Post-Processors")
 ```
+```
 
 
 
@@ -463,10 +473,12 @@ Generate vector embeddings for extracted text using the built-in ONNX Runtime su
 
 
 
+
 ## Batch Processing
 
 Process multiple documents efficiently:
 
+```exs
 ```elixir title="Elixir"
 file_paths = ["document1.pdf", "document2.pdf", "document3.pdf"]
 
@@ -481,7 +493,7 @@ end)
 
 IO.puts("Total files processed: #{length(results)}")
 ```
-
+```
 
 
 

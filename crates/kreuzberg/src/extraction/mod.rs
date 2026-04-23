@@ -65,59 +65,13 @@ pub mod xml;
 #[cfg(any(feature = "office", feature = "html", feature = "xml"))]
 pub mod markdown;
 
-pub use structured::{JsonExtractionConfig, StructuredDataResult, parse_json, parse_toml, parse_yaml};
-pub use text::parse_text;
-pub use transform::{
-    ListItemMetadata, ListType, detect_list_items, generate_element_id, transform_extraction_result_to_elements,
-    transform_to_document_structure,
-};
-
-#[cfg(any(feature = "ocr", feature = "ocr-wasm"))]
-pub use image::{ImageMetadata, extract_image_metadata};
-
-#[cfg(feature = "archives")]
-pub use archive::{
-    ArchiveEntry, ArchiveMetadata, extract_7z_metadata, extract_7z_text_content, extract_tar_metadata,
-    extract_tar_text_content, extract_zip_metadata, extract_zip_text_content,
-};
-
-#[cfg(feature = "email")]
-pub use email::{build_email_text_output, extract_email_content, parse_eml_content, parse_msg_content};
-
-#[cfg(feature = "email")]
-pub use pst::extract_pst_messages;
-
-#[cfg(any(feature = "excel", feature = "excel-wasm"))]
-pub use excel::{excel_to_markdown, read_excel_bytes, read_excel_file};
-
 #[cfg(feature = "html")]
 pub use html::convert_html_to_markdown;
 
 #[cfg(feature = "office")]
 pub use doc::extract_doc_text;
 
-#[cfg(feature = "office")]
-pub use ppt::{extract_ppt_text, extract_ppt_text_with_options};
-
-#[cfg(feature = "office")]
-pub use office_metadata::{
-    CoreProperties, CustomProperties, DocxAppProperties, OdtProperties, PptxAppProperties, XlsxAppProperties,
-    extract_core_properties, extract_custom_properties, extract_docx_app_properties, extract_odt_properties,
-    extract_pptx_app_properties, extract_xlsx_app_properties,
-};
-
-#[cfg(feature = "office")]
-pub use pptx::{PptxExtractionOptions, extract_pptx_from_bytes, extract_pptx_from_path};
-
-#[cfg(feature = "xml")]
-pub use xml::parse_xml;
-
 #[cfg(any(feature = "office", feature = "html", feature = "xml"))]
 pub use markdown::cells_to_markdown;
 #[cfg(any(feature = "office", feature = "html", feature = "xml"))]
 pub use markdown::cells_to_text;
-
-pub use capacity::{
-    estimate_content_capacity, estimate_html_markdown_capacity, estimate_presentation_capacity,
-    estimate_spreadsheet_capacity, estimate_table_markdown_capacity,
-};

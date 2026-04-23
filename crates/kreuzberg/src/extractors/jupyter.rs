@@ -52,7 +52,7 @@ pub struct JupyterExtractor;
 #[cfg(feature = "office")]
 impl JupyterExtractor {
     /// Create a new Jupyter extractor.
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self
     }
 

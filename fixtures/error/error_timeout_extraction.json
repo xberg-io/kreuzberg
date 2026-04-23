@@ -1,0 +1,18 @@
+{
+	"id": "error_timeout_extraction",
+	"category": "error",
+	"description": "Error when extraction times out",
+	"tags": ["error", "timeout"],
+	"call": "extract_file_sync",
+	"input": {
+		"path": "pdf/large.pdf",
+		"config": {
+			"extraction_timeout_secs": 1
+		}
+	},
+	"assertions": [
+		{
+			"type": "error"
+		}
+	]
+}

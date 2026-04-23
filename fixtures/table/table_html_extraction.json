@@ -1,0 +1,22 @@
+{
+	"id": "table_html_extraction",
+	"description": "HTML table extraction produces markdown format",
+	"tags": ["table", "html", "markdown"],
+	"call": "extract_file_sync",
+	"input": {
+		"path": "html/simple_table.html",
+		"config": {
+			"output_format": "markdown"
+		}
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "contains_any",
+			"field": "content",
+			"values": ["|"]
+		}
+	]
+}

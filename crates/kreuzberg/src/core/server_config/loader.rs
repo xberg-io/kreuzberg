@@ -30,7 +30,7 @@ use super::ServerConfig;
 /// - File doesn't exist or cannot be read
 /// - File extension is not recognized
 /// - File content is invalid for the detected format
-pub fn from_file(path: impl AsRef<Path>) -> Result<ServerConfig> {
+pub(crate) fn from_file(path: impl AsRef<Path>) -> Result<ServerConfig> {
     let path = path.as_ref();
 
     let content = std::fs::read_to_string(path)
@@ -67,7 +67,7 @@ pub fn from_file(path: impl AsRef<Path>) -> Result<ServerConfig> {
 /// # Errors
 ///
 /// Returns `KreuzbergError::Validation` if the file doesn't exist or is invalid TOML.
-pub fn from_toml_file(path: impl AsRef<Path>) -> Result<ServerConfig> {
+pub(crate) fn from_toml_file(path: impl AsRef<Path>) -> Result<ServerConfig> {
     let path = path.as_ref();
 
     let content = std::fs::read_to_string(path)
@@ -88,7 +88,7 @@ pub fn from_toml_file(path: impl AsRef<Path>) -> Result<ServerConfig> {
 /// # Errors
 ///
 /// Returns `KreuzbergError::Validation` if the file doesn't exist or is invalid YAML.
-pub fn from_yaml_file(path: impl AsRef<Path>) -> Result<ServerConfig> {
+pub(crate) fn from_yaml_file(path: impl AsRef<Path>) -> Result<ServerConfig> {
     let path = path.as_ref();
 
     let content = std::fs::read_to_string(path)
@@ -109,7 +109,7 @@ pub fn from_yaml_file(path: impl AsRef<Path>) -> Result<ServerConfig> {
 /// # Errors
 ///
 /// Returns `KreuzbergError::Validation` if the file doesn't exist or is invalid JSON.
-pub fn from_json_file(path: impl AsRef<Path>) -> Result<ServerConfig> {
+pub(crate) fn from_json_file(path: impl AsRef<Path>) -> Result<ServerConfig> {
     let path = path.as_ref();
 
     let content = std::fs::read_to_string(path)

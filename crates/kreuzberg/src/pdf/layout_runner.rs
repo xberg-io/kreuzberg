@@ -29,11 +29,11 @@ pub struct PdfLayoutBBox {
 }
 
 impl PdfLayoutBBox {
-    pub fn width(&self) -> f32 {
+    pub(crate) fn width(&self) -> f32 {
         (self.right - self.left).max(0.0)
     }
 
-    pub fn height(&self) -> f32 {
+    pub(crate) fn height(&self) -> f32 {
         (self.top - self.bottom).max(0.0)
     }
 }
@@ -84,58 +84,58 @@ pub struct LayoutTimingReport {
 }
 
 impl LayoutTimingReport {
-    pub fn avg_render_ms(&self) -> f64 {
+    pub(crate) fn avg_render_ms(&self) -> f64 {
         if self.per_page.is_empty() {
             return 0.0;
         }
         self.per_page.iter().map(|p| p.render_ms).sum::<f64>() / self.per_page.len() as f64
     }
 
-    pub fn avg_inference_ms(&self) -> f64 {
+    pub(crate) fn avg_inference_ms(&self) -> f64 {
         if self.per_page.is_empty() {
             return 0.0;
         }
         self.per_page.iter().map(|p| p.inference_ms).sum::<f64>() / self.per_page.len() as f64
     }
 
-    pub fn avg_preprocess_ms(&self) -> f64 {
+    pub(crate) fn avg_preprocess_ms(&self) -> f64 {
         if self.per_page.is_empty() {
             return 0.0;
         }
         self.per_page.iter().map(|p| p.preprocess_ms).sum::<f64>() / self.per_page.len() as f64
     }
 
-    pub fn avg_onnx_ms(&self) -> f64 {
+    pub(crate) fn avg_onnx_ms(&self) -> f64 {
         if self.per_page.is_empty() {
             return 0.0;
         }
         self.per_page.iter().map(|p| p.onnx_ms).sum::<f64>() / self.per_page.len() as f64
     }
 
-    pub fn avg_postprocess_ms(&self) -> f64 {
+    pub(crate) fn avg_postprocess_ms(&self) -> f64 {
         if self.per_page.is_empty() {
             return 0.0;
         }
         self.per_page.iter().map(|p| p.postprocess_ms).sum::<f64>() / self.per_page.len() as f64
     }
 
-    pub fn total_inference_ms(&self) -> f64 {
+    pub(crate) fn total_inference_ms(&self) -> f64 {
         self.per_page.iter().map(|p| p.inference_ms).sum()
     }
 
-    pub fn total_render_ms(&self) -> f64 {
+    pub(crate) fn total_render_ms(&self) -> f64 {
         self.per_page.iter().map(|p| p.render_ms).sum()
     }
 
-    pub fn total_preprocess_ms(&self) -> f64 {
+    pub(crate) fn total_preprocess_ms(&self) -> f64 {
         self.per_page.iter().map(|p| p.preprocess_ms).sum()
     }
 
-    pub fn total_onnx_ms(&self) -> f64 {
+    pub(crate) fn total_onnx_ms(&self) -> f64 {
         self.per_page.iter().map(|p| p.onnx_ms).sum()
     }
 
-    pub fn total_postprocess_ms(&self) -> f64 {
+    pub(crate) fn total_postprocess_ms(&self) -> f64 {
         self.per_page.iter().map(|p| p.postprocess_ms).sum()
     }
 }
@@ -210,7 +210,7 @@ thread_local! {
 /// This avoids rendering all pages into memory at once. It yields `PageLayoutResult`,
 /// the pre-rendered image, and the timings for that batch via a callback.
 #[tracing::instrument(skip_all)]
-pub fn detect_layout_for_document_batched<F>(
+pub(crate) fn detect_layout_for_document_batched<F>(
     pdf_bytes: &[u8],
     engine: &mut LayoutEngine,
     batch_size: usize,
@@ -468,7 +468,7 @@ where
 /// Under the hood, this uses batched layout detection to prevent holding too many
 /// full-resolution page images in memory simultaneously before detection.
 #[tracing::instrument(skip_all)]
-pub fn detect_layout_for_document(
+pub(crate) fn detect_layout_for_document(
     pdf_bytes: &[u8],
     engine: &mut LayoutEngine,
 ) -> Result<(Vec<PageLayoutResult>, LayoutTimingReport, Vec<image::DynamicImage>)> {
@@ -512,7 +512,7 @@ pub fn detect_layout_for_document(
 /// Returns pixel-space [`DetectionResult`]s — no PDF coordinate conversion.
 /// Use this when images are already available (e.g., from the OCR rendering
 /// path) to avoid redundant PDF re-rendering.
-pub fn detect_layout_for_images(
+pub(crate) fn detect_layout_for_images(
     images: &[image::DynamicImage],
     engine: &mut LayoutEngine,
 ) -> Result<Vec<DetectionResult>> {

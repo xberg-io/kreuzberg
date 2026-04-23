@@ -1,0 +1,15 @@
+{
+	"id": "cache_key_validate_empty",
+	"category": "cache_operations",
+	"description": "Validate empty cache key (should return false but not error)",
+	"tags": ["cache", "validation", "empty"],
+	"call": "validate_cache_key",
+	"input": {
+		"key": ""
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	]
+}

@@ -1,0 +1,19 @@
+{
+	"id": "validate_dpi_valid",
+	"description": "Accept valid DPI in OCR config",
+	"tags": ["validation", "ocr", "dpi"],
+	"call": "extract_file_sync",
+	"input": {
+		"path": "pdf/fake_memo.pdf",
+		"config": {
+			"ocr": {
+				"dpi": 300
+			}
+		}
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	]
+}

@@ -17,11 +17,9 @@ mod parser;
 mod tables;
 
 // Re-export public functions for backward compatibility
-pub use encoding::{hex_digit_to_u8, parse_hex_byte, parse_rtf_control_word};
 pub use formatting::normalize_whitespace;
-pub use images::{extract_image_metadata, extract_pict_image};
-pub use metadata::{extract_rtf_metadata, parse_rtf_datetime};
-pub use parser::{ParagraphMeta, extract_rtf_formatting, extract_text_from_rtf, spans_to_annotations};
+pub(crate) use metadata::extract_rtf_metadata;
+pub(crate) use parser::{extract_rtf_formatting, extract_text_from_rtf, spans_to_annotations};
 
 use crate::Result;
 use crate::core::config::ExtractionConfig;
@@ -42,7 +40,7 @@ pub struct RtfExtractor;
 
 impl RtfExtractor {
     /// Create a new RTF extractor.
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self
     }
 }

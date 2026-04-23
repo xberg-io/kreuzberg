@@ -90,7 +90,7 @@ pub enum MathNode {
 
 /// Collect an `m:oMathPara` subtree and convert to LaTeX (display math).
 /// The reader should be positioned right after the `<m:oMathPara>` start tag.
-pub fn collect_and_convert_omath_para(reader: &mut Reader<&[u8]>) -> String {
+pub(crate) fn collect_and_convert_omath_para(reader: &mut Reader<&[u8]>) -> String {
     let children = collect_children(reader, b"m:oMathPara");
     // An oMathPara may contain multiple oMath elements; render each.
     let mut parts = Vec::new();
@@ -113,7 +113,7 @@ pub fn collect_and_convert_omath_para(reader: &mut Reader<&[u8]>) -> String {
 
 /// Collect an `m:oMath` subtree and convert to LaTeX (inline math).
 /// The reader should be positioned right after the `<m:oMath>` start tag.
-pub fn collect_and_convert_omath(reader: &mut Reader<&[u8]>) -> String {
+pub(crate) fn collect_and_convert_omath(reader: &mut Reader<&[u8]>) -> String {
     let children = collect_children(reader, b"m:oMath");
     render_nodes(&children)
 }

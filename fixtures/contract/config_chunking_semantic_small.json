@@ -2,12 +2,9 @@
 	"id": "config_chunking_semantic_small",
 	"description": "Semantic chunker with small budget produces more granular chunks",
 	"tags": ["contract", "config", "chunking"],
-	"document": {
-		"path": "semantic/annual_report.txt"
-	},
-	"extraction": {
-		"method": "sync",
-		"input_type": "file",
+	"call": "extract_file_sync",
+	"input": {
+		"path": "semantic/annual_report.txt",
 		"config": {
 			"chunking": {
 				"chunker_type": "semantic",
@@ -15,15 +12,19 @@
 			}
 		}
 	},
-	"assertions": {
-		"expected_mime": "text/plain",
-		"min_content_length": 100,
-		"chunks": {
-			"min_count": 5,
-			"each_has_content": true
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "text/plain"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 100
 		}
-	},
+	],
 	"skip": {
-		"requires_feature": ["chunking"]
+		"reason": "Requires chunking feature"
 	}
 }

@@ -1,0 +1,9 @@
+{
+	"id": "render_html_styled",
+	"category": "rendering",
+	"description": "Render HTML preserving structure",
+	"tags": ["rendering"],
+	"call": "render_html",
+	"input": { "doc": "<h1>Heading</h1><p><strong>bold</strong></p>" },
+	"assertions": [{ "type": "not_error" }, { "type": "contains", "field": "content", "value": "Heading" }]
+}

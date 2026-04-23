@@ -243,4 +243,23 @@ GEMINI.md
 .remote-cache/
 .alef/
 .gemini/
+*.pyd
+.gems/
+vendor/bundle/
+*.h.bak
+*.test
+*.class
+bin/
+obj/
+*.nupkg
+pkg/
+
+# BEGIN ai-rulez (DO NOT EDIT - managed by ai-rulez)
+.agents/
+.claude/
+.codex/
+.gemini/
+AGENTS.md
+CLAUDE.md
 GEMINI.md
+# END ai-rulez

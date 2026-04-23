@@ -2,20 +2,23 @@
 	"id": "office_hwp_basic",
 	"category": "office",
 	"description": "Hangul Word Processor (.hwp) text extraction.",
-	"document": {
+	"input": {
 		"path": "hwp/converted_output.hwp",
 		"media_type": "application/x-hwp"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": "application/x-hwp",
-		"min_content_length": 10
-	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "application/x-hwp"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 10
+		}
+	],
 	"skip": {
-		"if_document_missing": true,
-		"requires_feature": ["office"],
-		"notes": "Requires the office feature."
+		"reason": "Requires features: office; Skip if document missing; Requires the office feature."
 	}
 }

@@ -54,7 +54,7 @@ pub struct PoolMetrics {
 #[cfg(feature = "pool-metrics")]
 impl PoolMetrics {
     /// Create a new metrics tracker with all counters at zero.
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         PoolMetrics {
             total_acquires: AtomicUsize::new(0),
             total_cache_hits: AtomicUsize::new(0),
@@ -64,7 +64,7 @@ impl PoolMetrics {
     }
 
     /// Calculate the cache hit rate as a percentage (0.0-100.0).
-    pub fn hit_rate(&self) -> f64 {
+    pub(crate) fn hit_rate(&self) -> f64 {
         let acquires = self.total_acquires.load(Ordering::Relaxed);
         if acquires == 0 {
             return 0.0;
@@ -73,7 +73,7 @@ impl PoolMetrics {
     }
 
     /// Get all metrics as a struct for reporting.
-    pub fn snapshot(&self) -> PoolMetricsSnapshot {
+    pub(crate) fn snapshot(&self) -> PoolMetricsSnapshot {
         PoolMetricsSnapshot {
             total_acquires: self.total_acquires.load(Ordering::Relaxed),
             total_cache_hits: self.total_cache_hits.load(Ordering::Relaxed),
@@ -83,7 +83,7 @@ impl PoolMetrics {
     }
 
     /// Reset all metrics to zero.
-    pub fn reset(&self) {
+    pub(crate) fn reset(&self) {
         self.total_acquires.store(0, Ordering::Relaxed);
         self.total_cache_hits.store(0, Ordering::Relaxed);
         self.peak_items_stored.store(0, Ordering::Relaxed);
@@ -151,7 +151,7 @@ impl<T: Recyclable> Pool<T> {
     ///
     /// let pool = Pool::new(|| String::new(), 10);
     /// ```
-    pub fn new<F>(factory: F, max_size: usize) -> Self
+    pub(crate) fn new<F>(factory: F, max_size: usize) -> Self
     where
         F: Fn() -> T + Send + Sync + 'static,
     {
@@ -211,14 +211,14 @@ impl<T: Recyclable> Pool<T> {
     }
 
     /// Clear the pool, discarding all pooled objects.
-    pub fn clear(&self) -> Result<(), PoolError> {
+    pub(crate) fn clear(&self) -> Result<(), PoolError> {
         self.objects.lock().clear();
         Ok(())
     }
 
     /// Get a reference to the pool metrics (only available with `pool-metrics` feature).
     #[cfg(feature = "pool-metrics")]
-    pub fn metrics(&self) -> &PoolMetrics {
+    pub(crate) fn metrics(&self) -> &PoolMetrics {
         &self.metrics
     }
 }

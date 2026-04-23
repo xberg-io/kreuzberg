@@ -1,0 +1,9 @@
+{
+	"id": "embed_normalize_unit",
+	"category": "embed_extra",
+	"description": "Normalize unit vector",
+	"tags": ["embedding"],
+	"call": "normalize_vec",
+	"input": { "data": [1.0, 0.0, 0.0] },
+	"assertions": [{ "type": "not_error" }]
+}

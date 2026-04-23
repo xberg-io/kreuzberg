@@ -29,7 +29,7 @@ use crate::core::config::LlmConfig;
 ///
 /// - `KreuzbergError::Embedding` if the API call fails or returns unexpected data
 /// - `KreuzbergError::MissingDependency` if the liter-llm client cannot be created
-pub async fn embed_via_llm<T: AsRef<str>>(
+pub(crate) async fn embed_via_llm<T: AsRef<str>>(
     texts: &[T],
     config: &LlmConfig,
     normalize: bool,

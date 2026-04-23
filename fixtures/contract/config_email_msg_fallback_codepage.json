@@ -1,21 +1,27 @@
 {
 	"id": "config_email_msg_fallback_codepage",
 	"category": "contract",
-	"tags": ["contract", "config", "email"],
 	"description": "Tests MSG extraction with custom fallback codepage for Cyrillic",
-	"document": {
+	"tags": ["contract", "config", "email"],
+	"input": {
 		"path": "email/fake_email.msg",
-		"media_type": "application/vnd.ms-outlook"
-	},
-	"extraction": {
+		"media_type": "application/vnd.ms-outlook",
 		"config": {
 			"email": {
 				"msg_fallback_codepage": 1251
 			}
 		}
 	},
-	"assertions": {
-		"expected_mime": "application/vnd.ms-outlook",
-		"min_content_length": 10
-	}
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "application/vnd.ms-outlook"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 10
+		}
+	]
 }

@@ -1,5 +1,5 @@
 use crate::error::{KreuzbergError, Result};
-use crate::types::{ExtractionConfig, ImagePreprocessingMetadata};
+use crate::types::{ImageDpiConfig as ExtractionConfig, ImagePreprocessingMetadata};
 use image::{DynamicImage, ImageBuffer, Rgb};
 
 use super::dpi::calculate_smart_dpi;
@@ -28,7 +28,7 @@ pub struct NormalizeResult {
 ///
 /// # Returns
 /// * `NormalizeResult` containing processed image data and metadata
-pub fn normalize_image_dpi(
+pub(crate) fn normalize_image_dpi(
     rgb_data: &[u8],
     width: usize,
     height: usize,

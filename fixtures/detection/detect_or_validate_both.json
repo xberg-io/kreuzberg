@@ -1,0 +1,12 @@
+{
+	"id": "detect_or_validate_both",
+	"category": "detection",
+	"description": "detect_or_validate with both",
+	"tags": ["mime_detection"],
+	"call": "detect_or_validate",
+	"input": {
+		"path": "file.pdf",
+		"mime_type": "application/pdf"
+	},
+	"assertions": [{ "type": "not_error" }]
+}

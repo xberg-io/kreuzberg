@@ -29,7 +29,7 @@ pub struct BibtexExtractor;
 
 impl BibtexExtractor {
     /// Create a new BibTeX extractor.
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self
     }
 }

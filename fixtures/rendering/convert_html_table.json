@@ -1,0 +1,20 @@
+{
+	"id": "convert_html_table",
+	"category": "rendering",
+	"description": "Convert HTML table to Markdown table format",
+	"tags": ["html_to_markdown", "table", "conversion"],
+	"call": "convert_html_to_markdown",
+	"input": {
+		"html": "<table><tr><th>Column A</th><th>Column B</th></tr><tr><td>1</td><td>2</td></tr><tr><td>3</td><td>4</td></tr></table>"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "contains",
+			"field": "content",
+			"value": "|"
+		}
+	]
+}

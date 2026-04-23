@@ -1,0 +1,20 @@
+{
+	"id": "underline_basic",
+	"category": "markup",
+	"description": "Create underline formatting",
+	"tags": ["markup", "formatting"],
+	"call": "underline",
+	"input": {
+		"text": "underlined"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "contains",
+			"field": "result",
+			"value": "underlined"
+		}
+	]
+}

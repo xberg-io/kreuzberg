@@ -44,7 +44,7 @@ pub struct DocumentStructureBuilder {
 
 impl DocumentStructureBuilder {
     /// Create a new empty builder.
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self {
             doc: DocumentStructure::new(),
             section_stack: Vec::new(),
@@ -54,7 +54,7 @@ impl DocumentStructureBuilder {
     }
 
     /// Create a builder with pre-allocated node capacity.
-    pub fn with_capacity(capacity: usize) -> Self {
+    pub(crate) fn with_capacity(capacity: usize) -> Self {
         Self {
             doc: DocumentStructure::with_capacity(capacity),
             section_stack: Vec::new(),
@@ -64,13 +64,13 @@ impl DocumentStructureBuilder {
     }
 
     /// Set the source format identifier (e.g. "docx", "html", "pptx").
-    pub fn source_format(mut self, format: impl Into<String>) -> Self {
+    pub(crate) fn source_format(mut self, format: impl Into<String>) -> Self {
         self.doc.source_format = Some(format.into());
         self
     }
 
     /// Consume the builder and return the constructed `DocumentStructure`.
-    pub fn build(self) -> DocumentStructure {
+    pub(crate) fn build(self) -> DocumentStructure {
         debug_assert!(
             self.doc.validate().is_ok(),
             "DocumentStructure validation failed: {:?}",
@@ -89,7 +89,13 @@ impl DocumentStructureBuilder {
     /// pushed after this heading will be nested under its `Group` node.
     ///
     /// Returns the `NodeIndex` of the `Group` node (not the heading child).
-    pub fn push_heading(&mut self, level: u8, text: &str, page: Option<u32>, bbox: Option<BoundingBox>) -> NodeIndex {
+    pub(crate) fn push_heading(
+        &mut self,
+        level: u8,
+        text: &str,
+        page: Option<u32>,
+        bbox: Option<BoundingBox>,
+    ) -> NodeIndex {
         // Pop sections at same or deeper level
         while self.section_stack.last().is_some_and(|(l, _)| *l >= level) {
             self.section_stack.pop();
@@ -127,7 +133,7 @@ impl DocumentStructureBuilder {
     // ========================================================================
 
     /// Push a paragraph node. Nested under current section if one exists.
-    pub fn push_paragraph(
+    pub(crate) fn push_paragraph(
         &mut self,
         text: &str,
         annotations: Vec<TextAnnotation>,
@@ -139,13 +145,13 @@ impl DocumentStructureBuilder {
     }
 
     /// Push a list container. Returns the `NodeIndex` to use with `push_list_item`.
-    pub fn push_list(&mut self, ordered: bool, page: Option<u32>) -> NodeIndex {
+    pub(crate) fn push_list(&mut self, ordered: bool, page: Option<u32>) -> NodeIndex {
         let content = NodeContent::List { ordered };
         self.push_body_node(content, page, None, vec![])
     }
 
     /// Push a list item as a child of the given list node.
-    pub fn push_list_item(&mut self, list: NodeIndex, text: &str, page: Option<u32>) -> NodeIndex {
+    pub(crate) fn push_list_item(&mut self, list: NodeIndex, text: &str, page: Option<u32>) -> NodeIndex {
         let content = NodeContent::ListItem { text: text.to_string() };
         let idx = self.push_node_raw(content, page, None, ContentLayer::Body, vec![]);
         self.doc.add_child(list, idx);
@@ -153,7 +159,7 @@ impl DocumentStructureBuilder {
     }
 
     /// Push a table node with a structured grid.
-    pub fn push_table(&mut self, grid: TableGrid, page: Option<u32>, bbox: Option<BoundingBox>) -> NodeIndex {
+    pub(crate) fn push_table(&mut self, grid: TableGrid, page: Option<u32>, bbox: Option<BoundingBox>) -> NodeIndex {
         let content = NodeContent::Table { grid };
         self.push_body_node(content, page, bbox, vec![])
     }
@@ -161,13 +167,13 @@ impl DocumentStructureBuilder {
     /// Push a table from a simple cell grid (`Vec<Vec<String>>`).
     ///
     /// Assumes the first row is the header row.
-    pub fn push_table_from_cells(&mut self, cells: &[Vec<String>], page: Option<u32>) -> NodeIndex {
+    pub(crate) fn push_table_from_cells(&mut self, cells: &[Vec<String>], page: Option<u32>) -> NodeIndex {
         let grid = cells_to_grid(cells);
         self.push_table(grid, page, None)
     }
 
     /// Push a code block.
-    pub fn push_code(&mut self, text: &str, language: Option<&str>, page: Option<u32>) -> NodeIndex {
+    pub(crate) fn push_code(&mut self, text: &str, language: Option<&str>, page: Option<u32>) -> NodeIndex {
         let content = NodeContent::Code {
             text: text.to_string(),
             language: language.map(|s| s.to_string()),
@@ -176,13 +182,13 @@ impl DocumentStructureBuilder {
     }
 
     /// Push a math formula node.
-    pub fn push_formula(&mut self, text: &str, page: Option<u32>) -> NodeIndex {
+    pub(crate) fn push_formula(&mut self, text: &str, page: Option<u32>) -> NodeIndex {
         let content = NodeContent::Formula { text: text.to_string() };
         self.push_body_node(content, page, None, vec![])
     }
 
     /// Push an image reference node.
-    pub fn push_image(
+    pub(crate) fn push_image(
         &mut self,
         description: Option<&str>,
         image_index: Option<u32>,
@@ -198,7 +204,7 @@ impl DocumentStructureBuilder {
     }
 
     /// Push an image node with source URL.
-    pub fn push_image_with_src(
+    pub(crate) fn push_image_with_src(
         &mut self,
         description: Option<&str>,
         src: Option<&str>,
@@ -218,7 +224,7 @@ impl DocumentStructureBuilder {
     ///
     /// Subsequent body nodes will be parented under this quote until
     /// [`exit_container`](Self::exit_container) is called.
-    pub fn push_quote(&mut self, page: Option<u32>) -> NodeIndex {
+    pub(crate) fn push_quote(&mut self, page: Option<u32>) -> NodeIndex {
         let content = NodeContent::Quote;
         let idx = self.push_body_node(content, page, None, vec![]);
         self.container_stack.push(idx);
@@ -226,13 +232,13 @@ impl DocumentStructureBuilder {
     }
 
     /// Push a footnote node.
-    pub fn push_footnote(&mut self, text: &str, page: Option<u32>) -> NodeIndex {
+    pub(crate) fn push_footnote(&mut self, text: &str, page: Option<u32>) -> NodeIndex {
         let content = NodeContent::Footnote { text: text.to_string() };
         self.push_node_raw(content, page, None, ContentLayer::Footnote, vec![])
     }
 
     /// Push a page break marker (always root-level, never nested under sections).
-    pub fn push_page_break(&mut self, page: Option<u32>) -> NodeIndex {
+    pub(crate) fn push_page_break(&mut self, page: Option<u32>) -> NodeIndex {
         let content = NodeContent::PageBreak;
         // PageBreak is always root-level
         self.push_node_raw(content, page, None, ContentLayer::Body, vec![])
@@ -248,7 +254,7 @@ impl DocumentStructureBuilder {
     /// fresh. Subsequent body nodes will be parented under this slide
     /// until [`exit_container`](Self::exit_container) is called or a new
     /// slide is pushed.
-    pub fn push_slide(&mut self, number: u32, title: Option<&str>) -> NodeIndex {
+    pub(crate) fn push_slide(&mut self, number: u32, title: Option<&str>) -> NodeIndex {
         // Clear stacks for each new slide — slides are top-level containers
         self.section_stack.clear();
         self.container_stack.clear();
@@ -263,13 +269,13 @@ impl DocumentStructureBuilder {
     }
 
     /// Push a definition list container. Use `push_definition_item` for entries.
-    pub fn push_definition_list(&mut self, page: Option<u32>) -> NodeIndex {
+    pub(crate) fn push_definition_list(&mut self, page: Option<u32>) -> NodeIndex {
         let content = NodeContent::DefinitionList;
         self.push_body_node(content, page, None, vec![])
     }
 
     /// Push a definition item as a child of the given definition list.
-    pub fn push_definition_item(
+    pub(crate) fn push_definition_item(
         &mut self,
         list: NodeIndex,
         term: &str,
@@ -286,7 +292,7 @@ impl DocumentStructureBuilder {
     }
 
     /// Push a citation / bibliographic reference.
-    pub fn push_citation(&mut self, key: &str, text: &str, page: Option<u32>) -> NodeIndex {
+    pub(crate) fn push_citation(&mut self, key: &str, text: &str, page: Option<u32>) -> NodeIndex {
         let content = NodeContent::Citation {
             key: key.to_string(),
             text: text.to_string(),
@@ -298,7 +304,7 @@ impl DocumentStructureBuilder {
     ///
     /// Subsequent body nodes will be parented under this admonition until
     /// [`exit_container`](Self::exit_container) is called.
-    pub fn push_admonition(&mut self, kind: &str, title: Option<&str>, page: Option<u32>) -> NodeIndex {
+    pub(crate) fn push_admonition(&mut self, kind: &str, title: Option<&str>, page: Option<u32>) -> NodeIndex {
         let content = NodeContent::Admonition {
             kind: kind.to_string(),
             title: title.map(|s| s.to_string()),
@@ -309,7 +315,7 @@ impl DocumentStructureBuilder {
     }
 
     /// Push a raw block preserved verbatim from the source format.
-    pub fn push_raw_block(&mut self, format: &str, content: &str, page: Option<u32>) -> NodeIndex {
+    pub(crate) fn push_raw_block(&mut self, format: &str, content: &str, page: Option<u32>) -> NodeIndex {
         let node_content = NodeContent::RawBlock {
             format: format.to_string(),
             content: content.to_string(),
@@ -318,7 +324,7 @@ impl DocumentStructureBuilder {
     }
 
     /// Push a metadata block (email headers, frontmatter key-value pairs).
-    pub fn push_metadata_block(&mut self, entries: Vec<(String, String)>, page: Option<u32>) -> NodeIndex {
+    pub(crate) fn push_metadata_block(&mut self, entries: Vec<(String, String)>, page: Option<u32>) -> NodeIndex {
         let content = NodeContent::MetadataBlock { entries };
         self.push_body_node(content, page, None, vec![])
     }
@@ -328,13 +334,13 @@ impl DocumentStructureBuilder {
     // ========================================================================
 
     /// Push a header paragraph (running page header).
-    pub fn push_header(&mut self, text: &str, page: Option<u32>) -> NodeIndex {
+    pub(crate) fn push_header(&mut self, text: &str, page: Option<u32>) -> NodeIndex {
         let content = NodeContent::Paragraph { text: text.to_string() };
         self.push_node_raw(content, page, None, ContentLayer::Header, vec![])
     }
 
     /// Push a footer paragraph (running page footer).
-    pub fn push_footer(&mut self, text: &str, page: Option<u32>) -> NodeIndex {
+    pub(crate) fn push_footer(&mut self, text: &str, page: Option<u32>) -> NodeIndex {
         let content = NodeContent::Paragraph { text: text.to_string() };
         self.push_node_raw(content, page, None, ContentLayer::Footer, vec![])
     }
@@ -344,20 +350,20 @@ impl DocumentStructureBuilder {
     // ========================================================================
 
     /// Set format-specific attributes on an existing node.
-    pub fn set_attributes(&mut self, index: NodeIndex, attrs: AHashMap<String, String>) {
+    pub(crate) fn set_attributes(&mut self, index: NodeIndex, attrs: AHashMap<String, String>) {
         if let Some(node) = self.doc.nodes.get_mut(index.0 as usize) {
             node.attributes = Some(attrs.into_iter().collect());
         }
     }
 
     /// Add a child node to an existing parent (for container nodes like Quote, Slide, Admonition).
-    pub fn add_child(&mut self, parent: NodeIndex, child: NodeIndex) {
+    pub(crate) fn add_child(&mut self, parent: NodeIndex, child: NodeIndex) {
         self.doc.add_child(parent, child);
     }
 
     /// Push a raw `NodeContent` with full control over content layer and annotations.
     /// Nests under current section unless the content type is a root-level type.
-    pub fn push_raw(
+    pub(crate) fn push_raw(
         &mut self,
         content: NodeContent,
         page: Option<u32>,
@@ -384,7 +390,7 @@ impl DocumentStructureBuilder {
     }
 
     /// Reset the section stack (e.g. when starting a new page).
-    pub fn clear_sections(&mut self) {
+    pub(crate) fn clear_sections(&mut self) {
         self.section_stack.clear();
     }
 
@@ -392,7 +398,7 @@ impl DocumentStructureBuilder {
     ///
     /// Subsequent body nodes will be parented under this container
     /// until [`exit_container`](Self::exit_container) is called.
-    pub fn enter_container(&mut self, container: NodeIndex) {
+    pub(crate) fn enter_container(&mut self, container: NodeIndex) {
         self.container_stack.push(container);
     }
 
@@ -400,7 +406,7 @@ impl DocumentStructureBuilder {
     ///
     /// Body nodes will resume parenting under the next container on the
     /// stack, or under the section stack if the container stack is empty.
-    pub fn exit_container(&mut self) {
+    pub(crate) fn exit_container(&mut self) {
         self.container_stack.pop();
     }
 

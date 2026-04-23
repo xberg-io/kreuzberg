@@ -15,7 +15,6 @@ mod json;
 mod markdown;
 mod plain;
 
-pub use comrak_bridge::build_comrak_ast;
 pub use djot::render_djot;
 pub use html::render_html;
 #[cfg(feature = "html")]

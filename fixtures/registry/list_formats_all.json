@@ -1,0 +1,12 @@
+{
+	"id": "list_formats_all",
+	"category": "registry_operations",
+	"description": "List all supported formats and their extensions",
+	"tags": ["registry", "formats", "list"],
+	"call": "list_supported_formats",
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	]
+}

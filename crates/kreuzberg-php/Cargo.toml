@@ -1,36 +1,16 @@
 [package]
 name = "kreuzberg-php"
-version.workspace = true
-edition.workspace = true
-rust-version.workspace = true
-authors.workspace = true
-description = "PHP bindings for Kreuzberg document intelligence library"
-license.workspace = true
-repository = "https://github.com/kreuzberg-dev/kreuzberg"
-homepage = "https://kreuzberg.dev"
-keywords = ["php", "ffi", "document", "extraction", "bindings"]
-categories = ["api-bindings", "text-processing"]
-
-[package.metadata.cargo-machete]
-ignored = ["serde"]
+version = "4.9.5"
+edition = "2024"
+license = "Elastic-2.0"
 
 [lib]
-name = "kreuzberg_php"
 crate-type = ["cdylib"]
-test = false
-
-[features]
-default = []
 
 [dependencies]
-ahash = { workspace = true }
-
-ctor = { workspace = true }
+async-trait = "0.1"
 ext-php-rs = "0.15"
-kreuzberg = { workspace = true, features = ["bundled-pdfium", "full"] }
-num_cpus = { workspace = true }
-once_cell = { workspace = true }
-parking_lot = { workspace = true }
-serde = { workspace = true }
-serde_json = { workspace = true }
-tokio = { workspace = true }
+kreuzberg = { path = "../kreuzberg", features = ["full", "pdf", "ocr", "paddle-ocr", "layout-detection", "embeddings", "chunking", "keywords-yake", "keywords-rake", "language-detection", "html", "tree-sitter", "office", "email", "archives", "stopwords", "auto-rotate", "tokio-runtime", "api", "mcp", "liter-llm"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["full"] }

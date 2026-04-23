@@ -1,21 +1,27 @@
 {
 	"id": "smoke_cache_namespace",
 	"category": "smoke",
-	"tags": ["smoke", "cache", "namespace"],
 	"description": "Smoke test: Extraction with cache namespace and TTL configuration",
-	"document": {
+	"tags": ["smoke", "cache", "namespace"],
+	"input": {
 		"path": "text/report.txt",
-		"media_type": "text/plain"
-	},
-	"extraction": {
+		"media_type": "text/plain",
 		"config": {
 			"cache_namespace": "test_tenant",
 			"cache_ttl_secs": 3600,
 			"use_cache": true
 		}
 	},
-	"assertions": {
-		"expected_mime": "text/plain",
-		"min_content_length": 5
-	}
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "text/plain"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 5
+		}
+	]
 }

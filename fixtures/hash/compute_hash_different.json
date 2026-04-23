@@ -1,0 +1,9 @@
+{
+	"id": "compute_hash_different",
+	"category": "hash",
+	"description": "Hash different content",
+	"tags": ["hash"],
+	"call": "compute_hash",
+	"input": { "data": "different content" },
+	"assertions": [{ "type": "not_error" }]
+}

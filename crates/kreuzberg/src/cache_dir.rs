@@ -11,7 +11,7 @@ use std::path::PathBuf;
 /// Uses the same resolution order as [`resolve_cache_dir`] but returns
 /// the top-level kreuzberg cache directory.
 #[allow(dead_code)]
-pub fn resolve_cache_base() -> PathBuf {
+pub(crate) fn resolve_cache_base() -> PathBuf {
     if let Ok(env_path) = std::env::var("KREUZBERG_CACHE_DIR") {
         return PathBuf::from(env_path);
     }
@@ -36,7 +36,7 @@ pub fn resolve_cache_base() -> PathBuf {
 ///    - Windows: `%LOCALAPPDATA%/kreuzberg/{module}`
 /// 3. Home directory fallback: `~/.cache/kreuzberg/{module}`
 /// 4. CWD-relative fallback: `.kreuzberg/{module}` (last resort, e.g. no HOME set)
-pub fn resolve_cache_dir(module: &str) -> PathBuf {
+pub(crate) fn resolve_cache_dir(module: &str) -> PathBuf {
     if let Ok(env_path) = std::env::var("KREUZBERG_CACHE_DIR") {
         return PathBuf::from(env_path).join(module);
     }

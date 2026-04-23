@@ -2,19 +2,22 @@
 	"id": "image_gif_basic",
 	"category": "image",
 	"description": "GIF image extraction via OCR.",
-	"document": {
+	"input": {
 		"path": "images_extra/ocr_image.gif",
-		"media_type": "image/gif",
-		"requires_external_tool": ["tesseract"]
+		"media_type": "image/gif"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": "image/gif",
-		"content_not_empty": true
-	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "image/gif"
+		},
+		{
+			"type": "not_empty",
+			"field": "content"
+		}
+	],
 	"skip": {
-		"requires_feature": ["tesseract"]
+		"reason": "Requires features: tesseract"
 	}
 }

@@ -1,0 +1,19 @@
+{
+	"id": "doc_metadata_docx",
+	"category": "document",
+	"description": "Extract DOCX metadata",
+	"tags": ["metadata", "docx"],
+	"call": "extract_file_sync",
+	"input": {
+		"path": "vendored/markitdown/test.docx"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "not_empty",
+			"field": "metadata"
+		}
+	]
+}

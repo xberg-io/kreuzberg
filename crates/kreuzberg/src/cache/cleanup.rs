@@ -93,12 +93,12 @@ pub(super) fn scan_cache_directory(cache_dir: &str) -> Result<CacheScanResult> {
     })
 }
 
-pub fn get_cache_metadata(cache_dir: &str) -> Result<CacheStats> {
+pub(crate) fn get_cache_metadata(cache_dir: &str) -> Result<CacheStats> {
     let scan_result = scan_cache_directory(cache_dir)?;
     Ok(scan_result.stats)
 }
 
-pub fn cleanup_cache(
+pub(crate) fn cleanup_cache(
     cache_dir: &str,
     max_age_days: f64,
     max_size_mb: f64,
@@ -170,7 +170,7 @@ pub fn cleanup_cache(
     Ok((removed_count, removed_size))
 }
 
-pub fn smart_cleanup_cache(
+pub(crate) fn smart_cleanup_cache(
     cache_dir: &str,
     max_age_days: f64,
     max_size_mb: f64,
@@ -195,7 +195,7 @@ pub fn smart_cleanup_cache(
     cleanup_cache(cache_dir, max_age_days, max_size_mb, target_ratio)
 }
 
-pub fn is_cache_valid(cache_path: &str, max_age_days: f64) -> bool {
+pub(crate) fn is_cache_valid(cache_path: &str, max_age_days: f64) -> bool {
     let path = Path::new(cache_path);
 
     if !path.exists() {
@@ -217,7 +217,7 @@ pub fn is_cache_valid(cache_path: &str, max_age_days: f64) -> bool {
     }
 }
 
-pub fn clear_cache_directory(cache_dir: &str) -> Result<(usize, f64)> {
+pub(crate) fn clear_cache_directory(cache_dir: &str) -> Result<(usize, f64)> {
     let dir_path = Path::new(cache_dir);
 
     if !dir_path.exists() {
@@ -264,7 +264,7 @@ pub fn clear_cache_directory(cache_dir: &str) -> Result<(usize, f64)> {
     Ok((removed_count, removed_size))
 }
 
-pub fn batch_cleanup_caches(
+pub(crate) fn batch_cleanup_caches(
     cache_dirs: &[&str],
     max_age_days: f64,
     max_size_mb: f64,

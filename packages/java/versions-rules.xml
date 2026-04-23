@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ruleset xmlns="http://mojo.codehaus.org/versions-maven-plugin/rules/2.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://mojo.codehaus.org/versions-maven-plugin/rules/2.0.0 https://mojo.codehaus.org/versions-maven-plugin/rules-2.0.0.xsd">
-    <ignoreVersions>
-        <ignoreVersion type="regex">(?i).*[.-](alpha|beta|rc|cr|milestone|preview|ea|eap|snapshot).*</ignoreVersion>
-        <ignoreVersion type="regex">(?i).*[.-]m\\d+.*</ignoreVersion>
-    </ignoreVersions>
-</ruleset>

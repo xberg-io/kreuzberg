@@ -1,23 +1,31 @@
 {
 	"id": "code_shebang_detection",
 	"category": "code",
-	"tags": ["code", "shebang", "tree-sitter"],
 	"description": "Test language detection from shebang line via bytes input",
-	"document": {
+	"tags": ["code", "shebang", "tree-sitter"],
+	"call": "extract_bytes_sync",
+	"input": {
 		"path": "code/script.sh",
 		"media_type": "text/x-source-code"
 	},
-	"extraction": {
-		"method": "sync",
-		"input_type": "bytes",
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": "text/x-source-code",
-		"min_content_length": 10,
-		"content_contains_all": ["build", "clean"]
-	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "text/x-source-code"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 10
+		},
+		{
+			"type": "contains_all",
+			"field": "content",
+			"values": ["build", "clean"]
+		}
+	],
 	"skip": {
-		"requires_feature": ["tree-sitter"]
+		"reason": "Requires features: tree-sitter"
 	}
 }

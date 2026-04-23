@@ -1,0 +1,16 @@
+{
+	"id": "error_render_corrupt_pdf",
+	"category": "error",
+	"description": "Error when rendering page from corrupt PDF",
+	"tags": ["error", "render", "corrupt"],
+	"call": "render_page",
+	"input": {
+		"path": "pdf/corrupt_truncated.pdf",
+		"page": 0
+	},
+	"assertions": [
+		{
+			"type": "error"
+		}
+	]
+}

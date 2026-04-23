@@ -1,0 +1,20 @@
+{
+	"id": "render_markdown_basic",
+	"category": "rendering",
+	"description": "Render HTML document to Markdown format",
+	"tags": ["markdown", "rendering", "conversion"],
+	"call": "render_markdown",
+	"input": {
+		"doc": "<h1>Heading</h1><p>Paragraph text with <strong>bold</strong> and <em>italic</em>.</p>"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 5
+		}
+	]
+}

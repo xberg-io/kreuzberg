@@ -42,6 +42,17 @@ pub enum OcrBoundingGeometry {
     },
 }
 
+impl Default for OcrBoundingGeometry {
+    fn default() -> Self {
+        OcrBoundingGeometry::Rectangle {
+            left: 0,
+            top: 0,
+            width: 0,
+            height: 0,
+        }
+    }
+}
+
 impl OcrBoundingGeometry {
     /// Convert to axis-aligned bounding box (AABB).
     ///
@@ -51,7 +62,7 @@ impl OcrBoundingGeometry {
     /// # Returns
     ///
     /// Tuple of `(left, top, width, height)` in pixels.
-    pub fn to_aabb(&self) -> (u32, u32, u32, u32) {
+    pub(crate) fn to_aabb(&self) -> (u32, u32, u32, u32) {
         match self {
             Self::Rectangle {
                 left,
@@ -70,13 +81,13 @@ impl OcrBoundingGeometry {
     }
 
     /// Get the center point of the bounding geometry.
-    pub fn center(&self) -> (f64, f64) {
+    pub(crate) fn center(&self) -> (f64, f64) {
         let (left, top, width, height) = self.to_aabb();
         (left as f64 + width as f64 / 2.0, top as f64 + height as f64 / 2.0)
     }
 
     /// Check if this geometry overlaps with another.
-    pub fn overlaps(&self, other: &Self) -> bool {
+    pub(crate) fn overlaps(&self, other: &Self) -> bool {
         let (l1, t1, w1, h1) = self.to_aabb();
         let (l2, t2, w2, h2) = other.to_aabb();
 
@@ -93,7 +104,7 @@ impl OcrBoundingGeometry {
 ///
 /// Separates detection confidence (how confident that text exists at this location)
 /// from recognition confidence (how confident about the actual text content).
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq)]
 #[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
 pub struct OcrConfidence {
     /// Detection confidence: how confident the OCR engine is that text exists here.
@@ -113,7 +124,7 @@ impl OcrConfidence {
     /// Create confidence from Tesseract's single confidence value.
     ///
     /// Tesseract provides confidence as 0-100, which we normalize to 0.0-1.0.
-    pub fn from_tesseract(confidence: f64) -> Self {
+    pub(crate) fn from_tesseract(confidence: f64) -> Self {
         Self {
             detection: None,
             recognition: (confidence / 100.0).clamp(0.0, 1.0),
@@ -125,7 +136,7 @@ impl OcrConfidence {
     /// Both scores should be in 0.0-1.0 range, but PaddleOCR may occasionally return
     /// values slightly above 1.0 due to model calibration. This method clamps both
     /// values to ensure they stay within the valid 0.0-1.0 range.
-    pub fn from_paddle(box_score: f32, text_score: f32) -> Self {
+    pub(crate) fn from_paddle(box_score: f32, text_score: f32) -> Self {
         Self {
             detection: Some((box_score as f64).clamp(0.0, 1.0)),
             recognition: (text_score as f64).clamp(0.0, 1.0),
@@ -158,7 +169,7 @@ impl OcrRotation {
     /// # Errors
     ///
     /// Returns an error if `angle_index` is not in the valid range (0-3).
-    pub fn from_paddle(angle_index: i32, angle_score: f32) -> std::result::Result<Self, String> {
+    pub(crate) fn from_paddle(angle_index: i32, angle_score: f32) -> std::result::Result<Self, String> {
         if !(0..=3).contains(&angle_index) {
             return Err(format!(
                 "Invalid angle_index: {}. Must be 0-3 (representing 0°, 90°, 180°, 270°)",
@@ -202,7 +213,7 @@ impl OcrElementLevel {
     /// Convert from Tesseract's numeric level (1-5).
     ///
     /// Tesseract levels: 1=Page, 2=Block, 3=Paragraph, 4=Line, 5=Word
-    pub fn from_tesseract_level(level: i32) -> Self {
+    pub(crate) fn from_tesseract_level(level: i32) -> Self {
         match level {
             1 => Self::Page,
             2 => Self::Block,
@@ -218,7 +229,7 @@ impl OcrElementLevel {
 ///
 /// This is the primary type for structured OCR output, preserving all information
 /// from both Tesseract and PaddleOCR backends.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
 pub struct OcrElement {
     /// The recognized text content.
@@ -259,7 +270,7 @@ fn default_page_number() -> usize {
 
 impl OcrElement {
     /// Create a new OCR element with minimal required fields.
-    pub fn new(text: impl Into<String>, geometry: OcrBoundingGeometry, confidence: OcrConfidence) -> Self {
+    pub(crate) fn new(text: impl Into<String>, geometry: OcrBoundingGeometry, confidence: OcrConfidence) -> Self {
         Self {
             text: text.into(),
             geometry,
@@ -273,31 +284,31 @@ impl OcrElement {
     }
 
     /// Set the hierarchical level.
-    pub fn with_level(mut self, level: OcrElementLevel) -> Self {
+    pub(crate) fn with_level(mut self, level: OcrElementLevel) -> Self {
         self.level = level;
         self
     }
 
     /// Set rotation information.
-    pub fn with_rotation(mut self, rotation: OcrRotation) -> Self {
+    pub(crate) fn with_rotation(mut self, rotation: OcrRotation) -> Self {
         self.rotation = Some(rotation);
         self
     }
 
     /// Set page number.
-    pub fn with_page_number(mut self, page_number: usize) -> Self {
+    pub(crate) fn with_page_number(mut self, page_number: usize) -> Self {
         self.page_number = page_number;
         self
     }
 
     /// Set parent element ID.
-    pub fn with_parent_id(mut self, parent_id: impl Into<String>) -> Self {
+    pub(crate) fn with_parent_id(mut self, parent_id: impl Into<String>) -> Self {
         self.parent_id = Some(parent_id.into());
         self
     }
 
     /// Add backend-specific metadata.
-    pub fn with_metadata(mut self, key: impl Into<String>, value: serde_json::Value) -> Self {
+    pub(crate) fn with_metadata(mut self, key: impl Into<String>, value: serde_json::Value) -> Self {
         self.backend_metadata.insert(key.into(), value);
         self
     }

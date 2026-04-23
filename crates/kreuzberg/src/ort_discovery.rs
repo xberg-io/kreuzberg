@@ -16,7 +16,7 @@ static ORT_INIT: Once = Once::new();
 ///
 /// When the `ort-bundled` feature is enabled the ORT binaries are embedded via the
 /// official Microsoft release and no system library search is needed.
-pub fn ensure_ort_available() {
+pub(crate) fn ensure_ort_available() {
     #[cfg(feature = "ort-bundled")]
     {
         tracing::debug!("ONNX Runtime is bundled; skipping system library discovery");
@@ -106,7 +106,7 @@ fn platform_candidates() -> &'static [&'static str] {
     feature = "paddle-ocr",
     feature = "auto-rotate"
 ))]
-pub fn apply_execution_providers(
+pub(crate) fn apply_execution_providers(
     builder: ort::session::builder::SessionBuilder,
     accel: Option<&crate::core::config::acceleration::AccelerationConfig>,
 ) -> Result<ort::session::builder::SessionBuilder, ort::Error> {

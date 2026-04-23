@@ -1,0 +1,9 @@
+{
+	"id": "chunk_text_zero_max",
+	"category": "chunking",
+	"description": "chunk_text max_characters zero",
+	"tags": ["chunking", "error"],
+	"call": "chunk_text",
+	"input": { "text": "Some text.", "config": { "max_characters": 0 } },
+	"assertions": [{ "type": "error" }]
+}

@@ -32,7 +32,7 @@ const MAX_IWA_DECOMPRESSED_SIZE: usize = 64 * 1024 * 1024; // 64 MiB
 /// Opens the ZIP from `content`, iterates every entry, and returns the names of
 /// all entries whose path ends with `.iwa`. Entries that cannot be read are
 /// silently skipped (consistent with the per-extractor `filter_map` pattern).
-pub fn collect_iwa_paths(content: &[u8]) -> Result<Vec<String>> {
+pub(crate) fn collect_iwa_paths(content: &[u8]) -> Result<Vec<String>> {
     let cursor = Cursor::new(content);
     let mut archive =
         zip::ZipArchive::new(cursor).map_err(|e| KreuzbergError::parsing(format!("Failed to open iWork ZIP: {e}")))?;
@@ -57,7 +57,7 @@ pub fn collect_iwa_paths(content: &[u8]) -> Result<Vec<String>> {
 /// - type `0x01`: Uncompressed block → use payload as-is
 ///
 /// Multiple blocks are concatenated to form the decompressed IWA stream.
-pub fn read_iwa_file(content: &[u8], path: &str) -> Result<Vec<u8>> {
+pub(crate) fn read_iwa_file(content: &[u8], path: &str) -> Result<Vec<u8>> {
     use std::io::Read;
 
     let cursor = Cursor::new(content);
@@ -81,7 +81,7 @@ pub fn read_iwa_file(content: &[u8], path: &str) -> Result<Vec<u8>> {
 /// IWA framing: each block = 1 byte type + 3 bytes LE length + N bytes payload
 /// - type 0x00 → Snappy-compressed, decompress with `snap::raw::Decoder`
 /// - type 0x01 → Uncompressed, use as-is
-pub fn decode_iwa_stream(data: &[u8]) -> std::result::Result<Vec<u8>, String> {
+pub(crate) fn decode_iwa_stream(data: &[u8]) -> std::result::Result<Vec<u8>, String> {
     let mut decoder = snap::raw::Decoder::new();
     let mut output = Vec::new();
     let mut i = 0usize;
@@ -145,7 +145,7 @@ pub fn decode_iwa_stream(data: &[u8]) -> std::result::Result<Vec<u8>, String> {
 ///
 /// This approach avoids the need for `prost-build` and generated proto code while
 /// still extracting human-readable text reliably from iWork documents.
-pub fn extract_text_from_proto(data: &[u8]) -> Vec<String> {
+pub(crate) fn extract_text_from_proto(data: &[u8]) -> Vec<String> {
     let mut texts: Vec<String> = Vec::new();
     let mut i = 0usize;
 
@@ -240,7 +240,7 @@ fn read_varint(data: &[u8], pos: usize) -> Option<(u64, usize)> {
 ///
 /// `iwa_paths` should list the IWA file paths to read (e.g. `["Index/Document.iwa"]`).
 /// Returns a flat joined string of all text found across all IWA files.
-pub fn extract_text_from_iwa_files(content: &[u8], iwa_paths: &[&str]) -> Result<String> {
+pub(crate) fn extract_text_from_iwa_files(content: &[u8], iwa_paths: &[String]) -> Result<String> {
     let cursor = Cursor::new(content);
     let mut archive =
         zip::ZipArchive::new(cursor).map_err(|e| KreuzbergError::parsing(format!("Failed to open iWork ZIP: {e}")))?;
@@ -287,7 +287,7 @@ pub fn extract_text_from_iwa_files(content: &[u8], iwa_paths: &[&str]) -> Result
 /// `Metadata/BuildVersionHistory.plist` from the ZIP. These files are XML plists
 /// containing authorship and creation information. If the files cannot be read
 /// or parsed, an empty `Metadata` is returned.
-pub fn extract_metadata_from_zip(content: &[u8]) -> crate::types::metadata::Metadata {
+pub(crate) fn extract_metadata_from_zip(content: &[u8]) -> crate::types::metadata::Metadata {
     let cursor = Cursor::new(content);
     let Ok(mut archive) = zip::ZipArchive::new(cursor) else {
         return crate::types::metadata::Metadata::default();

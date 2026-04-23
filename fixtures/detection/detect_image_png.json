@@ -1,0 +1,15 @@
+{
+	"id": "detect_image_png",
+	"category": "detection",
+	"description": "Detect PNG image format",
+	"tags": ["image_detection", "png"],
+	"call": "detect_image_format",
+	"input": {
+		"data": "images/hello_world.png"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	]
+}

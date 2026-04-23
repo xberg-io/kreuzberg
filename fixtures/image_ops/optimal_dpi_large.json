@@ -1,0 +1,20 @@
+{
+	"id": "optimal_dpi_large",
+	"category": "image_operations",
+	"description": "Calculate optimal DPI for large image (3000x4000 pixels, 5MB target)",
+	"tags": ["image", "dpi", "large"],
+	"call": "calculate_optimal_dpi",
+	"input": {
+		"page_width": 30.0,
+		"page_height": 40.0,
+		"target_dpi": 200,
+		"max_dimension": 2048,
+		"min_dpi": 72,
+		"max_dpi": 300
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	]
+}

@@ -1,19 +1,17 @@
 {
 	"id": "mime_get_extensions",
+	"category": "mime_utilities",
 	"description": "Get file extensions for a MIME type",
-	"api_category": "mime_utilities",
-	"api_function": "get_extensions_for_mime",
 	"tags": ["mime", "extensions", "lookup"],
-	"test_spec": {
-		"pattern": "mime_extension_lookup",
-		"function_call": {
-			"name": "get_extensions_for_mime",
-			"args": ["application/pdf"]
-		},
-		"assertions": {
-			"return_type": "list",
-			"list_item_type": "string",
-			"list_contains": "pdf"
+	"call": "get_extensions_for_mime",
+	"input": {
+		"args": ["application/pdf"]
+	},
+	"assertions": [
+		{
+			"type": "contains",
+			"field": "result",
+			"value": "pdf"
 		}
-	}
+	]
 }

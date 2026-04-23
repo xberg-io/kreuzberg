@@ -1,0 +1,20 @@
+{
+	"id": "snake_to_camel_basic",
+	"category": "string_utils",
+	"description": "Convert snake_case to camelCase",
+	"tags": ["string_utils", "conversion"],
+	"call": "snake_to_camel",
+	"input": {
+		"text": "my_variable_name"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "equals",
+			"field": "result",
+			"value": "myVariableName"
+		}
+	]
+}

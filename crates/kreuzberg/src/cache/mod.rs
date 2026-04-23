@@ -8,20 +8,17 @@ mod core;
 mod utilities;
 
 // Re-export all public types and functions for backward compatibility
-pub use cleanup::{
-    batch_cleanup_caches, cleanup_cache, clear_cache_directory, get_cache_metadata, is_cache_valid, smart_cleanup_cache,
-};
+pub(crate) use cleanup::{clear_cache_directory, get_cache_metadata};
 pub use core::{CacheStats, GenericCache};
-pub use utilities::{
-    blake3_hash_bytes, blake3_hash_file, fast_hash, filter_old_cache_entries, generate_cache_key,
-    get_available_disk_space, sanitize_namespace, sort_cache_by_access_time, validate_cache_key,
-};
+pub use utilities::{blake3_hash_bytes, blake3_hash_file, fast_hash, generate_cache_key, validate_cache_key};
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use cleanup::{cleanup_cache, is_cache_valid};
     use std::fs::File;
     use tempfile::tempdir;
+    use utilities::{filter_old_cache_entries, sort_cache_by_access_time};
 
     #[test]
     fn test_generate_cache_key_empty() {

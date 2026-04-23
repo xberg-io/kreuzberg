@@ -2,12 +2,9 @@
 	"id": "ocr_paddle_markdown",
 	"category": "ocr",
 	"description": "PaddleOCR with markdown output format.",
-	"document": {
+	"input": {
 		"path": "images/test_hello_world.png",
 		"media_type": "image/png",
-		"requires_external_tool": ["paddle-ocr", "onnxruntime"]
-	},
-	"extraction": {
 		"config": {
 			"ocr": {
 				"backend": "paddle-ocr",
@@ -19,13 +16,24 @@
 			"force_ocr": true
 		}
 	},
-	"assertions": {
-		"expected_mime": "image/png",
-		"min_content_length": 5,
-		"content_contains_any": ["hello", "Hello", "world", "World"]
-	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "image/png"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 5
+		},
+		{
+			"type": "contains_any",
+			"field": "content",
+			"values": ["hello", "Hello", "world", "World"]
+		}
+	],
 	"skip": {
-		"requires_feature": ["paddle-ocr"],
-		"notes": "Tests markdown output format parity with Tesseract"
+		"reason": "Requires features: paddle-ocr; Tests markdown output format parity with Tesseract"
 	}
 }

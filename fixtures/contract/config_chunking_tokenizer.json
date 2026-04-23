@@ -2,12 +2,9 @@
 	"id": "config_chunking_tokenizer",
 	"description": "Tests token-based chunk sizing with HuggingFace tokenizer",
 	"tags": ["contract", "config", "chunking", "tokenizer"],
-	"document": {
-		"path": "markdown/comprehensive.md"
-	},
-	"extraction": {
-		"method": "sync",
-		"input_type": "file",
+	"call": "extract_file_sync",
+	"input": {
+		"path": "markdown/comprehensive.md",
 		"config": {
 			"chunking": {
 				"max_chars": 200,
@@ -19,15 +16,23 @@
 			}
 		}
 	},
-	"assertions": {
-		"min_content_length": 10,
-		"chunks": {
-			"min_count": 2,
-			"each_has_content": true
+	"assertions": [
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 10
+		},
+		{
+			"type": "count_min",
+			"field": "chunks",
+			"value": 2
+		},
+		{
+			"type": "is_true",
+			"field": "chunks_have_content"
 		}
-	},
+	],
 	"skip": {
-		"requires_feature": ["chunking-tokenizers"],
-		"notes": "Requires network access for HuggingFace Hub tokenizer download"
+		"reason": "Requires features: chunking-tokenizers; Requires network access for HuggingFace Hub tokenizer download"
 	}
 }

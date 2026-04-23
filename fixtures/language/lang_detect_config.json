@@ -1,0 +1,20 @@
+{
+	"id": "lang_detect_config",
+	"description": "Language detection with specific language config",
+	"tags": ["language_detection", "text", "configuration"],
+	"call": "extract_file_sync",
+	"input": {
+		"path": "semantic/mixed_topics.txt",
+		"config": {
+			"language_detection": {
+				"enabled": true,
+				"languages": ["en", "de", "fr"]
+			}
+		}
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	]
+}

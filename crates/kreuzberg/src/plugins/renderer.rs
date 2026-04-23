@@ -83,7 +83,7 @@ pub trait Renderer: Send + Sync {
 ///
 /// register_renderer(Arc::new(MyRenderer)).unwrap();
 /// ```
-pub fn register_renderer(renderer: Arc<dyn Renderer>) -> crate::Result<()> {
+pub(crate) fn register_renderer(renderer: Arc<dyn Renderer>) -> crate::Result<()> {
     use crate::plugins::registry::get_renderer_registry;
 
     let registry = get_renderer_registry();

@@ -2,15 +2,20 @@
 	"id": "office_keynote_basic",
 	"category": "office",
 	"description": "Keynote document extraction baseline.",
-	"document": {
+	"input": {
 		"path": "iwork/test.key",
 		"media_type": "application/x-iwork-keynote-sffkey"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": "application/x-iwork-keynote-sffkey",
-		"min_content_length": 5
-	}
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "application/x-iwork-keynote-sffkey"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 5
+		}
+	]
 }

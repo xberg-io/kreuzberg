@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>Kreuzberg</RootNamespace>
+    <PackageId>Kreuzberg</PackageId>
+    <Version>4.9.5</Version>
+    <Description>High-performance document intelligence library</Description>
+    <PackageLicenseExpression>Elastic-2.0</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/kreuzberg-dev/kreuzberg</RepositoryUrl>
+    <Authors>Na'aman Hirschfeld <naaman@kreuzberg.dev></Authors>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,14 @@
+{
+	"id": "embed_get_preset",
+	"category": "embed_extra",
+	"description": "Get preset by name",
+	"tags": ["embedding"],
+	"call": "get_preset",
+	"input": {
+		"name": "all-MiniLM-L6-v2"
+	},
+	"assertions": [{ "type": "not_error" }],
+	"skip": {
+		"reason": "Requires features: embeddings"
+	}
+}

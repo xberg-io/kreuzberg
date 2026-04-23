@@ -1,5 +1,0 @@
-<Solution>
-  <Project Path="Benchmark/Benchmark.csproj" />
-  <Project Path="Kreuzberg.Tests/Kreuzberg.Tests.csproj" />
-  <Project Path="Kreuzberg/Kreuzberg.csproj" />
-</Solution>

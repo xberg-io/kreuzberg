@@ -1,0 +1,9 @@
+{
+	"id": "render_markdown_complex",
+	"category": "rendering",
+	"description": "Render complex HTML to markdown",
+	"tags": ["rendering"],
+	"call": "render_markdown",
+	"input": { "doc": "<h1>Title</h1><ul><li>A</li><li>B</li></ul>" },
+	"assertions": [{ "type": "not_error" }, { "type": "min_length", "field": "content", "value": 10 }]
+}

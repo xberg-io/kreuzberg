@@ -283,7 +283,7 @@ fn parse_rtf_color_table(content: &str) -> Vec<String> {
 /// - Color table and color references
 /// - Header/footer text
 /// - Hyperlink field instructions
-pub fn extract_rtf_formatting(content: &str) -> RtfFormattingData {
+pub(crate) fn extract_rtf_formatting(content: &str) -> RtfFormattingData {
     let color_table = parse_rtf_color_table(content);
     let mut spans = Vec::new();
     let mut hyperlinks = Vec::new();
@@ -790,7 +790,11 @@ pub fn extract_rtf_formatting(content: &str) -> RtfFormattingData {
 ///
 /// Given the byte range of a paragraph within the full extracted text,
 /// produces annotations from the formatting spans that overlap.
-pub fn spans_to_annotations(para_start: usize, para_end: usize, formatting: &RtfFormattingData) -> Vec<TextAnnotation> {
+pub(crate) fn spans_to_annotations(
+    para_start: usize,
+    para_end: usize,
+    formatting: &RtfFormattingData,
+) -> Vec<TextAnnotation> {
     let mut annotations = Vec::new();
     for span in &formatting.spans {
         // Check overlap
@@ -912,7 +916,7 @@ const SKIP_DESTINATIONS: &[&str] = &[
 /// 5. Extracting text while skipping formatting groups
 /// 6. Detecting and extracting image metadata (\pict sections)
 /// 7. Normalizing whitespace
-pub fn extract_text_from_rtf(
+pub(crate) fn extract_text_from_rtf(
     content: &str,
     plain: bool,
 ) -> (String, Vec<Table>, Vec<RtfImage>, Vec<ParagraphMeta>, RtfFormattingData) {
@@ -1191,7 +1195,7 @@ pub fn extract_text_from_rtf(
                             // Capture hex-encoded chars in footnote buffer even when skipping
                             if in_footnote
                                 && let (Some(h1), Some(h2)) = (hex1, hex2)
-                                && let Some(byte) = parse_hex_byte(h1, h2)
+                                && let Some(byte) = parse_hex_byte(h1 as u8, h2 as u8)
                             {
                                 footnote_buf.push(decode_windows_1252(byte));
                             }
@@ -1203,7 +1207,7 @@ pub fn extract_text_from_rtf(
                                 continue;
                             }
                             if let (Some(h1), Some(h2)) = (hex1, hex2)
-                                && let Some(byte) = parse_hex_byte(h1, h2)
+                                && let Some(byte) = parse_hex_byte(h1 as u8, h2 as u8)
                             {
                                 let decoded = decode_windows_1252(byte);
                                 if let Some(state) = table_state.as_mut()

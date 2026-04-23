@@ -1,0 +1,15 @@
+{
+	"id": "extract_email_basic",
+	"category": "extraction",
+	"description": "Extract content from an email file in EML format",
+	"tags": ["email", "eml", "text_extraction"],
+	"call": "extract_email_content",
+	"input": {
+		"data": "email/html_email_multipart.eml"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	]
+}

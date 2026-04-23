@@ -1,0 +1,22 @@
+{
+	"id": "doc_structure_pdf",
+	"category": "document",
+	"description": "Extract PDF document structure with include_document_structure config",
+	"tags": ["document_structure", "pdf"],
+	"call": "extract_file_sync",
+	"input": {
+		"path": "pdf/fake_memo.pdf",
+		"config": {
+			"include_document_structure": true
+		}
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "not_empty",
+			"field": "document_structure"
+		}
+	]
+}

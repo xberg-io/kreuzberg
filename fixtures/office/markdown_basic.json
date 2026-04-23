@@ -2,15 +2,20 @@
 	"id": "office_markdown_basic",
 	"category": "office",
 	"description": "Markdown document extraction baseline.",
-	"document": {
+	"input": {
 		"path": "markdown/comprehensive.md",
 		"media_type": "text/markdown"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": "text/markdown",
-		"min_content_length": 10
-	}
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "text/markdown"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 10
+		}
+	]
 }

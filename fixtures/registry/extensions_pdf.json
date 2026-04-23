@@ -1,0 +1,20 @@
+{
+	"id": "extensions_pdf",
+	"category": "registry_operations",
+	"description": "Get file extensions for PDF MIME type",
+	"tags": ["registry", "extensions", "pdf"],
+	"call": "get_extensions_for_mime",
+	"input": {
+		"args": ["application/pdf"]
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "contains",
+			"field": "result",
+			"value": "pdf"
+		}
+	]
+}

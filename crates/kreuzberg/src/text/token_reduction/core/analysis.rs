@@ -38,7 +38,7 @@ pub struct TextAnalyzer;
 
 impl TextAnalyzer {
     /// Scores the importance of a sentence based on various characteristics.
-    pub fn score_sentence_importance(sentence: &str, position: usize, total_sentences: usize) -> f32 {
+    pub(crate) fn score_sentence_importance(sentence: &str, position: usize, total_sentences: usize) -> f32 {
         let mut score = 0.0;
 
         if position == 0 || position == total_sentences - 1 {
@@ -121,7 +121,7 @@ impl TextAnalyzer {
     }
 
     /// Calculates character entropy (measure of text randomness/information content).
-    pub fn calculate_char_entropy(text: &str) -> f32 {
+    pub(crate) fn calculate_char_entropy(text: &str) -> f32 {
         let chars: Vec<char> = text.chars().collect();
         if chars.is_empty() {
             return 0.0;
@@ -150,7 +150,7 @@ impl TextAnalyzer {
     }
 
     /// Checks if a word has important characteristics that should be preserved.
-    pub fn has_important_characteristics(word: &str) -> bool {
+    pub(crate) fn has_important_characteristics(word: &str) -> bool {
         if word.len() > 1 && word.chars().all(|c| c.is_uppercase()) {
             return true;
         }
@@ -176,7 +176,7 @@ impl TextAnalyzer {
     }
 
     /// Checks if a CJK word has important characteristics.
-    pub fn has_cjk_importance(word: &str) -> bool {
+    pub(crate) fn has_cjk_importance(word: &str) -> bool {
         let chars: Vec<char> = word.chars().collect();
 
         let has_cjk = chars.iter().any(|&c| c as u32 >= 0x4E00 && (c as u32) <= 0x9FFF);

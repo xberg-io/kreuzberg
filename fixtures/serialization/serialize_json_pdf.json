@@ -1,0 +1,12 @@
+{
+	"id": "serialize_json_pdf",
+	"category": "serialization",
+	"description": "Serialize PDF extraction to JSON",
+	"tags": ["serialization", "json", "pdf"],
+	"call": "serialize_to_json",
+	"input": {
+		"path": "test_documents/pdf/sample.pdf",
+		"config": {}
+	},
+	"assertions": [{ "type": "not_error" }, { "type": "contains", "field": "content", "value": "content" }]
+}

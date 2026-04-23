@@ -3,12 +3,14 @@
 //! This module provides the BoundingBox type and geometric operations used
 //! for spatial analysis of text elements in PDF documents.
 
+use serde::{Deserialize, Serialize};
+
 // Constants for weighted distance calculation
 const WEIGHTED_DISTANCE_X_WEIGHT: f32 = 5.0;
 const WEIGHTED_DISTANCE_Y_WEIGHT: f32 = 1.0;
 
 /// A bounding box for text or elements.
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Serialize, Deserialize)]
 pub struct BoundingBox {
     /// Left x-coordinate
     pub left: f32,
@@ -40,7 +42,7 @@ impl BoundingBox {
     /// Returns an error if:
     /// - Width (`right - left`) is less than 1e-10 (near-zero)
     /// - Height (`bottom - top`) is less than 1e-10 (near-zero)
-    pub fn new(left: f32, top: f32, right: f32, bottom: f32) -> std::result::Result<BoundingBox, String> {
+    pub(crate) fn new(left: f32, top: f32, right: f32, bottom: f32) -> std::result::Result<BoundingBox, String> {
         let width = (right - left).abs();
         let height = (bottom - top).abs();
 
@@ -75,7 +77,7 @@ impl BoundingBox {
     /// # Returns
     ///
     /// A BoundingBox without any validation
-    pub fn new_unchecked(left: f32, top: f32, right: f32, bottom: f32) -> BoundingBox {
+    pub(crate) fn new_unchecked(left: f32, top: f32, right: f32, bottom: f32) -> BoundingBox {
         BoundingBox {
             left,
             top,
@@ -90,7 +92,7 @@ impl BoundingBox {
     ///
     /// The width (right - left). No absolute value is taken as
     /// the BoundingBox::new() constructor ensures correct ordering.
-    pub fn width(&self) -> f32 {
+    pub(crate) fn width(&self) -> f32 {
         self.right - self.left
     }
 
@@ -100,7 +102,7 @@ impl BoundingBox {
     ///
     /// The height (bottom - top). No absolute value is taken as
     /// the BoundingBox::new() constructor ensures correct ordering.
-    pub fn height(&self) -> f32 {
+    pub(crate) fn height(&self) -> f32 {
         self.bottom - self.top
     }
 
@@ -115,7 +117,7 @@ impl BoundingBox {
     /// # Returns
     ///
     /// The IOU value between 0.0 and 1.0
-    pub fn iou(&self, other: &BoundingBox) -> f32 {
+    pub(crate) fn iou(&self, other: &BoundingBox) -> f32 {
         let intersection_area = self.calculate_intersection_area(other);
         let self_area = self.calculate_area();
         let other_area = other.calculate_area();
@@ -140,7 +142,7 @@ impl BoundingBox {
     /// # Returns
     ///
     /// The weighted distance value
-    pub fn weighted_distance(&self, other: &BoundingBox) -> f32 {
+    pub(crate) fn weighted_distance(&self, other: &BoundingBox) -> f32 {
         let (self_center_x, self_center_y) = self.center();
         let (other_center_x, other_center_y) = other.center();
 
@@ -161,7 +163,7 @@ impl BoundingBox {
     /// # Returns
     ///
     /// The intersection ratio between 0.0 and 1.0
-    pub fn intersection_ratio(&self, other: &BoundingBox) -> f32 {
+    pub(crate) fn intersection_ratio(&self, other: &BoundingBox) -> f32 {
         let intersection_area = self.calculate_intersection_area(other);
         let self_area = self.calculate_area();
 
@@ -173,17 +175,17 @@ impl BoundingBox {
     }
 
     /// Check if this bounding box contains another bounding box.
-    pub fn contains(&self, other: &BoundingBox) -> bool {
+    pub(crate) fn contains(&self, other: &BoundingBox) -> bool {
         other.left >= self.left && other.right <= self.right && other.top >= self.top && other.bottom <= self.bottom
     }
 
     /// Calculate the center coordinates of this bounding box.
-    pub fn center(&self) -> (f32, f32) {
+    pub(crate) fn center(&self) -> (f32, f32) {
         ((self.left + self.right) / 2.0, (self.top + self.bottom) / 2.0)
     }
 
     /// Merge this bounding box with another, creating a box that contains both.
-    pub fn merge(&self, other: &BoundingBox) -> BoundingBox {
+    pub(crate) fn merge(&self, other: &BoundingBox) -> BoundingBox {
         BoundingBox {
             left: self.left.min(other.left),
             top: self.top.min(other.top),
@@ -193,7 +195,7 @@ impl BoundingBox {
     }
 
     /// Calculate a relaxed IOU with an expansion factor.
-    pub fn relaxed_iou(&self, other: &BoundingBox, relaxation: f32) -> f32 {
+    pub(crate) fn relaxed_iou(&self, other: &BoundingBox, relaxation: f32) -> f32 {
         let self_width = self.right - self.left;
         let self_height = self.bottom - self.top;
         let self_expansion = relaxation * self_width.min(self_height).max(0.0);

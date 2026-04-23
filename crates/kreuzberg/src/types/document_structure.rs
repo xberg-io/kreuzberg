@@ -36,14 +36,14 @@ pub struct NodeIndex(pub u32);
 /// Generated from a hash of `node_type + text + page`. The same document
 /// always produces the same IDs, making them useful for diffing, caching,
 /// and external references.
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
 #[cfg_attr(feature = "api", schema(value_type = String))]
 pub struct NodeId(String);
 
 impl NodeId {
     /// Create a `NodeId` from a pre-computed hash string.
-    pub fn new(id: impl Into<String>) -> Self {
+    pub(crate) fn new(id: impl Into<String>) -> Self {
         Self(id.into())
     }
 
@@ -59,7 +59,7 @@ impl NodeId {
     /// - `text`: The text content of the node
     /// - `page`: The page number (None becomes u64::MAX for hashing)
     /// - `index`: The position of this node in the document's nodes array
-    pub fn generate(node_type: &str, text: &str, page: Option<u32>, index: u32) -> Self {
+    pub(crate) fn generate(node_type: &str, text: &str, page: Option<u32>, index: u32) -> Self {
         let type_hash = node_type
             .bytes()
             .fold(0u64, |acc, b| acc.wrapping_mul(31).wrapping_add(b as u64));
@@ -239,7 +239,7 @@ pub enum ContentLayer {
 
 impl ContentLayer {
     /// Check if this is the default content layer (Body).
-    pub fn is_default(&self) -> bool {
+    pub(crate) fn is_default(&self) -> bool {
         *self == ContentLayer::Body
     }
 }
@@ -365,7 +365,7 @@ pub enum NodeContent {
 /// Structured table grid with cell-level metadata.
 ///
 /// Stores row/column dimensions and a flat list of cells with position info.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
 #[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
 pub struct TableGrid {
     /// Number of rows in the table.
@@ -424,10 +424,11 @@ pub struct TextAnnotation {
 }
 
 /// Types of inline text annotations.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
 #[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
 #[serde(tag = "annotation_type", rename_all = "snake_case")]
 pub enum AnnotationKind {
+    #[default]
     Bold,
     Italic,
     Underline,
@@ -476,6 +477,12 @@ impl From<(f32, f32, f32, f32)> for BoundingBox {
     }
 }
 
+impl Default for NodeContent {
+    fn default() -> Self {
+        NodeContent::Paragraph { text: String::new() }
+    }
+}
+
 // ============================================================================
 // NodeContent Helpers
 // ============================================================================
@@ -489,7 +496,7 @@ impl NodeContent {
     ///
     /// Container/marker nodes return `None`: `List`, `Quote`, `Group`, `PageBreak`,
     /// `Slide`, `DefinitionList`, `Admonition`, `MetadataBlock`.
-    pub fn text(&self) -> Option<&str> {
+    pub(crate) fn text(&self) -> Option<&str> {
         match self {
             NodeContent::Title { text }
             | NodeContent::Heading { text, .. }
@@ -515,7 +522,7 @@ impl NodeContent {
     }
 
     /// Get the serde tag discriminant string for this variant.
-    pub fn node_type_str(&self) -> &'static str {
+    pub(crate) fn node_type_str(&self) -> &'static str {
         match self {
             NodeContent::Title { .. } => "title",
             NodeContent::Heading { .. } => "heading",
@@ -547,7 +554,7 @@ impl NodeContent {
 
 impl DocumentStructure {
     /// Create an empty `DocumentStructure`.
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self {
             nodes: Vec::new(),
             source_format: None,
@@ -556,7 +563,7 @@ impl DocumentStructure {
     }
 
     /// Create a `DocumentStructure` with pre-allocated capacity.
-    pub fn with_capacity(capacity: usize) -> Self {
+    pub(crate) fn with_capacity(capacity: usize) -> Self {
         Self {
             nodes: Vec::with_capacity(capacity),
             source_format: None,
@@ -565,7 +572,7 @@ impl DocumentStructure {
     }
 
     /// Push a node and return its `NodeIndex`.
-    pub fn push_node(&mut self, node: DocumentNode) -> NodeIndex {
+    pub(crate) fn push_node(&mut self, node: DocumentNode) -> NodeIndex {
         let idx = NodeIndex(self.nodes.len() as u32);
         self.nodes.push(node);
         idx
@@ -578,7 +585,7 @@ impl DocumentStructure {
     /// # Panics
     ///
     /// Panics if either index is out of bounds.
-    pub fn add_child(&mut self, parent: NodeIndex, child: NodeIndex) {
+    pub(crate) fn add_child(&mut self, parent: NodeIndex, child: NodeIndex) {
         self.nodes[parent.0 as usize].children.push(child);
         self.nodes[child.0 as usize].parent = Some(parent);
     }
@@ -589,7 +596,7 @@ impl DocumentStructure {
     /// # Errors
     ///
     /// Returns a descriptive error string if validation fails.
-    pub fn validate(&self) -> std::result::Result<(), String> {
+    pub(crate) fn validate(&self) -> std::result::Result<(), String> {
         let len = self.nodes.len() as u32;
 
         for (i, node) in self.nodes.iter().enumerate() {
@@ -632,7 +639,7 @@ impl DocumentStructure {
     }
 
     /// Iterate over root-level body nodes (content_layer == Body, parent == None).
-    pub fn body_roots(&self) -> impl Iterator<Item = (NodeIndex, &DocumentNode)> {
+    pub(crate) fn body_roots(&self) -> impl Iterator<Item = (NodeIndex, &DocumentNode)> {
         self.nodes.iter().enumerate().filter_map(|(i, node)| {
             if node.parent.is_none() && node.content_layer == ContentLayer::Body {
                 Some((NodeIndex(i as u32), node))
@@ -643,7 +650,7 @@ impl DocumentStructure {
     }
 
     /// Iterate over root-level furniture nodes (non-Body content_layer, parent == None).
-    pub fn furniture_roots(&self) -> impl Iterator<Item = (NodeIndex, &DocumentNode)> {
+    pub(crate) fn furniture_roots(&self) -> impl Iterator<Item = (NodeIndex, &DocumentNode)> {
         self.nodes.iter().enumerate().filter_map(|(i, node)| {
             if node.parent.is_none() && node.content_layer != ContentLayer::Body {
                 Some((NodeIndex(i as u32), node))
@@ -654,17 +661,17 @@ impl DocumentStructure {
     }
 
     /// Get a node by index.
-    pub fn get(&self, index: NodeIndex) -> Option<&DocumentNode> {
+    pub(crate) fn get(&self, index: NodeIndex) -> Option<&DocumentNode> {
         self.nodes.get(index.0 as usize)
     }
 
     /// Get the total number of nodes.
-    pub fn len(&self) -> usize {
+    pub(crate) fn len(&self) -> usize {
         self.nodes.len()
     }
 
     /// Check if the document structure is empty.
-    pub fn is_empty(&self) -> bool {
+    pub(crate) fn is_empty(&self) -> bool {
         self.nodes.is_empty()
     }
 }

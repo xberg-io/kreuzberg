@@ -2,19 +2,28 @@
 	"id": "output_format_bytes_markdown",
 	"description": "Tests markdown output format via bytes extraction API",
 	"tags": ["contract", "output_format", "bytes"],
-	"document": {
-		"path": "pdf/fake_memo.pdf"
-	},
-	"extraction": {
-		"method": "sync",
-		"input_type": "bytes",
+	"call": "extract_bytes_sync",
+	"input": {
+		"path": "pdf/fake_memo.pdf",
 		"config": {
 			"output_format": "markdown"
 		}
 	},
-	"assertions": {
-		"expected_mime": "application/pdf",
-		"min_content_length": 10,
-		"output_format_is": "markdown"
-	}
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "application/pdf"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 10
+		},
+		{
+			"type": "equals",
+			"field": "output_format",
+			"value": "markdown"
+		}
+	]
 }

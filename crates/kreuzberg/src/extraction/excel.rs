@@ -51,7 +51,7 @@ use crate::extraction::office_metadata::{
 #[cfg(feature = "office")]
 use serde_json::Value;
 
-pub fn read_excel_file(file_path: &str) -> Result<ExcelWorkbook> {
+pub(crate) fn read_excel_file(file_path: &str) -> Result<ExcelWorkbook> {
     let lower_path = file_path.to_lowercase();
 
     #[cfg(feature = "office")]
@@ -136,7 +136,7 @@ pub fn read_excel_file(file_path: &str) -> Result<ExcelWorkbook> {
     process_workbook(workbook, office_metadata)
 }
 
-pub fn read_excel_bytes(data: &[u8], file_extension: &str) -> Result<ExcelWorkbook> {
+pub(crate) fn read_excel_bytes(data: &[u8], file_extension: &str) -> Result<ExcelWorkbook> {
     #[cfg(feature = "office")]
     let office_metadata = match file_extension.to_lowercase().as_str() {
         ".xlsx" | ".xlsm" | ".xlam" | ".xltm" => extract_xlsx_office_metadata_from_bytes(data).ok(),

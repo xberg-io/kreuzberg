@@ -111,7 +111,9 @@ pub struct PptxAppProperties {
 /// Extract DOCX application properties from an Office Open XML document
 ///
 /// Parses `docProps/app.xml` and extracts Word-specific metadata.
-pub fn extract_docx_app_properties<R: Read + std::io::Seek>(archive: &mut ZipArchive<R>) -> Result<DocxAppProperties> {
+pub(crate) fn extract_docx_app_properties<R: Read + std::io::Seek>(
+    archive: &mut ZipArchive<R>,
+) -> Result<DocxAppProperties> {
     let xml_content = match super::read_zip_entry_to_string(archive, "docProps/app.xml", "app.xml")? {
         Some(content) => content,
         None => return Ok(DocxAppProperties::default()),
@@ -145,7 +147,9 @@ pub fn extract_docx_app_properties<R: Read + std::io::Seek>(archive: &mut ZipArc
 /// Extract XLSX application properties from an Office Open XML document
 ///
 /// Parses `docProps/app.xml` and extracts Excel-specific metadata including worksheet names.
-pub fn extract_xlsx_app_properties<R: Read + std::io::Seek>(archive: &mut ZipArchive<R>) -> Result<XlsxAppProperties> {
+pub(crate) fn extract_xlsx_app_properties<R: Read + std::io::Seek>(
+    archive: &mut ZipArchive<R>,
+) -> Result<XlsxAppProperties> {
     let xml_content = match super::read_zip_entry_to_string(archive, "docProps/app.xml", "app.xml")? {
         Some(content) => content,
         None => return Ok(XlsxAppProperties::default()),
@@ -174,7 +178,9 @@ pub fn extract_xlsx_app_properties<R: Read + std::io::Seek>(archive: &mut ZipArc
 /// Extract PPTX application properties from an Office Open XML document
 ///
 /// Parses `docProps/app.xml` and extracts PowerPoint-specific metadata including slide information.
-pub fn extract_pptx_app_properties<R: Read + std::io::Seek>(archive: &mut ZipArchive<R>) -> Result<PptxAppProperties> {
+pub(crate) fn extract_pptx_app_properties<R: Read + std::io::Seek>(
+    archive: &mut ZipArchive<R>,
+) -> Result<PptxAppProperties> {
     let xml_content = match super::read_zip_entry_to_string(archive, "docProps/app.xml", "app.xml")? {
         Some(content) => content,
         None => return Ok(PptxAppProperties::default()),

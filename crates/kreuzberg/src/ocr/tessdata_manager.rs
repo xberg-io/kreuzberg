@@ -39,18 +39,18 @@ impl TessdataManager {
     /// If `cache_dir` is None, uses the default cache directory:
     /// 1. `KREUZBERG_CACHE_DIR` env var + `/tessdata`
     /// 2. `.kreuzberg/tessdata/` in current directory
-    pub fn new(cache_dir: Option<PathBuf>) -> Self {
+    pub(crate) fn new(cache_dir: Option<PathBuf>) -> Self {
         let cache_dir = cache_dir.unwrap_or_else(|| crate::cache_dir::resolve_cache_dir("tessdata"));
         Self { cache_dir }
     }
 
     /// Get the cache directory path.
-    pub fn cache_dir(&self) -> &Path {
+    pub(crate) fn cache_dir(&self) -> &Path {
         &self.cache_dir
     }
 
     /// Check if a specific language traineddata file is cached.
-    pub fn is_language_cached(&self, lang: &str) -> bool {
+    pub(crate) fn is_language_cached(&self, lang: &str) -> bool {
         self.cache_dir.join(format!("{lang}.traineddata")).exists()
     }
 
@@ -58,7 +58,7 @@ impl TessdataManager {
     ///
     /// Paths are relative to the cache root (prefixed with "tessdata/").
     #[cfg(feature = "paddle-ocr")]
-    pub fn manifest() -> Vec<crate::paddle_ocr::ModelManifestEntry> {
+    pub(crate) fn manifest() -> Vec<crate::paddle_ocr::ModelManifestEntry> {
         all_download_codes()
             .into_iter()
             .map(|lang| crate::paddle_ocr::ModelManifestEntry {
@@ -76,7 +76,7 @@ impl TessdataManager {
     ///
     /// Requires the `paddle-ocr` feature for HTTP download support (ureq).
     #[cfg(feature = "paddle-ocr")]
-    pub fn ensure_all_languages(&self) -> Result<usize, OcrError> {
+    pub(crate) fn ensure_all_languages(&self) -> Result<usize, OcrError> {
         fs::create_dir_all(&self.cache_dir).map_err(|e| {
             OcrError::TesseractInitializationFailed(format!(
                 "Failed to create tessdata cache dir {}: {e}",

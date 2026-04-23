@@ -75,10 +75,10 @@ pub fn reduce_tokens(
 /// ```rust
 /// use kreuzberg::text::token_reduction::{batch_reduce_tokens, TokenReductionConfig, ReductionLevel};
 ///
-/// let texts = vec![
-///     "This is the first document with some text.",
-///     "Here is another document with different content.",
-///     "And finally, a third document to process.",
+/// let texts: Vec<String> = vec![
+///     "This is the first document with some text.".to_string(),
+///     "Here is another document with different content.".to_string(),
+///     "And finally, a third document to process.".to_string(),
 /// ];
 /// let config = TokenReductionConfig::default();
 /// let reduced = batch_reduce_tokens(&texts, &config, Some("eng"))?;
@@ -86,7 +86,7 @@ pub fn reduce_tokens(
 /// # Ok::<(), kreuzberg::error::KreuzbergError>(())
 /// ```
 pub fn batch_reduce_tokens(
-    texts: &[&str],
+    texts: &[String],
     config: &TokenReductionConfig,
     language_hint: Option<&str>,
 ) -> crate::error::Result<Vec<String>> {

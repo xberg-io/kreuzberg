@@ -1,9 +1,8 @@
 ---
-description: "plugin architecture patterns"
+name: plugin-architecture-patterns
+description: "Plugin architecture, registration, and trait patterns"
 priority: critical
 ---
-
-## priority: critical
 
 # Plugin Architecture & Registration
 

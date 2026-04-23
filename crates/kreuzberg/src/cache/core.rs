@@ -57,7 +57,7 @@ pub struct GenericCache {
 }
 
 impl GenericCache {
-    pub fn new(
+    pub(crate) fn new(
         cache_type: String,
         cache_dir: Option<String>,
         max_age_days: f64,
@@ -252,7 +252,7 @@ impl GenericCache {
             cache.key = %cache_key,
         )
     ))]
-    pub fn get(
+    pub(crate) fn get(
         &self,
         cache_key: &str,
         source_file: Option<&str>,
@@ -298,7 +298,7 @@ impl GenericCache {
     }
 
     /// Backward-compatible get without namespace/TTL.
-    pub fn get_default(&self, cache_key: &str, source_file: Option<&str>) -> Result<Option<Vec<u8>>> {
+    pub(crate) fn get_default(&self, cache_key: &str, source_file: Option<&str>) -> Result<Option<Vec<u8>>> {
         self.get(cache_key, source_file, None, None)
     }
 
@@ -309,7 +309,7 @@ impl GenericCache {
             cache.size_bytes = data.len(),
         )
     ))]
-    pub fn set(
+    pub(crate) fn set(
         &self,
         cache_key: &str,
         data: Vec<u8>,
@@ -345,7 +345,7 @@ impl GenericCache {
     }
 
     /// Backward-compatible set without namespace/TTL.
-    pub fn set_default(&self, cache_key: &str, data: Vec<u8>, source_file: Option<&str>) -> Result<()> {
+    pub(crate) fn set_default(&self, cache_key: &str, data: Vec<u8>, source_file: Option<&str>) -> Result<()> {
         self.set(cache_key, data, source_file, None, None)
     }
 
@@ -373,16 +373,16 @@ impl GenericCache {
         let _ = fs::write(&marker, []);
     }
 
-    pub fn is_processing(&self, cache_key: &str) -> Result<bool> {
+    pub(crate) fn is_processing(&self, cache_key: &str) -> Result<bool> {
         Ok(self.read_processing_locks().contains(cache_key))
     }
 
-    pub fn mark_processing(&self, cache_key: String) -> Result<()> {
+    pub(crate) fn mark_processing(&self, cache_key: String) -> Result<()> {
         self.write_processing_locks().insert(cache_key);
         Ok(())
     }
 
-    pub fn mark_complete(&self, cache_key: &str) -> Result<()> {
+    pub(crate) fn mark_complete(&self, cache_key: &str) -> Result<()> {
         self.write_processing_locks().remove(cache_key);
         Ok(())
     }
@@ -397,7 +397,7 @@ impl GenericCache {
         Ok(())
     }
 
-    pub fn clear(&self) -> Result<(usize, f64)> {
+    pub(crate) fn clear(&self) -> Result<(usize, f64)> {
         let dir_path = &self.cache_dir;
 
         if !dir_path.exists() {
@@ -478,7 +478,7 @@ impl GenericCache {
     ///
     /// Removes the namespace subdirectory and all its contents.
     /// Returns (files_removed, mb_freed).
-    pub fn delete_namespace(&self, namespace: &str) -> Result<(usize, f64)> {
+    pub(crate) fn delete_namespace(&self, namespace: &str) -> Result<(usize, f64)> {
         let ns_dir = self.cache_dir.join(namespace);
         self.delete_namespace_inner(&ns_dir)
     }
@@ -510,12 +510,12 @@ impl GenericCache {
         Ok((removed_count, removed_size))
     }
 
-    pub fn get_stats(&self) -> Result<CacheStats> {
+    pub(crate) fn get_stats(&self) -> Result<CacheStats> {
         self.get_stats_filtered(None)
     }
 
     /// Get cache stats, optionally filtered to a specific namespace.
-    pub fn get_stats_filtered(&self, namespace: Option<&str>) -> Result<CacheStats> {
+    pub(crate) fn get_stats_filtered(&self, namespace: Option<&str>) -> Result<CacheStats> {
         let dir = self.resolve_dir(namespace);
         let dir_str = dir
             .to_str()
@@ -523,11 +523,11 @@ impl GenericCache {
         super::cleanup::get_cache_metadata(dir_str)
     }
 
-    pub fn cache_dir(&self) -> &Path {
+    pub(crate) fn cache_dir(&self) -> &Path {
         &self.cache_dir
     }
 
-    pub fn cache_type(&self) -> &str {
+    pub(crate) fn cache_type(&self) -> &str {
         &self.cache_type
     }
 }

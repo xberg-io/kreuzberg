@@ -22,7 +22,7 @@ pub struct LatexParser<'a> {
 
 impl<'a> LatexParser<'a> {
     /// Creates a new LaTeX parser for the given source.
-    pub fn new(source: &'a str) -> Self {
+    pub(crate) fn new(source: &'a str) -> Self {
         Self {
             source,
             metadata: Metadata::default(),
@@ -32,7 +32,7 @@ impl<'a> LatexParser<'a> {
     }
 
     /// Parses the LaTeX document and returns extracted content, metadata, and tables.
-    pub fn parse(&mut self) -> (String, Metadata, Vec<Table>) {
+    pub(crate) fn parse(&mut self) -> (String, Metadata, Vec<Table>) {
         let lines: Vec<&str> = self.source.lines().collect();
         let mut in_document = false;
         let mut i = 0;

@@ -1,0 +1,19 @@
+{
+	"id": "chunk_text_no_overlap",
+	"category": "chunking",
+	"description": "Text chunking with no overlap between chunks",
+	"tags": ["chunking", "text", "no-overlap"],
+	"call": "chunk_text",
+	"input": {
+		"text": "The quick brown fox jumps over the lazy dog. This is a long paragraph that should be split into multiple chunks when the chunk size is small enough. Each chunk should contain coherent text.",
+		"config": {
+			"max_characters": 50,
+			"max_overlap": 0
+		}
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	]
+}

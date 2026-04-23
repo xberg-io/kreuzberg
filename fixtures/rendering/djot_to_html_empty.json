@@ -1,0 +1,9 @@
+{
+	"id": "djot_to_html_empty",
+	"category": "rendering",
+	"description": "Convert empty djot to HTML",
+	"tags": ["rendering", "edge_case"],
+	"call": "djot_to_html",
+	"input": { "djot": "" },
+	"assertions": [{ "type": "not_error" }]
+}

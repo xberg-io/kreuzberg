@@ -26,7 +26,7 @@ use reader::CfbReader;
 ///
 /// Returns `HwpError` if the bytes do not form a valid HWP 5.0 compound file,
 /// if the document is password-encrypted, or if a critical parsing step fails.
-pub fn extract_hwp_text(bytes: &[u8]) -> Result<String> {
+pub(crate) fn extract_hwp_text(bytes: &[u8]) -> Result<String> {
     let mut cfb = CfbReader::from_bytes(bytes)?;
 
     // Parse the 256-byte file header

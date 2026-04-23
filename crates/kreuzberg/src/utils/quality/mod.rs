@@ -9,7 +9,6 @@ mod patterns;
 mod scoring;
 
 // Re-export public API
-pub use scoring::calculate_quality_score;
 
 use crate::text::utf8_validation;
 use memchr::{memchr, memchr3};
@@ -46,7 +45,7 @@ pub fn clean_extracted_text(text: &str) -> String {
 }
 
 /// Collapse redundant whitespace while preserving paragraph boundaries.
-pub fn normalize_spaces(text: &str) -> String {
+pub(crate) fn normalize_spaces(text: &str) -> String {
     if text.is_empty() || text.trim().is_empty() {
         return String::new();
     }

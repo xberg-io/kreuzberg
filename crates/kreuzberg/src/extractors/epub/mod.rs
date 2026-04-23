@@ -44,7 +44,7 @@ pub struct EpubExtractor;
 
 impl EpubExtractor {
     /// Create a new EPUB extractor.
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self
     }
 }

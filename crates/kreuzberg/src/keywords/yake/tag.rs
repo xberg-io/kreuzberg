@@ -18,7 +18,7 @@ pub(crate) enum Tag {
 }
 
 impl Tag {
-    pub fn classify(word: &str, is_first_word: bool, punctuation: &[u8; 256], strict_capital: bool) -> Tag {
+    pub(crate) fn classify(word: &str, is_first_word: bool, punctuation: &[u8; 256], strict_capital: bool) -> Tag {
         if Self::is_numeric(word) {
             Tag::Digit
         } else if Self::is_punctuation(word, punctuation) {

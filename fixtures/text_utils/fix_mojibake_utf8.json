@@ -1,0 +1,9 @@
+{
+	"id": "fix_mojibake_utf8",
+	"category": "text_utils",
+	"description": "Fix mojibake encoding",
+	"tags": ["text", "encoding"],
+	"call": "fix_mojibake",
+	"input": { "text": "cafÃ©" },
+	"assertions": [{ "type": "not_error" }]
+}

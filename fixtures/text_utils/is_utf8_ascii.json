@@ -1,0 +1,19 @@
+{
+	"id": "is_utf8_ascii",
+	"category": "text_utils",
+	"description": "Validate ASCII text as valid UTF-8",
+	"tags": ["text_utils", "encoding", "validation"],
+	"call": "is_valid_utf8",
+	"input": {
+		"data": "text/plain.txt"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "is_true",
+			"field": "result"
+		}
+	]
+}

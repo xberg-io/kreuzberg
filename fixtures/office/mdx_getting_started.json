@@ -2,29 +2,54 @@
 	"id": "office_mdx_getting_started",
 	"category": "office",
 	"description": "Real-world MDX extraction from mdx-js/mdx getting-started.mdx with imports, exports, JSX components, code blocks, and reference links.",
-	"document": {
+	"input": {
 		"path": "markdown/mdx_getting_started.mdx",
 		"media_type": "text/mdx"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": ["text/mdx", "text/x-mdx"],
-		"min_content_length": 2000,
-		"content_contains": [
-			"Getting started",
-			"Prerequisites",
-			"Quick start",
-			"Bundler",
-			"Security",
-			"Integrations",
-			"esbuild",
-			"Rollup",
-			"webpack",
-			"React"
-		],
-		"content_not_contains": ["import {Note}", "export const info", "export const navSortSelf"],
-		"requires_feature": ["mdx"]
+	"assertions": [
+		{
+			"type": "contains_any",
+			"field": "mime_type",
+			"values": ["text/mdx", "text/x-mdx"]
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 2000
+		},
+		{
+			"type": "contains_all",
+			"field": "content",
+			"values": [
+				"Getting started",
+				"Prerequisites",
+				"Quick start",
+				"Bundler",
+				"Security",
+				"Integrations",
+				"esbuild",
+				"Rollup",
+				"webpack",
+				"React"
+			]
+		},
+		{
+			"type": "not_contains",
+			"field": "content",
+			"values": ["import {Note}"]
+		},
+		{
+			"type": "not_contains",
+			"field": "content",
+			"values": ["export const info"]
+		},
+		{
+			"type": "not_contains",
+			"field": "content",
+			"values": ["export const navSortSelf"]
+		}
+	],
+	"skip": {
+		"reason": "Requires features: mdx"
 	}
 }

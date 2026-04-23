@@ -381,11 +381,11 @@ fn extract_palette_data(lookup: &lopdf::Object, document: &Document) -> Option<V
 }
 
 impl PdfImageExtractor {
-    pub fn new(pdf_bytes: &[u8]) -> Result<Self> {
+    pub(crate) fn new(pdf_bytes: &[u8]) -> Result<Self> {
         Self::new_with_password(pdf_bytes, None)
     }
 
-    pub fn new_with_password(pdf_bytes: &[u8], password: Option<&str>) -> Result<Self> {
+    pub(crate) fn new_with_password(pdf_bytes: &[u8], password: Option<&str>) -> Result<Self> {
         let mut doc =
             Document::load_mem(pdf_bytes).map_err(|e| PdfError::InvalidPdf(format!("Failed to load PDF: {}", e)))?;
 
@@ -400,7 +400,7 @@ impl PdfImageExtractor {
         Ok(Self { document: doc })
     }
 
-    pub fn extract_images(&self) -> Result<Vec<PdfImage>> {
+    pub(crate) fn extract_images(&self) -> Result<Vec<PdfImage>> {
         let mut all_images = Vec::new();
         let pages = self.document.get_pages();
 
@@ -450,7 +450,7 @@ impl PdfImageExtractor {
         Ok(all_images)
     }
 
-    pub fn extract_images_from_page(&self, page_number: u32) -> Result<Vec<PdfImage>> {
+    pub(crate) fn extract_images_from_page(&self, page_number: u32) -> Result<Vec<PdfImage>> {
         let pages = self.document.get_pages();
         let page_id = pages
             .get(&page_number)
@@ -501,18 +501,18 @@ impl PdfImageExtractor {
         Ok(page_images)
     }
 
-    pub fn get_image_count(&self) -> Result<usize> {
+    pub(crate) fn get_image_count(&self) -> Result<usize> {
         let images = self.extract_images()?;
         Ok(images.len())
     }
 }
 
-pub fn extract_images_from_pdf(pdf_bytes: &[u8]) -> Result<Vec<PdfImage>> {
+pub(crate) fn extract_images_from_pdf(pdf_bytes: &[u8]) -> Result<Vec<PdfImage>> {
     let extractor = PdfImageExtractor::new(pdf_bytes)?;
     extractor.extract_images()
 }
 
-pub fn extract_images_from_pdf_with_password(pdf_bytes: &[u8], password: &str) -> Result<Vec<PdfImage>> {
+pub(crate) fn extract_images_from_pdf_with_password(pdf_bytes: &[u8], password: &str) -> Result<Vec<PdfImage>> {
     let extractor = PdfImageExtractor::new_with_password(pdf_bytes, Some(password))?;
     extractor.extract_images()
 }
@@ -523,7 +523,7 @@ pub fn extract_images_from_pdf_with_password(pdf_bytes: &[u8], password: &str) -
 ///
 /// Returns the number of images successfully re-extracted.
 #[cfg(feature = "pdf")]
-pub fn reextract_raw_images_via_pdfium(pdf_bytes: &[u8], images: &mut [PdfImage]) -> Result<u32> {
+pub(crate) fn reextract_raw_images_via_pdfium(pdf_bytes: &[u8], images: &mut [PdfImage]) -> Result<u32> {
     use image::ImageEncoder;
     use pdfium_render::prelude::*;
 

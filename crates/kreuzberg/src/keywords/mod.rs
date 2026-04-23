@@ -125,7 +125,7 @@ static PROCESSOR_INITIALIZED: OnceCell<()> = OnceCell::new();
 ///
 /// This function is called automatically when needed.
 /// It's safe to call multiple times - registration only happens once.
-pub fn ensure_initialized() -> Result<()> {
+pub(crate) fn ensure_initialized() -> Result<()> {
     PROCESSOR_INITIALIZED
         .get_or_try_init(register_keyword_processor)
         .map(|_| ())
@@ -153,7 +153,7 @@ pub fn ensure_initialized() -> Result<()> {
 /// # #[cfg(not(any(feature = "keywords-yake", feature = "keywords-rake")))]
 /// # fn main() {}
 /// ```
-pub fn register_keyword_processor() -> Result<()> {
+pub(crate) fn register_keyword_processor() -> Result<()> {
     let registry = get_post_processor_registry();
     let mut registry = registry.write();
 

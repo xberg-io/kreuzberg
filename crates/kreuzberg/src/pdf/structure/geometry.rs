@@ -21,7 +21,7 @@ pub(crate) struct Rect {
 
 impl Rect {
     /// Create a rect, normalizing so left <= right and y_min <= y_max.
-    pub fn new(left: f32, right: f32, y_min: f32, y_max: f32) -> Self {
+    pub(crate) fn new(left: f32, right: f32, y_min: f32, y_max: f32) -> Self {
         Self {
             left: left.min(right),
             right: left.max(right),
@@ -31,42 +31,42 @@ impl Rect {
     }
 
     /// Create from PDF coordinate convention (left, bottom, right, top).
-    pub fn from_lbrt(left: f32, bottom: f32, right: f32, top: f32) -> Self {
+    pub(crate) fn from_lbrt(left: f32, bottom: f32, right: f32, top: f32) -> Self {
         Self::new(left, right, bottom, top)
     }
 
     /// Create from image coordinate convention (left, top, right, bottom).
-    pub fn from_ltrb(left: f32, top: f32, right: f32, bottom: f32) -> Self {
+    pub(crate) fn from_ltrb(left: f32, top: f32, right: f32, bottom: f32) -> Self {
         Self::new(left, right, top, bottom)
     }
 
     /// Create from (x, y, width, height) where y is the smaller Y value.
-    pub fn from_xywh(x: f32, y: f32, width: f32, height: f32) -> Self {
+    pub(crate) fn from_xywh(x: f32, y: f32, width: f32, height: f32) -> Self {
         Self::new(x, x + width, y, y + height)
     }
 
-    pub fn width(&self) -> f32 {
+    pub(crate) fn width(&self) -> f32 {
         self.right - self.left
     }
 
-    pub fn height(&self) -> f32 {
+    pub(crate) fn height(&self) -> f32 {
         self.y_max - self.y_min
     }
 
-    pub fn area(&self) -> f32 {
+    pub(crate) fn area(&self) -> f32 {
         self.width() * self.height()
     }
 
-    pub fn center_x(&self) -> f32 {
+    pub(crate) fn center_x(&self) -> f32 {
         (self.left + self.right) * 0.5
     }
 
-    pub fn center_y(&self) -> f32 {
+    pub(crate) fn center_y(&self) -> f32 {
         (self.y_min + self.y_max) * 0.5
     }
 
     /// Intersection area with another rect. Returns 0.0 if no overlap.
-    pub fn intersection_area(&self, other: &Rect) -> f32 {
+    pub(crate) fn intersection_area(&self, other: &Rect) -> f32 {
         let inter_left = self.left.max(other.left);
         let inter_right = self.right.min(other.right);
         let inter_y_min = self.y_min.max(other.y_min);
@@ -82,7 +82,7 @@ impl Rect {
     /// Fraction of `self`'s area that overlaps with `container`.
     ///
     /// Returns 0.0 if self has zero area or no overlap exists.
-    pub fn intersection_over_self(&self, container: &Rect) -> f32 {
+    pub(crate) fn intersection_over_self(&self, container: &Rect) -> f32 {
         let self_area = self.area();
         if self_area <= 0.0 {
             return 0.0;
@@ -91,7 +91,7 @@ impl Rect {
     }
 
     /// Whether a point lies inside (or on the boundary of) this rect.
-    pub fn contains_point(&self, x: f32, y: f32) -> bool {
+    pub(crate) fn contains_point(&self, x: f32, y: f32) -> bool {
         x >= self.left && x <= self.right && y >= self.y_min && y <= self.y_max
     }
 }

@@ -2,12 +2,9 @@
 	"id": "token_reduction_with_chunking",
 	"description": "Tests token reduction combined with chunking",
 	"tags": ["token_reduction", "chunking"],
-	"document": {
-		"path": "pdf/fake_memo.pdf"
-	},
-	"extraction": {
-		"method": "sync",
-		"input_type": "file",
+	"call": "extract_file_sync",
+	"input": {
+		"path": "pdf/fake_memo.pdf",
 		"config": {
 			"token_reduction": {
 				"mode": "moderate"
@@ -18,14 +15,34 @@
 			}
 		}
 	},
-	"assertions": {
-		"expected_mime": "application/pdf",
-		"min_content_length": 5,
-		"max_content_length": 200,
-		"content_not_empty": true,
-		"chunks": {
-			"min_count": 1,
-			"each_has_content": true
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "application/pdf"
+		},
+		{
+			"type": "min_length",
+			"field": "content",
+			"value": 5
+		},
+		{
+			"type": "max_length",
+			"field": "content",
+			"value": 200
+		},
+		{
+			"type": "not_empty",
+			"field": "content"
+		},
+		{
+			"type": "count_min",
+			"field": "chunks",
+			"value": 1
+		},
+		{
+			"type": "is_true",
+			"field": "chunks_have_content"
 		}
-	}
+	]
 }

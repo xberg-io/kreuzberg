@@ -2,19 +2,22 @@
 	"id": "image_tiff_basic",
 	"category": "image",
 	"description": "TIFF image extraction via OCR.",
-	"document": {
+	"input": {
 		"path": "images_extra/ocr_image.tif",
-		"media_type": "image/tiff",
-		"requires_external_tool": ["tesseract"]
+		"media_type": "image/tiff"
 	},
-	"extraction": {
-		"config": {}
-	},
-	"assertions": {
-		"expected_mime": "image/tiff",
-		"content_not_empty": true
-	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "mime_type",
+			"value": "image/tiff"
+		},
+		{
+			"type": "not_empty",
+			"field": "content"
+		}
+	],
 	"skip": {
-		"requires_feature": ["tesseract"]
+		"reason": "Requires features: tesseract"
 	}
 }

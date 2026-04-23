@@ -1,0 +1,10 @@
+{
+	"id": "reduce_tokens_moderate",
+	"category": "token_reduction",
+	"description": "Reduce tokens moderate",
+	"tags": ["token_reduction"],
+	"call": "reduce_tokens",
+	"input": { "text": "Some redundant verbose text.", "level": "moderate" },
+	"assertions": [{ "type": "not_error" }],
+	"skip": { "reason": "Requires features: quality" }
+}

@@ -1,0 +1,22 @@
+{
+	"id": "chunk_semantic_basic",
+	"category": "chunking",
+	"description": "Semantic chunking that respects topic boundaries",
+	"tags": ["chunking", "semantic", "topics"],
+	"call": "chunk_semantic",
+	"input": {
+		"text": "First topic: Machine learning is a subset of AI. It uses data to learn patterns. Second topic: Climate change affects global temperatures. Rising sea levels are a major concern.",
+		"config": {
+			"max_characters": 200,
+			"max_overlap": 20
+		}
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	],
+	"skip": {
+		"reason": "Requires features: embeddings"
+	}
+}

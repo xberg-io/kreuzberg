@@ -14,7 +14,7 @@ pub struct PunctuationCleaner;
 
 impl PunctuationCleaner {
     /// Cleans excessive punctuation from text using optimized Cow pattern.
-    pub fn clean_punctuation_optimized(text: &str) -> String {
+    pub(crate) fn clean_punctuation_optimized(text: &str) -> String {
         let mut result = Cow::Borrowed(text);
 
         if REPEATED_EXCLAMATION.is_match(&result) {

@@ -53,7 +53,7 @@ impl PluginHealthStatus {
     ///     println!("OCR backends: {:?}", status.ocr_backends);
     /// }
     /// ```
-    pub fn check() -> Self {
+    pub(crate) fn check() -> Self {
         let ocr_registry = get_ocr_backend_registry();
         let ocr_backends = ocr_registry.read().list();
 
@@ -114,7 +114,7 @@ impl PluginHealthStatus {
 ///     Ok(())
 /// }
 /// ```
-pub fn validate_plugins_at_startup() -> Result<PluginHealthStatus> {
+pub(crate) fn validate_plugins_at_startup() -> Result<PluginHealthStatus> {
     let status = PluginHealthStatus::check();
 
     // Log OCR backend status

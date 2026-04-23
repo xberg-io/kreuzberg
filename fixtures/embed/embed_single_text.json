@@ -2,26 +2,46 @@
 	"id": "embed_single_text",
 	"description": "Standalone embedding of a single text with balanced preset",
 	"tags": ["embed"],
-	"embed": {
+	"call": "embed",
+	"input": {
 		"texts": ["Hello, Kreuzberg!"],
 		"config": {
-			"model": { "type": "preset", "name": "balanced" },
+			"model": {
+				"type": "preset",
+				"name": "balanced"
+			},
 			"normalize": true
 		}
 	},
-	"assertions": {
-		"embed": {
-			"count": 1,
-			"dimensions": 768,
-			"no_nan": true,
-			"no_inf": true,
-			"non_zero": true,
-			"normalized": true
+	"assertions": [
+		{
+			"type": "count_equals",
+			"field": "embeddings",
+			"value": 1
+		},
+		{
+			"type": "equals",
+			"field": "embedding_dimensions",
+			"value": 768
+		},
+		{
+			"type": "is_true",
+			"field": "embeddings_valid"
+		},
+		{
+			"type": "is_true",
+			"field": "embeddings_finite"
+		},
+		{
+			"type": "is_true",
+			"field": "embeddings_non_zero"
+		},
+		{
+			"type": "is_true",
+			"field": "embeddings_normalized"
 		}
-	},
+	],
 	"skip": {
-		"requires_feature": ["embeddings"],
-		"skip_on_platform": ["x86_64-pc-windows-msvc"],
-		"notes": "Embeddings not supported on Windows MSVC"
+		"reason": "Requires features: embeddings; Skip on platforms: x86_64-pc-windows-msvc; Embeddings not supported on Windows MSVC"
 	}
 }

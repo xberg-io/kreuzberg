@@ -6,7 +6,7 @@ use serde_json::Value;
 use std::borrow::Cow;
 
 /// Parse a `{\\creatim ...}` or `{\\revtim ...}` RTF info block into ISO 8601 format.
-pub fn parse_rtf_datetime(segment: &str) -> Option<String> {
+pub(crate) fn parse_rtf_datetime(segment: &str) -> Option<String> {
     let mut year: Option<i32> = None;
     let mut month: Option<i32> = None;
     let mut day: Option<i32> = None;
@@ -46,7 +46,7 @@ pub fn parse_rtf_datetime(segment: &str) -> Option<String> {
 }
 
 /// Extract metadata from the RTF `\\info` block and augment with computed statistics.
-pub fn extract_rtf_metadata(rtf_content: &str, extracted_text: &str) -> AHashMap<Cow<'static, str>, Value> {
+pub(crate) fn extract_rtf_metadata(rtf_content: &str, extracted_text: &str) -> AHashMap<Cow<'static, str>, Value> {
     let mut metadata: AHashMap<Cow<'static, str>, Value> = AHashMap::new();
 
     if let Some(start) = rtf_content.find("{\\info") {

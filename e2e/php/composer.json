@@ -1,15 +1,13 @@
 {
-	"autoload": {
-		"psr-4": {
-			"E2EPhp\\": "tests/"
-		}
-	},
-	"autoload-dev": {
-		"psr-4": {
-			"E2EPhp\\Tests\\": "tests/"
-		}
-	},
-	"require-dev": {
-		"phpunit/phpunit": "^13.1"
-	}
+  "name": "kreuzberg/e2e-php",
+  "description": "E2e tests for PHP bindings",
+  "type": "project",
+  "require-dev": {
+    "phpunit/phpunit": "^13.1"
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Kreuzberg\\E2e\\": "tests/"
+    }
+  }
 }

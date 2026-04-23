@@ -1,0 +1,15 @@
+{
+	"id": "validate_port_valid",
+	"category": "validation",
+	"description": "Accept valid port number",
+	"tags": ["validation", "port"],
+	"call": "validate_port",
+	"input": {
+		"port": 8080
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	]
+}

@@ -21,7 +21,7 @@ use crate::pdf::error::PdfError;
 
 // Re-export for backward compatibility
 #[cfg(feature = "ocr")]
-pub use ocr::{NativeTextStats, OcrFallbackDecision, evaluate_native_text_for_ocr, evaluate_per_page_ocr};
+pub(crate) use ocr::evaluate_per_page_ocr;
 
 #[cfg(feature = "pdf")]
 use pdfium_render::prelude::{PdfDocument, Pdfium};
@@ -242,7 +242,7 @@ impl Default for PdfExtractor {
 }
 
 impl PdfExtractor {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self
     }
 }

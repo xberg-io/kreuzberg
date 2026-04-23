@@ -18,7 +18,7 @@ pub struct HwpDocument {
 impl HwpDocument {
     /// Concatenate the text of every paragraph in every section, separated by
     /// newlines.
-    pub fn extract_text(&self) -> String {
+    pub(crate) fn extract_text(&self) -> String {
         let mut out = String::new();
         for section in &self.sections {
             for para in &section.paragraphs {
@@ -71,7 +71,7 @@ impl ParaText {
     /// units.  Control characters < 0x0020 are mapped to whitespace or skipped;
     /// characters in the private-use range 0xF020–0xF07F (HWP internal controls)
     /// are discarded.
-    pub fn from_record(record: &Record) -> Result<Self> {
+    pub(crate) fn from_record(record: &Record) -> Result<Self> {
         let mut reader = record.data_reader();
         let mut chars: Vec<u16> = Vec::with_capacity(record.data.len() / 2);
 

@@ -72,7 +72,7 @@ pub struct LatexExtractor;
 
 impl LatexExtractor {
     /// Create a new LaTeX extractor.
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self
     }
 
@@ -427,7 +427,7 @@ impl LatexExtractor {
     ///
     /// Captures `\label{}` as anchors, `\ref{}` as CrossReference relationships,
     /// `\cite{}` as CitationReference relationships, and footnotes.
-    pub fn build_internal_document(source: &str, inject_placeholders: bool) -> InternalDocument {
+    pub(crate) fn build_internal_document(source: &str, inject_placeholders: bool) -> InternalDocument {
         let mut b = InternalDocumentBuilder::new("latex");
         let lines: Vec<&str> = source.lines().collect();
         let mut in_document = false;

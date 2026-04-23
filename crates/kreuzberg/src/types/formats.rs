@@ -420,12 +420,12 @@ pub struct ImagePreprocessingMetadata {
     pub resize_error: Option<String>,
 }
 
-/// Image extraction configuration (internal use).
+/// Image extraction DPI configuration (internal use).
 ///
 /// **Note:** This is an internal type used for image preprocessing.
 /// For the main extraction configuration, see [`crate::core::config::ExtractionConfig`].
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ExtractionConfig {
+pub struct ImageDpiConfig {
     /// Target DPI for image normalization
     pub target_dpi: i32,
     /// Maximum image dimension (width or height)
@@ -438,7 +438,7 @@ pub struct ExtractionConfig {
     pub max_dpi: i32,
 }
 
-impl Default for ExtractionConfig {
+impl Default for ImageDpiConfig {
     fn default() -> Self {
         Self {
             target_dpi: 300,

@@ -1,0 +1,1 @@
+{"id":"batch_bytes_invalid_mime","category":"batch","description":"batch_extract_bytes_sync invalid MIME","tags":["batch","error"],"call":"batch_extract_bytes_sync","input":{"items":[{"data":"SGVsbG8=","mime_type":"application/x-nonexistent"}]},"assertions":[{"type":"not_error"}]}

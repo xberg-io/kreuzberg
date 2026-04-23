@@ -1,0 +1,9 @@
+{
+	"id": "validate_port_over",
+	"category": "validate",
+	"description": "Port over 65535",
+	"tags": ["validation", "error"],
+	"call": "validate_port",
+	"input": { "port": 70000 },
+	"assertions": [{ "type": "error" }]
+}

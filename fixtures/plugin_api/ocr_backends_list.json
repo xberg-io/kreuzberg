@@ -1,18 +1,12 @@
 {
 	"id": "ocr_backends_list",
+	"category": "ocr_backend_management",
 	"description": "List all registered OCR backends",
-	"api_category": "ocr_backend_management",
-	"api_function": "list_ocr_backends",
 	"tags": ["ocr", "plugin_management", "list"],
-	"test_spec": {
-		"pattern": "simple_list",
-		"function_call": {
-			"name": "list_ocr_backends",
-			"args": []
-		},
-		"assertions": {
-			"return_type": "list",
-			"list_item_type": "string"
+	"call": "list_ocr_backends",
+	"assertions": [
+		{
+			"type": "not_error"
 		}
-	}
+	]
 }

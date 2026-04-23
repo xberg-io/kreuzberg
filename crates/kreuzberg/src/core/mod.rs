@@ -46,7 +46,7 @@ pub mod server_config;
 pub use config::HierarchyConfig;
 pub use config::{
     ChunkingConfig, EmbeddingConfig, EmbeddingModelType, ExtractionConfig, ImageExtractionConfig,
-    LanguageDetectionConfig, OcrConfig, OutputFormat, PageConfig, PostProcessorConfig, TokenReductionConfig,
+    LanguageDetectionConfig, OcrConfig, OutputFormat, PageConfig, PostProcessorConfig, TokenReductionOptions,
 };
 pub use config_validation::{
     validate_binarization_method, validate_chunking_params, validate_confidence, validate_dpi, validate_language_code,

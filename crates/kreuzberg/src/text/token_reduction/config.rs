@@ -1,8 +1,9 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Default)]
 pub enum ReductionLevel {
+    #[default]
     Off = 0,
     Light = 1,
     Moderate = 2,
@@ -11,7 +12,7 @@ pub enum ReductionLevel {
 }
 
 impl ReductionLevel {
-    pub fn as_str(&self) -> &'static str {
+    pub(crate) fn as_str(&self) -> &'static str {
         match self {
             ReductionLevel::Off => "off",
             ReductionLevel::Light => "light",
@@ -70,7 +71,7 @@ impl Default for TokenReductionConfig {
 
 impl TokenReductionConfig {
     #[allow(clippy::too_many_arguments)]
-    pub fn new(
+    pub(crate) fn new(
         level: ReductionLevel,
         language_hint: Option<String>,
         preserve_markdown: bool,

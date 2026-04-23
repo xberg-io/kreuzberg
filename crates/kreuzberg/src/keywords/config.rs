@@ -110,7 +110,7 @@ impl Default for KeywordConfig {
 impl KeywordConfig {
     /// Create a new configuration with YAKE algorithm.
     #[cfg(feature = "keywords-yake")]
-    pub fn yake() -> Self {
+    pub(crate) fn yake() -> Self {
         Self {
             algorithm: KeywordAlgorithm::Yake,
             ..Default::default()
@@ -119,7 +119,7 @@ impl KeywordConfig {
 
     /// Create a new configuration with RAKE algorithm.
     #[cfg(feature = "keywords-rake")]
-    pub fn rake() -> Self {
+    pub(crate) fn rake() -> Self {
         Self {
             algorithm: KeywordAlgorithm::Rake,
             ..Default::default()
@@ -127,39 +127,39 @@ impl KeywordConfig {
     }
 
     /// Set maximum number of keywords to extract.
-    pub fn with_max_keywords(mut self, max: usize) -> Self {
+    pub(crate) fn with_max_keywords(mut self, max: usize) -> Self {
         self.max_keywords = max;
         self
     }
 
     /// Set minimum score threshold.
-    pub fn with_min_score(mut self, score: f32) -> Self {
+    pub(crate) fn with_min_score(mut self, score: f32) -> Self {
         self.min_score = score;
         self
     }
 
     /// Set n-gram range.
-    pub fn with_ngram_range(mut self, min: usize, max: usize) -> Self {
+    pub(crate) fn with_ngram_range(mut self, min: usize, max: usize) -> Self {
         self.ngram_range = (min, max);
         self
     }
 
     /// Set language for stopword filtering.
-    pub fn with_language(mut self, lang: impl Into<String>) -> Self {
+    pub(crate) fn with_language(mut self, lang: impl Into<String>) -> Self {
         self.language = Some(lang.into());
         self
     }
 
     /// Set YAKE-specific parameters.
     #[cfg(feature = "keywords-yake")]
-    pub fn with_yake_params(mut self, params: YakeParams) -> Self {
+    pub(crate) fn with_yake_params(mut self, params: YakeParams) -> Self {
         self.yake_params = Some(params);
         self
     }
 
     /// Set RAKE-specific parameters.
     #[cfg(feature = "keywords-rake")]
-    pub fn with_rake_params(mut self, params: RakeParams) -> Self {
+    pub(crate) fn with_rake_params(mut self, params: RakeParams) -> Self {
         self.rake_params = Some(params);
         self
     }

@@ -1,0 +1,15 @@
+{
+	"id": "batch_file_async_basic",
+	"category": "batch",
+	"description": "Extract text from multiple files asynchronously",
+	"tags": ["batch", "async", "concurrent", "multiple_files"],
+	"call": "batch_extract_file",
+	"input": {
+		"paths": ["pdf/fake_memo.pdf", "text/fake_text.txt"]
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	]
+}

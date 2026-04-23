@@ -1,0 +1,15 @@
+{
+	"id": "validate_mime_invalid",
+	"category": "validation",
+	"description": "Reject invalid MIME type",
+	"tags": ["validation", "mime", "error"],
+	"call": "validate_mime_type",
+	"input": {
+		"mime_type": "invalid"
+	},
+	"assertions": [
+		{
+			"type": "error"
+		}
+	]
+}

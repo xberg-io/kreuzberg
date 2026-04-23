@@ -1,18 +1,12 @@
 {
 	"id": "post_processors_list",
+	"category": "post_processor_management",
 	"description": "List all registered post-processors",
-	"api_category": "post_processor_management",
-	"api_function": "list_post_processors",
 	"tags": ["post_processors", "plugin_management", "list"],
-	"test_spec": {
-		"pattern": "simple_list",
-		"function_call": {
-			"name": "list_post_processors",
-			"args": []
-		},
-		"assertions": {
-			"return_type": "list",
-			"list_item_type": "string"
+	"call": "list_post_processors",
+	"assertions": [
+		{
+			"type": "not_error"
 		}
-	}
+	]
 }

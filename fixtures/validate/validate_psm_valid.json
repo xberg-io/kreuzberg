@@ -1,0 +1,15 @@
+{
+	"id": "validate_psm_valid",
+	"category": "validation",
+	"description": "Accept valid Tesseract PSM mode",
+	"tags": ["validation", "tesseract", "psm"],
+	"call": "validate_tesseract_psm",
+	"input": {
+		"psm": 6
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	]
+}

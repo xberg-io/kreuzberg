@@ -56,7 +56,7 @@ pub struct ImageExtractionConfig {
 
 /// Token reduction configuration.
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct TokenReductionConfig {
+pub struct TokenReductionOptions {
     /// Reduction mode: "off", "light", "moderate", "aggressive", "maximum"
     #[serde(default = "default_reduction_mode")]
     pub mode: String,

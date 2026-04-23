@@ -43,7 +43,7 @@ impl LanguageRegistry {
     /// # Returns
     ///
     /// A new `LanguageRegistry` with EasyOCR, PaddleOCR, and Tesseract languages pre-populated.
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         let mut registry = Self {
             backends: AHashMap::new(),
         };
@@ -68,7 +68,7 @@ impl LanguageRegistry {
     /// # Returns
     ///
     /// A reference to the global `LanguageRegistry` instance.
-    pub fn global() -> &'static Self {
+    pub(crate) fn global() -> &'static Self {
         LANGUAGE_REGISTRY.get_or_init(Self::new)
     }
 
@@ -92,7 +92,7 @@ impl LanguageRegistry {
     ///     assert!(languages.contains(&"en".to_string()));
     /// }
     /// ```
-    pub fn get_supported_languages(&self, backend: &str) -> Option<&[String]> {
+    pub(crate) fn get_supported_languages(&self, backend: &str) -> Option<&[String]> {
         self.backends.get(backend).map(|v| v.as_slice())
     }
 
@@ -106,7 +106,7 @@ impl LanguageRegistry {
     /// # Returns
     ///
     /// `true` if the language is supported, `false` otherwise.
-    pub fn is_language_supported(&self, backend: &str, language: &str) -> bool {
+    pub(crate) fn is_language_supported(&self, backend: &str, language: &str) -> bool {
         self.backends
             .get(backend)
             .map(|langs| langs.contains(&language.to_string()))
@@ -118,7 +118,7 @@ impl LanguageRegistry {
     /// # Returns
     ///
     /// A vector of backend names in the registry.
-    pub fn get_backends(&self) -> Vec<String> {
+    pub(crate) fn get_backends(&self) -> Vec<String> {
         let mut backends: Vec<_> = self.backends.keys().cloned().collect();
         backends.sort();
         backends
@@ -133,7 +133,7 @@ impl LanguageRegistry {
     /// # Returns
     ///
     /// Number of supported languages for the backend, or 0 if backend not found.
-    pub fn get_language_count(&self, backend: &str) -> usize {
+    pub(crate) fn get_language_count(&self, backend: &str) -> usize {
         self.backends.get(backend).map(|langs| langs.len()).unwrap_or(0)
     }
 }

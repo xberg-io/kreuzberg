@@ -94,7 +94,7 @@ impl PaddleOcrConfig {
     ///
     /// let config = PaddleOcrConfig::new("en");
     /// ```
-    pub fn new(language: impl Into<String>) -> Self {
+    pub(crate) fn new(language: impl Into<String>) -> Self {
         Self {
             language: language.into(),
             cache_dir: None,
@@ -126,7 +126,7 @@ impl PaddleOcrConfig {
     /// let config = PaddleOcrConfig::new("en")
     ///     .with_cache_dir(PathBuf::from("/tmp/paddle-cache"));
     /// ```
-    pub fn with_cache_dir(mut self, path: PathBuf) -> Self {
+    pub(crate) fn with_cache_dir(mut self, path: PathBuf) -> Self {
         self.cache_dir = Some(path);
         self
     }
@@ -145,7 +145,7 @@ impl PaddleOcrConfig {
     /// let config = PaddleOcrConfig::new("en")
     ///     .with_table_detection(true);
     /// ```
-    pub fn with_table_detection(mut self, enable: bool) -> Self {
+    pub(crate) fn with_table_detection(mut self, enable: bool) -> Self {
         self.enable_table_detection = enable;
         self
     }
@@ -155,7 +155,7 @@ impl PaddleOcrConfig {
     /// # Arguments
     ///
     /// * `enable` - Whether to enable angle classification
-    pub fn with_angle_cls(mut self, enable: bool) -> Self {
+    pub(crate) fn with_angle_cls(mut self, enable: bool) -> Self {
         self.use_angle_cls = enable;
         self
     }
@@ -165,7 +165,7 @@ impl PaddleOcrConfig {
     /// # Arguments
     ///
     /// * `threshold` - Detection threshold (0.0-1.0)
-    pub fn with_det_db_thresh(mut self, threshold: f32) -> Self {
+    pub(crate) fn with_det_db_thresh(mut self, threshold: f32) -> Self {
         self.det_db_thresh = threshold.clamp(0.0, 1.0);
         self
     }
@@ -175,7 +175,7 @@ impl PaddleOcrConfig {
     /// # Arguments
     ///
     /// * `threshold` - Box threshold (0.0-1.0)
-    pub fn with_det_db_box_thresh(mut self, threshold: f32) -> Self {
+    pub(crate) fn with_det_db_box_thresh(mut self, threshold: f32) -> Self {
         self.det_db_box_thresh = threshold.clamp(0.0, 1.0);
         self
     }
@@ -185,7 +185,7 @@ impl PaddleOcrConfig {
     /// # Arguments
     ///
     /// * `ratio` - Unclip ratio (typically 1.5-2.0)
-    pub fn with_det_db_unclip_ratio(mut self, ratio: f32) -> Self {
+    pub(crate) fn with_det_db_unclip_ratio(mut self, ratio: f32) -> Self {
         self.det_db_unclip_ratio = ratio.clamp(1.0, 3.0);
         self
     }
@@ -195,7 +195,7 @@ impl PaddleOcrConfig {
     /// # Arguments
     ///
     /// * `length` - Maximum side length in pixels
-    pub fn with_det_limit_side_len(mut self, length: u32) -> Self {
+    pub(crate) fn with_det_limit_side_len(mut self, length: u32) -> Self {
         self.det_limit_side_len = length.clamp(64, 4096);
         self
     }
@@ -205,7 +205,7 @@ impl PaddleOcrConfig {
     /// # Arguments
     ///
     /// * `batch_size` - Number of text regions to process simultaneously
-    pub fn with_rec_batch_num(mut self, batch_size: u32) -> Self {
+    pub(crate) fn with_rec_batch_num(mut self, batch_size: u32) -> Self {
         self.rec_batch_num = batch_size.clamp(1, 64);
         self
     }
@@ -215,7 +215,7 @@ impl PaddleOcrConfig {
     /// # Arguments
     ///
     /// * `score` - Minimum confidence (0.0-1.0), text below this is dropped
-    pub fn with_drop_score(mut self, score: f32) -> Self {
+    pub(crate) fn with_drop_score(mut self, score: f32) -> Self {
         self.drop_score = score.clamp(0.0, 1.0);
         self
     }
@@ -225,7 +225,7 @@ impl PaddleOcrConfig {
     /// # Arguments
     ///
     /// * `padding` - Padding in pixels (0-100)
-    pub fn with_padding(mut self, padding: u32) -> Self {
+    pub(crate) fn with_padding(mut self, padding: u32) -> Self {
         self.padding = padding.clamp(0, 100);
         self
     }
@@ -235,7 +235,7 @@ impl PaddleOcrConfig {
     /// # Arguments
     ///
     /// * `tier` - `"mobile"` (default, lightweight, faster) or `"server"` (high accuracy, GPU/complex documents)
-    pub fn with_model_tier(mut self, tier: impl Into<String>) -> Self {
+    pub(crate) fn with_model_tier(mut self, tier: impl Into<String>) -> Self {
         self.model_tier = tier.into();
         self
     }
@@ -258,7 +258,7 @@ impl PaddleOcrConfig {
     /// let cache_dir = config.resolve_cache_dir();
     /// println!("Cache directory: {:?}", cache_dir);
     /// ```
-    pub fn resolve_cache_dir(&self) -> PathBuf {
+    pub(crate) fn resolve_cache_dir(&self) -> PathBuf {
         // First check if cache_dir is explicitly set
         if let Some(path) = &self.cache_dir {
             return path.clone();
@@ -369,7 +369,7 @@ impl PaddleLanguage {
     /// assert_eq!(PaddleLanguage::from_code("ch"), Some(PaddleLanguage::Chinese));
     /// assert_eq!(PaddleLanguage::from_code("unknown"), None);
     /// ```
-    pub fn from_code(code: &str) -> Option<Self> {
+    pub(crate) fn from_code(code: &str) -> Option<Self> {
         match code {
             "en" => Some(Self::English),
             "ch" => Some(Self::Chinese),

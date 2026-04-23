@@ -56,7 +56,7 @@ pub struct TypstExtractor;
 #[cfg(feature = "office")]
 impl TypstExtractor {
     /// Create a new Typst extractor.
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self
     }
 

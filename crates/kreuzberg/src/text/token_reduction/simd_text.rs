@@ -10,11 +10,11 @@ impl Default for SimdTextProcessor {
 }
 
 impl SimdTextProcessor {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self
     }
 
-    pub fn clean_punctuation(&self, text: &str) -> String {
+    pub(crate) fn clean_punctuation(&self, text: &str) -> String {
         let bytes = text.as_bytes();
         let mut result = Vec::with_capacity(text.len());
         let mut i = 0;
@@ -84,7 +84,7 @@ impl SimdTextProcessor {
     }
 }
 
-pub fn chunk_text_for_parallel(text: &str, target_chunks: usize) -> Vec<&str> {
+pub(crate) fn chunk_text_for_parallel(text: &str, target_chunks: usize) -> Vec<&str> {
     if text.len() < 1000 || target_chunks <= 1 {
         return vec![text];
     }

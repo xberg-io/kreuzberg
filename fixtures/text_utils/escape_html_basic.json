@@ -1,0 +1,20 @@
+{
+	"id": "escape_html_basic",
+	"category": "text_utils",
+	"description": "Escape HTML special characters including angle brackets",
+	"tags": ["text_utils", "html", "escaping"],
+	"call": "escape_html_entities",
+	"input": {
+		"text": "<script>alert('xss')</script>"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "contains",
+			"field": "result",
+			"value": "&lt;"
+		}
+	]
+}

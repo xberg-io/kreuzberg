@@ -7,7 +7,7 @@
 ///
 /// Returns a value in `[-1.0, 1.0]`. If either vector has near-zero magnitude
 /// the function returns `0.0` rather than producing `NaN`.
-pub fn cosine_similarity(a: &[f32], b: &[f32]) -> f32 {
+pub(crate) fn cosine_similarity(a: &[f32], b: &[f32]) -> f32 {
     debug_assert_eq!(a.len(), b.len(), "vectors must have equal length");
 
     let mut dot = 0.0_f32;
@@ -43,7 +43,7 @@ pub fn cosine_similarity(a: &[f32], b: &[f32]) -> f32 {
 ///
 /// A `Vec<bool>` of the same length as `segment_texts` where `true` marks the
 /// start of a new topic group.
-pub fn detect_topic_boundaries(
+pub(crate) fn detect_topic_boundaries(
     segment_texts: &[&str],
     forced_boundaries: &[bool],
     embedding_config: &crate::EmbeddingConfig,

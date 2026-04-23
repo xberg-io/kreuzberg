@@ -1,23 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/13.1/phpunit.xsd"
          bootstrap="bootstrap.php"
          colors="true"
-         executionOrder="depends,defects"
-         requireCoverageMetadata="false"
-         beStrictAboutCoverageMetadata="true"
-         beStrictAboutOutputDuringTests="true"
          failOnRisky="true"
          failOnWarning="true">
     <testsuites>
-        <testsuite name="E2E Tests">
+        <testsuite name="e2e">
             <directory>tests</directory>
         </testsuite>
     </testsuites>
-
-    <php>
-        <ini name="display_errors" value="1"/>
-        <ini name="error_reporting" value="-1"/>
-        <ini name="memory_limit" value="512M"/>
-    </php>
 </phpunit>

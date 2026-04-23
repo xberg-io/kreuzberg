@@ -182,7 +182,7 @@ fn discover_system_fonts() -> Result<AHashMap<String, Arc<[u8]>>, PdfError> {
 ///
 /// - First call: 50-100ms (system font discovery + loading)
 /// - Subsequent calls: < 1μs (no-op, just checks initialized flag)
-pub fn initialize_font_cache() -> Result<(), PdfError> {
+pub(crate) fn initialize_font_cache() -> Result<(), PdfError> {
     {
         let cache = FONT_CACHE
             .read()
@@ -225,7 +225,7 @@ pub fn initialize_font_cache() -> Result<(), PdfError> {
 ///
 /// - First call: ~50-100ms (includes font discovery)
 /// - Subsequent calls: < 1ms (reads from cache)
-pub fn get_font_descriptors() -> Result<Vec<FontDescriptor>, PdfError> {
+pub(crate) fn get_font_descriptors() -> Result<Vec<FontDescriptor>, PdfError> {
     initialize_font_cache()?;
 
     let cache = FONT_CACHE
@@ -262,7 +262,7 @@ pub fn get_font_descriptors() -> Result<Vec<FontDescriptor>, PdfError> {
 /// # Returns
 ///
 /// Number of fonts in the cache, or 0 if not initialized.
-pub fn cached_font_count() -> usize {
+pub(crate) fn cached_font_count() -> usize {
     FONT_CACHE.read().map(|cache| cache.fonts.len()).unwrap_or(0)
 }
 

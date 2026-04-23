@@ -1,0 +1,11 @@
+{
+	"id": "classify_uri_https",
+	"category": "uri",
+	"description": "Classify HTTPS URL",
+	"tags": ["uri"],
+	"call": "classify_uri",
+	"input": {
+		"url": "https://example.com/page"
+	},
+	"assertions": [{ "type": "not_error" }]
+}

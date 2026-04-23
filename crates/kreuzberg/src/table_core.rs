@@ -20,25 +20,25 @@ pub struct HocrWord {
 impl HocrWord {
     /// Get the right edge position.
     #[inline]
-    pub fn right(&self) -> u32 {
+    pub(crate) fn right(&self) -> u32 {
         self.left + self.width
     }
 
     /// Get the bottom edge position.
     #[inline]
-    pub fn bottom(&self) -> u32 {
+    pub(crate) fn bottom(&self) -> u32 {
         self.top + self.height
     }
 
     /// Get the vertical center position.
     #[inline]
-    pub fn y_center(&self) -> f64 {
+    pub(crate) fn y_center(&self) -> f64 {
         self.top as f64 + (self.height as f64 / 2.0)
     }
 
     /// Get the horizontal center position.
     #[inline]
-    pub fn x_center(&self) -> f64 {
+    pub(crate) fn x_center(&self) -> f64 {
         self.left as f64 + (self.width as f64 / 2.0)
     }
 }
@@ -47,7 +47,7 @@ impl HocrWord {
 ///
 /// Groups words by approximate x-position (within `column_threshold` pixels)
 /// and returns the median x-position for each detected column, sorted left to right.
-pub fn detect_columns(words: &[HocrWord], column_threshold: u32) -> Vec<u32> {
+pub(crate) fn detect_columns(words: &[HocrWord], column_threshold: u32) -> Vec<u32> {
     if words.is_empty() {
         return Vec::new();
     }
@@ -98,7 +98,7 @@ pub fn detect_columns(words: &[HocrWord], column_threshold: u32) -> Vec<u32> {
 /// Groups words by their vertical center position and returns the median
 /// y-position for each detected row. The `row_threshold_ratio` is multiplied
 /// by the median word height to determine the grouping threshold.
-pub fn detect_rows(words: &[HocrWord], row_threshold_ratio: f64) -> Vec<u32> {
+pub(crate) fn detect_rows(words: &[HocrWord], row_threshold_ratio: f64) -> Vec<u32> {
     if words.is_empty() {
         return Vec::new();
     }
@@ -213,7 +213,11 @@ fn remove_empty_rows_and_columns(table: Vec<Vec<String>>) -> Vec<Vec<String>> {
 /// 4. Combining words within the same cell
 ///
 /// Returns a `Vec<Vec<String>>` where each inner `Vec` is a row of cell texts.
-pub fn reconstruct_table(words: &[HocrWord], column_threshold: u32, row_threshold_ratio: f64) -> Vec<Vec<String>> {
+pub(crate) fn reconstruct_table(
+    words: &[HocrWord],
+    column_threshold: u32,
+    row_threshold_ratio: f64,
+) -> Vec<Vec<String>> {
     if words.is_empty() {
         return Vec::new();
     }
@@ -267,7 +271,7 @@ pub fn reconstruct_table(words: &[HocrWord], column_threshold: u32, row_threshol
 ///
 /// The first row is treated as the header row, with a separator line added after it.
 /// Pipe characters in cell content are escaped.
-pub fn table_to_markdown(table: &[Vec<String>]) -> String {
+pub(crate) fn table_to_markdown(table: &[Vec<String>]) -> String {
     if table.is_empty() {
         return String::new();
     }
