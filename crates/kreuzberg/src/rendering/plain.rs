@@ -60,13 +60,22 @@ pub fn render_plain(doc: &InternalDocument) -> String {
                 }
             }
             ElementKind::Image { image_index } => {
-                if let Some(img) = doc.images.get(image_index as usize)
-                    && let Some(ref desc) = img.description
-                    && !desc.is_empty()
-                {
-                    out.push_str("[Image: ");
-                    out.push_str(desc);
-                    out.push_str("]\n\n");
+                if let Some(img) = doc.images.get(image_index as usize) {
+                    if let Some(ref desc) = img.description
+                        && !desc.is_empty()
+                    {
+                        out.push_str("[Image: ");
+                        out.push_str(desc);
+                        out.push_str("]\n\n");
+                    }
+
+                    // If the image has an OCR result, append its content
+                    if let Some(ocr_result) = &img.ocr_result {
+                        if !ocr_result.content.is_empty() {
+                            out.push_str(&ocr_result.content);
+                            out.push_str("\n\n");
+                        }
+                    }
                 }
             }
             ElementKind::FootnoteRef => {

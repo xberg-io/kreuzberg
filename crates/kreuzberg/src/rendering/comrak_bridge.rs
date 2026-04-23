@@ -710,6 +710,15 @@ pub fn build_comrak_ast<'a>(doc: &InternalDocument, arena: &'a comrak::Arena<'a>
                 img_node.append(mk_text(arena, desc));
                 para.append(img_node);
                 parent.append(para);
+
+                // If the image has an OCR result, append its content as a paragraph
+                if let Some(ocr_result) = image.and_then(|img| img.ocr_result.as_ref()) {
+                    if !ocr_result.content.is_empty() {
+                        let ocr_para = mk(arena, NodeValue::Paragraph);
+                        ocr_para.append(mk_text(arena, &ocr_result.content));
+                        parent.append(ocr_para);
+                    }
+                }
             }
 
             ElementKind::FootnoteRef => {

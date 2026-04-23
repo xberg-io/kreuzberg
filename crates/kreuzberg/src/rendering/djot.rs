@@ -107,6 +107,14 @@ pub fn render_djot(doc: &InternalDocument) -> String {
                     .unwrap_or_default();
                 let block = format!("![{}]({})\n\n", desc, url);
                 push_with_bq(&mut out, &block, bq_depth);
+
+                // If the image has an OCR result, append its content
+                if let Some(ocr_result) = image.and_then(|img| img.ocr_result.as_ref()) {
+                    if !ocr_result.content.is_empty() {
+                        let block = format!("{}\n\n", ocr_result.content);
+                        push_with_bq(&mut out, &block, bq_depth);
+                    }
+                }
             }
             ElementKind::FootnoteRef => {
                 if let Some(n) = footnotes.ref_number(i as u32) {

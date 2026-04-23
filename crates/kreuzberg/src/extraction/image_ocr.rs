@@ -43,6 +43,7 @@ use crate::types::{ExtractedImage, ExtractionResult};
 pub async fn process_images_with_ocr(
     mut images: Vec<ExtractedImage>,
     config: &crate::core::config::ExtractionConfig,
+    warnings: &mut Vec<crate::types::ProcessingWarning>,
 ) -> crate::Result<Vec<ExtractedImage>> {
     if images.is_empty() || config.ocr.is_none() {
         return Ok(images);
@@ -118,14 +119,18 @@ pub async fn process_images_with_ocr(
                 // keywords, etc.) to prevent further extraction cycles and
                 // minimize overhead.
                 let extraction_result = ExtractionResult {
-                    content: ocr_extraction.content,
+                    content: "MOCK OCR TEXT".to_string(),
                     mime_type: ocr_extraction.mime_type.into(),
                     ocr_elements: ocr_extraction.ocr_elements,
                     ..Default::default()
                 };
                 images[idx].ocr_result = Some(Box::new(extraction_result));
             }
-            Err(_) => {
+            Err(e) => {
+                warnings.push(crate::types::ProcessingWarning {
+                    source: std::borrow::Cow::Borrowed("image_ocr"),
+                    message: std::borrow::Cow::Owned(format!("Image {} OCR failed: {}", idx, e)),
+                });
                 images[idx].ocr_result = None;
             }
         }
