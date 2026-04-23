@@ -818,26 +818,34 @@ jobs:
       fail-fast: false
       matrix:
         settings:
+          # Linux gnu: build via cargo-zigbuild (napi -x flag). zig's linker
+          # caps glibc at 2.17 (manylinux2014 floor), so the prebuilt .node
+          # loads on RHEL 8/9. napi-cross-toolchain ships GCC 4.8.5 which
+          # can't compile aws-lc-sys (stdatomic.h) — see napi-rs/cross-toolchain#4.
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
-            rust_target: ""
+            rust_target: x86_64-unknown-linux-gnu
             use_cross: false
             use_napi_cross: false
+            use_zigbuild: true
           - os: ubuntu-24.04-arm
             target: aarch64-unknown-linux-gnu
-            rust_target: ""
+            rust_target: aarch64-unknown-linux-gnu
             use_cross: false
             use_napi_cross: false
+            use_zigbuild: true
           - os: macos-latest
             target: aarch64-apple-darwin
             rust_target: ""
             use_cross: false
             use_napi_cross: false
+            use_zigbuild: false
           - os: windows-latest
             target: x86_64-pc-windows-msvc
             rust_target: ""
             use_cross: false
             use_napi_cross: false
+            use_zigbuild: false
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -877,6 +885,18 @@ jobs:
         if: ${{ matrix.settings.use_cross }}
         run: cargo install cross --git https://github.com/cross-rs/cross --locked
 
+      - name: Setup Zig
+        if: ${{ matrix.settings.use_zigbuild }}
+        uses: mlugg/setup-zig@v2
+        with:
+          version: 0.14.0
+
+      - name: Install cargo-zigbuild
+        if: ${{ matrix.settings.use_zigbuild }}
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-zigbuild
+
       - name: Setup Node
         uses: actions/setup-node@v6
         with:
@@ -911,6 +931,7 @@ jobs:
           TARGET: ${{ matrix.settings.target }}
           USE_CROSS: ${{ matrix.settings.use_cross }}
           USE_NAPI_CROSS: ${{ matrix.settings.use_napi_cross }}
+          USE_ZIGBUILD: ${{ matrix.settings.use_zigbuild }}
         shell: bash
         run: scripts/publish/node/build-native-module.sh
 

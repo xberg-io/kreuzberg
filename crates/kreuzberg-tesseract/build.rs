@@ -102,6 +102,25 @@ mod build_tesseract {
         target_matches(target, "wasm32") || target_matches(target, "wasm64")
     }
 
+    /// Detect whether the build is driven by cargo-zigbuild, which wraps the
+    /// C toolchain in a `zigcc`/`zigcxx` shim. zig's bundled libstdc++ has
+    /// `std::filesystem` inline (no standalone `libstdc++fs`) and its clang
+    /// splits `avx512f` from `evex512`, so tesseract's AVX512 intrinsics
+    /// fail to compile. Both workarounds below gate on this.
+    fn is_zigbuild() -> bool {
+        // CC_* / CXX_* covers target-prefixed vars that cargo-zigbuild sets
+        // when HOST == TARGET (e.g. `CC_x86_64_unknown_linux_gnu`).
+        env::vars().any(|(k, v)| {
+            let k_relevant = k == "CC"
+                || k == "CXX"
+                || k == "RUSTC_LINKER"
+                || k.starts_with("CC_")
+                || k.starts_with("CXX_")
+                || (k.starts_with("CARGO_TARGET_") && k.ends_with("_LINKER"));
+            k_relevant && (v.contains("zigcc") || v.contains("zigcxx") || v.contains("cargo-zigbuild"))
+        })
+    }
+
     /// Resolve the C++ compiler for CMake, following the cc-rs/Cargo convention:
     /// 1. Check `CXX` env var (explicit override)
     /// 2. Check target-specific `CXX_{target}` env var (e.g. `CXX_x86_64_unknown_linux_musl`)
@@ -600,6 +619,16 @@ mod build_tesseract {
                     .define("CMAKE_CXX_FLAGS", &cmake_cxx_flags)
                     .define("CMAKE_C_FLAGS", &cmake_c_flags);
 
+                // zig's clang (14+) requires an explicit `evex512` target
+                // feature for AVX512 intrinsics (`_mm512_*`), but tesseract's
+                // CMakeLists only passes `-mavx512f`. The resulting build
+                // fails with `always_inline function requires target feature
+                // 'evex512'`. Disable tesseract's AVX512 codepath under
+                // zigbuild — AVX2/SSE dispatch remains active.
+                if is_zigbuild() {
+                    tesseract_config.define("HAVE_AVX512F", "OFF");
+                }
+
                 for (key, value) in &additional_defines {
                     tesseract_config.define(key, value);
                 }
@@ -799,7 +828,13 @@ mod build_tesseract {
                 println!("cargo:rustc-link-lib=c++");
             } else {
                 println!("cargo:rustc-link-lib=stdc++");
-                println!("cargo:rustc-link-lib=stdc++fs");
+                // zig's bundled libstdc++ has `std::filesystem` inline; no
+                // standalone libstdc++fs ships with the toolchain, so emitting
+                // `-lstdc++fs` makes zld fail with `unable to find dynamic
+                // system library 'stdc++fs'`. Skip it under zigbuild.
+                if !is_zigbuild() {
+                    println!("cargo:rustc-link-lib=stdc++fs");
+                }
             }
             println!("cargo:rustc-link-lib=pthread");
             println!("cargo:rustc-link-lib=m");
