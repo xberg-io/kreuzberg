@@ -90,10 +90,12 @@ fn setup_log_capture() -> (Arc<Mutex<Vec<String>>>, tracing::subscriber::Default
 
 fn assert_cuda_requested(captured: &Arc<Mutex<Vec<String>>>) {
     let logs = captured.lock().unwrap();
-    let cuda_requested = logs.iter().any(|msg| msg.contains("CUDA execution provider requested"));
+    let cuda_active = logs
+        .iter()
+        .any(|msg| msg.contains("CUDA execution provider available") || msg.contains("CUDA available, using GPU"));
     assert!(
-        cuda_requested,
-        "CUDA EP was NOT requested — AccelerationConfig not propagated to ORT session. \
+        cuda_active,
+        "CUDA EP was NOT activated — AccelerationConfig not propagated to ORT session. \
          Captured logs:\n{}",
         logs.iter()
             .filter(|m| !m.is_empty())

@@ -35,31 +35,17 @@ permissions:
   contents: read
 
 jobs:
-  gpu-tests:
-    name: "GPU Tests (CUDA)"
-    runs-on: runner-gpu-l4
+  build:
+    name: "Build test binary"
+    runs-on: ubuntu-latest
     timeout-minutes: 30
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install NVIDIA drivers and CUDA toolkit
-        run: |
-          # Check if GPU is visible
-          nvidia-smi || {
-            echo "ERROR: nvidia-smi failed — no GPU detected"
-            exit 1
-          }
-          echo "GPU detected:"
-          nvidia-smi --query-gpu=name,driver_version,memory.total --format=csv,noheader
-
       - name: Install system dependencies
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq \
-            build-essential cmake pkg-config libssl-dev libclang-dev \
-            libtesseract-dev libleptonica-dev tesseract-ocr-eng
+        uses: ./.github/actions/install-system-deps
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
@@ -73,9 +59,53 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             target
-          key: gpu-cargo-${{ runner.os }}-${{ hashFiles('Cargo.lock') }}
+          key: gpu-build-${{ runner.os }}-${{ hashFiles('Cargo.lock') }}
           restore-keys: |
-            gpu-cargo-${{ runner.os }}-
+            gpu-build-${{ runner.os }}-
+
+      - name: Build GPU test binary
+        run: |
+          cargo test -p kreuzberg \
+            --features "paddle-ocr,layout-detection,embeddings,pdf,ocr,ort-dynamic" \
+            --test gpu_acceleration \
+            --no-run --message-format=json 2>/dev/null \
+            | jq -r 'select(.executable != null) | .executable' \
+            | head -1 > /tmp/test-binary-path.txt
+          TEST_BIN=$(cat /tmp/test-binary-path.txt)
+          echo "Test binary: $TEST_BIN"
+          cp "$TEST_BIN" gpu-acceleration-test
+          chmod +x gpu-acceleration-test
+
+      - name: Upload test binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: gpu-test-binary
+          path: gpu-acceleration-test
+          retention-days: 1
+
+  gpu-tests:
+    name: "GPU Tests (CUDA)"
+    needs: build
+    runs-on: runner-gpu-l4
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify GPU
+        run: |
+          nvidia-smi || {
+            echo "ERROR: nvidia-smi failed — no GPU detected"
+            exit 1
+          }
+          echo "GPU detected:"
+          nvidia-smi --query-gpu=name,driver_version,memory.total --format=csv,noheader
+
+      - name: Download test binary
+        uses: actions/download-artifact@v4
+        with:
+          name: gpu-test-binary
 
       - name: Download ONNX Runtime (GPU/CUDA)
         run: |
@@ -102,11 +132,9 @@ jobs:
       - name: Setup PaddleOCR models
         uses: ./.github/actions/setup-paddle-ocr-models
 
-      - name: Run GPU tests (Rust)
+      - name: Run GPU tests
         run: |
-          cargo test -p kreuzberg \
-            --features "paddle-ocr,layout-detection,embeddings,pdf,ocr,ort-dynamic" \
-            --test gpu_acceleration \
-            -- --ignored --nocapture
+          chmod +x gpu-acceleration-test
+          ./gpu-acceleration-test --ignored --nocapture
         env:
           RUST_LOG: "kreuzberg=debug"
