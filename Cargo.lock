@@ -2710,7 +2710,7 @@ dependencies = [
  "base64 0.22.1",
  "html-escape",
  "html5ever",
- "image 0.25.10",
+ "image",
  "lru",
  "memchr",
  "once_cell",
@@ -3047,21 +3047,6 @@ dependencies = [
 
 [[package]]
 name = "image"
-version = "0.24.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5690139d2f55868e080017335e4b94cb7414274c74f1669c84fb5feba2c9f69d"
-dependencies = [
- "bytemuck",
- "byteorder",
- "color_quant",
- "jpeg-decoder",
- "num-traits",
- "png 0.17.16",
- "tiff 0.9.1",
-]
-
-[[package]]
-name = "image"
 version = "0.25.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "85ab80394333c02fe689eaf900ab500fbd0c2213da414687ebf995a65d5a6104"
@@ -3074,10 +3059,10 @@ dependencies = [
  "image-webp",
  "moxcms",
  "num-traits",
- "png 0.18.1",
+ "png",
  "ravif",
  "rayon",
- "tiff 0.11.3",
+ "tiff",
  "zune-core",
  "zune-jpeg",
 ]
@@ -3100,7 +3085,7 @@ checksum = "5a8046da590889acc65f5880004580ebb269bbef84d6c0f5c543ec2dece46638"
 dependencies = [
  "approx",
  "getrandom 0.3.4",
- "image 0.25.10",
+ "image",
  "itertools 0.14.0",
  "nalgebra",
  "num",
@@ -3485,7 +3470,7 @@ dependencies = [
  "hex",
  "hf-hub 0.5.0",
  "html-to-markdown-rs",
- "image 0.25.10",
+ "image",
  "indexmap",
  "infer",
  "jotdown",
@@ -3537,7 +3522,7 @@ dependencies = [
  "tempfile",
  "text-splitter",
  "thiserror 2.0.18",
- "tiff 0.11.3",
+ "tiff",
  "tokenizers",
  "tokio",
  "tokio-test",
@@ -3608,7 +3593,7 @@ version = "4.9.5"
 dependencies = [
  "geo-clipper",
  "geo-types",
- "image 0.25.10",
+ "image",
  "imageproc",
  "ndarray",
  "ort",
@@ -3626,7 +3611,7 @@ dependencies = [
  "chrono",
  "console_error_panic_hook",
  "console_log",
- "image 0.25.10",
+ "image",
  "itertools 0.14.0",
  "js-sys",
  "libloading 0.9.0",
@@ -3671,7 +3656,7 @@ version = "4.9.5"
 dependencies = [
  "cc",
  "cmake",
- "image 0.25.10",
+ "image",
  "reqwest",
  "thiserror 2.0.18",
  "zip 8.5.1",
@@ -4746,9 +4731,9 @@ dependencies = [
 
 [[package]]
 name = "pdf_oxide"
-version = "0.3.37"
+version = "0.3.38"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dc3a6b42d0c770c436527c7744c3d16b20db9826703fef62ee74a31a9c10d3dc"
+checksum = "d595ec477ba6bd21443d4689746621f50eb0502b6ac3bb2896e3231f3736747d"
 dependencies = [
  "aes 0.9.0",
  "base64 0.22.1",
@@ -4762,8 +4747,7 @@ dependencies = [
  "env_logger",
  "fax",
  "flate2",
- "image 0.24.9",
- "indexmap",
+ "image",
  "jpeg-decoder",
  "lazy_static",
  "log",
@@ -4782,7 +4766,6 @@ dependencies = [
  "subsetter",
  "taffy",
  "thiserror 2.0.18",
- "tiff 0.11.3",
  "ttf-parser",
  "unicode-bidi",
  "unicode-linebreak",
@@ -4908,19 +4891,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "51bae2ac328883f7acdfea3d66a7c35751187f870bc81f94563733a154d7a670"
 dependencies = [
  "plotters-backend",
-]
-
-[[package]]
-name = "png"
-version = "0.17.16"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "82151a2fc869e011c153adc57cf2789ccb8d9906ce52c0b39a6b5697749d7526"
-dependencies = [
- "bitflags 1.3.2",
- "crc32fast",
- "fdeflate",
- "flate2",
- "miniz_oxide",
 ]
 
 [[package]]
@@ -6686,17 +6656,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f60246a4944f24f6e018aa17cdeffb7818b76356965d03b07d6a9886e8962185"
 dependencies = [
  "cfg-if",
-]
-
-[[package]]
-name = "tiff"
-version = "0.9.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ba1310fcea54c6a9a4fd1aad794ecc02c31682f6bfbecdf460bf19533eed1e3e"
-dependencies = [
- "flate2",
- "jpeg-decoder",
- "weezl",
 ]
 
 [[package]]
