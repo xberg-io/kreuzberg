@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+### Added
+
+- **#768**: In-process embedding backend plugin. Callers that already own an embedder (sentence-transformers, llama-cpp-python, a tuned ONNX session, etc.) can register it once via `kreuzberg::plugins::register_embedding_backend(Arc::new(MyEmbedder))` and route kreuzberg's chunking and standalone embed paths into it through the new `EmbeddingModelType::Plugin { name }` config variant. Reachable from REST, MCP (`embedding_plugin`), CLI (`--provider plugin --plugin NAME`), and the `KREUZBERG_EMBEDDING_PLUGIN_NAME` environment variable; registry pre-flight returns the available backends list when the name isn't found. A new `EmbeddingConfig.max_embed_duration_secs` field bounds the wait on a hung backend (default 60s; `None` disables, `Some(0)` is treated as disabled).
+
+---
+
 ## [4.9.5] - 2026-04-23
 
 ### Fixed
