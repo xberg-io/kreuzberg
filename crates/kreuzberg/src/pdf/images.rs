@@ -852,6 +852,14 @@ mod tests {
         let capped = extract_images_from_pdf(&pdf_bytes, Some(2)).expect("should parse");
         assert_eq!(capped.len(), 1, "with cap=2: only page-2 image extracted");
         assert_eq!(capped[0].width, 1);
+
+        // Edge case: cap=0 means every page with any images is skipped.
+        let zero_capped = extract_images_from_pdf(&pdf_bytes, Some(0)).expect("should parse");
+        assert_eq!(zero_capped.len(), 0, "cap=0: all pages skipped");
+
+        // Edge case: cap exactly equal to page-1 image count (3) — page is NOT skipped.
+        let exact_capped = extract_images_from_pdf(&pdf_bytes, Some(3)).expect("should parse");
+        assert_eq!(exact_capped.len(), 4, "cap=exactly-page-count: all images extracted");
     }
 
     #[cfg(feature = "pdf")]

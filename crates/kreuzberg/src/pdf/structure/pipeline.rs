@@ -2743,9 +2743,13 @@ fn populate_images_from_pdfium(
         // loop was catastrophically slow in those cases.
         let indices_set: ahash::AHashSet<usize> = indices.iter().copied().collect();
 
-        // INVARIANT: Image indices assigned to a single page are contiguous starting
-        // from the minimum index in `indices`. This holds because `objects_to_page_data`
-        // in bridge.rs increments `image_offset` sequentially per page object.
+        // INVARIANT: Image indices assigned to a single page form a contiguous range
+        // starting from the minimum index in `indices`. This holds because
+        // `objects_to_page_data` in bridge.rs increments `image_offset` for every
+        // image object it encounters — including those skipped by `max_images_per_page`
+        // (skipped images are not pushed to `indices` but still advance the counter).
+        // Kept images therefore form the dense prefix [min, min + len) of that range,
+        // which is why `max - min + 1 == len` always holds even when the cap fires.
         debug_assert!(
             {
                 let max = indices.iter().copied().max().unwrap_or(0);
