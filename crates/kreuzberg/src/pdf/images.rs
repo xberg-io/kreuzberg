@@ -414,7 +414,8 @@ impl PdfImageExtractor {
                 Err(_) => continue,
             };
             let mut img_index = 0usize;
-            self.collect_images_from_resources(resources, *page_num as usize, &mut img_index, &mut all_images, 0);
+            let mut visited = std::collections::HashSet::new();
+            self.collect_images_from_resources(resources, *page_num as usize, &mut img_index, &mut all_images, 0, &mut visited);
         }
 
         Ok(all_images)
@@ -439,6 +440,7 @@ impl PdfImageExtractor {
         img_index: &mut usize,
         out: &mut Vec<PdfImage>,
         depth: usize,
+        visited: &mut std::collections::HashSet<lopdf::ObjectId>,
     ) {
         // Guard against pathological or cyclic Form XObject chains.
         const MAX_FORM_DEPTH: usize = 8;
@@ -463,6 +465,12 @@ impl PdfImageExtractor {
                 Ok(id) => id,
                 Err(_) => continue,
             };
+            // Skip XObjects already processed on this page — the same object can be
+            // referenced from multiple Form parents (DAG), and processing it more than
+            // once would corrupt the sequential image_index.
+            if !visited.insert(id) {
+                continue;
+            }
             let stream = match self
                 .document
                 .get_object(id)
@@ -549,7 +557,7 @@ impl PdfImageExtractor {
             } else if subtype == b"Form" {
                 // Recurse into the Form XObject's own resource dictionary.
                 if let Ok(form_resources) = dict.get(b"Resources").and_then(|r| r.as_dict()) {
-                    self.collect_images_from_resources(form_resources, page_number, img_index, out, depth + 1);
+                    self.collect_images_from_resources(form_resources, page_number, img_index, out, depth + 1, visited);
                 }
             }
         }
@@ -572,7 +580,8 @@ impl PdfImageExtractor {
 
         let mut page_images = Vec::new();
         let mut img_index = 0usize;
-        self.collect_images_from_resources(resources, page_number as usize, &mut img_index, &mut page_images, 0);
+        let mut visited = std::collections::HashSet::new();
+        self.collect_images_from_resources(resources, page_number as usize, &mut img_index, &mut page_images, 0, &mut visited);
         Ok(page_images)
     }
 
@@ -635,7 +644,7 @@ pub(crate) fn reextract_raw_images_via_pdfium(pdf_bytes: &[u8], images: &mut [Pd
         let mut found = false;
 
         'outer: for obj in page.objects().iter() {
-            if collect_image_from_pdfium_obj(&obj, &document, target_index, &mut current_image, img, &mut reextracted) {
+            if collect_image_from_pdfium_obj(&obj, &document, target_index, &mut current_image, img, &mut reextracted, 0) {
                 found = true;
                 break 'outer;
             }
@@ -667,7 +676,9 @@ fn collect_image_from_pdfium_obj(
     current_image: &mut usize,
     img: &mut PdfImage,
     reextracted: &mut u32,
+    depth: usize,
 ) -> bool {
+    const MAX_XOBJECT_DEPTH: usize = 10;
     use image::ImageEncoder;
     use pdfium_render::prelude::PdfPageObject;
 
@@ -695,8 +706,11 @@ fn collect_image_from_pdfium_obj(
             }
         }
         PdfPageObject::XObjectForm(form_obj) => {
+            if depth >= MAX_XOBJECT_DEPTH {
+                return false;
+            }
             for child in form_obj.iter() {
-                if collect_image_from_pdfium_obj(&child, document, target_index, current_image, img, reextracted) {
+                if collect_image_from_pdfium_obj(&child, document, target_index, current_image, img, reextracted, depth + 1) {
                     return true;
                 }
             }
@@ -937,6 +951,180 @@ mod tests {
 
         let images = extract_images_from_pdf(&pdf_bytes).expect("should parse PDF");
         assert_eq!(images.len(), 1, "image nested inside Form XObject must be found");
+        assert_eq!(images[0].width, 1);
+        assert_eq!(images[0].height, 1);
+    }
+
+    /// Regression: a Form XObject referenced twice from the same page must not
+    /// double-count its images (would corrupt the sequential image_index).
+    #[cfg(feature = "pdf")]
+    #[test]
+    fn test_extract_images_form_xobject_referenced_twice() {
+        use lopdf::{Document, Object, Stream, dictionary};
+
+        // Minimal JPEG magic — use DCTDecode passthrough so no FlateDecode is needed.
+        let jpeg_bytes: Vec<u8> = vec![0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, b'J', b'F', b'I', b'F'];
+
+        let mut doc = Document::with_version("1.4");
+
+        let image_stream = Stream::new(
+            dictionary! {
+                "Type" => Object::Name(b"XObject".to_vec()),
+                "Subtype" => Object::Name(b"Image".to_vec()),
+                "Width" => 10i64,
+                "Height" => 10i64,
+                "ColorSpace" => Object::Name(b"DeviceRGB".to_vec()),
+                "BitsPerComponent" => 8i64,
+                "Filter" => Object::Name(b"DCTDecode".to_vec())
+            },
+            jpeg_bytes,
+        );
+        let image_id = doc.add_object(image_stream);
+
+        let form_stream = Stream::new(
+            dictionary! {
+                "Type" => Object::Name(b"XObject".to_vec()),
+                "Subtype" => Object::Name(b"Form".to_vec()),
+                "BBox" => Object::Array(vec![0i64.into(), 0i64.into(), 10i64.into(), 10i64.into()]),
+                "Resources" => dictionary! {
+                    "XObject" => dictionary! {
+                        "Im0" => Object::Reference(image_id)
+                    }
+                }
+            },
+            b"/Im0 Do".to_vec(),
+        );
+        let form_id = doc.add_object(form_stream);
+
+        let pages_id = doc.new_object_id();
+        let page_id = doc.add_object(dictionary! {
+            "Type" => Object::Name(b"Page".to_vec()),
+            "Parent" => Object::Reference(pages_id),
+            "MediaBox" => Object::Array(vec![0i64.into(), 0i64.into(), 100i64.into(), 100i64.into()]),
+            "Resources" => dictionary! {
+                "XObject" => dictionary! {
+                    // Same form referenced under two different names — must not double-count
+                    "Form1" => Object::Reference(form_id),
+                    "Form2" => Object::Reference(form_id)
+                }
+            }
+        });
+        doc.set_object(
+            pages_id,
+            dictionary! {
+                "Type" => Object::Name(b"Pages".to_vec()),
+                "Kids" => Object::Array(vec![Object::Reference(page_id)]),
+                "Count" => 1i64
+            },
+        );
+        let catalog_id = doc.add_object(dictionary! {
+            "Type" => Object::Name(b"Catalog".to_vec()),
+            "Pages" => Object::Reference(pages_id)
+        });
+        doc.trailer.set("Root", Object::Reference(catalog_id));
+
+        let mut pdf_bytes = Vec::new();
+        doc.save_to(&mut pdf_bytes).unwrap();
+
+        let images = extract_images_from_pdf(&pdf_bytes).expect("should parse PDF");
+        assert_eq!(
+            images.len(), 1,
+            "Form XObject referenced twice must yield exactly one image, not two"
+        );
+    }
+
+    /// Regression: images nested at depth 2 (Form inside Form) must be extracted.
+    #[cfg(feature = "pdf")]
+    #[test]
+    fn test_extract_images_depth2_nested_form_xobject() {
+        use flate2::Compression;
+        use flate2::write::ZlibEncoder;
+        use lopdf::{Document, Object, Stream, dictionary};
+        use std::io::Write;
+
+        let raw_pixel = vec![0u8, 128u8, 255u8]; // 1×1 DeviceRGB
+        let mut enc = ZlibEncoder::new(Vec::new(), Compression::default());
+        enc.write_all(&raw_pixel).unwrap();
+        let compressed = enc.finish().unwrap();
+
+        let mut doc = Document::with_version("1.4");
+
+        let image_stream = Stream::new(
+            dictionary! {
+                "Type" => Object::Name(b"XObject".to_vec()),
+                "Subtype" => Object::Name(b"Image".to_vec()),
+                "Width" => 1i64,
+                "Height" => 1i64,
+                "ColorSpace" => Object::Name(b"DeviceRGB".to_vec()),
+                "BitsPerComponent" => 8i64,
+                "Filter" => Object::Name(b"FlateDecode".to_vec())
+            },
+            compressed,
+        );
+        let image_id = doc.add_object(image_stream);
+
+        // inner form → contains image
+        let inner_form = Stream::new(
+            dictionary! {
+                "Type" => Object::Name(b"XObject".to_vec()),
+                "Subtype" => Object::Name(b"Form".to_vec()),
+                "BBox" => Object::Array(vec![0i64.into(), 0i64.into(), 5i64.into(), 5i64.into()]),
+                "Resources" => dictionary! {
+                    "XObject" => dictionary! {
+                        "Im0" => Object::Reference(image_id)
+                    }
+                }
+            },
+            b"/Im0 Do".to_vec(),
+        );
+        let inner_form_id = doc.add_object(inner_form);
+
+        // outer form → contains inner form
+        let outer_form = Stream::new(
+            dictionary! {
+                "Type" => Object::Name(b"XObject".to_vec()),
+                "Subtype" => Object::Name(b"Form".to_vec()),
+                "BBox" => Object::Array(vec![0i64.into(), 0i64.into(), 10i64.into(), 10i64.into()]),
+                "Resources" => dictionary! {
+                    "XObject" => dictionary! {
+                        "Inner" => Object::Reference(inner_form_id)
+                    }
+                }
+            },
+            b"/Inner Do".to_vec(),
+        );
+        let outer_form_id = doc.add_object(outer_form);
+
+        let pages_id = doc.new_object_id();
+        let page_id = doc.add_object(dictionary! {
+            "Type" => Object::Name(b"Page".to_vec()),
+            "Parent" => Object::Reference(pages_id),
+            "MediaBox" => Object::Array(vec![0i64.into(), 0i64.into(), 100i64.into(), 100i64.into()]),
+            "Resources" => dictionary! {
+                "XObject" => dictionary! {
+                    "Outer" => Object::Reference(outer_form_id)
+                }
+            }
+        });
+        doc.set_object(
+            pages_id,
+            dictionary! {
+                "Type" => Object::Name(b"Pages".to_vec()),
+                "Kids" => Object::Array(vec![Object::Reference(page_id)]),
+                "Count" => 1i64
+            },
+        );
+        let catalog_id = doc.add_object(dictionary! {
+            "Type" => Object::Name(b"Catalog".to_vec()),
+            "Pages" => Object::Reference(pages_id)
+        });
+        doc.trailer.set("Root", Object::Reference(catalog_id));
+
+        let mut pdf_bytes = Vec::new();
+        doc.save_to(&mut pdf_bytes).unwrap();
+
+        let images = extract_images_from_pdf(&pdf_bytes).expect("should parse PDF");
+        assert_eq!(images.len(), 1, "image at depth-2 Form nesting must be extracted");
         assert_eq!(images[0].width, 1);
         assert_eq!(images[0].height, 1);
     }

@@ -551,6 +551,7 @@ pub(super) fn objects_to_page_data(
             &mut capped,
             max_images_per_page,
             &mut images,
+            0,
         );
     }
     if capped {
@@ -624,7 +625,9 @@ fn count_image_objects(
     capped: &mut bool,
     max_images_per_page: Option<u32>,
     images: &mut Vec<ImagePosition>,
+    depth: usize,
 ) {
+    const MAX_XOBJECT_DEPTH: usize = 10;
     match obj {
         PdfPageObject::Image(_) => {
             if max_images_per_page.is_some_and(|cap| *page_image_count >= cap) {
@@ -642,6 +645,10 @@ fn count_image_objects(
             }
         }
         PdfPageObject::XObjectForm(form_obj) => {
+            if depth >= MAX_XOBJECT_DEPTH {
+                tracing::debug!(depth, "objects_to_page_data: max XObject nesting depth reached");
+                return;
+            }
             for child in form_obj.iter() {
                 count_image_objects(
                     &child,
@@ -651,6 +658,7 @@ fn count_image_objects(
                     capped,
                     max_images_per_page,
                     images,
+                    depth + 1,
                 );
             }
         }
