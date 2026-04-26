@@ -11,6 +11,7 @@ on:
       - "fixtures/**"
       - "scripts/**"
       - "tools/**"
+      - "charts/**"
       - "Cargo.toml"
       - "Cargo.lock"
       - "alef.toml"
@@ -27,6 +28,7 @@ on:
       - "fixtures/**"
       - "scripts/**"
       - "tools/**"
+      - "charts/**"
       - "Cargo.toml"
       - "Cargo.lock"
       - "alef.toml"
@@ -52,7 +54,7 @@ jobs:
       CARGO_TERM_COLOR: always
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
 
       - name: Setup Rust
         uses: kreuzberg-dev/actions/setup-rust@v1

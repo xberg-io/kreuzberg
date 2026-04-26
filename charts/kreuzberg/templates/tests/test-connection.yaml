@@ -7,9 +7,17 @@ metadata:
   annotations:
     "helm.sh/hook": test
 spec:
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 65534
   containers:
     - name: wget
       image: busybox:1.37-glibc
       command: ['wget']
       args: ['--spider', '--timeout=5', '{{ include "kreuzberg.fullname" . }}:{{ .Values.service.port }}/health']
+      securityContext:
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop: ["ALL"]
   restartPolicy: Never

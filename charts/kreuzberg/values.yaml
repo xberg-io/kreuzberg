@@ -1,14 +1,24 @@
-# -- Number of replicas
-replicaCount: 2
+# -- Number of replicas.
+# WARNING: When cache.enabled=true and cache.accessModes=[ReadWriteOnce], only one
+# replica can mount the PVC at a time. Keep replicaCount: 1 with RWO storage, or
+# switch to ReadWriteMany storage before increasing replicas. With RWO + multiple
+# replicas the deployment strategy must be Recreate (not RollingUpdate).
+replicaCount: 1
+
+# -- Deployment strategy. When cache is enabled with ReadWriteOnce storage,
+# set to Recreate to avoid Multi-Attach errors during rolling updates.
+strategy:
+  type: Recreate
 
 image:
   # -- Container image registry
   registry: ghcr.io
   # -- Container image repository
   repository: kreuzberg-dev/kreuzberg
-  # -- Image tag. Use "latest" for the full image (Tesseract + PaddleOCR + layout models)
+  # -- Image tag. Defaults to Chart.AppVersion when empty.
+  # Use "latest" for the full image (Tesseract + PaddleOCR + layout models)
   # or "core" for the minimal image (no pre-downloaded models).
-  tag: "latest"
+  tag: ""
   # -- Image pull policy
   pullPolicy: IfNotPresent
 
@@ -84,8 +94,10 @@ resources:
 autoscaling:
   # -- Enable HorizontalPodAutoscaler
   enabled: false
-  # -- Minimum replicas
-  minReplicas: 2
+  # -- Minimum replicas. Note: if podDisruptionBudget.minAvailable equals this
+  # value, scale-down will be blocked. Set minReplicas lower than minAvailable
+  # or raise minAvailable accordingly.
+  minReplicas: 1
   # -- Maximum replicas
   maxReplicas: 10
   # -- Target CPU utilization (percent)

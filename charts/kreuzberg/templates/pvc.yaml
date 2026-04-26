@@ -5,6 +5,8 @@ metadata:
   name: {{ include "kreuzberg.fullname" . }}-cache
   labels:
     {{- include "kreuzberg.labels" . | nindent 4 }}
+  annotations:
+    helm.sh/resource-policy: keep
 spec:
   accessModes:
     {{- toYaml .Values.cache.accessModes | nindent 4 }}

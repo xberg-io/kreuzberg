@@ -17,7 +17,9 @@ helm install kreuzberg oci://ghcr.io/kreuzberg-dev/charts/kreuzberg --version 4.
 Override defaults with a `values.yaml` file:
 
 ```yaml title="values.yaml"
-replicaCount: 3
+# NOTE: cache.enabled=true uses ReadWriteOnce by default; keep replicaCount: 1
+# with RWO storage or switch to ReadWriteMany before increasing replicas.
+replicaCount: 1
 
 image:
   tag: "4.8.4"
@@ -231,6 +233,10 @@ Kreuzberg runs as non-root (UID 1000, GID 1000). Fix PVC permissions with either
         command: ['sh', '-c', 'chown -R 1000:1000 /app/.kreuzberg']
         securityContext:
           runAsUser: 0
+          allowPrivilegeEscalation: false
+          capabilities:
+            add: ["CHOWN"]
+            drop: ["ALL"]
         volumeMounts:
         - name: cache
           mountPath: /app/.kreuzberg
@@ -329,8 +335,10 @@ kind: Deployment
 metadata:
   name: kreuzberg-api
   namespace: kreuzberg
+  # NOTE: PVC uses ReadWriteOnce; keep replicas: 1 with RWO storage.
+  # Increase replicas only when using ReadWriteMany storage.
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: kreuzberg
@@ -352,6 +360,10 @@ spec:
         command: ['sh', '-c', 'mkdir -p /app/.kreuzberg && chown -R 1000:1000 /app/.kreuzberg']
         securityContext:
           runAsUser: 0
+          allowPrivilegeEscalation: false
+          capabilities:
+            add: ["CHOWN"]
+            drop: ["ALL"]
         volumeMounts:
         - name: cache
           mountPath: /app/.kreuzberg
