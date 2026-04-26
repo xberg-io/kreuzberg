@@ -37,12 +37,20 @@ impl OcrBackendRegistry {
     /// allowing the process to continue with whichever backends are available.
     #[tracing::instrument(name = "ocr_backend_registry_init")]
     pub fn new() -> Self {
-        #[cfg(any(feature = "ocr", feature = "paddle-ocr", all(feature = "liter-llm", not(target_os = "windows"))))]
+        #[cfg(any(
+            feature = "ocr",
+            feature = "paddle-ocr",
+            all(feature = "liter-llm", not(target_os = "windows"))
+        ))]
         let mut registry = Self {
             backends: AHashMap::new(),
         };
 
-        #[cfg(not(any(feature = "ocr", feature = "paddle-ocr", all(feature = "liter-llm", not(target_os = "windows")))))]
+        #[cfg(not(any(
+            feature = "ocr",
+            feature = "paddle-ocr",
+            all(feature = "liter-llm", not(target_os = "windows"))
+        )))]
         let registry = Self {
             backends: AHashMap::new(),
         };
