@@ -1,3 +1,4 @@
+import RustBridgeC
 public func blake3_hash_bytes(_ data: RustVec<UInt8>) -> RustString {
     RustString(ptr: __swift_bridge__$blake3_hash_bytes({ let val = data; val.isOwned = false; return val.ptr }()))
 }
@@ -280,6 +281,9 @@ public func serialize_to_toon(_ result: ExtractionResult) throws -> RustString {
 public func serialize_to_json(_ result: ExtractionResult) throws -> RustString {
     try { let val = __swift_bridge__$serialize_to_json({result.isOwned = false; return result.ptr;}()); if val.is_ok { return RustString(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
 }
+public func _alef_phantom_vec_ocr_backend() -> RustVec<OcrBackendBox> {
+    RustVec(ptr: __swift_bridge__$_alef_phantom_vec_ocr_backend())
+}
 public func ocr_backend_call_process_image(_ this: OcrBackendBoxRef, _ image_bytes: RustVec<UInt8>, _ config: OcrConfig) throws -> ExtractionResult {
     try { let val = __swift_bridge__$ocr_backend_call_process_image(this.ptr, { let val = image_bytes; val.isOwned = false; return val.ptr }(), {config.isOwned = false; return config.ptr;}()); if val.is_ok { return ExtractionResult(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
 }
@@ -304,6 +308,9 @@ public func ocr_backend_call_supports_document_processing(_ this: OcrBackendBoxR
 public func ocr_backend_call_process_document<GenericIntoRustString: IntoRustString>(_ this: OcrBackendBoxRef, _ path: GenericIntoRustString, _ config: OcrConfig) throws -> ExtractionResult {
     try { let val = __swift_bridge__$ocr_backend_call_process_document(this.ptr, { let rustString = path.intoRustString(); rustString.isOwned = false; return rustString.ptr }(), {config.isOwned = false; return config.ptr;}()); if val.is_ok { return ExtractionResult(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
 }
+public func _alef_phantom_vec_post_processor() -> RustVec<PostProcessorBox> {
+    RustVec(ptr: __swift_bridge__$_alef_phantom_vec_post_processor())
+}
 public func post_processor_call_process(_ this: PostProcessorBoxRef, _ result: ExtractionResult, _ config: ExtractionConfig) throws -> () {
     try { let val = __swift_bridge__$post_processor_call_process(this.ptr, {result.isOwned = false; return result.ptr;}(), {config.isOwned = false; return config.ptr;}()); if val != nil { throw RustString(ptr: val!) } else { return } }()
 }
@@ -316,6 +323,9 @@ public func post_processor_call_should_process(_ this: PostProcessorBoxRef, _ re
 public func post_processor_call_estimated_duration_ms(_ this: PostProcessorBoxRef, _ result: ExtractionResult) -> UInt64 {
     __swift_bridge__$post_processor_call_estimated_duration_ms(this.ptr, {result.isOwned = false; return result.ptr;}())
 }
+public func _alef_phantom_vec_validator() -> RustVec<ValidatorBox> {
+    RustVec(ptr: __swift_bridge__$_alef_phantom_vec_validator())
+}
 public func validator_call_validate(_ this: ValidatorBoxRef, _ result: ExtractionResult, _ config: ExtractionConfig) throws -> () {
     try { let val = __swift_bridge__$validator_call_validate(this.ptr, {result.isOwned = false; return result.ptr;}(), {config.isOwned = false; return config.ptr;}()); if val != nil { throw RustString(ptr: val!) } else { return } }()
 }
@@ -324,6 +334,9 @@ public func validator_call_should_validate(_ this: ValidatorBoxRef, _ result: Ex
 }
 public func validator_call_priority(_ this: ValidatorBoxRef) -> Int32 {
     __swift_bridge__$validator_call_priority(this.ptr)
+}
+public func _alef_phantom_vec_embedding_backend() -> RustVec<EmbeddingBackendBox> {
+    RustVec(ptr: __swift_bridge__$_alef_phantom_vec_embedding_backend())
 }
 public func embedding_backend_call_dimensions(_ this: EmbeddingBackendBoxRef) -> UInt {
     __swift_bridge__$embedding_backend_call_dimensions(this.ptr)
@@ -3022,8 +3035,8 @@ public class SupportedFormat: SupportedFormatRefMut {
     }
 }
 extension SupportedFormat {
-    public convenience init<GenericIntoRustString: IntoRustString>(_ extension: GenericIntoRustString, _ mime_type: GenericIntoRustString) {
-        self.init(ptr: __swift_bridge__$SupportedFormat$new({ let rustString = extension.intoRustString(); rustString.isOwned = false; return rustString.ptr }(), { let rustString = mime_type.intoRustString(); rustString.isOwned = false; return rustString.ptr }()))
+    public convenience init<GenericIntoRustString: IntoRustString>(_ extension_: GenericIntoRustString, _ mime_type: GenericIntoRustString) {
+        self.init(ptr: __swift_bridge__$SupportedFormat$new({ let rustString = extension_.intoRustString(); rustString.isOwned = false; return rustString.ptr }(), { let rustString = mime_type.intoRustString(); rustString.isOwned = false; return rustString.ptr }()))
     }
 }
 public class SupportedFormatRefMut: SupportedFormatRef {
@@ -3039,8 +3052,8 @@ public class SupportedFormatRef {
     }
 }
 extension SupportedFormatRef {
-    public func extension() -> RustString {
-        RustString(ptr: __swift_bridge__$SupportedFormat$extension(ptr))
+    public func extension_() -> RustString {
+        RustString(ptr: __swift_bridge__$SupportedFormat$extension_(ptr))
     }
 
     public func mime_type() -> RustString {
