@@ -2976,6 +2976,67 @@ mod ffi {
         fn serialize_to_toon(result: ExtractionResult) -> Result<String, String>;
         fn serialize_to_json(result: ExtractionResult) -> Result<String, String>;
     }
+
+    extern "Rust" {
+        type OcrBackendBox;
+        fn ocr_backend_call_process_image(
+            this: &OcrBackendBox,
+            image_bytes: Vec<u8>,
+            config: OcrConfig,
+        ) -> Result<ExtractionResult, String>;
+        fn ocr_backend_call_process_image_file(
+            this: &OcrBackendBox,
+            path: String,
+            config: OcrConfig,
+        ) -> Result<ExtractionResult, String>;
+        fn ocr_backend_call_supports_language(this: &OcrBackendBox, lang: String) -> bool;
+        fn ocr_backend_call_backend_type(this: &OcrBackendBox) -> OcrBackendType;
+        fn ocr_backend_call_supported_languages(this: &OcrBackendBox) -> Vec<String>;
+        fn ocr_backend_call_supports_table_detection(this: &OcrBackendBox) -> bool;
+        fn ocr_backend_call_supports_document_processing(this: &OcrBackendBox) -> bool;
+        fn ocr_backend_call_process_document(
+            this: &OcrBackendBox,
+            path: String,
+            config: OcrConfig,
+        ) -> Result<ExtractionResult, String>;
+    }
+
+    extern "Rust" {
+        type PostProcessorBox;
+        fn post_processor_call_process(
+            this: &PostProcessorBox,
+            result: ExtractionResult,
+            config: ExtractionConfig,
+        ) -> Result<(), String>;
+        fn post_processor_call_processing_stage(this: &PostProcessorBox) -> ProcessingStage;
+        fn post_processor_call_should_process(
+            this: &PostProcessorBox,
+            result: ExtractionResult,
+            config: ExtractionConfig,
+        ) -> bool;
+        fn post_processor_call_estimated_duration_ms(this: &PostProcessorBox, result: ExtractionResult) -> u64;
+    }
+
+    extern "Rust" {
+        type ValidatorBox;
+        fn validator_call_validate(
+            this: &ValidatorBox,
+            result: ExtractionResult,
+            config: ExtractionConfig,
+        ) -> Result<(), String>;
+        fn validator_call_should_validate(
+            this: &ValidatorBox,
+            result: ExtractionResult,
+            config: ExtractionConfig,
+        ) -> bool;
+        fn validator_call_priority(this: &ValidatorBox) -> i32;
+    }
+
+    extern "Rust" {
+        type EmbeddingBackendBox;
+        fn embedding_backend_call_dimensions(this: &EmbeddingBackendBox) -> usize;
+        fn embedding_backend_call_embed(this: &EmbeddingBackendBox, texts: Vec<String>) -> Result<String, String>;
+    }
 }
 
 pub struct AccelerationConfig(pub kreuzberg::AccelerationConfig);
@@ -11837,4 +11898,157 @@ pub fn serialize_to_json(result: ExtractionResult) -> Result<String, String> {
     kreuzberg::serialize_to_json(&result.0)
         .map_err(|e| e.to_string())
         .map(|s| s.to_string())
+}
+
+pub struct OcrBackendBox(pub Box<dyn kreuzberg::plugins::OcrBackend + Send + Sync>);
+
+pub fn ocr_backend_call_process_image(
+    this: &OcrBackendBox,
+    image_bytes: Vec<u8>,
+    config: OcrConfig,
+) -> Result<ExtractionResult, String> {
+    ::tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()
+        .expect("build tokio runtime")
+        .block_on(async {
+            this.0
+                .process_image(&image_bytes, &config.0)
+                .await
+                .map(|v| ExtractionResult(v))
+                .map_err(|e| e.to_string())
+        })
+}
+
+pub fn ocr_backend_call_process_image_file(
+    this: &OcrBackendBox,
+    path: String,
+    config: OcrConfig,
+) -> Result<ExtractionResult, String> {
+    ::tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()
+        .expect("build tokio runtime")
+        .block_on(async {
+            this.0
+                .process_image_file(std::path::Path::new(&path), &config.0)
+                .await
+                .map(|v| ExtractionResult(v))
+                .map_err(|e| e.to_string())
+        })
+}
+
+pub fn ocr_backend_call_supports_language(this: &OcrBackendBox, lang: String) -> bool {
+    this.0.supports_language(&lang)
+}
+
+pub fn ocr_backend_call_backend_type(this: &OcrBackendBox) -> OcrBackendType {
+    OcrBackendType::from(this.0.backend_type())
+}
+
+pub fn ocr_backend_call_supported_languages(this: &OcrBackendBox) -> Vec<String> {
+    this.0.supported_languages()
+}
+
+pub fn ocr_backend_call_supports_table_detection(this: &OcrBackendBox) -> bool {
+    this.0.supports_table_detection()
+}
+
+pub fn ocr_backend_call_supports_document_processing(this: &OcrBackendBox) -> bool {
+    this.0.supports_document_processing()
+}
+
+pub fn ocr_backend_call_process_document(
+    this: &OcrBackendBox,
+    path: String,
+    config: OcrConfig,
+) -> Result<ExtractionResult, String> {
+    ::tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()
+        .expect("build tokio runtime")
+        .block_on(async {
+            this.0
+                .process_document(std::path::Path::new(&path), &config.0)
+                .await
+                .map(|v| ExtractionResult(v))
+                .map_err(|e| e.to_string())
+        })
+}
+
+pub struct PostProcessorBox(pub Box<dyn kreuzberg::plugins::PostProcessor + Send + Sync>);
+
+pub fn post_processor_call_process(
+    this: &PostProcessorBox,
+    mut result: ExtractionResult,
+    config: ExtractionConfig,
+) -> Result<(), String> {
+    ::tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()
+        .expect("build tokio runtime")
+        .block_on(async {
+            this.0
+                .process(&mut result.0, &config.0)
+                .await
+                .map_err(|e| e.to_string())
+        })
+}
+
+pub fn post_processor_call_processing_stage(this: &PostProcessorBox) -> ProcessingStage {
+    ProcessingStage::from(this.0.processing_stage())
+}
+
+pub fn post_processor_call_should_process(
+    this: &PostProcessorBox,
+    result: ExtractionResult,
+    config: ExtractionConfig,
+) -> bool {
+    this.0.should_process(&result.0, &config.0)
+}
+
+pub fn post_processor_call_estimated_duration_ms(this: &PostProcessorBox, result: ExtractionResult) -> u64 {
+    this.0.estimated_duration_ms(&result.0)
+}
+
+pub struct ValidatorBox(pub Box<dyn kreuzberg::plugins::Validator + Send + Sync>);
+
+pub fn validator_call_validate(
+    this: &ValidatorBox,
+    result: ExtractionResult,
+    config: ExtractionConfig,
+) -> Result<(), String> {
+    ::tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()
+        .expect("build tokio runtime")
+        .block_on(async { this.0.validate(&result.0, &config.0).await.map_err(|e| e.to_string()) })
+}
+
+pub fn validator_call_should_validate(this: &ValidatorBox, result: ExtractionResult, config: ExtractionConfig) -> bool {
+    this.0.should_validate(&result.0, &config.0)
+}
+
+pub fn validator_call_priority(this: &ValidatorBox) -> i32 {
+    this.0.priority()
+}
+
+pub struct EmbeddingBackendBox(pub Box<dyn kreuzberg::plugins::EmbeddingBackend + Send + Sync>);
+
+pub fn embedding_backend_call_dimensions(this: &EmbeddingBackendBox) -> usize {
+    this.0.dimensions()
+}
+
+pub fn embedding_backend_call_embed(this: &EmbeddingBackendBox, texts: Vec<String>) -> Result<String, String> {
+    ::tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()
+        .expect("build tokio runtime")
+        .block_on(async {
+            this.0
+                .embed(texts)
+                .await
+                .map(|v| serde_json::to_string(&v).expect("serializable return"))
+                .map_err(|e| e.to_string())
+        })
 }

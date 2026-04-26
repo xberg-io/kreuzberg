@@ -5136,3 +5136,714 @@ pub fn serialize_to_json(result: ExtractionResult) (KreuzbergError || error{OutO
         break :blk owned;
     };
 }
+
+/// Vtable for a Zig implementation of the `OcrBackend` trait.
+/// Fill each function pointer, then pass this struct to the corresponding
+/// `register_ocr_backend` function to register your implementation.
+pub const IOcrBackend = extern struct {
+    /// Return the plugin name into `out_name` (heap-allocated, caller frees).
+    name_fn: ?*const fn (user_data: ?*anyopaque, out_name: ?*?[*c]u8) callconv(.C) void = null,
+
+    /// Return the plugin version into `out_version` (heap-allocated, caller frees).
+    version_fn: ?*const fn (user_data: ?*anyopaque, out_version: ?*?[*c]u8) callconv(.C) void = null,
+
+    /// Initialise the plugin; return 0 on success, non-zero on error.
+    initialize_fn: ?*const fn (user_data: ?*anyopaque, out_error: ?*?[*c]u8) callconv(.C) i32 = null,
+
+    /// Shut down the plugin; return 0 on success, non-zero on error.
+    shutdown_fn: ?*const fn (user_data: ?*anyopaque, out_error: ?*?[*c]u8) callconv(.C) i32 = null,
+
+    /// Process an image and extract text via OCR.
+    ///
+    /// # Arguments
+    ///
+    /// * `image_bytes` - Raw image data (JPEG, PNG, TIFF, etc.)
+    /// * `config` - OCR configuration (language, PSM mode, etc.)
+    ///
+    /// # Returns
+    ///
+    /// An `ExtractionResult` containing the extracted text and metadata.
+    ///
+    /// # Errors
+    ///
+    /// - `KreuzbergError::Ocr` - OCR processing failed
+    /// - `KreuzbergError::Validation` - Invalid image format or configuration
+    /// - `KreuzbergError::Io` - I/O errors (these always bubble up)
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use kreuzberg::plugins::{Plugin, OcrBackend};
+    /// # use kreuzberg::{Result, OcrConfig};
+    /// # use async_trait::async_trait;
+    /// # use std::borrow::Cow;
+    /// # use std::path::Path;
+    /// # use kreuzberg::types::{ExtractionResult, Metadata};
+    /// # struct MyOcr;
+    /// # impl Plugin for MyOcr {
+    /// #     fn name(&self) -> &str { "my-ocr" }
+    /// #     fn version(&self) -> String { "1.0.0".to_string() }
+    /// #     fn initialize(&self) -> Result<()> { Ok(()) }
+    /// #     fn shutdown(&self) -> Result<()> { Ok(()) }
+    /// # }
+    /// # use kreuzberg::plugins::OcrBackendType;
+    /// # #[async_trait]
+    /// # impl OcrBackend for MyOcr {
+    /// #     fn supports_language(&self, _: &str) -> bool { true }
+    /// #     fn backend_type(&self) -> OcrBackendType { OcrBackendType::Custom }
+    /// #     async fn process_image_file(&self, _: &Path, _: &OcrConfig) -> Result<ExtractionResult> { todo!() }
+    /// async fn process_image(&self, image_bytes: &[u8], config: &OcrConfig) -> Result<ExtractionResult> {
+    ///     // Validate image format
+    ///     if image_bytes.is_empty() {
+    ///         return Err(kreuzberg::KreuzbergError::Validation {
+    ///             message: "Empty image data".to_string(),
+    ///             source: None,
+    ///         });
+    ///     }
+    ///
+    ///     // Perform OCR processing
+    ///     let text = format!("Extracted text in language: {}", config.language);
+    ///
+    ///     Ok(ExtractionResult {
+    ///         content: text,
+    ///         mime_type: Cow::Borrowed("text/plain"),
+    ///         ..Default::default()
+    ///     })
+    /// }
+    /// # }
+    /// ```
+    process_image: ?*const fn (user_data: ?*anyopaque, image_bytes_ptr: [*c]const u8, image_bytes_len: usize, config: [*c]const u8, out_result: ?*?[*c]u8, out_error: ?*?[*c]u8) callconv(.C) i32 = null,
+
+    /// Process a file and extract text via OCR.
+    ///
+    /// Default implementation reads the file and calls `process_image`.
+    /// Override for custom file handling or optimizations.
+    ///
+    /// # Arguments
+    ///
+    /// * `path` - Path to the image file
+    /// * `config` - OCR configuration
+    ///
+    /// # Errors
+    ///
+    /// Same as `process_image`, plus file I/O errors.
+    process_image_file: ?*const fn (user_data: ?*anyopaque, path: [*c]const u8, config: [*c]const u8, out_result: ?*?[*c]u8, out_error: ?*?[*c]u8) callconv(.C) i32 = null,
+
+    /// Check if this backend supports a given language code.
+    ///
+    /// # Arguments
+    ///
+    /// * `lang` - ISO 639-2/3 language code (e.g., "eng", "deu", "fra")
+    ///
+    /// # Returns
+    ///
+    /// `true` if the language is supported, `false` otherwise.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use kreuzberg::plugins::{Plugin, OcrBackend};
+    /// # use kreuzberg::Result;
+    /// # use async_trait::async_trait;
+    /// # use std::path::Path;
+    /// # struct MyOcr { languages: Vec<String> }
+    /// # impl Plugin for MyOcr {
+    /// #     fn name(&self) -> &str { "my-ocr" }
+    /// #     fn version(&self) -> String { "1.0.0".to_string() }
+    /// #     fn initialize(&self) -> Result<()> { Ok(()) }
+    /// #     fn shutdown(&self) -> Result<()> { Ok(()) }
+    /// # }
+    /// # use kreuzberg::plugins::OcrBackendType;
+    /// # use kreuzberg::{ExtractionResult, OcrConfig};
+    /// # #[async_trait]
+    /// # impl OcrBackend for MyOcr {
+    /// #     fn backend_type(&self) -> OcrBackendType { OcrBackendType::Custom }
+    /// #     async fn process_image(&self, _: &[u8], _: &OcrConfig) -> Result<ExtractionResult> { todo!() }
+    /// #     async fn process_image_file(&self, _: &Path, _: &OcrConfig) -> Result<ExtractionResult> { todo!() }
+    /// fn supports_language(&self, lang: &str) -> bool {
+    ///     self.languages.contains(&lang.to_string())
+    /// }
+    /// # }
+    /// ```
+    supports_language: ?*const fn (user_data: ?*anyopaque, lang: [*c]const u8, out_result: ?*?[*c]u8) callconv(.C) i32 = null,
+
+    /// Get the backend type identifier.
+    ///
+    /// # Returns
+    ///
+    /// The backend type enum value.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use kreuzberg::plugins::{Plugin, OcrBackend, OcrBackendType};
+    /// # use kreuzberg::Result;
+    /// # use async_trait::async_trait;
+    /// # use std::path::Path;
+    /// # struct TesseractBackend;
+    /// # impl Plugin for TesseractBackend {
+    /// #     fn name(&self) -> &str { "tesseract" }
+    /// #     fn version(&self) -> String { "1.0.0".to_string() }
+    /// #     fn initialize(&self) -> Result<()> { Ok(()) }
+    /// #     fn shutdown(&self) -> Result<()> { Ok(()) }
+    /// # }
+    /// # use kreuzberg::{ExtractionResult, OcrConfig};
+    /// # #[async_trait]
+    /// # impl OcrBackend for TesseractBackend {
+    /// #     fn supports_language(&self, _: &str) -> bool { true }
+    /// #     async fn process_image(&self, _: &[u8], _: &OcrConfig) -> Result<ExtractionResult> { todo!() }
+    /// #     async fn process_image_file(&self, _: &Path, _: &OcrConfig) -> Result<ExtractionResult> { todo!() }
+    /// fn backend_type(&self) -> OcrBackendType {
+    ///     OcrBackendType::Tesseract
+    /// }
+    /// # }
+    /// ```
+    backend_type: ?*const fn (user_data: ?*anyopaque, out_result: ?*?[*c]u8) callconv(.C) [*c]const u8 = null,
+
+    /// Optional: Get a list of all supported languages.
+    ///
+    /// Defaults to empty list. Override to provide comprehensive language support info.
+    supported_languages: ?*const fn (user_data: ?*anyopaque, out_result: ?*?[*c]u8) callconv(.C) [*c]const u8 = null,
+
+    /// Optional: Check if the backend supports table detection.
+    ///
+    /// Defaults to `false`. Override if your backend can detect and extract tables.
+    supports_table_detection: ?*const fn (user_data: ?*anyopaque, out_result: ?*?[*c]u8) callconv(.C) i32 = null,
+
+    /// Check if the backend supports direct document-level processing (e.g. for PDFs).
+    ///
+    /// Defaults to `false`. Override if the backend has optimized document processing.
+    supports_document_processing: ?*const fn (user_data: ?*anyopaque, out_result: ?*?[*c]u8) callconv(.C) i32 = null,
+
+    /// Process a document file directly via OCR.
+    ///
+    /// Only called if `supports_document_processing` returns `true`.
+    ///
+    /// # Arguments
+    ///
+    /// * `path` - Path to the document file (e.g. .pdf)
+    /// * `config` - OCR configuration
+    process_document: ?*const fn (user_data: ?*anyopaque, _path: [*c]const u8, _config: [*c]const u8, out_result: ?*?[*c]u8, out_error: ?*?[*c]u8) callconv(.C) i32 = null,
+
+    /// Called by the Rust runtime when the bridge is dropped.
+    /// Use this to release any Zig-side state held via `user_data`.
+    free_user_data: ?*const fn (user_data: ?*anyopaque) callconv(.C) void = null,
+};
+
+/// Register a `OcrBackend` implementation with the Rust runtime.
+///
+/// `name`     — null-terminated plugin name.
+/// `vtable`   — filled `I{trait_name}` struct with all required function pointers.
+/// `user_data`— opaque pointer passed back as the first argument of every vtable call.
+///
+/// Returns 0 on success; non-zero on failure (error text written to `out_error`).
+pub fn register_ocr_backend(name: [*c]const u8, vtable: IOcrBackend, user_data: ?*anyopaque, out_error: ?*?[*c]u8) i32 {
+    return c.kreuzberg_register_ocr_backend(name, vtable, user_data, out_error);
+}
+
+/// Unregister a previously registered `OcrBackend` implementation by name.
+///
+/// Returns 0 on success; non-zero on failure.
+pub fn unregister_ocr_backend(name: [*c]const u8, out_error: ?*?[*c]u8) i32 {
+    return c.kreuzberg_unregister_ocr_backend(name, out_error);
+}
+
+/// Vtable for a Zig implementation of the `PostProcessor` trait.
+/// Fill each function pointer, then pass this struct to the corresponding
+/// `register_post_processor` function to register your implementation.
+pub const IPostProcessor = extern struct {
+    /// Return the plugin name into `out_name` (heap-allocated, caller frees).
+    name_fn: ?*const fn (user_data: ?*anyopaque, out_name: ?*?[*c]u8) callconv(.C) void = null,
+
+    /// Return the plugin version into `out_version` (heap-allocated, caller frees).
+    version_fn: ?*const fn (user_data: ?*anyopaque, out_version: ?*?[*c]u8) callconv(.C) void = null,
+
+    /// Initialise the plugin; return 0 on success, non-zero on error.
+    initialize_fn: ?*const fn (user_data: ?*anyopaque, out_error: ?*?[*c]u8) callconv(.C) i32 = null,
+
+    /// Shut down the plugin; return 0 on success, non-zero on error.
+    shutdown_fn: ?*const fn (user_data: ?*anyopaque, out_error: ?*?[*c]u8) callconv(.C) i32 = null,
+
+    /// Process an extraction result.
+    ///
+    /// Transform or enrich the extraction result. Can modify:
+    /// - `content` - The extracted text
+    /// - `metadata` - Add or update metadata fields
+    /// - `tables` - Modify or enhance table data
+    ///
+    /// # Arguments
+    ///
+    /// * `result` - Mutable reference to the extraction result to process
+    /// * `config` - Extraction configuration
+    ///
+    /// # Returns
+    ///
+    /// `Ok(())` if processing succeeded, `Err(...)` for fatal failures.
+    ///
+    /// # Errors
+    ///
+    /// Return errors for fatal processing failures. Non-fatal errors should be
+    /// captured in metadata directly on the result.
+    ///
+    /// # Performance
+    ///
+    /// This signature avoids unnecessary cloning of large extraction results by
+    /// taking a mutable reference instead of ownership. Processors modify the
+    /// result in place.
+    ///
+    /// # Example - Language Detection
+    ///
+    /// ```rust
+    /// # use kreuzberg::plugins::{Plugin, PostProcessor, ProcessingStage};
+    /// # use kreuzberg::{Result, ExtractionResult, ExtractionConfig};
+    /// # use async_trait::async_trait;
+    /// # struct LanguageDetector;
+    /// # impl Plugin for LanguageDetector {
+    /// #     fn name(&self) -> &str { "language-detector" }
+    /// #     fn version(&self) -> String { "1.0.0".to_string() }
+    /// #     fn initialize(&self) -> Result<()> { Ok(()) }
+    /// #     fn shutdown(&self) -> Result<()> { Ok(()) }
+    /// # }
+    /// # #[async_trait]
+    /// # impl PostProcessor for LanguageDetector {
+    /// #     fn processing_stage(&self) -> ProcessingStage { ProcessingStage::Early }
+    /// async fn process(&self, result: &mut ExtractionResult, config: &ExtractionConfig)
+    ///     -> Result<()> {
+    ///     // Detect language (simplified - use real detection library in practice)
+    ///     let language = "en"; // Placeholder detection
+    ///
+    ///     // Add to metadata
+    ///     result.metadata.additional.insert("detected_language".to_string().into(), serde_json::json!(language));
+    ///
+    ///     Ok(())
+    /// }
+    /// # }
+    /// ```
+    ///
+    /// # Example - Text Cleaning
+    ///
+    /// ```rust
+    /// # use kreuzberg::plugins::{Plugin, PostProcessor, ProcessingStage};
+    /// # use kreuzberg::{Result, ExtractionResult, ExtractionConfig};
+    /// # use async_trait::async_trait;
+    /// # struct TextCleaner;
+    /// # impl Plugin for TextCleaner {
+    /// #     fn name(&self) -> &str { "text-cleaner" }
+    /// #     fn version(&self) -> String { "1.0.0".to_string() }
+    /// #     fn initialize(&self) -> Result<()> { Ok(()) }
+    /// #     fn shutdown(&self) -> Result<()> { Ok(()) }
+    /// # }
+    /// # #[async_trait]
+    /// # impl PostProcessor for TextCleaner {
+    /// #     fn processing_stage(&self) -> ProcessingStage { ProcessingStage::Middle }
+    /// async fn process(&self, result: &mut ExtractionResult, config: &ExtractionConfig)
+    ///     -> Result<()> {
+    ///     // Remove excessive whitespace
+    ///     result.content = result
+    ///         .content
+    ///         .split_whitespace()
+    ///         .collect::<Vec<_>>()
+    ///         .join(" ");
+    ///
+    ///     Ok(())
+    /// }
+    /// # }
+    /// ```
+    process: ?*const fn (user_data: ?*anyopaque, result: [*c]const u8, config: [*c]const u8, out_error: ?*?[*c]u8) callconv(.C) i32 = null,
+
+    /// Get the processing stage for this post-processor.
+    ///
+    /// Determines when this processor runs in the pipeline.
+    ///
+    /// # Returns
+    ///
+    /// The `ProcessingStage` (Early, Middle, or Late).
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use kreuzberg::plugins::{Plugin, PostProcessor, ProcessingStage};
+    /// # use kreuzberg::{Result, ExtractionResult, ExtractionConfig};
+    /// # use async_trait::async_trait;
+    /// # struct MyProcessor;
+    /// # impl Plugin for MyProcessor {
+    /// #     fn name(&self) -> &str { "my-processor" }
+    /// #     fn version(&self) -> String { "1.0.0".to_string() }
+    /// #     fn initialize(&self) -> Result<()> { Ok(()) }
+    /// #     fn shutdown(&self) -> Result<()> { Ok(()) }
+    /// # }
+    /// # #[async_trait]
+    /// # impl PostProcessor for MyProcessor {
+    /// #     async fn process(&self, result: &mut ExtractionResult, _: &ExtractionConfig) -> Result<()> { Ok(()) }
+    /// fn processing_stage(&self) -> ProcessingStage {
+    ///     ProcessingStage::Early  // Run before other processors
+    /// }
+    /// # }
+    /// ```
+    processing_stage: ?*const fn (user_data: ?*anyopaque, out_result: ?*?[*c]u8) callconv(.C) [*c]const u8 = null,
+
+    /// Optional: Check if this processor should run for a given result.
+    ///
+    /// Allows conditional processing based on MIME type, metadata, or content.
+    /// Defaults to `true` (always run).
+    ///
+    /// # Arguments
+    ///
+    /// * `result` - The extraction result to check
+    /// * `config` - Extraction configuration
+    ///
+    /// # Returns
+    ///
+    /// `true` if the processor should run, `false` to skip.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use kreuzberg::plugins::{Plugin, PostProcessor, ProcessingStage};
+    /// # use kreuzberg::{Result, ExtractionResult, ExtractionConfig};
+    /// # use async_trait::async_trait;
+    /// # struct PdfOnlyProcessor;
+    /// # impl Plugin for PdfOnlyProcessor {
+    /// #     fn name(&self) -> &str { "pdf-only" }
+    /// #     fn version(&self) -> String { "1.0.0".to_string() }
+    /// #     fn initialize(&self) -> Result<()> { Ok(()) }
+    /// #     fn shutdown(&self) -> Result<()> { Ok(()) }
+    /// # }
+    /// # #[async_trait]
+    /// # impl PostProcessor for PdfOnlyProcessor {
+    /// #     fn processing_stage(&self) -> ProcessingStage { ProcessingStage::Middle }
+    /// #     async fn process(&self, result: &mut ExtractionResult, _: &ExtractionConfig) -> Result<()> { Ok(()) }
+    /// /// Only process PDF documents
+    /// fn should_process(&self, result: &ExtractionResult, config: &ExtractionConfig) -> bool {
+    ///     result.mime_type == "application/pdf"
+    /// }
+    /// # }
+    /// ```
+    should_process: ?*const fn (user_data: ?*anyopaque, _result: [*c]const u8, _config: [*c]const u8, out_result: ?*?[*c]u8) callconv(.C) i32 = null,
+
+    /// Optional: Estimate processing time in milliseconds.
+    ///
+    /// Used for logging and debugging. Defaults to 0 (unknown).
+    ///
+    /// # Arguments
+    ///
+    /// * `result` - The extraction result to estimate for
+    ///
+    /// # Returns
+    ///
+    /// Estimated processing time in milliseconds.
+    estimated_duration_ms: ?*const fn (user_data: ?*anyopaque, _result: [*c]const u8, out_result: ?*?[*c]u8) callconv(.C) u64 = null,
+
+    /// Called by the Rust runtime when the bridge is dropped.
+    /// Use this to release any Zig-side state held via `user_data`.
+    free_user_data: ?*const fn (user_data: ?*anyopaque) callconv(.C) void = null,
+};
+
+/// Register a `PostProcessor` implementation with the Rust runtime.
+///
+/// `name`     — null-terminated plugin name.
+/// `vtable`   — filled `I{trait_name}` struct with all required function pointers.
+/// `user_data`— opaque pointer passed back as the first argument of every vtable call.
+///
+/// Returns 0 on success; non-zero on failure (error text written to `out_error`).
+pub fn register_post_processor(name: [*c]const u8, vtable: IPostProcessor, user_data: ?*anyopaque, out_error: ?*?[*c]u8) i32 {
+    return c.kreuzberg_register_post_processor(name, vtable, user_data, out_error);
+}
+
+/// Unregister a previously registered `PostProcessor` implementation by name.
+///
+/// Returns 0 on success; non-zero on failure.
+pub fn unregister_post_processor(name: [*c]const u8, out_error: ?*?[*c]u8) i32 {
+    return c.kreuzberg_unregister_post_processor(name, out_error);
+}
+
+/// Vtable for a Zig implementation of the `Validator` trait.
+/// Fill each function pointer, then pass this struct to the corresponding
+/// `register_validator` function to register your implementation.
+pub const IValidator = extern struct {
+    /// Return the plugin name into `out_name` (heap-allocated, caller frees).
+    name_fn: ?*const fn (user_data: ?*anyopaque, out_name: ?*?[*c]u8) callconv(.C) void = null,
+
+    /// Return the plugin version into `out_version` (heap-allocated, caller frees).
+    version_fn: ?*const fn (user_data: ?*anyopaque, out_version: ?*?[*c]u8) callconv(.C) void = null,
+
+    /// Initialise the plugin; return 0 on success, non-zero on error.
+    initialize_fn: ?*const fn (user_data: ?*anyopaque, out_error: ?*?[*c]u8) callconv(.C) i32 = null,
+
+    /// Shut down the plugin; return 0 on success, non-zero on error.
+    shutdown_fn: ?*const fn (user_data: ?*anyopaque, out_error: ?*?[*c]u8) callconv(.C) i32 = null,
+
+    /// Validate an extraction result.
+    ///
+    /// Check the extraction result and return `Ok(())` if valid, or an error
+    /// if validation fails.
+    ///
+    /// # Arguments
+    ///
+    /// * `result` - The extraction result to validate
+    /// * `config` - Extraction configuration
+    ///
+    /// # Returns
+    ///
+    /// - `Ok(())` if validation passes
+    /// - `Err(...)` if validation fails (extraction will fail)
+    ///
+    /// # Errors
+    ///
+    /// - `KreuzbergError::Validation` - Validation failed
+    /// - Any other error type appropriate for the failure
+    ///
+    /// # Example - Content Length Validation
+    ///
+    /// ```rust
+    /// # use kreuzberg::plugins::{Plugin, Validator};
+    /// # use kreuzberg::{Result, ExtractionResult, ExtractionConfig, KreuzbergError};
+    /// # use async_trait::async_trait;
+    /// # struct ContentLengthValidator { min: usize, max: usize }
+    /// # impl Plugin for ContentLengthValidator {
+    /// #     fn name(&self) -> &str { "length-validator" }
+    /// #     fn version(&self) -> String { "1.0.0".to_string() }
+    /// #     fn initialize(&self) -> Result<()> { Ok(()) }
+    /// #     fn shutdown(&self) -> Result<()> { Ok(()) }
+    /// # }
+    /// # #[async_trait]
+    /// # impl Validator for ContentLengthValidator {
+    /// async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
+    ///     -> Result<()> {
+    ///     let length = result.content.len();
+    ///
+    ///     if length < self.min {
+    ///         return Err(KreuzbergError::validation(format!(
+    ///             "Content too short: {} < {} characters",
+    ///             length, self.min
+    ///         )));
+    ///     }
+    ///
+    ///     if length > self.max {
+    ///         return Err(KreuzbergError::validation(format!(
+    ///             "Content too long: {} > {} characters",
+    ///             length, self.max
+    ///         )));
+    ///     }
+    ///
+    ///     Ok(())
+    /// }
+    /// # }
+    /// ```
+    ///
+    /// # Example - Quality Score Validation
+    ///
+    /// ```rust
+    /// # use kreuzberg::plugins::{Plugin, Validator};
+    /// # use kreuzberg::{Result, ExtractionResult, ExtractionConfig, KreuzbergError};
+    /// # use async_trait::async_trait;
+    /// # struct QualityValidator { min_score: f64 }
+    /// # impl Plugin for QualityValidator {
+    /// #     fn name(&self) -> &str { "quality-validator" }
+    /// #     fn version(&self) -> String { "1.0.0".to_string() }
+    /// #     fn initialize(&self) -> Result<()> { Ok(()) }
+    /// #     fn shutdown(&self) -> Result<()> { Ok(()) }
+    /// # }
+    /// # #[async_trait]
+    /// # impl Validator for QualityValidator {
+    /// async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
+    ///     -> Result<()> {
+    ///     // Check if quality_score exists in metadata
+    ///     let score = result.metadata
+    ///         .additional
+    ///         .get("quality_score")
+    ///         .and_then(|v| v.as_f64())
+    ///         .unwrap_or(0.0);
+    ///
+    ///     if score < self.min_score {
+    ///         return Err(KreuzbergError::validation(format!(
+    ///             "Quality score too low: {} < {}",
+    ///             score, self.min_score
+    ///         )));
+    ///     }
+    ///
+    ///     Ok(())
+    /// }
+    /// # }
+    /// ```
+    ///
+    /// # Example - Security Validation
+    ///
+    /// ```rust
+    /// # use kreuzberg::plugins::{Plugin, Validator};
+    /// # use kreuzberg::{Result, ExtractionResult, ExtractionConfig, KreuzbergError};
+    /// # use async_trait::async_trait;
+    /// # struct SecurityValidator { blocked_patterns: Vec<String> }
+    /// # impl Plugin for SecurityValidator {
+    /// #     fn name(&self) -> &str { "security-validator" }
+    /// #     fn version(&self) -> String { "1.0.0".to_string() }
+    /// #     fn initialize(&self) -> Result<()> { Ok(()) }
+    /// #     fn shutdown(&self) -> Result<()> { Ok(()) }
+    /// # }
+    /// # #[async_trait]
+    /// # impl Validator for SecurityValidator {
+    /// async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
+    ///     -> Result<()> {
+    ///     // Check for blocked patterns
+    ///     for pattern in &self.blocked_patterns {
+    ///         if result.content.contains(pattern) {
+    ///             return Err(KreuzbergError::validation(format!(
+    ///                 "Content contains blocked pattern: {}",
+    ///                 pattern
+    ///             )));
+    ///         }
+    ///     }
+    ///
+    ///     Ok(())
+    /// }
+    /// # }
+    /// ```
+    validate: ?*const fn (user_data: ?*anyopaque, result: [*c]const u8, config: [*c]const u8, out_error: ?*?[*c]u8) callconv(.C) i32 = null,
+
+    /// Optional: Check if this validator should run for a given result.
+    ///
+    /// Allows conditional validation based on MIME type, metadata, or content.
+    /// Defaults to `true` (always run).
+    ///
+    /// # Arguments
+    ///
+    /// * `result` - The extraction result to check
+    /// * `config` - Extraction configuration
+    ///
+    /// # Returns
+    ///
+    /// `true` if the validator should run, `false` to skip.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use kreuzberg::plugins::{Plugin, Validator};
+    /// # use kreuzberg::{Result, ExtractionResult, ExtractionConfig};
+    /// # use async_trait::async_trait;
+    /// # struct PdfValidator;
+    /// # impl Plugin for PdfValidator {
+    /// #     fn name(&self) -> &str { "pdf-validator" }
+    /// #     fn version(&self) -> String { "1.0.0".to_string() }
+    /// #     fn initialize(&self) -> Result<()> { Ok(()) }
+    /// #     fn shutdown(&self) -> Result<()> { Ok(()) }
+    /// # }
+    /// # #[async_trait]
+    /// # impl Validator for PdfValidator {
+    /// #     async fn validate(&self, _: &ExtractionResult, _: &ExtractionConfig) -> Result<()> { Ok(()) }
+    /// /// Only validate PDF documents
+    /// fn should_validate(&self, result: &ExtractionResult, config: &ExtractionConfig) -> bool {
+    ///     result.mime_type == "application/pdf"
+    /// }
+    /// # }
+    /// ```
+    should_validate: ?*const fn (user_data: ?*anyopaque, _result: [*c]const u8, _config: [*c]const u8, out_result: ?*?[*c]u8) callconv(.C) i32 = null,
+
+    /// Optional: Get the validation priority.
+    ///
+    /// Higher priority validators run first. Useful for ordering validation checks
+    /// (e.g., run cheap validations before expensive ones).
+    ///
+    /// Default priority is 50.
+    ///
+    /// # Returns
+    ///
+    /// Priority value (higher = runs earlier).
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use kreuzberg::plugins::{Plugin, Validator};
+    /// # use kreuzberg::{Result, ExtractionResult, ExtractionConfig};
+    /// # use async_trait::async_trait;
+    /// # struct FastValidator;
+    /// # impl Plugin for FastValidator {
+    /// #     fn name(&self) -> &str { "fast-validator" }
+    /// #     fn version(&self) -> String { "1.0.0".to_string() }
+    /// #     fn initialize(&self) -> Result<()> { Ok(()) }
+    /// #     fn shutdown(&self) -> Result<()> { Ok(()) }
+    /// # }
+    /// # #[async_trait]
+    /// # impl Validator for FastValidator {
+    /// #     async fn validate(&self, _: &ExtractionResult, _: &ExtractionConfig) -> Result<()> { Ok(()) }
+    /// /// Run this validator first (it's fast)
+    /// fn priority(&self) -> i32 {
+    ///     100
+    /// }
+    /// # }
+    /// ```
+    priority: ?*const fn (user_data: ?*anyopaque, out_result: ?*?[*c]u8) callconv(.C) i32 = null,
+
+    /// Called by the Rust runtime when the bridge is dropped.
+    /// Use this to release any Zig-side state held via `user_data`.
+    free_user_data: ?*const fn (user_data: ?*anyopaque) callconv(.C) void = null,
+};
+
+/// Register a `Validator` implementation with the Rust runtime.
+///
+/// `name`     — null-terminated plugin name.
+/// `vtable`   — filled `I{trait_name}` struct with all required function pointers.
+/// `user_data`— opaque pointer passed back as the first argument of every vtable call.
+///
+/// Returns 0 on success; non-zero on failure (error text written to `out_error`).
+pub fn register_validator(name: [*c]const u8, vtable: IValidator, user_data: ?*anyopaque, out_error: ?*?[*c]u8) i32 {
+    return c.kreuzberg_register_validator(name, vtable, user_data, out_error);
+}
+
+/// Unregister a previously registered `Validator` implementation by name.
+///
+/// Returns 0 on success; non-zero on failure.
+pub fn unregister_validator(name: [*c]const u8, out_error: ?*?[*c]u8) i32 {
+    return c.kreuzberg_unregister_validator(name, out_error);
+}
+
+/// Vtable for a Zig implementation of the `EmbeddingBackend` trait.
+/// Fill each function pointer, then pass this struct to the corresponding
+/// `register_embedding_backend` function to register your implementation.
+pub const IEmbeddingBackend = extern struct {
+    /// Return the plugin name into `out_name` (heap-allocated, caller frees).
+    name_fn: ?*const fn (user_data: ?*anyopaque, out_name: ?*?[*c]u8) callconv(.C) void = null,
+
+    /// Return the plugin version into `out_version` (heap-allocated, caller frees).
+    version_fn: ?*const fn (user_data: ?*anyopaque, out_version: ?*?[*c]u8) callconv(.C) void = null,
+
+    /// Initialise the plugin; return 0 on success, non-zero on error.
+    initialize_fn: ?*const fn (user_data: ?*anyopaque, out_error: ?*?[*c]u8) callconv(.C) i32 = null,
+
+    /// Shut down the plugin; return 0 on success, non-zero on error.
+    shutdown_fn: ?*const fn (user_data: ?*anyopaque, out_error: ?*?[*c]u8) callconv(.C) i32 = null,
+
+    /// Embedding vector dimension. Must be `> 0` and must match the length of
+    /// every vector returned by `embed`.
+    dimensions: ?*const fn (user_data: ?*anyopaque, out_result: ?*?[*c]u8) callconv(.C) usize = null,
+
+    /// Embed a batch of texts, returning one vector per input in order.
+    ///
+    /// # Errors
+    ///
+    /// Implementations should return [`crate::KreuzbergError::Plugin`] for
+    /// backend-specific failures. The dispatcher layers its own validation
+    /// (length, per-vector dimension) on top.
+    embed: ?*const fn (user_data: ?*anyopaque, texts: [*c]const u8, out_result: ?*?[*c]u8, out_error: ?*?[*c]u8) callconv(.C) i32 = null,
+
+    /// Called by the Rust runtime when the bridge is dropped.
+    /// Use this to release any Zig-side state held via `user_data`.
+    free_user_data: ?*const fn (user_data: ?*anyopaque) callconv(.C) void = null,
+};
+
+/// Register a `EmbeddingBackend` implementation with the Rust runtime.
+///
+/// `name`     — null-terminated plugin name.
+/// `vtable`   — filled `I{trait_name}` struct with all required function pointers.
+/// `user_data`— opaque pointer passed back as the first argument of every vtable call.
+///
+/// Returns 0 on success; non-zero on failure (error text written to `out_error`).
+pub fn register_embedding_backend(name: [*c]const u8, vtable: IEmbeddingBackend, user_data: ?*anyopaque, out_error: ?*?[*c]u8) i32 {
+    return c.kreuzberg_register_embedding_backend(name, vtable, user_data, out_error);
+}
+
+/// Unregister a previously registered `EmbeddingBackend` implementation by name.
+///
+/// Returns 0 on success; non-zero on failure.
+pub fn unregister_embedding_backend(name: [*c]const u8, out_error: ?*?[*c]u8) i32 {
+    return c.kreuzberg_unregister_embedding_backend(name, out_error);
+}

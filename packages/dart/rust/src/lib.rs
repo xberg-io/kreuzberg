@@ -461,29 +461,8 @@ pub struct OdtProperties {
     pub image_count: Option<i64>,
 }
 
-#[frb(mirror(SyncExtractor))]
-pub struct SyncExtractor {}
-
 #[frb(mirror(ZipBombValidator))]
 pub struct ZipBombValidator {}
-
-#[frb(mirror(EmbeddingBackend))]
-pub struct EmbeddingBackend {}
-
-#[frb(mirror(DocumentExtractor))]
-pub struct DocumentExtractor {}
-
-#[frb(mirror(OcrBackend))]
-pub struct OcrBackend {}
-
-#[frb(mirror(PostProcessor))]
-pub struct PostProcessor {}
-
-#[frb(mirror(Plugin))]
-pub struct Plugin {}
-
-#[frb(mirror(Validator))]
-pub struct Validator {}
 
 #[frb(mirror(TokenReductionConfig))]
 pub struct TokenReductionConfig {
@@ -1210,9 +1189,6 @@ pub struct Uri {
     pub page: Option<i64>,
     pub kind: UriKind,
 }
-
-#[frb(mirror(Recyclable))]
-pub struct Recyclable {}
 
 #[frb(mirror(StringBufferPool))]
 pub struct StringBufferPool {}
@@ -2660,4 +2636,416 @@ pub fn serialize_to_json(result: kreuzberg::ExtractionResult) -> Result<String, 
     kreuzberg::serialize_to_json(&result)
         .map(|v| v.to_string())
         .map_err(|e| e.to_string())
+}
+
+/// FRB opaque handle holding Dart callbacks for each trait method.
+/// Dart-side: register callbacks via `create_{snake}_dart_impl(...)` factory.
+#[frb(opaque)]
+pub struct OcrBackendDartImpl {
+    /// Plugin name used by the Plugin super-trait impl.
+    plugin_name: String,
+    /// Plugin version used by the Plugin super-trait impl.
+    plugin_version: String,
+    process_image: Box<
+        dyn Fn(Vec<u8>, kreuzberg::OcrConfig) -> flutter_rust_bridge::DartFnFuture<kreuzberg::ExtractionResult>
+            + Send
+            + Sync,
+    >,
+    process_image_file: Box<
+        dyn Fn(String, kreuzberg::OcrConfig) -> flutter_rust_bridge::DartFnFuture<kreuzberg::ExtractionResult>
+            + Send
+            + Sync,
+    >,
+    supports_language: Box<dyn Fn(String) -> flutter_rust_bridge::DartFnFuture<bool> + Send + Sync>,
+    backend_type: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<kreuzberg::plugins::OcrBackendType> + Send + Sync>,
+    supported_languages: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<Vec<String>> + Send + Sync>,
+    supports_table_detection: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<bool> + Send + Sync>,
+    supports_document_processing: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<bool> + Send + Sync>,
+    process_document: Box<
+        dyn Fn(String, kreuzberg::OcrConfig) -> flutter_rust_bridge::DartFnFuture<kreuzberg::ExtractionResult>
+            + Send
+            + Sync,
+    >,
+}
+
+impl kreuzberg::plugins::Plugin for OcrBackendDartImpl {
+    fn name(&self) -> &str {
+        &self.plugin_name
+    }
+
+    fn version(&self) -> String {
+        self.plugin_version.clone()
+    }
+
+    fn initialize(&self) -> kreuzberg::Result<()> {
+        Ok(())
+    }
+
+    fn shutdown(&self) -> kreuzberg::Result<()> {
+        Ok(())
+    }
+}
+
+#[async_trait::async_trait]
+impl kreuzberg::plugins::OcrBackend for OcrBackendDartImpl {
+    async fn process_image(
+        &self,
+        image_bytes: &[u8],
+        config: &kreuzberg::OcrConfig,
+    ) -> kreuzberg::Result<kreuzberg::ExtractionResult> {
+        let image_bytes = image_bytes.to_vec();
+        let config = config.clone();
+        Ok((self.process_image)(image_bytes, config).await)
+    }
+
+    async fn process_image_file(
+        &self,
+        path: &std::path::Path,
+        config: &kreuzberg::OcrConfig,
+    ) -> kreuzberg::Result<kreuzberg::ExtractionResult> {
+        let path = path.to_string_lossy().into_owned();
+        let config = config.clone();
+        Ok((self.process_image_file)(path, config).await)
+    }
+
+    fn supports_language(&self, lang: &str) -> bool {
+        let lang = lang.to_string();
+        let __result = tokio::runtime::Handle::current().block_on(async { (self.supports_language)(lang).await });
+        __result
+    }
+
+    fn backend_type(&self) -> kreuzberg::plugins::OcrBackendType {
+        let __result = tokio::runtime::Handle::current().block_on(async { (self.backend_type)().await });
+        __result
+    }
+
+    fn supported_languages(&self) -> Vec<String> {
+        let __result = tokio::runtime::Handle::current().block_on(async { (self.supported_languages)().await });
+        __result
+    }
+
+    fn supports_table_detection(&self) -> bool {
+        let __result = tokio::runtime::Handle::current().block_on(async { (self.supports_table_detection)().await });
+        __result
+    }
+
+    fn supports_document_processing(&self) -> bool {
+        let __result =
+            tokio::runtime::Handle::current().block_on(async { (self.supports_document_processing)().await });
+        __result
+    }
+
+    async fn process_document(
+        &self,
+        _path: &std::path::Path,
+        _config: &kreuzberg::OcrConfig,
+    ) -> kreuzberg::Result<kreuzberg::ExtractionResult> {
+        let _path = _path.to_string_lossy().into_owned();
+        let _config = _config.clone();
+        Ok((self.process_document)(_path, _config).await)
+    }
+}
+
+/// Create a `OcrBackendDartImpl` from Dart callback closures.
+/// Each method parameter is a `DartFnFuture`-returning closure.
+/// `plugin_name` and `plugin_version` are required for the Plugin super-trait.
+pub fn create_ocr_backend_dart_impl(
+    plugin_name: String,
+    plugin_version: String,
+    process_image: Box<
+        dyn Fn(Vec<u8>, kreuzberg::OcrConfig) -> flutter_rust_bridge::DartFnFuture<kreuzberg::ExtractionResult>
+            + Send
+            + Sync,
+    >,
+    process_image_file: Box<
+        dyn Fn(String, kreuzberg::OcrConfig) -> flutter_rust_bridge::DartFnFuture<kreuzberg::ExtractionResult>
+            + Send
+            + Sync,
+    >,
+    supports_language: Box<dyn Fn(String) -> flutter_rust_bridge::DartFnFuture<bool> + Send + Sync>,
+    backend_type: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<kreuzberg::plugins::OcrBackendType> + Send + Sync>,
+    supported_languages: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<Vec<String>> + Send + Sync>,
+    supports_table_detection: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<bool> + Send + Sync>,
+    supports_document_processing: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<bool> + Send + Sync>,
+    process_document: Box<
+        dyn Fn(String, kreuzberg::OcrConfig) -> flutter_rust_bridge::DartFnFuture<kreuzberg::ExtractionResult>
+            + Send
+            + Sync,
+    >,
+) -> OcrBackendDartImpl {
+    OcrBackendDartImpl {
+        plugin_name,
+        plugin_version,
+        process_image,
+        process_image_file,
+        supports_language,
+        backend_type,
+        supported_languages,
+        supports_table_detection,
+        supports_document_processing,
+        process_document,
+    }
+}
+
+/// FRB opaque handle holding Dart callbacks for each trait method.
+/// Dart-side: register callbacks via `create_{snake}_dart_impl(...)` factory.
+#[frb(opaque)]
+pub struct PostProcessorDartImpl {
+    /// Plugin name used by the Plugin super-trait impl.
+    plugin_name: String,
+    /// Plugin version used by the Plugin super-trait impl.
+    plugin_version: String,
+    process: Box<
+        dyn Fn(kreuzberg::ExtractionResult, kreuzberg::ExtractionConfig) -> flutter_rust_bridge::DartFnFuture<()>
+            + Send
+            + Sync,
+    >,
+    processing_stage:
+        Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<kreuzberg::plugins::ProcessingStage> + Send + Sync>,
+    should_process: Box<
+        dyn Fn(kreuzberg::ExtractionResult, kreuzberg::ExtractionConfig) -> flutter_rust_bridge::DartFnFuture<bool>
+            + Send
+            + Sync,
+    >,
+    estimated_duration_ms:
+        Box<dyn Fn(kreuzberg::ExtractionResult) -> flutter_rust_bridge::DartFnFuture<i64> + Send + Sync>,
+}
+
+impl kreuzberg::plugins::Plugin for PostProcessorDartImpl {
+    fn name(&self) -> &str {
+        &self.plugin_name
+    }
+
+    fn version(&self) -> String {
+        self.plugin_version.clone()
+    }
+
+    fn initialize(&self) -> kreuzberg::Result<()> {
+        Ok(())
+    }
+
+    fn shutdown(&self) -> kreuzberg::Result<()> {
+        Ok(())
+    }
+}
+
+#[async_trait::async_trait]
+impl kreuzberg::plugins::PostProcessor for PostProcessorDartImpl {
+    async fn process(
+        &self,
+        result: &mut kreuzberg::ExtractionResult,
+        config: &kreuzberg::ExtractionConfig,
+    ) -> kreuzberg::Result<()> {
+        let result = result.clone();
+        let config = config.clone();
+        Ok((self.process)(result, config).await)
+    }
+
+    fn processing_stage(&self) -> kreuzberg::plugins::ProcessingStage {
+        let __result = tokio::runtime::Handle::current().block_on(async { (self.processing_stage)().await });
+        __result
+    }
+
+    fn should_process(&self, _result: &kreuzberg::ExtractionResult, _config: &kreuzberg::ExtractionConfig) -> bool {
+        let _result = _result.clone();
+        let _config = _config.clone();
+        let __result =
+            tokio::runtime::Handle::current().block_on(async { (self.should_process)(_result, _config).await });
+        __result
+    }
+
+    fn estimated_duration_ms(&self, _result: &kreuzberg::ExtractionResult) -> u64 {
+        let _result = _result.clone();
+        let __result =
+            tokio::runtime::Handle::current().block_on(async { (self.estimated_duration_ms)(_result).await });
+        __result as u64
+    }
+}
+
+/// Create a `PostProcessorDartImpl` from Dart callback closures.
+/// Each method parameter is a `DartFnFuture`-returning closure.
+/// `plugin_name` and `plugin_version` are required for the Plugin super-trait.
+pub fn create_post_processor_dart_impl(
+    plugin_name: String,
+    plugin_version: String,
+    process: Box<
+        dyn Fn(kreuzberg::ExtractionResult, kreuzberg::ExtractionConfig) -> flutter_rust_bridge::DartFnFuture<()>
+            + Send
+            + Sync,
+    >,
+    processing_stage: Box<
+        dyn Fn() -> flutter_rust_bridge::DartFnFuture<kreuzberg::plugins::ProcessingStage> + Send + Sync,
+    >,
+    should_process: Box<
+        dyn Fn(kreuzberg::ExtractionResult, kreuzberg::ExtractionConfig) -> flutter_rust_bridge::DartFnFuture<bool>
+            + Send
+            + Sync,
+    >,
+    estimated_duration_ms: Box<
+        dyn Fn(kreuzberg::ExtractionResult) -> flutter_rust_bridge::DartFnFuture<i64> + Send + Sync,
+    >,
+) -> PostProcessorDartImpl {
+    PostProcessorDartImpl {
+        plugin_name,
+        plugin_version,
+        process,
+        processing_stage,
+        should_process,
+        estimated_duration_ms,
+    }
+}
+
+/// FRB opaque handle holding Dart callbacks for each trait method.
+/// Dart-side: register callbacks via `create_{snake}_dart_impl(...)` factory.
+#[frb(opaque)]
+pub struct ValidatorDartImpl {
+    /// Plugin name used by the Plugin super-trait impl.
+    plugin_name: String,
+    /// Plugin version used by the Plugin super-trait impl.
+    plugin_version: String,
+    validate: Box<
+        dyn Fn(kreuzberg::ExtractionResult, kreuzberg::ExtractionConfig) -> flutter_rust_bridge::DartFnFuture<()>
+            + Send
+            + Sync,
+    >,
+    should_validate: Box<
+        dyn Fn(kreuzberg::ExtractionResult, kreuzberg::ExtractionConfig) -> flutter_rust_bridge::DartFnFuture<bool>
+            + Send
+            + Sync,
+    >,
+    priority: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<i64> + Send + Sync>,
+}
+
+impl kreuzberg::plugins::Plugin for ValidatorDartImpl {
+    fn name(&self) -> &str {
+        &self.plugin_name
+    }
+
+    fn version(&self) -> String {
+        self.plugin_version.clone()
+    }
+
+    fn initialize(&self) -> kreuzberg::Result<()> {
+        Ok(())
+    }
+
+    fn shutdown(&self) -> kreuzberg::Result<()> {
+        Ok(())
+    }
+}
+
+#[async_trait::async_trait]
+impl kreuzberg::plugins::Validator for ValidatorDartImpl {
+    async fn validate(
+        &self,
+        result: &kreuzberg::ExtractionResult,
+        config: &kreuzberg::ExtractionConfig,
+    ) -> kreuzberg::Result<()> {
+        let result = result.clone();
+        let config = config.clone();
+        Ok((self.validate)(result, config).await)
+    }
+
+    fn should_validate(&self, _result: &kreuzberg::ExtractionResult, _config: &kreuzberg::ExtractionConfig) -> bool {
+        let _result = _result.clone();
+        let _config = _config.clone();
+        let __result =
+            tokio::runtime::Handle::current().block_on(async { (self.should_validate)(_result, _config).await });
+        __result
+    }
+
+    fn priority(&self) -> i32 {
+        let __result = tokio::runtime::Handle::current().block_on(async { (self.priority)().await });
+        __result as i32
+    }
+}
+
+/// Create a `ValidatorDartImpl` from Dart callback closures.
+/// Each method parameter is a `DartFnFuture`-returning closure.
+/// `plugin_name` and `plugin_version` are required for the Plugin super-trait.
+pub fn create_validator_dart_impl(
+    plugin_name: String,
+    plugin_version: String,
+    validate: Box<
+        dyn Fn(kreuzberg::ExtractionResult, kreuzberg::ExtractionConfig) -> flutter_rust_bridge::DartFnFuture<()>
+            + Send
+            + Sync,
+    >,
+    should_validate: Box<
+        dyn Fn(kreuzberg::ExtractionResult, kreuzberg::ExtractionConfig) -> flutter_rust_bridge::DartFnFuture<bool>
+            + Send
+            + Sync,
+    >,
+    priority: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<i64> + Send + Sync>,
+) -> ValidatorDartImpl {
+    ValidatorDartImpl {
+        plugin_name,
+        plugin_version,
+        validate,
+        should_validate,
+        priority,
+    }
+}
+
+/// FRB opaque handle holding Dart callbacks for each trait method.
+/// Dart-side: register callbacks via `create_{snake}_dart_impl(...)` factory.
+#[frb(opaque)]
+pub struct EmbeddingBackendDartImpl {
+    /// Plugin name used by the Plugin super-trait impl.
+    plugin_name: String,
+    /// Plugin version used by the Plugin super-trait impl.
+    plugin_version: String,
+    dimensions: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<i64> + Send + Sync>,
+    embed: Box<dyn Fn(Vec<String>) -> flutter_rust_bridge::DartFnFuture<Vec<Vec<f64>>> + Send + Sync>,
+}
+
+impl kreuzberg::plugins::Plugin for EmbeddingBackendDartImpl {
+    fn name(&self) -> &str {
+        &self.plugin_name
+    }
+
+    fn version(&self) -> String {
+        self.plugin_version.clone()
+    }
+
+    fn initialize(&self) -> kreuzberg::Result<()> {
+        Ok(())
+    }
+
+    fn shutdown(&self) -> kreuzberg::Result<()> {
+        Ok(())
+    }
+}
+
+#[async_trait::async_trait]
+impl kreuzberg::plugins::EmbeddingBackend for EmbeddingBackendDartImpl {
+    fn dimensions(&self) -> usize {
+        let __result = tokio::runtime::Handle::current().block_on(async { (self.dimensions)().await });
+        __result as usize
+    }
+
+    async fn embed(&self, texts: Vec<String>) -> kreuzberg::Result<Vec<Vec<f32>>> {
+        Ok((self.embed)(texts)
+            .await
+            .into_iter()
+            .map(|v| v.into_iter().map(|x| x as f32).collect())
+            .collect::<Vec<_>>())
+    }
+}
+
+/// Create a `EmbeddingBackendDartImpl` from Dart callback closures.
+/// Each method parameter is a `DartFnFuture`-returning closure.
+/// `plugin_name` and `plugin_version` are required for the Plugin super-trait.
+pub fn create_embedding_backend_dart_impl(
+    plugin_name: String,
+    plugin_version: String,
+    dimensions: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<i64> + Send + Sync>,
+    embed: Box<dyn Fn(Vec<String>) -> flutter_rust_bridge::DartFnFuture<Vec<Vec<f64>>> + Send + Sync>,
+) -> EmbeddingBackendDartImpl {
+    EmbeddingBackendDartImpl {
+        plugin_name,
+        plugin_version,
+        dimensions,
+        embed,
+    }
 }

@@ -3692,9 +3692,12 @@ dependencies = [
 name = "kreuzberg-dart"
 version = "0.7.11"
 dependencies = [
+ "anyhow",
+ "async-trait",
  "flutter_rust_bridge",
  "kreuzberg",
  "serde_json",
+ "tokio",
 ]
 
 [[package]]
