@@ -113,6 +113,170 @@ repos:
         exclude: ^docs/reference/(api-|configuration\.md|errors\.md|types\.md)
         pass_filenames: true
 
+  # Python: ruff (linting + formatting) + mypy (type checking)
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.12
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.20.2
+    hooks:
+      - id: mypy
+        exclude: "e2e/|tests/|scripts/"
+
+  # Node/TS/WASM: oxlint
+  - repo: https://github.com/oxc-project/mirrors-oxlint
+    rev: v1.60.0
+    hooks:
+      - id: oxlint
+        args: ["--fix"]
+        exclude: ^(tools/benchmark-harness/fixtures/|docs/snippets/)
+
+  # C/FFI: clang-format and cppcheck scoped to FFI test files
+  - repo: https://github.com/pocc/pre-commit-hooks
+    rev: v1.3.5
+    hooks:
+      - id: clang-format
+        args: [--style=file]
+        files: (^crates/kreuzberg-ffi/tests/c/|^tools/benchmark-harness/scripts/.*\.c$)
+      - id: cppcheck
+        args:
+          [
+            "--std=c11",
+            "--enable=warning,style,performance",
+            "--suppress=missingIncludeSystem",
+            "--suppress=unusedStructMember",
+            "--suppress=normalCheckLevelMaxBranches",
+          ]
+        files: (^crates/kreuzberg-ffi/tests/c/|^tools/benchmark-harness/scripts/.*\.c$)
+
+  # Go: formatting and linting (runs per Go module via Taskfile)
+  - repo: local
+    hooks:
+      - id: golangci-lint-full
+        name: golangci-lint (all Go modules)
+        entry: task go:lint
+        language: system
+        files: \.go$
+        pass_filenames: false
+
+  # Java: copy-paste detection and style checking
+  - repo: https://github.com/gherynos/pre-commit-java
+    rev: v0.6.37
+    hooks:
+      - id: cpd
+        exclude: ^(\.mvn/wrapper/|e2e/|tools/e2e-generator/e2e/|crates/kreuzberg-wasm/e2e/)
+      - id: checkstyle
+        args:
+          [
+            "-c",
+            "packages/java/checkstyle.xml",
+            "-p",
+            "packages/java/checkstyle.properties",
+          ]
+        exclude: ^(\.mvn/wrapper/|e2e/|tools/e2e-generator/e2e/|crates/kreuzberg-wasm/e2e/|packages/java/src/)
+
+  # Local hooks for unsupported languages (Ruby, Java, C#, PHP, Elixir, R) and custom configurations
+  - repo: local
+    hooks:
+      # Ruby
+      - id: ruby-format
+        name: Ruby formatting (rubocop)
+        entry: task ruby:format
+        language: system
+        files: \.rb$
+        pass_filenames: false
+        require_serial: true
+        stages: [commit]
+
+      - id: ruby-lint
+        name: Ruby linting (rubocop + steep)
+        entry: task ruby:lint
+        language: system
+        files: \.(rb|rbs)$
+        pass_filenames: false
+        require_serial: true
+        stages: [commit]
+
+      # Java (maven verify — cpd/checkstyle handled by pre-commit-java above)
+      - id: java-verify
+        name: maven verify (java)
+        entry: bash -lc 'if [ -f "$HOME/.sdkman/bin/sdkman-init.sh" ]; then source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk env; fi; MAVEN_OPTS="${MAVEN_OPTS:-} --enable-native-access=ALL-UNNAMED -Dsun.misc.unsafe.memory.access=allow" mvn -f packages/java/pom.xml -B -DskipTests -Dgpg.skip=true -Dskip.rust.ffi=true verify'
+        language: system
+        files: ^packages/java/
+        pass_filenames: false
+
+      # C#
+      - id: csharp-format
+        name: C# formatting (dotnet format)
+        entry: task csharp:format
+        language: system
+        files: \.cs$
+        pass_filenames: false
+        require_serial: true
+        stages: [commit]
+
+      - id: csharp-lint
+        name: C# linting (dotnet format)
+        entry: task csharp:lint
+        language: system
+        files: \.cs$
+        pass_filenames: false
+        require_serial: true
+        stages: [commit]
+
+      # PHP
+      - id: php-format
+        name: PHP formatting (php-cs-fixer)
+        entry: task php:format
+        language: system
+        files: \.php$
+        pass_filenames: false
+        require_serial: true
+        stages: [commit]
+
+      - id: php-lint
+        name: PHP linting (phpstan + php-cs-fixer)
+        entry: task php:lint
+        language: system
+        files: \.php$
+        pass_filenames: false
+        require_serial: true
+        stages: [commit]
+
+      # Elixir
+      - id: mix-format
+        name: mix format
+        entry: bash -c 'cd packages/elixir && MIX_ENV=dev mix format --check-formatted'
+        language: system
+        files: ^packages/elixir/
+        pass_filenames: false
+
+      - id: mix-credo
+        name: mix credo
+        entry: bash -c 'cd packages/elixir && MIX_ENV=dev mix credo --strict'
+        language: system
+        files: ^packages/elixir/
+        pass_filenames: false
+
+      # R
+      - id: r-style
+        name: R formatting (styler)
+        entry: Rscript -e 'styler::style_dir("packages/r")'
+        language: system
+        files: ^packages/r/.*\.(R|r|Rmd|Rnw)$
+        pass_filenames: false
+
+      - id: r-lint
+        name: R linting (lintr)
+        entry: Rscript -e 'lintr::lint_dir("packages/r")'
+        language: system
+        files: ^packages/r/.*\.(R|r|Rmd|Rnw)$
+        pass_filenames: false
+
   # Alef: verify bindings and sync versions
   - repo: https://github.com/kreuzberg-dev/alef
     rev: v0.7.10
