@@ -4,6 +4,7 @@
 # To verify freshness: alef verify --exit-code
 # Issues & docs: https://github.com/kreuzberg-dev/alef
 """E2e tests for category: uri."""
+
 from kreuzberg import classify_uri
 
 
@@ -12,13 +13,14 @@ def test_classify_uri_anchor() -> None:
     url = "#section-header"
     _ = classify_uri(url=url)
 
+
 def test_classify_uri_email() -> None:
     """Classify mailto URI."""
     url = "mailto:user@example.com"
     _ = classify_uri(url=url)
 
+
 def test_classify_uri_https() -> None:
     """Classify HTTPS URL."""
     url = "https://example.com/page"
     _ = classify_uri(url=url)
-

@@ -4,6 +4,7 @@
 # To verify freshness: alef verify --exit-code
 # Issues & docs: https://github.com/kreuzberg-dev/alef
 """E2e tests for category: xml."""
+
 import pytest
 from kreuzberg import extract_file
 
@@ -15,4 +16,3 @@ async def test_xml_plant_catalog() -> None:
     result = await extract_file(path=path)
     assert result.mime_type.strip() == "application/xml"  # noqa: S101
     assert len(result.content) >= 100  # noqa: S101
-

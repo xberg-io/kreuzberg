@@ -4,8 +4,18 @@
 # To verify freshness: alef verify --exit-code
 # Issues & docs: https://github.com/kreuzberg-dev/alef
 """E2e tests for category: validation."""
+
 import pytest
-from kreuzberg import validate_confidence, validate_output_format, validate_host, validate_language_code, validate_mime_type, validate_tesseract_oem, validate_port, validate_tesseract_psm
+from kreuzberg import (
+    validate_confidence,
+    validate_output_format,
+    validate_host,
+    validate_language_code,
+    validate_mime_type,
+    validate_tesseract_oem,
+    validate_port,
+    validate_tesseract_psm,
+)
 
 
 def test_validate_confidence_fn_invalid() -> None:
@@ -14,10 +24,12 @@ def test_validate_confidence_fn_invalid() -> None:
     with pytest.raises(Exception):  # noqa: B017
         validate_confidence(confidence=confidence)
 
+
 def test_validate_confidence_fn_valid() -> None:
     """Accept valid confidence threshold."""
     confidence = 0.95
     _ = validate_confidence(confidence=confidence)
+
 
 def test_validate_format_invalid() -> None:
     """Reject invalid output format."""
@@ -25,15 +37,18 @@ def test_validate_format_invalid() -> None:
     with pytest.raises(Exception):  # noqa: B017
         validate_output_format(format=format)
 
+
 def test_validate_format_valid() -> None:
     """Accept valid output format."""
     format = "markdown"
     _ = validate_output_format(format=format)
 
+
 def test_validate_host_valid() -> None:
     """Accept valid host address."""
     host = "127.0.0.1"
     _ = validate_host(host=host)
+
 
 def test_validate_lang_invalid() -> None:
     """Reject invalid language code."""
@@ -41,10 +56,12 @@ def test_validate_lang_invalid() -> None:
     with pytest.raises(Exception):  # noqa: B017
         validate_language_code(code=code)
 
+
 def test_validate_lang_valid() -> None:
     """Accept valid language code."""
     code = "eng"
     _ = validate_language_code(code=code)
+
 
 def test_validate_mime_invalid() -> None:
     """Reject invalid MIME type."""
@@ -52,10 +69,12 @@ def test_validate_mime_invalid() -> None:
     with pytest.raises(Exception):  # noqa: B017
         validate_mime_type(mime_type=mime_type)
 
+
 def test_validate_mime_valid() -> None:
     """Accept valid MIME type."""
     mime_type = "application/pdf"
     _ = validate_mime_type(mime_type=mime_type)
+
 
 def test_validate_oem_invalid() -> None:
     """Reject invalid Tesseract OEM mode."""
@@ -63,10 +82,12 @@ def test_validate_oem_invalid() -> None:
     with pytest.raises(Exception):  # noqa: B017
         validate_tesseract_oem(oem=oem)
 
+
 def test_validate_oem_valid() -> None:
     """Accept valid Tesseract OEM mode."""
     oem = 1
     _ = validate_tesseract_oem(oem=oem)
+
 
 def test_validate_port_invalid() -> None:
     """Reject invalid port number (zero)."""
@@ -74,10 +95,12 @@ def test_validate_port_invalid() -> None:
     with pytest.raises(Exception):  # noqa: B017
         validate_port(port=port)
 
+
 def test_validate_port_valid() -> None:
     """Accept valid port number."""
     port = 8080
     _ = validate_port(port=port)
+
 
 def test_validate_psm_invalid() -> None:
     """Reject invalid Tesseract PSM mode."""
@@ -85,8 +108,8 @@ def test_validate_psm_invalid() -> None:
     with pytest.raises(Exception):  # noqa: B017
         validate_tesseract_psm(psm=psm)
 
+
 def test_validate_psm_valid() -> None:
     """Accept valid Tesseract PSM mode."""
     psm = 6
     _ = validate_tesseract_psm(psm=psm)
-

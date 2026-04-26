@@ -4,6 +4,7 @@
 # To verify freshness: alef verify --exit-code
 # Issues & docs: https://github.com/kreuzberg-dev/alef
 """E2e tests for category: embedding_backend_management."""
+
 import pytest
 from kreuzberg import extract_file
 
@@ -13,4 +14,3 @@ async def test_embedding_backend_lifecycle() -> None:
     """List/clear lifecycle for embedding backends; asserts the registry surface exists and empty-state operations are non-erroring."""
     path = ""
     _ = await extract_file(path=path)
-

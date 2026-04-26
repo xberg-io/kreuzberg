@@ -4,6 +4,7 @@
 # To verify freshness: alef verify --exit-code
 # Issues & docs: https://github.com/kreuzberg-dev/alef
 """E2e tests for category: async."""
+
 import pytest
 from kreuzberg import extract_bytes, extract_file, ExtractionConfig
 
@@ -17,6 +18,7 @@ async def test_async_extract_bytes() -> None:
     assert result.mime_type.strip() == "application/pdf"  # noqa: S101
     assert len(result.content) >= 50  # noqa: S101
 
+
 @pytest.mark.asyncio
 async def test_async_extract_bytes_empty_mime() -> None:
     """extract_bytes empty MIME async."""
@@ -25,6 +27,7 @@ async def test_async_extract_bytes_empty_mime() -> None:
     config = ExtractionConfig()
     with pytest.raises(Exception):  # noqa: B017
         await extract_bytes(data=data, mime_type=mime_type, config=config)
+
 
 @pytest.mark.asyncio
 async def test_async_extract_bytes_invalid_mime() -> None:
@@ -35,6 +38,7 @@ async def test_async_extract_bytes_invalid_mime() -> None:
     with pytest.raises(Exception):  # noqa: B017
         await extract_bytes(data=data, mime_type=mime_type, config=config)
 
+
 @pytest.mark.asyncio
 async def test_async_extract_file() -> None:
     """Async extract_file call on PDF document."""
@@ -44,13 +48,17 @@ async def test_async_extract_file() -> None:
     assert result.mime_type.strip() == "application/pdf"  # noqa: S101
     assert len(result.content) >= 50  # noqa: S101
 
+
 @pytest.mark.asyncio
 async def test_async_extract_file_docx() -> None:
     """Async extract_file call on DOCX document."""
     path = "docx/fake.docx"
-    mime_type = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    mime_type = (
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    )
     result = await extract_file(path=path, mime_type=mime_type)
     assert len(result.content) >= 20  # noqa: S101
+
 
 @pytest.mark.asyncio
 async def test_async_extract_file_html() -> None:
@@ -60,6 +68,7 @@ async def test_async_extract_file_html() -> None:
     result = await extract_file(path=path, mime_type=mime_type)
     assert len(result.content) >= 10  # noqa: S101
 
+
 @pytest.mark.asyncio
 async def test_async_extract_file_image() -> None:
     """Async extract_file call on image document."""
@@ -67,12 +76,14 @@ async def test_async_extract_file_image() -> None:
     mime_type = "image/png"
     _ = await extract_file(path=path, mime_type=mime_type)
 
+
 @pytest.mark.asyncio
 async def test_async_extract_file_with_config() -> None:
     """Async extract_file call with output format and chunking config."""
     path = "pdf/fake_memo.pdf"
     mime_type = "application/pdf"
-    config = ExtractionConfig(chunking={"max_characters": 500, "max_overlap": 50}, output_format="markdown")
+    config = ExtractionConfig(
+        chunking={"max_characters": 500, "max_overlap": 50}, output_format="markdown"
+    )
     result = await extract_file(path=path, mime_type=mime_type, config=config)
     assert len(result.content) >= 10  # noqa: S101
-

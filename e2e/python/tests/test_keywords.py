@@ -4,6 +4,7 @@
 # To verify freshness: alef verify --exit-code
 # Issues & docs: https://github.com/kreuzberg-dev/alef
 """E2e tests for category: keywords."""
+
 import pytest
 from kreuzberg import extract_file_sync, ExtractionConfig
 
@@ -20,6 +21,7 @@ def test_keywords_rake() -> None:
     assert len(result.keywords) >= 1  # noqa: S101
     assert result.keywords_count <= 10  # noqa: S101
 
+
 @pytest.mark.skip(reason="Requires features: keywords-yake")
 def test_keywords_yake() -> None:
     """Tests keyword extraction using YAKE algorithm."""
@@ -31,4 +33,3 @@ def test_keywords_yake() -> None:
     assert result.keywords  # noqa: S101
     assert len(result.keywords) >= 1  # noqa: S101
     assert result.keywords_count <= 10  # noqa: S101
-

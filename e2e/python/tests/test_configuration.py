@@ -4,6 +4,7 @@
 # To verify freshness: alef verify --exit-code
 # Issues & docs: https://github.com/kreuzberg-dev/alef
 """E2e tests for category: configuration."""
+
 import pytest
 from kreuzberg import extract_file
 
@@ -16,6 +17,7 @@ async def test_config_discover() -> None:
     assert result.result.chunking  # noqa: S101
     assert result.result.chunking.max_chars == 50  # noqa: S101
 
+
 @pytest.mark.asyncio
 async def test_config_from_file() -> None:
     """Load configuration from a TOML file."""
@@ -26,4 +28,3 @@ async def test_config_from_file() -> None:
     assert result.result.chunking.max_overlap == 20  # noqa: S101
     assert result.result.language_detection  # noqa: S101
     assert result.result.language_detection.enabled is False  # noqa: S101
-

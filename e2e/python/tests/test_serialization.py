@@ -4,6 +4,7 @@
 # To verify freshness: alef verify --exit-code
 # Issues & docs: https://github.com/kreuzberg-dev/alef
 """E2e tests for category: serialization."""
+
 from kreuzberg import serialize_to_json, serialize_to_toon, ExtractionConfig
 
 
@@ -14,6 +15,7 @@ def test_serialize_json_basic() -> None:
     result = serialize_to_json(path=path, config=config)
     assert len(result.content) >= 1  # noqa: S101
 
+
 def test_serialize_json_pdf() -> None:
     """Serialize PDF extraction to JSON."""
     path = "test_documents/pdf/sample.pdf"
@@ -22,6 +24,7 @@ def test_serialize_json_pdf() -> None:
     assert result.content is not None  # noqa: S101
     assert "content" in result.content  # noqa: S101
 
+
 def test_serialize_toon_basic() -> None:
     """Serialize extraction result to TOON format."""
     path = "test_documents/text/plain.txt"
@@ -29,10 +32,10 @@ def test_serialize_toon_basic() -> None:
     result = serialize_to_toon(path=path, config=config)
     assert len(result.content) >= 1  # noqa: S101
 
+
 def test_serialize_toon_pdf() -> None:
     """Serialize PDF extraction to TOON."""
     path = "test_documents/pdf/sample.pdf"
     config = ExtractionConfig()
     result = serialize_to_toon(path=path, config=config)
     assert len(result.content) >= 10  # noqa: S101
-
