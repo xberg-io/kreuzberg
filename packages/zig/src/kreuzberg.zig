@@ -4090,43 +4090,6 @@ pub fn clear_extractors() (KreuzbergError || error{OutOfMemory})!void {
     return;
 }
 
-/// Unregister an OCR backend by name.
-///
-/// Removes the OCR backend from the global registry and calls its `shutdown()` method.
-///
-/// # Arguments
-///
-/// * `name` - Name of the OCR backend to unregister
-///
-/// # Returns
-///
-/// - `Ok(())` if the backend was unregistered or didn't exist
-/// - `Err(...)` if the shutdown method failed
-///
-/// # Example
-///
-/// ```rust
-/// use kreuzberg::plugins::unregister_ocr_backend;
-///
-/// # tokio_test::block_on(async {
-/// unregister_ocr_backend("custom-ocr")?;
-/// # Ok::<(), kreuzberg::KreuzbergError>(())
-/// # });
-/// ```
-pub fn unregister_ocr_backend(name: []const u8) (KreuzbergError || error{OutOfMemory})!void {
-    const name_z: [*:0]u8 = try std.fmt.allocPrintZ(
-        std.heap.c_allocator,
-        "{s}",
-        .{name},
-    );
-    _ = c.kreuzberg_unregister_ocr_backend(name_z);
-    if (c.kreuzberg_last_error_code() != 0) {
-        return _first_error(KreuzbergError);
-    }
-    std.heap.c_allocator.free(name_z[0..std.mem.len(name_z)]);
-    return;
-}
-
 /// List all registered OCR backends.
 ///
 /// Returns the names of all OCR backends currently registered in the global registry.
