@@ -822,6 +822,10 @@ exclude_functions = [
     # Returns *mut u8 (raw byte buffer) — no kreuzberg_free_bytes FFI function exists to free
     # the allocation, and kreuzberg_free_string(*char) is type-incompatible with *uint8_t.
     "render_pdf_page_to_png",
+    # `path: impl AsRef<Path>` is generic — codegen emits a stub. Use `extract_file_ffi` /
+    # `extract_file_sync_ffi` instead (concrete &str path, empty mime_type means auto-detect).
+    "extract_file",
+    "extract_file_sync",
 ]
 
 [go]

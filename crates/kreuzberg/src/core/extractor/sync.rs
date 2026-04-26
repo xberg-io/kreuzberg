@@ -83,6 +83,35 @@ pub fn extract_file_sync(
     global_runtime()?.block_on(extract_file(path, mime_type, config))
 }
 
+/// FFI-friendly variant of `extract_file_sync` with concrete, non-generic parameter types.
+///
+/// Alef's FFI codegen cannot translate the generic `impl AsRef<Path>` of `extract_file_sync`,
+/// so it stubs the corresponding C symbol. This wrapper exposes the same behavior with
+/// FFI-compatible types so Alef can emit a real binding. An empty `mime_type` string is
+/// interpreted as "auto-detect" (i.e. `None`).
+#[cfg(feature = "tokio-runtime")]
+pub fn extract_file_sync_ffi(
+    path: &str,
+    mime_type: &str,
+    config: &ExtractionConfig,
+) -> Result<ExtractionResult> {
+    let mt = if mime_type.is_empty() { None } else { Some(mime_type) };
+    extract_file_sync(path, mt, config)
+}
+
+/// FFI-friendly variant of `extract_file` (async) with concrete, non-generic parameter types.
+///
+/// See [`extract_file_sync_ffi`] for rationale. Empty `mime_type` means auto-detect.
+#[cfg(feature = "tokio-runtime")]
+pub async fn extract_file_ffi(
+    path: &str,
+    mime_type: &str,
+    config: &ExtractionConfig,
+) -> Result<ExtractionResult> {
+    let mt = if mime_type.is_empty() { None } else { Some(mime_type) };
+    extract_file(path, mt, config).await
+}
+
 /// Synchronous wrapper for `extract_bytes`.
 ///
 /// Uses the global Tokio runtime for 100x+ performance improvement over creating

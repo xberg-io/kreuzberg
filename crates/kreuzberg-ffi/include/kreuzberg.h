@@ -11539,82 +11539,31 @@ KREUZBERGExtractionResult *kreuzberg_extract_bytes(const uint8_t *content,
                                                    const KREUZBERGExtractionConfig *config);
 
 /**
- * Extract content from a file.
+ * FFI-friendly variant of `extract_file_sync` with concrete, non-generic parameter types.
  *
- * This is the main entry point for file-based extraction. It performs the following steps:
- * 1. Check cache for existing result (if caching enabled)
- * 2. Detect or validate MIME type
- * 3. Select appropriate extractor from registry
- * 4. Extract content
- * 5. Run post-processing pipeline
- * 6. Store result in cache (if caching enabled)
- *
- * # Arguments
- *
- * * `path` - Path to the file to extract
- * * `mime_type` - Optional MIME type override. If None, will be auto-detected
- * * `config` - Extraction configuration
- *
- * # Returns
- *
- * An `ExtractionResult` containing the extracted content and metadata.
- *
- * # Errors
- *
- * Returns `KreuzbergError::Io` if the file doesn't exist (NotFound) or for other file I/O errors.
- * Returns `KreuzbergError::UnsupportedFormat` if MIME type is not supported.
- *
- * # Example
- *
- * ```rust,no_run
- * use kreuzberg::core::extractor::extract_file;
- * use kreuzberg::core::config::ExtractionConfig;
- *
- * # async fn example() -> kreuzberg::Result<()> {
- * let config = ExtractionConfig::default();
- * let result = extract_file("document.pdf", None, &config).await?;
- * println!("Content: {}", result.content);
- * # Ok(())
- * # }
- * ```
+ * Alef's FFI codegen cannot translate the generic `impl AsRef<Path>` of `extract_file_sync`,
+ * so it stubs the corresponding C symbol. This wrapper exposes the same behavior with
+ * FFI-compatible types so Alef can emit a real binding. An empty `mime_type` string is
+ * interpreted as "auto-detect" (i.e. `None`).
  * # Safety
  * Caller must ensure all pointer arguments are valid or null.
  * Returned pointers must be freed with the appropriate free function.
  */
-KREUZBERGExtractionResult *kreuzberg_extract_file(const char *_path,
-                                                  const char *_mime_type,
-                                                  const KREUZBERGExtractionConfig *_config);
+KREUZBERGExtractionResult *kreuzberg_extract_file_sync_ffi(const char *path,
+                                                           const char *mime_type,
+                                                           const KREUZBERGExtractionConfig *config);
 
 /**
- * Synchronous wrapper for `extract_file`.
+ * FFI-friendly variant of `extract_file` (async) with concrete, non-generic parameter types.
  *
- * This is a convenience function that blocks the current thread until extraction completes.
- * For async code, use `extract_file` directly.
- *
- * Uses the global Tokio runtime for 100x+ performance improvement over creating
- * a new runtime per call. Always uses the global runtime to avoid nested runtime issues.
- *
- * This function is only available with the `tokio-runtime` feature. For WASM targets,
- * use a truly synchronous extraction approach instead.
- *
- * # Example
- *
- * ```rust,no_run
- * use kreuzberg::core::extractor::extract_file_sync;
- * use kreuzberg::core::config::ExtractionConfig;
- *
- * let config = ExtractionConfig::default();
- * let result = extract_file_sync("document.pdf", None, &config)?;
- * println!("Content: {}", result.content);
- * # Ok::<(), kreuzberg::KreuzbergError>(())
- * ```
+ * See [`extract_file_sync_ffi`] for rationale. Empty `mime_type` means auto-detect.
  * # Safety
  * Caller must ensure all pointer arguments are valid or null.
  * Returned pointers must be freed with the appropriate free function.
  */
-KREUZBERGExtractionResult *kreuzberg_extract_file_sync(const char *_path,
-                                                       const char *_mime_type,
-                                                       const KREUZBERGExtractionConfig *_config);
+KREUZBERGExtractionResult *kreuzberg_extract_file_ffi(const char *path,
+                                                      const char *mime_type,
+                                                      const KREUZBERGExtractionConfig *config);
 
 /**
  * Synchronous wrapper for `extract_bytes`.

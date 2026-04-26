@@ -29,6 +29,9 @@ pub use sync::{batch_extract_bytes_sync, extract_bytes_sync};
 pub use sync::extract_file_sync;
 
 #[cfg(feature = "tokio-runtime")]
+pub use sync::{extract_file_ffi, extract_file_sync_ffi};
+
+#[cfg(feature = "tokio-runtime")]
 pub use batch::{batch_extract_bytes, batch_extract_file};
 #[cfg(feature = "tokio-runtime")]
 pub use sync::batch_extract_file_sync;
