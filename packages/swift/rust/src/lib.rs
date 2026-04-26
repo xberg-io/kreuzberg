@@ -2924,7 +2924,7 @@ mod ffi {
         fn link(start: u32, end: u32, url: String, title: Option<String>) -> TextAnnotation;
         fn code(start: u32, end: u32) -> TextAnnotation;
         fn strikethrough(start: u32, end: u32) -> TextAnnotation;
-        fn subscript(start: u32, end: u32) -> TextAnnotation;
+        fn subscript_(start: u32, end: u32) -> TextAnnotation;
         fn superscript(start: u32, end: u32) -> TextAnnotation;
         fn font_size(start: u32, end: u32, value: String) -> TextAnnotation;
         fn color(start: u32, end: u32, value: String) -> TextAnnotation;
@@ -11709,7 +11709,7 @@ pub fn strikethrough(start: u32, end: u32) -> TextAnnotation {
     TextAnnotation(kreuzberg::builder::strikethrough(start, end))
 }
 
-pub fn subscript(start: u32, end: u32) -> TextAnnotation {
+pub fn subscript_(start: u32, end: u32) -> TextAnnotation {
     TextAnnotation(kreuzberg::builder::subscript(start, end))
 }
 

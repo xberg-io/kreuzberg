@@ -1,4 +1,3 @@
-import RustBridgeC
 public func blake3_hash_bytes(_ data: RustVec<UInt8>) -> RustString {
     RustString(ptr: __swift_bridge__$blake3_hash_bytes({ let val = data; val.isOwned = false; return val.ptr }()))
 }
@@ -197,8 +196,8 @@ public func code(_ start: UInt32, _ end: UInt32) -> TextAnnotation {
 public func strikethrough(_ start: UInt32, _ end: UInt32) -> TextAnnotation {
     TextAnnotation(ptr: __swift_bridge__$strikethrough(start, end))
 }
-public func subscript(_ start: UInt32, _ end: UInt32) -> TextAnnotation {
-    TextAnnotation(ptr: __swift_bridge__$subscript(start, end))
+public func subscript_(_ start: UInt32, _ end: UInt32) -> TextAnnotation {
+    TextAnnotation(ptr: __swift_bridge__$subscript_(start, end))
 }
 public func superscript(_ start: UInt32, _ end: UInt32) -> TextAnnotation {
     TextAnnotation(ptr: __swift_bridge__$superscript(start, end))
@@ -20692,3 +20691,6 @@ extension EmbeddingBackendBox: Vectorizable {
         __swift_bridge__$Vec_EmbeddingBackendBox$len(vecPtr)
     }
 }
+
+
+

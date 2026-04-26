@@ -1,4 +1,3 @@
-import RustBridgeC
 import Foundation
 
 extension RustString {
