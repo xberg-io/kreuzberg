@@ -3020,6 +3020,7 @@ pub type KreuzbergError {
   Embedding(message: String, source: Option(String))
   Timeout(elapsed_ms: Int, limit_ms: Int)
   Cancelled
+  Security(message: String, source: Option(String))
   KreuzbergErrorOther(String)
 }
 

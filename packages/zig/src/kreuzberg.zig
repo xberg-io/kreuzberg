@@ -64,6 +64,7 @@ pub const KreuzbergError = error{
     Embedding,
     Timeout,
     Cancelled,
+    Security,
     Other,
 };
 

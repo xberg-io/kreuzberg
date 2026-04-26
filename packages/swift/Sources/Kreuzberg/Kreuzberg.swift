@@ -220,8 +220,11 @@ public struct ExtractionConfig: Codable {
   /// Security limits for archive extraction.
   ///
   /// Controls maximum archive size, compression ratio, file count, and other
-  /// security thresholds to prevent decompression bomb attacks.
-  /// When `None`, default limits are used (500MB archive, 100:1 ratio, 10K files).
+  /// security thresholds to prevent decompression bomb attacks. Also caps
+  /// nesting depth, iteration count, entity / token length, cumulative
+  /// content size, and table cell count for every extraction path that
+  /// ingests user-controlled bytes.
+  /// When `None`, default limits are used.
   public let securityLimits: String?
   /// Content text format (default: Plain).
   ///
@@ -5991,6 +5994,7 @@ public enum KreuzbergError: Error {
   case embedding(message: String, source: String)
   case timeout(message: String, elapsedMs: UInt64, limitMs: UInt64)
   case cancelled(message: String)
+  case security(message: String, source: String)
   case other(message: String, field0: String)
 }
 

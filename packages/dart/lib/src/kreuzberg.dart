@@ -214,8 +214,11 @@ class ExtractionConfig {
   /// Security limits for archive extraction.
   ///
   /// Controls maximum archive size, compression ratio, file count, and other
-  /// security thresholds to prevent decompression bomb attacks.
-  /// When `None`, default limits are used (500MB archive, 100:1 ratio, 10K files).
+  /// security thresholds to prevent decompression bomb attacks. Also caps
+  /// nesting depth, iteration count, entity / token length, cumulative
+  /// content size, and table cell count for every extraction path that
+  /// ingests user-controlled bytes.
+  /// When `None`, default limits are used.
   final String? securityLimits;
   /// Content text format (default: Plain).
   ///
@@ -5845,6 +5848,16 @@ final class Cancelled implements KreuzbergError {
   @override
   String get message => 'Extraction cancelled';
   const Cancelled();
+}
+final class Security implements KreuzbergError {
+  final String message;
+  final String source;
+  @override
+  String get message => 'Security violation: {message}';
+  Security({
+    required this.message,
+    required this.source,
+  });
 }
 final class Other implements KreuzbergError {
   final String 0;
