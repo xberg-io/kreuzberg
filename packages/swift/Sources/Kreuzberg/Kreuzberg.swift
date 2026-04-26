@@ -7551,11 +7551,6 @@ public enum Kreuzberg {
     return RustBridge.normalize(v)
   }
 
-  /// Get a preset by name.
-  public static func getPreset(name: String) -> String? {
-    return RustBridge.getPreset(name)
-  }
-
   /// List all available preset names.
   public static func listPresets() -> [String] {
     return RustBridge.listPresets()

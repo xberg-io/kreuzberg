@@ -1023,6 +1023,16 @@ target = "jvm"
 module_name = "Kreuzberg"
 package_name = "Kreuzberg"
 features = ["full"]
+# Fields whose actual Rust types are excluded types mapped to String by the IR;
+# serde round-trip would fail because the underlying type is not Serialize/Deserialize.
+exclude_fields = [
+    "ExtractionResult.ocr_internal_document",
+    "OcrExtractionResult.internal_document",
+]
+exclude_functions = [
+    # Returns Option<&'static EmbeddingPreset> but EmbeddingPreset: !Serialize — cannot JSON-bridge
+    "get_preset",
+]
 
 [dart]
 pubspec_name = "kreuzberg"
