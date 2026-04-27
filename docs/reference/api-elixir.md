@@ -1283,6 +1283,66 @@ def register_default_extractors()
 
 ---
 
+#### unregister_extractor()
+
+Unregister a document extractor by name.
+
+**Signature:**
+
+```elixir
+@spec unregister_extractor(name) :: {:ok, term()} | {:error, term()}
+def unregister_extractor(name)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `String.t()` | Yes | The name |
+
+**Returns:** `:ok`
+
+**Errors:** Returns `{:error, reason}`
+
+
+---
+
+#### list_extractors()
+
+List names of all registered document extractors.
+
+**Signature:**
+
+```elixir
+@spec list_extractors() :: {:ok, term()} | {:error, term()}
+def list_extractors()
+```
+
+**Returns:** `list(String.t())`
+
+**Errors:** Returns `{:error, reason}`
+
+
+---
+
+#### clear_extractors()
+
+Remove all registered document extractors.
+
+**Signature:**
+
+```elixir
+@spec clear_extractors() :: {:ok, term()} | {:error, term()}
+def clear_extractors()
+```
+
+**Returns:** `:ok`
+
+**Errors:** Returns `{:error, reason}`
+
+
+---
+
 #### unregister_ocr_backend()
 
 Unregister an OCR backend by name.
@@ -1383,6 +1443,102 @@ def list_post_processors()
 ```
 
 **Returns:** `list(String.t())`
+
+**Errors:** Returns `{:error, reason}`
+
+
+---
+
+#### unregister_renderer()
+
+Unregister a renderer by name.
+
+**Signature:**
+
+```elixir
+@spec unregister_renderer(name) :: {:ok, term()} | {:error, term()}
+def unregister_renderer(name)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `String.t()` | Yes | The name |
+
+**Returns:** `:ok`
+
+**Errors:** Returns `{:error, reason}`
+
+
+---
+
+#### list_renderers()
+
+List names of all registered renderers.
+
+**Signature:**
+
+```elixir
+@spec list_renderers() :: {:ok, term()} | {:error, term()}
+def list_renderers()
+```
+
+**Returns:** `list(String.t())`
+
+**Errors:** Returns `{:error, reason}`
+
+
+---
+
+#### clear_renderers()
+
+Remove all registered renderers.
+
+**Signature:**
+
+```elixir
+@spec clear_renderers() :: {:ok, term()} | {:error, term()}
+def clear_renderers()
+```
+
+**Returns:** `:ok`
+
+**Errors:** Returns `{:error, reason}`
+
+
+---
+
+#### list_validators()
+
+List names of all registered validators.
+
+**Signature:**
+
+```elixir
+@spec list_validators() :: {:ok, term()} | {:error, term()}
+def list_validators()
+```
+
+**Returns:** `list(String.t())`
+
+**Errors:** Returns `{:error, reason}`
+
+
+---
+
+#### clear_validators()
+
+Remove all registered validators.
+
+**Signature:**
+
+```elixir
+@spec clear_validators() :: {:ok, term()} | {:error, term()}
+def clear_validators()
+```
+
+**Returns:** `:ok`
 
 **Errors:** Returns `{:error, reason}`
 
@@ -3419,6 +3575,7 @@ Request parameters for embedding generation.
 | `preset` | `String.t() | nil` | `nil` | Embedding preset name (default: "balanced"). Available: "speed", "balanced", "quality" |
 | `model` | `String.t() | nil` | `nil` | LLM model for provider-hosted embeddings (e.g., "openai/text-embedding-3-small"). When set, overrides preset and uses liter-llm for embedding generation. |
 | `api_key` | `String.t() | nil` | `nil` | API key for the LLM provider (optional, falls back to env). |
+| `embedding_plugin` | `String.t() | nil` | `nil` | Name of a pre-registered in-process embedding plugin backend. When set, overrides both preset and model and dispatches to the registered callback. Requires a prior call to `kreuzberg.plugins.register_embedding_backend`. |
 
 
 ---
@@ -3432,6 +3589,86 @@ Embedded file descriptor extracted from the PDF name tree.
 | `name` | `String.t()` | — | The filename as stored in the PDF name tree. |
 | `data` | `binary()` | — | Raw file bytes from the embedded stream. |
 | `mime_type` | `String.t() | nil` | `nil` | MIME type if specified in the filespec, otherwise `nil`. |
+
+
+---
+
+#### EmbeddingBackend
+
+Trait for in-process embedding backend plugins.
+
+Async to match the convention used by `crate.plugins.OcrBackend`,
+`crate.plugins.DocumentExtractor`, and `crate.plugins.PostProcessor`.
+Host-language bridges (PyO3, napi-rs, Rustler, extendr, magnus, ext-php-rs,
+C FFI, etc.) wrap their synchronous host callables in `spawn_blocking` or the
+equivalent to satisfy the async signature.
+
+# Thread safety
+
+Backends must be `Send + Sync + 'static`. They are stored in
+`Arc<dyn EmbeddingBackend>` and called concurrently from kreuzberg's chunking
+pipeline. If the backend's underlying model isn't thread-safe, the backend
+itself must serialize access internally (e.g. via `Mutex<Inner>`).
+
+# Contract
+
+- `embed(texts)` MUST return exactly `texts.len()` vectors, each of length
+  `self.dimensions()`. The dispatcher in `crate.embeddings.embed_texts`
+  validates this before returning to downstream consumers; a non-conforming
+  backend surfaces as a `KreuzbergError.Validation`, not a panic.
+- `embed` may be called from any thread. Its future must be `Send`
+  (enforced by `async_trait` when `#[async_trait]` is used on non-WASM targets).
+- `dimensions()` is called exactly once at registration, immediately after
+  `initialize()` succeeds. The returned value is cached by the registry and
+  used for all subsequent shape validation. Lazy-loading implementations can
+  defer model loading into `initialize()` and report the real dimension
+  afterwards. Later mutations of the backend's reported dimension are not
+  observed by kreuzberg — implementations that need to change dimension
+  must unregister and re-register.
+- `shutdown()` (inherited from `crate.plugins.Plugin`) may be invoked
+  concurrently with an in-flight `embed()` call. Implementations must
+  tolerate this — e.g. by letting in-flight calls finish using resources
+  held via the `Arc<dyn EmbeddingBackend>` reference, and only releasing
+  shared state that isn't needed by `embed`.
+
+# Runtime
+
+The synchronous `crate.embed_texts` entry uses
+`tokio.task.block_in_place` to await the trait's async `embed`, which
+requires a multi-thread tokio runtime. Callers running inside a
+`current_thread` runtime (e.g. `#[tokio.test]` without `flavor = "multi_thread"`,
+or `tokio.runtime.Builder.new_current_thread()`) must use
+`crate.embed_texts_async` instead, which awaits directly without
+`block_in_place`.
+
+##### Functions
+
+###### dimensions()
+
+Embedding vector dimension. Must be `> 0` and must match the length of
+every vector returned by `embed`.
+
+**Signature:**
+
+```elixir
+def dimensions()
+```
+
+###### embed()
+
+Embed a batch of texts, returning one vector per input in order.
+
+**Errors:**
+
+Implementations should return `crate.KreuzbergError.Plugin` for
+backend-specific failures. The dispatcher layers its own validation
+(length, per-vector dimension) on top.
+
+**Signature:**
+
+```elixir
+def embed(texts)
+```
 
 
 ---
@@ -3451,6 +3688,7 @@ Requires the `embeddings` feature to be enabled.
 | `show_download_progress` | `boolean()` | `false` | Show model download progress |
 | `cache_dir` | `String.t() | nil` | `nil` | Custom cache directory for model files Defaults to `~/.cache/kreuzberg/embeddings/` if not specified. Allows full customization of model download location. |
 | `acceleration` | `AccelerationConfig | nil` | `nil` | Hardware acceleration for the embedding ONNX model. When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for inference. Defaults to `nil` (auto-select per platform). |
+| `max_embed_duration_secs` | `integer() | nil` | `nil` | Maximum wall-clock duration (in seconds) for a single `embed()` call when using `EmbeddingModelType.Plugin`. Applies only to the in-process plugin path — protects against hung host-language backends (e.g. a Python callback deadlocked on the GIL, a model stuck on CUDA OOM retries, etc.). On timeout, the dispatcher returns `crate.KreuzbergError.Plugin` instead of blocking forever. `nil` disables the timeout. The default (60 seconds) is conservative for common in-process inference; increase for large batches on slow hardware. |
 
 ##### Functions
 
@@ -3668,7 +3906,7 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 | `extraction_timeout_secs` | `integer() | nil` | `nil` | Default per-file timeout in seconds for batch extraction. When set, each file in a batch will be canceled after this duration unless overridden by `FileExtractionConfig.timeout_secs`. `nil` means no timeout (unbounded extraction time). |
 | `max_concurrent_extractions` | `integer() | nil` | `nil` | Maximum concurrent extractions in batch operations (None = (num_cpus × 1.5).ceil()). Limits parallelism to prevent resource exhaustion when processing large batches. Defaults to (num_cpus × 1.5).ceil() when not set. |
 | `result_format` | `String.t()` | — | Result structure format Controls whether results are returned in unified format (default) with all content in the `content` field, or element-based format with semantic elements (for Unstructured-compatible output). |
-| `security_limits` | `String.t() | nil` | `nil` | Security limits for archive extraction. Controls maximum archive size, compression ratio, file count, and other security thresholds to prevent decompression bomb attacks. When `nil`, default limits are used (500MB archive, 100:1 ratio, 10K files). |
+| `security_limits` | `String.t() | nil` | `nil` | Security limits for archive extraction. Controls maximum archive size, compression ratio, file count, and other security thresholds to prevent decompression bomb attacks. Also caps nesting depth, iteration count, entity / token length, cumulative content size, and table cell count for every extraction path that ingests user-controlled bytes. When `nil`, default limits are used. |
 | `output_format` | `String.t()` | `Plain` | Content text format (default: Plain). Controls the format of the extracted content: - `Plain`: Raw extracted text (default) - `Markdown`: Markdown formatted output - `Djot`: Djot markup format (requires djot feature) - `Html`: HTML formatted output When set to a structured format, extraction results will include formatted output. The `formatted_content` field may be populated when format conversion is applied. |
 | `layout` | `LayoutDetectionConfig | nil` | `nil` | Layout detection configuration (None = layout detection disabled). When set, PDF pages and images are analyzed for document structure (headings, code, formulas, tables, figures, etc.) using RT-DETR models via ONNX Runtime. For PDFs, layout hints override paragraph classification in the markdown pipeline. For images, per-region OCR is performed with markdown formatting based on detected layout classes. Requires the `layout-detection` feature. |
 | `include_document_structure` | `boolean()` | `false` | Enable structured document tree output. When true, populates the `document` field on `ExtractionResult` with a hierarchical `DocumentStructure` containing heading-driven section nesting, table grids, content layer classification, and inline annotations. Independent of `result_format` — can be combined with Unified or ElementBased. |
@@ -4916,6 +5154,116 @@ Uses a builder pattern for convenient configuration.
 | `model_tier` | `String.t()` | — | Model tier controlling detection/recognition model size and accuracy trade-off. - `"mobile"` (default): Lightweight models (~4.5MB detection, ~16.5MB recognition), fast download and inference - `"server"`: Large, high-accuracy models (~88MB detection, ~84MB recognition), best for GPU or complex documents |
 
 ##### Functions
+
+###### with_cache_dir()
+
+Sets a custom cache directory for model files.
+
+**Signature:**
+
+```elixir
+def with_cache_dir(path)
+```
+
+###### with_table_detection()
+
+Enables or disables table structure detection.
+
+**Signature:**
+
+```elixir
+def with_table_detection(enable)
+```
+
+###### with_angle_cls()
+
+Enables or disables angle classification for rotated text.
+
+**Signature:**
+
+```elixir
+def with_angle_cls(enable)
+```
+
+###### with_det_db_thresh()
+
+Sets the database threshold for text detection.
+
+**Signature:**
+
+```elixir
+def with_det_db_thresh(threshold)
+```
+
+###### with_det_db_box_thresh()
+
+Sets the box threshold for text bounding box refinement.
+
+**Signature:**
+
+```elixir
+def with_det_db_box_thresh(threshold)
+```
+
+###### with_det_db_unclip_ratio()
+
+Sets the unclip ratio for expanding text bounding boxes.
+
+**Signature:**
+
+```elixir
+def with_det_db_unclip_ratio(ratio)
+```
+
+###### with_det_limit_side_len()
+
+Sets the maximum side length for detection images.
+
+**Signature:**
+
+```elixir
+def with_det_limit_side_len(length)
+```
+
+###### with_rec_batch_num()
+
+Sets the batch size for recognition inference.
+
+**Signature:**
+
+```elixir
+def with_rec_batch_num(batch_size)
+```
+
+###### with_drop_score()
+
+Sets the minimum recognition confidence threshold.
+
+**Signature:**
+
+```elixir
+def with_drop_score(score)
+```
+
+###### with_padding()
+
+Sets padding in pixels added around images before detection.
+
+**Signature:**
+
+```elixir
+def with_padding(padding)
+```
+
+###### with_model_tier()
+
+Sets the model tier controlling detection/recognition model size.
+
+**Signature:**
+
+```elixir
+def with_model_tier(tier)
+```
 
 ###### default()
 
@@ -6493,6 +6841,7 @@ Embedding model types supported by Kreuzberg.
 | `preset` | Use a preset model configuration (recommended) — Fields: `name`: `String.t()` |
 | `custom` | Use a custom ONNX model from HuggingFace — Fields: `model_id`: `String.t()`, `dimensions`: `integer()` |
 | `llm` | Provider-hosted embedding model via liter-llm. Uses the model specified in the nested `LlmConfig` (e.g., `"openai/text-embedding-3-small"`). — Fields: `llm`: `LlmConfig` |
+| `plugin` | In-process embedding backend registered via the plugin system. The caller registers an `EmbeddingBackend` once (e.g. a wrapper around an already-loaded `llama-cpp-python`, `sentence-transformers`, or tuned ONNX model), then references it by name in config. Kreuzberg calls back into the registered backend during chunking and standalone embed requests — no HuggingFace download, no ONNX Runtime requirement, no HTTP sidecar. When this variant is selected, only the following `EmbeddingConfig` fields apply: `normalize` (post-call L2 normalization) and `max_embed_duration_secs` (dispatcher timeout). Model-loading fields (`batch_size`, `cache_dir`, `show_download_progress`, `acceleration`) are ignored — the host owns the model lifecycle. Semantic chunking falls back to `ChunkingConfig.max_characters` when this variant is used, since there is no preset to look a chunk-size ceiling up against — size your context window via `max_characters` directly. See `crate.plugins.register_embedding_backend`. — Fields: `name`: `String.t()` |
 
 
 ---
@@ -7071,6 +7420,7 @@ and provides context for debugging.
 | `embedding` | Embedding error: {message} |
 | `timeout` | Extraction timed out after {elapsed_ms}ms (limit: {limit_ms}ms) |
 | `cancelled` | Extraction cancelled |
+| `security` | Security violation: {message} |
 | `other` | {0} |
 
 

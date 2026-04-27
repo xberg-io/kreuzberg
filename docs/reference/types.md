@@ -312,7 +312,7 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 | `extraction_timeout_secs` | `Option<u64>` | `None` | Default per-file timeout in seconds for batch extraction. When set, each file in a batch will be canceled after this duration unless overridden by `FileExtractionConfig.timeout_secs`. `None` means no timeout (unbounded extraction time). |
 | `max_concurrent_extractions` | `Option<usize>` | `None` | Maximum concurrent extractions in batch operations (None = (num_cpus × 1.5).ceil()). Limits parallelism to prevent resource exhaustion when processing large batches. Defaults to (num_cpus × 1.5).ceil() when not set. |
 | `result_format` | `String` | — | Result structure format Controls whether results are returned in unified format (default) with all content in the `content` field, or element-based format with semantic elements (for Unstructured-compatible output). |
-| `security_limits` | `Option<String>` | `None` | Security limits for archive extraction. Controls maximum archive size, compression ratio, file count, and other security thresholds to prevent decompression bomb attacks. When `None`, default limits are used (500MB archive, 100:1 ratio, 10K files). |
+| `security_limits` | `Option<String>` | `None` | Security limits for archive extraction. Controls maximum archive size, compression ratio, file count, and other security thresholds to prevent decompression bomb attacks. Also caps nesting depth, iteration count, entity / token length, cumulative content size, and table cell count for every extraction path that ingests user-controlled bytes. When `None`, default limits are used. |
 | `output_format` | `String` | `Plain` | Content text format (default: Plain). Controls the format of the extracted content: - `Plain`: Raw extracted text (default) - `Markdown`: Markdown formatted output - `Djot`: Djot markup format (requires djot feature) - `Html`: HTML formatted output When set to a structured format, extraction results will include formatted output. The `formatted_content` field may be populated when format conversion is applied. |
 | `layout` | `Option<LayoutDetectionConfig>` | `None` | Layout detection configuration (None = layout detection disabled). When set, PDF pages and images are analyzed for document structure (headings, code, formulas, tables, figures, etc.) using RT-DETR models via ONNX Runtime. For PDFs, layout hints override paragraph classification in the markdown pipeline. For images, per-region OCR is performed with markdown formatting based on detected layout classes. Requires the `layout-detection` feature. |
 | `include_document_structure` | `bool` | `false` | Enable structured document tree output. When true, populates the `document` field on `ExtractionResult` with a hierarchical `DocumentStructure` containing heading-driven section nesting, table grids, content layer classification, and inline annotations. Independent of `result_format` — can be combined with Unified or ElementBased. |
@@ -1867,40 +1867,6 @@ Helper struct for validating ZIP archives for security issues.
 
 ---
 
-#### PostProcessor
-
-Trait for post-processor plugins.
-
-Post-processors transform or enrich extraction results after the initial
-extraction is complete. They can:
-- Clean and normalize text
-- Add metadata (language, keywords, entities)
-- Split content into chunks
-- Score quality
-- Apply custom transformations
-
-# Processing Order
-
-Post-processors are executed in stage order:
-1. **Early** - Language detection, entity extraction
-2. **Middle** - Keyword extraction, token reduction
-3. **Late** - Custom hooks, final validation
-
-Within each stage, processors are executed in registration order.
-
-# Error Handling
-
-Post-processor errors are non-fatal by default - they're captured in metadata
-and execution continues. To make errors fatal, return an error from `process()`.
-
-# Thread Safety
-
-Post-processors must be thread-safe (`Send + Sync`).
-
-*Opaque type — fields are not directly accessible.*
-
----
-
 #### EmbeddingBackend
 
 Trait for in-process embedding backend plugins.
@@ -1938,6 +1904,50 @@ itself must serialize access internally (e.g. via `Mutex<Inner>`).
   tolerate this — e.g. by letting in-flight calls finish using resources
   held via the `Arc<dyn EmbeddingBackend>` reference, and only releasing
   shared state that isn't needed by `embed`.
+
+# Runtime
+
+The synchronous `crate.embed_texts` entry uses
+`tokio.task.block_in_place` to await the trait's async `embed`, which
+requires a multi-thread tokio runtime. Callers running inside a
+`current_thread` runtime (e.g. `#[tokio.test]` without `flavor = "multi_thread"`,
+or `tokio.runtime.Builder.new_current_thread()`) must use
+`crate.embed_texts_async` instead, which awaits directly without
+`block_in_place`.
+
+*Opaque type — fields are not directly accessible.*
+
+---
+
+#### PostProcessor
+
+Trait for post-processor plugins.
+
+Post-processors transform or enrich extraction results after the initial
+extraction is complete. They can:
+- Clean and normalize text
+- Add metadata (language, keywords, entities)
+- Split content into chunks
+- Score quality
+- Apply custom transformations
+
+# Processing Order
+
+Post-processors are executed in stage order:
+1. **Early** - Language detection, entity extraction
+2. **Middle** - Keyword extraction, token reduction
+3. **Late** - Custom hooks, final validation
+
+Within each stage, processors are executed in registration order.
+
+# Error Handling
+
+Post-processor errors are non-fatal by default - they're captured in metadata
+and execution continues. To make errors fatal, return an error from `process()`.
+
+# Thread Safety
+
+Post-processors must be thread-safe (`Send + Sync`).
 
 *Opaque type — fields are not directly accessible.*
 
@@ -2924,3 +2934,4 @@ Timing breakdown for a single page.
 | `mapping_ms` | `f64` | — | Time to map pixel-space bounding boxes to PDF coordinate space. |
 
 ---
+

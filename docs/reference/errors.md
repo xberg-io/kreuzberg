@@ -44,6 +44,8 @@ and provides context for debugging.
 | `Embedding` | Embedding error: {message} | Embedding errors |
 | `Timeout` | Extraction timed out after {elapsed_ms}ms (limit: {limit_ms}ms) | Timeout errors |
 | `Cancelled` | Extraction cancelled | Cancelled errors |
+| `Security` | Security violation: {message} | Security errors |
 | `Other` | {0} | Other errors |
 
 ---
+

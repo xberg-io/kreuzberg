@@ -1241,6 +1241,63 @@ def register_default_extractors() -> None
 
 ---
 
+#### unregister_extractor()
+
+Unregister a document extractor by name.
+
+**Signature:**
+
+```python
+def unregister_extractor(name: str) -> None
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `str` | Yes | The name |
+
+**Returns:** `None`
+
+**Errors:** Raises `Error`.
+
+
+---
+
+#### list_extractors()
+
+List names of all registered document extractors.
+
+**Signature:**
+
+```python
+def list_extractors() -> list[str]
+```
+
+**Returns:** `list[str]`
+
+**Errors:** Raises `Error`.
+
+
+---
+
+#### clear_extractors()
+
+Remove all registered document extractors.
+
+**Signature:**
+
+```python
+def clear_extractors() -> None
+```
+
+**Returns:** `None`
+
+**Errors:** Raises `Error`.
+
+
+---
+
 #### unregister_ocr_backend()
 
 Unregister an OCR backend by name.
@@ -1337,6 +1394,97 @@ def list_post_processors() -> list[str]
 ```
 
 **Returns:** `list[str]`
+
+**Errors:** Raises `Error`.
+
+
+---
+
+#### unregister_renderer()
+
+Unregister a renderer by name.
+
+**Signature:**
+
+```python
+def unregister_renderer(name: str) -> None
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `str` | Yes | The name |
+
+**Returns:** `None`
+
+**Errors:** Raises `Error`.
+
+
+---
+
+#### list_renderers()
+
+List names of all registered renderers.
+
+**Signature:**
+
+```python
+def list_renderers() -> list[str]
+```
+
+**Returns:** `list[str]`
+
+**Errors:** Raises `Error`.
+
+
+---
+
+#### clear_renderers()
+
+Remove all registered renderers.
+
+**Signature:**
+
+```python
+def clear_renderers() -> None
+```
+
+**Returns:** `None`
+
+**Errors:** Raises `Error`.
+
+
+---
+
+#### list_validators()
+
+List names of all registered validators.
+
+**Signature:**
+
+```python
+def list_validators() -> list[str]
+```
+
+**Returns:** `list[str]`
+
+**Errors:** Raises `Error`.
+
+
+---
+
+#### clear_validators()
+
+Remove all registered validators.
+
+**Signature:**
+
+```python
+def clear_validators() -> None
+```
+
+**Returns:** `None`
 
 **Errors:** Raises `Error`.
 
@@ -3335,6 +3483,7 @@ Request parameters for embedding generation.
 | `preset` | `str | None` | `None` | Embedding preset name (default: "balanced"). Available: "speed", "balanced", "quality" |
 | `model` | `str | None` | `None` | LLM model for provider-hosted embeddings (e.g., "openai/text-embedding-3-small"). When set, overrides preset and uses liter-llm for embedding generation. |
 | `api_key` | `str | None` | `None` | API key for the LLM provider (optional, falls back to env). |
+| `embedding_plugin` | `str | None` | `None` | Name of a pre-registered in-process embedding plugin backend. When set, overrides both preset and model and dispatches to the registered callback. Requires a prior call to `kreuzberg.plugins.register_embedding_backend`. |
 
 
 ---
@@ -3348,6 +3497,86 @@ Embedded file descriptor extracted from the PDF name tree.
 | `name` | `str` | — | The filename as stored in the PDF name tree. |
 | `data` | `bytes` | — | Raw file bytes from the embedded stream. |
 | `mime_type` | `str | None` | `None` | MIME type if specified in the filespec, otherwise `None`. |
+
+
+---
+
+#### EmbeddingBackend
+
+Trait for in-process embedding backend plugins.
+
+Async to match the convention used by `crate.plugins.OcrBackend`,
+`crate.plugins.DocumentExtractor`, and `crate.plugins.PostProcessor`.
+Host-language bridges (PyO3, napi-rs, Rustler, extendr, magnus, ext-php-rs,
+C FFI, etc.) wrap their synchronous host callables in `spawn_blocking` or the
+equivalent to satisfy the async signature.
+
+# Thread safety
+
+Backends must be `Send + Sync + 'static`. They are stored in
+`Arc<dyn EmbeddingBackend>` and called concurrently from kreuzberg's chunking
+pipeline. If the backend's underlying model isn't thread-safe, the backend
+itself must serialize access internally (e.g. via `Mutex<Inner>`).
+
+# Contract
+
+- `embed(texts)` MUST return exactly `texts.len()` vectors, each of length
+  `self.dimensions()`. The dispatcher in `crate.embeddings.embed_texts`
+  validates this before returning to downstream consumers; a non-conforming
+  backend surfaces as a `KreuzbergError.Validation`, not a panic.
+- `embed` may be called from any thread. Its future must be `Send`
+  (enforced by `async_trait` when `#[async_trait]` is used on non-WASM targets).
+- `dimensions()` is called exactly once at registration, immediately after
+  `initialize()` succeeds. The returned value is cached by the registry and
+  used for all subsequent shape validation. Lazy-loading implementations can
+  defer model loading into `initialize()` and report the real dimension
+  afterwards. Later mutations of the backend's reported dimension are not
+  observed by kreuzberg — implementations that need to change dimension
+  must unregister and re-register.
+- `shutdown()` (inherited from `crate.plugins.Plugin`) may be invoked
+  concurrently with an in-flight `embed()` call. Implementations must
+  tolerate this — e.g. by letting in-flight calls finish using resources
+  held via the `Arc<dyn EmbeddingBackend>` reference, and only releasing
+  shared state that isn't needed by `embed`.
+
+# Runtime
+
+The synchronous `crate.embed_texts` entry uses
+`tokio.task.block_in_place` to await the trait's async `embed`, which
+requires a multi-thread tokio runtime. Callers running inside a
+`current_thread` runtime (e.g. `#[tokio.test]` without `flavor = "multi_thread"`,
+or `tokio.runtime.Builder.new_current_thread()`) must use
+`crate.embed_texts_async` instead, which awaits directly without
+`block_in_place`.
+
+##### Methods
+
+###### dimensions()
+
+Embedding vector dimension. Must be `> 0` and must match the length of
+every vector returned by `embed`.
+
+**Signature:**
+
+```python
+def dimensions(self) -> int
+```
+
+###### embed()
+
+Embed a batch of texts, returning one vector per input in order.
+
+**Errors:**
+
+Implementations should return `crate.KreuzbergError.Plugin` for
+backend-specific failures. The dispatcher layers its own validation
+(length, per-vector dimension) on top.
+
+**Signature:**
+
+```python
+def embed(self, texts: list[str]) -> list[list[float]]
+```
 
 
 ---
@@ -3367,6 +3596,7 @@ Requires the `embeddings` feature to be enabled.
 | `show_download_progress` | `bool` | `False` | Show model download progress |
 | `cache_dir` | `str | None` | `None` | Custom cache directory for model files Defaults to `~/.cache/kreuzberg/embeddings/` if not specified. Allows full customization of model download location. |
 | `acceleration` | `AccelerationConfig | None` | `None` | Hardware acceleration for the embedding ONNX model. When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for inference. Defaults to `None` (auto-select per platform). |
+| `max_embed_duration_secs` | `int | None` | `None` | Maximum wall-clock duration (in seconds) for a single `embed()` call when using `EmbeddingModelType.Plugin`. Applies only to the in-process plugin path — protects against hung host-language backends (e.g. a Python callback deadlocked on the GIL, a model stuck on CUDA OOM retries, etc.). On timeout, the dispatcher returns `crate.KreuzbergError.Plugin` instead of blocking forever. `None` disables the timeout. The default (60 seconds) is conservative for common in-process inference; increase for large batches on slow hardware. |
 
 ##### Methods
 
@@ -3585,7 +3815,7 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 | `extraction_timeout_secs` | `int | None` | `None` | Default per-file timeout in seconds for batch extraction. When set, each file in a batch will be canceled after this duration unless overridden by `FileExtractionConfig.timeout_secs`. `None` means no timeout (unbounded extraction time). |
 | `max_concurrent_extractions` | `int | None` | `None` | Maximum concurrent extractions in batch operations (None = (num_cpus × 1.5).ceil()). Limits parallelism to prevent resource exhaustion when processing large batches. Defaults to (num_cpus × 1.5).ceil() when not set. |
 | `result_format` | `str` | — | Result structure format Controls whether results are returned in unified format (default) with all content in the `content` field, or element-based format with semantic elements (for Unstructured-compatible output). |
-| `security_limits` | `str | None` | `None` | Security limits for archive extraction. Controls maximum archive size, compression ratio, file count, and other security thresholds to prevent decompression bomb attacks. When `None`, default limits are used (500MB archive, 100:1 ratio, 10K files). |
+| `security_limits` | `str | None` | `None` | Security limits for archive extraction. Controls maximum archive size, compression ratio, file count, and other security thresholds to prevent decompression bomb attacks. Also caps nesting depth, iteration count, entity / token length, cumulative content size, and table cell count for every extraction path that ingests user-controlled bytes. When `None`, default limits are used. |
 | `output_format` | `str` | `Plain` | Content text format (default: Plain). Controls the format of the extracted content: - `Plain`: Raw extracted text (default) - `Markdown`: Markdown formatted output - `Djot`: Djot markup format (requires djot feature) - `Html`: HTML formatted output When set to a structured format, extraction results will include formatted output. The `formatted_content` field may be populated when format conversion is applied. |
 | `layout` | `LayoutDetectionConfig | None` | `None` | Layout detection configuration (None = layout detection disabled). When set, PDF pages and images are analyzed for document structure (headings, code, formulas, tables, figures, etc.) using RT-DETR models via ONNX Runtime. For PDFs, layout hints override paragraph classification in the markdown pipeline. For images, per-region OCR is performed with markdown formatting based on detected layout classes. Requires the `layout-detection` feature. |
 | `include_document_structure` | `bool` | `False` | Enable structured document tree output. When true, populates the `document` field on `ExtractionResult` with a hierarchical `DocumentStructure` containing heading-driven section nesting, table grids, content layer classification, and inline annotations. Independent of `result_format` — can be combined with Unified or ElementBased. |
@@ -4842,6 +5072,116 @@ Uses a builder pattern for convenient configuration.
 | `model_tier` | `str` | — | Model tier controlling detection/recognition model size and accuracy trade-off. - `"mobile"` (default): Lightweight models (~4.5MB detection, ~16.5MB recognition), fast download and inference - `"server"`: Large, high-accuracy models (~88MB detection, ~84MB recognition), best for GPU or complex documents |
 
 ##### Methods
+
+###### with_cache_dir()
+
+Sets a custom cache directory for model files.
+
+**Signature:**
+
+```python
+def with_cache_dir(self, path: str) -> PaddleOcrConfig
+```
+
+###### with_table_detection()
+
+Enables or disables table structure detection.
+
+**Signature:**
+
+```python
+def with_table_detection(self, enable: bool) -> PaddleOcrConfig
+```
+
+###### with_angle_cls()
+
+Enables or disables angle classification for rotated text.
+
+**Signature:**
+
+```python
+def with_angle_cls(self, enable: bool) -> PaddleOcrConfig
+```
+
+###### with_det_db_thresh()
+
+Sets the database threshold for text detection.
+
+**Signature:**
+
+```python
+def with_det_db_thresh(self, threshold: float) -> PaddleOcrConfig
+```
+
+###### with_det_db_box_thresh()
+
+Sets the box threshold for text bounding box refinement.
+
+**Signature:**
+
+```python
+def with_det_db_box_thresh(self, threshold: float) -> PaddleOcrConfig
+```
+
+###### with_det_db_unclip_ratio()
+
+Sets the unclip ratio for expanding text bounding boxes.
+
+**Signature:**
+
+```python
+def with_det_db_unclip_ratio(self, ratio: float) -> PaddleOcrConfig
+```
+
+###### with_det_limit_side_len()
+
+Sets the maximum side length for detection images.
+
+**Signature:**
+
+```python
+def with_det_limit_side_len(self, length: int) -> PaddleOcrConfig
+```
+
+###### with_rec_batch_num()
+
+Sets the batch size for recognition inference.
+
+**Signature:**
+
+```python
+def with_rec_batch_num(self, batch_size: int) -> PaddleOcrConfig
+```
+
+###### with_drop_score()
+
+Sets the minimum recognition confidence threshold.
+
+**Signature:**
+
+```python
+def with_drop_score(self, score: float) -> PaddleOcrConfig
+```
+
+###### with_padding()
+
+Sets padding in pixels added around images before detection.
+
+**Signature:**
+
+```python
+def with_padding(self, padding: int) -> PaddleOcrConfig
+```
+
+###### with_model_tier()
+
+Sets the model tier controlling detection/recognition model size.
+
+**Signature:**
+
+```python
+def with_model_tier(self, tier: str) -> PaddleOcrConfig
+```
 
 ###### default()
 
@@ -6430,6 +6770,7 @@ Embedding model types supported by Kreuzberg.
 | `PRESET` | Use a preset model configuration (recommended) — Fields: `name`: `str` |
 | `CUSTOM` | Use a custom ONNX model from HuggingFace — Fields: `model_id`: `str`, `dimensions`: `int` |
 | `LLM` | Provider-hosted embedding model via liter-llm. Uses the model specified in the nested `LlmConfig` (e.g., `"openai/text-embedding-3-small"`). — Fields: `llm`: `LlmConfig` |
+| `PLUGIN` | In-process embedding backend registered via the plugin system. The caller registers an `EmbeddingBackend` once (e.g. a wrapper around an already-loaded `llama-cpp-python`, `sentence-transformers`, or tuned ONNX model), then references it by name in config. Kreuzberg calls back into the registered backend during chunking and standalone embed requests — no HuggingFace download, no ONNX Runtime requirement, no HTTP sidecar. When this variant is selected, only the following `EmbeddingConfig` fields apply: `normalize` (post-call L2 normalization) and `max_embed_duration_secs` (dispatcher timeout). Model-loading fields (`batch_size`, `cache_dir`, `show_download_progress`, `acceleration`) are ignored — the host owns the model lifecycle. Semantic chunking falls back to `ChunkingConfig.max_characters` when this variant is used, since there is no preset to look a chunk-size ceiling up against — size your context window via `max_characters` directly. See `crate.plugins.register_embedding_backend`. — Fields: `name`: `str` |
 
 
 ---
@@ -7010,6 +7351,7 @@ and provides context for debugging.
 | `Embedding(KreuzbergError)` | Embedding error: {message} |
 | `Timeout(KreuzbergError)` | Extraction timed out after {elapsed_ms}ms (limit: {limit_ms}ms) |
 | `Cancelled(KreuzbergError)` | Extraction cancelled |
+| `Security(KreuzbergError)` | Security violation: {message} |
 | `Other(KreuzbergError)` | {0} |
 
 
