@@ -2482,12 +2482,10 @@ class ByteBufferPool: ...
 class TracingLayer: ...
 class ApiDoc: ...
 class ExtractResponse: ...
-
 class TessdataManager:
     def cache_dir(self) -> str: ...
     def is_language_cached(self, lang: str) -> bool: ...
     def ensure_all_languages(self) -> int: ...
-
 class PdfUnifiedExtractionResult: ...
 
 class ExecutionProviderType:
@@ -2536,7 +2534,7 @@ class ChunkSizingTokenizerVariant(TypedDict):
     model: str
     cache_dir: str | None
 
-ChunkSizing: TypeAlias = ChunkSizingCharactersVariant | ChunkSizingTokenizerVariant
+ChunkSizing = ChunkSizingCharactersVariant | ChunkSizingTokenizerVariant
 
 class EmbeddingModelTypePresetVariant(TypedDict):
     type: Literal["preset"]
@@ -2555,11 +2553,11 @@ class EmbeddingModelTypePluginVariant(TypedDict):
     type: Literal["plugin"]
     name: str
 
-EmbeddingModelType: TypeAlias = (
-    EmbeddingModelTypePresetVariant
-    | EmbeddingModelTypeCustomVariant
-    | EmbeddingModelTypeLlmVariant
-    | EmbeddingModelTypePluginVariant
+EmbeddingModelType = (
+    EmbeddingModelTypePresetVariant |
+    EmbeddingModelTypeCustomVariant |
+    EmbeddingModelTypeLlmVariant |
+    EmbeddingModelTypePluginVariant
 )
 
 class CodeContentMode:
@@ -2749,27 +2747,27 @@ class NodeContentMetadataBlockVariant(TypedDict):
     node_type: Literal["metadata_block"]
     entries: list[str]
 
-NodeContent: TypeAlias = (
-    NodeContentTitleVariant
-    | NodeContentHeadingVariant
-    | NodeContentParagraphVariant
-    | NodeContentListVariant
-    | NodeContentListItemVariant
-    | NodeContentTableVariant
-    | NodeContentImageVariant
-    | NodeContentCodeVariant
-    | NodeContentQuoteVariant
-    | NodeContentFormulaVariant
-    | NodeContentFootnoteVariant
-    | NodeContentGroupVariant
-    | NodeContentPageBreakVariant
-    | NodeContentSlideVariant
-    | NodeContentDefinitionListVariant
-    | NodeContentDefinitionItemVariant
-    | NodeContentCitationVariant
-    | NodeContentAdmonitionVariant
-    | NodeContentRawBlockVariant
-    | NodeContentMetadataBlockVariant
+NodeContent = (
+    NodeContentTitleVariant |
+    NodeContentHeadingVariant |
+    NodeContentParagraphVariant |
+    NodeContentListVariant |
+    NodeContentListItemVariant |
+    NodeContentTableVariant |
+    NodeContentImageVariant |
+    NodeContentCodeVariant |
+    NodeContentQuoteVariant |
+    NodeContentFormulaVariant |
+    NodeContentFootnoteVariant |
+    NodeContentGroupVariant |
+    NodeContentPageBreakVariant |
+    NodeContentSlideVariant |
+    NodeContentDefinitionListVariant |
+    NodeContentDefinitionItemVariant |
+    NodeContentCitationVariant |
+    NodeContentAdmonitionVariant |
+    NodeContentRawBlockVariant |
+    NodeContentMetadataBlockVariant
 )
 
 class AnnotationKindBoldVariant(TypedDict):
@@ -2814,19 +2812,19 @@ class AnnotationKindCustomVariant(TypedDict):
     name: str
     value: str | None
 
-AnnotationKind: TypeAlias = (
-    AnnotationKindBoldVariant
-    | AnnotationKindItalicVariant
-    | AnnotationKindUnderlineVariant
-    | AnnotationKindStrikethroughVariant
-    | AnnotationKindCodeVariant
-    | AnnotationKindSubscriptVariant
-    | AnnotationKindSuperscriptVariant
-    | AnnotationKindLinkVariant
-    | AnnotationKindHighlightVariant
-    | AnnotationKindColorVariant
-    | AnnotationKindFontSizeVariant
-    | AnnotationKindCustomVariant
+AnnotationKind = (
+    AnnotationKindBoldVariant |
+    AnnotationKindItalicVariant |
+    AnnotationKindUnderlineVariant |
+    AnnotationKindStrikethroughVariant |
+    AnnotationKindCodeVariant |
+    AnnotationKindSubscriptVariant |
+    AnnotationKindSuperscriptVariant |
+    AnnotationKindLinkVariant |
+    AnnotationKindHighlightVariant |
+    AnnotationKindColorVariant |
+    AnnotationKindFontSizeVariant |
+    AnnotationKindCustomVariant
 )
 
 class ChunkType:
@@ -2939,27 +2937,27 @@ class FormatMetadataCodeVariant(TypedDict):
     format_type: Literal["code"]
     _0: str
 
-FormatMetadata: TypeAlias = (
-    FormatMetadataPdfVariant
-    | FormatMetadataDocxVariant
-    | FormatMetadataExcelVariant
-    | FormatMetadataEmailVariant
-    | FormatMetadataPptxVariant
-    | FormatMetadataArchiveVariant
-    | FormatMetadataImageVariant
-    | FormatMetadataXmlVariant
-    | FormatMetadataTextVariant
-    | FormatMetadataHtmlVariant
-    | FormatMetadataOcrVariant
-    | FormatMetadataCsvVariant
-    | FormatMetadataBibtexVariant
-    | FormatMetadataCitationVariant
-    | FormatMetadataFictionBookVariant
-    | FormatMetadataDbfVariant
-    | FormatMetadataJatsVariant
-    | FormatMetadataEpubVariant
-    | FormatMetadataPstVariant
-    | FormatMetadataCodeVariant
+FormatMetadata = (
+    FormatMetadataPdfVariant |
+    FormatMetadataDocxVariant |
+    FormatMetadataExcelVariant |
+    FormatMetadataEmailVariant |
+    FormatMetadataPptxVariant |
+    FormatMetadataArchiveVariant |
+    FormatMetadataImageVariant |
+    FormatMetadataXmlVariant |
+    FormatMetadataTextVariant |
+    FormatMetadataHtmlVariant |
+    FormatMetadataOcrVariant |
+    FormatMetadataCsvVariant |
+    FormatMetadataBibtexVariant |
+    FormatMetadataCitationVariant |
+    FormatMetadataFictionBookVariant |
+    FormatMetadataDbfVariant |
+    FormatMetadataJatsVariant |
+    FormatMetadataEpubVariant |
+    FormatMetadataPstVariant |
+    FormatMetadataCodeVariant
 )
 
 class TextDirection:
@@ -3001,7 +2999,7 @@ class OcrBoundingGeometryQuadrilateralVariant(TypedDict):
     type: Literal["quadrilateral"]
     points: str
 
-OcrBoundingGeometry: TypeAlias = OcrBoundingGeometryRectangleVariant | OcrBoundingGeometryQuadrilateralVariant
+OcrBoundingGeometry = OcrBoundingGeometryRectangleVariant | OcrBoundingGeometryQuadrilateralVariant
 
 class OcrElementLevel:
     Word: OcrElementLevel = ...
