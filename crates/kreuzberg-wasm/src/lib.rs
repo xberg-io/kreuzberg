@@ -13,7 +13,8 @@
     clippy::unwrap_or_default,
     clippy::derivable_impls,
     clippy::needless_borrows_for_generic_args,
-    clippy::unnecessary_fallible_conversions
+    clippy::unnecessary_fallible_conversions,
+    clippy::useless_conversion
 )]
 
 use std::cell::RefCell;

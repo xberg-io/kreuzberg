@@ -1,6 +1,6 @@
 import RustBridgeC
 
-public func blake3_hash_bytes(_ data: RustVec<UInt8>) -> RustString {
+public func blake3HashBytes(_ data: RustVec<UInt8>) -> RustString {
   RustString(
     ptr: __swift_bridge__$blake3_hash_bytes(
       {
@@ -9,7 +9,7 @@ public func blake3_hash_bytes(_ data: RustVec<UInt8>) -> RustString {
         return val.ptr
       }()))
 }
-public func blake3_hash_file<GenericIntoRustString: IntoRustString>(_ path: GenericIntoRustString)
+public func blake3HashFile<GenericIntoRustString: IntoRustString>(_ path: GenericIntoRustString)
   throws -> RustString
 {
   try {
@@ -26,7 +26,7 @@ public func blake3_hash_file<GenericIntoRustString: IntoRustString>(_ path: Gene
     }
   }()
 }
-public func fast_hash(_ data: RustVec<UInt8>) -> UInt64 {
+public func fastHash(_ data: RustVec<UInt8>) -> UInt64 {
   __swift_bridge__$fast_hash(
     {
       let val = data
@@ -34,7 +34,7 @@ public func fast_hash(_ data: RustVec<UInt8>) -> UInt64 {
       return val.ptr
     }())
 }
-public func validate_cache_key<GenericIntoRustString: IntoRustString>(_ key: GenericIntoRustString)
+public func validateCacheKey<GenericIntoRustString: IntoRustString>(_ key: GenericIntoRustString)
   -> Bool
 {
   __swift_bridge__$validate_cache_key(
@@ -44,13 +44,13 @@ public func validate_cache_key<GenericIntoRustString: IntoRustString>(_ key: Gen
       return rustString.ptr
     }())
 }
-public func validate_port(_ port: UInt16) throws {
+public func validatePort(_ port: UInt16) throws {
   try {
     let val = __swift_bridge__$validate_port(port)
     if val != nil { throw RustString(ptr: val!) } else { return }
   }()
 }
-public func validate_host<GenericIntoRustString: IntoRustString>(_ host: GenericIntoRustString)
+public func validateHost<GenericIntoRustString: IntoRustString>(_ host: GenericIntoRustString)
   throws
 {
   try {
@@ -63,7 +63,7 @@ public func validate_host<GenericIntoRustString: IntoRustString>(_ host: Generic
     if val != nil { throw RustString(ptr: val!) } else { return }
   }()
 }
-public func validate_cors_origin<GenericIntoRustString: IntoRustString>(
+public func validateCorsOrigin<GenericIntoRustString: IntoRustString>(
   _ origin: GenericIntoRustString
 ) throws {
   try {
@@ -76,13 +76,13 @@ public func validate_cors_origin<GenericIntoRustString: IntoRustString>(
     if val != nil { throw RustString(ptr: val!) } else { return }
   }()
 }
-public func validate_upload_size(_ size: UInt) throws {
+public func validateUploadSize(_ size: UInt) throws {
   try {
     let val = __swift_bridge__$validate_upload_size(size)
     if val != nil { throw RustString(ptr: val!) } else { return }
   }()
 }
-public func validate_binarization_method<GenericIntoRustString: IntoRustString>(
+public func validateBinarizationMethod<GenericIntoRustString: IntoRustString>(
   _ method: GenericIntoRustString
 ) throws {
   try {
@@ -95,7 +95,7 @@ public func validate_binarization_method<GenericIntoRustString: IntoRustString>(
     if val != nil { throw RustString(ptr: val!) } else { return }
   }()
 }
-public func validate_token_reduction_level<GenericIntoRustString: IntoRustString>(
+public func validateTokenReductionLevel<GenericIntoRustString: IntoRustString>(
   _ level: GenericIntoRustString
 ) throws {
   try {
@@ -108,7 +108,7 @@ public func validate_token_reduction_level<GenericIntoRustString: IntoRustString
     if val != nil { throw RustString(ptr: val!) } else { return }
   }()
 }
-public func validate_ocr_backend<GenericIntoRustString: IntoRustString>(
+public func validateOcrBackend<GenericIntoRustString: IntoRustString>(
   _ backend: GenericIntoRustString
 ) throws {
   try {
@@ -121,7 +121,7 @@ public func validate_ocr_backend<GenericIntoRustString: IntoRustString>(
     if val != nil { throw RustString(ptr: val!) } else { return }
   }()
 }
-public func validate_language_code<GenericIntoRustString: IntoRustString>(
+public func validateLanguageCode<GenericIntoRustString: IntoRustString>(
   _ code: GenericIntoRustString
 ) throws {
   try {
@@ -134,19 +134,19 @@ public func validate_language_code<GenericIntoRustString: IntoRustString>(
     if val != nil { throw RustString(ptr: val!) } else { return }
   }()
 }
-public func validate_tesseract_psm(_ psm: Int32) throws {
+public func validateTesseractPsm(_ psm: Int32) throws {
   try {
     let val = __swift_bridge__$validate_tesseract_psm(psm)
     if val != nil { throw RustString(ptr: val!) } else { return }
   }()
 }
-public func validate_tesseract_oem(_ oem: Int32) throws {
+public func validateTesseractOem(_ oem: Int32) throws {
   try {
     let val = __swift_bridge__$validate_tesseract_oem(oem)
     if val != nil { throw RustString(ptr: val!) } else { return }
   }()
 }
-public func validate_output_format<GenericIntoRustString: IntoRustString>(
+public func validateOutputFormat<GenericIntoRustString: IntoRustString>(
   _ format: GenericIntoRustString
 ) throws {
   try {
@@ -159,25 +159,25 @@ public func validate_output_format<GenericIntoRustString: IntoRustString>(
     if val != nil { throw RustString(ptr: val!) } else { return }
   }()
 }
-public func validate_confidence(_ confidence: Double) throws {
+public func validateConfidence(_ confidence: Double) throws {
   try {
     let val = __swift_bridge__$validate_confidence(confidence)
     if val != nil { throw RustString(ptr: val!) } else { return }
   }()
 }
-public func validate_dpi(_ dpi: Int32) throws {
+public func validateDpi(_ dpi: Int32) throws {
   try {
     let val = __swift_bridge__$validate_dpi(dpi)
     if val != nil { throw RustString(ptr: val!) } else { return }
   }()
 }
-public func validate_chunking_params(_ max_chars: UInt, _ max_overlap: UInt) throws {
+public func validateChunkingParams(_ max_chars: UInt, _ max_overlap: UInt) throws {
   try {
     let val = __swift_bridge__$validate_chunking_params(max_chars, max_overlap)
     if val != nil { throw RustString(ptr: val!) } else { return }
   }()
 }
-public func validate_llm_config_model<GenericIntoRustString: IntoRustString>(
+public func validateLlmConfigModel<GenericIntoRustString: IntoRustString>(
   _ model: GenericIntoRustString
 ) throws {
   try {
@@ -190,7 +190,7 @@ public func validate_llm_config_model<GenericIntoRustString: IntoRustString>(
     if val != nil { throw RustString(ptr: val!) } else { return }
   }()
 }
-public func extract_bytes<GenericIntoRustString: IntoRustString>(
+public func extractBytes<GenericIntoRustString: IntoRustString>(
   _ content: RustVec<UInt8>, _ mime_type: GenericIntoRustString, _ config: ExtractionConfig
 ) throws -> ExtractionResult {
   try {
@@ -216,7 +216,7 @@ public func extract_bytes<GenericIntoRustString: IntoRustString>(
     }
   }()
 }
-public func extract_file<GenericIntoRustString: IntoRustString>(
+public func extractFile<GenericIntoRustString: IntoRustString>(
   _ path: GenericIntoRustString, _ mime_type: GenericIntoRustString?, _ config: ExtractionConfig
 ) throws -> ExtractionResult {
   try {
@@ -245,7 +245,7 @@ public func extract_file<GenericIntoRustString: IntoRustString>(
     }
   }()
 }
-public func extract_file_sync<GenericIntoRustString: IntoRustString>(
+public func extractFileSync<GenericIntoRustString: IntoRustString>(
   _ path: GenericIntoRustString, _ mime_type: GenericIntoRustString?, _ config: ExtractionConfig
 ) throws -> ExtractionResult {
   try {
@@ -274,7 +274,7 @@ public func extract_file_sync<GenericIntoRustString: IntoRustString>(
     }
   }()
 }
-public func extract_bytes_sync<GenericIntoRustString: IntoRustString>(
+public func extractBytesSync<GenericIntoRustString: IntoRustString>(
   _ content: RustVec<UInt8>, _ mime_type: GenericIntoRustString, _ config: ExtractionConfig
 ) throws -> ExtractionResult {
   try {
@@ -300,7 +300,7 @@ public func extract_bytes_sync<GenericIntoRustString: IntoRustString>(
     }
   }()
 }
-public func batch_extract_file_sync<GenericIntoRustString: IntoRustString>(
+public func batchExtractFileSync<GenericIntoRustString: IntoRustString>(
   _ items: RustVec<GenericIntoRustString>, _ config: ExtractionConfig
 ) throws -> RustVec<ExtractionResult> {
   try {
@@ -321,7 +321,7 @@ public func batch_extract_file_sync<GenericIntoRustString: IntoRustString>(
     }
   }()
 }
-public func batch_extract_bytes_sync<GenericIntoRustString: IntoRustString>(
+public func batchExtractBytesSync<GenericIntoRustString: IntoRustString>(
   _ items: RustVec<GenericIntoRustString>, _ config: ExtractionConfig
 ) throws -> RustVec<ExtractionResult> {
   try {
@@ -342,7 +342,7 @@ public func batch_extract_bytes_sync<GenericIntoRustString: IntoRustString>(
     }
   }()
 }
-public func batch_extract_file<GenericIntoRustString: IntoRustString>(
+public func batchExtractFile<GenericIntoRustString: IntoRustString>(
   _ items: RustVec<GenericIntoRustString>, _ config: ExtractionConfig
 ) throws -> RustVec<ExtractionResult> {
   try {
@@ -363,7 +363,7 @@ public func batch_extract_file<GenericIntoRustString: IntoRustString>(
     }
   }()
 }
-public func batch_extract_bytes<GenericIntoRustString: IntoRustString>(
+public func batchExtractBytes<GenericIntoRustString: IntoRustString>(
   _ items: RustVec<GenericIntoRustString>, _ config: ExtractionConfig
 ) throws -> RustVec<ExtractionResult> {
   try {
@@ -384,7 +384,7 @@ public func batch_extract_bytes<GenericIntoRustString: IntoRustString>(
     }
   }()
 }
-public func is_valid_format_field<GenericIntoRustString: IntoRustString>(
+public func isValidFormatField<GenericIntoRustString: IntoRustString>(
   _ field: GenericIntoRustString
 ) -> Bool {
   __swift_bridge__$is_valid_format_field(
@@ -394,7 +394,7 @@ public func is_valid_format_field<GenericIntoRustString: IntoRustString>(
       return rustString.ptr
     }())
 }
-public func validate_mime_type<GenericIntoRustString: IntoRustString>(
+public func validateMimeType<GenericIntoRustString: IntoRustString>(
   _ mime_type: GenericIntoRustString
 ) throws -> RustString {
   try {
@@ -411,7 +411,7 @@ public func validate_mime_type<GenericIntoRustString: IntoRustString>(
     }
   }()
 }
-public func detect_or_validate<GenericIntoRustString: IntoRustString>(
+public func detectOrValidate<GenericIntoRustString: IntoRustString>(
   _ path: GenericIntoRustString?, _ mime_type: GenericIntoRustString?
 ) throws -> RustString {
   try {
@@ -439,7 +439,7 @@ public func detect_or_validate<GenericIntoRustString: IntoRustString>(
     }
   }()
 }
-public func detect_mime_type_from_bytes(_ content: RustVec<UInt8>) throws -> RustString {
+public func detectMimeTypeFromBytes(_ content: RustVec<UInt8>) throws -> RustString {
   try {
     let val = __swift_bridge__$detect_mime_type_from_bytes(
       {
@@ -454,7 +454,7 @@ public func detect_mime_type_from_bytes(_ content: RustVec<UInt8>) throws -> Rus
     }
   }()
 }
-public func get_extensions_for_mime<GenericIntoRustString: IntoRustString>(
+public func getExtensionsForMime<GenericIntoRustString: IntoRustString>(
   _ mime_type: GenericIntoRustString
 ) throws -> RustVec<RustString> {
   try {
@@ -471,17 +471,16 @@ public func get_extensions_for_mime<GenericIntoRustString: IntoRustString>(
     }
   }()
 }
-public func list_supported_formats() -> RustVec<SupportedFormat> {
+public func listSupportedFormats() -> RustVec<SupportedFormat> {
   RustVec(ptr: __swift_bridge__$list_supported_formats())
 }
-public func clear_processor_cache() throws {
+public func clearProcessorCache() throws {
   try {
     let val = __swift_bridge__$clear_processor_cache()
     if val != nil { throw RustString(ptr: val!) } else { return }
   }()
 }
-public func transform_extraction_result_to_elements(_ result: ExtractionResult) -> RustVec<Element>
-{
+public func transformExtractionResultToElements(_ result: ExtractionResult) -> RustVec<Element> {
   RustVec(
     ptr: __swift_bridge__$transform_extraction_result_to_elements(
       {
@@ -489,7 +488,7 @@ public func transform_extraction_result_to_elements(_ result: ExtractionResult) 
         return result.ptr
       }()))
 }
-public func extract_email_content<GenericIntoRustString: IntoRustString>(
+public func extractEmailContent<GenericIntoRustString: IntoRustString>(
   _ data: RustVec<UInt8>, _ mime_type: GenericIntoRustString, _ fallback_codepage: UInt32?
 ) throws -> EmailExtractionResult {
   try {
@@ -511,7 +510,7 @@ public func extract_email_content<GenericIntoRustString: IntoRustString>(
     }
   }()
 }
-public func cells_to_text<GenericIntoRustString: IntoRustString>(_ cells: GenericIntoRustString)
+public func cellsToText<GenericIntoRustString: IntoRustString>(_ cells: GenericIntoRustString)
   -> RustString
 {
   RustString(
@@ -522,7 +521,7 @@ public func cells_to_text<GenericIntoRustString: IntoRustString>(_ cells: Generi
         return rustString.ptr
       }()))
 }
-public func cells_to_markdown<GenericIntoRustString: IntoRustString>(_ cells: GenericIntoRustString)
+public func cellsToMarkdown<GenericIntoRustString: IntoRustString>(_ cells: GenericIntoRustString)
   -> RustString
 {
   RustString(
@@ -533,9 +532,9 @@ public func cells_to_markdown<GenericIntoRustString: IntoRustString>(_ cells: Ge
         return rustString.ptr
       }()))
 }
-public func djot_to_html<GenericIntoRustString: IntoRustString>(
-  _ djot_source: GenericIntoRustString
-) throws -> RustString {
+public func djotToHtml<GenericIntoRustString: IntoRustString>(_ djot_source: GenericIntoRustString)
+  throws -> RustString
+{
   try {
     let val = __swift_bridge__$djot_to_html(
       {
@@ -550,7 +549,7 @@ public func djot_to_html<GenericIntoRustString: IntoRustString>(
     }
   }()
 }
-public func dedup_text<GenericIntoRustString: IntoRustString>(
+public func dedupText<GenericIntoRustString: IntoRustString>(
   _ texts: RustVec<GenericIntoRustString>
 ) -> RustVec<RustString> {
   RustVec(
@@ -561,7 +560,7 @@ public func dedup_text<GenericIntoRustString: IntoRustString>(
         return val.ptr
       }()))
 }
-public func normalize_whitespace<GenericIntoRustString: IntoRustString>(_ s: GenericIntoRustString)
+public func normalizeWhitespace<GenericIntoRustString: IntoRustString>(_ s: GenericIntoRustString)
   -> RustString
 {
   RustString(
@@ -572,13 +571,13 @@ public func normalize_whitespace<GenericIntoRustString: IntoRustString>(_ s: Gen
         return rustString.ptr
       }()))
 }
-public func register_default_extractors() throws {
+public func registerDefaultExtractors() throws {
   try {
     let val = __swift_bridge__$register_default_extractors()
     if val != nil { throw RustString(ptr: val!) } else { return }
   }()
 }
-public func unregister_extractor<GenericIntoRustString: IntoRustString>(
+public func unregisterExtractor<GenericIntoRustString: IntoRustString>(
   _ name: GenericIntoRustString
 ) throws {
   try {
@@ -591,7 +590,7 @@ public func unregister_extractor<GenericIntoRustString: IntoRustString>(
     if val != nil { throw RustString(ptr: val!) } else { return }
   }()
 }
-public func list_extractors() throws -> RustVec<RustString> {
+public func listExtractors() throws -> RustVec<RustString> {
   try {
     let val = __swift_bridge__$list_extractors()
     if val.is_ok {
@@ -601,13 +600,13 @@ public func list_extractors() throws -> RustVec<RustString> {
     }
   }()
 }
-public func clear_extractors() throws {
+public func clearExtractors() throws {
   try {
     let val = __swift_bridge__$clear_extractors()
     if val != nil { throw RustString(ptr: val!) } else { return }
   }()
 }
-public func unregister_ocr_backend<GenericIntoRustString: IntoRustString>(
+public func unregisterOcrBackend<GenericIntoRustString: IntoRustString>(
   _ name: GenericIntoRustString
 ) throws {
   try {
@@ -620,7 +619,7 @@ public func unregister_ocr_backend<GenericIntoRustString: IntoRustString>(
     if val != nil { throw RustString(ptr: val!) } else { return }
   }()
 }
-public func list_ocr_backends() throws -> RustVec<RustString> {
+public func listOcrBackends() throws -> RustVec<RustString> {
   try {
     let val = __swift_bridge__$list_ocr_backends()
     if val.is_ok {
@@ -630,13 +629,13 @@ public func list_ocr_backends() throws -> RustVec<RustString> {
     }
   }()
 }
-public func clear_ocr_backends() throws {
+public func clearOcrBackends() throws {
   try {
     let val = __swift_bridge__$clear_ocr_backends()
     if val != nil { throw RustString(ptr: val!) } else { return }
   }()
 }
-public func list_post_processors() throws -> RustVec<RustString> {
+public func listPostProcessors() throws -> RustVec<RustString> {
   try {
     let val = __swift_bridge__$list_post_processors()
     if val.is_ok {
@@ -646,9 +645,9 @@ public func list_post_processors() throws -> RustVec<RustString> {
     }
   }()
 }
-public func unregister_renderer<GenericIntoRustString: IntoRustString>(
-  _ name: GenericIntoRustString
-) throws {
+public func unregisterRenderer<GenericIntoRustString: IntoRustString>(_ name: GenericIntoRustString)
+  throws
+{
   try {
     let val = __swift_bridge__$unregister_renderer(
       {
@@ -659,7 +658,7 @@ public func unregister_renderer<GenericIntoRustString: IntoRustString>(
     if val != nil { throw RustString(ptr: val!) } else { return }
   }()
 }
-public func list_renderers() throws -> RustVec<RustString> {
+public func listRenderers() throws -> RustVec<RustString> {
   try {
     let val = __swift_bridge__$list_renderers()
     if val.is_ok {
@@ -669,13 +668,13 @@ public func list_renderers() throws -> RustVec<RustString> {
     }
   }()
 }
-public func clear_renderers() throws {
+public func clearRenderers() throws {
   try {
     let val = __swift_bridge__$clear_renderers()
     if val != nil { throw RustString(ptr: val!) } else { return }
   }()
 }
-public func list_validators() throws -> RustVec<RustString> {
+public func listValidators() throws -> RustVec<RustString> {
   try {
     let val = __swift_bridge__$list_validators()
     if val.is_ok {
@@ -685,13 +684,13 @@ public func list_validators() throws -> RustVec<RustString> {
     }
   }()
 }
-public func clear_validators() throws {
+public func clearValidators() throws {
   try {
     let val = __swift_bridge__$clear_validators()
     if val != nil { throw RustString(ptr: val!) } else { return }
   }()
 }
-public func sanitize_filename<GenericIntoRustString: IntoRustString>(_ path: GenericIntoRustString)
+public func sanitizeFilename<GenericIntoRustString: IntoRustString>(_ path: GenericIntoRustString)
   -> RustString
 {
   RustString(
@@ -702,7 +701,7 @@ public func sanitize_filename<GenericIntoRustString: IntoRustString>(_ path: Gen
         return rustString.ptr
       }()))
 }
-public func sanitize_path<GenericIntoRustString: IntoRustString>(_ path: GenericIntoRustString)
+public func sanitizePath<GenericIntoRustString: IntoRustString>(_ path: GenericIntoRustString)
   -> RustString
 {
   RustString(
@@ -713,7 +712,7 @@ public func sanitize_path<GenericIntoRustString: IntoRustString>(_ path: Generic
         return rustString.ptr
       }()))
 }
-public func is_valid_utf8(_ bytes: RustVec<UInt8>) -> Bool {
+public func isValidUtf8(_ bytes: RustVec<UInt8>) -> Bool {
   __swift_bridge__$is_valid_utf8(
     {
       let val = bytes
@@ -721,9 +720,9 @@ public func is_valid_utf8(_ bytes: RustVec<UInt8>) -> Bool {
       return val.ptr
     }())
 }
-public func clean_extracted_text<GenericIntoRustString: IntoRustString>(
-  _ text: GenericIntoRustString
-) -> RustString {
+public func cleanExtractedText<GenericIntoRustString: IntoRustString>(_ text: GenericIntoRustString)
+  -> RustString
+{
   RustString(
     ptr: __swift_bridge__$clean_extracted_text(
       {
@@ -732,7 +731,7 @@ public func clean_extracted_text<GenericIntoRustString: IntoRustString>(
         return rustString.ptr
       }()))
 }
-public func reduce_tokens<GenericIntoRustString: IntoRustString>(
+public func reduceTokens<GenericIntoRustString: IntoRustString>(
   _ text: GenericIntoRustString, _ config: TokenReductionConfig,
   _ language_hint: GenericIntoRustString?
 ) throws -> RustString {
@@ -762,7 +761,7 @@ public func reduce_tokens<GenericIntoRustString: IntoRustString>(
     }
   }()
 }
-public func batch_reduce_tokens<GenericIntoRustString: IntoRustString>(
+public func batchReduceTokens<GenericIntoRustString: IntoRustString>(
   _ texts: RustVec<GenericIntoRustString>, _ config: TokenReductionConfig,
   _ language_hint: GenericIntoRustString?
 ) throws -> RustVec<RustString> {
@@ -833,7 +832,7 @@ public func subscript_(_ start: UInt32, _ end: UInt32) -> TextAnnotation {
 public func superscript(_ start: UInt32, _ end: UInt32) -> TextAnnotation {
   TextAnnotation(ptr: __swift_bridge__$superscript(start, end))
 }
-public func font_size<GenericIntoRustString: IntoRustString>(
+public func fontSize<GenericIntoRustString: IntoRustString>(
   _ start: UInt32, _ end: UInt32, _ value: GenericIntoRustString
 ) -> TextAnnotation {
   TextAnnotation(
@@ -860,7 +859,7 @@ public func color<GenericIntoRustString: IntoRustString>(
 public func highlight(_ start: UInt32, _ end: UInt32) -> TextAnnotation {
   TextAnnotation(ptr: __swift_bridge__$highlight(start, end))
 }
-public func classify_uri<GenericIntoRustString: IntoRustString>(_ url: GenericIntoRustString)
+public func classifyUri<GenericIntoRustString: IntoRustString>(_ url: GenericIntoRustString)
   -> UriKind
 {
   UriKind(
@@ -871,7 +870,7 @@ public func classify_uri<GenericIntoRustString: IntoRustString>(_ url: GenericIn
         return rustString.ptr
       }()))
 }
-public func safe_decode<GenericIntoRustString: IntoRustString>(
+public func safeDecode<GenericIntoRustString: IntoRustString>(
   _ byte_data: RustVec<UInt8>, _ encoding: GenericIntoRustString?
 ) -> RustString {
   RustString(
@@ -890,7 +889,7 @@ public func safe_decode<GenericIntoRustString: IntoRustString>(
         }
       }()))
 }
-public func calculate_text_confidence<GenericIntoRustString: IntoRustString>(
+public func calculateTextConfidence<GenericIntoRustString: IntoRustString>(
   _ text: GenericIntoRustString
 ) -> Double {
   __swift_bridge__$calculate_text_confidence(
@@ -900,24 +899,22 @@ public func calculate_text_confidence<GenericIntoRustString: IntoRustString>(
       return rustString.ptr
     }())
 }
-public func create_string_buffer_pool(_ pool_size: UInt, _ buffer_capacity: UInt)
-  -> StringBufferPool
-{
+public func createStringBufferPool(_ pool_size: UInt, _ buffer_capacity: UInt) -> StringBufferPool {
   StringBufferPool(ptr: __swift_bridge__$create_string_buffer_pool(pool_size, buffer_capacity))
 }
-public func create_byte_buffer_pool(_ pool_size: UInt, _ buffer_capacity: UInt) -> ByteBufferPool {
+public func createByteBufferPool(_ pool_size: UInt, _ buffer_capacity: UInt) -> ByteBufferPool {
   ByteBufferPool(ptr: __swift_bridge__$create_byte_buffer_pool(pool_size, buffer_capacity))
 }
-public func openapi_json() -> RustString {
+public func openapiJson() -> RustString {
   RustString(ptr: __swift_bridge__$openapi_json())
 }
-public func serve_default() throws {
+public func serveDefault() throws {
   try {
     let val = __swift_bridge__$serve_default()
     if val != nil { throw RustString(ptr: val!) } else { return }
   }()
 }
-public func chunk_text<GenericIntoRustString: IntoRustString>(
+public func chunkText<GenericIntoRustString: IntoRustString>(
   _ text: GenericIntoRustString, _ config: ChunkingConfig, _ page_boundaries: RustVec<PageBoundary>?
 ) throws -> ChunkingResult {
   try {
@@ -946,7 +943,7 @@ public func chunk_text<GenericIntoRustString: IntoRustString>(
     }
   }()
 }
-public func chunk_text_with_heading_source<GenericIntoRustString: IntoRustString>(
+public func chunkTextWithHeadingSource<GenericIntoRustString: IntoRustString>(
   _ text: GenericIntoRustString, _ config: ChunkingConfig,
   _ page_boundaries: RustVec<PageBoundary>?, _ heading_source: GenericIntoRustString?
 ) throws -> ChunkingResult {
@@ -984,7 +981,7 @@ public func chunk_text_with_heading_source<GenericIntoRustString: IntoRustString
     }
   }()
 }
-public func chunk_texts_batch<GenericIntoRustString: IntoRustString>(
+public func chunkTextsBatch<GenericIntoRustString: IntoRustString>(
   _ texts: RustVec<GenericIntoRustString>, _ config: ChunkingConfig
 ) throws -> RustVec<ChunkingResult> {
   try {
@@ -1005,7 +1002,7 @@ public func chunk_texts_batch<GenericIntoRustString: IntoRustString>(
     }
   }()
 }
-public func chunk_semantic<GenericIntoRustString: IntoRustString>(
+public func chunkSemantic<GenericIntoRustString: IntoRustString>(
   _ text: GenericIntoRustString, _ config: ChunkingConfig, _ page_boundaries: RustVec<PageBoundary>?
 ) throws -> ChunkingResult {
   try {
@@ -1043,10 +1040,10 @@ public func normalize(_ v: RustVec<Float>) -> RustVec<Float> {
         return val.ptr
       }()))
 }
-public func list_presets() -> RustVec<RustString> {
+public func listPresets() -> RustVec<RustString> {
   RustVec(ptr: __swift_bridge__$list_presets())
 }
-public func warm_model<GenericIntoRustString: IntoRustString>(
+public func warmModel<GenericIntoRustString: IntoRustString>(
   _ model_type: EmbeddingModelType, _ cache_dir: GenericIntoRustString?
 ) throws {
   try {
@@ -1066,7 +1063,7 @@ public func warm_model<GenericIntoRustString: IntoRustString>(
     if val != nil { throw RustString(ptr: val!) } else { return }
   }()
 }
-public func download_model<GenericIntoRustString: IntoRustString>(
+public func downloadModel<GenericIntoRustString: IntoRustString>(
   _ model_type: EmbeddingModelType, _ cache_dir: GenericIntoRustString?
 ) throws {
   try {
@@ -1086,14 +1083,14 @@ public func download_model<GenericIntoRustString: IntoRustString>(
     if val != nil { throw RustString(ptr: val!) } else { return }
   }()
 }
-public func calculate_optimal_dpi(
+public func calculateOptimalDpi(
   _ page_width: Double, _ page_height: Double, _ target_dpi: Int32, _ max_dimension: Int32,
   _ min_dpi: Int32, _ max_dpi: Int32
 ) -> Int32 {
   __swift_bridge__$calculate_optimal_dpi(
     page_width, page_height, target_dpi, max_dimension, min_dpi, max_dpi)
 }
-public func detect_languages<GenericIntoRustString: IntoRustString>(
+public func detectLanguages<GenericIntoRustString: IntoRustString>(
   _ text: GenericIntoRustString, _ config: LanguageDetectionConfig
 ) throws -> RustString {
   try {
@@ -1114,7 +1111,7 @@ public func detect_languages<GenericIntoRustString: IntoRustString>(
     }
   }()
 }
-public func extract_keywords<GenericIntoRustString: IntoRustString>(
+public func extractKeywords<GenericIntoRustString: IntoRustString>(
   _ text: GenericIntoRustString, _ config: KeywordConfig
 ) throws -> RustVec<Keyword> {
   try {
@@ -1135,7 +1132,7 @@ public func extract_keywords<GenericIntoRustString: IntoRustString>(
     }
   }()
 }
-public func compute_hash<GenericIntoRustString: IntoRustString>(_ data: GenericIntoRustString)
+public func computeHash<GenericIntoRustString: IntoRustString>(_ data: GenericIntoRustString)
   -> RustString
 {
   RustString(
@@ -1146,7 +1143,7 @@ public func compute_hash<GenericIntoRustString: IntoRustString>(_ data: GenericI
         return rustString.ptr
       }()))
 }
-public func render_pdf_page_to_png<GenericIntoRustString: IntoRustString>(
+public func renderPdfPageToPng<GenericIntoRustString: IntoRustString>(
   _ pdf_bytes: RustVec<UInt8>, _ page_index: UInt, _ dpi: Int32?, _ password: GenericIntoRustString?
 ) throws -> RustVec<UInt8> {
   try {
@@ -1171,7 +1168,7 @@ public func render_pdf_page_to_png<GenericIntoRustString: IntoRustString>(
     }
   }()
 }
-public func extract_text_from_pdf(_ pdf_bytes: RustVec<UInt8>) throws -> RustString {
+public func extractTextFromPdf(_ pdf_bytes: RustVec<UInt8>) throws -> RustString {
   try {
     let val = __swift_bridge__$extract_text_from_pdf(
       {
@@ -1186,7 +1183,7 @@ public func extract_text_from_pdf(_ pdf_bytes: RustVec<UInt8>) throws -> RustStr
     }
   }()
 }
-public func serialize_to_toon(_ result: ExtractionResult) throws -> RustString {
+public func serializeToToon(_ result: ExtractionResult) throws -> RustString {
   try {
     let val = __swift_bridge__$serialize_to_toon(
       {
@@ -1200,7 +1197,7 @@ public func serialize_to_toon(_ result: ExtractionResult) throws -> RustString {
     }
   }()
 }
-public func serialize_to_json(_ result: ExtractionResult) throws -> RustString {
+public func serializeToJson(_ result: ExtractionResult) throws -> RustString {
   try {
     let val = __swift_bridge__$serialize_to_json(
       {
@@ -1214,8 +1211,8 @@ public func serialize_to_json(_ result: ExtractionResult) throws -> RustString {
     }
   }()
 }
-public func _alef_phantom_vec_ocr_backend() -> RustVec<OcrBackendBox> {
-  RustVec(ptr: __swift_bridge__$_alef_phantom_vec_ocr_backend())
+public func alef_phantom_vec_ocr_backend() -> RustVec<OcrBackendBox> {
+  RustVec(ptr: __swift_bridge__$alef_phantom_vec_ocr_backend())
 }
 public func ocr_backend_call_process_image(
   _ this: OcrBackendBoxRef, _ image_bytes: RustVec<UInt8>, _ config: OcrConfig
@@ -1306,8 +1303,8 @@ public func ocr_backend_call_process_document<GenericIntoRustString: IntoRustStr
     }
   }()
 }
-public func _alef_phantom_vec_post_processor() -> RustVec<PostProcessorBox> {
-  RustVec(ptr: __swift_bridge__$_alef_phantom_vec_post_processor())
+public func alef_phantom_vec_post_processor() -> RustVec<PostProcessorBox> {
+  RustVec(ptr: __swift_bridge__$alef_phantom_vec_post_processor())
 }
 public func post_processor_call_process(
   _ this: PostProcessorBoxRef, _ result: ExtractionResult, _ config: ExtractionConfig
@@ -1353,8 +1350,8 @@ public func post_processor_call_estimated_duration_ms(
       return result.ptr
     }())
 }
-public func _alef_phantom_vec_validator() -> RustVec<ValidatorBox> {
-  RustVec(ptr: __swift_bridge__$_alef_phantom_vec_validator())
+public func alef_phantom_vec_validator() -> RustVec<ValidatorBox> {
+  RustVec(ptr: __swift_bridge__$alef_phantom_vec_validator())
 }
 public func validator_call_validate(
   _ this: ValidatorBoxRef, _ result: ExtractionResult, _ config: ExtractionConfig
@@ -1390,8 +1387,8 @@ public func validator_call_should_validate(
 public func validator_call_priority(_ this: ValidatorBoxRef) -> Int32 {
   __swift_bridge__$validator_call_priority(this.ptr)
 }
-public func _alef_phantom_vec_embedding_backend() -> RustVec<EmbeddingBackendBox> {
-  RustVec(ptr: __swift_bridge__$_alef_phantom_vec_embedding_backend())
+public func alef_phantom_vec_embedding_backend() -> RustVec<EmbeddingBackendBox> {
+  RustVec(ptr: __swift_bridge__$alef_phantom_vec_embedding_backend())
 }
 public func embedding_backend_call_dimensions(_ this: EmbeddingBackendBoxRef) -> UInt {
   __swift_bridge__$embedding_backend_call_dimensions(this.ptr)

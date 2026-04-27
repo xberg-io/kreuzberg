@@ -5300,7 +5300,7 @@ public struct PdfUnifiedExtractionResult {}
 ///
 /// Determines which hardware backend is used for model inference.
 /// `Auto` (default) selects the best available provider per platform.
-public enum ExecutionProviderType {
+public enum ExecutionProviderType: Codable {
   /// Auto-select: CoreML on macOS, CUDA on Linux, CPU elsewhere.
   case auto
   /// CPU execution provider (always available).
@@ -5314,7 +5314,7 @@ public enum ExecutionProviderType {
 }
 
 /// Built-in HTML theme selection.
-public enum HtmlTheme {
+public enum HtmlTheme: Codable {
   /// Sensible defaults: system font stack, neutral colours, readable line
   /// measure. CSS custom properties (`--kb-*`) are all defined so user CSS
   /// can override individual values.
@@ -5334,7 +5334,7 @@ public enum HtmlTheme {
 ///
 /// Controls the model used for table cell detection within layout-detected
 /// table regions.
-public enum TableModel {
+public enum TableModel: Codable {
   /// TATR (Table Transformer) -- default, 30MB, DETR-based row/column detection.
   case tatr
   /// SLANeXT wired variant -- 365MB, optimized for bordered tables.
@@ -5356,7 +5356,7 @@ public enum TableModel {
 /// - `Pdfium`: pdfium-render (default, C++ based, mature)
 /// - `PdfOxide`: pdf_oxide (pure Rust, faster, requires `pdf-oxide` feature)
 /// - `Auto`: automatically select based on available features
-public enum PdfBackend {
+public enum PdfBackend: Codable {
   /// Use pdfium-render backend (default).
   case pdfium
   /// Use pdf_oxide backend (pure Rust). Requires `pdf-oxide` feature.
@@ -5379,7 +5379,7 @@ public enum PdfBackend {
 ///   blank-line paragraphs) and merges groups into chunks capped at
 ///   `max_characters` (default 1000). `topic_threshold` has no effect in the
 ///   fallback path. For best results, pair with an embedding model.
-public enum ChunkerType {
+public enum ChunkerType: Codable {
   case text
   case markdown
   case yaml
@@ -5394,7 +5394,7 @@ public enum ChunkerType {
 /// Token-based sizing uses HuggingFace tokenizers loaded at runtime. Any tokenizer
 /// available on HuggingFace Hub can be used, including OpenAI-compatible tokenizers
 /// (e.g., `Xenova/gpt-4o`, `Xenova/cl100k_base`).
-public enum ChunkSizing {
+public enum ChunkSizing: Codable {
   /// Size measured in Unicode characters (default).
   case characters
   /// Size measured in tokens from a HuggingFace tokenizer.
@@ -5402,7 +5402,7 @@ public enum ChunkSizing {
 }
 
 /// Embedding model types supported by Kreuzberg.
-public enum EmbeddingModelType {
+public enum EmbeddingModelType: Codable {
   /// Use a preset model configuration (recommended)
   case preset(name: String)
   /// Use a custom ONNX model from HuggingFace
@@ -5438,7 +5438,7 @@ public enum EmbeddingModelType {
 ///
 /// Controls how extracted code content is represented in the `content` field
 /// of `ExtractionResult`.
-public enum CodeContentMode {
+public enum CodeContentMode: Codable {
   /// Use TSLP semantic chunks as content (default).
   case chunks
   /// Use raw source code as content.
@@ -5497,7 +5497,7 @@ public enum ProcessingStage {
   case late
 }
 
-public enum ReductionLevel {
+public enum ReductionLevel: Codable {
   case off
   case light
   case moderate
@@ -5506,7 +5506,7 @@ public enum ReductionLevel {
 }
 
 /// Type of PDF annotation.
-public enum PdfAnnotationType {
+public enum PdfAnnotationType: Codable {
   /// Sticky note / text annotation
   case text
   /// Highlighted text region
@@ -5524,7 +5524,7 @@ public enum PdfAnnotationType {
 }
 
 /// Types of block-level elements in Djot.
-public enum BlockType {
+public enum BlockType: Codable {
   case paragraph
   case heading
   case blockquote
@@ -5544,7 +5544,7 @@ public enum BlockType {
 }
 
 /// Types of inline elements in Djot.
-public enum InlineType {
+public enum InlineType: Codable {
   case text
   case strong
   case emphasis
@@ -5564,7 +5564,7 @@ public enum InlineType {
 }
 
 /// Semantic kind of a relationship between document elements.
-public enum RelationshipKind {
+public enum RelationshipKind: Codable {
   /// Footnote marker -> footnote definition.
   case footnoteReference
   /// Citation marker -> bibliography entry.
@@ -5584,7 +5584,7 @@ public enum RelationshipKind {
 /// Content layer classification for document nodes.
 ///
 /// Replaces separate body/furniture arrays with per-node granularity.
-public enum ContentLayer {
+public enum ContentLayer: Codable {
   /// Main document body content.
   case body
   /// Page/section header (running header).
@@ -5599,7 +5599,7 @@ public enum ContentLayer {
 ///
 /// Uses `#[serde(tag = "node_type")]` to avoid "type" keyword collision in
 /// Go/Java/TypeScript bindings.
-public enum NodeContent {
+public enum NodeContent: Codable {
   /// Document title.
   case title(text: String)
   /// Section heading with level (1-6).
@@ -5651,7 +5651,7 @@ public enum NodeContent {
 }
 
 /// Types of inline text annotations.
-public enum AnnotationKind {
+public enum AnnotationKind: Codable {
   case bold
   case italic
   case underline
@@ -5675,7 +5675,7 @@ public enum AnnotationKind {
 /// Assigned by the heuristic classifier in `chunking::classifier`.
 /// Defaults to `Unknown` when no rule matches.
 /// Designed to be extended in future versions without breaking changes.
-public enum ChunkType {
+public enum ChunkType: Codable {
   /// Section heading or document title.
   case heading
   /// Party list: names, addresses, and signatories.
@@ -5708,7 +5708,7 @@ public enum ChunkType {
 ///
 /// Categorizes text content into semantic units for downstream processing.
 /// Supports the element types commonly found in Unstructured documents.
-public enum ElementType {
+public enum ElementType: Codable {
   /// Document title
   case title
   /// Main narrative text body
@@ -5737,7 +5737,7 @@ public enum ElementType {
 ///
 /// Only one format type can exist per extraction result. This provides
 /// type-safe, clean metadata without nested optionals.
-public enum FormatMetadata {
+public enum FormatMetadata: Codable {
   case pdf(field0: String)
   case docx(field0: DocxMetadata)
   case excel(field0: ExcelMetadata)
@@ -5761,7 +5761,7 @@ public enum FormatMetadata {
 }
 
 /// Text direction enumeration for HTML documents.
-public enum TextDirection {
+public enum TextDirection: Codable {
   /// Left-to-right text direction
   case leftToRight
   /// Right-to-left text direction
@@ -5771,7 +5771,7 @@ public enum TextDirection {
 }
 
 /// Link type classification.
-public enum LinkType {
+public enum LinkType: Codable {
   /// Anchor link (#section)
   case anchor
   /// Internal link (same domain)
@@ -5787,7 +5787,7 @@ public enum LinkType {
 }
 
 /// Image type classification.
-public enum ImageType {
+public enum ImageType: Codable {
   /// Data URI image
   case dataUri
   /// Inline SVG
@@ -5799,7 +5799,7 @@ public enum ImageType {
 }
 
 /// Structured data type classification.
-public enum StructuredDataType {
+public enum StructuredDataType: Codable {
   /// JSON-LD structured data
   case jsonLd
   /// Microdata
@@ -5812,7 +5812,7 @@ public enum StructuredDataType {
 ///
 /// Supports both axis-aligned rectangles (from Tesseract) and 4-point quadrilaterals
 /// (from PaddleOCR and rotated text detection).
-public enum OcrBoundingGeometry {
+public enum OcrBoundingGeometry: Codable {
   /// Axis-aligned bounding box (typical for Tesseract output).
   case rectangle(left: UInt32, top: UInt32, width: UInt32, height: UInt32)
   /// 4-point quadrilateral for rotated/skewed text (PaddleOCR).
@@ -5826,7 +5826,7 @@ public enum OcrBoundingGeometry {
 ///
 /// Maps to Tesseract's page segmentation hierarchy and provides
 /// equivalent semantics for PaddleOCR.
-public enum OcrElementLevel {
+public enum OcrElementLevel: Codable {
   /// Individual word
   case word
   /// Line of text (default for PaddleOCR)
@@ -5840,7 +5840,7 @@ public enum OcrElementLevel {
 /// Type of paginated unit in a document.
 ///
 /// Distinguishes between different types of "pages" (PDF pages, presentation slides, spreadsheet sheets).
-public enum PageUnitType {
+public enum PageUnitType: Codable {
   /// Standard document pages (PDF, DOCX, images)
   case page
   /// Presentation slides (PPTX, ODP)
@@ -5850,7 +5850,7 @@ public enum PageUnitType {
 }
 
 /// Semantic classification of an extracted URI.
-public enum UriKind {
+public enum UriKind: Codable {
   /// A clickable hyperlink (web URL, file link).
   case hyperlink
   /// An image or media resource reference.
@@ -5875,7 +5875,7 @@ public enum PoolError {
 }
 
 /// Keyword algorithm selection.
-public enum KeywordAlgorithm {
+public enum KeywordAlgorithm: Codable {
   /// YAKE (Yet Another Keyword Extractor) - statistical approach
   case yake
   /// RAKE (Rapid Automatic Keyword Extraction) - co-occurrence based
@@ -5883,7 +5883,7 @@ public enum KeywordAlgorithm {
 }
 
 /// Page Segmentation Mode for Tesseract OCR
-public enum PSMMode {
+public enum PSMMode: Codable {
   case osdOnly
   case autoOsd
   case autoOnly
@@ -5940,7 +5940,7 @@ public enum PaddleLanguage {
 /// All model backends (RT-DETR, YOLO, etc.) map their native class IDs
 /// to this shared set. Models with fewer classes (DocLayNet: 11, PubLayNet: 5)
 /// map to the closest equivalent.
-public enum LayoutClass {
+public enum LayoutClass: Codable {
   case caption
   case footnote
   case formula
