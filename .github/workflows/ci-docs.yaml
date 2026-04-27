@@ -5,6 +5,7 @@ on:
   push:
     branches: [main]
     paths:
+      - 'CHANGELOG.md'
       - 'docs/**'
       - 'pyproject.toml'
       - 'zensical.toml'
@@ -16,6 +17,7 @@ on:
   pull_request:
     branches: [main]
     paths:
+      - 'CHANGELOG.md'
       - 'docs/**'
       - 'pyproject.toml'
       - 'zensical.toml'

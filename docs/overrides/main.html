@@ -1,5 +1,49 @@
 {% extends "base.html" %}
 
+{% block scripts %}
+  {{ super() }}
+  <script>
+    // Changelog headings use [ver] link-reference syntax, which renders a nested <a> inside
+    // the outer .md-nav__link anchor. Browsers break nested anchors apart (HTML5 adoption
+    // agency algorithm), leaving the TOC anchor empty and the version text as orphaned nodes.
+    // This repairs those empty anchors by reading the text from the sibling nav's aria-label.
+    document$.subscribe(function () {
+      document.querySelectorAll("li.md-nav__item").forEach(function (item) {
+        var link = item.querySelector(":scope > a.md-nav__link");
+        var subNav = item.querySelector(":scope > nav.md-nav[aria-label]");
+        var label = subNav && subNav.getAttribute("aria-label");
+        if (link && label && !link.textContent.trim()) {
+          link.textContent = label;
+          var toRemove = [];
+          for (var node = link.nextSibling; node && node !== subNav; node = node.nextSibling) {
+            toRemove.push(node);
+          }
+          toRemove.forEach(function (n) { n.parentNode && n.parentNode.removeChild(n); });
+        }
+      });
+
+      // Workaround: zensical's repo source observable re-emits on each instant
+      // navigation, appending another <ul class="md-source__facts"> without
+      // removing the previous one. Keep only the most recent list. The GitHub
+      // stars fetch is async, so an immediate sweep isn't enough — also attach
+      // a MutationObserver so late appends get collapsed too.
+      document.querySelectorAll(".md-source__repository").forEach(function (repo) {
+        var dedupe = function () {
+          var lists = repo.querySelectorAll(":scope > ul.md-source__facts");
+          for (var i = 0; i < lists.length - 1; i++) {
+            lists[i].remove();
+          }
+        };
+        dedupe();
+        if (!repo.__factsObserver) {
+          repo.__factsObserver = new MutationObserver(dedupe);
+          repo.__factsObserver.observe(repo, { childList: true });
+        }
+      });
+    });
+  </script>
+{% endblock %}
+
 {% block extrahead %}
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-8G4NQW55PF"></script>
   <script>

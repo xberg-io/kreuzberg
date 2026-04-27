@@ -1129,8 +1129,8 @@ strong {
 }
 
 [data-md-color-scheme="slate"] .md-nav__link:not(.md-nav__link--active):hover {
-	background: rgba(88, 251, 218, 0.08);
-	color: #58fbda;
+	background: rgba(88, 251, 218, 0.08) !important;
+	color: #58fbda !important;
 }
 
 .md-nav--lifted > .md-nav__list > .md-nav__item--active {

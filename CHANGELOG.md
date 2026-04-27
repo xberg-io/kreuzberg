@@ -39,54 +39,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [4.9.2] - 2026-04-19
-
-### Fixed
-
-- Fix cancellation token not checked in WASM (non-tokio) path for Excel, DOC, PPT, Pages, Keynote, and Numbers extractors — cancellation was silently ignored in WASM builds
-- Propagate `Cancelled` error code (9) to all bindings — Go, C FFI, Python, TypeScript, and C API docs now include the new code
-- Fix PHP e2e embed tests calling instance methods statically — use procedural `\Kreuzberg\embed()` functions
-- Fix TypeScript e2e embed tests using wrong field names (`type`/`name` → `modelType`/`value`) for embedding model config
-- Fix Elixir e2e embed tests calling non-existent `embed_async/2` — use sync `embed/2`
-- Fix TypeScript e2e generator missing `html_output` config mapping for styled HTML tests
-- Fix `ORT_DYLIB_PATH` on Windows CI pointing to `lib/` instead of the actual DLL location
-- Fix C# CI build conditional to require successful FFI build
-- Add `libuv1-dev` to Linux CI system dependencies for R package builds
-
----
-
-## [4.9.1] - 2026-04-19
-
-### Fixed
-
-- **#754**: Preserve `_internal_bindings.pyi` type stub during wheel artifact cleanup — published wheels now include inline type information for the core binding module
-- Add missing `Default` impl for `PyCancellationToken` to satisfy clippy `new_without_default` lint
-- Improve download resilience for `eng.traineddata` in build script — increase retries from 3 to 5, add fallback URL via `raw.githubusercontent.com`, and increase timeout to 300s
-- Increase Task installer retry resilience in CI — 5 attempts with `--retry-all-errors` curl flag
-
----
-
-## [4.9.0] - 2026-04-18
-
-### Fixed
-
-- **#588**: Suppress C23 glibc symbols (`__isoc23_strtoll` etc.) in manylinux wheels — added CMake flag propagation and CI verification step to prevent incompatible symbols on glibc < 2.38 (Debian 12, Ubuntu 22.04)
-- **#748**: Remove `kreuzberg-cli` from Python wheel to fix `libonnxruntime.so.1` loading failure — CLI is available as standalone release
-- **#749**: Add cancellation token support — cancelled extractions no longer block subsequent calls via `PDFIUM_OPERATION_LOCK`; wired across Python, Node.js, Ruby, WASM, and C FFI bindings
-- **#750**: Fix `kreuzberg[easyocr]` extra silently installing nothing on Python 3.14+; clean up stale `[paddleocr]` references in docs
-- **#752**: Fix ~1000x slowdown on Ghostscript-produced PDFs with structured output — replace O(N²) `Vec::contains` with O(1) `AHashSet` lookup, add minimum dimension filter for tiny inline images
-- **#753**: Fix `llm_usage` returning `None` when using VLM-based OCR — propagate usage through PDF OCR, image OCR, and `force_ocr_pages` paths
-
-### Added
-
-- Cancellation token API available in all language bindings (`CancellationToken` in Python/Node/Ruby/WASM/FFI)
-
-### Changed
-
-- **Breaking**: `kreuzberg-cli` binary is no longer bundled in the Python wheel — install the standalone CLI from GitHub releases
-
----
-
 ## [4.9.4] - 2026-04-22
 
 ### Fixed
@@ -134,6 +86,54 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Removed redundant `.task/workflows/e2e.yml` — e2e tasks consolidated in top-level `Taskfile.yml`.
+
+---
+
+## [4.9.2] - 2026-04-19
+
+### Fixed
+
+- Fix cancellation token not checked in WASM (non-tokio) path for Excel, DOC, PPT, Pages, Keynote, and Numbers extractors — cancellation was silently ignored in WASM builds
+- Propagate `Cancelled` error code (9) to all bindings — Go, C FFI, Python, TypeScript, and C API docs now include the new code
+- Fix PHP e2e embed tests calling instance methods statically — use procedural `\Kreuzberg\embed()` functions
+- Fix TypeScript e2e embed tests using wrong field names (`type`/`name` → `modelType`/`value`) for embedding model config
+- Fix Elixir e2e embed tests calling non-existent `embed_async/2` — use sync `embed/2`
+- Fix TypeScript e2e generator missing `html_output` config mapping for styled HTML tests
+- Fix `ORT_DYLIB_PATH` on Windows CI pointing to `lib/` instead of the actual DLL location
+- Fix C# CI build conditional to require successful FFI build
+- Add `libuv1-dev` to Linux CI system dependencies for R package builds
+
+---
+
+## [4.9.1] - 2026-04-19
+
+### Fixed
+
+- **#754**: Preserve `_internal_bindings.pyi` type stub during wheel artifact cleanup — published wheels now include inline type information for the core binding module
+- Add missing `Default` impl for `PyCancellationToken` to satisfy clippy `new_without_default` lint
+- Improve download resilience for `eng.traineddata` in build script — increase retries from 3 to 5, add fallback URL via `raw.githubusercontent.com`, and increase timeout to 300s
+- Increase Task installer retry resilience in CI — 5 attempts with `--retry-all-errors` curl flag
+
+---
+
+## [4.9.0] - 2026-04-18
+
+### Fixed
+
+- **#588**: Suppress C23 glibc symbols (`__isoc23_strtoll` etc.) in manylinux wheels — added CMake flag propagation and CI verification step to prevent incompatible symbols on glibc < 2.38 (Debian 12, Ubuntu 22.04)
+- **#748**: Remove `kreuzberg-cli` from Python wheel to fix `libonnxruntime.so.1` loading failure — CLI is available as standalone release
+- **#749**: Add cancellation token support — cancelled extractions no longer block subsequent calls via `PDFIUM_OPERATION_LOCK`; wired across Python, Node.js, Ruby, WASM, and C FFI bindings
+- **#750**: Fix `kreuzberg[easyocr]` extra silently installing nothing on Python 3.14+; clean up stale `[paddleocr]` references in docs
+- **#752**: Fix ~1000x slowdown on Ghostscript-produced PDFs with structured output — replace O(N²) `Vec::contains` with O(1) `AHashSet` lookup, add minimum dimension filter for tiny inline images
+- **#753**: Fix `llm_usage` returning `None` when using VLM-based OCR — propagate usage through PDF OCR, image OCR, and `force_ocr_pages` paths
+
+### Added
+
+- Cancellation token API available in all language bindings (`CancellationToken` in Python/Node/Ruby/WASM/FFI)
+
+### Changed
+
+- **Breaking**: `kreuzberg-cli` binary is no longer bundled in the Python wheel — install the standalone CLI from GitHub releases
 
 ---
 
@@ -3190,6 +3190,13 @@ See the [API Reference](https://docs.kreuzberg.dev/reference/api-python/) for de
 - [Format Support](https://docs.kreuzberg.dev/reference/formats/) - Supported file formats
 - [Extraction Guide](https://docs.kreuzberg.dev/guides/extraction/) - Extraction examples
 
+[4.9.5]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.9.5
+[4.9.4]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.9.4
+[4.9.3]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.9.3
+[4.9.2]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.9.2
+[4.9.1]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.9.1
+[4.9.0]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.9.0
+[4.8.6]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.8.6
 [4.8.5]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.8.5
 [4.8.4]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.8.4
 [4.8.3]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.8.3
