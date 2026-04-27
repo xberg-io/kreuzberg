@@ -1,17 +1,14 @@
 name: Zig
 
 on:
-  workflow_dispatch:
-  # Zig binding is alef-experimental (added v0.10.0). build.zig.zon emitted
-  # by alef-scaffold has syntax errors; re-enable on push/PR once
-  # alef-backend-zig matures.
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: packages/zig
     steps:
       - uses: actions/checkout@v4
       - name: Set up Zig
@@ -19,6 +16,6 @@ jobs:
         with:
           version: 0.13.0
       - name: Build Zig project
-        run: zig build
+        run: zig build --directory packages/zig
       - name: Run tests
-        run: zig build test
+        run: zig build test --directory packages/zig

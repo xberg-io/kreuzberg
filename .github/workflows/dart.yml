@@ -1,17 +1,14 @@
 name: Dart
 
 on:
-  workflow_dispatch:
-  # Dart/Gleam/Zig/Kotlin/Swift bindings are alef-experimental (added v0.10.0).
-  # Codegen bugs (wrong List<T> syntax, missing bridge file, etc.) make
-  # `dart analyze` fail; re-enable on push/PR once alef-backend-dart matures.
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: packages/dart
     steps:
       - uses: actions/checkout@v4
       - name: Set up Dart
@@ -19,8 +16,8 @@ jobs:
         with:
           sdk: stable
       - name: Get Dart dependencies
-        run: dart pub get
+        run: dart pub get --working-dir=packages/dart
       - name: Analyze Dart code
-        run: dart analyze
+        run: dart analyze packages/dart
       - name: Run tests
-        run: dart test
+        run: dart test --working-dir=packages/dart
