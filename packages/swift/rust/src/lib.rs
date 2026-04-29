@@ -699,6 +699,7 @@ mod ffi {
         fn shared_doc(&self) -> Option<bool>;
         fn hyperlinks_changed(&self) -> Option<bool>;
         fn company(&self) -> Option<String>;
+        fn worksheet_names(&self) -> Vec<String>;
     }
 
     extern "Rust" {
@@ -735,6 +736,7 @@ mod ffi {
         fn hidden_slides(&self) -> Option<i32>;
         fn multimedia_clips(&self) -> Option<i32>;
         fn presentation_format(&self) -> Option<String>;
+        fn slide_titles(&self) -> Vec<String>;
     }
 
     extern "Rust" {
@@ -1933,8 +1935,10 @@ mod ffi {
 
     extern "Rust" {
         type BatchExtractFilesParams;
+        fn paths(&self) -> Vec<String>;
         fn config(&self) -> Option<String>;
         fn pdf_password(&self) -> Option<String>;
+        fn file_configs(&self) -> String;
         fn response_format(&self) -> Option<String>;
     }
 
@@ -1952,6 +1956,7 @@ mod ffi {
 
     extern "Rust" {
         type EmbedTextParams;
+        fn texts(&self) -> Vec<String>;
         fn preset(&self) -> Option<String>;
         fn model(&self) -> Option<String>;
         fn api_key(&self) -> Option<String>;
@@ -2053,6 +2058,7 @@ mod ffi {
     extern "Rust" {
         type RecognizedTable;
         fn detection_bbox(&self) -> BBox;
+        fn cells(&self) -> String;
         fn markdown(&self) -> String;
     }
 
@@ -2101,8 +2107,6 @@ mod ffi {
 
     extern "Rust" {
         type OrientationResult;
-        #[swift_bridge(init)]
-        fn new(degrees: u32, confidence: f32) -> OrientationResult;
         fn degrees(&self) -> u32;
         fn confidence(&self) -> f32;
     }
@@ -2438,6 +2442,12 @@ mod ffi {
         fn normalize_whitespace(s: String) -> String;
         #[swift_bridge(swift_name = "registerDefaultExtractors")]
         fn register_default_extractors() -> Result<(), String>;
+        #[swift_bridge(swift_name = "unregisterEmbeddingBackend")]
+        fn unregister_embedding_backend(name: String) -> Result<(), String>;
+        #[swift_bridge(swift_name = "listEmbeddingBackends")]
+        fn list_embedding_backends() -> Result<Vec<String>, String>;
+        #[swift_bridge(swift_name = "clearEmbeddingBackends")]
+        fn clear_embedding_backends() -> Result<(), String>;
         #[swift_bridge(swift_name = "unregisterExtractor")]
         fn unregister_extractor(name: String) -> Result<(), String>;
         #[swift_bridge(swift_name = "listExtractors")]
@@ -2554,6 +2564,8 @@ mod ffi {
             dpi: Option<i32>,
             password: Option<String>,
         ) -> Result<Vec<u8>, String>;
+        #[swift_bridge(swift_name = "pdfPageCount")]
+        fn pdf_page_count(pdf_bytes: Vec<u8>, password: Option<String>) -> Result<usize, String>;
         #[swift_bridge(swift_name = "extractTextFromPdf")]
         fn extract_text_from_pdf(pdf_bytes: Vec<u8>) -> Result<String, String>;
         #[swift_bridge(swift_name = "serializeToToon")]
@@ -4823,42 +4835,89 @@ impl XlsxAppProperties {
     ) -> XlsxAppProperties {
         let mut __target: kreuzberg::extraction::office_metadata::app_properties::XlsxAppProperties =
             ::std::default::Default::default();
-        // alef: application — String fallback in non-serde struct, left at default
-        // alef: app_version — String fallback in non-serde struct, left at default
+        if let Some(s) = application {
+            if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&s) {
+                if let Ok(t) = ::serde_json::from_value(v) {
+                    __target.application = Some(t);
+                }
+            }
+        }
+        if let Some(s) = app_version {
+            if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&s) {
+                if let Ok(t) = ::serde_json::from_value(v) {
+                    __target.app_version = Some(t);
+                }
+            }
+        }
         __target.doc_security = doc_security;
         __target.scale_crop = scale_crop;
         __target.links_up_to_date = links_up_to_date;
         __target.shared_doc = shared_doc;
         __target.hyperlinks_changed = hyperlinks_changed;
-        // alef: company — String fallback in non-serde struct, left at default
-        // alef: worksheet_names — Vec field type may differ from IR in non-serde struct, left at default
+        if let Some(s) = company {
+            if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&s) {
+                if let Ok(t) = ::serde_json::from_value(v) {
+                    __target.company = Some(t);
+                }
+            }
+        }
+        if let Ok(__v) = ::serde_json::to_value(worksheet_names) {
+            if let Ok(t) = ::serde_json::from_value(__v) {
+                __target.worksheet_names = t;
+            }
+        }
         XlsxAppProperties(__target)
     }
     pub fn application(&self) -> Option<String> {
-        self.0.application.as_ref().map(|v| format!("{v:?}"))
+        self.0.application.as_ref().and_then(|v| serde_json::to_string(v).ok())
     }
     pub fn app_version(&self) -> Option<String> {
-        self.0.app_version.as_ref().map(|v| format!("{v:?}"))
+        self.0.app_version.as_ref().and_then(|v| serde_json::to_string(v).ok())
     }
     pub fn doc_security(&self) -> Option<i32> {
-        self.0.doc_security.clone()
+        self.0.doc_security.as_ref().and_then(|v| {
+            ::serde_json::to_value(v)
+                .ok()
+                .and_then(|j| ::serde_json::from_value(j).ok())
+        })
     }
     pub fn scale_crop(&self) -> Option<bool> {
-        self.0.scale_crop.clone()
+        self.0.scale_crop.as_ref().and_then(|v| {
+            ::serde_json::to_value(v)
+                .ok()
+                .and_then(|j| ::serde_json::from_value(j).ok())
+        })
     }
     pub fn links_up_to_date(&self) -> Option<bool> {
-        self.0.links_up_to_date.clone()
+        self.0.links_up_to_date.as_ref().and_then(|v| {
+            ::serde_json::to_value(v)
+                .ok()
+                .and_then(|j| ::serde_json::from_value(j).ok())
+        })
     }
     pub fn shared_doc(&self) -> Option<bool> {
-        self.0.shared_doc.clone()
+        self.0.shared_doc.as_ref().and_then(|v| {
+            ::serde_json::to_value(v)
+                .ok()
+                .and_then(|j| ::serde_json::from_value(j).ok())
+        })
     }
     pub fn hyperlinks_changed(&self) -> Option<bool> {
-        self.0.hyperlinks_changed.clone()
+        self.0.hyperlinks_changed.as_ref().and_then(|v| {
+            ::serde_json::to_value(v)
+                .ok()
+                .and_then(|j| ::serde_json::from_value(j).ok())
+        })
     }
     pub fn company(&self) -> Option<String> {
-        self.0.company.as_ref().map(|v| format!("{v:?}"))
+        self.0.company.as_ref().and_then(|v| serde_json::to_string(v).ok())
     }
-    // alef: skipped getter `worksheet_names` — type cannot be bridged through swift-bridge
+    pub fn worksheet_names(&self) -> Vec<String> {
+        ::serde_json::to_value(&self.0.worksheet_names)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
 }
 
 pub struct PptxAppProperties(pub kreuzberg::extraction::office_metadata::app_properties::PptxAppProperties);
@@ -4883,10 +4942,28 @@ impl PptxAppProperties {
     ) -> PptxAppProperties {
         let mut __target: kreuzberg::extraction::office_metadata::app_properties::PptxAppProperties =
             ::std::default::Default::default();
-        // alef: application — String fallback in non-serde struct, left at default
-        // alef: app_version — String fallback in non-serde struct, left at default
+        if let Some(s) = application {
+            if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&s) {
+                if let Ok(t) = ::serde_json::from_value(v) {
+                    __target.application = Some(t);
+                }
+            }
+        }
+        if let Some(s) = app_version {
+            if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&s) {
+                if let Ok(t) = ::serde_json::from_value(v) {
+                    __target.app_version = Some(t);
+                }
+            }
+        }
         __target.total_time = total_time;
-        // alef: company — String fallback in non-serde struct, left at default
+        if let Some(s) = company {
+            if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&s) {
+                if let Ok(t) = ::serde_json::from_value(v) {
+                    __target.company = Some(t);
+                }
+            }
+        }
         __target.doc_security = doc_security;
         __target.scale_crop = scale_crop;
         __target.links_up_to_date = links_up_to_date;
@@ -4896,53 +4973,111 @@ impl PptxAppProperties {
         __target.notes = notes;
         __target.hidden_slides = hidden_slides;
         __target.multimedia_clips = multimedia_clips;
-        // alef: presentation_format — String fallback in non-serde struct, left at default
-        // alef: slide_titles — Vec field type may differ from IR in non-serde struct, left at default
+        if let Some(s) = presentation_format {
+            if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&s) {
+                if let Ok(t) = ::serde_json::from_value(v) {
+                    __target.presentation_format = Some(t);
+                }
+            }
+        }
+        if let Ok(__v) = ::serde_json::to_value(slide_titles) {
+            if let Ok(t) = ::serde_json::from_value(__v) {
+                __target.slide_titles = t;
+            }
+        }
         PptxAppProperties(__target)
     }
     pub fn application(&self) -> Option<String> {
-        self.0.application.as_ref().map(|v| format!("{v:?}"))
+        self.0.application.as_ref().and_then(|v| serde_json::to_string(v).ok())
     }
     pub fn app_version(&self) -> Option<String> {
-        self.0.app_version.as_ref().map(|v| format!("{v:?}"))
+        self.0.app_version.as_ref().and_then(|v| serde_json::to_string(v).ok())
     }
     pub fn total_time(&self) -> Option<i32> {
-        self.0.total_time.clone()
+        self.0.total_time.as_ref().and_then(|v| {
+            ::serde_json::to_value(v)
+                .ok()
+                .and_then(|j| ::serde_json::from_value(j).ok())
+        })
     }
     pub fn company(&self) -> Option<String> {
-        self.0.company.as_ref().map(|v| format!("{v:?}"))
+        self.0.company.as_ref().and_then(|v| serde_json::to_string(v).ok())
     }
     pub fn doc_security(&self) -> Option<i32> {
-        self.0.doc_security.clone()
+        self.0.doc_security.as_ref().and_then(|v| {
+            ::serde_json::to_value(v)
+                .ok()
+                .and_then(|j| ::serde_json::from_value(j).ok())
+        })
     }
     pub fn scale_crop(&self) -> Option<bool> {
-        self.0.scale_crop.clone()
+        self.0.scale_crop.as_ref().and_then(|v| {
+            ::serde_json::to_value(v)
+                .ok()
+                .and_then(|j| ::serde_json::from_value(j).ok())
+        })
     }
     pub fn links_up_to_date(&self) -> Option<bool> {
-        self.0.links_up_to_date.clone()
+        self.0.links_up_to_date.as_ref().and_then(|v| {
+            ::serde_json::to_value(v)
+                .ok()
+                .and_then(|j| ::serde_json::from_value(j).ok())
+        })
     }
     pub fn shared_doc(&self) -> Option<bool> {
-        self.0.shared_doc.clone()
+        self.0.shared_doc.as_ref().and_then(|v| {
+            ::serde_json::to_value(v)
+                .ok()
+                .and_then(|j| ::serde_json::from_value(j).ok())
+        })
     }
     pub fn hyperlinks_changed(&self) -> Option<bool> {
-        self.0.hyperlinks_changed.clone()
+        self.0.hyperlinks_changed.as_ref().and_then(|v| {
+            ::serde_json::to_value(v)
+                .ok()
+                .and_then(|j| ::serde_json::from_value(j).ok())
+        })
     }
     pub fn slides(&self) -> Option<i32> {
-        self.0.slides.clone()
+        self.0.slides.as_ref().and_then(|v| {
+            ::serde_json::to_value(v)
+                .ok()
+                .and_then(|j| ::serde_json::from_value(j).ok())
+        })
     }
     pub fn notes(&self) -> Option<i32> {
-        self.0.notes.clone()
+        self.0.notes.as_ref().and_then(|v| {
+            ::serde_json::to_value(v)
+                .ok()
+                .and_then(|j| ::serde_json::from_value(j).ok())
+        })
     }
     pub fn hidden_slides(&self) -> Option<i32> {
-        self.0.hidden_slides.clone()
+        self.0.hidden_slides.as_ref().and_then(|v| {
+            ::serde_json::to_value(v)
+                .ok()
+                .and_then(|j| ::serde_json::from_value(j).ok())
+        })
     }
     pub fn multimedia_clips(&self) -> Option<i32> {
-        self.0.multimedia_clips.clone()
+        self.0.multimedia_clips.as_ref().and_then(|v| {
+            ::serde_json::to_value(v)
+                .ok()
+                .and_then(|j| ::serde_json::from_value(j).ok())
+        })
     }
     pub fn presentation_format(&self) -> Option<String> {
-        self.0.presentation_format.as_ref().map(|v| format!("{v:?}"))
+        self.0
+            .presentation_format
+            .as_ref()
+            .and_then(|v| serde_json::to_string(v).ok())
     }
-    // alef: skipped getter `slide_titles` — type cannot be bridged through swift-bridge
+    pub fn slide_titles(&self) -> Vec<String> {
+        ::serde_json::to_value(&self.0.slide_titles)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
 }
 
 pub struct CustomProperties(pub kreuzberg::extraction::office_metadata::custom_properties::CustomProperties);
@@ -8774,19 +8909,22 @@ pub struct ExtractFileParams(pub kreuzberg::mcp::ExtractFileParams);
 
 impl ExtractFileParams {
     pub fn path(&self) -> String {
-        format!("{:?}", &self.0.path)
+        serde_json::to_string(&self.0.path).unwrap_or_default()
     }
     pub fn mime_type(&self) -> Option<String> {
-        self.0.mime_type.as_ref().map(|v| format!("{v:?}"))
+        self.0.mime_type.as_ref().and_then(|v| serde_json::to_string(v).ok())
     }
     pub fn config(&self) -> Option<String> {
-        self.0.config.as_ref().map(|v| format!("{v:?}"))
+        self.0.config.as_ref().and_then(|v| serde_json::to_string(v).ok())
     }
     pub fn pdf_password(&self) -> Option<String> {
-        self.0.pdf_password.as_ref().map(|v| format!("{v:?}"))
+        self.0.pdf_password.as_ref().and_then(|v| serde_json::to_string(v).ok())
     }
     pub fn response_format(&self) -> Option<String> {
-        self.0.response_format.as_ref().map(|v| format!("{v:?}"))
+        self.0
+            .response_format
+            .as_ref()
+            .and_then(|v| serde_json::to_string(v).ok())
     }
 }
 
@@ -8794,35 +8932,48 @@ pub struct ExtractBytesParams(pub kreuzberg::mcp::ExtractBytesParams);
 
 impl ExtractBytesParams {
     pub fn data(&self) -> String {
-        format!("{:?}", &self.0.data)
+        serde_json::to_string(&self.0.data).unwrap_or_default()
     }
     pub fn mime_type(&self) -> Option<String> {
-        self.0.mime_type.as_ref().map(|v| format!("{v:?}"))
+        self.0.mime_type.as_ref().and_then(|v| serde_json::to_string(v).ok())
     }
     pub fn config(&self) -> Option<String> {
-        self.0.config.as_ref().map(|v| format!("{v:?}"))
+        self.0.config.as_ref().and_then(|v| serde_json::to_string(v).ok())
     }
     pub fn pdf_password(&self) -> Option<String> {
-        self.0.pdf_password.as_ref().map(|v| format!("{v:?}"))
+        self.0.pdf_password.as_ref().and_then(|v| serde_json::to_string(v).ok())
     }
     pub fn response_format(&self) -> Option<String> {
-        self.0.response_format.as_ref().map(|v| format!("{v:?}"))
+        self.0
+            .response_format
+            .as_ref()
+            .and_then(|v| serde_json::to_string(v).ok())
     }
 }
 
 pub struct BatchExtractFilesParams(pub kreuzberg::mcp::BatchExtractFilesParams);
 
 impl BatchExtractFilesParams {
-    // alef: skipped getter `paths` — type cannot be bridged through swift-bridge
+    pub fn paths(&self) -> Vec<String> {
+        ::serde_json::to_value(&self.0.paths)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
     pub fn config(&self) -> Option<String> {
-        self.0.config.as_ref().map(|v| format!("{v:?}"))
+        self.0.config.as_ref().and_then(|v| serde_json::to_string(v).ok())
     }
     pub fn pdf_password(&self) -> Option<String> {
-        self.0.pdf_password.as_ref().map(|v| format!("{v:?}"))
+        self.0.pdf_password.as_ref().and_then(|v| serde_json::to_string(v).ok())
     }
-    // alef: skipped getter `file_configs` — type cannot be bridged through swift-bridge
+    pub fn file_configs(&self) -> String {
+        serde_json::to_string(&self.0.file_configs).expect("serializable file_configs")
+    }
     pub fn response_format(&self) -> Option<String> {
-        self.0.response_format.as_ref().map(|v| format!("{v:?}"))
+        self.0
+            .response_format
+            .as_ref()
+            .and_then(|v| serde_json::to_string(v).ok())
     }
 }
 
@@ -8830,10 +8981,13 @@ pub struct DetectMimeTypeParams(pub kreuzberg::mcp::DetectMimeTypeParams);
 
 impl DetectMimeTypeParams {
     pub fn path(&self) -> String {
-        format!("{:?}", &self.0.path)
+        serde_json::to_string(&self.0.path).unwrap_or_default()
     }
     pub fn use_content(&self) -> bool {
-        self.0.use_content.clone()
+        ::serde_json::to_value(&self.0.use_content)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
     }
 }
 
@@ -8841,28 +8995,42 @@ pub struct CacheWarmParams(pub kreuzberg::mcp::CacheWarmParams);
 
 impl CacheWarmParams {
     pub fn all_embeddings(&self) -> bool {
-        self.0.all_embeddings.clone()
+        ::serde_json::to_value(&self.0.all_embeddings)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
     }
     pub fn embedding_model(&self) -> Option<String> {
-        self.0.embedding_model.as_ref().map(|v| format!("{v:?}"))
+        self.0
+            .embedding_model
+            .as_ref()
+            .and_then(|v| serde_json::to_string(v).ok())
     }
 }
 
 pub struct EmbedTextParams(pub kreuzberg::mcp::EmbedTextParams);
 
 impl EmbedTextParams {
-    // alef: skipped getter `texts` — type cannot be bridged through swift-bridge
+    pub fn texts(&self) -> Vec<String> {
+        ::serde_json::to_value(&self.0.texts)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
     pub fn preset(&self) -> Option<String> {
-        self.0.preset.as_ref().map(|v| format!("{v:?}"))
+        self.0.preset.as_ref().and_then(|v| serde_json::to_string(v).ok())
     }
     pub fn model(&self) -> Option<String> {
-        self.0.model.as_ref().map(|v| format!("{v:?}"))
+        self.0.model.as_ref().and_then(|v| serde_json::to_string(v).ok())
     }
     pub fn api_key(&self) -> Option<String> {
-        self.0.api_key.as_ref().map(|v| format!("{v:?}"))
+        self.0.api_key.as_ref().and_then(|v| serde_json::to_string(v).ok())
     }
     pub fn embedding_plugin(&self) -> Option<String> {
-        self.0.embedding_plugin.as_ref().map(|v| format!("{v:?}"))
+        self.0
+            .embedding_plugin
+            .as_ref()
+            .and_then(|v| serde_json::to_string(v).ok())
     }
 }
 
@@ -8870,28 +9038,34 @@ pub struct ExtractStructuredParams(pub kreuzberg::mcp::ExtractStructuredParams);
 
 impl ExtractStructuredParams {
     pub fn path(&self) -> String {
-        format!("{:?}", &self.0.path)
+        serde_json::to_string(&self.0.path).unwrap_or_default()
     }
     pub fn schema(&self) -> String {
-        format!("{:?}", &self.0.schema)
+        serde_json::to_string(&self.0.schema).unwrap_or_default()
     }
     pub fn model(&self) -> String {
-        format!("{:?}", &self.0.model)
+        serde_json::to_string(&self.0.model).unwrap_or_default()
     }
     pub fn schema_name(&self) -> String {
-        format!("{:?}", &self.0.schema_name)
+        serde_json::to_string(&self.0.schema_name).unwrap_or_default()
     }
     pub fn schema_description(&self) -> Option<String> {
-        self.0.schema_description.as_ref().map(|v| format!("{v:?}"))
+        self.0
+            .schema_description
+            .as_ref()
+            .and_then(|v| serde_json::to_string(v).ok())
     }
     pub fn prompt(&self) -> Option<String> {
-        self.0.prompt.as_ref().map(|v| format!("{v:?}"))
+        self.0.prompt.as_ref().and_then(|v| serde_json::to_string(v).ok())
     }
     pub fn api_key(&self) -> Option<String> {
-        self.0.api_key.as_ref().map(|v| format!("{v:?}"))
+        self.0.api_key.as_ref().and_then(|v| serde_json::to_string(v).ok())
     }
     pub fn strict(&self) -> bool {
-        self.0.strict.clone()
+        ::serde_json::to_value(&self.0.strict)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
     }
 }
 
@@ -8899,19 +9073,31 @@ pub struct ChunkTextParams(pub kreuzberg::mcp::ChunkTextParams);
 
 impl ChunkTextParams {
     pub fn text(&self) -> String {
-        format!("{:?}", &self.0.text)
+        serde_json::to_string(&self.0.text).unwrap_or_default()
     }
     pub fn max_characters(&self) -> Option<usize> {
-        self.0.max_characters.clone()
+        self.0.max_characters.as_ref().and_then(|v| {
+            ::serde_json::to_value(v)
+                .ok()
+                .and_then(|j| ::serde_json::from_value(j).ok())
+        })
     }
     pub fn overlap(&self) -> Option<usize> {
-        self.0.overlap.clone()
+        self.0.overlap.as_ref().and_then(|v| {
+            ::serde_json::to_value(v)
+                .ok()
+                .and_then(|j| ::serde_json::from_value(j).ok())
+        })
     }
     pub fn chunker_type(&self) -> Option<String> {
-        self.0.chunker_type.as_ref().map(|v| format!("{v:?}"))
+        self.0.chunker_type.as_ref().and_then(|v| serde_json::to_string(v).ok())
     }
     pub fn topic_threshold(&self) -> Option<f32> {
-        self.0.topic_threshold.clone()
+        self.0.topic_threshold.as_ref().and_then(|v| {
+            ::serde_json::to_value(v)
+                .ok()
+                .and_then(|j| ::serde_json::from_value(j).ok())
+        })
     }
 }
 
@@ -9114,9 +9300,11 @@ impl RecognizedTable {
     pub fn detection_bbox(&self) -> BBox {
         BBox(self.0.detection_bbox.clone())
     }
-    // alef: skipped getter `cells` — type cannot be bridged through swift-bridge
+    pub fn cells(&self) -> String {
+        serde_json::to_string(&self.0.cells).expect("serializable cells")
+    }
     pub fn markdown(&self) -> String {
-        format!("{:?}", &self.0.markdown)
+        serde_json::to_string(&self.0.markdown).unwrap_or_default()
     }
 }
 
@@ -9253,14 +9441,17 @@ impl ModelPaths {
 pub struct OrientationResult(pub kreuzberg::OrientationResult);
 
 impl OrientationResult {
-    pub fn new(degrees: u32, confidence: f32) -> OrientationResult {
-        OrientationResult(kreuzberg::OrientationResult { degrees, confidence })
-    }
     pub fn degrees(&self) -> u32 {
-        self.0.degrees.clone()
+        ::serde_json::to_value(&self.0.degrees)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
     }
     pub fn confidence(&self) -> f32 {
-        self.0.confidence.clone()
+        ::serde_json::to_value(&self.0.confidence)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
     }
 }
 
@@ -10526,6 +10717,20 @@ pub fn register_default_extractors() -> Result<(), String> {
     kreuzberg::extractors::register_default_extractors().map_err(|e| e.to_string())
 }
 
+pub fn unregister_embedding_backend(name: String) -> Result<(), String> {
+    kreuzberg::plugins::unregister_embedding_backend(&name).map_err(|e| e.to_string())
+}
+
+pub fn list_embedding_backends() -> Result<Vec<String>, String> {
+    kreuzberg::plugins::list_embedding_backends()
+        .map_err(|e| e.to_string())
+        .map(|v| v.into_iter().map(|s| s.to_string()).collect::<Vec<_>>())
+}
+
+pub fn clear_embedding_backends() -> Result<(), String> {
+    kreuzberg::plugins::clear_embedding_backends().map_err(|e| e.to_string())
+}
+
 pub fn unregister_extractor(name: String) -> Result<(), String> {
     kreuzberg::plugins::unregister_extractor(&name).map_err(|e| e.to_string())
 }
@@ -10807,6 +11012,10 @@ pub fn render_pdf_page_to_png(
 ) -> Result<Vec<u8>, String> {
     kreuzberg::pdf::rendering::render_pdf_page_to_png(&pdf_bytes, page_index, dpi, password.as_deref())
         .map_err(|e| e.to_string())
+}
+
+pub fn pdf_page_count(pdf_bytes: Vec<u8>, password: Option<String>) -> Result<usize, String> {
+    kreuzberg::pdf::rendering::pdf_page_count(&pdf_bytes, password.as_deref()).map_err(|e| e.to_string())
 }
 
 pub fn extract_text_from_pdf(pdf_bytes: Vec<u8>) -> Result<String, String> {

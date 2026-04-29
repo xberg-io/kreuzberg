@@ -221,7 +221,7 @@ typealias PSMMode = dev.kreuzberg.PSMMode
 typealias PaddleLanguage = dev.kreuzberg.PaddleLanguage
 typealias LayoutClass = dev.kreuzberg.LayoutClass
 
-typealias KreuzbergError = dev.kreuzberg.KreuzbergErrorException
+typealias KreuzbergErrorException = dev.kreuzberg.KreuzbergErrorException
 
 object Kreuzberg {
     /**
@@ -815,6 +815,29 @@ object Kreuzberg {
     }
 
     /**
+     * Unregister an embedding backend by name, calling its `shutdown()` method.
+     *
+     * No-op if the backend is not registered.
+     */
+    fun unregisterEmbeddingBackend(name: String): Unit {
+        Bridge.unregisterEmbeddingBackend(name)
+    }
+
+    /**
+     * List the names of all registered embedding backends.
+     */
+    fun listEmbeddingBackends(): List<String> {
+        return Bridge.listEmbeddingBackends()
+    }
+
+    /**
+     * Shutdown and remove every registered embedding backend.
+     */
+    fun clearEmbeddingBackends(): Unit {
+        Bridge.clearEmbeddingBackends()
+    }
+
+    /**
      * Unregister a document extractor by name.
      */
     fun unregisterExtractor(name: String): Unit {
@@ -1319,6 +1342,19 @@ object Kreuzberg {
      */
     fun renderPdfPageToPng(pdfBytes: ByteArray, pageIndex: Long, dpi: Int?, password: String?): ByteArray {
         return Bridge.renderPdfPageToPng(pdfBytes, pageIndex, dpi, password)
+    }
+
+    /**
+     * Return the number of pages in the given PDF without rendering any of them.
+     *
+     * Accepts an optional password for encrypted PDFs.
+     *
+     * **Errors:**
+     *
+     * Returns an error if the PDF is invalid or locked with an unsupplied/incorrect password.
+     */
+    fun pdfPageCount(pdfBytes: ByteArray, password: String?): Long {
+        return Bridge.pdfPageCount(pdfBytes, password)
     }
 
     fun extractTextFromPdf(pdfBytes: ByteArray): String {

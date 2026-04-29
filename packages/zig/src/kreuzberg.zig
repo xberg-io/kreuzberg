@@ -3326,6 +3326,29 @@ pub fn register_default_extractors() (KreuzbergError||error{OutOfMemory})!void {
     return;
 }
 
+/// List the names of all registered embedding backends.
+pub fn list_embedding_backends() (KreuzbergError||error{OutOfMemory})![]u8 {
+    const _result = c.kreuzberg_list_embedding_backends();
+    if (c.kreuzberg_last_error_code() != 0) {
+        return _first_error(KreuzbergError);
+    }
+    return blk: {
+        const slice = std.mem.sliceTo(_result, 0);
+        const owned = try std.heap.c_allocator.dupe(u8, slice);
+        _free_string(_result);
+        break :blk owned;
+    };
+}
+
+/// Shutdown and remove every registered embedding backend.
+pub fn clear_embedding_backends() (KreuzbergError||error{OutOfMemory})!void {
+    _ = c.kreuzberg_clear_embedding_backends();
+    if (c.kreuzberg_last_error_code() != 0) {
+        return _first_error(KreuzbergError);
+    }
+    return;
+}
+
 /// Unregister a document extractor by name.
 pub fn unregister_extractor(name: []const u8) (KreuzbergError||error{OutOfMemory})!void {
     const name_z: [*:0]u8 = try std.fmt.allocPrintZ(
@@ -4037,6 +4060,25 @@ pub fn render_pdf_page_to_png(pdf_bytes: []const u8, page_index: u64, dpi: ?i32,
         std.heap.c_allocator, "{s}", .{password},
     );
     const _result = c.kreuzberg_render_pdf_page_to_png(pdf_bytes.ptr, pdf_bytes.len, page_index, dpi, password_z);
+    if (c.kreuzberg_last_error_code() != 0) {
+        return _first_error(KreuzbergError);
+    }
+    std.heap.c_allocator.free(password_z[0..std.mem.len(password_z)]);
+    return _result;
+}
+
+/// Return the number of pages in the given PDF without rendering any of them.
+///
+/// Accepts an optional password for encrypted PDFs.
+///
+/// **Errors:**
+///
+/// Returns an error if the PDF is invalid or locked with an unsupplied/incorrect password.
+pub fn pdf_page_count(pdf_bytes: []const u8, password: ?[]const u8) (KreuzbergError||error{OutOfMemory})!u64 {
+    const password_z: [*:0]u8 = try std.fmt.allocPrintZ(
+        std.heap.c_allocator, "{s}", .{password},
+    );
+    const _result = c.kreuzberg_pdf_page_count(pdf_bytes.ptr, pdf_bytes.len, password_z);
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }

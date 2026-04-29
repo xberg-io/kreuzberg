@@ -155,6 +155,7 @@ typedef struct KREUZBERGOcrTableBoundingBox KREUZBERGOcrTableBoundingBox;
 typedef struct KREUZBERGOdtProperties KREUZBERGOdtProperties;
 typedef struct KREUZBERGOpenWebDocumentResponse KREUZBERGOpenWebDocumentResponse;
 typedef struct KREUZBERGOrientationResult KREUZBERGOrientationResult;
+typedef struct KREUZBERGPSMMode KREUZBERGPSMMode;
 typedef struct KREUZBERGPaddleLanguage KREUZBERGPaddleLanguage;
 typedef struct KREUZBERGPaddleOcrConfig KREUZBERGPaddleOcrConfig;
 typedef struct KREUZBERGPageBoundary KREUZBERGPageBoundary;
@@ -182,7 +183,6 @@ typedef struct KREUZBERGPptxExtractionResult KREUZBERGPptxExtractionResult;
 typedef struct KREUZBERGPptxMetadata KREUZBERGPptxMetadata;
 typedef struct KREUZBERGProcessingStage KREUZBERGProcessingStage;
 typedef struct KREUZBERGProcessingWarning KREUZBERGProcessingWarning;
-typedef struct KREUZBERGPsmMode KREUZBERGPsmMode;
 typedef struct KREUZBERGPstMetadata KREUZBERGPstMetadata;
 typedef struct KREUZBERGRakeParams KREUZBERGRakeParams;
 typedef struct KREUZBERGRecognizedTable KREUZBERGRecognizedTable;
@@ -3510,6 +3510,22 @@ char *kreuzberg_table_properties_layout(const KREUZBERGTableProperties *ptr);
 char *kreuzberg_table_properties_caption(const KREUZBERGTableProperties *ptr);
 
 /**
+ * Create a `XlsxAppProperties` from a JSON string. Returns null on failure.
+ * # Safety
+ * JSON string must be valid UTF-8 and null-terminated.
+ * Returned handle must be freed with `kreuzberg_xlsx_app_properties_free`.
+ */
+KREUZBERGXlsxAppProperties *kreuzberg_xlsx_app_properties_from_json(const char *json);
+
+/**
+ * Serialize a `XlsxAppProperties` to a JSON string. Returns null on failure.
+ * # Safety
+ * `ptr` must be a valid, non-null pointer returned by a `kreuzberg` function.
+ * The returned string must be freed with `kreuzberg_free_string`.
+ */
+char *kreuzberg_xlsx_app_properties_to_json(const KREUZBERGXlsxAppProperties *ptr);
+
+/**
  * Free a `XlsxAppProperties` handle.
  * # Safety
  * Pointer must have been returned by this library, or be null.
@@ -3578,6 +3594,22 @@ char *kreuzberg_xlsx_app_properties_company(const KREUZBERGXlsxAppProperties *pt
  * Pointer must be a valid handle returned by this library.
  */
 char *kreuzberg_xlsx_app_properties_worksheet_names(const KREUZBERGXlsxAppProperties *ptr);
+
+/**
+ * Create a `PptxAppProperties` from a JSON string. Returns null on failure.
+ * # Safety
+ * JSON string must be valid UTF-8 and null-terminated.
+ * Returned handle must be freed with `kreuzberg_pptx_app_properties_free`.
+ */
+KREUZBERGPptxAppProperties *kreuzberg_pptx_app_properties_from_json(const char *json);
+
+/**
+ * Serialize a `PptxAppProperties` to a JSON string. Returns null on failure.
+ * # Safety
+ * `ptr` must be a valid, non-null pointer returned by a `kreuzberg` function.
+ * The returned string must be freed with `kreuzberg_free_string`.
+ */
+char *kreuzberg_pptx_app_properties_to_json(const KREUZBERGPptxAppProperties *ptr);
 
 /**
  * Free a `PptxAppProperties` handle.
@@ -9064,6 +9096,22 @@ void kreuzberg_docling_compat_response_free(KREUZBERGDoclingCompatResponse *ptr)
 char *kreuzberg_docling_compat_response_status(const KREUZBERGDoclingCompatResponse *ptr);
 
 /**
+ * Create a `ExtractFileParams` from a JSON string. Returns null on failure.
+ * # Safety
+ * JSON string must be valid UTF-8 and null-terminated.
+ * Returned handle must be freed with `kreuzberg_extract_file_params_free`.
+ */
+KREUZBERGExtractFileParams *kreuzberg_extract_file_params_from_json(const char *json);
+
+/**
+ * Serialize a `ExtractFileParams` to a JSON string. Returns null on failure.
+ * # Safety
+ * `ptr` must be a valid, non-null pointer returned by a `kreuzberg` function.
+ * The returned string must be freed with `kreuzberg_free_string`.
+ */
+char *kreuzberg_extract_file_params_to_json(const KREUZBERGExtractFileParams *ptr);
+
+/**
  * Free a `ExtractFileParams` handle.
  * # Safety
  * Pointer must have been returned by this library, or be null.
@@ -9104,6 +9152,22 @@ char *kreuzberg_extract_file_params_pdf_password(const KREUZBERGExtractFileParam
  * Pointer must be a valid handle returned by this library.
  */
 char *kreuzberg_extract_file_params_response_format(const KREUZBERGExtractFileParams *ptr);
+
+/**
+ * Create a `ExtractBytesParams` from a JSON string. Returns null on failure.
+ * # Safety
+ * JSON string must be valid UTF-8 and null-terminated.
+ * Returned handle must be freed with `kreuzberg_extract_bytes_params_free`.
+ */
+KREUZBERGExtractBytesParams *kreuzberg_extract_bytes_params_from_json(const char *json);
+
+/**
+ * Serialize a `ExtractBytesParams` to a JSON string. Returns null on failure.
+ * # Safety
+ * `ptr` must be a valid, non-null pointer returned by a `kreuzberg` function.
+ * The returned string must be freed with `kreuzberg_free_string`.
+ */
+char *kreuzberg_extract_bytes_params_to_json(const KREUZBERGExtractBytesParams *ptr);
 
 /**
  * Free a `ExtractBytesParams` handle.
@@ -9148,6 +9212,22 @@ char *kreuzberg_extract_bytes_params_pdf_password(const KREUZBERGExtractBytesPar
 char *kreuzberg_extract_bytes_params_response_format(const KREUZBERGExtractBytesParams *ptr);
 
 /**
+ * Create a `BatchExtractFilesParams` from a JSON string. Returns null on failure.
+ * # Safety
+ * JSON string must be valid UTF-8 and null-terminated.
+ * Returned handle must be freed with `kreuzberg_batch_extract_files_params_free`.
+ */
+KREUZBERGBatchExtractFilesParams *kreuzberg_batch_extract_files_params_from_json(const char *json);
+
+/**
+ * Serialize a `BatchExtractFilesParams` to a JSON string. Returns null on failure.
+ * # Safety
+ * `ptr` must be a valid, non-null pointer returned by a `kreuzberg` function.
+ * The returned string must be freed with `kreuzberg_free_string`.
+ */
+char *kreuzberg_batch_extract_files_params_to_json(const KREUZBERGBatchExtractFilesParams *ptr);
+
+/**
  * Free a `BatchExtractFilesParams` handle.
  * # Safety
  * Pointer must have been returned by this library, or be null.
@@ -9190,6 +9270,22 @@ char *kreuzberg_batch_extract_files_params_file_configs(const KREUZBERGBatchExtr
 char *kreuzberg_batch_extract_files_params_response_format(const KREUZBERGBatchExtractFilesParams *ptr);
 
 /**
+ * Create a `DetectMimeTypeParams` from a JSON string. Returns null on failure.
+ * # Safety
+ * JSON string must be valid UTF-8 and null-terminated.
+ * Returned handle must be freed with `kreuzberg_detect_mime_type_params_free`.
+ */
+KREUZBERGDetectMimeTypeParams *kreuzberg_detect_mime_type_params_from_json(const char *json);
+
+/**
+ * Serialize a `DetectMimeTypeParams` to a JSON string. Returns null on failure.
+ * # Safety
+ * `ptr` must be a valid, non-null pointer returned by a `kreuzberg` function.
+ * The returned string must be freed with `kreuzberg_free_string`.
+ */
+char *kreuzberg_detect_mime_type_params_to_json(const KREUZBERGDetectMimeTypeParams *ptr);
+
+/**
  * Free a `DetectMimeTypeParams` handle.
  * # Safety
  * Pointer must have been returned by this library, or be null.
@@ -9211,6 +9307,22 @@ char *kreuzberg_detect_mime_type_params_path(const KREUZBERGDetectMimeTypeParams
 int32_t kreuzberg_detect_mime_type_params_use_content(const KREUZBERGDetectMimeTypeParams *ptr);
 
 /**
+ * Create a `CacheWarmParams` from a JSON string. Returns null on failure.
+ * # Safety
+ * JSON string must be valid UTF-8 and null-terminated.
+ * Returned handle must be freed with `kreuzberg_cache_warm_params_free`.
+ */
+KREUZBERGCacheWarmParams *kreuzberg_cache_warm_params_from_json(const char *json);
+
+/**
+ * Serialize a `CacheWarmParams` to a JSON string. Returns null on failure.
+ * # Safety
+ * `ptr` must be a valid, non-null pointer returned by a `kreuzberg` function.
+ * The returned string must be freed with `kreuzberg_free_string`.
+ */
+char *kreuzberg_cache_warm_params_to_json(const KREUZBERGCacheWarmParams *ptr);
+
+/**
  * Free a `CacheWarmParams` handle.
  * # Safety
  * Pointer must have been returned by this library, or be null.
@@ -9230,6 +9342,22 @@ int32_t kreuzberg_cache_warm_params_all_embeddings(const KREUZBERGCacheWarmParam
  * Pointer must be a valid handle returned by this library.
  */
 char *kreuzberg_cache_warm_params_embedding_model(const KREUZBERGCacheWarmParams *ptr);
+
+/**
+ * Create a `EmbedTextParams` from a JSON string. Returns null on failure.
+ * # Safety
+ * JSON string must be valid UTF-8 and null-terminated.
+ * Returned handle must be freed with `kreuzberg_embed_text_params_free`.
+ */
+KREUZBERGEmbedTextParams *kreuzberg_embed_text_params_from_json(const char *json);
+
+/**
+ * Serialize a `EmbedTextParams` to a JSON string. Returns null on failure.
+ * # Safety
+ * `ptr` must be a valid, non-null pointer returned by a `kreuzberg` function.
+ * The returned string must be freed with `kreuzberg_free_string`.
+ */
+char *kreuzberg_embed_text_params_to_json(const KREUZBERGEmbedTextParams *ptr);
 
 /**
  * Free a `EmbedTextParams` handle.
@@ -9272,6 +9400,22 @@ char *kreuzberg_embed_text_params_api_key(const KREUZBERGEmbedTextParams *ptr);
  * Pointer must be a valid handle returned by this library.
  */
 char *kreuzberg_embed_text_params_embedding_plugin(const KREUZBERGEmbedTextParams *ptr);
+
+/**
+ * Create a `ExtractStructuredParams` from a JSON string. Returns null on failure.
+ * # Safety
+ * JSON string must be valid UTF-8 and null-terminated.
+ * Returned handle must be freed with `kreuzberg_extract_structured_params_free`.
+ */
+KREUZBERGExtractStructuredParams *kreuzberg_extract_structured_params_from_json(const char *json);
+
+/**
+ * Serialize a `ExtractStructuredParams` to a JSON string. Returns null on failure.
+ * # Safety
+ * `ptr` must be a valid, non-null pointer returned by a `kreuzberg` function.
+ * The returned string must be freed with `kreuzberg_free_string`.
+ */
+char *kreuzberg_extract_structured_params_to_json(const KREUZBERGExtractStructuredParams *ptr);
 
 /**
  * Free a `ExtractStructuredParams` handle.
@@ -9335,6 +9479,22 @@ char *kreuzberg_extract_structured_params_api_key(const KREUZBERGExtractStructur
  * Pointer must be a valid handle returned by this library.
  */
 int32_t kreuzberg_extract_structured_params_strict(const KREUZBERGExtractStructuredParams *ptr);
+
+/**
+ * Create a `ChunkTextParams` from a JSON string. Returns null on failure.
+ * # Safety
+ * JSON string must be valid UTF-8 and null-terminated.
+ * Returned handle must be freed with `kreuzberg_chunk_text_params_free`.
+ */
+KREUZBERGChunkTextParams *kreuzberg_chunk_text_params_from_json(const char *json);
+
+/**
+ * Serialize a `ChunkTextParams` to a JSON string. Returns null on failure.
+ * # Safety
+ * `ptr` must be a valid, non-null pointer returned by a `kreuzberg` function.
+ * The returned string must be freed with `kreuzberg_free_string`.
+ */
+char *kreuzberg_chunk_text_params_to_json(const KREUZBERGChunkTextParams *ptr);
 
 /**
  * Free a `ChunkTextParams` handle.
@@ -9704,6 +9864,22 @@ uintptr_t kreuzberg_ocr_cache_stats_total_files(const KREUZBERGOcrCacheStats *pt
  * Pointer must be a valid handle returned by this library.
  */
 double kreuzberg_ocr_cache_stats_total_size_mb(const KREUZBERGOcrCacheStats *ptr);
+
+/**
+ * Create a `RecognizedTable` from a JSON string. Returns null on failure.
+ * # Safety
+ * JSON string must be valid UTF-8 and null-terminated.
+ * Returned handle must be freed with `kreuzberg_recognized_table_free`.
+ */
+KREUZBERGRecognizedTable *kreuzberg_recognized_table_from_json(const char *json);
+
+/**
+ * Serialize a `RecognizedTable` to a JSON string. Returns null on failure.
+ * # Safety
+ * `ptr` must be a valid, non-null pointer returned by a `kreuzberg` function.
+ * The returned string must be freed with `kreuzberg_free_string`.
+ */
+char *kreuzberg_recognized_table_to_json(const KREUZBERGRecognizedTable *ptr);
 
 /**
  * Free a `RecognizedTable` handle.
@@ -10080,6 +10256,22 @@ char *kreuzberg_model_paths_rec_model(const KREUZBERGModelPaths *ptr);
  * Pointer must be a valid handle returned by this library.
  */
 char *kreuzberg_model_paths_dict_file(const KREUZBERGModelPaths *ptr);
+
+/**
+ * Create a `OrientationResult` from a JSON string. Returns null on failure.
+ * # Safety
+ * JSON string must be valid UTF-8 and null-terminated.
+ * Returned handle must be freed with `kreuzberg_orientation_result_free`.
+ */
+KREUZBERGOrientationResult *kreuzberg_orientation_result_from_json(const char *json);
+
+/**
+ * Serialize a `OrientationResult` to a JSON string. Returns null on failure.
+ * # Safety
+ * `ptr` must be a valid, non-null pointer returned by a `kreuzberg` function.
+ * The returned string must be freed with `kreuzberg_free_string`.
+ */
+char *kreuzberg_orientation_result_to_json(const KREUZBERGOrientationResult *ptr);
 
 /**
  * Free a `OrientationResult` handle.
@@ -12837,6 +13029,35 @@ char *kreuzberg_extract_keywords(const char *text,
  * Returned pointers must be freed with the appropriate free function.
  */
 char *kreuzberg_compute_hash(const char *data);
+
+/**
+ * Return the number of pages in the given PDF without rendering any of them.
+ *
+ * Accepts an optional password for encrypted PDFs.
+ *
+ * # Errors
+ *
+ * Returns an error if the PDF is invalid or locked with an unsupplied/incorrect password.
+ *
+ * # Example
+ *
+ * ```rust,no_run
+ * use kreuzberg::pdf::pdf_page_count;
+ *
+ * # fn example() -> kreuzberg::pdf::error::Result<()> {
+ * let pdf_bytes = std::fs::read("document.pdf")?;
+ * let pages = pdf_page_count(&pdf_bytes, None)?;
+ * println!("{pages} pages");
+ * # Ok(())
+ * # }
+ * ```
+ * # Safety
+ * Caller must ensure all pointer arguments are valid or null.
+ * Returned pointers must be freed with the appropriate free function.
+ */
+uintptr_t kreuzberg_pdf_page_count(const uint8_t *pdf_bytes,
+                                   uintptr_t pdf_bytes_len,
+                                   const char *password);
 
 /**
  * # Safety

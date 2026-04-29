@@ -286,7 +286,7 @@ pub(crate) fn render_selected_pages_for_ocr(
     })?;
 
     let page_count = renderer
-        .page_count(content)
+        .page_count(content, None)
         .map_err(|e| crate::KreuzbergError::Parsing {
             message: format!("Failed to get PDF page count: {}", e),
             source: None,
@@ -571,10 +571,12 @@ pub(crate) async fn extract_with_ocr(
                 message: format!("Failed to initialize PDF renderer for OCR streaming: {:?}", e),
                 source: None,
             })?;
-            lazy_pdf_page_count = renderer.page_count(bytes).map_err(|e| crate::KreuzbergError::Parsing {
-                message: format!("Failed to get document page count: {:?}", e),
-                source: None,
-            })?;
+            lazy_pdf_page_count = renderer
+                .page_count(bytes, None)
+                .map_err(|e| crate::KreuzbergError::Parsing {
+                    message: format!("Failed to get document page count: {:?}", e),
+                    source: None,
+                })?;
         }
     }
 

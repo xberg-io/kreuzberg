@@ -3500,6 +3500,20 @@ pub fn normalize_whitespace(s: String) -> String
 @external(erlang, "Elixir.Kreuzberg.Native", "register_default_extractors")
 pub fn register_default_extractors() -> Result(Nil, KreuzbergError)
 
+/// Unregister an embedding backend by name, calling its `shutdown()` method.
+///
+/// No-op if the backend is not registered.
+@external(erlang, "Elixir.Kreuzberg.Native", "unregister_embedding_backend")
+pub fn unregister_embedding_backend(name: String) -> Result(Nil, KreuzbergError)
+
+/// List the names of all registered embedding backends.
+@external(erlang, "Elixir.Kreuzberg.Native", "list_embedding_backends")
+pub fn list_embedding_backends() -> Result(List(String), KreuzbergError)
+
+/// Shutdown and remove every registered embedding backend.
+@external(erlang, "Elixir.Kreuzberg.Native", "clear_embedding_backends")
+pub fn clear_embedding_backends() -> Result(Nil, KreuzbergError)
+
 /// Unregister a document extractor by name.
 @external(erlang, "Elixir.Kreuzberg.Native", "unregister_extractor")
 pub fn unregister_extractor(name: String) -> Result(Nil, KreuzbergError)
@@ -3856,6 +3870,16 @@ pub fn compute_hash(data: String) -> String
 /// or if the page fails to render.
 @external(erlang, "Elixir.Kreuzberg.Native", "render_pdf_page_to_png")
 pub fn render_pdf_page_to_png(pdf_bytes: BitArray, page_index: Int, dpi: Option(Int), password: Option(String)) -> Result(BitArray, KreuzbergError)
+
+/// Return the number of pages in the given PDF without rendering any of them.
+///
+/// Accepts an optional password for encrypted PDFs.
+///
+/// **Errors:**
+///
+/// Returns an error if the PDF is invalid or locked with an unsupplied/incorrect password.
+@external(erlang, "Elixir.Kreuzberg.Native", "pdf_page_count")
+pub fn pdf_page_count(pdf_bytes: BitArray, password: Option(String)) -> Result(Int, KreuzbergError)
 
 @external(erlang, "Elixir.Kreuzberg.Native", "extract_text_from_pdf")
 pub fn extract_text_from_pdf(pdf_bytes: BitArray) -> Result(String, KreuzbergError)

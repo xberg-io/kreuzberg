@@ -40,12 +40,13 @@ impl PdfRenderer<'static> {
 
 impl PdfRenderer<'_> {
     /// Return the number of pages in the given PDF without rendering.
-    #[cfg(feature = "ocr")]
-    pub(crate) fn page_count(&self, pdf_bytes: &[u8]) -> Result<usize> {
+    ///
+    /// Accepts an optional password for encrypted PDFs.
+    pub(crate) fn page_count(&self, pdf_bytes: &[u8], password: Option<&str>) -> Result<usize> {
         let document = self
             .pdfium
-            .load_pdf_from_byte_slice(pdf_bytes, None)
-            .map_err(|e| PdfError::InvalidPdf(super::error::format_pdfium_error(e)))?;
+            .load_pdf_from_byte_slice(pdf_bytes, password)
+            .map_err(|e| super::error::classify_pdfium_load_error(e, password))?;
         Ok(document.pages().len() as usize)
     }
 
@@ -159,6 +160,31 @@ pub fn render_pdf_page_to_png(
     };
     let image = renderer.render_page_to_image_with_password(pdf_bytes, page_index, &options, password)?;
     encode_png(&image)
+}
+
+/// Return the number of pages in the given PDF without rendering any of them.
+///
+/// Accepts an optional password for encrypted PDFs.
+///
+/// # Errors
+///
+/// Returns an error if the PDF is invalid or locked with an unsupplied/incorrect password.
+///
+/// # Example
+///
+/// ```rust,no_run
+/// use kreuzberg::pdf::pdf_page_count;
+///
+/// # fn example() -> kreuzberg::pdf::error::Result<()> {
+/// let pdf_bytes = std::fs::read("document.pdf")?;
+/// let pages = pdf_page_count(&pdf_bytes, None)?;
+/// println!("{pages} pages");
+/// # Ok(())
+/// # }
+/// ```
+pub fn pdf_page_count(pdf_bytes: &[u8], password: Option<&str>) -> Result<usize> {
+    let renderer = PdfRenderer::new()?;
+    renderer.page_count(pdf_bytes, password)
 }
 
 /// Lazy page-by-page PDF renderer.
@@ -571,8 +597,26 @@ mod tests {
     fn test_page_count() {
         let pdf_bytes = load_test_pdf();
         let renderer = PdfRenderer::new().unwrap();
-        let count = renderer.page_count(&pdf_bytes).expect("page_count should succeed");
+        let count = renderer
+            .page_count(&pdf_bytes, None)
+            .expect("page_count should succeed");
         assert!(count >= 1, "test PDF should have at least 1 page");
+    }
+
+    #[test]
+    #[serial]
+    fn test_pdf_page_count_free_fn() {
+        let pdf_bytes = load_test_pdf();
+        let count = super::pdf_page_count(&pdf_bytes, None).expect("pdf_page_count should succeed");
+        assert!(count >= 1, "test PDF should have at least 1 page");
+    }
+
+    #[test]
+    #[serial]
+    fn test_pdf_page_count_invalid_input() {
+        let err = super::pdf_page_count(b"not a pdf", None).expect_err("should reject non-PDF input");
+        let msg = err.to_string();
+        assert!(!msg.is_empty(), "error message should not be empty");
     }
 
     #[test]

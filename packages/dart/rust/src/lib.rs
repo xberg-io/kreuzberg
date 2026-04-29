@@ -2605,6 +2605,29 @@ pub fn register_default_extractors() -> Result<(), String> {
         .map_err(|e| e.to_string())
 }
 
+/// Unregister an embedding backend by name, calling its `shutdown()` method.
+///
+/// No-op if the backend is not registered.
+pub fn unregister_embedding_backend(name: String) -> Result<(), String> {
+    kreuzberg::plugins::unregister_embedding_backend(&name)
+        .map(|v| v)
+        .map_err(|e| e.to_string())
+}
+
+/// List the names of all registered embedding backends.
+pub fn list_embedding_backends() -> Result<Vec<String>, String> {
+    kreuzberg::plugins::list_embedding_backends()
+        .map(|v| v.into_iter().map(|s| s.to_string()).collect::<Vec<_>>())
+        .map_err(|e| e.to_string())
+}
+
+/// Shutdown and remove every registered embedding backend.
+pub fn clear_embedding_backends() -> Result<(), String> {
+    kreuzberg::plugins::clear_embedding_backends()
+        .map(|v| v)
+        .map_err(|e| e.to_string())
+}
+
 /// Unregister a document extractor by name.
 pub fn unregister_extractor(name: String) -> Result<(), String> {
     kreuzberg::plugins::unregister_extractor(&name)
@@ -3121,6 +3144,19 @@ pub fn render_pdf_page_to_png(
     )
     .map(|v| v)
     .map_err(|e| e.to_string())
+}
+
+/// Return the number of pages in the given PDF without rendering any of them.
+///
+/// Accepts an optional password for encrypted PDFs.
+///
+/// **Errors:**
+///
+/// Returns an error if the PDF is invalid or locked with an unsupplied/incorrect password.
+pub fn pdf_page_count(pdf_bytes: Vec<u8>, password: Option<String>) -> Result<i64, String> {
+    kreuzberg::pdf::rendering::pdf_page_count(&pdf_bytes, password.as_deref())
+        .map(|v| v as i64)
+        .map_err(|e| e.to_string())
 }
 
 pub fn extract_text_from_pdf(pdf_bytes: Vec<u8>) -> Result<String, String> {

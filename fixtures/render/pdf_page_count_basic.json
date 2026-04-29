@@ -1,0 +1,19 @@
+{
+	"id": "pdf_page_count_basic",
+	"category": "render",
+	"description": "Count pages in a small PDF without rendering them",
+	"tags": ["render", "pdf", "page_count"],
+	"call": "pdf_page_count",
+	"input": {
+		"data": "pdf/tiny.pdf"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "greater_than_or_equal",
+			"value": 1
+		}
+	]
+}

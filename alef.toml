@@ -1,4 +1,4 @@
-version = "0.11.18"
+version = "0.11.20"
 languages = [
     "python",
     "node",
@@ -426,12 +426,12 @@ functions = [
     "register_chunking_processor",
     "extract_bundled_pdfium",      # PDF binary extraction — internal utility, not user-facing
 
-    # Plugin registration — handled by trait bridge codegen, not regular function bindings
+    # Plugin registration — handled by trait bridge codegen, not regular function bindings.
+    # Only the register_* entry points need the trait bridge (they take Arc<dyn Trait>).
+    # The matching unregister_*/list_*/clear_* helpers take plain types and are emitted
+    # as regular function bindings, mirroring the OCR-backend equivalents.
     "register_ocr_backend",
     "register_embedding_backend",
-    "unregister_embedding_backend",
-    "list_embedding_backends",
-    "clear_embedding_backends",
     "register_renderer",
 
     # Functions taking pdfium_render::PdfDocument — can't be passed from bindings
@@ -845,6 +845,12 @@ exclude_functions = [
     # not Send, causing tokio::task::spawn_blocking to reject it. Requires alef source fixes.
     "register_ocr_backend",
     "unregister_ocr_backend",
+    # EmbeddingBackend trait bridge already emits these as plain C functions in FFI; the regular
+    # function-binding generator would produce a duplicate symbol. Other bindings (pyo3, napi,
+    # magnus, etc.) get them via the regular path because their trait bridges only emit register_*.
+    "unregister_embedding_backend",
+    "list_embedding_backends",
+    "clear_embedding_backends",
     # Returns *mut u8 (raw byte buffer) — no kreuzberg_free_bytes FFI function exists to free
     # the allocation, and kreuzberg_free_string(*char) is type-incompatible with *uint8_t.
     "render_pdf_page_to_png",
@@ -1258,7 +1264,7 @@ exclude_languages = ["elixir"]
 
 [dto]
 python = "dataclass"
-python_output = "typed-dict"
+python_output = "dataclass"
 node = "interface"
 ruby = "struct"
 php = "readonly-class"
@@ -1878,6 +1884,15 @@ function = "extract_text_from_pdf"
 module = "kreuzberg"
 async = false
 args = [{ name = "pdf_bytes", field = "input.data", type = "bytes" }]
+
+[e2e.calls.pdf_page_count]
+function = "pdf_page_count"
+module = "kreuzberg"
+async = false
+args = [
+    { name = "pdf_bytes", field = "input.data", type = "bytes" },
+    { name = "password", field = "input.password", type = "string", optional = true },
+]
 
 [e2e.calls.extract_doc_text]
 function = "extract_doc_text"

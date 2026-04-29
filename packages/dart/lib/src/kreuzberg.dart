@@ -6926,6 +6926,26 @@ class KreuzbergBridge {
     return rust_bridge.registerDefaultExtractors();
   }
 
+  /// Unregister an embedding backend by name, calling its `shutdown()` method.
+  ///
+  /// No-op if the backend is not registered.
+  /// throws anyhow::Error on failure
+  static void unregisterEmbeddingBackend(String name) {
+    return rust_bridge.unregisterEmbeddingBackend(name);
+  }
+
+  /// List the names of all registered embedding backends.
+  /// throws anyhow::Error on failure
+  static List<String> listEmbeddingBackends() {
+    return rust_bridge.listEmbeddingBackends();
+  }
+
+  /// Shutdown and remove every registered embedding backend.
+  /// throws anyhow::Error on failure
+  static void clearEmbeddingBackends() {
+    return rust_bridge.clearEmbeddingBackends();
+  }
+
   /// Unregister a document extractor by name.
   /// throws anyhow::Error on failure
   static void unregisterExtractor(String name) {
@@ -7592,6 +7612,31 @@ class KreuzbergBridge {
   /// throws anyhow::Error on failure
   static Uint8List renderPdfPageToPng(Uint8List pdfBytes, int pageIndex, int? dpi, String? password) {
     return rust_bridge.renderPdfPageToPng(pdfBytes, pageIndex, dpi, password);
+  }
+
+  /// Return the number of pages in the given PDF without rendering any of them.
+  ///
+  /// Accepts an optional password for encrypted PDFs.
+  ///
+  /// # Errors
+  ///
+  /// Returns an error if the PDF is invalid or locked with an unsupplied/incorrect password.
+  ///
+  /// # Example
+  ///
+  /// ```rust,no_run
+  /// use kreuzberg::pdf::pdf_page_count;
+  ///
+  /// # fn example() -> kreuzberg::pdf::error::Result<()> {
+  /// let pdf_bytes = std::fs::read("document.pdf")?;
+  /// let pages = pdf_page_count(&pdf_bytes, None)?;
+  /// println!("{pages} pages");
+  /// # Ok(())
+  /// # }
+  /// ```
+  /// throws anyhow::Error on failure
+  static int pdfPageCount(Uint8List pdfBytes, String? password) {
+    return rust_bridge.pdfPageCount(pdfBytes, password);
   }
 
   /// throws anyhow::Error on failure

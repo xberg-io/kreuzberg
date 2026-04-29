@@ -12,9 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - **#761**: `ExtractionResult.extraction_method` — new field exposing how text was extracted (`native`, `ocr`, `mixed`). Populated by PDF (native vs OCR vs `force_ocr_pages` mixed) and image (always `ocr`) extractors. Surfaced across every binding (Python, Node, PHP, Ruby, Java, C#, Go, R, Dart, Swift, Elixir, Gleam, Zig, WASM, C FFI).
+- **#843**: `pdf_page_count(pdf_bytes, password)` — new public function returning the number of pages in a PDF without rendering any of them. Surfaced across every binding.
+- **#843**: `unregister_embedding_backend`, `list_embedding_backends`, `clear_embedding_backends` — wired through every binding so hosts can manage the embedding-backend registry end to end (the `register_*` counterpart was already wired).
 
 ### Fixed
 
+- **#843**: Python `ExtractionConfig` no longer crashes every public `extract_*` call. The codegen had been emitting it as a `TypedDict` while the converters in `api.py` accessed fields with dot syntax, producing `AttributeError: 'dict' object has no attribute 'use_cache'` on first use. Restored to a dataclass so attribute access works as written.
 - **#799**: Extract images nested inside PDF Form XObjects across XObject references — recursive Form XObject descent (depth-limited to 8) now follows indirect references through the resource chain, with cycle detection via a visited-set so self-referential XObject DAGs no longer hang. Both the lopdf and pdfium image-decoding paths benefit.
 - **#824**: Robust PDF image extraction across XObject references — fixes silent image drops when documents reference XObjects through indirect chains. Combined with the depth limit and cycle guard from #799 to harden the recursive walker against malformed structures.
 - **#826**: WASM loading on Next.js / Turbopack — `@kreuzberg/wasm` now bundles cleanly under webpack 5, Turbopack, and Next.js's app router. Dynamic imports of Node built-ins and the pdfium-js subsystem carry `/* webpackIgnore: true */` markers so bundlers stop trying to inline platform-specific binaries.
