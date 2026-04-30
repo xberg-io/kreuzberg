@@ -429,25 +429,34 @@
       // parsing) is CPU-bound and blocks whichever thread runs it. By spawning
       // a dedicated Web Worker per extraction we keep the UI thread free.
       // worker.terminate() provides a real kill switch if it hangs.
+      //
+      // Two-phase design: the worker signals 'ready' after WASM init completes,
+      // then the 30s timeout starts. This prevents cold CDN loads (which can
+      // take 15-25s) from consuming the extraction budget.
       function extractInWorker(fileBytes, mimeType, version) {
         return new Promise((resolve, reject) => {
           const workerCode = `
-            let extractBytes, initWasm, enableOcr;
+            let _extractBytes = null;
             self.onmessage = async (e) => {
-              const { fileBytes, mimeType, version } = e.data;
-              try {
-                const cdnBase = 'https://cdn.jsdelivr.net/npm/@kreuzberg/wasm@' + version;
-                const mod = await import(cdnBase + '/dist/index.js');
-                initWasm = mod.initWasm;
-                extractBytes = mod.extractBytes;
-                enableOcr = mod.enableOcr;
-                await initWasm(cdnBase + '/dist/pkg/kreuzberg_wasm_bg.wasm');
-                await enableOcr();
-                const result = await extractBytes(fileBytes, mimeType, null);
-                // Structured-clone safe: extract plain data
-                self.postMessage({ ok: true, result: JSON.parse(JSON.stringify(result)) });
-              } catch (err) {
-                self.postMessage({ ok: false, error: err?.message || String(err) });
+              const { type } = e.data;
+              if (type === 'init') {
+                try {
+                  const cdnBase = 'https://cdn.jsdelivr.net/npm/@kreuzberg/wasm@' + e.data.version;
+                  const mod = await import(cdnBase + '/dist/index.js');
+                  await mod.initWasm(cdnBase + '/dist/pkg/kreuzberg_wasm_bg.wasm');
+                  await mod.enableOcr();
+                  _extractBytes = mod.extractBytes;
+                  self.postMessage({ type: 'ready' });
+                } catch (err) {
+                  self.postMessage({ type: 'error', error: err?.message || String(err) });
+                }
+              } else if (type === 'extract') {
+                try {
+                  const result = await _extractBytes(e.data.fileBytes, e.data.mimeType, null);
+                  self.postMessage({ type: 'result', result: JSON.parse(JSON.stringify(result)) });
+                } catch (err) {
+                  self.postMessage({ type: 'error', error: err?.message || String(err) });
+                }
               }
             };
           `;
@@ -455,29 +464,35 @@
           const url = URL.createObjectURL(blob);
           const worker = new Worker(url, { type: 'module' });
 
-          const TIMEOUT_MS = 30_000;
-          const timer = setTimeout(() => {
+          let extractTimer = null;
+          const cleanup = () => {
+            if (extractTimer) clearTimeout(extractTimer);
             worker.terminate();
             URL.revokeObjectURL(url);
-            reject(new Error('Extraction timed out after 30s. The file may be too complex for in-browser processing. Try a simpler file or use the API.'));
-          }, TIMEOUT_MS);
+          };
 
           worker.onmessage = (e) => {
-            clearTimeout(timer);
-            worker.terminate();
-            URL.revokeObjectURL(url);
-            if (e.data.ok) resolve(e.data.result);
-            else reject(new Error(e.data.error));
+            if (e.data.type === 'ready') {
+              extractTimer = setTimeout(() => {
+                cleanup();
+                reject(new Error('Extraction timed out. Try a smaller file or use the API for complex documents.'));
+              }, 30_000);
+              worker.postMessage({ type: 'extract', fileBytes, mimeType });
+            } else if (e.data.type === 'result') {
+              cleanup();
+              resolve(e.data.result);
+            } else if (e.data.type === 'error') {
+              cleanup();
+              reject(new Error(e.data.error));
+            }
           };
 
           worker.onerror = (e) => {
-            clearTimeout(timer);
-            worker.terminate();
-            URL.revokeObjectURL(url);
+            cleanup();
             reject(new Error(e.message || 'Worker error'));
           };
 
-          worker.postMessage({ fileBytes, mimeType, version });
+          worker.postMessage({ type: 'init', version });
         });
       }
 
@@ -523,8 +538,11 @@
           const errorBox = document.getElementById("error-message");
           const errTitle = document.getElementById("error-title");
           const errDetail = document.getElementById("error-detail");
-          if (errTitle) errTitle.textContent = e?.message?.includes("timed out") ? "Extraction timed out" : "Extraction failed";
-          if (errDetail) errDetail.textContent = e instanceof Error ? e.message : "An unexpected error occurred. Please try a different file.";
+          const timedOut = e?.message?.includes("timed out");
+          if (errTitle) errTitle.textContent = timedOut ? "Extraction timed out" : "Extraction failed";
+          if (errDetail) errDetail.textContent = timedOut
+            ? "In-browser processing exceeded the time limit. Try a smaller file, or use the Kreuzberg API for larger documents."
+            : (e instanceof Error ? e.message : "An unexpected error occurred. Please try a different file.");
           if (errorBox) errorBox.style.display = 'flex';
         }
       }
