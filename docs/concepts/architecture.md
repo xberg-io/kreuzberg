@@ -55,14 +55,14 @@ flowchart TB
 
 Your code sits at the top. It calls into a bridge layer that translates types between your language and Rust. The bridge forwards the call to the Rust core, which does the actual extraction, OCR, and text processing. Results come back through the same bridge.
 
-### TypeScript: Native vs WASM
+### TypeScript: Native vs Wasm
 
 There are two TypeScript packages because server and browser environments have fundamentally different constraints:
 
 - **`@kreuzberg/node`** (native) - compiled via NAPI-RS. Maximum performance on Node.js, Bun, and Deno. Requires a platform-specific native binary.
 - **`@kreuzberg/wasm`** (WebAssembly) - compiled via wasm-bindgen. Runs in browsers, Cloudflare Workers, Vercel Edge, and any JavaScript runtime. About 60-80% of native speed, but zero native dependencies.
 
-Rule of thumb: use native on servers, WASM in browsers and edge runtimes. See the [Installation Guide](../getting-started/installation.md#typescript) for setup.
+Rule of thumb: use native on servers, Wasm in browsers and edge runtimes. See the [Installation Guide](../getting-started/installation.md#typescript) for setup.
 
 ---
 
@@ -160,7 +160,7 @@ fn main() -> kreuzberg::Result<()> {
 }
 ```
 
-This makes Kreuzberg a fit for Rust-native applications, CLI tools, high-performance API servers, and embedded systems where Python or Node.js aren't practical.
+This makes Kreuzberg a fit for Rust-native applications, command-line tools, high-performance API servers, and embedded systems where Python or Node.js aren't practical.
 
 ---
 

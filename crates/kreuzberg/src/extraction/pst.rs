@@ -192,7 +192,7 @@ fn extract_message_content(message: &dyn PstMessage, entry_id: &EntryId) -> Emai
     let plain_text = get_str_prop(props, 0x1000); // PR_BODY
     let html_content = get_str_prop(props, 0x1013); // PR_HTML (handles String or Binary via prop_value_to_string)
 
-    let cleaned_text = plain_text.clone().or_else(|| html_content.clone()).unwrap_or_default();
+    let content = plain_text.clone().or_else(|| html_content.clone()).unwrap_or_default();
 
     let date = props.get(0x0E06).and_then(|v| {
         if let PropertyValue::Time(ft) = v {
@@ -338,7 +338,7 @@ fn extract_message_content(message: &dyn PstMessage, entry_id: &EntryId) -> Emai
         message_id: None,
         plain_text,
         html_content,
-        cleaned_text,
+        content,
         attachments,
         metadata: HashMap::from([("entry_id".to_string(), entry_id_hex)]),
     }

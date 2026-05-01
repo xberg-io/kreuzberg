@@ -102,7 +102,7 @@ impl EmailExtractor {
                 }
             }
         } else {
-            for paragraph in email_result.cleaned_text.split("\n\n") {
+            for paragraph in email_result.content.split("\n\n") {
                 let trimmed = paragraph.trim();
                 if !trimmed.is_empty() {
                     builder.push_paragraph(trimmed, vec![], None, None);

@@ -8,7 +8,7 @@ MarkItDown is a Microsoft-backed Python library that converts documents to Markd
 |---|---|---|
 | **Written in** | Rust | Python |
 | **File formats** | 91+ | ~25 |
-| **Use from** | Python, TypeScript, Go, Ruby, Java, C#, PHP, Elixir, Rust, WASM | Python |
+| **Use from** | Python, TypeScript, Go, Ruby, Java, C#, PHP, Elixir, Rust, Wasm | Python |
 | **Output** | Unified text, element-based, per-page JSON, Markdown | Markdown |
 | **License** | Apache-2.0 | Elastic-2.0 |
 | **Sweet spot** | Full extraction pipelines with chunking and embeddings | Quick Markdown conversion for LLM context |
@@ -46,7 +46,7 @@ Different approaches to image-based text extraction.
 
 A significant difference in how you integrate each tool.
 
-- **Kreuzberg** -- Native bindings for **10 languages**. Same performance and API from Python, TypeScript, Go, Ruby, Java, C#, PHP, Elixir, Rust, or WASM in the browser.
+- **Kreuzberg** -- Native bindings for **10 languages**. Same performance and API from Python, TypeScript, Go, Ruby, Java, C#, PHP, Elixir, Rust, or Wasm in the browser.
 - **MarkItDown** -- **Python only**. If your backend is in Go or TypeScript, you'd need to wrap MarkItDown in an HTTP service or call it as a subprocess.
 
 ### Downstream Processing

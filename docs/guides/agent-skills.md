@@ -4,7 +4,7 @@ Kreuzberg ships with an [Agent Skill](https://agentskills.io) that teaches AI co
 
 ## Supported Assistants
 
-Works with any tool supporting the [Agent Skills](https://agentskills.io) standard: Claude Code, Codex, Gemini CLI, Cursor, VS Code (with AI extensions), Amp, Goose, and Roo Code.
+Works with any tool supporting the [Agent Skills](https://agentskills.io) standard: Claude Code, Codex, Gemini CLI, Cursor, Visual Studio Code (with AI extensions), Amp, Goose, and Roo Code.
 
 ## Installing
 

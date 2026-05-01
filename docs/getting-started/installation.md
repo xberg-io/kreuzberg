@@ -8,11 +8,9 @@ Kreuzberg ships native bindings for 12 languages and a standalone CLI. Pick your
 
 Every package includes **prebuilt binaries** for Linux (x86_64 / aarch64), macOS (Apple Silicon), and Windows — no compile step needed.
 
-!!! Warning "Windows — ONNX Runtime required for Go, Elixir, and C/C++"
-    Go, Elixir, and C/C++ bindings on Windows link against ONNX Runtime dynamically. You must have `onnxruntime.dll` on your `PATH` at runtime. Download it from the [ONNX Runtime releases](https://github.com/microsoft/onnxruntime/releases) (for example `onnxruntime-win-x64-1.24.1.zip`). Python, TypeScript, Java, C#, Ruby, PHP, and WASM are unaffected.
+!!! Warning "Windows — ONNX Runtime required for Go, Elixir, and C/C++" Go, Elixir, and C/C++ bindings on Windows link against ONNX Runtime dynamically. You must have `onnxruntime.dll` on your `PATH` at runtime. Download it from the [ONNX Runtime releases](https://github.com/microsoft/onnxruntime/releases) (for example `onnxruntime-win-x64-1.24.1.zip`). Python, TypeScript, Java, C#, Ruby, PHP, and Wasm are unaffected.
 
-!!! Warning "x86_64 CPU — AVX/AVX2 instruction set required"
-    The bundled ONNX Runtime binaries require **AVX/AVX2** CPU instructions. CPUs without AVX support (e.g. Intel Atom, Celeron N5105/Jasper Lake, older pre-2011 processors) will crash with an `invalid opcode` trap when using ONNX-dependent features. The affected features are **PaddleOCR**, **layout detection**, and **embeddings**. All other Kreuzberg functionality (text extraction, Tesseract OCR, chunking, metadata, etc.) works normally on any x86_64 CPU. ARM platforms (aarch64) are unaffected.
+!!! Warning "x86_64 CPU — AVX/AVX2 instruction set required" The bundled ONNX Runtime binaries require **AVX/AVX2** CPU instructions. CPUs without AVX support (e.g. Intel Atom, Celeron N5105/Jasper Lake, older pre-2011 processors) will crash with an `invalid opcode` trap when using ONNX-dependent features. The affected features are **PaddleOCR**, **layout detection**, and **embeddings**. All other Kreuzberg functionality (text extraction, Tesseract OCR, chunking, metadata, etc.) works normally on any x86_64 CPU. ARM platforms (aarch64) are unaffected.
 
 <div class="cli-hero" markdown>
 
@@ -207,11 +205,11 @@ Most of the time you won't need anything beyond the install command above. The t
 |---|---|
 | AVX/AVX2 CPU instructions | Required for ONNX Runtime features (PaddleOCR, layout detection, embeddings) on x86_64 |
 | Rust toolchain (`rustup`) | Building any native binding from source |
-| C/C++ compiler | Building native bindings (Xcode CLI tools / `build-essential` / MSVC) |
+| C/C++ compiler | Building native bindings (Xcode command-line tools / `build-essential` / MSVC) |
 | Tesseract OCR | Optional — `brew install tesseract` / `apt install tesseract-ocr` |
 | PDFium | Auto-fetched during builds |
 
-The WASM package (`@kreuzberg/wasm`) has **zero** system dependencies.
+The Wasm package (`@kreuzberg/wasm`) has **zero** system dependencies.
 
 ### GPU Acceleration
 
@@ -240,19 +238,16 @@ Two npm packages target different runtimes:
 | Package | Best for | Performance |
 |---|---|---|
 | `@kreuzberg/node` | Node.js, Bun — server-side apps | Native (100%) |
-| `@kreuzberg/wasm` | Browsers, Deno, Cloudflare Workers | WASM (~60-80%) |
+| `@kreuzberg/wasm` | Browsers, Deno, Cloudflare Workers | Wasm (~60-80%) |
 
-Both work with **pnpm** (`pnpm add`) and **yarn** (`yarn add`) as well.
+Both work with **pnpm** (`pnpm add`) and **Yarn** (`yarn add`) as well.
 
-!!! Note "pnpm workspaces"
-    In monorepos, add this to your root `.npmrc` so platform-specific optional deps resolve correctly:
+!!! Note "pnpm workspaces" In monorepos, add this to your root `.npmrc` so platform-specific optional deps resolve correctly:
     ```ini
     auto-install-peers=true```
 
-??? Example "WASM — Browser usage"
-    ```html
-    <script type="module">
-      import { initWasm, extractFromFile } from "@kreuzberg/wasm";
+??? Example "Wasm — Browser usage" ```HTML
+    <script type="module"> import { initWasm, extractFromFile } from "@kreuzberg/Wasm";
 
       await initWasm();
 
@@ -265,18 +260,14 @@ Both work with **pnpm** (`pnpm add`) and **yarn** (`yarn add`) as well.
     <input type="file" id="file" />
     ```
 
-??? Example "WASM — Deno"
-    ```typescript
-    import { initWasm, extractFile } from "npm:@kreuzberg/wasm";
+??? Example "Wasm — Deno" ```TypeScript import { initWasm, extractFile } from "npm:@kreuzberg/Wasm";
 
     await initWasm();
     const result = await extractFile("./document.pdf");
     console.log(result.content);
     ```
 
-??? Example "WASM — Cloudflare Workers"
-    ```typescript
-    import { initWasm, extractBytes } from "@kreuzberg/wasm";
+??? Example "Wasm — Cloudflare Workers" ```TypeScript import { initWasm, extractBytes } from "@kreuzberg/Wasm";
 
     export default {
       async fetch(request: Request): Promise<Response> {
@@ -290,8 +281,7 @@ Both work with **pnpm** (`pnpm add`) and **yarn** (`yarn add`) as well.
 
 **Supported runtimes:** Chrome 74+, Firefox 79+, Safari 14+, Edge 79+, Node.js 22+, Deno 1.35+, Cloudflare Workers.
 
-!!! Warning "WASM Platform Limitations"
-    The WASM binding does not support:
+!!! Warning "Wasm Platform Limitations" The Wasm binding does not support:
 
     - **Layout detection** (RT-DETR model inference requires ONNX Runtime unavailable in WebAssembly)
     - **Hardware acceleration config** (single-threaded WASM, no GPU access)
@@ -338,8 +328,7 @@ mix deps.get
 
 Ships prebuilt NIF binaries via RustlerPrecompiled. Falls back to compiling from source if no prebuilt matches your platform (requires Rust).
 
-!!! Warning "Windows"
-    The Windows NIF links against ONNX Runtime dynamically. `onnxruntime.dll` must be on your `PATH` at runtime — see the note at the top of this page.
+!!! Warning "Windows" The Windows NIF links against ONNX Runtime dynamically. `onnxruntime.dll` must be on your `PATH` at runtime — see the note at the top of this page.
 
 ### Go
 
@@ -347,11 +336,9 @@ Ships prebuilt NIF binaries via RustlerPrecompiled. Falls back to compiling from
 go get github.com/kreuzberg-dev/kreuzberg/packages/go/v4@latest
 ```
 
-!!! Warning "Windows"
-    The Go binding links against ONNX Runtime dynamically on Windows. `onnxruntime.dll` must be on your `PATH` at runtime — see the note at the top of this page.
+!!! Warning "Windows" The Go binding links against ONNX Runtime dynamically on Windows. `onnxruntime.dll` must be on your `PATH` at runtime — see the note at the top of this page.
 
-!!! Note "Windows feature limitations"
-    The Go and C/C++ bindings on Windows (MinGW/GNU target) do not include **PaddleOCR**, **layout detection**, or **auto-rotate**. Tesseract OCR and all other features work normally. These limitations apply only to Windows; Linux and macOS builds include the full feature set.
+!!! Note "Windows feature limitations" The Go and C/C++ bindings on Windows (MinGW/GNU target) do not include **PaddleOCR**, **layout detection**, or **auto-rotate**. Tesseract OCR and all other features work normally. These limitations apply only to Windows; Linux and macOS builds include the full feature set.
 
 ### Rust
 
@@ -388,8 +375,7 @@ my_app: my_app.c
     **macOS:** add `-framework CoreFoundation -framework Security`
     **Windows:** add `-lws2_32 -luserenv -lbcrypt`
 
-!!! Warning "Windows"
-    The Windows FFI library links against ONNX Runtime dynamically. `onnxruntime.dll` must be on your `PATH` at runtime — see the note at the top of this page.
+!!! Warning "Windows" The Windows FFI library links against ONNX Runtime dynamically. `onnxruntime.dll` must be on your `PATH` at runtime — see the note at the top of this page.
 
 [API Reference →](../reference/api-c.md)
 
@@ -397,7 +383,7 @@ my_app: my_app.c
 
 ## Development setup
 
-Working on the Kreuzberg repo itself:
+Working on the Kreuzberg repository itself:
 
 ```bash
 task setup      # installs all language toolchains

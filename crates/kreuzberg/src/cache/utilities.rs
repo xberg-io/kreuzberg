@@ -25,16 +25,20 @@ const CACHE_KEY_HASH_WIDTH: usize = 32;
 /// ```rust
 /// use kreuzberg::cache::generate_cache_key;
 ///
-/// let parts = [("format", "pdf"), ("ocr", "true"), ("lang", "en")];
+/// let parts = vec![
+///     ("format".to_string(), "pdf".to_string()),
+///     ("ocr".to_string(), "true".to_string()),
+///     ("lang".to_string(), "en".to_string()),
+/// ];
 /// let key = generate_cache_key(&parts);
 /// assert_eq!(key.len(), 32);
 /// ```
-pub fn generate_cache_key(parts: &[(&str, &str)]) -> String {
+pub fn generate_cache_key(parts: &[(String, String)]) -> String {
     if parts.is_empty() {
         return "empty".to_string();
     }
 
-    let mut sorted_parts: Vec<_> = parts.to_vec();
+    let mut sorted_parts: Vec<(&str, &str)> = parts.iter().map(|(k, v)| (k.as_str(), v.as_str())).collect();
     sorted_parts.sort_by_key(|(k, _)| *k);
 
     let estimated_size = sorted_parts.iter().map(|(k, v)| k.len() + v.len() + 2).sum::<usize>();

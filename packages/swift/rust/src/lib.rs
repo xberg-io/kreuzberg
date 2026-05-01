@@ -199,6 +199,8 @@ mod ffi {
 
     extern "Rust" {
         type LanguageDetectionConfig;
+        #[swift_bridge(init)]
+        fn new(enabled: bool, min_confidence: f64, detect_multiple: bool) -> LanguageDetectionConfig;
         fn enabled(&self) -> bool;
         fn min_confidence(&self) -> f64;
         fn detect_multiple(&self) -> bool;
@@ -567,6 +569,33 @@ mod ffi {
     }
 
     extern "Rust" {
+        type DocExtractionResult;
+        fn content(&self) -> String;
+        fn metadata(&self) -> DocMetadata;
+    }
+
+    extern "Rust" {
+        type DocMetadata;
+        #[swift_bridge(init)]
+        fn new(
+            title: Option<String>,
+            subject: Option<String>,
+            author: Option<String>,
+            last_author: Option<String>,
+            created: Option<String>,
+            modified: Option<String>,
+            revision_number: Option<String>,
+        ) -> DocMetadata;
+        fn title(&self) -> Option<String>;
+        fn subject(&self) -> Option<String>;
+        fn author(&self) -> Option<String>;
+        fn last_author(&self) -> Option<String>;
+        fn created(&self) -> Option<String>;
+        fn modified(&self) -> Option<String>;
+        fn revision_number(&self) -> Option<String>;
+    }
+
+    extern "Rust" {
         type Drawing;
         #[swift_bridge(init)]
         fn new(
@@ -889,10 +918,12 @@ mod ffi {
             nodes: Vec<DocumentNode>,
             source_format: Option<String>,
             relationships: Vec<DocumentRelationship>,
+            node_types: Vec<String>,
         ) -> DocumentStructure;
         fn nodes(&self) -> Vec<DocumentNode>;
         fn source_format(&self) -> Option<String>;
         fn relationships(&self) -> Vec<DocumentRelationship>;
+        fn node_types(&self) -> Vec<String>;
     }
 
     extern "Rust" {
@@ -1147,7 +1178,7 @@ mod ffi {
         fn message_id(&self) -> Option<String>;
         fn plain_text(&self) -> Option<String>;
         fn html_content(&self) -> Option<String>;
-        fn cleaned_text(&self) -> String;
+        fn content(&self) -> String;
         fn attachments(&self) -> Vec<EmailAttachment>;
         fn metadata(&self) -> String;
     }
@@ -1297,6 +1328,8 @@ mod ffi {
             document_version: Option<String>,
             abstract_text: Option<String>,
             output_format: Option<String>,
+            sheet_count: Option<usize>,
+            sheet_names: Option<Vec<String>>,
             additional: String,
         ) -> Metadata;
         fn title(&self) -> Option<String>;
@@ -1319,15 +1352,13 @@ mod ffi {
         fn document_version(&self) -> Option<String>;
         fn abstract_text(&self) -> Option<String>;
         fn output_format(&self) -> Option<String>;
+        fn sheet_count(&self) -> Option<usize>;
+        fn sheet_names(&self) -> Option<Vec<String>>;
         fn additional(&self) -> String;
     }
 
     extern "Rust" {
         type ExcelMetadata;
-        #[swift_bridge(init)]
-        fn new(sheet_count: usize, sheet_names: Vec<String>) -> ExcelMetadata;
-        fn sheet_count(&self) -> usize;
-        fn sheet_names(&self) -> Vec<String>;
     }
 
     extern "Rust" {
@@ -2361,7 +2392,7 @@ mod ffi {
         #[swift_bridge(swift_name = "validateCacheKey")]
         fn validate_cache_key(key: String) -> bool;
         #[swift_bridge(swift_name = "validatePort")]
-        fn validate_port(port: u16) -> Result<(), String>;
+        fn validate_port(port: u32) -> Result<(), String>;
         #[swift_bridge(swift_name = "validateHost")]
         fn validate_host(host: String) -> Result<(), String>;
         #[swift_bridge(swift_name = "validateCorsOrigin")]
@@ -2451,8 +2482,6 @@ mod ffi {
         fn djot_to_html(djot_source: String) -> Result<String, String>;
         #[swift_bridge(swift_name = "dedupText")]
         fn dedup_text(texts: Vec<String>) -> Vec<String>;
-        #[swift_bridge(swift_name = "normalizeWhitespace")]
-        fn normalize_whitespace(s: String) -> String;
         #[swift_bridge(swift_name = "registerDefaultExtractors")]
         fn register_default_extractors() -> Result<(), String>;
         #[swift_bridge(swift_name = "unregisterExtractor")]
@@ -2479,6 +2508,16 @@ mod ffi {
         fn list_validators() -> Result<Vec<String>, String>;
         #[swift_bridge(swift_name = "clearValidators")]
         fn clear_validators() -> Result<(), String>;
+        #[swift_bridge(swift_name = "renderHtmlStr")]
+        fn render_html_str(html: String) -> Result<String, String>;
+        #[swift_bridge(swift_name = "renderMarkdownStr")]
+        fn render_markdown_str(html: String) -> Result<String, String>;
+        #[swift_bridge(swift_name = "renderDjotStr")]
+        fn render_djot_str(html: String) -> Result<String, String>;
+        #[swift_bridge(swift_name = "renderJsonStr")]
+        fn render_json_str(html: String) -> Result<String, String>;
+        #[swift_bridge(swift_name = "renderPlainStr")]
+        fn render_plain_str(html: String) -> Result<String, String>;
         #[swift_bridge(swift_name = "sanitizeFilename")]
         fn sanitize_filename(path: String) -> String;
         #[swift_bridge(swift_name = "sanitizePath")]
@@ -2521,6 +2560,8 @@ mod ffi {
         fn create_string_buffer_pool(pool_size: usize, buffer_capacity: usize) -> StringBufferPool;
         #[swift_bridge(swift_name = "createByteBufferPool")]
         fn create_byte_buffer_pool(pool_size: usize, buffer_capacity: usize) -> ByteBufferPool;
+        #[swift_bridge(swift_name = "normalizeWhitespace")]
+        fn normalize_whitespace(s: String) -> String;
         #[swift_bridge(swift_name = "openapiJson")]
         fn openapi_json() -> String;
         #[swift_bridge(swift_name = "serveDefault")]
@@ -2573,10 +2614,32 @@ mod ffi {
         ) -> Result<Vec<u8>, String>;
         #[swift_bridge(swift_name = "extractTextFromPdf")]
         fn extract_text_from_pdf(pdf_bytes: Vec<u8>) -> Result<String, String>;
+        #[swift_bridge(swift_name = "detectMimeType")]
+        fn detect_mime_type(path: String, check_exists: bool) -> Result<String, String>;
+        #[swift_bridge(swift_name = "detectImageFormat")]
+        fn detect_image_format(data: Vec<u8>) -> String;
+        #[swift_bridge(swift_name = "embedTexts")]
+        fn embed_texts(texts: Vec<String>, config: Option<EmbeddingConfig>) -> Result<String, String>;
+        #[swift_bridge(swift_name = "generateCacheKey")]
+        fn generate_cache_key(parts: String) -> String;
+        #[swift_bridge(swift_name = "escapeHtmlEntities")]
+        fn escape_html_entities(text: String) -> String;
+        #[swift_bridge(swift_name = "fixMojibake")]
+        fn fix_mojibake(text: String) -> String;
+        #[swift_bridge(swift_name = "convertHtmlToMarkdown")]
+        fn convert_html_to_markdown(html: String) -> Result<String, String>;
+        #[swift_bridge(swift_name = "extractDocText")]
+        fn extract_doc_text(content: Vec<u8>) -> Result<DocExtractionResult, String>;
+        #[swift_bridge(swift_name = "extractPptxFromBytes")]
+        fn extract_pptx_from_bytes(data: Vec<u8>) -> Result<PptxExtractionResult, String>;
         #[swift_bridge(swift_name = "serializeToToon")]
         fn serialize_to_toon(result: ExtractionResult) -> Result<String, String>;
         #[swift_bridge(swift_name = "serializeToJson")]
         fn serialize_to_json(result: ExtractionResult) -> Result<String, String>;
+        #[swift_bridge(swift_name = "extractFileToToon")]
+        fn extract_file_to_toon(path: String, config: ExtractionConfig) -> Result<String, String>;
+        #[swift_bridge(swift_name = "extractFileToJson")]
+        fn extract_file_to_json(path: String, config: ExtractionConfig) -> Result<String, String>;
     }
 
     extern "Rust" {
@@ -3297,6 +3360,13 @@ impl TokenReductionOptions {
 pub struct LanguageDetectionConfig(pub kreuzberg::LanguageDetectionConfig);
 
 impl LanguageDetectionConfig {
+    pub fn new(enabled: bool, min_confidence: f64, detect_multiple: bool) -> LanguageDetectionConfig {
+        let mut __target: kreuzberg::LanguageDetectionConfig = ::std::default::Default::default();
+        __target.enabled = enabled;
+        __target.min_confidence = min_confidence;
+        __target.detect_multiple = detect_multiple;
+        LanguageDetectionConfig(__target)
+    }
     pub fn enabled(&self) -> bool {
         ::serde_json::to_value(&self.0.enabled)
             .ok()
@@ -4482,6 +4552,107 @@ impl ExtractedInlineImage {
     }
 }
 
+pub struct DocExtractionResult(pub kreuzberg::DocExtractionResult);
+
+impl DocExtractionResult {
+    pub fn content(&self) -> String {
+        serde_json::to_string(&self.0.content).unwrap_or_default()
+    }
+    pub fn metadata(&self) -> DocMetadata {
+        DocMetadata(self.0.metadata.clone())
+    }
+}
+
+pub struct DocMetadata(pub kreuzberg::DocMetadata);
+
+impl DocMetadata {
+    pub fn new(
+        title: Option<String>,
+        subject: Option<String>,
+        author: Option<String>,
+        last_author: Option<String>,
+        created: Option<String>,
+        modified: Option<String>,
+        revision_number: Option<String>,
+    ) -> DocMetadata {
+        let mut __target: kreuzberg::DocMetadata = ::std::default::Default::default();
+        if let Some(s) = title {
+            if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&s) {
+                if let Ok(t) = ::serde_json::from_value(v) {
+                    __target.title = Some(t);
+                }
+            }
+        }
+        if let Some(s) = subject {
+            if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&s) {
+                if let Ok(t) = ::serde_json::from_value(v) {
+                    __target.subject = Some(t);
+                }
+            }
+        }
+        if let Some(s) = author {
+            if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&s) {
+                if let Ok(t) = ::serde_json::from_value(v) {
+                    __target.author = Some(t);
+                }
+            }
+        }
+        if let Some(s) = last_author {
+            if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&s) {
+                if let Ok(t) = ::serde_json::from_value(v) {
+                    __target.last_author = Some(t);
+                }
+            }
+        }
+        if let Some(s) = created {
+            if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&s) {
+                if let Ok(t) = ::serde_json::from_value(v) {
+                    __target.created = Some(t);
+                }
+            }
+        }
+        if let Some(s) = modified {
+            if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&s) {
+                if let Ok(t) = ::serde_json::from_value(v) {
+                    __target.modified = Some(t);
+                }
+            }
+        }
+        if let Some(s) = revision_number {
+            if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&s) {
+                if let Ok(t) = ::serde_json::from_value(v) {
+                    __target.revision_number = Some(t);
+                }
+            }
+        }
+        DocMetadata(__target)
+    }
+    pub fn title(&self) -> Option<String> {
+        self.0.title.as_ref().and_then(|v| serde_json::to_string(v).ok())
+    }
+    pub fn subject(&self) -> Option<String> {
+        self.0.subject.as_ref().and_then(|v| serde_json::to_string(v).ok())
+    }
+    pub fn author(&self) -> Option<String> {
+        self.0.author.as_ref().and_then(|v| serde_json::to_string(v).ok())
+    }
+    pub fn last_author(&self) -> Option<String> {
+        self.0.last_author.as_ref().and_then(|v| serde_json::to_string(v).ok())
+    }
+    pub fn created(&self) -> Option<String> {
+        self.0.created.as_ref().and_then(|v| serde_json::to_string(v).ok())
+    }
+    pub fn modified(&self) -> Option<String> {
+        self.0.modified.as_ref().and_then(|v| serde_json::to_string(v).ok())
+    }
+    pub fn revision_number(&self) -> Option<String> {
+        self.0
+            .revision_number
+            .as_ref()
+            .and_then(|v| serde_json::to_string(v).ok())
+    }
+}
+
 pub struct Drawing(pub kreuzberg::extraction::docx::drawing::Drawing);
 
 impl Drawing {
@@ -5467,6 +5638,7 @@ impl DocumentStructure {
         nodes: Vec<DocumentNode>,
         source_format: Option<String>,
         relationships: Vec<DocumentRelationship>,
+        node_types: Vec<String>,
     ) -> DocumentStructure {
         let mut __target: kreuzberg::DocumentStructure = ::std::default::Default::default();
         __target.nodes = nodes.into_iter().map(|w| w.0).collect();
@@ -5478,6 +5650,11 @@ impl DocumentStructure {
             }
         }
         __target.relationships = relationships.into_iter().map(|w| w.0).collect();
+        if let Ok(__v) = ::serde_json::to_value(node_types) {
+            if let Ok(t) = ::serde_json::from_value(__v) {
+                __target.node_types = t;
+            }
+        }
         DocumentStructure(__target)
     }
     pub fn nodes(&self) -> Vec<DocumentNode> {
@@ -5495,6 +5672,12 @@ impl DocumentStructure {
             .iter()
             .map(|elem| DocumentRelationship(elem.clone()))
             .collect()
+    }
+    pub fn node_types(&self) -> Vec<String> {
+        ::serde_json::to_value(&self.0.node_types)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
     }
 }
 
@@ -6391,8 +6574,8 @@ impl EmailExtractionResult {
     pub fn html_content(&self) -> Option<String> {
         self.0.html_content.as_ref().and_then(|v| serde_json::to_string(v).ok())
     }
-    pub fn cleaned_text(&self) -> String {
-        serde_json::to_string(&self.0.cleaned_text).unwrap_or_default()
+    pub fn content(&self) -> String {
+        serde_json::to_string(&self.0.content).unwrap_or_default()
     }
     pub fn attachments(&self) -> Vec<EmailAttachment> {
         self.0
@@ -6854,6 +7037,8 @@ impl Metadata {
         document_version: Option<String>,
         abstract_text: Option<String>,
         output_format: Option<String>,
+        sheet_count: Option<usize>,
+        sheet_names: Option<Vec<String>>,
         additional: String,
     ) -> Metadata {
         let mut __target: kreuzberg::Metadata = ::std::default::Default::default();
@@ -6967,6 +7152,12 @@ impl Metadata {
                 }
             }
         }
+        __target.sheet_count = sheet_count;
+        if let Ok(__v) = ::serde_json::to_value(sheet_names) {
+            if let Ok(t) = ::serde_json::from_value(__v) {
+                __target.sheet_names = t;
+            }
+        }
         if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&additional) {
             if let Ok(t) = ::serde_json::from_value(v) {
                 __target.additional = t;
@@ -7059,37 +7250,26 @@ impl Metadata {
             .as_ref()
             .and_then(|v| serde_json::to_string(v).ok())
     }
+    pub fn sheet_count(&self) -> Option<usize> {
+        self.0.sheet_count.as_ref().and_then(|v| {
+            ::serde_json::to_value(v)
+                .ok()
+                .and_then(|j| ::serde_json::from_value(j).ok())
+        })
+    }
+    pub fn sheet_names(&self) -> Option<Vec<String>> {
+        self.0.sheet_names.as_ref().and_then(|v| {
+            ::serde_json::to_value(v)
+                .ok()
+                .and_then(|j| ::serde_json::from_value(j).ok())
+        })
+    }
     pub fn additional(&self) -> String {
-        serde_json::to_string(&self.0.additional).unwrap_or_default()
+        serde_json::to_string(&self.0.additional).expect("serializable additional")
     }
 }
 
 pub struct ExcelMetadata(pub kreuzberg::ExcelMetadata);
-
-impl ExcelMetadata {
-    pub fn new(sheet_count: usize, sheet_names: Vec<String>) -> ExcelMetadata {
-        let mut __target: kreuzberg::ExcelMetadata = ::std::default::Default::default();
-        __target.sheet_count = sheet_count;
-        if let Ok(__v) = ::serde_json::to_value(sheet_names) {
-            if let Ok(t) = ::serde_json::from_value(__v) {
-                __target.sheet_names = t;
-            }
-        }
-        ExcelMetadata(__target)
-    }
-    pub fn sheet_count(&self) -> usize {
-        ::serde_json::to_value(&self.0.sheet_count)
-            .ok()
-            .and_then(|j| ::serde_json::from_value(j).ok())
-            .unwrap_or_default()
-    }
-    pub fn sheet_names(&self) -> Vec<String> {
-        ::serde_json::to_value(&self.0.sheet_names)
-            .ok()
-            .and_then(|j| ::serde_json::from_value(j).ok())
-            .unwrap_or_default()
-    }
-}
 
 pub struct EmailMetadata(pub kreuzberg::EmailMetadata);
 
@@ -10570,7 +10750,7 @@ pub fn validate_cache_key(key: String) -> bool {
     kreuzberg::validate_cache_key(&key)
 }
 
-pub fn validate_port(port: u16) -> Result<(), String> {
+pub fn validate_port(port: u32) -> Result<(), String> {
     kreuzberg::validate_port(port).map_err(|e| e.to_string())
 }
 
@@ -10794,10 +10974,6 @@ pub fn dedup_text(texts: Vec<String>) -> Vec<String> {
         .collect::<Vec<_>>()
 }
 
-pub fn normalize_whitespace(s: String) -> String {
-    kreuzberg::extractors::rtf::normalize_whitespace(&s).to_string()
-}
-
 pub fn register_default_extractors() -> Result<(), String> {
     kreuzberg::extractors::register_default_extractors().map_err(|e| e.to_string())
 }
@@ -10858,6 +11034,36 @@ pub fn list_validators() -> Result<Vec<String>, String> {
 
 pub fn clear_validators() -> Result<(), String> {
     kreuzberg::plugins::clear_validators().map_err(|e| e.to_string())
+}
+
+pub fn render_html_str(html: String) -> Result<String, String> {
+    kreuzberg::render_html_str(&html)
+        .map_err(|e| e.to_string())
+        .map(|s| s.to_string())
+}
+
+pub fn render_markdown_str(html: String) -> Result<String, String> {
+    kreuzberg::render_markdown_str(&html)
+        .map_err(|e| e.to_string())
+        .map(|s| s.to_string())
+}
+
+pub fn render_djot_str(html: String) -> Result<String, String> {
+    kreuzberg::render_djot_str(&html)
+        .map_err(|e| e.to_string())
+        .map(|s| s.to_string())
+}
+
+pub fn render_json_str(html: String) -> Result<String, String> {
+    kreuzberg::render_json_str(&html)
+        .map_err(|e| e.to_string())
+        .map(|s| s.to_string())
+}
+
+pub fn render_plain_str(html: String) -> Result<String, String> {
+    kreuzberg::render_plain_str(&html)
+        .map_err(|e| e.to_string())
+        .map(|s| s.to_string())
 }
 
 pub fn sanitize_filename(path: String) -> String {
@@ -10966,6 +11172,10 @@ pub fn create_byte_buffer_pool(pool_size: usize, buffer_capacity: usize) -> Byte
     ))
 }
 
+pub fn normalize_whitespace(s: String) -> String {
+    kreuzberg::normalize_whitespace(&s).to_string()
+}
+
 pub fn openapi_json() -> String {
     kreuzberg::api::openapi::openapi_json().to_string()
 }
@@ -10983,7 +11193,7 @@ pub fn chunk_text(
     config: ChunkingConfig,
     page_boundaries: Option<Vec<PageBoundary>>,
 ) -> Result<ChunkingResult, String> {
-    kreuzberg::chunking::chunk_text(
+    kreuzberg::chunk_text(
         &text,
         &config.0,
         page_boundaries
@@ -11025,7 +11235,7 @@ pub fn chunk_semantic(
     config: ChunkingConfig,
     page_boundaries: Option<Vec<PageBoundary>>,
 ) -> Result<ChunkingResult, String> {
-    kreuzberg::chunking::semantic::chunk_semantic(
+    kreuzberg::chunk_semantic(
         &text,
         &config.0,
         page_boundaries
@@ -11060,7 +11270,7 @@ pub fn calculate_optimal_dpi(
 }
 
 pub fn detect_languages(text: String, config: LanguageDetectionConfig) -> Result<String, String> {
-    kreuzberg::language_detection::detect_languages(&text, &config.0)
+    kreuzberg::detect_languages(&text, &config.0)
         .map_err(|e| e.to_string())
         .map(|v| serde_json::to_string(&v).expect("serializable return"))
 }
@@ -11081,14 +11291,60 @@ pub fn render_pdf_page_to_png(
     dpi: Option<i32>,
     password: Option<String>,
 ) -> Result<Vec<u8>, String> {
-    kreuzberg::pdf::rendering::render_pdf_page_to_png(&pdf_bytes, page_index, dpi, password.as_deref())
-        .map_err(|e| e.to_string())
+    kreuzberg::render_pdf_page_to_png(&pdf_bytes, page_index, dpi, password.as_deref()).map_err(|e| e.to_string())
 }
 
 pub fn extract_text_from_pdf(pdf_bytes: Vec<u8>) -> Result<String, String> {
     kreuzberg::extract_text_from_pdf(&pdf_bytes)
         .map_err(|e| e.to_string())
         .map(|s| s.to_string())
+}
+
+pub fn detect_mime_type(path: String, check_exists: bool) -> Result<String, String> {
+    kreuzberg::detect_mime_type(path, check_exists)
+        .map_err(|e| e.to_string())
+        .map(|s| s.to_string())
+}
+
+pub fn detect_image_format(data: Vec<u8>) -> String {
+    kreuzberg::detect_image_format(data).to_string()
+}
+
+pub fn embed_texts(texts: Vec<String>, config: Option<EmbeddingConfig>) -> Result<String, String> {
+    kreuzberg::embed_texts(texts, config.map(|w| w.0))
+        .map_err(|e| e.to_string())
+        .map(|v| serde_json::to_string(&v).expect("serializable return"))
+}
+
+pub fn generate_cache_key(parts: String) -> String {
+    kreuzberg::generate_cache_key(serde_json::from_str::<Vec<Vec<String>>>(&parts).expect("valid JSON for parts"))
+        .to_string()
+}
+
+pub fn escape_html_entities(text: String) -> String {
+    kreuzberg::escape_html_entities(&text).to_string()
+}
+
+pub fn fix_mojibake(text: String) -> String {
+    kreuzberg::fix_mojibake(&text).to_string()
+}
+
+pub fn convert_html_to_markdown(html: String) -> Result<String, String> {
+    kreuzberg::convert_html_to_markdown(&html)
+        .map_err(|e| e.to_string())
+        .map(|s| s.to_string())
+}
+
+pub fn extract_doc_text(content: Vec<u8>) -> Result<DocExtractionResult, String> {
+    kreuzberg::extract_doc_text(&content)
+        .map_err(|e| e.to_string())
+        .map(DocExtractionResult)
+}
+
+pub fn extract_pptx_from_bytes(data: Vec<u8>) -> Result<PptxExtractionResult, String> {
+    kreuzberg::extract_pptx_from_bytes(&data)
+        .map_err(|e| e.to_string())
+        .map(PptxExtractionResult)
 }
 
 pub fn serialize_to_toon(result: ExtractionResult) -> Result<String, String> {
@@ -11099,6 +11355,18 @@ pub fn serialize_to_toon(result: ExtractionResult) -> Result<String, String> {
 
 pub fn serialize_to_json(result: ExtractionResult) -> Result<String, String> {
     kreuzberg::serialize_to_json(&result.0)
+        .map_err(|e| e.to_string())
+        .map(|s| s.to_string())
+}
+
+pub fn extract_file_to_toon(path: String, config: ExtractionConfig) -> Result<String, String> {
+    kreuzberg::extract_file_to_toon(std::path::PathBuf::from(path), &config.0)
+        .map_err(|e| e.to_string())
+        .map(|s| s.to_string())
+}
+
+pub fn extract_file_to_json(path: String, config: ExtractionConfig) -> Result<String, String> {
+    kreuzberg::extract_file_to_json(std::path::PathBuf::from(path), &config.0)
         .map_err(|e| e.to_string())
         .map(|s| s.to_string())
 }

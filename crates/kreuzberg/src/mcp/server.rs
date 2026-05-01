@@ -273,7 +273,8 @@ impl KreuzbergMcp {
         use super::errors::map_kreuzberg_error_to_mcp;
         use crate::detect_mime_type;
 
-        let mime_type = detect_mime_type(&params.path, params.use_content).map_err(map_kreuzberg_error_to_mcp)?;
+        let mime_type =
+            detect_mime_type(params.path.clone(), params.use_content).map_err(map_kreuzberg_error_to_mcp)?;
 
         Ok(CallToolResult::success(vec![Content::text(mime_type)]))
     }
@@ -761,7 +762,8 @@ fn embed_text_impl(params: super::params::EmbedTextParams) -> Result<CallToolRes
         (config, preset_name.to_string())
     };
 
-    let embeddings = crate::embed_texts(&params.texts, &config).map_err(super::errors::map_kreuzberg_error_to_mcp)?;
+    let embeddings =
+        crate::embeddings::embed_texts(&params.texts, &config).map_err(super::errors::map_kreuzberg_error_to_mcp)?;
 
     let dimensions = embeddings.first().map(|e| e.len()).unwrap_or(0);
 

@@ -103,6 +103,16 @@ impl Default for ImageExtractionConfig {
     }
 }
 
+impl Default for LanguageDetectionConfig {
+    fn default() -> Self {
+        Self {
+            enabled: true,
+            min_confidence: 0.8,
+            detect_multiple: false,
+        }
+    }
+}
+
 // Default value functions
 fn default_true() -> bool {
     true

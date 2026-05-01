@@ -7,8 +7,7 @@ Kreuzberg provides 8 core extraction functions organized by input type (file pat
 | **File path** | `extract_file_sync` | `extract_file` | `batch_extract_files_sync` | `batch_extract_files` |
 | **Bytes** | `extract_bytes_sync` | `extract_bytes` | `batch_extract_bytes_sync` | `batch_extract_bytes` |
 
-!!! Tip "Sync vs Async"
-    Use async variants when you're already in an async context or processing multiple files concurrently. For scripts and simple pipelines, sync variants are simpler and just as fast for single files.
+!!! Tip "Sync vs Async" Use async variants when you're already in an async context or processing multiple files concurrently. For scripts and simple pipelines, sync variants are simpler and just as fast for single files.
 
 ## Extract from Files
 
@@ -52,7 +51,7 @@ Pass a file path. Kreuzberg detects the MIME type from the extension and selects
 
     --8<-- "snippets/c/api/extract_file_sync.md"
 
-=== "WASM"
+=== "Wasm"
 
     --8<-- "snippets/wasm/api/extract_file_sync.md"
 
@@ -94,7 +93,7 @@ Pass a file path. Kreuzberg detects the MIME type from the extension and selects
 
     --8<-- "snippets/c/api/extract_file_async.md"
 
-=== "WASM"
+=== "Wasm"
 
     --8<-- "snippets/wasm/api/extract_file_async.md"
 
@@ -140,7 +139,7 @@ When the file is already loaded in memory (for example, from an upload or networ
 
     --8<-- "snippets/c/api/extract_bytes_sync.md"
 
-=== "WASM"
+=== "Wasm"
 
     --8<-- "snippets/wasm/api/extract_bytes_sync.md"
 
@@ -182,7 +181,7 @@ When the file is already loaded in memory (for example, from an upload or networ
 
     --8<-- "snippets/c/api/extract_bytes_async.md"
 
-=== "WASM"
+=== "Wasm"
 
     --8<-- "snippets/wasm/api/extract_bytes_async.md"
 
@@ -228,7 +227,7 @@ Batch functions accept an array of file paths (or byte arrays) and process them 
 
     --8<-- "snippets/c/api/batch_extract_files_sync.md"
 
-=== "WASM"
+=== "Wasm"
 
     --8<-- "snippets/wasm/api/batch_extract_files_sync.md"
 
@@ -270,7 +269,7 @@ Batch functions accept an array of file paths (or byte arrays) and process them 
 
     --8<-- "snippets/c/api/batch_extract_bytes_sync.md"
 
-=== "WASM"
+=== "Wasm"
 
     --8<-- "snippets/wasm/api/batch_extract_bytes_sync.md"
 
@@ -464,7 +463,7 @@ See [PageConfig Reference](../reference/configuration.md#pageconfig) for all opt
 When extracting source code files (`.py`, `.rs`, `.ts`, `.go`, etc.), Kreuzberg uses tree-sitter to produce structured code intelligence. The result is available in `ExtractionResult.code_intelligence` as a `ProcessResult` containing:
 
 - **Structure** -- Functions, classes, methods, interfaces, and their nesting hierarchy
-- **Imports/Exports** -- Module dependencies and re-exports
+- **Imports/Exports** -- Module dependencies and reexports
 - **Symbols** -- Variables, constants, type aliases
 - **Docstrings** -- Parsed documentation in 10+ formats (Google, NumPy, JSDoc, RustDoc, etc.)
 - **Diagnostics** -- Parse errors with line/column positions
@@ -552,7 +551,7 @@ All extraction functions raise typed exceptions on failure. Catch specific excep
 
     --8<-- "snippets/c/api/error_handling.md"
 
-=== "WASM"
+=== "Wasm"
 
     --8<-- "snippets/wasm/api/error_handling_wasm.md"
 

@@ -117,7 +117,7 @@ pub fn embed_command(
     };
 
     // Generate embeddings
-    let embeddings = kreuzberg::embed_texts(&texts, &config).context("Failed to generate embeddings")?;
+    let embeddings = kreuzberg::embed_texts(texts.clone(), Some(config)).context("Failed to generate embeddings")?;
 
     let dimensions = embeddings.first().map(|e| e.len()).unwrap_or(0);
 

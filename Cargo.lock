@@ -3777,7 +3777,7 @@ version = "4.10.0-rc.15"
 dependencies = [
  "async-trait",
  "futures-util",
- "getrandom 0.3.4",
+ "getrandom 0.4.2",
  "js-sys",
  "kreuzberg",
  "serde-wasm-bindgen",
@@ -3889,9 +3889,9 @@ checksum = "92daf443525c4cce67b150400bc2316076100ce0b3686209eb8cf3c31612e6f0"
 
 [[package]]
 name = "liter-llm"
-version = "1.4.0-rc.13"
+version = "1.4.0-rc.27"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dd044e3ff649c242dbc8f472a399749273ae147afcba25979ed23146819c3106"
+checksum = "50efad33f94be9deb4918c267aedbe474704cc124f5302e7ada865d47e64d1eb"
 dependencies = [
  "base64 0.22.1",
  "bytes",
@@ -3900,6 +3900,7 @@ dependencies = [
  "memchr",
  "pin-project-lite",
  "reqwest",
+ "rustls",
  "secrecy",
  "serde",
  "serde_json",
@@ -4843,9 +4844,9 @@ dependencies = [
 
 [[package]]
 name = "pdf_oxide"
-version = "0.3.39"
+version = "0.3.40"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "62b84c4a44843caf63fc8cf1dd43d9d9f48e01c2861c2b9877a610a11f983978"
+checksum = "37f1c422fbf26fae471440d294f55e97106e619fa583b1d79eebb20abdb2e6e5"
 dependencies = [
  "aes 0.9.0",
  "base64 0.22.1",
@@ -4861,7 +4862,6 @@ dependencies = [
  "flate2",
  "image",
  "jpeg-decoder",
- "lazy_static",
  "libc",
  "log",
  "lzw",

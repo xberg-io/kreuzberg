@@ -27,7 +27,10 @@ mod tests {
 
     #[test]
     fn test_generate_cache_key_consistent() {
-        let parts = [("key1", "value1"), ("key2", "value2")];
+        let parts = vec![
+            ("key1".to_string(), "value1".to_string()),
+            ("key2".to_string(), "value2".to_string()),
+        ];
         let key1 = generate_cache_key(&parts);
         let key2 = generate_cache_key(&parts);
         assert_eq!(key1, key2);

@@ -341,6 +341,23 @@ pub struct ExtractedInlineImage {
     pub attributes: Vec<String>,
 }
 
+#[frb(mirror(DocExtractionResult))]
+pub struct DocExtractionResult {
+    pub content: String,
+    pub metadata: DocMetadata,
+}
+
+#[frb(mirror(DocMetadata))]
+pub struct DocMetadata {
+    pub title: Option<String>,
+    pub subject: Option<String>,
+    pub author: Option<String>,
+    pub last_author: Option<String>,
+    pub created: Option<String>,
+    pub modified: Option<String>,
+    pub revision_number: Option<String>,
+}
+
 #[frb(mirror(Drawing))]
 pub struct Drawing {
     pub drawing_type: String,
@@ -556,6 +573,7 @@ pub struct DocumentStructure {
     pub nodes: Vec<DocumentNode>,
     pub source_format: Option<String>,
     pub relationships: Vec<DocumentRelationship>,
+    pub node_types: Vec<String>,
 }
 
 #[frb(mirror(DocumentRelationship))]
@@ -776,7 +794,7 @@ pub struct EmailExtractionResult {
     pub message_id: Option<String>,
     pub plain_text: Option<String>,
     pub html_content: Option<String>,
-    pub cleaned_text: String,
+    pub content: String,
     pub attachments: Vec<EmailAttachment>,
     pub metadata: std::collections::HashMap<String, String>,
 }
@@ -891,14 +909,13 @@ pub struct Metadata {
     pub document_version: Option<String>,
     pub abstract_text: Option<String>,
     pub output_format: Option<String>,
-    pub additional: String,
+    pub sheet_count: Option<i64>,
+    pub sheet_names: Option<Vec<String>>,
+    pub additional: std::collections::HashMap<String, String>,
 }
 
 #[frb(mirror(ExcelMetadata))]
-pub struct ExcelMetadata {
-    pub sheet_count: i64,
-    pub sheet_names: Vec<String>,
-}
+pub struct ExcelMetadata {}
 
 #[frb(mirror(EmailMetadata))]
 pub struct EmailMetadata {
@@ -2086,7 +2103,7 @@ pub fn validate_cache_key(key: String) -> bool {
 ///
 /// `Ok(())` if the port is valid, or a `ValidationError` with details about valid ranges.
 pub fn validate_port(port: i64) -> Result<(), String> {
-    kreuzberg::validate_port(port as u16)
+    kreuzberg::validate_port(port as u32)
         .map(|v| v)
         .map_err(|e| e.to_string())
 }
@@ -2604,17 +2621,6 @@ pub fn dedup_text(texts: Vec<String>) -> Vec<String> {
         .collect::<Vec<_>>()
 }
 
-/// Normalize whitespace in a string.
-///
-/// - Collapses multiple consecutive spaces/tabs into a single space
-/// - Preserves single newlines (paragraph breaks from \par)
-/// - Collapses multiple consecutive newlines into a double newline
-/// - Trims leading/trailing whitespace from each line
-/// - Trims leading/trailing blank lines
-pub fn normalize_whitespace(s: String) -> String {
-    kreuzberg::extractors::rtf::normalize_whitespace(&s).to_string()
-}
-
 /// Register all built-in extractors with the global registry.
 ///
 /// This function should be called once at application startup to register
@@ -2737,6 +2743,61 @@ pub fn list_validators() -> Result<Vec<String>, String> {
 pub fn clear_validators() -> Result<(), String> {
     kreuzberg::plugins::clear_validators()
         .map(|v| v)
+        .map_err(|e| e.to_string())
+}
+
+/// Parse an HTML string and render it to HTML5.
+///
+/// **Errors:**
+///
+/// Returns an error if the HTML cannot be parsed.
+pub fn render_html_str(html: String) -> Result<String, String> {
+    kreuzberg::render_html_str(&html)
+        .map(|v| v.to_string())
+        .map_err(|e| e.to_string())
+}
+
+/// Parse an HTML string and render it to GFM Markdown.
+///
+/// **Errors:**
+///
+/// Returns an error if the HTML cannot be parsed.
+pub fn render_markdown_str(html: String) -> Result<String, String> {
+    kreuzberg::render_markdown_str(&html)
+        .map(|v| v.to_string())
+        .map_err(|e| e.to_string())
+}
+
+/// Parse an HTML string and render it to Djot markup.
+///
+/// **Errors:**
+///
+/// Returns an error if the HTML cannot be parsed.
+pub fn render_djot_str(html: String) -> Result<String, String> {
+    kreuzberg::render_djot_str(&html)
+        .map(|v| v.to_string())
+        .map_err(|e| e.to_string())
+}
+
+/// Parse an HTML string and render it to a JSON tree string.
+///
+/// **Errors:**
+///
+/// Returns an error if the HTML cannot be parsed.
+pub fn render_json_str(html: String) -> Result<String, String> {
+    kreuzberg::render_json_str(&html)
+        .map(|v| v.to_string())
+        .map_err(|e| e.to_string())
+}
+
+/// Parse an HTML string and render it to plain text.
+///
+/// **Errors:**
+///
+/// Returns an error if the HTML cannot be parsed.
+pub fn render_plain_str(html: String) -> Result<String, String> {
+    kreuzberg::render_plain_str(&html)
+        .map(|v| v.to_string())
         .map_err(|e| e.to_string())
 }
 
@@ -2920,6 +2981,12 @@ pub fn create_byte_buffer_pool(pool_size: i64, buffer_capacity: i64) -> kreuzber
     kreuzberg::utils::pool::create_byte_buffer_pool(pool_size as usize, buffer_capacity as usize)
 }
 
+/// Normalizes whitespace by collapsing multiple whitespace characters into single spaces.
+/// Returns Cow.Borrowed if no normalization needed.
+pub fn normalize_whitespace(s: String) -> String {
+    kreuzberg::normalize_whitespace(&s).to_string()
+}
+
 /// Generate OpenAPI JSON schema.
 ///
 /// Returns the complete OpenAPI 3.1 specification as a JSON string.
@@ -2953,7 +3020,7 @@ pub fn chunk_text(
     config: kreuzberg::ChunkingConfig,
     page_boundaries: Option<Vec<kreuzberg::PageBoundary>>,
 ) -> Result<kreuzberg::chunking::ChunkingResult, String> {
-    kreuzberg::chunking::chunk_text(&text, &config, page_boundaries.as_deref())
+    kreuzberg::chunk_text(&text, &config, page_boundaries.as_deref())
         .map(|v| v)
         .map_err(|e| e.to_string())
 }
@@ -3010,7 +3077,7 @@ pub fn chunk_semantic(
     config: kreuzberg::ChunkingConfig,
     page_boundaries: Option<Vec<kreuzberg::PageBoundary>>,
 ) -> Result<kreuzberg::chunking::ChunkingResult, String> {
-    kreuzberg::chunking::semantic::chunk_semantic(&text, &config, page_boundaries.as_deref())
+    kreuzberg::chunk_semantic(&text, &config, page_boundaries.as_deref())
         .map(|v| v)
         .map_err(|e| e.to_string())
 }
@@ -3092,7 +3159,7 @@ pub fn detect_languages(
     text: String,
     config: kreuzberg::LanguageDetectionConfig,
 ) -> Result<Option<Vec<String>>, String> {
-    kreuzberg::language_detection::detect_languages(&text, &config)
+    kreuzberg::detect_languages(&text, &config)
         .map(|v| v)
         .map_err(|e| e.to_string())
 }
@@ -3136,7 +3203,7 @@ pub fn render_pdf_page_to_png(
     dpi: Option<i64>,
     password: Option<String>,
 ) -> Result<Vec<u8>, String> {
-    kreuzberg::pdf::rendering::render_pdf_page_to_png(
+    kreuzberg::render_pdf_page_to_png(
         &pdf_bytes,
         page_index as usize,
         dpi.map(|v| v as i32),
@@ -3149,6 +3216,88 @@ pub fn render_pdf_page_to_png(
 pub fn extract_text_from_pdf(pdf_bytes: Vec<u8>) -> Result<String, String> {
     kreuzberg::extract_text_from_pdf(&pdf_bytes)
         .map(|v| v.to_string())
+        .map_err(|e| e.to_string())
+}
+
+/// Detect the MIME type of a file at the given path.
+///
+/// Uses the file extension and optionally the file content to determine the MIME type.
+/// Set `check_exists` to `true` to verify the file exists before detection.
+pub fn detect_mime_type(path: String, check_exists: bool) -> Result<String, String> {
+    kreuzberg::detect_mime_type(path, check_exists)
+        .map(|v| v.to_string())
+        .map_err(|e| e.to_string())
+}
+
+/// Detect the image format from raw bytes.
+///
+/// Returns a string identifying the format (e.g., `"jpeg"`, `"png"`, `"gif"`, `"bmp"`, `"tiff"`, `"webp"`).
+/// Returns `"unknown"` if the format cannot be determined.
+pub fn detect_image_format(data: Vec<u8>) -> String {
+    kreuzberg::detect_image_format(data).to_string()
+}
+
+/// Embed a list of texts using the configured embedding model.
+///
+/// Returns a 2D vector where each inner vector is the embedding for the corresponding text.
+pub fn embed_texts(texts: Vec<String>, config: Option<kreuzberg::EmbeddingConfig>) -> Result<Vec<Vec<f64>>, String> {
+    kreuzberg::embed_texts(texts, config)
+        .map(|v| {
+            v.into_iter()
+                .map(|row| row.into_iter().map(|x| x as f64).collect::<Vec<_>>())
+                .collect::<Vec<_>>()
+        })
+        .map_err(|e| e.to_string())
+}
+
+/// Generate a deterministic cache key from a list of key-value pairs.
+///
+/// Each element of `parts` should be a two-element list `[key, value]`.
+/// The pairs are sorted by key before hashing, so order does not affect the result.
+pub fn generate_cache_key(parts: Vec<Vec<String>>) -> String {
+    kreuzberg::generate_cache_key(parts).to_string()
+}
+
+/// Escape HTML special characters in a string.
+///
+/// Converts `&`, `<`, `>`, `"`, and `'` to their HTML entity equivalents.
+pub fn escape_html_entities(text: String) -> String {
+    kreuzberg::escape_html_entities(&text).to_string()
+}
+
+/// Fix mojibake (garbled text from encoding errors) in a string.
+///
+/// Attempts to detect and correct common encoding errors where text was
+/// decoded with the wrong character set (e.g., UTF-8 bytes interpreted as Latin-1).
+pub fn fix_mojibake(text: String) -> String {
+    kreuzberg::fix_mojibake(&text).to_string()
+}
+
+/// Convert HTML to Markdown.
+///
+/// Converts an HTML string to Markdown using default conversion options.
+pub fn convert_html_to_markdown(html: String) -> Result<String, String> {
+    kreuzberg::convert_html_to_markdown(&html)
+        .map(|v| v.to_string())
+        .map_err(|e| e.to_string())
+}
+
+/// Extract text from a DOC (Word 97-2003) file.
+///
+/// Takes the raw bytes of a `.doc` file and returns the extracted text and metadata.
+pub fn extract_doc_text(content: Vec<u8>) -> Result<kreuzberg::DocExtractionResult, String> {
+    kreuzberg::extract_doc_text(&content)
+        .map(|v| v)
+        .map_err(|e| e.to_string())
+}
+
+/// Extract text and metadata from a PPTX (PowerPoint) file.
+///
+/// Takes the raw bytes of a `.pptx` file and returns the extracted content
+/// using default extraction options.
+pub fn extract_pptx_from_bytes(data: Vec<u8>) -> Result<kreuzberg::PptxExtractionResult, String> {
+    kreuzberg::extract_pptx_from_bytes(&data)
+        .map(|v| v)
         .map_err(|e| e.to_string())
 }
 
@@ -3165,6 +3314,23 @@ pub fn serialize_to_toon(result: kreuzberg::ExtractionResult) -> Result<String, 
 /// Serialize an `ExtractionResult` to pretty-printed JSON.
 pub fn serialize_to_json(result: kreuzberg::ExtractionResult) -> Result<String, String> {
     kreuzberg::serialize_to_json(&result)
+        .map(|v| v.to_string())
+        .map_err(|e| e.to_string())
+}
+
+/// Convenience: extract a file and serialize the result to TOON.
+///
+/// Equivalent to `extract_file_sync(path, None, config).and_then(|r| serialize_to_toon(&r))`,
+/// exposed as a single function so all bindings can offer the same one-call shape.
+pub fn extract_file_to_toon(path: String, config: kreuzberg::ExtractionConfig) -> Result<String, String> {
+    kreuzberg::extract_file_to_toon(std::path::PathBuf::from(path), &config)
+        .map(|v| v.to_string())
+        .map_err(|e| e.to_string())
+}
+
+/// Convenience: extract a file and serialize the result to pretty-printed JSON.
+pub fn extract_file_to_json(path: String, config: kreuzberg::ExtractionConfig) -> Result<String, String> {
+    kreuzberg::extract_file_to_json(std::path::PathBuf::from(path), &config)
         .map(|v| v.to_string())
         .map_err(|e| e.to_string())
 }

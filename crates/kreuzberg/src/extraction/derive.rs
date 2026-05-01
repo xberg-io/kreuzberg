@@ -291,6 +291,7 @@ fn derive_document_structure_inner(doc: &mut InternalDocument) -> DocumentStruct
         ds.validate()
     );
 
+    ds.finalize_node_types();
     ds
 }
 

@@ -276,8 +276,7 @@ The server discovers `kreuzberg.toml` in the current and parent directories. Pas
 | `KREUZBERG_MAX_UPLOAD_SIZE_MB` | `100` | Max upload size in MB |
 | `KREUZBERG_CORS_ORIGINS` | `*` | Comma-separated allowed origins |
 
-!!! Warning
-    Default CORS allows all origins. Set `KREUZBERG_CORS_ORIGINS` explicitly in production.
+!!! Warning Default CORS allows all origins. Set `KREUZBERG_CORS_ORIGINS` explicitly in production.
 
 See [Configuration Guide](configuration.md) for all options.
 

@@ -263,7 +263,7 @@ pub(crate) fn parse_eml_content(data: &[u8]) -> Result<EmailExtractionResult> {
         }
     };
 
-    let cleaned_text = if let Some(ref plain) = plain_text {
+    let content = if let Some(ref plain) = plain_text {
         plain.clone()
     } else if let Some(html) = &html_content {
         clean_html_content(html)
@@ -349,7 +349,7 @@ pub(crate) fn parse_eml_content(data: &[u8]) -> Result<EmailExtractionResult> {
         message_id,
         plain_text,
         html_content,
-        cleaned_text,
+        content,
         attachments,
         metadata,
     })
@@ -791,7 +791,7 @@ fn extract_msg_from_cfb<F: std::io::Read + std::io::Seek>(
     let plain_text = body.filter(|s| !s.is_empty());
     let html_content = html_body.filter(|s| !s.is_empty());
 
-    let cleaned_text = if let Some(ref plain) = plain_text {
+    let content = if let Some(ref plain) = plain_text {
         plain.clone()
     } else if let Some(ref html) = html_content {
         clean_html_content(html)
@@ -883,7 +883,7 @@ fn extract_msg_from_cfb<F: std::io::Read + std::io::Seek>(
         message_id,
         plain_text,
         html_content,
-        cleaned_text,
+        content,
         attachments,
         metadata,
     })
@@ -1297,7 +1297,7 @@ pub(crate) fn build_email_text_output(result: &EmailExtractionResult) -> String 
         text_parts.push(format!("Date: {}", date));
     }
 
-    text_parts.push(result.cleaned_text.clone());
+    text_parts.push(result.content.clone());
 
     // Attachment names are stored in metadata but not included in the text output.
     // This keeps the text output focused on message content.
@@ -1498,7 +1498,7 @@ mod tests {
         assert_eq!(result.subject, Some("Test Email".to_string()));
         assert_eq!(result.from_email, Some("test@example.com".to_string()));
         assert_eq!(result.to_emails, vec!["recipient@example.com".to_string()]);
-        assert_eq!(result.cleaned_text, "This is a test email body.");
+        assert_eq!(result.content, "This is a test email body.");
     }
 
     #[test]
@@ -1513,7 +1513,7 @@ mod tests {
             message_id: None,
             plain_text: None,
             html_content: None,
-            cleaned_text: "Hello World".to_string(),
+            content: "Hello World".to_string(),
             attachments: vec![],
             metadata: HashMap::new(),
         };
@@ -1537,7 +1537,7 @@ mod tests {
             message_id: None,
             plain_text: None,
             html_content: None,
-            cleaned_text: "Hello World".to_string(),
+            content: "Hello World".to_string(),
             attachments: vec![EmailAttachment {
                 name: Some("file.txt".to_string()),
                 filename: Some("file.txt".to_string()),
@@ -1694,7 +1694,7 @@ mod tests {
         let eml_content = b"From: sender@example.com\r\nTo: recipient@example.com\r\nSubject: HTML Email\r\nContent-Type: text/html\r\n\r\n<html><body><p>HTML Body</p></body></html>";
 
         let result = parse_eml_content(eml_content).unwrap();
-        assert!(!result.cleaned_text.is_empty());
+        assert!(!result.content.is_empty());
     }
 
     #[test]
@@ -1709,7 +1709,7 @@ mod tests {
             message_id: Some("<msg123@example.com>".to_string()),
             plain_text: Some("Plain text body".to_string()),
             html_content: Some("<html><body>HTML body</body></html>".to_string()),
-            cleaned_text: "Cleaned body text".to_string(),
+            content: "Cleaned body text".to_string(),
             attachments: vec![],
             metadata: HashMap::new(),
         };
@@ -1736,7 +1736,7 @@ mod tests {
             message_id: None,
             plain_text: None,
             html_content: None,
-            cleaned_text: "Body".to_string(),
+            content: "Body".to_string(),
             attachments: vec![EmailAttachment {
                 name: None,
                 filename: None,
@@ -1801,7 +1801,7 @@ mod tests {
 
         let result = parse_eml_content(eml_content).unwrap();
         assert_eq!(result.from_email, Some("sender@example.com".to_string()));
-        assert_eq!(result.cleaned_text, "Minimal body");
+        assert_eq!(result.content, "Minimal body");
     }
 
     #[test]
@@ -1883,19 +1883,19 @@ mod tests {
         .expect("html_only.eml should exist");
         let result = parse_eml_content(&eml_data).unwrap();
         assert!(
-            !result.cleaned_text.contains("script should be removed"),
-            "Script content leaked into cleaned_text: {}",
-            result.cleaned_text
+            !result.content.contains("script should be removed"),
+            "Script content leaked into content: {}",
+            result.content
         );
         assert!(
-            !result.cleaned_text.contains("alert("),
-            "Script content leaked into cleaned_text: {}",
-            result.cleaned_text
+            !result.content.contains("alert("),
+            "Script content leaked into content: {}",
+            result.content
         );
         assert!(
-            result.cleaned_text.contains("Welcome to Our Service"),
-            "Expected content missing from cleaned_text: {}",
-            result.cleaned_text
+            result.content.contains("Welcome to Our Service"),
+            "Expected content missing from content: {}",
+            result.content
         );
     }
 
@@ -1921,7 +1921,7 @@ mod tests {
         // This is a Western English fixture, so windows-1252 default is correct.
         let data = include_bytes!("../../../../test_documents/vendored/unstructured/msg/fake-email.msg");
         let result = parse_msg_content(data, None).unwrap();
-        assert!(!result.cleaned_text.is_empty());
+        assert!(!result.content.is_empty());
     }
 
     #[test]
@@ -1932,7 +1932,7 @@ mod tests {
         let result_invalid = parse_msg_content(data, Some(99999)).unwrap();
         let result_default = parse_msg_content(data, None).unwrap();
         assert_eq!(result_invalid.subject, result_default.subject);
-        assert_eq!(result_invalid.cleaned_text, result_default.cleaned_text);
+        assert_eq!(result_invalid.content, result_default.content);
     }
 
     #[test]

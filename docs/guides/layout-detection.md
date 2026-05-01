@@ -2,12 +2,11 @@
 
 Detect document layout regions (tables, figures, headers, text blocks, etc.) in PDFs using ONNX-based deep learning models. Enables table extraction, figure isolation, reading-order reconstruction, and selective OCR.
 
-!!! Note "Feature gate"
-    Requires the `layout-detection` Cargo feature. Not included in the default feature set.
+!!! Note "Feature gate" Requires the `layout-detection` Cargo feature. Not included in the default feature set.
 
 ## Model
 
-Layout detection uses the **RT-DETR v2** model, an ONNX-based deep learning model that detects 17 layout element classes: text blocks, tables, figures, headers, footers, captions, code, lists, sections, formulas, footnotes, page headers/footers, titles, checkboxes, key-value regions, and document indexes.
+Layout detection uses the **RT-DETR v2** model, an ONNX-based deep learning model that detects 17 layout element classes: text blocks, tables, figures, headers, footers, captions, code, lists, sections, formulas, footnotes, page headers/footers, titles, checkboxes, key-value regions, and document indices.
 
 ### When to Enable
 
@@ -24,8 +23,7 @@ Layout detection uses the **RT-DETR v2** model, an ONNX-based deep learning mode
 
 *171-document PDF corpus, CPU only. GPU acceleration significantly reduces the time penalty.*
 
-!!! Note "Layout Detection Model"
-    Kreuzberg uses only the RT-DETR v2 model for layout detection. The `preset` field is not available in `LayoutDetectionConfig`. Configure table structure recognition separately via `table_model` — see "Table Structure Models" below.
+!!! Note "Layout Detection Model" Kreuzberg uses only the RT-DETR v2 model for layout detection. The `preset` field is not available in `LayoutDetectionConfig`. Configure table structure recognition separately via `table_model` — see "Table Structure Models" below.
 
 ## Configuration
 
@@ -108,8 +106,7 @@ When layout detection identifies a table region, a table structure model analyze
 | SLANeXT Auto | `"slanet_auto"` | ~737 MB | Slower | Mixed documents (auto-classifies per page) |
 | SLANet-plus | `"slanet_plus"` | 7.78 MB | Fastest | Resource-constrained environments |
 
-!!! Note "Model Download"
-    SLANeXT models are not downloaded by default. Use `cache warm --all-table-models` to pre-download, or they download automatically on first use.
+!!! Note "Model Download" SLANeXT models are not downloaded by default. Use `cache warm --all-table-models` to pre-download, or they download automatically on first use.
 
 ## GPU Acceleration
 

@@ -1,6 +1,6 @@
 # Development Workflow
 
-Everything you need to build, test, and debug Kreuzberg locally. This guide assumes you've already followed the [Contributing Guide](../contributing.md) to fork and clone the repo.
+Everything you need to build, test, and debug Kreuzberg locally. This guide assumes you've already followed the [Contributing Guide](../contributing.md) to fork and clone the repository.
 
 ---
 
@@ -106,11 +106,11 @@ task wasm:build && task wasm:test
 
 ---
 
-## E2E Test Suites
+## End-to-end Test Suites
 
 End-to-end tests guarantee that every language binding produces identical results for the same document. They live in `e2e/` as shared fixtures — test inputs paired with expected outputs.
 
-### Run E2E Tests
+### Run end-to-end Tests
 
 | Language | Directory | Run with |
 |----------|-----------|----------|
@@ -124,9 +124,9 @@ End-to-end tests guarantee that every language binding produces identical result
 | PHP | `e2e/php/` | `task php:e2e:test` |
 | R | `e2e/r/` | `task r:e2e:test` |
 
-### Regenerate E2E Tests
+### Regenerate end-to-end Tests
 
-When you add a feature that changes extraction behavior, regenerate the affected E2E suites:
+When you add a feature that changes extraction behavior, regenerate the affected end-to-end suites:
 
 ```bash title="Terminal"
 task python:e2e:generate
@@ -189,7 +189,7 @@ task python:lint        # ruff + mypy
 task node:lint          # eslint + typecheck
 ```
 
-The repo uses pre-commit hooks that enforce conventional commit messages, code formatting, and lint rules. If a commit is rejected, the hook output tells you exactly what to fix.
+The repository uses pre-commit hooks that enforce conventional commit messages, code formatting, and linter rules. If a commit is rejected, the hook output tells you exactly what to fix.
 
 ---
 

@@ -14,7 +14,7 @@ Kreuzberg supports four OCR backends. Pick based on your platform, accuracy need
 | **Installation** | System package | Built-in (native) or Python package | Python package only | API key only |
 | **Model size** | ~10 MB | Mobile ~8 MB, Server ~120 MB | ~100 MB | None (cloud-hosted) |
 | **GPU support** | No | Yes | Yes | N/A (server-side) |
-| **Platform** | All (including WASM) | All except WASM | Python only | All |
+| **Platform** | All (including Wasm) | All except Wasm | Python only | All |
 | **Cost** | Free | Free | Free | Per-token API cost |
 
 **When to use which:**
@@ -85,8 +85,7 @@ tesseract --list-langs
 pip install "kreuzberg[easyocr]"
 ```
 
-!!! Info "Python 3.14"
-    EasyOCR 1.7.3+ and PyTorch 2.9.1+ support Python 3.14. Install `kreuzberg[easyocr]` on any supported Python version (3.10–3.14).
+!!! Info "Python 3.14" EasyOCR 1.7.3+ and PyTorch 2.9.1+ support Python 3.14. Install `kreuzberg[easyocr]` on any supported Python version (3.10–3.14).
 
 !!! Tip "Tesseract marker extra"
     `pip install "kreuzberg[tesseract]"` is available as a metadata-only marker to document a dependency on the Tesseract system package. It installs no Python packages — Tesseract itself must still be installed via your OS package manager (see above).
@@ -123,7 +122,7 @@ pip install "kreuzberg[easyocr]"
 
     --8<-- "snippets/r/ocr/ocr_extraction.md"
 
-=== "WASM"
+=== "Wasm"
 
     --8<-- "snippets/wasm/ocr/ocr_extraction.md"
 
@@ -159,7 +158,7 @@ Specify multiple language codes separated by `+` (Tesseract) or as a list (EasyO
 
     --8<-- "snippets/r/ocr/ocr_multi_language.md"
 
-=== "WASM"
+=== "Wasm"
 
     ```typescript
     import { enableOcr, extractFromFile, initWasm } from '@kreuzberg/wasm';
@@ -343,8 +342,7 @@ Use a vision-language model (for example, GPT-4o, Claude) as the OCR backend. Ea
 
 For more on VLM OCR, including custom prompts, supported providers, and API key configuration, see [LLM Integration](llm-integration.md#vlm-ocr).
 
-!!! Tip "GPU Acceleration"
-    EasyOCR and PaddleOCR support GPU acceleration. Set `use_gpu=True` in your OCR config. PaddleOCR's `model_tier="server"` gives the best accuracy with GPU.
+!!! Tip "GPU Acceleration" EasyOCR and PaddleOCR support GPU acceleration. Set `use_gpu=True` in your OCR config. PaddleOCR's `model_tier="server"` gives the best accuracy with GPU.
 
 ## DPI Configuration
 

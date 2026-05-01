@@ -208,8 +208,8 @@ Kreuzberg ships with four built-in renderers:
 
 | Renderer | Output | Description |
 |----------|--------|-------------|
-| **markdown** | GFM Markdown | GitHub Flavored Markdown via comrak AST bridge. Tables, headings, lists. |
-| **html** | HTML5 | Full HTML5 rendering via comrak. |
+| **Markdown** | GFM Markdown | GitHub Flavored Markdown via comrak AST bridge. Tables, headings, lists. |
+| **HTML** | HTML5 | Full HTML5 rendering via comrak. |
 | **djot** | Djot | Djot markup format. |
 | **plain** | Plain text | Raw text with no markup. |
 
@@ -266,9 +266,7 @@ The registration pattern is the same in every language. Get the registry, call r
     let mut registry = registry.write().unwrap();
     registry.register("my-pdf", Arc::new(MyPDFExtractor::new()))?;```
 
-=== "Python"
-    ```python
-    from Kreuzberg import get_document_extractor_registry
+=== "Python" ```python from Kreuzberg import get_document_extractor_registry
 
     registry = get_document_extractor_registry()
     registry.register(MyPDFExtractor())

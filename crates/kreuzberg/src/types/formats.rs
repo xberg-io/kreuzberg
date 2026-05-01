@@ -144,8 +144,9 @@ pub struct EmailExtractionResult {
     pub plain_text: Option<String>,
     /// HTML version of the email body
     pub html_content: Option<String>,
-    /// Cleaned/processed text content
-    pub cleaned_text: String,
+    /// Cleaned/processed text content. Aliased as `cleaned_text` for back-compat.
+    #[serde(alias = "cleaned_text")]
+    pub content: String,
     /// List of email attachments
     pub attachments: Vec<EmailAttachment>,
     /// Additional email headers and metadata

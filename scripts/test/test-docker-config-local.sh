@@ -101,7 +101,7 @@ fail_test() {
   fi
 }
 
-# shellcheck disable=SC2329  # Function is invoked via trap EXIT
+# shellcheck disable=SC2317,SC2329  # Function is invoked via trap EXIT
 cleanup() {
   log_info "Cleaning up test environment..."
 

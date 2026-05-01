@@ -9,15 +9,16 @@ use crate::error::{KreuzbergError, Result};
 use std::io::Cursor;
 
 /// Result of DOC text extraction.
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct DocExtractionResult {
-    /// Extracted text content.
-    pub text: String,
+    /// Extracted text content. Aliased as `text` for back-compat.
+    pub content: String,
     /// Document metadata.
     pub metadata: DocMetadata,
 }
 
 /// Metadata extracted from DOC files.
-#[derive(Default)]
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct DocMetadata {
     pub title: Option<String>,
     pub subject: Option<String>,
@@ -67,10 +68,16 @@ pub fn extract_doc_text(content: &[u8]) -> Result<DocExtractionResult> {
 
     // Extract text using the piece table approach (Word 97+)
     if n_fib >= 101 {
-        extract_text_word97(&word_doc, &table_stream).map(|text| DocExtractionResult { text, metadata })
+        extract_text_word97(&word_doc, &table_stream).map(|text| DocExtractionResult {
+            content: text,
+            metadata,
+        })
     } else {
         // For very old Word 6/95 files, try a simple text scan
-        extract_text_word6(&word_doc).map(|text| DocExtractionResult { text, metadata })
+        extract_text_word6(&word_doc).map(|text| DocExtractionResult {
+            content: text,
+            metadata,
+        })
     }
 }
 
@@ -714,7 +721,7 @@ mod tests {
         }
         let content = std::fs::read(&test_file).expect("Failed to read test DOC");
         let result = extract_doc_text(&content).expect("Failed to extract DOC text");
-        assert!(!result.text.is_empty(), "DOC extraction should produce text");
+        assert!(!result.content.is_empty(), "DOC extraction should produce text");
     }
 
     #[test]
@@ -726,7 +733,7 @@ mod tests {
         }
         let content = std::fs::read(&test_file).expect("Failed to read test DOC");
         let result = extract_doc_text(&content).expect("Failed to extract DOC text");
-        assert!(!result.text.is_empty(), "DOC extraction should produce text");
+        assert!(!result.content.is_empty(), "DOC extraction should produce text");
     }
 
     #[test]

@@ -2,7 +2,7 @@
 
 ## Text Chunking
 
-Split extracted text into chunks for RAG systems, vector databases, or LLM context windows. Four strategies: **Text** (splits on whitespace/punctuation boundaries), **Markdown** (structure-aware, preserves headings, lists, code blocks), **Yaml** (section-aware, preserves YAML document structure), and **Semantic** (topic-aware, splits at natural document boundaries).
+Split extracted text into chunks for RAG systems, vector databases, or LLM context windows. Four strategies: **Text** (splits on whitespace/punctuation boundaries), **Markdown** (structure-aware, preserves headings, lists, code blocks), **YAML** (section-aware, preserves YAML document structure), and **Semantic** (topic-aware, splits at natural document boundaries).
 
 ### Semantic
 
@@ -57,7 +57,7 @@ Use `topic_threshold` to control sensitivity: higher values (0.7–0.9) preserve
 
     --8<-- "snippets/r/config/chunking_config.md"
 
-=== "WASM"
+=== "Wasm"
 
     --8<-- "snippets/wasm/config/chunking_config.md"
 

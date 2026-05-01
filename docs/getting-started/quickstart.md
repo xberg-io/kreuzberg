@@ -57,7 +57,7 @@ Pass a file path to get its text content. Kreuzberg detects the format automatic
 
     --8<-- "snippets/typescript/getting-started/extract_file_sync.md"
 
-=== "WASM"
+=== "Wasm"
 
     --8<-- "snippets/wasm/getting-started/extract_file_sync.md"
 
@@ -110,7 +110,7 @@ exceptions for missing files, parse failures, and OCR problems:
 
     --8<-- "snippets/typescript/api/error_handling.md"
 
-=== "WASM"
+=== "Wasm"
 
     --8<-- "snippets/wasm/api/error_handling.md"
 
@@ -159,7 +159,7 @@ You can also force OCR on any document:
 
     --8<-- "snippets/typescript/ocr/ocr_extraction.md"
 
-=== "WASM"
+=== "Wasm"
 
     --8<-- "snippets/wasm/ocr/ocr_extraction.md"
 
@@ -211,7 +211,7 @@ Pass a list of paths to extract them in parallel:
 
     --8<-- "snippets/typescript/getting-started/batch_extract_files_sync.md"
 
-=== "WASM"
+=== "Wasm"
 
     --8<-- "snippets/wasm/getting-started/batch_extract_files_sync.md"
 
@@ -264,7 +264,7 @@ sheet names for Excel, dimensions for images:
 
     --8<-- "snippets/typescript/metadata/metadata.md"
 
-=== "WASM"
+=== "Wasm"
 
     --8<-- "snippets/wasm/metadata/metadata.md"
 
@@ -369,7 +369,7 @@ from PDFs, spreadsheets, and HTML:
 
     --8<-- "snippets/typescript/api/tables.md"
 
-=== "WASM"
+=== "Wasm"
 
     --8<-- "snippets/wasm/api/tables.md"
 
@@ -459,7 +459,7 @@ non-blocking I/O:
 
     --8<-- "snippets/typescript/getting-started/extract_file_async.md"
 
-=== "WASM"
+=== "Wasm"
 
     --8<-- "snippets/wasm/getting-started/extract_file_async.md"
 

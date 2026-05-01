@@ -58,7 +58,7 @@ Render extracted document content as styled HTML with semantic `kb-*` CSS classe
 
 | Theme | Description |
 |-------|-------------|
-| `unstyled` (default) | No built-in CSS. Only structural markup with `kb-*` classes. Use your own stylesheet. |
+| `unstyled` (default) | No built-in CSS. Only structural markup with `kb-*` classes. Use your own style sheet. |
 | `default` | System font stack, neutral colours, 72ch max width. All CSS custom properties defined. |
 | `github` | GitHub Markdown-inspired palette, border-bottom headings, 80ch max width. |
 | `dark` | Dark background (#0d1117), light text. Good for terminal/IDE integrations. |
@@ -69,10 +69,10 @@ Render extracted document content as styled HTML with semantic `kb-*` CSS classe
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `theme` | `HtmlTheme` | `unstyled` | Built-in colour/typography theme |
-| `css` | `string?` | `None` | Inline CSS string appended after theme stylesheet |
+| `css` | `string?` | `None` | Inline CSS string appended after theme style sheet |
 | `css_file` | `path?` | `None` | CSS file loaded at render time (max 1 MiB) |
 | `class_prefix` | `string` | `"kb-"` | CSS class prefix (alphanumeric, hyphens, underscores only) |
-| `embed_css` | `bool` | `true` | Include `<style>` block in output. Set `false` for external stylesheets |
+| `embed_css` | `bool` | `true` | Include `<style>` block in output. Set `false` for external style sheets |
 
 === "Python"
 
@@ -134,8 +134,7 @@ Render extracted document content as styled HTML with semantic `kb-*` CSS classe
 --html-no-embed-css         Suppress the <style> block entirely
 ```
 
-!!! Note
-    Any `--html-*` flag implicitly sets `--content-format html`.
+!!! Note Any `--html-*` flag implicitly sets `--content-format html`.
 
 ## CSS Customization
 
@@ -194,7 +193,7 @@ Pass custom CSS inline or from a file:
     };
     ```
 
-To use your own stylesheet, set the theme to `unstyled` and disable the embedded `<style>` block:
+To use your own style sheet, set the theme to `unstyled` and disable the embedded `<style>` block:
 
 ```python title="external_stylesheet.py"
 config = ExtractionConfig(
@@ -239,16 +238,11 @@ All generated HTML elements include semantic `kb-*` classes for targeted styling
 | `kb-admonition` | `<aside>` | Admonitions |
 | `kb-group` | `<div>` | Grouped content |
 
-!!! Tip "Custom prefix"
-    If you set `class_prefix` to `"my-"`, all classes become `my-doc`, `my-content`, `my-h1`, and so on.
+!!! Tip "Custom prefix" If you set `class_prefix` to `"my-"`, all classes become `my-doc`, `my-content`, `my-h1`, and so on.
 
 ## Security
 
-!!! Warning "Security considerations"
-    - `class_prefix` is validated to prevent HTML injection
-    - `</style>` sequences are stripped from user CSS
-    - `css_file` is limited to 1 MiB
-    - When serving HTML to untrusted users, sanitize CSS at the application layer
+!!! Warning "Security considerations" - `class_prefix` is validated to prevent HTML injection - `</style>` sequences are stripped from user CSS - `css_file` is limited to 1 MiB - When serving HTML to untrusted users, sanitize CSS at the application layer
 
 ## See Also
 

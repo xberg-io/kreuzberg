@@ -102,10 +102,8 @@ impl ExcelExtractor {
         let mut doc = Self::build_internal_document(workbook);
 
         let sheet_names: Vec<String> = workbook.sheets.iter().map(|s| s.name.clone()).collect();
-        let excel_metadata = ExcelMetadata {
-            sheet_count: workbook.sheets.len(),
-            sheet_names,
-        };
+        let sheet_count = workbook.sheets.len();
+        let excel_metadata = ExcelMetadata::default();
 
         let mut additional = AHashMap::new();
         let wb_meta = &workbook.metadata;
@@ -148,6 +146,8 @@ impl ExcelExtractor {
             created_by,
             modified_by,
             format: Some(crate::types::FormatMetadata::Excel(excel_metadata)),
+            sheet_count: Some(sheet_count),
+            sheet_names: Some(sheet_names),
             additional,
             ..Default::default()
         };

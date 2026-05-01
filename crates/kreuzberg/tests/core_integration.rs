@@ -295,7 +295,7 @@ fn test_mime_detection_comprehensive() {
         let file_path = dir.path().join(filename);
         File::create(&file_path).expect("Operation failed");
 
-        let detected = detect_mime_type(&file_path, true).expect("Operation failed");
+        let detected = detect_mime_type(file_path.to_string_lossy().into_owned(), true).expect("Operation failed");
         assert_eq!(detected, expected_mime, "Failed for {}", filename);
 
         let validated = validate_mime_type(&detected);
@@ -334,7 +334,7 @@ fn test_case_insensitive_extensions() {
         let file_path = dir.path().join(filename);
         File::create(&file_path).expect("Operation failed");
 
-        let detected = detect_mime_type(&file_path, true).expect("Operation failed");
+        let detected = detect_mime_type(file_path.to_string_lossy().into_owned(), true).expect("Operation failed");
         assert_eq!(detected, expected_mime, "Failed for {}", filename);
     }
 }

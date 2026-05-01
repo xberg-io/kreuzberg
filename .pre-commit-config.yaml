@@ -6,7 +6,7 @@ exclude: ^docs/snippets/|vendor/|node_modules/|target/|invalid*|dist/|artifacts/
 repos:
   # AI-Rulez: auto-generate AI assistant configuration files
   - repo: https://github.com/Goldziher/ai-rulez
-    rev: v4.1.0
+    rev: v4.1.4
     hooks:
       - id: ai-rulez-generate
 
@@ -65,6 +65,7 @@ repos:
             "--exclude=kreuzberg-node",
             "--exclude=kreuzberg-php",
             "--exclude=kreuzberg-wasm",
+            "--exclude=kreuzberg-dart",
             "--exclude=kreuzberg_nif",
             "--all-features",
             "--all-targets",
@@ -85,50 +86,20 @@ repos:
       - id: cargo-deny
         args: ["check"]
 
-  # Shell scripts: formatting and linting
-  - repo: https://github.com/scop/pre-commit-shfmt
-    rev: v3.13.1-1
-    hooks:
-      - id: shfmt
-        args: ["-w", "-i", "2"]
-
-  - repo: https://github.com/koalaman/shellcheck-precommit
-    rev: v0.11.0
-    hooks:
-      - id: shellcheck
-        args: ['-x']
-
   # Markdown: linting
   - repo: https://github.com/rvben/rumdl-pre-commit
-    rev: "v0.1.84"
+    rev: "v0.1.85"
     hooks:
       - id: rumdl-fmt
         exclude: '^(tools/benchmark-harness/vendored/|docs/reference/(api-|configuration\.md|errors\.md|types\.md)|templates/readme/)'
 
-  # Markdown prose linting: textlint
-  - repo: local
-    hooks:
-      - id: textlint
-        name: textlint (docs prose)
-        entry: npx textlint
-        language: node
-        files: ^docs/.*\.md$
-        exclude: ^docs/reference/(api-|configuration\.md|errors\.md|types\.md)
-        pass_filenames: true
-
-  # Python: ruff (linting + formatting) + mypy (type checking)
+  # Python: ruff (linting + formatting)
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.15.12
     hooks:
       - id: ruff
         args: [--fix]
       - id: ruff-format
-
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.20.2
-    hooks:
-      - id: mypy
-        exclude: "e2e/|tests/|scripts/"
 
   # Node/TS/WASM: oxlint
   - repo: https://github.com/oxc-project/mirrors-oxlint
@@ -138,13 +109,10 @@ repos:
         args: ["--fix"]
         exclude: ^(tools/benchmark-harness/fixtures/|docs/snippets/)
 
-  # C/FFI: clang-format and cppcheck scoped to FFI test files
+  # cppcheck — not yet shipped in shared kreuzberg-dev/pre-commit-hooks repo
   - repo: https://github.com/pocc/pre-commit-hooks
     rev: v1.3.5
     hooks:
-      - id: clang-format
-        args: [--style=file]
-        files: (^crates/kreuzberg-ffi/tests/c/|^tools/benchmark-harness/scripts/.*\.c$)
       - id: cppcheck
         args:
           [
@@ -156,22 +124,26 @@ repos:
           ]
         files: (^crates/kreuzberg-ffi/tests/c/|^tools/benchmark-harness/scripts/.*\.c$)
 
-  # Go: formatting and linting (runs per Go module via Taskfile)
-  - repo: local
-    hooks:
-      - id: golangci-lint-full
-        name: golangci-lint (all Go modules)
-        entry: task go:lint
-        language: system
-        files: \.go$
-        pass_filenames: false
-
-  # Java: copy-paste detection and style checking
+  # Java cpd — not yet shipped in shared kreuzberg-dev/pre-commit-hooks repo
   - repo: https://github.com/gherynos/pre-commit-java
     rev: v0.6.37
     hooks:
       - id: cpd
         exclude: ^(\.mvn/wrapper/|e2e/|tools/e2e-generator/e2e/|crates/kreuzberg-wasm/e2e/)
+
+  # Shared kreuzberg-dev polyglot hooks
+  - repo: https://github.com/kreuzberg-dev/pre-commit-hooks
+    rev: v0.1.0
+    hooks:
+      - id: shfmt
+        args: ["-w", "-i", "2"]
+      - id: shellcheck
+        args: ["-x"]
+      - id: clang-format
+        args: ["--style=file"]
+        files: ^crates/kreuzberg-ffi/tests/c/
+      - id: clang-tidy
+        files: ^crates/kreuzberg-ffi/tests/c/
       - id: checkstyle
         args:
           [
@@ -181,183 +153,94 @@ repos:
             "packages/java/checkstyle.properties",
           ]
         exclude: ^(\.mvn/wrapper/|e2e/|tools/e2e-generator/e2e/|crates/kreuzberg-wasm/e2e/|packages/java/src/)
-
-  # Local hooks for unsupported languages (Ruby, Java, C#, PHP, Elixir, R) and custom configurations
-  - repo: local
-    hooks:
-      # Ruby
-      - id: ruby-format
-        name: Ruby formatting (rubocop)
-        entry: task ruby:format
-        language: system
-        files: \.rb$
-        pass_filenames: false
-        require_serial: true
-        stages: [commit]
-
-      - id: ruby-lint
-        name: Ruby linting (rubocop + steep)
-        entry: task ruby:lint
-        language: system
-        files: \.(rb|rbs)$
-        pass_filenames: false
-        require_serial: true
-        stages: [commit]
-
-      # Java (maven verify — cpd/checkstyle handled by pre-commit-java above)
       - id: java-verify
-        name: maven verify (java)
-        entry: bash -lc 'if [ -f "$HOME/.sdkman/bin/sdkman-init.sh" ]; then source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk env; fi; MAVEN_OPTS="${MAVEN_OPTS:-} --enable-native-access=ALL-UNNAMED -Dsun.misc.unsafe.memory.access=allow" mvn -f packages/java/pom.xml -B -DskipTests -Dgpg.skip=true -Dskip.rust.ffi=true verify'
-        language: system
         files: ^packages/java/
-        pass_filenames: false
-
-      # C#
-      - id: csharp-format
-        name: C# formatting (dotnet format)
-        entry: task csharp:format
-        language: system
-        files: \.cs$
-        pass_filenames: false
-        require_serial: true
-        stages: [commit]
-
-      - id: csharp-lint
-        name: C# linting (dotnet format)
-        entry: task csharp:lint
-        language: system
-        files: \.cs$
-        pass_filenames: false
-        require_serial: true
-        stages: [commit]
-
-      # PHP
-      - id: php-format
-        name: PHP formatting (php-cs-fixer)
-        entry: task php:format
-        language: system
-        files: \.php$
-        pass_filenames: false
-        require_serial: true
-        stages: [commit]
-
-      - id: php-lint
-        name: PHP linting (phpstan + php-cs-fixer)
-        entry: task php:lint
-        language: system
-        files: \.php$
-        pass_filenames: false
-        require_serial: true
-        stages: [commit]
-
-      # Elixir
+      - id: mypy
+        files: ^(lib|src|kreuzberg|tools)/.*\.py$
+        exclude: "e2e/|tests/|scripts/"
+      - id: go-fmt
+        exclude: ^(e2e/|test_apps/|tools/)
+      - id: golangci-lint
+        exclude: ^(e2e/|test_apps/|tools/)
+      - id: govulncheck
+        exclude: ^(e2e/|test_apps/|tools/)
+      - id: rubocop
+        files: ^packages/ruby/.*\.rb$
+      - id: rubocop-lint
+        files: ^packages/ruby/.*\.(rb|rbs)$
+      - id: steep
+        files: ^packages/ruby/.*\.(rb|rbs)$
+      - id: dotnet-format
+        files: ^packages/csharp/.*\.cs$
+      - id: dotnet-format-check
+        files: ^packages/csharp/.*\.cs$
+      - id: php-cs-fixer
+        files: ^packages/php/.*\.php$
+      - id: phpstan
+        files: ^packages/php/.*\.php$
       - id: mix-format
-        name: mix format
-        entry: bash -c 'cd packages/elixir && MIX_ENV=dev mix format --check-formatted'
-        language: system
         files: ^packages/elixir/
-        pass_filenames: false
-
       - id: mix-credo
-        name: mix credo
-        entry: bash -c 'cd packages/elixir && MIX_ENV=dev mix credo --strict'
-        language: system
         files: ^packages/elixir/
-        pass_filenames: false
-
-      # R
-      - id: r-style
-        name: R formatting (styler)
-        entry: Rscript -e 'styler::style_dir("packages/r")'
-        language: system
-        files: ^packages/r/.*\.(R|r|Rmd|Rnw)$
-        pass_filenames: false
-
-      - id: r-lint
-        name: R linting (lintr)
-        entry: Rscript -e 'lintr::lint_dir("packages/r")'
-        language: system
-        files: ^packages/r/.*\.(R|r|Rmd|Rnw)$
-        pass_filenames: false
-
-      # Kotlin
-      - id: kotlin-format
-        name: Kotlin formatting (ktlint via gradle)
-        entry: bash -c 'command -v gradle >/dev/null 2>&1 && cd packages/kotlin && gradle ktlintFormat --no-daemon || echo "skip - gradle missing"'
-        language: system
-        files: ^packages/kotlin/.*\.kt$
-        pass_filenames: false
-
-      - id: kotlin-lint
-        name: Kotlin linting (ktlint via gradle)
-        entry: bash -c 'command -v gradle >/dev/null 2>&1 && cd packages/kotlin && gradle ktlintCheck --no-daemon || echo "skip - gradle missing"'
-        language: system
-        files: ^packages/kotlin/.*\.kt$
-        pass_filenames: false
-
-      # Swift
+      - id: air-format
+        files: ^packages/r/.*\.[Rr]$
+      - id: air-check
+        files: ^packages/r/.*\.[Rr]$
+      - id: lintr
+        files: ^packages/r/.*\.[Rr]$
+      - id: ktfmt
+        args: ["--kotlinlang-style"]
+        files: ^packages/kotlin/.*\.kts?$
+      - id: detekt
+        args: ["--build-upon-default-config"]
+        files: ^packages/kotlin/.*\.kts?$
       - id: swift-format
-        name: Swift formatting (swift format)
-        entry: bash -c 'command -v swift >/dev/null 2>&1 && swift format --in-place --recursive packages/swift/Sources || echo "skip - swift missing"'
-        language: system
         files: ^packages/swift/.*\.swift$
-        pass_filenames: false
-
-      - id: swift-lint
-        name: Swift linting (swift format lint)
-        entry: bash -c 'command -v swift >/dev/null 2>&1 && swift format lint --recursive packages/swift/Sources || echo "skip - swift missing"'
-        language: system
+      - id: swiftlint
         files: ^packages/swift/.*\.swift$
-        pass_filenames: false
-
-      # Dart
       - id: dart-format
-        name: Dart formatting (dart format)
-        entry: bash -c 'command -v dart >/dev/null 2>&1 && cd packages/dart && dart format . || echo "skip - dart missing"'
-        language: system
         files: ^packages/dart/.*\.dart$
-        pass_filenames: false
-
-      - id: dart-lint
-        name: Dart linting (dart analyze)
-        entry: bash -c 'command -v dart >/dev/null 2>&1 && cd packages/dart && dart analyze || echo "skip - dart missing"'
-        language: system
+      - id: dart-analyze
         files: ^packages/dart/.*\.dart$
-        pass_filenames: false
-
-      # Gleam
       - id: gleam-format
-        name: Gleam formatting (gleam format)
-        entry: bash -c 'command -v gleam >/dev/null 2>&1 && cd packages/gleam && gleam format || echo "skip - gleam missing"'
-        language: system
         files: ^packages/gleam/.*\.gleam$
-        pass_filenames: false
-
-      - id: gleam-lint
-        name: Gleam check (gleam format --check)
-        entry: bash -c 'command -v gleam >/dev/null 2>&1 && cd packages/gleam && gleam format --check || echo "skip - gleam missing"'
-        language: system
+      - id: gleam-check
         files: ^packages/gleam/.*\.gleam$
-        pass_filenames: false
-
-      # Zig
-      - id: zig-format
-        name: Zig formatting (zig fmt)
-        entry: bash -c 'command -v zig >/dev/null 2>&1 && cd packages/zig && zig fmt src || echo "skip - zig missing"'
-        language: system
+      - id: zig-fmt
         files: ^packages/zig/.*\.zig$
-        pass_filenames: false
-
-      - id: zig-lint
-        name: Zig check (zig fmt --check)
-        entry: bash -c 'command -v zig >/dev/null 2>&1 && cd packages/zig && zig fmt --check src || echo "skip - zig missing"'
-        language: system
+      - id: zig-build-check
         files: ^packages/zig/.*\.zig$
-        pass_filenames: false
+      - id: helm-lint
+        files: ^charts/.*/(Chart\.yaml|templates/.+\.ya?ml)$
+      - id: kubeconform
+        args: ["-strict", "-summary"]
+        files: ^charts/.*/templates/.+\.ya?ml$
+        exclude: ^charts/.*/(values|Chart)\.ya?ml$
+      - id: textlint
+        files: ^docs/[^/]+/[^/]+\.md$
+        exclude: ^docs/(reference/|api-|snippets/|migration/)
+        args:
+          - "--fix"
+          - "--rule"
+          - "common-misspellings"
+          - "--rule"
+          - "doubled-spaces"
+          - "--rule"
+          - "no-empty-section"
+          - "--rule"
+          - "no-start-duplicated-conjunction"
+          - "--rule"
+          - "no-surrogate-pair"
+          - "--rule"
+          - "no-todo"
+          - "--rule"
+          - "no-zero-width-spaces"
+          - "--rule"
+          - "terminology"
 
   # Alef: verify bindings and sync versions
   - repo: https://github.com/kreuzberg-dev/alef
-    rev: v0.11.25
+    rev: v0.12.13
     hooks:
       - id: alef-verify
       - id: alef-sync-versions
@@ -368,26 +251,9 @@ repos:
     hooks:
       - id: actionlint
 
-  # Helm
-  - repo: local
-    hooks:
-      - id: helm-lint
-        name: Helm lint (strict)
-        entry: bash -c 'for chart in charts/*/; do helm lint --strict "$chart" || exit 1; done'
-        language: system
-        files: ^charts/
-        pass_filenames: false
-
-      - id: kubeconform
-        name: kubeconform (Kubernetes schema validation)
-        entry: bash -c 'for chart in charts/*/; do helm template test "$chart" | kubeconform -strict -kubernetes-version 1.28.0 -summary || exit 1; done'
-        language: system
-        files: ^charts/
-        pass_filenames: false
-
   # Spelling: fast Rust-based spell checker (last — runs after all formatters)
   - repo: https://github.com/crate-ci/typos
-    rev: v1.45.2
+    rev: v1.46.0
     hooks:
       - id: typos
         args: [--force-exclude]

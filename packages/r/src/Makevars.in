@@ -1,0 +1,14 @@
+CARGO_BUILD_ARGS = --release
+STATLIB = ./rust/target/release/libkreuzberg.a
+PKG_LIBS = -L./rust/target/release -lkreuzberg $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
+
+all: $(SHLIB)
+
+$(STATLIB):
+	cargo build --manifest-path ./rust/Cargo.toml $(CARGO_BUILD_ARGS)
+
+$(SHLIB): $(STATLIB)
+
+clean:
+	rm -f $(SHLIB) $(STATLIB)
+	cargo clean --manifest-path ./rust/Cargo.toml

@@ -127,7 +127,7 @@ The first file found is merged with defaults. If no file exists, defaults are us
 
     --8<-- "snippets/r/config/config_discover.md"
 
-=== "WASM"
+=== "Wasm"
 
     --8<-- "snippets/wasm/config/config_discover.md"
 

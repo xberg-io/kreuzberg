@@ -312,7 +312,13 @@ mod embeddings_cuda {
             ..Default::default()
         };
 
-        let result = kreuzberg::embed_texts(&["Hello, world!", "GPU-accelerated embeddings test"], &config);
+        let result = kreuzberg::embed_texts(
+            vec![
+                "Hello, world!".to_string(),
+                "GPU-accelerated embeddings test".to_string(),
+            ],
+            Some(config.clone()),
+        );
         assert!(result.is_ok(), "Embedding CUDA failed: {:?}", result.err());
         assert_cuda_requested(&captured);
 
@@ -334,7 +340,10 @@ mod embeddings_cuda {
             ..Default::default()
         };
 
-        let result = kreuzberg::embed_texts(&["Document intelligence with GPU acceleration"], &config);
+        let result = kreuzberg::embed_texts(
+            vec!["Document intelligence with GPU acceleration".to_string()],
+            Some(config.clone()),
+        );
         assert!(result.is_ok(), "Embedding CUDA balanced failed: {:?}", result.err());
         assert_cuda_requested(&captured);
 

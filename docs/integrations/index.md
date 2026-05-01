@@ -17,5 +17,4 @@ Kreuzberg integrates with AI frameworks, databases, and search engines — bring
 | SurrealDB | [SurrealDB](https://surrealdb.com/) | [`kreuzberg-surrealdb`](https://pypi.org/project/kreuzberg-surrealdb/) | [SurrealDB](surrealdb.md) |
 | Spring AI | [Spring AI](https://spring.io/projects/spring-ai) | [`kreuzberg-spring-ai-document-reader`](https://central.sonatype.com/artifact/dev.kreuzberg/kreuzberg-spring-ai-document-reader) | [GitHub](https://github.com/kreuzberg-dev/kreuzberg-spring-ai) |
 
-!!! Tip "Building a new integration?"
-    Explore existing integrations on [GitHub](https://github.com/kreuzberg-dev) for reference.
+!!! Tip "Building a new integration?" Explore existing integrations on [GitHub](https://github.com/kreuzberg-dev) for reference.

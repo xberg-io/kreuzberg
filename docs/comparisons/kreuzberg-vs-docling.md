@@ -8,7 +8,7 @@ Kreuzberg and Docling are both open-source document extraction libraries, but th
 |---|---|---|
 | **Written in** | Rust | Python |
 | **File formats** | 91+ | ~38 extensions (15+ types) |
-| **Use from** | Python, TypeScript, Go, Ruby, Java, C#, PHP, Elixir, Rust, WASM | Python |
+| **Use from** | Python, TypeScript, Go, Ruby, Java, C#, PHP, Elixir, Rust, Wasm | Python |
 | **License** | Apache-2.0 | Elastic-2.0 |
 | **OCR** | Tesseract + PaddleOCR (local, multi-backend fallback) | Tesseract + EasyOCR |
 | **Sweet spot** | High-throughput pipelines, polyglot stacks, broad format coverage | ML-powered document understanding, scientific papers |
@@ -39,7 +39,7 @@ Docling covers the core document types well. Kreuzberg handles the long tail -- 
 
 How extracted content is structured.
 
-- **Kreuzberg** -- Outputs unified text (default), element-based structures, or per-page JSON. You choose the level of detail you need. Markdown output is built in via HTML-to-Markdown conversion.
+- **Kreuzberg** -- Outputs unified text (default), element-based structures, or per-page JSON. You choose the level of detail you need. Markdown output is built-in via HTML-to-Markdown conversion.
 - **Docling** -- Outputs a `DoclingDocument` object with rich structural metadata: reading order, table cells, figure captions, section hierarchy. Can export to Markdown, JSON, or other formats. The structural model is deeper but Python-specific.
 
 ### OCR
@@ -53,7 +53,7 @@ Both handle image-based documents, with different engine choices.
 
 How you integrate each tool into your stack.
 
-- **Kreuzberg** -- Native bindings for **10 languages** (Python, TypeScript, Go, Ruby, Java, C#, PHP, Elixir, Rust, WASM). Same performance and features from every language.
+- **Kreuzberg** -- Native bindings for **10 languages** (Python, TypeScript, Go, Ruby, Java, C#, PHP, Elixir, Rust, Wasm). Same performance and features from every language.
 - **Docling** -- **Python only**. If your backend is in Go, Java, or TypeScript, you'd need to wrap Docling in an HTTP service.
 
 ---
@@ -64,7 +64,7 @@ How you integrate each tool into your stack.
 - You need to process **high volumes** quickly without ML model loading overhead
 - Your pipeline ingests **diverse formats** beyond PDFs and Office docs
 - You want **local embeddings and chunking** built into the extraction step
-- You need to run in the **browser or on edge runtimes** via WASM
+- You need to run in the **browser or on edge runtimes** via Wasm
 
 ## When to Use Docling
 

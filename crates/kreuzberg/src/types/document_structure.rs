@@ -124,6 +124,56 @@ pub struct DocumentStructure {
     /// Empty when no relationships are detected.
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub relationships: Vec<DocumentRelationship>,
+
+    /// Sorted, deduplicated list of node type names present in this document.
+    ///
+    /// Each value is the snake_case `node_type` tag of the corresponding
+    /// [`NodeContent`] variant (e.g. `"paragraph"`, `"heading"`, `"table"`, …).
+    ///
+    /// Computed from [`nodes`] via [`DocumentStructure::finalize_node_types`].
+    /// Empty until that method is called (internal construction paths call it
+    /// at the end of derivation).
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub node_types: Vec<String>,
+}
+
+impl DocumentStructure {
+    /// Compute and populate the `node_types` field from the current `nodes`.
+    ///
+    /// Call this after all nodes have been added to the structure. Internal
+    /// construction paths (builder, derivation) call this automatically.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use kreuzberg::types::document_structure::{DocumentStructure, DocumentNode, NodeContent, NodeId};
+    ///
+    /// let mut structure = DocumentStructure {
+    ///     nodes: vec![DocumentNode {
+    ///         id: NodeId::from("n1"),
+    ///         content: NodeContent::Paragraph { text: "Hello".into() },
+    ///         parent: None,
+    ///         children: vec![],
+    ///         content_layer: Default::default(),
+    ///         page: None,
+    ///         page_end: None,
+    ///         bbox: None,
+    ///         annotations: vec![],
+    ///         attributes: None,
+    ///     }],
+    ///     source_format: None,
+    ///     relationships: vec![],
+    ///     node_types: vec![],
+    /// };
+    /// structure.finalize_node_types();
+    /// assert!(structure.node_types.contains(&"paragraph".to_string()));
+    /// ```
+    pub fn finalize_node_types(&mut self) {
+        let mut types: Vec<&'static str> = self.nodes.iter().map(|n| n.content.node_type_name()).collect();
+        types.sort_unstable();
+        types.dedup();
+        self.node_types = types.into_iter().map(|s| s.to_string()).collect();
+    }
 }
 
 /// A resolved relationship between two nodes in the document tree.
@@ -353,6 +403,36 @@ pub enum NodeContent {
     MetadataBlock { entries: Vec<(String, String)> },
 }
 
+impl NodeContent {
+    /// Return the snake_case type name for this node content variant.
+    ///
+    /// Matches the `node_type` serde tag value (i.e. `rename_all = "snake_case"`).
+    pub fn node_type_name(&self) -> &'static str {
+        match self {
+            Self::Title { .. } => "title",
+            Self::Heading { .. } => "heading",
+            Self::Paragraph { .. } => "paragraph",
+            Self::List { .. } => "list",
+            Self::ListItem { .. } => "list_item",
+            Self::Table { .. } => "table",
+            Self::Image { .. } => "image",
+            Self::Code { .. } => "code",
+            Self::Quote => "quote",
+            Self::Formula { .. } => "formula",
+            Self::Footnote { .. } => "footnote",
+            Self::Group { .. } => "group",
+            Self::PageBreak => "page_break",
+            Self::Slide { .. } => "slide",
+            Self::DefinitionList => "definition_list",
+            Self::DefinitionItem { .. } => "definition_item",
+            Self::Citation { .. } => "citation",
+            Self::Admonition { .. } => "admonition",
+            Self::RawBlock { .. } => "raw_block",
+            Self::MetadataBlock { .. } => "metadata_block",
+        }
+    }
+}
+
 // ============================================================================
 // Table Grid
 // ============================================================================
@@ -554,6 +634,7 @@ impl DocumentStructure {
             nodes: Vec::new(),
             source_format: None,
             relationships: Vec::new(),
+            node_types: Vec::new(),
         }
     }
 
@@ -563,6 +644,7 @@ impl DocumentStructure {
             nodes: Vec::with_capacity(capacity),
             source_format: None,
             relationships: Vec::new(),
+            node_types: Vec::new(),
         }
     }
 

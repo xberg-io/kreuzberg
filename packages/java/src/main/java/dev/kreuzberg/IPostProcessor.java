@@ -11,28 +11,30 @@ import java.util.Map;
  */
 public interface IPostProcessor {
 
-    /** Plugin name (used for registry keying). */
-    String name();
+	/** Plugin name (used for registry keying). */
+	String name();
 
-    /** Plugin version. */
-    String version();
+	/** Plugin version. */
+	String version();
 
-    /** Initialize the plugin. */
-    default void initialize() throws Exception {}
+	/** Initialize the plugin. */
+	default void initialize() throws Exception {
+	}
 
-    /** Shut down the plugin. */
-    default void shutdown() throws Exception {}
+	/** Shut down the plugin. */
+	default void shutdown() throws Exception {
+	}
 
-    /** process. */
-    void process(ExtractionResult result, ExtractionConfig config) throws Exception;
+	/** process. */
+	void process(ExtractionResult result, ExtractionConfig config) throws Exception;
 
-    /** processing_stage. */
-    ProcessingStage processing_stage() throws Exception;
+	/** processing_stage. */
+	ProcessingStage processing_stage() throws Exception;
 
-    /** should_process. */
-    boolean should_process(ExtractionResult _result, ExtractionConfig _config) throws Exception;
+	/** should_process. */
+	boolean should_process(ExtractionResult _result, ExtractionConfig _config) throws Exception;
 
-    /** estimated_duration_ms. */
-    long estimated_duration_ms(ExtractionResult _result) throws Exception;
+	/** estimated_duration_ms. */
+	long estimated_duration_ms(ExtractionResult _result) throws Exception;
 
 }

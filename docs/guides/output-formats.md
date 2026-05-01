@@ -4,7 +4,7 @@ Kreuzberg supports multiple output formats to suit different use cases — from 
 
 Choose the format that best matches your downstream processing needs:
 
-- **Unified (default)** — Plain text/markdown output, ideal for LLM prompts and full-text search
+- **Unified (default)** — Plain text/Markdown output, ideal for LLM prompts and full-text search
 - **Element-Based** — Flat array of typed elements with metadata, suitable for RAG chunking and semantic search
 - **Document Structure** — Hierarchical tree with explicit parent-child references, best for knowledge graphs and structured applications
 - **PDF Hierarchy** — Font size classification into heading levels (H1–H6) for PDFs

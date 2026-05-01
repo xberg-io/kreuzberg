@@ -199,6 +199,20 @@ pub struct Metadata {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub output_format: Option<String>,
 
+    /// Number of sheets in the workbook (Excel/spreadsheet sources only).
+    ///
+    /// `None` for non-spreadsheet documents. Mirrors the JSON-flat field
+    /// already exposed via the `FormatMetadata::Excel` flatten so all bindings
+    /// see it at `metadata.sheet_count`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub sheet_count: Option<usize>,
+
+    /// Sheet names in the workbook (Excel/spreadsheet sources only).
+    ///
+    /// `None` for non-spreadsheet documents.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub sheet_names: Option<Vec<String>>,
+
     /// Additional custom fields from postprocessors.
     ///
     /// **Deprecated**: Prefer using typed fields on `ExtractionResult` and `Metadata`
@@ -218,18 +232,43 @@ pub struct Metadata {
     pub additional: AHashMap<Cow<'static, str>, serde_json::Value>,
 }
 
-/// Excel/spreadsheet metadata.
+impl Metadata {
+    /// Returns `true` when no metadata fields, format-specific metadata, or
+    /// additional postprocessor fields are populated.
+    pub fn is_empty(&self) -> bool {
+        self.title.is_none()
+            && self.subject.is_none()
+            && self.authors.is_none()
+            && self.keywords.is_none()
+            && self.language.is_none()
+            && self.created_at.is_none()
+            && self.modified_at.is_none()
+            && self.created_by.is_none()
+            && self.modified_by.is_none()
+            && self.pages.is_none()
+            && self.format.is_none()
+            && self.image_preprocessing.is_none()
+            && self.json_schema.is_none()
+            && self.error.is_none()
+            && self.extraction_duration_ms.is_none()
+            && self.category.is_none()
+            && self.tags.is_none()
+            && self.document_version.is_none()
+            && self.abstract_text.is_none()
+            && self.output_format.is_none()
+            && self.additional.is_empty()
+    }
+}
+
+/// Excel/spreadsheet metadata marker.
 ///
-/// Contains information about sheets in Excel, OpenDocument Calc, and other
-/// spreadsheet formats (.xlsx, .xls, .ods, etc.).
+/// Sheet count and sheet names are now exposed directly on [`Metadata`] as
+/// `sheet_count: Option<usize>` and `sheet_names: Option<Vec<String>>` so that
+/// every binding (Rust, Python, Node, …) sees them at the same path. This
+/// struct remains as a `FormatMetadata` variant tag for spreadsheet sources.
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
-pub struct ExcelMetadata {
-    /// Total number of sheets in the workbook
-    pub sheet_count: usize,
-    /// Names of all sheets in order
-    pub sheet_names: Vec<String>,
-}
+pub struct ExcelMetadata {}
 
 /// Email metadata extracted from .eml and .msg files.
 ///

@@ -2,8 +2,7 @@
 
 Kreuzberg integrates with 146 LLM providers (including local inference engines) via [liter-llm](https://github.com/kreuzberg-dev/liter-llm) for three capabilities: VLM OCR, structured extraction, and provider-hosted embeddings.
 
-!!! Note "Feature gate"
-    Requires the `liter-llm` Cargo feature. Not included in the default feature set.
+!!! Note "Feature gate" Requires the `liter-llm` Cargo feature. Not included in the default feature set.
 
 ## VLM OCR
 
@@ -272,8 +271,7 @@ Kreuzberg supports local LLM inference engines via [liter-llm](https://github.co
 
 ### Example: Ollama
 
-=== "CLI"
-    ```bash
+=== "CLI" ```Bash
 
     # Start Ollama and pull a model
 
@@ -294,9 +292,7 @@ Kreuzberg supports local LLM inference engines via [liter-llm](https://github.co
       --text "Hello world"
     ```
 
-=== "Python"
-    ```python
-    from Kreuzberg import extract_file, ExtractionConfig, StructuredExtractionConfig, LlmConfig
+=== "Python" ```python from Kreuzberg import extract_file, ExtractionConfig, StructuredExtractionConfig, LlmConfig
 
     config = ExtractionConfig(
         structured_extraction=StructuredExtractionConfig(
@@ -307,16 +303,12 @@ Kreuzberg supports local LLM inference engines via [liter-llm](https://github.co
     result = await extract_file("doc.pdf", config=config)
     ```
 
-=== "TOML Config"
-    ```toml
-    [structured_extraction.llm]
-    model = "ollama/llama3.2"
+=== "TOML Config" ```toml [structured_extraction.llm] model = "ollama/llama3.2"
 
     # No api_key needed for local providers
     ```
 
-!!! Tip "Custom Base URL"
-    If your local server runs on a non-default port, use `base_url`:
+!!! Tip "Custom Base URL" If your local server runs on a non-default port, use `base_url`:
     ```python
     LlmConfig(model="ollama/llama3.2", base_url="http://localhost:11435/v1")```
 
@@ -363,8 +355,7 @@ API keys can be set via (in order of precedence):
 2. Provider standard env vars (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GOOGLE_API_KEY`, etc.)
 3. Kreuzberg-specific env var (`KREUZBERG_LLM_API_KEY`) — used as fallback for any provider
 
-!!! Note "Local providers skip API key lookup"
-    Local inference engines (Ollama, LM Studio, vLLM, llama.cpp, LocalAI, llamafile) do not require an API key. If you use a local provider prefix (for example, `ollama/`), the API key fields are ignored.
+!!! Note "Local providers skip API key lookup" Local inference engines (Ollama, LM Studio, vLLM, llama.cpp, LocalAI, llamafile) do not require an API key. If you use a local provider prefix (for example, `ollama/`), the API key fields are ignored.
 
 ```python title="Python"
 from kreuzberg import LlmConfig

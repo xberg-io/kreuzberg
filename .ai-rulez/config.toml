@@ -53,3 +53,12 @@ merge_strategy = 'local-override'
 [[installed_skills]]
 name = 'alef'
 source = 'https://github.com/kreuzberg-dev/alef.git'
+
+[[mcp_servers]]
+name = 'playwright'
+description = 'Playwright browser automation for E2E testing and docs verification'
+command = 'npx'
+args = ['-y', '@playwright/mcp@latest']
+
+[defaults]
+effort = 'medium'

@@ -156,6 +156,18 @@ site/
 # Elixir build artifacts
 packages/elixir/_build/
 packages/elixir/deps/
+packages/elixir/native/kreuzberg_nif/Cargo.lock
+e2e/elixir/_build/
+e2e/elixir/deps/
+e2e/elixir/mix.lock
+e2e/elixir/config/
+
+# Maven plugin artifacts
+*.versionsBackup
+
+# Ruby native build artifacts
+packages/ruby/lib/*.bundle
+packages/ruby/tmp/
 
 # Tests
 test_report.json

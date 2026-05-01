@@ -42,8 +42,7 @@ This is what Claude Desktop, Cursor, and most MCP clients expect.
 
 ### HTTP Transport
 
-!!! Info "Feature flag: `mcp-http`"
-    HTTP transport requires the `mcp-http` feature flag at build time.
+!!! Info "Feature flag: `mcp-http`" HTTP transport requires the `mcp-http` feature flag at build time.
 
 For remote deployments or multi-client setups where stdio doesn't work — shared servers, team environments, cloud-hosted agents — HTTP transport exposes the same tool interface over the network.
 

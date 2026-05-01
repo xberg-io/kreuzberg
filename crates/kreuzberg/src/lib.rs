@@ -186,10 +186,29 @@ pub use tree_sitter_language_pack::{
 
 pub use core::mime::{
     DOCX_MIME_TYPE, EXCEL_MIME_TYPE, HTML_MIME_TYPE, JSON_MIME_TYPE, MARKDOWN_MIME_TYPE, PDF_MIME_TYPE,
-    PLAIN_TEXT_MIME_TYPE, POWER_POINT_MIME_TYPE, SupportedFormat, XML_MIME_TYPE, detect_mime_type,
-    detect_mime_type_from_bytes, detect_or_validate, get_extensions_for_mime, list_supported_formats,
-    validate_mime_type,
+    PLAIN_TEXT_MIME_TYPE, POWER_POINT_MIME_TYPE, SupportedFormat, XML_MIME_TYPE, detect_mime_type_from_bytes,
+    detect_or_validate, get_extensions_for_mime, list_supported_formats, validate_mime_type,
 };
+
+/// Detect the MIME type of a file at the given path.
+///
+/// Uses the file extension and optionally the file content to determine the MIME type.
+/// Set `check_exists` to `true` to verify the file exists before detection.
+pub fn detect_mime_type(path: String, check_exists: bool) -> crate::Result<String> {
+    core::mime::detect_mime_type(path, check_exists)
+}
+
+#[cfg(feature = "language-detection")]
+pub use language_detection::detect_languages;
+
+/// Detect the image format from raw bytes.
+///
+/// Returns a string identifying the format (e.g., `"jpeg"`, `"png"`, `"gif"`, `"bmp"`, `"tiff"`, `"webp"`).
+/// Returns `"unknown"` if the format cannot be determined.
+#[cfg(feature = "ocr")]
+pub fn detect_image_format(data: Vec<u8>) -> String {
+    extraction::image_format::detect_image_format(&data).to_string()
+}
 
 pub use core::formats::{KNOWN_FORMATS, is_valid_format_field};
 
@@ -199,21 +218,60 @@ pub use plugins::registry::{
 };
 
 #[cfg(feature = "embeddings")]
-pub use embeddings::{
-    EMBEDDING_PRESETS, EmbeddingPreset, download_model, embed_texts, get_preset, list_presets, warm_model,
-};
+pub use embeddings::{EMBEDDING_PRESETS, EmbeddingPreset, download_model, get_preset, list_presets, warm_model};
+
+/// Embed a list of texts using the configured embedding model.
+///
+/// Returns a 2D vector where each inner vector is the embedding for the corresponding text.
+#[cfg(feature = "embeddings")]
+pub fn embed_texts(texts: Vec<String>, config: Option<core::config::EmbeddingConfig>) -> crate::Result<Vec<Vec<f32>>> {
+    embeddings::embed_texts(&texts, &config.unwrap_or_default())
+}
 
 #[cfg(all(feature = "embeddings", feature = "tokio-runtime"))]
 pub use embeddings::embed_texts_async;
 
 // Cache utilities
-pub use cache::{blake3_hash_bytes, blake3_hash_file, fast_hash, generate_cache_key, validate_cache_key};
+pub use cache::{blake3_hash_bytes, blake3_hash_file, fast_hash, validate_cache_key};
+
+/// Generate a deterministic cache key from a list of key-value pairs.
+///
+/// Each element of `parts` should be a two-element list `[key, value]`.
+/// The pairs are sorted by key before hashing, so order does not affect the result.
+pub fn generate_cache_key(parts: Vec<Vec<String>>) -> String {
+    let owned: Vec<(String, String)> = parts
+        .into_iter()
+        .filter_map(|mut pair| {
+            if pair.len() >= 2 {
+                let v = pair.remove(1);
+                let k = pair.remove(0);
+                Some((k, v))
+            } else {
+                None
+            }
+        })
+        .collect();
+    cache::generate_cache_key(&owned)
+}
 
 // JSON/string utilities
-pub use utils::{camel_to_snake, escape_html_entities, normalize_whitespace, snake_to_camel};
+pub use utils::{camel_to_snake, normalize_whitespace, snake_to_camel};
 
+/// Escape HTML special characters in a string.
+///
+/// Converts `&`, `<`, `>`, `"`, and `'` to their HTML entity equivalents.
+pub fn escape_html_entities(text: &str) -> String {
+    utils::escape_html_entities(text).into_owned()
+}
+
+/// Fix mojibake (garbled text from encoding errors) in a string.
+///
+/// Attempts to detect and correct common encoding errors where text was
+/// decoded with the wrong character set (e.g., UTF-8 bytes interpreted as Latin-1).
 #[cfg(feature = "quality")]
-pub use utils::fix_mojibake;
+pub fn fix_mojibake(text: &str) -> String {
+    utils::fix_mojibake(text).into_owned()
+}
 
 // Text utilities
 pub use text::utf8_validation::is_valid_utf8;
@@ -252,22 +310,47 @@ pub use extraction::markdown::{cells_to_markdown, cells_to_text};
 
 // Rendering utilities
 pub use rendering::{render_djot, render_html, render_json, render_markdown, render_plain};
-
 #[cfg(feature = "html")]
-pub use extraction::convert_html_to_markdown;
+pub use rendering::{render_djot_str, render_html_str, render_json_str, render_markdown_str, render_plain_str};
+
+/// Convert HTML to Markdown.
+///
+/// Converts an HTML string to Markdown using default conversion options.
+#[cfg(feature = "html")]
+pub fn convert_html_to_markdown(html: &str) -> crate::Result<String> {
+    extraction::html::convert_html_to_markdown_simple(html)
+}
 
 pub use extractors::djot_format::djot_to_html;
 
 // Format-specific extract functions
 #[cfg(feature = "office")]
-pub use extraction::extract_doc_text;
+pub use extraction::doc::DocExtractionResult;
+#[cfg(feature = "office")]
+pub use extraction::doc::DocMetadata;
+
+/// Extract text from a DOC (Word 97-2003) file.
+///
+/// Takes the raw bytes of a `.doc` file and returns the extracted text and metadata.
+#[cfg(feature = "office")]
+pub fn extract_doc_text(content: &[u8]) -> crate::Result<extraction::doc::DocExtractionResult> {
+    extraction::doc::extract_doc_text(content)
+}
 
 #[cfg(feature = "email")]
 pub use extraction::email::extract_email_content;
 
+/// Extract text and metadata from a PPTX (PowerPoint) file.
+///
+/// Takes the raw bytes of a `.pptx` file and returns the extracted content
+/// using default extraction options.
 #[cfg(feature = "office")]
-pub use extraction::pptx::extract_pptx_from_bytes;
+pub fn extract_pptx_from_bytes(data: &[u8]) -> crate::Result<types::formats::PptxExtractionResult> {
+    extraction::pptx::extract_pptx_from_bytes(data, &Default::default())
+}
 
+#[cfg(feature = "pdf")]
+pub use pdf::rendering::render_pdf_page_to_png;
 #[cfg(feature = "pdf")]
 pub use pdf::text::extract_text_from_pdf;
 
@@ -283,9 +366,11 @@ pub use embeddings::engine::normalize;
 #[cfg(feature = "quality")]
 pub use text::reduce_tokens;
 
-// Chunking batch
+// Chunking functions
 #[cfg(feature = "chunking")]
-pub use chunking::core::chunk_texts_batch;
+pub use chunking::core::{chunk_text, chunk_texts_batch};
+#[cfg(feature = "chunking")]
+pub use chunking::semantic::chunk_semantic;
 
 // iWork dedup utility
 #[cfg(feature = "iwork")]
@@ -303,4 +388,21 @@ pub fn serialize_to_toon(result: &ExtractionResult) -> Result<String> {
 pub fn serialize_to_json(result: &ExtractionResult) -> Result<String> {
     serde_json::to_string_pretty(result)
         .map_err(|e| KreuzbergError::serialization(format!("JSON serialization failed: {e}")))
+}
+
+/// Convenience: extract a file and serialize the result to TOON.
+///
+/// Equivalent to `extract_file_sync(path, None, config).and_then(|r| serialize_to_toon(&r))`,
+/// exposed as a single function so all bindings can offer the same one-call shape.
+#[cfg(feature = "tokio-runtime")]
+pub fn extract_file_to_toon(path: impl AsRef<std::path::Path>, config: &ExtractionConfig) -> Result<String> {
+    let result = extract_file_sync(path, None, config)?;
+    serialize_to_toon(&result)
+}
+
+/// Convenience: extract a file and serialize the result to pretty-printed JSON.
+#[cfg(feature = "tokio-runtime")]
+pub fn extract_file_to_json(path: impl AsRef<std::path::Path>, config: &ExtractionConfig) -> Result<String> {
+    let result = extract_file_sync(path, None, config)?;
+    serialize_to_json(&result)
 }

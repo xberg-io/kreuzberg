@@ -1,5 +1,5 @@
 {
-  "name": "Kreuzberg/e2e-php",
+  "name": "kreuzberg-dev/e2e-php",
   "description": "E2e tests for PHP bindings",
   "type": "project",
   "require-dev": {

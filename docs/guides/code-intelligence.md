@@ -14,7 +14,7 @@ When extracting source code, the `metadata.format` field contains a `ProcessResu
 - **Symbols** -- variable, constant, and type alias definitions
 - **Diagnostics** -- parse errors and warnings from tree-sitter
 - **Chunks** -- semantically meaningful code chunks for RAG and embedding pipelines
-- **Metrics** -- file-level statistics (lines of code, comment lines, blank lines, node count)
+- **Metrics** -- file-level statistics (lines of code, comment lines, empty lines, node count)
 
 Language support covers **248 programming languages** via tree-sitter grammars. See the [TSLP documentation](https://docs.tree-sitter-language-pack.kreuzberg.dev) for the full language list.
 

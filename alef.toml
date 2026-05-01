@@ -1,4 +1,4 @@
-version = "0.11.25"
+version = "0.12.13"
 languages = [
     "python",
     "node",
@@ -82,9 +82,17 @@ sources = [
     "crates/kreuzberg/src/chunking/mod.rs",
     "crates/kreuzberg/src/embeddings/mod.rs",
     "crates/kreuzberg/src/language_detection/mod.rs",
+    # Cache utilities (generate_cache_key, validate_cache_key)
+    "crates/kreuzberg/src/cache/utilities.rs",
+    # Extraction helpers (detect_image_format, extract_doc_text, convert_html_to_markdown)
+    "crates/kreuzberg/src/extraction/image_format.rs",
+    "crates/kreuzberg/src/extraction/doc/mod.rs",
+    "crates/kreuzberg/src/extraction/html/converter.rs",
     # OCR/PaddleOCR types (re-exported from lib.rs)
     "crates/kreuzberg/src/ocr/types.rs",
     "crates/kreuzberg/src/paddle_ocr/mod.rs",
+    # Plugin registry operations (list_document_extractors etc.)
+    "crates/kreuzberg/src/plugins/extractor/mod.rs",
 ]
 features = [
     "full",
@@ -259,7 +267,6 @@ types = [
     "FileHeader",
     "Record",
     "CfbReader",
-    "DocMetadata",
     "DocProperties",
     "PptMetadata",
     "PdfMetadata",
@@ -360,7 +367,6 @@ types = [
 
     # Internal extraction result types missing Clone
     "PptExtractionResult",
-    "DocExtractionResult",
 
     # Types with non-Clone/non-Default fields (Mutex, OpenTelemetry metrics)
     "TelemetryMetrics",
@@ -494,19 +500,16 @@ functions = [
     "clear_cache_directory",
     "smart_cleanup_cache",
     "get_cache_metadata",
-    "convert_html_to_markdown",
     "convert_html_to_markdown_with_metadata",
     "convert_html_to_markdown_with_tables",
     "decompress_gzip",
     "detect_layout_for_document",
-    "detect_mime_type",
     "extract_7z_file_bytes",
     "extract_7z_metadata",
     "extract_7z_text_content",
     "extract_and_process_embedded_files",
     "extract_chars_with_fonts",
     "extract_common_metadata_from_document",
-    "extract_doc_text",
     "extract_gzip",
     "extract_gzip_metadata",
     "extract_gzip_text_content",
@@ -518,7 +521,6 @@ functions = [
     "extract_ooxml_embedded_objects",
     "extract_ppt_text",
     "extract_ppt_text_with_options",
-    "extract_pptx_from_bytes",
     "extract_pptx_from_path",
     "extract_pst_messages",
     "extract_segments_from_page",
@@ -671,10 +673,6 @@ functions = [
     # Internal utilities not in official public API (docs.kreuzberg.dev)
     "camel_to_snake",
     "snake_to_camel",
-    "escape_html_entities",
-    "fix_mojibake",
-    "detect_image_format",
-    "generate_cache_key",
     "excel_to_text",
     "excel_to_markdown",
     "render_html",
@@ -1763,15 +1761,60 @@ check = "cd packages/zig && zig fmt --check src"
 fixtures = "fixtures"
 output = "e2e"
 languages = ["python", "rust", "node", "go", "ruby", "elixir", "wasm", "java", "csharp", "php", "r"]
-fields_optional = ["metadata.format"]
+fields_optional = [
+    "metadata.format",
+    "metadata.title",
+    "metadata.subject",
+    "metadata.authors",
+    "metadata.keywords",
+    "metadata.language",
+    "metadata.created_at",
+    "metadata.modified_at",
+    "metadata.created_by",
+    "metadata.modified_by",
+    "metadata.output_format",
+    "metadata.category",
+    "metadata.tags",
+    "metadata.document_version",
+    "metadata.abstract_text",
+    "metadata.sheet_count",
+    "metadata.sheet_names",
+    "chunks",
+    "images",
+    "pages",
+    "elements",
+    "djot_content",
+    "ocr_elements",
+    "document",
+    "extraction_method",
+    "detected_languages",
+    "extracted_keywords",
+    "quality_score",
+    "annotations",
+]
+fields_array = [
+    "tables",
+    "chunks",
+    "images",
+    "pages",
+    "elements",
+    "ocr_elements",
+    "detected_languages",
+    "extracted_keywords",
+    "annotations",
+    "processing_warnings",
+    "metadata.sheet_names",
+    "document.node_types",
+]
 
 [e2e.call]
 function = "extract_file"
 module = "kreuzberg"
 result_var = "result"
 async = true
+returns_result = true
 args = [
-    { name = "path", field = "input.path", type = "string" },
+    { name = "path", field = "input.path", type = "file_path" },
     { name = "mime_type", field = "input.mime_type", type = "string", optional = true },
     { name = "config", field = "input.config", type = "json_object", optional = true },
 ]
@@ -1788,7 +1831,8 @@ options_type = "ExtractionConfig"
 [e2e.call.overrides.node]
 module = "kreuzberg"
 function = "extractFile"
-options_type = "ExtractionConfig"
+options_type = "JsExtractionConfig"
+arg_order = ["path", "config", "mime_type"]
 
 [e2e.call.overrides.go]
 module = "github.com/kreuzberg-dev/kreuzberg/v4"
@@ -1805,6 +1849,7 @@ options_type = "ExtractionConfig"
 class = "KreuzbergLib"
 function = "ExtractFile"
 options_type = "ExtractionConfig"
+json_object_types = { chunking = "ChunkingConfig", ocr = "OcrConfig", images = "ImageExtractionConfig", html_output = "HtmlOutputConfig", language_detection = "LanguageDetectionConfig", postprocessor = "PostProcessorConfig", acceleration = "AccelerationConfig", email = "EmailConfig", pages = "PageConfig", pdf_options = "PdfConfig", layout = "LayoutDetectionConfig", tree_sitter = "TreeSitterConfig", structured_extraction = "StructuredExtractionConfig", content_filter = "ContentFilterConfig", token_reduction = "TokenReductionOptions" }
 
 [e2e.call.overrides.ruby]
 options_type = "Kreuzberg::ExtractionConfig"
@@ -1814,7 +1859,8 @@ options_type = "ExtractionConfig"
 handle_struct_type = "ExtractionConfig"
 
 [e2e.call.overrides.wasm]
-options_type = "JsExtractionConfig"
+options_type = "WasmExtractionConfig"
+bigint_fields = ["cacheTtlSecs", "extractionTimeoutSecs"]
 
 [e2e.call.overrides.php]
 class = "Kreuzberg\\Kreuzberg"
@@ -1830,150 +1876,357 @@ options_type = "ExtractionConfig"
 [e2e.calls.extract_bytes]
 function = "extract_bytes"
 module = "kreuzberg"
+skip_languages = ["wasm"]
 async = true
+returns_result = true
 args = [
     { name = "data", field = "input.data", type = "bytes" },
     { name = "mime_type", field = "input.mime_type", type = "string" },
     { name = "config", field = "input.config", type = "json_object", optional = true },
 ]
+
+[e2e.calls.extract_bytes.overrides.csharp]
+options_type = "ExtractionConfig"
+json_object_types = { chunking = "ChunkingConfig", ocr = "OcrConfig", images = "ImageExtractionConfig", html_output = "HtmlOutputConfig", language_detection = "LanguageDetectionConfig", postprocessor = "PostProcessorConfig", acceleration = "AccelerationConfig", email = "EmailConfig", pages = "PageConfig", pdf_options = "PdfConfig", layout = "LayoutDetectionConfig", tree_sitter = "TreeSitterConfig", structured_extraction = "StructuredExtractionConfig", content_filter = "ContentFilterConfig", token_reduction = "TokenReductionOptions" }
 
 [e2e.calls.extract_file_sync]
 function = "extract_file_sync"
 module = "kreuzberg"
 async = false
+returns_result = true
+skip_languages = ["wasm"]
 args = [
-    { name = "path", field = "input.path", type = "string" },
+    { name = "path", field = "input.path", type = "file_path" },
     { name = "mime_type", field = "input.mime_type", type = "string", optional = true },
     { name = "config", field = "input.config", type = "json_object", optional = true },
 ]
+
+[e2e.calls.extract_file_sync.overrides.node]
+options_type = "JsExtractionConfig"
+arg_order = ["path", "config", "mime_type"]
+
+[e2e.calls.extract_file_sync.overrides.csharp]
+options_type = "ExtractionConfig"
+json_object_types = { chunking = "ChunkingConfig", ocr = "OcrConfig", images = "ImageExtractionConfig", html_output = "HtmlOutputConfig", language_detection = "LanguageDetectionConfig", postprocessor = "PostProcessorConfig", acceleration = "AccelerationConfig", email = "EmailConfig", pages = "PageConfig", pdf_options = "PdfConfig", layout = "LayoutDetectionConfig", tree_sitter = "TreeSitterConfig", structured_extraction = "StructuredExtractionConfig", content_filter = "ContentFilterConfig", token_reduction = "TokenReductionOptions" }
 
 [e2e.calls.extract_bytes_sync]
 function = "extract_bytes_sync"
 module = "kreuzberg"
 async = false
+returns_result = true
+skip_languages = ["wasm"]
 args = [
     { name = "data", field = "input.data", type = "bytes" },
     { name = "mime_type", field = "input.mime_type", type = "string" },
     { name = "config", field = "input.config", type = "json_object", optional = true },
 ]
 
+[e2e.calls.extract_bytes_sync.overrides.csharp]
+options_type = "ExtractionConfig"
+json_object_types = { chunking = "ChunkingConfig", ocr = "OcrConfig", images = "ImageExtractionConfig", html_output = "HtmlOutputConfig", language_detection = "LanguageDetectionConfig", postprocessor = "PostProcessorConfig", acceleration = "AccelerationConfig", email = "EmailConfig", pages = "PageConfig", pdf_options = "PdfConfig", layout = "LayoutDetectionConfig", tree_sitter = "TreeSitterConfig", structured_extraction = "StructuredExtractionConfig", content_filter = "ContentFilterConfig", token_reduction = "TokenReductionOptions" }
+
 [e2e.calls.embed]
 function = "embed_texts"
 module = "kreuzberg"
 async = false
+returns_result = true
+skip_languages = ["wasm"]
 args = [
-    { name = "texts", field = "input.texts", type = "json_object" },
+    { name = "texts", field = "input.texts", type = "json_object", element_type = "String" },
     { name = "config", field = "input.config", type = "json_object", optional = true },
 ]
 
-[e2e.calls.render_page]
-function = "render_page"
-module = "kreuzberg"
-async = false
-args = [
-    { name = "path", field = "input.path", type = "string" },
-    { name = "page", field = "input.page", type = "int" },
-    { name = "config", field = "input.config", type = "json_object", optional = true },
-]
+[e2e.calls.embed.overrides.java]
+result_is_simple = true
+options_type = "EmbeddingConfig"
 
 # --- Text extraction standalone ---
 
 [e2e.calls.extract_text_from_pdf]
 function = "extract_text_from_pdf"
 module = "kreuzberg"
+skip_languages = ["wasm"]
 async = false
+returns_result = true
 args = [{ name = "pdf_bytes", field = "input.data", type = "bytes" }]
 
+[e2e.calls.extract_text_from_pdf.overrides.rust]
+result_is_simple = true
+
+[e2e.calls.extract_text_from_pdf.overrides.node]
+result_is_simple = true
+
+[e2e.calls.extract_text_from_pdf.overrides.csharp]
+result_is_simple = true
+
+[e2e.calls.extract_text_from_pdf.overrides.java]
+result_is_simple = true
+[e2e.calls.render_page]
+function = "render_pdf_page_to_png"
+module = "kreuzberg"
+skip_languages = ["wasm"]
+async = false
+returns_result = true
+args = [
+    { name = "pdf_bytes", field = "input.path", type = "bytes" },
+    { name = "page_index", field = "input.page_index", type = "int" },
+]
+
+[e2e.calls.render_page.overrides.rust]
+result_is_simple = true
+extra_args = ["None", "None"]
+
+[e2e.calls.render_page.overrides.node]
+result_is_simple = true
+
+[e2e.calls.render_page.overrides.csharp]
+result_is_simple = true
+extra_args = ["null", "null"]
+
+
+[e2e.calls.render_page.overrides.java]
+result_is_simple = true
+result_is_bytes = true
 [e2e.calls.extract_doc_text]
 function = "extract_doc_text"
 module = "kreuzberg"
+skip_languages = ["wasm"]
 async = false
+returns_result = true
 args = [{ name = "content", field = "input.data", type = "bytes" }]
 
 [e2e.calls.extract_email_content]
 function = "extract_email_content"
 module = "kreuzberg"
+skip_languages = ["wasm"]
 async = false
-args = [{ name = "bytes", field = "input.data", type = "bytes" }]
+returns_result = true
+args = [
+    { name = "data", field = "input.data", type = "bytes" },
+    { name = "mime_type", field = "input.mime_type", type = "string" },
+    { name = "fallback_codepage", field = "input.fallback_codepage", type = "int", optional = true },
+]
 
 [e2e.calls.extract_pptx_from_bytes]
 function = "extract_pptx_from_bytes"
 module = "kreuzberg"
+skip_languages = ["wasm"]
 async = false
-args = [{ name = "bytes", field = "input.data", type = "bytes" }]
+returns_result = true
+args = [
+    { name = "bytes", field = "input.data", type = "bytes" },
+    { name = "options", field = "input.options", type = "json_object", optional = true },
+]
 
 # --- Rendering standalone ---
 
 [e2e.calls.render_html]
-function = "render_html"
+function = "render_html_str"
 module = "kreuzberg"
 async = false
+returns_result = true
 args = [{ name = "doc", field = "input.doc", type = "string" }]
 
+[e2e.calls.render_html.overrides.rust]
+result_is_simple = true
+
+[e2e.calls.render_html.overrides.node]
+result_is_simple = true
+
+
+[e2e.calls.render_html.overrides.java]
+result_is_simple = true
+
+[e2e.calls.render_html.overrides.csharp]
+result_is_simple = true
 [e2e.calls.render_markdown]
-function = "render_markdown"
+function = "render_markdown_str"
 module = "kreuzberg"
 async = false
+returns_result = true
 args = [{ name = "doc", field = "input.doc", type = "string" }]
 
+[e2e.calls.render_markdown.overrides.rust]
+result_is_simple = true
+
+[e2e.calls.render_markdown.overrides.node]
+result_is_simple = true
+
+
+[e2e.calls.render_markdown.overrides.java]
+result_is_simple = true
+
+[e2e.calls.render_markdown.overrides.csharp]
+result_is_simple = true
 [e2e.calls.render_djot]
-function = "render_djot"
+function = "render_djot_str"
 module = "kreuzberg"
 async = false
+returns_result = true
 args = [{ name = "doc", field = "input.doc", type = "string" }]
 
+[e2e.calls.render_djot.overrides.rust]
+result_is_simple = true
+
+[e2e.calls.render_djot.overrides.node]
+result_is_simple = true
+
+
+[e2e.calls.render_djot.overrides.java]
+result_is_simple = true
+
+[e2e.calls.render_djot.overrides.csharp]
+result_is_simple = true
 [e2e.calls.render_json]
-function = "render_json"
+function = "render_json_str"
 module = "kreuzberg"
 async = false
+returns_result = true
 args = [{ name = "doc", field = "input.doc", type = "string" }]
 
+[e2e.calls.render_json.overrides.rust]
+result_is_simple = true
+
+[e2e.calls.render_json.overrides.node]
+result_is_simple = true
+
+
+[e2e.calls.render_json.overrides.java]
+result_is_simple = true
+
+[e2e.calls.render_json.overrides.csharp]
+result_is_simple = true
 [e2e.calls.render_plain]
-function = "render_plain"
+function = "render_plain_str"
 module = "kreuzberg"
 async = false
+returns_result = true
 args = [{ name = "doc", field = "input.doc", type = "string" }]
 
+[e2e.calls.render_plain.overrides.rust]
+result_is_simple = true
+
+[e2e.calls.render_plain.overrides.node]
+result_is_simple = true
+
+
+[e2e.calls.render_plain.overrides.java]
+result_is_simple = true
+
+[e2e.calls.render_plain.overrides.csharp]
+result_is_simple = true
 [e2e.calls.convert_html_to_markdown]
 function = "convert_html_to_markdown"
 module = "kreuzberg"
 async = false
+returns_result = true
 args = [{ name = "html", field = "input.html", type = "string" }]
 
+[e2e.calls.convert_html_to_markdown.overrides.rust]
+result_is_simple = true
+extra_args = ["None", "None"]
+
+[e2e.calls.convert_html_to_markdown.overrides.node]
+result_is_simple = true
+
+[e2e.calls.convert_html_to_markdown.overrides.csharp]
+result_is_simple = true
+
+
+[e2e.calls.convert_html_to_markdown.overrides.java]
+result_is_simple = true
 [e2e.calls.djot_to_html]
 function = "djot_to_html"
 module = "kreuzberg"
 async = false
+returns_result = true
 args = [{ name = "djot", field = "input.djot", type = "string" }]
 
 # --- Chunking ---
 
+[e2e.calls.djot_to_html.overrides.rust]
+result_is_simple = true
+
+[e2e.calls.djot_to_html.overrides.node]
+result_is_simple = true
+
+[e2e.calls.djot_to_html.overrides.csharp]
+result_is_simple = true
+
+
+[e2e.calls.djot_to_html.overrides.java]
+result_is_simple = true
 [e2e.calls.chunk_text]
 function = "chunk_text"
 module = "kreuzberg"
 async = false
+returns_result = true
 args = [
     { name = "text", field = "input.text", type = "string" },
     { name = "config", field = "input.config", type = "json_object" },
 ]
+
+[e2e.calls.chunk_text.overrides.wasm]
+options_type = "WasmChunkingConfig"
+
+[e2e.calls.chunk_text.overrides.rust]
+extra_args = ["None"]
+
+[e2e.calls.chunk_text.overrides.node]
+options_type = "JsChunkingConfig"
+
+[e2e.calls.chunk_text.overrides.csharp]
+options_type = "ChunkingConfig"
+extra_args = ["null"]
+
+[e2e.calls.chunk_text.overrides.java]
+options_type = "ChunkingConfig"
 
 [e2e.calls.chunk_semantic]
 function = "chunk_semantic"
 module = "kreuzberg"
 async = false
+returns_result = true
 args = [
     { name = "text", field = "input.text", type = "string" },
     { name = "config", field = "input.config", type = "json_object" },
 ]
 
+[e2e.calls.chunk_semantic.overrides.wasm]
+options_type = "WasmChunkingConfig"
+
+[e2e.calls.chunk_semantic.overrides.rust]
+extra_args = ["None"]
+
+[e2e.calls.chunk_semantic.overrides.node]
+options_type = "JsChunkingConfig"
+
+[e2e.calls.chunk_semantic.overrides.csharp]
+options_type = "ChunkingConfig"
+extra_args = ["null"]
+
+[e2e.calls.chunk_semantic.overrides.java]
+options_type = "ChunkingConfig"
+
 [e2e.calls.chunk_texts_batch]
 function = "chunk_texts_batch"
 module = "kreuzberg"
 async = false
+returns_result = true
+skip_languages = ["wasm"]
 args = [
-    { name = "texts", field = "input.texts", type = "json_object" },
+    { name = "texts", field = "input.texts", type = "json_object", element_type = "String" },
     { name = "config", field = "input.config", type = "json_object" },
 ]
+
+[e2e.calls.chunk_texts_batch.overrides.node]
+options_type = "JsChunkingConfig"
+
+[e2e.calls.chunk_texts_batch.overrides.csharp]
+options_type = "ChunkingConfig"
+
+[e2e.calls.chunk_texts_batch.overrides.java]
+options_type = "ChunkingConfig"
 
 # --- Detection ---
 
@@ -1981,130 +2234,202 @@ args = [
 function = "detect_languages"
 module = "kreuzberg"
 async = false
+returns_result = true
 args = [
     { name = "text", field = "input.text", type = "string" },
     { name = "config", field = "input.config", type = "json_object", optional = true },
 ]
 
+[e2e.calls.detect_languages.overrides.go]
+options_type = "LanguageDetectionConfig"
+
+[e2e.calls.detect_languages.overrides.node]
+options_type = "JsLanguageDetectionConfig"
+
+[e2e.calls.detect_languages.overrides.java]
+options_type = "LanguageDetectionConfig"
+
 [e2e.calls.detect_mime_type_standalone]
 function = "detect_mime_type"
 module = "kreuzberg"
 async = false
+returns_result = true
 args = [
     { name = "path", field = "input.path", type = "string" },
-    { name = "check_exists", field = "input.check_exists", type = "bool", optional = true },
+    { name = "check_exists", field = "input.check_exists", type = "bool" },
 ]
 
 [e2e.calls.detect_mime_type_from_bytes]
 function = "detect_mime_type_from_bytes"
 module = "kreuzberg"
+skip_languages = ["wasm"]
 async = false
+returns_result = true
 args = [{ name = "content", field = "input.data", type = "bytes" }]
 
 [e2e.calls.detect_image_format]
 function = "detect_image_format"
 module = "kreuzberg"
 async = false
+skip_languages = ["wasm"]
 args = [{ name = "data", field = "input.data", type = "bytes" }]
 
 # --- Hashing ---
 
+[e2e.calls.detect_image_format.overrides.rust]
+result_is_simple = true
+
+
+[e2e.calls.detect_image_format.overrides.java]
+result_is_simple = true
 [e2e.calls.blake3_hash_bytes]
 function = "blake3_hash_bytes"
 module = "kreuzberg"
+skip_languages = ["wasm"]
 async = false
 args = [{ name = "data", field = "input.data", type = "bytes" }]
 
+[e2e.calls.blake3_hash_bytes.overrides.rust]
+result_is_simple = true
+
+[e2e.calls.blake3_hash_bytes.overrides.node]
+result_is_simple = true
+
+
+[e2e.calls.blake3_hash_bytes.overrides.java]
+result_is_simple = true
 [e2e.calls.blake3_hash_file]
 function = "blake3_hash_file"
 module = "kreuzberg"
 async = false
-args = [{ name = "path", field = "input.path", type = "string" }]
+returns_result = true
+args = [{ name = "path", field = "input.path", type = "file_path" }]
 
+[e2e.calls.blake3_hash_file.overrides.node]
+result_is_simple = true
+
+
+[e2e.calls.blake3_hash_file.overrides.java]
+result_is_simple = true
 [e2e.calls.fast_hash]
 function = "fast_hash"
 module = "kreuzberg"
+skip_languages = ["wasm"]
 async = false
 args = [{ name = "data", field = "input.data", type = "bytes" }]
 
+[e2e.calls.fast_hash.overrides.rust]
+result_is_simple = true
+
+[e2e.calls.fast_hash.overrides.node]
+result_is_simple = true
+
+
+[e2e.calls.fast_hash.overrides.java]
+result_is_simple = true
 [e2e.calls.compute_hash]
 function = "compute_hash"
 module = "kreuzberg"
+skip_languages = ["wasm"]
 async = false
 args = [{ name = "data", field = "input.data", type = "bytes" }]
 
 # --- Validation ---
 
+[e2e.calls.compute_hash.overrides.rust]
+result_is_simple = true
+
+[e2e.calls.compute_hash.overrides.node]
+result_is_simple = true
+
+
+[e2e.calls.compute_hash.overrides.java]
+result_is_simple = true
 [e2e.calls.validate_port]
 function = "validate_port"
 module = "kreuzberg"
 async = false
+returns_result = true
+returns_void = true
 args = [{ name = "port", field = "input.port", type = "int" }]
 
 [e2e.calls.validate_host]
 function = "validate_host"
 module = "kreuzberg"
 async = false
+returns_result = true
+returns_void = true
 args = [{ name = "host", field = "input.host", type = "string" }]
 
 [e2e.calls.validate_mime_type]
 function = "validate_mime_type"
 module = "kreuzberg"
 async = false
+returns_result = true
 args = [{ name = "mime_type", field = "input.mime_type", type = "string" }]
 
 [e2e.calls.validate_language_code]
 function = "validate_language_code"
 module = "kreuzberg"
 async = false
+returns_result = true
+returns_void = true
 args = [{ name = "code", field = "input.code", type = "string" }]
 
 [e2e.calls.validate_tesseract_psm]
 function = "validate_tesseract_psm"
 module = "kreuzberg"
 async = false
+returns_void = true
 args = [{ name = "psm", field = "input.psm", type = "int" }]
 
 [e2e.calls.validate_tesseract_oem]
 function = "validate_tesseract_oem"
 module = "kreuzberg"
 async = false
+returns_void = true
 args = [{ name = "oem", field = "input.oem", type = "int" }]
 
 [e2e.calls.validate_output_format_fn]
 function = "validate_output_format"
 module = "kreuzberg"
 async = false
+returns_void = true
 args = [{ name = "format", field = "input.format", type = "string" }]
 
 [e2e.calls.validate_confidence_fn]
 function = "validate_confidence"
 module = "kreuzberg"
 async = false
+returns_void = true
 args = [{ name = "confidence", field = "input.confidence", type = "float" }]
 
 [e2e.calls.validate_ocr_backend]
 function = "validate_ocr_backend"
 module = "kreuzberg"
 async = false
+returns_void = true
 args = [{ name = "backend", field = "input.backend", type = "string" }]
 
 [e2e.calls.validate_binarization_method]
 function = "validate_binarization_method"
 module = "kreuzberg"
 async = false
+returns_void = true
 args = [{ name = "method", field = "input.method", type = "string" }]
 
 [e2e.calls.validate_token_reduction_level]
 function = "validate_token_reduction_level"
 module = "kreuzberg"
 async = false
+returns_void = true
 args = [{ name = "level", field = "input.level", type = "string" }]
 
 [e2e.calls.validate_chunking_params]
 function = "validate_chunking_params"
 module = "kreuzberg"
 async = false
+returns_void = true
 args = [
     { name = "max_characters", field = "input.max_characters", type = "int" },
     { name = "overlap", field = "input.overlap", type = "int" },
@@ -2118,50 +2443,136 @@ module = "kreuzberg"
 async = false
 args = [{ name = "text", field = "input.text", type = "string" }]
 
+[e2e.calls.normalize_whitespace.overrides.wasm]
+result_is_simple = true
+
+[e2e.calls.normalize_whitespace.overrides.rust]
+result_is_simple = true
+
+[e2e.calls.normalize_whitespace.overrides.go]
+result_is_simple = true
+
+[e2e.calls.normalize_whitespace.overrides.node]
+result_is_simple = true
+
+[e2e.calls.normalize_whitespace.overrides.csharp]
+result_is_simple = true
+
+
+[e2e.calls.normalize_whitespace.overrides.java]
+result_is_simple = true
 [e2e.calls.clean_extracted_text]
 function = "clean_extracted_text"
 module = "kreuzberg"
 async = false
 args = [{ name = "text", field = "input.text", type = "string" }]
 
+[e2e.calls.clean_extracted_text.overrides.wasm]
+result_is_simple = true
+
+[e2e.calls.clean_extracted_text.overrides.rust]
+result_is_simple = true
+
+[e2e.calls.clean_extracted_text.overrides.go]
+result_is_simple = true
+
+[e2e.calls.clean_extracted_text.overrides.node]
+result_is_simple = true
+
+[e2e.calls.clean_extracted_text.overrides.csharp]
+result_is_simple = true
+
+
+[e2e.calls.clean_extracted_text.overrides.java]
+result_is_simple = true
 [e2e.calls.fix_mojibake]
 function = "fix_mojibake"
 module = "kreuzberg"
 async = false
 args = [{ name = "text", field = "input.text", type = "string" }]
 
+[e2e.calls.fix_mojibake.overrides.wasm]
+result_is_simple = true
+
+[e2e.calls.fix_mojibake.overrides.rust]
+result_is_simple = true
+
+[e2e.calls.fix_mojibake.overrides.csharp]
+result_is_simple = true
+
+
+[e2e.calls.fix_mojibake.overrides.java]
+result_is_simple = true
 [e2e.calls.escape_html_entities]
 function = "escape_html_entities"
 module = "kreuzberg"
 async = false
 args = [{ name = "text", field = "input.text", type = "string" }]
 
+[e2e.calls.escape_html_entities.overrides.wasm]
+result_is_simple = true
+
+[e2e.calls.escape_html_entities.overrides.rust]
+result_is_simple = true
+
+[e2e.calls.escape_html_entities.overrides.csharp]
+result_is_simple = true
+
+
+[e2e.calls.escape_html_entities.overrides.java]
+result_is_simple = true
 [e2e.calls.dedup_text]
 function = "dedup_text"
 module = "kreuzberg"
 async = false
-args = [{ name = "text", field = "input.text", type = "string" }]
+args = [{ name = "texts", field = "input.texts", type = "json_object", owned = true, element_type = "String" }]
 
+[e2e.calls.dedup_text.overrides.wasm]
+result_is_simple = true
+
+[e2e.calls.dedup_text.overrides.rust]
+result_is_simple = true
+
+[e2e.calls.dedup_text.overrides.go]
+result_is_simple = true
+result_is_array = true
+returns_result = true
+
+[e2e.calls.dedup_text.overrides.node]
+result_is_simple = true
+
+[e2e.calls.dedup_text.overrides.csharp]
+result_is_simple = true
+
+
+[e2e.calls.dedup_text.overrides.java]
+result_is_simple = true
 [e2e.calls.is_valid_utf8]
 function = "is_valid_utf8"
 module = "kreuzberg"
+skip_languages = ["wasm"]
 async = false
 args = [{ name = "bytes", field = "input.data", type = "bytes" }]
 
+[e2e.calls.is_valid_utf8.overrides.rust]
+result_is_simple = true
+
+[e2e.calls.is_valid_utf8.overrides.go]
+result_is_simple = true
+
+[e2e.calls.is_valid_utf8.overrides.node]
+result_is_simple = true
+
+[e2e.calls.is_valid_utf8.overrides.csharp]
+result_is_simple = true
+
 # --- String utilities ---
+# Note: camel_to_snake and snake_to_camel are excluded from the public API surface
+# (they operate on serde_json::Value, not strings) and fixtures skip them everywhere.
 
-[e2e.calls.camel_to_snake]
-function = "camel_to_snake"
-module = "kreuzberg"
-async = false
-args = [{ name = "text", field = "input.text", type = "string" }]
 
-[e2e.calls.snake_to_camel]
-function = "snake_to_camel"
-module = "kreuzberg"
-async = false
-args = [{ name = "text", field = "input.text", type = "string" }]
-
+[e2e.calls.is_valid_utf8.overrides.java]
+result_is_simple = true
 [e2e.calls.sanitize_filename]
 function = "sanitize_filename"
 module = "kreuzberg"
@@ -2172,47 +2583,64 @@ args = [{ name = "filename", field = "input.filename", type = "string" }]
 function = "sanitize_path"
 module = "kreuzberg"
 async = false
-args = [{ name = "path", field = "input.path", type = "string" }]
+args = [{ name = "path", field = "input.path", type = "file_path" }]
 
 # --- Markup formatting ---
 
 [e2e.calls.bold]
 function = "bold"
-module = "kreuzberg"
+module = "kreuzberg::builder"
 async = false
-args = [{ name = "text", field = "input.text", type = "string" }]
+args = [
+    { name = "start", field = "input.start", type = "i64" },
+    { name = "end", field = "input.end", type = "i64" }
+]
 
 [e2e.calls.italic]
 function = "italic"
-module = "kreuzberg"
+module = "kreuzberg::builder"
 async = false
-args = [{ name = "text", field = "input.text", type = "string" }]
+args = [
+    { name = "start", field = "input.start", type = "i64" },
+    { name = "end", field = "input.end", type = "i64" }
+]
 
 [e2e.calls.code_markup]
 function = "code"
-module = "kreuzberg"
+module = "kreuzberg::builder"
 async = false
-args = [{ name = "text", field = "input.text", type = "string" }]
+args = [
+    { name = "start", field = "input.start", type = "i64" },
+    { name = "end", field = "input.end", type = "i64" }
+]
 
 [e2e.calls.strikethrough]
 function = "strikethrough"
-module = "kreuzberg"
+module = "kreuzberg::builder"
 async = false
-args = [{ name = "text", field = "input.text", type = "string" }]
+args = [
+    { name = "start", field = "input.start", type = "i64" },
+    { name = "end", field = "input.end", type = "i64" }
+]
 
 [e2e.calls.underline]
 function = "underline"
-module = "kreuzberg"
+module = "kreuzberg::builder"
 async = false
-args = [{ name = "text", field = "input.text", type = "string" }]
+args = [
+    { name = "start", field = "input.start", type = "i64" },
+    { name = "end", field = "input.end", type = "i64" }
+]
 
 [e2e.calls.link]
 function = "link"
-module = "kreuzberg"
+module = "kreuzberg::builder"
 async = false
 args = [
-    { name = "text", field = "input.text", type = "string" },
+    { name = "start", field = "input.start", type = "i64" },
+    { name = "end", field = "input.end", type = "i64" },
     { name = "url", field = "input.url", type = "string" },
+    { name = "title", field = "input.title", type = "string", optional = true }
 ]
 
 # --- Table processing ---
@@ -2229,17 +2657,8 @@ module = "kreuzberg"
 async = false
 args = [{ name = "cells", field = "input.cells", type = "json_object" }]
 
-[e2e.calls.excel_to_text]
-function = "excel_to_text"
-module = "kreuzberg"
-async = false
-args = [{ name = "bytes", field = "input.data", type = "bytes" }]
-
-[e2e.calls.excel_to_markdown]
-function = "excel_to_markdown"
-module = "kreuzberg"
-async = false
-args = [{ name = "bytes", field = "input.data", type = "bytes" }]
+# Note: excel_to_text and excel_to_markdown are internal helpers excluded from the
+# public API surface. No e2e fixtures exist for them.
 
 # --- Cache management ---
 
@@ -2247,22 +2666,36 @@ args = [{ name = "bytes", field = "input.data", type = "bytes" }]
 function = "generate_cache_key"
 module = "kreuzberg"
 async = false
-args = [{ name = "parts", field = "input.parts", type = "json_object" }]
+args = [{ name = "parts", field = "input.parts", type = "json_object", element_type = "(String, String)" }]
 
+[e2e.calls.generate_cache_key.overrides.rust]
+result_is_simple = true
+
+
+[e2e.calls.generate_cache_key.overrides.java]
+result_is_simple = true
 [e2e.calls.validate_cache_key]
 function = "validate_cache_key"
 module = "kreuzberg"
 async = false
 args = [{ name = "key", field = "input.key", type = "string" }]
 
+[e2e.calls.validate_cache_key.overrides.rust]
+result_is_simple = true
+
 # --- Embedding extras ---
 
+
+[e2e.calls.validate_cache_key.overrides.java]
+result_is_simple = true
 [e2e.calls.embed_text]
-function = "embed_text"
+function = "embed_texts"
 module = "kreuzberg"
 async = false
+returns_result = true
+skip_languages = ["wasm"]
 args = [
-    { name = "text", field = "input.text", type = "string" },
+    { name = "texts", field = "input.texts", type = "json_object" },
     { name = "config", field = "input.config", type = "json_object", optional = true },
 ]
 
@@ -2270,16 +2703,24 @@ args = [
 function = "list_presets"
 module = "kreuzberg"
 async = false
+skip_languages = ["wasm"]
 args = []
 
 [e2e.calls.normalize_vec]
 function = "normalize"
 module = "kreuzberg"
 async = false
-args = [{ name = "data", field = "input.data", type = "json_object" }]
+skip_languages = ["wasm"]
+args = [{ name = "data", field = "input.data", type = "json_object", element_type = "f32" }]
+
+[e2e.calls.normalize_vec.overrides.rust]
+result_is_simple = true
 
 # --- Registry & list ---
 
+
+[e2e.calls.normalize_vec.overrides.java]
+result_is_simple = true
 [e2e.calls.list_supported_formats]
 function = "list_supported_formats"
 module = "kreuzberg"
@@ -2290,7 +2731,24 @@ args = []
 function = "get_extensions_for_mime"
 module = "kreuzberg"
 async = false
+returns_result = true
 args = [{ name = "mime_type", field = "input.mime_type", type = "string" }]
+
+[e2e.calls.get_extensions_for_mime.overrides.rust]
+result_is_simple = true
+
+[e2e.calls.get_extensions_for_mime.overrides.go]
+result_is_simple = true
+result_is_array = true
+
+[e2e.calls.get_extensions_for_mime.overrides.node]
+result_is_simple = true
+
+[e2e.calls.get_extensions_for_mime.overrides.java]
+result_is_simple = true
+
+[e2e.calls.get_extensions_for_mime.overrides.csharp]
+result_is_simple = true
 
 # --- Batch extraction ---
 
@@ -2298,25 +2756,49 @@ args = [{ name = "mime_type", field = "input.mime_type", type = "string" }]
 function = "batch_extract_file"
 module = "kreuzberg"
 async = true
+returns_result = true
+skip_languages = ["wasm"]
 args = [
-    { name = "paths", field = "input.paths", type = "json_object" },
+    { name = "paths", field = "input.paths", type = "json_object", owned = true },
     { name = "config", field = "input.config", type = "json_object", optional = true },
 ]
+
+[e2e.calls.batch_extract_file.overrides.rust]
+result_is_vec = true
+
+[e2e.calls.batch_extract_file.overrides.csharp]
+result_is_vec = true
+options_type = "ExtractionConfig"
+
+[e2e.calls.batch_extract_file.overrides.java]
+options_type = "ExtractionConfig"
 
 [e2e.calls.batch_extract_file_sync]
 function = "batch_extract_file_sync"
 module = "kreuzberg"
 async = false
+returns_result = true
+skip_languages = ["wasm"]
 args = [
-    { name = "paths", field = "input.paths", type = "json_object" },
+    { name = "paths", field = "input.paths", type = "json_object", owned = true },
     { name = "config", field = "input.config", type = "json_object", optional = true },
 ]
+
+[e2e.calls.batch_extract_file_sync.overrides.rust]
+result_is_vec = true
+
+[e2e.calls.batch_extract_file_sync.overrides.csharp]
+result_is_vec = true
+options_type = "ExtractionConfig"
+
+[e2e.calls.batch_extract_file_sync.overrides.java]
+options_type = "ExtractionConfig"
 
 # --- Image processing ---
 
 [e2e.calls.calculate_optimal_dpi]
 function = "calculate_optimal_dpi"
-module = "kreuzberg"
+module = "kreuzberg::image"
 async = false
 args = [
     { name = "width", field = "input.width", type = "int" },
@@ -2341,34 +2823,88 @@ args = [
 function = "reduce_tokens"
 module = "kreuzberg"
 async = false
+returns_result = true
 args = [
     { name = "text", field = "input.text", type = "string" },
-    { name = "level", field = "input.level", type = "string" },
-    { name = "config", field = "input.config", type = "json_object", optional = true },
+    { name = "config", field = "input.config", type = "json_object" },
+    { name = "language_hint", field = "input.language_hint", type = "string", optional = true },
 ]
+
+[e2e.calls.reduce_tokens.overrides.wasm]
+result_is_simple = true
+
+[e2e.calls.reduce_tokens.overrides.rust]
+result_is_simple = true
+
+[e2e.calls.reduce_tokens.overrides.go]
+result_is_simple = true
+options_type = "TokenReductionConfig"
+
+[e2e.calls.reduce_tokens.overrides.node]
+options_type = "JsTokenReductionConfig"
+
+[e2e.calls.reduce_tokens.overrides.csharp]
+options_type = "TokenReductionConfig"
 
 # --- Serialization ---
 
+
+[e2e.calls.reduce_tokens.overrides.java]
+result_is_simple = true
+options_type = "TokenReductionConfig"
+
 [e2e.calls.serialize_to_toon]
-function = "serialize_to_toon"
+function = "extract_file_to_toon"
 module = "kreuzberg"
 async = false
+returns_result = true
+skip_languages = ["wasm"]
 args = [
-    { name = "path", field = "input.path", type = "string" },
+    { name = "path", field = "input.path", type = "file_path" },
     { name = "config", field = "input.config", type = "json_object", optional = true },
 ]
 
+[e2e.calls.serialize_to_toon.overrides.rust]
+result_is_simple = true
+
+[e2e.calls.serialize_to_toon.overrides.node]
+result_is_simple = true
+options_type = "JsExtractionConfig"
+
+[e2e.calls.serialize_to_toon.overrides.csharp]
+result_is_simple = true
+options_type = "ExtractionConfig"
+
+
+[e2e.calls.serialize_to_toon.overrides.java]
+result_is_simple = true
 [e2e.calls.serialize_to_json]
-function = "serialize_to_json"
+function = "extract_file_to_json"
 module = "kreuzberg"
 async = false
+returns_result = true
+skip_languages = ["wasm"]
 args = [
-    { name = "path", field = "input.path", type = "string" },
+    { name = "path", field = "input.path", type = "file_path" },
     { name = "config", field = "input.config", type = "json_object", optional = true },
 ]
 
 # --- MIME detection extras ---
 
+[e2e.calls.serialize_to_json.overrides.rust]
+result_is_simple = true
+
+[e2e.calls.serialize_to_json.overrides.node]
+result_is_simple = true
+options_type = "JsExtractionConfig"
+
+[e2e.calls.serialize_to_json.overrides.csharp]
+result_is_simple = true
+options_type = "ExtractionConfig"
+
+
+[e2e.calls.serialize_to_json.overrides.java]
+result_is_simple = true
 [e2e.calls.detect_or_validate]
 function = "detect_or_validate"
 module = "kreuzberg"
@@ -2377,6 +2913,9 @@ args = [
     { name = "path", field = "input.path", type = "string", optional = true },
     { name = "mime_type", field = "input.mime_type", type = "string", optional = true },
 ]
+
+[e2e.calls.detect_or_validate.overrides.go]
+returns_result = true
 
 [e2e.calls.is_valid_format_field]
 function = "is_valid_format_field"
@@ -2398,65 +2937,147 @@ args = [{ name = "url", field = "input.url", type = "string" }]
 function = "embed_texts"
 module = "kreuzberg"
 async = false
+returns_result = true
+skip_languages = ["wasm"]
 args = [
     { name = "texts", field = "input.texts", type = "json_object" },
     { name = "config", field = "input.config", type = "json_object", optional = true },
 ]
 
+[e2e.calls.embed_texts.overrides.csharp]
+result_is_simple = true
+options_type = "EmbeddingConfig"
+
+[e2e.calls.embed_texts.overrides.java]
+result_is_simple = true
+options_type = "EmbeddingConfig"
+
 [e2e.calls.get_preset]
 function = "get_preset"
 module = "kreuzberg"
 async = false
+skip_languages = ["wasm"]
 args = [{ name = "name", field = "input.name", type = "string" }]
 
 # --- Batch bytes ---
 
+[e2e.calls.get_preset.overrides.rust]
+result_is_simple = true
+
+
+[e2e.calls.get_preset.overrides.java]
+result_is_simple = true
 [e2e.calls.batch_extract_bytes]
 function = "batch_extract_bytes"
 module = "kreuzberg"
 async = true
+returns_result = true
+skip_languages = ["wasm"]
 args = [
-    { name = "items", field = "input.items", type = "json_object" },
+    { name = "items", field = "input.items", type = "json_object", owned = true },
     { name = "config", field = "input.config", type = "json_object", optional = true },
 ]
+
+[e2e.calls.batch_extract_bytes.overrides.rust]
+result_is_vec = true
+
+[e2e.calls.batch_extract_bytes.overrides.csharp]
+result_is_vec = true
+options_type = "ExtractionConfig"
+
+[e2e.calls.batch_extract_bytes.overrides.java]
+options_type = "ExtractionConfig"
 
 [e2e.calls.batch_extract_bytes_sync]
 function = "batch_extract_bytes_sync"
 module = "kreuzberg"
 async = false
+returns_result = true
+skip_languages = ["wasm"]
 args = [
-    { name = "items", field = "input.items", type = "json_object" },
+    { name = "items", field = "input.items", type = "json_object", owned = true },
     { name = "config", field = "input.config", type = "json_object", optional = true },
 ]
+
+[e2e.calls.batch_extract_bytes_sync.overrides.rust]
+result_is_vec = true
+
+[e2e.calls.batch_extract_bytes_sync.overrides.csharp]
+result_is_vec = true
+options_type = "ExtractionConfig"
+
+[e2e.calls.batch_extract_bytes_sync.overrides.java]
+options_type = "ExtractionConfig"
 
 # --- Registry operations ---
 
 [e2e.calls.list_document_extractors]
-function = "list_document_extractors"
-module = "kreuzberg"
+function = "list_extractors"
+module = "kreuzberg::plugins"
 async = false
 args = []
 
+[e2e.calls.list_document_extractors.overrides.go]
+function = "ListExtractors"
+result_is_simple = true
+
+[e2e.calls.list_document_extractors.overrides.node]
+function = "listExtractors"
+result_is_simple = true
+
+
+[e2e.calls.list_document_extractors.overrides.java]
+result_is_simple = true
 [e2e.calls.list_ocr_backends]
 function = "list_ocr_backends"
 module = "kreuzberg"
 async = false
 args = []
 
+[e2e.calls.list_ocr_backends.overrides.go]
+result_is_simple = true
+returns_result = true
+
+[e2e.calls.list_ocr_backends.overrides.node]
+result_is_simple = true
+
+
+[e2e.calls.list_ocr_backends.overrides.java]
+result_is_simple = true
 [e2e.calls.list_post_processors]
 function = "list_post_processors"
 module = "kreuzberg"
 async = false
 args = []
 
+[e2e.calls.list_post_processors.overrides.go]
+result_is_simple = true
+returns_result = true
+
+[e2e.calls.list_post_processors.overrides.node]
+result_is_simple = true
+
+
+[e2e.calls.list_post_processors.overrides.java]
+result_is_simple = true
 [e2e.calls.list_validators]
 function = "list_validators"
 module = "kreuzberg"
 async = false
 args = []
 
+[e2e.calls.list_validators.overrides.go]
+result_is_simple = true
+returns_result = true
+
+[e2e.calls.list_validators.overrides.node]
+result_is_simple = true
+
 # Package references for e2e tests
 
+
+[e2e.calls.list_validators.overrides.java]
+result_is_simple = true
 [e2e.packages.rust]
 path = "../../crates/kreuzberg"
 
@@ -2488,7 +3109,7 @@ module = "Kreuzberg"
 path = "../../packages/elixir"
 
 [e2e.packages.php]
-name = "Kreuzberg"
+name = "kreuzberg-dev/kreuzberg"
 path = "../../packages/php"
 
 [e2e.packages.r]
@@ -2502,6 +3123,12 @@ rust = "(cd {dir} && cargo fmt --all)"
 
 [e2e.fields]
 "metadata.title" = "metadata.format"
+# Derived/synthetic fields for assertions
+"chunks_have_content" = "chunks_have_content"
+
+# sheet_count / sheet_names are now real top-level Option-typed fields on
+# Metadata (mirrored from the Excel format variant) so every binding sees
+# them at metadata.sheet_count / metadata.sheet_names.
 
 [e2e.fields_c_types]
 "extraction_result.metadata" = "Metadata"
@@ -2522,3 +3149,6 @@ vendor_mode = "full"
 [publish.languages.ffi]
 pkg_config = true
 cmake_config = true
+
+[e2e.registry]
+output = "test_apps"

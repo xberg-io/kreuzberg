@@ -275,6 +275,12 @@ public typealias HtmlExtractionResult = RustBridge.HtmlExtractionResult
 /// Extracted inline image with metadata.
 public typealias ExtractedInlineImage = RustBridge.ExtractedInlineImage
 
+/// Result of DOC text extraction.
+public typealias DocExtractionResult = RustBridge.DocExtractionResult
+
+/// Metadata extracted from DOC files.
+public typealias DocMetadata = RustBridge.DocMetadata
+
 /// A drawing object extracted from `<w:drawing>`.
 public typealias Drawing = RustBridge.Drawing
 
@@ -908,10 +914,12 @@ public typealias ImagePreprocessingMetadata = RustBridge.ImagePreprocessingMetad
 /// via a discriminated union, and additional custom fields from postprocessors.
 public typealias Metadata = RustBridge.Metadata
 
-/// Excel/spreadsheet metadata.
+/// Excel/spreadsheet metadata marker.
 ///
-/// Contains information about sheets in Excel, OpenDocument Calc, and other
-/// spreadsheet formats (.xlsx, .xls, .ods, etc.).
+/// Sheet count and sheet names are now exposed directly on [`Metadata`] as
+/// `sheet_count: Option<usize>` and `sheet_names: Option<Vec<String>>` so that
+/// every binding (Rust, Python, Node, …) sees them at the same path. This
+/// struct remains as a `FormatMetadata` variant tag for spreadsheet sources.
 public typealias ExcelMetadata = RustBridge.ExcelMetadata
 
 /// Email metadata extracted from .eml and .msg files.
@@ -1479,20 +1487,20 @@ public typealias LayoutClass = RustBridge.LayoutClass
 /// - `UnsupportedFormat` - Unsupported MIME type or file format
 /// - `Other` - Catch-all for uncommon errors
 public enum KreuzbergError: Error {
-    case io(message: String, field0: String)
-    case parsing(message: String, source: String)
-    case ocr(message: String, source: String)
-    case validation(message: String, source: String)
-    case cache(message: String, source: String)
-    case imageProcessing(message: String, source: String)
-    case serialization(message: String, source: String)
-    case missingDependency(message: String, field0: String)
-    case plugin(message: String, pluginName: String)
-    case lockPoisoned(message: String, field0: String)
-    case unsupportedFormat(message: String, field0: String)
-    case embedding(message: String, source: String)
-    case timeout(message: String, elapsedMs: UInt64, limitMs: UInt64)
-    case cancelled(message: String)
-    case security(message: String, source: String)
-    case other(message: String, field0: String)
+  case io(message: String, field0: String)
+  case parsing(message: String, source: String)
+  case ocr(message: String, source: String)
+  case validation(message: String, source: String)
+  case cache(message: String, source: String)
+  case imageProcessing(message: String, source: String)
+  case serialization(message: String, source: String)
+  case missingDependency(message: String, field0: String)
+  case plugin(message: String, pluginName: String)
+  case lockPoisoned(message: String, field0: String)
+  case unsupportedFormat(message: String, field0: String)
+  case embedding(message: String, source: String)
+  case timeout(message: String, elapsedMs: UInt64, limitMs: UInt64)
+  case cancelled(message: String)
+  case security(message: String, source: String)
+  case other(message: String, field0: String)
 }

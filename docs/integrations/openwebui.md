@@ -8,8 +8,8 @@ Open WebUI supports pluggable content extraction backends. Kreuzberg implements 
 
 1. A user uploads a document (PDF, DOCX, image, etc.) in Open WebUI.
 2. Open WebUI sends the file to Kreuzberg's API endpoint.
-3. Kreuzberg extracts the content — running OCR where needed and returns markdown.
-4. Open WebUI stores the markdown in its vector database for retrieval-augmented generation.
+3. Kreuzberg extracts the content — running OCR where needed and returns Markdown.
+4. Open WebUI stores the Markdown in its vector database for retrieval-augmented generation.
 
 Kreuzberg supports [90+ file formats](../reference/formats.md) and requires no GPU.
 
@@ -61,11 +61,9 @@ docker compose up -d
 
 Open `http://localhost:3000`, create an account, and upload a document. The extracted text will appear in the chat context.
 
-!!! Note "Cache volume"
-    The `kreuzberg-cache` volume persists OCR models and embedding weights across restarts. Without it, models re-download on every container restart (~90 MB–1.2 GB depending on configuration).
+!!! Note "Cache volume" The `kreuzberg-cache` volume persists OCR models and embedding weights across restarts. Without it, models re-download on every container restart (~90 MB–1.2 GB depending on configuration).
 
-!!! Info "Already running Open WebUI?"
-    Start Kreuzberg separately, then point Open WebUI to that Kreuzberg URL.
+!!! Info "Already running Open WebUI?" Start Kreuzberg separately, then point Open WebUI to that Kreuzberg URL.
 
 === "Docker"
 
@@ -120,8 +118,7 @@ Kreuzberg exposes two Open WebUI–compatible APIs. Both return the same extract
 
     Or via the Admin UI: **Settings → Documents → Content Extraction Engine** → select **External** → set URL to `http://kreuzberg:8000`.
 
-!!! Tip
-    If Kreuzberg runs on a different host or port, replace `http://kreuzberg:8000` with the actual address. Inside Docker Compose, use the service name (`kreuzberg`). Outside Docker, use the host IP or `localhost`.
+!!! Tip If Kreuzberg runs on a different host or port, replace `http://kreuzberg:8000` with the actual address. Inside Docker Compose, use the service name (`kreuzberg`). Outside Docker, use the host IP or `localhost`.
 
 ## Verify it works
 

@@ -25,8 +25,8 @@ fn embed_chunks(chunks: &mut [Chunk], config: &EmbeddingConfig) -> kreuzberg::Re
     if chunks.is_empty() {
         return Ok(());
     }
-    let texts: Vec<&str> = chunks.iter().map(|c| c.content.as_str()).collect();
-    let embeddings = kreuzberg::embed_texts(&texts, config)?;
+    let texts: Vec<String> = chunks.iter().map(|c| c.content.clone()).collect();
+    let embeddings = kreuzberg::embed_texts(texts, Some(config.clone()))?;
     for (chunk, embedding) in chunks.iter_mut().zip(embeddings) {
         chunk.embedding = Some(embedding);
     }

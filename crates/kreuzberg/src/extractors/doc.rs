@@ -129,7 +129,7 @@ impl DocumentExtractor for DocExtractor {
         };
 
         // Build elements from the extracted text
-        let paragraphs: Vec<&str> = result.text.split("\n\n").collect();
+        let paragraphs: Vec<&str> = result.content.split("\n\n").collect();
         for (i, paragraph) in paragraphs.iter().enumerate() {
             let trimmed = paragraph.trim();
             if trimmed.is_empty() {

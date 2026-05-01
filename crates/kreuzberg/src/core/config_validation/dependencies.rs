@@ -29,15 +29,16 @@ use crate::{KreuzbergError, Result};
 /// assert!(validate_port(1).is_ok());
 /// assert!(validate_port(65535).is_ok());
 /// assert!(validate_port(0).is_err());
+/// assert!(validate_port(70000).is_err());
 /// ```
-pub fn validate_port(port: u16) -> Result<()> {
-    if port > 0 {
-        Ok(())
-    } else {
+pub fn validate_port(port: u32) -> Result<()> {
+    if port == 0 || port > 65535 {
         Err(KreuzbergError::Validation {
             message: format!("Port must be 1-65535, got {}", port),
             source: None,
         })
+    } else {
+        Ok(())
     }
 }
 

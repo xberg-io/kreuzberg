@@ -82,7 +82,9 @@ impl DocumentStructureBuilder {
             "DocumentStructure validation failed: {:?}",
             self.doc.validate()
         );
-        self.doc
+        let mut doc = self.doc;
+        doc.finalize_node_types();
+        doc
     }
 
     // ========================================================================

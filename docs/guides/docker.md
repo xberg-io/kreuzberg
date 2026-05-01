@@ -1,6 +1,6 @@
 # Docker Deployment <span class="version-badge">v4.0.0</span>
 
-Official Docker images built on the Rust core with Debian 13 (Trixie). Each image supports three execution modes: API server (default), CLI tool, and MCP server.
+Official Docker images built on the Rust core with Debian 13 (Trixie). Each image supports three execution modes: API server (default), command-line tool, and MCP server.
 
 ## Quick Start
 
@@ -131,8 +131,7 @@ docker run -v $(pwd)/documents:/data:ro \
   extract /data/document.pdf
 ```
 
-!!! Note "Model Downloads"
-    Embedding models download on first use (~90 MB – 1.2 GB depending on preset). Use a persistent volume for `/app/.kreuzberg` in production to avoid re-downloading on container restart. Outside Docker, models are cached in the platform-specific global cache directory (for example, `~/.cache/kreuzberg/` on Linux, `~/Library/Caches/kreuzberg/` on macOS).
+!!! Note "Model Downloads" Embedding models download on first use (~90 MB – 1.2 GB depending on preset). Use a persistent volume for `/app/.kreuzberg` in production to avoid re-downloading on container restart. Outside Docker, models are cached in the platform-specific global cache directory (for example, `~/.cache/kreuzberg/` on Linux, `~/Library/Caches/kreuzberg/` on macOS).
 
 ## Docker Compose
 

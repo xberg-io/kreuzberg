@@ -53,3 +53,11 @@ pub use types::{ExtractedInlineImage, HtmlExtractionResult};
 
 // Re-export from html-to-markdown-rs for convenience
 pub use html_to_markdown_rs::ConversionOptions;
+
+/// Convert HTML to Markdown using default options.
+///
+/// This is a simplified wrapper around [`convert_html_to_markdown`] that uses
+/// default conversion options and Markdown output format.
+pub(crate) fn convert_html_to_markdown_simple(html: &str) -> crate::Result<String> {
+    convert_html_to_markdown(html, None, None)
+}

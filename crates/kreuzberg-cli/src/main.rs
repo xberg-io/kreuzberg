@@ -731,7 +731,7 @@ fn main() -> Result<()> {
             validate_file_exists(&path)?;
 
             let path_str = path.to_string_lossy().to_string();
-            let mime_type = detect_mime_type(&path_str, true).with_context(|| {
+            let mime_type = detect_mime_type(path_str.clone(), true).with_context(|| {
                 format!(
                     "Failed to detect MIME type for file '{}'. Ensure the file is readable.",
                     path.display()

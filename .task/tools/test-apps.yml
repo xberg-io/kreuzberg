@@ -1,0 +1,127 @@
+version: "3"
+
+tasks:
+  smoke:
+    desc: Run all test_app smoke tests
+    cmds:
+      - task: smoke:python
+      - task: smoke:node
+      - task: smoke:ruby
+      - task: smoke:go
+      - task: smoke:java
+      - task: smoke:elixir
+      - task: smoke:csharp
+      - task: smoke:php
+      - task: smoke:r
+      - task: smoke:rust
+      - task: smoke:wasm
+
+  smoke:python:
+    desc: Run Python test_app smoke test
+    dir: test_apps/python
+    cmds:
+      - uv sync
+      - uv run pytest smoke_test.py -v
+
+  smoke:node:
+    desc: Run Node.js test_app smoke test
+    dir: test_apps/node
+    cmds:
+      - pnpm install
+      - pnpm run test:smoke
+
+  smoke:ruby:
+    desc: Run Ruby test_app smoke test
+    dir: test_apps/ruby
+    cmds:
+      - bundle install
+      - bundle exec rspec smoke_test.rb
+
+  smoke:go:
+    desc: Run Go test_app smoke test
+    dir: test_apps/go
+    cmds:
+      - go test -v -run TestBasicFixtures
+      - go test -v -run TestParseValidation
+
+  smoke:java:
+    desc: Run Java test_app smoke test
+    dir: test_apps/java
+    cmds:
+      - mvn test -Dtest=SmokeTest
+
+  smoke:elixir:
+    desc: Run Elixir test_app smoke test
+    dir: test_apps/elixir
+    cmds:
+      - mix deps.get
+      - mix test
+
+  smoke:csharp:
+    desc: Run C# test_app smoke test
+    dir: test_apps/csharp
+    cmds:
+      - dotnet restore
+      - dotnet test
+
+  smoke:php:
+    desc: Run PHP test_app smoke test
+    dir: test_apps/php
+    cmds:
+      - composer install
+      - vendor/bin/phpunit smoke_test.php
+
+  smoke:r:
+    desc: Run R test_app smoke test
+    dir: test_apps/r
+    cmds:
+      - Rscript run_tests.R
+
+  smoke:rust:
+    desc: Run Rust test_app smoke test
+    dir: test_apps/rust
+    cmds:
+      - cargo run
+
+  smoke:wasm:
+    desc: Run WASM test_app smoke test
+    dir: test_apps/wasm
+    cmds:
+      - pnpm install
+      - pnpm run test:smoke
+
+  comprehensive:
+    desc: Run all test_app comprehensive tests
+    cmds:
+      - task: comprehensive:python
+      - task: comprehensive:node
+      - task: comprehensive:ruby
+      - task: comprehensive:go
+
+  comprehensive:python:
+    desc: Run Python test_app comprehensive tests
+    dir: test_apps/python
+    cmds:
+      - uv sync
+      - uv run pytest comprehensive_test.py -v
+
+  comprehensive:node:
+    desc: Run Node.js test_app comprehensive tests
+    dir: test_apps/node
+    cmds:
+      - pnpm install
+      - pnpm run test:comprehensive
+
+  comprehensive:ruby:
+    desc: Run Ruby test_app comprehensive tests
+    dir: test_apps/ruby
+    cmds:
+      - bundle install
+      - bundle exec rspec comprehensive_test.rb
+
+  comprehensive:go:
+    desc: Run Go test_app comprehensive tests
+    dir: test_apps/go
+    cmds:
+      - go test -v -run TestProcessFixtures
+      - go test -v -run TestChunkingFixtures

@@ -8,8 +8,8 @@ Apache Tika is the longest-running open-source document extraction tool in the e
 |---|---|---|
 | **Written in** | Rust | Java |
 | **File formats** | 91+ extracted | 1500+ detected, hundreds extracted |
-| **Use from** | Python, TypeScript, Go, Ruby, Java, C#, PHP, Elixir, Rust, WASM | Java, or any language via Tika Server (HTTP) |
-| **Run it as** | Library, CLI, self-hosted API, browser (WASM) | Java library, Tika Server (HTTP), CLI |
+| **Use from** | Python, TypeScript, Go, Ruby, Java, C#, PHP, Elixir, Rust, Wasm | Java, or any language via Tika Server (HTTP) |
+| **Run it as** | Library, CLI, self-hosted API, browser (Wasm) | Java library, Tika Server (HTTP), CLI |
 | **License** | Apache-2.0 | Apache-2.0 |
 | **Sweet spot** | High-throughput pipelines, polyglot native bindings, modern CLI | Enterprise document processing, metadata extraction, search indexing |
 
@@ -39,14 +39,14 @@ Tika's format detection is unmatched in breadth. Kreuzberg focuses on extraction
 
 How each tool fits into your codebase.
 
-- **Kreuzberg** -- Native bindings for **10 languages**. Each binding calls directly into the Rust core -- same performance, same features, no network round-trips. Also runs in the browser via WASM.
+- **Kreuzberg** -- Native bindings for **10 languages**. Each binding calls directly into the Rust core -- same performance, same features, no network round-trips. Also runs in the browser via Wasm.
 - **Tika** -- Native only in **Java**. Every other language goes through Tika Server over HTTP. This adds latency, requires running a separate service, and means your application depends on the JVM being available.
 
 ### OCR
 
 Different levels of OCR sophistication.
 
-- **Kreuzberg** -- Tesseract + native PaddleOCR (ONNX-based, no Python needed). Multi-backend OCR pipeline with automatic quality-based fallback between engines. Image preprocessing built in.
+- **Kreuzberg** -- Tesseract + native PaddleOCR (ONNX-based, no Python needed). Multi-backend OCR pipeline with automatic quality-based fallback between engines. Image preprocessing built-in.
 - **Tika** -- Delegates to Tesseract via its OCR parser. Functional but no multi-backend fallback or built-in quality scoring.
 
 ### Metadata
@@ -72,7 +72,7 @@ Where each tool fits in the broader stack.
 - You need **native bindings** in languages beyond Java (Python, TypeScript, Go, Ruby, etc.)
 - You want a **single binary** or library -- no JVM, no separate server process
 - Your pipeline needs **built-in chunking, embeddings, and RAG support**
-- You need to run extraction in the **browser or on edge runtimes** via WASM
+- You need to run extraction in the **browser or on edge runtimes** via Wasm
 - You want **multi-backend OCR** with automatic quality-based fallback
 
 ## When to Use Tika
