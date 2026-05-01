@@ -195,6 +195,9 @@ class ExtractionConfig {
   /// Page extraction configuration (None = no page tracking)
   final PageConfig? pages;
 
+  /// Keyword extraction configuration (None = no keyword extraction)
+  final KeywordConfig? keywords;
+
   /// Post-processor configuration (None = use defaults)
   final PostProcessorConfig? postprocessor;
 
@@ -351,6 +354,7 @@ class ExtractionConfig {
     required this.tokenReduction,
     required this.languageDetection,
     required this.pages,
+    required this.keywords,
     required this.postprocessor,
     required this.htmlOptions,
     required this.htmlOutput,
@@ -437,6 +441,9 @@ class FileExtractionConfig {
   /// Override page extraction for this file.
   final PageConfig? pages;
 
+  /// Override keyword extraction for this file.
+  final KeywordConfig? keywords;
+
   /// Override post-processor for this file.
   final PostProcessorConfig? postprocessor;
 
@@ -484,6 +491,7 @@ class FileExtractionConfig {
     required this.tokenReduction,
     required this.languageDetection,
     required this.pages,
+    required this.keywords,
     required this.postprocessor,
     required this.htmlOptions,
     required this.resultFormat,
@@ -2643,6 +2651,13 @@ class ExtractionResult {
   /// Independent of `result_format` — can be combined with Unified or ElementBased.
   final DocumentStructure? document;
 
+  /// Extracted keywords when keyword extraction is enabled.
+  ///
+  /// When keyword extraction (RAKE or YAKE) is configured, this field contains
+  /// the extracted keywords with scores, algorithm info, and position data.
+  /// Previously stored in `metadata.additional["keywords"]`.
+  final List<Keyword>? extractedKeywords;
+
   /// Document quality score from quality analysis.
   ///
   /// A value between 0.0 and 1.0 indicating the overall text quality.
@@ -2728,6 +2743,7 @@ class ExtractionResult {
     required this.djotContent,
     required this.ocrElements,
     required this.document,
+    required this.extractedKeywords,
     required this.qualityScore,
     required this.processingWarnings,
     required this.annotations,

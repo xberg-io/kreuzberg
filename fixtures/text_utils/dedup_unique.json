@@ -5,7 +5,7 @@
 	"tags": ["text_utils", "deduplication"],
 	"call": "dedup_text",
 	"input": {
-		"text": "a\nb\nc"
+		"texts": ["a", "b", "c"]
 	},
 	"assertions": [
 		{

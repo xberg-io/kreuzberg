@@ -103,6 +103,15 @@ impl Default for ImageExtractionConfig {
     }
 }
 
+impl Default for TokenReductionOptions {
+    fn default() -> Self {
+        Self {
+            mode: default_reduction_mode(),
+            preserve_important_words: true,
+        }
+    }
+}
+
 impl Default for LanguageDetectionConfig {
     fn default() -> Self {
         Self {

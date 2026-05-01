@@ -1,4 +1,4 @@
-version = "0.12.15"
+version = "0.13.4"
 languages = [
     "python",
     "node",
@@ -863,6 +863,14 @@ ffi_style = "panama"
 
 [csharp]
 namespace = "Kreuzberg"
+exclude_functions = [
+    # Excluded from the C FFI layer (crates/kreuzberg-ffi) — no entry point exists.
+    "chunk_text",
+    "chunk_text_with_heading_source",
+    "chunk_texts_batch",
+    # Returns *mut u8 (raw byte buffer); no kreuzberg_free_bytes function exists in the C FFI.
+    "render_pdf_page_to_png",
+]
 
 [ruby]
 gem_name = "kreuzberg"
@@ -871,10 +879,6 @@ exclude_functions = [
     "apply_output_format",
     # Uses ? operator in a Vec<Element> return context (non-Result function)
     "transform_extraction_result_to_elements",
-    # config param is Option<String> but codegen passes &config as &Option<String> to serde_json::from_str
-    "extract_file",
-    "extract_file_async",
-    "extract_file_sync",
     # Codegen emits references to undeclared bindings (texts_refs, page_boundaries_core)
     "batch_reduce_tokens",
     "chunk_text",
@@ -1876,7 +1880,6 @@ options_type = "ExtractionConfig"
 [e2e.calls.extract_bytes]
 function = "extract_bytes"
 module = "kreuzberg"
-skip_languages = ["wasm"]
 async = true
 returns_result = true
 args = [
@@ -1888,6 +1891,10 @@ args = [
 [e2e.calls.extract_bytes.overrides.csharp]
 options_type = "ExtractionConfig"
 json_object_types = { chunking = "ChunkingConfig", ocr = "OcrConfig", images = "ImageExtractionConfig", html_output = "HtmlOutputConfig", language_detection = "LanguageDetectionConfig", postprocessor = "PostProcessorConfig", acceleration = "AccelerationConfig", email = "EmailConfig", pages = "PageConfig", pdf_options = "PdfConfig", layout = "LayoutDetectionConfig", tree_sitter = "TreeSitterConfig", structured_extraction = "StructuredExtractionConfig", content_filter = "ContentFilterConfig", token_reduction = "TokenReductionOptions" }
+
+[e2e.calls.extract_bytes.overrides.python]
+arg_name_map = { data = "content" }
+options_type = "ExtractionConfig"
 
 [e2e.calls.extract_file_sync]
 function = "extract_file_sync"
@@ -1925,6 +1932,10 @@ args = [
 options_type = "ExtractionConfig"
 json_object_types = { chunking = "ChunkingConfig", ocr = "OcrConfig", images = "ImageExtractionConfig", html_output = "HtmlOutputConfig", language_detection = "LanguageDetectionConfig", postprocessor = "PostProcessorConfig", acceleration = "AccelerationConfig", email = "EmailConfig", pages = "PageConfig", pdf_options = "PdfConfig", layout = "LayoutDetectionConfig", tree_sitter = "TreeSitterConfig", structured_extraction = "StructuredExtractionConfig", content_filter = "ContentFilterConfig", token_reduction = "TokenReductionOptions" }
 
+[e2e.calls.extract_bytes_sync.overrides.python]
+arg_name_map = { data = "content" }
+options_type = "ExtractionConfig"
+
 [e2e.calls.embed]
 function = "embed_texts"
 module = "kreuzberg"
@@ -1945,7 +1956,6 @@ options_type = "EmbeddingConfig"
 [e2e.calls.extract_text_from_pdf]
 function = "extract_text_from_pdf"
 module = "kreuzberg"
-skip_languages = ["wasm"]
 async = false
 returns_result = true
 args = [{ name = "pdf_bytes", field = "input.data", type = "bytes" }]
@@ -1961,10 +1971,12 @@ result_is_simple = true
 
 [e2e.calls.extract_text_from_pdf.overrides.java]
 result_is_simple = true
+
+[e2e.calls.extract_text_from_pdf.overrides.python]
+result_is_simple = true
 [e2e.calls.render_page]
 function = "render_pdf_page_to_png"
 module = "kreuzberg"
-skip_languages = ["wasm"]
 async = false
 returns_result = true
 args = [
@@ -1987,10 +1999,13 @@ extra_args = ["null", "null"]
 [e2e.calls.render_page.overrides.java]
 result_is_simple = true
 result_is_bytes = true
+
+[e2e.calls.render_page.overrides.python]
+result_is_simple = true
+result_is_bytes = true
 [e2e.calls.extract_doc_text]
 function = "extract_doc_text"
 module = "kreuzberg"
-skip_languages = ["wasm"]
 async = false
 returns_result = true
 args = [{ name = "content", field = "input.data", type = "bytes" }]
@@ -1998,7 +2013,6 @@ args = [{ name = "content", field = "input.data", type = "bytes" }]
 [e2e.calls.extract_email_content]
 function = "extract_email_content"
 module = "kreuzberg"
-skip_languages = ["wasm"]
 async = false
 returns_result = true
 args = [
@@ -2010,7 +2024,6 @@ args = [
 [e2e.calls.extract_pptx_from_bytes]
 function = "extract_pptx_from_bytes"
 module = "kreuzberg"
-skip_languages = ["wasm"]
 async = false
 returns_result = true
 args = [
@@ -2039,6 +2052,10 @@ result_is_simple = true
 
 [e2e.calls.render_html.overrides.csharp]
 result_is_simple = true
+
+[e2e.calls.render_html.overrides.python]
+result_is_simple = true
+arg_name_map = { doc = "html" }
 [e2e.calls.render_markdown]
 function = "render_markdown_str"
 module = "kreuzberg"
@@ -2058,6 +2075,10 @@ result_is_simple = true
 
 [e2e.calls.render_markdown.overrides.csharp]
 result_is_simple = true
+
+[e2e.calls.render_markdown.overrides.python]
+result_is_simple = true
+arg_name_map = { doc = "html" }
 [e2e.calls.render_djot]
 function = "render_djot_str"
 module = "kreuzberg"
@@ -2077,6 +2098,10 @@ result_is_simple = true
 
 [e2e.calls.render_djot.overrides.csharp]
 result_is_simple = true
+
+[e2e.calls.render_djot.overrides.python]
+result_is_simple = true
+arg_name_map = { doc = "html" }
 [e2e.calls.render_json]
 function = "render_json_str"
 module = "kreuzberg"
@@ -2096,6 +2121,10 @@ result_is_simple = true
 
 [e2e.calls.render_json.overrides.csharp]
 result_is_simple = true
+
+[e2e.calls.render_json.overrides.python]
+result_is_simple = true
+arg_name_map = { doc = "html" }
 [e2e.calls.render_plain]
 function = "render_plain_str"
 module = "kreuzberg"
@@ -2115,6 +2144,10 @@ result_is_simple = true
 
 [e2e.calls.render_plain.overrides.csharp]
 result_is_simple = true
+
+[e2e.calls.render_plain.overrides.python]
+result_is_simple = true
+arg_name_map = { doc = "html" }
 [e2e.calls.convert_html_to_markdown]
 function = "convert_html_to_markdown"
 module = "kreuzberg"
@@ -2134,6 +2167,9 @@ result_is_simple = true
 
 
 [e2e.calls.convert_html_to_markdown.overrides.java]
+result_is_simple = true
+
+[e2e.calls.convert_html_to_markdown.overrides.python]
 result_is_simple = true
 [e2e.calls.djot_to_html]
 function = "djot_to_html"
@@ -2156,6 +2192,10 @@ result_is_simple = true
 
 [e2e.calls.djot_to_html.overrides.java]
 result_is_simple = true
+
+[e2e.calls.djot_to_html.overrides.python]
+result_is_simple = true
+arg_name_map = { djot = "djot_source" }
 [e2e.calls.chunk_text]
 function = "chunk_text"
 module = "kreuzberg"
@@ -2246,6 +2286,9 @@ options_type = "LanguageDetectionConfig"
 [e2e.calls.detect_languages.overrides.node]
 options_type = "JsLanguageDetectionConfig"
 
+[e2e.calls.detect_languages.overrides.csharp]
+options_type = "LanguageDetectionConfig"
+
 [e2e.calls.detect_languages.overrides.java]
 options_type = "LanguageDetectionConfig"
 
@@ -2262,7 +2305,6 @@ args = [
 [e2e.calls.detect_mime_type_from_bytes]
 function = "detect_mime_type_from_bytes"
 module = "kreuzberg"
-skip_languages = ["wasm"]
 async = false
 returns_result = true
 args = [{ name = "content", field = "input.data", type = "bytes" }]
@@ -2435,6 +2477,9 @@ args = [
     { name = "overlap", field = "input.overlap", type = "int" },
 ]
 
+[e2e.calls.validate_chunking_params.overrides.python]
+arg_name_map = { max_characters = "max_chars", overlap = "max_overlap" }
+
 # --- Text processing ---
 
 [e2e.calls.normalize_whitespace]
@@ -2461,6 +2506,11 @@ result_is_simple = true
 
 [e2e.calls.normalize_whitespace.overrides.java]
 result_is_simple = true
+
+[e2e.calls.normalize_whitespace.overrides.python]
+result_is_simple = true
+arg_name_map = { text = "s" }
+
 [e2e.calls.clean_extracted_text]
 function = "clean_extracted_text"
 module = "kreuzberg"
@@ -2485,6 +2535,9 @@ result_is_simple = true
 
 [e2e.calls.clean_extracted_text.overrides.java]
 result_is_simple = true
+
+[e2e.calls.clean_extracted_text.overrides.python]
+result_is_simple = true
 [e2e.calls.fix_mojibake]
 function = "fix_mojibake"
 module = "kreuzberg"
@@ -2503,6 +2556,9 @@ result_is_simple = true
 
 [e2e.calls.fix_mojibake.overrides.java]
 result_is_simple = true
+
+[e2e.calls.fix_mojibake.overrides.python]
+result_is_simple = true
 [e2e.calls.escape_html_entities]
 function = "escape_html_entities"
 module = "kreuzberg"
@@ -2520,6 +2576,9 @@ result_is_simple = true
 
 
 [e2e.calls.escape_html_entities.overrides.java]
+result_is_simple = true
+
+[e2e.calls.escape_html_entities.overrides.python]
 result_is_simple = true
 [e2e.calls.dedup_text]
 function = "dedup_text"
@@ -2547,6 +2606,9 @@ result_is_simple = true
 
 [e2e.calls.dedup_text.overrides.java]
 result_is_simple = true
+
+[e2e.calls.dedup_text.overrides.python]
+result_is_simple = true
 [e2e.calls.is_valid_utf8]
 function = "is_valid_utf8"
 module = "kreuzberg"
@@ -2572,6 +2634,9 @@ result_is_simple = true
 
 
 [e2e.calls.is_valid_utf8.overrides.java]
+result_is_simple = true
+
+[e2e.calls.is_valid_utf8.overrides.python]
 result_is_simple = true
 [e2e.calls.sanitize_filename]
 function = "sanitize_filename"
@@ -2671,6 +2736,8 @@ args = [{ name = "parts", field = "input.parts", type = "json_object", element_t
 [e2e.calls.generate_cache_key.overrides.rust]
 result_is_simple = true
 
+[e2e.calls.generate_cache_key.overrides.csharp]
+result_is_simple = true
 
 [e2e.calls.generate_cache_key.overrides.java]
 result_is_simple = true
@@ -2773,6 +2840,10 @@ options_type = "ExtractionConfig"
 [e2e.calls.batch_extract_file.overrides.java]
 options_type = "ExtractionConfig"
 
+[e2e.calls.batch_extract_file.overrides.python]
+arg_name_map = { paths = "items" }
+options_type = "ExtractionConfig"
+
 [e2e.calls.batch_extract_file_sync]
 function = "batch_extract_file_sync"
 module = "kreuzberg"
@@ -2792,6 +2863,10 @@ result_is_vec = true
 options_type = "ExtractionConfig"
 
 [e2e.calls.batch_extract_file_sync.overrides.java]
+options_type = "ExtractionConfig"
+
+[e2e.calls.batch_extract_file_sync.overrides.python]
+arg_name_map = { paths = "items" }
 options_type = "ExtractionConfig"
 
 # --- Image processing ---
@@ -2844,6 +2919,11 @@ options_type = "TokenReductionConfig"
 options_type = "JsTokenReductionConfig"
 
 [e2e.calls.reduce_tokens.overrides.csharp]
+result_is_simple = true
+options_type = "TokenReductionConfig"
+
+[e2e.calls.reduce_tokens.overrides.python]
+result_is_simple = true
 options_type = "TokenReductionConfig"
 
 # --- Serialization ---

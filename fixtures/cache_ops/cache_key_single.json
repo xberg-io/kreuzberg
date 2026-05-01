@@ -11,5 +11,9 @@
 		{
 			"type": "not_error"
 		}
-	]
+	],
+	"skip": {
+		"languages": ["csharp"],
+		"reason": "parts passed as JSON string; C# GenerateCacheKey requires List<List<string>>"
+	}
 }

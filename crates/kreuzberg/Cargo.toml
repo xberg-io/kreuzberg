@@ -183,6 +183,9 @@ wasm-target = [
     "excel-wasm",
     "archives",
     "tree-sitter-wasm",
+    "ocr-wasm",
+    "liter-llm",
+    "stopwords",
 ]
 # WASM only: enables wasm-bindgen-rayon for multi-threaded WASM builds.
 # No #[cfg] gates — activates the wasm-bindgen-rayon dependency.

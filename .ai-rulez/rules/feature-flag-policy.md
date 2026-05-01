@@ -8,11 +8,25 @@ All features in `crates/kreuzberg/Cargo.toml`.
 
 ## WASM-Incompatible Features
 
-- `ocr` — uses `tiff`, `fast_image_resize`: not WASM-safe; use `ocr-wasm` instead
+Only ORT-dependent paths are WASM-incompatible:
+
 - `paddle-ocr` — ONNX Runtime + native C++ deps: not WASM-safe; no WASM equivalent
-- `excel` — requires `tokio-runtime`; use `excel-wasm` on WASM
-- `tree-sitter` — uses dynamic loading; use `tree-sitter-wasm` on WASM
-- `wasm-target` feature composes the complete safe WASM-compatible set
+- `layout-detection` — depends on ONNX Runtime layout models: not WASM-safe
+- `embeddings` — depends on ONNX Runtime sentence-transformer models: not WASM-safe
+- `auto-rotate` — depends on ONNX Runtime orientation classifier: not WASM-safe
+
+WASM-safe variants:
+
+- `ocr` (native) → `ocr-wasm` (uses `tesseract-wasm` + safe image deps)
+- `excel` (native) → `excel-wasm` (drops `tokio-runtime`)
+- `tree-sitter` (native dlopen) → `tree-sitter-wasm` (statically-linked grammar pack)
+- `liter-llm` — works on WASM via the upstream `wasm-http` feature; included in `wasm-target`
+- `stopwords` — pure-Rust, included in `wasm-target`
+- `keywords` — pure-Rust YAKE/RAKE, included in `wasm-target`
+
+The `wasm-target` aggregate composes the complete safe WASM-compatible set:
+`pdf, html, xml, email, language-detection, chunking, quality, keywords, office, mdx,
+excel-wasm, archives, tree-sitter-wasm, ocr-wasm, liter-llm, stopwords`.
 
 ## Experimental (NOT in `full`)
 

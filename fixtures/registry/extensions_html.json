@@ -5,7 +5,7 @@
 	"tags": ["registry", "extensions", "html"],
 	"call": "get_extensions_for_mime",
 	"input": {
-		"args": ["text/html"]
+		"mime_type": "text/html"
 	},
 	"assertions": [
 		{

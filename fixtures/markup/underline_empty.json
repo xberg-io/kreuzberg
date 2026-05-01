@@ -2,8 +2,18 @@
 	"id": "underline_empty",
 	"category": "markup",
 	"description": "Underline empty",
-	"tags": ["markup", "edge_case"],
+	"tags": [
+		"markup",
+		"edge_case"
+	],
 	"call": "underline",
-	"input": { "text": "" },
-	"assertions": [{ "type": "not_error" }]
+	"input": {
+		"start": 0,
+		"end": 0
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	]
 }

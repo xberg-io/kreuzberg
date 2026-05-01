@@ -2,19 +2,28 @@
 	"id": "strikethrough_basic",
 	"category": "markup",
 	"description": "Create strikethrough formatting",
-	"tags": ["markup", "formatting"],
+	"tags": [
+		"markup",
+		"formatting"
+	],
 	"call": "strikethrough",
 	"input": {
-		"text": "deleted"
+		"start": 0,
+		"end": 7
 	},
 	"assertions": [
 		{
 			"type": "not_error"
 		},
 		{
-			"type": "contains",
-			"field": "result",
-			"value": "deleted"
+			"type": "equals",
+			"field": "start",
+			"value": 0
+		},
+		{
+			"type": "equals",
+			"field": "end",
+			"value": 7
 		}
 	]
 }

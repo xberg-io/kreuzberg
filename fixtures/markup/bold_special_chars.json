@@ -2,8 +2,27 @@
 	"id": "bold_special_chars",
 	"category": "markup",
 	"description": "Bold special chars",
-	"tags": ["markup"],
+	"tags": [
+		"markup"
+	],
 	"call": "bold",
-	"input": { "text": "hello **world** & <tag>" },
-	"assertions": [{ "type": "not_error" }, { "type": "contains", "field": "result", "value": "hello" }]
+	"input": {
+		"start": 0,
+		"end": 23
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "equals",
+			"field": "start",
+			"value": 0
+		},
+		{
+			"type": "equals",
+			"field": "end",
+			"value": 23
+		}
+	]
 }

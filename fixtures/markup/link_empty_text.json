@@ -2,10 +2,15 @@
 	"id": "link_empty_text",
 	"category": "markup",
 	"description": "Create markdown link with empty text",
-	"tags": ["markup", "formatting", "links"],
+	"tags": [
+		"markup",
+		"formatting",
+		"links"
+	],
 	"call": "link",
 	"input": {
-		"text": "",
+		"start": 0,
+		"end": 0,
 		"url": "https://example.com"
 	},
 	"assertions": [
@@ -13,9 +18,14 @@
 			"type": "not_error"
 		},
 		{
-			"type": "contains",
-			"field": "result",
-			"value": "example.com"
+			"type": "equals",
+			"field": "start",
+			"value": 0
+		},
+		{
+			"type": "equals",
+			"field": "end",
+			"value": 0
 		}
 	]
 }

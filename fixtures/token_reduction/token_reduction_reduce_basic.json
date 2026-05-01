@@ -6,7 +6,7 @@
 	"call": "reduce_tokens",
 	"input": {
 		"text": "The quick brown fox jumps over the lazy dog. This is a test sentence.",
-		"level": "light"
+		"config": { "level": "light" }
 	},
 	"assertions": [
 		{

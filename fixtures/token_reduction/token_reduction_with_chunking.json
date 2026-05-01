@@ -10,8 +10,8 @@
 				"mode": "moderate"
 			},
 			"chunking": {
-				"max_chars": 500,
-				"max_overlap": 50
+				"max_characters": 500,
+				"overlap": 50
 			}
 		}
 	},

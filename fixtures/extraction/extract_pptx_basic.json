@@ -11,5 +11,9 @@
 		{
 			"type": "not_error"
 		}
-	]
+	],
+	"skip": {
+		"languages": ["csharp"],
+		"reason": "C# ExtractPptxFromBytes does not accept an options parameter; use ExtractFileSync for C#"
+	}
 }

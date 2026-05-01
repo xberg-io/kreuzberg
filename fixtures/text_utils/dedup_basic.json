@@ -5,7 +5,7 @@
 	"tags": ["text_utils", "deduplication"],
 	"call": "dedup_text",
 	"input": {
-		"text": "line1\nline1\nline2\nline2\nline3"
+		"texts": ["line1", "line1", "line2", "line2", "line3"]
 	},
 	"assertions": [
 		{

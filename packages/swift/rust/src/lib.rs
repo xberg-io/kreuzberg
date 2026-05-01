@@ -63,6 +63,7 @@ mod ffi {
             token_reduction: Option<TokenReductionOptions>,
             language_detection: Option<LanguageDetectionConfig>,
             pages: Option<PageConfig>,
+            keywords: Option<KeywordConfig>,
             postprocessor: Option<PostProcessorConfig>,
             html_options: Option<String>,
             html_output: Option<HtmlOutputConfig>,
@@ -96,6 +97,7 @@ mod ffi {
         fn token_reduction(&self) -> Option<TokenReductionOptions>;
         fn language_detection(&self) -> Option<LanguageDetectionConfig>;
         fn pages(&self) -> Option<PageConfig>;
+        fn keywords(&self) -> Option<KeywordConfig>;
         fn postprocessor(&self) -> Option<PostProcessorConfig>;
         fn html_options(&self) -> Option<String>;
         fn html_output(&self) -> Option<HtmlOutputConfig>;
@@ -133,6 +135,7 @@ mod ffi {
             token_reduction: Option<TokenReductionOptions>,
             language_detection: Option<LanguageDetectionConfig>,
             pages: Option<PageConfig>,
+            keywords: Option<KeywordConfig>,
             postprocessor: Option<PostProcessorConfig>,
             html_options: Option<String>,
             result_format: Option<String>,
@@ -155,6 +158,7 @@ mod ffi {
         fn token_reduction(&self) -> Option<TokenReductionOptions>;
         fn language_detection(&self) -> Option<LanguageDetectionConfig>;
         fn pages(&self) -> Option<PageConfig>;
+        fn keywords(&self) -> Option<KeywordConfig>;
         fn postprocessor(&self) -> Option<PostProcessorConfig>;
         fn html_options(&self) -> Option<String>;
         fn result_format(&self) -> Option<String>;
@@ -193,6 +197,8 @@ mod ffi {
 
     extern "Rust" {
         type TokenReductionOptions;
+        #[swift_bridge(init)]
+        fn new(mode: String, preserve_important_words: bool) -> TokenReductionOptions;
         fn mode(&self) -> String;
         fn preserve_important_words(&self) -> bool;
     }
@@ -982,6 +988,7 @@ mod ffi {
             djot_content: Option<DjotContent>,
             ocr_elements: Option<Vec<OcrElement>>,
             document: Option<DocumentStructure>,
+            extracted_keywords: Option<Vec<Keyword>>,
             quality_score: Option<f64>,
             processing_warnings: Vec<ProcessingWarning>,
             annotations: Option<Vec<PdfAnnotation>>,
@@ -1005,6 +1012,7 @@ mod ffi {
         fn djot_content(&self) -> Option<DjotContent>;
         fn ocr_elements(&self) -> Option<Vec<OcrElement>>;
         fn document(&self) -> Option<DocumentStructure>;
+        fn extracted_keywords(&self) -> Option<Vec<Keyword>>;
         fn quality_score(&self) -> Option<f64>;
         fn processing_warnings(&self) -> Vec<ProcessingWarning>;
         fn annotations(&self) -> Option<Vec<PdfAnnotation>>;
@@ -2804,6 +2812,7 @@ impl ExtractionConfig {
         token_reduction: Option<TokenReductionOptions>,
         language_detection: Option<LanguageDetectionConfig>,
         pages: Option<PageConfig>,
+        keywords: Option<KeywordConfig>,
         postprocessor: Option<PostProcessorConfig>,
         html_options: Option<String>,
         html_output: Option<HtmlOutputConfig>,
@@ -2857,6 +2866,9 @@ impl ExtractionConfig {
         }
         if let Some(w) = pages {
             __target.pages = Some(w.0);
+        }
+        if let Some(w) = keywords {
+            __target.keywords = Some(w.0);
         }
         if let Some(w) = postprocessor {
             __target.postprocessor = Some(w.0);
@@ -2986,6 +2998,9 @@ impl ExtractionConfig {
     pub fn pages(&self) -> Option<PageConfig> {
         self.0.pages.clone().map(PageConfig)
     }
+    pub fn keywords(&self) -> Option<KeywordConfig> {
+        self.0.keywords.clone().map(KeywordConfig)
+    }
     pub fn postprocessor(&self) -> Option<PostProcessorConfig> {
         self.0.postprocessor.clone().map(PostProcessorConfig)
     }
@@ -3085,6 +3100,7 @@ impl FileExtractionConfig {
         token_reduction: Option<TokenReductionOptions>,
         language_detection: Option<LanguageDetectionConfig>,
         pages: Option<PageConfig>,
+        keywords: Option<KeywordConfig>,
         postprocessor: Option<PostProcessorConfig>,
         html_options: Option<String>,
         result_format: Option<String>,
@@ -3127,6 +3143,9 @@ impl FileExtractionConfig {
         }
         if let Some(w) = pages {
             __target.pages = Some(w.0);
+        }
+        if let Some(w) = keywords {
+            __target.keywords = Some(w.0);
         }
         if let Some(w) = postprocessor {
             __target.postprocessor = Some(w.0);
@@ -3216,6 +3235,9 @@ impl FileExtractionConfig {
     }
     pub fn pages(&self) -> Option<PageConfig> {
         self.0.pages.clone().map(PageConfig)
+    }
+    pub fn keywords(&self) -> Option<KeywordConfig> {
+        self.0.keywords.clone().map(KeywordConfig)
     }
     pub fn postprocessor(&self) -> Option<PostProcessorConfig> {
         self.0.postprocessor.clone().map(PostProcessorConfig)
@@ -3346,6 +3368,16 @@ impl ImageExtractionConfig {
 pub struct TokenReductionOptions(pub kreuzberg::TokenReductionOptions);
 
 impl TokenReductionOptions {
+    pub fn new(mode: String, preserve_important_words: bool) -> TokenReductionOptions {
+        let mut __target: kreuzberg::TokenReductionOptions = ::std::default::Default::default();
+        if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&mode) {
+            if let Ok(t) = ::serde_json::from_value(v) {
+                __target.mode = t;
+            }
+        }
+        __target.preserve_important_words = preserve_important_words;
+        TokenReductionOptions(__target)
+    }
     pub fn mode(&self) -> String {
         serde_json::to_string(&self.0.mode).unwrap_or_default()
     }
@@ -5833,6 +5865,7 @@ impl ExtractionResult {
         djot_content: Option<DjotContent>,
         ocr_elements: Option<Vec<OcrElement>>,
         document: Option<DocumentStructure>,
+        extracted_keywords: Option<Vec<Keyword>>,
         quality_score: Option<f64>,
         processing_warnings: Vec<ProcessingWarning>,
         annotations: Option<Vec<PdfAnnotation>>,
@@ -5886,6 +5919,9 @@ impl ExtractionResult {
         }
         if let Some(w) = document {
             __target.document = Some(w.0);
+        }
+        if let Some(v) = extracted_keywords {
+            __target.extracted_keywords = Some(v.into_iter().map(|w| w.0).collect());
         }
         __target.quality_score = quality_score;
         __target.processing_warnings = processing_warnings.into_iter().map(|w| w.0).collect();
@@ -5985,6 +6021,12 @@ impl ExtractionResult {
     }
     pub fn document(&self) -> Option<DocumentStructure> {
         self.0.document.clone().map(DocumentStructure)
+    }
+    pub fn extracted_keywords(&self) -> Option<Vec<Keyword>> {
+        self.0
+            .extracted_keywords
+            .as_ref()
+            .map(|v| v.iter().map(|elem| Keyword(elem.clone())).collect())
     }
     pub fn quality_score(&self) -> Option<f64> {
         self.0.quality_score.as_ref().and_then(|v| {

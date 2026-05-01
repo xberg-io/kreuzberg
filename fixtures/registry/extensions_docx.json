@@ -5,7 +5,7 @@
 	"tags": ["registry", "extensions", "docx"],
 	"call": "get_extensions_for_mime",
 	"input": {
-		"args": ["application/vnd.openxmlformats-officedocument.wordprocessingml.document"]
+		"mime_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 	},
 	"assertions": [
 		{

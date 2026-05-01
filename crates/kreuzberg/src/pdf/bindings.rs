@@ -85,6 +85,11 @@ fn extract_and_get_lib_dir() -> Result<Option<PathBuf>, String> {
 /// Bind to the Pdfium library and create bindings.
 ///
 /// This function is only called once during singleton initialization.
+///
+/// The binding resolution order is:
+/// 1. `bundled-pdfium` feature: use the extracted temp-dir copy.
+/// 2. `KREUZBERG_PDFIUM_PATH` env var (directory **or** full path): bind from that location.
+/// 3. Fall back to the system dynamic linker (`bind_to_system_library`).
 fn create_pdfium_bindings(lib_dir: &Option<PathBuf>) -> Result<Box<dyn PdfiumLibraryBindings>, String> {
     let _ = lib_dir;
 
@@ -94,6 +99,23 @@ fn create_pdfium_bindings(lib_dir: &Option<PathBuf>) -> Result<Box<dyn PdfiumLib
             return Pdfium::bind_to_library(Pdfium::pdfium_platform_library_name_at_path(dir))
                 .map_err(|e| format!("Failed to bind to Pdfium library: {}", e));
         }
+    }
+
+    // Allow callers (e.g. C# / Java bindings that ship libpdfium.dylib alongside the FFI
+    // library) to specify an explicit path so dlopen never has to search system paths.
+    // KREUZBERG_PDFIUM_PATH may be a directory or a full path to the library file.
+    // On wasm32, dynamic library binding is not available — the wasm pdfium glue uses
+    // an explicit `initialize_pdfium_render` call from JS instead.
+    #[cfg(all(feature = "pdf", not(target_arch = "wasm32")))]
+    if let Ok(path_str) = std::env::var("KREUZBERG_PDFIUM_PATH") {
+        let path = PathBuf::from(&path_str);
+        let lib_path = if path.is_dir() {
+            Pdfium::pdfium_platform_library_name_at_path(&path)
+        } else {
+            path
+        };
+        return Pdfium::bind_to_library(lib_path)
+            .map_err(|e| format!("Failed to bind to Pdfium library at '{}': {}", path_str, e));
     }
 
     // For system library or WASM

@@ -1248,6 +1248,13 @@ KREUZBERGLanguageDetectionConfig *kreuzberg_extraction_config_language_detection
 KREUZBERGPageConfig *kreuzberg_extraction_config_pages(const KREUZBERGExtractionConfig *ptr);
 
 /**
+ * Get the `keywords` field from a `ExtractionConfig`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+KREUZBERGKeywordConfig *kreuzberg_extraction_config_keywords(const KREUZBERGExtractionConfig *ptr);
+
+/**
  * Get the `postprocessor` field from a `ExtractionConfig`.
  * # Safety
  * Pointer must be a valid handle returned by this library.
@@ -1471,6 +1478,13 @@ KREUZBERGLanguageDetectionConfig *kreuzberg_file_extraction_config_language_dete
 KREUZBERGPageConfig *kreuzberg_file_extraction_config_pages(const KREUZBERGFileExtractionConfig *ptr);
 
 /**
+ * Get the `keywords` field from a `FileExtractionConfig`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+KREUZBERGKeywordConfig *kreuzberg_file_extraction_config_keywords(const KREUZBERGFileExtractionConfig *ptr);
+
+/**
  * Get the `postprocessor` field from a `FileExtractionConfig`.
  * # Safety
  * Pointer must be a valid handle returned by this library.
@@ -1641,6 +1655,13 @@ char *kreuzberg_token_reduction_options_mode(const KREUZBERGTokenReductionOption
  * Pointer must be a valid handle returned by this library.
  */
 int32_t kreuzberg_token_reduction_options_preserve_important_words(const KREUZBERGTokenReductionOptions *ptr);
+
+/**
+ * # Safety
+ * Caller must ensure all pointer arguments are valid or null.
+ * Returned pointers must be freed with the appropriate free function.
+ */
+KREUZBERGTokenReductionOptions *kreuzberg_token_reduction_options_default(void);
 
 /**
  * Create a `LanguageDetectionConfig` from a JSON string. Returns null on failure.
@@ -4872,6 +4893,13 @@ char *kreuzberg_extraction_result_ocr_elements(const KREUZBERGExtractionResult *
  * Pointer must be a valid handle returned by this library.
  */
 KREUZBERGDocumentStructure *kreuzberg_extraction_result_document(const KREUZBERGExtractionResult *ptr);
+
+/**
+ * Get the `extracted_keywords` field from a `ExtractionResult`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+char *kreuzberg_extraction_result_extracted_keywords(const KREUZBERGExtractionResult *ptr);
 
 /**
  * Get the `quality_score` field from a `ExtractionResult`.
@@ -11492,6 +11520,36 @@ int32_t kreuzberg_layout_class_from_i32(int32_t value);
  * Caller must ensure `ptr` is a valid pointer to a `c_char` or null.
  */
 int32_t kreuzberg_layout_class_from_str(const char *name);
+
+/**
+ * Create a `EmbeddingModelType` from a JSON string. Returns null on failure.
+ * # Safety
+ * JSON string must be valid UTF-8 and null-terminated.
+ * Returned handle must be freed with `kreuzberg_embedding_model_type_free`.
+ */
+KREUZBERGEmbeddingModelType *kreuzberg_embedding_model_type_from_json(const char *json);
+
+/**
+ * Free a heap-allocated `EmbeddingModelType` returned by a pointer-returning FFI function.
+ * # Safety
+ * Pointer must have been returned by this library, or be null.
+ */
+void kreuzberg_embedding_model_type_free(KREUZBERGEmbeddingModelType *ptr);
+
+/**
+ * Free a heap-allocated `UriKind` returned by a pointer-returning FFI function.
+ * # Safety
+ * Pointer must have been returned by this library, or be null.
+ */
+void kreuzberg_uri_kind_free(KREUZBERGUriKind *ptr);
+
+/**
+ * Serialize a heap-allocated `UriKind` to a JSON string.
+ * # Safety
+ * `ptr` must be a valid, non-null pointer returned by a `kreuzberg` function.
+ * The returned string must be freed with `kreuzberg_free_string`.
+ */
+char *kreuzberg_uri_kind_to_json(const KREUZBERGUriKind *ptr);
 
 /**
  * Hash arbitrary bytes with blake3, returning a 32-char hex string.
