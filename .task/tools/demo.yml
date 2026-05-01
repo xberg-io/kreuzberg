@@ -3,22 +3,26 @@ version: "3"
 # ============================================================================
 # Demo development environment
 #
-# Starts two servers so demo.html can load WASM assets from a different port,
-# reproducing the cross-origin scenario that exists when assets are on a CDN.
+# Generates a patched demo-dev.html (CDN URLs → localhost), then starts two
+# servers that reproduce the cross-origin scenario the CDN creates in prod:
 #
-#   Docs server  → http://localhost:8001  (serves docs/demo.html)
+#   Docs server  → http://localhost:8001  (serves docs/)
 #   Asset server → http://localhost:9000  (serves crates/kreuzberg-wasm/)
 #
 # Usage:
-#   task demo:dev                  # full build + both servers
-#   SKIP_WASM_BUILD=1 task demo:dev  # skip Rust build, rebuild TS only
+#   task demo:dev                    # full build + patch + both servers
+#   SKIP_WASM_BUILD=1 task demo:dev  # skip Rust build, TS + patch only
+#
+# Open:  http://localhost:8001/demo-dev.html
 # ============================================================================
 
 tasks:
   dev:
-    desc: "Build WASM + TS and serve demo + asset servers for local testing"
+    desc: "Build, patch demo for localhost, and start both dev servers"
     cmds:
       - task: dev:build
+      - task: dev:patch
+      - task: dev:ready
       - task: dev:serve
 
   dev:build:
@@ -28,6 +32,28 @@ tasks:
       - '[ "${SKIP_WASM_BUILD:-0}" = "1" ] || pnpm run build:wasm:web'
       - pnpm run build:ts
       - node scripts/copy-pkg.js
+
+  dev:patch:
+    desc: "Generate docs/demo-dev.html with CDN URLs replaced by localhost:9000"
+    cmds:
+      - node scripts/task/patch-demo-dev.mjs
+
+  dev:ready:
+    desc: "Print the ready banner"
+    cmds:
+      - |
+        printf '\n'
+        printf '  ┌─────────────────────────────────────────────────────┐\n'
+        printf '  │  Demo dev environment ready                         │\n'
+        printf '  │                                                     │\n'
+        printf '  │  Open → http://localhost:8001/demo-dev.html         │\n'
+        printf '  │                                                     │\n'
+        printf '  │  Assets served from http://localhost:9000           │\n'
+        printf '  │  (same cross-origin setup as the live CDN)          │\n'
+        printf '  │                                                     │\n'
+        printf '  │  Ctrl+C to stop both servers                        │\n'
+        printf '  └─────────────────────────────────────────────────────┘\n'
+        printf '\n'
 
   dev:serve:
     desc: "Start docs server (port 8001) and WASM asset server (port 9000) in parallel"
