@@ -131,7 +131,7 @@ pub(crate) fn extract_pptx_from_path(path: &str, options: &PptxExtractionOptions
 /// # Returns
 ///
 /// A `PptxExtractionResult` containing extracted content, metadata, and images.
-pub fn extract_pptx_from_bytes(data: &[u8], options: &PptxExtractionOptions) -> Result<PptxExtractionResult> {
+pub(crate) fn extract_pptx_from_bytes(data: &[u8], options: &PptxExtractionOptions) -> Result<PptxExtractionResult> {
     let container = PptxContainer::from_bytes(data)?;
     extract_pptx_from_container(container, options)
 }

@@ -7,6 +7,7 @@
 use crate::{KreuzbergError, Result};
 
 /// Valid binarization methods for image preprocessing.
+#[cfg(test)]
 const VALID_BINARIZATION_METHODS: &[&str] = &["otsu", "adaptive", "sauvola"];
 
 /// Valid token reduction levels.
@@ -84,14 +85,17 @@ const VALID_LANGUAGE_CODES: &[&str] = &[
 ];
 
 /// Valid tesseract PSM (Page Segmentation Mode) values.
+#[cfg(test)]
 const VALID_TESSERACT_PSM: &[i32] = &[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
 
 /// Valid tesseract OEM (OCR Engine Mode) values.
+#[cfg(test)]
 const VALID_TESSERACT_OEM: &[i32] = &[0, 1, 2, 3];
 
 /// Valid output formats for document extraction.
 /// Supports plain text, markdown, djot, HTML, and structured (JSON) output formats.
 /// Also accepts aliases: "text" for "plain", "md" for "markdown", "json" for "structured".
+#[cfg(test)]
 const VALID_OUTPUT_FORMATS: &[&str] = &["plain", "text", "markdown", "md", "djot", "html", "structured", "json"];
 
 /// Validate a binarization method string.
@@ -113,7 +117,8 @@ const VALID_OUTPUT_FORMATS: &[&str] = &["plain", "text", "markdown", "md", "djot
 /// assert!(validate_binarization_method("adaptive").is_ok());
 /// assert!(validate_binarization_method("invalid").is_err());
 /// ```
-pub fn validate_binarization_method(method: &str) -> Result<()> {
+#[cfg(test)]
+pub(crate) fn validate_binarization_method(method: &str) -> Result<()> {
     let method = method.to_lowercase();
     if VALID_BINARIZATION_METHODS.contains(&method.as_str()) {
         Ok(())
@@ -148,7 +153,7 @@ pub fn validate_binarization_method(method: &str) -> Result<()> {
 /// assert!(validate_token_reduction_level("moderate").is_ok());
 /// assert!(validate_token_reduction_level("extreme").is_err());
 /// ```
-pub fn validate_token_reduction_level(level: &str) -> Result<()> {
+pub(crate) fn validate_token_reduction_level(level: &str) -> Result<()> {
     let level = level.to_lowercase();
     if VALID_TOKEN_REDUCTION_LEVELS.contains(&level.as_str()) {
         Ok(())
@@ -183,7 +188,7 @@ pub fn validate_token_reduction_level(level: &str) -> Result<()> {
 /// assert!(validate_ocr_backend("easyocr").is_ok());
 /// assert!(validate_ocr_backend("invalid").is_err());
 /// ```
-pub fn validate_ocr_backend(backend: &str) -> Result<()> {
+pub(crate) fn validate_ocr_backend(backend: &str) -> Result<()> {
     let backend = backend.to_lowercase();
     if VALID_OCR_BACKENDS.contains(&backend.as_str()) {
         Ok(())
@@ -223,7 +228,7 @@ pub fn validate_ocr_backend(backend: &str) -> Result<()> {
 /// assert!(validate_language_code("deu").is_ok());
 /// assert!(validate_language_code("invalid").is_err());
 /// ```
-pub fn validate_language_code(code: &str) -> Result<()> {
+pub(crate) fn validate_language_code(code: &str) -> Result<()> {
     let code_lower = code.to_lowercase();
 
     // Accept "all" and "*" as special values to auto-detect installed languages
@@ -265,7 +270,8 @@ pub fn validate_language_code(code: &str) -> Result<()> {
 /// assert!(validate_tesseract_psm(6).is_ok());  // Single block of text
 /// assert!(validate_tesseract_psm(14).is_err()); // Out of range
 /// ```
-pub fn validate_tesseract_psm(psm: i32) -> Result<()> {
+#[cfg(test)]
+pub(crate) fn validate_tesseract_psm(psm: i32) -> Result<()> {
     if VALID_TESSERACT_PSM.contains(&psm) {
         Ok(())
     } else {
@@ -299,7 +305,8 @@ pub fn validate_tesseract_psm(psm: i32) -> Result<()> {
 /// assert!(validate_tesseract_oem(2).is_ok());  // Legacy + LSTM
 /// assert!(validate_tesseract_oem(4).is_err()); // Out of range
 /// ```
-pub fn validate_tesseract_oem(oem: i32) -> Result<()> {
+#[cfg(test)]
+pub(crate) fn validate_tesseract_oem(oem: i32) -> Result<()> {
     if VALID_TESSERACT_OEM.contains(&oem) {
         Ok(())
     } else {
@@ -343,7 +350,8 @@ pub fn validate_tesseract_oem(oem: i32) -> Result<()> {
 /// assert!(validate_output_format("html").is_ok());
 /// assert!(validate_output_format("json").is_ok());
 /// ```
-pub fn validate_output_format(format: &str) -> Result<()> {
+#[cfg(test)]
+pub(crate) fn validate_output_format(format: &str) -> Result<()> {
     let format = format.to_lowercase();
     if VALID_OUTPUT_FORMATS.contains(&format.as_str()) {
         Ok(())
@@ -382,7 +390,8 @@ pub fn validate_output_format(format: &str) -> Result<()> {
 /// assert!(validate_confidence(1.5).is_err());
 /// assert!(validate_confidence(-0.1).is_err());
 /// ```
-pub fn validate_confidence(confidence: f64) -> Result<()> {
+#[cfg(test)]
+pub(crate) fn validate_confidence(confidence: f64) -> Result<()> {
     if (0.0..=1.0).contains(&confidence) {
         Ok(())
     } else {
@@ -418,7 +427,8 @@ pub fn validate_confidence(confidence: f64) -> Result<()> {
 /// assert!(validate_dpi(0).is_err());
 /// assert!(validate_dpi(-1).is_err());
 /// ```
-pub fn validate_dpi(dpi: i32) -> Result<()> {
+#[cfg(test)]
+pub(crate) fn validate_dpi(dpi: i32) -> Result<()> {
     if dpi > 0 && dpi <= 2400 {
         Ok(())
     } else {
@@ -455,7 +465,7 @@ pub fn validate_dpi(dpi: i32) -> Result<()> {
 /// assert!(validate_chunking_params(0, 100).is_err()); // max_chars must be > 0
 /// assert!(validate_chunking_params(100, 150).is_err()); // overlap >= max_chars
 /// ```
-pub fn validate_chunking_params(max_chars: usize, max_overlap: usize) -> Result<()> {
+pub(crate) fn validate_chunking_params(max_chars: usize, max_overlap: usize) -> Result<()> {
     if max_chars == 0 {
         return Err(KreuzbergError::Validation {
             message: "max_chars must be greater than 0".to_string(),
@@ -494,7 +504,8 @@ pub fn validate_chunking_params(max_chars: usize, max_overlap: usize) -> Result<
 /// assert!(validate_llm_config_model("openai/gpt-4o").is_ok());
 /// assert!(validate_llm_config_model("").is_err());
 /// ```
-pub fn validate_llm_config_model(model: &str) -> Result<()> {
+#[cfg(test)]
+pub(crate) fn validate_llm_config_model(model: &str) -> Result<()> {
     if model.trim().is_empty() {
         return Err(KreuzbergError::Validation {
             message: "LLM config 'model' must not be empty. Provide a model identifier (e.g., 'openai/gpt-4o')."
@@ -539,7 +550,11 @@ pub fn validate_llm_config_model(model: &str) -> Result<()> {
 /// assert!(validate_vlm_backend_config("vlm", Some(&config)).is_ok());
 /// assert!(validate_vlm_backend_config("vlm", None).is_err());
 /// ```
-pub fn validate_vlm_backend_config(backend: &str, vlm_config: Option<&crate::core::config::LlmConfig>) -> Result<()> {
+#[cfg(test)]
+pub(crate) fn validate_vlm_backend_config(
+    backend: &str,
+    vlm_config: Option<&crate::core::config::LlmConfig>,
+) -> Result<()> {
     if backend.to_lowercase() == "vlm" {
         match vlm_config {
             None => {
@@ -555,53 +570,4 @@ pub fn validate_vlm_backend_config(backend: &str, vlm_config: Option<&crate::cor
         }
     }
     Ok(())
-}
-
-/// Validate structured extraction configuration.
-///
-/// When structured extraction is enabled, the JSON schema must not be null or empty,
-/// and the LLM config must have a non-empty model string.
-///
-/// # Arguments
-///
-/// * `schema` - The JSON schema value to validate
-/// * `llm_model` - The LLM model string from the nested `LlmConfig`
-///
-/// # Returns
-///
-/// `Ok(())` if the schema is a non-empty object or array and the model is valid,
-/// or a `ValidationError` if the schema is null/empty or the model is empty.
-///
-/// # Examples
-///
-/// ```rust
-/// use kreuzberg::core::config_validation::validate_structured_extraction_schema;
-///
-/// let valid = serde_json::json!({"type": "object", "properties": {}});
-/// assert!(validate_structured_extraction_schema(&valid, "openai/gpt-4o").is_ok());
-///
-/// let empty = serde_json::Value::Object(Default::default());
-/// assert!(validate_structured_extraction_schema(&empty, "openai/gpt-4o").is_err());
-///
-/// let null = serde_json::Value::Null;
-/// assert!(validate_structured_extraction_schema(&null, "openai/gpt-4o").is_err());
-///
-/// let valid = serde_json::json!({"type": "object", "properties": {}});
-/// assert!(validate_structured_extraction_schema(&valid, "").is_err());
-/// ```
-pub fn validate_structured_extraction_schema(schema: &serde_json::Value, llm_model: &str) -> Result<()> {
-    match schema {
-        serde_json::Value::Null => Err(KreuzbergError::Validation {
-            message: "Structured extraction schema must not be null. Provide a valid JSON schema.".to_string(),
-            source: None,
-        }),
-        serde_json::Value::Object(map) if map.is_empty() => Err(KreuzbergError::Validation {
-            message: "Structured extraction schema must not be an empty object. Provide a valid JSON schema with at least one property.".to_string(),
-            source: None,
-        }),
-        _ => {
-            validate_llm_config_model(llm_model)?;
-            Ok(())
-        }
-    }
 }

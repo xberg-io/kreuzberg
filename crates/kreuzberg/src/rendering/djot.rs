@@ -10,7 +10,7 @@ use super::common::{
 };
 
 /// Render an `InternalDocument` to Djot markup.
-pub fn render_djot(doc: &InternalDocument) -> String {
+pub(crate) fn render_djot(doc: &InternalDocument) -> String {
     let footnotes = FootnoteCollector::new(doc);
     let mut state = RenderState::default();
     let mut out = String::with_capacity(doc.elements.len() * 80);

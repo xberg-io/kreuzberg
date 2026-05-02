@@ -215,7 +215,8 @@ fn mean_pool(tensor: &ArrayView<f32, Dim<IxDynImpl>>, attention_mask: Array2<i64
 }
 
 /// L2-normalize a vector.
-pub fn normalize(v: &[f32]) -> Vec<f32> {
+#[cfg(test)]
+pub(crate) fn normalize(v: &[f32]) -> Vec<f32> {
     let norm = v.iter().map(|x| x * x).sum::<f32>().sqrt();
     if norm > f32::EPSILON {
         let inv = 1.0 / norm;

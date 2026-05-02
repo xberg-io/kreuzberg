@@ -54,7 +54,7 @@ use crate::extraction::capacity;
 /// # Returns
 ///
 /// A `String` containing the plain text table representation
-pub fn cells_to_text(cells: &[Vec<String>]) -> String {
+pub(crate) fn cells_to_text(cells: &[Vec<String>]) -> String {
     if cells.is_empty() {
         return String::new();
     }
@@ -78,7 +78,7 @@ pub fn cells_to_text(cells: &[Vec<String>]) -> String {
     text
 }
 
-pub fn cells_to_markdown(cells: &[Vec<String>]) -> String {
+pub(crate) fn cells_to_markdown(cells: &[Vec<String>]) -> String {
     if cells.is_empty() {
         return String::new();
     }

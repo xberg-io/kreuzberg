@@ -154,7 +154,7 @@ fn calculate_cache_key(data: &[u8]) -> String {
 /// The function prefers an explicit `encoding`, falls back to the cached guess, probes
 /// an encoding detector, and finally tries a small curated list before returning a
 /// mojibake-cleaned string.
-pub fn safe_decode(byte_data: &[u8], encoding: Option<&str>) -> String {
+pub(crate) fn safe_decode(byte_data: &[u8], encoding: Option<&str>) -> String {
     if byte_data.is_empty() {
         return String::new();
     }
@@ -238,14 +238,6 @@ pub fn safe_decode(byte_data: &[u8], encoding: Option<&str>) -> String {
     final_text
 }
 
-/// Estimate how trustworthy a decoded string is on a 0.0–1.0 scale.
-///
-/// Scores close to 1.0 indicate mostly printable characters, whereas lower scores
-/// point to mojibake, control characters, or suspicious character mixes.
-pub fn calculate_text_confidence(text: &str) -> f64 {
-    calculate_text_confidence_internal(text)
-}
-
 fn calculate_text_confidence_internal(text: &str) -> f64 {
     if text.is_empty() {
         return 0.0;
@@ -274,11 +266,6 @@ fn calculate_text_confidence_internal(text: &str) -> f64 {
     }
 
     (readability_score - final_penalty).clamp(0.0, 1.0)
-}
-
-/// Strip control characters and replacement glyphs that typically arise from mojibake.
-pub fn fix_mojibake(text: &str) -> Cow<'_, str> {
-    fix_mojibake_internal(text)
 }
 
 fn fix_mojibake_internal(text: &str) -> Cow<'_, str> {
@@ -347,35 +334,5 @@ mod tests {
 
         assert!(cache.entries.contains_key("much-longer-key"));
         assert!(!cache.entries.contains_key("short"));
-    }
-
-    #[test]
-    fn test_calculate_text_confidence_empty() {
-        assert_eq!(calculate_text_confidence(""), 0.0);
-    }
-
-    #[test]
-    fn test_calculate_text_confidence_clean_text() {
-        let text = "This is clean, readable text without any issues.";
-        let confidence = calculate_text_confidence(text);
-        assert!(confidence > 0.9);
-    }
-
-    #[test]
-    fn test_fix_mojibake_empty() {
-        assert_eq!(fix_mojibake(""), "");
-    }
-
-    #[test]
-    fn test_fix_mojibake_clean_text() {
-        let text = "Clean text without mojibake";
-        assert_eq!(fix_mojibake(text), text);
-    }
-
-    #[test]
-    fn test_fix_mojibake_control_chars() {
-        let text = "Text\x00with\x01control\x1Fchars";
-        let fixed = fix_mojibake(text);
-        assert_eq!(fixed, "Textwithcontrolchars");
     }
 }

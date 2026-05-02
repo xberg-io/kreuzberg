@@ -32,7 +32,9 @@
 //! assert_eq!(KNOWN_FORMATS.len(), 58);
 //! ```
 
+#[cfg(test)]
 use ahash::AHashSet;
+#[cfg(test)]
 use std::sync::LazyLock;
 
 /// All known format field names across all extractors.
@@ -47,7 +49,8 @@ use std::sync::LazyLock;
 /// - Web: og_title, twitter_card, canonical, headers, links, etc.
 /// - Images: width, height, format
 /// - Archives: file_count, file_list, total_size, etc.
-pub const KNOWN_FORMATS: &[&str] = &[
+#[cfg(test)]
+pub(crate) const KNOWN_FORMATS: &[&str] = &[
     "format_type",
     "title",
     "author",
@@ -112,6 +115,7 @@ pub const KNOWN_FORMATS: &[&str] = &[
 ///
 /// Uses AHashSet for its excellent cache locality and performance characteristics
 /// with string keys. Built lazily on first use with minimal overhead.
+#[cfg(test)]
 static FORMAT_FIELD_SET: LazyLock<AHashSet<&'static str>> = LazyLock::new(|| KNOWN_FORMATS.iter().copied().collect());
 
 /// Validates whether a field name is in the known formats registry.
@@ -136,8 +140,9 @@ static FORMAT_FIELD_SET: LazyLock<AHashSet<&'static str>> = LazyLock::new(|| KNO
 /// assert!(is_valid_format_field("creation_date"));
 /// assert!(!is_valid_format_field("invalid_field"));
 /// ```
+#[cfg(test)]
 #[inline]
-pub fn is_valid_format_field(field: &str) -> bool {
+pub(crate) fn is_valid_format_field(field: &str) -> bool {
     FORMAT_FIELD_SET.contains(field)
 }
 

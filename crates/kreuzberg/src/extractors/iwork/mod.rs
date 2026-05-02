@@ -343,7 +343,7 @@ fn extract_plist_tag(line: &str, tag: &str) -> Option<String> {
 
 /// Deduplicate a list of text strings while preserving order.
 /// Adjacent duplicates and near-duplicates are removed.
-pub fn dedup_text(texts: Vec<String>) -> Vec<String> {
+pub(crate) fn dedup_text(texts: Vec<String>) -> Vec<String> {
     let mut seen = std::collections::HashSet::new();
     let mut result = Vec::new();
     for t in texts {

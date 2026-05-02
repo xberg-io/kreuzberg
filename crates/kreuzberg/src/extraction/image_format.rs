@@ -5,7 +5,7 @@ use std::borrow::Cow;
 /// Detect image format from raw bytes using magic byte signatures.
 ///
 /// Returns a format string like "jpeg", "png", etc. Used by both DOCX and PPTX extractors.
-pub fn detect_image_format(data: &[u8]) -> Cow<'static, str> {
+pub(crate) fn detect_image_format(data: &[u8]) -> Cow<'static, str> {
     if data.starts_with(&[0xFF, 0xD8, 0xFF]) {
         Cow::Borrowed("jpeg")
     } else if data.starts_with(&[0x89, 0x50, 0x4E, 0x47]) {

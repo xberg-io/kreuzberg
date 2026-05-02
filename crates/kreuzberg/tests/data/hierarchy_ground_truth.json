@@ -1,294 +1,294 @@
 {
-	"documents": [
-		{
-			"pdf_file": "sample_hierarchy_1.pdf",
-			"pages": [
-				{
-					"page_number": 1,
-					"blocks": [
-						{
-							"text": "Document Title",
-							"level": "H1",
-							"bbox": {
-								"left": 50.0,
-								"top": 50.0,
-								"right": 550.0,
-								"bottom": 100.0
-							}
-						},
-						{
-							"text": "Introduction Section",
-							"level": "H2",
-							"bbox": {
-								"left": 50.0,
-								"top": 120.0,
-								"right": 450.0,
-								"bottom": 160.0
-							}
-						},
-						{
-							"text": "This is the introductory paragraph that provides background information about the document. It contains multiple sentences explaining the context and purpose of the content.",
-							"level": "Body",
-							"bbox": {
-								"left": 50.0,
-								"top": 170.0,
-								"right": 550.0,
-								"bottom": 250.0
-							}
-						},
-						{
-							"text": "Main Content Section",
-							"level": "H2",
-							"bbox": {
-								"left": 50.0,
-								"top": 270.0,
-								"right": 450.0,
-								"bottom": 310.0
-							}
-						},
-						{
-							"text": "Subsection A",
-							"level": "H3",
-							"bbox": {
-								"left": 70.0,
-								"top": 330.0,
-								"right": 400.0,
-								"bottom": 360.0
-							}
-						},
-						{
-							"text": "This subsection contains detailed information about topic A. The content is organized hierarchically for better readability and structure.",
-							"level": "Body",
-							"bbox": {
-								"left": 70.0,
-								"top": 370.0,
-								"right": 550.0,
-								"bottom": 450.0
-							}
-						},
-						{
-							"text": "Subsection B",
-							"level": "H3",
-							"bbox": {
-								"left": 70.0,
-								"top": 470.0,
-								"right": 400.0,
-								"bottom": 500.0
-							}
-						},
-						{
-							"text": "Further elaboration on topic B follows here. This demonstrates how hierarchical structure helps organize complex information.",
-							"level": "Body",
-							"bbox": {
-								"left": 70.0,
-								"top": 510.0,
-								"right": 550.0,
-								"bottom": 570.0
-							}
-						},
-						{
-							"text": "Conclusion",
-							"level": "H2",
-							"bbox": {
-								"left": 50.0,
-								"top": 590.0,
-								"right": 350.0,
-								"bottom": 630.0
-							}
-						},
-						{
-							"text": "In conclusion, this document has demonstrated the importance of proper document hierarchy. Structured documents are easier to parse, understand, and process automatically.",
-							"level": "Body",
-							"bbox": {
-								"left": 50.0,
-								"top": 640.0,
-								"right": 550.0,
-								"bottom": 720.0
-							}
-						}
-					]
-				}
-			]
-		},
-		{
-			"pdf_file": "sample_hierarchy_2.pdf",
-			"pages": [
-				{
-					"page_number": 1,
-					"blocks": [
-						{
-							"text": "Research Paper: Machine Learning",
-							"level": "H1",
-							"bbox": {
-								"left": 50.0,
-								"top": 40.0,
-								"right": 550.0,
-								"bottom": 90.0
-							}
-						},
-						{
-							"text": "Abstract",
-							"level": "H2",
-							"bbox": {
-								"left": 50.0,
-								"top": 110.0,
-								"right": 350.0,
-								"bottom": 150.0
-							}
-						},
-						{
-							"text": "Machine learning is a subset of artificial intelligence that focuses on enabling computer systems to learn from data. This paper provides a comprehensive overview of modern ML techniques.",
-							"level": "Body",
-							"bbox": {
-								"left": 50.0,
-								"top": 160.0,
-								"right": 550.0,
-								"bottom": 240.0
-							}
-						},
-						{
-							"text": "1. Introduction",
-							"level": "H2",
-							"bbox": {
-								"left": 50.0,
-								"top": 260.0,
-								"right": 400.0,
-								"bottom": 300.0
-							}
-						},
-						{
-							"text": "1.1 Background",
-							"level": "H3",
-							"bbox": {
-								"left": 70.0,
-								"top": 320.0,
-								"right": 400.0,
-								"bottom": 360.0
-							}
-						},
-						{
-							"text": "The field of machine learning has grown exponentially over the past decade. Novel algorithms and abundant data have enabled unprecedented advancements.",
-							"level": "Body",
-							"bbox": {
-								"left": 70.0,
-								"top": 370.0,
-								"right": 550.0,
-								"bottom": 440.0
-							}
-						},
-						{
-							"text": "1.2 Problem Statement",
-							"level": "H3",
-							"bbox": {
-								"left": 70.0,
-								"top": 460.0,
-								"right": 400.0,
-								"bottom": 500.0
-							}
-						},
-						{
-							"text": "Despite the progress made, several challenges remain in the field of machine learning. This work addresses key limitations in current approaches.",
-							"level": "Body",
-							"bbox": {
-								"left": 70.0,
-								"top": 510.0,
-								"right": 550.0,
-								"bottom": 580.0
-							}
-						}
-					]
-				}
-			]
-		},
-		{
-			"pdf_file": "sample_hierarchy_3.pdf",
-			"pages": [
-				{
-					"page_number": 1,
-					"blocks": [
-						{
-							"text": "Technical Documentation",
-							"level": "H1",
-							"bbox": {
-								"left": 40.0,
-								"top": 30.0,
-								"right": 560.0,
-								"bottom": 80.0
-							}
-						},
-						{
-							"text": "Installation Guide",
-							"level": "H2",
-							"bbox": {
-								"left": 40.0,
-								"top": 100.0,
-								"right": 400.0,
-								"bottom": 140.0
-							}
-						},
-						{
-							"text": "Prerequisites",
-							"level": "H3",
-							"bbox": {
-								"left": 60.0,
-								"top": 160.0,
-								"right": 350.0,
-								"bottom": 195.0
-							}
-						},
-						{
-							"text": "Before beginning the installation process, ensure you have the following requirements met. Operating system compatibility and necessary dependencies must be verified.",
-							"level": "Body",
-							"bbox": {
-								"left": 60.0,
-								"top": 205.0,
-								"right": 560.0,
-								"bottom": 280.0
-							}
-						},
-						{
-							"text": "System Requirements",
-							"level": "H4",
-							"bbox": {
-								"left": 80.0,
-								"top": 300.0,
-								"right": 400.0,
-								"bottom": 335.0
-							}
-						},
-						{
-							"text": "Minimum: 4GB RAM, 2GHz processor. Recommended: 8GB RAM, modern multi-core processor with SSD.",
-							"level": "Body",
-							"bbox": {
-								"left": 80.0,
-								"top": 345.0,
-								"right": 560.0,
-								"bottom": 400.0
-							}
-						},
-						{
-							"text": "Installation Steps",
-							"level": "H3",
-							"bbox": {
-								"left": 60.0,
-								"top": 420.0,
-								"right": 350.0,
-								"bottom": 455.0
-							}
-						},
-						{
-							"text": "Follow these numbered steps in order to complete the installation successfully. Each step builds on the previous one.",
-							"level": "Body",
-							"bbox": {
-								"left": 60.0,
-								"top": 465.0,
-								"right": 560.0,
-								"bottom": 520.0
-							}
-						}
-					]
-				}
-			]
-		}
-	]
+  "documents": [
+    {
+      "pdf_file": "sample_hierarchy_1.pdf",
+      "pages": [
+        {
+          "page_number": 1,
+          "blocks": [
+            {
+              "text": "Document Title",
+              "level": "H1",
+              "bbox": {
+                "left": 50.0,
+                "top": 50.0,
+                "right": 550.0,
+                "bottom": 100.0
+              }
+            },
+            {
+              "text": "Introduction Section",
+              "level": "H2",
+              "bbox": {
+                "left": 50.0,
+                "top": 120.0,
+                "right": 450.0,
+                "bottom": 160.0
+              }
+            },
+            {
+              "text": "This is the introductory paragraph that provides background information about the document. It contains multiple sentences explaining the context and purpose of the content.",
+              "level": "Body",
+              "bbox": {
+                "left": 50.0,
+                "top": 170.0,
+                "right": 550.0,
+                "bottom": 250.0
+              }
+            },
+            {
+              "text": "Main Content Section",
+              "level": "H2",
+              "bbox": {
+                "left": 50.0,
+                "top": 270.0,
+                "right": 450.0,
+                "bottom": 310.0
+              }
+            },
+            {
+              "text": "Subsection A",
+              "level": "H3",
+              "bbox": {
+                "left": 70.0,
+                "top": 330.0,
+                "right": 400.0,
+                "bottom": 360.0
+              }
+            },
+            {
+              "text": "This subsection contains detailed information about topic A. The content is organized hierarchically for better readability and structure.",
+              "level": "Body",
+              "bbox": {
+                "left": 70.0,
+                "top": 370.0,
+                "right": 550.0,
+                "bottom": 450.0
+              }
+            },
+            {
+              "text": "Subsection B",
+              "level": "H3",
+              "bbox": {
+                "left": 70.0,
+                "top": 470.0,
+                "right": 400.0,
+                "bottom": 500.0
+              }
+            },
+            {
+              "text": "Further elaboration on topic B follows here. This demonstrates how hierarchical structure helps organize complex information.",
+              "level": "Body",
+              "bbox": {
+                "left": 70.0,
+                "top": 510.0,
+                "right": 550.0,
+                "bottom": 570.0
+              }
+            },
+            {
+              "text": "Conclusion",
+              "level": "H2",
+              "bbox": {
+                "left": 50.0,
+                "top": 590.0,
+                "right": 350.0,
+                "bottom": 630.0
+              }
+            },
+            {
+              "text": "In conclusion, this document has demonstrated the importance of proper document hierarchy. Structured documents are easier to parse, understand, and process automatically.",
+              "level": "Body",
+              "bbox": {
+                "left": 50.0,
+                "top": 640.0,
+                "right": 550.0,
+                "bottom": 720.0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "pdf_file": "sample_hierarchy_2.pdf",
+      "pages": [
+        {
+          "page_number": 1,
+          "blocks": [
+            {
+              "text": "Research Paper: Machine Learning",
+              "level": "H1",
+              "bbox": {
+                "left": 50.0,
+                "top": 40.0,
+                "right": 550.0,
+                "bottom": 90.0
+              }
+            },
+            {
+              "text": "Abstract",
+              "level": "H2",
+              "bbox": {
+                "left": 50.0,
+                "top": 110.0,
+                "right": 350.0,
+                "bottom": 150.0
+              }
+            },
+            {
+              "text": "Machine learning is a subset of artificial intelligence that focuses on enabling computer systems to learn from data. This paper provides a comprehensive overview of modern ML techniques.",
+              "level": "Body",
+              "bbox": {
+                "left": 50.0,
+                "top": 160.0,
+                "right": 550.0,
+                "bottom": 240.0
+              }
+            },
+            {
+              "text": "1. Introduction",
+              "level": "H2",
+              "bbox": {
+                "left": 50.0,
+                "top": 260.0,
+                "right": 400.0,
+                "bottom": 300.0
+              }
+            },
+            {
+              "text": "1.1 Background",
+              "level": "H3",
+              "bbox": {
+                "left": 70.0,
+                "top": 320.0,
+                "right": 400.0,
+                "bottom": 360.0
+              }
+            },
+            {
+              "text": "The field of machine learning has grown exponentially over the past decade. Novel algorithms and abundant data have enabled unprecedented advancements.",
+              "level": "Body",
+              "bbox": {
+                "left": 70.0,
+                "top": 370.0,
+                "right": 550.0,
+                "bottom": 440.0
+              }
+            },
+            {
+              "text": "1.2 Problem Statement",
+              "level": "H3",
+              "bbox": {
+                "left": 70.0,
+                "top": 460.0,
+                "right": 400.0,
+                "bottom": 500.0
+              }
+            },
+            {
+              "text": "Despite the progress made, several challenges remain in the field of machine learning. This work addresses key limitations in current approaches.",
+              "level": "Body",
+              "bbox": {
+                "left": 70.0,
+                "top": 510.0,
+                "right": 550.0,
+                "bottom": 580.0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "pdf_file": "sample_hierarchy_3.pdf",
+      "pages": [
+        {
+          "page_number": 1,
+          "blocks": [
+            {
+              "text": "Technical Documentation",
+              "level": "H1",
+              "bbox": {
+                "left": 40.0,
+                "top": 30.0,
+                "right": 560.0,
+                "bottom": 80.0
+              }
+            },
+            {
+              "text": "Installation Guide",
+              "level": "H2",
+              "bbox": {
+                "left": 40.0,
+                "top": 100.0,
+                "right": 400.0,
+                "bottom": 140.0
+              }
+            },
+            {
+              "text": "Prerequisites",
+              "level": "H3",
+              "bbox": {
+                "left": 60.0,
+                "top": 160.0,
+                "right": 350.0,
+                "bottom": 195.0
+              }
+            },
+            {
+              "text": "Before beginning the installation process, ensure you have the following requirements met. Operating system compatibility and necessary dependencies must be verified.",
+              "level": "Body",
+              "bbox": {
+                "left": 60.0,
+                "top": 205.0,
+                "right": 560.0,
+                "bottom": 280.0
+              }
+            },
+            {
+              "text": "System Requirements",
+              "level": "H4",
+              "bbox": {
+                "left": 80.0,
+                "top": 300.0,
+                "right": 400.0,
+                "bottom": 335.0
+              }
+            },
+            {
+              "text": "Minimum: 4GB RAM, 2GHz processor. Recommended: 8GB RAM, modern multi-core processor with SSD.",
+              "level": "Body",
+              "bbox": {
+                "left": 80.0,
+                "top": 345.0,
+                "right": 560.0,
+                "bottom": 400.0
+              }
+            },
+            {
+              "text": "Installation Steps",
+              "level": "H3",
+              "bbox": {
+                "left": 60.0,
+                "top": 420.0,
+                "right": 350.0,
+                "bottom": 455.0
+              }
+            },
+            {
+              "text": "Follow these numbered steps in order to complete the installation successfully. Each step builds on the previous one.",
+              "level": "Body",
+              "bbox": {
+                "left": 60.0,
+                "top": 465.0,
+                "right": 560.0,
+                "bottom": 520.0
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
 }

@@ -89,5 +89,3 @@ pub use crate::core::config::HierarchyConfig;
 pub(crate) use bundled::extract_bundled_pdfium;
 #[cfg(feature = "pdf")]
 pub use error::PdfError;
-#[cfg(feature = "pdf")]
-pub use text::extract_text_from_pdf;

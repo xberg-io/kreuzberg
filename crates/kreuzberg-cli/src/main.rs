@@ -768,7 +768,7 @@ fn main() -> Result<()> {
         }
 
         Commands::Formats { format } => {
-            let formats = kreuzberg::list_supported_formats();
+            let formats = kreuzberg::core::mime::list_supported_formats();
             match format {
                 WireFormat::Text => {
                     println!("{:<15} {}", style::label("EXTENSION"), style::label("MIME TYPE"));

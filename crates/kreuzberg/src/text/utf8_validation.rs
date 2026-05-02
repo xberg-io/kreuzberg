@@ -107,8 +107,9 @@ pub(crate) fn string_from_utf8(bytes: Vec<u8>) -> Result<String, std::string::Fr
 /// # Performance
 ///
 /// This function is optimized for early exit on invalid sequences.
+#[cfg(test)]
 #[inline]
-pub fn is_valid_utf8(bytes: &[u8]) -> bool {
+pub(crate) fn is_valid_utf8(bytes: &[u8]) -> bool {
     #[cfg(feature = "simd-utf8")]
     {
         simdutf8::basic::from_utf8(bytes).is_ok()

@@ -60,7 +60,7 @@ pub fn chunk_text(
 /// When `heading_source` is provided, it is used instead of `text` for building the
 /// heading map. This is needed when `text` is plain text (no markdown headings) but
 /// the original document had headings that were stripped during rendering.
-pub fn chunk_text_with_heading_source(
+pub(crate) fn chunk_text_with_heading_source(
     text: &str,
     config: &ChunkingConfig,
     page_boundaries: Option<&[PageBoundary]>,
@@ -271,7 +271,8 @@ pub(crate) fn chunk_text_with_type(
 /// # Ok(())
 /// # }
 /// ```
-pub fn chunk_texts_batch(texts: &[String], config: &ChunkingConfig) -> Result<Vec<ChunkingResult>> {
+#[cfg(test)]
+pub(crate) fn chunk_texts_batch(texts: &[String], config: &ChunkingConfig) -> Result<Vec<ChunkingResult>> {
     texts.iter().map(|text| chunk_text(text, config, None)).collect()
 }
 

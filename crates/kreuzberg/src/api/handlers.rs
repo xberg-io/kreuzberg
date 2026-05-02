@@ -292,7 +292,7 @@ pub(crate) async fn extract_handler(
 )]
 #[cfg_attr(feature = "otel", tracing::instrument(name = "api.formats"))]
 pub(crate) async fn formats_handler() -> Json<Vec<crate::SupportedFormat>> {
-    Json(crate::list_supported_formats())
+    Json(crate::core::mime::list_supported_formats())
 }
 
 /// Cache stats endpoint handler.
@@ -436,9 +436,9 @@ pub(crate) async fn embed_handler(JsonApi(request): JsonApi<EmbedRequest>) -> Re
 
     // Validate preset name if model type is Preset
     if let crate::core::config::EmbeddingModelType::Preset { ref name } = config.model
-        && crate::get_preset(name).is_none()
+        && crate::embeddings::get_preset(name).is_none()
     {
-        let available: Vec<&str> = crate::list_presets();
+        let available: Vec<&str> = crate::embeddings::list_presets();
         return Err(ApiError::validation(crate::error::KreuzbergError::validation(format!(
             "Unknown embedding preset '{}'. Available: {}",
             name,
@@ -1083,12 +1083,12 @@ pub(crate) async fn cache_warm_handler(JsonApi(request): JsonApi<WarmRequest>) -
     {
         let embeddings_dir = cache_base.join("embeddings");
         let presets_to_warm: Vec<&crate::EmbeddingPreset> = if request.all_embeddings {
-            crate::EMBEDDING_PRESETS.iter().collect()
+            crate::embeddings::EMBEDDING_PRESETS.iter().collect()
         } else if let Some(ref name) = request.embedding_model {
-            match crate::get_preset(name) {
+            match crate::embeddings::get_preset(name) {
                 Some(preset) => vec![preset],
                 None => {
-                    let available: Vec<&str> = crate::list_presets();
+                    let available: Vec<&str> = crate::embeddings::list_presets();
                     return Err(ApiError::validation(crate::error::KreuzbergError::validation(format!(
                         "Unknown embedding preset '{}'. Available: {}",
                         name,
@@ -1102,7 +1102,7 @@ pub(crate) async fn cache_warm_handler(JsonApi(request): JsonApi<WarmRequest>) -
 
         for preset in &presets_to_warm {
             let label = format!("embedding ({})", preset.name);
-            crate::warm_model(
+            crate::embeddings::warm_model(
                 &crate::core::config::EmbeddingModelType::Preset {
                     name: preset.name.to_string(),
                 },

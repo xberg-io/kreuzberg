@@ -38,6 +38,16 @@ pub fn unregister_post_processor(name: &str) -> crate::Result<()> {
     registry.remove(name)
 }
 
+/// Remove all registered post-processors.
+pub fn clear_post_processors() -> crate::Result<()> {
+    use crate::plugins::registry::get_post_processor_registry;
+
+    let registry = get_post_processor_registry();
+    let mut registry = registry.write();
+
+    registry.shutdown_all()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

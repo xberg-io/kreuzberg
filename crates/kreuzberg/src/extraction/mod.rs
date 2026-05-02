@@ -69,10 +69,7 @@ pub mod markdown;
 #[cfg(feature = "html")]
 pub use html::convert_html_to_markdown;
 
-#[cfg(feature = "office")]
-pub use doc::extract_doc_text;
-
 #[cfg(any(feature = "office", feature = "html", feature = "xml"))]
-pub use markdown::cells_to_markdown;
+pub(crate) use markdown::cells_to_markdown;
 #[cfg(any(feature = "office", feature = "html", feature = "xml"))]
-pub use markdown::cells_to_text;
+pub(crate) use markdown::cells_to_text;

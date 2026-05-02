@@ -69,7 +69,8 @@ fn calculate_dimension_constrained_dpi(
 }
 
 /// Calculate optimal DPI with min/max constraints
-pub fn calculate_optimal_dpi(
+#[cfg(test)]
+pub(crate) fn calculate_optimal_dpi(
     page_width: f64,
     page_height: f64,
     target_dpi: i32,

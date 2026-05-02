@@ -7,7 +7,7 @@ use crate::types::internal::InternalDocument;
 use super::comrak_bridge::build_comrak_ast;
 
 /// Render an `InternalDocument` to GFM Markdown.
-pub fn render_markdown(doc: &InternalDocument) -> String {
+pub(crate) fn render_markdown(doc: &InternalDocument) -> String {
     tracing::debug!(element_count = doc.elements.len(), "markdown rendering starting");
     let arena = Arena::new();
     let root = build_comrak_ast(doc, &arena);

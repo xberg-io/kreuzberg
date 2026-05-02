@@ -8,7 +8,7 @@ use super::comrak_bridge::build_comrak_ast;
 use super::markdown::comrak_options;
 
 /// Render an `InternalDocument` to HTML5.
-pub fn render_html(doc: &InternalDocument) -> String {
+pub(crate) fn render_html(doc: &InternalDocument) -> String {
     let arena = Arena::new();
     let root = build_comrak_ast(doc, &arena);
 

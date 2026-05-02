@@ -20,9 +20,7 @@ pub mod timing;
 pub mod xml_utils;
 
 #[cfg(feature = "quality")]
-pub use string_utils::{calculate_text_confidence, fix_mojibake, safe_decode};
-
-pub use json_utils::{camel_to_snake, snake_to_camel};
+pub(crate) use string_utils::safe_decode;
 #[cfg(any(feature = "xml", feature = "office"))]
 pub(crate) use xml_utils::xml_tag_name;
 
@@ -37,7 +35,7 @@ use std::borrow::Cow;
 /// Uses a single-pass scan: if no special characters are found, returns a
 /// borrowed `Cow` with no allocation.
 #[inline]
-pub fn escape_html_entities(text: &str) -> Cow<'_, str> {
+pub(crate) fn escape_html_entities(text: &str) -> Cow<'_, str> {
     let needs_amp = text.contains('&');
     let needs_lt = text.contains('<');
     let needs_gt = text.contains('>');
@@ -61,7 +59,7 @@ pub fn escape_html_entities(text: &str) -> Cow<'_, str> {
 /// Normalizes whitespace by collapsing multiple whitespace characters into single spaces.
 /// Returns Cow::Borrowed if no normalization needed.
 #[inline]
-pub fn normalize_whitespace(s: &str) -> Cow<'_, str> {
+pub(crate) fn normalize_whitespace(s: &str) -> Cow<'_, str> {
     // Check if normalization is needed
     let needs_normalization = s
         .as_bytes()

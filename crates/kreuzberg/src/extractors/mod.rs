@@ -315,7 +315,7 @@ pub(crate) fn ensure_initialized() -> Result<()> {
 /// # Ok(())
 /// # }
 /// ```
-pub fn register_default_extractors() -> Result<()> {
+pub(crate) fn register_default_extractors() -> Result<()> {
     let registry = get_document_extractor_registry();
     let mut registry = registry.write();
 

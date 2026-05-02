@@ -57,11 +57,11 @@ pub fn embed_command(
         }
         "local" | "" => {
             // Validate preset for local provider
-            let _preset_info = kreuzberg::get_preset(preset).with_context(|| {
+            let _preset_info = kreuzberg::get_embedding_preset(preset).with_context(|| {
                 format!(
                     "Unknown embedding preset '{}'. Available: {:?}",
                     preset,
-                    kreuzberg::list_presets()
+                    kreuzberg::list_embedding_presets()
                 )
             })?;
 

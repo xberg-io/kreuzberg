@@ -16,9 +16,4 @@ pub mod quality_processor;
 pub use quality_processor::QualityProcessor;
 
 #[cfg(feature = "quality")]
-pub use string_utils::{calculate_text_confidence, fix_mojibake, safe_decode};
-
-#[cfg(feature = "quality")]
-pub use token_reduction::{
-    ReductionLevel, TokenReductionConfig, batch_reduce_tokens, get_reduction_statistics, reduce_tokens,
-};
+pub use token_reduction::{ReductionLevel, TokenReductionConfig};

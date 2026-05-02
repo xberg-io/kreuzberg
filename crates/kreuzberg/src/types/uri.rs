@@ -49,7 +49,7 @@ pub enum UriKind {
 /// - `mailto:` → `Email`
 /// - `#` prefix → `Anchor`
 /// - everything else → `Hyperlink`
-pub fn classify_uri(url: &str) -> UriKind {
+pub(crate) fn classify_uri(url: &str) -> UriKind {
     if url.starts_with("mailto:") {
         UriKind::Email
     } else if url.starts_with('#') {

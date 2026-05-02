@@ -25,7 +25,7 @@ pub(crate) fn record_success_on_current_span() {
 ///
 /// Prevents PII (personally identifiable information) from appearing in
 /// traces by only recording filenames instead of full paths.
-pub fn sanitize_path(path: &std::path::Path) -> String {
+pub(crate) fn sanitize_path(path: &std::path::Path) -> String {
     conventions::sanitize_filename(path).to_owned()
 }
 

@@ -9,7 +9,7 @@ use crate::types::internal::{ElementKind, InternalDocument};
 use super::common::{get_admonition_kind, get_admonition_title, parse_metadata_entries, render_table_plain};
 
 /// Render an `InternalDocument` to plain text.
-pub fn render_plain(doc: &InternalDocument) -> String {
+pub(crate) fn render_plain(doc: &InternalDocument) -> String {
     let mut out = String::with_capacity(doc.elements.len() * 80);
 
     for elem in &doc.elements {

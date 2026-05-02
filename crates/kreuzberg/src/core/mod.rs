@@ -48,12 +48,6 @@ pub use config::{
     ChunkingConfig, EmbeddingConfig, EmbeddingModelType, ExtractionConfig, ImageExtractionConfig,
     LanguageDetectionConfig, OcrConfig, OutputFormat, PageConfig, PostProcessorConfig, TokenReductionOptions,
 };
-pub use config_validation::{
-    validate_binarization_method, validate_chunking_params, validate_confidence, validate_dpi, validate_language_code,
-    validate_ocr_backend, validate_output_format, validate_tesseract_oem, validate_tesseract_psm,
-    validate_token_reduction_level,
-};
-pub use formats::{KNOWN_FORMATS, is_valid_format_field};
 pub use server_config::ServerConfig;
 
 #[cfg(feature = "tokio-runtime")]

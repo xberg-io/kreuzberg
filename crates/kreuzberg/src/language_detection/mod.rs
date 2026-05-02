@@ -36,7 +36,7 @@ pub use processor::LanguageDetector;
 /// let languages = detect_languages(text, &config).expect("language detection succeeded");
 /// println!("Detected languages: {:?}", languages);
 /// ```
-pub fn detect_languages(text: &str, config: &LanguageDetectionConfig) -> Result<Option<Vec<String>>> {
+pub(crate) fn detect_languages(text: &str, config: &LanguageDetectionConfig) -> Result<Option<Vec<String>>> {
     if !config.enabled {
         return Ok(None);
     }

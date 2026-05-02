@@ -2,7 +2,6 @@
 //!
 //! This module provides functions to extract text content from PDF files using the pdfium-render library.
 
-use super::bindings::{PdfiumHandle, bind_pdfium};
 use super::error::{PdfError, Result};
 use crate::core::config::PageConfig;
 use crate::pdf::metadata::PdfExtractionMetadata;
@@ -81,44 +80,6 @@ pub(crate) fn convert_html_page_text(text: &str) -> String {
 
 /// Result type for PDF text extraction with optional page tracking.
 type PdfTextExtractionResult = (String, Option<Vec<PageBoundary>>, Option<Vec<PageContent>>);
-
-pub struct PdfTextExtractor<'a> {
-    pdfium: PdfiumHandle<'a>,
-}
-
-impl PdfTextExtractor<'static> {
-    pub(crate) fn new() -> Result<Self> {
-        let pdfium = bind_pdfium(PdfError::TextExtractionFailed, "text extraction", None)?;
-        Ok(PdfTextExtractor { pdfium })
-    }
-}
-
-impl PdfTextExtractor<'_> {
-    pub(crate) fn extract_text(&self, pdf_bytes: &[u8]) -> Result<String> {
-        self.extract_text_with_password(pdf_bytes, None)
-    }
-
-    pub(crate) fn extract_text_with_password(&self, pdf_bytes: &[u8], password: Option<&str>) -> Result<String> {
-        let document = self.pdfium.load_pdf_from_byte_slice(pdf_bytes, password).map_err(|e| {
-            let err_msg = super::error::format_pdfium_error(e);
-            if (err_msg.contains("password") || err_msg.contains("Password")) && password.is_some() {
-                PdfError::InvalidPassword
-            } else if err_msg.contains("password") || err_msg.contains("Password") {
-                PdfError::PasswordRequired
-            } else {
-                PdfError::InvalidPdf(err_msg)
-            }
-        })?;
-
-        let (content, _, _) = extract_text_from_pdf_document(&document, None, None)?;
-        Ok(content)
-    }
-}
-
-pub fn extract_text_from_pdf(pdf_bytes: &[u8]) -> Result<String> {
-    let extractor = PdfTextExtractor::new()?;
-    extractor.extract_text(pdf_bytes)
-}
 
 /// Result type for unified PDF text and metadata extraction.
 ///
@@ -598,43 +559,6 @@ fn extract_page_hierarchy(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use serial_test::serial;
-
-    #[test]
-    #[serial]
-    fn test_extractor_creation() {
-        let result = PdfTextExtractor::new();
-        assert!(result.is_ok());
-    }
-
-    #[test]
-    #[serial]
-    fn test_extract_empty_pdf() {
-        let extractor = PdfTextExtractor::new().unwrap();
-        let result = extractor.extract_text(b"");
-        assert!(result.is_err());
-    }
-
-    #[test]
-    #[serial]
-    fn test_extract_invalid_pdf() {
-        let extractor = PdfTextExtractor::new().unwrap();
-        let result = extractor.extract_text(b"not a pdf");
-        assert!(result.is_err());
-        assert!(matches!(result.unwrap_err(), PdfError::InvalidPdf(_)));
-    }
-
-    #[test]
-    #[serial]
-    fn test_password_required_detection() {
-        let extractor = PdfTextExtractor::new().unwrap();
-        let encrypted_pdf = b"%PDF-1.4\n%\xE2\xE3\xCF\xD3\n";
-        let result = extractor.extract_text(encrypted_pdf);
-
-        if let Err(err) = result {
-            assert!(matches!(err, PdfError::PasswordRequired | PdfError::InvalidPdf(_)));
-        }
-    }
 
     #[test]
     fn test_strip_page_rotation_no_rotate() {
@@ -716,77 +640,5 @@ mod html_detection_tests {
     fn test_rejects_code_generics() {
         // Rust/Java generics like Vec<T> should not trigger unless they look like HTML
         assert!(!contains_html_markup("Vec<String>"));
-    }
-}
-
-#[cfg(test)]
-mod cache_regression_tests {
-    use super::*;
-    use serial_test::serial;
-    use std::time::Instant;
-
-    /// Test that multiple extractions of the same document produce consistent results.
-    ///
-    /// Note: The Pdfium library uses a singleton pattern for initialization. The first
-    /// call to bind_pdfium() initializes the library (expensive), while subsequent
-    /// calls reuse the cached instance (fast). This is correct behavior, not a bug.
-    ///
-    /// This test verifies that:
-    /// 1. Multiple extractions produce identical text content
-    /// 2. The singleton pattern provides consistent extraction behavior
-    #[test]
-    #[serial]
-    fn test_no_global_cache_between_documents() {
-        let pdf_bytes = std::fs::read("../../test_documents/pdf/fake_memo.pdf").expect("Failed to read PDF");
-
-        let extractor = PdfTextExtractor::new().expect("Failed to create extractor");
-
-        let start = Instant::now();
-        let text1 = extractor.extract_text(&pdf_bytes).expect("Failed to extract (cold)");
-        let cold = start.elapsed();
-
-        let start = Instant::now();
-        let text2 = extractor.extract_text(&pdf_bytes).expect("Failed to extract (warm1)");
-        let warm1 = start.elapsed();
-
-        let start = Instant::now();
-        let text3 = extractor.extract_text(&pdf_bytes).expect("Failed to extract (warm2)");
-        let warm2 = start.elapsed();
-
-        eprintln!("Cold:   {:?}", cold);
-        eprintln!("Warm 1: {:?}", warm1);
-        eprintln!("Warm 2: {:?}", warm2);
-
-        // All extractions must produce identical content
-        assert_eq!(text1, text2);
-        assert_eq!(text2, text3);
-
-        // Warm calls may be faster due to the Pdfium singleton pattern - this is expected.
-        // The singleton initializes Pdfium once and reuses it for subsequent calls.
-        // What we DO want to verify is that warm1 and warm2 have similar performance,
-        // which indicates consistent behavior after initialization.
-        let warm1_micros = warm1.as_micros().max(1);
-        let warm2_micros = warm2.as_micros().max(1);
-        let warm_ratio = if warm1_micros > warm2_micros {
-            warm1_micros / warm2_micros
-        } else {
-            warm2_micros / warm1_micros
-        };
-
-        // After initialization, subsequent calls should have similar performance (within 5x)
-        assert!(
-            warm_ratio < 5,
-            "Warm calls have inconsistent performance ({}x difference) - warm1: {:?}, warm2: {:?}",
-            warm_ratio,
-            warm1,
-            warm2
-        );
-
-        // Log the cold/warm ratio for informational purposes
-        let cold_warm_ratio = cold.as_micros() / warm1_micros;
-        eprintln!(
-            "Cold/Warm ratio: {}x (expected due to singleton initialization)",
-            cold_warm_ratio
-        );
     }
 }

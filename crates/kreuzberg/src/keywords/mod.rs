@@ -100,7 +100,7 @@ pub use types::{Keyword, KeywordAlgorithm};
 /// }
 /// # Ok::<(), kreuzberg::KreuzbergError>(())
 /// ```
-pub fn extract_keywords(text: &str, config: &KeywordConfig) -> Result<Vec<Keyword>> {
+pub(crate) fn extract_keywords(text: &str, config: &KeywordConfig) -> Result<Vec<Keyword>> {
     match config.algorithm {
         #[cfg(feature = "keywords-yake")]
         KeywordAlgorithm::Yake => yake::extract_keywords_yake(text, config),

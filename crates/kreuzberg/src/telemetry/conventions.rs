@@ -117,7 +117,7 @@ pub const ERROR_TYPE: &str = "kreuzberg.error.type";
 /// Sanitize a file path to return only the filename (no directory).
 ///
 /// Prevents PII from appearing in traces.
-pub fn sanitize_filename(path: &std::path::Path) -> &str {
+pub(crate) fn sanitize_filename(path: &std::path::Path) -> &str {
     path.file_name().and_then(|n| n.to_str()).unwrap_or("unknown")
 }
 

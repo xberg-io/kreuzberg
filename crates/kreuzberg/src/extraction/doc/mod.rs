@@ -10,7 +10,7 @@ use std::io::Cursor;
 
 /// Result of DOC text extraction.
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub struct DocExtractionResult {
+pub(crate) struct DocExtractionResult {
     /// Extracted text content. Aliased as `text` for back-compat.
     pub content: String,
     /// Document metadata.
@@ -19,7 +19,7 @@ pub struct DocExtractionResult {
 
 /// Metadata extracted from DOC files.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct DocMetadata {
+pub(crate) struct DocMetadata {
     pub title: Option<String>,
     pub subject: Option<String>,
     pub author: Option<String>,
@@ -33,7 +33,7 @@ pub struct DocMetadata {
 ///
 /// Parses the OLE/CFB compound document, reads the FIB (File Information Block),
 /// and extracts text from the piece table.
-pub fn extract_doc_text(content: &[u8]) -> Result<DocExtractionResult> {
+pub(crate) fn extract_doc_text(content: &[u8]) -> Result<DocExtractionResult> {
     let cursor = Cursor::new(content);
     let mut comp = cfb::CompoundFile::open(cursor)
         .map_err(|e| KreuzbergError::parsing(format!("Failed to open DOC as OLE container: {e}")))?;

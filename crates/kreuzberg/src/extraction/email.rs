@@ -1250,7 +1250,7 @@ fn extract_raw_headers(data: &[u8]) -> HashMap<String, String> {
 }
 
 /// Extract email content from either .eml or .msg format
-pub fn extract_email_content(
+pub(crate) fn extract_email_content(
     data: &[u8],
     mime_type: &str,
     fallback_codepage: Option<u32>,

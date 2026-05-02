@@ -20,5 +20,5 @@ pub mod parsing;
 pub mod rendering;
 
 // Re-export public API
-pub use conversion::{djot_content_to_djot, djot_to_html, extraction_result_to_djot};
+pub use conversion::{djot_content_to_djot, extraction_result_to_djot};
 pub use extractor::DjotExtractor;

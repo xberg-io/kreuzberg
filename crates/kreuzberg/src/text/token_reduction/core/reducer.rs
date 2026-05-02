@@ -70,6 +70,7 @@ impl TokenReducer {
         }
     }
 
+    #[cfg(test)]
     pub(crate) fn batch_reduce(&self, texts: &[String]) -> Vec<String> {
         if !self.config.enable_parallel || texts.len() < 2 {
             return texts.iter().map(|text| self.reduce(text)).collect();

@@ -22,20 +22,20 @@ Command-line interface with configuration and caching
 
 ### Commands
 
-| Command | Description |
-|---------|-------------|
-| `extract` | Extract text from a document |
-| `batch` | Batch extract from multiple documents |
-| `detect` | Detect MIME type of a file |
-| `formats` | List all supported document formats |
-| `version` | Show version information |
-| `cache` | Cache management (stats, clear, warm, manifest) |
-| `serve` | Start the API server (requires `api` feature) |
-| `mcp` | Start the MCP server (requires `mcp` feature) |
-| `api` | API utilities (schema) (requires `api` feature) |
-| `embed` | Generate embeddings for text (requires `embeddings` feature) <span class="version-badge">v4.5.2</span> |
-| `chunk` | Chunk text for processing <span class="version-badge">v4.5.2</span> |
-| `completions` | Generate shell completions <span class="version-badge">v4.5.2</span> |
+| Command       | Description                                                                                            |
+| ------------- | ------------------------------------------------------------------------------------------------------ |
+| `extract`     | Extract text from a document                                                                           |
+| `batch`       | Batch extract from multiple documents                                                                  |
+| `detect`      | Detect MIME type of a file                                                                             |
+| `formats`     | List all supported document formats                                                                    |
+| `version`     | Show version information                                                                               |
+| `cache`       | Cache management (stats, clear, warm, manifest)                                                        |
+| `serve`       | Start the API server (requires `api` feature)                                                          |
+| `mcp`         | Start the MCP server (requires `mcp` feature)                                                          |
+| `api`         | API utilities (schema) (requires `api` feature)                                                        |
+| `embed`       | Generate embeddings for text (requires `embeddings` feature) <span class="version-badge">v4.5.2</span> |
+| `chunk`       | Chunk text for processing <span class="version-badge">v4.5.2</span>                                    |
+| `completions` | Generate shell completions <span class="version-badge">v4.5.2</span>                                   |
 
 ### Platform Support
 
@@ -252,8 +252,8 @@ kreuzberg mcp --config kreuzberg.toml
 
 ## Global Flags
 
-| Flag | Description |
-|------|-------------|
+| Flag                  | Description                                                                                                                        |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
 | `--log-level <LEVEL>` | Set log level (`trace`, `debug`, `info`, `warn`, `error`). Overrides `RUST_LOG` env var. <span class="version-badge">v4.5.2</span> |
 
 ## Configuration
@@ -354,40 +354,40 @@ kreuzberg extract <PATH> [OPTIONS]
 
 **Extraction override flags** <span class="version-badge">v4.5.2</span> (also available on `batch`):
 
-| Flag | Description |
-|------|-------------|
-| `--ocr <true\|false>` | Enable/disable OCR |
-| `--ocr-backend <BACKEND>` | OCR backend: `tesseract`, `paddle-ocr`, `easyocr` |
-| `--ocr-language <LANG>` | OCR language code (e.g. `eng`, `fra`, `ch`) |
-| `--ocr-auto-rotate <true\|false>` | Auto-rotate images before OCR |
-| `--force-ocr <true\|false>` | Force OCR even if text extraction succeeds |
-| `--no-cache <true\|false>` | Disable result caching |
-| `--chunk <true\|false>` | Enable text chunking |
-| `--chunk-size <SIZE>` | Maximum chunk size in characters (default: 1000) |
-| `--chunk-overlap <SIZE>` | Overlap between chunks in characters (default: 200) |
-| `--chunking-tokenizer <MODEL>` | Tokenizer model for token-based sizing (e.g. `Xenova/gpt-4o`) |
-| `--content-format <FORMAT>` | Content format: `plain`, `markdown`, `djot`, `html` |
-| `--include-structure <true\|false>` | Include hierarchical document structure |
-| `--quality <true\|false>` | Enable quality post-processing |
-| `--detect-language <true\|false>` | Enable language detection |
-| `--layout` | Enable layout detection (RT-DETR v2) (enables with defaults, use `--layout false` to disable) |
-| `--layout-confidence <FLOAT>` | Layout confidence threshold (0.0 - 1.0) |
-| `--acceleration <PROVIDER>` | ONNX execution provider: `auto`, `cpu`, `coreml`, `cuda`, `tensorrt` |
-| `--max-concurrent <N>` | Max parallel extractions in batch mode |
-| `--max-threads <N>` | Cap all internal thread pools |
-| `--extract-pages <true\|false>` | Extract pages as separate array |
-| `--page-markers <true\|false>` | Insert page marker comments |
-| `--extract-images <true\|false>` | Enable image extraction |
-| `--target-dpi <DPI>` | Target DPI for images (36 - 2400) |
-| `--pdf-password <PASS>` | Password for encrypted PDFs (repeatable) |
-| `--pdf-extract-images <true\|false>` | Extract images from PDF pages |
-| `--pdf-extract-metadata <true\|false>` | Extract PDF metadata |
-| `--token-reduction <LEVEL>` | Token reduction: `off`, `light`, `moderate`, `aggressive`, `maximum` |
-| `--layout-table-model <MODEL>` | Table structure model: `tatr`, `slanet_wired`, `slanet_wireless`, `slanet_plus`, `slanet_auto`, `disabled` |
-| `--disable-ocr <true\|false>` | Disable OCR entirely (even for images) |
-| `--cache-namespace <NAMESPACE>` | Cache namespace for tenant isolation |
-| `--cache-ttl-secs <SECONDS>` | Per-request cache TTL in seconds (0 = skip cache) |
-| `--msg-codepage <CODE>` | Windows codepage fallback for MSG files |
+| Flag                                   | Description                                                                                                |
+| -------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `--ocr <true\|false>`                  | Enable/disable OCR                                                                                         |
+| `--ocr-backend <BACKEND>`              | OCR backend: `tesseract`, `paddle-ocr`, `easyocr`                                                          |
+| `--ocr-language <LANG>`                | OCR language code (e.g. `eng`, `fra`, `ch`)                                                                |
+| `--ocr-auto-rotate <true\|false>`      | Auto-rotate images before OCR                                                                              |
+| `--force-ocr <true\|false>`            | Force OCR even if text extraction succeeds                                                                 |
+| `--no-cache <true\|false>`             | Disable result caching                                                                                     |
+| `--chunk <true\|false>`                | Enable text chunking                                                                                       |
+| `--chunk-size <SIZE>`                  | Maximum chunk size in characters (default: 1000)                                                           |
+| `--chunk-overlap <SIZE>`               | Overlap between chunks in characters (default: 200)                                                        |
+| `--chunking-tokenizer <MODEL>`         | Tokenizer model for token-based sizing (e.g. `Xenova/gpt-4o`)                                              |
+| `--content-format <FORMAT>`            | Content format: `plain`, `markdown`, `djot`, `html`                                                        |
+| `--include-structure <true\|false>`    | Include hierarchical document structure                                                                    |
+| `--quality <true\|false>`              | Enable quality post-processing                                                                             |
+| `--detect-language <true\|false>`      | Enable language detection                                                                                  |
+| `--layout`                             | Enable layout detection (RT-DETR v2) (enables with defaults, use `--layout false` to disable)              |
+| `--layout-confidence <FLOAT>`          | Layout confidence threshold (0.0 - 1.0)                                                                    |
+| `--acceleration <PROVIDER>`            | ONNX execution provider: `auto`, `cpu`, `coreml`, `cuda`, `tensorrt`                                       |
+| `--max-concurrent <N>`                 | Max parallel extractions in batch mode                                                                     |
+| `--max-threads <N>`                    | Cap all internal thread pools                                                                              |
+| `--extract-pages <true\|false>`        | Extract pages as separate array                                                                            |
+| `--page-markers <true\|false>`         | Insert page marker comments                                                                                |
+| `--extract-images <true\|false>`       | Enable image extraction                                                                                    |
+| `--target-dpi <DPI>`                   | Target DPI for images (36 - 2400)                                                                          |
+| `--pdf-password <PASS>`                | Password for encrypted PDFs (repeatable)                                                                   |
+| `--pdf-extract-images <true\|false>`   | Extract images from PDF pages                                                                              |
+| `--pdf-extract-metadata <true\|false>` | Extract PDF metadata                                                                                       |
+| `--token-reduction <LEVEL>`            | Token reduction: `off`, `light`, `moderate`, `aggressive`, `maximum`                                       |
+| `--layout-table-model <MODEL>`         | Table structure model: `tatr`, `slanet_wired`, `slanet_wireless`, `slanet_plus`, `slanet_auto`, `disabled` |
+| `--disable-ocr <true\|false>`          | Disable OCR entirely (even for images)                                                                     |
+| `--cache-namespace <NAMESPACE>`        | Cache namespace for tenant isolation                                                                       |
+| `--cache-ttl-secs <SECONDS>`           | Per-request cache TTL in seconds (0 = skip cache)                                                          |
+| `--msg-codepage <CODE>`                | Windows codepage fallback for MSG files                                                                    |
 
 **Examples:**
 
@@ -800,15 +800,15 @@ kreuzberg extract document.pdf --format json
 
 ## Supported File Formats
 
-| Category | Formats |
-|----------|---------|
+| Category      | Formats                                                  |
+| ------------- | -------------------------------------------------------- |
 | **Documents** | PDF, DOCX, DOC, PPTX, PPT, XLSX, XLS, ODT, ODP, ODS, RTF |
-| **Images** | PNG, JPEG, JPG, WEBP, BMP, TIFF, GIF |
-| **Web** | HTML, XHTML, XML |
-| **Text** | TXT, MD, CSV, TSV, JSON, YAML, TOML |
-| **Email** | EML, MSG |
-| **Archives** | ZIP, TAR, 7Z |
-| **Other** | 30+ additional formats |
+| **Images**    | PNG, JPEG, JPG, WEBP, BMP, TIFF, GIF                     |
+| **Web**       | HTML, XHTML, XML                                         |
+| **Text**      | TXT, MD, CSV, TSV, JSON, YAML, TOML                      |
+| **Email**     | EML, MSG                                                 |
+| **Archives**  | ZIP, TAR, 7Z                                             |
+| **Other**     | 30+ additional formats                                   |
 
 ## Exit Codes
 

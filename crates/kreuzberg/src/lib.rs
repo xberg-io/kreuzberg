@@ -113,10 +113,12 @@ pub mod layout;
 #[cfg(feature = "pdf")]
 pub mod pdf;
 
+// ── Error, Result, and all types ─────────────────────────────────────────────
 pub use cancellation::CancellationToken;
 pub use error::{KreuzbergError, Result};
 pub use types::*;
 
+// ── Extraction — public API (8 functions) ────────────────────────────────────
 #[cfg(feature = "tokio-runtime")]
 pub use core::extractor::{batch_extract_bytes, batch_extract_file};
 pub use core::extractor::{extract_bytes, extract_file};
@@ -126,6 +128,7 @@ pub use core::extractor::{batch_extract_bytes_sync, extract_bytes_sync};
 #[cfg(feature = "tokio-runtime")]
 pub use core::extractor::{batch_extract_file_sync, extract_file_sync};
 
+// ── Extraction config types ───────────────────────────────────────────────────
 pub use core::config::{
     AccelerationConfig, ChunkSizing, ChunkerType, ChunkingConfig, ContentFilterConfig, EmailConfig, EmbeddingConfig,
     EmbeddingModelType, ExecutionProviderType, ExtractionConfig, FileExtractionConfig, ImageExtractionConfig,
@@ -167,7 +170,7 @@ pub use core::config::{OcrPipelineConfig, OcrPipelineStage, OcrQualityThresholds
 pub use doc_orientation::OrientationResult;
 
 #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-pub use keywords::{Keyword, KeywordAlgorithm, KeywordConfig, extract_keywords};
+pub use keywords::{Keyword, KeywordAlgorithm, KeywordConfig};
 
 #[cfg(feature = "keywords-rake")]
 pub use keywords::RakeParams;
@@ -184,11 +187,8 @@ pub use tree_sitter_language_pack::{
     SymbolInfo, SymbolKind, process as process_code,
 };
 
-pub use core::mime::{
-    DOCX_MIME_TYPE, EXCEL_MIME_TYPE, HTML_MIME_TYPE, JSON_MIME_TYPE, MARKDOWN_MIME_TYPE, PDF_MIME_TYPE,
-    PLAIN_TEXT_MIME_TYPE, POWER_POINT_MIME_TYPE, SupportedFormat, XML_MIME_TYPE, detect_mime_type_from_bytes,
-    detect_or_validate, get_extensions_for_mime, list_supported_formats, validate_mime_type,
-};
+// ── MIME / Format Info — public API (3 functions) ────────────────────────────
+pub use core::mime::{SupportedFormat, detect_mime_type_from_bytes, get_extensions_for_mime};
 
 /// Detect the MIME type of a file at the given path.
 ///
@@ -198,27 +198,23 @@ pub fn detect_mime_type(path: String, check_exists: bool) -> crate::Result<Strin
     core::mime::detect_mime_type(path, check_exists)
 }
 
-#[cfg(feature = "language-detection")]
-pub use language_detection::detect_languages;
+// ── PDF Rendering — public API (1 function, feature-gated) ───────────────────
+#[cfg(feature = "pdf")]
+pub use pdf::rendering::render_pdf_page_to_png;
 
-/// Detect the image format from raw bytes.
-///
-/// Returns a string identifying the format (e.g., `"jpeg"`, `"png"`, `"gif"`, `"bmp"`, `"tiff"`, `"webp"`).
-/// Returns `"unknown"` if the format cannot be determined.
-#[cfg(feature = "ocr")]
-pub fn detect_image_format(data: Vec<u8>) -> String {
-    extraction::image_format::detect_image_format(&data).to_string()
-}
-
-pub use core::formats::{KNOWN_FORMATS, is_valid_format_field};
-
-pub use plugins::registry::{
-    get_document_extractor_registry, get_ocr_backend_registry, get_post_processor_registry, get_renderer_registry,
-    get_validator_registry,
+// ── Plugin Lifecycle — public API (13 functions) ─────────────────────────────
+pub use plugins::extractor::list_extractors as list_document_extractors;
+pub use plugins::list_ocr_backends;
+pub use plugins::list_post_processors;
+pub use plugins::list_validators;
+pub use plugins::{
+    clear_ocr_backends, clear_post_processors, clear_validators, register_ocr_backend, register_post_processor,
+    register_validator, unregister_ocr_backend, unregister_post_processor, unregister_validator,
 };
 
+// ── Embeddings — public API (4 functions + 1 type, feature-gated) ────────────
 #[cfg(feature = "embeddings")]
-pub use embeddings::{EMBEDDING_PRESETS, EmbeddingPreset, download_model, get_preset, list_presets, warm_model};
+pub use embeddings::EmbeddingPreset;
 
 /// Embed a list of texts using the configured embedding model.
 ///
@@ -231,178 +227,16 @@ pub fn embed_texts(texts: Vec<String>, config: Option<core::config::EmbeddingCon
 #[cfg(all(feature = "embeddings", feature = "tokio-runtime"))]
 pub use embeddings::embed_texts_async;
 
-// Cache utilities
-pub use cache::{blake3_hash_bytes, blake3_hash_file, fast_hash, validate_cache_key};
-
-/// Generate a deterministic cache key from a list of key-value pairs.
+/// Get an embedding preset by name.
 ///
-/// Each element of `parts` should be a two-element list `[key, value]`.
-/// The pairs are sorted by key before hashing, so order does not affect the result.
-pub fn generate_cache_key(parts: Vec<Vec<String>>) -> String {
-    let owned: Vec<(String, String)> = parts
-        .into_iter()
-        .filter_map(|mut pair| {
-            if pair.len() >= 2 {
-                let v = pair.remove(1);
-                let k = pair.remove(0);
-                Some((k, v))
-            } else {
-                None
-            }
-        })
-        .collect();
-    cache::generate_cache_key(&owned)
-}
-
-// JSON/string utilities
-pub use utils::{camel_to_snake, normalize_whitespace, snake_to_camel};
-
-/// Escape HTML special characters in a string.
-///
-/// Converts `&`, `<`, `>`, `"`, and `'` to their HTML entity equivalents.
-pub fn escape_html_entities(text: &str) -> String {
-    utils::escape_html_entities(text).into_owned()
-}
-
-/// Fix mojibake (garbled text from encoding errors) in a string.
-///
-/// Attempts to detect and correct common encoding errors where text was
-/// decoded with the wrong character set (e.g., UTF-8 bytes interpreted as Latin-1).
-#[cfg(feature = "quality")]
-pub fn fix_mojibake(text: &str) -> String {
-    utils::fix_mojibake(text).into_owned()
-}
-
-// Text utilities
-pub use text::utf8_validation::is_valid_utf8;
-
-#[cfg(feature = "quality")]
-pub use text::quality::clean_extracted_text;
-
-// Telemetry utilities
-pub use telemetry::conventions::sanitize_filename;
-
-#[cfg(feature = "otel")]
-pub use telemetry::spans::sanitize_path;
-
-// Plugin list functions
-pub use plugins::extractor::list_extractors as list_document_extractors;
-pub use plugins::list_ocr_backends;
-pub use plugins::list_post_processors;
-pub use plugins::list_validators;
-
-// Config validation functions
-pub use core::config_validation::{
-    validate_binarization_method, validate_chunking_params, validate_confidence, validate_host, validate_language_code,
-    validate_ocr_backend, validate_output_format, validate_port, validate_tesseract_oem, validate_tesseract_psm,
-    validate_token_reduction_level,
-};
-
-// Text annotation builder helpers (always available — used by djot/markdown extractors)
-pub use types::builder::{bold, code, italic, link, strikethrough};
-// Extended annotation helpers (only used by office/html/xml extractors)
-#[cfg(any(feature = "office", feature = "html", feature = "xml"))]
-pub use types::builder::underline;
-
-// Extraction markdown utilities
-#[cfg(any(feature = "office", feature = "html", feature = "xml"))]
-pub use extraction::markdown::{cells_to_markdown, cells_to_text};
-
-// Rendering utilities
-pub use rendering::{render_djot, render_html, render_json, render_markdown, render_plain};
-#[cfg(feature = "html")]
-pub use rendering::{render_djot_str, render_html_str, render_json_str, render_markdown_str, render_plain_str};
-
-/// Convert HTML to Markdown.
-///
-/// Converts an HTML string to Markdown using default conversion options.
-#[cfg(feature = "html")]
-pub fn convert_html_to_markdown(html: &str) -> crate::Result<String> {
-    extraction::html::convert_html_to_markdown_simple(html)
-}
-
-pub use extractors::djot_format::djot_to_html;
-
-// Format-specific extract functions
-#[cfg(feature = "office")]
-pub use extraction::doc::DocExtractionResult;
-#[cfg(feature = "office")]
-pub use extraction::doc::DocMetadata;
-
-/// Extract text from a DOC (Word 97-2003) file.
-///
-/// Takes the raw bytes of a `.doc` file and returns the extracted text and metadata.
-#[cfg(feature = "office")]
-pub fn extract_doc_text(content: &[u8]) -> crate::Result<extraction::doc::DocExtractionResult> {
-    extraction::doc::extract_doc_text(content)
-}
-
-#[cfg(feature = "email")]
-pub use extraction::email::extract_email_content;
-
-/// Extract text and metadata from a PPTX (PowerPoint) file.
-///
-/// Takes the raw bytes of a `.pptx` file and returns the extracted content
-/// using default extraction options.
-#[cfg(feature = "office")]
-pub fn extract_pptx_from_bytes(data: &[u8]) -> crate::Result<types::formats::PptxExtractionResult> {
-    extraction::pptx::extract_pptx_from_bytes(data, &Default::default())
-}
-
-#[cfg(feature = "pdf")]
-pub use pdf::rendering::render_pdf_page_to_png;
-#[cfg(feature = "pdf")]
-pub use pdf::text::extract_text_from_pdf;
-
-// OCR hash utility
-#[cfg(feature = "ocr")]
-pub use ocr::utils::compute_hash;
-
-// Embeddings utility
+/// Returns `None` if no preset with the given name exists.
 #[cfg(feature = "embeddings")]
-pub use embeddings::engine::normalize;
-
-// Token reduction
-#[cfg(feature = "quality")]
-pub use text::reduce_tokens;
-
-// Chunking functions
-#[cfg(feature = "chunking")]
-pub use chunking::core::{chunk_text, chunk_texts_batch};
-#[cfg(feature = "chunking")]
-pub use chunking::semantic::chunk_semantic;
-
-// iWork dedup utility
-#[cfg(feature = "iwork")]
-pub use extractors::iwork::dedup_text;
-
-/// Serialize an [`ExtractionResult`] to TOON (Token-Oriented Object Notation).
-///
-/// TOON is a token-efficient alternative to JSON for LLM prompts.
-/// Losslessly convertible to/from JSON but uses fewer tokens.
-pub fn serialize_to_toon(result: &ExtractionResult) -> Result<String> {
-    serde_toon::to_string(result).map_err(|e| KreuzbergError::serialization(format!("TOON serialization failed: {e}")))
+pub fn get_embedding_preset(name: &str) -> Option<&'static embeddings::EmbeddingPreset> {
+    embeddings::get_preset(name)
 }
 
-/// Serialize an [`ExtractionResult`] to pretty-printed JSON.
-pub fn serialize_to_json(result: &ExtractionResult) -> Result<String> {
-    serde_json::to_string_pretty(result)
-        .map_err(|e| KreuzbergError::serialization(format!("JSON serialization failed: {e}")))
-}
-
-/// Convenience: extract a file and serialize the result to TOON.
-///
-/// Equivalent to `extract_file_sync(path, None, config).and_then(|r| serialize_to_toon(&r))`,
-/// exposed as a single function so all bindings can offer the same one-call shape.
-#[cfg(feature = "tokio-runtime")]
-pub fn extract_file_to_toon(path: impl AsRef<std::path::Path>, config: &ExtractionConfig) -> Result<String> {
-    let result = extract_file_sync(path, None, config)?;
-    serialize_to_toon(&result)
-}
-
-/// Convenience: extract a file and serialize the result to pretty-printed JSON.
-#[cfg(feature = "tokio-runtime")]
-pub fn extract_file_to_json(path: impl AsRef<std::path::Path>, config: &ExtractionConfig) -> Result<String> {
-    let result = extract_file_sync(path, None, config)?;
-    serialize_to_json(&result)
+/// List the names of all available embedding presets.
+#[cfg(feature = "embeddings")]
+pub fn list_embedding_presets() -> Vec<&'static str> {
+    embeddings::list_presets()
 }

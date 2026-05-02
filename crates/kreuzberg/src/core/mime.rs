@@ -24,39 +24,25 @@ pub struct SupportedFormat {
     pub mime_type: String,
 }
 
-pub const HTML_MIME_TYPE: &str = "text/html";
-pub const MARKDOWN_MIME_TYPE: &str = "text/markdown";
-pub const PDF_MIME_TYPE: &str = "application/pdf";
-pub const PLAIN_TEXT_MIME_TYPE: &str = "text/plain";
-pub const POWER_POINT_MIME_TYPE: &str = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
-pub const DOCX_MIME_TYPE: &str = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-pub const LEGACY_WORD_MIME_TYPE: &str = "application/msword";
-pub const LEGACY_POWERPOINT_MIME_TYPE: &str = "application/vnd.ms-powerpoint";
+pub(crate) const HTML_MIME_TYPE: &str = "text/html";
+pub(crate) const PDF_MIME_TYPE: &str = "application/pdf";
+pub(crate) const PLAIN_TEXT_MIME_TYPE: &str = "text/plain";
+pub(crate) const POWER_POINT_MIME_TYPE: &str =
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+pub(crate) const DOCX_MIME_TYPE: &str = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+pub(crate) const LEGACY_WORD_MIME_TYPE: &str = "application/msword";
+pub(crate) const LEGACY_POWERPOINT_MIME_TYPE: &str = "application/vnd.ms-powerpoint";
 
-pub const EML_MIME_TYPE: &str = "message/rfc822";
-pub const MSG_MIME_TYPE: &str = "application/vnd.ms-outlook";
-pub const PST_MIME_TYPE: &str = "application/vnd.ms-outlook-pst";
-pub const JSON_MIME_TYPE: &str = "application/json";
-pub const JSONL_MIME_TYPE: &str = "application/x-ndjson";
-pub const YAML_MIME_TYPE: &str = "application/x-yaml";
-pub const TOML_MIME_TYPE: &str = "application/toml";
-pub const XML_MIME_TYPE: &str = "application/xml";
-pub const XML_TEXT_MIME_TYPE: &str = "text/xml";
-pub const SVG_MIME_TYPE: &str = "image/svg+xml";
-pub const SOURCE_CODE_MIME_TYPE: &str = "text/x-source-code";
+pub(crate) const PST_MIME_TYPE: &str = "application/vnd.ms-outlook-pst";
+pub(crate) const JSON_MIME_TYPE: &str = "application/json";
+pub(crate) const XML_MIME_TYPE: &str = "application/xml";
+pub(crate) const SOURCE_CODE_MIME_TYPE: &str = "text/x-source-code";
 
-pub const EXCEL_MIME_TYPE: &str = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-pub const EXCEL_BINARY_MIME_TYPE: &str = "application/vnd.ms-excel";
-pub const EXCEL_MACRO_MIME_TYPE: &str = "application/vnd.ms-excel.sheet.macroEnabled.12";
-pub const EXCEL_BINARY_2007_MIME_TYPE: &str = "application/vnd.ms-excel.sheet.binary.macroEnabled.12";
-pub const EXCEL_ADDON_MIME_TYPE: &str = "application/vnd.ms-excel.addin.macroEnabled.12";
-pub const EXCEL_TEMPLATE_MIME_TYPE: &str = "application/vnd.ms-excel.template.macroEnabled.12";
+pub(crate) const EXCEL_MIME_TYPE: &str = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
-pub const OPENDOC_SPREADSHEET_MIME_TYPE: &str = "application/vnd.oasis.opendocument.spreadsheet";
-
-pub const IWORK_PAGES_MIME_TYPE: &str = "application/x-iwork-pages-sffpages";
-pub const IWORK_NUMBERS_MIME_TYPE: &str = "application/x-iwork-numbers-sffnumbers";
-pub const IWORK_KEYNOTE_MIME_TYPE: &str = "application/x-iwork-keynote-sffkey";
+pub(crate) const IWORK_PAGES_MIME_TYPE: &str = "application/x-iwork-pages-sffpages";
+pub(crate) const IWORK_NUMBERS_MIME_TYPE: &str = "application/x-iwork-numbers-sffnumbers";
+pub(crate) const IWORK_KEYNOTE_MIME_TYPE: &str = "application/x-iwork-keynote-sffkey";
 
 /// A format definition in the centralized registry.
 ///
@@ -680,7 +666,7 @@ pub fn validate_mime_type(mime_type: &str) -> Result<String> {
 /// # Returns
 ///
 /// The validated MIME type string.
-pub fn detect_or_validate(path: Option<&str>, mime_type: Option<&str>) -> Result<String> {
+pub(crate) fn detect_or_validate(path: Option<&str>, mime_type: Option<&str>) -> Result<String> {
     if let Some(mime) = mime_type {
         tracing::debug!(mime_type = %mime, "validating caller-provided MIME type");
         validate_mime_type(mime)
@@ -946,7 +932,7 @@ mod tests {
 
         let test_cases = vec![
             ("test.xlsx", EXCEL_MIME_TYPE),
-            ("test.xls", EXCEL_BINARY_MIME_TYPE),
+            ("test.xls", "application/vnd.ms-excel"),
             ("test.pptx", POWER_POINT_MIME_TYPE),
             (
                 "test.ppsx",
@@ -975,8 +961,8 @@ mod tests {
 
         let test_cases = vec![
             ("test.json", JSON_MIME_TYPE),
-            ("test.yaml", YAML_MIME_TYPE),
-            ("test.toml", TOML_MIME_TYPE),
+            ("test.yaml", "application/x-yaml"),
+            ("test.toml", "application/toml"),
             ("test.xml", XML_MIME_TYPE),
             ("test.csv", "text/csv"),
         ];
@@ -995,7 +981,7 @@ mod tests {
 
         let test_cases = vec![
             ("test.txt", PLAIN_TEXT_MIME_TYPE),
-            ("test.md", MARKDOWN_MIME_TYPE),
+            ("test.md", "text/markdown"),
             ("test.html", HTML_MIME_TYPE),
             ("test.htm", HTML_MIME_TYPE),
         ];
@@ -1013,8 +999,8 @@ mod tests {
         let dir = tempdir().unwrap();
 
         let test_cases = vec![
-            ("test.eml", EML_MIME_TYPE),
-            ("test.msg", MSG_MIME_TYPE),
+            ("test.eml", "message/rfc822"),
+            ("test.msg", "application/vnd.ms-outlook"),
             ("test.pst", PST_MIME_TYPE),
         ];
 

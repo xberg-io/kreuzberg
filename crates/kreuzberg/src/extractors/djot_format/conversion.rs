@@ -6,6 +6,7 @@
 //! - Djot markup to HTML
 
 use super::rendering::render_block_to_djot;
+#[cfg(test)]
 use jotdown::Parser;
 #[cfg(test)]
 use std::borrow::Cow;
@@ -107,7 +108,8 @@ pub fn extraction_result_to_djot(result: &crate::types::ExtractionResult) -> cra
 /// assert!(html.contains("<strong>"));
 /// assert!(html.contains("<em>"));
 /// ```
-pub fn djot_to_html(djot_source: &str) -> crate::Result<String> {
+#[cfg(test)]
+pub(crate) fn djot_to_html(djot_source: &str) -> crate::Result<String> {
     let parser = Parser::new(djot_source);
     let html = jotdown::html::render_to_string(parser);
     Ok(html)

@@ -257,10 +257,10 @@ fn test_pdf_unicode_content() {
 
 /// Verify PDF module compiles with all feature combinations.
 ///
-/// This is a compile-time test that ensures the pdf module and the
-/// text extraction function compile correctly.
+/// This is a compile-time test that ensures the pdf module compiles correctly.
 #[test]
 #[cfg(feature = "pdf")]
 fn test_pdf_module_availability() {
-    let _ = kreuzberg::pdf::extract_text_from_pdf;
+    // pdf module compiles when feature is active
+    let _: Option<kreuzberg::pdf::PdfError> = None;
 }

@@ -329,12 +329,15 @@ pub fn warm_command(
     {
         let embeddings_dir = cache_base.join("embeddings");
         let presets_to_warm: Vec<&kreuzberg::EmbeddingPreset> = if all_embeddings {
-            kreuzberg::EMBEDDING_PRESETS.iter().collect()
+            kreuzberg::list_embedding_presets()
+                .into_iter()
+                .filter_map(kreuzberg::get_embedding_preset)
+                .collect()
         } else if let Some(ref name) = embedding_model {
-            match kreuzberg::get_preset(name) {
+            match kreuzberg::get_embedding_preset(name) {
                 Some(preset) => vec![preset],
                 None => {
-                    let available: Vec<&str> = kreuzberg::list_presets();
+                    let available = kreuzberg::list_embedding_presets();
                     anyhow::bail!(
                         "Unknown embedding preset '{}'. Available: {}",
                         name,
@@ -348,7 +351,7 @@ pub fn warm_command(
 
         for preset in &presets_to_warm {
             let label = format!("embedding ({})", preset.name);
-            kreuzberg::warm_model(
+            kreuzberg::embeddings::warm_model(
                 &kreuzberg::core::config::EmbeddingModelType::Preset {
                     name: preset.name.to_string(),
                 },

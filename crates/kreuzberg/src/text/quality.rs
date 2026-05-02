@@ -3,7 +3,6 @@ use once_cell::sync::Lazy;
 use regex::Regex;
 use std::borrow::Cow;
 
-use crate::utils::quality::{collapse_scattered_ascii, normalize_whitespace_ascii};
 use memchr::memmem;
 
 // ============================================================================
@@ -22,23 +21,8 @@ const MAX_SENTENCE_WORDS: f64 = 30.0;
 const MIN_PARAGRAPH_WORDS: f64 = 50.0;
 const MAX_PARAGRAPH_WORDS: f64 = 300.0;
 
-static SCATTERED_CHARS_PATTERN: Lazy<Regex> = Lazy::new(|| {
-    Regex::new(r"\b[a-zA-Z]\s{2,}[a-zA-Z]\s{2,}[a-zA-Z]\b")
-        .expect("Scattered chars regex pattern is valid and should compile")
-});
-static REPEATED_PUNCT_PATTERN: Lazy<Regex> = Lazy::new(|| {
-    Regex::new(r"[.]{3,}|[_]{3,}").expect("Repeated punctuation regex pattern is valid and should compile")
-});
 static DASH_PATTERN: Lazy<Regex> =
     Lazy::new(|| Regex::new(r"[-]{3,}").expect("Dash pattern regex is valid and should compile"));
-static ISOLATED_PUNCT_PATTERN: Lazy<Regex> =
-    Lazy::new(|| Regex::new(r"\s[.,;:!?]\s").expect("Isolated punctuation regex pattern is valid and should compile"));
-static MALFORMED_WORDS_PATTERN: Lazy<Regex> = Lazy::new(|| {
-    Regex::new(r"\b[a-zA-Z]+[0-9]+[a-zA-Z]+[a-zA-Z0-9]*\b")
-        .expect("Malformed words regex pattern is valid and should compile")
-});
-static EXCESSIVE_WHITESPACE_PATTERN: Lazy<Regex> =
-    Lazy::new(|| Regex::new(r"\s{3,}").expect("Excessive whitespace regex pattern is valid and should compile"));
 
 /// Combined OCR artifact pattern for single-pass scanning (used in calculate_ocr_penalty).
 /// This pattern combines 5 of the 6 OCR patterns with alternation to reduce regex passes
@@ -88,13 +72,6 @@ static SENTENCE_DETECT: Lazy<Regex> =
 static PUNCTUATION_DETECT: Lazy<Regex> =
     Lazy::new(|| Regex::new(r"[.!?]").expect("Punctuation detection regex pattern is valid and should compile"));
 
-static WHITESPACE_NORMALIZE: Lazy<Regex> = Lazy::new(|| {
-    Regex::new(r"[ \t\f\v\r\xa0\u{2000}-\u{200b}\u{2028}\u{2029}\u{3000}]+")
-        .expect("Whitespace normalization regex pattern is valid and should compile")
-});
-static NEWLINE_NORMALIZE: Lazy<Regex> = Lazy::new(|| {
-    Regex::new(r"\n\s*\n\s*\n+").expect("Newline normalization regex pattern is valid and should compile")
-});
 #[cfg(test)]
 static NEWLINE_CLEANUP: Lazy<Regex> =
     Lazy::new(|| Regex::new(r"\n+").expect("Newline cleanup regex pattern is valid and should compile"));
@@ -102,27 +79,6 @@ static NEWLINE_CLEANUP: Lazy<Regex> =
 #[inline]
 fn sum_match_lengths(text: &str, pattern: &Regex) -> usize {
     pattern.find_iter(text).map(|m| m.len()).sum()
-}
-
-fn chain_replacements<'a>(mut text: Cow<'a, str>, replacements: &[(&Regex, &str)]) -> Cow<'a, str> {
-    for (pattern, replacement) in replacements {
-        if pattern.is_match(&text) {
-            text = Cow::Owned(pattern.replace_all(&text, *replacement).into_owned());
-        }
-    }
-    text
-}
-
-#[inline]
-fn replace_with_if_matches<'a, F>(text: &'a str, pattern: &Regex, replacer: F) -> Cow<'a, str>
-where
-    F: FnMut(&regex::Captures) -> String,
-{
-    if pattern.is_match(text) {
-        Cow::Owned(pattern.replace_all(text, replacer).into_owned())
-    } else {
-        Cow::Borrowed(text)
-    }
 }
 
 pub(crate) fn calculate_quality_score(
@@ -285,123 +241,11 @@ fn calculate_metadata_bonus(metadata: &AHashMap<Cow<'static, str>, serde_json::V
     present_fields as f64 / IMPORTANT_FIELDS.len() as f64
 }
 
-pub fn clean_extracted_text(text: &str) -> String {
-    if text.is_empty() {
-        return String::new();
-    }
-
-    let mut working_text = Cow::Borrowed(text);
-
-    working_text = clean_scripts(working_text);
-
-    working_text = clean_ocr_artifacts_cow(working_text);
-
-    working_text = clean_navigation_elements_cow(working_text);
-
-    working_text = normalize_whitespace_cow(working_text);
-
-    working_text.trim().to_string()
-}
-
-#[inline]
-fn clean_scripts<'a>(text: Cow<'a, str>) -> Cow<'a, str> {
-    let script_replacements = [
-        (&*SCRIPT_TAG_PATTERN, " "),
-        (&*STYLE_TAG_PATTERN, " "),
-        (&*JS_FUNCTION_PATTERN, " "),
-        (&*CSS_RULES_PATTERN, " "),
-    ];
-    chain_replacements(text, &script_replacements)
-}
-
-#[inline]
-fn normalize_whitespace_cow<'a>(text: Cow<'a, str>) -> Cow<'a, str> {
-    if let Some(fast) = normalize_whitespace_ascii(text.as_ref()) {
-        return Cow::Owned(fast);
-    }
-
-    let mut result = text;
-
-    if WHITESPACE_NORMALIZE.is_match(&result) {
-        result = Cow::Owned(WHITESPACE_NORMALIZE.replace_all(&result, " ").into_owned());
-    }
-
-    if NEWLINE_NORMALIZE.is_match(&result) {
-        result = Cow::Owned(NEWLINE_NORMALIZE.replace_all(&result, "\n\n").into_owned());
-    }
-
-    result
-}
-
-#[inline]
-fn clean_ocr_artifacts_cow<'a>(text: Cow<'a, str>) -> Cow<'a, str> {
-    let result = if let Some(fixed) = collapse_scattered_ascii(&text) {
-        Cow::Owned(fixed)
-    } else if SCATTERED_CHARS_PATTERN.is_match(&text) {
-        Cow::Owned(
-            replace_with_if_matches(&text, &SCATTERED_CHARS_PATTERN, |caps: &regex::Captures| {
-                caps[0].chars().filter(|c| !c.is_whitespace()).collect::<String>()
-            })
-            .into_owned(),
-        )
-    } else {
-        text
-    };
-
-    let result = clean_dashes_preserve_tables(result);
-
-    let ocr_replacements = [
-        (&*REPEATED_PUNCT_PATTERN, "..."),
-        (&*ISOLATED_PUNCT_PATTERN, " "),
-        (&*MALFORMED_WORDS_PATTERN, " "),
-        (&*EXCESSIVE_WHITESPACE_PATTERN, " "),
-    ];
-
-    chain_replacements(result, &ocr_replacements)
-}
-
-#[inline]
-fn clean_dashes_preserve_tables<'a>(text: Cow<'a, str>) -> Cow<'a, str> {
-    if !DASH_PATTERN.is_match(&text) {
-        return text;
-    }
-
-    let mut result = String::with_capacity(text.len());
-    let lines: Vec<&str> = text.lines().collect();
-
-    for (i, line) in lines.iter().enumerate() {
-        if i > 0 {
-            result.push('\n');
-        }
-
-        let trimmed = line.trim();
-        let is_table_separator = trimmed.starts_with('|')
-            && trimmed.ends_with('|')
-            && trimmed
-                .chars()
-                .all(|c| c == '|' || c == '-' || c.is_whitespace() || c == ':');
-
-        if is_table_separator {
-            result.push_str(line);
-        } else {
-            let cleaned_line = DASH_PATTERN.replace_all(line, "...");
-            result.push_str(&cleaned_line);
-        }
-    }
-
-    Cow::Owned(result)
-}
-
-#[inline]
-fn clean_navigation_elements_cow<'a>(text: Cow<'a, str>) -> Cow<'a, str> {
-    let nav_replacements = [
-        (&*NAV_WORDS_PATTERN, " "),
-        (&*BREADCRUMB_PATTERN, " "),
-        (&*PAGINATION_PATTERN, " "),
-    ];
-
-    chain_replacements(text, &nav_replacements)
-}
+#[cfg(test)]
+static WHITESPACE_NORMALIZE: Lazy<Regex> = Lazy::new(|| {
+    Regex::new(r"[ \t\f\v\r\xa0\u{2000}-\u{200b}\u{2028}\u{2029}\u{3000}]+")
+        .expect("Whitespace normalization regex pattern is valid and should compile")
+});
 
 #[cfg(test)]
 pub(crate) fn normalize_spaces(text: &str) -> String {
@@ -467,21 +311,6 @@ mod tests {
         let score = calculate_quality_score(text, None);
         assert!(score > 0.5);
         assert!(score <= 1.0);
-    }
-
-    #[test]
-    fn test_clean_extracted_text_empty() {
-        assert_eq!(clean_extracted_text(""), "");
-        assert_eq!(clean_extracted_text("   "), "");
-    }
-
-    #[test]
-    fn test_clean_extracted_text_removes_scripts() {
-        let text = "Before <script>alert('test');</script> After";
-        let cleaned = clean_extracted_text(text);
-        assert!(!cleaned.contains("<script"));
-        assert!(cleaned.contains("Before"));
-        assert!(cleaned.contains("After"));
     }
 
     #[test]
@@ -586,30 +415,6 @@ mod tests {
     }
 
     #[test]
-    fn test_clean_extracted_text_removes_styles() {
-        let text = "Before <style>.class { color: red; }</style> After";
-        let cleaned = clean_extracted_text(text);
-        assert!(!cleaned.contains("<style"));
-        assert!(cleaned.contains("Before"));
-        assert!(cleaned.contains("After"));
-    }
-
-    #[test]
-    fn test_clean_extracted_text_ocr_artifacts() {
-        let text = "Text with   excessive    spaces";
-        let cleaned = clean_extracted_text(text);
-        assert!(!cleaned.contains("   "));
-    }
-
-    #[test]
-    fn test_clean_extracted_text_navigation() {
-        let text = "Content Skip to main content more content";
-        let cleaned = clean_extracted_text(text);
-        assert!(cleaned.contains("Content"));
-        assert!(cleaned.contains("more content"));
-    }
-
-    #[test]
     fn test_normalize_spaces_multiple_paragraphs() {
         let text = "First paragraph.\n\nSecond paragraph.";
         let normalized = normalize_spaces(text);
@@ -638,28 +443,6 @@ mod tests {
     }
 
     #[test]
-    fn test_clean_dashes_preserve_tables_simple() {
-        let text = Cow::Borrowed("| Col1 |\n|------|\n| Data |");
-        let result = clean_dashes_preserve_tables(text);
-        assert!(result.contains("|------"));
-    }
-
-    #[test]
-    fn test_clean_dashes_preserve_tables_replaces_non_table() {
-        let text = Cow::Borrowed("Text with --- dashes");
-        let result = clean_dashes_preserve_tables(text);
-        assert!(result.contains("..."));
-        assert!(!result.contains("---"));
-    }
-
-    #[test]
-    fn test_sum_match_lengths() {
-        let text = "test ... test ... test";
-        let count = sum_match_lengths(text, &REPEATED_PUNCT_PATTERN);
-        assert!(count > 0);
-    }
-
-    #[test]
     fn test_quality_score_large_text_with_ocr_issues() {
         let text = "a".repeat(2000) + "   " + &"b".repeat(2000);
         let score = calculate_quality_score(&text, None);
@@ -673,41 +456,6 @@ mod tests {
         let score = calculate_quality_score(&perfect_text, None);
         assert!(score >= 0.0);
         assert!(score <= 1.0);
-    }
-
-    #[test]
-    fn test_clean_extracted_text_scattered_chars() {
-        let text = "a  b  c scattered";
-        let cleaned = clean_extracted_text(text);
-        assert!(!cleaned.is_empty());
-    }
-
-    #[test]
-    fn test_normalize_whitespace_cow_no_changes() {
-        let text = Cow::Borrowed("normaltext");
-        let result = normalize_whitespace_cow(text);
-        assert_eq!(&*result, "normaltext");
-    }
-
-    #[test]
-    fn test_normalize_whitespace_cow_with_changes() {
-        let text = Cow::Borrowed("text   with   spaces");
-        let result = normalize_whitespace_cow(text);
-        assert!(matches!(result, Cow::Owned(_)));
-    }
-
-    #[test]
-    fn test_clean_scripts_no_scripts() {
-        let text = Cow::Borrowed("clean text");
-        let result = clean_scripts(text);
-        assert!(matches!(result, Cow::Borrowed(_)));
-    }
-
-    #[test]
-    fn test_clean_scripts_with_script_tag() {
-        let text = Cow::Borrowed("<script>code</script>");
-        let result = clean_scripts(text);
-        assert!(!result.contains("<script"));
     }
 
     #[test]

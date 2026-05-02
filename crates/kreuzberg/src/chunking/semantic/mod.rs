@@ -30,7 +30,7 @@ const DEFAULT_TOPIC_THRESHOLD: f32 = 0.75;
 /// Splits text into fine-grained segments, detects structural (and optionally
 /// embedding-based) topic boundaries, then merges segments into chunks that
 /// respect those boundaries and the configured size budget.
-pub fn chunk_semantic(
+pub(crate) fn chunk_semantic(
     text: &str,
     config: &ChunkingConfig,
     page_boundaries: Option<&[PageBoundary]>,

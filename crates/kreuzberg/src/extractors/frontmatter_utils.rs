@@ -259,7 +259,7 @@ pub(crate) fn extract_title_from_content(content: &str) -> Option<String> {
 /// let markdown = cells_to_markdown(&cells);
 /// assert!(markdown.contains("| Name | Age |"));
 /// ```
-pub fn cells_to_markdown(cells: &[Vec<String>]) -> String {
+pub(crate) fn cells_to_markdown(cells: &[Vec<String>]) -> String {
     if cells.is_empty() {
         return String::new();
     }

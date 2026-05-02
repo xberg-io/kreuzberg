@@ -3,9 +3,10 @@
 //! These tests verify the end-to-end behavior of the extraction pipeline,
 //! config loading, MIME detection, and batch processing.
 
+use kreuzberg::core::mime::validate_mime_type;
 use kreuzberg::{
     ExtractionConfig, batch_extract_bytes, batch_extract_bytes_sync, batch_extract_file, batch_extract_file_sync,
-    detect_mime_type, extract_bytes, extract_bytes_sync, extract_file, extract_file_sync, validate_mime_type,
+    detect_mime_type, extract_bytes, extract_bytes_sync, extract_file, extract_file_sync,
 };
 use std::fs::{self, File};
 use std::io::Write;

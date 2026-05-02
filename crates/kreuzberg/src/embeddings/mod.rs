@@ -150,7 +150,7 @@ pub const EMBEDDING_PRESETS: &[EmbeddingPreset] = &[
 ];
 
 /// Get a preset by name.
-pub fn get_preset(name: &str) -> Option<&'static EmbeddingPreset> {
+pub(crate) fn get_preset(name: &str) -> Option<&'static EmbeddingPreset> {
     EMBEDDING_PRESETS.iter().find(|p| p.name == name)
 }
 
@@ -160,7 +160,7 @@ pub(crate) fn preset_chunk_size(name: &str) -> Option<usize> {
 }
 
 /// List all available preset names.
-pub fn list_presets() -> Vec<&'static str> {
+pub(crate) fn list_presets() -> Vec<&'static str> {
     EMBEDDING_PRESETS.iter().map(|p| p.name).collect()
 }
 
@@ -593,69 +593,15 @@ fn panic_to_string(payload: Box<dyn std::any::Any + Send>) -> String {
 ///
 /// This triggers the same download and initialization as `get_or_init_engine`
 /// but discards the result, making it suitable for cache-warming scenarios
-/// where the caller doesn't need to use the model immediately.
-///
-/// **Note**: This function downloads AND initializes the ONNX model, which
-/// requires ONNX Runtime and uses significant memory. For download-only
-/// scenarios (e.g., init containers), use [`download_model`] instead.
+/// where the caller doesn't need to use the model immediately. Used internally
+/// by the api/mcp `cache.warm` endpoints and by the kreuzberg-cli warm command.
+/// Excluded from the language bindings via alef.toml `[exclude].functions`.
 pub fn warm_model(
     model_type: &crate::core::config::EmbeddingModelType,
     cache_dir: Option<std::path::PathBuf>,
 ) -> crate::Result<()> {
     let (repo, model_file, pooling) = resolve_model_info(model_type)?;
     get_or_init_engine(repo, model_file, pooling, cache_dir, None).map(|_| ())
-}
-
-/// Download an embedding model's files without initializing ONNX Runtime.
-///
-/// Downloads the model files (ONNX model, tokenizer, config) from HuggingFace
-/// to the cache directory. Subsequent calls to `warm_model` or
-/// `get_or_init_engine` will find the files cached and skip the download step.
-///
-/// This is ideal for init containers or CI environments where you want to
-/// pre-populate the cache without loading models into memory.
-pub fn download_model(
-    model_type: &crate::core::config::EmbeddingModelType,
-    cache_dir: Option<std::path::PathBuf>,
-) -> crate::Result<()> {
-    let (repo_name, model_file, _pooling) = resolve_model_info(model_type)?;
-    let cache_directory = resolve_cache_dir(cache_dir);
-
-    let files = &[
-        model_file,
-        "tokenizer.json",
-        "config.json",
-        "special_tokens_map.json",
-        "tokenizer_config.json",
-    ];
-
-    tracing::info!(repo = %repo_name, "Downloading embedding model files (no ONNX init)");
-
-    let api = hf_hub::api::sync::ApiBuilder::from_env()
-        .with_cache_dir(cache_directory)
-        .with_progress(true)
-        .build()
-        .map_err(|e| crate::KreuzbergError::embedding(format!("Failed to create HF API client: {e}")))?;
-
-    let repo = api.model(repo_name.to_string());
-
-    for file in files {
-        match repo.get(file) {
-            Ok(path) => tracing::debug!(file = %file, path = ?path, "Downloaded"),
-            Err(e) => {
-                // Model and tokenizer are required; others are optional
-                if *file == model_file || *file == "tokenizer.json" {
-                    return Err(crate::KreuzbergError::embedding(format!(
-                        "Failed to download {file}: {e}"
-                    )));
-                }
-                tracing::debug!(file = %file, error = %e, "Optional file not found, skipping");
-            }
-        }
-    }
-
-    tracing::info!(repo = %repo_name, "Embedding model files downloaded successfully");
-    Ok(())
 }
 
 /// Normalize an embedding vector in-place (L2 normalization).

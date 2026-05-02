@@ -185,26 +185,17 @@ pub mod startup_validation;
 mod traits;
 mod validator;
 
-pub use embedding::{
-    EmbeddingBackend, clear_embedding_backends, list_embedding_backends, register_embedding_backend,
-    unregister_embedding_backend,
-};
-pub use extractor::{DocumentExtractor, clear_extractors, list_extractors, register_extractor, unregister_extractor};
+pub use embedding::{EmbeddingBackend, list_embedding_backends};
+pub use extractor::{DocumentExtractor, list_extractors};
 pub use ocr::{
     OcrBackend, OcrBackendType, clear_ocr_backends, list_ocr_backends, register_ocr_backend, unregister_ocr_backend,
 };
 pub use processor::{
-    PostProcessor, ProcessingStage, list_post_processors, register_post_processor, unregister_post_processor,
+    PostProcessor, ProcessingStage, clear_post_processors, list_post_processors, register_post_processor,
+    unregister_post_processor,
 };
-pub use renderer::{Renderer, clear_renderers, list_renderers, register_renderer, unregister_renderer};
+pub use renderer::Renderer;
 pub use traits::Plugin;
 pub use validator::{Validator, clear_validators, list_validators, register_validator, unregister_validator};
 
-// Re-export registry items for backward compatibility
-pub use registry::{
-    DOCUMENT_EXTRACTOR_REGISTRY, DocumentExtractorRegistry, EMBEDDING_BACKEND_REGISTRY, EmbeddingBackendRegistry,
-    OCR_BACKEND_REGISTRY, OcrBackendRegistry, POST_PROCESSOR_REGISTRY, PostProcessorRegistry, RENDERER_REGISTRY,
-    RendererRegistry, VALIDATOR_REGISTRY, ValidatorRegistry, get_document_extractor_registry,
-    get_embedding_backend_registry, get_ocr_backend_registry, get_post_processor_registry, get_renderer_registry,
-    get_validator_registry,
-};
+pub(crate) use registry::get_embedding_backend_registry;

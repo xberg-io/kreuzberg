@@ -1,10 +1,8 @@
+#[cfg(test)]
 use serde_json::Value;
 
-/// Recursively convert snake_case keys in a JSON Value to camelCase.
-///
-/// This is used by language bindings (Node.js, Go, Java, C#, etc.) to provide
-/// a consistent camelCase API for consumers even though the Rust core uses snake_case.
-pub fn snake_to_camel(val: Value) -> Value {
+#[cfg(test)]
+pub(crate) fn snake_to_camel(val: Value) -> Value {
     match val {
         Value::Object(map) => {
             let mut new_map = serde_json::Map::with_capacity(map.len());
@@ -19,7 +17,7 @@ pub fn snake_to_camel(val: Value) -> Value {
     }
 }
 
-/// snake_case to camelCase converter for keys.
+#[cfg(test)]
 fn to_camel_case(s: &str) -> String {
     let mut camel = String::with_capacity(s.len());
     let mut capitalize_next = false;
@@ -37,11 +35,8 @@ fn to_camel_case(s: &str) -> String {
     camel
 }
 
-/// Recursively convert camelCase keys in a JSON Value to snake_case.
-///
-/// This is the inverse of `snake_to_camel`. Used by WASM bindings to accept
-/// camelCase config from JavaScript while the Rust core expects snake_case.
-pub fn camel_to_snake(val: Value) -> Value {
+#[cfg(test)]
+pub(crate) fn camel_to_snake(val: Value) -> Value {
     match val {
         Value::Object(map) => {
             let mut new_map = serde_json::Map::with_capacity(map.len());
@@ -56,7 +51,7 @@ pub fn camel_to_snake(val: Value) -> Value {
     }
 }
 
-/// camelCase to snake_case converter for keys.
+#[cfg(test)]
 fn to_snake_case(s: &str) -> String {
     let mut snake = String::with_capacity(s.len() + 4);
     for (i, c) in s.chars().enumerate() {

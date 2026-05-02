@@ -33,7 +33,8 @@ const CACHE_KEY_HASH_WIDTH: usize = 32;
 /// let key = generate_cache_key(&parts);
 /// assert_eq!(key.len(), 32);
 /// ```
-pub fn generate_cache_key(parts: &[(String, String)]) -> String {
+#[cfg(test)]
+pub(crate) fn generate_cache_key(parts: &[(String, String)]) -> String {
     if parts.is_empty() {
         return "empty".to_string();
     }
@@ -55,14 +56,14 @@ pub fn generate_cache_key(parts: &[(String, String)]) -> String {
 }
 
 /// Hash arbitrary bytes with blake3, returning a 32-char hex string.
-pub fn blake3_hash_bytes(data: &[u8]) -> String {
+pub(crate) fn blake3_hash_bytes(data: &[u8]) -> String {
     blake3_hash_to_hex(data)
 }
 
 /// Hash a file's content with blake3 using streaming 64 KiB reads.
 ///
 /// Returns a 32-char hex string (128 bits of blake3 output).
-pub fn blake3_hash_file(path: &Path) -> Result<String> {
+pub(crate) fn blake3_hash_file(path: &Path) -> Result<String> {
     let file = std::fs::File::open(path)
         .map_err(|e| crate::error::KreuzbergError::cache(format!("Failed to open file for hashing: {e}")))?;
     let mut reader = std::io::BufReader::with_capacity(64 * 1024, file);
@@ -131,11 +132,13 @@ pub(crate) fn get_available_disk_space(path: &str) -> Result<f64> {
     }
 }
 
-pub fn fast_hash(data: &[u8]) -> u64 {
+#[cfg(test)]
+pub(crate) fn fast_hash(data: &[u8]) -> u64 {
     let hash = blake3::hash(data);
     u64::from_le_bytes(hash.as_bytes()[..8].try_into().unwrap())
 }
 
-pub fn validate_cache_key(key: &str) -> bool {
+#[cfg(test)]
+pub(crate) fn validate_cache_key(key: &str) -> bool {
     key.len() == 32 && key.chars().all(|c| c.is_ascii_hexdigit())
 }
