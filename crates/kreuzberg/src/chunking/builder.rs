@@ -3,9 +3,9 @@
 //! This module handles the construction of individual chunks from text segments,
 //! including overlap calculation, offset tracking, and metadata assembly.
 
+use crate::chunking::text_splitter::{Characters, ChunkCapacity, ChunkConfig};
 use crate::error::{KreuzbergError, Result};
 use crate::types::{Chunk, ChunkMetadata, PageBoundary};
-use text_splitter::{Characters, ChunkCapacity, ChunkConfig};
 
 use super::boundaries::calculate_page_range;
 use super::classifier::classify_chunk;

@@ -3,7 +3,7 @@
 //! Groups segments by topic boundaries, merges within groups, and falls back
 //! to `text_splitter::TextSplitter` when a merged group exceeds the budget.
 
-use text_splitter::TextSplitter;
+use crate::chunking::text_splitter::TextSplitter;
 
 /// A text segment with its byte offset in the original document.
 #[derive(Debug, Clone, Copy)]

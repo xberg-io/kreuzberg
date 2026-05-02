@@ -5,11 +5,11 @@
 
 use crate::Result;
 use crate::core::config::ExtractionConfig;
-use crate::core::config::extraction::FileExtractionConfig;
+use crate::core::config::{BatchBytesItem, BatchFileItem};
 use crate::types::ExtractionResult;
 
 #[cfg(feature = "tokio-runtime")]
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 #[cfg(feature = "tokio-runtime")]
 use once_cell::sync::OnceCell;
@@ -126,23 +126,21 @@ pub fn extract_bytes_sync(content: &[u8], mime_type: &str, config: &ExtractionCo
 ///
 /// ```rust,no_run
 /// use kreuzberg::core::extractor::batch_extract_file_sync;
-/// use kreuzberg::core::config::ExtractionConfig;
-/// use kreuzberg::FileExtractionConfig;
-/// use std::path::PathBuf;
+/// use kreuzberg::core::config::{ExtractionConfig, BatchFileItem, FileExtractionConfig};
 ///
 /// let config = ExtractionConfig::default();
-/// let items: Vec<(PathBuf, Option<FileExtractionConfig>)> = vec![
-///     ("doc1.pdf".into(), Some(FileExtractionConfig { force_ocr: Some(true), ..Default::default() })),
-///     ("doc2.pdf".into(), None),
+/// let items = vec![
+///     BatchFileItem {
+///         path: "doc1.pdf".into(),
+///         config: Some(FileExtractionConfig { force_ocr: Some(true), ..Default::default() }),
+///     },
+///     BatchFileItem { path: "doc2.pdf".into(), config: None },
 /// ];
 /// let results = batch_extract_file_sync(items, &config)?;
 /// # Ok::<(), kreuzberg::KreuzbergError>(())
 /// ```
 #[cfg(feature = "tokio-runtime")]
-pub fn batch_extract_file_sync(
-    items: Vec<(PathBuf, Option<FileExtractionConfig>)>,
-    config: &ExtractionConfig,
-) -> Result<Vec<ExtractionResult>> {
+pub fn batch_extract_file_sync(items: Vec<BatchFileItem>, config: &ExtractionConfig) -> Result<Vec<ExtractionResult>> {
     global_runtime()?.block_on(batch_extract_file(items, config))
 }
 
@@ -157,21 +155,23 @@ pub fn batch_extract_file_sync(
 ///
 /// ```rust,no_run
 /// use kreuzberg::core::extractor::batch_extract_bytes_sync;
-/// use kreuzberg::core::config::ExtractionConfig;
-/// use kreuzberg::FileExtractionConfig;
+/// use kreuzberg::core::config::{ExtractionConfig, BatchBytesItem, FileExtractionConfig};
 ///
 /// let config = ExtractionConfig::default();
 /// let items = vec![
-///     (b"content".to_vec(), "text/plain".to_string(), None),
-///     (b"other".to_vec(), "text/plain".to_string(),
-///      Some(FileExtractionConfig { force_ocr: Some(true), ..Default::default() })),
+///     BatchBytesItem { content: b"content".to_vec(), mime_type: "text/plain".to_string(), config: None },
+///     BatchBytesItem {
+///         content: b"other".to_vec(),
+///         mime_type: "text/plain".to_string(),
+///         config: Some(FileExtractionConfig { force_ocr: Some(true), ..Default::default() }),
+///     },
 /// ];
 /// let results = batch_extract_bytes_sync(items, &config)?;
 /// # Ok::<(), kreuzberg::KreuzbergError>(())
 /// ```
 #[cfg(feature = "tokio-runtime")]
 pub fn batch_extract_bytes_sync(
-    items: Vec<(Vec<u8>, String, Option<FileExtractionConfig>)>,
+    items: Vec<BatchBytesItem>,
     config: &ExtractionConfig,
 ) -> Result<Vec<ExtractionResult>> {
     global_runtime()?.block_on(batch_extract_bytes(items, config))
@@ -182,16 +182,16 @@ pub fn batch_extract_bytes_sync(
 /// Iterates through items sequentially, applying per-file config overrides.
 #[cfg(not(feature = "tokio-runtime"))]
 pub fn batch_extract_bytes_sync(
-    items: Vec<(Vec<u8>, String, Option<FileExtractionConfig>)>,
+    items: Vec<BatchBytesItem>,
     config: &ExtractionConfig,
 ) -> Result<Vec<ExtractionResult>> {
     let mut results = Vec::with_capacity(items.len());
-    for (content, mime_type, file_config) in items {
-        let resolved = match &file_config {
+    for item in items {
+        let resolved = match &item.config {
             Some(fc) => config.with_file_overrides(fc),
             None => config.clone(),
         };
-        let result = extract_bytes_sync(&content, &mime_type, &resolved);
+        let result = extract_bytes_sync(&item.content, &item.mime_type, &resolved);
         results.push(result.unwrap_or_else(|e| error_extraction_result(&e, None)));
     }
     Ok(results)

@@ -136,8 +136,15 @@ layout-detection = [
     "ort-bundled",
 ]
 language-detection = ["dep:whatlang"]
-chunking = ["dep:text-splitter"]
-chunking-tokenizers = ["chunking", "dep:tokenizers", "text-splitter/tokenizers"]
+chunking = [
+    "dep:auto_enums",
+    "dep:either",
+    "dep:icu_provider",
+    "dep:icu_segmenter",
+    "dep:itertools",
+    "dep:strum",
+]
+chunking-tokenizers = ["chunking", "dep:tokenizers"]
 embeddings = [
     "dep:hf-hub",
     "dep:ort",
@@ -231,6 +238,7 @@ cli = ["services", "chunking"]
 [dependencies]
 ahash = { workspace = true }
 async-trait = { workspace = true }
+auto_enums = { version = "0.8", optional = true }
 axum = { version = "0.8", features = ["macros", "json", "multipart"], optional = true }
 base64 = { workspace = true }
 biblatex = { version = "0.11", optional = true }
@@ -251,6 +259,7 @@ comrak = { workspace = true }
 dashmap = "6.1"
 dbase = { workspace = true, optional = true }
 dirs = "6"
+either = { version = "1", optional = true }
 encoding_rs = { version = "0.8.35" }
 fast_image_resize = { version = "6.0.0", optional = true }
 flate2 = { version = "1.1", optional = true }
@@ -264,6 +273,8 @@ html-to-markdown-rs = { workspace = true, features = [
     "inline-images",
     "metadata",
 ], optional = true }
+icu_provider = { version = "2", features = ["sync"], optional = true }
+icu_segmenter = { version = "2", optional = true }
 image = { workspace = true, default-features = false, features = [
     "png",
     "jpeg",
@@ -276,6 +287,7 @@ image = { workspace = true, default-features = false, features = [
 ], optional = true }
 indexmap = "2.14.0"
 infer = "0.19.0"
+itertools = { workspace = true, optional = true }
 jotdown = "0.10"
 kamadak-exif = { version = "0.6.1", optional = true }
 
@@ -331,9 +343,9 @@ sevenz-rust2 = { version = "0.20.2", optional = true }
 sha2 = { version = "0.11", optional = true }
 simdutf8 = { version = "0.1", optional = true }
 snap = { version = "1.1", optional = true }
+strum = { version = "0.28", features = ["derive"], optional = true }
 tar = { version = "0.4.45", optional = true }
 tempfile = { workspace = true, optional = true }
-text-splitter = { version = "0.30.1", features = ["markdown"], optional = true }
 thiserror = { workspace = true }
 tiff = { version = "0.11", optional = true }
 tokenizers = { version = "0.23", optional = true, default-features = false, features = [

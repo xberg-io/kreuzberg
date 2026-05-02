@@ -5,9 +5,9 @@
 
 use std::fmt::Write;
 
+use crate::chunking::text_splitter::{ChunkCapacity, ChunkConfig, ChunkSizer, MarkdownSplitter, TextSplitter};
 use crate::error::Result;
 use crate::types::PageBoundary;
-use text_splitter::{ChunkSizer, MarkdownSplitter, TextSplitter};
 
 use super::builder::{build_chunk_config, build_chunks};
 use super::config::{ChunkerType, ChunkingConfig, ChunkingResult};
@@ -91,12 +91,11 @@ pub(crate) fn chunk_text_with_heading_source(
         #[cfg(feature = "chunking-tokenizers")]
         crate::core::config::ChunkSizing::Tokenizer { model, .. } => {
             let tokenizer = super::tokenizer_cache::get_or_init_tokenizer(model)?;
-            let chunk_config =
-                text_splitter::ChunkConfig::new(text_splitter::ChunkCapacity::new(config.max_characters))
-                    .with_sizer((*tokenizer).clone())
-                    .with_overlap(config.overlap)
-                    .map(|c| c.with_trim(config.trim))
-                    .map_err(|e| crate::KreuzbergError::validation(format!("Invalid chunking configuration: {}", e)))?;
+            let chunk_config = ChunkConfig::new(ChunkCapacity::new(config.max_characters))
+                .with_sizer((*tokenizer).clone())
+                .with_overlap(config.overlap)
+                .map(|c| c.with_trim(config.trim))
+                .map_err(|e| crate::KreuzbergError::validation(format!("Invalid chunking configuration: {}", e)))?;
             split_with_config(text, &config.chunker_type, chunk_config)
         }
         // Characters sizing (default) — also matches when no token features are enabled
@@ -184,7 +183,7 @@ fn strip_leading_heading<'a>(text: &'a str, level: u8, title: &str) -> &'a str {
 fn split_with_config<'a, S: ChunkSizer>(
     text: &'a str,
     chunker_type: &ChunkerType,
-    config: text_splitter::ChunkConfig<S>,
+    config: ChunkConfig<S>,
 ) -> Vec<&'a str> {
     match chunker_type {
         ChunkerType::Text | ChunkerType::Yaml | ChunkerType::Semantic => {

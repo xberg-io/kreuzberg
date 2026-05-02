@@ -6,7 +6,7 @@ exclude: ^docs/snippets/|vendor/|node_modules/|target/|invalid*|dist/|artifacts/
 repos:
   # AI-Rulez: auto-generate AI assistant configuration files
   - repo: https://github.com/Goldziher/ai-rulez
-    rev: v4.1.4
+    rev: v4.1.5
     hooks:
       - id: ai-rulez-generate
 
@@ -88,7 +88,7 @@ repos:
 
   # Markdown: linting
   - repo: https://github.com/rvben/rumdl-pre-commit
-    rev: "v0.1.85"
+    rev: "v0.1.86"
     hooks:
       - id: rumdl-fmt
         exclude: '^(tools/benchmark-harness/vendored/|docs/reference/(api-|configuration\.md|errors\.md|types\.md)|templates/readme/)'
@@ -234,7 +234,7 @@ repos:
 
   # Alef: verify bindings and sync versions
   - repo: https://github.com/kreuzberg-dev/alef
-    rev: v0.13.5
+    rev: v0.13.6
     hooks:
       - id: alef-verify
       - id: alef-sync-versions

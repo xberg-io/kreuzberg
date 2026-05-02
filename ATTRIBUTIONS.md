@@ -248,6 +248,61 @@ YAKE keyword extraction algorithm vendored into kreuzberg:
 
 The original MIT license is compatible with Kreuzberg's Elastic License 2.0 (ELv2).
 
+## text-splitter (inlined)
+
+The chunking submodule `crates/kreuzberg/src/chunking/text_splitter/` is a trimmed inline copy of [text-splitter](https://github.com/benbrandt/text-splitter) v0.30.1 by Benjamin Brandt. We inlined it because upstream pins `tokenizers = "0.22"`, which conflicts with kreuzberg's direct `tokenizers 0.23` dependency and pulls a duplicate copy of `tokenizers` into the build graph (breaking the `Tokenizer: ChunkSizer` bound in `chunking::core`).
+
+- **Source**: <https://github.com/benbrandt/text-splitter> @ v0.30.1
+- **License**: MIT
+- **Copyright**: © 2023 Benjamin Brandt <benjamin.j.brandt@gmail.com>
+- **Location**: `crates/kreuzberg/src/chunking/text_splitter/`
+
+### Modifications
+
+- Dropped the `code` (tree-sitter) splitter — kreuzberg has its own tree-sitter integration and does not use the upstream code splitter.
+- Dropped the `tiktoken-rs` sizer — unused.
+- Rebuilt against `tokenizers 0.23`.
+- Renamed feature gate `tokenizers` → `chunking-tokenizers`; the `markdown` splitter is always available because `pulldown-cmark` is already a non-optional kreuzberg dependency.
+- Tightened visibility on internal types to `pub(crate)`.
+- Path rewiring: upstream `crate::*` paths inside the inlined module rewritten relative to the new submodule root.
+
+### License Compatibility
+
+The MIT license is compatible with Kreuzberg's Elastic License 2.0 (ELv2). The full upstream license text is reproduced below:
+
+```text
+MIT License
+
+Copyright (c) 2023 Benjamin Brandt
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+### Test Documents from text-splitter
+
+The following test inputs were copied from the text-splitter repository to `/test_documents/text_splitter/`:
+
+- `text/romeo_and_juliet.txt` — Shakespeare, public domain (Project Gutenberg)
+- `text/room_with_a_view.txt` — E. M. Forster, public domain (Project Gutenberg)
+- `markdown/commonmark_spec.md` — CommonMark spec, CC-BY-SA-4.0
+- `markdown/github_flavored.md` — GitHub Flavored Markdown spec, CC-BY-4.0
+
 ---
 
 **Last Updated**: April 9, 2026

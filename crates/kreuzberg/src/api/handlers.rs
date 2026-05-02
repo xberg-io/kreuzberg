@@ -5,7 +5,7 @@ use axum::{Json, extract::State, response::IntoResponse};
 
 use tower::Service;
 
-use crate::{batch_extract_bytes, cache, service::ExtractionRequest};
+use crate::{batch_extract_bytes, cache, BatchBytesItem, service::ExtractionRequest};
 
 use super::{
     error::{ApiError, JsonApi, MultipartApi},
@@ -248,9 +248,13 @@ pub(crate) async fn extract_handler(
         let result = svc.call(request).await?;
         vec![result]
     } else {
-        let files_data: Vec<(Vec<u8>, String, Option<crate::FileExtractionConfig>)> = files
+        let files_data: Vec<BatchBytesItem> = files
             .into_iter()
-            .map(|(data, mime, _name)| (data, mime, None))
+            .map(|(data, mime, _name)| BatchBytesItem {
+                content: data,
+                mime_type: mime,
+                config: None,
+            })
             .collect();
 
         #[cfg(feature = "otel")]

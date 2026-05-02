@@ -36,7 +36,7 @@ pub use sync::batch_extract_file_sync;
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::core::config::ExtractionConfig;
+    use crate::core::config::{BatchBytesItem, BatchFileItem, ExtractionConfig};
     use serial_test::serial;
     use std::fs::File;
     use std::io::Write;
@@ -114,7 +114,16 @@ mod tests {
         File::create(&file2).unwrap().write_all(b"content 2").unwrap();
 
         let config = ExtractionConfig::default();
-        let items = vec![(file1, None), (file2, None)];
+        let items = vec![
+            BatchFileItem {
+                path: file1,
+                config: None,
+            },
+            BatchFileItem {
+                path: file2,
+                config: None,
+            },
+        ];
         let results = batch_extract_file(items, &config).await;
 
         assert!(results.is_ok());
@@ -127,7 +136,7 @@ mod tests {
     #[tokio::test]
     async fn test_batch_extract_file_empty() {
         let config = ExtractionConfig::default();
-        let items: Vec<(std::path::PathBuf, Option<crate::FileExtractionConfig>)> = vec![];
+        let items: Vec<BatchFileItem> = vec![];
         let results = batch_extract_file(items, &config).await;
 
         assert!(results.is_ok());
@@ -138,8 +147,16 @@ mod tests {
     async fn test_batch_extract_bytes() {
         let config = ExtractionConfig::default();
         let items = vec![
-            (b"content 1".to_vec(), "text/plain".to_string(), None),
-            (b"content 2".to_vec(), "text/plain".to_string(), None),
+            BatchBytesItem {
+                content: b"content 1".to_vec(),
+                mime_type: "text/plain".to_string(),
+                config: None,
+            },
+            BatchBytesItem {
+                content: b"content 2".to_vec(),
+                mime_type: "text/plain".to_string(),
+                config: None,
+            },
         ];
         let results = batch_extract_bytes(items, &config).await;
 
@@ -282,7 +299,16 @@ mod tests {
         let invalid_file = dir.path().join("nonexistent.txt");
 
         let config = ExtractionConfig::default();
-        let items = vec![(valid_file, None), (invalid_file, None)];
+        let items = vec![
+            BatchFileItem {
+                path: valid_file,
+                config: None,
+            },
+            BatchFileItem {
+                path: invalid_file,
+                config: None,
+            },
+        ];
         let results = batch_extract_file(items, &config).await;
 
         assert!(results.is_ok());
@@ -296,9 +322,21 @@ mod tests {
     async fn test_batch_extract_bytes_mixed_valid_invalid() {
         let config = ExtractionConfig::default();
         let items = vec![
-            (b"valid 1".to_vec(), "text/plain".to_string(), None),
-            (b"invalid".to_vec(), "invalid/mime".to_string(), None),
-            (b"valid 2".to_vec(), "text/plain".to_string(), None),
+            BatchBytesItem {
+                content: b"valid 1".to_vec(),
+                mime_type: "text/plain".to_string(),
+                config: None,
+            },
+            BatchBytesItem {
+                content: b"invalid".to_vec(),
+                mime_type: "invalid/mime".to_string(),
+                config: None,
+            },
+            BatchBytesItem {
+                content: b"valid 2".to_vec(),
+                mime_type: "text/plain".to_string(),
+                config: None,
+            },
         ];
         let results = batch_extract_bytes(items, &config).await;
 
@@ -314,8 +352,16 @@ mod tests {
     async fn test_batch_extract_bytes_all_invalid() {
         let config = ExtractionConfig::default();
         let items = vec![
-            (b"test 1".to_vec(), "invalid/mime1".to_string(), None),
-            (b"test 2".to_vec(), "invalid/mime2".to_string(), None),
+            BatchBytesItem {
+                content: b"test 1".to_vec(),
+                mime_type: "invalid/mime1".to_string(),
+                config: None,
+            },
+            BatchBytesItem {
+                content: b"test 2".to_vec(),
+                mime_type: "invalid/mime2".to_string(),
+                config: None,
+            },
         ];
         let results = batch_extract_bytes(items, &config).await;
 
@@ -349,7 +395,10 @@ mod tests {
                 .unwrap()
                 .write_all(format!("content {}", i).as_bytes())
                 .unwrap();
-            items.push((file_path, None));
+            items.push(BatchFileItem {
+                path: file_path,
+                config: None,
+            });
         }
 
         let config = ExtractionConfig::default();
@@ -405,7 +454,7 @@ mod tests {
     #[test]
     fn test_sync_wrapper_batch_empty() {
         let config = ExtractionConfig::default();
-        let items: Vec<(std::path::PathBuf, Option<crate::FileExtractionConfig>)> = vec![];
+        let items: Vec<BatchFileItem> = vec![];
         let results = batch_extract_file_sync(items, &config);
 
         assert!(results.is_ok());
@@ -415,7 +464,7 @@ mod tests {
     #[test]
     fn test_sync_wrapper_batch_bytes_empty() {
         let config = ExtractionConfig::default();
-        let items: Vec<(Vec<u8>, String, Option<crate::FileExtractionConfig>)> = vec![];
+        let items: Vec<BatchBytesItem> = vec![];
         let results = batch_extract_bytes_sync(items, &config);
 
         assert!(results.is_ok());
@@ -486,7 +535,16 @@ mod tests {
         File::create(&file2).unwrap().write_all(b"content 2").unwrap();
 
         let config = ExtractionConfig::default();
-        let items = vec![(file1, Some(crate::FileExtractionConfig::default())), (file2, None)];
+        let items = vec![
+            BatchFileItem {
+                path: file1,
+                config: Some(crate::FileExtractionConfig::default()),
+            },
+            BatchFileItem {
+                path: file2,
+                config: None,
+            },
+        ];
         let results = batch_extract_file(items, &config).await;
 
         assert!(results.is_ok());
@@ -499,7 +557,7 @@ mod tests {
     #[tokio::test]
     async fn test_batch_extract_file_with_configs_empty() {
         let config = ExtractionConfig::default();
-        let items: Vec<(std::path::PathBuf, Option<crate::FileExtractionConfig>)> = vec![];
+        let items: Vec<BatchFileItem> = vec![];
         let results = batch_extract_file(items, &config).await;
 
         assert!(results.is_ok());
@@ -510,12 +568,16 @@ mod tests {
     async fn test_batch_extract_bytes_with_per_item_configs() {
         let config = ExtractionConfig::default();
         let items = vec![
-            (b"hello".to_vec(), "text/plain".to_string(), None),
-            (
-                b"world".to_vec(),
-                "text/plain".to_string(),
-                Some(crate::FileExtractionConfig::default()),
-            ),
+            BatchBytesItem {
+                content: b"hello".to_vec(),
+                mime_type: "text/plain".to_string(),
+                config: None,
+            },
+            BatchBytesItem {
+                content: b"world".to_vec(),
+                mime_type: "text/plain".to_string(),
+                config: Some(crate::FileExtractionConfig::default()),
+            },
         ];
         let results = batch_extract_bytes(items, &config).await;
 
@@ -530,12 +592,16 @@ mod tests {
     async fn test_batch_extract_bytes_with_configs_error_handling() {
         let config = ExtractionConfig::default();
         let items = vec![
-            (b"valid".to_vec(), "text/plain".to_string(), None),
-            (
-                b"invalid".to_vec(),
-                "invalid/mime".to_string(),
-                Some(crate::FileExtractionConfig::default()),
-            ),
+            BatchBytesItem {
+                content: b"valid".to_vec(),
+                mime_type: "text/plain".to_string(),
+                config: None,
+            },
+            BatchBytesItem {
+                content: b"invalid".to_vec(),
+                mime_type: "invalid/mime".to_string(),
+                config: Some(crate::FileExtractionConfig::default()),
+            },
         ];
         let results = batch_extract_bytes(items, &config).await;
 
@@ -553,7 +619,10 @@ mod tests {
         File::create(&file_path).unwrap().write_all(b"sync test").unwrap();
 
         let config = ExtractionConfig::default();
-        let items = vec![(file_path, None)];
+        let items = vec![BatchFileItem {
+            path: file_path,
+            config: None,
+        }];
         let results = batch_extract_file_sync(items, &config);
 
         assert!(results.is_ok());

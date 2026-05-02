@@ -3537,6 +3537,7 @@ dependencies = [
  "ahash",
  "anyhow",
  "async-trait",
+ "auto_enums",
  "axum",
  "base64 0.22.1",
  "biblatex",
@@ -3554,6 +3555,7 @@ dependencies = [
  "dbase",
  "dirs",
  "dotenvy",
+ "either",
  "encoding_rs",
  "fast_image_resize",
  "filetime",
@@ -3564,9 +3566,12 @@ dependencies = [
  "hex",
  "hf-hub 0.5.0",
  "html-to-markdown-rs",
+ "icu_provider",
+ "icu_segmenter",
  "image",
  "indexmap",
  "infer",
+ "itertools 0.14.0",
  "jotdown",
  "jsonschema",
  "kamadak-exif",
@@ -3612,12 +3617,12 @@ dependencies = [
  "sha2 0.11.0",
  "simdutf8",
  "snap",
+ "strum 0.28.0",
  "tar",
  "tempfile",
- "text-splitter",
  "thiserror",
  "tiff",
- "tokenizers 0.23.1",
+ "tokenizers",
  "tokio",
  "tokio-test",
  "toml 1.1.2+spec-1.1.0",
@@ -4618,28 +4623,6 @@ name = "once_cell_polyfill"
 version = "1.70.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "384b8ab6d37215f3c5301a95a4accb5d64aa607f1fcb26a11b5303878451b4fe"
-
-[[package]]
-name = "onig"
-version = "6.5.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0cc3cbf698f9438986c11a880c90a6d04b9de27575afd28bbf45b154b6c709e2"
-dependencies = [
- "bitflags 2.11.1",
- "libc",
- "once_cell",
- "onig_sys",
-]
-
-[[package]]
-name = "onig_sys"
-version = "69.9.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1e68317604e77e53b85896388e1a803c1d21b74c899ec9e5e1112db90735edd7"
-dependencies = [
- "cc",
- "pkg-config",
-]
 
 [[package]]
 name = "oorandom"
@@ -6754,25 +6737,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "text-splitter"
-version = "0.30.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f1c090dcb5a7e4da833fcd8bdaf7fd5a9596c8fe9fe5c5355960243eaa4b5716"
-dependencies = [
- "ahash",
- "auto_enums",
- "either",
- "icu_provider",
- "icu_segmenter",
- "itertools 0.14.0",
- "memchr",
- "pulldown-cmark 0.13.3",
- "strum 0.28.0",
- "thiserror",
- "tokenizers 0.22.2",
-]
-
-[[package]]
 name = "thiserror"
 version = "2.0.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6931,39 +6895,6 @@ name = "tinyvec_macros"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1f3ccbac311fea05f86f61904b462b55fb3df8837a366dfc601a0161d0532f20"
-
-[[package]]
-name = "tokenizers"
-version = "0.22.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b238e22d44a15349529690fb07bd645cf58149a1b1e44d6cb5bd1641ff1a6223"
-dependencies = [
- "ahash",
- "aho-corasick",
- "compact_str",
- "dary_heap",
- "derive_builder",
- "esaxx-rs",
- "getrandom 0.3.4",
- "itertools 0.14.0",
- "log",
- "macro_rules_attribute",
- "monostate",
- "onig",
- "paste",
- "rand 0.9.4",
- "rayon",
- "rayon-cond",
- "regex",
- "regex-syntax",
- "serde",
- "serde_json",
- "spm_precompiled",
- "thiserror",
- "unicode-normalization-alignments",
- "unicode-segmentation",
- "unicode_categories",
-]
 
 [[package]]
 name = "tokenizers"

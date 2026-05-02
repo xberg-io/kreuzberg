@@ -4,8 +4,41 @@
 //! - Image extraction and processing
 //! - Token reduction
 //! - Language detection
+//! - Batch extraction items
 
 use serde::{Deserialize, Serialize};
+use std::path::PathBuf;
+
+/// Batch item for byte array extraction.
+///
+/// Used with [`crate::batch_extract_bytes`] and [`crate::batch_extract_bytes_sync`]
+/// to represent a single item in a batch extraction job.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BatchBytesItem {
+    /// The content bytes to extract from
+    pub content: Vec<u8>,
+
+    /// MIME type of the content (e.g., "application/pdf", "text/html")
+    pub mime_type: String,
+
+    /// Per-item configuration overrides (None uses batch-level defaults)
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub config: Option<super::FileExtractionConfig>,
+}
+
+/// Batch item for file extraction.
+///
+/// Used with [`crate::batch_extract_file`] and [`crate::batch_extract_file_sync`]
+/// to represent a single file in a batch extraction job.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BatchFileItem {
+    /// Path to the file to extract from
+    pub path: PathBuf,
+
+    /// Per-file configuration overrides (None uses batch-level defaults)
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub config: Option<super::FileExtractionConfig>,
+}
 
 /// Image extraction configuration.
 #[derive(Debug, Clone, Serialize, Deserialize)]

@@ -1,4 +1,4 @@
-version = "0.13.6"
+version = "0.13.7"
 languages = [
   "python",
   "node",
@@ -386,11 +386,9 @@ types = [
   "ImageMetadata", # kreuzberg::extraction::image::ImageMetadata (internal; use kreuzberg::types::ImageMetadata)
   "Attributes", # kreuzberg::extractors::djot_format::attributes::Attributes (internal type with lifetime issues)
 
-  # Content format OutputFormat (from core::config::formats) — exclude globally to avoid naming collision with types::OutputFormat
-  # The semantic element OutputFormat (types::OutputFormat) is exposed via result_format in ExtractionConfig
-  # When excluded, output_format field falls back to String type but that causes codegen issues
-  # TODO: Alef should handle this better by qualifying the type names
-  "OutputFormat", # kreuzberg::core::config::formats::OutputFormat (content format; conflicts with kreuzberg::types::OutputFormat)
+  # Content format OutputFormat (from core::config::formats) — exclude by fully-qualified path so
+  # that only the internal content-format variant is dropped while types::OutputFormat is retained.
+  "kreuzberg::core::config::formats::OutputFormat", # internal; kreuzberg::types::OutputFormat is the public API type
 
   # Internal IDs and newtype wrappers lacking required derives/conversions
   "NodeId", # String newtype without Serialize/From for FFI
@@ -947,18 +945,6 @@ register_fn = "register_embedding_backend"
 # Mirrors the existing exclusions for OcrBackend / PostProcessor / Validator.
 exclude_languages = ["elixir"]
 
-# TODO: add PostProcessor and Validator bridges once OcrBackend is proven
-# [[trait_bridges]]
-# trait_name = "PostProcessor"
-# super_trait = "kreuzberg::plugins::Plugin"
-# registry_getter = "kreuzberg::plugins::registry::get_post_processor_registry"
-# register_fn = "register_post_processor"
-#
-# [[trait_bridges]]
-# trait_name = "Validator"
-# super_trait = "kreuzberg::plugins::Plugin"
-# registry_getter = "kreuzberg::plugins::registry::get_validator_registry"
-# register_fn = "register_validator"
 
 # ---------------------------------------------------------------------------
 # Generation control

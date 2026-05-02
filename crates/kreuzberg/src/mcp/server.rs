@@ -198,6 +198,7 @@ impl KreuzbergMcp {
     ) -> Result<CallToolResult, rmcp::ErrorData> {
         use super::errors::map_kreuzberg_error_to_mcp;
         use super::format::build_config;
+        use crate::BatchFileItem;
         use crate::batch_extract_file;
 
         if params.paths.is_empty() {
@@ -207,40 +208,45 @@ impl KreuzbergMcp {
         let config =
             build_config(&self.default_config, params.config).map_err(|e| rmcp::ErrorData::invalid_params(e, None))?;
 
-        let items: Vec<(std::path::PathBuf, Option<crate::FileExtractionConfig>)> =
-            if let Some(file_configs) = params.file_configs {
-                if file_configs.len() != params.paths.len() {
-                    return Err(rmcp::ErrorData::invalid_params(
-                        format!(
-                            "file_configs length ({}) must match paths length ({})",
-                            file_configs.len(),
-                            params.paths.len()
-                        ),
-                        None,
-                    ));
-                }
+        let items: Vec<BatchFileItem> = if let Some(file_configs) = params.file_configs {
+            if file_configs.len() != params.paths.len() {
+                return Err(rmcp::ErrorData::invalid_params(
+                    format!(
+                        "file_configs length ({}) must match paths length ({})",
+                        file_configs.len(),
+                        params.paths.len()
+                    ),
+                    None,
+                ));
+            }
 
-                params
-                    .paths
-                    .iter()
-                    .zip(file_configs.into_iter())
-                    .map(|(path, fc)| {
-                        let file_config = fc
-                            .map(serde_json::from_value::<crate::FileExtractionConfig>)
-                            .transpose()
-                            .map_err(|e| {
-                                rmcp::ErrorData::invalid_params(format!("Failed to parse file config: {}", e), None)
-                            })?;
-                        Ok((std::path::PathBuf::from(path), file_config))
+            params
+                .paths
+                .iter()
+                .zip(file_configs.into_iter())
+                .map(|(path, fc)| {
+                    let file_config = fc
+                        .map(serde_json::from_value::<crate::FileExtractionConfig>)
+                        .transpose()
+                        .map_err(|e| {
+                            rmcp::ErrorData::invalid_params(format!("Failed to parse file config: {}", e), None)
+                        })?;
+                    Ok(BatchFileItem {
+                        path: std::path::PathBuf::from(path),
+                        config: file_config,
                     })
-                    .collect::<Result<Vec<_>, rmcp::ErrorData>>()?
-            } else {
-                params
-                    .paths
-                    .iter()
-                    .map(|p| (std::path::PathBuf::from(p), None))
-                    .collect()
-            };
+                })
+                .collect::<Result<Vec<_>, rmcp::ErrorData>>()?
+        } else {
+            params
+                .paths
+                .iter()
+                .map(|p| BatchFileItem {
+                    path: std::path::PathBuf::from(p),
+                    config: None,
+                })
+                .collect()
+        };
 
         let use_toon = params
             .response_format

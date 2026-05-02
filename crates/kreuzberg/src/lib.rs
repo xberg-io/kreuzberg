@@ -130,10 +130,10 @@ pub use core::extractor::{batch_extract_file_sync, extract_file_sync};
 
 // ── Extraction config types ───────────────────────────────────────────────────
 pub use core::config::{
-    AccelerationConfig, ChunkSizing, ChunkerType, ChunkingConfig, ContentFilterConfig, EmailConfig, EmbeddingConfig,
-    EmbeddingModelType, ExecutionProviderType, ExtractionConfig, FileExtractionConfig, ImageExtractionConfig,
-    LanguageDetectionConfig, LlmConfig, OcrConfig, OutputFormat, PageConfig, PostProcessorConfig,
-    StructuredExtractionConfig, TokenReductionOptions,
+    AccelerationConfig, BatchBytesItem, BatchFileItem, ChunkSizing, ChunkerType, ChunkingConfig, ContentFilterConfig,
+    EmailConfig, EmbeddingConfig, EmbeddingModelType, ExecutionProviderType, ExtractionConfig, FileExtractionConfig,
+    ImageExtractionConfig, LanguageDetectionConfig, LlmConfig, OcrConfig, OutputFormat, PageConfig,
+    PostProcessorConfig, StructuredExtractionConfig, TokenReductionOptions,
 };
 
 #[cfg(feature = "quality")]

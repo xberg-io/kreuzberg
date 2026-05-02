@@ -63,6 +63,7 @@ pub mod core;
 mod headings;
 pub mod processor;
 pub mod semantic;
+mod text_splitter;
 #[cfg(feature = "chunking-tokenizers")]
 mod tokenizer_cache;
 pub mod validation;

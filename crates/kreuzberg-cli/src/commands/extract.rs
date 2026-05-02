@@ -4,7 +4,7 @@
 //! or multiple documents with customizable extraction configurations.
 
 use anyhow::{Context, Result};
-use kreuzberg::{ExtractionConfig, FileExtractionConfig, batch_extract_file_sync, extract_file_sync};
+use kreuzberg::{BatchFileItem, ExtractionConfig, FileExtractionConfig, batch_extract_file_sync, extract_file_sync};
 use std::path::PathBuf;
 
 use crate::{WireFormat, style};
@@ -53,7 +53,7 @@ pub fn batch_command(
     config: ExtractionConfig,
     format: WireFormat,
 ) -> Result<()> {
-    let items: Vec<(PathBuf, Option<FileExtractionConfig>)> = if let Some(ref configs_map) = file_configs_map {
+    let items: Vec<BatchFileItem> = if let Some(ref configs_map) = file_configs_map {
         paths
             .into_iter()
             .map(|p| {
@@ -65,11 +65,17 @@ pub fn batch_command(
                             .with_context(|| format!("Failed to parse file config for '{}'", path_str))
                     })
                     .transpose()?;
-                Ok((p, file_config))
+                Ok(BatchFileItem {
+                    path: p,
+                    config: file_config,
+                })
             })
             .collect::<Result<Vec<_>>>()?
     } else {
-        paths.into_iter().map(|p| (p, None)).collect()
+        paths
+            .into_iter()
+            .map(|p| BatchFileItem { path: p, config: None })
+            .collect()
     };
 
     let results = batch_extract_file_sync(items, &config).with_context(

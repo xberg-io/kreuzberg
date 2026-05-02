@@ -13,10 +13,10 @@ use crate::chunking::boundary_detection::detect_plain_text_boundaries;
 use crate::chunking::classifier::classify_chunk;
 use crate::chunking::config::{ChunkingConfig, ChunkingResult};
 use crate::chunking::headings::{build_heading_map, resolve_heading_context};
+use crate::chunking::text_splitter::{MarkdownSplitter, TextSplitter};
 use crate::error::Result;
 use crate::types::{Chunk, ChunkMetadata, PageBoundary};
 use merge::Segment;
-use text_splitter::{MarkdownSplitter, TextSplitter};
 
 /// Default segment size (characters) for the initial fine-grained split.
 const SEGMENT_SIZE: usize = 200;

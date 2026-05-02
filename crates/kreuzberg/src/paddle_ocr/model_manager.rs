@@ -235,7 +235,7 @@ pub struct RecModelPaths {
 }
 
 /// Combined paths to all models needed for OCR (backward compatibility).
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct ModelPaths {
     /// Path to the detection model directory.
     pub det_model: PathBuf,
@@ -261,7 +261,7 @@ pub struct ModelManifestEntry {
 }
 
 /// Statistics about the PaddleOCR model cache.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct CacheStats {
     /// Total size of cached models in bytes.
     pub total_size_bytes: u64,

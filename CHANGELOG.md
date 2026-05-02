@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Inlined `text-splitter` into `crates/kreuzberg/src/chunking/text_splitter/`.** The upstream crate pins `tokenizers = "0.22"`, which conflicted with kreuzberg's direct `tokenizers 0.23` dependency and produced a duplicate copy of `tokenizers` in the build graph plus a `Tokenizer: ChunkSizer` trait-bound failure in `chunking::core`. The inlined fork drops the unused `code` (tree-sitter) and `tiktoken-rs` features and rebuilds against `tokenizers 0.23`. Kreuzberg's own tree-sitter–based code splitter is unaffected. See `ATTRIBUTIONS.md` for full provenance and license terms.
+
 ### Added
 
 - **#761**: `ExtractionResult.extraction_method` — new field exposing how text was extracted (`native`, `ocr`, `mixed`). Populated by PDF (native vs OCR vs `force_ocr_pages` mixed) and image (always `ocr`) extractors. Surfaced across every binding (Python, Node, PHP, Ruby, Java, C#, Go, R, Dart, Swift, Elixir, Gleam, Zig, WASM, C FFI).

@@ -18,7 +18,9 @@ mod types;
 // Re-export all public types for backward compatibility
 pub use self::core::ExtractionConfig;
 pub use self::file_config::FileExtractionConfig;
-pub use self::types::{ImageExtractionConfig, LanguageDetectionConfig, TokenReductionOptions};
+pub use self::types::{
+    BatchBytesItem, BatchFileItem, ImageExtractionConfig, LanguageDetectionConfig, TokenReductionOptions,
+};
 
 #[cfg(test)]
 mod tests {

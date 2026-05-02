@@ -229,6 +229,9 @@ pkg/
 # Local dev artifacts
 docs/demo-dev.html
 
+
+.php-cs-fixer.*
+
 # BEGIN ai-rulez (DO NOT EDIT - managed by ai-rulez)
 .agents/
 .cursor/

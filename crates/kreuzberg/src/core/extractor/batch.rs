@@ -5,10 +5,10 @@
 
 use crate::core::config::ExtractionConfig;
 use crate::core::config::extraction::FileExtractionConfig;
+use crate::core::config::{BatchBytesItem, BatchFileItem};
 use crate::types::ExtractionResult;
 use crate::{KreuzbergError, Result};
 use std::future::Future;
-use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Instant;
 
@@ -135,8 +135,8 @@ fn resolve_config(base: &ExtractionConfig, file_config: &Option<FileExtractionCo
 ///
 /// # Arguments
 ///
-/// * `items` - Vector of `(path, optional_file_config)` tuples. Pass `None` as the
-///   config to use the batch-level defaults for that file.
+/// * `items` - Vector of [`BatchFileItem`] structs, each containing a path and optional
+///   per-file configuration overrides.
 /// * `config` - Batch-level extraction configuration (provides defaults and batch settings)
 ///
 /// # Returns
@@ -154,14 +154,14 @@ fn resolve_config(base: &ExtractionConfig, file_config: &Option<FileExtractionCo
 ///
 /// ```rust,no_run
 /// use kreuzberg::core::extractor::batch_extract_file;
-/// use kreuzberg::core::config::ExtractionConfig;
+/// use kreuzberg::core::config::{ExtractionConfig, BatchFileItem};
 /// use std::path::PathBuf;
 ///
 /// # async fn example() -> kreuzberg::Result<()> {
 /// let config = ExtractionConfig::default();
-/// let items: Vec<(PathBuf, Option<kreuzberg::FileExtractionConfig>)> = vec![
-///     ("doc1.pdf".into(), None),
-///     ("doc2.pdf".into(), None),
+/// let items = vec![
+///     BatchFileItem { path: "doc1.pdf".into(), config: None },
+///     BatchFileItem { path: "doc2.pdf".into(), config: None },
 /// ];
 /// let results = batch_extract_file(items, &config).await?;
 /// println!("Processed {} files", results.len());
@@ -173,15 +173,17 @@ fn resolve_config(base: &ExtractionConfig, file_config: &Option<FileExtractionCo
 ///
 /// ```rust,no_run
 /// use kreuzberg::core::extractor::batch_extract_file;
-/// use kreuzberg::core::config::ExtractionConfig;
-/// use kreuzberg::FileExtractionConfig;
+/// use kreuzberg::core::config::{ExtractionConfig, BatchFileItem, FileExtractionConfig};
 /// use std::path::PathBuf;
 ///
 /// # async fn example() -> kreuzberg::Result<()> {
 /// let config = ExtractionConfig::default();
-/// let items: Vec<(PathBuf, Option<FileExtractionConfig>)> = vec![
-///     ("scan.pdf".into(), Some(FileExtractionConfig { force_ocr: Some(true), ..Default::default() })),
-///     ("notes.txt".into(), None),
+/// let items = vec![
+///     BatchFileItem {
+///         path: "scan.pdf".into(),
+///         config: Some(FileExtractionConfig { force_ocr: Some(true), ..Default::default() }),
+///     },
+///     BatchFileItem { path: "notes.txt".into(), config: None },
 /// ];
 /// let results = batch_extract_file(items, &config).await?;
 /// # Ok(())
@@ -194,10 +196,7 @@ fn resolve_config(base: &ExtractionConfig, file_config: &Option<FileExtractionCo
         extraction.batch_size = items.len(),
     )
 ))]
-pub async fn batch_extract_file(
-    items: Vec<(PathBuf, Option<FileExtractionConfig>)>,
-    config: &ExtractionConfig,
-) -> Result<Vec<ExtractionResult>> {
+pub async fn batch_extract_file(items: Vec<BatchFileItem>, config: &ExtractionConfig) -> Result<Vec<ExtractionResult>> {
     let config_arc = Arc::new(config.clone());
     // Use Arc<Vec> for file items — paths are small, so keeping them all alive is fine.
     let items_arc = Arc::new(items);
@@ -207,12 +206,12 @@ pub async fn batch_extract_file(
         let cfg = Arc::clone(&config_arc);
         let items = Arc::clone(&items_arc);
         async move {
-            let (ref path, ref file_config) = items[index];
-            let resolved = resolve_config(&cfg, file_config);
+            let item = &items[index];
+            let resolved = resolve_config(&cfg, &item.config);
             let timeout = resolved.extraction_timeout_secs;
             let cancel_token = resolved.cancel_token.clone();
             run_timed_extraction(index, sem, timeout, cancel_token, || {
-                let path = path.clone();
+                let path = item.path.clone();
                 async move { extract_file(&path, None, &resolved).await }
             })
             .await
@@ -234,7 +233,8 @@ pub async fn batch_extract_file(
 ///
 /// # Arguments
 ///
-/// * `items` - Vector of `(bytes, mime_type, optional_file_config)` tuples
+/// * `items` - Vector of [`BatchBytesItem`] structs, each containing content bytes,
+///   MIME type, and optional per-item configuration overrides.
 /// * `config` - Batch-level extraction configuration
 ///
 /// # Returns
@@ -247,13 +247,13 @@ pub async fn batch_extract_file(
 ///
 /// ```rust,no_run
 /// use kreuzberg::core::extractor::batch_extract_bytes;
-/// use kreuzberg::core::config::ExtractionConfig;
+/// use kreuzberg::core::config::{ExtractionConfig, BatchBytesItem};
 ///
 /// # async fn example() -> kreuzberg::Result<()> {
 /// let config = ExtractionConfig::default();
 /// let items = vec![
-///     (b"content 1".to_vec(), "text/plain".to_string(), None),
-///     (b"content 2".to_vec(), "text/plain".to_string(), None),
+///     BatchBytesItem { content: b"content 1".to_vec(), mime_type: "text/plain".to_string(), config: None },
+///     BatchBytesItem { content: b"content 2".to_vec(), mime_type: "text/plain".to_string(), config: None },
 /// ];
 /// let results = batch_extract_bytes(items, &config).await?;
 /// println!("Processed {} items", results.len());
@@ -265,15 +265,17 @@ pub async fn batch_extract_file(
 ///
 /// ```rust,no_run
 /// use kreuzberg::core::extractor::batch_extract_bytes;
-/// use kreuzberg::core::config::ExtractionConfig;
-/// use kreuzberg::FileExtractionConfig;
+/// use kreuzberg::core::config::{ExtractionConfig, BatchBytesItem, FileExtractionConfig};
 ///
 /// # async fn example() -> kreuzberg::Result<()> {
 /// let config = ExtractionConfig::default();
 /// let items = vec![
-///     (b"content".to_vec(), "text/plain".to_string(), None),
-///     (b"<html>test</html>".to_vec(), "text/html".to_string(),
-///      Some(FileExtractionConfig { force_ocr: Some(true), ..Default::default() })),
+///     BatchBytesItem { content: b"content".to_vec(), mime_type: "text/plain".to_string(), config: None },
+///     BatchBytesItem {
+///         content: b"<html>test</html>".to_vec(),
+///         mime_type: "text/html".to_string(),
+///         config: Some(FileExtractionConfig { force_ocr: Some(true), ..Default::default() }),
+///     },
 /// ];
 /// let results = batch_extract_bytes(items, &config).await?;
 /// # Ok(())
@@ -287,7 +289,7 @@ pub async fn batch_extract_file(
     )
 ))]
 pub async fn batch_extract_bytes(
-    items: Vec<(Vec<u8>, String, Option<FileExtractionConfig>)>,
+    items: Vec<BatchBytesItem>,
     config: &ExtractionConfig,
 ) -> Result<Vec<ExtractionResult>> {
     let config_arc = Arc::new(config.clone());
@@ -295,9 +297,9 @@ pub async fn batch_extract_bytes(
 
     // Move items into individually-indexed slots so each task can take ownership
     // of its bytes without cloning. This avoids the memory regression of
-    // Arc<Vec<(Vec<u8>, ...)>> which would keep all byte arrays alive for the
+    // Arc<Vec<BatchBytesItem>> which would keep all byte arrays alive for the
     // entire batch duration.
-    type BytesSlot = parking_lot::Mutex<Option<(Vec<u8>, String, Option<FileExtractionConfig>)>>;
+    type BytesSlot = parking_lot::Mutex<Option<BatchBytesItem>>;
     let slots: Arc<Vec<BytesSlot>> = Arc::new(
         items
             .into_iter()
@@ -309,12 +311,12 @@ pub async fn batch_extract_bytes(
         let cfg = Arc::clone(&config_arc);
         let slots = Arc::clone(&slots);
         async move {
-            let (bytes, mime_type, file_config) = slots[index].lock().take().expect("batch item already consumed");
-            let resolved = resolve_config(&cfg, &file_config);
+            let item = slots[index].lock().take().expect("batch item already consumed");
+            let resolved = resolve_config(&cfg, &item.config);
             let timeout = resolved.extraction_timeout_secs;
             let cancel_token = resolved.cancel_token.clone();
             run_timed_extraction(index, sem, timeout, cancel_token, || async move {
-                extract_bytes(&bytes, &mime_type, &resolved).await
+                extract_bytes(&item.content, &item.mime_type, &resolved).await
             })
             .await
         }
