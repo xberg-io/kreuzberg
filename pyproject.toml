@@ -26,19 +26,23 @@ docs = [
   "mkdocstrings-python>=2.0.3",
   "zensical",
 ]
-bench-docling = [ "docling>=2.64.1" ]
-bench-markitdown = [ "markitdown[all]>=0.1.5" ]
-bench-mineru = [ "mineru[pipeline]>=2.6.7", "onnxruntime" ]
-bench-pdfminer = [ "pdfminer-six>=20260107" ]
-bench-pdfplumber = [ "pdfplumber>=0.11.4" ]
-bench-pdftotext = [ "pdftotext>=3.0.0" ]
-bench-playa-pdf = [ "playa-pdf>=1.1.0" ]
-bench-pymupdf4llm = [ "pillow>=10.0.0", "pymupdf-layout>=1.27.2.3", "pymupdf4llm>=1.27.2.3" ]
-bench-pypdf = [ "pypdf>=6.10.2" ]
-bench-unstructured = [ "unstructured[all-docs]>=0.18.21" ]
 
 [tool.uv]
 workspace.members = [ "packages/python" ]
+conflicts = [
+  [
+    { package = "kreuzberg", group = "bench-docling" },
+    { package = "kreuzberg", group = "bench-markitdown" },
+    { package = "kreuzberg", group = "bench-mineru" },
+    { package = "kreuzberg", group = "bench-pdfminer" },
+    { package = "kreuzberg", group = "bench-pdfplumber" },
+    { package = "kreuzberg", group = "bench-pdftotext" },
+    { package = "kreuzberg", group = "bench-playa-pdf" },
+    { package = "kreuzberg", group = "bench-pymupdf4llm" },
+    { package = "kreuzberg", group = "bench-pypdf" },
+    { package = "kreuzberg", group = "bench-unstructured" },
+  ],
+]
 cache-keys = [
   { file = "pyproject.toml" },
   { file = "Cargo.toml" },

@@ -62,6 +62,7 @@
 pub mod engine;
 
 use ahash::AHashMap;
+use serde::{Deserialize, Serialize};
 use std::sync::{Arc, RwLock};
 
 use std::sync::LazyLock;
@@ -90,7 +91,7 @@ static EMBED_SEMAPHORE: LazyLock<Arc<tokio::sync::Semaphore>> = LazyLock::new(||
 ///
 /// Each preset combines chunk size, overlap, and embedding model
 /// to provide an optimized configuration for specific scenarios.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EmbeddingPreset {
     pub name: &'static str,
     pub chunk_size: usize,
@@ -276,7 +277,7 @@ fn load_tokenizer(
     {
         for (_, value) in &map {
             if let Some(content) = value.as_str() {
-                tokenizer.add_special_tokens(&[AddedToken {
+                let _ = tokenizer.add_special_tokens([AddedToken {
                     content: content.to_string(),
                     special: true,
                     ..Default::default()
@@ -290,7 +291,7 @@ fn load_tokenizer(
                     value["normalized"].as_bool(),
                 )
             {
-                tokenizer.add_special_tokens(&[AddedToken {
+                let _ = tokenizer.add_special_tokens([AddedToken {
                     content: content.to_string(),
                     special: true,
                     single_word,
