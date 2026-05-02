@@ -1409,6 +1409,44 @@ class ImageOcrResult {
   });
 }
 
+/// Archive metadata extracted from an archive file.
+class ArchiveArchiveMetadata {
+  /// Archive format (e.g., "ZIP", "TAR")
+  final String format;
+
+  /// List of files in the archive
+  final List<ArchiveEntry> fileList;
+
+  /// Total number of files
+  final int fileCount;
+
+  /// Total uncompressed size in bytes
+  final int totalSize;
+  ArchiveArchiveMetadata({
+    required this.format,
+    required this.fileList,
+    required this.fileCount,
+    required this.totalSize,
+  });
+}
+
+/// Information about a single file in an archive.
+class ArchiveArchiveEntry {
+  /// File path within the archive
+  final String path;
+
+  /// File size in bytes
+  final int size;
+
+  /// Whether this is a directory
+  final bool isDir;
+  ArchiveArchiveEntry({
+    required this.path,
+    required this.size,
+    required this.isDir,
+  });
+}
+
 /// Result of HTML extraction with optional images and warnings.
 class HtmlExtractionResult {
   final String markdown;
@@ -5288,6 +5326,65 @@ class RecognizedTable {
 
 /// Manages tessdata file downloading, caching, and manifest generation.
 class TessdataManager {}
+
+/// Configuration for Tesseract OCR (internal, efficient types).
+///
+/// This is the internal representation used by the OCR processor.
+/// Public API uses i32 for PyO3 compatibility, converted to u8 here for efficiency.
+class OcrTesseractConfig {
+  final String language;
+  final int psm;
+  final String outputFormat;
+  final int oem;
+  final double minConfidence;
+  final ImagePreprocessingConfig? preprocessing;
+  final bool enableTableDetection;
+  final double tableMinConfidence;
+  final int tableColumnThreshold;
+  final double tableRowThresholdRatio;
+  final bool useCache;
+  final bool classifyUsePreAdaptedTemplates;
+  final bool languageModelNgramOn;
+  final bool tesseditDontBlkrejGoodWds;
+  final bool tesseditDontRowrejGoodWds;
+  final bool tesseditEnableDictCorrection;
+  final String tesseditCharWhitelist;
+  final String tesseditCharBlacklist;
+  final bool tesseditUsePrimaryParamsModel;
+  final bool textordSpaceSizeIsVariable;
+  final bool thresholdingMethod;
+
+  /// Enable automatic page rotation based on orientation detection.
+  ///
+  /// When enabled, uses Tesseract's `DetectOrientationScript()` to detect
+  /// page orientation (0/90/180/270 degrees) before OCR. If the page is
+  /// rotated with high confidence, the image is corrected before recognition.
+  final bool autoRotate;
+  OcrTesseractConfig({
+    required this.language,
+    required this.psm,
+    required this.outputFormat,
+    required this.oem,
+    required this.minConfidence,
+    required this.preprocessing,
+    required this.enableTableDetection,
+    required this.tableMinConfidence,
+    required this.tableColumnThreshold,
+    required this.tableRowThresholdRatio,
+    required this.useCache,
+    required this.classifyUsePreAdaptedTemplates,
+    required this.languageModelNgramOn,
+    required this.tesseditDontBlkrejGoodWds,
+    required this.tesseditDontRowrejGoodWds,
+    required this.tesseditEnableDictCorrection,
+    required this.tesseditCharWhitelist,
+    required this.tesseditCharBlacklist,
+    required this.tesseditUsePrimaryParamsModel,
+    required this.textordSpaceSizeIsVariable,
+    required this.thresholdingMethod,
+    required this.autoRotate,
+  });
+}
 
 /// Configuration for PaddleOCR backend.
 ///

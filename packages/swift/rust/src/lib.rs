@@ -558,6 +558,20 @@ mod ffi {
     }
 
     extern "Rust" {
+        type ArchiveArchiveMetadata;
+        fn format(&self) -> String;
+        fn file_count(&self) -> usize;
+        fn total_size(&self) -> u64;
+    }
+
+    extern "Rust" {
+        type ArchiveArchiveEntry;
+        fn path(&self) -> String;
+        fn size(&self) -> u64;
+        fn is_dir(&self) -> bool;
+    }
+
+    extern "Rust" {
         type HtmlExtractionResult;
         fn markdown(&self) -> String;
         fn images(&self) -> Vec<ExtractedInlineImage>;
@@ -2109,6 +2123,57 @@ mod ffi {
 
     extern "Rust" {
         type TessdataManager;
+    }
+
+    extern "Rust" {
+        type OcrTesseractConfig;
+        #[swift_bridge(init)]
+        fn new(
+            language: String,
+            psm: u8,
+            output_format: String,
+            oem: u8,
+            min_confidence: f64,
+            preprocessing: Option<ImagePreprocessingConfig>,
+            enable_table_detection: bool,
+            table_min_confidence: f64,
+            table_column_threshold: u32,
+            table_row_threshold_ratio: f64,
+            use_cache: bool,
+            classify_use_pre_adapted_templates: bool,
+            language_model_ngram_on: bool,
+            tessedit_dont_blkrej_good_wds: bool,
+            tessedit_dont_rowrej_good_wds: bool,
+            tessedit_enable_dict_correction: bool,
+            tessedit_char_whitelist: String,
+            tessedit_char_blacklist: String,
+            tessedit_use_primary_params_model: bool,
+            textord_space_size_is_variable: bool,
+            thresholding_method: bool,
+            auto_rotate: bool,
+        ) -> OcrTesseractConfig;
+        fn language(&self) -> String;
+        fn psm(&self) -> u8;
+        fn output_format(&self) -> String;
+        fn oem(&self) -> u8;
+        fn min_confidence(&self) -> f64;
+        fn preprocessing(&self) -> Option<ImagePreprocessingConfig>;
+        fn enable_table_detection(&self) -> bool;
+        fn table_min_confidence(&self) -> f64;
+        fn table_column_threshold(&self) -> u32;
+        fn table_row_threshold_ratio(&self) -> f64;
+        fn use_cache(&self) -> bool;
+        fn classify_use_pre_adapted_templates(&self) -> bool;
+        fn language_model_ngram_on(&self) -> bool;
+        fn tessedit_dont_blkrej_good_wds(&self) -> bool;
+        fn tessedit_dont_rowrej_good_wds(&self) -> bool;
+        fn tessedit_enable_dict_correction(&self) -> bool;
+        fn tessedit_char_whitelist(&self) -> String;
+        fn tessedit_char_blacklist(&self) -> String;
+        fn tessedit_use_primary_params_model(&self) -> bool;
+        fn textord_space_size_is_variable(&self) -> bool;
+        fn thresholding_method(&self) -> bool;
+        fn auto_rotate(&self) -> bool;
     }
 
     extern "Rust" {
@@ -4531,6 +4596,35 @@ impl ImageOcrResult {
     }
     // alef: skipped getter `boundaries` — type cannot be bridged through swift-bridge
     // alef: skipped getter `page_contents` — type cannot be bridged through swift-bridge
+}
+
+pub struct ArchiveArchiveMetadata(pub kreuzberg::extraction::archive::ArchiveMetadata);
+
+impl ArchiveArchiveMetadata {
+    pub fn format(&self) -> String {
+        format!("{:?}", &self.0.format)
+    }
+    // alef: skipped getter `file_list` — type cannot be bridged through swift-bridge
+    pub fn file_count(&self) -> usize {
+        self.0.file_count.clone()
+    }
+    pub fn total_size(&self) -> u64 {
+        self.0.total_size.clone()
+    }
+}
+
+pub struct ArchiveArchiveEntry(pub kreuzberg::extraction::archive::ArchiveEntry);
+
+impl ArchiveArchiveEntry {
+    pub fn path(&self) -> String {
+        format!("{:?}", &self.0.path)
+    }
+    pub fn size(&self) -> u64 {
+        self.0.size.clone()
+    }
+    pub fn is_dir(&self) -> bool {
+        self.0.is_dir.clone()
+    }
 }
 
 pub struct HtmlExtractionResult(pub kreuzberg::extraction::html::HtmlExtractionResult);
@@ -9567,6 +9661,195 @@ impl RecognizedTable {
 }
 
 pub struct TessdataManager(pub kreuzberg::ocr::TessdataManager);
+
+pub struct OcrTesseractConfig(pub kreuzberg::ocr::TesseractConfig);
+
+impl OcrTesseractConfig {
+    pub fn new(
+        language: String,
+        psm: u8,
+        output_format: String,
+        oem: u8,
+        min_confidence: f64,
+        preprocessing: Option<ImagePreprocessingConfig>,
+        enable_table_detection: bool,
+        table_min_confidence: f64,
+        table_column_threshold: u32,
+        table_row_threshold_ratio: f64,
+        use_cache: bool,
+        classify_use_pre_adapted_templates: bool,
+        language_model_ngram_on: bool,
+        tessedit_dont_blkrej_good_wds: bool,
+        tessedit_dont_rowrej_good_wds: bool,
+        tessedit_enable_dict_correction: bool,
+        tessedit_char_whitelist: String,
+        tessedit_char_blacklist: String,
+        tessedit_use_primary_params_model: bool,
+        textord_space_size_is_variable: bool,
+        thresholding_method: bool,
+        auto_rotate: bool,
+    ) -> OcrTesseractConfig {
+        let mut __target: kreuzberg::ocr::TesseractConfig = ::std::default::Default::default();
+        if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&language) {
+            if let Ok(t) = ::serde_json::from_value(v) {
+                __target.language = t;
+            }
+        }
+        __target.psm = psm;
+        if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&output_format) {
+            if let Ok(t) = ::serde_json::from_value(v) {
+                __target.output_format = t;
+            }
+        }
+        __target.oem = oem;
+        __target.min_confidence = min_confidence;
+        if let Some(w) = preprocessing {
+            __target.preprocessing = Some(w.0);
+        }
+        __target.enable_table_detection = enable_table_detection;
+        __target.table_min_confidence = table_min_confidence;
+        __target.table_column_threshold = table_column_threshold;
+        __target.table_row_threshold_ratio = table_row_threshold_ratio;
+        __target.use_cache = use_cache;
+        __target.classify_use_pre_adapted_templates = classify_use_pre_adapted_templates;
+        __target.language_model_ngram_on = language_model_ngram_on;
+        __target.tessedit_dont_blkrej_good_wds = tessedit_dont_blkrej_good_wds;
+        __target.tessedit_dont_rowrej_good_wds = tessedit_dont_rowrej_good_wds;
+        __target.tessedit_enable_dict_correction = tessedit_enable_dict_correction;
+        if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&tessedit_char_whitelist) {
+            if let Ok(t) = ::serde_json::from_value(v) {
+                __target.tessedit_char_whitelist = t;
+            }
+        }
+        if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&tessedit_char_blacklist) {
+            if let Ok(t) = ::serde_json::from_value(v) {
+                __target.tessedit_char_blacklist = t;
+            }
+        }
+        __target.tessedit_use_primary_params_model = tessedit_use_primary_params_model;
+        __target.textord_space_size_is_variable = textord_space_size_is_variable;
+        __target.thresholding_method = thresholding_method;
+        __target.auto_rotate = auto_rotate;
+        OcrTesseractConfig(__target)
+    }
+    pub fn language(&self) -> String {
+        serde_json::to_string(&self.0.language).unwrap_or_default()
+    }
+    pub fn psm(&self) -> u8 {
+        ::serde_json::to_value(&self.0.psm)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn output_format(&self) -> String {
+        serde_json::to_string(&self.0.output_format).unwrap_or_default()
+    }
+    pub fn oem(&self) -> u8 {
+        ::serde_json::to_value(&self.0.oem)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn min_confidence(&self) -> f64 {
+        ::serde_json::to_value(&self.0.min_confidence)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn preprocessing(&self) -> Option<ImagePreprocessingConfig> {
+        self.0.preprocessing.clone().map(ImagePreprocessingConfig)
+    }
+    pub fn enable_table_detection(&self) -> bool {
+        ::serde_json::to_value(&self.0.enable_table_detection)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn table_min_confidence(&self) -> f64 {
+        ::serde_json::to_value(&self.0.table_min_confidence)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn table_column_threshold(&self) -> u32 {
+        ::serde_json::to_value(&self.0.table_column_threshold)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn table_row_threshold_ratio(&self) -> f64 {
+        ::serde_json::to_value(&self.0.table_row_threshold_ratio)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn use_cache(&self) -> bool {
+        ::serde_json::to_value(&self.0.use_cache)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn classify_use_pre_adapted_templates(&self) -> bool {
+        ::serde_json::to_value(&self.0.classify_use_pre_adapted_templates)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn language_model_ngram_on(&self) -> bool {
+        ::serde_json::to_value(&self.0.language_model_ngram_on)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn tessedit_dont_blkrej_good_wds(&self) -> bool {
+        ::serde_json::to_value(&self.0.tessedit_dont_blkrej_good_wds)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn tessedit_dont_rowrej_good_wds(&self) -> bool {
+        ::serde_json::to_value(&self.0.tessedit_dont_rowrej_good_wds)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn tessedit_enable_dict_correction(&self) -> bool {
+        ::serde_json::to_value(&self.0.tessedit_enable_dict_correction)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn tessedit_char_whitelist(&self) -> String {
+        serde_json::to_string(&self.0.tessedit_char_whitelist).unwrap_or_default()
+    }
+    pub fn tessedit_char_blacklist(&self) -> String {
+        serde_json::to_string(&self.0.tessedit_char_blacklist).unwrap_or_default()
+    }
+    pub fn tessedit_use_primary_params_model(&self) -> bool {
+        ::serde_json::to_value(&self.0.tessedit_use_primary_params_model)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn textord_space_size_is_variable(&self) -> bool {
+        ::serde_json::to_value(&self.0.textord_space_size_is_variable)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn thresholding_method(&self) -> bool {
+        ::serde_json::to_value(&self.0.thresholding_method)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn auto_rotate(&self) -> bool {
+        ::serde_json::to_value(&self.0.auto_rotate)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+}
 
 pub struct PaddleOcrConfig(pub kreuzberg::PaddleOcrConfig);
 

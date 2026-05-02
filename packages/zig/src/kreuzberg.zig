@@ -479,6 +479,21 @@ pub const ImageOcrResult = struct {
     page_contents: ?[]const PageContent,
 };
 
+/// Archive metadata extracted from an archive file.
+pub const ArchiveArchiveMetadata = struct {
+    format: [:0]const u8,
+    file_list: []const ArchiveEntry,
+    file_count: u64,
+    total_size: u64,
+};
+
+/// Information about a single file in an archive.
+pub const ArchiveArchiveEntry = struct {
+    path: [:0]const u8,
+    size: u64,
+    is_dir: bool,
+};
+
 /// Result of HTML extraction with optional images and warnings.
 pub const HtmlExtractionResult = struct {
     markdown: [:0]const u8,
@@ -2003,6 +2018,35 @@ pub const RecognizedTable = struct {
 
 /// Manages tessdata file downloading, caching, and manifest generation.
 pub const TessdataManager = struct {};
+
+/// Configuration for Tesseract OCR (internal, efficient types).
+///
+/// This is the internal representation used by the OCR processor.
+/// Public API uses i32 for PyO3 compatibility, converted to u8 here for efficiency.
+pub const OcrTesseractConfig = struct {
+    language: [:0]const u8,
+    psm: u8,
+    output_format: [:0]const u8,
+    oem: u8,
+    min_confidence: f64,
+    preprocessing: ?ImagePreprocessingConfig,
+    enable_table_detection: bool,
+    table_min_confidence: f64,
+    table_column_threshold: u32,
+    table_row_threshold_ratio: f64,
+    use_cache: bool,
+    classify_use_pre_adapted_templates: bool,
+    language_model_ngram_on: bool,
+    tessedit_dont_blkrej_good_wds: bool,
+    tessedit_dont_rowrej_good_wds: bool,
+    tessedit_enable_dict_correction: bool,
+    tessedit_char_whitelist: [:0]const u8,
+    tessedit_char_blacklist: [:0]const u8,
+    tessedit_use_primary_params_model: bool,
+    textord_space_size_is_variable: bool,
+    thresholding_method: bool,
+    auto_rotate: bool,
+};
 
 /// Configuration for PaddleOCR backend.
 ///

@@ -462,6 +462,21 @@ pub type ImageOcrResult {
   )
 }
 
+/// Archive metadata extracted from an archive file.
+pub type ArchiveArchiveMetadata {
+  ArchiveArchiveMetadata(
+    format: String,
+    file_list: List(ArchiveEntry),
+    file_count: Int,
+    total_size: Int,
+  )
+}
+
+/// Information about a single file in an archive.
+pub type ArchiveArchiveEntry {
+  ArchiveArchiveEntry(path: String, size: Int, is_dir: Bool)
+}
+
 /// Result of HTML extraction with optional images and warnings.
 pub type HtmlExtractionResult {
   HtmlExtractionResult(
@@ -2127,6 +2142,37 @@ pub type RecognizedTable {
 /// Manages tessdata file downloading, caching, and manifest generation.
 pub type TessdataManager {
   TessdataManager
+}
+
+/// Configuration for Tesseract OCR (internal, efficient types).
+///
+/// This is the internal representation used by the OCR processor.
+/// Public API uses i32 for PyO3 compatibility, converted to u8 here for efficiency.
+pub type OcrTesseractConfig {
+  OcrTesseractConfig(
+    language: String,
+    psm: Int,
+    output_format: String,
+    oem: Int,
+    min_confidence: Float,
+    preprocessing: Option(ImagePreprocessingConfig),
+    enable_table_detection: Bool,
+    table_min_confidence: Float,
+    table_column_threshold: Int,
+    table_row_threshold_ratio: Float,
+    use_cache: Bool,
+    classify_use_pre_adapted_templates: Bool,
+    language_model_ngram_on: Bool,
+    tessedit_dont_blkrej_good_wds: Bool,
+    tessedit_dont_rowrej_good_wds: Bool,
+    tessedit_enable_dict_correction: Bool,
+    tessedit_char_whitelist: String,
+    tessedit_char_blacklist: String,
+    tessedit_use_primary_params_model: Bool,
+    textord_space_size_is_variable: Bool,
+    thresholding_method: Bool,
+    auto_rotate: Bool,
+  )
 }
 
 /// Configuration for PaddleOCR backend.

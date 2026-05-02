@@ -326,6 +326,21 @@ pub struct ImageOcrResult {
     pub page_contents: Option<Vec<PageContent>>,
 }
 
+#[frb(mirror(ArchiveArchiveMetadata))]
+pub struct ArchiveArchiveMetadata {
+    pub format: String,
+    pub file_list: Vec<ArchiveEntry>,
+    pub file_count: i64,
+    pub total_size: i64,
+}
+
+#[frb(mirror(ArchiveArchiveEntry))]
+pub struct ArchiveArchiveEntry {
+    pub path: String,
+    pub size: i64,
+    pub is_dir: bool,
+}
+
 #[frb(mirror(HtmlExtractionResult))]
 pub struct HtmlExtractionResult {
     pub markdown: String,
@@ -1499,6 +1514,32 @@ pub struct RecognizedTable {
 
 #[frb(mirror(TessdataManager))]
 pub struct TessdataManager {}
+
+#[frb(mirror(OcrTesseractConfig))]
+pub struct OcrTesseractConfig {
+    pub language: String,
+    pub psm: i64,
+    pub output_format: String,
+    pub oem: i64,
+    pub min_confidence: f64,
+    pub preprocessing: Option<ImagePreprocessingConfig>,
+    pub enable_table_detection: bool,
+    pub table_min_confidence: f64,
+    pub table_column_threshold: i64,
+    pub table_row_threshold_ratio: f64,
+    pub use_cache: bool,
+    pub classify_use_pre_adapted_templates: bool,
+    pub language_model_ngram_on: bool,
+    pub tessedit_dont_blkrej_good_wds: bool,
+    pub tessedit_dont_rowrej_good_wds: bool,
+    pub tessedit_enable_dict_correction: bool,
+    pub tessedit_char_whitelist: String,
+    pub tessedit_char_blacklist: String,
+    pub tessedit_use_primary_params_model: bool,
+    pub textord_space_size_is_variable: bool,
+    pub thresholding_method: bool,
+    pub auto_rotate: bool,
+}
 
 #[frb(mirror(PaddleOcrConfig))]
 pub struct PaddleOcrConfig {
