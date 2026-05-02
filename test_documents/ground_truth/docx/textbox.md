@@ -9,8 +9,6 @@ Yes
 - A report must be submitted within 24 hours via the Ministry of Education's Campus Safety and Disaster Prevention Information Network.
 - A report must also be submitted within 48 hours through Chiayi County's School Suspected Infectious Disease Reporting System.
 
-
-
 **Health Bureau:**
 
 Upon receiving a report from the kindergarten, conduct a preliminary assessment of the case, and depending on the situation and type of illness, carry out an epidemiological investigation and report to the Centers for Disease Control.

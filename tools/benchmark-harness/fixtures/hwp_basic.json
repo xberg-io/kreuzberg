@@ -1,14 +1,14 @@
 {
-	"document": "../../../test_documents/hwp/converted_output.hwp",
-	"file_type": "hwp",
-	"file_size": 95744,
-	"expected_frameworks": ["kreuzberg"],
-	"metadata": {
-		"description": "Basic Hangul Word Processor document",
-		"category": "text"
-	},
-	"ground_truth": {
-		"text_file": "../../../test_documents/ground_truth/hwp/hwp_basic.txt",
-		"source": "manual"
-	}
+  "document": "../../../test_documents/hwp/converted_output.hwp",
+  "file_type": "hwp",
+  "file_size": 95744,
+  "expected_frameworks": ["kreuzberg"],
+  "metadata": {
+    "description": "Basic Hangul Word Processor document",
+    "category": "text"
+  },
+  "ground_truth": {
+    "text_file": "../../../test_documents/ground_truth/hwp/hwp_basic.txt",
+    "source": "manual"
+  }
 }

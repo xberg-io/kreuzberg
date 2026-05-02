@@ -175,16 +175,16 @@ Use `TreeSitterConfig` to control which analysis features are enabled. Set `enab
 
 ### Configuration Fields
 
-| Field            | Type      | Default | Description                                                      |
-| ---------------- | --------- | ------- | ---------------------------------------------------------------- |
-| `structure`      | `bool`    | `true`  | Extract structural items (functions, classes, structs, etc.)     |
-| `imports`        | `bool`    | `true`  | Extract import/include/require statements                        |
-| `exports`        | `bool`    | `true`  | Extract export statements                                        |
-| `comments`       | `bool`    | `false` | Extract comments                                                 |
-| `docstrings`     | `bool`    | `false` | Extract docstrings with parsed sections                          |
-| `symbols`        | `bool`    | `false` | Extract symbol definitions (variables, constants, type aliases)  |
-| `diagnostics`    | `bool`    | `false` | Include parse diagnostics (errors and warnings)                  |
-| `chunk_max_size` | `usize?`  | `None`  | Maximum chunk size in bytes. `None` uses the default chunk size  |
+| Field            | Type              | Default  | Description                                                              |
+| ---------------- | ----------------- | -------- | ------------------------------------------------------------------------ |
+| `structure`      | `bool`            | `true`   | Extract structural items (functions, classes, structs, etc.)             |
+| `imports`        | `bool`            | `true`   | Extract import/include/require statements                                |
+| `exports`        | `bool`            | `true`   | Extract export statements                                                |
+| `comments`       | `bool`            | `false`  | Extract comments                                                         |
+| `docstrings`     | `bool`            | `false`  | Extract docstrings with parsed sections                                  |
+| `symbols`        | `bool`            | `false`  | Extract symbol definitions (variables, constants, type aliases)          |
+| `diagnostics`    | `bool`            | `false`  | Include parse diagnostics (errors and warnings)                          |
+| `chunk_max_size` | `usize?`          | `None`   | Maximum chunk size in bytes. `None` uses the default chunk size          |
 | `content_mode`   | `CodeContentMode` | `chunks` | Controls how code content is rendered in the `content` field (see below) |
 
 ### CodeContentMode
@@ -209,16 +209,16 @@ The detected programming language name (for example, `"python"`, `"rust"`, `"typ
 
 File-level statistics:
 
-| Field           | Type    | Description                         |
-| --------------- | ------- | ----------------------------------- |
-| `total_lines`   | `usize` | Total number of lines               |
-| `code_lines`    | `usize` | Lines containing code               |
-| `comment_lines` | `usize` | Lines containing comments           |
-| `blank_lines`   | `usize` | Empty or whitespace-only lines      |
-| `total_bytes`   | `usize` | Total file size in bytes            |
-| `node_count`    | `usize` | Number of tree-sitter AST nodes     |
-| `error_count`   | `usize` | Number of parse error nodes         |
-| `max_depth`     | `usize` | Maximum AST nesting depth           |
+| Field           | Type    | Description                     |
+| --------------- | ------- | ------------------------------- |
+| `total_lines`   | `usize` | Total number of lines           |
+| `code_lines`    | `usize` | Lines containing code           |
+| `comment_lines` | `usize` | Lines containing comments       |
+| `blank_lines`   | `usize` | Empty or whitespace-only lines  |
+| `total_bytes`   | `usize` | Total file size in bytes        |
+| `node_count`    | `usize` | Number of tree-sitter AST nodes |
+| `error_count`   | `usize` | Number of parse error nodes     |
+| `max_depth`     | `usize` | Maximum AST nesting depth       |
 
 ### `structure`
 
@@ -311,21 +311,21 @@ Tree-sitter-language-pack supports 248 programming languages. For the full list,
 
 Common languages with full structural analysis:
 
-| Language | Structure | Imports | Exports | Docstrings |
-| -------- | --------- | ------- | ------- | ---------- |
-| Python   | Yes       | Yes     | Yes     | Yes        |
-| Rust     | Yes       | Yes     | Yes     | Yes        |
-| TypeScript | Yes     | Yes     | Yes     | Yes        |
-| JavaScript | Yes     | Yes     | Yes     | Yes        |
-| Go       | Yes       | Yes     | Yes     | Yes        |
-| Java     | Yes       | Yes     | Yes     | Yes        |
-| C/C++    | Yes       | Yes     | Yes     | Yes        |
-| Ruby     | Yes       | Yes     | Yes     | Yes        |
-| PHP      | Yes       | Yes     | Yes     | Yes        |
-| C#       | Yes       | Yes     | Yes     | Yes        |
-| Swift    | Yes       | Yes     | Yes     | Yes        |
-| Kotlin   | Yes       | Yes     | Yes     | Yes        |
-| Elixir   | Yes       | Yes     | Yes     | Yes        |
+| Language   | Structure | Imports | Exports | Docstrings |
+| ---------- | --------- | ------- | ------- | ---------- |
+| Python     | Yes       | Yes     | Yes     | Yes        |
+| Rust       | Yes       | Yes     | Yes     | Yes        |
+| TypeScript | Yes       | Yes     | Yes     | Yes        |
+| JavaScript | Yes       | Yes     | Yes     | Yes        |
+| Go         | Yes       | Yes     | Yes     | Yes        |
+| Java       | Yes       | Yes     | Yes     | Yes        |
+| C/C++      | Yes       | Yes     | Yes     | Yes        |
+| Ruby       | Yes       | Yes     | Yes     | Yes        |
+| PHP        | Yes       | Yes     | Yes     | Yes        |
+| C#         | Yes       | Yes     | Yes     | Yes        |
+| Swift      | Yes       | Yes     | Yes     | Yes        |
+| Kotlin     | Yes       | Yes     | Yes     | Yes        |
+| Elixir     | Yes       | Yes     | Yes     | Yes        |
 
 ## Related Documentation
 

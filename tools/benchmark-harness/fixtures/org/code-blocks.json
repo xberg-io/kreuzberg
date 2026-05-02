@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/org/code-blocks.org",
   "file_type": "org",
   "file_size": 309,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "org test: code-blocks",
     "source": "pandoc-generated",

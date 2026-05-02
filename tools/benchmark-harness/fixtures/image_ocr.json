@@ -1,14 +1,22 @@
 {
-	"document": "../../../test_documents/images/ocr_image.jpg",
-	"file_type": "jpg",
-	"file_size": 73717,
-	"expected_frameworks": ["kreuzberg", "docling", "markitdown", "mineru", "pymupdf4llm", "tika", "unstructured"],
-	"metadata": {
-		"description": "Image requiring OCR - Hello World test image",
-		"category": "ocr"
-	},
-	"ground_truth": {
-		"text_file": "../../../test_documents/ground_truth/jpg/image_ocr.md",
-		"source": "mistral-pixtral"
-	}
+  "document": "../../../test_documents/images/ocr_image.jpg",
+  "file_type": "jpg",
+  "file_size": 73717,
+  "expected_frameworks": [
+    "kreuzberg",
+    "docling",
+    "markitdown",
+    "mineru",
+    "pymupdf4llm",
+    "tika",
+    "unstructured"
+  ],
+  "metadata": {
+    "description": "Image requiring OCR - Hello World test image",
+    "category": "ocr"
+  },
+  "ground_truth": {
+    "text_file": "../../../test_documents/ground_truth/jpg/image_ocr.md",
+    "source": "mistral-pixtral"
+  }
 }

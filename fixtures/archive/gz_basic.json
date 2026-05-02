@@ -1,21 +1,21 @@
 {
-	"id": "archive_gz_basic",
-	"category": "archive",
-	"description": "Gzip compressed file extraction.",
-	"input": {
-		"path": "archives/book_war_and_peace_1p.txt.gz",
-		"media_type": "application/gzip"
-	},
-	"assertions": [
-		{
-			"type": "contains_any",
-			"field": "mime_type",
-			"values": ["application/gzip", "application/x-gzip"]
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 10
-		}
-	]
+  "id": "archive_gz_basic",
+  "category": "archive",
+  "description": "Gzip compressed file extraction.",
+  "input": {
+    "path": "archives/book_war_and_peace_1p.txt.gz",
+    "media_type": "application/gzip"
+  },
+  "assertions": [
+    {
+      "type": "contains_any",
+      "field": "mime_type",
+      "values": ["application/gzip", "application/x-gzip"]
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 10
+    }
+  ]
 }

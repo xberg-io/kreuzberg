@@ -1,27 +1,21 @@
 {
-	"id": "mime_get_extensions",
-	"category": "mime_utilities",
-	"description": "Get file extensions for a MIME type",
-	"tags": [
-		"mime",
-		"extensions",
-		"lookup"
-	],
-	"call": "get_extensions_for_mime",
-	"input": {
-		"args": [
-			"application/pdf"
-		]
-	},
-	"assertions": [
-		{
-			"type": "contains",
-			"field": "result",
-			"value": "pdf"
-		}
-	],
-	"skip": {
-		"languages": [],
-		"reason": "Tests plugin_api call surface that isn't re-exported at the kreuzberg crate root \u2014 skipped everywhere until Rust public API or codegen module path is updated."
-	}
+  "id": "mime_get_extensions",
+  "category": "mime_utilities",
+  "description": "Get file extensions for a MIME type",
+  "tags": ["mime", "extensions", "lookup"],
+  "call": "get_extensions_for_mime",
+  "input": {
+    "args": ["application/pdf"]
+  },
+  "assertions": [
+    {
+      "type": "contains",
+      "field": "result",
+      "value": "pdf"
+    }
+  ],
+  "skip": {
+    "languages": [],
+    "reason": "Tests plugin_api call surface that isn't re-exported at the kreuzberg crate root \u2014 skipped everywhere until Rust public API or codegen module path is updated."
+  }
 }

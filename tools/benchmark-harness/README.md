@@ -31,26 +31,26 @@ CLI (clap)
 
 ### Module Structure
 
-| Module | Purpose |
-|--------|---------|
-| `main.rs` | CLI entry point (clap subcommands) |
-| `adapter.rs` | `FrameworkAdapter` trait definition |
-| `adapters/` | Adapter implementations: subprocess (persistent/batch), native (in-process), kreuzberg factory functions for all languages |
-| `runner.rs` | Benchmark orchestration, iteration control, resource monitoring |
-| `quality.rs` | TF1: token-level bag-of-words F1 scoring |
-| `markdown_quality.rs` | SF1: structural block-level F1 scoring |
-| `comparison.rs` | Multi-pipeline extraction with quality guardrails |
-| `pipeline_benchmark.rs` | 6-path extraction matrix benchmark |
-| `corpus.rs`, `fixture.rs` | Fixture loading, filtering, validation |
-| `aggregate.rs`, `consolidate.rs` | Multi-job result merging and percentile aggregation |
-| `output.rs`, `stats.rs` | Result serialization and statistical analysis |
-| `validate_gt.rs` | Ground truth integrity checks and HTML-to-GFM cleanup |
-| `monitoring.rs` | CPU and memory sampling during benchmarks |
-| `profiling.rs`, `profile_report.rs` | Flamegraph generation (requires `profiling` feature) |
-| `survey.rs` | Corpus-wide extraction statistics |
-| `model_benchmark.rs` | Layout model A/B comparison |
-| `embed_benchmark.rs` | Embedding throughput benchmarks |
-| `sizes.rs` | Framework installation footprint measurement |
+| Module                              | Purpose                                                                                                                    |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `main.rs`                           | CLI entry point (clap subcommands)                                                                                         |
+| `adapter.rs`                        | `FrameworkAdapter` trait definition                                                                                        |
+| `adapters/`                         | Adapter implementations: subprocess (persistent/batch), native (in-process), kreuzberg factory functions for all languages |
+| `runner.rs`                         | Benchmark orchestration, iteration control, resource monitoring                                                            |
+| `quality.rs`                        | TF1: token-level bag-of-words F1 scoring                                                                                   |
+| `markdown_quality.rs`               | SF1: structural block-level F1 scoring                                                                                     |
+| `comparison.rs`                     | Multi-pipeline extraction with quality guardrails                                                                          |
+| `pipeline_benchmark.rs`             | 6-path extraction matrix benchmark                                                                                         |
+| `corpus.rs`, `fixture.rs`           | Fixture loading, filtering, validation                                                                                     |
+| `aggregate.rs`, `consolidate.rs`    | Multi-job result merging and percentile aggregation                                                                        |
+| `output.rs`, `stats.rs`             | Result serialization and statistical analysis                                                                              |
+| `validate_gt.rs`                    | Ground truth integrity checks and HTML-to-GFM cleanup                                                                      |
+| `monitoring.rs`                     | CPU and memory sampling during benchmarks                                                                                  |
+| `profiling.rs`, `profile_report.rs` | Flamegraph generation (requires `profiling` feature)                                                                       |
+| `survey.rs`                         | Corpus-wide extraction statistics                                                                                          |
+| `model_benchmark.rs`                | Layout model A/B comparison                                                                                                |
+| `embed_benchmark.rs`                | Embedding throughput benchmarks                                                                                            |
+| `sizes.rs`                          | Framework installation footprint measurement                                                                               |
 
 ## Quality Scoring
 
@@ -102,24 +102,24 @@ Fixtures are JSON files organized by format directory under `fixtures/`:
 ### Ground Truth Coverage
 
 | Format | Fixtures | With Markdown GT |
-|--------|----------|------------------|
-| PDF | 159 | 158 |
-| HTML | 36 | 36 |
-| DOCX | 26 | 26 |
-| ODT | 19 | 19 |
-| RTF | 17 | 17 |
-| XLSX | 12 | 11 |
-| CSV | 11 | 11 |
-| EPUB | 8 | 8 |
-| PPTX | 8 | 8 |
-| Org | 6 | 6 |
-| DOC | 5 | 5 |
-| OPML | 4 | 4 |
-| RST | 3 | 3 |
-| XLS | 3 | 3 |
-| IPynb | 1 | 1 |
-| JATS | 1 | 1 |
-| LaTeX | 1 | 1 |
+| ------ | -------- | ---------------- |
+| PDF    | 159      | 158              |
+| HTML   | 36       | 36               |
+| DOCX   | 26       | 26               |
+| ODT    | 19       | 19               |
+| RTF    | 17       | 17               |
+| XLSX   | 12       | 11               |
+| CSV    | 11       | 11               |
+| EPUB   | 8        | 8                |
+| PPTX   | 8        | 8                |
+| Org    | 6        | 6                |
+| DOC    | 5        | 5                |
+| OPML   | 4        | 4                |
+| RST    | 3        | 3                |
+| XLS    | 3        | 3                |
+| IPynb  | 1        | 1                |
+| JATS   | 1        | 1                |
+| LaTeX  | 1        | 1                |
 
 **Total:** 318 fixtures with markdown ground truth across 17 formats.
 
@@ -141,18 +141,18 @@ Docling, MarkItDown, Pandoc, Unstructured, Tika, PyMuPDF4LLM, PDFPlumber, MinerU
 
 The `compare` and `pipeline-benchmark` commands support these extraction paths:
 
-| Pipeline | Description |
-|----------|-------------|
-| `baseline` | Native pdfium text extraction (no OCR, no layout) |
-| `layout` | Native pdfium with layout detection |
-| `tesseract` | Tesseract OCR with force_ocr |
-| `tesseract+layout` | Tesseract OCR with layout detection |
-| `paddle` | PaddleOCR mobile tier with force_ocr |
-| `paddle+layout` | PaddleOCR mobile tier with layout detection |
-| `paddle-server` | PaddleOCR server tier |
-| `docling` | Vendored Docling reference extraction |
-| `paddleocr-python` | Vendored PaddleOCR Python extraction |
-| `rapidocr` | Vendored RapidOCR extraction |
+| Pipeline           | Description                                       |
+| ------------------ | ------------------------------------------------- |
+| `baseline`         | Native pdfium text extraction (no OCR, no layout) |
+| `layout`           | Native pdfium with layout detection               |
+| `tesseract`        | Tesseract OCR with force_ocr                      |
+| `tesseract+layout` | Tesseract OCR with layout detection               |
+| `paddle`           | PaddleOCR mobile tier with force_ocr              |
+| `paddle+layout`    | PaddleOCR mobile tier with layout detection       |
+| `paddle-server`    | PaddleOCR server tier                             |
+| `docling`          | Vendored Docling reference extraction             |
+| `paddleocr-python` | Vendored PaddleOCR Python extraction              |
+| `rapidocr`         | Vendored RapidOCR extraction                      |
 
 ## CLI Reference
 
@@ -169,19 +169,19 @@ benchmark-harness run \
   -i 3 -w 1
 ```
 
-| Flag | Description | Default |
-|------|-------------|---------|
-| `-f, --fixtures` | Fixture directory or file | required |
-| `-F, --frameworks` | Comma-separated framework names | all available |
-| `-o, --output` | Output directory | `results` |
-| `-m, --mode` | `single-file` or `batch` | `batch` |
-| `-i, --iterations` | Benchmark iterations | `3` |
-| `-w, --warmup` | Warmup iterations (discarded) | `1` |
-| `-c, --max-concurrent` | Max concurrent extractions | CPU count |
-| `-t, --timeout` | Timeout in seconds | `1800` |
-| `--ocr` | Enable OCR | `false` |
-| `--measure-quality` | Enable quality assessment | `false` |
-| `--shard` | Run fixture subset (`INDEX/TOTAL`, e.g. `1/3`) | none |
+| Flag                   | Description                                    | Default       |
+| ---------------------- | ---------------------------------------------- | ------------- |
+| `-f, --fixtures`       | Fixture directory or file                      | required      |
+| `-F, --frameworks`     | Comma-separated framework names                | all available |
+| `-o, --output`         | Output directory                               | `results`     |
+| `-m, --mode`           | `single-file` or `batch`                       | `batch`       |
+| `-i, --iterations`     | Benchmark iterations                           | `3`           |
+| `-w, --warmup`         | Warmup iterations (discarded)                  | `1`           |
+| `-c, --max-concurrent` | Max concurrent extractions                     | CPU count     |
+| `-t, --timeout`        | Timeout in seconds                             | `1800`        |
+| `--ocr`                | Enable OCR                                     | `false`       |
+| `--measure-quality`    | Enable quality assessment                      | `false`       |
+| `--shard`              | Run fixture subset (`INDEX/TOTAL`, e.g. `1/3`) | none          |
 
 ### `consolidate` -- Merge multi-job results
 
@@ -205,12 +205,12 @@ benchmark-harness compare \
   --guardrails
 ```
 
-| Flag | Description |
-|------|-------------|
-| `--pipelines` | Comma-separated pipeline names |
+| Flag             | Description                                           |
+| ---------------- | ----------------------------------------------------- |
+| `--pipelines`    | Comma-separated pipeline names                        |
 | `--dump-outputs` | Write extraction outputs to `/tmp/kreuzberg_compare/` |
-| `--guardrails` | Fail on quality regressions (non-zero exit) |
-| `--filter` | Only run documents matching this substring |
+| `--guardrails`   | Fail on quality regressions (non-zero exit)           |
+| `--filter`       | Only run documents matching this substring            |
 
 ### `pipeline-benchmark` -- 6-path extraction matrix
 
@@ -225,17 +225,17 @@ benchmark-harness pipeline-benchmark \
   --triage-blocks
 ```
 
-| Flag | Description | Default |
-|------|-------------|---------|
-| `--paths` | Comma-separated pipeline names | all 6 default paths |
-| `--doc` | Filter by document name substrings | none |
-| `--group` | Named benchmark group (`tables`, `structure`, `multicolumn`, `text-quality`, `ocr-fallback`) | none |
-| `--sort-by` | Sort metric: `sf1`, `tf1`, `time` | `sf1` |
-| `--bottom-n` | Show only the N worst-performing documents | none |
-| `--triage-blocks` | Print per-block-type F1 breakdown | `false` |
-| `--dump-outputs` | Write outputs to `/tmp/kreuzberg_pipeline/` | `false` |
-| `--json-output` | Write JSON results to file | none |
-| `--profile-dir` | Generate per-pipeline flamegraph SVGs | none |
+| Flag              | Description                                                                                  | Default             |
+| ----------------- | -------------------------------------------------------------------------------------------- | ------------------- |
+| `--paths`         | Comma-separated pipeline names                                                               | all 6 default paths |
+| `--doc`           | Filter by document name substrings                                                           | none                |
+| `--group`         | Named benchmark group (`tables`, `structure`, `multicolumn`, `text-quality`, `ocr-fallback`) | none                |
+| `--sort-by`       | Sort metric: `sf1`, `tf1`, `time`                                                            | `sf1`               |
+| `--bottom-n`      | Show only the N worst-performing documents                                                   | none                |
+| `--triage-blocks` | Print per-block-type F1 breakdown                                                            | `false`             |
+| `--dump-outputs`  | Write outputs to `/tmp/kreuzberg_pipeline/`                                                  | `false`             |
+| `--json-output`   | Write JSON results to file                                                                   | none                |
+| `--profile-dir`   | Generate per-pipeline flamegraph SVGs                                                        | none                |
 
 ### `validate-gt` -- Ground truth validation
 
@@ -328,11 +328,11 @@ aggregate-and-release                         (consolidate all results -> GitHub
 
 Pre-generated extraction outputs from reference tools are stored in `vendored/` for offline comparison:
 
-| Directory | Source |
-|-----------|--------|
-| `vendored/docling/` | Docling extraction outputs |
+| Directory                    | Source                                             |
+| ---------------------------- | -------------------------------------------------- |
+| `vendored/docling/`          | Docling extraction outputs                         |
 | `vendored/paddleocr-python/` | PaddleOCR Python outputs with timing (`.ms` files) |
-| `vendored/rapidocr/` | RapidOCR extraction outputs |
+| `vendored/rapidocr/`         | RapidOCR extraction outputs                        |
 
 Regenerate with:
 
@@ -374,10 +374,10 @@ cargo run -p benchmark-harness -- survey \
 
 ### Optional Features
 
-| Feature | Description |
-|---------|-------------|
-| `profiling` | Enables flamegraph generation via `pprof` |
-| `memory-profiling` | Enables jemalloc-based memory profiling |
+| Feature            | Description                               |
+| ------------------ | ----------------------------------------- |
+| `profiling`        | Enables flamegraph generation via `pprof` |
+| `memory-profiling` | Enables jemalloc-based memory profiling   |
 
 Build with features:
 

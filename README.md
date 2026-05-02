@@ -131,21 +131,21 @@ Each language binding provides comprehensive documentation with examples and bes
 Complete architecture coverage across all language bindings:
 
 | Language | Linux x86_64 | Linux aarch64 | macOS ARM64 | Windows x64 |
-|----------|:------------:|:-------------:|:-----------:|:-----------:|
-| Python | ✅ | ✅ | ✅ | ✅ |
-| Node.js | ✅ | ✅ | ✅ | ✅ |
-| WASM | ✅ | ✅ | ✅ | ✅ |
-| Ruby | ✅ | ✅ | ✅ | - |
-| R | ✅ | ✅ | ✅ | ✅ |
-| Elixir | ✅ | ✅ | ✅ | ✅ |
-| Go | ✅ | ✅ | ✅ | ✅ |
-| Java | ✅ | ✅ | ✅ | ✅ |
-| C# | ✅ | ✅ | ✅ | ✅ |
-| PHP | ✅ | ✅ | ✅ | ✅ |
-| Rust | ✅ | ✅ | ✅ | ✅ |
-| C (FFI) | ✅ | ✅ | ✅ | ✅ |
-| CLI | ✅ | ✅ | ✅ | ✅ |
-| Docker | ✅ | ✅ | ✅ | - |
+| -------- | :----------: | :-----------: | :---------: | :---------: |
+| Python   |      ✅      |      ✅       |     ✅      |     ✅      |
+| Node.js  |      ✅      |      ✅       |     ✅      |     ✅      |
+| WASM     |      ✅      |      ✅       |     ✅      |     ✅      |
+| Ruby     |      ✅      |      ✅       |     ✅      |      -      |
+| R        |      ✅      |      ✅       |     ✅      |     ✅      |
+| Elixir   |      ✅      |      ✅       |     ✅      |     ✅      |
+| Go       |      ✅      |      ✅       |     ✅      |     ✅      |
+| Java     |      ✅      |      ✅       |     ✅      |     ✅      |
+| C#       |      ✅      |      ✅       |     ✅      |     ✅      |
+| PHP      |      ✅      |      ✅       |     ✅      |     ✅      |
+| Rust     |      ✅      |      ✅       |     ✅      |     ✅      |
+| C (FFI)  |      ✅      |      ✅       |     ✅      |     ✅      |
+| CLI      |      ✅      |      ✅       |     ✅      |     ✅      |
+| Docker   |      ✅      |      ✅       |     ✅      |      -      |
 
 **Note**: ✅ = Precompiled binaries available with instant installation. WASM runs in any environment with WebAssembly support (browsers, Deno, Bun, Cloudflare Workers). All platforms are tested in CI. MacOS support is Apple Silicon only.
 
@@ -168,60 +168,60 @@ To use embeddings functionality:
 
 ### Office Documents
 
-| Category | Formats | Capabilities |
-|----------|---------|--------------|
-| **Word Processing** | `.docx`, `.docm`, `.dotx`, `.dotm`, `.dot`, `.odt`, `.pages` | Full text, tables, lists, images, metadata, styles |
-| **Spreadsheets** | `.xlsx`, `.xlsm`, `.xlsb`, `.xls`, `.xla`, `.xlam`, `.xltm`, `.xltx`, `.xlt`, `.ods`, `.numbers` | Sheet data, formulas, cell metadata, charts |
-| **Presentations** | `.pptx`, `.pptm`, `.ppsx`, `.potx`, `.potm`, `.pot`, `.key` | Slides, speaker notes, images, metadata |
-| **PDF** | `.pdf` | Text, tables, images, metadata, OCR support |
-| **eBooks** | `.epub`, `.fb2` | Chapters, metadata, embedded resources |
-| **Database** | `.dbf` | Table data extraction, field type support |
-| **Hangul** | `.hwp`, `.hwpx` | Korean document format, text extraction |
+| Category            | Formats                                                                                          | Capabilities                                       |
+| ------------------- | ------------------------------------------------------------------------------------------------ | -------------------------------------------------- |
+| **Word Processing** | `.docx`, `.docm`, `.dotx`, `.dotm`, `.dot`, `.odt`, `.pages`                                     | Full text, tables, lists, images, metadata, styles |
+| **Spreadsheets**    | `.xlsx`, `.xlsm`, `.xlsb`, `.xls`, `.xla`, `.xlam`, `.xltm`, `.xltx`, `.xlt`, `.ods`, `.numbers` | Sheet data, formulas, cell metadata, charts        |
+| **Presentations**   | `.pptx`, `.pptm`, `.ppsx`, `.potx`, `.potm`, `.pot`, `.key`                                      | Slides, speaker notes, images, metadata            |
+| **PDF**             | `.pdf`                                                                                           | Text, tables, images, metadata, OCR support        |
+| **eBooks**          | `.epub`, `.fb2`                                                                                  | Chapters, metadata, embedded resources             |
+| **Database**        | `.dbf`                                                                                           | Table data extraction, field type support          |
+| **Hangul**          | `.hwp`, `.hwpx`                                                                                  | Korean document format, text extraction            |
 
 ### Images (OCR-Enabled)
 
-| Category | Formats | Features |
-|----------|---------|----------|
-| **Raster** | `.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, `.bmp`, `.tiff`, `.tif` | OCR, table detection, EXIF metadata, dimensions, color space |
-| **Advanced** | `.jp2`, `.jpx`, `.jpm`, `.mj2`, `.jbig2`, `.jb2`, `.pnm`, `.pbm`, `.pgm`, `.ppm` | Pure Rust decoders (JPEG 2000, JBIG2), OCR, table detection |
-| **Vector** | `.svg` | DOM parsing, embedded text, graphics metadata |
+| Category     | Formats                                                                          | Features                                                     |
+| ------------ | -------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| **Raster**   | `.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, `.bmp`, `.tiff`, `.tif`                | OCR, table detection, EXIF metadata, dimensions, color space |
+| **Advanced** | `.jp2`, `.jpx`, `.jpm`, `.mj2`, `.jbig2`, `.jb2`, `.pnm`, `.pbm`, `.pgm`, `.ppm` | Pure Rust decoders (JPEG 2000, JBIG2), OCR, table detection  |
+| **Vector**   | `.svg`                                                                           | DOM parsing, embedded text, graphics metadata                |
 
 ### Web & Data
 
-| Category | Formats | Features |
-|----------|---------|----------|
-| **Markup** | `.html`, `.htm`, `.xhtml`, `.xml`, `.svg` | DOM parsing, metadata (Open Graph, Twitter Card), link extraction |
-| **Structured Data** | `.json`, `.yaml`, `.yml`, `.toml`, `.csv`, `.tsv` | Schema detection, nested structures, validation |
+| Category            | Formats                                                             | Features                                                          |
+| ------------------- | ------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| **Markup**          | `.html`, `.htm`, `.xhtml`, `.xml`, `.svg`                           | DOM parsing, metadata (Open Graph, Twitter Card), link extraction |
+| **Structured Data** | `.json`, `.yaml`, `.yml`, `.toml`, `.csv`, `.tsv`                   | Schema detection, nested structures, validation                   |
 | **Text & Markdown** | `.txt`, `.md`, `.markdown`, `.djot`, `.mdx`, `.rst`, `.org`, `.rtf` | CommonMark, GFM, Djot, MDX, reStructuredText, Org Mode, Rich Text |
 
 ### Email & Archives
 
-| Category | Formats | Features |
-|----------|---------|----------|
-| **Email** | `.eml`, `.msg` | Headers, body (HTML/plain), attachments, UTF-16 support |
-| **Archives** | `.zip`, `.tar`, `.tgz`, `.gz`, `.7z` | Recursive extraction, nested archives, metadata |
+| Category     | Formats                              | Features                                                |
+| ------------ | ------------------------------------ | ------------------------------------------------------- |
+| **Email**    | `.eml`, `.msg`                       | Headers, body (HTML/plain), attachments, UTF-16 support |
+| **Archives** | `.zip`, `.tar`, `.tgz`, `.gz`, `.7z` | Recursive extraction, nested archives, metadata         |
 
 ### Academic & Scientific
 
-| Category | Formats | Features |
-|----------|---------|----------|
-| **Citations** | `.bib`, `.ris`, `.nbib`, `.enw`, `.csl` | BibTeX/BibLaTeX, RIS, PubMed/MEDLINE, EndNote XML, CSL JSON |
-| **Scientific** | `.tex`, `.latex`, `.typ`, `.typst`, `.jats`, `.ipynb` | LaTeX, Typst, JATS journal articles, Jupyter notebooks |
-| **Publishing** | `.fb2`, `.docbook`, `.dbk`, `.opml` | FictionBook, DocBook XML, OPML outlines |
-| **Documentation** | `.pod`, `.mdoc`, `.troff` | Perl POD, man pages, troff |
+| Category          | Formats                                               | Features                                                    |
+| ----------------- | ----------------------------------------------------- | ----------------------------------------------------------- |
+| **Citations**     | `.bib`, `.ris`, `.nbib`, `.enw`, `.csl`               | BibTeX/BibLaTeX, RIS, PubMed/MEDLINE, EndNote XML, CSL JSON |
+| **Scientific**    | `.tex`, `.latex`, `.typ`, `.typst`, `.jats`, `.ipynb` | LaTeX, Typst, JATS journal articles, Jupyter notebooks      |
+| **Publishing**    | `.fb2`, `.docbook`, `.dbk`, `.opml`                   | FictionBook, DocBook XML, OPML outlines                     |
+| **Documentation** | `.pod`, `.mdoc`, `.troff`                             | Perl POD, man pages, troff                                  |
 
 **[Complete Format Reference →](https://docs.kreuzberg.dev/reference/formats/)**
 
 ### Code Intelligence (248 Languages)
 
-| Feature | Description |
-|---------|-------------|
-| **Structure Extraction** | Functions, classes, methods, structs, interfaces, enums |
-| **Import/Export Analysis** | Module dependencies, re-exports, wildcard imports |
-| **Symbol Extraction** | Variables, constants, type aliases, properties |
-| **Docstring Parsing** | Google, NumPy, Sphinx, JSDoc, RustDoc, and 10+ formats |
-| **Diagnostics** | Parse errors with line/column positions |
-| **Syntax-Aware Chunking** | Split code by semantic boundaries, not arbitrary byte offsets |
+| Feature                    | Description                                                   |
+| -------------------------- | ------------------------------------------------------------- |
+| **Structure Extraction**   | Functions, classes, methods, structs, interfaces, enums       |
+| **Import/Export Analysis** | Module dependencies, re-exports, wildcard imports             |
+| **Symbol Extraction**      | Variables, constants, type aliases, properties                |
+| **Docstring Parsing**      | Google, NumPy, Sphinx, JSDoc, RustDoc, and 10+ formats        |
+| **Diagnostics**            | Parse errors with line/column positions                       |
+| **Syntax-Aware Chunking**  | Split code by semantic boundaries, not arbitrary byte offsets |
 
 Powered by [tree-sitter-language-pack](https://github.com/kreuzberg-dev/tree-sitter-language-pack) with dynamic grammar download. See [TSLP documentation](https://docs.tree-sitter-language-pack.kreuzberg.dev) for the full language list.
 

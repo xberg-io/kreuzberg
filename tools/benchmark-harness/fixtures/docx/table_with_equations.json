@@ -2,14 +2,7 @@
   "document": "../../../../test_documents/vendored/docling/docx/table_with_equations.docx",
   "file_type": "docx",
   "file_size": 14228,
-  "expected_frameworks": [
-    "kreuzberg",
-    "docling",
-    "markitdown",
-    "pandoc",
-    "tika",
-    "unstructured"
-  ],
+  "expected_frameworks": ["kreuzberg", "docling", "markitdown", "pandoc", "tika", "unstructured"],
   "metadata": {
     "description": "Document from docling test suite",
     "source": "docling",

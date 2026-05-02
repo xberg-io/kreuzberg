@@ -1,19 +1,16 @@
 {
-	"id": "bold_empty",
-	"category": "markup",
-	"description": "Bold empty string",
-	"tags": [
-		"markup",
-		"edge_case"
-	],
-	"call": "bold",
-	"input": {
-		"start": 0,
-		"end": 0
-	},
-	"assertions": [
-		{
-			"type": "not_error"
-		}
-	]
+  "id": "bold_empty",
+  "category": "markup",
+  "description": "Bold empty string",
+  "tags": ["markup", "edge_case"],
+  "call": "bold",
+  "input": {
+    "start": 0,
+    "end": 0
+  },
+  "assertions": [
+    {
+      "type": "not_error"
+    }
+  ]
 }

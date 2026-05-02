@@ -12,66 +12,66 @@ Fish &amp; Game Collector Handbook Number 8
 
 ## Contents
 
-| Introduction.....................................................................4   |
-|--------------------------------------------------------------------------------------|
-| Texas Hunting Stamps ....................................................7           |
-| Archery Stamps........................................................7              |
-| Muzzleloader Hunting Stamps ..............................11                         |
-| Turkey Stamps .......................................................12              |
-| Upland Game Bird Stamps....................................14                        |
-| Waterfowl Stamps..................................................15                 |
-| White-Winged Dove...............................................19                   |
-| Non-Game Stamps .................................................23                  |
-| Texas Fishing Stamps....................................................26           |
-| Freshwater Trout ...................................................26               |
-| Freshwater Fishing.................................................28                |
-| Saltwater Fishing....................................................29              |
-| Texas Collector Booklets...............................................33            |
-| Texas Society Labels......................................................41         |
-| Wild Turkey Federation Labels.............................41                         |
-| Quail Unlimited Labels..........................................42                   |
-| Black Bass Unlimited Label...................................43                      |
-| Gulf Coast Conservation Association Labels........44                                 |
-| About the Author ..........................................................51        |
-| About PaperQuest Press ...............................................51             |
+| Introduction.....................................................................4 |
+| ---------------------------------------------------------------------------------- |
+| Texas Hunting Stamps ....................................................7         |
+| Archery Stamps........................................................7            |
+| Muzzleloader Hunting Stamps ..............................11                       |
+| Turkey Stamps .......................................................12            |
+| Upland Game Bird Stamps....................................14                      |
+| Waterfowl Stamps..................................................15               |
+| White-Winged Dove...............................................19                 |
+| Non-Game Stamps .................................................23                |
+| Texas Fishing Stamps....................................................26         |
+| Freshwater Trout ...................................................26             |
+| Freshwater Fishing.................................................28              |
+| Saltwater Fishing....................................................29            |
+| Texas Collector Booklets...............................................33          |
+| Texas Society Labels......................................................41       |
+| Wild Turkey Federation Labels.............................41                       |
+| Quail Unlimited Labels..........................................42                 |
+| Black Bass Unlimited Label...................................43                    |
+| Gulf Coast Conservation Association Labels........44                               |
+| About the Author ..........................................................51      |
+| About PaperQuest Press ...............................................51           |
 
-*
+-
 
-*
+-
 
-*
+-
 
-*
+-
 
-*
+-
 
 <!-- image -->
 
 Texas issued its first license stamp in 1971 for a long-running series of dove hunting stamps. Archery hunting stamps followed in 1975 and waterfowl hunting stamps in 1981, later than most states. Three additional series were inaugurated in 1985 - trout fishing, saltwater fishing, and nongame stamps. Wild turkey hunting stamps were introduced in 1991, followed by muzzleloader hunting stamps in 1994. In 1996, the era of mandatory stamps for hunting and fishing ended, as the individual stamp series changed to voluntary collector stamps that were all printed in a single booklet pane that over time shrunk from eight stamps to seven stamps with a blank label, and finally to just six stamps. The muzzleloader collector stamp series ended in 2003. In 2004 the collector trout stamp was replaced by a collector freshwater fishing stamp and in 2005 the turkey and white-winged dove collector stamps were replaced by a collector upland game bird stamp. Finally, in 2015 the last collector booklet pane of six stamps was printed and all the stamp series ended.
 
-| Series                     | Duration   |   # of Issues |
-|----------------------------|------------|---------------|
-| White-winged dove hunting  | 1971-2004  |            34 |
-| Archery hunting            | 1975-2015  |            41 |
-| Waterfowl hunting          | 1981-2015  |            35 |
-| Freshwater trout fishing   | 1985-2003  |            19 |
-| Saltwater fishing          | 1985-2015  |            31 |
-| Nongame                    | 1985-2015  |            31 |
-| Wild turkey hunting        | 1991-2004  |            14 |
-| Muzzleloader hunting       | 1994-2003  |            10 |
-| Freshwater fishing         | 2004-2015  |            12 |
-| Upland game bird hunting   | 2005-2015  |            11 |
-| Total stamps               |            |           238 |
-| Collector booklets         | 1996-2015  |            20 |
-| Total state-issued items   |            |           258 |
-| Texas Black Bass Unlimited | 1987       |             1 |
-| TX Quail Unlimited         | 1990-2005  |            16 |
-| TX Nat'l Wild Turkey Fed.  | 1984-1990  |             7 |
-| Coastal Conservation Ass'n | 1983-2004  |            22 |
-| Total society items        |            |            46 |
-| Total collectable items    |            |           304 |
+| Series                     | Duration  | # of Issues |
+| -------------------------- | --------- | ----------- |
+| White-winged dove hunting  | 1971-2004 | 34          |
+| Archery hunting            | 1975-2015 | 41          |
+| Waterfowl hunting          | 1981-2015 | 35          |
+| Freshwater trout fishing   | 1985-2003 | 19          |
+| Saltwater fishing          | 1985-2015 | 31          |
+| Nongame                    | 1985-2015 | 31          |
+| Wild turkey hunting        | 1991-2004 | 14          |
+| Muzzleloader hunting       | 1994-2003 | 10          |
+| Freshwater fishing         | 2004-2015 | 12          |
+| Upland game bird hunting   | 2005-2015 | 11          |
+| Total stamps               |           | 238         |
+| Collector booklets         | 1996-2015 | 20          |
+| Total state-issued items   |           | 258         |
+| Texas Black Bass Unlimited | 1987      | 1           |
+| TX Quail Unlimited         | 1990-2005 | 16          |
+| TX Nat'l Wild Turkey Fed.  | 1984-1990 | 7           |
+| Coastal Conservation Ass'n | 1983-2004 | 22          |
+| Total society items        |           | 46          |
+| Total collectable items    |           | 304         |
 
-* * * * *
+---
 
 <!-- image -->
 
@@ -99,7 +99,7 @@ MUZZLELOADER
 
 HUNTING STAMP
 
-* 7
+- 7
 
 Collector's Edition
 
@@ -147,7 +147,7 @@ WILDLIFE DEPARTMENT
 
 TEXAS PARKS &amp;
 
-* 8
+- 8
 
 2000
 
@@ -393,65 +393,65 @@ Bruce Miller
 
 ## Catalog Listings
 
-| Archery                                                                        |                                                                |    | 2004 $3, Coaching [Clemente Guzman]                                                                        | 2.50                                                                                                       |
-|--------------------------------------------------------------------------------|----------------------------------------------------------------|----|------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------|
-| Black serial numbers.                                                          |                                                                |    | Series ended                                                                                               |                                                                                                            |
-| 1975 $3.25, Archer [Helen Sloan]                                               | 3.00                                                           | -  | Non-game                                                                                                   |                                                                                                            |
-| 1976 $3.25, Arrows [Annette M. Neal]                                           | 3.00                                                           | -  | Black serial numbers.                                                                                      |                                                                                                            |
-| 1977 $3.25, Native Archer [Sharlee H. Holcomb]                                 | 5.00                                                           | -  | 1985 $5.00, Cranes [Ken Carlson]                                                                           | 17.00                                                                                                      |
-| 1978 $3.25, Arrowhead [Annette M. Neal]                                        | 5.00                                                           | -  | 1986 $5.00, Prairie Chickens [John Cowan]                                                                  | 12.00                                                                                                      |
-| 1979 $3.25, Hunter/deer [Annette M. Neal]                                      | 5.00                                                           | -  | 1987 $5.00, Eagle [Bob Kuhn]                                                                               | 12.00                                                                                                      |
-| 1980 $3.25, Nocked arrow [Saldana]                                             | 25.00                                                          | -  | 1988 $5.00, Kestrel [Charles Beckendorff]                                                                  | 10.00                                                                                                      |
-| 1981 $3.25, Arrowhead [Josie Salas-Cox]                                        | 15.00                                                          | -  | 1989 $5.00, Ocelot [Al Agnew]                                                                              | 10.00                                                                                                      |
-| 1982 $3.25, Bow &arrow [Josie Salas-Cox]                                       | 4.00                                                           | -  | 1990 $5.00, Quail [Sherrie Russell Meline]                                                                 | 10.00                                                                                                      |
-| 1983 $6.00, Arrow parts [Josie Salas-Cox]                                      | 25.00                                                          | -  | 1991 $5.00, Hawk [Pamela Davis-King]                                                                       | 10.00                                                                                                      |
-| 1984 $6.00, Archer []                                                          | 25.00                                                          | -  | 1992 $5.00, Heron [Gary Moss]                                                                              | 10.00                                                                                                      |
-| 1985 $6.00, Archer [Josie Salas-Cox]                                           | 22.00                                                          | -  | 1993 $5.00, Red Egret [Dee Kelley]                                                                         | 8.00                                                                                                       |
-| 1986 $6.00, Arrow parts [Pat Stark]                                            | 22.50                                                          | -  | 1994 $5.00, Horn. Owl [Pamela Davis-King]                                                                  | 8.00                                                                                                       |
-| 1987 $6.00, Hunters []                                                         | 22.50                                                          | -  | 1995 $5.00, Road Runners [C. Beckendorff]                                                                  | 8.00                                                                                                       |
-| 1988 $6.00, Arrow parts [Pris Martin]                                          |                                                                |    |                                                                                                            |                                                                                                            |
-|                                                                                | 15.00                                                          | -  | Change to collector-only stamps                                                                            |                                                                                                            |
-| 1989 $6.00, Arrowhead [Pat Stark]                                              | 15.00                                                          | -  | 1996 $3.00, Cardinals [David Drinkard]                                                                     | 2.50                                                                                                       |
-| 1990 $6.00, Handling arrow [Rob Fleming]                                       | 12.00                                                          | -  | 1997 $3.00, Golden Eagle [Joseph Hautman]                                                                  | 2.50                                                                                                       |
-| 1991 $6.00, Hunters [Clemente Guzman]                                          | 12.00                                                          | -  | 1998 $3.00, Mockinbirds [John Dearman]                                                                     | 2.50                                                                                                       |
-| 1992 $6.00, Arrows [Clemente Guzman] 1993 $6.00, Hunting buffalo [Rob Fleming] | 12.00                                                          | -  | 1999 $3.00, White Ibis [James Hautman]                                                                     | 2.50                                                                                                       |
-| 1994 $6.00, Deer [Linda Wells]                                                 | 12.00                                                          | -  | 2000 $3.00, Scissortail [Ken Carlson]                                                                      | 2.50                                                                                                       |
-|                                                                                | 12.00                                                          | -  | 2001 $3.00, Shrike [Thomas Quinn]                                                                          | 2.50                                                                                                       |
-| 1995 $6.00, Arrow &bow [Linda Wells]                                           | 12.00                                                          | -  | 2002 $3.00, Avocet [Sherrie Russell Meline]                                                                | 2.50                                                                                                       |
-| Change to collector-only stamps, issued on calendar year basis                 | Change to collector-only stamps, issued on calendar year basis |    | 2003 $3.00, Green Jay [John Dearman] 2004 $3.00, Kingfisher [Joseph Hautman]                               | 2.50 2.50                                                                                                  |
-| 1996 $3.00, Arrows &antler [Rob Fleming]                                       | 2.50                                                           |    | 2005 $3.00, Curlew [D.J. Cleland-Hura]                                                                     | 2.50                                                                                                       |
-| 1997 $3.00, Arrowheads [Clemente Guzman]                                       | 2.50                                                           |    | 2006$3.00, Barn Owl [Sherrie R. Meline]                                                                    | 2.50                                                                                                       |
-| 1998 $3.00, Hunters [Kenneth Helgren]                                          | 2.50                                                           |    | 2007 $3.00, Red-tail Hawk [James Hautman]                                                                  | 2.50                                                                                                       |
-| 1999 $3.00, Indian [Clemente Guzman]                                           | 2.50                                                           |    | 2008 $3.00, Heron [Bruce Miller]                                                                           | 2.50                                                                                                       |
-| 2000 $3.00, Deer [Rob Fleming]                                                 | 2.50                                                           |    | 2009 $3.00, Harris Hawk [Thomas Quinn]                                                                     | 2.50                                                                                                       |
-| 2001 $3.00, Deer [Clemente Guzman]                                             | 2.50                                                           |    | 2010 $3.00, Cedar Waxwing [Peter Mathios]                                                                  | 2.50                                                                                                       |
-| 2002 $3.00, Young archer [Rob Fleming]                                         | 2.50                                                           |    | 2011 $3.00, Black Skimmers [Al Barnes]                                                                     | 2.50                                                                                                       |
-| 2003 $3.00, Chief [Clemente Guzman]                                            | 2.50                                                           |    | 2012 $3.00, Blackbird [Greg Wilson]                                                                        | 2.50                                                                                                       |
-| 2004 $3.00, Camo [Clemente Guzman]                                             | 2.50                                                           |    | 2013 $3.00, Goldfinches [Bruce Miller]                                                                     | 2.50                                                                                                       |
-| 2005 $7.00, Woman [Clemente Guzman]                                            | 2.50                                                           |    | 2014 $3.00, Owl [Thomas Quinn]                                                                             | 2.50                                                                                                       |
-| 2006 $7.00, Hat [Clemente Guzman]                                              | 2.50                                                           |    | 2015 $3.00, Wading birds [Thomas Quinn]                                                                    | 2.50                                                                                                       |
-| 2007 $7.00, T-shirt [Clemente Guzman]                                          | 2.50                                                           |    | Series ended                                                                                               |                                                                                                            |
-| 2008 $7.00, Cave [Clemente Guzman]                                             | 2.50                                                           |    | Turkey                                                                                                     |                                                                                                            |
-| 2009 $7.00, Woman [Clemente Guzman]                                            | 2.50                                                           |    | Black serial numbers.                                                                                      |                                                                                                            |
-| 2010 $7.00, Deer [Clemente Guzman]                                             | 2.50                                                           |    | Required for hunting; show expiration date                                                                 | on stamp.                                                                                                  |
-| 2011 $7.00, Hog [Clemente Guzman] 2012 $7.00, Hunters [Clemente Guzman]        | 2.50 2.50                                                      |    | 1991 $5, Turkey pair [John Dearman]                                                                        | 14.00 -                                                                                                    |
-| 2013 $7.00, Rattling for Deer [Guzman]                                         | 2.50                                                           |    | 1992 $5, Turkey [Ken Carlson]                                                                              | 16.00 -                                                                                                    |
-| 2014 $7.00, Turkey [Clemente Guzman]                                           | 2.50                                                           |    | 1993 $5, Turkey [Reagan Gennusa]                                                                           | 16.00 -                                                                                                    |
-| 2015 $7.00, Antelope [Clemente Guzman]                                         |                                                                |    | 1994 $5, Turkey strutting [David Drinkard]                                                                 | 11.00 -                                                                                                    |
-| Series ended                                                                   | 2.50                                                           |    | 1995 $5, Turkey Trio [Charles Beckendorff]11.00                                                            | -                                                                                                          |
-| Muzzleloader Hunting                                                           |                                                                |    | Change to collector-only stamps, calendar                                                                  | year basis                                                                                                 |
-| Black serial numbers.                                                          |                                                                |    | 1996 $3, Turkey pair [Ken Carlson]                                                                         | 2.50                                                                                                       |
-| Required for hunting; show expiration date on stamp.                           | Required for hunting; show expiration date on stamp.           |    | 1997 $3, Turkey &cactus [John Dearman] 1998 $3, Turkey pair [Robert Hautman]                               | 2.50 2.50                                                                                                  |
-| 1994 $10, Mountain Man [Rob Fleming]                                           | 25.00                                                          | -  | 1999 $3, Turkey [Ragan Gennusa]                                                                            | 2.50                                                                                                       |
-| 1995 $10, Flintlock [Rob Fleming]                                              | 25.00                                                          | -  | 2000 $3, Turkey trio [Eddie LeRoy]                                                                         | 2.50                                                                                                       |
-| Change to collector-only stamps, issued on calendar                            | Change to collector-only stamps, issued on calendar            |    | 2001 $3, Turkey pair [Herb Booth]                                                                          | 2.50                                                                                                       |
-| year basis                                                                     |                                                                |    | 2002 $3, Turkey [John Dearman]                                                                             | 2.50                                                                                                       |
-| 1996 $3, Hunter [Clemente Guzman]                                              | 2.50                                                           |    | 2003 $3, Turkey [Reggie McLeroy]                                                                           | 2.50                                                                                                       |
-| 1997 $3, Flintlock &Powder [Linda Wells]                                       | 2.50                                                           |    | 2004 $3, Turkey strutting [Eldridge Hardie]                                                                | 2.50                                                                                                       |
-| 1998 $3, Mountain Man [Rob Fleming]                                            | 2.50                                                           |    | Series ended                                                                                               |                                                                                                            |
-| 1999 $3, Hunter [Clemente Guzman] 2000 $3, Riding hunter [Rob Fleming]         | 2.50 2.50                                                      |    | UplandGame Bird Stamp                                                                                      |                                                                                                            |
-| 2001 $3, Flintlock [Clemente Guzman]                                           | 2.50                                                           |    | Successor to Turkey Stamp series. All are collector stamps with no hunting validity. Black serial numbers. | Successor to Turkey Stamp series. All are collector stamps with no hunting validity. Black serial numbers. |
-| 2002 $3, Pack train [Rob Fleming]                                              | 2.50                                                           |    |                                                                                                            |                                                                                                            |
+| Archery                                                                        |                                                                |     | 2004 $3, Coaching [Clemente Guzman]                                                                        | 2.50                                                                                                       |
+| ------------------------------------------------------------------------------ | -------------------------------------------------------------- | --- | ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Black serial numbers.                                                          |                                                                |     | Series ended                                                                                               |                                                                                                            |
+| 1975 $3.25, Archer [Helen Sloan]                                               | 3.00                                                           | -   | Non-game                                                                                                   |                                                                                                            |
+| 1976 $3.25, Arrows [Annette M. Neal]                                           | 3.00                                                           | -   | Black serial numbers.                                                                                      |                                                                                                            |
+| 1977 $3.25, Native Archer [Sharlee H. Holcomb]                                 | 5.00                                                           | -   | 1985 $5.00, Cranes [Ken Carlson]                                                                           | 17.00                                                                                                      |
+| 1978 $3.25, Arrowhead [Annette M. Neal]                                        | 5.00                                                           | -   | 1986 $5.00, Prairie Chickens [John Cowan]                                                                  | 12.00                                                                                                      |
+| 1979 $3.25, Hunter/deer [Annette M. Neal]                                      | 5.00                                                           | -   | 1987 $5.00, Eagle [Bob Kuhn]                                                                               | 12.00                                                                                                      |
+| 1980 $3.25, Nocked arrow [Saldana]                                             | 25.00                                                          | -   | 1988 $5.00, Kestrel [Charles Beckendorff]                                                                  | 10.00                                                                                                      |
+| 1981 $3.25, Arrowhead [Josie Salas-Cox]                                        | 15.00                                                          | -   | 1989 $5.00, Ocelot [Al Agnew]                                                                              | 10.00                                                                                                      |
+| 1982 $3.25, Bow &arrow [Josie Salas-Cox]                                       | 4.00                                                           | -   | 1990 $5.00, Quail [Sherrie Russell Meline]                                                                 | 10.00                                                                                                      |
+| 1983 $6.00, Arrow parts [Josie Salas-Cox]                                      | 25.00                                                          | -   | 1991 $5.00, Hawk [Pamela Davis-King]                                                                       | 10.00                                                                                                      |
+| 1984 $6.00, Archer []                                                          | 25.00                                                          | -   | 1992 $5.00, Heron [Gary Moss]                                                                              | 10.00                                                                                                      |
+| 1985 $6.00, Archer [Josie Salas-Cox]                                           | 22.00                                                          | -   | 1993 $5.00, Red Egret [Dee Kelley]                                                                         | 8.00                                                                                                       |
+| 1986 $6.00, Arrow parts [Pat Stark]                                            | 22.50                                                          | -   | 1994 $5.00, Horn. Owl [Pamela Davis-King]                                                                  | 8.00                                                                                                       |
+| 1987 $6.00, Hunters []                                                         | 22.50                                                          | -   | 1995 $5.00, Road Runners [C. Beckendorff]                                                                  | 8.00                                                                                                       |
+| 1988 $6.00, Arrow parts [Pris Martin]                                          |                                                                |     |                                                                                                            |                                                                                                            |
+|                                                                                | 15.00                                                          | -   | Change to collector-only stamps                                                                            |                                                                                                            |
+| 1989 $6.00, Arrowhead [Pat Stark]                                              | 15.00                                                          | -   | 1996 $3.00, Cardinals [David Drinkard]                                                                     | 2.50                                                                                                       |
+| 1990 $6.00, Handling arrow [Rob Fleming]                                       | 12.00                                                          | -   | 1997 $3.00, Golden Eagle [Joseph Hautman]                                                                  | 2.50                                                                                                       |
+| 1991 $6.00, Hunters [Clemente Guzman]                                          | 12.00                                                          | -   | 1998 $3.00, Mockinbirds [John Dearman]                                                                     | 2.50                                                                                                       |
+| 1992 $6.00, Arrows [Clemente Guzman] 1993 $6.00, Hunting buffalo [Rob Fleming] | 12.00                                                          | -   | 1999 $3.00, White Ibis [James Hautman]                                                                     | 2.50                                                                                                       |
+| 1994 $6.00, Deer [Linda Wells]                                                 | 12.00                                                          | -   | 2000 $3.00, Scissortail [Ken Carlson]                                                                      | 2.50                                                                                                       |
+|                                                                                | 12.00                                                          | -   | 2001 $3.00, Shrike [Thomas Quinn]                                                                          | 2.50                                                                                                       |
+| 1995 $6.00, Arrow &bow [Linda Wells]                                           | 12.00                                                          | -   | 2002 $3.00, Avocet [Sherrie Russell Meline]                                                                | 2.50                                                                                                       |
+| Change to collector-only stamps, issued on calendar year basis                 | Change to collector-only stamps, issued on calendar year basis |     | 2003 $3.00, Green Jay [John Dearman] 2004 $3.00, Kingfisher [Joseph Hautman]                               | 2.50 2.50                                                                                                  |
+| 1996 $3.00, Arrows &antler [Rob Fleming]                                       | 2.50                                                           |     | 2005 $3.00, Curlew [D.J. Cleland-Hura]                                                                     | 2.50                                                                                                       |
+| 1997 $3.00, Arrowheads [Clemente Guzman]                                       | 2.50                                                           |     | 2006$3.00, Barn Owl [Sherrie R. Meline]                                                                    | 2.50                                                                                                       |
+| 1998 $3.00, Hunters [Kenneth Helgren]                                          | 2.50                                                           |     | 2007 $3.00, Red-tail Hawk [James Hautman]                                                                  | 2.50                                                                                                       |
+| 1999 $3.00, Indian [Clemente Guzman]                                           | 2.50                                                           |     | 2008 $3.00, Heron [Bruce Miller]                                                                           | 2.50                                                                                                       |
+| 2000 $3.00, Deer [Rob Fleming]                                                 | 2.50                                                           |     | 2009 $3.00, Harris Hawk [Thomas Quinn]                                                                     | 2.50                                                                                                       |
+| 2001 $3.00, Deer [Clemente Guzman]                                             | 2.50                                                           |     | 2010 $3.00, Cedar Waxwing [Peter Mathios]                                                                  | 2.50                                                                                                       |
+| 2002 $3.00, Young archer [Rob Fleming]                                         | 2.50                                                           |     | 2011 $3.00, Black Skimmers [Al Barnes]                                                                     | 2.50                                                                                                       |
+| 2003 $3.00, Chief [Clemente Guzman]                                            | 2.50                                                           |     | 2012 $3.00, Blackbird [Greg Wilson]                                                                        | 2.50                                                                                                       |
+| 2004 $3.00, Camo [Clemente Guzman]                                             | 2.50                                                           |     | 2013 $3.00, Goldfinches [Bruce Miller]                                                                     | 2.50                                                                                                       |
+| 2005 $7.00, Woman [Clemente Guzman]                                            | 2.50                                                           |     | 2014 $3.00, Owl [Thomas Quinn]                                                                             | 2.50                                                                                                       |
+| 2006 $7.00, Hat [Clemente Guzman]                                              | 2.50                                                           |     | 2015 $3.00, Wading birds [Thomas Quinn]                                                                    | 2.50                                                                                                       |
+| 2007 $7.00, T-shirt [Clemente Guzman]                                          | 2.50                                                           |     | Series ended                                                                                               |                                                                                                            |
+| 2008 $7.00, Cave [Clemente Guzman]                                             | 2.50                                                           |     | Turkey                                                                                                     |                                                                                                            |
+| 2009 $7.00, Woman [Clemente Guzman]                                            | 2.50                                                           |     | Black serial numbers.                                                                                      |                                                                                                            |
+| 2010 $7.00, Deer [Clemente Guzman]                                             | 2.50                                                           |     | Required for hunting; show expiration date                                                                 | on stamp.                                                                                                  |
+| 2011 $7.00, Hog [Clemente Guzman] 2012 $7.00, Hunters [Clemente Guzman]        | 2.50 2.50                                                      |     | 1991 $5, Turkey pair [John Dearman]                                                                        | 14.00 -                                                                                                    |
+| 2013 $7.00, Rattling for Deer [Guzman]                                         | 2.50                                                           |     | 1992 $5, Turkey [Ken Carlson]                                                                              | 16.00 -                                                                                                    |
+| 2014 $7.00, Turkey [Clemente Guzman]                                           | 2.50                                                           |     | 1993 $5, Turkey [Reagan Gennusa]                                                                           | 16.00 -                                                                                                    |
+| 2015 $7.00, Antelope [Clemente Guzman]                                         |                                                                |     | 1994 $5, Turkey strutting [David Drinkard]                                                                 | 11.00 -                                                                                                    |
+| Series ended                                                                   | 2.50                                                           |     | 1995 $5, Turkey Trio [Charles Beckendorff]11.00                                                            | -                                                                                                          |
+| Muzzleloader Hunting                                                           |                                                                |     | Change to collector-only stamps, calendar                                                                  | year basis                                                                                                 |
+| Black serial numbers.                                                          |                                                                |     | 1996 $3, Turkey pair [Ken Carlson]                                                                         | 2.50                                                                                                       |
+| Required for hunting; show expiration date on stamp.                           | Required for hunting; show expiration date on stamp.           |     | 1997 $3, Turkey &cactus [John Dearman] 1998 $3, Turkey pair [Robert Hautman]                               | 2.50 2.50                                                                                                  |
+| 1994 $10, Mountain Man [Rob Fleming]                                           | 25.00                                                          | -   | 1999 $3, Turkey [Ragan Gennusa]                                                                            | 2.50                                                                                                       |
+| 1995 $10, Flintlock [Rob Fleming]                                              | 25.00                                                          | -   | 2000 $3, Turkey trio [Eddie LeRoy]                                                                         | 2.50                                                                                                       |
+| Change to collector-only stamps, issued on calendar                            | Change to collector-only stamps, issued on calendar            |     | 2001 $3, Turkey pair [Herb Booth]                                                                          | 2.50                                                                                                       |
+| year basis                                                                     |                                                                |     | 2002 $3, Turkey [John Dearman]                                                                             | 2.50                                                                                                       |
+| 1996 $3, Hunter [Clemente Guzman]                                              | 2.50                                                           |     | 2003 $3, Turkey [Reggie McLeroy]                                                                           | 2.50                                                                                                       |
+| 1997 $3, Flintlock &Powder [Linda Wells]                                       | 2.50                                                           |     | 2004 $3, Turkey strutting [Eldridge Hardie]                                                                | 2.50                                                                                                       |
+| 1998 $3, Mountain Man [Rob Fleming]                                            | 2.50                                                           |     | Series ended                                                                                               |                                                                                                            |
+| 1999 $3, Hunter [Clemente Guzman] 2000 $3, Riding hunter [Rob Fleming]         | 2.50 2.50                                                      |     | UplandGame Bird Stamp                                                                                      |                                                                                                            |
+| 2001 $3, Flintlock [Clemente Guzman]                                           | 2.50                                                           |     | Successor to Turkey Stamp series. All are collector stamps with no hunting validity. Black serial numbers. | Successor to Turkey Stamp series. All are collector stamps with no hunting validity. Black serial numbers. |
+| 2002 $3, Pack train [Rob Fleming]                                              | 2.50                                                           |     |                                                                                                            |                                                                                                            |
 
 <!-- image -->
 
@@ -535,15 +535,15 @@ Wells, Ronnie, 31, 44
 
 Wilson, Greg, 25
 
-*
+-
 
-*
+-
 
-*
+-
 
-*
+-
 
-*
+-
 
 <!-- image -->
 

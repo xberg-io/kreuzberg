@@ -8,12 +8,12 @@ priority: critical
 
 ## Plugin Types
 
-| Type | Trait | Location |
-|------|-------|----------|
+| Type               | Trait                       | Location                     |
+| ------------------ | --------------------------- | ---------------------------- |
 | Document Extractor | `DocumentExtractor: Plugin` | `plugins/extractor/trait.rs` |
-| OCR Backend | `OcrBackend: Plugin` | `plugins/ocr/trait.rs` |
-| Post Processor | `PostProcessor: Plugin` | `plugins/processor/trait.rs` |
-| Validator | `Validator: Plugin` | `plugins/validator/trait.rs` |
+| OCR Backend        | `OcrBackend: Plugin`        | `plugins/ocr/trait.rs`       |
+| Post Processor     | `PostProcessor: Plugin`     | `plugins/processor/trait.rs` |
+| Validator          | `Validator: Plugin`         | `plugins/validator/trait.rs` |
 
 ## DocumentExtractor Implementation
 
@@ -43,12 +43,12 @@ impl DocumentExtractor for MyExtractor {
 
 ## Priority System
 
-| Range | Use |
-|-------|-----|
-| 0-25 | Fallback/low-quality |
-| 26-49 | Alternative extractors |
-| **50** | **Default (built-in)** |
-| 51-75 | Premium/enhanced |
+| Range  | Use                       |
+| ------ | ------------------------- |
+| 0-25   | Fallback/low-quality      |
+| 26-49  | Alternative extractors    |
+| **50** | **Default (built-in)**    |
+| 51-75  | Premium/enhanced          |
 | 76-100 | Specialized/high-priority |
 
 Registry selects **highest priority** extractor for each MIME type. Override built-ins with priority > 50.

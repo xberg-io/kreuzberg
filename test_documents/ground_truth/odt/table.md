@@ -1,4 +1,4 @@
 |              |                |
-|--------------|----------------|
+| ------------ | -------------- |
 | Table header | Another header |
 | Content      | More content   |

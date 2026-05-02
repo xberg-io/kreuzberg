@@ -1,20 +1,16 @@
 {
-	"id": "mime_list_supported",
-	"category": "mime_utilities",
-	"description": "List all supported MIME types and file extensions",
-	"tags": [
-		"mime",
-		"detection",
-		"list"
-	],
-	"call": "list_supported_formats",
-	"assertions": [
-		{
-			"type": "not_error"
-		}
-	],
-	"skip": {
-		"languages": [],
-		"reason": "Tests plugin_api call surface that isn't re-exported at the kreuzberg crate root \u2014 skipped everywhere until Rust public API or codegen module path is updated."
-	}
+  "id": "mime_list_supported",
+  "category": "mime_utilities",
+  "description": "List all supported MIME types and file extensions",
+  "tags": ["mime", "detection", "list"],
+  "call": "list_supported_formats",
+  "assertions": [
+    {
+      "type": "not_error"
+    }
+  ],
+  "skip": {
+    "languages": [],
+    "reason": "Tests plugin_api call surface that isn't re-exported at the kreuzberg crate root \u2014 skipped everywhere until Rust public API or codegen module path is updated."
+  }
 }

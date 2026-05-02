@@ -1,14 +1,20 @@
 {
-	"document": "../../../test_documents/pdf/ocr_test.pdf",
-	"file_type": "pdf",
-	"file_size": 93549,
-	"expected_frameworks": ["kreuzberg", "kreuzberg-python", "kreuzberg-node", "kreuzberg-wasm", "kreuzberg-ruby"],
-	"metadata": {
-		"requires_ocr": true
-	},
-	"ground_truth": {
-		"text_file": "../../../test_documents/ground_truth/pdf/pdf_ocr_test.md",
-		"source": "vision",
-		"markdown_file": "../../../test_documents/ground_truth/pdf/pdf_ocr_test.md"
-	}
+  "document": "../../../test_documents/pdf/ocr_test.pdf",
+  "file_type": "pdf",
+  "file_size": 93549,
+  "expected_frameworks": [
+    "kreuzberg",
+    "kreuzberg-python",
+    "kreuzberg-node",
+    "kreuzberg-wasm",
+    "kreuzberg-ruby"
+  ],
+  "metadata": {
+    "requires_ocr": true
+  },
+  "ground_truth": {
+    "text_file": "../../../test_documents/ground_truth/pdf/pdf_ocr_test.md",
+    "source": "vision",
+    "markdown_file": "../../../test_documents/ground_truth/pdf/pdf_ocr_test.md"
+  }
 }

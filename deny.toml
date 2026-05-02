@@ -10,45 +10,45 @@ feature-depth = 1
 
 [advisories]
 ignore = [
-    "RUSTSEC-2024-0436", # paste crate unmaintained - transitive dep from biblatex/tokenizers
-    "RUSTSEC-2025-0119", # number_prefix unmaintained - transitive dep from indicatif -> hf-hub -> fastembed
-    "RUSTSEC-2020-0144", # lzw unmaintained - transitive dep from pdf_oxide
-    "RUSTSEC-2026-0115", # imageproc unsound bounds check - transitive dep, not on user-input image path
-    "RUSTSEC-2026-0116", # imageproc improper invariant check - transitive dep, not on user-input image path
-    "RUSTSEC-2026-0117", # imageproc unsound bounds check - transitive dep, not on user-input image path
+  "RUSTSEC-2024-0436", # paste crate unmaintained - transitive dep from biblatex/tokenizers
+  "RUSTSEC-2025-0119", # number_prefix unmaintained - transitive dep from indicatif -> hf-hub -> fastembed
+  "RUSTSEC-2020-0144", # lzw unmaintained - transitive dep from pdf_oxide
+  "RUSTSEC-2026-0115", # imageproc unsound bounds check - transitive dep, not on user-input image path
+  "RUSTSEC-2026-0116", # imageproc improper invariant check - transitive dep, not on user-input image path
+  "RUSTSEC-2026-0117", # imageproc unsound bounds check - transitive dep, not on user-input image path
 ]
 
 [licenses]
 allow = [
-    "Apache-2.0",
-    "Apache-2.0 WITH LLVM-exception",
-    "MIT",
-    "Elastic-2.0",
-    "BSD-2-Clause",
-    "BSD-3-Clause",
-    "ISC",
-    "Zlib",
-    "Unlicense",
-    "CC0-1.0",
-    "CDLA-Permissive-2.0",
-    "Unicode-3.0",
-    "Unicode-DFS-2016",
-    "bzip2-1.0.6",
-    "BSL-1.0",
-    "OpenSSL",
-    "NCSA",
+  "Apache-2.0",
+  "Apache-2.0 WITH LLVM-exception",
+  "MIT",
+  "Elastic-2.0",
+  "BSD-2-Clause",
+  "BSD-3-Clause",
+  "ISC",
+  "Zlib",
+  "Unlicense",
+  "CC0-1.0",
+  "CDLA-Permissive-2.0",
+  "Unicode-3.0",
+  "Unicode-DFS-2016",
+  "bzip2-1.0.6",
+  "BSL-1.0",
+  "OpenSSL",
+  "NCSA",
 ]
 confidence-threshold = 0.8
 
 # Per-crate exceptions for copyleft licenses.
 # These are pinned to specific crates — nothing else can use these licenses.
 exceptions = [
-    # cbindgen: build-time C header generator, not linked into binaries
-    { allow = ["MPL-2.0"], crate = "cbindgen" },
-    # option-ext: tiny utility (transitive dep of cbindgen)
-    { allow = ["MPL-2.0"], crate = "option-ext" },
-    # r-efi: UEFI bindings, platform-specific transitive dep, never linked
-    { allow = ["LGPL-2.1-or-later"], crate = "r-efi" },
+  # cbindgen: build-time C header generator, not linked into binaries
+  { allow = ["MPL-2.0"], crate = "cbindgen" },
+  # option-ext: tiny utility (transitive dep of cbindgen)
+  { allow = ["MPL-2.0"], crate = "option-ext" },
+  # r-efi: UEFI bindings, platform-specific transitive dep, never linked
+  { allow = ["LGPL-2.1-or-later"], crate = "r-efi" },
 ]
 
 #[[licenses.clarify]]

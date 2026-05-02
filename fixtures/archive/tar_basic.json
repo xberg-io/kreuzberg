@@ -1,21 +1,21 @@
 {
-	"id": "archive_tar_basic",
-	"category": "archive",
-	"description": "TAR archive extraction.",
-	"input": {
-		"path": "archives/documents.tar",
-		"media_type": "application/x-tar"
-	},
-	"assertions": [
-		{
-			"type": "contains_any",
-			"field": "mime_type",
-			"values": ["application/x-tar", "application/tar"]
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 10
-		}
-	]
+  "id": "archive_tar_basic",
+  "category": "archive",
+  "description": "TAR archive extraction.",
+  "input": {
+    "path": "archives/documents.tar",
+    "media_type": "application/x-tar"
+  },
+  "assertions": [
+    {
+      "type": "contains_any",
+      "field": "mime_type",
+      "values": ["application/x-tar", "application/tar"]
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 10
+    }
+  ]
 }

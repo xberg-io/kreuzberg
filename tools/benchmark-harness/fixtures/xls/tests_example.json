@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/xls/tests_example.xls",
   "file_type": "xls",
   "file_size": 16384,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "xls test: tests_example",
     "source": "libreoffice+pandoc",

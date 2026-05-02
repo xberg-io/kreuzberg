@@ -6,11 +6,11 @@ Notice that
 
 **strong + bold mixed** looks similar but carries additional semantic meaning.
 
-Here is an *italic (i)* word and an *emphasis (em)* example.
+Here is an _italic (i)_ word and an _emphasis (em)_ example.
 
 Sometimes we combine them like
 
-*italic + emphasis together* .
+_italic + emphasis together_ .
 
 Now let's look at text that appears crossed out: ~~strikethrough with s~~ and ~~deleted with del~~ .
 
@@ -36,9 +36,9 @@ The mathematical expression x
 
 They can also be combined: CO
 
-2 * .
+2 \* .
 
-Mixing several: This sentence has ***strong + emphasis*** ,
+Mixing several: This sentence has **_strong + emphasis_** ,
 
 some
 

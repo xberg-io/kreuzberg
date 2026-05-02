@@ -61,11 +61,11 @@ See: `extraction/email.rs`, `extractors/email.rs`
 
 ## Common Helpers
 
-| Helper | Location | Purpose |
-|--------|----------|---------|
-| `office_metadata::extract_metadata()` | `extraction/office.rs` | Office XML metadata |
-| `cells_to_markdown()` | `extraction/mod.rs` | Convert cell grid to GFM table |
-| `build_archive_result()` | `extraction/archive/mod.rs` | Standard archive result |
+| Helper                                | Location                    | Purpose                        |
+| ------------------------------------- | --------------------------- | ------------------------------ |
+| `office_metadata::extract_metadata()` | `extraction/office.rs`      | Office XML metadata            |
+| `cells_to_markdown()`                 | `extraction/mod.rs`         | Convert cell grid to GFM table |
+| `build_archive_result()`              | `extraction/archive/mod.rs` | Standard archive result        |
 
 ## Adding a New Format
 

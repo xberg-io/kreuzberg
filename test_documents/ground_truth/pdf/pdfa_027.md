@@ -14,7 +14,7 @@ Email: tyagi.atul10@gmail.com
 ³Department of Mathematics, Geetanjali Institute of Technical Studies, Udaipur-313001, India
 Email: gajendrasingh237@gmail.com
 
-Abstract: We have investigated stiff fluid cosmological model with C-field in LRS Bianchi type-I space time. To get the deterministic solution, we assume that  $\sigma$  (shear tensor) is proportional to  $\theta$  (expansion) which leads to  $A = B^n$ , where  $n$  is constant. The physical and geometrical aspects of the model are also discussed.
+Abstract: We have investigated stiff fluid cosmological model with C-field in LRS Bianchi type-I space time. To get the deterministic solution, we assume that $\sigma$ (shear tensor) is proportional to $\theta$ (expansion) which leads to $A = B^n$ , where $n$ is constant. The physical and geometrical aspects of the model are also discussed.
 
 Keywords: C-field cosmology, stiff fluid, LRS Bianchi type-I
 
@@ -96,7 +96,7 @@ $$
 \frac {2 \mathrm {A} _ {4} \mathrm {B} _ {4}}{\mathrm {A B}} + \frac {\mathrm {B} _ {4} ^ {2}}{\mathrm {B} ^ {2}} = 8 \pi \mathrm {G} \left(\rho - \frac {1}{2} \mathrm {f} \dot {\mathrm {C}} ^ {2}\right) \tag {7}
 $$
 
-where the suffix 4 denoted the differentiation with respect to time  $t$ .
+where the suffix 4 denoted the differentiation with respect to time $t$ .
 
 ## 3. Solution of Field Equations
 
@@ -112,17 +112,17 @@ $$
 \frac {\mathrm {d}}{\mathrm {d t}} \dot {\mathrm {C}} ^ {2} + 2 \left(\frac {\mathrm {A} _ {4}}{\mathrm {A}} + \frac {2 \mathrm {B} _ {4}}{\mathrm {B}}\right) \dot {\mathrm {C}} ^ {2} = \frac {2 \dot {\rho}}{\mathrm {f}} + \frac {4 \rho}{\mathrm {f}} \left(\frac {\mathrm {A} _ {4}}{\mathrm {A}} + \frac {2 \mathrm {B} _ {4}}{\mathrm {B}}\right) \tag {9}
 $$
 
-The source equation of C-field  $\mathbf{C}_{,1}^{\mathrm{j}} = \frac{\mathbf{n}}{\mathbf{f}}$  leads to  $\mathbf{C} = \mathbf{t}$  for large  $\mathbf{r}$
+The source equation of C-field $\mathbf{C}_{,1}^{\mathrm{j}} = \frac{\mathbf{n}}{\mathbf{f}}$ leads to $\mathbf{C} = \mathbf{t}$ for large $\mathbf{r}$
 
-Thus  $\dot{\mathbf{C}} = 1$
+Thus $\dot{\mathbf{C}} = 1$
 
-Equation (5), (6) and (7) are three equations in 4 unknowns A, B, P and  $\rho$ , to get deterministic solution, a supplementary condition between metric potential
+Equation (5), (6) and (7) are three equations in 4 unknowns A, B, P and $\rho$ , to get deterministic solution, a supplementary condition between metric potential
 
 $$
 \mathrm {A} = \mathrm {B} ^ {\mathrm {n}} \tag {10}
 $$
 
-Using  $\dot{\mathbf{C}} = 1$  in equation (5), (6) and (7) which leads to
+Using $\dot{\mathbf{C}} = 1$ in equation (5), (6) and (7) which leads to
 
 $$
 \frac {2 \mathrm {B} _ {4 4}}{\mathrm {B}} + \frac {\mathrm {B} _ {4} ^ {2}}{\mathrm {B} ^ {2}} = 8 \pi \mathrm {G} \left(- \mathrm {p} + \frac {1}{2} \mathrm {f}\right) \tag {11}
@@ -136,7 +136,7 @@ $$
 \frac {2 \mathrm {A} _ {4} \mathrm {B} _ {4}}{\mathrm {A B}} + \frac {\mathrm {B} _ {4} ^ {2}}{\mathrm {B} ^ {2}} = 8 \pi \mathrm {G} \left(\rho - \frac {1}{2} \mathrm {f}\right) \tag {13}
 $$
 
-Adding equation (11) and (13), using stiff fluid condition  $(\mathfrak{p} = \rho)$ , we have
+Adding equation (11) and (13), using stiff fluid condition $(\mathfrak{p} = \rho)$ , we have
 
 Stiff Fluid Cosmological Model with C-Field in... 263
 
@@ -212,15 +212,15 @@ $$
 \dot {C} ^ {2} = 1 \tag {25}
 $$
 
-Thus we have  $\dot{\mathbf{C}} = 1$  or  $\mathrm{C} = \mathrm{t}$  (26)
+Thus we have $\dot{\mathbf{C}} = 1$ or $\mathrm{C} = \mathrm{t}$ (26)
 
-For simplicity, we assume that integral constant  $Q = 0$  which leads to
+For simplicity, we assume that integral constant $Q = 0$ which leads to
 
-We find  $\mathrm{C} = \mathrm{t}$ , which agrees with the value used in the source equation. Thus Creation field  $\mathrm{C}$  is proportional to time  $\mathrm{t}$ .
+We find $\mathrm{C} = \mathrm{t}$ , which agrees with the value used in the source equation. Thus Creation field $\mathrm{C}$ is proportional to time $\mathrm{t}$ .
 
 ## 4. Some Physical and Geometrical Features
 
-The homogeneous mass density  $(\rho)$ , the creation field (C), spatial volume  $(\mathbb{R}^3)$ , the deceleration parameter (q), shear tensor  $(\sigma)$  and expansion  $(\theta)$  of the model (22) are given by
+The homogeneous mass density $(\rho)$ , the creation field (C), spatial volume $(\mathbb{R}^3)$ , the deceleration parameter (q), shear tensor $(\sigma)$ and expansion $(\theta)$ of the model (22) are given by
 
 $$
 \rho = \frac {1}{8 \pi G} \left[ \frac {\alpha L ^ {2}}{\left(L t + k\right) ^ {2}} \right] + \frac {f}{2} \tag {27}
@@ -252,7 +252,7 @@ $$
 
 ## 5. Conclusion and Discussion
 
-The scale factor  $\mathbf{R}$  increases with time. The deceleration parameter  $q &gt; 0$ , hence the model (22) represents decelerating universe. The density and pressure decrease as time increases. The model (22) passes through a singular state at  $t = -\mathrm{K} / \mathrm{L}$ , this is explained as Creation exists all the time, so there is a big crunch between  $t = -\mathrm{K} / \mathrm{L}$  to  $\infty$  and Creation is going on from  $t = -\mathrm{K} / \mathrm{L}$  to  $\infty$ . During this period the model exists. Since at  $t \to \infty$ ,  $\frac{\sigma}{\theta}$  is constant, therefore model (22) does not approach to isotropy at late time. Since  $\theta \neq \infty$  at  $t = 0$ , hence model (22) is free from initial singularity.
+The scale factor $\mathbf{R}$ increases with time. The deceleration parameter $q &gt; 0$ , hence the model (22) represents decelerating universe. The density and pressure decrease as time increases. The model (22) passes through a singular state at $t = -\mathrm{K} / \mathrm{L}$ , this is explained as Creation exists all the time, so there is a big crunch between $t = -\mathrm{K} / \mathrm{L}$ to $\infty$ and Creation is going on from $t = -\mathrm{K} / \mathrm{L}$ to $\infty$ . During this period the model exists. Since at $t \to \infty$ , $\frac{\sigma}{\theta}$ is constant, therefore model (22) does not approach to isotropy at late time. Since $\theta \neq \infty$ at $t = 0$ , hence model (22) is free from initial singularity.
 
 Stiff Fluid Cosmological Model with C-Field in... 265
 
@@ -317,7 +317,5 @@ Atul Tyagi, Jaipal Singh and Gajendra Pal Singh
 [20] Wesson, P.S. (1978). An Exact Solution to Einstein's Equation with a Stiff Equation of State, J. Maths, Phys., 19, 2283.
 
 [21] Zel'dovich, Ya. B. (1970). Anisotropy of the microwave background in the inflationary cosmology. Mon. Not. R. Astron. Soc. 160.
-
-
 
 “哈，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，你是个小伙子，

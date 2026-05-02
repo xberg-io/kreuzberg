@@ -4,6 +4,7 @@ MATION
 GPO
 
 47698
+
 # Proposed Rules
 
 This section of the FEDERAL REGISTER
@@ -26,6 +27,7 @@ Identifier 2019-NM-035-AD]
 RIN 2120-AA64
 
 #### Airworthiness Directives; The Boeing
+
 Company Airplanes
 
 **AGENCY:** Federal Aviation
@@ -65,26 +67,26 @@ FAA is proposing this AD to address the
 unsafe condition on these products.
 
 **DATES:** The FAA must receive comments
-on this proposed AD by September 21,
-2020.
+on this proposed AD by September 21, 2020.
 
 **ADDRESSES:** You may send comments,
 using the procedures found in 14 CFR
 11.43 and 11.45, by any of the following
 methods:
+
 - Federal eRulemaking Portal: Go to
-https://www.regulations.gov. Follow the
-instructions for submitting comments.
+  https://www.regulations.gov. Follow the
+  instructions for submitting comments.
 - Fax: 202-493-2251.
 - Mail: U.S. Department of
-Transportation, Docket Operations, M-
-30, West Building Ground Floor, Room
-W12-140, 1200 New Jersey Avenue SE,
-Washington, DC 20590.
+  Transportation, Docket Operations, M-
+  30, West Building Ground Floor, Room
+  W12-140, 1200 New Jersey Avenue SE,
+  Washington, DC 20590.
 - Hand Delivery: Deliver to Mail
-address above between 9 a.m. and 5
-p.m., Monday through Friday, except
-Federal holidays.
+  address above between 9 a.m. and 5
+  p.m., Monday through Friday, except
+  Federal holidays.
 
 For Boeing service information
 identified in this NPRM, contact Boeing
@@ -99,13 +101,11 @@ the FAA, Airworthiness Products
 Section, Operational Safety Branch,
 2200 South 216th St., Des Moines, WA.
 For information on the availability of
-this material at the FAA, call 206-231-
-3195. It is also available in the Docket
+this material at the FAA, call 206-231- 3195. It is also available in the Docket
 for this rulemaking, which may be
 found on the internet at https://
 www.regulations.gov by searching for
-and locating Docket No. FAA-2020-
-0686.
+and locating Docket No. FAA-2020- 0686.
 
 #### Examining the AD Docket
 

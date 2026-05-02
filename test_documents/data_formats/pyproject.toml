@@ -11,30 +11,30 @@ license = { text = "MIT OR Apache-2.0" }
 authors = [{ name = "Kreuzberg Contributors", email = "hello@kreuzberg.dev" }]
 requires-python = ">=3.10"
 classifiers = [
-    "Development Status :: 4 - Beta",
-    "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
-    "License :: OSI Approved :: Apache Software License",
-    "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Topic :: Software Development :: Libraries :: Python Modules",
-    "Topic :: Text Processing",
-    "Topic :: Utilities",
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Topic :: Text Processing",
+  "Topic :: Utilities",
 ]
 dependencies = ["typing-extensions>=4.0.0; python_version < '3.11'", "pydantic>=2.0.0"]
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=7.0",
-    "pytest-cov>=4.0",
-    "pytest-asyncio>=0.21.0",
-    "mypy>=1.0",
-    "ruff>=0.1.0",
-    "black>=23.0",
-    "sphinx>=6.0",
+  "pytest>=7.0",
+  "pytest-cov>=4.0",
+  "pytest-asyncio>=0.21.0",
+  "mypy>=1.0",
+  "ruff>=0.1.0",
+  "black>=23.0",
+  "sphinx>=6.0",
 ]
 docs = ["sphinx>=6.0", "sphinx-rtd-theme>=1.2.0", "myst-parser>=1.0.0"]
 
@@ -56,8 +56,8 @@ testpaths = ["tests"]
 python_files = "test_*.py"
 addopts = "-v --cov=kreuzberg --cov-report=term-missing"
 markers = [
-    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
-    "integration: marks tests as integration tests",
+  "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+  "integration: marks tests as integration tests",
 ]
 
 [tool.mypy]

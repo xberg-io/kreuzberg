@@ -1,37 +1,37 @@
 {
-	"id": "config_chunking_text",
-	"description": "Tests text chunker type (generic whitespace/punctuation splitter)",
-	"tags": ["contract", "config", "chunking"],
-	"call": "extract_file_sync",
-	"input": {
-		"path": "pdf/fake_memo.pdf",
-		"config": {
-			"chunking": {
-				"chunker_type": "text",
-				"max_chars": 500,
-				"max_overlap": 50
-			}
-		}
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/pdf"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 10
-		},
-		{
-			"type": "count_min",
-			"field": "chunks",
-			"value": 1
-		},
-		{
-			"type": "is_true",
-			"field": "chunks_have_content"
-		}
-	]
+  "id": "config_chunking_text",
+  "description": "Tests text chunker type (generic whitespace/punctuation splitter)",
+  "tags": ["contract", "config", "chunking"],
+  "call": "extract_file_sync",
+  "input": {
+    "path": "pdf/fake_memo.pdf",
+    "config": {
+      "chunking": {
+        "chunker_type": "text",
+        "max_chars": 500,
+        "max_overlap": 50
+      }
+    }
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/pdf"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 10
+    },
+    {
+      "type": "count_min",
+      "field": "chunks",
+      "value": 1
+    },
+    {
+      "type": "is_true",
+      "field": "chunks_have_content"
+    }
+  ]
 }

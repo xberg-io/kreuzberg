@@ -17,11 +17,11 @@ Layout detection uses the **RT-DETR v2** model, an ONNX-based deep learning mode
 ### Performance Impact
 
 | Pipeline | Structure F1 | Text F1 | Avg time/doc |
-|----------|-------------|---------|--------------|
-| Baseline | 33.9% | 87.4% | 447 ms |
-| Layout | 41.1% | 90.1% | 1500 ms |
+| -------- | ------------ | ------- | ------------ |
+| Baseline | 33.9%        | 87.4%   | 447 ms       |
+| Layout   | 41.1%        | 90.1%   | 1500 ms      |
 
-*171-document PDF corpus, CPU only. GPU acceleration significantly reduces the time penalty.*
+_171-document PDF corpus, CPU only. GPU acceleration significantly reduces the time penalty._
 
 !!! Note "Layout Detection Model" Kreuzberg uses only the RT-DETR v2 model for layout detection. The `preset` field is not available in `LayoutDetectionConfig`. Configure table structure recognition separately via `table_model` — see "Table Structure Models" below.
 
@@ -98,13 +98,13 @@ Layout detection uses the **RT-DETR v2** model, an ONNX-based deep learning mode
 
 When layout detection identifies a table region, a table structure model analyzes rows, columns, headers, and spanning cells.
 
-| Model | Config value | Size | Speed | Best for |
-|-------|-------------|------|-------|----------|
-| **TATR** | `"tatr"` (default) | 30 MB | Fast | General-purpose, consistent results |
-| SLANeXT Wired | `"slanet_wired"` | 365 MB | Moderate | Bordered/gridlined tables |
-| SLANeXT Wireless | `"slanet_wireless"` | 365 MB | Moderate | Borderless tables |
-| SLANeXT Auto | `"slanet_auto"` | ~737 MB | Slower | Mixed documents (auto-classifies per page) |
-| SLANet-plus | `"slanet_plus"` | 7.78 MB | Fastest | Resource-constrained environments |
+| Model            | Config value        | Size    | Speed    | Best for                                   |
+| ---------------- | ------------------- | ------- | -------- | ------------------------------------------ |
+| **TATR**         | `"tatr"` (default)  | 30 MB   | Fast     | General-purpose, consistent results        |
+| SLANeXT Wired    | `"slanet_wired"`    | 365 MB  | Moderate | Bordered/gridlined tables                  |
+| SLANeXT Wireless | `"slanet_wireless"` | 365 MB  | Moderate | Borderless tables                          |
+| SLANeXT Auto     | `"slanet_auto"`     | ~737 MB | Slower   | Mixed documents (auto-classifies per page) |
+| SLANet-plus      | `"slanet_plus"`     | 7.78 MB | Fastest  | Resource-constrained environments          |
 
 !!! Note "Model Download" SLANeXT models are not downloaded by default. Use `cache warm --all-table-models` to pre-download, or they download automatically on first use.
 
@@ -112,12 +112,12 @@ When layout detection identifies a table region, a table structure model analyze
 
 Layout detection uses ONNX Runtime with automatic provider selection:
 
-| Provider | Platform | Notes |
-|----------|----------|-------|
-| CPU | All | Default, no setup needed |
-| CUDA | Linux, Windows | Requires CUDA toolkit + cuDNN |
-| CoreML | macOS | Automatic on Apple Silicon |
-| TensorRT | Linux | Requires TensorRT |
+| Provider | Platform       | Notes                         |
+| -------- | -------------- | ----------------------------- |
+| CPU      | All            | Default, no setup needed      |
+| CUDA     | Linux, Windows | Requires CUDA toolkit + cuDNN |
+| CoreML   | macOS          | Automatic on Apple Silicon    |
+| TensorRT | Linux          | Requires TensorRT             |
 
 To override:
 
@@ -134,25 +134,25 @@ See [AccelerationConfig reference](../reference/configuration.md#accelerationcon
 
 The RT-DETR v2 model detects 17 layout classes:
 
-| Class | Description |
-|-------|-------------|
-| `Caption` | Figure or table caption |
-| `Footnote` | Page footnote |
-| `Formula` | Mathematical formula |
-| `ListItem` | List item or bullet point |
-| `PageFooter` | Running page footer |
-| `PageHeader` | Running page header |
-| `Picture` | Image, chart, or diagram |
-| `SectionHeader` | Section heading |
-| `Table` | Tabular data region |
-| `Text` | Body text paragraph |
-| `Title` | Document or page title |
-| `DocumentIndex` | Table of contents |
-| `Code` | Code block |
-| `CheckboxSelected` | Checked checkbox |
-| `CheckboxUnselected` | Unchecked checkbox |
-| `Form` | Form region |
-| `KeyValueRegion` | Key-value pair region |
+| Class                | Description               |
+| -------------------- | ------------------------- |
+| `Caption`            | Figure or table caption   |
+| `Footnote`           | Page footnote             |
+| `Formula`            | Mathematical formula      |
+| `ListItem`           | List item or bullet point |
+| `PageFooter`         | Running page footer       |
+| `PageHeader`         | Running page header       |
+| `Picture`            | Image, chart, or diagram  |
+| `SectionHeader`      | Section heading           |
+| `Table`              | Tabular data region       |
+| `Text`               | Body text paragraph       |
+| `Title`              | Document or page title    |
+| `DocumentIndex`      | Table of contents         |
+| `Code`               | Code block                |
+| `CheckboxSelected`   | Checked checkbox          |
+| `CheckboxUnselected` | Unchecked checkbox        |
+| `Form`               | Form region               |
+| `KeyValueRegion`     | Key-value pair region     |
 
 ## Accessing Layout Regions
 
@@ -240,12 +240,12 @@ When layout detection is enabled AND page extraction is enabled, each page in th
 
 Each region in `layout_regions` contains:
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `class` | string | Layout class (see table below) |
-| `confidence` | float | Detection confidence [0.0–1.0] |
-| `bbox` | object/array | Bounding box (format varies by binding) |
-| `area_fraction` | float | Region area as fraction of page [0.0–1.0] |
+| Field           | Type         | Description                               |
+| --------------- | ------------ | ----------------------------------------- |
+| `class`         | string       | Layout class (see table below)            |
+| `confidence`    | float        | Detection confidence [0.0–1.0]            |
+| `bbox`          | object/array | Bounding box (format varies by binding)   |
+| `area_fraction` | float        | Region area as fraction of page [0.0–1.0] |
 
 ### Available Classes
 

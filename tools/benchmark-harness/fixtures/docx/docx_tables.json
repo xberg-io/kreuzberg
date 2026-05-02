@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/docx/docx_tables.docx",
   "file_type": "docx",
   "file_size": 12725,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "docx test: docx_tables",
     "source": "pandoc-generated",

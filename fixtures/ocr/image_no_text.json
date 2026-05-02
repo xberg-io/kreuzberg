@@ -1,31 +1,31 @@
 {
-	"id": "ocr_image_no_text",
-	"category": "ocr",
-	"description": "Image with no text to ensure OCR handles empty results gracefully.",
-	"input": {
-		"path": "images/flower_no_text.jpg",
-		"media_type": "image/jpeg",
-		"config": {
-			"ocr": {
-				"backend": "tesseract",
-				"language": "eng"
-			},
-			"force_ocr": true
-		}
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "image/jpeg"
-		},
-		{
-			"type": "max_length",
-			"field": "content",
-			"value": 300
-		}
-	],
-	"skip": {
-		"reason": "Requires features: tesseract; Skip when Tesseract is unavailable."
-	}
+  "id": "ocr_image_no_text",
+  "category": "ocr",
+  "description": "Image with no text to ensure OCR handles empty results gracefully.",
+  "input": {
+    "path": "images/flower_no_text.jpg",
+    "media_type": "image/jpeg",
+    "config": {
+      "ocr": {
+        "backend": "tesseract",
+        "language": "eng"
+      },
+      "force_ocr": true
+    }
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "image/jpeg"
+    },
+    {
+      "type": "max_length",
+      "field": "content",
+      "value": 300
+    }
+  ],
+  "skip": {
+    "reason": "Requires features: tesseract; Skip when Tesseract is unavailable."
+  }
 }

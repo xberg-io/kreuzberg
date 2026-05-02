@@ -38,7 +38,7 @@ When both code fragments are compiled with Visual C++ in Visual Studio 2005 Team
 c:\code\saltest\saltest.cpp(54) : warning C6203: Buffer overrun for non-stack buffer 'b' in call to 'FillString': length '420' exceeds buffer size '400' c:\code\saltest\saltest.cpp(54) : warning C6386: Buffer overrun: accessing 'argument 1', the writable size is '200*2' bytes, but '420' bytes might be written: Lines: 53, 54 c:\code\saltest\saltest.cpp(54) : warning C6387: 'argument 1' might be '0': this does not adhere to the specification for the function 'FillString': Lines: 53, 54
 ```
 
-What just happened here? Note the use of \_\_out\_ecount(n) just before buf in the argument list. This is a macro that wraps some very low-level SAL constructs you should never have to worry about, but in essence \_\_out\_ecount(n) means:
+What just happened here? Note the use of \_\_out_ecount(n) just before buf in the argument list. This is a macro that wraps some very low-level SAL constructs you should never have to worry about, but in essence \_\_out_ecount(n) means:
 
 'buf i s an out par am et er , w hi ch m eans i t w i l l be w r i t t en t o by t he f unct i on, and buf cannot be NULL. The l engt h of buf i s ' n' el em ent s, i n t hi s cas e cchBuf TCH ARS'
 
@@ -52,7 +52,7 @@ There are many other SAL macros, including:
 
 ## \_\_in
 
-The function will only read from the single-element buffer, and the buffer must be initialized; as such \_\_in the exactly the same as \_\_in\_ecount(1) and \_\_in is implied if the argument is a const. The following function prototype shows how you can use \_\_in.
+The function will only read from the single-element buffer, and the buffer must be initialized; as such \_\_in the exactly the same as \_\_in_ecount(1) and \_\_in is implied if the argument is a const. The following function prototype shows how you can use \_\_in.
 
 ```text
 BOOL AddElement( __in ELEMENT *pElement) ;
@@ -66,9 +66,9 @@ The function fills a valid buffer, and the buffer can be dereferenced by the cal
 BOOL GetFileVersion( LPCWSTR lpsFile, __out FILE_VERSION *pVersion);
 ```
 
-## \_\_in\_opt
+## \_\_in_opt
 
-The function expects an optional buffer, meaning the buffer can point to NULL. The following code shows how you could use \_\_in\_opt, in this example, if szMachineName is NULL, then the code will return operating system information about the local computer.
+The function expects an optional buffer, meaning the buffer can point to NULL. The following code shows how you could use \_\_in_opt, in this example, if szMachineName is NULL, then the code will return operating system information about the local computer.
 
 ```text
 BOOL GetOsType( __in_opt char *szMachineName,
@@ -82,17 +82,17 @@ The function expects a readable and writeable buffer, and the buffer must be ini
 size_t EncodeStream( __in HANDLE hStream, __inout STREAM *pStream);
 ```
 
-## \_\_inout\_bcount\_full(n)
+## \_\_inout_bcount_full(n)
 
-The function expects a buffer that is n-bytes long that is fully initialized on entry and exit. Note the use of bcount r at her t han ecount . ' b' m eans byt es, and ' e' m eans el em ent s, f or exam pl e a U ni code s t r i ng in Windows that is 12 characters (an element is SAL parlance) long is 24 bytes long. The following code example takes a BYTE * that points to a buffer to switch from big-endian format to little-endian format so it makes sense that the incoming buffer be fully initialized, and is a fully initialized buffer on function exi t . You' l l al s o s ee anot her SAL m acr o in the function prototype, \_\_out\_opt, which means the data will be written to by the function, but it can be NULL. In the case of a NULL exception point, the function will not return exception data to the caller.
+The function expects a buffer that is n-bytes long that is fully initialized on entry and exit. Note the use of bcount r at her t han ecount . ' b' m eans byt es, and ' e' m eans el em ent s, f or exam pl e a U ni code s t r i ng in Windows that is 12 characters (an element is SAL parlance) long is 24 bytes long. The following code example takes a BYTE \* that points to a buffer to switch from big-endian format to little-endian format so it makes sense that the incoming buffer be fully initialized, and is a fully initialized buffer on function exi t . You' l l al s o s ee anot her SAL m acr o in the function prototype, \_\_out_opt, which means the data will be written to by the function, but it can be NULL. In the case of a NULL exception point, the function will not return exception data to the caller.
 
 ```text
 void ConvertToLittleEndian( __inout_bcount_full(cbInteger) BYTE *pbInteger, DWORD cbInteger, __out_opt EXCEPTION *pException);
 ```
 
-## \_\_deref\_\_out\_bcount(n)
+## \_\_deref\_\_out_bcount(n)
 
-The f unct i on w hos e der ef er ence w i l l be s et t o an uni ni t i al i z ed buf f er of ' n' bytes, in other words, *p is initialized, but **p is not.
+The f unct i on w hos e der ef er ence w i l l be s et t o an uni ni t i al i z ed buf f er of ' n' bytes, in other words, \*p is initialized, but \*\*p is not.
 
 ```text
 HRESULT StringCbAlloc( size_t cb, __deref_out_bcount(cb) char **ppsz) { *ppsz = (char*)LocalAlloc(LPTR, cb); return *ppsz ? S_OK : E_OUTOFMEMORY; }
@@ -116,7 +116,7 @@ This bug really has little to do with the function argument, rather it occurs be
 _checkReturn __bcount_opt(_Size) void *__cdecl malloc(__in size_t _Size);
 ```
 
-Because the return from malloc() could be NULL we use a \_\_bcount\_opt(n) macro (note the use of opt in the macro name.) If we change the code that calls malloc() to check the return is not NULL prior to cal l i ng Fi l l St r i ng, t he w ar ni ng goes aw ay. D on' t conf use an opt i onal N U LL r et ur n val ue w i t h \_\_checkReturn, the latter means you ignored the result altogether, for example:
+Because the return from malloc() could be NULL we use a \_\_bcount_opt(n) macro (note the use of opt in the macro name.) If we change the code that calls malloc() to check the return is not NULL prior to cal l i ng Fi l l St r i ng, t he w ar ni ng goes aw ay. D on' t conf use an opt i onal N U LL r et ur n val ue w i t h \_\_checkReturn, the latter means you ignored the result altogether, for example:
 
 ```text
 size_t cb = 10 * 12; malloc(cb);
@@ -130,7 +130,7 @@ c:\code\saltest\saltest.cpp(30) : warning C6031: Return value ignored: 'malloc'
 
 ## The Future of SAL
 
-This section is important for completeness and to set expectations about the future of SAL. I have already mentioned that \_\_inout and the like are actually macros that wrap low-level SAL constructs. Presently, there is one set of macros and two low-level SAL primitives; one is a \_\_declspec form, and the other is an attribute form. As I write this, the macros that ship with Visual Studio 2005 map to the \_\_declspec form. For example, \_\_out\_ecount(n) maps to:
+This section is important for completeness and to set expectations about the future of SAL. I have already mentioned that \_\_inout and the like are actually macros that wrap low-level SAL constructs. Presently, there is one set of macros and two low-level SAL primitives; one is a \_\_declspec form, and the other is an attribute form. As I write this, the macros that ship with Visual Studio 2005 map to the \_\_declspec form. For example, \_\_out_ecount(n) maps to:
 
 ```text
 __pre __notnull __elem_writableTo(n) __post __valid __deref __notreadonly

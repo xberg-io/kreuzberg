@@ -1,21 +1,21 @@
 {
-	"id": "office_pptx_images",
-	"category": "office",
-	"description": "PPTX presentation containing images to ensure metadata extraction.",
-	"input": {
-		"path": "pptx/powerpoint_with_image.pptx",
-		"media_type": "application/vnd.openxmlformats-officedocument.presentationml.presentation"
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/vnd.openxmlformats-officedocument.presentationml.presentation"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 15
-		}
-	]
+  "id": "office_pptx_images",
+  "category": "office",
+  "description": "PPTX presentation containing images to ensure metadata extraction.",
+  "input": {
+    "path": "pptx/powerpoint_with_image.pptx",
+    "media_type": "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 15
+    }
+  ]
 }

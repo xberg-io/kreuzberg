@@ -69,10 +69,7 @@
             "b": 654.48,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            15
-          ]
+          "charspan": [0, 15]
         }
       ],
       "orig": "Figures Example",
@@ -97,10 +94,7 @@
             "b": 502.0,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            887
-          ]
+          "charspan": [0, 887]
         }
       ],
       "orig": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
@@ -124,10 +118,7 @@
             "b": 254.05,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            35
-          ]
+          "charspan": [0, 35]
         }
       ],
       "orig": "Figure 1: This is an example image.",
@@ -151,10 +142,7 @@
             "b": 122.54,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            747
-          ]
+          "charspan": [0, 747]
         }
       ],
       "orig": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.",
@@ -178,10 +166,7 @@
             "b": 87.46,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "1",
@@ -205,10 +190,7 @@
             "b": 523.83,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            887
-          ]
+          "charspan": [0, 887]
         }
       ],
       "orig": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
@@ -232,10 +214,7 @@
             "b": 259.97,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            35
-          ]
+          "charspan": [0, 35]
         }
       ],
       "orig": "Figure 2: This is an example image.",
@@ -259,10 +238,7 @@
             "b": 117.35,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            804
-          ]
+          "charspan": [0, 804]
         }
       ],
       "orig": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.",
@@ -286,10 +262,7 @@
             "b": 87.46,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "2",
@@ -319,10 +292,7 @@
             "b": 282.37,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            0
-          ]
+          "charspan": [0, 0]
         }
       ],
       "captions": [
@@ -356,10 +326,7 @@
             "b": 283.26,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            0
-          ]
+          "charspan": [0, 0]
         }
       ],
       "captions": [

@@ -1,5 +1,5 @@
 | Stanley Cups |          |              |
-|--------------|----------|--------------|
+| ------------ | -------- | ------------ |
 | Team         | Location | Stanley Cups |
 | Blues        | STL      | 1            |
 | Flyers       | PHI      | 2            |

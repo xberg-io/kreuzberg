@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/odt/headers.odt",
   "file_type": "odt",
   "file_size": 10515,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "odt test: headers",
     "source": "pandoc-generated",

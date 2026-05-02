@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/epub/winter_sports.epub",
   "file_type": "epub",
   "file_size": 210376,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "epub test: winter_sports",
     "source": "pandoc-generated",

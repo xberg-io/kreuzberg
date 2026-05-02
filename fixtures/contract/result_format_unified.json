@@ -1,28 +1,28 @@
 {
-	"id": "result_format_unified",
-	"description": "Tests Unified result format (default)",
-	"tags": ["contract", "result_format"],
-	"call": "extract_file_sync",
-	"input": {
-		"path": "pdf/fake_memo.pdf",
-		"config": {
-			"result_format": "unified"
-		}
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/pdf"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 10
-		},
-		{
-			"type": "is_empty",
-			"field": "elements"
-		}
-	]
+  "id": "result_format_unified",
+  "description": "Tests Unified result format (default)",
+  "tags": ["contract", "result_format"],
+  "call": "extract_file_sync",
+  "input": {
+    "path": "pdf/fake_memo.pdf",
+    "config": {
+      "result_format": "unified"
+    }
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/pdf"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 10
+    },
+    {
+      "type": "is_empty",
+      "field": "elements"
+    }
+  ]
 }

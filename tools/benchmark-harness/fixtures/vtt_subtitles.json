@@ -1,15 +1,15 @@
 {
-	"document": "../../../test_documents/data_formats/sample.vtt",
-	"file_type": "vtt",
-	"file_size": 262,
-	"expected_frameworks": ["kreuzberg", "docling"],
-	"metadata": {
-		"description": "WebVTT subtitle file with timed text content",
-		"category": "data_formats",
-		"size_class": "tiny"
-	},
-	"ground_truth": {
-		"text_file": "../../../test_documents/ground_truth/vtt/vtt_subtitles.txt",
-		"source": "vision"
-	}
+  "document": "../../../test_documents/data_formats/sample.vtt",
+  "file_type": "vtt",
+  "file_size": 262,
+  "expected_frameworks": ["kreuzberg", "docling"],
+  "metadata": {
+    "description": "WebVTT subtitle file with timed text content",
+    "category": "data_formats",
+    "size_class": "tiny"
+  },
+  "ground_truth": {
+    "text_file": "../../../test_documents/ground_truth/vtt/vtt_subtitles.txt",
+    "source": "vision"
+  }
 }

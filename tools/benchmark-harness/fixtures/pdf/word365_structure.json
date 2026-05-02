@@ -1,28 +1,28 @@
 {
-	"document": "../../../../test_documents/vendored/pdfplumber/pdf/word365_structure.pdf",
-	"file_type": "pdf",
-	"file_size": 99253,
-	"expected_frameworks": [
-		"kreuzberg",
-		"docling",
-		"markitdown",
-		"mineru",
-		"pdfminer",
-		"pdfplumber",
-		"pdftotext",
-		"pymupdf4llm",
-		"pypdf",
-		"tika",
-		"unstructured"
-	],
-	"metadata": {
-		"description": "Document from pdfplumber test suite",
-		"source": "pdfplumber",
-		"size_category": "small"
-	},
-	"ground_truth": {
-		"text_file": "../../../../test_documents/ground_truth/pdf/word365_structure.txt",
-		"source": "mistral-pixtral",
-		"markdown_file": "../../../../test_documents/ground_truth/pdf/word365_structure.md"
-	}
+  "document": "../../../../test_documents/vendored/pdfplumber/pdf/word365_structure.pdf",
+  "file_type": "pdf",
+  "file_size": 99253,
+  "expected_frameworks": [
+    "kreuzberg",
+    "docling",
+    "markitdown",
+    "mineru",
+    "pdfminer",
+    "pdfplumber",
+    "pdftotext",
+    "pymupdf4llm",
+    "pypdf",
+    "tika",
+    "unstructured"
+  ],
+  "metadata": {
+    "description": "Document from pdfplumber test suite",
+    "source": "pdfplumber",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/pdf/word365_structure.txt",
+    "source": "mistral-pixtral",
+    "markdown_file": "../../../../test_documents/ground_truth/pdf/word365_structure.md"
+  }
 }

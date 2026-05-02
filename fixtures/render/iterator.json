@@ -1,21 +1,21 @@
 {
-	"id": "render_iterator",
-	"category": "render",
-	"description": "Iterate all PDF pages as PNG images",
-	"tags": ["render", "pdf", "iterator"],
-	"call": "render_page",
-	"input": {
-		"path": "pdf/tiny.pdf",
-		"dpi": 150,
-		"mode": "iterator"
-	},
-	"assertions": [
-		{
-			"type": "not_empty"
-		},
-		{
-			"type": "count_min",
-			"value": 1
-		}
-	]
+  "id": "render_iterator",
+  "category": "render",
+  "description": "Iterate all PDF pages as PNG images",
+  "tags": ["render", "pdf", "iterator"],
+  "call": "render_page",
+  "input": {
+    "path": "pdf/tiny.pdf",
+    "dpi": 150,
+    "mode": "iterator"
+  },
+  "assertions": [
+    {
+      "type": "not_empty"
+    },
+    {
+      "type": "count_min",
+      "value": 1
+    }
+  ]
 }

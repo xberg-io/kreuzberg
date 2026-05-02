@@ -1,24 +1,24 @@
 {
-	"id": "config_use_cache_false",
-	"description": "Tests use_cache=false configuration option",
-	"tags": ["contract", "config"],
-	"call": "extract_file_sync",
-	"input": {
-		"path": "pdf/fake_memo.pdf",
-		"config": {
-			"use_cache": false
-		}
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/pdf"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 10
-		}
-	]
+  "id": "config_use_cache_false",
+  "description": "Tests use_cache=false configuration option",
+  "tags": ["contract", "config"],
+  "call": "extract_file_sync",
+  "input": {
+    "path": "pdf/fake_memo.pdf",
+    "config": {
+      "use_cache": false
+    }
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/pdf"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 10
+    }
+  ]
 }

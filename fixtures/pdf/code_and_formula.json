@@ -1,21 +1,21 @@
 {
-	"id": "pdf_code_and_formula",
-	"category": "pdf",
-	"description": "PDF containing code snippets and formulas should retain substantial content.",
-	"input": {
-		"path": "pdf/code_and_formula.pdf",
-		"media_type": "application/pdf"
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/pdf"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 100
-		}
-	]
+  "id": "pdf_code_and_formula",
+  "category": "pdf",
+  "description": "PDF containing code snippets and formulas should retain substantial content.",
+  "input": {
+    "path": "pdf/code_and_formula.pdf",
+    "media_type": "application/pdf"
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/pdf"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 100
+    }
+  ]
 }

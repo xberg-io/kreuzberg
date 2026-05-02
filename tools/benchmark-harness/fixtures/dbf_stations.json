@@ -1,14 +1,14 @@
 {
-	"document": "../../../test_documents/dbf/stations.dbf",
-	"file_type": "dbf",
-	"file_size": 87623,
-	"expected_frameworks": ["kreuzberg"],
-	"metadata": {
-		"description": "dBASE file with station records",
-		"category": "tables"
-	},
-	"ground_truth": {
-		"text_file": "../../../test_documents/ground_truth/dbf/dbf_stations.txt",
-		"source": "manual"
-	}
+  "document": "../../../test_documents/dbf/stations.dbf",
+  "file_type": "dbf",
+  "file_size": 87623,
+  "expected_frameworks": ["kreuzberg"],
+  "metadata": {
+    "description": "dBASE file with station records",
+    "category": "tables"
+  },
+  "ground_truth": {
+    "text_file": "../../../test_documents/ground_truth/dbf/dbf_stations.txt",
+    "source": "manual"
+  }
 }

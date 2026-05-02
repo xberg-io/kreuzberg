@@ -1,31 +1,31 @@
 {
-	"id": "config_language_detection",
-	"description": "Tests language detection configuration",
-	"tags": ["contract", "config"],
-	"call": "extract_file_sync",
-	"input": {
-		"path": "pdf/fake_memo.pdf",
-		"config": {
-			"language_detection": {
-				"enabled": true
-			}
-		}
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/pdf"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 10
-		},
-		{
-			"type": "contains_all",
-			"field": "detected_languages",
-			"values": ["eng"]
-		}
-	]
+  "id": "config_language_detection",
+  "description": "Tests language detection configuration",
+  "tags": ["contract", "config"],
+  "call": "extract_file_sync",
+  "input": {
+    "path": "pdf/fake_memo.pdf",
+    "config": {
+      "language_detection": {
+        "enabled": true
+      }
+    }
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/pdf"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 10
+    },
+    {
+      "type": "contains_all",
+      "field": "detected_languages",
+      "values": ["eng"]
+    }
+  ]
 }

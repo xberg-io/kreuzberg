@@ -105,17 +105,17 @@ kreuzberg extract-structured invoice.pdf \
   --strict
 ```
 
-| Flag                  | Description                                                                                       |
-| --------------------- | ------------------------------------------------------------------------------------------------- |
-| `<PATH>` (positional) | Document file path. Required.                                                                     |
-| `--schema <PATH>`     | Path to a JSON schema file describing the desired output. Required.                               |
-| `--model <MODEL>`     | LLM model identifier, for example `openai/gpt-4o` or `anthropic/claude-sonnet-4-20250514`. Required. |
-| `--api-key <KEY>`     | LLM provider API key. Falls back to `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, etc.                   |
-| `--prompt <TEMPLATE>` | Custom Jinja2 prompt template overriding the built-in one.                                        |
-| `--schema-name <NAME>`| Schema identifier passed to the LLM. Default: `extraction`.                                       |
-| `--strict`            | Enable OpenAI strict mode for exact schema matching.                                               |
-| `-c, --config <PATH>` | Path to a TOML/YAML/JSON extraction config file applied to the document extraction step.          |
-| `-f, --format <FORMAT>` | Wire format for the printed output: `json` (default), `text`, or `toon`.                        |
+| Flag                    | Description                                                                                          |
+| ----------------------- | ---------------------------------------------------------------------------------------------------- |
+| `<PATH>` (positional)   | Document file path. Required.                                                                        |
+| `--schema <PATH>`       | Path to a JSON schema file describing the desired output. Required.                                  |
+| `--model <MODEL>`       | LLM model identifier, for example `openai/gpt-4o` or `anthropic/claude-sonnet-4-20250514`. Required. |
+| `--api-key <KEY>`       | LLM provider API key. Falls back to `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, etc.                      |
+| `--prompt <TEMPLATE>`   | Custom Jinja2 prompt template overriding the built-in one.                                           |
+| `--schema-name <NAME>`  | Schema identifier passed to the LLM. Default: `extraction`.                                          |
+| `--strict`              | Enable OpenAI strict mode for exact schema matching.                                                 |
+| `-c, --config <PATH>`   | Path to a TOML/YAML/JSON extraction config file applied to the document extraction step.             |
+| `-f, --format <FORMAT>` | Wire format for the printed output: `json` (default), `text`, or `toon`.                             |
 
 The structured output is whatever the LLM produced for the schema; the underlying document text is not printed. Set `RUST_LOG=kreuzberg=debug` to inspect the prompt that was sent.
 
@@ -424,14 +424,14 @@ The `extract` and `batch` commands support a comprehensive set of flags to overr
 
 ### OCR Flags
 
-| Flag | Description |
-|------|-------------|
-| `--ocr <true\|false>` | Enable or disable OCR. Defaults to tesseract backend when enabled. |
-| `--ocr-backend <BACKEND>` | OCR backend: `tesseract`, `paddle-ocr`, or `easyocr`. |
-| `--ocr-language <LANG>` | OCR language code. Tesseract uses ISO 639-3 (`eng`, `fra`, `deu`). PaddleOCR/EasyOCR use short codes (`en`, `ch`, `korean`). |
-| `--force-ocr <true\|false>` | Force OCR even if the document has an existing text layer. |
-| `--ocr-auto-rotate <true\|false>` | Automatically rotate images before OCR based on detected orientation. |
-| `--disable-ocr <true\|false>` | Disable OCR entirely, even for images. |
+| Flag                              | Description                                                                                                                  |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `--ocr <true\|false>`             | Enable or disable OCR. Defaults to tesseract backend when enabled.                                                           |
+| `--ocr-backend <BACKEND>`         | OCR backend: `tesseract`, `paddle-ocr`, or `easyocr`.                                                                        |
+| `--ocr-language <LANG>`           | OCR language code. Tesseract uses ISO 639-3 (`eng`, `fra`, `deu`). PaddleOCR/EasyOCR use short codes (`en`, `ch`, `korean`). |
+| `--force-ocr <true\|false>`       | Force OCR even if the document has an existing text layer.                                                                   |
+| `--ocr-auto-rotate <true\|false>` | Automatically rotate images before OCR based on detected orientation.                                                        |
+| `--disable-ocr <true\|false>`     | Disable OCR entirely, even for images.                                                                                       |
 
 ```bash title="Terminal"
 kreuzberg extract scanned.pdf --ocr true --ocr-backend paddle-ocr --ocr-language ch
@@ -440,11 +440,11 @@ kreuzberg extract document.pdf --force-ocr true --ocr-auto-rotate true
 
 ### Chunking Flags
 
-| Flag | Description |
-|------|-------------|
-| `--chunk <true\|false>` | Enable or disable text chunking. |
-| `--chunk-size <N>` | Maximum chunk size in characters (default: 1000). |
-| `--chunk-overlap <N>` | Overlap between consecutive chunks in characters (default: 200). |
+| Flag                           | Description                                                                                                                                          |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--chunk <true\|false>`        | Enable or disable text chunking.                                                                                                                     |
+| `--chunk-size <N>`             | Maximum chunk size in characters (default: 1000).                                                                                                    |
+| `--chunk-overlap <N>`          | Overlap between consecutive chunks in characters (default: 200).                                                                                     |
 | `--chunking-tokenizer <MODEL>` | Tokenizer model for token-based chunk sizing (for example `Xenova/gpt-4o`). Implicitly enables chunking. Requires the `chunking-tokenizers` feature. |
 
 ```bash title="Terminal"
@@ -454,10 +454,10 @@ kreuzberg extract document.pdf --chunking-tokenizer "Xenova/gpt-4o"
 
 ### Output Flags
 
-| Flag | Description |
-|------|-------------|
-| `--content-format <FORMAT>` | Content output format: `plain`, `markdown`, `djot`, or `html`. Controls how extracted text is formatted. (Deprecated alias: `--output-format`) |
-| `--include-structure <true\|false>` | Include hierarchical document structure in results. |
+| Flag                                | Description                                                                                                                                    |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--content-format <FORMAT>`         | Content output format: `plain`, `markdown`, `djot`, or `html`. Controls how extracted text is formatted. (Deprecated alias: `--output-format`) |
+| `--include-structure <true\|false>` | Include hierarchical document structure in results.                                                                                            |
 
 ```bash title="Terminal"
 kreuzberg extract document.pdf --content-format markdown --include-structure true
@@ -465,11 +465,11 @@ kreuzberg extract document.pdf --content-format markdown --include-structure tru
 
 ### Layout Detection Flags
 
-| Flag | Description |
-|------|-------------|
-| `--layout` | Enable layout detection with default settings (RT-DETR v2). Use `--layout false` to explicitly disable. Requires the `layout-detection` feature. |
-| `--layout-confidence <FLOAT>` | Layout detection confidence threshold (0.0 - 1.0). |
-| `--layout-table-model <MODEL>` | Table structure model: `tatr` (default), `slanet_wired`, `slanet_wireless`, `slanet_plus`, `slanet_auto`, `disabled`. |
+| Flag                           | Description                                                                                                                                      |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `--layout`                     | Enable layout detection with default settings (RT-DETR v2). Use `--layout false` to explicitly disable. Requires the `layout-detection` feature. |
+| `--layout-confidence <FLOAT>`  | Layout detection confidence threshold (0.0 - 1.0).                                                                                               |
+| `--layout-table-model <MODEL>` | Table structure model: `tatr` (default), `slanet_wired`, `slanet_wireless`, `slanet_plus`, `slanet_auto`, `disabled`.                            |
 
 ```bash title="Terminal"
 kreuzberg extract document.pdf --layout --layout-confidence 0.7
@@ -477,8 +477,8 @@ kreuzberg extract document.pdf --layout --layout-confidence 0.7
 
 ### Acceleration Flags
 
-| Flag | Description |
-|------|-------------|
+| Flag                        | Description                                                                                          |
+| --------------------------- | ---------------------------------------------------------------------------------------------------- |
 | `--acceleration <PROVIDER>` | ONNX Runtime execution provider for model inference: `auto`, `cpu`, `coreml`, `cuda`, or `tensorrt`. |
 
 ```bash title="Terminal"
@@ -491,10 +491,10 @@ kreuzberg extract document.pdf --acceleration cuda
 
 ### Page Flags
 
-| Flag | Description |
-|------|-------------|
-| `--extract-pages <true\|false>` | Extract pages as a separate array in results. |
-| `--page-markers <true\|false>` | Insert page marker comments into the main content string. |
+| Flag                            | Description                                               |
+| ------------------------------- | --------------------------------------------------------- |
+| `--extract-pages <true\|false>` | Extract pages as a separate array in results.             |
+| `--page-markers <true\|false>`  | Insert page marker comments into the main content string. |
 
 ```bash title="Terminal"
 kreuzberg extract document.pdf --extract-pages true --page-markers true --format json
@@ -502,10 +502,10 @@ kreuzberg extract document.pdf --extract-pages true --page-markers true --format
 
 ### Image Flags
 
-| Flag | Description |
-|------|-------------|
-| `--extract-images <true\|false>` | Enable image extraction from documents. |
-| `--target-dpi <N>` | Target DPI for image normalisation (36 - 2400). |
+| Flag                             | Description                                     |
+| -------------------------------- | ----------------------------------------------- |
+| `--extract-images <true\|false>` | Enable image extraction from documents.         |
+| `--target-dpi <N>`               | Target DPI for image normalisation (36 - 2400). |
 
 ```bash title="Terminal"
 kreuzberg extract document.pdf --extract-images true --target-dpi 300
@@ -513,11 +513,11 @@ kreuzberg extract document.pdf --extract-images true --target-dpi 300
 
 ### PDF Flags
 
-| Flag | Description |
-|------|-------------|
-| `--pdf-password <PASSWORD>` | Password for encrypted PDFs. Can be specified multiple times for multiple passwords. |
-| `--pdf-extract-images <true\|false>` | Extract images embedded in PDF pages. Requires pdfium feature. |
-| `--pdf-extract-metadata <true\|false>` | Extract PDF metadata (title, author, etc.). Requires pdfium feature. |
+| Flag                                   | Description                                                                          |
+| -------------------------------------- | ------------------------------------------------------------------------------------ |
+| `--pdf-password <PASSWORD>`            | Password for encrypted PDFs. Can be specified multiple times for multiple passwords. |
+| `--pdf-extract-images <true\|false>`   | Extract images embedded in PDF pages. Requires pdfium feature.                       |
+| `--pdf-extract-metadata <true\|false>` | Extract PDF metadata (title, author, etc.). Requires pdfium feature.                 |
 
 ```bash title="Terminal"
 kreuzberg extract encrypted.pdf --pdf-password "secret"
@@ -526,8 +526,8 @@ kreuzberg extract document.pdf --pdf-extract-images true --pdf-extract-metadata 
 
 ### Token Reduction Flags
 
-| Flag | Description |
-|------|-------------|
+| Flag                        | Description                                                                                                                 |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
 | `--token-reduction <LEVEL>` | Token reduction intensity: `off`, `light`, `moderate`, `aggressive`, or `maximum`. Reduces token count for LLM consumption. |
 
 ```bash title="Terminal"
@@ -540,25 +540,25 @@ kreuzberg extract document.pdf --token-reduction maximum
 
 ### Quality and Detection Flags
 
-| Flag | Description |
-|------|-------------|
-| `--quality <true\|false>` | Enable quality post-processing for improved formatting. |
-| `--detect-language <true\|false>` | Enable automatic language detection on extracted text. |
+| Flag                              | Description                                             |
+| --------------------------------- | ------------------------------------------------------- |
+| `--quality <true\|false>`         | Enable quality post-processing for improved formatting. |
+| `--detect-language <true\|false>` | Enable automatic language detection on extracted text.  |
 
 ### Cache Flags
 
-| Flag | Description |
-|------|-------------|
-| `--no-cache <true\|false>` | Disable extraction result caching. |
-| `--cache-namespace <NAMESPACE>` | Cache namespace for tenant isolation. |
-| `--cache-ttl-secs <SECONDS>` | Per-request cache TTL in seconds (0 = skip cache). |
+| Flag                            | Description                                        |
+| ------------------------------- | -------------------------------------------------- |
+| `--no-cache <true\|false>`      | Disable extraction result caching.                 |
+| `--cache-namespace <NAMESPACE>` | Cache namespace for tenant isolation.              |
+| `--cache-ttl-secs <SECONDS>`    | Per-request cache TTL in seconds (0 = skip cache). |
 
 ### Concurrency Flags
 
-| Flag | Description |
-|------|-------------|
-| `--max-concurrent <N>` | Limit parallel extractions in batch mode. |
-| `--max-threads <N>` | Cap all internal thread pools (Rayon, ONNX intra-op, batch semaphore). Useful for constrained environments. |
+| Flag                   | Description                                                                                                 |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `--max-concurrent <N>` | Limit parallel extractions in batch mode.                                                                   |
+| `--max-threads <N>`    | Cap all internal thread pools (Rayon, ONNX intra-op, batch semaphore). Useful for constrained environments. |
 
 ```bash title="Terminal"
 kreuzberg batch documents/*.pdf --max-concurrent 4 --max-threads 8
@@ -566,8 +566,8 @@ kreuzberg batch documents/*.pdf --max-concurrent 4 --max-threads 8
 
 ### Email Flags
 
-| Flag | Description |
-|------|-------------|
+| Flag                 | Description                                                                                                                                 |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
 | `--msg-codepage <N>` | Windows codepage fallback for MSG files without codepage metadata. Common values: 1250 (Central European), 1251 (Cyrillic), 1252 (Western). |
 
 ```bash title="Terminal"

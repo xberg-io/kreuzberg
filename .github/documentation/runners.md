@@ -2,14 +2,14 @@
 
 ## Available Runners
 
-| Runner Label | Architecture | Size | Ephemeral | Notes |
-|---|---|---|---|---|
-| `runner-small` | x86_64 | Small | No | Light tasks: linting, formatting, validation |
-| `runner-medium` | x86_64 | Medium | No | Standard CI: tests, builds |
-| `runner-medium-arm64` | arm64 | Medium | No | ARM64 builds and tests |
-| `runner-large` | x86_64 | Large | No | Heavy workloads: benchmarks, coverage, release builds |
-| `runner-large-spot` | x86_64 | Large | Yes | Cost-optimized large jobs where interruption is acceptable |
-| `runner-medium-arm64-spot` | arm64 | Medium | Yes | Cost-optimized ARM64 jobs where interruption is acceptable |
+| Runner Label               | Architecture | Size   | Ephemeral | Notes                                                      |
+| -------------------------- | ------------ | ------ | --------- | ---------------------------------------------------------- |
+| `runner-small`             | x86_64       | Small  | No        | Light tasks: linting, formatting, validation               |
+| `runner-medium`            | x86_64       | Medium | No        | Standard CI: tests, builds                                 |
+| `runner-medium-arm64`      | arm64        | Medium | No        | ARM64 builds and tests                                     |
+| `runner-large`             | x86_64       | Large  | No        | Heavy workloads: benchmarks, coverage, release builds      |
+| `runner-large-spot`        | x86_64       | Large  | Yes       | Cost-optimized large jobs where interruption is acceptable |
+| `runner-medium-arm64-spot` | arm64        | Medium | Yes       | Cost-optimized ARM64 jobs where interruption is acceptable |
 
 ## Spot Runners
 
@@ -29,11 +29,11 @@ Spot runners (`*-spot`) use ephemeral cloud instances provisioned on a best-effo
 
 ## Choosing a Runner
 
-| Workload | Recommended Runner |
-|---|---|
-| Linting, formatting, validation | `runner-small` |
-| Unit tests, standard builds | `runner-medium` |
-| ARM64 cross-compilation / tests | `runner-medium-arm64` |
-| Benchmarks, coverage reports | `runner-large` |
-| Non-critical large builds | `runner-large-spot` |
-| Non-critical ARM64 builds | `runner-medium-arm64-spot` |
+| Workload                        | Recommended Runner         |
+| ------------------------------- | -------------------------- |
+| Linting, formatting, validation | `runner-small`             |
+| Unit tests, standard builds     | `runner-medium`            |
+| ARM64 cross-compilation / tests | `runner-medium-arm64`      |
+| Benchmarks, coverage reports    | `runner-large`             |
+| Non-critical large builds       | `runner-large-spot`        |
+| Non-critical ARM64 builds       | `runner-medium-arm64-spot` |

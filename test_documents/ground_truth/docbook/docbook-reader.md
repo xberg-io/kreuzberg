@@ -4,7 +4,7 @@ This is a set of tests for pandoc. Most of them are adapted from John Gruber’s
 
 ## Level 2 with an [embedded link](/url)
 
-### Level 3 with *emphasis*
+### Level 3 with _emphasis_
 
 #### Level 4
 
@@ -14,7 +14,7 @@ Hi.
 
 # Level 1
 
-## Level 2 with *emphasis*
+## Level 2 with _emphasis_
 
 ### Level 3
 
@@ -48,7 +48,7 @@ E-mail style:
 >         print "working";
 >     }
 >
-> ``` numberLines
+> ```numberLines
 > sub status {
 >     print "working with line numbers";
 > }
@@ -59,7 +59,6 @@ E-mail style:
 > A list:
 >
 > 1.  item one
->
 > 2.  item two
 >
 > Nested block quotes:
@@ -135,9 +134,7 @@ Multiple paragraphs:
 ## Nested
 
 - Tab
-
   - Tab
-
     - Tab
 
 Here’s another:
@@ -145,7 +142,6 @@ Here’s another:
 1.  First
 
 2.  Second:
-
     - Fee
 
     - Fie
@@ -159,7 +155,6 @@ Same thing but with paragraphs:
 1.  First
 
 2.  Second:
-
     - Fee
 
     - Fie
@@ -173,7 +168,6 @@ Same thing but with paragraphs:
 - this is a list item indented with tabs
 
 - this is a list item indented with spaces
-
   - this is an example list item indented with tabs
 
   - this is an example list item indented with spaces
@@ -184,32 +178,20 @@ Same thing but with paragraphs:
 
 3.  and now 3
 
-    with a continuation
-
-    4.  sublist with roman numerals, starting with 4
-
-    5.  more items
-
-        1.  a subsublist
+    with a continuation 4. sublist with roman numerals, starting with 4 5. more items 1. a subsublist
 
         2.  a subsublist
 
 Nesting:
 
 1.  Upper Alpha
-
-    1.  Upper Roman.
-
-        6.  Decimal start with 6
-
-            3.  Lower alpha with paren
+    1.  Upper Roman. 6. Decimal start with 6 3. Lower alpha with paren
 
 Autonumbering:
 
 1.  Autonumber.
 
 2.  More.
-
     1.  Nested.
 
 Should not be a list item:
@@ -241,12 +223,12 @@ yellow fruit
 
 Multiple blocks with italics:
 
-*apple*  
+_apple_  
 red fruit
 
 contains seeds, crisp, pleasant to taste
 
-*orange*  
+_orange_  
 orange fruit
 
     { orange code block }
@@ -281,19 +263,19 @@ orange fruit
 
 # Inline Markup
 
-This is *emphasized*, and so *is this*.
+This is _emphasized_, and so _is this_.
 
 This is **strong**, and so **is this**.
 
-An *[emphasized link](/url)*.
+An _[emphasized link](/url)_.
 
-***This is strong and em.***
+**_This is strong and em._**
 
-So is ***this*** word.
+So is **_this_** word.
 
-***This is strong and em.***
+**_This is strong and em._**
 
-So is ***this*** word.
+So is **_this_** word.
 
 This is code: `>`, `$`, `\`, `\$`, `<html>`.
 
@@ -301,9 +283,9 @@ More code: `Class` and `Type`
 
 Referencing a man page: `nix.conf(5)`
 
-~~This is *strikeout*.~~
+~~This is _strikeout_.~~
 
-Superscripts: a<sup>bc</sup>d a<sup>*hello*</sup> a<sup>hello there</sup>.
+Superscripts: a<sup>bc</sup>d a<sup>_hello_</sup> a<sup>hello there</sup>.
 
 Subscripts: H<sub>2</sub>O, H<sub>23</sub>O, H<sub>many of them</sub>O.
 
@@ -323,16 +305,19 @@ Dashes between numbers: 5–7, 255–66, 1987–1999.
 
 Ellipses…and…and….
 
-# 
+#
 
-``` math
+```math
 e = mc^{2}
 ```
-``` math
+
+```math
 1
 ```
+
 $`e = mc^{2}`$
-``` math
+
+```math
 e = mc^{2}
 ```
 
@@ -483,7 +468,7 @@ Here is a movie ![](movie.jpg) icon. And here a second movie ![alt text](movie.j
 
 # Footnotes
 
-Here is a footnote reference,[^1] and another.[^2] This should *not* be a footnote reference, because it contains a space.\[^my note\] Here is an inline note.[^3]
+Here is a footnote reference,[^1] and another.[^2] This should _not_ be a footnote reference, because it contains a space.\[^my note\] Here is an inline note.[^3]
 
 > Notes can go in quotes.[^4]
 
@@ -496,7 +481,7 @@ This paragraph should not be part of the note, as it is not indented.
 Simple table with caption:
 
 | Right | Left | Center | Default |
-|------:|:-----|:------:|:--------|
+| ----: | :--- | :----: | :------ |
 |    12 | 12   |   12   | 12      |
 |   123 | 123  |  123   | 123     |
 |     1 | 1    |   1    | 1       |
@@ -506,7 +491,7 @@ Demonstration of simple table syntax.
 Simple table without caption:
 
 | Right | Left | Center | Default |
-|------:|:-----|:------:|:--------|
+| ----: | :--- | :----: | :------ |
 |    12 | 12   |   12   | 12      |
 |   123 | 123  |  123   | 123     |
 |     1 | 1    |   1    | 1       |
@@ -514,7 +499,7 @@ Simple table without caption:
 Simple table indented two spaces:
 
 | Right | Left | Center | Default |
-|------:|:-----|:------:|:--------|
+| ----: | :--- | :----: | :------ |
 |    12 | 12   |   12   | 12      |
 |   123 | 123  |  123   | 123     |
 |     1 | 1    |   1    | 1       |
@@ -523,17 +508,17 @@ Demonstration of simple table syntax.
 
 Multiline table with caption:
 
-| Centered Header | Left Aligned | Right Aligned | Default aligned |
-|:--:|:---|---:|:---|
-| First | row | 12.0 | Example of a row that spans multiple lines. |
-| Second | row | 5.0 | Here's another one. Note the blank line between rows. |
+| Centered Header | Left Aligned | Right Aligned | Default aligned                                       |
+| :-------------: | :----------- | ------------: | :---------------------------------------------------- |
+|      First      | row          |          12.0 | Example of a row that spans multiple lines.           |
+|     Second      | row          |           5.0 | Here's another one. Note the blank line between rows. |
 
 Here's the caption. It may span multiple lines.
 
 Table with attributes
 
 |             |             |
-|-------------|-------------|
+| ----------- | ----------- |
 | body cell 1 | body cell 2 |
 
 Attribute table caption
@@ -541,20 +526,20 @@ Attribute table caption
 Table with attributes, without caption
 
 |             |             |
-|-------------|-------------|
+| ----------- | ----------- |
 | body cell 1 | body cell 2 |
 
 Multiline table without caption:
 
-| Centered Header | Left Aligned | Right Aligned | Default aligned |
-|:--:|:---|---:|:---|
-| First | row | 12.0 | Example of a row that spans multiple lines. |
-| Second | row | 5.0 | Here's another one. Note the blank line between rows. |
+| Centered Header | Left Aligned | Right Aligned | Default aligned                                       |
+| :-------------: | :----------- | ------------: | :---------------------------------------------------- |
+|      First      | row          |          12.0 | Example of a row that spans multiple lines.           |
+|     Second      | row          |           5.0 | Here's another one. Note the blank line between rows. |
 
 Table without column headers:
 
 |     |     |     |     |
-|----:|:----|:---:|----:|
+| --: | :-- | :-: | --: |
 |  12 | 12  | 12  |  12 |
 | 123 | 123 | 123 | 123 |
 |   1 | 1   |  1  |   1 |
@@ -562,7 +547,7 @@ Table without column headers:
 Multiline table without column headers:
 
 |        |     |      |                                                       |
-|:------:|:----|-----:|:------------------------------------------------------|
+| :----: | :-- | ---: | :---------------------------------------------------- |
 | First  | row | 12.0 | Example of a row that spans multiple lines.           |
 | Second | row |  5.0 | Here's another one. Note the blank line between rows. |
 
@@ -596,7 +581,6 @@ Multiline table with cells spanning multiple columns and rows without caption.
 1.  A Step
 
 2.  Another Step
-
     1.  Substeps can be nested indefinitely deep.
 
 3.  A Final Step
@@ -621,7 +605,7 @@ Index terms can also refer to other index terms: <span class="indexterm" primary
 
     If you want, you can indent every line, but you can also be lazy and just indent the first line of each block.
 
-[^3]: This is *easier* to type. Inline notes may contain [links](http://google.com) and `]` verbatim characters, as well as \[bracketed text\].
+[^3]: This is _easier_ to type. Inline notes may contain [links](http://google.com) and `]` verbatim characters, as well as \[bracketed text\].
 
 [^4]: In quote.
 

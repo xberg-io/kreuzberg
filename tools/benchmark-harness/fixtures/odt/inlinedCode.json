@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/odt/inlinedCode.odt",
   "file_type": "odt",
   "file_size": 10141,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "odt test: inlinedCode",
     "source": "pandoc-generated",

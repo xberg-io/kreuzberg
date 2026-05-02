@@ -16,7 +16,7 @@ Encore du contenu!
 ## Tableau
 
 | Chose   | Truc   |
-|---------|--------|
+| ------- | ------ |
 | Chose 1 | Truc 1 |
 | Chose 2 | Truc 2 |
 

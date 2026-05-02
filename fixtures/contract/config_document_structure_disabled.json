@@ -1,16 +1,16 @@
 {
-	"id": "config_document_structure_disabled",
-	"description": "Tests document field is null when include_document_structure is false",
-	"tags": ["contract", "document_structure"],
-	"call": "extract_file_sync",
-	"input": {
-		"path": "pdf/fake_memo.pdf"
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/pdf"
-		}
-	]
+  "id": "config_document_structure_disabled",
+  "description": "Tests document field is null when include_document_structure is false",
+  "tags": ["contract", "document_structure"],
+  "call": "extract_file_sync",
+  "input": {
+    "path": "pdf/fake_memo.pdf"
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/pdf"
+    }
+  ]
 }

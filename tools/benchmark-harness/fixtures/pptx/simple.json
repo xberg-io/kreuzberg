@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/pptx/simple.pptx",
   "file_type": "pptx",
   "file_size": 34865,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "PPTX test document: simple",
     "source": "pandoc-generated",

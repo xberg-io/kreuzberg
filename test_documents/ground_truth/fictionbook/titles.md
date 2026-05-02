@@ -1,4 +1,4 @@
-# 
+#
 
 <div id="simple-title" class="section">
 
@@ -10,6 +10,6 @@ This example tests FictionBook titles.
 
 <div id="emphasized-strong-title" class="section">
 
-## *Emphasized* **Strong** Title
+## _Emphasized_ **Strong** Title
 
 </div>

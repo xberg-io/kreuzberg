@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/latex/tables.tex",
   "file_type": "latex",
   "file_size": 471,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "LaTeX document with simple tabular and table environment with caption",
     "source": "handcrafted",

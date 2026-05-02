@@ -38,7 +38,7 @@ Teamset Manual , Monsters The 1985 Chicago Bears And Wild Heart Of Football Rich
 
 ## Pain, TRI ER POINTS AND ACUPUNCTURE POINTS FOR PAIN
 
-TRI ER POINTS AND ACUPUNCTURE POINTS FOR PAIN: CORRELATIONS AND IMPLICATIONS RONALD MELZACK *, DOROTHY M. STILLWELL And ELISABETH J. FOX Department Of Psychology, Mc ill University, And Department Of Medicine, Royal Victoria Hospital,
+TRI ER POINTS AND ACUPUNCTURE POINTS FOR PAIN: CORRELATIONS AND IMPLICATIONS RONALD MELZACK \*, DOROTHY M. STILLWELL And ELISABETH J. FOX Department Of Psychology, Mc ill University, And Department Of Medicine, Royal Victoria Hospital,
 
 Montreal, Que. (Canada) (Accepted July 21st, 1976) SUMMARY Trigger Points Associated With Myofascial And Visceral Pains Often Tie With- In The Areas Of Referred ... Jun 12th, 2021
 
@@ -88,7 +88,7 @@ Should You Do? To Avoid Distress, Try These Ways Of Kindness: 1) Distract To Ano
 
 ## overned
 
-14/10/2020 State Water Resources Control Board Https ://www.waterboards.ca.gov/water\_issues/programs/tm dl/integrated2014\_2016.shtml 1/ 2 H O M E Wa T E R I Ssu E S P R ... Jun 26th, 2021
+14/10/2020 State Water Resources Control Board Https ://www.waterboards.ca.gov/water\_issues/programs/tm dl/integrated2014_2016.shtml 1/ 2 H O M E Wa T E R I Ssu E S P R ... Jun 26th, 2021
 
 ## WORTH TRUST - ASSISTIVE DEVICES FOR THE
 

@@ -10,11 +10,11 @@ AutoGen is an open-source framework that allows developers to build LLM applicat
 
 ## A table to test parsing:
 
-| ColA | ColB | ColC | ColD | ColE | ColF |
-| --- | --- | --- | --- | --- | --- |
-| 1 | 2 | 3 | 4 | 5 | 6 |
-| 7 | 8 | 9 | 1b92870d-e3b5-4e65-8153-919f4ff45592 | 11 | 12 |
-| 13 | 14 | 15 | 16 | 17 | 18 |
+| ColA | ColB | ColC | ColD                                 | ColE | ColF |
+| ---- | ---- | ---- | ------------------------------------ | ---- | ---- |
+| 1    | 2    | 3    | 4                                    | 5    | 6    |
+| 7    | 8    | 9    | 1b92870d-e3b5-4e65-8153-919f4ff45592 | 11   | 12   |
+| 13   | 14   | 15   | 16                                   | 17   | 18   |
 
 ## A chart to test parsing:
 

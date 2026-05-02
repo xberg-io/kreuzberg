@@ -1,41 +1,41 @@
 {
-	"id": "code_tree_sitter_config",
-	"category": "code",
-	"description": "Test tree-sitter config with structure, comments, and docstrings enabled",
-	"tags": ["code", "config", "tree-sitter"],
-	"input": {
-		"path": "code/hello.py",
-		"media_type": "text/x-source-code",
-		"config": {
-			"tree_sitter": {
-				"process": {
-					"structure": true,
-					"imports": true,
-					"exports": true,
-					"comments": true,
-					"docstrings": true
-				}
-			}
-		}
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "text/x-source-code"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 10
-		},
-		{
-			"type": "contains_all",
-			"field": "content",
-			"values": ["def greet", "class Greeter"]
-		}
-	],
-	"skip": {
-		"reason": "Requires features: tree-sitter"
-	}
+  "id": "code_tree_sitter_config",
+  "category": "code",
+  "description": "Test tree-sitter config with structure, comments, and docstrings enabled",
+  "tags": ["code", "config", "tree-sitter"],
+  "input": {
+    "path": "code/hello.py",
+    "media_type": "text/x-source-code",
+    "config": {
+      "tree_sitter": {
+        "process": {
+          "structure": true,
+          "imports": true,
+          "exports": true,
+          "comments": true,
+          "docstrings": true
+        }
+      }
+    }
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "text/x-source-code"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 10
+    },
+    {
+      "type": "contains_all",
+      "field": "content",
+      "values": ["def greet", "class Greeter"]
+    }
+  ],
+  "skip": {
+    "reason": "Requires features: tree-sitter"
+  }
 }

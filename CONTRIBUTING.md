@@ -30,14 +30,14 @@ Want to work on something bigger or propose a new feature? [Open a discussion](h
 
 Kreuzberg is a polyglot project with many areas where you can help:
 
-| Area | Description |
-|------|-------------|
-| **Rust core** | Parser implementations, extraction pipeline, performance |
-| **Language bindings** | Python, TypeScript, Ruby, Go, Java, C#, PHP, R, Elixir, WASM |
-| **Documentation** | Guides, API references, examples, tutorials |
-| **Testing** | Unit tests, E2E test fixtures, cross-language coverage |
-| **Plugins** | New extraction plugins, plugin system improvements |
-| **CI/CD** | Build pipeline, cross-architecture support, release automation |
+| Area                  | Description                                                    |
+| --------------------- | -------------------------------------------------------------- |
+| **Rust core**         | Parser implementations, extraction pipeline, performance       |
+| **Language bindings** | Python, TypeScript, Ruby, Go, Java, C#, PHP, R, Elixir, WASM   |
+| **Documentation**     | Guides, API references, examples, tutorials                    |
+| **Testing**           | Unit tests, E2E test fixtures, cross-language coverage         |
+| **Plugins**           | New extraction plugins, plugin system improvements             |
+| **CI/CD**             | Build pipeline, cross-architecture support, release automation |
 
 ## Development setup
 
@@ -55,17 +55,17 @@ Kreuzberg is a polyglot project with many areas where you can help:
 
 **Language-specific toolchains** (only install what you need):
 
-| Language | Version | Tool |
-|----------|---------|------|
-| Python | 3.10+ | [`uv`](https://docs.astral.sh/uv/) |
-| Node.js | 20+ | [`pnpm`](https://pnpm.io/) |
-| Ruby | 3.2+ | `rbenv` or `rvm` |
-| Go | 1.26+ | [Official installer](https://go.dev/dl/) |
-| Java | 25+ | JDK (via [sdkman](https://sdkman.io/)) |
-| .NET | 10+ | `dotnet` |
-| PHP | 8.1+ | `composer` |
-| Elixir | 1.14+ | `mix` (OTP 25+) |
-| R | 4.1+ | [CRAN](https://cran.r-project.org/) |
+| Language | Version | Tool                                     |
+| -------- | ------- | ---------------------------------------- |
+| Python   | 3.10+   | [`uv`](https://docs.astral.sh/uv/)       |
+| Node.js  | 20+     | [`pnpm`](https://pnpm.io/)               |
+| Ruby     | 3.2+    | `rbenv` or `rvm`                         |
+| Go       | 1.26+   | [Official installer](https://go.dev/dl/) |
+| Java     | 25+     | JDK (via [sdkman](https://sdkman.io/))   |
+| .NET     | 10+     | `dotnet`                                 |
+| PHP      | 8.1+    | `composer`                               |
+| Elixir   | 1.14+   | `mix` (OTP 25+)                          |
+| R        | 4.1+    | [CRAN](https://cran.r-project.org/)      |
 
 ### Getting started
 
@@ -77,14 +77,14 @@ This installs all toolchains and dependencies across every language. Safe to re-
 
 ## Quick reference
 
-| Command | What it does |
-|---------|-------------|
-| `task setup` | Install all dependencies (idempotent) |
-| `task build` | Build all language bindings |
-| `task test` | Run all test suites |
-| `task lint` | Run all linters (with auto-fix) |
-| `task format` | Format all code |
-| `task check` | Combined lint + format check (no modifications) |
+| Command       | What it does                                    |
+| ------------- | ----------------------------------------------- |
+| `task setup`  | Install all dependencies (idempotent)           |
+| `task build`  | Build all language bindings                     |
+| `task test`   | Run all test suites                             |
+| `task lint`   | Run all linters (with auto-fix)                 |
+| `task format` | Format all code                                 |
+| `task check`  | Combined lint + format check (no modifications) |
 
 For language-specific commands, use the namespace pattern: `task rust:test`, `task python:build`, `task node:format`, etc.
 

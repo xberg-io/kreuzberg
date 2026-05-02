@@ -1,26 +1,26 @@
 {
-	"id": "structured_json_simple",
-	"category": "structured",
-	"description": "Simple JSON document to verify structured extraction.",
-	"input": {
-		"path": "json/simple.json",
-		"media_type": "application/json"
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/json"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 10
-		},
-		{
-			"type": "contains_any",
-			"field": "content",
-			"values": ["{", "name"]
-		}
-	]
+  "id": "structured_json_simple",
+  "category": "structured",
+  "description": "Simple JSON document to verify structured extraction.",
+  "input": {
+    "path": "json/simple.json",
+    "media_type": "application/json"
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/json"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 10
+    },
+    {
+      "type": "contains_any",
+      "field": "content",
+      "values": ["{", "name"]
+    }
+  ]
 }

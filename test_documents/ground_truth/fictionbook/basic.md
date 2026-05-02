@@ -1,4 +1,4 @@
-# 
+#
 
 <div id="top-level-title" class="section">
 
@@ -12,7 +12,7 @@
 
 #### Subsection
 
-This *emphasized* **strong** `verbatim` markdown. See this [link](http://example.com/).
+This _emphasized_ **strong** `verbatim` markdown. See this [link](http://example.com/).
 
 Ordered list:
 
@@ -24,7 +24,7 @@ Ordered list:
 
 > Blockquote is for citatons.
 
-------------------------------------------------------------------------
+---
 
 `Code`
 
@@ -36,7 +36,7 @@ Ordered list:
 
 `code.`
 
-------------------------------------------------------------------------
+---
 
 ~~Strikeout~~ is Pandoc’s extension. Superscript and subscripts too: H<sub>2</sub>O is a liquid[^1]. 2<sup>10</sup> is 1024.
 

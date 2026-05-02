@@ -1,14 +1,14 @@
 {
-	"document": "../../../test_documents/docx/lorem_ipsum.docx",
-	"file_type": "docx",
-	"file_size": 14817,
-	"expected_frameworks": ["kreuzberg", "docling", "markitdown", "pandoc", "tika", "unstructured"],
-	"metadata": {
-		"description": "Simple DOCX - Lorem ipsum text",
-		"category": "text"
-	},
-	"ground_truth": {
-		"text_file": "../../../test_documents/ground_truth/docx/docx_simple.txt",
-		"source": "vision"
-	}
+  "document": "../../../test_documents/docx/lorem_ipsum.docx",
+  "file_type": "docx",
+  "file_size": 14817,
+  "expected_frameworks": ["kreuzberg", "docling", "markitdown", "pandoc", "tika", "unstructured"],
+  "metadata": {
+    "description": "Simple DOCX - Lorem ipsum text",
+    "category": "text"
+  },
+  "ground_truth": {
+    "text_file": "../../../test_documents/ground_truth/docx/docx_simple.txt",
+    "source": "vision"
+  }
 }

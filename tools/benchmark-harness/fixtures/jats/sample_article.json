@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/jats/sample_article.jats",
   "file_type": "jats",
   "file_size": 7772,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "jats test: sample_article",
     "source": "pandoc-generated",

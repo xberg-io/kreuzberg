@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/odt/formula.odt",
   "file_type": "odt",
   "file_size": 14252,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "ODT test document: formula",
     "source": "pandoc-generated",

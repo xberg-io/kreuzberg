@@ -162,10 +162,10 @@ npm install @kreuzberg/wasm
 **Basic Extraction:**
 
 ```typescript
-import { extractBytes } from '@kreuzberg/wasm';
+import { extractBytes } from "@kreuzberg/wasm";
 
-const fileData = await fs.promises.readFile('document.pdf');
-const result = await extractBytes(fileData, 'application/pdf');
+const fileData = await fs.promises.readFile("document.pdf");
+const result = await extractBytes(fileData, "application/pdf");
 console.log(result.content);
 ```
 

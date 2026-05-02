@@ -1,31 +1,27 @@
 {
-	"id": "link_empty_text",
-	"category": "markup",
-	"description": "Create markdown link with empty text",
-	"tags": [
-		"markup",
-		"formatting",
-		"links"
-	],
-	"call": "link",
-	"input": {
-		"start": 0,
-		"end": 0,
-		"url": "https://example.com"
-	},
-	"assertions": [
-		{
-			"type": "not_error"
-		},
-		{
-			"type": "equals",
-			"field": "start",
-			"value": 0
-		},
-		{
-			"type": "equals",
-			"field": "end",
-			"value": 0
-		}
-	]
+  "id": "link_empty_text",
+  "category": "markup",
+  "description": "Create markdown link with empty text",
+  "tags": ["markup", "formatting", "links"],
+  "call": "link",
+  "input": {
+    "start": 0,
+    "end": 0,
+    "url": "https://example.com"
+  },
+  "assertions": [
+    {
+      "type": "not_error"
+    },
+    {
+      "type": "equals",
+      "field": "start",
+      "value": 0
+    },
+    {
+      "type": "equals",
+      "field": "end",
+      "value": 0
+    }
+  ]
 }

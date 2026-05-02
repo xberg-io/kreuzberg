@@ -1,14 +1,14 @@
 {
-	"document": "../../../test_documents/xml/simple_svg.svg",
-	"file_type": "svg",
-	"file_size": 426,
-	"expected_frameworks": ["kreuzberg", "pymupdf4llm", "tika"],
-	"metadata": {
-		"description": "Simple SVG image",
-		"category": "image"
-	},
-	"ground_truth": {
-		"text_file": "../../../test_documents/ground_truth/svg/svg_simple.txt",
-		"source": "manual"
-	}
+  "document": "../../../test_documents/xml/simple_svg.svg",
+  "file_type": "svg",
+  "file_size": 426,
+  "expected_frameworks": ["kreuzberg", "pymupdf4llm", "tika"],
+  "metadata": {
+    "description": "Simple SVG image",
+    "category": "image"
+  },
+  "ground_truth": {
+    "text_file": "../../../test_documents/ground_truth/svg/svg_simple.txt",
+    "source": "manual"
+  }
 }

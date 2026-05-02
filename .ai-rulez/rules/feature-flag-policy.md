@@ -44,11 +44,11 @@ excel-wasm, archives, tree-sitter-wasm, ocr-wasm, liter-llm, stopwords`.
 
 ## Aggregate Sets
 
-| Feature | Description |
-|---------|-------------|
-| `formats` | All document formats + api/mcp/otel/chunking; no OCR, no ML |
-| `full` | `formats` + ocr + paddle-ocr + layout + embeddings + tree-sitter + liter-llm; excludes `pdf-oxide` |
-| `wasm-target` | Full safe WASM-compatible set |
+| Feature       | Description                                                                                        |
+| ------------- | -------------------------------------------------------------------------------------------------- |
+| `formats`     | All document formats + api/mcp/otel/chunking; no OCR, no ML                                        |
+| `full`        | `formats` + ocr + paddle-ocr + layout + embeddings + tree-sitter + liter-llm; excludes `pdf-oxide` |
+| `wasm-target` | Full safe WASM-compatible set                                                                      |
 
 ## Build Profiles
 

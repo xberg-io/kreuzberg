@@ -1,21 +1,21 @@
 {
-	"id": "office_pptx_pitch_deck",
-	"category": "office",
-	"description": "Pitch deck PPTX used to validate large slide extraction.",
-	"input": {
-		"path": "pptx/pitch_deck_presentation.pptx",
-		"media_type": "application/vnd.openxmlformats-officedocument.presentationml.presentation"
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/vnd.openxmlformats-officedocument.presentationml.presentation"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 100
-		}
-	]
+  "id": "office_pptx_pitch_deck",
+  "category": "office",
+  "description": "Pitch deck PPTX used to validate large slide extraction.",
+  "input": {
+    "path": "pptx/pitch_deck_presentation.pptx",
+    "media_type": "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 100
+    }
+  ]
 }

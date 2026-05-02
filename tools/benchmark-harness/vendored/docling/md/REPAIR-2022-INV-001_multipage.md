@@ -74,19 +74,19 @@ Ellis Turner
 
 ## Estimate Totals
 
-|                  | Hours   | Rate   | Cost   |
-|------------------|---------|--------|--------|
-| Parts            |         |        | 2,100  |
-| Body Labor       | 2       | 150    | 300    |
-| Paint Labor      | 1.5     | 150    | 225    |
-| Mechanical Labor | -       | -      | -      |
-| Supplies         |         |        |        |
-| Paint Supplies   |         |        | 60     |
-| Body Supplies    |         |        | 30     |
-| Other Charges    |         |        | 15     |
-| Subtotal         |         |        | 2,730  |
-| Sales Tax        |         | 10.20% | 278.46 |
-| GRAND TOTAL      |         |        | 5,738  |
+|                  | Hours | Rate   | Cost   |
+| ---------------- | ----- | ------ | ------ |
+| Parts            |       |        | 2,100  |
+| Body Labor       | 2     | 150    | 300    |
+| Paint Labor      | 1.5   | 150    | 225    |
+| Mechanical Labor | -     | -      | -      |
+| Supplies         |       |        |        |
+| Paint Supplies   |       |        | 60     |
+| Body Supplies    |       |        | 30     |
+| Other Charges    |       |        | 15     |
+| Subtotal         |       |        | 2,730  |
+| Sales Tax        |       | 10.20% | 278.46 |
+| GRAND TOTAL      |       |        | 5,738  |
 
 ## Note
 
@@ -170,19 +170,19 @@ Ellis Turner
 
 ## Estimate Totals
 
-|                  | Hours   | Rate   | Cost      |
-|------------------|---------|--------|-----------|
-| Parts            |         |        | 99,999    |
-| Body Labor       | 2       | 150    | 300       |
-| Paint Labor      | 1.5     | 150    | 225       |
-| Mechanical Labor | -       | -      | -         |
-| Supplies         |         |        |           |
-| Paint Supplies   |         |        | 60        |
-| Body Supplies    |         |        | 30        |
-| Other Charges    |         |        | 15        |
-| Subtotal         |         |        | 100,629   |
-| Sales Tax        |         | 10.20% | 10264.158 |
-| GRAND TOTAL      |         |        | 211,522   |
+|                  | Hours | Rate   | Cost      |
+| ---------------- | ----- | ------ | --------- |
+| Parts            |       |        | 99,999    |
+| Body Labor       | 2     | 150    | 300       |
+| Paint Labor      | 1.5   | 150    | 225       |
+| Mechanical Labor | -     | -      | -         |
+| Supplies         |       |        |           |
+| Paint Supplies   |       |        | 60        |
+| Body Supplies    |       |        | 30        |
+| Other Charges    |       |        | 15        |
+| Subtotal         |       |        | 100,629   |
+| Sales Tax        |       | 10.20% | 10264.158 |
+| GRAND TOTAL      |       |        | 211,522   |
 
 Note
 

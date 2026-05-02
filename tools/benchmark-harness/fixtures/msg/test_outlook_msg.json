@@ -1,15 +1,15 @@
 {
-	"document": "../../../../test_documents/vendored/markitdown/msg/test_outlook_msg.msg",
-	"file_type": "msg",
-	"file_size": 13312,
-	"expected_frameworks": ["kreuzberg", "markitdown", "tika", "unstructured"],
-	"metadata": {
-		"description": "Document from markitdown test suite",
-		"source": "markitdown",
-		"size_category": "small"
-	},
-	"ground_truth": {
-		"text_file": "../../../../test_documents/ground_truth/msg/test_outlook_msg.txt",
-		"source": "olefile"
-	}
+  "document": "../../../../test_documents/vendored/markitdown/msg/test_outlook_msg.msg",
+  "file_type": "msg",
+  "file_size": 13312,
+  "expected_frameworks": ["kreuzberg", "markitdown", "tika", "unstructured"],
+  "metadata": {
+    "description": "Document from markitdown test suite",
+    "source": "markitdown",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/msg/test_outlook_msg.txt",
+    "source": "olefile"
+  }
 }

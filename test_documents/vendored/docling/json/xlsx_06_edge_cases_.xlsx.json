@@ -99,10 +99,7 @@
             "b": 4.0,
             "coord_origin": "TOPLEFT"
           },
-          "charspan": [
-            0,
-            0
-          ]
+          "charspan": [0, 0]
         }
       ],
       "captions": [],
@@ -768,10 +765,7 @@
             "b": 5.0,
             "coord_origin": "TOPLEFT"
           },
-          "charspan": [
-            0,
-            0
-          ]
+          "charspan": [0, 0]
         }
       ],
       "captions": [],
@@ -1541,10 +1535,7 @@
             "b": 4.0,
             "coord_origin": "TOPLEFT"
           },
-          "charspan": [
-            0,
-            0
-          ]
+          "charspan": [0, 0]
         }
       ],
       "captions": [],
@@ -2210,10 +2201,7 @@
             "b": 7.0,
             "coord_origin": "TOPLEFT"
           },
-          "charspan": [
-            0,
-            0
-          ]
+          "charspan": [0, 0]
         }
       ],
       "captions": [],

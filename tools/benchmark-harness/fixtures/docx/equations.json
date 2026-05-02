@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/vendored/docling/docx/equations.docx",
   "file_type": "docx",
   "file_size": 15814,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "DOCX test document: equations",
     "source": "pandoc-generated",

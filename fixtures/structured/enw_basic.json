@@ -1,16 +1,16 @@
 {
-	"id": "structured_enw_basic",
-	"category": "structured",
-	"description": "EndNote ENW citation format extraction.",
-	"input": {
-		"path": "data_formats/sample.enw",
-		"media_type": "application/x-endnote-refer"
-	},
-	"assertions": [
-		{
-			"type": "contains_any",
-			"field": "mime_type",
-			"values": ["application/x-endnote-refer", "application/x-endnote+xml", "text/plain"]
-		}
-	]
+  "id": "structured_enw_basic",
+  "category": "structured",
+  "description": "EndNote ENW citation format extraction.",
+  "input": {
+    "path": "data_formats/sample.enw",
+    "media_type": "application/x-endnote-refer"
+  },
+  "assertions": [
+    {
+      "type": "contains_any",
+      "field": "mime_type",
+      "values": ["application/x-endnote-refer", "application/x-endnote+xml", "text/plain"]
+    }
+  ]
 }

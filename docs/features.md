@@ -142,14 +142,14 @@ Kreuzberg supports three OCR backends. You can use one backend, or chain multipl
 
 ### Backend Comparison
 
-| | Tesseract | PaddleOCR | EasyOCR |
-|---|---|---|---|
-| **Languages** | 100+ | 80+ (11 script families) | 80+ |
-| **Best for** | General purpose, broad language coverage | CJK, complex scripts, high accuracy | GPU-accelerated workloads |
-| **Platform** | All bindings including WASM | All non-WASM bindings | Python only |
-| **Install** | System package (`tesseract-ocr`) | Cargo feature `paddle-ocr` (bundled in Python package since 4.8.5) | `pip install kreuzberg[easyocr]` |
-| **Runtime** | C library (Tesseract 4.0+) | ONNX Runtime (models downloaded on first use) | PyTorch (optional CUDA) |
-| **Python version** | Any | Any | Any |
+|                    | Tesseract                                | PaddleOCR                                                          | EasyOCR                          |
+| ------------------ | ---------------------------------------- | ------------------------------------------------------------------ | -------------------------------- |
+| **Languages**      | 100+                                     | 80+ (11 script families)                                           | 80+                              |
+| **Best for**       | General purpose, broad language coverage | CJK, complex scripts, high accuracy                                | GPU-accelerated workloads        |
+| **Platform**       | All bindings including WASM              | All non-WASM bindings                                              | Python only                      |
+| **Install**        | System package (`tesseract-ocr`)         | Cargo feature `paddle-ocr` (bundled in Python package since 4.8.5) | `pip install kreuzberg[easyocr]` |
+| **Runtime**        | C library (Tesseract 4.0+)               | ONNX Runtime (models downloaded on first use)                      | PyTorch (optional CUDA)          |
+| **Python version** | Any                                      | Any                                                                | Any                              |
 
 ### Multi-Backend Pipeline
 
@@ -311,12 +311,12 @@ flowchart LR
     E --> F[Output]
 ```
 
-| Plugin Type | Purpose | Example |
-|---|---|---|
-| **Document Extractors** | Add support for custom file formats or override defaults | Proprietary format parser |
-| **OCR Backends** | Integrate cloud OCR services or custom engines | AWS Textract, Google Vision |
-| **Validators** | Enforce quality standards on extraction results | Minimum word count check |
-| **Post-Processors** | Transform or enrich results after extraction | PII redaction, custom metadata |
+| Plugin Type             | Purpose                                                  | Example                        |
+| ----------------------- | -------------------------------------------------------- | ------------------------------ |
+| **Document Extractors** | Add support for custom file formats or override defaults | Proprietary format parser      |
+| **OCR Backends**        | Integrate cloud OCR services or custom engines           | AWS Textract, Google Vision    |
+| **Validators**          | Enforce quality standards on extraction results          | Minimum word count check       |
+| **Post-Processors**     | Transform or enrich results after extraction             | PII redaction, custom metadata |
 
 Plugins are registered with a priority value that determines execution order. Discovery works through Python entry points, configuration files, or environment variables.
 
@@ -326,13 +326,13 @@ For the architecture overview, see [Plugin System](concepts/plugin-system.md). F
 
 ## Deployment Modes
 
-| Mode | When to Use | Details |
-|---|---|---|
-| **Library** | Embedding extraction into your application | Import the package in Python, TypeScript, Rust, Go, Ruby, C#, Java, PHP, Elixir, R, or C |
-| **CLI** | One-off extractions, scripting, CI pipelines | `kreuzberg extract document.pdf --format json` -- see [CLI Usage](cli/usage.md) |
-| **REST API** | Multi-service architectures, language-agnostic access | `kreuzberg serve --port 8000` -- see [API Server Guide](guides/api-server.md) |
-| **MCP Server** | AI agent integration (Claude Desktop, Continue.dev) | `kreuzberg mcp` -- stdio transport with JSON-RPC 2.0 |
-| **Docker** | Reproducible deployments with all dependencies bundled | `ghcr.io/kreuzberg-dev/kreuzberg:latest` -- see [Docker Guide](guides/docker.md) |
+| Mode           | When to Use                                            | Details                                                                                  |
+| -------------- | ------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
+| **Library**    | Embedding extraction into your application             | Import the package in Python, TypeScript, Rust, Go, Ruby, C#, Java, PHP, Elixir, R, or C |
+| **CLI**        | One-off extractions, scripting, CI pipelines           | `kreuzberg extract document.pdf --format json` -- see [CLI Usage](cli/usage.md)          |
+| **REST API**   | Multi-service architectures, language-agnostic access  | `kreuzberg serve --port 8000` -- see [API Server Guide](guides/api-server.md)            |
+| **MCP Server** | AI agent integration (Claude Desktop, Continue.dev)    | `kreuzberg mcp` -- stdio transport with JSON-RPC 2.0                                     |
+| **Docker**     | Reproducible deployments with all dependencies bundled | `ghcr.io/kreuzberg-dev/kreuzberg:latest` -- see [Docker Guide](guides/docker.md)         |
 
 ---
 
@@ -359,12 +359,12 @@ Choose Native for server-side Node.js; choose WASM for browser or edge deploymen
 
 Rust builds are modular through Cargo features. Nothing is enabled by default -- you opt into exactly what you need:
 
-| Category | Features |
-|---|---|
-| **Format extractors** | `pdf`, `excel`, `office`, `email`, `html`, `xml`, `archives`, `markdown`, `djot`, `mdx` |
-| **Processing** | `ocr`, `paddle-ocr`, `language-detection`, `chunking`, `embeddings`, `quality`, `keywords`, `stopwords` |
-| **Servers** | `api`, `mcp` |
-| **Bundles** | `full` (all extractors + processing), `server`, `cli` |
+| Category              | Features                                                                                                |
+| --------------------- | ------------------------------------------------------------------------------------------------------- |
+| **Format extractors** | `pdf`, `excel`, `office`, `email`, `html`, `xml`, `archives`, `markdown`, `djot`, `mdx`                 |
+| **Processing**        | `ocr`, `paddle-ocr`, `language-detection`, `chunking`, `embeddings`, `quality`, `keywords`, `stopwords` |
+| **Servers**           | `api`, `mcp`                                                                                            |
+| **Bundles**           | `full` (all extractors + processing), `server`, `cli`                                                   |
 
 ### Package Installation
 

@@ -57,20 +57,20 @@ E-mail style:
 > This is a block quote. It is pretty short.
 
 > Code in a block quote:
-> 
+>
 >     sub status {
 >         print "working";
 >     }
-> 
+>
 > A list:
-> 
+>
 > 1. item one
 > 2. item two
-> 
+>
 > Nested block quotes:
-> 
+>
 > > nested
-> 
+>
 > > nested
 
 This should not be a block quote: 2 \> 1.
@@ -78,7 +78,7 @@ This should not be a block quote: 2 \> 1.
 Box-style:
 
 > Example:
-> 
+>
 >     sub status {
 >         print "working";
 >     }
@@ -89,7 +89,7 @@ Box-style:
 Here’s a nested one:
 
 > Joe said:
-> 
+>
 > > Don’t quote me.
 
 And a following paragraph.
@@ -101,17 +101,17 @@ And a following paragraph.
 Code:
 
     ---- (should be four hyphens)
-    
+
     sub status {
         print "working";
     }
-    
+
     this code block is indented by one tab
 
 And:
 
     this code block is indented by two tabs
-    
+
     These should not be escaped:  \$ \\ \> \[ \{
 
 this has {two
@@ -275,8 +275,8 @@ Loose:
 
 Multiple blocks with italics:
 
-- *apple*: red fruit
-- *orange*: orange fruit
+- _apple_: red fruit
+- _orange_: orange fruit
 
 # HTML Blocks
 
@@ -292,7 +292,7 @@ bar
 
 Interpreted markdown in a table:
 
-This is *emphasized*
+This is _emphasized_
 
 And this is **strong**
 
@@ -334,25 +334,25 @@ Hr’s:
 
 # Inline Markup
 
-This is *emphasized*, and so *is this*.
+This is _emphasized_, and so _is this_.
 
 This is **strong**, and so **is this**.
 
 An [emphasized link](/url).
 
-*This is strong and em.*
+_This is strong and em._
 
-So is *this* word.
+So is _this_ word.
 
-*This is strong and em.*
+_This is strong and em._
 
-So is *this* word.
+So is _this_ word.
 
 This is code: `>`, `$`, `\`, `$`,
 
 `<html>`.
 
-This is *strikeout*.
+This is _strikeout_.
 
 Superscripts: abcd
 
@@ -406,20 +406,20 @@ Ellipses…and…and….
 These shouldn’t be math:
 
 - To get the famous equation, write `$e = mc^2$`.
-- $22,000 is a *lot* of money. So is $34,000. (It worked if “lot” is emphasized.)
+- $22,000 is a _lot_ of money. So is $34,000. (It worked if “lot” is emphasized.)
 - Escaped `$`: $73 *this should be emphasized* 23$.
 
 Here’s a LaTeX table:
 
 | Animal | Number |
-| --- | --- |
-| Dog | 2 |
-| Cat | 1 |
+| ------ | ------ |
+| Dog    | 2      |
+| Cat    | 1      |
 
 A table with one column:
 
-| Animal |
-| --- |
+| Animal    |
+| --------- |
 | Vegetable |
 
 \---
@@ -450,7 +450,7 @@ Backtick: ‘
 
 Asterisk: \*
 
-Underscore: _
+Underscore: \_
 
 Left brace: {
 
@@ -598,11 +598,11 @@ and just indent the first line of each block.
 
 }
 
-This should *not* be a footnote reference, because it contains
+This should _not_ be a footnote reference, because it contains
 
 a space.\[^my note\] Here is an inline
 
-note.{ This is *easier* to type. Inline notes may contain
+note.{ This is _easier_ to type. Inline notes may contain
 
 [links](http://google.com) and `]` verbatim characters,
 
@@ -611,7 +611,7 @@ as well as \[bracketed text\].
 }
 
 > Notes can go in quotes.{ In quote.
-> 
+>
 > }
 
 1. And in list items. In list.
@@ -622,4 +622,4 @@ indented.
 
 # Escaped characters
 
-$ % & \# _ { }
+$ % & \# \_ { }

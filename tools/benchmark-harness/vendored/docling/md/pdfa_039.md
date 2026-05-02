@@ -5,7 +5,7 @@ SWN 12&amp;U Junior Champs 2019 14-Dec-19 to 15-Dec-19 SC Meters
 Location: WRAC
 
 | Time                   | F/P/S                  | Event                    |                        | Place                  | Points                 | Improv                 |
-|------------------------|------------------------|--------------------------|------------------------|------------------------|------------------------|------------------------|
+| ---------------------- | ---------------------- | ------------------------ | ---------------------- | ---------------------- | ---------------------- | ---------------------- |
 | Adams, Felix (10) M    | Adams, Felix (10) M    | Adams, Felix (10) M      | Adams, Felix (10) M    | Adams, Felix (10) M    | Adams, Felix (10) M    | Adams, Felix (10) M    |
 | 37.90S                 | # F                    | Male 10-10 50 Free       | RAUWN-WN               | 14                     | ---                    | -2.24                  |
 | 44.05S                 | # F                    | Male 10-10 50 Back       | RAUWN-WN               | 12                     | ---                    | -1.56                  |
@@ -56,59 +56,59 @@ SWN 12&amp;U Junior Champs 2019 14-Dec-19 to 15-Dec-19 SC Meters
 
 Location: WRAC
 
-| Time                | F/P/S                | Event                                     | Place                   | Points   | Improv   |
-|---------------------|----------------------|-------------------------------------------|-------------------------|----------|----------|
-| Cowley, Lola (10)   | F                    |                                           |                         |          |          |
-| 37.80S              | # 2B F               | Female 10-10 50 Free                      | 14 RAUWN-WN             | ---      | -2.06    |
-| 46.66S DQ           | # 8B F               | Female 10-10 50 Back                      | --- RAUWN-WN            | ---      | ---      |
-| 1:30.54S            | # 9B F               | Female 10-10 100 Free                     | 18 RAUWN-WN             | ---      | -3.95    |
-| 1:45.65S            | # 13B F              | Female 10-10 100 IM                       | 18 RAUWN-WN             | ---      | -0.97    |
-| 53.47S              | # 20B Female F       | 10-10 50 Breast                           | 16 RAUWN-WN             | ---      | -2.14    |
-| 1:42.30S            | # 24B F              | Female 10-10 100 Back                     | 15 RAUWN-WN             | ---      | -2.62    |
-| 47.01S              | # 31B F              | Female 10-10 50 Fly                       | 13 RAUWN-WN             | ---      | -2.13    |
-| Gray, Michaela (10) | F                    |                                           |                         |          |          |
-| 35.04S              | # 2B F               | Female 10-10 50 Free                      | 6 RAUWN-WN              | 5        | -0.08    |
-| 3:11.42S            | # 4A F               | Female 10 &Under 200 IM                   | 4 RAUWN-WN              | 7        | -7.99    |
-| 40.27S              | # 8B F               | Female 10-10 50 Back                      | 5 RAUWN-WN              | 6        | 0.41     |
-| 1:21.16S            | # 9B F               | Female 10-10 100 Free                     | 10 RAUWN-WN             | 1        | -0.71    |
-| 1:33.61S            | # 13B Female F       | 10-10 100 IM RAUWN-WN                     | 8                       | 3        | 2.05     |
-| 3:42.97S            | # 15A F              | Female 10 &Under 200 Breast               | 3 RAUWN-WN              | 10       | ---      |
-| 48.47S              | # 20B F              | Female 10-10 50 Breast                    | 7 RAUWN-WN              | 4        | 0.24     |
-| 1:27.33S            | # 24B F              | Female 10-10 100 Back                     | 5 RAUWN-WN              | 6        | -0.16    |
-| 3:00.50S            | # 27A F              | Female 10 &Under 200 Back                 | 2 RAUWN-WN              | 14       | -16.33   |
-| 1:43.57S            | # 29B F              | Female 10-10 100 Breast                   | 5 RAUWN-WN              | 6        | -2.69    |
-| 43.67S              | # 31B F              | Female 10-10 50 Fly                       | 10 RAUWN-WN             | 1        | 2.82     |
-| Hassan, Emily (12)  | F                    |                                           |                         |          |          |
-| 30.08S              | # 2D F               | Female 12-12 50 Free                      | 2 RAUWN-WN              | 14       | -1.40    |
-| 1:21.24S            | # 6D F               | Female 12-12 100 Fly                      | 4 RAUWN-WN              | 7        | ---      |
-| 1:07.26S            | # 9D F               | Female 12-12 100 Free                     | 6 RAUWN-WN              | 5        | ---      |
-| 3:07.33S            | # 15C F              | Female 12-12 200 Breast                   | 7 RAUWN-WN              | 4        | -8.03    |
-| 2:28.37S            | # 18C F              | Female 12-12 200 Free                     | 6 RAUWN-WN              | 5        | ---      |
-| 5:53.59S            | # 22 F               | Female 12 &Under 400 IM                   | 1 RAUWN-WN              | 20       | -11.03   |
-| 1:18.28S            | # 24D F              | Female 12-12 100 Back                     | 9 RAUWN-WN              | 2        | ---      |
-| Hassan, Jacob (9) M |                      |                                           |                         |          |          |
-| 36.05S              | # 1A F               | Male 9 &Under 50 Free                     | 3 RAUWN-WN              | 10       | ---      |
-| 44.26S              | # 7A F               | Male 9 &Under 50 Back                     | 8 RAUWN-WN              | 3        | ---      |
-| 1:22.10S            | # 10A F              | Male 9 &Under 100 Free                    | 3 RAUWN-WN              | 10       | ---      |
-| 1:38.43S            | # 14A F              | Male 9 &Under 100 IM                      | 6 RAUWN-WN              | 5        | ---      |
-| 2:59.32S            | # 17A F              | Male 10 &Under 200 Free                   | 6 RAUWN-WN              | 5        | ---      |
-| 53.13S 1:40.14S     | # 19A F # 23A Male F | Male 9 &Under 50 Breast 9 &Under 100 Back | 12 RAUWN-WN 10 RAUWN-WN | --- 1    | --- ---  |
-| Kelly, Elsa (10) F  |                      |                                           |                         |          |          |
-| 37.86S DQ           | # 2B F               | Female 10-10 50 Free                      | --- RAUWN-WN            | ---      | ---      |
-| 44.93S              | # 8B F               | Female 10-10 50 Back                      | 18 RAUWN-WN             | ---      | 0.90     |
-| 1:26.28S            | # 9B F               | Female 10-10 100 Free                     | 15 RAUWN-WN             | ---      | 1.02     |
-| 1:37.08S            | # 13B F              | Female 10-10 100 IM                       | 13 RAUWN-WN             | ---      | 0.26     |
-| 3:48.26S            | # 15A F              | Female 10 &Under 200 Breast               | 4 RAUWN-WN              | 7        | -1.64    |
-| 47.34S              | # 20B F              | Female 10-10 50 Breast                    | 5 RAUWN-WN              | 6        | -2.10    |
-| 1:34.47S            | # 24B F              | Female 10-10 100 Back                     | 13 RAUWN-WN             | ---      | -0.88    |
-| 1:41.21S            | # 29B F              | Female 10-10 100 Breast                   | 4 RAUWN-WN              | 7        | -6.17    |
+| Time                | F/P/S                | Event                                     | Place                   | Points | Improv  |
+| ------------------- | -------------------- | ----------------------------------------- | ----------------------- | ------ | ------- |
+| Cowley, Lola (10)   | F                    |                                           |                         |        |         |
+| 37.80S              | # 2B F               | Female 10-10 50 Free                      | 14 RAUWN-WN             | ---    | -2.06   |
+| 46.66S DQ           | # 8B F               | Female 10-10 50 Back                      | --- RAUWN-WN            | ---    | ---     |
+| 1:30.54S            | # 9B F               | Female 10-10 100 Free                     | 18 RAUWN-WN             | ---    | -3.95   |
+| 1:45.65S            | # 13B F              | Female 10-10 100 IM                       | 18 RAUWN-WN             | ---    | -0.97   |
+| 53.47S              | # 20B Female F       | 10-10 50 Breast                           | 16 RAUWN-WN             | ---    | -2.14   |
+| 1:42.30S            | # 24B F              | Female 10-10 100 Back                     | 15 RAUWN-WN             | ---    | -2.62   |
+| 47.01S              | # 31B F              | Female 10-10 50 Fly                       | 13 RAUWN-WN             | ---    | -2.13   |
+| Gray, Michaela (10) | F                    |                                           |                         |        |         |
+| 35.04S              | # 2B F               | Female 10-10 50 Free                      | 6 RAUWN-WN              | 5      | -0.08   |
+| 3:11.42S            | # 4A F               | Female 10 &Under 200 IM                   | 4 RAUWN-WN              | 7      | -7.99   |
+| 40.27S              | # 8B F               | Female 10-10 50 Back                      | 5 RAUWN-WN              | 6      | 0.41    |
+| 1:21.16S            | # 9B F               | Female 10-10 100 Free                     | 10 RAUWN-WN             | 1      | -0.71   |
+| 1:33.61S            | # 13B Female F       | 10-10 100 IM RAUWN-WN                     | 8                       | 3      | 2.05    |
+| 3:42.97S            | # 15A F              | Female 10 &Under 200 Breast               | 3 RAUWN-WN              | 10     | ---     |
+| 48.47S              | # 20B F              | Female 10-10 50 Breast                    | 7 RAUWN-WN              | 4      | 0.24    |
+| 1:27.33S            | # 24B F              | Female 10-10 100 Back                     | 5 RAUWN-WN              | 6      | -0.16   |
+| 3:00.50S            | # 27A F              | Female 10 &Under 200 Back                 | 2 RAUWN-WN              | 14     | -16.33  |
+| 1:43.57S            | # 29B F              | Female 10-10 100 Breast                   | 5 RAUWN-WN              | 6      | -2.69   |
+| 43.67S              | # 31B F              | Female 10-10 50 Fly                       | 10 RAUWN-WN             | 1      | 2.82    |
+| Hassan, Emily (12)  | F                    |                                           |                         |        |         |
+| 30.08S              | # 2D F               | Female 12-12 50 Free                      | 2 RAUWN-WN              | 14     | -1.40   |
+| 1:21.24S            | # 6D F               | Female 12-12 100 Fly                      | 4 RAUWN-WN              | 7      | ---     |
+| 1:07.26S            | # 9D F               | Female 12-12 100 Free                     | 6 RAUWN-WN              | 5      | ---     |
+| 3:07.33S            | # 15C F              | Female 12-12 200 Breast                   | 7 RAUWN-WN              | 4      | -8.03   |
+| 2:28.37S            | # 18C F              | Female 12-12 200 Free                     | 6 RAUWN-WN              | 5      | ---     |
+| 5:53.59S            | # 22 F               | Female 12 &Under 400 IM                   | 1 RAUWN-WN              | 20     | -11.03  |
+| 1:18.28S            | # 24D F              | Female 12-12 100 Back                     | 9 RAUWN-WN              | 2      | ---     |
+| Hassan, Jacob (9) M |                      |                                           |                         |        |         |
+| 36.05S              | # 1A F               | Male 9 &Under 50 Free                     | 3 RAUWN-WN              | 10     | ---     |
+| 44.26S              | # 7A F               | Male 9 &Under 50 Back                     | 8 RAUWN-WN              | 3      | ---     |
+| 1:22.10S            | # 10A F              | Male 9 &Under 100 Free                    | 3 RAUWN-WN              | 10     | ---     |
+| 1:38.43S            | # 14A F              | Male 9 &Under 100 IM                      | 6 RAUWN-WN              | 5      | ---     |
+| 2:59.32S            | # 17A F              | Male 10 &Under 200 Free                   | 6 RAUWN-WN              | 5      | ---     |
+| 53.13S 1:40.14S     | # 19A F # 23A Male F | Male 9 &Under 50 Breast 9 &Under 100 Back | 12 RAUWN-WN 10 RAUWN-WN | --- 1  | --- --- |
+| Kelly, Elsa (10) F  |                      |                                           |                         |        |         |
+| 37.86S DQ           | # 2B F               | Female 10-10 50 Free                      | --- RAUWN-WN            | ---    | ---     |
+| 44.93S              | # 8B F               | Female 10-10 50 Back                      | 18 RAUWN-WN             | ---    | 0.90    |
+| 1:26.28S            | # 9B F               | Female 10-10 100 Free                     | 15 RAUWN-WN             | ---    | 1.02    |
+| 1:37.08S            | # 13B F              | Female 10-10 100 IM                       | 13 RAUWN-WN             | ---    | 0.26    |
+| 3:48.26S            | # 15A F              | Female 10 &Under 200 Breast               | 4 RAUWN-WN              | 7      | -1.64   |
+| 47.34S              | # 20B F              | Female 10-10 50 Breast                    | 5 RAUWN-WN              | 6      | -2.10   |
+| 1:34.47S            | # 24B F              | Female 10-10 100 Back                     | 13 RAUWN-WN             | ---    | -0.88   |
+| 1:41.21S            | # 29B F              | Female 10-10 100 Breast                   | 4 RAUWN-WN              | 7      | -6.17   |
 
 ## Individual Meet Results
 
 SWN 12&amp;U Junior Champs 2019 14-Dec-19 to 15-Dec-19 SC Meters Location: WRAC
 
 | Time                   | F/P/S                  | Event                    |                        | Place                  | Points                 | Improv                 |
-|------------------------|------------------------|--------------------------|------------------------|------------------------|------------------------|------------------------|
+| ---------------------- | ---------------------- | ------------------------ | ---------------------- | ---------------------- | ---------------------- | ---------------------- |
 | Martin, Poppy (12) F   | Martin, Poppy (12) F   | Martin, Poppy (12) F     | Martin, Poppy (12) F   | Martin, Poppy (12) F   | Martin, Poppy (12) F   | Martin, Poppy (12) F   |
 | 37.11S                 | # 2D F                 | Female 12-12 50 Free     | RAUWN-WN               | 36                     | ---                    | -1.00                  |
 | 41.12S                 | # 8D F                 | Female 12-12 50 Back     | RAUWN-WN               | 21                     | ---                    | -0.27                  |
@@ -162,7 +162,7 @@ SWN 12&amp;U Junior Champs 2019 14-Dec-19 to 15-Dec-19 SC Meters Location: WRAC
 SWN 12&amp;U Junior Champs 2019 14-Dec-19 to 15-Dec-19 SC Meters Location: WRAC
 
 | Time                 | F/P/S                | Event                |                      | Place                | Points               | Improv               |
-|----------------------|----------------------|----------------------|----------------------|----------------------|----------------------|----------------------|
+| -------------------- | -------------------- | -------------------- | -------------------- | -------------------- | -------------------- | -------------------- |
 | Woodley, Cole (11) M | Woodley, Cole (11) M | Woodley, Cole (11) M | Woodley, Cole (11) M | Woodley, Cole (11) M | Woodley, Cole (11) M | Woodley, Cole (11) M |
 | 34.72S               | # 1C F               | Male 11-11 50 Free   | RAUWN-WN             | 18                   | ---                  | -0.57                |
 | 40.18S               | # 7C F               | Male 11-11 50 Back   | RAUWN-WN             | 14                   | ---                  | 0.46                 |

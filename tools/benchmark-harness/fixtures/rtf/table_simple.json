@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/rtf/table_simple.rtf",
   "file_type": "rtf",
   "file_size": 241,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "RTF test document: table_simple",
     "source": "pandoc-generated",

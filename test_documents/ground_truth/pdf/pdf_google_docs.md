@@ -15,17 +15,17 @@ In the face of ambiguity, refuse the temptation to guess.
 There should be one-- and preferably only one --obvious way to do it.
 Although that way may not be obvious at first unless you're Dutch.
 Now is better than never.
-Although never is often better than *right* now.
+Although never is often better than _right_ now.
 If the implementation is hard to explain, it's a bad idea.
 If the implementation is easy to explain, it may be a good idea.
 Namespaces are one honking great idea -- let's do more of those!
 
-|             | Indonesia | Germany | Austria | France    | Vatican |
-| :---------- | :-------- | :------ | :------ | :-------- | :------ |
-| Continent   | Asia      |         |         | Europe    |         |
-| Capital     | Jakarta   | Berlin  | Vienna  | Paris     | Vatican City |
-| Currency    | Rupia     |         | EUR (€) |           | -       |
-| Population  | 273.879.7501 | 83,190,5562 | 8,935,1123 | 67,413,000 | 453     |
+|            | Indonesia    | Germany     | Austria    | France     | Vatican      |
+| :--------- | :----------- | :---------- | :--------- | :--------- | :----------- |
+| Continent  | Asia         |             |            | Europe     |              |
+| Capital    | Jakarta      | Berlin      | Vienna     | Paris      | Vatican City |
+| Currency   | Rupia        |             | EUR (€)    |            | -            |
+| Population | 273.879.7501 | 83,190,5562 | 8,935,1123 | 67,413,000 | 453          |
 
 1 2021 estimate
 2 2020 estimate

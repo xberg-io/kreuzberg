@@ -2,5 +2,4 @@
 
 Some text with an endnote.\[^i\]
 
-[^1]:
-    Endnote text
+[^1]: Endnote text

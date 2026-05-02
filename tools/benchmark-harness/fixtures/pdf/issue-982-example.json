@@ -1,28 +1,28 @@
 {
-	"document": "../../../../test_documents/vendored/pdfplumber/pdf/issue-982-example.pdf",
-	"file_type": "pdf",
-	"file_size": 1029061,
-	"expected_frameworks": [
-		"kreuzberg",
-		"docling",
-		"markitdown",
-		"mineru",
-		"pdfminer",
-		"pdfplumber",
-		"pdftotext",
-		"pymupdf4llm",
-		"pypdf",
-		"tika",
-		"unstructured"
-	],
-	"metadata": {
-		"description": "Document from pdfplumber test suite",
-		"source": "pdfplumber",
-		"size_category": "medium"
-	},
-	"ground_truth": {
-		"text_file": "../../../../test_documents/ground_truth/pdf/issue-982-example.txt",
-		"source": "mistral-pixtral",
-		"markdown_file": "../../../../test_documents/ground_truth/pdf/issue-982-example.md"
-	}
+  "document": "../../../../test_documents/vendored/pdfplumber/pdf/issue-982-example.pdf",
+  "file_type": "pdf",
+  "file_size": 1029061,
+  "expected_frameworks": [
+    "kreuzberg",
+    "docling",
+    "markitdown",
+    "mineru",
+    "pdfminer",
+    "pdfplumber",
+    "pdftotext",
+    "pymupdf4llm",
+    "pypdf",
+    "tika",
+    "unstructured"
+  ],
+  "metadata": {
+    "description": "Document from pdfplumber test suite",
+    "source": "pdfplumber",
+    "size_category": "medium"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/pdf/issue-982-example.txt",
+    "source": "mistral-pixtral",
+    "markdown_file": "../../../../test_documents/ground_truth/pdf/issue-982-example.md"
+  }
 }

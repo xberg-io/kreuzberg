@@ -1,21 +1,21 @@
 {
-	"id": "office_pptx_basic",
-	"category": "office",
-	"description": "PPTX deck should extract slides content.",
-	"input": {
-		"path": "pptx/simple.pptx",
-		"media_type": "application/vnd.openxmlformats-officedocument.presentationml.presentation"
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/vnd.openxmlformats-officedocument.presentationml.presentation"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 50
-		}
-	]
+  "id": "office_pptx_basic",
+  "category": "office",
+  "description": "PPTX deck should extract slides content.",
+  "input": {
+    "path": "pptx/simple.pptx",
+    "media_type": "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 50
+    }
+  ]
 }

@@ -1,29 +1,27 @@
 {
-	"id": "link_special_url",
-	"category": "markup",
-	"description": "Link with query params",
-	"tags": [
-		"markup"
-	],
-	"call": "link",
-	"input": {
-		"start": 0,
-		"end": 5,
-		"url": "https://example.com?q=1&b=2"
-	},
-	"assertions": [
-		{
-			"type": "not_error"
-		},
-		{
-			"type": "equals",
-			"field": "start",
-			"value": 0
-		},
-		{
-			"type": "equals",
-			"field": "end",
-			"value": 5
-		}
-	]
+  "id": "link_special_url",
+  "category": "markup",
+  "description": "Link with query params",
+  "tags": ["markup"],
+  "call": "link",
+  "input": {
+    "start": 0,
+    "end": 5,
+    "url": "https://example.com?q=1&b=2"
+  },
+  "assertions": [
+    {
+      "type": "not_error"
+    },
+    {
+      "type": "equals",
+      "field": "start",
+      "value": 0
+    },
+    {
+      "type": "equals",
+      "field": "end",
+      "value": 5
+    }
+  ]
 }

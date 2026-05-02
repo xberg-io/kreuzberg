@@ -1,13 +1,11 @@
-import {Note} from '../_component/note.jsx'
+import { Note } from "../_component/note.jsx";
 
 export const info = {
-  author: [
-    {github: 'wooorm', name: 'Titus Wormer'}
-  ],
-  modified: new Date('2025-01-27'),
-  published: new Date('2021-09-30')
-}
-export const navSortSelf = 3
+  author: [{ github: "wooorm", name: "Titus Wormer" }],
+  modified: new Date("2025-01-27"),
+  published: new Date("2021-09-30"),
+};
+export const navSortSelf = 3;
 
 # Using MDX
 
@@ -19,12 +17,12 @@ To understand how the MDX format works, we recommend that you start with
 
 ## Contents
 
-* [How MDX works](#how-mdx-works)
-* [MDX content](#mdx-content)
-  * [Props](#props)
-  * [Components](#components)
-  * [Layout](#layout)
-* [MDX provider](#mdx-provider)
+- [How MDX works](#how-mdx-works)
+- [MDX content](#mdx-content)
+  - [Props](#props)
+  - [Components](#components)
+  - [Layout](#layout)
+- [MDX provider](#mdx-provider)
 
 ## How MDX works
 
@@ -33,13 +31,13 @@ Say we have an MDX document, `example.mdx`:
 
 ```mdx path="input.mdx"
 export function Thing() {
-  return <>World</>
+  return <>World</>;
 }
 
 # Hello <Thing />
 ```
 
-That’s *roughly* turned into the following JavaScript.
+That’s _roughly_ turned into the following JavaScript.
 The below might help to form a mental model:
 
 ```jsx twoslash path="output-outline.jsx"
@@ -47,50 +45,54 @@ The below might help to form a mental model:
 /* @jsxImportSource react */
 
 export function Thing() {
-  return <>World</>
+  return <>World</>;
 }
 
 export default function MDXContent() {
-  return <h1>Hello <Thing /></h1>
+  return (
+    <h1>
+      Hello <Thing />
+    </h1>
+  );
 }
 ```
 
 Some observations:
 
-* The output is serialized JavaScript that still needs to be evaluated
-* A comment is injected to configure how JSX is handled
-* It’s a complete file with import/exports
-* A component (`MDXContent`) is exported
+- The output is serialized JavaScript that still needs to be evaluated
+- A comment is injected to configure how JSX is handled
+- It’s a complete file with import/exports
+- A component (`MDXContent`) is exported
 
-The *actual* output is:
+The _actual_ output is:
 
 ```js twoslash path="output-actual.js"
 // @noErrors
-import {Fragment as _Fragment, jsx as _jsx, jsxs as _jsxs} from 'react/jsx-runtime'
+import { Fragment as _Fragment, jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 
 export function Thing() {
-  return _jsx(_Fragment, {children: 'World'})
+  return _jsx(_Fragment, { children: "World" });
 }
 
 function _createMdxContent(props) {
-  const _components = {h1: 'h1', ...props.components}
-  return _jsxs(_components.h1, {children: ['Hello ', _jsx(Thing, {})]})
+  const _components = { h1: "h1", ...props.components };
+  return _jsxs(_components.h1, { children: ["Hello ", _jsx(Thing, {})] });
 }
 
 export default function MDXContent(props = {}) {
-  const {wrapper: MDXLayout} = props.components || {}
+  const { wrapper: MDXLayout } = props.components || {};
   return MDXLayout
-    ? _jsx(MDXLayout, {...props, children: _jsx(_createMdxContent, {...props})})
-    : _createMdxContent(props)
+    ? _jsx(MDXLayout, { ...props, children: _jsx(_createMdxContent, { ...props }) })
+    : _createMdxContent(props);
 }
 ```
 
 Some more observations:
 
-* JSX is compiled away to function calls and an import of React†
-* The content component can be given `{components: {wrapper: MyLayout}}` to
+- JSX is compiled away to function calls and an import of React†
+- The content component can be given `{components: {wrapper: MyLayout}}` to
   wrap all content
-* The content component can be given `{components: {h1: MyComponent}}` to use
+- The content component can be given `{components: {h1: MyComponent}}` to use
   something else for the heading
 
 † MDX is not coupled to React.
@@ -134,7 +136,7 @@ Take this example:
 
 ```mdx path="example.mdx"
 export function Thing() {
-  return <>World</>
+  return <>World</>;
 }
 
 # Hello <Thing />
@@ -171,8 +173,8 @@ In [§ What is MDX][what], we showed that JavaScript expressions, inside curly
 braces, can be used in MDX:
 
 ```mdx path="example.mdx"
-import {year} from './data.js'
-export const name = 'world'
+import { year } from "./data.js";
+export const name = "world";
 
 # Hello {name.toUpperCase()}
 
@@ -209,10 +211,8 @@ console.log(<Example name="Mars" year={2022} />)
 ```
 
 <Note type="info">
-  **Note**:
-  Users of the MDX VS Code extension can add type
-  checking of `props` with a JSDoc comment.
-  See [`mdx-js/mdx-analyzer`][mdx-analyzer] for more info.
+  **Note**: Users of the MDX VS Code extension can add type checking of `props` with a JSDoc
+  comment. See [`mdx-js/mdx-analyzer`][mdx-analyzer] for more info.
 </Note>
 
 ### Components
@@ -222,7 +222,7 @@ It takes an object mapping component names to components.
 Take this example:
 
 ```mdx path="example.mdx"
-# Hello *<Planet />*
+# Hello _<Planet />_
 ```
 
 It can be imported from JavaScript and passed components like so:
@@ -251,7 +251,7 @@ You don’t have to pass components.
 You can also define or import them within MDX:
 
 ```mdx path="example.mdx"
-import {Box, Heading} from 'rebass'
+import { Box, Heading } from "rebass";
 
 MDX using imported components!
 
@@ -260,11 +260,11 @@ MDX using imported components!
 </Box>
 ```
 
-Because MDX files *are* components, they can also import each other:
+Because MDX files _are_ components, they can also import each other:
 
 ```mdx path="example.mdx"
-import License from './license.md' // Assumes an integration is used to compile markdown -> JS.
-import Contributing from './docs/contributing.mdx'
+import License from "./license.md"; // Assumes an integration is used to compile markdown -> JS.
+import Contributing from "./docs/contributing.mdx";
 
 # Hello world
 
@@ -316,10 +316,10 @@ console.log(
 
 The following keys can be passed in `components`:
 
-* HTML equivalents for the things you write with markdown such as `h1` for
+- HTML equivalents for the things you write with markdown such as `h1` for
   `# heading` (see [§ Table of components][toc] for examples)
-* `wrapper`, which defines the layout (but a local layout takes precedence)
-* anything else that is a valid JSX identifier (`foo`, `Quote`,
+- `wrapper`, which defines the layout (but a local layout takes precedence)
+- anything else that is a valid JSX identifier (`foo`, `Quote`,
   `custom-element`, `_`, `$x`, `a1`) for the things you write with JSX (like
   `<So />` or `<like.so />`, note that locally defined components take
   precedence)**‡**
@@ -327,16 +327,16 @@ The following keys can be passed in `components`:
 **‡** The rules for whether a name in JSX (so `x` in `<x>`) is a literal tag
 name (like `h1`) or not (like `Component`) are as follows:
 
-* if there’s a dot,
+- if there’s a dot,
   it’s a member expression (`<a.b>` → `h(a.b)`),
   which means a reference to the key `b` taken from object `a`
-* otherwise,
+- otherwise,
   if the name is not a valid JS identifier,
   it’s a literal (`<a-b>` → `h('a-b')`)
-* otherwise,
+- otherwise,
   if it starts with a lowercase,
   it’s a literal (`<a>` → `h('a')`)
-* otherwise,
+- otherwise,
   it’s a reference (`<A>` → `h(A)`)
 
 These keys in `components` and the difference between literal tag names and
@@ -344,9 +344,9 @@ references is illustrated as follows.
 With the following MDX:
 
 ```mdx path="example.mdx"
-* [markdown syntax](#alpha)
-* <a href="#bravo">JSX with a lowercase name</a>
-* <Link to="#charlie">JSX with a capitalized name</Link>
+- [markdown syntax](#alpha)
+- <a href="#bravo">JSX with a lowercase name</a>
+- <Link to="#charlie">JSX with a capitalized name</Link>
 ```
 
 …passed some components:
@@ -377,6 +377,7 @@ console.log(
 …we’d get:
 
 {
+
   <div className="card">
     <ul>
       <li><a href="#alpha" style={{borderTop: '1px dotted', color: 'violet'}}>markdown syntax</a></li>
@@ -400,17 +401,17 @@ If it is defined, it’s used to wrap all content.
 A layout can be defined from within MDX using a default export:
 
 ```mdx
-export default function Layout({children}) {
+export default function Layout({ children }) {
   return <main>{children}</main>;
 }
 
 All the things.
 ```
 
-The layout can also be imported and *then* exported with an `export … from`:
+The layout can also be imported and _then_ exported with an `export … from`:
 
 ```mdx
-export {Layout as default} from './components.js'
+export { Layout as default } from "./components.js";
 ```
 
 The layout can also be passed as `components.wrapper` (but a local one takes
@@ -462,8 +463,8 @@ cumbersome.
 Like so:
 
 ```mdx path="post.mdx"
-import License from './license.md' // Assumes an integration is used to compile markdown -> JS.
-import Contributing from './docs/contributing.mdx'
+import License from "./license.md"; // Assumes an integration is used to compile markdown -> JS.
+import Contributing from "./docs/contributing.mdx";
 
 # Hello world
 
@@ -474,7 +475,7 @@ import Contributing from './docs/contributing.mdx'
 <Contributing components={props.components} />
 ```
 
-To solve this, a *[context][]* can be used in React, Preact, and Vue.
+To solve this, a _[context][]_ can be used in React, Preact, and Vue.
 Context provides a way to pass data through the component tree without having to
 pass props down manually at every level.
 Set it up like so:
@@ -597,27 +598,15 @@ If you’re not nesting MDX files, or not nesting them often, don’t use
 providers: pass components explicitly.
 
 [context]: https://reactjs.org/docs/context.html
-
 [emotion]: /docs/getting-started/#emotion
-
 [mdx-analyzer]: https://github.com/mdx-js/mdx-analyzer
-
 [mdx-preact]: /packages/preact/
-
 [mdx-react]: /packages/react/
-
 [mdx-vue]: /packages/vue/
-
 [preact]: /docs/getting-started/#preact
-
 [processor-options]: /packages/mdx/#processoroptions
-
 [start]: /docs/getting-started/
-
 [theme ui]: /docs/getting-started/#theme-ui
-
 [toc]: /table-of-components/
-
 [vue]: /docs/getting-started/#vue
-
 [what]: /docs/what-is-mdx/

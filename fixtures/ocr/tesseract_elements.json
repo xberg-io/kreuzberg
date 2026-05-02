@@ -1,46 +1,46 @@
 {
-	"id": "ocr_tesseract_elements",
-	"category": "ocr",
-	"description": "Tests Tesseract OCR with element-level structured output including geometry",
-	"input": {
-		"path": "images/test_hello_world.png",
-		"media_type": "image/png",
-		"config": {
-			"ocr": {
-				"backend": "tesseract",
-				"language": "eng",
-				"element_config": {
-					"include_elements": true
-				}
-			},
-			"force_ocr": true
-		}
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "image/png"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 5
-		},
-		{
-			"type": "not_empty",
-			"field": "ocr_elements"
-		},
-		{
-			"type": "is_true",
-			"field": "ocr_elements_have_geometry"
-		},
-		{
-			"type": "is_true",
-			"field": "ocr_elements_have_confidence"
-		}
-	],
-	"skip": {
-		"reason": "Requires features: tesseract; Requires Tesseract OCR backend"
-	}
+  "id": "ocr_tesseract_elements",
+  "category": "ocr",
+  "description": "Tests Tesseract OCR with element-level structured output including geometry",
+  "input": {
+    "path": "images/test_hello_world.png",
+    "media_type": "image/png",
+    "config": {
+      "ocr": {
+        "backend": "tesseract",
+        "language": "eng",
+        "element_config": {
+          "include_elements": true
+        }
+      },
+      "force_ocr": true
+    }
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "image/png"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 5
+    },
+    {
+      "type": "not_empty",
+      "field": "ocr_elements"
+    },
+    {
+      "type": "is_true",
+      "field": "ocr_elements_have_geometry"
+    },
+    {
+      "type": "is_true",
+      "field": "ocr_elements_have_confidence"
+    }
+  ],
+  "skip": {
+    "reason": "Requires features: tesseract; Requires Tesseract OCR backend"
+  }
 }

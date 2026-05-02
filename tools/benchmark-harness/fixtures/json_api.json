@@ -1,14 +1,14 @@
 {
-	"document": "../../../test_documents/json/openapi_spec.json",
-	"file_type": "json",
-	"file_size": 1589,
-	"expected_frameworks": ["kreuzberg", "markitdown", "tika"],
-	"metadata": {
-		"description": "API JSON - OpenAPI specification with endpoint definitions and schema documentation",
-		"category": "api"
-	},
-	"ground_truth": {
-		"text_file": "../../../test_documents/ground_truth/json/json_api.txt",
-		"source": "vision"
-	}
+  "document": "../../../test_documents/json/openapi_spec.json",
+  "file_type": "json",
+  "file_size": 1589,
+  "expected_frameworks": ["kreuzberg", "markitdown", "tika"],
+  "metadata": {
+    "description": "API JSON - OpenAPI specification with endpoint definitions and schema documentation",
+    "category": "api"
+  },
+  "ground_truth": {
+    "text_file": "../../../test_documents/ground_truth/json/json_api.txt",
+    "source": "vision"
+  }
 }

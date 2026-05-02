@@ -261,7 +261,7 @@ Here's another:
 with a continuation
 
 1. sublist with roman numerals, starting with 4
-2.  more items
+2. more items
 
 <!-- end list -->
 
@@ -287,7 +287,7 @@ Nesting:
 Autonumbering:
 
 1. Autonumber.
-2.  More.
+2. More.
 
 <!-- end list -->
 
@@ -310,7 +310,7 @@ Definition 2, paragraph 1.
 
 Definition 2, paragraph 2.
 
-term with *emphasis*
+term with _emphasis_
 
 Definition 3.
 
@@ -340,7 +340,7 @@ Now, nested:
 
 ### Inline Markup
 
-This is *emphasized*. This is **strong**.
+This is _emphasized_. This is **strong**.
 
 This is code: `>`, `$`, `\`, `\$`, `<html>`.
 
@@ -370,7 +370,7 @@ Backtick: \\\`
 
 Asterisk: \\\*
 
-Underscore: \\_
+Underscore: \\\_
 
 Left brace: \\{
 
@@ -404,9 +404,9 @@ Explicit with no label: .
 
 Two anonymous links: `the first`_ and `the second`_
 
-__ /url1/ __ /url2/
+** /url1/ ** /url2/
 
-Reference links: `link1` and `link2` and link1_ again.
+Reference links: `link1` and `link2` and link1\_ again.
 
 [link1](/url1/)
 
@@ -457,62 +457,62 @@ another
 ### Simple Tables
 
 | col 1 | col 2 | col 3 |
-| --- | --- | --- |
-| r1 a | b | c |
-| r2 d | e | f |
+| ----- | ----- | ----- |
+| r1 a  | b     | c     |
+| r2 d  | e     | f     |
 
 Headless
 
-| r1 a | b | c |
-| --- | --- | --- |
-| r2 d | e | f |
+| r1 a | b   | c   |
+| ---- | --- | --- |
+| r2 d | e   | f   |
 
 ### Grid Tables
 
-| col 1 | col 2 | col 3 |
-| --- | --- | --- |
-| r1 a | b | c |
-| r1 bis | b 2 | c 2 |
-| r2 d | e | f |
+| col 1  | col 2 | col 3 |
+| ------ | ----- | ----- |
+| r1 a   | b     | c     |
+| r1 bis | b 2   | c 2   |
+| r2 d   | e     | f     |
 
 Headless
 
-| r1 a | b | c |
-| --- | --- | --- |
+| r1 a   | b   | c   |
+| ------ | --- | --- |
 | r1 bis | b 2 | c 2 |
-| r2 d | e | f |
+| r2 d   | e   | f   |
 
 Spaces at ends of lines
 
-| r1 a | b | c |
-| --- | --- | --- |
+| r1 a   | b   | c   |
+| ------ | --- | --- |
 | r1 bis | b 2 | c 2 |
-| r2 d | e | f |
+| r2 d   | e   | f   |
 
 Multiple blocks in a cell
 
-| r1 a | - b | c |
-| --- | --- | --- |
-| - b 2 | c 2 |  |
+| r1 a   | - b   | c   |
+| ------ | ----- | --- |
+| - b 2  | c 2   |     |
 | r1 bis | - b 2 | c 2 |
 
 Table with cells spanning multiple rows or columns:
 
-| Property | Earth |  |
-| --- | --- | --- |
-| min | -89.2 °C |  |
-| Temperature +-------+----------+ |  |  |
-| 1961-1990 | mean | 14 °C |
-| min | 56.7 °C |  |
+| Property                         | Earth    |       |
+| -------------------------------- | -------- | ----- |
+| min                              | -89.2 °C |       |
+| Temperature +-------+----------+ |          |       |
+| 1961-1990                        | mean     | 14 °C |
+| min                              | 56.7 °C  |       |
 
 Table with complex header:
 
-| Location | Temperature 1961-1990 |  |  |
-| --- | --- | --- | --- |
-| in degree Celsius |  |  |  |
-| min | mean | max |  |
-| Antarctica | -89.2 | N/A | 19.8 |
-| Earth | -89.2 | 14 | 56.7 |
+| Location          | Temperature 1961-1990 |     |      |
+| ----------------- | --------------------- | --- | ---- |
+| in degree Celsius |                       |     |      |
+| min               | mean                  | max |      |
+| Antarctica        | -89.2                 | N/A | 19.8 |
+| Earth             | -89.2                 | 14  | 56.7 |
 
 ### Footnotes
 
@@ -544,8 +544,10 @@ $$E = mc^2$$
 
 $$\alpha = \beta$$
 
-$$E &= mc^2\\
-F &= \pi E$$
+$$
+E &= mc^2\\
+F &= \pi E
+$$
 
 $$F &= \gamma \alpha^2$$
 
@@ -581,8 +583,6 @@ Different indirect C :c:`int x = 15;`.
 
 2*2 = 4*1
 
-[^1]:
-    Note with one line.
+[^1]: Note with one line.
 
-[^2]:
-    Note with
+[^2]: Note with

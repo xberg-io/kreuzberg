@@ -7,26 +7,26 @@ description: >
 
 inputs:
   cache-version:
-    description: 'Manual version for cache invalidation'
+    description: "Manual version for cache invalidation"
     required: false
-    default: 'v1'
+    default: "v1"
 
   build-profile:
-    description: 'Build profile (release, debug)'
+    description: "Build profile (release, debug)"
     required: false
-    default: 'release'
+    default: "release"
 
 outputs:
   cache-hit:
-    description: 'Boolean indicating exact cache hit'
+    description: "Boolean indicating exact cache hit"
     value: ${{ steps.cache-restore.outputs.cache-hit }}
 
   cache-key:
-    description: 'The cache key used'
+    description: "The cache key used"
     value: ${{ steps.generate-cache-key.outputs.cache-key }}
 
   binary-path:
-    description: 'Path to the built/cached benchmark-harness binary'
+    description: "Path to the built/cached benchmark-harness binary"
     value: ${{ steps.validate-binary.outputs.binary-path }}
 
 runs:

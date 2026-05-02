@@ -114,10 +114,10 @@ task demo:dev
 
 This builds the WASM binary and TypeScript dist, patches the demo with local URLs, and starts two servers:
 
-| Server | URL | Role |
-|--------|-----|------|
-| Docs | `http://localhost:8001` | Serves the patched `demo-dev.html` |
-| Assets | `http://localhost:9000` | Serves the local WASM package |
+| Server | URL                     | Role                               |
+| ------ | ----------------------- | ---------------------------------- |
+| Docs   | `http://localhost:8001` | Serves the patched `demo-dev.html` |
+| Assets | `http://localhost:9000` | Serves the local WASM package      |
 
 Open **`http://localhost:8001/demo-dev.html`** — no manual edits needed. The patched file (`docs/demo-dev.html`) is gitignored and regenerated on every run. The two different ports reproduce the cross-origin setup the CDN creates in production.
 
@@ -135,17 +135,17 @@ End-to-end tests guarantee that every language binding produces identical result
 
 ### Run end-to-end Tests
 
-| Language | Directory | Run with |
-|----------|-----------|----------|
-| Python | `e2e/python/` | `task python:e2e:test` |
-| TypeScript / Node.js | `e2e/typescript/` | `task node:e2e:test` |
-| Rust | `e2e/rust/` | `task rust:e2e:test` |
-| Go | `e2e/go/` | `task go:e2e:test` |
-| Java | `e2e/java/` | `task java:e2e:test` |
-| .NET | `e2e/csharp/` | `task csharp:e2e:test` |
-| Ruby | `e2e/ruby/` | `task ruby:e2e:test` |
-| PHP | `e2e/php/` | `task php:e2e:test` |
-| R | `e2e/r/` | `task r:e2e:test` |
+| Language             | Directory         | Run with               |
+| -------------------- | ----------------- | ---------------------- |
+| Python               | `e2e/python/`     | `task python:e2e:test` |
+| TypeScript / Node.js | `e2e/typescript/` | `task node:e2e:test`   |
+| Rust                 | `e2e/rust/`       | `task rust:e2e:test`   |
+| Go                   | `e2e/go/`         | `task go:e2e:test`     |
+| Java                 | `e2e/java/`       | `task java:e2e:test`   |
+| .NET                 | `e2e/csharp/`     | `task csharp:e2e:test` |
+| Ruby                 | `e2e/ruby/`       | `task ruby:e2e:test`   |
+| PHP                  | `e2e/php/`        | `task php:e2e:test`    |
+| R                    | `e2e/r/`          | `task r:e2e:test`      |
 
 ### Regenerate end-to-end Tests
 
@@ -179,10 +179,10 @@ task benchmark:run FRAMEWORK=kreuzberg MODE=batch
 
 ### Common Modes
 
-| Mode | What it measures |
-|------|-----------------|
-| `single-file` | Latency — one file at a time |
-| `batch` | Throughput — multiple files in parallel |
+| Mode          | What it measures                        |
+| ------------- | --------------------------------------- |
+| `single-file` | Latency — one file at a time            |
+| `batch`       | Throughput — multiple files in parallel |
 
 ### With Profiling
 
@@ -313,14 +313,14 @@ task test:all:ci        # Everything
 
 ### Other Workflows
 
-| Workflow | When it runs | What it does |
-|----------|-------------|-------------|
-| `ci.yaml` | Every push/PR to `main` | The main pipeline |
-| `docs.yaml` | Changes to `docs/` or `zensical.toml` | Builds and validates documentation |
-| `benchmarks.yaml` | Manual trigger | Runs the full benchmark suite |
-| `profiling.yaml` | Manual trigger | Generates flamegraphs |
-| `publish.yaml` | Release events | Publishes packages to registries |
-| `publish-docker.yaml` | Tags and releases | Builds and pushes Docker images |
+| Workflow              | When it runs                          | What it does                       |
+| --------------------- | ------------------------------------- | ---------------------------------- |
+| `ci.yaml`             | Every push/PR to `main`               | The main pipeline                  |
+| `docs.yaml`           | Changes to `docs/` or `zensical.toml` | Builds and validates documentation |
+| `benchmarks.yaml`     | Manual trigger                        | Runs the full benchmark suite      |
+| `profiling.yaml`      | Manual trigger                        | Generates flamegraphs              |
+| `publish.yaml`        | Release events                        | Publishes packages to registries   |
+| `publish-docker.yaml` | Tags and releases                     | Builds and pushes Docker images    |
 
 ---
 

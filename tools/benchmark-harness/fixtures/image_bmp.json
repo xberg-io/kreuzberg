@@ -1,16 +1,23 @@
 {
-	"document": "../../../test_documents/images/sample_text.bmp",
-	"file_type": "bmp",
-	"file_size": 60138,
-	"expected_frameworks": ["kreuzberg", "docling", "markitdown", "pymupdf4llm", "tika", "unstructured"],
-	"metadata": {
-		"description": "BMP image with 'Hello World' text for OCR testing - 60KB 24-bit BMP",
-		"category": "image",
-		"size_class": "small",
-		"requires_ocr": true
-	},
-	"ground_truth": {
-		"text_file": "../../../test_documents/ground_truth/bmp/image_bmp.txt",
-		"source": "vision"
-	}
+  "document": "../../../test_documents/images/sample_text.bmp",
+  "file_type": "bmp",
+  "file_size": 60138,
+  "expected_frameworks": [
+    "kreuzberg",
+    "docling",
+    "markitdown",
+    "pymupdf4llm",
+    "tika",
+    "unstructured"
+  ],
+  "metadata": {
+    "description": "BMP image with 'Hello World' text for OCR testing - 60KB 24-bit BMP",
+    "category": "image",
+    "size_class": "small",
+    "requires_ocr": true
+  },
+  "ground_truth": {
+    "text_file": "../../../test_documents/ground_truth/bmp/image_bmp.txt",
+    "source": "vision"
+  }
 }

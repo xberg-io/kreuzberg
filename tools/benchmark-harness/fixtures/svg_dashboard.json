@@ -1,14 +1,14 @@
 {
-	"document": "../../../test_documents/xml/data_dashboard.svg",
-	"file_type": "svg",
-	"file_size": 3035,
-	"expected_frameworks": ["kreuzberg", "tika"],
-	"metadata": {
-		"description": "SVG bar chart dashboard with quarterly revenue figures",
-		"category": "technical"
-	},
-	"ground_truth": {
-		"text_file": "../../../test_documents/ground_truth/svg/svg_dashboard.txt",
-		"source": "manual"
-	}
+  "document": "../../../test_documents/xml/data_dashboard.svg",
+  "file_type": "svg",
+  "file_size": 3035,
+  "expected_frameworks": ["kreuzberg", "tika"],
+  "metadata": {
+    "description": "SVG bar chart dashboard with quarterly revenue figures",
+    "category": "technical"
+  },
+  "ground_truth": {
+    "text_file": "../../../test_documents/ground_truth/svg/svg_dashboard.txt",
+    "source": "manual"
+  }
 }

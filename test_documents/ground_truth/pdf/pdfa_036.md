@@ -6,33 +6,33 @@ K2
 
 The K2 Australian Fund is an Absolute Return equities fund. The fund is index-unaware, aiming to produce positive absolute returns over the long term with a capital preservation mindset. The Fund's mandate allows it to actively manage its net market exposure – utilising both cash and shorts to help protect clients' capital.
 
-|   | 1 Month | Inception (x/m) | Inception Date  |
-| --- | --- | --- | --- |
-|  Performance (Net of Fees) | -1.0% | 9.9% | 1-Oct-1999  |
-|  Average Net Exposure | 97.5% | 73.4% |   |
+|                           | 1 Month | Inception (x/m) | Inception Date |
+| ------------------------- | ------- | --------------- | -------------- |
+| Performance (Net of Fees) | -1.0%   | 9.9%            | 1-Oct-1999     |
+| Average Net Exposure      | 97.5%   | 73.4%           |                |
 
 ![img-0.jpeg](img-0.jpeg)
 Growth of $10,000
 
-|  Top 5 Stock Holdings | Current | Monthly Move  |
-| --- | --- | --- |
-|  BHP Group Ltd | 8.9% | +0.8%  |
-|  Macquarie Group Ltd | 8.6% | +0.7%  |
-|  RIO Tinto Ltd | 7.3% | +0.3%  |
-|  Seven Group Holdings Ltd | 7.1% | -0.2%  |
-|  Medibank Private Ltd | 6.0% | +0.6%  |
-|  Month End Exposures | Current | Monthly Move  |
-| --- | --- | --- |
-|  Consumer | 6.7% | -2.5%  |
-|  Financials | 44.9% | +3.5%  |
-|  Health Care | 8.2% | +0.3%  |
-|  Industrials | 9.4% | -3.3%  |
-|  Materials | 25.9% | +2.6%  |
-|  Real Estate | 2.1% | -1.2%  |
-|  Number of Positions | 32 | -2  |
-|  Gross Equity Exposure | 97.2% | -0.7%  |
-|  Cash Weighting | 2.8% | +0.7%  |
-|  Net Equity Exposure | 97.2% | -0.7%  |
+| Top 5 Stock Holdings     | Current | Monthly Move |
+| ------------------------ | ------- | ------------ |
+| BHP Group Ltd            | 8.9%    | +0.8%        |
+| Macquarie Group Ltd      | 8.6%    | +0.7%        |
+| RIO Tinto Ltd            | 7.3%    | +0.3%        |
+| Seven Group Holdings Ltd | 7.1%    | -0.2%        |
+| Medibank Private Ltd     | 6.0%    | +0.6%        |
+| Month End Exposures      | Current | Monthly Move |
+| ---                      | ---     | ---          |
+| Consumer                 | 6.7%    | -2.5%        |
+| Financials               | 44.9%   | +3.5%        |
+| Health Care              | 8.2%    | +0.3%        |
+| Industrials              | 9.4%    | -3.3%        |
+| Materials                | 25.9%   | +2.6%        |
+| Real Estate              | 2.1%    | -1.2%        |
+| Number of Positions      | 32      | -2           |
+| Gross Equity Exposure    | 97.2%   | -0.7%        |
+| Cash Weighting           | 2.8%    | +0.7%        |
+| Net Equity Exposure      | 97.2%   | -0.7%        |
 
 # George Boubouras
 
@@ -50,19 +50,19 @@ The best performing holdings for the Fund this month were Kina Securities (KSL),
 
 The Fund's net exposure for the month averaged 97.5%. The median holding for the Fund has attractive characteristics; using consensus forecasts for the year ahead the PE is 15.3x, ROE is 10.6%, and the dividend yield is 3.7%. The market capitalisation of the median holding for the Fund is $7.5 billion and EPS growth is expected to be +13.1% over the next 12 months.
 
-|  Fund Characteristics  |   |
-| --- | --- |
-|  FUM | AUD $21m  |
-|  Portfolio Managers | Campbell Neal, David Poppenbeek and Josh Kitchen  |
-|  Strategy | Australian and New Zealand Equities  |
-|  Objectives | To deliver consistent absolute returns over the investment cycle with a focus on capital protection during periods of market declines  |
-|  Return Target | +10% pa over the long term  |
-|  Number of Stocks | Up to 80  |
-|  Cash | Up to 100% of portfolio  |
-|  Distributions | Annually  |
-|  Management Fee | 1.31%  |
-|  Buy/Sell | Daily Application/Redemption  |
-|  Performance Fee | 15.38% pa of the amount by which the NAV per unit exceeds the High Water Mark once the fund achieves its hurdle  |
+| Fund Characteristics |                                                                                                                                       |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| FUM                  | AUD $21m                                                                                                                              |
+| Portfolio Managers   | Campbell Neal, David Poppenbeek and Josh Kitchen                                                                                      |
+| Strategy             | Australian and New Zealand Equities                                                                                                   |
+| Objectives           | To deliver consistent absolute returns over the investment cycle with a focus on capital protection during periods of market declines |
+| Return Target        | +10% pa over the long term                                                                                                            |
+| Number of Stocks     | Up to 80                                                                                                                              |
+| Cash                 | Up to 100% of portfolio                                                                                                               |
+| Distributions        | Annually                                                                                                                              |
+| Management Fee       | 1.31%                                                                                                                                 |
+| Buy/Sell             | Daily Application/Redemption                                                                                                          |
+| Performance Fee      | 15.38% pa of the amount by which the NAV per unit exceeds the High Water Mark once the fund achieves its hurdle                       |
 
 K2 Asset Management Ltd ACN 085 445 094 / AFSL No. 244 393
 
@@ -70,32 +70,32 @@ www.k2am.com.au
 
 K2 Australian Fund Net Monthly Returns in AUD
 
-|  Year | Jul | Aug | Sep | Oct | Nov | Dec | Jan | Feb | Mar | Apr | May | Jun | Fin YTD | Fin YTD Index (1) | Average Cash | Average Short  |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-|  1999/00 |  |  |  | 1.9 | 2.0 | 9.5 | -3.9 | -2.6 | 5.6 | -4.0 | -1.9 | 2.4 | 8.5 | 16.0 | 52.0% | -12.8%  |
-|  2000/01 | 13.1 | 6.8 | -3.1 | 0.1 | 4.5 | 0.9 | 4.5 | -2.9 | -11.9 | 13.0 | 5.2 | 0.5 | 32.2 | 8.8 | 27.7% | -16.7%  |
-|  2001/02 | -7.9 | -4.8 | -5.4 | 8.7 | 11.5 | 1.8 | 3.9 | 3.5 | -0.2 | -0.4 | 2.7 | -2.7 | 9.5 | -4.5 | 32.1% | -14.6%  |
-|  2002/03 | -6.3 | 3.6 | -0.9 | 1.7 | 1.6 | 4.3 | 1.8 | 1.2 | -0.2 | 2.2 | 0.7 | 1.5 | 11.2 | -1.1 | 51.6% | -14.4%  |
-|  2003/04 | 3.7 | 7.0 | 1.6 | 2.5 | -1.2 | 2.9 | 0.4 | 1.4 | 0.5 | -0.1 | 0.3 | 2.2 | 23.2 | 22.4 | 36.0% | -3.7%  |
-|  2004/05 | 3.1 | 1.4 | 4.2 | 4.5 | 3.7 | 1.4 | 3.8 | 0.3 | -2.0 | -3.4 | 0.8 | 3.2 | 22.6 | 24.7 | 26.9% | -5.2%  |
-|  2005/06 | 1.3 | 0.7 | 3.9 | -3.2 | 3.7 | 1.4 | 1.7 | 0.5 | 3.5 | 1.9 | -0.4 | 2.0 | 18.3 | 24.2 | 27.6% | -3.9%  |
-|  2006/07 | -0.9 | 2.3 | 1.5 | 5.8 | 0.4 | 3.0 | 1.0 | 0.5 | 3.0 | 2.7 | 3.5 | 0.2 | 25.3 | 30.3 | 32.2% | -4.9%  |
-|  2007/08 | -0.6 | -1.5 | 2.6 | 0.9 | -1.9 | -0.3 | -9.3 | -0.4 | -1.5 | 1.6 | 0.9 | -2.3 | -11.6 | -12.1 | 51.1% | -8.2%  |
-|  2008/09 | 0.3 | 2.8 | -5.8 | -5.6 | -3.8 | 3.4 | -1.6 | -1.2 | 5.7 | 4.7 | 0.9 | 2.9 | 1.9 | -22.1 | 46.6% | -3.4%  |
-|  2009/10 | 7.2 | 7.4 | 5.1 | -1.0 | 1.8 | 3.5 | -4.0 | -0.2 | 3.5 | -0.6 | -5.7 | -0.9 | 16.3 | 13.8 | 10.3% | -2.6%  |
-|  2010/11 | 2.1 | -1.1 | 4.7 | 3.3 | 0.1 | 3.4 | -0.5 | 1.9 | 0.0 | -1.6 | -1.7 | -0.8 | 10.0 | 12.2 | 14.1% | -4.0%  |
-|  2011/12 | -3.4 | -0.6 | -4.8 | 3.7 | -2.8 | -2.1 | 3.1 | 1.9 | 1.9 | -0.2 | -5.5 | -0.4 | -9.2 | -7.0 | 23.3% | -3.5%  |
-|  2012/13 | 3.3 | 2.9 | 1.2 | 3.6 | 0.1 | 3.1 | 4.5 | 4.5 | 0.3 | 4.5 | -2.8 | -1.4 | 26.1 | 20.7 | 7.2% | -0.2%  |
-|  2013/14 | 3.3 | 1.3 | 4.6 | 2.5 | -0.3 | 0.1 | -2.3 | 2.2 | 1.7 | -0.1 | 0.0 | -0.9 | 12.5 | 17.6 | 11.7% | 0.0%  |
-|  2014/15 | 2.8 | 1.6 | -2.0 | 2.0 | -0.8 | -0.7 | 3.5 | 6.2 | 0.4 | -0.3 | 1.2 | -3.0 | 11.0 | 5.7 | 18.5% | -0.3%  |
-|  2015/16 | 1.6 | -4.1 | -2.7 | 3.4 | -0.6 | -1.7 | -3.8 | -1.4 | 4.4 | 3.1 | 2.2 | -3.1 | -3.2 | 2.0 | 19.8% | -0.3%  |
-|  2016/17 | 5.1 | 1.3 | 1.3 | -1.4 | 0.0 | 2.9 | 0.2 | -1.6 | 1.0 | -0.1 | 0.1 | 0.0 | 9.0 | 13.1 | 16.7% | -1.5%  |
-|  2017/18 | 1.0 | 0.3 | 0.5 | 2.9 | 1.8 | 3.2 | 0.8 | 0.7 | -2.7 | 1.7 | 0.7 | 1.6 | 13.1 | 13.7 | 21.6% | -3.7%  |
-|  2018/19 | 0.4 | -1.4 | 0.1 | -7.2 | -2.4 | -1.2 | 0.1 | 2.4 | 0.2 | 1.4 | 0.3 | -0.3 | -7.6 | 11.0 | 39.3% | -3.3%  |
-|  2019/20 | 2.2 | -4.6 | 3.6 | -1.0 | 4.0 | 2.1 | 2.7 | -9.4 | -26.2 | 10.8 | 5.7 | 2.2 | -12.7 | -7.2 | 13.6% | -1.6%  |
-|  2020/21 | 3.1 | 5.1 | -3.9 | 1.7 | 13.3 | 2.4 | -1.0 |  |  |  |  |  | 21.6 | 16.0 | 2.8% | -0.1%  |
-|  Incept |   |   |   |   |   |   |   |   |   |   |   | 654.7 | 462.8 |  |  |   |
-|  Incept |   |   |   |   |   |   |   |   |   |   |   | 9.9%pa | 8.4%pa | 26.5% | -5.0% |   |
+| Year    | Jul  | Aug  | Sep  | Oct  | Nov  | Dec  | Jan  | Feb  | Mar   | Apr  | May  | Jun    | Fin YTD | Fin YTD Index (1) | Average Cash | Average Short |
+| ------- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ----- | ---- | ---- | ------ | ------- | ----------------- | ------------ | ------------- |
+| 1999/00 |      |      |      | 1.9  | 2.0  | 9.5  | -3.9 | -2.6 | 5.6   | -4.0 | -1.9 | 2.4    | 8.5     | 16.0              | 52.0%        | -12.8%        |
+| 2000/01 | 13.1 | 6.8  | -3.1 | 0.1  | 4.5  | 0.9  | 4.5  | -2.9 | -11.9 | 13.0 | 5.2  | 0.5    | 32.2    | 8.8               | 27.7%        | -16.7%        |
+| 2001/02 | -7.9 | -4.8 | -5.4 | 8.7  | 11.5 | 1.8  | 3.9  | 3.5  | -0.2  | -0.4 | 2.7  | -2.7   | 9.5     | -4.5              | 32.1%        | -14.6%        |
+| 2002/03 | -6.3 | 3.6  | -0.9 | 1.7  | 1.6  | 4.3  | 1.8  | 1.2  | -0.2  | 2.2  | 0.7  | 1.5    | 11.2    | -1.1              | 51.6%        | -14.4%        |
+| 2003/04 | 3.7  | 7.0  | 1.6  | 2.5  | -1.2 | 2.9  | 0.4  | 1.4  | 0.5   | -0.1 | 0.3  | 2.2    | 23.2    | 22.4              | 36.0%        | -3.7%         |
+| 2004/05 | 3.1  | 1.4  | 4.2  | 4.5  | 3.7  | 1.4  | 3.8  | 0.3  | -2.0  | -3.4 | 0.8  | 3.2    | 22.6    | 24.7              | 26.9%        | -5.2%         |
+| 2005/06 | 1.3  | 0.7  | 3.9  | -3.2 | 3.7  | 1.4  | 1.7  | 0.5  | 3.5   | 1.9  | -0.4 | 2.0    | 18.3    | 24.2              | 27.6%        | -3.9%         |
+| 2006/07 | -0.9 | 2.3  | 1.5  | 5.8  | 0.4  | 3.0  | 1.0  | 0.5  | 3.0   | 2.7  | 3.5  | 0.2    | 25.3    | 30.3              | 32.2%        | -4.9%         |
+| 2007/08 | -0.6 | -1.5 | 2.6  | 0.9  | -1.9 | -0.3 | -9.3 | -0.4 | -1.5  | 1.6  | 0.9  | -2.3   | -11.6   | -12.1             | 51.1%        | -8.2%         |
+| 2008/09 | 0.3  | 2.8  | -5.8 | -5.6 | -3.8 | 3.4  | -1.6 | -1.2 | 5.7   | 4.7  | 0.9  | 2.9    | 1.9     | -22.1             | 46.6%        | -3.4%         |
+| 2009/10 | 7.2  | 7.4  | 5.1  | -1.0 | 1.8  | 3.5  | -4.0 | -0.2 | 3.5   | -0.6 | -5.7 | -0.9   | 16.3    | 13.8              | 10.3%        | -2.6%         |
+| 2010/11 | 2.1  | -1.1 | 4.7  | 3.3  | 0.1  | 3.4  | -0.5 | 1.9  | 0.0   | -1.6 | -1.7 | -0.8   | 10.0    | 12.2              | 14.1%        | -4.0%         |
+| 2011/12 | -3.4 | -0.6 | -4.8 | 3.7  | -2.8 | -2.1 | 3.1  | 1.9  | 1.9   | -0.2 | -5.5 | -0.4   | -9.2    | -7.0              | 23.3%        | -3.5%         |
+| 2012/13 | 3.3  | 2.9  | 1.2  | 3.6  | 0.1  | 3.1  | 4.5  | 4.5  | 0.3   | 4.5  | -2.8 | -1.4   | 26.1    | 20.7              | 7.2%         | -0.2%         |
+| 2013/14 | 3.3  | 1.3  | 4.6  | 2.5  | -0.3 | 0.1  | -2.3 | 2.2  | 1.7   | -0.1 | 0.0  | -0.9   | 12.5    | 17.6              | 11.7%        | 0.0%          |
+| 2014/15 | 2.8  | 1.6  | -2.0 | 2.0  | -0.8 | -0.7 | 3.5  | 6.2  | 0.4   | -0.3 | 1.2  | -3.0   | 11.0    | 5.7               | 18.5%        | -0.3%         |
+| 2015/16 | 1.6  | -4.1 | -2.7 | 3.4  | -0.6 | -1.7 | -3.8 | -1.4 | 4.4   | 3.1  | 2.2  | -3.1   | -3.2    | 2.0               | 19.8%        | -0.3%         |
+| 2016/17 | 5.1  | 1.3  | 1.3  | -1.4 | 0.0  | 2.9  | 0.2  | -1.6 | 1.0   | -0.1 | 0.1  | 0.0    | 9.0     | 13.1              | 16.7%        | -1.5%         |
+| 2017/18 | 1.0  | 0.3  | 0.5  | 2.9  | 1.8  | 3.2  | 0.8  | 0.7  | -2.7  | 1.7  | 0.7  | 1.6    | 13.1    | 13.7              | 21.6%        | -3.7%         |
+| 2018/19 | 0.4  | -1.4 | 0.1  | -7.2 | -2.4 | -1.2 | 0.1  | 2.4  | 0.2   | 1.4  | 0.3  | -0.3   | -7.6    | 11.0              | 39.3%        | -3.3%         |
+| 2019/20 | 2.2  | -4.6 | 3.6  | -1.0 | 4.0  | 2.1  | 2.7  | -9.4 | -26.2 | 10.8 | 5.7  | 2.2    | -12.7   | -7.2              | 13.6%        | -1.6%         |
+| 2020/21 | 3.1  | 5.1  | -3.9 | 1.7  | 13.3 | 2.4  | -1.0 |      |       |      |      |        | 21.6    | 16.0              | 2.8%         | -0.1%         |
+| Incept  |      |      |      |      |      |      |      |      |       |      |      | 654.7  | 462.8   |                   |              |               |
+| Incept  |      |      |      |      |      |      |      |      |       |      |      | 9.9%pa | 8.4%pa  | 26.5%             | -5.0%        |               |
 
 (1) S&amp;P/ASX All Ordinaries Accumulation Index
 

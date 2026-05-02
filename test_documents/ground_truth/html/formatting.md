@@ -1,8 +1,8 @@
 # HTML Text Formatting Examples
 
-This is a **bold (b)** example and right next to it we have a **strong emphasis (strong)**. Notice that ****strong + bold mixed**** looks similar but carries additional semantic meaning.
+This is a **bold (b)** example and right next to it we have a **strong emphasis (strong)**. Notice that \***\*strong + bold mixed\*\*** looks similar but carries additional semantic meaning.
 
-Here is an *italic (i)* word and an *emphasis (em)* example. Sometimes we combine them like italic + emphasis together.
+Here is an _italic (i)_ word and an _emphasis (em)_ example. Sometimes we combine them like italic + emphasis together.
 
 Now let's look at text that appears crossed out: ~~strikethrough with s~~ and ~~deleted with del~~. You can also mix them: ~~~~double strikethrough (s + del)~~~~.
 
@@ -10,4 +10,4 @@ To highlight insertions or underlines: underlined with u, inserted with ins. A c
 
 Subscript and superscript examples: Water is written as H2O using sub. The mathematical expression x2 + y3 uses sup. They can also be combined: CO2\*.
 
-Mixing several: This sentence has ***strong + emphasis***, some **bold + underline**, and a formula like a2 + b3.
+Mixing several: This sentence has **_strong + emphasis_**, some **bold + underline**, and a formula like a2 + b3.

@@ -1,20 +1,20 @@
 {
-	"id": "error_security_too_many_cells",
-	"category": "error",
-	"description": "Error when cumulative table cell count exceeds max_table_cells (TableValidator fires). The Stanley Cups spreadsheet has more than 1 cell, so any tabular extraction trips this dial-down.",
-	"tags": ["error", "security", "limits", "table-cells"],
-	"call": "extract_file_sync",
-	"input": {
-		"path": "xlsx/stanley_cups.xlsx",
-		"config": {
-			"security_limits": {
-				"max_table_cells": 1
-			}
-		}
-	},
-	"assertions": [
-		{
-			"type": "error"
-		}
-	]
+  "id": "error_security_too_many_cells",
+  "category": "error",
+  "description": "Error when cumulative table cell count exceeds max_table_cells (TableValidator fires). The Stanley Cups spreadsheet has more than 1 cell, so any tabular extraction trips this dial-down.",
+  "tags": ["error", "security", "limits", "table-cells"],
+  "call": "extract_file_sync",
+  "input": {
+    "path": "xlsx/stanley_cups.xlsx",
+    "config": {
+      "security_limits": {
+        "max_table_cells": 1
+      }
+    }
+  },
+  "assertions": [
+    {
+      "type": "error"
+    }
+  ]
 }

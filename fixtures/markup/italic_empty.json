@@ -1,19 +1,16 @@
 {
-	"id": "italic_empty",
-	"category": "markup",
-	"description": "Italic empty string",
-	"tags": [
-		"markup",
-		"edge_case"
-	],
-	"call": "italic",
-	"input": {
-		"start": 0,
-		"end": 0
-	},
-	"assertions": [
-		{
-			"type": "not_error"
-		}
-	]
+  "id": "italic_empty",
+  "category": "markup",
+  "description": "Italic empty string",
+  "tags": ["markup", "edge_case"],
+  "call": "italic",
+  "input": {
+    "start": 0,
+    "end": 0
+  },
+  "assertions": [
+    {
+      "type": "not_error"
+    }
+  ]
 }

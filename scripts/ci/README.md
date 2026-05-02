@@ -30,12 +30,14 @@ scripts/ci/
 ### Running a Script
 
 **Bash scripts:**
+
 ```bash
 ./scripts/ci/docker/build-image.sh core
 ./scripts/ci/python/run-tests.sh true
 ```
 
 **PowerShell scripts:**
+
 ```powershell
 & ./scripts/ci/go/build-ffi.ps1
 & ./scripts/ci/rust/package-cli-windows.ps1 -Target "x86_64-pc-windows-msvc"
@@ -44,6 +46,7 @@ scripts/ci/
 ### Sourcing Scripts
 
 For library path setup scripts:
+
 ```bash
 source ./scripts/lib/library-paths.sh
 setup_all_library_paths
@@ -53,6 +56,7 @@ setup_all_library_paths
 ## Scripts by Workflow
 
 ### Docker (`docker/`)
+
 - `free-disk-space.sh` - Clean up CI disk space
 - `build-image.sh` - Build Docker image variant
 - `check-image-size.sh` - Validate image size constraints
@@ -62,6 +66,7 @@ setup_all_library_paths
 - `summary.sh` - Print test summary
 
 ### Go (`go/`)
+
 - `build-ffi.sh` - Build FFI library (Unix)
 - `build-ffi.ps1` - Build FFI library (Windows)
 - `build-bindings.sh` - Build Go bindings with CGO (Unix)
@@ -70,20 +75,24 @@ setup_all_library_paths
 - `run-tests.sh` - Run Go tests with library paths
 
 ### Java (`java/`)
+
 - `build-java.sh` - Build Java bindings with Maven
 - `run-tests.sh` - Run Java tests with Maven
 
 ### Node/TypeScript (`node/`)
+
 - `build-napi.sh` - Build NAPI bindings with artifact collection
 - `unpack-bindings.sh` - Unpack and install bindings from tarball
 
 ### Python (`python/`)
+
 - `clean-artifacts.sh` - Clean previous wheel artifacts
 - `smoke-test-wheel.sh` - Test wheel installation
 - `install-wheel.sh` - Install platform-specific wheel
 - `run-tests.sh` - Run tests with optional coverage
 
 ### Ruby (`ruby/`)
+
 - `install-ruby-deps.sh` - Install bundle dependencies (Unix)
 - `install-ruby-deps.ps1` - Install bundle dependencies (Windows)
 - `vendor-kreuzberg-core.py` - Vendor core crate for packaging
@@ -95,6 +104,7 @@ setup_all_library_paths
 - `run-tests.sh` - Run RSpec tests
 
 ### Rust (`rust/`)
+
 - `configure-bindgen-windows.ps1` - Configure bindgen headers (Windows)
 - `run-unit-tests.sh` - Run Rust unit tests
 - `package-cli-unix.sh` - Package CLI as tar.gz (Unix)
@@ -103,33 +113,39 @@ setup_all_library_paths
 - `test-cli-windows.ps1` - Test CLI binary (Windows)
 
 ### C# (`csharp/`)
+
 - `build-csharp.sh` - Build C# bindings with dotnet
 - `run-tests.sh` - Run C# tests with dotnet
 
 ### Validate (`validate/`)
+
 - `run-lint.sh` - Run all linting and validation checks via Task
 
 ## Features
 
 ### Error Handling
+
 - All Bash scripts use `set -euo pipefail`
 - All PowerShell scripts use `Set-StrictMode` and error action preferences
 - Proper exit codes and error messages
 - Usage information for incorrect arguments
 
 ### Documentation
+
 - Every script has a descriptive header
 - Purpose and usage clearly stated
 - Which CI workflow step uses it
 - Argument documentation
 
 ### Platform Support
+
 - Windows-specific operations via PowerShell (.ps1)
 - Unix operations via Bash (.sh)
 - Cross-platform scripts detect OS and adjust behavior
 - Library path setup scripts handle Windows/Linux/macOS
 
 ### Reusability
+
 - `library-paths.sh` (`scripts/lib/`) - Shared by all workflows for native library configuration
 - `configure-bindgen-windows.ps1` used by Ruby and Rust
 - Common patterns consolidated into single scripts
@@ -143,6 +159,7 @@ For comprehensive workflow-to-script mapping and usage examples, see `SCRIPT_MAP
 ### Example: ci-docker.yaml
 
 **Before (inline commands):**
+
 ```yaml
 - name: Free up disk space
   run: |
@@ -154,6 +171,7 @@ For comprehensive workflow-to-script mapping and usage examples, see `SCRIPT_MAP
 ```
 
 **After (using script):**
+
 ```yaml
 - name: Free up disk space
   run: ./scripts/ci/docker/free-disk-space.sh
@@ -162,6 +180,7 @@ For comprehensive workflow-to-script mapping and usage examples, see `SCRIPT_MAP
 ### Example: ci-python.yaml
 
 **Before (inline commands):**
+
 ```yaml
 - name: Run Python tests
   run: |
@@ -174,6 +193,7 @@ For comprehensive workflow-to-script mapping and usage examples, see `SCRIPT_MAP
 ```
 
 **After (using script):**
+
 ```yaml
 - name: Run Python tests
   run: ./scripts/ci/python/run-tests.sh ${{ matrix.coverage }}
@@ -213,6 +233,7 @@ When adding new CI steps or modifying existing ones:
 ## Maintenance
 
 Scripts should be reviewed and updated when:
+
 - Updating CI workflow logic
 - Changing build tools or versions
 - Improving error handling

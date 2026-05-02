@@ -18,9 +18,11 @@ This document tests pandoc’s ability to extract content and metadata from LaTe
 
 The quadratic formula is given by:
 
-$$\begin{equation}
+$$
+\begin{equation}
 x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}
-\end{equation}$$
+\end{equation}
+$$
 
 Inline math also works: $E = mc^2$.
 
@@ -30,7 +32,7 @@ Inline math also works: $E = mc^2$.
 
 1. First item
 2. Second item with **bold text**
-3. Third item with *italic text*
+3. Third item with _italic text_
 
 ## Itemized List
 
@@ -43,9 +45,9 @@ Inline math also works: $E = mc^2$.
 # Tables
 
 | Left | Center | Right |
-| --- | --- | --- |
-| A1 | B1 | C1 |
-| A2 | B2 | C2 |
+| ---- | ------ | ----- |
+| A1   | B1     | C1    |
+| A2   | B2     | C2    |
 
 Sample Table
 

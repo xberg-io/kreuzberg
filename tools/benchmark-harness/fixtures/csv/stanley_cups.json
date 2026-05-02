@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/csv/stanley_cups.csv",
   "file_type": "csv",
   "file_size": 91,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "csv test: stanley_cups",
     "source": "pandoc-generated",

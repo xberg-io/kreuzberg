@@ -1,33 +1,33 @@
 {
-	"id": "pdf_annotations",
-	"category": "pdf",
-	"description": "PDF with annotations should extract annotation data when enabled.",
-	"input": {
-		"path": "pdf/test_article.pdf",
-		"media_type": "application/pdf",
-		"config": {
-			"pdf_options": {
-				"extract_annotations": true
-			}
-		}
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/pdf"
-		},
-		{
-			"type": "not_empty",
-			"field": "annotations"
-		},
-		{
-			"type": "count_min",
-			"field": "annotations",
-			"value": 1
-		}
-	],
-	"skip": {
-		"reason": "Skip on platforms: aarch64-unknown-linux-gnu; PDFium ARM Linux binary does not support annotation extraction"
-	}
+  "id": "pdf_annotations",
+  "category": "pdf",
+  "description": "PDF with annotations should extract annotation data when enabled.",
+  "input": {
+    "path": "pdf/test_article.pdf",
+    "media_type": "application/pdf",
+    "config": {
+      "pdf_options": {
+        "extract_annotations": true
+      }
+    }
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/pdf"
+    },
+    {
+      "type": "not_empty",
+      "field": "annotations"
+    },
+    {
+      "type": "count_min",
+      "field": "annotations",
+      "value": 1
+    }
+  ],
+  "skip": {
+    "reason": "Skip on platforms: aarch64-unknown-linux-gnu; PDFium ARM Linux binary does not support annotation extraction"
+  }
 }

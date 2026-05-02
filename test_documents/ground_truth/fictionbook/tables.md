@@ -1,20 +1,20 @@
-# 
+#
 
 <div class="section">
 
 Simple table with caption:
 
-*Demonstration of simple table syntax.*
+_Demonstration of simple table syntax._
 
 Simple table without caption:
 
 Simple table indented two spaces:
 
-*Demonstration of simple table syntax.*
+_Demonstration of simple table syntax._
 
 Multiline table with caption:
 
-*Here’s the caption. It may span multiple lines.*
+_Here’s the caption. It may span multiple lines._
 
 Multiline table without caption:
 

@@ -1,29 +1,29 @@
 {
-	"id": "office_dbf_basic",
-	"category": "office",
-	"description": "dBASE (.dbf) table extraction as markdown.",
-	"input": {
-		"path": "dbf/stations.dbf",
-		"media_type": "application/x-dbf"
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/x-dbf"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 10
-		},
-		{
-			"type": "contains_any",
-			"field": "content",
-			"values": ["|"]
-		}
-	],
-	"skip": {
-		"reason": "Requires features: office; Skip if document missing; Requires the office feature."
-	}
+  "id": "office_dbf_basic",
+  "category": "office",
+  "description": "dBASE (.dbf) table extraction as markdown.",
+  "input": {
+    "path": "dbf/stations.dbf",
+    "media_type": "application/x-dbf"
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/x-dbf"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 10
+    },
+    {
+      "type": "contains_any",
+      "field": "content",
+      "values": ["|"]
+    }
+  ],
+  "skip": {
+    "reason": "Requires features: office; Skip if document missing; Requires the office feature."
+  }
 }

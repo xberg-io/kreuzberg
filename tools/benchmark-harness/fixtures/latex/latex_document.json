@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/latex/latex_document.tex",
   "file_type": "latex",
   "file_size": 1475,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "Comprehensive LaTeX document with abstract, math equations, lists, tables, and bibliography reference",
     "source": "handcrafted",

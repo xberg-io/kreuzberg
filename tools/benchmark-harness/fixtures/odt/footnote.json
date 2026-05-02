@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/odt/footnote.odt",
   "file_type": "odt",
   "file_size": 10843,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "odt test: footnote",
     "source": "pandoc-generated",

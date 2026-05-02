@@ -1,21 +1,21 @@
 {
-	"id": "archive_sevenz_basic",
-	"category": "archive",
-	"description": "7-Zip archive extraction.",
-	"input": {
-		"path": "archives/documents.7z",
-		"media_type": "application/x-7z-compressed"
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/x-7z-compressed"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 10
-		}
-	]
+  "id": "archive_sevenz_basic",
+  "category": "archive",
+  "description": "7-Zip archive extraction.",
+  "input": {
+    "path": "archives/documents.7z",
+    "media_type": "application/x-7z-compressed"
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/x-7z-compressed"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 10
+    }
+  ]
 }

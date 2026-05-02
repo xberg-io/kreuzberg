@@ -1,21 +1,21 @@
 {
-	"id": "structured_yaml_simple",
-	"category": "structured",
-	"description": "Simple YAML document to validate structured extraction.",
-	"input": {
-		"path": "yaml/simple.yaml",
-		"media_type": "application/x-yaml"
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/x-yaml"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 10
-		}
-	]
+  "id": "structured_yaml_simple",
+  "category": "structured",
+  "description": "Simple YAML document to validate structured extraction.",
+  "input": {
+    "path": "yaml/simple.yaml",
+    "media_type": "application/x-yaml"
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/x-yaml"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 10
+    }
+  ]
 }

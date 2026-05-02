@@ -34,7 +34,7 @@ Christopher Paolini, whose new novel, "The Fork, the Witch, and the Worm," enter
 
 BITS' N' PIECES
 
-*The Shooting Gallery, (ss) The Dedalus Book of Spanish Fantasy, ed. Margaret Jull Costa &amp; Annella McDermott, Dedalus 1999; Extract from a novel (1929).; tr. by Margaret Jull Costa ...
+\*The Shooting Gallery, (ss) The Dedalus Book of Spanish Fantasy, ed. Margaret Jull Costa &amp; Annella McDermott, Dedalus 1999; Extract from a novel (1929).; tr. by Margaret Jull Costa ...
 
 Page 4/4
 

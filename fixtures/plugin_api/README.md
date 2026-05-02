@@ -39,8 +39,8 @@ Lists items from a registry. No setup required.
 ```json
 {
   "pattern": "simple_list",
-  "function_call": {"name": "list_validators", "args": []},
-  "assertions": {"return_type": "list", "list_item_type": "string"}
+  "function_call": { "name": "list_validators", "args": [] },
+  "assertions": { "return_type": "list", "list_item_type": "string" }
 }
 ```
 
@@ -53,8 +53,8 @@ Clears a registry and verifies it's empty.
 ```json
 {
   "pattern": "clear_registry",
-  "function_call": {"name": "clear_validators", "args": []},
-  "assertions": {"return_type": "void", "verify_cleanup": true}
+  "function_call": { "name": "clear_validators", "args": [] },
+  "assertions": { "return_type": "void", "verify_cleanup": true }
 }
 ```
 
@@ -67,8 +67,8 @@ Attempts to unregister a nonexistent item without error.
 ```json
 {
   "pattern": "graceful_unregister",
-  "function_call": {"name": "unregister_ocr_backend", "args": ["nonexistent-backend-xyz"]},
-  "assertions": {"does_not_throw": true}
+  "function_call": { "name": "unregister_ocr_backend", "args": ["nonexistent-backend-xyz"] },
+  "assertions": { "does_not_throw": true }
 }
 ```
 
@@ -93,9 +93,7 @@ Creates a temp TOML file, loads config, verifies properties.
     "args": ["${temp_file_path}"]
   },
   "assertions": {
-    "object_properties": [
-      {"path": "chunking.max_chars", "value": 100}
-    ]
+    "object_properties": [{ "path": "chunking.max_chars", "value": 100 }]
   }
 }
 ```
@@ -120,9 +118,9 @@ Detects MIME type from byte content.
 ```json
 {
   "pattern": "mime_from_bytes",
-  "setup": {"test_data": "%PDF-1.4\\n"},
-  "function_call": {"name": "detect_mime_type", "args": ["${test_data_bytes}"]},
-  "assertions": {"string_contains": "pdf"}
+  "setup": { "test_data": "%PDF-1.4\\n" },
+  "function_call": { "name": "detect_mime_type", "args": ["${test_data_bytes}"] },
+  "assertions": { "string_contains": "pdf" }
 }
 ```
 

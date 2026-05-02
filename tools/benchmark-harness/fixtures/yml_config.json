@@ -1,15 +1,15 @@
 {
-	"document": "../../../test_documents/yaml/sample_config.yml",
-	"file_type": "yml",
-	"file_size": 270,
-	"expected_frameworks": ["kreuzberg", "tika"],
-	"metadata": {
-		"description": "YAML configuration file (YML extension)",
-		"category": "structured",
-		"size_class": "tiny"
-	},
-	"ground_truth": {
-		"text_file": "../../../test_documents/ground_truth/yml/yml_config.txt",
-		"source": "vision"
-	}
+  "document": "../../../test_documents/yaml/sample_config.yml",
+  "file_type": "yml",
+  "file_size": 270,
+  "expected_frameworks": ["kreuzberg", "tika"],
+  "metadata": {
+    "description": "YAML configuration file (YML extension)",
+    "category": "structured",
+    "size_class": "tiny"
+  },
+  "ground_truth": {
+    "text_file": "../../../test_documents/ground_truth/yml/yml_config.txt",
+    "source": "vision"
+  }
 }

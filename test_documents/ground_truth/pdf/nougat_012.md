@@ -13,13 +13,17 @@ B. Approve minutes from meeting of 6/14/21
 C. Appoint one Commissioner to approve warrants while conducting meetings virtually
 
 D. OLD BUSINESS:
+
 1. Update on Per- and Poly-Fluoroalkyl Substances (PFAS).
+
 - Notice of Non-Compliance from MA DEP
 - Current sample data, if available
 - Any updates or discussion from PFAS Working Group
+
 2. Update on proposed solar arrays off Lawsbrook Road &amp; Knox Trail
 
 E. NEW BUSINESS:
+
 1. Annual Consumer Confidence Report (CCR) for 2020
 2. Meeting schedule for July-December 2021
 

@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/latex/lists.tex",
   "file_type": "latex",
   "file_size": 566,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "LaTeX document with itemize, enumerate, nested lists, and description lists",
     "source": "handcrafted",

@@ -1,22 +1,19 @@
 {
-	"id": "fast_hash_empty",
-	"category": "hash",
-	"description": "Hash empty bytes",
-	"tags": [
-		"hash",
-		"edge_case"
-	],
-	"call": "fast_hash",
-	"input": {
-		"data": ""
-	},
-	"assertions": [
-		{
-			"type": "not_error"
-		}
-	],
-	"skip": {
-		"languages": [],
-		"reason": "Tests hash call surface that isn't re-exported at the kreuzberg crate root \u2014 skipped everywhere until Rust public API or codegen module path is updated."
-	}
+  "id": "fast_hash_empty",
+  "category": "hash",
+  "description": "Hash empty bytes",
+  "tags": ["hash", "edge_case"],
+  "call": "fast_hash",
+  "input": {
+    "data": ""
+  },
+  "assertions": [
+    {
+      "type": "not_error"
+    }
+  ],
+  "skip": {
+    "languages": [],
+    "reason": "Tests hash call surface that isn't re-exported at the kreuzberg crate root \u2014 skipped everywhere until Rust public API or codegen module path is updated."
+  }
 }

@@ -97,6 +97,6 @@ Springfield, IL 62703
 
 Enclosed is my voluntary contribution to protect my retirement benefits.
 
-I am contributing: $30__, $25__, $20__, $15__, $10__, other amount__
+I am contributing: $30**, $25**, $20**, $15**, $10**, other amount**
 
 Please print your name and address here:

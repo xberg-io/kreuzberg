@@ -2,14 +2,7 @@
   "document": "../../../../test_documents/vendored/docling/xlsx/xlsx_01.xlsx",
   "file_type": "xlsx",
   "file_size": 170934,
-  "expected_frameworks": [
-    "kreuzberg",
-    "docling",
-    "markitdown",
-    "pandoc",
-    "tika",
-    "unstructured"
-  ],
+  "expected_frameworks": ["kreuzberg", "docling", "markitdown", "pandoc", "tika", "unstructured"],
   "metadata": {
     "description": "Document from docling test suite",
     "source": "docling",

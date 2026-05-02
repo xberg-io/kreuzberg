@@ -1,15 +1,15 @@
 {
-	"document": "../../../test_documents/docx/equations.docx",
-	"file_type": "docx",
-	"file_size": 15017,
-	"expected_frameworks": ["kreuzberg", "docling", "markitdown", "pandoc", "tika", "unstructured"],
-	"metadata": {
-		"description": "DOCX with mathematical equations - 15KB document with complex formatting",
-		"category": "docx-equations",
-		"size_class": "small"
-	},
-	"ground_truth": {
-		"text_file": "../../../test_documents/ground_truth/docx/docx_equations.txt",
-		"source": "vision"
-	}
+  "document": "../../../test_documents/docx/equations.docx",
+  "file_type": "docx",
+  "file_size": 15017,
+  "expected_frameworks": ["kreuzberg", "docling", "markitdown", "pandoc", "tika", "unstructured"],
+  "metadata": {
+    "description": "DOCX with mathematical equations - 15KB document with complex formatting",
+    "category": "docx-equations",
+    "size_class": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../test_documents/ground_truth/docx/docx_equations.txt",
+    "source": "vision"
+  }
 }

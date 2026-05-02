@@ -15,25 +15,25 @@ Y se fue, ayudando a las otras hormigas a llevar comida a su tienda. El saltamon
 ## Header 2
 
 | Header 2.1                                                        | Header 2.3                                                                                                                      |
-|-------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|
+| ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | In another moment. Down went Alice after                          | The rabbit-hole went straight on like a tunnel for some way, and then dipped                                                    |
 | it.                                                               | The rabbit-hole went straight on like a tunnel for some way, and then dipped                                                    |
 | Header 2.2                                                        | suddenly down,                                                                                                                  |
 | Never once considering how in the world she was to get out again. | So suddenly that Alice had not a moment to think about stopping herself before she found herself falling down a very deep well. |
 
-| Header   | Header   | Header   |
-|----------|----------|----------|
-| Cell     | Cell     | Cell     |
-| Cell     | Cell     | Cell     |
-| Cell     | Cell     | Cell     |
-| Cell     | Cell     | Cell     |
-
+| Header | Header | Header |
+| ------ | ------ | ------ |
 | Cell   | Cell   | Cell   |
-|--------|--------|--------|
+| Cell   | Cell   | Cell   |
+| Cell   | Cell   | Cell   |
 | Cell   | Cell   | Cell   |
 
-| Header   | Header   | Header   |
-|----------|----------|----------|
-| Cell     | Cell     | Cell     |
+| Cell | Cell | Cell |
+| ---- | ---- | ---- |
+| Cell | Cell | Cell |
+
+| Header | Header | Header |
+| ------ | ------ | ------ |
+| Cell   | Cell   | Cell   |
 
 Noise, should be ignore

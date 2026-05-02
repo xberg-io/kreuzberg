@@ -93,15 +93,15 @@ config = ExtractionConfig(
 
 Any liter-llm vision-capable provider works as a VLM OCR backend:
 
-| Provider | Example Model |
-|----------|--------------|
-| OpenAI | `openai/gpt-4o`, `openai/gpt-4o-mini` |
-| Anthropic | `anthropic/claude-3-5-sonnet-20241022` |
-| Google | `google/gemini-2.0-flash` |
-| Groq | `groq/llama-3.2-90b-vision-preview` |
-| Ollama (local) | `ollama/llama3.2-vision` |
-| LM Studio (local) | `lmstudio/llava-1.5` |
-| vLLM (local) | `vllm/llava-next` |
+| Provider          | Example Model                          |
+| ----------------- | -------------------------------------- |
+| OpenAI            | `openai/gpt-4o`, `openai/gpt-4o-mini`  |
+| Anthropic         | `anthropic/claude-3-5-sonnet-20241022` |
+| Google            | `google/gemini-2.0-flash`              |
+| Groq              | `groq/llama-3.2-90b-vision-preview`    |
+| Ollama (local)    | `ollama/llama3.2-vision`               |
+| LM Studio (local) | `lmstudio/llava-1.5`                   |
+| vLLM (local)      | `vllm/llava-next`                      |
 
 ## Structured Extraction
 
@@ -172,12 +172,12 @@ config = ExtractionConfig(
 
 Available template variables:
 
-| Variable | Description |
-|----------|-------------|
-| `{{ content }}` | The extracted document text |
-| `{{ schema }}` | The JSON schema as a formatted string |
-| `{{ schema_name }}` | The schema name (default: `"extraction"`) |
-| `{{ schema_description }}` | The schema description (may be empty) |
+| Variable                   | Description                               |
+| -------------------------- | ----------------------------------------- |
+| `{{ content }}`            | The extracted document text               |
+| `{{ schema }}`             | The JSON schema as a formatted string     |
+| `{{ schema_name }}`        | The schema name (default: `"extraction"`) |
+| `{{ schema_description }}` | The schema description (may be empty)     |
 
 ### Cross-Provider Compatibility
 
@@ -245,12 +245,12 @@ Use provider-hosted embedding models instead of local ONNX models. Useful when y
 
 ### Available Models
 
-| Model | Dimensions | Provider |
-|-------|-----------|----------|
-| `openai/text-embedding-3-small` | 1536 | OpenAI |
-| `openai/text-embedding-3-large` | 3072 | OpenAI |
-| `mistral/mistral-embed` | 1024 | Mistral |
-| Any liter-llm embedding-capable provider | Varies | Various |
+| Model                                    | Dimensions | Provider |
+| ---------------------------------------- | ---------- | -------- |
+| `openai/text-embedding-3-small`          | 1536       | OpenAI   |
+| `openai/text-embedding-3-large`          | 3072       | OpenAI   |
+| `mistral/mistral-embed`                  | 1024       | Mistral  |
+| Any liter-llm embedding-capable provider | Varies     | Various  |
 
 ## Local LLM Support
 
@@ -260,14 +260,14 @@ Kreuzberg supports local LLM inference engines via [liter-llm](https://github.co
 
 ### Supported Local Engines
 
-| Engine | Prefix | Default URL | Install |
-|--------|--------|-------------|---------|
-| [Ollama](https://ollama.com) | `ollama/` | `http://localhost:11434/v1` | `brew install ollama` |
-| [LM Studio](https://lmstudio.ai) | `lmstudio/` | `http://localhost:1234/v1` | Desktop app |
-| [vLLM](https://vllm.ai) | `vllm/` | `http://localhost:8000/v1` | `pip install vllm` |
-| [llama.cpp](https://github.com/ggerganov/llama.cpp) | `llamacpp/` | `http://localhost:8080/v1` | Build from source |
-| [LocalAI](https://localai.io) | `localai/` | `http://localhost:8080/v1` | Docker |
-| [llamafile](https://github.com/Mozilla-Ocho/llamafile) | `llamafile/` | `http://localhost:8080/v1` | Single binary |
+| Engine                                                 | Prefix       | Default URL                 | Install               |
+| ------------------------------------------------------ | ------------ | --------------------------- | --------------------- |
+| [Ollama](https://ollama.com)                           | `ollama/`    | `http://localhost:11434/v1` | `brew install ollama` |
+| [LM Studio](https://lmstudio.ai)                       | `lmstudio/`  | `http://localhost:1234/v1`  | Desktop app           |
+| [vLLM](https://vllm.ai)                                | `vllm/`      | `http://localhost:8000/v1`  | `pip install vllm`    |
+| [llama.cpp](https://github.com/ggerganov/llama.cpp)    | `llamacpp/`  | `http://localhost:8080/v1`  | Build from source     |
+| [LocalAI](https://localai.io)                          | `localai/`   | `http://localhost:8080/v1`  | Docker                |
+| [llamafile](https://github.com/Mozilla-Ocho/llamafile) | `llamafile/` | `http://localhost:8080/v1`  | Single binary         |
 
 ### Example: Ollama
 
@@ -309,8 +309,8 @@ Kreuzberg supports local LLM inference engines via [liter-llm](https://github.co
     ```
 
 !!! Tip "Custom Base URL" If your local server runs on a non-default port, use `base_url`:
-    ```python
-    LlmConfig(model="ollama/llama3.2", base_url="http://localhost:11435/v1")```
+`python
+    LlmConfig(model="ollama/llama3.2", base_url="http://localhost:11435/v1")`
 
 ## LLM Usage Tracking
 
@@ -372,15 +372,15 @@ config = LlmConfig(
 
 ## LlmConfig Reference
 
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `model` | `str` | *required* | Provider/model in liter-llm format (for example, `"openai/gpt-4o"`) |
-| `api_key` | `str \| None` | `None` | API key (falls back to env vars) |
-| `base_url` | `str \| None` | `None` | Custom endpoint URL |
-| `timeout_secs` | `int \| None` | `60` | Request timeout in seconds |
-| `max_retries` | `int \| None` | `3` | Maximum retry attempts |
-| `temperature` | `float \| None` | `None` | Sampling temperature |
-| `max_tokens` | `int \| None` | `None` | Maximum tokens to generate |
+| Field          | Type            | Default    | Description                                                         |
+| -------------- | --------------- | ---------- | ------------------------------------------------------------------- |
+| `model`        | `str`           | _required_ | Provider/model in liter-llm format (for example, `"openai/gpt-4o"`) |
+| `api_key`      | `str \| None`   | `None`     | API key (falls back to env vars)                                    |
+| `base_url`     | `str \| None`   | `None`     | Custom endpoint URL                                                 |
+| `timeout_secs` | `int \| None`   | `60`       | Request timeout in seconds                                          |
+| `max_retries`  | `int \| None`   | `3`        | Maximum retry attempts                                              |
+| `temperature`  | `float \| None` | `None`     | Sampling temperature                                                |
+| `max_tokens`   | `int \| None`   | `None`     | Maximum tokens to generate                                          |
 
 ## REST API
 

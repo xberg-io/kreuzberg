@@ -1,1 +1,1 @@
-Here comes *italic* text
+Here comes _italic_ text

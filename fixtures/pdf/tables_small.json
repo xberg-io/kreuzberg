@@ -1,40 +1,40 @@
 {
-	"id": "pdf_tables_small",
-	"category": "pdf",
-	"description": "Small PDF containing tables to validate table extraction.",
-	"input": {
-		"path": "pdf/tiny.pdf",
-		"media_type": "application/pdf",
-		"config": {
-			"output_format": "markdown",
-			"layout": {
-				"table_model": "tatr"
-			}
-		}
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/pdf"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 50
-		},
-		{
-			"type": "contains_all",
-			"field": "content",
-			"values": ["Table 1", "Selected Numbers", "Water Freezing Point", "Water Boiling Point"]
-		},
-		{
-			"type": "count_min",
-			"field": "tables",
-			"value": 1
-		}
-	],
-	"skip": {
-		"reason": "Requires features: ocr; Skip on platforms: aarch64-unknown-linux-gnu; PDF table extraction requires OCR feature. ONNX Runtime model loading unstable on ARM Linux."
-	}
+  "id": "pdf_tables_small",
+  "category": "pdf",
+  "description": "Small PDF containing tables to validate table extraction.",
+  "input": {
+    "path": "pdf/tiny.pdf",
+    "media_type": "application/pdf",
+    "config": {
+      "output_format": "markdown",
+      "layout": {
+        "table_model": "tatr"
+      }
+    }
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/pdf"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 50
+    },
+    {
+      "type": "contains_all",
+      "field": "content",
+      "values": ["Table 1", "Selected Numbers", "Water Freezing Point", "Water Boiling Point"]
+    },
+    {
+      "type": "count_min",
+      "field": "tables",
+      "value": 1
+    }
+  ],
+  "skip": {
+    "reason": "Requires features: ocr; Skip on platforms: aarch64-unknown-linux-gnu; PDF table extraction requires OCR feature. ONNX Runtime model loading unstable on ARM Linux."
+  }
 }

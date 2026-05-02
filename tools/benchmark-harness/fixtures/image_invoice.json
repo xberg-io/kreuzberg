@@ -1,16 +1,24 @@
 {
-	"document": "../../../test_documents/images/invoice_image.png",
-	"file_type": "png",
-	"file_size": 10411,
-	"expected_frameworks": ["kreuzberg", "docling", "markitdown", "mineru", "pymupdf4llm", "tika", "unstructured"],
-	"metadata": {
-		"description": "Invoice image requiring OCR - 10KB PNG document image",
-		"category": "image-invoice",
-		"size_class": "tiny",
-		"requires_ocr": true
-	},
-	"ground_truth": {
-		"text_file": "../../../test_documents/ground_truth/png/image_invoice.md",
-		"source": "mistral-pixtral"
-	}
+  "document": "../../../test_documents/images/invoice_image.png",
+  "file_type": "png",
+  "file_size": 10411,
+  "expected_frameworks": [
+    "kreuzberg",
+    "docling",
+    "markitdown",
+    "mineru",
+    "pymupdf4llm",
+    "tika",
+    "unstructured"
+  ],
+  "metadata": {
+    "description": "Invoice image requiring OCR - 10KB PNG document image",
+    "category": "image-invoice",
+    "size_class": "tiny",
+    "requires_ocr": true
+  },
+  "ground_truth": {
+    "text_file": "../../../test_documents/ground_truth/png/image_invoice.md",
+    "source": "mistral-pixtral"
+  }
 }

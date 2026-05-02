@@ -52,21 +52,21 @@ For remote deployments or multi-client setups where stdio doesn't work — share
 
 Every tool is discoverable at runtime via `list_tools`. Here's the full surface:
 
-| Tool | Params | What it does |
-|------|--------|-------------|
-| `extract_file` | `path` | Extract text and metadata from a local file |
-| `extract_bytes` | `data` (base64) | Extract from base64-encoded file content |
-| `batch_extract_files` | `paths` | Extract multiple files in one call |
-| `detect_mime_type` | `path` | Identify a file's format |
-| `list_formats` | — | All supported formats <span class="version-badge">v4.5.2</span> |
-| `get_version` | — | Library version string <span class="version-badge">v4.5.2</span> |
-| `embed_text` | `texts` | Generate embedding vectors <span class="version-badge">v4.5.2</span> |
-| `chunk_text` | `text` | Split text into overlapping chunks <span class="version-badge">v4.5.2</span> |
-| `cache_stats` | — | How much is cached |
-| `cache_clear` | — | Evict all cached results |
-| `cache_manifest` | — | Model checksums <span class="version-badge">v4.5.2</span> |
-| `cache_warm` | — | Pre-download models <span class="version-badge">v4.5.2</span> |
-| `extract_structured` | `path`, `schema`, `model` | Extract structured JSON via LLM <span class="version-badge">v4.8.0</span> |
+| Tool                  | Params                    | What it does                                                                 |
+| --------------------- | ------------------------- | ---------------------------------------------------------------------------- |
+| `extract_file`        | `path`                    | Extract text and metadata from a local file                                  |
+| `extract_bytes`       | `data` (base64)           | Extract from base64-encoded file content                                     |
+| `batch_extract_files` | `paths`                   | Extract multiple files in one call                                           |
+| `detect_mime_type`    | `path`                    | Identify a file's format                                                     |
+| `list_formats`        | —                         | All supported formats <span class="version-badge">v4.5.2</span>              |
+| `get_version`         | —                         | Library version string <span class="version-badge">v4.5.2</span>             |
+| `embed_text`          | `texts`                   | Generate embedding vectors <span class="version-badge">v4.5.2</span>         |
+| `chunk_text`          | `text`                    | Split text into overlapping chunks <span class="version-badge">v4.5.2</span> |
+| `cache_stats`         | —                         | How much is cached                                                           |
+| `cache_clear`         | —                         | Evict all cached results                                                     |
+| `cache_manifest`      | —                         | Model checksums <span class="version-badge">v4.5.2</span>                    |
+| `cache_warm`          | —                         | Pre-download models <span class="version-badge">v4.5.2</span>                |
+| `extract_structured`  | `path`, `schema`, `model` | Extract structured JSON via LLM <span class="version-badge">v4.8.0</span>    |
 
 All extraction tools accept an optional `config` object — the same `ExtractionConfig` shape used in the Python API. `extract_structured` requires the server to be built with the `liter-llm` feature.
 

@@ -1,47 +1,47 @@
 {
-	"id": "ocr_paddle_element_hierarchy",
-	"category": "ocr",
-	"description": "Tests PaddleOCR with element hierarchy building enabled",
-	"input": {
-		"path": "images/test_hello_world.png",
-		"media_type": "image/png",
-		"config": {
-			"ocr": {
-				"backend": "paddle-ocr",
-				"language": "en",
-				"element_config": {
-					"include_elements": true,
-					"build_hierarchy": true
-				}
-			},
-			"force_ocr": true
-		}
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "image/png"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 5
-		},
-		{
-			"type": "not_empty",
-			"field": "ocr_elements"
-		},
-		{
-			"type": "is_true",
-			"field": "ocr_elements_have_geometry"
-		},
-		{
-			"type": "is_true",
-			"field": "ocr_elements_have_confidence"
-		}
-	],
-	"skip": {
-		"reason": "Requires features: paddle-ocr; Requires PaddleOCR with ONNX Runtime"
-	}
+  "id": "ocr_paddle_element_hierarchy",
+  "category": "ocr",
+  "description": "Tests PaddleOCR with element hierarchy building enabled",
+  "input": {
+    "path": "images/test_hello_world.png",
+    "media_type": "image/png",
+    "config": {
+      "ocr": {
+        "backend": "paddle-ocr",
+        "language": "en",
+        "element_config": {
+          "include_elements": true,
+          "build_hierarchy": true
+        }
+      },
+      "force_ocr": true
+    }
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "image/png"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 5
+    },
+    {
+      "type": "not_empty",
+      "field": "ocr_elements"
+    },
+    {
+      "type": "is_true",
+      "field": "ocr_elements_have_geometry"
+    },
+    {
+      "type": "is_true",
+      "field": "ocr_elements_have_confidence"
+    }
+  ],
+  "skip": {
+    "reason": "Requires features: paddle-ocr; Requires PaddleOCR with ONNX Runtime"
+  }
 }

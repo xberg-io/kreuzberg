@@ -1,30 +1,30 @@
 {
-	"id": "config_html_options",
-	"description": "Tests extraction with HTML conversion options configured",
-	"tags": ["contract", "config"],
-	"call": "extract_file_sync",
-	"input": {
-		"path": "html/complex_table.html",
-		"config": {
-			"html_options": {
-				"extract_metadata": true
-			}
-		}
-	},
-	"assertions": [
-		{
-			"type": "contains_any",
-			"field": "mime_type",
-			"values": ["text/html"]
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 10
-		},
-		{
-			"type": "not_empty",
-			"field": "content"
-		}
-	]
+  "id": "config_html_options",
+  "description": "Tests extraction with HTML conversion options configured",
+  "tags": ["contract", "config"],
+  "call": "extract_file_sync",
+  "input": {
+    "path": "html/complex_table.html",
+    "config": {
+      "html_options": {
+        "extract_metadata": true
+      }
+    }
+  },
+  "assertions": [
+    {
+      "type": "contains_any",
+      "field": "mime_type",
+      "values": ["text/html"]
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 10
+    },
+    {
+      "type": "not_empty",
+      "field": "content"
+    }
+  ]
 }

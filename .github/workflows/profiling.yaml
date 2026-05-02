@@ -1150,8 +1150,8 @@ jobs:
         uses: actions/setup-java@v5
         id: setup-java
         with:
-          distribution: 'temurin'
-          java-version: '25'
+          distribution: "temurin"
+          java-version: "25"
 
       - name: Setup Maven 3.9.11
         uses: kreuzberg-dev/actions/setup-maven@v1

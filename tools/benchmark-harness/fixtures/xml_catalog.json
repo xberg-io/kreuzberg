@@ -1,14 +1,14 @@
 {
-	"document": "../../../test_documents/xml/plant_catalog.xml",
-	"file_type": "xml",
-	"file_size": 7729,
-	"expected_frameworks": ["kreuzberg", "markitdown", "tika", "unstructured"],
-	"metadata": {
-		"description": "XML catalog with multiple plant records containing structured product data",
-		"category": "catalog"
-	},
-	"ground_truth": {
-		"text_file": "../../../test_documents/ground_truth/xml/xml_catalog.txt",
-		"source": "vision"
-	}
+  "document": "../../../test_documents/xml/plant_catalog.xml",
+  "file_type": "xml",
+  "file_size": 7729,
+  "expected_frameworks": ["kreuzberg", "markitdown", "tika", "unstructured"],
+  "metadata": {
+    "description": "XML catalog with multiple plant records containing structured product data",
+    "category": "catalog"
+  },
+  "ground_truth": {
+    "text_file": "../../../test_documents/ground_truth/xml/xml_catalog.txt",
+    "source": "vision"
+  }
 }

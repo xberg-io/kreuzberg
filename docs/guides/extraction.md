@@ -2,10 +2,10 @@
 
 Kreuzberg provides 8 core extraction functions organized by input type (file path vs in-memory bytes), cardinality (single vs batch), and execution model (sync vs async). Pick the function that matches your situation — the extraction logic is identical across all variants.
 
-| Input | Single sync | Single async | Batch sync | Batch async |
-|-------|------------|-------------|------------|-------------|
-| **File path** | `extract_file_sync` | `extract_file` | `batch_extract_files_sync` | `batch_extract_files` |
-| **Bytes** | `extract_bytes_sync` | `extract_bytes` | `batch_extract_bytes_sync` | `batch_extract_bytes` |
+| Input         | Single sync          | Single async    | Batch sync                 | Batch async           |
+| ------------- | -------------------- | --------------- | -------------------------- | --------------------- |
+| **File path** | `extract_file_sync`  | `extract_file`  | `batch_extract_files_sync` | `batch_extract_files` |
+| **Bytes**     | `extract_bytes_sync` | `extract_bytes` | `batch_extract_bytes_sync` | `batch_extract_bytes` |
 
 !!! Tip "Sync vs Async" Use async variants when you're already in an async context or processing multiple files concurrently. For scripts and simple pipelines, sync variants are simpler and just as fast for single files.
 
@@ -423,16 +423,16 @@ When a layout-detection model is active, it can independently classify regions a
 
 Kreuzberg supports 75+ file formats across 8 categories:
 
-| Category | Extensions | Notes |
-|----------|-----------|-------|
-| **PDF** | `.pdf` | Native text + OCR for scanned pages |
-| **Images** | `.png`, `.jpg`, `.jpeg`, `.tiff`, `.bmp`, `.webp` | Requires OCR backend |
-| **Office** | `.docx`, `.pptx`, `.xlsx` | Modern formats via native parsers |
-| **Legacy Office** | `.doc`, `.ppt` | Native OLE/CFB parsing |
-| **Email** | `.eml`, `.msg` | Full support including attachments |
-| **Web** | `.html`, `.htm` | Converted to Markdown with metadata |
-| **Text** | `.md`, `.txt`, `.xml`, `.json`, `.yaml`, `.toml`, `.csv` | Direct extraction |
-| **Archives** | `.zip`, `.tar`, `.tar.gz`, `.tar.bz2` | Recursive extraction |
+| Category          | Extensions                                               | Notes                               |
+| ----------------- | -------------------------------------------------------- | ----------------------------------- |
+| **PDF**           | `.pdf`                                                   | Native text + OCR for scanned pages |
+| **Images**        | `.png`, `.jpg`, `.jpeg`, `.tiff`, `.bmp`, `.webp`        | Requires OCR backend                |
+| **Office**        | `.docx`, `.pptx`, `.xlsx`                                | Modern formats via native parsers   |
+| **Legacy Office** | `.doc`, `.ppt`                                           | Native OLE/CFB parsing              |
+| **Email**         | `.eml`, `.msg`                                           | Full support including attachments  |
+| **Web**           | `.html`, `.htm`                                          | Converted to Markdown with metadata |
+| **Text**          | `.md`, `.txt`, `.xml`, `.json`, `.yaml`, `.toml`, `.csv` | Direct extraction                   |
+| **Archives**      | `.zip`, `.tar`, `.tar.gz`, `.tar.bz2`                    | Recursive extraction                |
 
 ## Page Tracking
 
@@ -483,18 +483,18 @@ Render individual PDF pages as PNG images. Unlike the extraction pipeline (which
 
 ### Two Approaches
 
-| API | When to use |
-|-----|-------------|
-| `render_pdf_page` | You know which page you need, or only need a few pages |
+| API               | When to use                                                            |
+| ----------------- | ---------------------------------------------------------------------- |
+| `render_pdf_page` | You know which page you need, or only need a few pages                 |
 | `PdfPageIterator` | Process every page sequentially without loading all images into memory |
 
 ### DPI Configuration
 
-| DPI | Pixel size (US Letter) | Use case |
-|-----|----------------------|----------|
-| 72 | 612 x 792 | Thumbnails, quick previews |
-| 150 (default) | 1275 x 1650 | General-purpose, screen display |
-| 300 | 2550 x 3300 | OCR input, print quality |
+| DPI           | Pixel size (US Letter) | Use case                        |
+| ------------- | ---------------------- | ------------------------------- |
+| 72            | 612 x 792              | Thumbnails, quick previews      |
+| 150 (default) | 1275 x 1650            | General-purpose, screen display |
+| 300           | 2550 x 3300            | OCR input, print quality        |
 
 **Tip:** Use 300 DPI when rendering pages for OCR or vision models. The default 150 DPI may reduce recognition accuracy on small text.
 
@@ -556,7 +556,7 @@ All extraction functions raise typed exceptions on failure. Catch specific excep
     --8<-- "snippets/wasm/api/error_handling_wasm.md"
 
 !!! Warning "System Errors"
-    `OSError` (Python), `IOException` (Rust), and system-level errors always propagate through. These indicate real system problems (permissions, disk space, etc.) that your application should handle.
+`OSError` (Python), `IOException` (Rust), and system-level errors always propagate through. These indicate real system problems (permissions, disk space, etc.) that your application should handle.
 
 ## Next Steps
 

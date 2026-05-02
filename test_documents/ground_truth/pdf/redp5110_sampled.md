@@ -173,7 +173,7 @@ With your eyes now open to the importance of securing information assets, the re
 
 # 1.2 Current state of IBM i security
 
-Because of the inherently secure nature of IBM i, many clients rely on the default system settings to protect their business data that is stored in DB2 for i. In most cases, this means no data protection because the default setting for the Create default public authority (QCRTAUT) system value is *CHANGE.
+Because of the inherently secure nature of IBM i, many clients rely on the default system settings to protect their business data that is stored in DB2 for i. In most cases, this means no data protection because the default setting for the Create default public authority (QCRTAUT) system value is \*CHANGE.
 
 Even more disturbing is that many IBM i clients remain in this state, despite the news headlines and the significant costs that are involved with databases being compromised. This default security configuration makes it quite challenging to implement basic security policies. A tighter implementation is required if you really want to protect one of your company's most valuable assets, which is the data.
 
@@ -189,7 +189,7 @@ Some IBM i clients have tried augmenting the all-or-nothing object-level securit
 
 Using SQL views to limit access to a subset of the data in a table also has its own set of challenges. First, there is the complexity of managing all of the SQL view objects that are used for securing data access. Second, scaling a view-based security solution can be difficult as the amount of data grows and the number of users increases.
 
-Even if you are willing to live with these performance and management issues, a user with *ALLOBJ* access still can directly access all of the data in the underlying DB2 table and easily bypass the security controls that are built into an SQL view.
+Even if you are willing to live with these performance and management issues, a user with _ALLOBJ_ access still can directly access all of the data in the underlying DB2 table and easily bypass the security controls that are built into an SQL view.
 
 ![img-3.jpeg](img-3.jpeg)
 Figure 1-2 Existing row and column controls
@@ -208,7 +208,7 @@ The following CL commands can be used to work with, display, or change function 
 
 For example, the following CHGFCNUSG command shows granting authorization to user HBEDOYA to administer and manage RCAC rules:
 
-CHGFCNUSG FCNID(QIBM_DB_SECADM) USER(HBEDOYA) USAGE(*ALLOWED)
+CHGFCNUSG FCNID(QIBM_DB_SECADM) USER(HBEDOYA) USAGE(\*ALLOWED)
 
 ## 2.1.7 Verifying function usage IDs for RCAC with the FUNCTION_USAGE view
 
@@ -216,62 +216,63 @@ The FUNCTION_USAGE view contains function usage configuration details. Table 2-1
 
 Table 2-1 FUNCTION_USAGE view
 
-|  Column name | Data type | Description  |
-| --- | --- | --- |
-|  FUNCTION_ID | VARCHAR(30) | ID of the function.  |
-|  USER_NAME | VARCHAR(10) | Name of the user profile that has a usage setting for this function.  |
-|  USAGE | VARCHAR(7) | Usage setting:
+| Column name | Data type   | Description                                                          |
+| ----------- | ----------- | -------------------------------------------------------------------- |
+| FUNCTION_ID | VARCHAR(30) | ID of the function.                                                  |
+| USER_NAME   | VARCHAR(10) | Name of the user profile that has a usage setting for this function. |
+| USAGE       | VARCHAR(7)  | Usage setting:                                                       |
+
 ► ALLOWED: The user profile is allowed to use the function.
-► DENIED: The user profile is not allowed to use the function.  |
-|  USER_TYPE | VARCHAR(5) | Type of user profile:
+► DENIED: The user profile is not allowed to use the function. |
+| USER_TYPE | VARCHAR(5) | Type of user profile:
 ► USER: The user profile is a user.
-► GROUP: The user profile is a group.  |
+► GROUP: The user profile is a group. |
 
 To discover who has authorization to define and manage RCAC, you can use the query that is shown in Example 2-1.
 
 Example 2-1 Query to determine who has authority to define and manage RCAC
 
-|  SELECT | function_id,  |
-| --- | --- |
-|   | user_name,  |
-|   | usage,  |
-|   | user_type  |
-|  FROM | function_usage  |
-|  WHERE | function_id="QIBM_DB_SECADM"  |
-|  ORDER BY | user_name;  |
+| SELECT   | function_id,                 |
+| -------- | ---------------------------- |
+|          | user_name,                   |
+|          | usage,                       |
+|          | user_type                    |
+| FROM     | function_usage               |
+| WHERE    | function_id="QIBM_DB_SECADM" |
+| ORDER BY | user_name;                   |
 
 ## 2.2 Separation of duties
 
-Separation of duties helps businesses comply with industry regulations or organizational requirements and simplifies the management of authorities. Separation of duties is commonly used to prevent fraudulent activities or errors by a single person. It provides the ability for administrative functions to be divided across individuals without overlapping responsibilities, so that one user does not possess unlimited authority, such as with the *ALLOBJ authority.
+Separation of duties helps businesses comply with industry regulations or organizational requirements and simplifies the management of authorities. Separation of duties is commonly used to prevent fraudulent activities or errors by a single person. It provides the ability for administrative functions to be divided across individuals without overlapping responsibilities, so that one user does not possess unlimited authority, such as with the \*ALLOBJ authority.
 
 For example, assume that a business has assigned the duty to manage security on IBM i to Theresa. Before release IBM i 7.2, to grant privileges, Theresa had to have the same privileges Theresa was granting to others. Therefore, to grant *USE privileges to the PAYROLL table, Theresa had to have *OBJMGT and *USE authority (or a higher level of authority, such as *ALLOBJ). This requirement allowed Theresa to access the data in the PAYROLL table even though Theresa's job description was only to manage its security.
 
 In IBM i 7.2, the QIBM_DB_SECADM function usage grants authorities, revokes authorities, changes ownership, or changes the primary group without giving access to the object or, in the case of a database table, to the data that is in the table or allowing other operations on the table.
 
-QIBM_DB_SECADM function usage can be granted only by a user with *SECADM special authority and can be given to a user or a group.
+QIBM_DB_SECADM function usage can be granted only by a user with \*SECADM special authority and can be given to a user or a group.
 
 QIBM_DB_SECADM also is responsible for administering RCAC, which restricts which rows a user is allowed to access in a table and whether a user is allowed to see information in certain columns of a table.
 
 A preferred practice is that the RCAC administrator has the QIBM_DB_SECADM function usage ID, but absolutely no other data privileges. The result is that the RCAC administrator can deploy and maintain the RCAC constructs, but cannot grant themselves unauthorized access to data itself.
 
-Table 2-2 shows a comparison of the different function usage IDs and *JOBCTL authority to the different CL commands and DB2 for i tools.
+Table 2-2 shows a comparison of the different function usage IDs and \*JOBCTL authority to the different CL commands and DB2 for i tools.
 
-Table 2-2 Comparison of the different function usage IDs and *JOBCTL authority
+Table 2-2 Comparison of the different function usage IDs and \*JOBCTL authority
 
-|  User action | *JOBCTL | QIBM_DB_SECADM | QIBM_DB_SQLADM | QIBM_DB_SYSMON | No Authority  |
-| --- | --- | --- | --- | --- | --- |
-|  SET CURRENT DEGREE (SQL statement) | X |  | X |  |   |
-|  CHGQRYA command targeting a different user's job | X |  | X |  |   |
-|  STRDBMON or ENDDBMON commands targeting a different user's job | X |  | X |  |   |
-|  STRDBMON or ENDDBMON commands targeting a job that matches the current user | X |  | X | X | X  |
-|  QUSRJOBI() API format 900 or System i Navigator's SQL Details for Job | X |  | X | X |   |
-|  Visual Explain within Run SQL scripts | X |  | X | X | X  |
-|  Visual Explain outside of Run SQL scripts | X |  | X |  |   |
-|  ANALYZE PLAN CACHE procedure | X |  | X |  |   |
-|  DUMP PLAN CACHE procedure | X |  | X |  |   |
-|  MODIFY PLAN CACHE procedure | X |  | X |  |   |
-|  MODIFY PLAN CACHE PROPERTIES procedure (currently does not check authority) | X |  | X |  |   |
-|  CHANGE PLAN CACHE SIZE procedure (currently does not check authority) | X |  | X |  |   |
+| User action                                                                 | \*JOBCTL | QIBM_DB_SECADM | QIBM_DB_SQLADM | QIBM_DB_SYSMON | No Authority |
+| --------------------------------------------------------------------------- | -------- | -------------- | -------------- | -------------- | ------------ |
+| SET CURRENT DEGREE (SQL statement)                                          | X        |                | X              |                |              |
+| CHGQRYA command targeting a different user's job                            | X        |                | X              |                |              |
+| STRDBMON or ENDDBMON commands targeting a different user's job              | X        |                | X              |                |              |
+| STRDBMON or ENDDBMON commands targeting a job that matches the current user | X        |                | X              | X              | X            |
+| QUSRJOBI() API format 900 or System i Navigator's SQL Details for Job       | X        |                | X              | X              |              |
+| Visual Explain within Run SQL scripts                                       | X        |                | X              | X              | X            |
+| Visual Explain outside of Run SQL scripts                                   | X        |                | X              |                |              |
+| ANALYZE PLAN CACHE procedure                                                | X        |                | X              |                |              |
+| DUMP PLAN CACHE procedure                                                   | X        |                | X              |                |              |
+| MODIFY PLAN CACHE procedure                                                 | X        |                | X              |                |              |
+| MODIFY PLAN CACHE PROPERTIES procedure (currently does not check authority) | X        |                | X              |                |              |
+| CHANGE PLAN CACHE SIZE procedure (currently does not check authority)       | X        |                | X              |                |              |
 
 Chapter 2. Roles and separation of duties
 
@@ -290,11 +291,11 @@ Table 3-1 summarizes these special registers and their values.
 
 Table 3-1 Special registers and their corresponding values
 
-|  Special register | Corresponding value  |
-| --- | --- |
-|  USER or SESSION_USER | The effective user of the thread excluding adopted authority.  |
-|  CURRENT_USER | The effective user of the thread including adopted authority. When no adopted authority is present, this has the same value as USER.  |
-|  SYSTEM_USER | The authorization ID that initiated the connection.  |
+| Special register     | Corresponding value                                                                                                                  |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| USER or SESSION_USER | The effective user of the thread excluding adopted authority.                                                                        |
+| CURRENT_USER         | The effective user of the thread including adopted authority. When no adopted authority is present, this has the same value as USER. |
+| SYSTEM_USER          | The authorization ID that initiated the connection.                                                                                  |
 
 Figure 3-5 shows the difference in the special register values when an adopted authority is used:
 
@@ -302,6 +303,7 @@ A user connects to the server using the user profile ALICE.
 USER and CURRENT USER initially have the same value of ALICE.
 ALICE calls an SQL procedure that is named proc1, which is owned by user profile JOE and was created to adopt JOE's authority when it is called.
 While the procedure is running, the special register USER still contains the value of ALICE because it excludes any adopted authority. The special register CURRENT USER contains the value of JOE because it includes any adopted authority.
+
 - When proc1 ends, the session reverts to its original state with both USER and CURRENT USER having the value of ALICE.
 
 ![img-5.jpeg](img-5.jpeg)
@@ -319,17 +321,17 @@ Table 3-2 lists the nine built-in global variables.
 
 Table 3-2 Built-in global variables
 
-|  Global variable | Type | Description  |
-| --- | --- | --- |
-|  CLIENT_HOST | VARCHAR(255) | Host name of the current client as returned by the system  |
-|  CLIENT_IPADDR | VARCHAR(128) | IP address of the current client as returned by the system  |
-|  CLIENT_PORT | INTEGER | Port used by the current client to communicate with the server  |
-|  PACKAGE_NAME | VARCHAR(128) | Name of the currently running package  |
-|  PACKAGE_SCHEMA | VARCHAR(128) | Schema name of the currently running package  |
-|  PACKAGE_VERSION | VARCHAR(64) | Version identifier of the currently running package  |
-|  ROUTINE_SCHEMA | VARCHAR(128) | Schema name of the currently running routine  |
-|  ROUTINE_SPECIFIC_NAME | VARCHAR(128) | Name of the currently running routine  |
-|  ROUTINE_TYPE | CHAR(1) | Type of the currently running routine  |
+| Global variable       | Type         | Description                                                    |
+| --------------------- | ------------ | -------------------------------------------------------------- |
+| CLIENT_HOST           | VARCHAR(255) | Host name of the current client as returned by the system      |
+| CLIENT_IPADDR         | VARCHAR(128) | IP address of the current client as returned by the system     |
+| CLIENT_PORT           | INTEGER      | Port used by the current client to communicate with the server |
+| PACKAGE_NAME          | VARCHAR(128) | Name of the currently running package                          |
+| PACKAGE_SCHEMA        | VARCHAR(128) | Schema name of the currently running package                   |
+| PACKAGE_VERSION       | VARCHAR(64)  | Version identifier of the currently running package            |
+| ROUTINE_SCHEMA        | VARCHAR(128) | Schema name of the currently running routine                   |
+| ROUTINE_SPECIFIC_NAME | VARCHAR(128) | Name of the currently running routine                          |
+| ROUTINE_TYPE          | CHAR(1)      | Type of the currently running routine                          |
 
 ## 3.3 VERIFY_GROUP_FOR_USER function
 
@@ -388,6 +390,7 @@ ENABLE ;
 To implement this column mask, run the SQL statement that is shown in Example 3-9.
 
 Example 3-9 Creating a mask on the TAX_ID column
+
 ```sql
 CREATE MASK HR_SCHEMA.MASK_TAX_ID_ON_EMPLOYEES
 ON HR_SCHEMA.EMPLOYEES AS EMPLOYEES
@@ -425,6 +428,7 @@ Now that you have created the row permission and the two column masks, RCAC must
 1. Run the SQL statements that are shown in Example 3-10.
 
 Example 3-10 Activating RCAC on the EMPLOYEES table
+
 ```sql
 /* Active Row Access Control (permissions) */
 /* Active Column Access Control (masks) */
@@ -470,7 +474,7 @@ WHEN QSYS2 . VERIFY_GROUP_FOR_USER ( SESSION_USER , 'TELLER' ) = 1
 THEN C . CUSTOMER_DRIVERS_LICENSE_NUMBER
 WHEN QSYS2 . VERIFY_GROUP_FOR_USER ( SESSION_USER , 'CUSTOMER' ) = 1
 THEN C . CUSTOMER_DRIVERS_LICENSE_NUMBER
-ELSE '***'
+ELSE '\*\*\*'
 END
 ENABLE ;
 
@@ -481,7 +485,7 @@ WHEN QSYS2 . VERIFY_GROUP_FOR_USER ( SESSION_USER , 'ADMIN' ) = 1
 THEN C . CUSTOMER_LOGIN_ID
 WHEN QSYS2 . VERIFY_GROUP_FOR_USER ( SESSION_USER , 'CUSTOMER' ) = 1
 THEN C . CUSTOMER_LOGIN_ID
-ELSE '***'
+ELSE '\*\*\*'
 END
 ENABLE ;
 
@@ -492,7 +496,7 @@ WHEN QSYS2 . VERIFY_GROUP_FOR_USER ( SESSION_USER , 'ADMIN' ) = 1
 THEN C . CUSTOMER_SECURITY_QUESTION
 WHEN QSYS2 . VERIFY_GROUP_FOR_USER ( SESSION_USER , 'CUSTOMER' ) = 1
 THEN C . CUSTOMER_SECURITY_QUESTION
-ELSE '***'
+ELSE '\*\*\*'
 END
 ENABLE ;
 
@@ -503,7 +507,7 @@ WHEN QSYS2 . VERIFY_GROUP_FOR_USER ( SESSION_USER , 'ADMIN' ) = 1
 THEN C . CUSTOMER_SECURITY_QUESTION_ANSWER
 WHEN QSYS2 . VERIFY_GROUP_FOR_USER ( SESSION_USER , 'CUSTOMER' ) = 1
 THEN C . CUSTOMER_SECURITY_QUESTION_ANSWER
-ELSE '***'
+ELSE '\*\*\*'
 END
 ENABLE ;
 

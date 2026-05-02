@@ -1,44 +1,44 @@
 {
-	"id": "ocr_tesseract_elements_min_count",
-	"category": "ocr",
-	"description": "Tests Tesseract OCR element output with min_count assertion",
-	"input": {
-		"path": "images/test_hello_world.png",
-		"media_type": "image/png",
-		"config": {
-			"ocr": {
-				"backend": "tesseract",
-				"language": "eng",
-				"element_config": {
-					"include_elements": true,
-					"min_level": "line"
-				}
-			},
-			"force_ocr": true
-		}
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "image/png"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 5
-		},
-		{
-			"type": "not_empty",
-			"field": "ocr_elements"
-		},
-		{
-			"type": "count_min",
-			"field": "ocr_elements",
-			"value": 1
-		}
-	],
-	"skip": {
-		"reason": "Requires features: tesseract; Requires Tesseract OCR backend"
-	}
+  "id": "ocr_tesseract_elements_min_count",
+  "category": "ocr",
+  "description": "Tests Tesseract OCR element output with min_count assertion",
+  "input": {
+    "path": "images/test_hello_world.png",
+    "media_type": "image/png",
+    "config": {
+      "ocr": {
+        "backend": "tesseract",
+        "language": "eng",
+        "element_config": {
+          "include_elements": true,
+          "min_level": "line"
+        }
+      },
+      "force_ocr": true
+    }
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "image/png"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 5
+    },
+    {
+      "type": "not_empty",
+      "field": "ocr_elements"
+    },
+    {
+      "type": "count_min",
+      "field": "ocr_elements",
+      "value": 1
+    }
+  ],
+  "skip": {
+    "reason": "Requires features: tesseract; Requires Tesseract OCR backend"
+  }
 }

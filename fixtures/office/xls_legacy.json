@@ -1,21 +1,21 @@
 {
-	"id": "office_xls_legacy",
-	"category": "office",
-	"description": "Legacy XLS spreadsheet to ensure backward compatibility.",
-	"input": {
-		"path": "xls/test_excel.xls",
-		"media_type": "application/vnd.ms-excel"
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/vnd.ms-excel"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 10
-		}
-	]
+  "id": "office_xls_legacy",
+  "category": "office",
+  "description": "Legacy XLS spreadsheet to ensure backward compatibility.",
+  "input": {
+    "path": "xls/test_excel.xls",
+    "media_type": "application/vnd.ms-excel"
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/vnd.ms-excel"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 10
+    }
+  ]
 }

@@ -1,21 +1,17 @@
 {
-	"id": "validators_clear",
-	"category": "validator_management",
-	"description": "Clear all validators and verify list is empty",
-	"tags": [
-		"validators",
-		"plugin_management",
-		"clear"
-	],
-	"call": "clear_validators",
-	"assertions": [
-		{
-			"type": "is_empty",
-			"field": "result"
-		}
-	],
-	"skip": {
-		"languages": [],
-		"reason": "Tests plugin_api call surface that isn't re-exported at the kreuzberg crate root \u2014 skipped everywhere until Rust public API or codegen module path is updated."
-	}
+  "id": "validators_clear",
+  "category": "validator_management",
+  "description": "Clear all validators and verify list is empty",
+  "tags": ["validators", "plugin_management", "clear"],
+  "call": "clear_validators",
+  "assertions": [
+    {
+      "type": "is_empty",
+      "field": "result"
+    }
+  ],
+  "skip": {
+    "languages": [],
+    "reason": "Tests plugin_api call surface that isn't re-exported at the kreuzberg crate root \u2014 skipped everywhere until Rust public API or codegen module path is updated."
+  }
 }

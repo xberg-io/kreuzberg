@@ -1,14 +1,14 @@
 {
-	"document": "../../../test_documents/text/contract.txt",
-	"file_type": "txt",
-	"file_size": 35,
-	"expected_frameworks": ["kreuzberg", "pandoc", "pymupdf4llm", "tika", "unstructured"],
-	"metadata": {
-		"description": "Contract document in plain text",
-		"category": "legal"
-	},
-	"ground_truth": {
-		"text_file": "../../../test_documents/ground_truth/txt/txt_contract.txt",
-		"source": "vision"
-	}
+  "document": "../../../test_documents/text/contract.txt",
+  "file_type": "txt",
+  "file_size": 35,
+  "expected_frameworks": ["kreuzberg", "pandoc", "pymupdf4llm", "tika", "unstructured"],
+  "metadata": {
+    "description": "Contract document in plain text",
+    "category": "legal"
+  },
+  "ground_truth": {
+    "text_file": "../../../test_documents/ground_truth/txt/txt_contract.txt",
+    "source": "vision"
+  }
 }

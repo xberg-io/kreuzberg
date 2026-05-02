@@ -5,21 +5,22 @@ October 2025
 
 ## Recommendations on the use of Auxiliary Medicinal Products in Clinical Trials written and endorsed by the Clinical Trials Coordination and Advisory Group (CTAG)
 
-|  Document history and effective date:  |   |
-| --- | --- |
-|  Date of endorsement by CTAG | 15 October 2025  |
-|  Date of publication: | 30 October 2025  |
-|  Supersedes: | Version 19 February 2024  |
-|  Changes compared to superseded version: | - Updated structure of the recommendations according to classification of authorised AxMP, modified authorised AxMP and unauthorised AxMP
+| Document history and effective date:    |                                                                                                                                           |
+| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| Date of endorsement by CTAG             | 15 October 2025                                                                                                                           |
+| Date of publication:                    | 30 October 2025                                                                                                                           |
+| Supersedes:                             | Version 19 February 2024                                                                                                                  |
+| Changes compared to superseded version: | - Updated structure of the recommendations according to classification of authorised AxMP, modified authorised AxMP and unauthorised AxMP |
+
 - Clarifications on the classifications mentioned above, application and safety reporting requirements
 - Clarification if authorised AxMP is sourced outside the EU/EEA
 - Update the examples in Annex I
-- Background treatment Annex I: Standard of care as background treatment is in general considered an AxMP  |
-|  Date come into effect | 1 December 2025 for new clinical trial applications*  |
+- Background treatment Annex I: Standard of care as background treatment is in general considered an AxMP |
+  | Date come into effect | 1 December 2025 for new clinical trial applications\* |
 
 **Important notice:** This document should be read in combination with the Clinical Trials Regulation (EU) No 536/2014. The information and views expressed in this document may not in any circumstances be regarded as stating an official position of the European Commission or its services. Ultimately, only the European Court of Justice can give an authoritative interpretation of Community law. Additional supportive documents can be retrieved on Eudralex 10: https://health.ec.europa.eu/medicinal-products/eudralex/eudralex-volume-10_en
 
-*The revised recommendations on the use of AxMPs in clinical trials will not be enforced retrospectively. If preferred by the sponsor, the new rules can be applied immediately for all trials within a procedure (if timelines allow) or by submitting a substantial modification.
+\*The revised recommendations on the use of AxMPs in clinical trials will not be enforced retrospectively. If preferred by the sponsor, the new rules can be applied immediately for all trials within a procedure (if timelines allow) or by submitting a substantial modification.
 
 Auxiliary Medicinal Products in Clinical Trials
 October 2025
@@ -27,52 +28,53 @@ October 2025
 # Table of content
 
 ABBREVIATION LIST...4
+
 1. INTRODUCTION...5
 2. BACKGROUND...5
 3. AUXILIARY MEDICINAL PRODUCTS (AxMPs)...5
-3.1. What is an AxMP?...5
-3.2. Classification of AxMPs based on regulatory status and corresponding application requirements...7
-3.2.1 Authorised AxMPs...7
-3.2.2 Modified authorised AxMPs...7
-3.2.3 Unauthorised AxMP...8
-3.3. Safety reporting requirements for AxMPs...9
-3.3.1 All AxMPs...10
-3.3.2 Authorised AxMP...10
-3.3.3 Unauthorised AxMP or modified authorised AxMP...11
-Annex 1 – Types of AxMPs with examples...12
-Annex 2 – Flowchart on labelling requirements...16
+   3.1. What is an AxMP?...5
+   3.2. Classification of AxMPs based on regulatory status and corresponding application requirements...7
+   3.2.1 Authorised AxMPs...7
+   3.2.2 Modified authorised AxMPs...7
+   3.2.3 Unauthorised AxMP...8
+   3.3. Safety reporting requirements for AxMPs...9
+   3.3.1 All AxMPs...10
+   3.3.2 Authorised AxMP...10
+   3.3.3 Unauthorised AxMP or modified authorised AxMP...11
+   Annex 1 – Types of AxMPs with examples...12
+   Annex 2 – Flowchart on labelling requirements...16
 
 Auxiliary Medicinal Products in Clinical Trials
 October 2025
 
 # ABBREVATION LIST
 
-|  AE | Adverse Event  |
-| --- | --- |
-|  AR | Adverse Reaction  |
-|  ASR | Annual Safety Report  |
-|  ATC | Anatomical Therapeutic Chemical  |
-|  AxMP | Auxiliary Medicinal Product  |
-|  AxMPD | Auxiliary Medicinal Product Dossier  |
-|  CTCG | Clinical Trial Coordination Group  |
-|  CTR | Clinical Trial Regulation EU 536/2014  |
-|  EC | European Commission  |
-|  EEA | European Economic Area  |
-|  EU | European Union  |
-|  XEVMPD | eXtended EudraVigilance Medicinal Product Dictionary  |
-|  GVP | Good Pharmacovigilance Practice  |
-|  GMP | Good Manufacturing Practice  |
-|  ICH | International Council for Harmonisation of Technical Requirements for Pharmaceuticals for Human Use  |
-|  ICSR | Individual Case Safety Report  |
-|  IMP | Investigational Medicinal Product  |
-|  IMPD | Investigational Medicinal Product Dossier  |
-|  MAH | Marketing Authorisation Holder  |
-|  MS | Member State  |
-|  MSC | Member State Concerned  |
-|  RMS | Reporting Member State  |
-|  SAE | Serious Adverse Event  |
-|  SAR | Serious Adverse Reaction  |
-|  SUSAR | Suspected Unexpected Serious Adverse Reaction  |
+| AE     | Adverse Event                                                                                       |
+| ------ | --------------------------------------------------------------------------------------------------- |
+| AR     | Adverse Reaction                                                                                    |
+| ASR    | Annual Safety Report                                                                                |
+| ATC    | Anatomical Therapeutic Chemical                                                                     |
+| AxMP   | Auxiliary Medicinal Product                                                                         |
+| AxMPD  | Auxiliary Medicinal Product Dossier                                                                 |
+| CTCG   | Clinical Trial Coordination Group                                                                   |
+| CTR    | Clinical Trial Regulation EU 536/2014                                                               |
+| EC     | European Commission                                                                                 |
+| EEA    | European Economic Area                                                                              |
+| EU     | European Union                                                                                      |
+| XEVMPD | eXtended EudraVigilance Medicinal Product Dictionary                                                |
+| GVP    | Good Pharmacovigilance Practice                                                                     |
+| GMP    | Good Manufacturing Practice                                                                         |
+| ICH    | International Council for Harmonisation of Technical Requirements for Pharmaceuticals for Human Use |
+| ICSR   | Individual Case Safety Report                                                                       |
+| IMP    | Investigational Medicinal Product                                                                   |
+| IMPD   | Investigational Medicinal Product Dossier                                                           |
+| MAH    | Marketing Authorisation Holder                                                                      |
+| MS     | Member State                                                                                        |
+| MSC    | Member State Concerned                                                                              |
+| RMS    | Reporting Member State                                                                              |
+| SAE    | Serious Adverse Event                                                                               |
+| SAR    | Serious Adverse Reaction                                                                            |
+| SUSAR  | Suspected Unexpected Serious Adverse Reaction                                                       |
 
 Auxiliary Medicinal Products in Clinical Trials
 October 2025

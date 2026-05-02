@@ -1,21 +1,21 @@
 {
-	"id": "office_pages_basic",
-	"category": "office",
-	"description": "Pages document extraction baseline.",
-	"input": {
-		"path": "iwork/test.pages",
-		"media_type": "application/x-iwork-pages-sffpages"
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/x-iwork-pages-sffpages"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 5
-		}
-	]
+  "id": "office_pages_basic",
+  "category": "office",
+  "description": "Pages document extraction baseline.",
+  "input": {
+    "path": "iwork/test.pages",
+    "media_type": "application/x-iwork-pages-sffpages"
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/x-iwork-pages-sffpages"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 5
+    }
+  ]
 }

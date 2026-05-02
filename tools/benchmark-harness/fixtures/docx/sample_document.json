@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/docx/sample_document.docx",
   "file_type": "docx",
   "file_size": 103966,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "docx test: sample_document",
     "source": "pandoc-generated",

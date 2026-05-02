@@ -4,7 +4,7 @@ This is a simple Typst document with basic formatting.
 
 ## Subsection
 
-Some **bold text** and *italic text* with `inline code`.
+Some **bold text** and _italic text_ with `inline code`.
 
 # Features
 
@@ -14,7 +14,7 @@ This document demonstrates:
 
 - **Bold** formatting
 
-- *Italic* text
+- _Italic_ text
 
 - Tables
 
@@ -35,7 +35,7 @@ This document demonstrates:
 ## Tables
 
 |              |              |
-|--------------|--------------|
+| ------------ | ------------ |
 | Header 1     | Header 2     |
 | Row 1, Col 1 | Row 1, Col 2 |
 | Row 2, Col 1 | Row 2, Col 2 |

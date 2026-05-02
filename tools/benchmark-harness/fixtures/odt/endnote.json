@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/odt/endnote.odt",
   "file_type": "odt",
   "file_size": 10950,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "ODT test document: endnote",
     "source": "pandoc-generated",

@@ -1,34 +1,34 @@
 {
-	"id": "config_pages_exact_count",
-	"description": "Tests page extraction with exact page count assertion on multi-page PDF",
-	"tags": ["contract", "config", "pages"],
-	"call": "extract_file_sync",
-	"input": {
-		"path": "pdf/multi_page.pdf",
-		"config": {
-			"pages": {
-				"extract_pages": true
-			}
-		}
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/pdf"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 10
-		},
-		{
-			"type": "count_equals",
-			"field": "pages",
-			"value": 5
-		}
-	],
-	"skip": {
-		"reason": "Requires features: pdf"
-	}
+  "id": "config_pages_exact_count",
+  "description": "Tests page extraction with exact page count assertion on multi-page PDF",
+  "tags": ["contract", "config", "pages"],
+  "call": "extract_file_sync",
+  "input": {
+    "path": "pdf/multi_page.pdf",
+    "config": {
+      "pages": {
+        "extract_pages": true
+      }
+    }
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/pdf"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 10
+    },
+    {
+      "type": "count_equals",
+      "field": "pages",
+      "value": 5
+    }
+  ],
+  "skip": {
+    "reason": "Requires features: pdf"
+  }
 }

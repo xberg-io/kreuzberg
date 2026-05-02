@@ -1,3265 +1,3265 @@
 {
-	"timestamp": "2026-03-05T18:14:19.801264+00:00",
-	"git_sha": "6c7598f43",
-	"doc_count": 171,
-	"pipeline_count": 1,
-	"aggregates": [
-		{
-			"pipeline": "baseline",
-			"mean_sf1": 0.1946004540594232,
-			"mean_tf1": 0.7919178393306505,
-			"mean_time_ms": 5420.186888643275,
-			"p50_sf1": 0.09610431700415677,
-			"p50_tf1": 0.9476351351351352,
-			"p50_time_ms": 91.420083,
-			"p90_time_ms": 3635.487541
-		}
-	],
-	"docs": [
-		{
-			"name": "2023-06-20-PV",
-			"file_size": 35535,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.06834381476167703,
-					"tf1": 0.9730586370839936,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H2": 0.0,
-						"Image": 0.0,
-						"ListItem": 0.0,
-						"Paragraph": 0.8201257771401244,
-						"H1": 0.0
-					},
-					"time_ms": 230.53725
-				}
-			]
-		},
-		{
-			"name": "2203.01017v2",
-			"file_size": 7215177,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.07900260437326329,
-					"tf1": 0.9918046685129712,
-					"order_score": 0.90625,
-					"per_type_sf1": {
-						"H2": 0.0,
-						"Paragraph": 0.4903487205943379,
-						"ListItem": 0.42634777687556896,
-						"H1": 0.0,
-						"Table": 0.0,
-						"Code": 0.0
-					},
-					"time_ms": 1052.6
-				}
-			]
-		},
-		{
-			"name": "2206.01062",
-			"file_size": 4310680,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.01888807877702598,
-					"tf1": 0.8990441272751081,
-					"order_score": 0.7741935483870968,
-					"per_type_sf1": {
-						"Paragraph": 0.2716093496103993,
-						"H1": 0.0,
-						"ListItem": 0.03418803418803419,
-						"H2": 0.0,
-						"H3": 0.0,
-						"Code": 0.0
-					},
-					"time_ms": 1158.3007499999999
-				}
-			]
-		},
-		{
-			"name": "2305.03393v1",
-			"file_size": 4318934,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.41037881842434326,
-					"tf1": 0.9751671442215856,
-					"order_score": 0.9814814814814815,
-					"per_type_sf1": {
-						"Table": 0.0,
-						"Paragraph": 0.686086438951411,
-						"H2": 1.0,
-						"Image": 0.0,
-						"ListItem": 0.8888888888888891,
-						"H1": 0.33333333333333337,
-						"H3": 0.0
-					},
-					"time_ms": 298.077791
-				}
-			]
-		},
-		{
-			"name": "2305.03393v1-pg9",
-			"file_size": 162131,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.050681026290782395,
-					"tf1": 0.9973262032085561,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H2": 0.0,
-						"Table": 0.0,
-						"Paragraph": 0.7095343680709535,
-						"H1": 0.0,
-						"ListItem": 0.0
-					},
-					"time_ms": 38.361582999999996
-				}
-			]
-		},
-		{
-			"name": "4833695495684096",
-			"file_size": 3759,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.14545454545454545,
-					"tf1": 1.0,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H1": 0.0,
-						"Paragraph": 0.7272727272727273
-					},
-					"time_ms": 0.700833
-				}
-			]
-		},
-		{
-			"name": "RECEIPT-2024-TXN-98765_retail_purchase",
-			"file_size": 8459,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.04477992485238861,
-					"tf1": 0.9716088328075709,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Paragraph": 0.2686795491143317,
-						"Image": 0.0,
-						"H1": 0.0
-					},
-					"time_ms": 15.063583
-				}
-			]
-		},
-		{
-			"name": "REPAIR-2022-INV-001_multipage",
-			"file_size": 176629,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.3356643356643356,
-					"tf1": 0.9903614457831326,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Table": 0.0,
-						"Image": 0.0,
-						"H2": 0.0,
-						"Paragraph": 0.36363636363636365,
-						"H1": 1.0
-					},
-					"time_ms": 27.231791
-				}
-			]
-		},
-		{
-			"name": "SPARSE-2024-INV-1234_borderless_table",
-			"file_size": 19649,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.3963732861565679,
-					"tf1": 0.9819819819819819,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Paragraph": 0.5338345864661654,
-						"ListItem": 0.7058823529411764,
-						"H1": 1.0,
-						"Table": 0.0,
-						"H2": 0.0,
-						"Image": 0.0
-					},
-					"time_ms": 15.271958
-				}
-			]
-		},
-		{
-			"name": "WARN-Report-for-7-1-2015-to-03-25-2016",
-			"file_size": 478619,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.05281376360328497,
-					"tf1": 0.6955598455598456,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H1": 0.0,
-						"Table": 0.21081616918162793,
-						"H2": 0.0,
-						"Paragraph": 0.0013166556945358788
-					},
-					"time_ms": 3635.487541
-				}
-			]
-		},
-		{
-			"name": "amt_handbook_sample",
-			"file_size": 673416,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.5228582619886968,
-					"tf1": 0.9296482412060302,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H1": 0.0,
-						"H2": 1.0,
-						"Paragraph": 0.7057243578982709
-					},
-					"time_ms": 71.71195800000001
-				}
-			]
-		},
-		{
-			"name": "annotations-unicode-issues",
-			"file_size": 57927,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.75,
-					"tf1": 0.7058823529411764,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Paragraph": 0.75
-					},
-					"time_ms": 0.5435
-				}
-			]
-		},
-		{
-			"name": "code_and_formula",
-			"file_size": 89031,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.05883088284234227,
-					"tf1": 0.995068493150685,
-					"order_score": 0.5555555555555556,
-					"per_type_sf1": {
-						"Code": 0.0,
-						"Formula": 0.0,
-						"H2": 0.0,
-						"Paragraph": 0.8824632426351341,
-						"H1": 0.0
-					},
-					"time_ms": 40.457417
-				}
-			]
-		},
-		{
-			"name": "cupertino_usd_4-6-16",
-			"file_size": 80578,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.16298195631528967,
-					"tf1": 0.99581589958159,
-					"order_score": 0.9166666666666666,
-					"per_type_sf1": {
-						"H2": 0.0,
-						"Image": 0.0,
-						"H1": 0.0,
-						"ListItem": 0.6445584045584046,
-						"Paragraph": 0.6666666666666667
-					},
-					"time_ms": 115.72041700000001
-				}
-			]
-		},
-		{
-			"name": "docling",
-			"file_size": 5566575,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.28541699352310707,
-					"tf1": 0.5477201925800057,
-					"order_score": 0.9591836734693877,
-					"per_type_sf1": {
-						"ListItem": 0.3458823529411765,
-						"Table": 0.0,
-						"Image": 1.0,
-						"H2": 0.0,
-						"H1": 1.0,
-						"Code": 0.0,
-						"H3": 0.0,
-						"Paragraph": 0.5874091516260027
-					},
-					"time_ms": 407.67479099999997
-				}
-			]
-		},
-		{
-			"name": "extra-attrs-example",
-			"file_size": 15170,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 1.0,
-					"tf1": 1.0,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Paragraph": 1.0
-					},
-					"time_ms": 0.694667
-				}
-			]
-		},
-		{
-			"name": "federal-register-2020-17221",
-			"file_size": 713992,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.013074659124635218,
-					"tf1": 0.9365957209094463,
-					"order_score": 0.7142857142857143,
-					"per_type_sf1": {
-						"H3": 0.0,
-						"ListItem": 0.1111111111111111,
-						"Table": 0.0,
-						"H2": 0.0,
-						"Paragraph": 0.06542027851975256,
-						"H1": 0.0,
-						"H4": 0.0
-					},
-					"time_ms": 1550.5107919999998
-				}
-			]
-		},
-		{
-			"name": "figure_structure",
-			"file_size": 24694,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.08750000000000001,
-					"tf1": 0.8437499999999999,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H1": 0.0,
-						"Table": 0.0,
-						"Paragraph": 0.7000000000000001
-					},
-					"time_ms": 1.448834
-				}
-			]
-		},
-		{
-			"name": "hello_structure",
-			"file_size": 2641,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.43750000000000006,
-					"tf1": 1.0,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Paragraph": 0.43750000000000006
-					},
-					"time_ms": 0.582666
-				}
-			]
-		},
-		{
-			"name": "issue-1114-dedupe-chars",
-			"file_size": 43483,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.08115942028985508,
-					"tf1": 0.7586206896551724,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H2": 0.0,
-						"Paragraph": 0.4057971014492754
-					},
-					"time_ms": 1.290542
-				}
-			]
-		},
-		{
-			"name": "issue-1181",
-			"file_size": 13437,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.15277777777777776,
-					"tf1": 0.47058823529411764,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Paragraph": 0.611111111111111,
-						"Table": 0.0
-					},
-					"time_ms": 1.598875
-				}
-			]
-		},
-		{
-			"name": "issue-1279-example",
-			"file_size": 37214,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.053901996370235926,
-					"tf1": 0.6572637517630465,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H1": 0.0,
-						"ListItem": 0.0,
-						"Paragraph": 0.3773139745916515
-					},
-					"time_ms": 147.92987499999998
-				}
-			]
-		},
-		{
-			"name": "issue-140-example",
-			"file_size": 5251,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.0,
-					"tf1": 0.0,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Paragraph": 0.0
-					},
-					"time_ms": 9.166417
-				}
-			]
-		},
-		{
-			"name": "issue-316-example",
-			"file_size": 138691,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.05628379839930781,
-					"tf1": 0.9936070651815725,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"ListItem": 0.0,
-						"H2": 0.0,
-						"Table": 0.0,
-						"Image": 0.0,
-						"H4": 0.0,
-						"H3": 0.13333333333333333,
-						"Paragraph": 0.7611940298507462,
-						"H1": 0.0
-					},
-					"time_ms": 398.55616599999996
-				}
-			]
-		},
-		{
-			"name": "issue-461-example",
-			"file_size": 154889,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.0,
-					"tf1": 0.0,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"ListItem": 0.0,
-						"Paragraph": 0.0,
-						"Table": 0.0
-					},
-					"time_ms": 38.217166
-				}
-			]
-		},
-		{
-			"name": "issue-463-example",
-			"file_size": 88676,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.3329404861359749,
-					"tf1": 0.9459459459459459,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H2": 0.0,
-						"Paragraph": 0.5258692365835224,
-						"H1": 1.0,
-						"Code": 0.0,
-						"Table": 0.6,
-						"H3": 0.0
-					},
-					"time_ms": 393.85279099999997
-				}
-			]
-		},
-		{
-			"name": "issue-466-example",
-			"file_size": 13569,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.07142857142857144,
-					"tf1": 1.0,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Table": 0.0,
-						"Paragraph": 0.28571428571428575
-					},
-					"time_ms": 6.412167
-				}
-			]
-		},
-		{
-			"name": "issue-53-example",
-			"file_size": 133586,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.006081081081081081,
-					"tf1": 0.9784461152882206,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H1": 0.0,
-						"H3": 0.0,
-						"Table": 0.0,
-						"Paragraph": 0.0972972972972973,
-						"H2": 0.0
-					},
-					"time_ms": 1692.980125
-				}
-			]
-		},
-		{
-			"name": "issue-598-example",
-			"file_size": 504551,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.45981167608286255,
-					"tf1": 0.9684684684684683,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H2": 0.6666666666666666,
-						"ListItem": 1.0,
-						"H3": 0.0,
-						"Paragraph": 0.2305084745762712,
-						"H1": 0.5
-					},
-					"time_ms": 10.447208
-				}
-			]
-		},
-		{
-			"name": "issue-842-example",
-			"file_size": 287855,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.0,
-					"tf1": 0.6511627906976744,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Image": 0.0,
-						"Paragraph": 0.0,
-						"H1": 0.0
-					},
-					"time_ms": 9.490625000000001
-				}
-			]
-		},
-		{
-			"name": "issue-848",
-			"file_size": 71805,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.18181818181818182,
-					"tf1": 0.25101214574898784,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Paragraph": 0.18181818181818182
-					},
-					"time_ms": 80.34983299999999
-				}
-			]
-		},
-		{
-			"name": "issue-905",
-			"file_size": 18810,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.4753805774278216,
-					"tf1": 0.0,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H1": 1.0,
-						"Paragraph": 0.2784251968503937,
-						"H2": 0.0
-					},
-					"time_ms": 17.051333
-				}
-			]
-		},
-		{
-			"name": "issue-982-example",
-			"file_size": 1029061,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.022535368630924996,
-					"tf1": 0.9867206842223722,
-					"order_score": 0.8363636363636363,
-					"per_type_sf1": {
-						"Paragraph": 0.42817200398757493,
-						"Image": 0.0,
-						"H1": 0.0,
-						"ListItem": 0.0,
-						"H3": 0.0,
-						"H2": 0.0,
-						"Code": 0.0
-					},
-					"time_ms": 522.062917
-				}
-			]
-		},
-		{
-			"name": "issue-987-test",
-			"file_size": 8805,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.0,
-					"tf1": 1.0,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H2": 0.0,
-						"Paragraph": 0.0
-					},
-					"time_ms": 0.697542
-				}
-			]
-		},
-		{
-			"name": "la-precinct-bulletin-2014-p1",
-			"file_size": 20188,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.6368159203980099,
-					"tf1": 0.9732484076433121,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Paragraph": 0.6368159203980099
-					},
-					"time_ms": 48.965083
-				}
-			]
-		},
-		{
-			"name": "line-char-render-example",
-			"file_size": 13649,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 1.0,
-					"tf1": 1.0,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Paragraph": 1.0
-					},
-					"time_ms": 0.79
-				}
-			]
-		},
-		{
-			"name": "masterformat_partial_numbering",
-			"file_size": 2114,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.13188882680408104,
-					"tf1": 1.0,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Paragraph": 0.9232217876285672,
-						"H2": 0.0,
-						"ListItem": 0.0
-					},
-					"time_ms": 2.180583
-				}
-			]
-		},
-		{
-			"name": "mcid_example",
-			"file_size": 24694,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.08750000000000001,
-					"tf1": 0.8437499999999999,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Paragraph": 0.7000000000000001,
-						"Table": 0.0,
-						"H1": 0.0
-					},
-					"time_ms": 1.292542
-				}
-			]
-		},
-		{
-			"name": "multi_page",
-			"file_size": 128322,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.49192701345415907,
-					"tf1": 1.0,
-					"order_score": 0.98,
-					"per_type_sf1": {
-						"ListItem": 0.5300775181178955,
-						"H2": 0.9523809523809523,
-						"Paragraph": 0.5415183022361487,
-						"H1": 0.0
-					},
-					"time_ms": 136.66370799999999
-				}
-			]
-		},
-		{
-			"name": "nics-background-checks-2015-11",
-			"file_size": 90468,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.3027458492975735,
-					"tf1": 0.995659432387312,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H1": 0.8000000000000002,
-						"Table": 0.0,
-						"H2": 0.0,
-						"Paragraph": 0.43295019157088127
-					},
-					"time_ms": 948.7863749999999
-				}
-			]
-		},
-		{
-			"name": "nics-background-checks-2015-11-rotated",
-			"file_size": 90415,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.29359903381642516,
-					"tf1": 0.995659432387312,
-					"order_score": 0.6666666666666666,
-					"per_type_sf1": {
-						"H2": 0.0,
-						"Paragraph": 0.32318840579710145,
-						"Table": 0.0,
-						"H1": 0.8000000000000002
-					},
-					"time_ms": 955.461375
-				}
-			]
-		},
-		{
-			"name": "nougat_001",
-			"file_size": 525343,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.16162275626906916,
-					"tf1": 0.8511904761904762,
-					"order_score": 0.85,
-					"per_type_sf1": {
-						"ListItem": 0.0,
-						"H1": 0.0,
-						"H2": 0.6666666666666666,
-						"Image": 0.0,
-						"Paragraph": 0.4041657024456475,
-						"Table": 0.0,
-						"H3": 0.0
-					},
-					"time_ms": 55.814
-				}
-			]
-		},
-		{
-			"name": "nougat_002",
-			"file_size": 126909,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.5075651664517359,
-					"tf1": 0.9734513274336283,
-					"order_score": 0.9696969696969697,
-					"per_type_sf1": {
-						"ListItem": 0.4767623228014963,
-						"Paragraph": 0.5691708537522152
-					},
-					"time_ms": 105.37629199999999
-				}
-			]
-		},
-		{
-			"name": "nougat_003",
-			"file_size": 205324,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.04929625916604013,
-					"tf1": 0.9982558139534883,
-					"order_score": 0.8620689655172413,
-					"per_type_sf1": {
-						"H2": 0.0,
-						"Paragraph": 0.3450738141622809,
-						"ListItem": 0.0
-					},
-					"time_ms": 233.34270800000002
-				}
-			]
-		},
-		{
-			"name": "nougat_004",
-			"file_size": 63070,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.0,
-					"tf1": 0.9500000000000001,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Paragraph": 0.0,
-						"H2": 0.0,
-						"H1": 0.0,
-						"Image": 0.0
-					},
-					"time_ms": 3.28275
-				}
-			]
-		},
-		{
-			"name": "nougat_005",
-			"file_size": 932335,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.042208193293959965,
-					"tf1": 0.9184587813620072,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"ListItem": 0.0,
-						"H1": 0.0,
-						"Paragraph": 0.6331228994093995,
-						"H2": 0.0,
-						"H3": 0.0
-					},
-					"time_ms": 50.399541
-				}
-			]
-		},
-		{
-			"name": "nougat_006",
-			"file_size": 80325,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.09775977597759776,
-					"tf1": 1.0,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H2": 0.0,
-						"H1": 0.0,
-						"Paragraph": 0.8798379837983799
-					},
-					"time_ms": 66.95991699999999
-				}
-			]
-		},
-		{
-			"name": "nougat_007",
-			"file_size": 185508,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.09036709758054368,
-					"tf1": 0.9325292122125896,
-					"order_score": 0.9230769230769231,
-					"per_type_sf1": {
-						"ListItem": 0.0,
-						"H3": 0.0,
-						"H1": 0.0,
-						"H2": 0.2727272727272727,
-						"Image": 0.0,
-						"Paragraph": 0.35496447037960804
-					},
-					"time_ms": 213.947792
-				}
-			]
-		},
-		{
-			"name": "nougat_008",
-			"file_size": 143492,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.06047819971870605,
-					"tf1": 0.999498997995992,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H1": 0.0,
-						"H2": 0.0,
-						"Paragraph": 0.5443037974683544
-					},
-					"time_ms": 114.41025
-				}
-			]
-		},
-		{
-			"name": "nougat_009",
-			"file_size": 498806,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.27328627174760495,
-					"tf1": 0.9285714285714286,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Image": 0.0,
-						"Paragraph": 0.5179293592829252,
-						"ListItem": 0.4705882352941177,
-						"Table": 0.0,
-						"H3": 0.4,
-						"H1": 0.0,
-						"H2": 0.5333333333333333
-					},
-					"time_ms": 131.397375
-				}
-			]
-		},
-		{
-			"name": "nougat_010",
-			"file_size": 107951,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.08553003586666215,
-					"tf1": 0.9604573606479276,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H1": 0.0,
-						"H3": 0.0,
-						"H2": 0.0,
-						"Paragraph": 0.680210811972535,
-						"ListItem": 0.3013698630136986
-					},
-					"time_ms": 74.780875
-				}
-			]
-		},
-		{
-			"name": "nougat_011",
-			"file_size": 191109,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.7251908396946565,
-					"tf1": 0.9900773963087915,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Paragraph": 0.7251908396946565
-					},
-					"time_ms": 408.90912499999996
-				}
-			]
-		},
-		{
-			"name": "nougat_012",
-			"file_size": 141727,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.18939196858330032,
-					"tf1": 1.0,
-					"order_score": 0.8823529411764706,
-					"per_type_sf1": {
-						"Paragraph": 0.6220400763793985,
-						"ListItem": 0.35185185185185186,
-						"H2": 0.0
-					},
-					"time_ms": 142.50954199999998
-				}
-			]
-		},
-		{
-			"name": "nougat_013",
-			"file_size": 61858,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.5628017815517815,
-					"tf1": 0.9879931389365352,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Image": 0.0,
-						"H2": 0.0,
-						"Paragraph": 0.7536213786213786,
-						"ListItem": 1.0,
-						"H1": 1.0
-					},
-					"time_ms": 56.554874999999996
-				}
-			]
-		},
-		{
-			"name": "nougat_014",
-			"file_size": 848830,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.0,
-					"tf1": 0.0,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Paragraph": 0.0,
-						"Table": 0.0,
-						"ListItem": 0.0
-					},
-					"time_ms": 60002.154833
-				}
-			]
-		},
-		{
-			"name": "nougat_015",
-			"file_size": 46652,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.0,
-					"tf1": 0.0,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Paragraph": 0.0,
-						"H1": 0.0
-					},
-					"time_ms": 60002.145874999995
-				}
-			]
-		},
-		{
-			"name": "nougat_016",
-			"file_size": 454010,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.0,
-					"tf1": 0.0,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Paragraph": 0.0,
-						"ListItem": 0.0
-					},
-					"time_ms": 60001.561541999996
-				}
-			]
-		},
-		{
-			"name": "nougat_017",
-			"file_size": 911122,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.0,
-					"tf1": 0.0,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Table": 0.0,
-						"ListItem": 0.0,
-						"Paragraph": 0.0
-					},
-					"time_ms": 60002.142083000006
-				}
-			]
-		},
-		{
-			"name": "nougat_018",
-			"file_size": 516747,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.0,
-					"tf1": 0.0,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Paragraph": 0.0,
-						"Table": 0.0
-					},
-					"time_ms": 60001.912791
-				}
-			]
-		},
-		{
-			"name": "nougat_019",
-			"file_size": 183646,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.0,
-					"tf1": 0.0,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Paragraph": 0.0,
-						"ListItem": 0.0,
-						"H1": 0.0
-					},
-					"time_ms": 60002.154875
-				}
-			]
-		},
-		{
-			"name": "nougat_020",
-			"file_size": 115368,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.0,
-					"tf1": 0.0,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Paragraph": 0.0
-					},
-					"time_ms": 60002.132417
-				}
-			]
-		},
-		{
-			"name": "nougat_021",
-			"file_size": 469199,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.0,
-					"tf1": 0.0,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Paragraph": 0.0
-					},
-					"time_ms": 60002.129792
-				}
-			]
-		},
-		{
-			"name": "nougat_022",
-			"file_size": 34841,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.0,
-					"tf1": 0.0,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Paragraph": 0.0,
-						"ListItem": 0.0,
-						"H1": 0.0
-					},
-					"time_ms": 60002.15825
-				}
-			]
-		},
-		{
-			"name": "nougat_023",
-			"file_size": 74186,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.0,
-					"tf1": 0.0,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Paragraph": 0.0
-					},
-					"time_ms": 60002.682667
-				}
-			]
-		},
-		{
-			"name": "nougat_024",
-			"file_size": 46310,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.06791111111111112,
-					"tf1": 0.9824561403508771,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H1": 0.0,
-						"Image": 0.0,
-						"Paragraph": 0.6791111111111111,
-						"H2": 0.0
-					},
-					"time_ms": 39578.7155
-				}
-			]
-		},
-		{
-			"name": "nougat_025",
-			"file_size": 2094,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.0,
-					"tf1": 0.9041095890410958,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Table": 0.0,
-						"Code": 0.0,
-						"Paragraph": 0.0
-					},
-					"time_ms": 5.671084
-				}
-			]
-		},
-		{
-			"name": "nougat_026",
-			"file_size": 44245,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.03920982761134892,
-					"tf1": 1.0,
-					"order_score": 0.7307692307692307,
-					"per_type_sf1": {
-						"H2": 0.0,
-						"Table": 0.0,
-						"ListItem": 0.0,
-						"Paragraph": 0.3920982761134892
-					},
-					"time_ms": 142.219333
-				}
-			]
-		},
-		{
-			"name": "nougat_027",
-			"file_size": 390183,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.16518735355445174,
-					"tf1": 0.9637832984136485,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H2": 0.5714285714285715,
-						"H1": 0.0,
-						"Paragraph": 0.026908664048038287,
-						"Table": 0.0,
-						"ListItem": 0.0
-					},
-					"time_ms": 434.814417
-				}
-			]
-		},
-		{
-			"name": "nougat_028",
-			"file_size": 269676,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.3037978045496179,
-					"tf1": 0.7430901676483914,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Image": 0.0,
-						"Paragraph": 0.20697716336734534,
-						"H2": 0.3333333333333333,
-						"ListItem": 0.0,
-						"H1": 0.5263157894736842
-					},
-					"time_ms": 179.656958
-				}
-			]
-		},
-		{
-			"name": "nougat_029",
-			"file_size": 274635,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.09611398300638918,
-					"tf1": 0.9741992882562277,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H2": 0.0,
-						"Paragraph": 0.7311007420564593,
-						"Image": 0.0,
-						"H1": 0.0,
-						"Code": 0.0,
-						"H3": 0.0,
-						"ListItem": 0.5475324675324675
-					},
-					"time_ms": 420.526041
-				}
-			]
-		},
-		{
-			"name": "nougat_030",
-			"file_size": 772983,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.012763906790673431,
-					"tf1": 0.9462672372800761,
-					"order_score": 0.8333333333333334,
-					"per_type_sf1": {
-						"Table": 0.0,
-						"H1": 0.0,
-						"Paragraph": 0.2425142290227952,
-						"Image": 0.0,
-						"H3": 0.0,
-						"ListItem": 0.0,
-						"H2": 0.0
-					},
-					"time_ms": 174.994333
-				}
-			]
-		},
-		{
-			"name": "nougat_031",
-			"file_size": 40157,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.09835564628235795,
-					"tf1": 1.0,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Paragraph": 0.6884895239765056,
-						"ListItem": 0.0,
-						"H1": 0.0
-					},
-					"time_ms": 38.75725
-				}
-			]
-		},
-		{
-			"name": "nougat_032",
-			"file_size": 112154,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.49853535022589773,
-					"tf1": 0.9598278335724533,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Paragraph": 0.49853535022589773
-					},
-					"time_ms": 121.809584
-				}
-			]
-		},
-		{
-			"name": "nougat_033",
-			"file_size": 181946,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.025481842263849183,
-					"tf1": 0.9208443271767809,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Table": 0.0,
-						"ListItem": 0.0,
-						"Paragraph": 0.280300264902341,
-						"H2": 0.0,
-						"Image": 0.0
-					},
-					"time_ms": 132.925792
-				}
-			]
-		},
-		{
-			"name": "nougat_034",
-			"file_size": 219515,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.0,
-					"tf1": 0.0,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"ListItem": 0.0,
-						"Paragraph": 0.0,
-						"Table": 0.0
-					},
-					"time_ms": 60001.203457999996
-				}
-			]
-		},
-		{
-			"name": "nougat_035",
-			"file_size": 813601,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.0,
-					"tf1": 0.0,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Paragraph": 0.0,
-						"ListItem": 0.0
-					},
-					"time_ms": 60002.132625
-				}
-			]
-		},
-		{
-			"name": "nougat_036",
-			"file_size": 399271,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.47552837240924833,
-					"tf1": 0.9928288822947576,
-					"order_score": 0.9714285714285714,
-					"per_type_sf1": {
-						"H2": 0.8761904761904763,
-						"Image": 0.0,
-						"H1": 0.6666666666666666,
-						"H3": 0.0,
-						"Paragraph": 0.48596864230090453
-					},
-					"time_ms": 6289.424
-				}
-			]
-		},
-		{
-			"name": "nougat_037",
-			"file_size": 561676,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.3409113872039522,
-					"tf1": 0.9838945827232797,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H1": 0.9090909090909091,
-						"Image": 0.0,
-						"Paragraph": 0.2871311496186737,
-						"H2": 0.0,
-						"ListItem": 0.08372093023255814
-					},
-					"time_ms": 41.627625
-				}
-			]
-		},
-		{
-			"name": "nougat_038",
-			"file_size": 2391915,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.21987543906670995,
-					"tf1": 0.924114671163575,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Image": 0.0,
-						"Table": 0.7804878048780488,
-						"H1": 0.0,
-						"H2": 0.0,
-						"Paragraph": 0.5169172932330827
-					},
-					"time_ms": 20.19625
-				}
-			]
-		},
-		{
-			"name": "nougat_039",
-			"file_size": 69496,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.19055114231821405,
-					"tf1": 0.9329268292682927,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Paragraph": 0.1878787878787878,
-						"Table": 0.0,
-						"Image": 0.0,
-						"ListItem": 0.9540918888107833,
-						"H2": 0.0
-					},
-					"time_ms": 27.381249999999998
-				}
-			]
-		},
-		{
-			"name": "nougat_040",
-			"file_size": 476639,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.03826981135490284,
-					"tf1": 0.9217075984835997,
-					"order_score": 0.6875,
-					"per_type_sf1": {
-						"H1": 0.0,
-						"Paragraph": 0.34151319553905424,
-						"H2": 0.06593406593406594,
-						"ListItem": 0.11834319526627218,
-						"Code": 0.0,
-						"Table": 0.0,
-						"Image": 0.0,
-						"H3": 0.0
-					},
-					"time_ms": 1362.8575
-				}
-			]
-		},
-		{
-			"name": "nougat_041",
-			"file_size": 733602,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.1683106139409614,
-					"tf1": 0.8784194528875381,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H2": 0.0,
-						"ListItem": 0.8749999999999999,
-						"Paragraph": 0.26972736729153707,
-						"H1": 0.0,
-						"Image": 0.0
-					},
-					"time_ms": 144.727833
-				}
-			]
-		},
-		{
-			"name": "nougat_042",
-			"file_size": 166420,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.40861620716691066,
-					"tf1": 0.9983779399837793,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H2": 0.0,
-						"ListItem": 0.0,
-						"Paragraph": 0.858414642472381,
-						"H1": 0.9090909090909091
-					},
-					"time_ms": 76.143583
-				}
-			]
-		},
-		{
-			"name": "nougat_043",
-			"file_size": 119114,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.09561729524838837,
-					"tf1": 0.9969707169303265,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Paragraph": 0.2517902477322719,
-						"H2": 0.0,
-						"H1": 0.0,
-						"ListItem": 0.4
-					},
-					"time_ms": 69.32575
-				}
-			]
-		},
-		{
-			"name": "nougat_044",
-			"file_size": 107812,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.0,
-					"tf1": 0.9131534569983136,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H1": 0.0,
-						"Paragraph": 0.0
-					},
-					"time_ms": 92.623917
-				}
-			]
-		},
-		{
-			"name": "nougat_045",
-			"file_size": 129544,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.0,
-					"tf1": 0.9493087557603688,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Code": 0.0,
-						"Paragraph": 0.0,
-						"H1": 0.0,
-						"ListItem": 0.0
-					},
-					"time_ms": 130.00858300000002
-				}
-			]
-		},
-		{
-			"name": "nougat_046",
-			"file_size": 594787,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.12668543433046067,
-					"tf1": 0.9220430107526881,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H1": 0.0,
-						"H2": 0.0,
-						"Image": 0.0,
-						"ListItem": 0.7777777777777778,
-						"Table": 0.0,
-						"Paragraph": 0.34472595940135425
-					},
-					"time_ms": 57.72975
-				}
-			]
-		},
-		{
-			"name": "nougat_047",
-			"file_size": 420052,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.02812805825444189,
-					"tf1": 0.9607629427792915,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"ListItem": 0.0,
-						"Paragraph": 0.4500489320710702,
-						"H1": 0.0,
-						"Image": 0.0,
-						"H2": 0.0,
-						"H3": 0.0
-					},
-					"time_ms": 267.176875
-				}
-			]
-		},
-		{
-			"name": "nougat_048",
-			"file_size": 572026,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.35265164497062435,
-					"tf1": 0.9872572815533981,
-					"order_score": 0.7619047619047619,
-					"per_type_sf1": {
-						"Paragraph": 0.23095114514760068,
-						"Image": 0.0,
-						"H1": 1.0,
-						"Table": 0.0,
-						"ListItem": 0.5294117647058824,
-						"H2": 0.0
-					},
-					"time_ms": 478.84608299999996
-				}
-			]
-		},
-		{
-			"name": "nougat_049",
-			"file_size": 122803,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.03938708350473056,
-					"tf1": 0.9187279151943463,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H1": 0.0,
-						"Paragraph": 0.3938708350473056,
-						"H2": 0.0,
-						"Image": 0.0
-					},
-					"time_ms": 43.9495
-				}
-			]
-		},
-		{
-			"name": "nougat_050",
-			"file_size": 108353,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.088240296342817,
-					"tf1": 0.9424141749723145,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H2": 0.0,
-						"H1": 0.0,
-						"Paragraph": 0.7941626670853531
-					},
-					"time_ms": 74.518708
-				}
-			]
-		},
-		{
-			"name": "page-boxes-example",
-			"file_size": 1187,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 1.0,
-					"tf1": 1.0,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Paragraph": 1.0
-					},
-					"time_ms": 0.9064169999999999
-				}
-			]
-		},
-		{
-			"name": "pdf_embedded",
-			"file_size": 109798,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.018744142455482657,
-					"tf1": 0.9727626459143969,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Image": 0.0,
-						"Table": 0.0,
-						"H1": 0.0,
-						"ListItem": 0.0,
-						"Paragraph": 0.20618556701030924
-					},
-					"time_ms": 20.805125
-				}
-			]
-		},
-		{
-			"name": "pdf_google_docs",
-			"file_size": 80100,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.3692307692307692,
-					"tf1": 0.93841642228739,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Image": 0.0,
-						"Table": 0.0,
-						"H2": 0.0,
-						"H1": 1.0,
-						"Paragraph": 0.8
-					},
-					"time_ms": 426.252625
-				}
-			]
-		},
-		{
-			"name": "pdf_image_only_german",
-			"file_size": 189884,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.0,
-					"tf1": 0.017077798861480076,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H2": 0.0,
-						"H3": 0.0,
-						"Image": 0.0,
-						"H1": 0.0,
-						"Paragraph": 0.0,
-						"ListItem": 0.0
-					},
-					"time_ms": 0.6677500000000001
-				}
-			]
-		},
-		{
-			"name": "pdf_large_tables",
-			"file_size": 2636957,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.23737343577541425,
-					"tf1": 0.6043638697256537,
-					"order_score": 0.9166666666666666,
-					"per_type_sf1": {
-						"H2": 0.0,
-						"Paragraph": 0.392231319988672,
-						"Code": 0.0,
-						"Table": 0.0,
-						"H1": 0.9333333333333333,
-						"Image": 0.0,
-						"ListItem": 0.07357859531772576
-					},
-					"time_ms": 925.44175
-				}
-			]
-		},
-		{
-			"name": "pdf_medium",
-			"file_size": 358744,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.4312688552103267,
-					"tf1": 0.960789030550878,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H1": 1.0,
-						"H2": 0.11764705882352941,
-						"Code": 0.0,
-						"Paragraph": 0.7046380272298027
-					},
-					"time_ms": 314.4405
-				}
-			]
-		},
-		{
-			"name": "pdf_medium_tables",
-			"file_size": 245260,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.16719819057094618,
-					"tf1": 0.5716484926234766,
-					"order_score": 0.8,
-					"per_type_sf1": {
-						"ListItem": 0.3230019590795889,
-						"Table": 0.0,
-						"Image": 0.0,
-						"H1": 0.3870967741935484,
-						"Paragraph": 0.3135818436308216,
-						"H2": 0.0
-					},
-					"time_ms": 739.500042
-				}
-			]
-		},
-		{
-			"name": "pdf_non_searchable",
-			"file_size": 70489,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.0,
-					"tf1": 0.06060606060606061,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Image": 0.0,
-						"H1": 0.0,
-						"Paragraph": 0.0
-					},
-					"time_ms": 0.636541
-				}
-			]
-		},
-		{
-			"name": "pdf_ocr_rotated",
-			"file_size": 94703,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.0,
-					"tf1": 0.0,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H1": 0.0,
-						"Paragraph": 0.0
-					},
-					"time_ms": 0.436209
-				}
-			]
-		},
-		{
-			"name": "pdf_ocr_rotated_270",
-			"file_size": 94702,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.0,
-					"tf1": 0.0,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H1": 0.0,
-						"Paragraph": 0.0
-					},
-					"time_ms": 0.393042
-				}
-			]
-		},
-		{
-			"name": "pdf_ocr_rotated_90",
-			"file_size": 94126,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.0,
-					"tf1": 0.0,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H1": 0.0,
-						"Paragraph": 0.0
-					},
-					"time_ms": 0.394458
-				}
-			]
-		},
-		{
-			"name": "pdf_ocr_test",
-			"file_size": 93549,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.0,
-					"tf1": 0.0,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H1": 0.0,
-						"Paragraph": 0.0
-					},
-					"time_ms": 0.3265
-				}
-			]
-		},
-		{
-			"name": "pdf_protected",
-			"file_size": 270117,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.33068260158934476,
-					"tf1": 0.6205607476635514,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H2": 0.0,
-						"Paragraph": 0.613073248439102,
-						"Image": 0.0,
-						"H1": 0.7058823529411764,
-						"ListItem": 0.7618181818181818,
-						"Code": 0.0
-					},
-					"time_ms": 81.8295
-				}
-			]
-		},
-		{
-			"name": "pdf_scanned_ocr",
-			"file_size": 69966,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.030703960682749627,
-					"tf1": 0.9090909090909091,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H4": 0.0,
-						"Paragraph": 0.5833752529722429,
-						"H1": 0.0,
-						"H3": 0.0,
-						"H2": 0.0,
-						"ListItem": 0.0
-					},
-					"time_ms": 334.547375
-				}
-			]
-		},
-		{
-			"name": "pdf_structure",
-			"file_size": 34467,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.31331569664903003,
-					"tf1": 1.0,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H3": 0.0,
-						"H2": 0.5,
-						"Table": 0.0,
-						"Paragraph": 0.5000000000000001,
-						"ListItem": 0.7698412698412698,
-						"H1": 0.4000000000000001
-					},
-					"time_ms": 7.093666
-				}
-			]
-		},
-		{
-			"name": "pdf_tables",
-			"file_size": 23572,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.6868055555555556,
-					"tf1": 0.6666666666666666,
-					"order_score": 0.5,
-					"per_type_sf1": {
-						"Paragraph": 0.6222222222222222,
-						"Table": 0.7083333333333334
-					},
-					"time_ms": 12.932542
-				}
-			]
-		},
-		{
-			"name": "pdf_tiny_memo",
-			"file_size": 13374,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.8019323671497585,
-					"tf1": 1.0,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"ListItem": 0.8695652173913044,
-						"Paragraph": 0.6666666666666666
-					},
-					"time_ms": 1.3340839999999998
-				}
-			]
-		},
-		{
-			"name": "pdfa_001",
-			"file_size": 44245,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.0439904791188115,
-					"tf1": 1.0,
-					"order_score": 0.76,
-					"per_type_sf1": {
-						"Table": 0.0,
-						"H2": 0.0,
-						"Paragraph": 0.43990479118811504,
-						"ListItem": 0.0
-					},
-					"time_ms": 138.5075
-				}
-			]
-		},
-		{
-			"name": "pdfa_002",
-			"file_size": 390183,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.16518735355445174,
-					"tf1": 0.9637832984136485,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H1": 0.0,
-						"Table": 0.0,
-						"H2": 0.5714285714285715,
-						"ListItem": 0.0,
-						"Paragraph": 0.026908664048038287
-					},
-					"time_ms": 426.770334
-				}
-			]
-		},
-		{
-			"name": "pdfa_003",
-			"file_size": 269676,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.36837507227594307,
-					"tf1": 0.7430901676483914,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Image": 0.0,
-						"H1": 0.5263157894736842,
-						"Paragraph": 0.2451542315313605,
-						"H2": 0.3333333333333333
-					},
-					"time_ms": 177.676
-				}
-			]
-		},
-		{
-			"name": "pdfa_004",
-			"file_size": 274635,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.09660772981339964,
-					"tf1": 0.9741992882562277,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H2": 0.0,
-						"Code": 0.0,
-						"Image": 0.0,
-						"H1": 0.0,
-						"H3": 0.0,
-						"ListItem": 0.5475324675324675,
-						"Paragraph": 0.740481931389658
-					},
-					"time_ms": 424.188209
-				}
-			]
-		},
-		{
-			"name": "pdfa_005",
-			"file_size": 772983,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.0021367521367521365,
-					"tf1": 0.9462672372800761,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H3": 0.0,
-						"H1": 0.0,
-						"Paragraph": 0.034188034188034185,
-						"H2": 0.0,
-						"Image": 0.0,
-						"ListItem": 0.0
-					},
-					"time_ms": 175.913792
-				}
-			]
-		},
-		{
-			"name": "pdfa_006",
-			"file_size": 40157,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.09835564628235795,
-					"tf1": 1.0,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Paragraph": 0.6884895239765056,
-						"H1": 0.0,
-						"ListItem": 0.0
-					},
-					"time_ms": 36.73925
-				}
-			]
-		},
-		{
-			"name": "pdfa_007",
-			"file_size": 112154,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.6176248381503184,
-					"tf1": 0.9598278335724533,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Paragraph": 0.6176248381503184
-					},
-					"time_ms": 121.78358300000001
-				}
-			]
-		},
-		{
-			"name": "pdfa_008",
-			"file_size": 181946,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.03715361006382678,
-					"tf1": 0.9208443271767809,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H2": 0.0,
-						"Table": 0.0,
-						"Image": 0.0,
-						"ListItem": 0.0,
-						"Paragraph": 0.4086897107020946
-					},
-					"time_ms": 132.928292
-				}
-			]
-		},
-		{
-			"name": "pdfa_009",
-			"file_size": 219515,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.0,
-					"tf1": 0.0,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"ListItem": 0.0,
-						"Table": 0.0,
-						"Paragraph": 0.0
-					},
-					"time_ms": 60002.517208
-				}
-			]
-		},
-		{
-			"name": "pdfa_010",
-			"file_size": 813601,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.0,
-					"tf1": 0.0,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"ListItem": 0.0,
-						"Paragraph": 0.0,
-						"Table": 0.0
-					},
-					"time_ms": 60002.135125
-				}
-			]
-		},
-		{
-			"name": "pdfa_011",
-			"file_size": 399271,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.47552837240924833,
-					"tf1": 0.9928288822947576,
-					"order_score": 0.9714285714285714,
-					"per_type_sf1": {
-						"H2": 0.8761904761904763,
-						"H1": 0.6666666666666666,
-						"Image": 0.0,
-						"Paragraph": 0.48596864230090453,
-						"H3": 0.0
-					},
-					"time_ms": 6590.070334
-				}
-			]
-		},
-		{
-			"name": "pdfa_012",
-			"file_size": 561676,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.3409113872039522,
-					"tf1": 0.9838945827232797,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H2": 0.0,
-						"H1": 0.9090909090909091,
-						"Image": 0.0,
-						"Paragraph": 0.2871311496186737,
-						"ListItem": 0.08372093023255814
-					},
-					"time_ms": 42.364
-				}
-			]
-		},
-		{
-			"name": "pdfa_013",
-			"file_size": 2391915,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.22230802921859835,
-					"tf1": 0.924114671163575,
-					"order_score": 0.9,
-					"per_type_sf1": {
-						"Image": 0.0,
-						"Table": 0.7804878048780488,
-						"H1": 0.0,
-						"H2": 0.0,
-						"Paragraph": 0.5485409652076318
-					},
-					"time_ms": 20.023540999999998
-				}
-			]
-		},
-		{
-			"name": "pdfa_014",
-			"file_size": 69496,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.1898085384135548,
-					"tf1": 0.9329268292682927,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Image": 0.0,
-						"H2": 0.0,
-						"Paragraph": 0.1797101449275362,
-						"Table": 0.0,
-						"ListItem": 0.9540918888107833
-					},
-					"time_ms": 27.554333
-				}
-			]
-		},
-		{
-			"name": "pdfa_015",
-			"file_size": 476639,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.04486459316508731,
-					"tf1": 0.9217075984835997,
-					"order_score": 0.6666666666666666,
-					"per_type_sf1": {
-						"H3": 0.0,
-						"Table": 0.0,
-						"H1": 0.0,
-						"Code": 0.0,
-						"H2": 0.10364372469635627,
-						"ListItem": 0.1098901098901099,
-						"Paragraph": 0.352665931066276,
-						"Image": 0.0
-					},
-					"time_ms": 1362.372959
-				}
-			]
-		},
-		{
-			"name": "pdfa_016",
-			"file_size": 733602,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.1683106139409614,
-					"tf1": 0.8784194528875381,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"ListItem": 0.8749999999999999,
-						"Paragraph": 0.26972736729153707,
-						"Image": 0.0,
-						"H2": 0.0,
-						"H1": 0.0
-					},
-					"time_ms": 144.69341699999998
-				}
-			]
-		},
-		{
-			"name": "pdfa_017",
-			"file_size": 166420,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.466680906889572,
-					"tf1": 0.9983779399837793,
-					"order_score": 0.9583333333333334,
-					"per_type_sf1": {
-						"Paragraph": 0.5880354303307467,
-						"H1": 0.9090909090909091,
-						"ListItem": 0.0,
-						"H2": 0.22727272727272727
-					},
-					"time_ms": 75.983834
-				}
-			]
-		},
-		{
-			"name": "pdfa_018",
-			"file_size": 119114,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.09610431700415677,
-					"tf1": 0.9969707169303265,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Paragraph": 0.2571474870457245,
-						"ListItem": 0.4,
-						"H1": 0.0,
-						"H2": 0.0
-					},
-					"time_ms": 68.253916
-				}
-			]
-		},
-		{
-			"name": "pdfa_019",
-			"file_size": 107812,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.0,
-					"tf1": 0.9131534569983136,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Paragraph": 0.0,
-						"H1": 0.0
-					},
-					"time_ms": 90.56441699999999
-				}
-			]
-		},
-		{
-			"name": "pdfa_020",
-			"file_size": 129544,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.0,
-					"tf1": 0.9493087557603688,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Code": 0.0,
-						"Paragraph": 0.0,
-						"H1": 0.0,
-						"ListItem": 0.0
-					},
-					"time_ms": 129.024125
-				}
-			]
-		},
-		{
-			"name": "pdfa_021",
-			"file_size": 594787,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.09109407801099663,
-					"tf1": 0.9220430107526881,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H2": 0.0,
-						"ListItem": 0.707070707070707,
-						"H1": 0.0,
-						"H3": 0.0,
-						"Paragraph": 0.3166460680675221,
-						"Table": 0.0,
-						"Image": 0.0
-					},
-					"time_ms": 58.513792
-				}
-			]
-		},
-		{
-			"name": "pdfa_022",
-			"file_size": 420052,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.039481403582141604,
-					"tf1": 0.9607629427792915,
-					"order_score": 0.9743589743589743,
-					"per_type_sf1": {
-						"ListItem": 0.0,
-						"H2": 0.0,
-						"Image": 0.0,
-						"Paragraph": 0.6317024573142657,
-						"H3": 0.0,
-						"H1": 0.0
-					},
-					"time_ms": 268.217542
-				}
-			]
-		},
-		{
-			"name": "pdfa_023",
-			"file_size": 572026,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.35265164497062435,
-					"tf1": 0.9872572815533981,
-					"order_score": 0.7619047619047619,
-					"per_type_sf1": {
-						"H1": 1.0,
-						"H2": 0.0,
-						"Paragraph": 0.23095114514760068,
-						"ListItem": 0.5294117647058824,
-						"Image": 0.0,
-						"Table": 0.0
-					},
-					"time_ms": 478.350708
-				}
-			]
-		},
-		{
-			"name": "pdfa_024",
-			"file_size": 122803,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.03938708350473056,
-					"tf1": 0.9187279151943463,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H1": 0.0,
-						"Image": 0.0,
-						"Paragraph": 0.3938708350473056,
-						"H2": 0.0
-					},
-					"time_ms": 43.805709
-				}
-			]
-		},
-		{
-			"name": "pdfa_025",
-			"file_size": 108353,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.088240296342817,
-					"tf1": 0.9424141749723145,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Paragraph": 0.7941626670853531,
-						"H2": 0.0,
-						"H1": 0.0
-					},
-					"time_ms": 74.73783300000001
-				}
-			]
-		},
-		{
-			"name": "pdfa_026",
-			"file_size": 767342,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.022355370322169704,
-					"tf1": 0.9694385216773276,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Paragraph": 0.35768592515471526,
-						"ListItem": 0.0,
-						"Image": 0.0,
-						"H2": 0.0,
-						"H3": 0.0,
-						"H1": 0.0
-					},
-					"time_ms": 648.429625
-				}
-			]
-		},
-		{
-			"name": "pdfa_027",
-			"file_size": 163606,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.05758582502768549,
-					"tf1": 0.893852175915266,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Code": 0.0,
-						"ListItem": 0.0,
-						"Paragraph": 0.8062015503875969,
-						"H3": 0.0,
-						"H2": 0.0
-					},
-					"time_ms": 248.80966700000002
-				}
-			]
-		},
-		{
-			"name": "pdfa_028",
-			"file_size": 142067,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.05120511633427794,
-					"tf1": 0.9889549702633814,
-					"order_score": 0.9411764705882353,
-					"per_type_sf1": {
-						"ListItem": 0.0,
-						"Image": 0.0,
-						"H2": 0.0,
-						"H1": 0.0,
-						"Paragraph": 0.6144613960113353
-					},
-					"time_ms": 374.780791
-				}
-			]
-		},
-		{
-			"name": "pdfa_029",
-			"file_size": 5262991,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.4705867950896485,
-					"tf1": 0.9899732620320856,
-					"order_score": 0.9122807017543859,
-					"per_type_sf1": {
-						"Image": 0.0,
-						"H2": 0.5273368606701939,
-						"Paragraph": 0.28203452132873474,
-						"ListItem": 0.5559322033898306,
-						"H1": 0.888888888888889,
-						"Table": 0.0
-					},
-					"time_ms": 328.02725
-				}
-			]
-		},
-		{
-			"name": "pdfa_030",
-			"file_size": 110445,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.3263481888481889,
-					"tf1": 0.9885496183206107,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H1": 0.5714285714285715,
-						"Image": 0.0,
-						"ListItem": 0.6444444444444444,
-						"H2": 0.0,
-						"Paragraph": 0.3415750915750916
-					},
-					"time_ms": 15.219375
-				}
-			]
-		},
-		{
-			"name": "pdfa_031",
-			"file_size": 4873,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.15949820788530467,
-					"tf1": 0.9797979797979798,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"ListItem": 0.0,
-						"Paragraph": 0.478494623655914
-					},
-					"time_ms": 2.805917
-				}
-			]
-		},
-		{
-			"name": "pdfa_032",
-			"file_size": 108342,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.8148037399592278,
-					"tf1": 0.9808695652173912,
-					"order_score": 0.9523809523809523,
-					"per_type_sf1": {
-						"Paragraph": 0.874018699796138,
-						"H1": 0.8000000000000002
-					},
-					"time_ms": 79.954084
-				}
-			]
-		},
-		{
-			"name": "pdfa_033",
-			"file_size": 11564,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.3166666666666667,
-					"tf1": 0.7258064516129032,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Paragraph": 0.3166666666666667
-					},
-					"time_ms": 438.180292
-				}
-			]
-		},
-		{
-			"name": "pdfa_034",
-			"file_size": 27491,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.4982746721877157,
-					"tf1": 0.9672619047619048,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H1": 0.8333333333333334,
-						"Paragraph": 0.15458937198067635,
-						"ListItem": 0.0
-					},
-					"time_ms": 3.718417
-				}
-			]
-		},
-		{
-			"name": "pdfa_035",
-			"file_size": 79182,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.12037037037037039,
-					"tf1": 0.6153846153846154,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Image": 0.0,
-						"Paragraph": 0.24074074074074078
-					},
-					"time_ms": 6.707249999999999
-				}
-			]
-		},
-		{
-			"name": "pdfa_036",
-			"file_size": 409867,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.20641550739228032,
-					"tf1": 0.9398301956441492,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Table": 0.0,
-						"H2": 0.0,
-						"Image": 0.0,
-						"H1": 0.6666666666666666,
-						"Paragraph": 0.4295659442175381,
-						"ListItem": 0.0
-					},
-					"time_ms": 507.03916699999996
-				}
-			]
-		},
-		{
-			"name": "pdfa_037",
-			"file_size": 282613,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.16750443764060138,
-					"tf1": 0.9476351351351352,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Image": 0.0,
-						"Paragraph": 0.33500887528120277
-					},
-					"time_ms": 67.149959
-				}
-			]
-		},
-		{
-			"name": "pdfa_038",
-			"file_size": 14168,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.05121544244605145,
-					"tf1": 0.9472329472329473,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H2": 0.0,
-						"Paragraph": 0.563369866906566,
-						"H1": 0.0,
-						"ListItem": 0.0
-					},
-					"time_ms": 20.253334000000002
-				}
-			]
-		},
-		{
-			"name": "pdfa_039",
-			"file_size": 69411,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.0,
-					"tf1": 0.96617050067659,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H1": 0.0,
-						"Paragraph": 0.0,
-						"Table": 0.0,
-						"Code": 0.0
-					},
-					"time_ms": 478.314625
-				}
-			]
-		},
-		{
-			"name": "pdfa_040",
-			"file_size": 108450,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.012580486684088715,
-					"tf1": 0.9312906220984216,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Paragraph": 0.06290243342044358,
-						"H1": 0.0
-					},
-					"time_ms": 91.420083
-				}
-			]
-		},
-		{
-			"name": "pdfa_041",
-			"file_size": 41518,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.2585780736069753,
-					"tf1": 1.0,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H1": 0.5925925925925926,
-						"H2": 0.0,
-						"Paragraph": 0.47398843930635837,
-						"ListItem": 0.0
-					},
-					"time_ms": 32.957417
-				}
-			]
-		},
-		{
-			"name": "pdfa_042",
-			"file_size": 197955,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.2478414973158646,
-					"tf1": 0.9533116178067318,
-					"order_score": 0.8095238095238095,
-					"per_type_sf1": {
-						"ListItem": 0.18181818181818182,
-						"Table": 0.0,
-						"Image": 0.0,
-						"H2": 0.14857142857142858,
-						"H3": 0.45454545454545453,
-						"Paragraph": 0.2575838754943233,
-						"H4": 0.0,
-						"H1": 0.6666666666666666
-					},
-					"time_ms": 29.580958000000003
-				}
-			]
-		},
-		{
-			"name": "pdfa_043",
-			"file_size": 106715,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.01598806786932965,
-					"tf1": 0.8796331677493312,
-					"order_score": 0.75,
-					"per_type_sf1": {
-						"Table": 0.0,
-						"H2": 0.0,
-						"Paragraph": 0.2238329501706151,
-						"H1": 0.0,
-						"ListItem": 0.0
-					},
-					"time_ms": 117.06741699999999
-				}
-			]
-		},
-		{
-			"name": "pdfa_044",
-			"file_size": 143107,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.03231158439630513,
-					"tf1": 0.954349698535745,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Paragraph": 0.484673765944577,
-						"H1": 0.0,
-						"H2": 0.0,
-						"Image": 0.0,
-						"ListItem": 0.0,
-						"Table": 0.0
-					},
-					"time_ms": 178.23325
-				}
-			]
-		},
-		{
-			"name": "pdfa_045",
-			"file_size": 19551,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.5666103155731371,
-					"tf1": 0.8110760602874167,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Paragraph": 0.5816568243965754,
-						"ListItem": 0.0,
-						"H1": 0.8461538461538461
-					},
-					"time_ms": 92.03658300000001
-				}
-			]
-		},
-		{
-			"name": "pdfa_046",
-			"file_size": 246086,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.03316347421409385,
-					"tf1": 0.9862903225806451,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Paragraph": 0.16581737107046926,
-						"H1": 0.0
-					},
-					"time_ms": 68.52829200000001
-				}
-			]
-		},
-		{
-			"name": "pdfa_047",
-			"file_size": 130632,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.3947751776903112,
-					"tf1": 0.9960132890365448,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Table": 0.0,
-						"Paragraph": 0.8601858209976903,
-						"H1": 0.8333333333333333,
-						"H2": 0.0,
-						"ListItem": 0.6666666666666666
-					},
-					"time_ms": 32.927083
-				}
-			]
-		},
-		{
-			"name": "pdfa_048",
-			"file_size": 640060,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.17416208349184967,
-					"tf1": 0.9911868390129259,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H3": 0.0,
-						"Paragraph": 0.7865933358695947,
-						"H1": 0.0,
-						"ListItem": 1.0,
-						"H2": 0.0,
-						"Image": 0.0
-					},
-					"time_ms": 85.24920800000001
-				}
-			]
-		},
-		{
-			"name": "pdfa_049",
-			"file_size": 152698,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.3529674986998439,
-					"tf1": 0.9579256360078278,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"ListItem": 0.0,
-						"H1": 0.0,
-						"Paragraph": 0.7696343556169827,
-						"H2": 0.7782520325203252
-					},
-					"time_ms": 151.932459
-				}
-			]
-		},
-		{
-			"name": "pdfa_050",
-			"file_size": 308633,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.1638305374431484,
-					"tf1": 0.9950358891795801,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"ListItem": 0.2,
-						"H2": 0.0,
-						"Paragraph": 0.7468137621020389
-					},
-					"time_ms": 1456.534042
-				}
-			]
-		},
-		{
-			"name": "pdffill-demo",
-			"file_size": 108017,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.01429490715205001,
-					"tf1": 0.848816029143898,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Image": 0.0,
-						"Paragraph": 0.20012870012870015,
-						"H2": 0.0,
-						"H3": 0.0,
-						"H1": 0.0
-					},
-					"time_ms": 9.011625
-				}
-			]
-		},
-		{
-			"name": "picture_classification",
-			"file_size": 212855,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.35926971326164875,
-					"tf1": 0.9931506849315068,
-					"order_score": 0.6666666666666666,
-					"per_type_sf1": {
-						"H2": 0.0,
-						"Image": 0.0,
-						"ListItem": 0.0,
-						"H1": 1.0,
-						"Paragraph": 0.31123655913978493
-					},
-					"time_ms": 15.800999999999998
-				}
-			]
-		},
-		{
-			"name": "pr-138-example",
-			"file_size": 89950,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.3643100234277329,
-					"tf1": 0.9921304103428893,
-					"order_score": 0.9523809523809523,
-					"per_type_sf1": {
-						"Table": 0.0,
-						"H1": 0.6666666666666666,
-						"ListItem": 0.32000000000000006,
-						"Paragraph": 0.336433567610662
-					},
-					"time_ms": 413.28695799999997
-				}
-			]
-		},
-		{
-			"name": "pr-88-example",
-			"file_size": 95332,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.05226480836236934,
-					"tf1": 0.9259259259259259,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Image": 0.0,
-						"H3": 0.0,
-						"Paragraph": 0.7317073170731707,
-						"H1": 0.0,
-						"H2": 0.0
-					},
-					"time_ms": 4.299291
-				}
-			]
-		},
-		{
-			"name": "redp5110_sampled",
-			"file_size": 1277938,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.2641690544412553,
-					"tf1": 0.9707210975405722,
-					"order_score": 0.8783783783783784,
-					"per_type_sf1": {
-						"Table": 0.0,
-						"H3": 0.09380863039399624,
-						"ListItem": 0.3318681318681318,
-						"Paragraph": 0.5274282862972106,
-						"H1": 0.8181818181818182,
-						"Code": 0.0,
-						"H2": 0.24314821334272135,
-						"Image": 0.0
-					},
-					"time_ms": 313.842625
-				}
-			]
-		},
-		{
-			"name": "right_to_left_02",
-			"file_size": 92036,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.0,
-					"tf1": 0.8042328042328042,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Paragraph": 0.0,
-						"Image": 0.0
-					},
-					"time_ms": 23.100125
-				}
-			]
-		},
-		{
-			"name": "right_to_left_03",
-			"file_size": 278131,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.07179487179487179,
-					"tf1": 0.8467741935483871,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H1": 0.0,
-						"H2": 0.2333333333333333,
-						"Table": 0.0,
-						"Paragraph": 0.0,
-						"Image": 0.0
-					},
-					"time_ms": 27.722
-				}
-			]
-		},
-		{
-			"name": "scotus-transcript-p1",
-			"file_size": 84509,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.23952095808383228,
-					"tf1": 0.8369565217391304,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Paragraph": 0.23952095808383228
-					},
-					"time_ms": 7.392791
-				}
-			]
-		},
-		{
-			"name": "senate-expenditures",
-			"file_size": 53481,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.0,
-					"tf1": 0.012852199703410776,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Table": 0.0,
-						"Paragraph": 0.0
-					},
-					"time_ms": 217.637792
-				}
-			]
-		},
-		{
-			"name": "table-curves-example",
-			"file_size": 153741,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.1509433962264151,
-					"tf1": 0.998003992015968,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Paragraph": 0.6037735849056604,
-						"Table": 0.0
-					},
-					"time_ms": 38.346958
-				}
-			]
-		},
-		{
-			"name": "test",
-			"file_size": 92971,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.08058714103011276,
-					"tf1": 0.9973684210526316,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Paragraph": 0.4029357051505638,
-						"H1": 0.0
-					},
-					"time_ms": 65.131709
-				}
-			]
-		},
-		{
-			"name": "test-punkt",
-			"file_size": 14806,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 1.0,
-					"tf1": 1.0,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"Paragraph": 1.0
-					},
-					"time_ms": 0.86975
-				}
-			]
-		},
-		{
-			"name": "word365_structure",
-			"file_size": 99253,
-			"results": [
-				{
-					"pipeline": "baseline",
-					"sf1": 0.24705882352941178,
-					"tf1": 0.7727272727272727,
-					"order_score": 1.0,
-					"per_type_sf1": {
-						"H1": 0.0,
-						"Paragraph": 0.0,
-						"ListItem": 0.0,
-						"Table": 0.8235294117647058
-					},
-					"time_ms": 3.985791
-				}
-			]
-		}
-	]
+  "timestamp": "2026-03-05T18:14:19.801264+00:00",
+  "git_sha": "6c7598f43",
+  "doc_count": 171,
+  "pipeline_count": 1,
+  "aggregates": [
+    {
+      "pipeline": "baseline",
+      "mean_sf1": 0.1946004540594232,
+      "mean_tf1": 0.7919178393306505,
+      "mean_time_ms": 5420.186888643275,
+      "p50_sf1": 0.09610431700415677,
+      "p50_tf1": 0.9476351351351352,
+      "p50_time_ms": 91.420083,
+      "p90_time_ms": 3635.487541
+    }
+  ],
+  "docs": [
+    {
+      "name": "2023-06-20-PV",
+      "file_size": 35535,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.06834381476167703,
+          "tf1": 0.9730586370839936,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H2": 0.0,
+            "Image": 0.0,
+            "ListItem": 0.0,
+            "Paragraph": 0.8201257771401244,
+            "H1": 0.0
+          },
+          "time_ms": 230.53725
+        }
+      ]
+    },
+    {
+      "name": "2203.01017v2",
+      "file_size": 7215177,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.07900260437326329,
+          "tf1": 0.9918046685129712,
+          "order_score": 0.90625,
+          "per_type_sf1": {
+            "H2": 0.0,
+            "Paragraph": 0.4903487205943379,
+            "ListItem": 0.42634777687556896,
+            "H1": 0.0,
+            "Table": 0.0,
+            "Code": 0.0
+          },
+          "time_ms": 1052.6
+        }
+      ]
+    },
+    {
+      "name": "2206.01062",
+      "file_size": 4310680,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.01888807877702598,
+          "tf1": 0.8990441272751081,
+          "order_score": 0.7741935483870968,
+          "per_type_sf1": {
+            "Paragraph": 0.2716093496103993,
+            "H1": 0.0,
+            "ListItem": 0.03418803418803419,
+            "H2": 0.0,
+            "H3": 0.0,
+            "Code": 0.0
+          },
+          "time_ms": 1158.3007499999999
+        }
+      ]
+    },
+    {
+      "name": "2305.03393v1",
+      "file_size": 4318934,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.41037881842434326,
+          "tf1": 0.9751671442215856,
+          "order_score": 0.9814814814814815,
+          "per_type_sf1": {
+            "Table": 0.0,
+            "Paragraph": 0.686086438951411,
+            "H2": 1.0,
+            "Image": 0.0,
+            "ListItem": 0.8888888888888891,
+            "H1": 0.33333333333333337,
+            "H3": 0.0
+          },
+          "time_ms": 298.077791
+        }
+      ]
+    },
+    {
+      "name": "2305.03393v1-pg9",
+      "file_size": 162131,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.050681026290782395,
+          "tf1": 0.9973262032085561,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H2": 0.0,
+            "Table": 0.0,
+            "Paragraph": 0.7095343680709535,
+            "H1": 0.0,
+            "ListItem": 0.0
+          },
+          "time_ms": 38.361582999999996
+        }
+      ]
+    },
+    {
+      "name": "4833695495684096",
+      "file_size": 3759,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.14545454545454545,
+          "tf1": 1.0,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H1": 0.0,
+            "Paragraph": 0.7272727272727273
+          },
+          "time_ms": 0.700833
+        }
+      ]
+    },
+    {
+      "name": "RECEIPT-2024-TXN-98765_retail_purchase",
+      "file_size": 8459,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.04477992485238861,
+          "tf1": 0.9716088328075709,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Paragraph": 0.2686795491143317,
+            "Image": 0.0,
+            "H1": 0.0
+          },
+          "time_ms": 15.063583
+        }
+      ]
+    },
+    {
+      "name": "REPAIR-2022-INV-001_multipage",
+      "file_size": 176629,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.3356643356643356,
+          "tf1": 0.9903614457831326,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Table": 0.0,
+            "Image": 0.0,
+            "H2": 0.0,
+            "Paragraph": 0.36363636363636365,
+            "H1": 1.0
+          },
+          "time_ms": 27.231791
+        }
+      ]
+    },
+    {
+      "name": "SPARSE-2024-INV-1234_borderless_table",
+      "file_size": 19649,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.3963732861565679,
+          "tf1": 0.9819819819819819,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Paragraph": 0.5338345864661654,
+            "ListItem": 0.7058823529411764,
+            "H1": 1.0,
+            "Table": 0.0,
+            "H2": 0.0,
+            "Image": 0.0
+          },
+          "time_ms": 15.271958
+        }
+      ]
+    },
+    {
+      "name": "WARN-Report-for-7-1-2015-to-03-25-2016",
+      "file_size": 478619,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.05281376360328497,
+          "tf1": 0.6955598455598456,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H1": 0.0,
+            "Table": 0.21081616918162793,
+            "H2": 0.0,
+            "Paragraph": 0.0013166556945358788
+          },
+          "time_ms": 3635.487541
+        }
+      ]
+    },
+    {
+      "name": "amt_handbook_sample",
+      "file_size": 673416,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.5228582619886968,
+          "tf1": 0.9296482412060302,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H1": 0.0,
+            "H2": 1.0,
+            "Paragraph": 0.7057243578982709
+          },
+          "time_ms": 71.71195800000001
+        }
+      ]
+    },
+    {
+      "name": "annotations-unicode-issues",
+      "file_size": 57927,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.75,
+          "tf1": 0.7058823529411764,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Paragraph": 0.75
+          },
+          "time_ms": 0.5435
+        }
+      ]
+    },
+    {
+      "name": "code_and_formula",
+      "file_size": 89031,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.05883088284234227,
+          "tf1": 0.995068493150685,
+          "order_score": 0.5555555555555556,
+          "per_type_sf1": {
+            "Code": 0.0,
+            "Formula": 0.0,
+            "H2": 0.0,
+            "Paragraph": 0.8824632426351341,
+            "H1": 0.0
+          },
+          "time_ms": 40.457417
+        }
+      ]
+    },
+    {
+      "name": "cupertino_usd_4-6-16",
+      "file_size": 80578,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.16298195631528967,
+          "tf1": 0.99581589958159,
+          "order_score": 0.9166666666666666,
+          "per_type_sf1": {
+            "H2": 0.0,
+            "Image": 0.0,
+            "H1": 0.0,
+            "ListItem": 0.6445584045584046,
+            "Paragraph": 0.6666666666666667
+          },
+          "time_ms": 115.72041700000001
+        }
+      ]
+    },
+    {
+      "name": "docling",
+      "file_size": 5566575,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.28541699352310707,
+          "tf1": 0.5477201925800057,
+          "order_score": 0.9591836734693877,
+          "per_type_sf1": {
+            "ListItem": 0.3458823529411765,
+            "Table": 0.0,
+            "Image": 1.0,
+            "H2": 0.0,
+            "H1": 1.0,
+            "Code": 0.0,
+            "H3": 0.0,
+            "Paragraph": 0.5874091516260027
+          },
+          "time_ms": 407.67479099999997
+        }
+      ]
+    },
+    {
+      "name": "extra-attrs-example",
+      "file_size": 15170,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 1.0,
+          "tf1": 1.0,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Paragraph": 1.0
+          },
+          "time_ms": 0.694667
+        }
+      ]
+    },
+    {
+      "name": "federal-register-2020-17221",
+      "file_size": 713992,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.013074659124635218,
+          "tf1": 0.9365957209094463,
+          "order_score": 0.7142857142857143,
+          "per_type_sf1": {
+            "H3": 0.0,
+            "ListItem": 0.1111111111111111,
+            "Table": 0.0,
+            "H2": 0.0,
+            "Paragraph": 0.06542027851975256,
+            "H1": 0.0,
+            "H4": 0.0
+          },
+          "time_ms": 1550.5107919999998
+        }
+      ]
+    },
+    {
+      "name": "figure_structure",
+      "file_size": 24694,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.08750000000000001,
+          "tf1": 0.8437499999999999,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H1": 0.0,
+            "Table": 0.0,
+            "Paragraph": 0.7000000000000001
+          },
+          "time_ms": 1.448834
+        }
+      ]
+    },
+    {
+      "name": "hello_structure",
+      "file_size": 2641,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.43750000000000006,
+          "tf1": 1.0,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Paragraph": 0.43750000000000006
+          },
+          "time_ms": 0.582666
+        }
+      ]
+    },
+    {
+      "name": "issue-1114-dedupe-chars",
+      "file_size": 43483,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.08115942028985508,
+          "tf1": 0.7586206896551724,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H2": 0.0,
+            "Paragraph": 0.4057971014492754
+          },
+          "time_ms": 1.290542
+        }
+      ]
+    },
+    {
+      "name": "issue-1181",
+      "file_size": 13437,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.15277777777777776,
+          "tf1": 0.47058823529411764,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Paragraph": 0.611111111111111,
+            "Table": 0.0
+          },
+          "time_ms": 1.598875
+        }
+      ]
+    },
+    {
+      "name": "issue-1279-example",
+      "file_size": 37214,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.053901996370235926,
+          "tf1": 0.6572637517630465,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H1": 0.0,
+            "ListItem": 0.0,
+            "Paragraph": 0.3773139745916515
+          },
+          "time_ms": 147.92987499999998
+        }
+      ]
+    },
+    {
+      "name": "issue-140-example",
+      "file_size": 5251,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.0,
+          "tf1": 0.0,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Paragraph": 0.0
+          },
+          "time_ms": 9.166417
+        }
+      ]
+    },
+    {
+      "name": "issue-316-example",
+      "file_size": 138691,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.05628379839930781,
+          "tf1": 0.9936070651815725,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "ListItem": 0.0,
+            "H2": 0.0,
+            "Table": 0.0,
+            "Image": 0.0,
+            "H4": 0.0,
+            "H3": 0.13333333333333333,
+            "Paragraph": 0.7611940298507462,
+            "H1": 0.0
+          },
+          "time_ms": 398.55616599999996
+        }
+      ]
+    },
+    {
+      "name": "issue-461-example",
+      "file_size": 154889,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.0,
+          "tf1": 0.0,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "ListItem": 0.0,
+            "Paragraph": 0.0,
+            "Table": 0.0
+          },
+          "time_ms": 38.217166
+        }
+      ]
+    },
+    {
+      "name": "issue-463-example",
+      "file_size": 88676,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.3329404861359749,
+          "tf1": 0.9459459459459459,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H2": 0.0,
+            "Paragraph": 0.5258692365835224,
+            "H1": 1.0,
+            "Code": 0.0,
+            "Table": 0.6,
+            "H3": 0.0
+          },
+          "time_ms": 393.85279099999997
+        }
+      ]
+    },
+    {
+      "name": "issue-466-example",
+      "file_size": 13569,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.07142857142857144,
+          "tf1": 1.0,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Table": 0.0,
+            "Paragraph": 0.28571428571428575
+          },
+          "time_ms": 6.412167
+        }
+      ]
+    },
+    {
+      "name": "issue-53-example",
+      "file_size": 133586,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.006081081081081081,
+          "tf1": 0.9784461152882206,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H1": 0.0,
+            "H3": 0.0,
+            "Table": 0.0,
+            "Paragraph": 0.0972972972972973,
+            "H2": 0.0
+          },
+          "time_ms": 1692.980125
+        }
+      ]
+    },
+    {
+      "name": "issue-598-example",
+      "file_size": 504551,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.45981167608286255,
+          "tf1": 0.9684684684684683,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H2": 0.6666666666666666,
+            "ListItem": 1.0,
+            "H3": 0.0,
+            "Paragraph": 0.2305084745762712,
+            "H1": 0.5
+          },
+          "time_ms": 10.447208
+        }
+      ]
+    },
+    {
+      "name": "issue-842-example",
+      "file_size": 287855,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.0,
+          "tf1": 0.6511627906976744,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Image": 0.0,
+            "Paragraph": 0.0,
+            "H1": 0.0
+          },
+          "time_ms": 9.490625000000001
+        }
+      ]
+    },
+    {
+      "name": "issue-848",
+      "file_size": 71805,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.18181818181818182,
+          "tf1": 0.25101214574898784,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Paragraph": 0.18181818181818182
+          },
+          "time_ms": 80.34983299999999
+        }
+      ]
+    },
+    {
+      "name": "issue-905",
+      "file_size": 18810,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.4753805774278216,
+          "tf1": 0.0,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H1": 1.0,
+            "Paragraph": 0.2784251968503937,
+            "H2": 0.0
+          },
+          "time_ms": 17.051333
+        }
+      ]
+    },
+    {
+      "name": "issue-982-example",
+      "file_size": 1029061,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.022535368630924996,
+          "tf1": 0.9867206842223722,
+          "order_score": 0.8363636363636363,
+          "per_type_sf1": {
+            "Paragraph": 0.42817200398757493,
+            "Image": 0.0,
+            "H1": 0.0,
+            "ListItem": 0.0,
+            "H3": 0.0,
+            "H2": 0.0,
+            "Code": 0.0
+          },
+          "time_ms": 522.062917
+        }
+      ]
+    },
+    {
+      "name": "issue-987-test",
+      "file_size": 8805,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.0,
+          "tf1": 1.0,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H2": 0.0,
+            "Paragraph": 0.0
+          },
+          "time_ms": 0.697542
+        }
+      ]
+    },
+    {
+      "name": "la-precinct-bulletin-2014-p1",
+      "file_size": 20188,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.6368159203980099,
+          "tf1": 0.9732484076433121,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Paragraph": 0.6368159203980099
+          },
+          "time_ms": 48.965083
+        }
+      ]
+    },
+    {
+      "name": "line-char-render-example",
+      "file_size": 13649,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 1.0,
+          "tf1": 1.0,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Paragraph": 1.0
+          },
+          "time_ms": 0.79
+        }
+      ]
+    },
+    {
+      "name": "masterformat_partial_numbering",
+      "file_size": 2114,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.13188882680408104,
+          "tf1": 1.0,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Paragraph": 0.9232217876285672,
+            "H2": 0.0,
+            "ListItem": 0.0
+          },
+          "time_ms": 2.180583
+        }
+      ]
+    },
+    {
+      "name": "mcid_example",
+      "file_size": 24694,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.08750000000000001,
+          "tf1": 0.8437499999999999,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Paragraph": 0.7000000000000001,
+            "Table": 0.0,
+            "H1": 0.0
+          },
+          "time_ms": 1.292542
+        }
+      ]
+    },
+    {
+      "name": "multi_page",
+      "file_size": 128322,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.49192701345415907,
+          "tf1": 1.0,
+          "order_score": 0.98,
+          "per_type_sf1": {
+            "ListItem": 0.5300775181178955,
+            "H2": 0.9523809523809523,
+            "Paragraph": 0.5415183022361487,
+            "H1": 0.0
+          },
+          "time_ms": 136.66370799999999
+        }
+      ]
+    },
+    {
+      "name": "nics-background-checks-2015-11",
+      "file_size": 90468,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.3027458492975735,
+          "tf1": 0.995659432387312,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H1": 0.8000000000000002,
+            "Table": 0.0,
+            "H2": 0.0,
+            "Paragraph": 0.43295019157088127
+          },
+          "time_ms": 948.7863749999999
+        }
+      ]
+    },
+    {
+      "name": "nics-background-checks-2015-11-rotated",
+      "file_size": 90415,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.29359903381642516,
+          "tf1": 0.995659432387312,
+          "order_score": 0.6666666666666666,
+          "per_type_sf1": {
+            "H2": 0.0,
+            "Paragraph": 0.32318840579710145,
+            "Table": 0.0,
+            "H1": 0.8000000000000002
+          },
+          "time_ms": 955.461375
+        }
+      ]
+    },
+    {
+      "name": "nougat_001",
+      "file_size": 525343,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.16162275626906916,
+          "tf1": 0.8511904761904762,
+          "order_score": 0.85,
+          "per_type_sf1": {
+            "ListItem": 0.0,
+            "H1": 0.0,
+            "H2": 0.6666666666666666,
+            "Image": 0.0,
+            "Paragraph": 0.4041657024456475,
+            "Table": 0.0,
+            "H3": 0.0
+          },
+          "time_ms": 55.814
+        }
+      ]
+    },
+    {
+      "name": "nougat_002",
+      "file_size": 126909,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.5075651664517359,
+          "tf1": 0.9734513274336283,
+          "order_score": 0.9696969696969697,
+          "per_type_sf1": {
+            "ListItem": 0.4767623228014963,
+            "Paragraph": 0.5691708537522152
+          },
+          "time_ms": 105.37629199999999
+        }
+      ]
+    },
+    {
+      "name": "nougat_003",
+      "file_size": 205324,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.04929625916604013,
+          "tf1": 0.9982558139534883,
+          "order_score": 0.8620689655172413,
+          "per_type_sf1": {
+            "H2": 0.0,
+            "Paragraph": 0.3450738141622809,
+            "ListItem": 0.0
+          },
+          "time_ms": 233.34270800000002
+        }
+      ]
+    },
+    {
+      "name": "nougat_004",
+      "file_size": 63070,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.0,
+          "tf1": 0.9500000000000001,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Paragraph": 0.0,
+            "H2": 0.0,
+            "H1": 0.0,
+            "Image": 0.0
+          },
+          "time_ms": 3.28275
+        }
+      ]
+    },
+    {
+      "name": "nougat_005",
+      "file_size": 932335,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.042208193293959965,
+          "tf1": 0.9184587813620072,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "ListItem": 0.0,
+            "H1": 0.0,
+            "Paragraph": 0.6331228994093995,
+            "H2": 0.0,
+            "H3": 0.0
+          },
+          "time_ms": 50.399541
+        }
+      ]
+    },
+    {
+      "name": "nougat_006",
+      "file_size": 80325,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.09775977597759776,
+          "tf1": 1.0,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H2": 0.0,
+            "H1": 0.0,
+            "Paragraph": 0.8798379837983799
+          },
+          "time_ms": 66.95991699999999
+        }
+      ]
+    },
+    {
+      "name": "nougat_007",
+      "file_size": 185508,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.09036709758054368,
+          "tf1": 0.9325292122125896,
+          "order_score": 0.9230769230769231,
+          "per_type_sf1": {
+            "ListItem": 0.0,
+            "H3": 0.0,
+            "H1": 0.0,
+            "H2": 0.2727272727272727,
+            "Image": 0.0,
+            "Paragraph": 0.35496447037960804
+          },
+          "time_ms": 213.947792
+        }
+      ]
+    },
+    {
+      "name": "nougat_008",
+      "file_size": 143492,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.06047819971870605,
+          "tf1": 0.999498997995992,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H1": 0.0,
+            "H2": 0.0,
+            "Paragraph": 0.5443037974683544
+          },
+          "time_ms": 114.41025
+        }
+      ]
+    },
+    {
+      "name": "nougat_009",
+      "file_size": 498806,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.27328627174760495,
+          "tf1": 0.9285714285714286,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Image": 0.0,
+            "Paragraph": 0.5179293592829252,
+            "ListItem": 0.4705882352941177,
+            "Table": 0.0,
+            "H3": 0.4,
+            "H1": 0.0,
+            "H2": 0.5333333333333333
+          },
+          "time_ms": 131.397375
+        }
+      ]
+    },
+    {
+      "name": "nougat_010",
+      "file_size": 107951,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.08553003586666215,
+          "tf1": 0.9604573606479276,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H1": 0.0,
+            "H3": 0.0,
+            "H2": 0.0,
+            "Paragraph": 0.680210811972535,
+            "ListItem": 0.3013698630136986
+          },
+          "time_ms": 74.780875
+        }
+      ]
+    },
+    {
+      "name": "nougat_011",
+      "file_size": 191109,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.7251908396946565,
+          "tf1": 0.9900773963087915,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Paragraph": 0.7251908396946565
+          },
+          "time_ms": 408.90912499999996
+        }
+      ]
+    },
+    {
+      "name": "nougat_012",
+      "file_size": 141727,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.18939196858330032,
+          "tf1": 1.0,
+          "order_score": 0.8823529411764706,
+          "per_type_sf1": {
+            "Paragraph": 0.6220400763793985,
+            "ListItem": 0.35185185185185186,
+            "H2": 0.0
+          },
+          "time_ms": 142.50954199999998
+        }
+      ]
+    },
+    {
+      "name": "nougat_013",
+      "file_size": 61858,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.5628017815517815,
+          "tf1": 0.9879931389365352,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Image": 0.0,
+            "H2": 0.0,
+            "Paragraph": 0.7536213786213786,
+            "ListItem": 1.0,
+            "H1": 1.0
+          },
+          "time_ms": 56.554874999999996
+        }
+      ]
+    },
+    {
+      "name": "nougat_014",
+      "file_size": 848830,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.0,
+          "tf1": 0.0,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Paragraph": 0.0,
+            "Table": 0.0,
+            "ListItem": 0.0
+          },
+          "time_ms": 60002.154833
+        }
+      ]
+    },
+    {
+      "name": "nougat_015",
+      "file_size": 46652,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.0,
+          "tf1": 0.0,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Paragraph": 0.0,
+            "H1": 0.0
+          },
+          "time_ms": 60002.145874999995
+        }
+      ]
+    },
+    {
+      "name": "nougat_016",
+      "file_size": 454010,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.0,
+          "tf1": 0.0,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Paragraph": 0.0,
+            "ListItem": 0.0
+          },
+          "time_ms": 60001.561541999996
+        }
+      ]
+    },
+    {
+      "name": "nougat_017",
+      "file_size": 911122,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.0,
+          "tf1": 0.0,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Table": 0.0,
+            "ListItem": 0.0,
+            "Paragraph": 0.0
+          },
+          "time_ms": 60002.142083000006
+        }
+      ]
+    },
+    {
+      "name": "nougat_018",
+      "file_size": 516747,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.0,
+          "tf1": 0.0,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Paragraph": 0.0,
+            "Table": 0.0
+          },
+          "time_ms": 60001.912791
+        }
+      ]
+    },
+    {
+      "name": "nougat_019",
+      "file_size": 183646,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.0,
+          "tf1": 0.0,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Paragraph": 0.0,
+            "ListItem": 0.0,
+            "H1": 0.0
+          },
+          "time_ms": 60002.154875
+        }
+      ]
+    },
+    {
+      "name": "nougat_020",
+      "file_size": 115368,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.0,
+          "tf1": 0.0,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Paragraph": 0.0
+          },
+          "time_ms": 60002.132417
+        }
+      ]
+    },
+    {
+      "name": "nougat_021",
+      "file_size": 469199,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.0,
+          "tf1": 0.0,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Paragraph": 0.0
+          },
+          "time_ms": 60002.129792
+        }
+      ]
+    },
+    {
+      "name": "nougat_022",
+      "file_size": 34841,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.0,
+          "tf1": 0.0,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Paragraph": 0.0,
+            "ListItem": 0.0,
+            "H1": 0.0
+          },
+          "time_ms": 60002.15825
+        }
+      ]
+    },
+    {
+      "name": "nougat_023",
+      "file_size": 74186,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.0,
+          "tf1": 0.0,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Paragraph": 0.0
+          },
+          "time_ms": 60002.682667
+        }
+      ]
+    },
+    {
+      "name": "nougat_024",
+      "file_size": 46310,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.06791111111111112,
+          "tf1": 0.9824561403508771,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H1": 0.0,
+            "Image": 0.0,
+            "Paragraph": 0.6791111111111111,
+            "H2": 0.0
+          },
+          "time_ms": 39578.7155
+        }
+      ]
+    },
+    {
+      "name": "nougat_025",
+      "file_size": 2094,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.0,
+          "tf1": 0.9041095890410958,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Table": 0.0,
+            "Code": 0.0,
+            "Paragraph": 0.0
+          },
+          "time_ms": 5.671084
+        }
+      ]
+    },
+    {
+      "name": "nougat_026",
+      "file_size": 44245,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.03920982761134892,
+          "tf1": 1.0,
+          "order_score": 0.7307692307692307,
+          "per_type_sf1": {
+            "H2": 0.0,
+            "Table": 0.0,
+            "ListItem": 0.0,
+            "Paragraph": 0.3920982761134892
+          },
+          "time_ms": 142.219333
+        }
+      ]
+    },
+    {
+      "name": "nougat_027",
+      "file_size": 390183,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.16518735355445174,
+          "tf1": 0.9637832984136485,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H2": 0.5714285714285715,
+            "H1": 0.0,
+            "Paragraph": 0.026908664048038287,
+            "Table": 0.0,
+            "ListItem": 0.0
+          },
+          "time_ms": 434.814417
+        }
+      ]
+    },
+    {
+      "name": "nougat_028",
+      "file_size": 269676,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.3037978045496179,
+          "tf1": 0.7430901676483914,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Image": 0.0,
+            "Paragraph": 0.20697716336734534,
+            "H2": 0.3333333333333333,
+            "ListItem": 0.0,
+            "H1": 0.5263157894736842
+          },
+          "time_ms": 179.656958
+        }
+      ]
+    },
+    {
+      "name": "nougat_029",
+      "file_size": 274635,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.09611398300638918,
+          "tf1": 0.9741992882562277,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H2": 0.0,
+            "Paragraph": 0.7311007420564593,
+            "Image": 0.0,
+            "H1": 0.0,
+            "Code": 0.0,
+            "H3": 0.0,
+            "ListItem": 0.5475324675324675
+          },
+          "time_ms": 420.526041
+        }
+      ]
+    },
+    {
+      "name": "nougat_030",
+      "file_size": 772983,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.012763906790673431,
+          "tf1": 0.9462672372800761,
+          "order_score": 0.8333333333333334,
+          "per_type_sf1": {
+            "Table": 0.0,
+            "H1": 0.0,
+            "Paragraph": 0.2425142290227952,
+            "Image": 0.0,
+            "H3": 0.0,
+            "ListItem": 0.0,
+            "H2": 0.0
+          },
+          "time_ms": 174.994333
+        }
+      ]
+    },
+    {
+      "name": "nougat_031",
+      "file_size": 40157,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.09835564628235795,
+          "tf1": 1.0,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Paragraph": 0.6884895239765056,
+            "ListItem": 0.0,
+            "H1": 0.0
+          },
+          "time_ms": 38.75725
+        }
+      ]
+    },
+    {
+      "name": "nougat_032",
+      "file_size": 112154,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.49853535022589773,
+          "tf1": 0.9598278335724533,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Paragraph": 0.49853535022589773
+          },
+          "time_ms": 121.809584
+        }
+      ]
+    },
+    {
+      "name": "nougat_033",
+      "file_size": 181946,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.025481842263849183,
+          "tf1": 0.9208443271767809,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Table": 0.0,
+            "ListItem": 0.0,
+            "Paragraph": 0.280300264902341,
+            "H2": 0.0,
+            "Image": 0.0
+          },
+          "time_ms": 132.925792
+        }
+      ]
+    },
+    {
+      "name": "nougat_034",
+      "file_size": 219515,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.0,
+          "tf1": 0.0,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "ListItem": 0.0,
+            "Paragraph": 0.0,
+            "Table": 0.0
+          },
+          "time_ms": 60001.203457999996
+        }
+      ]
+    },
+    {
+      "name": "nougat_035",
+      "file_size": 813601,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.0,
+          "tf1": 0.0,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Paragraph": 0.0,
+            "ListItem": 0.0
+          },
+          "time_ms": 60002.132625
+        }
+      ]
+    },
+    {
+      "name": "nougat_036",
+      "file_size": 399271,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.47552837240924833,
+          "tf1": 0.9928288822947576,
+          "order_score": 0.9714285714285714,
+          "per_type_sf1": {
+            "H2": 0.8761904761904763,
+            "Image": 0.0,
+            "H1": 0.6666666666666666,
+            "H3": 0.0,
+            "Paragraph": 0.48596864230090453
+          },
+          "time_ms": 6289.424
+        }
+      ]
+    },
+    {
+      "name": "nougat_037",
+      "file_size": 561676,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.3409113872039522,
+          "tf1": 0.9838945827232797,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H1": 0.9090909090909091,
+            "Image": 0.0,
+            "Paragraph": 0.2871311496186737,
+            "H2": 0.0,
+            "ListItem": 0.08372093023255814
+          },
+          "time_ms": 41.627625
+        }
+      ]
+    },
+    {
+      "name": "nougat_038",
+      "file_size": 2391915,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.21987543906670995,
+          "tf1": 0.924114671163575,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Image": 0.0,
+            "Table": 0.7804878048780488,
+            "H1": 0.0,
+            "H2": 0.0,
+            "Paragraph": 0.5169172932330827
+          },
+          "time_ms": 20.19625
+        }
+      ]
+    },
+    {
+      "name": "nougat_039",
+      "file_size": 69496,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.19055114231821405,
+          "tf1": 0.9329268292682927,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Paragraph": 0.1878787878787878,
+            "Table": 0.0,
+            "Image": 0.0,
+            "ListItem": 0.9540918888107833,
+            "H2": 0.0
+          },
+          "time_ms": 27.381249999999998
+        }
+      ]
+    },
+    {
+      "name": "nougat_040",
+      "file_size": 476639,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.03826981135490284,
+          "tf1": 0.9217075984835997,
+          "order_score": 0.6875,
+          "per_type_sf1": {
+            "H1": 0.0,
+            "Paragraph": 0.34151319553905424,
+            "H2": 0.06593406593406594,
+            "ListItem": 0.11834319526627218,
+            "Code": 0.0,
+            "Table": 0.0,
+            "Image": 0.0,
+            "H3": 0.0
+          },
+          "time_ms": 1362.8575
+        }
+      ]
+    },
+    {
+      "name": "nougat_041",
+      "file_size": 733602,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.1683106139409614,
+          "tf1": 0.8784194528875381,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H2": 0.0,
+            "ListItem": 0.8749999999999999,
+            "Paragraph": 0.26972736729153707,
+            "H1": 0.0,
+            "Image": 0.0
+          },
+          "time_ms": 144.727833
+        }
+      ]
+    },
+    {
+      "name": "nougat_042",
+      "file_size": 166420,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.40861620716691066,
+          "tf1": 0.9983779399837793,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H2": 0.0,
+            "ListItem": 0.0,
+            "Paragraph": 0.858414642472381,
+            "H1": 0.9090909090909091
+          },
+          "time_ms": 76.143583
+        }
+      ]
+    },
+    {
+      "name": "nougat_043",
+      "file_size": 119114,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.09561729524838837,
+          "tf1": 0.9969707169303265,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Paragraph": 0.2517902477322719,
+            "H2": 0.0,
+            "H1": 0.0,
+            "ListItem": 0.4
+          },
+          "time_ms": 69.32575
+        }
+      ]
+    },
+    {
+      "name": "nougat_044",
+      "file_size": 107812,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.0,
+          "tf1": 0.9131534569983136,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H1": 0.0,
+            "Paragraph": 0.0
+          },
+          "time_ms": 92.623917
+        }
+      ]
+    },
+    {
+      "name": "nougat_045",
+      "file_size": 129544,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.0,
+          "tf1": 0.9493087557603688,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Code": 0.0,
+            "Paragraph": 0.0,
+            "H1": 0.0,
+            "ListItem": 0.0
+          },
+          "time_ms": 130.00858300000002
+        }
+      ]
+    },
+    {
+      "name": "nougat_046",
+      "file_size": 594787,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.12668543433046067,
+          "tf1": 0.9220430107526881,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H1": 0.0,
+            "H2": 0.0,
+            "Image": 0.0,
+            "ListItem": 0.7777777777777778,
+            "Table": 0.0,
+            "Paragraph": 0.34472595940135425
+          },
+          "time_ms": 57.72975
+        }
+      ]
+    },
+    {
+      "name": "nougat_047",
+      "file_size": 420052,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.02812805825444189,
+          "tf1": 0.9607629427792915,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "ListItem": 0.0,
+            "Paragraph": 0.4500489320710702,
+            "H1": 0.0,
+            "Image": 0.0,
+            "H2": 0.0,
+            "H3": 0.0
+          },
+          "time_ms": 267.176875
+        }
+      ]
+    },
+    {
+      "name": "nougat_048",
+      "file_size": 572026,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.35265164497062435,
+          "tf1": 0.9872572815533981,
+          "order_score": 0.7619047619047619,
+          "per_type_sf1": {
+            "Paragraph": 0.23095114514760068,
+            "Image": 0.0,
+            "H1": 1.0,
+            "Table": 0.0,
+            "ListItem": 0.5294117647058824,
+            "H2": 0.0
+          },
+          "time_ms": 478.84608299999996
+        }
+      ]
+    },
+    {
+      "name": "nougat_049",
+      "file_size": 122803,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.03938708350473056,
+          "tf1": 0.9187279151943463,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H1": 0.0,
+            "Paragraph": 0.3938708350473056,
+            "H2": 0.0,
+            "Image": 0.0
+          },
+          "time_ms": 43.9495
+        }
+      ]
+    },
+    {
+      "name": "nougat_050",
+      "file_size": 108353,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.088240296342817,
+          "tf1": 0.9424141749723145,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H2": 0.0,
+            "H1": 0.0,
+            "Paragraph": 0.7941626670853531
+          },
+          "time_ms": 74.518708
+        }
+      ]
+    },
+    {
+      "name": "page-boxes-example",
+      "file_size": 1187,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 1.0,
+          "tf1": 1.0,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Paragraph": 1.0
+          },
+          "time_ms": 0.9064169999999999
+        }
+      ]
+    },
+    {
+      "name": "pdf_embedded",
+      "file_size": 109798,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.018744142455482657,
+          "tf1": 0.9727626459143969,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Image": 0.0,
+            "Table": 0.0,
+            "H1": 0.0,
+            "ListItem": 0.0,
+            "Paragraph": 0.20618556701030924
+          },
+          "time_ms": 20.805125
+        }
+      ]
+    },
+    {
+      "name": "pdf_google_docs",
+      "file_size": 80100,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.3692307692307692,
+          "tf1": 0.93841642228739,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Image": 0.0,
+            "Table": 0.0,
+            "H2": 0.0,
+            "H1": 1.0,
+            "Paragraph": 0.8
+          },
+          "time_ms": 426.252625
+        }
+      ]
+    },
+    {
+      "name": "pdf_image_only_german",
+      "file_size": 189884,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.0,
+          "tf1": 0.017077798861480076,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H2": 0.0,
+            "H3": 0.0,
+            "Image": 0.0,
+            "H1": 0.0,
+            "Paragraph": 0.0,
+            "ListItem": 0.0
+          },
+          "time_ms": 0.6677500000000001
+        }
+      ]
+    },
+    {
+      "name": "pdf_large_tables",
+      "file_size": 2636957,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.23737343577541425,
+          "tf1": 0.6043638697256537,
+          "order_score": 0.9166666666666666,
+          "per_type_sf1": {
+            "H2": 0.0,
+            "Paragraph": 0.392231319988672,
+            "Code": 0.0,
+            "Table": 0.0,
+            "H1": 0.9333333333333333,
+            "Image": 0.0,
+            "ListItem": 0.07357859531772576
+          },
+          "time_ms": 925.44175
+        }
+      ]
+    },
+    {
+      "name": "pdf_medium",
+      "file_size": 358744,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.4312688552103267,
+          "tf1": 0.960789030550878,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H1": 1.0,
+            "H2": 0.11764705882352941,
+            "Code": 0.0,
+            "Paragraph": 0.7046380272298027
+          },
+          "time_ms": 314.4405
+        }
+      ]
+    },
+    {
+      "name": "pdf_medium_tables",
+      "file_size": 245260,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.16719819057094618,
+          "tf1": 0.5716484926234766,
+          "order_score": 0.8,
+          "per_type_sf1": {
+            "ListItem": 0.3230019590795889,
+            "Table": 0.0,
+            "Image": 0.0,
+            "H1": 0.3870967741935484,
+            "Paragraph": 0.3135818436308216,
+            "H2": 0.0
+          },
+          "time_ms": 739.500042
+        }
+      ]
+    },
+    {
+      "name": "pdf_non_searchable",
+      "file_size": 70489,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.0,
+          "tf1": 0.06060606060606061,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Image": 0.0,
+            "H1": 0.0,
+            "Paragraph": 0.0
+          },
+          "time_ms": 0.636541
+        }
+      ]
+    },
+    {
+      "name": "pdf_ocr_rotated",
+      "file_size": 94703,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.0,
+          "tf1": 0.0,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H1": 0.0,
+            "Paragraph": 0.0
+          },
+          "time_ms": 0.436209
+        }
+      ]
+    },
+    {
+      "name": "pdf_ocr_rotated_270",
+      "file_size": 94702,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.0,
+          "tf1": 0.0,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H1": 0.0,
+            "Paragraph": 0.0
+          },
+          "time_ms": 0.393042
+        }
+      ]
+    },
+    {
+      "name": "pdf_ocr_rotated_90",
+      "file_size": 94126,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.0,
+          "tf1": 0.0,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H1": 0.0,
+            "Paragraph": 0.0
+          },
+          "time_ms": 0.394458
+        }
+      ]
+    },
+    {
+      "name": "pdf_ocr_test",
+      "file_size": 93549,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.0,
+          "tf1": 0.0,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H1": 0.0,
+            "Paragraph": 0.0
+          },
+          "time_ms": 0.3265
+        }
+      ]
+    },
+    {
+      "name": "pdf_protected",
+      "file_size": 270117,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.33068260158934476,
+          "tf1": 0.6205607476635514,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H2": 0.0,
+            "Paragraph": 0.613073248439102,
+            "Image": 0.0,
+            "H1": 0.7058823529411764,
+            "ListItem": 0.7618181818181818,
+            "Code": 0.0
+          },
+          "time_ms": 81.8295
+        }
+      ]
+    },
+    {
+      "name": "pdf_scanned_ocr",
+      "file_size": 69966,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.030703960682749627,
+          "tf1": 0.9090909090909091,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H4": 0.0,
+            "Paragraph": 0.5833752529722429,
+            "H1": 0.0,
+            "H3": 0.0,
+            "H2": 0.0,
+            "ListItem": 0.0
+          },
+          "time_ms": 334.547375
+        }
+      ]
+    },
+    {
+      "name": "pdf_structure",
+      "file_size": 34467,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.31331569664903003,
+          "tf1": 1.0,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H3": 0.0,
+            "H2": 0.5,
+            "Table": 0.0,
+            "Paragraph": 0.5000000000000001,
+            "ListItem": 0.7698412698412698,
+            "H1": 0.4000000000000001
+          },
+          "time_ms": 7.093666
+        }
+      ]
+    },
+    {
+      "name": "pdf_tables",
+      "file_size": 23572,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.6868055555555556,
+          "tf1": 0.6666666666666666,
+          "order_score": 0.5,
+          "per_type_sf1": {
+            "Paragraph": 0.6222222222222222,
+            "Table": 0.7083333333333334
+          },
+          "time_ms": 12.932542
+        }
+      ]
+    },
+    {
+      "name": "pdf_tiny_memo",
+      "file_size": 13374,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.8019323671497585,
+          "tf1": 1.0,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "ListItem": 0.8695652173913044,
+            "Paragraph": 0.6666666666666666
+          },
+          "time_ms": 1.3340839999999998
+        }
+      ]
+    },
+    {
+      "name": "pdfa_001",
+      "file_size": 44245,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.0439904791188115,
+          "tf1": 1.0,
+          "order_score": 0.76,
+          "per_type_sf1": {
+            "Table": 0.0,
+            "H2": 0.0,
+            "Paragraph": 0.43990479118811504,
+            "ListItem": 0.0
+          },
+          "time_ms": 138.5075
+        }
+      ]
+    },
+    {
+      "name": "pdfa_002",
+      "file_size": 390183,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.16518735355445174,
+          "tf1": 0.9637832984136485,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H1": 0.0,
+            "Table": 0.0,
+            "H2": 0.5714285714285715,
+            "ListItem": 0.0,
+            "Paragraph": 0.026908664048038287
+          },
+          "time_ms": 426.770334
+        }
+      ]
+    },
+    {
+      "name": "pdfa_003",
+      "file_size": 269676,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.36837507227594307,
+          "tf1": 0.7430901676483914,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Image": 0.0,
+            "H1": 0.5263157894736842,
+            "Paragraph": 0.2451542315313605,
+            "H2": 0.3333333333333333
+          },
+          "time_ms": 177.676
+        }
+      ]
+    },
+    {
+      "name": "pdfa_004",
+      "file_size": 274635,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.09660772981339964,
+          "tf1": 0.9741992882562277,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H2": 0.0,
+            "Code": 0.0,
+            "Image": 0.0,
+            "H1": 0.0,
+            "H3": 0.0,
+            "ListItem": 0.5475324675324675,
+            "Paragraph": 0.740481931389658
+          },
+          "time_ms": 424.188209
+        }
+      ]
+    },
+    {
+      "name": "pdfa_005",
+      "file_size": 772983,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.0021367521367521365,
+          "tf1": 0.9462672372800761,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H3": 0.0,
+            "H1": 0.0,
+            "Paragraph": 0.034188034188034185,
+            "H2": 0.0,
+            "Image": 0.0,
+            "ListItem": 0.0
+          },
+          "time_ms": 175.913792
+        }
+      ]
+    },
+    {
+      "name": "pdfa_006",
+      "file_size": 40157,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.09835564628235795,
+          "tf1": 1.0,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Paragraph": 0.6884895239765056,
+            "H1": 0.0,
+            "ListItem": 0.0
+          },
+          "time_ms": 36.73925
+        }
+      ]
+    },
+    {
+      "name": "pdfa_007",
+      "file_size": 112154,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.6176248381503184,
+          "tf1": 0.9598278335724533,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Paragraph": 0.6176248381503184
+          },
+          "time_ms": 121.78358300000001
+        }
+      ]
+    },
+    {
+      "name": "pdfa_008",
+      "file_size": 181946,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.03715361006382678,
+          "tf1": 0.9208443271767809,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H2": 0.0,
+            "Table": 0.0,
+            "Image": 0.0,
+            "ListItem": 0.0,
+            "Paragraph": 0.4086897107020946
+          },
+          "time_ms": 132.928292
+        }
+      ]
+    },
+    {
+      "name": "pdfa_009",
+      "file_size": 219515,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.0,
+          "tf1": 0.0,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "ListItem": 0.0,
+            "Table": 0.0,
+            "Paragraph": 0.0
+          },
+          "time_ms": 60002.517208
+        }
+      ]
+    },
+    {
+      "name": "pdfa_010",
+      "file_size": 813601,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.0,
+          "tf1": 0.0,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "ListItem": 0.0,
+            "Paragraph": 0.0,
+            "Table": 0.0
+          },
+          "time_ms": 60002.135125
+        }
+      ]
+    },
+    {
+      "name": "pdfa_011",
+      "file_size": 399271,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.47552837240924833,
+          "tf1": 0.9928288822947576,
+          "order_score": 0.9714285714285714,
+          "per_type_sf1": {
+            "H2": 0.8761904761904763,
+            "H1": 0.6666666666666666,
+            "Image": 0.0,
+            "Paragraph": 0.48596864230090453,
+            "H3": 0.0
+          },
+          "time_ms": 6590.070334
+        }
+      ]
+    },
+    {
+      "name": "pdfa_012",
+      "file_size": 561676,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.3409113872039522,
+          "tf1": 0.9838945827232797,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H2": 0.0,
+            "H1": 0.9090909090909091,
+            "Image": 0.0,
+            "Paragraph": 0.2871311496186737,
+            "ListItem": 0.08372093023255814
+          },
+          "time_ms": 42.364
+        }
+      ]
+    },
+    {
+      "name": "pdfa_013",
+      "file_size": 2391915,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.22230802921859835,
+          "tf1": 0.924114671163575,
+          "order_score": 0.9,
+          "per_type_sf1": {
+            "Image": 0.0,
+            "Table": 0.7804878048780488,
+            "H1": 0.0,
+            "H2": 0.0,
+            "Paragraph": 0.5485409652076318
+          },
+          "time_ms": 20.023540999999998
+        }
+      ]
+    },
+    {
+      "name": "pdfa_014",
+      "file_size": 69496,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.1898085384135548,
+          "tf1": 0.9329268292682927,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Image": 0.0,
+            "H2": 0.0,
+            "Paragraph": 0.1797101449275362,
+            "Table": 0.0,
+            "ListItem": 0.9540918888107833
+          },
+          "time_ms": 27.554333
+        }
+      ]
+    },
+    {
+      "name": "pdfa_015",
+      "file_size": 476639,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.04486459316508731,
+          "tf1": 0.9217075984835997,
+          "order_score": 0.6666666666666666,
+          "per_type_sf1": {
+            "H3": 0.0,
+            "Table": 0.0,
+            "H1": 0.0,
+            "Code": 0.0,
+            "H2": 0.10364372469635627,
+            "ListItem": 0.1098901098901099,
+            "Paragraph": 0.352665931066276,
+            "Image": 0.0
+          },
+          "time_ms": 1362.372959
+        }
+      ]
+    },
+    {
+      "name": "pdfa_016",
+      "file_size": 733602,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.1683106139409614,
+          "tf1": 0.8784194528875381,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "ListItem": 0.8749999999999999,
+            "Paragraph": 0.26972736729153707,
+            "Image": 0.0,
+            "H2": 0.0,
+            "H1": 0.0
+          },
+          "time_ms": 144.69341699999998
+        }
+      ]
+    },
+    {
+      "name": "pdfa_017",
+      "file_size": 166420,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.466680906889572,
+          "tf1": 0.9983779399837793,
+          "order_score": 0.9583333333333334,
+          "per_type_sf1": {
+            "Paragraph": 0.5880354303307467,
+            "H1": 0.9090909090909091,
+            "ListItem": 0.0,
+            "H2": 0.22727272727272727
+          },
+          "time_ms": 75.983834
+        }
+      ]
+    },
+    {
+      "name": "pdfa_018",
+      "file_size": 119114,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.09610431700415677,
+          "tf1": 0.9969707169303265,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Paragraph": 0.2571474870457245,
+            "ListItem": 0.4,
+            "H1": 0.0,
+            "H2": 0.0
+          },
+          "time_ms": 68.253916
+        }
+      ]
+    },
+    {
+      "name": "pdfa_019",
+      "file_size": 107812,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.0,
+          "tf1": 0.9131534569983136,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Paragraph": 0.0,
+            "H1": 0.0
+          },
+          "time_ms": 90.56441699999999
+        }
+      ]
+    },
+    {
+      "name": "pdfa_020",
+      "file_size": 129544,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.0,
+          "tf1": 0.9493087557603688,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Code": 0.0,
+            "Paragraph": 0.0,
+            "H1": 0.0,
+            "ListItem": 0.0
+          },
+          "time_ms": 129.024125
+        }
+      ]
+    },
+    {
+      "name": "pdfa_021",
+      "file_size": 594787,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.09109407801099663,
+          "tf1": 0.9220430107526881,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H2": 0.0,
+            "ListItem": 0.707070707070707,
+            "H1": 0.0,
+            "H3": 0.0,
+            "Paragraph": 0.3166460680675221,
+            "Table": 0.0,
+            "Image": 0.0
+          },
+          "time_ms": 58.513792
+        }
+      ]
+    },
+    {
+      "name": "pdfa_022",
+      "file_size": 420052,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.039481403582141604,
+          "tf1": 0.9607629427792915,
+          "order_score": 0.9743589743589743,
+          "per_type_sf1": {
+            "ListItem": 0.0,
+            "H2": 0.0,
+            "Image": 0.0,
+            "Paragraph": 0.6317024573142657,
+            "H3": 0.0,
+            "H1": 0.0
+          },
+          "time_ms": 268.217542
+        }
+      ]
+    },
+    {
+      "name": "pdfa_023",
+      "file_size": 572026,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.35265164497062435,
+          "tf1": 0.9872572815533981,
+          "order_score": 0.7619047619047619,
+          "per_type_sf1": {
+            "H1": 1.0,
+            "H2": 0.0,
+            "Paragraph": 0.23095114514760068,
+            "ListItem": 0.5294117647058824,
+            "Image": 0.0,
+            "Table": 0.0
+          },
+          "time_ms": 478.350708
+        }
+      ]
+    },
+    {
+      "name": "pdfa_024",
+      "file_size": 122803,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.03938708350473056,
+          "tf1": 0.9187279151943463,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H1": 0.0,
+            "Image": 0.0,
+            "Paragraph": 0.3938708350473056,
+            "H2": 0.0
+          },
+          "time_ms": 43.805709
+        }
+      ]
+    },
+    {
+      "name": "pdfa_025",
+      "file_size": 108353,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.088240296342817,
+          "tf1": 0.9424141749723145,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Paragraph": 0.7941626670853531,
+            "H2": 0.0,
+            "H1": 0.0
+          },
+          "time_ms": 74.73783300000001
+        }
+      ]
+    },
+    {
+      "name": "pdfa_026",
+      "file_size": 767342,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.022355370322169704,
+          "tf1": 0.9694385216773276,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Paragraph": 0.35768592515471526,
+            "ListItem": 0.0,
+            "Image": 0.0,
+            "H2": 0.0,
+            "H3": 0.0,
+            "H1": 0.0
+          },
+          "time_ms": 648.429625
+        }
+      ]
+    },
+    {
+      "name": "pdfa_027",
+      "file_size": 163606,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.05758582502768549,
+          "tf1": 0.893852175915266,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Code": 0.0,
+            "ListItem": 0.0,
+            "Paragraph": 0.8062015503875969,
+            "H3": 0.0,
+            "H2": 0.0
+          },
+          "time_ms": 248.80966700000002
+        }
+      ]
+    },
+    {
+      "name": "pdfa_028",
+      "file_size": 142067,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.05120511633427794,
+          "tf1": 0.9889549702633814,
+          "order_score": 0.9411764705882353,
+          "per_type_sf1": {
+            "ListItem": 0.0,
+            "Image": 0.0,
+            "H2": 0.0,
+            "H1": 0.0,
+            "Paragraph": 0.6144613960113353
+          },
+          "time_ms": 374.780791
+        }
+      ]
+    },
+    {
+      "name": "pdfa_029",
+      "file_size": 5262991,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.4705867950896485,
+          "tf1": 0.9899732620320856,
+          "order_score": 0.9122807017543859,
+          "per_type_sf1": {
+            "Image": 0.0,
+            "H2": 0.5273368606701939,
+            "Paragraph": 0.28203452132873474,
+            "ListItem": 0.5559322033898306,
+            "H1": 0.888888888888889,
+            "Table": 0.0
+          },
+          "time_ms": 328.02725
+        }
+      ]
+    },
+    {
+      "name": "pdfa_030",
+      "file_size": 110445,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.3263481888481889,
+          "tf1": 0.9885496183206107,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H1": 0.5714285714285715,
+            "Image": 0.0,
+            "ListItem": 0.6444444444444444,
+            "H2": 0.0,
+            "Paragraph": 0.3415750915750916
+          },
+          "time_ms": 15.219375
+        }
+      ]
+    },
+    {
+      "name": "pdfa_031",
+      "file_size": 4873,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.15949820788530467,
+          "tf1": 0.9797979797979798,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "ListItem": 0.0,
+            "Paragraph": 0.478494623655914
+          },
+          "time_ms": 2.805917
+        }
+      ]
+    },
+    {
+      "name": "pdfa_032",
+      "file_size": 108342,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.8148037399592278,
+          "tf1": 0.9808695652173912,
+          "order_score": 0.9523809523809523,
+          "per_type_sf1": {
+            "Paragraph": 0.874018699796138,
+            "H1": 0.8000000000000002
+          },
+          "time_ms": 79.954084
+        }
+      ]
+    },
+    {
+      "name": "pdfa_033",
+      "file_size": 11564,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.3166666666666667,
+          "tf1": 0.7258064516129032,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Paragraph": 0.3166666666666667
+          },
+          "time_ms": 438.180292
+        }
+      ]
+    },
+    {
+      "name": "pdfa_034",
+      "file_size": 27491,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.4982746721877157,
+          "tf1": 0.9672619047619048,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H1": 0.8333333333333334,
+            "Paragraph": 0.15458937198067635,
+            "ListItem": 0.0
+          },
+          "time_ms": 3.718417
+        }
+      ]
+    },
+    {
+      "name": "pdfa_035",
+      "file_size": 79182,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.12037037037037039,
+          "tf1": 0.6153846153846154,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Image": 0.0,
+            "Paragraph": 0.24074074074074078
+          },
+          "time_ms": 6.707249999999999
+        }
+      ]
+    },
+    {
+      "name": "pdfa_036",
+      "file_size": 409867,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.20641550739228032,
+          "tf1": 0.9398301956441492,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Table": 0.0,
+            "H2": 0.0,
+            "Image": 0.0,
+            "H1": 0.6666666666666666,
+            "Paragraph": 0.4295659442175381,
+            "ListItem": 0.0
+          },
+          "time_ms": 507.03916699999996
+        }
+      ]
+    },
+    {
+      "name": "pdfa_037",
+      "file_size": 282613,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.16750443764060138,
+          "tf1": 0.9476351351351352,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Image": 0.0,
+            "Paragraph": 0.33500887528120277
+          },
+          "time_ms": 67.149959
+        }
+      ]
+    },
+    {
+      "name": "pdfa_038",
+      "file_size": 14168,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.05121544244605145,
+          "tf1": 0.9472329472329473,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H2": 0.0,
+            "Paragraph": 0.563369866906566,
+            "H1": 0.0,
+            "ListItem": 0.0
+          },
+          "time_ms": 20.253334000000002
+        }
+      ]
+    },
+    {
+      "name": "pdfa_039",
+      "file_size": 69411,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.0,
+          "tf1": 0.96617050067659,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H1": 0.0,
+            "Paragraph": 0.0,
+            "Table": 0.0,
+            "Code": 0.0
+          },
+          "time_ms": 478.314625
+        }
+      ]
+    },
+    {
+      "name": "pdfa_040",
+      "file_size": 108450,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.012580486684088715,
+          "tf1": 0.9312906220984216,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Paragraph": 0.06290243342044358,
+            "H1": 0.0
+          },
+          "time_ms": 91.420083
+        }
+      ]
+    },
+    {
+      "name": "pdfa_041",
+      "file_size": 41518,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.2585780736069753,
+          "tf1": 1.0,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H1": 0.5925925925925926,
+            "H2": 0.0,
+            "Paragraph": 0.47398843930635837,
+            "ListItem": 0.0
+          },
+          "time_ms": 32.957417
+        }
+      ]
+    },
+    {
+      "name": "pdfa_042",
+      "file_size": 197955,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.2478414973158646,
+          "tf1": 0.9533116178067318,
+          "order_score": 0.8095238095238095,
+          "per_type_sf1": {
+            "ListItem": 0.18181818181818182,
+            "Table": 0.0,
+            "Image": 0.0,
+            "H2": 0.14857142857142858,
+            "H3": 0.45454545454545453,
+            "Paragraph": 0.2575838754943233,
+            "H4": 0.0,
+            "H1": 0.6666666666666666
+          },
+          "time_ms": 29.580958000000003
+        }
+      ]
+    },
+    {
+      "name": "pdfa_043",
+      "file_size": 106715,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.01598806786932965,
+          "tf1": 0.8796331677493312,
+          "order_score": 0.75,
+          "per_type_sf1": {
+            "Table": 0.0,
+            "H2": 0.0,
+            "Paragraph": 0.2238329501706151,
+            "H1": 0.0,
+            "ListItem": 0.0
+          },
+          "time_ms": 117.06741699999999
+        }
+      ]
+    },
+    {
+      "name": "pdfa_044",
+      "file_size": 143107,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.03231158439630513,
+          "tf1": 0.954349698535745,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Paragraph": 0.484673765944577,
+            "H1": 0.0,
+            "H2": 0.0,
+            "Image": 0.0,
+            "ListItem": 0.0,
+            "Table": 0.0
+          },
+          "time_ms": 178.23325
+        }
+      ]
+    },
+    {
+      "name": "pdfa_045",
+      "file_size": 19551,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.5666103155731371,
+          "tf1": 0.8110760602874167,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Paragraph": 0.5816568243965754,
+            "ListItem": 0.0,
+            "H1": 0.8461538461538461
+          },
+          "time_ms": 92.03658300000001
+        }
+      ]
+    },
+    {
+      "name": "pdfa_046",
+      "file_size": 246086,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.03316347421409385,
+          "tf1": 0.9862903225806451,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Paragraph": 0.16581737107046926,
+            "H1": 0.0
+          },
+          "time_ms": 68.52829200000001
+        }
+      ]
+    },
+    {
+      "name": "pdfa_047",
+      "file_size": 130632,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.3947751776903112,
+          "tf1": 0.9960132890365448,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Table": 0.0,
+            "Paragraph": 0.8601858209976903,
+            "H1": 0.8333333333333333,
+            "H2": 0.0,
+            "ListItem": 0.6666666666666666
+          },
+          "time_ms": 32.927083
+        }
+      ]
+    },
+    {
+      "name": "pdfa_048",
+      "file_size": 640060,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.17416208349184967,
+          "tf1": 0.9911868390129259,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H3": 0.0,
+            "Paragraph": 0.7865933358695947,
+            "H1": 0.0,
+            "ListItem": 1.0,
+            "H2": 0.0,
+            "Image": 0.0
+          },
+          "time_ms": 85.24920800000001
+        }
+      ]
+    },
+    {
+      "name": "pdfa_049",
+      "file_size": 152698,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.3529674986998439,
+          "tf1": 0.9579256360078278,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "ListItem": 0.0,
+            "H1": 0.0,
+            "Paragraph": 0.7696343556169827,
+            "H2": 0.7782520325203252
+          },
+          "time_ms": 151.932459
+        }
+      ]
+    },
+    {
+      "name": "pdfa_050",
+      "file_size": 308633,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.1638305374431484,
+          "tf1": 0.9950358891795801,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "ListItem": 0.2,
+            "H2": 0.0,
+            "Paragraph": 0.7468137621020389
+          },
+          "time_ms": 1456.534042
+        }
+      ]
+    },
+    {
+      "name": "pdffill-demo",
+      "file_size": 108017,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.01429490715205001,
+          "tf1": 0.848816029143898,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Image": 0.0,
+            "Paragraph": 0.20012870012870015,
+            "H2": 0.0,
+            "H3": 0.0,
+            "H1": 0.0
+          },
+          "time_ms": 9.011625
+        }
+      ]
+    },
+    {
+      "name": "picture_classification",
+      "file_size": 212855,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.35926971326164875,
+          "tf1": 0.9931506849315068,
+          "order_score": 0.6666666666666666,
+          "per_type_sf1": {
+            "H2": 0.0,
+            "Image": 0.0,
+            "ListItem": 0.0,
+            "H1": 1.0,
+            "Paragraph": 0.31123655913978493
+          },
+          "time_ms": 15.800999999999998
+        }
+      ]
+    },
+    {
+      "name": "pr-138-example",
+      "file_size": 89950,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.3643100234277329,
+          "tf1": 0.9921304103428893,
+          "order_score": 0.9523809523809523,
+          "per_type_sf1": {
+            "Table": 0.0,
+            "H1": 0.6666666666666666,
+            "ListItem": 0.32000000000000006,
+            "Paragraph": 0.336433567610662
+          },
+          "time_ms": 413.28695799999997
+        }
+      ]
+    },
+    {
+      "name": "pr-88-example",
+      "file_size": 95332,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.05226480836236934,
+          "tf1": 0.9259259259259259,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Image": 0.0,
+            "H3": 0.0,
+            "Paragraph": 0.7317073170731707,
+            "H1": 0.0,
+            "H2": 0.0
+          },
+          "time_ms": 4.299291
+        }
+      ]
+    },
+    {
+      "name": "redp5110_sampled",
+      "file_size": 1277938,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.2641690544412553,
+          "tf1": 0.9707210975405722,
+          "order_score": 0.8783783783783784,
+          "per_type_sf1": {
+            "Table": 0.0,
+            "H3": 0.09380863039399624,
+            "ListItem": 0.3318681318681318,
+            "Paragraph": 0.5274282862972106,
+            "H1": 0.8181818181818182,
+            "Code": 0.0,
+            "H2": 0.24314821334272135,
+            "Image": 0.0
+          },
+          "time_ms": 313.842625
+        }
+      ]
+    },
+    {
+      "name": "right_to_left_02",
+      "file_size": 92036,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.0,
+          "tf1": 0.8042328042328042,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Paragraph": 0.0,
+            "Image": 0.0
+          },
+          "time_ms": 23.100125
+        }
+      ]
+    },
+    {
+      "name": "right_to_left_03",
+      "file_size": 278131,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.07179487179487179,
+          "tf1": 0.8467741935483871,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H1": 0.0,
+            "H2": 0.2333333333333333,
+            "Table": 0.0,
+            "Paragraph": 0.0,
+            "Image": 0.0
+          },
+          "time_ms": 27.722
+        }
+      ]
+    },
+    {
+      "name": "scotus-transcript-p1",
+      "file_size": 84509,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.23952095808383228,
+          "tf1": 0.8369565217391304,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Paragraph": 0.23952095808383228
+          },
+          "time_ms": 7.392791
+        }
+      ]
+    },
+    {
+      "name": "senate-expenditures",
+      "file_size": 53481,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.0,
+          "tf1": 0.012852199703410776,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Table": 0.0,
+            "Paragraph": 0.0
+          },
+          "time_ms": 217.637792
+        }
+      ]
+    },
+    {
+      "name": "table-curves-example",
+      "file_size": 153741,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.1509433962264151,
+          "tf1": 0.998003992015968,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Paragraph": 0.6037735849056604,
+            "Table": 0.0
+          },
+          "time_ms": 38.346958
+        }
+      ]
+    },
+    {
+      "name": "test",
+      "file_size": 92971,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.08058714103011276,
+          "tf1": 0.9973684210526316,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Paragraph": 0.4029357051505638,
+            "H1": 0.0
+          },
+          "time_ms": 65.131709
+        }
+      ]
+    },
+    {
+      "name": "test-punkt",
+      "file_size": 14806,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 1.0,
+          "tf1": 1.0,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "Paragraph": 1.0
+          },
+          "time_ms": 0.86975
+        }
+      ]
+    },
+    {
+      "name": "word365_structure",
+      "file_size": 99253,
+      "results": [
+        {
+          "pipeline": "baseline",
+          "sf1": 0.24705882352941178,
+          "tf1": 0.7727272727272727,
+          "order_score": 1.0,
+          "per_type_sf1": {
+            "H1": 0.0,
+            "Paragraph": 0.0,
+            "ListItem": 0.0,
+            "Table": 0.8235294117647058
+          },
+          "time_ms": 3.985791
+        }
+      ]
+    }
+  ]
 }

@@ -20,17 +20,17 @@ exclude = ["node_modules", "target", "dist", "vendor"]
 # MD030: Spaces after list markers (MkDocs Material grid cards require 3 spaces)
 # MD035: Horizontal rule style (grid cards use indented --- as card separators)
 disable = [
-    "MD012",
-    "MD013",
-    "MD024",
-    "MD030",
-    "MD033",
-    "MD035",
-    "MD036",
-    "MD041",
-    "MD046",
-    "MD051",
-    "MD076",
+  "MD012",
+  "MD013",
+  "MD024",
+  "MD030",
+  "MD033",
+  "MD035",
+  "MD036",
+  "MD041",
+  "MD046",
+  "MD051",
+  "MD076",
 ]
 
 # MD024: Allow duplicate heading names if they are not siblings

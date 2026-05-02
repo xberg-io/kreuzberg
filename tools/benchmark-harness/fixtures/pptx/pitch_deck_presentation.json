@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/pptx/pitch_deck_presentation.pptx",
   "file_type": "pptx",
   "file_size": 4610862,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "pptx test: pitch_deck_presentation",
     "source": "pandoc-generated",

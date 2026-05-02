@@ -98,7 +98,7 @@ The source equation of C-field f n C i ,i  leads to C = t for large r
 
 
 
-Thus    C
+Thus C
 
 = 1
 

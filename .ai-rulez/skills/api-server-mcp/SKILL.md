@@ -75,15 +75,15 @@ Key middleware layers applied in order:
 
 **Location**: `crates/kreuzberg/src/api/handlers.rs`
 
-| Handler | Method | Description |
-|---------|--------|-------------|
-| `extract_handler` | POST /extract | Multipart upload: parse file + optional config JSON, check cache, call `extract_bytes()`, cache result |
-| `extract_url_handler` | POST /extract-url | Fetch URL via reqwest, extract bytes |
-| `batch_handler` | POST /batch | Parallel extraction with `Semaphore`-limited concurrency (default: CPU count) |
-| `health_handler` | GET /health | Report status, version, uptime, feature availability (OCR, embeddings), cache stats |
-| `formats_handler` | GET /formats | Return supported format categories (office, pdf, images, web, email, archives, academic) |
-| `cache_stats_handler` | GET /cache/stats | Hit/miss counts and hit rate |
-| `cache_clear_handler` | DELETE /cache | Clear LRU cache |
+| Handler               | Method            | Description                                                                                            |
+| --------------------- | ----------------- | ------------------------------------------------------------------------------------------------------ |
+| `extract_handler`     | POST /extract     | Multipart upload: parse file + optional config JSON, check cache, call `extract_bytes()`, cache result |
+| `extract_url_handler` | POST /extract-url | Fetch URL via reqwest, extract bytes                                                                   |
+| `batch_handler`       | POST /batch       | Parallel extraction with `Semaphore`-limited concurrency (default: CPU count)                          |
+| `health_handler`      | GET /health       | Report status, version, uptime, feature availability (OCR, embeddings), cache stats                    |
+| `formats_handler`     | GET /formats      | Return supported format categories (office, pdf, images, web, email, archives, academic)               |
+| `cache_stats_handler` | GET /cache/stats  | Hit/miss counts and hit rate                                                                           |
+| `cache_clear_handler` | DELETE /cache     | Clear LRU cache                                                                                        |
 
 ## Caching Strategy
 
@@ -112,11 +112,11 @@ The MCP server allows Claude and other AI agents to call Kreuzberg extraction fu
 
 Three tools are registered:
 
-| Tool | Purpose | Required Params |
-|------|---------|----------------|
-| `extract_file` | Extract text/tables/metadata from documents (75+ formats) | `file_path` |
-| `batch_extract` | Extract from multiple documents in parallel | `file_paths[]` |
-| `get_capabilities` | List supported formats, features, backends | (none) |
+| Tool               | Purpose                                                   | Required Params |
+| ------------------ | --------------------------------------------------------- | --------------- |
+| `extract_file`     | Extract text/tables/metadata from documents (75+ formats) | `file_path`     |
+| `batch_extract`    | Extract from multiple documents in parallel               | `file_paths[]`  |
+| `get_capabilities` | List supported formats, features, backends                | (none)          |
 
 **Tool registration pattern** (example: `extract_file`):
 

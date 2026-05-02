@@ -1,21 +1,21 @@
 {
-	"id": "office_markdown_basic",
-	"category": "office",
-	"description": "Markdown document extraction baseline.",
-	"input": {
-		"path": "markdown/comprehensive.md",
-		"media_type": "text/markdown"
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "text/markdown"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 10
-		}
-	]
+  "id": "office_markdown_basic",
+  "category": "office",
+  "description": "Markdown document extraction baseline.",
+  "input": {
+    "path": "markdown/comprehensive.md",
+    "media_type": "text/markdown"
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "text/markdown"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 10
+    }
+  ]
 }

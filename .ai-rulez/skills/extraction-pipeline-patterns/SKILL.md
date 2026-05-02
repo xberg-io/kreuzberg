@@ -36,16 +36,16 @@ match (magic_bytes(content), extension) {
 
 ## Extraction Modules (75 Formats)
 
-| Category | Extractors | Key Modules |
-|----------|-----------|------------|
-| **Office** | DOCX, XLSX, XLSM, XLSB, XLS, PPTX, ODP, ODS | `extraction/{docx,excel,pptx}.rs` |
-| **PDF** | Standard + encrypted, password attempts | `pdf/` subdirectory (13 files) |
-| **Images** | PNG, JPG, TIFF, WebP, JP2, SVG (OCR-enabled) | `extraction/image.rs` + `ocr/` |
-| **Web** | HTML, XHTML, XML, SVG (DOM parsing) | `extraction/html.rs` (67KB - complex table handling) |
-| **Email** | EML, MSG (headers, body, attachments, threading) | `extraction/email.rs` |
-| **Archives** | ZIP, TAR, GZ, 7Z (recursive extraction) | `extraction/archive.rs` (31KB) |
-| **Markdown** | MD, TXT, RST, Org Mode, RTF | `extraction/markdown.rs` |
-| **Academic** | LaTeX, BibTeX, JATS, Jupyter, DocBook | `extraction/{structured,xml}.rs` |
+| Category     | Extractors                                       | Key Modules                                          |
+| ------------ | ------------------------------------------------ | ---------------------------------------------------- |
+| **Office**   | DOCX, XLSX, XLSM, XLSB, XLS, PPTX, ODP, ODS      | `extraction/{docx,excel,pptx}.rs`                    |
+| **PDF**      | Standard + encrypted, password attempts          | `pdf/` subdirectory (13 files)                       |
+| **Images**   | PNG, JPG, TIFF, WebP, JP2, SVG (OCR-enabled)     | `extraction/image.rs` + `ocr/`                       |
+| **Web**      | HTML, XHTML, XML, SVG (DOM parsing)              | `extraction/html.rs` (67KB - complex table handling) |
+| **Email**    | EML, MSG (headers, body, attachments, threading) | `extraction/email.rs`                                |
+| **Archives** | ZIP, TAR, GZ, 7Z (recursive extraction)          | `extraction/archive.rs` (31KB)                       |
+| **Markdown** | MD, TXT, RST, Org Mode, RTF                      | `extraction/markdown.rs`                             |
+| **Academic** | LaTeX, BibTeX, JATS, Jupyter, DocBook            | `extraction/{structured,xml}.rs`                     |
 
 ## Extraction Dispatcher
 
@@ -92,13 +92,13 @@ Plugin registry loaded at startup, cached for zero-cost lookup.
 
 20+ features across 9 language bindings. Key feature groups:
 
-| Group | Features | Notes |
-|-------|----------|-------|
-| OCR | `tesseract` (default), `tesseract-static`, `ocr-minimal` | Mutually exclusive recommendation |
-| Formats | `pdf`, `pdf-minimal`, `office`, `office-minimal` | |
-| AI/ML | `embeddings` (requires ONNX), `keywords-yake`, `keywords-rake`, `language-detection` | |
-| Server | `api` (Axum), `mcp`, `tokio-runtime`, `lite-runtime` | |
-| Bindings | `python-bindings`, `ruby-bindings`, `php-bindings`, `node-bindings`, `wasm` | |
+| Group    | Features                                                                             | Notes                             |
+| -------- | ------------------------------------------------------------------------------------ | --------------------------------- |
+| OCR      | `tesseract` (default), `tesseract-static`, `ocr-minimal`                             | Mutually exclusive recommendation |
+| Formats  | `pdf`, `pdf-minimal`, `office`, `office-minimal`                                     |                                   |
+| AI/ML    | `embeddings` (requires ONNX), `keywords-yake`, `keywords-rake`, `language-detection` |                                   |
+| Server   | `api` (Axum), `mcp`, `tokio-runtime`, `lite-runtime`                                 |                                   |
+| Bindings | `python-bindings`, `ruby-bindings`, `php-bindings`, `node-bindings`, `wasm`          |                                   |
 
 Conditional compilation: modules gated with `#[cfg(feature = "...")]`. Runtime `validate_config()` warns if requested feature not compiled in.
 

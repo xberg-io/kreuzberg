@@ -1,11 +1,7 @@
 {
   "id": "config_html_styled_custom_css",
   "description": "HTML output with inline user CSS string is embedded verbatim in the style block",
-  "tags": [
-    "contract",
-    "output_format",
-    "html_styled"
-  ],
+  "tags": ["contract", "output_format", "html_styled"],
   "call": "extract_file_sync",
   "input": {
     "path": "pdf/fake_memo.pdf",
@@ -27,10 +23,7 @@
     {
       "type": "contains_all",
       "field": "content",
-      "values": [
-        ".kb-p { color: red; }",
-        "kb-doc"
-      ]
+      "values": [".kb-p { color: red; }", "kb-doc"]
     }
   ]
 }

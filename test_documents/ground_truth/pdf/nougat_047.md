@@ -8,9 +8,11 @@ Including in your future
 European Regional Development Fund
 
 # Nova Innovation Tidal Array
+
 Shetland
 
 # INNOVATION™
+
 Nova Innovation Ltd
 
 ## Introduction
@@ -215,14 +217,14 @@ GREBE will be operated by eight partner organisations across six regions:
 - ERI
 - Innovation Center Iceland
 - WDC
-WONDERFUL EQUIPMENT COORDINATES
-COMPUTER FORWARDEL AS INSTITUTE
+  WONDERFUL EQUIPMENT COORDINATES
+  COMPUTER FORWARDEL AS INSTITUTE
 - Fermanagh &amp; Omagh
-District Council
-Comhairle Coantair
-Fhear Manach agus na hÓmaí
+  District Council
+  Comhairle Coantair
+  Fhear Manach agus na hÓmaí
 - Action Renewables
-the future of energy, today
+  the future of energy, today
 - FORSKNINGSPARKEN I NARVIK
 - Eureliia
 - NATIONAL RESOURCES INSTITUTE FINLAND

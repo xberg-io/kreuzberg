@@ -39,7 +39,7 @@ Artist Cross Reference ...Error! Bookmark not defined.
 About the Author...51
 About PaperQuest Press...51
 
-* * * * *
+---
 
 ![img-3.jpeg](img-3.jpeg)
 ![img-4.jpeg](img-4.jpeg)
@@ -48,29 +48,29 @@ About PaperQuest Press...51
 
 Texas issued its first license stamp in 1971 for a long-running series of dove hunting stamps. Archery hunting stamps followed in 1975 and waterfowl hunting stamps in 1981, later than most states. Three additional series were inaugurated in 1985 – trout fishing, saltwater fishing, and nongame stamps. Wild turkey hunting stamps were introduced in 1991, followed by muzzleloader hunting stamps in 1994. In 1996, the era of mandatory stamps for hunting and fishing ended, as the individual stamp series changed to voluntary collector stamps that were all printed in a single booklet pane that over time shrunk from eight stamps to seven stamps with a blank label, and finally to just six stamps. The muzzleloader collector stamp series ended in 2003. In 2004 the collector trout stamp was replaced by a collector freshwater fishing stamp and in 2005 the turkey and white-winged dove collector stamps were replaced by a collector upland game bird stamp. Finally, in 2015 the last collector booklet pane of six stamps was printed and all the stamp series ended.
 
-|  Series | Duration | # of Issues  |
-| --- | --- | --- |
-|  White-winged dove hunting | 1971-2004 | 34  |
-|  Archery hunting | 1975-2015 | 41  |
-|  Waterfowl hunting | 1981-2015 | 35  |
-|  Freshwater trout fishing | 1985-2003 | 19  |
-|  Saltwater fishing | 1985-2015 | 31  |
-|  Nongame | 1985-2015 | 31  |
-|  Wild turkey hunting | 1991-2004 | 14  |
-|  Muzzleloader hunting | 1994-2003 | 10  |
-|  Freshwater fishing | 2004-2015 | 12  |
-|  Upland game bird hunting | 2005-2015 | 11  |
-|  Total stamps |  | 238  |
-|  Collector booklets | 1996-2015 | 20  |
-|  Total state-issued items |  | 258  |
-|  Texas Black Bass Unlimited | 1987 | 1  |
-|  TX Quail Unlimited | 1990-2005 | 16  |
-|  TX Nat’l Wild Turkey Fed. | 1984-1990 | 7  |
-|  Coastal Conservation Ass’n | 1983-2004 | 22  |
-|  Total society items |  | 46  |
-|  Total collectable items |  | 304  |
+| Series                     | Duration  | # of Issues |
+| -------------------------- | --------- | ----------- |
+| White-winged dove hunting  | 1971-2004 | 34          |
+| Archery hunting            | 1975-2015 | 41          |
+| Waterfowl hunting          | 1981-2015 | 35          |
+| Freshwater trout fishing   | 1985-2003 | 19          |
+| Saltwater fishing          | 1985-2015 | 31          |
+| Nongame                    | 1985-2015 | 31          |
+| Wild turkey hunting        | 1991-2004 | 14          |
+| Muzzleloader hunting       | 1994-2003 | 10          |
+| Freshwater fishing         | 2004-2015 | 12          |
+| Upland game bird hunting   | 2005-2015 | 11          |
+| Total stamps               |           | 238         |
+| Collector booklets         | 1996-2015 | 20          |
+| Total state-issued items   |           | 258         |
+| Texas Black Bass Unlimited | 1987      | 1           |
+| TX Quail Unlimited         | 1990-2005 | 16          |
+| TX Nat’l Wild Turkey Fed.  | 1984-1990 | 7           |
+| Coastal Conservation Ass’n | 1983-2004 | 22          |
+| Total society items        |           | 46          |
+| Total collectable items    |           | 304         |
 
-* * * * *
+---
 
 ![img-7.jpeg](img-7.jpeg)
 
@@ -446,52 +446,52 @@ Wilson, Greg, 25
 
 ![img-36.jpeg](img-36.jpeg)
 
-|  Quantity | Price | Total  |
-| --- | --- | --- |
-|  No. 1 – California Pictorial Hunting & Fishing Licenses (2007) |  |   |
-|  Saddle-stitched binding | X $35.00 | = $  |
-|  Coil binding (opens flat) | X $37.00 | = $  |
-|  Black & White edition (color cover) | X $20.00 | = $  |
-|  No. 2 - Michigan Fish & Game Licenses & Club Badges, 2^{nd} Ed. (2010) |  |   |
-|  Saddle-stitched binding | X $35.00 | = $  |
-|  Coil binding (opens flat) | X $37.00 | = $  |
-|  Black & White edition (color cover) | X $20.00 | = $  |
-|  No. 3 – National Wildlife Federation® Christmas Stamps (2009) |  |   |
-|  Saddle-stitched binding | X $35.00 | = $  |
-|  Coil binding (opens flat) | X $37.00 | = $  |
-|  Hard Cover | X $45.00 | = $  |
-|  No. 4 – Voluntary Wildlife Conservation Stamps, Vol I – Gov’t Issues (2010) |  |   |
-|  Saddle-stitched binding | X $35.00 | = $  |
-|  Coil binding (opens flat) | X $37.00 | = $  |
-|  No. 5 – Pennsylvania Fishing License Badges & Patches (2011) |  |   |
-|  Saddle-stitched binding | X $35.00 | = $  |
-|  Coil binding (opens flat) | X $37.00 | = $  |
-|  Black & White edition (color cover) | X $20.00 | = $  |
-|  No. 6 – Catalog of State Fish & Game License Badges, Tokens & Tags, 2^{nd} Ed. (2015) |  |   |
-|  Saddle-stitched binding | X $35.00 | = $  |
-|  Coil binding (opens flat) | X $37.00 | = $  |
-|  Black & White edition (color cover) | X $20.00 | = $  |
-|  No. 7 – Nebraska Small Game, Fishing & Trapping Licenses, 1901-2009 (2015) |  |   |
-|  Perfect binding | X $65.00 | = $  |
-|  Coil binding (opens flat) | X $65.00 | = $  |
-|  Black & White edition (color cover) | X $25.00 | = $  |
-|  Hard Cover | X $80.00 | = $  |
-|  No. 8 – Texas Fish & Game Stamps (2018) |  |   |
-|  Saddle-stitched binding | X $35.00 | = $  |
-|  Coil binding (opens flat) | X $37.00 | = $  |
-|  Black & White edition (color cover) | X $20.00 | = $  |
-|  Hard Cover | X $45.00 | = $  |
-|  Eric Dolan & Bob Dumaine, The Duck Stamp Story, Krause Publications (2000) |  |   |
-|  Hard Cover | X $44.00 | = $  |
-|  Soft Cover | X $20.00 | = $  |
-|  Terence Hines, Old Home Week Seals (2012) |  |   |
-|  Saddle-stitched binding | X $25.00 | = $  |
-|  Terence Hines, A History of Postal Service in Hanover, New Hampshire Since 1761 (2016) |  |   |
-|  Perfect binding | X $50.00 | = $  |
-|  Coil binding (opens flat) | X $52.00 | = $  |
-|  Domestic shipping for first handbook (please email us for foreign shipping rates.) |  | $ 5.00  |
-|  Shipping for each additional handbook | X $ 2.00 | = $  |
-|  Total remitted by check or money order |  | $  |
+| Quantity                                                                               | Price    | Total  |
+| -------------------------------------------------------------------------------------- | -------- | ------ |
+| No. 1 – California Pictorial Hunting & Fishing Licenses (2007)                         |          |        |
+| Saddle-stitched binding                                                                | X $35.00 | = $    |
+| Coil binding (opens flat)                                                              | X $37.00 | = $    |
+| Black & White edition (color cover)                                                    | X $20.00 | = $    |
+| No. 2 - Michigan Fish & Game Licenses & Club Badges, 2^{nd} Ed. (2010)                 |          |        |
+| Saddle-stitched binding                                                                | X $35.00 | = $    |
+| Coil binding (opens flat)                                                              | X $37.00 | = $    |
+| Black & White edition (color cover)                                                    | X $20.00 | = $    |
+| No. 3 – National Wildlife Federation® Christmas Stamps (2009)                          |          |        |
+| Saddle-stitched binding                                                                | X $35.00 | = $    |
+| Coil binding (opens flat)                                                              | X $37.00 | = $    |
+| Hard Cover                                                                             | X $45.00 | = $    |
+| No. 4 – Voluntary Wildlife Conservation Stamps, Vol I – Gov’t Issues (2010)            |          |        |
+| Saddle-stitched binding                                                                | X $35.00 | = $    |
+| Coil binding (opens flat)                                                              | X $37.00 | = $    |
+| No. 5 – Pennsylvania Fishing License Badges & Patches (2011)                           |          |        |
+| Saddle-stitched binding                                                                | X $35.00 | = $    |
+| Coil binding (opens flat)                                                              | X $37.00 | = $    |
+| Black & White edition (color cover)                                                    | X $20.00 | = $    |
+| No. 6 – Catalog of State Fish & Game License Badges, Tokens & Tags, 2^{nd} Ed. (2015)  |          |        |
+| Saddle-stitched binding                                                                | X $35.00 | = $    |
+| Coil binding (opens flat)                                                              | X $37.00 | = $    |
+| Black & White edition (color cover)                                                    | X $20.00 | = $    |
+| No. 7 – Nebraska Small Game, Fishing & Trapping Licenses, 1901-2009 (2015)             |          |        |
+| Perfect binding                                                                        | X $65.00 | = $    |
+| Coil binding (opens flat)                                                              | X $65.00 | = $    |
+| Black & White edition (color cover)                                                    | X $25.00 | = $    |
+| Hard Cover                                                                             | X $80.00 | = $    |
+| No. 8 – Texas Fish & Game Stamps (2018)                                                |          |        |
+| Saddle-stitched binding                                                                | X $35.00 | = $    |
+| Coil binding (opens flat)                                                              | X $37.00 | = $    |
+| Black & White edition (color cover)                                                    | X $20.00 | = $    |
+| Hard Cover                                                                             | X $45.00 | = $    |
+| Eric Dolan & Bob Dumaine, The Duck Stamp Story, Krause Publications (2000)             |          |        |
+| Hard Cover                                                                             | X $44.00 | = $    |
+| Soft Cover                                                                             | X $20.00 | = $    |
+| Terence Hines, Old Home Week Seals (2012)                                              |          |        |
+| Saddle-stitched binding                                                                | X $25.00 | = $    |
+| Terence Hines, A History of Postal Service in Hanover, New Hampshire Since 1761 (2016) |          |        |
+| Perfect binding                                                                        | X $50.00 | = $    |
+| Coil binding (opens flat)                                                              | X $52.00 | = $    |
+| Domestic shipping for first handbook (please email us for foreign shipping rates.)     |          | $ 5.00 |
+| Shipping for each additional handbook                                                  | X $ 2.00 | = $    |
+| Total remitted by check or money order                                                 |          | $      |
 
 (Check/money order appreciated. Please visit www.PaperQuestPress.com to pay by credit card.)
 

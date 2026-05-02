@@ -34,8 +34,6 @@ $$e^{x}=1+\frac{x}{1!}+\frac{x^{2}}{2!}+\frac{x^{3}}{3!}+\ldots ,  -\infty x\inf
 
 And that is an equation by itself. Cheers\!
 
-
-
 Large operators and integrals are represented with n-ary objects in OMML XML:
 
 $$\sum_{0}^{2}{x}$$

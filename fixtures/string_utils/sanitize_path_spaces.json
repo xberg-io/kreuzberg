@@ -1,21 +1,19 @@
 {
-	"id": "sanitize_path_spaces",
-	"category": "string_utils",
-	"description": "Sanitize path with spaces",
-	"tags": [
-		"sanitization"
-	],
-	"call": "sanitize_path",
-	"input": {
-		"path": "my folder/file.txt"
-	},
-	"assertions": [
-		{
-			"type": "not_error"
-		}
-	],
-	"skip": {
-		"languages": [],
-		"reason": "Tests string_utils call surface that isn't re-exported at the kreuzberg crate root \u2014 skipped everywhere until Rust public API or codegen module path is updated."
-	}
+  "id": "sanitize_path_spaces",
+  "category": "string_utils",
+  "description": "Sanitize path with spaces",
+  "tags": ["sanitization"],
+  "call": "sanitize_path",
+  "input": {
+    "path": "my folder/file.txt"
+  },
+  "assertions": [
+    {
+      "type": "not_error"
+    }
+  ],
+  "skip": {
+    "languages": [],
+    "reason": "Tests string_utils call surface that isn't re-exported at the kreuzberg crate root \u2014 skipped everywhere until Rust public API or codegen module path is updated."
+  }
 }

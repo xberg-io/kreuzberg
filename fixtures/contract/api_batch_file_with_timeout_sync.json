@@ -1,24 +1,24 @@
 {
-	"id": "api_batch_file_with_timeout_sync",
-	"description": "Tests sync batch file extraction with per-file timeout config override",
-	"tags": ["contract", "api", "batch", "file_config", "timeout"],
-	"call": "batch_extract_file_sync",
-	"input": {
-		"path": "pdf/fake_memo.pdf",
-		"config": {
-			"extraction_timeout_secs": 300
-		}
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/pdf"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 10
-		}
-	]
+  "id": "api_batch_file_with_timeout_sync",
+  "description": "Tests sync batch file extraction with per-file timeout config override",
+  "tags": ["contract", "api", "batch", "file_config", "timeout"],
+  "call": "batch_extract_file_sync",
+  "input": {
+    "path": "pdf/fake_memo.pdf",
+    "config": {
+      "extraction_timeout_secs": 300
+    }
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/pdf"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 10
+    }
+  ]
 }

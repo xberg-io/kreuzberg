@@ -40,11 +40,11 @@ Kreuzberg runs as an HTTP REST API server (`kreuzberg serve`) or as an MCP serve
 
 Extract text from uploaded files via multipart form data.
 
-| Field | Required | Description |
-|-------|----------|-------------|
-| `files` | Yes (repeatable) | Files to extract |
-| `config` | No | JSON config overrides |
-| `output_format` | No | `plain` (default), `markdown`, `djot`, or `html` |
+| Field           | Required         | Description                                      |
+| --------------- | ---------------- | ------------------------------------------------ |
+| `files`         | Yes (repeatable) | Files to extract                                 |
+| `config`        | No               | JSON config overrides                            |
+| `output_format` | No               | `plain` (default), `markdown`, `djot`, or `html` |
 
 ```bash title="Terminal"
 # Single file
@@ -77,10 +77,10 @@ curl -F "files=@scanned.pdf" \
 
 Generate vector embeddings. Requires the `embeddings` feature.
 
-| Field | Required | Description |
-|-------|----------|-------------|
-| `texts` | Yes | Array of strings |
-| `config` | No | Embedding config overrides |
+| Field    | Required | Description                |
+| -------- | -------- | -------------------------- |
+| `texts`  | Yes      | Array of strings           |
+| `config` | No       | Embedding config overrides |
 
 ```bash title="Terminal"
 curl -X POST http://localhost:8000/embed \
@@ -88,23 +88,23 @@ curl -X POST http://localhost:8000/embed \
   -d '{"texts":["Hello world","Second text"]}'
 ```
 
-| Preset | Dimensions | Model |
-|--------|-----------|-------|
-| `fast` | 384 | AllMiniLML6V2Q |
-| `balanced` (default) | 768 | BGEBaseENV15 |
-| `quality` | 1024 | BGELargeENV15 |
-| `multilingual` | 768 | MultilingualE5Base |
+| Preset               | Dimensions | Model              |
+| -------------------- | ---------- | ------------------ |
+| `fast`               | 384        | AllMiniLML6V2Q     |
+| `balanced` (default) | 768        | BGEBaseENV15       |
+| `quality`            | 1024       | BGELargeENV15      |
+| `multilingual`       | 768        | MultilingualE5Base |
 
 #### POST /chunk
 
 Chunk text for RAG pipelines.
 
-| Field | Required | Description |
-|-------|----------|-------------|
-| `text` | Yes | Text to chunk |
-| `chunker_type` | No | `"text"` (default), `"markdown"`, `"yaml"`, or `"semantic"` |
-| `config.max_characters` | No | Max chars per chunk (default: 2000) |
-| `config.overlap` | No | Overlap between chunks (default: 100) |
+| Field                   | Required | Description                                                 |
+| ----------------------- | -------- | ----------------------------------------------------------- |
+| `text`                  | Yes      | Text to chunk                                               |
+| `chunker_type`          | No       | `"text"` (default), `"markdown"`, `"yaml"`, or `"semantic"` |
+| `config.max_characters` | No       | Max chars per chunk (default: 2000)                         |
+| `config.overlap`        | No       | Overlap between chunks (default: 100)                       |
 
 ```bash title="Terminal"
 curl -X POST http://localhost:8000/chunk \
@@ -146,16 +146,16 @@ Extract typed JSON from a document by running an LLM against the extracted text 
 
 The request is `multipart/form-data`.
 
-| Field | Required | Description |
-|-------|----------|-------------|
-| `file` (or `files`) | Yes | The document to extract from |
-| `schema` | Yes | JSON Schema string describing the structured output |
-| `model` | Yes | LLM model identifier, for example `openai/gpt-4o` or `anthropic/claude-sonnet-4-20250514` |
-| `api_key` | No | LLM provider API key. Falls back to provider env vars (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, ...) |
-| `prompt` | No | Custom Jinja2 prompt template overriding the default |
-| `schema_name` | No | Schema identifier (default: `extraction`) |
-| `strict` | No | `"true"` / `"false"` — enable OpenAI strict mode for exact schema matching |
-| `config` | No | Extraction config overrides as a JSON string |
+| Field               | Required | Description                                                                                        |
+| ------------------- | -------- | -------------------------------------------------------------------------------------------------- |
+| `file` (or `files`) | Yes      | The document to extract from                                                                       |
+| `schema`            | Yes      | JSON Schema string describing the structured output                                                |
+| `model`             | Yes      | LLM model identifier, for example `openai/gpt-4o` or `anthropic/claude-sonnet-4-20250514`          |
+| `api_key`           | No       | LLM provider API key. Falls back to provider env vars (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, ...) |
+| `prompt`            | No       | Custom Jinja2 prompt template overriding the default                                               |
+| `schema_name`       | No       | Schema identifier (default: `extraction`)                                                          |
+| `strict`            | No       | `"true"` / `"false"` — enable OpenAI strict mode for exact schema matching                         |
+| `config`            | No       | Extraction config overrides as a JSON string                                                       |
 
 ```bash title="Terminal"
 curl -X POST http://localhost:8000/extract-structured \
@@ -170,7 +170,7 @@ curl -X POST http://localhost:8000/extract-structured \
 {
   "structured_output": {
     "invoice_number": "INV-2026-0142",
-    "total": 1284.50
+    "total": 1284.5
   },
   "content": "Invoice INV-2026-0142...",
   "mime_type": "application/pdf"
@@ -181,17 +181,17 @@ Errors follow the same shape as `/extract`. A `501` body indicates the server wa
 
 #### Other Endpoints
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/health` | GET | `{"status":"healthy","version":"4.6.3"}` |
-| `/version` | GET | `{"version":"4.6.3"}` <span class="version-badge">v4.5.2</span> |
-| `/detect` | POST | MIME type detection (multipart) <span class="version-badge">v4.5.2</span> |
-| `/cache/stats` | GET | Cache statistics |
-| `/cache/warm` | POST | Pre-download models <span class="version-badge">v4.5.2</span> |
-| `/cache/manifest` | GET | Model manifest with checksums <span class="version-badge">v4.5.2</span> |
-| `/cache/clear` | DELETE | Clear all cached files |
-| `/info` | GET | `{"version":"...","rust_backend":true}` |
-| `/openapi.json` | GET | OpenAPI 3.0 schema |
+| Endpoint          | Method | Description                                                               |
+| ----------------- | ------ | ------------------------------------------------------------------------- |
+| `/health`         | GET    | `{"status":"healthy","version":"4.6.3"}`                                  |
+| `/version`        | GET    | `{"version":"4.6.3"}` <span class="version-badge">v4.5.2</span>           |
+| `/detect`         | POST   | MIME type detection (multipart) <span class="version-badge">v4.5.2</span> |
+| `/cache/stats`    | GET    | Cache statistics                                                          |
+| `/cache/warm`     | POST   | Pre-download models <span class="version-badge">v4.5.2</span>             |
+| `/cache/manifest` | GET    | Model manifest with checksums <span class="version-badge">v4.5.2</span>   |
+| `/cache/clear`    | DELETE | Clear all cached files                                                    |
+| `/info`           | GET    | `{"version":"...","rust_backend":true}`                                   |
+| `/openapi.json`   | GET    | OpenAPI 3.0 schema                                                        |
 
 ### Client Examples
 
@@ -233,11 +233,11 @@ Errors follow the same shape as `/extract`. A `501` body indicates the server wa
 }
 ```
 
-| Status | Error type | Meaning |
-|--------|-----------|---------|
-| 400 | `ValidationError` | Invalid input |
-| 422 | `ParsingError`, `OcrError` | Processing failed |
-| 500 | Internal errors | Server errors |
+| Status | Error type                 | Meaning           |
+| ------ | -------------------------- | ----------------- |
+| 400    | `ValidationError`          | Invalid input     |
+| 422    | `ParsingError`, `OcrError` | Processing failed |
+| 500    | Internal errors            | Server errors     |
 
 === "Python"
 
@@ -271,10 +271,10 @@ Errors follow the same shape as `/extract`. A `501` body indicates the server wa
 
 The server discovers `kreuzberg.toml` in the current and parent directories. Pass `--config path/to/file` to use a different file.
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `KREUZBERG_MAX_UPLOAD_SIZE_MB` | `100` | Max upload size in MB |
-| `KREUZBERG_CORS_ORIGINS` | `*` | Comma-separated allowed origins |
+| Variable                       | Default | Description                     |
+| ------------------------------ | ------- | ------------------------------- |
+| `KREUZBERG_MAX_UPLOAD_SIZE_MB` | `100`   | Max upload size in MB           |
+| `KREUZBERG_CORS_ORIGINS`       | `*`     | Comma-separated allowed origins |
 
 !!! Warning Default CORS allows all origins. Set `KREUZBERG_CORS_ORIGINS` explicitly in production.
 
@@ -321,21 +321,21 @@ kreuzberg mcp --config kreuzberg.toml
 
 ### Tools
 
-| Tool | Key parameters | Description |
-|------|----------------|-------------|
-| `extract_file` | `path` | Extract from file path |
-| `extract_bytes` | `data` (base64) | Extract from encoded bytes |
-| `batch_extract_files` | `paths` | Extract multiple files |
-| `detect_mime_type` | `path` | Detect file format |
-| `list_formats` | — | List supported formats <span class="version-badge">v4.5.2</span> |
-| `get_version` | — | Library version <span class="version-badge">v4.5.2</span> |
-| `cache_stats` | — | Cache usage |
-| `cache_clear` | — | Remove cached files |
-| `cache_manifest` | — | Model checksums <span class="version-badge">v4.5.2</span> |
-| `cache_warm` | — | Pre-download models <span class="version-badge">v4.5.2</span> |
-| `embed_text` | `texts` | Generate embeddings <span class="version-badge">v4.5.2</span> |
-| `chunk_text` | `text` | Split text <span class="version-badge">v4.5.2</span> |
-| `extract_structured` | `path`, `schema`, `model`; optional `schema_name` (default `"extraction"`), `schema_description`, `prompt`, `api_key`, `strict` (default `false`) | Extract structured JSON via LLM <span class="version-badge">v4.8.0</span> |
+| Tool                  | Key parameters                                                                                                                                    | Description                                                               |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `extract_file`        | `path`                                                                                                                                            | Extract from file path                                                    |
+| `extract_bytes`       | `data` (base64)                                                                                                                                   | Extract from encoded bytes                                                |
+| `batch_extract_files` | `paths`                                                                                                                                           | Extract multiple files                                                    |
+| `detect_mime_type`    | `path`                                                                                                                                            | Detect file format                                                        |
+| `list_formats`        | —                                                                                                                                                 | List supported formats <span class="version-badge">v4.5.2</span>          |
+| `get_version`         | —                                                                                                                                                 | Library version <span class="version-badge">v4.5.2</span>                 |
+| `cache_stats`         | —                                                                                                                                                 | Cache usage                                                               |
+| `cache_clear`         | —                                                                                                                                                 | Remove cached files                                                       |
+| `cache_manifest`      | —                                                                                                                                                 | Model checksums <span class="version-badge">v4.5.2</span>                 |
+| `cache_warm`          | —                                                                                                                                                 | Pre-download models <span class="version-badge">v4.5.2</span>             |
+| `embed_text`          | `texts`                                                                                                                                           | Generate embeddings <span class="version-badge">v4.5.2</span>             |
+| `chunk_text`          | `text`                                                                                                                                            | Split text <span class="version-badge">v4.5.2</span>                      |
+| `extract_structured`  | `path`, `schema`, `model`; optional `schema_name` (default `"extraction"`), `schema_description`, `prompt`, `api_key`, `strict` (default `false`) | Extract structured JSON via LLM <span class="version-badge">v4.8.0</span> |
 
 All tools accept an optional `config` object. `extract_file` and `extract_bytes` also accept `pdf_password`. `extract_structured` requires the server to be built with the `liter-llm` feature; see the row above for optional fields and defaults.
 

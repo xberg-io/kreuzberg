@@ -1,30 +1,26 @@
 {
-	"id": "pdf_assembly_technical",
-	"category": "pdf",
-	"description": "Assembly language technical manual with large body of text.",
-	"input": {
-		"path": "pdf/assembly_language_for_beginners_al4_b_en.pdf",
-		"media_type": "application/pdf"
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/pdf"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 5000
-		},
-		{
-			"type": "contains_any",
-			"field": "content",
-			"values": [
-				"assembly",
-				"register",
-				"instruction"
-			]
-		}
-	]
+  "id": "pdf_assembly_technical",
+  "category": "pdf",
+  "description": "Assembly language technical manual with large body of text.",
+  "input": {
+    "path": "pdf/assembly_language_for_beginners_al4_b_en.pdf",
+    "media_type": "application/pdf"
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/pdf"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 5000
+    },
+    {
+      "type": "contains_any",
+      "field": "content",
+      "values": ["assembly", "register", "instruction"]
+    }
+  ]
 }

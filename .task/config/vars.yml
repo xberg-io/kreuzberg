@@ -7,7 +7,7 @@ vars:
     sh: grep -m 1 'version = ' Cargo.toml | sed 's/version = "\(.*\)"/\1/'
 
   # Build profile (dev/release/ci) - default to release
-  BUILD_PROFILE: "{{.BUILD_PROFILE | default \"release\"}}"
+  BUILD_PROFILE: '{{.BUILD_PROFILE | default "release"}}'
 
   # Kreuzberg-specific versions
   PDFIUM_VERSION: "7678"

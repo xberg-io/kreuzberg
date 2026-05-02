@@ -3,9 +3,7 @@
 - A second
 
 - A third
-
   - New level!
-
     - And another!
     - It's great up here!
 

@@ -1,21 +1,17 @@
 {
-	"id": "embedding_backend_lifecycle",
-	"category": "embedding_backend_management",
-	"description": "List/clear lifecycle for embedding backends; asserts the registry surface exists and empty-state operations are non-erroring",
-	"tags": [
-		"embedding_backend",
-		"plugin_management",
-		"lifecycle"
-	],
-	"call": "list_embedding_backends",
-	"input": {},
-	"assertions": [
-		{
-			"type": "not_error"
-		}
-	],
-	"skip": {
-		"languages": [],
-		"reason": "Tests plugin_api call surface that isn't re-exported at the kreuzberg crate root \u2014 skipped everywhere until Rust public API or codegen module path is updated."
-	}
+  "id": "embedding_backend_lifecycle",
+  "category": "embedding_backend_management",
+  "description": "List/clear lifecycle for embedding backends; asserts the registry surface exists and empty-state operations are non-erroring",
+  "tags": ["embedding_backend", "plugin_management", "lifecycle"],
+  "call": "list_embedding_backends",
+  "input": {},
+  "assertions": [
+    {
+      "type": "not_error"
+    }
+  ],
+  "skip": {
+    "languages": [],
+    "reason": "Tests plugin_api call surface that isn't re-exported at the kreuzberg crate root \u2014 skipped everywhere until Rust public API or codegen module path is updated."
+  }
 }

@@ -84,28 +84,28 @@ Date
 
 Citv
 
-| preference   | Applied   | Accepted   |
-|--------------|-----------|------------|
+| preference | Applied | Accepted |
+| ---------- | ------- | -------- |
 
 High School Sponsored Activities (Clubs, Athletics, Band, JROTC, Etc)
 
-| Name   | Yr 09   | Yr 10   | Yr 11   | Yr 12   | Description of how honor was earned   | Description of how honor was earned   | Description of how honor was earned   | Description of how honor was earned   | Description of how honor was earned   | Description of how honor was earned   | Description of how honor was earned   | Description of how honor was earned   | Description of how honor was earned   | Description of how honor was earned   | Description of how honor was earned   | Description of how honor was earned   | Description of how honor was earned   | Description of how honor was earned   |
-|--------|---------|---------|---------|---------|---------------------------------------|---------------------------------------|---------------------------------------|---------------------------------------|---------------------------------------|---------------------------------------|---------------------------------------|---------------------------------------|---------------------------------------|---------------------------------------|---------------------------------------|---------------------------------------|---------------------------------------|---------------------------------------|
+| Name | Yr 09 | Yr 10 | Yr 11 | Yr 12 | Description of how honor was earned | Description of how honor was earned | Description of how honor was earned | Description of how honor was earned | Description of how honor was earned | Description of how honor was earned | Description of how honor was earned | Description of how honor was earned | Description of how honor was earned | Description of how honor was earned | Description of how honor was earned | Description of how honor was earned | Description of how honor was earned | Description of how honor was earned |
+| ---- | ----- | ----- | ----- | ----- | ----------------------------------- | ----------------------------------- | ----------------------------------- | ----------------------------------- | ----------------------------------- | ----------------------------------- | ----------------------------------- | ----------------------------------- | ----------------------------------- | ----------------------------------- | ----------------------------------- | ----------------------------------- | ----------------------------------- | ----------------------------------- |
 
 Academic Honors or Other Achievements
 
-| Name   | Yr 09   | Yr 10   | Yr 11   | Yr 12   | Description of how honor was earned   |
-|--------|---------|---------|---------|---------|---------------------------------------|
+| Name | Yr 09 | Yr 10 | Yr 11 | Yr 12 | Description of how honor was earned |
+| ---- | ----- | ----- | ----- | ----- | ----------------------------------- |
 
 Employment
 
-| Name   | Yr 09   | Yr 10   | Yr 11   | Yr 12   | Average Hours per Week/per Year   | Average Hours per Week/per Year   | Average Hours per Week/per Year   | Average Hours per Week/per Year   | Average Hours per Week/per Year   | Average Hours per Week/per Year   |
-|--------|---------|---------|---------|---------|-----------------------------------|-----------------------------------|-----------------------------------|-----------------------------------|-----------------------------------|-----------------------------------|
+| Name | Yr 09 | Yr 10 | Yr 11 | Yr 12 | Average Hours per Week/per Year | Average Hours per Week/per Year | Average Hours per Week/per Year | Average Hours per Week/per Year | Average Hours per Week/per Year | Average Hours per Week/per Year |
+| ---- | ----- | ----- | ----- | ----- | ------------------------------- | ------------------------------- | ------------------------------- | ------------------------------- | ------------------------------- | ------------------------------- |
 
 Community Activities
 
-| Scouts, DeMolay, Rainbow Religious Etc.   | Yr 09   | Yr 10   | Yr 11   | Yr 12   | Average Hours per Week/per Year   |
-|-------------------------------------------|---------|---------|---------|---------|-----------------------------------|
+| Scouts, DeMolay, Rainbow Religious Etc. | Yr 09 | Yr 10 | Yr 11 | Yr 12 | Average Hours per Week/per Year |
+| --------------------------------------- | ----- | ----- | ----- | ----- | ------------------------------- |
 
 Scholarship Application Deadline is April 15 th 2020
 

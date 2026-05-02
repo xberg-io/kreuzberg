@@ -18,7 +18,7 @@ Welcome! Here's how to get started:
 Congratulations — that's really all it takes to start contributing! Fork, fix, and open a PR. We keep the process simple so you can focus on what matters: the code.
 
 !!! Tip
-    Start small. A focused contribution you understand well is more valuable than an ambitious one that stalls.
+Start small. A focused contribution you understand well is more valuable than an ambitious one that stalls.
 
 Want to propose a larger change or new feature? [Open an issue](https://github.com/kreuzberg-dev/kreuzberg/issues) to discuss it with maintainers first.
 
@@ -40,17 +40,17 @@ You only need the toolchains for the areas you plan to work on.
 
 **Language-specific toolchains** (only install what you need):
 
-| Language | Version | Tool |
-|----------|---------|------|
-| Python | 3.10+ | [`uv`](https://docs.astral.sh/uv/) |
-| Node.js | 20+ | [`pnpm`](https://pnpm.io/) |
-| Ruby | 3.2+ | `rbenv` or `rvm` |
-| Go | 1.26+ | [Official installer](https://go.dev/dl/) |
-| Java | 25+ | JDK (via [sdkman](https://sdkman.io/)) |
-| .NET | 10+ | `dotnet` |
-| PHP | 8.1+ | `composer` |
-| Elixir | 1.14+ | `mix` (OTP 25+) |
-| R | 4.1+ | [CRAN](https://cran.r-project.org/) |
+| Language | Version | Tool                                     |
+| -------- | ------- | ---------------------------------------- |
+| Python   | 3.10+   | [`uv`](https://docs.astral.sh/uv/)       |
+| Node.js  | 20+     | [`pnpm`](https://pnpm.io/)               |
+| Ruby     | 3.2+    | `rbenv` or `rvm`                         |
+| Go       | 1.26+   | [Official installer](https://go.dev/dl/) |
+| Java     | 25+     | JDK (via [sdkman](https://sdkman.io/))   |
+| .NET     | 10+     | `dotnet`                                 |
+| PHP      | 8.1+    | `composer`                               |
+| Elixir   | 1.14+   | `mix` (OTP 25+)                          |
+| R        | 4.1+    | [CRAN](https://cran.r-project.org/)      |
 
 For platform-specific build dependencies (compilers, OpenSSL, etc.), see the [Installation guide](getting-started/installation.md).
 
@@ -146,7 +146,7 @@ Include: what you expected, what happened (with error output), steps to reproduc
 Search for existing issues first. Describe the use case and keep scope focused — break large ideas into smaller, actionable issues.
 
 !!! Tip "Filing great issues"
-    Be specific: "PDF tables lose column alignment" is better than "PDF parsing is broken." Explain impact and link related issues with `#123`.
+Be specific: "PDF tables lose column alignment" is better than "PDF parsing is broken." Explain impact and link related issues with `#123`.
 
 ---
 
@@ -157,6 +157,7 @@ Search for existing issues first. Describe the use case and keep scope focused �
 Before opening a PR, verify locally:
 
 <!-- textlint-disable no-todo -->
+
 - [ ] `task check` passes
 - [ ] Targeted tests pass
 - [ ] Docs updated (if applicable)
@@ -168,7 +169,7 @@ Before opening a PR, verify locally:
 Include **what** changed, **why**, and **how** you tested it. Use `Fixes #123` to auto-close related issues.
 
 !!! Tip
-    Set your PR to **Draft** while it's in progress. Maintainers may leave early comments but won't do a full review until you mark it ready.
+Set your PR to **Draft** while it's in progress. Maintainers may leave early comments but won't do a full review until you mark it ready.
 
 ### Review and merge
 
@@ -180,7 +181,7 @@ Include **what** changed, **why**, and **how** you tested it. Use `Fixes #123` t
 **Merge requirements:** all CI checks pass, at least one maintainer approval, no unresolved conversations, branch up to date with `main`.
 
 !!! Info
-    Don't worry about failing CI on your first PR. Maintainers will help you resolve issues.
+Don't worry about failing CI on your first PR. Maintainers will help you resolve issues.
 
 ---
 
@@ -188,19 +189,19 @@ Include **what** changed, **why**, and **how** you tested it. Use `Fixes #123` t
 
 Kreuzberg ships six GitHub Actions workflows under `.github/workflows/`. The first two run automatically on contributor PRs; the rest are manual or release-driven and contributors do not need to invoke them.
 
-| Workflow | Trigger | What it does |
-|----------|---------|--------------|
-| `ci.yaml` | Push to `main`, every PR | Clippy, fmt, unit + integration tests, type checks for the Python and TypeScript bindings. Runs on `ubuntu-24.04-arm`. This is the canonical "PR is mergeable" check. |
-| `docs.yaml` | Push/PR touching `docs/**`, manual dispatch | Builds the docs site in strict mode, validates `--8<--` snippet includes, runs prose linting, and deploys to GitHub Pages from `main`. |
-| `publish.yaml` | Manual dispatch, GitHub release event | Publishes to PyPI, npm, crates.io, Docker Hub, Homebrew, and other registries. Not run on PRs. |
-| `publish-docker.yaml` | Manual dispatch, GitHub release event | Builds and publishes the Kreuzberg Docker images. |
-| `benchmarks.yaml` | Manual dispatch only | Three-iteration performance run with quality metrics on `ubuntu-24.04-arm`. Used to compare proposed changes against `main`. |
-| `profiling.yaml` | Manual dispatch only | Generates flamegraphs for six fixture types (small/medium PDFs, simple DOCX, and others) for performance investigations. |
+| Workflow              | Trigger                                     | What it does                                                                                                                                                          |
+| --------------------- | ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ci.yaml`             | Push to `main`, every PR                    | Clippy, fmt, unit + integration tests, type checks for the Python and TypeScript bindings. Runs on `ubuntu-24.04-arm`. This is the canonical "PR is mergeable" check. |
+| `docs.yaml`           | Push/PR touching `docs/**`, manual dispatch | Builds the docs site in strict mode, validates `--8<--` snippet includes, runs prose linting, and deploys to GitHub Pages from `main`.                                |
+| `publish.yaml`        | Manual dispatch, GitHub release event       | Publishes to PyPI, npm, crates.io, Docker Hub, Homebrew, and other registries. Not run on PRs.                                                                        |
+| `publish-docker.yaml` | Manual dispatch, GitHub release event       | Builds and publishes the Kreuzberg Docker images.                                                                                                                     |
+| `benchmarks.yaml`     | Manual dispatch only                        | Three-iteration performance run with quality metrics on `ubuntu-24.04-arm`. Used to compare proposed changes against `main`.                                          |
+| `profiling.yaml`      | Manual dispatch only                        | Generates flamegraphs for six fixture types (small/medium PDFs, simple DOCX, and others) for performance investigations.                                              |
 
 ### Reading workflow failures
 
 !!! Note
-    Please run checks locally before you open a PR. For example `task check` plus tests for any language bindings you touched (see the [Development Workflow](guides/development.md) guide for common commands). That catches most CI failures faster than iterating on GitHub alone.
+Please run checks locally before you open a PR. For example `task check` plus tests for any language bindings you touched (see the [Development Workflow](guides/development.md) guide for common commands). That catches most CI failures faster than iterating on GitHub alone.
 
 Open the failing PR's **Checks** tab and click into the failing job to expand its log. The job name maps directly to the step in `ci.yaml` that failed (for example, `clippy` or `python-test`). To re-run after pushing a fix, GitHub Actions will pick the new commit up automatically; to re-run without a new commit (for flakes), use the **Re-run failed jobs** button at the top right of the workflow run page.
 

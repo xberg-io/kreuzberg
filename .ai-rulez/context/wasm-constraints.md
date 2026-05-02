@@ -48,10 +48,10 @@ const MAX_HTML_SIZE: usize = 2 * 1024 * 1024;  // 2MB - stack constraint
 ### 4. PDFium Initialization (from JS)
 
 ```typescript
-import init, { initialize_pdfium_render } from './kreuzberg_wasm.js';
+import init, { initialize_pdfium_render } from "./kreuzberg_wasm.js";
 const wasm = await init();
 const pdfium = await pdfiumModule();
-initialize_pdfium_render(pdfium, wasm, false);  // REQUIRED for PDF
+initialize_pdfium_render(pdfium, wasm, false); // REQUIRED for PDF
 ```
 
 ## Build Config

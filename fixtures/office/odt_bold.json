@@ -1,21 +1,21 @@
 {
-	"id": "office_odt_bold",
-	"category": "office",
-	"description": "ODT document with bold formatting.",
-	"input": {
-		"path": "odt/bold.odt",
-		"media_type": "application/vnd.oasis.opendocument.text"
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/vnd.oasis.opendocument.text"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 10
-		}
-	]
+  "id": "office_odt_bold",
+  "category": "office",
+  "description": "ODT document with bold formatting.",
+  "input": {
+    "path": "odt/bold.odt",
+    "media_type": "application/vnd.oasis.opendocument.text"
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/vnd.oasis.opendocument.text"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 10
+    }
+  ]
 }

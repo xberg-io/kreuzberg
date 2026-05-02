@@ -1,22 +1,22 @@
 {
-	"id": "office_ppsx_slideshow",
-	"category": "office",
-	"description": "PPSX (PowerPoint Show) files should extract slides content identical to PPTX. GitHub Issue #321 Bug 2.",
-	"tags": ["regression", "issue-321"],
-	"input": {
-		"path": "pptx/sample.ppsx",
-		"media_type": "application/vnd.openxmlformats-officedocument.presentationml.slideshow"
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/vnd.openxmlformats-officedocument.presentationml.slideshow"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 10
-		}
-	]
+  "id": "office_ppsx_slideshow",
+  "category": "office",
+  "description": "PPSX (PowerPoint Show) files should extract slides content identical to PPTX. GitHub Issue #321 Bug 2.",
+  "tags": ["regression", "issue-321"],
+  "input": {
+    "path": "pptx/sample.ppsx",
+    "media_type": "application/vnd.openxmlformats-officedocument.presentationml.slideshow"
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/vnd.openxmlformats-officedocument.presentationml.slideshow"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 10
+    }
+  ]
 }

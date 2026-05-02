@@ -13,13 +13,13 @@ ER
 **Accepted:** 8 March 2006
 
 Marie Gee Wilson
-*The University of Auckland Business School, Auckland, New Zealand*
+_The University of Auckland Business School, Auckland, New Zealand_
 
 Andrea Polzer-Debruyne
-*Department of Psychology, Massey University – Albany, NSMC, Auckland, New Zealand, and*
+_Department of Psychology, Massey University – Albany, NSMC, Auckland, New Zealand, and_
 
 Sophie Chen and Sonia Fernandes
-*The University of Auckland Business School, Auckland, New Zealand*
+_The University of Auckland Business School, Auckland, New Zealand_
 
 Abstract
 
@@ -210,11 +210,11 @@ The multivariate analysis results are also less pronounced for FWC; only the int
 For FWC, however, significant differences are found between the control and the family training site post-intervention (t(162) = -5.714, p < 0.01, n2 = 0.42), consistent with the interaction effect of training and family involvement. Taken together, the survey results suggest that involving the family in training and development focused on a broader range of relevant behaviours, rather than physiological aspects alone, improves outcomes in both FWC and WFC for shift workers.
 
 | Effects/variables (within subject) | Multivariate F (n = 432) | Uni-variate F (n = 432) |
-| --- | --- | --- |
-| Training | 6.988** df = 1 | 23.112** df = 1 |
-| Family nvolvement | 5.820** df = 1 | 18.749** df = 1 |
-| Training x family involvement | 16.334** df = 2 | 13.709* df = 2 |
-| Notes: *p <0.05; **p <0.01 |  |  |
+| ---------------------------------- | ------------------------ | ----------------------- |
+| Training                           | 6.988\*\* df = 1         | 23.112\*\* df = 1       |
+| Family nvolvement                  | 5.820\*\* df = 1         | 18.749\*\* df = 1       |
+| Training x family involvement      | 16.334\*\* df = 2        | 13.709\* df = 2         |
+| Notes: \*p <0.05; \*\*p <0.01      |                          |                         |
 
 **Table I.**
 MANOVA: effect of work-life training and family involvement on WFC
@@ -243,11 +243,11 @@ Respondents across all three sites at the beginning of the study expressed that 
 The number of positive comments made after the intervention remained the same for Site A, while it decreased for Site B ( – 5.4 per cent) and increased at Site C (+12 per cent). Overall, the number of negative impacts listed declined by about 50 per cent in the two family oriented training conditions (Sites B and C) when measured for the second time. The overall decrease in negative impacts reported for Site A, with the health-only training, was only 5.4 per cent. In particular, tiredness decreased across all three sites. In all conditions, being “out-of-sync" with the family and missing important family events were also mentioned less than in the time before the interventions. Going against this trend, at Site B the number of comments related to no or disrupted social life increased by 13.5 per cent (see Table III).
 
 | Effects/variables (within subject) | Multivariate F (n = 432) | Uni-variate F (n = 432) |
-| --- | --- | --- |
-| Training | 1.55, ns df = 1 | 1.42, ns df = 1 |
-| Family involvement | 1.99, ns df = 1 | 1.07, ns df = 1 |
-| Training x family involvement | 2.998* df = 2 | 2.10, ns df = 2 |
-| Notes: *p<0.05; **p <0.01 |  |  |
+| ---------------------------------- | ------------------------ | ----------------------- |
+| Training                           | 1.55, ns df = 1          | 1.42, ns df = 1         |
+| Family involvement                 | 1.99, ns df = 1          | 1.07, ns df = 1         |
+| Training x family involvement      | 2.998\* df = 2           | 2.10, ns df = 2         |
+| Notes: \*p<0.05; \*\*p <0.01       |                          |                         |
 
 **Table II.**
 MANOVA: Effect of work-life training and family involvement on FWC
@@ -257,20 +257,20 @@ interventions
 
 171
 
-|  | Site A before/after no. of comments | Site B before/after no. of comments | Site C before/after no. of comments |
-| --- | --- | --- | --- |
-| WFC – positive: |  |  |  |
-| Able to have good standard of living | 101/98 | 110/104 | 120/122 |
-| Longer periods of time off with family | 68/70 | 75/71 | 74/84 |
-| Total | 169/169 | 185/175 | 194/206 |
-| Change in % | +/- 0% | - 5.4% | +12% |
-| WFC - negative: |  |  |  |
-| Feeling tired and grouchy | 81/76 | 90/65 | 101/62 |
-| Out of synch with family; off cycle | 65/60 | 60/55 | 52/38 |
-| No or disrupted social life | 42/38 | 37/41 | 66/47 |
-| Missed family events | 36/38 | 24/20 | 51/28 |
-| Total | 224/212 | 211/181 | 270/175 |
-| Change in % | - 5.4% | - 14.2% | - 35.3% |
+|                                        | Site A before/after no. of comments | Site B before/after no. of comments | Site C before/after no. of comments |
+| -------------------------------------- | ----------------------------------- | ----------------------------------- | ----------------------------------- |
+| WFC – positive:                        |                                     |                                     |                                     |
+| Able to have good standard of living   | 101/98                              | 110/104                             | 120/122                             |
+| Longer periods of time off with family | 68/70                               | 75/71                               | 74/84                               |
+| Total                                  | 169/169                             | 185/175                             | 194/206                             |
+| Change in %                            | +/- 0%                              | - 5.4%                              | +12%                                |
+| WFC - negative:                        |                                     |                                     |                                     |
+| Feeling tired and grouchy              | 81/76                               | 90/65                               | 101/62                              |
+| Out of synch with family; off cycle    | 65/60                               | 60/55                               | 52/38                               |
+| No or disrupted social life            | 42/38                               | 37/41                               | 66/47                               |
+| Missed family events                   | 36/38                               | 24/20                               | 51/28                               |
+| Total                                  | 224/212                             | 211/181                             | 270/175                             |
+| Change in %                            | - 5.4%                              | - 14.2%                             | - 35.3%                             |
 
 **Table III.**
 Frequencies and changes in WFC-related comments before and after the interventions
@@ -289,14 +289,14 @@ The 244 total responses received at Time 1 for these questions (222 at Time 2) w
 
 The number of positive comments made increased across all three conditions from 20 per cent at Site A to 48.4 per cent at Site B and even 108 per cent at Site C. However, the most striking difference across conditions and time was the reduction in listing of family arguments that carried over into work from the first to second measurement, particularly in the training scenario including the family. While this was reduced in all conditions (-15 per cent at Site A, 54.6 per cent at Site B), it disappeared entirely from the family training scenario (Site C) across the measurement period. Of the respondents, seven specifically noted that completing the training with their partners meant that they now approached this as a problem to be solved, and they felt that they were working together more effectively with balancing work and family commitments than they ever had before. These results are summarised in Table IV.
 
-|  | Site A before/after no. of comments | Site B before/after no. of comments | Site C before/after no. of comments |
-| --- | --- | --- | --- |
-| FWC - positive: |  |  |  |
-| Family supports and understands | 25/30 | 31/46 | 36/75 |
-| Change in % | +5% | +48.4% | +108% |
-| FWC – negative: |  |  |  |
-| Fights about work schedule | 60/51 | 44/20 | 48/0 |
-| Change in % | -15% | - 54.6% | - 100% |
+|                                 | Site A before/after no. of comments | Site B before/after no. of comments | Site C before/after no. of comments |
+| ------------------------------- | ----------------------------------- | ----------------------------------- | ----------------------------------- |
+| FWC - positive:                 |                                     |                                     |                                     |
+| Family supports and understands | 25/30                               | 31/46                               | 36/75                               |
+| Change in %                     | +5%                                 | +48.4%                              | +108%                               |
+| FWC – negative:                 |                                     |                                     |                                     |
+| Fights about work schedule      | 60/51                               | 44/20                               | 48/0                                |
+| Change in %                     | -15%                                | - 54.6%                             | - 100%                              |
 
 **Table IV.**
 Frequencies and changes in WFC-related comments before and after the interventions

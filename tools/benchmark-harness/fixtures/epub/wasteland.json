@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/epub/wasteland.epub",
   "file_type": "epub",
   "file_size": 25840,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "EPUB test document: wasteland",
     "source": "pandoc-generated",

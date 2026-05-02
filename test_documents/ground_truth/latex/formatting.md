@@ -4,12 +4,12 @@ This is normal text.
 
 **This is bold text.**
 
-*This is italic text.*
+_This is italic text._
 
-__This is underlined text.__
+**This is underlined text.**
 
-*This is emphasized text.*
+_This is emphasized text._
 
 `This is monospace text.`
 
-You can also combine formatting: *bold and italic*.
+You can also combine formatting: _bold and italic_.

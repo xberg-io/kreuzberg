@@ -1,15 +1,15 @@
 {
-	"document": "../../../test_documents/xlsx/data-with-macros.xla",
-	"file_type": "xla",
-	"file_size": 49664,
-	"expected_frameworks": ["kreuzberg"],
-	"metadata": {
-		"description": "Excel add-in file with spreadsheet data (XLA extension)",
-		"category": "spreadsheet",
-		"size_class": "small"
-	},
-	"ground_truth": {
-		"text_file": "../../../test_documents/ground_truth/xla/data-with-macros.txt",
-		"source": "manual"
-	}
+  "document": "../../../test_documents/xlsx/data-with-macros.xla",
+  "file_type": "xla",
+  "file_size": 49664,
+  "expected_frameworks": ["kreuzberg"],
+  "metadata": {
+    "description": "Excel add-in file with spreadsheet data (XLA extension)",
+    "category": "spreadsheet",
+    "size_class": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../test_documents/ground_truth/xla/data-with-macros.txt",
+    "source": "manual"
+  }
 }

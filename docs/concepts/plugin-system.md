@@ -116,11 +116,11 @@ pub trait OcrBackend: Plugin {
 
 Three backends ship out of the box:
 
-| Backend | Engine | Strengths |
-|---------|--------|-----------|
-| **Tesseract** | Native Rust bindings | Fast, general-purpose, default backend. Good accuracy for Latin scripts. |
-| **PaddleOCR** | ONNX Runtime | Best accuracy for CJK (Chinese, Japanese, Korean) scripts. No Python dependency. |
-| **EasyOCR** | Python + PyTorch | Supports 80+ languages including Arabic, Hindi, and Thai. Only available through Python bindings. |
+| Backend       | Engine               | Strengths                                                                                         |
+| ------------- | -------------------- | ------------------------------------------------------------------------------------------------- |
+| **Tesseract** | Native Rust bindings | Fast, general-purpose, default backend. Good accuracy for Latin scripts.                          |
+| **PaddleOCR** | ONNX Runtime         | Best accuracy for CJK (Chinese, Japanese, Korean) scripts. No Python dependency.                  |
+| **EasyOCR**   | Python + PyTorch     | Supports 80+ languages including Arabic, Hindi, and Thai. Only available through Python bindings. |
 
 You can register your own OCR backend (for example, a cloud-based API, a custom model) using the same trait.
 
@@ -147,11 +147,11 @@ pub trait PostProcessor: Plugin {
 
 The three stages execute in fixed order:
 
-| Stage | Runs | Purpose | Examples |
-|-------|------|---------|---------|
-| `Early` | First | Clean up raw text | Strip control characters, fix encoding, normalize whitespace |
-| `Middle` | Second | Analyze content | Extract named entities, detect language, classify document type |
-| `Late` | Third | Final output shaping | Format output, generate summaries, redact PII |
+| Stage    | Runs   | Purpose              | Examples                                                        |
+| -------- | ------ | -------------------- | --------------------------------------------------------------- |
+| `Early`  | First  | Clean up raw text    | Strip control characters, fix encoding, normalize whitespace    |
+| `Middle` | Second | Analyze content      | Extract named entities, detect language, classify document type |
+| `Late`   | Third  | Final output shaping | Format output, generate summaries, redact PII                   |
 
 A design decision worth noting: **post-processor errors do not fail the extraction.** If a processor throws an exception, the error is logged and the pipeline continues with the result unchanged. This ensures a buggy or experimental processor can't take down your extraction pipeline.
 
@@ -206,12 +206,12 @@ pub trait Renderer: Plugin {
 
 Kreuzberg ships with four built-in renderers:
 
-| Renderer | Output | Description |
-|----------|--------|-------------|
+| Renderer     | Output       | Description                                                              |
+| ------------ | ------------ | ------------------------------------------------------------------------ |
 | **Markdown** | GFM Markdown | GitHub Flavored Markdown via comrak AST bridge. Tables, headings, lists. |
-| **HTML** | HTML5 | Full HTML5 rendering via comrak. |
-| **djot** | Djot | Djot markup format. |
-| **plain** | Plain text | Raw text with no markup. |
+| **HTML**     | HTML5        | Full HTML5 rendering via comrak.                                         |
+| **djot**     | Djot         | Djot markup format.                                                      |
+| **plain**    | Plain text   | Raw text with no markup.                                                 |
 
 To register a custom renderer:
 
@@ -261,10 +261,10 @@ pub trait Plugin: Send + Sync {
 The registration pattern is the same in every language. Get the registry, call register.
 
 === "Rust"
-    ```rust
+`rust
     let registry = get_document_extractor_registry();
     let mut registry = registry.write().unwrap();
-    registry.register("my-pdf", Arc::new(MyPDFExtractor::new()))?;```
+    registry.register("my-pdf", Arc::new(MyPDFExtractor::new()))?;`
 
 === "Python" ```python from Kreuzberg import get_document_extractor_registry
 
@@ -300,11 +300,11 @@ sequenceDiagram
 
 The bridge handles type conversion between languages:
 
-| Rust | Python | TypeScript |
-|------|--------|------------|
-| `Vec<u8>` | `bytes` | `Buffer` |
-| `String` | `str` | `string` |
-| Structs | Dataclasses | Plain objects |
+| Rust      | Python      | TypeScript    |
+| --------- | ----------- | ------------- |
+| `Vec<u8>` | `bytes`     | `Buffer`      |
+| `String`  | `str`       | `string`      |
+| Structs   | Dataclasses | Plain objects |
 
 For large data like file bytes and image buffers, the bindings are designed to minimize copying and use buffer protocols where supported. A Python plugin may receive file data as `bytes` or another buffer-compatible type, depending on the binding implementation and runtime behavior.
 

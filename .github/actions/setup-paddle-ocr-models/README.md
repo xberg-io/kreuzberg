@@ -16,11 +16,11 @@ This action manages the setup of PaddleOCR PP-OCRv5 ONNX models used by the `kre
 
 The action downloads pre-converted ONNX format models from the `Kreuzberg/paddleocr-onnx-models` Hugging Face repository:
 
-| Model Type | File | Size | Purpose |
-|-----------|------|------|---------|
-| Detection (det) | `PP-OCRv5_server_det_infer.onnx` | ~84 MB | Text location detection (PP-OCRv5 server) |
-| Classification (cls) | `ch_ppocr_mobile_v2.0_cls_infer.onnx` | ~0.6 MB | Text orientation classification |
-| Recognition (rec) | `rec/english/model.onnx` | ~8 MB | Text character recognition (PP-OCRv5) |
+| Model Type           | File                                  | Size    | Purpose                                   |
+| -------------------- | ------------------------------------- | ------- | ----------------------------------------- |
+| Detection (det)      | `PP-OCRv5_server_det_infer.onnx`      | ~84 MB  | Text location detection (PP-OCRv5 server) |
+| Classification (cls) | `ch_ppocr_mobile_v2.0_cls_infer.onnx` | ~0.6 MB | Text orientation classification           |
+| Recognition (rec)    | `rec/english/model.onnx`              | ~8 MB   | Text character recognition (PP-OCRv5)     |
 
 **Total cache size: ~93 MB per OS/architecture combination**
 
@@ -55,23 +55,23 @@ For cross-architecture builds where caching doesn't help:
 ```yaml
 - uses: ./.github/actions/setup-paddle-ocr-models
   with:
-    models: "det,rec"  # Skip classification model
+    models: "det,rec" # Skip classification model
 ```
 
 ## Inputs
 
-| Name | Description | Required | Default |
-|------|-------------|----------|---------|
-| `cache-enabled` | Enable model caching (set false for cross-arch builds) | No | `true` |
-| `models` | Comma-separated list of models to setup (det,cls,rec or subset) | No | `det,cls,rec` |
-| `cache-key-suffix` | Suffix for cache key to differentiate model sets | No | `paddle-ocr-v5-onnx` |
+| Name               | Description                                                     | Required | Default              |
+| ------------------ | --------------------------------------------------------------- | -------- | -------------------- |
+| `cache-enabled`    | Enable model caching (set false for cross-arch builds)          | No       | `true`               |
+| `models`           | Comma-separated list of models to setup (det,cls,rec or subset) | No       | `det,cls,rec`        |
+| `cache-key-suffix` | Suffix for cache key to differentiate model sets                | No       | `paddle-ocr-v5-onnx` |
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| `cache-hit` | Whether models were restored from cache (true/false) |
-| `cache-dir` | Path to the PaddleOCR model cache directory |
+| Name               | Description                                          |
+| ------------------ | ---------------------------------------------------- |
+| `cache-hit`        | Whether models were restored from cache (true/false) |
+| `cache-dir`        | Path to the PaddleOCR model cache directory          |
 | `models-available` | Comma-separated list of available models after setup |
 
 ## Outputs as Environment Variables

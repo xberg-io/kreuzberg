@@ -2,11 +2,7 @@
   "id": "render_output_html",
   "category": "render",
   "description": "Extract PDF with HTML output format",
-  "tags": [
-    "render",
-    "output_format",
-    "html"
-  ],
+  "tags": ["render", "output_format", "html"],
   "call": "extract_file_sync",
   "input": {
     "path": "pdf/fake_memo.pdf",
@@ -26,11 +22,7 @@
     {
       "type": "contains_any",
       "field": "content",
-      "values": [
-        "<",
-        ">",
-        "</"
-      ]
+      "values": ["<", ">", "</"]
     }
   ]
 }

@@ -2,11 +2,7 @@
   "id": "render_output_plain",
   "category": "render",
   "description": "Extract PDF with plain text output format",
-  "tags": [
-    "render",
-    "output_format",
-    "plain"
-  ],
+  "tags": ["render", "output_format", "plain"],
   "call": "extract_file_sync",
   "input": {
     "path": "pdf/fake_memo.pdf",

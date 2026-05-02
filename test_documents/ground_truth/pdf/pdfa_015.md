@@ -1,6 +1,6 @@
 Differentially Private Set Union: Supplementary Materials
 
-Sivakanth Gopi $^{1}$  Pankaj Gulhane $^{1}$  Janardhan Kulkarni $^{1}$  Judy Hanwen Shen $^{1,2}$  Milad Shokouhi $^{1}$  Sergey Yekhanin $^{1}$
+Sivakanth Gopi $^{1}$ Pankaj Gulhane $^{1}$ Janardhan Kulkarni $^{1}$ Judy Hanwen Shen $^{1,2}$ Milad Shokouhi $^{1}$ Sergey Yekhanin $^{1}$
 
 ## A. Proofs of Policy Algorithms (Theorems 3.1 and 4.1)
 
@@ -69,7 +69,7 @@ $$
 \Pr_{x \sim Q}[x \in S] \leq 1 \leq e^{\varepsilon} \Pr_{x \sim P}[x \in S] + \delta' + \delta.
 $$
 
-*Equal contribution
+\*Equal contribution
 
 ^{1}
 Microsoft
@@ -167,23 +167,23 @@ $$
 \rho_ {\text {G a u s s}} \geq \max  _ {1 \leq t \leq \Delta_ {0}} \left(\frac {1}{\sqrt {t}} + \sigma \Phi^ {- 1} \left(\left(1 - \frac {\delta}{2}\right) ^ {1 / t}\right)\right),
 $$
 
-we have  $P(\bar{E}) \leq \delta / 2$ . Therefore the DP Set Union algorithm (Algorithm 1) is  $(\varepsilon, \delta)$ -DP.
+we have $P(\bar{E}) \leq \delta / 2$ . Therefore the DP Set Union algorithm (Algorithm 1) is $(\varepsilon, \delta)$ -DP.
 
 ## B. Bounded Sensitivity implies DP (Proof of Theorem 1.2)
 
-We will now prove a formal version of Theorem 1.2, i.e., if the histogram output by Algorithm 2 has bounded  $\ell_p$ -sensitivity (for  $p \in \{1,2\}$ ), then by adding appropriate noise and setting an appropriate threshold, Algorithm 1 for DP set union can be made differentially private. The lower bounds on the threshold  $(\rho)$  that we obtain in this generality are only slightly worse compared to the corresponding bounds in Theorems 3.1 and 4.1.
+We will now prove a formal version of Theorem 1.2, i.e., if the histogram output by Algorithm 2 has bounded $\ell_p$ -sensitivity (for $p \in \{1,2\}$ ), then by adding appropriate noise and setting an appropriate threshold, Algorithm 1 for DP set union can be made differentially private. The lower bounds on the threshold $(\rho)$ that we obtain in this generality are only slightly worse compared to the corresponding bounds in Theorems 3.1 and 4.1.
 
-Theorem B.1. Suppose the histogram output by Algorithm 2 has  $\ell_1$ -sensitivity 1. Then Algorithm 1 is  $(\varepsilon, \delta)$ -DP when the Noise distribution is  $\mathrm{Lap}(0, \lambda)$  where  $\lambda = 1 / \varepsilon$  and the threshold
+Theorem B.1. Suppose the histogram output by Algorithm 2 has $\ell_1$ -sensitivity 1. Then Algorithm 1 is $(\varepsilon, \delta)$ -DP when the Noise distribution is $\mathrm{Lap}(0, \lambda)$ where $\lambda = 1 / \varepsilon$ and the threshold
 
 $$
 \rho \geq \max _ {1 \leq t \leq \Delta_ {0}} 1 + \frac {1}{\varepsilon} \log \left(\frac {1}{2 (1 - (1 - \delta) ^ {1 / t})}\right).
 $$
 
-Proof. Proof of Theorem B.1 is extremely similar to the proof of Theorem 3.1. The only place where it differs is in Equation (1) where we bound  $H_{1}[u] \leq 1$  instead of  $H_{1}[u] \leq 1 / |T|$ .
+Proof. Proof of Theorem B.1 is extremely similar to the proof of Theorem 3.1. The only place where it differs is in Equation (1) where we bound $H_{1}[u] \leq 1$ instead of $H_{1}[u] \leq 1 / |T|$ .
 
-Theorem B.2. Suppose the histogram output by Algorithm 2 has  $\ell_2$ -sensitivity 1. Then Algorithm 1 is  $(\varepsilon, \delta)$ -DP when the Noise distribution is  $\mathcal{N}(0, \sigma^2)$  where  $\sigma$  and the
+Theorem B.2. Suppose the histogram output by Algorithm 2 has $\ell_2$ -sensitivity 1. Then Algorithm 1 is $(\varepsilon, \delta)$ -DP when the Noise distribution is $\mathcal{N}(0, \sigma^2)$ where $\sigma$ and the
 
-threshold  $\rho$  are chosen s.t.
+threshold $\rho$ are chosen s.t.
 
 $$
 \Phi \left(\frac {1}{2 \sigma} - \varepsilon \sigma\right) - e ^ {\varepsilon} \Phi \left(- \frac {1}{2 \sigma} - \varepsilon \sigma\right) \leq \frac {\delta}{2} \text { and}
@@ -193,14 +193,14 @@ $$
 \rho \geq \max  _ {1 \leq t \leq \Delta_ {0}} \left(1 + \sigma \Phi^ {- 1} \left(\left(1 - \frac {\delta}{2}\right) ^ {1 / t}\right)\right).
 $$
 
-Proof. Proof of Theorem B.2 is extremely similar to the proof of Theorem 4.1. The only place where it differs is in Equation (2) where we bound  $H_{1}[u] \leq 1$  instead of  $H_{1}[u] \leq 1 / \sqrt{|T|}$ .
+Proof. Proof of Theorem B.2 is extremely similar to the proof of Theorem 4.1. The only place where it differs is in Equation (2) where we bound $H_{1}[u] \leq 1$ instead of $H_{1}[u] \leq 1 / \sqrt{|T|}$ .
 
 ## C. Proof of Lemma 4.1
 
 ![img-0.jpeg](img-0.jpeg)
-Figure 1. Geometric explanation of Lemma 4.1 when  $|AB|, |AC| &gt; 1$ .
+Figure 1. Geometric explanation of Lemma 4.1 when $|AB|, |AC| &gt; 1$ .
 
-Proof of Lemma 4.1. Let us first assume that both  $|AB|, |AC| &gt; 1$ . Let  $\theta$  be the angle at  $A$  and let  $|AB'| = x, |AC'| = y$  as shown in Figure 1. Then by the cosine formula,
+Proof of Lemma 4.1. Let us first assume that both $|AB|, |AC| &gt; 1$ . Let $\theta$ be the angle at $A$ and let $|AB'| = x, |AC'| = y$ as shown in Figure 1. Then by the cosine formula,
 
 $$
 \begin{array}{l}
@@ -212,20 +212,20 @@ $$
 \end{array}
 $$
 
-If  $|AB|, |AC| \leq 1$ , then  $B' = C' = A$  and then the
+If $|AB|, |AC| \leq 1$ , then $B' = C' = A$ and then the
 
 ![img-1.jpeg](img-1.jpeg)
-Figure 2. Geometric explanation of Lemma 4.1 when  $|AB| &gt; 1, |AC| \leq 1$ .
+Figure 2. Geometric explanation of Lemma 4.1 when $|AB| &gt; 1, |AC| \leq 1$ .
 
 Differentially Private Set Union: Supplementary Materials
 
-claim is trivially true. Suppose  $|AB| &gt; 1, |AC| \leq 1$ . Now  $C' = A$ . Let  $|AB'| = x, |AC| = z \leq 1$  and  $\theta$  be the angle at  $A$  as shown in Figure 2. Then by the cosine formula,
+claim is trivially true. Suppose $|AB| &gt; 1, |AC| \leq 1$ . Now $C' = A$ . Let $|AB'| = x, |AC| = z \leq 1$ and $\theta$ be the angle at $A$ as shown in Figure 2. Then by the cosine formula,
 
 $$
 \begin{array}{l} \left| B C \right| ^ {2} = \left| A B \right| ^ {2} + \left| A C \right| ^ {2} - 2 \left| A B \right| \left| A C \right| \cos \theta \\ = (x + 1) ^ {2} + z ^ {2} - 2 (x + 1) z \cos \theta \\ = x ^ {2} + 2 x (1 - z \cos \theta) + (z - \cos \theta) ^ {2} + (1 - \cos^ {2} \theta) \\ \geq x ^ {2} = \left| A B ^ {\prime} \right| ^ {2} = \left| B ^ {\prime} C ^ {\prime} \right| ^ {2}. \\ (0 \leq z \leq 1, | \cos \theta | \leq 1) \\ \end{array}
 $$
 
-By symmetry, the claim is also true when  $|AC| &gt; 1, |AB| \leq 1$ .
+By symmetry, the claim is also true when $|AC| &gt; 1, |AB| \leq 1$ .
 
 # D. Privacy analysis of Weighted Laplace and Gaussian Algorithms
 
@@ -233,76 +233,76 @@ By symmetry, the claim is also true when  $|AC| &gt; 1, |AB| \leq 1$ .
 
 Algorithm 1 LAPLACE weighted update
 
-Input:  $H$ : Current histogram
+Input: $H$ : Current histogram
 
-$W$ : A subset of  $U$  of size at most  $\Delta_0$
+$W$ : A subset of $U$ of size at most $\Delta_0$
 
-Output:  $H$ : Updated histogram
+Output: $H$ : Updated histogram
 
-for  $u$  in  $W$  do
+for $u$ in $W$ do
 
 $\mathrm{H}[u]\gets \mathrm{H}[u] + \frac{1}{|W|}$
 
 end for
 
-Theorem D.1. The WEIGHTED LAPLACE algorithm (AlGORITHM 1) is  $(\varepsilon, \delta)$ -DP when
+Theorem D.1. The WEIGHTED LAPLACE algorithm (AlGORITHM 1) is $(\varepsilon, \delta)$ -DP when
 
 $$
 \rho_ {\mathrm {L a p}} \geq \max  _ {1 \leq t \leq \Delta_ {0}} \frac {1}{t} + \frac {1}{\varepsilon} \log \left(\frac {1}{2 (1 - (1 - \delta) ^ {1 / t})}\right).
 $$
 
-Proof. Proof is exactly the same as that of Theorem 3.1.  $\square$
+Proof. Proof is exactly the same as that of Theorem 3.1. $\square$
 
 # D.2. Weighted Gaussian
 
 Algorithm 2 GAUSSIAN weighted update
 
-Input:  $H$ : Current histogram
+Input: $H$ : Current histogram
 
-$W$ : A subset of  $U$  of size at most  $\Delta_0$
+$W$ : A subset of $U$ of size at most $\Delta_0$
 
-Output:  $H$ : Updated histogram
+Output: $H$ : Updated histogram
 
-for  $u$  in  $W$  do
+for $u$ in $W$ do
 
 $\mathrm{H}[u]\gets \mathrm{H}[u] + \sqrt{\frac{1}{|W|}}$
 
 end for
 
-Theorem D.2. The WEIGHTED GAUSSIAN algorithm (AlGORITHM 2) is  $(\varepsilon, \delta)$ -DP if  $\sigma, \rho_{\mathrm{Gauss}}$  are chosen s.t.
+Theorem D.2. The WEIGHTED GAUSSIAN algorithm (AlGORITHM 2) is $(\varepsilon, \delta)$ -DP if $\sigma, \rho_{\mathrm{Gauss}}$ are chosen s.t.
 
-$\Phi \left(\frac{1}{2\sigma} - \varepsilon \sigma\right) - e^{\varepsilon} \Phi \left(-\frac{1}{2\sigma} - \varepsilon \sigma\right) \leq \frac{\delta}{2}$  and
+$\Phi \left(\frac{1}{2\sigma} - \varepsilon \sigma\right) - e^{\varepsilon} \Phi \left(-\frac{1}{2\sigma} - \varepsilon \sigma\right) \leq \frac{\delta}{2}$ and
 
 $\rho_{\mathrm{Gauss}} \geq \max_{1 \leq t \leq \Delta_0} \left( \frac{1}{\sqrt{t}} + \sigma \Phi^{-1} \left( \left( 1 - \frac{\delta}{2} \right)^{1/t} \right) \right)$ .
 
-Proof. Proof is exactly the same as that of Theorem 4.1.  $\square$
+Proof. Proof is exactly the same as that of Theorem 4.1. $\square$
 
 # E. Greedy Policy
 
 ![img-2.jpeg](img-2.jpeg)
-Figure 3. Visualization of greedy update example where the final  $l_{1}$  sensitivity is larger than 1.
+Figure 3. Visualization of greedy update example where the final $l_{1}$ sensitivity is larger than 1.
 
 In this section, we give a simple counter example to illustrate how the sensitivity of a greedy policy algorithm can be unbounded.
 
 Algorithm 3 GREEDY POLICY update
 
-Input:  $H$ : Current histogram
+Input: $H$ : Current histogram
 
-$W$ : A subset of  $U$  of size at most  $\Delta_0$
+$W$ : A subset of $U$ of size at most $\Delta_0$
 
-$\Gamma$  : cutoff parameter
+$\Gamma$ : cutoff parameter
 
-Output:  $H$ : Updated histogram
+Output: $H$ : Updated histogram
 
-// Build cost dictionary  $G$
+// Build cost dictionary $G$
 
-$G = \{\}$  // Empty dictionary
+$G = \{\}$ // Empty dictionary
 
-for  $u\in W$  do
+for $u\in W$ do
 
-if  $H[u] &lt; \Gamma$  then
+if $H[u] &lt; \Gamma$ then
 
-// Gap to cutoff for items below cutoff  $\Gamma$
+// Gap to cutoff for items below cutoff $\Gamma$
 
 $G[u]\gets \Gamma -H[u]$
 
@@ -310,25 +310,25 @@ end if
 
 end for
 
-budget  $\leftarrow 1$  // Each user gets a total budget of 1
+budget $\leftarrow 1$ // Each user gets a total budget of 1
 
-// Sort in increasing order of the gap  $\Gamma - H[u]$
+// Sort in increasing order of the gap $\Gamma - H[u]$
 
 $G\gets \mathrm{sort}(G)$
 
-// Let  $u_{1}, u_{2}, \ldots, u_{|G|}$  be the sorted order
+// Let $u_{1}, u_{2}, \ldots, u_{|G|}$ be the sorted order
 
-for  $j = 1$  to  $|G|$  do
+for $j = 1$ to $|G|$ do
 
-if  $G[u_j] \leq$  budget then
+if $G[u_j] \leq$ budget then
 
 $H[u_j]\gets H[u_j] + G[u_j]$
 
-budget  $\leftarrow$  budget -  $G[u_{j}]$
+budget $\leftarrow$ budget - $G[u_{j}]$
 
 else
 
-$H[u_j]\gets H[u_j] +$  budget
+$H[u_j]\gets H[u_j] +$ budget
 
 break
 
@@ -336,30 +336,30 @@ end if
 
 end for
 
-Suppose there are  $N$  user let  $u_{1}$  and  $u_{2}$  be two items in the universe. We will denote the weight of item  $u$  after user
+Suppose there are $N$ user let $u_{1}$ and $u_{2}$ be two items in the universe. We will denote the weight of item $u$ after user
 
 Differentially Private Set Union: Supplementary Materials
 
-$i$ 's contribution as  $H^{(i)}[u]$ . Suppose user  $i$  has only item  $u_{1}$  while users  $i + 1, i + 2, \ldots, N$  have both items. Let  $H_{1}$  be the histogram generated with all  $\mathbf{N}$  users while  $H_{2}$  be the histogram generated without user  $i$ . Let  $\Delta_0 = 2$  and  $H^{(i - 1)}[u_1] &lt; H^{(i - 1)}[u_2] &lt; 1 + H^{(i - 1)}[u_1]$ . According to the greedy update described in Algorithm 3, in  $H_{1}$ , user  $i$  will add weight 1 to  $u_{1}$  and users  $i + 1, i + 2, \ldots, N$  will also to  $u_{1}$  since  $H^{(i)}[u_1] &gt; H^{(i)}[u_2]$ . In  $H_{2}$ , users  $i + 1, i + 2, \ldots, N$  will add to  $u_{2}$  since  $H^{(i - 1)}[u_1] &lt; H^{(i - 1)}[u_2]$ . This process is described in figure 3. Therefore the  $\ell_1$ -sensitivity of the histogram built using Greedy Policy update (Algorithm 3) can be  $\Omega(\Gamma, N)$ .
+$i$ 's contribution as $H^{(i)}[u]$ . Suppose user $i$ has only item $u_{1}$ while users $i + 1, i + 2, \ldots, N$ have both items. Let $H_{1}$ be the histogram generated with all $\mathbf{N}$ users while $H_{2}$ be the histogram generated without user $i$ . Let $\Delta_0 = 2$ and $H^{(i - 1)}[u_1] &lt; H^{(i - 1)}[u_2] &lt; 1 + H^{(i - 1)}[u_1]$ . According to the greedy update described in Algorithm 3, in $H_{1}$ , user $i$ will add weight 1 to $u_{1}$ and users $i + 1, i + 2, \ldots, N$ will also to $u_{1}$ since $H^{(i)}[u_1] &gt; H^{(i)}[u_2]$ . In $H_{2}$ , users $i + 1, i + 2, \ldots, N$ will add to $u_{2}$ since $H^{(i - 1)}[u_1] &lt; H^{(i - 1)}[u_2]$ . This process is described in figure 3. Therefore the $\ell_1$ -sensitivity of the histogram built using Greedy Policy update (Algorithm 3) can be $\Omega(\Gamma, N)$ .
 
 # F. Dataset Details
 
 Using a log-log scale, the frequency of users for each unigram vs. the rank of the unigram is linear (Figure 4). In other words, the lowest ranked (most common) unigrams are used by almost all users while the highest ranked (least common) unigrams are used by very few users.
 
 ![img-3.jpeg](img-3.jpeg)
-Figure 4. Frequency (i.e. number of users who use the unigram) vs. rank of the unigram (based on frequency) on a log-log scale. This linear relationship shows that the frequency of unigrams among users also follows Zipf's law (power law), i.e., count  $\propto 1 / \mathrm{rank}^{\alpha}$  for some constant  $\alpha &gt;0$ . The  $\alpha$  in this case is  $\approx 1$ .
+Figure 4. Frequency (i.e. number of users who use the unigram) vs. rank of the unigram (based on frequency) on a log-log scale. This linear relationship shows that the frequency of unigrams among users also follows Zipf's law (power law), i.e., count $\propto 1 / \mathrm{rank}^{\alpha}$ for some constant $\alpha &gt;0$ . The $\alpha$ in this case is $\approx 1$ .
 
-The distribution of how many unigrams each user uses also follows a long tail distribution. While the top 10 users contribute between 850 and 2000 unique unigrams, most users  $(93.1\%)$  contribute less than 100 unique unigrams. Table 1 summarizes the percentage of users with a unique vocabulary smaller than each threshold T provided.
+The distribution of how many unigrams each user uses also follows a long tail distribution. While the top 10 users contribute between 850 and 2000 unique unigrams, most users $(93.1\%)$ contribute less than 100 unique unigrams. Table 1 summarizes the percentage of users with a unique vocabulary smaller than each threshold T provided.
 
 Table 1. Percentage of users with unique unigram count of less than or equal to T. The vast majority of user have less than 100 unique unigrams.
 
-|  THRESHOLD (T) | USERS WITH |Wi| ≤ T  |
-| --- | --- | --- | --- |
-|  1 | 2.78%  |
-|  10 | 29.82%  |
-|  50 | 79.16%  |
-|  100 | 93.13%  |
-|  300 | 99.59%  |
+| THRESHOLD (T) | USERS WITH | Wi  | ≤ T |
+| ------------- | ---------- | --- | --- |
+| 1             | 2.78%      |
+| 10            | 29.82%     |
+| 50            | 79.16%     |
+| 100           | 93.13%     |
+| 300           | 99.59%     |
 
 # G. Additional Experiments
 
@@ -367,32 +367,32 @@ Table 1. Percentage of users with unique unigram count of less than or equal to 
 
 In the experiments described thus far, each user contributes items once within the budget constraints. We also investigate whether the output of set union increases in size when each user contributes the same budget over multiple passes (e.g. user 1 contributes half of their budget each time over 2 passes), we compare POLICY LAPLACE and POLICY GAUSSIAN outputs. Table 2 summarizes the results showing that there is not strong evidence suggesting that running multiple passes through the users improves the size of the output set.
 
-# G.2. Selecting  $\alpha$ : parameter to set threshold  $\Gamma$
+# G.2. Selecting $\alpha$ : parameter to set threshold $\Gamma$
 
-Figure 5 shows the number of unigrams released by POLICY LAPLACE and POLICY GAUSSIAN for various values of  $\alpha$ . We observe that the number of unigrams released increases sharply until  $\alpha = 4$ , then remains nearly constant and then slowly decreases. This choice of  $\alpha$  only affects the policy algorithms since the weighted and count algorithms do not use a threshold.
+Figure 5 shows the number of unigrams released by POLICY LAPLACE and POLICY GAUSSIAN for various values of $\alpha$ . We observe that the number of unigrams released increases sharply until $\alpha = 4$ , then remains nearly constant and then slowly decreases. This choice of $\alpha$ only affects the policy algorithms since the weighted and count algorithms do not use a threshold.
 
 ![img-4.jpeg](img-4.jpeg)
-Figure 5. Number of unigrams released for various values of  $\alpha$ . The number of unigrams released increases sharply until about  $\alpha = 2$ , then remains nearly constant and then decreases. Here we fixed  $\Delta_0 = 100$  and  $\varepsilon = 3$ .
+Figure 5. Number of unigrams released for various values of $\alpha$ . The number of unigrams released increases sharply until about $\alpha = 2$ , then remains nearly constant and then decreases. Here we fixed $\Delta_0 = 100$ and $\varepsilon = 3$ .
 
 Differentially Private Set Union: Supplementary Materials
 
-Table 2. Count of unigrams released POLICY LAPLACE and POLICY GAUSSIAN algorithms for single and double passes over users. Results are averaged and rounded across 5 shuffles of user order. The privacy parameters are  $\varepsilon = 3$  and  $\delta = \exp(-10)$ .  $\alpha = 2$  is chosen for the threshold parameter. Significant p-values for a two-sided independent t-test are bolded.
+Table 2. Count of unigrams released POLICY LAPLACE and POLICY GAUSSIAN algorithms for single and double passes over users. Results are averaged and rounded across 5 shuffles of user order. The privacy parameters are $\varepsilon = 3$ and $\delta = \exp(-10)$ . $\alpha = 2$ is chosen for the threshold parameter. Significant p-values for a two-sided independent t-test are bolded.
 
-|  POLICY LAPLACE |   |   | POLICY GAUSSIAN  |   |   |   |
-| --- | --- | --- | --- | --- | --- | --- |
-|  Δ0 | 1 PASS | 2 PASSES | P-VAL | 1 PASS | 2 PASSES | P-VAL  |
-|  1 | 4236 ± 14 | 4257 ± 17 | 0.083 | 3135 ± 25 | 3131 ± 20 | 0.829  |
-|  10 | 12452 ± 31 | 12389 ± 17 | 0.008 | 10784 ± 22 | 10817 ± 54 | 0.293  |
-|  50 | 15056 ± 35 | 15080 ± 21 | 0.262 | 15763 ± 33 | 15809 ± 45 | 0.139  |
-|  100 | 14562 ± 50 | 14567 ± 24 | 0.846 | 14562 ± 50 | 14568 ± 24 | 0.846  |
-|  200 | 14005 ± 33 | 13979 ± 31 | 0.271 | 14005 ± 33 | 13979 ± 31 | 0.271  |
-|  300 | 13702 ± 37 | 13678 ± 47 | 0.448 | 13702 ± 37 | 13678 ± 47 | 0.447  |
+| POLICY LAPLACE |            |            | POLICY GAUSSIAN |            |            |       |
+| -------------- | ---------- | ---------- | --------------- | ---------- | ---------- | ----- |
+| Δ0             | 1 PASS     | 2 PASSES   | P-VAL           | 1 PASS     | 2 PASSES   | P-VAL |
+| 1              | 4236 ± 14  | 4257 ± 17  | 0.083           | 3135 ± 25  | 3131 ± 20  | 0.829 |
+| 10             | 12452 ± 31 | 12389 ± 17 | 0.008           | 10784 ± 22 | 10817 ± 54 | 0.293 |
+| 50             | 15056 ± 35 | 15080 ± 21 | 0.262           | 15763 ± 33 | 15809 ± 45 | 0.139 |
+| 100            | 14562 ± 50 | 14567 ± 24 | 0.846           | 14562 ± 50 | 14568 ± 24 | 0.846 |
+| 200            | 14005 ± 33 | 13979 ± 31 | 0.271           | 14005 ± 33 | 13979 ± 31 | 0.271 |
+| 300            | 13702 ± 37 | 13678 ± 47 | 0.448           | 13702 ± 37 | 13678 ± 47 | 0.447 |
 
 ![img-5.jpeg](img-5.jpeg)
-THE EFFECT OF  $\varepsilon$
-Figure 6. Number of unigrams released for various values of  $\varepsilon$ . Here we fixed  $\Delta_0 = 100$  and  $\alpha = 5$ .
+THE EFFECT OF $\varepsilon$
+Figure 6. Number of unigrams released for various values of $\varepsilon$ . Here we fixed $\Delta_0 = 100$ and $\alpha = 5$ .
 
-We use  $\varepsilon = 3$  for the experiments in table 1. At this value of  $\varepsilon$  our policy algorithms perform much better than previous count and weighted algorithms. To check whether this result holds with smaller  $\varepsilon$ , we also run these algorithms on various values of  $\varepsilon$ . Figure 6 shows that for  $\varepsilon \geq 1$  our policy algorithms always perform better.
+We use $\varepsilon = 3$ for the experiments in table 1. At this value of $\varepsilon$ our policy algorithms perform much better than previous count and weighted algorithms. To check whether this result holds with smaller $\varepsilon$ , we also run these algorithms on various values of $\varepsilon$ . Figure 6 shows that for $\varepsilon \geq 1$ our policy algorithms always perform better.
 
 # References
 

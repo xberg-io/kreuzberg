@@ -51,14 +51,14 @@ docker build -f docker/Dockerfile.full -t kreuzberg:full .
 
 ## Size Comparison
 
-| Component | Core | Full | Difference |
-|-----------|------|------|------------|
-| Base (trixie-slim) | ~120MB | ~120MB | - |
-| Tesseract + 12 langs | ~250MB | ~250MB | - |
-| Rust binary | ~80MB | ~80MB | - |
-| pdfium | ~30MB | ~30MB | - |
-| System libraries | ~100MB | ~100MB | - |
-| **Total (approx)** | **~1.0-1.3GB** | **~1.0-1.3GB** | **- (same size)** |
+| Component            | Core           | Full           | Difference        |
+| -------------------- | -------------- | -------------- | ----------------- |
+| Base (trixie-slim)   | ~120MB         | ~120MB         | -                 |
+| Tesseract + 12 langs | ~250MB         | ~250MB         | -                 |
+| Rust binary          | ~80MB          | ~80MB          | -                 |
+| pdfium               | ~30MB          | ~30MB          | -                 |
+| System libraries     | ~100MB         | ~100MB         | -                 |
+| **Total (approx)**   | **~1.0-1.3GB** | **~1.0-1.3GB** | **- (same size)** |
 
 ## Default Image
 

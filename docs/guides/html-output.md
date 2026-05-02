@@ -56,23 +56,23 @@ Render extracted document content as styled HTML with semantic `kb-*` CSS classe
 
 ## Built-in Themes
 
-| Theme | Description |
-|-------|-------------|
+| Theme                | Description                                                                            |
+| -------------------- | -------------------------------------------------------------------------------------- |
 | `unstyled` (default) | No built-in CSS. Only structural markup with `kb-*` classes. Use your own style sheet. |
-| `default` | System font stack, neutral colours, 72ch max width. All CSS custom properties defined. |
-| `github` | GitHub Markdown-inspired palette, border-bottom headings, 80ch max width. |
-| `dark` | Dark background (#0d1117), light text. Good for terminal/IDE integrations. |
-| `light` | Minimal light theme with generous spacing. |
+| `default`            | System font stack, neutral colours, 72ch max width. All CSS custom properties defined. |
+| `github`             | GitHub Markdown-inspired palette, border-bottom headings, 80ch max width.              |
+| `dark`               | Dark background (#0d1117), light text. Good for terminal/IDE integrations.             |
+| `light`              | Minimal light theme with generous spacing.                                             |
 
 ## Configuration
 
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `theme` | `HtmlTheme` | `unstyled` | Built-in colour/typography theme |
-| `css` | `string?` | `None` | Inline CSS string appended after theme style sheet |
-| `css_file` | `path?` | `None` | CSS file loaded at render time (max 1 MiB) |
-| `class_prefix` | `string` | `"kb-"` | CSS class prefix (alphanumeric, hyphens, underscores only) |
-| `embed_css` | `bool` | `true` | Include `<style>` block in output. Set `false` for external style sheets |
+| Field          | Type        | Default    | Description                                                              |
+| -------------- | ----------- | ---------- | ------------------------------------------------------------------------ |
+| `theme`        | `HtmlTheme` | `unstyled` | Built-in colour/typography theme                                         |
+| `css`          | `string?`   | `None`     | Inline CSS string appended after theme style sheet                       |
+| `css_file`     | `path?`     | `None`     | CSS file loaded at render time (max 1 MiB)                               |
+| `class_prefix` | `string`    | `"kb-"`    | CSS class prefix (alphanumeric, hyphens, underscores only)               |
+| `embed_css`    | `bool`      | `true`     | Include `<style>` block in output. Set `false` for external style sheets |
 
 === "Python"
 
@@ -209,34 +209,34 @@ config = ExtractionConfig(
 
 All generated HTML elements include semantic `kb-*` classes for targeted styling.
 
-| Class | Element | Description |
-|-------|---------|-------------|
-| `kb-doc` | `<div>` | Root wrapper |
-| `kb-content` | `<main>` | Content area |
-| `kb-doc-title` | `<h1>` | Document title |
-| `kb-h`, `kb-h1`..`kb-h6` | `<h1>`..`<h6>` | Headings |
-| `kb-p` | `<p>` | Paragraphs |
-| `kb-list`, `kb-ul`, `kb-ol` | `<ul>`, `<ol>` | Lists |
-| `kb-li` | `<li>` | List items |
-| `kb-blockquote` | `<blockquote>` | Block quotes |
-| `kb-pre` | `<pre>` | Code blocks |
-| `kb-code` | `<code>` | Inline/block code |
-| `kb-table` | `<table>` | Tables |
-| `kb-thead`, `kb-tbody` | `<thead>`, `<tbody>` | Table sections |
-| `kb-th`, `kb-td`, `kb-tr` | `<th>`, `<td>`, `<tr>` | Table cells/rows |
-| `kb-figure` | `<figure>` | Image wrapper |
-| `kb-img` | `<img>` | Images |
-| `kb-page-break` | `<hr>` | Page breaks |
-| `kb-footnote` | `<aside>` | Footnote definitions |
-| `kb-footnote-ref` | `<sup>` | Footnote references |
-| `kb-citation` | `<cite>` | Citations |
-| `kb-link` | `<a>` | Hyperlinks |
-| `kb-metadata` | `<dl>` | Metadata blocks |
-| `kb-formula` | `<pre>` | Math formulas |
-| `kb-slide` | `<section>` | Slide sections |
-| `kb-dt`, `kb-dd` | `<dt>`, `<dd>` | Definition terms/descriptions |
-| `kb-admonition` | `<aside>` | Admonitions |
-| `kb-group` | `<div>` | Grouped content |
+| Class                       | Element                | Description                   |
+| --------------------------- | ---------------------- | ----------------------------- |
+| `kb-doc`                    | `<div>`                | Root wrapper                  |
+| `kb-content`                | `<main>`               | Content area                  |
+| `kb-doc-title`              | `<h1>`                 | Document title                |
+| `kb-h`, `kb-h1`..`kb-h6`    | `<h1>`..`<h6>`         | Headings                      |
+| `kb-p`                      | `<p>`                  | Paragraphs                    |
+| `kb-list`, `kb-ul`, `kb-ol` | `<ul>`, `<ol>`         | Lists                         |
+| `kb-li`                     | `<li>`                 | List items                    |
+| `kb-blockquote`             | `<blockquote>`         | Block quotes                  |
+| `kb-pre`                    | `<pre>`                | Code blocks                   |
+| `kb-code`                   | `<code>`               | Inline/block code             |
+| `kb-table`                  | `<table>`              | Tables                        |
+| `kb-thead`, `kb-tbody`      | `<thead>`, `<tbody>`   | Table sections                |
+| `kb-th`, `kb-td`, `kb-tr`   | `<th>`, `<td>`, `<tr>` | Table cells/rows              |
+| `kb-figure`                 | `<figure>`             | Image wrapper                 |
+| `kb-img`                    | `<img>`                | Images                        |
+| `kb-page-break`             | `<hr>`                 | Page breaks                   |
+| `kb-footnote`               | `<aside>`              | Footnote definitions          |
+| `kb-footnote-ref`           | `<sup>`                | Footnote references           |
+| `kb-citation`               | `<cite>`               | Citations                     |
+| `kb-link`                   | `<a>`                  | Hyperlinks                    |
+| `kb-metadata`               | `<dl>`                 | Metadata blocks               |
+| `kb-formula`                | `<pre>`                | Math formulas                 |
+| `kb-slide`                  | `<section>`            | Slide sections                |
+| `kb-dt`, `kb-dd`            | `<dt>`, `<dd>`         | Definition terms/descriptions |
+| `kb-admonition`             | `<aside>`              | Admonitions                   |
+| `kb-group`                  | `<div>`                | Grouped content               |
 
 !!! Tip "Custom prefix" If you set `class_prefix` to `"my-"`, all classes become `my-doc`, `my-content`, `my-h1`, and so on.
 

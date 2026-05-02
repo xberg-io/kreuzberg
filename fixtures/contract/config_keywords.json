@@ -1,39 +1,39 @@
 {
-	"id": "config_keywords",
-	"description": "Tests keyword extraction via YAKE algorithm",
-	"tags": ["contract", "config", "keywords"],
-	"call": "extract_file_sync",
-	"input": {
-		"path": "pdf/fake_memo.pdf",
-		"config": {
-			"keywords": {
-				"algorithm": "yake",
-				"max_keywords": 10
-			}
-		}
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/pdf"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 10
-		},
-		{
-			"type": "not_empty",
-			"field": "keywords"
-		},
-		{
-			"type": "count_min",
-			"field": "keywords",
-			"value": 1
-		}
-	],
-	"skip": {
-		"reason": "Requires features: keywords-yake"
-	}
+  "id": "config_keywords",
+  "description": "Tests keyword extraction via YAKE algorithm",
+  "tags": ["contract", "config", "keywords"],
+  "call": "extract_file_sync",
+  "input": {
+    "path": "pdf/fake_memo.pdf",
+    "config": {
+      "keywords": {
+        "algorithm": "yake",
+        "max_keywords": 10
+      }
+    }
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/pdf"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 10
+    },
+    {
+      "type": "not_empty",
+      "field": "keywords"
+    },
+    {
+      "type": "count_min",
+      "field": "keywords",
+      "value": 1
+    }
+  ],
+  "skip": {
+    "reason": "Requires features: keywords-yake"
+  }
 }

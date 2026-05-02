@@ -1,24 +1,24 @@
 {
-	"id": "office_doc_legacy",
-	"category": "office",
-	"description": "Legacy .doc document extraction via native OLE/CFB parsing.",
-	"input": {
-		"path": "doc/unit_test_lists.doc",
-		"media_type": "application/msword"
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/msword"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 20
-		}
-	],
-	"skip": {
-		"reason": "Requires features: office; Skip if document missing; Requires the office feature."
-	}
+  "id": "office_doc_legacy",
+  "category": "office",
+  "description": "Legacy .doc document extraction via native OLE/CFB parsing.",
+  "input": {
+    "path": "doc/unit_test_lists.doc",
+    "media_type": "application/msword"
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/msword"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 20
+    }
+  ],
+  "skip": {
+    "reason": "Requires features: office; Skip if document missing; Requires the office feature."
+  }
 }

@@ -1,22 +1,22 @@
 {
-	"id": "render_custom_dpi",
-	"category": "render",
-	"description": "Render PDF page with custom DPI",
-	"tags": ["render", "pdf", "dpi"],
-	"call": "render_page",
-	"input": {
-		"path": "pdf/tiny.pdf",
-		"page_index": 0,
-		"dpi": 72,
-		"mode": "single_page"
-	},
-	"assertions": [
-		{
-			"type": "not_empty"
-		},
-		{
-			"type": "count_min",
-			"value": 50
-		}
-	]
+  "id": "render_custom_dpi",
+  "category": "render",
+  "description": "Render PDF page with custom DPI",
+  "tags": ["render", "pdf", "dpi"],
+  "call": "render_page",
+  "input": {
+    "path": "pdf/tiny.pdf",
+    "page_index": 0,
+    "dpi": 72,
+    "mode": "single_page"
+  },
+  "assertions": [
+    {
+      "type": "not_empty"
+    },
+    {
+      "type": "count_min",
+      "value": 50
+    }
+  ]
 }

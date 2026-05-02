@@ -1,11 +1,7 @@
 {
   "id": "config_djot_content",
   "description": "Tests djot output format converts content to djot markup",
-  "tags": [
-    "contract",
-    "config",
-    "djot"
-  ],
+  "tags": ["contract", "config", "djot"],
   "call": "extract_file_sync",
   "input": {
     "path": "pdf/fake_memo.pdf",

@@ -4,9 +4,9 @@ Small Caps
 
 **bold**
 
-*italics*
+_italics_
 
-**bold *and italics***
+**bold _and italics_**
 
 underlined
 

@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/odt/citation.odt",
   "file_type": "odt",
   "file_size": 10842,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "ODT test document: citation",
     "source": "pandoc-generated",

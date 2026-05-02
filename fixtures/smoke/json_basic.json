@@ -1,22 +1,22 @@
 {
-	"id": "smoke_json_basic",
-	"category": "smoke",
-	"description": "Smoke test: JSON file extraction",
-	"tags": ["smoke", "structured", "json"],
-	"input": {
-		"path": "json/simple.json",
-		"media_type": "application/json"
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/json"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 5
-		}
-	]
+  "id": "smoke_json_basic",
+  "category": "smoke",
+  "description": "Smoke test: JSON file extraction",
+  "tags": ["smoke", "structured", "json"],
+  "input": {
+    "path": "json/simple.json",
+    "media_type": "application/json"
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/json"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 5
+    }
+  ]
 }

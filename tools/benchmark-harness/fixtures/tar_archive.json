@@ -1,14 +1,14 @@
 {
-	"document": "../../../test_documents/archives/documents.tar",
-	"file_type": "tar",
-	"file_size": 49152,
-	"expected_frameworks": ["kreuzberg", "tika"],
-	"metadata": {
-		"description": "TAR archive with documents",
-		"category": "archive"
-	},
-	"ground_truth": {
-		"text_file": "../../../test_documents/ground_truth/tar/documents.txt",
-		"source": "manual"
-	}
+  "document": "../../../test_documents/archives/documents.tar",
+  "file_type": "tar",
+  "file_size": 49152,
+  "expected_frameworks": ["kreuzberg", "tika"],
+  "metadata": {
+    "description": "TAR archive with documents",
+    "category": "archive"
+  },
+  "ground_truth": {
+    "text_file": "../../../test_documents/ground_truth/tar/documents.txt",
+    "source": "manual"
+  }
 }

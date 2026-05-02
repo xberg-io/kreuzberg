@@ -8,14 +8,14 @@ MinerU is an open-source tool from OpenDataLab designed for high-quality PDF ext
 
 ## At a Glance
 
-| | Kreuzberg | MinerU |
-|---|---|---|
-| **Written in** | Rust | Python |
-| **File formats** | 91+ | PDF + PNG/JPG only |
-| **Use from** | Python, TypeScript, Go, Ruby, Java, C#, PHP, Elixir, Rust, Wasm | Python CLI / library |
-| **License** | Apache-2.0 | **AGPL-3.0** |
-| **GPU** | Optional (ONNX Runtime -- CUDA, CoreML, TensorRT) | Recommended for best results |
-| **Sweet spot** | Broad format extraction, high throughput, polyglot stacks | Scientific PDFs, academic papers, complex layout analysis |
+|                  | Kreuzberg                                                       | MinerU                                                    |
+| ---------------- | --------------------------------------------------------------- | --------------------------------------------------------- |
+| **Written in**   | Rust                                                            | Python                                                    |
+| **File formats** | 91+                                                             | PDF + PNG/JPG only                                        |
+| **Use from**     | Python, TypeScript, Go, Ruby, Java, C#, PHP, Elixir, Rust, Wasm | Python CLI / library                                      |
+| **License**      | Apache-2.0                                                      | **AGPL-3.0**                                              |
+| **GPU**          | Optional (ONNX Runtime -- CUDA, CoreML, TensorRT)               | Recommended for best results                              |
+| **Sweet spot**   | Broad format extraction, high throughput, polyglot stacks       | Scientific PDFs, academic papers, complex layout analysis |
 
 ---
 

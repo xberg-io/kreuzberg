@@ -6,7 +6,7 @@ Open Access
 
 ## Core mutations, IL28B polymorphisms and response to peginterferon/ribavirin treatment in Swedish patients with hepatitis C virus genotype 1 infection
 
-Erik Alestig 1* , Birgitta Arnholm 2 , Anders Eilard 1 , Martin Lagging 1 , Staffan Nilsson 3 , Gunnar Norkrans 1 , Thomas Wahlberg 4 , Rune Wejstål 1 , Johan Westin 1 and Magnus Lindh 1
+Erik Alestig 1\* , Birgitta Arnholm 2 , Anders Eilard 1 , Martin Lagging 1 , Staffan Nilsson 3 , Gunnar Norkrans 1 , Thomas Wahlberg 4 , Rune Wejstål 1 , Johan Westin 1 and Magnus Lindh 1
 
 ## Abstract
 
@@ -56,7 +56,7 @@ Strains of genotype 1b were also amplified using primers outer forward GTCACAACT
 
 ## Single Nucleotide Polymorphisms
 
-Alleles of rs12979860 were assessed by first running a two-step PCR (15 s at 95°C; 60 s at 60°C) on an ABI 7300 instrument using primers rs12979860\_F, GTGCCT GTCGTGTACTGAACCA and rs12979860\_R, AGCGC GGAGTGCAATTCA and the Taqman MGB-probes rs12979860-C\_P, FAM-CCTGGTTCGCGCCTT-MGB and rs12979860-T\_P, VIC-CCTGGTTCACGCCT-MGB (SNP position underlined). Allelic discrimination was obtained by post-PCR read of fluorescence intensity from each of the fluorophores.
+Alleles of rs12979860 were assessed by first running a two-step PCR (15 s at 95°C; 60 s at 60°C) on an ABI 7300 instrument using primers rs12979860_F, GTGCCT GTCGTGTACTGAACCA and rs12979860_R, AGCGC GGAGTGCAATTCA and the Taqman MGB-probes rs12979860-C_P, FAM-CCTGGTTCGCGCCTT-MGB and rs12979860-T_P, VIC-CCTGGTTCACGCCT-MGB (SNP position underlined). Allelic discrimination was obtained by post-PCR read of fluorescence intensity from each of the fluorophores.
 
 ## Statistical analysis
 
@@ -74,73 +74,73 @@ Table 2 shows the baseline status of patients achieving and not achieving SVR. T
 
 Table 1 Virological and clinical characteristics of patients with hepatitis C virus infection
 
-|            |          |                         |     |             | Core amino acid   | Core amino acid   |            |                             |
-|------------|----------|-------------------------|-----|-------------|-------------------|-------------------|------------|-----------------------------|
-| Patient no | Genotype | Viral load (10 6 IU/ml) | Sex | Age (years) | 70                | 91                | rs12979860 | End of treatment response a |
-| R1         | 1a       | 4.36                    | M   | 52.6        | R                 | C                 | CC         | SVR                         |
-| R2         | 1a       | 6.37                    | M   | 34.9        | R                 | C                 | CC         | SVR                         |
-| R3         | 1a       | 7.84                    | M   | 45.8        | R                 | C                 | CC         | SVR                         |
-| R4         | 1a       | 7.77                    | F   | 42.3        | R                 | C                 | CC         | SVR                         |
-| R5         | 1a       | 7.05                    | M   | 45.3        | R                 | C                 | CC         | SVR                         |
-| R6         | 1a       | 7.19                    | F   | 45.5        | R                 | C                 | CC         | SVR                         |
-| R7         | 1a       | 5.54                    | F   | 46.9        | R                 | C                 | CC         | SVR                         |
-| R8         | 1a       | 5.46                    | M   | 29.1        | R                 | C                 | CT         | SVR                         |
-| R9         | 1a       | 6.18                    | M   | 50.7        | R                 | C                 | CC         | SVR                         |
-| R10        | 1a       | 6.42                    | M   | 59.9        | R                 | C                 | CC         | SVR                         |
-| R11        | 1a       | 5.85                    | M   | 46.4        | R                 | C                 | CC         | SVR                         |
-| R12        | 1a       | 7.25                    | M   | 36.4        | R                 | C                 | CT         | SVR                         |
-| R13        | 1a       | 6.43                    | M   | 57.5        | R                 | C                 | CC         | SVR                         |
-| R14        | 1a       | 6.06                    | M   | 39.2        | R                 | C                 | CT         | SVR                         |
-| R15        | 1a       | 6.63                    | F   | 47.1        | R                 | C                 | CT         | SVR                         |
-| R21        | 1a       | 5.36                    | F   | 29.6        | R                 | C                 | CT         | SVR                         |
-| R22        | 1a       | 5.55                    | F   | 28.7        | R                 | C                 | CT         | SVR                         |
-| R23        | 1a       | 6.43                    | F   | 41.2        | R                 | C                 | CC         | SVR                         |
-| R24        | 1a       | 6.10                    | M   | 51.3        | R                 | C                 | CC         | SVR                         |
-| R25        | 1a       | 7.49                    | F   | 55.7        | R                 | C                 | CC         | SVR                         |
-| R28        | 1a       | 7.79                    | M   | 41.5        | R                 | C                 | CT         | SVR                         |
-| N1         | 1a       | 6.28                    | M   | 40.5        | R                 | C                 | CT         | non-SVR                     |
-| N2         | 1a       | 6.25                    | M   | 50.3        | R                 | C                 | CT         | non-SVR                     |
-| N3         | 1a       | 6.10                    | M   | 55.9        | R                 | C                 | TT         | non-SVR                     |
-| N4         | 1a       | 7.05                    | M   | 47.9        | R                 | C                 | TT         | non-SVR                     |
-| N5         | 1a       | 5.89                    | M   | 50.8        | R                 | C                 | CT         | non-SVR                     |
-| N6         | 1a       | 6.42                    | F   | 48.1        | P                 | C                 | CT         | non-SVR                     |
-| N7         | 1a       | 6.72                    | M   | 48.9        | R                 | C                 | TT         | non-SVR                     |
-| N8         | 1a       | 7.35                    | M   | 54.6        | R                 | C                 | TT         | non-SVR                     |
-| N9         | 1a       | 6.13                    | F   | 57.8        | R                 | C                 | TT         | non-SVR                     |
-| N10        | 1a       | 6.72                    | M   | 54.6        | R                 | C                 | TT         | non-SVR                     |
-| N11        | 1a       | 6.42                    | M   | 48.0        | R                 | C                 | CT         | non-SVR                     |
-| N12        | 1a       | 7.32                    | F   | 48.4        | R                 | C                 | CT         | non-SVR                     |
-| N13        | 1a       | 6.09                    | M   | 24.3        | R                 | C                 | TT         | non-SVR                     |
-| N14        | 1a       | 6.31                    | M   | 35.0        | R                 | C                 | CT         | non-SVR                     |
-| N20        | 1a       | 6.73                    | F   | 35.0        | R                 | C                 | CC         | non-SVR                     |
-| N21        | 1a       | 7.15                    | F   | 45.0        | R                 | C                 | CC         | non-SVR                     |
-| R16        | 1b       | 4.13                    | F   | 46.5        | R                 | M                 | CC         | SVR                         |
-| R17        | 1b       | 4.94                    | M   | 31.5        | R                 | M                 | CC         | SVR                         |
-| R18        | 1b       | 5.40                    | F   | 58.7        | R                 | M                 | CT         | SVR                         |
-| R19        | 1b       | 6.23                    | F   | 38.4        | R                 | L                 | CT         | SVR                         |
-| R20        | 1b       | 7.39                    | F   | 47.8        | R                 | M                 | CT         | SVR                         |
-| R26        | 1b       | 7.17                    | M   | 46.6        | R                 | L                 | CT         | SVR                         |
-|            |          | 7.55                    |     |             | Q                 |                   |            |                             |
-| R29        | 1b       |                         | M   | 57.0        | Q                 | M                 | CT         | SVR                         |
-| N15        | 1b       | 6.08                    | F   | 56.5        | Q                 | M                 | CT         | non-SVR                     |
-| N16        | 1b 1b    | 6.57 7.37               | F M | 58.5 48.9   |                   | M L               | TT CT      | non-SVR non-SVR             |
-| N17 N18    | 1b       | 6.69                    | M   | 62.8        | Q Q               | L                 | CT         | non-SVR                     |
-| N19        | 1b       | 6.70                    | F   | 54.2        | Q                 | M                 | CT         | non-SVR                     |
+|            |          |                         |     |             | Core amino acid | Core amino acid |            |                             |
+| ---------- | -------- | ----------------------- | --- | ----------- | --------------- | --------------- | ---------- | --------------------------- |
+| Patient no | Genotype | Viral load (10 6 IU/ml) | Sex | Age (years) | 70              | 91              | rs12979860 | End of treatment response a |
+| R1         | 1a       | 4.36                    | M   | 52.6        | R               | C               | CC         | SVR                         |
+| R2         | 1a       | 6.37                    | M   | 34.9        | R               | C               | CC         | SVR                         |
+| R3         | 1a       | 7.84                    | M   | 45.8        | R               | C               | CC         | SVR                         |
+| R4         | 1a       | 7.77                    | F   | 42.3        | R               | C               | CC         | SVR                         |
+| R5         | 1a       | 7.05                    | M   | 45.3        | R               | C               | CC         | SVR                         |
+| R6         | 1a       | 7.19                    | F   | 45.5        | R               | C               | CC         | SVR                         |
+| R7         | 1a       | 5.54                    | F   | 46.9        | R               | C               | CC         | SVR                         |
+| R8         | 1a       | 5.46                    | M   | 29.1        | R               | C               | CT         | SVR                         |
+| R9         | 1a       | 6.18                    | M   | 50.7        | R               | C               | CC         | SVR                         |
+| R10        | 1a       | 6.42                    | M   | 59.9        | R               | C               | CC         | SVR                         |
+| R11        | 1a       | 5.85                    | M   | 46.4        | R               | C               | CC         | SVR                         |
+| R12        | 1a       | 7.25                    | M   | 36.4        | R               | C               | CT         | SVR                         |
+| R13        | 1a       | 6.43                    | M   | 57.5        | R               | C               | CC         | SVR                         |
+| R14        | 1a       | 6.06                    | M   | 39.2        | R               | C               | CT         | SVR                         |
+| R15        | 1a       | 6.63                    | F   | 47.1        | R               | C               | CT         | SVR                         |
+| R21        | 1a       | 5.36                    | F   | 29.6        | R               | C               | CT         | SVR                         |
+| R22        | 1a       | 5.55                    | F   | 28.7        | R               | C               | CT         | SVR                         |
+| R23        | 1a       | 6.43                    | F   | 41.2        | R               | C               | CC         | SVR                         |
+| R24        | 1a       | 6.10                    | M   | 51.3        | R               | C               | CC         | SVR                         |
+| R25        | 1a       | 7.49                    | F   | 55.7        | R               | C               | CC         | SVR                         |
+| R28        | 1a       | 7.79                    | M   | 41.5        | R               | C               | CT         | SVR                         |
+| N1         | 1a       | 6.28                    | M   | 40.5        | R               | C               | CT         | non-SVR                     |
+| N2         | 1a       | 6.25                    | M   | 50.3        | R               | C               | CT         | non-SVR                     |
+| N3         | 1a       | 6.10                    | M   | 55.9        | R               | C               | TT         | non-SVR                     |
+| N4         | 1a       | 7.05                    | M   | 47.9        | R               | C               | TT         | non-SVR                     |
+| N5         | 1a       | 5.89                    | M   | 50.8        | R               | C               | CT         | non-SVR                     |
+| N6         | 1a       | 6.42                    | F   | 48.1        | P               | C               | CT         | non-SVR                     |
+| N7         | 1a       | 6.72                    | M   | 48.9        | R               | C               | TT         | non-SVR                     |
+| N8         | 1a       | 7.35                    | M   | 54.6        | R               | C               | TT         | non-SVR                     |
+| N9         | 1a       | 6.13                    | F   | 57.8        | R               | C               | TT         | non-SVR                     |
+| N10        | 1a       | 6.72                    | M   | 54.6        | R               | C               | TT         | non-SVR                     |
+| N11        | 1a       | 6.42                    | M   | 48.0        | R               | C               | CT         | non-SVR                     |
+| N12        | 1a       | 7.32                    | F   | 48.4        | R               | C               | CT         | non-SVR                     |
+| N13        | 1a       | 6.09                    | M   | 24.3        | R               | C               | TT         | non-SVR                     |
+| N14        | 1a       | 6.31                    | M   | 35.0        | R               | C               | CT         | non-SVR                     |
+| N20        | 1a       | 6.73                    | F   | 35.0        | R               | C               | CC         | non-SVR                     |
+| N21        | 1a       | 7.15                    | F   | 45.0        | R               | C               | CC         | non-SVR                     |
+| R16        | 1b       | 4.13                    | F   | 46.5        | R               | M               | CC         | SVR                         |
+| R17        | 1b       | 4.94                    | M   | 31.5        | R               | M               | CC         | SVR                         |
+| R18        | 1b       | 5.40                    | F   | 58.7        | R               | M               | CT         | SVR                         |
+| R19        | 1b       | 6.23                    | F   | 38.4        | R               | L               | CT         | SVR                         |
+| R20        | 1b       | 7.39                    | F   | 47.8        | R               | M               | CT         | SVR                         |
+| R26        | 1b       | 7.17                    | M   | 46.6        | R               | L               | CT         | SVR                         |
+|            |          | 7.55                    |     |             | Q               |                 |            |                             |
+| R29        | 1b       |                         | M   | 57.0        | Q               | M               | CT         | SVR                         |
+| N15        | 1b       | 6.08                    | F   | 56.5        | Q               | M               | CT         | non-SVR                     |
+| N16        | 1b 1b    | 6.57 7.37               | F M | 58.5 48.9   |                 | M L             | TT CT      | non-SVR non-SVR             |
+| N17 N18    | 1b       | 6.69                    | M   | 62.8        | Q Q             | L               | CT         | non-SVR                     |
+| N19        | 1b       | 6.70                    | F   | 54.2        | Q               | M               | CT         | non-SVR                     |
 
 Table 2 Host and viral baseline parameters in patients with and without treatment response
 
-|                                     | SVR n = 29           | non-SVR n = 21      | Univariate p value   |
-|-------------------------------------|----------------------|---------------------|----------------------|
-| Age (mean)                          | 45.2                 | 48.8                | 0.09 a               |
-| Number of patients < 45 / > 45 yrs  | 11 / 18              | 4 / 17              | 0.21 b               |
-| Gender (m/f)                        | 17 / 12              | 13 / 8              | 1.0 b                |
-| Baseline HCV RNA (mean log IU/mL)   | 6.37                 | 6.59                | 0.56 a               |
-| Number with < 5.6 / > 5.6 log IU/mL | 8 / 21               | 0 / 21              | 0.01 b               |
-| Genotype 1a/1b                      | 21 / 8               | 16 / 5              | 1.0 b                |
-| Fibrosis (F0/F1/F2/F3/F4) c         | 0 / 10 / 13 / 4 / 0  | 2 / 4 / 4 / 7 / 2   | 0.19 d               |
-| Core aa 70                          | 28 R / 1 Q           | 15 R / 5 Q & 1 P    | 0.03 b               |
-| Core aa 91                          | 21 C / 6 M / 2 L     | 16 C / 3 M / 2 L    | 0.82 e               |
-| rs12979860                          | 16 CC / 13 CT / 0 TT | 2 CC / 11 CT / 8 TT | 0.0001 e             |
+|                                     | SVR n = 29           | non-SVR n = 21      | Univariate p value |
+| ----------------------------------- | -------------------- | ------------------- | ------------------ |
+| Age (mean)                          | 45.2                 | 48.8                | 0.09 a             |
+| Number of patients < 45 / > 45 yrs  | 11 / 18              | 4 / 17              | 0.21 b             |
+| Gender (m/f)                        | 17 / 12              | 13 / 8              | 1.0 b              |
+| Baseline HCV RNA (mean log IU/mL)   | 6.37                 | 6.59                | 0.56 a             |
+| Number with < 5.6 / > 5.6 log IU/mL | 8 / 21               | 0 / 21              | 0.01 b             |
+| Genotype 1a/1b                      | 21 / 8               | 16 / 5              | 1.0 b              |
+| Fibrosis (F0/F1/F2/F3/F4) c         | 0 / 10 / 13 / 4 / 0  | 2 / 4 / 4 / 7 / 2   | 0.19 d             |
+| Core aa 70                          | 28 R / 1 Q           | 15 R / 5 Q & 1 P    | 0.03 b             |
+| Core aa 91                          | 21 C / 6 M / 2 L     | 16 C / 3 M / 2 L    | 0.82 e             |
+| rs12979860                          | 16 CC / 13 CT / 0 TT | 2 CC / 11 CT / 8 TT | 0.0001 e           |
 
 ## Subgenotypes, core mutations and treatment response
 
@@ -150,16 +150,16 @@ Substitutions of core residues 70 and 91 were closely linked to subgenotype 1b: 
 
 Table 3 Distribution of amino acids at residue 70 and 91 of the core region
 
-|          | Amino acid 70   | Amino acid 70   | Amino acid 70   | Amino acid 70   | Amino acid 91   | Amino acid 91   | Amino acid 91   |       |
-|----------|-----------------|-----------------|-----------------|-----------------|-----------------|-----------------|-----------------|-------|
-| Genotype | Q               | R               | P               | H               | C               | M               | L               | Total |
-| 1a       | 2%              | 98%             | -               | -               | 100%            | -               | -               | 920   |
-| 1b       | 60%             | 35%             | -               | 4%              | 1%              | 71%             | 28%             | 2022  |
-| 2        | -               | 100%            | -               | -               | 39%             | 4%              | 58%             | 83    |
-| 3        | -               | 93%             | 6%              | -               | 99%             | -               | -               | 204   |
-| 4        | 5%              | 95%             | -               | -               | 100%            | -               | -               | 19    |
-| 5        | 86%             | 14%             | -               | -               | -               | -               | 100%            | 14    |
-| 6        | 60%             | 13%             | 13%             | 15%             | 100%            | -               | -               | 55    |
+|          | Amino acid 70 | Amino acid 70 | Amino acid 70 | Amino acid 70 | Amino acid 91 | Amino acid 91 | Amino acid 91 |       |
+| -------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ----- |
+| Genotype | Q             | R             | P             | H             | C             | M             | L             | Total |
+| 1a       | 2%            | 98%           | -             | -             | 100%          | -             | -             | 920   |
+| 1b       | 60%           | 35%           | -             | 4%            | 1%            | 71%           | 28%           | 2022  |
+| 2        | -             | 100%          | -             | -             | 39%           | 4%            | 58%           | 83    |
+| 3        | -             | 93%           | 6%            | -             | 99%           | -             | -             | 204   |
+| 4        | 5%            | 95%           | -             | -             | 100%          | -             | -             | 19    |
+| 5        | 86%           | 14%           | -             | -             | -             | -             | 100%          | 14    |
+| 6        | 60%           | 13%           | 13%           | 15%           | 100%          | -             | -             | 55    |
 
 A total of 3317 sequences found on 31 st of March 2010 in the The Hepatitis C Virus (HCV) Database Project (<http://hcv.lanl.gov/>) were analysed. Values less than 1% not shown.
 

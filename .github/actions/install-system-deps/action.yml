@@ -8,12 +8,11 @@ inputs:
   enable-retry:
     description: Enable retry logic with exponential backoff
     required: false
-    default: 'true'
+    default: "true"
 
 runs:
   using: composite
   steps:
-
     - name: Detect Tesseract version (macOS)
       if: runner.os == 'macOS'
       id: detect-tesseract-macos
@@ -40,7 +39,6 @@ runs:
       shell: bash
       run: scripts/ci/install-system-deps/install-macos.sh
 
-
     - name: Detect Tesseract version (Linux)
       if: runner.os == 'Linux'
       id: detect-tesseract-linux
@@ -64,7 +62,6 @@ runs:
       if: runner.os == 'Linux'
       shell: bash
       run: scripts/ci/install-system-deps/install-linux.sh
-
 
     - name: Cache Tesseract (Windows)
       if: runner.os == 'Windows'

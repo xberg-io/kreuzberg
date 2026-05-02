@@ -28,7 +28,7 @@ City/Nearest Community: Pebble Beach
 
 ---~---------
 
-- - - - - - - - -
+---
 
 Cross Streets:
 
@@ -36,7 +36,7 @@ Cross Streets:
 
 Zip Code: 93953
 
-- - - - - - - - -
+---
 
 Longitude/Latitude (degrees, minutes and seconds): ~
 
@@ -48,7 +48,7 @@ Longitude/Latitude (degrees, minutes and seconds): ~
 
 14.58" W Total Acres: 0.37
 
-- - - - - - - - -
+---
 
 Assessor's Parcel No.:008-091-005-000
 
@@ -82,7 +82,7 @@ CEQA:
 
 - [x] ~ Mit Neg Dec
 
-- - - - - - - - -
+---
 
 ## Local Action Type
 
@@ -94,7 +94,7 @@ CEQA:
 
 - [ ] 0 Community Plan
 
-- - - - - - - - -
+---
 
 - [ ] 0 Draft EIR
 
@@ -104,7 +104,7 @@ CEQA:
 
 Other:
 
-- - - - - - - - -
+---
 
 - [ ] □ Specific Plan
 
@@ -114,11 +114,11 @@ Other:
 
 - [ ] □ Site Plan
 
-- - - - - - - - -
+---
 
-- - - - - - - - -
+---
 
-- - - - - - - - -
+---
 
 NEPA:
 
@@ -138,11 +138,11 @@ Other:
 
 - [ ] □ FONSI
 
-- - - - - - - - -
+---
 
-- - - - - - - - -
+---
 
-- - - - - - - - -
+---
 
 - [ ] □ Rezone
 
@@ -160,7 +160,7 @@ Other:
 
 - [x] I&amp;] Other:Design Approval
 
------- --------------- ---------
+---
 
 ## Development Type
 
@@ -186,7 +186,7 @@ Acres \_\_
 
 Employees \_\_ \_
 
-- - - - - - - - -
+---
 
 - [ ] □ Mining:
 
@@ -208,7 +208,7 @@ MW \_\_\_\_\_ \_
 
 - [ ] 0 Educational:
 
-- - - - - - - - -
+---
 
 - [ ] 0 Waste Treatment:Type
 
@@ -218,13 +218,13 @@ MGD -----
 
 - [ ] □ Hazardous Waste:Type
 
-- - - - - - - - -
+---
 
 - [ ] □
 
 Water Facilities:Type ------- MGD -----
 
-- - - - - - - - -
+---
 
 - [ ] □ Other:
 
@@ -300,11 +300,7 @@ Other: --------
 
 -
 
--
-
--
-
---
+- ***
 
 ## Present Land Use/Zoning/General Plan Designation
 
@@ -316,10 +312,10 @@ Project Description:
 
 The proposed project would require a Combined Development Permit consisting of:
 
-- 1) Coastal Administrative Permit and Design Approval to allow construction of a 4,208 sf two-story residence w ith attached 900 sf garage, first floor terrace, second floor terrace, and covered porch;
-- 2) Coastal Development Permit to allow development on slopes in excess of 30%;
-- 3) Coastal Development Permit to allow removal of 18 trees (Monterey pine); and
-- 4) Coastal Development Permit to allow development within 100 feet of environmentally sensitive habitat area.
+- 1. Coastal Administrative Permit and Design Approval to allow construction of a 4,208 sf two-story residence w ith attached 900 sf garage, first floor terrace, second floor terrace, and covered porch;
+- 2. Coastal Development Permit to allow development on slopes in excess of 30%;
+- 3. Coastal Development Permit to allow removal of 18 trees (Monterey pine); and
+- 4. Coastal Development Permit to allow development within 100 feet of environmentally sensitive habitat area.
 
 Print Form
 
@@ -393,7 +389,7 @@ Contact: -------------------
 
 Phone:
 
-- - - - - - - - -
+---
 
 - [ ] Office of Historic Preservation
 
@@ -437,7 +433,7 @@ Other: -------------------
 
 - [ ] 0th er:
 
-- - - - - - - - -
+---
 
 Ending Date \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ \_
 

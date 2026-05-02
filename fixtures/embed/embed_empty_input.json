@@ -1,33 +1,33 @@
 {
-	"id": "embed_empty_input",
-	"description": "Standalone embedding with empty text list returns empty result without error",
-	"tags": ["embed"],
-	"call": "embed",
-	"input": {
-		"texts": [],
-		"config": {
-			"model": {
-				"type": "preset",
-				"name": "balanced"
-			}
-		}
-	},
-	"assertions": [
-		{
-			"type": "count_equals",
-			"field": "embeddings",
-			"value": 0
-		},
-		{
-			"type": "is_true",
-			"field": "embeddings_valid"
-		},
-		{
-			"type": "is_true",
-			"field": "embeddings_finite"
-		}
-	],
-	"skip": {
-		"reason": "Requires features: embeddings; Skip on platforms: x86_64-pc-windows-msvc"
-	}
+  "id": "embed_empty_input",
+  "description": "Standalone embedding with empty text list returns empty result without error",
+  "tags": ["embed"],
+  "call": "embed",
+  "input": {
+    "texts": [],
+    "config": {
+      "model": {
+        "type": "preset",
+        "name": "balanced"
+      }
+    }
+  },
+  "assertions": [
+    {
+      "type": "count_equals",
+      "field": "embeddings",
+      "value": 0
+    },
+    {
+      "type": "is_true",
+      "field": "embeddings_valid"
+    },
+    {
+      "type": "is_true",
+      "field": "embeddings_finite"
+    }
+  ],
+  "skip": {
+    "reason": "Requires features: embeddings; Skip on platforms: x86_64-pc-windows-msvc"
+  }
 }

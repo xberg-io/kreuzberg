@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/odt/metadata_test.odt",
   "file_type": "odt",
   "file_size": 6874,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "odt test: metadata_test",
     "source": "pandoc-generated",

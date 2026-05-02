@@ -253,10 +253,7 @@
             "b": 644526.0,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            16
-          ]
+          "charspan": [0, 16]
         }
       ],
       "orig": "Test Table Slide",
@@ -280,10 +277,7 @@
             "b": 5433848.0,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            13
-          ]
+          "charspan": [0, 13]
         }
       ],
       "orig": "With footnote",
@@ -307,10 +301,7 @@
             "b": 365125.0,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            18
-          ]
+          "charspan": [0, 18]
         }
       ],
       "orig": "Second slide title",
@@ -334,10 +325,7 @@
             "b": 1825625.0,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            50
-          ]
+          "charspan": [0, 50]
         }
       ],
       "orig": "Let’s introduce a list",
@@ -361,10 +349,7 @@
             "b": 1825625.0,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            50
-          ]
+          "charspan": [0, 50]
         }
       ],
       "orig": "With foo",
@@ -390,10 +375,7 @@
             "b": 1825625.0,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            50
-          ]
+          "charspan": [0, 50]
         }
       ],
       "orig": "Bar",
@@ -419,10 +401,7 @@
             "b": 1825625.0,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            50
-          ]
+          "charspan": [0, 50]
         }
       ],
       "orig": "And baz things",
@@ -448,10 +427,7 @@
             "b": 1344058.0,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            40
-          ]
+          "charspan": [0, 40]
         }
       ],
       "orig": "A rectangle shape with this text inside.",
@@ -475,10 +451,7 @@
             "b": 0.0,
             "coord_origin": "TOPLEFT"
           },
-          "charspan": [
-            0,
-            31
-          ]
+          "charspan": [0, 31]
         }
       ],
       "orig": "Some notes on the second slide.",
@@ -502,10 +475,7 @@
             "b": 2434665.0,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            32
-          ]
+          "charspan": [0, 32]
         }
       ],
       "orig": "List item4",
@@ -531,10 +501,7 @@
             "b": 2434665.0,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            32
-          ]
+          "charspan": [0, 32]
         }
       ],
       "orig": "List item5",
@@ -560,10 +527,7 @@
             "b": 2434665.0,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            32
-          ]
+          "charspan": [0, 32]
         }
       ],
       "orig": "List item6",
@@ -589,10 +553,7 @@
             "b": 2457553.0,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            11
-          ]
+          "charspan": [0, 11]
         }
       ],
       "orig": "I1",
@@ -618,10 +579,7 @@
             "b": 2457553.0,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            11
-          ]
+          "charspan": [0, 11]
         }
       ],
       "orig": "I2",
@@ -647,10 +605,7 @@
             "b": 2457553.0,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            11
-          ]
+          "charspan": [0, 11]
         }
       ],
       "orig": "I3",
@@ -676,10 +631,7 @@
             "b": 2457553.0,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            11
-          ]
+          "charspan": [0, 11]
         }
       ],
       "orig": "I4",
@@ -705,10 +657,7 @@
             "b": 2457554.0,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            24
-          ]
+          "charspan": [0, 24]
         }
       ],
       "orig": "Some info:",
@@ -732,10 +681,7 @@
             "b": 2457554.0,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            24
-          ]
+          "charspan": [0, 24]
         }
       ],
       "orig": "Item A",
@@ -761,10 +707,7 @@
             "b": 2457554.0,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            24
-          ]
+          "charspan": [0, 24]
         }
       ],
       "orig": "Item B",
@@ -790,10 +733,7 @@
             "b": 2459421.0,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            31
-          ]
+          "charspan": [0, 31]
         }
       ],
       "orig": "Maybe a list?",
@@ -817,10 +757,7 @@
             "b": 2459421.0,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            31
-          ]
+          "charspan": [0, 31]
         }
       ],
       "orig": "List1",
@@ -846,10 +783,7 @@
             "b": 2459421.0,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            31
-          ]
+          "charspan": [0, 31]
         }
       ],
       "orig": "List2",
@@ -875,10 +809,7 @@
             "b": 2459421.0,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            31
-          ]
+          "charspan": [0, 31]
         }
       ],
       "orig": "List3",
@@ -904,10 +835,7 @@
             "b": 2434665.0,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            9
-          ]
+          "charspan": [0, 9]
         }
       ],
       "orig": "l1 ",
@@ -933,10 +861,7 @@
             "b": 2434665.0,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            9
-          ]
+          "charspan": [0, 9]
         }
       ],
       "orig": "l2",
@@ -962,10 +887,7 @@
             "b": 2434665.0,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            9
-          ]
+          "charspan": [0, 9]
         }
       ],
       "orig": "l3",
@@ -991,10 +913,7 @@
             "b": 0.0,
             "coord_origin": "TOPLEFT"
           },
-          "charspan": [
-            0,
-            53
-          ]
+          "charspan": [0, 53]
         }
       ],
       "orig": "Final notes on the third slide.\nSecond line of notes.",
@@ -1021,10 +940,7 @@
             "b": 1945640.0,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            0
-          ]
+          "charspan": [0, 0]
         }
       ],
       "captions": [],

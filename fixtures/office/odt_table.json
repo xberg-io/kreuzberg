@@ -1,26 +1,26 @@
 {
-	"id": "office_odt_table",
-	"category": "office",
-	"description": "ODT document with a table structure.",
-	"input": {
-		"path": "odt/table.odt",
-		"media_type": "application/vnd.oasis.opendocument.text"
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/vnd.oasis.opendocument.text"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 10
-		},
-		{
-			"type": "count_min",
-			"field": "tables",
-			"value": 1
-		}
-	]
+  "id": "office_odt_table",
+  "category": "office",
+  "description": "ODT document with a table structure.",
+  "input": {
+    "path": "odt/table.odt",
+    "media_type": "application/vnd.oasis.opendocument.text"
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/vnd.oasis.opendocument.text"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 10
+    },
+    {
+      "type": "count_min",
+      "field": "tables",
+      "value": 1
+    }
+  ]
 }

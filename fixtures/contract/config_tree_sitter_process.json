@@ -1,38 +1,38 @@
 {
-	"id": "config_tree_sitter_process",
-	"description": "Tests tree-sitter process config with all options enabled",
-	"tags": ["contract", "config", "tree-sitter"],
-	"call": "extract_file_sync",
-	"input": {
-		"path": "code/hello.py",
-		"config": {
-			"tree_sitter": {
-				"process": {
-					"structure": true,
-					"imports": true,
-					"exports": true,
-					"comments": true,
-					"docstrings": true,
-					"symbols": true,
-					"diagnostics": true,
-					"chunk_max_size": 2000
-				}
-			}
-		}
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "text/x-source-code"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 5
-		}
-	],
-	"skip": {
-		"reason": "Requires features: tree-sitter"
-	}
+  "id": "config_tree_sitter_process",
+  "description": "Tests tree-sitter process config with all options enabled",
+  "tags": ["contract", "config", "tree-sitter"],
+  "call": "extract_file_sync",
+  "input": {
+    "path": "code/hello.py",
+    "config": {
+      "tree_sitter": {
+        "process": {
+          "structure": true,
+          "imports": true,
+          "exports": true,
+          "comments": true,
+          "docstrings": true,
+          "symbols": true,
+          "diagnostics": true,
+          "chunk_max_size": 2000
+        }
+      }
+    }
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "text/x-source-code"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 5
+    }
+  ],
+  "skip": {
+    "reason": "Requires features: tree-sitter"
+  }
 }

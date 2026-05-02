@@ -33,7 +33,7 @@ To use Docling, you can simply install the docling package from PyPI. Documentat
 
 Docling provides an easy code interface to convert PDF documents from file system, URLs or binary streams, and retrieve the output in either JSON or Markdown format. For convenience, separate methods are offered to convert single documents or batches of documents. A basic usage example is illustrated below. Further examples are available in the Doclign code repository.
 
-from docling.document\_converter import DocumentConverter
+from docling.document_converter import DocumentConverter
 
 ```text
 source = "https://arxiv.org/pdf/2206.01062" # PDF path or URL converter = DocumentConverter() result = converter.convert_single(source) print(result.render_as_markdown()) # output: "## DocLayNet: A Large Human -Annotated Dataset for Document -Layout Analysis [...]"
@@ -103,11 +103,11 @@ torch runtimes backing the Docling pipeline. We will deliver updates on this top
 
 Table 1: Runtime characteristics of Docling with the standard model pipeline and settings, on our test dataset of 225 pages, on two different systems. OCR is disabled. We show the time-to-solution (TTS), computed throughput in pages per second, and the peak memory used (resident set size) for both the Docling-native PDF backend and for the pypdfium backend, using 4 and 16 threads.
 
-| CPU                     | Thread budget   | native backend   | native backend   | native backend   | pypdfium backend   | pypdfium backend   | pypdfium backend   |
-|-------------------------|-----------------|------------------|------------------|------------------|--------------------|--------------------|--------------------|
-|                         |                 | TTS              | Pages/s          | Mem              | TTS                | Pages/s            | Mem                |
-| Apple M3 Max (16 cores) | 4 16            | 177 s 167 s      | 1.27 1.34        | 6.20 GB          | 103 s 92 s         | 2.18 2.45          | 2.56 GB            |
-| Intel(R) Xeon E5-2690   | 4 16            | 375 s 244 s      | 0.60 0.92        | 6.16 GB          | 239 s 143 s        | 0.94 1.57          | 2.42 GB            |
+| CPU                     | Thread budget | native backend | native backend | native backend | pypdfium backend | pypdfium backend | pypdfium backend |
+| ----------------------- | ------------- | -------------- | -------------- | -------------- | ---------------- | ---------------- | ---------------- |
+|                         |               | TTS            | Pages/s        | Mem            | TTS              | Pages/s          | Mem              |
+| Apple M3 Max (16 cores) | 4 16          | 177 s 167 s    | 1.27 1.34      | 6.20 GB        | 103 s 92 s       | 2.18 2.45        | 2.56 GB          |
+| Intel(R) Xeon E5-2690   | 4 16          | 375 s 244 s    | 0.60 0.92      | 6.16 GB        | 239 s 143 s      | 0.94 1.57        | 2.42 GB          |
 
 ## 5 Applications
 
@@ -352,7 +352,7 @@ Table 2: Prediction performance (mAP@0.5-0.95) of object detection networks on D
 surprising, as Text, Table and Picture are abundant and the most visually distinctive in a document.
 
 |                                                                                                        | human                                                                   | MRCNN R50 R101                                                                                                          | FRCNN R101                                                  | YOLO v5x6                                                   |
-|--------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------|-------------------------------------------------------------|
+| ------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- | ----------------------------------------------------------- |
 | Caption Footnote Formula List-item Page-footer Page-header Picture Section-header Table Text Title All | 84-89 83-91 83-85 87-88 93-94 85-89 69-71 83-84 77-81 84-86 60-72 82-83 | 68.4 71.5 70.9 71.8 60.1 63.4 81.2 80.8 61.6 59.3 71.9 70.0 71.7 72.7 67.6 69.3 82.2 82.9 84.6 85.8 76.7 80.4 72.4 73.5 | 70.1 73.7 63.5 81.0 58.9 72.0 72.0 68.4 82.2 85.4 79.9 73.4 | 77.7 77.2 66.2 86.2 61.1 67.9 77.1 74.6 86.3 88.1 82.7 76.8 |
 
 to avoid this at any cost in order to have clear, unbiased baseline numbers for human document-layout annotation. Third, we introduced the feature of snapping boxes around text segments to obtain a pixel-accurate annotation and again reduce time and effort. The CCS annotation tool automatically shrinks every user-drawn box to the minimum bounding-box around the enclosed text-cells for all purely text-based segments, which excludes only Table and Picture . For the latter, we instructed annotation staff to minimise inclusion of surrounding whitespace while including all graphical lines. A downside of snapping boxes to enclosed text cells is that some wrongly parsed PDF pages cannot be annotated correctly and need to be skipped. Fourth, we established a way to flag pages as rejected for cases where no valid annotation according to the label guidelines could be achieved. Example cases for this would be PDF pages that render incorrectly or contain layouts that are impossible to capture with non-overlapping rectangles. Such rejected pages are not contained in the final dataset. With all these measures in place, experienced annotation staff managed to annotate a single page in a typical timeframe of 20s to 60s, depending on its complexity.

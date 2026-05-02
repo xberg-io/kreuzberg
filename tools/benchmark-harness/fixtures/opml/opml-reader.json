@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/opml/opml-reader.opml",
   "file_type": "opml",
   "file_size": 2904,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "opml test: opml-reader",
     "source": "pandoc-generated",

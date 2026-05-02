@@ -6,13 +6,13 @@ John MacFarlane
 
 ### Level 2 with an [embedded link](/url)
 
-#### Level 3 with *emphasis*
+#### Level 3 with _emphasis_
 
 ##### Level 4
 
 ## Level 1
 
-### Level 2 with *emphasis*
+### Level 2 with _emphasis_
 
 #### Level 3
 
@@ -73,7 +73,7 @@ Underscore: \_
 
 ## Code Examples
 
-``` python
+```python
 def example():
     return True
 ```
@@ -81,19 +81,19 @@ def example():
 ## Tables
 
 | Header 1 | Header 2 |
-|----------|----------|
+| -------- | -------- |
 | Data 1   | Data 2   |
 | Data 3   | Data 4   |
 
 ## Links and emphasis
 
-An *[emphasized link](/url)*.
+An _[emphasized link](/url)_.
 
 This is code: `>=`, `$`, `\`, `\$`, `<html>`.
 
-~~This is *strikeout*.~~
+~~This is _strikeout_.~~
 
-This is *emphasized*, and so *is this*.
+This is _emphasized_, and so _is this_.
 
 This is **strong**, and so **is this**.
 

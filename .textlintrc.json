@@ -1,66 +1,66 @@
 {
-	"filters": {
-		"comments": true,
-		"node-types": {
-			"nodeTypes": ["CodeBlock", "Code"]
-		}
-	},
-	"rules": {
-		"no-todo": false,
-		"no-start-duplicated-conjunction": {
-			"severity": "warning"
-		},
-		"no-empty-section": {
-			"severity": "warning"
-		},
-		"terminology": {
-			"severity": "warning",
-			"defaultTerms": false,
-			"terms": ["Kreuzberg", "Zensical"]
-		},
-		"no-zero-width-spaces": true,
-		"@textlint-rule/no-invalid-control-character": true,
-		"no-surrogate-pair": true,
-		"@textlint-rule/no-unmatched-pair": false,
-		"write-good": {
-			"passive": false,
-			"weasel": false,
-			"tooWordy": false,
-			"adverb": false,
-			"so": false,
-			"illusion": false,
-			"severity": "warning"
-		},
-		"common-misspellings": true,
-		"stop-words": {
-			"severity": "warning",
-			"exclude": [
-				"deep dive",
-				"redaction",
-				"e.g.",
-				"currently",
-				"subsequent",
-				"failed to",
-				"leverage",
-				"particularly",
-				"proximity",
-				"consolidate",
-				"simply",
-				"go on",
-				"specifically",
-				"on behalf of",
-				"it appears",
-				"relative to",
-				"practically",
-				"enterprise content management",
-				"long tail",
-				"all of",
-				"demonstrate",
-				"Specifically"
-			]
-		},
-		"en-capitalization": {
-			"severity": "warning"
-		}
-	}
+  "filters": {
+    "comments": true,
+    "node-types": {
+      "nodeTypes": ["CodeBlock", "Code"]
+    }
+  },
+  "rules": {
+    "no-todo": false,
+    "no-start-duplicated-conjunction": {
+      "severity": "warning"
+    },
+    "no-empty-section": {
+      "severity": "warning"
+    },
+    "terminology": {
+      "severity": "warning",
+      "defaultTerms": false,
+      "terms": ["Kreuzberg", "Zensical"]
+    },
+    "no-zero-width-spaces": true,
+    "@textlint-rule/no-invalid-control-character": true,
+    "no-surrogate-pair": true,
+    "@textlint-rule/no-unmatched-pair": false,
+    "write-good": {
+      "passive": false,
+      "weasel": false,
+      "tooWordy": false,
+      "adverb": false,
+      "so": false,
+      "illusion": false,
+      "severity": "warning"
+    },
+    "common-misspellings": true,
+    "stop-words": {
+      "severity": "warning",
+      "exclude": [
+        "deep dive",
+        "redaction",
+        "e.g.",
+        "currently",
+        "subsequent",
+        "failed to",
+        "leverage",
+        "particularly",
+        "proximity",
+        "consolidate",
+        "simply",
+        "go on",
+        "specifically",
+        "on behalf of",
+        "it appears",
+        "relative to",
+        "practically",
+        "enterprise content management",
+        "long tail",
+        "all of",
+        "demonstrate",
+        "Specifically"
+      ]
+    },
+    "en-capitalization": {
+      "severity": "warning"
+    }
+  }
 }

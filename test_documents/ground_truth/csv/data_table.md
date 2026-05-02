@@ -1,5 +1,5 @@
 | Name              | Department  | Salary | Start Date | Active |
-|-------------------|-------------|--------|------------|--------|
+| ----------------- | ----------- | ------ | ---------- | ------ |
 | Alice Johnson     | Engineering | 95000  | 2020-01-15 | true   |
 | Bob Smith         | Marketing   | 75000  | 2019-06-01 | true   |
 | Carol White       | Sales       | 82000  | 2021-03-10 | false  |

@@ -1,30 +1,24 @@
 {
-	"id": "mime_detect_bytes",
-	"category": "mime_utilities",
-	"description": "Detect MIME type from file bytes",
-	"tags": [
-		"mime",
-		"detection",
-		"bytes"
-	],
-	"call": "detect_mime_type",
-	"input": {
-		"setup": {
-			"test_data": "%PDF-1.4\\n"
-		},
-		"args": [
-			"${test_data_bytes}"
-		]
-	},
-	"assertions": [
-		{
-			"type": "contains",
-			"field": "result",
-			"value": "pdf"
-		}
-	],
-	"skip": {
-		"languages": [],
-		"reason": "Tests plugin_api call surface that isn't re-exported at the kreuzberg crate root \u2014 skipped everywhere until Rust public API or codegen module path is updated."
-	}
+  "id": "mime_detect_bytes",
+  "category": "mime_utilities",
+  "description": "Detect MIME type from file bytes",
+  "tags": ["mime", "detection", "bytes"],
+  "call": "detect_mime_type",
+  "input": {
+    "setup": {
+      "test_data": "%PDF-1.4\\n"
+    },
+    "args": ["${test_data_bytes}"]
+  },
+  "assertions": [
+    {
+      "type": "contains",
+      "field": "result",
+      "value": "pdf"
+    }
+  ],
+  "skip": {
+    "languages": [],
+    "reason": "Tests plugin_api call surface that isn't re-exported at the kreuzberg crate root \u2014 skipped everywhere until Rust public API or codegen module path is updated."
+  }
 }

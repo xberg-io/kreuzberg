@@ -1,22 +1,22 @@
 {
-	"id": "render_single_page",
-	"category": "render",
-	"description": "Render a single PDF page to PNG",
-	"tags": ["render", "pdf", "single_page"],
-	"call": "render_page",
-	"input": {
-		"path": "pdf/tiny.pdf",
-		"page_index": 0,
-		"dpi": 150,
-		"mode": "single_page"
-	},
-	"assertions": [
-		{
-			"type": "not_empty"
-		},
-		{
-			"type": "count_min",
-			"value": 100
-		}
-	]
+  "id": "render_single_page",
+  "category": "render",
+  "description": "Render a single PDF page to PNG",
+  "tags": ["render", "pdf", "single_page"],
+  "call": "render_page",
+  "input": {
+    "path": "pdf/tiny.pdf",
+    "page_index": 0,
+    "dpi": 150,
+    "mode": "single_page"
+  },
+  "assertions": [
+    {
+      "type": "not_empty"
+    },
+    {
+      "type": "count_min",
+      "value": 100
+    }
+  ]
 }

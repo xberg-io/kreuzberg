@@ -1,33 +1,33 @@
 {
-	"id": "config_pdf_annotations_count",
-	"description": "Tests PDF annotation extraction with min_count assertion",
-	"tags": ["contract", "config", "annotations"],
-	"call": "extract_file_sync",
-	"input": {
-		"path": "vendored/pdfplumber/pdf/annotations.pdf",
-		"config": {
-			"pdf_options": {
-				"extract_annotations": true
-			}
-		}
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/pdf"
-		},
-		{
-			"type": "not_empty",
-			"field": "annotations"
-		},
-		{
-			"type": "count_min",
-			"field": "annotations",
-			"value": 3
-		}
-	],
-	"skip": {
-		"reason": "Requires features: pdf; Skip on platforms: aarch64-unknown-linux-gnu; PDFium ARM Linux binary does not support annotation extraction"
-	}
+  "id": "config_pdf_annotations_count",
+  "description": "Tests PDF annotation extraction with min_count assertion",
+  "tags": ["contract", "config", "annotations"],
+  "call": "extract_file_sync",
+  "input": {
+    "path": "vendored/pdfplumber/pdf/annotations.pdf",
+    "config": {
+      "pdf_options": {
+        "extract_annotations": true
+      }
+    }
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/pdf"
+    },
+    {
+      "type": "not_empty",
+      "field": "annotations"
+    },
+    {
+      "type": "count_min",
+      "field": "annotations",
+      "value": 3
+    }
+  ],
+  "skip": {
+    "reason": "Requires features: pdf; Skip on platforms: aarch64-unknown-linux-gnu; PDFium ARM Linux binary does not support annotation extraction"
+  }
 }

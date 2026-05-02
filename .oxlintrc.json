@@ -1,24 +1,24 @@
 {
-	"ignorePatterns": ["docs/snippets/**/*.ts", "crates/kreuzberg-wasm/typescript/kreuzberg_wasm.js"],
-	"rules": {
-		"no-unused-vars": [
-			"warn",
-			{
-				"vars": "all",
-				"varsIgnorePattern": "^_",
-				"args": "after-used",
-				"argsIgnorePattern": "^_",
-				"caughtErrors": "none",
-				"ignoreRestSiblings": true
-			}
-		]
-	},
-	"overrides": [
-		{
-			"files": ["**/*.spec.ts", "**/*.test.ts", "**/*.test.mjs", "**/tests/**"],
-			"rules": {
-				"no-unused-vars": "off"
-			}
-		}
-	]
+  "ignorePatterns": ["docs/snippets/**/*.ts", "crates/kreuzberg-wasm/typescript/kreuzberg_wasm.js"],
+  "rules": {
+    "no-unused-vars": [
+      "warn",
+      {
+        "vars": "all",
+        "varsIgnorePattern": "^_",
+        "args": "after-used",
+        "argsIgnorePattern": "^_",
+        "caughtErrors": "none",
+        "ignoreRestSiblings": true
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["**/*.spec.ts", "**/*.test.ts", "**/*.test.mjs", "**/tests/**"],
+      "rules": {
+        "no-unused-vars": "off"
+      }
+    }
+  ]
 }

@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/latex/latex-reader.latex",
   "file_type": "latex",
   "file_size": 12572,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "latex test: latex-reader",
     "source": "pandoc-generated",

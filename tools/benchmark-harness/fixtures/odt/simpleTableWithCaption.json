@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/odt/simpleTableWithCaption.odt",
   "file_type": "odt",
   "file_size": 10396,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "odt test: simpleTableWithCaption",
     "source": "pandoc-generated",

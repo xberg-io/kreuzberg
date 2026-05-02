@@ -1,12 +1,9 @@
 {
-	"id": "validate_cache_key_invalid",
-	"category": "cache_ops",
-	"description": "Invalid cache key returns false",
-	"tags": ["cache"],
-	"call": "validate_cache_key",
-	"input": { "key": "" },
-	"assertions": [
-		{ "type": "not_error" },
-		{ "type": "is_false", "field": "result" }
-	]
+  "id": "validate_cache_key_invalid",
+  "category": "cache_ops",
+  "description": "Invalid cache key returns false",
+  "tags": ["cache"],
+  "call": "validate_cache_key",
+  "input": { "key": "" },
+  "assertions": [{ "type": "not_error" }, { "type": "is_false", "field": "result" }]
 }

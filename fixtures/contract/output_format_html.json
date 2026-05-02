@@ -1,10 +1,7 @@
 {
   "id": "output_format_html",
   "description": "Tests HTML output format",
-  "tags": [
-    "contract",
-    "output_format"
-  ],
+  "tags": ["contract", "output_format"],
   "call": "extract_file_sync",
   "input": {
     "path": "pdf/fake_memo.pdf",

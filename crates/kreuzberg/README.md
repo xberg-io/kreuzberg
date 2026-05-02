@@ -35,12 +35,12 @@ tokio = { version = "1", features = ["rt", "macros"] }
 
 Kreuzberg offers flexible PDFium linking strategies for different deployment scenarios. **Note:** Language bindings (Python, TypeScript, Ruby, Java, Go, C#, PHP, Elixir) automatically bundle PDFium—no configuration needed. This section applies only to the Rust crate.
 
-| Strategy | Feature Flag | Description | Use Case |
-|----------|-------------|-------------|----------|
-| **Default (Dynamic)** | None | Links to system PDFium at runtime | Development, system package users |
-| **Static** | `pdf-static` | Statically links PDFium into binary | Single binary distribution, no runtime dependencies |
-| **Bundled** | `pdf-bundled` | Downloads and embeds PDFium in binary | CI/CD, hermetic builds, largest binary size |
-| **System** | `pdf-system` | Uses system PDFium via pkg-config | Linux distributions with PDFium package |
+| Strategy              | Feature Flag  | Description                           | Use Case                                            |
+| --------------------- | ------------- | ------------------------------------- | --------------------------------------------------- |
+| **Default (Dynamic)** | None          | Links to system PDFium at runtime     | Development, system package users                   |
+| **Static**            | `pdf-static`  | Statically links PDFium into binary   | Single binary distribution, no runtime dependencies |
+| **Bundled**           | `pdf-bundled` | Downloads and embeds PDFium in binary | CI/CD, hermetic builds, largest binary size         |
+| **System**            | `pdf-system`  | Uses system PDFium via pkg-config     | Linux distributions with PDFium package             |
 
 **Example Cargo.toml configurations:**
 
@@ -249,19 +249,19 @@ kreuzberg = { version = "4.0", features = ["pdf", "excel", "ocr"] }
 
 ### Available Features
 
-| Feature | Description | Binary Size |
-|---------|-------------|-------------|
-| `pdf` | PDF extraction via pdfium | +25MB |
-| `excel` | Excel/spreadsheet parsing | +3MB |
-| `office` | DOCX, PPTX extraction | +1MB |
-| `email` | EML, MSG extraction | +500KB |
-| `html` | HTML to markdown | +1MB |
-| `xml` | XML streaming parser | +500KB |
-| `archives` | ZIP, TAR, 7Z extraction | +2MB |
-| `ocr` | OCR with Tesseract | +5MB |
-| `language-detection` | Language detection | +100KB |
-| `chunking` | Text chunking | +200KB |
-| `quality` | Text quality processing | +500KB |
+| Feature              | Description               | Binary Size |
+| -------------------- | ------------------------- | ----------- |
+| `pdf`                | PDF extraction via pdfium | +25MB       |
+| `excel`              | Excel/spreadsheet parsing | +3MB        |
+| `office`             | DOCX, PPTX extraction     | +1MB        |
+| `email`              | EML, MSG extraction       | +500KB      |
+| `html`               | HTML to markdown          | +1MB        |
+| `xml`                | XML streaming parser      | +500KB      |
+| `archives`           | ZIP, TAR, 7Z extraction   | +2MB        |
+| `ocr`                | OCR with Tesseract        | +5MB        |
+| `language-detection` | Language detection        | +100KB      |
+| `chunking`           | Text chunking             | +200KB      |
+| `quality`            | Text quality processing   | +500KB      |
 
 ### Feature Bundles
 
@@ -275,11 +275,11 @@ kreuzberg = { version = "4.0", features = ["cli"] }
 
 Kreuzberg supports three PDFium linking strategies. **Default is `bundled-pdfium`** (best developer experience).
 
-| Strategy | Feature | Use Case | Binary Size | Runtime Deps |
-|----------|---------|----------|-------------|--------------|
-| **Bundled (default)** | `bundled-pdfium` | Development, production | +8-15MB | None |
-| **Static** | `static-pdfium` | Docker, musl, standalone binaries | +200MB | None |
-| **System** | `system-pdfium` | Package managers, distros | +2MB | libpdfium.so |
+| Strategy              | Feature          | Use Case                          | Binary Size | Runtime Deps |
+| --------------------- | ---------------- | --------------------------------- | ----------- | ------------ |
+| **Bundled (default)** | `bundled-pdfium` | Development, production           | +8-15MB     | None         |
+| **Static**            | `static-pdfium`  | Docker, musl, standalone binaries | +200MB      | None         |
+| **System**            | `system-pdfium`  | Package managers, distros         | +2MB        | libpdfium.so |
 
 ### Quick Start
 

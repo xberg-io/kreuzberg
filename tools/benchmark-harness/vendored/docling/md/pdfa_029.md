@@ -113,7 +113,7 @@ Anderson connector (option)
 The battery charger is designed to charge only 12V, 24V, 36V ali 48V lead (Pb) batteries, depending on the type of charger. Check if the charger and battery have the same voltage!
 
 |    | Plug the charger (230Vac cable) into the mains.                                                                                                                               |
-|-----|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 |    | Switch on the main supply switcher (POWER) on back of the charger.                                                                                                            |
 |    | The device responds with a short beep and all three LED blinks briefly, captions appear on the screen, the charger is ready to charge.                                        |
 |    | BLACK on - poll of the battery                                                                                                                                                |
@@ -127,15 +127,15 @@ Warning: If the battery is properly connected and all three LED blinks, but the 
 
 ## LEGEND OF LED SIGNALS WHILE CHARGING THE BATTERY
 
-| LED                | LED activity         | Charge phase                 | battery charge level   |
-|--------------------|----------------------|------------------------------|------------------------|
-| RED, YELLOW, GREEN | short blink all LEDs | charger is ready (Ready)     | /                      |
-| YELLOW             | blinks               | bulk charge (Bulk)           | < 65%                  |
-| YELLOW             | continuously lit     | absorption I charge (Abso1)  | 65..75%                |
-| GREEN              | blinks               | absorption II charge (Abso2) | 75..90%                |
-| GREEN              | 2x fast blink        | equalization charge (Equal)  | 90..95%                |
-| GREEN              | continuously lit     | float charge (Float)         | >95%                   |
-| RED                | continuously lit     | temperature off (Error)      | /                      |
+| LED                | LED activity         | Charge phase                 | battery charge level |
+| ------------------ | -------------------- | ---------------------------- | -------------------- |
+| RED, YELLOW, GREEN | short blink all LEDs | charger is ready (Ready)     | /                    |
+| YELLOW             | blinks               | bulk charge (Bulk)           | < 65%                |
+| YELLOW             | continuously lit     | absorption I charge (Abso1)  | 65..75%              |
+| GREEN              | blinks               | absorption II charge (Abso2) | 75..90%              |
+| GREEN              | 2x fast blink        | equalization charge (Equal)  | 90..95%              |
+| GREEN              | continuously lit     | float charge (Float)         | >95%                 |
+| RED                | continuously lit     | temperature off (Error)      | /                    |
 
 Contrast
 
@@ -153,7 +153,7 @@ Ah:
 
 4. UH
 
-6. 6Hh
+5. 6Hh
 
 › Status
 
@@ -344,7 +344,7 @@ For servis intervention only.
 ## CHARGING PROGRAMS
 
 | UNIVERSAL (UNI)          | universal program, used for unrecognised types of batteries                                                    |
-|--------------------------|----------------------------------------------------------------------------------------------------------------|
+| ------------------------ | -------------------------------------------------------------------------------------------------------------- |
 | STANDARD (STA)           | standard Pd program, used for older types of Pb batteries                                                      |
 | CaCaWET (WET)            | Pb CaCaWET program, is used for wet hermetic start battery                                                     |
 | AGM                      | Pb with acid swab , used for hermetic AGM batteries                                                            |
@@ -356,32 +356,32 @@ For servis intervention only.
 
 The table below shows the charging voltage per cell in the battery. The charging voltage per cell are indicated for each charging profile or for each type of battery and charging phase.
 
-| Program:     | ( Bulk ) V/cel   | ( Absorption I ) V/cel   | ( Absorption II ) V/cel   | ( Equalization ) V/cel   | ( Float ) V/cel   |
-|--------------|------------------|--------------------------|---------------------------|--------------------------|-------------------|
-| Universal    | 1.. 2,355        | 2,430                    | 2,397                     | /                        | 2,20..2,30        |
-| Standard     | 1.. 2,355        | 2,460                    | 2,410                     | 2,490                    | 2,25..2,30        |
-| CaCaWET      | 1.. 2,355        | 2,600                    | 2,550                     | 2,660                    | 2,25..2,30        |
-| AGM          | 1.. 2,355        | 2,470                    | 2,450                     | 2,510                    | 2,25..2,38        |
-| GEL          | 1.. 2,355        | 2,400                    | 2,380                     | /                        | 2,25..2,30        |
-| Lead crystal | 1.. 2,355        | 2,460                    | 2,380                     | /                        | 2,316..2,325      |
-| Traction     | 1.. 2,355        | 2,580                    | 2,400                     | 2,630                    | 2,28..2,32        |
+| Program:     | ( Bulk ) V/cel | ( Absorption I ) V/cel | ( Absorption II ) V/cel | ( Equalization ) V/cel | ( Float ) V/cel |
+| ------------ | -------------- | ---------------------- | ----------------------- | ---------------------- | --------------- |
+| Universal    | 1.. 2,355      | 2,430                  | 2,397                   | /                      | 2,20..2,30      |
+| Standard     | 1.. 2,355      | 2,460                  | 2,410                   | 2,490                  | 2,25..2,30      |
+| CaCaWET      | 1.. 2,355      | 2,600                  | 2,550                   | 2,660                  | 2,25..2,30      |
+| AGM          | 1.. 2,355      | 2,470                  | 2,450                   | 2,510                  | 2,25..2,38      |
+| GEL          | 1.. 2,355      | 2,400                  | 2,380                   | /                      | 2,25..2,30      |
+| Lead crystal | 1.. 2,355      | 2,460                  | 2,380                   | /                      | 2,316..2,325    |
+| Traction     | 1.. 2,355      | 2,580                  | 2,400                   | 2,630                  | 2,28..2,32      |
 
 ## DESCRIPTION OF CHARGE PHASE
 
-| Charge phase:   | Charge phase:   | Description:                                                                                                            |
-|-----------------|-----------------|-------------------------------------------------------------------------------------------------------------------------|
-| Bulk            | BULK CHARGE     | Charges the battery up to 65%, delivering a lot of energy to the battery in a short time.                               |
-| Abso 1          | ABSORPTION I    | The charge is slowed down so that the battery absorbs more energy. The battery reaches 65..75% of the capacity.         |
-| Abso 2          | ABSORPTION II   | Charge current is gradually reduced. The battery reaches 75..85% of the capacity.                                       |
-| Equal           | EQUALIZATION    | At this phase, levels between different filled cells are equalized. The battery reaches 90..95% of the capacity.        |
-| Float           | FLOAT CHARGE    | Keeps the battery at 100% of the capacity without causing damage to the battery. Also, can not over-charge the battery. |
+| Charge phase: | Charge phase: | Description:                                                                                                            |
+| ------------- | ------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Bulk          | BULK CHARGE   | Charges the battery up to 65%, delivering a lot of energy to the battery in a short time.                               |
+| Abso 1        | ABSORPTION I  | The charge is slowed down so that the battery absorbs more energy. The battery reaches 65..75% of the capacity.         |
+| Abso 2        | ABSORPTION II | Charge current is gradually reduced. The battery reaches 75..85% of the capacity.                                       |
+| Equal         | EQUALIZATION  | At this phase, levels between different filled cells are equalized. The battery reaches 90..95% of the capacity.        |
+| Float         | FLOAT CHARGE  | Keeps the battery at 100% of the capacity without causing damage to the battery. Also, can not over-charge the battery. |
 
 ## CURRENT LIMIT MENU
 
 It happens that the line fuse in installation does not allow such a large consumption of energy from the network (example 10A fuse), as it needs Charger AP-3000. One of the reasons may be a aggregate, which is too weak, or the battery is too small for such a large charging currents. Power of the charging current in this case can be reduced in »Current limit MENU« to 20% of nominal. A step of reduction the charging current is 10%. In the case of setting the charging current to 20% of the power consumption of the network more than 650W.
 
-| BATTERY SIZE MENU   |
-|---------------------|
+| BATTERY SIZE MENU |
+| ----------------- |
 
 The battery, which is filled can be small (less than 50Ah) or large, over 1000Ah. Depending on the size of the battery, the ability to receive el. energy during the absorption phase is very different. The charging profile therefore adjusts to the size of the battery during the absorption, equalization and maintenance phases. To make sure that battery charging is really optimal, select the size (capacity) of the battery in the » BattSize MENU«
 
@@ -395,14 +395,14 @@ For special purposes where we need a stable voltage and current for charging (ex
 
 There are technical constraints of the device, which is not possible to set, for example voltage of 62V and current 50A at the same time. An example relates to 48V battery charger.
 
-| Selected voltage Uo   | Max selected current Io   |
-|-----------------------|---------------------------|
-| >66.0V                | 10.5A                     |
-| 64.0V                 | 12.2A                     |
-| 62.0V                 | 15.8A                     |
-| 60.0V                 | 29.8A                     |
-| 59.2V                 | 40.2A                     |
-| <59.2V                | 50.0A                     |
+| Selected voltage Uo | Max selected current Io |
+| ------------------- | ----------------------- |
+| >66.0V              | 10.5A                   |
+| 64.0V               | 12.2A                   |
+| 62.0V               | 15.8A                   |
+| 60.0V               | 29.8A                   |
+| 59.2V               | 40.2A                   |
+| <59.2V              | 50.0A                   |
 
 15 T
 
@@ -420,17 +420,17 @@ When charging an overdischarged battery which has a voltage below 6V (at 12V cha
 
 If necessary, repeat the entire procedure several times, up to 100x. Repeat until a voltage of 6V is reached at 12V charger (For the other chargers, see table below). From then on the system automatically starts charging.
 
-| Charger model:   | AP-3000 12V   | AP-3000 24V   | AP-3000 36V   | AP-3000 48V   |
-|------------------|---------------|---------------|---------------|---------------|
-| Start charge at: | 6V            | 12V           | 18V           | 24V           |
+| Charger model:   | AP-3000 12V | AP-3000 24V | AP-3000 36V | AP-3000 48V |
+| ---------------- | ----------- | ----------- | ----------- | ----------- |
+| Start charge at: | 6V          | 12V         | 18V         | 24V         |
 
 ## MAINS VOLTAGE IS TOO LOW
 
 In the event of a low supply voltage, all voltages below 210Vac count for this, the charging current is gradually reduced to 35% of the rated value. This happens at 90Vac. The device can therefore also be used in environments where the mains voltage fluctuates. Current from the grid will never exceed 16A. The system automatically protects itself from destruction, as does the network installation and the 16A mains fuse. The charging current decreases gradually, as the table below shows. The mains voltage is displayed in the status menu on the left below. If the charger is in standby mode and not fully charged, the power supply is displayed with considerable error. After charging the charger, the voltage measurement error is minimal.
 
-| Uac[V]   |   210 |   200 |   190 |   180 |   170 |   160 |   150 |   140 |   130 |   120 |   110 |   100 |   90 |
-|----------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|------|
-| Ibat[%]  |    95 |    90 |    85 |    80 |    75 |    70 |    65 |    60 |    55 |    50 |    45 |    40 |   35 |
+| Uac[V]  | 210 | 200 | 190 | 180 | 170 | 160 | 150 | 140 | 130 | 120 | 110 | 100 | 90  |
+| ------- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Ibat[%] | 95  | 90  | 85  | 80  | 75  | 70  | 65  | 60  | 55  | 50  | 45  | 40  | 35  |
 
 <!-- image -->
 
@@ -445,7 +445,7 @@ We can say that pulse charging technology works as transformer between battery c
 ## TECHNICAL DATA
 
 | Model       | Model               | AP-3000 12V 135A                                                                                                                             | AP-3000 24V 100A                                                                                                                             | AP-3000 36V 75A                                                                                                                              | AP-3000 48V 50A                                                                                                                              |
-|-------------|---------------------|----------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
+| ----------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
 |             | THE MAIN CHARGE     | 14,6V yellow LED                                                                                                                             | 29,2V yellow LED                                                                                                                             | 43,8V yellow LED                                                                                                                             | 58,4V yellow LED                                                                                                                             |
 |             | MAINTENANCE VOLTAGE | 13,6V green LED                                                                                                                              | 27,2V green LED                                                                                                                              | 40,8V green LED                                                                                                                              | 54,4V green LED                                                                                                                              |
 |             | PULSED CURRENT- EFF | 100A                                                                                                                                         | 100A                                                                                                                                         | 75A                                                                                                                                          | 50A                                                                                                                                          |
@@ -477,7 +477,7 @@ We can say that pulse charging technology works as transformer between battery c
 ## TROUBLESHOOTING
 
 | Error                                                                                                   | Cause                                                               | Solution                                                               |
-|---------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------|------------------------------------------------------------------------|
+| ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- | ---------------------------------------------------------------------- |
 | The charger is connected to the mains, power switch is ON, LED not blinks and the screen does not work. | - there is no mains voltage 230Vac                                  | - ensure supply voltage 230Vac                                         |
 | Battery is connected but the charger is not charging, all LED blinking. The screen shows a low voltage. | - to low voltage on the battery (over- discharged battery)          | - use START HELP button                                                |
 | Red LED is on and the LCD Screen displays »Error«.                                                      | - devices has overheated - to high ambient temperatures - fan error | - reduce the ambient temperature - service intervention - clean up fan |
@@ -496,9 +496,9 @@ We can say that pulse charging technology works as transformer between battery c
 
 ## Eyra elektronika d.o.o. Gabrje pri Stični 45 SI-1295 Ivančna Gorica Slovenia
 
-Tel.++386 (0)1 7869-037    Fax++386 (0)1 7869-038
+Tel.++386 (0)1 7869-037 Fax++386 (0)1 7869-038
 
-e-mail: <info@eyra-elektronika.si>    <http://www.eyra-elektronika.si>
+e-mail: <info@eyra-elektronika.si> <http://www.eyra-elektronika.si>
 
 ## GUARANTEE STATEMENT
 
@@ -519,18 +519,18 @@ seller :
 
 company:
 
-------------------------------------------------------------------------------------------------------------------------
+---
 
 name and surname of the seller:
 
-------------------------------------------------------------------------------------------------------------------------
+---
 
 signature of the seller:
 
-------------------------------------------------------------------------------------------------------------------------
+---
 
 date of sale:
 
-------------------------------------------------------------------------------------------------------------------------
+---
 
 stamp:

@@ -1,46 +1,46 @@
 {
-	"id": "ocr_paddle_structured",
-	"category": "ocr",
-	"description": "PaddleOCR with structured output preserving all metadata.",
-	"input": {
-		"path": "images/test_hello_world.png",
-		"media_type": "image/png",
-		"config": {
-			"ocr": {
-				"backend": "paddle-ocr",
-				"language": "en",
-				"element_config": {
-					"include_elements": true
-				}
-			},
-			"force_ocr": true
-		}
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "image/png"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 5
-		},
-		{
-			"type": "not_empty",
-			"field": "ocr_elements"
-		},
-		{
-			"type": "is_true",
-			"field": "ocr_elements_have_geometry"
-		},
-		{
-			"type": "is_true",
-			"field": "ocr_elements_have_confidence"
-		}
-	],
-	"skip": {
-		"reason": "Requires features: paddle-ocr; Tests structured output with bbox/confidence preservation"
-	}
+  "id": "ocr_paddle_structured",
+  "category": "ocr",
+  "description": "PaddleOCR with structured output preserving all metadata.",
+  "input": {
+    "path": "images/test_hello_world.png",
+    "media_type": "image/png",
+    "config": {
+      "ocr": {
+        "backend": "paddle-ocr",
+        "language": "en",
+        "element_config": {
+          "include_elements": true
+        }
+      },
+      "force_ocr": true
+    }
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "image/png"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 5
+    },
+    {
+      "type": "not_empty",
+      "field": "ocr_elements"
+    },
+    {
+      "type": "is_true",
+      "field": "ocr_elements_have_geometry"
+    },
+    {
+      "type": "is_true",
+      "field": "ocr_elements_have_confidence"
+    }
+  ],
+  "skip": {
+    "reason": "Requires features: paddle-ocr; Tests structured output with bbox/confidence preservation"
+  }
 }

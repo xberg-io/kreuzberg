@@ -1,4 +1,4 @@
-*1XN98/65202411231432*
+_1XN98/65202411231432_
 
 ## TECHMART ELECTRONICS
 
@@ -8,7 +8,7 @@
 
 Store #0342 - Downtown SF 11/23/2024 14:32:18 PST TXN: TXN-98765-2024 Cashier: Emily Rodriguez Register: POS-07
 
------------------------------------
+---
 
 Wireless Noise-Cancelling Headphones - Premium Black AUDIO-5521 1 @ $349.99 Member Discount $-50.00 $299.99
 
@@ -22,7 +22,7 @@ Screen Cleaning Kit Professional Grade CARE-1156 3 @ $12.99 $38.97
 
 HDMI 2.1 Cable 6ft 8K Resolution Support CABLE-7789 2 @ $24.99 Member Discount $-5.00 $44.98
 
------------------------------------
+---
 
 SUBTOTAL $863.91 Member Discount (15%)-$84.00 Sales Tax (8.5%) $66.23 Rewards Applied -$25.00
 
@@ -34,15 +34,15 @@ SUBTOTAL $863.91 Member Discount (15%)-$84.00 Sales Tax (8.5%) $66.23 Rewards Ap
 
 PAYMENT METHOD Visa Card ending in 4782 Auth: 847392 Ref: REF-20241123-98765
 
------------------------------------
+---
 
 REWARDS MEMBER Sarah Mitchell ID: TM-447821 Points Earned: 821 Total Points: 3,247 Next Reward: $50 gift card at 5,000 pts (1,753 to go)
 
------------------------------------
+---
 
 RETURN POLICY Returns within 30 days Receipt required Electronics must be unopened
 
-## *TXN98765202411231432*
+## _TXN98765202411231432_
 
 Thank you for shopping! <https://www.techmart.example.com>
 

@@ -1,20 +1,20 @@
 {
-	"id": "dedup_unique",
-	"category": "text_utils",
-	"description": "Deduplicate text with all unique lines",
-	"tags": ["text_utils", "deduplication"],
-	"call": "dedup_text",
-	"input": {
-		"texts": ["a", "b", "c"]
-	},
-	"assertions": [
-		{
-			"type": "not_error"
-		},
-		{
-			"type": "contains",
-			"field": "result",
-			"value": "a"
-		}
-	]
+  "id": "dedup_unique",
+  "category": "text_utils",
+  "description": "Deduplicate text with all unique lines",
+  "tags": ["text_utils", "deduplication"],
+  "call": "dedup_text",
+  "input": {
+    "texts": ["a", "b", "c"]
+  },
+  "assertions": [
+    {
+      "type": "not_error"
+    },
+    {
+      "type": "contains",
+      "field": "result",
+      "value": "a"
+    }
+  ]
 }

@@ -8,10 +8,10 @@ Supports both **ESM** (`import`) and **CommonJS** (`require`):
 
 ```typescript
 // ESM
-import { extractFile, batchExtractFiles } from '@kreuzberg/node';
+import { extractFile, batchExtractFiles } from "@kreuzberg/node";
 
 // CommonJS
-const { extractFile, batchExtractFiles } = require('@kreuzberg/node');
+const { extractFile, batchExtractFiles } = require("@kreuzberg/node");
 ```
 
 **Current Version**: 4.2.14
@@ -29,17 +29,17 @@ All extraction functions return `ExtractionResult` containing extracted content,
 Extract content from a single file asynchronously.
 
 ```typescript
-import { extractFile } from '@kreuzberg/node';
+import { extractFile } from "@kreuzberg/node";
 
 // Auto-detect MIME type from file extension
-const result = await extractFile('document.pdf');
+const result = await extractFile("document.pdf");
 console.log(result.content);
 
 // Explicit MIME type
-const result2 = await extractFile('document.pdf', 'application/pdf');
+const result2 = await extractFile("document.pdf", "application/pdf");
 
 // With configuration
-const result3 = await extractFile('document.pdf', null, {
+const result3 = await extractFile("document.pdf", null, {
   chunking: {
     maxChars: 1000,
     maxOverlap: 200,
@@ -62,9 +62,9 @@ const result3 = await extractFile('document.pdf', null, {
 Extract content from a single file synchronously.
 
 ```typescript
-import { extractFileSync } from '@kreuzberg/node';
+import { extractFileSync } from "@kreuzberg/node";
 
-const result = extractFileSync('document.pdf');
+const result = extractFileSync("document.pdf");
 console.log(result.content);
 ```
 
@@ -81,11 +81,11 @@ console.log(result.content);
 Extract content from raw bytes (Buffer or Uint8Array) asynchronously.
 
 ```typescript
-import { extractBytes } from '@kreuzberg/node';
-import { readFile } from 'fs/promises';
+import { extractBytes } from "@kreuzberg/node";
+import { readFile } from "fs/promises";
 
-const data = await readFile('document.pdf');
-const result = await extractBytes(data, 'application/pdf');
+const data = await readFile("document.pdf");
+const result = await extractBytes(data, "application/pdf");
 console.log(result.content);
 ```
 
@@ -102,11 +102,11 @@ console.log(result.content);
 Extract content from raw bytes synchronously.
 
 ```typescript
-import { extractBytesSync } from '@kreuzberg/node';
-import { readFileSync } from 'fs';
+import { extractBytesSync } from "@kreuzberg/node";
+import { readFileSync } from "fs";
 
-const data = readFileSync('document.pdf');
-const result = extractBytesSync(data, 'application/pdf');
+const data = readFileSync("document.pdf");
+const result = extractBytesSync(data, "application/pdf");
 ```
 
 **Parameters**: Same as `extractBytes()`
@@ -124,9 +124,9 @@ For processing multiple documents, batch APIs provide superior performance and m
 Extract content from multiple files in parallel (asynchronous).
 
 ```typescript
-import { batchExtractFiles } from '@kreuzberg/node';
+import { batchExtractFiles } from "@kreuzberg/node";
 
-const files = ['doc1.pdf', 'doc2.docx', 'doc3.xlsx'];
+const files = ["doc1.pdf", "doc2.docx", "doc3.xlsx"];
 const results = await batchExtractFiles(files);
 
 results.forEach((result, i) => {
@@ -146,9 +146,9 @@ results.forEach((result, i) => {
 Extract content from multiple files synchronously.
 
 ```typescript
-import { batchExtractFilesSync } from '@kreuzberg/node';
+import { batchExtractFilesSync } from "@kreuzberg/node";
 
-const files = ['doc1.pdf', 'doc2.docx', 'doc3.xlsx'];
+const files = ["doc1.pdf", "doc2.docx", "doc3.xlsx"];
 const results = batchExtractFilesSync(files);
 ```
 
@@ -161,12 +161,15 @@ const results = batchExtractFilesSync(files);
 Extract content from multiple byte arrays in parallel (asynchronous).
 
 ```typescript
-import { batchExtractBytes } from '@kreuzberg/node';
-import { readFile } from 'fs/promises';
+import { batchExtractBytes } from "@kreuzberg/node";
+import { readFile } from "fs/promises";
 
-const files = ['doc1.pdf', 'doc2.docx'];
-const dataList = await Promise.all(files.map(f => readFile(f)));
-const mimeTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+const files = ["doc1.pdf", "doc2.docx"];
+const dataList = await Promise.all(files.map((f) => readFile(f)));
+const mimeTypes = [
+  "application/pdf",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+];
 
 const results = await batchExtractBytes(dataList, mimeTypes);
 ```
@@ -184,11 +187,14 @@ const results = await batchExtractBytes(dataList, mimeTypes);
 Extract content from multiple byte arrays synchronously.
 
 ```typescript
-import { batchExtractBytesSync } from '@kreuzberg/node';
-import { readFileSync } from 'fs';
+import { batchExtractBytesSync } from "@kreuzberg/node";
+import { readFileSync } from "fs";
 
-const dataList = ['doc1.pdf', 'doc2.docx'].map(f => readFileSync(f));
-const mimeTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+const dataList = ["doc1.pdf", "doc2.docx"].map((f) => readFileSync(f));
+const mimeTypes = [
+  "application/pdf",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+];
 
 const results = batchExtractBytesSync(dataList, mimeTypes);
 ```
@@ -203,8 +209,8 @@ Extract multiple files with per-file configuration overrides (asynchronous).
 
 ```typescript
 const results = await batchExtractFilesWithConfigs(
-  ['report.pdf', 'scanned.pdf'],
-  [null, { forceOcr: true, ocr: { backend: 'tesseract', language: 'deu' } }],
+  ["report.pdf", "scanned.pdf"],
+  [null, { forceOcr: true, ocr: { backend: "tesseract", language: "deu" } }],
 );
 ```
 
@@ -237,7 +243,7 @@ Worker pools enable concurrent extraction using Node.js worker threads for CPU-b
 Create a worker pool for concurrent extraction.
 
 ```typescript
-import { createWorkerPool } from '@kreuzberg/node';
+import { createWorkerPool } from "@kreuzberg/node";
 
 // Create pool with default size (number of CPU cores)
 const pool = createWorkerPool();
@@ -257,15 +263,13 @@ const pool4 = createWorkerPool(4);
 Extract a single file using a worker from the pool.
 
 ```typescript
-import { createWorkerPool, extractFileInWorker, closeWorkerPool } from '@kreuzberg/node';
+import { createWorkerPool, extractFileInWorker, closeWorkerPool } from "@kreuzberg/node";
 
 const pool = createWorkerPool(4);
 
 try {
-  const files = ['doc1.pdf', 'doc2.docx', 'doc3.xlsx'];
-  const results = await Promise.all(
-    files.map(f => extractFileInWorker(pool, f))
-  );
+  const files = ["doc1.pdf", "doc2.docx", "doc3.xlsx"];
+  const results = await Promise.all(files.map((f) => extractFileInWorker(pool, f)));
 
   results.forEach((r, i) => {
     console.log(`${files[i]}: ${r.content.substring(0, 100)}...`);
@@ -289,14 +293,14 @@ try {
 Extract multiple files using the worker pool for concurrent processing.
 
 ```typescript
-import { createWorkerPool, batchExtractFilesInWorker, closeWorkerPool } from '@kreuzberg/node';
+import { createWorkerPool, batchExtractFilesInWorker, closeWorkerPool } from "@kreuzberg/node";
 
 const pool = createWorkerPool(4);
 
 try {
-  const files = ['invoice1.pdf', 'invoice2.pdf', 'invoice3.pdf'];
+  const files = ["invoice1.pdf", "invoice2.pdf", "invoice3.pdf"];
   const results = await batchExtractFilesInWorker(pool, files, {
-    ocr: { backend: 'tesseract', language: 'eng' }
+    ocr: { backend: "tesseract", language: "eng" },
   });
 
   const total = results.reduce((sum, r) => sum + extractAmount(r.content), 0);
@@ -319,7 +323,7 @@ try {
 Get statistics about a worker pool.
 
 ```typescript
-import { createWorkerPool, getWorkerPoolStats } from '@kreuzberg/node';
+import { createWorkerPool, getWorkerPoolStats } from "@kreuzberg/node";
 
 const pool = createWorkerPool(4);
 const stats = getWorkerPoolStats(pool);
@@ -340,7 +344,7 @@ console.log(`Queued tasks: ${stats.queuedTasks}`);
 Close a worker pool and shut down all worker threads.
 
 ```typescript
-import { createWorkerPool, closeWorkerPool } from '@kreuzberg/node';
+import { createWorkerPool, closeWorkerPool } from "@kreuzberg/node";
 
 const pool = createWorkerPool(4);
 
@@ -368,28 +372,28 @@ Main configuration object controlling extraction behavior.
 ```typescript
 interface ExtractionConfig {
   // Caching and processing
-  useCache?: boolean;                            // Default: true
-  enableQualityProcessing?: boolean;            // Default: false
+  useCache?: boolean; // Default: true
+  enableQualityProcessing?: boolean; // Default: false
 
   // OCR configuration
-  ocr?: OcrConfig;                              // OCR settings
-  forceOcr?: boolean;                           // Default: false
+  ocr?: OcrConfig; // OCR settings
+  forceOcr?: boolean; // Default: false
 
   // Document processing
-  chunking?: ChunkingConfig;                    // Break into chunks
-  images?: ImageExtractionConfig;               // Image extraction
-  pdfOptions?: PdfConfig;                       // PDF-specific options
-  tokenReduction?: TokenReductionConfig;        // Token optimization
-  languageDetection?: LanguageDetectionConfig;  // Language detection
-  postprocessor?: PostProcessorConfig;          // Post-processing
-  htmlOptions?: HtmlConversionOptions;          // HTML conversion
-  keywords?: KeywordConfig;                     // Keyword extraction
-  pages?: PageExtractionConfig;                 // Page extraction
+  chunking?: ChunkingConfig; // Break into chunks
+  images?: ImageExtractionConfig; // Image extraction
+  pdfOptions?: PdfConfig; // PDF-specific options
+  tokenReduction?: TokenReductionConfig; // Token optimization
+  languageDetection?: LanguageDetectionConfig; // Language detection
+  postprocessor?: PostProcessorConfig; // Post-processing
+  htmlOptions?: HtmlConversionOptions; // HTML conversion
+  keywords?: KeywordConfig; // Keyword extraction
+  pages?: PageExtractionConfig; // Page extraction
 
   // Output control
-  maxConcurrentExtractions?: number;            // Default: 4
-  outputFormat?: 'plain' | 'markdown' | 'djot' | 'html';  // Default: 'plain'
-  resultFormat?: 'unified' | 'element_based';  // Default: 'unified'
+  maxConcurrentExtractions?: number; // Default: 4
+  outputFormat?: "plain" | "markdown" | "djot" | "html"; // Default: 'plain'
+  resultFormat?: "unified" | "element_based"; // Default: 'unified'
 }
 ```
 
@@ -410,8 +414,8 @@ interface FileExtractionConfig {
   pages?: PageExtractionConfig;
   keywords?: KeywordConfig;
   postprocessor?: PostProcessorConfig;
-  outputFormat?: 'plain' | 'markdown' | 'djot' | 'html';
-  resultFormat?: 'unified' | 'element_based';
+  outputFormat?: "plain" | "markdown" | "djot" | "html";
+  resultFormat?: "unified" | "element_based";
   includeDocumentStructure?: boolean;
 }
 ```
@@ -424,13 +428,13 @@ Configuration for breaking documents into chunks (useful for RAG and vector data
 
 ```typescript
 interface ChunkingConfig {
-  maxChars?: number;          // Max characters per chunk (default: 4096)
-  maxOverlap?: number;        // Overlap between chunks (default: 512)
-  chunkSize?: number;         // Alternative unit (mutually exclusive with maxChars)
-  chunkOverlap?: number;      // Alternative unit (mutually exclusive with maxOverlap)
-  preset?: string;            // Named preset ('default', 'aggressive', 'minimal')
-  embedding?: Record<string, unknown>;  // Embedding config
-  enabled?: boolean;          // Enable chunking (default: true when config provided)
+  maxChars?: number; // Max characters per chunk (default: 4096)
+  maxOverlap?: number; // Overlap between chunks (default: 512)
+  chunkSize?: number; // Alternative unit (mutually exclusive with maxChars)
+  chunkOverlap?: number; // Alternative unit (mutually exclusive with maxOverlap)
+  preset?: string; // Named preset ('default', 'aggressive', 'minimal')
+  embedding?: Record<string, unknown>; // Embedding config
+  enabled?: boolean; // Enable chunking (default: true when config provided)
 }
 ```
 
@@ -442,15 +446,15 @@ Configuration for optical character recognition.
 
 ```typescript
 interface OcrConfig {
-  backend: string;              // OCR backend name (e.g., 'tesseract')
-  language?: string;            // Language code (e.g., 'eng', 'deu')
+  backend: string; // OCR backend name (e.g., 'tesseract')
+  language?: string; // Language code (e.g., 'eng', 'deu')
   tesseractConfig?: TesseractConfig;
 }
 
 interface TesseractConfig {
-  psm?: number;                 // Page Segmentation Mode (0-13)
+  psm?: number; // Page Segmentation Mode (0-13)
   enableTableDetection?: boolean;
-  tesseditCharWhitelist?: string;  // Character whitelist
+  tesseditCharWhitelist?: string; // Character whitelist
 }
 ```
 
@@ -460,12 +464,12 @@ Configuration for extracting and optimizing images.
 
 ```typescript
 interface ImageExtractionConfig {
-  extractImages?: boolean;      // Default: true
-  targetDpi?: number;          // Target DPI (default: 150)
-  maxImageDimension?: number;  // Max width/height in pixels (default: 2000)
-  autoAdjustDpi?: boolean;     // Auto-adjust DPI (default: true)
-  minDpi?: number;             // Minimum DPI (default: 72)
-  maxDpi?: number;             // Maximum DPI (default: 300)
+  extractImages?: boolean; // Default: true
+  targetDpi?: number; // Target DPI (default: 150)
+  maxImageDimension?: number; // Max width/height in pixels (default: 2000)
+  autoAdjustDpi?: boolean; // Auto-adjust DPI (default: true)
+  minDpi?: number; // Minimum DPI (default: 72)
+  maxDpi?: number; // Maximum DPI (default: 300)
 }
 ```
 
@@ -475,10 +479,10 @@ PDF-specific extraction options.
 
 ```typescript
 interface PdfConfig {
-  extractImages?: boolean;      // Default: true
-  passwords?: string[];         // Passwords for encrypted PDFs
-  extractMetadata?: boolean;    // Default: true
-  hierarchy?: HierarchyConfig;  // Hierarchy extraction
+  extractImages?: boolean; // Default: true
+  passwords?: string[]; // Passwords for encrypted PDFs
+  extractMetadata?: boolean; // Default: true
+  hierarchy?: HierarchyConfig; // Hierarchy extraction
 }
 ```
 
@@ -488,9 +492,9 @@ Configuration for automatic language detection.
 
 ```typescript
 interface LanguageDetectionConfig {
-  enabled?: boolean;            // Default: true
-  minConfidence?: number;       // Threshold 0.0-1.0 (default: 0.5)
-  detectMultiple?: boolean;     // Detect multiple languages (default: false)
+  enabled?: boolean; // Default: true
+  minConfidence?: number; // Threshold 0.0-1.0 (default: 0.5)
+  detectMultiple?: boolean; // Detect multiple languages (default: false)
 }
 ```
 
@@ -500,8 +504,8 @@ Configuration for optimizing token usage.
 
 ```typescript
 interface TokenReductionConfig {
-  mode?: string;                // 'aggressive' or 'conservative' (default: 'conservative')
-  preserveImportantWords?: boolean;  // Default: true
+  mode?: string; // 'aggressive' or 'conservative' (default: 'conservative')
+  preserveImportantWords?: boolean; // Default: true
 }
 ```
 
@@ -511,11 +515,11 @@ Configuration for keyword extraction.
 
 ```typescript
 interface KeywordConfig {
-  algorithm?: 'yake' | 'rake';  // Default: 'yake'
-  maxKeywords?: number;         // Maximum keywords (default: 10)
-  minScore?: number;            // Minimum relevance score (default: 0.1)
-  ngramRange?: [number, number];  // N-gram range (default: [1, 3])
-  language?: string;            // Language code (default: 'en')
+  algorithm?: "yake" | "rake"; // Default: 'yake'
+  maxKeywords?: number; // Maximum keywords (default: 10)
+  minScore?: number; // Minimum relevance score (default: 0.1)
+  ngramRange?: [number, number]; // N-gram range (default: [1, 3])
+  language?: string; // Language code (default: 'en')
   yakeParams?: YakeParams;
   rakeParams?: RakeParams;
 }
@@ -527,9 +531,9 @@ Configuration for page-level content tracking.
 
 ```typescript
 interface PageExtractionConfig {
-  extractPages?: boolean;       // Extract as separate pages array
-  insertPageMarkers?: boolean;  // Insert page markers in content
-  markerFormat?: string;        // Marker format with {page_num} placeholder
+  extractPages?: boolean; // Extract as separate pages array
+  insertPageMarkers?: boolean; // Insert page markers in content
+  markerFormat?: string; // Marker format with {page_num} placeholder
 }
 ```
 
@@ -539,8 +543,8 @@ Configuration for HTML to Markdown conversion.
 
 ```typescript
 interface HtmlConversionOptions {
-  headingStyle?: 'atx' | 'underlined' | 'atx_closed';
-  listIndentType?: 'spaces' | 'tabs';
+  headingStyle?: "atx" | "underlined" | "atx_closed";
+  listIndentType?: "spaces" | "tabs";
   listIndentWidth?: number;
   bullets?: string;
   strongEmSymbol?: string;
@@ -553,17 +557,17 @@ interface HtmlConversionOptions {
   defaultTitle?: boolean;
   brInTables?: boolean;
   hocrSpatialTables?: boolean;
-  highlightStyle?: 'double_equal' | 'html' | 'bold' | 'none';
+  highlightStyle?: "double_equal" | "html" | "bold" | "none";
   extractMetadata?: boolean;
-  whitespaceMode?: 'normalized' | 'strict';
+  whitespaceMode?: "normalized" | "strict";
   stripNewlines?: boolean;
   wrap?: boolean;
   wrapWidth?: number;
   convertAsInline?: boolean;
   subSymbol?: string;
   supSymbol?: string;
-  newlineStyle?: 'spaces' | 'backslash';
-  codeBlockStyle?: 'indented' | 'backticks' | 'tildes';
+  newlineStyle?: "spaces" | "backslash";
+  codeBlockStyle?: "indented" | "backticks" | "tildes";
   keepInlineImagesIn?: string[];
   encoding?: string;
   debug?: boolean;
@@ -597,13 +601,13 @@ interface ExtractionResult {
 
   // Optional processed data
   detectedLanguages: string[] | null;
-  chunks: Chunk[] | null;        // From chunking config
-  images: ExtractedImage[] | null;  // From image extraction
-  elements?: Element[] | null;   // From element_based result format
-  pages?: PageContent[] | null;  // From page extraction
-  extractedKeywords?: ExtractedKeyword[] | null;  // Extracted keywords with scores
-  qualityScore?: number | null;  // Overall extraction quality (0.0-1.0)
-  processingWarnings?: ProcessingWarning[];  // Non-fatal warnings from pipeline
+  chunks: Chunk[] | null; // From chunking config
+  images: ExtractedImage[] | null; // From image extraction
+  elements?: Element[] | null; // From element_based result format
+  pages?: PageContent[] | null; // From page extraction
+  extractedKeywords?: ExtractedKeyword[] | null; // Extracted keywords with scores
+  qualityScore?: number | null; // Overall extraction quality (0.0-1.0)
+  processingWarnings?: ProcessingWarning[]; // Non-fatal warnings from pipeline
 }
 ```
 
@@ -613,9 +617,9 @@ Extracted table data with cell structure.
 
 ```typescript
 interface Table {
-  cells: string[][];    // 2D array of cell contents (rows × columns)
-  markdown: string;     // Markdown representation
-  pageNumber: number;   // 1-indexed page number
+  cells: string[][]; // 2D array of cell contents (rows × columns)
+  markdown: string; // Markdown representation
+  pageNumber: number; // 1-indexed page number
 }
 ```
 
@@ -626,17 +630,17 @@ Text chunk for RAG or vector database indexing.
 ```typescript
 interface Chunk {
   content: string;
-  embedding?: number[] | null;  // Vector embedding if computed
+  embedding?: number[] | null; // Vector embedding if computed
   metadata: ChunkMetadata;
 }
 
 interface ChunkMetadata {
-  byteStart: number;      // UTF-8 byte offset in original text
-  byteEnd: number;        // UTF-8 byte offset
+  byteStart: number; // UTF-8 byte offset in original text
+  byteEnd: number; // UTF-8 byte offset
   tokenCount?: number | null;
-  chunkIndex: number;     // Zero-based index
-  totalChunks: number;    // Total number of chunks
-  firstPage?: number | null;   // 1-indexed, if page tracking enabled
+  chunkIndex: number; // Zero-based index
+  totalChunks: number; // Total number of chunks
+  firstPage?: number | null; // 1-indexed, if page tracking enabled
   lastPage?: number | null;
 }
 ```
@@ -647,9 +651,9 @@ Image extracted from document.
 
 ```typescript
 interface ExtractedImage {
-  data: Uint8Array;      // Raw image bytes
-  format: string;        // Format (e.g., 'png', 'jpeg', 'tiff')
-  imageIndex: number;    // Sequential index (0-indexed)
+  data: Uint8Array; // Raw image bytes
+  format: string; // Format (e.g., 'png', 'jpeg', 'tiff')
+  imageIndex: number; // Sequential index (0-indexed)
   pageNumber?: number | null;
   width?: number | null;
   height?: number | null;
@@ -657,7 +661,7 @@ interface ExtractedImage {
   bitsPerComponent?: number | null;
   isMask: boolean;
   description?: string | null;
-  ocrResult?: ExtractionResult | null;  // OCR result if processed
+  ocrResult?: ExtractionResult | null; // OCR result if processed
 }
 ```
 
@@ -667,10 +671,10 @@ Per-page content when page extraction is enabled.
 
 ```typescript
 interface PageContent {
-  pageNumber: number;    // 1-indexed
-  content: string;       // Page text content
-  tables: Table[];       // Tables on this page
-  images: ExtractedImage[];  // Images on this page
+  pageNumber: number; // 1-indexed
+  content: string; // Page text content
+  tables: Table[]; // Tables on this page
+  images: ExtractedImage[]; // Images on this page
 }
 ```
 
@@ -680,10 +684,10 @@ Extracted keyword with relevance score and position information.
 
 ```typescript
 interface ExtractedKeyword {
-  text: string;           // Keyword text
-  score: number;          // Relevance score (0.0-1.0)
-  algorithm: string;      // Algorithm used ("tfidf", "textrank", "yake", etc.)
-  positions?: number[] | null;  // Character positions in content (if available)
+  text: string; // Keyword text
+  score: number; // Relevance score (0.0-1.0)
+  algorithm: string; // Algorithm used ("tfidf", "textrank", "yake", etc.)
+  positions?: number[] | null; // Character positions in content (if available)
 }
 ```
 
@@ -693,8 +697,8 @@ Non-fatal warning encountered during document processing.
 
 ```typescript
 interface ProcessingWarning {
-  source: string;         // Component that generated the warning
-  message: string;        // Warning message describing the issue
+  source: string; // Component that generated the warning
+  message: string; // Warning message describing the issue
 }
 ```
 
@@ -708,7 +712,17 @@ interface Metadata {
   language?: string | null;
   date?: string | null;
   subject?: string | null;
-  format_type?: 'pdf' | 'excel' | 'email' | 'pptx' | 'archive' | 'image' | 'xml' | 'text' | 'html' | 'ocr';
+  format_type?:
+    | "pdf"
+    | "excel"
+    | "email"
+    | "pptx"
+    | "archive"
+    | "image"
+    | "xml"
+    | "text"
+    | "html"
+    | "ocr";
 
   // PDF metadata
   title?: string | null;
@@ -745,7 +759,7 @@ interface Metadata {
   // HTML metadata
   canonical_url?: string | null;
   html_language?: string | null;
-  text_direction?: 'ltr' | 'rtl' | 'auto' | null;
+  text_direction?: "ltr" | "rtl" | "auto" | null;
   open_graph?: Record<string, string>;
   twitter_card?: Record<string, string>;
   meta_tags?: Record<string, string>;
@@ -786,14 +800,14 @@ interface Metadata {
 import {
   KreuzbergError,
   ParsingError,
-  OcrError,           // Note: camelCase, not "OCRError"
+  OcrError, // Note: camelCase, not "OCRError"
   ValidationError,
   MissingDependencyError,
   CacheError,
   ImageProcessingError,
   PluginError,
   ErrorCode,
-} from '@kreuzberg/node';
+} from "@kreuzberg/node";
 ```
 
 **Error Hierarchy**:
@@ -816,10 +830,10 @@ import {
   getErrorCodeName,
   getLastErrorCode,
   getLastPanicContext,
-} from '@kreuzberg/node';
+} from "@kreuzberg/node";
 
 try {
-  const result = await extractFile('document.pdf');
+  const result = await extractFile("document.pdf");
 } catch (error) {
   const classification = classifyError(error.message);
   console.log(`Error code: ${getErrorCodeName(classification.code)}`);
@@ -856,21 +870,21 @@ Custom post-processors can enrich extraction results without failing the extract
 Register a custom post-processor.
 
 ```typescript
-import { registerPostProcessor, extractFile } from '@kreuzberg/node';
+import { registerPostProcessor, extractFile } from "@kreuzberg/node";
 
 const processor = {
   name() {
-    return 'my_processor';
+    return "my_processor";
   },
 
   async process(result) {
     // Enrich result with custom metadata
-    result.metadata['custom_field'] = 'value';
+    result.metadata["custom_field"] = "value";
     return result;
   },
 
   processingStage() {
-    return 'late';  // 'early', 'middle', or 'late'
+    return "late"; // 'early', 'middle', or 'late'
   },
 
   async initialize() {
@@ -883,7 +897,7 @@ const processor = {
 };
 
 registerPostProcessor(processor);
-const result = await extractFile('document.pdf');
+const result = await extractFile("document.pdf");
 ```
 
 #### `unregisterPostProcessor(name): void`
@@ -891,9 +905,9 @@ const result = await extractFile('document.pdf');
 Remove a registered post-processor.
 
 ```typescript
-import { unregisterPostProcessor } from '@kreuzberg/node';
+import { unregisterPostProcessor } from "@kreuzberg/node";
 
-unregisterPostProcessor('my_processor');
+unregisterPostProcessor("my_processor");
 ```
 
 #### `listPostProcessors(): string[]`
@@ -901,10 +915,10 @@ unregisterPostProcessor('my_processor');
 List all registered post-processor names.
 
 ```typescript
-import { listPostProcessors } from '@kreuzberg/node';
+import { listPostProcessors } from "@kreuzberg/node";
 
 const processors = listPostProcessors();
-console.log('Registered processors:', processors);
+console.log("Registered processors:", processors);
 ```
 
 #### `clearPostProcessors(): void`
@@ -912,7 +926,7 @@ console.log('Registered processors:', processors);
 Unregister all post-processors.
 
 ```typescript
-import { clearPostProcessors } from '@kreuzberg/node';
+import { clearPostProcessors } from "@kreuzberg/node";
 
 clearPostProcessors();
 ```
@@ -926,25 +940,25 @@ Custom validators check extraction results and fail the extraction if validation
 Register a custom validator.
 
 ```typescript
-import { registerValidator, extractFile } from '@kreuzberg/node';
+import { registerValidator, extractFile } from "@kreuzberg/node";
 
 const validator = {
   name() {
-    return 'content_length_validator';
+    return "content_length_validator";
   },
 
   validate(result) {
     if (result.content.length < 10) {
-      throw new Error('Content too short');
+      throw new Error("Content too short");
     }
   },
 
   priority() {
-    return 100;  // Higher = runs first
+    return 100; // Higher = runs first
   },
 
   shouldValidate(result) {
-    return result.mimeType === 'application/pdf';  // Conditional validation
+    return result.mimeType === "application/pdf"; // Conditional validation
   },
 
   async initialize() {
@@ -957,7 +971,7 @@ const validator = {
 };
 
 registerValidator(validator);
-const result = await extractFile('document.pdf');
+const result = await extractFile("document.pdf");
 ```
 
 #### `unregisterValidator(name): void`
@@ -965,9 +979,9 @@ const result = await extractFile('document.pdf');
 Remove a registered validator.
 
 ```typescript
-import { unregisterValidator } from '@kreuzberg/node';
+import { unregisterValidator } from "@kreuzberg/node";
 
-unregisterValidator('content_length_validator');
+unregisterValidator("content_length_validator");
 ```
 
 #### `listValidators(): string[]`
@@ -975,7 +989,7 @@ unregisterValidator('content_length_validator');
 List all registered validator names.
 
 ```typescript
-import { listValidators } from '@kreuzberg/node';
+import { listValidators } from "@kreuzberg/node";
 
 const validators = listValidators();
 ```
@@ -985,7 +999,7 @@ const validators = listValidators();
 Unregister all validators.
 
 ```typescript
-import { clearValidators } from '@kreuzberg/node';
+import { clearValidators } from "@kreuzberg/node";
 
 clearValidators();
 ```
@@ -999,27 +1013,26 @@ Custom OCR backends can be registered to handle image text extraction.
 Register a custom OCR backend.
 
 ```typescript
-import { registerOcrBackend, extractFile } from '@kreuzberg/node';
+import { registerOcrBackend, extractFile } from "@kreuzberg/node";
 
 const backend = {
   name() {
-    return 'my-ocr';
+    return "my-ocr";
   },
 
   supportedLanguages() {
-    return ['eng', 'deu', 'fra'];
+    return ["eng", "deu", "fra"];
   },
 
   async processImage(imageBytes, language) {
     // imageBytes: Uint8Array or Base64 string
-    const buffer = typeof imageBytes === 'string'
-      ? Buffer.from(imageBytes, 'base64')
-      : Buffer.from(imageBytes);
+    const buffer =
+      typeof imageBytes === "string" ? Buffer.from(imageBytes, "base64") : Buffer.from(imageBytes);
 
     // Process and extract text
     return {
-      content: 'extracted text',
-      mime_type: 'text/plain',
+      content: "extracted text",
+      mime_type: "text/plain",
       metadata: { confidence: 0.95, language },
       tables: [],
     };
@@ -1042,14 +1055,14 @@ registerOcrBackend(backend);
 Built-in OCR backend implementation using Guten-OCR.
 
 ```typescript
-import { GutenOcrBackend, registerOcrBackend, extractFile } from '@kreuzberg/node';
+import { GutenOcrBackend, registerOcrBackend, extractFile } from "@kreuzberg/node";
 
 const backend = new GutenOcrBackend();
 await backend.initialize();
 registerOcrBackend(backend);
 
-const result = await extractFile('scanned.pdf', null, {
-  ocr: { backend: 'guten-ocr', language: 'eng' }
+const result = await extractFile("scanned.pdf", null, {
+  ocr: { backend: "guten-ocr", language: "eng" },
 });
 ```
 
@@ -1058,9 +1071,9 @@ const result = await extractFile('scanned.pdf', null, {
 Remove a registered OCR backend.
 
 ```typescript
-import { unregisterOcrBackend } from '@kreuzberg/node';
+import { unregisterOcrBackend } from "@kreuzberg/node";
 
-unregisterOcrBackend('my-ocr');
+unregisterOcrBackend("my-ocr");
 ```
 
 #### `listOcrBackends(): string[]`
@@ -1068,7 +1081,7 @@ unregisterOcrBackend('my-ocr');
 List all registered OCR backend names.
 
 ```typescript
-import { listOcrBackends } from '@kreuzberg/node';
+import { listOcrBackends } from "@kreuzberg/node";
 
 const backends = listOcrBackends();
 ```
@@ -1078,7 +1091,7 @@ const backends = listOcrBackends();
 Unregister all OCR backends.
 
 ```typescript
-import { clearOcrBackends } from '@kreuzberg/node';
+import { clearOcrBackends } from "@kreuzberg/node";
 
 clearOcrBackends();
 ```
@@ -1092,10 +1105,10 @@ clearOcrBackends();
 Detect MIME type from file content (magic bytes).
 
 ```typescript
-import { detectMimeType } from '@kreuzberg/node';
-import { readFileSync } from 'fs';
+import { detectMimeType } from "@kreuzberg/node";
+import { readFileSync } from "fs";
 
-const data = readFileSync('document');
+const data = readFileSync("document");
 const mimeType = detectMimeType(data);
 console.log(`Detected MIME type: ${mimeType}`);
 ```
@@ -1105,10 +1118,10 @@ console.log(`Detected MIME type: ${mimeType}`);
 Detect MIME type from file extension.
 
 ```typescript
-import { detectMimeTypeFromPath } from '@kreuzberg/node';
+import { detectMimeTypeFromPath } from "@kreuzberg/node";
 
-const mimeType = detectMimeTypeFromPath('document.pdf');
-console.log(`MIME type: ${mimeType}`);  // 'application/pdf'
+const mimeType = detectMimeTypeFromPath("document.pdf");
+console.log(`MIME type: ${mimeType}`); // 'application/pdf'
 ```
 
 ### `getExtensionsForMime(mimeType): string[]`
@@ -1116,10 +1129,10 @@ console.log(`MIME type: ${mimeType}`);  // 'application/pdf'
 Get file extensions for a MIME type.
 
 ```typescript
-import { getExtensionsForMime } from '@kreuzberg/node';
+import { getExtensionsForMime } from "@kreuzberg/node";
 
-const extensions = getExtensionsForMime('application/pdf');
-console.log(`Extensions: ${extensions}`);  // ['.pdf']
+const extensions = getExtensionsForMime("application/pdf");
+console.log(`Extensions: ${extensions}`); // ['.pdf']
 ```
 
 ### `validateMimeType(mimeType): boolean`
@@ -1127,10 +1140,10 @@ console.log(`Extensions: ${extensions}`);  // ['.pdf']
 Check if a MIME type is valid.
 
 ```typescript
-import { validateMimeType } from '@kreuzberg/node';
+import { validateMimeType } from "@kreuzberg/node";
 
-if (validateMimeType('application/pdf')) {
-  console.log('Valid MIME type');
+if (validateMimeType("application/pdf")) {
+  console.log("Valid MIME type");
 }
 ```
 
@@ -1143,10 +1156,10 @@ if (validateMimeType('application/pdf')) {
 Load extraction configuration from a file (JSON, YAML, or TOML).
 
 ```typescript
-import { ExtractionConfig, extractFile } from '@kreuzberg/node';
+import { ExtractionConfig, extractFile } from "@kreuzberg/node";
 
-const config = ExtractionConfig.fromFile('./kreuzberg.toml');
-const result = await extractFile('document.pdf', null, config);
+const config = ExtractionConfig.fromFile("./kreuzberg.toml");
+const result = await extractFile("document.pdf", null, config);
 ```
 
 ### `ExtractionConfig.discover(): ExtractionConfig | null`
@@ -1154,12 +1167,12 @@ const result = await extractFile('document.pdf', null, config);
 Auto-discover extraction configuration file in current and parent directories.
 
 ```typescript
-import { ExtractionConfig, extractFile } from '@kreuzberg/node';
+import { ExtractionConfig, extractFile } from "@kreuzberg/node";
 
 // Searches for kreuzberg.{toml,yaml,json} in current directory and parents
 const config = ExtractionConfig.discover();
 if (config) {
-  const result = await extractFile('document.pdf', null, config);
+  const result = await extractFile("document.pdf", null, config);
 }
 ```
 
@@ -1172,9 +1185,9 @@ if (config) {
 Get a named embedding model preset.
 
 ```typescript
-import { getEmbeddingPreset } from '@kreuzberg/node';
+import { getEmbeddingPreset } from "@kreuzberg/node";
 
-const preset = getEmbeddingPreset('default');
+const preset = getEmbeddingPreset("default");
 if (preset) {
   console.log(`Model: ${preset.modelName}`);
   console.log(`Dimensions: ${preset.dimensions}`);
@@ -1186,10 +1199,10 @@ if (preset) {
 List all available embedding presets.
 
 ```typescript
-import { listEmbeddingPresets } from '@kreuzberg/node';
+import { listEmbeddingPresets } from "@kreuzberg/node";
 
 const presets = listEmbeddingPresets();
-console.log('Available presets:', presets);
+console.log("Available presets:", presets);
 ```
 
 ### `EmbeddingPreset`
@@ -1198,12 +1211,12 @@ Type definition for embedding model presets.
 
 ```typescript
 interface EmbeddingPreset {
-  name: string;           // Preset name (e.g., "fast", "balanced", "quality", "multilingual")
-  chunkSize: number;      // Recommended chunk size in characters
-  overlap: number;        // Recommended overlap in characters
-  modelName: string;      // Model identifier (e.g., "AllMiniLML6V2Q", "BGEBaseENV15")
-  dimensions: number;     // Embedding vector dimensions
-  description: string;    // Human-readable description
+  name: string; // Preset name (e.g., "fast", "balanced", "quality", "multilingual")
+  chunkSize: number; // Recommended chunk size in characters
+  overlap: number; // Recommended overlap in characters
+  modelName: string; // Model identifier (e.g., "AllMiniLML6V2Q", "BGEBaseENV15")
+  dimensions: number; // Embedding vector dimensions
+  description: string; // Human-readable description
 }
 ```
 
@@ -1221,7 +1234,7 @@ interface PostProcessorProtocol {
 
   process(result: ExtractionResult): ExtractionResult | Promise<ExtractionResult>;
 
-  processingStage?(): ProcessingStage;  // 'early' | 'middle' | 'late'
+  processingStage?(): ProcessingStage; // 'early' | 'middle' | 'late'
 
   initialize?(): void | Promise<void>;
 
@@ -1239,7 +1252,7 @@ interface ValidatorProtocol {
 
   validate(result: ExtractionResult): void | Promise<void>;
 
-  priority?(): number;  // Higher = runs first
+  priority?(): number; // Higher = runs first
 
   shouldValidate?(result: ExtractionResult): boolean;
 
@@ -1297,13 +1310,13 @@ import {
   listDocumentExtractors,
   unregisterDocumentExtractor,
   clearDocumentExtractors,
-} from '@kreuzberg/node';
+} from "@kreuzberg/node";
 
 // List registered extractors
 const extractors = listDocumentExtractors();
 
 // Unregister a specific extractor
-unregisterDocumentExtractor('pdf');
+unregisterDocumentExtractor("pdf");
 
 // Clear all extractors
 clearDocumentExtractors();

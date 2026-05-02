@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/doc/unit_test_lists.doc",
   "file_type": "doc",
   "file_size": 16384,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "doc test: unit_test_lists",
     "source": "pandoc-generated",

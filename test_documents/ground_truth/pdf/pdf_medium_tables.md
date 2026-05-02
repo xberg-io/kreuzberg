@@ -65,12 +65,12 @@ has not been corroborated in European strains.
 In addition to well-known host factors like age and
 liver fibrosis, it was recently revealed that single nucleo-
 tide polymorphisms (SNPs) upstream of the interferon
-23-encoding *IL28B* gene may predict which patients
+23-encoding _IL28B_ gene may predict which patients
 achieve SVR after the completion of peg-IFN/ribavirin
 therapy [15,16]. This observation may be relevant for
 investigations of how core variation influences treatment
 response in different populations of patients with hepati-
-tis C, firstly because the distribution of *IL28B* SNP geno-
+tis C, firstly because the distribution of _IL28B_ SNP geno-
 types differ between ethnic groups [15,17] and secondly
 because SNP differences may bias the results.
 In this study, serum samples were drawn from 50
@@ -169,73 +169,73 @@ RNA below 5.6 log IU/mL was significantly associated
 with SVR. Neither subgenotype (1a vs. 1b) nor gender
 was associated with SVR.
 
-| Patient no | Genotype | Viral load (10⁶ IU/ml) | Sex | Age (years) | 70 | 91 | rs12979860 | End of treatment response |
-| ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |
-| R1 | 1a | 4.36 | M | 52.6 | R | C | CC | SVR |
-| R2 | 1a | 6.37 | M | 34.9 | R | C | CC | SVR |
-| R3 | 1a | 7.84 | M | 45.8 | R | C | CC | SVR |
-| R4 | 1a | 7.77 | F | 42.3 | R | C | CC | SVR |
-| R5 | 1a | 7.05 | M | 45.3 | R | C | CC | SVR |
-| R6 | 1a | 7.19 | F | 45.5 | R | C | CC | SVR |
-| R7 | 1a | 5.54 | F | 46.9 | R | C | CC | SVR |
-| R8 | 1a | 5.46 | M | 29.1 | R | C | CT | SVR |
-| R9 | 1a | 6.18 | M | 50.7 | R | C | CC | SVR |
-| R10 | 1a | 6.42 | M | 59.9 | R | C | CC | SVR |
-| R11 | 1a | 5.85 | M | 46.4 | R | C | CC | SVR |
-| R12 | 1a | 7.25 | M | 36.4 | R | C | CT | SVR |
-| R13 | 1a | 6.43 | M | 57.5 | R | C | CC | SVR |
-| R14 | 1a | 6.06 | M | 39.2 | R | C | CT | SVR |
-| R15 | 1a | 6.63 | F | 47.1 | R | C | CT | SVR |
-| R21 | 1a | 5.36 | F | 29.6 | R | C | CT | SVR |
-| R22 | 1a | 5.55 | F | 28.7 | R | C | CT | SVR |
-| R23 | 1a | 6.43 | F | 41.2 | R | C | CC | SVR |
-| R24 | 1a | 6.10 | M | 51.3 | R | C | CC | SVR |
-| R25 | 1a | 7.49 | F | 55.7 | R | C | CC | SVR |
-| R28 | 1a | 7.79 | M | 41.5 | R | C | CT | SVR |
-| N1 | 1a | 6.28 | M | 40.5 | R | C | CT | non-SVR |
-| N2 | 1a | 6.25 | M | 50.3 | R | C | CT | non-SVR |
-| N3 | 1a | 6.10 | M | 55.9 | R | C | TT | non-SVR |
-| N4 | 1a | 7.05 | M | 47.9 | R | C | TT | non-SVR |
-| N5 | 1a | 5.89 | M | 50.8 | R | C | CT | non-SVR |
-| N6 | 1a | 6.42 | F | 48.1 | P | C | CT | non-SVR |
-| N7 | 1a | 6.72 | M | 48.9 | R | C | TT | non-SVR |
-| N8 | 1a | 7.35 | M | 54.6 | R | C | TT | non-SVR |
-| N9 | 1a | 6.13 | F | 57.8 | R | C | TT | non-SVR |
-| N10 | 1a | 6.72 | M | 54.6 | R | C | TT | non-SVR |
-| N11 | 1a | 6.42 | M | 48.0 | R | C | CT | non-SVR |
-| N12 | 1a | 7.32 | F | 48.4 | R | C | CT | non-SVR |
-| N13 | 1a | 6.09 | M | 24.3 | R | C | TT | non-SVR |
-| N14 | 1a | 6.31 | M | 35.0 | R | C | CT | non-SVR |
-| N20 | 1a | 6.73 | F | 35.0 | R | C | CC | non-SVR |
-| N21 | 1a | 7.15 | F | 45.0 | R | C | CC | non-SVR |
-| R16 | 1b | 4.13 | F | 46.5 | R | M | CC | SVR |
-| R17 | 1b | 4.94 | M | 31.5 | R | M | CC | SVR |
-| R18 | 1b | 5.40 | F | 58.7 | R | M | CT | SVR |
-| R19 | 1b | 6.23 | F | 38.4 | R | L | CT | SVR |
-| R20 | 1b | 7.39 | F | 47.8 | R | M | CT | SVR |
-| R26 | 1b | 7.17 | M | 46.6 | R | L | CT | SVR |
-| R27 | 1b | 6.81 | M | 56.8 | R | M | CT | SVR |
-| R29 | 1b | 7.55 | M | 57.0 | Q | M | CT | SVR |
-| N15 | 1b | 6.08 | F | 56.5 | Q | M | CT | non-SVR |
-| N16 | 1b | 6.57 | F | 58.5 | Q | M | TT | non-SVR |
-| N17 | 1b | 7.37 | M | 48.9 | Q | L | CT | non-SVR |
-| N18 | 1b | 6.69 | M | 62.8 | Q | L | CT | non-SVR |
-| N19 | 1b | 6.70 | F | 54.2 | Q | M | CT | non-SVR |
+| Patient no | Genotype | Viral load (10⁶ IU/ml) | Sex | Age (years) | 70  | 91  | rs12979860 | End of treatment response |
+| ---------- | -------- | ---------------------- | --- | ----------- | --- | --- | ---------- | ------------------------- |
+| R1         | 1a       | 4.36                   | M   | 52.6        | R   | C   | CC         | SVR                       |
+| R2         | 1a       | 6.37                   | M   | 34.9        | R   | C   | CC         | SVR                       |
+| R3         | 1a       | 7.84                   | M   | 45.8        | R   | C   | CC         | SVR                       |
+| R4         | 1a       | 7.77                   | F   | 42.3        | R   | C   | CC         | SVR                       |
+| R5         | 1a       | 7.05                   | M   | 45.3        | R   | C   | CC         | SVR                       |
+| R6         | 1a       | 7.19                   | F   | 45.5        | R   | C   | CC         | SVR                       |
+| R7         | 1a       | 5.54                   | F   | 46.9        | R   | C   | CC         | SVR                       |
+| R8         | 1a       | 5.46                   | M   | 29.1        | R   | C   | CT         | SVR                       |
+| R9         | 1a       | 6.18                   | M   | 50.7        | R   | C   | CC         | SVR                       |
+| R10        | 1a       | 6.42                   | M   | 59.9        | R   | C   | CC         | SVR                       |
+| R11        | 1a       | 5.85                   | M   | 46.4        | R   | C   | CC         | SVR                       |
+| R12        | 1a       | 7.25                   | M   | 36.4        | R   | C   | CT         | SVR                       |
+| R13        | 1a       | 6.43                   | M   | 57.5        | R   | C   | CC         | SVR                       |
+| R14        | 1a       | 6.06                   | M   | 39.2        | R   | C   | CT         | SVR                       |
+| R15        | 1a       | 6.63                   | F   | 47.1        | R   | C   | CT         | SVR                       |
+| R21        | 1a       | 5.36                   | F   | 29.6        | R   | C   | CT         | SVR                       |
+| R22        | 1a       | 5.55                   | F   | 28.7        | R   | C   | CT         | SVR                       |
+| R23        | 1a       | 6.43                   | F   | 41.2        | R   | C   | CC         | SVR                       |
+| R24        | 1a       | 6.10                   | M   | 51.3        | R   | C   | CC         | SVR                       |
+| R25        | 1a       | 7.49                   | F   | 55.7        | R   | C   | CC         | SVR                       |
+| R28        | 1a       | 7.79                   | M   | 41.5        | R   | C   | CT         | SVR                       |
+| N1         | 1a       | 6.28                   | M   | 40.5        | R   | C   | CT         | non-SVR                   |
+| N2         | 1a       | 6.25                   | M   | 50.3        | R   | C   | CT         | non-SVR                   |
+| N3         | 1a       | 6.10                   | M   | 55.9        | R   | C   | TT         | non-SVR                   |
+| N4         | 1a       | 7.05                   | M   | 47.9        | R   | C   | TT         | non-SVR                   |
+| N5         | 1a       | 5.89                   | M   | 50.8        | R   | C   | CT         | non-SVR                   |
+| N6         | 1a       | 6.42                   | F   | 48.1        | P   | C   | CT         | non-SVR                   |
+| N7         | 1a       | 6.72                   | M   | 48.9        | R   | C   | TT         | non-SVR                   |
+| N8         | 1a       | 7.35                   | M   | 54.6        | R   | C   | TT         | non-SVR                   |
+| N9         | 1a       | 6.13                   | F   | 57.8        | R   | C   | TT         | non-SVR                   |
+| N10        | 1a       | 6.72                   | M   | 54.6        | R   | C   | TT         | non-SVR                   |
+| N11        | 1a       | 6.42                   | M   | 48.0        | R   | C   | CT         | non-SVR                   |
+| N12        | 1a       | 7.32                   | F   | 48.4        | R   | C   | CT         | non-SVR                   |
+| N13        | 1a       | 6.09                   | M   | 24.3        | R   | C   | TT         | non-SVR                   |
+| N14        | 1a       | 6.31                   | M   | 35.0        | R   | C   | CT         | non-SVR                   |
+| N20        | 1a       | 6.73                   | F   | 35.0        | R   | C   | CC         | non-SVR                   |
+| N21        | 1a       | 7.15                   | F   | 45.0        | R   | C   | CC         | non-SVR                   |
+| R16        | 1b       | 4.13                   | F   | 46.5        | R   | M   | CC         | SVR                       |
+| R17        | 1b       | 4.94                   | M   | 31.5        | R   | M   | CC         | SVR                       |
+| R18        | 1b       | 5.40                   | F   | 58.7        | R   | M   | CT         | SVR                       |
+| R19        | 1b       | 6.23                   | F   | 38.4        | R   | L   | CT         | SVR                       |
+| R20        | 1b       | 7.39                   | F   | 47.8        | R   | M   | CT         | SVR                       |
+| R26        | 1b       | 7.17                   | M   | 46.6        | R   | L   | CT         | SVR                       |
+| R27        | 1b       | 6.81                   | M   | 56.8        | R   | M   | CT         | SVR                       |
+| R29        | 1b       | 7.55                   | M   | 57.0        | Q   | M   | CT         | SVR                       |
+| N15        | 1b       | 6.08                   | F   | 56.5        | Q   | M   | CT         | non-SVR                   |
+| N16        | 1b       | 6.57                   | F   | 58.5        | Q   | M   | TT         | non-SVR                   |
+| N17        | 1b       | 7.37                   | M   | 48.9        | Q   | L   | CT         | non-SVR                   |
+| N18        | 1b       | 6.69                   | M   | 62.8        | Q   | L   | CT         | non-SVR                   |
+| N19        | 1b       | 6.70                   | F   | 54.2        | Q   | M   | CT         | non-SVR                   |
 
 ª SVR, sustained virologic response; non-SVR, no sustained virologic response
 
-|  | SVR n = 29 | non-SVR n = 21 | Univariate p value |
-| ----------- | ----------- | ----------- | ----------- |
-| Age (mean) | 45.2 | 48.8 | 0.09ª |
-| Number of patients < 45 / > 45 yrs | 11 / 18 | 4 / 17 | 0.21b |
-| Gender (m/f) | 17 / 12 | 13 / 8 | 1.0b |
-| Baseline HCV RNA (mean log IU/mL) | 6.37 | 6.59 | 0.56ª |
-| Number with < 5.6 / > 5.6 log IU/mL | 8/21 | 0/21 | 0.01b |
-| Genotype 1a/1b | 21/8 | 16/5 | 1.0b |
-| Fibrosis (FO/F1/F2/F3/F4) | 0/10/13/4/0 | 2/4/4/7/2 | 0.19d |
-| Core aa 70 | 28 R/1 Q | 15 R/5Q & 1 P | 0.03b |
-| Core aa 91 | 21C/6M/2L | 16 C/3M/2L | 0.82° |
-| rs 12979860 | 16 CC/13 CT/0 TT | 2 CC/11 CT/8 TT | 0.0001b |
+|                                     | SVR n = 29       | non-SVR n = 21  | Univariate p value |
+| ----------------------------------- | ---------------- | --------------- | ------------------ |
+| Age (mean)                          | 45.2             | 48.8            | 0.09ª              |
+| Number of patients < 45 / > 45 yrs  | 11 / 18          | 4 / 17          | 0.21b              |
+| Gender (m/f)                        | 17 / 12          | 13 / 8          | 1.0b               |
+| Baseline HCV RNA (mean log IU/mL)   | 6.37             | 6.59            | 0.56ª              |
+| Number with < 5.6 / > 5.6 log IU/mL | 8/21             | 0/21            | 0.01b              |
+| Genotype 1a/1b                      | 21/8             | 16/5            | 1.0b               |
+| Fibrosis (FO/F1/F2/F3/F4)           | 0/10/13/4/0      | 2/4/4/7/2       | 0.19d              |
+| Core aa 70                          | 28 R/1 Q         | 15 R/5Q & 1 P   | 0.03b              |
+| Core aa 91                          | 21C/6M/2L        | 16 C/3M/2L      | 0.82°              |
+| rs 12979860                         | 16 CC/13 CT/0 TT | 2 CC/11 CT/8 TT | 0.0001b            |
 
 ª Mann-Whitney U test.
 
@@ -269,16 +269,16 @@ lanl.gov/), showing a predominance (≥93%) of R70 in
 genotypes 1a, 2, 3 and 4, and high rates of Q70 in 1b, 5
 and 6 (Table 3). In the 13 patients carrying subtype 1b
 
-| Genotype |  | Amino acid 70 |  |  |  |  | Amino acid 91 |  |  |  | Total |
-| ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |
-|  | Q | R | P | H | C | M | L | C |  |  |  |  |
-| 1a | 2% | 98% |  |  | 100% |  |  |  |  |  |  | 920 |
-| 1b | 60% | 35% |  | 4% |  | 1% | 71% | 28% |  |  |  | 2022 |
-| 2 |  |  |  |  | 100% |  |  | 39% | 4% | 58% |  | 83 |
-| 3 |  | 93% |  | 6% |  |  |  | 99% |  |  |  | 204 |
-| 4 |  | 5% |  | 95% |  |  |  | 100% |  |  |  | 19 |
-| 5 | 86% | 14% |  |  |  |  |  | 100% |  |  |  | 14 |
-| 6 | 60% | 13% | 13% | 15% |  |  |  | 100% |  |  |  | 55 |
+| Genotype |     | Amino acid 70 |     |     |      |     | Amino acid 91 |      |     |     | Total |
+| -------- | --- | ------------- | --- | --- | ---- | --- | ------------- | ---- | --- | --- | ----- | ---- |
+|          | Q   | R             | P   | H   | C    | M   | L             | C    |     |     |       |      |
+| 1a       | 2%  | 98%           |     |     | 100% |     |               |      |     |     |       | 920  |
+| 1b       | 60% | 35%           |     | 4%  |      | 1%  | 71%           | 28%  |     |     |       | 2022 |
+| 2        |     |               |     |     | 100% |     |               | 39%  | 4%  | 58% |       | 83   |
+| 3        |     | 93%           |     | 6%  |      |     |               | 99%  |     |     |       | 204  |
+| 4        |     | 5%            |     | 95% |      |     |               | 100% |     |     |       | 19   |
+| 5        | 86% | 14%           |     |     |      |     |               | 100% |     |     |       | 14   |
+| 6        | 60% | 13%           | 13% | 15% |      |     |               | 100% |     |     |       | 55   |
 
 A total of 3317 sequences found on 31st of March 2010 in the The Hepatitis C
 Virus (HCV) Database Project (http://hcv.lanl.gov/) were analysed. Values less
@@ -399,7 +399,7 @@ considering that only 13 patients were investigated, such
 an association might be missed.
 The main focus of the present study was not the
 importance of the recently identified single nucleotide
-polymorphisms (SNP) upstream the *IL28B* gene. How-
+polymorphisms (SNP) upstream the _IL28B_ gene. How-
 ever, because this variability might influence the inter-
 pretation of core variability, the rs12979860 SNP
 was analysed. The results show that this SNP has a
@@ -470,36 +470,36 @@ Skövde, Sweden.
 **References**
 
 1. WHO: Hepatitis C-global prevalence (update). Wkly Epidemiol Rec 1999,
-74:425-427.
+   74:425-427.
 2. Fried MW, Shiffman ML, Reddy KR, Smith C, Marinos G, Goncales FL Jr,
-Haussinger D, Diago M, Carosi G, Dhumeaux D, et al: Peginterferon alfa-2a
-plus ribavirin for chronic hepatitis C virus infection. N Engl J Med 2002,
-347:975-982.
+   Haussinger D, Diago M, Carosi G, Dhumeaux D, et al: Peginterferon alfa-2a
+   plus ribavirin for chronic hepatitis C virus infection. N Engl J Med 2002,
+   347:975-982.
 3. Poynard T, McHutchison J, Manns M, Trepo C, Lindsay K, Goodman Z,
-Ling MH, Albrecht J: Impact of pegylated interferon alfa-2b and ribavirin
-on liver fibrosis in patients with chronic hepatitis C. Gastroenterology
-2002, 122:1303-1313.
+   Ling MH, Albrecht J: Impact of pegylated interferon alfa-2b and ribavirin
+   on liver fibrosis in patients with chronic hepatitis C. Gastroenterology
+   2002, 122:1303-1313.
 4. Manns MP, McHutchison JG, Gordon SC, Rustgi VK, Shiffman M,
-Reindollar R, Goodman ZD, Koury K, Ling M, Albrecht JK: Peginterferon
-alfa-2b plus ribavirin compared with interferon alfa-2b plus ribavirin for
+   Reindollar R, Goodman ZD, Koury K, Ling M, Albrecht JK: Peginterferon
+   alfa-2b plus ribavirin compared with interferon alfa-2b plus ribavirin for
 5. Kau A, Vermehren J, Sarrazin C: Treatment predictors of a sustained
-virologic response in hepatitis B and C. J Hepatol 2008, 49:634-651.
+   virologic response in hepatitis B and C. J Hepatol 2008, 49:634-651.
 6. Berg T, von Wagner M, Nasser S, Sarrazin C, Heintges T, Gerlach T,
-Buggisch P, Goeser T, Rasenack J, Pape GR, et al: Extended treatment
-duration for hepatitis C virus type 1: comparing 48 versus 72 weeks of
-peginterferon-alfa-2a plus ribavirin. Gastroenterology 2006, 130:1086-1097.
+   Buggisch P, Goeser T, Rasenack J, Pape GR, et al: Extended treatment
+   duration for hepatitis C virus type 1: comparing 48 versus 72 weeks of
+   peginterferon-alfa-2a plus ribavirin. Gastroenterology 2006, 130:1086-1097.
 7. Enomoto N, Sakuma I, Asahina Y, Kurosaki M, Murakami T, Yamamoto C,
-Izumi N, Marumo F, Sato C: Comparison of full-length sequences of
-interferon-sensitive and resistant hepatitis C virus 1b. Sensitivity to
-interferon is conferred by amino acid substitutions in the NS5A region. J
-Clin Invest 1995, 96:224-230.
+   Izumi N, Marumo F, Sato C: Comparison of full-length sequences of
+   interferon-sensitive and resistant hepatitis C virus 1b. Sensitivity to
+   interferon is conferred by amino acid substitutions in the NS5A region. J
+   Clin Invest 1995, 96:224-230.
 8. Zeuzem S, Lee JH, Roth WK: Mutations in the nonstructural 5A gene of
-European hepatitis C virus isolates and response to interferon alfa.
-Hepatology 1997, 25:740-744.
+   European hepatitis C virus isolates and response to interferon alfa.
+   Hepatology 1997, 25:740-744.
 9. Schinkel J, Spaan WJ, Kroes AC: Meta-analysis of mutations in the NS5A
-gene and hepatitis C virus resistance to interferon therapy: uniting
-discordant conclusions. Antivir Ther 2004, 9:275-286.
+   gene and hepatitis C virus resistance to interferon therapy: uniting
+   discordant conclusions. Antivir Ther 2004, 9:275-286.
 10. Odeberg J, Yun Z, Sonnerborg A, Weiland O, Lundeberg J: Variation in the
-hepatitis C virus NS5a region in relation to hypervariable region 1
-heterogeneity during interferon treatment. J Med Virol 1998, 56:33-38.
+    hepatitis C virus NS5a region in relation to hypervariable region 1
+    heterogeneity during interferon treatment. J Med Virol 1998, 56:33-38.
 11. Akuta N, Suzuki F, Sezaki

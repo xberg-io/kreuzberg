@@ -109,28 +109,28 @@ Kreuzberg's default output provides richer metadata than Unstructured:
 
 ## API Endpoint Mapping
 
-| Unstructured | Kreuzberg | Notes |
-|--------------|-----------|-------|
-| `POST /general/v0/general` | `POST /extract` | Single/batch extraction |
-| N/A | `POST /embed` | Built-in embeddings (ONNX models) |
-| N/A | `GET /health` | Health check |
-| N/A | `GET /cache/stats` | Cache statistics |
+| Unstructured               | Kreuzberg          | Notes                             |
+| -------------------------- | ------------------ | --------------------------------- |
+| `POST /general/v0/general` | `POST /extract`    | Single/batch extraction           |
+| N/A                        | `POST /embed`      | Built-in embeddings (ONNX models) |
+| N/A                        | `GET /health`      | Health check                      |
+| N/A                        | `GET /cache/stats` | Cache statistics                  |
 
 ## Element Type Mapping
 
-| Unstructured | Kreuzberg | Notes |
-|--------------|-----------|-------|
-| `Title` | `title` | PDF hierarchy (h1-h6) detection |
+| Unstructured    | Kreuzberg        | Notes                               |
+| --------------- | ---------------- | ----------------------------------- |
+| `Title`         | `title`          | PDF hierarchy (h1-h6) detection     |
 | `NarrativeText` | `narrative_text` | Paragraphs split on double newlines |
-| `ListItem` | `list_item` | Bullets, numbered, lettered |
-| `Table` | `table` | Tab-separated text representation |
-| `Image` | `image` | Format, dimensions in metadata |
-| `PageBreak` | `page_break` | Between pages in multi-page docs |
-| `Header` | `header` | Page header text |
-| `Footer` | `footer` | Page footer text |
-| N/A | `heading` | Section headings (beyond title) |
-| N/A | `code_block` | Code snippets |
-| N/A | `block_quote` | Quoted text blocks |
+| `ListItem`      | `list_item`      | Bullets, numbered, lettered         |
+| `Table`         | `table`          | Tab-separated text representation   |
+| `Image`         | `image`          | Format, dimensions in metadata      |
+| `PageBreak`     | `page_break`     | Between pages in multi-page docs    |
+| `Header`        | `header`         | Page header text                    |
+| `Footer`        | `footer`         | Page footer text                    |
+| N/A             | `heading`        | Section headings (beyond title)     |
+| N/A             | `code_block`     | Code snippets                       |
+| N/A             | `block_quote`    | Quoted text blocks                  |
 
 ## Code Examples
 
@@ -174,11 +174,11 @@ for page in result.pages:
 
 ```typescript
 const formData = new FormData();
-formData.append('files', fileBlob);
+formData.append("files", fileBlob);
 
-const response = await fetch('https://api.unstructured.io/general/v0/general', {
-  method: 'POST',
-  body: formData
+const response = await fetch("https://api.unstructured.io/general/v0/general", {
+  method: "POST",
+  body: formData,
 });
 const elements = await response.json();
 ```
@@ -186,11 +186,11 @@ const elements = await response.json();
 **Kreuzberg**:
 
 ```typescript
-import { extractBytes } from 'kreuzberg';
+import { extractBytes } from "kreuzberg";
 
 // Option 1: Element-based output
-const result = await extractBytes(pdfBuffer, 'application/pdf', {
-  output_format: 'element_based'
+const result = await extractBytes(pdfBuffer, "application/pdf", {
+  output_format: "element_based",
 });
 
 for (const element of result.elements) {
@@ -198,8 +198,8 @@ for (const element of result.elements) {
 }
 
 // Option 2: Unified output with pages
-const result = await extractBytes(pdfBuffer, 'application/pdf', {
-  pages: { extract_pages: true }
+const result = await extractBytes(pdfBuffer, "application/pdf", {
+  pages: { extract_pages: true },
 });
 
 for (const page of result.pages) {
@@ -254,14 +254,14 @@ curl -X POST "http://localhost:8080/extract" \
 
 ## Configuration Mapping
 
-| Unstructured Parameter | Kreuzberg Config | Notes |
-|------------------------|------------------|-------|
-| `strategy=hi_res` | `pdf_options.hierarchy.enabled=true` | PDF hierarchy extraction |
-| `coordinates=true` | Always included when available | Bounding boxes in element metadata |
-| `languages=["eng"]` | `ocr.language="eng"` | OCR language |
-| `extract_image_block_types=["image"]` | `images.extract_images=true` | Image extraction |
-| `chunking_strategy="by_title"` | `chunking.max_chars=1000` | Text chunking (basic) |
-| `embedding_model="..."`  | `chunking.embedding.model="..."` | Embedding generation |
+| Unstructured Parameter                | Kreuzberg Config                     | Notes                              |
+| ------------------------------------- | ------------------------------------ | ---------------------------------- |
+| `strategy=hi_res`                     | `pdf_options.hierarchy.enabled=true` | PDF hierarchy extraction           |
+| `coordinates=true`                    | Always included when available       | Bounding boxes in element metadata |
+| `languages=["eng"]`                   | `ocr.language="eng"`                 | OCR language                       |
+| `extract_image_block_types=["image"]` | `images.extract_images=true`         | Image extraction                   |
+| `chunking_strategy="by_title"`        | `chunking.max_chars=1000`            | Text chunking (basic)              |
+| `embedding_model="..."`               | `chunking.embedding.model="..."`     | Embedding generation               |
 
 ## Migration Checklist
 

@@ -1,27 +1,27 @@
 {
-	"id": "smoke_pdf_basic",
-	"category": "smoke",
-	"description": "Smoke test: PDF with simple text extraction",
-	"tags": ["smoke", "pdf", "basic"],
-	"input": {
-		"path": "pdf/fake_memo.pdf",
-		"media_type": "application/pdf"
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/pdf"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 50
-		},
-		{
-			"type": "contains_any",
-			"field": "content",
-			"values": ["May 5, 2023", "To Whom it May Concern"]
-		}
-	]
+  "id": "smoke_pdf_basic",
+  "category": "smoke",
+  "description": "Smoke test: PDF with simple text extraction",
+  "tags": ["smoke", "pdf", "basic"],
+  "input": {
+    "path": "pdf/fake_memo.pdf",
+    "media_type": "application/pdf"
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/pdf"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 50
+    },
+    {
+      "type": "contains_any",
+      "field": "content",
+      "values": ["May 5, 2023", "To Whom it May Concern"]
+    }
+  ]
 }

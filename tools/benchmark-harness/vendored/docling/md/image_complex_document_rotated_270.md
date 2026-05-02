@@ -30,10 +30,10 @@ Widget B
 
 Widget C
 
-| Revenue   | ,500     | 1,000    | ,000     |
-|-----------|----------|----------|----------|
-| Units     | 150      | 200      | 100      |
-| Product   | Widget A | Widget B | Widget C |
+| Revenue | ,500     | 1,000    | ,000     |
+| ------- | -------- | -------- | -------- |
+| Units   | 150      | 200      | 100      |
+| Product | Widget A | Widget B | Widget C |
 
 Summary:
 

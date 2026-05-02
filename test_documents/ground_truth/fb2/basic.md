@@ -4,7 +4,7 @@
 
 #### Subsection
 
-This *emphasized* **strong** `verbatim` markdown. See this link .
+This _emphasized_ **strong** `verbatim` markdown. See this link .
 
 Ordered list:
 

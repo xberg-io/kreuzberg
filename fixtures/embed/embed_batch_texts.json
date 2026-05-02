@@ -1,48 +1,48 @@
 {
-	"id": "embed_batch_texts",
-	"description": "Standalone embedding of a batch of 3 texts with fast preset",
-	"tags": ["embed"],
-	"call": "embed",
-	"input": {
-		"texts": ["Text one", "Text two", "Text three"],
-		"config": {
-			"model": {
-				"type": "preset",
-				"name": "fast"
-			},
-			"normalize": true,
-			"batch_size": 32
-		}
-	},
-	"assertions": [
-		{
-			"type": "count_equals",
-			"field": "embeddings",
-			"value": 3
-		},
-		{
-			"type": "equals",
-			"field": "embedding_dimensions",
-			"value": 384
-		},
-		{
-			"type": "is_true",
-			"field": "embeddings_valid"
-		},
-		{
-			"type": "is_true",
-			"field": "embeddings_finite"
-		},
-		{
-			"type": "is_true",
-			"field": "embeddings_non_zero"
-		},
-		{
-			"type": "is_true",
-			"field": "embeddings_normalized"
-		}
-	],
-	"skip": {
-		"reason": "Requires features: embeddings; Skip on platforms: x86_64-pc-windows-msvc; Embeddings not supported on Windows MSVC"
-	}
+  "id": "embed_batch_texts",
+  "description": "Standalone embedding of a batch of 3 texts with fast preset",
+  "tags": ["embed"],
+  "call": "embed",
+  "input": {
+    "texts": ["Text one", "Text two", "Text three"],
+    "config": {
+      "model": {
+        "type": "preset",
+        "name": "fast"
+      },
+      "normalize": true,
+      "batch_size": 32
+    }
+  },
+  "assertions": [
+    {
+      "type": "count_equals",
+      "field": "embeddings",
+      "value": 3
+    },
+    {
+      "type": "equals",
+      "field": "embedding_dimensions",
+      "value": 384
+    },
+    {
+      "type": "is_true",
+      "field": "embeddings_valid"
+    },
+    {
+      "type": "is_true",
+      "field": "embeddings_finite"
+    },
+    {
+      "type": "is_true",
+      "field": "embeddings_non_zero"
+    },
+    {
+      "type": "is_true",
+      "field": "embeddings_normalized"
+    }
+  ],
+  "skip": {
+    "reason": "Requires features: embeddings; Skip on platforms: x86_64-pc-windows-msvc; Embeddings not supported on Windows MSVC"
+  }
 }

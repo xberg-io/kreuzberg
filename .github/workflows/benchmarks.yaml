@@ -73,8 +73,8 @@ jobs:
         uses: kreuzberg-dev/actions/setup-rust@v1
         with:
           cache-key-prefix: benchmarks-setup
-          use-sccache: 'true'
-          report-stats: 'true'
+          use-sccache: "true"
+          report-stats: "true"
 
       - name: Cache PDFium
         uses: ./.github/actions/cache-pdfium
@@ -169,8 +169,8 @@ jobs:
         uses: kreuzberg-dev/actions/setup-rust@v1
         with:
           cache-key-prefix: benchmarks-native
-          use-sccache: 'true'
-          report-stats: 'true'
+          use-sccache: "true"
+          report-stats: "true"
 
       - name: Download build artifacts
         uses: actions/download-artifact@v8
@@ -234,8 +234,8 @@ jobs:
         uses: kreuzberg-dev/actions/setup-rust@v1
         with:
           cache-key-prefix: benchmarks-native-paddle
-          use-sccache: 'true'
-          report-stats: 'true'
+          use-sccache: "true"
+          report-stats: "true"
 
       - name: Download build artifacts
         uses: actions/download-artifact@v8
@@ -304,8 +304,8 @@ jobs:
         uses: kreuzberg-dev/actions/setup-rust@v1
         with:
           cache-key-prefix: benchmarks-python
-          use-sccache: 'true'
-          report-stats: 'true'
+          use-sccache: "true"
+          report-stats: "true"
 
       - name: Download build artifacts
         uses: actions/download-artifact@v8
@@ -383,8 +383,8 @@ jobs:
         uses: kreuzberg-dev/actions/setup-rust@v1
         with:
           cache-key-prefix: benchmarks-node
-          use-sccache: 'false'
-          report-stats: 'true'
+          use-sccache: "false"
+          report-stats: "true"
 
       - name: Download build artifacts
         uses: actions/download-artifact@v8
@@ -465,8 +465,8 @@ jobs:
         uses: kreuzberg-dev/actions/setup-rust@v1
         with:
           cache-key-prefix: benchmarks-wasm
-          use-sccache: 'true'
-          report-stats: 'true'
+          use-sccache: "true"
+          report-stats: "true"
 
       - name: Download build artifacts
         uses: actions/download-artifact@v8
@@ -547,8 +547,8 @@ jobs:
         uses: kreuzberg-dev/actions/setup-rust@v1
         with:
           cache-key-prefix: benchmarks-ruby
-          use-sccache: 'true'
-          report-stats: 'true'
+          use-sccache: "true"
+          report-stats: "true"
 
       - name: Download build artifacts
         uses: actions/download-artifact@v8
@@ -643,8 +643,8 @@ jobs:
         uses: kreuzberg-dev/actions/setup-rust@v1
         with:
           cache-key-prefix: benchmarks-r
-          use-sccache: 'true'
-          report-stats: 'true'
+          use-sccache: "true"
+          report-stats: "true"
 
       - name: Download build artifacts
         uses: actions/download-artifact@v8
@@ -658,7 +658,7 @@ jobs:
       - name: Setup R
         uses: r-lib/actions/setup-r@v2
         with:
-          r-version: '4.3'
+          r-version: "4.3"
 
       - name: Install R dependencies
         run: |
@@ -729,8 +729,8 @@ jobs:
         uses: kreuzberg-dev/actions/setup-rust@v1
         with:
           cache-key-prefix: benchmarks-go
-          use-sccache: 'true'
-          report-stats: 'true'
+          use-sccache: "true"
+          report-stats: "true"
 
       - name: Download build artifacts
         uses: actions/download-artifact@v8
@@ -831,8 +831,8 @@ jobs:
         uses: kreuzberg-dev/actions/setup-rust@v1
         with:
           cache-key-prefix: benchmarks-java
-          use-sccache: 'true'
-          report-stats: 'true'
+          use-sccache: "true"
+          report-stats: "true"
 
       - name: Download build artifacts
         uses: actions/download-artifact@v8
@@ -847,8 +847,8 @@ jobs:
         uses: actions/setup-java@v5
         id: setup-java
         with:
-          distribution: 'temurin'
-          java-version: '25'
+          distribution: "temurin"
+          java-version: "25"
 
       - name: Setup Maven
         uses: kreuzberg-dev/actions/setup-maven@v1
@@ -929,8 +929,8 @@ jobs:
         uses: kreuzberg-dev/actions/setup-rust@v1
         with:
           cache-key-prefix: benchmarks-csharp
-          use-sccache: 'true'
-          report-stats: 'true'
+          use-sccache: "true"
+          report-stats: "true"
 
       - name: Download build artifacts
         uses: actions/download-artifact@v8
@@ -1021,8 +1021,8 @@ jobs:
         uses: kreuzberg-dev/actions/setup-rust@v1
         with:
           cache-key-prefix: benchmarks-elixir
-          use-sccache: 'true'
-          report-stats: 'true'
+          use-sccache: "true"
+          report-stats: "true"
 
       - name: Download build artifacts
         uses: actions/download-artifact@v8
@@ -1102,8 +1102,8 @@ jobs:
         uses: kreuzberg-dev/actions/setup-rust@v1
         with:
           cache-key-prefix: benchmarks-php
-          use-sccache: 'true'
-          report-stats: 'true'
+          use-sccache: "true"
+          report-stats: "true"
 
       - name: Download build artifacts
         uses: actions/download-artifact@v8
@@ -1197,8 +1197,8 @@ jobs:
         uses: kreuzberg-dev/actions/setup-rust@v1
         with:
           cache-key-prefix: benchmarks-c
-          use-sccache: 'true'
-          report-stats: 'true'
+          use-sccache: "true"
+          report-stats: "true"
 
       - name: Download build artifacts
         uses: actions/download-artifact@v8
@@ -1235,7 +1235,22 @@ jobs:
 
   kreuzberg-gate:
     name: Kreuzberg benchmarks complete
-    needs: [bench-native, bench-native-paddle, bench-python, bench-node, bench-wasm, bench-ruby, bench-r, bench-go, bench-java, bench-csharp, bench-elixir, bench-php, bench-c]
+    needs:
+      [
+        bench-native,
+        bench-native-paddle,
+        bench-python,
+        bench-node,
+        bench-wasm,
+        bench-ruby,
+        bench-r,
+        bench-go,
+        bench-java,
+        bench-csharp,
+        bench-elixir,
+        bench-php,
+        bench-c,
+      ]
     if: always()
     runs-on: ubuntu-24.04-arm
     steps:
@@ -1536,8 +1551,8 @@ jobs:
         uses: actions/setup-java@v5
         id: setup-java
         with:
-          distribution: 'temurin'
-          java-version: '25'
+          distribution: "temurin"
+          java-version: "25"
 
       - name: Download Apache Tika
         run: |
@@ -1995,7 +2010,22 @@ jobs:
 
   aggregate-and-publish:
     name: Aggregate & Release Results
-    needs: [kreuzberg-gate, bench-docling, bench-markitdown, bench-pandoc, bench-unstructured, bench-tika, bench-pymupdf4llm, bench-pdfplumber, bench-mineru, bench-pypdf, bench-pdfminer, bench-pdftotext, bench-playa-pdf]
+    needs:
+      [
+        kreuzberg-gate,
+        bench-docling,
+        bench-markitdown,
+        bench-pandoc,
+        bench-unstructured,
+        bench-tika,
+        bench-pymupdf4llm,
+        bench-pdfplumber,
+        bench-mineru,
+        bench-pypdf,
+        bench-pdfminer,
+        bench-pdftotext,
+        bench-playa-pdf,
+      ]
     runs-on: ubuntu-24.04-arm
     if: ${{ !cancelled() && (github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch') }}
     permissions:

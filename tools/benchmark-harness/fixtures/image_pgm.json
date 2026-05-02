@@ -1,14 +1,14 @@
 {
-	"document": "../../../test_documents/images_extra/ocr_image.pgm",
-	"file_type": "pgm",
-	"file_size": 363096,
-	"expected_frameworks": ["kreuzberg"],
-	"metadata": {
-		"description": "Portable Graymap with text for OCR",
-		"category": "image"
-	},
-	"ground_truth": {
-		"text_file": "../../../test_documents/ground_truth/pgm/image_pgm.txt",
-		"source": "vision"
-	}
+  "document": "../../../test_documents/images_extra/ocr_image.pgm",
+  "file_type": "pgm",
+  "file_size": 363096,
+  "expected_frameworks": ["kreuzberg"],
+  "metadata": {
+    "description": "Portable Graymap with text for OCR",
+    "category": "image"
+  },
+  "ground_truth": {
+    "text_file": "../../../test_documents/ground_truth/pgm/image_pgm.txt",
+    "source": "vision"
+  }
 }

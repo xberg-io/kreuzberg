@@ -1,21 +1,21 @@
 {
-	"id": "office_docx_basic",
-	"category": "office",
-	"description": "DOCX document extraction baseline.",
-	"input": {
-		"path": "docx/sample_document.docx",
-		"media_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 10
-		}
-	]
+  "id": "office_docx_basic",
+  "category": "office",
+  "description": "DOCX document extraction baseline.",
+  "input": {
+    "path": "docx/sample_document.docx",
+    "media_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 10
+    }
+  ]
 }

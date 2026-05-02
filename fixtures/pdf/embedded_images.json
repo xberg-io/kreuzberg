@@ -1,26 +1,26 @@
 {
-	"id": "pdf_embedded_images",
-	"category": "pdf",
-	"description": "PDF with embedded images should extract text and tables when present.",
-	"input": {
-		"path": "pdf/embedded_images_tables.pdf",
-		"media_type": "application/pdf"
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/pdf"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 50
-		},
-		{
-			"type": "count_min",
-			"field": "tables",
-			"value": 0
-		}
-	]
+  "id": "pdf_embedded_images",
+  "category": "pdf",
+  "description": "PDF with embedded images should extract text and tables when present.",
+  "input": {
+    "path": "pdf/embedded_images_tables.pdf",
+    "media_type": "application/pdf"
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/pdf"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 50
+    },
+    {
+      "type": "count_min",
+      "field": "tables",
+      "value": 0
+    }
+  ]
 }

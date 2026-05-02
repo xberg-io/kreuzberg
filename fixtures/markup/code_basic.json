@@ -1,29 +1,26 @@
 {
-	"id": "code_basic",
-	"category": "markup",
-	"description": "Create inline code formatting",
-	"tags": [
-		"markup",
-		"formatting"
-	],
-	"call": "code_markup",
-	"input": {
-		"start": 0,
-		"end": 8
-	},
-	"assertions": [
-		{
-			"type": "not_error"
-		},
-		{
-			"type": "equals",
-			"field": "start",
-			"value": 0
-		},
-		{
-			"type": "equals",
-			"field": "end",
-			"value": 8
-		}
-	]
+  "id": "code_basic",
+  "category": "markup",
+  "description": "Create inline code formatting",
+  "tags": ["markup", "formatting"],
+  "call": "code_markup",
+  "input": {
+    "start": 0,
+    "end": 8
+  },
+  "assertions": [
+    {
+      "type": "not_error"
+    },
+    {
+      "type": "equals",
+      "field": "start",
+      "value": 0
+    },
+    {
+      "type": "equals",
+      "field": "end",
+      "value": 8
+    }
+  ]
 }

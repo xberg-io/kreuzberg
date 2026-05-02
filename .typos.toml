@@ -3,21 +3,21 @@
 
 [default]
 extend-ignore-re = [
-    # Hex strings (e.g. commit hashes, checksums)
-    "[a-fA-F0-9]{32,}",
-    # Base64 encoded strings
-    "[A-Za-z0-9+/]{40,}={0,2}",
-    # URLs — avoid flagging path segments
-    "https?://[^\\s]+",
-    # ODF/XSL-FO namespace prefixes (fo:color, fo:font-size, etc.)
-    "fo:[a-z-]+",
-    "xsl-fo-compatible",
-    # Unicode escapes (e.g. \u{0065})
-    "'\\\\u\\{[0-9a-fA-F]+\\}'",
-    # Foreign language text in test strings and OCR backend language lists
-    '"[^"]*(?:programa|cursos|ist ein|künstliche|excepcional|utiliza|transforme|Exemple|Dies ist|internacional|Hauptstadt)[^"]*"',
-    # GPU runner name
-    "runner-gpu-l4",
+  # Hex strings (e.g. commit hashes, checksums)
+  "[a-fA-F0-9]{32,}",
+  # Base64 encoded strings
+  "[A-Za-z0-9+/]{40,}={0,2}",
+  # URLs — avoid flagging path segments
+  "https?://[^\\s]+",
+  # ODF/XSL-FO namespace prefixes (fo:color, fo:font-size, etc.)
+  "fo:[a-z-]+",
+  "xsl-fo-compatible",
+  # Unicode escapes (e.g. \u{0065})
+  "'\\\\u\\{[0-9a-fA-F]+\\}'",
+  # Foreign language text in test strings and OCR backend language lists
+  '"[^"]*(?:programa|cursos|ist ein|künstliche|excepcional|utiliza|transforme|Exemple|Dies ist|internacional|Hauptstadt)[^"]*"',
+  # GPU runner name
+  "runner-gpu-l4",
 ]
 
 [default.extend-words]
@@ -113,41 +113,41 @@ traineddata = "traineddata"
 
 [files]
 extend-exclude = [
-    # Test fixtures and vendor files
-    "test_documents/",
-    "fixtures/",
-    # Lock files
-    "*.lock",
-    "pnpm-lock.yaml",
-    # Build artifacts
-    "target/",
-    "node_modules/",
-    "dist/",
-    "site/",
-    # Code snippets (validated separately by snippet-runner)
-    "docs/snippets/",
-    # Generated files (e2e tests, bindgen)
-    "e2e/",
-    "**/bindgen/",
-    # Stopwords files (foreign language words)
-    "**/stopwords/",
-    # Test data (hOCR samples, etc.)
-    "**/test_data/",
-    # Patch files (upstream diffs)
-    "**/*.diff",
-    "**/*.patch",
-    # PDF text repair tests (intentionally broken text)
-    "**/text_repair.rs",
-    # Changelog (contains intentional examples of garbled text)
-    "CHANGELOG.md",
-    "docs/CHANGELOG.md",
-    # Vendored / third-party code
-    "**/vendor/",
-    "**/vendored/",
-    # Binary files
-    "*.whl",
-    "*.tar.gz",
-    "*.png",
-    "*.ico",
-    "*.svg",
+  # Test fixtures and vendor files
+  "test_documents/",
+  "fixtures/",
+  # Lock files
+  "*.lock",
+  "pnpm-lock.yaml",
+  # Build artifacts
+  "target/",
+  "node_modules/",
+  "dist/",
+  "site/",
+  # Code snippets (validated separately by snippet-runner)
+  "docs/snippets/",
+  # Generated files (e2e tests, bindgen)
+  "e2e/",
+  "**/bindgen/",
+  # Stopwords files (foreign language words)
+  "**/stopwords/",
+  # Test data (hOCR samples, etc.)
+  "**/test_data/",
+  # Patch files (upstream diffs)
+  "**/*.diff",
+  "**/*.patch",
+  # PDF text repair tests (intentionally broken text)
+  "**/text_repair.rs",
+  # Changelog (contains intentional examples of garbled text)
+  "CHANGELOG.md",
+  "docs/CHANGELOG.md",
+  # Vendored / third-party code
+  "**/vendor/",
+  "**/vendored/",
+  # Binary files
+  "*.whl",
+  "*.tar.gz",
+  "*.png",
+  "*.ico",
+  "*.svg",
 ]

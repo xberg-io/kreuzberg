@@ -1,8 +1,8 @@
 % Title
-  spanning multiple lines
+spanning multiple lines
 % Author One
-  Author Two; Author Three;
-  Author Four
+Author Two; Author Three;
+Author Four
 
 # Additional markdown reader tests
 
@@ -10,18 +10,14 @@
 
 [foo] and [bar]
 
-[foo]:
-  /url
-
-[bar]:
-/url
-"title"
+[foo]: /url
+[bar]: /url "title"
 
 ## Raw ConTeXt environments
 
 \placeformula \startformula
-   L_{1} = L_{2}
-   \stopformula
+L*{1} = L*{2}
+\stopformula
 
 \start[a2]
 \start[a2]
@@ -40,23 +36,23 @@
 
 [foo](/bar and baz)
 [foo](/bar
- and baz )
-[foo]( /bar  and  baz  )
-[foo](bar baz  "title" )
+and baz )
+[foo]( /bar and baz )
+[foo](bar baz "title" )
 
 [baz][] [bam][] [bork][]
 
 [baz]: /foo foo
-[bam]:  /foo fee
-[bork]:  /foo/zee zob   (title)
+[bam]: /foo fee
+[bork]: /foo/zee zob (title)
 
 [Ward's method.](http://en.wikipedia.org/wiki/Ward's_method)
 
 ## Horizontal rules with spaces at end
 
-* * * * *
+---
 
--- - -- -- -
+---
 
 ## Raw HTML before header
 
@@ -79,7 +75,7 @@ $PATH 90 $PATH
 - one
 <!--
 - two
--->
+  -->
 - three
 
 ## Indented code at beginning of list
@@ -87,16 +83,16 @@ $PATH 90 $PATH
 -     code
       code
 
-  1.     code
-         code
+  1.           code
 
-  12345678.     code
-                code
+      code
 
+  2.           code
+          code
   -     code
         code
 
-  -    no code
+  - no code
 
 ## Backslash newline
 
@@ -110,7 +106,7 @@ there
 `hi
 there`
 
-`` hi````there ``
+`hi````there`
 
 `hi
 
@@ -160,11 +156,12 @@ $\tuple{x,y}$
 
 - one
 - two
+
 1. one
 2. two
 
- a. one
- b. two
+a. one
+b. two
 
 ## Implicit header references
 
@@ -191,73 +188,73 @@ But this is not a link to [My other header], since the reference is defined.
 ## Line blocks
 
 | But can a bee be said to be
-|     or not to be an entire bee,
-|         when half the bee is not a bee,
-|             due to some ancient injury?
+| or not to be an entire bee,
+| when half the bee is not a bee,
+| due to some ancient injury?
 |
 | Continuation
- line
-|   and
-       another
+line
+| and
+another
 
 ## Grid Tables
 
 +------------------+-----------+------------+
-| col 1            | col 2     | col 3      |
+| col 1 | col 2 | col 3 |
 +==================+===========+============+
-| r1 a             | b         | c          |
-| r1 bis           | b 2       | c 2        |
+| r1 a | b | c |
+| r1 bis | b 2 | c 2 |
 +------------------+-----------+------------+
-| r2 d             | e         | f          |
+| r2 d | e | f |
 +------------------+-----------+------------+
 
 Headless
 
 +------------------+-----------+------------+
-| r1 a             | b         | c          |
-| r1 bis           | b 2       | c 2        |
+| r1 a | b | c |
+| r1 bis | b 2 | c 2 |
 +------------------+-----------+------------+
-| r2 d             | e         | f          |
+| r2 d | e | f |
 +------------------+-----------+------------+
 
 With alignments
 
 +------------------+-----------+------------+
-| col 1            | col 2     | col 3      |
+| col 1 | col 2 | col 3 |
 +=================:+:==========+:==========:+
-| r1 a             | b         | c          |
-| r1 bis           | b 2       | c 2        |
+| r1 a | b | c |
+| r1 bis | b 2 | c 2 |
 +------------------+-----------+------------+
-| r2 d             | e         | f          |
+| r2 d | e | f |
 +------------------+-----------+------------+
 
 Headless with alignments
 
 +-----------------:+:----------+:----------:+
-| r1 a             | b         | c          |
-| r1 bis           | b 2       | c 2        |
+| r1 a | b | c |
+| r1 bis | b 2 | c 2 |
 +------------------+-----------+------------+
-| r2 d             | e         | f          |
+| r2 d | e | f |
 +------------------+-----------+------------+
 
 Spaces at ends of lines
 
 +------------------+-----------+------------+
-| r1 a             | b         | c          |
-| r1 bis           | b 2       | c 2        |
+| r1 a | b | c |
+| r1 bis | b 2 | c 2 |
 +------------------+-----------+------------+
-| r2 d             | e         | f          |
+| r2 d | e | f |
 +------------------+-----------+------------+
 
 Multiple blocks in a cell
 
 +------------------+-----------+------------+
-| # col 1          | # col 2   | # col 3    |
-| col 1            | col 2     | col 3      |
+| # col 1 | # col 2 | # col 3 |
+| col 1 | col 2 | col 3 |
 +------------------+-----------+------------+
-| r1 a             | - b       | c          |
-|                  | - b 2     | c 2        |
-| r1 bis           | - b 2     | c 2        |
+| r1 a | - b | c |
+| | - b 2 | c 2 |
+| r1 bis | - b 2 | c 2 |
 +------------------+-----------+------------+
 
 East Asian characters have double width
@@ -283,52 +280,51 @@ Zero-width non-joiner in Persian
 Empty cells
 
 +---+---+
-|   |   |
+| | |
 +---+---+
-
 
 Table with cells spanning multiple rows or columns:
 
 +---------------------+----------+
-| Property            | Earth    |
+| Property | Earth |
 +=============+=======+==========+
-|             | min   | -89.2 °C |
+| | min | -89.2 °C |
 | Temperature +-------+----------+
-| 1961-1990   | mean  | 14 °C    |
-|             +-------+----------+
-|             | min   | 56.7 °C  |
+| 1961-1990 | mean | 14 °C |
+| +-------+----------+
+| | min | 56.7 °C |
 +-------------+-------+----------+
 
 Table with complex header:
 
 +---------------------+-----------------------+
-| Location            | Temperature 1961-1990 |
-|                     | in degree Celsius     |
-|                     +-------+-------+-------+
-|                     | min   | mean  | max   |
+| Location | Temperature 1961-1990 |
+| | in degree Celsius |
+| +-------+-------+-------+
+| | min | mean | max |
 +=====================+=======+=======+=======+
-| Antarctica          | -89.2 | N/A   | 19.8  |
+| Antarctica | -89.2 | N/A | 19.8 |
 +---------------------+-------+-------+-------+
-| Earth               | -89.2 | 14    | 56.7  |
+| Earth | -89.2 | 14 | 56.7 |
 +---------------------+-------+-------+-------+
 
 ## Entities in links and titles
 
-[link](/&uuml;rl "&ouml;&ouml;!")
+[link](/ürl "öö!")
 
-<http://g&ouml;&ouml;gle.com>
+<http://göögle.com>
 
-<me@ex&auml;mple.com>
+<me@exämple.com>
 
 [foobar]
 
-[foobar]: /&uuml;rl "&ouml;&ouml;!"
+[foobar]: /ürl "öö!"
 
 ## Parentheses in URLs
 
-[link](/hi(there))
+[link](</hi(there)>)
 
-[link](/hithere\))
+[link](</hithere)>)
 
 [linky]
 
@@ -351,9 +347,7 @@ most vocal proponent.
 
 ## Empty reference links
 
-[foo2]:
-
-bar
+[foo2]: bar
 
 [foo2]
 
@@ -363,4 +357,4 @@ bar
 
 ## Bracketed spans
 
-[*foo* bar baz [link](url)]{.class #id key=val}
+[_foo_ bar baz [link](url)]{.class #id key=val}

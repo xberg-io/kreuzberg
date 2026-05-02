@@ -32,25 +32,25 @@ Building on previous work, we delineated five domains of variables that could in
 
 Table 1 Categorization of potential factors influencing pre-TAS results.
 
-| Domain                 | Factor                | Covariate                     | Description                                                     | Reference Group      | Summary statistic   | Temporal Resolution   | Source             |
-|------------------------|-----------------------|-------------------------------|-----------------------------------------------------------------|----------------------|---------------------|-----------------------|--------------------|
-| Prevalence             | Baseline prevalence   | 5% cut off                    | Maximum reported mapping or baseline sentinel site prevalence   | <5%                  | Maximum             | Varies                | Programmatic data  |
-| Prevalence             | Baseline prevalence   | 10% cut off                   | Maximum reported mapping or baseline sentinel site prevalence   | <10%                 | Maximum             | Varies                | Programmatic data  |
-| Agent                  | Parasite              | Parasite                      | Predominate parasite in district                                | W. bancrofti & mixed | Binary value        | 2018                  | Programmatic data  |
-| Environment            | Vector                | Vector                        | Predominate vector in district                                  | Anopheles & Mansonia | Binary value        | 2018                  | Country expert     |
-| Environment            | Geography             | Elevation                     | Elevation measured in meters                                    | >350                 | Mean                | 2000                  | CGIAR-CSI SRTM [9] |
-| Environment            | Geography             | District area                 | Area measured in km2                                            | >2,500               | Maximum sum         | Static                | Programmatic data  |
-| Environment            | Climate               | EVI                           | Enhanced vegetation index                                       | > 0.3                | Mean                | 2015                  | MODIS [10]         |
-| Environment            | Climate               | Rainfall                      | Annual rainfall measured in mm                                  | ≤ 700                | Mean                | 2015                  | CHIRPS [11]        |
-| Environment            | Socio-economic        | Population density            | Number of people per km2                                        | ≤ 100                | Mean                | 2015                  | WorldPop [12]      |
-| Environment            | Socio-economic        | Nighttime lights              | Nighttime light index from 0 to 63                              | >1.5                 | Mean                | 2015                  | VIIRS [13]         |
-| Environment            | Co-endemicity         | Co-endemic for onchocerciasis | Part or all of district is also endemic for onchocerciases      | Non-endemic          | Binary value        | 2018                  | Programmatic data  |
-| MDA                    | Drug efficacy         | Drug package                  | DEC-ALB or IVM-ALB                                              | DEC-ALB              | Binary value        | 2018                  | Programmatic data  |
-| MDA                    | Implementation of MDA | Coverage                      | Median MDA coverage for last 5 rounds                           | ≥ 65%                | Median              | Varies                | Programmatic data  |
-| MDA                    | Implementation of MDA | Sufficient rounds             | Number of rounds of sufficient (≥ 65% coverage) in last 5 years | ≥ 3                  | Count               | Varies                | Programmatic data  |
-| MDA                    | Implementation of MDA | Number of rounds              | Maximum number of recorded rounds of MDA                        | ≥ 6                  | Maximum             | Varies                | Programmatic data  |
-| Pre-TAS implementation | Quality of survey     | Diagnostic method             | Using Mf or Ag                                                  | Mf                   | Binary value        | Varies                | Programmatic data  |
-| Pre-TAS implementation | Quality of survey     | Diagnostic test               | Using Mf, ICT, or FTS                                           | Mf                   | Categorical         | Varies                | Programmatic data  |
+| Domain                 | Factor                | Covariate                     | Description                                                     | Reference Group      | Summary statistic | Temporal Resolution | Source             |
+| ---------------------- | --------------------- | ----------------------------- | --------------------------------------------------------------- | -------------------- | ----------------- | ------------------- | ------------------ |
+| Prevalence             | Baseline prevalence   | 5% cut off                    | Maximum reported mapping or baseline sentinel site prevalence   | <5%                  | Maximum           | Varies              | Programmatic data  |
+| Prevalence             | Baseline prevalence   | 10% cut off                   | Maximum reported mapping or baseline sentinel site prevalence   | <10%                 | Maximum           | Varies              | Programmatic data  |
+| Agent                  | Parasite              | Parasite                      | Predominate parasite in district                                | W. bancrofti & mixed | Binary value      | 2018                | Programmatic data  |
+| Environment            | Vector                | Vector                        | Predominate vector in district                                  | Anopheles & Mansonia | Binary value      | 2018                | Country expert     |
+| Environment            | Geography             | Elevation                     | Elevation measured in meters                                    | >350                 | Mean              | 2000                | CGIAR-CSI SRTM [9] |
+| Environment            | Geography             | District area                 | Area measured in km2                                            | >2,500               | Maximum sum       | Static              | Programmatic data  |
+| Environment            | Climate               | EVI                           | Enhanced vegetation index                                       | > 0.3                | Mean              | 2015                | MODIS [10]         |
+| Environment            | Climate               | Rainfall                      | Annual rainfall measured in mm                                  | ≤ 700                | Mean              | 2015                | CHIRPS [11]        |
+| Environment            | Socio-economic        | Population density            | Number of people per km2                                        | ≤ 100                | Mean              | 2015                | WorldPop [12]      |
+| Environment            | Socio-economic        | Nighttime lights              | Nighttime light index from 0 to 63                              | >1.5                 | Mean              | 2015                | VIIRS [13]         |
+| Environment            | Co-endemicity         | Co-endemic for onchocerciasis | Part or all of district is also endemic for onchocerciases      | Non-endemic          | Binary value      | 2018                | Programmatic data  |
+| MDA                    | Drug efficacy         | Drug package                  | DEC-ALB or IVM-ALB                                              | DEC-ALB              | Binary value      | 2018                | Programmatic data  |
+| MDA                    | Implementation of MDA | Coverage                      | Median MDA coverage for last 5 rounds                           | ≥ 65%                | Median            | Varies              | Programmatic data  |
+| MDA                    | Implementation of MDA | Sufficient rounds             | Number of rounds of sufficient (≥ 65% coverage) in last 5 years | ≥ 3                  | Count             | Varies              | Programmatic data  |
+| MDA                    | Implementation of MDA | Number of rounds              | Maximum number of recorded rounds of MDA                        | ≥ 6                  | Maximum           | Varies              | Programmatic data  |
+| Pre-TAS implementation | Quality of survey     | Diagnostic method             | Using Mf or Ag                                                  | Mf                   | Binary value      | Varies              | Programmatic data  |
+| Pre-TAS implementation | Quality of survey     | Diagnostic test               | Using Mf, ICT, or FTS                                           | Mf                   | Categorical       | Varies              | Programmatic data  |
 
 ### Data sources
 
@@ -129,7 +129,7 @@ Sensitivity analyses were conducted using the same model with different subsets 
 Table 2 Adjusted risk ratios for pre-TAS failure from log-binomial model sensitivity analysis.
 
 |                                             |                  | (1)                        | (2)                      | (3)                                  | (4)                             |
-|---------------------------------------------|------------------|----------------------------|--------------------------|--------------------------------------|---------------------------------|
+| ------------------------------------------- | ---------------- | -------------------------- | ------------------------ | ------------------------------------ | ------------------------------- |
 |                                             | Full Model       | Without Cameroon districts | Only districts in Africa | Only W. bancrofti parasite districts | Only Anopheles vector districts |
 | Number of Failures                          | 74               | 74                         | 44                       | 72                                   | 46                              |
 | Number of total districts                   | (N = 554)        | (N = 420)                  | (N = 407)                | (N = 518)                            | (N = 414)                       |

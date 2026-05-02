@@ -1,36 +1,36 @@
 {
-	"id": "ocr_paddle_pdf_scanned",
-	"category": "ocr",
-	"description": "Scanned PDF requires PaddleOCR to extract text.",
-	"input": {
-		"path": "pdf/ocr_test.pdf",
-		"media_type": "application/pdf",
-		"config": {
-			"ocr": {
-				"backend": "paddle-ocr",
-				"language": "en"
-			},
-			"force_ocr": true
-		}
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/pdf"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 20
-		},
-		{
-			"type": "contains_any",
-			"field": "content",
-			"values": ["Docling", "Markdown", "JSON"]
-		}
-	],
-	"skip": {
-		"reason": "Requires features: paddle-ocr; Requires PaddleOCR with ONNX Runtime"
-	}
+  "id": "ocr_paddle_pdf_scanned",
+  "category": "ocr",
+  "description": "Scanned PDF requires PaddleOCR to extract text.",
+  "input": {
+    "path": "pdf/ocr_test.pdf",
+    "media_type": "application/pdf",
+    "config": {
+      "ocr": {
+        "backend": "paddle-ocr",
+        "language": "en"
+      },
+      "force_ocr": true
+    }
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/pdf"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 20
+    },
+    {
+      "type": "contains_any",
+      "field": "content",
+      "values": ["Docling", "Markdown", "JSON"]
+    }
+  ],
+  "skip": {
+    "reason": "Requires features: paddle-ocr; Requires PaddleOCR with ONNX Runtime"
+  }
 }

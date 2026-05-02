@@ -1,15 +1,15 @@
 {
-	"document": "../../../test_documents/html/html.htm",
-	"file_type": "htm",
-	"file_size": 1397,
-	"expected_frameworks": ["kreuzberg", "docling", "markitdown", "pandoc", "tika", "unstructured"],
-	"metadata": {
-		"description": "Minimal HTML document with basic structure (HTM extension)",
-		"category": "web",
-		"size_class": "tiny"
-	},
-	"ground_truth": {
-		"text_file": "../../../test_documents/ground_truth/htm/htm_simple.txt",
-		"source": "vision"
-	}
+  "document": "../../../test_documents/html/html.htm",
+  "file_type": "htm",
+  "file_size": 1397,
+  "expected_frameworks": ["kreuzberg", "docling", "markitdown", "pandoc", "tika", "unstructured"],
+  "metadata": {
+    "description": "Minimal HTML document with basic structure (HTM extension)",
+    "category": "web",
+    "size_class": "tiny"
+  },
+  "ground_truth": {
+    "text_file": "../../../test_documents/ground_truth/htm/htm_simple.txt",
+    "source": "vision"
+  }
 }

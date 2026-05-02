@@ -1,26 +1,26 @@
 {
-	"id": "email_eml_utf16",
-	"category": "email",
-	"description": "UTF-16 encoded EML file with BOM.",
-	"input": {
-		"path": "vendored/unstructured/eml/fake-email-utf-16.eml",
-		"media_type": "message/rfc822"
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "message/rfc822"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 50
-		},
-		{
-			"type": "contains_any",
-			"field": "content",
-			"values": ["Test Email", "Roses are red"]
-		}
-	]
+  "id": "email_eml_utf16",
+  "category": "email",
+  "description": "UTF-16 encoded EML file with BOM.",
+  "input": {
+    "path": "vendored/unstructured/eml/fake-email-utf-16.eml",
+    "media_type": "message/rfc822"
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "message/rfc822"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 50
+    },
+    {
+      "type": "contains_any",
+      "field": "content",
+      "values": ["Test Email", "Roses are red"]
+    }
+  ]
 }

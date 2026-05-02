@@ -1,40 +1,40 @@
 {
-	"id": "ocr_paddle_table_detection",
-	"category": "ocr",
-	"description": "Table detection and extraction with PaddleOCR.",
-	"input": {
-		"path": "images/simple_table.png",
-		"media_type": "image/png",
-		"config": {
-			"output_format": "markdown",
-			"ocr": {
-				"backend": "paddle-ocr",
-				"language": "en",
-				"paddle_ocr_config": {
-					"enable_table_detection": true
-				}
-			},
-			"force_ocr": true
-		}
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "image/png"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 10
-		},
-		{
-			"type": "contains_any",
-			"field": "content",
-			"values": ["Product", "Apple", "Banana", "Orange"]
-		}
-	],
-	"skip": {
-		"reason": "Requires features: paddle-ocr; Skip on platforms: aarch64-unknown-linux-gnu; Tests table detection capability with PaddleOCR. ONNX Runtime model loading unstable on ARM Linux."
-	}
+  "id": "ocr_paddle_table_detection",
+  "category": "ocr",
+  "description": "Table detection and extraction with PaddleOCR.",
+  "input": {
+    "path": "images/simple_table.png",
+    "media_type": "image/png",
+    "config": {
+      "output_format": "markdown",
+      "ocr": {
+        "backend": "paddle-ocr",
+        "language": "en",
+        "paddle_ocr_config": {
+          "enable_table_detection": true
+        }
+      },
+      "force_ocr": true
+    }
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "image/png"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 10
+    },
+    {
+      "type": "contains_any",
+      "field": "content",
+      "values": ["Product", "Apple", "Banana", "Orange"]
+    }
+  ],
+  "skip": {
+    "reason": "Requires features: paddle-ocr; Skip on platforms: aarch64-unknown-linux-gnu; Tests table detection capability with PaddleOCR. ONNX Runtime model loading unstable on ARM Linux."
+  }
 }

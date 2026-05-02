@@ -38,10 +38,10 @@ We identified 47 studies meeting inclusion criteria.
 
 Summary of study design and population characteristics.
 
-| Study | Year | Population | Outcome |
-| --- | --- | --- | --- |
-| Study A | 2003 | 100 adults | Increased alertness |
-| Study B | 2004 | 50 subjects | Sleep disruption |
+| Study   | Year | Population  | Outcome             |
+| ------- | ---- | ----------- | ------------------- |
+| Study A | 2003 | 100 adults  | Increased alertness |
+| Study B | 2004 | 50 subjects | Sleep disruption    |
 
 ## Discussion
 

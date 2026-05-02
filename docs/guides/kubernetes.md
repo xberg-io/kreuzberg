@@ -80,15 +80,15 @@ helm upgrade kreuzberg oci://ghcr.io/kreuzberg-dev/charts/kreuzberg --version 4.
 
 The chart creates the following resources:
 
-| Resource | Description | Conditional |
-|----------|-------------|-------------|
-| Deployment | Main application with health probes and security hardening | Always |
-| Service | ClusterIP service on port 80 → 8000 | Always |
-| ServiceAccount | Dedicated service account | Always |
-| PersistentVolumeClaim | Cache for embedding models and assets | `cache.enabled` |
-| Ingress | HTTP(S) ingress with TLS | `ingress.enabled` |
-| HorizontalPodAutoscaler | CPU/memory-based autoscaling | `autoscaling.enabled` |
-| PodDisruptionBudget | Availability during disruptions | `podDisruptionBudget.enabled` |
+| Resource                | Description                                                | Conditional                   |
+| ----------------------- | ---------------------------------------------------------- | ----------------------------- |
+| Deployment              | Main application with health probes and security hardening | Always                        |
+| Service                 | ClusterIP service on port 80 → 8000                        | Always                        |
+| ServiceAccount          | Dedicated service account                                  | Always                        |
+| PersistentVolumeClaim   | Cache for embedding models and assets                      | `cache.enabled`               |
+| Ingress                 | HTTP(S) ingress with TLS                                   | `ingress.enabled`             |
+| HorizontalPodAutoscaler | CPU/memory-based autoscaling                               | `autoscaling.enabled`         |
+| PodDisruptionBudget     | Availability during disruptions                            | `podDisruptionBudget.enabled` |
 
 All values are documented in the chart's [`values.yaml`](https://github.com/kreuzberg-dev/kreuzberg/blob/main/charts/kreuzberg/values.yaml).
 
@@ -114,35 +114,35 @@ spec:
         app: kreuzberg
     spec:
       containers:
-      - name: kreuzberg
-        image: ghcr.io/kreuzberg-dev/kreuzberg:latest
-        ports:
-        - containerPort: 8000
-          name: http
-        env:
-        - name: RUST_LOG
-          value: "info"
-        - name: TESSDATA_PREFIX
-          value: "/usr/share/tesseract-ocr/5/tessdata"
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "500m"
-          limits:
-            memory: "2Gi"
-            cpu: "2000m"
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 8000
-          initialDelaySeconds: 10
-          periodSeconds: 30
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 8000
-          initialDelaySeconds: 5
-          periodSeconds: 10
+        - name: kreuzberg
+          image: ghcr.io/kreuzberg-dev/kreuzberg:latest
+          ports:
+            - containerPort: 8000
+              name: http
+          env:
+            - name: RUST_LOG
+              value: "info"
+            - name: TESSDATA_PREFIX
+              value: "/usr/share/tesseract-ocr/5/tessdata"
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "2Gi"
+              cpu: "2000m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
 ---
 apiVersion: v1
 kind: Service
@@ -152,9 +152,9 @@ spec:
   selector:
     app: kreuzberg
   ports:
-  - protocol: TCP
-    port: 80
-    targetPort: 8000
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
   type: LoadBalancer
 ```
 
@@ -170,14 +170,14 @@ Without `TESSDATA_PREFIX`, OCR silently falls back to non-OCR extraction. Offici
 
 ```yaml
 env:
-- name: TESSDATA_PREFIX
-  value: "/usr/share/tesseract-ocr/5/tessdata"
-- name: KREUZBERG_OCR_LANGUAGE
-  value: "eng"
-- name: KREUZBERG_CACHE_DIR
-  value: "/app/.kreuzberg"
-- name: HF_HOME
-  value: "/app/.kreuzberg/huggingface"
+  - name: TESSDATA_PREFIX
+    value: "/usr/share/tesseract-ocr/5/tessdata"
+  - name: KREUZBERG_OCR_LANGUAGE
+    value: "eng"
+  - name: KREUZBERG_CACHE_DIR
+    value: "/app/.kreuzberg"
+  - name: HF_HOME
+    value: "/app/.kreuzberg/huggingface"
 ```
 
 **Pre-installed languages:** `eng`, `spa`, `fra`, `deu`, `ita`, `por`, `chi_sim`, `chi_tra`, `jpn`, `ara`, `rus`, `hin`
@@ -195,17 +195,17 @@ kubectl create configmap tessdata \
 ```yaml
 spec:
   containers:
-  - name: kreuzberg
-    env:
-    - name: TESSDATA_PREFIX
-      value: "/etc/tessdata"
-    volumeMounts:
-    - name: tessdata
-      mountPath: /etc/tessdata
+    - name: kreuzberg
+      env:
+        - name: TESSDATA_PREFIX
+          value: "/etc/tessdata"
+      volumeMounts:
+        - name: tessdata
+          mountPath: /etc/tessdata
   volumes:
-  - name: tessdata
-    configMap:
-      name: tessdata
+    - name: tessdata
+      configMap:
+        name: tessdata
 ```
 
 For large custom language sets, use a PVC instead of a ConfigMap.
@@ -267,37 +267,37 @@ Kreuzberg runs as non-root (UID 1000, GID 1000). Fix PVC permissions with either
 
 ```yaml
 containers:
-- name: kreuzberg
-  livenessProbe:
-    httpGet:
-      path: /health
-      port: 8000
-    initialDelaySeconds: 10
-    periodSeconds: 30
-    timeoutSeconds: 5
-    failureThreshold: 3
-  readinessProbe:
-    httpGet:
-      path: /health
-      port: 8000
-    initialDelaySeconds: 5
-    periodSeconds: 10
-    timeoutSeconds: 3
-    failureThreshold: 2
-  startupProbe:
-    httpGet:
-      path: /health
-      port: 8000
-    periodSeconds: 10
-    failureThreshold: 30
+  - name: kreuzberg
+    livenessProbe:
+      httpGet:
+        path: /health
+        port: 8000
+      initialDelaySeconds: 10
+      periodSeconds: 30
+      timeoutSeconds: 5
+      failureThreshold: 3
+    readinessProbe:
+      httpGet:
+        path: /health
+        port: 8000
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      timeoutSeconds: 3
+      failureThreshold: 2
+    startupProbe:
+      httpGet:
+        path: /health
+        port: 8000
+      periodSeconds: 10
+      failureThreshold: 30
 ```
 
 ## Logging
 
 ```yaml
 env:
-- name: RUST_LOG
-  value: "kreuzberg=debug,warn"
+  - name: RUST_LOG
+    value: "kreuzberg=debug,warn"
 ```
 
 Levels: `trace`, `debug`, `info`, `warn`, `error`
@@ -354,79 +354,79 @@ spec:
         seccompProfile:
           type: RuntimeDefault
       initContainers:
-      - name: init-cache
-        image: busybox:1.37-glibc
-        command: ['sh', '-c', 'mkdir -p /app/.kreuzberg && chown -R 1000:1000 /app/.kreuzberg']
-        securityContext:
-          runAsUser: 0
-          allowPrivilegeEscalation: false
-          capabilities:
-            add: ["CHOWN"]
-            drop: ["ALL"]
-        volumeMounts:
-        - name: cache
-          mountPath: /app/.kreuzberg
+        - name: init-cache
+          image: busybox:1.37-glibc
+          command: ["sh", "-c", "mkdir -p /app/.kreuzberg && chown -R 1000:1000 /app/.kreuzberg"]
+          securityContext:
+            runAsUser: 0
+            allowPrivilegeEscalation: false
+            capabilities:
+              add: ["CHOWN"]
+              drop: ["ALL"]
+          volumeMounts:
+            - name: cache
+              mountPath: /app/.kreuzberg
       containers:
-      - name: kreuzberg
-        image: ghcr.io/kreuzberg-dev/kreuzberg:latest
-        ports:
-        - containerPort: 8000
-          name: http
-        env:
-        - name: RUST_LOG
-          value: "info"
-        - name: TESSDATA_PREFIX
-          value: "/usr/share/tesseract-ocr/5/tessdata"
-        - name: KREUZBERG_CACHE_DIR
-          value: "/app/.kreuzberg"
-        - name: HF_HOME
-          value: "/app/.kreuzberg/huggingface"
-        - name: KREUZBERG_CORS_ORIGINS
-          value: "https://app.example.com"
-        - name: KREUZBERG_MAX_UPLOAD_SIZE_MB
-          value: "500"
-        args: ["serve", "--host", "0.0.0.0", "--port", "8000"]
-        resources:
-          requests:
-            memory: "1Gi"
-            cpu: "1000m"
-          limits:
-            memory: "4Gi"
-            cpu: "2000m"
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 8000
-          initialDelaySeconds: 15
-          periodSeconds: 30
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 8000
-          initialDelaySeconds: 10
-          periodSeconds: 10
-        startupProbe:
-          httpGet:
-            path: /health
-            port: 8000
-          periodSeconds: 10
-          failureThreshold: 30
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop: ["ALL"]
-        volumeMounts:
-        - name: cache
-          mountPath: /app/.kreuzberg
-        - name: tmp
-          mountPath: /tmp
+        - name: kreuzberg
+          image: ghcr.io/kreuzberg-dev/kreuzberg:latest
+          ports:
+            - containerPort: 8000
+              name: http
+          env:
+            - name: RUST_LOG
+              value: "info"
+            - name: TESSDATA_PREFIX
+              value: "/usr/share/tesseract-ocr/5/tessdata"
+            - name: KREUZBERG_CACHE_DIR
+              value: "/app/.kreuzberg"
+            - name: HF_HOME
+              value: "/app/.kreuzberg/huggingface"
+            - name: KREUZBERG_CORS_ORIGINS
+              value: "https://app.example.com"
+            - name: KREUZBERG_MAX_UPLOAD_SIZE_MB
+              value: "500"
+          args: ["serve", "--host", "0.0.0.0", "--port", "8000"]
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "1000m"
+            limits:
+              memory: "4Gi"
+              cpu: "2000m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            periodSeconds: 10
+            failureThreshold: 30
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: cache
+              mountPath: /app/.kreuzberg
+            - name: tmp
+              mountPath: /tmp
       volumes:
-      - name: cache
-        persistentVolumeClaim:
-          claimName: kreuzberg-cache
-      - name: tmp
-        emptyDir: {}
+        - name: cache
+          persistentVolumeClaim:
+            claimName: kreuzberg-cache
+        - name: tmp
+          emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
@@ -438,9 +438,9 @@ spec:
   selector:
     app: kreuzberg
   ports:
-  - protocol: TCP
-    port: 80
-    targetPort: 8000
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
 ---
 apiVersion: policy/v1
 kind: PodDisruptionBudget
@@ -477,14 +477,14 @@ spec:
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                - key: app
-                  operator: In
-                  values: [kreuzberg]
-              topologyKey: kubernetes.io/hostname
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values: [kreuzberg]
+                topologyKey: kubernetes.io/hostname
 ```
 
 ## Troubleshooting

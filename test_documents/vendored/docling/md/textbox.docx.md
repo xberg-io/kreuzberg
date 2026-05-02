@@ -5,14 +5,14 @@
 **Student falls ill**
 
 - Suggested Reportable Symptoms:
-＊ Fever
-＊ Cough
-＊ Diarrhea
-＊ Vomiting
-＊ Rash
-＊ Blisters
-＊ Headache
-＊ Sore throat
+  ＊ Fever
+  ＊ Cough
+  ＊ Diarrhea
+  ＊ Vomiting
+  ＊ Rash
+  ＊ Blisters
+  ＊ Headache
+  ＊ Sore throat
 
 If a caregiver suspects that within one week, a fifth of the class (for classes with more than 15 students) or more than three students (for classes with 15 or fewer students)
 show the same suggested reportable symptoms

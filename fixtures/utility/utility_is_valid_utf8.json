@@ -1,30 +1,24 @@
 {
-	"id": "utility_is_valid_utf8",
-	"category": "utility",
-	"description": "Check if bytes are valid UTF-8",
-	"tags": [
-		"utility",
-		"encoding",
-		"validation"
-	],
-	"call": "is_valid_utf8",
-	"input": {
-		"args": [
-			"valid text"
-		]
-	},
-	"skip": {
-		"languages": [],
-		"reason": "Tests utility call surface that isn't re-exported at the kreuzberg crate root \u2014 skipped everywhere until Rust public API or codegen module path is updated."
-	},
-	"assertions": [
-		{
-			"type": "not_error"
-		},
-		{
-			"type": "equals",
-			"field": "result",
-			"value": true
-		}
-	]
+  "id": "utility_is_valid_utf8",
+  "category": "utility",
+  "description": "Check if bytes are valid UTF-8",
+  "tags": ["utility", "encoding", "validation"],
+  "call": "is_valid_utf8",
+  "input": {
+    "args": ["valid text"]
+  },
+  "skip": {
+    "languages": [],
+    "reason": "Tests utility call surface that isn't re-exported at the kreuzberg crate root \u2014 skipped everywhere until Rust public API or codegen module path is updated."
+  },
+  "assertions": [
+    {
+      "type": "not_error"
+    },
+    {
+      "type": "equals",
+      "field": "result",
+      "value": true
+    }
+  ]
 }

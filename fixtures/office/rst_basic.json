@@ -1,21 +1,21 @@
 {
-	"id": "office_rst_basic",
-	"category": "office",
-	"description": "reStructuredText document extraction.",
-	"input": {
-		"path": "rst/restructured_text.rst",
-		"media_type": "text/x-rst"
-	},
-	"assertions": [
-		{
-			"type": "contains_any",
-			"field": "mime_type",
-			"values": ["text/x-rst", "text/prs.fallenstein.rst"]
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 20
-		}
-	]
+  "id": "office_rst_basic",
+  "category": "office",
+  "description": "reStructuredText document extraction.",
+  "input": {
+    "path": "rst/restructured_text.rst",
+    "media_type": "text/x-rst"
+  },
+  "assertions": [
+    {
+      "type": "contains_any",
+      "field": "mime_type",
+      "values": ["text/x-rst", "text/prs.fallenstein.rst"]
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 20
+    }
+  ]
 }

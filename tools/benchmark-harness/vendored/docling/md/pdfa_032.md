@@ -72,7 +72,7 @@ For if he does not find a way to stop them, the Frostborn shall entomb the world
 
 ## Frostborn: The Undying Wizard (Frostborn #3) eBook
 
-Frostborn | RIDMARK ARBAN is the  ray Knight, and he quests for the ruined citadel of Urd Morlemoch, seeking a way to stop the return of the dreaded Frostborn. For if he does not find a way to stop them, the Frostborn shall entomb the world in ice forever.
+Frostborn | RIDMARK ARBAN is the ray Knight, and he quests for the ruined citadel of Urd Morlemoch, seeking a way to stop the return of the dreaded Frostborn. For if he does not find a way to stop them, the Frostborn shall entomb the world in ice forever.
 
 ## Frostborn : The Undying Wizard by Jonathan Moeller
 

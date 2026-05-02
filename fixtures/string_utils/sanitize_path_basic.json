@@ -1,28 +1,24 @@
 {
-	"id": "sanitize_path_basic",
-	"category": "string_utils",
-	"description": "Sanitize path traversal in file path",
-	"tags": [
-		"string_utils",
-		"sanitization",
-		"security"
-	],
-	"call": "sanitize_path",
-	"input": {
-		"path": "../../../secret/file.txt"
-	},
-	"assertions": [
-		{
-			"type": "not_error"
-		},
-		{
-			"type": "min_length",
-			"field": "result",
-			"value": 1
-		}
-	],
-	"skip": {
-		"languages": [],
-		"reason": "Tests string_utils call surface that isn't re-exported at the kreuzberg crate root \u2014 skipped everywhere until Rust public API or codegen module path is updated."
-	}
+  "id": "sanitize_path_basic",
+  "category": "string_utils",
+  "description": "Sanitize path traversal in file path",
+  "tags": ["string_utils", "sanitization", "security"],
+  "call": "sanitize_path",
+  "input": {
+    "path": "../../../secret/file.txt"
+  },
+  "assertions": [
+    {
+      "type": "not_error"
+    },
+    {
+      "type": "min_length",
+      "field": "result",
+      "value": 1
+    }
+  ],
+  "skip": {
+    "languages": [],
+    "reason": "Tests string_utils call surface that isn't re-exported at the kreuzberg crate root \u2014 skipped everywhere until Rust public API or codegen module path is updated."
+  }
 }

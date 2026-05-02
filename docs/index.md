@@ -77,22 +77,22 @@ Kreuzberg is a document intelligence platform with a high‑performance Rust cor
 
 Precompiled binaries for Linux (x86_64 & aarch64), macOS (Apple Silicon), and Windows (x64).
 
-| Language | Package | Docs |
-|:---------|:--------|:-----|
-| **Python** | `pip install kreuzberg` | [API Reference](reference/api-python.md) |
-| **TypeScript (Native)** | `npm install @kreuzberg/node` | [API Reference](reference/api-typescript.md) |
-| **TypeScript (WASM)** | `npm install @kreuzberg/wasm` | [API Reference](reference/api-wasm.md) |
-| **Rust** | `cargo add kreuzberg` | [API Reference](reference/api-rust.md) |
-| **Go** | `go get .../kreuzberg/packages/go/v4` | [API Reference](reference/api-go.md) |
-| **Java** | Maven Central `dev.kreuzberg:kreuzberg` | [API Reference](reference/api-java.md) |
-| **C#** | `dotnet add package Kreuzberg` | [API Reference](reference/api-csharp.md) |
-| **Ruby** | `gem install kreuzberg` | [API Reference](reference/api-ruby.md) |
-| **PHP** | `composer require kreuzberg/kreuzberg` | [API Reference](reference/api-php.md) |
-| **Elixir** | `{:kreuzberg, "~> 4.0"}` | [API Reference](reference/api-elixir.md) |
-| **R** | r-universe `kreuzberg` | [API Reference](reference/api-r.md) |
-| **C (FFI)** | Shared library + header | [API Reference](reference/api-c.md) |
-| **CLI** | `brew install kreuzberg-dev/tap/kreuzberg` | [CLI Guide](cli/usage.md) |
-| **Docker** | `ghcr.io/kreuzberg-dev/kreuzberg` | [Docker Guide](guides/docker.md) |
+| Language                | Package                                    | Docs                                         |
+| :---------------------- | :----------------------------------------- | :------------------------------------------- |
+| **Python**              | `pip install kreuzberg`                    | [API Reference](reference/api-python.md)     |
+| **TypeScript (Native)** | `npm install @kreuzberg/node`              | [API Reference](reference/api-typescript.md) |
+| **TypeScript (WASM)**   | `npm install @kreuzberg/wasm`              | [API Reference](reference/api-wasm.md)       |
+| **Rust**                | `cargo add kreuzberg`                      | [API Reference](reference/api-rust.md)       |
+| **Go**                  | `go get .../kreuzberg/packages/go/v4`      | [API Reference](reference/api-go.md)         |
+| **Java**                | Maven Central `dev.kreuzberg:kreuzberg`    | [API Reference](reference/api-java.md)       |
+| **C#**                  | `dotnet add package Kreuzberg`             | [API Reference](reference/api-csharp.md)     |
+| **Ruby**                | `gem install kreuzberg`                    | [API Reference](reference/api-ruby.md)       |
+| **PHP**                 | `composer require kreuzberg/kreuzberg`     | [API Reference](reference/api-php.md)        |
+| **Elixir**              | `{:kreuzberg, "~> 4.0"}`                   | [API Reference](reference/api-elixir.md)     |
+| **R**                   | r-universe `kreuzberg`                     | [API Reference](reference/api-r.md)          |
+| **C (FFI)**             | Shared library + header                    | [API Reference](reference/api-c.md)          |
+| **CLI**                 | `brew install kreuzberg-dev/tap/kreuzberg` | [CLI Guide](cli/usage.md)                    |
+| **Docker**              | `ghcr.io/kreuzberg-dev/kreuzberg`          | [Docker Guide](guides/docker.md)             |
 
 !!! Tip "Choosing Between TypeScript Packages"
 

@@ -113,7 +113,7 @@ IST
 
 ## Integrated Service Technology Inc
 
-Sustainable Development Business Unit 1F, No.19, Pu-ding Rd., Hsin - chu City,Taiwan, R.O.C. Tel: 886-3-579-9909    Fax: 886-3-563-4868
+Sustainable Development Business Unit 1F, No.19, Pu-ding Rd., Hsin - chu City,Taiwan, R.O.C. Tel: 886-3-579-9909 Fax: 886-3-563-4868
 
 <http://www.istgroup.com>
 
@@ -127,10 +127,10 @@ OPENUPS2-N(RS)
 
 This test results meet the acceptance criteria of the latest SVHC candidate list from (EC) No. 1907/2006 REACH Regulation
 
-| Legal requirement relevant to the article     | Conclusion   | Conclusion                                                                                 |
-|-----------------------------------------------|--------------|--------------------------------------------------------------------------------------------|
-| Article 33(Communication of SVHC information) | ■            | Comply(Article contains<0.1% candidate list SVHC)                                          |
-| Article 33(Communication of SVHC information) | □            | Warning(Article contains>0.1% candidate list SVHC and prepare tool for SVHC communication) |
+| Legal requirement relevant to the article     | Conclusion | Conclusion                                                                                 |
+| --------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------ |
+| Article 33(Communication of SVHC information) | ■          | Comply(Article contains<0.1% candidate list SVHC)                                          |
+| Article 33(Communication of SVHC information) | □          | Warning(Article contains>0.1% candidate list SVHC and prepare tool for SVHC communication) |
 
 Report No.
 

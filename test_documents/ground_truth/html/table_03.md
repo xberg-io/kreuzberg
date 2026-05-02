@@ -2,6 +2,6 @@
 
 This is the first paragraph.
 
-| A | B |
-| --- | --- |
+| A                               | B    |
+| ------------------------------- | ---- |
 | First itemSecond itemThird item | 2... |

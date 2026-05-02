@@ -1,1 +1,9 @@
-{"id":"validate_binarization_invalid","category":"validate","description":"Invalid binarization","tags":["validation","error"],"call":"validate_binarization_method","input":{"method":"nonexistent"},"assertions":[{"type":"error"}]}
+{
+  "id": "validate_binarization_invalid",
+  "category": "validate",
+  "description": "Invalid binarization",
+  "tags": ["validation", "error"],
+  "call": "validate_binarization_method",
+  "input": { "method": "nonexistent" },
+  "assertions": [{ "type": "error" }]
+}

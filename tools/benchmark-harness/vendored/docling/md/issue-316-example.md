@@ -233,10 +233,10 @@ The multivariate analysis results are also less pronounced for FWC; only the int
 
 For FWC, however, significant differences are found between the control and the family training site post-intervention ð t ð 162 Þ ¼ 2 5 : 714 ; p , 0 : 01 ; n 2 ¼ 0 : 42 Þ ; consistent with the interaction effect of training and family involvement. Taken together, the survey results suggest that involving the family in training and development focused on a broader range of relevant behaviours, rather than physiological aspects alone, improves outcomes in both FWC and WFC for shift workers.
 
-| Effects/variables (within subject)                       | Multivariate F ð n ¼ 432 Þ                          | Uni-variate F ð n ¼ 432 Þ                           |
-|----------------------------------------------------------|-----------------------------------------------------|-----------------------------------------------------|
-| Training Family nvolvement Training £ family involvement | 6.988 * * df ¼ 1 5.820 * * df ¼ 1 16.334 * * df ¼ 2 | 23.112 * * df ¼ 1 18.749 * * df ¼ 1 13.709 * df ¼ 2 |
-| Notes: * p , 0.05; * * p , 0.01                          |                                                     |                                                     |
+| Effects/variables (within subject)                       | Multivariate F ð n ¼ 432 Þ                            | Uni-variate F ð n ¼ 432 Þ                            |
+| -------------------------------------------------------- | ----------------------------------------------------- | ---------------------------------------------------- |
+| Training Family nvolvement Training £ family involvement | 6.988 \* _ df ¼ 1 5.820 _ _ df ¼ 1 16.334 _ \* df ¼ 2 | 23.112 \* _ df ¼ 1 18.749 _ _ df ¼ 1 13.709 _ df ¼ 2 |
+| Notes: _ p , 0.05; _ \* p , 0.01                         |                                                       |                                                      |
 
 <!-- image -->
 
@@ -253,25 +253,25 @@ Respondents across all three sites at the beginning of the study expressed that 
 
 The number of positive comments made after the intervention remained the same for Site A, while it decreased for Site B ( 2 5.4 per cent) and increased at Site C ( þ 12 per cent). Overall, the number of negative impacts listed declined by about 50 per cent in the two family oriented training conditions (Sites B and C) when measured for the second time. The overall decrease in negative impacts reported for Site A, with the health-only training, was only 5.4 per cent. In particular, tiredness decreased across all three sites. In all conditions, being 'out-of-sync' with the family and missing important family events were also mentioned less than in the time before the interventions. Going against this trend, at Site B the number of comments related to no or disrupted social life increased by 13.5 per cent (see Table III).
 
-| Effects/variables (within subject)     | Multivariate F ð n ¼ 432 Þ   | Uni-variate F ð n ¼ 432 Þ   |                             |
-|----------------------------------------|------------------------------|-----------------------------|-----------------------------|
-| Training Training £ family involvement | 1.55, ns df ¼ 1 2.998 *      | 1.42, ns df ¼ 1 2.10, ns    | Table II. MANOVA: Effect of |
-| Family involvement                     | 1.99, ns df ¼ 1              | 1.07, ns df ¼ 1             |                             |
-| Notes: * p , 0.05; * * p , 0.01        |                              |                             | on FWC                      |
+| Effects/variables (within subject)     | Multivariate F ð n ¼ 432 Þ | Uni-variate F ð n ¼ 432 Þ |                             |
+| -------------------------------------- | -------------------------- | ------------------------- | --------------------------- |
+| Training Training £ family involvement | 1.55, ns df ¼ 1 2.998 \*   | 1.42, ns df ¼ 1 2.10, ns  | Table II. MANOVA: Effect of |
+| Family involvement                     | 1.99, ns df ¼ 1            | 1.07, ns df ¼ 1           |                             |
+| Notes: _ p , 0.05; _ \* p , 0.01       |                            |                           | on FWC                      |
 
 Shift work interventions
 
-| ER 29,2                 |                                                                                             | Site A before/after no. of comments   | Site B before/after no. of comments   | Site C before/after no. of comments   |
-|-------------------------|---------------------------------------------------------------------------------------------|---------------------------------------|---------------------------------------|---------------------------------------|
-|                         | WFC - positive: Able to have good standard of living Longer periods of time off with family | 101/98 68/70                          | 110/104 75/71                         | 120/122 74/84                         |
-|                         | Total                                                                                       | 169/169                               | 185/175                               | 194/206                               |
-| 172                     | Change in%                                                                                  | þ / 2 0%                              | 2 5.4%                                | þ 12%                                 |
-|                         | WFC 2 negative: Feeling tired and grouchy                                                   | 81/76                                 | 90/65                                 | 101/62                                |
-| Table III.              | Out of synch with family; off cycle                                                         | 65/60                                 | 60/55                                 | 52/38                                 |
-| Frequencies and changes | No or disrupted social life                                                                 | 42/38                                 | 37/41                                 | 66/47                                 |
-| in WFC-related          | Missed family events                                                                        | 36/38                                 | 24/20                                 | 51/28                                 |
-| comments before and     | Total                                                                                       | 224/212                               | 211/181                               | 270/175                               |
-| after the interventions | Change in %                                                                                 | 2 5.4%                                | 2 14.2%                               | 2 35.3%                               |
+| ER 29,2                 |                                                                                             | Site A before/after no. of comments | Site B before/after no. of comments | Site C before/after no. of comments |
+| ----------------------- | ------------------------------------------------------------------------------------------- | ----------------------------------- | ----------------------------------- | ----------------------------------- |
+|                         | WFC - positive: Able to have good standard of living Longer periods of time off with family | 101/98 68/70                        | 110/104 75/71                       | 120/122 74/84                       |
+|                         | Total                                                                                       | 169/169                             | 185/175                             | 194/206                             |
+| 172                     | Change in%                                                                                  | þ / 2 0%                            | 2 5.4%                              | þ 12%                               |
+|                         | WFC 2 negative: Feeling tired and grouchy                                                   | 81/76                               | 90/65                               | 101/62                              |
+| Table III.              | Out of synch with family; off cycle                                                         | 65/60                               | 60/55                               | 52/38                               |
+| Frequencies and changes | No or disrupted social life                                                                 | 42/38                               | 37/41                               | 66/47                               |
+| in WFC-related          | Missed family events                                                                        | 36/38                               | 24/20                               | 51/28                               |
+| comments before and     | Total                                                                                       | 224/212                             | 211/181                             | 270/175                             |
+| after the interventions | Change in %                                                                                 | 2 5.4%                              | 2 14.2%                             | 2 35.3%                             |
 
 In response to the spillover effects of family on work, the level of expressed conflict on FWCwaslower for all groups, and this was reflected in far fewer comments in the open section of the survey to the following two questions:
 
@@ -284,12 +284,12 @@ The number of positive comments made increased across all three conditions from 
 
 However, the most striking difference across conditions and time was the reduction in listing of family arguments that carried over into work from the first to second measurement, particularly in the training scenario including the family. While this was reduced in all conditions ( 2 15 per cent at Site A, 2 54.6 per cent at Site B), it disappeared entirely from the family training scenario (Site C) across the measurement period. Of the respondents, seven specifically noted that completing the training with their partners meant that they now approached this as a problem to be solved, and they felt that they were working together more effectively with balancing work and family commitments than they ever had before. These results are summarised in Table IV.
 
-|                                    |                                                 | Site A before/after no. of comments   | Site B before/after no. of comments   | Site C before/after no. of comments   |
-|------------------------------------|-------------------------------------------------|---------------------------------------|---------------------------------------|---------------------------------------|
-| Table IV.                          | FWC - positive: Family supports and understands | 25/30                                 | 31/46                                 | 36/75                                 |
-| Frequencies and changes            | Change in%                                      | þ 5%                                  | þ 48.4%                               | þ 108%                                |
-| in WFC-related comments before and | FWC - negative: Fights about work schedule      | 60/51                                 | 44/20                                 | 48/0                                  |
-| after the interventions            | Change in %                                     | 2 15%                                 | 2 54.6%                               | 2 100%                                |
+|                                    |                                                 | Site A before/after no. of comments | Site B before/after no. of comments | Site C before/after no. of comments |
+| ---------------------------------- | ----------------------------------------------- | ----------------------------------- | ----------------------------------- | ----------------------------------- |
+| Table IV.                          | FWC - positive: Family supports and understands | 25/30                               | 31/46                               | 36/75                               |
+| Frequencies and changes            | Change in%                                      | þ 5%                                | þ 48.4%                             | þ 108%                              |
+| in WFC-related comments before and | FWC - negative: Fights about work schedule      | 60/51                               | 44/20                               | 48/0                                |
+| after the interventions            | Change in %                                     | 2 15%                               | 2 54.6%                             | 2 100%                              |
 
 In summary, the quantitative and qualitative analyses of the collected data indicate that all three interventions can contribute to reductions in WFC as well as FWC, although there are some aspects of the training that tend to heighten awareness rather than resolve the problems directly, as we see in the increase in negative factors noted at Site B. However, the largest positive effect arises from the involvement of the families in training and development focused on a broader range of relevant behaviours and risk factors.
 
@@ -343,22 +343,22 @@ The pressures of work and family are accelerating and families, who have traditi
 
 ## Shift work interventions
 
-| ER 29,2   | Loudon, R. and Bohle, P. (1997), 'Work/non-work conflict and health in shiftwork: relationships with family status and social support', International Journal of Occupational and Environmental Health , Vol. 3, pp. 571-7.   |
-|-----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 176       | Minors, D.S. and Waterhouse, J.M. (1986), 'Circadian rhythms and their mechanisms', Experientia , Vol. 42, pp. 1-13.                                                                                                          |
-|           | Monk, T. (2000), 'What can the chronobiologist do to help the shift worker?', Journal of Biological Rhythms , Vol. 15 No. 2, pp. 86-94.                                                                                       |
-|           | Netemeyer, R., Boles, J. and McMurrian, R. (1996), 'Development and validation of work-family conflict and family-work conflict scales', Journal of Applied Psychology , Vol. 81 No. 4, pp. 400-10.                           |
-|           | Owen, J. (1985), 'Changing from a rotating to a permanent shift system in the Detroit police department: effects on employee attitudes and behaviour', Labor Law Journal , Vol. 368, pp. 484-90.                              |
-|           | Pisarski, A., Bohle, P. and Callan, V. (1998), 'Work/non-work conflict and health in shiftwork: effect of coping strategies and social support', Scandinavian Journal of Work Environment and Health , Vol. 243, pp. 141-5.   |
-|           | Pleck, J., Staines, G. and Lang, L. (1980), 'Conflicts between work and family life', Monthly Labor Review , Vol. 103, pp. 29-32.                                                                                             |
-|           | Presser, H. (1987), 'Work shifts of full-time dual earner couples: patterns and contrasts by sex of spouse', Demography , Vol. 24 No. 1, pp. 99-112.                                                                          |
-|           | Presser, H. (2003), Working in a 24/7 Economy: Challenges for American Families , Russell Sage Foundation, New York, NY.                                                                                                      |
-|           | Quick, J.C., Quick, J.D., Nelson, D.L. and Hurrell, J.J. (1997), Preventive Stress Management in Organizations , American Psychological Association, Washington, DC.                                                          |
-|           | Simon, B.L. (1987), Never Married Women , Temple University Press, Philadelphia, PA.                                                                                                                                          |
-|           | Tepas, D.I. (1993), 'Educational programmes for shift-workers, their families, and prospective shift-workers', Ergonomics , Vol. 361 No. 3, pp. 199-209.                                                                      |
-|           | Walker, J. (1985), 'Social problems of shift work', in Folkard, S. and Monk, T.H. (Eds), Hours of Work: Temporal Factors in Work Scheduling , Wiley, New York, NY, pp. 340-87.                                                |
-|           | Wedderburn, A.A. and Scholarios, D. (1993), 'Guidelines for shift workers: trials and errors', Ergonomics , Vol. 36, pp. 211-7.                                                                                               |
-|           | Zedeck, S. (1992), 'Introduction: exploring the domain of work and family careers', in Zedeck, S. (Ed.), Work, families, and organizations , Jossey-Bass, San Francisco, CA, pp. 1-32.                                        |
+| ER 29,2 | Loudon, R. and Bohle, P. (1997), 'Work/non-work conflict and health in shiftwork: relationships with family status and social support', International Journal of Occupational and Environmental Health , Vol. 3, pp. 571-7. |
+| ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 176     | Minors, D.S. and Waterhouse, J.M. (1986), 'Circadian rhythms and their mechanisms', Experientia , Vol. 42, pp. 1-13.                                                                                                        |
+|         | Monk, T. (2000), 'What can the chronobiologist do to help the shift worker?', Journal of Biological Rhythms , Vol. 15 No. 2, pp. 86-94.                                                                                     |
+|         | Netemeyer, R., Boles, J. and McMurrian, R. (1996), 'Development and validation of work-family conflict and family-work conflict scales', Journal of Applied Psychology , Vol. 81 No. 4, pp. 400-10.                         |
+|         | Owen, J. (1985), 'Changing from a rotating to a permanent shift system in the Detroit police department: effects on employee attitudes and behaviour', Labor Law Journal , Vol. 368, pp. 484-90.                            |
+|         | Pisarski, A., Bohle, P. and Callan, V. (1998), 'Work/non-work conflict and health in shiftwork: effect of coping strategies and social support', Scandinavian Journal of Work Environment and Health , Vol. 243, pp. 141-5. |
+|         | Pleck, J., Staines, G. and Lang, L. (1980), 'Conflicts between work and family life', Monthly Labor Review , Vol. 103, pp. 29-32.                                                                                           |
+|         | Presser, H. (1987), 'Work shifts of full-time dual earner couples: patterns and contrasts by sex of spouse', Demography , Vol. 24 No. 1, pp. 99-112.                                                                        |
+|         | Presser, H. (2003), Working in a 24/7 Economy: Challenges for American Families , Russell Sage Foundation, New York, NY.                                                                                                    |
+|         | Quick, J.C., Quick, J.D., Nelson, D.L. and Hurrell, J.J. (1997), Preventive Stress Management in Organizations , American Psychological Association, Washington, DC.                                                        |
+|         | Simon, B.L. (1987), Never Married Women , Temple University Press, Philadelphia, PA.                                                                                                                                        |
+|         | Tepas, D.I. (1993), 'Educational programmes for shift-workers, their families, and prospective shift-workers', Ergonomics , Vol. 361 No. 3, pp. 199-209.                                                                    |
+|         | Walker, J. (1985), 'Social problems of shift work', in Folkard, S. and Monk, T.H. (Eds), Hours of Work: Temporal Factors in Work Scheduling , Wiley, New York, NY, pp. 340-87.                                              |
+|         | Wedderburn, A.A. and Scholarios, D. (1993), 'Guidelines for shift workers: trials and errors', Ergonomics , Vol. 36, pp. 211-7.                                                                                             |
+|         | Zedeck, S. (1992), 'Introduction: exploring the domain of work and family careers', in Zedeck, S. (Ed.), Work, families, and organizations , Jossey-Bass, San Francisco, CA, pp. 1-32.                                      |
 
 ## Further reading
 

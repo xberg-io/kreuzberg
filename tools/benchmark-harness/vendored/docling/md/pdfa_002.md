@@ -21,7 +21,7 @@ The session objectives include:
 ## II. Session agenda
 
 | Time         | Agenda Item                                                                                                                                                                                                                          | Presenter      |
-|--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------|
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------- |
 | 8:00 - 8:15  | Welcome, introduction, purpose, and session objectives including extension requestion on engagement and filing schedule                                                                                                              | AESO / Stack'd |
 | 8:15 - 9:00  | DOS 101 - describes how the current DOS rate works today • Origins of DOS • How the current DOS rate is derived • How DOS works o How to apply for it, use it, curtail it, how is it charged and what happens if you misuse it • Q&A | AESO           |
 | 9:00 - 9:20  | Recap of AESO conclusions on non-firm rates • Q&A                                                                                                                                                                                    | AESO           |
@@ -44,7 +44,7 @@ Public
 <!-- image -->
 
 | Time          | Agenda Item                                                                                                                                | Presenter      |
-|---------------|--------------------------------------------------------------------------------------------------------------------------------------------|----------------|
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | -------------- |
 | 10:05 - 11:30 | AESO's DOS modernization recommendation • DOS Eligibility • DOS Connections • DOS Transactions • Suspension of DOS • DOS Rates Streamlined | AESO           |
 | 11:30 - 12:00 | Break                                                                                                                                      |                |
 | 12:00 - 12:50 | Q&A Period • What we heard • AESO's DOS modernization recommendation                                                                       | AESO           |
@@ -53,7 +53,7 @@ Public
 ## III. Attendees
 
 | Company                                                           |
-|-------------------------------------------------------------------|
+| ----------------------------------------------------------------- |
 | Alberta Direct Connect Consumers Association ('ADC')              |
 | Alberta Electric System Operator ('AESO')                         |
 | Alberta Energy                                                    |
@@ -80,7 +80,7 @@ Enter Footer
 <!-- image -->
 
 | Company                                                     |
-|-------------------------------------------------------------|
+| ----------------------------------------------------------- |
 | CNRL                                                        |
 | Customized Energy Solutions                                 |
 | DePal Consulting Limited                                    |
@@ -121,7 +121,7 @@ Enter Footer
 <!-- image -->
 
 | Company                  |
-|--------------------------|
+| ------------------------ |
 | Weyerhaeuser             |
 | Stack'd Consulting, Inc. |
 | Attendees by phone       |

@@ -4,19 +4,19 @@ This is a comprehensive CommonMark document showcasing standard markdown element
 
 ## Introduction
 
-CommonMark is a **standardized specification** of Markdown. This document demonstrates *all* the core elements that should be properly parsed and extracted.
+CommonMark is a **standardized specification** of Markdown. This document demonstrates _all_ the core elements that should be properly parsed and extracted.
 
 ### About Markdown
 
-Markdown is a lightweight markup language with plain-text formatting syntax. It’s designed to be *easy to read* and **easy to write**.
+Markdown is a lightweight markup language with plain-text formatting syntax. It’s designed to be _easy to read_ and **easy to write**.
 
 ## Text Formatting
 
 You can use various text formatting options:
 
 - **Bold text** using double asterisks or underscores
-- *Italic text* using single asterisks or underscores
-- ***Bold and italic*** combined
+- _Italic text_ using single asterisks or underscores
+- **_Bold and italic_** combined
 - `inline code` for short snippets
 
 ## Lists
@@ -50,22 +50,22 @@ Use the `function_name()` method to process data.
 
 ### Code Blocks
 
-``` rust
+```rust
 fn hello_world() {
     println!("Hello, World!");
 }
 ```
 
-``` python
+```python
 def fibonacci(n):
     if n <= 1:
         return n
     return fibonacci(n-1) + fibonacci(n-2)
 ```
 
-``` javascript
+```javascript
 const greeting = (name) => {
-    return `Hello, ${name}!`;
+  return `Hello, ${name}!`;
 };
 ```
 
@@ -79,18 +79,18 @@ You can also use [reference-style links](https://spec.commonmark.org/) if prefer
 
 > This is a blockquote. It’s useful for highlighting important information or quotes from other sources.
 
-> Blockquotes can contain **bold text** and *italic text*.
+> Blockquotes can contain **bold text** and _italic text_.
 >
 > They can also span multiple paragraphs.
 
 ## Horizontal Rule
 
-------------------------------------------------------------------------
+---
 
 ## Tables
 
 | Language   | Type     | Package Manager |
-|------------|----------|-----------------|
+| ---------- | -------- | --------------- |
 | Python     | Dynamic  | pip             |
 | Rust       | Compiled | cargo           |
 | JavaScript | Dynamic  | npm             |
@@ -102,11 +102,11 @@ You can also use [reference-style links](https://spec.commonmark.org/) if prefer
 
 ## Mixed Content
 
-Here’s a paragraph with multiple types of formatting. It contains **bold**, *italic*, `code`, and [links](https://example.com).
+Here’s a paragraph with multiple types of formatting. It contains **bold**, _italic_, `code`, and [links](https://example.com).
 
 ### Complex Nested List
 
-1.  First item with **bold** and *italic*
+1.  First item with **bold** and _italic_
     - Sub-item with `code`
     - Another sub-item with [link](https://example.com)
 2.  Second item

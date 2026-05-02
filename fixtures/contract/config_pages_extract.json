@@ -1,34 +1,34 @@
 {
-	"id": "config_pages_extract",
-	"description": "Tests page extraction config producing per-page content array",
-	"tags": ["contract", "config"],
-	"call": "extract_file_sync",
-	"input": {
-		"path": "pdf/fake_memo.pdf",
-		"config": {
-			"pages": {
-				"extract_pages": true
-			}
-		}
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/pdf"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 10
-		},
-		{
-			"type": "count_min",
-			"field": "pages",
-			"value": 1
-		}
-	],
-	"skip": {
-		"reason": "Requires features: pdf"
-	}
+  "id": "config_pages_extract",
+  "description": "Tests page extraction config producing per-page content array",
+  "tags": ["contract", "config"],
+  "call": "extract_file_sync",
+  "input": {
+    "path": "pdf/fake_memo.pdf",
+    "config": {
+      "pages": {
+        "extract_pages": true
+      }
+    }
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/pdf"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 10
+    },
+    {
+      "type": "count_min",
+      "field": "pages",
+      "value": 1
+    }
+  ],
+  "skip": {
+    "reason": "Requires features: pdf"
+  }
 }

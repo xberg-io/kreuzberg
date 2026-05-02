@@ -2,11 +2,7 @@
   "document": "../../../../test_documents/vendored/unstructured/doc/simple.doc",
   "file_type": "doc",
   "file_size": 15872,
-  "expected_frameworks": [
-    "kreuzberg",
-    "tika",
-    "unstructured"
-  ],
+  "expected_frameworks": ["kreuzberg", "tika", "unstructured"],
   "metadata": {
     "description": "Document from unstructured test suite",
     "source": "unstructured",

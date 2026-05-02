@@ -1,26 +1,26 @@
 {
-	"id": "office_xlsx_multi_sheet",
-	"category": "office",
-	"description": "XLSX workbook with multiple sheets.",
-	"input": {
-		"path": "xlsx/excel_multi_sheet.xlsx",
-		"media_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 20
-		},
-		{
-			"type": "greater_than_or_equal",
-			"field": "metadata.sheet_count",
-			"value": 2
-		}
-	]
+  "id": "office_xlsx_multi_sheet",
+  "category": "office",
+  "description": "XLSX workbook with multiple sheets.",
+  "input": {
+    "path": "xlsx/excel_multi_sheet.xlsx",
+    "media_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 20
+    },
+    {
+      "type": "greater_than_or_equal",
+      "field": "metadata.sheet_count",
+      "value": 2
+    }
+  ]
 }

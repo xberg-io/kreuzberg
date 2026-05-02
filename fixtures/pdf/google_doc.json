@@ -1,21 +1,21 @@
 {
-	"id": "pdf_google_doc",
-	"category": "pdf",
-	"description": "Google Docs exported PDF to verify conversion fidelity.",
-	"input": {
-		"path": "pdf/google_doc_document.pdf",
-		"media_type": "application/pdf"
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/pdf"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 50
-		}
-	]
+  "id": "pdf_google_doc",
+  "category": "pdf",
+  "description": "Google Docs exported PDF to verify conversion fidelity.",
+  "input": {
+    "path": "pdf/google_doc_document.pdf",
+    "media_type": "application/pdf"
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/pdf"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 50
+    }
+  ]
 }

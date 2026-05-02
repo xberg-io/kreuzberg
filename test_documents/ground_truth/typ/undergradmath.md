@@ -30,7 +30,7 @@
 
 // Put this here to avoid affecting the title \#show link: underline
 
-This is a Typst port of *\#LaTeX Math for Undergrads* by Jim Hefferon. The original version is available at \#link("https://gitlab.com/jim.hefferon/undergradmath").
+This is a Typst port of _\#LaTeX Math for Undergrads_ by Jim Hefferon. The original version is available at \#link("https://gitlab.com/jim.hefferon/undergradmath").
 
 # Meaning of annotations
 
@@ -54,7 +54,7 @@ Your document should contain at least this.
 
 # Common constructs
 
-\#align(center, table( columns: 2, column-gutter: 1.5em, cell($x^2$, `x^2`), cell(\[$sqrt(2)$, $root(n, 3)$\], \[`sqrt(2)`, `root(n, 3)`\]), cell($x*(i, j)$, \`x*(i, j)`), cell([$2 / 3$, $2 \/ 3$], [`2 / 3` ,  `2 \\/ 3`  or  `2 slash 3` ]), // Maybe use  `slash\`? ))
+\#align(center, table( columns: 2, column-gutter: 1.5em, cell($x^2$, `x^2`), cell(\[$sqrt(2)$, $root(n, 3)$\], \[`sqrt(2)`, `root(n, 3)`\]), cell($x*(i, j)$, \`x\*(i, j)`), cell([$2 / 3$, $2 \/ 3$], [`2 / 3`, `2 \\/ 3`  or  `2 slash 3`]), // Maybe use `slash\`? ))
 
 # Calligraphic letters
 
@@ -82,7 +82,7 @@ Negate an operator, as in $subset.not$, with `subset.not`. Get the set complemen
 
 # Decorations
 
-\#align(center, table( columns: 3, column-gutter: 1em, cell($f'$, \[`f'`, `f prime`\]), cell($dot(a)$, `dot(a)`), cell($tilde(a)$, `tilde(a)`), cell($f prime.double$, `f prime.double`), cell($diaer(a)$, `diaer(a)`), cell($macron(a)$, `macron(a)`), cell($Sigma^**$, \`Sigma^**` ), cell($hat(a)$,  `hat(a)` ), cell($arrow(a)$,  `arrow(a)\`), ))
+\#align(center, table( columns: 3, column-gutter: 1em, cell($f'$, \[`f'`, `f prime`\]), cell($dot(a)$, `dot(a)`), cell($tilde(a)$, `tilde(a)`), cell($f prime.double$, `f prime.double`), cell($diaer(a)$, `diaer(a)`), cell($macron(a)$, `macron(a)`), cell($Sigma^**$, \`Sigma^\*\*`), cell($hat(a)$, `hat(a)`), cell($arrow(a)$, `arrow(a)\`), ))
 
 If the decorated letter is $i$ or $j$ then some decorations need `\u{1D6A4}` @tricky and `\u{1D6A5}` @tricky, as in $arrow(\\u{1D6A4})$ with `arrow(\u{1D6A4})`. Some authors use boldface for vectors: `bold(x)`.
 
@@ -102,7 +102,7 @@ Just type them\!
 
 # Other symbols
 
-\#align(center, table( columns: 3, column-gutter: 1.2em, cell($\<$, \[`<`, `lt`\]), cell($angle$, `angle`), cell($dot$, \[`dot`\]), cell($\<=$, \[`<=`, `lt.eq`\]), cell($angle.arc$, `angle.arc`), cell($plus.minus$, `plus.minus`), cell($\>$, \[`>`, `gt`\]), cell($ell$, `ell`), cell($minus.plus$, `minus.plus`), cell($\>=$, \[`>=`, `gt.eq`\]), cell($parallel$, `parallel`), cell($times$, `times`), cell($\!=$, \[`!=`, `eq.not`\]), cell($45 degree$, `45 degree`), cell($div$, `div`), cell($\<\<$, \[`<<`, `lt.double`\]), cell($tilde.equiv$, `tilde.equiv`), cell($**$, \[\`**` ,  `ast`]), cell($>>$, [`\>\>` ,  `gt.double` ]), cell($tilde.equiv.not$,  `tilde.equiv.not` ), cell($divides$,  `divides` ), cell($approx$,  `approx` ), cell($tilde$,  `tilde` ), cell($divides.not$,  `divides.not`), cell($\u{224D}$, [`\\u{224D}`  @tricky]), cell($tilde.eq$,  `tilde.eq` ), cell($n!$,  `n\!` ), cell($equiv$,  `equiv` ), cell($tilde.not$,  `tilde.not` ), cell($diff$,  `diff` ), cell($prec$,  `prec` ), cell($plus.circle$,  `plus.circle` ), cell($nabla$,  `nabla` ), cell($prec.eq$,  `prec.eq` ), cell($minus.circle$,  `minus.circle` ), cell($planck.reduce$,  `planck.reduce` ), cell($succ$,  `succ` ), cell($dot.circle$,  `dot.circle` ), cell($circle.stroked.tiny$,  `circle.stroked.tiny` ), cell($succ.eq$,  `succ.eq` ), cell($times.circle$,  `times.circle` ), cell($star$,  `star` ), cell($prop$,  `prop`), cell($\u{2298}$, [`\\u{2298}`  @tricky]), cell($sqrt("")$,  `sqrt("")`), cell($\u{2250}$, [`\\u{2250}`  @tricky]), cell($harpoon.tr$,  `harpoon.tr` ), cell($checkmark$,  `checkmark\`), ))
+\#align(center, table( columns: 3, column-gutter: 1.2em, cell($\<$, \[`<`, `lt`\]), cell($angle$, `angle`), cell($dot$, \[`dot`\]), cell($\<=$, \[`<=`, `lt.eq`\]), cell($angle.arc$, `angle.arc`), cell($plus.minus$, `plus.minus`), cell($\>$, \[`>`, `gt`\]), cell($ell$, `ell`), cell($minus.plus$, `minus.plus`), cell($\>=$, \[`>=`, `gt.eq`\]), cell($parallel$, `parallel`), cell($times$, `times`), cell($\!=$, \[`!=`, `eq.not`\]), cell($45 degree$, `45 degree`), cell($div$, `div`), cell($\<\<$, \[`<<`, `lt.double`\]), cell($tilde.equiv$, `tilde.equiv`), cell($**$, \[\`\*\*`, `ast`]), cell($>>$, [`\>\>`, `gt.double`]), cell($tilde.equiv.not$, `tilde.equiv.not`), cell($divides$, `divides`), cell($approx$, `approx`), cell($tilde$, `tilde`), cell($divides.not$, `divides.not`), cell($\u{224D}$, [`\\u{224D}`  @tricky]), cell($tilde.eq$,  `tilde.eq`), cell($n!$, `n\!`), cell($equiv$, `equiv`), cell($tilde.not$, `tilde.not`), cell($diff$, `diff`), cell($prec$, `prec`), cell($plus.circle$, `plus.circle`), cell($nabla$, `nabla`), cell($prec.eq$, `prec.eq`), cell($minus.circle$, `minus.circle`), cell($planck.reduce$, `planck.reduce`), cell($succ$, `succ`), cell($dot.circle$, `dot.circle`), cell($circle.stroked.tiny$, `circle.stroked.tiny`), cell($succ.eq$, `succ.eq`), cell($times.circle$, `times.circle`), cell($star$, `star`), cell($prop$, `prop`), cell($\u{2298}$, [`\\u{2298}`  @tricky]), cell($sqrt("")$,  `sqrt("")`), cell($\u{2250}$, [`\\u{2250}`  @tricky]), cell($harpoon.tr$,  `harpoon.tr`), cell($checkmark$, `checkmark\`), ))
 
 Use `a divides b` for the divides relation, $a divides b$, and `a divides.not b` for the negation, $a divides.not b$. Use `|` to get set builder notation ${a in S | a "is odd"}$ with `{a in S | a "is odd"}`.
 
@@ -114,7 +114,7 @@ The right arrows in the first column have matching left arrows, such as `arrow.l
 
 # Variable-sized operators
 
-The summation $sum*(j = 0)^3 j^2$ \`sum*(j = 0)^3 j^2`  and the integral $integral_(x = 0)^3 x^2 dif x$  `integral_(x = 0)^3 x^2 dif x\` expand when displayed.
+The summation $sum*(j = 0)^3 j^2$ \`sum\*(j = 0)^3 j^2`  and the integral $integral_(x = 0)^3 x^2 dif x$  `integral\_(x = 0)^3 x^2 dif x\` expand when displayed.
 
 $$sum_(j = 0)^3 j^2 qquad integral_(x = 0)^3 x^2 dif x$$
 
@@ -128,7 +128,7 @@ These do the same.
 
 Fix the size with the `lr` function.
 
-\#align(center, table( columns: 2, column-gutter: 0.5em, $ lr(\[sum_(k = 0)^n e^(k^2)\], size: \#50%) $,
+\#align(center, table( columns: 2, column-gutter: 0.5em, $ lr(\[sum\_(k = 0)^n e^(k^2)\], size: \#50%) $,
 
 ````
   lr([sum_(k = 0)^n e^(k^2)], size: #50%)
@@ -192,14 +192,14 @@ Get a matrix with the `mat` function. You can pass an array to it.
 $$mat(a, b; c, d)$$
 
     ))
-    
+
     In Typst, #link("https://typst.app/docs/reference/typst/array")[array] is a sequence of values,
     while in #LaTeX, array is a matrix without fences, which is `$mat(delim: #none, ..)$` in Typst.
-    
+
     For the determinant use `|A|`, text operator $det$ `det` or `mat(delim: "|", ..)`.
-    
+
     Definition by cases can be easily obtained with the `cases` function.
-    
+
     #align(center, table(
       columns: 2,
       column-gutter: 1em,
@@ -211,17 +211,17 @@ $$mat(a, b; c, d)$$
 $ f*n = cases( a &"if" n = 0, r dot f*(n - 1) &"else" ) $
 
     ))
-    
+
     = Spacing in mathematics
     Improve $sqrt(2) x$ to $sqrt(2) thin x$ with a thin space, as in `sqrt(2) thin x`.
     Slightly wider are `medium` and `thick` (the three are in ratio $3 : 4 : 5$).
     Bigger space is `quad` for $arrow.r quad arrow.l$, which is useful between parts of a display.
     Get arbitrary space with the `h` function.
     For example, use `#h(2em)` for `\qquad` in #LaTeX and `#h(-0.1667em)` for `\!`.
-    
+
     = Displayed equations
     Display equations in a block level using `$ ... $` with at least one space separating the math content and the `$`.
-    
+
     #align(center, table(
       columns: 2,
       column-gutter: 1em,
@@ -244,11 +244,12 @@ You can break into multiple lines.
 $ sin(x) = x - x^3 / 3\! \\
 
 1. x^5 / 5\! - dots.h.c $
+
    ```,
    ))
-   
+
    Align equations using `&`
-   
+
    #align(center, table(
      columns: 2,
      column-gutter: 1em,
@@ -282,7 +283,7 @@ f: RR -\> RR
   $ lim_(h->0) (f(x+h)-f(x))/h $,
 ```
 
-lim_(h -\> 0) (f(x + h) - f(x)) / h
+lim\_(h -\> 0) (f(x + h) - f(x)) / h
 
 ```,
   $ integral x^2 dif x = x^3 \/ 3 + C $,

@@ -1,30 +1,24 @@
 {
-	"id": "utility_blake3_hash",
-	"category": "utility",
-	"description": "BLAKE3 hash of known bytes produces deterministic output",
-	"tags": [
-		"utility",
-		"hash",
-		"blake3"
-	],
-	"call": "blake3_hash_bytes",
-	"input": {
-		"args": [
-			"hello world"
-		]
-	},
-	"skip": {
-		"languages": [],
-		"reason": "Tests utility call surface that isn't re-exported at the kreuzberg crate root \u2014 skipped everywhere until Rust public API or codegen module path is updated."
-	},
-	"assertions": [
-		{
-			"type": "not_error"
-		},
-		{
-			"type": "min_length",
-			"field": "result",
-			"value": 64
-		}
-	]
+  "id": "utility_blake3_hash",
+  "category": "utility",
+  "description": "BLAKE3 hash of known bytes produces deterministic output",
+  "tags": ["utility", "hash", "blake3"],
+  "call": "blake3_hash_bytes",
+  "input": {
+    "args": ["hello world"]
+  },
+  "skip": {
+    "languages": [],
+    "reason": "Tests utility call surface that isn't re-exported at the kreuzberg crate root \u2014 skipped everywhere until Rust public API or codegen module path is updated."
+  },
+  "assertions": [
+    {
+      "type": "not_error"
+    },
+    {
+      "type": "min_length",
+      "field": "result",
+      "value": 64
+    }
+  ]
 }

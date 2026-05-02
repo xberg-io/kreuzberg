@@ -1,31 +1,31 @@
 {
-	"id": "office_docx_tables",
-	"category": "office",
-	"description": "DOCX document containing tables for table-aware extraction.",
-	"input": {
-		"path": "docx/docx_tables.docx",
-		"media_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 50
-		},
-		{
-			"type": "contains_all",
-			"field": "content",
-			"values": ["Simple uniform table", "Nested Table", "merged cells", "Header Col"]
-		},
-		{
-			"type": "count_min",
-			"field": "tables",
-			"value": 1
-		}
-	]
+  "id": "office_docx_tables",
+  "category": "office",
+  "description": "DOCX document containing tables for table-aware extraction.",
+  "input": {
+    "path": "docx/docx_tables.docx",
+    "media_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 50
+    },
+    {
+      "type": "contains_all",
+      "field": "content",
+      "values": ["Simple uniform table", "Nested Table", "merged cells", "Header Col"]
+    },
+    {
+      "type": "count_min",
+      "field": "tables",
+      "value": 1
+    }
+  ]
 }

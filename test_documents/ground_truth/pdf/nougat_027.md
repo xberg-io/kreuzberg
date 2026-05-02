@@ -18,28 +18,29 @@ The session objectives include:
 
 II. Session agenda
 
-|  Time | Agenda Item | Presenter  |
-| --- | --- | --- |
-|  8:00 – 8:15 | Welcome, introduction, purpose, and session objectives including extension requestion on engagement and filing schedule | AESO / Stack’d  |
-|  8:15 – 9:00 | DOS 101 – describes how the current DOS rate works today
+| Time        | Agenda Item                                                                                                             | Presenter      |
+| ----------- | ----------------------------------------------------------------------------------------------------------------------- | -------------- |
+| 8:00 – 8:15 | Welcome, introduction, purpose, and session objectives including extension requestion on engagement and filing schedule | AESO / Stack’d |
+| 8:15 – 9:00 | DOS 101 – describes how the current DOS rate works today                                                                |
+
 • Origins of DOS
 • How the current DOS rate is derived
 • How DOS works
 ○ How to apply for it, use it, curtail it, how is it charged and what happens if you misuse it
-• Q&A | AESO  |
-|  9:00 – 9:20 | Recap of AESO conclusions on non-firm rates
-• Q&A | AESO  |
-|  9:20 – 9:35 | Break |   |
-|  9:35 – 9:45 | Key highlights of AESO’s DOS modernization recommendation
+• Q&A | AESO |
+| 9:00 – 9:20 | Recap of AESO conclusions on non-firm rates
+• Q&A | AESO |
+| 9:20 – 9:35 | Break | |
+| 9:35 – 9:45 | Key highlights of AESO’s DOS modernization recommendation
 • Opportunity rate design principles
-• Proposed key changes to DOS | AESO  |
-|  9:45 – 10:05 | What we heard
+• Proposed key changes to DOS | AESO |
+| 9:45 – 10:05 | What we heard
 • DOS rate under preferred rate design
 • Fast recall rate
 • Annual term for DOS
 • DOS take-or-pay requirement
 • Provision of ancillary services as a DOS customer
-• Availability of capacity | AESO  |
+• Availability of capacity | AESO |
 
 Alberta Electric System Operator
 
@@ -55,97 +56,98 @@ www.aeso.ca
 
 aeso
 
-|  Time | Agenda Item | Presenter  |
-| --- | --- | --- |
-|  10:05 – 11:30 | AESO’s DOS modernization recommendation
+| Time          | Agenda Item                             | Presenter |
+| ------------- | --------------------------------------- | --------- |
+| 10:05 – 11:30 | AESO’s DOS modernization recommendation |
+
 • DOS Eligibility
 • DOS Connections
 • DOS Transactions
 • Suspension of DOS
-• DOS Rates Streamlined | AESO  |
-|  11:30 – 12:00 | Break |   |
-|  12:00 – 12:50 | Q&A Period
+• DOS Rates Streamlined | AESO |
+| 11:30 – 12:00 | Break | |
+| 12:00 – 12:50 | Q&A Period
 • What we heard
-• AESO’s DOS modernization recommendation | AESO  |
-|  12:50 – 1:00 | Session close-out and next steps | AESO / Stack’d  |
+• AESO’s DOS modernization recommendation | AESO |
+| 12:50 – 1:00 | Session close-out and next steps | AESO / Stack’d |
 
 ## III. Attendees
 
-|  Company  |
-| --- |
-|  Alberta Direct Connect Consumers Association (“ADC”)  |
-|  Alberta Electric System Operator (“AESO”)  |
-|  Alberta Energy  |
-|  Alberta Newsprint Company (“ANC”)  |
-|  Alberta Utilities Commission (“AUC”)  |
-|  AltaLink Management Ltd.  |
-|  AltaSteel  |
-|  Arcus Power Corporation  |
-|  ASCENT Energy Partners Ltd.  |
-|  ATCO Electric Ltd.  |
-|  Best Consulting Solutions Inc.  |
-|  BluEarth Renewables Inc.  |
-|  Boost Energy Ventures  |
-|  Brubaker & Associates, Inc., on behalf of ADC  |
-|  Canadian Renewable Energy Association (“CanREA”)  |
-|  Capital Power  |
-|  Chymko Consulting, on behalf of Cities of Lethbridge and Red Deer  |
-|  Consumers Coalition of Alberta (“CCA”)  |
-|  Cenovus Energy  |
-|  Chapman Ventures Inc.  |
+| Company                                                           |
+| ----------------------------------------------------------------- |
+| Alberta Direct Connect Consumers Association (“ADC”)              |
+| Alberta Electric System Operator (“AESO”)                         |
+| Alberta Energy                                                    |
+| Alberta Newsprint Company (“ANC”)                                 |
+| Alberta Utilities Commission (“AUC”)                              |
+| AltaLink Management Ltd.                                          |
+| AltaSteel                                                         |
+| Arcus Power Corporation                                           |
+| ASCENT Energy Partners Ltd.                                       |
+| ATCO Electric Ltd.                                                |
+| Best Consulting Solutions Inc.                                    |
+| BluEarth Renewables Inc.                                          |
+| Boost Energy Ventures                                             |
+| Brubaker & Associates, Inc., on behalf of ADC                     |
+| Canadian Renewable Energy Association (“CanREA”)                  |
+| Capital Power                                                     |
+| Chymko Consulting, on behalf of Cities of Lethbridge and Red Deer |
+| Consumers Coalition of Alberta (“CCA”)                            |
+| Cenovus Energy                                                    |
+| Chapman Ventures Inc.                                             |
 
 Public
 
 aeso
 
-|  Company  |
-| --- |
-|  CNRL  |
-|  Customized Energy Solutions  |
-|  DePal Consulting Limited  |
-|  Enbridge Pipelines Inc.  |
-|  Enel NA  |
-|  Energy Storage Canada  |
-|  ENMAX Corporation  |
-|  EnPowered Inc.  |
-|  EPCOR Distribution & Transmission Inc.  |
-|  EQUS  |
-|  ERCO Worldwide  |
-|  FortisAlberta Inc.  |
-|  Heartland Generation Ltd.  |
-|  Imperial Oil  |
-|  Industrial Power Consumers Association of Alberta (“IPCAA”)  |
-|  Lionstooth Energy Inc.  |
-|  Mercer Peace River Pulp  |
-|  Millar Western Forest Products  |
-|  NextEra Insights Inc.  |
-|  Northern Sunrise County  |
-|  NRGCS  |
-|  Power Advisory LLC  |
-|  RMP Energy Storage  |
-|  Rodan Energy Solutions  |
-|  Solas Energy Consulting Inc.  |
-|  Suncor Energy Inc.  |
-|  TC Energy  |
-|  The Office of the Utilities Consumer Advocate (“UCA”)  |
-|  TransAlta Corporation  |
-|  Turning Point Generation  |
-|  URICA Asset Optimization  |
-|  VIDYA Knowledge Systems, on behalf of Canada West Ski Areas Association (“CWSAA”)  |
-|  West Fraser  |
+| Company                                                                           |
+| --------------------------------------------------------------------------------- |
+| CNRL                                                                              |
+| Customized Energy Solutions                                                       |
+| DePal Consulting Limited                                                          |
+| Enbridge Pipelines Inc.                                                           |
+| Enel NA                                                                           |
+| Energy Storage Canada                                                             |
+| ENMAX Corporation                                                                 |
+| EnPowered Inc.                                                                    |
+| EPCOR Distribution & Transmission Inc.                                            |
+| EQUS                                                                              |
+| ERCO Worldwide                                                                    |
+| FortisAlberta Inc.                                                                |
+| Heartland Generation Ltd.                                                         |
+| Imperial Oil                                                                      |
+| Industrial Power Consumers Association of Alberta (“IPCAA”)                       |
+| Lionstooth Energy Inc.                                                            |
+| Mercer Peace River Pulp                                                           |
+| Millar Western Forest Products                                                    |
+| NextEra Insights Inc.                                                             |
+| Northern Sunrise County                                                           |
+| NRGCS                                                                             |
+| Power Advisory LLC                                                                |
+| RMP Energy Storage                                                                |
+| Rodan Energy Solutions                                                            |
+| Solas Energy Consulting Inc.                                                      |
+| Suncor Energy Inc.                                                                |
+| TC Energy                                                                         |
+| The Office of the Utilities Consumer Advocate (“UCA”)                             |
+| TransAlta Corporation                                                             |
+| Turning Point Generation                                                          |
+| URICA Asset Optimization                                                          |
+| VIDYA Knowledge Systems, on behalf of Canada West Ski Areas Association (“CWSAA”) |
+| West Fraser                                                                       |
 
 Public
 
 aeso
 
-|  Company  |
-| --- |
-|  Weyerhaeuser  |
-|  Stack’d Consulting, Inc.  |
-|  Attendees by phone  |
-|  14034636639  |
-|  14038284900  |
-|  15878894627  |
+| Company                  |
+| ------------------------ |
+| Weyerhaeuser             |
+| Stack’d Consulting, Inc. |
+| Attendees by phone       |
+| 14034636639              |
+| 14038284900              |
+| 15878894627              |
 
 ## IV. Overall outcomes from the day
 
@@ -155,17 +157,17 @@ The main objective of the session was for the AESO to present its recommendation
 
 Captured below are the highlights of the questions and discussion on a topic-by-topic basis. For a detailed review of the session, please refer to the session recording, posted at www.aeso.ca.
 
-*Topic 1: DOS 101 – how the current DOS rate works today*
+_Topic 1: DOS 101 – how the current DOS rate works today_
 
 ### i. Stakeholder Commentary
 
 - Clarifying comments:
-- *Solas Energy*: Does the AESO use economic thresholds for any other connection load or generation?
-- *ERCO*: Could you provide the timing of the AESO's review of the DOS application? Days? Weeks?
-- *AltaSteel*: Does the AESO have any historic numbers of MW applied for and granted in the DOS?
-- *Best Consulting*: On Slide 27 (Current DOS usage request process), how are there only two reasons for denial listed when there is supposed to be an economic case?
-- *CanREA*: Are there other services where a lack of compliance can result in loss of access to the service?
-- *TransAlta*: If the AESO disqualifies a DOS customer as a consequence of an audit, is there a dispute resolution mechanism in place?
+- _Solas Energy_: Does the AESO use economic thresholds for any other connection load or generation?
+- _ERCO_: Could you provide the timing of the AESO's review of the DOS application? Days? Weeks?
+- _AltaSteel_: Does the AESO have any historic numbers of MW applied for and granted in the DOS?
+- _Best Consulting_: On Slide 27 (Current DOS usage request process), how are there only two reasons for denial listed when there is supposed to be an economic case?
+- _CanREA_: Are there other services where a lack of compliance can result in loss of access to the service?
+- _TransAlta_: If the AESO disqualifies a DOS customer as a consequence of an audit, is there a dispute resolution mechanism in place?
 
 ### ii. AESO Clarification
 

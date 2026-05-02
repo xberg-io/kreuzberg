@@ -461,19 +461,19 @@ docker-config-tests:
 
 ## Performance Expectations
 
-| Metric | Time |
-|--------|------|
-| Single test | 2-5 seconds |
-| All 8 tests (1 variant) | 30-45 seconds |
-| All 16 tests (2 variants) | 60-90 seconds |
-| With verbose output | +10-20 seconds |
+| Metric                    | Time           |
+| ------------------------- | -------------- |
+| Single test               | 2-5 seconds    |
+| All 8 tests (1 variant)   | 30-45 seconds  |
+| All 16 tests (2 variants) | 60-90 seconds  |
+| With verbose output       | +10-20 seconds |
 
 ## Exit Codes
 
-| Code | Meaning |
-|------|---------|
-| 0 | All tests passed |
-| 1 | One or more tests failed OR Docker unavailable |
+| Code | Meaning                                        |
+| ---- | ---------------------------------------------- |
+| 0    | All tests passed                               |
+| 1    | One or more tests failed OR Docker unavailable |
 
 ## Advanced Usage
 

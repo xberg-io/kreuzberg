@@ -1,11 +1,7 @@
 {
   "id": "config_structured_output",
   "description": "Tests structured (JSON) output format config",
-  "tags": [
-    "contract",
-    "config",
-    "output_format"
-  ],
+  "tags": ["contract", "config", "output_format"],
   "call": "extract_file_sync",
   "input": {
     "path": "pdf/fake_memo.pdf",

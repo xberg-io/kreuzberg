@@ -1,5 +1,5 @@
 | Code | Error                           |
-|------|---------------------------------|
+| ---- | ------------------------------- |
 | 3    | PandocFailOnWarningError        |
 | 4    | PandocAppError                  |
 | 5    | PandocTemplateError             |

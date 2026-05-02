@@ -1,29 +1,26 @@
 {
-	"id": "strikethrough_basic",
-	"category": "markup",
-	"description": "Create strikethrough formatting",
-	"tags": [
-		"markup",
-		"formatting"
-	],
-	"call": "strikethrough",
-	"input": {
-		"start": 0,
-		"end": 7
-	},
-	"assertions": [
-		{
-			"type": "not_error"
-		},
-		{
-			"type": "equals",
-			"field": "start",
-			"value": 0
-		},
-		{
-			"type": "equals",
-			"field": "end",
-			"value": 7
-		}
-	]
+  "id": "strikethrough_basic",
+  "category": "markup",
+  "description": "Create strikethrough formatting",
+  "tags": ["markup", "formatting"],
+  "call": "strikethrough",
+  "input": {
+    "start": 0,
+    "end": 7
+  },
+  "assertions": [
+    {
+      "type": "not_error"
+    },
+    {
+      "type": "equals",
+      "field": "start",
+      "value": 0
+    },
+    {
+      "type": "equals",
+      "field": "end",
+      "value": 7
+    }
+  ]
 }

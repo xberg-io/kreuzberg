@@ -26,7 +26,7 @@ Top 13 books at Odyssey Books Christopher Paolini, whose new novel, 'Th
 
 BITS 'N' PIECES
 
-* The Shooting Gallery, (ss) The Dedalus Book of Spanish Fantasy, ed. Margaret Jull Costa &amp; Annella McDermott, Dedalus 1999; Extract from a novel (1929).; tr. by Margaret Jull Costa ...
+\* The Shooting Gallery, (ss) The Dedalus Book of Spanish Fantasy, ed. Margaret Jull Costa &amp; Annella McDermott, Dedalus 1999; Extract from a novel (1929).; tr. by Margaret Jull Costa ...
 
 Copyright : academicroom.com
 

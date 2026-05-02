@@ -1,7 +1,7 @@
 # Sample Data Table
 
-| Product    | Category    | Price    | Stock |
-|------------|-------------|----------|-------|
+| Product    | Category    | Price   | Stock |
+| ---------- | ----------- | ------- | ----- |
 | Laptop     | Electronics | $999.99 | 25    |
 | Desk Chair | Furniture   | $199.99 | 8     |
 | Coffee Mug | Kitchen     | $9.99   | 150   |
@@ -10,7 +10,7 @@
 ## Summary Statistics
 
 |                     |           |
-|---------------------|-----------|
+| ------------------- | --------- |
 | **Total Products:** | 4         |
-| **Average Price:**  | $303.12  |
+| **Average Price:**  | $303.12   |
 | **Total Stock:**    | 258 units |

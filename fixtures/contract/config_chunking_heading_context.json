@@ -1,39 +1,39 @@
 {
-	"id": "config_chunking_heading_context",
-	"description": "Tests markdown chunker populates heading context on chunks",
-	"tags": ["contract", "config", "chunking", "heading-context"],
-	"call": "extract_file_sync",
-	"input": {
-		"path": "markdown/extraction_test.md",
-		"config": {
-			"chunking": {
-				"chunker_type": "markdown",
-				"max_chars": 300,
-				"max_overlap": 50
-			}
-		}
-	},
-	"assertions": [
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 10
-		},
-		{
-			"type": "count_min",
-			"field": "chunks",
-			"value": 2
-		},
-		{
-			"type": "is_true",
-			"field": "chunks_have_content"
-		},
-		{
-			"type": "is_true",
-			"field": "chunks_have_heading_context"
-		}
-	],
-	"skip": {
-		"reason": "Requires features: chunking"
-	}
+  "id": "config_chunking_heading_context",
+  "description": "Tests markdown chunker populates heading context on chunks",
+  "tags": ["contract", "config", "chunking", "heading-context"],
+  "call": "extract_file_sync",
+  "input": {
+    "path": "markdown/extraction_test.md",
+    "config": {
+      "chunking": {
+        "chunker_type": "markdown",
+        "max_chars": 300,
+        "max_overlap": 50
+      }
+    }
+  },
+  "assertions": [
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 10
+    },
+    {
+      "type": "count_min",
+      "field": "chunks",
+      "value": 2
+    },
+    {
+      "type": "is_true",
+      "field": "chunks_have_content"
+    },
+    {
+      "type": "is_true",
+      "field": "chunks_have_heading_context"
+    }
+  ],
+  "skip": {
+    "reason": "Requires features: chunking"
+  }
 }

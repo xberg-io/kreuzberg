@@ -1,15 +1,15 @@
 {
-	"document": "../../../test_documents/data_formats/sample.ris",
-	"file_type": "ris",
-	"file_size": 279,
-	"expected_frameworks": ["kreuzberg", "pandoc"],
-	"metadata": {
-		"description": "RIS citation format with journal article metadata",
-		"category": "citation",
-		"size_class": "tiny"
-	},
-	"ground_truth": {
-		"text_file": "../../../test_documents/ground_truth/ris/ris_citation.txt",
-		"source": "vision"
-	}
+  "document": "../../../test_documents/data_formats/sample.ris",
+  "file_type": "ris",
+  "file_size": 279,
+  "expected_frameworks": ["kreuzberg", "pandoc"],
+  "metadata": {
+    "description": "RIS citation format with journal article metadata",
+    "category": "citation",
+    "size_class": "tiny"
+  },
+  "ground_truth": {
+    "text_file": "../../../test_documents/ground_truth/ris/ris_citation.txt",
+    "source": "vision"
+  }
 }

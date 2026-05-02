@@ -86,6 +86,7 @@ Reading Economics 1 Lesson 7
 Handout 12 Answers
 
 ## Economics 1 Lesson 7 Handout 12
+
 Answers creativity thinking skills critical thinking problem. career cruising english
 
 Reading Economics 1 Lesson 7

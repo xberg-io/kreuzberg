@@ -1,39 +1,39 @@
 {
-	"id": "config_chunking_small",
-	"description": "Tests chunking with very small chunk size produces more chunks",
-	"tags": ["contract", "config", "chunking"],
-	"call": "extract_file_sync",
-	"input": {
-		"path": "pdf/fake_memo.pdf",
-		"config": {
-			"chunking": {
-				"max_chars": 100,
-				"max_overlap": 20
-			}
-		}
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/pdf"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 10
-		},
-		{
-			"type": "count_min",
-			"field": "chunks",
-			"value": 2
-		},
-		{
-			"type": "is_true",
-			"field": "chunks_have_content"
-		}
-	],
-	"skip": {
-		"reason": "Requires features: chunking"
-	}
+  "id": "config_chunking_small",
+  "description": "Tests chunking with very small chunk size produces more chunks",
+  "tags": ["contract", "config", "chunking"],
+  "call": "extract_file_sync",
+  "input": {
+    "path": "pdf/fake_memo.pdf",
+    "config": {
+      "chunking": {
+        "max_chars": 100,
+        "max_overlap": 20
+      }
+    }
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/pdf"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 10
+    },
+    {
+      "type": "count_min",
+      "field": "chunks",
+      "value": 2
+    },
+    {
+      "type": "is_true",
+      "field": "chunks_have_content"
+    }
+  ],
+  "skip": {
+    "reason": "Requires features: chunking"
+  }
 }

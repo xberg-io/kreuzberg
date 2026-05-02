@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/user_reports/mp_axmp_rec_en.pdf",
   "file_type": "pdf",
   "file_size": 408353,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "EU health document with STX (U+0002) characters where hyphens should be. PDF font encoding issue. Community report 2026-03-25.",
     "source": "user_report",

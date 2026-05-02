@@ -1,23 +1,23 @@
 {
-	"id": "image_gif_basic",
-	"category": "image",
-	"description": "GIF image extraction via OCR.",
-	"input": {
-		"path": "images_extra/ocr_image.gif",
-		"media_type": "image/gif"
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "image/gif"
-		},
-		{
-			"type": "not_empty",
-			"field": "content"
-		}
-	],
-	"skip": {
-		"reason": "Requires features: tesseract"
-	}
+  "id": "image_gif_basic",
+  "category": "image",
+  "description": "GIF image extraction via OCR.",
+  "input": {
+    "path": "images_extra/ocr_image.gif",
+    "media_type": "image/gif"
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "image/gif"
+    },
+    {
+      "type": "not_empty",
+      "field": "content"
+    }
+  ],
+  "skip": {
+    "reason": "Requires features: tesseract"
+  }
 }

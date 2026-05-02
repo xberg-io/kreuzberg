@@ -6,16 +6,16 @@ Extract text from images and scanned PDFs. Kreuzberg automatically determines wh
 
 Kreuzberg supports four OCR backends. Pick based on your platform, accuracy needs, and language coverage.
 
-| | **Tesseract** | **PaddleOCR** | **EasyOCR** | **VLM** |
-|---|---|---|---|---|
-| **Speed** | Fast | Very fast | Moderate | Slow (API latency) |
-| **Accuracy** | Good | Excellent | Excellent | Highest |
-| **Languages** | 100+ | 80+ (11 script families) | 80+ | All (provider-dependent) |
-| **Installation** | System package | Built-in (native) or Python package | Python package only | API key only |
-| **Model size** | ~10 MB | Mobile ~8 MB, Server ~120 MB | ~100 MB | None (cloud-hosted) |
-| **GPU support** | No | Yes | Yes | N/A (server-side) |
-| **Platform** | All (including Wasm) | All except Wasm | Python only | All |
-| **Cost** | Free | Free | Free | Per-token API cost |
+|                  | **Tesseract**        | **PaddleOCR**                       | **EasyOCR**         | **VLM**                  |
+| ---------------- | -------------------- | ----------------------------------- | ------------------- | ------------------------ |
+| **Speed**        | Fast                 | Very fast                           | Moderate            | Slow (API latency)       |
+| **Accuracy**     | Good                 | Excellent                           | Excellent           | Highest                  |
+| **Languages**    | 100+                 | 80+ (11 script families)            | 80+                 | All (provider-dependent) |
+| **Installation** | System package       | Built-in (native) or Python package | Python package only | API key only             |
+| **Model size**   | ~10 MB               | Mobile ~8 MB, Server ~120 MB        | ~100 MB             | None (cloud-hosted)      |
+| **GPU support**  | No                   | Yes                                 | Yes                 | N/A (server-side)        |
+| **Platform**     | All (including Wasm) | All except Wasm                     | Python only         | All                      |
+| **Cost**         | Free                 | Free                                | Free                | Per-token API cost       |
 
 **When to use which:**
 
@@ -88,7 +88,7 @@ pip install "kreuzberg[easyocr]"
 !!! Info "Python 3.14" EasyOCR 1.7.3+ and PyTorch 2.9.1+ support Python 3.14. Install `kreuzberg[easyocr]` on any supported Python version (3.10–3.14).
 
 !!! Tip "Tesseract marker extra"
-    `pip install "kreuzberg[tesseract]"` is available as a metadata-only marker to document a dependency on the Tesseract system package. It installs no Python packages — Tesseract itself must still be installed via your OS package manager (see above).
+`pip install "kreuzberg[tesseract]"` is available as a metadata-only marker to document a dependency on the Tesseract system package. It installs no Python packages — Tesseract itself must still be installed via your OS package manager (see above).
 
 ## Configuration
 
@@ -348,11 +348,11 @@ For more on VLM OCR, including custom prompts, supported providers, and API key 
 
 Image resolution affects both accuracy and speed. Higher DPI improves accuracy but increases processing time and memory usage.
 
-| DPI | Trade-off |
-|-----|-----------|
-| **150** | Fastest — lower accuracy, less memory |
+| DPI               | Trade-off                                  |
+| ----------------- | ------------------------------------------ |
+| **150**           | Fastest — lower accuracy, less memory      |
 | **300** (default) | Balanced — good accuracy, reasonable speed |
-| **600** | Best accuracy — slower, more memory |
+| **600**           | Best accuracy — slower, more memory        |
 
 === "Python"
 
@@ -386,19 +386,19 @@ Image resolution affects both accuracy and speed. Higher DPI improves accuracy b
 
 PaddleOCR supports 80+ languages across 11 script families (PP-OCRv5). Recognition models are downloaded on demand from HuggingFace:
 
-| Family | Languages |
-|--------|-----------|
-| **English** | English, numbers, punctuation |
-| **Chinese** | Simplified/Traditional Chinese, Japanese |
-| **Latin** | French, German, Spanish, Portuguese, Italian, Polish, Dutch, Turkish, Vietnamese, and so on. |
-| **Korean** | Korean (Hangul) |
-| **Slavic** | Russian, Ukrainian, Belarusian, Bulgarian, Serbian, and so on. |
-| **Thai** | Thai script |
-| **Greek** | Greek script |
-| **Arabic** | Arabic, Persian, Urdu |
-| **Devanagari** | Hindi, Marathi, Sanskrit, Nepali |
-| **Tamil** | Tamil script |
-| **Telugu** | Telugu script |
+| Family         | Languages                                                                                    |
+| -------------- | -------------------------------------------------------------------------------------------- |
+| **English**    | English, numbers, punctuation                                                                |
+| **Chinese**    | Simplified/Traditional Chinese, Japanese                                                     |
+| **Latin**      | French, German, Spanish, Portuguese, Italian, Polish, Dutch, Turkish, Vietnamese, and so on. |
+| **Korean**     | Korean (Hangul)                                                                              |
+| **Slavic**     | Russian, Ukrainian, Belarusian, Bulgarian, Serbian, and so on.                               |
+| **Thai**       | Thai script                                                                                  |
+| **Greek**      | Greek script                                                                                 |
+| **Arabic**     | Arabic, Persian, Urdu                                                                        |
+| **Devanagari** | Hindi, Marathi, Sanskrit, Nepali                                                             |
+| **Tamil**      | Tamil script                                                                                 |
+| **Telugu**     | Telugu script                                                                                |
 
 Models are cached locally after first download, so subsequent runs start immediately.
 
@@ -424,13 +424,13 @@ kreuzberg extract handwritten.pdf --force-ocr true --vlm-model openai/gpt-4o-min
 kreuzberg extract scanned.pdf --config kreuzberg.toml --ocr true
 ```
 
-| Flag | Description |
-|------|-------------|
-| `--ocr true` | Enable OCR processing |
-| `--ocr-language <code>` | Language code (`eng`, `deu`, `fra`, `ch`, `ja`, `ru`, etc.) |
-| `--ocr-backend <backend>` | Engine: `tesseract`, `paddle-ocr`, `easyocr`, or `vlm` |
-| `--force-ocr true` | OCR all pages regardless of text layer |
-| `--vlm-model <model>` | VLM model for OCR (for example, `openai/gpt-4o-mini`). Implies `--ocr-backend vlm` |
+| Flag                      | Description                                                                        |
+| ------------------------- | ---------------------------------------------------------------------------------- |
+| `--ocr true`              | Enable OCR processing                                                              |
+| `--ocr-language <code>`   | Language code (`eng`, `deu`, `fra`, `ch`, `ja`, `ru`, etc.)                        |
+| `--ocr-backend <backend>` | Engine: `tesseract`, `paddle-ocr`, `easyocr`, or `vlm`                             |
+| `--force-ocr true`        | OCR all pages regardless of text layer                                             |
+| `--vlm-model <model>`     | VLM model for OCR (for example, `openai/gpt-4o-mini`). Implies `--ocr-backend vlm` |
 
 ## Troubleshooting
 

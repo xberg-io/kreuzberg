@@ -1,16 +1,14 @@
 {
-	"id": "embed_get_preset_invalid",
-	"category": "embed_extra",
-	"description": "Get preset invalid name",
-	"tags": ["embedding", "error"],
-	"call": "get_preset",
-	"input": {
-		"name": "nonexistent-model"
-	},
-	"assertions": [
-		{"type": "not_error"}
-	],
-	"skip": {
-		"reason": "Requires features: embeddings"
-	}
+  "id": "embed_get_preset_invalid",
+  "category": "embed_extra",
+  "description": "Get preset invalid name",
+  "tags": ["embedding", "error"],
+  "call": "get_preset",
+  "input": {
+    "name": "nonexistent-model"
+  },
+  "assertions": [{ "type": "not_error" }],
+  "skip": {
+    "reason": "Requires features: embeddings"
+  }
 }

@@ -30,7 +30,7 @@ Szamosi T. 2'd Pediatric Dept. of Med/Fac, Semmelweis University, Budapest, Hung
 
 Long time effect of lifestyle modification (LM) advised against insulin resistance syndrome (IRS) is not established, therefore repeated investigation of our earlier patients were performed after ten years. Our invitation was accepted by 127 patients whose IRS was thought to be improved after a 2 years long care 8 years ago. 28 have continued (group 1), 42 have partly continued (group 2), 57 have not continued (group 3) the LM. BMI, BP, carbohydrate and lipid metabolic parameters were determined. BMi was &gt; 25 together with high SBP in 4, 6, 31 cases from group 1, 2, 3, respectively. The frequency difference between group 1 and 3 was significant. Impaired glucose tolerance together with hyperinsulinemia were found in 9, 13, 39 cases from group 1, 2, 3, respectively w/o significant frequency differences. No pathologic serum lipid parameters were observed. The effect of LM on different IRS risk factors seems to be due to the compliance time and the factor,s nature.
 
-LOW-CALORIE THERMOGENIC BEVERAGE AND EXERCISE IMPROVES BODY COMPOSITION AND LIPID PROFILE IN OVERWEIGHT AND OBESE WOMEN Abbie E. Smith, Jordan R. Moon, Christopher M. Lockwood, Krislina L. Kendall, Jennifer L. Gracf, David H. Fukuda, Joel T. Cramer, Jeffrey R. Stout. Department of Health and Exercise Science, University Of Oklahoma, Norman, OK The purpose of this study was to evaluate the combined effects of a 10-week exercise program with chronic ingeslion of a thermogenic energy drink on body composition, cardiovascular fitness, strength, and safety in overweight and obese women. In a double-blind placebo-controlled approach overweight and obese women (n=27) were randomly assigned to groups that consumed identically tasting treatment beverages with exercise (EX-Aci: n=6; EX-PL: n=9) or without exercise (NEX-Act: n=7; NEXPL: n=5). All participants consumed one drink per day for t0 weeks; EX-Act and EX-PL participated in a 10-weck endurance and resistance training program. Fifteen minutes prior to each workout, participants consumed their assigned drink; on non-training days the same beverage was consumed ad libitum. Changes in body composition were assessed using a four-compartment model. Changes in muscle mass (MM) were evaluated using a previously published equation based on DXA-derived appendicular lean-soft tissue. Cardiovascular fitness and upper- and lower-body strength were assessed prior to and following the 10-week intervention. Separate two-way repeated measures ANOVAs [treatment (EX-Act vs. EX-PL. vs. NEX-Act vs. NEX-PL) x time (Pre vs. Post)] indicated a significant time x treatment interaction for muscle mass (p=0.026) and total cholesterol (p=0.047); a significant time x training interaction for VO\_peak (p=0.046), ventilatory threshold (VT, p=0.014), upper-and lower-body strength (p&lt;0.05). Post hoc analyses revealed a significant difference between the EXand NEX-groups for percent change in muscle mass (EX-Act: 6.8 + 2.5%; EXPL: 5.1 ‡ 2.4%; NEX-Act: 1.1 *3.2%; NEX-PL: 1.4* 1.3%) and VO\_peak (EXAct: 13.4 ‡ 10.1%; EX-PL: 8.9 *6.9%; NEX-Act: 2.1* 6.6%; NEX-PL: 7.2 + 5.4%), VT (EX-Act: 46.2 + 23.3%; EX-PL: 15.0 + 15.6%; NEX-Act: 6.6 *17.5%; NEX-PL: 10.3 ‡ 22.4%), upper- (EX-Act: 14.4 ‡ 10.1%; EX-PL: 20.9 + 8.3%; NEX-Act: 2.0 ‡ 3.4%; NEX-PL: 2.7 + 7.7%) and lower- (EX-Act: 33.3 + 23.9%; EX-PL: 31.7* 23.94%; NEX-Act: 1.4 *4.1%; NEX-PL: 1.2* 3.0%) body strength. Clinical markers for hepatic and renal function revealed no adverse effects in response to the beverage consumption. Total cholesterol significantly decreased for the Act supplementing groups (EX-Act: -5.0 + 4.7%; NEX-Act: · 10.7 * 15.4% vs. EX-PL: +3.0 + 12.8%, NEX-PL: +0.3 ÷ 8.9%). The current data suggest that the ACSM exercise program guidelines provide an effective measure for improving cardiovascular fitness, strength and modifying body composition. Individual data demonstrate support for implementing a single serving thermogenic drink prior to exercise, to improve muscle mass, decrease fat mass and improve lipid profiles of overweight women, compared to exercise alone.
+LOW-CALORIE THERMOGENIC BEVERAGE AND EXERCISE IMPROVES BODY COMPOSITION AND LIPID PROFILE IN OVERWEIGHT AND OBESE WOMEN Abbie E. Smith, Jordan R. Moon, Christopher M. Lockwood, Krislina L. Kendall, Jennifer L. Gracf, David H. Fukuda, Joel T. Cramer, Jeffrey R. Stout. Department of Health and Exercise Science, University Of Oklahoma, Norman, OK The purpose of this study was to evaluate the combined effects of a 10-week exercise program with chronic ingeslion of a thermogenic energy drink on body composition, cardiovascular fitness, strength, and safety in overweight and obese women. In a double-blind placebo-controlled approach overweight and obese women (n=27) were randomly assigned to groups that consumed identically tasting treatment beverages with exercise (EX-Aci: n=6; EX-PL: n=9) or without exercise (NEX-Act: n=7; NEXPL: n=5). All participants consumed one drink per day for t0 weeks; EX-Act and EX-PL participated in a 10-weck endurance and resistance training program. Fifteen minutes prior to each workout, participants consumed their assigned drink; on non-training days the same beverage was consumed ad libitum. Changes in body composition were assessed using a four-compartment model. Changes in muscle mass (MM) were evaluated using a previously published equation based on DXA-derived appendicular lean-soft tissue. Cardiovascular fitness and upper- and lower-body strength were assessed prior to and following the 10-week intervention. Separate two-way repeated measures ANOVAs [treatment (EX-Act vs. EX-PL. vs. NEX-Act vs. NEX-PL) x time (Pre vs. Post)] indicated a significant time x treatment interaction for muscle mass (p=0.026) and total cholesterol (p=0.047); a significant time x training interaction for VO*peak (p=0.046), ventilatory threshold (VT, p=0.014), upper-and lower-body strength (p&lt;0.05). Post hoc analyses revealed a significant difference between the EXand NEX-groups for percent change in muscle mass (EX-Act: 6.8 + 2.5%; EXPL: 5.1 ‡ 2.4%; NEX-Act: 1.1 \_3.2%; NEX-PL: 1.4* 1.3%) and VO*peak (EXAct: 13.4 ‡ 10.1%; EX-PL: 8.9 \_6.9%; NEX-Act: 2.1* 6.6%; NEX-PL: 7.2 + 5.4%), VT (EX-Act: 46.2 + 23.3%; EX-PL: 15.0 + 15.6%; NEX-Act: 6.6 _17.5%; NEX-PL: 10.3 ‡ 22.4%), upper- (EX-Act: 14.4 ‡ 10.1%; EX-PL: 20.9 + 8.3%; NEX-Act: 2.0 ‡ 3.4%; NEX-PL: 2.7 + 7.7%) and lower- (EX-Act: 33.3 + 23.9%; EX-PL: 31.7_ 23.94%; NEX-Act: 1.4 _4.1%; NEX-PL: 1.2_ 3.0%) body strength. Clinical markers for hepatic and renal function revealed no adverse effects in response to the beverage consumption. Total cholesterol significantly decreased for the Act supplementing groups (EX-Act: -5.0 + 4.7%; NEX-Act: · 10.7 \* 15.4% vs. EX-PL: +3.0 + 12.8%, NEX-PL: +0.3 ÷ 8.9%). The current data suggest that the ACSM exercise program guidelines provide an effective measure for improving cardiovascular fitness, strength and modifying body composition. Individual data demonstrate support for implementing a single serving thermogenic drink prior to exercise, to improve muscle mass, decrease fat mass and improve lipid profiles of overweight women, compared to exercise alone.
 
 Abstract 66
 
@@ -80,13 +80,13 @@ Body Mass (kg)
 
 <!-- image -->
 
-| 164.22 ‡ 11.10 78.60 ‡ 9.54 39.59 + 2.78   | 164.22 ‡ 11.10 78.60 ‡ 9.54 39.59 + 2.78   | 164.22 ‡ 11.10 78.60 ‡ 9.54 39.59 + 2.78   | 164.22 ‡ 11.10 78.60 ‡ 9.54 39.59 + 2.78   | 164.22 ‡ 11.10 78.60 ‡ 9.54 39.59 + 2.78   |
-|--------------------------------------------|--------------------------------------------|--------------------------------------------|--------------------------------------------|--------------------------------------------|
-|                                            | 163.37 ‡ 4.64&#124;                        | 73.06 ‡ 10.40 &#124; 38.49 = 3.40          |                                            |                                            |
-|                                            | 163.47 ‡ 4.31                              | 68.62 ‡ 12.90 37.56 ‡ 2.56                 |                                            |                                            |
-| 28.40 ‡ 10.16                              | 169.26 ‡ 13.12                             | 79.25 ‡ 11.68 36.22 ‡ 1.52                 |                                            |                                            |
-|                                            | 27.26 ‡ 8.60 &#124; 164.67 ‡ 8.13          | 74.29 ‡ 11.33 &#124; 38.07 ‡2.87           |                                            |                                            |
-|                                            | BODY COMPOSITION (4C-MODEL)                |                                            |                                            |                                            |
+| 164.22 ‡ 11.10 78.60 ‡ 9.54 39.59 + 2.78 | 164.22 ‡ 11.10 78.60 ‡ 9.54 39.59 + 2.78 | 164.22 ‡ 11.10 78.60 ‡ 9.54 39.59 + 2.78 | 164.22 ‡ 11.10 78.60 ‡ 9.54 39.59 + 2.78 | 164.22 ‡ 11.10 78.60 ‡ 9.54 39.59 + 2.78 |
+| ---------------------------------------- | ---------------------------------------- | ---------------------------------------- | ---------------------------------------- | ---------------------------------------- |
+|                                          | 163.37 ‡ 4.64&#124;                      | 73.06 ‡ 10.40 &#124; 38.49 = 3.40        |                                          |                                          |
+|                                          | 163.47 ‡ 4.31                            | 68.62 ‡ 12.90 37.56 ‡ 2.56               |                                          |                                          |
+| 28.40 ‡ 10.16                            | 169.26 ‡ 13.12                           | 79.25 ‡ 11.68 36.22 ‡ 1.52               |                                          |                                          |
+|                                          | 27.26 ‡ 8.60 &#124; 164.67 ‡ 8.13        | 74.29 ‡ 11.33 &#124; 38.07 ‡2.87         |                                          |                                          |
+|                                          | BODY COMPOSITION (4C-MODEL)              |                                          |                                          |                                          |
 
 All body composition measurements were performed on the same day following a 12-hour fast (water intake was allowed up to one hour prior to testing).  Hydration status was determined prior to all testing using specific gravity via handheld refractometry (Model CLX-1, precision = 0.001 ± 0.001, VEE GEE Scientific, Inc., Kirkland, WA) to assure proper hydration from PRE (1.022 ± 0.007) to POST (1.021 ± 0.007) measurements.  Fat mass (FM), percent body fat (%FAT) and fat-free mass (FFM) were estimated using the four-compartment (4-C) model described by Wang et al.(4)
 
@@ -121,7 +121,7 @@ Described by Rossiter et al. (8), using a Corival 906900 (Lode B.V. 
 The exercise program was designed using the American College of Sports Medicine (ACSM) recommended guidelines for apparently healthy adults; all participants were supervised by a certified trainer. Progressive endurance training, on cycle ergometers, was performed three days per week (Table 2). Resistance training was performed two days per week, providing at least 24 hours recovery between sessions.  Participants completed nine isotonic exercises incorporating both singlejoint and multi-joint exercises. Each exercise was performed once per session, with participants completing 8-12 repetitions per exercise, until volitional fatigue. Weight was increased when participants performed &gt;10 repetitions, at the same resistance, during two consecutive lifting sessions.
 
 | Table 2                  | Table 2                  | Table 2                  |
-|--------------------------|--------------------------|--------------------------|
+| ------------------------ | ------------------------ | ------------------------ |
 | Week                     | Duration (min)           | %HRR                     |
 | 1                        | 15 - 20                  | 40 - 50                  |
 | 2                        | 20 -25                   | 40 - 50                  |
@@ -179,7 +179,7 @@ Ginger extract (root)
 
 †Percent Daily Values are based on a 2,000 calorie diet.
 
-**Daily Value (DV) not established.
+\*\*Daily Value (DV) not established.
 
 Other Ingredients: Filtered Water, Natural Colors,
 
@@ -263,7 +263,7 @@ NEX-PL
 
 <!-- image -->
 
-Using a two-way repeated measures ANOVA, significant time*treatment interactions resulted for  muscle mass (p&lt;0.05). 100% of the subjects in the Act supplementing group increased Muscle mass, while 45% of the EX-PL group and 20% of the individuals in the NEX-PL group increased in muscle mass.  Although the decrease in %BF was not significant, 50% of the Ex-Act group saw a decrease (MD 1.8%), 22% in the Ex-PL, 20% in the NEX-PL and no one in the NEX-Act.
+Using a two-way repeated measures ANOVA, significant time\*treatment interactions resulted for  muscle mass (p&lt;0.05). 100% of the subjects in the Act supplementing group increased Muscle mass, while 45% of the EX-PL group and 20% of the individuals in the NEX-PL group increased in muscle mass.  Although the decrease in %BF was not significant, 50% of the Ex-Act group saw a decrease (MD 1.8%), 22% in the Ex-PL, 20% in the NEX-PL and no one in the NEX-Act.
 
 Time (seconds)
 
@@ -299,7 +299,7 @@ PRE
 
 POST
 
-211.33 ‡ 30.22 200.33 ‡ 27.37*
+211.33 ‡ 30.22 200.33 ‡ 27.37\*
 
 <!-- image -->
 
@@ -313,7 +313,7 @@ Triglycerides (mg/dL)
 
 ronh o |
 
-Strength and cardiovascular improvements were significantly  (p&lt;0.05) augmented in both training groups.  However, a significant time*treatment interaction resulted for time to exhaustion during the VO2peak (p=0.046)
+Strength and cardiovascular improvements were significantly  (p&lt;0.05) augmented in both training groups.  However, a significant time\*treatment interaction resulted for time to exhaustion during the VO2peak (p=0.046)
 
 Safety data suggest this thermogenic drink as an effective  method for lowering TC and LDL (main effect for treatment).
 

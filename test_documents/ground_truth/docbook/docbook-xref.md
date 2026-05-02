@@ -33,5 +33,5 @@ Some content here
 ## Supported features by version
 
 | Version | Feat |
-| --- | --- |
-| Free | no |
+| ------- | ---- |
+| Free    | no   |

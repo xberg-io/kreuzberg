@@ -1,14 +1,10 @@
 - Asia
-    - China
-    - Japan
-    - Thailand
+  - China
+  - Japan
+  - Thailand
 - Europe
-    - UK
-    - Germany
-    - Switzerland
-            - Bern
-            - Aargau
-    - Italy
-            - Piedmont
-            - Liguria
+  - UK
+  - Germany
+  - Switzerland - Bern - Aargau
+  - Italy - Piedmont - Liguria
 - Africa

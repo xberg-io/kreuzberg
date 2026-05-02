@@ -61,11 +61,11 @@ await pipeline.ingest_directory("./papers", glob="**/*.pdf")
 
 The package provides two entry points. Choose based on whether you need chunking and embeddings.
 
-| | `DocumentConnector` | `DocumentPipeline` | `DocumentPipeline(embed=False)` |
-|---|---|---|---|
-| Stores | Full documents | Documents + chunks | Documents + chunks |
-| Embeddings | No | Yes (configurable) | No |
-| Indices | BM25 on documents | BM25 + HNSW on chunks | BM25 on chunks |
-| Best for | Keyword search over whole documents | Semantic or hybrid search over chunks | Keyword search over chunks |
+|            | `DocumentConnector`                 | `DocumentPipeline`                    | `DocumentPipeline(embed=False)` |
+| ---------- | ----------------------------------- | ------------------------------------- | ------------------------------- |
+| Stores     | Full documents                      | Documents + chunks                    | Documents + chunks              |
+| Embeddings | No                                  | Yes (configurable)                    | No                              |
+| Indices    | BM25 on documents                   | BM25 + HNSW on chunks                 | BM25 on chunks                  |
+| Best for   | Keyword search over whole documents | Semantic or hybrid search over chunks | Keyword search over chunks      |
 
 For the complete API reference, embedding model options, chunking configuration, and database schema details, see the [kreuzberg-surrealdb readme](https://github.com/kreuzberg-dev/kreuzberg-surrealdb). For general SurrealDB usage, see the [SurrealDB docs](https://surrealdb.com/docs).

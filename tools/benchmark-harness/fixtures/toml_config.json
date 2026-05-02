@@ -1,14 +1,14 @@
 {
-	"document": "../../../test_documents/data_formats/application.toml",
-	"file_type": "toml",
-	"file_size": 4302,
-	"expected_frameworks": ["kreuzberg", "tika"],
-	"metadata": {
-		"description": "Complex application configuration with nested tables",
-		"category": "data"
-	},
-	"ground_truth": {
-		"text_file": "../../../test_documents/ground_truth/toml/toml_config.txt",
-		"source": "vision"
-	}
+  "document": "../../../test_documents/data_formats/application.toml",
+  "file_type": "toml",
+  "file_size": 4302,
+  "expected_frameworks": ["kreuzberg", "tika"],
+  "metadata": {
+    "description": "Complex application configuration with nested tables",
+    "category": "data"
+  },
+  "ground_truth": {
+    "text_file": "../../../test_documents/ground_truth/toml/toml_config.txt",
+    "source": "vision"
+  }
 }

@@ -37,41 +37,41 @@ Unsafe or inappropriate behavior may result in suspension from using the club fo
 ![img-0.jpeg](img-0.jpeg)
 
 To be completed by LRRC staff:
-Date: _______________     Staff initials: ___________
+Date: **\*\***\_\_\_**\*\*** Staff initials: \***\*\_\_\_\*\***
 
 # PARTICIPANT'S INFORMATION
 
-Name: _____________________________________________________________ Date of birth: _______________ Gender: Male ☐ Female ☐
+Name: **\*\***\*\***\*\***\*\***\*\***\*\***\*\***\_**\*\***\*\***\*\***\*\***\*\***\*\***\*\*** Date of birth: **\*\***\_\_\_**\*\*** Gender: Male ☐ Female ☐
 
-Child's cell number (if applicable): _____________________________________________________________
+Child's cell number (if applicable): **\*\***\*\***\*\***\*\***\*\***\*\***\*\***\_**\*\***\*\***\*\***\*\***\*\***\*\***\*\***
 
-Mother's name: _____________________________________________________________ Father's name: _____________________________________________________________
+Mother's name: **\*\***\*\***\*\***\*\***\*\***\*\***\*\***\_**\*\***\*\***\*\***\*\***\*\***\*\***\*\*** Father's name: **\*\***\*\***\*\***\*\***\*\***\*\***\*\***\_**\*\***\*\***\*\***\*\***\*\***\*\***\*\***
 
-Street address: _____________________________________________________________ City: _______________ State: _______________ Zip: _______________
+Street address: **\*\***\*\***\*\***\*\***\*\***\*\***\*\***\_**\*\***\*\***\*\***\*\***\*\***\*\***\*\*** City: **\*\***\_\_\_**\*\*** State: **\*\***\_\_\_**\*\*** Zip: **\*\***\_\_\_**\*\***
 
-Mother's phone: _____________________________________________________________ Father's phone: _____________________________________________________________
+Mother's phone: **\*\***\*\***\*\***\*\***\*\***\*\***\*\***\_**\*\***\*\***\*\***\*\***\*\***\*\***\*\*** Father's phone: **\*\***\*\***\*\***\*\***\*\***\*\***\*\***\_**\*\***\*\***\*\***\*\***\*\***\*\***\*\***
 
-Email: _____________________________________________________________
+Email: **\*\***\*\***\*\***\*\***\*\***\*\***\*\***\_**\*\***\*\***\*\***\*\***\*\***\*\***\*\***
 
 # MEDICAL INFORMATION
 
-Person to contact in case of emergency if parents cannot be reached: _____________________________________________________________
+Person to contact in case of emergency if parents cannot be reached: **\*\***\*\***\*\***\*\***\*\***\*\***\*\***\_**\*\***\*\***\*\***\*\***\*\***\*\***\*\***
 
-Phone(s): _____________________________________________________________ Relationship to child: _____________________________________________________________
+Phone(s): **\*\***\*\***\*\***\*\***\*\***\*\***\*\***\_**\*\***\*\***\*\***\*\***\*\***\*\***\*\*** Relationship to child: **\*\***\*\***\*\***\*\***\*\***\*\***\*\***\_**\*\***\*\***\*\***\*\***\*\***\*\***\*\***
 
-Doctor's name: _____________________________________________________________ Phone number: _____________________________________________________________
+Doctor's name: **\*\***\*\***\*\***\*\***\*\***\*\***\*\***\_**\*\***\*\***\*\***\*\***\*\***\*\***\*\*** Phone number: **\*\***\*\***\*\***\*\***\*\***\*\***\*\***\_**\*\***\*\***\*\***\*\***\*\***\*\***\*\***
 
-Emergency room of choice: _____________________________________________________________
+Emergency room of choice: **\*\***\*\***\*\***\*\***\*\***\*\***\*\***\_**\*\***\*\***\*\***\*\***\*\***\*\***\*\***
 
-Allergies, medications, special conditions including but not limited to asthma, diabetes, sun sensitivity, seizures or fainting spells (please provide specifics): _____________________________________________________________
+Allergies, medications, special conditions including but not limited to asthma, diabetes, sun sensitivity, seizures or fainting spells (please provide specifics): **\*\***\*\***\*\***\*\***\*\***\*\***\*\***\_**\*\***\*\***\*\***\*\***\*\***\*\***\*\***
 
 # PAYMENT INFORMATION
 
-Person responsible for payment: _____________________________________________________________
+Person responsible for payment: **\*\***\*\***\*\***\*\***\*\***\*\***\*\***\_**\*\***\*\***\*\***\*\***\*\***\*\***\*\***
 
-Responsible party's address: _____________________________________________________________ City: _______________ State: _______________ Zip: _______________
+Responsible party's address: **\*\***\*\***\*\***\*\***\*\***\*\***\*\***\_**\*\***\*\***\*\***\*\***\*\***\*\***\*\*** City: **\*\***\_\_\_**\*\*** State: **\*\***\_\_\_**\*\*** Zip: **\*\***\_\_\_**\*\***
 
-Day phone: _______________ Evening phone: _______________ Email address: _____________________________________________________________
+Day phone: **\*\***\_\_\_**\*\*** Evening phone: **\*\***\_\_\_**\*\*** Email address: **\*\***\*\***\*\***\*\***\*\***\*\***\*\***\_**\*\***\*\***\*\***\*\***\*\***\*\***\*\***
 
 Method of Payment (Indicate your choice by completing the appropriate information below):
 
@@ -79,13 +79,13 @@ For security reasons, your payment information will be encrypted by our computer
 
 LRRC/LRAC club account option (for members only/account must be current)
 
-Name of member to be charged: _____________________________________________________________
+Name of member to be charged: **\*\***\*\***\*\***\*\***\*\***\*\***\*\***\_**\*\***\*\***\*\***\*\***\*\***\*\***\*\***
 
 Credit/debit card option (Visa, MasterCard, Discover, American Express)
 
-Name as shown on card: _____________________________________________________________
+Name as shown on card: **\*\***\*\***\*\***\*\***\*\***\*\***\*\***\_**\*\***\*\***\*\***\*\***\*\***\*\***\*\***
 
-Credit card number: _____________________________________________________________ Expiration date: _______________ CCV number: _______________
+Credit card number: **\*\***\*\***\*\***\*\***\*\***\*\***\*\***\_**\*\***\*\***\*\***\*\***\*\***\*\***\*\*** Expiration date: **\*\***\_\_\_**\*\*** CCV number: **\*\***\_\_\_**\*\***
 
 NOW SIGN THE WAIVER
 ON THE BACK →
@@ -113,10 +113,10 @@ Text and Email Communication - By opting in to receiving text and email messages
 - I authorize the LRAC to draft the Child Consent fee;
 - I understand the Rules and Regulations explained herein and my child agrees to abide by them.
 
-Print Parent's/Guardian's Name: ________________________________
+Print Parent's/Guardian's Name: **\*\***\*\***\*\***\_\_\_\_**\*\***\*\***\*\***
 
-Parent's/Guardian's Signature: ________________________________ Date: _______________
+Parent's/Guardian's Signature: **\*\***\*\***\*\***\_\_\_\_**\*\***\*\***\*\*** Date: **\*\***\_\_\_**\*\***
 
-Print Child's Name: ________________________________
+Print Child's Name: **\*\***\*\***\*\***\_\_\_\_**\*\***\*\***\*\***
 
-Child's Signature: ________________________________ Date: _______________
+Child's Signature: **\*\***\*\***\*\***\_\_\_\_**\*\***\*\***\*\*** Date: **\*\***\_\_\_**\*\***

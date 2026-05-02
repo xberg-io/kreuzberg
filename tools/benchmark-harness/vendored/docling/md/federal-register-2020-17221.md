@@ -324,9 +324,9 @@ The FAA, through an operational evaluation, will assess the impact of the propos
 
 ## ESTIMATED COSTS
 
-| Action                                                                                                                                                 | Labor cost                                                                                                              | Parts cost                                                                                | Cost per product                                                                       | Cost on U.S. operators   |
-|--------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------|--------------------------|
-| FCC OPS installation and verification .. AFM revisions ....................................... MDS installation and verification, INOP marker removal. | 1 work-hour × $85 per hour = $85 ...... 1 work-hour × $85 per hour = $85 ...... 1 work-hour × $85 per hour = $85 ...... | $0 .......................... $0 .......................... $0 .......................... | $85 ........................ $85 ........................ $85 ........................ | $6,205. $6,205. $6,205.  |
+| Action                                                                                                                                                 | Labor cost                                                                                                              | Parts cost                                                                                | Cost per product                                                                       | Cost on U.S. operators  |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | ----------------------- |
+| FCC OPS installation and verification .. AFM revisions ....................................... MDS installation and verification, INOP marker removal. | 1 work-hour × $85 per hour = $85 ...... 1 work-hour × $85 per hour = $85 ...... 1 work-hour × $85 per hour = $85 ...... | $0 .......................... $0 .......................... $0 .......................... | $85 ........................ $85 ........................ $85 ........................ | $6,205. $6,205. $6,205. |
 
 VerDate Sep&lt;11&gt;2014
 
@@ -364,10 +364,10 @@ jbell on DSKJLSW7X2PROD with PROPOSALS
 
 ## ESTIMATED COSTS-Continued
 
-| Action                                            | Labor cost                                         | Parts cost                    | Cost per product           | Cost on U.S. operators   |
-|---------------------------------------------------|----------------------------------------------------|-------------------------------|----------------------------|--------------------------|
-| Stabilizer wiring change ........................ | Up to 79 work-hours × $85 per hour = Up to $6,715. | Up to $3,790 .........        | Up to $10,505 .......      | Up to $766,865.          |
-| AOA sensor system test .......................    | 40 work-hours × $85 per hour = $3,400.             | $0 .......................... | $3,400 ................... | $248,200.                |
+| Action                                            | Labor cost                                         | Parts cost                    | Cost per product           | Cost on U.S. operators |
+| ------------------------------------------------- | -------------------------------------------------- | ----------------------------- | -------------------------- | ---------------------- |
+| Stabilizer wiring change ........................ | Up to 79 work-hours × $85 per hour = Up to $6,715. | Up to $3,790 .........        | Up to $10,505 .......      | Up to $766,865.        |
+| AOA sensor system test .......................    | 40 work-hours × $85 per hour = $3,400.             | $0 .......................... | $3,400 ................... | $248,200.              |
 
 The FAA has received no definitive data that would enable the agency to provide cost estimates for the operational readiness flight specified in this proposed AD.
 
@@ -525,7 +525,7 @@ Notes:
 PFD and HUD (as installed).
 
 3. If the AOA indicator option is installed, the stick shaker indicator may
-2. be unreliable. AOA digital readout, analog needle, and approach reference band may be unreliable if the airspeed unreliable condition is
+4. be unreliable. AOA digital readout, analog needle, and approach reference band may be unreliable if the airspeed unreliable condition is
 
 caused by erroneous AOA.
 

@@ -1,21 +1,21 @@
 {
-	"id": "email_eml_html_body",
-	"category": "email",
-	"description": "EML with HTML body content.",
-	"input": {
-		"path": "email/html_only.eml",
-		"media_type": "message/rfc822"
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "message/rfc822"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 10
-		}
-	]
+  "id": "email_eml_html_body",
+  "category": "email",
+  "description": "EML with HTML body content.",
+  "input": {
+    "path": "email/html_only.eml",
+    "media_type": "message/rfc822"
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "message/rfc822"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 10
+    }
+  ]
 }

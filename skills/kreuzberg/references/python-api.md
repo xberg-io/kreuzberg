@@ -210,25 +210,25 @@ Main extraction configuration for document processing. All attributes are option
 
 **Attributes:**
 
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `use_cache` | bool | True | Enable caching of extraction results to improve performance on repeated extractions |
-| `enable_quality_processing` | bool | True | Enable quality post-processing to clean and normalize extracted text |
-| `ocr` | OcrConfig \| None | None | OCR configuration for extracting text from images. None = OCR disabled |
-| `force_ocr` | bool | False | Force OCR processing even for searchable PDFs that contain extractable text |
-| `chunking` | ChunkingConfig \| None | None | Text chunking configuration for dividing content into manageable chunks. None = disabled |
-| `images` | ImageExtractionConfig \| None | None | Image extraction configuration for extracting images FROM documents. None = no extraction |
-| `pdf_options` | PdfConfig \| None | None | PDF-specific options like password handling and metadata extraction |
-| `token_reduction` | TokenReductionConfig \| None | None | Token reduction configuration for reducing token count in extracted content |
-| `language_detection` | LanguageDetectionConfig \| None | None | Language detection configuration for identifying document language(s) |
-| `keywords` | KeywordConfig \| None | None | Keyword extraction configuration for identifying important terms and phrases |
-| `postprocessor` | PostProcessorConfig \| None | None | Post-processor configuration for custom text processing |
-| `max_concurrent_extractions` | int \| None | num_cpus * 2 | Maximum concurrent extractions in batch operations |
-| `html_options` | HtmlConversionOptions \| None | None | HTML conversion options for converting documents to markdown |
-| `pages` | PageConfig \| None | None | Page extraction configuration for tracking page boundaries |
-| `security_limits` | dict[str, int] \| None | None | Security limits configuration |
-| `result_format` | str | "unified" | Result format: "unified" or "element_based" |
-| `output_format` | str | "plain" | Output content format: "plain", "markdown", "djot", or "html" |
+| Field                        | Type                            | Default       | Description                                                                               |
+| ---------------------------- | ------------------------------- | ------------- | ----------------------------------------------------------------------------------------- |
+| `use_cache`                  | bool                            | True          | Enable caching of extraction results to improve performance on repeated extractions       |
+| `enable_quality_processing`  | bool                            | True          | Enable quality post-processing to clean and normalize extracted text                      |
+| `ocr`                        | OcrConfig \| None               | None          | OCR configuration for extracting text from images. None = OCR disabled                    |
+| `force_ocr`                  | bool                            | False         | Force OCR processing even for searchable PDFs that contain extractable text               |
+| `chunking`                   | ChunkingConfig \| None          | None          | Text chunking configuration for dividing content into manageable chunks. None = disabled  |
+| `images`                     | ImageExtractionConfig \| None   | None          | Image extraction configuration for extracting images FROM documents. None = no extraction |
+| `pdf_options`                | PdfConfig \| None               | None          | PDF-specific options like password handling and metadata extraction                       |
+| `token_reduction`            | TokenReductionConfig \| None    | None          | Token reduction configuration for reducing token count in extracted content               |
+| `language_detection`         | LanguageDetectionConfig \| None | None          | Language detection configuration for identifying document language(s)                     |
+| `keywords`                   | KeywordConfig \| None           | None          | Keyword extraction configuration for identifying important terms and phrases              |
+| `postprocessor`              | PostProcessorConfig \| None     | None          | Post-processor configuration for custom text processing                                   |
+| `max_concurrent_extractions` | int \| None                     | num_cpus \* 2 | Maximum concurrent extractions in batch operations                                        |
+| `html_options`               | HtmlConversionOptions \| None   | None          | HTML conversion options for converting documents to markdown                              |
+| `pages`                      | PageConfig \| None              | None          | Page extraction configuration for tracking page boundaries                                |
+| `security_limits`            | dict[str, int] \| None          | None          | Security limits configuration                                                             |
+| `result_format`              | str                             | "unified"     | Result format: "unified" or "element_based"                                               |
+| `output_format`              | str                             | "plain"       | Output content format: "plain", "markdown", "djot", or "html"                             |
 
 **Example:**
 
@@ -274,11 +274,11 @@ OCR configuration for extracting text from images.
 
 **Attributes:**
 
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `backend` | str | "tesseract" | OCR backend: "tesseract", "easyocr", or "paddleocr" |
-| `language` | str | "eng" | Language code (ISO 639-3 three-letter: "eng", "deu", "fra" or ISO 639-1 two-letter: "en", "de", "fr") |
-| `tesseract_config` | TesseractConfig \| None | None | Tesseract-specific configuration (only used when backend="tesseract") |
+| Field              | Type                    | Default     | Description                                                                                           |
+| ------------------ | ----------------------- | ----------- | ----------------------------------------------------------------------------------------------------- |
+| `backend`          | str                     | "tesseract" | OCR backend: "tesseract", "easyocr", or "paddleocr"                                                   |
+| `language`         | str                     | "eng"       | Language code (ISO 639-3 three-letter: "eng", "deu", "fra" or ISO 639-1 two-letter: "en", "de", "fr") |
+| `tesseract_config` | TesseractConfig \| None | None        | Tesseract-specific configuration (only used when backend="tesseract")                                 |
 
 **Example:**
 
@@ -301,29 +301,29 @@ Detailed Tesseract OCR configuration for advanced tuning. Fine-tune Tesseract OC
 
 **Attributes:**
 
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `language` | str | "eng" | OCR language (ISO 639-3 three-letter code) |
-| `psm` | int | 3 | Page Segmentation Mode: 0 (detection only), 3 (auto), 6 (uniform block), 11 (sparse text) |
-| `output_format` | str | "markdown" | Output format for OCR results |
-| `oem` | int | 3 | OCR Engine Mode: 0 (legacy), 1 (LSTM), 2 (both), 3 (auto) |
-| `min_confidence` | float | 0.0 | Minimum confidence threshold (0.0-1.0) for accepting OCR results |
-| `preprocessing` | ImagePreprocessingConfig \| None | None | Image preprocessing configuration before OCR |
-| `enable_table_detection` | bool | True | Enable automatic table detection and extraction |
-| `table_min_confidence` | float | 0.0 | Minimum confidence for table detection (0.0-1.0) |
-| `table_column_threshold` | int | 50 | Minimum pixel width between columns |
-| `table_row_threshold_ratio` | float | 0.5 | Minimum row height ratio |
-| `use_cache` | bool | True | Cache OCR results for improved performance |
-| `classify_use_pre_adapted_templates` | bool | True | Use pre-adapted character templates |
-| `language_model_ngram_on` | bool | False | Enable language model n-gram processing |
-| `tessedit_dont_blkrej_good_wds` | bool | True | Don't block-reject good words |
-| `tessedit_dont_rowrej_good_wds` | bool | True | Don't row-reject good words |
-| `tessedit_enable_dict_correction` | bool | True | Enable dictionary-based spelling correction |
-| `tessedit_char_whitelist` | str | "" | Whitelist of characters to recognize (empty = all) |
-| `tessedit_char_blacklist` | str | "" | Blacklist of characters to ignore |
-| `tessedit_use_primary_params_model` | bool | True | Use primary parameters model |
-| `textord_space_size_is_variable` | bool | True | Allow variable space sizes |
-| `thresholding_method` | bool | False | Thresholding method for binarization |
+| Field                                | Type                             | Default    | Description                                                                               |
+| ------------------------------------ | -------------------------------- | ---------- | ----------------------------------------------------------------------------------------- |
+| `language`                           | str                              | "eng"      | OCR language (ISO 639-3 three-letter code)                                                |
+| `psm`                                | int                              | 3          | Page Segmentation Mode: 0 (detection only), 3 (auto), 6 (uniform block), 11 (sparse text) |
+| `output_format`                      | str                              | "markdown" | Output format for OCR results                                                             |
+| `oem`                                | int                              | 3          | OCR Engine Mode: 0 (legacy), 1 (LSTM), 2 (both), 3 (auto)                                 |
+| `min_confidence`                     | float                            | 0.0        | Minimum confidence threshold (0.0-1.0) for accepting OCR results                          |
+| `preprocessing`                      | ImagePreprocessingConfig \| None | None       | Image preprocessing configuration before OCR                                              |
+| `enable_table_detection`             | bool                             | True       | Enable automatic table detection and extraction                                           |
+| `table_min_confidence`               | float                            | 0.0        | Minimum confidence for table detection (0.0-1.0)                                          |
+| `table_column_threshold`             | int                              | 50         | Minimum pixel width between columns                                                       |
+| `table_row_threshold_ratio`          | float                            | 0.5        | Minimum row height ratio                                                                  |
+| `use_cache`                          | bool                             | True       | Cache OCR results for improved performance                                                |
+| `classify_use_pre_adapted_templates` | bool                             | True       | Use pre-adapted character templates                                                       |
+| `language_model_ngram_on`            | bool                             | False      | Enable language model n-gram processing                                                   |
+| `tessedit_dont_blkrej_good_wds`      | bool                             | True       | Don't block-reject good words                                                             |
+| `tessedit_dont_rowrej_good_wds`      | bool                             | True       | Don't row-reject good words                                                               |
+| `tessedit_enable_dict_correction`    | bool                             | True       | Enable dictionary-based spelling correction                                               |
+| `tessedit_char_whitelist`            | str                              | ""         | Whitelist of characters to recognize (empty = all)                                        |
+| `tessedit_char_blacklist`            | str                              | ""         | Blacklist of characters to ignore                                                         |
+| `tessedit_use_primary_params_model`  | bool                             | True       | Use primary parameters model                                                              |
+| `textord_space_size_is_variable`     | bool                             | True       | Allow variable space sizes                                                                |
+| `thresholding_method`                | bool                             | False      | Thresholding method for binarization                                                      |
 
 **Example:**
 
@@ -358,12 +358,12 @@ Text chunking configuration for dividing content into chunks. Chunking is useful
 
 **Attributes:**
 
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `max_chars` | int | 1000 | Maximum number of characters per chunk. Chunks larger than this will be split intelligently at sentence/paragraph boundaries |
-| `max_overlap` | int | 200 | Overlap between consecutive chunks in characters. Creates context bridges between chunks for smoother processing |
-| `embedding` | EmbeddingConfig \| None | None | Configuration for generating embeddings for each chunk using ONNX models. None = no embeddings |
-| `preset` | str \| None | None | Use a preset chunking configuration (overrides individual settings if provided). Use list_embedding_presets() to see available presets |
+| Field         | Type                    | Default | Description                                                                                                                            |
+| ------------- | ----------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `max_chars`   | int                     | 1000    | Maximum number of characters per chunk. Chunks larger than this will be split intelligently at sentence/paragraph boundaries           |
+| `max_overlap` | int                     | 200     | Overlap between consecutive chunks in characters. Creates context bridges between chunks for smoother processing                       |
+| `embedding`   | EmbeddingConfig \| None | None    | Configuration for generating embeddings for each chunk using ONNX models. None = no embeddings                                         |
+| `preset`      | str \| None             | None    | Use a preset chunking configuration (overrides individual settings if provided). Use list_embedding_presets() to see available presets |
 
 **IMPORTANT:** The fields are `max_chars` and `max_overlap` (NOT `max_characters` or `overlap`).
 
@@ -396,12 +396,12 @@ PDF-specific extraction configuration.
 
 **Attributes:**
 
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `extract_images` | bool | False | Extract images from PDF documents |
-| `passwords` | list[str] \| None | None | List of passwords to try when opening encrypted PDFs. Try each password in order until one succeeds |
-| `extract_metadata` | bool | True | Extract PDF metadata (title, author, creation date, etc.) |
-| `hierarchy` | HierarchyConfig \| None | None | Document hierarchy detection configuration. None = no hierarchy detection |
+| Field              | Type                    | Default | Description                                                                                         |
+| ------------------ | ----------------------- | ------- | --------------------------------------------------------------------------------------------------- |
+| `extract_images`   | bool                    | False   | Extract images from PDF documents                                                                   |
+| `passwords`        | list[str] \| None       | None    | List of passwords to try when opening encrypted PDFs. Try each password in order until one succeeds |
+| `extract_metadata` | bool                    | True    | Extract PDF metadata (title, author, creation date, etc.)                                           |
+| `hierarchy`        | HierarchyConfig \| None | None    | Document hierarchy detection configuration. None = no hierarchy detection                           |
 
 **Example:**
 
@@ -427,14 +427,14 @@ Configuration for extracting images FROM documents. This is NOT for preprocessin
 
 **Attributes:**
 
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `extract_images` | bool | True | Enable image extraction from documents |
-| `target_dpi` | int | 300 | Target DPI for image normalization. Images are resampled to this DPI for consistency |
-| `max_image_dimension` | int | 4096 | Maximum width or height for extracted images. Larger images are downscaled to fit |
-| `auto_adjust_dpi` | bool | True | Automatically adjust DPI based on image content quality |
-| `min_dpi` | int | 72 | Minimum DPI threshold. Images with lower DPI are upscaled |
-| `max_dpi` | int | 600 | Maximum DPI threshold. Images with higher DPI are downscaled |
+| Field                 | Type | Default | Description                                                                          |
+| --------------------- | ---- | ------- | ------------------------------------------------------------------------------------ |
+| `extract_images`      | bool | True    | Enable image extraction from documents                                               |
+| `target_dpi`          | int  | 300     | Target DPI for image normalization. Images are resampled to this DPI for consistency |
+| `max_image_dimension` | int  | 4096    | Maximum width or height for extracted images. Larger images are downscaled to fit    |
+| `auto_adjust_dpi`     | bool | True    | Automatically adjust DPI based on image content quality                              |
+| `min_dpi`             | int  | 72      | Minimum DPI threshold. Images with lower DPI are upscaled                            |
+| `max_dpi`             | int  | 600     | Maximum DPI threshold. Images with higher DPI are downscaled                         |
 
 **Example:**
 
@@ -456,13 +456,13 @@ Embedding generation configuration for text chunks. Configures embedding generat
 
 **Attributes:**
 
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `model` | EmbeddingModelType | Preset "balanced" | The embedding model to use (preset, fastembed, or custom) |
-| `normalize` | bool | True | Whether to normalize embedding vectors to unit length (recommended for cosine similarity) |
-| `batch_size` | int | 32 | Number of texts to process simultaneously. Higher values use more memory but may be faster |
-| `show_download_progress` | bool | False | Display progress during embedding model download |
-| `cache_dir` | str \| None | None | Custom directory for caching downloaded models (defaults to ~/.cache/kreuzberg/embeddings/) |
+| Field                    | Type               | Default           | Description                                                                                 |
+| ------------------------ | ------------------ | ----------------- | ------------------------------------------------------------------------------------------- |
+| `model`                  | EmbeddingModelType | Preset "balanced" | The embedding model to use (preset, fastembed, or custom)                                   |
+| `normalize`              | bool               | True              | Whether to normalize embedding vectors to unit length (recommended for cosine similarity)   |
+| `batch_size`             | int                | 32                | Number of texts to process simultaneously. Higher values use more memory but may be faster  |
+| `show_download_progress` | bool               | False             | Display progress during embedding model download                                            |
+| `cache_dir`              | str \| None        | None              | Custom directory for caching downloaded models (defaults to ~/.cache/kreuzberg/embeddings/) |
 
 **Example:**
 
@@ -513,7 +513,7 @@ Use a specific fastembed model by name.
 def custom(model_id: str, dimensions: int) -> EmbeddingModelType
 ```
 
-Use a custom ONNX model from HuggingFace (e.g., sentence-transformers/*).
+Use a custom ONNX model from HuggingFace (e.g., sentence-transformers/\*).
 
 **Example:**
 
@@ -543,10 +543,10 @@ Configuration for reducing token count in extracted content. Reduces token count
 
 **Attributes:**
 
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `mode` | str | "off" | Token reduction mode: "off", "light", "moderate", "aggressive", or "maximum" |
-| `preserve_important_words` | bool | True | Preserve capitalized words, technical terms, and proper nouns even in aggressive reduction modes |
+| Field                      | Type | Default | Description                                                                                      |
+| -------------------------- | ---- | ------- | ------------------------------------------------------------------------------------------------ |
+| `mode`                     | str  | "off"   | Token reduction mode: "off", "light", "moderate", "aggressive", or "maximum"                     |
+| `preserve_important_words` | bool | True    | Preserve capitalized words, technical terms, and proper nouns even in aggressive reduction modes |
 
 **Example:**
 
@@ -575,11 +575,11 @@ Configuration for detecting document language(s).
 
 **Attributes:**
 
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `enabled` | bool | True | Enable language detection for extracted content |
-| `min_confidence` | float | 0.8 | Minimum confidence threshold (0.0-1.0) for language detection |
-| `detect_multiple` | bool | False | Detect multiple languages in the document. When False, only the most confident language is returned |
+| Field             | Type  | Default | Description                                                                                         |
+| ----------------- | ----- | ------- | --------------------------------------------------------------------------------------------------- |
+| `enabled`         | bool  | True    | Enable language detection for extracted content                                                     |
+| `min_confidence`  | float | 0.8     | Minimum confidence threshold (0.0-1.0) for language detection                                       |
+| `detect_multiple` | bool  | False   | Detect multiple languages in the document. When False, only the most confident language is returned |
 
 **Example:**
 
@@ -605,15 +605,15 @@ Keyword extraction configuration.
 
 **Attributes:**
 
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `algorithm` | KeywordAlgorithm | - | Keyword extraction algorithm (KeywordAlgorithm.Yake or KeywordAlgorithm.Rake) |
-| `max_keywords` | int | 10 | Maximum number of keywords to extract |
-| `min_score` | float | 0.0 | Minimum score threshold |
-| `ngram_range` | tuple[int, int] | (1, 3) | N-gram range for keyword extraction |
-| `language` | str \| None | "en" | Optional language hint |
-| `yake_params` | YakeParams \| None | None | YAKE-specific tuning parameters |
-| `rake_params` | RakeParams \| None | None | RAKE-specific tuning parameters |
+| Field          | Type               | Default | Description                                                                   |
+| -------------- | ------------------ | ------- | ----------------------------------------------------------------------------- |
+| `algorithm`    | KeywordAlgorithm   | -       | Keyword extraction algorithm (KeywordAlgorithm.Yake or KeywordAlgorithm.Rake) |
+| `max_keywords` | int                | 10      | Maximum number of keywords to extract                                         |
+| `min_score`    | float              | 0.0     | Minimum score threshold                                                       |
+| `ngram_range`  | tuple[int, int]    | (1, 3)  | N-gram range for keyword extraction                                           |
+| `language`     | str \| None        | "en"    | Optional language hint                                                        |
+| `yake_params`  | YakeParams \| None | None    | YAKE-specific tuning parameters                                               |
+| `rake_params`  | RakeParams \| None | None    | RAKE-specific tuning parameters                                               |
 
 ### PageConfig
 
@@ -621,11 +621,11 @@ Page extraction and tracking configuration.
 
 **Attributes:**
 
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `extract_pages` | bool | False | Enable page tracking and per-page extraction |
-| `insert_page_markers` | bool | False | Insert page markers into content |
-| `marker_format` | str | "\\n\\n<!-- PAGE {page_num} -->\\n\\n" | Marker template containing {page_num} |
+| Field                 | Type | Default                                | Description                                  |
+| --------------------- | ---- | -------------------------------------- | -------------------------------------------- |
+| `extract_pages`       | bool | False                                  | Enable page tracking and per-page extraction |
+| `insert_page_markers` | bool | False                                  | Insert page markers into content             |
+| `marker_format`       | str  | "\\n\\n<!-- PAGE {page_num} -->\\n\\n" | Marker template containing {page_num}        |
 
 **Example:**
 
@@ -641,11 +641,11 @@ Configuration for post-processors in the extraction pipeline.
 
 **Attributes:**
 
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `enabled` | bool | True | Enable post-processors in the extraction pipeline |
-| `enabled_processors` | list[str] \| None | None | Whitelist of processor names to run. None = run all enabled |
-| `disabled_processors` | list[str] \| None | None | Blacklist of processor names to skip. None = none disabled |
+| Field                 | Type              | Default | Description                                                 |
+| --------------------- | ----------------- | ------- | ----------------------------------------------------------- |
+| `enabled`             | bool              | True    | Enable post-processors in the extraction pipeline           |
+| `enabled_processors`  | list[str] \| None | None    | Whitelist of processor names to run. None = run all enabled |
+| `disabled_processors` | list[str] \| None | None    | Blacklist of processor names to skip. None = none disabled  |
 
 **Example:**
 
@@ -681,15 +681,15 @@ Configuration for preprocessing images before OCR. This is NOT for extracting im
 
 **Attributes:**
 
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `target_dpi` | int | 300 | Target DPI for image normalization before OCR |
-| `auto_rotate` | bool | True | Automatically detect and correct image rotation |
-| `deskew` | bool | True | Correct skewed images to improve OCR accuracy |
-| `denoise` | bool | False | Apply denoising filters to reduce noise in images |
-| `contrast_enhance` | bool | False | Enhance contrast to improve text readability |
-| `binarization_method` | str | "otsu" | Method for converting images to black and white |
-| `invert_colors` | bool | False | Invert colors (white text on black background) |
+| Field                 | Type | Default | Description                                       |
+| --------------------- | ---- | ------- | ------------------------------------------------- |
+| `target_dpi`          | int  | 300     | Target DPI for image normalization before OCR     |
+| `auto_rotate`         | bool | True    | Automatically detect and correct image rotation   |
+| `deskew`              | bool | True    | Correct skewed images to improve OCR accuracy     |
+| `denoise`             | bool | False   | Apply denoising filters to reduce noise in images |
+| `contrast_enhance`    | bool | False   | Enhance contrast to improve text readability      |
+| `binarization_method` | str  | "otsu"  | Method for converting images to black and white   |
+| `invert_colors`       | bool | False   | Invert colors (white text on black background)    |
 
 **Example:**
 
@@ -717,22 +717,22 @@ Result object returned by extraction functions.
 
 **Attributes:**
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `content` | str | Main extracted text content in the specified output_format |
-| `mime_type` | str | MIME type of the processed document |
-| `metadata` | Metadata | Extracted document metadata (title, author, created_at, format_type, etc.) |
-| `tables` | list[ExtractedTable] | Extracted tables from the document |
-| `detected_languages` | list[str] \| None | Detected language codes (e.g., ["en", "de"]) if language detection is enabled |
-| `chunks` | list[Chunk] \| None | Text chunks if chunking is enabled (each chunk has content, embedding, metadata) |
-| `images` | list[ExtractedImage] \| None | Extracted images if image extraction is enabled |
-| `pages` | list[PageContent] \| None | Per-page content and metadata if page extraction is enabled |
-| `elements` | list[Element] \| None | Semantic elements if result_format="element_based" |
-| `output_format` | str \| None | Format of the content field (plain, markdown, djot, html) |
-| `result_format` | str \| None | Result format used (unified or element_based) |
-| `extracted_keywords` | list[ExtractedKeyword] \| None | Extracted keywords with relevance scores if keyword extraction enabled |
-| `quality_score` | float \| None | Overall quality score for the extraction result (0.0-1.0) |
-| `processing_warnings` | list[ProcessingWarning] | Non-fatal warnings encountered during extraction pipeline |
+| Field                 | Type                           | Description                                                                      |
+| --------------------- | ------------------------------ | -------------------------------------------------------------------------------- |
+| `content`             | str                            | Main extracted text content in the specified output_format                       |
+| `mime_type`           | str                            | MIME type of the processed document                                              |
+| `metadata`            | Metadata                       | Extracted document metadata (title, author, created_at, format_type, etc.)       |
+| `tables`              | list[ExtractedTable]           | Extracted tables from the document                                               |
+| `detected_languages`  | list[str] \| None              | Detected language codes (e.g., ["en", "de"]) if language detection is enabled    |
+| `chunks`              | list[Chunk] \| None            | Text chunks if chunking is enabled (each chunk has content, embedding, metadata) |
+| `images`              | list[ExtractedImage] \| None   | Extracted images if image extraction is enabled                                  |
+| `pages`               | list[PageContent] \| None      | Per-page content and metadata if page extraction is enabled                      |
+| `elements`            | list[Element] \| None          | Semantic elements if result_format="element_based"                               |
+| `output_format`       | str \| None                    | Format of the content field (plain, markdown, djot, html)                        |
+| `result_format`       | str \| None                    | Result format used (unified or element_based)                                    |
+| `extracted_keywords`  | list[ExtractedKeyword] \| None | Extracted keywords with relevance scores if keyword extraction enabled           |
+| `quality_score`       | float \| None                  | Overall quality score for the extraction result (0.0-1.0)                        |
+| `processing_warnings` | list[ProcessingWarning]        | Non-fatal warnings encountered during extraction pipeline                        |
 
 **Methods:**
 

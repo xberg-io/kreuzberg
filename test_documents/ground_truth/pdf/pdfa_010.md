@@ -11,6 +11,7 @@ Consuming Celsius prior to exercising improves body composition and lipid profil
 Overweight and obese women drinking Celsius prior to moderate exercise resulted in increased fat loss, increased muscle mass, increased endurance performance with significant improvements to blood lipid profiles when compared to exercise alone.
 
 Participants' results included:
+
 - 46% greater fat loss
 - 27% greater muscle mass
 - 35% greater endurance performance.
@@ -84,18 +85,18 @@ Weight loss supplements are widely available and superfluously marketed, while l
 
 This study implemented a randomized, double-blind placebo-controlled design examining the combined effects of a 10-week pre-exercise intervention with a low-calorie energy and thermogenic beverage (Celsius®, Celsius, Inc. Delray Beach, FL) and five days per week of combined aerobic and resistance exercise. Participants were randomized into one of four groups: active energy drink + exercise (EX-Act), energy drink only (NEX-Act), placebo + exercise (EX-PL) or placebo only (NEX-PL), and consumed their respective drink one time per day, either alone or in combination with exercise. Participants consumed their respective drink ad libitum on the other two days per week. Body composition was assessed using a four-compartment model (4) at Baseline and after 12 weeks of exercise and supplementation. Cardiovascular and strength testing were conducted within 24 hours of baseline and post-testing, and blood safety measures were also assessed after a 12-h fast.
 
-|  METHODS  |   |   |   |   |
-| --- | --- | --- | --- | --- |
-|  GROUP | Age (yrs) | Height (cm) | Body Mass (kg) | % BF (%)  |
-|  EX-Act |  |  |  |   |
-|  n=6 | 31.17 ± 8.23 | 164.22 ± 11.10 | 78.60 ± 9.54 | 39.59 ± 2.78  |
-|  EX-PL |  |  |  |   |
-|  n=9 | 23.56 ± 7.42 | 163.37 ± 4.64 | 73.06 ± 10.40 | 38.49 ± 3.40  |
-|  NEX-Act |  |  |  |   |
-|  n=7 | 27.86 ± 9.21 | 163.47 ± 4.31 | 68.62 ± 12.90 | 37.56 ± 2.56  |
-|  NEX-PL |  |  |  |   |
-|  n=5 | 28.40 ± 10.16 | 169.26 ± 13.12 | 79.25 ± 11.68 | 36.22 ± 1.52  |
-|  N=27 | 27.26 ± 8.60 | 164.67 ± 8.13 | 74.29 ± 11.33 | 38.07 ± 2.87  |
+| METHODS |               |                |                |              |
+| ------- | ------------- | -------------- | -------------- | ------------ |
+| GROUP   | Age (yrs)     | Height (cm)    | Body Mass (kg) | % BF (%)     |
+| EX-Act  |               |                |                |              |
+| n=6     | 31.17 ± 8.23  | 164.22 ± 11.10 | 78.60 ± 9.54   | 39.59 ± 2.78 |
+| EX-PL   |               |                |                |              |
+| n=9     | 23.56 ± 7.42  | 163.37 ± 4.64  | 73.06 ± 10.40  | 38.49 ± 3.40 |
+| NEX-Act |               |                |                |              |
+| n=7     | 27.86 ± 9.21  | 163.47 ± 4.31  | 68.62 ± 12.90  | 37.56 ± 2.56 |
+| NEX-PL  |               |                |                |              |
+| n=5     | 28.40 ± 10.16 | 169.26 ± 13.12 | 79.25 ± 11.68  | 36.22 ± 1.52 |
+| N=27    | 27.26 ± 8.60  | 164.67 ± 8.13  | 74.29 ± 11.33  | 38.07 ± 2.87 |
 
 # BODY COMPOSITION (4C-MODEL)
 
@@ -143,22 +144,22 @@ Described by Rossiter et al. (8), using a Corival 906900 (Lode B.V. Medical Tech
 
 The exercise program was designed using the American College of Sports Medicine (ACSM) recommended guidelines for apparently healthy adults; all participants
 
-were supervised by a certified trainer. Progressive endurance training, on cycle ergometers, was performed three days per week (Table 2). Resistance training was performed two days per week, providing at least 24 hours recovery between sessions. Participants completed nine isotonic exercises incorporating both single-joint and multi-joint exercises. Each exercise was performed once per session, with participants completing 8-12 repetitions per exercise, until volitional fatigue. Weight was increased when participants performed  $&gt;10$  repetitions, at the same resistance, during two consecutive lifting sessions.
+were supervised by a certified trainer. Progressive endurance training, on cycle ergometers, was performed three days per week (Table 2). Resistance training was performed two days per week, providing at least 24 hours recovery between sessions. Participants completed nine isotonic exercises incorporating both single-joint and multi-joint exercises. Each exercise was performed once per session, with participants completing 8-12 repetitions per exercise, until volitional fatigue. Weight was increased when participants performed $&gt;10$ repetitions, at the same resistance, during two consecutive lifting sessions.
 
-|  Table 2  |   |   |
-| --- | --- | --- |
-|  Week | Duration (min) | %HRR  |
-|  1 | 15 – 20 | 40 – 50  |
-|  2 | 20 -25 | 40 – 50  |
-|  3 | 25 – 30 | 50 -60  |
-|  4 | 25 – 30 | 50 -60  |
-|  5 | 25 – 30 | 60 – 70  |
-|  6 | 25 – 30 | 60 – 70  |
-|  7 | 25 – 30 | 60 – 70  |
-|  8 | 30 – 35 | 60 – 70  |
-|  9 | 30 – 35 | 60 – 70  |
-|  10 | 30 – 35 | 60 – 70  |
-|  HRR = Heart rate reserve  |   |   |
+| Table 2                  |                |         |
+| ------------------------ | -------------- | ------- |
+| Week                     | Duration (min) | %HRR    |
+| 1                        | 15 – 20        | 40 – 50 |
+| 2                        | 20 -25         | 40 – 50 |
+| 3                        | 25 – 30        | 50 -60  |
+| 4                        | 25 – 30        | 50 -60  |
+| 5                        | 25 – 30        | 60 – 70 |
+| 6                        | 25 – 30        | 60 – 70 |
+| 7                        | 25 – 30        | 60 – 70 |
+| 8                        | 30 – 35        | 60 – 70 |
+| 9                        | 30 – 35        | 60 – 70 |
+| 10                       | 30 – 35        | 60 – 70 |
+| HRR = Heart rate reserve |                |         |
 
 # THERMOGENIC DRINK PROTOCOL
 
@@ -169,33 +170,34 @@ All participants were instructed to consume one drink per day, for a total of 70
 Serving Size 12 fl. oz
 Servings per Container 1
 
-|  Amount per serving |  | %DV†  |
-| --- | --- | --- |
-|  Calories | 10 |   |
-|  Total Carbohydrates | 1g | <1%  |
-|  Sugar | 0g |   |
-|  Vitamin C (ascorbic acid) | 60mg | 100%  |
-|  Riboflavin | 1.7mg | 100%  |
-|  Niacin (as niacinamide) | 20mg | 100%  |
-|  Vitamin B6 (as pyridoxine hydrochloride) | 2mg | 100%  |
-|  Vitamin B12 (as cyanocobalamin) | 6mcg | 100%  |
-|  Biotin | 300mcg | 100%  |
-|  Pantothenic Acid
-(as calcium d-pantothenate) | 10mg | 100%  |
-|  Calcium (as calcium carbonate) | 50mg | 5%  |
-|  Chromium (chelate) | 50mcg | 41%  |
-|  Sodium | 6mg | <1%  |
-|  MetaPlus™ | 1,810mg |   |
-|  Taurine |  | **  |
-|  Guarana extract (seed) |  | **  |
-|  Green Tea leaf extract (leaf)
-standardized to 10% EGCG |  | **  |
-|  Caffeine (as caffeine anhydrous) |  | **  |
-|  Glucuronolactone |  | **  |
-|  Ginger extract (root) |  | **  |
+| Amount per serving                       |        | %DV† |
+| ---------------------------------------- | ------ | ---- |
+| Calories                                 | 10     |      |
+| Total Carbohydrates                      | 1g     | <1%  |
+| Sugar                                    | 0g     |      |
+| Vitamin C (ascorbic acid)                | 60mg   | 100% |
+| Riboflavin                               | 1.7mg  | 100% |
+| Niacin (as niacinamide)                  | 20mg   | 100% |
+| Vitamin B6 (as pyridoxine hydrochloride) | 2mg    | 100% |
+| Vitamin B12 (as cyanocobalamin)          | 6mcg   | 100% |
+| Biotin                                   | 300mcg | 100% |
+
+| Pantothenic Acid
+(as calcium d-pantothenate) | 10mg | 100% |
+| Calcium (as calcium carbonate) | 50mg | 5% |
+| Chromium (chelate) | 50mcg | 41% |
+| Sodium | 6mg | <1% |
+| MetaPlus™ | 1,810mg | |
+| Taurine | | ** |
+| Guarana extract (seed) | | ** |
+| Green Tea leaf extract (leaf)
+standardized to 10% EGCG | | ** |
+| Caffeine (as caffeine anhydrous) | | ** |
+| Glucuronolactone | | ** |
+| Ginger extract (root) | | ** |
 
 †Percent Daily Values are based on a 2,000 calorie diet.
-**Daily Value (DV) not established.
+\*\*Daily Value (DV) not established.
 
 Other Ingredients: Filtered Water, Natural Colors, Natural Flavors, Citric Acid, Sucralose
 Contains: 200 mg total caffeine per serving
@@ -214,45 +216,45 @@ BF Change
 ![img-3.jpeg](img-3.jpeg)
 MMChange
 
-Using a two-way repeated measures ANOVA, significant time*treatment interactions resulted for muscle mass (p&lt;0.05). 100% of the subjects in the Act supplementing group increased Muscle mass, while 45% of the EX-PL group and 20% of the individuals in the NEX-PL group increased in muscle mass. Although the decrease in %BF was not significant, 50% of the Ex-Act group saw a decrease (MD 1.8%), 22% in the Ex-PL, 20% in the NEX-PL and no one in the NEX-Act.
+Using a two-way repeated measures ANOVA, significant time\*treatment interactions resulted for muscle mass (p&lt;0.05). 100% of the subjects in the Act supplementing group increased Muscle mass, while 45% of the EX-PL group and 20% of the individuals in the NEX-PL group increased in muscle mass. Although the decrease in %BF was not significant, 50% of the Ex-Act group saw a decrease (MD 1.8%), 22% in the Ex-PL, 20% in the NEX-PL and no one in the NEX-Act.
 
 ![img-4.jpeg](img-4.jpeg)
-Change in  $\mathsf{VO}_2\mathsf{TTE}$
+Change in $\mathsf{VO}_2\mathsf{TTE}$
 
-|  Changes in fasting lipid concentrations from PRE to POST  |   |   |   |   |
-| --- | --- | --- | --- | --- |
-|  |   |   |   |   |
-|  Total Cholesterol (mg/dL) |   |   | PRE | POST  |
-|   |  | EX-Act | 211.33 ± 30.22 | 200.33 ± 27.37*  |
-|   |  | EX-PL | 161.67 ± 26.50 | 165.56 ± 26.69  |
-|   |  | NEX-Act | 199.57 ± 65.38 | 173.14 ± 41.59  |
-|   |  | NEX-PL | 170.40 ± 31.61 | 170.20 ± 31.23  |
-|  |   |   |   |   |
-|  HDL (mg/dL) |   |  |  |   |
-|   |  | EX-Act | 52.33 ± 9.04 | 52.83 ± 7.17  |
-|   |  | EX-PL | 54.11 ± 8.96 | 54.89 ± 10.45  |
-|   |  | NEX-Act | 55.29 ± 6.97 | 51.86 ± 8.40  |
-|   |  | NEX-PL | 51.80 ± 15.83 | 57.20 ± 20.56  |
-|  |   |   |   |   |
-|  LDL (mg/dL) |   |  |  |   |
-|   |  | EX-Act | 137.50 ± 30.85 | 120.33 ± 24.31*  |
-|   |  | EX-PL | 92.56 ± 22.69 | 93.00 ± 19.67  |
-|   |  | NEX-Act | 125.57 ± 61.15 | 102.43 ± 37.48*  |
-|   |  | NEX-PL | 101.20 ± 30.04 | 95.40 ± 31.00  |
-|  |   |   |   |   |
-|  VLDL (mg/dL) |   |  |  |   |
-|   |  | EX-Act | 21.50 ± 5.13 | 27.17 ± 7.25  |
-|   |  | EX-PL | 15.00 ± 5.20 | 17.67 ± 4.64  |
-|   |  | NEX-Act | 18.71 ± 6.26 | 18.86 ± 7.80  |
-|   |  | NEX-PL | 17.40 ± 5.68 | 17.60 ± 7.20  |
-|  |   |   |   |   |
-|  Triglycerides (mg/dL) |   |   |  |   |
-|   |  | EX-Act | 108.00 ± 24.80 | 135.83 ± 35.49*  |
-|   |  | EX-PL | 74.44 ± 26.17 | 87.67 ± 22.27  |
-|   |  | NEX-Act | 94.14 ± 31.21 | 95.14 ± 38.19  |
-|   |  | NEX-PL | 86.40 ± 29.10 | 88.20 ± 35.07  |
+| Changes in fasting lipid concentrations from PRE to POST |     |         |                |                  |
+| -------------------------------------------------------- | --- | ------- | -------------- | ---------------- |
+|                                                          |     |         |                |                  |
+| Total Cholesterol (mg/dL)                                |     |         | PRE            | POST             |
+|                                                          |     | EX-Act  | 211.33 ± 30.22 | 200.33 ± 27.37\* |
+|                                                          |     | EX-PL   | 161.67 ± 26.50 | 165.56 ± 26.69   |
+|                                                          |     | NEX-Act | 199.57 ± 65.38 | 173.14 ± 41.59   |
+|                                                          |     | NEX-PL  | 170.40 ± 31.61 | 170.20 ± 31.23   |
+|                                                          |     |         |                |                  |
+| HDL (mg/dL)                                              |     |         |                |                  |
+|                                                          |     | EX-Act  | 52.33 ± 9.04   | 52.83 ± 7.17     |
+|                                                          |     | EX-PL   | 54.11 ± 8.96   | 54.89 ± 10.45    |
+|                                                          |     | NEX-Act | 55.29 ± 6.97   | 51.86 ± 8.40     |
+|                                                          |     | NEX-PL  | 51.80 ± 15.83  | 57.20 ± 20.56    |
+|                                                          |     |         |                |                  |
+| LDL (mg/dL)                                              |     |         |                |                  |
+|                                                          |     | EX-Act  | 137.50 ± 30.85 | 120.33 ± 24.31\* |
+|                                                          |     | EX-PL   | 92.56 ± 22.69  | 93.00 ± 19.67    |
+|                                                          |     | NEX-Act | 125.57 ± 61.15 | 102.43 ± 37.48\* |
+|                                                          |     | NEX-PL  | 101.20 ± 30.04 | 95.40 ± 31.00    |
+|                                                          |     |         |                |                  |
+| VLDL (mg/dL)                                             |     |         |                |                  |
+|                                                          |     | EX-Act  | 21.50 ± 5.13   | 27.17 ± 7.25     |
+|                                                          |     | EX-PL   | 15.00 ± 5.20   | 17.67 ± 4.64     |
+|                                                          |     | NEX-Act | 18.71 ± 6.26   | 18.86 ± 7.80     |
+|                                                          |     | NEX-PL  | 17.40 ± 5.68   | 17.60 ± 7.20     |
+|                                                          |     |         |                |                  |
+| Triglycerides (mg/dL)                                    |     |         |                |                  |
+|                                                          |     | EX-Act  | 108.00 ± 24.80 | 135.83 ± 35.49\* |
+|                                                          |     | EX-PL   | 74.44 ± 26.17  | 87.67 ± 22.27    |
+|                                                          |     | NEX-Act | 94.14 ± 31.21  | 95.14 ± 38.19    |
+|                                                          |     | NEX-PL  | 86.40 ± 29.10  | 88.20 ± 35.07    |
 
-Strength and cardiovascular improvements were significantly  $(p &lt; 0.05)$  augmented in both training groups. However, a significant time*treatment interaction resulted for time to exhaustion during the VO2peak  $(p = 0.046)$
+Strength and cardiovascular improvements were significantly $(p &lt; 0.05)$ augmented in both training groups. However, a significant time\*treatment interaction resulted for time to exhaustion during the VO2peak $(p = 0.046)$
 
 Safety data suggest this thermogenic drink as an effective method for lowering TC and LDL (main effect for treatment).
 
@@ -265,8 +267,8 @@ The current data suggest that the ACSM exercise program guidelines provide an ef
 1. Dalbo VJ, Roberts MD, Stout JR, Kerksick CM: Acute effects of ingesting a commercial thermogenic drink on changes in energy expenditure and markers of lipolysis. J Int Soc Sports Nutr 2008, 5:6.
 2. Roberts MD, Dalbo VJ, Hassell SE, Stout JR, Kerksick CM. Efficacy and safety of a popular thermogenic drink after 28 days of ingestion. J Int Soc Sports Nutr 2008, 5:19.
 3. Lockwood CM, Moon JM, Smith AE, Tokin SE, Kendall KL, Graef JL, Cramer JT, Stout JR. Low-calorie energy drink improves physiological response to exercise in previously sedentary men: a placebo-controlled efficacy and safety study. J Strength Cond Res. (In press).
-7. Wang Z, Pi-Sunyer FX, Kotler DP, Wielopolski L, Withers RT, Pierson RN, Jr., Heymsfield SB: Multicomponent methods: evaluation of new and traditional soft tissue mineral models by in vivo neutron activation analysis. Am J Clin Nutr 2002, 76:968-974.
-8. Kim J, Wang Z, Heymsfield SB, Baumgartner RN, Gallagher D. Total-body skeletal muscle mass: estimation by a new dual-energy X-ray absorptiometry method. Am J Clin Nutr. 2002;76(2):378-383.
-9. Wilmore JH, Vodak PA, Parr RB, Girandola RN, Billing JE: Further simplification of a method for determination of residual lung volume. Med Sci Sports Exerc 1980, 12:216-218.
-10. Schoeller DA, van Santen E, Peterson DW, Dietz W, Jaspan J, Klein PD. Total body water measurement in humans with 18O and 2H labeled water. Am J Clin Nutr. 1980;33(12):2686-2693.
-11. Rossiter HB, Kowalchuk JM, Whipp BJ: A test to establish maximum O2 uptake despite no plateau in the O2 uptake response to ramp incremental exercise. J Appl Physiol 2006, 100:764-770.
+4. Wang Z, Pi-Sunyer FX, Kotler DP, Wielopolski L, Withers RT, Pierson RN, Jr., Heymsfield SB: Multicomponent methods: evaluation of new and traditional soft tissue mineral models by in vivo neutron activation analysis. Am J Clin Nutr 2002, 76:968-974.
+5. Kim J, Wang Z, Heymsfield SB, Baumgartner RN, Gallagher D. Total-body skeletal muscle mass: estimation by a new dual-energy X-ray absorptiometry method. Am J Clin Nutr. 2002;76(2):378-383.
+6. Wilmore JH, Vodak PA, Parr RB, Girandola RN, Billing JE: Further simplification of a method for determination of residual lung volume. Med Sci Sports Exerc 1980, 12:216-218.
+7. Schoeller DA, van Santen E, Peterson DW, Dietz W, Jaspan J, Klein PD. Total body water measurement in humans with 18O and 2H labeled water. Am J Clin Nutr. 1980;33(12):2686-2693.
+8. Rossiter HB, Kowalchuk JM, Whipp BJ: A test to establish maximum O2 uptake despite no plateau in the O2 uptake response to ramp incremental exercise. J Appl Physiol 2006, 100:764-770.

@@ -51,17 +51,17 @@ Throughout this paper, the chromatic number of a digraph $D$, denoted by $\chi(D
 
 A classical result due to Gallai, Hasse, Roy and Vitaver is the following.
 
-###### Theorem 1.1 (Gallai *[8]*, Hasse *[9]*, Roy *[11]*, Vitaver *[12]*)
+###### Theorem 1.1 (Gallai _[8]_, Hasse _[9]_, Roy _[11]_, Vitaver _[12]_)
 
 If $\chi(D)\geq k$, then $D$ contains a dipath of length $k-1$.
 
 This raises the question of which digraphs are subdigraphs of all digraphs with large chromatic number.
 
-A classical theorem by Erdős *[6]* implies that if $H$ is a digraph containing a cycle, there exist digraphs with arbitrarily high chromatic number with no subdigraph isomorphic to $H$. Thus the only possible candidates to generalise Theorem 1.1 are the oriented trees that are orientations of trees. Burr*[3]* proved that every $(k-1)^{2}$-chromatic digraph contains every oriented tree of order $k$ and conjectured an upper bound of $2k-2$. The best known upper bound, due to Addario-Berry et al. *[1]*, is in $(k/2)^{2}$.
+A classical theorem by Erdős _[6]_ implies that if $H$ is a digraph containing a cycle, there exist digraphs with arbitrarily high chromatic number with no subdigraph isomorphic to $H$. Thus the only possible candidates to generalise Theorem 1.1 are the oriented trees that are orientations of trees. Burr*[3]* proved that every $(k-1)^{2}$-chromatic digraph contains every oriented tree of order $k$ and conjectured an upper bound of $2k-2$. The best known upper bound, due to Addario-Berry et al. _[1]_, is in $(k/2)^{2}$.
 
 However the following celebrated theorem of Bondy shows that the story does not stop there.
 
-###### Theorem 1.2 (Bondy *[2]*)
+###### Theorem 1.2 (Bondy _[2]_)
 
 Every strongly connected digraph with chromatic number at least $k$ contains a directed cycle of length at least $k$.
 
@@ -71,17 +71,17 @@ The strong connectivity assumption is indeed necessary, as transitive tournament
 
 Observe that a directed cycle of length at least $k$ can be seen as a subdivision of $\vec{C}_{k}$, the directed cycle of length $k$. Recall that a subdivision of a digraph $F$ is a digraph that can be obtained from $F$ by replacing each arc $uv$ by a dipath from $u$ to $v$.
 
-###### Conjecture 1.3 (Cohen et al. *[5]*)
+###### Conjecture 1.3 (Cohen et al. _[5]_)
 
 For every cycle $C$, there exists a constant $f(C)$ such that every strongly connected digraph with chromatic number at least $f(C)$ contains a subdivision of $C$.
 
-The strong connectivity assumption is also necessary in Conjecture 1.3 as shown by Cohen et al. in *[5]*. In the same paper, Conjecture 1.3 was confirmed for cycles with two blocks (i.e. maximal subdipaths of the cycle) and the antidirected cycle of length $4$. More precisely, denoting by $C(k,\ell)$ the cycle on two blocks, one of length $k$ and the other of length $\ell$, Cohen et al. *[5]* proved the following.
+The strong connectivity assumption is also necessary in Conjecture 1.3 as shown by Cohen et al. in _[5]_. In the same paper, Conjecture 1.3 was confirmed for cycles with two blocks (i.e. maximal subdipaths of the cycle) and the antidirected cycle of length $4$. More precisely, denoting by $C(k,\ell)$ the cycle on two blocks, one of length $k$ and the other of length $\ell$, Cohen et al. _[5]_ proved the following.
 
 ###### Theorem 1.4
 
 Every strongly connected digraph with chromatic number at least $O((k+\ell)^{4})$ contains a subdivision of $C(k,\ell)$.
 
-The bound has recently been improved to $O((k+\ell)^{2})$ by Kim et al. *[10]*.
+The bound has recently been improved to $O((k+\ell)^{2})$ by Kim et al. _[10]_.
 
 A subdivision of $C(k,\ell)$ can be seen as a $2$-spindle made of two internally disjoint dipaths, one of length at least $k$ and one of length at least $\ell$. In this paper, we generalize this and study the existence of subdivision of spindles and bispindles in strongly connected digraphs with large chromatic number. Our first result is to give constructions for the following theorem:
 

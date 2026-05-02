@@ -2,14 +2,7 @@
   "document": "../../../../test_documents/vendored/docling/html/formatting.html",
   "file_type": "html",
   "file_size": 1430,
-  "expected_frameworks": [
-    "kreuzberg",
-    "docling",
-    "markitdown",
-    "pandoc",
-    "tika",
-    "unstructured"
-  ],
+  "expected_frameworks": ["kreuzberg", "docling", "markitdown", "pandoc", "tika", "unstructured"],
   "metadata": {
     "description": "Document from docling test suite",
     "source": "docling",

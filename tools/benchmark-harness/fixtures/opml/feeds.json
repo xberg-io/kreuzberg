@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/opml/feeds.opml",
   "file_type": "opml",
   "file_size": 1634,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "opml test: feeds",
     "source": "pandoc-generated",

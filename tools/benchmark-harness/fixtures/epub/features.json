@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/epub/features.epub",
   "file_type": "epub",
   "file_size": 8970,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "EPUB test document: features",
     "source": "pandoc-generated",

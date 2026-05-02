@@ -1,15 +1,15 @@
 {
-	"document": "../../../../test_documents/vendored/docling/md/redp5110_sampled.md",
-	"file_type": "md",
-	"file_size": 40112,
-	"expected_frameworks": ["kreuzberg", "docling", "pandoc", "tika", "unstructured"],
-	"metadata": {
-		"description": "Document from docling test suite",
-		"source": "docling",
-		"size_category": "small"
-	},
-	"ground_truth": {
-		"text_file": "../../../../test_documents/ground_truth/md/redp5110_sampled.txt",
-		"source": "vision"
-	}
+  "document": "../../../../test_documents/vendored/docling/md/redp5110_sampled.md",
+  "file_type": "md",
+  "file_size": 40112,
+  "expected_frameworks": ["kreuzberg", "docling", "pandoc", "tika", "unstructured"],
+  "metadata": {
+    "description": "Document from docling test suite",
+    "source": "docling",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/md/redp5110_sampled.txt",
+    "source": "vision"
+  }
 }

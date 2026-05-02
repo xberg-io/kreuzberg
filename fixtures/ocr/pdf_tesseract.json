@@ -1,36 +1,36 @@
 {
-	"id": "ocr_pdf_tesseract",
-	"category": "ocr",
-	"description": "Scanned PDF requires OCR to extract text.",
-	"input": {
-		"path": "pdf/ocr_test.pdf",
-		"media_type": "application/pdf",
-		"config": {
-			"ocr": {
-				"backend": "tesseract",
-				"language": "eng"
-			},
-			"force_ocr": true
-		}
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/pdf"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 20
-		},
-		{
-			"type": "contains_any",
-			"field": "content",
-			"values": ["Docling", "Markdown", "JSON"]
-		}
-	],
-	"skip": {
-		"reason": "Requires features: tesseract; Skip automatically if OCR backend is unavailable."
-	}
+  "id": "ocr_pdf_tesseract",
+  "category": "ocr",
+  "description": "Scanned PDF requires OCR to extract text.",
+  "input": {
+    "path": "pdf/ocr_test.pdf",
+    "media_type": "application/pdf",
+    "config": {
+      "ocr": {
+        "backend": "tesseract",
+        "language": "eng"
+      },
+      "force_ocr": true
+    }
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/pdf"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 20
+    },
+    {
+      "type": "contains_any",
+      "field": "content",
+      "values": ["Docling", "Markdown", "JSON"]
+    }
+  ],
+  "skip": {
+    "reason": "Requires features: tesseract; Skip automatically if OCR backend is unavailable."
+  }
 }

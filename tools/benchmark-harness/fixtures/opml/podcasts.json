@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/opml/podcasts.opml",
   "file_type": "opml",
   "file_size": 1590,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "opml test: podcasts",
     "source": "pandoc-generated",

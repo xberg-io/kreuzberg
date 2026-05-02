@@ -1,31 +1,31 @@
 {
-	"id": "ocr_pdf_rotated_90",
-	"category": "ocr",
-	"description": "Rotated page PDF requiring OCR to verify orientation handling.",
-	"input": {
-		"path": "pdf/ocr_test_rotated_90.pdf",
-		"media_type": "application/pdf",
-		"config": {
-			"ocr": {
-				"backend": "tesseract",
-				"language": "eng"
-			},
-			"force_ocr": true
-		}
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/pdf"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 10
-		}
-	],
-	"skip": {
-		"reason": "Requires features: tesseract; Skip automatically when OCR backend is missing."
-	}
+  "id": "ocr_pdf_rotated_90",
+  "category": "ocr",
+  "description": "Rotated page PDF requiring OCR to verify orientation handling.",
+  "input": {
+    "path": "pdf/ocr_test_rotated_90.pdf",
+    "media_type": "application/pdf",
+    "config": {
+      "ocr": {
+        "backend": "tesseract",
+        "language": "eng"
+      },
+      "force_ocr": true
+    }
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/pdf"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 10
+    }
+  ],
+  "skip": {
+    "reason": "Requires features: tesseract; Skip automatically when OCR backend is missing."
+  }
 }

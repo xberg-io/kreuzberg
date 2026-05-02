@@ -1,6 +1,6 @@
 # Fibonacci sequence
 
-The Fibonacci sequence is defined through the recurrence relation $F*n = F*(n-1) + F*(n-2)$. It can also be expressed in* closed form:_
+The Fibonacci sequence is defined through the recurrence relation $F*n = F*(n-1) + F*(n-2)$. It can also be expressed in\* closed form:\_
 
 $ F_n = round(1 / sqrt(5) phi.alt^n), quad phi.alt = (1 + sqrt(5)) / 2 $
 

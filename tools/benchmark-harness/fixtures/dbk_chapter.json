@@ -1,16 +1,16 @@
 {
-	"document": "../../../test_documents/docbook/docbook-chapter.dbk",
-	"file_type": "dbk",
-	"file_size": 1088,
-	"expected_frameworks": ["kreuzberg", "pandoc"],
-	"metadata": {
-		"description": "DocBook XML chapter with recursive sections (DBK extension)",
-		"category": "markup",
-		"size_class": "small"
-	},
-	"ground_truth": {
-		"text_file": "../../../test_documents/ground_truth/docbook/docbook-chapter.txt",
-		"markdown_file": "../../../test_documents/ground_truth/docbook/docbook-chapter.md",
-		"source": "pandoc"
-	}
+  "document": "../../../test_documents/docbook/docbook-chapter.dbk",
+  "file_type": "dbk",
+  "file_size": 1088,
+  "expected_frameworks": ["kreuzberg", "pandoc"],
+  "metadata": {
+    "description": "DocBook XML chapter with recursive sections (DBK extension)",
+    "category": "markup",
+    "size_class": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../test_documents/ground_truth/docbook/docbook-chapter.txt",
+    "markdown_file": "../../../test_documents/ground_truth/docbook/docbook-chapter.md",
+    "source": "pandoc"
+  }
 }

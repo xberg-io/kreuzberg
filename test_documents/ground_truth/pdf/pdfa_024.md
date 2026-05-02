@@ -1,39 +1,50 @@
 ![img-0.jpeg](img-0.jpeg)
 
 # Pulpetti | 11
+
 Slowly Cooked Beef &amp; Pork Meatballs | Salsa Di Nonna
 Shaved Parmigiano Reggiano
 
 # Fried Calamari | 16
+
 Fried Banana Peppers | Tzatziki | Marinara Sauce
 
 # Lobster &amp; Corn Risotto | 20/36
+
 Grilled Sweet Corn | Fresh Herbs | Shaved Parmesan Cheese
 
 # Jumbo Shrimp Cocktail | 20
+
 House-Made Cocktail Sauce
 
 # Tuna Carpaccio | 20
+
 Fried Capers | Fresh Lemon | Truffle-White Balsamic Vinaigrette
 Organic Greens
 
 # East Coast Oysters [6] | 18
+
 Mignonette Sauce
 
 # Crab Cakes | 22
+
 Rémeoulade, Organic Greens
 
 # Burrata | 20
+
 Prosciutto | Tomato | Balsamic Reduction
 
 # Arugula Salad | 14
+
 Whipped Creamy Ricotta | Sugar Snap Peas | Tomatoes
 Toasted Pine Nut Vinaigrette
 
 # Insalata Di Caesar | 12
+
 Crisp Romaine Lettuce | Croutons | Shaved Parmigiano | Caesar Dressing
 
 # Mediterranean Salad | 16
+
 Tomatoes | Cucumber | Red Onion | Olives | Bell Peppers | Feta
 Stuffed Grape Leaf | Red Wine Vinaigrette
 

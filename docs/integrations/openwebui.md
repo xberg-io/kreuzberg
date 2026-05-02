@@ -88,11 +88,11 @@ Then configure Open WebUI using one of the two engine modes below.
 
 Kreuzberg exposes two Open WebUI–compatible APIs. Both return the same extracted content. So pick whichever fits your setup.
 
-| | **Docling** (recommended) | **External** |
-|---|---|---|
-| **Endpoint** | `POST /v1/convert/file` | `PUT /process` |
-| **Engine setting** | `docling` | `external` |
-| **URL variable** | `DOCLING_SERVER_URL` | `EXTERNAL_DOCUMENT_LOADER_URL` |
+|                    | **Docling** (recommended) | **External**                   |
+| ------------------ | ------------------------- | ------------------------------ |
+| **Endpoint**       | `POST /v1/convert/file`   | `PUT /process`                 |
+| **Engine setting** | `docling`                 | `external`                     |
+| **URL variable**   | `DOCLING_SERVER_URL`      | `EXTERNAL_DOCUMENT_LOADER_URL` |
 
 === "Docling (recommended)"
 

@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/odt/simpleTable.odt",
   "file_type": "odt",
   "file_size": 10705,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "ODT test document: simpleTable",
     "source": "pandoc-generated",

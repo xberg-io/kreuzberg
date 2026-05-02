@@ -7,17 +7,17 @@ description = 'Rust document intelligence library with polyglot bindings (Python
 gitignore = true
 presets = ['claude', 'copilot', 'cursor', 'antigravity', 'codex']
 builtins = [
-    'rust',
-    'python',
-    'typescript',
-    'go',
-    'java',
-    'ruby',
-    'php',
-    'csharp',
-    'elixir',
-    'r',
-    'default-commands',
+  'rust',
+  'python',
+  'typescript',
+  'go',
+  'java',
+  'ruby',
+  'php',
+  'csharp',
+  'elixir',
+  'r',
+  'default-commands',
 ]
 
 [[includes]]

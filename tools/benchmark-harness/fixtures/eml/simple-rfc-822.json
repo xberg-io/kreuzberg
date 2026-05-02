@@ -1,15 +1,15 @@
 {
-	"document": "../../../../test_documents/vendored/unstructured/eml/simple-rfc-822.eml",
-	"file_type": "eml",
-	"file_size": 679,
-	"expected_frameworks": ["kreuzberg", "tika", "unstructured"],
-	"metadata": {
-		"description": "Document from unstructured test suite",
-		"source": "unstructured",
-		"size_category": "small"
-	},
-	"ground_truth": {
-		"text_file": "../../../../test_documents/ground_truth/eml/simple-rfc-822.txt",
-		"source": "python_email"
-	}
+  "document": "../../../../test_documents/vendored/unstructured/eml/simple-rfc-822.eml",
+  "file_type": "eml",
+  "file_size": 679,
+  "expected_frameworks": ["kreuzberg", "tika", "unstructured"],
+  "metadata": {
+    "description": "Document from unstructured test suite",
+    "source": "unstructured",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/eml/simple-rfc-822.txt",
+    "source": "python_email"
+  }
 }

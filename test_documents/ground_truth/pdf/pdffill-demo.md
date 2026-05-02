@@ -43,6 +43,7 @@ Six Arrow Styles:
 9 Arrow Sizes for Each Style:
 
 <!-- image -->
+
 No Arrow
 Arrow
 Open Arrow Stealth

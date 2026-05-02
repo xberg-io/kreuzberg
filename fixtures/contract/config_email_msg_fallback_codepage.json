@@ -1,27 +1,27 @@
 {
-	"id": "config_email_msg_fallback_codepage",
-	"category": "contract",
-	"description": "Tests MSG extraction with custom fallback codepage for Cyrillic",
-	"tags": ["contract", "config", "email"],
-	"input": {
-		"path": "email/fake_email.msg",
-		"media_type": "application/vnd.ms-outlook",
-		"config": {
-			"email": {
-				"msg_fallback_codepage": 1251
-			}
-		}
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/vnd.ms-outlook"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 10
-		}
-	]
+  "id": "config_email_msg_fallback_codepage",
+  "category": "contract",
+  "description": "Tests MSG extraction with custom fallback codepage for Cyrillic",
+  "tags": ["contract", "config", "email"],
+  "input": {
+    "path": "email/fake_email.msg",
+    "media_type": "application/vnd.ms-outlook",
+    "config": {
+      "email": {
+        "msg_fallback_codepage": 1251
+      }
+    }
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/vnd.ms-outlook"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 10
+    }
+  ]
 }

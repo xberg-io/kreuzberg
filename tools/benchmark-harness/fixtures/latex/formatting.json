@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/latex/formatting.tex",
   "file_type": "latex",
   "file_size": 340,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "LaTeX document with bold, italic, underline, emphasis, monospace, and combined formatting",
     "source": "handcrafted",

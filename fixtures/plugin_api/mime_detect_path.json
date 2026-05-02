@@ -1,32 +1,26 @@
 {
-	"id": "mime_detect_path",
-	"category": "mime_utilities",
-	"description": "Detect MIME type from file path",
-	"tags": [
-		"mime",
-		"detection",
-		"path"
-	],
-	"call": "detect_mime_type_from_path",
-	"input": {
-		"setup": {
-			"create_temp_file": true,
-			"temp_file_name": "test.txt",
-			"temp_file_content": "Hello, world!"
-		},
-		"args": [
-			"${temp_file_path}"
-		]
-	},
-	"assertions": [
-		{
-			"type": "contains",
-			"field": "result",
-			"value": "text"
-		}
-	],
-	"skip": {
-		"languages": [],
-		"reason": "Tests plugin_api call surface that isn't re-exported at the kreuzberg crate root \u2014 skipped everywhere until Rust public API or codegen module path is updated."
-	}
+  "id": "mime_detect_path",
+  "category": "mime_utilities",
+  "description": "Detect MIME type from file path",
+  "tags": ["mime", "detection", "path"],
+  "call": "detect_mime_type_from_path",
+  "input": {
+    "setup": {
+      "create_temp_file": true,
+      "temp_file_name": "test.txt",
+      "temp_file_content": "Hello, world!"
+    },
+    "args": ["${temp_file_path}"]
+  },
+  "assertions": [
+    {
+      "type": "contains",
+      "field": "result",
+      "value": "text"
+    }
+  ],
+  "skip": {
+    "languages": [],
+    "reason": "Tests plugin_api call surface that isn't re-exported at the kreuzberg crate root \u2014 skipped everywhere until Rust public API or codegen module path is updated."
+  }
 }

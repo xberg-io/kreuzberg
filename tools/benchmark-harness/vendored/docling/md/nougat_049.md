@@ -47,7 +47,7 @@ Crisp Romaine Lettuce | Croutons | Shaved Parmigiano | Caesar Dressing
 Tomatoes | Cucumber | Red Onion | Olives | Bell Peppers | Feta Stuffed Grape Leaf | Red Wine Vinaigrette
 
 | Pan-Seared Branzino &#124; 34 Saffron Rice &#124; Sautéed Spinach &#124; Red Pepper Aioli                               |
-|-------------------------------------------------------------------------------------------------------------------------|
+| ----------------------------------------------------------------------------------------------------------------------- |
 | Shrimp Scampi &#124; 27 Sautéed Shrimp &#124; Linguini &#124; Garlic                                                    |
 | Squid Ink Pasta &#124; 24 Crab Meat &#124; Bomba Calabrese Sauce &#124; Toasted Bread Crumbs                            |
 | Rigatoni Bolognese &#124; 23 Traditional Beef &Pork Ragù &#124; Plum Tomatoes &#124; Garden Herbs &#124; Ricotta Cheese |

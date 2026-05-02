@@ -1,15 +1,15 @@
 {
-	"document": "../../../test_documents/images_extra/Hadley_Crater.j2k",
-	"file_type": "j2k",
-	"file_size": 626560,
-	"expected_frameworks": ["kreuzberg"],
-	"metadata": {
-		"description": "JPEG 2000 code stream image of Hadley Crater (J2K extension)",
-		"category": "image",
-		"size_class": "medium"
-	},
-	"ground_truth": {
-		"text_file": "../../../test_documents/ground_truth/j2k/j2k_image.txt",
-		"source": "vision"
-	}
+  "document": "../../../test_documents/images_extra/Hadley_Crater.j2k",
+  "file_type": "j2k",
+  "file_size": 626560,
+  "expected_frameworks": ["kreuzberg"],
+  "metadata": {
+    "description": "JPEG 2000 code stream image of Hadley Crater (J2K extension)",
+    "category": "image",
+    "size_class": "medium"
+  },
+  "ground_truth": {
+    "text_file": "../../../test_documents/ground_truth/j2k/j2k_image.txt",
+    "source": "vision"
+  }
 }

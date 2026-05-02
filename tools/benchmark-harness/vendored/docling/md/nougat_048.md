@@ -155,7 +155,7 @@ Figure 1 illustrates the motivation behind our proposed design space. Inspired b
 Table 1: Design Space
 
 |                 | Implicit                                                                    | Explicit                                                                     |
-|-----------------|-----------------------------------------------------------------------------|------------------------------------------------------------------------------|
+| --------------- | --------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
 | Input Modality  | Gaze direction; Stress; Workload; Fatigue; Head Movement; Facial Expression | Touch; Smooth Pursuit                                                        |
 | Output Modality | Automatic tinting; Background data logging; Peripheral notification         | Peripheral display; LED; See-through OLED; Symbolic holograph; Audio; Haptic |
 
@@ -198,7 +198,7 @@ Ubiquitous Smart Eyewear Interactions using Implicit Sensing and Unobtrusive Inf
 Table 2: Applications
 
 |                 | Implicit Input                                                                                                                                                                                   | Explicit Output                                               |
-|-----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------|
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------- |
 | Implicit Output | Automatic tinting under sunlight; Unobtrusive message notification during task [1]; Background lifelogging (heart rate, steps, etc.); Facial expression detection; Stress and fatigue detection. | Lifelogging with camera.                                      |
 | Explicit Output | Drowsiness alert; Attention alert; Emotion regulation; Stress regulation.                                                                                                                        | Notification responding; Face-touching input; Smooth pursuit. |
 

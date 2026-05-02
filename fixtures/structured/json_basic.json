@@ -1,26 +1,26 @@
 {
-	"id": "structured_json_basic",
-	"category": "structured",
-	"description": "Structured JSON extraction should stream and preserve content.",
-	"input": {
-		"path": "json/sample_document.json",
-		"media_type": "application/json"
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/json"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 20
-		},
-		{
-			"type": "contains_any",
-			"field": "content",
-			"values": ["Sample Document", "Test Author"]
-		}
-	]
+  "id": "structured_json_basic",
+  "category": "structured",
+  "description": "Structured JSON extraction should stream and preserve content.",
+  "input": {
+    "path": "json/sample_document.json",
+    "media_type": "application/json"
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/json"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 20
+    },
+    {
+      "type": "contains_any",
+      "field": "content",
+      "values": ["Sample Document", "Test Author"]
+    }
+  ]
 }

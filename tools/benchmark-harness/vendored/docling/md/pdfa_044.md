@@ -4,7 +4,7 @@ Hong Kong Exchanges and Clearing Limited and The Stock Exchange of Hong Kong Lim
 
 ## KAISUN HOLDINGS LIMITED
 
-凱順控股有限公司 *
+凱順控股有限公司 \*
 
 (Incorporated in the Cayman Islands with limited liability)
 
@@ -20,21 +20,21 @@ As at the date of the AGM, the total number of issued shares of the Company was 
 
 Computershare Hong Kong Investor Services Limited, the share registrar of the Company in Hong Kong, was appointed as scrutineer for the purpose of vote-taking at the AGM. The poll results were as follows:
 
-|          |                                                                                                                                                                | Number of votes (%)    | Number of votes (%)   |
-|----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------|-----------------------|
-| Ordinary | Resolutions                                                                                                                                                    | For                    | Against               |
-| 1.       | To receive and consider the audited financial statements and the report of the directors and independent auditor's report for the year ended 31 December 2020. | 185,396,300 (68.201 %) | 86,440,000 (31.799%)  |
-| 2.       | (a) To re-elect Mr. Yang Yongcheng as director                                                                                                                 | 185,396,300 (68.201%)  | 86,440,000 (31.799%)  |
+|          |                                                                                                                                                                | Number of votes (%)    | Number of votes (%)  |
+| -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------- | -------------------- |
+| Ordinary | Resolutions                                                                                                                                                    | For                    | Against              |
+| 1.       | To receive and consider the audited financial statements and the report of the directors and independent auditor's report for the year ended 31 December 2020. | 185,396,300 (68.201 %) | 86,440,000 (31.799%) |
+| 2.       | (a) To re-elect Mr. Yang Yongcheng as director                                                                                                                 | 185,396,300 (68.201%)  | 86,440,000 (31.799%) |
 
-|    | (b) To re-elect Mr. Liew Swee Yean as a director                                                                                                                  | 185,396,300 (68.201 %)   | 86,440,000 (31.799%)   |
-|----|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------|------------------------|
-|    | (c) To re-elect Dr. Wong Yun Kuen as a director                                                                                                                   | 185,396,300 (68.201 %)   | 86,440,000 (31.799%)   |
-|    | (d) To re-elect Mr. Anderson Brian Ralph as a director                                                                                                            | 185,396,300 (68.201 %)   | 86,440,000 (31.799%)   |
-|    | (e) To authorize the board of directors to fix the remuneration of the directors                                                                                  | 185,396,300 (68.201 %)   | 86,440,000 (31.799%)   |
-| 3. | To re-appoint the auditors and to authorize the board of directors to fix the remuneration of the auditors                                                        | 185,396,300 (68.201 %)   | 86,440,000 (31.799%)   |
-| 4. | Ordinary Resolution in item 4 of the notice of annual general meeting (To grant a general mandate to the directors to allot and issue new shares of the Company)  | 185,396,300 (68.201 %)   | 86,440,000 (31.799%)   |
-| 5. | Ordinary Resolution in item 5 of the notice of annual general meeting (To grant a general mandate to the directors to repurchase shares of the Company)           | 185,396,300 (68.201 %)   | 86,440,000 (31.799%)   |
-| 6. | Ordinary Resolution in item 6 of the notice of annual general meeting (To extend the general mandate granted to the directors to issue new shares of the Company) | 185,396,300 (68.201 %)   | 86,440,000 (31.799%)   |
+|     | (b) To re-elect Mr. Liew Swee Yean as a director                                                                                                                  | 185,396,300 (68.201 %) | 86,440,000 (31.799%) |
+| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------- | -------------------- |
+|     | (c) To re-elect Dr. Wong Yun Kuen as a director                                                                                                                   | 185,396,300 (68.201 %) | 86,440,000 (31.799%) |
+|     | (d) To re-elect Mr. Anderson Brian Ralph as a director                                                                                                            | 185,396,300 (68.201 %) | 86,440,000 (31.799%) |
+|     | (e) To authorize the board of directors to fix the remuneration of the directors                                                                                  | 185,396,300 (68.201 %) | 86,440,000 (31.799%) |
+| 3.  | To re-appoint the auditors and to authorize the board of directors to fix the remuneration of the auditors                                                        | 185,396,300 (68.201 %) | 86,440,000 (31.799%) |
+| 4.  | Ordinary Resolution in item 4 of the notice of annual general meeting (To grant a general mandate to the directors to allot and issue new shares of the Company)  | 185,396,300 (68.201 %) | 86,440,000 (31.799%) |
+| 5.  | Ordinary Resolution in item 5 of the notice of annual general meeting (To grant a general mandate to the directors to repurchase shares of the Company)           | 185,396,300 (68.201 %) | 86,440,000 (31.799%) |
+| 6.  | Ordinary Resolution in item 6 of the notice of annual general meeting (To extend the general mandate granted to the directors to issue new shares of the Company) | 185,396,300 (68.201 %) | 86,440,000 (31.799%) |
 
 As more than 50% of the votes were cast in favour of each of the above resolution nos. 1 to 6, the resolutions were duly passed as ordinary resolutions.
 
@@ -44,4 +44,4 @@ Hong Kong, 30 June, 2021
 
 As of the date of this announcement, the executive Directors are Mr. Chan Nap Kee Joseph, and Mr. Yang Yongcheng. The independent non-executive Directors are Mr. Liew Swee Yean, Dr. Wong Yun Kuen and Mr. Anderson Brian Ralph.
 
-* for identification purpose only
+- for identification purpose only

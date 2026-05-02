@@ -43,4 +43,4 @@ All other requests will be considered and please note that some services require
 
 Toys used by or on you will be purchased specifically by you for your use.
 
-*** Note: Be sure to request and confirm your desired extras when finalizing your booking. Last minute requests cannot be accommodated.
+\*\*\* Note: Be sure to request and confirm your desired extras when finalizing your booking. Last minute requests cannot be accommodated.

@@ -168,9 +168,7 @@
           "start_time": 14760.0,
           "end_time": 14818.239,
           "identifier": "agcvs-08234",
-          "languages": [
-            "es-ES"
-          ]
+          "languages": ["es-ES"]
         }
       ],
       "orig": "paella",
@@ -238,9 +236,7 @@
           "start_time": 14760.0,
           "end_time": 14818.239,
           "identifier": "agcvs-08234",
-          "classes": [
-            "b.loud"
-          ]
+          "classes": ["b.loud"]
         }
       ],
       "orig": "unexpected",
@@ -295,9 +291,7 @@
           "start_time": 14760.0,
           "end_time": 14818.239,
           "identifier": "agcvs-08234",
-          "languages": [
-            "it"
-          ]
+          "languages": ["it"]
         }
       ],
       "orig": "arcobaleno",

@@ -764,7 +764,7 @@ RMW
 29
 
 | the                                                                 | information disclosed.                                              |
-|---------------------------------------------------------------------|---------------------------------------------------------------------|
+| ------------------------------------------------------------------- | ------------------------------------------------------------------- |
 | settlement issued by a mediator in a proceeding, shall be disclosed | settlement issued by a mediator in a proceeding, shall be disclosed |
 | only to the parties to the proceeding unless all parties consent to | only to the parties to the proceeding unless all parties consent to |
 | disclosure. A mediator's recommended settlement may be disclosed to | disclosure. A mediator's recommended settlement may be disclosed to |
@@ -1613,7 +1613,7 @@ RMW
 29
 
 | 1   | by a telecommunication provider may apply to the commission to      |
-|-----|---------------------------------------------------------------------|
+| --- | ------------------------------------------------------------------- |
 | 2   | determine if the discontinuance of service is authorized under this |
 | 3   | act. Within 90 days after the date of publication of the notice     |
 | 4   | required by subsection (2), the commission may, in response to a    |
@@ -1704,7 +1704,7 @@ RMW
 29
 
 | exchange voice traffic.                                             |
-|---------------------------------------------------------------------|
+| ------------------------------------------------------------------- |
 | (c) The jurisdiction and authority to regulate switched access      |
 | rates, terms, and conditions, including the implementation of       |
 | federal or state law concerning intercarrier compensation.          |
@@ -1852,36 +1852,36 @@ RMW
 
 29
 
-| willing provider may utilize any form of technology that is capable   |
-|-----------------------------------------------------------------------|
-| of providing comparable voice service with reliable access to 9-1-1   |
-| and emergency services, including voice over internet protocol        |
-| services and wireless services. If the commission determines that     |
-| another provider is not capable of providing comparable voice         |
-| service with reliable access to 9-1-1 and emergency services in       |
-| that area, the commission shall issue an order requiring the          |
-| current telecommunication provider to provide comparable voice        |
-| service with reliable access to 9-1-1 and emergency services in       |
-| that area utilizing any form of technology that the commission        |
-| determines is capable of providing comparable voice service with      |
-| reliable access to 9-1-1 and emergency services, including voice      |
-| over internet protocol services and wireless services, until          |
-| another willing provider is available. An intrastate universal        |
-| service fund under section 316a shall not be created or used to       |
-| compensate or fund a willing provider or current telecommunication    |
-| provider to provide service under this section. As used in this       |
-| subsection:                                                           |
-| (a) "Comparable voice service" includes any 2-way voice               |
-| service offered through any form of technology, including voice       |
-| over internet protocol services and wireless services, that is        |
-| capable of placing calls to and receiving calls from a provider of    |
-| basic local exchange service.                                         |
-| (b) "Emergency services" means services provided to the public        |
-| by police, fire, ambulance, or other first responders.                |
-| (c) "Reliable access to 9-1-1" means the rules, regulations,          |
-| and guidelines set forth in the FCC trials order, including all       |
-| appendices, that provide comparable and reliable consumer access to   |
-| emergency services.                                                   |
+| willing provider may utilize any form of technology that is capable |
+| ------------------------------------------------------------------- |
+| of providing comparable voice service with reliable access to 9-1-1 |
+| and emergency services, including voice over internet protocol      |
+| services and wireless services. If the commission determines that   |
+| another provider is not capable of providing comparable voice       |
+| service with reliable access to 9-1-1 and emergency services in     |
+| that area, the commission shall issue an order requiring the        |
+| current telecommunication provider to provide comparable voice      |
+| service with reliable access to 9-1-1 and emergency services in     |
+| that area utilizing any form of technology that the commission      |
+| determines is capable of providing comparable voice service with    |
+| reliable access to 9-1-1 and emergency services, including voice    |
+| over internet protocol services and wireless services, until        |
+| another willing provider is available. An intrastate universal      |
+| service fund under section 316a shall not be created or used to     |
+| compensate or fund a willing provider or current telecommunication  |
+| provider to provide service under this section. As used in this     |
+| subsection:                                                         |
+| (a) "Comparable voice service" includes any 2-way voice             |
+| service offered through any form of technology, including voice     |
+| over internet protocol services and wireless services, that is      |
+| capable of placing calls to and receiving calls from a provider of  |
+| basic local exchange service.                                       |
+| (b) "Emergency services" means services provided to the public      |
+| by police, fire, ambulance, or other first responders.              |
+| (c) "Reliable access to 9-1-1" means the rules, regulations,        |
+| and guidelines set forth in the FCC trials order, including all     |
+| appendices, that provide comparable and reliable consumer access to |
+| emergency services.                                                 |
 
 RMW
 

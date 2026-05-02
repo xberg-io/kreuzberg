@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/jupyter/simple.ipynb",
   "file_type": "ipynb",
   "file_size": 23791,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "Jupyter notebook with markdown cells, code cells with HTML output, and cell attachments",
     "source": "pandoc-test-suite",

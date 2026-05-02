@@ -29,10 +29,12 @@ in T, as measured by P, improves with experience E.
 ```
 
 <!-- image -->
+
 (a) Example of an artificial neuron unit(b)
 xi are the input signals and wi are weights which have to get learned. Each input signal gets multiplied with its weight, everything gets summed up and the activation function is applied.
 
 <!-- image -->
+
 A visualization of a simple feed- forward neural network. The 5 input nodes are red, the 2 bias nodes are gray, the 3 hidden units are green and the single output node is blue.
 
 **Fig. 1:** Neural networks are based on simple units which get combined to complex networks.
@@ -43,7 +45,7 @@ The field of machine learning is related to statistics. Some algorithms directly
 
 A common misunderstanding of people who are not related in this field is that the developers don't understand what their machine learning program is doing. It is understood very well in the sense that the developer, given only a pen, lots of paper and a calculator could calculate the same result as the machine does when he gets the same data. And lots of time, of course. It is not understood in the sense that it is hard to make predictions how the algorithm behaves without actually trying it. However, this is similar to expecting from an electrical engineer to explain how a computer works. The electrical engineer could probably get the knowledge he needs to do so, but the amount of time required to understand such a complex system from basic building blocks is a time-intensive and difficult task.
 
-An important group of machine learning algorithms was inspired by biological neurons and are thus called *artificial neural networks*. Those networks are based on mathematical functions called *artificial neurons* which taken∈ N numbers X1,...,Xn ∈ R as input, multiply them with weights W1,..., Wn ∈ R, add them and apply a so called *activation function* as visualized in Figure 1(a). One example of such an activation function is the sigmoid function σ(x) = 1/(1+e-x). Those functions act as building blocks for more complex systems as they can be chained and grouped in layers as visualized in Figure 1(b). The interesting question is how the parameters wi are learned. This is usually done by an optimization technique called gradient descent. The gradient descent algorithm takes a function which has to be derivable, starts at any point of the surface of this error function and
+An important group of machine learning algorithms was inspired by biological neurons and are thus called _artificial neural networks_. Those networks are based on mathematical functions called _artificial neurons_ which taken∈ N numbers X1,...,Xn ∈ R as input, multiply them with weights W1,..., Wn ∈ R, add them and apply a so called _activation function_ as visualized in Figure 1(a). One example of such an activation function is the sigmoid function σ(x) = 1/(1+e-x). Those functions act as building blocks for more complex systems as they can be chained and grouped in layers as visualized in Figure 1(b). The interesting question is how the parameters wi are learned. This is usually done by an optimization technique called gradient descent. The gradient descent algorithm takes a function which has to be derivable, starts at any point of the surface of this error function and
 
 makes a step in the direction which goes downwards. Hence it tries to find a minimum of this high-dimensional function.
 
@@ -76,9 +78,11 @@ bird appears, seemingly out of nowhere.
 The name "Inceptionism" in the title of [MOT15] comes from the science-fiction movie "Inception" (2010). One reason it might be chosen is because neural networks are structured in layers. Recent publications tend to have more and more layers [HZRS15]. The used jargon is to say they get "deeper". As this technique as published by Google engineers, the technique is called Google DeepDream.
 
 <!-- image -->
+
 **Fig. 2:** Aurelia aurita
 
 <!-- image -->
+
 **Fig. 3:** DeepDream impression of Aurelia aurita
 
 It has become famous in the internet [Red]. Usually, the images are generated in iterations and in each iteration it is zoomed into the image.
@@ -92,12 +96,15 @@ A key idea of neural networks is that they learn different representations of th
 Gatys, Ecker and Bethge showed in [GEB15] that with a clever choice of features it is possible to separate the general style of an image in terms of local image appearance from the content of an image. They support their claim by applying the style of different artists to an arbitrary image of their choice.
 
 <!-- image -->
+
 (a) Original Image
 
 <!-- image -->
+
 (b) Style image
 
 <!-- image -->
+
 (c) The artistic style of Van Gogh's "Starry Night" applied to the photograph of a Scottish Highland Cattle.
 
 **Fig. 4:** The algorithm takes both, the original image and the style image to produce the result.
@@ -122,11 +129,11 @@ This list could be continued and most of these kinds of texts are now available 
 
 The most simple language model which is of use is an n-gram model. This model makes use of sequences of the length n to model language. It can be used to get the probability of a third word, given the previous two words. This way, a complete text can be generated word by word. Refinements and extensions to this model are discussed in the field of Natural Language Processing (NLP).
 
-However, there are much more sophisticated models. One of those are *character predictors* based on Recurrent Neural Networks (RNNs). Those character predictors take a sequence of characters as input and predict the next character. In that sense they are similar to the n-gram model, but operate on a lower level. Using such a predictor, one can generate texts character by character. If the model is good, the text can have the correct punctuation. This would not be possible with a word predictor.
+However, there are much more sophisticated models. One of those are _character predictors_ based on Recurrent Neural Networks (RNNs). Those character predictors take a sequence of characters as input and predict the next character. In that sense they are similar to the n-gram model, but operate on a lower level. Using such a predictor, one can generate texts character by character. If the model is good, the text can have the correct punctuation. This would not be possible with a word predictor.
 
 Character predictors can be implemented with RNNs. In con- trast to standard feed-forward neural networks like multilayer Perceptrons (MLPs) which was shown in Figure 1(b), those networks are trained to take their output at some point as well as the normal input. This means they can keep some information over time. One of the most common variant to implement RNNs is by using so called Long short-term memory (LSTM) cells [HS97].
 
-Recurrent networks apply two main ideas in order to learn: The first is called *unrolling* and means that an recurrent network is imagined to be an infinite network over time. At each time step the recurrent neurons get duplicated. The second idea is *weight sharing* which means that those unrolled neurons share the same weight.
+Recurrent networks apply two main ideas in order to learn: The first is called _unrolling_ and means that an recurrent network is imagined to be an infinite network over time. At each time step the recurrent neurons get duplicated. The second idea is _weight sharing_ which means that those unrolled neurons share the same weight.
 
 ### A. Similar Texts Generation
 
@@ -252,6 +259,7 @@ However, by now it is obvious that machine learning algorithms cannot compete wi
 **[ZF14]** M. D. Zeiler and R. Fergus, "Visualizing and understanding convolutional networks," in Computer Vision-ECCV 2014. Springer, 2014, pp. 818-833.
 
 ## APPENDIX A
+
 AUTOMATICALLY GENERATED TEXTS
 
 The following texts were generated by [Kar15a] and published by Karpathy on [Kar15b]. This is meant to be a copy for convenience and the case that the website is not reachable.

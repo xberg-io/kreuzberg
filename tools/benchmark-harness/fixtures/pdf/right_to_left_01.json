@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/vendored/docling/pdf/right_to_left_01.pdf",
   "file_type": "pdf",
   "file_size": 102852,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "pdf test: right_to_left_01",
     "source": "pandoc-generated",

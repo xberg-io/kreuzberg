@@ -1,19 +1,16 @@
 {
-	"id": "strikethrough_empty",
-	"category": "markup",
-	"description": "Strikethrough empty",
-	"tags": [
-		"markup",
-		"edge_case"
-	],
-	"call": "strikethrough",
-	"input": {
-		"start": 0,
-		"end": 0
-	},
-	"assertions": [
-		{
-			"type": "not_error"
-		}
-	]
+  "id": "strikethrough_empty",
+  "category": "markup",
+  "description": "Strikethrough empty",
+  "tags": ["markup", "edge_case"],
+  "call": "strikethrough",
+  "input": {
+    "start": 0,
+    "end": 0
+  },
+  "assertions": [
+    {
+      "type": "not_error"
+    }
+  ]
 }

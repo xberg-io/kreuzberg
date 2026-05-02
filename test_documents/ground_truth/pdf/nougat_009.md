@@ -37,18 +37,18 @@ higher lead form completion rate 68%
 
 Sponsored Content significantly outperformed benchmarks across all key media metrics
 
-| | US FinServ Benchmark | BlackRock Campaign |
-|---|---|---|
-| Click through rate | 0.86% | 2.21% |
-| Engagement rate | 0.92% | 56.96% |
-| Video view rate | 0.43% | 35.20% |
+|                    | US FinServ Benchmark | BlackRock Campaign |
+| ------------------ | -------------------- | ------------------ |
+| Click through rate | 0.86%                | 2.21%              |
+| Engagement rate    | 0.92%                | 56.96%             |
+| Video view rate    | 0.43%                | 35.20%             |
 
 **Demand generation performance**
 
-| | US FinServ Benchmark | BlackRock Campaign |
-|---|---|---|
-| Lead form completion rate | 33.19% | 8.55% |
-| Cost per lead | $263 | $69 |
+|                           | US FinServ Benchmark | BlackRock Campaign |
+| ------------------------- | -------------------- | ------------------ |
+| Lead form completion rate | 33.19%               | 8.55%              |
+| Cost per lead             | $263                 | $69                |
 
 Nielsen brand study results:
 

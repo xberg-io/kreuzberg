@@ -62,10 +62,7 @@
             "b": 21.0,
             "coord_origin": "TOPLEFT"
           },
-          "charspan": [
-            0,
-            0
-          ]
+          "charspan": [0, 0]
         }
       ],
       "captions": [],

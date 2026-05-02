@@ -68,10 +68,7 @@
             "b": 2.0,
             "coord_origin": "TOPLEFT"
           },
-          "charspan": [
-            0,
-            0
-          ]
+          "charspan": [0, 0]
         }
       ],
       "captions": [],
@@ -136,10 +133,7 @@
             "b": 10.0,
             "coord_origin": "TOPLEFT"
           },
-          "charspan": [
-            0,
-            0
-          ]
+          "charspan": [0, 0]
         }
       ],
       "captions": [],

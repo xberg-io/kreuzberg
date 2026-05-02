@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/rtf/unicode.rtf",
   "file_type": "rtf",
   "file_size": 92,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "RTF test document: unicode",
     "source": "pandoc-generated",

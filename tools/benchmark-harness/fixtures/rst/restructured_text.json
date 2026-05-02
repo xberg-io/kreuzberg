@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/rst/restructured_text.rst",
   "file_type": "rst",
   "file_size": 2220,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "rst test: restructured_text",
     "source": "pandoc-generated",

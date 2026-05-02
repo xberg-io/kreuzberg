@@ -10,14 +10,14 @@ Renaming the bookmark does not rename the folder.
 
 - Check that the side bar lists the bookmark under the new name.
 
-Procedure . Right-click the bookmark in the side bar. . Select *Rename…*. +
+Procedure . Right-click the bookmark in the side bar. . Select _Rename…_. +
 
 <!-- image -->
 
- In the *Name* field, enter the new name for the bookmark. +
+In the _Name_ field, enter the new name for the bookmark. +
 
 <!-- image -->
 
- Click btn:[Rename]. .Verification
+Click btn:[Rename]. .Verification
 
 <!-- image -->

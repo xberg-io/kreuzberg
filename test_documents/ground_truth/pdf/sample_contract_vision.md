@@ -1,25 +1,26 @@
-# *Sample Contract*
+# _Sample Contract_
 
-Contract No.___________
+Contract No.\***\*\_\_\_\*\***
 
 ## PROFESSIONAL SERVICES AGREEMENT
 
-THIS AGREEMENT made and entered into this _______ day of _____________, 20__ by and between the SANTA CRUZ COUNTY REGIONAL TRANSPORTATION COMMISSION, hereinafter called COMMISSION, and _____________, hereinafter called CONSULTANT for __________________ *(services/project name)*.
+THIS AGREEMENT made and entered into this **\_\_\_** day of **\*\***\_**\*\***, 20** by and between the SANTA CRUZ COUNTY REGIONAL TRANSPORTATION COMMISSION, hereinafter called COMMISSION, and \*\***\_\_\_**\*\***, hereinafter called CONSULTANT for **\*\*\*\***\_\_**\*\*\*\*** _(services/project name)_.
 
 ## 1. DUTIES.
 
-A. CONSULTANT agrees to exercise special skill to accomplish the following results in a manner reasonably satisfactory to COMMISSION: _________________________________, as specified in Exhibit A: Scope of Services, which by this reference is incorporated herein.
+A. CONSULTANT agrees to exercise special skill to accomplish the following results in a manner reasonably satisfactory to COMMISSION: **\*\***\*\*\*\***\*\***\_**\*\***\*\*\*\***\*\***, as specified in Exhibit A: Scope of Services, which by this reference is incorporated herein.
 
 B. CONSULTANT shall provide the personnel listed below to perform the above-specified services, which persons are hereby designated as key personnel under this Agreement.
 
-| Name | Firm | Function |
-|------|------|----------|
-| | | Principal in Charge |
-| | | Project Manager |
+| Name | Firm | Function            |
+| ---- | ---- | ------------------- |
+|      |      | Principal in Charge |
+|      |      | Project Manager     |
 
 C. No person named in paragraph B of this Section, or his or her successor, shall be removed or replaced by CONSULTANT, nor shall his or her agreed-upon function hereunder be changed, without the prior written consent of COMMISSION. Such consent shall not be unreasonably withheld.
 
 D. CONSULTANT'S PROGRESS REPORTS AND/OR MEETINGS
+
 1. The CONSULTANT shall submit written progress reports with each invoice. The report should be sufficiently detailed for the Contract Manager to determine if the CONSULTANT is performing to expectations or is on schedule; to provide communication of interim findings; and to sufficiently address any difficulties or special problems encountered, so remedies can be developed.
 2. The CONSULTANT's Project Manager shall meet with the COMMISSION's Contract Manager, as needed, to discuss progress on the contract.
 
@@ -27,7 +28,7 @@ D. CONSULTANT'S PROGRESS REPORTS AND/OR MEETINGS
 
 In consideration for CONSULTANT accomplishing said result, COMMISSION agrees to pay CONSULTANT as follows:
 
-A. Total payment is not to exceed $_____ for time and materials at the rates and conditions set forth in Exhibit B: Fee Schedule, which by this reference is incorporated herein.
+A. Total payment is not to exceed $**\_** for time and materials at the rates and conditions set forth in Exhibit B: Fee Schedule, which by this reference is incorporated herein.
 
 B. In no event, will the CONSULTANT be reimbursed for overhead costs at a rate that exceeds the overhead rate set forth in the Fee Schedule.
 
@@ -46,6 +47,7 @@ H. The CONSULTANT will be reimbursed after receipt by the COMMISSION's Contract 
 SCCRTC, 1523 Pacific Ave, Santa Cruz, CA, 95060
 
 The invoices must include the following information:
+
 1. Labor (staff name, hours charged, hourly billing rate, current charges and cumulative charges) performed during the billing period by task;
 2. Itemized expenses incurred during the billing period;
 3. Total invoice/payment requested;

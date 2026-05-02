@@ -1,28 +1,28 @@
 {
-	"id": "config_security_limits",
-	"description": "Tests archive extraction with custom security limits",
-	"tags": ["contract", "config", "security"],
-	"call": "extract_file_sync",
-	"input": {
-		"path": "archives/documents.zip",
-		"config": {
-			"security_limits": {
-				"max_archive_size": 104857600,
-				"max_compression_ratio": 50,
-				"max_files_in_archive": 100
-			}
-		}
-	},
-	"assertions": [
-		{
-			"type": "contains_any",
-			"field": "mime_type",
-			"values": ["application/zip", "application/x-zip-compressed"]
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 10
-		}
-	]
+  "id": "config_security_limits",
+  "description": "Tests archive extraction with custom security limits",
+  "tags": ["contract", "config", "security"],
+  "call": "extract_file_sync",
+  "input": {
+    "path": "archives/documents.zip",
+    "config": {
+      "security_limits": {
+        "max_archive_size": 104857600,
+        "max_compression_ratio": 50,
+        "max_files_in_archive": 100
+      }
+    }
+  },
+  "assertions": [
+    {
+      "type": "contains_any",
+      "field": "mime_type",
+      "values": ["application/zip", "application/x-zip-compressed"]
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 10
+    }
+  ]
 }

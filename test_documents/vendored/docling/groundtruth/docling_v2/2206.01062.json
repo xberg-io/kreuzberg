@@ -556,10 +556,7 @@
             "b": 237.0,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            39
-          ]
+          "charspan": [0, 39]
         }
       ],
       "orig": "arXiv:2206.01062v1  [cs.CV]  2 Jun 2022",
@@ -583,10 +580,7 @@
             "b": 672.59,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            71
-          ]
+          "charspan": [0, 71]
         }
       ],
       "orig": "DocLayNet: A Large Human-Annotated Dataset for Document-Layout Analysis",
@@ -611,10 +605,7 @@
             "b": 611.92,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            73
-          ]
+          "charspan": [0, 73]
         }
       ],
       "orig": "Birgit Pfitzmann IBM Research Rueschlikon, Switzerland bpf@zurich.ibm.com",
@@ -638,10 +629,7 @@
             "b": 611.92,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            71
-          ]
+          "charspan": [0, 71]
         }
       ],
       "orig": "Christoph Auer IBM Research Rueschlikon, Switzerland cau@zurich.ibm.com",
@@ -665,10 +653,7 @@
             "b": 577.45,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            28
-          ]
+          "charspan": [0, 28]
         }
       ],
       "orig": "Ahmed S. Nassar IBM Research",
@@ -692,10 +677,7 @@
             "b": 553.53,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            43
-          ]
+          "charspan": [0, 43]
         }
       ],
       "orig": "Rueschlikon, Switzerland ahn@zurich.ibm.com",
@@ -719,10 +701,7 @@
             "b": 611.92,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            70
-          ]
+          "charspan": [0, 70]
         }
       ],
       "orig": "Michele Dolfi IBM Research Rueschlikon, Switzerland dol@zurich.ibm.com",
@@ -746,10 +725,7 @@
             "b": 565.49,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            49
-          ]
+          "charspan": [0, 49]
         },
         {
           "page_no": 1,
@@ -760,10 +736,7 @@
             "b": 553.53,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            50,
-            68
-          ]
+          "charspan": [50, 68]
         }
       ],
       "orig": "Peter Staar IBM Research Rueschlikon, Switzerland taa@zurich.ibm.com",
@@ -787,10 +760,7 @@
             "b": 232.73,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            84
-          ]
+          "charspan": [0, 84]
         }
       ],
       "orig": "Figure 1: Four examples of complex page layouts across different document categories",
@@ -814,10 +784,7 @@
             "b": 438.15,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            2
-          ]
+          "charspan": [0, 2]
         }
       ],
       "orig": "13",
@@ -841,10 +808,7 @@
             "b": 458.77,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            25
-          ]
+          "charspan": [0, 25]
         }
       ],
       "orig": "USING THE VERTICAL TUBE -",
@@ -868,10 +832,7 @@
             "b": 457.16,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            20
-          ]
+          "charspan": [0, 20]
         }
       ],
       "orig": "MODELS AY11230/11234",
@@ -895,10 +856,7 @@
             "b": 454.14,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            36
-          ]
+          "charspan": [0, 36]
         }
       ],
       "orig": "1. The vertical tube can be used for",
@@ -922,10 +880,7 @@
             "b": 452.71,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            38
-          ]
+          "charspan": [0, 38]
         }
       ],
       "orig": "instructional viewing or to photograph",
@@ -949,10 +904,7 @@
             "b": 451.28,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            36
-          ]
+          "charspan": [0, 36]
         }
       ],
       "orig": "the image with a digital camera or a",
@@ -976,10 +928,7 @@
             "b": 449.85,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            13
-          ]
+          "charspan": [0, 13]
         }
       ],
       "orig": "micro TV unit",
@@ -1003,10 +952,7 @@
             "b": 448.36,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            42
-          ]
+          "charspan": [0, 42]
         }
       ],
       "orig": "2. Loosen the retention screw, then rotate",
@@ -1030,10 +976,7 @@
             "b": 446.93,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            33
-          ]
+          "charspan": [0, 33]
         }
       ],
       "orig": "the adjustment ring to change the",
@@ -1057,10 +1000,7 @@
             "b": 445.5,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            28
-          ]
+          "charspan": [0, 28]
         }
       ],
       "orig": "length of the vertical tube.",
@@ -1084,10 +1024,7 @@
             "b": 443.7,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            36
-          ]
+          "charspan": [0, 36]
         }
       ],
       "orig": "3. Make sure that both the images in",
@@ -1111,10 +1048,7 @@
             "b": 533.32,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            17
-          ]
+          "charspan": [0, 17]
         }
       ],
       "orig": "OPERATION (cont.)",
@@ -1138,10 +1072,7 @@
             "b": 526.85,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            19
-          ]
+          "charspan": [0, 19]
         }
       ],
       "orig": "SELECTING OBJECTIVE",
@@ -1165,10 +1096,7 @@
             "b": 525.24,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            13
-          ]
+          "charspan": [0, 13]
         }
       ],
       "orig": "MAGNIFICATION",
@@ -1192,10 +1120,7 @@
             "b": 523.63,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            38
-          ]
+          "charspan": [0, 38]
         }
       ],
       "orig": "1. There are two objectives. The lower",
@@ -1219,10 +1144,7 @@
             "b": 522.02,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            37
-          ]
+          "charspan": [0, 37]
         }
       ],
       "orig": "magnification objective has a greater",
@@ -1246,10 +1168,7 @@
             "b": 520.41,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            24
-          ]
+          "charspan": [0, 24]
         }
       ],
       "orig": "depth of field and view.",
@@ -1273,10 +1192,7 @@
             "b": 518.8,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            35
-          ]
+          "charspan": [0, 35]
         }
       ],
       "orig": "2. In order to observe the specimen",
@@ -1300,10 +1216,7 @@
             "b": 517.19,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            34
-          ]
+          "charspan": [0, 34]
         }
       ],
       "orig": "easily use the lower magnification",
@@ -1327,10 +1240,7 @@
             "b": 515.58,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            38
-          ]
+          "charspan": [0, 38]
         }
       ],
       "orig": "objective first. Then, by rotating the",
@@ -1354,10 +1264,7 @@
             "b": 513.97,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            30
-          ]
+          "charspan": [0, 30]
         }
       ],
       "orig": "case, the magnification can be",
@@ -1381,10 +1288,7 @@
             "b": 512.36,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            8
-          ]
+          "charspan": [0, 8]
         }
       ],
       "orig": "changed.",
@@ -1408,10 +1312,7 @@
             "b": 509.13,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            27
-          ]
+          "charspan": [0, 27]
         }
       ],
       "orig": "CHANGING THE INTERPUPILLARY",
@@ -1435,10 +1336,7 @@
             "b": 507.52,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            8
-          ]
+          "charspan": [0, 8]
         }
       ],
       "orig": "DISTANCE",
@@ -1462,10 +1360,7 @@
             "b": 505.91,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            38
-          ]
+          "charspan": [0, 38]
         }
       ],
       "orig": "1. The distance between the observer's",
@@ -1489,10 +1384,7 @@
             "b": 504.3,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            38
-          ]
+          "charspan": [0, 38]
         }
       ],
       "orig": "pupils is the interpupil ary distance.",
@@ -1516,10 +1408,7 @@
             "b": 502.69,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            40
-          ]
+          "charspan": [0, 40]
         }
       ],
       "orig": "2. To adjust the interpupil ary distance",
@@ -1543,10 +1432,7 @@
             "b": 501.08,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            37
-          ]
+          "charspan": [0, 37]
         }
       ],
       "orig": "rotate the prism caps until both eyes",
@@ -1570,10 +1456,7 @@
             "b": 499.47,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            30
-          ]
+          "charspan": [0, 30]
         }
       ],
       "orig": "coincide with the image in the",
@@ -1597,10 +1480,7 @@
             "b": 497.86,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            9
-          ]
+          "charspan": [0, 9]
         }
       ],
       "orig": "eyepiece.",
@@ -1624,10 +1504,7 @@
             "b": 494.64,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            8
-          ]
+          "charspan": [0, 8]
         }
       ],
       "orig": "FOCUSING",
@@ -1651,10 +1528,7 @@
             "b": 493.03,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            36
-          ]
+          "charspan": [0, 36]
         }
       ],
       "orig": "1. Remove the lens protective cover.",
@@ -1678,10 +1552,7 @@
             "b": 491.42,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            36
-          ]
+          "charspan": [0, 36]
         }
       ],
       "orig": "2. Place the specimen on the working",
@@ -1705,10 +1576,7 @@
             "b": 489.81,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            6
-          ]
+          "charspan": [0, 6]
         }
       ],
       "orig": "stage.",
@@ -1732,10 +1600,7 @@
             "b": 488.2,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            39
-          ]
+          "charspan": [0, 39]
         }
       ],
       "orig": "3. Focus the specimen with the left eye",
@@ -1759,10 +1624,7 @@
             "b": 486.59,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            40
-          ]
+          "charspan": [0, 40]
         }
       ],
       "orig": "first while turning the focus knob until",
@@ -1786,10 +1648,7 @@
             "b": 484.98,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            34
-          ]
+          "charspan": [0, 34]
         }
       ],
       "orig": "the image appears clear and sharp.",
@@ -1813,10 +1672,7 @@
             "b": 483.37,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            43
-          ]
+          "charspan": [0, 43]
         }
       ],
       "orig": "4. Rotate the right eyepiece ring until the",
@@ -1840,10 +1696,7 @@
             "b": 481.76,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            36
-          ]
+          "charspan": [0, 36]
         }
       ],
       "orig": "images in each eyepiece coincide and",
@@ -1867,10 +1720,7 @@
             "b": 480.15,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            20
-          ]
+          "charspan": [0, 20]
         }
       ],
       "orig": "are sharp and clear.",
@@ -1894,10 +1744,7 @@
             "b": 476.93,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            17
-          ]
+          "charspan": [0, 17]
         }
       ],
       "orig": "CHANGING THE BULB",
@@ -1921,10 +1768,7 @@
             "b": 475.32,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            29
-          ]
+          "charspan": [0, 29]
         }
       ],
       "orig": "1. Disconnect the power cord.",
@@ -1948,10 +1792,7 @@
             "b": 473.71,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            36
-          ]
+          "charspan": [0, 36]
         }
       ],
       "orig": "2. When the bulb is cool, remove the",
@@ -1975,10 +1816,7 @@
             "b": 472.1,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            34
-          ]
+          "charspan": [0, 34]
         }
       ],
       "orig": "oblique il uminator cap and remove",
@@ -2002,10 +1840,7 @@
             "b": 470.49,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            26
-          ]
+          "charspan": [0, 26]
         }
       ],
       "orig": "the halogen bulb with cap.",
@@ -2029,10 +1864,7 @@
             "b": 468.88,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            35
-          ]
+          "charspan": [0, 35]
         }
       ],
       "orig": "3. Replace with a new halogen bulb.",
@@ -2056,10 +1888,7 @@
             "b": 467.27,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            40
-          ]
+          "charspan": [0, 40]
         }
       ],
       "orig": "4. Open the window in the base plate and",
@@ -2083,10 +1912,7 @@
             "b": 465.66,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            27
-          ]
+          "charspan": [0, 27]
         }
       ],
       "orig": "replace the halogen lamp or",
@@ -2110,10 +1936,7 @@
             "b": 464.05,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            31
-          ]
+          "charspan": [0, 31]
         }
       ],
       "orig": "fluorescent lamp of transmitted",
@@ -2137,10 +1960,7 @@
             "b": 462.44,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            12
-          ]
+          "charspan": [0, 12]
         }
       ],
       "orig": "il uminator.",
@@ -2164,10 +1984,7 @@
             "b": 526.85,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            8
-          ]
+          "charspan": [0, 8]
         }
       ],
       "orig": "FOCUSING",
@@ -2191,10 +2008,7 @@
             "b": 525.24,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            40
-          ]
+          "charspan": [0, 40]
         }
       ],
       "orig": "1. Turn the focusing knob away or toward",
@@ -2218,10 +2032,7 @@
             "b": 523.63,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            34
-          ]
+          "charspan": [0, 34]
         }
       ],
       "orig": "you until a clear image is viewed.",
@@ -2245,10 +2056,7 @@
             "b": 522.02,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            38
-          ]
+          "charspan": [0, 38]
         }
       ],
       "orig": "2. If the image is unclear, adjust the",
@@ -2272,10 +2080,7 @@
             "b": 520.41,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            34
-          ]
+          "charspan": [0, 34]
         }
       ],
       "orig": "height of the elevator up or down,",
@@ -2299,10 +2104,7 @@
             "b": 518.8,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            34
-          ]
+          "charspan": [0, 34]
         }
       ],
       "orig": "then turn the focusing knob again.",
@@ -2326,10 +2128,7 @@
             "b": 515.58,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            18
-          ]
+          "charspan": [0, 18]
         }
       ],
       "orig": "ZOOM MAGNIFICATION",
@@ -2353,10 +2152,7 @@
             "b": 513.97,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            38
-          ]
+          "charspan": [0, 38]
         }
       ],
       "orig": "1. Turn the zoom magnification knob to",
@@ -2380,10 +2176,7 @@
             "b": 512.36,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            38
-          ]
+          "charspan": [0, 38]
         }
       ],
       "orig": "the desired magnification and field of",
@@ -2407,10 +2200,7 @@
             "b": 510.75,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            5
-          ]
+          "charspan": [0, 5]
         }
       ],
       "orig": "view.",
@@ -2434,10 +2224,7 @@
             "b": 509.13,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            40
-          ]
+          "charspan": [0, 40]
         }
       ],
       "orig": "2. In most situations, it is recommended",
@@ -2461,10 +2248,7 @@
             "b": 507.52,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            28
-          ]
+          "charspan": [0, 28]
         }
       ],
       "orig": "that you focus at the lowest",
@@ -2488,10 +2272,7 @@
             "b": 505.91,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            36
-          ]
+          "charspan": [0, 36]
         }
       ],
       "orig": "magnification, then move to a higher",
@@ -2515,10 +2296,7 @@
             "b": 504.3,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            29
-          ]
+          "charspan": [0, 29]
         }
       ],
       "orig": "magnification and re-focus as",
@@ -2542,10 +2320,7 @@
             "b": 502.69,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            10
-          ]
+          "charspan": [0, 10]
         }
       ],
       "orig": "necessary.",
@@ -2569,10 +2344,7 @@
             "b": 501.08,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            41
-          ]
+          "charspan": [0, 41]
         }
       ],
       "orig": "3. If the image is not clear to both eyes",
@@ -2596,10 +2368,7 @@
             "b": 499.47,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            38
-          ]
+          "charspan": [0, 38]
         }
       ],
       "orig": "at the same time, the diopter ring may",
@@ -2623,10 +2392,7 @@
             "b": 497.86,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            16
-          ]
+          "charspan": [0, 16]
         }
       ],
       "orig": "need adjustment.",
@@ -2650,10 +2416,7 @@
             "b": 494.64,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            23
-          ]
+          "charspan": [0, 23]
         }
       ],
       "orig": "DIOPTER RING ADJUSTMENT",
@@ -2677,10 +2440,7 @@
             "b": 493.03,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            42
-          ]
+          "charspan": [0, 42]
         }
       ],
       "orig": "1. To adjust the eyepiece for viewing with",
@@ -2704,10 +2464,7 @@
             "b": 491.42,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            29
-          ]
+          "charspan": [0, 29]
         }
       ],
       "orig": "or without eyeglasses and for",
@@ -2731,10 +2488,7 @@
             "b": 489.81,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            39
-          ]
+          "charspan": [0, 39]
         }
       ],
       "orig": "differences in acuity between the right",
@@ -2758,10 +2512,7 @@
             "b": 488.2,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            35
-          ]
+          "charspan": [0, 35]
         }
       ],
       "orig": "and left eyes, fol ow the fol owing",
@@ -2785,10 +2536,7 @@
             "b": 486.59,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            6
-          ]
+          "charspan": [0, 6]
         }
       ],
       "orig": "steps:",
@@ -2812,10 +2560,7 @@
             "b": 484.98,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            36
-          ]
+          "charspan": [0, 36]
         }
       ],
       "orig": "a. Observe an image through the left",
@@ -2839,10 +2584,7 @@
             "b": 483.37,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            35
-          ]
+          "charspan": [0, 35]
         }
       ],
       "orig": "eyepiece and bring a specific point",
@@ -2866,10 +2608,7 @@
             "b": 481.76,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            32
-          ]
+          "charspan": [0, 32]
         }
       ],
       "orig": "into focus using the focus knob.",
@@ -2893,10 +2632,7 @@
             "b": 480.15,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            30
-          ]
+          "charspan": [0, 30]
         }
       ],
       "orig": "b. By turning the diopter ring",
@@ -2920,10 +2656,7 @@
             "b": 478.54,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            33
-          ]
+          "charspan": [0, 33]
         }
       ],
       "orig": "adjustment for the left eyepiece,",
@@ -2947,10 +2680,7 @@
             "b": 476.93,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            31
-          ]
+          "charspan": [0, 31]
         }
       ],
       "orig": "bring the same point into sharp",
@@ -2974,10 +2704,7 @@
             "b": 475.32,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            6
-          ]
+          "charspan": [0, 6]
         }
       ],
       "orig": "focus.",
@@ -3001,10 +2728,7 @@
             "b": 473.71,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            32
-          ]
+          "charspan": [0, 32]
         }
       ],
       "orig": "c.Then bring the same point into",
@@ -3028,10 +2752,7 @@
             "b": 472.1,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            32
-          ]
+          "charspan": [0, 32]
         }
       ],
       "orig": "focus through the right eyepiece",
@@ -3055,10 +2776,7 @@
             "b": 470.49,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            34
-          ]
+          "charspan": [0, 34]
         }
       ],
       "orig": "by turning the right diopter ring.",
@@ -3082,10 +2800,7 @@
             "b": 468.88,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            33
-          ]
+          "charspan": [0, 33]
         }
       ],
       "orig": "d.With more than one viewer, each",
@@ -3109,10 +2824,7 @@
             "b": 467.27,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            28
-          ]
+          "charspan": [0, 28]
         }
       ],
       "orig": "viewer should note their own",
@@ -3136,10 +2848,7 @@
             "b": 465.66,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            34
-          ]
+          "charspan": [0, 34]
         }
       ],
       "orig": "diopter ring position for the left",
@@ -3163,10 +2872,7 @@
             "b": 464.05,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            32
-          ]
+          "charspan": [0, 32]
         }
       ],
       "orig": "and right eyepieces, then before",
@@ -3190,10 +2896,7 @@
             "b": 462.44,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            28
-          ]
+          "charspan": [0, 28]
         }
       ],
       "orig": "viewing set the diopter ring",
@@ -3217,10 +2920,7 @@
             "b": 460.83,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            28
-          ]
+          "charspan": [0, 28]
         }
       ],
       "orig": "adjustments to that setting.",
@@ -3244,10 +2944,7 @@
             "b": 457.61,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            17
-          ]
+          "charspan": [0, 17]
         }
       ],
       "orig": "CHANGING THE BULB",
@@ -3271,10 +2968,7 @@
             "b": 456.0,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            37
-          ]
+          "charspan": [0, 37]
         }
       ],
       "orig": "1. Disconnect the power cord from the",
@@ -3298,10 +2992,7 @@
             "b": 454.39,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            18
-          ]
+          "charspan": [0, 18]
         }
       ],
       "orig": "electrical outlet.",
@@ -3325,10 +3016,7 @@
             "b": 452.78,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            36
-          ]
+          "charspan": [0, 36]
         }
       ],
       "orig": "2. When the bulb is cool, remove the",
@@ -3352,10 +3040,7 @@
             "b": 451.17,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            34
-          ]
+          "charspan": [0, 34]
         }
       ],
       "orig": "oblique il uminator cap and remove",
@@ -3379,10 +3064,7 @@
             "b": 449.56,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            26
-          ]
+          "charspan": [0, 26]
         }
       ],
       "orig": "the halogen bulb with cap.",
@@ -3406,10 +3088,7 @@
             "b": 447.95,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            35
-          ]
+          "charspan": [0, 35]
         }
       ],
       "orig": "3. Replace with a new halogen bulb.",
@@ -3433,10 +3112,7 @@
             "b": 446.34,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            36
-          ]
+          "charspan": [0, 36]
         }
       ],
       "orig": "4. Open the window in the base plate",
@@ -3460,10 +3136,7 @@
             "b": 444.73,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            31
-          ]
+          "charspan": [0, 31]
         }
       ],
       "orig": "and replace the halogen lamp or",
@@ -3487,10 +3160,7 @@
             "b": 443.12,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            31
-          ]
+          "charspan": [0, 31]
         }
       ],
       "orig": "fluorescent lamp of transmitted",
@@ -3514,10 +3184,7 @@
             "b": 441.51,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            12
-          ]
+          "charspan": [0, 12]
         }
       ],
       "orig": "il uminator.",
@@ -3541,10 +3208,7 @@
             "b": 529.2,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            13
-          ]
+          "charspan": [0, 13]
         }
       ],
       "orig": "Model AY11230",
@@ -3568,10 +3232,7 @@
             "b": 529.2,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            13
-          ]
+          "charspan": [0, 13]
         }
       ],
       "orig": "Model AY11234",
@@ -3595,10 +3256,7 @@
             "b": 438.16,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            2
-          ]
+          "charspan": [0, 2]
         }
       ],
       "orig": "14",
@@ -3622,10 +3280,7 @@
             "b": 515.11,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            10
-          ]
+          "charspan": [0, 10]
         }
       ],
       "orig": "Objectives",
@@ -3649,10 +3304,7 @@
             "b": 521.65,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            16
-          ]
+          "charspan": [0, 16]
         }
       ],
       "orig": "Revolving Turret",
@@ -3676,10 +3328,7 @@
             "b": 511.51,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            6
-          ]
+          "charspan": [0, 6]
         }
       ],
       "orig": "Coarse",
@@ -3703,10 +3352,7 @@
             "b": 510.33,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            10
-          ]
+          "charspan": [0, 10]
         }
       ],
       "orig": "Adjustment",
@@ -3730,10 +3376,7 @@
             "b": 509.15,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            4
-          ]
+          "charspan": [0, 4]
         }
       ],
       "orig": "Knob",
@@ -3757,10 +3400,7 @@
             "b": 533.32,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            13
-          ]
+          "charspan": [0, 13]
         }
       ],
       "orig": "MODEL AY11236",
@@ -3784,10 +3424,7 @@
             "b": 483.23,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            16
-          ]
+          "charspan": [0, 16]
         }
       ],
       "orig": "MICROSCOPE USAGE",
@@ -3811,10 +3448,7 @@
             "b": 479.57,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            55
-          ]
+          "charspan": [0, 55]
         }
       ],
       "orig": "BARSKA Model AY11236 is a powerful fixed power compound",
@@ -3838,10 +3472,7 @@
             "b": 477.42,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            59
-          ]
+          "charspan": [0, 59]
         }
       ],
       "orig": "microscope designed for biological studies such as specimen",
@@ -3865,10 +3496,7 @@
             "b": 475.27,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            59
-          ]
+          "charspan": [0, 59]
         }
       ],
       "orig": "examination. It can also be used for examining bacteria and",
@@ -3892,10 +3520,7 @@
             "b": 473.13,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            67
-          ]
+          "charspan": [0, 67]
         }
       ],
       "orig": "for general clinical and medical studies and other scientific uses.",
@@ -3919,10 +3544,7 @@
             "b": 467.84,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            12
-          ]
+          "charspan": [0, 12]
         }
       ],
       "orig": "CONSTRUCTION",
@@ -3946,10 +3568,7 @@
             "b": 463.47,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            58
-          ]
+          "charspan": [0, 58]
         }
       ],
       "orig": "BARSKA Model AY11236 is a fixed power compound microscope.",
@@ -3973,10 +3592,7 @@
             "b": 461.32,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            65
-          ]
+          "charspan": [0, 65]
         }
       ],
       "orig": "It is constructed with two optical paths at the same angle. It is",
@@ -4000,10 +3616,7 @@
             "b": 459.17,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            65
-          ]
+          "charspan": [0, 65]
         }
       ],
       "orig": "equipped with transmitted il umination. By using this instrument,",
@@ -4027,10 +3640,7 @@
             "b": 457.03,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            59
-          ]
+          "charspan": [0, 59]
         }
       ],
       "orig": "the user can observe specimens at magnification from 40x to",
@@ -4054,10 +3664,7 @@
             "b": 454.88,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            62
-          ]
+          "charspan": [0, 62]
         }
       ],
       "orig": "1000x by selecting the desired objective lens. Coarse and fine",
@@ -4081,10 +3688,7 @@
             "b": 452.73,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            65
-          ]
+          "charspan": [0, 65]
         }
       ],
       "orig": "focus adjustments provide accuracy and image detail. The rotating",
@@ -4108,10 +3712,7 @@
             "b": 450.58,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            58
-          ]
+          "charspan": [0, 58]
         }
       ],
       "orig": "head al ows the user to position the eyepieces for maximum",
@@ -4135,10 +3736,7 @@
             "b": 448.44,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            56
-          ]
+          "charspan": [0, 56]
         }
       ],
       "orig": "viewing comfort and easy access to al  adjustment knobs.",
@@ -4162,10 +3760,7 @@
             "b": 489.1,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            13
-          ]
+          "charspan": [0, 13]
         }
       ],
       "orig": "Model AY11236",
@@ -4189,10 +3784,7 @@
             "b": 507.55,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            4
-          ]
+          "charspan": [0, 4]
         }
       ],
       "orig": "Fine",
@@ -4216,10 +3808,7 @@
             "b": 506.37,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            10
-          ]
+          "charspan": [0, 10]
         }
       ],
       "orig": "Adjustment",
@@ -4243,10 +3832,7 @@
             "b": 505.19,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            4
-          ]
+          "charspan": [0, 4]
         }
       ],
       "orig": "Knob",
@@ -4270,10 +3856,7 @@
             "b": 511.51,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            5
-          ]
+          "charspan": [0, 5]
         }
       ],
       "orig": "Stage",
@@ -4297,10 +3880,7 @@
             "b": 509.72,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            9
-          ]
+          "charspan": [0, 9]
         }
       ],
       "orig": "Condenser",
@@ -4324,10 +3904,7 @@
             "b": 508.54,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            8
-          ]
+          "charspan": [0, 8]
         }
       ],
       "orig": "Focusing",
@@ -4351,10 +3928,7 @@
             "b": 507.36,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            4
-          ]
+          "charspan": [0, 4]
         }
       ],
       "orig": "Knob",
@@ -4378,10 +3952,7 @@
             "b": 528.31,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            8
-          ]
+          "charspan": [0, 8]
         }
       ],
       "orig": "Eyepiece",
@@ -4405,10 +3976,7 @@
             "b": 519.5,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            5
-          ]
+          "charspan": [0, 5]
         }
       ],
       "orig": "Stand",
@@ -4432,10 +4000,7 @@
             "b": 506.23,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            4
-          ]
+          "charspan": [0, 4]
         }
       ],
       "orig": "Lamp",
@@ -4459,10 +4024,7 @@
             "b": 504.8,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            5
-          ]
+          "charspan": [0, 5]
         }
       ],
       "orig": "On/Of",
@@ -4486,10 +4048,7 @@
             "b": 503.37,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            6
-          ]
+          "charspan": [0, 6]
         }
       ],
       "orig": "Switch",
@@ -4513,10 +4072,7 @@
             "b": 493.92,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            4
-          ]
+          "charspan": [0, 4]
         }
       ],
       "orig": "Lamp",
@@ -4540,10 +4096,7 @@
             "b": 498.45,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            5
-          ]
+          "charspan": [0, 5]
         }
       ],
       "orig": "Power",
@@ -4567,10 +4120,7 @@
             "b": 497.02,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            4
-          ]
+          "charspan": [0, 4]
         }
       ],
       "orig": "Cord",
@@ -4594,10 +4144,7 @@
             "b": 525.97,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            13
-          ]
+          "charspan": [0, 13]
         }
       ],
       "orig": "Rotating Head",
@@ -4621,10 +4168,7 @@
             "b": 503.73,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            10
-          ]
+          "charspan": [0, 10]
         }
       ],
       "orig": "Stage Clip",
@@ -4648,10 +4192,7 @@
             "b": 502.3,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            10
-          ]
+          "charspan": [0, 10]
         }
       ],
       "orig": "Adjustment",
@@ -4675,10 +4216,7 @@
             "b": 530.77,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            31
-          ]
+          "charspan": [0, 31]
         }
       ],
       "orig": "Interpupil ary Slide Adjustment",
@@ -4702,10 +4240,7 @@
             "b": 411.3,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            17
-          ]
+          "charspan": [0, 17]
         }
       ],
       "orig": "Circling Minimums",
@@ -4729,10 +4264,7 @@
             "b": 406.74,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            873
-          ]
+          "charspan": [0, 873]
         }
       ],
       "orig": "7KHUHGLYPH<c=3,font=/AAAAAH+ArialMT>ZDVGLYPH<c=3,font=/AAAAAH+ArialMT>DGLYPH<c=3,font=/AAAAAH+ArialMT>FKDQJHGLYPH<c=3,font=/AAAAAH+ArialMT>WRGLYPH<c=3,font=/AAAAAH+ArialMT>WKHGLYPH<c=3,font=/AAAAAH+ArialMT>7(536GLYPH<c=3,font=/AAAAAH+ArialMT>FULWHULDGLYPH<c=3,font=/AAAAAH+ArialMT>LQGLYPH<c=3,font=/AAAAAH+ArialMT>GLYPH<c=21,font=/AAAAAH+ArialMT>GLYPH<c=19,font=/AAAAAH+ArialMT>GLYPH<c=20,font=/AAAAAH+ArialMT>GLYPH<c=21,font=/AAAAAH+ArialMT>GLYPH<c=3,font=/AAAAAH+ArialMT>WKDWGLYPH<c=3,font=/AAAAAH+ArialMT>D\u1087HFWVGLYPH<c=3,font=/AAAAAH+ArialMT>FLUFOLQJGLYPH<c=3,font=/AAAAAH+ArialMT>DUHDGLYPH<c=3,font=/AAAAAH+ArialMT>GLPHQVLRQGLYPH<c=3,font=/AAAAAH+ArialMT>E\\GLYPH<c=3,font=/AAAAAH+ArialMT>H[SDQGLQJGLYPH<c=3,font=/AAAAAH+ArialMT>WKHGLYPH<c=3,font=/AAAAAH+ArialMT>DUHDVGLYPH<c=3,font=/AAAAAH+ArialMT>WRGLYPH<c=3,font=/AAAAAH+ArialMT>SURYLGHGLYPH<c=3,font=/AAAAAH+ArialMT>",
@@ -4756,10 +4288,7 @@
             "b": 404.21,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            104
-          ]
+          "charspan": [0, 104]
         }
       ],
       "orig": "improved obstacle protection. To indicate that the new criteria had been applied to a given procedure, a",
@@ -4783,10 +4312,7 @@
             "b": 404.21,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            12
-          ]
+          "charspan": [0, 12]
         }
       ],
       "orig": "is placed on",
@@ -4810,10 +4336,7 @@
             "b": 401.93,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            119
-          ]
+          "charspan": [0, 119]
         }
       ],
       "orig": "the circling line of minimums. The new circling tables and explanatory information is located in the Legend of the TPP.",
@@ -4837,10 +4360,7 @@
             "b": 396.75,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            543
-          ]
+          "charspan": [0, 543]
         }
       ],
       "orig": "7KHGLYPH<c=3,font=/AAAAAH+ArialMT>DSSURDFKHVGLYPH<c=3,font=/AAAAAH+ArialMT>XVLQJGLYPH<c=3,font=/AAAAAH+ArialMT>VWDQGDUGGLYPH<c=3,font=/AAAAAH+ArialMT>FLUFOLQJGLYPH<c=3,font=/AAAAAH+ArialMT>DSSURDFKGLYPH<c=3,font=/AAAAAH+ArialMT>DUHDVGLYPH<c=3,font=/AAAAAH+ArialMT>FDQGLYPH<c=3,font=/AAAAAH+ArialMT>EHGLYPH<c=3,font=/AAAAAH+ArialMT>LGHQWL\u00bfHGGLYPH<c=3,font=/AAAAAH+ArialMT>E\\GLYPH<c=3,font=/AAAAAH+ArialMT>WKHGLYPH<c=3,font=/AAAAAH+ArialMT>DEVHQFHGLYPH<c=3,font=/AAAAAH+ArialMT>RIGLYPH<c=3,font=/AAAAAH+ArialMT>WKHGLYPH<c=3,font=/AAAAAH+ArialMT>",
@@ -4864,10 +4384,7 @@
             "b": 396.75,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            23
-          ]
+          "charspan": [0, 23]
         }
       ],
       "orig": "on the circling line of",
@@ -4891,10 +4408,7 @@
             "b": 394.47,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            7
-          ]
+          "charspan": [0, 7]
         }
       ],
       "orig": "minima.",
@@ -4918,10 +4432,7 @@
             "b": 374.57,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            281
-          ]
+          "charspan": [0, 281]
         }
       ],
       "orig": "$SSO\\GLYPH<c=3,font=/AAAAAK+Arial-ItalicMT>6WDQGDUGGLYPH<c=3,font=/AAAAAK+Arial-ItalicMT>&LUFOLQJGLYPH<c=3,font=/AAAAAK+Arial-ItalicMT> $SSURDFKGLYPH<c=3,font=/AAAAAK+Arial-ItalicMT>0DQHXYHULQJGLYPH<c=3,font=/AAAAAK+Arial-ItalicMT>5DGLXVGLYPH<c=3,font=/AAAAAK+Arial-ItalicMT>7 DEOH",
@@ -4945,10 +4456,7 @@
             "b": 380.91,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            322
-          ]
+          "charspan": [0, 322]
         }
       ],
       "orig": "$SSO\\GLYPH<c=3,font=/AAAAAK+Arial-ItalicMT>([SDQGHGGLYPH<c=3,font=/AAAAAK+Arial-ItalicMT>&LUFOLQJGLYPH<c=3,font=/AAAAAK+Arial-ItalicMT> $SSURDFKGLYPH<c=3,font=/AAAAAK+Arial-ItalicMT>0DQHXYHULQJGLYPH<c=3,font=/AAAAAK+Arial-ItalicMT> $LUVSDFHGLYPH<c=3,font=/AAAAAK+Arial-ItalicMT>5DGLXVGLYPH<c=3,font=/AAAAAK+Arial-ItalicMT>",
@@ -4972,10 +4480,7 @@
             "b": 378.86,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            5
-          ]
+          "charspan": [0, 5]
         }
       ],
       "orig": "Table",
@@ -4999,10 +4504,7 @@
             "b": 369.37,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            14
-          ]
+          "charspan": [0, 14]
         }
       ],
       "orig": "AIRPORT SKETCH",
@@ -5026,10 +4528,7 @@
             "b": 364.87,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            92
-          ]
+          "charspan": [0, 92]
         }
       ],
       "orig": "The airport sketch is a depiction of the airport with emphasis on runway pattern and related",
@@ -5053,10 +4552,7 @@
             "b": 362.6,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            94
-          ]
+          "charspan": [0, 94]
         }
       ],
       "orig": "information, positioned in either the lower left or lower right corner of the chart to aid pi-",
@@ -5080,10 +4576,7 @@
             "b": 360.32,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            92
-          ]
+          "charspan": [0, 92]
         }
       ],
       "orig": "lot recognition of the airport from the air and to provide some information to aid on ground",
@@ -5107,10 +4600,7 @@
             "b": 358.04,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            92
-          ]
+          "charspan": [0, 92]
         }
       ],
       "orig": "navigation of the airport. The runways are drawn to scale and oriented to true north. Runway",
@@ -5134,10 +4624,7 @@
             "b": 355.76,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            63
-          ]
+          "charspan": [0, 63]
         }
       ],
       "orig": "dimensions (length and width) are shown for al  active runways.",
@@ -5161,10 +4648,7 @@
             "b": 351.2,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            73
-          ]
+          "charspan": [0, 73]
         }
       ],
       "orig": "Runway(s) are depicted based on what type and construction of the runway.",
@@ -5188,10 +4672,7 @@
             "b": 346.1,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            12
-          ]
+          "charspan": [0, 12]
         }
       ],
       "orig": "Hard Surface",
@@ -5215,10 +4696,7 @@
             "b": 346.1,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            10
-          ]
+          "charspan": [0, 10]
         }
       ],
       "orig": "Other Than",
@@ -5242,10 +4720,7 @@
             "b": 344.05,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            12
-          ]
+          "charspan": [0, 12]
         }
       ],
       "orig": "Hard Surface",
@@ -5269,10 +4744,7 @@
             "b": 346.1,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            13
-          ]
+          "charspan": [0, 13]
         }
       ],
       "orig": "Metal Surface",
@@ -5296,10 +4768,7 @@
             "b": 346.1,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            13
-          ]
+          "charspan": [0, 13]
         }
       ],
       "orig": "Closed Runway",
@@ -5323,10 +4792,7 @@
             "b": 346.1,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            18
-          ]
+          "charspan": [0, 18]
         }
       ],
       "orig": "Under Construction",
@@ -5350,10 +4816,7 @@
             "b": 335.36,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            9
-          ]
+          "charspan": [0, 9]
         }
       ],
       "orig": "Stopways,",
@@ -5377,10 +4840,7 @@
             "b": 333.3,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            15
-          ]
+          "charspan": [0, 15]
         }
       ],
       "orig": "Taxiways, Park-",
@@ -5404,10 +4864,7 @@
             "b": 331.25,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            9
-          ]
+          "charspan": [0, 9]
         }
       ],
       "orig": "ing Areas",
@@ -5431,10 +4888,7 @@
             "b": 335.36,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            9
-          ]
+          "charspan": [0, 9]
         }
       ],
       "orig": "Displaced",
@@ -5458,10 +4912,7 @@
             "b": 333.3,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            9
-          ]
+          "charspan": [0, 9]
         }
       ],
       "orig": "Threshold",
@@ -5485,10 +4936,7 @@
             "b": 335.36,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            6
-          ]
+          "charspan": [0, 6]
         }
       ],
       "orig": "Closed",
@@ -5512,10 +4960,7 @@
             "b": 333.3,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            8
-          ]
+          "charspan": [0, 8]
         }
       ],
       "orig": "Pavement",
@@ -5539,10 +4984,7 @@
             "b": 335.36,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            12
-          ]
+          "charspan": [0, 12]
         }
       ],
       "orig": "Water Runway",
@@ -5566,10 +5008,7 @@
             "b": 320.63,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            110
-          ]
+          "charspan": [0, 110]
         }
       ],
       "orig": "Taxiways and aprons are shaded grey. Other runway features that may be shown are runway numbers, runway dimen-",
@@ -5593,10 +5032,7 @@
             "b": 318.36,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            61
-          ]
+          "charspan": [0, 61]
         }
       ],
       "orig": "sions, runway slope, arresting gear, and displaced threshold.",
@@ -5620,10 +5056,7 @@
             "b": 313.8,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            697
-          ]
+          "charspan": [0, 697]
         }
       ],
       "orig": "2WKHUGLYPH<c=3,font=/AAAAAH+ArialMT>LQIRUPDWLRQGLYPH<c=3,font=/AAAAAH+ArialMT>FRQFHUQLQJGLYPH<c=3,font=/AAAAAH+ArialMT>OLJKWLQJGLYPH<c=15,font=/AAAAAH+ArialMT>GLYPH<c=3,font=/AAAAAH+ArialMT>\u00bfQDOGLYPH<c=3,font=/AAAAAH+ArialMT>DSSURDFKGLYPH<c=3,font=/AAAAAH+ArialMT>EHDULQJVGLYPH<c=15,font=/AAAAAH+ArialMT>GLYPH<c=3,font=/AAAAAH+ArialMT>DLUSRUWGLYPH<c=3,font=/AAAAAH+ArialMT>EHDFRQGLYPH<c=15,font=/AAAAAH+ArialMT>GLYPH<c=3,font=/AAAAAH+ArialMT>REVWDFOHVGLYPH<c=15,font=/AAAAAH+ArialMT>GLYPH<c=3,font=/AAAAAH+ArialMT>FRQWUROGLYPH<c=3,font=/AAAAAH+ArialMT>WRZHU GLYPH<c=15,font=/AAAAAH+ArialMT>GLYPH<c=3,font=/AAAAAH+ArialMT>1$ 9 $,'VGLYPH<c=15,font=/AAAAAH+ArialMT>GLYPH<c=3,font=/AAAAAH+ArialMT>KHOL",
@@ -5647,10 +5080,7 @@
             "b": 313.8,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "-",
@@ -5674,10 +5104,7 @@
             "b": 311.52,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            23
-          ]
+          "charspan": [0, 23]
         }
       ],
       "orig": "pads may also be shown.",
@@ -5701,10 +5128,7 @@
             "b": 306.96,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            222
-          ]
+          "charspan": [0, 222]
         }
       ],
       "orig": "$LUSRUWGLYPH<c=3,font=/AAAAAN+Arial-BoldMT>(OHYDWLRQGLYPH<c=3,font=/AAAAAN+Arial-BoldMT>DQGGLYPH<c=3,font=/AAAAAN+Arial-BoldMT>7 RXFKGRZQGLYPH<c=3,font=/AAAAAN+Arial-BoldMT>=RQHGLYPH<c=3,font=/AAAAAN+Arial-BoldMT>(OHYDWLRQ",
@@ -5728,10 +5152,7 @@
             "b": 302.4,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            118
-          ]
+          "charspan": [0, 118]
         }
       ],
       "orig": "The airport elevation is shown enclosed within a box in the upper left corner of the sketch box and the touchdown zone",
@@ -5755,10 +5176,7 @@
             "b": 300.12,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            119
-          ]
+          "charspan": [0, 119]
         }
       ],
       "orig": "elevation (TDZE) is shown in the upper right corner of the sketch box. The airport elevation is the highest point of an",
@@ -5782,10 +5200,7 @@
             "b": 297.85,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            969
-          ]
+          "charspan": [0, 969]
         }
       ],
       "orig": "DLUSRUW\u00b6VGLYPH<c=3,font=/AAAAAH+ArialMT>XVDEOHGLYPH<c=3,font=/AAAAAH+ArialMT>UXQZD\\VGLYPH<c=3,font=/AAAAAH+ArialMT>PHDVXUHGGLYPH<c=3,font=/AAAAAH+ArialMT>LQGLYPH<c=3,font=/AAAAAH+ArialMT>IHHWGLYPH<c=3,font=/AAAAAH+ArialMT>IURPGLYPH<c=3,font=/AAAAAH+ArialMT>PHDQGLYPH<c=3,font=/AAAAAH+ArialMT>VHDGLYPH<c=3,font=/AAAAAH+ArialMT>OHYHOGLYPH<c=17,font=/AAAAAH+ArialMT>GLYPH<c=3,font=/AAAAAH+ArialMT>7KHGLYPH<c=3,font=/AAAAAH+ArialMT>7'=(GLYPH<c=3,font=/AAAAAH+ArialMT>LVGLYPH<c=3,font=/AAAAAH+ArialMT>WKHGLYPH<c=3,font=/AAAAAH+ArialMT>KLJKHVWGLYPH<c=3,font=/AAAAAH+ArialMT>HOHYDWLRQGLYPH<c=3,font=/AAAAAH+ArialMT>LQGLYPH<c=3,font=/AAAAAH+ArialMT>WKHGLYPH<c=3,font=/AAAAAH+ArialMT>\u00bfUVWGLYPH<c=3,font=/AAAAAH+ArialMT>GLYPH<c=22,font=/AAAAAH+ArialMT>GLYPH<c=15,font=/AAAAAH+ArialMT>GLYPH<c=19,font=/AAAAAH+ArialMT>GLYPH<c=19,font=/AAAAAH+ArialMT>GLYPH<c=19,font=/AAAAAH+ArialMT>GLYPH<c=3,font=/AAAAAH+ArialMT>IHHWGLYPH<c=3,font=/AAAAAH+ArialMT>RIGLYPH<c=3,font=/AAAAAH+ArialMT>",
@@ -5809,10 +5224,7 @@
             "b": 295.57,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            67
-          ]
+          "charspan": [0, 67]
         }
       ],
       "orig": "the landing surface. Circling only approaches wil  not show a TDZE.",
@@ -5836,10 +5248,7 @@
             "b": 273.07,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            3
-          ]
+          "charspan": [0, 3]
         }
       ],
       "orig": "114",
@@ -5863,10 +5272,7 @@
             "b": 320.13,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            70
-          ]
+          "charspan": [0, 70]
         }
       ],
       "orig": "FAA Chart Users' Guide - Terminal Procedures Publication (TPP) - Terms",
@@ -5890,10 +5296,7 @@
             "b": 409.94,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            27
-          ]
+          "charspan": [0, 27]
         }
       ],
       "orig": "AGL 2013 Financial Calendar",
@@ -5917,10 +5320,7 @@
             "b": 407.5,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            14
-          ]
+          "charspan": [0, 14]
         }
       ],
       "orig": "22 August 2012",
@@ -5944,10 +5344,7 @@
             "b": 407.5,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            50
-          ]
+          "charspan": [0, 50]
         }
       ],
       "orig": "2012 ful  year result and final dividend announced",
@@ -5971,10 +5368,7 @@
             "b": 404.96,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            14
-          ]
+          "charspan": [0, 14]
         }
       ],
       "orig": "30 August 2012",
@@ -5998,10 +5392,7 @@
             "b": 404.96,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            29
-          ]
+          "charspan": [0, 29]
         }
       ],
       "orig": "Ex-dividend trading commences",
@@ -6025,10 +5416,7 @@
             "b": 402.41,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            16
-          ]
+          "charspan": [0, 16]
         }
       ],
       "orig": "5 September 2012",
@@ -6052,10 +5440,7 @@
             "b": 402.41,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            35
-          ]
+          "charspan": [0, 35]
         }
       ],
       "orig": "Record date for 2012 final dividend",
@@ -6079,10 +5464,7 @@
             "b": 399.87,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            17
-          ]
+          "charspan": [0, 17]
         }
       ],
       "orig": "27 September 2012",
@@ -6106,10 +5488,7 @@
             "b": 399.87,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            22
-          ]
+          "charspan": [0, 22]
         }
       ],
       "orig": "Final dividend payable",
@@ -6133,10 +5512,7 @@
             "b": 397.33,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            15
-          ]
+          "charspan": [0, 15]
         }
       ],
       "orig": "23 October 2012",
@@ -6160,10 +5536,7 @@
             "b": 397.33,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            22
-          ]
+          "charspan": [0, 22]
         }
       ],
       "orig": "Annual General Meeting",
@@ -6187,10 +5560,7 @@
             "b": 394.79,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            18
-          ]
+          "charspan": [0, 18]
         }
       ],
       "orig": "27 February 2013 1",
@@ -6214,10 +5584,7 @@
             "b": 394.79,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            50
-          ]
+          "charspan": [0, 50]
         }
       ],
       "orig": "2013 interim result and interim dividend announced",
@@ -6241,10 +5608,7 @@
             "b": 392.24,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            16
-          ]
+          "charspan": [0, 16]
         }
       ],
       "orig": "28 August 2013 1",
@@ -6268,10 +5632,7 @@
             "b": 392.25,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            51
-          ]
+          "charspan": [0, 51]
         }
       ],
       "orig": "2013 ful  year results and final dividend announced",
@@ -6295,10 +5656,7 @@
             "b": 390.07,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            61
-          ]
+          "charspan": [0, 61]
         }
       ],
       "orig": "1 Indicative dates only, subject to change/Board confirmation",
@@ -6322,10 +5680,7 @@
             "b": 385.46,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            87
-          ]
+          "charspan": [0, 87]
         }
       ],
       "orig": "AGL's Annual General Meeting wil  be held at the City Recital Hal , Angel Place, Sydney",
@@ -6349,10 +5704,7 @@
             "b": 383.42,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            49
-          ]
+          "charspan": [0, 49]
         }
       ],
       "orig": "commencing at 10.30am on Tuesday 23 October 2012.",
@@ -6376,10 +5728,7 @@
             "b": 326.58,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            9
-          ]
+          "charspan": [0, 9]
         }
       ],
       "orig": "Yesterday",
@@ -6403,10 +5752,7 @@
             "b": 323.09,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            39
-          ]
+          "charspan": [0, 39]
         }
       ],
       "orig": "Established in Sydney in 1837, and then",
@@ -6430,10 +5776,7 @@
             "b": 321.05,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            42
-          ]
+          "charspan": [0, 42]
         }
       ],
       "orig": "known as The Australian Gas Light Company,",
@@ -6457,10 +5800,7 @@
             "b": 319.02,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            43
-          ]
+          "charspan": [0, 43]
         }
       ],
       "orig": "the AGL business has an established history",
@@ -6484,10 +5824,7 @@
             "b": 316.99,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            38
-          ]
+          "charspan": [0, 38]
         }
       ],
       "orig": "and reputation for serving the gas and",
@@ -6511,10 +5848,7 @@
             "b": 314.95,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            43
-          ]
+          "charspan": [0, 43]
         }
       ],
       "orig": "electricity needs of Australian households.",
@@ -6538,10 +5872,7 @@
             "b": 312.92,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            43
-          ]
+          "charspan": [0, 43]
         }
       ],
       "orig": "In 1841, when AGL supplied the gas to light",
@@ -6565,10 +5896,7 @@
             "b": 310.88,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            45
-          ]
+          "charspan": [0, 45]
         }
       ],
       "orig": "the first public street lamp, it was reported",
@@ -6592,10 +5920,7 @@
             "b": 308.85,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            37
-          ]
+          "charspan": [0, 37]
         }
       ],
       "orig": "in the Sydney Gazette as a 'wonderful",
@@ -6619,10 +5944,7 @@
             "b": 306.82,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            45
-          ]
+          "charspan": [0, 45]
         }
       ],
       "orig": "achievement of scientific knowledge, assisted",
@@ -6646,10 +5968,7 @@
             "b": 304.78,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            43
-          ]
+          "charspan": [0, 43]
         }
       ],
       "orig": "by mechanical ingenuity.' Within two years,",
@@ -6673,10 +5992,7 @@
             "b": 302.75,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            47
-          ]
+          "charspan": [0, 47]
         }
       ],
       "orig": "165 gas lamps were lighting the City of Sydney.",
@@ -6700,10 +6016,7 @@
             "b": 361.16,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            15
-          ]
+          "charspan": [0, 15]
         }
       ],
       "orig": "Looking back on",
@@ -6727,10 +6040,7 @@
             "b": 350.99,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            3
-          ]
+          "charspan": [0, 3]
         }
       ],
       "orig": "175",
@@ -6754,10 +6064,7 @@
             "b": 350.99,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            8
-          ]
+          "charspan": [0, 8]
         }
       ],
       "orig": "years of",
@@ -6781,10 +6088,7 @@
             "b": 340.82,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            7
-          ]
+          "charspan": [0, 7]
         }
       ],
       "orig": "looking",
@@ -6808,10 +6112,7 @@
             "b": 340.82,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            8
-          ]
+          "charspan": [0, 8]
         }
       ],
       "orig": "forward.",
@@ -6835,10 +6136,7 @@
             "b": 418.13,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            38
-          ]
+          "charspan": [0, 38]
         }
       ],
       "orig": "AGL Energy Limited  ABN 74 115 061 375",
@@ -6862,10 +6160,7 @@
             "b": 429.22,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            2
-          ]
+          "charspan": [0, 2]
         }
       ],
       "orig": "29",
@@ -6889,10 +6184,7 @@
             "b": 537.13,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            32
-          ]
+          "charspan": [0, 32]
         }
       ],
       "orig": "signs, signals and road markings",
@@ -6916,10 +6208,7 @@
             "b": 537.09,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "3",
@@ -6943,10 +6232,7 @@
             "b": 526.13,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            2
-          ]
+          "charspan": [0, 2]
         }
       ],
       "orig": "In",
@@ -6970,10 +6256,7 @@
             "b": 526.18,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            31
-          ]
+          "charspan": [0, 31]
         }
       ],
       "orig": "chapter 2, you and your vehicle",
@@ -6997,10 +6280,7 @@
             "b": 526.13,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            19
-          ]
+          "charspan": [0, 19]
         }
       ],
       "orig": ", you learned about",
@@ -7024,10 +6304,7 @@
             "b": 524.08,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            61
-          ]
+          "charspan": [0, 61]
         }
       ],
       "orig": "some of the controls in your vehicle. This chapter is a handy",
@@ -7051,10 +6328,7 @@
             "b": 522.04,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            56
-          ]
+          "charspan": [0, 56]
         }
       ],
       "orig": "reference section that gives examples of the most common",
@@ -7078,10 +6352,7 @@
             "b": 520.0,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            60
-          ]
+          "charspan": [0, 60]
         }
       ],
       "orig": "signs, signals and road markings that keep traffic organized",
@@ -7105,10 +6376,7 @@
             "b": 517.96,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            21
-          ]
+          "charspan": [0, 21]
         }
       ],
       "orig": "and flowing smoothly.",
@@ -7132,10 +6400,7 @@
             "b": 511.15,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            5
-          ]
+          "charspan": [0, 5]
         }
       ],
       "orig": "Signs",
@@ -7159,10 +6424,7 @@
             "b": 508.19,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            62
-          ]
+          "charspan": [0, 62]
         }
       ],
       "orig": "There are three ways to read signs: by their shape, colour and",
@@ -7186,10 +6448,7 @@
             "b": 506.15,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            60
-          ]
+          "charspan": [0, 60]
         }
       ],
       "orig": "the messages printed on them. Understanding these three ways",
@@ -7213,10 +6472,7 @@
             "b": 504.11,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            66
-          ]
+          "charspan": [0, 66]
         }
       ],
       "orig": "of classifying signs wil  help you figure out the meaning of signs",
@@ -7240,10 +6496,7 @@
             "b": 502.06,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            20
-          ]
+          "charspan": [0, 20]
         }
       ],
       "orig": "that are new to you.",
@@ -7267,10 +6520,7 @@
             "b": 487.15,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            4
-          ]
+          "charspan": [0, 4]
         }
       ],
       "orig": "Stop",
@@ -7294,10 +6544,7 @@
             "b": 486.97,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            22
-          ]
+          "charspan": [0, 22]
         }
       ],
       "orig": "Yield the right-of-way",
@@ -7321,10 +6568,7 @@
             "b": 469.04,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            13
-          ]
+          "charspan": [0, 13]
         }
       ],
       "orig": "Shows driving",
@@ -7348,10 +6592,7 @@
             "b": 467.35,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            11
-          ]
+          "charspan": [0, 11]
         }
       ],
       "orig": "regulations",
@@ -7375,10 +6616,7 @@
             "b": 470.64,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            17
-          ]
+          "charspan": [0, 17]
         }
       ],
       "orig": "Explains lane use",
@@ -7402,10 +6640,7 @@
             "b": 471.85,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            17
-          ]
+          "charspan": [0, 17]
         }
       ],
       "orig": "School zone signs",
@@ -7429,10 +6664,7 @@
             "b": 470.16,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            15
-          ]
+          "charspan": [0, 15]
         }
       ],
       "orig": "are fluorescent",
@@ -7456,10 +6688,7 @@
             "b": 468.48,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            12
-          ]
+          "charspan": [0, 12]
         }
       ],
       "orig": "yel ow-green",
@@ -7483,10 +6712,7 @@
             "b": 452.1,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            20
-          ]
+          "charspan": [0, 20]
         }
       ],
       "orig": "Tel s about motorist",
@@ -7510,10 +6736,7 @@
             "b": 450.41,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            8
-          ]
+          "charspan": [0, 8]
         }
       ],
       "orig": "services",
@@ -7537,10 +6760,7 @@
             "b": 452.17,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            17
-          ]
+          "charspan": [0, 17]
         }
       ],
       "orig": "Shows a permitted",
@@ -7564,10 +6784,7 @@
             "b": 450.48,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            6
-          ]
+          "charspan": [0, 6]
         }
       ],
       "orig": "action",
@@ -7591,10 +6808,7 @@
             "b": 452.34,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            20
-          ]
+          "charspan": [0, 20]
         }
       ],
       "orig": "Shows an action that",
@@ -7618,10 +6832,7 @@
             "b": 450.66,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            16
-          ]
+          "charspan": [0, 16]
         }
       ],
       "orig": "is not permitted",
@@ -7645,10 +6856,7 @@
             "b": 434.05,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            16
-          ]
+          "charspan": [0, 16]
         }
       ],
       "orig": "Warns of hazards",
@@ -7672,10 +6880,7 @@
             "b": 432.37,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            5
-          ]
+          "charspan": [0, 5]
         }
       ],
       "orig": "ahead",
@@ -7699,10 +6904,7 @@
             "b": 433.96,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            8
-          ]
+          "charspan": [0, 8]
         }
       ],
       "orig": "Warns of",
@@ -7726,10 +6928,7 @@
             "b": 432.28,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            18
-          ]
+          "charspan": [0, 18]
         }
       ],
       "orig": "construction zones",
@@ -7753,10 +6952,7 @@
             "b": 433.96,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            16
-          ]
+          "charspan": [0, 16]
         }
       ],
       "orig": "Railway crossing",
@@ -7780,10 +6976,7 @@
             "b": 437.3,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            18
-          ]
+          "charspan": [0, 18]
         }
       ],
       "orig": "Shows distance and",
@@ -7807,10 +7000,7 @@
             "b": 435.61,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            9
-          ]
+          "charspan": [0, 9]
         }
       ],
       "orig": "direction",
@@ -7834,10 +7024,7 @@
             "b": 519.88,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            8
-          ]
+          "charspan": [0, 8]
         }
       ],
       "orig": "\u2022  Signs",
@@ -7861,10 +7048,7 @@
             "b": 517.69,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "-",
@@ -7888,10 +7072,7 @@
             "b": 517.58,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            16
-          ]
+          "charspan": [0, 16]
         }
       ],
       "orig": "regulatory signs",
@@ -7915,10 +7096,7 @@
             "b": 515.39,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "-",
@@ -7942,10 +7120,7 @@
             "b": 515.28,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            7
-          ]
+          "charspan": [0, 7]
         }
       ],
       "orig": "school,",
@@ -7969,10 +7144,7 @@
             "b": 513.24,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            14
-          ]
+          "charspan": [0, 14]
         }
       ],
       "orig": "playground and",
@@ -7996,10 +7168,7 @@
             "b": 511.19,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            15
-          ]
+          "charspan": [0, 15]
         }
       ],
       "orig": "crosswalk signs",
@@ -8023,10 +7192,7 @@
             "b": 509.01,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "-",
@@ -8050,10 +7216,7 @@
             "b": 508.9,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            14
-          ]
+          "charspan": [0, 14]
         }
       ],
       "orig": "lane use signs",
@@ -8077,10 +7240,7 @@
             "b": 506.71,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "-",
@@ -8104,10 +7264,7 @@
             "b": 506.6,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            18
-          ]
+          "charspan": [0, 18]
         }
       ],
       "orig": "turn control signs",
@@ -8131,10 +7288,7 @@
             "b": 504.42,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "-",
@@ -8158,10 +7312,7 @@
             "b": 504.3,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            13
-          ]
+          "charspan": [0, 13]
         }
       ],
       "orig": "parking signs",
@@ -8185,10 +7336,7 @@
             "b": 502.12,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "-",
@@ -8212,10 +7360,7 @@
             "b": 502.0,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            13
-          ]
+          "charspan": [0, 13]
         }
       ],
       "orig": "reserved lane",
@@ -8239,10 +7384,7 @@
             "b": 499.96,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            5
-          ]
+          "charspan": [0, 5]
         }
       ],
       "orig": "signs",
@@ -8266,10 +7408,7 @@
             "b": 497.78,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "-",
@@ -8293,10 +7432,7 @@
             "b": 497.66,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            13
-          ]
+          "charspan": [0, 13]
         }
       ],
       "orig": "warning signs",
@@ -8320,10 +7456,7 @@
             "b": 495.48,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "-",
@@ -8347,10 +7480,7 @@
             "b": 495.37,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            14
-          ]
+          "charspan": [0, 14]
         }
       ],
       "orig": "object markers",
@@ -8374,10 +7504,7 @@
             "b": 493.18,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "-",
@@ -8401,10 +7528,7 @@
             "b": 493.07,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            12
-          ]
+          "charspan": [0, 12]
         }
       ],
       "orig": "construction",
@@ -8428,10 +7552,7 @@
             "b": 491.02,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            5
-          ]
+          "charspan": [0, 5]
         }
       ],
       "orig": "signs",
@@ -8455,10 +7576,7 @@
             "b": 488.73,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            17
-          ]
+          "charspan": [0, 17]
         }
       ],
       "orig": "- information and",
@@ -8482,10 +7600,7 @@
             "b": 486.68,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            17
-          ]
+          "charspan": [0, 17]
         }
       ],
       "orig": "destination signs",
@@ -8509,10 +7624,7 @@
             "b": 484.5,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "-",
@@ -8536,10 +7648,7 @@
             "b": 484.39,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            13
-          ]
+          "charspan": [0, 13]
         }
       ],
       "orig": "railway signs",
@@ -8563,10 +7672,7 @@
             "b": 481.77,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            10
-          ]
+          "charspan": [0, 10]
         }
       ],
       "orig": "\u2022  Signals",
@@ -8590,10 +7696,7 @@
             "b": 479.58,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "-",
@@ -8617,10 +7720,7 @@
             "b": 479.47,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            12
-          ]
+          "charspan": [0, 12]
         }
       ],
       "orig": "lane control",
@@ -8644,10 +7744,7 @@
             "b": 477.43,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            7
-          ]
+          "charspan": [0, 7]
         }
       ],
       "orig": "signals",
@@ -8671,10 +7768,7 @@
             "b": 475.25,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "-",
@@ -8698,10 +7792,7 @@
             "b": 475.13,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            14
-          ]
+          "charspan": [0, 14]
         }
       ],
       "orig": "traffic lights",
@@ -8725,10 +7816,7 @@
             "b": 472.51,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            16
-          ]
+          "charspan": [0, 16]
         }
       ],
       "orig": "\u2022  Road markings",
@@ -8752,10 +7840,7 @@
             "b": 470.33,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "-",
@@ -8779,10 +7864,7 @@
             "b": 470.21,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            12
-          ]
+          "charspan": [0, 12]
         }
       ],
       "orig": "yel ow lines",
@@ -8806,10 +7888,7 @@
             "b": 468.03,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "-",
@@ -8833,10 +7912,7 @@
             "b": 467.92,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            11
-          ]
+          "charspan": [0, 11]
         }
       ],
       "orig": "white lines",
@@ -8860,10 +7936,7 @@
             "b": 465.73,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "-",
@@ -8887,10 +7960,7 @@
             "b": 465.62,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            13
-          ]
+          "charspan": [0, 13]
         }
       ],
       "orig": "reserved lane",
@@ -8914,10 +7984,7 @@
             "b": 463.58,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            8
-          ]
+          "charspan": [0, 8]
         }
       ],
       "orig": "markings",
@@ -8941,10 +8008,7 @@
             "b": 461.28,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            16
-          ]
+          "charspan": [0, 16]
         }
       ],
       "orig": "- other markings",
@@ -8968,10 +8032,7 @@
             "b": 524.01,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            15
-          ]
+          "charspan": [0, 15]
         }
       ],
       "orig": "in this chapter",
@@ -8995,10 +8056,7 @@
             "b": 189.53,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            8
-          ]
+          "charspan": [0, 8]
         }
       ],
       "orig": "KEYWORDS",
@@ -9023,10 +8081,7 @@
             "b": 165.14,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            90
-          ]
+          "charspan": [0, 90]
         }
       ],
       "orig": "PDF document conversion, layout segmentation, object-detection, data set, Machine Learning",
@@ -9050,10 +8105,7 @@
             "b": 144.64,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            20
-          ]
+          "charspan": [0, 20]
         }
       ],
       "orig": "ACMReference Format:",
@@ -9078,10 +8130,7 @@
             "b": 84.75,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            374
-          ]
+          "charspan": [0, 374]
         }
       ],
       "orig": "Birgit Pfitzmann, Christoph Auer, Michele Dolfi, Ahmed S. Nassar, and Peter Staar. 2022. DocLayNet: A Large Human-Annotated Dataset for DocumentLayout Analysis. In Proceedings of the 28th ACM SIGKDD Conference on Knowledge Discovery and Data Mining (KDD '22), August 14-18, 2022, Washington, DC, USA. ACM, New York, NY, USA, 9 pages. https://doi.org/10.1145/ 3534678.3539043",
@@ -9105,10 +8154,7 @@
             "b": 534.29,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            8
-          ]
+          "charspan": [0, 8]
         }
       ],
       "orig": "ABSTRACT",
@@ -9133,10 +8179,7 @@
             "b": 257.85,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1595
-          ]
+          "charspan": [0, 1595]
         }
       ],
       "orig": "Accurate document layout analysis is a key requirement for highquality PDF document conversion. With the recent availability of public, large ground-truth datasets such as PubLayNet and DocBank, deep-learning models have proven to be very effective at layout detection and segmentation. While these datasets are of adequate size to train such models, they severely lack in layout variability since they are sourced from scientific article repositories such as PubMed and arXiv only. Consequently, the accuracy of the layout segmentation drops significantly when these models are applied on more challenging and diverse layouts. In this paper, we present DocLayNet , a new, publicly available, document-layout annotation dataset in COCO format. It contains 80863 manually annotated pages from diverse data sources to represent a wide variability in layouts. For each PDF page, the layout annotations provide labelled bounding-boxes with a choice of 11 distinct classes. DocLayNet also provides a subset of double- and triple-annotated pages to determine the inter-annotator agreement. In multiple experiments, we provide baseline accuracy scores (in mAP) for a set of popular object detection models. We also demonstrate that these models fall approximately 10% behind the inter-annotator agreement. Furthermore, we provide evidence that DocLayNet is of sufficient size. Lastly, we compare models trained on PubLayNet, DocBank and DocLayNet, showing that layout predictions of the DocLayNettrained models are more robust and thus the preferred choice for general-purpose document-layout analysis.",
@@ -9160,10 +8203,7 @@
             "b": 231.0,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            12
-          ]
+          "charspan": [0, 12]
         }
       ],
       "orig": "CCS CONCEPTS",
@@ -9188,10 +8228,7 @@
             "b": 194.71,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            167
-          ]
+          "charspan": [0, 167]
         }
       ],
       "orig": "\u00b7 Informationsystems \u2192 Documentstructure ; \u00b7 Appliedcomputing \u2192 Document analysis ; \u00b7 Computing methodologies \u2192 Machine learning ; Computer vision ; Object detection ;",
@@ -9215,10 +8252,7 @@
             "b": 119.32,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            397
-          ]
+          "charspan": [0, 397]
         }
       ],
       "orig": "Permission to make digital or hard copies of part or all of this work for personal or classroom use is granted without fee provided that copies are not made or distributed for profit or commercial advantage and that copies bear this notice and the full citation on the first page. Copyrights for third-party components of this work must be honored. For all other uses, contact the owner/author(s).",
@@ -9242,10 +8276,7 @@
             "b": 110.52,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            48
-          ]
+          "charspan": [0, 48]
         }
       ],
       "orig": "KDD '22, August 14-18, 2022, Washington, DC, USA",
@@ -9269,10 +8300,7 @@
             "b": 101.78,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            45
-          ]
+          "charspan": [0, 45]
         }
       ],
       "orig": "\u00a9 2022 Copyright held by the owner/author(s).",
@@ -9296,10 +8324,7 @@
             "b": 93.81,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            33
-          ]
+          "charspan": [0, 33]
         }
       ],
       "orig": "ACM ISBN 978-1-4503-9385-0/22/08.",
@@ -9323,10 +8348,7 @@
             "b": 85.84,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            39
-          ]
+          "charspan": [0, 39]
         }
       ],
       "orig": "https://doi.org/10.1145/3534678.3539043",
@@ -9350,10 +8372,7 @@
             "b": 723.51,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            130
-          ]
+          "charspan": [0, 130]
         }
       ],
       "orig": "KDD '22, August 14-18, 2022, Washington, DC, USA Birgit Pfitzmann, Christoph Auer, Michele Dolfi, Ahmed S. Nassar, and Peter Staar",
@@ -9377,10 +8396,7 @@
             "b": 696.13,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            14
-          ]
+          "charspan": [0, 14]
         }
       ],
       "orig": "1 INTRODUCTION",
@@ -9405,10 +8421,7 @@
             "b": 563.2,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            702
-          ]
+          "charspan": [0, 702]
         }
       ],
       "orig": "Despite the substantial improvements achieved with machine-learning (ML) approaches and deep neural networks in recent years, document conversion remains a challenging problem, as demonstrated by the numerous public competitions held on this topic [1-4]. The challenge originates from the huge variability in PDF documents regarding layout, language and formats (scanned, programmatic or a combination of both). Engineering a single ML model that can be applied on all types of documents and provides high-quality layout segmentation remains to this day extremely challenging [5]. To highlight the variability in document layouts, we show a few example documents from the DocLayNet dataset in Figure 1.",
@@ -9432,10 +8445,7 @@
             "b": 289.22,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1578
-          ]
+          "charspan": [0, 1578]
         }
       ],
       "orig": "Akeyproblem in the process of document conversion is to understand the structure of a single document page, i.e. which segments of text should be grouped together in a unit. To train models for this task, there are currently two large datasets available to the community, PubLayNet [6] and DocBank [7]. They were introduced in 2019 and 2020 respectively and significantly accelerated the implementation of layout detection and segmentation models due to their sizes of 300K and 500K ground-truth pages. These sizes were achieved by leveraging an automation approach. The benefit of automated ground-truth generation is obvious: one can generate large ground-truth datasets at virtually no cost. However, the automation introduces a constraint on the variability in the dataset, because corresponding structured source data must be available. PubLayNet and DocBank were both generated from scientific document repositories (PubMed and arXiv), which provide XML or L A T E X sources. Those scientific documents present a limited variability in their layouts, because they are typeset in uniform templates provided by the publishers. Obviously, documents such as technical manuals, annual company reports, legal text, government tenders, etc. have very different and partially unique layouts. As a consequence, the layout predictions obtained from models trained on PubLayNet or DocBank is very reasonable when applied on scientific documents. However, for more artistic or free-style layouts, we see sub-par prediction quality from these models, which we demonstrate in Section 5.",
@@ -9459,10 +8469,7 @@
             "b": 212.51,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            462
-          ]
+          "charspan": [0, 462]
         }
       ],
       "orig": "In this paper, we present the DocLayNet dataset. It provides pageby-page layout annotation ground-truth using bounding-boxes for 11 distinct class labels on 80863 unique document pages, of which a fraction carry double- or triple-annotations. DocLayNet is similar in spirit to PubLayNet and DocBank and will likewise be made available to the public 1 in order to stimulate the document-layout analysis community. It distinguishes itself in the following aspects:",
@@ -9486,10 +8493,7 @@
             "b": 177.27,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            149
-          ]
+          "charspan": [0, 149]
         }
       ],
       "orig": "(1) Human Annotation : In contrast to PubLayNet and DocBank, we relied on human annotation instead of automation approaches to generate the data set.",
@@ -9515,10 +8519,7 @@
             "b": 155.35,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            109
-          ]
+          "charspan": [0, 109]
         }
       ],
       "orig": "(2) Large Layout Variability : We include diverse and complex layouts from a large variety of public sources.",
@@ -9544,10 +8545,7 @@
             "b": 122.48,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            180
-          ]
+          "charspan": [0, 180]
         }
       ],
       "orig": "(3) Detailed Label Set : We define 11 class labels to distinguish layout features in high detail. PubLayNet provides 5 labels; DocBank provides 13, although not a superset of ours.",
@@ -9573,10 +8571,7 @@
             "b": 100.56,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            115
-          ]
+          "charspan": [0, 115]
         }
       ],
       "orig": "(4) Redundant Annotations : A fraction of the pages in the DocLayNet data set carry more than one human annotation.",
@@ -9602,10 +8597,7 @@
             "b": 83.37,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            56
-          ]
+          "charspan": [0, 56]
         }
       ],
       "orig": "1 https://developer.ibm.com/exchanges/data/all/doclaynet",
@@ -9629,10 +8621,7 @@
             "b": 685.45,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            86
-          ]
+          "charspan": [0, 86]
         }
       ],
       "orig": "This enables experimentation with annotation uncertainty and quality control analysis.",
@@ -9656,10 +8645,7 @@
             "b": 630.65,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            280
-          ]
+          "charspan": [0, 280]
         }
       ],
       "orig": "(5) Pre-defined Train-, Test- & Validation-set : Like DocBank, we provide fixed train-, test- & validation-sets to ensure proportional representation of the class-labels. Further, we prevent leakage of unique layouts across sets, which has a large effect on model accuracy scores.",
@@ -9685,10 +8671,7 @@
             "b": 571.96,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            297
-          ]
+          "charspan": [0, 297]
         }
       ],
       "orig": "All aspects outlined above are detailed in Section 3. In Section 4, we will elaborate on how we designed and executed this large-scale human annotation campaign. We will also share key insights and lessons learned that might prove helpful for other parties planning to set up annotation campaigns.",
@@ -9712,10 +8695,7 @@
             "b": 484.29,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            506
-          ]
+          "charspan": [0, 506]
         }
       ],
       "orig": "In Section 5, we will present baseline accuracy numbers for a variety of object detection methods (Faster R-CNN, Mask R-CNN and YOLOv5) trained on DocLayNet. We further show how the model performance is impacted by varying the DocLayNet dataset size, reducing the label set and modifying the train/test-split. Last but not least, we compare the performance of models trained on PubLayNet, DocBank and DocLayNet and demonstrate that a model trained on DocLayNet provides overall more robust layout recovery.",
@@ -9739,10 +8719,7 @@
             "b": 460.79,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            14
-          ]
+          "charspan": [0, 14]
         }
       ],
       "orig": "2 RELATED WORK",
@@ -9767,10 +8744,7 @@
             "b": 327.85,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            655
-          ]
+          "charspan": [0, 655]
         }
       ],
       "orig": "While early approaches in document-layout analysis used rulebased algorithms and heuristics [8], the problem is lately addressed with deep learning methods. The most common approach is to leverage object detection models [9-15]. In the last decade, the accuracy and speed of these models has increased dramatically. Furthermore, most state-of-the-art object detection methods can be trained and applied with very little work, thanks to a standardisation effort of the ground-truth data format [16] and common deep-learning frameworks [17]. Reference data sets such as PubLayNet [6] and DocBank provide their data in the commonly accepted COCO format [16].",
@@ -9794,10 +8768,7 @@
             "b": 240.17,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            500
-          ]
+          "charspan": [0, 500]
         }
       ],
       "orig": "Lately, new types of ML models for document-layout analysis have emerged in the community [18-21]. These models do not approach the problem of layout analysis purely based on an image representation of the page, as computer vision methods do. Instead, they combine the text tokens and image representation of a page in order to obtain a segmentation. While the reported accuracies appear to be promising, a broadly accepted data format which links geometric and textual features has yet to establish.",
@@ -9821,10 +8792,7 @@
             "b": 216.67,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            23
-          ]
+          "charspan": [0, 23]
         }
       ],
       "orig": "3 THE DOCLAYNET DATASET",
@@ -9849,10 +8817,7 @@
             "b": 116.61,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            522
-          ]
+          "charspan": [0, 522]
         }
       ],
       "orig": "DocLayNet contains 80863 PDF pages. Among these, 7059 carry two instances of human annotations, and 1591 carry three. This amounts to 91104 total annotation instances. The annotations provide layout information in the shape of labeled, rectangular boundingboxes. We define 11 distinct labels for layout features, namely Caption , Footnote , Formula , List-item , Page-footer , Page-header , Picture , Section-header , Table , Text , and Title . Our reasoning for picking this particular label set is detailed in Section 4.",
@@ -9876,10 +8841,7 @@
             "b": 83.74,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            186
-          ]
+          "charspan": [0, 186]
         }
       ],
       "orig": "In addition to open intellectual property constraints for the source documents, we required that the documents in DocLayNet adhere to a few conditions. Firstly, we kept scanned documents",
@@ -9903,10 +8865,7 @@
             "b": 723.51,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            71
-          ]
+          "charspan": [0, 71]
         }
       ],
       "orig": "DocLayNet: A Large Human-Annotated Dataset for Document-Layout Analysis",
@@ -9930,10 +8889,7 @@
             "b": 723.51,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            48
-          ]
+          "charspan": [0, 48]
         }
       ],
       "orig": "KDD '22, August 14-18, 2022, Washington, DC, USA",
@@ -9957,10 +8913,7 @@
             "b": 536.7,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            69
-          ]
+          "charspan": [0, 69]
         }
       ],
       "orig": "Figure 2: Distribution of DocLayNet pages across document categories.",
@@ -9984,10 +8937,7 @@
             "b": 650.73,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            7
-          ]
+          "charspan": [0, 7]
         }
       ],
       "orig": "Patents",
@@ -10011,10 +8961,7 @@
             "b": 643.35,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            2
-          ]
+          "charspan": [0, 2]
         }
       ],
       "orig": "8%",
@@ -10038,10 +8985,7 @@
             "b": 690.65,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            10
-          ]
+          "charspan": [0, 10]
         }
       ],
       "orig": "Scientific",
@@ -10065,10 +9009,7 @@
             "b": 665.13,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            3
-          ]
+          "charspan": [0, 3]
         }
       ],
       "orig": "17%",
@@ -10092,10 +9033,7 @@
             "b": 669.46,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            9
-          ]
+          "charspan": [0, 9]
         }
       ],
       "orig": "Financial",
@@ -10119,10 +9057,7 @@
             "b": 653.57,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            3
-          ]
+          "charspan": [0, 3]
         }
       ],
       "orig": "32%",
@@ -10146,10 +9081,7 @@
             "b": 596.15,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            7
-          ]
+          "charspan": [0, 7]
         }
       ],
       "orig": "Tenders",
@@ -10173,10 +9105,7 @@
             "b": 613.59,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            2
-          ]
+          "charspan": [0, 2]
         }
       ],
       "orig": "6%",
@@ -10200,10 +9129,7 @@
             "b": 571.31,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            4
-          ]
+          "charspan": [0, 4]
         }
       ],
       "orig": "Laws",
@@ -10227,10 +9153,7 @@
             "b": 600.03,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            3
-          ]
+          "charspan": [0, 3]
         }
       ],
       "orig": "16%",
@@ -10254,10 +9177,7 @@
             "b": 594.51,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            7
-          ]
+          "charspan": [0, 7]
         }
       ],
       "orig": "Manuals",
@@ -10281,10 +9201,7 @@
             "b": 612.69,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            3
-          ]
+          "charspan": [0, 3]
         }
       ],
       "orig": "21%",
@@ -10308,10 +9225,7 @@
             "b": 425.25,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            513
-          ]
+          "charspan": [0, 513]
         }
       ],
       "orig": "to a minimum, since they introduce difficulties in annotation (see Section 4). As a second condition, we focussed on medium to large documents ( > 10 pages) with technical content, dense in complex tables, figures, plots and captions. Such documents carry a lot of information value, but are often hard to analyse with high accuracy due to their challenging layouts. Counterexamples of documents not included in the dataset are receipts, invoices, hand-written documents or photographs showing 'text in the wild\".",
@@ -10335,10 +9249,7 @@
             "b": 282.79,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            810
-          ]
+          "charspan": [0, 810]
         }
       ],
       "orig": "The pages in DocLayNet can be grouped into six distinct categories, namely Financial Reports , Manuals , Scientific Articles , Laws & Regulations , Patents and Government Tenders . Each document category was sourced from various repositories. For example, Financial Reports contain both free-style format annual reports 2 which expose company-specific, artistic layouts as well as the more formal SEC filings. The two largest categories ( Financial Reports and Manuals ) contain a large amount of free-style layouts in order to obtain maximum variability. In the other four categories, we boosted the variability by mixing documents from independent providers, such as different government websites or publishers. In Figure 2, we show the document categories contained in DocLayNet with their respective sizes.",
@@ -10362,10 +9273,7 @@
             "b": 184.16,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            535
-          ]
+          "charspan": [0, 535]
         }
       ],
       "orig": "We did not control the document selection with regard to language. The vast majority of documents contained in DocLayNet (close to 95%) are published in English language. However, DocLayNet also contains a number of documents in other languages such as German (2.5%), French (1.0%) and Japanese (1.0%). While the document language has negligible impact on the performance of computer vision methods such as object detection and segmentation models, it might prove challenging for layout analysis methods which exploit textual features.",
@@ -10389,10 +9297,7 @@
             "b": 107.44,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            413
-          ]
+          "charspan": [0, 413]
         }
       ],
       "orig": "To ensure that future benchmarks in the document-layout analysis community can be easily compared, we have split up DocLayNet into pre-defined train-, test- and validation-sets. In this way, we can avoid spurious variations in the evaluation scores due to random splitting in train-, test- and validation-sets. We also ensured that less frequent labels are represented in train and test sets in equal proportions.",
@@ -10416,10 +9321,7 @@
             "b": 83.94,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            47
-          ]
+          "charspan": [0, 47]
         }
       ],
       "orig": "2 e.g. AAPL from https://www.annualreports.com/",
@@ -10443,10 +9345,7 @@
             "b": 630.65,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            435
-          ]
+          "charspan": [0, 435]
         }
       ],
       "orig": "Table 1 shows the overall frequency and distribution of the labels among the different sets. Importantly, we ensure that subsets are only split on full-document boundaries. This avoids that pages of the same document are spread over train, test and validation set, which can give an undesired evaluation advantage to models and lead to overestimation of their prediction accuracy. We will show the impact of this decision in Section 5.",
@@ -10470,10 +9369,7 @@
             "b": 521.06,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            645
-          ]
+          "charspan": [0, 645]
         }
       ],
       "orig": "In order to accommodate the different types of models currently in use by the community, we provide DocLayNet in an augmented COCO format [16]. This entails the standard COCO ground-truth file (in JSON format) with the associated page images (in PNG format, 1025 \u00d7 1025 pixels). Furthermore, custom fields have been added to each COCO record to specify document category, original document filename and page number. In addition, we also provide the original PDF pages, as well as sidecar files containing parsed PDF text and text-cell coordinates (in JSON). All additional files are linked to the primary page images by their matching filenames.",
@@ -10497,10 +9393,7 @@
             "b": 203.25,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1854
-          ]
+          "charspan": [0, 1854]
         }
       ],
       "orig": "Despite being cost-intense and far less scalable than automation, human annotation has several benefits over automated groundtruth generation. The first and most obvious reason to leverage human annotations is the freedom to annotate any type of document without requiring a programmatic source. For most PDF documents, the original source document is not available. The latter is not a hard constraint with human annotation, but it is for automated methods. A second reason to use human annotations is that the latter usually provide a more natural interpretation of the page layout. The human-interpreted layout can significantly deviate from the programmatic layout used in typesetting. For example, 'invisible' tables might be used solely for aligning text paragraphs on columns. Such typesetting tricks might be interpreted by automated methods incorrectly as an actual table, while the human annotation will interpret it correctly as Text or other styles. The same applies to multi-line text elements, when authors decided to space them as 'invisible' list elements without bullet symbols. A third reason to gather ground-truth through human annotation is to estimate a 'natural' upper bound on the segmentation accuracy. As we will show in Section 4, certain documents featuring complex layouts can have different but equally acceptable layout interpretations. This natural upper bound for segmentation accuracy can be found by annotating the same pages multiple times by different people and evaluating the inter-annotator agreement. Such a baseline consistency evaluation is very useful to define expectations for a good target accuracy in trained deep neural network models and avoid overfitting (see Table 1). On the flip side, achieving high annotation consistency proved to be a key challenge in human annotation, as we outline in Section 4.",
@@ -10524,10 +9417,7 @@
             "b": 175.14,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            21
-          ]
+          "charspan": [0, 21]
         }
       ],
       "orig": "4 ANNOTATION CAMPAIGN",
@@ -10552,10 +9442,7 @@
             "b": 86.04,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            457
-          ]
+          "charspan": [0, 457]
         }
       ],
       "orig": "The annotation campaign was carried out in four phases. In phase one, we identified and prepared the data sources for annotation. In phase two, we determined the class labels and how annotations should be done on the documents in order to obtain maximum consistency. The latter was guided by a detailed requirement analysis and exhaustive experiments. In phase three, we trained the annotation staff and performed exams for quality assurance. In phase four,",
@@ -10579,10 +9466,7 @@
             "b": 723.51,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            130
-          ]
+          "charspan": [0, 130]
         }
       ],
       "orig": "KDD '22, August 14-18, 2022, Washington, DC, USA Birgit Pfitzmann, Christoph Auer, Michele Dolfi, Ahmed S. Nassar, and Peter Staar",
@@ -10606,10 +9490,7 @@
             "b": 676.9,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            348
-          ]
+          "charspan": [0, 348]
         }
       ],
       "orig": "Table 1: DocLayNet dataset overview. Along with the frequency of each class label, we present the relative occurrence (as % of row 'Total') in the train, test and validation sets. The inter-annotator agreement is computed as the mAP@0.5-0.95 metric between pairwise annotations from the triple-annotated pages, from which we obtain accuracy ranges.",
@@ -10633,10 +9514,7 @@
             "b": 185.93,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            281
-          ]
+          "charspan": [0, 281]
         }
       ],
       "orig": "Figure 3: Corpus Conversion Service annotation user interface. The PDF page is shown in the background, with overlaid text-cells (in darker shades). The annotation boxes can be drawn by dragging a rectangle over each segment with the respective label from the palette on the right.",
@@ -10660,10 +9538,7 @@
             "b": 116.6,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            231
-          ]
+          "charspan": [0, 231]
         }
       ],
       "orig": "we distributed the annotation workload and performed continuous quality controls. Phase one and two required a small team of experts only. For phases three and four, a group of 40 dedicated annotators were assembled and supervised.",
@@ -10687,10 +9562,7 @@
             "b": 83.72,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            193
-          ]
+          "charspan": [0, 193]
         },
         {
           "page_no": 4,
@@ -10701,10 +9573,7 @@
             "b": 416.89,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            194,
-            567
-          ]
+          "charspan": [194, 567]
         }
       ],
       "orig": "Phase 1: Data selection and preparation. Our inclusion criteria for documents were described in Section 3. A large effort went into ensuring that all documents are free to use. The data sources include publication repositories such as arXiv 3 , government offices, company websites as well as data directory services for financial reports and patents. Scanned documents were excluded wherever possible because they can be rotated or skewed. This would not allow us to perform annotation with rectangular bounding-boxes and therefore complicate the annotation process.",
@@ -10728,10 +9597,7 @@
             "b": 285.39,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            746
-          ]
+          "charspan": [0, 746]
         }
       ],
       "orig": "Preparation work included uploading and parsing the sourced PDF documents in the Corpus Conversion Service (CCS) [22], a cloud-native platform which provides a visual annotation interface and allows for dataset inspection and analysis. The annotation interface of CCS is shown in Figure 3. The desired balance of pages between the different document categories was achieved by selective subsampling of pages with certain desired properties. For example, we made sure to include the title page of each document and bias the remaining page selection to those with figures or tables. The latter was achieved by leveraging pre-trained object detection models from PubLayNet, which helped us estimate how many figures and tables a given page contains.",
@@ -10755,10 +9621,7 @@
             "b": 99.09,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1159
-          ]
+          "charspan": [0, 1159]
         }
       ],
       "orig": "Phase 2: Label selection and guideline. We reviewed the collected documents and identified the most common structural features they exhibit. This was achieved by identifying recurrent layout elements and lead us to the definition of 11 distinct class labels. These 11 class labels are Caption , Footnote , Formula , List-item , Pagefooter , Page-header , Picture , Section-header , Table , Text , and Title . Critical factors that were considered for the choice of these class labels were (1) the overall occurrence of the label, (2) the specificity of the label, (3) recognisability on a single page (i.e. no need for context from previous or next page) and (4) overall coverage of the page. Specificity ensures that the choice of label is not ambiguous, while coverage ensures that all meaningful items on a page can be annotated. We refrained from class labels that are very specific to a document category, such as Abstract in the Scientific Articles category. We also avoided class labels that are tightly linked to the semantics of the text. Labels such as Author and Affiliation , as seen in DocBank, are often only distinguishable by discriminating on",
@@ -10782,10 +9645,7 @@
             "b": 83.24,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            20
-          ]
+          "charspan": [0, 20]
         }
       ],
       "orig": "3 https://arxiv.org/",
@@ -10809,10 +9669,7 @@
             "b": 723.51,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            71
-          ]
+          "charspan": [0, 71]
         }
       ],
       "orig": "DocLayNet: A Large Human-Annotated Dataset for Document-Layout Analysis",
@@ -10836,10 +9693,7 @@
             "b": 723.51,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            48
-          ]
+          "charspan": [0, 48]
         }
       ],
       "orig": "KDD '22, August 14-18, 2022, Washington, DC, USA",
@@ -10863,10 +9717,7 @@
             "b": 685.4,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            135
-          ]
+          "charspan": [0, 135]
         }
       ],
       "orig": "the textual content of an element, which goes beyond visual layout recognition, in particular outside the Scientific Articles category.",
@@ -10890,10 +9741,7 @@
             "b": 542.98,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            812
-          ]
+          "charspan": [0, 812]
         }
       ],
       "orig": "At first sight, the task of visual document-layout interpretation appears intuitive enough to obtain plausible annotations in most cases. However, during early trial-runs in the core team, we observed many cases in which annotators use different annotation styles, especially for documents with challenging layouts. For example, if a figure is presented with subfigures, one annotator might draw a single figure bounding-box, while another might annotate each subfigure separately. The same applies for lists, where one might annotate all list items in one block or each list item separately. In essence, we observed that challenging layouts would be annotated in different but plausible ways. To illustrate this, we show in Figure 4 multiple examples of plausible but inconsistent annotations on the same pages.",
@@ -10917,10 +9765,7 @@
             "b": 455.31,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            465
-          ]
+          "charspan": [0, 465]
         }
       ],
       "orig": "Obviously, this inconsistency in annotations is not desirable for datasets which are intended to be used for model training. To minimise these inconsistencies, we created a detailed annotation guideline. While perfect consistency across 40 annotation staff members is clearly not possible to achieve, we saw a huge improvement in annotation consistency after the introduction of our annotation guideline. A few selected, non-trivial highlights of the guideline are:",
@@ -10944,10 +9789,7 @@
             "b": 402.33,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            202
-          ]
+          "charspan": [0, 202]
         }
       ],
       "orig": "(1) Every list-item is an individual object instance with class label List-item . This definition is different from PubLayNet and DocBank, where all list-items are grouped together into one List object.",
@@ -10973,10 +9815,7 @@
             "b": 358.54,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            208
-          ]
+          "charspan": [0, 208]
         }
       ],
       "orig": "(2) A List-item is a paragraph with hanging indentation. Singleline elements can qualify as List-item if the neighbour elements expose hanging indentation. Bullet or enumeration symbols are not a requirement.",
@@ -11002,10 +9841,7 @@
             "b": 336.58,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            82
-          ]
+          "charspan": [0, 82]
         }
       ],
       "orig": "(3) For every Caption , there must be exactly one corresponding Picture or Table .",
@@ -11031,10 +9867,7 @@
             "b": 314.71,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            70
-          ]
+          "charspan": [0, 70]
         }
       ],
       "orig": "(4) Connected sub-pictures are grouped together in one Picture object.",
@@ -11060,10 +9893,7 @@
             "b": 303.7,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            53
-          ]
+          "charspan": [0, 53]
         }
       ],
       "orig": "(5) Formula numbers are included in a Formula object.",
@@ -11089,10 +9919,7 @@
             "b": 270.87,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            160
-          ]
+          "charspan": [0, 160]
         }
       ],
       "orig": "(6) Emphasised text (e.g. in italic or bold) at the beginning of a paragraph is not considered a Section-header , unless it appears exclusively on its own line.",
@@ -11118,10 +9945,7 @@
             "b": 217.94,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            221
-          ]
+          "charspan": [0, 221]
         }
       ],
       "orig": "The complete annotation guideline is over 100 pages long and a detailed description is obviously out of scope for this paper. Nevertheless, it will be made publicly available alongside with DocLayNet for future reference.",
@@ -11145,10 +9969,7 @@
             "b": 86.43,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            792
-          ]
+          "charspan": [0, 792]
         }
       ],
       "orig": "Phase 3: Training. After a first trial with a small group of people, we realised that providing the annotation guideline and a set of random practice pages did not yield the desired quality level for layout annotation. Therefore we prepared a subset of pages with two different complexity levels, each with a practice and an exam part. 974 pages were reference-annotated by one proficient core team member. Annotation staff were then given the task to annotate the same subsets (blinded from the reference). By comparing the annotations of each staff member with the reference annotations, we could quantify how closely their annotations matched the reference. Only after passing two exam levels with high annotation quality, staff were admitted into the production phase. Practice iterations",
@@ -11172,10 +9993,7 @@
             "b": 610.17,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            64
-          ]
+          "charspan": [0, 64]
         }
       ],
       "orig": "1ef23f5e6d7f10d393f9947e8208285dce9ae87250ac483ac4b4a59d51b4e037",
@@ -11199,10 +10017,7 @@
             "b": 700.0,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            25
-          ]
+          "charspan": [0, 25]
         }
       ],
       "orig": "Compliant with guidelines",
@@ -11226,10 +10041,7 @@
             "b": 700.0,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            33
-          ]
+          "charspan": [0, 33]
         }
       ],
       "orig": "Plausible but invalid alternative",
@@ -11253,10 +10065,7 @@
             "b": 420.33,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            53
-          ]
+          "charspan": [0, 53]
         }
       ],
       "orig": "Borderline case: Two guideline-compliant alternatives",
@@ -11280,10 +10089,7 @@
             "b": 544.89,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            64
-          ]
+          "charspan": [0, 64]
         }
       ],
       "orig": "03c31a2ee1ed1b583c28957f475ee545d144e1b5a264dc4dd068c8d2f6a64860",
@@ -11307,10 +10113,7 @@
             "b": 430.83,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            64
-          ]
+          "charspan": [0, 64]
         }
       ],
       "orig": "1a5cd524f1844c1260c8e8c073e1f442423c264583212b0d0b6626fc780e6ed4",
@@ -11334,10 +10137,7 @@
             "b": 687.98,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "A",
@@ -11361,10 +10161,7 @@
             "b": 599.33,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "B",
@@ -11388,10 +10185,7 @@
             "b": 532.78,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "C",
@@ -11415,10 +10209,7 @@
             "b": 419.24,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "D",
@@ -11442,10 +10233,7 @@
             "b": 331.52,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            64
-          ]
+          "charspan": [0, 64]
         }
       ],
       "orig": "05237a14f2524e3f53c8454b074409d05078038a6a36b770fcc8ec7e540deae0",
@@ -11469,10 +10257,7 @@
             "b": 288.36,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            173
-          ]
+          "charspan": [0, 173]
         }
       ],
       "orig": "Figure 4: Examples of plausible annotation alternatives for the same page. Criteria in our annotation guideline can resolve cases A to C, while the case D remains ambiguous.",
@@ -11496,10 +10281,7 @@
             "b": 247.31,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            123
-          ]
+          "charspan": [0, 123]
         }
       ],
       "orig": "were carried out over a timeframe of 12 weeks, after which 8 of the 40 initially allocated annotators did not pass the bar.",
@@ -11523,10 +10305,7 @@
             "b": 82.93,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            987
-          ]
+          "charspan": [0, 987]
         }
       ],
       "orig": "Phase 4: Production annotation. The previously selected 80K pages were annotated with the defined 11 class labels by 32 annotators. This production phase took around three months to complete. All annotations were created online through CCS, which visualises the programmatic PDF text-cells as an overlay on the page. The page annotation are obtained by drawing rectangular bounding-boxes, as shown in Figure 3. With regard to the annotation practices, we implemented a few constraints and capabilities on the tooling level. First, we only allow non-overlapping, vertically oriented, rectangular boxes. For the large majority of documents, this constraint was sufficient and it speeds up the annotation considerably in comparison with arbitrary segmentation shapes. Second, annotator staff were not able to see each other's annotations. This was enforced by design to avoid any bias in the annotation, which could skew the numbers of the inter-annotator agreement (see Table 1). We wanted",
@@ -11550,10 +10329,7 @@
             "b": 723.51,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            130
-          ]
+          "charspan": [0, 130]
         }
       ],
       "orig": "KDD '22, August 14-18, 2022, Washington, DC, USA Birgit Pfitzmann, Christoph Auer, Michele Dolfi, Ahmed S. Nassar, and Peter Staar",
@@ -11577,10 +10353,7 @@
             "b": 609.23,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            489
-          ]
+          "charspan": [0, 489]
         }
       ],
       "orig": "Table 2: Prediction performance (mAP@0.5-0.95) of object detection networks on DocLayNet test set. The MRCNN (Mask R-CNN) and FRCNN (Faster R-CNN) models with ResNet-50 or ResNet-101 backbone were trained based on the network architectures from the detectron2 model zoo (Mask R-CNN R50, R101-FPN 3x, Faster R-CNN R101-FPN 3x), with default configurations. The YOLO implementation utilized was YOLOv5x6 [13]. All models were initialised using pre-trained weights from the COCO 2017 dataset.",
@@ -11604,10 +10377,7 @@
             "b": 215.58,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1252
-          ]
+          "charspan": [0, 1252]
         }
       ],
       "orig": "to avoid this at any cost in order to have clear, unbiased baseline numbers for human document-layout annotation. Third, we introduced the feature of snapping boxes around text segments to obtain a pixel-accurate annotation and again reduce time and effort. The CCS annotation tool automatically shrinks every user-drawn box to the minimum bounding-box around the enclosed text-cells for all purely text-based segments, which excludes only Table and Picture . For the latter, we instructed annotation staff to minimise inclusion of surrounding whitespace while including all graphical lines. A downside of snapping boxes to enclosed text cells is that some wrongly parsed PDF pages cannot be annotated correctly and need to be skipped. Fourth, we established a way to flag pages as rejected for cases where no valid annotation according to the label guidelines could be achieved. Example cases for this would be PDF pages that render incorrectly or contain layouts that are impossible to capture with non-overlapping rectangles. Such rejected pages are not contained in the final dataset. With all these measures in place, experienced annotation staff managed to annotate a single page in a typical timeframe of 20s to 60s, depending on its complexity.",
@@ -11631,10 +10401,7 @@
             "b": 193.87,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            13
-          ]
+          "charspan": [0, 13]
         }
       ],
       "orig": "5 EXPERIMENTS",
@@ -11659,10 +10426,7 @@
             "b": 82.84,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            584
-          ]
+          "charspan": [0, 584]
         }
       ],
       "orig": "The primary goal of DocLayNet is to obtain high-quality ML models capable of accurate document-layout analysis on a wide variety of challenging layouts. As discussed in Section 2, object detection models are currently the easiest to use, due to the standardisation of ground-truth data in COCO format [16] and the availability of general frameworks such as detectron2 [17]. Furthermore, baseline numbers in PubLayNet and DocBank were obtained using standard object detection models such as Mask R-CNN and Faster R-CNN. As such, we will relate to these object detection methods in this",
@@ -11686,10 +10450,7 @@
             "b": 449.96,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            322
-          ]
+          "charspan": [0, 322]
         }
       ],
       "orig": "Figure 5: Prediction performance (mAP@0.5-0.95) of a Mask R-CNNnetworkwithResNet50backbonetrainedonincreasing fractions of the DocLayNet dataset. The learning curve flattens around the 80% mark, indicating that increasing the size of the DocLayNet dataset with similar data will not yield significantly better predictions.",
@@ -11713,10 +10474,7 @@
             "b": 539.25,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "0",
@@ -11740,10 +10498,7 @@
             "b": 539.25,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            2
-          ]
+          "charspan": [0, 2]
         }
       ],
       "orig": "20",
@@ -11767,10 +10522,7 @@
             "b": 539.25,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            2
-          ]
+          "charspan": [0, 2]
         }
       ],
       "orig": "40",
@@ -11794,10 +10546,7 @@
             "b": 539.25,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            2
-          ]
+          "charspan": [0, 2]
         }
       ],
       "orig": "60",
@@ -11821,10 +10570,7 @@
             "b": 539.25,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            2
-          ]
+          "charspan": [0, 2]
         }
       ],
       "orig": "80",
@@ -11848,10 +10594,7 @@
             "b": 539.25,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            3
-          ]
+          "charspan": [0, 3]
         }
       ],
       "orig": "100",
@@ -11875,10 +10618,7 @@
             "b": 532.12,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            27
-          ]
+          "charspan": [0, 27]
         }
       ],
       "orig": "% of DocLayNet training set",
@@ -11902,10 +10642,7 @@
             "b": 567.54,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            2
-          ]
+          "charspan": [0, 2]
         }
       ],
       "orig": "50",
@@ -11929,10 +10666,7 @@
             "b": 593.84,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            2
-          ]
+          "charspan": [0, 2]
         }
       ],
       "orig": "55",
@@ -11956,10 +10690,7 @@
             "b": 620.14,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            2
-          ]
+          "charspan": [0, 2]
         }
       ],
       "orig": "60",
@@ -11983,10 +10714,7 @@
             "b": 646.43,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            2
-          ]
+          "charspan": [0, 2]
         }
       ],
       "orig": "65",
@@ -12010,10 +10738,7 @@
             "b": 672.73,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            2
-          ]
+          "charspan": [0, 2]
         }
       ],
       "orig": "70",
@@ -12037,10 +10762,7 @@
             "b": 605.21,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            13
-          ]
+          "charspan": [0, 13]
         }
       ],
       "orig": "mAP 0.50:0.95",
@@ -12064,10 +10786,7 @@
             "b": 550.56,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            4
-          ]
+          "charspan": [0, 4]
         }
       ],
       "orig": "10 1",
@@ -12091,10 +10810,7 @@
             "b": 550.51,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            4
-          ]
+          "charspan": [0, 4]
         }
       ],
       "orig": "10 2",
@@ -12118,10 +10834,7 @@
             "b": 569.93,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            2
-          ]
+          "charspan": [0, 2]
         }
       ],
       "orig": "50",
@@ -12145,10 +10858,7 @@
             "b": 585.71,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            2
-          ]
+          "charspan": [0, 2]
         }
       ],
       "orig": "55",
@@ -12172,10 +10882,7 @@
             "b": 601.48,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            2
-          ]
+          "charspan": [0, 2]
         }
       ],
       "orig": "60",
@@ -12199,10 +10906,7 @@
             "b": 617.26,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            2
-          ]
+          "charspan": [0, 2]
         }
       ],
       "orig": "65",
@@ -12226,10 +10930,7 @@
             "b": 633.04,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            2
-          ]
+          "charspan": [0, 2]
         }
       ],
       "orig": "70",
@@ -12253,10 +10954,7 @@
             "b": 388.8,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            102
-          ]
+          "charspan": [0, 102]
         }
       ],
       "orig": "paper and leave the detailed evaluation of more recent methods mentioned in Section 2 for future work.",
@@ -12280,10 +10978,7 @@
             "b": 312.09,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            397
-          ]
+          "charspan": [0, 397]
         }
       ],
       "orig": "In this section, we will present several aspects related to the performance of object detection models on DocLayNet. Similarly as in PubLayNet, we will evaluate the quality of their predictions using mean average precision (mAP) with 10 overlaps that range from 0.5 to 0.95 in steps of 0.05 (mAP@0.5-0.95). These scores are computed by leveraging the evaluation code provided by the COCO API [16].",
@@ -12307,10 +11002,7 @@
             "b": 285.17,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            30
-          ]
+          "charspan": [0, 30]
         }
       ],
       "orig": "Baselines for Object Detection",
@@ -12335,10 +11027,7 @@
             "b": 85.44,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1146
-          ]
+          "charspan": [0, 1146]
         }
       ],
       "orig": "In Table 2, we present baseline experiments (given in mAP) on Mask R-CNN [12], Faster R-CNN [11], and YOLOv5 [13]. Both training and evaluation were performed on RGB images with dimensions of 1025 \u00d7 1025 pixels. For training, we only used one annotation in case of redundantly annotated pages. As one can observe, the variation in mAP between the models is rather low, but overall between 6 and 10% lower than the mAP computed from the pairwise human annotations on triple-annotated pages. This gives a good indication that the DocLayNet dataset poses a worthwhile challenge for the research community to close the gap between human recognition and ML approaches. It is interesting to see that Mask R-CNN and Faster R-CNN produce very comparable mAP scores, indicating that pixel-based image segmentation derived from bounding-boxes does not help to obtain better predictions. On the other hand, the more recent Yolov5x model does very well and even out-performs humans on selected labels such as Text , Table and Picture . This is not entirely surprising, as Text , Table and Picture are abundant and the most visually distinctive in a document.",
@@ -12362,10 +11051,7 @@
             "b": 723.51,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            71
-          ]
+          "charspan": [0, 71]
         }
       ],
       "orig": "DocLayNet: A Large Human-Annotated Dataset for Document-Layout Analysis",
@@ -12389,10 +11075,7 @@
             "b": 723.51,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            48
-          ]
+          "charspan": [0, 48]
         }
       ],
       "orig": "KDD '22, August 14-18, 2022, Washington, DC, USA",
@@ -12416,10 +11099,7 @@
             "b": 664.03,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            205
-          ]
+          "charspan": [0, 205]
         }
       ],
       "orig": "Table 3: Performance of a Mask R-CNN R50 network in mAP@0.5-0.95 scores trained on DocLayNet with different class label sets. The reduced label sets were obtained by either down-mapping or dropping labels.",
@@ -12443,10 +11123,7 @@
             "b": 462.43,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            14
-          ]
+          "charspan": [0, 14]
         }
       ],
       "orig": "Learning Curve",
@@ -12471,10 +11148,7 @@
             "b": 262.69,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1157
-          ]
+          "charspan": [0, 1157]
         }
       ],
       "orig": "One of the fundamental questions related to any dataset is if it is 'large enough'. To answer this question for DocLayNet, we performed a data ablation study in which we evaluated a Mask R-CNN model trained on increasing fractions of the DocLayNet dataset. As can be seen in Figure 5, the mAP score rises sharply in the beginning and eventually levels out. To estimate the error-bar on the metrics, we ran the training five times on the entire data-set. This resulted in a 1% error-bar, depicted by the shaded area in Figure 5. In the inset of Figure 5, we show the exact same data-points, but with a logarithmic scale on the x-axis. As is expected, the mAP score increases linearly as a function of the data-size in the inset. The curve ultimately flattens out between the 80% and 100% mark, with the 80% mark falling within the error-bars of the 100% mark. This provides a good indication that the model would not improve significantly by yet increasing the data size. Rather, it would probably benefit more from improved data consistency (as discussed in Section 3), data augmentation methods [23], or the addition of more document categories and styles.",
@@ -12498,10 +11172,7 @@
             "b": 239.49,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            22
-          ]
+          "charspan": [0, 22]
         }
       ],
       "orig": "Impact of Class Labels",
@@ -12526,10 +11197,7 @@
             "b": 83.59,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            910
-          ]
+          "charspan": [0, 910]
         }
       ],
       "orig": "The choice and number of labels can have a significant effect on the overall model performance. Since PubLayNet, DocBank and DocLayNet all have different label sets, it is of particular interest to understand and quantify this influence of the label set on the model performance. We investigate this by either down-mapping labels into more common ones (e.g. Caption \u2192 Text ) or excluding them from the annotations entirely. Furthermore, it must be stressed that all mappings and exclusions were performed on the data before model training. In Table 3, we present the mAP scores for a Mask R-CNN R50 network on different label sets. Where a label is down-mapped, we show its corresponding label, otherwise it was excluded. We present three different label sets, with 6, 5 and 4 different labels respectively. The set of 5 labels contains the same labels as PubLayNet. However, due to the different definition of",
@@ -12553,10 +11221,7 @@
             "b": 664.03,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            183
-          ]
+          "charspan": [0, 183]
         }
       ],
       "orig": "Table 4: Performance of a Mask R-CNN R50 network with document-wise and page-wise split for different label sets. Naive page-wise split will result in /tildelow 10% point improvement.",
@@ -12580,10 +11245,7 @@
             "b": 375.65,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            469
-          ]
+          "charspan": [0, 469]
         }
       ],
       "orig": "lists in PubLayNet (grouped list-items) versus DocLayNet (separate list-items), the label set of size 4 is the closest to PubLayNet, in the assumption that the List is down-mapped to Text in PubLayNet. The results in Table 3 show that the prediction accuracy on the remaining class labels does not change significantly when other classes are merged into them. The overall macro-average improves by around 5%, in particular when Page-footer and Page-header are excluded.",
@@ -12607,10 +11269,7 @@
             "b": 352.6,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            46
-          ]
+          "charspan": [0, 46]
         }
       ],
       "orig": "Impact of Document Split in Train and Test Set",
@@ -12635,10 +11294,7 @@
             "b": 196.71,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            852
-          ]
+          "charspan": [0, 852]
         }
       ],
       "orig": "Many documents in DocLayNet have a unique styling. In order to avoid overfitting on a particular style, we have split the train-, test- and validation-sets of DocLayNet on document boundaries, i.e. every document contributes pages to only one set. To the best of our knowledge, this was not considered in PubLayNet or DocBank. To quantify how this affects model performance, we trained and evaluated a Mask R-CNN R50 model on a modified dataset version. Here, the train-, test- and validation-sets were obtained by a randomised draw over the individual pages. As can be seen in Table 4, the difference in model performance is surprisingly large: pagewise splitting gains \u02dc 10% in mAP over the document-wise splitting. Thus, random page-wise splitting of DocLayNet can easily lead to accidental overestimation of model performance and should be avoided.",
@@ -12662,10 +11318,7 @@
             "b": 173.65,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            18
-          ]
+          "charspan": [0, 18]
         }
       ],
       "orig": "Dataset Comparison",
@@ -12690,10 +11343,7 @@
             "b": 83.47,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            521
-          ]
+          "charspan": [0, 521]
         }
       ],
       "orig": "Throughout this paper, we claim that DocLayNet's wider variety of document layouts leads to more robust layout detection models. In Table 5, we provide evidence for that. We trained models on each of the available datasets (PubLayNet, DocBank and DocLayNet) and evaluated them on the test sets of the other datasets. Due to the different label sets and annotation styles, a direct comparison is not possible. Hence, we focussed on the common labels among the datasets. Between PubLayNet and DocLayNet, these are Picture ,",
@@ -12717,10 +11367,7 @@
             "b": 723.51,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            130
-          ]
+          "charspan": [0, 130]
         }
       ],
       "orig": "KDD '22, August 14-18, 2022, Washington, DC, USA Birgit Pfitzmann, Christoph Auer, Michele Dolfi, Ahmed S. Nassar, and Peter Staar",
@@ -12744,10 +11391,7 @@
             "b": 642.11,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            298
-          ]
+          "charspan": [0, 298]
         }
       ],
       "orig": "Table 5: Prediction Performance (mAP@0.5-0.95) of a Mask R-CNN R50 network across the PubLayNet, DocBank & DocLayNet data-sets. By evaluating on common label classes of each dataset, we observe that the DocLayNet-trained model has much less pronounced variations in performance across all datasets.",
@@ -12771,10 +11415,7 @@
             "b": 348.97,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            295
-          ]
+          "charspan": [0, 295]
         }
       ],
       "orig": "Section-header , Table and Text . Before training, we either mapped or excluded DocLayNet's other labels as specified in table 3, and also PubLayNet's List to Text . Note that the different clustering of lists (by list-element vs. whole list objects) naturally decreases the mAP score for Text .",
@@ -12798,10 +11439,7 @@
             "b": 206.55,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            793
-          ]
+          "charspan": [0, 793]
         }
       ],
       "orig": "For comparison of DocBank with DocLayNet, we trained only on Picture and Table clusters of each dataset. We had to exclude Text because successive paragraphs are often grouped together into a single object in DocBank. This paragraph grouping is incompatible with the individual paragraphs of DocLayNet. As can be seen in Table 5, DocLayNet trained models yield better performance compared to the previous datasets. It is noteworthy that the models trained on PubLayNet and DocBank perform very well on their own test set, but have a much lower performance on the foreign datasets. While this also applies to DocLayNet, the difference is far less pronounced. Thus we conclude that DocLayNet trained models are overall more robust and will produce better results for challenging, unseen layouts.",
@@ -12825,10 +11463,7 @@
             "b": 176.93,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            19
-          ]
+          "charspan": [0, 19]
         }
       ],
       "orig": "Example Predictions",
@@ -12853,10 +11488,7 @@
             "b": 86.79,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            481
-          ]
+          "charspan": [0, 481]
         }
       ],
       "orig": "To conclude this section, we illustrate the quality of layout predictions one can expect from DocLayNet-trained models by providing a selection of examples without any further post-processing applied. Figure 6 shows selected layout predictions on pages from the test-set of DocLayNet. Results look decent in general across document categories, however one can also observe mistakes such as overlapping clusters of different classes, or entirely missing boxes due to low confidence.",
@@ -12880,10 +11512,7 @@
             "b": 696.13,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            12
-          ]
+          "charspan": [0, 12]
         }
       ],
       "orig": "6 CONCLUSION",
@@ -12908,10 +11537,7 @@
             "b": 605.99,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            507
-          ]
+          "charspan": [0, 507]
         }
       ],
       "orig": "In this paper, we presented the DocLayNet dataset. It provides the document conversion and layout analysis research community a new and challenging dataset to improve and fine-tune novel ML methods on. In contrast to many other datasets, DocLayNet was created by human annotation in order to obtain reliable layout ground-truth on a wide variety of publication- and typesettingstyles. Including a large proportion of documents outside the scientific publishing domain adds significant value in this respect.",
@@ -12935,10 +11561,7 @@
             "b": 507.36,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            573
-          ]
+          "charspan": [0, 573]
         }
       ],
       "orig": "From the dataset, we have derived on the one hand reference metrics for human performance on document-layout annotation (through double and triple annotations) and on the other hand evaluated the baseline performance of commonly used object detection methods. We also illustrated the impact of various dataset-related aspects on model performance through data-ablation experiments, both from a size and class-label perspective. Last but not least, we compared the accuracy of models trained on other public datasets and showed that DocLayNet trained models are more robust.",
@@ -12962,10 +11585,7 @@
             "b": 474.49,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            188
-          ]
+          "charspan": [0, 188]
         }
       ],
       "orig": "To date, there is still a significant gap between human and ML accuracy on the layout interpretation task, and we hope that this work will inspire the research community to close that gap.",
@@ -12989,10 +11609,7 @@
             "b": 446.9,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            10
-          ]
+          "charspan": [0, 10]
         }
       ],
       "orig": "REFERENCES",
@@ -13017,10 +11634,7 @@
             "b": 420.92,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            191
-          ]
+          "charspan": [0, 191]
         }
       ],
       "orig": "[1] Max G\u00f6bel, Tamir Hassan, Ermelinda Oro, and Giorgio Orsi. Icdar 2013 table competition. In 2013 12th International Conference on Document Analysis and Recognition , pages 1449-1453, 2013.",
@@ -13046,10 +11660,7 @@
             "b": 389.04,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            279
-          ]
+          "charspan": [0, 279]
         }
       ],
       "orig": "[2] Christian Clausner, Apostolos Antonacopoulos, and Stefan Pletschacher. Icdar2017 competition on recognition of documents with complex layouts rdcl2017. In 2017 14th IAPR International Conference on Document Analysis and Recognition (ICDAR) , volume 01, pages 1404-1410, 2017.",
@@ -13075,10 +11686,7 @@
             "b": 365.16,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            213
-          ]
+          "charspan": [0, 213]
         }
       ],
       "orig": "[3] Herv\u00e9 D\u00e9jean, Jean-Luc Meunier, Liangcai Gao, Yilun Huang, Yu Fang, Florian Kleber, and Eva-Maria Lang. ICDAR 2019 Competition on Table Detection and Recognition (cTDaR), April 2019. http://sac.founderit.com/.",
@@ -13104,10 +11712,7 @@
             "b": 333.28,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            251
-          ]
+          "charspan": [0, 251]
         }
       ],
       "orig": "[4] Antonio Jimeno Yepes, Peter Zhong, and Douglas Burdick. Competition on scientific literature parsing. In Proceedings of the International Conference on Document Analysis and Recognition , ICDAR, pages 605-617. LNCS 12824, SpringerVerlag, sep 2021.",
@@ -13133,10 +11738,7 @@
             "b": 301.4,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            261
-          ]
+          "charspan": [0, 261]
         }
       ],
       "orig": "[5] Logan Markewich, Hao Zhang, Yubin Xing, Navid Lambert-Shirzad, Jiang Zhexin, Roy Lee, Zhi Li, and Seok-Bum Ko. Segmentation for document layout analysis: not dead yet. International Journal on Document Analysis and Recognition (IJDAR) , pages 1-11, 01 2022.",
@@ -13162,10 +11764,7 @@
             "b": 277.46,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            235
-          ]
+          "charspan": [0, 235]
         }
       ],
       "orig": "[6] Xu Zhong, Jianbin Tang, and Antonio Jimeno-Yepes. Publaynet: Largest dataset ever for document layout analysis. In Proceedings of the International Conference on Document Analysis and Recognition , ICDAR, pages 1015-1022, sep 2019.",
@@ -13191,10 +11790,7 @@
             "b": 237.64,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            316
-          ]
+          "charspan": [0, 316]
         }
       ],
       "orig": "[7] Minghao Li, Yiheng Xu, Lei Cui, Shaohan Huang, Furu Wei, Zhoujun Li, and Ming Zhou. Docbank: A benchmark dataset for document layout analysis. In Proceedings of the 28th International Conference on Computational Linguistics , COLING, pages 949-960. International Committee on Computational Linguistics, dec 2020.",
@@ -13220,10 +11816,7 @@
             "b": 213.7,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            172
-          ]
+          "charspan": [0, 172]
         }
       ],
       "orig": "[8] Riaz Ahmad, Muhammad Tanvir Afzal, and M. Qadir. Information extraction from pdf sources based on rule-based system using integrated formats. In SemWebEval@ESWC , 2016.",
@@ -13249,10 +11842,7 @@
             "b": 181.85,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            271
-          ]
+          "charspan": [0, 271]
         }
       ],
       "orig": "[9] Ross B. Girshick, Jeff Donahue, Trevor Darrell, and Jitendra Malik. Rich feature hierarchies for accurate object detection and semantic segmentation. In IEEE Conference on Computer Vision and Pattern Recognition , CVPR, pages 580-587. IEEE Computer Society, jun 2014.",
@@ -13278,10 +11868,7 @@
             "b": 165.88,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            149
-          ]
+          "charspan": [0, 149]
         }
       ],
       "orig": "[10] Ross B. Girshick. Fast R-CNN. In 2015 IEEE International Conference on Computer Vision , ICCV, pages 1440-1448. IEEE Computer Society, dec 2015.",
@@ -13307,10 +11894,7 @@
             "b": 141.97,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            227
-          ]
+          "charspan": [0, 227]
         }
       ],
       "orig": "[11] Shaoqing Ren, Kaiming He, Ross Girshick, and Jian Sun. Faster r-cnn: Towards real-time object detection with region proposal networks. IEEE Transactions on Pattern Analysis and Machine Intelligence , 39(6):1137-1149, 2017.",
@@ -13336,10 +11920,7 @@
             "b": 118.09,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            192
-          ]
+          "charspan": [0, 192]
         }
       ],
       "orig": "[12] Kaiming He, Georgia Gkioxari, Piotr Doll\u00e1r, and Ross B. Girshick. Mask R-CNN. In IEEE International Conference on Computer Vision , ICCV, pages 2980-2988. IEEE Computer Society, Oct 2017.",
@@ -13365,10 +11946,7 @@
             "b": 86.21,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            305
-          ]
+          "charspan": [0, 305]
         }
       ],
       "orig": "[13] Glenn Jocher, Alex Stoken, Ayush Chaurasia, Jirka Borovec, NanoCode012, TaoXie, Yonghye Kwon, Kalen Michael, Liu Changyu, Jiacong Fang, Abhiram V, Laughing, tkianai, yxNONG, Piotr Skalski, Adam Hogan, Jebastin Nadar, imyhxy, Lorenzo Mammana, Alex Wang, Cristi Fati, Diego Montes, Jan Hajek, Laurentiu",
@@ -13394,10 +11972,7 @@
             "b": 723.51,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            71
-          ]
+          "charspan": [0, 71]
         }
       ],
       "orig": "DocLayNet: A Large Human-Annotated Dataset for Document-Layout Analysis",
@@ -13421,10 +11996,7 @@
             "b": 723.51,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            48
-          ]
+          "charspan": [0, 48]
         }
       ],
       "orig": "KDD '22, August 14-18, 2022, Washington, DC, USA",
@@ -13448,10 +12020,7 @@
             "b": 286.42,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            386
-          ]
+          "charspan": [0, 386]
         }
       ],
       "orig": "Figure 6: Example layout predictions on selected pages from the DocLayNet test-set. (A, D) exhibit favourable results on coloured backgrounds. (B, C) show accurate list-item and paragraph differentiation despite densely-spaced lines. (E) demonstrates good table and figure distinction. (F) shows predictions on a Chinese patent with multiple overlaps, label confusion and missing boxes.",
@@ -13475,10 +12044,7 @@
             "b": 377.31,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            64
-          ]
+          "charspan": [0, 64]
         }
       ],
       "orig": "4bed2a8aa51ac37058e79605821bbc426d032b0b6ca8bdf3409ed8508ccd8c67",
@@ -13502,10 +12068,7 @@
             "b": 561.44,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            64
-          ]
+          "charspan": [0, 64]
         }
       ],
       "orig": "2f2a06d08f5ad565d0f5e815f4ddf666365b2cff435cdaeb8850217e8a8efabf",
@@ -13529,10 +12092,7 @@
             "b": 377.31,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            64
-          ]
+          "charspan": [0, 64]
         }
       ],
       "orig": "7f2fd7293e04bf4f1756ae51f5779764933da1d1d2002e3915356050570fc75b",
@@ -13556,10 +12116,7 @@
             "b": 561.44,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            64
-          ]
+          "charspan": [0, 64]
         }
       ],
       "orig": "1b81cf65f47456ad4faa725d1eb09879bd633af16cfe2bf8cea661b87907bfac",
@@ -13583,10 +12140,7 @@
             "b": 377.31,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            64
-          ]
+          "charspan": [0, 64]
         }
       ],
       "orig": "b60da9d26f488cb133e47d101d35fda1bdca2671ade60764d1cd569590270327",
@@ -13610,10 +12164,7 @@
             "b": 561.44,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            64
-          ]
+          "charspan": [0, 64]
         }
       ],
       "orig": "2b7b8355a42ebef0cf91583aad9f30f7c9fa63c5b05911730ba15275c024965b",
@@ -13637,10 +12188,7 @@
             "b": 694.93,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "A",
@@ -13664,10 +12212,7 @@
             "b": 695.33,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "B",
@@ -13691,10 +12236,7 @@
             "b": 694.93,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "C",
@@ -13718,10 +12260,7 @@
             "b": 517.07,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "D",
@@ -13745,10 +12284,7 @@
             "b": 517.46,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "E",
@@ -13772,10 +12308,7 @@
             "b": 517.07,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "F",
@@ -13799,10 +12332,7 @@
             "b": 344.18,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            4
-          ]
+          "charspan": [0, 4]
         }
       ],
       "orig": "Text",
@@ -13826,10 +12356,7 @@
             "b": 344.18,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            7
-          ]
+          "charspan": [0, 7]
         }
       ],
       "orig": "Caption",
@@ -13853,10 +12380,7 @@
             "b": 344.18,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            9
-          ]
+          "charspan": [0, 9]
         }
       ],
       "orig": "List-Item",
@@ -13880,10 +12404,7 @@
             "b": 344.18,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            7
-          ]
+          "charspan": [0, 7]
         }
       ],
       "orig": "Formula",
@@ -13907,10 +12428,7 @@
             "b": 344.18,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            5
-          ]
+          "charspan": [0, 5]
         }
       ],
       "orig": "Table",
@@ -13934,10 +12452,7 @@
             "b": 344.18,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            14
-          ]
+          "charspan": [0, 14]
         }
       ],
       "orig": "Section-Header",
@@ -13961,10 +12476,7 @@
             "b": 344.18,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            7
-          ]
+          "charspan": [0, 7]
         }
       ],
       "orig": "Picture",
@@ -13988,10 +12500,7 @@
             "b": 344.18,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            11
-          ]
+          "charspan": [0, 11]
         }
       ],
       "orig": "Page-Header",
@@ -14015,10 +12524,7 @@
             "b": 344.18,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            11
-          ]
+          "charspan": [0, 11]
         }
       ],
       "orig": "Page-Footer",
@@ -14042,10 +12548,7 @@
             "b": 344.18,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            5
-          ]
+          "charspan": [0, 5]
         }
       ],
       "orig": "Title",
@@ -14069,10 +12572,7 @@
             "b": 242.59,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            195
-          ]
+          "charspan": [0, 195]
         }
       ],
       "orig": "Diaconu, Mai Thanh Minh, Marc, albinxavi, fatih, oleg, and wanghao yang. ultralytics/yolov5: v6.0 - yolov5n nano models, roboflow integration, tensorflow export, opencv dnn support, October 2021.",
@@ -14096,10 +12596,7 @@
             "b": 218.65,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            190
-          ]
+          "charspan": [0, 190]
         }
       ],
       "orig": "[14] Nicolas Carion, Francisco Massa, Gabriel Synnaeve, Nicolas Usunier, Alexander Kirillov, and Sergey Zagoruyko. End-to-end object detection with transformers. CoRR , abs/2005.12872, 2020.",
@@ -14125,10 +12622,7 @@
             "b": 202.71,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            132
-          ]
+          "charspan": [0, 132]
         }
       ],
       "orig": "[15] Mingxing Tan, Ruoming Pang, and Quoc V. Le. Efficientdet: Scalable and efficient object detection. CoRR , abs/1911.09070, 2019.",
@@ -14154,10 +12648,7 @@
             "b": 178.83,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            219
-          ]
+          "charspan": [0, 219]
         }
       ],
       "orig": "[16] Tsung-Yi Lin, Michael Maire, Serge J. Belongie, Lubomir D. Bourdev, Ross B. Girshick, James Hays, Pietro Perona, Deva Ramanan, Piotr Doll\u00e1r, and C. Lawrence Zitnick. Microsoft COCO: common objects in context, 2014.",
@@ -14183,10 +12674,7 @@
             "b": 162.89,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            100
-          ]
+          "charspan": [0, 100]
         }
       ],
       "orig": "[17] Yuxin Wu, Alexander Kirillov, Francisco Massa, Wan-Yen Lo, and Ross Girshick. Detectron2, 2019.",
@@ -14212,10 +12700,7 @@
             "b": 123.04,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            339
-          ]
+          "charspan": [0, 339]
         }
       ],
       "orig": "[18] Nikolaos Livathinos, Cesar Berrospi, Maksym Lysak, Viktor Kuropiatnyk, Ahmed Nassar, Andre Carvalho, Michele Dolfi, Christoph Auer, Kasper Dinkla, and Peter W. J. Staar. Robust pdf document conversion using recurrent neural networks. In Proceedings of the 35th Conference on Artificial Intelligence , AAAI, pages 1513715145, feb 2021.",
@@ -14241,10 +12726,7 @@
             "b": 83.19,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            336
-          ]
+          "charspan": [0, 336]
         }
       ],
       "orig": "[19] Yiheng Xu, Minghao Li, Lei Cui, Shaohan Huang, Furu Wei, and Ming Zhou. Layoutlm: Pre-training of text and layout for document image understanding. In Proceedings of the 26th ACM SIGKDD International Conference on Knowledge Discovery and Data Mining , KDD, pages 1192-1200, New York, USA, 2020. Association for Computing Machinery.",
@@ -14270,10 +12752,7 @@
             "b": 250.56,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            153
-          ]
+          "charspan": [0, 153]
         }
       ],
       "orig": "[20] Shoubin Li, Xuyan Ma, Shuaiqun Pan, Jun Hu, Lin Shi, and Qing Wang. Vtlayout: Fusion of visual and text features for document layout analysis, 2021.",
@@ -14299,10 +12778,7 @@
             "b": 226.65,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            188
-          ]
+          "charspan": [0, 188]
         }
       ],
       "orig": "[21] Peng Zhang, Can Li, Liang Qiao, Zhanzhan Cheng, Shiliang Pu, Yi Niu, and Fei Wu. Vsr: A unified framework for document layout analysis combining vision, semantics and relations, 2021.",
@@ -14328,10 +12804,7 @@
             "b": 194.74,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            290
-          ]
+          "charspan": [0, 290]
         }
       ],
       "orig": "[22] Peter W J Staar, Michele Dolfi, Christoph Auer, and Costas Bekas. Corpus conversion service: A machine learning platform to ingest documents at scale. In Proceedings of the 24th ACM SIGKDD International Conference on Knowledge Discovery and Data Mining , KDD, pages 774-782. ACM, 2018.",
@@ -14357,10 +12830,7 @@
             "b": 178.8,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            138
-          ]
+          "charspan": [0, 138]
         }
       ],
       "orig": "[23] Connor Shorten and Taghi M. Khoshgoftaar. A survey on image data augmentation for deep learning. Journal of Big Data , 6(1):60, 2019.",
@@ -15301,10 +13771,7 @@
             "b": 266.08,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            0
-          ]
+          "charspan": [0, 0]
         }
       ],
       "captions": [
@@ -15374,10 +13841,7 @@
             "b": 571.39,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            0
-          ]
+          "charspan": [0, 0]
         }
       ],
       "captions": [
@@ -15411,10 +13875,7 @@
             "b": 251.28,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            0
-          ]
+          "charspan": [0, 0]
         }
       ],
       "captions": [
@@ -15475,10 +13936,7 @@
             "b": 332.93,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            0
-          ]
+          "charspan": [0, 0]
         }
       ],
       "captions": [],
@@ -15568,10 +14026,7 @@
             "b": 531.04,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            0
-          ]
+          "charspan": [0, 0]
         }
       ],
       "captions": [
@@ -15671,10 +14126,7 @@
             "b": 343.49,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            0
-          ]
+          "charspan": [0, 0]
         }
       ],
       "captions": [
@@ -15710,10 +14162,7 @@
             "b": 498.0,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            0
-          ]
+          "charspan": [0, 0]
         }
       ],
       "captions": [
@@ -22289,10 +20738,7 @@
             "b": 440.36,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            0
-          ]
+          "charspan": [0, 0]
         }
       ],
       "captions": [
@@ -25621,10 +24067,7 @@
             "b": 495.96,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            0
-          ]
+          "charspan": [0, 0]
         }
       ],
       "captions": [
@@ -28292,10 +26735,7 @@
             "b": 485.13,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            0
-          ]
+          "charspan": [0, 0]
         }
       ],
       "captions": [
@@ -30770,10 +29210,7 @@
             "b": 451.92,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            0
-          ]
+          "charspan": [0, 0]
         }
       ],
       "captions": [],

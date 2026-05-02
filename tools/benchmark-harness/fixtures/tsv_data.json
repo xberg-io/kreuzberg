@@ -1,14 +1,14 @@
 {
-	"document": "../../../test_documents/data_formats/employees.tsv",
-	"file_type": "tsv",
-	"file_size": 3051,
-	"expected_frameworks": ["kreuzberg", "pandoc", "tika", "unstructured"],
-	"metadata": {
-		"description": "Employee database with 25 records",
-		"category": "data"
-	},
-	"ground_truth": {
-		"text_file": "../../../test_documents/ground_truth/tsv/tsv_data.txt",
-		"source": "vision"
-	}
+  "document": "../../../test_documents/data_formats/employees.tsv",
+  "file_type": "tsv",
+  "file_size": 3051,
+  "expected_frameworks": ["kreuzberg", "pandoc", "tika", "unstructured"],
+  "metadata": {
+    "description": "Employee database with 25 records",
+    "category": "data"
+  },
+  "ground_truth": {
+    "text_file": "../../../test_documents/ground_truth/tsv/tsv_data.txt",
+    "source": "vision"
+  }
 }

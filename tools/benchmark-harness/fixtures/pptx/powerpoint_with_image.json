@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/pptx/powerpoint_with_image.pptx",
   "file_type": "pptx",
   "file_size": 76480,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "pptx test: powerpoint_with_image",
     "source": "pandoc-generated",

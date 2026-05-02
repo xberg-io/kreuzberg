@@ -38,7 +38,7 @@ Essentials of Statistics for the Behavioral Sciences (9th Edition) answers all t
 
 ## Essentials of Statistics for the Behavioral Sciences (9th
 
-Essentials of Statistics Plus MyLab Statistics with Pearson eText -- 24 Month Access Card Package (6th Edition) (What's New in Statistics) by Mario F. Triola | Jan 28, 2018. 5.0 out of 5 stars 2. Paperback $72.97 $ 72. 97 to rent $178.58 to buy.  et it as soon as Tue, Nov 19. FREE Shipping by Amazon ...
+Essentials of Statistics Plus MyLab Statistics with Pearson eText -- 24 Month Access Card Package (6th Edition) (What's New in Statistics) by Mario F. Triola | Jan 28, 2018. 5.0 out of 5 stars 2. Paperback $72.97 $ 72. 97 to rent $178.58 to buy. et it as soon as Tue, Nov 19. FREE Shipping by Amazon ...
 
 ## Amazon.com: essentials of statistics
 

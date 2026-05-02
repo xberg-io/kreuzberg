@@ -1,12 +1,12 @@
 Table 1: Current layout detection models in the LayoutParser model zoo
 
-| Dataset         |       | Base Model'&#124; Large Model &#124; Notes   |                                                            |
-|-----------------|-------|----------------------------------------------|------------------------------------------------------------|
-| PubLayNet [38]  | F / M | M                                            | Layouts of modern acientific documents                     |
-| PRImA (3]       | M     |                                              | Layouts of scanned modern magazines and scientific reports |
-| Newspaper (17)  |       |                                              | Labut of and i caper for the both conten.                  |
-| ableBank &#124; |       |                                              |                                                            |
-| Dataset [       | F / M |                                              | ayouts of history Japanese document                        |
+| Dataset         |       | Base Model'&#124; Large Model &#124; Notes |                                                            |
+| --------------- | ----- | ------------------------------------------ | ---------------------------------------------------------- |
+| PubLayNet [38]  | F / M | M                                          | Layouts of modern acientific documents                     |
+| PRImA (3]       | M     |                                            | Layouts of scanned modern magazines and scientific reports |
+| Newspaper (17)  |       |                                            | Labut of and i caper for the both conten.                  |
+| ableBank &#124; |       |                                            |                                                            |
+| Dataset [       | F / M |                                            | ayouts of history Japanese document                        |
 
 1 orga dion car, or ta mad and as ice Were a i Reait 0 or Realit 101. 2o0 in coming months.
 

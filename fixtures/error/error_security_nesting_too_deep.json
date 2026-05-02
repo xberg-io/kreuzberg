@@ -1,20 +1,20 @@
 {
-	"id": "error_security_nesting_too_deep",
-	"category": "error",
-	"description": "Error when XML/DOCX nesting depth exceeds max_xml_depth (DepthValidator fires)",
-	"tags": ["error", "security", "limits", "depth"],
-	"call": "extract_file_sync",
-	"input": {
-		"path": "docx/lorem_ipsum.docx",
-		"config": {
-			"security_limits": {
-				"max_xml_depth": 1
-			}
-		}
-	},
-	"assertions": [
-		{
-			"type": "error"
-		}
-	]
+  "id": "error_security_nesting_too_deep",
+  "category": "error",
+  "description": "Error when XML/DOCX nesting depth exceeds max_xml_depth (DepthValidator fires)",
+  "tags": ["error", "security", "limits", "depth"],
+  "call": "extract_file_sync",
+  "input": {
+    "path": "docx/lorem_ipsum.docx",
+    "config": {
+      "security_limits": {
+        "max_xml_depth": 1
+      }
+    }
+  },
+  "assertions": [
+    {
+      "type": "error"
+    }
+  ]
 }

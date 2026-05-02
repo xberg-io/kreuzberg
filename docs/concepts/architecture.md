@@ -98,16 +98,16 @@ flowchart LR
     style Extractors fill:#ffccbc,stroke:#d84315
 ```
 
-| Module | Responsibility |
-|--------|---------------|
-| **core/** | Main entry points (`extract_file`, `extract_bytes`), MIME detection, config loading, pipeline orchestration |
-| **plugins/** | Plugin trait definitions (`DocumentExtractor`, `OcrBackend`, `PostProcessor`, `Validator`, `Renderer`) and the registry system (ExtractorRegistry, OcrRegistry, ValidatorRegistry, ProcessorRegistry, RendererRegistry) |
-| **extractors/** | Maps MIME types to the correct extractor implementation and registers them with the plugin system |
-| **extraction/** | Format-specific extraction logic - PDF via pdfium, Excel via calamine, email parsing, and so on. |
-| **ocr/** | OCR orchestration - Tesseract bindings, HOCR parsing, table detection |
-| **text/** | Text processing utilities - token reduction, quality scoring, string manipulation |
-| **types/** | Shared data structures: `ExtractionResult`, `Metadata`, `Chunk`, and friends |
-| **error/** | Centralized error handling with the `KreuzbergError` enum |
+| Module          | Responsibility                                                                                                                                                                                                          |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **core/**       | Main entry points (`extract_file`, `extract_bytes`), MIME detection, config loading, pipeline orchestration                                                                                                             |
+| **plugins/**    | Plugin trait definitions (`DocumentExtractor`, `OcrBackend`, `PostProcessor`, `Validator`, `Renderer`) and the registry system (ExtractorRegistry, OcrRegistry, ValidatorRegistry, ProcessorRegistry, RendererRegistry) |
+| **extractors/** | Maps MIME types to the correct extractor implementation and registers them with the plugin system                                                                                                                       |
+| **extraction/** | Format-specific extraction logic - PDF via pdfium, Excel via calamine, email parsing, and so on.                                                                                                                        |
+| **ocr/**        | OCR orchestration - Tesseract bindings, HOCR parsing, table detection                                                                                                                                                   |
+| **text/**       | Text processing utilities - token reduction, quality scoring, string manipulation                                                                                                                                       |
+| **types/**      | Shared data structures: `ExtractionResult`, `Metadata`, `Chunk`, and friends                                                                                                                                            |
+| **error/**      | Centralized error handling with the `KreuzbergError` enum                                                                                                                                                               |
 
 ---
 

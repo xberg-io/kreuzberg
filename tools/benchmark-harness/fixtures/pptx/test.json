@@ -2,14 +2,7 @@
   "document": "../../../../test_documents/vendored/markitdown/pptx/test.pptx",
   "file_type": "pptx",
   "file_size": 277515,
-  "expected_frameworks": [
-    "kreuzberg",
-    "docling",
-    "markitdown",
-    "pandoc",
-    "tika",
-    "unstructured"
-  ],
+  "expected_frameworks": ["kreuzberg", "docling", "markitdown", "pandoc", "tika", "unstructured"],
   "metadata": {
     "description": "Document from markitdown test suite",
     "source": "markitdown",

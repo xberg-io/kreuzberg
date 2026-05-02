@@ -12,11 +12,11 @@ Extension -> EXT_TO_MIME map -> validate -> Registry lookup -> Extractor
 
 ## Key Functions
 
-| Function | Location | Purpose |
-|----------|----------|---------|
-| `detect_mime_type(path, inspect)` | `core/mime.rs` | Extension + optional content inspection |
-| `detect_mime_type_from_bytes(bytes)` | `core/mime.rs` | Magic number detection (infer crate) |
-| `validate_mime_type(mime)` | `core/mime.rs` | Check if any extractor supports it |
+| Function                             | Location       | Purpose                                 |
+| ------------------------------------ | -------------- | --------------------------------------- |
+| `detect_mime_type(path, inspect)`    | `core/mime.rs` | Extension + optional content inspection |
+| `detect_mime_type_from_bytes(bytes)` | `core/mime.rs` | Magic number detection (infer crate)    |
+| `validate_mime_type(mime)`           | `core/mime.rs` | Check if any extractor supports it      |
 
 ## Extension Mapping
 

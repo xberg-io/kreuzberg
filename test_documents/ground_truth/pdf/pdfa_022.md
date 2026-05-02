@@ -214,18 +214,18 @@ GREBE will be operated by eight partner organisations across six regions:
 - ERI
 - Innovation Center Iceland
 - WDC
-WONDER DEVELOPMENT COOPERATION
-COMPUTER FORWARDEL AT SOFTWARE
+  WONDER DEVELOPMENT COOPERATION
+  COMPUTER FORWARDEL AT SOFTWARE
 - Fermanagh &amp; Omagh
-District Council
-Comhairle Coantair
-Fhear Manach agus na hÓmaí
+  District Council
+  Comhairle Coantair
+  Fhear Manach agus na hÓmaí
 - Action Renewables
-the future of energy, today
+  the future of energy, today
 - FORSKNINGSPARKEN I NARVIK
 - Eureliia
 - NATIONAL RESOURCES
-INSTITUTE FINLAND
+  INSTITUTE FINLAND
 - Karelia
 - FORSKNINGSPARKEN I NARVIK
 

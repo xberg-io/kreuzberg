@@ -1,29 +1,26 @@
 {
-	"id": "pdf_non_english_german",
-	"category": "pdf",
-	"description": "German technical PDF to ensure non-ASCII content extraction.",
-	"input": {
-		"path": "pdf/5_level_paging_and_5_level_ept_intel_revision_1_1_may_2017.pdf",
-		"media_type": "application/pdf"
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/pdf"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 100
-		},
-		{
-			"type": "contains_any",
-			"field": "content",
-			"values": [
-				"Intel",
-				"paging"
-			]
-		}
-	]
+  "id": "pdf_non_english_german",
+  "category": "pdf",
+  "description": "German technical PDF to ensure non-ASCII content extraction.",
+  "input": {
+    "path": "pdf/5_level_paging_and_5_level_ept_intel_revision_1_1_may_2017.pdf",
+    "media_type": "application/pdf"
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/pdf"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 100
+    },
+    {
+      "type": "contains_any",
+      "field": "content",
+      "values": ["Intel", "paging"]
+    }
+  ]
 }

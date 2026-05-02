@@ -4,14 +4,14 @@ Both Kreuzberg and Unstructured are open-source tools for extracting text, table
 
 ## At a Glance
 
-| | Kreuzberg | Unstructured |
-|---|---|---|
-| **Written in** | Rust | Python |
-| **File formats** | 91+ | ~30 |
-| **Use from** | Python, TypeScript, Go, Ruby, Java, C#, PHP, Elixir, Rust, Wasm | Python, or any language via REST API |
-| **Run it as** | Library, CLI, self-hosted API, browser (Wasm) | Python library, managed cloud API, self-hosted API |
-| **Pricing** | Free, Apache 2.0 | Free (open-source) + paid managed API |
-| **Sweet spot** | High-throughput pipelines, polyglot stacks, on-prem | Managed service, ML-heavy layout analysis, quick prototyping |
+|                  | Kreuzberg                                                       | Unstructured                                                 |
+| ---------------- | --------------------------------------------------------------- | ------------------------------------------------------------ |
+| **Written in**   | Rust                                                            | Python                                                       |
+| **File formats** | 91+                                                             | ~30                                                          |
+| **Use from**     | Python, TypeScript, Go, Ruby, Java, C#, PHP, Elixir, Rust, Wasm | Python, or any language via REST API                         |
+| **Run it as**    | Library, CLI, self-hosted API, browser (Wasm)                   | Python library, managed cloud API, self-hosted API           |
+| **Pricing**      | Free, Apache 2.0                                                | Free (open-source) + paid managed API                        |
+| **Sweet spot**   | High-throughput pipelines, polyglot stacks, on-prem             | Managed service, ML-heavy layout analysis, quick prototyping |
 
 ---
 

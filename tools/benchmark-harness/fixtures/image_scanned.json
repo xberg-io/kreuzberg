@@ -1,17 +1,25 @@
 {
-	"document": "../../../test_documents/images/english_and_korean.png",
-	"file_type": "png",
-	"file_size": 305401,
-	"expected_frameworks": ["kreuzberg", "docling", "markitdown", "mineru", "pymupdf4llm", "tika", "unstructured"],
-	"metadata": {
-		"description": "Scanned multilingual document with English and Korean text - 305KB PNG",
-		"category": "image-scanned",
-		"size_class": "medium",
-		"requires_ocr": true,
-		"languages": ["en", "ko"]
-	},
-	"ground_truth": {
-		"text_file": "../../../test_documents/ground_truth/png/image_scanned.md",
-		"source": "mistral-pixtral"
-	}
+  "document": "../../../test_documents/images/english_and_korean.png",
+  "file_type": "png",
+  "file_size": 305401,
+  "expected_frameworks": [
+    "kreuzberg",
+    "docling",
+    "markitdown",
+    "mineru",
+    "pymupdf4llm",
+    "tika",
+    "unstructured"
+  ],
+  "metadata": {
+    "description": "Scanned multilingual document with English and Korean text - 305KB PNG",
+    "category": "image-scanned",
+    "size_class": "medium",
+    "requires_ocr": true,
+    "languages": ["en", "ko"]
+  },
+  "ground_truth": {
+    "text_file": "../../../test_documents/ground_truth/png/image_scanned.md",
+    "source": "mistral-pixtral"
+  }
 }

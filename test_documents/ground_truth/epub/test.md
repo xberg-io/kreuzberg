@@ -9,6 +9,6 @@ It includes:
 
 # Chapter 2: More Content
 
-Here's a second chapter with a *different* style.
+Here's a second chapter with a _different_ style.
 
 > This is a blockquote for testing.

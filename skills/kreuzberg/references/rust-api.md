@@ -846,18 +846,18 @@ All fallible operations return `Result<T>` where errors are `KreuzbergError`.
 
 ## Feature Flags Summary
 
-| Feature | Availability | Dependencies |
-|---------|--------------|--------------|
-| tokio-runtime | Default | Tokio runtime for async/sync |
-| pdf | Default | PDFium |
-| ocr | Optional | Tesseract |
-| chunking | Optional | text-splitter |
-| embeddings | Optional | FastEmbed, requires tokio-runtime |
-| language-detection | Optional | whatlang |
-| keywords-yake | Optional | yake-rust |
-| keywords-rake | Optional | rake |
-| api | Optional | Axum, requires tokio-runtime |
-| mcp | Optional | Model Context Protocol, requires tokio-runtime |
+| Feature            | Availability | Dependencies                                   |
+| ------------------ | ------------ | ---------------------------------------------- |
+| tokio-runtime      | Default      | Tokio runtime for async/sync                   |
+| pdf                | Default      | PDFium                                         |
+| ocr                | Optional     | Tesseract                                      |
+| chunking           | Optional     | text-splitter                                  |
+| embeddings         | Optional     | FastEmbed, requires tokio-runtime              |
+| language-detection | Optional     | whatlang                                       |
+| keywords-yake      | Optional     | yake-rust                                      |
+| keywords-rake      | Optional     | rake                                           |
+| api                | Optional     | Axum, requires tokio-runtime                   |
+| mcp                | Optional     | Model Context Protocol, requires tokio-runtime |
 
 ---
 

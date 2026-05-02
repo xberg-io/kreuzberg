@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/odt/italic.odt",
   "file_type": "odt",
   "file_size": 10426,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "odt test: italic",
     "source": "pandoc-generated",

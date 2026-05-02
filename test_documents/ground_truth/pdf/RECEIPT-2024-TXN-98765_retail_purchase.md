@@ -63,7 +63,7 @@ Returns within 30 days
 Receipt required
 Electronics must be unopened
 
-*TXN98765202411231432*
+_TXN98765202411231432_
 
 MEMBER EXCLUSIVE
 Promo: TECHSAVE2024

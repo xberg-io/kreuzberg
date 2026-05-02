@@ -1,6 +1,6 @@
 <div class="section">
 
-Plain, **strong**, *emphasis*, ***strong emphasis***, ***emphasized strong***.
+Plain, **strong**, _emphasis_, **_strong emphasis_**, **_emphasized strong_**.
 
 Strikethrough: ~~deleted~~
 

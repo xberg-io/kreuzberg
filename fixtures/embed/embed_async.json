@@ -1,43 +1,43 @@
 {
-	"id": "embed_async",
-	"description": "Standalone embedding via async API path with balanced preset",
-	"tags": ["embed"],
-	"call": "embed",
-	"input": {
-		"texts": ["Async embedding test"],
-		"config": {
-			"model": {
-				"type": "preset",
-				"name": "balanced"
-			},
-			"normalize": true
-		}
-	},
-	"assertions": [
-		{
-			"type": "count_equals",
-			"field": "embeddings",
-			"value": 1
-		},
-		{
-			"type": "equals",
-			"field": "embedding_dimensions",
-			"value": 768
-		},
-		{
-			"type": "is_true",
-			"field": "embeddings_valid"
-		},
-		{
-			"type": "is_true",
-			"field": "embeddings_finite"
-		},
-		{
-			"type": "is_true",
-			"field": "embeddings_non_zero"
-		}
-	],
-	"skip": {
-		"reason": "Requires features: embeddings; Skip on platforms: x86_64-pc-windows-msvc; Embeddings not supported on Windows MSVC"
-	}
+  "id": "embed_async",
+  "description": "Standalone embedding via async API path with balanced preset",
+  "tags": ["embed"],
+  "call": "embed",
+  "input": {
+    "texts": ["Async embedding test"],
+    "config": {
+      "model": {
+        "type": "preset",
+        "name": "balanced"
+      },
+      "normalize": true
+    }
+  },
+  "assertions": [
+    {
+      "type": "count_equals",
+      "field": "embeddings",
+      "value": 1
+    },
+    {
+      "type": "equals",
+      "field": "embedding_dimensions",
+      "value": 768
+    },
+    {
+      "type": "is_true",
+      "field": "embeddings_valid"
+    },
+    {
+      "type": "is_true",
+      "field": "embeddings_finite"
+    },
+    {
+      "type": "is_true",
+      "field": "embeddings_non_zero"
+    }
+  ],
+  "skip": {
+    "reason": "Requires features: embeddings; Skip on platforms: x86_64-pc-windows-msvc; Embeddings not supported on Windows MSVC"
+  }
 }

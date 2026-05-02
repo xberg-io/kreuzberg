@@ -48,11 +48,11 @@ The statements in this information sheet are based upon our knowledge and practi
 
 Maximum values for the coefficient of retroreflection (according to ECE 104, material class E)
 
-|                       | Specific coefficient of retroreflection R' in cd·lx -1 ·m -2   | Specific coefficient of retroreflection R' in cd·lx -1 ·m -2   | Specific coefficient of retroreflection R' in cd·lx -1 ·m -2   | Specific coefficient of retroreflection R' in cd·lx -1 ·m -2   |
-|-----------------------|----------------------------------------------------------------|----------------------------------------------------------------|----------------------------------------------------------------|----------------------------------------------------------------|
-| Observation angle (°) | 0,33                                                           | 0,33                                                           | 0,33                                                           | 0,33                                                           |
-| Lighting angle (°)    | 5                                                              | 30                                                             | 40                                                             | 60                                                             |
-| every colour          | 50                                                             | 21,66                                                          | 12,33                                                          | 1,66                                                           |
+|                       | Specific coefficient of retroreflection R' in cd·lx -1 ·m -2 | Specific coefficient of retroreflection R' in cd·lx -1 ·m -2 | Specific coefficient of retroreflection R' in cd·lx -1 ·m -2 | Specific coefficient of retroreflection R' in cd·lx -1 ·m -2 |
+| --------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| Observation angle (°) | 0,33                                                         | 0,33                                                         | 0,33                                                         | 0,33                                                         |
+| Lighting angle (°)    | 5                                                            | 30                                                           | 40                                                           | 60                                                           |
+| every colour          | 50                                                           | 21,66                                                        | 12,33                                                        | 1,66                                                         |
 
 ## Colours
 
@@ -100,13 +100,13 @@ The statements in this information sheet are based upon our knowledge and practi
 
 ## FLEET MARKING GRADE
 
-| Thickness* (without protective paper and adhesive)                                                         | 90 to 140 micron                                                                |
-|------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------|
-| Temperature resistance***                                                                                  | adhered to aluminium, -50°C to +95°C                                            |
-| Adhesive power* (FINAT-TM1 after 72h)                                                                      | adhered to stainless steel: 17.0 N/25mm adhered to acrylic coating: 17.5 N/25mm |
+| Thickness\* (without protective paper and adhesive)                                                        | 90 to 140 micron                                                                |
+| ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| Temperature resistance\*\*\*                                                                               | adhered to aluminium, -50°C to +95°C                                            |
+| Adhesive power\* (FINAT-TM1 after 72h)                                                                     | adhered to stainless steel: 17.0 N/25mm adhered to acrylic coating: 17.5 N/25mm |
 | Tensile strength (DIN 53455)                                                                               | along: min 10 N/mm² across: min 10 N/mm²                                        |
 | Elongation at break (DIN 53455)                                                                            | along: min 100% across: min 100%                                                |
-| Shelf life**                                                                                               | 2 years                                                                         |
+| Shelf life\*\*                                                                                             | 2 years                                                                         |
 | Application temperature                                                                                    | > +15°C                                                                         |
 | Service life by specialist application under vertical outdoor exposure (standard central European climate) | 7 years                                                                         |
 

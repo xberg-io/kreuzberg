@@ -1,20 +1,20 @@
 {
-	"id": "structured_ris_basic",
-	"category": "structured",
-	"description": "RIS citation format extraction.",
-	"input": {
-		"path": "data_formats/sample.ris",
-		"media_type": "application/x-research-info-systems"
-	},
-	"assertions": [
-		{
-			"type": "contains_any",
-			"field": "mime_type",
-			"values": ["application/x-research-info-systems", "text/plain"]
-		},
-		{
-			"type": "not_empty",
-			"field": "content"
-		}
-	]
+  "id": "structured_ris_basic",
+  "category": "structured",
+  "description": "RIS citation format extraction.",
+  "input": {
+    "path": "data_formats/sample.ris",
+    "media_type": "application/x-research-info-systems"
+  },
+  "assertions": [
+    {
+      "type": "contains_any",
+      "field": "mime_type",
+      "values": ["application/x-research-info-systems", "text/plain"]
+    },
+    {
+      "type": "not_empty",
+      "field": "content"
+    }
+  ]
 }

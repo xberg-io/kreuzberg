@@ -222,13 +222,13 @@ To get around deficiencies in training data, some approaches model TSR in ways t
 
 Table 1. Comparison of crowd-sourced datasets for table structure recognition.
 
-| Dataset             | Input Modality   | # Tables   | Cell Topology   | Cell Content   | Cell Location   | Row &Column Location   | Canonical Structure   |
-|---------------------|------------------|------------|-----------------|----------------|-----------------|------------------------|-----------------------|
-| TableBank [9]       | Image            | 145K       | glyph[check]    |                |                 |                        |                       |
-| SciTSR [3]          | PDF ∗            | 15K        | glyph[check]    | glyph[check]   |                 |                        |                       |
-| PubTabNet [22,23]   | Image            | 510K ‡     | glyph[check]    | glyph[check]   | glyph[check] †  |                        |                       |
-| FinTabNet [22]      | PDF ∗            | 113K       | glyph[check]    | glyph[check]   | glyph[check] †  |                        |                       |
-| PubTables-1M (ours) | PDF ∗            | 948K       | glyph[check]    | glyph[check]   | glyph[check]    | glyph[check]           | glyph[check]          |
+| Dataset             | Input Modality | # Tables | Cell Topology | Cell Content | Cell Location  | Row &Column Location | Canonical Structure |
+| ------------------- | -------------- | -------- | ------------- | ------------ | -------------- | -------------------- | ------------------- |
+| TableBank [9]       | Image          | 145K     | glyph[check]  |              |                |                      |                     |
+| SciTSR [3]          | PDF ∗          | 15K      | glyph[check]  | glyph[check] |                |                      |                     |
+| PubTabNet [22,23]   | Image          | 510K ‡   | glyph[check]  | glyph[check] | glyph[check] † |                      |                     |
+| FinTabNet [22]      | PDF ∗          | 113K     | glyph[check]  | glyph[check] | glyph[check] † |                      |                     |
+| PubTables-1M (ours) | PDF ∗          | 948K     | glyph[check]  | glyph[check] | glyph[check]   | glyph[check]         | glyph[check]        |
 
 ∗ Multiple input modalities, such as image or text, can be derived from annotated PDF data.
 
@@ -279,13 +279,13 @@ Finally, there are two additional cases that we must handle by convention. One c
 
 Table 2. Estimated measure of oversegmentation for projected row headers (PRHs) by dataset. As PRHs are only one type of cell that can be oversegmented, this is a partial survey of the total oversegmentation in these datasets.
 
-| Dataset             | Total Tables †   | Total Tables ∗   | Tables with an oversegmented PRH   | Tables with an oversegmented PRH   | Tables with an oversegmented PRH   |
-|---------------------|------------------|------------------|------------------------------------|------------------------------------|------------------------------------|
-|                     | Investigated     | with a PRH       | Total                              | %(of total with a PRH)             | %(of total investigated)           |
-| SciTSR              | 10,431           | 342              | 54                                 | 15.79%                             | 0.52%                              |
-| PubTabNet           | 422,491          | 100,159          | 58,747                             | 58.65%                             | 13.90%                             |
-| FinTabNet           | 70,028           | 25,637           | 25,348                             | 98.87%                             | 36.20%                             |
-| PubTables-1M (ours) | 761,262          | 153,705          | 0                                  | 0%                                 | 0%                                 |
+| Dataset             | Total Tables † | Total Tables ∗ | Tables with an oversegmented PRH | Tables with an oversegmented PRH | Tables with an oversegmented PRH |
+| ------------------- | -------------- | -------------- | -------------------------------- | -------------------------------- | -------------------------------- |
+|                     | Investigated   | with a PRH     | Total                            | %(of total with a PRH)           | %(of total investigated)         |
+| SciTSR              | 10,431         | 342            | 54                               | 15.79%                           | 0.52%                            |
+| PubTabNet           | 422,491        | 100,159        | 58,747                           | 58.65%                           | 13.90%                           |
+| FinTabNet           | 70,028         | 25,637         | 25,348                           | 98.87%                           | 36.20%                           |
+| PubTables-1M (ours) | 761,262        | 153,705        | 0                                | 0%                               | 0%                               |
 
 † We exclude tables with fewer than five rows; to avoid column header rows we skip the first four rows when searching for PRHs.
 
@@ -358,7 +358,7 @@ Median
 Table 3. Test performance of models on PubTables-1M using object detection metrics.
 
 | Task     | Model             | AP          | AP 50       | AP 75       | AR          |
-|----------|-------------------|-------------|-------------|-------------|-------------|
+| -------- | ----------------- | ----------- | ----------- | ----------- | ----------- |
 | TD       | Faster R-CNN DETR | 0.825 0.966 | 0.985 0.995 | 0.927 0.988 | 0.866 0.981 |
 | TSR + FA | Faster R-CNN DETR | 0.722 0.912 | 0.815 0.971 | 0.785 0.948 | 0.762 0.942 |
 
@@ -378,20 +378,20 @@ which can also be interpreted as an F-score. GriTS represents the ground truth a
 
 Table 4. Test performance of the TSR + FA models on PubTables-1M on TSR metrics.
 
-| Test Data     | Model        | Table Category   |   Acc Cont |   GriTS Top |   GriTS Cont |   GriTS Loc |   Adj Cont |
-|---------------|--------------|------------------|------------|-------------|--------------|-------------|------------|
-| Non-Canonical | DETR-NC      | Simple           |     0.8678 |      0.9872 |       0.9859 |      0.9821 |     0.9801 |
-|               |              | Complex          |     0.536  |      0.96   |       0.9618 |      0.9444 |     0.9505 |
-|               |              | All              |     0.7336 |      0.9762 |       0.9761 |      0.9668 |     0.9681 |
-| Canonical     | DETR-NC      | Simple           |     0.9349 |      0.9933 |       0.992  |      0.99   |     0.9865 |
-|               |              | Complex          |     0.2712 |      0.9257 |       0.929  |      0.9044 |     0.9162 |
-|               |              | All              |     0.5851 |      0.9576 |       0.9588 |      0.9449 |     0.9494 |
-|               | Faster R-CNN | Simple           |     0.0867 |      0.8682 |       0.8571 |      0.6869 |     0.8024 |
-|               |              | Complex          |     0.1193 |      0.8556 |       0.8507 |      0.7518 |     0.7734 |
-|               |              | All              |     0.1039 |      0.8616 |       0.8538 |      0.7211 |     0.7871 |
-|               | DETR         | Simple           |     0.9468 |      0.9949 |       0.9938 |      0.9922 |     0.9893 |
-|               |              | Complex          |     0.6944 |      0.9752 |       0.9763 |      0.9654 |     0.9667 |
-|               |              | All              |     0.8138 |      0.9845 |       0.9846 |      0.9781 |     0.9774 |
+| Test Data     | Model        | Table Category | Acc Cont | GriTS Top | GriTS Cont | GriTS Loc | Adj Cont |
+| ------------- | ------------ | -------------- | -------- | --------- | ---------- | --------- | -------- |
+| Non-Canonical | DETR-NC      | Simple         | 0.8678   | 0.9872    | 0.9859     | 0.9821    | 0.9801   |
+|               |              | Complex        | 0.536    | 0.96      | 0.9618     | 0.9444    | 0.9505   |
+|               |              | All            | 0.7336   | 0.9762    | 0.9761     | 0.9668    | 0.9681   |
+| Canonical     | DETR-NC      | Simple         | 0.9349   | 0.9933    | 0.992      | 0.99      | 0.9865   |
+|               |              | Complex        | 0.2712   | 0.9257    | 0.929      | 0.9044    | 0.9162   |
+|               |              | All            | 0.5851   | 0.9576    | 0.9588     | 0.9449    | 0.9494   |
+|               | Faster R-CNN | Simple         | 0.0867   | 0.8682    | 0.8571     | 0.6869    | 0.8024   |
+|               |              | Complex        | 0.1193   | 0.8556    | 0.8507     | 0.7518    | 0.7734   |
+|               |              | All            | 0.1039   | 0.8616    | 0.8538     | 0.7211    | 0.7871   |
+|               | DETR         | Simple         | 0.9468   | 0.9949    | 0.9938     | 0.9922    | 0.9893   |
+|               |              | Complex        | 0.6944   | 0.9752    | 0.9763     | 0.9654    | 0.9667   |
+|               |              | All            | 0.8138   | 0.9845    | 0.9846     | 0.9781    | 0.9774   |
 
 ordering of cells of a table when comparing tables. Further, GriTS enables TSR to be assessed from multiple perspectives within the same formulation, with GriTSTop measuring cell topology recognition, GriTSCont measuring cell content recognition, and GriTSLoc measuring cell location recognition.
 

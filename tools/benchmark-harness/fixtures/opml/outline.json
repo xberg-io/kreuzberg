@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/opml/outline.opml",
   "file_type": "opml",
   "file_size": 1666,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "opml test: outline",
     "source": "pandoc-generated",

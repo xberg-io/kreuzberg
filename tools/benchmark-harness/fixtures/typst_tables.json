@@ -1,16 +1,16 @@
 {
-	"document": "../../../test_documents/markdown/tables.typst",
-	"file_type": "typst",
-	"file_size": 2552,
-	"expected_frameworks": ["kreuzberg", "pandoc"],
-	"metadata": {
-		"description": "Typst document with multiple table examples",
-		"category": "markup",
-		"size_class": "small"
-	},
-	"ground_truth": {
-		"text_file": "../../../test_documents/ground_truth/typst/typst_tables.txt",
-		"markdown_file": "../../../test_documents/ground_truth/typst/tables.md",
-		"source": "pandoc"
-	}
+  "document": "../../../test_documents/markdown/tables.typst",
+  "file_type": "typst",
+  "file_size": 2552,
+  "expected_frameworks": ["kreuzberg", "pandoc"],
+  "metadata": {
+    "description": "Typst document with multiple table examples",
+    "category": "markup",
+    "size_class": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../test_documents/ground_truth/typst/typst_tables.txt",
+    "markdown_file": "../../../test_documents/ground_truth/typst/tables.md",
+    "source": "pandoc"
+  }
 }

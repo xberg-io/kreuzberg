@@ -1,14 +1,14 @@
 {
-	"document": "../../../test_documents/archives/documents.7z",
-	"file_type": "7z",
-	"file_size": 216,
-	"expected_frameworks": ["kreuzberg", "tika"],
-	"metadata": {
-		"description": "7-Zip archive with text documents",
-		"category": "archive"
-	},
-	"ground_truth": {
-		"text_file": "../../../test_documents/ground_truth/7z/documents.txt",
-		"source": "manual"
-	}
+  "document": "../../../test_documents/archives/documents.7z",
+  "file_type": "7z",
+  "file_size": 216,
+  "expected_frameworks": ["kreuzberg", "tika"],
+  "metadata": {
+    "description": "7-Zip archive with text documents",
+    "category": "archive"
+  },
+  "ground_truth": {
+    "text_file": "../../../test_documents/ground_truth/7z/documents.txt",
+    "source": "manual"
+  }
 }

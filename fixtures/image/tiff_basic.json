@@ -1,23 +1,23 @@
 {
-	"id": "image_tiff_basic",
-	"category": "image",
-	"description": "TIFF image extraction via OCR.",
-	"input": {
-		"path": "images_extra/ocr_image.tif",
-		"media_type": "image/tiff"
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "image/tiff"
-		},
-		{
-			"type": "not_empty",
-			"field": "content"
-		}
-	],
-	"skip": {
-		"reason": "Requires features: tesseract"
-	}
+  "id": "image_tiff_basic",
+  "category": "image",
+  "description": "TIFF image extraction via OCR.",
+  "input": {
+    "path": "images_extra/ocr_image.tif",
+    "media_type": "image/tiff"
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "image/tiff"
+    },
+    {
+      "type": "not_empty",
+      "field": "content"
+    }
+  ],
+  "skip": {
+    "reason": "Requires features: tesseract"
+  }
 }

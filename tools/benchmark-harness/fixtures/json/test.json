@@ -1,15 +1,15 @@
 {
-	"document": "../../../../test_documents/vendored/markitdown/json/test.json",
-	"file_type": "json",
-	"file_size": 229,
-	"expected_frameworks": ["kreuzberg", "markitdown", "tika"],
-	"metadata": {
-		"description": "Document from markitdown test suite",
-		"source": "markitdown",
-		"size_category": "small"
-	},
-	"ground_truth": {
-		"text_file": "../../../../test_documents/ground_truth/json/test.txt",
-		"source": "vision"
-	}
+  "document": "../../../../test_documents/vendored/markitdown/json/test.json",
+  "file_type": "json",
+  "file_size": 229,
+  "expected_frameworks": ["kreuzberg", "markitdown", "tika"],
+  "metadata": {
+    "description": "Document from markitdown test suite",
+    "source": "markitdown",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/json/test.txt",
+    "source": "vision"
+  }
 }

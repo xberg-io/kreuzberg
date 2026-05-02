@@ -1,19 +1,16 @@
-import {Note} from '../_component/note.jsx'
+import { Note } from "../_component/note.jsx";
 
 export const info = {
-  author: [
-    {github: 'wooorm', name: 'Titus Wormer'}
-  ],
-  modified: new Date('2025-01-27'),
-  published: new Date('2021-10-18')
-}
-export const navSortSelf = 5
+  author: [{ github: "wooorm", name: "Titus Wormer" }],
+  modified: new Date("2025-01-27"),
+  published: new Date("2021-10-18"),
+};
+export const navSortSelf = 5;
 
 {/* lint disable maximum-heading-length */}
 
 <Note type="info">
-  **Note**: Had trouble with something that wasn’t explained here but should be?
-  Please let us know.
+  **Note**: Had trouble with something that wasn’t explained here but should be? Please let us know.
   See [§ Contribute][contribute] for how to help.
 </Note>
 
@@ -28,37 +25,37 @@ To migrate to the latest MDX, see [§ Migrating from v1 to v2][migation-v2].
 
 ## Contents
 
-* [Problems integrating MDX](#problems-integrating-mdx)
-  * [ESM](#esm)
-* [Problems using MDX](#problems-using-mdx)
-  * [`` `options.renderer` is no longer supported ``](#optionsrenderer-is-no-longer-supported)
-  * [`` Incorrect `format: 'detect'` ``](#incorrect-format-detect)
-  * [`` Unexpected `format: 'detect'` ``](#unexpected-format-detect)
-  * [`` Missing `pragma` in classic runtime with `pragmaImportSource` ``](#missing-pragma-in-classic-runtime-with-pragmaimportsource)
-  * [`` Unexpected deprecated option `jsxRuntime: 'classic'`, `pragma`, `pragmaFrag`, or `pragmaImportSource` ``](#unexpected-deprecated-option-jsxruntime-classic-pragma-pragmafrag-or-pragmaimportsource)
-  * [`` Expected `Fragment` given to `evaluate` ``](#expected-fragment-given-to-evaluate)
-  * [`` Expected `jsx` given to `evaluate` ``](#expected-jsx-given-to-evaluate)
-  * [`` Expected `jsxs` given to `evaluate` ``](#expected-jsxs-given-to-evaluate)
-  * [``Unexpected missing `options.baseUrl` needed…``](#unexpected-missing-optionsbaseurl-needed)
-* [Problems writing MDX](#problems-writing-mdx)
-  * [`Could not parse import/exports with acorn: $error`](#could-not-parse-importexports-with-acorn-error)
-  * [``Unexpected `$type` in code: only import/exports are supported``](#unexpected-type-in-code-only-importexports-are-supported)
-  * [`` Unexpected end of file in expression, expected a corresponding closing brace for `{` ``](#unexpected-end-of-file-in-expression-expected-a-corresponding-closing-brace-for-)
-  * [`Unexpected lazy line in expression in container`](#unexpected-lazy-line-in-expression-in-container)
-  * [`Could not parse expression with acorn: $error`](#could-not-parse-expression-with-acorn-error)
-  * [`Could not parse expression with acorn: Unexpected content after expression`](#could-not-parse-expression-with-acorn-unexpected-content-after-expression)
-  * [`Unexpected extra content in spread: only a single spread is supported`](#unexpected-extra-content-in-spread-only-a-single-spread-is-supported)
-  * [``Unexpected `$type` in code: only spread elements are supported``](#unexpected-type-in-code-only-spread-elements-are-supported)
-  * [`Unexpected empty expression`](#unexpected-empty-expression)
-  * [`Unexpected end of file $at, expected $expect`](#unexpected-end-of-file-at-expected-expect)
-  * [`Unexpected character $at, expected $expect`](#unexpected-character-at-expected-expect)
-  * [``Unexpected closing slash `/` in tag, expected an open tag first``](#unexpected-closing-slash--in-tag-expected-an-open-tag-first)
-  * [`Unexpected lazy line in container, expected line to be…`](#unexpected-lazy-line-in-container-expected-line-to-be)
-  * [`Unexpected attribute in closing tag, expected the end of the tag`](#unexpected-attribute-in-closing-tag-expected-the-end-of-the-tag)
-  * [``Unexpected self-closing slash `/` in closing tag, expected the end of the tag``](#unexpected-self-closing-slash--in-closing-tag-expected-the-end-of-the-tag)
-  * [``Unexpected closing tag `</$tag>`, expected corresponding closing tag for `<$tag>` ($at)``](#unexpected-closing-tag-tag-expected-corresponding-closing-tag-for-tag-at)
-  * [``Cannot close `$type` ($at): a different token (`$type`, $at) is open``](#cannot-close-type-at-a-different-token-type-at-is-open)
-  * [``Cannot close document, a token (`$type`, $at) is still open``](#cannot-close-document-a-token-type-at-is-still-open)
+- [Problems integrating MDX](#problems-integrating-mdx)
+  - [ESM](#esm)
+- [Problems using MDX](#problems-using-mdx)
+  - [`` `options.renderer` is no longer supported ``](#optionsrenderer-is-no-longer-supported)
+  - [`` Incorrect `format: 'detect'` ``](#incorrect-format-detect)
+  - [`` Unexpected `format: 'detect'` ``](#unexpected-format-detect)
+  - [`` Missing `pragma` in classic runtime with `pragmaImportSource` ``](#missing-pragma-in-classic-runtime-with-pragmaimportsource)
+  - [`` Unexpected deprecated option `jsxRuntime: 'classic'`, `pragma`, `pragmaFrag`, or `pragmaImportSource` ``](#unexpected-deprecated-option-jsxruntime-classic-pragma-pragmafrag-or-pragmaimportsource)
+  - [`` Expected `Fragment` given to `evaluate` ``](#expected-fragment-given-to-evaluate)
+  - [`` Expected `jsx` given to `evaluate` ``](#expected-jsx-given-to-evaluate)
+  - [`` Expected `jsxs` given to `evaluate` ``](#expected-jsxs-given-to-evaluate)
+  - [``Unexpected missing `options.baseUrl` needed…``](#unexpected-missing-optionsbaseurl-needed)
+- [Problems writing MDX](#problems-writing-mdx)
+  - [`Could not parse import/exports with acorn: $error`](#could-not-parse-importexports-with-acorn-error)
+  - [``Unexpected `$type` in code: only import/exports are supported``](#unexpected-type-in-code-only-importexports-are-supported)
+  - [`` Unexpected end of file in expression, expected a corresponding closing brace for `{` ``](#unexpected-end-of-file-in-expression-expected-a-corresponding-closing-brace-for-)
+  - [`Unexpected lazy line in expression in container`](#unexpected-lazy-line-in-expression-in-container)
+  - [`Could not parse expression with acorn: $error`](#could-not-parse-expression-with-acorn-error)
+  - [`Could not parse expression with acorn: Unexpected content after expression`](#could-not-parse-expression-with-acorn-unexpected-content-after-expression)
+  - [`Unexpected extra content in spread: only a single spread is supported`](#unexpected-extra-content-in-spread-only-a-single-spread-is-supported)
+  - [``Unexpected `$type` in code: only spread elements are supported``](#unexpected-type-in-code-only-spread-elements-are-supported)
+  - [`Unexpected empty expression`](#unexpected-empty-expression)
+  - [`Unexpected end of file $at, expected $expect`](#unexpected-end-of-file-at-expected-expect)
+  - [`Unexpected character $at, expected $expect`](#unexpected-character-at-expected-expect)
+  - [``Unexpected closing slash `/` in tag, expected an open tag first``](#unexpected-closing-slash--in-tag-expected-an-open-tag-first)
+  - [`Unexpected lazy line in container, expected line to be…`](#unexpected-lazy-line-in-container-expected-line-to-be)
+  - [`Unexpected attribute in closing tag, expected the end of the tag`](#unexpected-attribute-in-closing-tag-expected-the-end-of-the-tag)
+  - [``Unexpected self-closing slash `/` in closing tag, expected the end of the tag``](#unexpected-self-closing-slash--in-closing-tag-expected-the-end-of-the-tag)
+  - [``Unexpected closing tag `</$tag>`, expected corresponding closing tag for `<$tag>` ($at)``](#unexpected-closing-tag-tag-expected-corresponding-closing-tag-for-tag-at)
+  - [``Cannot close `$type` ($at): a different token (`$type`, $at) is open``](#cannot-close-type-at-a-different-token-type-at-is-open)
+  - [``Cannot close document, a token (`$type`, $at) is still open``](#cannot-close-document-a-token-type-at-is-still-open)
 
 ## Problems integrating MDX
 
@@ -87,12 +84,13 @@ one short-term solution is to use a bundler to make a CJS version.
 <details>
   <summary>Expand example of making a CJS bundle</summary>
 
-  With [esbuild](https://esbuild.github.io), this bundles the ESM package
-  `@mdx-js/mdx` as CJS in `vendor/mdx.js`:
+With [esbuild](https://esbuild.github.io), this bundles the ESM package
+`@mdx-js/mdx` as CJS in `vendor/mdx.js`:
 
-  ```sh
-  npx esbuild @mdx-js/mdx --bundle --platform=node --outfile=vendor/mdx.js
-  ```
+```sh
+npx esbuild @mdx-js/mdx --bundle --platform=node --outfile=vendor/mdx.js
+```
+
 </details>
 
 ## Problems using MDX
@@ -224,12 +222,12 @@ typos).
 
 Errors typically fall in these three categories:
 
-* **Not escaping `<` and `{`**
+- **Not escaping `<` and `{`**
   — Escape these (`\<`, `\{`) if you mean them as plain text instead of JS(X)
-* **Incorrect interleaving**
+- **Incorrect interleaving**
   — See the rules in
   [¶ Interleaving in § What is MDX?][interleaving]
-* **Broken JavaScript**
+- **Broken JavaScript**
   — Make sure the JavaScript you write is valid
 
 ### `Could not parse import/exports with acorn: $error`
@@ -537,15 +535,9 @@ See the rules on
 [¶ Interleaving in § What is MDX?][interleaving]
 
 [contribute]: /community/contribute/
-
 [interleaving]: /docs/what-is-mdx/#interleaving
-
 [loader]: /packages/loader/
-
 [mdx]: /packages/mdx/
-
 [migation-v2]: /migrating/v2/
-
 [packages]: /packages/
-
 [what]: /docs/what-is-mdx/

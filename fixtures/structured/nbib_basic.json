@@ -1,20 +1,20 @@
 {
-	"id": "structured_nbib_basic",
-	"category": "structured",
-	"description": "PubMed NBIB citation format extraction.",
-	"input": {
-		"path": "data_formats/sample.nbib",
-		"media_type": "application/nbib"
-	},
-	"assertions": [
-		{
-			"type": "contains_any",
-			"field": "mime_type",
-			"values": ["application/nbib", "application/x-pubmed", "text/plain"]
-		},
-		{
-			"type": "not_empty",
-			"field": "content"
-		}
-	]
+  "id": "structured_nbib_basic",
+  "category": "structured",
+  "description": "PubMed NBIB citation format extraction.",
+  "input": {
+    "path": "data_formats/sample.nbib",
+    "media_type": "application/nbib"
+  },
+  "assertions": [
+    {
+      "type": "contains_any",
+      "field": "mime_type",
+      "values": ["application/nbib", "application/x-pubmed", "text/plain"]
+    },
+    {
+      "type": "not_empty",
+      "field": "content"
+    }
+  ]
 }

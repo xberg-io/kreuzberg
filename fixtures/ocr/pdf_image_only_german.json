@@ -1,31 +1,31 @@
 {
-	"id": "ocr_pdf_image_only_german",
-	"category": "ocr",
-	"description": "Image-only German PDF requiring OCR to extract text.",
-	"input": {
-		"path": "pdf/image_only_german_pdf.pdf",
-		"media_type": "application/pdf",
-		"config": {
-			"ocr": {
-				"backend": "tesseract",
-				"language": "deu"
-			},
-			"force_ocr": true
-		}
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/pdf"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 20
-		}
-	],
-	"skip": {
-		"reason": "Requires features: tesseract; Requires Tesseract OCR with German language data."
-	}
+  "id": "ocr_pdf_image_only_german",
+  "category": "ocr",
+  "description": "Image-only German PDF requiring OCR to extract text.",
+  "input": {
+    "path": "pdf/image_only_german_pdf.pdf",
+    "media_type": "application/pdf",
+    "config": {
+      "ocr": {
+        "backend": "tesseract",
+        "language": "deu"
+      },
+      "force_ocr": true
+    }
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/pdf"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 20
+    }
+  ],
+  "skip": {
+    "reason": "Requires features: tesseract; Requires Tesseract OCR with German language data."
+  }
 }

@@ -1,17 +1,25 @@
 {
-	"document": "../../../test_documents/images/layout_parser_paper_with_table.jpg",
-	"file_type": "jpg",
-	"file_size": 165505,
-	"expected_frameworks": ["kreuzberg", "docling", "markitdown", "mineru", "pymupdf4llm", "tika", "unstructured"],
-	"metadata": {
-		"description": "Layout-parsed chart and data visualization - 166KB JPG document image",
-		"category": "image-chart",
-		"size_class": "medium",
-		"requires_ocr": true,
-		"content_type": "chart"
-	},
-	"ground_truth": {
-		"text_file": "../../../test_documents/ground_truth/jpg/image_chart.md",
-		"source": "mistral-pixtral"
-	}
+  "document": "../../../test_documents/images/layout_parser_paper_with_table.jpg",
+  "file_type": "jpg",
+  "file_size": 165505,
+  "expected_frameworks": [
+    "kreuzberg",
+    "docling",
+    "markitdown",
+    "mineru",
+    "pymupdf4llm",
+    "tika",
+    "unstructured"
+  ],
+  "metadata": {
+    "description": "Layout-parsed chart and data visualization - 166KB JPG document image",
+    "category": "image-chart",
+    "size_class": "medium",
+    "requires_ocr": true,
+    "content_type": "chart"
+  },
+  "ground_truth": {
+    "text_file": "../../../test_documents/ground_truth/jpg/image_chart.md",
+    "source": "mistral-pixtral"
+  }
 }

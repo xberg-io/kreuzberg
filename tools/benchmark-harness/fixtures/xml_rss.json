@@ -1,14 +1,14 @@
 {
-	"document": "../../../test_documents/xml/rss_feed.xml",
-	"file_type": "xml",
-	"file_size": 2685,
-	"expected_frameworks": ["kreuzberg", "markitdown", "tika", "unstructured"],
-	"metadata": {
-		"description": "RSS feed format with multiple items containing metadata and content links",
-		"category": "feed"
-	},
-	"ground_truth": {
-		"text_file": "../../../test_documents/ground_truth/xml/xml_rss.txt",
-		"source": "vision"
-	}
+  "document": "../../../test_documents/xml/rss_feed.xml",
+  "file_type": "xml",
+  "file_size": 2685,
+  "expected_frameworks": ["kreuzberg", "markitdown", "tika", "unstructured"],
+  "metadata": {
+    "description": "RSS feed format with multiple items containing metadata and content links",
+    "category": "feed"
+  },
+  "ground_truth": {
+    "text_file": "../../../test_documents/ground_truth/xml/xml_rss.txt",
+    "source": "vision"
+  }
 }

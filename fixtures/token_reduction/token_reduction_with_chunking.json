@@ -1,48 +1,48 @@
 {
-	"id": "token_reduction_with_chunking",
-	"description": "Tests token reduction combined with chunking",
-	"tags": ["token_reduction", "chunking"],
-	"call": "extract_file_sync",
-	"input": {
-		"path": "pdf/fake_memo.pdf",
-		"config": {
-			"token_reduction": {
-				"mode": "moderate"
-			},
-			"chunking": {
-				"max_characters": 500,
-				"overlap": 50
-			}
-		}
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/pdf"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 5
-		},
-		{
-			"type": "max_length",
-			"field": "content",
-			"value": 200
-		},
-		{
-			"type": "not_empty",
-			"field": "content"
-		},
-		{
-			"type": "count_min",
-			"field": "chunks",
-			"value": 1
-		},
-		{
-			"type": "is_true",
-			"field": "chunks_have_content"
-		}
-	]
+  "id": "token_reduction_with_chunking",
+  "description": "Tests token reduction combined with chunking",
+  "tags": ["token_reduction", "chunking"],
+  "call": "extract_file_sync",
+  "input": {
+    "path": "pdf/fake_memo.pdf",
+    "config": {
+      "token_reduction": {
+        "mode": "moderate"
+      },
+      "chunking": {
+        "max_characters": 500,
+        "overlap": 50
+      }
+    }
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/pdf"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 5
+    },
+    {
+      "type": "max_length",
+      "field": "content",
+      "value": 200
+    },
+    {
+      "type": "not_empty",
+      "field": "content"
+    },
+    {
+      "type": "count_min",
+      "field": "chunks",
+      "value": 1
+    },
+    {
+      "type": "is_true",
+      "field": "chunks_have_content"
+    }
+  ]
 }

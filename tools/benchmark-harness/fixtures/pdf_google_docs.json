@@ -1,30 +1,30 @@
 {
-	"document": "../../../test_documents/pdf/google_doc_document.pdf",
-	"file_type": "pdf",
-	"file_size": 80100,
-	"expected_frameworks": [
-		"kreuzberg",
-		"docling",
-		"markitdown",
-		"mineru",
-		"pdfminer",
-		"pdfplumber",
-		"pdftotext",
-		"pymupdf4llm",
-		"pypdf",
-		"tika",
-		"unstructured"
-	],
-	"metadata": {
-		"description": "Google Docs exported PDF - 78KB document generated from Google Docs to test extraction of cloud-native document formats",
-		"category": "pdf-generated",
-		"size_class": "small",
-		"source": "google-docs",
-		"special_handling": "cloud_generated"
-	},
-	"ground_truth": {
-		"text_file": "../../../test_documents/ground_truth/pdf/pdf_google_docs.txt",
-		"source": "vision",
-		"markdown_file": "../../../test_documents/ground_truth/pdf/pdf_google_docs.md"
-	}
+  "document": "../../../test_documents/pdf/google_doc_document.pdf",
+  "file_type": "pdf",
+  "file_size": 80100,
+  "expected_frameworks": [
+    "kreuzberg",
+    "docling",
+    "markitdown",
+    "mineru",
+    "pdfminer",
+    "pdfplumber",
+    "pdftotext",
+    "pymupdf4llm",
+    "pypdf",
+    "tika",
+    "unstructured"
+  ],
+  "metadata": {
+    "description": "Google Docs exported PDF - 78KB document generated from Google Docs to test extraction of cloud-native document formats",
+    "category": "pdf-generated",
+    "size_class": "small",
+    "source": "google-docs",
+    "special_handling": "cloud_generated"
+  },
+  "ground_truth": {
+    "text_file": "../../../test_documents/ground_truth/pdf/pdf_google_docs.txt",
+    "source": "vision",
+    "markdown_file": "../../../test_documents/ground_truth/pdf/pdf_google_docs.md"
+  }
 }

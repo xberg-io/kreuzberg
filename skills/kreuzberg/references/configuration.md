@@ -38,10 +38,10 @@ config = ExtractionConfig.discover()
 ### Node.js / TypeScript
 
 ```typescript
-import { ExtractionConfig } from '@kreuzberg/node';
+import { ExtractionConfig } from "@kreuzberg/node";
 
 // Load from explicit path
-const config = ExtractionConfig.fromFile('kreuzberg.toml');
+const config = ExtractionConfig.fromFile("kreuzberg.toml");
 
 // Auto-discover configuration
 const config = ExtractionConfig.discover();
@@ -72,15 +72,15 @@ result_format = "text"
 max_concurrent_extractions = 4
 ```
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `use_cache` | boolean | `true` | Enable caching of extraction results |
-| `enable_quality_processing` | boolean | `true` | Enable post-processing for output quality |
-| `force_ocr` | boolean | `false` | Force OCR processing even for searchable PDFs |
-| `disable_ocr` | boolean | `false` | Disable OCR entirely — image files return empty content instead of errors (v4.7.0+) |
-| `output_format` | string | `"markdown"` | Output format (markdown, html, text) |
-| `result_format` | string | `"text"` | Result format for structured output |
-| `max_concurrent_extractions` | integer | `4` | Maximum concurrent document extractions |
+| Option                       | Type    | Default      | Description                                                                         |
+| ---------------------------- | ------- | ------------ | ----------------------------------------------------------------------------------- |
+| `use_cache`                  | boolean | `true`       | Enable caching of extraction results                                                |
+| `enable_quality_processing`  | boolean | `true`       | Enable post-processing for output quality                                           |
+| `force_ocr`                  | boolean | `false`      | Force OCR processing even for searchable PDFs                                       |
+| `disable_ocr`                | boolean | `false`      | Disable OCR entirely — image files return empty content instead of errors (v4.7.0+) |
+| `output_format`              | string  | `"markdown"` | Output format (markdown, html, text)                                                |
+| `result_format`              | string  | `"text"`     | Result format for structured output                                                 |
+| `max_concurrent_extractions` | integer | `4`          | Maximum concurrent document extractions                                             |
 
 ### OCR Configuration
 
@@ -90,10 +90,10 @@ backend = "tesseract"
 language = "eng"
 ```
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `backend` | string | `"tesseract"` | OCR backend (currently tesseract) |
-| `language` | string | `"eng"` | ISO 639-3 language code (eng, deu, fra, etc.) |
+| Option     | Type   | Default       | Description                                   |
+| ---------- | ------ | ------------- | --------------------------------------------- |
+| `backend`  | string | `"tesseract"` | OCR backend (currently tesseract)             |
+| `language` | string | `"eng"`       | ISO 639-3 language code (eng, deu, fra, etc.) |
 
 #### Tesseract Configuration
 
@@ -110,17 +110,17 @@ table_row_threshold_ratio = 0.5
 use_cache = true
 ```
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `psm` | integer | `3` | Page Segmentation Mode (0-13) |
-| `oem` | integer | `3` | OCR Engine Mode (0-3) |
-| `min_confidence` | float | `0.0` | Minimum OCR confidence threshold (0.0-1.0) |
-| `output_format` | string | `"text"` | Output format from OCR |
-| `enable_table_detection` | boolean | `false` | Enable table detection during OCR |
-| `table_min_confidence` | float | `0.5` | Minimum confidence for table cells |
-| `table_column_threshold` | integer | `50` | Pixel threshold for column detection |
-| `table_row_threshold_ratio` | float | `0.5` | Row height ratio threshold |
-| `use_cache` | boolean | `true` | Cache OCR results |
+| Option                      | Type    | Default  | Description                                |
+| --------------------------- | ------- | -------- | ------------------------------------------ |
+| `psm`                       | integer | `3`      | Page Segmentation Mode (0-13)              |
+| `oem`                       | integer | `3`      | OCR Engine Mode (0-3)                      |
+| `min_confidence`            | float   | `0.0`    | Minimum OCR confidence threshold (0.0-1.0) |
+| `output_format`             | string  | `"text"` | Output format from OCR                     |
+| `enable_table_detection`    | boolean | `false`  | Enable table detection during OCR          |
+| `table_min_confidence`      | float   | `0.5`    | Minimum confidence for table cells         |
+| `table_column_threshold`    | integer | `50`     | Pixel threshold for column detection       |
+| `table_row_threshold_ratio` | float   | `0.5`    | Row height ratio threshold                 |
+| `use_cache`                 | boolean | `true`   | Cache OCR results                          |
 
 #### Tesseract Preprocessing
 
@@ -135,15 +135,15 @@ binarization_method = "otsu"
 invert_colors = false
 ```
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `target_dpi` | integer | `300` | Target DPI for preprocessing |
-| `auto_rotate` | boolean | `true` | Automatically detect and correct page rotation |
-| `deskew` | boolean | `true` | Correct skewed pages |
-| `denoise` | boolean | `true` | Remove noise from images |
-| `contrast_enhance` | boolean | `true` | Enhance image contrast |
-| `binarization_method` | string | `"otsu"` | Method for image binarization |
-| `invert_colors` | boolean | `false` | Invert image colors if needed |
+| Option                | Type    | Default  | Description                                    |
+| --------------------- | ------- | -------- | ---------------------------------------------- |
+| `target_dpi`          | integer | `300`    | Target DPI for preprocessing                   |
+| `auto_rotate`         | boolean | `true`   | Automatically detect and correct page rotation |
+| `deskew`              | boolean | `true`   | Correct skewed pages                           |
+| `denoise`             | boolean | `true`   | Remove noise from images                       |
+| `contrast_enhance`    | boolean | `true`   | Enhance image contrast                         |
+| `binarization_method` | string  | `"otsu"` | Method for image binarization                  |
+| `invert_colors`       | boolean | `false`  | Invert image colors if needed                  |
 
 ### PDF Options
 
@@ -159,14 +159,14 @@ include_bbox = true
 ocr_coverage_threshold = 0.5
 ```
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `extract_images` | boolean | `true` | Extract images from PDF documents |
-| `extract_metadata` | boolean | `true` | Extract PDF metadata |
-| `hierarchy.enabled` | boolean | `true` | Enable PDF hierarchy extraction (v4.0.0+) |
-| `hierarchy.k_clusters` | integer | `6` | Number of clusters for hierarchy detection |
-| `hierarchy.include_bbox` | boolean | `true` | Include bounding boxes in hierarchy |
-| `hierarchy.ocr_coverage_threshold` | float | `0.5` | OCR coverage threshold for hierarchy (0.0-1.0) |
+| Option                             | Type    | Default | Description                                    |
+| ---------------------------------- | ------- | ------- | ---------------------------------------------- |
+| `extract_images`                   | boolean | `true`  | Extract images from PDF documents              |
+| `extract_metadata`                 | boolean | `true`  | Extract PDF metadata                           |
+| `hierarchy.enabled`                | boolean | `true`  | Enable PDF hierarchy extraction (v4.0.0+)      |
+| `hierarchy.k_clusters`             | integer | `6`     | Number of clusters for hierarchy detection     |
+| `hierarchy.include_bbox`           | boolean | `true`  | Include bounding boxes in hierarchy            |
+| `hierarchy.ocr_coverage_threshold` | float   | `0.5`   | OCR coverage threshold for hierarchy (0.0-1.0) |
 
 ### Image Processing
 
@@ -180,14 +180,14 @@ min_dpi = 72
 max_dpi = 600
 ```
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `extract_images` | boolean | `true` | Extract images from documents |
-| `target_dpi` | integer | `300` | Target DPI for image processing |
-| `max_image_dimension` | integer | `4096` | Maximum image dimension in pixels |
-| `auto_adjust_dpi` | boolean | `true` | Automatically adjust DPI based on image size |
-| `min_dpi` | integer | `72` | Minimum DPI threshold |
-| `max_dpi` | integer | `600` | Maximum DPI threshold |
+| Option                | Type    | Default | Description                                  |
+| --------------------- | ------- | ------- | -------------------------------------------- |
+| `extract_images`      | boolean | `true`  | Extract images from documents                |
+| `target_dpi`          | integer | `300`   | Target DPI for image processing              |
+| `max_image_dimension` | integer | `4096`  | Maximum image dimension in pixels            |
+| `auto_adjust_dpi`     | boolean | `true`  | Automatically adjust DPI based on image size |
+| `min_dpi`             | integer | `72`    | Minimum DPI threshold                        |
+| `max_dpi`             | integer | `600`   | Maximum DPI threshold                        |
 
 ### Chunking Configuration
 
@@ -207,19 +207,19 @@ type = "preset"
 name = "balanced"
 ```
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `max_chars` | integer | `1000` | Maximum characters per chunk |
-| `max_overlap` | integer | `200` | Overlap between consecutive chunks |
-| `embedding.batch_size` | integer | `32` | Batch size for embedding generation |
-| `embedding.normalize` | boolean | `true` | Normalize embeddings to unit length |
-| `embedding.show_download_progress` | boolean | `true` | Show progress when downloading models |
-| `embedding.cache_dir` | string | `"~/.cache/kreuzberg/embeddings"` | Directory for caching embeddings |
-| `embedding.model.type` | string | `"preset"` | Model type: preset, fastembed, or custom |
-| `embedding.model.name` | string | `"balanced"` | Preset model name (balanced, fast, accurate, multilingual) |
-| `embedding.model.model` | string | | FastEmbed model identifier |
-| `embedding.model.model_id` | string | | Custom HuggingFace model ID |
-| `embedding.model.dimensions` | integer | | Embedding dimensions |
+| Option                             | Type    | Default                           | Description                                                |
+| ---------------------------------- | ------- | --------------------------------- | ---------------------------------------------------------- |
+| `max_chars`                        | integer | `1000`                            | Maximum characters per chunk                               |
+| `max_overlap`                      | integer | `200`                             | Overlap between consecutive chunks                         |
+| `embedding.batch_size`             | integer | `32`                              | Batch size for embedding generation                        |
+| `embedding.normalize`              | boolean | `true`                            | Normalize embeddings to unit length                        |
+| `embedding.show_download_progress` | boolean | `true`                            | Show progress when downloading models                      |
+| `embedding.cache_dir`              | string  | `"~/.cache/kreuzberg/embeddings"` | Directory for caching embeddings                           |
+| `embedding.model.type`             | string  | `"preset"`                        | Model type: preset, fastembed, or custom                   |
+| `embedding.model.name`             | string  | `"balanced"`                      | Preset model name (balanced, fast, accurate, multilingual) |
+| `embedding.model.model`            | string  |                                   | FastEmbed model identifier                                 |
+| `embedding.model.model_id`         | string  |                                   | Custom HuggingFace model ID                                |
+| `embedding.model.dimensions`       | integer |                                   | Embedding dimensions                                       |
 
 ### Keywords Configuration
 
@@ -232,13 +232,13 @@ ngram_range = [1, 3]
 language = "en"
 ```
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `algorithm` | string | `"yake"` | Keyword extraction algorithm (yake or rake) |
-| `max_keywords` | integer | `10` | Maximum keywords to extract |
-| `min_score` | float | `0.0` | Minimum relevance score for keywords |
-| `ngram_range` | array | `[1, 3]` | N-gram size range [min, max] |
-| `language` | string | `"en"` | Language code for keyword extraction |
+| Option         | Type    | Default  | Description                                 |
+| -------------- | ------- | -------- | ------------------------------------------- |
+| `algorithm`    | string  | `"yake"` | Keyword extraction algorithm (yake or rake) |
+| `max_keywords` | integer | `10`     | Maximum keywords to extract                 |
+| `min_score`    | float   | `0.0`    | Minimum relevance score for keywords        |
+| `ngram_range`  | array   | `[1, 3]` | N-gram size range [min, max]                |
+| `language`     | string  | `"en"`   | Language code for keyword extraction        |
 
 ### Token Reduction
 
@@ -248,10 +248,10 @@ mode = "off"
 preserve_important_words = true
 ```
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `mode` | string | `"off"` | Mode: off, aggressive, moderate, minimal |
-| `preserve_important_words` | boolean | `true` | Preserve important words during reduction |
+| Option                     | Type    | Default | Description                               |
+| -------------------------- | ------- | ------- | ----------------------------------------- |
+| `mode`                     | string  | `"off"` | Mode: off, aggressive, moderate, minimal  |
+| `preserve_important_words` | boolean | `true`  | Preserve important words during reduction |
 
 ### Language Detection
 
@@ -262,11 +262,11 @@ min_confidence = 0.8
 detect_multiple = false
 ```
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `enabled` | boolean | `true` | Enable automatic language detection |
-| `min_confidence` | float | `0.8` | Minimum confidence threshold for detection |
-| `detect_multiple` | boolean | `false` | Detect multiple languages in document |
+| Option            | Type    | Default | Description                                |
+| ----------------- | ------- | ------- | ------------------------------------------ |
+| `enabled`         | boolean | `true`  | Enable automatic language detection        |
+| `min_confidence`  | float   | `0.8`   | Minimum confidence threshold for detection |
+| `detect_multiple` | boolean | `false` | Detect multiple languages in document      |
 
 ### Post-Processor
 
@@ -275,9 +275,9 @@ detect_multiple = false
 enabled = true
 ```
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `enabled` | boolean | `true` | Enable post-processing of extracted content |
+| Option    | Type    | Default | Description                                 |
+| --------- | ------- | ------- | ------------------------------------------- |
+| `enabled` | boolean | `true`  | Enable post-processing of extracted content |
 
 ## FileExtractionConfig (Per-File Overrides)
 
@@ -298,13 +298,13 @@ Passed as an optional parameter to `batch_extract_file` / `batch_extract_bytes` 
 
 Kreuzberg uses consistent naming conventions across different contexts:
 
-| Context | Convention | Example |
-|---------|-----------|---------|
-| Python | snake_case | `max_chars`, `pdf_options`, `use_cache` |
-| Node.js / TypeScript | camelCase | `maxChars`, `pdfOptions`, `useCache` |
-| Rust | snake_case | `max_chars`, `pdf_options`, `use_cache` |
-| TOML / YAML / JSON | snake_case | `max_chars`, `pdf_options`, `use_cache` |
-| CLI flags | kebab-case | `--max-chars`, `--pdf-options`, `--use-cache` |
+| Context              | Convention | Example                                       |
+| -------------------- | ---------- | --------------------------------------------- |
+| Python               | snake_case | `max_chars`, `pdf_options`, `use_cache`       |
+| Node.js / TypeScript | camelCase  | `maxChars`, `pdfOptions`, `useCache`          |
+| Rust                 | snake_case | `max_chars`, `pdf_options`, `use_cache`       |
+| TOML / YAML / JSON   | snake_case | `max_chars`, `pdf_options`, `use_cache`       |
+| CLI flags            | kebab-case | `--max-chars`, `--pdf-options`, `--use-cache` |
 
 When switching between languages, apply the appropriate conversion:
 
@@ -316,10 +316,10 @@ When switching between languages, apply the appropriate conversion:
 
 The following environment variables can override configuration:
 
-| Variable | Purpose | Example |
-|----------|---------|---------|
+| Variable         | Purpose                             | Example     |
+| ---------------- | ----------------------------------- | ----------- |
 | `KREUZBERG_HOST` | Server bind address (serve command) | `127.0.0.1` |
-| `KREUZBERG_PORT` | Server port (serve command) | `8080` |
+| `KREUZBERG_PORT` | Server port (serve command)         | `8080`      |
 
 ## Configuration Merging
 

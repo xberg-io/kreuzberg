@@ -1,4 +1,5 @@
 # PubTables-1M: Towards comprehensive table extraction from unstructured
+
 documents
 
 Brandon Smock
@@ -47,7 +48,9 @@ be used in further applications.
 
 The problem of inferring a table's structure from its pre-
 sentation and converting it to a structured form is known as
+
 <!-- image -->
+
 Figure 1. An example of a presentation table whose underlying
 structure must be inferred, either manually or by automated sys-
 tems.
@@ -83,6 +86,7 @@ tency, and quality. This includes not only what information
 is present but how explicitly this information is represented.
 
 <!-- image -->
+
 Figure 2. Illustration of the three subtasks of table extraction addressed by the PubTables-1M dataset.
 
 For instance, markup annotations do not encode spatial coor-
@@ -131,41 +135,42 @@ tific articles in the PubMed Central Open Access¹ (PMCOA)
 database. Among our contributions:
 
 - PubTables-1M is nearly twice as large as the current
-largest comparable dataset and addresses all three tasks
-of table detection (TD), table structure recognition
-(TSR), and functional analysis (FA).
+  largest comparable dataset and addresses all three tasks
+  of table detection (TD), table structure recognition
+  (TSR), and functional analysis (FA).
 - Compared to prior datasets, PubTables-1M contains
-richer annotation information, including annotations
-for projected row headers and bounding boxes for all
-rows, columns, and cells, including blank cells. It also
-includes annotations on their original source documents,
-which supports multiple input modalities and enables a
-wide range of potential model architectures.
+  richer annotation information, including annotations
+  for projected row headers and bounding boxes for all
+  rows, columns, and cells, including blank cells. It also
+  includes annotations on their original source documents,
+  which supports multiple input modalities and enables a
+  wide range of potential model architectures.
 - We introduce a novel canonicalization procedure that
-corrects oversegmentation and whose goal is to ensure
-each table has a unique, unambiguous structure inter-
-pretation.
+  corrects oversegmentation and whose goal is to ensure
+  each table has a unique, unambiguous structure inter-
+  pretation.
 - To reduce additional sources of error, we implement
-several quality verification and control steps and pro-
-vide measurable guarantees about the quality of the
-ground truth.
+  several quality verification and control steps and pro-
+  vide measurable guarantees about the quality of the
+  ground truth.
 - We show that data improvements alone lead to a sig-
-nificant increase in performance for TSR models, due
-both to improved training and a more reliable estimate
-of performance at evaluation.
+  nificant increase in performance for TSR models, due
+  both to improved training and a more reliable estimate
+  of performance at evaluation.
 
 ¹https://www.ncbi.nlm.nih.gov/pmc/tools/openftlist/
 
 <!-- image -->
+
 Figure 3. In the above example, the structure annotation on the left is oversegmented, creating extra blank cells in the headers. The canonical
 structure annotation on the right merges these cells and captures its true logical structure.
 
 - Finally, we apply the Detection Transformer (DETR)
-[2] for the first time to the tasks of TD, TSR, and FA,
-and demonstrate how with PubTables-1M all three tasks
-can be addressed with a transformer-based object detec-
-tion framework without any special customization for
-these tasks.
+  [2] for the first time to the tasks of TD, TSR, and FA,
+  and demonstrate how with PubTables-1M all three tasks
+  can be addressed with a transformer-based object detec-
+  tion framework without any special customization for
+  these tasks.
 
 2. Related Work
 
@@ -251,15 +256,15 @@ previously mentioned approaches also use engineered model
 
 Table 1. Comparison of crowd-sourced datasets for table structure recognition.
 
-| Dataset | Input Modality | # Tables | Cell Topology | Cell Content | Cell Location | Row & Column Location | Canonical Structure |
-| ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |
-| TableBank [9] | Image | 145K | ✓ | ✓ | | | |
-| SciTSR [3] | PDF* | 15K | ✓ | ✓ | | | |
-| PubTabNet [22,23] | Image | 510K+ | ✓ | ✓ | ✓ | | |
-| FinTabNet [22] | PDF* | 113K | ✓ | ✓ | ✓ | | |
-| PubTables-1M (ours) | PDF* | 948K | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Dataset             | Input Modality | # Tables | Cell Topology | Cell Content | Cell Location | Row & Column Location | Canonical Structure |
+| ------------------- | -------------- | -------- | ------------- | ------------ | ------------- | --------------------- | ------------------- |
+| TableBank [9]       | Image          | 145K     | ✓             | ✓            |               |                       |                     |
+| SciTSR [3]          | PDF\*          | 15K      | ✓             | ✓            |               |                       |                     |
+| PubTabNet [22,23]   | Image          | 510K+    | ✓             | ✓            | ✓             |                       |                     |
+| FinTabNet [22]      | PDF\*          | 113K     | ✓             | ✓            | ✓             |                       |                     |
+| PubTables-1M (ours) | PDF\*          | 948K     | ✓             | ✓            | ✓             | ✓                     | ✓                   |
 
-*Multiple input modalities, such as image or text, can be derived from annotated PDF data.
+\*Multiple input modalities, such as image or text, can be derived from annotated PDF data.
 +The authors release annotations for 510K of the 568K total tables in their dataset.
 For these datasets, cell bounding boxes are given for non-blank cells only and exclude any non-text portion of a cell.
 
@@ -459,16 +464,16 @@ head, which is consistent with the scheme in Line 10.
 Table 2. Estimated measure of oversegmentation for projected row headers (PRHs) by dataset. As PRHs are only one type of cell that can be
 oversegmented, this is a partial survey of the total oversegmentation in these datasets.
 
-| Dataset | Total Tables Investigated | Total Tables with a PRH* | Tables with an oversegmented PRH | |
-| ----------- | ----------- | ----------- | ----------- | ----------- |
-| | | | Total | % (of total with a PRH) | % (of total investigated) |
-| SciTSR | 10,431 | 342 | 54 | 15.79% | 0.52% |
-| PubTabNet | 422,491 | 100,159 | 58,747 | 58.65% | 13.90% |
-| FinTabNet | 70,028 | 25,637 | 25,348 | 98.87% | 36.20% |
-| PubTables-1M (ours) | 761,262 | 153,705 | 0 | 0% | 0% |
+| Dataset             | Total Tables Investigated | Total Tables with a PRH\* | Tables with an oversegmented PRH |                         |
+| ------------------- | ------------------------- | ------------------------- | -------------------------------- | ----------------------- | ------------------------- |
+|                     |                           |                           | Total                            | % (of total with a PRH) | % (of total investigated) |
+| SciTSR              | 10,431                    | 342                       | 54                               | 15.79%                  | 0.52%                     |
+| PubTabNet           | 422,491                   | 100,159                   | 58,747                           | 58.65%                  | 13.90%                    |
+| FinTabNet           | 70,028                    | 25,637                    | 25,348                           | 98.87%                  | 36.20%                    |
+| PubTables-1M (ours) | 761,262                   | 153,705                   | 0                                | 0%                      | 0%                        |
 
-+ We exclude tables with fewer than five rows; to avoid column header rows we skip the first four rows when searching for PRHs.
-*PRH = projected row header; these can be reliably detected in datasets without any prior row or column header annotations.
+- We exclude tables with fewer than five rows; to avoid column header rows we skip the first four rows when searching for PRHs.
+  \*PRH = projected row header; these can be reliably detected in datasets without any prior row or column header annotations.
 
 Limitations While the stated goal of canonicalization is
 applicable to any table structure annotation, we note that
@@ -555,17 +560,19 @@ for validation; and 93,834 for testing. For TD, there are
 57,591 for validation; and 57,125 for testing. An example
 
 <!-- image -->
+
 Table 3. Test performance of models on PubTables-1M using object
 detection metrics.
 
-| Task | Model | AP | AP50 | AP75 | AR |
-| ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |
-| TD | Faster R-CNN | 0.825 | 0.985 | 0.927 | 0.866 |
-| | DETR | 0.966 | 0.995 | 0.988 | 0.981 |
+| Task     | Model        | AP    | AP50  | AP75  | AR    |
+| -------- | ------------ | ----- | ----- | ----- | ----- |
+| TD       | Faster R-CNN | 0.825 | 0.985 | 0.927 | 0.866 |
+|          | DETR         | 0.966 | 0.995 | 0.988 | 0.981 |
 | TSR + FA | Faster R-CNN | 0.722 | 0.815 | 0.785 | 0.762 |
-| | DETR | 0.812 | 0.912 | 0.971 | 0.948 |
+|          | DETR         | 0.812 | 0.912 | 0.971 | 0.948 |
 
 <!-- image -->
+
 Figure 4. An example table with dilated bounding box annotations
 for different object classes for jointly modeling table structure
 recognition and functional analysis.
@@ -657,14 +664,14 @@ mulation better captures the two-dimensional structure and
 
 Table 4. Test performance of the TSR + FA models on PubTables-1M on TSR metrics.
 
-| Test Data | Model | Table Category | Acccont | GriTSTop | GriTSCont | GriTSLoc | AdjCont |
-| ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |
-| Non-Canonical | DETR-NC | Simple | 0.8678 | 0.9872 | 0.9859 | 0.9821 | 0.9801 |
-| | | Complex | 0.5360 | 0.9600 | 0.9618 | 0.9444 | 0.9505 |
-| | | All | 0.7336 | 0.9762 | 0.9761 | 0.9668 | 0.9681 |
-| Canonical | DETR-NC | Simple | 0.9349 | 0.9933 | 0.9920 | 0.9900 | 0.9865 |
-| | | Complex | 0.2712 | 0.9257 | 0.9290 | 0.9044 | 0.9162 |
-| | | All | 0.5851 | 0.9576 | 0.9588 | 0.9449 | 0.9494 |
-| | Faster R-CNN | Simple | 0.0867 | 0.8682 | 0.8571 | 0.6869 | 0.8024 |
-| | | Complex | 0.1193 | 0.8556 | 0.8507 | 0.7518 | 0.7734 |
-| | | All |
+| Test Data     | Model        | Table Category | Acccont | GriTSTop | GriTSCont | GriTSLoc | AdjCont |
+| ------------- | ------------ | -------------- | ------- | -------- | --------- | -------- | ------- |
+| Non-Canonical | DETR-NC      | Simple         | 0.8678  | 0.9872   | 0.9859    | 0.9821   | 0.9801  |
+|               |              | Complex        | 0.5360  | 0.9600   | 0.9618    | 0.9444   | 0.9505  |
+|               |              | All            | 0.7336  | 0.9762   | 0.9761    | 0.9668   | 0.9681  |
+| Canonical     | DETR-NC      | Simple         | 0.9349  | 0.9933   | 0.9920    | 0.9900   | 0.9865  |
+|               |              | Complex        | 0.2712  | 0.9257   | 0.9290    | 0.9044   | 0.9162  |
+|               |              | All            | 0.5851  | 0.9576   | 0.9588    | 0.9449   | 0.9494  |
+|               | Faster R-CNN | Simple         | 0.0867  | 0.8682   | 0.8571    | 0.6869   | 0.8024  |
+|               |              | Complex        | 0.1193  | 0.8556   | 0.8507    | 0.7518   | 0.7734  |
+|               |              | All            |

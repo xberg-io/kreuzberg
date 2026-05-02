@@ -1,42 +1,38 @@
 {
-	"id": "config_discover",
-	"category": "configuration",
-	"description": "Discover configuration from current or parent directories",
-	"tags": [
-		"configuration",
-		"toml",
-		"discovery"
-	],
-	"call": "discover",
-	"input": {
-		"setup": {
-			"create_temp_dir": true,
-			"create_temp_file": true,
-			"temp_file_name": "kreuzberg.toml",
-			"temp_file_content": "[chunking]\nmax_chars = 50\n",
-			"create_subdirectory": true,
-			"subdirectory_name": "subdir",
-			"change_directory": true
-		},
-		"is_method": true,
-		"class_name": "ExtractionConfig",
-		"teardown": {
-			"restore_directory": true
-		}
-	},
-	"assertions": [
-		{
-			"type": "not_empty",
-			"field": "result.chunking"
-		},
-		{
-			"type": "equals",
-			"field": "result.chunking.max_chars",
-			"value": 50
-		}
-	],
-	"skip": {
-		"languages": [],
-		"reason": "Tests plugin_api call surface that isn't re-exported at the kreuzberg crate root \u2014 skipped everywhere until Rust public API or codegen module path is updated."
-	}
+  "id": "config_discover",
+  "category": "configuration",
+  "description": "Discover configuration from current or parent directories",
+  "tags": ["configuration", "toml", "discovery"],
+  "call": "discover",
+  "input": {
+    "setup": {
+      "create_temp_dir": true,
+      "create_temp_file": true,
+      "temp_file_name": "kreuzberg.toml",
+      "temp_file_content": "[chunking]\nmax_chars = 50\n",
+      "create_subdirectory": true,
+      "subdirectory_name": "subdir",
+      "change_directory": true
+    },
+    "is_method": true,
+    "class_name": "ExtractionConfig",
+    "teardown": {
+      "restore_directory": true
+    }
+  },
+  "assertions": [
+    {
+      "type": "not_empty",
+      "field": "result.chunking"
+    },
+    {
+      "type": "equals",
+      "field": "result.chunking.max_chars",
+      "value": 50
+    }
+  ],
+  "skip": {
+    "languages": [],
+    "reason": "Tests plugin_api call surface that isn't re-exported at the kreuzberg crate root \u2014 skipped everywhere until Rust public API or codegen module path is updated."
+  }
 }

@@ -1,15 +1,15 @@
 {
-	"document": "../../../../test_documents/vendored/unstructured/eml/test-rfc2822-date.eml",
-	"file_type": "eml",
-	"file_size": 151,
-	"expected_frameworks": ["kreuzberg", "tika", "unstructured"],
-	"metadata": {
-		"description": "Document from unstructured test suite",
-		"source": "unstructured",
-		"size_category": "small"
-	},
-	"ground_truth": {
-		"text_file": "../../../../test_documents/ground_truth/eml/test-rfc2822-date.txt",
-		"source": "python_email"
-	}
+  "document": "../../../../test_documents/vendored/unstructured/eml/test-rfc2822-date.eml",
+  "file_type": "eml",
+  "file_size": 151,
+  "expected_frameworks": ["kreuzberg", "tika", "unstructured"],
+  "metadata": {
+    "description": "Document from unstructured test suite",
+    "source": "unstructured",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../../test_documents/ground_truth/eml/test-rfc2822-date.txt",
+    "source": "python_email"
+  }
 }

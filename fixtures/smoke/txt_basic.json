@@ -1,22 +1,22 @@
 {
-	"id": "smoke_txt_basic",
-	"category": "smoke",
-	"description": "Smoke test: Plain text file",
-	"tags": ["smoke", "text", "plaintext"],
-	"input": {
-		"path": "text/report.txt",
-		"media_type": "text/plain"
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "text/plain"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 5
-		}
-	]
+  "id": "smoke_txt_basic",
+  "category": "smoke",
+  "description": "Smoke test: Plain text file",
+  "tags": ["smoke", "text", "plaintext"],
+  "input": {
+    "path": "text/report.txt",
+    "media_type": "text/plain"
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "text/plain"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 5
+    }
+  ]
 }

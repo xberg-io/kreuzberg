@@ -87,7 +87,7 @@ det
 -1-
 
 | Section 1: Sample Summary ...................................................................................................       | 3   |
-|-------------------------------------------------------------------------------------------------------------------------------------|-----|
+| ----------------------------------------------------------------------------------------------------------------------------------- | --- |
 | Section 2: Sample Results ........................................................................................................  | 4   |
 | 2.1: JD3794-1: CAMS 519 ..................................................................................................          | 5   |
 | Section 3: Misc. Forms ............................................................................................................ | 8   |
@@ -107,7 +107,7 @@ JD3794
 Valero-CAMS, Baton Rouge, LA Project No: 712-001
 
 | Sample                                                                                                                    | Collected                                                                                                                 | Collected                                                                                                                 | Matrix                                                                                                                    | Matrix                                                                                                                    | Client                                                                                                                    |
-|---------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|
+| ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
 | Number                                                                                                                    | Date                                                                                                                      | Time By                                                                                                                   | Received                                                                                                                  | Code Type                                                                                                                 | Sample ID                                                                                                                 |
 | This report contains results reported as ND =Not detected. The following applies: Organics ND =Not detected above the MDL | This report contains results reported as ND =Not detected. The following applies: Organics ND =Not detected above the MDL | This report contains results reported as ND =Not detected. The following applies: Organics ND =Not detected above the MDL | This report contains results reported as ND =Not detected. The following applies: Organics ND =Not detected above the MDL | This report contains results reported as ND =Not detected. The following applies: Organics ND =Not detected above the MDL | This report contains results reported as ND =Not detected. The following applies: Organics ND =Not detected above the MDL |
 | JD3794-1                                                                                                                  | 02/20/20                                                                                                                  | 10:40 BK                                                                                                                  | 02/27/20                                                                                                                  | AIR Ambient Air Comp.                                                                                                     | CAMS 519                                                                                                                  |
@@ -172,10 +172,10 @@ Project:
 
 Valero-CAMS, Baton Rouge, LA
 
-|        | File ID   |   DF | Analyzed       | By   | Prep Date   | Prep Batch   | Analytical Batch   |
-|--------|-----------|------|----------------|------|-------------|--------------|--------------------|
-| Run #1 | 6W16456.D |    1 | 03/04/20 20:49 | TCH  | n/a         | n/a          | V6W688             |
-| Run #2 | 6W16493.D |    1 | 03/06/20 06:57 | TCH  | n/a         | n/a          | V6W689             |
+|        | File ID   | DF  | Analyzed       | By  | Prep Date | Prep Batch | Analytical Batch |
+| ------ | --------- | --- | -------------- | --- | --------- | ---------- | ---------------- |
+| Run #1 | 6W16456.D | 1   | 03/04/20 20:49 | TCH | n/a       | n/a        | V6W688           |
+| Run #2 | 6W16493.D | 1   | 03/06/20 06:57 | TCH | n/a       | n/a        | V6W689           |
 
 ## Initial Volume
 
@@ -189,40 +189,40 @@ Run #2
 
 ## VOA TO15 List
 
-| CAS No.    |     MW | Compound                   | Result   |   RL |    MDL | Units   | Q    |   Result RL |   MDL | Units   |
-|------------|--------|----------------------------|----------|------|--------|---------|------|-------------|-------|---------|
-| 67-64-1    |  58.08 | Acetone                    | 10.1     |  0.2 | 0.11   | ppbv    | 24.0 |        0.48 | 0.26  | ug/m3   |
-| 106-99-0   |  54.09 | 1,3-Butadiene              | ND       |  0.2 | 0.046  | ppbv    | ND   |        0.44 | 0.1   | ug/m3   |
-| 71-43-2    |  78.11 | Benzene                    | 0.20     |  0.2 | 0.012  | ppbv    | 0.64 |        0.64 | 0.038 | ug/m3   |
-| 75-27-4    | 163.8  | Bromodichloromethane       | ND       |  0.2 | 0.027  | ppbv    | ND   |        1.3  | 0.18  | ug/m3   |
-| 75-25-2    | 252.8  | Bromoform                  | ND       |  0.2 | 0.037  | ppbv    | ND   |        2.1  | 0.38  | ug/m3   |
-| 74-83-9    |  94.94 | Bromomethane               | ND       |  0.2 | 0.022  | ppbv    | ND   |        0.78 | 0.085 | ug/m3   |
-| 593-60-2   | 106.9  | Bromoethene                | ND       |  0.2 | 0.022  | ppbv    | ND   |        0.87 | 0.096 | ug/m3   |
-| 100-44-7   | 126    | Benzyl Chloride            | ND       |  0.2 | 0.057  | ppbv    | ND   |        1    | 0.29  | ug/m3   |
-| 75-15-0    |  76.14 | Carbon disulfide           | ND       |  0.2 | 0.024  | ppbv    | ND   |        0.62 | 0.075 | ug/m3   |
-| 108-90-7   | 112.6  | Chlorobenzene              | ND       |  0.2 | 0.026  | ppbv    | ND   |        0.92 | 0.12  | ug/m3   |
-| 75-00-3    |  64.52 | Chloroethane               | ND       |  0.2 | 0.048  | ppbv    | ND   |        0.53 | 0.13  | ug/m3   |
-| 67-66-3    | 119.4  | Chloroform                 | ND       |  0.2 | 0.02   | ppbv    | ND   |        0.98 | 0.098 | ug/m3   |
-| 74-87-3    |  50.49 | Chloromethane              | 0.75     |  0.2 | 0.015  | ppbv    | 1.5  |        0.41 | 0.031 | ug/m3   |
-| 107-05-1   |  76.53 | 3-Chloropropene            | ND       |  0.2 | 0.04   | ppbv    | ND   |        0.63 | 0.13  | ug/m3   |
-| 95-49-8    | 126.6  | 2-Chlorotoluene            | ND       |  0.2 | 0.025  | ppbv    | ND   |        1    | 0.13  | ug/m3   |
-| 56-23-5    | 153.8  | Carbon tetrachloride       | ND       |  0.2 | 0.024  | ppbv    | ND   |        1.3  | 0.15  | ug/m3   |
-| 110-82-7   |  84.16 | Cyclohexane                | 1.5      |  0.2 | 0.022  | ppbv    | 5.2  |        0.69 | 0.076 | ug/m3   |
-| 75-34-3    |  98.96 | 1,1-Dichloroethane         | ND       |  0.2 | 0.012  | ppbv    | ND   |        0.81 | 0.049 | ug/m3   |
-| 75-35-4    |  96.94 | 1,1-Dichloroethylene       | ND       |  0.2 | 0.017  | ppbv    | ND   |        0.79 | 0.067 | ug/m3   |
-| 106-93-4   | 187.9  | 1,2-Dibromoethane          | ND       |  0.2 | 0.018  | ppbv    | ND   |        1.5  | 0.14  | ug/m3   |
-| 107-06-2   |  98.96 | 1,2-Dichloroethane         | ND       |  0.2 | 0.021  | ppbv    | ND   |        0.81 | 0.085 | ug/m3   |
-| 78-87-5    | 113    | 1,2-Dichloropropane        | ND       |  0.2 | 0.019  | ppbv    | ND   |        0.92 | 0.088 | ug/m3   |
-| 123-91-1   |  88.12 | 1,4-Dioxane                | ND       |  0.2 | 0.052  | ppbv    | ND   |        0.72 | 0.19  | ug/m3   |
-| 75-71-8    | 120.9  | Dichlorodifluoromethane    | 0.48     |  0.2 | 0.017  | ppbv    | 2.4  |        0.99 | 0.084 | ug/m3   |
-| 124-48-1   | 208.3  | Dibromochloromethane       | ND       |  0.2 | 0.033  | ppbv    | ND   |        1.7  | 0.28  | ug/m3   |
-| 156-60-5   |  96.94 | trans-1,2-Dichloroethylene | ND       |  0.2 | 0.0073 | ppbv    | ND   |        0.79 | 0.029 | ug/m3   |
-| 156-59-2   |  96.94 | cis-1,2-Dichloroethylene   | ND       |  0.2 | 0.012  | ppbv    | ND   |        0.79 | 0.048 | ug/m3   |
-| 10061-01-5 | 111    | cis-1,3-Dichloropropene    | ND       |  0.2 | 0.02   | ppbv    | ND   |        0.91 | 0.091 | ug/m3   |
-| 541-73-1   | 147    | m-Dichlorobenzene          | ND       |  0.2 | 0.019  | ppbv    | ND   |        1.2  | 0.11  | ug/m3   |
-| 95-50-1    | 147    | o-Dichlorobenzene          | ND       |  0.2 | 0.022  | ppbv    | ND   |        1.2  | 0.13  | ug/m3   |
-| 106-46-7   | 147    | p-Dichlorobenzene          | ND       |  0.2 | 0.018  | ppbv    | ND   |        1.2  | 0.11  | ug/m3   |
-| 10061-02-6 | 111    | trans-1,3-Dichloropropene  | ND       |  0.2 | 0.02   | ppbv    | ND   |        0.91 | 0.091 | ug/m3   |
+| CAS No.    | MW    | Compound                   | Result | RL  | MDL    | Units | Q    | Result RL | MDL   | Units |
+| ---------- | ----- | -------------------------- | ------ | --- | ------ | ----- | ---- | --------- | ----- | ----- |
+| 67-64-1    | 58.08 | Acetone                    | 10.1   | 0.2 | 0.11   | ppbv  | 24.0 | 0.48      | 0.26  | ug/m3 |
+| 106-99-0   | 54.09 | 1,3-Butadiene              | ND     | 0.2 | 0.046  | ppbv  | ND   | 0.44      | 0.1   | ug/m3 |
+| 71-43-2    | 78.11 | Benzene                    | 0.20   | 0.2 | 0.012  | ppbv  | 0.64 | 0.64      | 0.038 | ug/m3 |
+| 75-27-4    | 163.8 | Bromodichloromethane       | ND     | 0.2 | 0.027  | ppbv  | ND   | 1.3       | 0.18  | ug/m3 |
+| 75-25-2    | 252.8 | Bromoform                  | ND     | 0.2 | 0.037  | ppbv  | ND   | 2.1       | 0.38  | ug/m3 |
+| 74-83-9    | 94.94 | Bromomethane               | ND     | 0.2 | 0.022  | ppbv  | ND   | 0.78      | 0.085 | ug/m3 |
+| 593-60-2   | 106.9 | Bromoethene                | ND     | 0.2 | 0.022  | ppbv  | ND   | 0.87      | 0.096 | ug/m3 |
+| 100-44-7   | 126   | Benzyl Chloride            | ND     | 0.2 | 0.057  | ppbv  | ND   | 1         | 0.29  | ug/m3 |
+| 75-15-0    | 76.14 | Carbon disulfide           | ND     | 0.2 | 0.024  | ppbv  | ND   | 0.62      | 0.075 | ug/m3 |
+| 108-90-7   | 112.6 | Chlorobenzene              | ND     | 0.2 | 0.026  | ppbv  | ND   | 0.92      | 0.12  | ug/m3 |
+| 75-00-3    | 64.52 | Chloroethane               | ND     | 0.2 | 0.048  | ppbv  | ND   | 0.53      | 0.13  | ug/m3 |
+| 67-66-3    | 119.4 | Chloroform                 | ND     | 0.2 | 0.02   | ppbv  | ND   | 0.98      | 0.098 | ug/m3 |
+| 74-87-3    | 50.49 | Chloromethane              | 0.75   | 0.2 | 0.015  | ppbv  | 1.5  | 0.41      | 0.031 | ug/m3 |
+| 107-05-1   | 76.53 | 3-Chloropropene            | ND     | 0.2 | 0.04   | ppbv  | ND   | 0.63      | 0.13  | ug/m3 |
+| 95-49-8    | 126.6 | 2-Chlorotoluene            | ND     | 0.2 | 0.025  | ppbv  | ND   | 1         | 0.13  | ug/m3 |
+| 56-23-5    | 153.8 | Carbon tetrachloride       | ND     | 0.2 | 0.024  | ppbv  | ND   | 1.3       | 0.15  | ug/m3 |
+| 110-82-7   | 84.16 | Cyclohexane                | 1.5    | 0.2 | 0.022  | ppbv  | 5.2  | 0.69      | 0.076 | ug/m3 |
+| 75-34-3    | 98.96 | 1,1-Dichloroethane         | ND     | 0.2 | 0.012  | ppbv  | ND   | 0.81      | 0.049 | ug/m3 |
+| 75-35-4    | 96.94 | 1,1-Dichloroethylene       | ND     | 0.2 | 0.017  | ppbv  | ND   | 0.79      | 0.067 | ug/m3 |
+| 106-93-4   | 187.9 | 1,2-Dibromoethane          | ND     | 0.2 | 0.018  | ppbv  | ND   | 1.5       | 0.14  | ug/m3 |
+| 107-06-2   | 98.96 | 1,2-Dichloroethane         | ND     | 0.2 | 0.021  | ppbv  | ND   | 0.81      | 0.085 | ug/m3 |
+| 78-87-5    | 113   | 1,2-Dichloropropane        | ND     | 0.2 | 0.019  | ppbv  | ND   | 0.92      | 0.088 | ug/m3 |
+| 123-91-1   | 88.12 | 1,4-Dioxane                | ND     | 0.2 | 0.052  | ppbv  | ND   | 0.72      | 0.19  | ug/m3 |
+| 75-71-8    | 120.9 | Dichlorodifluoromethane    | 0.48   | 0.2 | 0.017  | ppbv  | 2.4  | 0.99      | 0.084 | ug/m3 |
+| 124-48-1   | 208.3 | Dibromochloromethane       | ND     | 0.2 | 0.033  | ppbv  | ND   | 1.7       | 0.28  | ug/m3 |
+| 156-60-5   | 96.94 | trans-1,2-Dichloroethylene | ND     | 0.2 | 0.0073 | ppbv  | ND   | 0.79      | 0.029 | ug/m3 |
+| 156-59-2   | 96.94 | cis-1,2-Dichloroethylene   | ND     | 0.2 | 0.012  | ppbv  | ND   | 0.79      | 0.048 | ug/m3 |
+| 10061-01-5 | 111   | cis-1,3-Dichloropropene    | ND     | 0.2 | 0.02   | ppbv  | ND   | 0.91      | 0.091 | ug/m3 |
+| 541-73-1   | 147   | m-Dichlorobenzene          | ND     | 0.2 | 0.019  | ppbv  | ND   | 1.2       | 0.11  | ug/m3 |
+| 95-50-1    | 147   | o-Dichlorobenzene          | ND     | 0.2 | 0.022  | ppbv  | ND   | 1.2       | 0.13  | ug/m3 |
+| 106-46-7   | 147   | p-Dichlorobenzene          | ND     | 0.2 | 0.018  | ppbv  | ND   | 1.2       | 0.11  | ug/m3 |
+| 10061-02-6 | 111   | trans-1,3-Dichloropropene  | ND     | 0.2 | 0.02   | ppbv  | ND   | 0.91      | 0.091 | ug/m3 |
 
 ND = Not detected
 
@@ -277,7 +277,7 @@ Valero-CAMS, Baton Rouge, LA
 ## VOA TO15 List
 
 | CAS No.           | MW          | Compound                  | Result    | RL        | MDL         | Units     | Q   | Result   | RL        | MDL        | Units       |
-|-------------------|-------------|---------------------------|-----------|-----------|-------------|-----------|-----|----------|-----------|------------|-------------|
+| ----------------- | ----------- | ------------------------- | --------- | --------- | ----------- | --------- | --- | -------- | --------- | ---------- | ----------- |
 | 64-17-5           | 46.07       | Ethanol                   | 4.1       | 0.50      | 0.22        | ppbv      |     | 7.7      | 0.94      | 0.41       | ug/m3       |
 | 100-41-4          | 106.2       | Ethylbenzene              | ND        | 0.20      | 0.015       | ppbv      |     | ND       | 0.87      | 0.065      | ug/m3       |
 | 141-78-6          | 88          | Ethyl Acetate             | 0.11      | 0.20      | 0.038       | ppbv      | J   | 0.40     | 0.72      | 0.14       | ug/m3       |
@@ -481,7 +481,7 @@ Y or N
 
 4. Smpl Dates/Time OK
 
-2. Cooler temp verification:
+5. Cooler temp verification:
 
 ## Cooler Temperature
 
@@ -497,7 +497,7 @@ N/A
 
 ## Quality Control Preservation
 
-Y    or N        N/A
+Y or N N/A
 
 1. Trip Blank present / cooler:
 
@@ -545,7 +545,7 @@ Y or N
 
 Comments
 
-Y or    N N/A
+Y or N N/A
 
 Cooler Temps (Raw Measured) °C:
 
@@ -595,8 +595,8 @@ Received:
 
 VP-012420-47
 
-| Prep Date   |   Room Temp(F) |   Bar Pres "Hg |
-|-------------|----------------|----------------|
-| 01/27/20    |             70 |          29.92 |
+| Prep Date | Room Temp(F) | Bar Pres "Hg |
+| --------- | ------------ | ------------ |
+| 01/27/20  | 70           | 29.92        |
 
 <!-- image -->

@@ -13,7 +13,7 @@ Poem epigraph
 ## First stanza title
 
 Verse\
-*More* verse
+_More_ verse
 
 One more stanza
 

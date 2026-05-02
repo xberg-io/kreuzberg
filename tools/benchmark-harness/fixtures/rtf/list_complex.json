@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/rtf/list_complex.rtf",
   "file_type": "rtf",
   "file_size": 63224,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "RTF test document: list_complex",
     "source": "pandoc-generated",

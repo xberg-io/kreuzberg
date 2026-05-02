@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/org/tables.org",
   "file_type": "org",
   "file_size": 2028,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "org test: tables",
     "source": "pandoc-generated",

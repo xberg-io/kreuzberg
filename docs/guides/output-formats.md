@@ -66,31 +66,31 @@ Elements are in `result.elements`. Each element has `element_id`, `element_type`
 
 ### Element Types
 
-| `element_type` | Description | Key `additional` fields |
-|----------------|-------------|------------------------|
-| `title` | Main title or top-level heading | `level` (h1–h6), `font_size`, `font_name` |
-| `heading` | Section/subsection heading | `level` (h1–h6) |
-| `narrative_text` | Body paragraph | — |
-| `list_item` | Bullet, numbered, or indented item | `list_type`, `list_marker`, `indent_level` |
-| `table` | Tabular data | `row_count`, `column_count`, `format` |
-| `image` | Embedded image | `format`, `width`, `height`, `alt_text` |
-| `code_block` | Code snippet | `language`, `line_count` |
-| `block_quote` | Quoted text | — |
-| `header` | Recurring page header | `position` |
-| `footer` | Recurring page footer | `position` |
-| `page_break` | Page boundary marker | `next_page` |
+| `element_type`   | Description                        | Key `additional` fields                    |
+| ---------------- | ---------------------------------- | ------------------------------------------ |
+| `title`          | Main title or top-level heading    | `level` (h1–h6), `font_size`, `font_name`  |
+| `heading`        | Section/subsection heading         | `level` (h1–h6)                            |
+| `narrative_text` | Body paragraph                     | —                                          |
+| `list_item`      | Bullet, numbered, or indented item | `list_type`, `list_marker`, `indent_level` |
+| `table`          | Tabular data                       | `row_count`, `column_count`, `format`      |
+| `image`          | Embedded image                     | `format`, `width`, `height`, `alt_text`    |
+| `code_block`     | Code snippet                       | `language`, `line_count`                   |
+| `block_quote`    | Quoted text                        | —                                          |
+| `header`         | Recurring page header              | `position`                                 |
+| `footer`         | Recurring page footer              | `position`                                 |
+| `page_break`     | Page boundary marker               | `next_page`                                |
 
 ### Metadata
 
 Every element's `metadata` contains:
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `page_number` | `int \| None` | 1-indexed page number (PDF, DOCX, PPTX) |
-| `filename` | `str \| None` | Source filename |
-| `coordinates` | `BoundingBox \| None` | `x0`, `y0`, `x1`, `y1` in PDF points. Only populated for **text elements** when `pdf_options.hierarchy` is enabled with `include_bbox=True`. Table and image elements do not carry coordinates. |
-| `element_index` | `int` | Zero-based position in the elements array |
-| `additional` | `dict[str, str]` | Element-type-specific fields (see table above) |
+| Field           | Type                  | Description                                                                                                                                                                                     |
+| --------------- | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `page_number`   | `int \| None`         | 1-indexed page number (PDF, DOCX, PPTX)                                                                                                                                                         |
+| `filename`      | `str \| None`         | Source filename                                                                                                                                                                                 |
+| `coordinates`   | `BoundingBox \| None` | `x0`, `y0`, `x1`, `y1` in PDF points. Only populated for **text elements** when `pdf_options.hierarchy` is enabled with `include_bbox=True`. Table and image elements do not carry coordinates. |
+| `element_index` | `int`                 | Zero-based position in the elements array                                                                                                                                                       |
+| `additional`    | `dict[str, str]`      | Element-type-specific fields (see table above)                                                                                                                                                  |
 
 PDF coordinates use bottom-left origin in points (1/72 inch).
 
@@ -128,12 +128,12 @@ for title in titles:
 
 If you're migrating from Unstructured.io, element-based output follows a similar structure with these key differences:
 
-| Aspect | Unstructured.io | Kreuzberg |
-|--------|----------------|-----------|
-| Type names | PascalCase (`Title`, `NarrativeText`) | snake_case (`title`, `narrative_text`) |
-| Element IDs | Not always present | Always present (deterministic hash) |
-| Metadata | Basic (`page_number`, `filename`) | Extended (coordinates, `additional` fields) |
-| Config key | — | `result_format="element_based"` |
+| Aspect      | Unstructured.io                       | Kreuzberg                                   |
+| ----------- | ------------------------------------- | ------------------------------------------- |
+| Type names  | PascalCase (`Title`, `NarrativeText`) | snake_case (`title`, `narrative_text`)      |
+| Element IDs | Not always present                    | Always present (deterministic hash)         |
+| Metadata    | Basic (`page_number`, `filename`)     | Extended (coordinates, `additional` fields) |
+| Config key  | —                                     | `result_format="element_based"`             |
 
 ---
 
@@ -145,14 +145,14 @@ Use document structure when you need hierarchical relationships between sections
 
 ### Comparison
 
-| Aspect | Unified (default) | Element-based | Document structure |
-|--------|------------------|---------------|--------------------|
-| Output shape | `content: string` | `elements: array` | `nodes: array` with index refs |
-| Hierarchy | None | Inferred from levels | Explicit parent/child indices |
-| Inline annotations | No | No | Bold, italic, links per node |
-| Tables | `result.tables` | Table elements | `TableGrid` with cell coords |
-| Content layers | Not classified | Not classified | body, header, footer, footnote |
-| Best for | LLM prompts, full-text | RAG chunking | Knowledge graphs, structured apps |
+| Aspect             | Unified (default)      | Element-based        | Document structure                |
+| ------------------ | ---------------------- | -------------------- | --------------------------------- |
+| Output shape       | `content: string`      | `elements: array`    | `nodes: array` with index refs    |
+| Hierarchy          | None                   | Inferred from levels | Explicit parent/child indices     |
+| Inline annotations | No                     | No                   | Bold, italic, links per node      |
+| Tables             | `result.tables`        | Table elements       | `TableGrid` with cell coords      |
+| Content layers     | Not classified         | Not classified       | body, header, footer, footnote    |
+| Best for           | LLM prompts, full-text | RAG chunking         | Knowledge graphs, structured apps |
 
 ### Enable
 
@@ -212,30 +212,30 @@ Each node in `result.document.nodes`:
 
 ### Node Types
 
-| `node_type` | Key fields | Notes |
-|-------------|-----------|-------|
-| `title` | `text` | Document title |
-| `heading` | `level` (1–6), `text` | Section heading |
-| `paragraph` | `text` | Body paragraph; may have `annotations` |
-| `list` | `ordered` (bool) | Container; children are `list_item` nodes |
-| `list_item` | `text` | Child of `list` |
-| `table` | `grid` ([TableGrid](#table-grid)) | Grid with cell-level data |
-| `image` | `description`, `image_index` | `image_index` references `result.images` |
-| `code` | `text`, `language` | Code block |
-| `quote` | _(container)_ | Children are typically paragraphs |
-| `formula` | `text` | Math formula (plain text, LaTeX, or MathML) |
-| `footnote` | `text` | Usually `content_layer: "footnote"` |
-| `group` | `label`, `heading_level`, `heading_text` | Section grouping container |
-| `page_break` | _(marker)_ | Page boundary |
+| `node_type`  | Key fields                               | Notes                                       |
+| ------------ | ---------------------------------------- | ------------------------------------------- |
+| `title`      | `text`                                   | Document title                              |
+| `heading`    | `level` (1–6), `text`                    | Section heading                             |
+| `paragraph`  | `text`                                   | Body paragraph; may have `annotations`      |
+| `list`       | `ordered` (bool)                         | Container; children are `list_item` nodes   |
+| `list_item`  | `text`                                   | Child of `list`                             |
+| `table`      | `grid` ([TableGrid](#table-grid))        | Grid with cell-level data                   |
+| `image`      | `description`, `image_index`             | `image_index` references `result.images`    |
+| `code`       | `text`, `language`                       | Code block                                  |
+| `quote`      | _(container)_                            | Children are typically paragraphs           |
+| `formula`    | `text`                                   | Math formula (plain text, LaTeX, or MathML) |
+| `footnote`   | `text`                                   | Usually `content_layer: "footnote"`         |
+| `group`      | `label`, `heading_level`, `heading_text` | Section grouping container                  |
+| `page_break` | _(marker)_                               | Page boundary                               |
 
 ### Content Layers
 
-| Layer | Description |
-|-------|-------------|
-| `body` | Main document content |
-| `header` | Page header area (repeated chapter titles) |
-| `footer` | Page footer area (page numbers, copyright) |
-| `footnote` | Footnotes and endnotes |
+| Layer      | Description                                |
+| ---------- | ------------------------------------------ |
+| `body`     | Main document content                      |
+| `header`   | Page header area (repeated chapter titles) |
+| `footer`   | Page footer area (page numbers, copyright) |
+| `footnote` | Footnotes and endnotes                     |
 
 ```python
 for node in result.document["nodes"]:
@@ -251,11 +251,11 @@ Paragraphs carry a list of `annotations` marking character spans:
 { "start": 0, "end": 16, "kind": { "annotation_type": "bold" } }
 ```
 
-| `annotation_type` | Extra fields |
-|-------------------|-------------|
-| `bold`, `italic`, `underline`, `strikethrough` | — |
-| `code`, `subscript`, `superscript` | — |
-| `link` | `url`, `title` (optional) |
+| `annotation_type`                              | Extra fields              |
+| ---------------------------------------------- | ------------------------- |
+| `bold`, `italic`, `underline`, `strikethrough` | —                         |
+| `code`, `subscript`, `superscript`             | —                         |
+| `link`                                         | `url`, `title` (optional) |
 
 ```python
 for node in result.document["nodes"]:
@@ -275,10 +275,18 @@ Table nodes contain a `grid` with cell-level data:
 
 ```json
 {
-  "rows": 3, "cols": 3,
+  "rows": 3,
+  "cols": 3,
   "cells": [
     { "content": "Algorithm", "row": 0, "col": 0, "row_span": 1, "col_span": 1, "is_header": true },
-    { "content": "Decision Tree", "row": 1, "col": 0, "row_span": 1, "col_span": 1, "is_header": false }
+    {
+      "content": "Decision Tree",
+      "row": 1,
+      "col": 0,
+      "row_span": 1,
+      "col_span": 1,
+      "is_header": false
+    }
   ]
 }
 ```
@@ -341,9 +349,19 @@ Hierarchy data is in `result.pages[n].hierarchy`. Each page has a `blocks` list:
 {
   "block_count": 4,
   "blocks": [
-    { "text": "Chapter 1: Introduction", "level": "h1", "font_size": 24.0, "bbox": [50.0, 100.0, 400.0, 125.0] },
+    {
+      "text": "Chapter 1: Introduction",
+      "level": "h1",
+      "font_size": 24.0,
+      "bbox": [50.0, 100.0, 400.0, 125.0]
+    },
     { "text": "Background", "level": "h2", "font_size": 18.0, "bbox": [50.0, 150.0, 300.0, 168.0] },
-    { "text": "This chapter provides...", "level": "body", "font_size": 12.0, "bbox": [50.0, 200.0, 550.0, 450.0] }
+    {
+      "text": "This chapter provides...",
+      "level": "body",
+      "font_size": 12.0,
+      "bbox": [50.0, 200.0, 550.0, 450.0]
+    }
   ]
 }
 ```
@@ -353,29 +371,29 @@ Hierarchy data is in `result.pages[n].hierarchy`. Each page has a `blocks` list:
 
 ### Configuration
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `enabled` | `bool` | `true` | Enable hierarchy extraction |
-| `k_clusters` | `int` | `6` | Font size clusters (2–10), maps to heading levels |
-| `include_bbox` | `bool` | `true` | Include bounding box coordinates |
-| `ocr_coverage_threshold` | `float \| None` | `None` | Trigger OCR if text coverage is below this fraction |
+| Parameter                | Type            | Default | Description                                         |
+| ------------------------ | --------------- | ------- | --------------------------------------------------- |
+| `enabled`                | `bool`          | `true`  | Enable hierarchy extraction                         |
+| `k_clusters`             | `int`           | `6`     | Font size clusters (2–10), maps to heading levels   |
+| `include_bbox`           | `bool`          | `true`  | Include bounding box coordinates                    |
+| `ocr_coverage_threshold` | `float \| None` | `None`  | Trigger OCR if text coverage is below this fraction |
 
 #### Choosing k_clusters
 
-| `k_clusters` | Heading levels | Use when |
-|--------------|----------------|----------|
-| 2–3 | H1–H2 | Simple documents with 1–2 heading sizes |
-| 4–5 | H1–H4 | Standard documents |
-| 6 (default) | H1–H6 | Most documents |
-| 7–8 | H1–H6+ | Books, specs with deep nesting |
+| `k_clusters` | Heading levels | Use when                                |
+| ------------ | -------------- | --------------------------------------- |
+| 2–3          | H1–H2          | Simple documents with 1–2 heading sizes |
+| 4–5          | H1–H4          | Standard documents                      |
+| 6 (default)  | H1–H6          | Most documents                          |
+| 7–8          | H1–H6+         | Books, specs with deep nesting          |
 
 #### Ocr_coverage_threshold
 
-| Threshold | Behavior |
-|-----------|----------|
-| `None` | OCR never triggered by coverage |
-| `0.3` | OCR if < 30% of page has text |
-| `0.5` | OCR if < 50% of page has text |
+| Threshold | Behavior                        |
+| --------- | ------------------------------- |
+| `None`    | OCR never triggered by coverage |
+| `0.3`     | OCR if < 30% of page has text   |
+| `0.5`     | OCR if < 50% of page has text   |
 
 Requires an OCR backend to be configured separately.
 

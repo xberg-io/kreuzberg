@@ -121,10 +121,10 @@ UbiComp/ISWC '19 Adjunct, September 9-13, 2019, London, United Kingdom
 
 Zhou, et al.
 
-|   | Implicit | Explicit  |
-| --- | --- | --- |
-|  Input Modality | Gaze direction; Stress; Workload; Fatigue; Head Movement; Facial Expression | Touch; Smooth Pursuit  |
-|  Output Modality | Automatic tinting; Background data logging; Peripheral notification | Peripheral display; LED; See-through OLED; Symbolic holograph; Audio; Haptic  |
+|                 | Implicit                                                                    | Explicit                                                                     |
+| --------------- | --------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| Input Modality  | Gaze direction; Stress; Workload; Fatigue; Head Movement; Facial Expression | Touch; Smooth Pursuit                                                        |
+| Output Modality | Automatic tinting; Background data logging; Peripheral notification         | Peripheral display; LED; See-through OLED; Symbolic holograph; Audio; Haptic |
 
 Table 1: Design Space
 
@@ -140,7 +140,7 @@ In this work, we define explicit output as the presentation of information which
 
 Implicit Output. As discussed above, physiological sensors enable passive background data logging. This can be used to monitor vital signs and and other health or fitness-related indicators such as the number of steps walked, heart rate, blood oxygen levels, and distance travelled within certain time periods $^{1112}$ . Costanza et al. have used LED lights in the peripheral vision field, which can be attached to the inside of eyewear temples to enable implicit notifications without occupying users' attention [1]. Subtle self-tinting can provide users with a comfortable vision in combination with ambient light sensors without their notice.
 
-Explicit Output. In the context of this work, we focus on the simplistic presentation of notification and other explicit information which induce users' immediate awareness but do not require their continuous engagement. LEDs can be embedded and activated at different locations on the frame to present directional information. Transparent OLED screens with small form factor, such as SparkFun Transparent OLED  $^{13}$ , provide a simplistic graphical display for necessary information such as time, temperature, and notification summary that is available with limited computing power and power consumption. Symbolic holograph projections are a visual alternative to graphical displays which present symbolic information from a predefined set, instead of continuously generating new patterns. Acoustic, haptic and bone conduction output can present notifications or as secondary feedback modalities to compensate for other primary output modalities [10].
+Explicit Output. In the context of this work, we focus on the simplistic presentation of notification and other explicit information which induce users' immediate awareness but do not require their continuous engagement. LEDs can be embedded and activated at different locations on the frame to present directional information. Transparent OLED screens with small form factor, such as SparkFun Transparent OLED $^{13}$ , provide a simplistic graphical display for necessary information such as time, temperature, and notification summary that is available with limited computing power and power consumption. Symbolic holograph projections are a visual alternative to graphical displays which present symbolic information from a predefined set, instead of continuously generating new patterns. Acoustic, haptic and bone conduction output can present notifications or as secondary feedback modalities to compensate for other primary output modalities [10].
 
 # 4 APPLICATIONS
 
@@ -156,10 +156,10 @@ Implicit assistance contributes to better accessibility in scenarios where users
 
 Ubiquitous Smart Eyewear Interactions using Implicit Sensing and Unobtrusive Unirhaput, September 9-13, 2019, London, United Kingdom
 
-|   | Implicit Input | Explicit Output  |
-| --- | --- | --- |
-|  Implicit Output | Automatic tinting under sunlight; Unobtrusive message notification during task [1]; Background lifelogging (heart rate, steps, etc.); Facial expression detection; Stress and fatigue detection. | Lifelogging with camera.  |
-|  Explicit Output | Drowsiness alert; Attention alert; Emotion regulation; Stress regulation. | Notification responding; Face-touching input; Smooth pursuit.  |
+|                 | Implicit Input                                                                                                                                                                                   | Explicit Output                                               |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------- |
+| Implicit Output | Automatic tinting under sunlight; Unobtrusive message notification during task [1]; Background lifelogging (heart rate, steps, etc.); Facial expression detection; Stress and fatigue detection. | Lifelogging with camera.                                      |
+| Explicit Output | Drowsiness alert; Attention alert; Emotion regulation; Stress regulation.                                                                                                                        | Notification responding; Face-touching input; Smooth pursuit. |
 
 Table 2: Applications
 

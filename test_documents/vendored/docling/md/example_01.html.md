@@ -16,5 +16,5 @@ Example image
 1. First item in ordered list
 2. Second item in ordered list
 
-42. First item in ordered list with start
-43. Second item in ordered list with start
+3. First item in ordered list with start
+4. Second item in ordered list with start

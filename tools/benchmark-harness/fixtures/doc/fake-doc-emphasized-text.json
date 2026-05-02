@@ -2,11 +2,7 @@
   "document": "../../../../test_documents/vendored/unstructured/doc/fake-doc-emphasized-text.doc",
   "file_type": "doc",
   "file_size": 27648,
-  "expected_frameworks": [
-    "kreuzberg",
-    "tika",
-    "unstructured"
-  ],
+  "expected_frameworks": ["kreuzberg", "tika", "unstructured"],
   "metadata": {
     "description": "Document from unstructured test suite",
     "source": "unstructured",

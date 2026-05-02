@@ -83,9 +83,9 @@ print(result.content)
 ### Node.js
 
 ```typescript
-import { extractFile } from '@kreuzberg/node';
+import { extractFile } from "@kreuzberg/node";
 
-const result = await extractFile('document.pdf');
+const result = await extractFile("document.pdf");
 console.log(result.content);
 console.log(result.metadata);
 console.log(result.tables);
@@ -94,9 +94,9 @@ console.log(result.tables);
 ### Node.js (Sync)
 
 ```typescript
-import { extractFileSync } from '@kreuzberg/node';
+import { extractFileSync } from "@kreuzberg/node";
 
-const result = extractFileSync('document.pdf');
+const result = extractFileSync("document.pdf");
 ```
 
 ### Rust (Async)
@@ -163,16 +163,16 @@ result = await extract_file("document.pdf", config=config)
 ### Node.js (camelCase)
 
 ```typescript
-import { extractFile, type ExtractionConfig } from '@kreuzberg/node';
+import { extractFile, type ExtractionConfig } from "@kreuzberg/node";
 
 const config: ExtractionConfig = {
-    ocr: { backend: 'tesseract', language: 'eng' },
-    pdfOptions: { passwords: ['secret123'] },
-    chunking: { maxChars: 1000, maxOverlap: 200 },
-    outputFormat: 'markdown',
+  ocr: { backend: "tesseract", language: "eng" },
+  pdfOptions: { passwords: ["secret123"] },
+  chunking: { maxChars: 1000, maxOverlap: 200 },
+  outputFormat: "markdown",
 };
 
-const result = await extractFile('document.pdf', null, config);
+const result = await extractFile("document.pdf", null, config);
 ```
 
 ### Rust (snake_case)
@@ -243,9 +243,9 @@ for result in results:
 ### Node.js
 
 ```typescript
-import { batchExtractFiles } from '@kreuzberg/node';
+import { batchExtractFiles } from "@kreuzberg/node";
 
-const results = await batchExtractFiles(['doc1.pdf', 'doc2.docx']);
+const results = await batchExtractFiles(["doc1.pdf", "doc2.docx"]);
 ```
 
 ### Rust — requires `tokio-runtime` feature
@@ -292,18 +292,18 @@ config = ExtractionConfig(force_ocr=True)  # OCR even if text is extractable
 
 ## ExtractionResult Fields
 
-| Field | Python | Node.js | Rust | Description |
-|-------|--------|---------|------|-------------|
-| Text content | `result.content` | `result.content` | `result.content` | Extracted text (str/String) |
-| MIME type | `result.mime_type` | `result.mimeType` | `result.mime_type` | Input document MIME type |
-| Metadata | `result.metadata` | `result.metadata` | `result.metadata` | Document metadata (dict/object/HashMap) |
-| Tables | `result.tables` | `result.tables` | `result.tables` | Extracted tables with cells + markdown |
-| Languages | `result.detected_languages` | `result.detectedLanguages` | `result.detected_languages` | Detected languages (if enabled) |
-| Chunks | `result.chunks` | `result.chunks` | `result.chunks` | Text chunks (if chunking enabled) |
-| Images | `result.images` | `result.images` | `result.images` | Extracted images (if enabled) |
-| Elements | `result.elements` | `result.elements` | `result.elements` | Semantic elements (if element_based format) |
-| Pages | `result.pages` | `result.pages` | `result.pages` | Per-page content (if page extraction enabled) |
-| Keywords | `result.keywords` | `result.keywords` | `result.keywords` | Extracted keywords (if enabled) |
+| Field        | Python                      | Node.js                    | Rust                        | Description                                   |
+| ------------ | --------------------------- | -------------------------- | --------------------------- | --------------------------------------------- |
+| Text content | `result.content`            | `result.content`           | `result.content`            | Extracted text (str/String)                   |
+| MIME type    | `result.mime_type`          | `result.mimeType`          | `result.mime_type`          | Input document MIME type                      |
+| Metadata     | `result.metadata`           | `result.metadata`          | `result.metadata`           | Document metadata (dict/object/HashMap)       |
+| Tables       | `result.tables`             | `result.tables`            | `result.tables`             | Extracted tables with cells + markdown        |
+| Languages    | `result.detected_languages` | `result.detectedLanguages` | `result.detected_languages` | Detected languages (if enabled)               |
+| Chunks       | `result.chunks`             | `result.chunks`            | `result.chunks`             | Text chunks (if chunking enabled)             |
+| Images       | `result.images`             | `result.images`            | `result.images`             | Extracted images (if enabled)                 |
+| Elements     | `result.elements`           | `result.elements`          | `result.elements`           | Semantic elements (if element_based format)   |
+| Pages        | `result.pages`              | `result.pages`             | `result.pages`              | Per-page content (if page extraction enabled) |
+| Keywords     | `result.keywords`           | `result.keywords`          | `result.keywords`           | Extracted keywords (if enabled)               |
 
 ## Error Handling
 
@@ -333,17 +333,26 @@ except KreuzbergError as e:
 
 ```typescript
 import {
-    extractFile, KreuzbergError, ParsingError,
-    OcrError, ValidationError, MissingDependencyError,
-} from '@kreuzberg/node';
+  extractFile,
+  KreuzbergError,
+  ParsingError,
+  OcrError,
+  ValidationError,
+  MissingDependencyError,
+} from "@kreuzberg/node";
 
 try {
-    const result = await extractFile('file.pdf');
+  const result = await extractFile("file.pdf");
 } catch (e) {
-    if (e instanceof ParsingError) { /* ... */ }
-    else if (e instanceof OcrError) { /* ... */ }
-    else if (e instanceof ValidationError) { /* ... */ }
-    else if (e instanceof KreuzbergError) { /* ... */ }
+  if (e instanceof ParsingError) {
+    /* ... */
+  } else if (e instanceof OcrError) {
+    /* ... */
+  } else if (e instanceof ValidationError) {
+    /* ... */
+  } else if (e instanceof KreuzbergError) {
+    /* ... */
+  }
 }
 ```
 
@@ -374,20 +383,20 @@ match extract_file("file.pdf", None, &config).await {
 
 ## Supported Formats (Summary)
 
-| Category | Extensions |
-|----------|-----------|
-| **PDF** | `.pdf` |
-| **Word** | `.docx`, `.odt` |
-| **Spreadsheets** | `.xlsx`, `.xlsm`, `.xlsb`, `.xls`, `.xla`, `.xlam`, `.xltm`, `.ods` |
-| **Presentations** | `.pptx`, `.ppt`, `.ppsx` |
-| **eBooks** | `.epub`, `.fb2` |
-| **Images** | `.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, `.bmp`, `.tiff`, `.tif`, `.jp2`, `.jpx`, `.jpm`, `.mj2`, `.jbig2`, `.jb2`, `.pnm`, `.pbm`, `.pgm`, `.ppm`, `.svg` |
-| **Markup** | `.html`, `.htm`, `.xhtml`, `.xml` |
-| **Data** | `.json`, `.yaml`, `.yml`, `.toml`, `.csv`, `.tsv` |
-| **Text** | `.txt`, `.md`, `.markdown`, `.djot`, `.rst`, `.org`, `.rtf` |
-| **Email** | `.eml`, `.msg` |
-| **Archives** | `.zip`, `.tar`, `.tgz`, `.gz`, `.7z` |
-| **Academic** | `.bib`, `.biblatex`, `.ris`, `.nbib`, `.enw`, `.csl`, `.tex`, `.latex`, `.typ`, `.jats`, `.ipynb`, `.docbook`, `.opml`, `.pod`, `.mdoc`, `.troff` |
+| Category          | Extensions                                                                                                                                                  |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **PDF**           | `.pdf`                                                                                                                                                      |
+| **Word**          | `.docx`, `.odt`                                                                                                                                             |
+| **Spreadsheets**  | `.xlsx`, `.xlsm`, `.xlsb`, `.xls`, `.xla`, `.xlam`, `.xltm`, `.ods`                                                                                         |
+| **Presentations** | `.pptx`, `.ppt`, `.ppsx`                                                                                                                                    |
+| **eBooks**        | `.epub`, `.fb2`                                                                                                                                             |
+| **Images**        | `.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, `.bmp`, `.tiff`, `.tif`, `.jp2`, `.jpx`, `.jpm`, `.mj2`, `.jbig2`, `.jb2`, `.pnm`, `.pbm`, `.pgm`, `.ppm`, `.svg` |
+| **Markup**        | `.html`, `.htm`, `.xhtml`, `.xml`                                                                                                                           |
+| **Data**          | `.json`, `.yaml`, `.yml`, `.toml`, `.csv`, `.tsv`                                                                                                           |
+| **Text**          | `.txt`, `.md`, `.markdown`, `.djot`, `.rst`, `.org`, `.rtf`                                                                                                 |
+| **Email**         | `.eml`, `.msg`                                                                                                                                              |
+| **Archives**      | `.zip`, `.tar`, `.tgz`, `.gz`, `.7z`                                                                                                                        |
+| **Academic**      | `.bib`, `.biblatex`, `.ris`, `.nbib`, `.enw`, `.csl`, `.tex`, `.latex`, `.typ`, `.jats`, `.ipynb`, `.docbook`, `.opml`, `.pod`, `.mdoc`, `.troff`           |
 
 See [references/supported-formats.md](references/supported-formats.md) for the complete format reference with MIME types.
 

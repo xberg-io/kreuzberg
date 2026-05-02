@@ -1,15 +1,15 @@
 {
-	"document": "../../../test_documents/jats/sample_article.nxml",
-	"file_type": "nxml",
-	"file_size": 7772,
-	"expected_frameworks": ["kreuzberg"],
-	"metadata": {
-		"description": "NXML article format on caffeine health effects (same as JATS)",
-		"category": "markup",
-		"size_class": "small"
-	},
-	"ground_truth": {
-		"text_file": "../../../test_documents/ground_truth/nxml/nxml_article.txt",
-		"source": "vision"
-	}
+  "document": "../../../test_documents/jats/sample_article.nxml",
+  "file_type": "nxml",
+  "file_size": 7772,
+  "expected_frameworks": ["kreuzberg"],
+  "metadata": {
+    "description": "NXML article format on caffeine health effects (same as JATS)",
+    "category": "markup",
+    "size_class": "small"
+  },
+  "ground_truth": {
+    "text_file": "../../../test_documents/ground_truth/nxml/nxml_article.txt",
+    "source": "vision"
+  }
 }

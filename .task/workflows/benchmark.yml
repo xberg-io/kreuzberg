@@ -1,6 +1,5 @@
 version: "3"
 
-
 vars:
   FIXTURES_DIR: "tools/benchmark-harness/fixtures"
   HARNESS_PATH: "./target/release/benchmark-harness"

@@ -1,19 +1,16 @@
 {
-	"id": "underline_empty",
-	"category": "markup",
-	"description": "Underline empty",
-	"tags": [
-		"markup",
-		"edge_case"
-	],
-	"call": "underline",
-	"input": {
-		"start": 0,
-		"end": 0
-	},
-	"assertions": [
-		{
-			"type": "not_error"
-		}
-	]
+  "id": "underline_empty",
+  "category": "markup",
+  "description": "Underline empty",
+  "tags": ["markup", "edge_case"],
+  "call": "underline",
+  "input": {
+    "start": 0,
+    "end": 0
+  },
+  "assertions": [
+    {
+      "type": "not_error"
+    }
+  ]
 }

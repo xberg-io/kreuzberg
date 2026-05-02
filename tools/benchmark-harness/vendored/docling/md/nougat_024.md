@@ -20,7 +20,7 @@ April, 2021.
 
 Tender No.
 
-41(01)/2019/PROM Dated: 11/09/2020 CPP Portal Tender ID: 2020\_TBI\_582964\_1
+41(01)/2019/PROM Dated: 11/09/2020 CPP Portal Tender ID: 2020_TBI_582964_1
 
 All the interested bidders are advised to make note that the Tender for RFQ cum RFP for Empanelment of Branding Consultants/ Agenciesis hereby cancelled.
 

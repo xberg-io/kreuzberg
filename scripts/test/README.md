@@ -33,12 +33,12 @@ Tests Docker configuration in various scenarios:
 
 #### Options
 
-| Option | Description | Default |
-|--------|-------------|---------|
-| `--variant VARIANT` | Test specific variant: `core`, `full`, or `all` | `all` |
-| `--verbose` | Enable verbose debugging output | Disabled |
-| `--keep-containers` | Preserve containers after tests for inspection | Clean up |
-| `--help` | Display help message | - |
+| Option              | Description                                     | Default  |
+| ------------------- | ----------------------------------------------- | -------- |
+| `--variant VARIANT` | Test specific variant: `core`, `full`, or `all` | `all`    |
+| `--verbose`         | Enable verbose debugging output                 | Disabled |
+| `--keep-containers` | Preserve containers after tests for inspection  | Clean up |
+| `--help`            | Display help message                            | -        |
 
 #### Examples
 
@@ -192,11 +192,11 @@ Tested Variants:
 
 The script respects these environment variables:
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `TEST_VARIANT` | Override variant via environment | Unset |
-| `VERBOSE` | Enable verbose output via environment | `false` |
-| `KEEP_CONTAINERS` | Keep containers via environment | `false` |
+| Variable          | Description                           | Default |
+| ----------------- | ------------------------------------- | ------- |
+| `TEST_VARIANT`    | Override variant via environment      | Unset   |
+| `VERBOSE`         | Enable verbose output via environment | `false` |
+| `KEEP_CONTAINERS` | Keep containers via environment       | `false` |
 
 Example:
 

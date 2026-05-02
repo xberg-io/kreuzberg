@@ -2,10 +2,10 @@
 
 Extract ranked keywords from document text using YAKE or RAKE algorithms.
 
-| Algorithm | Scoring | Best for |
-|-----------|---------|----------|
-| **YAKE** | Lower score = more relevant (0.0–1.0) | General documents, single terms, multilingual |
-| **RAKE** | Higher score = more relevant (unbounded) | Multi-word phrases, technical docs |
+| Algorithm | Scoring                                  | Best for                                      |
+| --------- | ---------------------------------------- | --------------------------------------------- |
+| **YAKE**  | Lower score = more relevant (0.0–1.0)    | General documents, single terms, multilingual |
+| **RAKE**  | Higher score = more relevant (unbounded) | Multi-word phrases, technical docs            |
 
 ## Quick Start
 
@@ -41,15 +41,15 @@ Keywords are returned in `result.extracted_keywords` as objects with `text` and 
 
 ## Configuration
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `algorithm` | `KeywordAlgorithm` | `YAKE` | `YAKE` or `RAKE` |
-| `max_keywords` | `int` | `10` | Maximum keywords to extract |
-| `min_score` | `float` | `0.0` | Score threshold (upper bound for YAKE, lower bound for RAKE) |
-| `ngram_range` | `tuple[int, int]` | `(1, 3)` | Min and max phrase length in words |
-| `language` | `str \| None` | `"en"` | Language for stopword filtering (`None` disables) |
-| `yake_params` | `YakeParams` | — | YAKE-specific tuning |
-| `rake_params` | `RakeParams` | — | RAKE-specific tuning |
+| Parameter      | Type               | Default  | Description                                                  |
+| -------------- | ------------------ | -------- | ------------------------------------------------------------ |
+| `algorithm`    | `KeywordAlgorithm` | `YAKE`   | `YAKE` or `RAKE`                                             |
+| `max_keywords` | `int`              | `10`     | Maximum keywords to extract                                  |
+| `min_score`    | `float`            | `0.0`    | Score threshold (upper bound for YAKE, lower bound for RAKE) |
+| `ngram_range`  | `tuple[int, int]`  | `(1, 3)` | Min and max phrase length in words                           |
+| `language`     | `str \| None`      | `"en"`   | Language for stopword filtering (`None` disables)            |
+| `yake_params`  | `YakeParams`       | —        | YAKE-specific tuning                                         |
+| `rake_params`  | `RakeParams`       | —        | RAKE-specific tuning                                         |
 
 === "Python"
 
@@ -83,11 +83,11 @@ Keywords are returned in `result.extracted_keywords` as objects with `text` and 
 
 Lower YAKE scores = higher relevance. Use `min_score` as an upper bound:
 
-| `min_score` | Effect |
-|-------------|--------|
-| `0.5` | Keeps most keywords |
-| `0.3` | Main topics only |
-| `0.1` | Core concepts only |
+| `min_score` | Effect              |
+| ----------- | ------------------- |
+| `0.5`       | Keeps most keywords |
+| `0.3`       | Main topics only    |
+| `0.1`       | Core concepts only  |
 
 `YakeParams.window_size` controls co-occurrence context: `1–2` for narrow domains, `2–3` for general (default: `2`), `3–4` for discussion-heavy content.
 
@@ -95,11 +95,11 @@ Lower YAKE scores = higher relevance. Use `min_score` as an upper bound:
 
 Higher RAKE scores = higher relevance. Use `min_score` as a lower bound:
 
-| `min_score` | Effect |
-|-------------|--------|
-| `0.1` | Keeps most keywords |
-| `5.0` | Main phrases only |
-| `20.0` | Only highly specific phrases |
+| `min_score` | Effect                       |
+| ----------- | ---------------------------- |
+| `0.1`       | Keeps most keywords          |
+| `5.0`       | Main phrases only            |
+| `20.0`      | Only highly specific phrases |
 
 `RakeParams`: `min_word_length` (default: `1`), `max_words_per_phrase` (default: `3`).
 

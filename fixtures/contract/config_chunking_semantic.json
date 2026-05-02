@@ -1,29 +1,29 @@
 {
-	"id": "config_chunking_semantic",
-	"description": "Semantic chunker with defaults on a multi-section document",
-	"tags": ["contract", "config", "chunking"],
-	"call": "extract_file_sync",
-	"input": {
-		"path": "semantic/annual_report.txt",
-		"config": {
-			"chunking": {
-				"chunker_type": "semantic"
-			}
-		}
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "text/plain"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 100
-		}
-	],
-	"skip": {
-		"reason": "Requires chunking feature"
-	}
+  "id": "config_chunking_semantic",
+  "description": "Semantic chunker with defaults on a multi-section document",
+  "tags": ["contract", "config", "chunking"],
+  "call": "extract_file_sync",
+  "input": {
+    "path": "semantic/annual_report.txt",
+    "config": {
+      "chunking": {
+        "chunker_type": "semantic"
+      }
+    }
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "text/plain"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 100
+    }
+  ],
+  "skip": {
+    "reason": "Requires chunking feature"
+  }
 }

@@ -40,7 +40,7 @@ Teamset Manual , Monsters The 1985 Chicago Bears And Wild Heart Of Football Rich
 
 # Pain, TRIGGER POINTS AND ACUPUNCTURE POINTS FOR PAIN …
 
-TRIGGER POINTS AND ACUPUNCTURE POINTS FOR PAIN: CORRELATIONS AND IMPLICATIONS RONALD MELZACK *, DOROTHY M. STILLWELL And ELISABETH J. FOX Department Of Psychology, McGill University, And Department Of Medicine, Royal Victoria Hospital,
+TRIGGER POINTS AND ACUPUNCTURE POINTS FOR PAIN: CORRELATIONS AND IMPLICATIONS RONALD MELZACK \*, DOROTHY M. STILLWELL And ELISABETH J. FOX Department Of Psychology, McGill University, And Department Of Medicine, Royal Victoria Hospital,
 
 Montreal, Que. (Canada) (Accepted July 21st, 1976)
 SUMMARY Trigger Points Associated With Myofascial And Visceral Pains Often Tie With- In The Areas Of Referred ... Jun 12th, 2021
@@ -85,7 +85,7 @@ Impairment Related To Alcohol, Drugs, Or A Combination Of Both Based On A Comple
 
 # Memory Impaired 3.5.08
 
-Should You Do? To Avoid Distress, Try These Ways Of Kindness: 1) Distract To Another Topic, Or 2) Start A Fun Activity, Or 3) Reminisce About Their Spouse, "I Was Just Thinking About ___. How Did You Meet?" Or You Might Try, "He's Gone For A While. Let's Take Our Walk Now." Jul 4th, 2021
+Should You Do? To Avoid Distress, Try These Ways Of Kindness: 1) Distract To Another Topic, Or 2) Start A Fun Activity, Or 3) Reminisce About Their Spouse, "I Was Just Thinking About \_\_\_. How Did You Meet?" Or You Might Try, "He's Gone For A While. Let's Take Our Walk Now." Jul 4th, 2021
 
 # Listing A Water Body As Impaired In California Is Governed ...
 

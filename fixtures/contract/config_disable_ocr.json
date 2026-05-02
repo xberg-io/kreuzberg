@@ -1,25 +1,25 @@
 {
-	"id": "config_disable_ocr",
-	"description": "Tests disable_ocr configuration option - OCR is skipped for images",
-	"tags": ["contract", "config", "ocr"],
-	"call": "extract_file_sync",
-	"input": {
-		"path": "images/test_hello_world.png",
-		"media_type": "image/png",
-		"config": {
-			"disable_ocr": true
-		}
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "image/png"
-		},
-		{
-			"type": "max_length",
-			"field": "content",
-			"value": 5
-		}
-	]
+  "id": "config_disable_ocr",
+  "description": "Tests disable_ocr configuration option - OCR is skipped for images",
+  "tags": ["contract", "config", "ocr"],
+  "call": "extract_file_sync",
+  "input": {
+    "path": "images/test_hello_world.png",
+    "media_type": "image/png",
+    "config": {
+      "disable_ocr": true
+    }
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "image/png"
+    },
+    {
+      "type": "max_length",
+      "field": "content",
+      "value": 5
+    }
+  ]
 }

@@ -94,38 +94,38 @@ jobs:
       matrix:
         include:
           - lang: python
-            python-version: '3.13'
-            test-cmd: 'pip install maturin && cd packages/python && maturin develop --release && python3 -m pytest tests/ -q && cd ../../e2e/python && python3 -m pytest tests/ -q'
+            python-version: "3.13"
+            test-cmd: "pip install maturin && cd packages/python && maturin develop --release && python3 -m pytest tests/ -q && cd ../../e2e/python && python3 -m pytest tests/ -q"
           - lang: node
-            node-version: '24'
-            test-cmd: 'cd crates/kreuzberg-node && npm run build && cd ../../e2e/node && npx vitest run'
+            node-version: "24"
+            test-cmd: "cd crates/kreuzberg-node && npm run build && cd ../../e2e/node && npx vitest run"
           - lang: go
-            go-version: '1.26'
-            test-cmd: 'cd e2e/go && go test ./... -count=1 -v'
+            go-version: "1.26"
+            test-cmd: "cd e2e/go && go test ./... -count=1 -v"
           - lang: ruby
-            ruby-version: '3.4'
-            test-cmd: 'cd e2e/ruby && bundle exec rspec'
+            ruby-version: "3.4"
+            test-cmd: "cd e2e/ruby && bundle exec rspec"
           - lang: java
-            java-version: '25'
-            test-cmd: 'cd e2e/java && mvn test -q'
+            java-version: "25"
+            test-cmd: "cd e2e/java && mvn test -q"
           - lang: csharp
-            dotnet-version: '10.0.x'
-            test-cmd: 'cd e2e/csharp && dotnet test'
+            dotnet-version: "10.0.x"
+            test-cmd: "cd e2e/csharp && dotnet test"
           - lang: php
-            php-version: '8.4'
-            test-cmd: 'cd e2e/php && composer install -q && vendor/bin/phpunit'
+            php-version: "8.4"
+            test-cmd: "cd e2e/php && composer install -q && vendor/bin/phpunit"
           - lang: elixir
-            elixir-version: '1.19'
-            otp-version: '28'
-            test-cmd: 'cd e2e/elixir && mix deps.get && mix test'
+            elixir-version: "1.19"
+            otp-version: "28"
+            test-cmd: "cd e2e/elixir && mix deps.get && mix test"
           - lang: wasm
-            node-version: '24'
-            test-cmd: 'cd e2e/wasm && npm install && npm test'
+            node-version: "24"
+            test-cmd: "cd e2e/wasm && npm install && npm test"
           - lang: rust
-            test-cmd: 'cd e2e/rust && cargo test'
+            test-cmd: "cd e2e/rust && cargo test"
           - lang: r
-            r-version: '4.3'
-            test-cmd: 'cd e2e/r && Rscript run_tests.R'
+            r-version: "4.3"
+            test-cmd: "cd e2e/r && Rscript run_tests.R"
     steps:
       - uses: actions/checkout@v6
 

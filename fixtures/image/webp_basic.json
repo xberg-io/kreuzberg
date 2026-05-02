@@ -1,23 +1,23 @@
 {
-	"id": "image_webp_basic",
-	"category": "image",
-	"description": "WebP image extraction via OCR.",
-	"input": {
-		"path": "images_extra/ocr_image.webp",
-		"media_type": "image/webp"
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "image/webp"
-		},
-		{
-			"type": "not_empty",
-			"field": "content"
-		}
-	],
-	"skip": {
-		"reason": "Requires features: tesseract"
-	}
+  "id": "image_webp_basic",
+  "category": "image",
+  "description": "WebP image extraction via OCR.",
+  "input": {
+    "path": "images_extra/ocr_image.webp",
+    "media_type": "image/webp"
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "image/webp"
+    },
+    {
+      "type": "not_empty",
+      "field": "content"
+    }
+  ],
+  "skip": {
+    "reason": "Requires features: tesseract"
+  }
 }

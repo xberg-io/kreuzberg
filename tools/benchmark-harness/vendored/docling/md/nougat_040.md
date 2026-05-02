@@ -232,13 +232,13 @@ The distribution of how many unigrams each user uses also follows a long tail di
 
 Table 1. Percentage of users with unique unigram count of less than or equal to T. The vast majority of user have less than 100 unique unigrams.
 
-|   THRESHOLD (T) USERS WITH &#124; W i &#124; ≤ T | THRESHOLD (T) USERS WITH &#124; W i &#124; ≤ T   |
-|--------------------------------------------------|--------------------------------------------------|
-|                                                1 | 2.78%                                            |
-|                                               10 | 29.82%                                           |
-|                                               50 | 79.16%                                           |
-|                                              100 | 93.13%                                           |
-|                                              300 | 99.59%                                           |
+| THRESHOLD (T) USERS WITH &#124; W i &#124; ≤ T | THRESHOLD (T) USERS WITH &#124; W i &#124; ≤ T |
+| ---------------------------------------------- | ---------------------------------------------- |
+| 1                                              | 2.78%                                          |
+| 10                                             | 29.82%                                         |
+| 50                                             | 79.16%                                         |
+| 100                                            | 93.13%                                         |
+| 300                                            | 99.59%                                         |
 
 ## G. Additional Experiments
 
@@ -256,15 +256,15 @@ Figure 5. Number of unigrams released for various values of α . The number of u
 
 Table 2. Count of unigrams released POLICY LAPLACE and POLICY GAUSSIAN algorithms for single and double passes over users. Results are averaged and rounded across 5 shuffles of user order. The privacy parameters are ε = 3 and δ = exp( -10) . α = 2 is chosen for the threshold parameter. Significant p-values for a two-sided independent t-test are bolded.
 
-| POLICY LAPLACE   | POLICY LAPLACE   | POLICY LAPLACE   | POLICY GAUSSIAN   | POLICY GAUSSIAN   | POLICY GAUSSIAN   | POLICY GAUSSIAN   |
-|------------------|------------------|------------------|-------------------|-------------------|-------------------|-------------------|
-| ∆ 0              | 1 PASS           | 2 PASSES         | P-VAL             | 1 PASS            | 2 PASSES          | P-VAL             |
-| 1                | 4236 ± 14        | 4257 ± 17        | 0.083             | 3135 ± 25         | 3131 ± 20         | 0.829             |
-| 10               | 12452 ± 31       | 12389 ± 17       | 0.008             | 10784 ± 22        | 10817 ± 54        | 0.293             |
-| 50               | 15056 ± 35       | 15080 ± 21       | 0.262             | 15763 ± 33        | 15809 ± 45        | 0.139             |
-| 100              | 14562 ± 50       | 14567 ± 24       | 0.846             | 14562 ± 50        | 14568 ± 24        | 0.846             |
-| 200              | 14005 ± 33       | 13979 ± 31       | 0.271             | 14005 ± 33        | 13979 ± 31        | 0.271             |
-| 300              | 13702 ± 37       | 13678 ± 47       | 0.448             | 13702 ± 37        | 13678 ± 47        | 0.447             |
+| POLICY LAPLACE | POLICY LAPLACE | POLICY LAPLACE | POLICY GAUSSIAN | POLICY GAUSSIAN | POLICY GAUSSIAN | POLICY GAUSSIAN |
+| -------------- | -------------- | -------------- | --------------- | --------------- | --------------- | --------------- |
+| ∆ 0            | 1 PASS         | 2 PASSES       | P-VAL           | 1 PASS          | 2 PASSES        | P-VAL           |
+| 1              | 4236 ± 14      | 4257 ± 17      | 0.083           | 3135 ± 25       | 3131 ± 20       | 0.829           |
+| 10             | 12452 ± 31     | 12389 ± 17     | 0.008           | 10784 ± 22      | 10817 ± 54      | 0.293           |
+| 50             | 15056 ± 35     | 15080 ± 21     | 0.262           | 15763 ± 33      | 15809 ± 45      | 0.139           |
+| 100            | 14562 ± 50     | 14567 ± 24     | 0.846           | 14562 ± 50      | 14568 ± 24      | 0.846           |
+| 200            | 14005 ± 33     | 13979 ± 31     | 0.271           | 14005 ± 33      | 13979 ± 31      | 0.271           |
+| 300            | 13702 ± 37     | 13678 ± 47     | 0.448           | 13702 ± 37      | 13678 ± 47      | 0.447           |
 
 ## THE EFFECT OF ε
 

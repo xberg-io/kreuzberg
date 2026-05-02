@@ -6,12 +6,12 @@ Extend Kreuzberg with custom extractors, post-processors, OCR backends, and vali
 
 ## Plugin Types
 
-| Type | Purpose | Use case |
-|------|---------|----------|
-| **DocumentExtractor** | Extract content from file formats | New format support, override built-in extractors |
-| **PostProcessor** | Transform extraction results | Metadata enrichment, content filtering, text normalization |
-| **OcrBackend** | Perform OCR on images | Cloud OCR services, custom OCR engines |
-| **Validator** | Validate extraction quality | Minimum content length, quality score thresholds |
+| Type                  | Purpose                           | Use case                                                   |
+| --------------------- | --------------------------------- | ---------------------------------------------------------- |
+| **DocumentExtractor** | Extract content from file formats | New format support, override built-in extractors           |
+| **PostProcessor**     | Transform extraction results      | Metadata enrichment, content filtering, text normalization |
+| **OcrBackend**        | Perform OCR on images             | Cloud OCR services, custom OCR engines                     |
+| **Validator**         | Validate extraction quality       | Minimum content length, quality score thresholds           |
 
 All plugins must be thread-safe (`Send + Sync` in Rust, thread-safe in Python) and implement `initialize()` / `shutdown()` lifecycle methods.
 
@@ -67,12 +67,12 @@ Add support for new file formats or override built-in extractors.
 
 When multiple extractors support the same MIME type, the highest priority wins:
 
-| Range | Level |
-|-------|-------|
-| 0–25 | Fallback / low-quality |
-| 26–49 | Alternative |
-| **50** | **Default (built-in)** |
-| 51–75 | Enhanced / premium |
+| Range  | Level                       |
+| ------ | --------------------------- |
+| 0–25   | Fallback / low-quality      |
+| 26–49  | Alternative                 |
+| **50** | **Default (built-in)**      |
+| 51–75  | Enhanced / premium          |
 | 76–100 | Specialized / high-priority |
 
 ## Post-Processors

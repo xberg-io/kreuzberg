@@ -30,12 +30,12 @@ Output: Vec<Chunk> with text, vectors, metadata
 
 **Location**: `crates/kreuzberg/src/chunking/mod.rs`
 
-| Strategy | Pattern | Best For |
-|----------|---------|----------|
-| **Fixed-Size** | Sliding window with configurable overlap | Uniform chunks for embedding models with fixed token limits |
-| **Semantic** | Split by sentences, merge/split by similarity threshold | Smart context preservation for LLM consumption and semantic search |
-| **Syntax-Aware** | Split by paragraph/section/heading/code-block structure | Preserving document structure (sections, code blocks) in RAG |
-| **Recursive** (LangChain pattern) | Try separators in order: `\n\n`, `\n`, ``,`` | Best general-purpose chunking; auto-finds optimal split points |
+| Strategy                          | Pattern                                                 | Best For                                                           |
+| --------------------------------- | ------------------------------------------------------- | ------------------------------------------------------------------ |
+| **Fixed-Size**                    | Sliding window with configurable overlap                | Uniform chunks for embedding models with fixed token limits        |
+| **Semantic**                      | Split by sentences, merge/split by similarity threshold | Smart context preservation for LLM consumption and semantic search |
+| **Syntax-Aware**                  | Split by paragraph/section/heading/code-block structure | Preserving document structure (sections, code blocks) in RAG       |
+| **Recursive** (LangChain pattern) | Try separators in order: `\n\n`, `\n`, `,`              | Best general-purpose chunking; auto-finds optimal split points     |
 
 Key config fields per strategy (see struct definitions in `chunking/mod.rs`):
 
@@ -48,12 +48,12 @@ Key config fields per strategy (see struct definitions in `chunking/mod.rs`):
 
 **Location**: `crates/kreuzberg/src/chunking/mod.rs`
 
-| Preset | Chunk Size | Overlap | Strategy | Use Case |
-|--------|-----------|---------|----------|----------|
-| **Balanced** | 512 tokens | 50 | Semantic | RAG sweet spot |
-| **Compact** | 256 tokens | 32 | Fixed-Size | Dense vectors |
-| **Extended** | 1024 tokens | 100 | Recursive | Full context |
-| **Minimal** | 128 tokens | 16 | (default) | Lightweight embeddings |
+| Preset       | Chunk Size  | Overlap | Strategy   | Use Case               |
+| ------------ | ----------- | ------- | ---------- | ---------------------- |
+| **Balanced** | 512 tokens  | 50      | Semantic   | RAG sweet spot         |
+| **Compact**  | 256 tokens  | 32      | Fixed-Size | Dense vectors          |
+| **Extended** | 1024 tokens | 100     | Recursive  | Full context           |
+| **Minimal**  | 128 tokens  | 16      | (default)  | Lightweight embeddings |
 
 Usage: set `config.chunking.preset = Some("balanced")` in `ExtractionConfig`.
 
@@ -63,13 +63,13 @@ Usage: set `config.chunking.preset = Some("balanced")` in `ExtractionConfig`.
 
 ### Model Selection
 
-| Model | Dimensions | Notes |
-|-------|-----------|-------|
-| `BAAI/bge-small-en-v1.5` (default) | 384 | Fast, excellent for RAG |
-| `BAAI/bge-small-zh-v1.5` | 384 | Chinese optimized |
-| `BAAI/bge-base-en-v1.5` | 768 | Better quality, slower |
-| `jinaai/jina-embeddings-v2-base-en` | 768 | Long context (up to 8192 tokens) |
-| `Custom(path)` | varies | Custom ONNX model path |
+| Model                               | Dimensions | Notes                            |
+| ----------------------------------- | ---------- | -------------------------------- |
+| `BAAI/bge-small-en-v1.5` (default)  | 384        | Fast, excellent for RAG          |
+| `BAAI/bge-small-zh-v1.5`            | 384        | Chinese optimized                |
+| `BAAI/bge-base-en-v1.5`             | 768        | Better quality, slower           |
+| `jinaai/jina-embeddings-v2-base-en` | 768        | Long context (up to 8192 tokens) |
+| `Custom(path)`                      | varies     | Custom ONNX model path           |
 
 ### Embedding Pattern
 

@@ -1,21 +1,21 @@
 {
-	"id": "structured_csv_basic",
-	"category": "structured",
-	"description": "CSV data file extraction.",
-	"input": {
-		"path": "csv/stanley_cups.csv",
-		"media_type": "text/csv"
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "text/csv"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 20
-		}
-	]
+  "id": "structured_csv_basic",
+  "category": "structured",
+  "description": "CSV data file extraction.",
+  "input": {
+    "path": "csv/stanley_cups.csv",
+    "media_type": "text/csv"
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "text/csv"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 20
+    }
+  ]
 }

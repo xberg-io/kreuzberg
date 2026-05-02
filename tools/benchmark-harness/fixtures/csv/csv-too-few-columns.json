@@ -2,14 +2,7 @@
   "document": "../../../../test_documents/vendored/docling/csv/csv-too-few-columns.csv",
   "file_type": "csv",
   "file_size": 44,
-  "expected_frameworks": [
-    "kreuzberg",
-    "docling",
-    "markitdown",
-    "pandoc",
-    "tika",
-    "unstructured"
-  ],
+  "expected_frameworks": ["kreuzberg", "docling", "markitdown", "pandoc", "tika", "unstructured"],
   "metadata": {
     "description": "Document from docling test suite",
     "source": "docling",

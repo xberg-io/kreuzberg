@@ -1,24 +1,24 @@
 {
-	"id": "result_format_element_based",
-	"description": "Tests ElementBased result format with element assertions",
-	"tags": ["contract", "result_format"],
-	"call": "extract_file_sync",
-	"input": {
-		"path": "pdf/fake_memo.pdf",
-		"config": {
-			"result_format": "element_based"
-		}
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/pdf"
-		},
-		{
-			"type": "count_min",
-			"field": "elements",
-			"value": 1
-		}
-	]
+  "id": "result_format_element_based",
+  "description": "Tests ElementBased result format with element assertions",
+  "tags": ["contract", "result_format"],
+  "call": "extract_file_sync",
+  "input": {
+    "path": "pdf/fake_memo.pdf",
+    "config": {
+      "result_format": "element_based"
+    }
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/pdf"
+    },
+    {
+      "type": "count_min",
+      "field": "elements",
+      "value": 1
+    }
+  ]
 }

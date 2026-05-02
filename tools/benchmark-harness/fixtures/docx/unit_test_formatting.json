@@ -2,14 +2,7 @@
   "document": "../../../../test_documents/vendored/docling/docx/unit_test_formatting.docx",
   "file_type": "docx",
   "file_size": 29099,
-  "expected_frameworks": [
-    "kreuzberg",
-    "docling",
-    "markitdown",
-    "pandoc",
-    "tika",
-    "unstructured"
-  ],
+  "expected_frameworks": ["kreuzberg", "docling", "markitdown", "pandoc", "tika", "unstructured"],
   "metadata": {
     "description": "Document from docling test suite",
     "source": "docling",

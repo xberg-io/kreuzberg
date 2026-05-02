@@ -30,14 +30,14 @@ Official Docker images built on the Rust core with Debian 13 (Trixie). Each imag
 
 ## Image Variants
 
-| | **Core** | **Full** |
-|---|---|---|
-| **Image** | `ghcr.io/kreuzberg-dev/kreuzberg:core` | `ghcr.io/kreuzberg-dev/kreuzberg:latest` |
-| **Size** | ~1.0–1.3 GB | ~1.5–2.1 GB |
-| **Tesseract OCR** | 12 languages | 12 languages |
-| **Modern Office** | DOCX, PPTX, XLSX | DOCX, PPTX, XLSX |
-| **Legacy Office** | DOC, PPT, XLS (native OLE/CFB) | DOC, PPT, XLS (native OLE/CFB) |
-| **Startup** | ~1s | ~1s |
+|                   | **Core**                               | **Full**                                 |
+| ----------------- | -------------------------------------- | ---------------------------------------- |
+| **Image**         | `ghcr.io/kreuzberg-dev/kreuzberg:core` | `ghcr.io/kreuzberg-dev/kreuzberg:latest` |
+| **Size**          | ~1.0–1.3 GB                            | ~1.5–2.1 GB                              |
+| **Tesseract OCR** | 12 languages                           | 12 languages                             |
+| **Modern Office** | DOCX, PPTX, XLSX                       | DOCX, PPTX, XLSX                         |
+| **Legacy Office** | DOC, PPT, XLS (native OLE/CFB)         | DOC, PPT, XLS (native OLE/CFB)           |
+| **Startup**       | ~1s                                    | ~1s                                      |
 
 **Core** is optimized for production deployments where image size matters. Both images support all major formats — choose based on deployment constraints.
 
@@ -101,13 +101,13 @@ See [API Server Guide - MCP Section](api-server.md#mcp-server) for integration d
 
 ## Environment Variables
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `KREUZBERG_MAX_UPLOAD_SIZE_MB` | `100` | Max upload size in MB |
-| `KREUZBERG_CORS_ORIGINS` | `*` | Comma-separated allowed origins |
-| `RUST_LOG` | `info` | Log level: `error`, `warn`, `info`, `debug`, `trace` |
-| `KREUZBERG_CACHE_DIR` | `/app/.kreuzberg` | Cache directory (set explicitly in Docker; outside containers defaults to platform global cache) |
-| `HF_HOME` | `/app/.kreuzberg/huggingface` | HuggingFace model cache |
+| Variable                       | Default                       | Description                                                                                      |
+| ------------------------------ | ----------------------------- | ------------------------------------------------------------------------------------------------ |
+| `KREUZBERG_MAX_UPLOAD_SIZE_MB` | `100`                         | Max upload size in MB                                                                            |
+| `KREUZBERG_CORS_ORIGINS`       | `*`                           | Comma-separated allowed origins                                                                  |
+| `RUST_LOG`                     | `info`                        | Log level: `error`, `warn`, `info`, `debug`, `trace`                                             |
+| `KREUZBERG_CACHE_DIR`          | `/app/.kreuzberg`             | Cache directory (set explicitly in Docker; outside containers defaults to platform global cache) |
+| `HF_HOME`                      | `/app/.kreuzberg/huggingface` | HuggingFace model cache                                                                          |
 
 Host and port are set via CLI args: `serve --host 0.0.0.0 --port 8000`.
 
@@ -181,11 +181,11 @@ chown -R 1000:1000 /path/to/mounted/directory
 
 ## Resource Allocation
 
-| Workload | Memory | CPU | Notes |
-|----------|--------|-----|-------|
-| Light | 512 MB | 0.5 cores | Small documents, low concurrency |
-| Medium | 1 GB | 1 core | Typical documents, moderate concurrency |
-| Heavy | 2 GB+ | 2+ cores | Large documents, OCR, high concurrency |
+| Workload | Memory | CPU       | Notes                                   |
+| -------- | ------ | --------- | --------------------------------------- |
+| Light    | 512 MB | 0.5 cores | Small documents, low concurrency        |
+| Medium   | 1 GB   | 1 core    | Typical documents, moderate concurrency |
+| Heavy    | 2 GB+  | 2+ cores  | Large documents, OCR, high concurrency  |
 
 ```bash title="Terminal"
 docker run -p 8000:8000 --memory=1g --cpus=1 \
@@ -219,12 +219,12 @@ CMD ["serve", "--config", "/app/kreuzberg.toml"]
 
 The published Core and Full images cover most use cases. For specialized needs, the `docker/` directory has additional Dockerfiles:
 
-| Dockerfile | What it builds |
-|------------|---------------|
-| `Dockerfile.cli` | Minimal image with just the `kreuzberg` binary — good for CI pipelines and batch jobs |
-| `Dockerfile.musl-build` | Fully static Linux binaries via MUSL — runs on any distro, no dynamic libs |
-| `Dockerfile.musl-ffi` | Static C FFI library for language bindings (Go, Ruby, R, PHP, Elixir) |
-| `Dockerfile.musl-rustler` | MUSL-based Rustler NIF for Elixir |
+| Dockerfile                | What it builds                                                                        |
+| ------------------------- | ------------------------------------------------------------------------------------- |
+| `Dockerfile.cli`          | Minimal image with just the `kreuzberg` binary — good for CI pipelines and batch jobs |
+| `Dockerfile.musl-build`   | Fully static Linux binaries via MUSL — runs on any distro, no dynamic libs            |
+| `Dockerfile.musl-ffi`     | Static C FFI library for language bindings (Go, Ruby, R, PHP, Elixir)                 |
+| `Dockerfile.musl-rustler` | MUSL-based Rustler NIF for Elixir                                                     |
 
 ### CLI Image
 

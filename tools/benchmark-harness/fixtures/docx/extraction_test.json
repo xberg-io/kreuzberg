@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/docx/extraction_test.docx",
   "file_type": "docx",
   "file_size": 11296,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "docx test: extraction_test",
     "source": "pandoc-generated",

@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/html/simple_table.html",
   "file_type": "html",
   "file_size": 1490,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "HTML test document: simple_table",
     "source": "pandoc-generated",

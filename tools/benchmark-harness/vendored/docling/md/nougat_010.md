@@ -44,7 +44,7 @@ Kindle 3 - This third-gen product is the last one that came with a full keyboard
 
 I think the Kindle keyboard is the best kindle - it's the got the page-turn buttons. I know my Kindle won't last forever (and now getting ink line drop outs) - but your instructions gave it more life! Reply. Peter says: November 27, 2019 at 11:14 am That's brilliant. It worked. Many many thanks. Reply.
 
-## HOWTO: Soft/Hard reset your Kindle 3  w/ keyboard | Kurt's
+## HOWTO: Soft/Hard reset your Kindle 3 w/ keyboard | Kurt's
 
 Kindle - 3rd eneration - need help on factory reset I have a Kindle 3rd generation ("kindle keyboard" per the amazon site) and the most of the screen has frozen on me (including the menus). I tried going through Amazon support, but they stated they did not have a 3rd generation to walk me through the steps and basically tried to sell me a new one.
 

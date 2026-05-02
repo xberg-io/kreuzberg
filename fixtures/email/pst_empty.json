@@ -1,16 +1,16 @@
 {
-	"id": "email_pst_empty",
-	"category": "email",
-	"description": "Empty Outlook PST archive with no messages.",
-	"input": {
-		"path": "email/empty.pst",
-		"media_type": "application/vnd.ms-outlook-pst"
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/vnd.ms-outlook-pst"
-		}
-	]
+  "id": "email_pst_empty",
+  "category": "email",
+  "description": "Empty Outlook PST archive with no messages.",
+  "input": {
+    "path": "email/empty.pst",
+    "media_type": "application/vnd.ms-outlook-pst"
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/vnd.ms-outlook-pst"
+    }
+  ]
 }

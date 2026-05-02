@@ -1,16 +1,23 @@
 {
-	"document": "../../../test_documents/images_extra/ocr_image.tif",
-	"file_type": "tif",
-	"file_size": 367848,
-	"expected_frameworks": ["kreuzberg", "docling", "markitdown", "pymupdf4llm", "tika", "unstructured"],
-	"metadata": {
-		"description": "OCR test image with text content (TIF extension)",
-		"category": "image",
-		"size_class": "medium",
-		"requires_ocr": true
-	},
-	"ground_truth": {
-		"text_file": "../../../test_documents/ground_truth/tif/tif_ocr.md",
-		"source": "vision"
-	}
+  "document": "../../../test_documents/images_extra/ocr_image.tif",
+  "file_type": "tif",
+  "file_size": 367848,
+  "expected_frameworks": [
+    "kreuzberg",
+    "docling",
+    "markitdown",
+    "pymupdf4llm",
+    "tika",
+    "unstructured"
+  ],
+  "metadata": {
+    "description": "OCR test image with text content (TIF extension)",
+    "category": "image",
+    "size_class": "medium",
+    "requires_ocr": true
+  },
+  "ground_truth": {
+    "text_file": "../../../test_documents/ground_truth/tif/tif_ocr.md",
+    "source": "vision"
+  }
 }

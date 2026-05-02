@@ -8,7 +8,7 @@ $$x^2 + y^2 = r^2$$
 
 # Formatting Showcase
 
-Different types of **bold**, *italic*, and `code` can be combined:
+Different types of **bold**, _italic_, and `code` can be combined:
 
 - \*_bold and italic_\*
 - \`\#set heading(numbering: "1.")\`
@@ -36,14 +36,14 @@ And this is level 4.
 
 # Tables and Data
 
-| Name | Age | City | Alice | 30 | New York | Bob | 25 | San Francisco | Carol | 35 | Boston |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Name | Age | City | Alice | 30  | New York | Bob | 25  | San Francisco | Carol | 35  | Boston |
+| ---- | --- | ---- | ----- | --- | -------- | --- | --- | ------------- | ----- | --- | ------ |
 
 # Multiple Paragraphs
 
 First paragraph here.
 
-Second paragraph with some *emphasized* text.
+Second paragraph with some _emphasized_ text.
 
 Third paragraph with a [link to example](https://example.com).
 

@@ -1,42 +1,42 @@
 {
-	"id": "pdf_bounding_boxes",
-	"description": "Tests bounding box extraction on PDF tables and images",
-	"tags": ["pdf", "bounding_boxes"],
-	"call": "extract_file_sync",
-	"input": {
-		"path": "pdf/tiny.pdf",
-		"config": {
-			"output_format": "markdown",
-			"layout": {
-				"table_model": "tatr"
-			},
-			"images": {
-				"extract_images": true
-			}
-		}
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/pdf"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 50
-		},
-		{
-			"type": "count_min",
-			"field": "tables",
-			"value": 1
-		},
-		{
-			"type": "is_true",
-			"field": "tables_have_bounding_boxes"
-		}
-	],
-	"skip": {
-		"reason": "Requires features: pdf; Skip on platforms: aarch64-unknown-linux-gnu; ONNX Runtime model loading unstable on ARM Linux; table detection returns 0 tables"
-	}
+  "id": "pdf_bounding_boxes",
+  "description": "Tests bounding box extraction on PDF tables and images",
+  "tags": ["pdf", "bounding_boxes"],
+  "call": "extract_file_sync",
+  "input": {
+    "path": "pdf/tiny.pdf",
+    "config": {
+      "output_format": "markdown",
+      "layout": {
+        "table_model": "tatr"
+      },
+      "images": {
+        "extract_images": true
+      }
+    }
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/pdf"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 50
+    },
+    {
+      "type": "count_min",
+      "field": "tables",
+      "value": 1
+    },
+    {
+      "type": "is_true",
+      "field": "tables_have_bounding_boxes"
+    }
+  ],
+  "skip": {
+    "reason": "Requires features: pdf; Skip on platforms: aarch64-unknown-linux-gnu; ONNX Runtime model loading unstable on ARM Linux; table detection returns 0 tables"
+  }
 }

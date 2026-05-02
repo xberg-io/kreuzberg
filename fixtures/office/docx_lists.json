@@ -1,21 +1,21 @@
 {
-	"id": "office_docx_lists",
-	"category": "office",
-	"description": "DOCX document emphasizing list formatting.",
-	"input": {
-		"path": "docx/unit_test_lists.docx",
-		"media_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 20
-		}
-	]
+  "id": "office_docx_lists",
+  "category": "office",
+  "description": "DOCX document emphasizing list formatting.",
+  "input": {
+    "path": "docx/unit_test_lists.docx",
+    "media_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 20
+    }
+  ]
 }

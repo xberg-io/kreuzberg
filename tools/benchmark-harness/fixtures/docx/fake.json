@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/docx/fake.docx",
   "file_type": "docx",
   "file_size": 36602,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "docx test: fake",
     "source": "pandoc-generated",

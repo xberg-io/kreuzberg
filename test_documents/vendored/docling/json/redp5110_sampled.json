@@ -733,10 +733,7 @@
             "b": 741.25,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            11
-          ]
+          "charspan": [0, 11]
         }
       ],
       "orig": "Front cover",
@@ -760,10 +757,7 @@
             "b": 626.16,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            54
-          ]
+          "charspan": [0, 54]
         }
       ],
       "orig": "Row and Column Access Control Support in IBM DB2 for i",
@@ -788,10 +782,7 @@
             "b": 26.89,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            17
-          ]
+          "charspan": [0, 17]
         }
       ],
       "orig": "ibm.com /redbooks",
@@ -815,10 +806,7 @@
             "b": 18.23,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            8
-          ]
+          "charspan": [0, 8]
         }
       ],
       "orig": "Redpaper",
@@ -842,10 +830,7 @@
             "b": 93.59,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            115
-          ]
+          "charspan": [0, 115]
         }
       ],
       "orig": "Jim Bainbridge Hernando Bedoya Rob Bestgen Mike Cain Dan Cruikshank Jim Denton Doug Mack Tom McKinley Kent Milligan",
@@ -869,10 +854,7 @@
             "b": 466.44,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            40
-          ]
+          "charspan": [0, 40]
         }
       ],
       "orig": "Implement roles and separation of duties",
@@ -896,10 +878,7 @@
             "b": 412.44,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            40
-          ]
+          "charspan": [0, 40]
         }
       ],
       "orig": "Leverage row permissions on the database",
@@ -923,10 +902,7 @@
             "b": 358.44,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            40
-          ]
+          "charspan": [0, 40]
         }
       ],
       "orig": "Protect columns by defining column masks",
@@ -950,10 +926,7 @@
             "b": 695.95,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            8
-          ]
+          "charspan": [0, 8]
         }
       ],
       "orig": "Contents",
@@ -978,10 +951,7 @@
             "b": 28.14,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            48
-          ]
+          "charspan": [0, 48]
         }
       ],
       "orig": "\u00a9 Copyright IBM Corp. 2014. All rights reserved.",
@@ -1005,10 +975,7 @@
             "b": 27.94,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            3
-          ]
+          "charspan": [0, 3]
         }
       ],
       "orig": "iii",
@@ -1032,10 +999,7 @@
             "b": 706.42,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            30
-          ]
+          "charspan": [0, 30]
         }
       ],
       "orig": "DB2 for i Center of Excellence",
@@ -1059,10 +1023,7 @@
             "b": 636.62,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            52
-          ]
+          "charspan": [0, 52]
         }
       ],
       "orig": "Solution Brief IBM Systems Lab Services and Training",
@@ -1086,10 +1047,7 @@
             "b": 455.19,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            10
-          ]
+          "charspan": [0, 10]
         }
       ],
       "orig": "Highlights",
@@ -1114,10 +1072,7 @@
             "b": 433.33,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            213
-          ]
+          "charspan": [0, 213]
         }
       ],
       "orig": "/g115/g3 /g40/g81/g75/g68/g81/g70/g72/g3 /g87/g75/g72/g3 /g83/g72/g85/g73/g82/g85/g80/g68/g81/g70/g72/g3 /g82/g73/g3 /g92/g82/g88/g85/g3 /g71/g68/g87/g68/g69/g68/g86/g72/g3 /g82/g83/g72/g85/g68/g87/g76/g82/g81/g86",
@@ -1143,10 +1098,7 @@
             "b": 402.78,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            351
-          ]
+          "charspan": [0, 351]
         }
       ],
       "orig": "/g115/g3 /g40/g68/g85/g81/g3 /g74/g85/g72/g68/g87/g72/g85/g3 /g85/g72/g87/g88/g85/g81/g3 /g82/g81/g3 /g44/g55/g3 /g83/g85 /g82/g77/g72/g70/g87/g86/g3 /g87/g75/g85 /g82/g88/g74/g75/g3 /g80/g82/g71/g72/g85/g81/g76/g93/g68/g87/g76/g82/g81/g3 /g82/g73/g3 /g71/g68/g87/g68/g69/g68/g86/g72/g3 /g68/g81/g71/g3 /g68/g83/g83/g79/g76/g70/g68/g87/g76/g82/g81/g86",
@@ -1172,10 +1124,7 @@
             "b": 380.07,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            269
-          ]
+          "charspan": [0, 269]
         }
       ],
       "orig": "/g115/g3 /g53/g72/g79/g92/g3 /g82/g81/g3 /g44/g37/g48/g3 /g72/g91/g83/g72/g85/g87/g3 /g70/g82/g81/g86/g88/g79/g87/g76/g81/g74/g15/g3 /g86/g78/g76/g79/g79/g86/g3 /g86/g75/g68/g85/g76/g81/g74/g3 /g68/g81/g71/g3 /g85/g72/g81/g82/g90/g81/g3 /g86/g72/g85/g89/g76/g70/g72/g86",
@@ -1201,10 +1150,7 @@
             "b": 357.35,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            246
-          ]
+          "charspan": [0, 246]
         }
       ],
       "orig": "/g115/g3 /g55 /g68/g78/g72/g3 /g68/g71/g89/g68/g81/g87/g68/g74/g72/g3 /g82/g73/g3 /g68/g70/g70/g72/g86/g86/g3 /g87/g82/g3 /g68/g3 /g90/g82/g85/g79/g71/g90/g76/g71/g72/g3 /g86/g82/g88/g85/g70/g72/g3 /g82/g73/g3 /g72/g91/g83/g72/g85/g87/g76/g86/g72",
@@ -1230,10 +1176,7 @@
             "b": 646.58,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            14
-          ]
+          "charspan": [0, 14]
         }
       ],
       "orig": "Power Services",
@@ -1257,10 +1200,7 @@
             "b": 515.38,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            30
-          ]
+          "charspan": [0, 30]
         }
       ],
       "orig": "DB2 for i Center of Excellence",
@@ -1285,10 +1225,7 @@
             "b": 503.76,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            49
-          ]
+          "charspan": [0, 49]
         }
       ],
       "orig": "Expert help to achieve your business requirements",
@@ -1312,10 +1249,7 @@
             "b": 469.14,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            37
-          ]
+          "charspan": [0, 37]
         }
       ],
       "orig": "We build confident, satisfied clients",
@@ -1340,10 +1274,7 @@
             "b": 447.04,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            122
-          ]
+          "charspan": [0, 122]
         }
       ],
       "orig": "No one else has the vast consulting experiences, skills sharing and renown service offerings to do what we can do for you.",
@@ -1367,10 +1298,7 @@
             "b": 427.27,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            27
-          ]
+          "charspan": [0, 27]
         }
       ],
       "orig": "Because no one else is IBM.",
@@ -1394,10 +1322,7 @@
             "b": 366.78,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            318
-          ]
+          "charspan": [0, 318]
         }
       ],
       "orig": "With combined experiences and direct access to development groups, we're the experts in IBM DB2\u00ae for i. The DB2 for i Center of Excellence (CoE) can help you achieve-perhaps reexamine and exceed-your business requirements and gain more confidence and satisfaction in IBM product data management products and solutions.",
@@ -1421,10 +1346,7 @@
             "b": 347.17,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            30
-          ]
+          "charspan": [0, 30]
         }
       ],
       "orig": "Who we are, some of what we do",
@@ -1449,10 +1371,7 @@
             "b": 335.25,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            46
-          ]
+          "charspan": [0, 46]
         }
       ],
       "orig": "Global CoE engagements cover topics including:",
@@ -1476,10 +1395,7 @@
             "b": 315.48,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            83
-          ]
+          "charspan": [0, 83]
         }
       ],
       "orig": "rGLYPH<c=1,font=/NKDKKL+JansonTextLTStd-Roman> Database performance and scalability",
@@ -1505,10 +1421,7 @@
             "b": 305.3,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            89
-          ]
+          "charspan": [0, 89]
         }
       ],
       "orig": "rGLYPH<c=1,font=/NKDKKL+JansonTextLTStd-Roman> Advanced SQL knowledge and skills transfer",
@@ -1534,10 +1447,7 @@
             "b": 295.11,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            82
-          ]
+          "charspan": [0, 82]
         }
       ],
       "orig": "rGLYPH<c=1,font=/NKDKKL+JansonTextLTStd-Roman> Business intelligence and analytics",
@@ -1563,10 +1473,7 @@
             "b": 284.93,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            60
-          ]
+          "charspan": [0, 60]
         }
       ],
       "orig": "rGLYPH<c=1,font=/NKDKKL+JansonTextLTStd-Roman> DB2 Web Query",
@@ -1592,10 +1499,7 @@
             "b": 274.75,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            117
-          ]
+          "charspan": [0, 117]
         }
       ],
       "orig": "rGLYPH<c=1,font=/NKDKKL+JansonTextLTStd-Roman> Query/400 modernization for better reporting and analysis capabilities",
@@ -1621,10 +1525,7 @@
             "b": 264.56,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            88
-          ]
+          "charspan": [0, 88]
         }
       ],
       "orig": "rGLYPH<c=1,font=/NKDKKL+JansonTextLTStd-Roman> Database modernization and re-engineering",
@@ -1650,10 +1551,7 @@
             "b": 254.38,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            83
-          ]
+          "charspan": [0, 83]
         }
       ],
       "orig": "rGLYPH<c=1,font=/NKDKKL+JansonTextLTStd-Roman> Data-centric architecture and design",
@@ -1679,10 +1577,7 @@
             "b": 244.2,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            103
-          ]
+          "charspan": [0, 103]
         }
       ],
       "orig": "rGLYPH<c=1,font=/NKDKKL+JansonTextLTStd-Roman> Extremely large database and overcoming limits to growth",
@@ -1708,10 +1603,7 @@
             "b": 234.02,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            75
-          ]
+          "charspan": [0, 75]
         }
       ],
       "orig": "rGLYPH<c=1,font=/NKDKKL+JansonTextLTStd-Roman> ISV education and enablement",
@@ -1737,10 +1629,7 @@
             "b": 695.95,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            7
-          ]
+          "charspan": [0, 7]
         }
       ],
       "orig": "Preface",
@@ -1765,10 +1654,7 @@
             "b": 590.14,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            467
-          ]
+          "charspan": [0, 467]
         }
       ],
       "orig": "This IBM\u00ae Redpaper\u2122 publication provides information about the IBM i 7.2 feature of IBM DB2\u00ae for i Row and Column Access Control (RCAC). It offers a broad description of the function and advantages of controlling access to data in a comprehensive and transparent way. This publication helps you understand the capabilities of RCAC and provides examples of defining, creating, and implementing the row permissions and column masks in a relational database environment.",
@@ -1792,10 +1678,7 @@
             "b": 532.18,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            309
-          ]
+          "charspan": [0, 309]
         }
       ],
       "orig": "This paper is intended for database engineers, data-centric application developers, and security officers who want to design and implement RCAC as a part of their data control and governance policy. A solid background in IBM i object level security, DB2 for i relational database concepts, and SQL is assumed.",
@@ -1819,10 +1702,7 @@
             "b": 450.16,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            172
-          ]
+          "charspan": [0, 172]
         }
       ],
       "orig": "This paper was produced by the IBM DB2 for i Center of Excellence team in partnership with the International Technical Support Organization (ITSO), Rochester, Minnesota US.",
@@ -1846,10 +1726,7 @@
             "b": 275.14,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            684
-          ]
+          "charspan": [0, 684]
         }
       ],
       "orig": "Jim Bainbridge is a senior DB2 consultant on the DB2 for i Center of Excellence team in the IBM Lab Services and Training organization. His primary role is training and implementation services for IBM DB2 Web Query for i and business analytics. Jim began his career with IBM 30 years ago in the IBM Rochester Development Lab, where he developed cooperative processing products that paired IBM PCs with IBM S/36 and AS/.400 systems. In the years since, Jim has held numerous technical roles, including independent software vendors technical support on a broad range of IBM technologies and products, and supporting customers in the IBM Executive Briefing Center and IBM Project Office.",
@@ -1873,10 +1750,7 @@
             "b": 111.16,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            724
-          ]
+          "charspan": [0, 724]
         }
       ],
       "orig": "Hernando Bedoya is a Senior IT Specialist at STG Lab Services and Training in Rochester, Minnesota. He writes extensively and teaches IBM classes worldwide in all areas of DB2 for i. Before joining STG Lab Services, he worked in the ITSO for nine years writing multiple IBM Redbooks\u00ae publications. He also worked for IBM Colombia as an IBM AS/400\u00ae IT Specialist doing presales support for the Andean countries. He has 28 years of experience in the computing field and has taught database classes in Colombian universities. He holds a Master's degree in Computer Science from EAFIT, Colombia. His areas of expertise are database technology, performance, and data warehousing. Hernando can be contacted at hbedoya@us.ibm.com .",
@@ -1900,10 +1774,7 @@
             "b": 488.94,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            7
-          ]
+          "charspan": [0, 7]
         }
       ],
       "orig": "Authors",
@@ -1928,10 +1799,7 @@
             "b": 28.14,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            48
-          ]
+          "charspan": [0, 48]
         }
       ],
       "orig": "\u00a9 Copyright IBM Corp. 2014. All rights reserved.",
@@ -1955,10 +1823,7 @@
             "b": 27.94,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            2
-          ]
+          "charspan": [0, 2]
         }
       ],
       "orig": "xi",
@@ -1982,10 +1847,7 @@
             "b": 517.02,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            10
-          ]
+          "charspan": [0, 10]
         }
       ],
       "orig": "Chapter 1.",
@@ -2009,10 +1871,7 @@
             "b": 661.87,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "1",
@@ -2037,10 +1896,7 @@
             "b": 482.12,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            36
-          ]
+          "charspan": [0, 36]
         }
       ],
       "orig": "Securing and protecting IBM DB2 data",
@@ -2065,10 +1921,7 @@
             "b": 362.08,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            641
-          ]
+          "charspan": [0, 641]
         }
       ],
       "orig": "Recent news headlines are filled with reports of data breaches and cyber-attacks impacting global businesses of all sizes. The Identity Theft Resource Center 1  reports that almost 5000 data breaches have occurred since 2005, exposing over 600 million records of data. The financial cost of these data breaches is skyrocketing. Studies from the Ponemon Institute 2 revealed that the average cost of a data breach increased in 2013 by 15% globally and resulted in a brand equity loss of $9.4 million per attack. The average cost that is incurred for each lost record containing sensitive information increased more than 9% to $145 per record.",
@@ -2092,10 +1945,7 @@
             "b": 304.06,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            304
-          ]
+          "charspan": [0, 304]
         }
       ],
       "orig": "Businesses must make a serious effort to secure their data and recognize that securing information assets is a cost of doing business. In many parts of the world and in many industries, securing the data is required by law and subject to audits. Data security is no longer an option; it is a requirement.",
@@ -2119,10 +1969,7 @@
             "b": 270.1,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            122
-          ]
+          "charspan": [0, 122]
         }
       ],
       "orig": "This chapter describes how you can secure and protect data in DB2 for i. The following topics are covered in this chapter:",
@@ -2146,10 +1993,7 @@
             "b": 253.06,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            31
-          ]
+          "charspan": [0, 31]
         }
       ],
       "orig": "/SM590000 Security fundamentals",
@@ -2175,10 +2019,7 @@
             "b": 241.06,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            41
-          ]
+          "charspan": [0, 41]
         }
       ],
       "orig": "/SM590000 Current state of IBM i security",
@@ -2204,10 +2045,7 @@
             "b": 229.06,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            37
-          ]
+          "charspan": [0, 37]
         }
       ],
       "orig": "/SM590000 DB2 for i security controls",
@@ -2233,10 +2071,7 @@
             "b": 67.28,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            32
-          ]
+          "charspan": [0, 32]
         }
       ],
       "orig": "1   http://www.idtheftcenter.org",
@@ -2260,10 +2095,7 @@
             "b": 57.03,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            26
-          ]
+          "charspan": [0, 26]
         }
       ],
       "orig": "2 http://www.ponemon.org /",
@@ -2287,10 +2119,7 @@
             "b": 28.14,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            48
-          ]
+          "charspan": [0, 48]
         }
       ],
       "orig": "\u00a9 Copyright IBM Corp. 2014. All rights reserved.",
@@ -2314,10 +2143,7 @@
             "b": 27.94,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "1",
@@ -2341,10 +2167,7 @@
             "b": 702.9,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            26
-          ]
+          "charspan": [0, 26]
         }
       ],
       "orig": "1.1  Security fundamentals",
@@ -2369,10 +2192,7 @@
             "b": 664.18,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            133
-          ]
+          "charspan": [0, 133]
         }
       ],
       "orig": "Before reviewing database security techniques, there are two fundamental steps in securing information assets that must be described:",
@@ -2396,10 +2216,7 @@
             "b": 611.14,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            355
-          ]
+          "charspan": [0, 355]
         }
       ],
       "orig": "/SM590000 First, and most important, is the definition of a company's security policy . Without a security policy, there is no definition of what are acceptable practices for using, accessing, and storing information by who, what, when, where, and how. A security policy should minimally address three things: confidentiality, integrity, and availability.",
@@ -2425,10 +2242,7 @@
             "b": 522.16,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            587
-          ]
+          "charspan": [0, 587]
         }
       ],
       "orig": "The monitoring and assessment of adherence to the security policy determines whether your security strategy is working. Often, IBM security consultants are asked to perform security assessments for companies without regard to the security policy. Although these assessments can be useful for observing how the system is defined and how data is being accessed, they cannot determine the level of security without a security policy. Without a security policy, it really is not an assessment as much as it is a baseline for monitoring the changes in the security settings that are captured.",
@@ -2452,10 +2266,7 @@
             "b": 505.18,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            90
-          ]
+          "charspan": [0, 90]
         }
       ],
       "orig": "A security policy is what defines whether the system and its settings are secure (or not).",
@@ -2479,10 +2290,7 @@
             "b": 416.14,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            567
-          ]
+          "charspan": [0, 567]
         }
       ],
       "orig": "/SM590000 The second fundamental in securing data assets is the use of resource security . If implemented properly, resource security prevents data breaches from both internal and external intrusions. Resource security controls are closely tied to the part of the security policy that defines who should have access to what information resources. A hacker might be good enough to get through your company firewalls and sift his way through to your system, but if they do not have explicit access to your database, the hacker cannot compromise your information assets.",
@@ -2508,10 +2316,7 @@
             "b": 382.18,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            179
-          ]
+          "charspan": [0, 179]
         }
       ],
       "orig": "With your eyes now open to the importance of securing information assets, the rest of this chapter reviews the methods that are available for securing database resources on IBM i.",
@@ -2535,10 +2340,7 @@
             "b": 338.94,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            36
-          ]
+          "charspan": [0, 36]
         }
       ],
       "orig": "1.2  Current state of IBM i security",
@@ -2563,10 +2365,7 @@
             "b": 276.16,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            306
-          ]
+          "charspan": [0, 306]
         }
       ],
       "orig": "Because of the inherently secure nature of IBM i, many clients rely on the default system settings to protect their business data that is stored in DB2 for i. In most cases, this means no data protection because the default setting for the Create default public authority (QCRTAUT) system value is *CHANGE.",
@@ -2590,10 +2389,7 @@
             "b": 206.14,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            405
-          ]
+          "charspan": [0, 405]
         }
       ],
       "orig": "Even more disturbing is that many IBM i clients remain in this state, despite the news headlines and the significant costs that are involved with databases being compromised. This default security configuration makes it quite challenging to implement basic security policies. A tighter implementation is required if you really want to protect one of your company's most valuable assets, which is the data.",
@@ -2617,10 +2413,7 @@
             "b": 112.12,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            640
-          ]
+          "charspan": [0, 640]
         }
       ],
       "orig": "Traditionally, IBM i applications have employed menu-based security to counteract this default configuration that gives all users access to the data. The theory is that data is protected by the menu options controlling what database operations that the user can perform. This approach is ineffective, even if the user profile is restricted from running interactive commands. The reason is that in today's connected world there are a multitude of interfaces into the system, from web browsers to PC clients, that bypass application menus. If there are no object-level controls, users of these newer interfaces have an open door to your data.",
@@ -2644,10 +2437,7 @@
             "b": 27.94,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            56
-          ]
+          "charspan": [0, 56]
         }
       ],
       "orig": "2 Row and Column Access Control Support in IBM DB2 for i",
@@ -2671,10 +2461,7 @@
             "b": 639.28,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            589
-          ]
+          "charspan": [0, 589]
         }
       ],
       "orig": "Many businesses are trying to limit data access to a need-to-know basis. This security goal means that users should be given access only to the minimum set of data that is required to perform their job. Often, users with object-level access are given access to row and column values that are beyond what their business task requires because that object-level security provides an all-or-nothing solution. For example, object-level controls allow a manager to access data about all employees. Most security policies limit a manager to accessing data only for the employees that they manage.",
@@ -2698,10 +2485,7 @@
             "b": 606.68,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            38
-          ]
+          "charspan": [0, 38]
         }
       ],
       "orig": "1.3.1  Existing row and column control",
@@ -2726,10 +2510,7 @@
             "b": 535.3,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            377
-          ]
+          "charspan": [0, 377]
         }
       ],
       "orig": "Some IBM i clients have tried augmenting the all-or-nothing object-level security with SQL views (or logical files) and application logic, as shown in Figure 1-2. However, application-based logic is easy to bypass with all of the different data access interfaces that are provided by the IBM i operating system, such as Open Database Connectivity (ODBC) and System i Navigator.",
@@ -2753,10 +2534,7 @@
             "b": 477.28,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            340
-          ]
+          "charspan": [0, 340]
         }
       ],
       "orig": "Using SQL views to limit access to a subset of the data in a table also has its own set of challenges. First, there is the complexity of managing all of the SQL view objects that are used for securing data access. Second, scaling a view-based security solution can be difficult as the amount of data grows and the number of users increases.",
@@ -2780,10 +2558,7 @@
             "b": 431.26,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            247
-          ]
+          "charspan": [0, 247]
         }
       ],
       "orig": "Even if you are willing to live with these performance and management issues, a user with *ALLOBJ access still can directly access all of the data in the underlying DB2 table and easily bypass the security controls that are built into an SQL view.",
@@ -2807,10 +2582,7 @@
             "b": 91.86,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            45
-          ]
+          "charspan": [0, 45]
         }
       ],
       "orig": "Figure 1-2   Existing row and column controls",
@@ -2834,10 +2606,7 @@
             "b": 402.61,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            9
-          ]
+          "charspan": [0, 9]
         }
       ],
       "orig": "User with",
@@ -2861,10 +2630,7 @@
             "b": 395.12,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            14
-          ]
+          "charspan": [0, 14]
         }
       ],
       "orig": "*ALLOBJ access",
@@ -2888,10 +2654,7 @@
             "b": 27.94,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            56
-          ]
+          "charspan": [0, 56]
         }
       ],
       "orig": "4 Row and Column Access Control Support in IBM DB2 for i",
@@ -2915,10 +2678,7 @@
             "b": 708.68,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            39
-          ]
+          "charspan": [0, 39]
         }
       ],
       "orig": "2.1.6  Change Function Usage CL command",
@@ -2943,10 +2703,7 @@
             "b": 685.3,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            90
-          ]
+          "charspan": [0, 90]
         }
       ],
       "orig": "The following CL commands can be used to work with, display, or change function usage IDs:",
@@ -2970,10 +2727,7 @@
             "b": 668.26,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            43
-          ]
+          "charspan": [0, 43]
         }
       ],
       "orig": "/SM590000 Work Function Usage ( WRKFCNUSG )",
@@ -2999,10 +2753,7 @@
             "b": 656.26,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            45
-          ]
+          "charspan": [0, 45]
         }
       ],
       "orig": "/SM590000 Change Function Usage ( CHGFCNUSG )",
@@ -3028,10 +2779,7 @@
             "b": 644.26,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            46
-          ]
+          "charspan": [0, 46]
         }
       ],
       "orig": "/SM590000 Display Function Usage ( DSPFCNUSG )",
@@ -3057,10 +2805,7 @@
             "b": 610.3,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            126
-          ]
+          "charspan": [0, 126]
         }
       ],
       "orig": "For example, the following CHGFCNUSG command shows granting authorization to user HBEDOYA to administer and manage RCAC rules:",
@@ -3084,10 +2829,7 @@
             "b": 593.62,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            61
-          ]
+          "charspan": [0, 61]
         }
       ],
       "orig": "CHGFCNUSG FCNID(QIBM_DB_SECADM) USER(HBEDOYA) USAGE(*ALLOWED)",
@@ -3111,10 +2853,7 @@
             "b": 560.66,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            73
-          ]
+          "charspan": [0, 73]
         }
       ],
       "orig": "2.1.7  Verifying function usage IDs for RCAC with the FUNCTION_USAGE view",
@@ -3139,10 +2878,7 @@
             "b": 525.28,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            130
-          ]
+          "charspan": [0, 130]
         }
       ],
       "orig": "The FUNCTION_USAGE view contains function usage configuration details. Table 2-1 describes the columns in the FUNCTION_USAGE view.",
@@ -3166,10 +2902,7 @@
             "b": 504.12,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            31
-          ]
+          "charspan": [0, 31]
         }
       ],
       "orig": "Table 2-1   FUNCTION_USAGE view",
@@ -3193,10 +2926,7 @@
             "b": 318.28,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            112
-          ]
+          "charspan": [0, 112]
         }
       ],
       "orig": "To discover who has authorization to define and manage RCAC, you can use the query that is shown in Example 2-1.",
@@ -3220,10 +2950,7 @@
             "b": 297.12,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            76
-          ]
+          "charspan": [0, 76]
         }
       ],
       "orig": "Example 2-1   Query to determine who has authority to define and manage RCAC",
@@ -3247,10 +2974,7 @@
             "b": 157.02,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            25
-          ]
+          "charspan": [0, 25]
         }
       ],
       "orig": "2.2  Separation of duties",
@@ -3275,10 +2999,7 @@
             "b": 82.24,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            463
-          ]
+          "charspan": [0, 463]
         }
       ],
       "orig": "Separation of duties helps businesses comply with industry regulations or organizational requirements and simplifies the management of authorities. Separation of duties is commonly used to prevent fraudulent activities or errors by a single person. It provides the ability for administrative functions to be divided across individuals without overlapping responsibilities, so that one user does not possess unlimited authority, such as with the *ALLOBJ authority.",
@@ -3302,10 +3023,7 @@
             "b": 27.94,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            57
-          ]
+          "charspan": [0, 57]
         }
       ],
       "orig": "10 Row and Column Access Control Support in IBM DB2 for i",
@@ -3329,10 +3047,7 @@
             "b": 651.28,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            516
-          ]
+          "charspan": [0, 516]
         }
       ],
       "orig": "For example, assume that a business has assigned the duty to manage security on IBM i to Theresa. Before release IBM i 7.2, to grant privileges, Theresa had to have the same privileges Theresa was granting to others. Therefore, to grant *USE privileges to the PAYROLL table, Theresa had to have *OBJMGT and *USE authority (or a higher level of authority, such as *ALLOBJ). This requirement allowed Theresa to access the data in the PAYROLL table even though Theresa's job description was only to manage its security.",
@@ -3356,10 +3071,7 @@
             "b": 593.26,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            285
-          ]
+          "charspan": [0, 285]
         }
       ],
       "orig": "In IBM i 7.2, the QIBM_DB_SECADM function usage grants authorities, revokes authorities, changes ownership, or changes the primary group without giving access to the object or, in the case of a database table, to the data that is in the table or allowing other operations on the table.",
@@ -3383,10 +3095,7 @@
             "b": 559.3,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            129
-          ]
+          "charspan": [0, 129]
         }
       ],
       "orig": "QIBM_DB_SECADM function usage can be granted only by a user with *SECADM special authority and can be given to a user or a group.",
@@ -3410,10 +3119,7 @@
             "b": 513.28,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            204
-          ]
+          "charspan": [0, 204]
         }
       ],
       "orig": "QIBM_DB_SECADM also is responsible for administering RCAC, which restricts which rows a user is allowed to access in a table and whether a user is allowed to see information in certain columns of a table.",
@@ -3437,10 +3143,7 @@
             "b": 455.26,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            285
-          ]
+          "charspan": [0, 285]
         }
       ],
       "orig": "A preferred practice is that the RCAC administrator has the QIBM_DB_SECADM function usage ID, but absolutely no other data privileges. The result is that the RCAC administrator can deploy and maintain the RCAC constructs, but cannot grant themselves unauthorized access to data itself.",
@@ -3464,10 +3167,7 @@
             "b": 421.3,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            136
-          ]
+          "charspan": [0, 136]
         }
       ],
       "orig": "Table 2-2 shows a comparison of the different function usage IDs and *JOBCTL authority to the different CL commands and DB2 for i tools.",
@@ -3491,10 +3191,7 @@
             "b": 400.14,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            81
-          ]
+          "charspan": [0, 81]
         }
       ],
       "orig": "Table 2-2    Comparison of the different function usage IDs and *JOBCTL authority",
@@ -3518,10 +3215,7 @@
             "b": 27.94,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            44
-          ]
+          "charspan": [0, 44]
         }
       ],
       "orig": "Chapter 2. Roles and separation of duties 11",
@@ -3545,10 +3239,7 @@
             "b": 699.28,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            135
-          ]
+          "charspan": [0, 135]
         }
       ],
       "orig": "The SQL CREATE PERMISSION statement that is shown in Figure 3-1 is used to define and initially enable or disable the row access rules.",
@@ -3572,10 +3263,7 @@
             "b": 369.54,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            44
-          ]
+          "charspan": [0, 44]
         }
       ],
       "orig": "Figure 3-1   CREATE PERMISSION SQL statement",
@@ -3599,10 +3287,7 @@
             "b": 642.63,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            17
-          ]
+          "charspan": [0, 17]
         }
       ],
       "orig": "CREATE PERMISSION",
@@ -3626,10 +3311,7 @@
             "b": 642.64,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "<",
@@ -3653,10 +3335,7 @@
             "b": 642.63,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            15
-          ]
+          "charspan": [0, 15]
         }
       ],
       "orig": "permission name",
@@ -3680,10 +3359,7 @@
             "b": 642.64,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": ">",
@@ -3707,10 +3383,7 @@
             "b": 662.78,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            47
-          ]
+          "charspan": [0, 47]
         }
       ],
       "orig": "Names the row permission for row access control",
@@ -3734,10 +3407,7 @@
             "b": 601.25,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            2
-          ]
+          "charspan": [0, 2]
         }
       ],
       "orig": "ON",
@@ -3761,10 +3431,7 @@
             "b": 601.26,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "<",
@@ -3788,10 +3455,7 @@
             "b": 601.25,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            10
-          ]
+          "charspan": [0, 10]
         }
       ],
       "orig": "table name",
@@ -3815,10 +3479,7 @@
             "b": 601.26,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": ">",
@@ -3842,10 +3503,7 @@
             "b": 617.94,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            59
-          ]
+          "charspan": [0, 59]
         }
       ],
       "orig": "Identifies the table on which the row permission is created",
@@ -3869,10 +3527,7 @@
             "b": 559.86,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            2
-          ]
+          "charspan": [0, 2]
         }
       ],
       "orig": "AS",
@@ -3896,10 +3551,7 @@
             "b": 559.87,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "<",
@@ -3923,10 +3575,7 @@
             "b": 559.86,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            16
-          ]
+          "charspan": [0, 16]
         }
       ],
       "orig": "correlation name",
@@ -3950,10 +3599,7 @@
             "b": 559.87,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": ">",
@@ -3977,10 +3623,7 @@
             "b": 580.01,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            79
-          ]
+          "charspan": [0, 79]
         }
       ],
       "orig": "Specifies an optional correlation name that can be used within search-condition",
@@ -4004,10 +3647,7 @@
             "b": 518.48,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            8
-          ]
+          "charspan": [0, 8]
         }
       ],
       "orig": "FOR ROWS",
@@ -4031,10 +3671,7 @@
             "b": 538.14,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            42
-          ]
+          "charspan": [0, 42]
         }
       ],
       "orig": "Indicates that a row permission is created",
@@ -4058,10 +3695,7 @@
             "b": 517.93,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            57
-          ]
+          "charspan": [0, 57]
         }
       ],
       "orig": "Specifies a condition that can be true, false, or unknown",
@@ -4085,10 +3719,7 @@
             "b": 490.89,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            5
-          ]
+          "charspan": [0, 5]
         }
       ],
       "orig": "WHERE",
@@ -4112,10 +3743,7 @@
             "b": 490.9,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "<",
@@ -4139,10 +3767,7 @@
             "b": 490.89,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            52
-          ]
+          "charspan": [0, 52]
         }
       ],
       "orig": "logic to test: user and/or group and/or column value",
@@ -4166,10 +3791,7 @@
             "b": 490.9,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": ">",
@@ -4193,10 +3815,7 @@
             "b": 449.51,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            23
-          ]
+          "charspan": [0, 23]
         }
       ],
       "orig": "ENFORCED FOR ALL ACCESS",
@@ -4220,10 +3839,7 @@
             "b": 469.65,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            72
-          ]
+          "charspan": [0, 72]
         }
       ],
       "orig": "Specifies that the row permission applies to all references of the table",
@@ -4247,10 +3863,7 @@
             "b": 449.51,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            23
-          ]
+          "charspan": [0, 23]
         }
       ],
       "orig": "ENFORCED FOR ALL ACCESS",
@@ -4274,10 +3887,7 @@
             "b": 408.13,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            6
-          ]
+          "charspan": [0, 6]
         }
       ],
       "orig": "ENABLE",
@@ -4301,10 +3911,7 @@
             "b": 428.27,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            60
-          ]
+          "charspan": [0, 60]
         }
       ],
       "orig": "Specifies that the row permission is to be initially enabled",
@@ -4328,10 +3935,7 @@
             "b": 407.58,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "S",
@@ -4355,10 +3959,7 @@
             "b": 407.58,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            3
-          ]
+          "charspan": [0, 3]
         }
       ],
       "orig": "ifi",
@@ -4382,10 +3983,7 @@
             "b": 407.58,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            2
-          ]
+          "charspan": [0, 2]
         }
       ],
       "orig": "th",
@@ -4409,10 +4007,7 @@
             "b": 407.58,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            4
-          ]
+          "charspan": [0, 4]
         }
       ],
       "orig": "t th",
@@ -4436,10 +4031,7 @@
             "b": 407.58,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "i",
@@ -4463,10 +4055,7 @@
             "b": 407.58,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "i",
@@ -4490,10 +4079,7 @@
             "b": 407.58,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "i",
@@ -4517,10 +4103,7 @@
             "b": 407.58,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "t",
@@ -4544,10 +4127,7 @@
             "b": 407.58,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "b",
@@ -4571,10 +4151,7 @@
             "b": 407.58,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "i",
@@ -4598,10 +4175,7 @@
             "b": 407.58,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            3
-          ]
+          "charspan": [0, 3]
         }
       ],
       "orig": "iti",
@@ -4625,10 +4199,7 @@
             "b": 407.58,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            2
-          ]
+          "charspan": [0, 2]
         }
       ],
       "orig": "ll",
@@ -4652,10 +4223,7 @@
             "b": 407.58,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            2
-          ]
+          "charspan": [0, 2]
         }
       ],
       "orig": "di",
@@ -4679,10 +4247,7 @@
             "b": 407.58,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            4
-          ]
+          "charspan": [0, 4]
         }
       ],
       "orig": "bl d",
@@ -4706,10 +4271,7 @@
             "b": 408.13,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            6
-          ]
+          "charspan": [0, 6]
         }
       ],
       "orig": "ENABLE",
@@ -4733,10 +4295,7 @@
             "b": 394.33,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            7
-          ]
+          "charspan": [0, 7]
         }
       ],
       "orig": "DISABLE",
@@ -4760,10 +4319,7 @@
             "b": 394.34,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": ";",
@@ -4787,10 +4343,7 @@
             "b": 407.58,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            61
-          ]
+          "charspan": [0, 61]
         }
       ],
       "orig": "Specifies that the row permission is to be initially disabled",
@@ -4814,10 +4367,7 @@
             "b": 340.96,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            11
-          ]
+          "charspan": [0, 11]
         }
       ],
       "orig": "Column mask",
@@ -4842,10 +4392,7 @@
             "b": 291.7,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            297
-          ]
+          "charspan": [0, 297]
         }
       ],
       "orig": "A column mask is a database object that manifests a column value access control rule for a specific column in a specific table. It uses a CASE expression that describes what you see when you access the column. For example, a teller can see only the last four digits of a tax identification number.",
@@ -4869,10 +4416,7 @@
             "b": 27.94,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            43
-          ]
+          "charspan": [0, 43]
         }
       ],
       "orig": "Chapter 3. Row and Column Access Control 15",
@@ -4896,10 +4440,7 @@
             "b": 711.28,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            62
-          ]
+          "charspan": [0, 62]
         }
       ],
       "orig": "Table 3-1 summarizes these special registers and their values.",
@@ -4923,10 +4464,7 @@
             "b": 690.18,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            60
-          ]
+          "charspan": [0, 60]
         }
       ],
       "orig": "Table 3-1   Special registers and their corresponding values",
@@ -4950,10 +4488,7 @@
             "b": 556.3,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            97
-          ]
+          "charspan": [0, 97]
         }
       ],
       "orig": "Figure 3-5 shows the difference in the special register values when an adopted authority is used:",
@@ -4977,10 +4512,7 @@
             "b": 539.26,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            69
-          ]
+          "charspan": [0, 69]
         }
       ],
       "orig": "/SM590000 A user connects to the server using the user profile ALICE.",
@@ -5006,10 +4538,7 @@
             "b": 522.28,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            71
-          ]
+          "charspan": [0, 71]
         }
       ],
       "orig": "/SM590000 USER and CURRENT USER initially have the same value of ALICE.",
@@ -5035,10 +4564,7 @@
             "b": 493.3,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            154
-          ]
+          "charspan": [0, 154]
         }
       ],
       "orig": "/SM590000 ALICE calls an SQL procedure that is named proc1, which is owned by user profile JOE and was created to adopt JOE's authority when it is called.",
@@ -5064,10 +4590,7 @@
             "b": 452.26,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            247
-          ]
+          "charspan": [0, 247]
         }
       ],
       "orig": "/SM590000 While the procedure is running, the special register USER still contains the value of ALICE because it excludes any adopted authority. The special register CURRENT USER contains the value of JOE because it includes any adopted authority.",
@@ -5093,10 +4616,7 @@
             "b": 423.28,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            127
-          ]
+          "charspan": [0, 127]
         }
       ],
       "orig": "/SM590000 When proc1 ends, the session reverts to its original state with both USER and CURRENT USER having the value of ALICE.",
@@ -5122,10 +4642,7 @@
             "b": 186.96,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            52
-          ]
+          "charspan": [0, 52]
         }
       ],
       "orig": "Figure 3-5   Special registers and adopted authority",
@@ -5149,10 +4666,7 @@
             "b": 396.62,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            18
-          ]
+          "charspan": [0, 18]
         }
       ],
       "orig": "Signed on as ALICE",
@@ -5176,10 +4690,7 @@
             "b": 372.73,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            12
-          ]
+          "charspan": [0, 12]
         }
       ],
       "orig": "USER = ALICE",
@@ -5203,10 +4714,7 @@
             "b": 360.79,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            20
-          ]
+          "charspan": [0, 20]
         }
       ],
       "orig": "CURRENT USER = ALICE",
@@ -5230,10 +4738,7 @@
             "b": 336.9,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            10
-          ]
+          "charspan": [0, 10]
         }
       ],
       "orig": "CALL proc1",
@@ -5257,10 +4762,7 @@
             "b": 310.02,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "P",
@@ -5284,10 +4786,7 @@
             "b": 310.02,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            5
-          ]
+          "charspan": [0, 5]
         }
       ],
       "orig": "roc1:",
@@ -5311,10 +4810,7 @@
             "b": 298.08,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            11
-          ]
+          "charspan": [0, 11]
         }
       ],
       "orig": "Owner = JOE",
@@ -5338,10 +4834,7 @@
             "b": 286.13,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            24
-          ]
+          "charspan": [0, 24]
         }
       ],
       "orig": "SET OPTION USRPRF=*OWNER",
@@ -5365,10 +4858,7 @@
             "b": 262.24,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            12
-          ]
+          "charspan": [0, 12]
         }
       ],
       "orig": "USER = ALICE",
@@ -5392,10 +4882,7 @@
             "b": 250.3,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            18
-          ]
+          "charspan": [0, 18]
         }
       ],
       "orig": "CURRENT USER = JOE",
@@ -5419,10 +4906,7 @@
             "b": 217.45,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            12
-          ]
+          "charspan": [0, 12]
         }
       ],
       "orig": "USER = ALICE",
@@ -5446,10 +4930,7 @@
             "b": 205.5,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            20
-          ]
+          "charspan": [0, 20]
         }
       ],
       "orig": "CURRENT USER = ALICE",
@@ -5473,10 +4954,7 @@
             "b": 154.46,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            32
-          ]
+          "charspan": [0, 32]
         }
       ],
       "orig": "3.2.2  Built-in global variables",
@@ -5501,10 +4979,7 @@
             "b": 119.08,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            161
-          ]
+          "charspan": [0, 161]
         }
       ],
       "orig": "Built-in global variables are provided with the database manager and are used in SQL statements to retrieve scalar values that are associated with the variables.",
@@ -5528,10 +5003,7 @@
             "b": 73.06,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            233
-          ]
+          "charspan": [0, 233]
         }
       ],
       "orig": "IBM DB2 for i supports nine different built-in global variables that are read only and maintained by the system. These global variables can be used to identify attributes of the database connection and used as part of the RCAC logic.",
@@ -5555,10 +5027,7 @@
             "b": 27.94,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            43
-          ]
+          "charspan": [0, 43]
         }
       ],
       "orig": "Chapter 3. Row and Column Access Control 19",
@@ -5582,10 +5051,7 @@
             "b": 711.28,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            51
-          ]
+          "charspan": [0, 51]
         }
       ],
       "orig": "Table 3-2 lists the nine built-in global variables.",
@@ -5609,10 +5075,7 @@
             "b": 690.18,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            37
-          ]
+          "charspan": [0, 37]
         }
       ],
       "orig": "Table 3-2   Built-in global variables",
@@ -5636,10 +5099,7 @@
             "b": 455.04,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            35
-          ]
+          "charspan": [0, 35]
         }
       ],
       "orig": "3.3  VERIFY_GROUP_FOR_USER function",
@@ -5664,10 +5124,7 @@
             "b": 356.26,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            576
-          ]
+          "charspan": [0, 576]
         }
       ],
       "orig": "The VERIFY_GROUP_FOR_USER function was added in IBM i 7.2. Although it is primarily intended for use with RCAC permissions and masks, it can be used in other SQL statements. The first parameter must be one of these three special registers: SESSION_USER, USER, or CURRENT_USER. The second and subsequent parameters are a list of user or group profiles. Each of these values must be 1 - 10 characters in length. These values are not validated for their existence, which means that you can specify the names of user profiles that do not exist without receiving any kind of error.",
@@ -5691,10 +5148,7 @@
             "b": 310.3,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            235
-          ]
+          "charspan": [0, 235]
         }
       ],
       "orig": "If a special register value is in the list of user profiles or it is a member of a group profile included in the list, the function returns a long integer value of 1. Otherwise, it returns a value of 0. It never returns the null value.",
@@ -5718,10 +5172,7 @@
             "b": 288.28,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            63
-          ]
+          "charspan": [0, 63]
         }
       ],
       "orig": "Here is an example of using the VERIFY_GROUP_FOR_USER function:",
@@ -5745,10 +5196,7 @@
             "b": 271.24,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            57
-          ]
+          "charspan": [0, 57]
         }
       ],
       "orig": "1. There are user profiles for MGR, JANE, JUDY, and TONY.",
@@ -5774,10 +5222,7 @@
             "b": 254.26,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            58
-          ]
+          "charspan": [0, 58]
         }
       ],
       "orig": "2. The user profile JANE specifies a group profile of MGR.",
@@ -5803,10 +5248,7 @@
             "b": 225.28,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            127
-          ]
+          "charspan": [0, 127]
         }
       ],
       "orig": "3. If a user is connected to the server using user profile JANE, all of the following function invocations return a value of 1:",
@@ -5832,10 +5274,7 @@
             "b": 184.61,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            156
-          ]
+          "charspan": [0, 156]
         }
       ],
       "orig": "VERIFY_GROUP_FOR_USER (CURRENT_USER, 'MGR') VERIFY_GROUP_FOR_USER (CURRENT_USER, 'JANE', 'MGR') VERIFY_GROUP_FOR_USER (CURRENT_USER, 'JANE', 'MGR', 'STEVE')",
@@ -5859,10 +5298,7 @@
             "b": 167.26,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            55
-          ]
+          "charspan": [0, 55]
         }
       ],
       "orig": "The following function invocation returns a value of 0:",
@@ -5886,10 +5322,7 @@
             "b": 150.65,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            52
-          ]
+          "charspan": [0, 52]
         }
       ],
       "orig": "VERIFY_GROUP_FOR_USER (CURRENT_USER, 'JUDY', 'TONY')",
@@ -5913,10 +5346,7 @@
             "b": 27.94,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            57
-          ]
+          "charspan": [0, 57]
         }
       ],
       "orig": "20 Row and Column Access Control Support in IBM DB2 for i",
@@ -5940,10 +5370,7 @@
             "b": 531.64,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            455
-          ]
+          "charspan": [0, 455]
         }
       ],
       "orig": "RETURN CASE WHEN VERIFY_GROUP_FOR_USER ( SESSION_USER , 'HR', 'EMP' ) = 1 THEN EMPLOYEES . DATE_OF_BIRTH WHEN VERIFY_GROUP_FOR_USER ( SESSION_USER , 'MGR' ) = 1 AND SESSION_USER = EMPLOYEES . USER_ID THEN EMPLOYEES . DATE_OF_BIRTH WHEN VERIFY_GROUP_FOR_USER ( SESSION_USER , 'MGR' ) = 1 AND SESSION_USER <> EMPLOYEES . USER_ID THEN ( 9999 || '-' ||  MONTH ( EMPLOYEES . DATE_OF_BIRTH ) || '-'     || DAY (EMPLOYEES.DATE_OF_BIRTH )) ELSE NULL END ENABLE  ;",
@@ -5971,10 +5398,7 @@
             "b": 495.28,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            136
-          ]
+          "charspan": [0, 136]
         }
       ],
       "orig": "2. The other column to mask in this example is the TAX_ID information. In this example, the rules to enforce include the following ones:",
@@ -6000,10 +5424,7 @@
             "b": 478.3,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            62
-          ]
+          "charspan": [0, 62]
         }
       ],
       "orig": "-Human Resources can see the unmasked TAX_ID of the employees.",
@@ -6029,10 +5450,7 @@
             "b": 461.26,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            50
-          ]
+          "charspan": [0, 50]
         }
       ],
       "orig": "-Employees can see only their own unmasked TAX_ID.",
@@ -6058,10 +5476,7 @@
             "b": 432.28,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            129
-          ]
+          "charspan": [0, 129]
         }
       ],
       "orig": "-Managers see a masked version of TAX_ID with the first five characters replaced with the X character (for example, XXX-XX-1234).",
@@ -6087,10 +5502,7 @@
             "b": 415.3,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            77
-          ]
+          "charspan": [0, 77]
         }
       ],
       "orig": "-Any other person sees the entire TAX_ID as masked, for example, XXX-XX-XXXX.",
@@ -6116,10 +5528,7 @@
             "b": 398.26,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            82
-          ]
+          "charspan": [0, 82]
         }
       ],
       "orig": "To implement this column mask, run the SQL statement that is shown in Example 3-9.",
@@ -6147,10 +5556,7 @@
             "b": 107.63,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            607
-          ]
+          "charspan": [0, 607]
         }
       ],
       "orig": "CREATE MASK   HR_SCHEMA.MASK_TAX_ID_ON_EMPLOYEES ON            HR_SCHEMA.EMPLOYEES AS EMPLOYEES FOR COLUMN    TAX_ID RETURN CASE WHEN VERIFY_GROUP_FOR_USER ( SESSION_USER , 'HR' ) = 1 THEN EMPLOYEES . TAX_ID WHEN VERIFY_GROUP_FOR_USER ( SESSION_USER , 'MGR' ) = 1 AND SESSION_USER = EMPLOYEES . USER_ID THEN EMPLOYEES . TAX_ID WHEN VERIFY_GROUP_FOR_USER ( SESSION_USER , 'MGR' ) = 1 AND SESSION_USER <> EMPLOYEES . USER_ID THEN ( 'XXX-XX-' CONCAT QSYS2 . SUBSTR ( EMPLOYEES . TAX_ID , 8 , 4 ) ) WHEN VERIFY_GROUP_FOR_USER ( SESSION_USER , 'EMP' ) = 1 THEN EMPLOYEES . TAX_ID ELSE 'XXX-XX-XXXX' END ENABLE  ;",
@@ -6182,10 +5588,7 @@
             "b": 377.16,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            50
-          ]
+          "charspan": [0, 50]
         }
       ],
       "orig": "Example 3-9   Creating a mask on the TAX_ID column",
@@ -6209,10 +5612,7 @@
             "b": 28.14,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            40
-          ]
+          "charspan": [0, 40]
         }
       ],
       "orig": "Chapter 3. Row and Column Access Control",
@@ -6236,10 +5636,7 @@
             "b": 27.94,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            2
-          ]
+          "charspan": [0, 2]
         }
       ],
       "orig": "27",
@@ -6263,10 +5660,7 @@
             "b": 711.28,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            65
-          ]
+          "charspan": [0, 65]
         }
       ],
       "orig": "3. Figure 3-10 shows the masks that are created in the HR_SCHEMA.",
@@ -6292,10 +5686,7 @@
             "b": 610.14,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            54
-          ]
+          "charspan": [0, 54]
         }
       ],
       "orig": "Figure 3-10   Column masks shown in System i Navigator",
@@ -6319,10 +5710,7 @@
             "b": 577.64,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            22
-          ]
+          "charspan": [0, 22]
         }
       ],
       "orig": "3.6.6  Activating RCAC",
@@ -6347,10 +5735,7 @@
             "b": 530.26,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            265
-          ]
+          "charspan": [0, 265]
         }
       ],
       "orig": "Now that you have created the row permission and the two column masks, RCAC must be activated. The row permission and the two column masks are enabled (last clause in the scripts), but now you must activate RCAC on the table. To do so, complete the following steps:",
@@ -6374,10 +5759,7 @@
             "b": 513.28,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            57
-          ]
+          "charspan": [0, 57]
         }
       ],
       "orig": "1. Run the SQL statements that are shown in Example 3-10.",
@@ -6403,10 +5785,7 @@
             "b": 492.12,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            53
-          ]
+          "charspan": [0, 53]
         }
       ],
       "orig": "Example 3-10   Activating RCAC on the EMPLOYEES table",
@@ -6430,10 +5809,7 @@
             "b": 474.64,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            48
-          ]
+          "charspan": [0, 48]
         }
       ],
       "orig": "/*   Active Row Access Control (permissions)  */",
@@ -6457,10 +5833,7 @@
             "b": 462.64,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            48
-          ]
+          "charspan": [0, 48]
         }
       ],
       "orig": "/*   Active Column Access Control (masks)     */",
@@ -6484,10 +5857,7 @@
             "b": 450.64,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            31
-          ]
+          "charspan": [0, 31]
         }
       ],
       "orig": "ALTER TABLE HR_SCHEMA.EMPLOYEES",
@@ -6511,10 +5881,7 @@
             "b": 438.64,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            27
-          ]
+          "charspan": [0, 27]
         }
       ],
       "orig": "ACTIVATE ROW ACCESS CONTROL",
@@ -6538,10 +5905,7 @@
             "b": 426.64,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            31
-          ]
+          "charspan": [0, 31]
         }
       ],
       "orig": "ACTIVATE COLUMN ACCESS CONTROL;",
@@ -6565,10 +5929,7 @@
             "b": 378.28,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            231
-          ]
+          "charspan": [0, 231]
         }
       ],
       "orig": "2. Look at the definition of the EMPLOYEE table, as shown in Figure 3-11. To do this, from the main navigation pane of System i Navigator, click Schemas \uf0ae HR_SCHEMA \uf0ae Tables , right-click the EMPLOYEES table, and click Definition .",
@@ -6594,10 +5955,7 @@
             "b": 134.64,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            67
-          ]
+          "charspan": [0, 67]
         }
       ],
       "orig": "Figure 3-11   Selecting the EMPLOYEES table from System i Navigator",
@@ -6621,10 +5979,7 @@
             "b": 27.94,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            57
-          ]
+          "charspan": [0, 57]
         }
       ],
       "orig": "28 Row and Column Access Control Support in IBM DB2 for i",
@@ -6648,10 +6003,7 @@
             "b": 687.28,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            228
-          ]
+          "charspan": [0, 228]
         }
       ],
       "orig": "2. Figure 4-68 shows the Visual Explain of the same SQL statement, but with RCAC enabled. It is clear that the implementation of the SQL statement is more complex because the row permission rule becomes part of the WHERE clause.",
@@ -6677,10 +6029,7 @@
             "b": 303.12,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            46
-          ]
+          "charspan": [0, 46]
         }
       ],
       "orig": "Figure 4-68   Visual Explain with RCAC enabled",
@@ -6704,10 +6053,7 @@
             "b": 252.22,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            232
-          ]
+          "charspan": [0, 232]
         }
       ],
       "orig": "3. Compare the advised indexes that are provided by the Optimizer without RCAC and with RCAC enabled. Figure 4-69 shows the index advice for the SQL statement without RCAC enabled. The index being advised is for the ORDER BY clause.",
@@ -6733,10 +6079,7 @@
             "b": 116.16,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            39
-          ]
+          "charspan": [0, 39]
         }
       ],
       "orig": "Figure 4-69   Index advice with no RCAC",
@@ -6760,10 +6103,7 @@
             "b": 27.94,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            73
-          ]
+          "charspan": [0, 73]
         }
       ],
       "orig": "Chapter 4. Implementing Row and Column Access Control: Banking example 77",
@@ -6787,10 +6127,7 @@
             "b": 85.46,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            2007
-          ]
+          "charspan": [0, 2007]
         }
       ],
       "orig": "THEN C . CUSTOMER_TAX_ID WHEN QSYS2 . VERIFY_GROUP_FOR_USER ( SESSION_USER , 'TELLER' ) = 1 THEN ( 'XXX-XX-' CONCAT QSYS2 . SUBSTR ( C . CUSTOMER_TAX_ID , 8 , 4 ) ) WHEN QSYS2 . VERIFY_GROUP_FOR_USER ( SESSION_USER , 'CUSTOMER' ) = 1 THEN C . CUSTOMER_TAX_ID ELSE 'XXX-XX-XXXX' END ENABLE  ; CREATE MASK BANK_SCHEMA.MASK_DRIVERS_LICENSE_ON_CUSTOMERS ON BANK_SCHEMA.CUSTOMERS AS C FOR COLUMN CUSTOMER_DRIVERS_LICENSE_NUMBER RETURN  CASE WHEN QSYS2 . VERIFY_GROUP_FOR_USER ( SESSION_USER , 'ADMIN' ) = 1 THEN C . CUSTOMER_DRIVERS_LICENSE_NUMBER WHEN QSYS2 . VERIFY_GROUP_FOR_USER ( SESSION_USER , 'TELLER' ) = 1 THEN C . CUSTOMER_DRIVERS_LICENSE_NUMBER WHEN QSYS2 . VERIFY_GROUP_FOR_USER ( SESSION_USER , 'CUSTOMER' ) = 1 THEN C . CUSTOMER_DRIVERS_LICENSE_NUMBER ELSE '*************' END ENABLE  ; CREATE MASK BANK_SCHEMA.MASK_LOGIN_ID_ON_CUSTOMERS ON BANK_SCHEMA.CUSTOMERS AS C FOR COLUMN CUSTOMER_LOGIN_ID RETURN  CASE WHEN QSYS2 . VERIFY_GROUP_FOR_USER ( SESSION_USER , 'ADMIN' ) = 1 THEN C . CUSTOMER_LOGIN_ID WHEN QSYS2 . VERIFY_GROUP_FOR_USER ( SESSION_USER , 'CUSTOMER' ) = 1 THEN C . CUSTOMER_LOGIN_ID ELSE '*****' END ENABLE  ; CREATE MASK BANK_SCHEMA.MASK_SECURITY_QUESTION_ON_CUSTOMERS ON BANK_SCHEMA.CUSTOMERS AS C FOR COLUMN CUSTOMER_SECURITY_QUESTION RETURN  CASE WHEN QSYS2 . VERIFY_GROUP_FOR_USER ( SESSION_USER , 'ADMIN' ) = 1 THEN C . CUSTOMER_SECURITY_QUESTION WHEN QSYS2 . VERIFY_GROUP_FOR_USER ( SESSION_USER , 'CUSTOMER' ) = 1 THEN C . CUSTOMER_SECURITY_QUESTION ELSE '*****' END ENABLE  ; CREATE MASK BANK_SCHEMA.MASK_SECURITY_QUESTION_ANSWER_ON_CUSTOMERS ON BANK_SCHEMA.CUSTOMERS AS C FOR COLUMN CUSTOMER_SECURITY_QUESTION_ANSWER RETURN  CASE WHEN QSYS2 . VERIFY_GROUP_FOR_USER ( SESSION_USER , 'ADMIN' ) = 1 THEN C . CUSTOMER_SECURITY_QUESTION_ANSWER WHEN QSYS2 . VERIFY_GROUP_FOR_USER ( SESSION_USER , 'CUSTOMER' ) = 1 THEN C . CUSTOMER_SECURITY_QUESTION_ANSWER ELSE '*****' END ENABLE  ; ALTER TABLE BANK_SCHEMA.CUSTOMERS ACTIVATE ROW ACCESS CONTROL ACTIVATE COLUMN ACCESS CONTROL ;",
@@ -6818,10 +6155,7 @@
             "b": 27.94,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            3
-          ]
+          "charspan": [0, 3]
         }
       ],
       "orig": "124",
@@ -6845,10 +6179,7 @@
             "b": 28.14,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            54
-          ]
+          "charspan": [0, 54]
         }
       ],
       "orig": "Row and Column Access Control Support in IBM DB2 for i",
@@ -6872,10 +6203,7 @@
             "b": 741.25,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            10
-          ]
+          "charspan": [0, 10]
         }
       ],
       "orig": "Back cover",
@@ -6899,10 +6227,7 @@
             "b": 651.54,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            54
-          ]
+          "charspan": [0, 54]
         }
       ],
       "orig": "Row and Column Access Control Support in IBM DB2 for i",
@@ -6927,10 +6252,7 @@
             "b": 525.17,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            40
-          ]
+          "charspan": [0, 40]
         }
       ],
       "orig": "Implement roles and separation of duties",
@@ -6954,10 +6276,7 @@
             "b": 469.13,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            40
-          ]
+          "charspan": [0, 40]
         }
       ],
       "orig": "Leverage row permissions on the database",
@@ -6981,10 +6300,7 @@
             "b": 413.15,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            40
-          ]
+          "charspan": [0, 40]
         }
       ],
       "orig": "Protect columns by defining column masks",
@@ -7008,10 +6324,7 @@
             "b": 468.41,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            464
-          ]
+          "charspan": [0, 464]
         }
       ],
       "orig": "This IBM Redpaper publication provides information about the IBM i 7.2 feature of IBM DB2 for i Row and Column Access Control (RCAC). It offers a broad description of the function and advantages of controlling access to data in a comprehensive and transparent way. This publication helps you understand the capabilities of RCAC and provides examples of defining, creating, and implementing the row permissions and column masks in a relational database environment.",
@@ -7035,10 +6348,7 @@
             "b": 403.43,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            309
-          ]
+          "charspan": [0, 309]
         }
       ],
       "orig": "This paper is intended for database engineers, data-centric application developers, and security officers who want to design and implement RCAC as a part of their data control and governance policy. A solid background in IBM i object level security, DB2 for i relational database concepts, and SQL is assumed.",
@@ -7062,10 +6372,7 @@
             "b": 737.32,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "\u00ae",
@@ -7089,10 +6396,7 @@
             "b": 603.06,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            8
-          ]
+          "charspan": [0, 8]
         }
       ],
       "orig": "Redpaper",
@@ -7116,10 +6420,7 @@
             "b": 610.79,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            1
-          ]
+          "charspan": [0, 1]
         }
       ],
       "orig": "\u2122",
@@ -7143,10 +6444,7 @@
             "b": 489.84,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            44
-          ]
+          "charspan": [0, 44]
         }
       ],
       "orig": "INTERNATIONAL TECHNICAL SUPPORT ORGANIZATION",
@@ -7170,10 +6468,7 @@
             "b": 405.53,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            60
-          ]
+          "charspan": [0, 60]
         }
       ],
       "orig": "BUILDING TECHNICAL INFORMATION BASED ON PRACTICAL EXPERIENCE",
@@ -7198,10 +6493,7 @@
             "b": 250.37,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            323
-          ]
+          "charspan": [0, 323]
         }
       ],
       "orig": "IBM Redbooks are developed by the IBM International Technical Support Organization. Experts from IBM, Customers and Partners from around the world create timely technical information based on realistic scenarios. Specific recommendations are provided to help you implement IT solutions more effectively in your environment.",
@@ -7225,10 +6517,7 @@
             "b": 190.49,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            39
-          ]
+          "charspan": [0, 39]
         }
       ],
       "orig": "For more information: ibm.com /redbooks",
@@ -7252,10 +6541,7 @@
             "b": 152.34,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            12
-          ]
+          "charspan": [0, 12]
         }
       ],
       "orig": "REDP-5110-00",
@@ -7281,10 +6567,7 @@
             "b": 736.61,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            0
-          ]
+          "charspan": [0, 0]
         }
       ],
       "captions": [],
@@ -7329,10 +6612,7 @@
             "b": 14.09,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            0
-          ]
+          "charspan": [0, 0]
         }
       ],
       "captions": [],
@@ -7358,10 +6638,7 @@
             "b": 506.41,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            0
-          ]
+          "charspan": [0, 0]
         }
       ],
       "captions": [],
@@ -7387,10 +6664,7 @@
             "b": 103.54,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            0
-          ]
+          "charspan": [0, 0]
         }
       ],
       "captions": [],
@@ -7416,10 +6690,7 @@
             "b": 288.7,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            0
-          ]
+          "charspan": [0, 0]
         }
       ],
       "captions": [],
@@ -7445,10 +6716,7 @@
             "b": 156.66,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            0
-          ]
+          "charspan": [0, 0]
         }
       ],
       "captions": [],
@@ -7474,10 +6742,7 @@
             "b": 553.01,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            0
-          ]
+          "charspan": [0, 0]
         }
       ],
       "captions": [],
@@ -7513,10 +6778,7 @@
             "b": 102.53,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            0
-          ]
+          "charspan": [0, 0]
         }
       ],
       "captions": [
@@ -7685,10 +6947,7 @@
             "b": 380.87,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            0
-          ]
+          "charspan": [0, 0]
         }
       ],
       "captions": [
@@ -7758,10 +7017,7 @@
             "b": 198.95,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            0
-          ]
+          "charspan": [0, 0]
         }
       ],
       "captions": [
@@ -7795,10 +7051,7 @@
             "b": 621.94,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            0
-          ]
+          "charspan": [0, 0]
         }
       ],
       "captions": [
@@ -7847,10 +7100,7 @@
             "b": 421.93,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            0
-          ]
+          "charspan": [0, 0]
         }
       ],
       "captions": [
@@ -7884,10 +7134,7 @@
             "b": 145.45,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            0
-          ]
+          "charspan": [0, 0]
         }
       ],
       "captions": [
@@ -7921,10 +7168,7 @@
             "b": 313.52,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            0
-          ]
+          "charspan": [0, 0]
         }
       ],
       "captions": [
@@ -7958,10 +7202,7 @@
             "b": 127.55,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            0
-          ]
+          "charspan": [0, 0]
         }
       ],
       "captions": [
@@ -7995,10 +7236,7 @@
             "b": 737.56,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            0
-          ]
+          "charspan": [0, 0]
         }
       ],
       "captions": [],
@@ -8031,10 +7269,7 @@
             "b": 602.57,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            0
-          ]
+          "charspan": [0, 0]
         }
       ],
       "captions": [],
@@ -8062,10 +7297,7 @@
             "b": 76.82,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            0
-          ]
+          "charspan": [0, 0]
         }
       ],
       "captions": [],
@@ -11547,10 +10779,7 @@
             "b": 349.3,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            0
-          ]
+          "charspan": [0, 0]
         }
       ],
       "captions": [
@@ -12202,10 +11431,7 @@
             "b": 201.84,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            0
-          ]
+          "charspan": [0, 0]
         }
       ],
       "captions": [
@@ -12466,10 +11692,7 @@
             "b": 69.63,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            0
-          ]
+          "charspan": [0, 0]
         }
       ],
       "captions": [
@@ -14820,10 +14043,7 @@
             "b": 587.49,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            0
-          ]
+          "charspan": [0, 0]
         }
       ],
       "captions": [
@@ -15193,10 +14413,7 @@
             "b": 495.69,
             "coord_origin": "BOTTOMLEFT"
           },
-          "charspan": [
-            0,
-            0
-          ]
+          "charspan": [0, 0]
         }
       ],
       "captions": [

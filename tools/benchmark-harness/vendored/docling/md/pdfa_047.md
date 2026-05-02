@@ -168,7 +168,7 @@ Page 33/36
 
 Essentials of Investments - McGraw-
 
-Hill Education business essentials TWELFTH EDITION Ronald J. Ebert Ricky W. Griffin New York, NY A01\_EBER8391\_12\_SE\_FM.indd 3 04/10/17 11:07 am
+Hill Education business essentials TWELFTH EDITION Ronald J. Ebert Ricky W. Griffin New York, NY A01_EBER8391_12_SE_FM.indd 3 04/10/17 11:07 am
 
 Page 34/36
 

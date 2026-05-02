@@ -1,20 +1,16 @@
 {
-	"id": "post_processors_list",
-	"category": "post_processor_management",
-	"description": "List all registered post-processors",
-	"tags": [
-		"post_processors",
-		"plugin_management",
-		"list"
-	],
-	"call": "list_post_processors",
-	"assertions": [
-		{
-			"type": "not_error"
-		}
-	],
-	"skip": {
-		"languages": [],
-		"reason": "Tests plugin_api call surface that isn't re-exported at the kreuzberg crate root \u2014 skipped everywhere until Rust public API or codegen module path is updated."
-	}
+  "id": "post_processors_list",
+  "category": "post_processor_management",
+  "description": "List all registered post-processors",
+  "tags": ["post_processors", "plugin_management", "list"],
+  "call": "list_post_processors",
+  "assertions": [
+    {
+      "type": "not_error"
+    }
+  ],
+  "skip": {
+    "languages": [],
+    "reason": "Tests plugin_api call surface that isn't re-exported at the kreuzberg crate root \u2014 skipped everywhere until Rust public API or codegen module path is updated."
+  }
 }

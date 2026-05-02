@@ -88,19 +88,19 @@ By: /s/ Gregory D. Gorgas Gregory D. Gorgas President and Chief Executive Office
 
 ## Table of Contents
 
-|                                                                            |   Page |
-|----------------------------------------------------------------------------|--------|
-| General Information                                                        |      1 |
-| Security Ownership of Certain Beneficial Owners and Management             |      6 |
-| Corporate Governance                                                       |      7 |
-| Executive Officers                                                         |     12 |
-| Executive Compensation                                                     |     13 |
-| Proposal 1 - Election of Directors                                         |     15 |
-| Proposal 2 - Ratification Of Independent Registered Public Accounting Firm |     18 |
-| Report of the Audit Committee                                              |     19 |
-| Certain Relationships and Related Transactions                             |     20 |
-| Equity Compensation Plan Information                                       |     22 |
-| Other Matters                                                              |     23 |
+|                                                                            | Page |
+| -------------------------------------------------------------------------- | ---- |
+| General Information                                                        | 1    |
+| Security Ownership of Certain Beneficial Owners and Management             | 6    |
+| Corporate Governance                                                       | 7    |
+| Executive Officers                                                         | 12   |
+| Executive Compensation                                                     | 13   |
+| Proposal 1 - Election of Directors                                         | 15   |
+| Proposal 2 - Ratification Of Independent Registered Public Accounting Firm | 18   |
+| Report of the Audit Committee                                              | 19   |
+| Certain Relationships and Related Transactions                             | 20   |
+| Equity Compensation Plan Information                                       | 22   |
+| Other Matters                                                              | 23   |
 
 ## General Information
 
@@ -209,21 +209,21 @@ The following table presents certain information with respect to the beneficial 
 
 Percentage of beneficial ownership is calculated based on 23,149,112 shares of common stock outstanding on April 22, 2021. We have determined beneficial ownership in accordance with SEC rules. In computing the number of shares of common stock beneficially owned by a person and the percentage ownership of that person, we deemed as outstanding shares of common stock subject to stock options held by that person that are currently exercisable or exercisable within 60 days of April 22, 2021. We did not deem these shares outstanding, however, for the purpose of computing the percentage ownership of any other person. Except otherwise indicated in the footnotes below, the address of each beneficial owner listed in the table is Artelo Biosciences, Inc., 888 Prospect Street, Suite 210, La Jolla, California 92037.
 
-|                                                         | Number of   | Number of Shares Subject to Options Exercisable within 60   | Total Shares Beneficially Owned   | Total Shares Beneficially Owned   |
-|---------------------------------------------------------|-------------|-------------------------------------------------------------|-----------------------------------|-----------------------------------|
-| Name and Address of Beneficial Owner                    | Shares Held | Days                                                        | Number                            | %                                 |
-| Directors and Named Executive Officers                  |             |                                                             |                                   |                                   |
-| Gregory D. Gorgas (1)                                   | 270,676     | 52,933                                                      | 323,609                           | 1.40%                             |
-| Connie Matsui (2)                                       | 56,667      | 26,500                                                      | 83,167                            | *                                 |
-| Steven Kelly (3)                                        | 12,500      | 22,250                                                      | 34,750                            | *                                 |
-| Douglas Blayney, M.D. (4)                               | 12,500      | 18,000                                                      | 30,500                            | *                                 |
-| R. Martin Emanuele, Ph.D. (5)                           | 12,500      | 27,060                                                      | 39,560                            | *                                 |
-| John W. Beck (6)                                        | -           | 15,000                                                      | 15,000                            | *                                 |
-| Gregory R. Reyes, M.D., Ph.D. (7)                       | -           | 15,000                                                      | 15,000                            | *                                 |
-| Tamara A. Seymour (8)                                   | -           | -                                                           | -                                 |                                   |
-| All Current Directors and Executive Officers as a Group | 364,843     | 176,743                                                     | 541,586                           | 2.34%                             |
-| 5% Stockholders                                         |             |                                                             |                                   |                                   |
-| Parian Global Management LP                             | 1,199,738   | -                                                           | 1,199,738                         | 5.18%                             |
+|                                                         | Number of   | Number of Shares Subject to Options Exercisable within 60 | Total Shares Beneficially Owned | Total Shares Beneficially Owned |
+| ------------------------------------------------------- | ----------- | --------------------------------------------------------- | ------------------------------- | ------------------------------- |
+| Name and Address of Beneficial Owner                    | Shares Held | Days                                                      | Number                          | %                               |
+| Directors and Named Executive Officers                  |             |                                                           |                                 |                                 |
+| Gregory D. Gorgas (1)                                   | 270,676     | 52,933                                                    | 323,609                         | 1.40%                           |
+| Connie Matsui (2)                                       | 56,667      | 26,500                                                    | 83,167                          | \*                              |
+| Steven Kelly (3)                                        | 12,500      | 22,250                                                    | 34,750                          | \*                              |
+| Douglas Blayney, M.D. (4)                               | 12,500      | 18,000                                                    | 30,500                          | \*                              |
+| R. Martin Emanuele, Ph.D. (5)                           | 12,500      | 27,060                                                    | 39,560                          | \*                              |
+| John W. Beck (6)                                        | -           | 15,000                                                    | 15,000                          | \*                              |
+| Gregory R. Reyes, M.D., Ph.D. (7)                       | -           | 15,000                                                    | 15,000                          | \*                              |
+| Tamara A. Seymour (8)                                   | -           | -                                                         | -                               |                                 |
+| All Current Directors and Executive Officers as a Group | 364,843     | 176,743                                                   | 541,586                         | 2.34%                           |
+| 5% Stockholders                                         |             |                                                           |                                 |                                 |
+| Parian Global Management LP                             | 1,199,738   | -                                                         | 1,199,738                       | 5.18%                           |
 
 \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
@@ -268,16 +268,16 @@ Ms. Matsui currently serves as Chair of the Board and is an independent director
 
 The Board has an Audit Committee, a Compensation Committee, and a Corporate Governance and Nominating Committee. These committees operate under written charters, which are available on our website at <http://www.artelobio.com> under 'Investors-Governance.' The Board has determined that all members of these committees satisfy the applicable independence requirements under Nasdaq rules. The current members of the committees are identified in the table below.
 
-| Director                      | Audit Committee   | Compensation Committee   | Corporate Governance and Nominating Committee   |
-|-------------------------------|-------------------|--------------------------|-------------------------------------------------|
-| Gregory D. Gorgas             | -                 | -                        | -                                               |
-| Connie Matsui                 | -                 | -                        | Member                                          |
-| Steven Kelly                  | Member            | Chair                    | -                                               |
-| John W. Beck                  | Chair             | Member                   | -                                               |
-| R. M. Emanuele, Ph.D.         | -                 | -                        | Member                                          |
-| Douglas Blayney, M.D.         | -                 | -                        | Chair                                           |
-| Gregory R. Reyes, M.D., Ph.D. | -                 | Member                   | -                                               |
-| Tamara A. Seymour             | Member            | -                        | -                                               |
+| Director                      | Audit Committee | Compensation Committee | Corporate Governance and Nominating Committee |
+| ----------------------------- | --------------- | ---------------------- | --------------------------------------------- |
+| Gregory D. Gorgas             | -               | -                      | -                                             |
+| Connie Matsui                 | -               | -                      | Member                                        |
+| Steven Kelly                  | Member          | Chair                  | -                                             |
+| John W. Beck                  | Chair           | Member                 | -                                             |
+| R. M. Emanuele, Ph.D.         | -               | -                      | Member                                        |
+| Douglas Blayney, M.D.         | -               | -                      | Chair                                         |
+| Gregory R. Reyes, M.D., Ph.D. | -               | Member                 | -                                             |
+| Tamara A. Seymour             | Member          | -                      | -                                             |
 
 The Audit Committee is responsible primarily for overseeing (i) the services provided by our independent registered public accounting firm, (ii) the integrity of our financial statements and internal control over financial reporting, and (iii) risk management, internal audit and our compliance with legal and regulatory requirements. Mr. Beck, the Chair of the Audit Committee, has been determined by the Board to be an audit committee financial expert. For fiscal year ending August 31, 2020, the Audit Committee held six (6) meetings.
 
@@ -368,9 +368,9 @@ Our 2018 Equity Incentive Plan, or the 2018 Plan, provides that in the event of 
 
 The following table presents compensation information for our non-employee directors for fiscal year 2020.
 
-| Name      |   Fees Earned or Paid in Cash ($) |   Stock Awards ($) | Option Awards ($)   |   Non-Equity Incentive Plan Compensation ($) |   Nonqualified Deferred Compensation Earnings ($) |   All Other Compensation ($) | Total ($)   |
-|-----------|-----------------------------------|--------------------|---------------------|----------------------------------------------|---------------------------------------------------|------------------------------|-------------|
-| John Beck |                                 0 |                  0 | 122,007             |                                            0 |                                                 0 |                            0 | 122,007     |
+| Name      | Fees Earned or Paid in Cash ($) | Stock Awards ($) | Option Awards ($) | Non-Equity Incentive Plan Compensation ($) | Nonqualified Deferred Compensation Earnings ($) | All Other Compensation ($) | Total ($) |
+| --------- | ------------------------------- | ---------------- | ----------------- | ------------------------------------------ | ----------------------------------------------- | -------------------------- | --------- |
+| John Beck | 0                               | 0                | 122,007           | 0                                          | 0                                               | 0                          | 122,007   |
 
 \_\_\_\_\_\_\_\_\_\_\_
 
@@ -380,13 +380,13 @@ The stock options issued in the above table were options granted on August 29, 2
 
 The following table presents the total number of shares subject to either options outstanding or restricted stock awards, as well as the number of shares subject to vested exercisable options, for each non-employee director as of August 31, 2020.
 
-| Director                 | Total Number of Options Outstanding or Restricted Stock Awards   | Number of Vested Exercisable Options/Restricted Stock Awards   |
-|--------------------------|------------------------------------------------------------------|----------------------------------------------------------------|
-| Connie Matsui            | 41,500                                                           | 3,750                                                          |
-| Steven Kelly             | 34,750                                                           | 3,125                                                          |
-| R. Martin Emanuele, Ph.D | 42,500                                                           | 6,250                                                          |
-| Douglas Blayney, M.D     | 30,500                                                           | 3,125                                                          |
-| John Beck                | 50,000                                                           | 40,000                                                         |
+| Director                 | Total Number of Options Outstanding or Restricted Stock Awards | Number of Vested Exercisable Options/Restricted Stock Awards |
+| ------------------------ | -------------------------------------------------------------- | ------------------------------------------------------------ |
+| Connie Matsui            | 41,500                                                         | 3,750                                                        |
+| Steven Kelly             | 34,750                                                         | 3,125                                                        |
+| R. Martin Emanuele, Ph.D | 42,500                                                         | 6,250                                                        |
+| Douglas Blayney, M.D     | 30,500                                                         | 3,125                                                        |
+| John Beck                | 50,000                                                         | 40,000                                                       |
 
 \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
@@ -396,9 +396,9 @@ The following table presents the total number of shares subject to either option
 
 Our executive officers are appointed by, and serve at the discretion of, the Board. Each executive officer is a full-time employee of Artelo. The names of our executive officers and their ages, titles and biographies are set forth below:
 
-| Name              |   Age | Position                                                                            |
-|-------------------|-------|-------------------------------------------------------------------------------------|
-| Gregory D. Gorgas |    58 | President, Chief Executive Officer, Chief Financial Officer, Secretary and Director |
+| Name              | Age | Position                                                                            |
+| ----------------- | --- | ----------------------------------------------------------------------------------- |
+| Gregory D. Gorgas | 58  | President, Chief Executive Officer, Chief Financial Officer, Secretary and Director |
 
 Gregory D. Gorgas. Please see biography in 'Proposal 1' section below.
 
@@ -410,25 +410,25 @@ The following table summarizes the total compensation earned by our NEO for 2020
 
 ## SUMMARY COMPENSATION TABLE
 
-| Name and Principal Position       | Year   | Salary ($)   | Bonus ($)   | Stock Awards ($)   | Option Awards ($)   | Non-Equity Incentive Plan Compensa- tion ($)   | Change in Pension Value and Nonqualified Deferred Compensa- tion Earnings ($)   | All Other Compensa- tion ($)   | Total ($)   |
-|-----------------------------------|--------|--------------|-------------|--------------------|---------------------|------------------------------------------------|---------------------------------------------------------------------------------|--------------------------------|-------------|
-| Gregory D. Gorgas                 |        |              |             |                    |                     |                                                |                                                                                 |                                |             |
-| President, CEO, CFO,              | 2020   | 430,961      | 150,480*    | -                  | -                   | -                                              | -                                                                               | -                              | 581,441     |
-| Secretary, Treasurer and Director | 2019   | 209,369      | -           | -                  | 138,058             | -                                              | -                                                                               | -                              | 347,427     |
+| Name and Principal Position       | Year | Salary ($) | Bonus ($) | Stock Awards ($) | Option Awards ($) | Non-Equity Incentive Plan Compensa- tion ($) | Change in Pension Value and Nonqualified Deferred Compensa- tion Earnings ($) | All Other Compensa- tion ($) | Total ($) |
+| --------------------------------- | ---- | ---------- | --------- | ---------------- | ----------------- | -------------------------------------------- | ----------------------------------------------------------------------------- | ---------------------------- | --------- |
+| Gregory D. Gorgas                 |      |            |           |                  |                   |                                              |                                                                               |                              |           |
+| President, CEO, CFO,              | 2020 | 430,961    | 150,480\* | -                | -                 | -                                            | -                                                                             | -                            | 581,441   |
+| Secretary, Treasurer and Director | 2019 | 209,369    | -         | -                | 138,058           | -                                            | -                                                                             | -                            | 347,427   |
 
 \_\_\_\_\_\_\_\_\_
 
-*Bonus was paid in October 2020.
+\*Bonus was paid in October 2020.
 
 ## Outstanding Equity Awards at Fiscal Year End
 
 As of August 31, 2020, there was an option to purchase 75,000 shares of our common stock held by our named executive officer.
 
-|                                                                          | Option Awards                                                    | Option Awards                                                      | Option Awards                                                                              | Option Awards         | Option Awards          | Option Awards                                           | Stock Awards                                                      | Stock Awards                                                                                        | Stock Awards                                                                                                        | Stock Awards   |
-|--------------------------------------------------------------------------|------------------------------------------------------------------|--------------------------------------------------------------------|--------------------------------------------------------------------------------------------|-----------------------|------------------------|---------------------------------------------------------|-------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------|----------------|
-| Name                                                                     | Number of Securities Underlying Unexercised Options: Exercisable | Number of Securities Underlying Unexercised Options: Unexercisable | Equity Incentive Plan Awards: Number of Securities Underlying Unexercised Unearned Options | Option Exercise Price | Option Expiration Date | Number of Shares or Units of Stock That Have Not Vested | Market Value of Shares or Units of Stock That Have Not Vested (7) | Equity Incentive Plan Awards: Number of Unearned Shares, Units or Other Rights That Have Not Vested | Equity Incentive Plan Awards: Market or Payout Value of Unearned Shares, Units or Other Rights That Have Not Vested |                |
-|                                                                          | (1)                                                              | (2)                                                                | (3)                                                                                        | (4)                   |                        | (5)                                                     | (6)                                                               | (8)                                                                                                 | (9)                                                                                                                 |                |
-| Gregory D. Gorgas President, CEO, CFO, Secretary, Treasurer and Director | 18,756                                                           | 56,244                                                             |                                                                                            | $ 1.99                |                        | August 29, 2029                                         | - -                                                               | -                                                                                                   | -                                                                                                                   |                |
+|                                                                          | Option Awards                                                    | Option Awards                                                      | Option Awards                                                                              | Option Awards         | Option Awards          | Option Awards                                           | Stock Awards                                                      | Stock Awards                                                                                        | Stock Awards                                                                                                        | Stock Awards |
+| ------------------------------------------------------------------------ | ---------------------------------------------------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ | --------------------- | ---------------------- | ------------------------------------------------------- | ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ------------ |
+| Name                                                                     | Number of Securities Underlying Unexercised Options: Exercisable | Number of Securities Underlying Unexercised Options: Unexercisable | Equity Incentive Plan Awards: Number of Securities Underlying Unexercised Unearned Options | Option Exercise Price | Option Expiration Date | Number of Shares or Units of Stock That Have Not Vested | Market Value of Shares or Units of Stock That Have Not Vested (7) | Equity Incentive Plan Awards: Number of Unearned Shares, Units or Other Rights That Have Not Vested | Equity Incentive Plan Awards: Market or Payout Value of Unearned Shares, Units or Other Rights That Have Not Vested |              |
+|                                                                          | (1)                                                              | (2)                                                                | (3)                                                                                        | (4)                   |                        | (5)                                                     | (6)                                                               | (8)                                                                                                 | (9)                                                                                                                 |              |
+| Gregory D. Gorgas President, CEO, CFO, Secretary, Treasurer and Director | 18,756                                                           | 56,244                                                             |                                                                                            | $ 1.99                |                        | August 29, 2029                                         | - -                                                               | -                                                                                                   | -                                                                                                                   |              |
 
 ## Executive Employment Agreements
 
@@ -509,7 +509,7 @@ Although our bylaws do not require that our stockholders approve the appointment
 The following table presents fees for professional audit and other services rendered by MaloneBailey for the audit of our annual consolidated financial statements as of and for the years ended August 31, 2020 and 2019, respectively, and fees billed for other services rendered by MaloneBailey during those respective periods.
 
 |                        | 2020     | 2019     |
-|------------------------|----------|----------|
+| ---------------------- | -------- | -------- |
 | Audit Fees (1)         | $ 54,000 | $ 44,000 |
 | Audit Related Fees (2) | 29,102   | 16,325   |
 | Tax Fees (3)           | 87,102   | 4,450    |
@@ -572,11 +572,11 @@ To the extent that indemnification for liabilities arising under the Securities 
 
 The following table summarizes the number of outstanding options and rights granted to our employees, consultants and directors, as well as the number of shares of common stock remaining available for future issuance, under our equity compensation plans as of August 31, 2020:
 
-| Plan Category                                              | Number of securities to be issued upon exercise of outstanding options and rights (a)   | Weighted- average exercise price of outstanding options and rights (b)   | Number of securities remaining available for future issuance under equity compensation plans (excluding securities reflected in column (a)) (c)   |
-|------------------------------------------------------------|-----------------------------------------------------------------------------------------|--------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
-| Equity compensation plans approved by security holders(1)  | 281,834                                                                                 | $ 3.57                                                                   | 518,166                                                                                                                                           |
-| Equity compensation plans not approved by security holders | -                                                                                       | -                                                                        | -                                                                                                                                                 |
-| Total                                                      | 281,834                                                                                 | $ 3.57                                                                   | 518,166                                                                                                                                           |
+| Plan Category                                              | Number of securities to be issued upon exercise of outstanding options and rights (a) | Weighted- average exercise price of outstanding options and rights (b) | Number of securities remaining available for future issuance under equity compensation plans (excluding securities reflected in column (a)) (c) |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Equity compensation plans approved by security holders(1)  | 281,834                                                                               | $ 3.57                                                                 | 518,166                                                                                                                                         |
+| Equity compensation plans not approved by security holders | -                                                                                     | -                                                                      | -                                                                                                                                               |
+| Total                                                      | 281,834                                                                               | $ 3.57                                                                 | 518,166                                                                                                                                         |
 
 \_\_\_\_\_\_\_\_\_\_\_\_
 

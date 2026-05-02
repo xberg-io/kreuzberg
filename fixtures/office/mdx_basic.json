@@ -1,39 +1,39 @@
 {
-	"id": "office_mdx_basic",
-	"category": "office",
-	"description": "MDX document extraction with JSX stripping and frontmatter.",
-	"input": {
-		"path": "markdown/sample.mdx",
-		"media_type": "text/mdx"
-	},
-	"assertions": [
-		{
-			"type": "contains_any",
-			"field": "mime_type",
-			"values": ["text/mdx", "text/x-mdx"]
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 50
-		},
-		{
-			"type": "contains_all",
-			"field": "content",
-			"values": ["MDX Sample Document", "warning message", "Conclusion"]
-		},
-		{
-			"type": "not_contains",
-			"field": "content",
-			"values": ["import"]
-		},
-		{
-			"type": "not_contains",
-			"field": "content",
-			"values": ["export const meta"]
-		}
-	],
-	"skip": {
-		"reason": "Requires features: mdx"
-	}
+  "id": "office_mdx_basic",
+  "category": "office",
+  "description": "MDX document extraction with JSX stripping and frontmatter.",
+  "input": {
+    "path": "markdown/sample.mdx",
+    "media_type": "text/mdx"
+  },
+  "assertions": [
+    {
+      "type": "contains_any",
+      "field": "mime_type",
+      "values": ["text/mdx", "text/x-mdx"]
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 50
+    },
+    {
+      "type": "contains_all",
+      "field": "content",
+      "values": ["MDX Sample Document", "warning message", "Conclusion"]
+    },
+    {
+      "type": "not_contains",
+      "field": "content",
+      "values": ["import"]
+    },
+    {
+      "type": "not_contains",
+      "field": "content",
+      "values": ["export const meta"]
+    }
+  ],
+  "skip": {
+    "reason": "Requires features: mdx"
+  }
 }

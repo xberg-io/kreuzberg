@@ -56,11 +56,11 @@ page 2 of 3
 
 Maximum values for the coefficient of retroreflection (according to ECE 104, material class E)
 
-|   | Specific coefficient of retroreflection R^{a} in cd·lx^{-1}·m^{-2}  |   |   |   |
-| --- | --- | --- | --- | --- |
-|  Observation angle (°) | 0,33  |   |   |   |
-|  Lighting angle (°) | 5 | 30 | 40 | 60  |
-|  every colour | 50 | 21,66 | 12,33 | 1,66  |
+|                       | Specific coefficient of retroreflection R^{a} in cd·lx^{-1}·m^{-2} |       |       |      |
+| --------------------- | ------------------------------------------------------------------ | ----- | ----- | ---- |
+| Observation angle (°) | 0,33                                                               |       |       |      |
+| Lighting angle (°)    | 5                                                                  | 30    | 40    | 60   |
+| every colour          | 50                                                                 | 21,66 | 12,33 | 1,66 |
 
 # Colours
 
@@ -96,22 +96,21 @@ Technical Data Sheet
 2011/22
 page 3 of 3
 
-|  Thickness* (without protective paper and adhesive) | 90 to 140 micron  |
-| --- | --- |
-|  Temperature resistance*** | adhered to aluminium, -50°C to +95°C  |
-|  Adhesive power* (FINAT-TM1 after 72h) | adhered to stainless steel: 17.0 N/25mm
-adhered to acrylic coating: 17.5 N/25mm  |
-|  Tensile strength (DIN 53455) | along: min 10 N/mm²
-across: min 10 N/mm²  |
-|  Elongation at break (DIN 53455) | along: min 100%
-across: min 100%  |
-|  Shelf life** | 2 years  |
-|  Application temperature | > +15°C  |
-|  Service life by specialist application under vertical outdoor exposure (standard central European climate) | 7 years  |
+| Thickness\* (without protective paper and adhesive)                                                        | 90 to 140 micron                        |
+| ---------------------------------------------------------------------------------------------------------- | --------------------------------------- |
+| Temperature resistance\*\*\*                                                                               | adhered to aluminium, -50°C to +95°C    |
+| Adhesive power\* (FINAT-TM1 after 72h)                                                                     | adhered to stainless steel: 17.0 N/25mm |
+| adhered to acrylic coating: 17.5 N/25mm                                                                    |
+| Tensile strength (DIN 53455)                                                                               | along: min 10 N/mm²                     |
+| across: min 10 N/mm²                                                                                       |
+| Elongation at break (DIN 53455)                                                                            | along: min 100%                         |
+| across: min 100%                                                                                           |
+| Shelf life\*\*                                                                                             | 2 years                                 |
+| Application temperature                                                                                    | > +15°C                                 |
+| Service life by specialist application under vertical outdoor exposure (standard central European climate) | 7 years                                 |
 
-* average
-** in original packaging, at 20°C and 50% relative humidity
-*** standard central European climate
+- average
+  ** in original packaging, at 20°C and 50% relative humidity \*** standard central European climate
 
 Note
 Surfaces to which the material will be applied must be thoroughly cleaned from dust, grease or any contamination which could affect the adhesion of the material. Freshly lacquered or painted surfaces should be completely cured. The compatibility of selected lacquers and paints should be tested by the user, prior to application of the material. The self-adhesive reflective material can only be used for dry application. Furthermore the application information published by ORAFOL is to be considered. The batch traceability according to ISO 9001 is possible on the basis of the roll number.

@@ -81,14 +81,14 @@ This is the core of the pipeline. The selected extractor reads the file and prod
 
 Each file format has a tailored extraction strategy:
 
-| Format | What happens |
-|--------|-------------|
-| **PDF** | Text is extracted directly from the PDF text layer using pdfium-render. If the PDF contains embedded images (scanned pages, diagrams), those images are collected and passed to the OCR stage. |
-| **Excel / Spreadsheets** | Each sheet is parsed individually using calamine. Cell values are assembled into structured Markdown tables, preserving column alignment. |
-| **Images** (JPEG, PNG, TIFF, etc.) | The image bytes are loaded into memory and forwarded directly to the OCR backend. There is no text layer to extract from an image. |
-| **XML / Plain text** | A streaming parser processes the file incrementally. This keeps memory usage constant even for multi-gigabyte files because the entire file is never loaded at once. |
-| **Email** (`.eml`, `.msg`) | The MIME structure is parsed. The email body (plain text or HTML) is extracted as the main content. Attachments are extracted recursively using the same pipeline. |
-| **Office** (DOCX, PPTX) | The file is a ZIP archive containing XML. Kreuzberg opens the archive, locates the content XML parts, and parses the document structure into text. |
+| Format                             | What happens                                                                                                                                                                                   |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **PDF**                            | Text is extracted directly from the PDF text layer using pdfium-render. If the PDF contains embedded images (scanned pages, diagrams), those images are collected and passed to the OCR stage. |
+| **Excel / Spreadsheets**           | Each sheet is parsed individually using calamine. Cell values are assembled into structured Markdown tables, preserving column alignment.                                                      |
+| **Images** (JPEG, PNG, TIFF, etc.) | The image bytes are loaded into memory and forwarded directly to the OCR backend. There is no text layer to extract from an image.                                                             |
+| **XML / Plain text**               | A streaming parser processes the file incrementally. This keeps memory usage constant even for multi-gigabyte files because the entire file is never loaded at once.                           |
+| **Email** (`.eml`, `.msg`)         | The MIME structure is parsed. The email body (plain text or HTML) is extracted as the main content. Attachments are extracted recursively using the same pipeline.                             |
+| **Office** (DOCX, PPTX)            | The file is a ZIP archive containing XML. Kreuzberg opens the archive, locates the content XML parts, and parses the document structure into text.                                             |
 
 The extraction result at this point contains raw extracted text. It hasn't been validated, scored, or chunked yet.
 
@@ -120,11 +120,11 @@ flowchart LR
 
 Kreuzberg ships three OCR backends:
 
-| Backend | Engine | When to use it |
-|---------|--------|----------------|
-| **Tesseract** | Native Rust bindings | Default. Fast, solid accuracy for Latin scripts. Good general-purpose choice. |
-| **PaddleOCR** | ONNX Runtime | Best accuracy for Chinese, Japanese, Korean (CJK) scripts. Runs natively without Python. |
-| **EasyOCR** | Python + PyTorch | Supports 80+ languages including Arabic, Hindi, Thai, and other complex scripts. Only available through the Python bindings. |
+| Backend       | Engine               | When to use it                                                                                                               |
+| ------------- | -------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| **Tesseract** | Native Rust bindings | Default. Fast, solid accuracy for Latin scripts. Good general-purpose choice.                                                |
+| **PaddleOCR** | ONNX Runtime         | Best accuracy for Chinese, Japanese, Korean (CJK) scripts. Runs natively without Python.                                     |
+| **EasyOCR**   | Python + PyTorch     | Supports 80+ languages including Arabic, Hindi, Thai, and other complex scripts. Only available through the Python bindings. |
 
 When OCR completes, the OCR output is merged with any text the format extractor already produced. The merged result moves to post-processing.
 
@@ -172,11 +172,11 @@ Post-processors are the final transformation step. They receive the `ExtractionR
 
 Post-processors run in three ordered stages so you can control what happens first:
 
-| Stage | Purpose | Examples |
-|-------|---------|---------|
-| **Early** | Raw text cleanup | Strip control characters, fix encoding issues, normalize whitespace |
-| **Middle** | Content analysis | Extract named entities, detect language, classify document type |
-| **Late** | Final transformations | Apply output formatting, generate summaries, redact PII |
+| Stage      | Purpose               | Examples                                                            |
+| ---------- | --------------------- | ------------------------------------------------------------------- |
+| **Early**  | Raw text cleanup      | Strip control characters, fix encoding issues, normalize whitespace |
+| **Middle** | Content analysis      | Extract named entities, detect language, classify document type     |
+| **Late**   | Final transformations | Apply output formatting, generate summaries, redact PII             |
 
 An important design choice: **post-processor errors do not fail the extraction.** If a post-processor throws an exception, the error is logged and the pipeline continues with the result as-is. This means a buggy post-processor can't take down your extraction pipeline.
 
@@ -200,13 +200,13 @@ The final `ExtractionResult` returned to you contains:
 
 The pipeline follows a deliberate error strategy: fail early for things the developer can fix, be resilient for things that are beyond their control.
 
-| Stage | Error type | What happens |
-|-------|-----------|-------------|
-| MIME detection | `UnsupportedFormat` | Pipeline stops. The file type isn't supported. |
-| Format extraction | `ParsingError` | Pipeline stops. The file is corrupt or the format couldn't be parsed. |
-| Validators | `ValidationError` | Pipeline stops. The result didn't meet your defined requirements. |
-| Post-processors | Non-fatal processor error | Error is logged. Pipeline continues. Result is returned without that transformation. |
-| System | I/O failure, out-of-memory, or other system-level failure | Always propagated. These indicate infrastructure problems. |
+| Stage             | Error type                                                | What happens                                                                         |
+| ----------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| MIME detection    | `UnsupportedFormat`                                       | Pipeline stops. The file type isn't supported.                                       |
+| Format extraction | `ParsingError`                                            | Pipeline stops. The file is corrupt or the format couldn't be parsed.                |
+| Validators        | `ValidationError`                                         | Pipeline stops. The result didn't meet your defined requirements.                    |
+| Post-processors   | Non-fatal processor error                                 | Error is logged. Pipeline continues. Result is returned without that transformation. |
+| System            | I/O failure, out-of-memory, or other system-level failure | Always propagated. These indicate infrastructure problems.                           |
 
 For the complete error taxonomy, see [Error Handling](../reference/errors.md).
 

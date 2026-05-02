@@ -2,13 +2,13 @@
 
 ## Table 1: Current layout detection models in the LayoutParser model zoo
 
-| Dataset | Base Model | Large Model | Notes |
-|---------|-----------|------------|-------|
-| PubLayNet [38] | P / M | M | Layouts of modern scientific documents |
-| Manga [5] | M | - | Layouts of scanned modern magazines and scientific reports |
-| Newspaper [17] | P | - | Layouts of scanned US newspapers from the 20th century |
-| TableBank [44] | P | - | Table region on modern scientific and business document |
-| HJDataset [91] | P / M | - | Layouts of history Japanese documents |
+| Dataset        | Base Model | Large Model | Notes                                                      |
+| -------------- | ---------- | ----------- | ---------------------------------------------------------- |
+| PubLayNet [38] | P / M      | M           | Layouts of modern scientific documents                     |
+| Manga [5]      | M          | -           | Layouts of scanned modern magazines and scientific reports |
+| Newspaper [17] | P          | -           | Layouts of scanned US newspapers from the 20th century     |
+| TableBank [44] | P          | -           | Table region on modern scientific and business document    |
+| HJDataset [91] | P / M      | -           | Layouts of history Japanese documents                      |
 
 For each dataset, we train several model of different sizes for different needs (the trade-off between accuracy vs. computational cost). For "base model" and "large model", we refer to using the ResNet 50 or ResNet 101 backbone [15]. The past 1 architecture and mAP backbone). The platform is maintained and a number of additions will be made to the model zoo in coming months.
 

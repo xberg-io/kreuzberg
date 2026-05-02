@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/rst/rst-reader.rst",
   "file_type": "rst",
   "file_size": 9893,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "rst test: rst-reader",
     "source": "pandoc-generated",

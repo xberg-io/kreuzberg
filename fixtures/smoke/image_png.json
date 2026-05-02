@@ -1,28 +1,28 @@
 {
-	"id": "smoke_image_png",
-	"category": "smoke",
-	"description": "Smoke test: PNG image (without OCR, metadata only)",
-	"tags": ["smoke", "image", "png"],
-	"input": {
-		"path": "images/sample.png",
-		"media_type": "image/png",
-		"config": {
-			"disable_ocr": true
-		}
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "image/png"
-		},
-		{
-			"type": "equals",
-			"field": "metadata.format",
-			"value": "PNG"
-		}
-	],
-	"skip": {
-		"reason": "Skip if document missing; Image extraction requires image processing dependencies"
-	}
+  "id": "smoke_image_png",
+  "category": "smoke",
+  "description": "Smoke test: PNG image (without OCR, metadata only)",
+  "tags": ["smoke", "image", "png"],
+  "input": {
+    "path": "images/sample.png",
+    "media_type": "image/png",
+    "config": {
+      "disable_ocr": true
+    }
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "image/png"
+    },
+    {
+      "type": "equals",
+      "field": "metadata.format",
+      "value": "PNG"
+    }
+  ],
+  "skip": {
+    "reason": "Skip if document missing; Image extraction requires image processing dependencies"
+  }
 }

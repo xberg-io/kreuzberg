@@ -20,7 +20,7 @@ reStructuredText is a plaintext markup syntax used primarily in Python documenta
 
 ### Basic Formatting
 
-This paragraph contains *emphasized text*, **strong text**, and `inline code`.
+This paragraph contains _emphasized text_, **strong text**, and `inline code`.
 
 You can also use:
 
@@ -73,14 +73,14 @@ You can also use:
 ### Simple Table
 
 | Col1 | Col2 | Col3 |
-|------|------|------|
+| ---- | ---- | ---- |
 | A    | B    | C    |
 | D    | E    | F    |
 
 ### Grid Table
 
 | Head1 | Head2 | Head3 |
-|-------|-------|-------|
+| ----- | ----- | ----- |
 | Cell1 | Cell2 | Cell3 |
 | Cell4 | Cell5 | Cell6 |
 
@@ -99,4 +99,4 @@ Internal reference: See [Introduction](#introduction) section.
 This document demonstrates RST features for comprehensive pandoc testing.
 
 Smith2024
-Smith, J. (2024). *Technical Documentation with RST*. Doc Press.
+Smith, J. (2024). _Technical Documentation with RST_. Doc Press.

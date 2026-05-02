@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/odt/imageWithCaption.odt",
   "file_type": "odt",
   "file_size": 33811,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "odt test: imageWithCaption",
     "source": "pandoc-generated",

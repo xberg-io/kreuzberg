@@ -1,20 +1,16 @@
 {
-	"id": "validators_list",
-	"category": "validator_management",
-	"description": "List all registered validators",
-	"tags": [
-		"validators",
-		"plugin_management",
-		"list"
-	],
-	"call": "list_validators",
-	"assertions": [
-		{
-			"type": "not_error"
-		}
-	],
-	"skip": {
-		"languages": [],
-		"reason": "Tests plugin_api call surface that isn't re-exported at the kreuzberg crate root \u2014 skipped everywhere until Rust public API or codegen module path is updated."
-	}
+  "id": "validators_list",
+  "category": "validator_management",
+  "description": "List all registered validators",
+  "tags": ["validators", "plugin_management", "list"],
+  "call": "list_validators",
+  "assertions": [
+    {
+      "type": "not_error"
+    }
+  ],
+  "skip": {
+    "languages": [],
+    "reason": "Tests plugin_api call surface that isn't re-exported at the kreuzberg crate root \u2014 skipped everywhere until Rust public API or codegen module path is updated."
+  }
 }

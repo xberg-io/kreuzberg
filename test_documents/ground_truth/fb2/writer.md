@@ -294,13 +294,13 @@ yellow fruit
 
 Multiple blocks with italics:
 
-*apple*
+_apple_
 
 red fruit
 
 contains seeds, crisp, pleasant to taste
 
-*orange*
+_orange_
 
 orange fruit
 
@@ -398,25 +398,25 @@ Hr’s:
 
 ## Inline Markup
 
-This is *emphasized* , and so *is this* .
+This is _emphasized_ , and so _is this_ .
 
 This is **strong** , and so **is this** .
 
-An *emphasized link* .
+An _emphasized link_ .
 
-*This is strong and em.*
+_This is strong and em._
 
-So is *this* word.
+So is _this_ word.
 
-*This is strong and em.*
+_This is strong and em._
 
-So is *this* word.
+So is _this_ word.
 
 This is code: `>` , `$` , `\` , `\$` , `< html>` .
 
 ~~This is strikeout .~~
 
-Superscripts: a bc d a *hello* a hello there .
+Superscripts: a bc d a _hello_ a hello there .
 
 Subscripts: H 2 O, H 23 O, H many of them O.
 
@@ -432,7 +432,7 @@ These should not be superscripts or subscripts, because of the unescaped spaces:
 
 ‘He said, “I want to go.”’ Were you alive in the 70’s?
 
-Here is some quoted ‘`  code ` ’ and a “ quoted link ”.
+Here is some quoted ‘` code` ’ and a “ quoted link ”.
 
 Some dashes: one—two — three—four — five.
 
@@ -444,17 +444,17 @@ Ellipses…and…and….
 
 •
 
-• `  2+2=4 `
+• ` 2+2=4`
 
-• `  x \in y `
+• ` x \in y`
 
-• `  \alpha \wedge \omega `
+• ` \alpha \wedge \omega`
 
-• `  223 `
+• ` 223`
 
-• `  p ` -Tree
+• ` p` -Tree
 
-• Here’s some display math:`  \frac{d}{dx}f(x)=\lim_{h\to 0}\frac{f(x+h)-f(x)}{h} `
+• Here’s some display math:` \frac{d}{dx}f(x)=\lim_{h\to 0}\frac{f(x+h)-f(x)}{h}`
 
 • Here’s one that has a line break in it: `\alpha + \omega \times x^2` .
 
@@ -462,7 +462,7 @@ These shouldn’t be math:
 
 • To get the famous equation, write `$e = mc^2$` .
 
-• $22,000 is a *lot* of money. So is $34,000. (It worked if “lot” is emphasized.)
+• $22,000 is a _lot_ of money. So is $34,000. (It worked if “lot” is emphasized.)
 
 • Shoes ($20) and socks ($5).
 
@@ -500,7 +500,7 @@ Backtick: \`
 
 Asterisk: \*
 
-Underscore: _
+Underscore: \_
 
 Left brace: {
 
@@ -606,7 +606,7 @@ Here is a movie icon.
 
 ## Footnotes
 
-Here is a footnote reference, \[1\] and another. \[2\] This should *not* be a footnote reference, because it contains a space.\[^my note\] Here is an inline note. \[3\]
+Here is a footnote reference, \[1\] and another. \[2\] This should _not_ be a footnote reference, because it contains a space.\[^my note\] Here is an inline note. \[3\]
 
 > Notes can go in quotes.\[4\]
 

@@ -1,11 +1,7 @@
 {
   "id": "config_html_styled_default",
   "description": "HTML output with default theme emits kb-* class hooks and an embedded style block",
-  "tags": [
-    "contract",
-    "output_format",
-    "html_styled"
-  ],
+  "tags": ["contract", "output_format", "html_styled"],
   "call": "extract_file_sync",
   "input": {
     "path": "pdf/fake_memo.pdf",
@@ -31,12 +27,7 @@
     {
       "type": "contains_all",
       "field": "content",
-      "values": [
-        "kb-doc",
-        "kb-content",
-        "kb-p",
-        "<style>"
-      ]
+      "values": ["kb-doc", "kb-content", "kb-p", "<style>"]
     }
   ]
 }

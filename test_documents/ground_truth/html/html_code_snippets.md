@@ -7,7 +7,7 @@ To use Docling, simply install \`docling\`from your package manager, e.g. pip: \
 To convert individual documents with python, use \`convert()\`, for example:
 
     from docling.document_converter import DocumentConverter
-    
+
     source = "https://arxiv.org/pdf/2408.09869"
     converter = DocumentConverter()
     result = converter.convert(source)
@@ -26,5 +26,5 @@ Prefetch the models:
 ```
 $ docling-tools models download-hf-repo ds4sd/SmolDocling-256M-preview
 Downloading ds4sd/SmolDocling-256M-preview model from HuggingFace...
-        
+
 ```

@@ -145,13 +145,7 @@ repos:
       - id: clang-tidy
         files: ^crates/kreuzberg-ffi/tests/c/
       - id: checkstyle
-        args:
-          [
-            "-c",
-            "packages/java/checkstyle.xml",
-            "-p",
-            "packages/java/checkstyle.properties",
-          ]
+        args: ["-c", "packages/java/checkstyle.xml", "-p", "packages/java/checkstyle.properties"]
         exclude: ^(\.mvn/wrapper/|e2e/|tools/e2e-generator/e2e/|crates/kreuzberg-wasm/e2e/|packages/java/src/)
       - id: java-verify
         files: ^packages/java/

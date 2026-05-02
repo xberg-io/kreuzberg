@@ -10,13 +10,17 @@ $$\int_0^\infty e^{-x^2} dx = \frac{\sqrt{\pi}}{2}$$
 
 ## Equation Environment
 
-$$\begin{equation}
+$$
+\begin{equation}
   f(x) = \sum_{n=0}^{\infty} \frac{x^n}{n!}
-\end{equation}$$
+\end{equation}
+$$
 
 ## Align Environment
 
-$$\begin{align}
+$$
+\begin{align}
   a + b &= c \\
   d + e &= f
-\end{align}$$
+\end{align}
+$$

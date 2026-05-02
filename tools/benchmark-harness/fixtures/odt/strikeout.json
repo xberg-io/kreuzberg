@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/odt/strikeout.odt",
   "file_type": "odt",
   "file_size": 10582,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "odt test: strikeout",
     "source": "pandoc-generated",

@@ -31,16 +31,16 @@ The next page includes a handout for the lesson.
 8.3.b Evaluate the physical, mental, and social benefits of physical activity.
 8.3.g Develop a strategy to prevent diabetes, heart disease, stroke, and other chronic diseases and conditions.
 
-|   | **Link**  |   |
-| --- | --- | --- |
-|   |  A healthy heart is essential to a healthy body. Why? Write 3 facts that you already know about the heart in the boxes.  |   |
-|   |  1. |   |
-|   |  2. |   |
-|  3. |  |   |
-|  The heart is an important organ that keeps the blood moving throughout the body. Blood brings important nutrients to all body systems, including the brain. The brain needs oxygen and glucose from blood to function. What happens when the blood supply in the brain changes? The result may be a stroke. In this lesson, you will learn about what a stroke is, what the risk factors are, and ways to prevent stroke.  |   |   |
-|   | **Explore**  |   |
-| --- | --- | --- |
-|   |  Use one of the following resources to learn about stroke. During your reading, respond to the questions in complete sentences.
+|                                                                                                                                                                                                                                                                                                                                                                                                                           | **Link**                                                                                                                       |     |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | --- |
+|                                                                                                                                                                                                                                                                                                                                                                                                                           | A healthy heart is essential to a healthy body. Why? Write 3 facts that you already know about the heart in the boxes.         |     |
+|                                                                                                                                                                                                                                                                                                                                                                                                                           | 1.                                                                                                                             |     |
+|                                                                                                                                                                                                                                                                                                                                                                                                                           | 2.                                                                                                                             |     |
+| 3.                                                                                                                                                                                                                                                                                                                                                                                                                        |                                                                                                                                |     |
+| The heart is an important organ that keeps the blood moving throughout the body. Blood brings important nutrients to all body systems, including the brain. The brain needs oxygen and glucose from blood to function. What happens when the blood supply in the brain changes? The result may be a stroke. In this lesson, you will learn about what a stroke is, what the risk factors are, and ways to prevent stroke. |                                                                                                                                |     |
+|                                                                                                                                                                                                                                                                                                                                                                                                                           | **Explore**                                                                                                                    |     |
+| ---                                                                                                                                                                                                                                                                                                                                                                                                                       | ---                                                                                                                            | --- |
+|                                                                                                                                                                                                                                                                                                                                                                                                                           | Use one of the following resources to learn about stroke. During your reading, respond to the questions in complete sentences. |
 
 ♦ Library Database: Cavendish Square
 https://www.fcps.edu/resources/library/online-databases-and-e-books?keywords=Cavendish (login is Fairfax; password is Fairfax)
@@ -57,25 +57,26 @@ https://www.nhlbi.nih.gov/health/health-topics/topics/stroke/signs
 ➤ How Can a Stroke be Prevented?
 https://www.nhlbi.nih.gov/health/health-topics/topics/stroke/prevention
 
-Write responses to questions in the boxes provided:  |   |
+Write responses to questions in the boxes provided: | |
 
 © HyperDocs
 
-|  Describe what a stroke is and describe the two different types of stroke:  |
-| --- |
-|  A stroke is -  |
-|  Types of stroke -  |
-|  Who is at risk for stroke? What are the risk factors for strokes?  |
-|  |
-|  What are the signs or symptoms that someone may be having a stroke?  |
-|  |
-|  How can strokes be prevented?  |
-|  |
-|  Source: National Stroke Association (http://www.stroke.org/understand-stroke/recognizing-stroke/act-fast) | Explain  |
-| --- | --- |
-|   |  From the National Stroke Association
+| Describe what a stroke is and describe the two different types of stroke:                                 |
+| --------------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| A stroke is -                                                                                             |
+| Types of stroke -                                                                                         |
+| Who is at risk for stroke? What are the risk factors for strokes?                                         |
+|                                                                                                           |
+| What are the signs or symptoms that someone may be having a stroke?                                       |
+|                                                                                                           |
+| How can strokes be prevented?                                                                             |
+|                                                                                                           |
+| Source: National Stroke Association (http://www.stroke.org/understand-stroke/recognizing-stroke/act-fast) | Explain                              |
+| ---                                                                                                       | ---                                  |
+|                                                                                                           | From the National Stroke Association |
+
 Act FAST
-FAST is an easy way to remember and identify the most common symptoms of a stroke. Recognition of stroke and calling 9 -1-1 will determine how quickly someone will receive help and treatment. Getting to a hospital rapidly will more likely lead to a better recovery.  |
+FAST is an easy way to remember and identify the most common symptoms of a stroke. Recognition of stroke and calling 9 -1-1 will determine how quickly someone will receive help and treatment. Getting to a hospital rapidly will more likely lead to a better recovery. |
 
 © HyperDocs
 
@@ -117,7 +118,7 @@ Or, create 3-4 slides for a presentation in Google slides.
 
 © HyperDocs
 
-|   | **Reflect**  |
-| --- | --- |
-|   |  Explain how physical activity can help prevent strokes:  |
-|   |  |
+|     | **Reflect**                                             |
+| --- | ------------------------------------------------------- |
+|     | Explain how physical activity can help prevent strokes: |
+|     |                                                         |

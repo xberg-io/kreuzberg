@@ -168,7 +168,7 @@ Janet Cook (ISU)
 
 17438 East Walden Road
 
-I am eontributing: $30_, $25_, $20_, $15_, $10_. other amount
+I am eontributing: $30*, $25*, $20*, $15*, $10\_. other amount
 
 Hudson, IL 61748
 

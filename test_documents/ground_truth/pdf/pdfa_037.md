@@ -1,4 +1,5 @@
 # Directions to the Maynard Rod and Gun Club
+
 45 Old Mill Rd
 Maynard, MA. 01754
 
@@ -11,8 +12,9 @@ Go North on Edgell Rd, turn **RIGHT** on Boston Post Road (RT-20) and a quick **
 ![img-0.jpeg](img-0.jpeg)
 
 Directions: Maynard Rod &amp; Gun Club
+
 - 1 -
-Rev: May 21, 2021
+  Rev: May 21, 2021
 
 From Rt. 495:
 
@@ -30,5 +32,6 @@ Take Route 20 East toward Waltham. Turn LEFT at the lights at Stow Street, at th
 ![img-2.jpeg](img-2.jpeg)
 
 Directions: Maynard Rod &amp; Gun Club
+
 - 3 -
-Rev: May 21, 2021
+  Rev: May 21, 2021

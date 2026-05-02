@@ -1,30 +1,30 @@
 {
-	"document": "../../../test_documents/pdf/copy_protected.pdf",
-	"file_type": "pdf",
-	"file_size": 270117,
-	"expected_frameworks": [
-		"kreuzberg",
-		"docling",
-		"markitdown",
-		"mineru",
-		"pdfminer",
-		"pdfplumber",
-		"pdftotext",
-		"pymupdf4llm",
-		"pypdf",
-		"tika",
-		"unstructured"
-	],
-	"metadata": {
-		"description": "Copy-protected PDF document - 263KB document with copy protection flags to test extraction from restricted documents",
-		"category": "pdf-protected",
-		"size_class": "medium",
-		"has_protection": true,
-		"special_handling": "copy_protected"
-	},
-	"ground_truth": {
-		"text_file": "../../../test_documents/ground_truth/pdf/pdf_protected.txt",
-		"source": "vision",
-		"markdown_file": "../../../test_documents/ground_truth/pdf/pdf_protected.md"
-	}
+  "document": "../../../test_documents/pdf/copy_protected.pdf",
+  "file_type": "pdf",
+  "file_size": 270117,
+  "expected_frameworks": [
+    "kreuzberg",
+    "docling",
+    "markitdown",
+    "mineru",
+    "pdfminer",
+    "pdfplumber",
+    "pdftotext",
+    "pymupdf4llm",
+    "pypdf",
+    "tika",
+    "unstructured"
+  ],
+  "metadata": {
+    "description": "Copy-protected PDF document - 263KB document with copy protection flags to test extraction from restricted documents",
+    "category": "pdf-protected",
+    "size_class": "medium",
+    "has_protection": true,
+    "special_handling": "copy_protected"
+  },
+  "ground_truth": {
+    "text_file": "../../../test_documents/ground_truth/pdf/pdf_protected.txt",
+    "source": "vision",
+    "markdown_file": "../../../test_documents/ground_truth/pdf/pdf_protected.md"
+  }
 }

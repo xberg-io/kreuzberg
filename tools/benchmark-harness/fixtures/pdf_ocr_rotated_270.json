@@ -1,15 +1,21 @@
 {
-	"document": "../../../test_documents/pdf/ocr_test_rotated_270.pdf",
-	"file_type": "pdf",
-	"file_size": 94702,
-	"expected_frameworks": ["kreuzberg", "kreuzberg-python", "kreuzberg-node", "kreuzberg-wasm", "kreuzberg-ruby"],
-	"metadata": {
-		"requires_ocr": true
-	},
-	"ground_truth": {
-		"text_file": "../../../test_documents/ground_truth/pdf/pdf_ocr_rotated_270.md",
-		"source": "vision",
-		"markdown_file": "../../../test_documents/ground_truth/pdf/pdf_ocr_rotated_270.md"
-	},
-	"ground_truth_text": "Docling bundles PDF document conversion to JSON and Markdown in an easy self contained package"
+  "document": "../../../test_documents/pdf/ocr_test_rotated_270.pdf",
+  "file_type": "pdf",
+  "file_size": 94702,
+  "expected_frameworks": [
+    "kreuzberg",
+    "kreuzberg-python",
+    "kreuzberg-node",
+    "kreuzberg-wasm",
+    "kreuzberg-ruby"
+  ],
+  "metadata": {
+    "requires_ocr": true
+  },
+  "ground_truth": {
+    "text_file": "../../../test_documents/ground_truth/pdf/pdf_ocr_rotated_270.md",
+    "source": "vision",
+    "markdown_file": "../../../test_documents/ground_truth/pdf/pdf_ocr_rotated_270.md"
+  },
+  "ground_truth_text": "Docling bundles PDF document conversion to JSON and Markdown in an easy self contained package"
 }

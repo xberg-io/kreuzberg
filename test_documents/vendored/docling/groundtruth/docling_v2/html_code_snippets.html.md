@@ -1,6 +1,6 @@
 # Code snippets
 
-The Pythagorean theorem can be written as an equation relating the lengths of the sides *a* , *b* and the hypotenuse *c* .
+The Pythagorean theorem can be written as an equation relating the lengths of the sides _a_ , _b_ and the hypotenuse _c_ .
 
 To use Docling, simply install `docling` from your package manager, e.g. pip: `pip install docling`
 

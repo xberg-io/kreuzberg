@@ -1,21 +1,21 @@
 {
-	"id": "office_numbers_basic",
-	"category": "office",
-	"description": "Numbers document extraction baseline.",
-	"input": {
-		"path": "iwork/test.numbers",
-		"media_type": "application/x-iwork-numbers-sffnumbers"
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/x-iwork-numbers-sffnumbers"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 10
-		}
-	]
+  "id": "office_numbers_basic",
+  "category": "office",
+  "description": "Numbers document extraction baseline.",
+  "input": {
+    "path": "iwork/test.numbers",
+    "media_type": "application/x-iwork-numbers-sffnumbers"
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/x-iwork-numbers-sffnumbers"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 10
+    }
+  ]
 }

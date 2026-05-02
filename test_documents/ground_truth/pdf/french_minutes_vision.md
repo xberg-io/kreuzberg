@@ -9,10 +9,12 @@ Séance publique tenue le 20 juin, à 16h00 à la salle du conseil
 ### Présences
 
 Membres :
+
 - M. Gaétan Gagné, conseiller municipal
 - M. David Hugues-Daines, conseiller municipal
 
 Secrétaire :
+
 - Mme Ariane Bélanger, greffière adjointe, Service du greffe
 
 ### 1. Ouverture de la séance

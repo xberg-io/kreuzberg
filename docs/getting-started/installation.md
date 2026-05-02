@@ -60,138 +60,138 @@ The fastest way to try Kreuzberg - no SDK, no code, just your terminal.
 
 <div class="grid cards install-cards" markdown>
 
--   :fontawesome-brands-python:{ .lg .middle } **Python**
+- :fontawesome-brands-python:{ .lg .middle } **Python**
 
-    ---
+  ***
 
-    ```bash
-    pip install kreuzberg
-    ```
+  ```bash
+  pip install kreuzberg
+  ```
 
-    [API Reference](../reference/api-python.md){ .install-btn .install-btn--ghost }
-    [:material-lightning-bolt: Quick Start](quickstart.md){ .install-btn .install-btn--solid }
+  [API Reference](../reference/api-python.md){ .install-btn .install-btn--ghost }
+  [:material-lightning-bolt: Quick Start](quickstart.md){ .install-btn .install-btn--solid }
 
--   :fontawesome-brands-node-js:{ .lg .middle } **TypeScript (Node.js / Bun)**
+- :fontawesome-brands-node-js:{ .lg .middle } **TypeScript (Node.js / Bun)**
 
-    ---
+  ***
 
-    ```bash
-    npm install @kreuzberg/node
-    ```
+  ```bash
+  npm install @kreuzberg/node
+  ```
 
-    [API Reference](../reference/api-typescript.md){ .install-btn .install-btn--ghost }
-    [:material-lightning-bolt: Quick Start](#typescript){ .install-btn .install-btn--solid }
+  [API Reference](../reference/api-typescript.md){ .install-btn .install-btn--ghost }
+  [:material-lightning-bolt: Quick Start](#typescript){ .install-btn .install-btn--solid }
 
--   :fontawesome-brands-js:{ .lg .middle } **TypeScript (Browser / Edge)**
+- :fontawesome-brands-js:{ .lg .middle } **TypeScript (Browser / Edge)**
 
-    ---
+  ***
 
-    ```bash
-    npm install @kreuzberg/wasm
-    ```
+  ```bash
+  npm install @kreuzberg/wasm
+  ```
 
-    [API Reference](../reference/api-wasm.md){ .install-btn .install-btn--ghost }
-    [:material-lightning-bolt: Quick Start](#typescript){ .install-btn .install-btn--solid }
+  [API Reference](../reference/api-wasm.md){ .install-btn .install-btn--ghost }
+  [:material-lightning-bolt: Quick Start](#typescript){ .install-btn .install-btn--solid }
 
--   :fontawesome-brands-rust:{ .lg .middle } **Rust**
+- :fontawesome-brands-rust:{ .lg .middle } **Rust**
 
-    ---
+  ***
 
-    ```bash
-    cargo add kreuzberg
-    ```
+  ```bash
+  cargo add kreuzberg
+  ```
 
-    [API Reference](../reference/api-rust.md){ .install-btn .install-btn--ghost }
-    [:material-lightning-bolt: Quick Start](quickstart.md){ .install-btn .install-btn--solid }
+  [API Reference](../reference/api-rust.md){ .install-btn .install-btn--ghost }
+  [:material-lightning-bolt: Quick Start](quickstart.md){ .install-btn .install-btn--solid }
 
--   :fontawesome-brands-golang:{ .lg .middle } **Go**
+- :fontawesome-brands-golang:{ .lg .middle } **Go**
 
-    ---
+  ***
 
-    ```bash
-    go get github.com/kreuzberg-dev/kreuzberg/packages/go/v4@latest
-    ```
+  ```bash
+  go get github.com/kreuzberg-dev/kreuzberg/packages/go/v4@latest
+  ```
 
-    [API Reference](../reference/api-go.md){ .install-btn .install-btn--ghost }
-    [:material-lightning-bolt: Quick Start](quickstart.md){ .install-btn .install-btn--solid }
+  [API Reference](../reference/api-go.md){ .install-btn .install-btn--ghost }
+  [:material-lightning-bolt: Quick Start](quickstart.md){ .install-btn .install-btn--solid }
 
--   :fontawesome-brands-java:{ .lg .middle } **Java**
+- :fontawesome-brands-java:{ .lg .middle } **Java**
 
-    ---
+  ***
 
-    ```gradle
-    implementation 'dev.kreuzberg:kreuzberg:4.9.5'
-    ```
+  ```gradle
+  implementation 'dev.kreuzberg:kreuzberg:4.9.5'
+  ```
 
-    [API Reference](../reference/api-java.md){ .install-btn .install-btn--ghost }
-    [:material-lightning-bolt: Quick Start](#java){ .install-btn .install-btn--solid }
+  [API Reference](../reference/api-java.md){ .install-btn .install-btn--ghost }
+  [:material-lightning-bolt: Quick Start](#java){ .install-btn .install-btn--solid }
 
--   :material-language-ruby:{ .lg .middle } **Ruby**
+- :material-language-ruby:{ .lg .middle } **Ruby**
 
-    ---
+  ***
 
-    ```bash
-    gem install kreuzberg
-    ```
+  ```bash
+  gem install kreuzberg
+  ```
 
-    [API Reference](../reference/api-ruby.md){ .install-btn .install-btn--ghost }
-    [:material-lightning-bolt: Quick Start](quickstart.md){ .install-btn .install-btn--solid }
+  [API Reference](../reference/api-ruby.md){ .install-btn .install-btn--ghost }
+  [:material-lightning-bolt: Quick Start](quickstart.md){ .install-btn .install-btn--solid }
 
--   :material-language-csharp:{ .lg .middle } **C# / .NET**
+- :material-language-csharp:{ .lg .middle } **C# / .NET**
 
-    ---
+  ***
 
-    ```bash
-    dotnet add package Kreuzberg
-    ```
+  ```bash
+  dotnet add package Kreuzberg
+  ```
 
-    [API Reference](../reference/api-csharp.md){ .install-btn .install-btn--ghost }
-    [:material-lightning-bolt: Quick Start](../reference/api-csharp.md){ .install-btn .install-btn--solid }
+  [API Reference](../reference/api-csharp.md){ .install-btn .install-btn--ghost }
+  [:material-lightning-bolt: Quick Start](../reference/api-csharp.md){ .install-btn .install-btn--solid }
 
--   :fontawesome-brands-php:{ .lg .middle } **PHP**
+- :fontawesome-brands-php:{ .lg .middle } **PHP**
 
-    ---
+  ***
 
-    ```bash
-    composer require kreuzberg/kreuzberg
-    ```
+  ```bash
+  composer require kreuzberg/kreuzberg
+  ```
 
-    [API Reference](../reference/api-php.md){ .install-btn .install-btn--ghost }
-    [:material-lightning-bolt: Quick Start](quickstart.md){ .install-btn .install-btn--solid }
+  [API Reference](../reference/api-php.md){ .install-btn .install-btn--ghost }
+  [:material-lightning-bolt: Quick Start](quickstart.md){ .install-btn .install-btn--solid }
 
--   :simple-elixir:{ .lg .middle } **Elixir**
+- :simple-elixir:{ .lg .middle } **Elixir**
 
-    ---
+  ***
 
-    ```elixir
-    {:kreuzberg, "~> 4.0"}
-    ```
+  ```elixir
+  {:kreuzberg, "~> 4.0"}
+  ```
 
-    [API Reference](../reference/api-elixir.md){ .install-btn .install-btn--ghost }
-    [:material-lightning-bolt: Quick Start](#elixir){ .install-btn .install-btn--solid }
+  [API Reference](../reference/api-elixir.md){ .install-btn .install-btn--ghost }
+  [:material-lightning-bolt: Quick Start](#elixir){ .install-btn .install-btn--solid }
 
--   :simple-r:{ .lg .middle } **R**
+- :simple-r:{ .lg .middle } **R**
 
-    ---
+  ***
 
-    ```r
-    install.packages("kreuzberg",
-      repos = "https://kreuzberg-dev.r-universe.dev")
-    ```
+  ```r
+  install.packages("kreuzberg",
+    repos = "https://kreuzberg-dev.r-universe.dev")
+  ```
 
-    [API Reference](../reference/api-r.md){ .install-btn .install-btn--ghost }
-    [:material-lightning-bolt: Quick Start](quickstart.md){ .install-btn .install-btn--solid }
+  [API Reference](../reference/api-r.md){ .install-btn .install-btn--ghost }
+  [:material-lightning-bolt: Quick Start](quickstart.md){ .install-btn .install-btn--solid }
 
--   :simple-cplusplus:{ .lg .middle } **C / C++**
+- :simple-cplusplus:{ .lg .middle } **C / C++**
 
-    ---
+  ***
 
-    ```bash
-    cargo build -p kreuzberg-ffi
-    ```
+  ```bash
+  cargo build -p kreuzberg-ffi
+  ```
 
-    [API Reference](../reference/api-c.md){ .install-btn .install-btn--ghost }
-    [:material-lightning-bolt: Quick Start](#c-c-v4.5.3){ .install-btn .install-btn--solid }
+  [API Reference](../reference/api-c.md){ .install-btn .install-btn--ghost }
+  [:material-lightning-bolt: Quick Start](#c-c-v4.5.3){ .install-btn .install-btn--solid }
 
 </div>
 
@@ -201,13 +201,13 @@ The fastest way to try Kreuzberg - no SDK, no code, just your terminal.
 
 Most of the time you won't need anything beyond the install command above. The table below only matters if you're building from source or want OCR:
 
-| Dependency | When you need it |
-|---|---|
+| Dependency                | When you need it                                                                       |
+| ------------------------- | -------------------------------------------------------------------------------------- |
 | AVX/AVX2 CPU instructions | Required for ONNX Runtime features (PaddleOCR, layout detection, embeddings) on x86_64 |
-| Rust toolchain (`rustup`) | Building any native binding from source |
-| C/C++ compiler | Building native bindings (Xcode command-line tools / `build-essential` / MSVC) |
-| Tesseract OCR | Optional — `brew install tesseract` / `apt install tesseract-ocr` |
-| PDFium | Auto-fetched during builds |
+| Rust toolchain (`rustup`) | Building any native binding from source                                                |
+| C/C++ compiler            | Building native bindings (Xcode command-line tools / `build-essential` / MSVC)         |
+| Tesseract OCR             | Optional — `brew install tesseract` / `apt install tesseract-ocr`                      |
+| PDFium                    | Auto-fetched during builds                                                             |
 
 The Wasm package (`@kreuzberg/wasm`) has **zero** system dependencies.
 
@@ -217,11 +217,11 @@ Kreuzberg bundles a CPU-only ONNX Runtime — ML features (PaddleOCR, layout det
 
 For GPU acceleration, install a GPU-enabled ONNX Runtime and set `ORT_DYLIB_PATH`:
 
-| Platform | Install | Set ORT_DYLIB_PATH |
-|---|---|---|
-| Linux (CUDA) | Download from [ONNX Runtime releases](https://github.com/microsoft/onnxruntime/releases) | `export ORT_DYLIB_PATH=/path/to/libonnxruntime.so` |
-| Python (any OS) | `pip install onnxruntime-gpu` | Point at the pip package's `capi/` directory |
-| macOS (CoreML) | Works with bundled ORT — no extra setup needed | — |
+| Platform        | Install                                                                                  | Set ORT_DYLIB_PATH                                 |
+| --------------- | ---------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| Linux (CUDA)    | Download from [ONNX Runtime releases](https://github.com/microsoft/onnxruntime/releases) | `export ORT_DYLIB_PATH=/path/to/libonnxruntime.so` |
+| Python (any OS) | `pip install onnxruntime-gpu`                                                            | Point at the pip package's `capi/` directory       |
+| macOS (CoreML)  | Works with bundled ORT — no extra setup needed                                           | —                                                  |
 
 See [AccelerationConfig](../reference/configuration.md#accelerationconfig) and [ORT_DYLIB_PATH](../reference/environment-variables.md#ort_dylib_path) for details.
 
@@ -235,19 +235,20 @@ For most languages the install command above is all you need. The sections below
 
 Two npm packages target different runtimes:
 
-| Package | Best for | Performance |
-|---|---|---|
-| `@kreuzberg/node` | Node.js, Bun — server-side apps | Native (100%) |
+| Package           | Best for                           | Performance    |
+| ----------------- | ---------------------------------- | -------------- |
+| `@kreuzberg/node` | Node.js, Bun — server-side apps    | Native (100%)  |
 | `@kreuzberg/wasm` | Browsers, Deno, Cloudflare Workers | Wasm (~60-80%) |
 
 Both work with **pnpm** (`pnpm add`) and **Yarn** (`yarn add`) as well.
 
 !!! Note "pnpm workspaces" In monorepos, add this to your root `.npmrc` so platform-specific optional deps resolve correctly:
-    ```ini
-    auto-install-peers=true```
+`ini
+    auto-install-peers=true`
 
 ??? Example "Wasm — Browser usage" ```HTML
-    <script type="module"> import { initWasm, extractFromFile } from "@kreuzberg/Wasm";
+
+<script type="module"> import { initWasm, extractFromFile } from "@kreuzberg/Wasm";
 
       await initWasm();
 
@@ -257,6 +258,7 @@ Both work with **pnpm** (`pnpm add`) and **Yarn** (`yarn add`) as well.
         console.log(result.content);
       });
     </script>
+
     <input type="file" id="file" />
     ```
 
@@ -372,8 +374,8 @@ my_app: my_app.c
 ```
 
 !!! Tip "Platform-specific linker flags"
-    **macOS:** add `-framework CoreFoundation -framework Security`
-    **Windows:** add `-lws2_32 -luserenv -lbcrypt`
+**macOS:** add `-framework CoreFoundation -framework Security`
+**Windows:** add `-lws2_32 -luserenv -lbcrypt`
 
 !!! Warning "Windows" The Windows FFI library links against ONNX Runtime dynamically. `onnxruntime.dll` must be on your `PATH` at runtime — see the note at the top of this page.
 

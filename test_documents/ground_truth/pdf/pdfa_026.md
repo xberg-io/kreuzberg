@@ -10,58 +10,58 @@ For Hand Delivery/Street Address: 1400 Tenth Street, Sacramento, CA 95814
 
 ## Project Title: Mata
 
-|  Lead Agency: Monterey County Resource Management Agency | Contact Person: Son Pham-Gallardo  |
-| --- | --- |
-|  Mailing Address: 1441 Schilling Place, 2nd Floor | Phone: 831-755-5226  |
-|  City: Salinas | Zip: 93901  |
-|  County: Monterey | City/Nearest Community: Pebble Beach  |
+| Lead Agency: Monterey County Resource Management Agency | Contact Person: Son Pham-Gallardo    |
+| ------------------------------------------------------- | ------------------------------------ |
+| Mailing Address: 1441 Schilling Place, 2nd Floor        | Phone: 831-755-5226                  |
+| City: Salinas                                           | Zip: 93901                           |
+| County: Monterey                                        | City/Nearest Community: Pebble Beach |
 
 ## Project Location: County: Monterey
 
-|  Cross Streets: El Bosque Drive | Zip Code: 93953  |
-| --- | --- |
-|  Longitude/Latitude (degrees, minutes and seconds): 38° 49' 50.37" N / 121° 15' 14.58" W | Total Acres: 0.37  |
-|  Assessor's Parcel No.: 008-091-005-000 | Section: ________ Twp.: ________ Range: ________ Base: ________  |
-|  Within 2 Miles: State Hwy #: Highway 68 | Waterways: ________  |
-|  Airports: ________ | Railways: ________ Schools: ________  |
+| Cross Streets: El Bosque Drive                                                          | Zip Code: 93953                                                                 |
+| --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| Longitude/Latitude (degrees, minutes and seconds): 38° 49' 50.37" N / 121° 15' 14.58" W | Total Acres: 0.37                                                               |
+| Assessor's Parcel No.: 008-091-005-000                                                  | Section: **\_\_\_\_** Twp.: **\_\_\_\_** Range: **\_\_\_\_** Base: **\_\_\_\_** |
+| Within 2 Miles: State Hwy #: Highway 68                                                 | Waterways: **\_\_\_\_**                                                         |
+| Airports: **\_\_\_\_**                                                                  | Railways: **\_\_\_\_** Schools: **\_\_\_\_**                                    |
 
 ## Document Type:
 
-|  CEQA: | ☐ NOP | ☐ Draft EIR | NEPA: | ☐ NOI | Other: | ☐ Joint Document  |
-| --- | --- | --- | --- | --- | --- | --- |
-|   | ☐ Early Cons | ☐ Supplement/Subsequent EIR |  | ☐ EA |  | ☐ Final Document  |
-|   | ☐ Neg Dec | (Prior SCH No.) |  | ☐ Draft EIS |  | ☐ Other:  |
-|   | ☑ Mit Neg Dec | Other: |  | ☐ FONSI |  |   |
+| CEQA: | ☐ NOP         | ☐ Draft EIR                 | NEPA: | ☐ NOI       | Other: | ☐ Joint Document |
+| ----- | ------------- | --------------------------- | ----- | ----------- | ------ | ---------------- |
+|       | ☐ Early Cons  | ☐ Supplement/Subsequent EIR |       | ☐ EA        |        | ☐ Final Document |
+|       | ☐ Neg Dec     | (Prior SCH No.)             |       | ☐ Draft EIS |        | ☐ Other:         |
+|       | ☑ Mit Neg Dec | Other:                      |       | ☐ FONSI     |        |                  |
 
 ## Local Action Type:
 
-|  ☐ General Plan Update | ☐ Specific Plan | ☐ Rezone | ☐ Annexation  |
-| --- | --- | --- | --- |
-|  ☐ General Plan Amendment | ☐ Master Plan | ☐ Prezone | ☐ Redevelopment  |
-|  ☐ General Plan Element | ☐ Planned Unit Development | ☐ Use Permit | ☑ Coastal Permit  |
-|  ☐ Community Plan | ☐ Site Plan | ☐ Land Division (Subdivision, etc.) | ☑ Other: Design Approval  |
+| ☐ General Plan Update    | ☐ Specific Plan            | ☐ Rezone                            | ☐ Annexation             |
+| ------------------------ | -------------------------- | ----------------------------------- | ------------------------ |
+| ☐ General Plan Amendment | ☐ Master Plan              | ☐ Prezone                           | ☐ Redevelopment          |
+| ☐ General Plan Element   | ☐ Planned Unit Development | ☐ Use Permit                        | ☑ Coastal Permit         |
+| ☐ Community Plan         | ☐ Site Plan                | ☐ Land Division (Subdivision, etc.) | ☑ Other: Design Approval |
 
 ## Development Type:
 
-|  ☑ Residential: Units 1 Acres 0.37 | ☐ Office: Sq.ft. Acres ________ Employees ________ | ☐ Transportation: Type ________  |
-| --- | --- | --- |
-|  ☐ Commercial: Sq.ft. Acres ________ Employees ________ | ☐ Mining: Mineral ________ | ☐ Power: Type ________ MW ________  |
-|  ☐ Industrial: Sq.ft. Acres ________ Employees ________ | ☐ Waste Treatment: Type ________ MGD ________ | ☐ Hazardous Waste: Type ________  |
-|  ☐ Educational: ________ | ☐ Other: ________ |   |
-|  ☐ Recreational: ________ |  |   |
-|  ☐ Water Facilities: Type ________ MGD ________ |  |   |
+| ☑ Residential: Units 1 Acres 0.37                              | ☐ Office: Sq.ft. Acres **\_\_\_\_** Employees **\_\_\_\_** | ☐ Transportation: Type **\_\_\_\_**        |
+| -------------------------------------------------------------- | ---------------------------------------------------------- | ------------------------------------------ |
+| ☐ Commercial: Sq.ft. Acres **\_\_\_\_** Employees **\_\_\_\_** | ☐ Mining: Mineral **\_\_\_\_**                             | ☐ Power: Type **\_\_\_\_** MW **\_\_\_\_** |
+| ☐ Industrial: Sq.ft. Acres **\_\_\_\_** Employees **\_\_\_\_** | ☐ Waste Treatment: Type **\_\_\_\_** MGD **\_\_\_\_**      | ☐ Hazardous Waste: Type **\_\_\_\_**       |
+| ☐ Educational: **\_\_\_\_**                                    | ☐ Other: **\_\_\_\_**                                      |                                            |
+| ☐ Recreational: **\_\_\_\_**                                   |                                                            |                                            |
+| ☐ Water Facilities: Type **\_\_\_\_** MGD **\_\_\_\_**         |                                                            |                                            |
 
 ## Project Issues Discussed in Document:
 
-|  ☑ Aesthetic/Visual | ☐ Fiscal | ☐ Recreation/Parks | ☐ Vegetation  |
-| --- | --- | --- | --- |
-|  ☐ Agricultural Land | ☐ Flood Plain/Flooding | ☐ Schools/Universities | ☐ Water Quality  |
-|  ☐ Air Quality | ☑ Forest Land/Fire Hazard | ☐ Septic Systems | ☐ Water Supply/Groundwater  |
-|  ☐ Archeological/Historical | ☑ Geologic/Seismic | ☐ Sewer Capacity | ☐ Wetland/Riparian  |
-|  ☑ Biological Resources | ☐ Minerals | ☐ Soil Erosion/Compaction/Grading | ☐ Growth Inducement  |
-|  ☐ Coastal Zone | ☐ Noise | ☐ Solid Waste | ☑ Land Use  |
-|  ☐ Drainage/Absorption | ☐ Population/Housing Balance | ☐ Toxic/Hazardous | ☐ Cumulative Effects  |
-|  ☐ Economic/Jobs | ☐ Public Services/Facilities | ☐ Traffic/Circulation | ☐ Other: ________  |
+| ☑ Aesthetic/Visual         | ☐ Fiscal                     | ☐ Recreation/Parks                | ☐ Vegetation               |
+| -------------------------- | ---------------------------- | --------------------------------- | -------------------------- |
+| ☐ Agricultural Land        | ☐ Flood Plain/Flooding       | ☐ Schools/Universities            | ☐ Water Quality            |
+| ☐ Air Quality              | ☑ Forest Land/Fire Hazard    | ☐ Septic Systems                  | ☐ Water Supply/Groundwater |
+| ☐ Archeological/Historical | ☑ Geologic/Seismic           | ☐ Sewer Capacity                  | ☐ Wetland/Riparian         |
+| ☑ Biological Resources     | ☐ Minerals                   | ☐ Soil Erosion/Compaction/Grading | ☐ Growth Inducement        |
+| ☐ Coastal Zone             | ☐ Noise                      | ☐ Solid Waste                     | ☑ Land Use                 |
+| ☐ Drainage/Absorption      | ☐ Population/Housing Balance | ☐ Toxic/Hazardous                 | ☐ Cumulative Effects       |
+| ☐ Economic/Jobs            | ☐ Public Services/Facilities | ☐ Traffic/Circulation             | ☐ Other: **\_\_\_\_**      |
 
 ## Present Land Use/Zoning/General Plan Designation:
 
@@ -84,30 +84,30 @@ Reviewing Agencies Checklist
 
 Lead Agencies may recommend State Clearinghouse distribution by marking agencies below with and "X". If you have already sent your document to the agency please denote that with an "S".
 
-|  ☐ Air Resources Board | ☐ Office of Historic Preservation  |
-| --- | --- |
-|  ☐ Boating & Waterways, Department of | ☐ Office of Public School Construction  |
-|  ☐ California Emergency Management Agency | ☐ Parks & Recreation, Department of  |
-|  ☐ California Highway Patrol | ☐ Pesticide Regulation, Department of  |
-|  ☐ Caltrans District #______ | ☐ Public Utilities Commission  |
-|  ☐ Caltrans Division of Aeronautics | ☐ Regional WQCB #______  |
-|  ☐ Caltrans Planning | ☐ Resources Agency  |
-|  ☐ Central Valley Flood Protection Board | ☐ Resources Recycling and Recovery, Department of  |
-|  ☐ Coachella Valley Mtns. Conservancy | ☐ S.F. Bay Conservation & Development Comm.  |
-|  ☑ Coastal Commission | ☐ San Gabriel & Lower L.A. Rivers & Mtns. Conservancy  |
-|  ☐ Colorado River Board | ☐ San Joaquin River Conservancy  |
-|  ☐ Conservation, Department of | ☐ Santa Monica Mtns. Conservancy  |
-|  ☐ Corrections, Department of | ☐ State Lands Commission  |
-|  ☐ Delta Protection Commission | ☐ SWRCB: Clean Water Grants  |
-|  ☐ Education, Department of | ☐ SWRCB: Water Quality  |
-|  ☐ Energy Commission | ☐ SWRCB: Water Rights  |
-|  ☐ Fish & Game Region #______ | ☐ Tahoe Regional Planning Agency  |
-|  ☐ Food & Agriculture, Department of | ☐ Toxic Substances Control, Department of  |
-|  ☐ Forestry and Fire Protection, Department of | ☐ Water Resources, Department of  |
-|  ☐ General Services, Department of |   |
-|  ☐ Health Services, Department of | ☐ Other: _________________________  |
-|  ☐ Housing & Community Development | ☐ Other: _________________________  |
-|  ☑ Native American Heritage Commission |   |
+| ☐ Air Resources Board                         | ☐ Office of Historic Preservation                     |
+| --------------------------------------------- | ----------------------------------------------------- |
+| ☐ Boating & Waterways, Department of          | ☐ Office of Public School Construction                |
+| ☐ California Emergency Management Agency      | ☐ Parks & Recreation, Department of                   |
+| ☐ California Highway Patrol                   | ☐ Pesticide Regulation, Department of                 |
+| ☐ Caltrans District #**\_\_**                 | ☐ Public Utilities Commission                         |
+| ☐ Caltrans Division of Aeronautics            | ☐ Regional WQCB #**\_\_**                             |
+| ☐ Caltrans Planning                           | ☐ Resources Agency                                    |
+| ☐ Central Valley Flood Protection Board       | ☐ Resources Recycling and Recovery, Department of     |
+| ☐ Coachella Valley Mtns. Conservancy          | ☐ S.F. Bay Conservation & Development Comm.           |
+| ☑ Coastal Commission                          | ☐ San Gabriel & Lower L.A. Rivers & Mtns. Conservancy |
+| ☐ Colorado River Board                        | ☐ San Joaquin River Conservancy                       |
+| ☐ Conservation, Department of                 | ☐ Santa Monica Mtns. Conservancy                      |
+| ☐ Corrections, Department of                  | ☐ State Lands Commission                              |
+| ☐ Delta Protection Commission                 | ☐ SWRCB: Clean Water Grants                           |
+| ☐ Education, Department of                    | ☐ SWRCB: Water Quality                                |
+| ☐ Energy Commission                           | ☐ SWRCB: Water Rights                                 |
+| ☐ Fish & Game Region #**\_\_**                | ☐ Tahoe Regional Planning Agency                      |
+| ☐ Food & Agriculture, Department of           | ☐ Toxic Substances Control, Department of             |
+| ☐ Forestry and Fire Protection, Department of | ☐ Water Resources, Department of                      |
+| ☐ General Services, Department of             |                                                       |
+| ☐ Health Services, Department of              | ☐ Other: \***\*\*\*\*\*\*\***\_\***\*\*\*\*\*\*\***   |
+| ☐ Housing & Community Development             | ☐ Other: \***\*\*\*\*\*\*\***\_\***\*\*\*\*\*\*\***   |
+| ☑ Native American Heritage Commission         |                                                       |
 
 ## Local Public Review Period (to be filled in by lead agency)
 
@@ -116,14 +116,14 @@ Ending Date November 9, 2020
 
 ## Lead Agency (Complete if applicable):
 
-|  Consulting Firm: | Applicant: Henry Mata  |
-| --- | --- |
-|  Address: | Address: 998 N TEMPERANCE AVE  |
-|  City/State/Zip: | City/State/Zip: CLOVIS CA 93611  |
-|  Contact: | Phone: (559) 323-9595  |
-|  Phone: |   |
+| Consulting Firm: | Applicant: Henry Mata           |
+| ---------------- | ------------------------------- |
+| Address:         | Address: 998 N TEMPERANCE AVE   |
+| City/State/Zip:  | City/State/Zip: CLOVIS CA 93611 |
+| Contact:         | Phone: (559) 323-9595           |
+| Phone:           |                                 |
 
-Signature of Lead Agency Representative: _________________________
+Signature of Lead Agency Representative: \***\*\*\*\*\*\*\***\_\***\*\*\*\*\*\*\***
 Date: 10/7/20
 
 Authority cited: Section 21083, Public Resources Code, Reference: Section 21161, Public Resources Code.

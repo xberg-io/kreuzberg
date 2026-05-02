@@ -102,7 +102,7 @@ Product Name : OPENUPS2-N(RS)
 
 This test results meet the acceptance criteria of the latest SVHC candidate list from (EC) No. 1907/2006 REACH Regulation
 
-|  Legal requirement relevant to the article | Conclusion  |   |
-| --- | --- | --- |
-|  Article 33(Communication of SVHC information) | ☑ | Comply(Article contains<0.1% candidate list SVHC)  |
-|   |  ☐ | Warning(Article contains>0.1% candidate list SVHC and prepare tool for SVHC communication)  |
+| Legal requirement relevant to the article     | Conclusion |                                                                                            |
+| --------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------ |
+| Article 33(Communication of SVHC information) | ☑          | Comply(Article contains<0.1% candidate list SVHC)                                          |
+|                                               | ☐          | Warning(Article contains>0.1% candidate list SVHC and prepare tool for SVHC communication) |

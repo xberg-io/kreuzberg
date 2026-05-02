@@ -65,14 +65,14 @@ Use `topic_threshold` to control sensitivity: higher values (0.7–0.9) preserve
 
 Each chunk in `result.chunks` contains:
 
-| Field | Description |
-|-------|-------------|
-| `content` | Chunk text |
-| `metadata.byte_start` / `byte_end` | Byte offsets in the original text |
-| `metadata.chunk_index` / `total_chunks` | Position in sequence |
-| `metadata.token_count` | Token count (when embeddings enabled) |
-| `metadata.heading_context` | Active heading hierarchy (Markdown chunker only) |
-| `embedding` | Embedding vector (when configured) |
+| Field                                   | Description                                      |
+| --------------------------------------- | ------------------------------------------------ |
+| `content`                               | Chunk text                                       |
+| `metadata.byte_start` / `byte_end`      | Byte offsets in the original text                |
+| `metadata.chunk_index` / `total_chunks` | Position in sequence                             |
+| `metadata.token_count`                  | Token count (when embeddings enabled)            |
+| `metadata.heading_context`              | Active heading hierarchy (Markdown chunker only) |
+| `embedding`                             | Embedding vector (when configured)               |
 
 Chunks can be sized by token count instead of characters — enable the `chunking-tokenizers` feature and set `sizing` to `token`.
 
@@ -188,12 +188,12 @@ By default, only the primary language is returned. Set `detect_multiple: true` t
 
 Generate embeddings for semantic search and RAG using local ONNX models. Requires the `embeddings` feature. Embeddings are generated in-process with no external API calls.
 
-| Preset | Model | Dimensions | Max Tokens | Use Case |
-|--------|-------|-----------|------------|----------|
-| `fast` | all-MiniLM-L6-v2 (quantized) | 384 | 512 | Quick prototyping, development, resource-constrained |
-| `balanced` | BGE-base-en-v1.5 | 768 | 1024 | General-purpose RAG, production deployments, English |
-| `quality` | BGE-large-en-v1.5 | 1024 | 2000 | Complex documents, maximum accuracy, sufficient compute |
-| `multilingual` | multilingual-e5-base | 768 | 1024 | International documents, mixed-language content |
+| Preset         | Model                        | Dimensions | Max Tokens | Use Case                                                |
+| -------------- | ---------------------------- | ---------- | ---------- | ------------------------------------------------------- |
+| `fast`         | all-MiniLM-L6-v2 (quantized) | 384        | 512        | Quick prototyping, development, resource-constrained    |
+| `balanced`     | BGE-base-en-v1.5             | 768        | 1024       | General-purpose RAG, production deployments, English    |
+| `quality`      | BGE-large-en-v1.5            | 1024       | 2000       | Complex documents, maximum accuracy, sufficient compute |
+| `multilingual` | multilingual-e5-base         | 768        | 1024       | International documents, mixed-language content         |
 
 ### In-Process Embedding Backends (Plugin Variant)
 
@@ -279,11 +279,11 @@ The CLI (`kreuzberg embed --provider plugin --plugin my-embedder`), MCP server (
 
 Reduce token count while preserving meaning for LLM pipelines.
 
-| Level | Reduction | Effect |
-|-------|-----------|--------|
-| `off` | 0% | Pass-through |
-| `moderate` | 15–25% | Stopwords + redundancy removal |
-| `aggressive` | 30–50% | Semantic clustering + importance scoring |
+| Level        | Reduction | Effect                                   |
+| ------------ | --------- | ---------------------------------------- |
+| `off`        | 0%        | Pass-through                             |
+| `moderate`   | 15–25%    | Stopwords + redundancy removal           |
+| `aggressive` | 30–50%    | Semantic clustering + importance scoring |
 
 ### Configuration
 
@@ -429,13 +429,13 @@ Extract keywords using YAKE or RAKE algorithms. Requires the `keywords` feature 
 
 Score extracted text for quality issues (0.0–1.0, where 1.0 is highest quality). Detects OCR artifacts, script content, navigation elements, and structural issues.
 
-| Factor | Weight | Detects |
-|--------|--------|---------|
-| OCR Artifacts | 30% | Scattered chars, repeated punctuation, malformed words |
-| Script Content | 20% | JavaScript, CSS, HTML tags |
-| Navigation Elements | 10% | Breadcrumbs, pagination, skip links |
-| Document Structure | 20% | Sentence/paragraph length, punctuation distribution |
-| Metadata Quality | 10% | Presence of title, author, subject |
+| Factor              | Weight | Detects                                                |
+| ------------------- | ------ | ------------------------------------------------------ |
+| OCR Artifacts       | 30%    | Scattered chars, repeated punctuation, malformed words |
+| Script Content      | 20%    | JavaScript, CSS, HTML tags                             |
+| Navigation Elements | 10%    | Breadcrumbs, pagination, skip links                    |
+| Document Structure  | 20%    | Sentence/paragraph length, punctuation distribution    |
+| Metadata Quality    | 10%    | Presence of title, author, subject                     |
 
 Score ranges: `0.0–0.3` very low, `0.3–0.6` low, `0.6–0.8` moderate, `0.8–1.0` high.
 

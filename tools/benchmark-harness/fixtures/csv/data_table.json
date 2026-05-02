@@ -2,9 +2,7 @@
   "document": "../../../../test_documents/csv/data_table.csv",
   "file_type": "csv",
   "file_size": 476,
-  "expected_frameworks": [
-    "kreuzberg"
-  ],
+  "expected_frameworks": ["kreuzberg"],
   "metadata": {
     "description": "csv test: data_table",
     "source": "pandoc-generated",

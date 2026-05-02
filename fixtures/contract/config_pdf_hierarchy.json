@@ -1,35 +1,35 @@
 {
-	"id": "config_pdf_hierarchy",
-	"description": "Tests PDF hierarchy extraction config with block-level structure",
-	"tags": ["contract", "config", "pdf"],
-	"call": "extract_file_sync",
-	"input": {
-		"path": "pdf/fake_memo.pdf",
-		"config": {
-			"pdf_options": {
-				"hierarchy": {
-					"enabled": true,
-					"include_bbox": true
-				}
-			},
-			"pages": {
-				"extract_pages": true
-			}
-		}
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/pdf"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 50
-		}
-	],
-	"skip": {
-		"reason": "Requires features: pdf"
-	}
+  "id": "config_pdf_hierarchy",
+  "description": "Tests PDF hierarchy extraction config with block-level structure",
+  "tags": ["contract", "config", "pdf"],
+  "call": "extract_file_sync",
+  "input": {
+    "path": "pdf/fake_memo.pdf",
+    "config": {
+      "pdf_options": {
+        "hierarchy": {
+          "enabled": true,
+          "include_bbox": true
+        }
+      },
+      "pages": {
+        "extract_pages": true
+      }
+    }
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/pdf"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 50
+    }
+  ],
+  "skip": {
+    "reason": "Requires features: pdf"
+  }
 }

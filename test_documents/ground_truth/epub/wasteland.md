@@ -92,7 +92,7 @@ Living nor dead, and I knew nothing,40
 
 Looking into the heart of light, the silence.
 
-Od' und *leer das Meer.\**[](#note-4)
+Od' und \*leer das Meer.\*\*[](#note-4)
 
 Madame Sosostris, famous clairvoyante,
 
@@ -334,7 +334,7 @@ It's them pills I took, to bring it off, she said.
 
 The chemist said it would be all right, but I've never been the same.
 
-You *are* a proper fool, I said.
+You _are_ a proper fool, I said.
 
 Well, if Albert won't leave you alone, there it is, I said,
 

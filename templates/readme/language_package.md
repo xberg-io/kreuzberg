@@ -30,7 +30,7 @@ Kreuzberg supports multiple OCR backends for extracting text from scanned docume
 {% for backend in ocr_backends %}
 
 - **{{ backend | title }}**
-{% endfor %}
+  {% endfor %}
 
 ### OCR Configuration Example
 

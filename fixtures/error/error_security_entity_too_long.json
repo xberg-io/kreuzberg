@@ -1,20 +1,20 @@
 {
-	"id": "error_security_entity_too_long",
-	"category": "error",
-	"description": "Error when an XML attribute / entity expansion exceeds max_entity_length (EntityValidator fires). Real DOCX attributes routinely exceed a 2-byte cap, so this trips on any content.",
-	"tags": ["error", "security", "limits", "entity"],
-	"call": "extract_file_sync",
-	"input": {
-		"path": "docx/lorem_ipsum.docx",
-		"config": {
-			"security_limits": {
-				"max_entity_length": 2
-			}
-		}
-	},
-	"assertions": [
-		{
-			"type": "error"
-		}
-	]
+  "id": "error_security_entity_too_long",
+  "category": "error",
+  "description": "Error when an XML attribute / entity expansion exceeds max_entity_length (EntityValidator fires). Real DOCX attributes routinely exceed a 2-byte cap, so this trips on any content.",
+  "tags": ["error", "security", "limits", "entity"],
+  "call": "extract_file_sync",
+  "input": {
+    "path": "docx/lorem_ipsum.docx",
+    "config": {
+      "security_limits": {
+        "max_entity_length": 2
+      }
+    }
+  },
+  "assertions": [
+    {
+      "type": "error"
+    }
+  ]
 }

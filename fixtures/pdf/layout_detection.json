@@ -1,39 +1,39 @@
 {
-	"id": "pdf_layout_detection",
-	"category": "pdf",
-	"description": "PDF extraction with layout detection enabled should produce content from a document with mixed structure.",
-	"tags": ["pdf", "layout", "config"],
-	"call": "extract_file_sync",
-	"input": {
-		"path": "pdf/docling.pdf",
-		"mime_type": "application/pdf",
-		"config": {
-			"layout": {
-				"table_model": "tatr"
-			},
-			"output_format": "markdown",
-			"pages": {
-				"extract_pages": true
-			}
-		}
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "mime_type",
-			"value": "application/pdf"
-		},
-		{
-			"type": "not_empty",
-			"field": "content"
-		},
-		{
-			"type": "min_length",
-			"field": "content",
-			"value": 100
-		}
-	],
-	"skip": {
-		"reason": "Requires layout-detection feature with ONNX Runtime"
-	}
+  "id": "pdf_layout_detection",
+  "category": "pdf",
+  "description": "PDF extraction with layout detection enabled should produce content from a document with mixed structure.",
+  "tags": ["pdf", "layout", "config"],
+  "call": "extract_file_sync",
+  "input": {
+    "path": "pdf/docling.pdf",
+    "mime_type": "application/pdf",
+    "config": {
+      "layout": {
+        "table_model": "tatr"
+      },
+      "output_format": "markdown",
+      "pages": {
+        "extract_pages": true
+      }
+    }
+  },
+  "assertions": [
+    {
+      "type": "equals",
+      "field": "mime_type",
+      "value": "application/pdf"
+    },
+    {
+      "type": "not_empty",
+      "field": "content"
+    },
+    {
+      "type": "min_length",
+      "field": "content",
+      "value": 100
+    }
+  ],
+  "skip": {
+    "reason": "Requires layout-detection feature with ONNX Runtime"
+  }
 }

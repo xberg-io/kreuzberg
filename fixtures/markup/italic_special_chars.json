@@ -1,28 +1,26 @@
 {
-	"id": "italic_special_chars",
-	"category": "markup",
-	"description": "Italic special chars",
-	"tags": [
-		"markup"
-	],
-	"call": "italic",
-	"input": {
-		"start": 0,
-		"end": 17
-	},
-	"assertions": [
-		{
-			"type": "not_error"
-		},
-		{
-			"type": "equals",
-			"field": "start",
-			"value": 0
-		},
-		{
-			"type": "equals",
-			"field": "end",
-			"value": 17
-		}
-	]
+  "id": "italic_special_chars",
+  "category": "markup",
+  "description": "Italic special chars",
+  "tags": ["markup"],
+  "call": "italic",
+  "input": {
+    "start": 0,
+    "end": 17
+  },
+  "assertions": [
+    {
+      "type": "not_error"
+    },
+    {
+      "type": "equals",
+      "field": "start",
+      "value": 0
+    },
+    {
+      "type": "equals",
+      "field": "end",
+      "value": 17
+    }
+  ]
 }
