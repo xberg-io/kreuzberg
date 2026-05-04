@@ -1,5 +1,5 @@
 [workspace]
-alef_version = "0.14.20"
+alef_version = "0.14.22"
 languages = [
   "python",
   "node",
@@ -1423,7 +1423,7 @@ returns_result = true
 result_is_vec = true
 skip_languages = ["wasm"]
 args = [
-  { name = "paths", field = "input.paths", type = "json_object", owned = true, go_type = "BatchFileItem" },
+  { name = "paths", field = "input.paths", type = "json_object", owned = true, go_type = "BatchFileItem", element_type = "BatchFileItem" },
   { name = "config", field = "input.config", type = "json_object", optional = true },
 ]
 
@@ -1448,7 +1448,7 @@ returns_result = true
 result_is_vec = true
 skip_languages = ["wasm"]
 args = [
-  { name = "paths", field = "input.paths", type = "json_object", owned = true, go_type = "BatchFileItem" },
+  { name = "paths", field = "input.paths", type = "json_object", owned = true, go_type = "BatchFileItem", element_type = "BatchFileItem" },
   { name = "config", field = "input.config", type = "json_object", optional = true },
 ]
 
@@ -1538,7 +1538,7 @@ returns_result = true
 result_is_vec = true
 skip_languages = ["wasm"]
 args = [
-  { name = "items", field = "input.items", type = "json_object", owned = true, go_type = "BatchBytesItem" },
+  { name = "items", field = "input.items", type = "json_object", owned = true, go_type = "BatchBytesItem", element_type = "BatchBytesItem" },
   { name = "config", field = "input.config", type = "json_object", optional = true },
 ]
 
@@ -1558,7 +1558,7 @@ returns_result = true
 result_is_vec = true
 skip_languages = ["wasm"]
 args = [
-  { name = "items", field = "input.items", type = "json_object", owned = true, go_type = "BatchBytesItem" },
+  { name = "items", field = "input.items", type = "json_object", owned = true, go_type = "BatchBytesItem", element_type = "BatchBytesItem" },
   { name = "config", field = "input.config", type = "json_object", optional = true },
 ]
 
