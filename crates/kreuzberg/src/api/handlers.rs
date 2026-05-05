@@ -1306,7 +1306,7 @@ pub(crate) async fn extract_async_handler(
         ("job_id" = String, Path, description = "Job ID returned by POST /extract-async"),
     ),
     responses(
-        (status = 200, description = "Job status", body = crate::types::events::JobStatus),
+        (status = 200, description = "Job status", body = crate::api::types::JobStatus),
         (status = 404, description = "Job not found or expired", body = crate::api::types::ErrorResponse),
     )
 )]
@@ -1713,7 +1713,7 @@ mod tests {
     #[cfg(feature = "api")]
     #[tokio::test]
     async fn test_extract_async_then_poll_job_id() {
-        use crate::types::events::{JobState, JobStatus};
+        use crate::api::types::{JobState, JobStatus};
         use tower::Service;
 
         // Use a single mutable service so both requests share the same ApiState.
@@ -1802,7 +1802,7 @@ mod tests {
     #[cfg(feature = "api")]
     #[tokio::test]
     async fn test_extract_async_bad_file_fails() {
-        use crate::types::events::{JobState, JobStatus};
+        use crate::api::types::{JobState, JobStatus};
         use tower::Service;
 
         let mut app = test_router();

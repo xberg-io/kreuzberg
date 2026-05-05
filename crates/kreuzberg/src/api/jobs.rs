@@ -4,7 +4,7 @@ use std::time::Duration;
 
 use moka::sync::Cache;
 
-use crate::types::events::{JobState, JobStatus};
+use crate::api::types::{JobState, JobStatus};
 
 /// Default time-to-live for completed/failed jobs (5 minutes).
 const JOB_TTL: Duration = Duration::from_secs(300);
@@ -111,6 +111,8 @@ pub fn now_rfc3339() -> String {
 mod tests {
     use super::*;
 
+    use crate::api::types::JobState;
+
     #[test]
     fn test_create_job_is_pending() {
         let store = JobStore::new();
@@ -191,4 +193,26 @@ mod tests {
         let status = store.get(&id).expect("job must be created");
         assert_eq!(status.state, JobState::Pending);
     }
+}
+
+#[test]
+fn test_create_job_concurrent_uniqueness() {
+    use std::sync::Arc;
+    use std::thread;
+
+    let store = Arc::new(JobStore::new());
+    let mut handles = vec![];
+
+    for _ in 0..100 {
+        let store_clone = Arc::clone(&store);
+        handles.push(thread::spawn(move || store_clone.create_job()));
+    }
+
+    let mut job_ids = std::collections::HashSet::new();
+    for handle in handles {
+        let id = handle.join().unwrap();
+        assert!(job_ids.insert(id.clone()), "Duplicate job ID generated: {}", id);
+    }
+
+    assert_eq!(job_ids.len(), 100);
 }

@@ -197,8 +197,43 @@ pub struct AsyncJobResponse {
     pub job_id: String,
 }
 
+/// The state of an async extraction job.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
+#[serde(rename_all = "snake_case")]
+pub enum JobState {
+    /// The job has been accepted but not yet started.
+    Pending,
+    /// The job is currently being processed.
+    Running,
+    /// The job completed successfully.
+    Completed,
+    /// The job terminated with an error.
+    Failed,
+}
+
+/// The status of an async extraction job returned by `GET /jobs/{id}`.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
+pub struct JobStatus {
+    /// Unique identifier of the job.
+    pub job_id: String,
+    /// Current lifecycle state of the job.
+    pub state: JobState,
+    /// ISO 8601 timestamp when the job was created.
+    pub created_at: String,
+    /// ISO 8601 timestamp of the last state change.
+    pub updated_at: String,
+    /// The extraction result, present only when `state == completed`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub result: Option<serde_json::Value>,
+    /// Error message, present only when `state == failed`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub error: Option<String>,
+}
+
 /// Response from `GET /jobs/{job_id}`.
-pub type JobStatusResponse = crate::types::events::JobStatus;
+pub type JobStatusResponse = JobStatus;
 
 /// Cache statistics response.
 #[derive(Debug, Clone, Serialize, Deserialize)]

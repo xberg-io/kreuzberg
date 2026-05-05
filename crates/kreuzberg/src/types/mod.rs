@@ -5,7 +5,6 @@ pub mod annotations;
 pub mod builder;
 pub mod djot;
 pub mod document_structure;
-pub mod events;
 pub mod extraction;
 pub mod formats;
 pub mod internal;
@@ -24,7 +23,6 @@ pub use document_structure::{
     AnnotationKind, ContentLayer, DocumentNode, DocumentRelationship, DocumentStructure, GridCell, NodeContent, NodeId,
     NodeIndex, RelationshipKind, TableGrid, TextAnnotation,
 };
-pub use events::{JobState, JobStatus};
 pub use extraction::*;
 pub use formats::*;
 pub use metadata::*;
