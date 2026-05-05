@@ -5,9 +5,27 @@ includes:
     taskfile: ../config/vars.yml
     internal: true
 
+# Detect platform-specific Pdfium library filename.
+vars:
+  PDFIUM_LIB_NAME:
+    sh: |
+      case "$(uname -s)" in
+        Darwin*) echo libpdfium.dylib ;;
+        Linux*)  echo libpdfium.so ;;
+        MINGW*|MSYS*|CYGWIN*) echo pdfium.dll ;;
+        *) echo libpdfium.so ;;
+      esac
+
 tasks:
   download:
-    desc: Download PDFium runtime
+    desc: Download PDFium runtime into target/release and target/debug
+    cmds:
+      - bash scripts/download_pdfium_runtime.sh
+
+  ensure:
+    desc: Ensure libpdfium runtime is staged in target/release (idempotent)
+    status:
+      - test -f target/release/{{.PDFIUM_LIB_NAME}}
     cmds:
       - bash scripts/download_pdfium_runtime.sh
 
