@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/kreuzberg-dev/kreuzberg/packages/go/v4"
+	"github.com/kreuzberg-dev/kreuzberg/packages/go/v5"
 )
 
 maxKeywords := int32(10)

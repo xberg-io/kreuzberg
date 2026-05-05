@@ -20,7 +20,7 @@ public class HtmlOutputConfigBuilder {
     private Optional<java.nio.file.Path> cssFile = Optional.empty();
     private HtmlTheme theme = null;
     private String classPrefix = "";
-    private boolean embedCss = false;
+    private boolean embedCss = true;
 
     /** Sets the css field. */
     public HtmlOutputConfigBuilder withCss(final Optional<String> value) {

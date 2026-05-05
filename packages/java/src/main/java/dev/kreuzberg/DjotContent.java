@@ -27,7 +27,7 @@ public record DjotContent(
         /** Metadata from YAML frontmatter */
         Metadata metadata,
         /** Extracted tables as structured data */
-        @JsonInclude(JsonInclude.Include.NON_NULL) List<String> tables,
+        @JsonInclude(JsonInclude.Include.NON_NULL) List<Table> tables,
         /** Extracted images with metadata */
         @JsonInclude(JsonInclude.Include.NON_NULL) List<DjotImage> images,
         /** Extracted links with URLs */

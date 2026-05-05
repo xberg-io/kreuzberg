@@ -41,8 +41,17 @@ repos:
     hooks:
       - id: pyproject-fmt
 
-  - repo: https://github.com/DevinR528/cargo-sort
-    rev: "v2.1.4"
+  # Markdown: linting
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.12
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+
+  # Node/TS/WASM: oxlint
+  - repo: https://github.com/kreuzberg-dev/pre-commit-hooks
+    rev: v1.0.0
     hooks:
       - id: cargo-sort
         # `-w` (workspace) iterates ALL workspace members regardless of which Cargo.toml
@@ -51,13 +60,22 @@ repos:
         # That breaks the downstream alef-verify hash check. Run per-file (no -w) so
         # `exclude:` actually filters correctly.
         exclude: ^(crates/kreuzberg-(wasm|node|py|php|ffi)|packages/(dart|swift)/rust)/Cargo\.toml$
-
-  # Rust: formatting, linting, and license checking
-  - repo: https://github.com/AndrejOrsula/pre-commit-cargo
-    rev: 0.5.0
-    hooks:
       - id: cargo-fmt
         args: ["--all"]
+      - id: cargo-check
+        args:
+          [
+            "--workspace",
+            "--exclude=kreuzberg-ffi",
+            "--exclude=kreuzberg-py",
+            "--exclude=kreuzberg-node",
+            "--exclude=kreuzberg-php",
+            "--exclude=kreuzberg-wasm",
+            "--exclude=kreuzberg-dart",
+            "--exclude=kreuzberg_nif",
+            "--all-features",
+            "--all-targets",
+          ]
       - id: cargo-clippy
         args:
           [
@@ -78,69 +96,11 @@ repos:
             "-D",
             "warnings",
           ]
-
-  - repo: https://github.com/bnjbvr/cargo-machete
-    rev: v0.9.2
-    hooks:
       - id: cargo-machete
         args: ["crates/", "packages/", "tools/"]
         exclude: ^e2e/
-
-  - repo: https://github.com/EmbarkStudios/cargo-deny
-    rev: 0.19.4
-    hooks:
       - id: cargo-deny
         args: ["check"]
-
-  # Markdown: linting
-  - repo: https://github.com/rvben/rumdl-pre-commit
-    rev: "v0.1.88"
-    hooks:
-      - id: rumdl-fmt
-        exclude: '^(tools/benchmark-harness/vendored/|docs/reference/(api-|configuration\.md|errors\.md|types\.md)|templates/readme/|charts/)'
-
-  # Python: ruff (linting + formatting)
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.12
-    hooks:
-      - id: ruff
-        args: [--fix]
-      - id: ruff-format
-
-  # Node/TS/WASM: oxlint
-  - repo: https://github.com/oxc-project/mirrors-oxlint
-    rev: v1.61.1
-    hooks:
-      - id: oxlint
-        args: ["--fix"]
-        exclude: ^(tools/benchmark-harness/fixtures/|docs/snippets/)
-
-  # cppcheck — not yet shipped in shared kreuzberg-dev/pre-commit-hooks repo
-  - repo: https://github.com/pocc/pre-commit-hooks
-    rev: v1.3.5
-    hooks:
-      - id: cppcheck
-        args:
-          [
-            "--std=c11",
-            "--enable=warning,style,performance",
-            "--suppress=missingIncludeSystem",
-            "--suppress=unusedStructMember",
-            "--suppress=normalCheckLevelMaxBranches",
-          ]
-        files: (^crates/kreuzberg-ffi/tests/c/|^tools/benchmark-harness/scripts/.*\.c$)
-
-  # Java cpd — not yet shipped in shared kreuzberg-dev/pre-commit-hooks repo
-  - repo: https://github.com/gherynos/pre-commit-java
-    rev: v0.6.37
-    hooks:
-      - id: cpd
-        exclude: ^(\.mvn/wrapper/|e2e/|tools/e2e-generator/e2e/|crates/kreuzberg-wasm/e2e/)
-
-  # Shared kreuzberg-dev polyglot hooks
-  - repo: https://github.com/kreuzberg-dev/pre-commit-hooks
-    rev: v0.1.0
-    hooks:
       - id: shfmt
         args: ["-w", "-i", "2"]
       - id: shellcheck
@@ -217,30 +177,18 @@ repos:
         files: ^charts/.*/templates/.+\.ya?ml$
         exclude: ^charts/.*/(values|Chart)\.ya?ml$
       - id: textlint
-        files: ^docs/[^/]+/[^/]+\.md$
+        files: ^docs/.*\.md$
         exclude: ^docs/(reference/|api-|snippets/|migration/)
-        args:
-          - "--fix"
-          - "--rule"
-          - "common-misspellings"
-          - "--rule"
-          - "doubled-spaces"
-          - "--rule"
-          - "no-empty-section"
-          - "--rule"
-          - "no-start-duplicated-conjunction"
-          - "--rule"
-          - "no-surrogate-pair"
-          - "--rule"
-          - "no-todo"
-          - "--rule"
-          - "no-zero-width-spaces"
-          - "--rule"
-          - "terminology"
+        args: ["--fix", "--config", ".textlintrc.json"]
 
+      - id: oxlint
+      - id: oxfmt
+      - id: cppcheck
+      - id: rumdl-fmt
+      - id: cpd
   # Alef: verify bindings and sync versions
   - repo: https://github.com/kreuzberg-dev/alef
-    rev: v0.14.22
+    rev: v0.14.23
     hooks:
       - id: alef-verify
       - id: alef-sync-versions

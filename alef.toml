@@ -1,5 +1,5 @@
 [workspace]
-alef_version = "0.14.22"
+alef_version = "0.14.23"
 languages = [
   "python",
   "node",
@@ -74,9 +74,14 @@ enabled = false
 extra_paths = [
   "packages/python/kreuzberg/__init__.py",
   "packages/ruby/lib/kreuzberg/version.rb",
+  "packages/ruby/ext/kreuzberg_rb/native/Cargo.toml",
   "crates/kreuzberg-node/package.json",
   "crates/kreuzberg-node/npm/*/package.json",
-  "packages/go/v4/go.mod",
+  "packages/node/package.json",
+  "packages/gleam/gleam.toml",
+  "packages/go/v5/go.mod",
+  "e2e/java/pom.xml",
+  "Cargo.toml",
 ]
 
 [[crates]]
@@ -194,9 +199,11 @@ gem_name = "kreuzberg"
 [crates.php]
 extension_name = "kreuzberg"
 exclude_functions = [
-  # ext-php-rs cannot derive FromZvalMut for Vec<BatchFileItem>/Vec<BatchBytesItem>
-  # without a manual blanket impl. Until that lands upstream, bindings are excluded;
-  # callers iterate single extract_file/extract_bytes calls.
+  # ext-php-rs 0.15 does not impl `FromZvalMut` for `Vec<T>` where `T: #[php_class]`,
+  # so batch_extract_* fns (which take `Vec<BatchBytesItem>` / `Vec<BatchFileItem>`)
+  # fail to compile in the PHP binding. The DTOs themselves are still emitted, but
+  # the batch entry-point fns are excluded until ext-php-rs adds Vec<custom-type>
+  # FromZval support. Callers iterate single extract_file / extract_bytes calls.
   "batch_extract_files",
   "batch_extract_files_sync",
   "batch_extract_bytes",
@@ -399,7 +406,7 @@ app_name = "kreuzberg"
 nif_module = "Elixir.Kreuzberg.Native"
 
 [crates.go]
-module = "github.com/kreuzberg-dev/kreuzberg/v4"
+module = "github.com/kreuzberg-dev/kreuzberg/v5"
 package_name = "kreuzberg"
 
 [crates.java]
@@ -448,7 +455,7 @@ node = "crates/kreuzberg-node/src/"
 ruby = "packages/ruby/ext/kreuzberg_rb/src/"
 php = "crates/kreuzberg-php/src/"
 ffi = "crates/kreuzberg-ffi/src/"
-go = "packages/go/v4/"
+go = "packages/go/v5/"
 elixir = "packages/elixir/native/kreuzberg_nif/src/"
 wasm = "crates/kreuzberg-wasm/src/"
 java = "packages/java/src/main/java/"
@@ -540,7 +547,6 @@ types = [
   "JsonNode",
   "PaddleOcrBackend", # runtime backend with engine pool — cannot serialize
   "ModelManager", # holds Path/HashMap engines — cannot serialize
-  "SecurityLimits",
   "PluginHealthStatus",
   "Run",
   "Paragraph",
@@ -750,10 +756,12 @@ types = [
   "Renderer",
 
   # Internal docx/hwp parser types — missing Serialize/Deserialize derives
-  "Table", # kreuzberg::extraction::docx::parser::Table
-  "TableCell", # kreuzberg::extraction::docx::parser::TableCell
-  "TableRow", # kreuzberg::extraction::docx::parser::TableRow
-  "Section", # kreuzberg::extraction::hwp::model::Section
+  "kreuzberg::extraction::docx::parser::Table",
+  "kreuzberg::extraction::docx::parser::TableCell",
+  "kreuzberg::extraction::docx::parser::TableRow",
+  "kreuzberg::extraction::docx::parser::HeaderFooter",
+  "kreuzberg::extraction::docx::parser::Note",
+  "kreuzberg::extraction::hwp::model::Section",
 
   # Duplicate types with internal-only versions — use public types instead
   "BoundingBox", # kreuzberg::pdf::hierarchy::bounding_box::BoundingBox (internal; use kreuzberg::types::BoundingBox)
@@ -1028,7 +1036,7 @@ e2e = "cd e2e/python && uv run pytest tests/ -q"
 
 [crates.test.node]
 precondition = "command -v npx >/dev/null 2>&1"
-before = "cd crates/kreuzberg-node && napi build --output-dir . --release"
+before = "cd crates/kreuzberg-node && napi build --output-dir . --release --platform"
 e2e = "cd e2e/node && pnpm install && pnpm test"
 
 [crates.test.go]
@@ -1038,7 +1046,7 @@ e2e = "cd e2e/go && go test ./... -count=1"
 
 [crates.test.ruby]
 precondition = "command -v bundle >/dev/null 2>&1"
-before = "cd e2e/ruby && bundle install"
+before = "cd packages/ruby && bundle install && bundle exec rake compile && cd ../../e2e/ruby && bundle install"
 e2e = "cd e2e/ruby && bundle exec rspec"
 
 [crates.test.php]
@@ -1053,13 +1061,13 @@ e2e = "cd e2e/java && mvn test -q"
 
 [crates.test.csharp]
 precondition = "command -v dotnet >/dev/null 2>&1"
-before = "cargo build --release -p kreuzberg-ffi"
+before = "cargo build --release -p kreuzberg-ffi && bash scripts/stage_csharp_native_local.sh"
 e2e = "dotnet test e2e/csharp"
 
 [crates.test.elixir]
 precondition = "command -v mix >/dev/null 2>&1"
-before = "cd packages/elixir && mix deps.get && mix compile"
-e2e = "cd e2e/elixir && mix test"
+before = "cd packages/elixir && KREUZBERG_BUILD=1 mix deps.get && KREUZBERG_BUILD=1 mix compile && cd ../../e2e/elixir && KREUZBERG_BUILD=1 mix deps.get"
+e2e = "cd e2e/elixir && KREUZBERG_BUILD=1 mix test"
 
 [crates.test.r]
 precondition = "command -v Rscript >/dev/null 2>&1"
@@ -1068,8 +1076,8 @@ e2e = "cd e2e/r && Rscript -e \"devtools::load_all('../../packages/r'); testthat
 
 [crates.test.wasm]
 precondition = "command -v wasm-pack >/dev/null 2>&1"
-before = "wasm-pack build crates/kreuzberg-wasm --release --target web && cd e2e/wasm && npm install"
-e2e = "cd e2e/wasm && npm test"
+before = "wasm-pack build crates/kreuzberg-wasm --release --target web && cd e2e/wasm && pnpm install --ignore-workspace"
+e2e = "cd e2e/wasm && pnpm test"
 
 [crates.test.rust]
 precondition = "command -v cargo >/dev/null 2>&1"
@@ -1200,7 +1208,7 @@ options_type = "JsExtractionConfig"
 arg_order = ["path", "config", "mime_type"]
 
 [crates.e2e.call.overrides.go]
-module = "github.com/kreuzberg-dev/kreuzberg/v4"
+module = "github.com/kreuzberg-dev/kreuzberg/v5"
 function = "ExtractFile"
 alias = "kreuzberg"
 options_type = "ExtractionConfig"
@@ -1394,6 +1402,7 @@ function = "detect_mime_type_from_bytes"
 module = "kreuzberg"
 async = false
 returns_result = true
+result_is_simple = true
 args = [{ name = "content", field = "input.data", type = "bytes" }]
 
 [crates.e2e.calls.validate_chunking_params.overrides.python]
@@ -1423,7 +1432,7 @@ module = "kreuzberg"
 async = true
 returns_result = true
 result_is_vec = true
-skip_languages = ["wasm"]
+skip_languages = ["wasm", "php"]
 args = [
   { name = "paths", field = "input.paths", type = "json_object", owned = true, go_type = "BatchFileItem", element_type = "BatchFileItem" },
   { name = "config", field = "input.config", type = "json_object", optional = true },
@@ -1451,7 +1460,7 @@ module = "kreuzberg"
 async = false
 returns_result = true
 result_is_vec = true
-skip_languages = ["wasm"]
+skip_languages = ["wasm", "php"]
 args = [
   { name = "paths", field = "input.paths", type = "json_object", owned = true, go_type = "BatchFileItem", element_type = "BatchFileItem" },
   { name = "config", field = "input.config", type = "json_object", optional = true },
@@ -1519,7 +1528,7 @@ function = "embed_texts"
 module = "kreuzberg"
 async = false
 returns_result = true
-skip_languages = ["wasm"]
+skip_languages = ["wasm", "php"]
 args = [
   { name = "texts", field = "input.texts", type = "json_object", owned = true, element_type = "String" },
   { name = "config", field = "input.config", type = "json_object", optional = true },
@@ -1544,7 +1553,7 @@ module = "kreuzberg"
 async = true
 returns_result = true
 result_is_vec = true
-skip_languages = ["wasm"]
+skip_languages = ["wasm", "php"]
 args = [
   { name = "items", field = "input.items", type = "json_object", owned = true, go_type = "BatchBytesItem", element_type = "BatchBytesItem" },
   { name = "config", field = "input.config", type = "json_object", optional = true },
@@ -1564,7 +1573,7 @@ module = "kreuzberg"
 async = false
 returns_result = true
 result_is_vec = true
-skip_languages = ["wasm"]
+skip_languages = ["wasm", "php"]
 args = [
   { name = "items", field = "input.items", type = "json_object", owned = true, go_type = "BatchBytesItem", element_type = "BatchBytesItem" },
   { name = "config", field = "input.config", type = "json_object", optional = true },
@@ -1708,7 +1717,7 @@ function = "embed_texts_async"
 module = "kreuzberg"
 async = true
 returns_result = true
-skip_languages = ["wasm"]
+skip_languages = ["wasm", "php"]
 args = [
   { name = "texts", field = "input.texts", type = "json_object", owned = true, element_type = "String" },
   { name = "config", field = "input.config", type = "json_object", optional = true },
@@ -1890,8 +1899,8 @@ name = "kreuzberg"
 path = "../../crates/kreuzberg-node"
 
 [crates.e2e.packages.go]
-module = "github.com/kreuzberg-dev/kreuzberg/v4"
-path = "../../packages/go/v4"
+module = "github.com/kreuzberg-dev/kreuzberg/v5"
+path = "../../packages/go/v5"
 
 [crates.e2e.packages.csharp]
 name = "Kreuzberg"
@@ -1983,9 +1992,9 @@ snippets = { basic_extraction = "getting-started/basic_usage.md", async_extracti
 
 [crates.readme.languages.go]
 template = "go.md"
-output_path = "packages/go/v4/README.md"
+output_path = "packages/go/v5/README.md"
 name = "Go"
-package_name = "github.com/kreuzberg-dev/kreuzberg/v4"
+package_name = "github.com/kreuzberg-dev/kreuzberg/v5"
 badge_url = "https://img.shields.io/github/v/tag/kreuzberg-dev/kreuzberg?label=Go&color=007ec6"
 docs_url = "https://kreuzberg.dev/"
 description = "Extract text, tables, images, and metadata from 91+ file formats and 248 programming languages including PDF, Office documents, and images. Go bindings with context-aware async support, idiomatic Go API, and CGO-based native performance."

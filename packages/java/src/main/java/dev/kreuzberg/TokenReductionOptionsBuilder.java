@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 public class TokenReductionOptionsBuilder {
 
     private String mode = "";
-    private boolean preserveImportantWords = false;
+    private boolean preserveImportantWords = true;
 
     /** Sets the mode field. */
     public TokenReductionOptionsBuilder withMode(final String value) {

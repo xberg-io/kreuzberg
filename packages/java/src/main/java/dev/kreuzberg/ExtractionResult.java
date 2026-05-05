@@ -20,7 +20,7 @@ import org.jspecify.annotations.Nullable;
 public record ExtractionResult(String content, @JsonProperty("mime_type") String mimeType, Metadata metadata,
         /** Extraction strategy used to produce the returned text. */
         @Nullable @JsonProperty("extraction_method") ExtractionMethod extractionMethod,
-        @JsonInclude(JsonInclude.Include.NON_NULL) List<String> tables,
+        @JsonInclude(JsonInclude.Include.NON_NULL) List<Table> tables,
         @Nullable @JsonProperty("detected_languages") List<String> detectedLanguages,
         /** Text chunks when chunking is enabled. */
         @Nullable List<Chunk> chunks,

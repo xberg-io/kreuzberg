@@ -113,7 +113,6 @@ TextDirection.LEFT_TO_RIGHT = TextDirection.LeftToRight
 TextDirection.RIGHT_TO_LEFT = TextDirection.RightToLeft
 TextDirection.AUTO = TextDirection.Auto
 
-
 class FracType(str, Enum):
     """Frac type."""
 
@@ -476,7 +475,7 @@ class ExtractionConfig(TypedDict, total=False):
     result_format: ResultFormat | str
     """Result structure format"""
 
-    security_limits: str | None
+    security_limits: SecurityLimits | None
     """Security limits for archive extraction."""
 
     output_format: OutputFormat
@@ -1026,7 +1025,6 @@ class Drawing:
     doc_properties: str | None = None
     image_ref: str | None = None
 
-
 @dataclass
 class AnchorProperties:
     """Properties for anchored drawings."""
@@ -1037,16 +1035,6 @@ class AnchorProperties:
     position_h: str | None = None
     position_v: str | None = None
     wrap_type: str = ""
-
-
-@dataclass
-class HeaderFooter:
-    """Header footer."""
-
-    paragraphs: list[str] = field(default_factory=list)
-    tables: list[str] = field(default_factory=list)
-    header_type: str = ""
-
 
 @dataclass
 class PageMarginsPoints:
@@ -1060,14 +1048,12 @@ class PageMarginsPoints:
     footer: float | None = None
     gutter: float | None = None
 
-
 @dataclass
 class ResolvedStyle:
     """Fully resolved (flattened) style after walking the inheritance chain."""
 
     paragraph_properties: str = ""
     run_properties: str = ""
-
 
 @dataclass
 class TableProperties:
@@ -1082,7 +1068,6 @@ class TableProperties:
     cell_margins: str | None = None
     indent: str | None = None
     caption: str | None = None
-
 
 @dataclass
 class XlsxAppProperties:
@@ -1226,6 +1211,38 @@ class OdtProperties:
 
 
 @dataclass
+class SecurityLimits:
+    """Configuration for security limits across extractors."""
+
+    max_archive_size: int = 524288000
+    """Maximum uncompressed size for archives (500 MB)"""
+
+    max_compression_ratio: int = 100
+    """Maximum compression ratio before flagging as potential bomb (100:1)"""
+
+    max_files_in_archive: int = 10000
+    """Maximum number of files in archive (10,000)"""
+
+    max_nesting_depth: int = 1024
+    """Maximum nesting depth for structures (100)"""
+
+    max_entity_length: int = 1048576
+    """Maximum length of any single XML entity / attribute / token (1 MiB). This is a per-token cap, NOT a cumulative cap -- billion-laughs class attacks where a single entity expands to hundreds of MB are caught here, while normal long text content (a paragraph, a CDATA block) is caught by `max_content_size` instead."""
+
+    max_content_size: int = 104857600
+    """Maximum string growth per document (100 MB)"""
+
+    max_iterations: int = 10000000
+    """Maximum iterations per operation"""
+
+    max_xml_depth: int = 1024
+    """Maximum XML depth (100 levels)"""
+
+    max_table_cells: int = 100000
+    """Maximum cells per table (100,000)"""
+
+
+@dataclass
 class TokenReductionConfig:
     """Token reduction config."""
 
@@ -1240,7 +1257,6 @@ class TokenReductionConfig:
     preserve_patterns: list[str] = field(default_factory=list)
     target_reduction: float | None = None
     enable_semantic_clustering: bool = False
-
 
 @dataclass
 class DocumentStructure:
@@ -1282,7 +1298,7 @@ class ExtractionResult(TypedDict, total=False):
     extraction_method: ExtractionMethod | str | None
     """Extraction strategy used to produce the returned text."""
 
-    tables: list[str]
+    tables: list[Table]
     detected_languages: list[str] | None
     chunks: list[Chunk] | None
     """Text chunks when chunking is enabled."""
@@ -1687,7 +1703,6 @@ class OcrMetadata:
     table_rows: int | None = None
     table_cols: int | None = None
 
-
 @dataclass
 class PptxMetadata:
     """PowerPoint presentation metadata."""
@@ -1729,7 +1744,6 @@ class CsvMetadata:
     has_header: bool = False
     column_types: list[str] | None = None
 
-
 @dataclass
 class BibtexMetadata:
     """BibTeX bibliography metadata."""
@@ -1742,7 +1756,6 @@ class BibtexMetadata:
     year_range: YearRange | None = None
     entry_types: dict[str, int] | None = None
 
-
 @dataclass
 class CitationMetadata:
     """Citation file metadata (RIS, PubMed, EndNote)."""
@@ -1754,7 +1767,6 @@ class CitationMetadata:
     dois: list[str] = field(default_factory=list)
     keywords: list[str] = field(default_factory=list)
 
-
 @dataclass
 class FictionBookMetadata:
     """FictionBook (FB2) metadata."""
@@ -1762,7 +1774,6 @@ class FictionBookMetadata:
     genres: list[str] = field(default_factory=list)
     sequences: list[str] = field(default_factory=list)
     annotation: str | None = None
-
 
 @dataclass
 class DbfMetadata:
@@ -1772,7 +1783,6 @@ class DbfMetadata:
     field_count: int = 0
     fields: list[DbfFieldInfo] = field(default_factory=list)
 
-
 @dataclass
 class JatsMetadata:
     """JATS (Journal Article Tag Suite) metadata."""
@@ -1781,7 +1791,6 @@ class JatsMetadata:
     license: str | None = None
     history_dates: dict[str, str] = field(default_factory=dict)
     contributor_roles: list[ContributorRole] = field(default_factory=list)
-
 
 @dataclass
 class EpubMetadata:
@@ -1794,13 +1803,11 @@ class EpubMetadata:
     dc_type: str | None = None
     cover_image: str | None = None
 
-
 @dataclass
 class PstMetadata:
     """Outlook PST archive metadata."""
 
     message_count: int = 0
-
 
 @dataclass
 class OcrConfidence:
@@ -1877,6 +1884,40 @@ class LayoutRegion:
 
 
 @dataclass
+class Table:
+    """Extracted table structure."""
+
+    cells: list[list[str]] = field(default_factory=list)
+    """Table cells as a 2D vector (rows x columns)"""
+
+    markdown: str = ""
+    """Markdown representation of the table"""
+
+    page_number: int = 0
+    """Page number where the table was found (1-indexed)"""
+
+    bounding_box: str | None = None
+    """Bounding box of the table on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top). Only populated for PDF-extracted tables when position data is available."""
+
+
+@dataclass
+class TableCell:
+    """Individual table cell with content and optional styling."""
+
+    content: str = ""
+    """Cell content as text"""
+
+    row_span: int = 0
+    """Row span (number of rows this cell spans)"""
+
+    col_span: int = 0
+    """Column span (number of columns this cell spans)"""
+
+    is_header: bool = False
+    """Whether this is a header cell"""
+
+
+@dataclass
 class TracingLayer:
     """A [`tower::Layer`] that wraps each extraction in a semantic tracing span."""
 
@@ -1933,7 +1974,6 @@ class OcrCacheStats:
     total_files: int = 0
     total_size_mb: float = 0.0
 
-
 @dataclass
 class PaddleOcrConfig:
     """Configuration for PaddleOCR backend."""
@@ -1986,24 +2026,24 @@ EmbeddingModelType = str | int | LlmConfig
 
 # Format-specific metadata (discriminated union).
 FormatMetadata = (
-    str
-    | DocxMetadata
-    | ExcelMetadata
-    | EmailMetadata
-    | PptxMetadata
-    | ArchiveMetadata
-    | XmlMetadata
-    | TextMetadata
-    | HtmlMetadata
-    | OcrMetadata
-    | CsvMetadata
-    | BibtexMetadata
-    | CitationMetadata
-    | FictionBookMetadata
-    | DbfMetadata
-    | JatsMetadata
-    | EpubMetadata
-    | PstMetadata
+    str |
+    DocxMetadata |
+    ExcelMetadata |
+    EmailMetadata |
+    PptxMetadata |
+    ArchiveMetadata |
+    XmlMetadata |
+    TextMetadata |
+    HtmlMetadata |
+    OcrMetadata |
+    CsvMetadata |
+    BibtexMetadata |
+    CitationMetadata |
+    FictionBookMetadata |
+    DbfMetadata |
+    JatsMetadata |
+    EpubMetadata |
+    PstMetadata
 )
 
 # Bounding geometry for an OCR element.

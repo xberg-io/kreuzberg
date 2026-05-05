@@ -357,8 +357,7 @@ pub struct ExtractionConfig {
     /// ingests user-controlled bytes.
     /// When `None`, default limits are used.
     #[pyo3(get)]
-    #[serde(skip)]
-    pub security_limits: Option<String>,
+    pub security_limits: Option<SecurityLimits>,
     /// Content text format (default: Plain).
     ///
     /// Controls the format of the extracted content:
@@ -488,7 +487,7 @@ impl ExtractionConfig {
         html_output: Option<HtmlOutputConfig>,
         extraction_timeout_secs: Option<u64>,
         max_concurrent_extractions: Option<usize>,
-        security_limits: Option<String>,
+        security_limits: Option<SecurityLimits>,
         layout: Option<LayoutDetectionConfig>,
         acceleration: Option<AccelerationConfig>,
         cache_namespace: Option<String>,
@@ -560,7 +559,7 @@ impl ExtractionConfig {
             extraction_timeout_secs: self.extraction_timeout_secs,
             max_concurrent_extractions: self.max_concurrent_extractions,
             result_format: self.result_format.clone().into(),
-            security_limits: Default::default(),
+            security_limits: self.security_limits.clone().map(Into::into),
             output_format: self.output_format.clone().into(),
             layout: self.layout.clone().map(Into::into),
             include_document_structure: self.include_document_structure,
@@ -2460,71 +2459,6 @@ impl AnchorProperties {
 
 #[derive(Clone, Default, serde::Serialize, serde::Deserialize)]
 #[pyclass(frozen, from_py_object)]
-pub struct HeaderFooter {
-    #[pyo3(get)]
-    #[serde(skip)]
-    pub paragraphs: Vec<String>,
-    #[pyo3(get)]
-    #[serde(skip)]
-    pub tables: Vec<String>,
-    #[pyo3(get)]
-    #[serde(skip)]
-    pub header_type: String,
-}
-
-#[pymethods]
-impl HeaderFooter {
-    #[must_use]
-    #[pyo3(signature = (paragraphs=None, tables=None, header_type=None))]
-    #[new]
-    pub fn new(paragraphs: Option<Vec<String>>, tables: Option<Vec<String>>, header_type: Option<String>) -> Self {
-        Self {
-            paragraphs: paragraphs.unwrap_or_default(),
-            tables: tables.unwrap_or_default(),
-            header_type: header_type.unwrap_or_default(),
-        }
-    }
-
-    #[staticmethod]
-    fn from_json(json_str: String) -> pyo3::PyResult<Self> {
-        serde_json::from_str::<Self>(&json_str).map_err(|e| pyo3::exceptions::PyValueError::new_err(e.to_string()))
-    }
-}
-
-#[derive(Clone, Default, serde::Serialize, serde::Deserialize)]
-#[pyclass(frozen, from_py_object)]
-pub struct Note {
-    #[pyo3(get)]
-    pub id: String,
-    #[pyo3(get)]
-    #[serde(skip)]
-    pub note_type: String,
-    #[pyo3(get)]
-    #[serde(skip)]
-    pub paragraphs: Vec<String>,
-}
-
-#[pymethods]
-impl Note {
-    #[must_use]
-    #[pyo3(signature = (id, note_type, paragraphs))]
-    #[new]
-    pub fn new(id: String, note_type: String, paragraphs: Vec<String>) -> Self {
-        Self {
-            id,
-            note_type,
-            paragraphs,
-        }
-    }
-
-    #[staticmethod]
-    fn from_json(json_str: String) -> pyo3::PyResult<Self> {
-        serde_json::from_str::<Self>(&json_str).map_err(|e| pyo3::exceptions::PyValueError::new_err(e.to_string()))
-    }
-}
-
-#[derive(Clone, Default, serde::Serialize, serde::Deserialize)]
-#[pyclass(frozen, from_py_object)]
 pub struct PageMarginsPoints {
     #[pyo3(get)]
     pub top: Option<f64>,
@@ -3017,6 +2951,85 @@ impl OdtProperties {
     }
 }
 
+#[derive(Clone, Default, serde::Serialize, serde::Deserialize)]
+#[pyclass(frozen, from_py_object)]
+pub struct SecurityLimits {
+    /// Maximum uncompressed size for archives (500 MB)
+    #[pyo3(get)]
+    pub max_archive_size: usize,
+    /// Maximum compression ratio before flagging as potential bomb (100:1)
+    #[pyo3(get)]
+    pub max_compression_ratio: usize,
+    /// Maximum number of files in archive (10,000)
+    #[pyo3(get)]
+    pub max_files_in_archive: usize,
+    /// Maximum nesting depth for structures (100)
+    #[pyo3(get)]
+    pub max_nesting_depth: usize,
+    /// Maximum length of any single XML entity / attribute / token (1 MiB).
+    /// This is a per-token cap, NOT a cumulative cap — billion-laughs class
+    /// attacks where a single entity expands to hundreds of MB are caught
+    /// here, while normal long text content (a paragraph, a CDATA block) is
+    /// caught by `max_content_size` instead.
+    #[pyo3(get)]
+    pub max_entity_length: usize,
+    /// Maximum string growth per document (100 MB)
+    #[pyo3(get)]
+    pub max_content_size: usize,
+    /// Maximum iterations per operation
+    #[pyo3(get)]
+    pub max_iterations: usize,
+    /// Maximum XML depth (100 levels)
+    #[pyo3(get)]
+    pub max_xml_depth: usize,
+    /// Maximum cells per table (100,000)
+    #[pyo3(get)]
+    pub max_table_cells: usize,
+}
+
+#[pymethods]
+impl SecurityLimits {
+    #[allow(clippy::too_many_arguments)]
+    #[must_use]
+    #[pyo3(signature = (max_archive_size=None, max_compression_ratio=None, max_files_in_archive=None, max_nesting_depth=None, max_entity_length=None, max_content_size=None, max_iterations=None, max_xml_depth=None, max_table_cells=None))]
+    #[new]
+    pub fn new(
+        max_archive_size: Option<usize>,
+        max_compression_ratio: Option<usize>,
+        max_files_in_archive: Option<usize>,
+        max_nesting_depth: Option<usize>,
+        max_entity_length: Option<usize>,
+        max_content_size: Option<usize>,
+        max_iterations: Option<usize>,
+        max_xml_depth: Option<usize>,
+        max_table_cells: Option<usize>,
+    ) -> Self {
+        Self {
+            max_archive_size: max_archive_size.unwrap_or(524288000),
+            max_compression_ratio: max_compression_ratio.unwrap_or(100),
+            max_files_in_archive: max_files_in_archive.unwrap_or(10000),
+            max_nesting_depth: max_nesting_depth.unwrap_or(1024),
+            max_entity_length: max_entity_length.unwrap_or(1048576),
+            max_content_size: max_content_size.unwrap_or(104857600),
+            max_iterations: max_iterations.unwrap_or(10000000),
+            max_xml_depth: max_xml_depth.unwrap_or(1024),
+            max_table_cells: max_table_cells.unwrap_or(100000),
+        }
+    }
+
+    #[allow(clippy::should_implement_trait)]
+    #[staticmethod]
+    #[pyo3(signature = ())]
+    pub fn default() -> SecurityLimits {
+        kreuzberg::SecurityLimits::default().into()
+    }
+
+    #[staticmethod]
+    fn from_json(json_str: String) -> pyo3::PyResult<Self> {
+        serde_json::from_str::<Self>(&json_str).map_err(|e| pyo3::exceptions::PyValueError::new_err(e.to_string()))
+    }
+}
+
 #[derive(Clone)]
 #[pyclass(unsendable, from_py_object)]
 pub struct ZipBombValidator {
@@ -3155,8 +3168,7 @@ pub struct DjotContent {
     pub metadata: Metadata,
     /// Extracted tables as structured data
     #[pyo3(get)]
-    #[serde(skip)]
-    pub tables: Vec<String>,
+    pub tables: Vec<Table>,
     /// Extracted images with metadata
     #[pyo3(get)]
     pub images: Vec<DjotImage>,
@@ -3182,7 +3194,7 @@ impl DjotContent {
         plain_text: String,
         blocks: Vec<FormattedBlock>,
         metadata: Metadata,
-        tables: Vec<String>,
+        tables: Vec<Table>,
         images: Vec<DjotImage>,
         links: Vec<DjotLink>,
         footnotes: Vec<Footnote>,
@@ -3735,8 +3747,7 @@ pub struct ExtractionResult {
     #[pyo3(get)]
     pub extraction_method: Option<ExtractionMethod>,
     #[pyo3(get)]
-    #[serde(skip)]
-    pub tables: Vec<String>,
+    pub tables: Vec<Table>,
     #[pyo3(get)]
     pub detected_languages: Option<Vec<String>>,
     /// Text chunks when chunking is enabled.
@@ -3908,7 +3919,7 @@ impl ExtractionResult {
         content: Option<String>,
         mime_type: Option<String>,
         metadata: Option<Metadata>,
-        tables: Option<Vec<String>>,
+        tables: Option<Vec<Table>>,
         processing_warnings: Option<Vec<ProcessingWarning>>,
         extraction_method: Option<ExtractionMethod>,
         detected_languages: Option<Vec<String>>,
@@ -6862,8 +6873,7 @@ pub struct PageContent {
     /// Serializes as Vec<Table> for JSON compatibility while maintaining
     /// Arc semantics in-memory for zero-copy sharing.
     #[pyo3(get)]
-    #[serde(skip)]
-    pub tables: Vec<String>,
+    pub tables: Vec<Table>,
     /// Images found on this page (uses Arc for memory efficiency)
     ///
     /// Serializes as Vec<ExtractedImage> for JSON compatibility while maintaining
@@ -6899,7 +6909,7 @@ impl PageContent {
     pub fn new(
         page_number: usize,
         content: String,
-        tables: Vec<String>,
+        tables: Vec<Table>,
         images: Vec<ExtractedImage>,
         hierarchy: Option<PageHierarchy>,
         is_blank: Option<bool>,
@@ -7031,6 +7041,93 @@ impl HierarchicalBlock {
             font_size,
             level,
             bbox,
+        }
+    }
+
+    #[staticmethod]
+    fn from_json(json_str: String) -> pyo3::PyResult<Self> {
+        serde_json::from_str::<Self>(&json_str).map_err(|e| pyo3::exceptions::PyValueError::new_err(e.to_string()))
+    }
+}
+
+#[derive(Clone, Default, serde::Serialize, serde::Deserialize)]
+#[pyclass(frozen, from_py_object)]
+pub struct Table {
+    /// Table cells as a 2D vector (rows × columns)
+    #[pyo3(get)]
+    pub cells: Vec<Vec<String>>,
+    /// Markdown representation of the table
+    #[pyo3(get)]
+    pub markdown: String,
+    /// Page number where the table was found (1-indexed)
+    #[pyo3(get)]
+    pub page_number: usize,
+    /// Bounding box of the table on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top).
+    /// Only populated for PDF-extracted tables when position data is available.
+    #[pyo3(get)]
+    #[serde(skip)]
+    pub bounding_box: Option<String>,
+}
+
+#[pymethods]
+impl Table {
+    #[must_use]
+    #[pyo3(signature = (cells=None, markdown=None, page_number=None, bounding_box=None))]
+    #[new]
+    pub fn new(
+        cells: Option<Vec<Vec<String>>>,
+        markdown: Option<String>,
+        page_number: Option<usize>,
+        bounding_box: Option<String>,
+    ) -> Self {
+        Self {
+            cells: cells.unwrap_or_default(),
+            markdown: markdown.unwrap_or_default(),
+            page_number: page_number.unwrap_or_default(),
+            bounding_box,
+        }
+    }
+
+    #[staticmethod]
+    fn from_json(json_str: String) -> pyo3::PyResult<Self> {
+        serde_json::from_str::<Self>(&json_str).map_err(|e| pyo3::exceptions::PyValueError::new_err(e.to_string()))
+    }
+}
+
+#[derive(Clone, Default, serde::Serialize, serde::Deserialize)]
+#[pyclass(frozen, from_py_object)]
+#[allow(clippy::similar_names)]
+pub struct TableCell {
+    /// Cell content as text
+    #[pyo3(get)]
+    pub content: String,
+    /// Row span (number of rows this cell spans)
+    #[pyo3(get)]
+    pub row_span: usize,
+    /// Column span (number of columns this cell spans)
+    #[pyo3(get)]
+    pub col_span: usize,
+    /// Whether this is a header cell
+    #[pyo3(get)]
+    pub is_header: bool,
+}
+
+#[pymethods]
+impl TableCell {
+    #[must_use]
+    #[pyo3(signature = (content=None, row_span=None, col_span=None, is_header=None))]
+    #[new]
+    pub fn new(
+        content: Option<String>,
+        row_span: Option<usize>,
+        col_span: Option<usize>,
+        is_header: Option<bool>,
+    ) -> Self {
+        Self {
+            content: content.unwrap_or_default(),
+            row_span: row_span.unwrap_or_default(),
+            col_span: col_span.unwrap_or_default(),
+            is_header: is_header.unwrap_or_default(),
         }
     }
 
@@ -8893,9 +8990,17 @@ pub struct OutputFormat {
 #[pymethods]
 impl OutputFormat {
     #[new]
-    fn new(py: Python<'_>, value: &Bound<'_, pyo3::types::PyDict>) -> PyResult<Self> {
-        let json_mod = py.import("json")?;
-        let json_str: String = json_mod.call_method1("dumps", (value,))?.extract()?;
+    fn new(py: Python<'_>, value: &Bound<'_, pyo3::types::PyAny>) -> PyResult<Self> {
+        // Accept either a Python dict (full tagged-union shape) or a string
+        // (the unit variant name). Strings are wrapped in `"..."` so serde_json
+        // can deserialize into a unit-variant of the tagged enum.
+        let json_str: String = if let Ok(s) = value.extract::<String>() {
+            serde_json::to_string(&s)
+                .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("Invalid OutputFormat: {e}")))?
+        } else {
+            let json_mod = py.import("json")?;
+            json_mod.call_method1("dumps", (value,))?.extract()?
+        };
         let inner: kreuzberg::OutputFormat = serde_json::from_str(&json_str)
             .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("Invalid OutputFormat: {e}")))?;
         Ok(Self { inner })
@@ -9066,9 +9171,17 @@ pub struct ChunkSizing {
 #[pymethods]
 impl ChunkSizing {
     #[new]
-    fn new(py: Python<'_>, value: &Bound<'_, pyo3::types::PyDict>) -> PyResult<Self> {
-        let json_mod = py.import("json")?;
-        let json_str: String = json_mod.call_method1("dumps", (value,))?.extract()?;
+    fn new(py: Python<'_>, value: &Bound<'_, pyo3::types::PyAny>) -> PyResult<Self> {
+        // Accept either a Python dict (full tagged-union shape) or a string
+        // (the unit variant name). Strings are wrapped in `"..."` so serde_json
+        // can deserialize into a unit-variant of the tagged enum.
+        let json_str: String = if let Ok(s) = value.extract::<String>() {
+            serde_json::to_string(&s)
+                .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("Invalid ChunkSizing: {e}")))?
+        } else {
+            let json_mod = py.import("json")?;
+            json_mod.call_method1("dumps", (value,))?.extract()?
+        };
         let inner: kreuzberg::ChunkSizing = serde_json::from_str(&json_str)
             .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("Invalid ChunkSizing: {e}")))?;
         Ok(Self { inner })
@@ -9130,9 +9243,17 @@ pub struct EmbeddingModelType {
 #[pymethods]
 impl EmbeddingModelType {
     #[new]
-    fn new(py: Python<'_>, value: &Bound<'_, pyo3::types::PyDict>) -> PyResult<Self> {
-        let json_mod = py.import("json")?;
-        let json_str: String = json_mod.call_method1("dumps", (value,))?.extract()?;
+    fn new(py: Python<'_>, value: &Bound<'_, pyo3::types::PyAny>) -> PyResult<Self> {
+        // Accept either a Python dict (full tagged-union shape) or a string
+        // (the unit variant name). Strings are wrapped in `"..."` so serde_json
+        // can deserialize into a unit-variant of the tagged enum.
+        let json_str: String = if let Ok(s) = value.extract::<String>() {
+            serde_json::to_string(&s)
+                .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("Invalid EmbeddingModelType: {e}")))?
+        } else {
+            let json_mod = py.import("json")?;
+            json_mod.call_method1("dumps", (value,))?.extract()?
+        };
         let inner: kreuzberg::EmbeddingModelType = serde_json::from_str(&json_str)
             .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("Invalid EmbeddingModelType: {e}")))?;
         Ok(Self { inner })
@@ -9550,9 +9671,17 @@ pub struct AnnotationKind {
 #[pymethods]
 impl AnnotationKind {
     #[new]
-    fn new(py: Python<'_>, value: &Bound<'_, pyo3::types::PyDict>) -> PyResult<Self> {
-        let json_mod = py.import("json")?;
-        let json_str: String = json_mod.call_method1("dumps", (value,))?.extract()?;
+    fn new(py: Python<'_>, value: &Bound<'_, pyo3::types::PyAny>) -> PyResult<Self> {
+        // Accept either a Python dict (full tagged-union shape) or a string
+        // (the unit variant name). Strings are wrapped in `"..."` so serde_json
+        // can deserialize into a unit-variant of the tagged enum.
+        let json_str: String = if let Ok(s) = value.extract::<String>() {
+            serde_json::to_string(&s)
+                .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("Invalid AnnotationKind: {e}")))?
+        } else {
+            let json_mod = py.import("json")?;
+            json_mod.call_method1("dumps", (value,))?.extract()?
+        };
         let inner: kreuzberg::AnnotationKind = serde_json::from_str(&json_str)
             .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("Invalid AnnotationKind: {e}")))?;
         Ok(Self { inner })
@@ -10254,7 +10383,7 @@ pub fn extract_file<'py>(
     mime_type: Option<String>,
     config: Option<ExtractionConfig>,
 ) -> PyResult<Bound<'py, PyAny>> {
-    let config_core: kreuzberg::ExtractionConfig = config.expect("'config' is required").into();
+    let config_core: kreuzberg::ExtractionConfig = config.unwrap_or_default().into();
     pyo3_async_runtimes::tokio::future_into_py(py, async move {
         let result = kreuzberg::extract_file(std::path::PathBuf::from(path), mime_type.as_deref(), &config_core)
             .await
@@ -10272,7 +10401,7 @@ pub fn extract_file_sync(
     mime_type: Option<String>,
     config: Option<ExtractionConfig>,
 ) -> PyResult<ExtractionResult> {
-    let config_core: kreuzberg::ExtractionConfig = config.expect("'config' is required").into();
+    let config_core: kreuzberg::ExtractionConfig = config.unwrap_or_default().into();
     kreuzberg::extract_file_sync(std::path::PathBuf::from(path), mime_type.as_deref(), &config_core)
         .map(Into::into)
         .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e.to_string()))
@@ -11390,7 +11519,7 @@ impl From<ExtractionConfig> for kreuzberg::ExtractionConfig {
             extraction_timeout_secs: val.extraction_timeout_secs,
             max_concurrent_extractions: val.max_concurrent_extractions,
             result_format: val.result_format.into(),
-            security_limits: Default::default(),
+            security_limits: val.security_limits.map(Into::into),
             output_format: val.output_format.into(),
             layout: val.layout.map(Into::into),
             include_document_structure: val.include_document_structure,
@@ -11432,7 +11561,7 @@ impl From<kreuzberg::ExtractionConfig> for ExtractionConfig {
             extraction_timeout_secs: val.extraction_timeout_secs,
             max_concurrent_extractions: val.max_concurrent_extractions,
             result_format: val.result_format.into(),
-            security_limits: val.security_limits.as_ref().map(|v| format!("{v:?}")),
+            security_limits: val.security_limits.map(Into::into),
             output_format: val.output_format.into(),
             layout: val.layout.map(Into::into),
             include_document_structure: val.include_document_structure,
@@ -11515,7 +11644,7 @@ impl From<kreuzberg::FileExtractionConfig> for FileExtractionConfig {
 impl From<BatchBytesItem> for kreuzberg::BatchBytesItem {
     fn from(val: BatchBytesItem) -> Self {
         Self {
-            content: val.content.into(),
+            content: val.content.to_vec().into(),
             mime_type: val.mime_type,
             config: val.config.map(Into::into),
         }
@@ -11526,7 +11655,7 @@ impl From<BatchBytesItem> for kreuzberg::BatchBytesItem {
 impl From<kreuzberg::BatchBytesItem> for BatchBytesItem {
     fn from(val: kreuzberg::BatchBytesItem) -> Self {
         Self {
-            content: val.content.to_vec(),
+            content: val.content.to_vec().into(),
             mime_type: val.mime_type,
             config: val.config.map(Into::into),
         }
@@ -12185,7 +12314,7 @@ impl From<kreuzberg::extraction::html::HtmlExtractionResult> for HtmlExtractionR
 impl From<kreuzberg::extraction::html::ExtractedInlineImage> for ExtractedInlineImage {
     fn from(val: kreuzberg::extraction::html::ExtractedInlineImage) -> Self {
         Self {
-            data: val.data.to_vec(),
+            data: val.data.to_vec().into(),
             format: val.format,
             filename: val.filename,
             description: val.description,
@@ -12220,28 +12349,6 @@ impl From<kreuzberg::extraction::docx::drawing::AnchorProperties> for AnchorProp
             position_h: val.position_h.as_ref().map(|v| format!("{v:?}")),
             position_v: val.position_v.as_ref().map(|v| format!("{v:?}")),
             wrap_type: format!("{:?}", val.wrap_type),
-        }
-    }
-}
-
-#[allow(clippy::redundant_closure, clippy::useless_conversion)]
-impl From<kreuzberg::extraction::docx::parser::HeaderFooter> for HeaderFooter {
-    fn from(val: kreuzberg::extraction::docx::parser::HeaderFooter) -> Self {
-        Self {
-            paragraphs: val.paragraphs.iter().map(|i| format!("{:?}", i)).collect(),
-            tables: val.tables.iter().map(|i| format!("{:?}", i)).collect(),
-            header_type: format!("{:?}", val.header_type),
-        }
-    }
-}
-
-#[allow(clippy::redundant_closure, clippy::useless_conversion)]
-impl From<kreuzberg::extraction::docx::parser::Note> for Note {
-    fn from(val: kreuzberg::extraction::docx::parser::Note) -> Self {
-        Self {
-            id: val.id,
-            note_type: format!("{:?}", val.note_type),
-            paragraphs: val.paragraphs.iter().map(|i| format!("{:?}", i)).collect(),
         }
     }
 }
@@ -12371,6 +12478,40 @@ impl From<kreuzberg::extraction::office_metadata::odt_properties::OdtProperties>
 }
 
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
+impl From<SecurityLimits> for kreuzberg::SecurityLimits {
+    fn from(val: SecurityLimits) -> Self {
+        Self {
+            max_archive_size: val.max_archive_size,
+            max_compression_ratio: val.max_compression_ratio,
+            max_files_in_archive: val.max_files_in_archive,
+            max_nesting_depth: val.max_nesting_depth,
+            max_entity_length: val.max_entity_length,
+            max_content_size: val.max_content_size,
+            max_iterations: val.max_iterations,
+            max_xml_depth: val.max_xml_depth,
+            max_table_cells: val.max_table_cells,
+        }
+    }
+}
+
+#[allow(clippy::redundant_closure, clippy::useless_conversion)]
+impl From<kreuzberg::SecurityLimits> for SecurityLimits {
+    fn from(val: kreuzberg::SecurityLimits) -> Self {
+        Self {
+            max_archive_size: val.max_archive_size,
+            max_compression_ratio: val.max_compression_ratio,
+            max_files_in_archive: val.max_files_in_archive,
+            max_nesting_depth: val.max_nesting_depth,
+            max_entity_length: val.max_entity_length,
+            max_content_size: val.max_content_size,
+            max_iterations: val.max_iterations,
+            max_xml_depth: val.max_xml_depth,
+            max_table_cells: val.max_table_cells,
+        }
+    }
+}
+
+#[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<TokenReductionConfig> for kreuzberg::TokenReductionConfig {
     fn from(val: TokenReductionConfig) -> Self {
         Self {
@@ -12439,7 +12580,7 @@ impl From<DjotContent> for kreuzberg::DjotContent {
             plain_text: val.plain_text,
             blocks: val.blocks.into_iter().map(Into::into).collect(),
             metadata: val.metadata.into(),
-            tables: Default::default(),
+            tables: val.tables.into_iter().map(Into::into).collect(),
             images: val.images.into_iter().map(Into::into).collect(),
             links: val.links.into_iter().map(Into::into).collect(),
             footnotes: val.footnotes.into_iter().map(Into::into).collect(),
@@ -12455,7 +12596,7 @@ impl From<kreuzberg::DjotContent> for DjotContent {
             plain_text: val.plain_text,
             blocks: val.blocks.into_iter().map(Into::into).collect(),
             metadata: val.metadata.into(),
-            tables: val.tables.iter().map(|i| format!("{:?}", i)).collect(),
+            tables: val.tables.into_iter().map(Into::into).collect(),
             images: val.images.into_iter().map(Into::into).collect(),
             links: val.links.into_iter().map(Into::into).collect(),
             footnotes: val.footnotes.into_iter().map(Into::into).collect(),
@@ -12759,7 +12900,7 @@ impl From<ExtractionResult> for kreuzberg::ExtractionResult {
             mime_type: val.mime_type.into(),
             metadata: val.metadata.into(),
             extraction_method: val.extraction_method.map(Into::into),
-            tables: Default::default(),
+            tables: val.tables.into_iter().map(Into::into).collect(),
             detected_languages: val.detected_languages,
             chunks: val.chunks.map(|v| v.into_iter().map(Into::into).collect()),
             images: val.images.map(|v| v.into_iter().map(Into::into).collect()),
@@ -12795,7 +12936,7 @@ impl From<kreuzberg::ExtractionResult> for ExtractionResult {
             mime_type: val.mime_type.to_string(),
             metadata: val.metadata.into(),
             extraction_method: val.extraction_method.map(Into::into),
-            tables: val.tables.iter().map(|i| format!("{:?}", i)).collect(),
+            tables: val.tables.into_iter().map(Into::into).collect(),
             detected_languages: val.detected_languages,
             chunks: val.chunks.map(|v| v.into_iter().map(Into::into).collect()),
             images: val.images.map(|v| v.into_iter().map(Into::into).collect()),
@@ -12989,7 +13130,7 @@ impl From<kreuzberg::ChunkMetadata> for ChunkMetadata {
 impl From<ExtractedImage> for kreuzberg::ExtractedImage {
     fn from(val: ExtractedImage) -> Self {
         Self {
-            data: val.data.into(),
+            data: val.data.to_vec().into(),
             format: val.format.into(),
             image_index: val.image_index,
             page_number: val.page_number,
@@ -13013,7 +13154,7 @@ impl From<ExtractedImage> for kreuzberg::ExtractedImage {
 impl From<kreuzberg::ExtractedImage> for ExtractedImage {
     fn from(val: kreuzberg::ExtractedImage) -> Self {
         Self {
-            data: val.data.to_vec(),
+            data: val.data.to_vec().into(),
             format: val.format.to_string(),
             image_index: val.image_index,
             page_number: val.page_number,
@@ -13191,7 +13332,7 @@ impl From<kreuzberg::EmailAttachment> for EmailAttachment {
             mime_type: val.mime_type,
             size: val.size,
             is_image: val.is_image,
-            data: val.data.map(|v| v.to_vec()).map(|v| v.to_vec()),
+            data: val.data.map(|v| v.to_vec().into()),
         }
     }
 }
@@ -14279,7 +14420,7 @@ impl From<PageContent> for kreuzberg::PageContent {
         Self {
             page_number: val.page_number,
             content: val.content,
-            tables: Default::default(),
+            tables: val.tables.into_iter().map(|v| std::sync::Arc::new(v.into())).collect(),
             images: val.images.into_iter().map(|v| std::sync::Arc::new(v.into())).collect(),
             hierarchy: val.hierarchy.map(Into::into),
             is_blank: val.is_blank,
@@ -14294,7 +14435,7 @@ impl From<kreuzberg::PageContent> for PageContent {
         Self {
             page_number: val.page_number,
             content: val.content,
-            tables: val.tables.iter().map(|i| format!("{:?}", i)).collect(),
+            tables: val.tables.into_iter().map(|v| (*v).clone().into()).collect(),
             images: val.images.into_iter().map(|v| (*v).clone().into()).collect(),
             hierarchy: val.hierarchy.map(Into::into),
             is_blank: val.is_blank,
@@ -14370,6 +14511,42 @@ impl From<kreuzberg::HierarchicalBlock> for HierarchicalBlock {
                 let arr: Vec<_> = [t.0, t.1].into_iter().map(|v| v as _).collect();
                 arr
             }),
+        }
+    }
+}
+
+#[allow(clippy::redundant_closure, clippy::useless_conversion)]
+impl From<Table> for kreuzberg::Table {
+    fn from(val: Table) -> Self {
+        Self {
+            cells: val.cells,
+            markdown: val.markdown,
+            page_number: val.page_number,
+            bounding_box: Default::default(),
+        }
+    }
+}
+
+#[allow(clippy::redundant_closure, clippy::useless_conversion)]
+impl From<kreuzberg::Table> for Table {
+    fn from(val: kreuzberg::Table) -> Self {
+        Self {
+            cells: val.cells,
+            markdown: val.markdown,
+            page_number: val.page_number,
+            bounding_box: val.bounding_box.as_ref().map(|v| format!("{v:?}")),
+        }
+    }
+}
+
+#[allow(clippy::redundant_closure, clippy::useless_conversion)]
+impl From<kreuzberg::TableCell> for TableCell {
+    fn from(val: kreuzberg::TableCell) -> Self {
+        Self {
+            content: val.content,
+            row_span: val.row_span,
+            col_span: val.col_span,
+            is_header: val.is_header,
         }
     }
 }
@@ -14871,7 +15048,7 @@ impl From<kreuzberg::pdf::embedded_files::EmbeddedFile> for EmbeddedFile {
     fn from(val: kreuzberg::pdf::embedded_files::EmbeddedFile) -> Self {
         Self {
             name: val.name,
-            data: val.data.to_vec(),
+            data: val.data.to_vec().into(),
             mime_type: val.mime_type,
         }
     }
@@ -14888,7 +15065,7 @@ impl From<kreuzberg::pdf::images::PdfImage> for PdfImage {
             color_space: val.color_space,
             bits_per_component: val.bits_per_component,
             filters: val.filters,
-            data: val.data.to_vec(),
+            data: val.data.to_vec().into(),
             decoded_format: val.decoded_format,
             image_kind: val.image_kind.map(Into::into),
             kind_confidence: val.kind_confidence,
@@ -15743,8 +15920,6 @@ pub fn _kreuzberg(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<ExtractedInlineImage>()?;
     m.add_class::<Drawing>()?;
     m.add_class::<AnchorProperties>()?;
-    m.add_class::<HeaderFooter>()?;
-    m.add_class::<Note>()?;
     m.add_class::<PageMarginsPoints>()?;
     m.add_class::<StyleDefinition>()?;
     m.add_class::<ResolvedStyle>()?;
@@ -15753,6 +15928,7 @@ pub fn _kreuzberg(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<PptxAppProperties>()?;
     m.add_class::<CustomProperties>()?;
     m.add_class::<OdtProperties>()?;
+    m.add_class::<SecurityLimits>()?;
     m.add_class::<ZipBombValidator>()?;
     m.add_class::<TokenReductionConfig>()?;
     m.add_class::<PdfAnnotation>()?;
@@ -15829,6 +16005,8 @@ pub fn _kreuzberg(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<LayoutRegion>()?;
     m.add_class::<PageHierarchy>()?;
     m.add_class::<HierarchicalBlock>()?;
+    m.add_class::<Table>()?;
+    m.add_class::<TableCell>()?;
     m.add_class::<Uri>()?;
     m.add_class::<StringBufferPool>()?;
     m.add_class::<ByteBufferPool>()?;

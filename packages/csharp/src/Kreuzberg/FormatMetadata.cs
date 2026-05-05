@@ -157,7 +157,7 @@ internal sealed class FormatMetadataJsonConverter : JsonConverter<FormatMetadata
             "citation" => new FormatMetadata.Citation(
                 JsonSerializer.Deserialize<CitationMetadata>(json, options)!
                     ?? throw new JsonException("Failed to deserialize FormatMetadata.Citation.Value")),
-            "fictionbook" => new FormatMetadata.FictionBook(
+            "fiction_book" => new FormatMetadata.FictionBook(
                 JsonSerializer.Deserialize<FictionBookMetadata>(json, options)!
                     ?? throw new JsonException("Failed to deserialize FormatMetadata.FictionBook.Value")),
             "dbf" => new FormatMetadata.Dbf(
@@ -328,7 +328,7 @@ internal sealed class FormatMetadataJsonConverter : JsonConverter<FormatMetadata
                 {
                     var doc = JsonSerializer.SerializeToDocument(v.Value, options);
                     writer.WriteStartObject();
-                    writer.WriteString("format_type", "fictionbook");
+                    writer.WriteString("format_type", "fiction_book");
                     foreach (var prop in doc.RootElement.EnumerateObject())
                         if (prop.Name != "format_type") prop.WriteTo(writer);
                     writer.WriteEndObject();

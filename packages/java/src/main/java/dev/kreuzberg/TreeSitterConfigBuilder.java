@@ -22,7 +22,7 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 @JsonPOJOBuilder(withPrefix = "with")
 public class TreeSitterConfigBuilder {
 
-    private boolean enabled = false;
+    private boolean enabled = true;
     private Optional<java.nio.file.Path> cacheDir = Optional.empty();
     private Optional<List<String>> languages = Optional.empty();
     private Optional<List<String>> groups = Optional.empty();

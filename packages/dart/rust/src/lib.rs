@@ -52,7 +52,7 @@ pub struct ExtractionConfig {
     pub extraction_timeout_secs: Option<i64>,
     pub max_concurrent_extractions: Option<i64>,
     pub result_format: ResultFormat,
-    pub security_limits: Option<String>,
+    pub security_limits: Option<SecurityLimits>,
     pub output_format: OutputFormat,
     pub layout: Option<LayoutDetectionConfig>,
     pub include_document_structure: bool,
@@ -374,20 +374,6 @@ pub struct AnchorProperties {
     pub wrap_type: String,
 }
 
-#[frb(mirror(HeaderFooter))]
-pub struct HeaderFooter {
-    pub paragraphs: Vec<String>,
-    pub tables: Vec<String>,
-    pub header_type: String,
-}
-
-#[frb(mirror(Note))]
-pub struct Note {
-    pub id: String,
-    pub note_type: String,
-    pub paragraphs: Vec<String>,
-}
-
 #[frb(mirror(PageMarginsPoints))]
 pub struct PageMarginsPoints {
     pub top: Option<f64>,
@@ -487,6 +473,19 @@ pub struct OdtProperties {
     pub image_count: Option<i64>,
 }
 
+#[frb(mirror(SecurityLimits))]
+pub struct SecurityLimits {
+    pub max_archive_size: i64,
+    pub max_compression_ratio: i64,
+    pub max_files_in_archive: i64,
+    pub max_nesting_depth: i64,
+    pub max_entity_length: i64,
+    pub max_content_size: i64,
+    pub max_iterations: i64,
+    pub max_xml_depth: i64,
+    pub max_table_cells: i64,
+}
+
 #[frb(mirror(ZipBombValidator))]
 pub struct ZipBombValidator {}
 
@@ -518,7 +517,7 @@ pub struct DjotContent {
     pub plain_text: String,
     pub blocks: Vec<FormattedBlock>,
     pub metadata: Metadata,
-    pub tables: Vec<String>,
+    pub tables: Vec<Table>,
     pub images: Vec<DjotImage>,
     pub links: Vec<DjotLink>,
     pub footnotes: Vec<Footnote>,
@@ -626,7 +625,7 @@ pub struct ExtractionResult {
     pub mime_type: String,
     pub metadata: Metadata,
     pub extraction_method: Option<ExtractionMethod>,
-    pub tables: Vec<String>,
+    pub tables: Vec<Table>,
     pub detected_languages: Option<Vec<String>>,
     pub chunks: Option<Vec<Chunk>>,
     pub images: Option<Vec<ExtractedImage>>,
@@ -1192,7 +1191,7 @@ pub struct PageInfo {
 pub struct PageContent {
     pub page_number: i64,
     pub content: String,
-    pub tables: Vec<String>,
+    pub tables: Vec<Table>,
     pub images: Vec<ExtractedImage>,
     pub hierarchy: Option<PageHierarchy>,
     pub is_blank: Option<bool>,
@@ -1219,6 +1218,22 @@ pub struct HierarchicalBlock {
     pub font_size: f64,
     pub level: String,
     pub bbox: Option<Vec<f64>>,
+}
+
+#[frb(mirror(Table))]
+pub struct Table {
+    pub cells: Vec<Vec<String>>,
+    pub markdown: String,
+    pub page_number: i64,
+    pub bounding_box: Option<String>,
+}
+
+#[frb(mirror(TableCell))]
+pub struct TableCell {
+    pub content: String,
+    pub row_span: i64,
+    pub col_span: i64,
+    pub is_header: bool,
 }
 
 #[frb(mirror(Uri))]

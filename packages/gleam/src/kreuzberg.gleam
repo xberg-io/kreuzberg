@@ -61,7 +61,7 @@ pub type ExtractionConfig {
     extraction_timeout_secs: Option(Int),
     max_concurrent_extractions: Option(Int),
     result_format: ResultFormat,
-    security_limits: Option(String),
+    security_limits: Option(SecurityLimits),
     output_format: OutputFormat,
     layout: Option(LayoutDetectionConfig),
     include_document_structure: Bool,
@@ -525,18 +525,6 @@ pub type AnchorProperties {
   )
 }
 
-pub type HeaderFooter {
-  HeaderFooter(
-    paragraphs: List(String),
-    tables: List(String),
-    header_type: String,
-  )
-}
-
-pub type Note {
-  Note(id: String, note_type: String, paragraphs: List(String))
-}
-
 /// Page margins converted to points (1/72 inch).
 pub type PageMarginsPoints {
   PageMarginsPoints(
@@ -675,6 +663,24 @@ pub type OdtProperties {
 /// The `mime_type` parameter is guaranteed to be already validated.
 pub type SyncExtractor {
   SyncExtractor
+}
+
+/// Configuration for security limits across extractors.
+///
+/// All limits are intentionally conservative to prevent DoS attacks
+/// while still supporting legitimate documents.
+pub type SecurityLimits {
+  SecurityLimits(
+    max_archive_size: Int,
+    max_compression_ratio: Int,
+    max_files_in_archive: Int,
+    max_nesting_depth: Int,
+    max_entity_length: Int,
+    max_content_size: Int,
+    max_iterations: Int,
+    max_xml_depth: Int,
+    max_table_cells: Int,
+  )
 }
 
 /// Helper struct for validating ZIP archives for security issues.
@@ -886,7 +892,7 @@ pub type DjotContent {
     plain_text: String,
     blocks: List(FormattedBlock),
     metadata: Metadata,
-    tables: List(String),
+    tables: List(Table),
     images: List(DjotImage),
     links: List(DjotLink),
     footnotes: List(Footnote),
@@ -1026,7 +1032,7 @@ pub type ExtractionResult {
     mime_type: String,
     metadata: Metadata,
     extraction_method: Option(ExtractionMethod),
-    tables: List(String),
+    tables: List(Table),
     detected_languages: Option(List(String)),
     chunks: Option(List(Chunk)),
     images: Option(List(ExtractedImage)),
@@ -1770,7 +1776,7 @@ pub type PageContent {
   PageContent(
     page_number: Int,
     content: String,
-    tables: List(String),
+    tables: List(Table),
     images: List(ExtractedImage),
     hierarchy: Option(PageHierarchy),
     is_blank: Option(Bool),
@@ -1811,6 +1817,26 @@ pub type HierarchicalBlock {
     level: String,
     bbox: Option(List(Float)),
   )
+}
+
+/// Extracted table structure.
+///
+/// Represents a table detected and extracted from a document (PDF, image, etc.).
+/// Tables are converted to both structured cell data and Markdown format.
+pub type Table {
+  Table(
+    cells: List(List(String)),
+    markdown: String,
+    page_number: Int,
+    bounding_box: Option(String),
+  )
+}
+
+/// Individual table cell with content and optional styling.
+///
+/// Future extension point for rich table support with cell-level metadata.
+pub type TableCell {
+  TableCell(content: String, row_span: Int, col_span: Int, is_header: Bool)
 }
 
 /// A URI extracted from a document.

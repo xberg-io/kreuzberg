@@ -123,7 +123,7 @@ pub const ExtractionConfig = struct {
     extraction_timeout_secs: ?u64,
     max_concurrent_extractions: ?u64,
     result_format: ResultFormat,
-    security_limits: ?[:0]const u8,
+    security_limits: ?SecurityLimits,
     output_format: OutputFormat,
     layout: ?LayoutDetectionConfig,
     include_document_structure: bool,
@@ -533,18 +533,6 @@ pub const AnchorProperties = struct {
     wrap_type: [:0]const u8,
 };
 
-pub const HeaderFooter = struct {
-    paragraphs: []const [:0]const u8,
-    tables: []const [:0]const u8,
-    header_type: [:0]const u8,
-};
-
-pub const Note = struct {
-    id: [:0]const u8,
-    note_type: [:0]const u8,
-    paragraphs: []const [:0]const u8,
-};
-
 /// Page margins converted to points (1/72 inch).
 pub const PageMarginsPoints = struct {
     top: ?f64,
@@ -669,6 +657,22 @@ pub const OdtProperties = struct {
 ///
 /// The `mime_type` parameter is guaranteed to be already validated.
 pub const SyncExtractor = struct {};
+
+/// Configuration for security limits across extractors.
+///
+/// All limits are intentionally conservative to prevent DoS attacks
+/// while still supporting legitimate documents.
+pub const SecurityLimits = struct {
+    max_archive_size: u64,
+    max_compression_ratio: u64,
+    max_files_in_archive: u64,
+    max_nesting_depth: u64,
+    max_entity_length: u64,
+    max_content_size: u64,
+    max_iterations: u64,
+    max_xml_depth: u64,
+    max_table_cells: u64,
+};
 
 /// Helper struct for validating ZIP archives for security issues.
 pub const ZipBombValidator = struct {};
@@ -860,7 +864,7 @@ pub const DjotContent = struct {
     plain_text: [:0]const u8,
     blocks: []const FormattedBlock,
     metadata: Metadata,
-    tables: []const [:0]const u8,
+    tables: []const Table,
     images: []const DjotImage,
     links: []const DjotLink,
     footnotes: []const Footnote,
@@ -991,7 +995,7 @@ pub const ExtractionResult = struct {
     mime_type: [:0]const u8,
     metadata: Metadata,
     extraction_method: ?ExtractionMethod,
-    tables: []const [:0]const u8,
+    tables: []const Table,
     detected_languages: ?[]const [:0]const u8,
     chunks: ?[]const Chunk,
     images: ?[]const ExtractedImage,
@@ -1673,7 +1677,7 @@ pub const PageInfo = struct {
 pub const PageContent = struct {
     page_number: u64,
     content: [:0]const u8,
-    tables: []const [:0]const u8,
+    tables: []const Table,
     images: []const ExtractedImage,
     hierarchy: ?PageHierarchy,
     is_blank: ?bool,
@@ -1710,6 +1714,27 @@ pub const HierarchicalBlock = struct {
     font_size: f32,
     level: [:0]const u8,
     bbox: ?[]const f32,
+};
+
+/// Extracted table structure.
+///
+/// Represents a table detected and extracted from a document (PDF, image, etc.).
+/// Tables are converted to both structured cell data and Markdown format.
+pub const Table = struct {
+    cells: []const []const [:0]const u8,
+    markdown: [:0]const u8,
+    page_number: u64,
+    bounding_box: ?[:0]const u8,
+};
+
+/// Individual table cell with content and optional styling.
+///
+/// Future extension point for rich table support with cell-level metadata.
+pub const TableCell = struct {
+    content: [:0]const u8,
+    row_span: u64,
+    col_span: u64,
+    is_header: bool,
 };
 
 /// A URI extracted from a document.

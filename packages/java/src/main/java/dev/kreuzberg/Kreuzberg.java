@@ -315,7 +315,7 @@ public final class Kreuzberg {
      */
     public static EmbeddingPreset getEmbeddingPreset(final String name) throws KreuzbergRsException {
         java.util.Objects.requireNonNull(name, "name must not be null");
-        return KreuzbergRs.getEmbeddingPreset(name).orElseThrow();
+        return KreuzbergRs.getEmbeddingPreset(name).orElse(null);
     }
 
     /**

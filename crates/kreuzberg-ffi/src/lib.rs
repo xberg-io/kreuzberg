@@ -804,6 +804,24 @@ pub unsafe extern "C" fn kreuzberg_extraction_config_result_format(
     Box::into_raw(Box::new(obj.result_format))
 }
 
+/// Get the `security_limits` field from a `ExtractionConfig`.
+/// # Safety
+/// Pointer must be a valid handle returned by this library.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn kreuzberg_extraction_config_security_limits(
+    ptr: *const kreuzberg::ExtractionConfig,
+) -> *mut kreuzberg::SecurityLimits {
+    if ptr.is_null() {
+        return std::ptr::null_mut();
+    }
+    // SAFETY: null check above guarantees ptr is a valid pointer.
+    let obj = unsafe { &*ptr };
+    match &obj.security_limits {
+        Some(val) => Box::into_raw(Box::new(val.clone())),
+        None => std::ptr::null_mut(),
+    }
+}
+
 /// Get the `output_format` field from a `ExtractionConfig`.
 /// # Safety
 /// Pointer must be a valid handle returned by this library.
@@ -6383,50 +6401,6 @@ pub unsafe extern "C" fn kreuzberg_anchor_properties_relative_height(
     }
 }
 
-/// Free a `HeaderFooter` handle.
-/// # Safety
-/// Pointer must have been returned by this library, or be null.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn kreuzberg_header_footer_free(ptr: *mut kreuzberg::extraction::docx::parser::HeaderFooter) {
-    if !ptr.is_null() {
-        // SAFETY: ptr was allocated by Box::into_raw; caller ensures no aliases.
-        unsafe {
-            drop(Box::from_raw(ptr));
-        }
-    }
-}
-
-/// Free a `Note` handle.
-/// # Safety
-/// Pointer must have been returned by this library, or be null.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn kreuzberg_note_free(ptr: *mut kreuzberg::extraction::docx::parser::Note) {
-    if !ptr.is_null() {
-        // SAFETY: ptr was allocated by Box::into_raw; caller ensures no aliases.
-        unsafe {
-            drop(Box::from_raw(ptr));
-        }
-    }
-}
-
-/// Get the `id` field from a `Note`.
-/// # Safety
-/// Pointer must be a valid handle returned by this library.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn kreuzberg_note_id(
-    ptr: *const kreuzberg::extraction::docx::parser::Note,
-) -> *mut std::ffi::c_char {
-    if ptr.is_null() {
-        return std::ptr::null_mut();
-    }
-    // SAFETY: null check above guarantees ptr is a valid pointer.
-    let obj = unsafe { &*ptr };
-    match CString::new(obj.id.to_string()) {
-        Ok(cs) => cs.into_raw(),
-        Err(_) => std::ptr::null_mut(),
-    }
-}
-
 /// Free a `PageMarginsPoints` handle.
 /// # Safety
 /// Pointer must have been returned by this library, or be null.
@@ -7850,6 +7824,206 @@ pub unsafe extern "C" fn kreuzberg_odt_properties_image_count(
     }
 }
 
+/// Create a `SecurityLimits` from a JSON string. Returns null on failure.
+/// # Safety
+/// JSON string must be valid UTF-8 and null-terminated.
+/// Returned handle must be freed with `kreuzberg_security_limits_free`.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn kreuzberg_security_limits_from_json(json: *const c_char) -> *mut kreuzberg::SecurityLimits {
+    clear_last_error();
+    if json.is_null() {
+        set_last_error(1, "Null pointer passed for JSON string");
+        return std::ptr::null_mut();
+    }
+    // SAFETY: null check above guarantees json is a valid pointer; string is valid UTF-8 from caller.
+    let c_str = match unsafe { CStr::from_ptr(json) }.to_str() {
+        Ok(s) => s,
+        Err(_) => {
+            set_last_error(1, "Invalid UTF-8 in JSON string");
+            return std::ptr::null_mut();
+        }
+    };
+    match serde_json::from_str::<kreuzberg::SecurityLimits>(c_str) {
+        Ok(val) => Box::into_raw(Box::new(val)),
+        Err(e) => {
+            set_last_error(2, &e.to_string());
+            std::ptr::null_mut()
+        }
+    }
+}
+
+/// Serialize a `SecurityLimits` to a JSON string. Returns null on failure.
+/// # Safety
+/// `ptr` must be a valid, non-null pointer returned by a `kreuzberg` function.
+/// The returned string must be freed with `kreuzberg_free_string`.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn kreuzberg_security_limits_to_json(ptr: *const kreuzberg::SecurityLimits) -> *mut c_char {
+    clear_last_error();
+    if ptr.is_null() {
+        set_last_error(1, "Null pointer passed to to_json");
+        return std::ptr::null_mut();
+    }
+    // SAFETY: null check above guarantees ptr is a valid pointer.
+    let val = unsafe { &*ptr };
+    match serde_json::to_string(val) {
+        Ok(s) => match CString::new(s) {
+            Ok(cs) => cs.into_raw(),
+            Err(e) => {
+                set_last_error(2, &e.to_string());
+                std::ptr::null_mut()
+            }
+        },
+        Err(e) => {
+            set_last_error(2, &e.to_string());
+            std::ptr::null_mut()
+        }
+    }
+}
+
+/// Free a `SecurityLimits` handle.
+/// # Safety
+/// Pointer must have been returned by this library, or be null.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn kreuzberg_security_limits_free(ptr: *mut kreuzberg::SecurityLimits) {
+    if !ptr.is_null() {
+        // SAFETY: ptr was allocated by Box::into_raw; caller ensures no aliases.
+        unsafe {
+            drop(Box::from_raw(ptr));
+        }
+    }
+}
+
+/// Get the `max_archive_size` field from a `SecurityLimits`.
+/// # Safety
+/// Pointer must be a valid handle returned by this library.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn kreuzberg_security_limits_max_archive_size(ptr: *const kreuzberg::SecurityLimits) -> usize {
+    if ptr.is_null() {
+        return 0;
+    }
+    // SAFETY: null check above guarantees ptr is a valid pointer.
+    let obj = unsafe { &*ptr };
+    obj.max_archive_size
+}
+
+/// Get the `max_compression_ratio` field from a `SecurityLimits`.
+/// # Safety
+/// Pointer must be a valid handle returned by this library.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn kreuzberg_security_limits_max_compression_ratio(
+    ptr: *const kreuzberg::SecurityLimits,
+) -> usize {
+    if ptr.is_null() {
+        return 0;
+    }
+    // SAFETY: null check above guarantees ptr is a valid pointer.
+    let obj = unsafe { &*ptr };
+    obj.max_compression_ratio
+}
+
+/// Get the `max_files_in_archive` field from a `SecurityLimits`.
+/// # Safety
+/// Pointer must be a valid handle returned by this library.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn kreuzberg_security_limits_max_files_in_archive(
+    ptr: *const kreuzberg::SecurityLimits,
+) -> usize {
+    if ptr.is_null() {
+        return 0;
+    }
+    // SAFETY: null check above guarantees ptr is a valid pointer.
+    let obj = unsafe { &*ptr };
+    obj.max_files_in_archive
+}
+
+/// Get the `max_nesting_depth` field from a `SecurityLimits`.
+/// # Safety
+/// Pointer must be a valid handle returned by this library.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn kreuzberg_security_limits_max_nesting_depth(ptr: *const kreuzberg::SecurityLimits) -> usize {
+    if ptr.is_null() {
+        return 0;
+    }
+    // SAFETY: null check above guarantees ptr is a valid pointer.
+    let obj = unsafe { &*ptr };
+    obj.max_nesting_depth
+}
+
+/// Get the `max_entity_length` field from a `SecurityLimits`.
+/// # Safety
+/// Pointer must be a valid handle returned by this library.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn kreuzberg_security_limits_max_entity_length(ptr: *const kreuzberg::SecurityLimits) -> usize {
+    if ptr.is_null() {
+        return 0;
+    }
+    // SAFETY: null check above guarantees ptr is a valid pointer.
+    let obj = unsafe { &*ptr };
+    obj.max_entity_length
+}
+
+/// Get the `max_content_size` field from a `SecurityLimits`.
+/// # Safety
+/// Pointer must be a valid handle returned by this library.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn kreuzberg_security_limits_max_content_size(ptr: *const kreuzberg::SecurityLimits) -> usize {
+    if ptr.is_null() {
+        return 0;
+    }
+    // SAFETY: null check above guarantees ptr is a valid pointer.
+    let obj = unsafe { &*ptr };
+    obj.max_content_size
+}
+
+/// Get the `max_iterations` field from a `SecurityLimits`.
+/// # Safety
+/// Pointer must be a valid handle returned by this library.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn kreuzberg_security_limits_max_iterations(ptr: *const kreuzberg::SecurityLimits) -> usize {
+    if ptr.is_null() {
+        return 0;
+    }
+    // SAFETY: null check above guarantees ptr is a valid pointer.
+    let obj = unsafe { &*ptr };
+    obj.max_iterations
+}
+
+/// Get the `max_xml_depth` field from a `SecurityLimits`.
+/// # Safety
+/// Pointer must be a valid handle returned by this library.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn kreuzberg_security_limits_max_xml_depth(ptr: *const kreuzberg::SecurityLimits) -> usize {
+    if ptr.is_null() {
+        return 0;
+    }
+    // SAFETY: null check above guarantees ptr is a valid pointer.
+    let obj = unsafe { &*ptr };
+    obj.max_xml_depth
+}
+
+/// Get the `max_table_cells` field from a `SecurityLimits`.
+/// # Safety
+/// Pointer must be a valid handle returned by this library.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn kreuzberg_security_limits_max_table_cells(ptr: *const kreuzberg::SecurityLimits) -> usize {
+    if ptr.is_null() {
+        return 0;
+    }
+    // SAFETY: null check above guarantees ptr is a valid pointer.
+    let obj = unsafe { &*ptr };
+    obj.max_table_cells
+}
+
+/// # Safety
+/// Caller must ensure all pointer arguments are valid or null.
+/// Returned pointers must be freed with the appropriate free function.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn kreuzberg_security_limits_default() -> *mut kreuzberg::SecurityLimits {
+    clear_last_error();
+    let result = kreuzberg::SecurityLimits::default();
+    Box::into_raw(Box::new(result))
+}
+
 /// Free a `ZipBombValidator` handle.
 /// # Safety
 /// Pointer must have been returned by this library, or be null.
@@ -8372,6 +8546,25 @@ pub unsafe extern "C" fn kreuzberg_djot_content_metadata(
     // SAFETY: null check above guarantees ptr is a valid pointer.
     let obj = unsafe { &*ptr };
     Box::into_raw(Box::new(obj.metadata.clone()))
+}
+
+/// Get the `tables` field from a `DjotContent`.
+/// # Safety
+/// Pointer must be a valid handle returned by this library.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn kreuzberg_djot_content_tables(ptr: *const kreuzberg::DjotContent) -> *mut std::ffi::c_char {
+    if ptr.is_null() {
+        return std::ptr::null_mut();
+    }
+    // SAFETY: null check above guarantees ptr is a valid pointer.
+    let obj = unsafe { &*ptr };
+    match serde_json::to_string(&obj.tables) {
+        Ok(s) => match CString::new(s) {
+            Ok(cs) => cs.into_raw(),
+            Err(_) => std::ptr::null_mut(),
+        },
+        Err(_) => std::ptr::null_mut(),
+    }
 }
 
 /// Get the `images` field from a `DjotContent`.
@@ -10115,6 +10308,27 @@ pub unsafe extern "C" fn kreuzberg_extraction_result_extraction_method(
     match &obj.extraction_method {
         Some(val) => Box::into_raw(Box::new(*val)),
         None => std::ptr::null_mut(),
+    }
+}
+
+/// Get the `tables` field from a `ExtractionResult`.
+/// # Safety
+/// Pointer must be a valid handle returned by this library.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn kreuzberg_extraction_result_tables(
+    ptr: *const kreuzberg::ExtractionResult,
+) -> *mut std::ffi::c_char {
+    if ptr.is_null() {
+        return std::ptr::null_mut();
+    }
+    // SAFETY: null check above guarantees ptr is a valid pointer.
+    let obj = unsafe { &*ptr };
+    match serde_json::to_string(&obj.tables) {
+        Ok(s) => match CString::new(s) {
+            Ok(cs) => cs.into_raw(),
+            Err(_) => std::ptr::null_mut(),
+        },
+        Err(_) => std::ptr::null_mut(),
     }
 }
 
@@ -19692,6 +19906,25 @@ pub unsafe extern "C" fn kreuzberg_page_content_content(ptr: *const kreuzberg::P
     }
 }
 
+/// Get the `tables` field from a `PageContent`.
+/// # Safety
+/// Pointer must be a valid handle returned by this library.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn kreuzberg_page_content_tables(ptr: *const kreuzberg::PageContent) -> *mut std::ffi::c_char {
+    if ptr.is_null() {
+        return std::ptr::null_mut();
+    }
+    // SAFETY: null check above guarantees ptr is a valid pointer.
+    let obj = unsafe { &*ptr };
+    match serde_json::to_string(&obj.tables) {
+        Ok(s) => match CString::new(s) {
+            Ok(cs) => cs.into_raw(),
+            Err(_) => std::ptr::null_mut(),
+        },
+        Err(_) => std::ptr::null_mut(),
+    }
+}
+
 /// Get the `images` field from a `PageContent`.
 /// # Safety
 /// Pointer must be a valid handle returned by this library.
@@ -20103,6 +20336,247 @@ pub unsafe extern "C" fn kreuzberg_hierarchical_block_level(
         Ok(cs) => cs.into_raw(),
         Err(_) => std::ptr::null_mut(),
     }
+}
+
+/// Create a `Table` from a JSON string. Returns null on failure.
+/// # Safety
+/// JSON string must be valid UTF-8 and null-terminated.
+/// Returned handle must be freed with `kreuzberg_table_free`.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn kreuzberg_table_from_json(json: *const c_char) -> *mut kreuzberg::Table {
+    clear_last_error();
+    if json.is_null() {
+        set_last_error(1, "Null pointer passed for JSON string");
+        return std::ptr::null_mut();
+    }
+    // SAFETY: null check above guarantees json is a valid pointer; string is valid UTF-8 from caller.
+    let c_str = match unsafe { CStr::from_ptr(json) }.to_str() {
+        Ok(s) => s,
+        Err(_) => {
+            set_last_error(1, "Invalid UTF-8 in JSON string");
+            return std::ptr::null_mut();
+        }
+    };
+    match serde_json::from_str::<kreuzberg::Table>(c_str) {
+        Ok(val) => Box::into_raw(Box::new(val)),
+        Err(e) => {
+            set_last_error(2, &e.to_string());
+            std::ptr::null_mut()
+        }
+    }
+}
+
+/// Serialize a `Table` to a JSON string. Returns null on failure.
+/// # Safety
+/// `ptr` must be a valid, non-null pointer returned by a `kreuzberg` function.
+/// The returned string must be freed with `kreuzberg_free_string`.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn kreuzberg_table_to_json(ptr: *const kreuzberg::Table) -> *mut c_char {
+    clear_last_error();
+    if ptr.is_null() {
+        set_last_error(1, "Null pointer passed to to_json");
+        return std::ptr::null_mut();
+    }
+    // SAFETY: null check above guarantees ptr is a valid pointer.
+    let val = unsafe { &*ptr };
+    match serde_json::to_string(val) {
+        Ok(s) => match CString::new(s) {
+            Ok(cs) => cs.into_raw(),
+            Err(e) => {
+                set_last_error(2, &e.to_string());
+                std::ptr::null_mut()
+            }
+        },
+        Err(e) => {
+            set_last_error(2, &e.to_string());
+            std::ptr::null_mut()
+        }
+    }
+}
+
+/// Free a `Table` handle.
+/// # Safety
+/// Pointer must have been returned by this library, or be null.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn kreuzberg_table_free(ptr: *mut kreuzberg::Table) {
+    if !ptr.is_null() {
+        // SAFETY: ptr was allocated by Box::into_raw; caller ensures no aliases.
+        unsafe {
+            drop(Box::from_raw(ptr));
+        }
+    }
+}
+
+/// Get the `cells` field from a `Table`.
+/// # Safety
+/// Pointer must be a valid handle returned by this library.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn kreuzberg_table_cells(ptr: *const kreuzberg::Table) -> *mut std::ffi::c_char {
+    if ptr.is_null() {
+        return std::ptr::null_mut();
+    }
+    // SAFETY: null check above guarantees ptr is a valid pointer.
+    let obj = unsafe { &*ptr };
+    match serde_json::to_string(&obj.cells) {
+        Ok(s) => match CString::new(s) {
+            Ok(cs) => cs.into_raw(),
+            Err(_) => std::ptr::null_mut(),
+        },
+        Err(_) => std::ptr::null_mut(),
+    }
+}
+
+/// Get the `markdown` field from a `Table`.
+/// # Safety
+/// Pointer must be a valid handle returned by this library.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn kreuzberg_table_markdown(ptr: *const kreuzberg::Table) -> *mut std::ffi::c_char {
+    if ptr.is_null() {
+        return std::ptr::null_mut();
+    }
+    // SAFETY: null check above guarantees ptr is a valid pointer.
+    let obj = unsafe { &*ptr };
+    match CString::new(obj.markdown.to_string()) {
+        Ok(cs) => cs.into_raw(),
+        Err(_) => std::ptr::null_mut(),
+    }
+}
+
+/// Get the `page_number` field from a `Table`.
+/// # Safety
+/// Pointer must be a valid handle returned by this library.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn kreuzberg_table_page_number(ptr: *const kreuzberg::Table) -> usize {
+    if ptr.is_null() {
+        return 0;
+    }
+    // SAFETY: null check above guarantees ptr is a valid pointer.
+    let obj = unsafe { &*ptr };
+    obj.page_number
+}
+
+/// Create a `TableCell` from a JSON string. Returns null on failure.
+/// # Safety
+/// JSON string must be valid UTF-8 and null-terminated.
+/// Returned handle must be freed with `kreuzberg_table_cell_free`.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn kreuzberg_table_cell_from_json(json: *const c_char) -> *mut kreuzberg::TableCell {
+    clear_last_error();
+    if json.is_null() {
+        set_last_error(1, "Null pointer passed for JSON string");
+        return std::ptr::null_mut();
+    }
+    // SAFETY: null check above guarantees json is a valid pointer; string is valid UTF-8 from caller.
+    let c_str = match unsafe { CStr::from_ptr(json) }.to_str() {
+        Ok(s) => s,
+        Err(_) => {
+            set_last_error(1, "Invalid UTF-8 in JSON string");
+            return std::ptr::null_mut();
+        }
+    };
+    match serde_json::from_str::<kreuzberg::TableCell>(c_str) {
+        Ok(val) => Box::into_raw(Box::new(val)),
+        Err(e) => {
+            set_last_error(2, &e.to_string());
+            std::ptr::null_mut()
+        }
+    }
+}
+
+/// Serialize a `TableCell` to a JSON string. Returns null on failure.
+/// # Safety
+/// `ptr` must be a valid, non-null pointer returned by a `kreuzberg` function.
+/// The returned string must be freed with `kreuzberg_free_string`.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn kreuzberg_table_cell_to_json(ptr: *const kreuzberg::TableCell) -> *mut c_char {
+    clear_last_error();
+    if ptr.is_null() {
+        set_last_error(1, "Null pointer passed to to_json");
+        return std::ptr::null_mut();
+    }
+    // SAFETY: null check above guarantees ptr is a valid pointer.
+    let val = unsafe { &*ptr };
+    match serde_json::to_string(val) {
+        Ok(s) => match CString::new(s) {
+            Ok(cs) => cs.into_raw(),
+            Err(e) => {
+                set_last_error(2, &e.to_string());
+                std::ptr::null_mut()
+            }
+        },
+        Err(e) => {
+            set_last_error(2, &e.to_string());
+            std::ptr::null_mut()
+        }
+    }
+}
+
+/// Free a `TableCell` handle.
+/// # Safety
+/// Pointer must have been returned by this library, or be null.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn kreuzberg_table_cell_free(ptr: *mut kreuzberg::TableCell) {
+    if !ptr.is_null() {
+        // SAFETY: ptr was allocated by Box::into_raw; caller ensures no aliases.
+        unsafe {
+            drop(Box::from_raw(ptr));
+        }
+    }
+}
+
+/// Get the `content` field from a `TableCell`.
+/// # Safety
+/// Pointer must be a valid handle returned by this library.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn kreuzberg_table_cell_content(ptr: *const kreuzberg::TableCell) -> *mut std::ffi::c_char {
+    if ptr.is_null() {
+        return std::ptr::null_mut();
+    }
+    // SAFETY: null check above guarantees ptr is a valid pointer.
+    let obj = unsafe { &*ptr };
+    match CString::new(obj.content.to_string()) {
+        Ok(cs) => cs.into_raw(),
+        Err(_) => std::ptr::null_mut(),
+    }
+}
+
+/// Get the `row_span` field from a `TableCell`.
+/// # Safety
+/// Pointer must be a valid handle returned by this library.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn kreuzberg_table_cell_row_span(ptr: *const kreuzberg::TableCell) -> usize {
+    if ptr.is_null() {
+        return 0;
+    }
+    // SAFETY: null check above guarantees ptr is a valid pointer.
+    let obj = unsafe { &*ptr };
+    obj.row_span
+}
+
+/// Get the `col_span` field from a `TableCell`.
+/// # Safety
+/// Pointer must be a valid handle returned by this library.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn kreuzberg_table_cell_col_span(ptr: *const kreuzberg::TableCell) -> usize {
+    if ptr.is_null() {
+        return 0;
+    }
+    // SAFETY: null check above guarantees ptr is a valid pointer.
+    let obj = unsafe { &*ptr };
+    obj.col_span
+}
+
+/// Get the `is_header` field from a `TableCell`.
+/// # Safety
+/// Pointer must be a valid handle returned by this library.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn kreuzberg_table_cell_is_header(ptr: *const kreuzberg::TableCell) -> i32 {
+    if ptr.is_null() {
+        return 0;
+    }
+    // SAFETY: null check above guarantees ptr is a valid pointer.
+    let obj = unsafe { &*ptr };
+    obj.is_header as i32
 }
 
 /// Create a `Uri` from a JSON string. Returns null on failure.
@@ -27716,12 +28190,16 @@ pub unsafe extern "C" fn kreuzberg_extract_bytes(
     config: *const kreuzberg::ExtractionConfig,
 ) -> *mut kreuzberg::ExtractionResult {
     clear_last_error();
-    if content.is_null() {
+    if content.is_null() && content_len > 0 {
         set_last_error(1, "Null pointer passed for parameter 'content'");
         return std::ptr::null_mut();
     }
-    // SAFETY: null check above; ptr and len validated by caller; data is valid for len elements.
-    let content_rs = unsafe { std::slice::from_raw_parts(content, content_len) }.to_vec();
+    // SAFETY: when content is null, content_len is 0 (checked above), so we use an empty slice; otherwise data is valid for len elements.
+    let content_rs = if content.is_null() {
+        Vec::new()
+    } else {
+        unsafe { std::slice::from_raw_parts(content, content_len) }.to_vec()
+    };
     if mime_type.is_null() {
         set_last_error(1, "Null pointer passed for parameter 'mime_type'");
         return std::ptr::null_mut();
@@ -27938,12 +28416,16 @@ pub unsafe extern "C" fn kreuzberg_extract_bytes_sync(
     config: *const kreuzberg::ExtractionConfig,
 ) -> *mut kreuzberg::ExtractionResult {
     clear_last_error();
-    if content.is_null() {
+    if content.is_null() && content_len > 0 {
         set_last_error(1, "Null pointer passed for parameter 'content'");
         return std::ptr::null_mut();
     }
-    // SAFETY: null check above; ptr and len validated by caller; data is valid for len elements.
-    let content_rs = unsafe { std::slice::from_raw_parts(content, content_len) }.to_vec();
+    // SAFETY: when content is null, content_len is 0 (checked above), so we use an empty slice; otherwise data is valid for len elements.
+    let content_rs = if content.is_null() {
+        Vec::new()
+    } else {
+        unsafe { std::slice::from_raw_parts(content, content_len) }.to_vec()
+    };
     if mime_type.is_null() {
         set_last_error(1, "Null pointer passed for parameter 'mime_type'");
         return std::ptr::null_mut();
@@ -28362,12 +28844,16 @@ pub unsafe extern "C" fn kreuzberg_detect_mime_type_from_bytes(
     content_len: usize,
 ) -> *mut std::ffi::c_char {
     clear_last_error();
-    if content.is_null() {
+    if content.is_null() && content_len > 0 {
         set_last_error(1, "Null pointer passed for parameter 'content'");
         return std::ptr::null_mut();
     }
-    // SAFETY: null check above; ptr and len validated by caller; data is valid for len elements.
-    let content_rs = unsafe { std::slice::from_raw_parts(content, content_len) }.to_vec();
+    // SAFETY: when content is null, content_len is 0 (checked above), so we use an empty slice; otherwise data is valid for len elements.
+    let content_rs = if content.is_null() {
+        Vec::new()
+    } else {
+        unsafe { std::slice::from_raw_parts(content, content_len) }.to_vec()
+    };
     let result = kreuzberg::detect_mime_type_from_bytes(&content_rs);
     match result {
         Ok(val) => match CString::new(val) {

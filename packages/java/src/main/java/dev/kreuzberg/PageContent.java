@@ -31,7 +31,7 @@ public record PageContent(
         /** Text content for this page */
         String content,
         /** Tables found on this page (uses Arc for memory efficiency) */
-        @JsonInclude(JsonInclude.Include.NON_NULL) List<String> tables,
+        @JsonInclude(JsonInclude.Include.NON_NULL) List<Table> tables,
         /** Images found on this page (uses Arc for memory efficiency) */
         @JsonInclude(JsonInclude.Include.NON_NULL) List<ExtractedImage> images,
         /** Hierarchy information for the page (when hierarchy extraction is enabled) */

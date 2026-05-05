@@ -48,7 +48,7 @@ public sealed class DjotContent
     /// Extracted tables as structured data
     /// </summary>
     [JsonPropertyName("tables")]
-    public List<string> Tables { get; set; } = [];
+    public List<Table> Tables { get; set; } = [];
 
     /// <summary>
     /// Extracted images with metadata

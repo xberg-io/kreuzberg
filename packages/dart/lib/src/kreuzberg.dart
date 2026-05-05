@@ -29,10 +29,7 @@ class AccelerationConfig {
 
   /// GPU device ID (for CUDA/TensorRT). Ignored for CPU/CoreML/Auto.
   final int deviceId;
-  AccelerationConfig({
-    required this.provider,
-    required this.deviceId,
-  });
+  AccelerationConfig({required this.provider, required this.deviceId});
 }
 
 /// Cross-extractor content filtering configuration.
@@ -245,7 +242,7 @@ class ExtractionConfig {
   /// content size, and table cell count for every extraction path that
   /// ingests user-controlled bytes.
   /// When `None`, default limits are used.
-  final String? securityLimits;
+  final SecurityLimits? securityLimits;
 
   /// Content text format (default: Plain).
   ///
@@ -534,10 +531,7 @@ class BatchFileItem {
 
   /// Per-file configuration overrides (None uses batch-level defaults)
   final FileExtractionConfig? config;
-  BatchFileItem({
-    required this.path,
-    required this.config,
-  });
+  BatchFileItem({required this.path, required this.config});
 }
 
 /// Image extraction configuration.
@@ -922,10 +916,7 @@ class OcrPipelineConfig {
 
   /// Quality thresholds for deciding whether to accept a result or try the next backend.
   final OcrQualityThresholds qualityThresholds;
-  OcrPipelineConfig({
-    required this.stages,
-    required this.qualityThresholds,
-  });
+  OcrPipelineConfig({required this.stages, required this.qualityThresholds});
 }
 
 /// OCR configuration.
@@ -1366,10 +1357,7 @@ class SupportedFormat {
 
   /// MIME type string, e.g., "application/pdf"
   final String mimeType;
-  SupportedFormat({
-    required this.extension_,
-    required this.mimeType,
-  });
+  SupportedFormat({required this.extension_, required this.mimeType});
 }
 
 /// API server configuration.
@@ -1504,28 +1492,6 @@ class AnchorProperties {
     required this.positionH,
     required this.positionV,
     required this.wrapType,
-  });
-}
-
-class HeaderFooter {
-  final List<String> paragraphs;
-  final List<String> tables;
-  final String headerType;
-  HeaderFooter({
-    required this.paragraphs,
-    required this.tables,
-    required this.headerType,
-  });
-}
-
-class Note {
-  final String id;
-  final String noteType;
-  final List<String> paragraphs;
-  Note({
-    required this.id,
-    required this.noteType,
-    required this.paragraphs,
   });
 }
 
@@ -1850,6 +1816,54 @@ class OdtProperties {
 /// }
 /// ```
 class SyncExtractor {}
+
+/// Configuration for security limits across extractors.
+///
+/// All limits are intentionally conservative to prevent DoS attacks
+/// while still supporting legitimate documents.
+class SecurityLimits {
+  /// Maximum uncompressed size for archives (500 MB)
+  final int maxArchiveSize;
+
+  /// Maximum compression ratio before flagging as potential bomb (100:1)
+  final int maxCompressionRatio;
+
+  /// Maximum number of files in archive (10,000)
+  final int maxFilesInArchive;
+
+  /// Maximum nesting depth for structures (100)
+  final int maxNestingDepth;
+
+  /// Maximum length of any single XML entity / attribute / token (1 MiB).
+  /// This is a per-token cap, NOT a cumulative cap — billion-laughs class
+  /// attacks where a single entity expands to hundreds of MB are caught
+  /// here, while normal long text content (a paragraph, a CDATA block) is
+  /// caught by `max_content_size` instead.
+  final int maxEntityLength;
+
+  /// Maximum string growth per document (100 MB)
+  final int maxContentSize;
+
+  /// Maximum iterations per operation
+  final int maxIterations;
+
+  /// Maximum XML depth (100 levels)
+  final int maxXmlDepth;
+
+  /// Maximum cells per table (100,000)
+  final int maxTableCells;
+  SecurityLimits({
+    required this.maxArchiveSize,
+    required this.maxCompressionRatio,
+    required this.maxFilesInArchive,
+    required this.maxNestingDepth,
+    required this.maxEntityLength,
+    required this.maxContentSize,
+    required this.maxIterations,
+    required this.maxXmlDepth,
+    required this.maxTableCells,
+  });
+}
 
 /// Helper struct for validating ZIP archives for security issues.
 class ZipBombValidator {}
@@ -2263,7 +2277,7 @@ class DjotContent {
   final Metadata metadata;
 
   /// Extracted tables as structured data
-  final List<String> tables;
+  final List<Table> tables;
 
   /// Extracted images with metadata
   final List<DjotImage> images;
@@ -2395,10 +2409,7 @@ class Footnote {
 
   /// Footnote content blocks
   final List<FormattedBlock> content;
-  Footnote({
-    required this.label,
-    required this.content,
-  });
+  Footnote({required this.label, required this.content});
 }
 
 /// Top-level structured document representation.
@@ -2526,11 +2537,7 @@ class TableGrid {
 
   /// All cells in row-major order.
   final List<GridCell> cells;
-  TableGrid({
-    required this.rows,
-    required this.cols,
-    required this.cells,
-  });
+  TableGrid({required this.rows, required this.cols, required this.cells});
 }
 
 /// Individual grid cell with position and span metadata.
@@ -2579,11 +2586,7 @@ class TextAnnotation {
 
   /// Annotation type.
   final AnnotationKind kind;
-  TextAnnotation({
-    required this.start,
-    required this.end,
-    required this.kind,
-  });
+  TextAnnotation({required this.start, required this.end, required this.kind});
 }
 
 /// General extraction result used by the core extraction API.
@@ -2599,7 +2602,7 @@ class ExtractionResult {
   /// Populated when the extractor can reliably distinguish native text extraction,
   /// OCR-only extraction, or mixed native/OCR output.
   final ExtractionMethod? extractionMethod;
-  final List<String> tables;
+  final List<Table> tables;
   final List<String>? detectedLanguages;
 
   /// Text chunks when chunking is enabled.
@@ -2809,10 +2812,7 @@ class ProcessingWarning {
 
   /// Human-readable description of what went wrong.
   final String message;
-  ProcessingWarning({
-    required this.source,
-    required this.message,
-  });
+  ProcessingWarning({required this.source, required this.message});
 }
 
 /// Token usage and cost data for a single LLM call made during extraction.
@@ -2901,10 +2901,7 @@ class HeadingLevel {
 
   /// The text content of the heading.
   final String text;
-  HeadingLevel({
-    required this.level,
-    required this.text,
-  });
+  HeadingLevel({required this.level, required this.text});
 }
 
 /// Metadata about a chunk's position in the original document.
@@ -3094,10 +3091,7 @@ class ExcelWorkbook {
 
   /// Workbook-level metadata (author, creation date, etc.)
   final Map<String, String> metadata;
-  ExcelWorkbook({
-    required this.sheets,
-    required this.metadata,
-  });
+  ExcelWorkbook({required this.sheets, required this.metadata});
 }
 
 /// Single Excel worksheet.
@@ -3815,10 +3809,7 @@ class XmlMetadata {
 
   /// List of unique element tag names (sorted)
   final List<String> uniqueElements;
-  XmlMetadata({
-    required this.elementCount,
-    required this.uniqueElements,
-  });
+  XmlMetadata({required this.elementCount, required this.uniqueElements});
 }
 
 /// Text/Markdown metadata.
@@ -4055,10 +4046,7 @@ class OcrMetadata {
 class ErrorMetadata {
   final String errorType;
   final String message;
-  ErrorMetadata({
-    required this.errorType,
-    required this.message,
-  });
+  ErrorMetadata({required this.errorType, required this.message});
 }
 
 /// PowerPoint presentation metadata.
@@ -4169,11 +4157,7 @@ class YearRange {
   final int? min;
   final int? max;
   final List<int> years;
-  YearRange({
-    required this.min,
-    required this.max,
-    required this.years,
-  });
+  YearRange({required this.min, required this.max, required this.years});
 }
 
 /// FictionBook (FB2) metadata.
@@ -4204,10 +4188,7 @@ class DbfMetadata {
 class DbfFieldInfo {
   final String name;
   final String fieldType;
-  DbfFieldInfo({
-    required this.name,
-    required this.fieldType,
-  });
+  DbfFieldInfo({required this.name, required this.fieldType});
 }
 
 /// JATS (Journal Article Tag Suite) metadata.
@@ -4228,10 +4209,7 @@ class JatsMetadata {
 class ContributorRole {
   final String name;
   final String? role;
-  ContributorRole({
-    required this.name,
-    required this.role,
-  });
+  ContributorRole({required this.name, required this.role});
 }
 
 /// EPUB metadata (Dublin Core extensions).
@@ -4273,10 +4251,7 @@ class OcrConfidence {
   ///
   /// Range: 0.0 to 1.0.
   final double recognition;
-  OcrConfidence({
-    required this.detection,
-    required this.recognition,
-  });
+  OcrConfidence({required this.detection, required this.recognition});
 }
 
 /// Rotation information for an OCR element.
@@ -4286,10 +4261,7 @@ class OcrRotation {
 
   /// Confidence score for the rotation detection.
   final double? confidence;
-  OcrRotation({
-    required this.angleDegrees,
-    required this.confidence,
-  });
+  OcrRotation({required this.angleDegrees, required this.confidence});
 }
 
 /// A unified OCR element representing detected text with full metadata.
@@ -4492,7 +4464,7 @@ class PageContent {
   ///
   /// Serializes as Vec<Table> for JSON compatibility while maintaining
   /// Arc semantics in-memory for zero-copy sharing.
-  final List<String> tables;
+  final List<Table> tables;
 
   /// Images found on this page (uses Arc for memory efficiency)
   ///
@@ -4563,10 +4535,7 @@ class PageHierarchy {
 
   /// Hierarchical blocks with heading levels
   final List<HierarchicalBlock> blocks;
-  PageHierarchy({
-    required this.blockCount,
-    required this.blocks,
-  });
+  PageHierarchy({required this.blockCount, required this.blocks});
 }
 
 /// A text block with hierarchy level assignment.
@@ -4601,6 +4570,54 @@ class HierarchicalBlock {
     required this.fontSize,
     required this.level,
     required this.bbox,
+  });
+}
+
+/// Extracted table structure.
+///
+/// Represents a table detected and extracted from a document (PDF, image, etc.).
+/// Tables are converted to both structured cell data and Markdown format.
+class Table {
+  /// Table cells as a 2D vector (rows × columns)
+  final List<List<String>> cells;
+
+  /// Markdown representation of the table
+  final String markdown;
+
+  /// Page number where the table was found (1-indexed)
+  final int pageNumber;
+
+  /// Bounding box of the table on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top).
+  /// Only populated for PDF-extracted tables when position data is available.
+  final String? boundingBox;
+  Table({
+    required this.cells,
+    required this.markdown,
+    required this.pageNumber,
+    required this.boundingBox,
+  });
+}
+
+/// Individual table cell with content and optional styling.
+///
+/// Future extension point for rich table support with cell-level metadata.
+class TableCell {
+  /// Cell content as text
+  final String content;
+
+  /// Row span (number of rows this cell spans)
+  final int rowSpan;
+
+  /// Column span (number of columns this cell spans)
+  final int colSpan;
+
+  /// Whether this is a header cell
+  final bool isHeader;
+  TableCell({
+    required this.content,
+    required this.rowSpan,
+    required this.colSpan,
+    required this.isHeader,
   });
 }
 
@@ -4657,10 +4674,7 @@ class InfoResponse {
 
   /// Whether using Rust backend
   final bool rustBackend;
-  InfoResponse({
-    required this.version,
-    required this.rustBackend,
-  });
+  InfoResponse({required this.version, required this.rustBackend});
 }
 
 /// Extraction response (list of results).
@@ -4673,10 +4687,7 @@ class EmbedRequest {
 
   /// Optional embedding configuration (model, batch size, etc.)
   final EmbeddingConfig? config;
-  EmbedRequest({
-    required this.texts,
-    required this.config,
-  });
+  EmbedRequest({required this.texts, required this.config});
 }
 
 /// Embedding response containing generated embeddings.
@@ -4749,10 +4760,7 @@ class DetectResponse {
 
   /// Original filename (if provided)
   final String? filename;
-  DetectResponse({
-    required this.mimeType,
-    required this.filename,
-  });
+  DetectResponse({required this.mimeType, required this.filename});
 }
 
 /// Model manifest entry for cache management.
@@ -4840,10 +4848,7 @@ class OpenWebDocumentResponse {
 
   /// Document metadata
   final String metadata;
-  OpenWebDocumentResponse({
-    required this.pageContent,
-    required this.metadata,
-  });
+  OpenWebDocumentResponse({required this.pageContent, required this.metadata});
 }
 
 /// OpenWebUI "Docling" engine response format.
@@ -4855,10 +4860,7 @@ class DoclingCompatResponse {
 
   /// Processing status
   final String status;
-  DoclingCompatResponse({
-    required this.document,
-    required this.status,
-  });
+  DoclingCompatResponse({required this.document, required this.status});
 }
 
 /// Request parameters for MIME type detection.
@@ -4868,10 +4870,7 @@ class DetectMimeTypeParams {
 
   /// Use content-based detection (default: true)
   final bool useContent;
-  DetectMimeTypeParams({
-    required this.path,
-    required this.useContent,
-  });
+  DetectMimeTypeParams({required this.path, required this.useContent});
 }
 
 /// Request parameters for cache warm (model download).
@@ -4881,10 +4880,7 @@ class CacheWarmParams {
 
   /// Specific embedding preset name to download (e.g. "balanced", "speed", "quality")
   final String? embeddingModel;
-  CacheWarmParams({
-    required this.allEmbeddings,
-    required this.embeddingModel,
-  });
+  CacheWarmParams({required this.allEmbeddings, required this.embeddingModel});
 }
 
 /// Request parameters for embedding generation.
@@ -4984,10 +4980,7 @@ class DetectedBoundary {
 
   /// Whether this boundary looks like a header/section title.
   final bool isHeader;
-  DetectedBoundary({
-    required this.byteOffset,
-    required this.isHeader,
-  });
+  DetectedBoundary({required this.byteOffset, required this.isHeader});
 }
 
 /// Result of a text chunking operation.
@@ -4999,10 +4992,7 @@ class ChunkingResult {
 
   /// Total number of chunks generated
   final int chunkCount;
-  ChunkingResult({
-    required this.chunks,
-    required this.chunkCount,
-  });
+  ChunkingResult({required this.chunks, required this.chunkCount});
 }
 
 /// A merged chunk produced by [`merge_segments`].
@@ -5067,10 +5057,7 @@ class RakeParams {
 
   /// Maximum words in a keyword phrase (default: 3).
   final int maxWordsPerPhrase;
-  RakeParams({
-    required this.minWordLength,
-    required this.maxWordsPerPhrase,
-  });
+  RakeParams({required this.minWordLength, required this.maxWordsPerPhrase});
 }
 
 /// Keyword extraction configuration.
@@ -5139,10 +5126,7 @@ class Keyword {
 class OcrCacheStats {
   final int totalFiles;
   final double totalSizeMb;
-  OcrCacheStats({
-    required this.totalFiles,
-    required this.totalSizeMb,
-  });
+  OcrCacheStats({required this.totalFiles, required this.totalSizeMb});
 }
 
 /// Pre-computed table markdown for a table detection region.
@@ -5278,10 +5262,7 @@ class OrientationResult {
 
   /// Confidence score (0.0-1.0).
   final double confidence;
-  OrientationResult({
-    required this.degrees,
-    required this.confidence,
-  });
+  OrientationResult({required this.degrees, required this.confidence});
 }
 
 /// Bounding box in original image coordinates (x1, y1) top-left, (x2, y2) bottom-right.
@@ -5474,7 +5455,7 @@ enum ExecutionProviderType {
   cuda,
 
   /// NVIDIA TensorRT (optimized CUDA inference).
-  tensorRt;
+  tensorRt,
 }
 
 /// Output format for extraction results.
@@ -5529,7 +5510,7 @@ enum HtmlTheme {
 
   /// No built-in stylesheet emitted. CSS custom properties are still defined
   /// on `:root` so user stylesheets can reference `var(--kb-*)` tokens.
-  unstyled;
+  unstyled,
 }
 
 /// Which table structure recognition model to use.
@@ -5554,7 +5535,7 @@ enum TableModel {
   slanetAuto,
 
   /// Disable table structure model inference entirely; use heuristic path only.
-  disabled;
+  disabled,
 }
 
 /// PDF extraction backend selection.
@@ -5571,7 +5552,7 @@ enum PdfBackend {
   pdfOxide,
 
   /// Automatically select the best available backend.
-  auto;
+  auto,
 }
 
 /// Type of text chunker to use.
@@ -5588,12 +5569,7 @@ enum PdfBackend {
 ///   blank-line paragraphs) and merges groups into chunks capped at
 ///   `max_characters` (default 1000). `topic_threshold` has no effect in the
 ///   fallback path. For best results, pair with an embedding model.
-enum ChunkerType {
-  text,
-  markdown,
-  yaml,
-  semantic;
-}
+enum ChunkerType { text, markdown, yaml, semantic }
 
 /// How chunk size is measured.
 ///
@@ -5612,10 +5588,7 @@ final class Characters extends ChunkSizing {}
 final class Tokenizer extends ChunkSizing {
   final String model;
   final String cacheDir;
-  Tokenizer({
-    required this.model,
-    required this.cacheDir,
-  });
+  Tokenizer({required this.model, required this.cacheDir});
 }
 
 /// Embedding model types supported by Kreuzberg.
@@ -5631,10 +5604,7 @@ final class Preset extends EmbeddingModelType {
 final class Custom extends EmbeddingModelType {
   final String modelId;
   final int dimensions;
-  Custom({
-    required this.modelId,
-    required this.dimensions,
-  });
+  Custom({required this.modelId, required this.dimensions});
 }
 
 /// Provider-hosted embedding model via liter-llm.
@@ -5682,15 +5652,10 @@ enum CodeContentMode {
   raw,
 
   /// Emit function/class headings + docstrings (no code bodies).
-  structure;
+  structure,
 }
 
-enum FracType {
-  bar,
-  noBar,
-  linear,
-  skewed;
-}
+enum FracType { bar, noBar, linear, skewed }
 
 /// OCR backend types.
 enum OcrBackendType {
@@ -5704,7 +5669,7 @@ enum OcrBackendType {
   paddleOcr,
 
   /// Custom/third-party OCR backend
-  custom;
+  custom,
 }
 
 /// Processing stages for post-processors.
@@ -5737,16 +5702,10 @@ enum ProcessingStage {
   /// - Analytics/logging
   /// - Final validation
   /// - Output formatting
-  late_;
+  late_,
 }
 
-enum ReductionLevel {
-  off,
-  light,
-  moderate,
-  aggressive,
-  maximum;
-}
+enum ReductionLevel { off, light, moderate, aggressive, maximum }
 
 /// Type of PDF annotation.
 enum PdfAnnotationType {
@@ -5769,7 +5728,7 @@ enum PdfAnnotationType {
   strikeOut,
 
   /// Any other annotation type
-  other;
+  other,
 }
 
 /// Types of block-level elements in Djot.
@@ -5789,7 +5748,7 @@ enum BlockType {
   section,
   thematicBreak,
   rawBlock,
-  mathDisplay;
+  mathDisplay,
 }
 
 /// Types of inline elements in Djot.
@@ -5809,7 +5768,7 @@ enum InlineType {
   math,
   rawInline,
   footnoteRef,
-  symbol;
+  symbol,
 }
 
 /// Semantic kind of a relationship between document elements.
@@ -5833,7 +5792,7 @@ enum RelationshipKind {
   tocEntry,
 
   /// Cross-reference (LaTeX `\ref{}`, DOCX cross-reference field).
-  crossReference;
+  crossReference,
 }
 
 /// Content layer classification for document nodes.
@@ -5850,7 +5809,7 @@ enum ContentLayer {
   footer,
 
   /// Footnote content.
-  footnote;
+  footnote,
 }
 
 /// Tagged enum for node content. Each variant carries only type-specific data.
@@ -5869,10 +5828,7 @@ final class Title extends NodeContent {
 final class Heading extends NodeContent {
   final int level;
   final String text;
-  Heading({
-    required this.level,
-    required this.text,
-  });
+  Heading({required this.level, required this.text});
 }
 
 /// Body text paragraph.
@@ -5915,10 +5871,7 @@ final class Image extends NodeContent {
 final class Code extends NodeContent {
   final String text;
   final String language;
-  Code({
-    required this.text,
-    required this.language,
-  });
+  Code({required this.text, required this.language});
 }
 
 /// Block quote — container, children carry the quoted content.
@@ -5958,10 +5911,7 @@ final class PageBreak extends NodeContent {}
 final class Slide extends NodeContent {
   final int number;
   final String title;
-  Slide({
-    required this.number,
-    required this.title,
-  });
+  Slide({required this.number, required this.title});
 }
 
 /// Definition list container — children are `DefinitionItem` nodes.
@@ -5971,20 +5921,14 @@ final class DefinitionList extends NodeContent {}
 final class DefinitionItem extends NodeContent {
   final String term;
   final String definition;
-  DefinitionItem({
-    required this.term,
-    required this.definition,
-  });
+  DefinitionItem({required this.term, required this.definition});
 }
 
 /// Citation or bibliographic reference.
 final class Citation extends NodeContent {
   final String key;
   final String text;
-  Citation({
-    required this.key,
-    required this.text,
-  });
+  Citation({required this.key, required this.text});
 }
 
 /// Admonition / callout container (note, warning, tip, etc.).
@@ -5993,10 +5937,7 @@ final class Citation extends NodeContent {
 final class Admonition extends NodeContent {
   final String kind;
   final String title;
-  Admonition({
-    required this.kind,
-    required this.title,
-  });
+  Admonition({required this.kind, required this.title});
 }
 
 /// Raw block preserved verbatim from the source format.
@@ -6006,10 +5947,7 @@ final class Admonition extends NodeContent {
 final class RawBlock extends NodeContent {
   final String format;
   final String content;
-  RawBlock({
-    required this.format,
-    required this.content,
-  });
+  RawBlock({required this.format, required this.content});
 }
 
 /// Structured metadata block (email headers, YAML frontmatter, etc.).
@@ -6038,10 +5976,7 @@ final class Superscript extends AnnotationKind {}
 final class Link extends AnnotationKind {
   final String url;
   final String title;
-  Link({
-    required this.url,
-    required this.title,
-  });
+  Link({required this.url, required this.title});
 }
 
 /// Highlighted text (PDF highlights, HTML `<mark>`).
@@ -6063,18 +5998,11 @@ final class FontSize extends AnnotationKind {
 final class Custom extends AnnotationKind {
   final String name;
   final String value;
-  Custom({
-    required this.name,
-    required this.value,
-  });
+  Custom({required this.name, required this.value});
 }
 
 /// How the extracted text was produced.
-enum ExtractionMethod {
-  native,
-  ocr,
-  mixed;
-}
+enum ExtractionMethod { native, ocr, mixed }
 
 /// Semantic structural classification of a text chunk.
 ///
@@ -6119,7 +6047,7 @@ enum ChunkType {
   diagram,
 
   /// Unclassified or mixed content.
-  unknown;
+  unknown,
 }
 
 /// Heuristic classification of what an image likely depicts.
@@ -6155,7 +6083,7 @@ enum ImageKind {
   mask,
 
   /// Could not classify with reasonable confidence
-  unknown;
+  unknown,
 }
 
 /// Result-shape selection for extraction results.
@@ -6168,7 +6096,7 @@ enum ResultFormat {
   unified,
 
   /// Element-based format with semantic element extraction
-  elementBased;
+  elementBased,
 }
 
 /// Semantic element type classification.
@@ -6207,7 +6135,7 @@ enum ElementType {
   footer,
 
   /// Header text
-  header;
+  header,
 }
 
 /// Format-specific metadata (discriminated union).
@@ -6325,7 +6253,7 @@ enum TextDirection {
   rightToLeft,
 
   /// Automatic text direction detection
-  auto;
+  auto,
 }
 
 /// Link type classification.
@@ -6346,7 +6274,7 @@ enum LinkType {
   phone,
 
   /// Other link type
-  other;
+  other,
 }
 
 /// Image type classification.
@@ -6361,7 +6289,7 @@ enum ImageType {
   external_,
 
   /// Relative path image
-  relative;
+  relative,
 }
 
 /// Structured data type classification.
@@ -6373,7 +6301,7 @@ enum StructuredDataType {
   microdata,
 
   /// RDFa
-  rdFa;
+  rdFa,
 }
 
 /// Bounding geometry for an OCR element.
@@ -6420,7 +6348,7 @@ enum OcrElementLevel {
   block,
 
   /// Page-level element
-  page;
+  page,
 }
 
 /// Type of paginated unit in a document.
@@ -6434,7 +6362,7 @@ enum PageUnitType {
   slide,
 
   /// Spreadsheet sheets (XLSX, ODS)
-  sheet;
+  sheet,
 }
 
 /// Semantic classification of an extracted URI.
@@ -6455,7 +6383,7 @@ enum UriKind {
   reference,
 
   /// An email address (`mailto:` link or bare email).
-  email;
+  email,
 }
 
 /// Error type for pool operations.
@@ -6464,7 +6392,7 @@ enum PoolError {
   ///
   /// This indicates a panic occurred while holding the lock.
   /// The pool is in a locked state and cannot be recovered.
-  lockPoisoned;
+  lockPoisoned,
 }
 
 /// Keyword algorithm selection.
@@ -6473,7 +6401,7 @@ enum KeywordAlgorithm {
   yake,
 
   /// RAKE (Rapid Automatic Keyword Extraction) - co-occurrence based
-  rake;
+  rake,
 }
 
 /// Page Segmentation Mode for Tesseract OCR
@@ -6488,7 +6416,7 @@ enum PSMMode {
   singleLine,
   singleWord,
   circleWord,
-  singleChar;
+  singleChar,
 }
 
 /// Supported languages in PaddleOCR.
@@ -6541,7 +6469,7 @@ enum PaddleLanguage {
   tamil,
 
   /// Telugu
-  telugu;
+  telugu,
 }
 
 /// The 17 canonical document layout classes.
@@ -6566,7 +6494,7 @@ enum LayoutClass {
   checkboxSelected,
   checkboxUnselected,
   form,
-  keyValueRegion;
+  keyValueRegion,
 }
 
 /// Main error type for all Kreuzberg operations.
@@ -6604,10 +6532,7 @@ final class Parsing implements KreuzbergError {
   final String source;
   @override
   String get message => 'Parsing error';
-  Parsing({
-    required this.message,
-    required this.source,
-  });
+  Parsing({required this.message, required this.source});
 }
 
 final class Ocr implements KreuzbergError {
@@ -6615,10 +6540,7 @@ final class Ocr implements KreuzbergError {
   final String source;
   @override
   String get message => 'OCR error';
-  Ocr({
-    required this.message,
-    required this.source,
-  });
+  Ocr({required this.message, required this.source});
 }
 
 final class Validation implements KreuzbergError {
@@ -6626,10 +6548,7 @@ final class Validation implements KreuzbergError {
   final String source;
   @override
   String get message => 'Validation error';
-  Validation({
-    required this.message,
-    required this.source,
-  });
+  Validation({required this.message, required this.source});
 }
 
 final class Cache implements KreuzbergError {
@@ -6637,10 +6556,7 @@ final class Cache implements KreuzbergError {
   final String source;
   @override
   String get message => 'Cache error';
-  Cache({
-    required this.message,
-    required this.source,
-  });
+  Cache({required this.message, required this.source});
 }
 
 final class ImageProcessing implements KreuzbergError {
@@ -6648,10 +6564,7 @@ final class ImageProcessing implements KreuzbergError {
   final String source;
   @override
   String get message => 'Image processing error';
-  ImageProcessing({
-    required this.message,
-    required this.source,
-  });
+  ImageProcessing({required this.message, required this.source});
 }
 
 final class Serialization implements KreuzbergError {
@@ -6659,10 +6572,7 @@ final class Serialization implements KreuzbergError {
   final String source;
   @override
   String get message => 'Serialization error';
-  Serialization({
-    required this.message,
-    required this.source,
-  });
+  Serialization({required this.message, required this.source});
 }
 
 final class MissingDependency implements KreuzbergError {
@@ -6677,10 +6587,7 @@ final class Plugin implements KreuzbergError {
   final String pluginName;
   @override
   String get message => 'Plugin error in';
-  Plugin({
-    required this.message,
-    required this.pluginName,
-  });
+  Plugin({required this.message, required this.pluginName});
 }
 
 final class LockPoisoned implements KreuzbergError {
@@ -6702,10 +6609,7 @@ final class Embedding implements KreuzbergError {
   final String source;
   @override
   String get message => 'Embedding error';
-  Embedding({
-    required this.message,
-    required this.source,
-  });
+  Embedding({required this.message, required this.source});
 }
 
 final class Timeout implements KreuzbergError {
@@ -6713,10 +6617,7 @@ final class Timeout implements KreuzbergError {
   final int limitMs;
   @override
   String get message => 'Extraction timed out after ms (limit: ms)';
-  Timeout({
-    required this.elapsedMs,
-    required this.limitMs,
-  });
+  Timeout({required this.elapsedMs, required this.limitMs});
 }
 
 final class Cancelled implements KreuzbergError {
@@ -6730,10 +6631,7 @@ final class Security implements KreuzbergError {
   final String source;
   @override
   String get message => 'Security violation';
-  Security({
-    required this.message,
-    required this.source,
-  });
+  Security({required this.message, required this.source});
 }
 
 final class Other implements KreuzbergError {
@@ -6781,7 +6679,10 @@ class KreuzbergBridge {
   /// ```
   /// throws anyhow::Error on failure
   static Future<ExtractionResult> extractBytes(
-      Uint8List content, String mimeType, ExtractionConfig config) async {
+    Uint8List content,
+    String mimeType,
+    ExtractionConfig config,
+  ) async {
     return await rust_bridge.extractBytes(content, mimeType, config);
   }
 
@@ -6822,7 +6723,10 @@ class KreuzbergBridge {
   /// ```
   /// throws anyhow::Error on failure
   static Future<ExtractionResult> extractFile(
-      String path, String? mimeType, ExtractionConfig config) async {
+    String path,
+    String? mimeType,
+    ExtractionConfig config,
+  ) async {
     return await rust_bridge.extractFile(path, mimeType, config);
   }
 
@@ -6849,7 +6753,10 @@ class KreuzbergBridge {
   /// ```
   /// throws anyhow::Error on failure
   static ExtractionResult extractFileSync(
-      String path, String? mimeType, ExtractionConfig config) {
+    String path,
+    String? mimeType,
+    ExtractionConfig config,
+  ) {
     return rust_bridge.extractFileSync(path, mimeType, config);
   }
 
@@ -6874,7 +6781,10 @@ class KreuzbergBridge {
   /// ```
   /// throws anyhow::Error on failure
   static ExtractionResult extractBytesSync(
-      Uint8List content, String mimeType, ExtractionConfig config) {
+    Uint8List content,
+    String mimeType,
+    ExtractionConfig config,
+  ) {
     return rust_bridge.extractBytesSync(content, mimeType, config);
   }
 
@@ -6901,7 +6811,9 @@ class KreuzbergBridge {
   /// ```
   /// throws anyhow::Error on failure
   static List<ExtractionResult> batchExtractFilesSync(
-      List<BatchFileItem> items, ExtractionConfig config) {
+    List<BatchFileItem> items,
+    ExtractionConfig config,
+  ) {
     return rust_bridge.batchExtractFilesSync(items, config);
   }
 
@@ -6931,7 +6843,9 @@ class KreuzbergBridge {
   /// ```
   /// throws anyhow::Error on failure
   static List<ExtractionResult> batchExtractBytesSync(
-      List<BatchBytesItem> items, ExtractionConfig config) {
+    List<BatchBytesItem> items,
+    ExtractionConfig config,
+  ) {
     return rust_bridge.batchExtractBytesSync(items, config);
   }
 
@@ -6999,7 +6913,9 @@ class KreuzbergBridge {
   /// ```
   /// throws anyhow::Error on failure
   static Future<List<ExtractionResult>> batchExtractFiles(
-      List<BatchFileItem> items, ExtractionConfig config) async {
+    List<BatchFileItem> items,
+    ExtractionConfig config,
+  ) async {
     return await rust_bridge.batchExtractFiles(items, config);
   }
 
@@ -7060,7 +6976,9 @@ class KreuzbergBridge {
   /// ```
   /// throws anyhow::Error on failure
   static Future<List<ExtractionResult>> batchExtractBytes(
-      List<BatchBytesItem> items, ExtractionConfig config) async {
+    List<BatchBytesItem> items,
+    ExtractionConfig config,
+  ) async {
     return await rust_bridge.batchExtractBytes(items, config);
   }
 
@@ -7240,7 +7158,9 @@ class KreuzbergBridge {
   /// ```
   /// throws anyhow::Error on failure
   static Future<List<List<double>>> embedTextsAsync(
-      List<String> texts, EmbeddingConfig config) async {
+    List<String> texts,
+    EmbeddingConfig config,
+  ) async {
     return await rust_bridge.embedTextsAsync(texts, config);
   }
 
@@ -7262,7 +7182,11 @@ class KreuzbergBridge {
   /// ```
   /// throws anyhow::Error on failure
   static Uint8List renderPdfPageToPng(
-      Uint8List pdfBytes, int pageIndex, int? dpi, String? password) {
+    Uint8List pdfBytes,
+    int pageIndex,
+    int? dpi,
+    String? password,
+  ) {
     return rust_bridge.renderPdfPageToPng(pdfBytes, pageIndex, dpi, password);
   }
 
@@ -7280,7 +7204,9 @@ class KreuzbergBridge {
   /// Returns a 2D vector where each inner vector is the embedding for the corresponding text.
   /// throws anyhow::Error on failure
   static List<List<double>> embedTexts(
-      List<String> texts, EmbeddingConfig config) {
+    List<String> texts,
+    EmbeddingConfig config,
+  ) {
     return rust_bridge.embedTexts(texts, config);
   }
 

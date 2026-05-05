@@ -394,7 +394,7 @@ Rust builds are modular through Cargo features. Nothing is enabled by default --
 
     ```bash
     gem install kreuzberg                  # Ruby
-    go get github.com/kreuzberg-dev/kreuzberg/packages/go/v4  # Go
+    go get github.com/kreuzberg-dev/kreuzberg/packages/go/v5  # Go
     dotnet add package kreuzberg.dev       # C#
     ```
 

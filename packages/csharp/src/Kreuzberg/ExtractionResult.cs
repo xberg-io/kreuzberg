@@ -37,7 +37,7 @@ public sealed class ExtractionResult
     public ExtractionMethod? ExtractionMethod { get; set; } = null;
 
     [JsonPropertyName("tables")]
-    public List<string> Tables { get; set; } = [];
+    public List<Table> Tables { get; set; } = [];
 
     [JsonPropertyName("detected_languages")]
     public List<string>? DetectedLanguages { get; set; } = null;

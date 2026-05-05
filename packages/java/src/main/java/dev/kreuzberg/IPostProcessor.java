@@ -1,8 +1,5 @@
 package dev.kreuzberg;
 
-import java.util.List;
-import java.util.Map;
-
 /**
  * Bridge interface for the PostProcessor plugin system.
  *

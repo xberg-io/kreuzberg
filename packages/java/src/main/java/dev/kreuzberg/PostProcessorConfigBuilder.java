@@ -14,7 +14,7 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 @JsonPOJOBuilder(withPrefix = "with")
 public class PostProcessorConfigBuilder {
 
-    private boolean enabled = false;
+    private boolean enabled = true;
     private Optional<List<String>> enabledProcessors = Optional.empty();
     private Optional<List<String>> disabledProcessors = Optional.empty();
     private Optional<String> enabledSet = Optional.empty();

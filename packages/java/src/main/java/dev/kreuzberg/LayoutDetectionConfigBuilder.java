@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 public class LayoutDetectionConfigBuilder {
 
     private Optional<Float> confidenceThreshold = Optional.empty();
-    private boolean applyHeuristics = false;
+    private boolean applyHeuristics = true;
     private TableModel tableModel = null;
     private Optional<AccelerationConfig> acceleration = Optional.empty();
 

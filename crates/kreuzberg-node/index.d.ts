@@ -397,18 +397,18 @@ export interface JsAnchorProperties {
 
 /** Types of inline text annotations. */
 export type JsAnnotationKind =
-  | { annotation_type: 'Bold' }
-  | { annotation_type: 'Italic' }
-  | { annotation_type: 'Underline' }
-  | { annotation_type: 'Strikethrough' }
-  | { annotation_type: 'Code' }
-  | { annotation_type: 'Subscript' }
-  | { annotation_type: 'Superscript' }
-  | { annotation_type: 'Link'; url: string; title: string }
-  | { annotation_type: 'Highlight' }
-  | { annotation_type: 'Color'; value: string }
-  | { annotation_type: 'FontSize'; value: string }
-  | { annotation_type: 'Custom'; name: string; value: string }
+  | { annotation_type: 'bold' }
+  | { annotation_type: 'italic' }
+  | { annotation_type: 'underline' }
+  | { annotation_type: 'strikethrough' }
+  | { annotation_type: 'code' }
+  | { annotation_type: 'subscript' }
+  | { annotation_type: 'superscript' }
+  | { annotation_type: 'link'; url: string; title: string }
+  | { annotation_type: 'highlight' }
+  | { annotation_type: 'color'; value: string }
+  | { annotation_type: 'font_size'; value: string }
+  | { annotation_type: 'custom'; name: string; value: string }
 
 /**
  * OpenAPI documentation structure.
@@ -740,8 +740,8 @@ export interface JsChunkResponse {
  * (e.g., `Xenova/gpt-4o`, `Xenova/cl100k_base`).
  */
 export type JsChunkSizing =
-  | { type: 'Characters' }
-  | { type: 'Tokenizer'; model: string; cacheDir: string }
+  | { type: 'characters' }
+  | { type: 'tokenizer'; model: string; cacheDir: string }
 
 /** Request parameters for text chunking. */
 export interface JsChunkTextParams {
@@ -998,7 +998,7 @@ export interface JsDjotContent {
   /** Metadata from YAML frontmatter */
   metadata: JsMetadata
   /** Extracted tables as structured data */
-  tables: Array<string>
+  tables: Array<JsTable>
   /** Extracted images with metadata */
   images: Array<JsDjotImage>
   /** Extracted links with URLs */
@@ -1592,10 +1592,10 @@ export interface JsEmbeddingConfig {
 
 /** Embedding model types supported by Kreuzberg. */
 export type JsEmbeddingModelType =
-  | { type: 'Preset'; name: string }
-  | { type: 'Custom'; modelId: string; dimensions: number }
-  | { type: 'Llm'; llm: JsLlmConfig }
-  | { type: 'Plugin'; name: string }
+  | { type: 'preset'; name: string }
+  | { type: 'custom'; modelId: string; dimensions: number }
+  | { type: 'llm'; llm: JsLlmConfig }
+  | { type: 'plugin'; name: string }
 
 /**
  * Preset configurations for common RAG use cases.
@@ -1942,7 +1942,7 @@ export interface JsExtractionConfig {
    * ingests user-controlled bytes.
    * When `None`, default limits are used.
    */
-  securityLimits?: string
+  securityLimits?: JsSecurityLimits
   /**
    * Content text format (default: Plain).
    *
@@ -2074,7 +2074,7 @@ export interface JsExtractionResult {
    * OCR-only extraction, or mixed native/OCR output.
    */
   extractionMethod?: JsExtractionMethod
-  tables?: Array<string>
+  tables?: Array<JsTable>
   detectedLanguages?: Array<string>
   /**
    * Text chunks when chunking is enabled.
@@ -2377,26 +2377,26 @@ export interface JsFootnote {
  * type-safe, clean metadata without nested optionals.
  */
 export type JsFormatMetadata =
-  | { format_type: 'Pdf'; 0: string }
-  | { format_type: 'Docx'; 0: JsDocxMetadata }
-  | { format_type: 'Excel'; 0: JsExcelMetadata }
-  | { format_type: 'Email'; 0: JsEmailMetadata }
-  | { format_type: 'Pptx'; 0: JsPptxMetadata }
-  | { format_type: 'Archive'; 0: JsArchiveMetadata }
-  | { format_type: 'Image'; 0: string }
-  | { format_type: 'Xml'; 0: JsXmlMetadata }
-  | { format_type: 'Text'; 0: JsTextMetadata }
-  | { format_type: 'Html'; 0: JsHtmlMetadata }
-  | { format_type: 'Ocr'; 0: JsOcrMetadata }
-  | { format_type: 'Csv'; 0: JsCsvMetadata }
-  | { format_type: 'Bibtex'; 0: JsBibtexMetadata }
-  | { format_type: 'Citation'; 0: JsCitationMetadata }
-  | { format_type: 'FictionBook'; 0: JsFictionBookMetadata }
-  | { format_type: 'Dbf'; 0: JsDbfMetadata }
-  | { format_type: 'Jats'; 0: JsJatsMetadata }
-  | { format_type: 'Epub'; 0: JsEpubMetadata }
-  | { format_type: 'Pst'; 0: JsPstMetadata }
-  | { format_type: 'Code'; 0: string }
+  | { format_type: 'pdf'; 0: string }
+  | { format_type: 'docx'; 0: JsDocxMetadata }
+  | { format_type: 'excel'; 0: JsExcelMetadata }
+  | { format_type: 'email'; 0: JsEmailMetadata }
+  | { format_type: 'pptx'; 0: JsPptxMetadata }
+  | { format_type: 'archive'; 0: JsArchiveMetadata }
+  | { format_type: 'image'; 0: string }
+  | { format_type: 'xml'; 0: JsXmlMetadata }
+  | { format_type: 'text'; 0: JsTextMetadata }
+  | { format_type: 'html'; 0: JsHtmlMetadata }
+  | { format_type: 'ocr'; 0: JsOcrMetadata }
+  | { format_type: 'csv'; 0: JsCsvMetadata }
+  | { format_type: 'bibtex'; 0: JsBibtexMetadata }
+  | { format_type: 'citation'; 0: JsCitationMetadata }
+  | { format_type: 'fiction_book'; 0: JsFictionBookMetadata }
+  | { format_type: 'dbf'; 0: JsDbfMetadata }
+  | { format_type: 'jats'; 0: JsJatsMetadata }
+  | { format_type: 'epub'; 0: JsEpubMetadata }
+  | { format_type: 'pst'; 0: JsPstMetadata }
+  | { format_type: 'code'; 0: string }
 
 /**
  * Block-level element in a Djot document.
@@ -2443,12 +2443,6 @@ export interface JsGridCell {
   isHeader: boolean
   /** Bounding box for this cell (if available). */
   bbox?: string
-}
-
-export interface JsHeaderFooter {
-  paragraphs?: Array<string>
-  tables?: Array<string>
-  headerType?: string
 }
 
 /** Header/heading element metadata. */
@@ -3264,32 +3258,26 @@ export interface JsModelPaths {
  * Go/Java/TypeScript bindings.
  */
 export type JsNodeContent =
-  | { node_type: 'Title'; text: string }
-  | { node_type: 'Heading'; level: number; text: string }
-  | { node_type: 'Paragraph'; text: string }
-  | { node_type: 'List'; ordered: boolean }
-  | { node_type: 'ListItem'; text: string }
-  | { node_type: 'Table'; grid: JsTableGrid }
-  | { node_type: 'Image'; description: string; imageIndex: number; src: string }
-  | { node_type: 'Code'; text: string; language: string }
-  | { node_type: 'Quote' }
-  | { node_type: 'Formula'; text: string }
-  | { node_type: 'Footnote'; text: string }
-  | { node_type: 'Group'; label: string; headingLevel: number; headingText: string }
-  | { node_type: 'PageBreak' }
-  | { node_type: 'Slide'; number: number; title: string }
-  | { node_type: 'DefinitionList' }
-  | { node_type: 'DefinitionItem'; term: string; definition: string }
-  | { node_type: 'Citation'; key: string; text: string }
-  | { node_type: 'Admonition'; kind: string; title: string }
-  | { node_type: 'RawBlock'; format: string; content: string }
-  | { node_type: 'MetadataBlock'; entries: Array<string> }
-
-export interface JsNote {
-  id: string
-  noteType: string
-  paragraphs: Array<string>
-}
+  | { node_type: 'title'; text: string }
+  | { node_type: 'heading'; level: number; text: string }
+  | { node_type: 'paragraph'; text: string }
+  | { node_type: 'list'; ordered: boolean }
+  | { node_type: 'list_item'; text: string }
+  | { node_type: 'table'; grid: JsTableGrid }
+  | { node_type: 'image'; description: string; imageIndex: number; src: string }
+  | { node_type: 'code'; text: string; language: string }
+  | { node_type: 'quote' }
+  | { node_type: 'formula'; text: string }
+  | { node_type: 'footnote'; text: string }
+  | { node_type: 'group'; label: string; headingLevel: number; headingText: string }
+  | { node_type: 'page_break' }
+  | { node_type: 'slide'; number: number; title: string }
+  | { node_type: 'definition_list' }
+  | { node_type: 'definition_item'; term: string; definition: string }
+  | { node_type: 'citation'; key: string; text: string }
+  | { node_type: 'admonition'; kind: string; title: string }
+  | { node_type: 'raw_block'; format: string; content: string }
+  | { node_type: 'metadata_block'; entries: Array<string> }
 
 /**
  * Trait for OCR backend plugins.
@@ -3458,8 +3446,8 @@ export declare enum JsOcrBackendType {
  * (from PaddleOCR and rotated text detection).
  */
 export type JsOcrBoundingGeometry =
-  | { type: 'Rectangle'; left: number; top: number; width: number; height: number }
-  | { type: 'Quadrilateral'; points: string }
+  | { type: 'rectangle'; left: number; top: number; width: number; height: number }
+  | { type: 'quadrilateral'; points: string }
 
 export interface JsOcrCacheStats {
   totalFiles?: number
@@ -4069,7 +4057,7 @@ export interface JsPageContent {
    * Serializes as Vec<Table> for JSON compatibility while maintaining
    * Arc semantics in-memory for zero-copy sharing.
    */
-  tables: Array<string>
+  tables: Array<JsTable>
   /**
    * Images found on this page (uses Arc for memory efficiency)
    *
@@ -4921,6 +4909,39 @@ export declare enum JsResultFormat {
 }
 
 /**
+ * Configuration for security limits across extractors.
+ *
+ * All limits are intentionally conservative to prevent DoS attacks
+ * while still supporting legitimate documents.
+ */
+export interface JsSecurityLimits {
+  /** Maximum uncompressed size for archives (500 MB) */
+  maxArchiveSize?: number
+  /** Maximum compression ratio before flagging as potential bomb (100:1) */
+  maxCompressionRatio?: number
+  /** Maximum number of files in archive (10,000) */
+  maxFilesInArchive?: number
+  /** Maximum nesting depth for structures (100) */
+  maxNestingDepth?: number
+  /**
+   * Maximum length of any single XML entity / attribute / token (1 MiB).
+   * This is a per-token cap, NOT a cumulative cap — billion-laughs class
+   * attacks where a single entity expands to hundreds of MB are caught
+   * here, while normal long text content (a paragraph, a CDATA block) is
+   * caught by `max_content_size` instead.
+   */
+  maxEntityLength?: number
+  /** Maximum string growth per document (100 MB) */
+  maxContentSize?: number
+  /** Maximum iterations per operation */
+  maxIterations?: number
+  /** Maximum XML depth (100 levels) */
+  maxXmlDepth?: number
+  /** Maximum cells per table (100,000) */
+  maxTableCells?: number
+}
+
+/**
  * API server configuration.
  *
  * This struct holds all configuration options for the Kreuzberg API server,
@@ -5118,6 +5139,42 @@ export interface JsSyncExtractor {
    * @returns An `InternalDocument` containing the extracted elements, metadata, and tables.
    */
   extractSync?(content: Uint8Array, mimeType: string, config: JsExtractionConfig): string
+}
+
+/**
+ * Extracted table structure.
+ *
+ * Represents a table detected and extracted from a document (PDF, image, etc.).
+ * Tables are converted to both structured cell data and Markdown format.
+ */
+export interface JsTable {
+  /** Table cells as a 2D vector (rows × columns) */
+  cells?: Array<Array<string>>
+  /** Markdown representation of the table */
+  markdown?: string
+  /** Page number where the table was found (1-indexed) */
+  pageNumber?: number
+  /**
+   * Bounding box of the table on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top).
+   * Only populated for PDF-extracted tables when position data is available.
+   */
+  boundingBox?: string
+}
+
+/**
+ * Individual table cell with content and optional styling.
+ *
+ * Future extension point for rich table support with cell-level metadata.
+ */
+export interface JsTableCell {
+  /** Cell content as text */
+  content?: string
+  /** Row span (number of rows this cell spans) */
+  rowSpan?: number
+  /** Column span (number of columns this cell spans) */
+  colSpan?: number
+  /** Whether this is a header cell */
+  isHeader?: boolean
 }
 
 /**

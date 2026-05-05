@@ -34,7 +34,7 @@ final class NativeLib {
     static {
         loadNativeLibrary();
         try {
-            java.lang.foreign.Arena arena = java.lang.foreign.Arena.ofConfined();
+            Arena arena = Arena.ofConfined();
             // Try the loaded library name first (for System.load() path case)
             try {
                 LIB = SymbolLookup.libraryLookup(loadedLibraryName, arena);
@@ -237,7 +237,7 @@ final class NativeLib {
         String javaLibPath = System.getProperty("java.library.path");
         if (javaLibPath != null) {
             for (String path : javaLibPath.split(File.pathSeparator)) {
-                java.nio.file.Path libPath = java.nio.file.Paths.get(path, fullLibName + libExt);
+                Path libPath = Paths.get(path, fullLibName + libExt);
                 if (java.nio.file.Files.exists(libPath)) {
                     try {
                         return libPath.toRealPath().toString();

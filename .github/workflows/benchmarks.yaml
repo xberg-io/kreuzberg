@@ -745,7 +745,7 @@ jobs:
         uses: actions/setup-go@v6
         with:
           go-version: "1.26.x"
-          cache-dependency-path: packages/go/v4/go.sum
+          cache-dependency-path: packages/go/v5/go.sum
 
       - name: Setup ONNX Runtime
         uses: ./.github/actions/setup-onnx-runtime
@@ -773,7 +773,7 @@ jobs:
           echo "LD_LIBRARY_PATH=${{ github.workspace }}/target/release:$LD_LIBRARY_PATH" >> "$GITHUB_ENV"
 
       - name: Prime Go modules
-        working-directory: packages/go/v4
+        working-directory: packages/go/v5
         run: go mod download
 
       - name: Prime benchmark Go modules

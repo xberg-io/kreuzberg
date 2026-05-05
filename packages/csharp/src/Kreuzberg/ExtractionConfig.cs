@@ -200,7 +200,7 @@ public sealed class ExtractionConfig
     /// When `None`, default limits are used.
     /// </summary>
     [JsonPropertyName("security_limits")]
-    public string? SecurityLimits { get; set; } = null;
+    public SecurityLimits? SecurityLimits { get; set; } = null;
 
     /// <summary>
     /// Content text format (default: Plain).

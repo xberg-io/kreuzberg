@@ -15,9 +15,9 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 @JsonPOJOBuilder(withPrefix = "with")
 public class TreeSitterProcessConfigBuilder {
 
-    private boolean structure = false;
-    private boolean imports = false;
-    private boolean exports = false;
+    private boolean structure = true;
+    private boolean imports = true;
+    private boolean exports = true;
     private boolean comments = false;
     private boolean docstrings = false;
     private boolean symbols = false;

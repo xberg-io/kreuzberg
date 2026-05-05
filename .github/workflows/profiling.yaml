@@ -974,7 +974,7 @@ jobs:
         uses: actions/setup-go@v6
         with:
           go-version: "1.26.x"
-          cache-dependency-path: packages/go/v4/go.sum
+          cache-dependency-path: packages/go/v5/go.sum
 
       - name: Setup ONNX Runtime
         uses: ./.github/actions/setup-onnx-runtime
@@ -985,7 +985,7 @@ jobs:
         uses: ./.github/actions/setup-layout-models
 
       - name: Prime Go modules
-        working-directory: packages/go/v4
+        working-directory: packages/go/v5
         run: go mod download
 
       - name: Install Task
@@ -1062,7 +1062,7 @@ jobs:
         uses: actions/setup-go@v6
         with:
           go-version: "1.26.x"
-          cache-dependency-path: packages/go/v4/go.sum
+          cache-dependency-path: packages/go/v5/go.sum
 
       - name: Setup ONNX Runtime
         uses: ./.github/actions/setup-onnx-runtime
@@ -1073,7 +1073,7 @@ jobs:
         uses: ./.github/actions/setup-layout-models
 
       - name: Prime Go modules
-        working-directory: packages/go/v4
+        working-directory: packages/go/v5
         run: go mod download
 
       - name: Install Task

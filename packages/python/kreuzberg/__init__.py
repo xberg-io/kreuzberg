@@ -4,7 +4,7 @@
 # Issues & docs: https://github.com/kreuzberg-dev/alef
 """Public API for the conversion library.
 
-Version: 4.10.0-rc.15
+Version: 5.0.0-rc.1
 """
 
 from ._kreuzberg import (
@@ -93,7 +93,6 @@ from ._kreuzberg import (
     MergedChunk,
     ModelPaths,
     NodeContent,
-    Note,
     OcrBackendType,
     OcrBoundingGeometry,
     OcrElementLevel,
@@ -220,7 +219,6 @@ from .options import (
     ExtractionResult,
     FictionBookMetadata,
     FileExtractionConfig,
-    HeaderFooter,
     HierarchyConfig,
     HtmlMetadata,
     HtmlOutputConfig,
@@ -252,7 +250,10 @@ from .options import (
     PstMetadata,
     RakeParams,
     ResolvedStyle,
+    SecurityLimits,
     ServerConfig,
+    Table,
+    TableCell,
     TableGrid,
     TableProperties,
     TesseractConfig,
@@ -350,7 +351,6 @@ __all__ = [
     "FormattedBlock",
     "FracType",
     "GridCell",
-    "HeaderFooter",
     "HeaderMetadata",
     "HeadingContext",
     "HeadingLevel",
@@ -395,7 +395,6 @@ __all__ = [
     "MissingDependencyError",
     "ModelPaths",
     "NodeContent",
-    "Note",
     "OcrBackendType",
     "OcrBoundingGeometry",
     "OcrCacheStats",
@@ -454,6 +453,7 @@ __all__ = [
     "ResolvedStyle",
     "ResultFormat",
     "SecurityError",
+    "SecurityLimits",
     "SerializationError",
     "ServerConfig",
     "StreamReader",
@@ -465,6 +465,8 @@ __all__ = [
     "StructuredExtractionResponse",
     "StyleDefinition",
     "SupportedFormat",
+    "Table",
+    "TableCell",
     "TableGrid",
     "TableModel",
     "TableProperties",
@@ -519,4 +521,4 @@ __all__ = [
     "render_pdf_page_to_png",
 ]
 
-__version__ = "4.10.0-rc.15"
+__version__ = "5.0.0-rc.1"

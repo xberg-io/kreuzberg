@@ -21,7 +21,7 @@ cargo build -p kreuzberg-ffi --release
 
 # Go build will automatically link against the static library
 # (from target/release/libkreuzberg_ffi.a)
-cd packages/go/v4
+cd packages/go/v5
 go build -v
 
 # Run your binary (no library path needed - it's statically linked)
@@ -232,7 +232,7 @@ func init() {
 
 ## API Reference
 
-- **GoDoc**: [pkg.go.dev/{{ package_name }}](https://pkg.go.dev/{{ package_name }})
+- **GoDoc**: [pkg.go.dev/{{ package_name }}](<https://pkg.go.dev/{{ package_name }}>)
 - **Full documentation**: [kreuzberg.dev](https://kreuzberg.dev) (configuration, formats, OCR backends)
 
 ## Troubleshooting

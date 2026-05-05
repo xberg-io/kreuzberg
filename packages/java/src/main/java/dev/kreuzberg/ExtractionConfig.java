@@ -60,7 +60,7 @@ public record ExtractionConfig(
         /** Result structure format */
         @JsonProperty("result_format") ResultFormat resultFormat,
         /** Security limits for archive extraction. */
-        @Nullable @JsonProperty("security_limits") String securityLimits,
+        @Nullable @JsonProperty("security_limits") SecurityLimits securityLimits,
         /** Content text format (default: Plain). */
         @JsonProperty("output_format") Object outputFormat,
         /** Layout detection configuration (None = layout detection disabled). */

@@ -54,7 +54,7 @@ class ExtractionConfig:
     extraction_timeout_secs: int | None
     max_concurrent_extractions: int | None
     result_format: ResultFormat
-    security_limits: str | None
+    security_limits: SecurityLimits | None
     output_format: OutputFormat
     layout: LayoutDetectionConfig | None
     include_document_structure: bool
@@ -89,7 +89,7 @@ class ExtractionConfig:
         extraction_timeout_secs: int | None = None,
         max_concurrent_extractions: int | None = None,
         result_format: ResultFormat | str | None = None,
-        security_limits: str | None = None,
+        security_limits: SecurityLimits | None = None,
         output_format: OutputFormat | None = None,
         layout: LayoutDetectionConfig | None = None,
         include_document_structure: bool | None = None,
@@ -654,28 +654,6 @@ class AnchorProperties:
         wrap_type: str | None = None,
     ) -> None: ...
 
-class HeaderFooter:
-    paragraphs: list[str]
-    tables: list[str]
-    header_type: str
-    def __init__(
-        self,
-        paragraphs: list[str] | None = None,
-        tables: list[str] | None = None,
-        header_type: str | None = None,
-    ) -> None: ...
-
-class Note:
-    id: str
-    note_type: str
-    paragraphs: list[str]
-    def __init__(
-        self,
-        id: str,  # noqa: A002
-        note_type: str,
-        paragraphs: list[str],
-    ) -> None: ...
-
 class PageMarginsPoints:
     top: float | None
     right: float | None
@@ -847,6 +825,31 @@ class OdtProperties:
         image_count: int | None = None,
     ) -> None: ...
 
+class SecurityLimits:
+    max_archive_size: int
+    max_compression_ratio: int
+    max_files_in_archive: int
+    max_nesting_depth: int
+    max_entity_length: int
+    max_content_size: int
+    max_iterations: int
+    max_xml_depth: int
+    max_table_cells: int
+    def __init__(
+        self,
+        max_archive_size: int | None = None,
+        max_compression_ratio: int | None = None,
+        max_files_in_archive: int | None = None,
+        max_nesting_depth: int | None = None,
+        max_entity_length: int | None = None,
+        max_content_size: int | None = None,
+        max_iterations: int | None = None,
+        max_xml_depth: int | None = None,
+        max_table_cells: int | None = None,
+    ) -> None: ...
+    @staticmethod
+    def default() -> SecurityLimits: ...
+
 class TokenReductionConfig:
     level: ReductionLevel
     language_hint: str | None
@@ -893,7 +896,7 @@ class DjotContent:
     plain_text: str
     blocks: list[FormattedBlock]
     metadata: Metadata
-    tables: list[str]
+    tables: list[Table]
     images: list[DjotImage]
     links: list[DjotLink]
     footnotes: list[Footnote]
@@ -903,7 +906,7 @@ class DjotContent:
         plain_text: str,
         blocks: list[FormattedBlock],
         metadata: Metadata,
-        tables: list[str],
+        tables: list[Table],
         images: list[DjotImage],
         links: list[DjotLink],
         footnotes: list[Footnote],
@@ -1061,7 +1064,7 @@ class ExtractionResult:
     mime_type: str
     metadata: Metadata
     extraction_method: ExtractionMethod | None
-    tables: list[str]
+    tables: list[Table]
     detected_languages: list[str] | None
     chunks: list[Chunk] | None
     images: list[ExtractedImage] | None
@@ -1087,7 +1090,7 @@ class ExtractionResult:
         mime_type: str | None = None,
         metadata: Metadata | None = None,
         extraction_method: ExtractionMethod | str | None = None,
-        tables: list[str] | None = None,
+        tables: list[Table] | None = None,
         detected_languages: list[str] | None = None,
         chunks: list[Chunk] | None = None,
         images: list[ExtractedImage] | None = None,
@@ -1556,7 +1559,7 @@ class Metadata:
     def is_empty(self) -> bool: ...
 
 class ExcelMetadata:
-    def __init__(self) -> None: ...
+    def __init__(self ) -> None: ...
 
 class EmailMetadata:
     from_email: str | None
@@ -1976,7 +1979,7 @@ class PageInfo:
 class PageContent:
     page_number: int
     content: str
-    tables: list[str]
+    tables: list[Table]
     images: list[ExtractedImage]
     hierarchy: PageHierarchy | None
     is_blank: bool | None
@@ -1985,7 +1988,7 @@ class PageContent:
         self,
         page_number: int,
         content: str,
-        tables: list[str],
+        tables: list[Table],
         images: list[ExtractedImage],
         hierarchy: PageHierarchy | None = None,
         is_blank: bool | None = None,
@@ -2021,6 +2024,32 @@ class HierarchicalBlock:
         font_size: float,
         level: str,
         bbox: list[float] | None = None,
+    ) -> None: ...
+
+class Table:
+    cells: list[list[str]]
+    markdown: str
+    page_number: int
+    bounding_box: str | None
+    def __init__(
+        self,
+        cells: list[list[str]] | None = None,
+        markdown: str | None = None,
+        page_number: int | None = None,
+        bounding_box: str | None = None,
+    ) -> None: ...
+
+class TableCell:
+    content: str
+    row_span: int
+    col_span: int
+    is_header: bool
+    def __init__(
+        self,
+        content: str | None = None,
+        row_span: int | None = None,
+        col_span: int | None = None,
+        is_header: bool | None = None,
     ) -> None: ...
 
 class Uri:
@@ -2476,12 +2505,10 @@ class ByteBufferPool: ...
 class TracingLayer: ...
 class ApiDoc: ...
 class ExtractResponse: ...
-
 class TessdataManager:
     def cache_dir(self) -> str: ...
     def is_language_cached(self, lang: str) -> bool: ...
     def ensure_all_languages(self) -> int: ...
-
 class PdfUnifiedExtractionResult: ...
 
 class ExecutionProviderType:
@@ -2520,13 +2547,13 @@ class OutputFormatCustomVariant(TypedDict):
     _0: str
 
 OutputFormat: TypeAlias = (
-    OutputFormatPlainVariant
-    | OutputFormatMarkdownVariant
-    | OutputFormatDjotVariant
-    | OutputFormatHtmlVariant
-    | OutputFormatJsonVariant
-    | OutputFormatStructuredVariant
-    | OutputFormatCustomVariant
+    OutputFormatPlainVariant |
+    OutputFormatMarkdownVariant |
+    OutputFormatDjotVariant |
+    OutputFormatHtmlVariant |
+    OutputFormatJsonVariant |
+    OutputFormatStructuredVariant |
+    OutputFormatCustomVariant
 )
 
 class HtmlTheme:
@@ -2578,37 +2605,37 @@ class ChunkerType:
     SEMANTIC: ChunkerType = ...
 
 class ChunkSizingCharactersVariant(TypedDict):
-    type: Literal["Characters"]
+    type: Literal["characters"]
 
 class ChunkSizingTokenizerVariant(TypedDict):
-    type: Literal["Tokenizer"]
+    type: Literal["tokenizer"]
     model: str
     cache_dir: str | None
 
 ChunkSizing: TypeAlias = ChunkSizingCharactersVariant | ChunkSizingTokenizerVariant
 
 class EmbeddingModelTypePresetVariant(TypedDict):
-    type: Literal["Preset"]
+    type: Literal["preset"]
     name: str
 
 class EmbeddingModelTypeCustomVariant(TypedDict):
-    type: Literal["Custom"]
+    type: Literal["custom"]
     model_id: str
     dimensions: int
 
 class EmbeddingModelTypeLlmVariant(TypedDict):
-    type: Literal["Llm"]
+    type: Literal["llm"]
     llm: LlmConfig
 
 class EmbeddingModelTypePluginVariant(TypedDict):
-    type: Literal["Plugin"]
+    type: Literal["plugin"]
     name: str
 
 EmbeddingModelType: TypeAlias = (
-    EmbeddingModelTypePresetVariant
-    | EmbeddingModelTypeCustomVariant
-    | EmbeddingModelTypeLlmVariant
-    | EmbeddingModelTypePluginVariant
+    EmbeddingModelTypePresetVariant |
+    EmbeddingModelTypeCustomVariant |
+    EmbeddingModelTypeLlmVariant |
+    EmbeddingModelTypePluginVariant
 )
 
 class CodeContentMode:
@@ -2780,171 +2807,171 @@ class ContentLayer:
     FOOTNOTE: ContentLayer = ...
 
 class NodeContentTitleVariant(TypedDict):
-    node_type: Literal["Title"]
+    node_type: Literal["title"]
     text: str
 
 class NodeContentHeadingVariant(TypedDict):
-    node_type: Literal["Heading"]
+    node_type: Literal["heading"]
     level: int
     text: str
 
 class NodeContentParagraphVariant(TypedDict):
-    node_type: Literal["Paragraph"]
+    node_type: Literal["paragraph"]
     text: str
 
 class NodeContentListVariant(TypedDict):
-    node_type: Literal["List"]
+    node_type: Literal["list"]
     ordered: bool
 
 class NodeContentListItemVariant(TypedDict):
-    node_type: Literal["ListItem"]
+    node_type: Literal["list_item"]
     text: str
 
 class NodeContentTableVariant(TypedDict):
-    node_type: Literal["Table"]
+    node_type: Literal["table"]
     grid: TableGrid
 
 class NodeContentImageVariant(TypedDict):
-    node_type: Literal["Image"]
+    node_type: Literal["image"]
     description: str | None
     image_index: int | None
     src: str | None
 
 class NodeContentCodeVariant(TypedDict):
-    node_type: Literal["Code"]
+    node_type: Literal["code"]
     text: str
     language: str | None
 
 class NodeContentQuoteVariant(TypedDict):
-    node_type: Literal["Quote"]
+    node_type: Literal["quote"]
 
 class NodeContentFormulaVariant(TypedDict):
-    node_type: Literal["Formula"]
+    node_type: Literal["formula"]
     text: str
 
 class NodeContentFootnoteVariant(TypedDict):
-    node_type: Literal["Footnote"]
+    node_type: Literal["footnote"]
     text: str
 
 class NodeContentGroupVariant(TypedDict):
-    node_type: Literal["Group"]
+    node_type: Literal["group"]
     label: str | None
     heading_level: int | None
     heading_text: str | None
 
 class NodeContentPageBreakVariant(TypedDict):
-    node_type: Literal["PageBreak"]
+    node_type: Literal["page_break"]
 
 class NodeContentSlideVariant(TypedDict):
-    node_type: Literal["Slide"]
+    node_type: Literal["slide"]
     number: int
     title: str | None
 
 class NodeContentDefinitionListVariant(TypedDict):
-    node_type: Literal["DefinitionList"]
+    node_type: Literal["definition_list"]
 
 class NodeContentDefinitionItemVariant(TypedDict):
-    node_type: Literal["DefinitionItem"]
+    node_type: Literal["definition_item"]
     term: str
     definition: str
 
 class NodeContentCitationVariant(TypedDict):
-    node_type: Literal["Citation"]
+    node_type: Literal["citation"]
     key: str
     text: str
 
 class NodeContentAdmonitionVariant(TypedDict):
-    node_type: Literal["Admonition"]
+    node_type: Literal["admonition"]
     kind: str
     title: str | None
 
 class NodeContentRawBlockVariant(TypedDict):
-    node_type: Literal["RawBlock"]
+    node_type: Literal["raw_block"]
     format: str
     content: str
 
 class NodeContentMetadataBlockVariant(TypedDict):
-    node_type: Literal["MetadataBlock"]
+    node_type: Literal["metadata_block"]
     entries: list[str]
 
 NodeContent: TypeAlias = (
-    NodeContentTitleVariant
-    | NodeContentHeadingVariant
-    | NodeContentParagraphVariant
-    | NodeContentListVariant
-    | NodeContentListItemVariant
-    | NodeContentTableVariant
-    | NodeContentImageVariant
-    | NodeContentCodeVariant
-    | NodeContentQuoteVariant
-    | NodeContentFormulaVariant
-    | NodeContentFootnoteVariant
-    | NodeContentGroupVariant
-    | NodeContentPageBreakVariant
-    | NodeContentSlideVariant
-    | NodeContentDefinitionListVariant
-    | NodeContentDefinitionItemVariant
-    | NodeContentCitationVariant
-    | NodeContentAdmonitionVariant
-    | NodeContentRawBlockVariant
-    | NodeContentMetadataBlockVariant
+    NodeContentTitleVariant |
+    NodeContentHeadingVariant |
+    NodeContentParagraphVariant |
+    NodeContentListVariant |
+    NodeContentListItemVariant |
+    NodeContentTableVariant |
+    NodeContentImageVariant |
+    NodeContentCodeVariant |
+    NodeContentQuoteVariant |
+    NodeContentFormulaVariant |
+    NodeContentFootnoteVariant |
+    NodeContentGroupVariant |
+    NodeContentPageBreakVariant |
+    NodeContentSlideVariant |
+    NodeContentDefinitionListVariant |
+    NodeContentDefinitionItemVariant |
+    NodeContentCitationVariant |
+    NodeContentAdmonitionVariant |
+    NodeContentRawBlockVariant |
+    NodeContentMetadataBlockVariant
 )
 
 class AnnotationKindBoldVariant(TypedDict):
-    annotation_type: Literal["Bold"]
+    annotation_type: Literal["bold"]
 
 class AnnotationKindItalicVariant(TypedDict):
-    annotation_type: Literal["Italic"]
+    annotation_type: Literal["italic"]
 
 class AnnotationKindUnderlineVariant(TypedDict):
-    annotation_type: Literal["Underline"]
+    annotation_type: Literal["underline"]
 
 class AnnotationKindStrikethroughVariant(TypedDict):
-    annotation_type: Literal["Strikethrough"]
+    annotation_type: Literal["strikethrough"]
 
 class AnnotationKindCodeVariant(TypedDict):
-    annotation_type: Literal["Code"]
+    annotation_type: Literal["code"]
 
 class AnnotationKindSubscriptVariant(TypedDict):
-    annotation_type: Literal["Subscript"]
+    annotation_type: Literal["subscript"]
 
 class AnnotationKindSuperscriptVariant(TypedDict):
-    annotation_type: Literal["Superscript"]
+    annotation_type: Literal["superscript"]
 
 class AnnotationKindLinkVariant(TypedDict):
-    annotation_type: Literal["Link"]
+    annotation_type: Literal["link"]
     url: str
     title: str | None
 
 class AnnotationKindHighlightVariant(TypedDict):
-    annotation_type: Literal["Highlight"]
+    annotation_type: Literal["highlight"]
 
 class AnnotationKindColorVariant(TypedDict):
-    annotation_type: Literal["Color"]
+    annotation_type: Literal["color"]
     value: str
 
 class AnnotationKindFontSizeVariant(TypedDict):
-    annotation_type: Literal["FontSize"]
+    annotation_type: Literal["font_size"]
     value: str
 
 class AnnotationKindCustomVariant(TypedDict):
-    annotation_type: Literal["Custom"]
+    annotation_type: Literal["custom"]
     name: str
     value: str | None
 
 AnnotationKind: TypeAlias = (
-    AnnotationKindBoldVariant
-    | AnnotationKindItalicVariant
-    | AnnotationKindUnderlineVariant
-    | AnnotationKindStrikethroughVariant
-    | AnnotationKindCodeVariant
-    | AnnotationKindSubscriptVariant
-    | AnnotationKindSuperscriptVariant
-    | AnnotationKindLinkVariant
-    | AnnotationKindHighlightVariant
-    | AnnotationKindColorVariant
-    | AnnotationKindFontSizeVariant
-    | AnnotationKindCustomVariant
+    AnnotationKindBoldVariant |
+    AnnotationKindItalicVariant |
+    AnnotationKindUnderlineVariant |
+    AnnotationKindStrikethroughVariant |
+    AnnotationKindCodeVariant |
+    AnnotationKindSubscriptVariant |
+    AnnotationKindSuperscriptVariant |
+    AnnotationKindLinkVariant |
+    AnnotationKindHighlightVariant |
+    AnnotationKindColorVariant |
+    AnnotationKindFontSizeVariant |
+    AnnotationKindCustomVariant
 )
 
 class ExtractionMethod:
@@ -3043,106 +3070,106 @@ class ElementType:
     HEADER: ElementType = ...
 
 class FormatMetadataPdfVariant(TypedDict):
-    format_type: Literal["Pdf"]
+    format_type: Literal["pdf"]
     _0: str
 
 class FormatMetadataDocxVariant(TypedDict):
-    format_type: Literal["Docx"]
+    format_type: Literal["docx"]
     _0: DocxMetadata
 
 class FormatMetadataExcelVariant(TypedDict):
-    format_type: Literal["Excel"]
+    format_type: Literal["excel"]
     _0: ExcelMetadata
 
 class FormatMetadataEmailVariant(TypedDict):
-    format_type: Literal["Email"]
+    format_type: Literal["email"]
     _0: EmailMetadata
 
 class FormatMetadataPptxVariant(TypedDict):
-    format_type: Literal["Pptx"]
+    format_type: Literal["pptx"]
     _0: PptxMetadata
 
 class FormatMetadataArchiveVariant(TypedDict):
-    format_type: Literal["Archive"]
+    format_type: Literal["archive"]
     _0: ArchiveMetadata
 
 class FormatMetadataImageVariant(TypedDict):
-    format_type: Literal["Image"]
+    format_type: Literal["image"]
     _0: str
 
 class FormatMetadataXmlVariant(TypedDict):
-    format_type: Literal["Xml"]
+    format_type: Literal["xml"]
     _0: XmlMetadata
 
 class FormatMetadataTextVariant(TypedDict):
-    format_type: Literal["Text"]
+    format_type: Literal["text"]
     _0: TextMetadata
 
 class FormatMetadataHtmlVariant(TypedDict):
-    format_type: Literal["Html"]
+    format_type: Literal["html"]
     _0: HtmlMetadata
 
 class FormatMetadataOcrVariant(TypedDict):
-    format_type: Literal["Ocr"]
+    format_type: Literal["ocr"]
     _0: OcrMetadata
 
 class FormatMetadataCsvVariant(TypedDict):
-    format_type: Literal["Csv"]
+    format_type: Literal["csv"]
     _0: CsvMetadata
 
 class FormatMetadataBibtexVariant(TypedDict):
-    format_type: Literal["Bibtex"]
+    format_type: Literal["bibtex"]
     _0: BibtexMetadata
 
 class FormatMetadataCitationVariant(TypedDict):
-    format_type: Literal["Citation"]
+    format_type: Literal["citation"]
     _0: CitationMetadata
 
 class FormatMetadataFictionBookVariant(TypedDict):
-    format_type: Literal["FictionBook"]
+    format_type: Literal["fiction_book"]
     _0: FictionBookMetadata
 
 class FormatMetadataDbfVariant(TypedDict):
-    format_type: Literal["Dbf"]
+    format_type: Literal["dbf"]
     _0: DbfMetadata
 
 class FormatMetadataJatsVariant(TypedDict):
-    format_type: Literal["Jats"]
+    format_type: Literal["jats"]
     _0: JatsMetadata
 
 class FormatMetadataEpubVariant(TypedDict):
-    format_type: Literal["Epub"]
+    format_type: Literal["epub"]
     _0: EpubMetadata
 
 class FormatMetadataPstVariant(TypedDict):
-    format_type: Literal["Pst"]
+    format_type: Literal["pst"]
     _0: PstMetadata
 
 class FormatMetadataCodeVariant(TypedDict):
-    format_type: Literal["Code"]
+    format_type: Literal["code"]
     _0: str
 
 FormatMetadata: TypeAlias = (
-    FormatMetadataPdfVariant
-    | FormatMetadataDocxVariant
-    | FormatMetadataExcelVariant
-    | FormatMetadataEmailVariant
-    | FormatMetadataPptxVariant
-    | FormatMetadataArchiveVariant
-    | FormatMetadataImageVariant
-    | FormatMetadataXmlVariant
-    | FormatMetadataTextVariant
-    | FormatMetadataHtmlVariant
-    | FormatMetadataOcrVariant
-    | FormatMetadataCsvVariant
-    | FormatMetadataBibtexVariant
-    | FormatMetadataCitationVariant
-    | FormatMetadataFictionBookVariant
-    | FormatMetadataDbfVariant
-    | FormatMetadataJatsVariant
-    | FormatMetadataEpubVariant
-    | FormatMetadataPstVariant
-    | FormatMetadataCodeVariant
+    FormatMetadataPdfVariant |
+    FormatMetadataDocxVariant |
+    FormatMetadataExcelVariant |
+    FormatMetadataEmailVariant |
+    FormatMetadataPptxVariant |
+    FormatMetadataArchiveVariant |
+    FormatMetadataImageVariant |
+    FormatMetadataXmlVariant |
+    FormatMetadataTextVariant |
+    FormatMetadataHtmlVariant |
+    FormatMetadataOcrVariant |
+    FormatMetadataCsvVariant |
+    FormatMetadataBibtexVariant |
+    FormatMetadataCitationVariant |
+    FormatMetadataFictionBookVariant |
+    FormatMetadataDbfVariant |
+    FormatMetadataJatsVariant |
+    FormatMetadataEpubVariant |
+    FormatMetadataPstVariant |
+    FormatMetadataCodeVariant
 )
 
 class TextDirection:
@@ -3190,14 +3217,14 @@ class StructuredDataType:
     RDFA: StructuredDataType = ...
 
 class OcrBoundingGeometryRectangleVariant(TypedDict):
-    type: Literal["Rectangle"]
+    type: Literal["rectangle"]
     left: int
     top: int
     width: int
     height: int
 
 class OcrBoundingGeometryQuadrilateralVariant(TypedDict):
-    type: Literal["Quadrilateral"]
+    type: Literal["quadrilateral"]
     points: str
 
 OcrBoundingGeometry: TypeAlias = OcrBoundingGeometryRectangleVariant | OcrBoundingGeometryQuadrilateralVariant

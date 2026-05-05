@@ -20,7 +20,7 @@ public class ContentFilterConfigBuilder {
 
     private boolean includeHeaders = false;
     private boolean includeFooters = false;
-    private boolean stripRepeatingText = false;
+    private boolean stripRepeatingText = true;
     private boolean includeWatermarks = false;
 
     /** Sets the includeHeaders field. */

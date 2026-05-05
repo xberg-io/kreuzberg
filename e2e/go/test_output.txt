@@ -1,3 +1,0 @@
-testing: warning: no tests to run
-PASS
-ok  	e2e_go	1.318s [no tests to run]

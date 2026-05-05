@@ -196,7 +196,7 @@ internal sealed class NodeContentJsonConverter : JsonConverter<NodeContent>
                 ?? throw new JsonException("Failed to deserialize NodeContent.Paragraph"),
             "list" => JsonSerializer.Deserialize<NodeContent.List>(json, options)!
                 ?? throw new JsonException("Failed to deserialize NodeContent.List"),
-            "listitem" => JsonSerializer.Deserialize<NodeContent.ListItem>(json, options)!
+            "list_item" => JsonSerializer.Deserialize<NodeContent.ListItem>(json, options)!
                 ?? throw new JsonException("Failed to deserialize NodeContent.ListItem"),
             "table" => JsonSerializer.Deserialize<NodeContent.Table>(json, options)!
                 ?? throw new JsonException("Failed to deserialize NodeContent.Table"),
@@ -212,21 +212,21 @@ internal sealed class NodeContentJsonConverter : JsonConverter<NodeContent>
                 ?? throw new JsonException("Failed to deserialize NodeContent.Footnote"),
             "group" => JsonSerializer.Deserialize<NodeContent.Group>(json, options)!
                 ?? throw new JsonException("Failed to deserialize NodeContent.Group"),
-            "pagebreak" => JsonSerializer.Deserialize<NodeContent.PageBreak>(json, options)!
+            "page_break" => JsonSerializer.Deserialize<NodeContent.PageBreak>(json, options)!
                 ?? throw new JsonException("Failed to deserialize NodeContent.PageBreak"),
             "slide" => JsonSerializer.Deserialize<NodeContent.Slide>(json, options)!
                 ?? throw new JsonException("Failed to deserialize NodeContent.Slide"),
-            "definitionlist" => JsonSerializer.Deserialize<NodeContent.DefinitionList>(json, options)!
+            "definition_list" => JsonSerializer.Deserialize<NodeContent.DefinitionList>(json, options)!
                 ?? throw new JsonException("Failed to deserialize NodeContent.DefinitionList"),
-            "definitionitem" => JsonSerializer.Deserialize<NodeContent.DefinitionItem>(json, options)!
+            "definition_item" => JsonSerializer.Deserialize<NodeContent.DefinitionItem>(json, options)!
                 ?? throw new JsonException("Failed to deserialize NodeContent.DefinitionItem"),
             "citation" => JsonSerializer.Deserialize<NodeContent.Citation>(json, options)!
                 ?? throw new JsonException("Failed to deserialize NodeContent.Citation"),
             "admonition" => JsonSerializer.Deserialize<NodeContent.Admonition>(json, options)!
                 ?? throw new JsonException("Failed to deserialize NodeContent.Admonition"),
-            "rawblock" => JsonSerializer.Deserialize<NodeContent.RawBlock>(json, options)!
+            "raw_block" => JsonSerializer.Deserialize<NodeContent.RawBlock>(json, options)!
                 ?? throw new JsonException("Failed to deserialize NodeContent.RawBlock"),
-            "metadatablock" => JsonSerializer.Deserialize<NodeContent.MetadataBlock>(json, options)!
+            "metadata_block" => JsonSerializer.Deserialize<NodeContent.MetadataBlock>(json, options)!
                 ?? throw new JsonException("Failed to deserialize NodeContent.MetadataBlock"),
             _ => throw new JsonException($"Unknown NodeContent discriminator: {tag}")
         };
@@ -281,7 +281,7 @@ internal sealed class NodeContentJsonConverter : JsonConverter<NodeContent>
                 {
                     var doc = JsonSerializer.SerializeToDocument(v, options);
                     writer.WriteStartObject();
-                    writer.WriteString("node_type", "listitem");
+                    writer.WriteString("node_type", "list_item");
                     foreach (var prop in doc.RootElement.EnumerateObject())
                         if (prop.Name != "node_type") prop.WriteTo(writer);
                     writer.WriteEndObject();
@@ -361,7 +361,7 @@ internal sealed class NodeContentJsonConverter : JsonConverter<NodeContent>
                 {
                     var doc = JsonSerializer.SerializeToDocument(v, options);
                     writer.WriteStartObject();
-                    writer.WriteString("node_type", "pagebreak");
+                    writer.WriteString("node_type", "page_break");
                     foreach (var prop in doc.RootElement.EnumerateObject())
                         if (prop.Name != "node_type") prop.WriteTo(writer);
                     writer.WriteEndObject();
@@ -381,7 +381,7 @@ internal sealed class NodeContentJsonConverter : JsonConverter<NodeContent>
                 {
                     var doc = JsonSerializer.SerializeToDocument(v, options);
                     writer.WriteStartObject();
-                    writer.WriteString("node_type", "definitionlist");
+                    writer.WriteString("node_type", "definition_list");
                     foreach (var prop in doc.RootElement.EnumerateObject())
                         if (prop.Name != "node_type") prop.WriteTo(writer);
                     writer.WriteEndObject();
@@ -391,7 +391,7 @@ internal sealed class NodeContentJsonConverter : JsonConverter<NodeContent>
                 {
                     var doc = JsonSerializer.SerializeToDocument(v, options);
                     writer.WriteStartObject();
-                    writer.WriteString("node_type", "definitionitem");
+                    writer.WriteString("node_type", "definition_item");
                     foreach (var prop in doc.RootElement.EnumerateObject())
                         if (prop.Name != "node_type") prop.WriteTo(writer);
                     writer.WriteEndObject();
@@ -421,7 +421,7 @@ internal sealed class NodeContentJsonConverter : JsonConverter<NodeContent>
                 {
                     var doc = JsonSerializer.SerializeToDocument(v, options);
                     writer.WriteStartObject();
-                    writer.WriteString("node_type", "rawblock");
+                    writer.WriteString("node_type", "raw_block");
                     foreach (var prop in doc.RootElement.EnumerateObject())
                         if (prop.Name != "node_type") prop.WriteTo(writer);
                     writer.WriteEndObject();
@@ -431,7 +431,7 @@ internal sealed class NodeContentJsonConverter : JsonConverter<NodeContent>
                 {
                     var doc = JsonSerializer.SerializeToDocument(v, options);
                     writer.WriteStartObject();
-                    writer.WriteString("node_type", "metadatablock");
+                    writer.WriteString("node_type", "metadata_block");
                     foreach (var prop in doc.RootElement.EnumerateObject())
                         if (prop.Name != "node_type") prop.WriteTo(writer);
                     writer.WriteEndObject();

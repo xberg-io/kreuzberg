@@ -267,7 +267,7 @@ public sealed class OcrBackendBridge : IDisposable
             var json_Config = Marshal.PtrToStringUTF8(Config) ?? "{}";
             var managed_Config = JsonSerializer.Deserialize<OcrConfig>(json_Config)!;
             var result = _impl.ProcessImage(managed_ImageBytes, managed_Config);
-            outResult = Marshal.StringToCoTaskMemUTF8(ToJsonString(result));
+            outResult = Marshal.StringToCoTaskMemUTF8(result.ToFfiJson());
             outError = IntPtr.Zero;
             return 0;
         }
@@ -288,7 +288,7 @@ public sealed class OcrBackendBridge : IDisposable
             var json_Config = Marshal.PtrToStringUTF8(Config) ?? "{}";
             var managed_Config = JsonSerializer.Deserialize<OcrConfig>(json_Config)!;
             var result = _impl.ProcessImageFile(managed_Path, managed_Config);
-            outResult = Marshal.StringToCoTaskMemUTF8(ToJsonString(result));
+            outResult = Marshal.StringToCoTaskMemUTF8(result.ToFfiJson());
             outError = IntPtr.Zero;
             return 0;
         }
@@ -323,7 +323,7 @@ public sealed class OcrBackendBridge : IDisposable
         try
         {
             var result = _impl.BackendType();
-            outResult = Marshal.StringToCoTaskMemUTF8(ToJsonString(result));
+            outResult = Marshal.StringToCoTaskMemUTF8(result.ToFfiJson());
             outError = IntPtr.Zero;
             return 0;
         }
@@ -395,7 +395,7 @@ public sealed class OcrBackendBridge : IDisposable
             var json_Config = Marshal.PtrToStringUTF8(Config) ?? "{}";
             var managed_Config = JsonSerializer.Deserialize<OcrConfig>(json_Config)!;
             var result = _impl.ProcessDocument(managed_Path, managed_Config);
-            outResult = Marshal.StringToCoTaskMemUTF8(ToJsonString(result));
+            outResult = Marshal.StringToCoTaskMemUTF8(result.ToFfiJson());
             outError = IntPtr.Zero;
             return 0;
         }
@@ -738,7 +738,7 @@ public sealed class PostProcessorBridge : IDisposable
         try
         {
             var result = _impl.ProcessingStage();
-            outResult = Marshal.StringToCoTaskMemUTF8(ToJsonString(result));
+            outResult = Marshal.StringToCoTaskMemUTF8(result.ToFfiJson());
             outError = IntPtr.Zero;
             return 0;
         }
@@ -1551,4 +1551,16 @@ public static class EmbeddingBackendRegistry
             bridge.Dispose();
         }
     }
+}
+
+/// <summary>FFI JSON serialization extension methods</summary>
+internal static class FfiJsonExtensions
+{
+
+    /// <summary>Serialize any object to JSON for FFI marshalling</summary>
+    internal static string ToFfiJson<T>(this T value)
+    {
+        return JsonSerializer.Serialize(value);
+    }
+
 }

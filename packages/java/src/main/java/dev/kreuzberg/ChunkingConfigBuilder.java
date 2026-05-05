@@ -21,7 +21,7 @@ public class ChunkingConfigBuilder {
 
     private long maxCharacters = 0;
     private long overlap = 0;
-    private boolean trim = false;
+    private boolean trim = true;
     private ChunkerType chunkerType = null;
     private Optional<EmbeddingConfig> embedding = Optional.empty();
     private Optional<String> preset = Optional.empty();

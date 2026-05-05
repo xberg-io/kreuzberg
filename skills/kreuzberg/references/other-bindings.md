@@ -7,7 +7,7 @@ Kreuzberg provides native bindings for multiple programming languages, each with
 **Installation:**
 
 ```bash
-go get github.com/kreuzberg-dev/kreuzberg/packages/go/v4
+go get github.com/kreuzberg-dev/kreuzberg/packages/go/v5
 ```
 
 **Basic Extraction:**
@@ -18,7 +18,7 @@ package main
 import (
     "context"
     "fmt"
-    "github.com/kreuzberg-dev/kreuzberg/packages/go/v4/kreuzberg"
+    "github.com/kreuzberg-dev/kreuzberg/packages/go/v5/kreuzberg"
 )
 
 func main() {

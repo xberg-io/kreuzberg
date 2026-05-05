@@ -110,7 +110,7 @@ kreuzberg extract-structured invoice.pdf \
 | `<PATH>` (positional)   | Document file path. Required.                                                                        |
 | `--schema <PATH>`       | Path to a JSON schema file describing the desired output. Required.                                  |
 | `--model <MODEL>`       | LLM model identifier, for example `openai/gpt-4o` or `anthropic/claude-sonnet-4-20250514`. Required. |
-| `--api-key <KEY>`       | LLM provider API key. Falls back to `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, etc.                      |
+| `--api-key <KEY>`       | LLM provider API key. Falls back to `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, and so on.                      |
 | `--prompt <TEMPLATE>`   | Custom Jinja2 prompt template overriding the built-in one.                                           |
 | `--schema-name <NAME>`  | Schema identifier passed to the LLM. Default: `extraction`.                                          |
 | `--strict`              | Enable OpenAI strict mode for exact schema matching.                                                 |

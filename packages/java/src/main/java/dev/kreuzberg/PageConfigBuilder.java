@@ -20,7 +20,7 @@ public class PageConfigBuilder {
 
     private boolean extractPages = false;
     private boolean insertPageMarkers = false;
-    private String markerFormat = "";
+    private String markerFormat = "\n\n<!-- PAGE {page_num} -->\n\n";
 
     /** Sets the extractPages field. */
     public PageConfigBuilder withExtractPages(final boolean value) {

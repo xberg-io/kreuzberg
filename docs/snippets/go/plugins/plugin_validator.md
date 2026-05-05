@@ -12,7 +12,7 @@ import (
 	"log"
 	"unsafe"
 
-	"github.com/kreuzberg-dev/kreuzberg/packages/go/v4"
+	"github.com/kreuzberg-dev/kreuzberg/packages/go/v5"
 )
 
 //export customValidator

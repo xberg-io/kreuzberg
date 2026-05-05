@@ -25,7 +25,7 @@ Version source of truth: root `Cargo.toml` `[workspace.package] version`.
 - `packages/typescript/` — npm type declarations
 - `packages/ruby/` — RubyGems (Magnus); native ext compiled by `rake`
 - `packages/php/` — Composer (ext-php-rs)
-- `packages/go/v4/` — Go module; cgo over kreuzberg-ffi
+- `packages/go/v5/` — Go module; cgo over kreuzberg-ffi
 - `packages/java/` — Maven; Foreign Function & Memory API over kreuzberg-ffi
 - `packages/csharp/` — NuGet; P/Invoke over kreuzberg-ffi
 - `packages/elixir/` — Hex; Rustler NIF (workspace member at `packages/elixir/native/kreuzberg_rustler`)

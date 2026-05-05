@@ -217,11 +217,11 @@ tasks:
   e2e:lint:
     desc: "Lint Rust E2E crate with clippy"
     cmds:
-      - cargo clippy -p e2e-rust -- -D warnings
+      - cargo clippy --manifest-path e2e/rust/Cargo.toml -- -D warnings
 
   e2e:test:
     desc: "Run Rust E2E tests"
     env:
       RUST_TEST_THREADS: "1"
     cmds:
-      - cargo test -p e2e-rust --release
+      - cargo test --manifest-path e2e/rust/Cargo.toml --release

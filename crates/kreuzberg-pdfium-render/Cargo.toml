@@ -15,9 +15,6 @@ readme = "README.md"
 build = "build.rs"
 exclude = ["include/**/rust-import-wrapper.h"]
 
-[package.metadata.cargo-machete]
-ignored = ["bindgen"]
-
 [lib]
 name = "pdfium_render"
 crate-type = ["lib"]
@@ -25,7 +22,6 @@ doctest = false
 
 [features]
 default = ["image_latest", "thread_safe"]
-bindings = ["dep:bindgen"]
 thread_safe = []
 
 # Image
@@ -56,9 +52,6 @@ js-sys = { workspace = true }
 wasm-bindgen = { workspace = true }
 wasm-bindgen-futures = { workspace = true }
 web-sys = { workspace = true }
-
-[build-dependencies]
-bindgen = { version = "0.72", optional = true }
 
 [lints.rust.unexpected_cfgs]
 level = "allow"

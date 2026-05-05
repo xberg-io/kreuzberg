@@ -15,10 +15,10 @@ public class TokenReductionConfigBuilder {
     private ReductionLevel level = null;
     private Optional<String> languageHint = Optional.empty();
     private boolean preserveMarkdown = false;
-    private boolean preserveCode = false;
+    private boolean preserveCode = true;
     private float semanticThreshold = 0.0f;
-    private boolean enableParallel = false;
-    private boolean useSimd = false;
+    private boolean enableParallel = true;
+    private boolean useSimd = true;
     private Optional<Map<String, List<String>>> customStopwords = Optional.empty();
     private List<String> preservePatterns = List.of();
     private Optional<Float> targetReduction = Optional.empty();

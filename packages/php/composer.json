@@ -13,7 +13,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Kreuzberg\\\\": "src/"
+      "Kreuzberg\\": "src/"
     }
   },
   "scripts": {

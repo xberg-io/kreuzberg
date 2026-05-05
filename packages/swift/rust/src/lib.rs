@@ -70,7 +70,7 @@ mod ffi {
             extraction_timeout_secs: Option<u64>,
             max_concurrent_extractions: Option<usize>,
             result_format: ResultFormat,
-            security_limits: Option<String>,
+            security_limits: Option<SecurityLimits>,
             output_format: OutputFormat,
             layout: Option<LayoutDetectionConfig>,
             include_document_structure: bool,
@@ -104,7 +104,7 @@ mod ffi {
         fn extraction_timeout_secs(&self) -> Option<u64>;
         fn max_concurrent_extractions(&self) -> Option<usize>;
         fn result_format(&self) -> ResultFormat;
-        fn security_limits(&self) -> Option<String>;
+        fn security_limits(&self) -> Option<SecurityLimits>;
         fn output_format(&self) -> OutputFormat;
         fn layout(&self) -> Option<LayoutDetectionConfig>;
         fn include_document_structure(&self) -> bool;
@@ -622,19 +622,6 @@ mod ffi {
     }
 
     extern "Rust" {
-        type HeaderFooter;
-        #[swift_bridge(init)]
-        fn new(paragraphs: Vec<String>, tables: Vec<String>, header_type: String) -> HeaderFooter;
-        fn header_type(&self) -> String;
-    }
-
-    extern "Rust" {
-        type Note;
-        fn id(&self) -> String;
-        fn note_type(&self) -> String;
-    }
-
-    extern "Rust" {
         type PageMarginsPoints;
         #[swift_bridge(init)]
         fn new(
@@ -810,6 +797,31 @@ mod ffi {
     }
 
     extern "Rust" {
+        type SecurityLimits;
+        #[swift_bridge(init)]
+        fn new(
+            max_archive_size: usize,
+            max_compression_ratio: usize,
+            max_files_in_archive: usize,
+            max_nesting_depth: usize,
+            max_entity_length: usize,
+            max_content_size: usize,
+            max_iterations: usize,
+            max_xml_depth: usize,
+            max_table_cells: usize,
+        ) -> SecurityLimits;
+        fn max_archive_size(&self) -> usize;
+        fn max_compression_ratio(&self) -> usize;
+        fn max_files_in_archive(&self) -> usize;
+        fn max_nesting_depth(&self) -> usize;
+        fn max_entity_length(&self) -> usize;
+        fn max_content_size(&self) -> usize;
+        fn max_iterations(&self) -> usize;
+        fn max_xml_depth(&self) -> usize;
+        fn max_table_cells(&self) -> usize;
+    }
+
+    extern "Rust" {
         type ZipBombValidator;
     }
 
@@ -855,7 +867,7 @@ mod ffi {
         fn plain_text(&self) -> String;
         fn blocks(&self) -> Vec<FormattedBlock>;
         fn metadata(&self) -> Metadata;
-        fn tables(&self) -> Vec<String>;
+        fn tables(&self) -> Vec<Table>;
         fn images(&self) -> Vec<DjotImage>;
         fn links(&self) -> Vec<DjotLink>;
         fn footnotes(&self) -> Vec<Footnote>;
@@ -974,7 +986,7 @@ mod ffi {
             mime_type: String,
             metadata: Metadata,
             extraction_method: Option<ExtractionMethod>,
-            tables: Vec<String>,
+            tables: Vec<Table>,
             detected_languages: Option<Vec<String>>,
             chunks: Option<Vec<Chunk>>,
             images: Option<Vec<ExtractedImage>>,
@@ -998,7 +1010,7 @@ mod ffi {
         fn mime_type(&self) -> String;
         fn metadata(&self) -> Metadata;
         fn extraction_method(&self) -> Option<ExtractionMethod>;
-        fn tables(&self) -> Vec<String>;
+        fn tables(&self) -> Vec<Table>;
         fn detected_languages(&self) -> Option<Vec<String>>;
         fn chunks(&self) -> Option<Vec<Chunk>>;
         fn images(&self) -> Option<Vec<ExtractedImage>>;
@@ -1769,7 +1781,7 @@ mod ffi {
         type PageContent;
         fn page_number(&self) -> usize;
         fn content(&self) -> String;
-        fn tables(&self) -> Vec<String>;
+        fn tables(&self) -> Vec<Table>;
         fn images(&self) -> Vec<ExtractedImage>;
         fn hierarchy(&self) -> Option<PageHierarchy>;
         fn is_blank(&self) -> Option<bool>;
@@ -1798,6 +1810,26 @@ mod ffi {
         fn font_size(&self) -> f32;
         fn level(&self) -> String;
         fn bbox(&self) -> Option<Vec<f32>>;
+    }
+
+    extern "Rust" {
+        type Table;
+        #[swift_bridge(init)]
+        fn new(cells: String, markdown: String, page_number: usize, bounding_box: Option<String>) -> Table;
+        fn cells(&self) -> String;
+        fn markdown(&self) -> String;
+        fn page_number(&self) -> usize;
+        fn bounding_box(&self) -> Option<String>;
+    }
+
+    extern "Rust" {
+        type TableCell;
+        #[swift_bridge(init)]
+        fn new(content: String, row_span: usize, col_span: usize, is_header: bool) -> TableCell;
+        fn content(&self) -> String;
+        fn row_span(&self) -> usize;
+        fn col_span(&self) -> usize;
+        fn is_header(&self) -> bool;
     }
 
     extern "Rust" {
@@ -2587,7 +2619,7 @@ impl ExtractionConfig {
         extraction_timeout_secs: Option<u64>,
         max_concurrent_extractions: Option<usize>,
         result_format: ResultFormat,
-        security_limits: Option<String>,
+        security_limits: Option<SecurityLimits>,
         output_format: OutputFormat,
         layout: Option<LayoutDetectionConfig>,
         include_document_structure: bool,
@@ -2654,12 +2686,8 @@ impl ExtractionConfig {
         __target.extraction_timeout_secs = extraction_timeout_secs;
         __target.max_concurrent_extractions = max_concurrent_extractions;
         // alef: result_format (ResultFormat) is an enum; reverse From not generated — left at default
-        if let Some(s) = security_limits {
-            if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&s) {
-                if let Ok(t) = ::serde_json::from_value(v) {
-                    __target.security_limits = Some(t);
-                }
-            }
+        if let Some(w) = security_limits {
+            __target.security_limits = Some(w.0);
         }
         // alef: output_format (OutputFormat) is an enum; reverse From not generated — left at default
         if let Some(w) = layout {
@@ -2787,11 +2815,8 @@ impl ExtractionConfig {
     pub fn result_format(&self) -> ResultFormat {
         ResultFormat::from(self.0.result_format.clone())
     }
-    pub fn security_limits(&self) -> Option<String> {
-        self.0
-            .security_limits
-            .as_ref()
-            .and_then(|v| serde_json::to_string(v).ok())
+    pub fn security_limits(&self) -> Option<SecurityLimits> {
+        self.0.security_limits.clone().map(SecurityLimits)
     }
     pub fn output_format(&self) -> OutputFormat {
         OutputFormat::from(self.0.output_format.clone())
@@ -4463,35 +4488,6 @@ impl AnchorProperties {
     }
 }
 
-pub struct HeaderFooter(pub kreuzberg::extraction::docx::parser::HeaderFooter);
-
-impl HeaderFooter {
-    pub fn new(paragraphs: Vec<String>, tables: Vec<String>, header_type: String) -> HeaderFooter {
-        let mut __target: kreuzberg::extraction::docx::parser::HeaderFooter = ::std::default::Default::default();
-        // alef: paragraphs — Vec field type may differ from IR in non-serde struct, left at default
-        // alef: tables — Vec field type may differ from IR in non-serde struct, left at default
-        // alef: header_type — String fallback in non-serde struct, left at default
-        HeaderFooter(__target)
-    }
-    // alef: skipped getter `paragraphs` — type cannot be bridged through swift-bridge
-    // alef: skipped getter `tables` — type cannot be bridged through swift-bridge
-    pub fn header_type(&self) -> String {
-        format!("{:?}", &self.0.header_type)
-    }
-}
-
-pub struct Note(pub kreuzberg::extraction::docx::parser::Note);
-
-impl Note {
-    pub fn id(&self) -> String {
-        format!("{:?}", &self.0.id)
-    }
-    pub fn note_type(&self) -> String {
-        format!("{:?}", &self.0.note_type)
-    }
-    // alef: skipped getter `paragraphs` — type cannot be bridged through swift-bridge
-}
-
 pub struct PageMarginsPoints(pub kreuzberg::extraction::docx::section::PageMarginsPoints);
 
 impl PageMarginsPoints {
@@ -5056,6 +5052,88 @@ impl OdtProperties {
     }
 }
 
+pub struct SecurityLimits(pub kreuzberg::SecurityLimits);
+
+impl SecurityLimits {
+    pub fn new(
+        max_archive_size: usize,
+        max_compression_ratio: usize,
+        max_files_in_archive: usize,
+        max_nesting_depth: usize,
+        max_entity_length: usize,
+        max_content_size: usize,
+        max_iterations: usize,
+        max_xml_depth: usize,
+        max_table_cells: usize,
+    ) -> SecurityLimits {
+        let mut __target: kreuzberg::SecurityLimits = ::std::default::Default::default();
+        __target.max_archive_size = max_archive_size;
+        __target.max_compression_ratio = max_compression_ratio;
+        __target.max_files_in_archive = max_files_in_archive;
+        __target.max_nesting_depth = max_nesting_depth;
+        __target.max_entity_length = max_entity_length;
+        __target.max_content_size = max_content_size;
+        __target.max_iterations = max_iterations;
+        __target.max_xml_depth = max_xml_depth;
+        __target.max_table_cells = max_table_cells;
+        SecurityLimits(__target)
+    }
+    pub fn max_archive_size(&self) -> usize {
+        ::serde_json::to_value(&self.0.max_archive_size)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn max_compression_ratio(&self) -> usize {
+        ::serde_json::to_value(&self.0.max_compression_ratio)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn max_files_in_archive(&self) -> usize {
+        ::serde_json::to_value(&self.0.max_files_in_archive)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn max_nesting_depth(&self) -> usize {
+        ::serde_json::to_value(&self.0.max_nesting_depth)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn max_entity_length(&self) -> usize {
+        ::serde_json::to_value(&self.0.max_entity_length)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn max_content_size(&self) -> usize {
+        ::serde_json::to_value(&self.0.max_content_size)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn max_iterations(&self) -> usize {
+        ::serde_json::to_value(&self.0.max_iterations)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn max_xml_depth(&self) -> usize {
+        ::serde_json::to_value(&self.0.max_xml_depth)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn max_table_cells(&self) -> usize {
+        ::serde_json::to_value(&self.0.max_table_cells)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+}
+
 pub struct ZipBombValidator(pub kreuzberg::extractors::security::ZipBombValidator);
 
 pub struct TokenReductionConfig(pub kreuzberg::TokenReductionConfig);
@@ -5197,11 +5275,8 @@ impl DjotContent {
     pub fn metadata(&self) -> Metadata {
         Metadata(self.0.metadata.clone())
     }
-    pub fn tables(&self) -> Vec<String> {
-        ::serde_json::to_value(&self.0.tables)
-            .ok()
-            .and_then(|j| ::serde_json::from_value(j).ok())
-            .unwrap_or_default()
+    pub fn tables(&self) -> Vec<Table> {
+        self.0.tables.iter().map(|elem| Table(elem.clone())).collect()
     }
     pub fn images(&self) -> Vec<DjotImage> {
         self.0.images.iter().map(|elem| DjotImage(elem.clone())).collect()
@@ -5540,7 +5615,7 @@ impl ExtractionResult {
         mime_type: String,
         metadata: Metadata,
         extraction_method: Option<ExtractionMethod>,
-        tables: Vec<String>,
+        tables: Vec<Table>,
         detected_languages: Option<Vec<String>>,
         chunks: Option<Vec<Chunk>>,
         images: Option<Vec<ExtractedImage>>,
@@ -5573,11 +5648,7 @@ impl ExtractionResult {
         }
         __target.metadata = metadata.0;
         // alef: extraction_method (ExtractionMethod) is an enum; reverse From not generated — left at default
-        if let Ok(__v) = ::serde_json::to_value(tables) {
-            if let Ok(t) = ::serde_json::from_value(__v) {
-                __target.tables = t;
-            }
-        }
+        __target.tables = tables.into_iter().map(|w| w.0).collect();
         if let Ok(__v) = ::serde_json::to_value(detected_languages) {
             if let Ok(t) = ::serde_json::from_value(__v) {
                 __target.detected_languages = t;
@@ -5657,11 +5728,8 @@ impl ExtractionResult {
     pub fn extraction_method(&self) -> Option<ExtractionMethod> {
         self.0.extraction_method.clone().map(ExtractionMethod::from)
     }
-    pub fn tables(&self) -> Vec<String> {
-        ::serde_json::to_value(&self.0.tables)
-            .ok()
-            .and_then(|j| ::serde_json::from_value(j).ok())
-            .unwrap_or_default()
+    pub fn tables(&self) -> Vec<Table> {
+        self.0.tables.iter().map(|elem| Table(elem.clone())).collect()
     }
     pub fn detected_languages(&self) -> Option<Vec<String>> {
         self.0.detected_languages.as_ref().and_then(|v| {
@@ -8376,11 +8444,8 @@ impl PageContent {
     pub fn content(&self) -> String {
         serde_json::to_string(&self.0.content).unwrap_or_default()
     }
-    pub fn tables(&self) -> Vec<String> {
-        ::serde_json::to_value(&self.0.tables)
-            .ok()
-            .and_then(|j| ::serde_json::from_value(j).ok())
-            .unwrap_or_default()
+    pub fn tables(&self) -> Vec<Table> {
+        self.0.tables.iter().map(|elem| Table((**elem).clone())).collect()
     }
     pub fn images(&self) -> Vec<ExtractedImage> {
         self.0
@@ -8485,6 +8550,86 @@ impl HierarchicalBlock {
                 .ok()
                 .and_then(|j| ::serde_json::from_value(j).ok())
         })
+    }
+}
+
+pub struct Table(pub kreuzberg::Table);
+
+impl Table {
+    pub fn new(cells: String, markdown: String, page_number: usize, bounding_box: Option<String>) -> Table {
+        let mut __target: kreuzberg::Table = ::std::default::Default::default();
+        if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&cells) {
+            if let Ok(t) = ::serde_json::from_value(v) {
+                __target.cells = t;
+            }
+        }
+        if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&markdown) {
+            if let Ok(t) = ::serde_json::from_value(v) {
+                __target.markdown = t;
+            }
+        }
+        __target.page_number = page_number;
+        if let Some(s) = bounding_box {
+            if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&s) {
+                if let Ok(t) = ::serde_json::from_value(v) {
+                    __target.bounding_box = Some(t);
+                }
+            }
+        }
+        Table(__target)
+    }
+    pub fn cells(&self) -> String {
+        serde_json::to_string(&self.0.cells).expect("serializable cells")
+    }
+    pub fn markdown(&self) -> String {
+        serde_json::to_string(&self.0.markdown).unwrap_or_default()
+    }
+    pub fn page_number(&self) -> usize {
+        ::serde_json::to_value(&self.0.page_number)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn bounding_box(&self) -> Option<String> {
+        self.0.bounding_box.as_ref().and_then(|v| serde_json::to_string(v).ok())
+    }
+}
+
+pub struct TableCell(pub kreuzberg::TableCell);
+
+impl TableCell {
+    pub fn new(content: String, row_span: usize, col_span: usize, is_header: bool) -> TableCell {
+        let mut __target: kreuzberg::TableCell = ::std::default::Default::default();
+        if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&content) {
+            if let Ok(t) = ::serde_json::from_value(v) {
+                __target.content = t;
+            }
+        }
+        __target.row_span = row_span;
+        __target.col_span = col_span;
+        __target.is_header = is_header;
+        TableCell(__target)
+    }
+    pub fn content(&self) -> String {
+        serde_json::to_string(&self.0.content).unwrap_or_default()
+    }
+    pub fn row_span(&self) -> usize {
+        ::serde_json::to_value(&self.0.row_span)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn col_span(&self) -> usize {
+        ::serde_json::to_value(&self.0.col_span)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn is_header(&self) -> bool {
+        ::serde_json::to_value(&self.0.is_header)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
     }
 }
 

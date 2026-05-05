@@ -292,10 +292,6 @@ public typealias Drawing = RustBridge.Drawing
 /// Properties for anchored drawings.
 public typealias AnchorProperties = RustBridge.AnchorProperties
 
-public typealias HeaderFooter = RustBridge.HeaderFooter
-
-public typealias Note = RustBridge.Note
-
 /// Page margins converted to points (1/72 inch).
 public typealias PageMarginsPoints = RustBridge.PageMarginsPoints
 
@@ -365,6 +361,12 @@ public typealias OdtProperties = RustBridge.OdtProperties
 /// ```
 public struct SyncExtractor {
 }
+
+/// Configuration for security limits across extractors.
+///
+/// All limits are intentionally conservative to prevent DoS attacks
+/// while still supporting legitimate documents.
+public typealias SecurityLimits = RustBridge.SecurityLimits
 
 /// Helper struct for validating ZIP archives for security issues.
 public typealias ZipBombValidator = RustBridge.ZipBombValidator
@@ -1096,6 +1098,17 @@ public typealias PageHierarchy = RustBridge.PageHierarchy
 /// Represents a block of text with semantic heading information extracted from
 /// font size clustering and hierarchical analysis.
 public typealias HierarchicalBlock = RustBridge.HierarchicalBlock
+
+/// Extracted table structure.
+///
+/// Represents a table detected and extracted from a document (PDF, image, etc.).
+/// Tables are converted to both structured cell data and Markdown format.
+public typealias Table = RustBridge.Table
+
+/// Individual table cell with content and optional styling.
+///
+/// Future extension point for rich table support with cell-level metadata.
+public typealias TableCell = RustBridge.TableCell
 
 /// A URI extracted from a document.
 ///

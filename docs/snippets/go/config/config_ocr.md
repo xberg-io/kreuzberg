@@ -1,7 +1,7 @@
 ```go title="Go"
 package main
 
-import "github.com/kreuzberg-dev/kreuzberg/packages/go/v4"
+import "github.com/kreuzberg-dev/kreuzberg/packages/go/v5"
 
 func main() {
 	language := "eng+fra"

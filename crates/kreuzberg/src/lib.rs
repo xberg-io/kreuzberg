@@ -137,6 +137,7 @@ pub use core::config::{
     ImageExtractionConfig, LanguageDetectionConfig, LlmConfig, OcrConfig, OutputFormat, PageConfig,
     PostProcessorConfig, StructuredExtractionConfig, TokenReductionOptions,
 };
+pub use extractors::security::SecurityLimits;
 
 #[cfg(feature = "quality")]
 pub use text::{ReductionLevel, TokenReductionConfig};

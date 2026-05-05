@@ -98,7 +98,7 @@ internal sealed class AnnotationKindJsonConverter : JsonConverter<AnnotationKind
                 ?? throw new JsonException("Failed to deserialize AnnotationKind.Highlight"),
             "color" => JsonSerializer.Deserialize<AnnotationKind.Color>(json, options)!
                 ?? throw new JsonException("Failed to deserialize AnnotationKind.Color"),
-            "fontsize" => JsonSerializer.Deserialize<AnnotationKind.FontSize>(json, options)!
+            "font_size" => JsonSerializer.Deserialize<AnnotationKind.FontSize>(json, options)!
                 ?? throw new JsonException("Failed to deserialize AnnotationKind.FontSize"),
             "custom" => JsonSerializer.Deserialize<AnnotationKind.Custom>(json, options)!
                 ?? throw new JsonException("Failed to deserialize AnnotationKind.Custom"),
@@ -215,7 +215,7 @@ internal sealed class AnnotationKindJsonConverter : JsonConverter<AnnotationKind
                 {
                     var doc = JsonSerializer.SerializeToDocument(v, options);
                     writer.WriteStartObject();
-                    writer.WriteString("annotation_type", "fontsize");
+                    writer.WriteString("annotation_type", "font_size");
                     foreach (var prop in doc.RootElement.EnumerateObject())
                         if (prop.Name != "annotation_type") prop.WriteTo(writer);
                     writer.WriteEndObject();

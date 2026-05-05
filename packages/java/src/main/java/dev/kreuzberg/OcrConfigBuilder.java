@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 @JsonPOJOBuilder(withPrefix = "with")
 public class OcrConfigBuilder {
 
-    private boolean enabled = false;
+    private boolean enabled = true;
     private String backend = "";
     private String language = "";
     private Optional<TesseractConfig> tesseractConfig = Optional.empty();

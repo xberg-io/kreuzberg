@@ -217,7 +217,7 @@ namespace Kreuzberg {
         public ?int $extraction_timeout_secs;
         public ?int $max_concurrent_extractions;
         public ResultFormat $result_format;
-        public ?string $security_limits;
+        public ?SecurityLimits $security_limits;
         public OutputFormat $output_format;
         public ?LayoutDetectionConfig $layout;
         public bool $include_document_structure;
@@ -258,7 +258,7 @@ namespace Kreuzberg {
             ?HtmlOutputConfig $html_output = null,
             ?int $extraction_timeout_secs = null,
             ?int $max_concurrent_extractions = null,
-            ?string $security_limits = null,
+            ?SecurityLimits $security_limits = null,
             ?LayoutDetectionConfig $layout = null,
             ?AccelerationConfig $acceleration = null,
             ?string $cache_namespace = null,
@@ -351,7 +351,7 @@ namespace Kreuzberg {
         {
             throw new \RuntimeException('Not implemented.');
         }
-        public function getSecurityLimits(): ?string
+        public function getSecurityLimits(): ?SecurityLimits
         {
             throw new \RuntimeException('Not implemented.');
         }
@@ -2049,71 +2049,6 @@ namespace Kreuzberg {
         }
     }
 
-    class HeaderFooter
-    {
-        /** @var array<string> */
-        public array $paragraphs;
-        /** @var array<string> */
-        public array $tables;
-        public string $header_type;
-
-        /**
-         * @param array<string> $paragraphs
-         * @param array<string> $tables
-         */
-        public function __construct(
-            array $paragraphs,
-            array $tables,
-            string $header_type
-        ) {}
-
-        /** @return array<string> */
-        public function getParagraphs(): array
-        {
-            throw new \RuntimeException('Not implemented.');
-        }
-        /** @return array<string> */
-        public function getTables(): array
-        {
-            throw new \RuntimeException('Not implemented.');
-        }
-        public function getHeaderType(): string
-        {
-            throw new \RuntimeException('Not implemented.');
-        }
-    }
-
-    class Note
-    {
-        public string $id;
-        public string $note_type;
-        /** @var array<string> */
-        public array $paragraphs;
-
-        /**
-         * @param array<string> $paragraphs
-         */
-        public function __construct(
-            string $id,
-            string $note_type,
-            array $paragraphs
-        ) {}
-
-        public function getId(): string
-        {
-            throw new \RuntimeException('Not implemented.');
-        }
-        public function getNoteType(): string
-        {
-            throw new \RuntimeException('Not implemented.');
-        }
-        /** @return array<string> */
-        public function getParagraphs(): array
-        {
-            throw new \RuntimeException('Not implemented.');
-        }
-    }
-
     /**
      * Page margins converted to points (1/72 inch).
      */
@@ -2616,6 +2551,74 @@ namespace Kreuzberg {
         }
     }
 
+    /**
+     * Configuration for security limits across extractors.
+     *
+     * All limits are intentionally conservative to prevent DoS attacks
+     * while still supporting legitimate documents.
+     */
+    class SecurityLimits
+    {
+        public int $max_archive_size;
+        public int $max_compression_ratio;
+        public int $max_files_in_archive;
+        public int $max_nesting_depth;
+        public int $max_entity_length;
+        public int $max_content_size;
+        public int $max_iterations;
+        public int $max_xml_depth;
+        public int $max_table_cells;
+
+        public function __construct(
+            int $max_archive_size,
+            int $max_compression_ratio,
+            int $max_files_in_archive,
+            int $max_nesting_depth,
+            int $max_entity_length,
+            int $max_content_size,
+            int $max_iterations,
+            int $max_xml_depth,
+            int $max_table_cells
+        ) {}
+
+        public function getMaxArchiveSize(): int
+        {
+            throw new \RuntimeException('Not implemented.');
+        }
+        public function getMaxCompressionRatio(): int
+        {
+            throw new \RuntimeException('Not implemented.');
+        }
+        public function getMaxFilesInArchive(): int
+        {
+            throw new \RuntimeException('Not implemented.');
+        }
+        public function getMaxNestingDepth(): int
+        {
+            throw new \RuntimeException('Not implemented.');
+        }
+        public function getMaxEntityLength(): int
+        {
+            throw new \RuntimeException('Not implemented.');
+        }
+        public function getMaxContentSize(): int
+        {
+            throw new \RuntimeException('Not implemented.');
+        }
+        public function getMaxIterations(): int
+        {
+            throw new \RuntimeException('Not implemented.');
+        }
+        public function getMaxXmlDepth(): int
+        {
+            throw new \RuntimeException('Not implemented.');
+        }
+        public function getMaxTableCells(): int
+        {
+            throw new \RuntimeException('Not implemented.');
+        }
+    }
+
     class TokenReductionConfig
     {
         public ReductionLevel $level;
@@ -2752,7 +2755,7 @@ namespace Kreuzberg {
         /** @var array<FormattedBlock> */
         public array $blocks;
         public Metadata $metadata;
-        /** @var array<string> */
+        /** @var array<Table> */
         public array $tables;
         /** @var array<DjotImage> */
         public array $images;
@@ -2765,7 +2768,7 @@ namespace Kreuzberg {
 
         /**
          * @param array<FormattedBlock> $blocks
-         * @param array<string> $tables
+         * @param array<Table> $tables
          * @param array<DjotImage> $images
          * @param array<DjotLink> $links
          * @param array<Footnote> $footnotes
@@ -2795,7 +2798,7 @@ namespace Kreuzberg {
         {
             throw new \RuntimeException('Not implemented.');
         }
-        /** @return array<string> */
+        /** @return array<Table> */
         public function getTables(): array
         {
             throw new \RuntimeException('Not implemented.');
@@ -3326,7 +3329,7 @@ namespace Kreuzberg {
         public string $mime_type;
         public Metadata $metadata;
         public ?ExtractionMethod $extraction_method;
-        /** @var array<string> */
+        /** @var array<Table> */
         public array $tables;
         /** @var ?array<string> */
         public ?array $detected_languages;
@@ -3361,7 +3364,7 @@ namespace Kreuzberg {
         public ?string $ocr_internal_document;
 
         /**
-         * @param array<string> $tables
+         * @param array<Table> $tables
          * @param array<ProcessingWarning> $processing_warnings
          * @param ?array<string> $detected_languages
          * @param ?array<Chunk> $chunks
@@ -3418,7 +3421,7 @@ namespace Kreuzberg {
         {
             throw new \RuntimeException('Not implemented.');
         }
-        /** @return array<string> */
+        /** @return array<Table> */
         public function getTables(): array
         {
             throw new \RuntimeException('Not implemented.');
@@ -6415,7 +6418,7 @@ namespace Kreuzberg {
     {
         public int $page_number;
         public string $content;
-        /** @var array<string> */
+        /** @var array<Table> */
         public array $tables;
         /** @var array<ExtractedImage> */
         public array $images;
@@ -6425,7 +6428,7 @@ namespace Kreuzberg {
         public ?array $layout_regions;
 
         /**
-         * @param array<string> $tables
+         * @param array<Table> $tables
          * @param array<ExtractedImage> $images
          * @param ?array<LayoutRegion> $layout_regions
          */
@@ -6447,7 +6450,7 @@ namespace Kreuzberg {
         {
             throw new \RuntimeException('Not implemented.');
         }
-        /** @return array<string> */
+        /** @return array<Table> */
         public function getTables(): array
         {
             throw new \RuntimeException('Not implemented.');
@@ -6580,6 +6583,86 @@ namespace Kreuzberg {
         }
         /** @return ?array<float> */
         public function getBbox(): ?array
+        {
+            throw new \RuntimeException('Not implemented.');
+        }
+    }
+
+    /**
+     * Extracted table structure.
+     *
+     * Represents a table detected and extracted from a document (PDF, image, etc.).
+     * Tables are converted to both structured cell data and Markdown format.
+     */
+    class Table
+    {
+        /** @var array<array<string>> */
+        public array $cells;
+        public string $markdown;
+        public int $page_number;
+        public ?string $bounding_box;
+
+        /**
+         * @param array<array<string>> $cells
+         */
+        public function __construct(
+            array $cells,
+            string $markdown,
+            int $page_number,
+            ?string $bounding_box = null
+        ) {}
+
+        /** @return array<array<string>> */
+        public function getCells(): array
+        {
+            throw new \RuntimeException('Not implemented.');
+        }
+        public function getMarkdown(): string
+        {
+            throw new \RuntimeException('Not implemented.');
+        }
+        public function getPageNumber(): int
+        {
+            throw new \RuntimeException('Not implemented.');
+        }
+        public function getBoundingBox(): ?string
+        {
+            throw new \RuntimeException('Not implemented.');
+        }
+    }
+
+    /**
+     * Individual table cell with content and optional styling.
+     *
+     * Future extension point for rich table support with cell-level metadata.
+     */
+    class TableCell
+    {
+        public string $content;
+        public int $row_span;
+        public int $col_span;
+        public bool $is_header;
+
+        public function __construct(
+            string $content,
+            int $row_span,
+            int $col_span,
+            bool $is_header
+        ) {}
+
+        public function getContent(): string
+        {
+            throw new \RuntimeException('Not implemented.');
+        }
+        public function getRowSpan(): int
+        {
+            throw new \RuntimeException('Not implemented.');
+        }
+        public function getColSpan(): int
+        {
+            throw new \RuntimeException('Not implemented.');
+        }
+        public function getIsHeader(): bool
         {
             throw new \RuntimeException('Not implemented.');
         }

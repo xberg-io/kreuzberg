@@ -92,7 +92,6 @@ typedef struct KREUZBERGFormatMetadata KREUZBERGFormatMetadata;
 typedef struct KREUZBERGFormattedBlock KREUZBERGFormattedBlock;
 typedef struct KREUZBERGFracType KREUZBERGFracType;
 typedef struct KREUZBERGGridCell KREUZBERGGridCell;
-typedef struct KREUZBERGHeaderFooter KREUZBERGHeaderFooter;
 typedef struct KREUZBERGHeaderMetadata KREUZBERGHeaderMetadata;
 typedef struct KREUZBERGHeadingContext KREUZBERGHeadingContext;
 typedef struct KREUZBERGHeadingLevel KREUZBERGHeadingLevel;
@@ -131,7 +130,6 @@ typedef struct KREUZBERGMergedChunk KREUZBERGMergedChunk;
 typedef struct KREUZBERGMetadata KREUZBERGMetadata;
 typedef struct KREUZBERGModelPaths KREUZBERGModelPaths;
 typedef struct KREUZBERGNodeContent KREUZBERGNodeContent;
-typedef struct KREUZBERGNote KREUZBERGNote;
 typedef struct KREUZBERGOcrBackend KREUZBERGOcrBackend;
 typedef struct KREUZBERGOcrBackendType KREUZBERGOcrBackendType;
 typedef struct KREUZBERGOcrBoundingGeometry KREUZBERGOcrBoundingGeometry;
@@ -189,6 +187,7 @@ typedef struct KREUZBERGReductionLevel KREUZBERGReductionLevel;
 typedef struct KREUZBERGRelationshipKind KREUZBERGRelationshipKind;
 typedef struct KREUZBERGResolvedStyle KREUZBERGResolvedStyle;
 typedef struct KREUZBERGResultFormat KREUZBERGResultFormat;
+typedef struct KREUZBERGSecurityLimits KREUZBERGSecurityLimits;
 typedef struct KREUZBERGServerConfig KREUZBERGServerConfig;
 typedef struct KREUZBERGStreamReader KREUZBERGStreamReader;
 typedef struct KREUZBERGStringBufferPool KREUZBERGStringBufferPool;
@@ -200,6 +199,8 @@ typedef struct KREUZBERGStructuredExtractionResponse KREUZBERGStructuredExtracti
 typedef struct KREUZBERGStyleDefinition KREUZBERGStyleDefinition;
 typedef struct KREUZBERGSupportedFormat KREUZBERGSupportedFormat;
 typedef struct KREUZBERGSyncExtractor KREUZBERGSyncExtractor;
+typedef struct KREUZBERGTable KREUZBERGTable;
+typedef struct KREUZBERGTableCell KREUZBERGTableCell;
 typedef struct KREUZBERGTableGrid KREUZBERGTableGrid;
 typedef struct KREUZBERGTableModel KREUZBERGTableModel;
 typedef struct KREUZBERGTableProperties KREUZBERGTableProperties;
@@ -1110,6 +1111,13 @@ uintptr_t kreuzberg_extraction_config_max_concurrent_extractions(const KREUZBERG
  * Pointer must be a valid handle returned by this library.
  */
 KREUZBERGResultFormat *kreuzberg_extraction_config_result_format(const KREUZBERGExtractionConfig *ptr);
+
+/**
+ * Get the `security_limits` field from a `ExtractionConfig`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+KREUZBERGSecurityLimits *kreuzberg_extraction_config_security_limits(const KREUZBERGExtractionConfig *ptr);
 
 /**
  * Get the `output_format` field from a `ExtractionConfig`.
@@ -3310,27 +3318,6 @@ int32_t kreuzberg_anchor_properties_layout_in_cell(const KREUZBERGAnchorProperti
 int64_t kreuzberg_anchor_properties_relative_height(const KREUZBERGAnchorProperties *ptr);
 
 /**
- * Free a `HeaderFooter` handle.
- * # Safety
- * Pointer must have been returned by this library, or be null.
- */
-void kreuzberg_header_footer_free(KREUZBERGHeaderFooter *ptr);
-
-/**
- * Free a `Note` handle.
- * # Safety
- * Pointer must have been returned by this library, or be null.
- */
-void kreuzberg_note_free(KREUZBERGNote *ptr);
-
-/**
- * Get the `id` field from a `Note`.
- * # Safety
- * Pointer must be a valid handle returned by this library.
- */
-char *kreuzberg_note_id(const KREUZBERGNote *ptr);
-
-/**
  * Free a `PageMarginsPoints` handle.
  * # Safety
  * Pointer must have been returned by this library, or be null.
@@ -3841,6 +3828,99 @@ int32_t kreuzberg_odt_properties_table_count(const KREUZBERGOdtProperties *ptr);
 int32_t kreuzberg_odt_properties_image_count(const KREUZBERGOdtProperties *ptr);
 
 /**
+ * Create a `SecurityLimits` from a JSON string. Returns null on failure.
+ * # Safety
+ * JSON string must be valid UTF-8 and null-terminated.
+ * Returned handle must be freed with `kreuzberg_security_limits_free`.
+ */
+KREUZBERGSecurityLimits *kreuzberg_security_limits_from_json(const char *json);
+
+/**
+ * Serialize a `SecurityLimits` to a JSON string. Returns null on failure.
+ * # Safety
+ * `ptr` must be a valid, non-null pointer returned by a `kreuzberg` function.
+ * The returned string must be freed with `kreuzberg_free_string`.
+ */
+char *kreuzberg_security_limits_to_json(const KREUZBERGSecurityLimits *ptr);
+
+/**
+ * Free a `SecurityLimits` handle.
+ * # Safety
+ * Pointer must have been returned by this library, or be null.
+ */
+void kreuzberg_security_limits_free(KREUZBERGSecurityLimits *ptr);
+
+/**
+ * Get the `max_archive_size` field from a `SecurityLimits`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+uintptr_t kreuzberg_security_limits_max_archive_size(const KREUZBERGSecurityLimits *ptr);
+
+/**
+ * Get the `max_compression_ratio` field from a `SecurityLimits`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+uintptr_t kreuzberg_security_limits_max_compression_ratio(const KREUZBERGSecurityLimits *ptr);
+
+/**
+ * Get the `max_files_in_archive` field from a `SecurityLimits`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+uintptr_t kreuzberg_security_limits_max_files_in_archive(const KREUZBERGSecurityLimits *ptr);
+
+/**
+ * Get the `max_nesting_depth` field from a `SecurityLimits`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+uintptr_t kreuzberg_security_limits_max_nesting_depth(const KREUZBERGSecurityLimits *ptr);
+
+/**
+ * Get the `max_entity_length` field from a `SecurityLimits`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+uintptr_t kreuzberg_security_limits_max_entity_length(const KREUZBERGSecurityLimits *ptr);
+
+/**
+ * Get the `max_content_size` field from a `SecurityLimits`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+uintptr_t kreuzberg_security_limits_max_content_size(const KREUZBERGSecurityLimits *ptr);
+
+/**
+ * Get the `max_iterations` field from a `SecurityLimits`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+uintptr_t kreuzberg_security_limits_max_iterations(const KREUZBERGSecurityLimits *ptr);
+
+/**
+ * Get the `max_xml_depth` field from a `SecurityLimits`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+uintptr_t kreuzberg_security_limits_max_xml_depth(const KREUZBERGSecurityLimits *ptr);
+
+/**
+ * Get the `max_table_cells` field from a `SecurityLimits`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+uintptr_t kreuzberg_security_limits_max_table_cells(const KREUZBERGSecurityLimits *ptr);
+
+/**
+ * # Safety
+ * Caller must ensure all pointer arguments are valid or null.
+ * Returned pointers must be freed with the appropriate free function.
+ */
+KREUZBERGSecurityLimits *kreuzberg_security_limits_default(void);
+
+/**
  * Free a `ZipBombValidator` handle.
  * # Safety
  * Pointer must have been returned by this library, or be null.
@@ -4041,6 +4121,13 @@ char *kreuzberg_djot_content_blocks(const KREUZBERGDjotContent *ptr);
  * Pointer must be a valid handle returned by this library.
  */
 KREUZBERGMetadata *kreuzberg_djot_content_metadata(const KREUZBERGDjotContent *ptr);
+
+/**
+ * Get the `tables` field from a `DjotContent`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+char *kreuzberg_djot_content_tables(const KREUZBERGDjotContent *ptr);
 
 /**
  * Get the `images` field from a `DjotContent`.
@@ -4711,6 +4798,13 @@ KREUZBERGMetadata *kreuzberg_extraction_result_metadata(const KREUZBERGExtractio
  * Pointer must be a valid handle returned by this library.
  */
 KREUZBERGExtractionMethod *kreuzberg_extraction_result_extraction_method(const KREUZBERGExtractionResult *ptr);
+
+/**
+ * Get the `tables` field from a `ExtractionResult`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+char *kreuzberg_extraction_result_tables(const KREUZBERGExtractionResult *ptr);
 
 /**
  * Get the `detected_languages` field from a `ExtractionResult`.
@@ -8253,6 +8347,13 @@ uintptr_t kreuzberg_page_content_page_number(const KREUZBERGPageContent *ptr);
 char *kreuzberg_page_content_content(const KREUZBERGPageContent *ptr);
 
 /**
+ * Get the `tables` field from a `PageContent`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+char *kreuzberg_page_content_tables(const KREUZBERGPageContent *ptr);
+
+/**
  * Get the `images` field from a `PageContent`.
  * # Safety
  * Pointer must be a valid handle returned by this library.
@@ -8404,6 +8505,101 @@ float kreuzberg_hierarchical_block_font_size(const KREUZBERGHierarchicalBlock *p
  * Pointer must be a valid handle returned by this library.
  */
 char *kreuzberg_hierarchical_block_level(const KREUZBERGHierarchicalBlock *ptr);
+
+/**
+ * Create a `Table` from a JSON string. Returns null on failure.
+ * # Safety
+ * JSON string must be valid UTF-8 and null-terminated.
+ * Returned handle must be freed with `kreuzberg_table_free`.
+ */
+KREUZBERGTable *kreuzberg_table_from_json(const char *json);
+
+/**
+ * Serialize a `Table` to a JSON string. Returns null on failure.
+ * # Safety
+ * `ptr` must be a valid, non-null pointer returned by a `kreuzberg` function.
+ * The returned string must be freed with `kreuzberg_free_string`.
+ */
+char *kreuzberg_table_to_json(const KREUZBERGTable *ptr);
+
+/**
+ * Free a `Table` handle.
+ * # Safety
+ * Pointer must have been returned by this library, or be null.
+ */
+void kreuzberg_table_free(KREUZBERGTable *ptr);
+
+/**
+ * Get the `cells` field from a `Table`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+char *kreuzberg_table_cells(const KREUZBERGTable *ptr);
+
+/**
+ * Get the `markdown` field from a `Table`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+char *kreuzberg_table_markdown(const KREUZBERGTable *ptr);
+
+/**
+ * Get the `page_number` field from a `Table`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+uintptr_t kreuzberg_table_page_number(const KREUZBERGTable *ptr);
+
+/**
+ * Create a `TableCell` from a JSON string. Returns null on failure.
+ * # Safety
+ * JSON string must be valid UTF-8 and null-terminated.
+ * Returned handle must be freed with `kreuzberg_table_cell_free`.
+ */
+KREUZBERGTableCell *kreuzberg_table_cell_from_json(const char *json);
+
+/**
+ * Serialize a `TableCell` to a JSON string. Returns null on failure.
+ * # Safety
+ * `ptr` must be a valid, non-null pointer returned by a `kreuzberg` function.
+ * The returned string must be freed with `kreuzberg_free_string`.
+ */
+char *kreuzberg_table_cell_to_json(const KREUZBERGTableCell *ptr);
+
+/**
+ * Free a `TableCell` handle.
+ * # Safety
+ * Pointer must have been returned by this library, or be null.
+ */
+void kreuzberg_table_cell_free(KREUZBERGTableCell *ptr);
+
+/**
+ * Get the `content` field from a `TableCell`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+char *kreuzberg_table_cell_content(const KREUZBERGTableCell *ptr);
+
+/**
+ * Get the `row_span` field from a `TableCell`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+uintptr_t kreuzberg_table_cell_row_span(const KREUZBERGTableCell *ptr);
+
+/**
+ * Get the `col_span` field from a `TableCell`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+uintptr_t kreuzberg_table_cell_col_span(const KREUZBERGTableCell *ptr);
+
+/**
+ * Get the `is_header` field from a `TableCell`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+int32_t kreuzberg_table_cell_is_header(const KREUZBERGTableCell *ptr);
 
 /**
  * Create a `Uri` from a JSON string. Returns null on failure.

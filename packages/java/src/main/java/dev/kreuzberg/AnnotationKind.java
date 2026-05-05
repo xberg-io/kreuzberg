@@ -23,7 +23,7 @@ import java.util.Optional;
         @JsonSubTypes.Type(value = AnnotationKind.Link.class, name = "link"),
         @JsonSubTypes.Type(value = AnnotationKind.Highlight.class, name = "highlight"),
         @JsonSubTypes.Type(value = AnnotationKind.Color.class, name = "color"),
-        @JsonSubTypes.Type(value = AnnotationKind.FontSize.class, name = "fontsize"),
+        @JsonSubTypes.Type(value = AnnotationKind.FontSize.class, name = "font_size"),
         @JsonSubTypes.Type(value = AnnotationKind.Custom.class, name = "custom")})
 public sealed interface AnnotationKind {
 

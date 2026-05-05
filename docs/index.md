@@ -83,7 +83,7 @@ Precompiled binaries for Linux (x86_64 & aarch64), macOS (Apple Silicon), and Wi
 | **TypeScript (Native)** | `npm install @kreuzberg/node`              | [API Reference](reference/api-typescript.md) |
 | **TypeScript (WASM)**   | `npm install @kreuzberg/wasm`              | [API Reference](reference/api-wasm.md)       |
 | **Rust**                | `cargo add kreuzberg`                      | [API Reference](reference/api-rust.md)       |
-| **Go**                  | `go get .../kreuzberg/packages/go/v4`      | [API Reference](reference/api-go.md)         |
+| **Go**                  | `go get .../kreuzberg/packages/go/v5`      | [API Reference](reference/api-go.md)         |
 | **Java**                | Maven Central `dev.kreuzberg:kreuzberg`    | [API Reference](reference/api-java.md)       |
 | **C#**                  | `dotnet add package Kreuzberg`             | [API Reference](reference/api-csharp.md)     |
 | **Ruby**                | `gem install kreuzberg`                    | [API Reference](reference/api-ruby.md)       |

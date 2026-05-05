@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 public class EmbeddingConfigBuilder {
 
     private EmbeddingModelType model = null;
-    private boolean normalize = false;
+    private boolean normalize = true;
     private long batchSize = 0;
     private boolean showDownloadProgress = false;
     private Optional<java.nio.file.Path> cacheDir = Optional.empty();

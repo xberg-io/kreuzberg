@@ -223,7 +223,7 @@ pub struct WasmExtractionConfig {
     extraction_timeout_secs: Option<u64>,
     max_concurrent_extractions: Option<usize>,
     result_format: WasmResultFormat,
-    security_limits: Option<String>,
+    security_limits: Option<WasmSecurityLimits>,
     output_format: WasmOutputFormat,
     include_document_structure: bool,
     acceleration: Option<WasmAccelerationConfig>,
@@ -263,7 +263,7 @@ impl WasmExtractionConfig {
         html_output: Option<WasmHtmlOutputConfig>,
         extraction_timeout_secs: Option<u64>,
         max_concurrent_extractions: Option<usize>,
-        security_limits: Option<String>,
+        security_limits: Option<WasmSecurityLimits>,
         acceleration: Option<WasmAccelerationConfig>,
         cache_namespace: Option<String>,
         cache_ttl_secs: Option<u64>,
@@ -497,12 +497,12 @@ impl WasmExtractionConfig {
     }
 
     #[wasm_bindgen(getter, js_name = "securityLimits")]
-    pub fn security_limits(&self) -> Option<String> {
+    pub fn security_limits(&self) -> Option<WasmSecurityLimits> {
         self.security_limits.clone()
     }
 
     #[wasm_bindgen(setter, js_name = "securityLimits")]
-    pub fn set_security_limits(&mut self, value: Option<String>) {
+    pub fn set_security_limits(&mut self, value: Option<WasmSecurityLimits>) {
         self.security_limits = value;
     }
 
@@ -3055,110 +3055,6 @@ impl WasmAnchorProperties {
     }
 }
 
-#[derive(Clone, Default)]
-#[wasm_bindgen]
-pub struct WasmHeaderFooter {
-    paragraphs: Vec<String>,
-    tables: Vec<String>,
-    header_type: String,
-}
-
-#[wasm_bindgen]
-impl WasmHeaderFooter {
-    #[wasm_bindgen(constructor)]
-    pub fn new(
-        paragraphs: Option<Vec<String>>,
-        tables: Option<Vec<String>>,
-        header_type: Option<String>,
-    ) -> WasmHeaderFooter {
-        WasmHeaderFooter {
-            paragraphs: paragraphs.unwrap_or_default(),
-            tables: tables.unwrap_or_default(),
-            header_type: header_type.unwrap_or_default(),
-        }
-    }
-
-    #[wasm_bindgen(getter)]
-    pub fn paragraphs(&self) -> Vec<String> {
-        self.paragraphs.clone()
-    }
-
-    #[wasm_bindgen(setter)]
-    pub fn set_paragraphs(&mut self, value: Vec<String>) {
-        self.paragraphs = value;
-    }
-
-    #[wasm_bindgen(getter)]
-    pub fn tables(&self) -> Vec<String> {
-        self.tables.clone()
-    }
-
-    #[wasm_bindgen(setter)]
-    pub fn set_tables(&mut self, value: Vec<String>) {
-        self.tables = value;
-    }
-
-    #[wasm_bindgen(getter, js_name = "headerType")]
-    pub fn header_type(&self) -> String {
-        self.header_type.clone()
-    }
-
-    #[wasm_bindgen(setter, js_name = "headerType")]
-    pub fn set_header_type(&mut self, value: String) {
-        self.header_type = value;
-    }
-}
-
-#[derive(Clone, Default)]
-#[wasm_bindgen]
-pub struct WasmNote {
-    id: String,
-    note_type: String,
-    paragraphs: Vec<String>,
-}
-
-#[wasm_bindgen]
-impl WasmNote {
-    #[wasm_bindgen(constructor)]
-    pub fn new(id: String, note_type: String, paragraphs: Vec<String>) -> WasmNote {
-        WasmNote {
-            id,
-            note_type,
-            paragraphs,
-        }
-    }
-
-    #[wasm_bindgen(getter)]
-    pub fn id(&self) -> String {
-        self.id.clone()
-    }
-
-    #[wasm_bindgen(setter)]
-    pub fn set_id(&mut self, value: String) {
-        self.id = value;
-    }
-
-    #[wasm_bindgen(getter, js_name = "noteType")]
-    pub fn note_type(&self) -> String {
-        self.note_type.clone()
-    }
-
-    #[wasm_bindgen(setter, js_name = "noteType")]
-    pub fn set_note_type(&mut self, value: String) {
-        self.note_type = value;
-    }
-
-    #[wasm_bindgen(getter)]
-    pub fn paragraphs(&self) -> Vec<String> {
-        self.paragraphs.clone()
-    }
-
-    #[wasm_bindgen(setter)]
-    pub fn set_paragraphs(&mut self, value: Vec<String>) {
-        self.paragraphs = value;
-    }
-}
-
 /// Page margins converted to points (1/72 inch).
 #[derive(Clone, Default)]
 #[wasm_bindgen]
@@ -4177,6 +4073,149 @@ impl WasmOdtProperties {
     }
 }
 
+/// Configuration for security limits across extractors.
+///
+/// All limits are intentionally conservative to prevent DoS attacks
+/// while still supporting legitimate documents.
+#[derive(Clone, Default)]
+#[wasm_bindgen]
+pub struct WasmSecurityLimits {
+    max_archive_size: usize,
+    max_compression_ratio: usize,
+    max_files_in_archive: usize,
+    max_nesting_depth: usize,
+    max_entity_length: usize,
+    max_content_size: usize,
+    max_iterations: usize,
+    max_xml_depth: usize,
+    max_table_cells: usize,
+}
+
+#[wasm_bindgen]
+impl WasmSecurityLimits {
+    #[allow(clippy::too_many_arguments)]
+    #[wasm_bindgen(constructor)]
+    pub fn new(
+        max_archive_size: Option<usize>,
+        max_compression_ratio: Option<usize>,
+        max_files_in_archive: Option<usize>,
+        max_nesting_depth: Option<usize>,
+        max_entity_length: Option<usize>,
+        max_content_size: Option<usize>,
+        max_iterations: Option<usize>,
+        max_xml_depth: Option<usize>,
+        max_table_cells: Option<usize>,
+    ) -> WasmSecurityLimits {
+        WasmSecurityLimits {
+            max_archive_size: max_archive_size.unwrap_or(524288000),
+            max_compression_ratio: max_compression_ratio.unwrap_or(100),
+            max_files_in_archive: max_files_in_archive.unwrap_or(10000),
+            max_nesting_depth: max_nesting_depth.unwrap_or(1024),
+            max_entity_length: max_entity_length.unwrap_or(1048576),
+            max_content_size: max_content_size.unwrap_or(104857600),
+            max_iterations: max_iterations.unwrap_or(10000000),
+            max_xml_depth: max_xml_depth.unwrap_or(1024),
+            max_table_cells: max_table_cells.unwrap_or(100000),
+        }
+    }
+
+    #[wasm_bindgen(getter, js_name = "maxArchiveSize")]
+    pub fn max_archive_size(&self) -> usize {
+        self.max_archive_size
+    }
+
+    #[wasm_bindgen(setter, js_name = "maxArchiveSize")]
+    pub fn set_max_archive_size(&mut self, value: usize) {
+        self.max_archive_size = value;
+    }
+
+    #[wasm_bindgen(getter, js_name = "maxCompressionRatio")]
+    pub fn max_compression_ratio(&self) -> usize {
+        self.max_compression_ratio
+    }
+
+    #[wasm_bindgen(setter, js_name = "maxCompressionRatio")]
+    pub fn set_max_compression_ratio(&mut self, value: usize) {
+        self.max_compression_ratio = value;
+    }
+
+    #[wasm_bindgen(getter, js_name = "maxFilesInArchive")]
+    pub fn max_files_in_archive(&self) -> usize {
+        self.max_files_in_archive
+    }
+
+    #[wasm_bindgen(setter, js_name = "maxFilesInArchive")]
+    pub fn set_max_files_in_archive(&mut self, value: usize) {
+        self.max_files_in_archive = value;
+    }
+
+    #[wasm_bindgen(getter, js_name = "maxNestingDepth")]
+    pub fn max_nesting_depth(&self) -> usize {
+        self.max_nesting_depth
+    }
+
+    #[wasm_bindgen(setter, js_name = "maxNestingDepth")]
+    pub fn set_max_nesting_depth(&mut self, value: usize) {
+        self.max_nesting_depth = value;
+    }
+
+    #[wasm_bindgen(getter, js_name = "maxEntityLength")]
+    pub fn max_entity_length(&self) -> usize {
+        self.max_entity_length
+    }
+
+    #[wasm_bindgen(setter, js_name = "maxEntityLength")]
+    pub fn set_max_entity_length(&mut self, value: usize) {
+        self.max_entity_length = value;
+    }
+
+    #[wasm_bindgen(getter, js_name = "maxContentSize")]
+    pub fn max_content_size(&self) -> usize {
+        self.max_content_size
+    }
+
+    #[wasm_bindgen(setter, js_name = "maxContentSize")]
+    pub fn set_max_content_size(&mut self, value: usize) {
+        self.max_content_size = value;
+    }
+
+    #[wasm_bindgen(getter, js_name = "maxIterations")]
+    pub fn max_iterations(&self) -> usize {
+        self.max_iterations
+    }
+
+    #[wasm_bindgen(setter, js_name = "maxIterations")]
+    pub fn set_max_iterations(&mut self, value: usize) {
+        self.max_iterations = value;
+    }
+
+    #[wasm_bindgen(getter, js_name = "maxXmlDepth")]
+    pub fn max_xml_depth(&self) -> usize {
+        self.max_xml_depth
+    }
+
+    #[wasm_bindgen(setter, js_name = "maxXmlDepth")]
+    pub fn set_max_xml_depth(&mut self, value: usize) {
+        self.max_xml_depth = value;
+    }
+
+    #[wasm_bindgen(getter, js_name = "maxTableCells")]
+    pub fn max_table_cells(&self) -> usize {
+        self.max_table_cells
+    }
+
+    #[wasm_bindgen(setter, js_name = "maxTableCells")]
+    pub fn set_max_table_cells(&mut self, value: usize) {
+        self.max_table_cells = value;
+    }
+
+    #[allow(clippy::should_implement_trait)]
+    #[wasm_bindgen]
+    pub fn default() -> WasmSecurityLimits {
+        kreuzberg::SecurityLimits::default().into()
+    }
+}
+
 /// Helper struct for validating ZIP archives for security issues.
 #[derive(Clone)]
 #[wasm_bindgen]
@@ -4437,7 +4476,7 @@ pub struct WasmDjotContent {
     plain_text: String,
     blocks: Vec<WasmFormattedBlock>,
     metadata: WasmMetadata,
-    tables: Vec<String>,
+    tables: Vec<WasmTable>,
     images: Vec<WasmDjotImage>,
     links: Vec<WasmDjotLink>,
     footnotes: Vec<WasmFootnote>,
@@ -4452,7 +4491,7 @@ impl WasmDjotContent {
         plain_text: String,
         blocks: Vec<WasmFormattedBlock>,
         metadata: WasmMetadata,
-        tables: Vec<String>,
+        tables: Vec<WasmTable>,
         images: Vec<WasmDjotImage>,
         links: Vec<WasmDjotLink>,
         footnotes: Vec<WasmFootnote>,
@@ -4501,12 +4540,12 @@ impl WasmDjotContent {
     }
 
     #[wasm_bindgen(getter)]
-    pub fn tables(&self) -> Vec<String> {
+    pub fn tables(&self) -> Vec<WasmTable> {
         self.tables.clone()
     }
 
     #[wasm_bindgen(setter)]
-    pub fn set_tables(&mut self, value: Vec<String>) {
+    pub fn set_tables(&mut self, value: Vec<WasmTable>) {
         self.tables = value;
     }
 
@@ -5427,7 +5466,7 @@ pub struct WasmExtractionResult {
     mime_type: String,
     metadata: WasmMetadata,
     extraction_method: Option<WasmExtractionMethod>,
-    tables: Vec<String>,
+    tables: Vec<WasmTable>,
     detected_languages: Option<Vec<String>>,
     chunks: Option<Vec<WasmChunk>>,
     images: Option<Vec<WasmExtractedImage>>,
@@ -5455,7 +5494,7 @@ impl WasmExtractionResult {
         content: Option<String>,
         mime_type: Option<String>,
         metadata: Option<WasmMetadata>,
-        tables: Option<Vec<String>>,
+        tables: Option<Vec<WasmTable>>,
         extraction_method: Option<WasmExtractionMethod>,
         detected_languages: Option<Vec<String>>,
         chunks: Option<Vec<WasmChunk>>,
@@ -5542,12 +5581,12 @@ impl WasmExtractionResult {
     }
 
     #[wasm_bindgen(getter)]
-    pub fn tables(&self) -> Vec<String> {
+    pub fn tables(&self) -> Vec<WasmTable> {
         self.tables.clone()
     }
 
     #[wasm_bindgen(setter)]
-    pub fn set_tables(&mut self, value: Vec<String>) {
+    pub fn set_tables(&mut self, value: Vec<WasmTable>) {
         self.tables = value;
     }
 
@@ -10464,7 +10503,7 @@ impl WasmPageInfo {
 pub struct WasmPageContent {
     page_number: usize,
     content: String,
-    tables: Vec<String>,
+    tables: Vec<WasmTable>,
     images: Vec<WasmExtractedImage>,
     hierarchy: Option<WasmPageHierarchy>,
     is_blank: Option<bool>,
@@ -10477,7 +10516,7 @@ impl WasmPageContent {
     pub fn new(
         page_number: usize,
         content: String,
-        tables: Vec<String>,
+        tables: Vec<WasmTable>,
         images: Vec<WasmExtractedImage>,
         hierarchy: Option<WasmPageHierarchy>,
         is_blank: Option<bool>,
@@ -10515,12 +10554,12 @@ impl WasmPageContent {
     }
 
     #[wasm_bindgen(getter)]
-    pub fn tables(&self) -> Vec<String> {
+    pub fn tables(&self) -> Vec<WasmTable> {
         self.tables.clone()
     }
 
     #[wasm_bindgen(setter)]
-    pub fn set_tables(&mut self, value: Vec<String>) {
+    pub fn set_tables(&mut self, value: Vec<WasmTable>) {
         self.tables = value;
     }
 
@@ -10739,6 +10778,147 @@ impl WasmHierarchicalBlock {
     #[wasm_bindgen(setter)]
     pub fn set_bbox(&mut self, value: Option<Vec<f32>>) {
         self.bbox = value;
+    }
+}
+
+/// Extracted table structure.
+///
+/// Represents a table detected and extracted from a document (PDF, image, etc.).
+/// Tables are converted to both structured cell data and Markdown format.
+#[derive(Clone, Default)]
+#[wasm_bindgen]
+pub struct WasmTable {
+    cells: JsValue,
+    markdown: String,
+    page_number: usize,
+    bounding_box: Option<String>,
+}
+
+#[wasm_bindgen]
+impl WasmTable {
+    #[wasm_bindgen(constructor)]
+    pub fn new(
+        cells: Option<JsValue>,
+        markdown: Option<String>,
+        page_number: Option<usize>,
+        bounding_box: Option<String>,
+    ) -> WasmTable {
+        WasmTable {
+            cells: cells.unwrap_or_default(),
+            markdown: markdown.unwrap_or_default(),
+            page_number: page_number.unwrap_or_default(),
+            bounding_box,
+        }
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn cells(&self) -> JsValue {
+        self.cells.clone()
+    }
+
+    #[wasm_bindgen(setter)]
+    pub fn set_cells(&mut self, value: JsValue) {
+        self.cells = value;
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn markdown(&self) -> String {
+        self.markdown.clone()
+    }
+
+    #[wasm_bindgen(setter)]
+    pub fn set_markdown(&mut self, value: String) {
+        self.markdown = value;
+    }
+
+    #[wasm_bindgen(getter, js_name = "pageNumber")]
+    pub fn page_number(&self) -> usize {
+        self.page_number
+    }
+
+    #[wasm_bindgen(setter, js_name = "pageNumber")]
+    pub fn set_page_number(&mut self, value: usize) {
+        self.page_number = value;
+    }
+
+    #[wasm_bindgen(getter, js_name = "boundingBox")]
+    pub fn bounding_box(&self) -> Option<String> {
+        self.bounding_box.clone()
+    }
+
+    #[wasm_bindgen(setter, js_name = "boundingBox")]
+    pub fn set_bounding_box(&mut self, value: Option<String>) {
+        self.bounding_box = value;
+    }
+}
+
+/// Individual table cell with content and optional styling.
+///
+/// Future extension point for rich table support with cell-level metadata.
+#[derive(Clone, Default)]
+#[wasm_bindgen]
+pub struct WasmTableCell {
+    content: String,
+    row_span: usize,
+    col_span: usize,
+    is_header: bool,
+}
+
+#[wasm_bindgen]
+impl WasmTableCell {
+    #[wasm_bindgen(constructor)]
+    pub fn new(
+        content: Option<String>,
+        row_span: Option<usize>,
+        col_span: Option<usize>,
+        is_header: Option<bool>,
+    ) -> WasmTableCell {
+        WasmTableCell {
+            content: content.unwrap_or_default(),
+            row_span: row_span.unwrap_or_default(),
+            col_span: col_span.unwrap_or_default(),
+            is_header: is_header.unwrap_or_default(),
+        }
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn content(&self) -> String {
+        self.content.clone()
+    }
+
+    #[wasm_bindgen(setter)]
+    pub fn set_content(&mut self, value: String) {
+        self.content = value;
+    }
+
+    #[wasm_bindgen(getter, js_name = "rowSpan")]
+    pub fn row_span(&self) -> usize {
+        self.row_span
+    }
+
+    #[wasm_bindgen(setter, js_name = "rowSpan")]
+    pub fn set_row_span(&mut self, value: usize) {
+        self.row_span = value;
+    }
+
+    #[wasm_bindgen(getter, js_name = "colSpan")]
+    pub fn col_span(&self) -> usize {
+        self.col_span
+    }
+
+    #[wasm_bindgen(setter, js_name = "colSpan")]
+    pub fn set_col_span(&mut self, value: usize) {
+        self.col_span = value;
+    }
+
+    #[wasm_bindgen(getter, js_name = "isHeader")]
+    pub fn is_header(&self) -> bool {
+        self.is_header
+    }
+
+    #[wasm_bindgen(setter, js_name = "isHeader")]
+    pub fn set_is_header(&mut self, value: bool) {
+        self.is_header = value;
     }
 }
 
@@ -13522,7 +13702,7 @@ impl From<WasmExtractionConfig> for kreuzberg::ExtractionConfig {
             extraction_timeout_secs: val.extraction_timeout_secs,
             max_concurrent_extractions: val.max_concurrent_extractions,
             result_format: val.result_format.into(),
-            security_limits: Default::default(),
+            security_limits: val.security_limits.map(Into::into),
             output_format: val.output_format.into(),
             include_document_structure: val.include_document_structure,
             acceleration: val.acceleration.map(Into::into),
@@ -13561,7 +13741,7 @@ impl From<kreuzberg::ExtractionConfig> for WasmExtractionConfig {
             extraction_timeout_secs: val.extraction_timeout_secs,
             max_concurrent_extractions: val.max_concurrent_extractions,
             result_format: val.result_format.into(),
-            security_limits: val.security_limits.as_ref().map(|v| format!("{v:?}")),
+            security_limits: val.security_limits.map(Into::into),
             output_format: val.output_format.into(),
             include_document_structure: val.include_document_structure,
             acceleration: val.acceleration.map(Into::into),
@@ -13636,7 +13816,7 @@ impl From<kreuzberg::FileExtractionConfig> for WasmFileExtractionConfig {
 impl From<WasmBatchBytesItem> for kreuzberg::BatchBytesItem {
     fn from(val: WasmBatchBytesItem) -> Self {
         Self {
-            content: val.content.into(),
+            content: val.content.to_vec().into(),
             mime_type: val.mime_type,
             config: val.config.map(Into::into),
         }
@@ -13647,7 +13827,7 @@ impl From<WasmBatchBytesItem> for kreuzberg::BatchBytesItem {
 impl From<kreuzberg::BatchBytesItem> for WasmBatchBytesItem {
     fn from(val: kreuzberg::BatchBytesItem) -> Self {
         Self {
-            content: val.content.to_vec(),
+            content: val.content.to_vec().into(),
             mime_type: val.mime_type,
             config: val.config.map(Into::into),
         }
@@ -14157,7 +14337,7 @@ impl From<kreuzberg::extraction::html::HtmlExtractionResult> for WasmHtmlExtract
 impl From<kreuzberg::extraction::html::ExtractedInlineImage> for WasmExtractedInlineImage {
     fn from(val: kreuzberg::extraction::html::ExtractedInlineImage) -> Self {
         Self {
-            data: val.data.to_vec(),
+            data: val.data.to_vec().into(),
             format: val.format,
             filename: val.filename,
             description: val.description,
@@ -14192,28 +14372,6 @@ impl From<kreuzberg::extraction::docx::drawing::AnchorProperties> for WasmAnchor
             position_h: val.position_h.as_ref().map(|v| format!("{v:?}")),
             position_v: val.position_v.as_ref().map(|v| format!("{v:?}")),
             wrap_type: format!("{:?}", val.wrap_type),
-        }
-    }
-}
-
-#[allow(clippy::redundant_closure, clippy::useless_conversion)]
-impl From<kreuzberg::extraction::docx::parser::HeaderFooter> for WasmHeaderFooter {
-    fn from(val: kreuzberg::extraction::docx::parser::HeaderFooter) -> Self {
-        Self {
-            paragraphs: val.paragraphs.iter().map(|i| format!("{:?}", i)).collect(),
-            tables: val.tables.iter().map(|i| format!("{:?}", i)).collect(),
-            header_type: format!("{:?}", val.header_type),
-        }
-    }
-}
-
-#[allow(clippy::redundant_closure, clippy::useless_conversion)]
-impl From<kreuzberg::extraction::docx::parser::Note> for WasmNote {
-    fn from(val: kreuzberg::extraction::docx::parser::Note) -> Self {
-        Self {
-            id: val.id,
-            note_type: format!("{:?}", val.note_type),
-            paragraphs: val.paragraphs.iter().map(|i| format!("{:?}", i)).collect(),
         }
     }
 }
@@ -14343,6 +14501,40 @@ impl From<kreuzberg::extraction::office_metadata::odt_properties::OdtProperties>
 }
 
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
+impl From<WasmSecurityLimits> for kreuzberg::SecurityLimits {
+    fn from(val: WasmSecurityLimits) -> Self {
+        Self {
+            max_archive_size: val.max_archive_size,
+            max_compression_ratio: val.max_compression_ratio,
+            max_files_in_archive: val.max_files_in_archive,
+            max_nesting_depth: val.max_nesting_depth,
+            max_entity_length: val.max_entity_length,
+            max_content_size: val.max_content_size,
+            max_iterations: val.max_iterations,
+            max_xml_depth: val.max_xml_depth,
+            max_table_cells: val.max_table_cells,
+        }
+    }
+}
+
+#[allow(clippy::redundant_closure, clippy::useless_conversion)]
+impl From<kreuzberg::SecurityLimits> for WasmSecurityLimits {
+    fn from(val: kreuzberg::SecurityLimits) -> Self {
+        Self {
+            max_archive_size: val.max_archive_size,
+            max_compression_ratio: val.max_compression_ratio,
+            max_files_in_archive: val.max_files_in_archive,
+            max_nesting_depth: val.max_nesting_depth,
+            max_entity_length: val.max_entity_length,
+            max_content_size: val.max_content_size,
+            max_iterations: val.max_iterations,
+            max_xml_depth: val.max_xml_depth,
+            max_table_cells: val.max_table_cells,
+        }
+    }
+}
+
+#[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<WasmTokenReductionConfig> for kreuzberg::TokenReductionConfig {
     fn from(val: WasmTokenReductionConfig) -> Self {
         Self {
@@ -14417,7 +14609,7 @@ impl From<WasmDjotContent> for kreuzberg::DjotContent {
             plain_text: val.plain_text,
             blocks: val.blocks.into_iter().map(Into::into).collect(),
             metadata: val.metadata.into(),
-            tables: Default::default(),
+            tables: val.tables.into_iter().map(Into::into).collect(),
             images: val.images.into_iter().map(Into::into).collect(),
             links: val.links.into_iter().map(Into::into).collect(),
             footnotes: val.footnotes.into_iter().map(Into::into).collect(),
@@ -14433,7 +14625,7 @@ impl From<kreuzberg::DjotContent> for WasmDjotContent {
             plain_text: val.plain_text,
             blocks: val.blocks.into_iter().map(Into::into).collect(),
             metadata: val.metadata.into(),
-            tables: val.tables.iter().map(|i| format!("{:?}", i)).collect(),
+            tables: val.tables.into_iter().map(Into::into).collect(),
             images: val.images.into_iter().map(Into::into).collect(),
             links: val.links.into_iter().map(Into::into).collect(),
             footnotes: val.footnotes.into_iter().map(Into::into).collect(),
@@ -14738,7 +14930,7 @@ impl From<WasmExtractionResult> for kreuzberg::ExtractionResult {
             mime_type: val.mime_type.into(),
             metadata: val.metadata.into(),
             extraction_method: val.extraction_method.map(Into::into),
-            tables: Default::default(),
+            tables: val.tables.into_iter().map(Into::into).collect(),
             detected_languages: val.detected_languages,
             chunks: val.chunks.map(|v| v.into_iter().map(Into::into).collect()),
             images: val.images.map(|v| v.into_iter().map(Into::into).collect()),
@@ -14772,7 +14964,7 @@ impl From<kreuzberg::ExtractionResult> for WasmExtractionResult {
             mime_type: val.mime_type.to_string(),
             metadata: val.metadata.into(),
             extraction_method: val.extraction_method.map(Into::into),
-            tables: val.tables.iter().map(|i| format!("{:?}", i)).collect(),
+            tables: val.tables.into_iter().map(Into::into).collect(),
             detected_languages: val.detected_languages,
             chunks: val.chunks.map(|v| v.into_iter().map(Into::into).collect()),
             images: val.images.map(|v| v.into_iter().map(Into::into).collect()),
@@ -14947,7 +15139,7 @@ impl From<kreuzberg::ChunkMetadata> for WasmChunkMetadata {
 impl From<WasmExtractedImage> for kreuzberg::ExtractedImage {
     fn from(val: WasmExtractedImage) -> Self {
         Self {
-            data: val.data.into(),
+            data: val.data.to_vec().into(),
             format: val.format.into(),
             image_index: val.image_index,
             page_number: val.page_number,
@@ -14971,7 +15163,7 @@ impl From<WasmExtractedImage> for kreuzberg::ExtractedImage {
 impl From<kreuzberg::ExtractedImage> for WasmExtractedImage {
     fn from(val: kreuzberg::ExtractedImage) -> Self {
         Self {
-            data: val.data.to_vec(),
+            data: val.data.to_vec().into(),
             format: val.format.to_string(),
             image_index: val.image_index,
             page_number: val.page_number,
@@ -15148,7 +15340,7 @@ impl From<kreuzberg::EmailAttachment> for WasmEmailAttachment {
             mime_type: val.mime_type,
             size: val.size,
             is_image: val.is_image,
-            data: val.data.map(|v| v.to_vec()).map(|v| v.to_vec()),
+            data: val.data.map(|v| v.to_vec().into()),
         }
     }
 }
@@ -16154,7 +16346,7 @@ impl From<WasmPageContent> for kreuzberg::PageContent {
         Self {
             page_number: val.page_number,
             content: val.content,
-            tables: Default::default(),
+            tables: val.tables.into_iter().map(|v| std::sync::Arc::new(v.into())).collect(),
             images: val.images.into_iter().map(|v| std::sync::Arc::new(v.into())).collect(),
             hierarchy: val.hierarchy.map(Into::into),
             is_blank: val.is_blank,
@@ -16169,7 +16361,7 @@ impl From<kreuzberg::PageContent> for WasmPageContent {
         Self {
             page_number: val.page_number,
             content: val.content,
-            tables: val.tables.iter().map(|i| format!("{:?}", i)).collect(),
+            tables: val.tables.into_iter().map(|v| (*v).clone().into()).collect(),
             images: val.images.into_iter().map(|v| (*v).clone().into()).collect(),
             hierarchy: val.hierarchy.map(Into::into),
             is_blank: val.is_blank,
@@ -16250,6 +16442,42 @@ impl From<kreuzberg::HierarchicalBlock> for WasmHierarchicalBlock {
 }
 
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
+impl From<WasmTable> for kreuzberg::Table {
+    fn from(val: WasmTable) -> Self {
+        Self {
+            cells: serde_wasm_bindgen::from_value(val.cells.clone()).unwrap_or_default(),
+            markdown: val.markdown,
+            page_number: val.page_number,
+            bounding_box: Default::default(),
+        }
+    }
+}
+
+#[allow(clippy::redundant_closure, clippy::useless_conversion)]
+impl From<kreuzberg::Table> for WasmTable {
+    fn from(val: kreuzberg::Table) -> Self {
+        Self {
+            cells: serde_wasm_bindgen::to_value(&val.cells).unwrap_or(JsValue::NULL),
+            markdown: val.markdown,
+            page_number: val.page_number,
+            bounding_box: val.bounding_box.as_ref().map(|v| format!("{v:?}")),
+        }
+    }
+}
+
+#[allow(clippy::redundant_closure, clippy::useless_conversion)]
+impl From<kreuzberg::TableCell> for WasmTableCell {
+    fn from(val: kreuzberg::TableCell) -> Self {
+        Self {
+            content: val.content,
+            row_span: val.row_span,
+            col_span: val.col_span,
+            is_header: val.is_header,
+        }
+    }
+}
+
+#[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<WasmUri> for kreuzberg::Uri {
     fn from(val: WasmUri) -> Self {
         Self {
@@ -16309,7 +16537,7 @@ impl From<kreuzberg::pdf::embedded_files::EmbeddedFile> for WasmEmbeddedFile {
     fn from(val: kreuzberg::pdf::embedded_files::EmbeddedFile) -> Self {
         Self {
             name: val.name,
-            data: val.data.to_vec(),
+            data: val.data.to_vec().into(),
             mime_type: val.mime_type,
         }
     }
@@ -16326,7 +16554,7 @@ impl From<kreuzberg::pdf::images::PdfImage> for WasmPdfImage {
             color_space: val.color_space,
             bits_per_component: val.bits_per_component,
             filters: val.filters,
-            data: val.data.to_vec(),
+            data: val.data.to_vec().into(),
             decoded_format: val.decoded_format,
             image_kind: val.image_kind.map(Into::into),
             kind_confidence: val.kind_confidence,

@@ -18,7 +18,7 @@ public static class KreuzbergLib
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         Converters = { new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseLower) },
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
     };
 
     /// <summary>
@@ -1125,6 +1125,17 @@ public static class KreuzbergLib
             handle
         );
         var returnValue = nativeResult;
+        return returnValue;
+    }
+
+    public static SecurityLimits SecurityLimitsDefault()
+    {
+        var nativeResult = NativeMethods.SecurityLimitsDefault();
+        var jsonPtr = NativeMethods.SecurityLimitsToJson(nativeResult);
+        var json = Marshal.PtrToStringUTF8(jsonPtr);
+        NativeMethods.FreeString(jsonPtr);
+        NativeMethods.SecurityLimitsFree(nativeResult);
+        var returnValue = JsonSerializer.Deserialize<SecurityLimits>(json ?? "null", JsonOptions)!;
         return returnValue;
     }
 

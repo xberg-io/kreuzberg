@@ -13,15 +13,15 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 @JsonPOJOBuilder(withPrefix = "with")
 public class ImageExtractionConfigBuilder {
 
-    private boolean extractImages = false;
+    private boolean extractImages = true;
     private int targetDpi = 0;
     private int maxImageDimension = 0;
-    private boolean injectPlaceholders = false;
-    private boolean autoAdjustDpi = false;
+    private boolean injectPlaceholders = true;
+    private boolean autoAdjustDpi = true;
     private int minDpi = 0;
     private int maxDpi = 0;
     private Optional<Integer> maxImagesPerPage = Optional.empty();
-    private boolean classify = false;
+    private boolean classify = true;
 
     /** Sets the extractImages field. */
     public ImageExtractionConfigBuilder withExtractImages(final boolean value) {

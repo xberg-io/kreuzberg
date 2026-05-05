@@ -70,6 +70,7 @@ impl Clone for JsVisitorRef {
     }
 }
 
+#[allow(clippy::arc_with_non_send_sync)]
 impl From<napi::bindgen_prelude::Object<'static>> for JsVisitorRef {
     fn from(visitor: napi::bindgen_prelude::Object<'static>) -> Self {
         JsVisitorRef {
@@ -80,11 +81,8 @@ impl From<napi::bindgen_prelude::Object<'static>> for JsVisitorRef {
 
 impl From<JsVisitorRef> for napi::bindgen_prelude::Object<'static> {
     fn from(visitor_ref: JsVisitorRef) -> Self {
-        // SAFETY: Arc::clone does not actually clone the Object — it just increments
-        // the refcount. When we deref via * and clone, we get a new arc-ed reference
-        // to the same Object data. This is safe because Object<'static> is a reference
-        // type (internally just holding an env + handle pair).
-        (*visitor_ref.inner).clone()
+        // Object<'static> is Copy (it just holds an env+handle pair), so deref directly.
+        *visitor_ref.inner
     }
 }
 
@@ -154,7 +152,7 @@ pub struct JsExtractionConfig {
     #[napi(js_name = "resultFormat")]
     pub result_format: Option<JsResultFormat>,
     #[napi(js_name = "securityLimits")]
-    pub security_limits: Option<String>,
+    pub security_limits: Option<JsSecurityLimits>,
     #[napi(js_name = "outputFormat")]
     pub output_format: Option<JsOutputFormat>,
     pub layout: Option<JsLayoutDetectionConfig>,
@@ -219,13 +217,24 @@ pub struct JsFileExtractionConfig {
     pub structured_extraction: Option<JsStructuredExtractionConfig>,
 }
 
-#[derive(Clone, Default, serde::Serialize, serde::Deserialize)]
+#[derive(Default, serde::Serialize, serde::Deserialize)]
 #[napi(object)]
 pub struct JsBatchBytesItem {
-    pub content: Vec<u8>,
+    #[serde(skip)]
+    pub content: napi::bindgen_prelude::Buffer,
     #[napi(js_name = "mimeType")]
     pub mime_type: String,
     pub config: Option<JsFileExtractionConfig>,
+}
+
+impl Clone for JsBatchBytesItem {
+    fn clone(&self) -> Self {
+        Self {
+            content: self.content.to_vec().into(),
+            mime_type: self.mime_type.clone(),
+            config: self.config.clone(),
+        }
+    }
 }
 
 #[derive(Clone, Default, serde::Serialize, serde::Deserialize)]
@@ -581,15 +590,29 @@ pub struct JsHtmlExtractionResult {
     pub warnings: Vec<String>,
 }
 
-#[derive(Clone, Default, serde::Serialize, serde::Deserialize)]
+#[derive(Default, serde::Serialize, serde::Deserialize)]
 #[napi(object)]
 pub struct JsExtractedInlineImage {
-    pub data: Vec<u8>,
+    #[serde(skip)]
+    pub data: napi::bindgen_prelude::Buffer,
     pub format: String,
     pub filename: Option<String>,
     pub description: Option<String>,
     pub dimensions: Option<Vec<u32>>,
     pub attributes: Vec<String>,
+}
+
+impl Clone for JsExtractedInlineImage {
+    fn clone(&self) -> Self {
+        Self {
+            data: self.data.to_vec().into(),
+            format: self.format.clone(),
+            filename: self.filename.clone(),
+            description: self.description.clone(),
+            dimensions: self.dimensions.clone(),
+            attributes: self.attributes.clone(),
+        }
+    }
 }
 
 #[derive(Clone, Default, serde::Serialize, serde::Deserialize)]
@@ -619,24 +642,6 @@ pub struct JsAnchorProperties {
     pub position_v: Option<String>,
     #[napi(js_name = "wrapType")]
     pub wrap_type: Option<String>,
-}
-
-#[derive(Clone, Default, serde::Serialize, serde::Deserialize)]
-#[napi(object)]
-pub struct JsHeaderFooter {
-    pub paragraphs: Option<Vec<String>>,
-    pub tables: Option<Vec<String>>,
-    #[napi(js_name = "headerType")]
-    pub header_type: Option<String>,
-}
-
-#[derive(Clone, Default, serde::Serialize, serde::Deserialize)]
-#[napi(object)]
-pub struct JsNote {
-    pub id: String,
-    #[napi(js_name = "noteType")]
-    pub note_type: String,
-    pub paragraphs: Vec<String>,
 }
 
 #[derive(Clone, Default, serde::Serialize, serde::Deserialize)]
@@ -789,6 +794,29 @@ pub struct JsOdtProperties {
     pub image_count: Option<i32>,
 }
 
+#[derive(Clone, Default, serde::Serialize, serde::Deserialize)]
+#[napi(object)]
+pub struct JsSecurityLimits {
+    #[napi(js_name = "maxArchiveSize")]
+    pub max_archive_size: Option<i64>,
+    #[napi(js_name = "maxCompressionRatio")]
+    pub max_compression_ratio: Option<i64>,
+    #[napi(js_name = "maxFilesInArchive")]
+    pub max_files_in_archive: Option<i64>,
+    #[napi(js_name = "maxNestingDepth")]
+    pub max_nesting_depth: Option<i64>,
+    #[napi(js_name = "maxEntityLength")]
+    pub max_entity_length: Option<i64>,
+    #[napi(js_name = "maxContentSize")]
+    pub max_content_size: Option<i64>,
+    #[napi(js_name = "maxIterations")]
+    pub max_iterations: Option<i64>,
+    #[napi(js_name = "maxXmlDepth")]
+    pub max_xml_depth: Option<i64>,
+    #[napi(js_name = "maxTableCells")]
+    pub max_table_cells: Option<i64>,
+}
+
 #[derive(Clone)]
 #[napi]
 pub struct JsZipBombValidator {
@@ -843,7 +871,7 @@ pub struct JsDjotContent {
     pub plain_text: String,
     pub blocks: Vec<JsFormattedBlock>,
     pub metadata: JsMetadata,
-    pub tables: Vec<String>,
+    pub tables: Vec<JsTable>,
     pub images: Vec<JsDjotImage>,
     pub links: Vec<JsDjotLink>,
     pub footnotes: Vec<JsFootnote>,
@@ -975,7 +1003,7 @@ pub struct JsExtractionResult {
     pub metadata: Option<JsMetadata>,
     #[napi(js_name = "extractionMethod")]
     pub extraction_method: Option<JsExtractionMethod>,
-    pub tables: Option<Vec<String>>,
+    pub tables: Option<Vec<JsTable>>,
     #[napi(js_name = "detectedLanguages")]
     pub detected_languages: Option<Vec<String>>,
     pub chunks: Option<Vec<JsChunk>>,
@@ -1085,10 +1113,11 @@ pub struct JsChunkMetadata {
     pub heading_context: Option<JsHeadingContext>,
 }
 
-#[derive(Clone, Default, serde::Serialize, serde::Deserialize)]
+#[derive(Default, serde::Serialize, serde::Deserialize)]
 #[napi(object)]
 pub struct JsExtractedImage {
-    pub data: Vec<u8>,
+    #[serde(skip)]
+    pub data: napi::bindgen_prelude::Buffer,
     pub format: String,
     #[napi(js_name = "imageIndex")]
     pub image_index: i64,
@@ -1114,6 +1143,29 @@ pub struct JsExtractedImage {
     pub kind_confidence: Option<f64>,
     #[napi(js_name = "clusterId")]
     pub cluster_id: Option<u32>,
+}
+
+impl Clone for JsExtractedImage {
+    fn clone(&self) -> Self {
+        Self {
+            data: self.data.to_vec().into(),
+            format: self.format.clone(),
+            image_index: self.image_index.clone(),
+            page_number: self.page_number.clone(),
+            width: self.width.clone(),
+            height: self.height.clone(),
+            colorspace: self.colorspace.clone(),
+            bits_per_component: self.bits_per_component.clone(),
+            is_mask: self.is_mask.clone(),
+            description: self.description.clone(),
+            ocr_result: self.ocr_result.clone(),
+            bounding_box: self.bounding_box.clone(),
+            source_path: self.source_path.clone(),
+            image_kind: self.image_kind.clone(),
+            kind_confidence: self.kind_confidence.clone(),
+            cluster_id: self.cluster_id.clone(),
+        }
+    }
 }
 
 #[derive(Clone, Default, serde::Serialize, serde::Deserialize)]
@@ -1233,7 +1285,7 @@ pub struct JsEmailExtractionResult {
     pub metadata: HashMap<String, String>,
 }
 
-#[derive(Clone, Default, serde::Serialize, serde::Deserialize)]
+#[derive(Default, serde::Serialize, serde::Deserialize)]
 #[napi(object)]
 pub struct JsEmailAttachment {
     pub name: Option<String>,
@@ -1243,7 +1295,21 @@ pub struct JsEmailAttachment {
     pub size: Option<i64>,
     #[napi(js_name = "isImage")]
     pub is_image: bool,
-    pub data: Option<Vec<u8>>,
+    #[serde(skip)]
+    pub data: Option<napi::bindgen_prelude::Buffer>,
+}
+
+impl Clone for JsEmailAttachment {
+    fn clone(&self) -> Self {
+        Self {
+            name: self.name.clone(),
+            filename: self.filename.clone(),
+            mime_type: self.mime_type.clone(),
+            size: self.size.clone(),
+            is_image: self.is_image.clone(),
+            data: self.data.as_ref().map(|b| b.to_vec().into()),
+        }
+    }
 }
 
 #[derive(Clone, Default, serde::Serialize, serde::Deserialize)]
@@ -1792,7 +1858,7 @@ pub struct JsPageContent {
     #[napi(js_name = "pageNumber")]
     pub page_number: i64,
     pub content: String,
-    pub tables: Vec<String>,
+    pub tables: Vec<JsTable>,
     pub images: Vec<JsExtractedImage>,
     pub hierarchy: Option<JsPageHierarchy>,
     #[napi(js_name = "isBlank")]
@@ -1829,6 +1895,29 @@ pub struct JsHierarchicalBlock {
     pub font_size: f64,
     pub level: String,
     pub bbox: Option<Vec<f64>>,
+}
+
+#[derive(Clone, Default, serde::Serialize, serde::Deserialize)]
+#[napi(object)]
+pub struct JsTable {
+    pub cells: Option<Vec<Vec<String>>>,
+    pub markdown: Option<String>,
+    #[napi(js_name = "pageNumber")]
+    pub page_number: Option<i64>,
+    #[napi(js_name = "boundingBox")]
+    pub bounding_box: Option<String>,
+}
+
+#[derive(Clone, Default, serde::Serialize, serde::Deserialize)]
+#[napi(object)]
+pub struct JsTableCell {
+    pub content: Option<String>,
+    #[napi(js_name = "rowSpan")]
+    pub row_span: Option<i64>,
+    #[napi(js_name = "colSpan")]
+    pub col_span: Option<i64>,
+    #[napi(js_name = "isHeader")]
+    pub is_header: Option<bool>,
 }
 
 #[derive(Clone, Default, serde::Serialize, serde::Deserialize)]
@@ -2263,16 +2352,27 @@ pub struct JsDetectionResult {
     pub detections: Vec<JsLayoutDetection>,
 }
 
-#[derive(Clone, Default, serde::Serialize, serde::Deserialize)]
+#[derive(Default, serde::Serialize, serde::Deserialize)]
 #[napi(object)]
 pub struct JsEmbeddedFile {
     pub name: String,
-    pub data: Vec<u8>,
+    #[serde(skip)]
+    pub data: napi::bindgen_prelude::Buffer,
     #[napi(js_name = "mimeType")]
     pub mime_type: Option<String>,
 }
 
-#[derive(Clone, Default, serde::Serialize, serde::Deserialize)]
+impl Clone for JsEmbeddedFile {
+    fn clone(&self) -> Self {
+        Self {
+            name: self.name.clone(),
+            data: self.data.to_vec().into(),
+            mime_type: self.mime_type.clone(),
+        }
+    }
+}
+
+#[derive(Default, serde::Serialize, serde::Deserialize)]
 #[napi(object)]
 pub struct JsPdfImage {
     #[napi(js_name = "pageNumber")]
@@ -2286,7 +2386,8 @@ pub struct JsPdfImage {
     #[napi(js_name = "bitsPerComponent")]
     pub bits_per_component: Option<i64>,
     pub filters: Vec<String>,
-    pub data: Vec<u8>,
+    #[serde(skip)]
+    pub data: napi::bindgen_prelude::Buffer,
     #[napi(js_name = "decodedFormat")]
     pub decoded_format: String,
     #[napi(js_name = "imageKind")]
@@ -2295,6 +2396,25 @@ pub struct JsPdfImage {
     pub kind_confidence: Option<f64>,
     #[napi(js_name = "clusterId")]
     pub cluster_id: Option<u32>,
+}
+
+impl Clone for JsPdfImage {
+    fn clone(&self) -> Self {
+        Self {
+            page_number: self.page_number.clone(),
+            image_index: self.image_index.clone(),
+            width: self.width.clone(),
+            height: self.height.clone(),
+            color_space: self.color_space.clone(),
+            bits_per_component: self.bits_per_component.clone(),
+            filters: self.filters.clone(),
+            data: self.data.to_vec().into(),
+            decoded_format: self.decoded_format.clone(),
+            image_kind: self.image_kind.clone(),
+            kind_confidence: self.kind_confidence.clone(),
+            cluster_id: self.cluster_id.clone(),
+        }
+    }
 }
 
 #[derive(Clone, Default, serde::Serialize, serde::Deserialize)]
@@ -3142,11 +3262,13 @@ impl Default for JsLayoutClass {
 #[allow(clippy::missing_errors_doc)]
 #[napi(js_name = "extractBytes")]
 pub async fn extract_bytes(
-    content: Vec<u8>,
+    content: napi::bindgen_prelude::Buffer,
     mime_type: String,
-    config: JsExtractionConfig,
+    config: Option<JsExtractionConfig>,
 ) -> Result<JsExtractionResult> {
+    let config = config.unwrap_or_default();
     let config_core: kreuzberg::ExtractionConfig = config.into();
+    let content: Vec<u8> = content.to_vec();
     let result = kreuzberg::extract_bytes(&content, &mime_type, &config_core)
         .await
         .map_err(|e| napi::Error::new(napi::Status::GenericFailure, e.to_string()))?;
@@ -3160,7 +3282,7 @@ pub async fn extract_file(
     mime_type: Option<String>,
     config: Option<JsExtractionConfig>,
 ) -> Result<JsExtractionResult> {
-    let config_core: kreuzberg::ExtractionConfig = config.expect("'config' is required").into();
+    let config_core: kreuzberg::ExtractionConfig = config.unwrap_or_default().into();
     let result = kreuzberg::extract_file(std::path::PathBuf::from(path), mime_type.as_deref(), &config_core)
         .await
         .map_err(|e| napi::Error::new(napi::Status::GenericFailure, e.to_string()))?;
@@ -3174,7 +3296,7 @@ pub fn extract_file_sync(
     mime_type: Option<String>,
     config: Option<JsExtractionConfig>,
 ) -> Result<JsExtractionResult> {
-    let config_core: kreuzberg::ExtractionConfig = config.expect("'config' is required").into();
+    let config_core: kreuzberg::ExtractionConfig = config.unwrap_or_default().into();
     kreuzberg::extract_file_sync(std::path::PathBuf::from(path), mime_type.as_deref(), &config_core)
         .map(|val| val.into())
         .map_err(|e| napi::Error::new(napi::Status::GenericFailure, e.to_string()))
@@ -3183,11 +3305,13 @@ pub fn extract_file_sync(
 #[allow(clippy::missing_errors_doc)]
 #[napi(js_name = "extractBytesSync")]
 pub fn extract_bytes_sync(
-    content: Vec<u8>,
+    content: napi::bindgen_prelude::Buffer,
     mime_type: String,
-    config: JsExtractionConfig,
+    config: Option<JsExtractionConfig>,
 ) -> Result<JsExtractionResult> {
+    let config = config.unwrap_or_default();
     let config_core: kreuzberg::ExtractionConfig = config.into();
+    let content: Vec<u8> = content.to_vec();
     kreuzberg::extract_bytes_sync(&content, &mime_type, &config_core)
         .map(|val| val.into())
         .map_err(|e| napi::Error::new(napi::Status::GenericFailure, e.to_string()))
@@ -3197,8 +3321,9 @@ pub fn extract_bytes_sync(
 #[napi(js_name = "batchExtractFilesSync")]
 pub fn batch_extract_files_sync(
     items: Vec<JsBatchFileItem>,
-    config: JsExtractionConfig,
+    config: Option<JsExtractionConfig>,
 ) -> Result<Vec<JsExtractionResult>> {
+    let config = config.unwrap_or_default();
     let items_core: Vec<_> = items.into_iter().map(Into::into).collect();
     let config_core: kreuzberg::ExtractionConfig = config.into();
     kreuzberg::batch_extract_files_sync(items_core, &config_core)
@@ -3210,8 +3335,9 @@ pub fn batch_extract_files_sync(
 #[napi(js_name = "batchExtractBytesSync")]
 pub fn batch_extract_bytes_sync(
     items: Vec<JsBatchBytesItem>,
-    config: JsExtractionConfig,
+    config: Option<JsExtractionConfig>,
 ) -> Result<Vec<JsExtractionResult>> {
+    let config = config.unwrap_or_default();
     let items_core: Vec<_> = items.into_iter().map(Into::into).collect();
     let config_core: kreuzberg::ExtractionConfig = config.into();
     kreuzberg::batch_extract_bytes_sync(items_core, &config_core)
@@ -3223,8 +3349,9 @@ pub fn batch_extract_bytes_sync(
 #[napi(js_name = "batchExtractFiles")]
 pub async fn batch_extract_files(
     items: Vec<JsBatchFileItem>,
-    config: JsExtractionConfig,
+    config: Option<JsExtractionConfig>,
 ) -> Result<Vec<JsExtractionResult>> {
+    let config = config.unwrap_or_default();
     let items_core: Vec<_> = items.into_iter().map(Into::into).collect();
     let config_core: kreuzberg::ExtractionConfig = config.into();
     let result = kreuzberg::batch_extract_files(items_core, &config_core)
@@ -3237,8 +3364,9 @@ pub async fn batch_extract_files(
 #[napi(js_name = "batchExtractBytes")]
 pub async fn batch_extract_bytes(
     items: Vec<JsBatchBytesItem>,
-    config: JsExtractionConfig,
+    config: Option<JsExtractionConfig>,
 ) -> Result<Vec<JsExtractionResult>> {
+    let config = config.unwrap_or_default();
     let items_core: Vec<_> = items.into_iter().map(Into::into).collect();
     let config_core: kreuzberg::ExtractionConfig = config.into();
     let result = kreuzberg::batch_extract_bytes(items_core, &config_core)
@@ -3249,7 +3377,8 @@ pub async fn batch_extract_bytes(
 
 #[allow(clippy::missing_errors_doc)]
 #[napi(js_name = "detectMimeTypeFromBytes")]
-pub fn detect_mime_type_from_bytes(content: Vec<u8>) -> Result<String> {
+pub fn detect_mime_type_from_bytes(content: napi::bindgen_prelude::Buffer) -> Result<String> {
+    let content: Vec<u8> = content.to_vec();
     kreuzberg::detect_mime_type_from_bytes(&content)
         .map_err(|e| napi::Error::new(napi::Status::GenericFailure, e.to_string()))
 }
@@ -3305,7 +3434,8 @@ pub fn clear_validators() -> Result<()> {
 
 #[allow(clippy::missing_errors_doc)]
 #[napi(js_name = "embedTextsAsync")]
-pub async fn embed_texts_async(texts: Vec<String>, config: JsEmbeddingConfig) -> Result<Vec<Vec<f64>>> {
+pub async fn embed_texts_async(texts: Vec<String>, config: Option<JsEmbeddingConfig>) -> Result<Vec<Vec<f64>>> {
+    let config = config.unwrap_or_default();
     let config_core: kreuzberg::EmbeddingConfig = config.into();
     let result = kreuzberg::embed_texts_async(texts, &config_core)
         .await
@@ -3319,12 +3449,14 @@ pub async fn embed_texts_async(texts: Vec<String>, config: JsEmbeddingConfig) ->
 #[allow(clippy::missing_errors_doc)]
 #[napi(js_name = "renderPdfPageToPng")]
 pub fn render_pdf_page_to_png(
-    pdf_bytes: Vec<u8>,
+    pdf_bytes: napi::bindgen_prelude::Buffer,
     page_index: i64,
     dpi: Option<i32>,
     password: Option<String>,
-) -> Result<Vec<u8>> {
+) -> Result<napi::bindgen_prelude::Buffer> {
+    let pdf_bytes: Vec<u8> = pdf_bytes.to_vec();
     kreuzberg::render_pdf_page_to_png(&pdf_bytes, page_index as usize, dpi, password.as_deref())
+        .map(|val| val.into())
         .map_err(|e| napi::Error::new(napi::Status::GenericFailure, e.to_string()))
 }
 
@@ -3337,7 +3469,8 @@ pub fn detect_mime_type(path: String, check_exists: bool) -> Result<String> {
 
 #[allow(clippy::missing_errors_doc)]
 #[napi(js_name = "embedTexts")]
-pub fn embed_texts(texts: Vec<String>, config: JsEmbeddingConfig) -> Result<Vec<Vec<f64>>> {
+pub fn embed_texts(texts: Vec<String>, config: Option<JsEmbeddingConfig>) -> Result<Vec<Vec<f64>>> {
+    let config = config.unwrap_or_default();
     let config_core: kreuzberg::EmbeddingConfig = config.into();
     kreuzberg::embed_texts(texts, &config_core)
         .map(|val| {
@@ -4657,6 +4790,7 @@ pub fn register_embedding_backend(obj: napi::bindgen_prelude::Object) -> napi::R
     })
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsAccelerationConfig> for kreuzberg::AccelerationConfig {
     fn from(val: JsAccelerationConfig) -> Self {
@@ -4681,6 +4815,7 @@ impl From<kreuzberg::AccelerationConfig> for JsAccelerationConfig {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsContentFilterConfig> for kreuzberg::ContentFilterConfig {
     fn from(val: JsContentFilterConfig) -> Self {
@@ -4713,6 +4848,7 @@ impl From<kreuzberg::ContentFilterConfig> for JsContentFilterConfig {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsEmailConfig> for kreuzberg::EmailConfig {
     fn from(val: JsEmailConfig) -> Self {
@@ -4732,6 +4868,7 @@ impl From<kreuzberg::EmailConfig> for JsEmailConfig {
 }
 
 #[allow(clippy::needless_update)]
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsExtractionConfig> for kreuzberg::ExtractionConfig {
     fn from(val: JsExtractionConfig) -> Self {
@@ -4765,6 +4902,7 @@ impl From<JsExtractionConfig> for kreuzberg::ExtractionConfig {
         if let Some(__v) = val.result_format {
             __result.result_format = __v.into();
         }
+        __result.security_limits = val.security_limits.map(Into::into);
         if let Some(__v) = val.output_format {
             __result.output_format = __v.into();
         }
@@ -4812,7 +4950,7 @@ impl From<kreuzberg::ExtractionConfig> for JsExtractionConfig {
             extraction_timeout_secs: val.extraction_timeout_secs.map(|v| v as i64),
             max_concurrent_extractions: val.max_concurrent_extractions.map(|v| v as i64),
             result_format: Some(val.result_format.into()),
-            security_limits: val.security_limits.as_ref().map(|v| format!("{v:?}")),
+            security_limits: val.security_limits.map(Into::into),
             output_format: Some(val.output_format.into()),
             layout: val.layout.map(Into::into),
             include_document_structure: Some(val.include_document_structure),
@@ -4830,6 +4968,7 @@ impl From<kreuzberg::ExtractionConfig> for JsExtractionConfig {
 }
 
 #[allow(clippy::needless_update)]
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsFileExtractionConfig> for kreuzberg::FileExtractionConfig {
     fn from(val: JsFileExtractionConfig) -> Self {
@@ -4896,7 +5035,7 @@ impl From<kreuzberg::FileExtractionConfig> for JsFileExtractionConfig {
 impl From<JsBatchBytesItem> for kreuzberg::BatchBytesItem {
     fn from(val: JsBatchBytesItem) -> Self {
         Self {
-            content: val.content.into(),
+            content: val.content.to_vec().into(),
             mime_type: val.mime_type,
             config: val.config.map(Into::into),
         }
@@ -4907,7 +5046,7 @@ impl From<JsBatchBytesItem> for kreuzberg::BatchBytesItem {
 impl From<kreuzberg::BatchBytesItem> for JsBatchBytesItem {
     fn from(val: kreuzberg::BatchBytesItem) -> Self {
         Self {
-            content: val.content.to_vec(),
+            content: val.content.to_vec().into(),
             mime_type: val.mime_type,
             config: val.config.map(Into::into),
         }
@@ -4934,6 +5073,7 @@ impl From<kreuzberg::BatchFileItem> for JsBatchFileItem {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsImageExtractionConfig> for kreuzberg::ImageExtractionConfig {
     fn from(val: JsImageExtractionConfig) -> Self {
@@ -4984,6 +5124,7 @@ impl From<kreuzberg::ImageExtractionConfig> for JsImageExtractionConfig {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsTokenReductionOptions> for kreuzberg::TokenReductionOptions {
     fn from(val: JsTokenReductionOptions) -> Self {
@@ -5008,6 +5149,7 @@ impl From<kreuzberg::TokenReductionOptions> for JsTokenReductionOptions {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsLanguageDetectionConfig> for kreuzberg::LanguageDetectionConfig {
     fn from(val: JsLanguageDetectionConfig) -> Self {
@@ -5036,6 +5178,7 @@ impl From<kreuzberg::LanguageDetectionConfig> for JsLanguageDetectionConfig {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsHtmlOutputConfig> for kreuzberg::HtmlOutputConfig {
     fn from(val: JsHtmlOutputConfig) -> Self {
@@ -5068,6 +5211,7 @@ impl From<kreuzberg::HtmlOutputConfig> for JsHtmlOutputConfig {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsLayoutDetectionConfig> for kreuzberg::LayoutDetectionConfig {
     fn from(val: JsLayoutDetectionConfig) -> Self {
@@ -5096,6 +5240,7 @@ impl From<kreuzberg::LayoutDetectionConfig> for JsLayoutDetectionConfig {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsLlmConfig> for kreuzberg::LlmConfig {
     fn from(val: JsLlmConfig) -> Self {
@@ -5156,6 +5301,7 @@ impl From<kreuzberg::StructuredExtractionConfig> for JsStructuredExtractionConfi
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsOcrQualityThresholds> for kreuzberg::OcrQualityThresholds {
     fn from(val: JsOcrQualityThresholds) -> Self {
@@ -5287,6 +5433,7 @@ impl From<kreuzberg::OcrPipelineConfig> for JsOcrPipelineConfig {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsOcrConfig> for kreuzberg::OcrConfig {
     fn from(val: JsOcrConfig) -> Self {
@@ -5340,6 +5487,7 @@ impl From<kreuzberg::OcrConfig> for JsOcrConfig {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsPageConfig> for kreuzberg::PageConfig {
     fn from(val: JsPageConfig) -> Self {
@@ -5368,6 +5516,7 @@ impl From<kreuzberg::PageConfig> for JsPageConfig {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsPdfConfig> for kreuzberg::PdfConfig {
     fn from(val: JsPdfConfig) -> Self {
@@ -5412,6 +5561,7 @@ impl From<kreuzberg::PdfConfig> for JsPdfConfig {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsHierarchyConfig> for kreuzberg::HierarchyConfig {
     fn from(val: JsHierarchyConfig) -> Self {
@@ -5442,6 +5592,7 @@ impl From<kreuzberg::HierarchyConfig> for JsHierarchyConfig {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsPostProcessorConfig> for kreuzberg::PostProcessorConfig {
     fn from(val: JsPostProcessorConfig) -> Self {
@@ -5468,6 +5619,7 @@ impl From<kreuzberg::PostProcessorConfig> for JsPostProcessorConfig {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsChunkingConfig> for kreuzberg::ChunkingConfig {
     fn from(val: JsChunkingConfig) -> Self {
@@ -5514,6 +5666,7 @@ impl From<kreuzberg::ChunkingConfig> for JsChunkingConfig {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsEmbeddingConfig> for kreuzberg::EmbeddingConfig {
     fn from(val: JsEmbeddingConfig) -> Self {
@@ -5552,6 +5705,7 @@ impl From<kreuzberg::EmbeddingConfig> for JsEmbeddingConfig {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsTreeSitterConfig> for kreuzberg::TreeSitterConfig {
     fn from(val: JsTreeSitterConfig) -> Self {
@@ -5582,6 +5736,7 @@ impl From<kreuzberg::TreeSitterConfig> for JsTreeSitterConfig {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsTreeSitterProcessConfig> for kreuzberg::TreeSitterProcessConfig {
     fn from(val: JsTreeSitterProcessConfig) -> Self {
@@ -5642,6 +5797,7 @@ impl From<kreuzberg::SupportedFormat> for JsSupportedFormat {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsServerConfig> for kreuzberg::ServerConfig {
     fn from(val: JsServerConfig) -> Self {
@@ -5716,7 +5872,7 @@ impl From<kreuzberg::extraction::html::HtmlExtractionResult> for JsHtmlExtractio
 impl From<kreuzberg::extraction::html::ExtractedInlineImage> for JsExtractedInlineImage {
     fn from(val: kreuzberg::extraction::html::ExtractedInlineImage) -> Self {
         Self {
-            data: val.data.to_vec(),
+            data: val.data.to_vec().into(),
             format: val.format,
             filename: val.filename,
             description: val.description,
@@ -5751,28 +5907,6 @@ impl From<kreuzberg::extraction::docx::drawing::AnchorProperties> for JsAnchorPr
             position_h: val.position_h.as_ref().map(|v| format!("{v:?}")),
             position_v: val.position_v.as_ref().map(|v| format!("{v:?}")),
             wrap_type: Some(format!("{:?}", val.wrap_type)),
-        }
-    }
-}
-
-#[allow(clippy::redundant_closure, clippy::useless_conversion)]
-impl From<kreuzberg::extraction::docx::parser::HeaderFooter> for JsHeaderFooter {
-    fn from(val: kreuzberg::extraction::docx::parser::HeaderFooter) -> Self {
-        Self {
-            paragraphs: Some(val.paragraphs.iter().map(|i| format!("{:?}", i)).collect()),
-            tables: Some(val.tables.iter().map(|i| format!("{:?}", i)).collect()),
-            header_type: Some(format!("{:?}", val.header_type)),
-        }
-    }
-}
-
-#[allow(clippy::redundant_closure, clippy::useless_conversion)]
-impl From<kreuzberg::extraction::docx::parser::Note> for JsNote {
-    fn from(val: kreuzberg::extraction::docx::parser::Note) -> Self {
-        Self {
-            id: val.id,
-            note_type: format!("{:?}", val.note_type),
-            paragraphs: val.paragraphs.iter().map(|i| format!("{:?}", i)).collect(),
         }
     }
 }
@@ -5901,6 +6035,60 @@ impl From<kreuzberg::extraction::office_metadata::odt_properties::OdtProperties>
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
+#[allow(clippy::redundant_closure, clippy::useless_conversion)]
+impl From<JsSecurityLimits> for kreuzberg::SecurityLimits {
+    fn from(val: JsSecurityLimits) -> Self {
+        let mut __result = kreuzberg::SecurityLimits::default();
+        if let Some(__v) = val.max_archive_size {
+            __result.max_archive_size = __v as usize;
+        }
+        if let Some(__v) = val.max_compression_ratio {
+            __result.max_compression_ratio = __v as usize;
+        }
+        if let Some(__v) = val.max_files_in_archive {
+            __result.max_files_in_archive = __v as usize;
+        }
+        if let Some(__v) = val.max_nesting_depth {
+            __result.max_nesting_depth = __v as usize;
+        }
+        if let Some(__v) = val.max_entity_length {
+            __result.max_entity_length = __v as usize;
+        }
+        if let Some(__v) = val.max_content_size {
+            __result.max_content_size = __v as usize;
+        }
+        if let Some(__v) = val.max_iterations {
+            __result.max_iterations = __v as usize;
+        }
+        if let Some(__v) = val.max_xml_depth {
+            __result.max_xml_depth = __v as usize;
+        }
+        if let Some(__v) = val.max_table_cells {
+            __result.max_table_cells = __v as usize;
+        }
+        __result
+    }
+}
+
+#[allow(clippy::redundant_closure, clippy::useless_conversion)]
+impl From<kreuzberg::SecurityLimits> for JsSecurityLimits {
+    fn from(val: kreuzberg::SecurityLimits) -> Self {
+        Self {
+            max_archive_size: Some(val.max_archive_size as i64),
+            max_compression_ratio: Some(val.max_compression_ratio as i64),
+            max_files_in_archive: Some(val.max_files_in_archive as i64),
+            max_nesting_depth: Some(val.max_nesting_depth as i64),
+            max_entity_length: Some(val.max_entity_length as i64),
+            max_content_size: Some(val.max_content_size as i64),
+            max_iterations: Some(val.max_iterations as i64),
+            max_xml_depth: Some(val.max_xml_depth as i64),
+            max_table_cells: Some(val.max_table_cells as i64),
+        }
+    }
+}
+
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsTokenReductionConfig> for kreuzberg::TokenReductionConfig {
     fn from(val: JsTokenReductionConfig) -> Self {
@@ -5986,7 +6174,7 @@ impl From<JsDjotContent> for kreuzberg::DjotContent {
             plain_text: val.plain_text,
             blocks: val.blocks.into_iter().map(Into::into).collect(),
             metadata: val.metadata.into(),
-            tables: Default::default(),
+            tables: val.tables.into_iter().map(Into::into).collect(),
             images: val.images.into_iter().map(Into::into).collect(),
             links: val.links.into_iter().map(Into::into).collect(),
             footnotes: val.footnotes.into_iter().map(Into::into).collect(),
@@ -6002,7 +6190,7 @@ impl From<kreuzberg::DjotContent> for JsDjotContent {
             plain_text: val.plain_text,
             blocks: val.blocks.into_iter().map(Into::into).collect(),
             metadata: val.metadata.into(),
-            tables: val.tables.iter().map(|i| format!("{:?}", i)).collect(),
+            tables: val.tables.into_iter().map(Into::into).collect(),
             images: val.images.into_iter().map(Into::into).collect(),
             links: val.links.into_iter().map(Into::into).collect(),
             footnotes: val.footnotes.into_iter().map(Into::into).collect(),
@@ -6137,6 +6325,7 @@ impl From<kreuzberg::Footnote> for JsFootnote {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsDocumentStructure> for kreuzberg::DocumentStructure {
     fn from(val: JsDocumentStructure) -> Self {
@@ -6229,6 +6418,7 @@ impl From<kreuzberg::DocumentNode> for JsDocumentNode {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsTableGrid> for kreuzberg::TableGrid {
     fn from(val: JsTableGrid) -> Self {
@@ -6310,6 +6500,7 @@ impl From<kreuzberg::TextAnnotation> for JsTextAnnotation {
 }
 
 #[allow(clippy::needless_update)]
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsExtractionResult> for kreuzberg::ExtractionResult {
     fn from(val: JsExtractionResult) -> Self {
@@ -6324,6 +6515,9 @@ impl From<JsExtractionResult> for kreuzberg::ExtractionResult {
             __result.metadata = __v.into();
         }
         __result.extraction_method = val.extraction_method.map(Into::into);
+        if let Some(__v) = val.tables {
+            __result.tables = __v.into_iter().map(Into::into).collect();
+        }
         __result.detected_languages = val.detected_languages;
         __result.chunks = val.chunks.map(|v| v.into_iter().map(Into::into).collect());
         __result.images = val.images.map(|v| v.into_iter().map(Into::into).collect());
@@ -6358,7 +6552,7 @@ impl From<kreuzberg::ExtractionResult> for JsExtractionResult {
             mime_type: Some(val.mime_type.to_string()),
             metadata: Some(val.metadata.into()),
             extraction_method: val.extraction_method.map(Into::into),
-            tables: Some(val.tables.iter().map(|i| format!("{:?}", i)).collect()),
+            tables: Some(val.tables.into_iter().map(Into::into).collect()),
             detected_languages: val.detected_languages,
             chunks: val.chunks.map(|v| v.into_iter().map(Into::into).collect()),
             images: val.images.map(|v| v.into_iter().map(Into::into).collect()),
@@ -6424,6 +6618,7 @@ impl From<kreuzberg::ProcessingWarning> for JsProcessingWarning {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsLlmUsage> for kreuzberg::LlmUsage {
     fn from(val: JsLlmUsage) -> Self {
@@ -6556,7 +6751,7 @@ impl From<kreuzberg::ChunkMetadata> for JsChunkMetadata {
 impl From<JsExtractedImage> for kreuzberg::ExtractedImage {
     fn from(val: JsExtractedImage) -> Self {
         Self {
-            data: val.data.into(),
+            data: val.data.to_vec().into(),
             format: val.format.into(),
             image_index: val.image_index as usize,
             page_number: val.page_number.map(|v| v as usize),
@@ -6580,7 +6775,7 @@ impl From<JsExtractedImage> for kreuzberg::ExtractedImage {
 impl From<kreuzberg::ExtractedImage> for JsExtractedImage {
     fn from(val: kreuzberg::ExtractedImage) -> Self {
         Self {
-            data: val.data.to_vec(),
+            data: val.data.to_vec().into(),
             format: val.format.to_string(),
             image_index: val.image_index as i64,
             page_number: val.page_number.map(|v| v as i64),
@@ -6758,7 +6953,7 @@ impl From<kreuzberg::EmailAttachment> for JsEmailAttachment {
             mime_type: val.mime_type,
             size: val.size.map(|v| v as i64),
             is_image: val.is_image,
-            data: val.data.map(|v| v.to_vec()).map(|v| v.to_vec()),
+            data: val.data.map(|v| v.to_vec().into()),
         }
     }
 }
@@ -6805,6 +7000,7 @@ impl From<kreuzberg::OcrTableBoundingBox> for JsOcrTableBoundingBox {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsImagePreprocessingConfig> for kreuzberg::ImagePreprocessingConfig {
     fn from(val: JsImagePreprocessingConfig) -> Self {
@@ -6849,6 +7045,7 @@ impl From<kreuzberg::ImagePreprocessingConfig> for JsImagePreprocessingConfig {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsTesseractConfig> for kreuzberg::TesseractConfig {
     fn from(val: JsTesseractConfig) -> Self {
@@ -6990,6 +7187,7 @@ impl From<kreuzberg::ImagePreprocessingMetadata> for JsImagePreprocessingMetadat
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsMetadata> for kreuzberg::Metadata {
     fn from(val: JsMetadata) -> Self {
@@ -7062,6 +7260,7 @@ impl From<kreuzberg::Metadata> for JsMetadata {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsExcelMetadata> for kreuzberg::ExcelMetadata {
     fn from(val: JsExcelMetadata) -> Self {
@@ -7077,6 +7276,7 @@ impl From<kreuzberg::ExcelMetadata> for JsExcelMetadata {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsEmailMetadata> for kreuzberg::EmailMetadata {
     fn from(val: JsEmailMetadata) -> Self {
@@ -7115,6 +7315,7 @@ impl From<kreuzberg::EmailMetadata> for JsEmailMetadata {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsArchiveMetadata> for kreuzberg::ArchiveMetadata {
     fn from(val: JsArchiveMetadata) -> Self {
@@ -7149,6 +7350,7 @@ impl From<kreuzberg::ArchiveMetadata> for JsArchiveMetadata {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsXmlMetadata> for kreuzberg::XmlMetadata {
     fn from(val: JsXmlMetadata) -> Self {
@@ -7173,6 +7375,7 @@ impl From<kreuzberg::XmlMetadata> for JsXmlMetadata {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsTextMetadata> for kreuzberg::TextMetadata {
     fn from(val: JsTextMetadata) -> Self {
@@ -7318,6 +7521,7 @@ impl From<kreuzberg::StructuredData> for JsStructuredData {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsHtmlMetadata> for kreuzberg::HtmlMetadata {
     fn from(val: JsHtmlMetadata) -> Self {
@@ -7385,6 +7589,7 @@ impl From<kreuzberg::HtmlMetadata> for JsHtmlMetadata {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsOcrMetadata> for kreuzberg::OcrMetadata {
     fn from(val: JsOcrMetadata) -> Self {
@@ -7441,6 +7646,7 @@ impl From<kreuzberg::ErrorMetadata> for JsErrorMetadata {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsPptxMetadata> for kreuzberg::PptxMetadata {
     fn from(val: JsPptxMetadata) -> Self {
@@ -7469,6 +7675,7 @@ impl From<kreuzberg::PptxMetadata> for JsPptxMetadata {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsDocxMetadata> for kreuzberg::DocxMetadata {
     fn from(val: JsDocxMetadata) -> Self {
@@ -7495,6 +7702,7 @@ impl From<kreuzberg::DocxMetadata> for JsDocxMetadata {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsCsvMetadata> for kreuzberg::CsvMetadata {
     fn from(val: JsCsvMetadata) -> Self {
@@ -7527,6 +7735,7 @@ impl From<kreuzberg::CsvMetadata> for JsCsvMetadata {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsBibtexMetadata> for kreuzberg::BibtexMetadata {
     fn from(val: JsBibtexMetadata) -> Self {
@@ -7564,6 +7773,7 @@ impl From<kreuzberg::BibtexMetadata> for JsBibtexMetadata {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsCitationMetadata> for kreuzberg::CitationMetadata {
     fn from(val: JsCitationMetadata) -> Self {
@@ -7622,6 +7832,7 @@ impl From<kreuzberg::YearRange> for JsYearRange {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsFictionBookMetadata> for kreuzberg::FictionBookMetadata {
     fn from(val: JsFictionBookMetadata) -> Self {
@@ -7648,6 +7859,7 @@ impl From<kreuzberg::FictionBookMetadata> for JsFictionBookMetadata {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsDbfMetadata> for kreuzberg::DbfMetadata {
     fn from(val: JsDbfMetadata) -> Self {
@@ -7696,6 +7908,7 @@ impl From<kreuzberg::DbfFieldInfo> for JsDbfFieldInfo {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsJatsMetadata> for kreuzberg::JatsMetadata {
     fn from(val: JsJatsMetadata) -> Self {
@@ -7749,6 +7962,7 @@ impl From<kreuzberg::ContributorRole> for JsContributorRole {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsEpubMetadata> for kreuzberg::EpubMetadata {
     fn from(val: JsEpubMetadata) -> Self {
@@ -7777,6 +7991,7 @@ impl From<kreuzberg::EpubMetadata> for JsEpubMetadata {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsPstMetadata> for kreuzberg::PstMetadata {
     fn from(val: JsPstMetadata) -> Self {
@@ -7797,6 +8012,7 @@ impl From<kreuzberg::PstMetadata> for JsPstMetadata {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsOcrConfidence> for kreuzberg::OcrConfidence {
     fn from(val: JsOcrConfidence) -> Self {
@@ -7839,6 +8055,7 @@ impl From<kreuzberg::OcrRotation> for JsOcrRotation {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsOcrElement> for kreuzberg::OcrElement {
     fn from(val: JsOcrElement) -> Self {
@@ -7891,6 +8108,7 @@ impl From<kreuzberg::OcrElement> for JsOcrElement {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsOcrElementConfig> for kreuzberg::OcrElementConfig {
     fn from(val: JsOcrElementConfig) -> Self {
@@ -8010,7 +8228,7 @@ impl From<JsPageContent> for kreuzberg::PageContent {
         Self {
             page_number: val.page_number as usize,
             content: val.content,
-            tables: Default::default(),
+            tables: val.tables.into_iter().map(|v| std::sync::Arc::new(v.into())).collect(),
             images: val.images.into_iter().map(|v| std::sync::Arc::new(v.into())).collect(),
             hierarchy: val.hierarchy.map(Into::into),
             is_blank: val.is_blank,
@@ -8025,7 +8243,7 @@ impl From<kreuzberg::PageContent> for JsPageContent {
         Self {
             page_number: val.page_number as i64,
             content: val.content,
-            tables: val.tables.iter().map(|i| format!("{:?}", i)).collect(),
+            tables: val.tables.into_iter().map(|v| (*v).clone().into()).collect(),
             images: val.images.into_iter().map(|v| (*v).clone().into()).collect(),
             hierarchy: val.hierarchy.map(Into::into),
             is_blank: val.is_blank,
@@ -8034,6 +8252,7 @@ impl From<kreuzberg::PageContent> for JsPageContent {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsLayoutRegion> for kreuzberg::LayoutRegion {
     fn from(val: JsLayoutRegion) -> Self {
@@ -8106,6 +8325,48 @@ impl From<kreuzberg::HierarchicalBlock> for JsHierarchicalBlock {
                 let arr: Vec<_> = [t.0, t.1].into_iter().map(|v| v as _).collect();
                 arr
             }),
+        }
+    }
+}
+
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
+#[allow(clippy::redundant_closure, clippy::useless_conversion)]
+impl From<JsTable> for kreuzberg::Table {
+    fn from(val: JsTable) -> Self {
+        let mut __result = kreuzberg::Table::default();
+        if let Some(__v) = val.cells {
+            __result.cells = __v;
+        }
+        if let Some(__v) = val.markdown {
+            __result.markdown = __v;
+        }
+        if let Some(__v) = val.page_number {
+            __result.page_number = __v as usize;
+        }
+        __result
+    }
+}
+
+#[allow(clippy::redundant_closure, clippy::useless_conversion)]
+impl From<kreuzberg::Table> for JsTable {
+    fn from(val: kreuzberg::Table) -> Self {
+        Self {
+            cells: Some(val.cells),
+            markdown: Some(val.markdown),
+            page_number: Some(val.page_number as i64),
+            bounding_box: val.bounding_box.as_ref().map(|v| format!("{v:?}")),
+        }
+    }
+}
+
+#[allow(clippy::redundant_closure, clippy::useless_conversion)]
+impl From<kreuzberg::TableCell> for JsTableCell {
+    fn from(val: kreuzberg::TableCell) -> Self {
+        Self {
+            content: Some(val.content),
+            row_span: Some(val.row_span as i64),
+            col_span: Some(val.col_span as i64),
+            is_header: Some(val.is_header),
         }
     }
 }
@@ -8395,6 +8656,7 @@ impl From<kreuzberg::EmbeddingPreset> for JsEmbeddingPreset {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsYakeParams> for kreuzberg::YakeParams {
     fn from(val: JsYakeParams) -> Self {
@@ -8415,6 +8677,7 @@ impl From<kreuzberg::YakeParams> for JsYakeParams {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsRakeParams> for kreuzberg::RakeParams {
     fn from(val: JsRakeParams) -> Self {
@@ -8440,6 +8703,7 @@ impl From<kreuzberg::RakeParams> for JsRakeParams {
 }
 
 #[allow(clippy::needless_update)]
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsKeywordConfig> for kreuzberg::KeywordConfig {
     fn from(val: JsKeywordConfig) -> Self {
@@ -8520,6 +8784,7 @@ impl From<kreuzberg::RecognizedTable> for JsRecognizedTable {
     }
 }
 
+#[allow(clippy::field_reassign_with_default, clippy::let_and_return)]
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<JsPaddleOcrConfig> for kreuzberg::PaddleOcrConfig {
     fn from(val: JsPaddleOcrConfig) -> Self {
@@ -8643,7 +8908,7 @@ impl From<kreuzberg::pdf::embedded_files::EmbeddedFile> for JsEmbeddedFile {
     fn from(val: kreuzberg::pdf::embedded_files::EmbeddedFile) -> Self {
         Self {
             name: val.name,
-            data: val.data.to_vec(),
+            data: val.data.to_vec().into(),
             mime_type: val.mime_type,
         }
     }
@@ -8660,7 +8925,7 @@ impl From<kreuzberg::pdf::images::PdfImage> for JsPdfImage {
             color_space: val.color_space,
             bits_per_component: val.bits_per_component,
             filters: val.filters,
-            data: val.data.to_vec(),
+            data: val.data.to_vec().into(),
             decoded_format: val.decoded_format,
             image_kind: val.image_kind.map(Into::into),
             kind_confidence: val.kind_confidence.map(|v| v as f64),

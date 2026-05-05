@@ -16,26 +16,26 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 @JsonPOJOBuilder(withPrefix = "with")
 public class TesseractConfigBuilder {
 
-    private String language = "";
+    private String language = "eng";
     private int psm = 0;
-    private String outputFormat = "";
+    private String outputFormat = "markdown";
     private int oem = 0;
     private double minConfidence = 0.0;
     private Optional<ImagePreprocessingConfig> preprocessing = Optional.empty();
-    private boolean enableTableDetection = false;
+    private boolean enableTableDetection = true;
     private double tableMinConfidence = 0.0;
     private int tableColumnThreshold = 0;
     private double tableRowThresholdRatio = 0.0;
-    private boolean useCache = false;
-    private boolean classifyUsePreAdaptedTemplates = false;
+    private boolean useCache = true;
+    private boolean classifyUsePreAdaptedTemplates = true;
     private boolean languageModelNgramOn = false;
-    private boolean tesseditDontBlkrejGoodWds = false;
-    private boolean tesseditDontRowrejGoodWds = false;
-    private boolean tesseditEnableDictCorrection = false;
+    private boolean tesseditDontBlkrejGoodWds = true;
+    private boolean tesseditDontRowrejGoodWds = true;
+    private boolean tesseditEnableDictCorrection = true;
     private String tesseditCharWhitelist = "";
     private String tesseditCharBlacklist = "";
-    private boolean tesseditUsePrimaryParamsModel = false;
-    private boolean textordSpaceSizeIsVariable = false;
+    private boolean tesseditUsePrimaryParamsModel = true;
+    private boolean textordSpaceSizeIsVariable = true;
     private boolean thresholdingMethod = false;
 
     /** Sets the language field. */

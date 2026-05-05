@@ -29,7 +29,7 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
         @JsonSubTypes.Type(value = FormatMetadata.Csv.class, name = "csv"),
         @JsonSubTypes.Type(value = FormatMetadata.Bibtex.class, name = "bibtex"),
         @JsonSubTypes.Type(value = FormatMetadata.Citation.class, name = "citation"),
-        @JsonSubTypes.Type(value = FormatMetadata.FictionBook.class, name = "fictionbook"),
+        @JsonSubTypes.Type(value = FormatMetadata.FictionBook.class, name = "fiction_book"),
         @JsonSubTypes.Type(value = FormatMetadata.Dbf.class, name = "dbf"),
         @JsonSubTypes.Type(value = FormatMetadata.Jats.class, name = "jats"),
         @JsonSubTypes.Type(value = FormatMetadata.Epub.class, name = "epub"),

@@ -34,6 +34,7 @@ from ._kreuzberg import (
     PdfConfig,
     PostProcessorConfig,
     RakeParams,
+    SecurityLimits,
     TesseractConfig,
     TokenReductionOptions,
     TreeSitterConfig,
@@ -42,7 +43,6 @@ from ._kreuzberg import (
 )
 
 _E = TypeVar("_E")
-
 
 def _coerce_enum(enum_cls: type[_E], value: object) -> _E:
     """Coerce a string/alias value into the matching pyclass enum instance."""
@@ -88,6 +88,8 @@ def _to_rust_image_preprocessing_config(
 def _to_rust_tesseract_config(value: TesseractConfig | None) -> _rust.TesseractConfig | None:
     """Convert Python TesseractConfig to Rust binding type."""
     if isinstance(value, dict):
+        if "preprocessing" in value and value["preprocessing"] is not None:
+            value["preprocessing"] = _to_rust_image_preprocessing_config(value["preprocessing"])
         value = TesseractConfig(**value)
     if value is None:
         return None
@@ -196,6 +198,18 @@ def _to_rust_acceleration_config(
 def _to_rust_ocr_config(value: OcrConfig | None) -> _rust.OcrConfig | None:
     """Convert Python OcrConfig to Rust binding type."""
     if isinstance(value, dict):
+        if "tesseract_config" in value and value["tesseract_config"] is not None:
+            value["tesseract_config"] = _to_rust_tesseract_config(value["tesseract_config"])
+        if "element_config" in value and value["element_config"] is not None:
+            value["element_config"] = _to_rust_ocr_element_config(value["element_config"])
+        if "quality_thresholds" in value and value["quality_thresholds"] is not None:
+            value["quality_thresholds"] = _to_rust_ocr_quality_thresholds(value["quality_thresholds"])
+        if "vlm_config" in value and value["vlm_config"] is not None:
+            value["vlm_config"] = _to_rust_llm_config(value["vlm_config"])
+        if "acceleration" in value and value["acceleration"] is not None:
+            value["acceleration"] = _to_rust_acceleration_config(value["acceleration"])
+        if "output_format" in value and value["output_format"] is not None and not isinstance(value["output_format"], _rust.OutputFormat):
+            value["output_format"] = _rust.OutputFormat(value["output_format"])
         value = OcrConfig(**value)
     if value is None:
         return None
@@ -204,13 +218,7 @@ def _to_rust_ocr_config(value: OcrConfig | None) -> _rust.OcrConfig | None:
         backend=value.backend,
         language=value.language,
         tesseract_config=_to_rust_tesseract_config(value.tesseract_config),
-        output_format=(
-            value.output_format
-            if isinstance(value.output_format, _rust.OutputFormat)
-            else _rust.OutputFormat(value.output_format)
-        )
-        if value.output_format is not None
-        else None,
+        output_format=(value.output_format if isinstance(value.output_format, _rust.OutputFormat) else _rust.OutputFormat(value.output_format)) if value.output_format is not None else None,
         paddle_ocr_config=value.paddle_ocr_config,
         element_config=_to_rust_ocr_element_config(value.element_config),
         quality_thresholds=_to_rust_ocr_quality_thresholds(value.quality_thresholds),
@@ -225,13 +233,15 @@ def _to_rust_ocr_config(value: OcrConfig | None) -> _rust.OcrConfig | None:
 def _to_rust_embedding_config(value: EmbeddingConfig | None) -> _rust.EmbeddingConfig | None:
     """Convert Python EmbeddingConfig to Rust binding type."""
     if isinstance(value, dict):
+        if "acceleration" in value and value["acceleration"] is not None:
+            value["acceleration"] = _to_rust_acceleration_config(value["acceleration"])
+        if "model" in value and value["model"] is not None and not isinstance(value["model"], _rust.EmbeddingModelType):
+            value["model"] = _rust.EmbeddingModelType(value["model"])
         value = EmbeddingConfig(**value)
     if value is None:
         return None
     return _rust.EmbeddingConfig(
-        model=value.model
-        if isinstance(value.model, _rust.EmbeddingModelType)
-        else _rust.EmbeddingModelType(value.model),
+        model=value.model if isinstance(value.model, _rust.EmbeddingModelType) else _rust.EmbeddingModelType(value.model),
         normalize=value.normalize,
         batch_size=value.batch_size,
         show_download_progress=value.show_download_progress,
@@ -246,6 +256,10 @@ def _to_rust_chunking_config(value: ChunkingConfig | None) -> _rust.ChunkingConf
     if isinstance(value, dict):
         if "chunker_type" in value and value["chunker_type"] is not None:
             value["chunker_type"] = _coerce_enum(_rust.ChunkerType, value["chunker_type"])
+        if "embedding" in value and value["embedding"] is not None:
+            value["embedding"] = _to_rust_embedding_config(value["embedding"])
+        if "sizing" in value and value["sizing"] is not None and not isinstance(value["sizing"], _rust.ChunkSizing):
+            value["sizing"] = _rust.ChunkSizing(value["sizing"])
         value = ChunkingConfig(**value)
     if value is None:
         return None
@@ -318,6 +332,8 @@ def _to_rust_pdf_config(value: PdfConfig | None) -> _rust.PdfConfig | None:
     if isinstance(value, dict):
         if "backend" in value and value["backend"] is not None:
             value["backend"] = _coerce_enum(_rust.PdfBackend, value["backend"])
+        if "hierarchy" in value and value["hierarchy"] is not None:
+            value["hierarchy"] = _to_rust_hierarchy_config(value["hierarchy"])
         value = PdfConfig(**value)
     if value is None:
         return None
@@ -404,6 +420,10 @@ def _to_rust_keyword_config(value: KeywordConfig | None) -> _rust.KeywordConfig 
     if isinstance(value, dict):
         if "algorithm" in value and value["algorithm"] is not None:
             value["algorithm"] = _coerce_enum(_rust.KeywordAlgorithm, value["algorithm"])
+        if "yake_params" in value and value["yake_params"] is not None:
+            value["yake_params"] = _to_rust_yake_params(value["yake_params"])
+        if "rake_params" in value and value["rake_params"] is not None:
+            value["rake_params"] = _to_rust_rake_params(value["rake_params"])
         value = KeywordConfig(**value)
     if value is None:
         return None
@@ -452,6 +472,25 @@ def _to_rust_html_output_config(value: HtmlOutputConfig | None) -> _rust.HtmlOut
     )
 
 
+def _to_rust_security_limits(value: SecurityLimits | None) -> _rust.SecurityLimits | None:
+    """Convert Python SecurityLimits to Rust binding type."""
+    if isinstance(value, dict):
+        value = SecurityLimits(**value)
+    if value is None:
+        return None
+    return _rust.SecurityLimits(
+        max_archive_size=value.max_archive_size,
+        max_compression_ratio=value.max_compression_ratio,
+        max_files_in_archive=value.max_files_in_archive,
+        max_nesting_depth=value.max_nesting_depth,
+        max_entity_length=value.max_entity_length,
+        max_content_size=value.max_content_size,
+        max_iterations=value.max_iterations,
+        max_xml_depth=value.max_xml_depth,
+        max_table_cells=value.max_table_cells,
+    )
+
+
 def _to_rust_layout_detection_config(
     value: LayoutDetectionConfig | None,
 ) -> _rust.LayoutDetectionConfig | None:
@@ -459,6 +498,8 @@ def _to_rust_layout_detection_config(
     if isinstance(value, dict):
         if "table_model" in value and value["table_model"] is not None:
             value["table_model"] = _coerce_enum(_rust.TableModel, value["table_model"])
+        if "acceleration" in value and value["acceleration"] is not None:
+            value["acceleration"] = _to_rust_acceleration_config(value["acceleration"])
         value = LayoutDetectionConfig(**value)
     if value is None:
         return None
@@ -507,6 +548,8 @@ def _to_rust_tree_sitter_process_config(
 def _to_rust_tree_sitter_config(value: TreeSitterConfig | None) -> _rust.TreeSitterConfig | None:
     """Convert Python TreeSitterConfig to Rust binding type."""
     if isinstance(value, dict):
+        if "process" in value and value["process"] is not None:
+            value["process"] = _to_rust_tree_sitter_process_config(value["process"])
         value = TreeSitterConfig(**value)
     if value is None:
         return None
@@ -524,6 +567,40 @@ def _to_rust_extraction_config(value: ExtractionConfig | None) -> _rust.Extracti
     if isinstance(value, dict):
         if "result_format" in value and value["result_format"] is not None:
             value["result_format"] = _coerce_enum(_rust.ResultFormat, value["result_format"])
+        if "ocr" in value and value["ocr"] is not None:
+            value["ocr"] = _to_rust_ocr_config(value["ocr"])
+        if "chunking" in value and value["chunking"] is not None:
+            value["chunking"] = _to_rust_chunking_config(value["chunking"])
+        if "content_filter" in value and value["content_filter"] is not None:
+            value["content_filter"] = _to_rust_content_filter_config(value["content_filter"])
+        if "images" in value and value["images"] is not None:
+            value["images"] = _to_rust_image_extraction_config(value["images"])
+        if "pdf_options" in value and value["pdf_options"] is not None:
+            value["pdf_options"] = _to_rust_pdf_config(value["pdf_options"])
+        if "token_reduction" in value and value["token_reduction"] is not None:
+            value["token_reduction"] = _to_rust_token_reduction_options(value["token_reduction"])
+        if "language_detection" in value and value["language_detection"] is not None:
+            value["language_detection"] = _to_rust_language_detection_config(value["language_detection"])
+        if "pages" in value and value["pages"] is not None:
+            value["pages"] = _to_rust_page_config(value["pages"])
+        if "keywords" in value and value["keywords"] is not None:
+            value["keywords"] = _to_rust_keyword_config(value["keywords"])
+        if "postprocessor" in value and value["postprocessor"] is not None:
+            value["postprocessor"] = _to_rust_post_processor_config(value["postprocessor"])
+        if "html_output" in value and value["html_output"] is not None:
+            value["html_output"] = _to_rust_html_output_config(value["html_output"])
+        if "security_limits" in value and value["security_limits"] is not None:
+            value["security_limits"] = _to_rust_security_limits(value["security_limits"])
+        if "layout" in value and value["layout"] is not None:
+            value["layout"] = _to_rust_layout_detection_config(value["layout"])
+        if "acceleration" in value and value["acceleration"] is not None:
+            value["acceleration"] = _to_rust_acceleration_config(value["acceleration"])
+        if "email" in value and value["email"] is not None:
+            value["email"] = _to_rust_email_config(value["email"])
+        if "tree_sitter" in value and value["tree_sitter"] is not None:
+            value["tree_sitter"] = _to_rust_tree_sitter_config(value["tree_sitter"])
+        if "output_format" in value and value["output_format"] is not None and not isinstance(value["output_format"], _rust.OutputFormat):
+            value["output_format"] = _rust.OutputFormat(value["output_format"])
         value = ExtractionConfig(**value)
     if value is None:
         return None
@@ -548,10 +625,8 @@ def _to_rust_extraction_config(value: ExtractionConfig | None) -> _rust.Extracti
         extraction_timeout_secs=value.extraction_timeout_secs,
         max_concurrent_extractions=value.max_concurrent_extractions,
         result_format=_coerce_enum(_rust.ResultFormat, value.result_format),
-        security_limits=value.security_limits,
-        output_format=value.output_format
-        if isinstance(value.output_format, _rust.OutputFormat)
-        else _rust.OutputFormat(value.output_format),
+        security_limits=_to_rust_security_limits(value.security_limits),
+        output_format=value.output_format if isinstance(value.output_format, _rust.OutputFormat) else _rust.OutputFormat(value.output_format),
         layout=_to_rust_layout_detection_config(value.layout),
         include_document_structure=value.include_document_structure,
         acceleration=_to_rust_acceleration_config(value.acceleration),

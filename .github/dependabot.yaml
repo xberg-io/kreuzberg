@@ -53,7 +53,7 @@ updates:
       interval: "weekly"
 
   - package-ecosystem: "gomod"
-    directory: "/packages/go/v4"
+    directory: "/packages/go/v5"
     schedule:
       interval: "weekly"
 

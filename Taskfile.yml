@@ -224,9 +224,9 @@ tasks:
       - alef e2e generate
 
   e2e:build:
-    desc: "Build all language bindings (release)"
+    desc: "Build all language bindings used by e2e suites (release)"
     cmds:
-      - alef build --release
+      - alef build --release --lang python,node,ruby,php,ffi,go,java,csharp,elixir,wasm,r
 
   e2e:run:
     desc: "Run all e2e test suites across all languages"
@@ -236,7 +236,7 @@ tasks:
       DYLD_LIBRARY_PATH: "{{.ROOT_DIR}}/target/release"
       LD_LIBRARY_PATH: "{{.ROOT_DIR}}/target/release"
     cmds:
-      - alef test --e2e
+      - alef test --e2e --lang rust,python,node,ruby,php,go,java,csharp,elixir,wasm,r
 
   e2e:all:
     desc: "Build all bindings + run all e2e tests (single command)"
@@ -246,13 +246,23 @@ tasks:
       DYLD_LIBRARY_PATH: "{{.ROOT_DIR}}/target/release"
       LD_LIBRARY_PATH: "{{.ROOT_DIR}}/target/release"
     cmds:
-      - alef build --release
-      - alef test --e2e
+      - alef build --release --lang python,node,ruby,php,ffi,go,java,csharp,elixir,wasm,r
+      - alef test --e2e --lang rust,python,node,ruby,php,go,java,csharp,elixir,wasm,r
 
   e2e:test:
     desc: "Run E2E tests for all languages (alias for e2e:run)"
     cmds:
       - task: e2e:run
+
+  rust:e2e:
+    desc: "Run Rust e2e tests via alef"
+    deps: [pdfium:ensure]
+    env:
+      KREUZBERG_PDFIUM_PATH: "{{.ROOT_DIR}}/target/release"
+      DYLD_LIBRARY_PATH: "{{.ROOT_DIR}}/target/release"
+      LD_LIBRARY_PATH: "{{.ROOT_DIR}}/target/release"
+    cmds:
+      - alef test --e2e --lang rust
 
   python:e2e:
     desc: "Run Python e2e tests (builds kreuzberg-py via maturin first)"
@@ -375,7 +385,7 @@ tasks:
     desc: "Lint Go binding with golangci-lint"
     cmds:
       - golangci-lint run ./...
-    dir: packages/go/v4
+    dir: packages/go/v5
 
   ruby:format:
     desc: "Format Ruby binding with rubocop"

@@ -19,7 +19,7 @@ import java.util.Optional;
         @JsonSubTypes.Type(value = NodeContent.Heading.class, name = "heading"),
         @JsonSubTypes.Type(value = NodeContent.Paragraph.class, name = "paragraph"),
         @JsonSubTypes.Type(value = NodeContent.List.class, name = "list"),
-        @JsonSubTypes.Type(value = NodeContent.ListItem.class, name = "listitem"),
+        @JsonSubTypes.Type(value = NodeContent.ListItem.class, name = "list_item"),
         @JsonSubTypes.Type(value = NodeContent.Table.class, name = "table"),
         @JsonSubTypes.Type(value = NodeContent.Image.class, name = "image"),
         @JsonSubTypes.Type(value = NodeContent.Code.class, name = "code"),
@@ -27,14 +27,14 @@ import java.util.Optional;
         @JsonSubTypes.Type(value = NodeContent.Formula.class, name = "formula"),
         @JsonSubTypes.Type(value = NodeContent.Footnote.class, name = "footnote"),
         @JsonSubTypes.Type(value = NodeContent.Group.class, name = "group"),
-        @JsonSubTypes.Type(value = NodeContent.PageBreak.class, name = "pagebreak"),
+        @JsonSubTypes.Type(value = NodeContent.PageBreak.class, name = "page_break"),
         @JsonSubTypes.Type(value = NodeContent.Slide.class, name = "slide"),
-        @JsonSubTypes.Type(value = NodeContent.DefinitionList.class, name = "definitionlist"),
-        @JsonSubTypes.Type(value = NodeContent.DefinitionItem.class, name = "definitionitem"),
+        @JsonSubTypes.Type(value = NodeContent.DefinitionList.class, name = "definition_list"),
+        @JsonSubTypes.Type(value = NodeContent.DefinitionItem.class, name = "definition_item"),
         @JsonSubTypes.Type(value = NodeContent.Citation.class, name = "citation"),
         @JsonSubTypes.Type(value = NodeContent.Admonition.class, name = "admonition"),
-        @JsonSubTypes.Type(value = NodeContent.RawBlock.class, name = "rawblock"),
-        @JsonSubTypes.Type(value = NodeContent.MetadataBlock.class, name = "metadatablock")})
+        @JsonSubTypes.Type(value = NodeContent.RawBlock.class, name = "raw_block"),
+        @JsonSubTypes.Type(value = NodeContent.MetadataBlock.class, name = "metadata_block")})
 public sealed interface NodeContent {
 
     /** Document title. */

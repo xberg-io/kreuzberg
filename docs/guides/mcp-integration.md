@@ -29,7 +29,7 @@ flowchart LR
 
 ## Server Modes
 
-### stdio (Default)
+### Stdio (Default)
 
 The standard mode for local AI tools. The agent spawns `kreuzberg mcp` as a subprocess and communicates over pipes.
 

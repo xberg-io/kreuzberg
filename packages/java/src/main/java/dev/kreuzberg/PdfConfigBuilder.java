@@ -17,7 +17,7 @@ public class PdfConfigBuilder {
     private PdfBackend backend = null;
     private boolean extractImages = false;
     private Optional<List<String>> passwords = Optional.empty();
-    private boolean extractMetadata = false;
+    private boolean extractMetadata = true;
     private Optional<HierarchyConfig> hierarchy = Optional.empty();
     private boolean extractAnnotations = false;
     private Optional<Float> topMarginFraction = Optional.empty();

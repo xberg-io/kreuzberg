@@ -284,6 +284,12 @@ defmodule Kreuzberg do
   end
 
   @doc "Method"
+  @spec securitylimits_default() :: String.t() | nil
+  def securitylimits_default do
+    Kreuzberg.Native.securitylimits_default()
+  end
+
+  @doc "Method"
   @spec tokenreductionconfig_default() :: String.t() | nil
   def tokenreductionconfig_default do
     Kreuzberg.Native.tokenreductionconfig_default()

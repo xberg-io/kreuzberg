@@ -5,17 +5,14 @@
 defmodule Kreuzberg.Native do
   @moduledoc false
 
-  if System.get_env("KREUZBERG_BUILD") in ["1", "true"] or Mix.env() in [:test, :dev] do
-    use Rustler, otp_app: :kreuzberg, crate: "kreuzberg_nif"
-  else
-    use RustlerPrecompiled,
-      otp_app: :kreuzberg,
-      crate: "kreuzberg_nif",
-      base_url: "https://github.com/kreuzberg-dev/kreuzberg/releases/download/v#{Mix.Project.config()[:version]}",
-      version: Mix.Project.config()[:version],
-      targets: ~w(aarch64-apple-darwin aarch64-unknown-linux-gnu x86_64-unknown-linux-gnu x86_64-pc-windows-gnu),
-      nif_versions: ["2.16", "2.17"]
-  end
+  use RustlerPrecompiled,
+    otp_app: :kreuzberg,
+    crate: "kreuzberg_nif",
+    base_url: "https://github.com/kreuzberg-dev/kreuzberg/releases/download/v#{Mix.Project.config()[:version]}",
+    version: Mix.Project.config()[:version],
+    targets: ~w(aarch64-apple-darwin aarch64-unknown-linux-gnu x86_64-unknown-linux-gnu x86_64-pc-windows-gnu),
+    nif_versions: ["2.16", "2.17"],
+    force_build: System.get_env("KREUZBERG_BUILD") in ["1", "true"] or Mix.env() in [:test, :dev]
 
   def extract_bytes_async(_content, _mime_type, _config), do: :erlang.nif_error(:nif_not_loaded)
   def extract_file_async(_path, _mime_type, _config), do: :erlang.nif_error(:nif_not_loaded)
@@ -61,6 +58,7 @@ defmodule Kreuzberg.Native do
   def serverconfig_is_origin_allowed(_obj, _origin), do: :erlang.nif_error(:nif_not_loaded)
   def serverconfig_max_request_body_mb(_obj), do: :erlang.nif_error(:nif_not_loaded)
   def serverconfig_max_multipart_field_mb(_obj), do: :erlang.nif_error(:nif_not_loaded)
+  def securitylimits_default, do: :erlang.nif_error(:nif_not_loaded)
   def tokenreductionconfig_default, do: :erlang.nif_error(:nif_not_loaded)
   def documentstructure_finalize_node_types(_obj), do: :erlang.nif_error(:nif_not_loaded)
   def documentstructure_default, do: :erlang.nif_error(:nif_not_loaded)

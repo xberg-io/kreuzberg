@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 @JsonPOJOBuilder(withPrefix = "with")
 public class LanguageDetectionConfigBuilder {
 
-    private boolean enabled = false;
+    private boolean enabled = true;
     private double minConfidence = 0.0;
     private boolean detectMultiple = false;
 

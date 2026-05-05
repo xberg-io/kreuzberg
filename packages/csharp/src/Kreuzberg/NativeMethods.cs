@@ -202,6 +202,12 @@ internal static partial class NativeMethods
     [DllImport(LibName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "kreuzberg_rake_params_free")]
     internal static extern void RakeParamsFree(IntPtr ptr);
 
+    [DllImport(LibName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "kreuzberg_security_limits_to_json")]
+    internal static extern IntPtr SecurityLimitsToJson(IntPtr ptr);
+
+    [DllImport(LibName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "kreuzberg_security_limits_free")]
+    internal static extern void SecurityLimitsFree(IntPtr ptr);
+
     [DllImport(LibName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "kreuzberg_server_config_to_json")]
     internal static extern IntPtr ServerConfigToJson(IntPtr ptr);
 
@@ -437,6 +443,9 @@ internal static partial class NativeMethods
     internal static extern ulong ServerConfigMaxMultipartFieldMb(
         IntPtr handle
     );
+
+    [DllImport(LibName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "kreuzberg_security_limits_default")]
+    internal static extern IntPtr SecurityLimitsDefault();
 
     [DllImport(LibName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "kreuzberg_token_reduction_config_default")]
     internal static extern IntPtr TokenReductionConfigDefault();

@@ -101,7 +101,7 @@ pub struct ExtractionConfig {
     pub extraction_timeout_secs: Option<u64>,
     pub max_concurrent_extractions: Option<usize>,
     pub result_format: ResultFormat,
-    pub security_limits: Option<String>,
+    pub security_limits: Option<SecurityLimits>,
     pub output_format: OutputFormat,
     pub layout: Option<LayoutDetectionConfig>,
     pub include_document_structure: bool,
@@ -804,7 +804,7 @@ impl ServerConfig {
 pub struct StructuredDataResult {
     pub content: String,
     pub format: String,
-    pub metadata: String,
+    pub metadata: HashMap<String, String>,
     pub text_fields: Vec<String>,
 }
 
@@ -891,34 +891,6 @@ impl AnchorProperties {
             wrap_type: opts.get("wrap_type").and_then(|t| t.decode().ok()).unwrap_or_default(),
         }
     }
-}
-
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize, rustler::NifMap)]
-pub struct HeaderFooter {
-    pub paragraphs: Vec<String>,
-    pub tables: Vec<String>,
-    pub header_type: String,
-}
-
-impl HeaderFooter {
-    pub fn new(opts: std::collections::HashMap<String, rustler::Term>) -> Self {
-        Self {
-            paragraphs: opts.get("paragraphs").and_then(|t| t.decode().ok()).unwrap_or_default(),
-            tables: opts.get("tables").and_then(|t| t.decode().ok()).unwrap_or_default(),
-            header_type: opts
-                .get("header_type")
-                .and_then(|t| t.decode().ok())
-                .unwrap_or_default(),
-        }
-    }
-}
-
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize, rustler::NifStruct)]
-#[module = "Kreuzberg.Note"]
-pub struct Note {
-    pub id: String,
-    pub note_type: String,
-    pub paragraphs: Vec<String>,
 }
 
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize, rustler::NifMap)]
@@ -1142,6 +1114,59 @@ impl OdtProperties {
     }
 }
 
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize, rustler::NifMap)]
+pub struct SecurityLimits {
+    pub max_archive_size: usize,
+    pub max_compression_ratio: usize,
+    pub max_files_in_archive: usize,
+    pub max_nesting_depth: usize,
+    pub max_entity_length: usize,
+    pub max_content_size: usize,
+    pub max_iterations: usize,
+    pub max_xml_depth: usize,
+    pub max_table_cells: usize,
+}
+
+impl SecurityLimits {
+    pub fn new(opts: std::collections::HashMap<String, rustler::Term>) -> Self {
+        Self {
+            max_archive_size: opts
+                .get("max_archive_size")
+                .and_then(|t| t.decode().ok())
+                .unwrap_or(524288000),
+            max_compression_ratio: opts
+                .get("max_compression_ratio")
+                .and_then(|t| t.decode().ok())
+                .unwrap_or(100),
+            max_files_in_archive: opts
+                .get("max_files_in_archive")
+                .and_then(|t| t.decode().ok())
+                .unwrap_or(10000),
+            max_nesting_depth: opts
+                .get("max_nesting_depth")
+                .and_then(|t| t.decode().ok())
+                .unwrap_or(1024),
+            max_entity_length: opts
+                .get("max_entity_length")
+                .and_then(|t| t.decode().ok())
+                .unwrap_or(1048576),
+            max_content_size: opts
+                .get("max_content_size")
+                .and_then(|t| t.decode().ok())
+                .unwrap_or(104857600),
+            max_iterations: opts
+                .get("max_iterations")
+                .and_then(|t| t.decode().ok())
+                .unwrap_or(10000000),
+            max_xml_depth: opts.get("max_xml_depth").and_then(|t| t.decode().ok()).unwrap_or(1024),
+            max_table_cells: opts
+                .get("max_table_cells")
+                .and_then(|t| t.decode().ok())
+                .unwrap_or(100000),
+        }
+    }
+}
+
 #[derive(Clone)]
 pub struct ZipBombValidator {
     inner: Arc<kreuzberg::extractors::security::ZipBombValidator>,
@@ -1161,7 +1186,7 @@ pub struct TokenReductionConfig {
     pub semantic_threshold: f32,
     pub enable_parallel: bool,
     pub use_simd: bool,
-    pub custom_stopwords: Option<String>,
+    pub custom_stopwords: Option<HashMap<String, Vec<String>>>,
     pub preserve_patterns: Vec<String>,
     pub target_reduction: Option<f32>,
     pub enable_semantic_clustering: bool,
@@ -1215,7 +1240,7 @@ pub struct DjotContent {
     pub plain_text: String,
     pub blocks: Vec<FormattedBlock>,
     pub metadata: Metadata,
-    pub tables: Vec<String>,
+    pub tables: Vec<Table>,
     pub images: Vec<DjotImage>,
     pub links: Vec<DjotLink>,
     pub footnotes: Vec<Footnote>,
@@ -1240,7 +1265,7 @@ pub struct InlineElement {
     pub element_type: InlineType,
     pub content: String,
     pub attributes: Option<String>,
-    pub metadata: Option<String>,
+    pub metadata: Option<HashMap<String, String>>,
 }
 
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize, rustler::NifStruct)]
@@ -1310,7 +1335,7 @@ pub struct DocumentNode {
     pub page_end: Option<u32>,
     pub bbox: Option<String>,
     pub annotations: Vec<TextAnnotation>,
-    pub attributes: Option<String>,
+    pub attributes: Option<HashMap<String, String>>,
 }
 
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize, rustler::NifMap)]
@@ -1356,7 +1381,7 @@ pub struct ExtractionResult {
     pub mime_type: String,
     pub metadata: Metadata,
     pub extraction_method: Option<ExtractionMethod>,
-    pub tables: Vec<String>,
+    pub tables: Vec<Table>,
     pub detected_languages: Option<Vec<String>>,
     pub chunks: Option<Vec<Chunk>>,
     pub images: Option<Vec<ExtractedImage>>,
@@ -1515,7 +1540,7 @@ pub struct ElementMetadata {
     pub filename: Option<String>,
     pub coordinates: Option<String>,
     pub element_index: Option<usize>,
-    pub additional: String,
+    pub additional: HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize, rustler::NifStruct)]
@@ -1531,7 +1556,7 @@ pub struct Element {
 #[module = "Kreuzberg.ExcelWorkbook"]
 pub struct ExcelWorkbook {
     pub sheets: Vec<ExcelSheet>,
-    pub metadata: String,
+    pub metadata: HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize, rustler::NifStruct)]
@@ -1578,7 +1603,7 @@ pub struct PptxExtractionResult {
     pub page_contents: Option<Vec<PageContent>>,
     pub document: Option<DocumentStructure>,
     pub hyperlinks: Vec<String>,
-    pub office_metadata: String,
+    pub office_metadata: HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize, rustler::NifStruct)]
@@ -1595,7 +1620,7 @@ pub struct EmailExtractionResult {
     pub html_content: Option<String>,
     pub content: String,
     pub attachments: Vec<EmailAttachment>,
-    pub metadata: String,
+    pub metadata: HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize, rustler::NifStruct)]
@@ -1614,7 +1639,7 @@ pub struct EmailAttachment {
 pub struct OcrExtractionResult {
     pub content: String,
     pub mime_type: String,
-    pub metadata: String,
+    pub metadata: HashMap<String, String>,
     pub tables: Vec<OcrTable>,
     pub ocr_elements: Option<Vec<OcrElement>>,
     pub internal_document: Option<String>,
@@ -1808,7 +1833,7 @@ pub struct Metadata {
     pub output_format: Option<String>,
     pub sheet_count: Option<usize>,
     pub sheet_names: Option<Vec<String>>,
-    pub additional: String,
+    pub additional: HashMap<String, String>,
 }
 
 impl Metadata {
@@ -1990,9 +2015,9 @@ pub struct HtmlMetadata {
     pub base_href: Option<String>,
     pub language: Option<String>,
     pub text_direction: Option<TextDirection>,
-    pub open_graph: String,
-    pub twitter_card: String,
-    pub meta_tags: String,
+    pub open_graph: HashMap<String, String>,
+    pub twitter_card: HashMap<String, String>,
+    pub meta_tags: HashMap<String, String>,
     pub headers: Vec<HeaderMetadata>,
     pub links: Vec<LinkMetadata>,
     pub images: Vec<ImageMetadataType>,
@@ -2092,7 +2117,7 @@ impl PptxMetadata {
 pub struct DocxMetadata {
     pub core_properties: Option<String>,
     pub app_properties: Option<String>,
-    pub custom_properties: Option<String>,
+    pub custom_properties: Option<HashMap<String, String>>,
 }
 
 impl DocxMetadata {
@@ -2135,7 +2160,7 @@ pub struct BibtexMetadata {
     pub citation_keys: Vec<String>,
     pub authors: Vec<String>,
     pub year_range: Option<YearRange>,
-    pub entry_types: Option<String>,
+    pub entry_types: Option<HashMap<String, usize>>,
 }
 
 impl BibtexMetadata {
@@ -2241,7 +2266,7 @@ pub struct DbfFieldInfo {
 pub struct JatsMetadata {
     pub copyright: Option<String>,
     pub license: Option<String>,
-    pub history_dates: String,
+    pub history_dates: HashMap<String, String>,
     pub contributor_roles: Vec<ContributorRole>,
 }
 
@@ -2342,7 +2367,7 @@ pub struct OcrElement {
     pub rotation: Option<OcrRotation>,
     pub page_number: usize,
     pub parent_id: Option<String>,
-    pub backend_metadata: String,
+    pub backend_metadata: HashMap<String, String>,
 }
 
 impl OcrElement {
@@ -2429,7 +2454,7 @@ pub struct PageInfo {
 pub struct PageContent {
     pub page_number: usize,
     pub content: String,
-    pub tables: Vec<String>,
+    pub tables: Vec<Table>,
     pub images: Vec<ExtractedImage>,
     pub hierarchy: Option<PageHierarchy>,
     pub is_blank: Option<bool>,
@@ -2475,6 +2500,47 @@ pub struct HierarchicalBlock {
     pub font_size: f32,
     pub level: String,
     pub bbox: Option<Vec<f32>>,
+}
+
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize, rustler::NifMap)]
+pub struct Table {
+    pub cells: Vec<Vec<String>>,
+    pub markdown: String,
+    pub page_number: usize,
+    pub bounding_box: Option<String>,
+}
+
+impl Table {
+    pub fn new(opts: std::collections::HashMap<String, rustler::Term>) -> Self {
+        Self {
+            cells: opts.get("cells").and_then(|t| t.decode().ok()).unwrap_or_default(),
+            markdown: opts.get("markdown").and_then(|t| t.decode().ok()).unwrap_or_default(),
+            page_number: opts
+                .get("page_number")
+                .and_then(|t| t.decode().ok())
+                .unwrap_or_default(),
+            bounding_box: opts.get("bounding_box").and_then(|t| t.decode().ok()),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize, rustler::NifMap)]
+pub struct TableCell {
+    pub content: String,
+    pub row_span: usize,
+    pub col_span: usize,
+    pub is_header: bool,
+}
+
+impl TableCell {
+    pub fn new(opts: std::collections::HashMap<String, rustler::Term>) -> Self {
+        Self {
+            content: opts.get("content").and_then(|t| t.decode().ok()).unwrap_or_default(),
+            row_span: opts.get("row_span").and_then(|t| t.decode().ok()).unwrap_or_default(),
+            col_span: opts.get("col_span").and_then(|t| t.decode().ok()).unwrap_or_default(),
+            is_header: opts.get("is_header").and_then(|t| t.decode().ok()).unwrap_or_default(),
+        }
+    }
 }
 
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize, rustler::NifStruct)]
@@ -4442,6 +4508,11 @@ pub fn serverconfig_max_multipart_field_mb(obj: ServerConfig) -> usize {
 }
 
 #[rustler::nif]
+pub fn securitylimits_default() -> SecurityLimits {
+    kreuzberg::SecurityLimits::default().into()
+}
+
+#[rustler::nif]
 pub fn tokenreductionconfig_default() -> TokenReductionConfig {
     kreuzberg::TokenReductionConfig::default().into()
 }
@@ -4783,7 +4854,7 @@ impl From<ExtractionConfig> for kreuzberg::ExtractionConfig {
             extraction_timeout_secs: val.extraction_timeout_secs,
             max_concurrent_extractions: val.max_concurrent_extractions,
             result_format: val.result_format.into(),
-            security_limits: Default::default(),
+            security_limits: val.security_limits.map(Into::into),
             output_format: val.output_format.into(),
             layout: val.layout.map(Into::into),
             include_document_structure: val.include_document_structure,
@@ -4825,7 +4896,7 @@ impl From<kreuzberg::ExtractionConfig> for ExtractionConfig {
             extraction_timeout_secs: val.extraction_timeout_secs,
             max_concurrent_extractions: val.max_concurrent_extractions,
             result_format: val.result_format.into(),
-            security_limits: val.security_limits.as_ref().map(|v| format!("{v:?}")),
+            security_limits: val.security_limits.map(Into::into),
             output_format: val.output_format.into(),
             layout: val.layout.map(Into::into),
             include_document_structure: val.include_document_structure,
@@ -4908,7 +4979,7 @@ impl From<kreuzberg::FileExtractionConfig> for FileExtractionConfig {
 impl From<BatchBytesItem> for kreuzberg::BatchBytesItem {
     fn from(val: BatchBytesItem) -> Self {
         Self {
-            content: val.content.into(),
+            content: val.content.to_vec().into(),
             mime_type: val.mime_type,
             config: val.config.map(Into::into),
         }
@@ -4919,7 +4990,7 @@ impl From<BatchBytesItem> for kreuzberg::BatchBytesItem {
 impl From<kreuzberg::BatchBytesItem> for BatchBytesItem {
     fn from(val: kreuzberg::BatchBytesItem) -> Self {
         Self {
-            content: val.content.to_vec(),
+            content: val.content.to_vec().into(),
             mime_type: val.mime_type,
             config: val.config.map(Into::into),
         }
@@ -5546,7 +5617,7 @@ impl From<kreuzberg::extraction::structured::StructuredDataResult> for Structure
         Self {
             content: val.content,
             format: val.format.to_string(),
-            metadata: format!("{:?}", val.metadata),
+            metadata: val.metadata.into_iter().map(|(k, v)| (k.into(), v.into())).collect(),
             text_fields: val.text_fields,
         }
     }
@@ -5578,7 +5649,7 @@ impl From<kreuzberg::extraction::html::HtmlExtractionResult> for HtmlExtractionR
 impl From<kreuzberg::extraction::html::ExtractedInlineImage> for ExtractedInlineImage {
     fn from(val: kreuzberg::extraction::html::ExtractedInlineImage) -> Self {
         Self {
-            data: val.data.to_vec(),
+            data: val.data.to_vec().into(),
             format: val.format,
             filename: val.filename,
             description: val.description,
@@ -5613,28 +5684,6 @@ impl From<kreuzberg::extraction::docx::drawing::AnchorProperties> for AnchorProp
             position_h: val.position_h.as_ref().map(|v| format!("{v:?}")),
             position_v: val.position_v.as_ref().map(|v| format!("{v:?}")),
             wrap_type: format!("{:?}", val.wrap_type),
-        }
-    }
-}
-
-#[allow(clippy::redundant_closure, clippy::useless_conversion)]
-impl From<kreuzberg::extraction::docx::parser::HeaderFooter> for HeaderFooter {
-    fn from(val: kreuzberg::extraction::docx::parser::HeaderFooter) -> Self {
-        Self {
-            paragraphs: val.paragraphs.iter().map(|i| format!("{:?}", i)).collect(),
-            tables: val.tables.iter().map(|i| format!("{:?}", i)).collect(),
-            header_type: format!("{:?}", val.header_type),
-        }
-    }
-}
-
-#[allow(clippy::redundant_closure, clippy::useless_conversion)]
-impl From<kreuzberg::extraction::docx::parser::Note> for Note {
-    fn from(val: kreuzberg::extraction::docx::parser::Note) -> Self {
-        Self {
-            id: val.id,
-            note_type: format!("{:?}", val.note_type),
-            paragraphs: val.paragraphs.iter().map(|i| format!("{:?}", i)).collect(),
         }
     }
 }
@@ -5764,6 +5813,40 @@ impl From<kreuzberg::extraction::office_metadata::odt_properties::OdtProperties>
 }
 
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
+impl From<SecurityLimits> for kreuzberg::SecurityLimits {
+    fn from(val: SecurityLimits) -> Self {
+        Self {
+            max_archive_size: val.max_archive_size,
+            max_compression_ratio: val.max_compression_ratio,
+            max_files_in_archive: val.max_files_in_archive,
+            max_nesting_depth: val.max_nesting_depth,
+            max_entity_length: val.max_entity_length,
+            max_content_size: val.max_content_size,
+            max_iterations: val.max_iterations,
+            max_xml_depth: val.max_xml_depth,
+            max_table_cells: val.max_table_cells,
+        }
+    }
+}
+
+#[allow(clippy::redundant_closure, clippy::useless_conversion)]
+impl From<kreuzberg::SecurityLimits> for SecurityLimits {
+    fn from(val: kreuzberg::SecurityLimits) -> Self {
+        Self {
+            max_archive_size: val.max_archive_size,
+            max_compression_ratio: val.max_compression_ratio,
+            max_files_in_archive: val.max_files_in_archive,
+            max_nesting_depth: val.max_nesting_depth,
+            max_entity_length: val.max_entity_length,
+            max_content_size: val.max_content_size,
+            max_iterations: val.max_iterations,
+            max_xml_depth: val.max_xml_depth,
+            max_table_cells: val.max_table_cells,
+        }
+    }
+}
+
+#[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<TokenReductionConfig> for kreuzberg::TokenReductionConfig {
     fn from(val: TokenReductionConfig) -> Self {
         Self {
@@ -5774,7 +5857,7 @@ impl From<TokenReductionConfig> for kreuzberg::TokenReductionConfig {
             semantic_threshold: val.semantic_threshold,
             enable_parallel: val.enable_parallel,
             use_simd: val.use_simd,
-            custom_stopwords: Default::default(),
+            custom_stopwords: val.custom_stopwords.map(|m| m.into_iter().collect()),
             preserve_patterns: val.preserve_patterns,
             target_reduction: val.target_reduction,
             enable_semantic_clustering: val.enable_semantic_clustering,
@@ -5793,7 +5876,7 @@ impl From<kreuzberg::TokenReductionConfig> for TokenReductionConfig {
             semantic_threshold: val.semantic_threshold,
             enable_parallel: val.enable_parallel,
             use_simd: val.use_simd,
-            custom_stopwords: val.custom_stopwords.as_ref().map(|m| format!("{m:?}")),
+            custom_stopwords: val.custom_stopwords.map(|m| m.into_iter().collect()),
             preserve_patterns: val.preserve_patterns,
             target_reduction: val.target_reduction,
             enable_semantic_clustering: val.enable_semantic_clustering,
@@ -5832,7 +5915,7 @@ impl From<DjotContent> for kreuzberg::DjotContent {
             plain_text: val.plain_text,
             blocks: val.blocks.into_iter().map(Into::into).collect(),
             metadata: val.metadata.into(),
-            tables: Default::default(),
+            tables: val.tables.into_iter().map(Into::into).collect(),
             images: val.images.into_iter().map(Into::into).collect(),
             links: val.links.into_iter().map(Into::into).collect(),
             footnotes: val.footnotes.into_iter().map(Into::into).collect(),
@@ -5848,7 +5931,7 @@ impl From<kreuzberg::DjotContent> for DjotContent {
             plain_text: val.plain_text,
             blocks: val.blocks.into_iter().map(Into::into).collect(),
             metadata: val.metadata.into(),
-            tables: val.tables.iter().map(|i| format!("{:?}", i)).collect(),
+            tables: val.tables.into_iter().map(Into::into).collect(),
             images: val.images.into_iter().map(Into::into).collect(),
             links: val.links.into_iter().map(Into::into).collect(),
             footnotes: val.footnotes.into_iter().map(Into::into).collect(),
@@ -5894,7 +5977,9 @@ impl From<InlineElement> for kreuzberg::InlineElement {
             element_type: val.element_type.into(),
             content: val.content,
             attributes: Default::default(),
-            metadata: Default::default(),
+            metadata: val
+                .metadata
+                .map(|m| m.into_iter().map(|(k, v)| (k.into(), v.into())).collect()),
         }
     }
 }
@@ -5906,7 +5991,9 @@ impl From<kreuzberg::InlineElement> for InlineElement {
             element_type: val.element_type.into(),
             content: val.content,
             attributes: val.attributes.as_ref().map(|v| format!("{v:?}")),
-            metadata: val.metadata.as_ref().map(|m| format!("{m:?}")),
+            metadata: val
+                .metadata
+                .map(|m| m.into_iter().map(|(k, v)| (k.into(), v.into())).collect()),
         }
     }
 }
@@ -6038,7 +6125,9 @@ impl From<DocumentNode> for kreuzberg::DocumentNode {
             page_end: val.page_end,
             bbox: Default::default(),
             annotations: val.annotations.into_iter().map(Into::into).collect(),
-            attributes: Default::default(),
+            attributes: val
+                .attributes
+                .map(|m| m.into_iter().map(|(k, v)| (k.into(), v.into())).collect()),
         }
     }
 }
@@ -6056,7 +6145,9 @@ impl From<kreuzberg::DocumentNode> for DocumentNode {
             page_end: val.page_end,
             bbox: val.bbox.as_ref().map(|v| format!("{v:?}")),
             annotations: val.annotations.into_iter().map(Into::into).collect(),
-            attributes: val.attributes.as_ref().map(|m| format!("{m:?}")),
+            attributes: val
+                .attributes
+                .map(|m| m.into_iter().map(|(k, v)| (k.into(), v.into())).collect()),
         }
     }
 }
@@ -6144,7 +6235,7 @@ impl From<ExtractionResult> for kreuzberg::ExtractionResult {
             mime_type: val.mime_type.into(),
             metadata: val.metadata.into(),
             extraction_method: val.extraction_method.map(Into::into),
-            tables: Default::default(),
+            tables: val.tables.into_iter().map(Into::into).collect(),
             detected_languages: val.detected_languages,
             chunks: val.chunks.map(|v| v.into_iter().map(Into::into).collect()),
             images: val.images.map(|v| v.into_iter().map(Into::into).collect()),
@@ -6180,7 +6271,7 @@ impl From<kreuzberg::ExtractionResult> for ExtractionResult {
             mime_type: val.mime_type.to_string(),
             metadata: val.metadata.into(),
             extraction_method: val.extraction_method.map(Into::into),
-            tables: val.tables.iter().map(|i| format!("{:?}", i)).collect(),
+            tables: val.tables.into_iter().map(Into::into).collect(),
             detected_languages: val.detected_languages,
             chunks: val.chunks.map(|v| v.into_iter().map(Into::into).collect()),
             images: val.images.map(|v| v.into_iter().map(Into::into).collect()),
@@ -6374,7 +6465,7 @@ impl From<kreuzberg::ChunkMetadata> for ChunkMetadata {
 impl From<ExtractedImage> for kreuzberg::ExtractedImage {
     fn from(val: ExtractedImage) -> Self {
         Self {
-            data: val.data.into(),
+            data: val.data.to_vec().into(),
             format: val.format.into(),
             image_index: val.image_index,
             page_number: val.page_number,
@@ -6398,7 +6489,7 @@ impl From<ExtractedImage> for kreuzberg::ExtractedImage {
 impl From<kreuzberg::ExtractedImage> for ExtractedImage {
     fn from(val: kreuzberg::ExtractedImage) -> Self {
         Self {
-            data: val.data.to_vec(),
+            data: val.data.to_vec().into(),
             format: val.format.to_string(),
             image_index: val.image_index,
             page_number: val.page_number,
@@ -6426,7 +6517,7 @@ impl From<ElementMetadata> for kreuzberg::ElementMetadata {
             filename: val.filename,
             coordinates: Default::default(),
             element_index: val.element_index,
-            additional: Default::default(),
+            additional: val.additional.into_iter().map(|(k, v)| (k.into(), v.into())).collect(),
         }
     }
 }
@@ -6439,7 +6530,7 @@ impl From<kreuzberg::ElementMetadata> for ElementMetadata {
             filename: val.filename,
             coordinates: val.coordinates.as_ref().map(|v| format!("{v:?}")),
             element_index: val.element_index,
-            additional: format!("{:?}", val.additional),
+            additional: val.additional.into_iter().map(|(k, v)| (k.into(), v.into())).collect(),
         }
     }
 }
@@ -6473,7 +6564,7 @@ impl From<kreuzberg::ExcelWorkbook> for ExcelWorkbook {
     fn from(val: kreuzberg::ExcelWorkbook) -> Self {
         Self {
             sheets: val.sheets.into_iter().map(Into::into).collect(),
-            metadata: format!("{:?}", val.metadata),
+            metadata: val.metadata.into_iter().map(|(k, v)| (k.into(), v.into())).collect(),
         }
     }
 }
@@ -6538,7 +6629,11 @@ impl From<kreuzberg::PptxExtractionResult> for PptxExtractionResult {
             page_contents: val.page_contents.map(|v| v.into_iter().map(Into::into).collect()),
             document: val.document.map(Into::into),
             hyperlinks: val.hyperlinks.iter().map(|i| format!("{:?}", i)).collect(),
-            office_metadata: format!("{:?}", val.office_metadata),
+            office_metadata: val
+                .office_metadata
+                .into_iter()
+                .map(|(k, v)| (k.into(), v.into()))
+                .collect(),
         }
     }
 }
@@ -6558,7 +6653,7 @@ impl From<kreuzberg::EmailExtractionResult> for EmailExtractionResult {
             html_content: val.html_content,
             content: val.content,
             attachments: val.attachments.into_iter().map(Into::into).collect(),
-            metadata: format!("{:?}", val.metadata),
+            metadata: val.metadata.into_iter().map(|(k, v)| (k.into(), v.into())).collect(),
         }
     }
 }
@@ -6572,7 +6667,7 @@ impl From<kreuzberg::EmailAttachment> for EmailAttachment {
             mime_type: val.mime_type,
             size: val.size,
             is_image: val.is_image,
-            data: val.data.map(|v| v.to_vec()).map(|v| v.to_vec()),
+            data: val.data.map(|v| v.to_vec().into()),
         }
     }
 }
@@ -6583,7 +6678,11 @@ impl From<kreuzberg::OcrExtractionResult> for OcrExtractionResult {
         Self {
             content: val.content,
             mime_type: val.mime_type,
-            metadata: format!("{:?}", val.metadata),
+            metadata: val
+                .metadata
+                .into_iter()
+                .map(|(k, v)| (k.to_string(), v.to_string()))
+                .collect(),
             tables: val.tables.into_iter().map(Into::into).collect(),
             ocr_elements: val.ocr_elements.map(|v| v.into_iter().map(Into::into).collect()),
             internal_document: val.internal_document.as_ref().map(|v| format!("{v:?}")),
@@ -6772,7 +6871,11 @@ impl From<Metadata> for kreuzberg::Metadata {
             output_format: val.output_format,
             sheet_count: val.sheet_count,
             sheet_names: val.sheet_names,
-            additional: Default::default(),
+            additional: val
+                .additional
+                .into_iter()
+                .map(|(k, v)| (k.into(), serde_json::from_str(&v).unwrap_or_default()))
+                .collect(),
         }
     }
 }
@@ -6803,7 +6906,11 @@ impl From<kreuzberg::Metadata> for Metadata {
             output_format: val.output_format,
             sheet_count: val.sheet_count,
             sheet_names: val.sheet_names,
-            additional: format!("{:?}", val.additional),
+            additional: val
+                .additional
+                .into_iter()
+                .map(|(k, v)| (k.to_string(), v.to_string()))
+                .collect(),
         }
     }
 }
@@ -7051,9 +7158,13 @@ impl From<HtmlMetadata> for kreuzberg::HtmlMetadata {
             base_href: val.base_href,
             language: val.language,
             text_direction: val.text_direction.map(Into::into),
-            open_graph: Default::default(),
-            twitter_card: Default::default(),
-            meta_tags: Default::default(),
+            open_graph: val.open_graph.into_iter().map(|(k, v)| (k.into(), v.into())).collect(),
+            twitter_card: val
+                .twitter_card
+                .into_iter()
+                .map(|(k, v)| (k.into(), v.into()))
+                .collect(),
+            meta_tags: val.meta_tags.into_iter().map(|(k, v)| (k.into(), v.into())).collect(),
             headers: val.headers.into_iter().map(Into::into).collect(),
             links: val.links.into_iter().map(Into::into).collect(),
             images: val.images.into_iter().map(Into::into).collect(),
@@ -7074,9 +7185,13 @@ impl From<kreuzberg::HtmlMetadata> for HtmlMetadata {
             base_href: val.base_href,
             language: val.language,
             text_direction: val.text_direction.map(Into::into),
-            open_graph: format!("{:?}", val.open_graph),
-            twitter_card: format!("{:?}", val.twitter_card),
-            meta_tags: format!("{:?}", val.meta_tags),
+            open_graph: val.open_graph.into_iter().map(|(k, v)| (k.into(), v.into())).collect(),
+            twitter_card: val
+                .twitter_card
+                .into_iter()
+                .map(|(k, v)| (k.into(), v.into()))
+                .collect(),
+            meta_tags: val.meta_tags.into_iter().map(|(k, v)| (k.into(), v.into())).collect(),
             headers: val.headers.into_iter().map(Into::into).collect(),
             links: val.links.into_iter().map(Into::into).collect(),
             images: val.images.into_iter().map(Into::into).collect(),
@@ -7163,7 +7278,11 @@ impl From<DocxMetadata> for kreuzberg::DocxMetadata {
         Self {
             core_properties: Default::default(),
             app_properties: Default::default(),
-            custom_properties: Default::default(),
+            custom_properties: val.custom_properties.map(|m| {
+                m.into_iter()
+                    .map(|(k, v)| (k.into(), serde_json::from_str(&v).unwrap_or_default()))
+                    .collect()
+            }),
         }
     }
 }
@@ -7174,7 +7293,9 @@ impl From<kreuzberg::DocxMetadata> for DocxMetadata {
         Self {
             core_properties: val.core_properties.as_ref().map(|v| format!("{v:?}")),
             app_properties: val.app_properties.as_ref().map(|v| format!("{v:?}")),
-            custom_properties: val.custom_properties.as_ref().map(|m| format!("{m:?}")),
+            custom_properties: val
+                .custom_properties
+                .map(|m| m.into_iter().map(|(k, v)| (k.to_string(), v.to_string())).collect()),
         }
     }
 }
@@ -7213,7 +7334,7 @@ impl From<BibtexMetadata> for kreuzberg::BibtexMetadata {
             citation_keys: val.citation_keys,
             authors: val.authors,
             year_range: val.year_range.map(Into::into),
-            entry_types: Default::default(),
+            entry_types: val.entry_types.map(|m| m.into_iter().collect()),
         }
     }
 }
@@ -7226,7 +7347,7 @@ impl From<kreuzberg::BibtexMetadata> for BibtexMetadata {
             citation_keys: val.citation_keys,
             authors: val.authors,
             year_range: val.year_range.map(Into::into),
-            entry_types: val.entry_types.as_ref().map(|m| format!("{m:?}")),
+            entry_types: val.entry_types.map(|m| m.into_iter().collect()),
         }
     }
 }
@@ -7351,7 +7472,11 @@ impl From<JatsMetadata> for kreuzberg::JatsMetadata {
         Self {
             copyright: val.copyright,
             license: val.license,
-            history_dates: Default::default(),
+            history_dates: val
+                .history_dates
+                .into_iter()
+                .map(|(k, v)| (k.into(), v.into()))
+                .collect(),
             contributor_roles: val.contributor_roles.into_iter().map(Into::into).collect(),
         }
     }
@@ -7363,7 +7488,11 @@ impl From<kreuzberg::JatsMetadata> for JatsMetadata {
         Self {
             copyright: val.copyright,
             license: val.license,
-            history_dates: format!("{:?}", val.history_dates),
+            history_dates: val
+                .history_dates
+                .into_iter()
+                .map(|(k, v)| (k.into(), v.into()))
+                .collect(),
             contributor_roles: val.contributor_roles.into_iter().map(Into::into).collect(),
         }
     }
@@ -7486,7 +7615,11 @@ impl From<OcrElement> for kreuzberg::OcrElement {
             rotation: val.rotation.map(Into::into),
             page_number: val.page_number,
             parent_id: val.parent_id,
-            backend_metadata: Default::default(),
+            backend_metadata: val
+                .backend_metadata
+                .into_iter()
+                .map(|(k, v)| (k.into(), serde_json::from_str(&v).unwrap_or_default()))
+                .collect(),
         }
     }
 }
@@ -7502,7 +7635,11 @@ impl From<kreuzberg::OcrElement> for OcrElement {
             rotation: val.rotation.map(Into::into),
             page_number: val.page_number,
             parent_id: val.parent_id,
-            backend_metadata: format!("{:?}", val.backend_metadata),
+            backend_metadata: val
+                .backend_metadata
+                .into_iter()
+                .map(|(k, v)| (k.to_string(), v.to_string()))
+                .collect(),
         }
     }
 }
@@ -7618,7 +7755,7 @@ impl From<PageContent> for kreuzberg::PageContent {
         Self {
             page_number: val.page_number,
             content: val.content,
-            tables: Default::default(),
+            tables: val.tables.into_iter().map(|v| std::sync::Arc::new(v.into())).collect(),
             images: val.images.into_iter().map(|v| std::sync::Arc::new(v.into())).collect(),
             hierarchy: val.hierarchy.map(Into::into),
             is_blank: val.is_blank,
@@ -7633,7 +7770,7 @@ impl From<kreuzberg::PageContent> for PageContent {
         Self {
             page_number: val.page_number,
             content: val.content,
-            tables: val.tables.iter().map(|i| format!("{:?}", i)).collect(),
+            tables: val.tables.into_iter().map(|v| (*v).clone().into()).collect(),
             images: val.images.into_iter().map(|v| (*v).clone().into()).collect(),
             hierarchy: val.hierarchy.map(Into::into),
             is_blank: val.is_blank,
@@ -7709,6 +7846,42 @@ impl From<kreuzberg::HierarchicalBlock> for HierarchicalBlock {
                 let arr: Vec<_> = [t.0, t.1].into_iter().map(|v| v as _).collect();
                 arr
             }),
+        }
+    }
+}
+
+#[allow(clippy::redundant_closure, clippy::useless_conversion)]
+impl From<Table> for kreuzberg::Table {
+    fn from(val: Table) -> Self {
+        Self {
+            cells: val.cells,
+            markdown: val.markdown,
+            page_number: val.page_number,
+            bounding_box: Default::default(),
+        }
+    }
+}
+
+#[allow(clippy::redundant_closure, clippy::useless_conversion)]
+impl From<kreuzberg::Table> for Table {
+    fn from(val: kreuzberg::Table) -> Self {
+        Self {
+            cells: val.cells,
+            markdown: val.markdown,
+            page_number: val.page_number,
+            bounding_box: val.bounding_box.as_ref().map(|v| format!("{v:?}")),
+        }
+    }
+}
+
+#[allow(clippy::redundant_closure, clippy::useless_conversion)]
+impl From<kreuzberg::TableCell> for TableCell {
+    fn from(val: kreuzberg::TableCell) -> Self {
+        Self {
+            content: val.content,
+            row_span: val.row_span,
+            col_span: val.col_span,
+            is_header: val.is_header,
         }
     }
 }
@@ -8210,7 +8383,7 @@ impl From<kreuzberg::pdf::embedded_files::EmbeddedFile> for EmbeddedFile {
     fn from(val: kreuzberg::pdf::embedded_files::EmbeddedFile) -> Self {
         Self {
             name: val.name,
-            data: val.data.to_vec(),
+            data: val.data.to_vec().into(),
             mime_type: val.mime_type,
         }
     }
@@ -8227,7 +8400,7 @@ impl From<kreuzberg::pdf::images::PdfImage> for PdfImage {
             color_space: val.color_space,
             bits_per_component: val.bits_per_component,
             filters: val.filters,
-            data: val.data.to_vec(),
+            data: val.data.to_vec().into(),
             decoded_format: val.decoded_format,
             image_kind: val.image_kind.map(Into::into),
             kind_confidence: val.kind_confidence,

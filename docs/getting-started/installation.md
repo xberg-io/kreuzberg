@@ -109,7 +109,7 @@ The fastest way to try Kreuzberg - no SDK, no code, just your terminal.
   ***
 
   ```bash
-  go get github.com/kreuzberg-dev/kreuzberg/packages/go/v4@latest
+  go get github.com/kreuzberg-dev/kreuzberg/packages/go/v5@latest
   ```
 
   [API Reference](../reference/api-go.md){ .install-btn .install-btn--ghost }
@@ -335,7 +335,7 @@ Ships prebuilt NIF binaries via RustlerPrecompiled. Falls back to compiling from
 ### Go
 
 ```bash
-go get github.com/kreuzberg-dev/kreuzberg/packages/go/v4@latest
+go get github.com/kreuzberg-dev/kreuzberg/packages/go/v5@latest
 ```
 
 !!! Warning "Windows" The Go binding links against ONNX Runtime dynamically on Windows. `onnxruntime.dll` must be on your `PATH` at runtime — see the note at the top of this page.

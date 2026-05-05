@@ -249,7 +249,7 @@ pub struct ExtractionConfig {
     /// content size, and table cell count for every extraction path that
     /// ingests user-controlled bytes.
     /// When `None`, default limits are used.
-    pub security_limits: Option<String>,
+    pub security_limits: Option<SecurityLimits>,
     /// Content text format (default: Plain).
     ///
     /// Controls the format of the extracted content:
@@ -362,7 +362,7 @@ impl ExtractionConfig {
             extraction_timeout_secs: self.extraction_timeout_secs.map(|v| v as u64),
             max_concurrent_extractions: self.max_concurrent_extractions.map(|v| v as usize),
             result_format: self.result_format.clone().into(),
-            security_limits: Default::default(),
+            security_limits: self.security_limits.clone().map(Into::into),
             output_format: self.output_format.clone().into(),
             layout: self.layout.clone().map(Into::into),
             include_document_structure: self.include_document_structure,
@@ -397,7 +397,6 @@ pub fn new_extractionconfig(
     extraction_timeout_secs: Option<f64>,
     max_concurrent_extractions: Option<f64>,
     result_format: Option<String>,
-    security_limits: Option<String>,
     output_format: Option<String>,
     include_document_structure: Option<bool>,
     cache_namespace: Option<String>,
@@ -435,9 +434,6 @@ pub fn new_extractionconfig(
         if let Ok(parsed) = serde_json::from_str(&format!("\"{v}\"")) {
             __out.result_format = parsed;
         }
-    }
-    if let Some(v) = security_limits {
-        __out.security_limits = Some(v);
     }
     if let Some(v) = output_format {
         if let Ok(parsed) = serde_json::from_str(&format!("\"{v}\"")) {
@@ -1973,47 +1969,6 @@ pub fn new_anchorproperties(
 
 #[extendr]
 #[derive(Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct HeaderFooter {
-    pub paragraphs: Vec<String>,
-    pub tables: Vec<String>,
-    pub header_type: String,
-}
-
-#[extendr]
-impl HeaderFooter {}
-
-#[extendr]
-pub fn new_headerfooter(
-    paragraphs: Option<Vec<String>>,
-    tables: Option<Vec<String>>,
-    header_type: Option<String>,
-) -> HeaderFooter {
-    let mut __out = <HeaderFooter>::default();
-    if let Some(v) = paragraphs {
-        __out.paragraphs = v;
-    }
-    if let Some(v) = tables {
-        __out.tables = v;
-    }
-    if let Some(v) = header_type {
-        __out.header_type = v;
-    }
-    __out
-}
-
-#[extendr]
-#[derive(Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct Note {
-    pub id: String,
-    pub note_type: String,
-    pub paragraphs: Vec<String>,
-}
-
-#[extendr]
-impl Note {}
-
-#[extendr]
-#[derive(Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct PageMarginsPoints {
     pub top: Option<f64>,
     pub right: Option<f64>,
@@ -2476,6 +2431,84 @@ pub fn new_odtproperties(
 
 #[extendr]
 #[derive(Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct SecurityLimits {
+    /// Maximum uncompressed size for archives (500 MB)
+    pub max_archive_size: f64,
+    /// Maximum compression ratio before flagging as potential bomb (100:1)
+    pub max_compression_ratio: f64,
+    /// Maximum number of files in archive (10,000)
+    pub max_files_in_archive: f64,
+    /// Maximum nesting depth for structures (100)
+    pub max_nesting_depth: f64,
+    /// Maximum length of any single XML entity / attribute / token (1 MiB).
+    /// This is a per-token cap, NOT a cumulative cap — billion-laughs class
+    /// attacks where a single entity expands to hundreds of MB are caught
+    /// here, while normal long text content (a paragraph, a CDATA block) is
+    /// caught by `max_content_size` instead.
+    pub max_entity_length: f64,
+    /// Maximum string growth per document (100 MB)
+    pub max_content_size: f64,
+    /// Maximum iterations per operation
+    pub max_iterations: f64,
+    /// Maximum XML depth (100 levels)
+    pub max_xml_depth: f64,
+    /// Maximum cells per table (100,000)
+    pub max_table_cells: f64,
+}
+
+#[extendr]
+impl SecurityLimits {
+    #[allow(clippy::should_implement_trait)]
+    pub fn default() -> SecurityLimits {
+        kreuzberg::SecurityLimits::default().into()
+    }
+}
+
+#[extendr]
+pub fn new_securitylimits(
+    max_archive_size: Option<f64>,
+    max_compression_ratio: Option<f64>,
+    max_files_in_archive: Option<f64>,
+    max_nesting_depth: Option<f64>,
+    max_entity_length: Option<f64>,
+    max_content_size: Option<f64>,
+    max_iterations: Option<f64>,
+    max_xml_depth: Option<f64>,
+    max_table_cells: Option<f64>,
+) -> SecurityLimits {
+    let mut __out = <SecurityLimits>::default();
+    if let Some(v) = max_archive_size {
+        __out.max_archive_size = v;
+    }
+    if let Some(v) = max_compression_ratio {
+        __out.max_compression_ratio = v;
+    }
+    if let Some(v) = max_files_in_archive {
+        __out.max_files_in_archive = v;
+    }
+    if let Some(v) = max_nesting_depth {
+        __out.max_nesting_depth = v;
+    }
+    if let Some(v) = max_entity_length {
+        __out.max_entity_length = v;
+    }
+    if let Some(v) = max_content_size {
+        __out.max_content_size = v;
+    }
+    if let Some(v) = max_iterations {
+        __out.max_iterations = v;
+    }
+    if let Some(v) = max_xml_depth {
+        __out.max_xml_depth = v;
+    }
+    if let Some(v) = max_table_cells {
+        __out.max_table_cells = v;
+    }
+    __out
+}
+
+#[extendr]
+#[derive(Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct TokenReductionConfig {
     pub level: ReductionLevel,
     pub language_hint: Option<String>,
@@ -2576,7 +2609,7 @@ pub struct DjotContent {
     /// Metadata from YAML frontmatter
     pub metadata: Metadata,
     /// Extracted tables as structured data
-    pub tables: Vec<String>,
+    pub tables: Vec<Table>,
     /// Extracted images with metadata
     pub images: Vec<DjotImage>,
     /// Extracted links with URLs
@@ -2787,7 +2820,7 @@ pub struct ExtractionResult {
     /// Populated when the extractor can reliably distinguish native text extraction,
     /// OCR-only extraction, or mixed native/OCR output.
     pub extraction_method: Option<ExtractionMethod>,
-    pub tables: Vec<String>,
+    pub tables: Vec<Table>,
     pub detected_languages: Option<Vec<String>>,
     /// Text chunks when chunking is enabled.
     ///
@@ -4739,7 +4772,7 @@ pub struct PageContent {
     ///
     /// Serializes as Vec<Table> for JSON compatibility while maintaining
     /// Arc semantics in-memory for zero-copy sharing.
-    pub tables: Vec<String>,
+    pub tables: Vec<Table>,
     /// Images found on this page (uses Arc for memory efficiency)
     ///
     /// Serializes as Vec<ExtractedImage> for JSON compatibility while maintaining
@@ -4835,6 +4868,86 @@ pub struct HierarchicalBlock {
 
 #[extendr]
 impl HierarchicalBlock {}
+
+#[extendr]
+#[derive(Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct Table {
+    /// Table cells as a 2D vector (rows × columns)
+    pub cells: Vec<Vec<String>>,
+    /// Markdown representation of the table
+    pub markdown: String,
+    /// Page number where the table was found (1-indexed)
+    pub page_number: f64,
+    /// Bounding box of the table on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top).
+    /// Only populated for PDF-extracted tables when position data is available.
+    pub bounding_box: Option<String>,
+}
+
+#[extendr]
+impl Table {}
+
+#[extendr]
+pub fn new_table(
+    cells: Option<Vec<Vec<String>>>,
+    markdown: Option<String>,
+    page_number: Option<f64>,
+    bounding_box: Option<String>,
+) -> Table {
+    let mut __out = <Table>::default();
+    if let Some(v) = cells {
+        __out.cells = v;
+    }
+    if let Some(v) = markdown {
+        __out.markdown = v;
+    }
+    if let Some(v) = page_number {
+        __out.page_number = v;
+    }
+    if let Some(v) = bounding_box {
+        __out.bounding_box = Some(v);
+    }
+    __out
+}
+
+#[extendr]
+#[derive(Clone, Default, serde::Serialize, serde::Deserialize)]
+#[allow(clippy::similar_names)]
+pub struct TableCell {
+    /// Cell content as text
+    pub content: String,
+    /// Row span (number of rows this cell spans)
+    pub row_span: f64,
+    /// Column span (number of columns this cell spans)
+    pub col_span: f64,
+    /// Whether this is a header cell
+    pub is_header: bool,
+}
+
+#[extendr]
+impl TableCell {}
+
+#[extendr]
+pub fn new_tablecell(
+    content: Option<String>,
+    row_span: Option<f64>,
+    col_span: Option<f64>,
+    is_header: Option<bool>,
+) -> TableCell {
+    let mut __out = <TableCell>::default();
+    if let Some(v) = content {
+        __out.content = v;
+    }
+    if let Some(v) = row_span {
+        __out.row_span = v;
+    }
+    if let Some(v) = col_span {
+        __out.col_span = v;
+    }
+    if let Some(v) = is_header {
+        __out.is_header = v;
+    }
+    __out
+}
 
 #[extendr]
 #[derive(Clone, Default, serde::Serialize, serde::Deserialize)]
@@ -5864,6 +5977,7 @@ pub enum ChunkerType {
 }
 
 #[derive(Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum ChunkSizing {
     #[default]
     Characters = 0,
@@ -5871,6 +5985,7 @@ pub enum ChunkSizing {
 }
 
 #[derive(Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum EmbeddingModelType {
     #[default]
     Preset = 0,
@@ -6005,6 +6120,7 @@ pub enum ContentLayer {
 }
 
 #[derive(Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum NodeContent {
     #[default]
     Title = 0,
@@ -6030,6 +6146,7 @@ pub enum NodeContent {
 }
 
 #[derive(Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum AnnotationKind {
     #[default]
     Bold = 0,
@@ -6117,6 +6234,7 @@ pub enum ElementType {
 }
 
 #[derive(Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum FormatMetadata {
     #[default]
     Pdf = 0,
@@ -6182,6 +6300,7 @@ pub enum StructuredDataType {
 }
 
 #[derive(Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum OcrBoundingGeometry {
     #[default]
     Rectangle = 0,
@@ -6379,7 +6498,7 @@ impl From<ExtractionConfig> for kreuzberg::ExtractionConfig {
             extraction_timeout_secs: val.extraction_timeout_secs.map(|v| v as u64),
             max_concurrent_extractions: val.max_concurrent_extractions.map(|v| v as usize),
             result_format: val.result_format.into(),
-            security_limits: Default::default(),
+            security_limits: val.security_limits.map(Into::into),
             output_format: val.output_format.into(),
             layout: val.layout.map(Into::into),
             include_document_structure: val.include_document_structure,
@@ -6424,7 +6543,7 @@ impl From<kreuzberg::ExtractionConfig> for ExtractionConfig {
             extraction_timeout_secs: val.extraction_timeout_secs.map(|v| v as f64),
             max_concurrent_extractions: val.max_concurrent_extractions.map(|v| v as f64),
             result_format: val.result_format.into(),
-            security_limits: val.security_limits.as_ref().map(|v| format!("{v:?}")),
+            security_limits: val.security_limits.map(Into::into),
             output_format: val.output_format.into(),
             layout: val.layout.map(Into::into),
             include_document_structure: val.include_document_structure,
@@ -6510,7 +6629,7 @@ impl From<kreuzberg::FileExtractionConfig> for FileExtractionConfig {
 impl From<BatchBytesItem> for kreuzberg::BatchBytesItem {
     fn from(val: BatchBytesItem) -> Self {
         Self {
-            content: val.content.into(),
+            content: val.content.to_vec().into(),
             mime_type: val.mime_type,
             config: val.config.map(Into::into),
         }
@@ -6521,7 +6640,7 @@ impl From<BatchBytesItem> for kreuzberg::BatchBytesItem {
 impl From<kreuzberg::BatchBytesItem> for BatchBytesItem {
     fn from(val: kreuzberg::BatchBytesItem) -> Self {
         Self {
-            content: val.content.to_vec(),
+            content: val.content.to_vec().into(),
             mime_type: val.mime_type,
             config: val.config.map(Into::into),
         }
@@ -7180,7 +7299,7 @@ impl From<kreuzberg::extraction::html::HtmlExtractionResult> for HtmlExtractionR
 impl From<kreuzberg::extraction::html::ExtractedInlineImage> for ExtractedInlineImage {
     fn from(val: kreuzberg::extraction::html::ExtractedInlineImage) -> Self {
         Self {
-            data: val.data.to_vec(),
+            data: val.data.to_vec().into(),
             format: val.format,
             filename: val.filename,
             description: val.description,
@@ -7215,28 +7334,6 @@ impl From<kreuzberg::extraction::docx::drawing::AnchorProperties> for AnchorProp
             position_h: val.position_h.as_ref().map(|v| format!("{v:?}")),
             position_v: val.position_v.as_ref().map(|v| format!("{v:?}")),
             wrap_type: format!("{:?}", val.wrap_type),
-        }
-    }
-}
-
-#[allow(clippy::redundant_closure, clippy::useless_conversion)]
-impl From<kreuzberg::extraction::docx::parser::HeaderFooter> for HeaderFooter {
-    fn from(val: kreuzberg::extraction::docx::parser::HeaderFooter) -> Self {
-        Self {
-            paragraphs: val.paragraphs.iter().map(|i| format!("{:?}", i)).collect(),
-            tables: val.tables.iter().map(|i| format!("{:?}", i)).collect(),
-            header_type: format!("{:?}", val.header_type),
-        }
-    }
-}
-
-#[allow(clippy::redundant_closure, clippy::useless_conversion)]
-impl From<kreuzberg::extraction::docx::parser::Note> for Note {
-    fn from(val: kreuzberg::extraction::docx::parser::Note) -> Self {
-        Self {
-            id: val.id,
-            note_type: format!("{:?}", val.note_type),
-            paragraphs: val.paragraphs.iter().map(|i| format!("{:?}", i)).collect(),
         }
     }
 }
@@ -7366,6 +7463,40 @@ impl From<kreuzberg::extraction::office_metadata::odt_properties::OdtProperties>
 }
 
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
+impl From<SecurityLimits> for kreuzberg::SecurityLimits {
+    fn from(val: SecurityLimits) -> Self {
+        Self {
+            max_archive_size: val.max_archive_size as usize,
+            max_compression_ratio: val.max_compression_ratio as usize,
+            max_files_in_archive: val.max_files_in_archive as usize,
+            max_nesting_depth: val.max_nesting_depth as usize,
+            max_entity_length: val.max_entity_length as usize,
+            max_content_size: val.max_content_size as usize,
+            max_iterations: val.max_iterations as usize,
+            max_xml_depth: val.max_xml_depth as usize,
+            max_table_cells: val.max_table_cells as usize,
+        }
+    }
+}
+
+#[allow(clippy::redundant_closure, clippy::useless_conversion)]
+impl From<kreuzberg::SecurityLimits> for SecurityLimits {
+    fn from(val: kreuzberg::SecurityLimits) -> Self {
+        Self {
+            max_archive_size: val.max_archive_size as f64,
+            max_compression_ratio: val.max_compression_ratio as f64,
+            max_files_in_archive: val.max_files_in_archive as f64,
+            max_nesting_depth: val.max_nesting_depth as f64,
+            max_entity_length: val.max_entity_length as f64,
+            max_content_size: val.max_content_size as f64,
+            max_iterations: val.max_iterations as f64,
+            max_xml_depth: val.max_xml_depth as f64,
+            max_table_cells: val.max_table_cells as f64,
+        }
+    }
+}
+
+#[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<TokenReductionConfig> for kreuzberg::TokenReductionConfig {
     fn from(val: TokenReductionConfig) -> Self {
         Self {
@@ -7434,7 +7565,7 @@ impl From<DjotContent> for kreuzberg::DjotContent {
             plain_text: val.plain_text,
             blocks: val.blocks.into_iter().map(Into::into).collect(),
             metadata: val.metadata.into(),
-            tables: Default::default(),
+            tables: val.tables.into_iter().map(Into::into).collect(),
             images: val.images.into_iter().map(Into::into).collect(),
             links: val.links.into_iter().map(Into::into).collect(),
             footnotes: val.footnotes.into_iter().map(Into::into).collect(),
@@ -7450,7 +7581,7 @@ impl From<kreuzberg::DjotContent> for DjotContent {
             plain_text: val.plain_text,
             blocks: val.blocks.into_iter().map(Into::into).collect(),
             metadata: val.metadata.into(),
-            tables: val.tables.iter().map(|i| format!("{:?}", i)).collect(),
+            tables: val.tables.into_iter().map(Into::into).collect(),
             images: val.images.into_iter().map(Into::into).collect(),
             links: val.links.into_iter().map(Into::into).collect(),
             footnotes: val.footnotes.into_iter().map(Into::into).collect(),
@@ -7764,7 +7895,7 @@ impl From<ExtractionResult> for kreuzberg::ExtractionResult {
             mime_type: val.mime_type.into(),
             metadata: val.metadata.into(),
             extraction_method: val.extraction_method.map(Into::into),
-            tables: Default::default(),
+            tables: val.tables.into_iter().map(Into::into).collect(),
             detected_languages: val.detected_languages,
             chunks: val.chunks.map(|v| v.into_iter().map(Into::into).collect()),
             images: val.images.map(|v| v.into_iter().map(Into::into).collect()),
@@ -7800,7 +7931,7 @@ impl From<kreuzberg::ExtractionResult> for ExtractionResult {
             mime_type: val.mime_type.to_string(),
             metadata: val.metadata.into(),
             extraction_method: val.extraction_method.map(Into::into),
-            tables: val.tables.iter().map(|i| format!("{:?}", i)).collect(),
+            tables: val.tables.into_iter().map(Into::into).collect(),
             detected_languages: val.detected_languages,
             chunks: val.chunks.map(|v| v.into_iter().map(Into::into).collect()),
             images: val.images.map(|v| v.into_iter().map(Into::into).collect()),
@@ -7994,7 +8125,7 @@ impl From<kreuzberg::ChunkMetadata> for ChunkMetadata {
 impl From<ExtractedImage> for kreuzberg::ExtractedImage {
     fn from(val: ExtractedImage) -> Self {
         Self {
-            data: val.data.into(),
+            data: val.data.to_vec().into(),
             format: val.format.into(),
             image_index: val.image_index as usize,
             page_number: val.page_number.map(|v| v as usize),
@@ -8018,7 +8149,7 @@ impl From<ExtractedImage> for kreuzberg::ExtractedImage {
 impl From<kreuzberg::ExtractedImage> for ExtractedImage {
     fn from(val: kreuzberg::ExtractedImage) -> Self {
         Self {
-            data: val.data.to_vec(),
+            data: val.data.to_vec().into(),
             format: val.format.to_string(),
             image_index: val.image_index as f64,
             page_number: val.page_number.map(|v| v as f64),
@@ -8196,7 +8327,7 @@ impl From<kreuzberg::EmailAttachment> for EmailAttachment {
             mime_type: val.mime_type,
             size: val.size.map(|v| v as f64),
             is_image: val.is_image,
-            data: val.data.map(|v| v.to_vec()).map(|v| v.to_vec()),
+            data: val.data.map(|v| v.to_vec().into()),
         }
     }
 }
@@ -9289,7 +9420,7 @@ impl From<PageContent> for kreuzberg::PageContent {
         Self {
             page_number: val.page_number as usize,
             content: val.content,
-            tables: Default::default(),
+            tables: val.tables.into_iter().map(|v| std::sync::Arc::new(v.into())).collect(),
             images: val.images.into_iter().map(|v| std::sync::Arc::new(v.into())).collect(),
             hierarchy: val.hierarchy.map(Into::into),
             is_blank: val.is_blank,
@@ -9304,7 +9435,7 @@ impl From<kreuzberg::PageContent> for PageContent {
         Self {
             page_number: val.page_number as f64,
             content: val.content,
-            tables: val.tables.iter().map(|i| format!("{:?}", i)).collect(),
+            tables: val.tables.into_iter().map(|v| (*v).clone().into()).collect(),
             images: val.images.into_iter().map(|v| (*v).clone().into()).collect(),
             hierarchy: val.hierarchy.map(Into::into),
             is_blank: val.is_blank,
@@ -9380,6 +9511,42 @@ impl From<kreuzberg::HierarchicalBlock> for HierarchicalBlock {
                 let arr: Vec<_> = [t.0, t.1].into_iter().map(|v| v as _).collect();
                 arr
             }),
+        }
+    }
+}
+
+#[allow(clippy::redundant_closure, clippy::useless_conversion)]
+impl From<Table> for kreuzberg::Table {
+    fn from(val: Table) -> Self {
+        Self {
+            cells: val.cells,
+            markdown: val.markdown,
+            page_number: val.page_number as usize,
+            bounding_box: Default::default(),
+        }
+    }
+}
+
+#[allow(clippy::redundant_closure, clippy::useless_conversion)]
+impl From<kreuzberg::Table> for Table {
+    fn from(val: kreuzberg::Table) -> Self {
+        Self {
+            cells: val.cells,
+            markdown: val.markdown,
+            page_number: val.page_number as f64,
+            bounding_box: val.bounding_box.as_ref().map(|v| format!("{v:?}")),
+        }
+    }
+}
+
+#[allow(clippy::redundant_closure, clippy::useless_conversion)]
+impl From<kreuzberg::TableCell> for TableCell {
+    fn from(val: kreuzberg::TableCell) -> Self {
+        Self {
+            content: val.content,
+            row_span: val.row_span as f64,
+            col_span: val.col_span as f64,
+            is_header: val.is_header,
         }
     }
 }
@@ -9885,7 +10052,7 @@ impl From<kreuzberg::pdf::embedded_files::EmbeddedFile> for EmbeddedFile {
     fn from(val: kreuzberg::pdf::embedded_files::EmbeddedFile) -> Self {
         Self {
             name: val.name,
-            data: val.data.to_vec(),
+            data: val.data.to_vec().into(),
             mime_type: val.mime_type,
         }
     }
@@ -9902,7 +10069,7 @@ impl From<kreuzberg::pdf::images::PdfImage> for PdfImage {
             color_space: val.color_space,
             bits_per_component: val.bits_per_component.map(|v| v as f64),
             filters: val.filters,
-            data: val.data.to_vec(),
+            data: val.data.to_vec().into(),
             decoded_format: val.decoded_format,
             image_kind: val.image_kind.map(Into::into),
             kind_confidence: val.kind_confidence.map(|v| v as f64),
@@ -11253,8 +11420,6 @@ extendr_module! {
     impl ExtractedInlineImage;
     impl Drawing;
     impl AnchorProperties;
-    impl HeaderFooter;
-    impl Note;
     impl PageMarginsPoints;
     impl StyleDefinition;
     impl ResolvedStyle;
@@ -11263,6 +11428,7 @@ extendr_module! {
     impl PptxAppProperties;
     impl CustomProperties;
     impl OdtProperties;
+    impl SecurityLimits;
     impl TokenReductionConfig;
     impl PdfAnnotation;
     impl InlineElement;
@@ -11320,6 +11486,8 @@ extendr_module! {
     impl PageInfo;
     impl LayoutRegion;
     impl HierarchicalBlock;
+    impl Table;
+    impl TableCell;
     impl Uri;
     impl StringBufferPool;
     impl ByteBufferPool;

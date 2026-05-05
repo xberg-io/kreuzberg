@@ -17,8 +17,8 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 @JsonPOJOBuilder(withPrefix = "with")
 public class ExtractionConfigBuilder {
 
-    private boolean useCache = false;
-    private boolean enableQualityProcessing = false;
+    private boolean useCache = true;
+    private boolean enableQualityProcessing = true;
     private Optional<OcrConfig> ocr = Optional.empty();
     private boolean forceOcr = false;
     private Optional<List<Long>> forceOcrPages = Optional.empty();
@@ -37,7 +37,7 @@ public class ExtractionConfigBuilder {
     private Optional<Long> extractionTimeoutSecs = Optional.empty();
     private Optional<Long> maxConcurrentExtractions = Optional.empty();
     private ResultFormat resultFormat = null;
-    private Optional<String> securityLimits = Optional.empty();
+    private Optional<SecurityLimits> securityLimits = Optional.empty();
     private OutputFormat outputFormat = null;
     private Optional<LayoutDetectionConfig> layout = Optional.empty();
     private boolean includeDocumentStructure = false;
@@ -172,7 +172,7 @@ public class ExtractionConfigBuilder {
     }
 
     /** Sets the securityLimits field. */
-    public ExtractionConfigBuilder withSecurityLimits(final Optional<String> value) {
+    public ExtractionConfigBuilder withSecurityLimits(final Optional<SecurityLimits> value) {
         this.securityLimits = value;
         return this;
     }

@@ -302,7 +302,7 @@ itertools = { workspace = true, optional = true }
 jotdown = "0.10"
 kamadak-exif = { version = "0.6.1", optional = true }
 
-kreuzberg-tesseract = { path = "../kreuzberg-tesseract", version = "4.10.0-rc.2", optional = true }
+kreuzberg-tesseract = { path = "../kreuzberg-tesseract", version = "5.0.0-rc.1", optional = true }
 libc = { workspace = true }
 # liter-llm is declared in the platform-conditional dependencies block below — it must be
 # excluded on Windows because it pulls reqwest/rustls -> aws-lc-rs -> aws-lc-sys, which fails
@@ -332,7 +332,7 @@ pastey = "0.2"
 pdf_oxide = { workspace = true, optional = true }
 pdfium-render = { workspace = true, features = ["thread_safe", "image_latest"], optional = true }
 pulldown-cmark = { version = "0.13" }
-quick-xml = { version = "0.39.2", features = ["serialize"], optional = true }
+quick-xml = { version = "0.39.3", features = ["serialize"], optional = true }
 rake = { version = "0.3.6", optional = true }
 rayon = { workspace = true }
 regex = "1.12.3"
@@ -380,7 +380,7 @@ tracing = { workspace = true }
 tracing-opentelemetry = { version = "0.32", optional = true }
 unicode-normalization = { version = "0.1.25", optional = true }
 urlencoding = "2"
-utoipa = { version = "5.4", features = ["axum_extras"], optional = true }
+utoipa = { version = "5.5", features = ["axum_extras"], optional = true }
 uuid = { version = "1", features = ["v4"], optional = true }
 v_htmlescape = { version = "0.17", optional = true }
 whatlang = { version = "0.18.0", optional = true }
@@ -391,7 +391,7 @@ zip = { version = ">=7.0.0", optional = true, default-features = false, features
 [target.'cfg(all(not(target_os = "windows"), not(target_arch = "wasm32")))'.dependencies]
 hf-hub = { version = "0.5", default-features = false, features = ["ureq"], optional = true }
 # PaddleOCR via ONNX Runtime - not available on WASM (vendored from paddle-ocr-rs)
-kreuzberg-paddle-ocr = { path = "../kreuzberg-paddle-ocr", version = "4.10.0-rc.2", optional = true }
+kreuzberg-paddle-ocr = { path = "../kreuzberg-paddle-ocr", version = "5.0.0-rc.1", optional = true }
 # liter-llm pulls reqwest/rustls -> aws-lc-rs -> aws-lc-sys. aws-lc-sys 0.40 fails to build on
 # Windows MSVC (stdalign feature detection treats `-WX` warnings as errors). Until upstream ships
 # a fix, restrict liter-llm to non-Windows targets so Windows FFI/CLI builds don't pull aws-lc-sys.
@@ -404,7 +404,7 @@ ureq = { version = "3.3", default-features = false, features = ["rustls", "json"
 [target.'cfg(all(target_os = "windows", not(target_arch = "wasm32")))'.dependencies]
 hf-hub = { version = "0.5", default-features = false, features = ["ureq"], optional = true }
 # PaddleOCR via ONNX Runtime - not available on WASM (vendored from paddle-ocr-rs)
-kreuzberg-paddle-ocr = { path = "../kreuzberg-paddle-ocr", version = "4.10.0-rc.2", optional = true }
+kreuzberg-paddle-ocr = { path = "../kreuzberg-paddle-ocr", version = "5.0.0-rc.1", optional = true }
 # Force ureq (transitive dep via hf-hub) to use native-tls on Windows
 ureq = { version = "3.3", default-features = false, features = [
     "native-tls",

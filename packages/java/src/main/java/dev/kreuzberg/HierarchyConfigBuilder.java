@@ -16,9 +16,9 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 @JsonPOJOBuilder(withPrefix = "with")
 public class HierarchyConfigBuilder {
 
-    private boolean enabled = false;
+    private boolean enabled = true;
     private long kClusters = 0;
-    private boolean includeBbox = false;
+    private boolean includeBbox = true;
     private Optional<Float> ocrCoverageThreshold = Optional.empty();
 
     /** Sets the enabled field. */

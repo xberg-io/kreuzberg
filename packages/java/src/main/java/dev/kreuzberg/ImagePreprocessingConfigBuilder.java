@@ -16,11 +16,11 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 public class ImagePreprocessingConfigBuilder {
 
     private int targetDpi = 0;
-    private boolean autoRotate = false;
-    private boolean deskew = false;
+    private boolean autoRotate = true;
+    private boolean deskew = true;
     private boolean denoise = false;
     private boolean contrastEnhance = false;
-    private String binarizationMethod = "";
+    private String binarizationMethod = "otsu";
     private boolean invertColors = false;
 
     /** Sets the targetDpi field. */
