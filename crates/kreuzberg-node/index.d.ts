@@ -38,13 +38,13 @@ export declare class JsZipBombValidator {
 
 }
 
-export declare function batchExtractBytes(items: Array<JsBatchBytesItem>, config: JsExtractionConfig): Promise<Array<JsExtractionResult>>
+export declare function batchExtractBytes(items: Array<JsBatchBytesItem>, config?: JsExtractionConfig | undefined | null): Promise<Array<JsExtractionResult>>
 
-export declare function batchExtractBytesSync(items: Array<JsBatchBytesItem>, config: JsExtractionConfig): Array<JsExtractionResult>
+export declare function batchExtractBytesSync(items: Array<JsBatchBytesItem>, config?: JsExtractionConfig | undefined | null): Array<JsExtractionResult>
 
-export declare function batchExtractFiles(items: Array<JsBatchFileItem>, config: JsExtractionConfig): Promise<Array<JsExtractionResult>>
+export declare function batchExtractFiles(items: Array<JsBatchFileItem>, config?: JsExtractionConfig | undefined | null): Promise<Array<JsExtractionResult>>
 
-export declare function batchExtractFilesSync(items: Array<JsBatchFileItem>, config: JsExtractionConfig): Array<JsExtractionResult>
+export declare function batchExtractFilesSync(items: Array<JsBatchFileItem>, config?: JsExtractionConfig | undefined | null): Array<JsExtractionResult>
 
 export declare function clearOcrBackends(): void
 
@@ -54,15 +54,15 @@ export declare function clearValidators(): void
 
 export declare function detectMimeType(path: string, checkExists: boolean): string
 
-export declare function detectMimeTypeFromBytes(content: Array<number>): string
+export declare function detectMimeTypeFromBytes(content: Buffer): string
 
-export declare function embedTexts(texts: Array<string>, config: JsEmbeddingConfig): Array<Array<number>>
+export declare function embedTexts(texts: Array<string>, config?: JsEmbeddingConfig | undefined | null): Array<Array<number>>
 
-export declare function embedTextsAsync(texts: Array<string>, config: JsEmbeddingConfig): Promise<Array<Array<number>>>
+export declare function embedTextsAsync(texts: Array<string>, config?: JsEmbeddingConfig | undefined | null): Promise<Array<Array<number>>>
 
-export declare function extractBytes(content: Array<number>, mimeType: string, config: JsExtractionConfig): Promise<JsExtractionResult>
+export declare function extractBytes(content: Buffer, mimeType: string, config?: JsExtractionConfig | undefined | null): Promise<JsExtractionResult>
 
-export declare function extractBytesSync(content: Array<number>, mimeType: string, config: JsExtractionConfig): JsExtractionResult
+export declare function extractBytesSync(content: Buffer, mimeType: string, config?: JsExtractionConfig | undefined | null): JsExtractionResult
 
 export declare function extractFile(path: string, mimeType?: string | undefined | null, config?: JsExtractionConfig | undefined | null): Promise<JsExtractionResult>
 
@@ -109,7 +109,7 @@ export interface JsArchiveMetadata {
 }
 
 export interface JsBatchBytesItem {
-  content: Array<number>
+  content: Buffer
   mimeType: string
   config?: JsFileExtractionConfig
 }
@@ -432,7 +432,7 @@ export interface JsEmailAttachment {
   mimeType?: string
   size?: number
   isImage: boolean
-  data?: Array<number>
+  data?: Buffer
 }
 
 export interface JsEmailConfig {
@@ -466,7 +466,7 @@ export interface JsEmailMetadata {
 
 export interface JsEmbeddedFile {
   name: string
-  data: Array<number>
+  data: Buffer
   mimeType?: string
 }
 
@@ -560,7 +560,7 @@ export declare const enum JsExecutionProviderType {
 }
 
 export interface JsExtractedImage {
-  data: Array<number>
+  data: Buffer
   format: string
   imageIndex: number
   pageNumber?: number
@@ -579,7 +579,7 @@ export interface JsExtractedImage {
 }
 
 export interface JsExtractedInlineImage {
-  data: Array<number>
+  data: Buffer
   format: string
   filename?: string
   description?: string
@@ -1434,7 +1434,7 @@ export interface JsPdfImage {
   colorSpace?: string
   bitsPerComponent?: number
   filters: Array<string>
-  data: Array<number>
+  data: Buffer
   decodedFormat: string
   imageKind?: JsImageKind
   kindConfidence?: number
@@ -1838,4 +1838,4 @@ export declare function registerPostProcessor(obj: object): void
 
 export declare function registerValidator(obj: object): void
 
-export declare function renderPdfPageToPng(pdfBytes: Array<number>, pageIndex: number, dpi?: number | undefined | null, password?: string | undefined | null): Array<number>
+export declare function renderPdfPageToPng(pdfBytes: Buffer, pageIndex: number, dpi?: number | undefined | null, password?: string | undefined | null): Buffer

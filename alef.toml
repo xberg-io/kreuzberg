@@ -1031,7 +1031,7 @@ e2e = "cd e2e/python && uv run pytest tests/ -q"
 
 [crates.test.node]
 precondition = "command -v npx >/dev/null 2>&1"
-before = "cd crates/kreuzberg-node && napi build --output-dir . --release"
+before = "cd crates/kreuzberg-node && napi build --output-dir . --release --platform"
 e2e = "cd e2e/node && pnpm install && pnpm test"
 
 [crates.test.go]
