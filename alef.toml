@@ -746,10 +746,10 @@ types = [
   "Renderer",
 
   # Internal docx/hwp parser types — missing Serialize/Deserialize derives
-  "Table", # kreuzberg::extraction::docx::parser::Table
-  "TableCell", # kreuzberg::extraction::docx::parser::TableCell
-  "TableRow", # kreuzberg::extraction::docx::parser::TableRow
-  "Section", # kreuzberg::extraction::hwp::model::Section
+  "kreuzberg::extraction::docx::parser::Table",
+  "kreuzberg::extraction::docx::parser::TableCell",
+  "kreuzberg::extraction::docx::parser::TableRow",
+  "kreuzberg::extraction::hwp::model::Section",
 
   # Duplicate types with internal-only versions — use public types instead
   "BoundingBox", # kreuzberg::pdf::hierarchy::bounding_box::BoundingBox (internal; use kreuzberg::types::BoundingBox)
