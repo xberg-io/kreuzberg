@@ -359,7 +359,6 @@ features = [
   "html",
   "xml",
   "archives",
-  "embeddings",
   "language-detection",
   "chunking",
   "quality",
