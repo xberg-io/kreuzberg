@@ -4,6 +4,10 @@
   "description": "Async extract_bytes call on PDF document",
   "tags": ["async", "api", "extract_bytes"],
   "call": "extract_bytes",
+  "skip": {
+    "skip_languages": ["wasm"],
+    "reason": "PDFium for WASM requires manual initialization via pdfium_render module"
+  },
   "input": {
     "data": "pdf/fake_memo.pdf",
     "mime_type": "application/pdf"

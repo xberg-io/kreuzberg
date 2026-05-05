@@ -68,7 +68,7 @@ pub mod chunking;
 #[cfg(all(feature = "liter-llm", not(target_os = "windows"), not(target_arch = "wasm32")))]
 pub mod llm;
 
-#[cfg(feature = "embeddings")]
+#[cfg(feature = "embedding-presets")]
 pub mod embeddings;
 
 #[cfg(feature = "ocr")]
@@ -233,7 +233,7 @@ pub use embeddings::embed_texts_async;
 ///
 /// Returns `None` if no preset with the given name exists. Returns an owned
 /// clone so the value is safe to pass across FFI boundaries.
-#[cfg(feature = "embeddings")]
+#[cfg(feature = "embedding-presets")]
 pub fn get_embedding_preset(name: &str) -> Option<embeddings::EmbeddingPreset> {
     embeddings::get_preset(name)
 }
@@ -241,7 +241,7 @@ pub fn get_embedding_preset(name: &str) -> Option<embeddings::EmbeddingPreset> {
 /// List the names of all available embedding presets.
 ///
 /// Returns owned `String`s so the values are safe to pass across FFI boundaries.
-#[cfg(feature = "embeddings")]
+#[cfg(feature = "embedding-presets")]
 pub fn list_embedding_presets() -> Vec<String> {
     embeddings::list_presets()
 }

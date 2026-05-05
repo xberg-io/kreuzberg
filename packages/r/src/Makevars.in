@@ -1,6 +1,6 @@
 CARGO_BUILD_ARGS = --release
-STATLIB = ./rust/target/release/libkreuzberg.a
-PKG_LIBS = -L./rust/target/release -lkreuzberg $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
+STATLIB = ./rust/target/release/libkreuzberg_r.a
+PKG_LIBS = -L./rust/target/release -lkreuzberg_r $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
 
 all: $(SHLIB)
 

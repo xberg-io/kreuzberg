@@ -148,6 +148,9 @@ chunking = [
     "dep:strum",
 ]
 chunking-tokenizers = ["chunking", "dep:tokenizers"]
+# embedding-presets: static preset metadata (WASM-safe, no ORT)
+embedding-presets = []
+# embeddings: full embedding generation with ONNX Runtime (ORT-dependent, WASM-incompatible)
 embeddings = [
     "dep:hf-hub",
     "dep:ort",
@@ -156,6 +159,7 @@ embeddings = [
     "chunking",
     "tokio-runtime",
     "ort-bundled",
+    "embedding-presets",
 ]
 stopwords = []
 quality = ["dep:unicode-normalization", "dep:chardetng", "stopwords"]
@@ -196,6 +200,7 @@ wasm-target = [
     "ocr-wasm",
     "liter-llm",
     "stopwords",
+    "embedding-presets",
 ]
 # WASM only: enables wasm-bindgen-rayon for multi-threaded WASM builds.
 # No #[cfg] gates — activates the wasm-bindgen-rayon dependency.

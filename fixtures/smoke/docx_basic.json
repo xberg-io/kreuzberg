@@ -24,5 +24,9 @@
       "field": "content",
       "values": ["Lorem", "ipsum", "document", "text"]
     }
-  ]
+  ],
+  "skip": {
+    "languages": ["wasm"],
+    "reason": "WASM cannot access filesystem; use extractBytes with file content instead"
+  }
 }

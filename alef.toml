@@ -1,5 +1,5 @@
 [workspace]
-alef_version = "0.14.4"
+alef_version = "0.14.22"
 languages = [
   "python",
   "node",
@@ -59,6 +59,12 @@ public_api = true
 
 [workspace.generate_overrides.wasm]
 async_wrappers = false
+
+# Disable the default format_generated pass for node (pnpm dlx oxfmt .) which runs
+# from the repo root and chokes on vendored HTML fixtures and Helm chart YAML.
+# Post-generation formatting is handled by [crates.lint.node] format command instead.
+[workspace.format_overrides.node]
+enabled = false
 
 # ---------------------------------------------------------------------------
 # Version synchronization
@@ -124,11 +130,20 @@ sources = [
   "crates/kreuzberg/src/chunking/mod.rs",
   "crates/kreuzberg/src/embeddings/mod.rs",
   "crates/kreuzberg/src/language_detection/mod.rs",
+  # Batch extraction functions (re-exported from lib.rs)
+  "crates/kreuzberg/src/core/extractor/mod.rs",
+  "crates/kreuzberg/src/core/extractor/sync.rs",
   # OCR/PaddleOCR types (re-exported from lib.rs)
   "crates/kreuzberg/src/ocr/types.rs",
   "crates/kreuzberg/src/paddle_ocr/mod.rs",
   # Plugin registry operations (list_document_extractors etc.)
   "crates/kreuzberg/src/plugins/extractor/mod.rs",
+  # OCR backend registry operations (register/unregister/list/clear)
+  "crates/kreuzberg/src/plugins/ocr.rs",
+  # Validator registry operations
+  "crates/kreuzberg/src/plugins/validator/mod.rs",
+  # Post-processor registry operations
+  "crates/kreuzberg/src/plugins/processor/mod.rs",
 ]
 features = [
   "full",
@@ -413,6 +428,9 @@ exclude_functions = [
 
 [crates.csharp]
 namespace = "Kreuzberg"
+# project_file directs `dotnet format` to the .csproj inside packages/csharp/Kreuzberg/
+# rather than the parent directory (which has no .sln or .csproj at its root).
+project_file = "packages/csharp/Kreuzberg/Kreuzberg.csproj"
 exclude_functions = [
   # Returns *mut u8 (raw byte buffer); no kreuzberg_free_bytes function exists in the C FFI.
   "render_pdf_page_to_png",
@@ -1006,14 +1024,12 @@ upgrade = "cd packages/zig && zig build --fetch"
 [crates.test.python]
 precondition = "command -v uv >/dev/null 2>&1"
 before = "cd packages/python && maturin develop --release"
-command = "cd packages/python && uv run pytest tests/ -v"
-e2e = "cd e2e/python && python3 -m pytest tests/ -q"
+e2e = "cd e2e/python && uv run pytest tests/ -q"
 
 [crates.test.node]
 precondition = "command -v npx >/dev/null 2>&1"
 before = "cd crates/kreuzberg-node && napi build --output-dir . --release"
-command = "npx vitest run --config packages/typescript/vitest.config.ts"
-e2e = "cd e2e/typescript && npx vitest run"
+e2e = "cd e2e/node && pnpm install && pnpm test"
 
 [crates.test.go]
 precondition = "command -v go >/dev/null 2>&1"
@@ -1023,31 +1039,26 @@ e2e = "cd e2e/go && go test ./... -count=1"
 [crates.test.ruby]
 precondition = "command -v bundle >/dev/null 2>&1"
 before = "cd e2e/ruby && bundle install"
-command = "cd e2e/ruby && bundle exec rspec"
 e2e = "cd e2e/ruby && bundle exec rspec"
 
 [crates.test.php]
 precondition = "command -v composer >/dev/null 2>&1"
 before = "cd e2e/php && composer install"
-command = "cd e2e/php && composer test"
 e2e = "cd e2e/php && composer test"
 
 [crates.test.java]
 precondition = "command -v mvn >/dev/null 2>&1"
-before = "cargo build --release -p kreuzberg-ffi"
-command = "cd e2e/java && mvn test -q"
+before = "cargo build --release -p kreuzberg-ffi && cd packages/java && mvn package -DskipTests -q"
 e2e = "cd e2e/java && mvn test -q"
 
 [crates.test.csharp]
 precondition = "command -v dotnet >/dev/null 2>&1"
 before = "cargo build --release -p kreuzberg-ffi"
-command = "dotnet test e2e/csharp"
 e2e = "dotnet test e2e/csharp"
 
 [crates.test.elixir]
 precondition = "command -v mix >/dev/null 2>&1"
 before = "cd packages/elixir && mix deps.get && mix compile"
-command = "cd e2e/elixir && mix test"
 e2e = "cd e2e/elixir && mix test"
 
 [crates.test.r]
@@ -1057,7 +1068,7 @@ e2e = "cd e2e/r && Rscript -e \"devtools::load_all('../../packages/r'); testthat
 
 [crates.test.wasm]
 precondition = "command -v wasm-pack >/dev/null 2>&1"
-before = "wasm-pack build crates/kreuzberg-wasm --release --target bundler && cd e2e/wasm && npm install"
+before = "wasm-pack build crates/kreuzberg-wasm --release --target web && cd e2e/wasm && npm install"
 e2e = "cd e2e/wasm && npm test"
 
 [crates.test.rust]
@@ -1225,6 +1236,17 @@ options_type = "ExtractionConfig"
 function = "extract_file"
 options_type = "ExtractionConfig"
 
+[crates.e2e.calls.extract_file]
+function = "extract_file"
+module = "kreuzberg"
+async = true
+returns_result = true
+args = [
+  { name = "path", field = "input.path", type = "file_path" },
+  { name = "mime_type", field = "input.mime_type", type = "string", optional = true },
+  { name = "config", field = "input.config", type = "json_object", optional = true },
+]
+
 [crates.e2e.calls.extract_bytes]
 function = "extract_bytes"
 module = "kreuzberg"
@@ -1243,6 +1265,9 @@ json_object_types = { chunking = "ChunkingConfig", ocr = "OcrConfig", images = "
 [crates.e2e.calls.extract_bytes.overrides.python]
 arg_name_map = { data = "content" }
 options_type = "ExtractionConfig"
+
+[crates.e2e.calls.extract_bytes.overrides.r]
+arg_name_map = { data = "content" }
 
 [crates.e2e.calls.extract_file_sync]
 function = "extract_file_sync"
@@ -1283,6 +1308,9 @@ json_object_types = { chunking = "ChunkingConfig", ocr = "OcrConfig", images = "
 [crates.e2e.calls.extract_bytes_sync.overrides.python]
 arg_name_map = { data = "content" }
 options_type = "ExtractionConfig"
+
+[crates.e2e.calls.extract_bytes_sync.overrides.r]
+arg_name_map = { data = "content" }
 
 [crates.e2e.calls.render_html.overrides.python]
 result_is_simple = true
@@ -1397,7 +1425,7 @@ returns_result = true
 result_is_vec = true
 skip_languages = ["wasm"]
 args = [
-  { name = "paths", field = "input.paths", type = "json_object", owned = true },
+  { name = "paths", field = "input.paths", type = "json_object", owned = true, go_type = "BatchFileItem", element_type = "BatchFileItem" },
   { name = "config", field = "input.config", type = "json_object", optional = true },
 ]
 
@@ -1414,6 +1442,9 @@ result_is_vec = true
 arg_name_map = { paths = "items" }
 options_type = "ExtractionConfig"
 
+[crates.e2e.calls.batch_extract_files.overrides.r]
+arg_name_map = { paths = "items" }
+
 [crates.e2e.calls.batch_extract_files_sync]
 function = "batch_extract_files_sync"
 module = "kreuzberg"
@@ -1422,7 +1453,7 @@ returns_result = true
 result_is_vec = true
 skip_languages = ["wasm"]
 args = [
-  { name = "paths", field = "input.paths", type = "json_object", owned = true },
+  { name = "paths", field = "input.paths", type = "json_object", owned = true, go_type = "BatchFileItem", element_type = "BatchFileItem" },
   { name = "config", field = "input.config", type = "json_object", optional = true },
 ]
 
@@ -1438,6 +1469,9 @@ options_type = "ExtractionConfig"
 result_is_vec = true
 arg_name_map = { paths = "items" }
 options_type = "ExtractionConfig"
+
+[crates.e2e.calls.batch_extract_files_sync.overrides.r]
+arg_name_map = { paths = "items" }
 
 [crates.e2e.calls.reduce_tokens.overrides.go]
 result_is_simple = true
@@ -1480,6 +1514,7 @@ returns_result = true
 
 [crates.e2e.calls.embed_texts]
 result_is_simple = true
+result_is_array = true
 function = "embed_texts"
 module = "kreuzberg"
 async = false
@@ -1498,6 +1533,11 @@ options_type = "EmbeddingConfig"
 result_is_simple = true
 options_type = "EmbeddingConfig"
 
+[crates.e2e.calls.embed_texts.overrides.go]
+result_is_simple = true
+result_is_array = true
+options_type = "EmbeddingConfig"
+
 [crates.e2e.calls.batch_extract_bytes]
 function = "batch_extract_bytes"
 module = "kreuzberg"
@@ -1506,7 +1546,7 @@ returns_result = true
 result_is_vec = true
 skip_languages = ["wasm"]
 args = [
-  { name = "items", field = "input.items", type = "json_object", owned = true },
+  { name = "items", field = "input.items", type = "json_object", owned = true, go_type = "BatchBytesItem", element_type = "BatchBytesItem" },
   { name = "config", field = "input.config", type = "json_object", optional = true },
 ]
 
@@ -1526,7 +1566,7 @@ returns_result = true
 result_is_vec = true
 skip_languages = ["wasm"]
 args = [
-  { name = "items", field = "input.items", type = "json_object", owned = true },
+  { name = "items", field = "input.items", type = "json_object", owned = true, go_type = "BatchBytesItem", element_type = "BatchBytesItem" },
   { name = "config", field = "input.config", type = "json_object", optional = true },
 ]
 
@@ -1544,6 +1584,10 @@ function = "list_document_extractors"
 module = "kreuzberg"
 async = false
 args = []
+
+[crates.e2e.calls.list_document_extractors.overrides.go]
+result_is_simple = true
+returns_result = true
 
 [crates.e2e.calls.list_ocr_backends]
 result_is_simple = true
@@ -1578,12 +1622,109 @@ args = []
 result_is_simple = true
 returns_result = true
 
+[crates.e2e.calls.clear_ocr_backends]
+result_is_simple = true
+function = "clear_ocr_backends"
+module = "kreuzberg"
+async = false
+returns_result = false
+args = []
+
+[crates.e2e.calls.clear_post_processors]
+result_is_simple = true
+function = "clear_post_processors"
+module = "kreuzberg"
+async = false
+returns_result = false
+args = []
+
+[crates.e2e.calls.clear_validators]
+result_is_simple = true
+function = "clear_validators"
+module = "kreuzberg"
+async = false
+returns_result = false
+args = []
+
+[crates.e2e.calls.unregister_ocr_backend]
+# Trait-bridge function — excluded from gen_function surface; fixtures skip all languages.
+# function/module left empty so alef skips API surface validation.
+result_is_simple = true
+function = ""
+module = ""
+async = false
+returns_result = false
+args = [{ name = "name", field = "input.name", type = "string" }]
+
+[crates.e2e.calls.unregister_post_processor]
+# Trait-bridge function — excluded from gen_function surface; fixtures skip all languages.
+result_is_simple = true
+function = ""
+module = ""
+async = false
+returns_result = false
+args = [{ name = "name", field = "input.name", type = "string" }]
+
+[crates.e2e.calls.unregister_validator]
+# Trait-bridge function — excluded from gen_function surface; fixtures skip all languages.
+result_is_simple = true
+function = ""
+module = ""
+async = false
+returns_result = false
+args = [{ name = "name", field = "input.name", type = "string" }]
+
+[crates.e2e.calls.register_ocr_backend]
+# Trait-bridge function — excluded from gen_function surface; fixtures skip all languages.
+result_is_simple = true
+function = ""
+module = ""
+async = false
+returns_result = false
+args = []
+
+[crates.e2e.calls.register_post_processor]
+# Trait-bridge function — excluded from gen_function surface; fixtures skip all languages.
+result_is_simple = true
+function = ""
+module = ""
+async = false
+returns_result = false
+args = []
+
+[crates.e2e.calls.register_validator]
+# Trait-bridge function — excluded from gen_function surface; fixtures skip all languages.
+result_is_simple = true
+function = ""
+module = ""
+async = false
+returns_result = false
+args = []
+
+[crates.e2e.calls.embed_texts_async]
+result_is_simple = true
+result_is_array = true
+function = "embed_texts_async"
+module = "kreuzberg"
+async = true
+returns_result = true
+skip_languages = ["wasm"]
+args = [
+  { name = "texts", field = "input.texts", type = "json_object", owned = true, element_type = "String" },
+  { name = "config", field = "input.config", type = "json_object", optional = true },
+]
+
 [crates.e2e.calls.embed_texts_async.overrides.csharp]
 result_is_simple = true
 options_type = "EmbeddingConfig"
 
 [crates.e2e.calls.embed_texts_async.overrides.java]
 result_is_simple = true
+options_type = "EmbeddingConfig"
+
+[crates.e2e.calls.embed_texts_async.overrides.go]
+result_is_simple = true
+result_is_array = true
 options_type = "EmbeddingConfig"
 
 [crates.e2e.calls.get_embedding_preset]
@@ -1593,10 +1734,11 @@ function = "get_embedding_preset"
 module = "kreuzberg"
 async = false
 returns_result = false
-args = [{ name = "preset_name", field = "input.preset_name", type = "string" }]
+args = [{ name = "name", field = "input.preset_name", type = "string" }]
 
 [crates.e2e.calls.list_embedding_presets]
 result_is_simple = true
+result_is_array = true
 function = "list_embedding_presets"
 module = "kreuzberg"
 async = false
@@ -1621,6 +1763,7 @@ function = "render_pdf_page_to_png"
 module = "kreuzberg"
 async = false
 returns_result = true
+skip_languages = ["go", "wasm"]
 args = [
   { name = "pdf_bytes", field = "input.pdf_bytes", type = "bytes" },
   { name = "page_index", field = "input.page_index", type = "int" },
@@ -1752,7 +1895,7 @@ path = "../../packages/go/v4"
 
 [crates.e2e.packages.csharp]
 name = "Kreuzberg"
-path = "../../packages/csharp/Kreuzberg.csproj"
+path = "../../packages/csharp/Kreuzberg/Kreuzberg.csproj"
 
 [crates.e2e.packages.java]
 module = "dev.kreuzberg"
@@ -1827,7 +1970,7 @@ package_name = "@kreuzberg/node"
 badge_url = "https://img.shields.io/npm/v/@kreuzberg/node?label=TypeScript&color=007ec6"
 docs_url = "https://kreuzberg.dev/"
 description = "Extract text, tables, images, and metadata from 91+ file formats and 248 programming languages including PDF, Office documents, and images. Native NAPI-RS bindings for Node.js with superior performance, async/await support, and TypeScript type definitions."
-package_manager = ["npm", "pnpm", "yarn"]
+package_manager = ["pnpm"]
 features = { ocr = true, async = true, plugin_system = true, embeddings = true, worker_pools = true, config_discovery = true, code_intelligence = true }
 ocr_backends = ["tesseract", "paddleocr"]
 optional_sections = [
@@ -1925,7 +2068,7 @@ package_name = "@kreuzberg/wasm"
 badge_url = "https://img.shields.io/npm/v/@kreuzberg/wasm?label=WASM&color=007ec6"
 docs_url = "https://kreuzberg.dev/"
 description = "Extract text, tables, images, and metadata from 91+ file formats and 248 programming languages including PDF, Office documents, and images. WebAssembly bindings for browsers, Deno, and Cloudflare Workers with portable deployment and multi-threading support."
-package_manager = ["npm", "pnpm", "yarn"]
+package_manager = ["pnpm"]
 features = { ocr = true, async = true, plugin_system = true, embeddings = false, code_intelligence = true }
 ocr_backends = ["tesseract-wasm"]
 optional_sections = [
@@ -2030,25 +2173,25 @@ trait_name = "OcrBackend"
 super_trait = "kreuzberg::plugins::Plugin"
 registry_getter = "kreuzberg::plugins::registry::get_ocr_backend_registry"
 register_fn = "register_ocr_backend"
-exclude_languages = ["elixir"]
+exclude_languages = ["elixir", "r"]
 
 [[crates.trait_bridges]]
 trait_name = "PostProcessor"
 super_trait = "kreuzberg::plugins::Plugin"
 registry_getter = "kreuzberg::plugins::registry::get_post_processor_registry"
 register_fn = "register_post_processor"
-exclude_languages = ["elixir"]
+exclude_languages = ["elixir", "r"]
 
 [[crates.trait_bridges]]
 trait_name = "Validator"
 super_trait = "kreuzberg::plugins::Plugin"
 registry_getter = "kreuzberg::plugins::registry::get_validator_registry"
 register_fn = "register_validator"
-exclude_languages = ["elixir"]
+exclude_languages = ["elixir", "r"]
 
 [[crates.trait_bridges]]
 trait_name = "EmbeddingBackend"
 super_trait = "kreuzberg::plugins::Plugin"
 registry_getter = "kreuzberg::plugins::registry::get_embedding_backend_registry"
 register_fn = "register_embedding_backend"
-exclude_languages = ["elixir"]
+exclude_languages = ["elixir", "r"]

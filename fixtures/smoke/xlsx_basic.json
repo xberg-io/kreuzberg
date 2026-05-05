@@ -49,5 +49,9 @@
       "field": "metadata.sheet_names",
       "values": ["Stanley Cups"]
     }
-  ]
+  ],
+  "skip": {
+    "languages": ["wasm"],
+    "reason": "WASM cannot access filesystem; use extractBytes with file content instead"
+  }
 }

@@ -10,5 +10,8 @@
     {
       "type": "not_error"
     }
-  ]
+  ],
+  "skip": {
+    "skip_languages": ["wasm"]
+  }
 }

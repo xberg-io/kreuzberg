@@ -3,10 +3,10 @@
   "category": "code",
   "description": "Test language detection from shebang line via bytes input",
   "tags": ["code", "shebang", "tree-sitter"],
-  "call": "extract_bytes_sync",
+  "call": "extract_file_sync",
   "input": {
     "path": "code/script.sh",
-    "media_type": "text/x-source-code"
+    "mime_type": "text/x-source-code"
   },
   "assertions": [
     {

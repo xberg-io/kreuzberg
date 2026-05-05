@@ -16,8 +16,8 @@ Suggests:
     lintr,
     styler
 SystemRequirements: Cargo (Rust's package manager), rustc (>= 1.91)
-Config/rextendr/version: 0.4.2
+Config/rextendr/version: 0.5.0
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.3
 Config/testthat/edition: 3
+Config/roxygen2/version: 8.0.0

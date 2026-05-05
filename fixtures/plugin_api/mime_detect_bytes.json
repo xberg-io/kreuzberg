@@ -3,12 +3,9 @@
   "category": "mime_utilities",
   "description": "Detect MIME type from file bytes",
   "tags": ["mime", "detection", "bytes"],
-  "call": "detect_mime_type",
+  "call": "detect_mime_type_from_bytes",
   "input": {
-    "setup": {
-      "test_data": "%PDF-1.4\\n"
-    },
-    "args": ["${test_data_bytes}"]
+    "data": "pdf/fake_memo.pdf"
   },
   "assertions": [
     {

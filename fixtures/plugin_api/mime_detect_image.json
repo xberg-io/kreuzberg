@@ -3,12 +3,9 @@
   "category": "mime_utilities",
   "description": "Detect MIME type from PNG image bytes",
   "tags": ["mime", "detection", "image", "bytes"],
-  "call": "detect_mime_type",
+  "call": "detect_mime_type_from_bytes",
   "input": {
-    "setup": {
-      "test_data": "\u0089PNG\r\n\u001a\n"
-    },
-    "args": ["${test_data_bytes}"]
+    "data": "images/test_hello_world.png"
   },
   "assertions": [
     {
@@ -19,6 +16,6 @@
   ],
   "skip": {
     "languages": [],
-    "reason": "Tests plugin_api call surface that isn't re-exported at the kreuzberg crate root \u2014 skipped everywhere until Rust public API or codegen module path is updated."
+    "reason": "Tests plugin_api call surface that isn't re-exported at the kreuzberg crate root — skipped everywhere until Rust public API or codegen module path is updated."
   }
 }

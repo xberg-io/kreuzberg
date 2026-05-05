@@ -3680,6 +3680,7 @@ dependencies = [
  "cbindgen",
  "kreuzberg",
  "serde_json",
+ "tempfile",
  "tokio",
 ]
 

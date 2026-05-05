@@ -1,9 +1,9 @@
 {
   "id": "format_pptx",
   "category": "format_specific",
-  "description": "PPTX presentation extraction using extract_bytes_sync",
+  "description": "PPTX presentation extraction using extract_file_sync",
   "tags": ["format_specific", "pptx", "text_extraction"],
-  "call": "extract_bytes_sync",
+  "call": "extract_file_sync",
   "input": {
     "path": "pptx/simple.pptx",
     "mime_type": "application/vnd.openxmlformats-officedocument.presentationml.presentation"

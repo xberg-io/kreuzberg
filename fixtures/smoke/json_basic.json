@@ -19,5 +19,9 @@
       "field": "content",
       "value": 5
     }
-  ]
+  ],
+  "skip": {
+    "languages": ["wasm"],
+    "reason": "WASM cannot access filesystem; use extractBytes with file content instead"
+  }
 }

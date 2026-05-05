@@ -59,18 +59,23 @@
 //! }
 //! ```
 
+#[cfg(feature = "embeddings")]
 pub mod engine;
 
-use ahash::AHashMap;
 use serde::{Deserialize, Serialize};
-use std::sync::{Arc, RwLock};
-
 use std::sync::LazyLock;
 
+#[cfg(feature = "embeddings")]
+use ahash::AHashMap;
+#[cfg(feature = "embeddings")]
 use engine::EmbeddingEngine;
+#[cfg(feature = "embeddings")]
+use std::sync::{Arc, RwLock};
 
+#[cfg(feature = "embeddings")]
 type CachedEngine = Arc<EmbeddingEngine>;
 
+#[cfg(feature = "embeddings")]
 static ENGINE_CACHE: LazyLock<RwLock<AHashMap<String, CachedEngine>>> = LazyLock::new(|| RwLock::new(AHashMap::new()));
 
 /// Global semaphore that limits concurrent ONNX embedding inference calls.
@@ -81,7 +86,7 @@ static ENGINE_CACHE: LazyLock<RwLock<AHashMap<String, CachedEngine>>> = LazyLock
 /// semaphore — they don't share the local-inference resource pool. The permit
 /// count is set once on first access using the thread budget, matching the pattern
 /// used elsewhere (e.g., image OCR, batch extraction).
-#[cfg(feature = "tokio-runtime")]
+#[cfg(all(feature = "embeddings", feature = "tokio-runtime"))]
 static EMBED_SEMAPHORE: LazyLock<Arc<tokio::sync::Semaphore>> = LazyLock::new(|| {
     let budget = crate::core::config::concurrency::resolve_thread_budget(None);
     Arc::new(tokio::sync::Semaphore::new(budget))
@@ -204,6 +209,7 @@ fn resolve_cache_dir(cache_dir: Option<std::path::PathBuf>) -> std::path::PathBu
 }
 
 /// Resolve model info (repo, model file, pooling) from an EmbeddingModelType config.
+#[cfg(feature = "embeddings")]
 fn resolve_model_info(
     model_type: &crate::core::config::EmbeddingModelType,
 ) -> crate::Result<(String, String, engine::Pooling)> {
@@ -602,6 +608,7 @@ fn panic_to_string(payload: Box<dyn std::any::Any + Send>) -> String {
 /// where the caller doesn't need to use the model immediately. Used internally
 /// by the api/mcp `cache.warm` endpoints and by the kreuzberg-cli warm command.
 /// Excluded from the language bindings via alef.toml `[exclude].functions`.
+#[cfg(feature = "embeddings")]
 pub fn warm_model(
     model_type: &crate::core::config::EmbeddingModelType,
     cache_dir: Option<std::path::PathBuf>,
@@ -688,6 +695,7 @@ fn normalize_embeddings(embeddings: &mut [Vec<f32>]) {
 ///
 /// Returns `Ok(())` if embeddings were generated successfully, or an error if
 /// model initialization or embedding generation fails.
+#[cfg(feature = "embeddings")]
 pub(crate) fn generate_embeddings_for_chunks(
     chunks: &mut [crate::types::Chunk],
     config: &crate::core::config::EmbeddingConfig,
@@ -742,6 +750,7 @@ pub(crate) fn generate_embeddings_for_chunks(
 /// assert_eq!(embeddings.len(), 2);
 /// assert_eq!(embeddings[0].len(), 768); // balanced preset = 768 dims
 /// ```
+#[cfg(feature = "embeddings")]
 pub fn embed_texts<T: AsRef<str>>(
     texts: &[T],
     config: &crate::core::config::EmbeddingConfig,
@@ -902,7 +911,7 @@ pub fn embed_texts<T: AsRef<str>>(
 ///     &EmbeddingConfig::default(),
 /// ).await?;
 /// ```
-#[cfg(feature = "tokio-runtime")]
+#[cfg(all(feature = "tokio-runtime", feature = "embeddings"))]
 pub async fn embed_texts_async<T: AsRef<str> + Send + 'static>(
     texts: Vec<T>,
     config: &crate::core::config::EmbeddingConfig,

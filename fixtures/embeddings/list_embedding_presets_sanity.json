@@ -8,5 +8,8 @@
     {
       "type": "not_empty"
     }
-  ]
+  ],
+  "skip": {
+    "skip_languages": ["wasm"]
+  }
 }

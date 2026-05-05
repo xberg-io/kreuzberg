@@ -3,6 +3,10 @@
   "description": "Tests async batch bytes extraction API (batch_extract_bytes)",
   "tags": ["contract", "api", "batch"],
   "call": "extract_file",
+  "skip": {
+    "skip_languages": ["wasm"],
+    "reason": "PDFium for WASM requires manual initialization via pdfium_render module"
+  },
   "input": {
     "path": "pdf/fake_memo.pdf"
   },

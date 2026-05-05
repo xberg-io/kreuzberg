@@ -1,6 +1,6 @@
 CARGO_BUILD_ARGS = --release --target x86_64-pc-windows-gnu
-STATLIB = ./rust/target/x86_64-pc-windows-gnu/release/kreuzberg.lib
-PKG_LIBS = -L./rust/target/x86_64-pc-windows-gnu/release -lkreuzberg -lws2_32 -ladvapi32 -luserenv -lbcrypt -lntdll
+STATLIB = ./rust/target/x86_64-pc-windows-gnu/release/kreuzberg_r.lib
+PKG_LIBS = -L./rust/target/x86_64-pc-windows-gnu/release -lkreuzberg_r -lws2_32 -ladvapi32 -luserenv -lbcrypt -lntdll
 
 all: $(SHLIB)
 

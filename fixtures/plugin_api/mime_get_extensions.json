@@ -5,7 +5,7 @@
   "tags": ["mime", "extensions", "lookup"],
   "call": "get_extensions_for_mime",
   "input": {
-    "args": ["application/pdf"]
+    "mime_type": "application/pdf"
   },
   "assertions": [
     {

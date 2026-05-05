@@ -1,7 +1,12 @@
 {
   "id": "api_batch_file_with_configs_async",
   "description": "Tests async batch file extraction with per-file configs (batch_extract_files with file_configs parameter)",
-  "tags": ["contract", "api", "batch", "file_config"],
+  "tags": [
+    "contract",
+    "api",
+    "batch",
+    "file_config"
+  ],
   "call": "extract_file",
   "input": {
     "path": "pdf/fake_memo.pdf",
@@ -25,5 +30,11 @@
       "field": "metadata.output_format",
       "value": "markdown"
     }
-  ]
+  ],
+  "skip": {
+    "skip_languages": [
+      "wasm"
+    ],
+    "reason": "PDFium for WASM requires manual initialization via pdfium_render module"
+  }
 }
