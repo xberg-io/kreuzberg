@@ -80,7 +80,6 @@ extra_paths = [
   "packages/node/package.json",
   "packages/gleam/gleam.toml",
   "packages/go/v5/go.mod",
-  "e2e/java/pom.xml",
   "Cargo.toml",
 ]
 
