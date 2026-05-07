@@ -51,6 +51,7 @@ fn extract_markdown_with_layout(relative_path: &str) -> String {
 // ── Noise filtering: figure-internal text ────────────────────────────
 
 #[cfg(feature = "layout-detection")]
+#[ignore = "TODO: pdf_oxide upstream — https://github.com/yfedoseev/pdf_oxide/issues/484"]
 #[test]
 fn test_docling_no_figure_internal_text() {
     if !test_documents_available() {
