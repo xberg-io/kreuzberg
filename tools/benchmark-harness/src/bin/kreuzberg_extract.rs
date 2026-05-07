@@ -12,8 +12,7 @@
 //! - On error: {"error": "message"}
 
 use kreuzberg::{
-    BatchFileItem, ExtractionConfig, FormatMetadata, OcrConfig, PdfBackend, PdfConfig, batch_extract_files_sync,
-    extract_file_sync,
+    BatchFileItem, ExtractionConfig, FormatMetadata, OcrConfig, PdfConfig, batch_extract_files_sync, extract_file_sync,
 };
 use serde_json::json;
 use std::io::{self, BufRead, Write};
@@ -38,21 +37,11 @@ fn main() {
         .find(|w| w[0] == "--layout-preset" || w[0] == "--table-model")
         .map(|w| w[1].clone());
 
-    // Parse --pdf-backend <backend> (default: pdfium)
-    let pdf_backend = args.windows(2).find(|w| w[0] == "--pdf-backend").map(|w| w[1].as_str());
-
-    let pdf_options = pdf_backend.map(|backend| {
-        let backend = match backend {
-            "pdf-oxide" | "pdf_oxide" | "oxide" => PdfBackend::PdfOxide,
-            "pdfium" => PdfBackend::Pdfium,
-            "auto" => PdfBackend::Auto,
-            _ => PdfBackend::default(),
-        };
-        PdfConfig {
-            backend,
-            ..Default::default()
-        }
-    });
+    // Parse --pdf-backend <backend> — backend selection removed (only pdf_oxide is supported)
+    let pdf_options: Option<PdfConfig> = args
+        .windows(2)
+        .find(|w| w[0] == "--pdf-backend")
+        .map(|_| PdfConfig::default());
 
     let layout_config = layout_model.map(|model| {
         let table_model = match model.as_str() {

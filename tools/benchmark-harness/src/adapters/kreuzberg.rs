@@ -869,11 +869,10 @@ pub fn create_rust_subprocess_adapter(ocr_enabled: bool) -> Result<SubprocessAda
     ))
 }
 
-/// Create Rust subprocess adapter with pdf_oxide backend (persistent server mode)
+/// Create Rust subprocess adapter with explicit pdf_oxide backend flag (persistent server mode)
 ///
-/// Same as `create_rust_subprocess_adapter` but uses pdf_oxide instead of pdfium for
-/// PDF text extraction. Registered as framework name `kreuzberg-rust-oxide` for
-/// separate aggregation and backend comparison.
+/// Same as `create_rust_subprocess_adapter` but passes `--pdf-backend pdf-oxide` explicitly.
+/// Registered as framework name `kreuzberg-rust-oxide` for separate aggregation and backend comparison.
 pub fn create_rust_oxide_subprocess_adapter(ocr_enabled: bool) -> Result<SubprocessAdapter> {
     let binary_path = find_kreuzberg_extract_binary()?;
 
@@ -891,11 +890,10 @@ pub fn create_rust_oxide_subprocess_adapter(ocr_enabled: bool) -> Result<Subproc
     ))
 }
 
-/// Create Rust batch adapter with pdf_oxide backend
+/// Create Rust batch adapter with explicit pdf_oxide backend flag
 ///
-/// Same as `create_rust_batch_adapter` but uses pdf_oxide instead of pdfium for
-/// PDF text extraction. Registered as framework name `kreuzberg-rust-oxide` for
-/// separate aggregation and backend comparison.
+/// Same as `create_rust_batch_adapter` but passes `--pdf-backend pdf-oxide` explicitly.
+/// Registered as framework name `kreuzberg-rust-oxide` for separate aggregation and backend comparison.
 pub fn create_rust_oxide_batch_adapter(ocr_enabled: bool) -> Result<SubprocessAdapter> {
     let binary_path = find_kreuzberg_extract_binary()?;
 

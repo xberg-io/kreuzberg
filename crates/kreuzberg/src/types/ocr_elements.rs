@@ -89,7 +89,7 @@ impl OcrBoundingGeometry {
     }
 
     /// Check if this geometry overlaps with another.
-    #[cfg(test)]
+    #[cfg(all(test, feature = "ocr"))]
     pub(crate) fn overlaps(&self, other: &Self) -> bool {
         let (l1, t1, w1, h1) = self.to_aabb();
         let (l2, t2, w2, h2) = other.to_aabb();
@@ -355,7 +355,7 @@ pub struct OcrElementConfig {
     pub build_hierarchy: bool,
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "ocr"))]
 mod tests {
     use super::*;
 

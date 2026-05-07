@@ -14,28 +14,6 @@ _get_path_separator() {
   esac
 }
 
-setup_pdfium_paths() {
-  local pdfium_lib="${KREUZBERG_PDFIUM_PREBUILT:-}"
-  [ -z "$pdfium_lib" ] && return 0
-
-  local platform="${RUNNER_OS:-$(uname -s)}"
-  case "$platform" in
-  Linux)
-    export LD_LIBRARY_PATH="${pdfium_lib}/lib:${LD_LIBRARY_PATH:-}"
-    echo "✓ Set LD_LIBRARY_PATH for PDFium"
-    ;;
-  macOS | Darwin)
-    export DYLD_LIBRARY_PATH="${pdfium_lib}/lib:${DYLD_LIBRARY_PATH:-}"
-    export DYLD_FALLBACK_LIBRARY_PATH="${pdfium_lib}/lib:${DYLD_FALLBACK_LIBRARY_PATH:-}"
-    echo "✓ Set DYLD_LIBRARY_PATH for PDFium on macOS"
-    ;;
-  Windows | MINGW* | MSYS* | CYGWIN*)
-    export PATH="${pdfium_lib}/bin;${PATH:-}"
-    echo "✓ Set PATH for PDFium on Windows"
-    ;;
-  esac
-}
-
 setup_onnx_paths() {
   local ort_lib="${ORT_LIB_LOCATION:-}"
   [ -z "$ort_lib" ] && return 0
@@ -204,14 +182,12 @@ setup_all_library_paths() {
   local repo_root="${1:-${REPO_ROOT:-}}"
 
   echo "Setting up library paths..."
-  setup_pdfium_paths
   setup_onnx_paths
   setup_rust_ffi_paths "$repo_root"
   setup_go_paths "$repo_root"
   echo "✓ All library paths configured"
 }
 
-export -f setup_pdfium_paths
 export -f setup_onnx_paths
 export -f setup_rust_ffi_paths
 export -f verify_pkg_config

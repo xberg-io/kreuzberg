@@ -4,14 +4,14 @@
 //! Run after each substantial change to measure improvement or regression.
 //!
 //! Usage:
-//!   # Non-OCR tests (fast, pdfium path only):
-//!   cargo test -p kreuzberg --features "pdf,bundled-pdfium" --test pdf_table_ground_truth -- --nocapture
+//!   # Non-OCR tests (fast, oxide path):
+//!   cargo test -p kreuzberg --features "pdf" --test pdf_table_ground_truth -- --nocapture
 //!
 //!   # Full tests including table detection (needs ocr feature for HocrWord):
-//!   cargo test -p kreuzberg --features "pdf,ocr,bundled-pdfium" --test pdf_table_ground_truth -- --nocapture
+//!   cargo test -p kreuzberg --features "pdf,ocr" --test pdf_table_ground_truth -- --nocapture
 //!
 //!   # Comprehensive baseline snapshot:
-//!   cargo test -p kreuzberg --features "pdf,ocr,bundled-pdfium" --test pdf_table_ground_truth -- --ignored --nocapture
+//!   cargo test -p kreuzberg --features "pdf,ocr" --test pdf_table_ground_truth -- --ignored --nocapture
 
 #![cfg(feature = "pdf")]
 
@@ -39,7 +39,7 @@ fn word_similarity(a: &str, b: &str) -> f64 {
     intersection as f64 / union as f64
 }
 
-/// Extract markdown from a PDF file (pdfium path, no OCR).
+/// Extract markdown from a PDF file (oxide path, no OCR).
 fn extract_markdown(relative_path: &str) -> Option<kreuzberg::types::ExtractionResult> {
     let path = get_test_file_path(relative_path);
     if !path.exists() {
@@ -132,7 +132,7 @@ fn test_false_positive_google_doc() {
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// Section 2: Markdown Quality Tests (pdfium path, no OCR needed)
+// Section 2: Markdown Quality Tests (oxide path, no OCR needed)
 // Tests that text-bearing PDFs produce reasonable markdown.
 // ═══════════════════════════════════════════════════════════════════
 
@@ -213,7 +213,7 @@ fn test_markdown_quality_vs_ground_truth_simple() {
     println!("Ground truth length: {} chars", ground_truth.len());
     println!("Word similarity: {:.1}%", similarity * 100.0);
 
-    // table_document.pdf is image-only, so pdfium extracts almost nothing.
+    // table_document.pdf is image-only, so the PDF extractor finds almost no text.
     // This test tracks progress — similarity should increase with OCR improvements.
     // Currently: ~3% (only image placeholder matches a few words).
     println!("NOTE: table_document.pdf is image-only; low similarity expected without OCR.");

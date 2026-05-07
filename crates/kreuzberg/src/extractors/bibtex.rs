@@ -253,6 +253,16 @@ impl DocumentExtractor for BibtexExtractor {
             None
         };
 
+        let bibtex_metadata = BibtexMetadata {
+            entry_count: entries_vec.len(),
+            citation_keys,
+            authors: authors_list.clone(),
+            year_range,
+            entry_types,
+        };
+
+        // Store per-entry field maps as additional (complex JSON data)
+        let mut additional: AHashMap<Cow<'static, str>, serde_json::Value> = AHashMap::new();
         let entries_metadata: Vec<serde_json::Value> = entries_vec
             .iter()
             .map(|(key, fields)| {
@@ -264,15 +274,7 @@ impl DocumentExtractor for BibtexExtractor {
                 serde_json::Value::Object(entry_obj)
             })
             .collect();
-
-        let bibtex_metadata = BibtexMetadata {
-            entry_count: entries_vec.len(),
-            citation_keys,
-            authors: authors_list.clone(),
-            year_range,
-            entry_types,
-            entries: Some(entries_metadata),
-        };
+        additional.insert(Cow::Borrowed("entries"), serde_json::json!(entries_metadata));
 
         let meta_authors = if authors_list.is_empty() {
             None
@@ -285,6 +287,7 @@ impl DocumentExtractor for BibtexExtractor {
         doc.metadata = Metadata {
             authors: meta_authors,
             format: Some(FormatMetadata::Bibtex(bibtex_metadata)),
+            additional,
             ..Default::default()
         };
 
@@ -599,12 +602,12 @@ Some random text that's not valid BibTeX"#;
         let metadata = &result.metadata;
 
         // Check that entries metadata contains all fields
-        let format_meta = metadata.format.as_ref().expect("Should have format metadata");
-        let bibtex_meta = match format_meta {
-            crate::types::FormatMetadata::Bibtex(m) => m,
-            _ => panic!("Expected Bibtex format metadata"),
-        };
-        let entries_array = bibtex_meta.entries.as_ref().expect("entries should be present");
+        let entries = metadata.additional.get(&Cow::Borrowed("entries"));
+        assert!(entries.is_some(), "Should have entries metadata");
+        let entries_array = entries
+            .expect("entries key should be present")
+            .as_array()
+            .expect("entries should be an array");
         assert_eq!(entries_array.len(), 1);
 
         let entry = &entries_array[0];

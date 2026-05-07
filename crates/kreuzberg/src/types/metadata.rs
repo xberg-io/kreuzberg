@@ -75,7 +75,6 @@ pub enum FormatMetadata {
     Html(Box<HtmlMetadata>),
     Ocr(OcrMetadata),
     Csv(CsvMetadata),
-    Structured(StructuredMetadata),
     #[cfg(feature = "office")]
     Bibtex(BibtexMetadata),
     #[cfg(feature = "office")]
@@ -206,16 +205,13 @@ pub struct Metadata {
     /// Output format identifier (e.g., "markdown", "html", "text").
     ///
     /// Set by the output format pipeline stage when format conversion is applied.
+    /// Previously stored in `metadata.additional["output_format"]`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub output_format: Option<String>,
 
-    /// Method used to extract text (e.g., "native", "ocr", "mixed", "native_ole").
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub extraction_method: Option<String>,
-
-    /// Custom fields for plugin-injected and format-specific dynamic data
-    /// (e.g., OCR backend metadata, org-mode directives).
+    /// Additional custom fields from postprocessors.
     ///
+    /// Serialized as a nested `"additional"` object (not flattened at root level).
     /// Uses `Cow<'static, str>` keys so static string keys avoid allocation.
     #[serde(
         skip_serializing_if = "additional_serde::is_empty",
@@ -229,7 +225,7 @@ pub struct Metadata {
 
 impl Metadata {
     /// Returns `true` when no metadata fields, format-specific metadata, or
-    /// custom postprocessor fields are populated.
+    /// additional postprocessor fields are populated.
     pub fn is_empty(&self) -> bool {
         self.title.is_none()
             && self.subject.is_none()
@@ -251,7 +247,6 @@ impl Metadata {
             && self.document_version.is_none()
             && self.abstract_text.is_none()
             && self.output_format.is_none()
-            && self.extraction_method.is_none()
             && self.additional.is_empty()
     }
 }
@@ -270,10 +265,6 @@ pub struct ExcelMetadata {
     /// Names of all sheets in the workbook.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub sheet_names: Option<Vec<String>>,
-
-    /// Custom office properties from docProps/custom.xml
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub custom_properties: Option<HashMap<String, serde_json::Value>>,
 }
 
 /// Email metadata extracted from .eml and .msg files.
@@ -303,19 +294,6 @@ pub struct EmailMetadata {
 
     /// List of attachment filenames
     pub attachments: Vec<String>,
-
-    /// Non-standard email headers as key-value pairs
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub extra_headers: Option<HashMap<String, String>>,
-}
-
-/// A single entry in an archive (file or directory).
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
-#[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
-pub struct ArchiveFileEntry {
-    pub path: String,
-    pub size: u64,
-    pub is_dir: bool,
 }
 
 /// Archive (ZIP/TAR/7Z) metadata.
@@ -329,8 +307,8 @@ pub struct ArchiveMetadata {
     pub format: Cow<'static, str>,
     /// Total number of files in the archive
     pub file_count: usize,
-    /// Typed entries with path, size, and is_dir fields
-    pub entries: Vec<ArchiveFileEntry>,
+    /// List of file paths within the archive
+    pub file_list: Vec<String>,
     /// Total uncompressed size in bytes
     pub total_size: usize,
 
@@ -754,9 +732,6 @@ pub struct PptxMetadata {
     /// Number of tables
     #[serde(skip_serializing_if = "Option::is_none")]
     pub table_count: Option<usize>,
-    /// Custom office properties from docProps/custom.xml
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub custom_properties: Option<HashMap<String, serde_json::Value>>,
 }
 
 /// Word document metadata.
@@ -772,14 +747,16 @@ pub struct DocxMetadata {
     /// Contains title, creator, subject, keywords, dates, etc.
     /// Shared format across DOCX/PPTX/XLSX documents.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub core_properties: Option<serde_json::Value>,
+    #[cfg_attr(feature = "api", schema(value_type = Option<Object>))]
+    pub core_properties: Option<crate::extraction::office_metadata::CoreProperties>,
 
     /// Application properties from docProps/app.xml (Word-specific statistics)
     ///
     /// Contains word count, page count, paragraph count, editing time, etc.
     /// DOCX-specific variant of Office application properties.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub app_properties: Option<serde_json::Value>,
+    #[cfg_attr(feature = "api", schema(value_type = Option<Object>))]
+    pub app_properties: Option<crate::extraction::office_metadata::DocxAppProperties>,
 
     /// Custom properties from docProps/custom.xml (user-defined properties)
     ///
@@ -795,20 +772,7 @@ pub struct DocxMetadata {
     // document_settings: DocumentSettings,              // Week 11: Settings.xml
 }
 
-// ── Format-specific metadata structs ──────────────────
-
-/// JSON/YAML/TOML structured data metadata.
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
-#[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
-pub struct StructuredMetadata {
-    /// Detected data format: "json", "yaml", or "toml"
-    pub data_format: String,
-    /// Number of top-level fields
-    pub field_count: usize,
-    /// Pass-through of custom fields not mapped to standard metadata
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub custom_fields: Option<HashMap<String, serde_json::Value>>,
-}
+// ── Format-specific metadata structs (non-additional) ──────────────────
 
 /// CSV/TSV file metadata.
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -837,9 +801,6 @@ pub struct BibtexMetadata {
     pub year_range: Option<YearRange>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub entry_types: Option<BTreeMap<String, usize>>,
-    /// Raw BibTeX entry data (author, title, year, etc. per entry)
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub entries: Option<Vec<serde_json::Value>>,
 }
 
 /// Citation file metadata (RIS, PubMed, EndNote).

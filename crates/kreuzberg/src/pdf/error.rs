@@ -55,48 +55,6 @@ impl From<lopdf::Error> for PdfError {
 
 pub type Result<T> = std::result::Result<T, PdfError>;
 
-/// Format a pdfium error for display.
-///
-/// The kreuzberg-pdfium-render fork's error type doesn't implement Display,
-/// so Debug formatting produces messages like "PdfiumLibraryInternalError(FormatError,)"
-/// with trailing commas and parentheses. This function cleans up the formatting.
-pub(crate) fn format_pdfium_error<E: std::fmt::Debug>(error: E) -> String {
-    let debug_msg = format!("{:?}", error);
-
-    if let Some(paren_idx) = debug_msg.find('(') {
-        let variant = &debug_msg[..paren_idx];
-        let inner = &debug_msg[paren_idx + 1..];
-
-        let inner_clean = inner.trim_end_matches(')').trim_end_matches(',');
-
-        if inner_clean.is_empty() {
-            variant.to_string()
-        } else {
-            format!("{}: {}", variant, inner_clean)
-        }
-    } else {
-        debug_msg
-    }
-}
-
-/// Classify a PDFium document-load error into the appropriate `PdfError` variant.
-///
-/// Password-related errors are distinguished by inspecting the formatted message.
-/// When `password` is `Some`, a password-related failure means the password was wrong;
-/// when `None`, it means the document requires one.
-pub(crate) fn classify_pdfium_load_error<E: std::fmt::Debug>(error: E, password: Option<&str>) -> PdfError {
-    let err_msg = format_pdfium_error(error);
-    if err_msg.contains("password") || err_msg.contains("Password") {
-        if password.is_some() {
-            PdfError::InvalidPassword
-        } else {
-            PdfError::PasswordRequired
-        }
-    } else {
-        PdfError::InvalidPdf(err_msg)
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -179,57 +137,5 @@ mod tests {
     fn test_font_loading_failed_error() {
         let err = PdfError::FontLoadingFailed("missing font file".to_string());
         assert_eq!(err.to_string(), "Font loading failed: missing font file");
-    }
-
-    #[test]
-    fn test_format_pdfium_error_with_inner_value() {
-        #[derive(Debug)]
-        #[allow(dead_code)]
-        struct MockError(String);
-
-        let error = MockError("FormatError,".to_string());
-        let formatted = format_pdfium_error(error);
-        assert!(formatted.contains("MockError"));
-        assert!(formatted.contains("FormatError"));
-    }
-
-    #[test]
-    fn test_format_pdfium_error_simple() {
-        #[derive(Debug)]
-        struct SimpleError;
-
-        let formatted = format_pdfium_error(SimpleError);
-        assert_eq!(formatted, "SimpleError");
-    }
-
-    #[test]
-    fn test_format_pdfium_error_empty_inner() {
-        #[derive(Debug)]
-        struct EmptyInner;
-
-        let formatted = format_pdfium_error(EmptyInner);
-        assert_eq!(formatted, "EmptyInner");
-    }
-
-    #[test]
-    fn test_format_pdfium_error_cleans_trailing_comma() {
-        #[derive(Debug)]
-        #[allow(dead_code)]
-        enum PdfiumError {
-            PdfiumLibraryInternalError(InternalError),
-        }
-
-        #[derive(Debug)]
-        #[allow(dead_code)]
-        enum InternalError {
-            FormatError,
-        }
-
-        let error = PdfiumError::PdfiumLibraryInternalError(InternalError::FormatError);
-        let formatted = format_pdfium_error(error);
-
-        assert!(!formatted.contains(",)"));
-        assert!(formatted.contains("PdfiumLibraryInternalError"));
-        assert!(formatted.contains("FormatError"));
     }
 }

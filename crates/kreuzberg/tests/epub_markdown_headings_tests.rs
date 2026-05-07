@@ -8,7 +8,6 @@
 #![cfg(feature = "office")]
 
 use kreuzberg::core::config::{ExtractionConfig, OutputFormat};
-use kreuzberg::core::pipeline::apply_output_format;
 use kreuzberg::extraction::derive::derive_extraction_result;
 use kreuzberg::extractors::EpubExtractor;
 use kreuzberg::plugins::DocumentExtractor;
@@ -101,10 +100,7 @@ async fn test_epub_markdown_output_keeps_headings() {
         .extract_bytes(&bytes, "application/epub+zip", &config)
         .await
         .expect("EPUB extraction should succeed");
-    let result = apply_output_format(
-        derive_extraction_result(doc, false, OutputFormat::Markdown),
-        OutputFormat::Markdown,
-    );
+    let result = derive_extraction_result(doc, false, kreuzberg::OutputFormat::Plain);
 
     assert!(
         result.processing_warnings.is_empty(),
@@ -138,10 +134,7 @@ async fn test_epub_djot_output_keeps_headings() {
         .extract_bytes(&bytes, "application/epub+zip", &config)
         .await
         .expect("EPUB extraction should succeed");
-    let result = apply_output_format(
-        derive_extraction_result(doc, false, OutputFormat::Djot),
-        OutputFormat::Djot,
-    );
+    let result = derive_extraction_result(doc, false, kreuzberg::OutputFormat::Plain);
 
     assert!(
         result.processing_warnings.is_empty(),

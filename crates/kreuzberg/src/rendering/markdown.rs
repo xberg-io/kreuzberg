@@ -104,7 +104,7 @@ pub(crate) fn render_markdown(doc: &InternalDocument) -> String {
 /// Strip arXiv watermark noise from rendered markdown.
 ///
 /// LaTeX-generated PDFs often have a rotated sidebar with the arXiv identifier
-/// that pdfium concatenates with body text. This strips patterns like:
+/// that the PDF extractor concatenates with body text. This strips patterns like:
 /// "Title N arXiv:NNNN.NNNNNvN [cat.SC] DD Mon YYYY" from the first pages.
 fn strip_arxiv_watermark_noise(mut text: String) -> String {
     // Only search the first portion of the text (roughly first 2 pages)

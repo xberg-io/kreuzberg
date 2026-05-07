@@ -232,7 +232,6 @@ pub struct PageConfig {
 
 #[frb(mirror(PdfConfig))]
 pub struct PdfConfig {
-    pub backend: PdfBackend,
     pub extract_images: bool,
     pub passwords: Option<Vec<String>>,
     pub extract_metadata: bool,
@@ -914,7 +913,6 @@ pub struct Metadata {
     pub document_version: Option<String>,
     pub abstract_text: Option<String>,
     pub output_format: Option<String>,
-    pub extraction_method: Option<String>,
     pub additional: std::collections::HashMap<String, String>,
 }
 
@@ -922,7 +920,6 @@ pub struct Metadata {
 pub struct ExcelMetadata {
     pub sheet_count: Option<i64>,
     pub sheet_names: Option<Vec<String>>,
-    pub custom_properties: Option<std::collections::HashMap<String, String>>,
 }
 
 #[frb(mirror(EmailMetadata))]
@@ -934,21 +931,13 @@ pub struct EmailMetadata {
     pub bcc_emails: Vec<String>,
     pub message_id: Option<String>,
     pub attachments: Vec<String>,
-    pub extra_headers: Option<std::collections::HashMap<String, String>>,
-}
-
-#[frb(mirror(ArchiveFileEntry))]
-pub struct ArchiveFileEntry {
-    pub path: String,
-    pub size: i64,
-    pub is_dir: bool,
 }
 
 #[frb(mirror(ArchiveMetadata))]
 pub struct ArchiveMetadata {
     pub format: String,
     pub file_count: i64,
-    pub entries: Vec<ArchiveFileEntry>,
+    pub file_list: Vec<String>,
     pub total_size: i64,
     pub compressed_size: Option<i64>,
 }
@@ -1046,7 +1035,6 @@ pub struct PptxMetadata {
     pub slide_names: Vec<String>,
     pub image_count: Option<i64>,
     pub table_count: Option<i64>,
-    pub custom_properties: Option<std::collections::HashMap<String, String>>,
 }
 
 #[frb(mirror(DocxMetadata))]
@@ -1054,13 +1042,6 @@ pub struct DocxMetadata {
     pub core_properties: Option<String>,
     pub app_properties: Option<String>,
     pub custom_properties: Option<std::collections::HashMap<String, String>>,
-}
-
-#[frb(mirror(StructuredMetadata))]
-pub struct StructuredMetadata {
-    pub data_format: String,
-    pub field_count: i64,
-    pub custom_fields: Option<std::collections::HashMap<String, String>>,
 }
 
 #[frb(mirror(CsvMetadata))]
@@ -1079,7 +1060,6 @@ pub struct BibtexMetadata {
     pub authors: Vec<String>,
     pub year_range: Option<YearRange>,
     pub entry_types: Option<std::collections::HashMap<String, i64>>,
-    pub entries: Option<Vec<String>>,
 }
 
 #[frb(mirror(CitationMetadata))]
@@ -1541,56 +1521,6 @@ pub struct EmbeddedFile {
     pub mime_type: Option<String>,
 }
 
-#[frb(mirror(PdfImage))]
-pub struct PdfImage {
-    pub page_number: i64,
-    pub image_index: i64,
-    pub width: i64,
-    pub height: i64,
-    pub color_space: Option<String>,
-    pub bits_per_component: Option<i64>,
-    pub filters: Vec<String>,
-    pub data: Vec<u8>,
-    pub decoded_format: String,
-    pub image_kind: Option<ImageKind>,
-    pub kind_confidence: Option<f64>,
-    pub cluster_id: Option<i64>,
-}
-
-#[frb(mirror(PageLayoutResult))]
-pub struct PageLayoutResult {
-    pub page_index: i64,
-    pub regions: Vec<String>,
-    pub page_width_pts: f64,
-    pub page_height_pts: f64,
-    pub render_width_px: i64,
-    pub render_height_px: i64,
-}
-
-#[frb(mirror(PageTiming))]
-pub struct PageTiming {
-    pub render_ms: f64,
-    pub preprocess_ms: f64,
-    pub onnx_ms: f64,
-    pub inference_ms: f64,
-    pub postprocess_ms: f64,
-    pub mapping_ms: f64,
-}
-
-#[frb(mirror(CommonPdfMetadata))]
-pub struct CommonPdfMetadata {
-    pub title: Option<String>,
-    pub subject: Option<String>,
-    pub authors: Option<Vec<String>>,
-    pub keywords: Option<Vec<String>>,
-    pub created_at: Option<String>,
-    pub modified_at: Option<String>,
-    pub created_by: Option<String>,
-}
-
-#[frb(mirror(PdfUnifiedExtractionResult))]
-pub struct PdfUnifiedExtractionResult {}
-
 #[frb(mirror(ExecutionProviderType))]
 pub enum ExecutionProviderType {
     Auto,
@@ -1628,13 +1558,6 @@ pub enum TableModel {
     SlanetPlus,
     SlanetAuto,
     Disabled,
-}
-
-#[frb(mirror(PdfBackend))]
-pub enum PdfBackend {
-    Pdfium,
-    PdfOxide,
-    Auto,
 }
 
 #[frb(mirror(ChunkerType))]
@@ -1927,7 +1850,6 @@ pub enum FormatMetadata {
     Html { field0: HtmlMetadata },
     Ocr { field0: OcrMetadata },
     Csv { field0: CsvMetadata },
-    Structured { field0: StructuredMetadata },
     Bibtex { field0: BibtexMetadata },
     Citation { field0: CitationMetadata },
     FictionBook { field0: FictionBookMetadata },
@@ -2390,28 +2312,6 @@ pub async fn embed_texts_async(
                 .collect::<Vec<_>>()
         })
         .map_err(|e| e.to_string())
-}
-
-/// Render a single PDF page to a PNG-encoded byte buffer.
-///
-/// **Errors:**
-///
-/// Returns an error if the PDF is invalid, the page index is out of bounds,
-/// or if the page fails to render.
-pub fn render_pdf_page_to_png(
-    pdf_bytes: Vec<u8>,
-    page_index: i64,
-    dpi: Option<i64>,
-    password: Option<String>,
-) -> Result<Vec<u8>, String> {
-    kreuzberg::render_pdf_page_to_png(
-        &pdf_bytes,
-        page_index as usize,
-        dpi.map(|v| v as i32),
-        password.as_deref(),
-    )
-    .map(|v| v)
-    .map_err(|e| e.to_string())
 }
 
 /// Detect the MIME type of a file at the given path.

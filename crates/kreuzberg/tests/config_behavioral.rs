@@ -287,9 +287,10 @@ async fn test_quality_processing_enabled_produces_score() {
         .await
         .expect("Should extract successfully");
 
+    // Quality processing should populate the dedicated quality_score field
     assert!(
         result.quality_score.is_some(),
-        "Quality processing enabled should produce quality_score in metadata"
+        "Quality processing enabled should produce quality_score"
     );
 }
 

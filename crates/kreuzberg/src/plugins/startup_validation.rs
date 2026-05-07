@@ -218,7 +218,7 @@ fn check_environment_variables() {
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "api"))]
 mod tests {
     use super::*;
 

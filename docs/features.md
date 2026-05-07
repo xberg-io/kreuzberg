@@ -123,7 +123,7 @@ flowchart LR
 ```
 
 1. **MIME detection** -- Kreuzberg identifies the file type from magic bytes and extension, then selects the matching native extractor from the registry.
-2. **Format extraction** -- The extractor pulls text, tables, metadata, and optionally images from the file. PDF extraction uses pdfium; Office formats use streaming XML parsers; images pass directly to OCR.
+2. **Format extraction** -- The extractor pulls text, tables, metadata, and optionally images from the file. PDF extraction uses pdf_oxide (pure Rust); Office formats use streaming XML parsers; images pass directly to OCR.
 3. **OCR** -- When the extractor finds no text layer (or `force_ocr` is set), the file is routed to the configured OCR backend. The OCR result replaces or supplements the extracted text.
 4. **Post-processing** -- Validators, quality processing, chunking, embeddings, keyword extraction, and any registered post-processor plugins run in sequence.
 5. **Caching** -- If caching is enabled, results are stored keyed by a content hash so repeated extractions skip the entire pipeline.

@@ -520,8 +520,6 @@ async fn test_extraction_with_chunking_config() {
     let chunks = result.chunks.expect("Operation failed");
     assert!(chunks.len() > 1, "Should have multiple chunks for long content");
 
-    assert!(chunks.len() > 1, "chunk_count should be derivable from chunks.len()");
-
     for chunk in &chunks {
         assert!(
             chunk.content.len() <= 100 + 20,

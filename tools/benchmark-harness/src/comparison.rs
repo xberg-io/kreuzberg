@@ -8,7 +8,7 @@
 //!
 //! Each [`Pipeline`] variant represents a distinct extraction configuration:
 //!
-//! - **Baseline / Layout**: native pdfium text extraction; `Layout` adds layout
+//! - **Baseline / Layout**: native PDF text extraction; `Layout` adds layout
 //!   detection for heading/table identification without OCR.
 //! - **Tesseract / TesseractLayout**: Tesseract OCR with `force_ocr`; the
 //!   `Layout` suffix adds layout detection on top.
@@ -41,9 +41,9 @@ use std::time::Instant;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum Pipeline {
-    /// Native pdfium text extraction (no OCR, no layout)
+    /// Native PDF text extraction (no OCR, no layout)
     Baseline,
-    /// Native pdfium + layout detection
+    /// Native PDF text extraction + layout detection
     Layout,
     /// Tesseract OCR (force_ocr)
     Tesseract,
@@ -67,13 +67,13 @@ pub enum Pipeline {
     PaddleOcrPython,
     /// RapidOCR vendored extraction (read from file)
     RapidOcr,
-    /// Native pdfium + layout detection + SLANeXT wired table model (forced)
+    /// Native PDF + layout detection + SLANeXT wired table model (forced)
     LayoutSlanetWired,
-    /// Native pdfium + layout detection + SLANeXT wireless table model (forced)
+    /// Native PDF + layout detection + SLANeXT wireless table model (forced)
     LayoutSlanetWireless,
-    /// Native pdfium + layout detection + SLANet_plus table model
+    /// Native PDF + layout detection + SLANet_plus table model
     LayoutSlanetPlus,
-    /// Native pdfium + layout detection + classifier-routed SLANeXT (wired/wireless auto)
+    /// Native PDF + layout detection + classifier-routed SLANeXT (wired/wireless auto)
     LayoutSlanetAuto,
     /// pdf_oxide backend text extraction (no OCR, no layout)
     PdfOxide,
@@ -323,17 +323,11 @@ pub fn build_extraction_config(pipeline: Pipeline) -> kreuzberg::ExtractionConfi
             ..base
         },
         Pipeline::PdfOxide => kreuzberg::ExtractionConfig {
-            pdf_options: Some(kreuzberg::PdfConfig {
-                backend: kreuzberg::PdfBackend::PdfOxide,
-                ..Default::default()
-            }),
+            pdf_options: Some(kreuzberg::PdfConfig { ..Default::default() }),
             ..base
         },
         Pipeline::PdfOxideLayout => kreuzberg::ExtractionConfig {
-            pdf_options: Some(kreuzberg::PdfConfig {
-                backend: kreuzberg::PdfBackend::PdfOxide,
-                ..Default::default()
-            }),
+            pdf_options: Some(kreuzberg::PdfConfig { ..Default::default() }),
             layout: Some(LayoutDetectionConfig::default()),
             ocr: Some(kreuzberg::core::config::OcrConfig {
                 backend: "tesseract".to_string(),

@@ -5,31 +5,10 @@
 
 use serde::{Deserialize, Serialize};
 
-/// PDF extraction backend selection.
-///
-/// Controls which PDF library is used for text extraction:
-/// - `Pdfium`: pdfium-render (default, C++ based, mature)
-/// - `PdfOxide`: pdf_oxide (pure Rust, faster, requires `pdf-oxide` feature)
-/// - `Auto`: automatically select based on available features
-#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "lowercase")]
-pub enum PdfBackend {
-    /// Use pdfium-render backend (default).
-    #[default]
-    Pdfium,
-    /// Use pdf_oxide backend (pure Rust). Requires `pdf-oxide` feature.
-    PdfOxide,
-    /// Automatically select the best available backend.
-    Auto,
-}
-
 /// PDF-specific configuration.
 #[cfg(feature = "pdf")]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PdfConfig {
-    /// PDF extraction backend. Default: `Pdfium`.
-    #[serde(default)]
-    pub backend: PdfBackend,
     /// Extract images from PDF
     #[serde(default)]
     pub extract_images: bool,
@@ -107,7 +86,6 @@ pub struct HierarchyConfig {
 impl Default for PdfConfig {
     fn default() -> Self {
         Self {
-            backend: PdfBackend::default(),
             extract_images: false,
             passwords: None,
             extract_metadata: true,
@@ -177,7 +155,6 @@ mod tests {
     fn test_pdf_config_custom_margins() {
         use super::*;
         let config = PdfConfig {
-            backend: PdfBackend::default(),
             extract_images: false,
             passwords: None,
             extract_metadata: true,

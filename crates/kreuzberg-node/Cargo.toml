@@ -24,3 +24,6 @@ serde_json = "1"
 
 [build-dependencies]
 napi-build = "2"
+
+[lints]
+workspace = true

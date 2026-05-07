@@ -732,19 +732,6 @@ enabled, each processable file produces its own full `ExtractionResult`.
 
 ---
 
-#### ArchiveFileEntry
-
-A single entry in an archive (file or directory).
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `Path` | `string` | — | File path |
-| `Size` | `ulong` | — | Size in bytes |
-| `IsDir` | `bool` | — | Whether dir |
-
-
----
-
 #### ArchiveMetadata
 
 Archive (ZIP/TAR/7Z) metadata.
@@ -755,7 +742,7 @@ Extracted from compressed archive files containing file lists and size informati
 |-------|------|---------|-------------|
 | `Format` | `string` | — | Archive format ("ZIP", "TAR", "7Z", etc.) |
 | `FileCount` | `nuint` | — | Total number of files in the archive |
-| `Entries` | `List<ArchiveFileEntry>` | `new List<ArchiveFileEntry>()` | Typed entries with path, size, and is_dir fields |
+| `FileList` | `List<string>` | `new List<string>()` | List of file paths within the archive |
 | `TotalSize` | `nuint` | — | Total uncompressed size in bytes |
 | `CompressedSize` | `nuint?` | `null` | Compressed size in bytes (if available) |
 
@@ -818,7 +805,6 @@ BibTeX bibliography metadata.
 | `Authors` | `List<string>` | `new List<string>()` | Authors |
 | `YearRange` | `YearRange?` | `null` | Year range (year range) |
 | `EntryTypes` | `Dictionary<string, nuint>?` | `new Dictionary<string, nuint>()` | Entry types |
-| `Entries` | `List<object>?` | `new List<object>()` | Raw BibTeX entry data (author, title, year, etc. per entry) |
 
 
 ---
@@ -1456,8 +1442,8 @@ Integrates with `office_metadata` module for core/app/custom properties.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `CoreProperties` | `object?` | `null` | Core properties from docProps/core.xml (Dublin Core metadata) Contains title, creator, subject, keywords, dates, etc. Shared format across DOCX/PPTX/XLSX documents. |
-| `AppProperties` | `object?` | `null` | Application properties from docProps/app.xml (Word-specific statistics) Contains word count, page count, paragraph count, editing time, etc. DOCX-specific variant of Office application properties. |
+| `CoreProperties` | `string?` | `null` | Core properties from docProps/core.xml (Dublin Core metadata) Contains title, creator, subject, keywords, dates, etc. Shared format across DOCX/PPTX/XLSX documents. |
+| `AppProperties` | `string?` | `null` | Application properties from docProps/app.xml (Word-specific statistics) Contains word count, page count, paragraph count, editing time, etc. DOCX-specific variant of Office application properties. |
 | `CustomProperties` | `Dictionary<string, object>?` | `new Dictionary<string, object>()` | Custom properties from docProps/custom.xml (user-defined properties) Contains key-value pairs defined by users or applications. Values can be strings, numbers, booleans, or dates. |
 
 
@@ -1578,7 +1564,6 @@ Includes sender/recipient information, message ID, and attachment list.
 | `BccEmails` | `List<string>` | `new List<string>()` | BCC recipients |
 | `MessageId` | `string?` | `null` | Message-ID header value |
 | `Attachments` | `List<string>` | `new List<string>()` | List of attachment filenames |
-| `ExtraHeaders` | `Dictionary<string, string>?` | `new Dictionary<string, string>()` | Non-standard email headers as key-value pairs |
 
 
 ---
@@ -1810,7 +1795,6 @@ discriminant. Sheet count and sheet names are stored inside this struct.
 |-------|------|---------|-------------|
 | `SheetCount` | `nuint?` | `null` | Number of sheets in the workbook. |
 | `SheetNames` | `List<string>?` | `new List<string>()` | Names of all sheets in the workbook. |
-| `CustomProperties` | `Dictionary<string, object>?` | `new Dictionary<string, object>()` | Custom office properties from docProps/custom.xml |
 
 
 ---
@@ -1895,7 +1879,7 @@ PIL.Image (Python), Sharp (Node.js), or other formats as needed.
 | `IsMask` | `bool` | — | Whether this image is a mask image |
 | `Description` | `string?` | `null` | Optional description of the image |
 | `OcrResult` | `ExtractionResult?` | `null` | Nested OCR extraction result (if image was OCRed) When OCR is performed on this image, the result is embedded here rather than in a separate collection, making the relationship explicit. |
-| `BoundingBox` | `string?` | `null` | Bounding box of the image on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top). Only populated for PDF-extracted images when position data is available from pdfium. |
+| `BoundingBox` | `string?` | `null` | Bounding box of the image on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top). Only populated for PDF-extracted images when position data is available from pdf_oxide. |
 | `SourcePath` | `string?` | `null` | Original source path of the image within the document archive (e.g., "media/image1.png" in DOCX). Used for rendering image references when the binary data is not extracted. |
 | `ImageKind` | `ImageKind?` | `null` | Heuristic classification of what this image likely depicts. `null` if classification was disabled or inconclusive. |
 | `KindConfidence` | `float?` | `null` | Confidence score for `image_kind`, in [0.0, 1.0]. |
@@ -2318,7 +2302,7 @@ Image extraction configuration.
 | `AutoAdjustDpi` | `bool` | `true` | Automatically adjust DPI based on image content |
 | `MinDpi` | `int` | `72` | Minimum DPI threshold |
 | `MaxDpi` | `int` | `600` | Maximum DPI threshold |
-| `MaxImagesPerPage` | `uint?` | `null` | Maximum number of image objects to extract per PDF page. Some PDFs (e.g. technical diagrams stored as thousands of raster fragments) can trigger extremely long or indefinite extraction times when every image object on a dense page is decoded individually via pdfium FFI. Setting this limit causes kreuzberg to stop collecting individual images once the count per page reaches the cap and emit a warning instead. `null` (default) means no limit — all images are extracted. |
+| `MaxImagesPerPage` | `uint?` | `null` | Maximum number of image objects to extract per PDF page. Some PDFs (e.g. technical diagrams stored as thousands of raster fragments) can trigger extremely long or indefinite extraction times when every image object on a dense page is decoded individually via pdf_oxide. Setting this limit causes kreuzberg to stop collecting individual images once the count per page reaches the cap and emit a warning instead. `null` (default) means no limit — all images are extracted. |
 | `Classify` | `bool` | `true` | When `true` (default), extracted images are classified by kind and grouped into clusters where they appear to belong to one figure. |
 
 ##### Methods
@@ -2710,16 +2694,15 @@ via a discriminated union, and additional custom fields from postprocessors.
 | `Tags` | `List<string>?` | `new List<string>()` | Document tags (from frontmatter). |
 | `DocumentVersion` | `string?` | `null` | Document version string (from frontmatter). |
 | `AbstractText` | `string?` | `null` | Abstract or summary text (from frontmatter). |
-| `OutputFormat` | `string?` | `null` | Output format identifier (e.g., "markdown", "html", "text"). Set by the output format pipeline stage when format conversion is applied. |
-| `ExtractionMethod` | `string?` | `null` | Method used to extract text (e.g., "native", "ocr", "mixed", "native_ole"). |
-| `Additional` | `Dictionary<string, object>` | `new Dictionary<string, object>()` | Custom fields for plugin-injected and format-specific dynamic data (e.g., OCR backend metadata, org-mode directives). Uses `Cow<'static, str>` keys so static string keys avoid allocation. |
+| `OutputFormat` | `string?` | `null` | Output format identifier (e.g., "markdown", "html", "text"). Set by the output format pipeline stage when format conversion is applied. Previously stored in `metadata.additional["output_format"]`. |
+| `Additional` | `Dictionary<string, object>` | `new Dictionary<string, object>()` | Additional custom fields from postprocessors. Serialized as a nested `"additional"` object (not flattened at root level). Uses `Cow<'static, str>` keys so static string keys avoid allocation. |
 
 ##### Methods
 
 ###### IsEmpty()
 
 Returns `true` when no metadata fields, format-specific metadata, or
-custom postprocessor fields are populated.
+additional postprocessor fields are populated.
 
 **Signature:**
 
@@ -3526,7 +3509,6 @@ PDF-specific configuration.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `Backend` | `PdfBackend` | `PdfBackend.Pdfium` | PDF extraction backend. Default: `Pdfium`. |
 | `ExtractImages` | `bool` | `false` | Extract images from PDF |
 | `Passwords` | `List<string>?` | `null` | List of passwords to try when opening encrypted PDFs |
 | `ExtractMetadata` | `bool` | `true` | Extract PDF metadata |
@@ -3931,7 +3913,6 @@ Extracted from PPTX files containing slide counts and presentation details.
 | `SlideNames` | `List<string>` | `new List<string>()` | Names of slides (if available) |
 | `ImageCount` | `nuint?` | `null` | Number of embedded images |
 | `TableCount` | `nuint?` | `null` | Number of tables |
-| `CustomProperties` | `Dictionary<string, object>?` | `new Dictionary<string, object>()` | Custom office properties from docProps/custom.xml |
 
 
 ---
@@ -4224,19 +4205,6 @@ Response from structured extraction endpoint.
 | `StructuredOutput` | `object` | — | Structured data conforming to the provided JSON schema |
 | `Content` | `string` | — | Extracted document text content |
 | `MimeType` | `string` | — | Detected MIME type of the input file |
-
-
----
-
-#### StructuredMetadata
-
-JSON/YAML/TOML structured data metadata.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `DataFormat` | `string` | — | Detected data format: "json", "yaml", or "toml" |
-| `FieldCount` | `nuint` | — | Number of top-level fields |
-| `CustomFields` | `Dictionary<string, object>?` | `new Dictionary<string, object>()` | Pass-through of custom fields not mapped to standard metadata |
 
 
 ---
@@ -5009,24 +4977,6 @@ table regions.
 
 ---
 
-#### PdfBackend
-
-PDF extraction backend selection.
-
-Controls which PDF library is used for text extraction:
-- `Pdfium`: pdfium-render (default, C++ based, mature)
-- `PdfOxide`: pdf_oxide (pure Rust, faster, requires `pdf-oxide` feature)
-- `Auto`: automatically select based on available features
-
-| Value | Description |
-|-------|-------------|
-| `Pdfium` | Use pdfium-render backend (default). |
-| `PdfOxide` | Use pdf_oxide backend (pure Rust). Requires `pdf-oxide` feature. |
-| `Auto` | Automatically select the best available backend. |
-
-
----
-
 #### ChunkerType
 
 Type of text chunker to use.
@@ -5437,7 +5387,6 @@ type-safe, clean metadata without nested optionals.
 | `Html` | Preserve as HTML `<mark>` tags — Fields: `0`: `HtmlMetadata` |
 | `Ocr` | Ocr — Fields: `0`: `OcrMetadata` |
 | `Csv` | Csv format — Fields: `0`: `CsvMetadata` |
-| `Structured` | Structured — Fields: `0`: `StructuredMetadata` |
 | `Bibtex` | Bibtex — Fields: `0`: `BibtexMetadata` |
 | `Citation` | Citation — Fields: `0`: `CitationMetadata` |
 | `FictionBook` | Fiction book — Fields: `0`: `FictionBookMetadata` |

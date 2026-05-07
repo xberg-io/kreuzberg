@@ -436,7 +436,7 @@ fn parse_pip_show_size(stdout: &str, package: &str) -> Option<u64> {
 /// Measure npm package size including native addon binary
 fn measure_npm_package(package: &str) -> Result<Option<u64>> {
     // For kreuzberg-node, measure the native .node addon + JS wrapper
-    // The .node file contains the Rust FFI + pdfium statically linked
+    // The .node file contains the Rust FFI statically linked
     if package.contains("kreuzberg") && package.contains("node") {
         let mut total: u64 = 0;
 
@@ -556,7 +556,7 @@ fn measure_binary(name: &str) -> Result<Option<u64>> {
                 return Ok(Some(metadata.len()));
             }
         }
-        // Fall back to measuring all native FFI libs (includes pdfium)
+        // Fall back to measuring all native FFI libs
         let ffi_size = measure_native_ffi_libs();
         if ffi_size > 0 {
             return Ok(Some(ffi_size));
@@ -711,7 +711,7 @@ fn measure_gem_package(package: &str) -> Result<Option<u64>> {
 
         // Add FFI native libs unless lib/ already contains a substantial native
         // extension (> 5 MB). Small .so files may be stubs or incomplete artifacts
-        // that don't include the full FFI + pdfium libs.
+        // that don't include the full FFI libs.
         let has_substantial_native = has_native_extension(ruby_lib) && lib_size > 5_000_000;
         if !has_substantial_native {
             total += measure_native_ffi_libs();
@@ -905,7 +905,7 @@ fn measure_php_extension(name: &str) -> Result<Option<u64>> {
     Ok(None)
 }
 
-/// Measure the native FFI + pdfium libraries from target/release/.
+/// Measure the native FFI library from target/release/.
 /// Returns the total size of found native libs, or 0 if none are found.
 /// Only counts one platform variant of each library (first match wins).
 fn measure_native_ffi_libs() -> u64 {
@@ -916,18 +916,6 @@ fn measure_native_ffi_libs() -> u64 {
         "target/release/libkreuzberg_ffi.so",
         "target/release/libkreuzberg_ffi.dylib",
         "target/release/kreuzberg_ffi.dll",
-    ] {
-        if let Ok(m) = fs::metadata(path) {
-            total += m.len();
-            break;
-        }
-    }
-
-    // PDFium runtime library (one per platform)
-    for path in [
-        "target/release/libpdfium.so",
-        "target/release/libpdfium.dylib",
-        "target/release/pdfium.dll",
     ] {
         if let Ok(m) = fs::metadata(path) {
             total += m.len();

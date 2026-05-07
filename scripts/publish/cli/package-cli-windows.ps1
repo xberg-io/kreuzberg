@@ -32,9 +32,6 @@ Copy-Item $exePath $stage
 Copy-Item "LICENSE" $stage
 Copy-Item "README.md" $stage
 
-if (Test-Path ("target/" + $target + "/release/pdfium.dll")) {
-  Copy-Item ("target/" + $target + "/release/pdfium.dll") $stage
-}
 
 Compress-Archive -Path "$stage/*" -DestinationPath ($stage + ".zip") -Force
 Remove-Item -Recurse -Force $stage

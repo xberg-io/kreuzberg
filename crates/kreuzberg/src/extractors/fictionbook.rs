@@ -1146,7 +1146,7 @@ mod tests {
             authors[0]
         );
 
-        // Check author details in custom metadata
+        // Check author details in additional metadata
         let details = metadata
             .additional
             .get("author_details")

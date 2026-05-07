@@ -138,7 +138,6 @@ pub fn manifest_command(format: WireFormat) -> Result<()> {
     // below is `#[cfg]`-stripped and `entries: Vec<_>` has no anchor for
     // type inference — `e.size_bytes` on the closure further down then
     // fails compilation with E0282. Bail with a clear error instead so
-    // the build with `--no-default-features --features "bundled-pdfium"`
     // (or similar minimal configurations) succeeds.
     #[cfg(not(any(feature = "paddle-ocr", feature = "layout-detection")))]
     {

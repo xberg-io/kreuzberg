@@ -74,8 +74,8 @@ fn test_archive_path_traversal_zip() {
             _ => None,
         })
     {
-        for entry in &archive_meta.entries {
-            assert!(!entry.path.starts_with('/'), "Absolute paths should be rejected");
+        for file_path in &archive_meta.file_list {
+            assert!(!file_path.starts_with('/'), "Absolute paths should be rejected");
         }
     }
 }

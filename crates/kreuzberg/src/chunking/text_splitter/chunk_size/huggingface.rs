@@ -56,6 +56,9 @@ mod tests {
 
     #[test]
     fn returns_size_handles_prefix() {
+        // Use a tokenizer that adds padding tokens: thenlper/gte-small has a PAD token
+        // so pad_id is Some, and leading/trailing padding is skipped in the count.
+        // The text "An apple a" should still yield exactly 3 content tokens.
         let tokenizer = Tokenizer::from_pretrained("thenlper/gte-small", None)
             .expect("Could not load tokenizer 'thenlper/gte-small'");
 
@@ -75,7 +78,10 @@ mod tests {
         let tokenizer = Tokenizer::from_pretrained("sentence-transformers/all-MiniLM-L6-v2", None)
             .expect("Could not load tokenizer 'sentence-transformers/all-MiniLM-L6-v2'");
 
-        // With stride=0 (default), truncation caps at max_length=128 with no overflow encodings.
+        // When the tokenizer has truncation (max_length=128) but no stride, encode_fast
+        // returns a single encoding capped at 128 tokens with no overflow entries.
+        // The ChunkSizer returns 128 for any text longer than the model's max_length,
+        // which is sufficient to signal to the text splitter that the chunk is too large.
         assert_eq!(
             tokenizer.size("An apple a day keeps the doctor away.".repeat(100).as_str()),
             128

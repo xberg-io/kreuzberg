@@ -404,8 +404,8 @@ async fn test_quality_processing_enabled() {
         .await
         .expect("Should extract successfully");
 
-    if let Some(score) = result.quality_score {
-        assert!((0.0..=1.0).contains(&score));
+    if let Some(score_value) = result.quality_score {
+        assert!((0.0..=1.0).contains(&score_value));
     }
 
     assert!(!result.content.is_empty());

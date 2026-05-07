@@ -2,7 +2,7 @@
 //!
 //! pdf_oxide parses PDF content streams directly (Tj/TJ operators) and uses
 //! adaptive TJ-offset thresholds for word boundary detection, avoiding the
-//! broken word spacing that pdfium's text page API produces for fonts with
+//! broken word spacing that occurs with fonts having
 //! broken CMap/ToUnicode tables.
 //!
 //! The current PDF file path is communicated via a thread-local to avoid

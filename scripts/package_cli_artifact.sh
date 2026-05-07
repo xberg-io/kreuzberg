@@ -15,12 +15,5 @@ cp "$ROOT/target/${TARGET}/release/kreuzberg" "$STAGE/"
 cp "$ROOT/LICENSE" "$STAGE/"
 cp "$ROOT/README.md" "$STAGE/"
 
-if [[ -f "$ROOT/target/${TARGET}/release/libpdfium.dylib" ]]; then
-  cp "$ROOT/target/${TARGET}/release/libpdfium.dylib" "$STAGE/"
-fi
-if [[ -f "$ROOT/target/${TARGET}/release/libpdfium.so" ]]; then
-  cp "$ROOT/target/${TARGET}/release/libpdfium.so" "$STAGE/"
-fi
-
 tar -czf "kreuzberg-cli-${TARGET}.tar.gz" -C "$ROOT" "kreuzberg-cli-${TARGET}"
 rm -rf "$STAGE"

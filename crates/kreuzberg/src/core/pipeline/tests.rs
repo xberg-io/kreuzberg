@@ -17,7 +17,7 @@ fn make_doc(content: &str, mime: &str) -> InternalDocument {
     doc
 }
 
-/// Build an `InternalDocument` with content, mime, and additional metadata.
+/// Build an `InternalDocument` with content, mime, and custom metadata.
 fn make_doc_with_metadata(content: &str, mime: &str, metadata: Metadata) -> InternalDocument {
     let mut doc = make_doc(content, mime);
     doc.metadata = metadata;

@@ -86,7 +86,7 @@ impl NativeTextStats {
         };
 
         // Compute consecutive word repetition ratio: fraction of adjacent word pairs
-        // that are identical. High values indicate column scrambling where pdfium
+        // that are identical. High values indicate column scrambling where the PDF extractor
         // reads multi-column text row-by-row, duplicating words.
         let consecutive_repeat_ratio = if words.len() >= thresholds.min_words_for_repeat_check {
             let repeat_count = words.windows(2).filter(|pair| pair[0] == pair[1]).count();
@@ -278,21 +278,19 @@ pub(crate) fn render_selected_pages_for_ocr(
     content: &[u8],
     page_indices: &[usize],
 ) -> crate::Result<Vec<(usize, image::DynamicImage)>> {
-    use crate::pdf::rendering::{PageRenderOptions, PdfRenderer};
+    use pdf_oxide::rendering::{RenderOptions, render_page};
 
-    let renderer = PdfRenderer::new().map_err(|e| crate::KreuzbergError::Parsing {
-        message: format!("Failed to initialize PDF renderer: {}", e),
+    let mut doc = pdf_oxide::PdfDocument::from_bytes(content.to_vec()).map_err(|e| crate::KreuzbergError::Parsing {
+        message: format!("Failed to open PDF for rendering: {}", e),
         source: None,
     })?;
 
-    let page_count = renderer
-        .page_count(content)
-        .map_err(|e| crate::KreuzbergError::Parsing {
-            message: format!("Failed to get PDF page count: {}", e),
-            source: None,
-        })?;
+    let page_count = doc.page_count().map_err(|e| crate::KreuzbergError::Parsing {
+        message: format!("Failed to get PDF page count: {}", e),
+        source: None,
+    })?;
 
-    let render_options = PageRenderOptions::default();
+    let render_options = RenderOptions::default();
     let mut images = Vec::with_capacity(page_indices.len());
     for &idx in page_indices {
         if idx >= page_count {
@@ -305,13 +303,16 @@ pub(crate) fn render_selected_pages_for_ocr(
             );
             continue;
         }
-        let image = renderer
-            .render_page_to_image(content, idx, &render_options)
-            .map_err(|e| crate::KreuzbergError::Parsing {
-                message: format!("Failed to render PDF page {}: {}", idx + 1, e),
-                source: None,
-            })?;
-        images.push((idx, image));
+        let rendered = render_page(&mut doc, idx, &render_options).map_err(|e| crate::KreuzbergError::Parsing {
+            message: format!("Failed to render PDF page {}: {}", idx + 1, e),
+            source: None,
+        })?;
+        // rendered.data is PNG-encoded; decode back to DynamicImage for OCR.
+        let img = image::load_from_memory(&rendered.data).map_err(|e| crate::KreuzbergError::Parsing {
+            message: format!("Failed to decode rendered page {}: {}", idx + 1, e),
+            source: None,
+        })?;
+        images.push((idx, img));
     }
 
     Ok(images)
@@ -567,11 +568,12 @@ pub(crate) async fn extract_with_ocr(
     {
         #[cfg(feature = "pdf")]
         {
-            let renderer = crate::pdf::rendering::PdfRenderer::new().map_err(|e| crate::KreuzbergError::Parsing {
-                message: format!("Failed to initialize PDF renderer for OCR streaming: {:?}", e),
-                source: None,
-            })?;
-            lazy_pdf_page_count = renderer.page_count(bytes).map_err(|e| crate::KreuzbergError::Parsing {
+            let doc =
+                pdf_oxide::PdfDocument::from_bytes(bytes.to_vec()).map_err(|e| crate::KreuzbergError::Parsing {
+                    message: format!("Failed to open PDF for OCR streaming: {:?}", e),
+                    source: None,
+                })?;
+            lazy_pdf_page_count = doc.page_count().map_err(|e| crate::KreuzbergError::Parsing {
                 message: format!("Failed to get document page count: {:?}", e),
                 source: None,
             })?;
@@ -666,40 +668,31 @@ pub(crate) async fn extract_with_ocr(
         } else {
             #[cfg(feature = "pdf")]
             let encoded = {
-                // Render each page, encode to PNG immediately, then drop the RGB buffer.
-                // This keeps only one ~26MB RGB image alive at a time instead of batch_size.
-                let renderer =
-                    crate::pdf::rendering::PdfRenderer::new().map_err(|e| crate::KreuzbergError::Parsing {
-                        message: format!("Failed to initialize PDF renderer for OCR batch: {:?}", e),
+                // Render each page to PNG bytes directly via pdf_oxide.
+                // RenderedImage.data is already PNG-encoded, so no re-encode step needed.
+                let pdf_bytes = content.ok_or_else(|| crate::KreuzbergError::Parsing {
+                    message: "PDF content is required for OCR rendering but was not provided".to_string(),
+                    source: None,
+                })?;
+                let mut doc = pdf_oxide::PdfDocument::from_bytes(pdf_bytes.to_vec()).map_err(|e| {
+                    crate::KreuzbergError::Parsing {
+                        message: format!("Failed to open PDF for OCR batch rendering: {:?}", e),
                         source: None,
-                    })?;
-                let render_opts = crate::pdf::rendering::PageRenderOptions::default();
+                    }
+                })?;
+                let render_opts = pdf_oxide::rendering::RenderOptions::default();
                 let mut batch_encoded: Vec<(usize, Arc<Vec<u8>>, u32, u32)> =
                     Vec::with_capacity(batch_end - batch_start);
                 for i in batch_start..batch_end {
-                    let pdf_bytes = content.ok_or_else(|| crate::KreuzbergError::Parsing {
-                        message: "PDF content is required for OCR rendering but was not provided".to_string(),
-                        source: None,
-                    })?;
-                    let image = renderer.render_page_to_image(pdf_bytes, i, &render_opts).map_err(|e| {
+                    let rendered = pdf_oxide::rendering::render_page(&mut doc, i, &render_opts).map_err(|e| {
                         crate::KreuzbergError::Parsing {
                             message: format!("Failed to render page {} for OCR: {:?}", i, e),
                             source: None,
                         }
                     })?;
-                    // Encode immediately so the DynamicImage can be dropped.
-                    let rgb_image = image.to_rgb8();
-                    let (width, height) = rgb_image.dimensions();
-                    let mut image_bytes = Cursor::new(Vec::new());
-                    let png_encoder = PngEncoder::new(&mut image_bytes);
-                    png_encoder
-                        .write_image(&rgb_image, width, height, image::ColorType::Rgb8.into())
-                        .map_err(|e| crate::KreuzbergError::Parsing {
-                            message: format!("Failed to encode page {} image: {}", i, e),
-                            source: None,
-                        })?;
-                    batch_encoded.push((i, Arc::new(image_bytes.into_inner()), width, height));
-                    // `image` and `rgb_image` are dropped here, freeing ~52MB per page.
+                    // rendered.data is PNG-encoded; width and height are available directly.
+                    batch_encoded.push((i, Arc::new(rendered.data), rendered.width, rendered.height));
+                    // `rendered` is dropped here after extracting the fields.
                 }
                 batch_encoded
             };
@@ -824,7 +817,7 @@ pub(crate) async fn extract_with_ocr(
                 }
 
                 // Convert hOCR structure to PdfParagraphs, then apply layout overrides.
-                // This mirrors the pdfium path: structure → layout classify → assemble.
+                // This follows the oxide path: structure → layout classify → assemble.
                 if let Some(ref ocr_doc) = ocr_result.ocr_internal_document {
                     let mut paragraphs =
                         crate::pdf::structure::adapters::ocr_doc_to_paragraphs(ocr_doc, ocr_render_height);

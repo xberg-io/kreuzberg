@@ -16,7 +16,6 @@ Version source of truth: root `Cargo.toml` `[workspace.package] version`.
 - `kreuzberg-php` — ext-php-rs PHP bindings
 - `kreuzberg-wasm` — wasm-bindgen WASM bindings; uses `wasm-target` feature set
 - `kreuzberg-paddle-ocr` — PaddleOCR via ONNX Runtime; not available on WASM or Windows
-- `kreuzberg-pdfium-render` — forked `pdfium-render` with Kreuzberg patches
 - `kreuzberg-tesseract` — Rust bindings for Tesseract OCR
 
 ## Out-of-workspace bindings (`packages/`)

@@ -5,15 +5,15 @@
 //! using word-level F1 scoring.
 //!
 //! Two extraction routes are tested:
-//! - **PDFium (native)**: Direct text extraction from searchable PDFs
+//! - **PDF (native)**: Direct text extraction from searchable PDFs
 //! - **OCR**: Image rendering → Tesseract OCR → plain text
 //!
 //! Usage:
 //!   # All quality gates (Markdown, Djot, Plain):
-//!   cargo test -p kreuzberg --features "pdf,bundled-pdfium" --test pdf_markdown_regression -- --nocapture
+//!   cargo test -p kreuzberg --features "pdf" --test pdf_markdown_regression -- --nocapture
 //!
 //!   # Include OCR path tests (slow, needs tesseract):
-//!   cargo test -p kreuzberg --features "pdf,ocr,bundled-pdfium" --test pdf_markdown_regression -- --ignored --nocapture
+//!   cargo test -p kreuzberg --features "pdf,ocr" --test pdf_markdown_regression -- --ignored --nocapture
 
 #![cfg(feature = "pdf")]
 
@@ -100,7 +100,6 @@ fn resolve_pdf_path(gt_name: &str) -> Option<PathBuf> {
         base.join(format!("vendored/pdfplumber/pdf/from-oss-fuzz/load/{}.pdf", gt_name)),
         base.join(format!("vendored/markitdown/pdf/{}.pdf", gt_name)),
         base.join(format!("vendored/markitdown/{}.pdf", gt_name)),
-        base.join(format!("vendored/pdfium-render/{}.pdf", gt_name)),
         qb_root.join(format!("data/nougat/{}.pdf", gt_name)),
         qb_root.join(format!("data/pdfa/{}.pdf", gt_name)),
     ];
@@ -441,11 +440,11 @@ fn run_quality_gate(
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// Section 1: PDFium Path — Quality Gates per Output Format
+// Section 1: PDF Path — Quality Gates per Output Format
 // ═══════════════════════════════════════════════════════════════════
 
 #[test]
-fn test_pdfium_quality_gate() {
+fn test_pdf_quality_gate() {
     if !test_documents_available() {
         println!("Skipping: test_documents not available");
         return;
@@ -471,7 +470,7 @@ fn test_pdfium_quality_gate() {
 }
 
 #[test]
-fn test_pdfium_djot_quality_gate() {
+fn test_pdf_djot_quality_gate() {
     if !test_documents_available() {
         println!("Skipping: test_documents not available");
         return;
@@ -494,7 +493,7 @@ fn test_pdfium_djot_quality_gate() {
 }
 
 #[test]
-fn test_pdfium_plain_quality_gate() {
+fn test_pdf_plain_quality_gate() {
     if !test_documents_available() {
         println!("Skipping: test_documents not available");
         return;
@@ -727,7 +726,7 @@ fn test_ocr_quality_gate() {
 
 #[test]
 #[ignore]
-fn test_pdfium_detailed_snapshot() {
+fn test_pdf_detailed_snapshot() {
     if !test_documents_available() {
         println!("Skipping: test_documents not available");
         return;

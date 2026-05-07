@@ -81,3 +81,51 @@ pub(crate) struct LayoutHint {
     pub right: f32,
     pub top: f32,
 }
+
+/// Bounding box in PDF coordinate space (points, y=0 at bottom of page).
+#[cfg(feature = "layout-detection")]
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct PdfLayoutBBox {
+    pub left: f32,
+    pub bottom: f32,
+    pub right: f32,
+    pub top: f32,
+}
+
+#[cfg(feature = "layout-detection")]
+impl PdfLayoutBBox {
+    pub(crate) fn width(&self) -> f32 {
+        (self.right - self.left).max(0.0)
+    }
+
+    pub(crate) fn height(&self) -> f32 {
+        (self.top - self.bottom).max(0.0)
+    }
+}
+
+/// A detected layout region mapped to PDF coordinate space.
+#[cfg(feature = "layout-detection")]
+#[derive(Debug, Clone)]
+pub struct PageLayoutRegion {
+    pub class_name: crate::layout::LayoutClass,
+    pub confidence: f32,
+    pub bbox: PdfLayoutBBox,
+}
+
+/// Layout detection results for a single page.
+///
+/// Carries the per-page bounding boxes from layout detection (in PDF coordinate space)
+/// and the pixel dimensions of the rendered image used for detection.
+/// Used by table recognition models to map pixel predictions back to PDF coordinates.
+#[cfg(feature = "layout-detection")]
+#[derive(Debug, Clone)]
+pub struct PageLayoutResult {
+    pub page_index: usize,
+    pub regions: Vec<PageLayoutRegion>,
+    pub page_width_pts: f32,
+    pub page_height_pts: f32,
+    /// Width of the rendered image used for layout detection (pixels).
+    pub render_width_px: u32,
+    /// Height of the rendered image used for layout detection (pixels).
+    pub render_height_px: u32,
+}

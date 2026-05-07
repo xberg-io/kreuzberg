@@ -32,8 +32,6 @@ concurrency:
 
 env:
   CARGO_TERM_COLOR: always
-  PDFIUM_VERSION: "7678"
-  PDFIUM_STATIC_VERSION: "7678"
   ORT_VERSION: "1.24.2"
   MACOSX_DEPLOYMENT_TARGET: "14.0"
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
@@ -215,7 +213,7 @@ jobs:
 
       - name: Build AMD64 test image
         if: ${{ needs.prepare.outputs.force_republish == 'true' || (matrix.variant == 'core' && needs.check-docker.outputs.core_exists != 'true') || (matrix.variant == 'full' && needs.check-docker.outputs.full_exists != 'true') || (matrix.variant == 'cli' && needs.check-docker.outputs.cli_exists != 'true') }}
-        run: docker build -f ${{ matrix.dockerfile }} --build-arg PDFIUM_VERSION=${{ env.PDFIUM_VERSION }} --build-arg ONNXRUNTIME_VERSION=${{ env.ORT_VERSION }} -t kreuzberg-publish:${{ matrix.variant }}-test .
+        run: docker build -f ${{ matrix.dockerfile }} --build-arg ONNXRUNTIME_VERSION=${{ env.ORT_VERSION }} -t kreuzberg-publish:${{ matrix.variant }}-test .
 
       - name: Run Docker tests
         if: ${{ needs.prepare.outputs.force_republish == 'true' || (matrix.variant == 'core' && needs.check-docker.outputs.core_exists != 'true') || (matrix.variant == 'full' && needs.check-docker.outputs.full_exists != 'true') || (matrix.variant == 'cli' && needs.check-docker.outputs.cli_exists != 'true') }}
@@ -247,7 +245,6 @@ jobs:
           file: ${{ matrix.dockerfile }}
           push: true
           build-args: |
-            PDFIUM_VERSION=${{ env.PDFIUM_VERSION }}
             ONNXRUNTIME_VERSION=${{ env.ORT_VERSION }}
           tags: ${{ steps.docker_meta.outputs.tags }}
           labels: |

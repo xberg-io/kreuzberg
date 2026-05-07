@@ -13,8 +13,6 @@ env:
   CARGO_PROFILE_DEV_DEBUG: 0
   RUST_BACKTRACE: short
   RUST_MIN_STACK: 16777216
-  PDFIUM_VERSION: "7678"
-  PDFIUM_STATIC_VERSION: "7678"
   ORT_VERSION: "1.24.2"
   MACOSX_DEPLOYMENT_TARGET: "14.0"
   BUILD_PROFILE: "ci"
@@ -56,21 +54,6 @@ jobs:
 
       - name: Setup OpenSSL
         uses: kreuzberg-dev/actions/setup-openssl@v1
-
-      - name: Cache PDFium
-        uses: ./.github/actions/cache-pdfium
-        with:
-          pdfium-version: ${{ env.PDFIUM_VERSION }}
-
-      - name: Download PDFium
-        uses: ./.github/actions/download-pdfium
-        with:
-          pdfium-version: ${{ env.PDFIUM_VERSION }}
-
-      - name: Stage PDFium runtime
-        uses: ./.github/actions/stage-pdfium-runtime
-        with:
-          destination: target/release
 
       - name: Setup ONNX Runtime
         uses: ./.github/actions/setup-onnx-runtime

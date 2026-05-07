@@ -42,7 +42,6 @@ CHECKS: list[tuple[str, str, str, dict[str, str]]] = [
     ("cratesio", "kreuzberg-cli", "crates.io (cli)", {}),
     ("cratesio", "kreuzberg-tesseract", "crates.io (tesseract)", {}),
     ("cratesio", "kreuzberg-paddle-ocr", "crates.io (paddle-ocr)", {}),
-    ("cratesio", "kreuzberg-pdfium-render", "crates.io (pdfium)", {}),
     ("maven", "dev.kreuzberg:kreuzberg", "Maven", {}),
     ("nuget", "Kreuzberg", "NuGet", {}),
     ("packagist", "kreuzberg/kreuzberg", "Packagist", {}),

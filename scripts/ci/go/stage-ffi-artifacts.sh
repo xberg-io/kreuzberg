@@ -31,13 +31,6 @@ if [ ${#ffi_libs_found[@]} -gt 0 ]; then
   echo "✓ Staged dynamic libraries: ${ffi_libs_found[*]}"
 fi
 
-# Stage PDFium libraries
-pdfium_libs=(target/release/libpdfium.*)
-if [ ${#pdfium_libs[@]} -gt 0 ]; then
-  cp "${pdfium_libs[@]}" "${STAGING_DIR}/lib/"
-  echo "✓ Staged PDFium library: ${pdfium_libs[*]}"
-fi
-
 shopt -u nullglob
 
 # Stage header file

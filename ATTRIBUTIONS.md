@@ -159,32 +159,6 @@ The original Apache-2.0 license is compatible with MIT relicensing. The original
 
 ---
 
-## pdfium-render
-
-High-level idiomatic Rust wrapper around Pdfium, forked for Kreuzberg integration:
-
-- **Source**: <https://github.com/ajrcarey/pdfium-render>
-- **Original License**: MIT OR Apache-2.0
-- **Author**: Alastair Carey (<alastair@alastaircarey.com>)
-- **Forked Version**: 0.8.x (with patches)
-- **Location**: `crates/kreuzberg-pdfium-render/`
-- **Purpose**: PDF rendering and text extraction via Google's Pdfium library
-
-### Modifications
-
-The forked code has been modified for Kreuzberg integration:
-
-- Updated to Rust 2024 edition and workspace conventions
-- License narrowed to MIT (compatible with original dual license)
-- Added musl static linking support in build.rs
-- Removed examples and test data (kept in upstream repo)
-
-### License Compatibility
-
-The original MIT OR Apache-2.0 dual license permits relicensing under MIT alone. The original copyright and attribution are preserved in the crate's LICENSE file.
-
----
-
 ## fastembed-rs
 
 Text embedding inference pipeline vendored into `crates/kreuzberg/src/embeddings/engine.rs`:

@@ -181,6 +181,18 @@ pub(crate) fn take_or_create_slanet(
     }
 }
 
+/// Returns `true` if the TATR table structure model has been successfully loaded.
+pub(crate) fn is_tatr_available() -> bool {
+    TATR_TRIED.get().copied().unwrap_or(false)
+}
+
+/// Returns `true` if any SLANeXT table model variant has been successfully loaded.
+pub(crate) fn is_slanet_available() -> bool {
+    SLANET_WIRED_TRIED.get().copied().unwrap_or(false)
+        || SLANET_WIRELESS_TRIED.get().copied().unwrap_or(false)
+        || SLANET_PLUS_TRIED.get().copied().unwrap_or(false)
+}
+
 /// Return a SLANeXT model to the global cache for reuse.
 pub(crate) fn return_slanet(variant: &str, model: models::slanet::SlanetModel) {
     match variant {

@@ -198,7 +198,7 @@ impl OcrBackendRegistry {
     /// # Returns
     ///
     /// The first backend supporting the language, or an error if none found.
-    #[cfg(test)]
+    #[cfg(all(test, any(feature = "ocr", feature = "ocr-wasm")))]
     pub(crate) fn get_for_language(&self, language: &str) -> Result<Arc<dyn OcrBackend>> {
         self.backends
             .values()
@@ -241,7 +241,7 @@ impl Default for OcrBackendRegistry {
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, any(feature = "ocr", feature = "ocr-wasm")))]
 mod tests {
     use super::*;
     use crate::core::config::OcrConfig;

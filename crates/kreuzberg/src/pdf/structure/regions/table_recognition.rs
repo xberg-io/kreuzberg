@@ -49,7 +49,7 @@ pub(in crate::pdf::structure) fn recognize_tables_for_native_page(
     page_image: &image::DynamicImage,
     hints: &[LayoutHint],
     words: &[crate::pdf::table_reconstruct::HocrWord],
-    page_result: &crate::pdf::layout_runner::PageLayoutResult,
+    page_result: &crate::pdf::structure::types::PageLayoutResult,
     page_height: f32,
     page_index: usize,
     tatr_model: &mut crate::layout::models::tatr::TatrModel,
@@ -338,7 +338,7 @@ fn build_tatr_grid_table(
 /// Detect and fix vertically-oriented table header text.
 ///
 /// PDFs with rotated column headers (common in wide tables) produce garbled
-/// text when pdfium extracts characters individually: "y t i r o h t u A o N"
+/// text when the PDF extractor extracts characters individually: "y t i r o h t u A o N"
 /// instead of "No Authority". Detected by: ≥3 tokens, >70% single characters.
 /// Fixed by joining characters and reversing (the chars are in bottom-to-top order).
 #[cfg(feature = "layout-detection")]
@@ -426,7 +426,7 @@ pub(in crate::pdf::structure) fn recognize_tables_slanet(
     page_image: &image::DynamicImage,
     hints: &[LayoutHint],
     words: &[crate::pdf::table_reconstruct::HocrWord],
-    page_result: &crate::pdf::layout_runner::PageLayoutResult,
+    page_result: &crate::pdf::structure::types::PageLayoutResult,
     page_height: f32,
     page_index: usize,
     slanet_model: &mut crate::layout::models::slanet::SlanetModel,

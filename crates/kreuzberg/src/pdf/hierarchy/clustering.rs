@@ -3,7 +3,7 @@
 //! This module implements k-means clustering on font sizes to identify
 //! document hierarchy levels (headings vs body text).
 
-use super::extraction::TextBlock;
+use super::types::TextBlock;
 use crate::pdf::error::{PdfError, Result};
 
 // K-means algorithm constants
@@ -350,7 +350,7 @@ fn assign_blocks_to_centroids(blocks: &[TextBlock], centroids: &[f32]) -> Vec<Ve
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::pdf::hierarchy::bounding_box::BoundingBox;
+    use crate::pdf::hierarchy::BoundingBox;
 
     fn make_block(text: &str, font_size: f32) -> TextBlock {
         TextBlock {

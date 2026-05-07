@@ -69,7 +69,7 @@ where
 /// Run a single extraction task with semaphore gating, timing, optional timeout, and batch mode.
 ///
 /// When `cancel_token` is provided and the timeout fires, the token is signalled so that
-/// any blocking pdfium operations in progress can observe the cancellation at the next
+/// any blocking PDF operations in progress can observe the cancellation at the next
 /// inter-page checkpoint and stop early.
 #[cfg(feature = "tokio-runtime")]
 async fn run_timed_extraction<F, Fut>(
@@ -92,7 +92,7 @@ where
         Some(secs) => match tokio::time::timeout(std::time::Duration::from_secs(secs), extraction_future).await {
             Ok(inner) => inner,
             Err(_elapsed) => {
-                // Signal the cancellation token so that any blocking pdfium thread can
+                // Signal the cancellation token so that any blocking PDF thread can
                 // detect it at the next inter-page checkpoint and stop processing.
                 if let Some(ref token) = cancel_token {
                     token.cancel();

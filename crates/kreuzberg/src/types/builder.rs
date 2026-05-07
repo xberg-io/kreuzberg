@@ -633,7 +633,7 @@ pub(crate) fn highlight(start: u32, end: u32) -> TextAnnotation {
 // Tests
 // ============================================================================
 
-#[cfg(all(test, any(feature = "office", feature = "html", feature = "xml")))]
+#[cfg(all(test, any(feature = "office", feature = "email", feature = "xml")))]
 mod tests {
     use super::*;
 

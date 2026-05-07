@@ -67,10 +67,6 @@ if ! {
   if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || "$OSTYPE" == "win32" ]]; then
     extra_excludes+=(--exclude benchmark-harness)
   fi
-  # pdfium-render must be excluded from the main workspace test and run separately
-  # with --test-threads=1 because pdfium's FFI bindings use global state and are not thread-safe.
-  # On ARM64 Linux we skip pdfium-render entirely due to pdfium binary incompatibility.
-  extra_excludes+=(--exclude kreuzberg-pdfium-render)
   RUST_BACKTRACE=full cargo test \
     --workspace \
     --exclude kreuzberg \
@@ -80,12 +76,6 @@ if ! {
     ${extra_excludes[@]+"${extra_excludes[@]}"} \
     --all-features \
     --verbose
-
-  # Run pdfium-render tests single-threaded (skip on ARM64 Linux due to binary incompatibility)
-  if ! [[ "$(uname -m)" == "aarch64" && "$(uname -s)" == "Linux" ]]; then
-    echo "=== cargo test -p kreuzberg-pdfium-render (single-threaded) ==="
-    RUST_BACKTRACE=full cargo test -p kreuzberg-pdfium-render --verbose -- --test-threads=1
-  fi
 } 2>&1 | tee "$TEST_LOG"; then
   echo "=== Test execution failed ==="
   echo "Last 50 lines of test output:"

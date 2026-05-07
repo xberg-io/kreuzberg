@@ -389,7 +389,6 @@ mod ffi {
         type PdfConfig;
         #[swift_bridge(init)]
         fn new(
-            backend: PdfBackend,
             extract_images: bool,
             passwords: Option<Vec<String>>,
             extract_metadata: bool,
@@ -399,7 +398,6 @@ mod ffi {
             bottom_margin_fraction: Option<f32>,
             allow_single_column_tables: bool,
         ) -> PdfConfig;
-        fn backend(&self) -> PdfBackend;
         fn extract_images(&self) -> bool;
         fn passwords(&self) -> Option<Vec<String>>;
         fn extract_metadata(&self) -> bool;
@@ -1343,7 +1341,6 @@ mod ffi {
             document_version: Option<String>,
             abstract_text: Option<String>,
             output_format: Option<String>,
-            extraction_method: Option<String>,
             additional: String,
         ) -> Metadata;
         fn title(&self) -> Option<String>;
@@ -1366,21 +1363,15 @@ mod ffi {
         fn document_version(&self) -> Option<String>;
         fn abstract_text(&self) -> Option<String>;
         fn output_format(&self) -> Option<String>;
-        fn extraction_method(&self) -> Option<String>;
         fn additional(&self) -> String;
     }
 
     extern "Rust" {
         type ExcelMetadata;
         #[swift_bridge(init)]
-        fn new(
-            sheet_count: Option<usize>,
-            sheet_names: Option<Vec<String>>,
-            custom_properties: String,
-        ) -> ExcelMetadata;
+        fn new(sheet_count: Option<usize>, sheet_names: Option<Vec<String>>) -> ExcelMetadata;
         fn sheet_count(&self) -> Option<usize>;
         fn sheet_names(&self) -> Option<Vec<String>>;
-        fn custom_properties(&self) -> String;
     }
 
     extern "Rust" {
@@ -1394,7 +1385,6 @@ mod ffi {
             bcc_emails: Vec<String>,
             message_id: Option<String>,
             attachments: Vec<String>,
-            extra_headers: String,
         ) -> EmailMetadata;
         fn from_email(&self) -> Option<String>;
         fn from_name(&self) -> Option<String>;
@@ -1403,16 +1393,6 @@ mod ffi {
         fn bcc_emails(&self) -> Vec<String>;
         fn message_id(&self) -> Option<String>;
         fn attachments(&self) -> Vec<String>;
-        fn extra_headers(&self) -> String;
-    }
-
-    extern "Rust" {
-        type ArchiveFileEntry;
-        #[swift_bridge(init)]
-        fn new(path: String, size: u64, is_dir: bool) -> ArchiveFileEntry;
-        fn path(&self) -> String;
-        fn size(&self) -> u64;
-        fn is_dir(&self) -> bool;
     }
 
     extern "Rust" {
@@ -1421,13 +1401,13 @@ mod ffi {
         fn new(
             format: String,
             file_count: usize,
-            entries: Vec<ArchiveFileEntry>,
+            file_list: Vec<String>,
             total_size: usize,
             compressed_size: Option<usize>,
         ) -> ArchiveMetadata;
         fn format(&self) -> String;
         fn file_count(&self) -> usize;
-        fn entries(&self) -> Vec<ArchiveFileEntry>;
+        fn file_list(&self) -> Vec<String>;
         fn total_size(&self) -> usize;
         fn compressed_size(&self) -> Option<usize>;
     }
@@ -1565,13 +1545,11 @@ mod ffi {
             slide_names: Vec<String>,
             image_count: Option<usize>,
             table_count: Option<usize>,
-            custom_properties: String,
         ) -> PptxMetadata;
         fn slide_count(&self) -> usize;
         fn slide_names(&self) -> Vec<String>;
         fn image_count(&self) -> Option<usize>;
         fn table_count(&self) -> Option<usize>;
-        fn custom_properties(&self) -> String;
     }
 
     extern "Rust" {
@@ -1585,15 +1563,6 @@ mod ffi {
         fn core_properties(&self) -> Option<String>;
         fn app_properties(&self) -> Option<String>;
         fn custom_properties(&self) -> String;
-    }
-
-    extern "Rust" {
-        type StructuredMetadata;
-        #[swift_bridge(init)]
-        fn new(data_format: String, field_count: usize, custom_fields: String) -> StructuredMetadata;
-        fn data_format(&self) -> String;
-        fn field_count(&self) -> usize;
-        fn custom_fields(&self) -> String;
     }
 
     extern "Rust" {
@@ -1622,14 +1591,12 @@ mod ffi {
             authors: Vec<String>,
             year_range: Option<YearRange>,
             entry_types: String,
-            entries: Option<Vec<String>>,
         ) -> BibtexMetadata;
         fn entry_count(&self) -> usize;
         fn citation_keys(&self) -> Vec<String>;
         fn authors(&self) -> Vec<String>;
         fn year_range(&self) -> Option<YearRange>;
         fn entry_types(&self) -> String;
-        fn entries(&self) -> Option<Vec<String>>;
     }
 
     extern "Rust" {
@@ -2186,63 +2153,6 @@ mod ffi {
     }
 
     extern "Rust" {
-        type PdfImage;
-        fn page_number(&self) -> usize;
-        fn image_index(&self) -> usize;
-        fn width(&self) -> i64;
-        fn height(&self) -> i64;
-        fn color_space(&self) -> Option<String>;
-        fn bits_per_component(&self) -> Option<i64>;
-        fn filters(&self) -> Vec<String>;
-        fn data(&self) -> Vec<u8>;
-        fn decoded_format(&self) -> String;
-        fn image_kind(&self) -> Option<ImageKind>;
-        fn kind_confidence(&self) -> Option<f32>;
-        fn cluster_id(&self) -> Option<u32>;
-    }
-
-    extern "Rust" {
-        type PageLayoutResult;
-        fn page_index(&self) -> usize;
-        fn page_width_pts(&self) -> f32;
-        fn page_height_pts(&self) -> f32;
-        fn render_width_px(&self) -> u32;
-        fn render_height_px(&self) -> u32;
-    }
-
-    extern "Rust" {
-        type PageTiming;
-        #[swift_bridge(init)]
-        fn new(
-            render_ms: f64,
-            preprocess_ms: f64,
-            onnx_ms: f64,
-            inference_ms: f64,
-            postprocess_ms: f64,
-            mapping_ms: f64,
-        ) -> PageTiming;
-        fn render_ms(&self) -> f64;
-        fn preprocess_ms(&self) -> f64;
-        fn onnx_ms(&self) -> f64;
-        fn inference_ms(&self) -> f64;
-        fn postprocess_ms(&self) -> f64;
-        fn mapping_ms(&self) -> f64;
-    }
-
-    extern "Rust" {
-        type CommonPdfMetadata;
-        fn title(&self) -> Option<String>;
-        fn subject(&self) -> Option<String>;
-        fn created_at(&self) -> Option<String>;
-        fn modified_at(&self) -> Option<String>;
-        fn created_by(&self) -> Option<String>;
-    }
-
-    extern "Rust" {
-        type PdfUnifiedExtractionResult;
-    }
-
-    extern "Rust" {
         type ExecutionProviderType;
     }
 
@@ -2256,10 +2166,6 @@ mod ffi {
 
     extern "Rust" {
         type TableModel;
-    }
-
-    extern "Rust" {
-        type PdfBackend;
     }
 
     extern "Rust" {
@@ -2463,13 +2369,6 @@ mod ffi {
         fn clear_validators() -> Result<(), String>;
         #[swift_bridge(swift_name = "embedTextsAsync")]
         fn embed_texts_async(texts: Vec<String>, config: EmbeddingConfig) -> Result<String, String>;
-        #[swift_bridge(swift_name = "renderPdfPageToPng")]
-        fn render_pdf_page_to_png(
-            pdf_bytes: Vec<u8>,
-            page_index: usize,
-            dpi: Option<i32>,
-            password: Option<String>,
-        ) -> Result<Vec<u8>, String>;
         #[swift_bridge(swift_name = "detectMimeType")]
         fn detect_mime_type(path: String, check_exists: bool) -> Result<String, String>;
         #[swift_bridge(swift_name = "embedTexts")]
@@ -3774,7 +3673,6 @@ pub struct PdfConfig(pub kreuzberg::PdfConfig);
 
 impl PdfConfig {
     pub fn new(
-        backend: PdfBackend,
         extract_images: bool,
         passwords: Option<Vec<String>>,
         extract_metadata: bool,
@@ -3785,7 +3683,6 @@ impl PdfConfig {
         allow_single_column_tables: bool,
     ) -> PdfConfig {
         let mut __target: kreuzberg::PdfConfig = ::std::default::Default::default();
-        // alef: backend (PdfBackend) is an enum; reverse From not generated — left at default
         __target.extract_images = extract_images;
         if let Ok(__v) = ::serde_json::to_value(passwords) {
             if let Ok(t) = ::serde_json::from_value(__v) {
@@ -3801,9 +3698,6 @@ impl PdfConfig {
         __target.bottom_margin_fraction = bottom_margin_fraction;
         __target.allow_single_column_tables = allow_single_column_tables;
         PdfConfig(__target)
-    }
-    pub fn backend(&self) -> PdfBackend {
-        PdfBackend::from(self.0.backend.clone())
     }
     pub fn extract_images(&self) -> bool {
         ::serde_json::to_value(&self.0.extract_images)
@@ -6862,7 +6756,6 @@ impl Metadata {
         document_version: Option<String>,
         abstract_text: Option<String>,
         output_format: Option<String>,
-        extraction_method: Option<String>,
         additional: String,
     ) -> Metadata {
         let mut __target: kreuzberg::Metadata = ::std::default::Default::default();
@@ -6976,13 +6869,6 @@ impl Metadata {
                 }
             }
         }
-        if let Some(s) = extraction_method {
-            if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&s) {
-                if let Ok(t) = ::serde_json::from_value(v) {
-                    __target.extraction_method = Some(t);
-                }
-            }
-        }
         if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&additional) {
             if let Ok(t) = ::serde_json::from_value(v) {
                 __target.additional = t;
@@ -7075,12 +6961,6 @@ impl Metadata {
             .as_ref()
             .and_then(|v| serde_json::to_string(v).ok())
     }
-    pub fn extraction_method(&self) -> Option<String> {
-        self.0
-            .extraction_method
-            .as_ref()
-            .and_then(|v| serde_json::to_string(v).ok())
-    }
     pub fn additional(&self) -> String {
         serde_json::to_string(&self.0.additional).expect("serializable additional")
     }
@@ -7089,21 +6969,12 @@ impl Metadata {
 pub struct ExcelMetadata(pub kreuzberg::ExcelMetadata);
 
 impl ExcelMetadata {
-    pub fn new(
-        sheet_count: Option<usize>,
-        sheet_names: Option<Vec<String>>,
-        custom_properties: String,
-    ) -> ExcelMetadata {
+    pub fn new(sheet_count: Option<usize>, sheet_names: Option<Vec<String>>) -> ExcelMetadata {
         let mut __target: kreuzberg::ExcelMetadata = ::std::default::Default::default();
         __target.sheet_count = sheet_count;
         if let Ok(__v) = ::serde_json::to_value(sheet_names) {
             if let Ok(t) = ::serde_json::from_value(__v) {
                 __target.sheet_names = t;
-            }
-        }
-        if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&custom_properties) {
-            if let Ok(t) = ::serde_json::from_value(v) {
-                __target.custom_properties = t;
             }
         }
         ExcelMetadata(__target)
@@ -7122,9 +6993,6 @@ impl ExcelMetadata {
                 .and_then(|j| ::serde_json::from_value(j).ok())
         })
     }
-    pub fn custom_properties(&self) -> String {
-        serde_json::to_string(&self.0.custom_properties).expect("serializable custom_properties")
-    }
 }
 
 pub struct EmailMetadata(pub kreuzberg::EmailMetadata);
@@ -7138,7 +7006,6 @@ impl EmailMetadata {
         bcc_emails: Vec<String>,
         message_id: Option<String>,
         attachments: Vec<String>,
-        extra_headers: String,
     ) -> EmailMetadata {
         let mut __target: kreuzberg::EmailMetadata = ::std::default::Default::default();
         if let Some(s) = from_email {
@@ -7182,11 +7049,6 @@ impl EmailMetadata {
                 __target.attachments = t;
             }
         }
-        if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&extra_headers) {
-            if let Ok(t) = ::serde_json::from_value(v) {
-                __target.extra_headers = t;
-            }
-        }
         EmailMetadata(__target)
     }
     pub fn from_email(&self) -> Option<String> {
@@ -7222,40 +7084,6 @@ impl EmailMetadata {
             .and_then(|j| ::serde_json::from_value(j).ok())
             .unwrap_or_default()
     }
-    pub fn extra_headers(&self) -> String {
-        serde_json::to_string(&self.0.extra_headers).expect("serializable extra_headers")
-    }
-}
-
-pub struct ArchiveFileEntry(pub kreuzberg::ArchiveFileEntry);
-
-impl ArchiveFileEntry {
-    pub fn new(path: String, size: u64, is_dir: bool) -> ArchiveFileEntry {
-        let mut __target: kreuzberg::ArchiveFileEntry = ::std::default::Default::default();
-        if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&path) {
-            if let Ok(t) = ::serde_json::from_value(v) {
-                __target.path = t;
-            }
-        }
-        __target.size = size;
-        __target.is_dir = is_dir;
-        ArchiveFileEntry(__target)
-    }
-    pub fn path(&self) -> String {
-        serde_json::to_string(&self.0.path).unwrap_or_default()
-    }
-    pub fn size(&self) -> u64 {
-        ::serde_json::to_value(&self.0.size)
-            .ok()
-            .and_then(|j| ::serde_json::from_value(j).ok())
-            .unwrap_or_default()
-    }
-    pub fn is_dir(&self) -> bool {
-        ::serde_json::to_value(&self.0.is_dir)
-            .ok()
-            .and_then(|j| ::serde_json::from_value(j).ok())
-            .unwrap_or_default()
-    }
 }
 
 pub struct ArchiveMetadata(pub kreuzberg::ArchiveMetadata);
@@ -7264,7 +7092,7 @@ impl ArchiveMetadata {
     pub fn new(
         format: String,
         file_count: usize,
-        entries: Vec<ArchiveFileEntry>,
+        file_list: Vec<String>,
         total_size: usize,
         compressed_size: Option<usize>,
     ) -> ArchiveMetadata {
@@ -7275,7 +7103,11 @@ impl ArchiveMetadata {
             }
         }
         __target.file_count = file_count;
-        __target.entries = entries.into_iter().map(|w| w.0).collect();
+        if let Ok(__v) = ::serde_json::to_value(file_list) {
+            if let Ok(t) = ::serde_json::from_value(__v) {
+                __target.file_list = t;
+            }
+        }
         __target.total_size = total_size;
         __target.compressed_size = compressed_size;
         ArchiveMetadata(__target)
@@ -7289,12 +7121,11 @@ impl ArchiveMetadata {
             .and_then(|j| ::serde_json::from_value(j).ok())
             .unwrap_or_default()
     }
-    pub fn entries(&self) -> Vec<ArchiveFileEntry> {
-        self.0
-            .entries
-            .iter()
-            .map(|elem| ArchiveFileEntry(elem.clone()))
-            .collect()
+    pub fn file_list(&self) -> Vec<String> {
+        ::serde_json::to_value(&self.0.file_list)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
     }
     pub fn total_size(&self) -> usize {
         ::serde_json::to_value(&self.0.total_size)
@@ -7745,7 +7576,6 @@ impl PptxMetadata {
         slide_names: Vec<String>,
         image_count: Option<usize>,
         table_count: Option<usize>,
-        custom_properties: String,
     ) -> PptxMetadata {
         let mut __target: kreuzberg::PptxMetadata = ::std::default::Default::default();
         __target.slide_count = slide_count;
@@ -7756,11 +7586,6 @@ impl PptxMetadata {
         }
         __target.image_count = image_count;
         __target.table_count = table_count;
-        if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&custom_properties) {
-            if let Ok(t) = ::serde_json::from_value(v) {
-                __target.custom_properties = t;
-            }
-        }
         PptxMetadata(__target)
     }
     pub fn slide_count(&self) -> usize {
@@ -7788,9 +7613,6 @@ impl PptxMetadata {
                 .ok()
                 .and_then(|j| ::serde_json::from_value(j).ok())
         })
-    }
-    pub fn custom_properties(&self) -> String {
-        serde_json::to_string(&self.0.custom_properties).expect("serializable custom_properties")
     }
 }
 
@@ -7838,38 +7660,6 @@ impl DocxMetadata {
     }
     pub fn custom_properties(&self) -> String {
         serde_json::to_string(&self.0.custom_properties).expect("serializable custom_properties")
-    }
-}
-
-pub struct StructuredMetadata(pub kreuzberg::StructuredMetadata);
-
-impl StructuredMetadata {
-    pub fn new(data_format: String, field_count: usize, custom_fields: String) -> StructuredMetadata {
-        let mut __target: kreuzberg::StructuredMetadata = ::std::default::Default::default();
-        if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&data_format) {
-            if let Ok(t) = ::serde_json::from_value(v) {
-                __target.data_format = t;
-            }
-        }
-        __target.field_count = field_count;
-        if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&custom_fields) {
-            if let Ok(t) = ::serde_json::from_value(v) {
-                __target.custom_fields = t;
-            }
-        }
-        StructuredMetadata(__target)
-    }
-    pub fn data_format(&self) -> String {
-        serde_json::to_string(&self.0.data_format).unwrap_or_default()
-    }
-    pub fn field_count(&self) -> usize {
-        ::serde_json::to_value(&self.0.field_count)
-            .ok()
-            .and_then(|j| ::serde_json::from_value(j).ok())
-            .unwrap_or_default()
-    }
-    pub fn custom_fields(&self) -> String {
-        serde_json::to_string(&self.0.custom_fields).expect("serializable custom_fields")
     }
 }
 
@@ -7940,7 +7730,6 @@ impl BibtexMetadata {
         authors: Vec<String>,
         year_range: Option<YearRange>,
         entry_types: String,
-        entries: Option<Vec<String>>,
     ) -> BibtexMetadata {
         let mut __target: kreuzberg::BibtexMetadata = ::std::default::Default::default();
         __target.entry_count = entry_count;
@@ -7960,11 +7749,6 @@ impl BibtexMetadata {
         if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&entry_types) {
             if let Ok(t) = ::serde_json::from_value(v) {
                 __target.entry_types = t;
-            }
-        }
-        if let Ok(__v) = ::serde_json::to_value(entries) {
-            if let Ok(t) = ::serde_json::from_value(__v) {
-                __target.entries = t;
             }
         }
         BibtexMetadata(__target)
@@ -7992,13 +7776,6 @@ impl BibtexMetadata {
     }
     pub fn entry_types(&self) -> String {
         serde_json::to_string(&self.0.entry_types).expect("serializable entry_types")
-    }
-    pub fn entries(&self) -> Option<Vec<String>> {
-        self.0.entries.as_ref().and_then(|v| {
-            ::serde_json::to_value(v)
-                .ok()
-                .and_then(|j| ::serde_json::from_value(j).ok())
-        })
     }
 }
 
@@ -9625,159 +9402,6 @@ impl EmbeddedFile {
     }
 }
 
-pub struct PdfImage(pub kreuzberg::pdf::images::PdfImage);
-
-impl PdfImage {
-    pub fn page_number(&self) -> usize {
-        ::serde_json::to_value(&self.0.page_number)
-            .ok()
-            .and_then(|j| ::serde_json::from_value(j).ok())
-            .unwrap_or_default()
-    }
-    pub fn image_index(&self) -> usize {
-        ::serde_json::to_value(&self.0.image_index)
-            .ok()
-            .and_then(|j| ::serde_json::from_value(j).ok())
-            .unwrap_or_default()
-    }
-    pub fn width(&self) -> i64 {
-        ::serde_json::to_value(&self.0.width)
-            .ok()
-            .and_then(|j| ::serde_json::from_value(j).ok())
-            .unwrap_or_default()
-    }
-    pub fn height(&self) -> i64 {
-        ::serde_json::to_value(&self.0.height)
-            .ok()
-            .and_then(|j| ::serde_json::from_value(j).ok())
-            .unwrap_or_default()
-    }
-    pub fn color_space(&self) -> Option<String> {
-        self.0.color_space.as_ref().and_then(|v| serde_json::to_string(v).ok())
-    }
-    pub fn bits_per_component(&self) -> Option<i64> {
-        self.0.bits_per_component.as_ref().and_then(|v| {
-            ::serde_json::to_value(v)
-                .ok()
-                .and_then(|j| ::serde_json::from_value(j).ok())
-        })
-    }
-    pub fn filters(&self) -> Vec<String> {
-        ::serde_json::to_value(&self.0.filters)
-            .ok()
-            .and_then(|j| ::serde_json::from_value(j).ok())
-            .unwrap_or_default()
-    }
-    pub fn data(&self) -> Vec<u8> {
-        self.0.data.to_vec()
-    }
-    pub fn decoded_format(&self) -> String {
-        serde_json::to_string(&self.0.decoded_format).unwrap_or_default()
-    }
-    pub fn image_kind(&self) -> Option<ImageKind> {
-        self.0.image_kind.clone().map(ImageKind::from)
-    }
-    pub fn kind_confidence(&self) -> Option<f32> {
-        self.0.kind_confidence.as_ref().and_then(|v| {
-            ::serde_json::to_value(v)
-                .ok()
-                .and_then(|j| ::serde_json::from_value(j).ok())
-        })
-    }
-    pub fn cluster_id(&self) -> Option<u32> {
-        self.0.cluster_id.as_ref().and_then(|v| {
-            ::serde_json::to_value(v)
-                .ok()
-                .and_then(|j| ::serde_json::from_value(j).ok())
-        })
-    }
-}
-
-pub struct PageLayoutResult(pub kreuzberg::pdf::layout_runner::PageLayoutResult);
-
-impl PageLayoutResult {
-    pub fn page_index(&self) -> usize {
-        self.0.page_index.clone()
-    }
-    // alef: skipped getter `regions` — type cannot be bridged through swift-bridge
-    pub fn page_width_pts(&self) -> f32 {
-        self.0.page_width_pts.clone()
-    }
-    pub fn page_height_pts(&self) -> f32 {
-        self.0.page_height_pts.clone()
-    }
-    pub fn render_width_px(&self) -> u32 {
-        self.0.render_width_px.clone()
-    }
-    pub fn render_height_px(&self) -> u32 {
-        self.0.render_height_px.clone()
-    }
-}
-
-pub struct PageTiming(pub kreuzberg::pdf::layout_runner::PageTiming);
-
-impl PageTiming {
-    pub fn new(
-        render_ms: f64,
-        preprocess_ms: f64,
-        onnx_ms: f64,
-        inference_ms: f64,
-        postprocess_ms: f64,
-        mapping_ms: f64,
-    ) -> PageTiming {
-        PageTiming(kreuzberg::pdf::layout_runner::PageTiming {
-            render_ms,
-            preprocess_ms,
-            onnx_ms,
-            inference_ms,
-            postprocess_ms,
-            mapping_ms,
-        })
-    }
-    pub fn render_ms(&self) -> f64 {
-        self.0.render_ms.clone()
-    }
-    pub fn preprocess_ms(&self) -> f64 {
-        self.0.preprocess_ms.clone()
-    }
-    pub fn onnx_ms(&self) -> f64 {
-        self.0.onnx_ms.clone()
-    }
-    pub fn inference_ms(&self) -> f64 {
-        self.0.inference_ms.clone()
-    }
-    pub fn postprocess_ms(&self) -> f64 {
-        self.0.postprocess_ms.clone()
-    }
-    pub fn mapping_ms(&self) -> f64 {
-        self.0.mapping_ms.clone()
-    }
-}
-
-pub struct CommonPdfMetadata(pub kreuzberg::pdf::metadata::CommonPdfMetadata);
-
-impl CommonPdfMetadata {
-    pub fn title(&self) -> Option<String> {
-        self.0.title.as_ref().map(|v| format!("{v:?}"))
-    }
-    pub fn subject(&self) -> Option<String> {
-        self.0.subject.as_ref().map(|v| format!("{v:?}"))
-    }
-    // alef: skipped getter `authors` — type cannot be bridged through swift-bridge
-    // alef: skipped getter `keywords` — type cannot be bridged through swift-bridge
-    pub fn created_at(&self) -> Option<String> {
-        self.0.created_at.as_ref().map(|v| format!("{v:?}"))
-    }
-    pub fn modified_at(&self) -> Option<String> {
-        self.0.modified_at.as_ref().map(|v| format!("{v:?}"))
-    }
-    pub fn created_by(&self) -> Option<String> {
-        self.0.created_by.as_ref().map(|v| format!("{v:?}"))
-    }
-}
-
-pub struct PdfUnifiedExtractionResult(pub kreuzberg::pdf::text::PdfUnifiedExtractionResult);
-
 pub enum ExecutionProviderType {
     Auto,
     Cpu,
@@ -9861,22 +9485,6 @@ impl From<kreuzberg::TableModel> for TableModel {
             kreuzberg::TableModel::SlanetPlus => Self::SlanetPlus,
             kreuzberg::TableModel::SlanetAuto => Self::SlanetAuto,
             kreuzberg::TableModel::Disabled => Self::Disabled,
-        }
-    }
-}
-
-pub enum PdfBackend {
-    Pdfium,
-    PdfOxide,
-    Auto,
-}
-
-impl From<kreuzberg::PdfBackend> for PdfBackend {
-    fn from(val: kreuzberg::PdfBackend) -> Self {
-        match val {
-            kreuzberg::PdfBackend::Pdfium => Self::Pdfium,
-            kreuzberg::PdfBackend::PdfOxide => Self::PdfOxide,
-            kreuzberg::PdfBackend::Auto => Self::Auto,
         }
     }
 }
@@ -10804,15 +10412,6 @@ pub fn embed_texts_async(texts: Vec<String>, config: EmbeddingConfig) -> Result<
                 .map_err(|e| e.to_string())
                 .map(|v| serde_json::to_string(&v).expect("serializable return"))
         })
-}
-
-pub fn render_pdf_page_to_png(
-    pdf_bytes: Vec<u8>,
-    page_index: usize,
-    dpi: Option<i32>,
-    password: Option<String>,
-) -> Result<Vec<u8>, String> {
-    kreuzberg::render_pdf_page_to_png(&pdf_bytes, page_index, dpi, password.as_deref()).map_err(|e| e.to_string())
 }
 
 pub fn detect_mime_type(path: String, check_exists: bool) -> Result<String, String> {

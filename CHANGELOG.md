@@ -9,35 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Breaking Changes
-
-- **`ArchiveMetadata.file_list: Vec<String>` replaced with `entries: Vec<ArchiveFileEntry>`**
-  — the flat list of paths is gone; the new `ArchiveFileEntry` struct carries `path`,
-  `size` (bytes, u64), and `is_dir` (bool). Update any consumer iterating
-  `archive_metadata.file_list`.
-- **`extraction_method` promoted from `additional["extraction_method"]` to a typed
-  `Metadata.extraction_method: Option<String>` field**. The wire key moved from inside
-  the `additional` object to a top-level field of `metadata`. Affects PDF, image, and
-  derived-extraction results.
-- **Org-mode metadata now writes to typed `Metadata` fields instead of `additional`**:
-  `title`, `authors`, `keywords`, `created_at` are now top-level typed fields on
-  `metadata`; only arbitrary `#+KEY:` directives remain in `metadata.additional`.
-- **`FormatMetadata.Structured` variant added** for JSON/YAML/TOML documents with
-  `data_format: String`, `field_count: usize`, and an optional `custom_fields` map.
-  Previously these were injected into `additional`.
-
-### Added
-
-- **`ArchiveFileEntry` struct** (all bindings): `path: String`, `size: u64`,
-  `is_dir: bool`. Replaces the flat `file_list` with richer per-entry metadata.
-- **`BibtexMetadata.entries`**: raw BibTeX entry data per reference (formerly injected
-  into `additional`).
-- **`PptxMetadata.custom_properties`** / **`ExcelMetadata.custom_properties`**:
-  Office custom document properties (formerly in `additional`).
-- **`EmailMetadata.extra_headers`**: non-standard email headers (formerly in
-  `additional`).
-- **`StructuredMetadata`** format variant for JSON/YAML/TOML structured data.
-
 ## [5.0.0-rc.1] - 2026-05-05
 
 ### Breaking Changes

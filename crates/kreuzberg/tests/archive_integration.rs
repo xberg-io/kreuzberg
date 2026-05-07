@@ -40,8 +40,8 @@ async fn test_zip_basic_extraction() {
     };
     assert_eq!(archive_meta.format, "ZIP");
     assert_eq!(archive_meta.file_count, 1);
-    assert_eq!(archive_meta.entries.len(), 1);
-    assert_eq!(archive_meta.entries[0].path, "test.txt");
+    assert_eq!(archive_meta.file_list.len(), 1);
+    assert_eq!(archive_meta.file_list[0], "test.txt");
 }
 
 /// Test ZIP with multiple files.
@@ -89,10 +89,10 @@ async fn test_zip_multiple_files() {
         _ => panic!("Expected Archive metadata"),
     };
     assert_eq!(archive_meta.file_count, 3, "Should have 3 files");
-    assert_eq!(archive_meta.entries.len(), 3, "file_list should contain 3 entries");
-    assert!(archive_meta.entries.iter().any(|e| e.path == "file1.txt"));
-    assert!(archive_meta.entries.iter().any(|e| e.path == "file2.md"));
-    assert!(archive_meta.entries.iter().any(|e| e.path == "file3.json"));
+    assert_eq!(archive_meta.file_list.len(), 3, "file_list should contain 3 entries");
+    assert!(archive_meta.file_list.contains(&"file1.txt".to_string()));
+    assert!(archive_meta.file_list.contains(&"file2.md".to_string()));
+    assert!(archive_meta.file_list.contains(&"file3.json".to_string()));
 }
 
 /// Test ZIP with nested directory structure.
@@ -143,12 +143,12 @@ async fn test_zip_nested_directories() {
         archive_meta.file_count >= 2,
         "Should have at least 2 files (excluding empty dirs)"
     );
-    assert!(archive_meta.entries.iter().any(|e| e.path.contains("dir1/file.txt")));
+    assert!(archive_meta.file_list.iter().any(|f| f.contains("dir1/file.txt")));
     assert!(
         archive_meta
-            .entries
+            .file_list
             .iter()
-            .any(|e| e.path.contains("dir1/subdir/nested.txt"))
+            .any(|f| f.contains("dir1/subdir/nested.txt"))
     );
 }
 
@@ -272,8 +272,8 @@ async fn test_nested_archive() {
         _ => panic!("Expected Archive metadata"),
     };
     assert_eq!(archive_meta.file_count, 2, "Should have 2 files in outer archive");
-    assert!(archive_meta.entries.iter().any(|e| e.path == "inner.zip"));
-    assert!(archive_meta.entries.iter().any(|e| e.path == "readme.txt"));
+    assert!(archive_meta.file_list.contains(&"inner.zip".to_string()));
+    assert!(archive_meta.file_list.contains(&"readme.txt".to_string()));
 }
 
 /// Test archive with mixed file formats (PDF, DOCX, images).
@@ -324,11 +324,11 @@ async fn test_archive_mixed_formats() {
         _ => panic!("Expected Archive metadata"),
     };
     assert_eq!(archive_meta.file_count, 4, "Should have 4 files");
-    assert_eq!(archive_meta.entries.len(), 4, "file_list should contain 4 entries");
-    assert!(archive_meta.entries.iter().any(|e| e.path == "document.txt"));
-    assert!(archive_meta.entries.iter().any(|e| e.path == "readme.md"));
-    assert!(archive_meta.entries.iter().any(|e| e.path == "image.png"));
-    assert!(archive_meta.entries.iter().any(|e| e.path == "document.pdf"));
+    assert_eq!(archive_meta.file_list.len(), 4, "file_list should contain 4 entries");
+    assert!(archive_meta.file_list.contains(&"document.txt".to_string()));
+    assert!(archive_meta.file_list.contains(&"readme.md".to_string()));
+    assert!(archive_meta.file_list.contains(&"image.png".to_string()));
+    assert!(archive_meta.file_list.contains(&"document.pdf".to_string()));
 }
 
 /// Test password-protected archive (should fail gracefully).
@@ -399,13 +399,17 @@ async fn test_large_archive() {
         _ => panic!("Expected Archive metadata"),
     };
     assert_eq!(archive_meta.file_count, 100, "Should have 100 files");
-    assert_eq!(archive_meta.entries.len(), 100, "file_list should contain 100 entries");
+    assert_eq!(
+        archive_meta.file_list.len(),
+        100,
+        "file_list should contain 100 entries"
+    );
 
     assert!(result.content.contains("file_0.txt"));
     assert!(result.content.contains("file_99.txt"));
-    assert!(archive_meta.entries.iter().any(|e| e.path == "file_0.txt"));
-    assert!(archive_meta.entries.iter().any(|e| e.path == "file_50.txt"));
-    assert!(archive_meta.entries.iter().any(|e| e.path == "file_99.txt"));
+    assert!(archive_meta.file_list.contains(&"file_0.txt".to_string()));
+    assert!(archive_meta.file_list.contains(&"file_50.txt".to_string()));
+    assert!(archive_meta.file_list.contains(&"file_99.txt".to_string()));
 }
 
 /// Test archive with special characters and Unicode filenames.
@@ -452,10 +456,10 @@ async fn test_archive_with_special_characters() {
         _ => panic!("Expected Archive metadata"),
     };
     assert_eq!(archive_meta.file_count, 3, "Should have 3 files");
-    assert_eq!(archive_meta.entries.len(), 3, "file_list should contain 3 entries");
-    assert!(archive_meta.entries.iter().any(|e| e.path.contains("txt")));
-    assert!(archive_meta.entries.iter().any(|e| e.path == "file with spaces.txt"));
-    assert!(archive_meta.entries.iter().any(|e| e.path == "file-with-dashes.txt"));
+    assert_eq!(archive_meta.file_list.len(), 3, "file_list should contain 3 entries");
+    assert!(archive_meta.file_list.iter().any(|f| f.contains("txt")));
+    assert!(archive_meta.file_list.contains(&"file with spaces.txt".to_string()));
+    assert!(archive_meta.file_list.contains(&"file-with-dashes.txt".to_string()));
 }
 
 /// Test empty archive.
@@ -486,7 +490,7 @@ async fn test_empty_archive() {
     };
     assert_eq!(archive_meta.file_count, 0, "Empty archive should have 0 files");
     assert_eq!(archive_meta.total_size, 0, "Empty archive should have 0 total size");
-    assert!(archive_meta.entries.is_empty(), "file_list should be empty");
+    assert!(archive_meta.file_list.is_empty(), "file_list should be empty");
 }
 
 /// Test synchronous archive extraction.
@@ -512,8 +516,8 @@ fn test_archive_extraction_sync() {
     };
     assert_eq!(archive_meta.format, "ZIP");
     assert_eq!(archive_meta.file_count, 1);
-    assert_eq!(archive_meta.entries.len(), 1);
-    assert_eq!(archive_meta.entries[0].path, "test.txt");
+    assert_eq!(archive_meta.file_list.len(), 1);
+    assert_eq!(archive_meta.file_list[0], "test.txt");
 }
 
 fn create_simple_zip() -> Vec<u8> {

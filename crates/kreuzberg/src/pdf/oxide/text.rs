@@ -1,9 +1,4 @@
 //! PDF text extraction using the pdf_oxide backend.
-//!
-//! Provides equivalent functionality to the pdfium-based `text.rs` module,
-//! using pdf_oxide for text extraction. Reuses backend-agnostic utilities
-//! (`fix_pdf_control_chars`, `contains_html_markup`) from the pdfium text
-//! module to avoid logic duplication.
 
 use super::OxideDocument;
 use crate::core::config::{ExtractionConfig, PageConfig};
@@ -54,19 +49,32 @@ pub(crate) fn extract_text_and_metadata(
 
 /// Extract text from a pdf_oxide document with optional page boundary tracking.
 ///
-/// Mirrors the signature and behaviour of `extract_text_from_pdf_document` in the
-/// pdfium backend so callers can switch transparently.
+/// Mirrors the signature and behaviour of `extract_text_from_pdf_document`.
 ///
-/// When `page_config` is `None`, uses a fast path with minimal overhead.
 /// When `page_config` is `Some`, tracks byte offsets and optionally collects
 /// per-page `PageContent` entries.
+///
+/// When `page_config` is `None` but `extraction_config` requires per-page boundaries
+/// (i.e. `force_ocr_pages` is set or an `ocr` config is present for quality evaluation),
+/// boundary tracking is enabled automatically with a default `PageConfig` so that the
+/// mixed-OCR and quality-threshold codepaths receive the offsets they need.
+///
+/// Otherwise the fast path is used (no per-page tracking).
 pub(crate) fn extract_text_from_oxide_document(
     doc: &mut OxideDocument,
     page_config: Option<&PageConfig>,
-    _extraction_config: Option<&ExtractionConfig>,
+    extraction_config: Option<&ExtractionConfig>,
 ) -> Result<PdfTextExtractionResult> {
+    let needs_boundaries =
+        extraction_config.is_some_and(|c| c.force_ocr_pages.as_ref().is_some_and(|p| !p.is_empty()) || c.ocr.is_some());
+
     if let Some(config) = page_config {
         extract_text_with_tracking(doc, config)
+    } else if needs_boundaries {
+        // Use a default PageConfig (no markers, no per-page content) purely for
+        // boundary tracking required by mixed-OCR and OCR quality evaluation.
+        let default_config = PageConfig::default();
+        extract_text_with_tracking(doc, &default_config)
     } else {
         extract_text_fast_path(doc)
     }
@@ -116,7 +124,7 @@ fn extract_text_fast_path(doc: &mut OxideDocument) -> Result<PdfTextExtractionRe
 
 /// Extract text with page boundary and content tracking.
 ///
-/// Mirrors `extract_text_lazy_with_tracking` in the pdfium backend: tracks byte
+/// Mirrors `extract_text_lazy_with_tracking`: tracks byte
 /// offsets for each page, optionally collects per-page `PageContent`, and inserts
 /// page markers when configured.
 fn extract_text_with_tracking(doc: &mut OxideDocument, config: &PageConfig) -> Result<PdfTextExtractionResult> {

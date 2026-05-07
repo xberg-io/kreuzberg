@@ -72,34 +72,54 @@ impl OrgModeExtractor {
     /// Also extracts document structure and content in parallel.
     fn extract_metadata_and_content(org_text: &str, org: &Org) -> (Metadata, String) {
         let mut metadata = Metadata::default();
-        let mut custom: AHashMap<Cow<'static, str>, serde_json::Value> = Default::default();
+        let mut additional: AHashMap<Cow<'static, str>, serde_json::Value> = Default::default();
 
         for line in org_text.lines().take(100) {
             let trimmed = line.trim();
 
             if let Some(rest) = trimmed.strip_prefix("#+TITLE:") {
-                metadata.title = Some(rest.trim().to_string());
+                let value = rest.trim().to_string();
+                additional.insert(Cow::Borrowed("title"), serde_json::json!(value));
             } else if let Some(rest) = trimmed.strip_prefix("#+AUTHOR:") {
                 let value = rest.trim().to_string();
-                metadata.authors = Some(vec![value]);
+                additional.insert(Cow::Borrowed("author"), serde_json::json!(&value));
+                additional.insert(Cow::Borrowed("authors"), serde_json::json!(vec![value]));
             } else if let Some(rest) = trimmed.strip_prefix("#+DATE:") {
-                metadata.created_at = Some(rest.trim().to_string());
+                let value = rest.trim().to_string();
+                metadata.created_at = Some(value.clone());
+                additional.insert(Cow::Borrowed("date"), serde_json::json!(value));
             } else if let Some(rest) = trimmed.strip_prefix("#+KEYWORDS:") {
                 let value = rest.trim();
-                let keywords: Vec<String> = value.split(',').map(|s| s.trim().to_string()).collect();
-                metadata.keywords = Some(keywords);
+                let keywords: Vec<&str> = value.split(',').map(|s| s.trim()).collect();
+                additional.insert(Cow::Borrowed("keywords"), serde_json::json!(keywords));
             } else if let Some(rest) = trimmed.strip_prefix("#+")
                 && let Some((key, val)) = rest.split_once(':')
             {
                 let key_lower = key.trim().to_lowercase();
                 let value = val.trim();
                 if !key_lower.is_empty() && !value.is_empty() {
-                    custom.insert(Cow::Owned(format!("directive_{}", key_lower)), serde_json::json!(value));
+                    additional.insert(Cow::Owned(format!("directive_{}", key_lower)), serde_json::json!(value));
                 }
             }
         }
 
-        metadata.additional = custom;
+        // Map standard fields from additional to typed Metadata fields
+        metadata.title = additional
+            .remove(&Cow::Borrowed("title"))
+            .and_then(|v| v.as_str().map(|s| s.to_string()));
+        metadata.authors = additional.remove(&Cow::Borrowed("authors")).and_then(|v| {
+            v.as_array()
+                .map(|arr| arr.iter().filter_map(|v| v.as_str().map(|s| s.to_string())).collect())
+        });
+        // Remove the duplicate "author" key since we used "authors"
+        additional.remove(&Cow::Borrowed("author"));
+        metadata.keywords = additional.remove(&Cow::Borrowed("keywords")).and_then(|v| {
+            v.as_array()
+                .map(|arr| arr.iter().filter_map(|v| v.as_str().map(|s| s.to_string())).collect())
+        });
+        // Note: created_at is already set above from #+DATE
+
+        metadata.additional = additional;
 
         let content = Self::extract_content(org);
 

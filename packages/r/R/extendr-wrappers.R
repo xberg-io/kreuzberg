@@ -63,9 +63,6 @@ clear_validators <- function() .Call("wrap__clear_validators", PACKAGE = "kreuzb
 embed_texts_async <- function(texts, config) .Call("wrap__embed_texts_async", texts, config, PACKAGE = "kreuzberg")
 
 #' @export
-render_pdf_page_to_png <- function(pdf_bytes, page_index, dpi, password) .Call("wrap__render_pdf_page_to_png", pdf_bytes, page_index, dpi, password, PACKAGE = "kreuzberg")
-
-#' @export
 detect_mime_type <- function(path, check_exists) .Call("wrap__detect_mime_type", path, check_exists, PACKAGE = "kreuzberg")
 
 #' @export
@@ -1011,19 +1008,19 @@ EmailMetadata$from_json <- function(json) .Call("wrap__EmailMetadata__from_json"
 #' @export
 `[[.EmailMetadata` <- `$.EmailMetadata`
 
-ArchiveFileEntry <- new.env(parent = emptyenv())
+ArchiveMetadata <- new.env(parent = emptyenv())
 
-ArchiveFileEntry$from_json <- function(json) .Call("wrap__ArchiveFileEntry__from_json", json, PACKAGE = "kreuzberg")
+ArchiveMetadata$from_json <- function(json) .Call("wrap__ArchiveMetadata__from_json", json, PACKAGE = "kreuzberg")
 
 #' @export
-`$.ArchiveFileEntry` <- function(self, name) {
-  func <- ArchiveFileEntry[[name]]
+`$.ArchiveMetadata` <- function(self, name) {
+  func <- ArchiveMetadata[[name]]
   environment(func) <- environment()
   func
 }
 
 #' @export
-`[[.ArchiveFileEntry` <- `$.ArchiveFileEntry`
+`[[.ArchiveMetadata` <- `$.ArchiveMetadata`
 
 XmlMetadata <- new.env(parent = emptyenv())
 
@@ -1154,20 +1151,6 @@ DocxMetadata$from_json <- function(json) .Call("wrap__DocxMetadata__from_json", 
 
 #' @export
 `[[.DocxMetadata` <- `$.DocxMetadata`
-
-StructuredMetadata <- new.env(parent = emptyenv())
-
-StructuredMetadata$from_json <- function(json) .Call("wrap__StructuredMetadata__from_json", json, PACKAGE = "kreuzberg")
-
-#' @export
-`$.StructuredMetadata` <- function(self, name) {
-  func <- StructuredMetadata[[name]]
-  environment(func) <- environment()
-  func
-}
-
-#' @export
-`[[.StructuredMetadata` <- `$.StructuredMetadata`
 
 CsvMetadata <- new.env(parent = emptyenv())
 
@@ -1826,54 +1809,6 @@ EmbeddedFile <- new.env(parent = emptyenv())
 
 #' @export
 `[[.EmbeddedFile` <- `$.EmbeddedFile`
-
-PdfImage <- new.env(parent = emptyenv())
-
-#' @export
-`$.PdfImage` <- function(self, name) {
-  func <- PdfImage[[name]]
-  environment(func) <- environment()
-  func
-}
-
-#' @export
-`[[.PdfImage` <- `$.PdfImage`
-
-PageLayoutResult <- new.env(parent = emptyenv())
-
-#' @export
-`$.PageLayoutResult` <- function(self, name) {
-  func <- PageLayoutResult[[name]]
-  environment(func) <- environment()
-  func
-}
-
-#' @export
-`[[.PageLayoutResult` <- `$.PageLayoutResult`
-
-PageTiming <- new.env(parent = emptyenv())
-
-#' @export
-`$.PageTiming` <- function(self, name) {
-  func <- PageTiming[[name]]
-  environment(func) <- environment()
-  func
-}
-
-#' @export
-`[[.PageTiming` <- `$.PageTiming`
-
-CommonPdfMetadata <- new.env(parent = emptyenv())
-
-#' @export
-`$.CommonPdfMetadata` <- function(self, name) {
-  func <- CommonPdfMetadata[[name]]
-  environment(func) <- environment()
-  func
-}
-
-#' @export
-`[[.CommonPdfMetadata` <- `$.CommonPdfMetadata`
 
 OutputFormat <- new.env(parent = emptyenv())
 

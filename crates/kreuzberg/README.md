@@ -251,7 +251,7 @@ kreuzberg = { version = "4.0", features = ["pdf", "excel", "ocr"] }
 
 | Feature              | Description               | Binary Size |
 | -------------------- | ------------------------- | ----------- |
-| `pdf`                | PDF extraction via pdfium | +25MB       |
+| `pdf`                | PDF extraction (pure Rust) | +2MB       |
 | `excel`              | Excel/spreadsheet parsing | +3MB        |
 | `office`             | DOCX, PPTX extraction     | +1MB        |
 | `email`              | EML, MSG extraction       | +500KB      |
@@ -271,35 +271,17 @@ kreuzberg = { version = "4.0", features = ["server"] }
 kreuzberg = { version = "4.0", features = ["cli"] }
 ```
 
-## PDF Support and Linking Options
+## PDF Support
 
-Kreuzberg supports three PDFium linking strategies. **Default is `bundled-pdfium`** (best developer experience).
-
-| Strategy              | Feature          | Use Case                          | Binary Size | Runtime Deps |
-| --------------------- | ---------------- | --------------------------------- | ----------- | ------------ |
-| **Bundled (default)** | `bundled-pdfium` | Development, production           | +8-15MB     | None         |
-| **Static**            | `static-pdfium`  | Docker, musl, standalone binaries | +200MB      | None         |
-| **System**            | `system-pdfium`  | Package managers, distros         | +2MB        | libpdfium.so |
-
-### Quick Start
+Kreuzberg uses **pdf_oxide** — a pure-Rust PDF library with no system dependencies.
+Enable PDF extraction with the `pdf` feature:
 
 ```toml
-# Default - bundled PDFium (recommended)
 [dependencies]
-kreuzberg = "4.0"
-
-# Static linking (Docker, musl)
-[dependencies]
-kreuzberg = { version = "4.0", features = ["static-pdfium"] }
-
-# System PDFium (package managers)
-[dependencies]
-kreuzberg = { version = "4.0", features = ["system-pdfium"] }
+kreuzberg = { version = "5.0", features = ["pdf"] }
 ```
 
-For detailed information, see the PDFium Linking Guide in the project documentation.
-
-**Note:** Language bindings (Python, TypeScript, Ruby, Java, Go) automatically bundle PDFium. No configuration needed.
+No native libraries required. Works on all platforms including musl, Docker, and WASM.
 
 ## Documentation
 

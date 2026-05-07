@@ -36,7 +36,7 @@ You only need the toolchains for the areas you plan to work on.
 
 **Required for WASM builds:**
 
-- [WASI SDK](https://github.com/WebAssembly/wasi-sdk/releases) — provides a wasm-capable C/C++ compiler needed by tree-sitter, tesseract, and pdfium. Install to `$HOME/wasi-sdk` or set the `WASI_SDK_PATH` environment variable to your install location
+- [WASI SDK](https://github.com/WebAssembly/wasi-sdk/releases) — provides a wasm-capable C/C++ compiler needed by tree-sitter and tesseract. Install to `$HOME/wasi-sdk` or set the `WASI_SDK_PATH` environment variable to your install location
 
 **Language-specific toolchains** (only install what you need):
 

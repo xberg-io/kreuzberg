@@ -1,270 +1,26 @@
-//! Main PDF-to-Markdown pipeline orchestrator.
+//! Main PDF-to-Markdown pipeline orchestrator (oxide backend).
 
 use std::borrow::Cow;
 
 use crate::pdf::error::Result;
 use crate::pdf::hierarchy::{BoundingBox, SegmentData, TextBlock, assign_heading_levels_smart, cluster_font_sizes};
-use pdfium_render::prelude::*;
 #[cfg(not(target_arch = "wasm32"))]
 use rayon::prelude::*;
 
 use super::assembly::assemble_internal_document;
-use super::bridge::{ImagePosition, extracted_blocks_to_paragraphs, filter_sidebar_blocks, objects_to_page_data};
 use super::classify::{
     classify_paragraphs, demote_heading_runs, demote_unnumbered_subsections, mark_arxiv_noise,
     mark_cross_page_repeating_short_text, mark_cross_page_repeating_text, refine_heading_hierarchy,
 };
-use super::constants::{
-    FULL_LINE_FRACTION, MIN_FONT_SIZE, MIN_HEADING_FONT_GAP, MIN_HEADING_FONT_RATIO, PAGE_BOTTOM_MARGIN_FRACTION,
-    PAGE_TOP_MARGIN_FRACTION,
-};
+use super::constants::{FULL_LINE_FRACTION, MIN_HEADING_FONT_GAP, MIN_HEADING_FONT_RATIO};
 use super::lines::is_cjk_char;
 use super::paragraphs::{merge_continuation_paragraphs, split_embedded_list_items};
 use super::text_repair::{
-    apply_ligature_repairs, apply_to_all_segments, build_ligature_repair_map, clean_duplicate_punctuation,
-    expand_ligatures_with_space_absorption, normalize_text_encoding, normalize_unicode_text,
-    repair_broken_word_spacing, repair_contextual_ligatures, repair_ligature_spaces, text_has_broken_word_spacing,
-    text_has_ligature_corruption,
+    apply_to_all_segments, clean_duplicate_punctuation, expand_ligatures_with_space_absorption,
+    normalize_text_encoding, normalize_unicode_text, repair_broken_word_spacing, repair_contextual_ligatures,
+    repair_ligature_spaces, text_has_broken_word_spacing, text_has_ligature_corruption,
 };
 use super::types::{LayoutHint, PdfParagraph};
-
-/// Stage 0: Try structure tree extraction for each page.
-///
-/// Returns (struct_tree_results, heuristic_pages, has_font_encoding_issues).
-#[allow(clippy::type_complexity)]
-fn extract_structure_tree_pages(
-    pages: &PdfPages,
-    page_count: PdfPageIndex,
-) -> Result<(Vec<Option<Vec<PdfParagraph>>>, Vec<usize>, bool)> {
-    let mut struct_tree_results: Vec<Option<Vec<PdfParagraph>>> = Vec::with_capacity(page_count as usize);
-    let mut heuristic_pages: Vec<usize> = Vec::new();
-    let mut has_font_encoding_issues = false;
-
-    for i in 0..page_count {
-        let page = pages.get(i).map_err(|e| {
-            crate::pdf::error::PdfError::TextExtractionFailed(format!("Failed to get page {}: {:?}", i, e))
-        })?;
-
-        let page_t = crate::utils::timing::Instant::now();
-        match extract_page_content(&page) {
-            Ok(extraction)
-                if extraction.method == PageExtractionMethod::StructureTree && !extraction.blocks.is_empty() =>
-            {
-                tracing::trace!(
-                    page = i,
-                    method = ?extraction.method,
-                    block_count = extraction.blocks.len(),
-                    "PDF structure pipeline: page extracted via structure tree"
-                );
-                // Log the roles of the first few blocks for debugging
-                for (bi, block) in extraction.blocks.iter().take(10).enumerate() {
-                    tracing::trace!(
-                        page = i,
-                        block_index = bi,
-                        role = ?block.role,
-                        text_preview = block.text.chars().take(60).collect::<String>(),
-                        font_size = ?block.font_size,
-                        is_bold = block.is_bold,
-                        child_count = block.children.len(),
-                        "PDF structure pipeline: structure tree block"
-                    );
-                }
-                let page_width = page.width().value;
-                let filtered_blocks = filter_sidebar_blocks(&extraction.blocks, page_width);
-                let mut paragraphs = extracted_blocks_to_paragraphs(&filtered_blocks);
-                // Apply ligature repair to structure tree text (the structure tree
-                // path bypasses chars_to_segments where repair normally happens).
-                // First try error-flag-based repair, then fall back to contextual
-                // heuristic for fonts where pdfium doesn't flag the encoding errors.
-                // Try error-flag-based repair first (most accurate).
-                if let Some(repair_map) = build_ligature_repair_map(&page) {
-                    has_font_encoding_issues = true;
-                    apply_to_all_segments(&mut paragraphs, |t| apply_ligature_repairs(t, &repair_map));
-                }
-                // Then apply contextual ligature repair for fonts where
-                // pdfium doesn't flag encoding errors. Check the actual
-                // paragraph text (not page.text()) since structure tree
-                // text may differ from the page text layer.
-                {
-                    let all_text = build_page_text(&paragraphs);
-                    if text_has_ligature_corruption(&all_text) {
-                        apply_to_all_segments(&mut paragraphs, repair_contextual_ligatures);
-                    }
-                    // Repair broken word spacing (single-letter fragments like "M ust")
-                    if text_has_broken_word_spacing(&all_text) {
-                        apply_to_all_segments(&mut paragraphs, repair_broken_word_spacing);
-                    }
-                }
-                // Fused text normalization pass: apply all 5 text repairs in a single
-                // traversal instead of 5 separate passes over all segments.
-                apply_to_all_segments(&mut paragraphs, fused_text_repairs);
-                // Dehyphenate: rejoin trailing hyphens. Use positional
-                // data for full-line checks when bounds are available.
-                let has_positions = paragraphs.iter().any(|p| {
-                    p.lines
-                        .iter()
-                        .any(|l| l.segments.iter().any(|s| s.width > 0.0 || s.x > 0.0))
-                });
-                dehyphenate_paragraphs(&mut paragraphs, has_positions);
-                // Split paragraphs with embedded bullet characters (•) into
-                // separate list item paragraphs (common in structure tree PDFs).
-                split_embedded_list_items(&mut paragraphs);
-                let heading_count = paragraphs.iter().filter(|p| p.heading_level.is_some()).count();
-                let bold_count = paragraphs.iter().filter(|p| p.is_bold).count();
-                let has_font_variation = has_font_size_variation(&paragraphs);
-                tracing::trace!(
-                    page = i,
-                    paragraph_count = paragraphs.len(),
-                    heading_count,
-                    bold_count,
-                    has_font_variation,
-                    "PDF structure pipeline: structure tree paragraphs after conversion"
-                );
-                if paragraphs.is_empty() {
-                    struct_tree_results.push(None);
-                    heuristic_pages.push(i as usize);
-                } else if heading_count == 0 && has_font_variation {
-                    // Structure tree has text with font size variation but no
-                    // heading tags. Add to heuristic extraction for font-size
-                    // clustering data; heading classification will be applied
-                    // to these paragraphs in Stage 3.
-                    tracing::debug!(
-                        page = i,
-                        "PDF structure pipeline: structure tree has font variation but no headings, will classify via font-size clustering"
-                    );
-                    struct_tree_results.push(Some(paragraphs));
-                    heuristic_pages.push(i as usize);
-                } else {
-                    struct_tree_results.push(Some(paragraphs));
-                }
-            }
-            Ok(_) => {
-                struct_tree_results.push(None);
-                heuristic_pages.push(i as usize);
-            }
-            Err(_) => {
-                struct_tree_results.push(None);
-                heuristic_pages.push(i as usize);
-            }
-        }
-        let page_ms = page_t.elapsed_ms();
-        if page_ms > 2000.0 {
-            tracing::warn!(page = i, elapsed_ms = page_ms, "slow structure tree extraction");
-        }
-    }
-
-    tracing::debug!(
-        heuristic_page_count = heuristic_pages.len(),
-        struct_tree_ok = struct_tree_results.iter().filter(|r| r.is_some()).count(),
-        "PDF structure pipeline: stage 0 complete"
-    );
-
-    Ok((struct_tree_results, heuristic_pages, has_font_encoding_issues))
-}
-
-/// Stage 1: Extract segments from heuristic pages via pdfium text/object APIs.
-///
-/// Returns (all_page_segments indexed by page, image_positions, paragraph_gap_ys per page, page_heights).
-#[allow(clippy::type_complexity, clippy::too_many_arguments)]
-fn extract_heuristic_segments(
-    pages: &PdfPages,
-    page_count: PdfPageIndex,
-    heuristic_pages: &[usize],
-    top_margin: Option<f32>,
-    bottom_margin: Option<f32>,
-    has_layout_hints: bool,
-    include_headers: bool,
-    include_footers: bool,
-    max_images_per_page: Option<u32>,
-) -> (Vec<Vec<SegmentData>>, Vec<ImagePosition>, Vec<Vec<f32>>, Vec<f32>) {
-    let stage1_start = crate::utils::timing::Instant::now();
-    let mut all_page_segments: Vec<Vec<SegmentData>> = vec![Vec::new(); page_count as usize];
-    let mut all_page_gap_ys: Vec<Vec<f32>> = vec![Vec::new(); page_count as usize];
-    let mut page_heights: Vec<f32> = vec![0.0; page_count as usize];
-    let mut all_image_positions: Vec<ImagePosition> = Vec::new();
-    let mut image_offset = 0usize;
-
-    for &i in heuristic_pages {
-        let page = match pages.get(i as PdfPageIndex) {
-            Ok(p) => p,
-            Err(e) => {
-                tracing::warn!("Failed to get page {} for heuristic extraction: {:?}", i, e);
-                continue;
-            }
-        };
-
-        page_heights[i] = page.height().value;
-        let page_t = crate::utils::timing::Instant::now();
-        let (mut segments, image_positions, paragraph_gap_ys) =
-            objects_to_page_data(&page, i + 1, &mut image_offset, max_images_per_page);
-        let page_ms = page_t.elapsed_ms();
-        if page_ms > 1000.0 {
-            tracing::warn!(
-                "slow objects_to_page_data page {}: {:.0}ms, {} segments",
-                i + 1,
-                page_ms,
-                segments.len()
-            );
-        }
-
-        // Filter tiny text in-place (avoids cloning all segments).
-        // Only filter if at least some segments would survive.
-        if segments
-            .iter()
-            .any(|s| s.font_size >= MIN_FONT_SIZE && !s.text.trim().is_empty())
-        {
-            segments.retain(|s| s.font_size >= MIN_FONT_SIZE);
-        }
-
-        // When layout hints are available, skip geometric margin filtering and
-        // standalone page number removal. The layout model handles PageHeader/
-        // PageFooter classification more accurately than hard margin cutoffs.
-        if !has_layout_hints {
-            let page_height = page.height().value;
-            let top_frac = top_margin.unwrap_or(PAGE_TOP_MARGIN_FRACTION).clamp(0.0, 0.5);
-            let bottom_frac = bottom_margin.unwrap_or(PAGE_BOTTOM_MARGIN_FRACTION).clamp(0.0, 0.5);
-            let top_cutoff = page_height * (1.0 - top_frac);
-            let bottom_cutoff = page_height * bottom_frac;
-
-            // When include_headers or include_footers is set, relax margin
-            // filtering so those regions are preserved.
-            let skip_top = include_headers;
-            let skip_bottom = include_footers;
-
-            if !skip_top || !skip_bottom {
-                // Check if margin filtering would leave content before applying
-                let would_survive = segments.iter().any(|s| {
-                    !s.text.trim().is_empty()
-                        && (s.baseline_y == 0.0
-                            || ((skip_top || s.baseline_y <= top_cutoff)
-                                && (skip_bottom || s.baseline_y >= bottom_cutoff)))
-                });
-                if would_survive {
-                    segments.retain(|s| {
-                        s.baseline_y == 0.0
-                            || ((skip_top || s.baseline_y <= top_cutoff)
-                                && (skip_bottom || s.baseline_y >= bottom_cutoff))
-                    });
-                }
-            }
-
-            filter_standalone_page_numbers(&mut segments);
-        }
-        let filtered = segments;
-
-        all_page_segments[i] = filtered;
-        all_page_gap_ys[i] = paragraph_gap_ys;
-        all_image_positions.extend(image_positions);
-    }
-
-    tracing::debug!(
-        stage1_ms = stage1_start.elapsed_ms(),
-        total_segments = all_page_segments.iter().map(|s| s.len()).sum::<usize>(),
-        "PDF structure pipeline: stage 1 complete"
-    );
-
-    (all_page_segments, all_image_positions, all_page_gap_ys, page_heights)
-}
 
 /// Stage 2: Cluster font sizes globally and assign heading levels.
 ///
@@ -344,7 +100,6 @@ fn build_heading_map(
 /// `assigned_role` field on each segment (populated from the PDF structure tree).
 /// Each unique font size is mapped to the heading level most commonly assigned
 /// to segments at that size. Font sizes with no assigned role are treated as body text.
-#[cfg(feature = "pdf-oxide")]
 fn build_heading_map_from_assigned_roles(all_page_segments: &[Vec<SegmentData>]) -> Vec<(f32, Option<u8>)> {
     use std::collections::HashMap;
 
@@ -420,7 +175,7 @@ struct PageInput {
     hint_validations: Vec<super::regions::layout_validation::RegionValidation>,
     /// Whether this page's structure-tree paragraphs need font-size classification.
     needs_classify: bool,
-    /// Y-coordinates of paragraph gaps detected from pdfium segment boundaries.
+    /// Y-coordinates of paragraph gaps detected from segment boundaries.
     paragraph_gap_ys: Vec<f32>,
     /// When true, paragraphs classified as `PageHeader` by the layout model are
     /// preserved rather than marked as furniture. Mirrors `ContentFilterConfig::include_headers`.
@@ -448,7 +203,7 @@ fn process_single_page(
         table_bboxes,
         hint_validations: _,
         needs_classify,
-        paragraph_gap_ys: _,
+        paragraph_gap_ys,
         include_headers,
         include_footers,
     } = input;
@@ -491,8 +246,7 @@ fn process_single_page(
         paragraphs
     } else {
         let page_segments = heuristic_segments;
-        // Full-text extraction: blocks from page.text().all() with char-indexed
-        // font metadata. Both layout and no-layout paths use the same extraction.
+        // Full-text extraction: blocks from segments with font metadata.
         // Layout hints refine classifications when available.
         tracing::debug!(
             page = i,
@@ -501,7 +255,7 @@ fn process_single_page(
             "process_single_page: heuristic path"
         );
         let page_segments = filter_segments_by_table_bboxes(page_segments, &table_bboxes);
-        let mut paragraphs = super::bridge::blocks_to_paragraphs(page_segments, heading_map, &input.paragraph_gap_ys);
+        let mut paragraphs = blocks_to_paragraphs(page_segments, heading_map, &paragraph_gap_ys);
         tracing::debug!(
             page = i,
             paragraphs = paragraphs.len(),
@@ -526,883 +280,400 @@ fn process_single_page(
     }
 }
 
-/// Render a PDF document as structured `InternalDocument`, with tables interleaved.
+/// Convert a flat list of text segments into grouped paragraphs.
 ///
-/// Returns (InternalDocument, has_font_encoding_issues).
-#[allow(clippy::too_many_arguments)]
-pub(crate) fn extract_document_structure(
-    document: &PdfDocument,
-    k_clusters: usize,
-    tables: &[crate::types::Table],
-    top_margin: Option<f32>,
-    bottom_margin: Option<f32>,
-    layout_hints: Option<&[Vec<LayoutHint>]>,
-    #[cfg(feature = "layout-detection")] layout_images: Option<&[image::DynamicImage]>,
-    #[cfg(not(feature = "layout-detection"))] _layout_images: Option<()>,
-    #[cfg(feature = "layout-detection")] layout_results: Option<&[crate::pdf::layout_runner::PageLayoutResult]>,
-    #[cfg(not(feature = "layout-detection"))] _layout_results: Option<()>,
-    allow_single_column: bool,
-    #[cfg(feature = "layout-detection")] table_model: crate::core::config::layout::TableModel,
-    #[cfg(not(feature = "layout-detection"))] _table_model: Option<()>,
-    #[cfg(feature = "layout-detection")] acceleration: Option<&crate::core::config::acceleration::AccelerationConfig>,
-    #[cfg(not(feature = "layout-detection"))] _acceleration: Option<()>,
-    strip_repeating_text: bool,
-    include_headers: bool,
-    include_footers: bool,
-    max_images_per_page: Option<u32>,
-    cancel_token: Option<&crate::cancellation::CancellationToken>,
-    inject_placeholders: bool,
-) -> Result<(crate::types::internal::InternalDocument, bool)> {
-    let pages = document.pages();
-    let page_count = pages.len();
-    let total_table_hints = layout_hints
-        .map(|h| {
-            h.iter()
-                .flat_map(|p| p.iter())
-                .filter(|hint| matches!(hint.class_name, super::types::LayoutHintClass::Table))
-                .count()
-        })
-        .unwrap_or(0);
-    tracing::trace!(
-        has_layout = layout_hints.is_some(),
-        total_table_hints,
-        "Starting structure with tables pipeline"
-    );
-    tracing::debug!(page_count, "PDF structure pipeline: starting render");
+/// Groups consecutive segments by font changes, bold changes, list markers, and
+/// paragraph gap positions. Each group is then classified via `finalize_paragraph`.
+fn blocks_to_paragraphs(
+    lines: Vec<SegmentData>,
+    heading_map: &[(f32, Option<u8>)],
+    paragraph_gap_ys: &[f32],
+) -> Vec<PdfParagraph> {
+    if lines.is_empty() {
+        return Vec::new();
+    }
 
-    let mut has_font_encoding_issues = false;
+    let gap_info = super::classify::precompute_gap_info(heading_map);
 
-    // Previously this forced heuristic extraction when layout hints were present,
-    // but apply_layout_overrides() now supports proportional matching for structure
-    // tree pages without positional data. Forcing heuristic extraction degrades text
-    // quality (chars_to_segments garbles words), so we let structure tree extraction
-    // proceed normally and apply layout hints in Stage 3.
+    // Group consecutive lines into paragraphs. A new paragraph starts when:
+    // - Line's baseline_y crosses a segment gap position
+    // - Font size changes significantly (>1.5pt)
+    // - Bold changes
+    // - Line starts with a list marker
+    let mut paragraphs: Vec<PdfParagraph> = Vec::new();
+    let mut current_lines: Vec<&SegmentData> = Vec::new();
 
-    // Stage 0: Try structure tree extraction for each page.
-    let (mut struct_tree_results, heuristic_pages, struct_tree_font_issues) =
-        extract_structure_tree_pages(pages, page_count)?;
-    has_font_encoding_issues |= struct_tree_font_issues;
-
-    // Experimental: use pdf_oxide for text extraction when the feature is enabled.
-    // pdf_oxide parses PDF content streams directly with adaptive TJ-offset thresholds,
-    // producing cleaner word spacing for fonts with broken CMaps.
-    #[cfg(feature = "pdf-oxide")]
-    let oxide_segments: Option<Vec<Vec<SegmentData>>> = {
-        let t = crate::utils::timing::Instant::now();
-        let result = crate::pdf::oxide_text::extract_segments_with_oxide(page_count as usize);
-        if let Some(ref segs) = result {
-            let total: usize = segs.iter().map(|s| s.len()).sum();
-            tracing::debug!(
-                total_segments = total,
-                elapsed_ms = t.elapsed_ms(),
-                "pdf_oxide text extraction complete"
-            );
-        }
-        result
-    };
-    #[cfg(not(feature = "pdf-oxide"))]
-    let oxide_segments: Option<Vec<Vec<SegmentData>>> = None;
-
-    // Stage 1: Extract segments from pages that need heuristic extraction.
-    // Use pdf_oxide segments when available, fall back to pdfium.
-    let (mut all_page_segments, all_image_positions, mut all_page_gap_ys, page_heights) =
-        if let Some(oxide_segs) = oxide_segments {
-            // Use pdf_oxide segments for heuristic pages, pdfium for images only.
-            let mut all_segs = oxide_segs;
-            // Ensure vector is large enough (pdf_oxide may return fewer pages)
-            all_segs.resize_with(page_count as usize, Vec::new);
-            // Still need pdfium for image positions
-            let has_hints = layout_hints.is_some();
-            let (_, image_positions, _, page_heights) = extract_heuristic_segments(
-                pages,
-                page_count,
-                &heuristic_pages,
-                top_margin,
-                bottom_margin,
-                has_hints,
-                include_headers,
-                include_footers,
-                max_images_per_page,
-            );
-            (
-                all_segs,
-                image_positions,
-                vec![Vec::new(); page_count as usize],
-                page_heights,
-            )
+    for line in &lines {
+        let should_break = if current_lines.is_empty() {
+            false
         } else {
-            let has_hints = layout_hints.is_some();
-            extract_heuristic_segments(
-                pages,
-                page_count,
-                &heuristic_pages,
-                top_margin,
-                bottom_margin,
-                has_hints,
-                include_headers,
-                include_footers,
-                max_images_per_page,
-            )
+            let prev = current_lines.last().unwrap();
+            let font_change = (line.font_size - prev.font_size).abs() > 1.5;
+            let bold_change = line.is_bold != prev.is_bold;
+            let is_list = looks_like_list_item(&line.text);
+            // Segment gap: a paragraph break exists between prev and current
+            // if a gap_y falls between their baselines.
+            let crossed_gap = paragraph_gap_ys.iter().any(|&gap_y| {
+                // prev is above current in PDF coords (prev.baseline_y > line.baseline_y)
+                let (upper, lower) = if prev.baseline_y > line.baseline_y {
+                    (prev.baseline_y, line.baseline_y)
+                } else {
+                    (line.baseline_y, prev.baseline_y)
+                };
+                gap_y < upper && gap_y > lower
+            });
+            font_change || bold_change || is_list || crossed_gap
         };
 
-    // Detect font encoding issues on heuristic pages.
-    for &i in &heuristic_pages {
-        let page = pages.get(i as PdfPageIndex).map_err(|e| {
-            crate::pdf::error::PdfError::TextExtractionFailed(format!("Failed to get page {}: {:?}", i, e))
-        })?;
-        if build_ligature_repair_map(&page).is_some() {
-            has_font_encoding_issues = true;
-            break;
+        if should_break && !current_lines.is_empty() {
+            if let Some(para) = finalize_paragraph(&current_lines, heading_map, &gap_info) {
+                paragraphs.push(para);
+            }
+            current_lines.clear();
         }
+        current_lines.push(line);
     }
 
-    // Stage 2: Global font-size clustering (heuristic pages + struct tree pages needing classification).
-    let (heading_map, struct_tree_needs_classify) =
-        build_heading_map(&all_page_segments, &struct_tree_results, &heuristic_pages, k_clusters)?;
+    // Finalize last paragraph.
+    if !current_lines.is_empty()
+        && let Some(para) = finalize_paragraph(&current_lines, heading_map, &gap_info)
+    {
+        paragraphs.push(para);
+    }
 
-    // Compute the document-level body text font size from the heading map.
-    // This is the centroid of the cluster NOT classified as a heading.
-    // Used by layout detection to distinguish section headers (larger font)
-    // from bold sub-headings at body text size.
-    let doc_body_font_size: Option<f32> = heading_map
-        .iter()
-        .find(|(_, level)| level.is_none())
-        .map(|(size, _)| *size);
+    tracing::debug!(
+        input_lines = lines.len(),
+        output_paragraphs = paragraphs.len(),
+        headings = paragraphs.iter().filter(|p| p.heading_level.is_some()).count(),
+        lists = paragraphs.iter().filter(|p| p.is_list_item).count(),
+        "blocks_to_paragraphs complete"
+    );
 
-    // Extract tables from layout-detected Table regions.
-    // Uses the same segments as region assembly (from Stage 1) converted to
-    // word-level HocrWords, ensuring consistency between table extraction
-    // and text flow. Falls back to character-level extraction for pages
-    // without heuristic segments (structure-tree-only pages).
-    let mut layout_tables: Vec<crate::types::Table> = Vec::new();
-    if let Some(hints_pages) = layout_hints {
-        // Phase 1 (sequential): Prepare words per page. This may require pdfium
-        // calls for structure-tree-only pages, so it must be sequential.
-        struct TablePageData {
-            page_idx: usize,
-            words: Vec<crate::pdf::table_reconstruct::HocrWord>,
-            page_height: f32,
-        }
-        let mut table_pages: Vec<TablePageData> = Vec::new();
+    paragraphs
+}
 
-        #[allow(clippy::needless_range_loop)]
-        for page_idx in 0..page_count as usize {
-            let Some(hints) = hints_pages.get(page_idx) else {
-                continue;
-            };
-            if !hints
+/// Build a PdfParagraph from a group of consecutive lines with compatible font properties.
+fn finalize_paragraph(
+    lines: &[&SegmentData],
+    heading_map: &[(f32, Option<u8>)],
+    gap_info: &super::classify::GapInfo,
+) -> Option<PdfParagraph> {
+    if lines.is_empty() {
+        return None;
+    }
+
+    // Join line texts with newlines (preserving full_text content exactly).
+    let text: String = lines.iter().map(|l| l.text.as_str()).collect::<Vec<_>>().join("\n");
+
+    let trimmed = text.trim();
+    if trimmed.is_empty() {
+        return None;
+    }
+
+    let first = lines[0];
+    let word_count = trimmed.split_whitespace().count();
+    let is_bold = lines.iter().filter(|l| l.is_bold).count() > lines.len() / 2;
+
+    // When segments carry pre-assigned heading roles from the PDF structure tree,
+    // use those directly — the tree is the author's stated intent and overrides
+    // all heuristic detection. The majority role among lines wins.
+    let structure_tree_role = {
+        let role_counts: std::collections::HashMap<u8, usize> =
+            lines
                 .iter()
-                .any(|h| h.class_name == super::types::LayoutHintClass::Table)
-            {
-                continue;
-            }
-
-            // Always use pdfium's character API for per-word positions.
-            // Our SegmentData has line-level granularity (not per-word), so
-            // segments_to_words() would give imprecise bboxes that break
-            // word-to-cell matching. extract_words_from_page() uses
-            // page.text().chars() for accurate per-word bounding boxes.
-            let page = pages.get(page_idx as PdfPageIndex).map_err(|e| {
-                crate::pdf::error::PdfError::TextExtractionFailed(format!(
-                    "Failed to get page {} for table extraction: {:?}",
-                    page_idx, e
-                ))
-            })?;
-            let page_height = page.height().value;
-            let (words, page_height) = match crate::pdf::table::extract_words_from_page(&page, 0.0) {
-                Ok(w) => (w, page_height),
-                Err(e) => {
-                    tracing::debug!(page = page_idx, error = %e, "table extraction: word extraction failed");
-                    continue;
-                }
-            };
-
-            if words.is_empty() {
-                tracing::trace!(page = page_idx, "Table extraction: no words found, skipping");
-                continue;
-            }
-            tracing::trace!(
-                page = page_idx,
-                word_count = words.len(),
-                page_height,
-                "Table page prepared"
-            );
-            table_pages.push(TablePageData {
-                page_idx,
-                words,
-                page_height,
-            });
-        }
-
-        // Phase 2 (parallel): Run table structure inference + heuristic fallback.
-        // Supports TATR (default) and SLANeXT table models via `table_model` config.
-        #[cfg(feature = "layout-detection")]
-        {
-            use crate::core::config::layout::TableModel;
-            use std::cell::RefCell;
-
-            // When Disabled, skip model inference entirely and go straight to heuristic path.
-            let use_model_inference = table_model != TableModel::Disabled;
-
-            thread_local! {
-                static TL_TATR: RefCell<Option<crate::layout::models::tatr::TatrModel>> = const { RefCell::new(None) };
-                static TL_SLANET: RefCell<Option<crate::layout::models::slanet::SlanetModel>> = const { RefCell::new(None) };
-                static TL_SLANET_ALT: RefCell<Option<crate::layout::models::slanet::SlanetModel>> = const { RefCell::new(None) };
-                static TL_CLASSIFIER: RefCell<Option<crate::layout::models::table_classifier::TableClassifier>> = const { RefCell::new(None) };
-            }
-
-            // Determine which table model to use and seed thread-locals
-            let slanet_variant = match table_model {
-                TableModel::SlanetWired => Some("slanet_wired"),
-                TableModel::SlanetWireless => Some("slanet_wireless"),
-                TableModel::SlanetPlus => Some("slanet_plus"),
-                TableModel::SlanetAuto => Some("slanet_wired"), // primary=wired, alt=wireless
-                TableModel::Tatr | TableModel::Disabled => None,
-            };
-            let is_auto = table_model == TableModel::SlanetAuto;
-
-            let has_table_model = if !use_model_inference {
-                false
-            } else if let Some(variant) = slanet_variant {
-                // SLANeXT path
-                let seed = if layout_images.is_some() {
-                    crate::layout::take_or_create_slanet(variant, acceleration)
-                } else {
-                    None
-                };
-                let has = seed.is_some();
-                if let Some(model) = seed {
-                    TL_SLANET.with(|cell| {
-                        *cell.borrow_mut() = Some(model);
-                    });
-                }
-                // For auto mode, also seed wireless model + classifier
-                if is_auto && has {
-                    if let Some(alt) = crate::layout::take_or_create_slanet("slanet_wireless", acceleration) {
-                        TL_SLANET_ALT.with(|cell| {
-                            *cell.borrow_mut() = Some(alt);
-                        });
-                    }
-                    if let Some(cls) = crate::layout::take_or_create_table_classifier(acceleration) {
-                        TL_CLASSIFIER.with(|cell| {
-                            *cell.borrow_mut() = Some(cls);
-                        });
-                    }
-                }
-                has
-            } else {
-                // TATR path (default)
-                let seed = if layout_images.is_some() {
-                    crate::layout::take_or_create_tatr(acceleration)
-                } else {
-                    None
-                };
-                let has = seed.is_some();
-                if let Some(model) = seed {
-                    TL_TATR.with(|cell| {
-                        *cell.borrow_mut() = Some(model);
-                    });
-                }
-                has
-            };
-
-            tracing::debug!(
-                has_table_model,
-                table_model = %table_model,
-                table_page_count = table_pages.len(),
-                "Table extraction phase 2: model availability"
-            );
-            if use_model_inference && !has_table_model && !table_pages.is_empty() {
-                let model_name = slanet_variant.unwrap_or("tatr");
-                return Err(crate::pdf::error::PdfError::TextExtractionFailed(format!(
-                    "Layout detection found table regions but {model_name} model is not available. \
-                         Ensure the ONNX model is downloaded. Tables cannot be extracted without it."
-                )));
-            }
-
-            if has_table_model {
-                if let (Some(images @ [_, ..]), Some(results @ [_, ..])) = (layout_images, layout_results) {
-                    #[cfg(not(target_arch = "wasm32"))]
-                    let parallel_tables: Vec<Vec<crate::types::Table>> = table_pages
-                        .par_iter()
-                        .map(|tp| {
-                            if let Some(variant) = slanet_variant {
-                                // SLANeXT path — ensure models are loaded in thread-local
-                                TL_SLANET.with(|cell| {
-                                    let mut slanet_ref = cell.borrow_mut();
-                                    if slanet_ref.is_none() {
-                                        *slanet_ref = crate::layout::take_or_create_slanet(variant, acceleration);
-                                    }
-                                });
-                                if is_auto {
-                                    TL_SLANET_ALT.with(|cell| {
-                                        let mut alt_ref = cell.borrow_mut();
-                                        if alt_ref.is_none() {
-                                            *alt_ref =
-                                                crate::layout::take_or_create_slanet("slanet_wireless", acceleration);
-                                        }
-                                    });
-                                    TL_CLASSIFIER.with(|cell| {
-                                        let mut cls_ref = cell.borrow_mut();
-                                        if cls_ref.is_none() {
-                                            *cls_ref = crate::layout::take_or_create_table_classifier(acceleration);
-                                        }
-                                    });
-                                }
-
-                                // Now borrow all needed models and run recognition
-                                TL_SLANET.with(|slanet_cell| {
-                                    let mut slanet_ref = slanet_cell.borrow_mut();
-                                    let Some(slanet) = slanet_ref.as_mut() else {
-                                        tracing::warn!("SLANeXT model unavailable in worker thread");
-                                        return Vec::new();
-                                    };
-
-                                    if let (Some(page_image), Some(page_result)) =
-                                        (images.get(tp.page_idx), results.get(tp.page_idx))
-                                    {
-                                        let hints = &hints_pages[tp.page_idx];
-
-                                        // In auto mode, build the classifier tuple
-                                        // Since we can't borrow multiple RefCells simultaneously,
-                                        // take the alt model and classifier temporarily.
-                                        let mut classifier_pair = if is_auto {
-                                            let alt = TL_SLANET_ALT.with(|c| c.borrow_mut().take());
-                                            let cls = TL_CLASSIFIER.with(|c| c.borrow_mut().take());
-                                            match (cls, alt) {
-                                                (Some(c), Some(a)) => Some((c, a)),
-                                                (c, a) => {
-                                                    // Put back anything we took
-                                                    if let Some(cls) = c {
-                                                        TL_CLASSIFIER.with(|cell| {
-                                                            *cell.borrow_mut() = Some(cls);
-                                                        });
-                                                    }
-                                                    if let Some(alt) = a {
-                                                        TL_SLANET_ALT.with(|cell| {
-                                                            *cell.borrow_mut() = Some(alt);
-                                                        });
-                                                    }
-                                                    None
-                                                }
-                                            }
-                                        } else {
-                                            None
-                                        };
-
-                                        let classifier_arg =
-                                            classifier_pair.as_mut().map(|(cls, alt)| {
-                                                (cls as &mut crate::layout::models::table_classifier::TableClassifier,
-                                                         alt as &mut crate::layout::models::slanet::SlanetModel)
-                                            });
-
-                                        let slanet_tables = super::regions::recognize_tables_slanet(
-                                            page_image,
-                                            hints,
-                                            &tp.words,
-                                            page_result,
-                                            tp.page_height,
-                                            tp.page_idx,
-                                            slanet,
-                                            classifier_arg,
-                                        );
-
-                                        // Return borrowed models
-                                        if let Some((cls, alt)) = classifier_pair {
-                                            TL_CLASSIFIER.with(|cell| {
-                                                *cell.borrow_mut() = Some(cls);
-                                            });
-                                            TL_SLANET_ALT.with(|cell| {
-                                                *cell.borrow_mut() = Some(alt);
-                                            });
-                                        }
-
-                                        if !slanet_tables.is_empty() {
-                                            return slanet_tables;
-                                        }
-                                    }
-
-                                    // Fallback: heuristic
-                                    let hints = &hints_pages[tp.page_idx];
-                                    super::regions::extract_tables_from_layout_hints(
-                                        &tp.words,
-                                        hints,
-                                        tp.page_idx,
-                                        tp.page_height,
-                                        0.5,
-                                        allow_single_column,
-                                    )
-                                })
-                            } else {
-                                // TATR path (default)
-                                TL_TATR.with(|cell| {
-                                    let mut tatr_ref = cell.borrow_mut();
-                                    if tatr_ref.is_none() {
-                                        *tatr_ref = crate::layout::take_or_create_tatr(acceleration);
-                                    }
-                                    let Some(tatr) = tatr_ref.as_mut() else {
-                                        tracing::warn!("TATR model unavailable in worker thread");
-                                        return Vec::new();
-                                    };
-
-                                    if let (Some(page_image), Some(page_result)) =
-                                        (images.get(tp.page_idx), results.get(tp.page_idx))
-                                    {
-                                        let hints = &hints_pages[tp.page_idx];
-                                        let tatr_tables = super::regions::recognize_tables_for_native_page(
-                                            page_image,
-                                            hints,
-                                            &tp.words,
-                                            page_result,
-                                            tp.page_height,
-                                            tp.page_idx,
-                                            tatr,
-                                        );
-                                        tracing::trace!(
-                                            page = tp.page_idx,
-                                            tatr_tables = tatr_tables.len(),
-                                            "TATR table recognition result"
-                                        );
-                                        if !tatr_tables.is_empty() {
-                                            return tatr_tables;
-                                        }
-                                    }
-
-                                    // Fallback: heuristic
-                                    let hints = &hints_pages[tp.page_idx];
-                                    super::regions::extract_tables_from_layout_hints(
-                                        &tp.words,
-                                        hints,
-                                        tp.page_idx,
-                                        tp.page_height,
-                                        0.5,
-                                        allow_single_column,
-                                    )
-                                })
-                            }
-                        })
-                        .collect();
-                    #[cfg(target_arch = "wasm32")]
-                    let parallel_tables: Vec<Vec<crate::types::Table>> = table_pages
-                        .iter()
-                        .map(|tp| {
-                            if let Some(variant) = slanet_variant {
-                                // SLANeXT path — ensure models are loaded in thread-local
-                                TL_SLANET.with(|cell| {
-                                    let mut slanet_ref = cell.borrow_mut();
-                                    if slanet_ref.is_none() {
-                                        *slanet_ref = crate::layout::take_or_create_slanet(variant, acceleration);
-                                    }
-                                });
-                                if is_auto {
-                                    TL_SLANET_ALT.with(|cell| {
-                                        let mut alt_ref = cell.borrow_mut();
-                                        if alt_ref.is_none() {
-                                            *alt_ref =
-                                                crate::layout::take_or_create_slanet("slanet_wireless", acceleration);
-                                        }
-                                    });
-                                    TL_CLASSIFIER.with(|cell| {
-                                        let mut cls_ref = cell.borrow_mut();
-                                        if cls_ref.is_none() {
-                                            *cls_ref = crate::layout::take_or_create_table_classifier(acceleration);
-                                        }
-                                    });
-                                }
-
-                                // Now borrow all needed models and run recognition
-                                TL_SLANET.with(|slanet_cell| {
-                                    let mut slanet_ref = slanet_cell.borrow_mut();
-                                    let Some(slanet) = slanet_ref.as_mut() else {
-                                        tracing::warn!("SLANeXT model unavailable in worker thread");
-                                        return Vec::new();
-                                    };
-
-                                    if let (Some(page_image), Some(page_result)) =
-                                        (images.get(tp.page_idx), results.get(tp.page_idx))
-                                    {
-                                        let hints = &hints_pages[tp.page_idx];
-
-                                        let mut classifier_pair = if is_auto {
-                                            let alt = TL_SLANET_ALT.with(|c| c.borrow_mut().take());
-                                            let cls = TL_CLASSIFIER.with(|c| c.borrow_mut().take());
-                                            match (cls, alt) {
-                                                (Some(c), Some(a)) => Some((c, a)),
-                                                (c, a) => {
-                                                    if let Some(cls) = c {
-                                                        TL_CLASSIFIER.with(|cell| {
-                                                            *cell.borrow_mut() = Some(cls);
-                                                        });
-                                                    }
-                                                    if let Some(alt) = a {
-                                                        TL_SLANET_ALT.with(|cell| {
-                                                            *cell.borrow_mut() = Some(alt);
-                                                        });
-                                                    }
-                                                    None
-                                                }
-                                            }
-                                        } else {
-                                            None
-                                        };
-
-                                        let classifier_arg =
-                                            classifier_pair.as_mut().map(|(cls, alt)| {
-                                                (cls as &mut crate::layout::models::table_classifier::TableClassifier,
-                                                         alt as &mut crate::layout::models::slanet::SlanetModel)
-                                            });
-
-                                        let slanet_tables = super::regions::recognize_tables_slanet(
-                                            page_image,
-                                            hints,
-                                            &tp.words,
-                                            page_result,
-                                            tp.page_height,
-                                            tp.page_idx,
-                                            slanet,
-                                            classifier_arg,
-                                        );
-
-                                        if let Some((cls, alt)) = classifier_pair {
-                                            TL_CLASSIFIER.with(|cell| {
-                                                *cell.borrow_mut() = Some(cls);
-                                            });
-                                            TL_SLANET_ALT.with(|cell| {
-                                                *cell.borrow_mut() = Some(alt);
-                                            });
-                                        }
-
-                                        if !slanet_tables.is_empty() {
-                                            return slanet_tables;
-                                        }
-                                    }
-
-                                    let hints = &hints_pages[tp.page_idx];
-                                    super::regions::extract_tables_from_layout_hints(
-                                        &tp.words,
-                                        hints,
-                                        tp.page_idx,
-                                        tp.page_height,
-                                        0.5,
-                                        allow_single_column,
-                                    )
-                                })
-                            } else {
-                                // TATR path (default)
-                                TL_TATR.with(|cell| {
-                                    let mut tatr_ref = cell.borrow_mut();
-                                    if tatr_ref.is_none() {
-                                        *tatr_ref = crate::layout::take_or_create_tatr(acceleration);
-                                    }
-                                    let Some(tatr) = tatr_ref.as_mut() else {
-                                        tracing::warn!("TATR model unavailable in worker thread");
-                                        return Vec::new();
-                                    };
-
-                                    if let (Some(page_image), Some(page_result)) =
-                                        (images.get(tp.page_idx), results.get(tp.page_idx))
-                                    {
-                                        let hints = &hints_pages[tp.page_idx];
-                                        let tatr_tables = super::regions::recognize_tables_for_native_page(
-                                            page_image,
-                                            hints,
-                                            &tp.words,
-                                            page_result,
-                                            tp.page_height,
-                                            tp.page_idx,
-                                            tatr,
-                                        );
-                                        if !tatr_tables.is_empty() {
-                                            return tatr_tables;
-                                        }
-                                    }
-
-                                    let hints = &hints_pages[tp.page_idx];
-                                    super::regions::extract_tables_from_layout_hints(
-                                        &tp.words,
-                                        hints,
-                                        tp.page_idx,
-                                        tp.page_height,
-                                        0.5,
-                                        allow_single_column,
-                                    )
-                                })
-                            }
-                        })
-                        .collect();
-
-                    for tables in parallel_tables {
-                        layout_tables.extend(tables);
-                    }
-
-                    // Return thread-local models to global cache
-                    if let Some(variant) = slanet_variant {
-                        TL_SLANET.with(|cell| {
-                            if let Some(model) = cell.borrow_mut().take() {
-                                crate::layout::return_slanet(variant, model);
-                            }
-                        });
-                        if is_auto {
-                            TL_SLANET_ALT.with(|cell| {
-                                if let Some(model) = cell.borrow_mut().take() {
-                                    crate::layout::return_slanet("slanet_wireless", model);
-                                }
-                            });
-                            TL_CLASSIFIER.with(|cell| {
-                                if let Some(model) = cell.borrow_mut().take() {
-                                    crate::layout::return_table_classifier(model);
-                                }
-                            });
-                        }
-                    } else {
-                        TL_TATR.with(|cell| {
-                            if let Some(model) = cell.borrow_mut().take() {
-                                crate::layout::return_tatr(model);
-                            }
-                        });
-                    }
-                }
-            } else {
-                // No TATR — run heuristic fallback sequentially
-                tracing::debug!(
-                    table_page_count = table_pages.len(),
-                    "Running heuristic table extraction (no TATR)"
-                );
-                for tp in &table_pages {
-                    let hints = &hints_pages[tp.page_idx];
-                    layout_tables.extend(super::regions::extract_tables_from_layout_hints(
-                        &tp.words,
-                        hints,
-                        tp.page_idx,
-                        tp.page_height,
-                        0.5,
-                        allow_single_column,
-                    ));
-                }
-            }
-        }
-
-        #[cfg(not(feature = "layout-detection"))]
-        {
-            // No layout detection — run heuristic fallback sequentially
-            for tp in &table_pages {
-                let hints = &hints_pages[tp.page_idx];
-                layout_tables.extend(super::regions::extract_tables_from_layout_hints(
-                    &tp.words,
-                    hints,
-                    tp.page_idx,
-                    tp.page_height,
-                    0.5,
-                    allow_single_column,
-                ));
-            }
-        }
-    }
-
-    tracing::debug!(tables_found = layout_tables.len(), "Table extraction complete");
-
-    // Build per-page index of successfully extracted table bounding boxes.
-    // This tells assign_segments_to_regions which Table bboxes actually produced
-    // output, so it only suppresses segments for those — not for failed extractions.
-    // Include BOTH layout-detected tables and heuristic tables (from extraction.rs)
-    // to prevent text duplication when a table is extracted by the heuristic path.
-    let extracted_table_bboxes_by_page: ahash::AHashMap<usize, Vec<crate::types::BoundingBox>> = {
-        let mut map: ahash::AHashMap<usize, Vec<crate::types::BoundingBox>> = ahash::AHashMap::new();
-        for table in &layout_tables {
-            if let Some(ref bb) = table.bounding_box {
-                // Table.page_number is 1-indexed, convert to 0-indexed
-                map.entry(table.page_number.saturating_sub(1)).or_default().push(*bb);
-            }
-        }
-        // Also include heuristic tables from extraction.rs — these have bboxes
-        // but weren't previously used for segment suppression, causing text
-        // duplication on pages where heuristic extraction finds a table.
-        for table in tables {
-            if let Some(ref bb) = table.bounding_box {
-                map.entry(table.page_number.saturating_sub(1)).or_default().push(*bb);
-            }
-        }
-        tracing::debug!(
-            layout_tables = layout_tables.len(),
-            heuristic_tables = tables.len(),
-            pages_with_bboxes = map.len(),
-            total_bboxes = map.values().map(|v| v.len()).sum::<usize>(),
-            "table bbox suppression map built"
-        );
-        map
+                .filter_map(|l| l.assigned_role)
+                .fold(std::collections::HashMap::new(), |mut acc, level| {
+                    *acc.entry(level).or_default() += 1;
+                    acc
+                });
+        role_counts
+            .into_iter()
+            .max_by_key(|(_, count)| *count)
+            .map(|(level, _)| level)
     };
-
-    // Validate layout regions via connected component analysis.
-    // Regions flagged as Empty should not suppress segments.
-    #[cfg(feature = "layout-detection")]
-    let validations_by_page: ahash::AHashMap<usize, Vec<super::regions::layout_validation::RegionValidation>> = {
-        let mut map = ahash::AHashMap::new();
-        if let (Some(images), Some(results), Some(hints_pages)) = (layout_images, layout_results, layout_hints) {
-            for page_idx in 0..page_count as usize {
-                if let (Some(img), Some(res), Some(hints)) =
-                    (images.get(page_idx), results.get(page_idx), hints_pages.get(page_idx))
-                {
-                    let validations = super::regions::layout_validation::validate_page_regions(img, hints, res);
-                    if validations.contains(&super::regions::layout_validation::RegionValidation::Empty) {
-                        tracing::debug!(
-                            page = page_idx,
-                            empty_count = validations
-                                .iter()
-                                .filter(|v| **v == super::regions::layout_validation::RegionValidation::Empty)
-                                .count(),
-                            "layout validation: found empty regions"
-                        );
-                    }
-                    map.insert(page_idx, validations);
-                }
-            }
-        }
-        map
-    };
-    #[cfg(not(feature = "layout-detection"))]
-    let validations_by_page: ahash::AHashMap<usize, Vec<super::regions::layout_validation::RegionValidation>> =
-        ahash::AHashMap::new();
-
-    // Stage 3: Per-page structured extraction (parallelised with rayon).
-    //
-    // Pre-split all per-page owned data into a Vec<PageInput> so that rayon can
-    // hand each worker an independent chunk with no shared mutable state.
-    // Shared read-only data (heading_map, layout_hints, etc.) is accessed via
-    // immutable references, which are Sync and safe to share across threads.
-    let page_inputs: Vec<PageInput> = (0..page_count as usize)
-        .map(|i| PageInput {
-            page_index: i,
-            struct_paragraphs: struct_tree_results[i].take(),
-            heuristic_segments: std::mem::take(&mut all_page_segments[i]),
-            page_hints: layout_hints.and_then(|h| h.get(i)).cloned(),
-            table_bboxes: extracted_table_bboxes_by_page.get(&i).cloned().unwrap_or_default(),
-            hint_validations: validations_by_page.get(&i).cloned().unwrap_or_default(),
-            needs_classify: struct_tree_needs_classify.contains(&i),
-            paragraph_gap_ys: std::mem::take(&mut all_page_gap_ys[i]),
-            include_headers,
-            include_footers,
-        })
-        .collect();
-
-    #[cfg(not(target_arch = "wasm32"))]
-    let mut all_page_paragraphs: Vec<Vec<PdfParagraph>> = page_inputs
-        .into_par_iter()
-        .map(|input| process_single_page(input, &heading_map, doc_body_font_size))
-        .collect();
-    #[cfg(target_arch = "wasm32")]
-    let mut all_page_paragraphs: Vec<Vec<PdfParagraph>> = page_inputs
-        .into_iter()
-        .map(|input| process_single_page(input, &heading_map, doc_body_font_size))
-        .collect();
-
-    // Refine heading hierarchy across the document: merge split titles and
-    // demote numbered section headings when a title H1 is detected.
-    refine_heading_hierarchy(&mut all_page_paragraphs);
-    demote_unnumbered_subsections(&mut all_page_paragraphs);
-    demote_heading_runs(&mut all_page_paragraphs);
-
-    // Mark short text that repeats across many pages as furniture (headers/footers/watermarks).
-    // When strip_repeating_text is disabled, skip cross-page repeating text detection entirely.
-    if strip_repeating_text {
-        mark_cross_page_repeating_text(&mut all_page_paragraphs, &page_heights);
-        // Tier 2: catch short repeating text outside margin zones (e.g. conference headers).
-        mark_cross_page_repeating_short_text(&mut all_page_paragraphs);
-    }
-    // Mark arXiv watermark identifiers on first pages.
-    mark_arxiv_noise(&mut all_page_paragraphs);
-    for page in &mut all_page_paragraphs {
-        retain_page_furniture_safely(page);
+    if let Some(level) = structure_tree_role {
+        let segments: Vec<SegmentData> = lines.iter().map(|l| (*l).clone()).collect();
+        let line = super::types::PdfLine {
+            segments,
+            baseline_y: first.baseline_y,
+            dominant_font_size: first.font_size,
+            is_bold,
+            is_monospace: first.is_monospace,
+        };
+        return Some(PdfParagraph {
+            text: trimmed.to_string(),
+            lines: vec![line],
+            dominant_font_size: first.font_size,
+            heading_level: Some(level),
+            is_bold,
+            is_list_item: looks_like_list_item(trimmed),
+            is_code_block: first.is_monospace && lines.len() > 1,
+            is_formula: false,
+            is_page_furniture: false,
+            layout_class: None,
+            caption_for: None,
+            block_bbox: None,
+        });
     }
 
-    // Deduplicate paragraphs with identical text within each page.
-    // Catches bold/shadow rendering artifacts (consecutive duplicates)
-    // and table content rendered as both table and body text.
-    // When strip_repeating_text is disabled, skip dedup to preserve all content.
-    if strip_repeating_text {
-        deduplicate_paragraphs(&mut all_page_paragraphs);
+    // Conservative heading detection.
+    // Pass 1: font-size-based — significantly larger font than body.
+    let mut heading_level = super::classify::find_heading_level(first.font_size, heading_map, gap_info);
+    if heading_level.is_some() && (word_count > 20 || super::layout_classify::is_separator_text(trimmed)) {
+        heading_level = None;
     }
 
-    let total_paragraphs: usize = all_page_paragraphs.iter().map(|p| p.len()).sum();
-    tracing::debug!(
-        heuristic_page_count = heuristic_pages.len(),
-        total_paragraphs,
-        heading_map_len = heading_map.len(),
-        "PDF structure pipeline: stage 3 complete, assembling document"
-    );
+    // Pass 2: bold-at-body-size → H2. Very conservative — only when we have
+    // strong evidence this is a heading, not just bold emphasis:
+    // - Must be bold + single line + short (≤8 words)
+    // - Must NOT end with period, colon, comma, semicolon (sentence fragments)
+    // - Must NOT contain common body-text signals (@, parentheses, commas)
+    // - Must start with uppercase letter or digit (section numbering)
+    if heading_level.is_none()
+        && is_bold
+        && (1..=8).contains(&word_count)
+        && lines.len() == 1
+        && !trimmed.ends_with('.')
+        && !trimmed.ends_with(':')
+        && !trimmed.ends_with(',')
+        && !trimmed.ends_with(';')
+        && !trimmed.contains('@')
+        && !trimmed.contains('(')
+        && !trimmed.contains(',')
+        && trimmed
+            .chars()
+            .next()
+            .is_some_and(|c| c.is_uppercase() || c.is_ascii_digit())
+        && !super::layout_classify::is_separator_text(trimmed)
+        && !super::regions::looks_like_figure_label(trimmed)
+    {
+        heading_level = Some(2);
+    }
 
-    // Stage 4: Assemble InternalDocument with tables interleaved
-    // Combine heuristic tables (from extraction.rs) with layout-detected tables,
-    // then deduplicate overlapping tables on the same page.
-    let mut combined_tables: Vec<crate::types::Table> = tables.iter().cloned().chain(layout_tables).collect();
-    deduplicate_overlapping_tables(&mut combined_tables);
-
-    // Convert image positions to (page_idx, image_index) pairs for the assembler.
-    // Skip when inject_placeholders=false: the caller does not want image links in output.
-    let image_pos_pairs: Vec<(usize, usize)> = if inject_placeholders {
-        all_image_positions
+    // Pass 3: font-size-above-body detection for short paragraphs.
+    // Catches section headings whose font size is meaningfully larger than body
+    // but was merged into the body cluster by k-means (e.g., 12pt headings vs
+    // 10pt body in LaTeX documents). Since we don't have bold confirmation,
+    // require stronger evidence: text must match a section heading pattern
+    // (starts with section number like "3.1 Methods" or is a known structural
+    // heading word like "References", "Appendix").
+    if heading_level.is_none() {
+        let body_font_size = heading_map
             .iter()
-            .map(|img| (img.page_number, img.image_index))
-            .collect()
-    } else {
-        Vec::new()
-    };
+            .find(|(_, level)| level.is_none())
+            .map(|(centroid, _)| *centroid)
+            .unwrap_or(0.0);
+        let min_heading_threshold = body_font_size * super::constants::MIN_HEADING_FONT_RATIO;
+        if body_font_size > 0.0
+            && first.font_size >= min_heading_threshold
+            && first.font_size > body_font_size + 0.5
+            && word_count <= super::constants::MAX_BOLD_HEADING_WORD_COUNT
+            && lines.len() <= 2
+            && !trimmed.ends_with(':')
+            && !trimmed.contains('@')
+            && (super::classify::is_section_pattern(trimmed) || is_structural_heading_word(trimmed))
+            && !super::layout_classify::is_separator_text(trimmed)
+            && !super::regions::looks_like_figure_label(trimmed)
+            && !looks_like_list_item(trimmed)
+        {
+            heading_level = Some(2);
+        }
+    }
+
+    let is_list_item = heading_level.is_none() && looks_like_list_item(trimmed);
+    let is_code_block =
+        heading_level.is_none() && !is_list_item && lines.iter().all(|l| l.is_monospace) && lines.len() >= 2;
+
+    // Page furniture detection: mark standalone page numbers as furniture.
+    // These are short text fragments that match common page number patterns
+    // (e.g., "1", "Page 3 of 10", "- 5 -", Roman numerals). Cross-page
+    // repeating text detection (in classify.rs) handles running headers
+    // and footers; this catches page numbers which vary per page.
+    let is_page_furniture = heading_level.is_none()
+        && !is_list_item
+        && !is_code_block
+        && word_count <= 10
+        && is_page_number_pattern(trimmed);
 
     tracing::debug!(
-        combined_tables = combined_tables.len(),
-        image_positions = image_pos_pairs.len(),
-        total_paragraphs = all_page_paragraphs.iter().map(|p| p.len()).sum::<usize>(),
-        "stage 4: assembling document"
+        font_size = first.font_size,
+        is_bold,
+        word_count,
+        heading_level = ?heading_level,
+        is_list_item,
+        is_code_block,
+        is_page_furniture,
+        text_preview = %&trimmed.chars().take(60).collect::<String>(),
+        "classified paragraph"
     );
 
-    let mut doc = assemble_internal_document(all_page_paragraphs, &combined_tables, &image_pos_pairs);
+    Some(PdfParagraph {
+        text: trimmed.to_string(),
+        lines: Vec::new(),
+        dominant_font_size: first.font_size,
+        heading_level,
+        is_bold,
+        is_list_item,
+        is_code_block,
+        is_formula: false,
+        is_page_furniture,
+        layout_class: None,
+        caption_for: None,
+        block_bbox: Some({
+            // Union of all lines' bboxes for precise paragraph bounds.
+            let left = lines.iter().map(|l| l.x).fold(f32::MAX, f32::min);
+            let bottom = lines.iter().map(|l| l.baseline_y).fold(f32::MAX, f32::min);
+            let right = lines.iter().map(|l| l.x + l.width).fold(f32::MIN, f32::max);
+            let top = lines.iter().map(|l| l.baseline_y + l.height).fold(f32::MIN, f32::max);
+            (left, bottom, right, top)
+        }),
+    })
+}
 
-    // Stage 4b: Populate doc.images with actual image data from pdfium.
-    // Image elements reference indices into doc.images, which must be populated
-    // for markdown/HTML rendering to produce `![desc](image_N.png)` instead of `![]()`.
-    // Skip when inject_placeholders=false to avoid unnecessary rendering work.
-    if inject_placeholders {
-        populate_images_from_pdfium(document, &all_image_positions, &mut doc, cancel_token);
+/// Check if text starts with a common list marker.
+fn looks_like_list_item(text: &str) -> bool {
+    let t = text.trim_start();
+
+    // Bullet characters — high confidence markers
+    if t.starts_with('•')
+        || t.starts_with('·')
+        || t.starts_with('◦')
+        || t.starts_with('▪')
+        || t.starts_with('–')
+        || t.starts_with('—')
+    {
+        return true;
     }
 
-    let element_count = doc.elements.len();
-    tracing::debug!(element_count, "PDF structure pipeline: assembly complete");
+    // Hyphen-dash list: only if followed by space + alphabetic word.
+    // Rejects "- 1145/3620665..." (bibliography) and "- 1 PDF backends" (subsection).
+    if let Some(rest) = t.strip_prefix("- ") {
+        return rest.chars().next().is_some_and(|c| c.is_alphabetic());
+    }
 
-    // Stage 5: Element-level text normalization.
-    // Apply ligature repair and Unicode normalization to each element's text
-    // so that any text that bypassed per-segment processing is also cleaned up.
-    for elem in &mut doc.elements {
-        if elem.text.is_empty() {
-            continue;
+    // Numbered / lettered patterns: "1.", "2)", "a.", "a)", "i.", "(1)", "(a)"
+    let mut chars = t.chars().peekable();
+
+    // Parenthesized: "(1)" or "(a)" — require closing paren + space + word
+    if chars.peek() == Some(&'(') {
+        chars.next();
+        if chars.peek().is_some_and(|c| c.is_alphanumeric()) {
+            chars.next();
+            while chars.peek().is_some_and(|c| c.is_alphanumeric()) {
+                chars.next();
+            }
+            if chars.peek() == Some(&')') {
+                chars.next();
+                // Must be followed by space then an alphabetic character
+                return chars.peek() == Some(&' ') && {
+                    chars.next();
+                    chars.peek().is_some_and(|c| c.is_alphabetic())
+                };
+            }
         }
-        let t1 = repair_contextual_ligatures(&elem.text);
-        let t2 = expand_ligatures_with_space_absorption(&t1);
-        let t3 = normalize_unicode_text(&t2);
-        if let Cow::Owned(normalized) = t3 {
-            elem.text = normalized;
-        } else if let Cow::Owned(normalized) = t2 {
-            elem.text = normalized;
-        } else if let Cow::Owned(normalized) = t1 {
-            elem.text = normalized;
+        return false;
+    }
+
+    // "1." / "1)" / "a." / "a)" etc.
+    // Exclude section heading patterns: "I. INTRODUCTION", "II. BASICS" etc.
+    if super::classify::is_section_pattern(t) {
+        return false;
+    }
+
+    if chars.peek().is_some_and(|c| c.is_alphanumeric()) {
+        let mut num_len = 0;
+        while chars.peek().is_some_and(|c| c.is_alphanumeric()) {
+            chars.next();
+            num_len += 1;
+        }
+        if num_len <= 4 && (chars.peek() == Some(&'.') || chars.peek() == Some(&')')) {
+            chars.next();
+            return chars.peek() == Some(&' ') && {
+                chars.next();
+                chars.peek().is_some_and(|c| c.is_alphabetic())
+            };
         }
     }
 
-    Ok((doc, has_font_encoding_issues))
+    false
+}
+
+/// Check if text is a well-known structural heading word.
+///
+/// These single-word headings appear frequently in academic papers and reports
+/// and are reliable heading indicators when combined with a larger-than-body font.
+fn is_structural_heading_word(text: &str) -> bool {
+    let t = text.trim();
+    matches!(
+        t,
+        "Abstract"
+            | "References"
+            | "Appendix"
+            | "Acknowledgments"
+            | "Acknowledgements"
+            | "Conclusion"
+            | "Conclusions"
+            | "Bibliography"
+            | "Contents"
+            | "Index"
+            | "Glossary"
+            | "Summary"
+            | "Discussion"
+            | "Methods"
+            | "Results"
+            | "Methodology"
+    )
+}
+
+/// Check if text matches common page number patterns.
+///
+/// Detects standalone page numbers, "Page X", "Page X of Y", Roman numerals,
+/// and similar patterns that appear as page furniture.
+fn is_page_number_pattern(text: &str) -> bool {
+    let t = text.trim();
+    if t.is_empty() {
+        return false;
+    }
+    // Standalone number: "1", "42", "103"
+    if t.chars().all(|c| c.is_ascii_digit()) && t.len() <= 4 {
+        return true;
+    }
+    // "Page X" or "Page X of Y" (case-insensitive)
+    let lower = t.to_lowercase();
+    if lower.starts_with("page ") {
+        return true;
+    }
+    // "- X -" or "– X –" (centered page numbers with dashes)
+    if (t.starts_with("- ") || t.starts_with("– ")) && (t.ends_with(" -") || t.ends_with(" –")) {
+        let inner = t
+            .trim_start_matches("- ")
+            .trim_start_matches("– ")
+            .trim_end_matches(" -")
+            .trim_end_matches(" –")
+            .trim();
+        if inner.chars().all(|c| c.is_ascii_digit()) && inner.len() <= 4 {
+            return true;
+        }
+    }
+    // Roman numerals: "i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix", "x", "xi", "xii"
+    if t.len() <= 5 && t.chars().all(|c| matches!(c, 'i' | 'v' | 'x' | 'I' | 'V' | 'X')) {
+        return true;
+    }
+    false
 }
 
 /// Build a structured `InternalDocument` from pre-extracted per-page segments.
 ///
-/// This is the oxide-backend equivalent of [`extract_document_structure`]. It accepts
-/// segments already extracted via `oxide::hierarchy::extract_all_segments` and runs
-/// the same font-clustering, heading-classification, paragraph-assembly, and
-/// post-processing stages without requiring a pdfium `PdfDocument`.
+/// This is the oxide-backend entry point. It accepts segments already extracted
+/// via `oxide::hierarchy::extract_all_segments` and runs the same font-clustering,
+/// heading-classification, paragraph-assembly, and post-processing stages without
+/// requiring a PDF document.
 ///
 /// Image positions can be supplied to insert image placeholders into the document.
 /// Layout hints (from RT-DETR layout detection) are optional; when present they
-/// drive furniture marking, heading overrides, and table region detection — the
-/// same role they play in the pdfium-backed [`extract_document_structure`].
+/// drive furniture marking, heading overrides, and table region detection.
 ///
 /// Returns the assembled `InternalDocument`.
-#[cfg(feature = "pdf-oxide")]
 pub(crate) struct SegmentStructureConfig<'a> {
     pub k_clusters: usize,
     pub tables: &'a [crate::types::Table],
@@ -1418,14 +689,13 @@ pub(crate) struct SegmentStructureConfig<'a> {
     #[cfg(feature = "layout-detection")]
     pub layout_images: Option<&'a [image::DynamicImage]>,
     #[cfg(feature = "layout-detection")]
-    pub layout_results: Option<&'a [crate::pdf::layout_runner::PageLayoutResult]>,
+    pub layout_results: Option<&'a [super::types::PageLayoutResult]>,
     #[cfg(feature = "layout-detection")]
     pub table_model: crate::core::config::layout::TableModel,
     #[cfg(feature = "layout-detection")]
     pub acceleration: Option<&'a crate::core::config::acceleration::AccelerationConfig>,
 }
 
-#[cfg(feature = "pdf-oxide")]
 pub(crate) fn extract_document_structure_from_segments(
     mut all_page_segments: Vec<Vec<SegmentData>>,
     config: SegmentStructureConfig<'_>,
@@ -1498,14 +768,8 @@ pub(crate) fn extract_document_structure_from_segments(
 
     // Extract tables from layout-detected Table regions using oxide segments.
     //
-    // Mirrors the pdfium path in `extract_document_structure`, but uses
-    // `segments_to_words` to convert oxide `SegmentData` into `HocrWord`s
-    // instead of pdfium's character-level API. Oxide segments already carry
-    // x/y/width/height in PDF coordinates (y=0 at bottom), and `segments_to_words`
-    // converts them to image coordinates (y=0 at top) as `HocrWord` requires.
-    //
-    // When layout-detection is enabled, TATR or SLANeXT table recognition is used
-    // (matching the pdfium path); otherwise the heuristic fallback is used.
+    // When layout-detection is enabled, TATR or SLANeXT table recognition is used;
+    // otherwise the heuristic fallback is used.
     let mut layout_tables: Vec<crate::types::Table> = Vec::new();
     if let Some(hints_pages) = layout_hints {
         // Phase 1 (sequential): build words per page from oxide segments.
@@ -1577,61 +841,33 @@ pub(crate) fn extract_document_structure_from_segments(
             };
             let is_auto = table_model == TableModel::SlanetAuto;
 
-            let has_table_model = if !use_model_inference {
-                false
-            } else if let Some(variant) = slanet_variant {
-                let seed = if layout_images.is_some() {
-                    crate::layout::take_or_create_slanet(variant, acceleration)
-                } else {
-                    None
-                };
-                let has = seed.is_some();
-                if let Some(model) = seed {
-                    TL_SLANET.with(|cell| {
-                        *cell.borrow_mut() = Some(model);
-                    });
-                }
-                if is_auto && has {
-                    if let Some(alt) = crate::layout::take_or_create_slanet("slanet_wireless", acceleration) {
-                        TL_SLANET_ALT.with(|cell| {
-                            *cell.borrow_mut() = Some(alt);
-                        });
-                    }
-                    if let Some(cls) = crate::layout::take_or_create_table_classifier(acceleration) {
-                        TL_CLASSIFIER.with(|cell| {
-                            *cell.borrow_mut() = Some(cls);
-                        });
-                    }
-                }
-                has
-            } else {
-                let seed = if layout_images.is_some() {
-                    crate::layout::take_or_create_tatr(acceleration)
-                } else {
-                    None
-                };
-                let has = seed.is_some();
-                if let Some(model) = seed {
-                    TL_TATR.with(|cell| {
-                        *cell.borrow_mut() = Some(model);
-                    });
-                }
-                has
+            let model_name = match table_model {
+                TableModel::Tatr => "TATR",
+                TableModel::SlanetWired | TableModel::SlanetWireless | TableModel::SlanetPlus => "SLANeXT",
+                TableModel::SlanetAuto => "SLANeXT (auto)",
+                TableModel::Disabled => "disabled",
             };
 
-            tracing::debug!(
-                has_table_model,
-                table_model = %table_model,
-                table_page_count = table_pages.len(),
-                "oxide table extraction phase 2: model availability"
-            );
-            if use_model_inference && !has_table_model && !table_pages.is_empty() {
-                let model_name = slanet_variant.unwrap_or("tatr");
-                return Err(crate::pdf::error::PdfError::TextExtractionFailed(format!(
-                    "Layout detection found table regions but {model_name} model is not available. \
+            let has_table_model = if use_model_inference {
+                let available = match table_model {
+                    TableModel::Tatr => crate::layout::is_tatr_available(),
+                    TableModel::SlanetWired
+                    | TableModel::SlanetWireless
+                    | TableModel::SlanetPlus
+                    | TableModel::SlanetAuto => crate::layout::is_slanet_available(),
+                    TableModel::Disabled => false,
+                };
+
+                if !available && !table_pages.is_empty() {
+                    return Err(crate::pdf::error::PdfError::TextExtractionFailed(format!(
+                        "Layout detection found table regions but {model_name} model is not available. \
                          Ensure the ONNX model is downloaded. Tables cannot be extracted without it."
-                )));
-            }
+                    )));
+                }
+                available
+            } else {
+                false
+            };
 
             if has_table_model {
                 if let (Some(images @ [_, ..]), Some(results @ [_, ..])) = (layout_images, layout_results) {
@@ -1764,11 +1000,6 @@ pub(crate) fn extract_document_structure_from_segments(
                                             tp.page_idx,
                                             tatr,
                                         );
-                                        tracing::trace!(
-                                            page = tp.page_idx,
-                                            tatr_tables = tatr_tables.len(),
-                                            "oxide TATR table recognition result"
-                                        );
                                         if !tatr_tables.is_empty() {
                                             return tatr_tables;
                                         }
@@ -1791,97 +1022,30 @@ pub(crate) fn extract_document_structure_from_segments(
                     let parallel_tables: Vec<Vec<crate::types::Table>> = table_pages
                         .iter()
                         .map(|tp| {
-                            if let Some(variant) = slanet_variant {
-                                TL_SLANET.with(|cell| {
-                                    let mut slanet_ref = cell.borrow_mut();
-                                    if slanet_ref.is_none() {
-                                        *slanet_ref = crate::layout::take_or_create_slanet(variant, acceleration);
+                            if let (Some(page_image), Some(page_result)) =
+                                (images.get(tp.page_idx), results.get(tp.page_idx))
+                            {
+                                let hints = &hints_pages[tp.page_idx];
+                                TL_TATR.with(|cell| {
+                                    let mut tatr_ref = cell.borrow_mut();
+                                    if tatr_ref.is_none() {
+                                        *tatr_ref = crate::layout::take_or_create_tatr(acceleration);
                                     }
-                                });
-                                if is_auto {
-                                    TL_SLANET_ALT.with(|cell| {
-                                        let mut alt_ref = cell.borrow_mut();
-                                        if alt_ref.is_none() {
-                                            *alt_ref =
-                                                crate::layout::take_or_create_slanet("slanet_wireless", acceleration);
-                                        }
-                                    });
-                                    TL_CLASSIFIER.with(|cell| {
-                                        let mut cls_ref = cell.borrow_mut();
-                                        if cls_ref.is_none() {
-                                            *cls_ref = crate::layout::take_or_create_table_classifier(acceleration);
-                                        }
-                                    });
-                                }
-
-                                TL_SLANET.with(|slanet_cell| {
-                                    let mut slanet_ref = slanet_cell.borrow_mut();
-                                    let Some(slanet) = slanet_ref.as_mut() else {
-                                        tracing::warn!("SLANeXT model unavailable in worker thread");
+                                    let Some(tatr) = tatr_ref.as_mut() else {
                                         return Vec::new();
                                     };
-
-                                    if let (Some(page_image), Some(page_result)) =
-                                        (images.get(tp.page_idx), results.get(tp.page_idx))
-                                    {
-                                        let hints = &hints_pages[tp.page_idx];
-
-                                        let mut classifier_pair = if is_auto {
-                                            let alt = TL_SLANET_ALT.with(|c| c.borrow_mut().take());
-                                            let cls = TL_CLASSIFIER.with(|c| c.borrow_mut().take());
-                                            match (cls, alt) {
-                                                (Some(c), Some(a)) => Some((c, a)),
-                                                (c, a) => {
-                                                    if let Some(cls) = c {
-                                                        TL_CLASSIFIER.with(|cell| {
-                                                            *cell.borrow_mut() = Some(cls);
-                                                        });
-                                                    }
-                                                    if let Some(alt) = a {
-                                                        TL_SLANET_ALT.with(|cell| {
-                                                            *cell.borrow_mut() = Some(alt);
-                                                        });
-                                                    }
-                                                    None
-                                                }
-                                            }
-                                        } else {
-                                            None
-                                        };
-
-                                        let classifier_arg = classifier_pair.as_mut().map(|(cls, alt)| {
-                                            (
-                                                cls as &mut crate::layout::models::table_classifier::TableClassifier,
-                                                alt as &mut crate::layout::models::slanet::SlanetModel,
-                                            )
-                                        });
-
-                                        let slanet_tables = super::regions::recognize_tables_slanet(
-                                            page_image,
-                                            hints,
-                                            &tp.words,
-                                            page_result,
-                                            tp.page_height,
-                                            tp.page_idx,
-                                            slanet,
-                                            classifier_arg,
-                                        );
-
-                                        if let Some((cls, alt)) = classifier_pair {
-                                            TL_CLASSIFIER.with(|cell| {
-                                                *cell.borrow_mut() = Some(cls);
-                                            });
-                                            TL_SLANET_ALT.with(|cell| {
-                                                *cell.borrow_mut() = Some(alt);
-                                            });
-                                        }
-
-                                        if !slanet_tables.is_empty() {
-                                            return slanet_tables;
-                                        }
+                                    let tatr_tables = super::regions::recognize_tables_for_native_page(
+                                        page_image,
+                                        hints,
+                                        &tp.words,
+                                        page_result,
+                                        tp.page_height,
+                                        tp.page_idx,
+                                        tatr,
+                                    );
+                                    if !tatr_tables.is_empty() {
+                                        return tatr_tables;
                                     }
-
-                                    let hints = &hints_pages[tp.page_idx];
                                     super::regions::extract_tables_from_layout_hints(
                                         &tp.words,
                                         hints,
@@ -1892,86 +1056,31 @@ pub(crate) fn extract_document_structure_from_segments(
                                     )
                                 })
                             } else {
-                                // TATR path (default)
-                                TL_TATR.with(|cell| {
-                                    let mut tatr_ref = cell.borrow_mut();
-                                    if tatr_ref.is_none() {
-                                        *tatr_ref = crate::layout::take_or_create_tatr(acceleration);
-                                    }
-                                    let Some(tatr) = tatr_ref.as_mut() else {
-                                        tracing::warn!("TATR model unavailable in worker thread");
-                                        return Vec::new();
-                                    };
-
-                                    if let (Some(page_image), Some(page_result)) =
-                                        (images.get(tp.page_idx), results.get(tp.page_idx))
-                                    {
-                                        let hints = &hints_pages[tp.page_idx];
-                                        let tatr_tables = super::regions::recognize_tables_for_native_page(
-                                            page_image,
-                                            hints,
-                                            &tp.words,
-                                            page_result,
-                                            tp.page_height,
-                                            tp.page_idx,
-                                            tatr,
-                                        );
-                                        if !tatr_tables.is_empty() {
-                                            return tatr_tables;
-                                        }
-                                    }
-
-                                    let hints = &hints_pages[tp.page_idx];
-                                    super::regions::extract_tables_from_layout_hints(
-                                        &tp.words,
-                                        hints,
-                                        tp.page_idx,
-                                        tp.page_height,
-                                        0.5,
-                                        allow_single_column,
-                                    )
-                                })
+                                Vec::new()
                             }
                         })
                         .collect();
-
-                    for tables in parallel_tables {
-                        layout_tables.extend(tables);
-                    }
-
-                    // Return thread-local models to global cache.
-                    if let Some(variant) = slanet_variant {
-                        TL_SLANET.with(|cell| {
-                            if let Some(model) = cell.borrow_mut().take() {
-                                crate::layout::return_slanet(variant, model);
-                            }
-                        });
-                        if is_auto {
-                            TL_SLANET_ALT.with(|cell| {
-                                if let Some(model) = cell.borrow_mut().take() {
-                                    crate::layout::return_slanet("slanet_wireless", model);
-                                }
-                            });
-                            TL_CLASSIFIER.with(|cell| {
-                                if let Some(model) = cell.borrow_mut().take() {
-                                    crate::layout::return_table_classifier(model);
-                                }
-                            });
+                    layout_tables.extend(parallel_tables.into_iter().flatten());
+                } else {
+                    // No layout images or results — fall back to heuristic table extraction.
+                    for tp in &table_pages {
+                        if cancel_token.is_some_and(|t| t.is_cancelled()) {
+                            tracing::debug!("oxide structure pipeline: cancelled during heuristic table extraction");
+                            break;
                         }
-                    } else {
-                        TL_TATR.with(|cell| {
-                            if let Some(model) = cell.borrow_mut().take() {
-                                crate::layout::return_tatr(model);
-                            }
-                        });
+                        let hints = &hints_pages[tp.page_idx];
+                        layout_tables.extend(super::regions::extract_tables_from_layout_hints(
+                            &tp.words,
+                            hints,
+                            tp.page_idx,
+                            tp.page_height,
+                            0.5,
+                            allow_single_column,
+                        ));
                     }
                 }
             } else {
-                // No model — run heuristic fallback sequentially.
-                tracing::debug!(
-                    table_page_count = table_pages.len(),
-                    "oxide running heuristic table extraction (no TATR)"
-                );
+                // Model inference disabled — heuristic fallback.
                 for tp in &table_pages {
                     if cancel_token.is_some_and(|t| t.is_cancelled()) {
                         tracing::debug!("oxide structure pipeline: cancelled during heuristic table extraction");
@@ -1990,24 +1099,22 @@ pub(crate) fn extract_document_structure_from_segments(
             }
         }
 
+        // No layout detection — run heuristic fallback sequentially.
         #[cfg(not(feature = "layout-detection"))]
-        {
-            // No layout detection — run heuristic fallback sequentially.
-            for tp in &table_pages {
-                if cancel_token.is_some_and(|t| t.is_cancelled()) {
-                    tracing::debug!("oxide structure pipeline: cancelled during heuristic table extraction");
-                    break;
-                }
-                let hints = &hints_pages[tp.page_idx];
-                layout_tables.extend(super::regions::extract_tables_from_layout_hints(
-                    &tp.words,
-                    hints,
-                    tp.page_idx,
-                    tp.page_height,
-                    0.5,
-                    allow_single_column,
-                ));
+        for tp in &table_pages {
+            if cancel_token.is_some_and(|t| t.is_cancelled()) {
+                tracing::debug!("oxide structure pipeline: cancelled during heuristic table extraction");
+                break;
             }
+            let hints = &hints_pages[tp.page_idx];
+            layout_tables.extend(super::regions::extract_tables_from_layout_hints(
+                &tp.words,
+                hints,
+                tp.page_idx,
+                tp.page_height,
+                0.5,
+                allow_single_column,
+            ));
         }
     }
 
@@ -2130,7 +1237,7 @@ pub(crate) fn extract_document_structure_from_segments(
 
     // Stage 4: Assemble InternalDocument.
     // Combine native oxide tables with layout-detected tables, then deduplicate
-    // overlapping tables on the same page (same pattern as the pdfium path).
+    // overlapping tables on the same page.
     let mut combined_tables: Vec<crate::types::Table> = tables.iter().cloned().chain(layout_tables).collect();
     deduplicate_overlapping_tables(&mut combined_tables);
     let effective_image_positions = if inject_placeholders { image_positions } else { &[] };
@@ -2436,159 +1543,151 @@ fn dehyphenate_paragraphs(paragraphs: &mut [PdfParagraph], has_positions: bool) 
 /// margin. If so, attempts to rejoin the trailing word of one line with the
 /// leading word of the next.
 fn dehyphenate_paragraph_lines(para: &mut PdfParagraph) {
-    // Compute max right edge across all lines.
+    // Compute the maximum right edge across all segments to detect "full" lines.
     let max_right_edge = para
         .lines
         .iter()
-        .filter_map(|line| line.segments.last().map(|seg| seg.x + seg.width))
+        .flat_map(|l| l.segments.iter())
+        .map(|s| s.x + s.width)
         .fold(0.0_f32, f32::max);
 
     if max_right_edge <= 0.0 {
-        // No positional data — fall back to hyphen-only.
+        // No positional data — fall back to hyphen-only mode.
         dehyphenate_hyphen_only(para);
         return;
     }
 
     let threshold = max_right_edge * FULL_LINE_FRACTION;
 
-    // Process line boundaries from last to first so index shifts don't
-    // invalidate earlier indices.
-    let line_count = para.lines.len();
-    for i in (0..line_count - 1).rev() {
-        let line_right = para.lines[i]
-            .segments
+    let n = para.lines.len();
+    for i in 0..(n - 1) {
+        // Check whether the current line's last segment ends near the right margin.
+        let trailing_right = para.lines[i].segments.last().map(|s| s.x + s.width).unwrap_or(0.0);
+        if trailing_right < threshold {
+            continue; // Short line — don't attempt joining.
+        }
+
+        // Extract relevant text.
+        let trailing_text = match para.lines[i].segments.last() {
+            Some(s) if !s.text.is_empty() => s.text.clone(),
+            _ => continue,
+        };
+        let leading_text = match para.lines[i + 1].segments.first() {
+            Some(s) if !s.text.is_empty() => s.text.clone(),
+            _ => continue,
+        };
+
+        // Only join when the trailing word ends with a hyphen.
+        // Case 2 (no-hyphen joining) was removed because it caused false
+        // positives (e.g., "through" + "several" → "throughseveral").
+        let has_trailing_hyphen = trailing_text.ends_with('-');
+        if !has_trailing_hyphen {
+            continue;
+        }
+
+        // Don't join when the leading word starts with an uppercase letter —
+        // that signals a sentence boundary (e.g., "said.- Next sentence.").
+        let leading_word = leading_text.split_whitespace().next().unwrap_or("");
+        if leading_word.chars().next().is_some_and(|c| c.is_uppercase()) {
+            continue;
+        }
+
+        // Don't join when the trailing word before the hyphen ends with a CJK character.
+        let trailing_word = trailing_text
+            .trim_end_matches('-')
+            .split_whitespace()
             .last()
-            .map(|seg| seg.x + seg.width)
-            .unwrap_or(0.0);
-        let is_full_line = line_right >= threshold;
-
-        if !is_full_line {
+            .unwrap_or("");
+        if trailing_word.chars().last().is_some_and(is_cjk_char) {
             continue;
         }
 
-        // Get trailing word from last segment of current line.
-        let trailing_seg_text: &str = match para.lines[i].segments.last() {
-            Some(seg) if !seg.text.is_empty() => &seg.text,
-            _ => continue,
-        };
-        let trailing_word = match trailing_seg_text.split_whitespace().next_back() {
-            Some(w) => w,
-            None => continue,
-        };
+        // Strip the hyphen and join with the leading word.
+        // joined_word is only the merged word (trailing base + leading word), not the full line.
+        let joined_word = format!("{trailing_word}{leading_word}");
 
-        // Get leading word from first segment of next line.
-        let leading_seg_text: &str = match para.lines[i + 1].segments.first() {
-            Some(seg) if !seg.text.is_empty() => &seg.text,
-            _ => continue,
-        };
-        let leading_word = match leading_seg_text.split_whitespace().next() {
-            Some(w) => w,
-            None => continue,
-        };
-
-        // Skip if either word contains CJK characters.
-        if trailing_word.chars().any(is_cjk_char) || leading_word.chars().any(is_cjk_char) {
-            continue;
+        // Update the trailing segment.
+        if let Some(seg) = para.lines[i].segments.last_mut() {
+            // Replace the trailing word (which ends with '-') with the joined word.
+            // Find the trailing word boundary and replace from there.
+            let text_without_word: String = seg
+                .text
+                .chars()
+                .rev()
+                .skip(trailing_word.len() + 1) // +1 for the hyphen
+                .collect::<String>()
+                .chars()
+                .rev()
+                .collect();
+            seg.text = format!("{text_without_word}{joined_word}");
         }
 
-        // Case 1: trailing hyphen
-        if let Some(stem) = trailing_word.strip_suffix('-')
-            && !stem.is_empty()
-            && leading_word.starts_with(|c: char| c.is_lowercase())
-        {
-            let joined = format!("{}{}", stem, leading_word);
-            // Clone to break the immutable borrow on `para` before mutating it.
-            let tw = trailing_word.to_string();
-            let lw = leading_word.to_string();
-            apply_dehyphenation_join(para, i, &tw, &lw, &joined);
-            continue;
+        // Remove the leading word from the next line's first segment.
+        if let Some(seg) = para.lines[i + 1].segments.first_mut() {
+            let after_leading_word = seg.text.trim_start_matches(leading_word).trim_start();
+            seg.text = after_leading_word.to_string();
         }
-
-        // Case 2 (removed): no-hyphen full-line word joining was too aggressive.
-        // It incorrectly joined separate words like "through" + "several" →
-        // "throughseveral" at every line boundary where text wraps to the margin.
-        // Unhyphenated word splits are extremely rare in PDFs — explicit hyphens
-        // (Case 1) cover the vast majority of real word breaks.
     }
 }
 
-/// Fallback dehyphenation for structure tree path (no positional data).
+/// Hyphen-only dehyphenation (no position data required).
 ///
-/// Only handles Case 1: explicit trailing hyphens with lowercase continuation.
+/// Only joins lines when the trailing segment ends with an explicit hyphen.
+/// Used for structure tree pages where x/width may be zero.
 fn dehyphenate_hyphen_only(para: &mut PdfParagraph) {
-    let line_count = para.lines.len();
-    for i in (0..line_count - 1).rev() {
-        let trailing_seg_text: &str = match para.lines[i].segments.last() {
-            Some(seg) if !seg.text.is_empty() => &seg.text,
+    let n = para.lines.len();
+    for i in 0..(n - 1) {
+        let trailing_text = match para.lines[i].segments.last() {
+            Some(s) if s.text.ends_with('-') => s.text.clone(),
             _ => continue,
         };
-        let trailing_word = match trailing_seg_text.split_whitespace().next_back() {
-            Some(w) => w,
-            None => continue,
+        let leading_text = match para.lines[i + 1].segments.first() {
+            Some(s) if !s.text.is_empty() => s.text.clone(),
+            _ => continue,
         };
 
-        if !trailing_word.ends_with('-') {
+        let leading_word = leading_text.split_whitespace().next().unwrap_or("");
+        if leading_word.chars().next().is_some_and(|c| c.is_uppercase()) {
             continue;
         }
 
-        let leading_seg_text: &str = match para.lines[i + 1].segments.first() {
-            Some(seg) if !seg.text.is_empty() => &seg.text,
-            _ => continue,
-        };
-        let leading_word = match leading_seg_text.split_whitespace().next() {
-            Some(w) => w,
-            None => continue,
-        };
-
-        if trailing_word.chars().any(is_cjk_char) || leading_word.chars().any(is_cjk_char) {
+        let trailing_word = trailing_text
+            .trim_end_matches('-')
+            .split_whitespace()
+            .last()
+            .unwrap_or("");
+        if trailing_word.chars().last().is_some_and(is_cjk_char) {
             continue;
         }
 
-        let stem = &trailing_word[..trailing_word.len() - 1];
-        if !stem.is_empty() && leading_word.starts_with(|c: char| c.is_lowercase()) {
-            let joined = format!("{}{}", stem, leading_word);
-            let tw = trailing_word.to_string();
-            let lw = leading_word.to_string();
-            apply_dehyphenation_join(para, i, &tw, &lw, &joined);
+        // joined_word is only the merged word (trailing base + leading word), not the full line.
+        let joined_word = format!("{trailing_word}{leading_word}");
+
+        if let Some(seg) = para.lines[i].segments.last_mut() {
+            let text_without_word: String = seg
+                .text
+                .chars()
+                .rev()
+                .skip(trailing_word.len() + 1)
+                .collect::<String>()
+                .chars()
+                .rev()
+                .collect();
+            seg.text = format!("{text_without_word}{joined_word}");
+        }
+
+        if let Some(seg) = para.lines[i + 1].segments.first_mut() {
+            let after_leading_word = seg.text.trim_start_matches(leading_word).trim_start();
+            seg.text = after_leading_word.to_string();
         }
     }
 }
 
-/// Mutate segment text to apply a dehyphenation join.
+/// Detect whether a set of paragraphs contains any font-size variation.
 ///
-/// Replaces the trailing word in the last segment of `line_idx` with `joined`,
-/// and removes the leading word from the first segment of `line_idx + 1`.
-fn apply_dehyphenation_join(
-    para: &mut PdfParagraph,
-    line_idx: usize,
-    trailing_word: &str,
-    leading_word: &str,
-    joined: &str,
-) {
-    // Replace trailing word in last segment of current line.
-    if let Some(seg) = para.lines[line_idx].segments.last_mut()
-        && let Some(pos) = seg.text.rfind(trailing_word)
-    {
-        seg.text.replace_range(pos..pos + trailing_word.len(), joined);
-    }
-
-    // Remove leading word from first segment of next line.
-    if let Some(seg) = para.lines[line_idx + 1].segments.first_mut()
-        && let Some(pos) = seg.text.find(leading_word)
-    {
-        let end = pos + leading_word.len();
-        // Also remove any trailing whitespace after the removed word.
-        let trim_end = seg.text[end..]
-            .find(|c: char| !c.is_whitespace())
-            .map_or(seg.text.len(), |off| end + off);
-        seg.text.replace_range(pos..trim_end, "");
-    }
-}
-
-/// Check if paragraphs have meaningful font size variation.
-///
-/// Returns true if there are at least 2 distinct non-zero font sizes,
-/// indicating that font-size clustering could identify heading candidates.
+/// Variation is defined as any paragraph whose font size differs from the first
+/// non-zero size by more than 0.5pt. Used to decide whether structure-tree pages
+/// need font-size clustering for heading assignment.
 fn has_font_size_variation(paragraphs: &[PdfParagraph]) -> bool {
     let mut first_size: Option<f32> = None;
     for para in paragraphs {
@@ -2649,34 +1748,33 @@ fn deduplicate_paragraphs(all_pages: &mut [Vec<PdfParagraph>]) {
                 to_remove.push(idx);
             }
         }
-        for idx in to_remove.into_iter().rev() {
+
+        // Remove in reverse order to preserve indices.
+        for &idx in to_remove.iter().rev() {
             page.remove(idx);
         }
     }
 }
 
-/// Extract normalized text from a paragraph for dedup comparison.
-/// Builds result directly without intermediate Vec allocations.
-fn paragraph_text_normalized(p: &PdfParagraph) -> String {
-    let mut result = String::new();
-    for line in &p.lines {
-        for seg in &line.segments {
-            for word in seg.text.split_whitespace() {
-                if !result.is_empty() {
-                    result.push(' ');
-                }
-                for c in word.chars() {
-                    for lc in c.to_lowercase() {
-                        result.push(lc);
-                    }
-                }
-            }
-        }
-    }
-    result
+/// Normalize paragraph text for deduplication comparison.
+///
+/// Uses `para.text` when populated (heuristic path), otherwise assembles text
+/// from segment data (structure tree path, used in tests).
+fn paragraph_text_normalized(para: &PdfParagraph) -> String {
+    let raw = if para.text.is_empty() {
+        para.lines
+            .iter()
+            .flat_map(|l| l.segments.iter())
+            .map(|s| s.text.as_str())
+            .collect::<Vec<_>>()
+            .join(" ")
+    } else {
+        para.text.clone()
+    };
+    raw.split_whitespace().collect::<Vec<_>>().join(" ").to_lowercase()
 }
 
-/// Check if a paragraph is eligible for deduplication.
+/// Check if a paragraph is a candidate for non-consecutive deduplication.
 fn is_dedup_candidate(p: &PdfParagraph) -> bool {
     p.heading_level.is_none()
         && !p.is_list_item
@@ -2686,214 +1784,24 @@ fn is_dedup_candidate(p: &PdfParagraph) -> bool {
         && p.caption_for.is_none()
 }
 
-/// Recursively walk a pdfium page object, extracting image data for the target index.
-///
-/// Mirrors the traversal order of `count_image_objects` in bridge.rs exactly so that
-/// `image_offset` indices assigned there align with the images extracted here.
-#[allow(clippy::too_many_arguments)]
-fn extract_image_from_pdfium_obj(
-    obj: &PdfPageObject,
-    document: &PdfDocument,
-    page_num: usize,
-    first_idx_on_page: usize,
-    current_image: &mut usize,
-    indices_set: &ahash::AHashSet<usize>,
-    extracted_on_page: &mut ahash::AHashMap<usize, crate::types::ExtractedImage>,
-    extracted_count: &mut u32,
-    depth: usize,
-) {
-    const MAX_XOBJECT_DEPTH: usize = 10;
-    use image::ImageEncoder;
-    match obj {
-        PdfPageObject::Image(image_obj) => {
-            let global_idx = first_idx_on_page + *current_image;
-            if indices_set.contains(&global_idx)
-                && let Ok(dynamic_image) = image_obj.get_processed_image(document)
-            {
-                let w = dynamic_image.width();
-                let h = dynamic_image.height();
-                if w >= 32 || h >= 32 {
-                    let rgba = dynamic_image.to_rgba8();
-                    let mut png_buf: Vec<u8> = Vec::new();
-                    if image::codecs::png::PngEncoder::new(&mut png_buf)
-                        .write_image(rgba.as_raw(), w, h, image::ExtendedColorType::Rgba8)
-                        .is_ok()
-                    {
-                        *extracted_count += 1;
-                        extracted_on_page.insert(
-                            global_idx,
-                            crate::types::ExtractedImage {
-                                data: bytes::Bytes::from(png_buf),
-                                format: std::borrow::Cow::Borrowed("png"),
-                                image_index: global_idx,
-                                page_number: Some(page_num),
-                                width: Some(w),
-                                height: Some(h),
-                                colorspace: Some("RGBA".to_string()),
-                                bits_per_component: Some(8),
-                                is_mask: false,
-                                description: None,
-                                ocr_result: None,
-                                bounding_box: None,
-                                source_path: None,
-                                image_kind: None,
-                                kind_confidence: None,
-                                cluster_id: None,
-                            },
-                        );
-                    }
-                }
-            }
-            *current_image += 1;
-        }
-        PdfPageObject::XObjectForm(form_obj) => {
-            if depth >= MAX_XOBJECT_DEPTH {
-                tracing::debug!(depth, "populate_images_from_pdfium: max XObject nesting depth reached");
-                return;
-            }
-            for child in form_obj.iter() {
-                extract_image_from_pdfium_obj(
-                    &child,
-                    document,
-                    page_num,
-                    first_idx_on_page,
-                    current_image,
-                    indices_set,
-                    extracted_on_page,
-                    extracted_count,
-                    depth + 1,
-                );
-            }
-        }
-        _ => {}
-    }
+#[allow(dead_code)] // Used by structure tree pages in process_single_page
+fn apply_text_repair_to_structure_tree_paragraphs(paragraphs: &mut Vec<PdfParagraph>, has_positions: bool) {
+    // Apply fused text repairs to all segments.
+    apply_to_all_segments(paragraphs, fused_text_repairs);
+    // Dehyphenate: rejoin trailing hyphens.
+    dehyphenate_paragraphs(paragraphs, has_positions);
+    // Split paragraphs with embedded bullet characters (•) into
+    // separate list item paragraphs (common in structure tree PDFs).
+    split_embedded_list_items(paragraphs);
 }
 
-/// Extract actual image data from pdfium and populate `doc.images`.
-///
-/// Each `ImagePosition` records (page_number, image_index) for image objects
-/// found during page scanning. This function re-traverses the pages to extract
-/// actual pixel data via pdfium's `get_processed_image`, then pushes each as an
-/// `ExtractedImage` into the document so that rendering produces proper
-/// `![desc](image_N.fmt)` references instead of empty `![]()`.
-fn populate_images_from_pdfium(
-    document: &PdfDocument,
-    image_positions: &[super::bridge::ImagePosition],
-    doc: &mut crate::types::internal::InternalDocument,
-    cancel_token: Option<&crate::cancellation::CancellationToken>,
-) {
-    if image_positions.is_empty() {
-        return;
+#[allow(dead_code)] // Used in structure tree check; kept for completeness
+fn apply_text_repair_structure_tree_check(paragraphs: &mut Vec<PdfParagraph>, all_text: &str) {
+    if text_has_ligature_corruption(all_text) {
+        apply_to_all_segments(paragraphs, repair_contextual_ligatures);
     }
-
-    // Group image positions by page number (1-indexed) for efficient traversal.
-    let mut by_page: std::collections::BTreeMap<usize, Vec<usize>> = std::collections::BTreeMap::new();
-    for pos in image_positions {
-        by_page.entry(pos.page_number).or_default().push(pos.image_index);
-    }
-
-    let pages = document.pages();
-    let mut extracted_count = 0u32;
-
-    for (&page_num, indices) in &by_page {
-        // Check cancellation between pages so a timeout can interrupt a long
-        // pdfium image-extraction run without having to wait for the current
-        // page to finish.  Individual pdfium FFI calls cannot be interrupted,
-        // but we can at least skip remaining pages once cancelled.
-        if cancel_token.is_some_and(|t| t.is_cancelled()) {
-            tracing::debug!(
-                page_num,
-                "populate_images_from_pdfium: cancelled, skipping remaining pages"
-            );
-            for &idx in indices {
-                doc.images.push(empty_image_placeholder(idx, page_num));
-            }
-            continue;
-        }
-
-        let page_idx = page_num.saturating_sub(1) as i32;
-        let Ok(page) = pages.get(page_idx) else {
-            for &idx in indices {
-                doc.images.push(empty_image_placeholder(idx, page_num));
-            }
-            continue;
-        };
-
-        // Build an O(1) lookup set so the inner loop over page objects is O(N)
-        // rather than O(N²). Pages from Ghostscript-produced PDFs can contain
-        // thousands of inline images; a Vec::contains scan inside the object
-        // loop was catastrophically slow in those cases.
-        let indices_set: ahash::AHashSet<usize> = indices.iter().copied().collect();
-
-        // INVARIANT: Image indices assigned to a single page form a contiguous range
-        // starting from the minimum index in `indices`. This holds because
-        // `objects_to_page_data` in bridge.rs increments `image_offset` for every
-        // image object it encounters — including those skipped by `max_images_per_page`
-        // (skipped images are not pushed to `indices` but still advance the counter).
-        // Kept images therefore form the dense prefix [min, min + len) of that range,
-        // which is why `max - min + 1 == len` always holds even when the cap fires.
-        debug_assert!(
-            {
-                let max = indices.iter().copied().max().unwrap_or(0);
-                let min = indices.iter().copied().min().unwrap_or(0);
-                max - min + 1 == indices.len()
-            },
-            "image indices must form a contiguous set within a page"
-        );
-
-        // Walk page objects, extracting image data for each matching index.
-        let first_idx_on_page = indices.iter().copied().min().unwrap_or(0);
-        let mut current_image = 0usize;
-        let mut extracted_on_page: ahash::AHashMap<usize, crate::types::ExtractedImage> = ahash::AHashMap::new();
-
-        for obj in page.objects().iter() {
-            extract_image_from_pdfium_obj(
-                &obj,
-                document,
-                page_num,
-                first_idx_on_page,
-                &mut current_image,
-                &indices_set,
-                &mut extracted_on_page,
-                &mut extracted_count,
-                0,
-            );
-        }
-
-        for &idx in indices {
-            let img = extracted_on_page
-                .remove(&idx)
-                .unwrap_or_else(|| empty_image_placeholder(idx, page_num));
-            doc.images.push(img);
-        }
-    }
-
-    tracing::debug!(
-        total_positions = image_positions.len(),
-        extracted = extracted_count,
-        "populated document images from pdfium"
-    );
-}
-
-/// Create an empty placeholder for an image that couldn't be extracted.
-fn empty_image_placeholder(idx: usize, page_num: usize) -> crate::types::ExtractedImage {
-    crate::types::ExtractedImage {
-        data: bytes::Bytes::new(),
-        format: std::borrow::Cow::Borrowed("unknown"),
-        image_index: idx,
-        page_number: Some(page_num),
-        width: None,
-        height: None,
-        colorspace: None,
-        bits_per_component: None,
-        is_mask: false,
-        description: None,
-        ocr_result: None,
-        bounding_box: None,
-        source_path: None,
-        image_kind: None,
-        kind_confidence: None,
-        cluster_id: None,
+    if text_has_broken_word_spacing(all_text) {
+        apply_to_all_segments(paragraphs, repair_broken_word_spacing);
     }
 }
 
@@ -3285,15 +2193,7 @@ mod tests {
         );
     }
 
-    /// Verify that the `first_idx_on_page + current_image` index offset formula
-    /// used in `populate_images_from_pdfium` maps page-local object positions to
-    /// the correct global image indices.
-    ///
-    /// This is a regression guard for issue #752: the original code used
-    /// `Vec::contains` (O(N) per lookup) inside the per-page object loop,
-    /// causing O(N²) behaviour with ~1,924 images on Ghostscript-produced PDFs.
-    /// The fix collects indices into an `AHashSet` before the loop for O(1) lookup,
-    /// and uses `first_idx_on_page + current_image` to compute the global index.
+    /// Verify that the index offset formula used for image mapping is correct.
     #[test]
     fn test_image_index_offset_mapping() {
         // Simulate page 2 whose images start at global index 50 (non-zero offset).
@@ -3330,9 +2230,7 @@ mod tests {
         );
     }
 
-    /// Verify that non-contiguous index ranges across pages are handled correctly
-    /// by the `first_idx_on_page` minimum, i.e., each page independently resets
-    /// `current_image` to 0 and derives `first_idx_on_page` from its own slice.
+    /// Verify that non-contiguous index ranges across pages are handled correctly.
     #[test]
     fn test_image_index_offset_non_contiguous_pages() {
         // Page 1 has global indices [0, 1], page 2 has [100, 101] (large gap).

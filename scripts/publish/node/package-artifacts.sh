@@ -18,37 +18,30 @@ case "$target" in
 aarch64-apple-darwin)
   platform_dir="darwin-arm64"
   node_file="kreuzberg-node.darwin-arm64.node"
-  pdfium_file="libpdfium.dylib"
   ;;
 x86_64-apple-darwin)
   platform_dir="darwin-x64"
   node_file="kreuzberg-node.darwin-x64.node"
-  pdfium_file="libpdfium.dylib"
   ;;
 x86_64-pc-windows-msvc)
   platform_dir="win32-x64-msvc"
   node_file="kreuzberg-node.win32-x64-msvc.node"
-  pdfium_file="pdfium.dll"
   ;;
 aarch64-pc-windows-msvc)
   platform_dir="win32-arm64-msvc"
   node_file="kreuzberg-node.win32-arm64-msvc.node"
-  pdfium_file="pdfium.dll"
   ;;
 x86_64-unknown-linux-gnu)
   platform_dir="linux-x64-gnu"
   node_file="kreuzberg-node.linux-x64-gnu.node"
-  pdfium_file="libpdfium.so"
   ;;
 aarch64-unknown-linux-gnu)
   platform_dir="linux-arm64-gnu"
   node_file="kreuzberg-node.linux-arm64-gnu.node"
-  pdfium_file="libpdfium.so"
   ;;
 armv7-unknown-linux-gnueabihf)
   platform_dir="linux-arm-gnueabihf"
   node_file="kreuzberg-node.linux-arm-gnueabihf.node"
-  pdfium_file="libpdfium.so"
   ;;
 *)
   echo "Unsupported NAPI target: $target" >&2
@@ -120,42 +113,6 @@ ls -lh "$platform_npm_dir"
 echo ""
 echo "npm/$platform_dir directory contents:"
 find "$platform_npm_dir" -type f
-
-echo ""
-echo "Including PDFium runtime..."
-pdfium_src=""
-for candidate in \
-  "crates/kreuzberg-node/${pdfium_file}" \
-  "target/release/${pdfium_file}" \
-  "target/${target}/release/${pdfium_file}"; do
-  if [ -f "$candidate" ]; then
-    pdfium_src="$candidate"
-    echo "  ✓ Found PDFium: $candidate"
-    break
-  fi
-done
-
-if [ -z "$pdfium_src" ]; then
-  echo "  ⚠ Warning: ${pdfium_file} not found in any expected location" >&2
-  echo "  Expected locations:" >&2
-  echo "    - crates/kreuzberg-node/${pdfium_file}" >&2
-  echo "    - target/release/${pdfium_file}" >&2
-  echo "    - target/${target}/release/${pdfium_file}" >&2
-else
-  echo "  Copying ${pdfium_file} to platform directory..."
-  cp -f "$pdfium_src" "crates/kreuzberg-node/npm/${platform_dir}/${pdfium_file}"
-  ls -lh "crates/kreuzberg-node/npm/${platform_dir}/${pdfium_file}"
-
-  platform_pkg_json="crates/kreuzberg-node/npm/${platform_dir}/package.json"
-  tmp_pkg_json="$(mktemp)"
-  trap 'rm -f "$tmp_pkg_json"' EXIT
-  jq --arg f "$pdfium_file" '.files |= ((. + [$f]) | unique)' "$platform_pkg_json" >"$tmp_pkg_json"
-  mv "$tmp_pkg_json" "$platform_pkg_json"
-  echo "  ✓ Updated package.json to include ${pdfium_file}"
-  echo ""
-  echo "Updated package.json files:"
-  cat "$platform_pkg_json"
-fi
 
 platform_npm_dir="crates/kreuzberg-node/npm/${platform_dir}"
 if [ ! -d "$platform_npm_dir" ]; then

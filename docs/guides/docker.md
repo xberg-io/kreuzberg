@@ -41,7 +41,7 @@ Official Docker images built on the Rust core with Debian 13 (Trixie). Each imag
 
 **Core** is optimized for production deployments where image size matters. Both images support all major formats — choose based on deployment constraints.
 
-All images include: Tesseract OCR (eng, spa, fra, deu, ita, por, chi-sim, chi-tra, jpn, ara, rus, hin), pdfium, images, HTML, email, and archives.
+All images include: Tesseract OCR (eng, spa, fra, deu, ita, por, chi-sim, chi-tra, jpn, ara, rus, hin), PDF (pdf_oxide), images, HTML, email, and archives.
 
 ## Execution Modes
 

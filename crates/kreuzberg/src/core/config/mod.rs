@@ -39,7 +39,7 @@ pub use llm::{LlmConfig, StructuredExtractionConfig};
 pub use ocr::{OcrConfig, OcrPipelineConfig, OcrPipelineStage, OcrQualityThresholds};
 pub use page::PageConfig;
 #[cfg(feature = "pdf")]
-pub use pdf::{HierarchyConfig, PdfBackend, PdfConfig};
+pub use pdf::{HierarchyConfig, PdfConfig};
 pub use processing::{
     ChunkSizing, ChunkerType, ChunkingConfig, EmbeddingConfig, EmbeddingModelType, PostProcessorConfig,
 };

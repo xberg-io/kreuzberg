@@ -38,9 +38,9 @@ pub mod custom_properties;
 pub mod odt_properties;
 
 pub(crate) use app_properties::{
-    extract_docx_app_properties, extract_pptx_app_properties, extract_xlsx_app_properties,
+    DocxAppProperties, extract_docx_app_properties, extract_pptx_app_properties, extract_xlsx_app_properties,
 };
-pub(crate) use core_properties::extract_core_properties;
+pub(crate) use core_properties::{CoreProperties, extract_core_properties};
 pub(crate) use custom_properties::extract_custom_properties;
 pub(crate) use odt_properties::extract_odt_properties;
 

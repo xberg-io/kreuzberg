@@ -35,7 +35,7 @@ chrono = { workspace = true }
 
 clap = { workspace = true }
 futures = { workspace = true }
-kreuzberg = { path = "../../crates/kreuzberg", features = ["full", "bundled-pdfium", "pdf-oxide"] }
+kreuzberg = { path = "../../crates/kreuzberg", features = ["full"] }
 num_cpus = { workspace = true }
 
 pprof = { version = "0.15", features = ["flamegraph", "criterion"], optional = true }

@@ -1,18 +1,12 @@
-//! PDF text hierarchy extraction using pdfium character positions.
+//! PDF text hierarchy utilities (backend-agnostic).
 //!
-//! This module provides functions for extracting character information from PDFs,
-//! preserving font size and position data for text hierarchy analysis.
-//!
-//! Note: Requires the "pdf" feature to be enabled.
+//! Provides font-size clustering, heading level assignment, and shared segment
+//! data types used by the oxide PDF extraction pipeline.
 
 mod bounding_box;
 mod clustering;
-mod extraction;
+mod types;
 
-// Re-export all public types and functions for backward compatibility
 pub use bounding_box::BoundingBox;
 pub(crate) use clustering::{assign_heading_levels_smart, cluster_font_sizes};
-pub(crate) use extraction::{
-    HierarchyLevel, KMeansResult, SegmentData, TextBlock, assign_hierarchy_levels, extract_chars_with_fonts,
-    merge_chars_into_blocks,
-};
+pub(crate) use types::{SegmentData, TextBlock};

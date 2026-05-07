@@ -609,6 +609,7 @@ impl DocumentExtractor for HtmlExtractor {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::extractors::security::SecurityLimits;
 
     /// Helper to extract tables from HTML using the unified converter.
     fn extract_tables(html: &str) -> Vec<Table> {
@@ -911,7 +912,7 @@ mod tests {
         let (_, _, _, doc_structure) =
             crate::extraction::html::convert_html_to_markdown_with_tables(html, None, None).unwrap();
         let doc_structure = doc_structure.expect("should have document structure");
-        let mut budget = SecurityBudget::with_defaults();
+        let mut budget = SecurityBudget::from_limits(&SecurityLimits::default());
         let doc = HtmlExtractor::map_document_structure(&doc_structure, true, &mut budget).unwrap();
         assert!(!doc.elements.is_empty(), "Should have elements");
     }
@@ -960,7 +961,7 @@ mod tests {
                 crate::extraction::html::convert_html_to_markdown_with_tables(html, None, None).unwrap();
             ds.expect("should have document structure")
         };
-        let mut budget = SecurityBudget::with_defaults();
+        let mut budget = SecurityBudget::from_limits(&SecurityLimits::default());
         let doc = HtmlExtractor::map_document_structure(&doc_structure, true, &mut budget).unwrap();
 
         // Check that no element contains CSS or script content
@@ -990,7 +991,7 @@ mod tests {
         let (_, _, _, doc_structure) =
             crate::extraction::html::convert_html_to_markdown_with_tables(html, None, None).unwrap();
         let doc_structure = doc_structure.expect("should have document structure");
-        let mut budget = SecurityBudget::with_defaults();
+        let mut budget = SecurityBudget::from_limits(&SecurityLimits::default());
         let doc = HtmlExtractor::map_document_structure(&doc_structure, true, &mut budget).unwrap();
         let content = doc.content();
         assert!(
@@ -1006,7 +1007,7 @@ mod tests {
         let (_, _, _, doc_structure) =
             crate::extraction::html::convert_html_to_markdown_with_tables(html, None, None).unwrap();
         let doc_structure = doc_structure.expect("should have document structure");
-        let mut budget = SecurityBudget::with_defaults();
+        let mut budget = SecurityBudget::from_limits(&SecurityLimits::default());
         let doc = HtmlExtractor::map_document_structure(&doc_structure, false, &mut budget).unwrap();
         let content = doc.content();
         assert!(

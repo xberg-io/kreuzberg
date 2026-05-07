@@ -83,7 +83,7 @@ Each file format has a tailored extraction strategy:
 
 | Format                             | What happens                                                                                                                                                                                   |
 | ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **PDF**                            | Text is extracted directly from the PDF text layer using pdfium-render. If the PDF contains embedded images (scanned pages, diagrams), those images are collected and passed to the OCR stage. |
+| **PDF**                            | Text is extracted directly from the PDF text layer using pdf_oxide (pure Rust). If the PDF contains embedded images (scanned pages, diagrams), those images are collected and passed to the OCR stage. |
 | **Excel / Spreadsheets**           | Each sheet is parsed individually using calamine. Cell values are assembled into structured Markdown tables, preserving column alignment.                                                      |
 | **Images** (JPEG, PNG, TIFF, etc.) | The image bytes are loaded into memory and forwarded directly to the OCR backend. There is no text layer to extract from an image.                                                             |
 | **XML / Plain text**               | A streaming parser processes the file incrementally. This keeps memory usage constant even for multi-gigabyte files because the entire file is never loaded at once.                           |

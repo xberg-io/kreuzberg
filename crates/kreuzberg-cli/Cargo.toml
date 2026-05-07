@@ -21,7 +21,6 @@ path = "src/main.rs"
 
 [features]
 default = [
-    "bundled-pdfium",
     "embeddings",
     "html",
     "liter-llm",
@@ -31,9 +30,6 @@ default = [
     "chunking-tokenizers",
     "tree-sitter",
 ]
-
-bundled-pdfium = ["kreuzberg/bundled-pdfium"]
-static-pdfium = ["kreuzberg/static-pdfium"]
 ort-bundled = ["kreuzberg/ort-bundled"]
 
 ocr = ["kreuzberg/ocr"]

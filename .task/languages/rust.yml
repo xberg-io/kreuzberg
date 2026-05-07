@@ -9,7 +9,6 @@ vars:
   BUILD_PROFILE: '{{.BUILD_PROFILE | default "release"}}'
   RUST_BACKTRACE: '{{.RUST_BACKTRACE | default "1"}}'
   CARGO_TERM_COLOR: "always"
-  PDFIUM_VERSION: "7678"
 
 tasks:
   install:
@@ -32,35 +31,29 @@ tasks:
 
   build:dev:
     desc: "Build all Rust crates in debug mode"
-    env:
-      PDFIUM_VERSION: "{{.PDFIUM_VERSION}}"
     cmds:
-      # Note: exclude kreuzberg-pdfium-render because --all-features enables mutually exclusive static/dynamic linking
-      - cmd: cargo build --workspace --all-features --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm --exclude kreuzberg-pdfium-render
+      - cmd: cargo build --workspace --all-features --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm
         platforms: [linux, darwin]
       # Note: exclude benchmark-harness on Windows as jemalloc doesn't build with MSVC
-      - cmd: cargo build --workspace --all-features --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm --exclude benchmark-harness --exclude kreuzberg-pdfium-render
+      - cmd: cargo build --workspace --all-features --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm --exclude benchmark-harness
         platforms: [windows]
 
   build:release:
     desc: "Build all Rust crates in release mode"
-    env:
-      PDFIUM_VERSION: "{{.PDFIUM_VERSION}}"
     cmds:
-      - cmd: cargo build --release --workspace --all-features --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm --exclude kreuzberg-pdfium-render
+      - cmd: cargo build --release --workspace --all-features --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm
         platforms: [linux, darwin]
-      - cmd: cargo build --release --workspace --all-features --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm --exclude benchmark-harness --exclude kreuzberg-pdfium-render
+      - cmd: cargo build --release --workspace --all-features --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm --exclude benchmark-harness
         platforms: [windows]
 
   build:ci:
     desc: "Build for CI with debug info enabled"
     env:
-      PDFIUM_VERSION: "{{.PDFIUM_VERSION}}"
       RUSTFLAGS: "-C debuginfo=2"
     cmds:
-      - cmd: cargo build --release --workspace --all-features --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm --exclude kreuzberg-pdfium-render
+      - cmd: cargo build --release --workspace --all-features --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm
         platforms: [linux, darwin]
-      - cmd: cargo build --release --workspace --all-features --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm --exclude benchmark-harness --exclude kreuzberg-pdfium-render
+      - cmd: cargo build --release --workspace --all-features --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm --exclude benchmark-harness
         platforms: [windows]
 
   build:profiling:
@@ -176,8 +169,6 @@ tasks:
     desc: "Clean up large build artifacts to reduce cache size (for CI)"
     cmds:
       - echo "Cleaning up large build artifacts to reduce cache size..."
-      - cmd: rm -rf target/*/build/kreuzberg-*/out/pdfium 2>/dev/null || true
-        ignore_error: true
       - cmd: find target -type f -name "*.rlib" -size +10M -exec rm -f {} \; 2>/dev/null || true
         ignore_error: true
       - cmd: find target -type f -name "*.so" -size +10M -exec rm -f {} \; 2>/dev/null || true

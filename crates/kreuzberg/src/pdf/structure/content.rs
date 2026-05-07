@@ -1,6 +1,6 @@
 //! Unified internal DTO for the PDF markdown pipeline.
 //!
-//! All extraction backends (pdfium structure tree, OCR)
+//! PDF structure content types shared across extraction paths
 //! produce `PageContent` which the shared pipeline converts to markdown.
 
 use super::geometry::Rect;
@@ -28,7 +28,7 @@ pub(crate) enum SemanticRole {
 pub(crate) enum ElementLevel {
     /// Single word (OCR word-level, or whitespace-split from structure tree).
     Word,
-    /// A full line of text (pdfium segment = one baseline run).
+    /// A full line of text (one baseline run).
     Line,
     /// A block/paragraph of text (structure tree block).
     Block,

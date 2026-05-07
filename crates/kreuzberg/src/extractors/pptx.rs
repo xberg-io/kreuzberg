@@ -8,6 +8,7 @@ use crate::types::internal::InternalDocument;
 use crate::types::internal_builder::InternalDocumentBuilder;
 use crate::types::metadata::Metadata;
 use crate::types::uri::Uri;
+use ahash::AHashMap;
 use async_trait::async_trait;
 use std::borrow::Cow;
 use std::path::Path;
@@ -219,6 +220,8 @@ impl PptxExtractor {
         extract_images: bool,
         budget: &mut SecurityBudget,
     ) -> Result<InternalDocument> {
+        let mut additional: AHashMap<Cow<'static, str>, serde_json::Value> = AHashMap::new();
+
         // Populate image_count and table_count on PptxMetadata struct
         let mut pptx_metadata = pptx_result.metadata;
         pptx_metadata.image_count = Some(pptx_result.image_count);
@@ -240,41 +243,27 @@ impl PptxExtractor {
                 .collect()
         });
 
-        // Put remaining office metadata into custom_properties
-        let custom_properties: std::collections::HashMap<String, serde_json::Value> = pptx_result
-            .office_metadata
-            .iter()
-            .filter(|(key, _)| {
-                !matches!(
-                    key.as_str(),
-                    "title"
-                        | "subject"
-                        | "created_by"
-                        | "modified_by"
-                        | "created_at"
-                        | "modified_at"
-                        | "author"
-                        | "keywords"
-                        | "slide_count"
-                )
-            })
-            .map(|(k, v)| {
-                let json_value = match k.as_str() {
-                    "notes_count" | "hidden_slides" => v
+        // Put remaining office metadata into additional map
+        for (key, value) in &pptx_result.office_metadata {
+            match key.as_str() {
+                // Skip fields already mapped to standard Metadata fields
+                "title" | "subject" | "created_by" | "modified_by" | "created_at" | "modified_at" | "author"
+                | "keywords" => {}
+                // Skip slide_count — already in PptxMetadata.slide_count (as a numeric type)
+                "slide_count" => {}
+                // Numeric fields: parse as JSON numbers so they serialize as integers, not strings
+                "notes_count" | "hidden_slides" => {
+                    let json_value = value
                         .parse::<u64>()
                         .map(|n| serde_json::Value::Number(n.into()))
-                        .unwrap_or_else(|_| serde_json::json!(v)),
-                    _ => serde_json::json!(v),
-                };
-                (k.clone(), json_value)
-            })
-            .collect();
-
-        pptx_metadata.custom_properties = if custom_properties.is_empty() {
-            None
-        } else {
-            Some(custom_properties)
-        };
+                        .unwrap_or_else(|_| serde_json::json!(value));
+                    additional.insert(Cow::Owned(key.clone()), json_value);
+                }
+                _ => {
+                    additional.insert(Cow::Owned(key.clone()), serde_json::json!(value));
+                }
+            }
+        }
 
         let mut doc = Self::build_internal_document(&pptx_result.content, pptx_result.slide_count as u32, budget)?;
         doc.mime_type = Cow::Owned(mime_type.to_string());
@@ -289,6 +278,7 @@ impl PptxExtractor {
             created_by,
             modified_by,
             format: Some(crate::types::FormatMetadata::Pptx(pptx_metadata)),
+            additional,
             ..Default::default()
         };
 

@@ -72,19 +72,19 @@ async fn test_latex_metadata_extraction() {
     let result = derive_extraction_result(doc, false, kreuzberg::OutputFormat::Plain);
 
     assert_eq!(
-        result.metadata.title.as_deref(),
+        result.metadata.additional.get("title").and_then(|v| v.as_str()),
         Some("Test Document"),
         "FAIL: Should extract title 'Test Document' from \\title{{}} command"
     );
 
     assert_eq!(
-        result.metadata.created_by.as_deref(),
+        result.metadata.additional.get("author").and_then(|v| v.as_str()),
         Some("John Doe"),
         "FAIL: Should extract author 'John Doe' from \\author{{}} command"
     );
 
     assert_eq!(
-        result.metadata.created_at.as_deref(),
+        result.metadata.additional.get("date").and_then(|v| v.as_str()),
         Some("2025-12-07"),
         "FAIL: Should extract date '2025-12-07' from \\date{{}} command"
     );

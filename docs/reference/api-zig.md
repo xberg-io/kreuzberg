@@ -732,19 +732,6 @@ enabled, each processable file produces its own full `ExtractionResult`.
 
 ---
 
-#### ArchiveFileEntry
-
-A single entry in an archive (file or directory).
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `path` | `[:0]const u8` | — | File path |
-| `size` | `u64` | — | Size in bytes |
-| `isDir` | `bool` | — | Whether dir |
-
-
----
-
 #### ArchiveMetadata
 
 Archive (ZIP/TAR/7Z) metadata.
@@ -755,7 +742,7 @@ Extracted from compressed archive files containing file lists and size informati
 |-------|------|---------|-------------|
 | `format` | `[:0]const u8` | — | Archive format ("ZIP", "TAR", "7Z", etc.) |
 | `fileCount` | `u64` | — | Total number of files in the archive |
-| `entries` | `[]const ArchiveFileEntry` | `[]` | Typed entries with path, size, and is_dir fields |
+| `fileList` | `[]const [:0]const u8` | `[]` | List of file paths within the archive |
 | `totalSize` | `u64` | — | Total uncompressed size in bytes |
 | `compressedSize` | `u64?` | `null` | Compressed size in bytes (if available) |
 
@@ -818,7 +805,6 @@ BibTeX bibliography metadata.
 | `authors` | `[]const [:0]const u8` | `[]` | Authors |
 | `yearRange` | `YearRange?` | `null` | Year range (year range) |
 | `entryTypes` | `std.StringHashMap(u64)?` | `{}` | Entry types |
-| `entries` | `[]const [:0]const u8?` | `[]` | Raw BibTeX entry data (author, title, year, etc. per entry) |
 
 
 ---
@@ -1578,7 +1564,6 @@ Includes sender/recipient information, message ID, and attachment list.
 | `bccEmails` | `[]const [:0]const u8` | `[]` | BCC recipients |
 | `messageId` | `[:0]const u8?` | `null` | Message-ID header value |
 | `attachments` | `[]const [:0]const u8` | `[]` | List of attachment filenames |
-| `extraHeaders` | `std.StringHashMap([:0]const u8)?` | `{}` | Non-standard email headers as key-value pairs |
 
 
 ---
@@ -1810,7 +1795,6 @@ discriminant. Sheet count and sheet names are stored inside this struct.
 |-------|------|---------|-------------|
 | `sheetCount` | `u64?` | `null` | Number of sheets in the workbook. |
 | `sheetNames` | `[]const [:0]const u8?` | `[]` | Names of all sheets in the workbook. |
-| `customProperties` | `std.StringHashMap([:0]const u8)?` | `{}` | Custom office properties from docProps/custom.xml |
 
 
 ---
@@ -1895,7 +1879,7 @@ PIL.Image (Python), Sharp (Node.js), or other formats as needed.
 | `isMask` | `bool` | — | Whether this image is a mask image |
 | `description` | `[:0]const u8?` | `null` | Optional description of the image |
 | `ocrResult` | `ExtractionResult?` | `null` | Nested OCR extraction result (if image was OCRed) When OCR is performed on this image, the result is embedded here rather than in a separate collection, making the relationship explicit. |
-| `boundingBox` | `[:0]const u8?` | `null` | Bounding box of the image on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top). Only populated for PDF-extracted images when position data is available from pdfium. |
+| `boundingBox` | `[:0]const u8?` | `null` | Bounding box of the image on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top). Only populated for PDF-extracted images when position data is available from pdf_oxide. |
 | `sourcePath` | `[:0]const u8?` | `null` | Original source path of the image within the document archive (e.g., "media/image1.png" in DOCX). Used for rendering image references when the binary data is not extracted. |
 | `imageKind` | `ImageKind?` | `null` | Heuristic classification of what this image likely depicts. `null` if classification was disabled or inconclusive. |
 | `kindConfidence` | `f32?` | `null` | Confidence score for `image_kind`, in [0.0, 1.0]. |
@@ -2318,7 +2302,7 @@ Image extraction configuration.
 | `autoAdjustDpi` | `bool` | `true` | Automatically adjust DPI based on image content |
 | `minDpi` | `i32` | `72` | Minimum DPI threshold |
 | `maxDpi` | `i32` | `600` | Maximum DPI threshold |
-| `maxImagesPerPage` | `u32?` | `null` | Maximum number of image objects to extract per PDF page. Some PDFs (e.g. technical diagrams stored as thousands of raster fragments) can trigger extremely long or indefinite extraction times when every image object on a dense page is decoded individually via pdfium FFI. Setting this limit causes kreuzberg to stop collecting individual images once the count per page reaches the cap and emit a warning instead. `null` (default) means no limit — all images are extracted. |
+| `maxImagesPerPage` | `u32?` | `null` | Maximum number of image objects to extract per PDF page. Some PDFs (e.g. technical diagrams stored as thousands of raster fragments) can trigger extremely long or indefinite extraction times when every image object on a dense page is decoded individually via pdf_oxide. Setting this limit causes kreuzberg to stop collecting individual images once the count per page reaches the cap and emit a warning instead. `null` (default) means no limit — all images are extracted. |
 | `classify` | `bool` | `true` | When `true` (default), extracted images are classified by kind and grouped into clusters where they appear to belong to one figure. |
 
 ##### Methods
@@ -2710,16 +2694,15 @@ via a discriminated union, and additional custom fields from postprocessors.
 | `tags` | `[]const [:0]const u8?` | `[]` | Document tags (from frontmatter). |
 | `documentVersion` | `[:0]const u8?` | `null` | Document version string (from frontmatter). |
 | `abstractText` | `[:0]const u8?` | `null` | Abstract or summary text (from frontmatter). |
-| `outputFormat` | `[:0]const u8?` | `null` | Output format identifier (e.g., "markdown", "html", "text"). Set by the output format pipeline stage when format conversion is applied. |
-| `extractionMethod` | `[:0]const u8?` | `null` | Method used to extract text (e.g., "native", "ocr", "mixed", "native_ole"). |
-| `additional` | `std.StringHashMap([:0]const u8)` | `{}` | Custom fields for plugin-injected and format-specific dynamic data (e.g., OCR backend metadata, org-mode directives). Uses `Cow<'static, str>` keys so static string keys avoid allocation. |
+| `outputFormat` | `[:0]const u8?` | `null` | Output format identifier (e.g., "markdown", "html", "text"). Set by the output format pipeline stage when format conversion is applied. Previously stored in `metadata.additional["output_format"]`. |
+| `additional` | `std.StringHashMap([:0]const u8)` | `{}` | Additional custom fields from postprocessors. Serialized as a nested `"additional"` object (not flattened at root level). Uses `Cow<'static, str>` keys so static string keys avoid allocation. |
 
 ##### Methods
 
 ###### isEmpty()
 
 Returns `true` when no metadata fields, format-specific metadata, or
-custom postprocessor fields are populated.
+additional postprocessor fields are populated.
 
 **Signature:**
 
@@ -3526,7 +3509,6 @@ PDF-specific configuration.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `backend` | `PdfBackend` | `PdfBackend.Pdfium` | PDF extraction backend. Default: `Pdfium`. |
 | `extractImages` | `bool` | `false` | Extract images from PDF |
 | `passwords` | `[]const [:0]const u8?` | `null` | List of passwords to try when opening encrypted PDFs |
 | `extractMetadata` | `bool` | `true` | Extract PDF metadata |
@@ -3931,7 +3913,6 @@ Extracted from PPTX files containing slide counts and presentation details.
 | `slideNames` | `[]const [:0]const u8` | `[]` | Names of slides (if available) |
 | `imageCount` | `u64?` | `null` | Number of embedded images |
 | `tableCount` | `u64?` | `null` | Number of tables |
-| `customProperties` | `std.StringHashMap([:0]const u8)?` | `{}` | Custom office properties from docProps/custom.xml |
 
 
 ---
@@ -4224,19 +4205,6 @@ Response from structured extraction endpoint.
 | `structuredOutput` | `[:0]const u8` | — | Structured data conforming to the provided JSON schema |
 | `content` | `[:0]const u8` | — | Extracted document text content |
 | `mimeType` | `[:0]const u8` | — | Detected MIME type of the input file |
-
-
----
-
-#### StructuredMetadata
-
-JSON/YAML/TOML structured data metadata.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `dataFormat` | `[:0]const u8` | — | Detected data format: "json", "yaml", or "toml" |
-| `fieldCount` | `u64` | — | Number of top-level fields |
-| `customFields` | `std.StringHashMap([:0]const u8)?` | `{}` | Pass-through of custom fields not mapped to standard metadata |
 
 
 ---
@@ -5009,24 +4977,6 @@ table regions.
 
 ---
 
-#### PdfBackend
-
-PDF extraction backend selection.
-
-Controls which PDF library is used for text extraction:
-- `Pdfium`: pdfium-render (default, C++ based, mature)
-- `PdfOxide`: pdf_oxide (pure Rust, faster, requires `pdf-oxide` feature)
-- `Auto`: automatically select based on available features
-
-| Value | Description |
-|-------|-------------|
-| `Pdfium` | Use pdfium-render backend (default). |
-| `PdfOxide` | Use pdf_oxide backend (pure Rust). Requires `pdf-oxide` feature. |
-| `Auto` | Automatically select the best available backend. |
-
-
----
-
 #### ChunkerType
 
 Type of text chunker to use.
@@ -5437,7 +5387,6 @@ type-safe, clean metadata without nested optionals.
 | `Html` | Preserve as HTML `<mark>` tags — Fields: `0`: `HtmlMetadata` |
 | `Ocr` | Ocr — Fields: `0`: `OcrMetadata` |
 | `Csv` | Csv format — Fields: `0`: `CsvMetadata` |
-| `Structured` | Structured — Fields: `0`: `StructuredMetadata` |
 | `Bibtex` | Bibtex — Fields: `0`: `BibtexMetadata` |
 | `Citation` | Citation — Fields: `0`: `CitationMetadata` |
 | `FictionBook` | Fiction book — Fields: `0`: `FictionBookMetadata` |

@@ -217,12 +217,10 @@ pub struct ExtractionOverrides {
     pub pdf_password: Vec<String>,
 
     /// Extract images embedded in PDF pages.
-    #[cfg(any(feature = "bundled-pdfium", feature = "static-pdfium"))]
     #[arg(long)]
     pub pdf_extract_images: Option<bool>,
 
     /// Extract PDF metadata (title, author, etc.).
-    #[cfg(any(feature = "bundled-pdfium", feature = "static-pdfium"))]
     #[arg(long)]
     pub pdf_extract_metadata: Option<bool>,
 
@@ -654,33 +652,20 @@ impl ExtractionOverrides {
         }
     }
 
-    #[allow(unused_variables)]
     fn apply_pdf(&self, config: &mut ExtractionConfig) {
-        #[cfg(any(feature = "bundled-pdfium", feature = "static-pdfium"))]
-        {
-            let has_pdf_flag = self.pdf_extract_images.is_some()
-                || self.pdf_extract_metadata.is_some()
-                || !self.pdf_password.is_empty();
-            if has_pdf_flag {
-                let pdf_opts = config.pdf_options.get_or_insert_with(Default::default);
-                if let Some(extract_img) = self.pdf_extract_images {
-                    pdf_opts.extract_images = extract_img;
-                }
-                if let Some(extract_meta) = self.pdf_extract_metadata {
-                    pdf_opts.extract_metadata = extract_meta;
-                }
-                if !self.pdf_password.is_empty() {
-                    pdf_opts.passwords = Some(self.pdf_password.clone());
-                }
-            }
-        }
-
-        // Handle pdf_password even without pdfium features for the
-        // common case where pdf is enabled through other means.
-        #[cfg(not(any(feature = "bundled-pdfium", feature = "static-pdfium")))]
-        if !self.pdf_password.is_empty() {
+        let has_pdf_flag =
+            self.pdf_extract_images.is_some() || self.pdf_extract_metadata.is_some() || !self.pdf_password.is_empty();
+        if has_pdf_flag {
             let pdf_opts = config.pdf_options.get_or_insert_with(Default::default);
-            pdf_opts.passwords = Some(self.pdf_password.clone());
+            if let Some(extract_img) = self.pdf_extract_images {
+                pdf_opts.extract_images = extract_img;
+            }
+            if let Some(extract_meta) = self.pdf_extract_metadata {
+                pdf_opts.extract_metadata = extract_meta;
+            }
+            if !self.pdf_password.is_empty() {
+                pdf_opts.passwords = Some(self.pdf_password.clone());
+            }
         }
     }
 

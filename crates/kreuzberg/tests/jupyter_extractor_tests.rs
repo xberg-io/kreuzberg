@@ -12,8 +12,6 @@
 
 use kreuzberg::core::config::ExtractionConfig;
 use kreuzberg::core::extractor::extract_bytes;
-use serde_json::Value;
-use std::borrow::Cow;
 use std::{fs, path::PathBuf};
 
 mod helpers;
@@ -22,36 +20,6 @@ fn jupyter_fixture(name: &str) -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .join("../../test_documents/jupyter")
         .join(name)
-}
-
-/// Helper: Check if metadata contains cells with execution_count
-fn has_cells_with_execution_count(metadata_additional: &ahash::AHashMap<Cow<'static, str>, Value>) -> bool {
-    if let Some(Value::Array(cells)) = metadata_additional.get("cells") {
-        cells.iter().any(|cell| {
-            if let Value::Object(cell_obj) = cell {
-                cell_obj.contains_key("execution_count")
-            } else {
-                false
-            }
-        })
-    } else {
-        false
-    }
-}
-
-/// Helper: Check if metadata contains cells with tags
-fn has_cells_with_tags(metadata_additional: &ahash::AHashMap<Cow<'static, str>, Value>) -> bool {
-    if let Some(Value::Array(cells)) = metadata_additional.get("cells") {
-        cells.iter().any(|cell| {
-            if let Value::Object(cell_obj) = cell {
-                cell_obj.contains_key("tags")
-            } else {
-                false
-            }
-        })
-    } else {
-        false
-    }
 }
 
 /// Test simple.ipynb - Validates markdown cells, code cells, and HTML output.
@@ -111,10 +79,9 @@ async fn test_jupyter_simple_notebook_extraction() {
         "Should extract **bold** formatted text"
     );
 
-    // Check metadata for execution_count (stored in cells metadata, not rendered in content)
     assert!(
-        has_cells_with_execution_count(&extraction.metadata.additional),
-        "Should preserve execution_count from code cells in metadata"
+        extraction.content.contains("execution_count"),
+        "Should preserve execution_count from code cells"
     );
 
     assert!(
@@ -132,10 +99,9 @@ async fn test_jupyter_simple_notebook_extraction() {
         "Should extract image cell content"
     );
 
-    // Check metadata for tags (stored in cells metadata, not rendered in content)
     assert!(
-        has_cells_with_tags(&extraction.metadata.additional),
-        "Should preserve cell metadata tags"
+        extraction.content.contains("foo") || extraction.content.contains("bar") || extraction.content.contains("tags"),
+        "Should preserve or reference cell metadata tags"
     );
 
     println!(
@@ -244,9 +210,8 @@ async fn test_jupyter_mime_notebook_extraction() {
         "Should extract Mime class definition"
     );
 
-    // Check metadata for execution_count (stored in cells metadata, not rendered in content)
     assert!(
-        has_cells_with_execution_count(&extraction.metadata.additional),
+        extraction.content.contains("execution_count"),
         "Should preserve execution_count metadata from code outputs"
     );
 
@@ -410,8 +375,10 @@ async fn test_jupyter_rank_notebook_extraction() {
         "Should preserve image output information"
     );
 
-    // Output type markers are metadata (stored in cells), not rendered in content text
-    // The actual data outputs (text, HTML, images) are extracted, but the type labels are stored as metadata
+    assert!(
+        extraction.content.contains("display") || extraction.content.contains("output"),
+        "Should preserve output type markers"
+    );
 
     assert!(
         extraction.content.contains("subplots")
@@ -421,18 +388,18 @@ async fn test_jupyter_rank_notebook_extraction() {
     );
 
     assert!(
-        extraction.content.contains("Figure")
-            || extraction.content.contains("Axes")
-            || extraction.content.contains("size")
+        extraction.content.contains("html")
+            || extraction.content.contains("text")
             || extraction.content.contains("see"),
         "Should extract alternative text representation"
     );
 
-    // Kernel and language information is stored in notebook metadata
-    // Verify metadata contains language_info
-    if let Some(Value::Object(metadata_obj)) = extraction.metadata.additional.get("language_info") {
-        assert!(!metadata_obj.is_empty(), "Should preserve language_info metadata");
-    }
+    assert!(
+        extraction.content.contains("ipykernel")
+            || extraction.content.contains("python")
+            || extraction.content.contains("Python"),
+        "Should preserve kernel or language information"
+    );
 
     println!(
         "✓ rank.ipynb: Successfully extracted {} characters of visualization content",
@@ -548,17 +515,18 @@ async fn test_jupyter_cell_content_aggregation() {
         markdown_count
     );
 
-    // Output data (text, HTML, images) are extracted as actual content
-    // The type labels ("output", "stream", "execute") are metadata, not rendered text
     assert!(
-        !extraction.content.is_empty(),
-        "Should extract non-empty content from notebook cells"
+        extraction.content.contains("output")
+            || extraction.content.contains("execute")
+            || extraction.content.contains("stream"),
+        "Should extract output cells"
     );
 
-    // Cell metadata is stored in the metadata object
     assert!(
-        !extraction.metadata.additional.is_empty(),
-        "Should preserve cell metadata"
+        extraction.content.contains("cell")
+            || extraction.content.contains("output")
+            || extraction.content.contains("#"),
+        "Should preserve cell structure in extracted content"
     );
 
     println!(
@@ -600,18 +568,26 @@ async fn test_jupyter_mime_output_handling() {
     assert!(
         extraction.content.contains("image")
             || extraction.content.contains("png")
-            || extraction.content.contains("jpg")
-            || extraction.content.contains("Figure"),
+            || extraction.content.contains("jpg"),
         "Should handle image MIME types"
     );
 
-    // Text representations of outputs are extracted (Figure, Axes descriptions)
-    // Output type markers (display_data, execute_result) are metadata, not rendered text
+    assert!(
+        extraction.content.contains("html") || extraction.content.contains("text"),
+        "Should preserve HTML and text representations"
+    );
+
+    let output_type_markers = ["display_data", "execute_result", "stream", "output"];
+    let has_output_types = output_type_markers
+        .iter()
+        .any(|&marker| extraction.content.contains(marker));
+    assert!(has_output_types, "Should preserve output type classifications");
+
     assert!(
         extraction.content.contains("Figure")
             || extraction.content.contains("Axes")
-            || extraction.content.contains("matplotlib")
-            || extraction.content.contains("plt"),
+            || extraction.content.contains("size")
+            || extraction.content.contains("text"),
         "Should extract alternative text representations of visual outputs"
     );
 
@@ -646,16 +622,22 @@ async fn test_jupyter_notebook_structure_preservation() {
 
     let extraction = result.expect("Operation failed");
 
-    // Cell IDs and execution_count are stored in metadata, not in rendered content text
-    // Verify metadata contains cell information
+    let cell_id_patterns = ["uid1", "uid2", "uid3", "uid4", "uid6"];
+    let id_count = cell_id_patterns
+        .iter()
+        .filter(|&&id| extraction.content.contains(id))
+        .count();
+    assert!(id_count >= 1, "Should preserve cell IDs (found {} IDs)", id_count);
+
     assert!(
-        !extraction.metadata.additional.is_empty(),
-        "Should preserve cell metadata"
+        extraction.content.contains("uid") || extraction.content.contains("cell"),
+        "Should contain cell identity markers"
     );
 
-    if let Some(Value::Array(cells)) = extraction.metadata.additional.get("cells") {
-        assert!(!cells.is_empty(), "Should preserve cell metadata entries");
-    }
+    assert!(
+        extraction.content.contains("execution_count") || extraction.content.contains("count"),
+        "Should preserve execution count metadata"
+    );
 
     println!("✓ Structure preservation: Cell IDs and ordering maintained");
 }
@@ -692,18 +674,18 @@ async fn test_jupyter_pandoc_baseline_alignment() {
 
         let extraction = result.expect("Operation failed");
 
-        // Cell structure and output type information is stored in metadata
-        // Content should contain the actual extracted text (markdown, code, outputs)
         assert!(
-            !extraction.content.is_empty(),
-            "{}: Should extract meaningful content",
+            extraction.content.contains("cell")
+                || extraction.content.contains("code")
+                || extraction.content.contains("markdown")
+                || extraction.content.contains("output"),
+            "{}: Should contain cell/output structure markers that match Pandoc format",
             notebook_name
         );
 
-        // Verify metadata contains cell structure information
         assert!(
-            !extraction.metadata.additional.is_empty(),
-            "{}: Should preserve notebook metadata",
+            !extraction.content.is_empty(),
+            "{}: Should extract meaningful content",
             notebook_name
         );
 

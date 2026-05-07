@@ -146,7 +146,7 @@ pub use text::{ReductionLevel, TokenReductionConfig};
 pub use core::server_config::ServerConfig;
 
 #[cfg(feature = "pdf")]
-pub use core::config::{HierarchyConfig, PdfBackend, PdfConfig};
+pub use core::config::{HierarchyConfig, PdfConfig};
 
 #[cfg(feature = "html")]
 pub use core::config::{HtmlOutputConfig, HtmlTheme};
@@ -201,9 +201,9 @@ pub fn detect_mime_type(path: String, check_exists: bool) -> crate::Result<Strin
     core::mime::detect_mime_type(path, check_exists)
 }
 
-// ── PDF Rendering — public API (1 function, feature-gated) ───────────────────
+// ── PDF Rendering ─────────────────────────────────────────────────────────────
 #[cfg(feature = "pdf")]
-pub use pdf::rendering::render_pdf_page_to_png;
+pub use pdf::render::render_pdf_page_to_png;
 
 // ── Plugin Lifecycle — public API (13 functions) ─────────────────────────────
 pub use plugins::extractor::list_document_extractors;

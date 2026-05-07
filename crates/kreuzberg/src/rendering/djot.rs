@@ -763,7 +763,7 @@ mod tests {
     #[test]
     fn test_render_djot_strips_control_characters() {
         let mut b = InternalDocumentBuilder::new("test");
-        // STX (0x02) is emitted by pdfium as soft-hyphen marker
+        // STX (0x02) is emitted by pdf_oxide as a soft-hyphen marker
         b.push_paragraph("Hello\x02world", vec![], None, None);
         let doc = b.build();
         let out = render_djot(&doc);

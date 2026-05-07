@@ -25,7 +25,10 @@ impl ImageExtractor {
     }
 
     fn mark_ocr_extraction(doc: &mut InternalDocument) {
-        doc.metadata.extraction_method = Some(crate::types::ExtractionMethod::Ocr.as_str().to_string());
+        doc.metadata.additional.insert(
+            std::borrow::Cow::Borrowed("extraction_method"),
+            serde_json::Value::String(crate::types::ExtractionMethod::Ocr.as_str().to_string()),
+        );
     }
 
     /// Extract text from image using OCR with optional page tracking for multi-frame TIFFs.

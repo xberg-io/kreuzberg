@@ -8,6 +8,7 @@ use crate::types::internal::InternalDocument;
 use crate::types::internal_builder::InternalDocumentBuilder;
 use crate::types::metadata::Metadata;
 use crate::types::{ArchiveEntry, EmailMetadata, ProcessingWarning};
+use ahash::AHashMap;
 use async_trait::async_trait;
 use std::borrow::Cow;
 #[cfg(feature = "tokio-runtime")]
@@ -58,18 +59,10 @@ impl EmailExtractor {
             builder.push_metadata_block(&header_entries, None);
         }
 
-        // Push body content: use the extracted content (which already has HTML
-        // processing applied if needed - see email.rs clean_html_content()).
-        // For HTML emails, this is already text with tags stripped.
-        if !email_result.content.is_empty() {
-            for paragraph in email_result.content.split("\n\n") {
-                let trimmed = paragraph.trim();
-                if !trimmed.is_empty() {
-                    builder.push_paragraph(trimmed, vec![], None, None);
-                }
-            }
-        } else if let Some(ref html) = email_result.html_content {
-            // Fallback: if content is empty but HTML is available, try structured extraction
+        // Push body content: if HTML body is available, walk the HTML
+        // document structure for richer extraction; otherwise fall back to
+        // plain text paragraph splitting.
+        if let Some(ref html) = email_result.html_content {
             let html_doc = crate::extraction::html::structure::build_document_structure(html);
             for node in &html_doc.nodes {
                 if node.parent.is_none() {
@@ -108,18 +101,12 @@ impl EmailExtractor {
                     }
                 }
             }
-        }
-
-        // Add attachments section if there are attachments
-        if !email_result.attachments.is_empty() {
-            let attachment_names: Vec<String> = email_result
-                .attachments
-                .iter()
-                .filter_map(|att| att.filename.clone().or_else(|| att.name.clone()))
-                .collect();
-            if !attachment_names.is_empty() {
-                let attachments_text = format!("Attachments:\n{}", attachment_names.join("\n"));
-                builder.push_paragraph(&attachments_text, vec![], None, None);
+        } else {
+            for paragraph in email_result.content.split("\n\n") {
+                let trimmed = paragraph.trim();
+                if !trimmed.is_empty() {
+                    builder.push_paragraph(trimmed, vec![], None, None);
+                }
             }
         }
 
@@ -173,12 +160,12 @@ impl SyncExtractor for EmailExtractor {
             "email_cc",
             "email_bcc",
         ];
-        let extra_headers: std::collections::HashMap<String, String> = email_result
-            .metadata
-            .iter()
-            .filter(|(key, _)| !EMAIL_STRUCT_KEYS.contains(&key.as_str()))
-            .map(|(k, v)| (k.clone(), v.clone()))
-            .collect();
+        let mut additional = AHashMap::new();
+        for (key, value) in &email_result.metadata {
+            if !EMAIL_STRUCT_KEYS.contains(&key.as_str()) {
+                additional.insert(Cow::Owned(key.clone()), serde_json::json!(value));
+            }
+        }
 
         // Build internal document from email content
         let mut doc = Self::build_internal_document(&email_result);
@@ -196,11 +183,6 @@ impl SyncExtractor for EmailExtractor {
             bcc_emails: email_result.bcc_emails,
             message_id: email_result.message_id,
             attachments: attachment_names,
-            extra_headers: if extra_headers.is_empty() {
-                None
-            } else {
-                Some(extra_headers)
-            },
         };
 
         // Map from_name to standard authors field
@@ -211,6 +193,7 @@ impl SyncExtractor for EmailExtractor {
             subject,
             authors,
             created_at,
+            additional,
             ..Default::default()
         };
 

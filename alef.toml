@@ -1,5 +1,5 @@
 [workspace]
-alef_version = "0.14.25"
+alef_version = "0.14.29"
 languages = [
   "python",
   "node",
@@ -349,8 +349,6 @@ exclude_functions = [
   # MCP server functions (not available in WASM)
   "start_mcp_server_http",
   "start_mcp_server_http_with_config",
-  # Vec<&mut PdfImage> mutability mismatch
-  "reextract_raw_images_via_pdfium",
   # Vec<&str> vs &[String] / texts_refs scope — codegen type mismatch
   "batch_reduce_tokens",
   "chunk_texts_batch",
@@ -789,7 +787,6 @@ types = [
   "NativeTextStats", # missing Debug
   "ErrorResponse", # API-only error response
   "ApiSizeLimits", # internal API config
-  "PdfDocument", # pdfium_render type — can't cross FFI
   "PdfExtractionMetadata", # internal PDF metadata
 
   "VlmOcrBackend",
@@ -802,7 +799,6 @@ functions = [
   "ensure_initialized",
   "register_keyword_processor",
   "register_chunking_processor",
-  "extract_bundled_pdfium",
   # Plugin-registry accessors — internal mechanism, not user-facing. Used by
   # integration tests inside the kreuzberg crate; must stay `pub` for those.
   "get_document_extractor_registry",
@@ -2088,7 +2084,6 @@ package_manager = ["pnpm"]
 features = { ocr = true, async = true, plugin_system = true, embeddings = false, code_intelligence = true }
 ocr_backends = ["tesseract-wasm"]
 optional_sections = [
-  "pdfium_initialization",
   "multi_threading",
   "ocr_support",
   "performance_comparison",

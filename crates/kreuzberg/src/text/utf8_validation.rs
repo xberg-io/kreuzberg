@@ -164,6 +164,7 @@ mod tests {
         assert!(!is_valid_utf8(bytes));
     }
 
+    #[cfg(feature = "quality")]
     #[test]
     fn test_string_from_utf8_valid() {
         let bytes = b"Test string".to_vec();
@@ -171,6 +172,7 @@ mod tests {
         assert_eq!(result, "Test string");
     }
 
+    #[cfg(feature = "quality")]
     #[test]
     fn test_string_from_utf8_invalid() {
         let bytes: Vec<u8> = vec![0xFF, 0xFE];

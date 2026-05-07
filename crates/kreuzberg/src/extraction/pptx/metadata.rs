@@ -117,7 +117,6 @@ pub(super) fn extract_metadata<R: Read + Seek>(archive: &mut ZipArchive<R>) -> (
                 slide_names,
                 image_count: None,
                 table_count: None,
-                custom_properties: None,
             },
             metadata_map,
         )

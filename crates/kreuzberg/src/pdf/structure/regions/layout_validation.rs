@@ -104,7 +104,7 @@ pub(in crate::pdf::structure) fn validate_region_has_text(
 pub(in crate::pdf::structure) fn validate_page_regions(
     page_image: &image::DynamicImage,
     hints: &[super::super::types::LayoutHint],
-    page_result: &crate::pdf::layout_runner::PageLayoutResult,
+    page_result: &crate::pdf::structure::types::PageLayoutResult,
 ) -> Vec<RegionValidation> {
     use super::super::types::LayoutHintClass;
 

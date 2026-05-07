@@ -2,119 +2,18 @@
 //!
 //! Handles three classes of text corruption common in PDFs with broken font encodings:
 //!
-//! 1. **Ligature corruption** – fonts with broken ToUnicode CMaps map ligature glyphs
-//!    (fi, fl, ff, ffi, ffl) to low-byte or ASCII characters. Repaired via either a
-//!    per-page repair map built from pdfium's `has_unicode_map_error()` API, or
-//!    contextual heuristics (e.g., `e!cient` → `efficient`).
+//! 1. **Ligature corruption** – contextual heuristics repair ligature glyphs
+//!    (fi, fl, ff, ffi, ffl) that map to wrong characters.
 //!
-//! 2. **Broken word spacing** – fonts with broken CMap/ToUnicode tables cause pdfium
-//!    to insert spaces mid-word. Detected by density of single-letter fragments
-//!    followed by lowercase continuations; repaired by rejoining them.
+//! 2. **Broken word spacing** – PDFs with broken CMap/ToUnicode tables may cause
+//!    spaces to be inserted mid-word. Repaired by rejoining single-letter fragments.
 //!
 //! 3. **Unicode normalization** – curly quotes, fraction slash, and other PDF-specific
 //!    Unicode characters are normalized to their ASCII equivalents.
 
 use std::borrow::Cow;
 
-use pdfium_render::prelude::*;
-
 use super::types::PdfParagraph;
-
-/// Build a mapping of corrupted characters → correct ligature expansions for a page.
-///
-/// Walks the per-character API to find characters with `has_unicode_map_error()`,
-/// then determines the correct ligature expansion based on the character's raw
-/// unicode value and font-specific encoding patterns.
-///
-/// Returns `None` if the page has no encoding errors (most pages).
-pub(super) fn build_ligature_repair_map(page: &PdfPage) -> Option<Vec<(char, &'static str)>> {
-    let text = match page.text() {
-        Ok(t) => t,
-        Err(_) => return None,
-    };
-
-    let chars = text.chars();
-    let char_count = chars.len();
-    if char_count == 0 {
-        return None;
-    }
-
-    let mut repair_map: Vec<(char, &'static str)> = Vec::new();
-
-    for i in 0..char_count {
-        let ch = match chars.get(i) {
-            Ok(c) => c,
-            Err(_) => continue,
-        };
-
-        if ch.is_generated().unwrap_or(false) {
-            continue;
-        }
-
-        if !ch.has_unicode_map_error().unwrap_or(false) {
-            continue;
-        }
-
-        // Skip symbol/math fonts — their encodings are intentional
-        if ch.font_is_symbolic() {
-            continue;
-        }
-
-        let unicode_val = ch.unicode_value();
-        let mapped_char = match char::from_u32(unicode_val) {
-            Some(c) => c,
-            None => continue,
-        };
-
-        // Check if we already have a mapping for this character
-        if repair_map.iter().any(|(c, _)| *c == mapped_char) {
-            continue;
-        }
-
-        // Determine the correct ligature based on raw unicode value.
-        // Different fonts encode ligatures at different positions. We check
-        // both the low-byte encoding (CM fonts) and ASCII fallback positions.
-        let ligature = match unicode_val {
-            // Standard Type1/CM ligature positions (low bytes)
-            0x0B => "ff",
-            0x0C => "fi",
-            0x0D => "fl",
-            0x0E => "ffi",
-            0x0F => "ffl",
-            // Alternate low-byte positions used by some fonts
-            0x01 => "fi",
-            0x02 => "fl",
-            0x03 => "ff",
-            0x04 => "ffi",
-            0x05 => "ffl",
-            // ASCII positions: broken CMap maps ligature glyph codes to these
-            // ASCII characters. Safe because we only reach here when
-            // has_unicode_map_error() is true (i.e. pdfium detected encoding issues).
-            0x21 => "fi",  // '!' → fi (most common ligature corruption)
-            0x22 => "ff",  // '"' → ff
-            0x23 => "fl",  // '#' → fl
-            0x24 => "ffi", // '$' → ffi
-            0x25 => "ffl", // '%' → ffl
-            // Italian/European ligatures: tt, ti, tti
-            // Some fonts (especially Italian) encode these ligatures at ASCII positions
-            0x2A => "tt",  // '*' → tt (e.g., "Dire*ore" → "Direttore")
-            0x3A => "ti",  // ':' → ti (e.g., "ges:one" → "gestione")
-            0x4D => "tti", // 'M' → tti (e.g., "progeM" → "progetti") — only with map error
-            _ => continue,
-        };
-
-        repair_map.push((mapped_char, ligature));
-    }
-
-    if repair_map.is_empty() { None } else { Some(repair_map) }
-}
-
-/// Apply ligature repairs to a text string using a page-specific repair map.
-///
-/// After replacing ligature characters, collapses spurious spaces that result
-/// from the replacement: e.g., "ﬁ rst" → "fi rst" → "first". When a ligature
-/// expansion is immediately followed by a space and a lowercase letter, the
-/// space is removed (matching the reference regex-based post-processing).
 pub(super) fn apply_ligature_repairs<'a>(text: &'a str, repair_map: &[(char, &str)]) -> Cow<'a, str> {
     // Fast path: if no characters in the text match the repair map, return borrowed.
     if repair_map.is_empty() || !text.chars().any(|c| repair_map.iter().any(|(rc, _)| *rc == c)) {
@@ -349,7 +248,7 @@ pub(super) fn text_has_ligature_corruption(text: &str) -> bool {
 }
 
 /// Check if text has an abnormal density of short-fragment words followed by
-/// lowercase continuation, indicating broken word spacing from pdfium.
+/// lowercase continuation, indicating broken word spacing from the PDF extractor.
 ///
 /// Pattern: `"M ust"`, `"s hall"`, `"sen d er"`, `"a dd ress"` — short fragments
 /// (1-3 chars) followed by a space then a lowercase continuation. Normal English
@@ -393,7 +292,7 @@ pub(in crate::pdf) fn text_has_broken_word_spacing(text: &str) -> bool {
 
 /// Repair broken word spacing by joining short fragments to adjacent words.
 ///
-/// Targets the pattern where pdfium inserts spaces mid-word due to broken font
+/// Targets the pattern where the PDF extractor inserts spaces mid-word due to broken font
 /// CMap/ToUnicode tables. Handles both single-character and multi-character
 /// fragments:
 /// - `"M ust Be Tough"` → `"Must Be Tough"` (single-char)
@@ -518,7 +417,7 @@ pub(in crate::pdf::structure) fn repair_broken_word_spacing(text: &str) -> Cow<'
 
 /// Check if a word is a trailing fragment: very short (1-2 chars), all lowercase
 /// alphabetic, and not a common standalone word. These are fragments that were
-/// split off from the end of a word by pdfium.
+/// split off from the end of a word by the PDF extractor.
 fn is_trailing_fragment(word: &str) -> bool {
     word.len() <= 2
         && !word.is_empty()
@@ -633,7 +532,7 @@ pub(super) fn expand_ligatures_with_space_absorption(text: &str) -> Cow<'_, str>
 
 /// Repair ligature-glyph word breaks in extracted text.
 ///
-/// When pdfium decomposes ligature glyphs (fi, fl, ff, ffi, ffl) into individual
+/// When the PDF extractor decomposes ligature glyphs (fi, fl, ff, ffi, ffl) into individual
 /// characters, the resulting character positions often have gaps that get interpreted
 /// as word boundaries. This produces patterns like "eff iciently", "signif icant",
 /// "f irst" where the space appears at the ligature position.
@@ -697,7 +596,7 @@ pub(super) fn normalize_unicode_text(text: &str) -> Cow<'_, str> {
 
 /// Clean up duplicate punctuation artifacts from PDF text extraction.
 ///
-/// When pdfium's segment-level re-extraction picks up characters from adjacent
+/// When segment-level re-extraction picks up characters from adjacent
 /// cells (due to slightly overlapping bounding boxes), duplicate punctuation
 /// patterns like `, ,` or `. .` appear. This collapses them to single
 /// punctuation marks.
@@ -763,7 +662,7 @@ fn is_dup_punct_byte(b: u8) -> bool {
     matches!(b, b',' | b'.' | b';' | b':')
 }
 
-/// Normalize text encoding: handle soft hyphens, pdfium word-break markers,
+/// Normalize text encoding: handle soft hyphens, PDF word-break markers,
 /// and strip control characters.
 ///
 /// - `\u{00AD}` (soft hyphen) at end of text → replaced with `-` so downstream

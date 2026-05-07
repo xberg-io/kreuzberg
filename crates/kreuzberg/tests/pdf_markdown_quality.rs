@@ -4,7 +4,7 @@
 //! live in `tools/benchmark-harness` (subcommands: `compare`, `pipeline-benchmark`).
 //!
 //! Usage:
-//!   cargo test -p kreuzberg --features "pdf,bundled-pdfium" \
+//!   cargo test -p kreuzberg --features "pdf" \
 //!     --test pdf_markdown_quality -- --nocapture
 
 #![cfg(feature = "pdf")]

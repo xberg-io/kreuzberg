@@ -48,7 +48,7 @@ fn normalize_text(text: &str) -> String {
         // from PDF text extraction, not intentional line breaks). Without this,
         // comrak escapes them as `&#10;` in CommonMark output.
         // Also strip control characters (< 0x20) except tab, which catches STX
-        // (0x02) that pdfium emits as soft-hyphen markers and would become `&#2;`.
+        // (0x02) that pdf_oxide emits as soft-hyphen markers and would become `&#2;`.
         if ch == '\n' || ch == ' ' {
             if !prev_space {
                 result.push(' ');
@@ -690,7 +690,7 @@ pub(crate) fn build_comrak_ast<'a>(doc: &InternalDocument, arena: &'a comrak::Ar
                         } else if let Some(ref path) = img.source_path {
                             path.clone()
                         } else {
-                            // The image is known to exist in the document (pdfium detected it)
+                            // The image is known to exist in the document (pdf_oxide detected it)
                             // but its pixel data could not be extracted (too small, encoding
                             // failure, etc.). Emit a stable placeholder filename so the link
                             // appears in markdown output rather than being silently dropped.
@@ -1236,7 +1236,7 @@ mod tests {
     }
 
     /// Regression test for issue #762: image links must appear in markdown when image
-    /// data is available via pdfium extraction (non-empty `data` field).
+    /// data is available via pdf_oxide extraction (non-empty `data` field).
     #[test]
     fn test_image_with_data_renders_link() {
         use crate::types::ExtractedImage;

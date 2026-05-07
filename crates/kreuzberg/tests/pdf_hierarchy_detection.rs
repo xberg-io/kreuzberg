@@ -5,7 +5,7 @@
 
 #![cfg(feature = "pdf")]
 
-use kreuzberg::core::config::{ExtractionConfig, HierarchyConfig, PageConfig, PdfBackend, PdfConfig};
+use kreuzberg::core::config::{ExtractionConfig, HierarchyConfig, PageConfig, PdfConfig};
 use kreuzberg::extract_bytes;
 use std::path::Path;
 
@@ -53,7 +53,6 @@ async fn test_full_hierarchy_extraction() {
             top_margin_fraction: None,
             bottom_margin_fraction: None,
             allow_single_column_tables: false,
-            backend: PdfBackend::default(),
         }),
         ..Default::default()
     };
@@ -170,7 +169,6 @@ async fn test_hierarchy_disabled() {
             top_margin_fraction: None,
             bottom_margin_fraction: None,
             allow_single_column_tables: false,
-            backend: PdfBackend::default(),
         }),
         ..Default::default()
     };
@@ -230,7 +228,6 @@ async fn test_hierarchy_with_explicit_disabled() {
             top_margin_fraction: None,
             bottom_margin_fraction: None,
             allow_single_column_tables: false,
-            backend: PdfBackend::default(),
         }),
         ..Default::default()
     };
@@ -291,7 +288,6 @@ async fn test_hierarchy_different_k_clusters() {
                 top_margin_fraction: None,
                 bottom_margin_fraction: None,
                 allow_single_column_tables: false,
-                backend: PdfBackend::default(),
             }),
             ..Default::default()
         };

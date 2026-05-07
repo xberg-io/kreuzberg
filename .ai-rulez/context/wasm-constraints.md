@@ -45,15 +45,6 @@ impl DocumentExtractor for MyExtractor {
 const MAX_HTML_SIZE: usize = 2 * 1024 * 1024;  // 2MB - stack constraint
 ```
 
-### 4. PDFium Initialization (from JS)
-
-```typescript
-import init, { initialize_pdfium_render } from "./kreuzberg_wasm.js";
-const wasm = await init();
-const pdfium = await pdfiumModule();
-initialize_pdfium_render(pdfium, wasm, false); // REQUIRED for PDF
-```
-
 ## Build Config
 
 ```toml
@@ -83,6 +74,5 @@ Functions can be `async` for JS compatibility, but internal extraction is sync.
 1. **No tokio** -- all operations synchronous
 2. **Implement SyncExtractor** for all WASM-compatible extractors
 3. **HTML limited to 2MB** due to stack constraints
-4. **PDFium requires** manual JS initialization
-5. **Size optimization** via `opt-level = "z"`
-6. **Feature gate** with `#[cfg(target_arch = "wasm32")]`
+4. **Size optimization** via `opt-level = "z"`
+5. **Feature gate** with `#[cfg(target_arch = "wasm32")]`

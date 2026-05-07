@@ -326,7 +326,6 @@ pub type PageConfig {
 /// PDF-specific configuration.
 pub type PdfConfig {
   PdfConfig(
-    backend: PdfBackend,
     extract_images: Bool,
     passwords: Option(List(String)),
     extract_metadata: Bool,
@@ -1462,7 +1461,6 @@ pub type Metadata {
     document_version: Option(String),
     abstract_text: Option(String),
     output_format: Option(String),
-    extraction_method: Option(String),
     additional: Dict(String, String)
   )
 }
@@ -1474,8 +1472,7 @@ pub type Metadata {
 pub type ExcelMetadata {
   ExcelMetadata(
     sheet_count: Option(Int),
-    sheet_names: Option(List(String)),
-    custom_properties: Option(Dict(String, String))
+    sheet_names: Option(List(String))
   )
 }
 
@@ -1490,17 +1487,7 @@ pub type EmailMetadata {
     cc_emails: List(String),
     bcc_emails: List(String),
     message_id: Option(String),
-    attachments: List(String),
-    extra_headers: Option(Dict(String, String))
-  )
-}
-
-/// A single entry in an archive (file or directory).
-pub type ArchiveFileEntry {
-  ArchiveFileEntry(
-    path: String,
-    size: Int,
-    is_dir: Bool
+    attachments: List(String)
   )
 }
 
@@ -1511,7 +1498,7 @@ pub type ArchiveMetadata {
   ArchiveMetadata(
     format: String,
     file_count: Int,
-    entries: List(ArchiveFileEntry),
+    file_list: List(String),
     total_size: Int,
     compressed_size: Option(Int)
   )
@@ -1640,8 +1627,7 @@ pub type PptxMetadata {
     slide_count: Int,
     slide_names: List(String),
     image_count: Option(Int),
-    table_count: Option(Int),
-    custom_properties: Option(Dict(String, String))
+    table_count: Option(Int)
   )
 }
 
@@ -1654,15 +1640,6 @@ pub type DocxMetadata {
     core_properties: Option(String),
     app_properties: Option(String),
     custom_properties: Option(Dict(String, String))
-  )
-}
-
-/// JSON/YAML/TOML structured data metadata.
-pub type StructuredMetadata {
-  StructuredMetadata(
-    data_format: String,
-    field_count: Int,
-    custom_fields: Option(Dict(String, String))
   )
 }
 
@@ -1684,8 +1661,7 @@ pub type BibtexMetadata {
     citation_keys: List(String),
     authors: List(String),
     year_range: Option(YearRange),
-    entry_types: Option(Dict(String, Int)),
-    entries: Option(List(String))
+    entry_types: Option(Dict(String, Int))
   )
 }
 
@@ -2349,67 +2325,6 @@ pub type EmbeddedFile {
   )
 }
 
-pub type PdfImage {
-  PdfImage(
-    page_number: Int,
-    image_index: Int,
-    width: Int,
-    height: Int,
-    color_space: Option(String),
-    bits_per_component: Option(Int),
-    filters: List(String),
-    data: BitArray,
-    decoded_format: String,
-    image_kind: Option(ImageKind),
-    kind_confidence: Option(Float),
-    cluster_id: Option(Int)
-  )
-}
-
-/// Layout detection results for a single page.
-pub type PageLayoutResult {
-  PageLayoutResult(
-    page_index: Int,
-    regions: List(String),
-    page_width_pts: Float,
-    page_height_pts: Float,
-    render_width_px: Int,
-    render_height_px: Int
-  )
-}
-
-/// Timing breakdown for a single page.
-pub type PageTiming {
-  PageTiming(
-    render_ms: Float,
-    preprocess_ms: Float,
-    onnx_ms: Float,
-    inference_ms: Float,
-    postprocess_ms: Float,
-    mapping_ms: Float
-  )
-}
-
-/// Common metadata fields extracted from a PDF.
-pub type CommonPdfMetadata {
-  CommonPdfMetadata(
-    title: Option(String),
-    subject: Option(String),
-    authors: Option(List(String)),
-    keywords: Option(List(String)),
-    created_at: Option(String),
-    modified_at: Option(String),
-    created_by: Option(String)
-  )
-}
-
-/// Result type for unified PDF text and metadata extraction.
-///
-/// Contains text, optional page boundaries, optional per-page content, and metadata.
-pub type PdfUnifiedExtractionResult {
-  PdfUnifiedExtractionResult
-}
-
 /// ONNX Runtime execution provider type.
 ///
 /// Determines which hardware backend is used for model inference.
@@ -2435,7 +2350,7 @@ pub type OutputFormat {
   Djot
   OutputFormatHtml
   Json
-  OutputFormatStructured
+  Structured
   OutputFormatCustom(
     String
   )
@@ -2461,18 +2376,6 @@ pub type TableModel {
   SlanetPlus
   SlanetAuto
   Disabled
-}
-
-/// PDF extraction backend selection.
-///
-/// Controls which PDF library is used for text extraction:
-/// - `Pdfium`: pdfium-render (default, C++ based, mature)
-/// - `PdfOxide`: pdf_oxide (pure Rust, faster, requires `pdf-oxide` feature)
-/// - `Auto`: automatically select based on available features
-pub type PdfBackend {
-  Pdfium
-  PdfOxide
-  PdfBackendAuto
 }
 
 /// Type of text chunker to use.
@@ -2853,9 +2756,6 @@ pub type FormatMetadata {
   )
   Csv(
     CsvMetadata
-  )
-  FormatMetadataStructured(
-    StructuredMetadata
   )
   Bibtex(
     BibtexMetadata
@@ -3340,15 +3240,6 @@ pub fn clear_validators() -> Result(Nil, KreuzbergError)
 ///   or the blocking inference task panics
 @external(erlang, "Elixir.Kreuzberg.Native", "embed_texts_async")
 pub fn embed_texts_async(texts: List(String), config: EmbeddingConfig) -> Result(List(List(Float)), KreuzbergError)
-
-/// Render a single PDF page to a PNG-encoded byte buffer.
-///
-/// **Errors:**
-///
-/// Returns an error if the PDF is invalid, the page index is out of bounds,
-/// or if the page fails to render.
-@external(erlang, "Elixir.Kreuzberg.Native", "render_pdf_page_to_png")
-pub fn render_pdf_page_to_png(pdf_bytes: BitArray, page_index: Int, dpi: Option(Int), password: Option(String)) -> Result(BitArray, KreuzbergError)
 
 /// Detect the MIME type of a file at the given path.
 ///

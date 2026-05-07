@@ -155,26 +155,25 @@ async fn test_fictionbook_markdown_formatting_preservation() {
         .await
         .expect("Failed to extract FB2 file");
 
-    let md = &result.content;
+    let md = result
+        .formatted_content
+        .as_deref()
+        .expect("formatted_content should be set for Markdown output");
     assert!(
         md.contains("**strong**"),
-        "Strong text should be formatted as **bold** in markdown. Got:\n{}",
-        md
+        "Strong text should be formatted as **bold** in markdown"
     );
     assert!(
         md.contains("*emphasis*"),
-        "Emphasis text should be formatted as *italic* in markdown. Got:\n{}",
-        md
+        "Emphasis text should be formatted as *italic* in markdown"
     );
     assert!(
         md.contains("~~deleted~~"),
-        "Strikethrough text should be formatted as ~~strikethrough~~ in markdown. Got:\n{}",
-        md
+        "Strikethrough text should be formatted as ~~strikethrough~~ in markdown"
     );
     assert!(
         md.contains("`code`"),
-        "Code text should be wrapped in backticks in markdown. Got:\n{}",
-        md
+        "Code text should be wrapped in backticks in markdown"
     );
 }
 
@@ -189,20 +188,20 @@ async fn test_fictionbook_formatting_in_body_paragraphs() {
         .await
         .expect("Failed to extract FB2 file");
 
-    let md = &result.content;
+    let md = result
+        .formatted_content
+        .as_deref()
+        .expect("formatted_content should be set for Markdown output");
     assert!(
         md.contains("*emphasized*"),
-        "Emphasis formatting should be preserved in body content. Got:\n{}",
-        md
+        "Emphasis formatting should be preserved in body content"
     );
     assert!(
         md.contains("**strong**"),
-        "Strong formatting should be preserved in body content. Got:\n{}",
-        md
+        "Strong formatting should be preserved in body content"
     );
     assert!(
         md.contains("`verbatim`"),
-        "Code formatting should be preserved in body content. Got:\n{}",
-        md
+        "Code formatting should be preserved in body content"
     );
 }

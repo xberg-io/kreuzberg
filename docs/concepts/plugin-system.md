@@ -84,7 +84,7 @@ pub trait DocumentExtractor: Plugin {
 }
 ```
 
-Kreuzberg ships with built-in extractors for PDF (via pdfium), Excel (via calamine), images (routes to OCR), XML, plain text, email, and Office formats (DOCX, PPTX).
+Kreuzberg ships with built-in extractors for PDF (via pdf_oxide), Excel (via calamine), images (routes to OCR), XML, plain text, email, and Office formats (DOCX, PPTX).
 
 **Priority resolution.** When two extractors are registered for the same MIME type, the one with the higher `priority()` value wins. Every built-in extractor has a priority of 0. To override the built-in PDF extractor with your own, register yours with a higher priority:
 

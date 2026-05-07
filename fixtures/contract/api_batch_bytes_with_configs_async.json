@@ -35,6 +35,6 @@
     "skip_languages": [
       "wasm"
     ],
-    "reason": "PDFium for WASM requires manual initialization via pdfium_render module"
+    "reason": "WASM uses synchronous-only API; async extraction is not available on the wasm target"
   }
 }

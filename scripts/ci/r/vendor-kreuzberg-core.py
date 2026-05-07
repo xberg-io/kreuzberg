@@ -220,7 +220,7 @@ def generate_vendor_cargo_toml(repo_root: Path, workspace_deps: dict[str, object
     deps_str = "\n".join(deps_lines)
 
     # Build members list based on actually copied crates
-    members = [name for name in ["kreuzberg", "kreuzberg-ffi", "kreuzberg-tesseract", "kreuzberg-paddle-ocr", "kreuzberg-pdfium-render"]
+    members = [name for name in ["kreuzberg", "kreuzberg-ffi", "kreuzberg-tesseract", "kreuzberg-paddle-ocr"]
                if name in copied_crates]
     members_str = ', '.join(f'"{m}"' for m in members)
 
@@ -264,7 +264,7 @@ def main() -> None:
 
     # Clean only crate directories
     crate_names = ["kreuzberg", "kreuzberg-ffi", "kreuzberg-tesseract",
-                   "kreuzberg-paddle-ocr", "kreuzberg-pdfium-render"]
+                   "kreuzberg-paddle-ocr"]
     for name in crate_names:
         crate_path = vendor_base / name
         if crate_path.exists():
@@ -282,7 +282,6 @@ def main() -> None:
         ("crates/kreuzberg-ffi", "kreuzberg-ffi"),
         ("crates/kreuzberg-tesseract", "kreuzberg-tesseract"),
         ("crates/kreuzberg-paddle-ocr", "kreuzberg-paddle-ocr"),
-        ("crates/kreuzberg-pdfium-render", "kreuzberg-pdfium-render"),
     ]
 
     copied_crates: list[str] = []
@@ -374,15 +373,6 @@ def main() -> None:
                 content = re.sub(
                     r'kreuzberg-paddle-ocr = \{ version = "[^"]*", optional = true \}',
                     'kreuzberg-paddle-ocr = { path = "../kreuzberg-paddle-ocr", optional = true }',
-                    content
-                )
-            # Only update pdfium-render path if it was actually copied
-            if "kreuzberg-pdfium-render" in copied_crates:
-                # Match pdfium-render dep with package = "kreuzberg-pdfium-render" and any
-                # combination of path/version fields, replacing them with the vendored path.
-                content = re.sub(
-                    r'pdfium-render = \{ package = "kreuzberg-pdfium-render",(?:\s*path = "[^"]*",)?(?:\s*version = "[^"]*")',
-                    'pdfium-render = { package = "kreuzberg-pdfium-render", path = "../kreuzberg-pdfium-render"',
                     content
                 )
 

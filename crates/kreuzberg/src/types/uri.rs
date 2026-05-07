@@ -132,6 +132,7 @@ mod tests {
         assert_eq!(uri.kind, UriKind::Email);
     }
 
+    #[cfg(any(feature = "xml", feature = "office"))]
     #[test]
     fn test_uri_citation() {
         let uri = Uri::citation("10.1234/test", Some("Smith 2024".to_string()));

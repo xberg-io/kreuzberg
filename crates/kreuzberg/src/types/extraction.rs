@@ -528,7 +528,7 @@ pub struct ExtractedImage {
     pub ocr_result: Option<Box<ExtractionResult>>,
 
     /// Bounding box of the image on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top).
-    /// Only populated for PDF-extracted images when position data is available from pdfium.
+    /// Only populated for PDF-extracted images when position data is available from the PDF extractor.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub bounding_box: Option<BoundingBox>,

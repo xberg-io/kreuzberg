@@ -8,6 +8,7 @@ use crate::plugins::{DocumentExtractor, Plugin};
 use crate::types::internal::InternalDocument;
 use crate::types::internal_builder::InternalDocumentBuilder;
 use crate::types::{ExcelMetadata, Metadata};
+use ahash::AHashMap;
 use async_trait::async_trait;
 use std::borrow::Cow;
 use std::path::Path;
@@ -102,6 +103,12 @@ impl ExcelExtractor {
 
         let sheet_names: Vec<String> = workbook.sheets.iter().map(|s| s.name.clone()).collect();
         let sheet_count = workbook.sheets.len();
+        let excel_metadata = ExcelMetadata {
+            sheet_count: Some(sheet_count),
+            sheet_names: Some(sheet_names),
+        };
+
+        let mut additional = AHashMap::new();
         let wb_meta = &workbook.metadata;
 
         // Map office metadata to standard Metadata fields
@@ -120,36 +127,16 @@ impl ExcelExtractor {
         });
         let language = wb_meta.get("language").cloned();
 
-        // Put remaining metadata into custom_properties (excluding standard fields)
-        let custom_properties: std::collections::HashMap<String, serde_json::Value> = workbook
-            .metadata
-            .iter()
-            .filter(|(key, _)| {
-                !matches!(
-                    key.as_str(),
-                    "title"
-                        | "subject"
-                        | "created_by"
-                        | "creator"
-                        | "modified_by"
-                        | "created_at"
-                        | "modified_at"
-                        | "keywords"
-                        | "language"
-                )
-            })
-            .map(|(k, v)| (k.clone(), serde_json::json!(v)))
-            .collect();
-
-        let excel_metadata = ExcelMetadata {
-            sheet_count: Some(sheet_count),
-            sheet_names: Some(sheet_names),
-            custom_properties: if custom_properties.is_empty() {
-                None
-            } else {
-                Some(custom_properties)
-            },
-        };
+        // Put remaining metadata into additional map (excluding standard fields)
+        for (key, value) in &workbook.metadata {
+            match key.as_str() {
+                "title" | "subject" | "created_by" | "creator" | "modified_by" | "created_at" | "modified_at"
+                | "keywords" | "language" => {}
+                _ => {
+                    additional.insert(Cow::Owned(key.clone()), serde_json::json!(value));
+                }
+            }
+        }
 
         doc.metadata = Metadata {
             title,
@@ -162,6 +149,7 @@ impl ExcelExtractor {
             created_by,
             modified_by,
             format: Some(crate::types::FormatMetadata::Excel(excel_metadata)),
+            additional,
             ..Default::default()
         };
 

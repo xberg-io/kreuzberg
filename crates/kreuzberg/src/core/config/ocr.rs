@@ -479,6 +479,7 @@ mod tests {
 
     // ── effective_pipeline tests ──
 
+    #[cfg(feature = "ocr")]
     #[test]
     fn test_effective_pipeline_explicit_pipeline_returned_unchanged() {
         let explicit_pipeline = OcrPipelineConfig {
@@ -503,6 +504,7 @@ mod tests {
         assert_eq!(result.stages[0].language, Some("fra".to_string()));
     }
 
+    #[cfg(feature = "ocr")]
     #[test]
     fn test_effective_pipeline_explicit_paddleocr_no_autofallback() {
         let config = OcrConfig {
@@ -512,6 +514,7 @@ mod tests {
         assert!(config.effective_pipeline().is_none());
     }
 
+    #[cfg(feature = "ocr")]
     #[test]
     fn test_effective_pipeline_explicit_easyocr_no_autofallback() {
         let config = OcrConfig {
@@ -521,6 +524,7 @@ mod tests {
         assert!(config.effective_pipeline().is_none());
     }
 
+    #[cfg(feature = "ocr")]
     #[test]
     fn test_effective_pipeline_default_tesseract_backend() {
         let config = OcrConfig::default();
@@ -540,6 +544,7 @@ mod tests {
         }
     }
 
+    #[cfg(feature = "ocr")]
     #[test]
     fn test_effective_thresholds_custom_vs_default() {
         // With custom thresholds

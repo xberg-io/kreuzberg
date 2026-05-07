@@ -6,7 +6,8 @@ use crate::extractors::security::SecurityBudget;
 use crate::plugins::{DocumentExtractor, Plugin};
 use crate::types::internal::InternalDocument;
 use crate::types::internal_builder::InternalDocumentBuilder;
-use crate::types::metadata::{Metadata, StructuredMetadata};
+use crate::types::metadata::Metadata;
+use ahash::AHashMap;
 use async_trait::async_trait;
 use std::borrow::Cow;
 #[cfg(feature = "tokio-runtime")]
@@ -206,28 +207,26 @@ impl DocumentExtractor for StructuredExtractor {
             _ => return Err(crate::KreuzbergError::UnsupportedFormat(mime_type.to_string())),
         };
 
-        let field_count = structured_result.text_fields.len();
-        let data_format = structured_result.format.clone();
+        let mut additional = AHashMap::new();
+        additional.insert(
+            Cow::Borrowed("field_count"),
+            serde_json::json!(structured_result.text_fields.len()),
+        );
+        additional.insert(
+            Cow::Borrowed("data_format"),
+            serde_json::json!(structured_result.format),
+        );
 
-        let custom_fields: Option<std::collections::HashMap<String, serde_json::Value>> = {
-            let fields: std::collections::HashMap<_, _> = structured_result
-                .metadata
-                .iter()
-                .map(|(k, v)| (k.clone(), serde_json::json!(v)))
-                .collect();
-            if fields.is_empty() { None } else { Some(fields) }
-        };
+        for (key, value) in &structured_result.metadata {
+            additional.insert(Cow::Owned(key.clone()), serde_json::json!(value));
+        }
 
         let mut budget = SecurityBudget::from_config(config);
         let mut doc = build_internal_document(&structured_result, mime_type, &mut budget)?;
         doc.mime_type = Cow::Owned(mime_type.to_string());
 
         doc.metadata = Metadata {
-            format: Some(crate::types::FormatMetadata::Structured(StructuredMetadata {
-                data_format: data_format.to_string(),
-                field_count,
-                custom_fields,
-            })),
+            additional,
             ..Default::default()
         };
 

@@ -503,7 +503,7 @@ class ImageExtractionConfig {
   ///
   /// Some PDFs (e.g. technical diagrams stored as thousands of raster fragments)
   /// can trigger extremely long or indefinite extraction times when every image
-  /// object on a dense page is decoded individually via pdfium FFI. Setting this
+  /// object on a dense page is decoded individually via the PDF extractor. Setting this
   /// limit causes kreuzberg to stop collecting individual images once the count
   /// per page reaches the cap and emit a warning instead.
   ///
@@ -910,8 +910,6 @@ class PageConfig {
 
 /// PDF-specific configuration.
 class PdfConfig {
-  /// PDF extraction backend. Default: `Pdfium`.
-  final PdfBackend backend;
   /// Extract images from PDF
   final bool extractImages;
   /// List of passwords to try when opening encrypted PDFs
@@ -938,7 +936,6 @@ class PdfConfig {
   /// detection) still apply.
   final bool allowSingleColumnTables;
   PdfConfig({
-    required this.backend,
     required this.extractImages,
     required this.passwords,
     required this.extractMetadata,
@@ -2698,7 +2695,7 @@ class ExtractedImage {
   /// rather than in a separate collection, making the relationship explicit.
   final ExtractionResult? ocrResult;
   /// Bounding box of the image on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top).
-  /// Only populated for PDF-extracted images when position data is available from pdfium.
+  /// Only populated for PDF-extracted images when position data is available from the PDF extractor.
   final String? boundingBox;
   /// Original source path of the image within the document archive (e.g., "media/image1.png" in DOCX).
   /// Used for rendering image references when the binary data is not extracted.
@@ -3265,12 +3262,11 @@ class Metadata {
   /// Output format identifier (e.g., "markdown", "html", "text").
   ///
   /// Set by the output format pipeline stage when format conversion is applied.
+  /// Previously stored in `metadata.additional["output_format"]`.
   final String? outputFormat;
-  /// Method used to extract text (e.g., "native", "ocr", "mixed", "native_ole").
-  final String? extractionMethod;
-  /// Custom fields for plugin-injected and format-specific dynamic data
-  /// (e.g., OCR backend metadata, org-mode directives).
+  /// Additional custom fields from postprocessors.
   ///
+  /// Serialized as a nested `"additional"` object (not flattened at root level).
   /// Uses `Cow<'static, str>` keys so static string keys avoid allocation.
   final Map<String, String> additional;
   Metadata({
@@ -3294,7 +3290,6 @@ class Metadata {
     required this.documentVersion,
     required this.abstractText,
     required this.outputFormat,
-    required this.extractionMethod,
     required this.additional,
   });
 }
@@ -3308,12 +3303,9 @@ class ExcelMetadata {
   final int? sheetCount;
   /// Names of all sheets in the workbook.
   final List<String>? sheetNames;
-  /// Custom office properties from docProps/custom.xml
-  final Map<String, String>? customProperties;
   ExcelMetadata({
     required this.sheetCount,
     required this.sheetNames,
-    required this.customProperties,
   });
 }
 
@@ -3335,8 +3327,6 @@ class EmailMetadata {
   final String? messageId;
   /// List of attachment filenames
   final List<String> attachments;
-  /// Non-standard email headers as key-value pairs
-  final Map<String, String>? extraHeaders;
   EmailMetadata({
     required this.fromEmail,
     required this.fromName,
@@ -3345,19 +3335,6 @@ class EmailMetadata {
     required this.bccEmails,
     required this.messageId,
     required this.attachments,
-    required this.extraHeaders,
-  });
-}
-
-/// A single entry in an archive (file or directory).
-class ArchiveFileEntry {
-  final String path;
-  final int size;
-  final bool isDir;
-  ArchiveFileEntry({
-    required this.path,
-    required this.size,
-    required this.isDir,
   });
 }
 
@@ -3369,8 +3346,8 @@ class ArchiveMetadata {
   final String format;
   /// Total number of files in the archive
   final int fileCount;
-  /// Typed entries with path, size, and is_dir fields
-  final List<ArchiveFileEntry> entries;
+  /// List of file paths within the archive
+  final List<String> fileList;
   /// Total uncompressed size in bytes
   final int totalSize;
   /// Compressed size in bytes (if available)
@@ -3378,7 +3355,7 @@ class ArchiveMetadata {
   ArchiveMetadata({
     required this.format,
     required this.fileCount,
-    required this.entries,
+    required this.fileList,
     required this.totalSize,
     required this.compressedSize,
   });
@@ -3612,14 +3589,11 @@ class PptxMetadata {
   final int? imageCount;
   /// Number of tables
   final int? tableCount;
-  /// Custom office properties from docProps/custom.xml
-  final Map<String, String>? customProperties;
   PptxMetadata({
     required this.slideCount,
     required this.slideNames,
     required this.imageCount,
     required this.tableCount,
-    required this.customProperties,
   });
 }
 
@@ -3650,21 +3624,6 @@ class DocxMetadata {
   });
 }
 
-/// JSON/YAML/TOML structured data metadata.
-class StructuredMetadata {
-  /// Detected data format: "json", "yaml", or "toml"
-  final String dataFormat;
-  /// Number of top-level fields
-  final int fieldCount;
-  /// Pass-through of custom fields not mapped to standard metadata
-  final Map<String, String>? customFields;
-  StructuredMetadata({
-    required this.dataFormat,
-    required this.fieldCount,
-    required this.customFields,
-  });
-}
-
 /// CSV/TSV file metadata.
 class CsvMetadata {
   final int rowCount;
@@ -3689,15 +3648,12 @@ class BibtexMetadata {
   final List<String> authors;
   final YearRange? yearRange;
   final Map<String, int>? entryTypes;
-  /// Raw BibTeX entry data (author, title, year, etc. per entry)
-  final List<String>? entries;
   BibtexMetadata({
     required this.entryCount,
     required this.citationKeys,
     required this.authors,
     required this.yearRange,
     required this.entryTypes,
-    required this.entries,
   });
 }
 
@@ -4821,110 +4777,6 @@ class EmbeddedFile {
   });
 }
 
-class PdfImage {
-  final int pageNumber;
-  final int imageIndex;
-  final int width;
-  final int height;
-  final String? colorSpace;
-  final int? bitsPerComponent;
-  /// Original PDF stream filters (e.g. `["FlateDecode"]`, `["DCTDecode"]`).
-  final List<String> filters;
-  /// The decoded image bytes in a standard format (JPEG, PNG, etc.).
-  final Uint8List data;
-  /// The format of `data` after decoding: `"jpeg"`, `"png"`, `"jpeg2000"`, `"ccitt"`, or `"raw"`.
-  final String decodedFormat;
-  /// Heuristic classification of what this image likely depicts.
-  final ImageKind? imageKind;
-  /// Confidence score for `image_kind`, in [0.0, 1.0].
-  final double? kindConfidence;
-  /// Identifier shared across images that form a single logical figure.
-  final int? clusterId;
-  PdfImage({
-    required this.pageNumber,
-    required this.imageIndex,
-    required this.width,
-    required this.height,
-    required this.colorSpace,
-    required this.bitsPerComponent,
-    required this.filters,
-    required this.data,
-    required this.decodedFormat,
-    required this.imageKind,
-    required this.kindConfidence,
-    required this.clusterId,
-  });
-}
-
-/// Layout detection results for a single page.
-class PageLayoutResult {
-  final int pageIndex;
-  final List<String> regions;
-  final double pageWidthPts;
-  final double pageHeightPts;
-  /// Width of the rendered image used for layout detection (pixels).
-  final int renderWidthPx;
-  /// Height of the rendered image used for layout detection (pixels).
-  final int renderHeightPx;
-  PageLayoutResult({
-    required this.pageIndex,
-    required this.regions,
-    required this.pageWidthPts,
-    required this.pageHeightPts,
-    required this.renderWidthPx,
-    required this.renderHeightPx,
-  });
-}
-
-/// Timing breakdown for a single page.
-class PageTiming {
-  /// Time to render the PDF page to a raster image (amortized from batch render).
-  final double renderMs;
-  /// Time spent in image preprocessing (resize, normalize, tensor construction).
-  final double preprocessMs;
-  /// Time for the ONNX model session.run() call (actual neural network inference).
-  final double onnxMs;
-  /// Total model inference time (preprocess + onnx), as measured by the engine.
-  final double inferenceMs;
-  /// Time spent in postprocessing (confidence filtering, overlap resolution).
-  final double postprocessMs;
-  /// Time to map pixel-space bounding boxes to PDF coordinate space.
-  final double mappingMs;
-  PageTiming({
-    required this.renderMs,
-    required this.preprocessMs,
-    required this.onnxMs,
-    required this.inferenceMs,
-    required this.postprocessMs,
-    required this.mappingMs,
-  });
-}
-
-/// Common metadata fields extracted from a PDF.
-class CommonPdfMetadata {
-  final String? title;
-  final String? subject;
-  final List<String>? authors;
-  final List<String>? keywords;
-  final String? createdAt;
-  final String? modifiedAt;
-  final String? createdBy;
-  CommonPdfMetadata({
-    required this.title,
-    required this.subject,
-    required this.authors,
-    required this.keywords,
-    required this.createdAt,
-    required this.modifiedAt,
-    required this.createdBy,
-  });
-}
-
-/// Result type for unified PDF text and metadata extraction.
-///
-/// Contains text, optional page boundaries, optional per-page content, and metadata.
-class PdfUnifiedExtractionResult {}
-
 /// ONNX Runtime execution provider type.
 ///
 /// Determines which hardware backend is used for model inference.
@@ -5004,21 +4856,6 @@ enum TableModel {
   slanetAuto,
   /// Disable table structure model inference entirely; use heuristic path only.
   disabled;
-}
-
-/// PDF extraction backend selection.
-///
-/// Controls which PDF library is used for text extraction:
-/// - `Pdfium`: pdfium-render (default, C++ based, mature)
-/// - `PdfOxide`: pdf_oxide (pure Rust, faster, requires `pdf-oxide` feature)
-/// - `Auto`: automatically select based on available features
-enum PdfBackend {
-  /// Use pdfium-render backend (default).
-  pdfium,
-  /// Use pdf_oxide backend (pure Rust). Requires `pdf-oxide` feature.
-  pdfOxide,
-  /// Automatically select the best available backend.
-  auto;
 }
 
 /// Type of text chunker to use.
@@ -5616,10 +5453,6 @@ final class Ocr extends FormatMetadata {
 final class Csv extends FormatMetadata {
   final CsvMetadata field0;
   Csv(this.field0);
-}
-final class Structured extends FormatMetadata {
-  final StructuredMetadata field0;
-  Structured(this.field0);
 }
 final class Bibtex extends FormatMetadata {
   final BibtexMetadata field0;
@@ -6516,27 +6349,6 @@ class KreuzbergBridge {
   /// throws anyhow::Error on failure
   static Future<List<List<double>>> embedTextsAsync(List<String> texts, EmbeddingConfig config) async {
     return await rust_bridge.embedTextsAsync(texts, config);
-  }
-
-  /// Render a single PDF page to a PNG-encoded byte buffer.
-  ///
-  /// # Errors
-  ///
-  /// Returns an error if the PDF is invalid, the page index is out of bounds,
-  /// or if the page fails to render.
-  ///
-  /// # Example
-  ///
-  /// ```rust,no_run
-  /// use kreuzberg::pdf::render_pdf_page_to_png;
-  ///
-  /// let pdf_bytes = std::fs::read("document.pdf")?;
-  /// let png = render_pdf_page_to_png(&pdf_bytes, 0, Some(150), None)?;
-  /// std::fs::write("page_0.png", png)?;
-  /// ```
-  /// throws anyhow::Error on failure
-  static Uint8List renderPdfPageToPng(Uint8List pdfBytes, int pageIndex, int? dpi, String? password) {
-    return rust_bridge.renderPdfPageToPng(pdfBytes, pageIndex, dpi, password);
   }
 
   /// Detect the MIME type of a file at the given path.

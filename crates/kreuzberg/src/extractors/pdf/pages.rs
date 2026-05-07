@@ -67,7 +67,7 @@ pub(crate) fn assign_tables_and_images_to_pages(
 #[cfg(feature = "layout-detection")]
 pub(crate) fn assign_layout_regions_to_pages(
     page_contents: &mut Option<Vec<PageContent>>,
-    layout_results: &[crate::pdf::layout_runner::PageLayoutResult],
+    layout_results: &[crate::pdf::structure::types::PageLayoutResult],
 ) {
     let Some(pages) = page_contents.as_mut() else {
         return;

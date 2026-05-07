@@ -161,6 +161,10 @@ impl DocumentExtractor for PptExtractor {
             Cow::Borrowed("slide_count"),
             serde_json::Value::Number(result.slide_count.into()),
         );
+        metadata_map.insert(
+            Cow::Borrowed("extraction_method"),
+            serde_json::Value::String("native_ole".to_string()),
+        );
 
         // Store speaker notes if available
         if !result.speaker_notes.is_empty() {
@@ -209,7 +213,6 @@ impl DocumentExtractor for PptExtractor {
             created_by: meta_created_by,
             modified_by: meta_modified_by,
             pages: page_structure,
-            extraction_method: Some("native_ole".to_string()),
             additional: metadata_map,
             ..Default::default()
         };

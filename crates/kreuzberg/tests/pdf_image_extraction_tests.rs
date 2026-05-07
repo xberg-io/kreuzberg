@@ -115,7 +115,7 @@ fn test_docling_content_quality() {
 /// Regression test for issue #752: structured output was ~1000x slower than text
 /// on Ghostscript-produced PDFs with many inline images (~1,924 per page).
 ///
-/// Root cause: `populate_images_from_pdfium` used `Vec::contains` (O(N)) inside
+/// Root cause: `populate_images_from_oxide` used `Vec::contains` (O(N)) inside
 /// the per-page object loop — O(N²) total. Fixed by converting to `AHashSet` for
 /// O(1) lookup before the loop.
 ///
@@ -161,7 +161,7 @@ fn test_ghostscript_inline_images_completes_in_reasonable_time() {
 // appear in `ExtractionResult.images` when `output_format` was `Markdown` or
 // `Djot`. The root cause was that `inject_placeholders` in `extraction.rs`
 // defaulted to `true` without checking `extract_images`, allowing the structure
-// pipeline to call `populate_images_from_pdfium` unconditionally.
+// pipeline to call `populate_images_from_oxide` unconditionally.
 
 /// Helper: extract with a specific output format and images explicitly disabled
 /// via `ImageExtractionConfig.extract_images = false`.

@@ -48,7 +48,6 @@ def sign_wheel(wheel_path: Path, identity: str) -> None:
         package_root = unpacked_dir / "kreuzberg"
 
         targets = list(package_root.glob("_internal_bindings*.so"))
-        targets.append(package_root / "libpdfium.dylib")
 
         for target in targets:
             if target.exists():

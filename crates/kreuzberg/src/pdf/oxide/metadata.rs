@@ -1,7 +1,6 @@
 //! PDF metadata extraction using the pdf_oxide backend.
 //!
-//! Provides equivalent functionality to the pdfium-based `metadata.rs` module,
-//! extracting document info dictionary fields (title, author, keywords, dates,
+//! Extracts document info dictionary fields (title, author, keywords, dates,
 //! producer, creator) and PDF-specific properties (version, encryption, dimensions,
 //! page count). Also builds `PageStructure` from page boundaries.
 
@@ -187,7 +186,7 @@ fn decode_pdf_string(bytes: &[u8]) -> Option<String> {
 
 /// Build a `PageStructure` from an oxide document and page boundaries.
 ///
-/// Mirrors `build_page_structure` in the pdfium metadata module: validates
+/// Mirrors `build_page_structure` in the pdf metadata module: validates
 /// boundary count against page count, collects per-page dimensions from
 /// MediaBox, and determines blank status from content slices.
 fn build_page_structure(doc: &mut OxideDocument, boundaries: &[PageBoundary], content: &str) -> Result<PageStructure> {
@@ -251,7 +250,7 @@ fn build_page_structure(doc: &mut OxideDocument, boundaries: &[PageBoundary], co
 }
 
 // --- Helper functions for parsing metadata strings ---
-// These mirror the implementations in `pdf::metadata` for the pdfium backend.
+// These mirror the implementations in `pdf::metadata`.
 
 fn parse_authors(author_str: &str) -> Vec<String> {
     let author_str = author_str.replace(" and ", ", ");

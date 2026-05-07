@@ -78,7 +78,7 @@ pub struct ImageExtractionConfig {
     ///
     /// Some PDFs (e.g. technical diagrams stored as thousands of raster fragments)
     /// can trigger extremely long or indefinite extraction times when every image
-    /// object on a dense page is decoded individually via pdfium FFI. Setting this
+    /// object on a dense page is decoded individually via the PDF extractor. Setting this
     /// limit causes kreuzberg to stop collecting individual images once the count
     /// per page reaches the cap and emit a warning instead.
     ///

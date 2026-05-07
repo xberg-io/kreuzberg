@@ -757,13 +757,13 @@ impl DocumentExtractor for JupyterExtractor {
         let (_extracted_content, additional_metadata, extracted_images, notebook_json) =
             Self::extract_notebook(content, plain)?;
 
-        let mut metadata_custom = AHashMap::new();
+        let mut metadata_additional = AHashMap::new();
         // Extract language name for the standard Metadata.language field
         let meta_language = additional_metadata
             .get(&Cow::Borrowed("language_name"))
             .and_then(|v| v.as_str().map(|s| s.to_string()));
         for (key, value) in additional_metadata {
-            metadata_custom.insert(key, json!(value));
+            metadata_additional.insert(key, json!(value));
         }
 
         let images = extracted_images;
@@ -775,7 +775,7 @@ impl DocumentExtractor for JupyterExtractor {
 
         doc.metadata = Metadata {
             language: meta_language,
-            additional: metadata_custom,
+            additional: metadata_additional,
             ..Default::default()
         };
         doc.images = images;

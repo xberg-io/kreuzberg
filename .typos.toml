@@ -24,7 +24,6 @@ extend-ignore-re = [
 # Project-specific terms that are not typos.
 kreuzberg = "kreuzberg"
 zensical = "zensical"
-pdfium = "pdfium"
 tesseract = "tesseract"
 onnx = "onnx"
 surrealdb = "surrealdb"

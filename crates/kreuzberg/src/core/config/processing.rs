@@ -604,6 +604,7 @@ mod tests {
         }
     }
 
+    #[cfg(any(feature = "embeddings", feature = "chunking"))]
     #[test]
     fn test_resolve_preset_no_preset_returns_unchanged() {
         let config = ChunkingConfig {
@@ -617,6 +618,7 @@ mod tests {
         assert!(resolved.embedding.is_none());
     }
 
+    #[cfg(any(feature = "embeddings", feature = "chunking"))]
     #[test]
     fn test_resolve_preset_unknown_name_returns_unchanged() {
         let config = ChunkingConfig {
@@ -770,6 +772,7 @@ mod tests {
     }
 
     /// No preset, no embedding: embedding must stay None (regression guard).
+    #[cfg(any(feature = "embeddings", feature = "chunking"))]
     #[test]
     fn test_resolve_preset_no_preset_no_embedding_stays_none() {
         let config = ChunkingConfig {

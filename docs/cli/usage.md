@@ -516,8 +516,8 @@ kreuzberg extract document.pdf --extract-images true --target-dpi 300
 | Flag                                   | Description                                                                          |
 | -------------------------------------- | ------------------------------------------------------------------------------------ |
 | `--pdf-password <PASSWORD>`            | Password for encrypted PDFs. Can be specified multiple times for multiple passwords. |
-| `--pdf-extract-images <true\|false>`   | Extract images embedded in PDF pages. Requires pdfium feature.                       |
-| `--pdf-extract-metadata <true\|false>` | Extract PDF metadata (title, author, etc.). Requires pdfium feature.                 |
+| `--pdf-extract-images <true\|false>`   | Extract images embedded in PDF pages.                                                |
+| `--pdf-extract-metadata <true\|false>` | Extract PDF metadata (title, author, etc.).                                          |
 
 ```bash title="Terminal"
 kreuzberg extract encrypted.pdf --pdf-password "secret"

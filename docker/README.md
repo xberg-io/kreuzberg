@@ -56,7 +56,6 @@ docker build -f docker/Dockerfile.full -t kreuzberg:full .
 | Base (trixie-slim)   | ~120MB         | ~120MB         | -                 |
 | Tesseract + 12 langs | ~250MB         | ~250MB         | -                 |
 | Rust binary          | ~80MB          | ~80MB          | -                 |
-| pdfium               | ~30MB          | ~30MB          | -                 |
 | System libraries     | ~100MB         | ~100MB         | -                 |
 | **Total (approx)**   | **~1.0-1.3GB** | **~1.0-1.3GB** | **- (same size)** |
 
@@ -71,7 +70,7 @@ Both images support:
 - `linux/amd64` (x86_64)
 - `linux/arm64` (aarch64)
 
-Architecture-specific binaries (pdfium) are automatically selected during build.
+Both architectures use the same pure-Rust PDF library — no architecture-specific binaries needed.
 
 ## Usage Modes
 

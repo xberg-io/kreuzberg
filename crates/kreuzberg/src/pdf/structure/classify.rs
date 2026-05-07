@@ -1050,11 +1050,11 @@ fn is_greek_letter(c: char) -> bool {
 /// Handles two cases:
 /// 1. Short standalone paragraphs that are just the arXiv identifier → mark as furniture.
 /// 2. arXiv identifier appended to the end of a longer paragraph (LaTeX sidebar
-///    text that pdfium concatenates with body text) → strip the trailing noise.
+///    text that the PDF extractor concatenates with body text) → strip the trailing noise.
 pub(super) fn mark_arxiv_noise(all_pages: &mut [Vec<PdfParagraph>]) {
     let arxiv_re = regex::Regex::new(r"arXiv:\d{4}\.\d{4,5}").expect("valid regex");
     // Match trailing sidebar noise: title/page-num + arXiv ID (+ category + date) at end.
-    // The sidebar text from LaTeX gets concatenated by pdfium with body text.
+    // The sidebar text from LaTeX gets concatenated by the PDF extractor with body text.
     // We capture from the arXiv ID to end-of-string and also eat back any preceding
     // short title/page-number fragment (up to ~8 words before arXiv:).
     let trailing_re = regex::Regex::new(

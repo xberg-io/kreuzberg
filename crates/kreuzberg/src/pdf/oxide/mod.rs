@@ -1,6 +1,6 @@
 //! pdf_oxide backend for PDF extraction.
 //!
-//! Pure-Rust alternative to the pdfium-render backend. Provides text extraction,
+//! Provides text extraction,
 //! metadata parsing, annotation extraction, image extraction, table detection,
 //! and font metrics for heading hierarchy detection.
 

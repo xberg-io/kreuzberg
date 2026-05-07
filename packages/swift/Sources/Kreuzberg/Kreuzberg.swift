@@ -937,9 +937,6 @@ public typealias ExcelMetadata = RustBridge.ExcelMetadata
 /// Includes sender/recipient information, message ID, and attachment list.
 public typealias EmailMetadata = RustBridge.EmailMetadata
 
-/// A single entry in an archive (file or directory).
-public typealias ArchiveFileEntry = RustBridge.ArchiveFileEntry
-
 /// Archive (ZIP/TAR/7Z) metadata.
 ///
 /// Extracted from compressed archive files containing file lists and size information.
@@ -992,9 +989,6 @@ public typealias PptxMetadata = RustBridge.PptxMetadata
 /// Extracted from DOCX files using shared Office Open XML metadata extraction.
 /// Integrates with `office_metadata` module for core/app/custom properties.
 public typealias DocxMetadata = RustBridge.DocxMetadata
-
-/// JSON/YAML/TOML structured data metadata.
-public typealias StructuredMetadata = RustBridge.StructuredMetadata
 
 /// CSV/TSV file metadata.
 public typealias CsvMetadata = RustBridge.CsvMetadata
@@ -1282,22 +1276,6 @@ public typealias DetectionResult = RustBridge.DetectionResult
 /// Embedded file descriptor extracted from the PDF name tree.
 public typealias EmbeddedFile = RustBridge.EmbeddedFile
 
-public typealias PdfImage = RustBridge.PdfImage
-
-/// Layout detection results for a single page.
-public typealias PageLayoutResult = RustBridge.PageLayoutResult
-
-/// Timing breakdown for a single page.
-public typealias PageTiming = RustBridge.PageTiming
-
-/// Common metadata fields extracted from a PDF.
-public typealias CommonPdfMetadata = RustBridge.CommonPdfMetadata
-
-/// Result type for unified PDF text and metadata extraction.
-///
-/// Contains text, optional page boundaries, optional per-page content, and metadata.
-public typealias PdfUnifiedExtractionResult = RustBridge.PdfUnifiedExtractionResult
-
 /// ONNX Runtime execution provider type.
 ///
 /// Determines which hardware backend is used for model inference.
@@ -1321,14 +1299,6 @@ public typealias HtmlTheme = RustBridge.HtmlTheme
 /// Controls the model used for table cell detection within layout-detected
 /// table regions.
 public typealias TableModel = RustBridge.TableModel
-
-/// PDF extraction backend selection.
-///
-/// Controls which PDF library is used for text extraction:
-/// - `Pdfium`: pdfium-render (default, C++ based, mature)
-/// - `PdfOxide`: pdf_oxide (pure Rust, faster, requires `pdf-oxide` feature)
-/// - `Auto`: automatically select based on available features
-public typealias PdfBackend = RustBridge.PdfBackend
 
 /// Type of text chunker to use.
 ///

@@ -40,12 +40,6 @@ if ($ImportLibs.Count -gt 0) {
     Write-Host "✓ Staged import libraries: $($ImportLibs.Count) files"
 }
 
-# Copy PDFium (optional, bundled during build)
-if (Test-Path "$TargetDir\pdfium.dll") {
-    Copy-Item "$TargetDir\pdfium.dll" "$StagingDir\lib\"
-    Write-Host "✓ Staged PDFium library"
-}
-
 # Copy header
 Copy-Item "crates\kreuzberg-ffi\include\kreuzberg.h" "$StagingDir\include\"
 

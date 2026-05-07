@@ -1041,8 +1041,8 @@ impl DocumentExtractor for DocxExtractor {
 
         let mut metadata_map = AHashMap::new();
         let mut parsed_keywords: Option<Vec<String>> = None;
-        let mut docx_core_properties: Option<serde_json::Value> = None;
-        let mut docx_app_properties: Option<serde_json::Value> = None;
+        let mut docx_core_properties = None;
+        let mut docx_app_properties = None;
         let mut docx_custom_properties: Option<std::collections::HashMap<String, serde_json::Value>> = None;
 
         if let Ok(core) = office_metadata::extract_core_properties(&mut archive) {
@@ -1105,7 +1105,7 @@ impl DocumentExtractor for DocxExtractor {
             if let Some(ref language) = core.language {
                 metadata_map.insert(Cow::Borrowed("language"), serde_json::Value::String(language.clone()));
             }
-            docx_core_properties = serde_json::to_value(core).ok();
+            docx_core_properties = Some(core);
         }
 
         if let Ok(app) = office_metadata::extract_docx_app_properties(&mut archive) {
@@ -1148,7 +1148,7 @@ impl DocumentExtractor for DocxExtractor {
                     serde_json::Value::String(application.clone()),
                 );
             }
-            docx_app_properties = serde_json::to_value(app).ok();
+            docx_app_properties = Some(app);
         }
 
         if let Ok(custom) = office_metadata::extract_custom_properties(&mut archive) {
@@ -2424,14 +2424,14 @@ mod tests {
         assert_eq!(result.metadata.modified_at.as_deref(), Some("2024-02-20T14:45:00Z"));
         assert_eq!(result.metadata.language.as_deref(), Some("en-US"));
 
-        // Verify these are NOT duplicated in custom map
+        // Verify these are NOT duplicated in additional map
         assert!(
             result.metadata.additional.get("title").is_none(),
-            "title should not be in custom"
+            "title should not be in additional"
         );
         assert!(
             result.metadata.additional.get("created_by").is_none(),
-            "created_by should not be in custom"
+            "created_by should not be in additional"
         );
     }
 
@@ -2716,12 +2716,12 @@ mod tests {
             FormatMetadata::Docx(docx_meta) => {
                 assert!(docx_meta.core_properties.is_some(), "Core properties should be present");
                 let core = docx_meta.core_properties.as_ref().unwrap();
-                assert_eq!(core["title"].as_str(), Some("Format Test"));
+                assert_eq!(core.title.as_deref(), Some("Format Test"));
 
                 assert!(docx_meta.app_properties.is_some(), "App properties should be present");
                 let app = docx_meta.app_properties.as_ref().unwrap();
-                assert_eq!(app["pages"].as_i64(), Some(3));
-                assert_eq!(app["words"].as_i64(), Some(500));
+                assert_eq!(app.pages, Some(3));
+                assert_eq!(app.words, Some(500));
             }
             _ => panic!("Expected FormatMetadata::Docx"),
         }

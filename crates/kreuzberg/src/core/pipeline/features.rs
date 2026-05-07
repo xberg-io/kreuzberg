@@ -13,7 +13,7 @@ use std::borrow::Cow;
 /// Recompute page boundaries against the rendered `content` string.
 ///
 /// `PageBoundary` offsets produced during extraction are computed against raw
-/// pdfium/source text, but `result.content` is produced by `render_plain` which
+/// rendered/source text, but `result.content` is produced by `render_plain` which
 /// may have different byte lengths (e.g. normalised whitespace, Unicode
 /// normalisation, dropped control characters).  This function re-derives the
 /// boundaries by locating each page's rendered content inside the combined

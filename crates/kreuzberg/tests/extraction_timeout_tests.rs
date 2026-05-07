@@ -6,7 +6,7 @@ use kreuzberg::core::extractor::{extract_bytes, extract_file};
 use std::time::Instant;
 
 /// A timeout of 0 seconds should fire immediately, before any real work is done.
-/// We use plain-text content so the test doesn't require external binaries (Tesseract, pdfium).
+/// We use plain-text content so the test doesn't require external binaries (Tesseract, PDF extractor).
 #[tokio::test]
 async fn test_extract_bytes_zero_timeout_returns_timeout_error() {
     let config = ExtractionConfig {

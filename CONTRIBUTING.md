@@ -49,7 +49,7 @@ Kreuzberg is a polyglot project with many areas where you can help:
 - [Task](https://taskfile.dev/installation/) — our task runner for all build and test workflows
 - [Rust](https://rustup.rs/) stable (via `rustup`) — the `wasm32-unknown-unknown` target is configured automatically via `rust-toolchain.toml`
 
-**Required for WASM builds** (tree-sitter, tesseract, and pdfium compile C/C++ to wasm):
+**Required for WASM builds** (tree-sitter and tesseract compile C/C++ to wasm):
 
 - [WASI SDK](https://github.com/WebAssembly/wasi-sdk/releases) — install to `$HOME/wasi-sdk` or set `WASI_SDK_PATH`
 

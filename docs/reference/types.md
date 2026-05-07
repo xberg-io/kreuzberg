@@ -390,7 +390,7 @@ Image extraction configuration.
 | `auto_adjust_dpi` | `bool` | `true` | Automatically adjust DPI based on image content |
 | `min_dpi` | `i32` | `72` | Minimum DPI threshold |
 | `max_dpi` | `i32` | `600` | Maximum DPI threshold |
-| `max_images_per_page` | `Option<u32>` | `None` | Maximum number of image objects to extract per PDF page. Some PDFs (e.g. technical diagrams stored as thousands of raster fragments) can trigger extremely long or indefinite extraction times when every image object on a dense page is decoded individually via pdfium FFI. Setting this limit causes kreuzberg to stop collecting individual images once the count per page reaches the cap and emit a warning instead. `None` (default) means no limit — all images are extracted. |
+| `max_images_per_page` | `Option<u32>` | `None` | Maximum number of image objects to extract per PDF page. Some PDFs (e.g. technical diagrams stored as thousands of raster fragments) can trigger extremely long or indefinite extraction times when every image object on a dense page is decoded individually via pdf_oxide. Setting this limit causes kreuzberg to stop collecting individual images once the count per page reaches the cap and emit a warning instead. `None` (default) means no limit — all images are extracted. |
 | `classify` | `bool` | `true` | When `true` (default), extracted images are classified by kind and grouped into clusters where they appear to belong to one figure. |
 
 ---
@@ -584,7 +584,6 @@ PDF-specific configuration.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `backend` | `PdfBackend` | `PdfBackend::Pdfium` | PDF extraction backend. Default: `Pdfium`. |
 | `extract_images` | `bool` | `false` | Extract images from PDF |
 | `passwords` | `Vec<String>` | `None` | List of passwords to try when opening encrypted PDFs |
 | `extract_metadata` | `bool` | `true` | Extract PDF metadata |
@@ -1041,18 +1040,6 @@ for specific document types (invoices, handwriting, etc.).
 
 ---
 
-##### ArchiveFileEntry
-
-A single entry in an archive (file or directory).
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `path` | `String` | — | File path |
-| `size` | `u64` | — | Size in bytes |
-| `is_dir` | `bool` | — | Whether dir |
-
----
-
 ##### OcrConfidence
 
 Confidence scores for an OCR element.
@@ -1313,9 +1300,8 @@ via a discriminated union, and additional custom fields from postprocessors.
 | `tags` | `Vec<String>` | `vec![]` | Document tags (from frontmatter). |
 | `document_version` | `Option<String>` | `Default::default()` | Document version string (from frontmatter). |
 | `abstract_text` | `Option<String>` | `Default::default()` | Abstract or summary text (from frontmatter). |
-| `output_format` | `Option<String>` | `Default::default()` | Output format identifier (e.g., "markdown", "html", "text"). Set by the output format pipeline stage when format conversion is applied. |
-| `extraction_method` | `Option<String>` | `Default::default()` | Method used to extract text (e.g., "native", "ocr", "mixed", "native_ole"). |
-| `additional` | `HashMap<String, serde_json::Value>` | `HashMap::new()` | Custom fields for plugin-injected and format-specific dynamic data (e.g., OCR backend metadata, org-mode directives). Uses `Cow<'static, str>` keys so static string keys avoid allocation. |
+| `output_format` | `Option<String>` | `Default::default()` | Output format identifier (e.g., "markdown", "html", "text"). Set by the output format pipeline stage when format conversion is applied. Previously stored in `metadata.additional["output_format"]`. |
+| `additional` | `HashMap<String, serde_json::Value>` | `HashMap::new()` | Additional custom fields from postprocessors. Serialized as a nested `"additional"` object (not flattened at root level). Uses `Cow<'static, str>` keys so static string keys avoid allocation. |
 
 ---
 
@@ -1330,7 +1316,6 @@ discriminant. Sheet count and sheet names are stored inside this struct.
 |-------|------|---------|-------------|
 | `sheet_count` | `Option<usize>` | `Default::default()` | Number of sheets in the workbook. |
 | `sheet_names` | `Vec<String>` | `vec![]` | Names of all sheets in the workbook. |
-| `custom_properties` | `HashMap<String, serde_json::Value>` | `HashMap::new()` | Custom office properties from docProps/custom.xml |
 
 ---
 
@@ -1349,7 +1334,6 @@ Includes sender/recipient information, message ID, and attachment list.
 | `bcc_emails` | `Vec<String>` | `vec![]` | BCC recipients |
 | `message_id` | `Option<String>` | `Default::default()` | Message-ID header value |
 | `attachments` | `Vec<String>` | `vec![]` | List of attachment filenames |
-| `extra_headers` | `HashMap<String, String>` | `HashMap::new()` | Non-standard email headers as key-value pairs |
 
 ---
 
@@ -1363,7 +1347,7 @@ Extracted from compressed archive files containing file lists and size informati
 |-------|------|---------|-------------|
 | `format` | `String` | — | Archive format ("ZIP", "TAR", "7Z", etc.) |
 | `file_count` | `usize` | — | Total number of files in the archive |
-| `entries` | `Vec<ArchiveFileEntry>` | `vec![]` | Typed entries with path, size, and is_dir fields |
+| `file_list` | `Vec<String>` | `vec![]` | List of file paths within the archive |
 | `total_size` | `usize` | — | Total uncompressed size in bytes |
 | `compressed_size` | `Option<usize>` | `Default::default()` | Compressed size in bytes (if available) |
 
@@ -1511,7 +1495,6 @@ Extracted from PPTX files containing slide counts and presentation details.
 | `slide_names` | `Vec<String>` | `vec![]` | Names of slides (if available) |
 | `image_count` | `Option<usize>` | `Default::default()` | Number of embedded images |
 | `table_count` | `Option<usize>` | `Default::default()` | Number of tables |
-| `custom_properties` | `HashMap<String, serde_json::Value>` | `HashMap::new()` | Custom office properties from docProps/custom.xml |
 
 ---
 
@@ -1524,21 +1507,9 @@ Integrates with `office_metadata` module for core/app/custom properties.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `core_properties` | `Option<serde_json::Value>` | `Default::default()` | Core properties from docProps/core.xml (Dublin Core metadata) Contains title, creator, subject, keywords, dates, etc. Shared format across DOCX/PPTX/XLSX documents. |
-| `app_properties` | `Option<serde_json::Value>` | `Default::default()` | Application properties from docProps/app.xml (Word-specific statistics) Contains word count, page count, paragraph count, editing time, etc. DOCX-specific variant of Office application properties. |
+| `core_properties` | `Option<String>` | `Default::default()` | Core properties from docProps/core.xml (Dublin Core metadata) Contains title, creator, subject, keywords, dates, etc. Shared format across DOCX/PPTX/XLSX documents. |
+| `app_properties` | `Option<String>` | `Default::default()` | Application properties from docProps/app.xml (Word-specific statistics) Contains word count, page count, paragraph count, editing time, etc. DOCX-specific variant of Office application properties. |
 | `custom_properties` | `HashMap<String, serde_json::Value>` | `HashMap::new()` | Custom properties from docProps/custom.xml (user-defined properties) Contains key-value pairs defined by users or applications. Values can be strings, numbers, booleans, or dates. |
-
----
-
-##### StructuredMetadata
-
-JSON/YAML/TOML structured data metadata.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `data_format` | `String` | — | Detected data format: "json", "yaml", or "toml" |
-| `field_count` | `usize` | — | Number of top-level fields |
-| `custom_fields` | `HashMap<String, serde_json::Value>` | `HashMap::new()` | Pass-through of custom fields not mapped to standard metadata |
 
 ---
 
@@ -1567,7 +1538,6 @@ BibTeX bibliography metadata.
 | `authors` | `Vec<String>` | `vec![]` | Authors |
 | `year_range` | `Option<YearRange>` | `Default::default()` | Year range (year range) |
 | `entry_types` | `HashMap<String, usize>` | `HashMap::new()` | Entry types |
-| `entries` | `Vec<serde_json::Value>` | `vec![]` | Raw BibTeX entry data (author, title, year, etc. per entry) |
 
 ---
 
@@ -2319,7 +2289,7 @@ PIL.Image (Python), Sharp (Node.js), or other formats as needed.
 | `is_mask` | `bool` | — | Whether this image is a mask image |
 | `description` | `Option<String>` | `None` | Optional description of the image |
 | `ocr_result` | `Option<ExtractionResult>` | `None` | Nested OCR extraction result (if image was OCRed) When OCR is performed on this image, the result is embedded here rather than in a separate collection, making the relationship explicit. |
-| `bounding_box` | `Option<String>` | `None` | Bounding box of the image on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top). Only populated for PDF-extracted images when position data is available from pdfium. |
+| `bounding_box` | `Option<String>` | `None` | Bounding box of the image on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top). Only populated for PDF-extracted images when position data is available from pdf_oxide. |
 | `source_path` | `Option<String>` | `None` | Original source path of the image within the document archive (e.g., "media/image1.png" in DOCX). Used for rendering image references when the binary data is not extracted. |
 | `image_kind` | `Option<ImageKind>` | `None` | Heuristic classification of what this image likely depicts. `None` if classification was disabled or inconclusive. |
 | `kind_confidence` | `Option<f32>` | `None` | Confidence score for `image_kind`, in [0.0, 1.0]. |

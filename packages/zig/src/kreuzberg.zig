@@ -351,7 +351,6 @@ pub const PageConfig = struct {
 
 /// PDF-specific configuration.
 pub const PdfConfig = struct {
-    backend: PdfBackend,
     extract_images: bool,
     passwords: ?[]const [:0]const u8,
     extract_metadata: bool,
@@ -1355,7 +1354,6 @@ pub const Metadata = struct {
     document_version: ?[:0]const u8,
     abstract_text: ?[:0]const u8,
     output_format: ?[:0]const u8,
-    extraction_method: ?[:0]const u8,
     additional: std.StringHashMap([:0]const u8),
 };
 
@@ -1366,7 +1364,6 @@ pub const Metadata = struct {
 pub const ExcelMetadata = struct {
     sheet_count: ?u64,
     sheet_names: ?[]const [:0]const u8,
-    custom_properties: ?std.StringHashMap([:0]const u8),
 };
 
 /// Email metadata extracted from .eml and .msg files.
@@ -1380,14 +1377,6 @@ pub const EmailMetadata = struct {
     bcc_emails: []const [:0]const u8,
     message_id: ?[:0]const u8,
     attachments: []const [:0]const u8,
-    extra_headers: ?std.StringHashMap([:0]const u8),
-};
-
-/// A single entry in an archive (file or directory).
-pub const ArchiveFileEntry = struct {
-    path: [:0]const u8,
-    size: u64,
-    is_dir: bool,
 };
 
 /// Archive (ZIP/TAR/7Z) metadata.
@@ -1396,7 +1385,7 @@ pub const ArchiveFileEntry = struct {
 pub const ArchiveMetadata = struct {
     format: [:0]const u8,
     file_count: u64,
-    entries: []const ArchiveFileEntry,
+    file_list: []const [:0]const u8,
     total_size: u64,
     compressed_size: ?u64,
 };
@@ -1506,7 +1495,6 @@ pub const PptxMetadata = struct {
     slide_names: []const [:0]const u8,
     image_count: ?u64,
     table_count: ?u64,
-    custom_properties: ?std.StringHashMap([:0]const u8),
 };
 
 /// Word document metadata.
@@ -1517,13 +1505,6 @@ pub const DocxMetadata = struct {
     core_properties: ?[:0]const u8,
     app_properties: ?[:0]const u8,
     custom_properties: ?std.StringHashMap([:0]const u8),
-};
-
-/// JSON/YAML/TOML structured data metadata.
-pub const StructuredMetadata = struct {
-    data_format: [:0]const u8,
-    field_count: u64,
-    custom_fields: ?std.StringHashMap([:0]const u8),
 };
 
 /// CSV/TSV file metadata.
@@ -1542,7 +1523,6 @@ pub const BibtexMetadata = struct {
     authors: []const [:0]const u8,
     year_range: ?YearRange,
     entry_types: ?std.StringHashMap(u64),
-    entries: ?[]const [:0]const u8,
 };
 
 /// Citation file metadata (RIS, PubMed, EndNote).
@@ -2084,58 +2064,6 @@ pub const EmbeddedFile = struct {
     mime_type: ?[:0]const u8,
 };
 
-pub const PdfImage = struct {
-    page_number: u64,
-    image_index: u64,
-    width: i64,
-    height: i64,
-    color_space: ?[:0]const u8,
-    bits_per_component: ?i64,
-    filters: []const [:0]const u8,
-    data: []const u8,
-    decoded_format: [:0]const u8,
-    image_kind: ?ImageKind,
-    kind_confidence: ?f32,
-    cluster_id: ?u32,
-};
-
-/// Layout detection results for a single page.
-pub const PageLayoutResult = struct {
-    page_index: u64,
-    regions: []const [:0]const u8,
-    page_width_pts: f32,
-    page_height_pts: f32,
-    render_width_px: u32,
-    render_height_px: u32,
-};
-
-/// Timing breakdown for a single page.
-pub const PageTiming = struct {
-    render_ms: f64,
-    preprocess_ms: f64,
-    onnx_ms: f64,
-    inference_ms: f64,
-    postprocess_ms: f64,
-    mapping_ms: f64,
-};
-
-/// Common metadata fields extracted from a PDF.
-pub const CommonPdfMetadata = struct {
-    title: ?[:0]const u8,
-    subject: ?[:0]const u8,
-    authors: ?[]const [:0]const u8,
-    keywords: ?[]const [:0]const u8,
-    created_at: ?[:0]const u8,
-    modified_at: ?[:0]const u8,
-    created_by: ?[:0]const u8,
-};
-
-/// Result type for unified PDF text and metadata extraction.
-///
-/// Contains text, optional page boundaries, optional per-page content, and metadata.
-pub const PdfUnifiedExtractionResult = struct {
-};
-
 /// ONNX Runtime execution provider type.
 ///
 /// Determines which hardware backend is used for model inference.
@@ -2185,18 +2113,6 @@ pub const TableModel = enum {
     slanet_plus,
     slanet_auto,
     disabled,
-};
-
-/// PDF extraction backend selection.
-///
-/// Controls which PDF library is used for text extraction:
-/// - `Pdfium`: pdfium-render (default, C++ based, mature)
-/// - `PdfOxide`: pdf_oxide (pure Rust, faster, requires `pdf-oxide` feature)
-/// - `Auto`: automatically select based on available features
-pub const PdfBackend = enum {
-    pdfium,
-    pdf_oxide,
-    auto,
 };
 
 /// Type of text chunker to use.
@@ -2528,7 +2444,6 @@ pub const FormatMetadata = union(enum) {
     html: HtmlMetadata,
     ocr: OcrMetadata,
     csv: CsvMetadata,
-    structured: StructuredMetadata,
     bibtex: BibtexMetadata,
     citation: CitationMetadata,
     fiction_book: FictionBookMetadata,
@@ -2933,24 +2848,6 @@ pub fn clear_validators() (KreuzbergError||error{OutOfMemory})!void {
         return _first_error(KreuzbergError);
     }
     return;
-}
-
-/// Render a single PDF page to a PNG-encoded byte buffer.
-///
-/// **Errors:**
-///
-/// Returns an error if the PDF is invalid, the page index is out of bounds,
-/// or if the page fails to render.
-pub fn render_pdf_page_to_png(pdf_bytes: []const u8, page_index: u64, dpi: ?i32, password: ?[]const u8) (KreuzbergError||error{OutOfMemory})![]const u8 {
-    const password_z: [*:0]u8 = try std.fmt.allocPrintZ(
-        std.heap.c_allocator, "{s}", .{password},
-    );
-    const _result = c.kreuzberg_render_pdf_page_to_png(pdf_bytes.ptr, pdf_bytes.len, page_index, dpi, password_z);
-    if (c.kreuzberg_last_error_code() != 0) {
-        return _first_error(KreuzbergError);
-    }
-    std.heap.c_allocator.free(password_z[0..std.mem.len(password_z)]);
-    return _result;
 }
 
 /// Detect the MIME type of a file at the given path.

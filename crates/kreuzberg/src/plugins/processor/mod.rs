@@ -1,6 +1,6 @@
 //! Post-processor plugin system.
 //!
-//! This module provides the trait and registry for implementing additional post-processors.
+//! This module provides the trait and registry for implementing custom post-processors.
 
 mod registry;
 mod r#trait;
