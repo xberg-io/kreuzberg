@@ -1089,6 +1089,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "crossbeam-channel"
+version = "0.5.15"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "82b8f8f868b36967f9606790d1903570de9ceaf870a7bf9fbbd3016d636a2cb2"
+dependencies = [
+ "crossbeam-utils",
+]
+
+[[package]]
 name = "crossbeam-deque"
 version = "0.8.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2854,6 +2863,7 @@ dependencies = [
  "memmap2",
  "mime_guess",
  "minijinja",
+ "moka",
  "ndarray",
  "num_cpus",
  "once_cell",
@@ -2898,6 +2908,7 @@ dependencies = [
  "ureq 3.3.0",
  "urlencoding",
  "utoipa",
+ "uuid",
  "v_htmlescape",
  "whatlang",
  "zip 8.6.0",
@@ -3320,6 +3331,23 @@ dependencies = [
  "libc",
  "wasi",
  "windows-sys 0.61.2",
+]
+
+[[package]]
+name = "moka"
+version = "0.12.15"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "957228ad12042ee839f93c8f257b62b4c0ab5eaae1d4fa60de53b27c9d7c5046"
+dependencies = [
+ "crossbeam-channel",
+ "crossbeam-epoch",
+ "crossbeam-utils",
+ "equivalent",
+ "parking_lot",
+ "portable-atomic",
+ "smallvec",
+ "tagptr",
+ "uuid",
 ]
 
 [[package]]
@@ -4928,19 +4956,19 @@ dependencies = [
 
 [[package]]
 name = "sevenz-rust2"
-version = "0.20.2"
+version = "0.21.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "29225600349ef74beda5a9fffb36ac660a24613c0bde9315d0c49be1d51e9c24"
+checksum = "dbbd24232798280d6bc896e3429a3469174de008ec8b1b591a96618b46664195"
 dependencies = [
- "aes 0.8.4",
+ "aes 0.9.0",
  "bzip2",
- "cbc 0.1.2",
+ "cbc 0.2.0",
  "crc32fast",
  "getrandom 0.4.2",
  "js-sys",
  "lzma-rust2 0.16.2",
  "ppmd-rust",
- "sha2 0.10.9",
+ "sha2 0.11.0",
  "wasm-bindgen",
 ]
 
@@ -5313,6 +5341,12 @@ dependencies = [
  "serde",
  "slotmap",
 ]
+
+[[package]]
+name = "tagptr"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7b2093cf4c8eb1e67749a6762251bc9cd836b6fc171623bd0a9d324d37af2417"
 
 [[package]]
 name = "tap"

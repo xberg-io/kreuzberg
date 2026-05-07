@@ -937,7 +937,10 @@ async fn test_typst_inline_code_regression() {
         .expect("Extraction failed");
 
     assert!(result.content.contains("println"), "inline code content lost");
-    assert!(result.content.contains("Use") && result.content.contains("Rust"), "surrounding text lost");
+    assert!(
+        result.content.contains("Use") && result.content.contains("Rust"),
+        "surrounding text lost"
+    );
 }
 
 /// TEST 31: Regression - Code blocks

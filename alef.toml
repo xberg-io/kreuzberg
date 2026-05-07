@@ -1032,11 +1032,11 @@ e2e = "cd e2e/python && uv run pytest tests/ -q"
 [crates.test.node]
 precondition = "command -v pnpm >/dev/null 2>&1"
 before = "cd crates/kreuzberg-node && napi build --output-dir . --release --platform"
-e2e = "cd e2e/node && pnpm install && pnpm test"
+e2e = "cd e2e/node && CI=true pnpm install && pnpm test"
 
 [crates.test.go]
 precondition = "command -v go >/dev/null 2>&1"
-before = "cargo build --release -p kreuzberg-ffi"
+before = "cargo build --release -p kreuzberg-ffi && mkdir -p packages/go/v5/include && cp crates/kreuzberg-ffi/include/kreuzberg.h packages/go/v5/include/"
 e2e = "cd e2e/go && go test ./... -count=1"
 
 [crates.test.ruby]
@@ -1066,6 +1066,7 @@ e2e = "cd e2e/elixir && KREUZBERG_BUILD=1 mix test"
 
 [crates.test.r]
 precondition = "command -v Rscript >/dev/null 2>&1"
+before = "cd packages/r/src/rust && cargo build --release"
 command = "cd e2e/r && Rscript -e \"devtools::load_all('../../packages/r'); testthat::set_max_fails(Inf); testthat::test_dir('tests')\""
 e2e = "cd e2e/r && Rscript -e \"devtools::load_all('../../packages/r'); testthat::set_max_fails(Inf); testthat::test_dir('tests')\""
 

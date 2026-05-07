@@ -23,7 +23,9 @@ pub(crate) struct OxideDocument {
 
 impl OxideDocument {
     /// Open a PDF from a file path.
-    #[allow(dead_code)]
+    ///
+    /// Only available on non-WASM targets — WASM has no filesystem access.
+    #[cfg(not(target_arch = "wasm32"))]
     pub(crate) fn open_file(path: &Path) -> Result<Self> {
         let doc = pdf_oxide::PdfDocument::open(path).map_err(|e| KreuzbergError::Parsing {
             message: format!("pdf_oxide: failed to open file: {e}"),

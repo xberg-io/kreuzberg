@@ -8,7 +8,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Kreuzberg\\": "../../packages/php/src/"
+      "Kreuzberg\\": ["../../packages/php/src/", "../../packages/php/stubs/"]
     }
   },
   "autoload-dev": {
