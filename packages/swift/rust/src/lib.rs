@@ -4929,9 +4929,9 @@ impl PptxAppProperties {
     }
 }
 
-pub struct CustomProperties(pub kreuzberg::CustomProperties);
+pub struct CustomProperties(pub kreuzberg::extraction::office_metadata::CustomProperties);
 
-pub struct OdtProperties(pub kreuzberg::OdtProperties);
+pub struct OdtProperties(pub kreuzberg::extraction::office_metadata::OdtProperties);
 
 impl OdtProperties {
     pub fn new(
@@ -4954,7 +4954,7 @@ impl OdtProperties {
         table_count: Option<i32>,
         image_count: Option<i32>,
     ) -> OdtProperties {
-        let mut __target: kreuzberg::OdtProperties = ::std::default::Default::default();
+        let mut __target: kreuzberg::extraction::office_metadata::OdtProperties = ::std::default::Default::default();
         // alef: title — String fallback in non-serde struct, left at default
         // alef: subject — String fallback in non-serde struct, left at default
         // alef: creator — String fallback in non-serde struct, left at default

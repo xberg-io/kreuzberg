@@ -646,6 +646,18 @@ PptxAppProperties <- new.env(parent = emptyenv())
 #' @export
 `[[.PptxAppProperties` <- `$.PptxAppProperties`
 
+CustomProperties <- new.env(parent = emptyenv())
+
+#' @export
+`$.CustomProperties` <- function(self, name) {
+  func <- CustomProperties[[name]]
+  environment(func) <- environment()
+  func
+}
+
+#' @export
+`[[.CustomProperties` <- `$.CustomProperties`
+
 OdtProperties <- new.env(parent = emptyenv())
 
 #' @export
