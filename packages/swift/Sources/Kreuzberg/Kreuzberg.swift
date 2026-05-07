@@ -1648,12 +1648,3 @@ public enum KreuzbergError: Error {
     case security(message: String, source: String)
     case other(message: String, field0: String)
 }
-
-// MARK: - Extraction Wrappers
-
-/// Synchronously extracts structured content from a file with MIME type and optional config.
-/// Used in e2e tests as a convenience wrapper around extractFileSync.
-public func extractBytesSync(_ path: String, _ mimeType: String, _ config: ExtractionConfig? = nil) throws -> ExtractionResult {
-    let cfg = config ?? ExtractionConfig()
-    return try RustBridge.extractFileSync(path, mimeType, cfg)
-}
