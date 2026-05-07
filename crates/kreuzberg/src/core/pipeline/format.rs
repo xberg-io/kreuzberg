@@ -39,10 +39,8 @@ pub fn apply_output_format(result: ExtractionResult, output_format: OutputFormat
     };
     result.metadata.output_format = Some(format_name.to_string());
 
-    // Swap in pre-rendered content if available (populated by derive_extraction_result).
-    if let Some(formatted) = result.formatted_content.take() {
-        result.content = formatted;
-    }
+    // Keep formatted_content populated for callers that need both plain text and formatted version.
+    // Do not swap formatted_content into content; maintain both fields as separate outputs.
     result
 }
 
