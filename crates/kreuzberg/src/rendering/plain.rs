@@ -50,10 +50,14 @@ pub(crate) fn render_plain(doc: &InternalDocument) -> String {
                     if matches!(elem.kind, ElementKind::Heading { .. }) && elem.attributes.is_some() {
                         out.push_str(&elem.text);
                         let attrs = elem.attributes.as_ref().unwrap();
-                        // Filter out xmlns attributes and format remaining ones
-                        let formatted_attrs: Vec<String> = attrs
+                        // Filter out xmlns attributes and format remaining ones, sorted for deterministic output
+                        let mut filtered_attrs: Vec<_> = attrs
                             .iter()
                             .filter(|(k, v)| !k.starts_with("xmlns") && !v.is_empty())
+                            .collect();
+                        filtered_attrs.sort_by_key(|(k, _)| k.as_str());
+                        let formatted_attrs: Vec<String> = filtered_attrs
+                            .iter()
                             .map(|(k, v)| format!("{}: {}", k, v))
                             .collect();
                         if !formatted_attrs.is_empty() {
