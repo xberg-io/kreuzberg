@@ -31,7 +31,11 @@ pub(crate) fn render_plain(doc: &InternalDocument) -> String {
                     if matches!(elem.kind, ElementKind::Heading { .. }) {
                         if let Some(last_depth) = last_heading_depth {
                             // Only insert blank lines between siblings at the same depth, depth 0 or 1
-                            if (last_depth == 0 || last_depth == 1) && last_depth == elem.depth && !out.is_empty() && !out.ends_with("\n\n") {
+                            if (last_depth == 0 || last_depth == 1)
+                                && last_depth == elem.depth
+                                && !out.is_empty()
+                                && !out.ends_with("\n\n")
+                            {
                                 out.push('\n');
                             }
                         }
@@ -56,10 +60,8 @@ pub(crate) fn render_plain(doc: &InternalDocument) -> String {
                             .filter(|(k, v)| !k.starts_with("xmlns") && !v.is_empty())
                             .collect();
                         filtered_attrs.sort_by_key(|(k, _)| k.as_str());
-                        let formatted_attrs: Vec<String> = filtered_attrs
-                            .iter()
-                            .map(|(k, v)| format!("{}: {}", k, v))
-                            .collect();
+                        let formatted_attrs: Vec<String> =
+                            filtered_attrs.iter().map(|(k, v)| format!("{}: {}", k, v)).collect();
                         if !formatted_attrs.is_empty() {
                             out.push_str(" (");
                             out.push_str(&formatted_attrs.join(", "));

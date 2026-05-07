@@ -76,11 +76,17 @@ pub(crate) fn extract_all_from_oxide_document(
         }
     })?;
 
-    // Pre-render structured document for output formats that benefit from headings.
-    let needs_structured = matches!(
-        config.output_format,
-        OutputFormat::Markdown | OutputFormat::Djot | OutputFormat::Html
-    );
+    // Pre-render structured document for output formats that benefit from headings,
+    // or when hierarchy extraction is explicitly enabled.
+    let hierarchy_enabled = config
+        .pdf_options
+        .as_ref()
+        .is_some_and(|opts| opts.hierarchy.as_ref().is_some_and(|h| h.enabled));
+    let needs_structured = hierarchy_enabled
+        || matches!(
+            config.output_format,
+            OutputFormat::Markdown | OutputFormat::Djot | OutputFormat::Html
+        );
 
     let allow_single_column = config
         .pdf_options

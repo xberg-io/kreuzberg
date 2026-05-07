@@ -32,7 +32,7 @@ pub(crate) fn assign_hierarchy_to_pages(pages: &mut [PageContent], doc: &Interna
                         .bbox
                         .map(|b| (b.x0 as f32, b.y0 as f32, b.x1 as f32, b.y1 as f32)),
                 };
-                page_hierarchies.entry(page_num).or_insert_with(Vec::new).push(block);
+                page_hierarchies.entry(page_num).or_default().push(block);
             }
             ElementKind::Paragraph => {
                 let block = HierarchicalBlock {
@@ -43,7 +43,7 @@ pub(crate) fn assign_hierarchy_to_pages(pages: &mut [PageContent], doc: &Interna
                         .bbox
                         .map(|b| (b.x0 as f32, b.y0 as f32, b.x1 as f32, b.y1 as f32)),
                 };
-                page_hierarchies.entry(page_num).or_insert_with(Vec::new).push(block);
+                page_hierarchies.entry(page_num).or_default().push(block);
             }
             _ => {}
         }

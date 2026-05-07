@@ -175,6 +175,10 @@ test_documents/deps/
 # Maven plugin artifacts
 *.versionsBackup
 
+# Gradle (Kotlin e2e)
+e2e/kotlin/.gradle/
+e2e/kotlin/build/
+
 # Ruby native build artifacts
 packages/ruby/lib/*.bundle
 packages/ruby/tmp/
