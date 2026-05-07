@@ -252,3 +252,4 @@ scratch/
 .github/copilot-instructions.md
 .github/skills/
 # END ai-rulez
+e2e/zig/.zig-cache/

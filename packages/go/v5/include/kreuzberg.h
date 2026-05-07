@@ -4512,6 +4512,14 @@ char *kreuzberg_document_structure_node_types(const KREUZBERGDocumentStructure *
 void kreuzberg_document_structure_finalize_node_types(KREUZBERGDocumentStructure *this_);
 
 /**
+ * Check if the document structure is empty.
+ * # Safety
+ * Caller must ensure all pointer arguments are valid or null.
+ * Returned pointers must be freed with the appropriate free function.
+ */
+int32_t kreuzberg_document_structure_is_empty(const KREUZBERGDocumentStructure *this_);
+
+/**
  * # Safety
  * Caller must ensure all pointer arguments are valid or null.
  * Returned pointers must be freed with the appropriate free function.
