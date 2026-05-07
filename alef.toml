@@ -139,6 +139,10 @@ sources = [
   "crates/kreuzberg/src/core/extractor/sync.rs",
   # Office metadata types (used in metadata.rs)
   "crates/kreuzberg/src/extraction/office_metadata/mod.rs",
+  "crates/kreuzberg/src/extraction/office_metadata/core_properties.rs",
+  "crates/kreuzberg/src/extraction/office_metadata/app_properties.rs",
+  "crates/kreuzberg/src/extraction/office_metadata/custom_properties.rs",
+  "crates/kreuzberg/src/extraction/office_metadata/odt_properties.rs",
   # OCR/PaddleOCR types (re-exported from lib.rs)
   "crates/kreuzberg/src/ocr/types.rs",
   "crates/kreuzberg/src/paddle_ocr/mod.rs",
