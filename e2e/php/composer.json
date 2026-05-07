@@ -7,7 +7,6 @@
     "guzzlehttp/guzzle": "^7.0"
   },
   "autoload": {
-    "files": ["../../packages/php/stubs/kreuzberg_extension.php"],
     "psr-4": {
       "Kreuzberg\\": "../../packages/php/src/"
     }

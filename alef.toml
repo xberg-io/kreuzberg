@@ -137,6 +137,8 @@ sources = [
   # Batch extraction functions (re-exported from lib.rs)
   "crates/kreuzberg/src/core/extractor/mod.rs",
   "crates/kreuzberg/src/core/extractor/sync.rs",
+  # Office metadata types (used in metadata.rs)
+  "crates/kreuzberg/src/extraction/office_metadata/mod.rs",
   # OCR/PaddleOCR types (re-exported from lib.rs)
   "crates/kreuzberg/src/ocr/types.rs",
   "crates/kreuzberg/src/paddle_ocr/mod.rs",
@@ -1046,7 +1048,7 @@ e2e = "cd e2e/ruby && bundle exec rspec"
 
 [crates.test.php]
 precondition = "command -v composer >/dev/null 2>&1"
-before = "cd e2e/php && composer install"
+before = "cargo build --release -p kreuzberg-php && cd e2e/php && composer install"
 e2e = "cd e2e/php && composer test"
 
 [crates.test.java]
@@ -1066,7 +1068,7 @@ e2e = "cd e2e/elixir && KREUZBERG_BUILD=1 mix test"
 
 [crates.test.r]
 precondition = "command -v Rscript >/dev/null 2>&1"
-before = "cd packages/r/src/rust && cargo build --release"
+before = "rm -f packages/r/src/kreuzberg.so packages/r/src/entrypoint.o && cd packages/r/src/rust && cargo build --release"
 command = "cd e2e/r && Rscript -e \"devtools::load_all('../../packages/r'); testthat::set_max_fails(Inf); testthat::test_dir('tests')\""
 e2e = "cd e2e/r && Rscript -e \"devtools::load_all('../../packages/r'); testthat::set_max_fails(Inf); testthat::test_dir('tests')\""
 
@@ -1292,6 +1294,9 @@ args = [
 
 [crates.e2e.calls.extract_file_sync.overrides.node]
 options_type = "JsExtractionConfig"
+arg_order = ["path", "config", "mime_type"]
+
+[crates.e2e.calls.extract_file_sync.overrides.ruby]
 arg_order = ["path", "config", "mime_type"]
 
 [crates.e2e.calls.extract_file_sync.overrides.csharp]

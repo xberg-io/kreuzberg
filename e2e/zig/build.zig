@@ -4,12 +4,24 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
     const test_step = b.step("test", "Run tests");
+    const ffi_path = b.option([]const u8, "ffi_path", "Path to directory containing libkreuzberg_ffi") orelse "../../target/debug";
+    const ffi_include = b.option([]const u8, "ffi_include_path", "Path to directory containing kreuzberg FFI header") orelse "../../crates/kreuzberg-ffi/include";
+
+    const kreuzberg_module = b.addModule("kreuzberg", .{
+        .root_source_file = b.path("../../packages/zig/src/kreuzberg.zig"),
+        .target = target,
+        .optimize = optimize,
+    });
+    kreuzberg_module.addLibraryPath(.{ .cwd_relative = ffi_path });
+    kreuzberg_module.addIncludePath(.{ .cwd_relative = ffi_include });
+    kreuzberg_module.linkSystemLibrary("kreuzberg_ffi", .{});
 
     const async_module = b.createModule(.{
         .root_source_file = b.path("src/async_test.zig"),
         .target = target,
         .optimize = optimize,
     });
+    async_module.addImport("kreuzberg", kreuzberg_module);
     const async_tests = b.addTest(.{
         .root_module = async_module,
     });
@@ -21,6 +33,7 @@ pub fn build(b: *std.Build) void {
         .target = target,
         .optimize = optimize,
     });
+    batch_module.addImport("kreuzberg", kreuzberg_module);
     const batch_tests = b.addTest(.{
         .root_module = batch_module,
     });
@@ -32,6 +45,7 @@ pub fn build(b: *std.Build) void {
         .target = target,
         .optimize = optimize,
     });
+    contract_module.addImport("kreuzberg", kreuzberg_module);
     const contract_tests = b.addTest(.{
         .root_module = contract_module,
     });
@@ -43,6 +57,7 @@ pub fn build(b: *std.Build) void {
         .target = target,
         .optimize = optimize,
     });
+    detection_module.addImport("kreuzberg", kreuzberg_module);
     const detection_tests = b.addTest(.{
         .root_module = detection_module,
     });
@@ -54,6 +69,7 @@ pub fn build(b: *std.Build) void {
         .target = target,
         .optimize = optimize,
     });
+    error_module.addImport("kreuzberg", kreuzberg_module);
     const error_tests = b.addTest(.{
         .root_module = error_module,
     });
@@ -65,6 +81,7 @@ pub fn build(b: *std.Build) void {
         .target = target,
         .optimize = optimize,
     });
+    format_specific_module.addImport("kreuzberg", kreuzberg_module);
     const format_specific_tests = b.addTest(.{
         .root_module = format_specific_module,
     });
@@ -76,6 +93,7 @@ pub fn build(b: *std.Build) void {
         .target = target,
         .optimize = optimize,
     });
+    registry_module.addImport("kreuzberg", kreuzberg_module);
     const registry_tests = b.addTest(.{
         .root_module = registry_module,
     });
@@ -87,6 +105,7 @@ pub fn build(b: *std.Build) void {
         .target = target,
         .optimize = optimize,
     });
+    registry_operations_module.addImport("kreuzberg", kreuzberg_module);
     const registry_operations_tests = b.addTest(.{
         .root_module = registry_operations_module,
     });
@@ -98,6 +117,7 @@ pub fn build(b: *std.Build) void {
         .target = target,
         .optimize = optimize,
     });
+    smoke_module.addImport("kreuzberg", kreuzberg_module);
     const smoke_tests = b.addTest(.{
         .root_module = smoke_module,
     });
