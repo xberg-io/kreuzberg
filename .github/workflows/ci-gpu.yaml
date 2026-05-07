@@ -2,7 +2,7 @@ name: CI GPU
 
 on:
   push:
-    branches: [main]
+    branches: [chore/v4.9-lts]
     paths:
       - "crates/**"
       - ".github/workflows/ci-gpu.yaml"
@@ -10,7 +10,7 @@ on:
       - "Cargo.toml"
       - "Cargo.lock"
   pull_request:
-    branches: [main]
+    branches: [chore/v4.9-lts]
     paths:
       - "crates/**"
       - ".github/workflows/ci-gpu.yaml"

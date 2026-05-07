@@ -63,7 +63,7 @@ else
 fi
 
 if [[ "$ref" =~ ^[0-9a-f]{40}$ ]]; then
-  checkout_ref="refs/heads/main"
+  checkout_ref="refs/heads/chore/v4.9-lts"
   target_sha="$ref"
 elif [[ "$ref" =~ ^refs/ ]]; then
   checkout_ref="$ref"
@@ -74,7 +74,7 @@ else
 fi
 
 if [[ "$ref" =~ ^[0-9a-f]{40}$ ]]; then
-  matrix_ref="main"
+  matrix_ref="chore/v4.9-lts"
 elif [[ "$ref" =~ ^refs/heads/(.+)$ ]]; then
   matrix_ref="${BASH_REMATCH[1]}"
 elif [[ "$ref" =~ ^refs/tags/(.+)$ ]]; then

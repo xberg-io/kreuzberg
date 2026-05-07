@@ -1,0 +1,36 @@
+name: Create GitHub Release on tag push
+
+on:
+  push:
+    tags: ["v4.9.*"]
+
+permissions:
+  contents: write
+
+jobs:
+  create-release:
+    name: "Create Release"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Verify tag points at chore/v4.9-lts
+        shell: bash
+        run: |
+          git fetch origin chore/v4.9-lts:refs/remotes/origin/chore/v4.9-lts
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/chore/v4.9-lts; then
+            echo "::error::Tag $GITHUB_REF_NAME points at $GITHUB_SHA which is not on chore/v4.9-lts" >&2
+            exit 1
+          fi
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --title "$GITHUB_REF_NAME" \
+            --generate-notes \
+            --target "$GITHUB_SHA"
