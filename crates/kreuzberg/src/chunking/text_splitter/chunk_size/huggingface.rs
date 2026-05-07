@@ -56,7 +56,8 @@ mod tests {
 
     #[test]
     fn returns_size_handles_prefix() {
-        let tokenizer = tokenizers::Tokenizer::from_file("./tests/tokenizers/huggingface.json").unwrap();
+        let tokenizer = Tokenizer::from_pretrained("thenlper/gte-small", None)
+            .expect("Could not load tokenizer 'thenlper/gte-small'");
 
         let size = tokenizer.size("An apple a");
         assert_eq!(size, 3);
@@ -74,10 +75,10 @@ mod tests {
         let tokenizer = Tokenizer::from_pretrained("sentence-transformers/all-MiniLM-L6-v2", None)
             .expect("Could not load tokenizer 'sentence-transformers/all-MiniLM-L6-v2'");
 
-        // Need to ensure chunk is large enough to cause Encoding overflows.
+        // With stride=0 (default), truncation caps at max_length=128 with no overflow encodings.
         assert_eq!(
             tokenizer.size("An apple a day keeps the doctor away.".repeat(100).as_str()),
-            900
+            128
         );
     }
 }

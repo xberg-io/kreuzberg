@@ -18,9 +18,8 @@ fn biome_available() -> bool {
     std::process::Command::new("biome").arg("--version").output().is_ok()
 }
 
-/// Run `biome format --check` on the given HTML content. Returns `Ok(())`
-/// when the formatting check passes, `Err(message)` with diagnostics when it
-/// fails.
+/// Run `biome ci` on the given HTML content. Returns `Ok(())` when the
+/// formatting check passes, `Err(message)` with diagnostics when it fails.
 fn run_biome_format_check(html_content: &str) -> Result<(), String> {
     let tmp = tempfile::Builder::new()
         .suffix(".html")
@@ -30,7 +29,7 @@ fn run_biome_format_check(html_content: &str) -> Result<(), String> {
     std::fs::write(tmp.path(), html_content).expect("failed to write temp file");
 
     let output = std::process::Command::new("biome")
-        .args(["format", "--check"])
+        .args(["ci"])
         .arg(tmp.path())
         .output()
         .map_err(|e| format!("failed to run biome: {e}"))?;
@@ -40,7 +39,7 @@ fn run_biome_format_check(html_content: &str) -> Result<(), String> {
     } else {
         let stdout = String::from_utf8_lossy(&output.stdout);
         let stderr = String::from_utf8_lossy(&output.stderr);
-        Err(format!("biome format --check failed:\n{stdout}\n{stderr}"))
+        Err(format!("biome ci failed:\n{stdout}\n{stderr}"))
     }
 }
 
