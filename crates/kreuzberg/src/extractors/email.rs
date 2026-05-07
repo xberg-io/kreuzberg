@@ -110,6 +110,17 @@ impl EmailExtractor {
             }
         }
 
+        // Add attachments section if any exist
+        if !email_result.attachments.is_empty() {
+            builder.push_paragraph("Attachments:", vec![], None, None);
+            for att in &email_result.attachments {
+                let name = att.filename.as_deref().or(att.name.as_deref()).unwrap_or("unnamed");
+                let size = att.size.unwrap_or(0);
+                let att_text = format!("  {} ({}B)", name, size);
+                builder.push_paragraph(&att_text, vec![], None, None);
+            }
+        }
+
         builder.build()
     }
 }

@@ -116,24 +116,14 @@ pub(crate) fn parse_eml_content(data: &[u8]) -> Result<EmailExtractionResult> {
     let subject = message.subject().map(|s| s.to_string());
 
     let from_email = message.from().and_then(|from| from.first()).and_then(|addr| {
-        let email = addr.address()?;
-        Some(match addr.name() {
-            Some(name) if !name.is_empty() => format!("\"{}\" <{}>", name, email),
-            _ => email.to_string(),
-        })
+        addr.address().map(|email| email.to_string())
     });
 
     let to_emails: Vec<String> = message
         .to()
         .map(|to| {
             to.iter()
-                .filter_map(|addr| {
-                    let email = addr.address()?;
-                    Some(match addr.name() {
-                        Some(name) if !name.is_empty() => format!("\"{}\" <{}>", name, email),
-                        _ => email.to_string(),
-                    })
-                })
+                .filter_map(|addr| addr.address().map(|email| email.to_string()))
                 .collect()
         })
         .unwrap_or_else(Vec::new);
@@ -142,13 +132,7 @@ pub(crate) fn parse_eml_content(data: &[u8]) -> Result<EmailExtractionResult> {
         .cc()
         .map(|cc| {
             cc.iter()
-                .filter_map(|addr| {
-                    let email = addr.address()?;
-                    Some(match addr.name() {
-                        Some(name) if !name.is_empty() => format!("\"{}\" <{}>", name, email),
-                        _ => email.to_string(),
-                    })
-                })
+                .filter_map(|addr| addr.address().map(|email| email.to_string()))
                 .collect()
         })
         .unwrap_or_else(Vec::new);
@@ -157,13 +141,7 @@ pub(crate) fn parse_eml_content(data: &[u8]) -> Result<EmailExtractionResult> {
         .bcc()
         .map(|bcc| {
             bcc.iter()
-                .filter_map(|addr| {
-                    let email = addr.address()?;
-                    Some(match addr.name() {
-                        Some(name) if !name.is_empty() => format!("\"{}\" <{}>", name, email),
-                        _ => email.to_string(),
-                    })
-                })
+                .filter_map(|addr| addr.address().map(|email| email.to_string()))
                 .collect()
         })
         .unwrap_or_else(Vec::new);
@@ -193,13 +171,7 @@ pub(crate) fn parse_eml_content(data: &[u8]) -> Result<EmailExtractionResult> {
         .map(|addrs| {
             addrs
                 .iter()
-                .filter_map(|addr| {
-                    let email = addr.address()?;
-                    Some(match addr.name() {
-                        Some(name) if !name.is_empty() => format!("\"{}\" <{}>", name, email),
-                        _ => email.to_string(),
-                    })
-                })
+                .filter_map(|addr| addr.address().map(|email| email.to_string()))
                 .collect()
         })
         .unwrap_or_default();
@@ -222,6 +194,14 @@ pub(crate) fn parse_eml_content(data: &[u8]) -> Result<EmailExtractionResult> {
     // Iterate over all body parts to capture content from multipart messages.
     // Also recurse into nested message/rfc822 parts (multipart/digest emails).
     //
+    // Determine if message content should be treated as HTML based on MIME type.
+    // This check happens early so we can gather the appropriate body content.
+    let should_treat_as_html = message
+        .content_type()
+        .and_then(|ct| ct.subtype())
+        .map(|subtype| subtype.eq_ignore_ascii_case("html"))
+        .unwrap_or(false);
+
     // Important: mail-parser's `body_text()` auto-converts HTML to plain text
     // using a naive tag-stripping approach that does NOT remove <script> or
     // <style> content. We only trust `body_text()` when the message has at
@@ -229,7 +209,9 @@ pub(crate) fn parse_eml_content(data: &[u8]) -> Result<EmailExtractionResult> {
     // emails we fall through to `clean_html_content()` which uses
     // html-to-markdown-rs or regex-based stripping that properly handles scripts.
     let has_genuine_text_part = has_genuine_text_body(&message);
-    let plain_text = if has_genuine_text_part {
+    let plain_text = if has_genuine_text_part || should_treat_as_html {
+        // Extract text for both genuine text/plain parts AND HTML-only emails
+        // (for HTML emails, this gets the raw HTML which we'll clean later)
         let mut all_text = Vec::new();
         let mut i = 0;
         while let Some(text) = message.body_text(i) {
@@ -263,7 +245,18 @@ pub(crate) fn parse_eml_content(data: &[u8]) -> Result<EmailExtractionResult> {
         }
     };
 
-    let content = if let Some(ref plain) = plain_text {
+    // If MIME type is HTML but body_html didn't extract anything, try to get content
+    // via body_text and treat it as HTML
+    let html_content = if should_treat_as_html && html_content.is_none() && plain_text.is_some() {
+        plain_text.clone()
+    } else {
+        html_content
+    };
+
+    let content = if should_treat_as_html && html_content.is_some() {
+        // Prefer cleaned HTML for text/html MIME type
+        clean_html_content(html_content.as_ref().unwrap())
+    } else if let Some(ref plain) = plain_text {
         plain.clone()
     } else if let Some(html) = &html_content {
         clean_html_content(html)
@@ -758,10 +751,7 @@ fn extract_msg_from_cfb<F: std::io::Read + std::io::Seek>(
     let sender_email = read_msg_string_prop(comp, "", 0x0C1F, codepage) // PR_SENDER_EMAIL_ADDRESS
         .or_else(|| read_msg_string_prop(comp, "", 0x0065, codepage)) // PR_SENT_REPRESENTING_EMAIL
         .filter(|s| !s.is_empty());
-    let from_email = sender_email.as_ref().map(|email| match sender_name.as_deref() {
-        Some(name) if !name.is_empty() => format!("\"{}\" <{}>", name, email),
-        _ => email.clone(),
-    });
+    let from_email = sender_email;
     let body = read_msg_string_prop(comp, "", 0x1000, codepage); // PR_BODY
     let html_body = read_msg_string_prop(comp, "", 0x1013, codepage); // PR_BODY_HTML
     let message_id = read_msg_string_prop(comp, "", 0x1035, codepage) // PR_INTERNET_MESSAGE_ID
@@ -1299,8 +1289,20 @@ pub(crate) fn build_email_text_output(result: &EmailExtractionResult) -> String 
 
     text_parts.push(result.content.clone());
 
-    // Attachment names are stored in metadata but not included in the text output.
-    // This keeps the text output focused on message content.
+    // Add attachments section if any exist
+    if !result.attachments.is_empty() {
+        text_parts.push("Attachments:".to_string());
+        let attachment_lines: Vec<String> = result
+            .attachments
+            .iter()
+            .filter_map(|att| {
+                let name = att.filename.as_deref().or(att.name.as_deref()).unwrap_or("unnamed");
+                let size = att.size.unwrap_or(0);
+                Some(format!("  {} ({}B)", name, size))
+            })
+            .collect();
+        text_parts.extend(attachment_lines);
+    }
 
     text_parts.join("\n")
 }
