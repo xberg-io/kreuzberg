@@ -178,7 +178,17 @@ impl DocumentExtractor for HwpExtractor {
         _config: &ExtractionConfig,
     ) -> Result<InternalDocument> {
         let hwp_doc = extract_hwp_content(content)?;
+        if hwp_doc.sections.is_empty() {
+            return Err(crate::KreuzbergError::parsing(
+                "no BodyText sections found in HWP document".to_string(),
+            ));
+        }
         let mut doc = build_hwp_internal_document(&hwp_doc);
+        if doc.elements.is_empty() {
+            return Err(crate::KreuzbergError::parsing(
+                "no BodyText sections found in HWP document".to_string(),
+            ));
+        }
         doc.mime_type = std::borrow::Cow::Owned(mime_type.to_string());
         Ok(doc)
     }
