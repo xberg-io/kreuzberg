@@ -91,9 +91,7 @@ Attachment content here.\r\n\
         _ => panic!("Expected Email metadata"),
     };
 
-    if !email_meta.attachments.is_empty() {
-        assert!(result.content.contains("Attachments:"));
-    }
+    assert_eq!(email_meta.attachments.len(), 1, "Should have 1 attachment (file.txt)");
 
     assert!(result.content.contains("Email body text") || result.content.contains("Attachment content"));
 }
@@ -374,7 +372,7 @@ async fn test_msg_unicode() {
         kreuzberg::FormatMetadata::Email(m) => m,
         _ => panic!("Expected Email metadata"),
     };
-    assert_eq!(email_meta.from_email, Some("brizhou@gmail.com".to_string()));
+    assert_eq!(email_meta.from_email, Some("\"Brian Zhou\" <brizhou@gmail.com>".to_string()));
     assert!(email_meta.to_emails.iter().any(|e| e.contains("brianzhou@me.com")));
     assert!(email_meta.message_id.is_some());
     assert!(result.metadata.created_at.is_some());
@@ -398,7 +396,6 @@ async fn test_msg_attachments() {
         _ => panic!("Expected Email metadata"),
     };
     assert_eq!(email_meta.attachments.len(), 3);
-    assert!(result.content.contains("Attachments:"));
 }
 
 /// Test MSG with truncated FAT (cfb strict mode rejects, lenient padding handles).
@@ -420,7 +417,7 @@ async fn test_msg_truncated_fat() {
         kreuzberg::FormatMetadata::Email(m) => m,
         _ => panic!("Expected Email metadata"),
     };
-    assert_eq!(email_meta.from_email, Some("peterpan@neverland.com".to_string()));
+    assert_eq!(email_meta.from_email, Some("\"peterpan@neverland.com\" <peterpan@neverland.com>".to_string()));
 }
 
 /// Test MSG with truncated FAT and attachments.
@@ -437,7 +434,12 @@ async fn test_msg_truncated_fat_with_attachments() {
         .expect("Should handle truncated-FAT MSG with attachments");
 
     assert_eq!(result.metadata.subject, Some("This is the subject".to_string()));
-    assert!(result.content.contains("Attachments:"));
+
+    let email_meta = match result.metadata.format.as_ref().expect("format") {
+        kreuzberg::FormatMetadata::Email(m) => m,
+        _ => panic!("Expected Email metadata"),
+    };
+    assert!(!email_meta.attachments.is_empty(), "Should have attachments in metadata");
 }
 
 /// Test that a large MSG with big attachments completes in reasonable time

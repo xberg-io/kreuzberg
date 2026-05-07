@@ -59,10 +59,18 @@ impl EmailExtractor {
             builder.push_metadata_block(&header_entries, None);
         }
 
-        // Push body content: if HTML body is available, walk the HTML
-        // document structure for richer extraction; otherwise fall back to
-        // plain text paragraph splitting.
-        if let Some(ref html) = email_result.html_content {
+        // Push body content: use the extracted cleaned_text (which already has HTML
+        // processing applied if needed - see email.rs clean_html_content()).
+        // For HTML emails, this is already text with tags stripped.
+        if !email_result.cleaned_text.is_empty() {
+            for paragraph in email_result.cleaned_text.split("\n\n") {
+                let trimmed = paragraph.trim();
+                if !trimmed.is_empty() {
+                    builder.push_paragraph(trimmed, vec![], None, None);
+                }
+            }
+        } else if let Some(ref html) = email_result.html_content {
+            // Fallback: if cleaned_text is empty but HTML is available, try structured extraction
             let html_doc = crate::extraction::html::structure::build_document_structure(html);
             for node in &html_doc.nodes {
                 if node.parent.is_none() {
@@ -99,13 +107,6 @@ impl EmailExtractor {
                             }
                         }
                     }
-                }
-            }
-        } else {
-            for paragraph in email_result.cleaned_text.split("\n\n") {
-                let trimmed = paragraph.trim();
-                if !trimmed.is_empty() {
-                    builder.push_paragraph(trimmed, vec![], None, None);
                 }
             }
         }

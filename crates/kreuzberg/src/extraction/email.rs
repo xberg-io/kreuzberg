@@ -256,6 +256,46 @@ pub fn parse_eml_content(data: &[u8]) -> Result<EmailExtractionResult> {
         }
         // Extract HTML from nested message/rfc822 sub-messages.
         collect_nested_message_html(&message, &mut all_html);
+
+        // Fallback: if no dedicated HTML body was found, check if the message
+        // parts include HTML content. For simple HTML emails, mail-parser might
+        // not expose HTML via body_html() but it's still in the parts.
+        if all_html.is_empty() {
+            use mail_parser::{MimeHeaders, PartType};
+            for part in &message.parts {
+                if let Some(ct) = part.content_type() {
+                    let is_html = ct.subtype().map(|s| s.eq_ignore_ascii_case("html")).unwrap_or(false);
+                    if is_html {
+                        match &part.body {
+                            PartType::Text(t) | PartType::Html(t) => {
+                                all_html.push(t.to_string());
+                            }
+                            _ => {}
+                        }
+                    }
+                }
+            }
+        }
+
+        // Final fallback: if still no HTML found, manually extract body from raw bytes.
+        // Mail-parser sometimes doesn't parse simple single-part HTML emails correctly.
+        if all_html.is_empty()
+            && let Ok(data_str) = std::str::from_utf8(&data) {
+                // Find the blank line that separates headers from body
+                // Try both CRLF and LF line endings
+                let body = if let Some(pos) = data_str.find("\r\n\r\n") {
+                    &data_str[pos + 4..]
+                } else if let Some(pos) = data_str.find("\n\n") {
+                    &data_str[pos + 2..]
+                } else {
+                    ""
+                };
+
+                if !body.is_empty() {
+                    all_html.push(body.to_string());
+                }
+            }
+
         if all_html.is_empty() {
             None
         } else {
@@ -264,11 +304,27 @@ pub fn parse_eml_content(data: &[u8]) -> Result<EmailExtractionResult> {
     };
 
     let cleaned_text = if let Some(ref plain) = plain_text {
-        plain.clone()
+        // If plain_text contains HTML tags, treat it as HTML
+        if plain.contains("<html") || plain.contains("<body") || plain.contains("<!DOCTYPE") {
+            clean_html_content(plain)
+        } else {
+            plain.clone()
+        }
     } else if let Some(html) = &html_content {
         clean_html_content(html)
     } else {
-        String::new()
+        // Last resort: if no plain text or extracted HTML, try body_text(0)
+        // which might contain HTML content for pure HTML emails
+        if let Some(text) = message.body_text(0) {
+            // Check if this is actually HTML content
+            if text.contains("<html") || text.contains("<body") || text.contains("<!DOCTYPE") {
+                clean_html_content(&text)
+            } else {
+                text.to_string()
+            }
+        } else {
+            String::new()
+        }
     };
 
     let mut attachments = Vec::with_capacity(message.attachments().count().min(20));
@@ -1310,7 +1366,18 @@ fn clean_html_content(html: &str) -> String {
         return String::new();
     }
 
-    // Use html-to-markdown converter in plain text mode when available
+    // First try: regex-based HTML stripping (most reliable)
+    let cleaned = script_regex().replace_all(html, "");
+    let cleaned = style_regex().replace_all(&cleaned, "");
+    let cleaned = html_tag_regex().replace_all(&cleaned, "");
+    let cleaned = whitespace_regex().replace_all(&cleaned, " ");
+    let text = cleaned.trim().to_string();
+
+    if !text.is_empty() {
+        return text;
+    }
+
+    // Fallback: try html-to-markdown converter if regex stripping produced nothing
     #[cfg(feature = "html")]
     {
         if let Ok(text) = crate::extraction::html::convert_html_to_markdown(
@@ -1325,13 +1392,7 @@ fn clean_html_content(html: &str) -> String {
         }
     }
 
-    // Fallback: regex-based HTML stripping
-    let cleaned = script_regex().replace_all(html, "");
-    let cleaned = style_regex().replace_all(&cleaned, "");
-    let cleaned = html_tag_regex().replace_all(&cleaned, "");
-    let cleaned = whitespace_regex().replace_all(&cleaned, " ");
-
-    cleaned.trim().to_string()
+    String::new()
 }
 
 fn is_image_mime_type(mime_type: &str) -> bool {
